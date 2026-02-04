@@ -1,0 +1,223 @@
+[
+  {
+    "question_id": "210c700a-a2f7-4246-a58e-de51993f1fca",
+    "subject": "Fen Bilimleri",
+    "topic": "Fen Bilimleri",
+    "difficulty": "orta",
+    "exam_type": "TYT",
+    "stem": "Aşağıdakilerden hangisi eşeysiz üreme ile\ngerçekleşmez? B) Birden fazla herbivor tür vardır.",
+    "options": {
+      "A": "Laktik asit bakterilerinin çoğalması",
+      "B": "Kara yosunlarında sporla yeni bireylerin oluşması",
+      "C": "Deniz yıldızının kopan kolundan yeni bir birey oluşması",
+      "D": "Hidralarda tomurcuklanma ile yeni bir bireyin oluşması",
+      "E": "Bal arılarında kraliçe arının oluşumu"
+    },
+    "correct_answer": null,
+    "year": 2024
+  },
+  {
+    "question_id": "42c52eaf-9a5f-4452-ab59-5482a9e454f7",
+    "subject": "Fen Bilimleri",
+    "topic": "Fen Bilimleri",
+    "difficulty": "orta",
+    "exam_type": "TYT",
+    "stem": "Canlıların sınıflandırılmasında en üst kategoriden 20. Şekilde farklı besin zincirlerinin bir araya gelerek\nalt kategorilere doğru gidildikçe aşağıdakilerden oluşturduğu bir besin ağı verilmiştir.\nhangisinin görülmesi beklenmez?",
+    "options": {
+      "A": "Hem K hem de L ototrof organizmalardır.",
+      "B": "Taksonlar arasındaki akrabalık derecesi artar.",
+      "C": "Birey sayısı azalır.",
+      "D": "Taksonlar arasındaki protein benzerliği artar.",
+      "E": "Canlı çeşitliliği azalır. Bu besin ağı ile ilgili aşağıdakilerden hangisi söylenemez?"
+    },
+    "correct_answer": null,
+    "year": 2024
+  },
+  {
+    "question_id": "4e818c4c-0899-4677-b809-f30abfcc5e83",
+    "subject": "Fen Bilimleri",
+    "topic": "Fen Bilimleri",
+    "difficulty": "orta",
+    "exam_type": "TYT",
+    "stem": "Belirli bir sıcaklıkta, 80 gram tuz ile 120 gram su ifadelerinden hangileri doğrudur?\nkarıştırılıyor. Daha fazla çözünme olmayıncaya kadar",
+    "options": {
+      "A": "20",
+      "B": "25",
+      "C": "30",
+      "D": "35",
+      "E": "40"
+    },
+    "correct_answer": null,
+    "year": 2024
+  },
+  {
+    "question_id": "6943acfe-1c83-4c01-b26d-cf97052e4e43",
+    "subject": "Fen Bilimleri",
+    "topic": "Fen Bilimleri",
+    "difficulty": "orta",
+    "exam_type": "TYT",
+    "stem": "Ahsen; marketten aldığı ve oda sıcaklığında ( 25 oC)",
+    "options": {
+      "A": "Yalnız I",
+      "B": "Yalnız II",
+      "C": "Yalnız III bulunan birer kutu süt, peynir ve zeytini içinin sıcaklığı 4 oC olan dış ortamdan ısıca yalıtılmış bir buzdolabına",
+      "D": "I ve II",
+      "E": "I ve III koyduğunda elektrikler kesiliyor. Elektrikler kesilmiş hâlde kapağı kapalı olan buzdolabındaki ürünleri birbirleriyle ısı alışverişi sona erene kadar yeterince bekletiyor. Isı alışverişi kesildiğinde"
+    },
+    "correct_answer": null,
+    "year": 2024
+  },
+  {
+    "question_id": "8a9794dc-e593-48f6-839d-203c9c0dd45d",
+    "subject": "Fen Bilimleri",
+    "topic": "Fen Bilimleri",
+    "difficulty": "orta",
+    "exam_type": "TYT",
+    "stem": "A, B ve C iletken tellerinin uçları arasındaki potansiyel 6. Yeterince uzun ve gergin ideal bir yay üzerinde\nfarklar ve üzerlerinden geçen akımı gösteren grafik oluşturulan bir dalganın t anındaki görüntüsü ile\naşağıdaki gibidir. Bu teller kesilmeden ve şekilleri dalganın x doğrultulu ilerleme yönü şekildeki gibidir.\ndeğiştirilmeden kendileri ile aynı harfi taşıyan A, B ve C\nampullerinin yapımında flaman olarak kullanılmıştır. Bu\nampuller, iç direnci önemsiz bir üreteç ve bağlantı\nkabloları ile şekildeki elektrik devresi kurulmuştur.\nBuna göre yay üzerinde bulunan K, L ve M\nnoktalarının titreşim yönleri aşağıdakilerin\nhangisinde doğru verilmiştir?\nA, B ve C ampullerinin sırasıyla, uçları arasındaki K L M\nV A, V B, V C potansiyel farkları ve P A, P B, P C birim",
+    "options": {
+      "A": "V > V > V",
+      "B": "V > V > V A B C A B C",
+      "C": "V A < V B < V C",
+      "D": "V A = V B = V C",
+      "E": "V = V = V A B C P < P < P A B C 36 Diğer sayfaya geçiniz."
+    },
+    "correct_answer": null,
+    "year": 2024
+  },
+  {
+    "question_id": "988df3a1-6549-4912-9e24-a9d06f85354a",
+    "subject": "Fen Bilimleri",
+    "topic": "Fen Bilimleri",
+    "difficulty": "orta",
+    "exam_type": "TYT",
+    "stem": "Aşağıdaki çizelgede bazı gaz örneklerine ait bilgiler ve 14. Hidrojen florür (HF), standart şartlarda gaz hâlde\nbu gazlardaki oksijen atomu sayıları K, L ve M harfleriyle bulunan ve suda çözünebilen bir maddedir.\ntemsil edilecek şekilde verilmiştir.\nHidrojen florürün sulu çözeltisi ile ilgili aşağıdaki\nifadelerden hangisi yanlıştır?",
+    "options": {
+      "A": "K > L > M",
+      "B": "K > M > L",
+      "C": "L > K > M",
+      "D": "Aktif metallerle tepkimeye girerek H gazı açığa 2 çıkarır. Buna göre K, L ve M arasındaki ilişki aşağıdakilerin",
+      "E": "25 o C’de pH değeri 7’den büyüktür. hangisinde doğru verilmiştir? (Gazların ideal gaz olarak davrandığı varsayılacaktır. N O = 44 g/mol, Avogadro sayısı (N ) = 6,02x1023) 2 A"
+    },
+    "correct_answer": null,
+    "year": 2024
+  },
+  {
+    "question_id": "9892060b-27bf-4b1b-a821-85e531a90607",
+    "subject": "Fen Bilimleri",
+    "topic": "Fen Bilimleri",
+    "difficulty": "orta",
+    "exam_type": "TYT",
+    "stem": "Süsleme sanatlarından biri olan ebru, ebru teknesinde 3. Altay; içinde su bulunan yatay zemindeki bir kaba\nyer alan yoğunlaştırılmış su üzerinde yüzen toprak hacimleri birbirine eşit, her biri içi dolu küre şeklindeki\nve toz boyalarla resim ve desen oluşturma sanatıdır. alüminyum, demir ve tahtadan yapılmış üç topu\nÇiçeği kırmızı ve gövdesi yeşil renkli olan şekildeki gibi bıraktığında ilk ikisinin batarken tahtanın yüzdüğünü\nbir lale resmi oluşturmak amacıyla kullanılması gözlemliyor.\nplanlanan su ve boyaların kütle-hacim grafiği aşağıda\nDemirin özkütlesi alüminyumun özkütlesinden\nverilmiştir.\nbüyük olduğuna göre\nI. Demir ve alüminyum topa, suyun uyguladığı\nkaldırma kuvveti eşit büyüklüktedir.\nII. Tahta topa, ağırlığına eşit büyüklükte kaldırma\nkuvveti etki eder.\nIII. Tahta top diğerlerinden daha fazla hacimde\nsuyun yerini değiştirir.\nyargılarından hangileri doğrudur?\nŞekildeki lale resmini oluşturabilmek için ebru",
+    "options": {
+      "A": "Yalnız I",
+      "B": "Yalnız II",
+      "C": "Yalnız III teknesinde",
+      "D": "I ve II",
+      "E": "II ve III I. Yalnızca A suyu kullanılabilir. II. Yalnızca B suyu kullanılabilir. III.A ve B sularından elde edilen bir karışım kullanılabilir. yargılarından hangileri doğrudur?"
+    },
+    "correct_answer": null,
+    "year": 2024
+  },
+  {
+    "question_id": "b22ac280-123d-48ba-b1ab-e47772c28fd0",
+    "subject": "Fen Bilimleri",
+    "topic": "Fen Bilimleri",
+    "difficulty": "orta",
+    "exam_type": "TYT",
+    "stem": "Hemofili, X kromozomu üzerindeki çekinik bir alel\ntarafından kalıtılan bir hastalıktır. Aşağıda bu hastalığın\nbir ailedeki kalıtımı gösterilmiştir.\nBuna göre 1 ve 2 numaralı bireylerin evliliğinden\ndoğacak çocuğun hemofili olma olasılığı kaçtır?",
+    "options": {
+      "A": "1/16",
+      "B": "1/8",
+      "C": "1/4",
+      "D": "1/2",
+      "E": "1 TEST BİTTİ. 39 CEVAPLARINIZI KONTROL EDİNİZ."
+    },
+    "correct_answer": null,
+    "year": 2024
+  },
+  {
+    "question_id": "b8e24080-0eb6-4f1a-8554-818368e19692",
+    "subject": "Fen Bilimleri",
+    "topic": "Fen Bilimleri",
+    "difficulty": "orta",
+    "exam_type": "TYT",
+    "stem": "K ve L maddelerinin tanecikleri arasındaki etkileşimlerle\nilgili bilgiler aşağıda verilmiştir.\nBu sistemde aynanın odak noktasında bulunan ışık\n K’nin tanecikleri arasında sadece indüklenmiş\nkaynağından tek renkli mavi ışık yayılsaydı ışık\ndipol-indüklenmiş dipol etkileşimi vardır.\naynadan yansıyıp mercekten geçtikten sonra asal\n L’nin tanecikleri arasında dipol-dipol etkileşimi\neksenin neresinde toplanacak şekilde kırılırdı?\nvardır.",
+    "options": {
+      "A": "CH F 4 2",
+      "B": "H O 2 2",
+      "C": "Ne H O 2",
+      "D": "H O HF 2",
+      "E": "F - T noktaları arasında"
+    },
+    "correct_answer": null,
+    "year": 2024
+  },
+  {
+    "question_id": "c0bed3ac-3629-4c35-a2e3-5ff037b161f4",
+    "subject": "Fen Bilimleri",
+    "topic": "Fen Bilimleri",
+    "difficulty": "orta",
+    "exam_type": "TYT",
+    "stem": "Farklı malzemeden yapılmış m, 2m ve 4m kütleli K, L\nI. Buzdolabının içinin sıcaklığı azalmıştır.\nve M blokları yatay olarak ayrı ayrı uygulanan aynı F\nII. Süt, peynir ve zeytinin son sıcaklıkları birbirine\nkuvvetinin etkisi altında yatay beton zemin üzerinde\neşittir.\nhareketsiz durmaktadır. Bloklar ile beton zemin\narasındaki statik sürtünme katsayısının K bloğu için 1, III. Süt, peynir ve zeytin ortama aynı miktar ısı\nL bloğu için 0,5 ve M bloğu için ise 0,8 olduğu vermiştir.\nbilinmektedir.\nyargılarından hangileri kesinlikle doğrudur?\nF kuvvetine rağmen hareket etmeyen K, L ve M",
+    "options": {
+      "A": "f = f = f",
+      "B": "f > f > f",
+      "C": "f < f < f K L M K L M K L M",
+      "D": "f = f < f",
+      "E": "f = f > f K L M K L M 35 Diğer sayfaya geçiniz."
+    },
+    "correct_answer": null,
+    "year": 2024
+  },
+  {
+    "question_id": "c7e48d6f-f441-4925-8cba-ef4bb5423a6d",
+    "subject": "Fen Bilimleri",
+    "topic": "Fen Bilimleri",
+    "difficulty": "orta",
+    "exam_type": "TYT",
+    "stem": "Sıvı hâldeki etanol ile ilgili\ndoğru verilmiştir?\nI. Açık bir kapta her sıcaklıkta buharlaşır.\nX Y\nII. Aynı koşullarda farklı yüzey alanına sahip eşit",
+    "options": {
+      "A": "Yalnız I",
+      "B": "Yalnız II",
+      "C": "Yalnız III",
+      "D": "I ve III",
+      "E": "II ve III 37 Diğer sayfaya geçiniz."
+    },
+    "correct_answer": null,
+    "year": 2024
+  },
+  {
+    "question_id": "d766857e-2d61-4f79-884e-f4c2b8099dbb",
+    "subject": "Fen Bilimleri",
+    "topic": "Fen Bilimleri",
+    "difficulty": "orta",
+    "exam_type": "TYT",
+    "stem": "Aşağıdaki organik moleküllerden hangisi bir polimer\ndeğildir?",
+    "options": {
+      "A": "Glikojen",
+      "B": "Kitin",
+      "C": "Nükleik asit",
+      "D": "Trigliserit",
+      "E": "Protein 38 Diğer sayfaya geçiniz."
+    },
+    "correct_answer": null,
+    "year": 2024
+  },
+  {
+    "question_id": "d8920b15-e72b-4969-ae3f-2d22415305d7",
+    "subject": "Fen Bilimleri",
+    "topic": "Fen Bilimleri",
+    "difficulty": "orta",
+    "exam_type": "TYT",
+    "stem": "Aşağıdaki şekilde asal eksenleri çakışık çukur ayna, 9. Rutherford Atom Modeli’ne göre\nyakınsak mercek ve S ışık kaynağından oluşan bir\nI. Atomda pozitif yükler çekirdekte toplanmıştır.\ndüzenek görülmektedir. Aynanın odak noktasında\nbulunan ışık kaynağından yayılan tek renkli kırmızı ışık, II. Atomda elektronlar orbitallerde bulunur.\nönce aynadan yansıyıp daha sonra mercekte kırılarak III. Atom hacminin büyük bir kısmı boşluktur.\nasal eksen üzerindeki K noktasında toplanacak şekilde\nbir yol izlemektedir. ifadelerinden hangileri doğrudur?",
+    "options": {
+      "A": "Yalnız I",
+      "B": "Yalnız II",
+      "C": "I ve II",
+      "D": "I ve III",
+      "E": "II ve III"
+    },
+    "correct_answer": null,
+    "year": 2024
+  }
+]

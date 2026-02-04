@@ -1,0 +1,31 @@
+{
+  "stem": "Bir okuldaki öğrencilerin haftalık kitap okuma süreleri ve sayfa sayıları aşağıdaki tabloda verilmiştir.\n\n| Öğrenci | Okuma Süresi (saat) | Okunan Sayfa |\n|---------|---------------------|---------------|\n| Ahmet   | 5                   | 120           |\n| Ayşe    | 7                   | 175           |\n| Mehmet  | 4                   | 100           |\n| Zeynep  | 6                   | 150           |\n\nBu öğrencilerin okuma hızları (sayfa/saat) hesaplandığında, okuma hızlarının ortalaması kaçtır?",
+  "options": {
+    "A": "23",
+    "B": "24",
+    "C": "25",
+    "D": "26",
+    "E": "27"
+  },
+  "correct_answer": "C",
+  "explanation": "Önce her öğrencinin okuma hızını hesaplayalım:\n- Ahmet: 120 ÷ 5 = 24 sayfa/saat\n- Ayşe: 175 ÷ 7 = 25 sayfa/saat\n- Mehmet: 100 ÷ 4 = 25 sayfa/saat\n- Zeynep: 150 ÷ 6 = 25 sayfa/saat\n\nOkuma hızlarının ortalaması: (24 + 25 + 25 + 25) ÷ 4 = 99 ÷ 4 = 24,75 ≈ 25 sayfa/saat\n\nDoğru cevap C seçeneğidir.",
+  "visual_content": {
+    "type": "table",
+    "format": "markdown",
+    "content": "| Sütun 1 | Sütun 2 | Sütun 3 |\n| --- | --- | --- |\n| Veri 1-1 | Veri 1-2 | Veri 1-3 |\n| Veri 2-1 | Veri 2-2 | Veri 2-3 |\n| Veri 3-1 | Veri 3-2 | Veri 3-3 |\n| Veri 4-1 | Veri 4-2 | Veri 4-3 |",
+    "metadata": {
+      "caption": "Tablo 1: Veri Tablosu",
+      "alt_text": "Generic data table",
+      "rows": 4,
+      "columns": 3
+    }
+  },
+  "method": "few-shot",
+  "osym_examples_used": 3,
+  "metadata": {
+    "phase": "Phase 1 - Tables",
+    "generated_at": "2025-11-07T11:49:56.423640",
+    "spec_name": "Q2_Math_Statistics",
+    "table_type": "statistics_summary"
+  }
+}

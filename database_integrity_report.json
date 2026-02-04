@@ -1,0 +1,18 @@
+{
+  "summary": {
+    "total_foreign_keys": 0,
+    "valid_foreign_keys": 0,
+    "orphaned_records": 0,
+    "missing_indexes": 0,
+    "cascade_rules": 0,
+    "relationship_issues": 0
+  },
+  "details": {
+    "foreign_keys": [],
+    "orphaned_records": [],
+    "missing_indexes": [],
+    "cascade_rules": [],
+    "relationship_issues": []
+  },
+  "health_score": 100.0
+}

@@ -1,0 +1,201 @@
+{
+  "timestamp": "2025-11-06T02:38:11.252447",
+  "statistics": {
+    "total": 10,
+    "approved": 7,
+    "review": 3,
+    "rejected": 0,
+    "scores": [
+      0.75125,
+      0.9,
+      0.9,
+      0.83125,
+      0.795,
+      0.8125,
+      0.8500000000000001,
+      0.8175,
+      0.77875,
+      0.9
+    ],
+    "bloom_levels": {
+      "Seviye 1": 2,
+      "Seviye 3": 8
+    }
+  },
+  "questions": [
+    {
+      "question_text": "f(x) = x³ - 6x² + 9x + 2 fonksiyonu için aşağıdaki ifadelerden hangisi yanlıştır?",
+      "difficulty": "zor",
+      "subject": "Matematik - Fonksiyonlar",
+      "correct_answer": "C",
+      "length": 81,
+      "wave2b_evaluation": {
+        "overall_score": 0.75125,
+        "overall_grade": "Acceptable",
+        "decision": "REVIEW",
+        "bloom_level": 1,
+        "bloom_confidence": 1.0,
+        "strengths": [],
+        "weaknesses": [
+          "Question too short (81 chars, min 200)"
+        ]
+      }
+    },
+    {
+      "question_text": "Bir sınıfta 8 kız ve 6 erkek öğrenci vardır. Bu öğrencilerden 5 kişilik bir grup seçilecektir. Seçilen grupta en az 2 kız ve en az 1 erkek öğrenci bulunması koşulu ile kaç farklı grup oluşturulabilir?",
+      "difficulty": "zor",
+      "subject": "Matematik - Olasılık",
+      "correct_answer": "C",
+      "length": 200,
+      "wave2b_evaluation": {
+        "overall_score": 0.9,
+        "overall_grade": "Excellent",
+        "decision": "APPROVE",
+        "bloom_level": 3,
+        "bloom_confidence": 1.0,
+        "strengths": [],
+        "weaknesses": []
+      }
+    },
+    {
+      "question_text": "Sürtünmesiz yatay düzlemde durmakta olan 4 kg kütleli bir cisme, yatay doğrultuda 12 N büyüklüğünde sabit bir kuvvet uygulanıyor. Bu kuvvet 3 saniye boyunca etki ettikten sonra kaldırılıyor. Kuvvet kaldırıldığı anda cismin hızı kaç m/s'dir?",
+      "difficulty": "orta",
+      "subject": "Fizik - Kuvvet",
+      "correct_answer": "C",
+      "length": 240,
+      "wave2b_evaluation": {
+        "overall_score": 0.9,
+        "overall_grade": "Excellent",
+        "decision": "APPROVE",
+        "bloom_level": 3,
+        "bloom_confidence": 1.0,
+        "strengths": [],
+        "weaknesses": []
+      }
+    },
+    {
+      "question_text": "Sabit hacimli bir kapta bulunan ideal gazın basıncı 2 atm ve sıcaklığı 27°C'dir. Bu gazın sıcaklığı 127°C'ye çıkarıldığında basıncı kaç atm olur?",
+      "difficulty": "orta",
+      "subject": "Kimya - Gazlar",
+      "correct_answer": "A",
+      "length": 145,
+      "wave2b_evaluation": {
+        "overall_score": 0.83125,
+        "overall_grade": "Good",
+        "decision": "APPROVE",
+        "bloom_level": 3,
+        "bloom_confidence": 1.0,
+        "strengths": [],
+        "weaknesses": [
+          "Question too short (145 chars, min 200)"
+        ]
+      }
+    },
+    {
+      "question_text": "Durgun halden harekete başlayan bir araç 8 saniyede 64 m yol alıyor. Bu aracın 6. saniye sonundaki hızı kaç m/s'dir?",
+      "difficulty": "orta",
+      "subject": "Fizik - Hareket",
+      "correct_answer": "C",
+      "length": 116,
+      "wave2b_evaluation": {
+        "overall_score": 0.795,
+        "overall_grade": "Acceptable",
+        "decision": "REVIEW",
+        "bloom_level": 3,
+        "bloom_confidence": 1.0,
+        "strengths": [],
+        "weaknesses": [
+          "Question too short (116 chars, min 200)"
+        ]
+      }
+    },
+    {
+      "question_text": "Hücresel solunumda glikoliz, Krebs döngüsü ve elektron taşıma zinciri aşamalarıyla ilgili aşağıdaki ifadelerden hangisi yanlıştır?",
+      "difficulty": "orta",
+      "subject": "Biyoloji - Solunum",
+      "correct_answer": "D",
+      "length": 130,
+      "wave2b_evaluation": {
+        "overall_score": 0.8125,
+        "overall_grade": "Good",
+        "decision": "APPROVE",
+        "bloom_level": 1,
+        "bloom_confidence": 1.0,
+        "strengths": [],
+        "weaknesses": [
+          "Question too short (130 chars, min 200)"
+        ]
+      }
+    },
+    {
+      "question_text": "2Al + 3CuSO₄ → Al₂(SO₄)₃ + 3Cu tepkimesinde 5,4 gram alüminyum (Al) tamamen tüketildiğinde oluşan bakır (Cu) kütlesi kaç gramdır? (Al: 27 g/mol, Cu: 63,5 g/mol)",
+      "difficulty": "orta",
+      "subject": "Kimya - Mol",
+      "correct_answer": "C",
+      "length": 160,
+      "wave2b_evaluation": {
+        "overall_score": 0.8500000000000001,
+        "overall_grade": "Good",
+        "decision": "APPROVE",
+        "bloom_level": 3,
+        "bloom_confidence": 1.0,
+        "strengths": [],
+        "weaknesses": [
+          "Question too short (160 chars, min 200)"
+        ]
+      }
+    },
+    {
+      "question_text": "0,1 M HCl çözeltisinin 100 mL'si ile 0,05 M Ba(OH)₂ çözeltisinin 200 mL'si karıştırılıyor. Oluşan karışımın pH'ı kaçtır? (log 2 = 0,3)",
+      "difficulty": "zor",
+      "subject": "Kimya - Asit-Baz",
+      "correct_answer": "C",
+      "length": 134,
+      "wave2b_evaluation": {
+        "overall_score": 0.8175,
+        "overall_grade": "Good",
+        "decision": "APPROVE",
+        "bloom_level": 3,
+        "bloom_confidence": 1.0,
+        "strengths": [],
+        "weaknesses": [
+          "Question too short (134 chars, min 200)"
+        ]
+      }
+    },
+    {
+      "question_text": "ABC üçgeninde |AB| = 8 cm, |AC| = 6 cm ve A açısı 60° dir. Buna göre, BC kenarının uzunluğu kaç cm'dir?",
+      "difficulty": "orta",
+      "subject": "Matematik - Geometri",
+      "correct_answer": "A",
+      "length": 103,
+      "wave2b_evaluation": {
+        "overall_score": 0.77875,
+        "overall_grade": "Acceptable",
+        "decision": "REVIEW",
+        "bloom_level": 3,
+        "bloom_confidence": 1.0,
+        "strengths": [],
+        "weaknesses": [
+          "Question too short (103 chars, min 200)"
+        ]
+      }
+    },
+    {
+      "question_text": "Şekilde gösterildiği gibi, köşeleri A, B, C olan eşkenar üçgenin A köşesine +2q, B köşesine -3q yüklü noktasal cisimler yerleştirilmiştir. Eşkenar üçgenin kenar uzunluğu d'dir. C köşesine yerleştirilen +q yüklü cismin elektriksel potansiyel enerjisi kaç kq²/(4πε₀d) olur? (k = 1/(4πε₀))",
+      "difficulty": "zor",
+      "subject": "Fizik - Elektrik",
+      "correct_answer": "A",
+      "length": 286,
+      "wave2b_evaluation": {
+        "overall_score": 0.9,
+        "overall_grade": "Excellent",
+        "decision": "APPROVE",
+        "bloom_level": 3,
+        "bloom_confidence": 1.0,
+        "strengths": [],
+        "weaknesses": []
+      }
+    }
+  ]
+}

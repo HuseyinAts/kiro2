@@ -1,0 +1,159 @@
+# Health Check Alerting Rules
+# Teknofest 2025 - Eğitim Eylemci Projesi
+# Requirements: 4.5, 4.11
+
+groups:
+  - name: health_check_alerts
+    interval: 30s
+    rules:
+      # Service Unhealthy Alert
+      - alert: VideoAPIServiceUnhealthy
+        expr: up{job="video_api"} == 0
+        for: 2m
+        labels:
+          severity: critical
+          component: video_api
+          team: backend
+        annotations:
+          summary: "Video API servisi down!"
+          description: |
+            Video API servisi 2 dakikadır yanıt vermiyor.
+            Job: {{ $labels.job }}
+            Instance: {{ $labels.instance }}
+            Acil müdahale gerekli!
+          runbook_url: "https://docs.teknofest-egitim.com/runbooks/service-down"
+          dashboard_url: "https://grafana.teknofest-egitim.com/d/health/health-dashboard"
+
+      # Health Check Endpoint Failing
+      - alert: HealthCheckEndpointFailing
+        expr: up{job="health_check"} == 0
+        for: 5m
+        labels:
+          severity: warning
+          component: health_check
+          team: backend
+        annotations:
+          summary: "Health check endpoint başarısız"
+          description: |
+            Health check endpoint 5 dakikadır başarısız.
+            Servis çalışıyor olabilir ama health check yanıt vermiyor.
+            Kontrol edilmeli.
+          runbook_url: "https://docs.teknofest-egitim.com/runbooks/health-check-failing"
+
+      # YouTube API Component Unhealthy
+      - alert: YouTubeAPIComponentUnhealthy
+        expr: |
+          health_check_component_status{component="youtube_api"} == 0
+        for: 5m
+        labels:
+          severity: critical
+          component: youtube_api
+          team: backend
+        annotations:
+          summary: "YouTube API bileşeni sağlıksız"
+          description: |
+            YouTube API bileşeni 5 dakikadır sağlıksız durumda.
+            Video önerileri çalışmıyor olabilir.
+            YouTube API credentials ve quota kontrol edilmeli.
+          runbook_url: "https://docs.teknofest-egitim.com/runbooks/youtube-api-unhealthy"
+
+      # Database Component Unhealthy
+      - alert: DatabaseComponentUnhealthy
+        expr: |
+          health_check_component_status{component="database"} == 0
+        for: 3m
+        labels:
+          severity: critical
+          component: database
+          team: backend
+        annotations:
+          summary: "Database bileşeni sağlıksız"
+          description: |
+            Database bileşeni 3 dakikadır sağlıksız durumda.
+            Veri okuma/yazma işlemleri başarısız olabilir.
+            Database bağlantısı kontrol edilmeli.
+          runbook_url: "https://docs.teknofest-egitim.com/runbooks/database-unhealthy"
+
+      # Cache Component Unhealthy
+      - alert: CacheComponentUnhealthy
+        expr: |
+          health_check_component_status{component="cache"} == 0
+        for: 5m
+        labels:
+          severity: warning
+          component: cache
+          team: backend
+        annotations:
+          summary: "Cache bileşeni sağlıksız"
+          description: |
+            Cache (Redis) bileşeni 5 dakikadır sağlıksız durumda.
+            Cache kullanılamıyor, tüm istekler database'e gidiyor.
+            Performance etkilenebilir.
+            Redis bağlantısı kontrol edilmeli.
+          runbook_url: "https://docs.teknofest-egitim.com/runbooks/cache-unhealthy"
+
+      # Health Check Response Time Slow
+      - alert: HealthCheckResponseTimeSlow
+        expr: |
+          health_check_response_time_ms > 500
+        for: 10m
+        labels:
+          severity: warning
+          component: health_check
+          team: backend
+        annotations:
+          summary: "Health check yanıt süresi yavaş"
+          description: |
+            Health check endpoint 500ms'den yavaş yanıt veriyor.
+            Mevcut yanıt süresi: {{ $value }}ms
+            Hedef: < 500ms
+            Sistem yükü yüksek olabilir.
+          runbook_url: "https://docs.teknofest-egitim.com/runbooks/slow-health-check"
+
+      # Multiple Components Degraded
+      - alert: MultipleComponentsDegraded
+        expr: |
+          count(health_check_component_status == 0) >= 2
+        for: 5m
+        labels:
+          severity: critical
+          component: system
+          team: backend
+        annotations:
+          summary: "Birden fazla bileşen sağlıksız!"
+          description: |
+            2 veya daha fazla sistem bileşeni sağlıksız durumda.
+            Sistem genelinde sorun olabilir.
+            Acil müdahale gerekli!
+          runbook_url: "https://docs.teknofest-egitim.com/runbooks/multiple-components-down"
+
+      # Prometheus Exporter Down
+      - alert: PrometheusExporterDown
+        expr: up{job="prometheus_exporter"} == 0
+        for: 5m
+        labels:
+          severity: warning
+          component: monitoring
+          team: devops
+        annotations:
+          summary: "Prometheus exporter down"
+          description: |
+            Prometheus exporter 5 dakikadır yanıt vermiyor.
+            Custom metrics toplanamıyor.
+            Monitoring eksik olabilir.
+          runbook_url: "https://docs.teknofest-egitim.com/runbooks/exporter-down"
+
+      # Node Exporter Down
+      - alert: NodeExporterDown
+        expr: up{job="node_exporter"} == 0
+        for: 5m
+        labels:
+          severity: warning
+          component: monitoring
+          team: devops
+        annotations:
+          summary: "Node exporter down"
+          description: |
+            Node exporter 5 dakikadır yanıt vermiyor.
+            Sistem metrikleri (CPU, memory, disk) toplanamıyor.
+          runbook_url: "https://docs.teknofest-egitim.com/runbooks/node-exporter-down"

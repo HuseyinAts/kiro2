@@ -1,0 +1,98 @@
+# Security Scanning CI/CD Workflow
+# Runs on every push and pull request
+
+name: Security Scan
+
+on:
+  push:
+    branches: [main, master, develop]
+  pull_request:
+    branches: [main, master]
+  schedule:
+    # Run weekly on Mondays at 9 AM
+    - cron: '0 9 * * 1'
+
+jobs:
+  security-scan:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          cd backend
+          pip install bandit safety
+
+      - name: Run Bandit (Code Security)
+        run: |
+          cd backend
+          bandit -r . \
+            --exclude ./tests,./alembic \
+            --format json \
+            --output bandit-report.json \
+            --severity-level medium
+        continue-on-error: true
+
+      - name: Run Safety (Dependency Security)
+        run: |
+          cd backend
+          pip install -r requirements.txt
+          safety check --json > safety-report.json
+        continue-on-error: true
+
+      - name: Upload Bandit Report
+        uses: actions/upload-artifact@v3
+        with:
+          name: bandit-report
+          path: backend/bandit-report.json
+
+      - name: Upload Safety Report
+        uses: actions/upload-artifact@v3
+        with:
+          name: safety-report
+          path: backend/safety-report.json
+
+      - name: Check for Critical Issues
+        run: |
+          cd backend
+          # Fail build if critical issues found
+          if [ -f "bandit-report.json" ]; then
+            high_severity=$(jq '.results[] | select(.issue_severity=="HIGH")' bandit-report.json | wc -l)
+            if [ $high_severity -gt 0 ]; then
+              echo "❌ Found $high_severity HIGH severity security issues"
+              exit 1
+            fi
+          fi
+
+  owasp-zap-scan:
+    runs-on: ubuntu-latest
+    needs: security-scan
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Start application
+        run: |
+          cd backend
+          docker-compose up -d
+          sleep 30  # Wait for app to start
+
+      - name: Run OWASP ZAP Baseline Scan
+        uses: zaproxy/action-baseline@v0.7.0
+        with:
+          target: 'http://localhost:8000'
+          rules_file_name: '.zap/rules.tsv'
+          cmd_options: '-a'
+
+      - name: Stop application
+        run: |
+          cd backend
+          docker-compose down

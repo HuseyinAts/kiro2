@@ -1,0 +1,40 @@
+{
+  "stem": "Bir okulda 57 öğrencinin sınav sonuçları kategorilere ayrılmıştır. Bu kategorilerde yer alan öğrenci sayıları ve yüzdeleri aşağıdaki tabloda verilmiştir.\n\n| Kategori | Frekans | Yüzde (%) |\n|----------|---------|------------|\n| A        | 10      | 17.5       |\n| B        | 8       | 14.0       |\n| C        | 15      | 26.3       |\n| D        | 24      | 42.1       |\n\nBuna göre, C ve D kategorisindeki öğrencilerin sayılarının ortalaması ile A ve B kategorisindeki öğrencilerin sayılarının ortalaması arasındaki fark kaçtır?",
+  "options": {
+    "A": "10",
+    "B": "10.5",
+    "C": "11",
+    "D": "11.5",
+    "E": "12"
+  },
+  "correct_answer": "B",
+  "explanation": "C ve D kategorisindeki öğrenci sayılarının ortalaması: (15 + 24) / 2 = 39 / 2 = 19.5\n\nA ve B kategorisindeki öğrenci sayılarının ortalaması: (10 + 8) / 2 = 18 / 2 = 9\n\nAradaki fark: 19.5 - 9 = 10.5\n\nDoğru cevap B şıkkıdır.",
+  "visual_content": {
+    "type": "table",
+    "format": "markdown",
+    "content": "| Kategori | Frekans | Yüzde (%) |\n| --- | --- | --- |\n| A | 10 | 17.5 |\n| B | 8 | 14.0 |\n| C | 15 | 26.3 |\n| D | 24 | 42.1 |",
+    "data": {
+      "categories": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "frequencies": [
+        10,
+        8,
+        15,
+        24
+      ],
+      "total": 57
+    },
+    "metadata": {
+      "caption": "Tablo 1: Frekans Dağılımı",
+      "alt_text": "Frequency distribution table",
+      "rows": 4,
+      "columns": 3
+    }
+  },
+  "method": "few-shot",
+  "osym_examples_used": 3
+}

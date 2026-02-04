@@ -1,0 +1,33 @@
+/* Task 94.3: Step-by-Step Guide CSS */
+.step-guide { background: white; padding: 24px; border-radius: 8px; border: 2px solid #dee2e6; }
+.osb-mode.step-guide { border-radius: 4px; border-width: 3px; }
+.guide-header { margin-bottom: 24px; }
+.guide-title { margin: 0 0 16px; font-size: 24px; font-weight: 600; }
+.progress-bar { position: relative; height: 32px; background: #f8f9fa; border-radius: 16px; border: 2px solid #dee2e6; overflow: hidden; }
+.progress-fill { height: 100%; background: linear-gradient(90deg, #0d6efd, #6ea8fe); transition: width 0.3s ease; }
+.progress-text { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 14px; font-weight: 600; z-index: 1; }
+.guide-content { border: 3px solid #0d6efd; border-radius: 8px; padding: 24px; }
+.osb-mode .guide-content { border-radius: 4px; }
+.step-indicator { display: flex; align-items: baseline; gap: 8px; margin-bottom: 16px; }
+.step-number { font-size: 48px; font-weight: 700; color: #0d6efd; }
+.step-total { font-size: 24px; color: #6c757d; }
+.step-details { }
+.step-icon { font-size: 64px; margin-bottom: 16px; }
+.step-title { margin: 0 0 12px; font-size: 22px; font-weight: 600; }
+.step-description { margin: 0 0 16px; font-size: 16px; line-height: 1.6; color: #495057; }
+.step-image { max-width: 100%; border-radius: 8px; margin: 16px 0; }
+.step-tip { background: #fff3cd; border-left: 4px solid #ffc107; padding: 12px 16px; border-radius: 4px; margin-top: 16px; display: flex; gap: 12px; align-items: start; }
+.tip-icon { font-size: 20px; }
+.tip-text { flex: 1; font-size: 14px; color: #664d03; }
+.step-navigation { display: flex; gap: 12px; margin-top: 24px; }
+.nav-button { flex: 1; padding: 12px 24px; border: 2px solid #dee2e6; background: white; border-radius: 6px; font-size: 16px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+.nav-button:hover:not(:disabled) { background: #e9ecef; }
+.nav-button:disabled { opacity: 0.5; cursor: not-allowed; }
+.nav-button.primary { background: #0d6efd; color: white; border-color: #0d6efd; }
+.nav-button.primary:hover { background: #0b5ed7; }
+.steps-overview { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 8px; margin-top: 24px; padding-top: 24px; border-top: 2px solid #dee2e6; }
+.overview-step { padding: 12px; border: 2px solid #dee2e6; background: white; border-radius: 6px; cursor: pointer; transition: all 0.2s; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.overview-step.active { border-color: #0d6efd; background: #cfe2ff; }
+.overview-step.completed { border-color: #198754; background: #d1e7dd; }
+.overview-number { font-size: 18px; font-weight: 700; }
+.overview-title { font-size: 12px; text-align: center; }

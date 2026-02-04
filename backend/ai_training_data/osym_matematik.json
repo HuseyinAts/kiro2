@@ -1,0 +1,376 @@
+[
+  {
+    "question_id": "0a03f918-bf5c-436f-9124-331109dd798f",
+    "subject": "Matematik",
+    "topic": "Matematik",
+    "difficulty": "orta",
+    "exam_type": "TYT",
+    "stem": "Aşağıdakilerden hangisi rasyonel sayı olmayan kasadaki elmalar B sınıfına dağıtıldığında ise bu kasada\nbir gerçel sayıdır? yeterli sayıda elma olmadığından 2 öğrenciye elma\nverilememiştir.",
+    "options": {
+      "A": "Yalnız I",
+      "B": "Yalnız III",
+      "C": "I ve II",
+      "D": "II ve III",
+      "E": "I, II ve III 23 Diğer sayfaya geçiniz."
+    },
+    "correct_answer": null,
+    "year": 2024
+  },
+  {
+    "question_id": "32d7963b-0ac9-4322-b089-68b380c088d9",
+    "subject": "Matematik",
+    "topic": "Matematik",
+    "difficulty": "orta",
+    "exam_type": "TYT",
+    "stem": "Eukleides’in Elementler adlı eserinde kullandığı\ngeometrik yöntemin metafizik, epistemoloji ve ahlak\nalanındaki kendi görüşlerini temellendirmek için de\nuygun olduğunu düşünen Spinoza; Etika adlı eserini\ngeometrik yöntemle kaleme aldı. Bu doğrultuda kitabının\nher bölümüne tanımlarla, önermelerle ve bu önermelerin\nön dayanağı sayılan ve kendiliğinden apaçık olan\naksiyomlarla başladı. Spinoza’nın bu yöntemi kullanarak\namaçladığı şey ise insanın mutluluğa ulaşma sürecini\ndoğru bir düşünüş ve akıl yürütmelerle âdeta bir cetvelle\nçiziyormuş gibi düzgün bir şekilde çizmekti.\nSpinoza’nın görüşlerinin yer aldığı bu parçada\naşağıdakilerin hangisi vurgulanmaktadır?",
+    "options": {
+      "A": "Yöntemin çok aşamalı oluşu bilgiye ulaşmayı zorlaştırır.",
+      "B": "Gerçek bilgiye ulaşmanın birden fazla yöntemi vardır.",
+      "C": "Mutluluğa ulaştıran bilginin kesinliği yöntemle ilişkilidir.",
+      "D": "Mantıksal bilgi doğa yasalarını anlamaya ve açıklamaya yarar.",
+      "E": "Geleneksel yöntemler bilgimizi kesinlik düzeyine ulaştırır. SOSYAL BİLİMLER TESTİ BİTTİ. 21 TEMEL MATEMATİK TESTİNE GEÇİNİZ."
+    },
+    "correct_answer": null,
+    "year": 2024
+  },
+  {
+    "question_id": "39c6952f-06c1-4246-9d2a-679f2c17c3a4",
+    "subject": "Matematik",
+    "topic": "Matematik",
+    "difficulty": "orta",
+    "exam_type": "TYT",
+    "stem": "Cem; kaykayını süslemek için kaykayın direksiyon\ngönderiyor ve sonraki her seferde zemine paralel\nçubuğunun uçlarından birine, aşağı sallanan kısmının\nbiçimde sabit bir açıyla saat yönünde dönerek sıradaki\nuzunluğu 46 cm olan bir ip bağlamıştır. Kaykayın uzayıp\nışınını şekildeki gibi gönderiyor.\nkısalabilen bağlantı direğinin uzunluğu Şekil 1'deki gibi\n60 cm iken ipin yere en yakın noktasının bağlantı\ndireğinin kaykayla birleştiği noktaya uzaklığı 50 cm\nolmaktadır.\nLazerin gönderdiği 6. ışının 1. ışınla çakıştığı ve zeminin\nfarklı kenarlarına isabet eden 2. ve 3. ışınların isabet\nettikleri kenarlarla yaptıkları dar açıların ölçülerinin\nbirbirine eşit olduğu görülüyor.\nBuna göre 4. ışının isabet ettiği kenarla yaptığı dar\naçının ölçüsü kaç derecedir? Cem, kaykayın bağlantı direğinin uzunluğunu\nŞekil 2’deki gibi artırdığında ipin yere en yakın",
+    "options": {
+      "A": "30",
+      "B": "40",
+      "C": "50",
+      "D": "60",
+      "E": "70 32 Diğer sayfaya geçiniz."
+    },
+    "correct_answer": null,
+    "year": 2024
+  },
+  {
+    "question_id": "41aec651-b210-4ff3-a5e7-99b258d4bf80",
+    "subject": "Matematik",
+    "topic": "Matematik",
+    "difficulty": "orta",
+    "exam_type": "TYT",
+    "stem": "satırında bulunan sayıların toplamına eşittir.\nBuna göre toplamı kaçtır?",
+    "options": {
+      "A": "99",
+      "B": "110",
+      "C": "121",
+      "D": "132",
+      "E": "143 26 Diğer sayfaya geçiniz."
+    },
+    "correct_answer": null,
+    "year": 2024
+  },
+  {
+    "question_id": "5110baf9-81ac-4d0e-b621-55a074522a45",
+    "subject": "Matematik",
+    "topic": "Matematik",
+    "difficulty": "orta",
+    "exam_type": "TYT",
+    "stem": "n kenarlı bir düzgün çokgenin bir dış açısının ölçüsü\nolarak hesaplanır.\nformülüyle hesaplanır.\nBirer kenarları ortak olan şekildeki üç düzgün Pelin, bir kenar uzunluğu 4 santimetre olan kare\nçokgenden en içteki 6, ortadaki ise 10 kenarlıdır. biçimindeki özdeş etiketlerle dikdörtgenler prizması\nşeklindeki bir cismin ayrıt uzunluklarını hesaplayacaktır.\nPelin, dikdörtgenler prizması şeklindeki cismin bir\nyüzeyine 2 tane, diğer bir yüzeyine ise 3 tane etiketi\nyapıştırıldıkları yüzeyi tamamen kaplayacak biçimde\nyerleştirmiştir. Bu yerleştirme işlemini etiketler arasında\nboşluk kalmayacak, etiketler üst üste gelmeyecek ve\nyüzeyin dışına taşmayacak biçimde yapmıştır.\nBuna göre dikdörtgenler prizması şeklindeki cismin\nŞekilde gösterilen iki açı eşit olduğuna göre hacmi kaç santimetreküptür?\nen dıştaki düzgün çokgen kaç kenarlıdır?",
+    "options": {
+      "A": "12",
+      "B": "18",
+      "C": "20",
+      "D": "24",
+      "E": "30 TEMEL MATEMATİK TESTİ BİTTİ. 34 FEN BİLİMLERİ TESTİNE GEÇİNİZ."
+    },
+    "correct_answer": null,
+    "year": 2024
+  },
+  {
+    "question_id": "817ee4a7-f568-4a22-a4fb-ae35571875d3",
+    "subject": "Matematik",
+    "topic": "Matematik",
+    "difficulty": "orta",
+    "exam_type": "TYT",
+    "stem": "Elif’in, matematik kitabında okuduğu bir not aşağıdaki 6. Ali, Burcu ve Can; yayımlanacak olan okul dergisinin\ngibidir: sayfa sayısını sırasıyla 27, 35 ve 39 olarak tahmin\netmiştir. Her bir tahmin değeri ile derginin sayfa sayısı\narasındaki farkın mutlak değeri birbirinden farklı olmak\nüzere derginin sayfa sayısına en yakın tahminde\nbulunan kişi Burcu, en uzak tahminde bulunan kişi ise\nCan’dır.\nBuna göre derginin sayfa sayısının rakamları toplamı\nkaçtır?",
+    "options": {
+      "A": "4",
+      "B": "5",
+      "C": "6",
+      "D": "7",
+      "E": "8 Elif, kitabına su damladığı için örnekteki b sayısını okuyamamıştır. Buna göre b sayısı aşağıdakilerden hangisi olamaz?"
+    },
+    "correct_answer": null,
+    "year": 2024
+  },
+  {
+    "question_id": "87a1087b-4111-4ace-ad75-56a840bf2260",
+    "subject": "Matematik",
+    "topic": "Matematik",
+    "difficulty": "orta",
+    "exam_type": "TYT",
+    "stem": "Dikdörtgen biçiminde olan şekildeki banyo duvarı, 28. Akın ile Gökay, 1’den 10’a kadar olan doğal sayılarla\ndikdörtgen biçiminde olan aynı ebatlardaki sarı ve numaralandırılmış 10 topun bulunduğu bir torbadan top\nmavi renkli özdeş fayanslarla, fayanslar arasında boşluk çekerek bir oyun oynamaktadır. Torbadan iki top çeken\nkalmayacak biçimde tamamen kaplanacaktır. Akın, çektiği topların numaraları çarpımını Gökay’a\nBu kaplama işlemi; şekilde gösterildiği gibi sırasıyla söyledikten sonra aralarında şöyle bir konuşma\nbir sıra sarı, bir sıra mavi fayans kullanılarak geçmiştir:\ntamamlanacaktır.\nAkın : Çektiğim topların numaralarını bulabilir\nmisin?\nGökay : Verdiğin bilgi yetersiz. Birden fazla çözüm\nvar.\nAkın : Çektiğim topların numaraları toplamı\n11 desem?\nGökay : Tamam, şimdi kesin olarak buldum.\nBuna göre Akın’ın çektiği topların numaraları farkı\nKaplama işlemi bittiğinde sarı fayansların kapladığı\naşağıdakilerden hangisi olamaz?\nalanın, mavi fayansların kapladığı alana oranı olarak",
+    "options": {
+      "A": "56",
+      "B": "63",
+      "C": "70",
+      "D": "77",
+      "E": "84"
+    },
+    "correct_answer": null,
+    "year": 2024
+  },
+  {
+    "question_id": "88761bc2-52ca-424f-aba8-d4d38cedacc5",
+    "subject": "Matematik",
+    "topic": "Matematik",
+    "difficulty": "orta",
+    "exam_type": "TYT",
+    "stem": "Vücut kitle indeksi (VKİ), bir kişinin vücudundaki tahmini 23. Bir kentte bulunan fabrikaların her biri gıda, mobilya,\nyağ oranını gösteren bir hesaplama yöntemidir. Bu plastik ve tekstil alanlarından yalnızca birinde üretim\nyöntemde öncelikle kişinin kilogram türünden ağırlığı ve yapmaktadır. Bu fabrikaların üretim alanlarına göre\nmetre türünden boy uzunluğu ölçülür. Daha sonra sayıca dağılımı Şekil 1’deki daire grafiğinde\nkişinin ağırlığının boyunun karesine bölünmesiyle gösterilmiştir.\no kişiye ait VKİ hesaplanır.\nAşağıdaki tabloda, belirli yaş aralıklarına göre ideal VKİ\naralıkları verilmiştir.\n30 yaşındaki İlayda’nın yaşına uygun en küçük ideal VKİ Bu fabrikaların toplam 54 tanesi ihracat yapmaktadır.\ndeğerindeki ağırlığı ile en büyük ideal VKİ değerindeki Her bir üretim alanı için o alanda üretim yapan\nağırlığı arasındaki fark 12,8 kilogram olarak fabrikalardan ihracat yapanların sayısının, o alanda\nhesaplanmıştır. üretim yapan toplam fabrika sayısına oranı yüzde olarak\nŞekil 2’deki sütun grafiğinde gösterilmiştir.\nBuna göre İlayda’nın boyu kaç metredir?",
+    "options": {
+      "A": "96",
+      "B": "120",
+      "C": "144",
+      "D": "154",
+      "E": "180 29 Diğer sayfaya geçiniz."
+    },
+    "correct_answer": null,
+    "year": 2024
+  },
+  {
+    "question_id": "8a79c503-f2c8-42a1-af3d-4bc7c075ad3b",
+    "subject": "Matematik",
+    "topic": "Matematik",
+    "difficulty": "orta",
+    "exam_type": "TYT",
+    "stem": "Bir tenis turnuvasına katılan 20 tenisçiden her biri\nturnuvaya katılan diğer tenisçilerle birer kez\nkarşılaşmıştır. Toplam 19 hakemin görevlendirildiği\nbu turnuvada, her bir karşılaşma için 3 hakem\ngörevlendirilmiştir.\nBu turnuvada tüm hakemler eşit sayıda\nkarşılaşmada görev aldığına göre bir hakemin görev\naldığı karşılaşma sayısı kaçtır?",
+    "options": {
+      "A": "25",
+      "B": "27",
+      "C": "30",
+      "D": "32",
+      "E": "35 30 Diğer sayfaya geçiniz."
+    },
+    "correct_answer": null,
+    "year": 2024
+  },
+  {
+    "question_id": "9993d5c7-e998-48ae-80a7-b24e13cbbbd0",
+    "subject": "Matematik",
+    "topic": "Matematik",
+    "difficulty": "orta",
+    "exam_type": "TYT",
+    "stem": "Aynı evde yaşayan üç arkadaştan Erman 1 adet, 32.\nGörkem 2 adet ve Kerem 3 adet kargo paketi\nbeklemektedir. Bu üç arkadaş, eve gelen 6 kargo\npaketinin üzerindeki alıcı bilgisi kısımlarını okumadan\npaketleri rastgele paylaşmıştır. Bu paylaşım sonucunda\nherkes beklediği sayıda kargo paketi almıştır.\nBuna göre bu üç arkadaştan her birinin beklediği\npaketleri almış olma olasılığı kaçtır?\nKırmızı kenar uzunlukları birbirine eşit olan eş ABC ve",
+    "options": {
+      "A": "44",
+      "B": "45",
+      "C": "46",
+      "D": "47",
+      "E": "48"
+    },
+    "correct_answer": null,
+    "year": 2024
+  },
+  {
+    "question_id": "9b14697d-25f5-4240-a529-978cfe71f307",
+    "subject": "Matematik",
+    "topic": "Matematik",
+    "difficulty": "orta",
+    "exam_type": "TYT",
+    "stem": "Can’ın telefonunun arama kayıtları bölümünde, telefon 20. A ve B şirketleri, kuruluşlarından itibaren aynı sektörde\ngörüşmesi yaptığı kişiler ve o kişilerle yaptığı telefon kesintisiz olarak faaliyet göstermektedir. 2021 yılında bu\ngörüşmesi sayıları parantez içinde gösterilmektedir. iki şirketin sektörde geçirdikleri süreler hesaplanmıştır.\nCan’ın dün ve bugün yaptığı telefon görüşmeleri Bu hesaba göre A şirketinin sektörde geçirdiği süre,\nsırasıyla Şekil 1 ve Şekil 2'de verilmiştir. B şirketinin sektörde geçirdiği sürenin 5 katıdır. Aynı\nhesap 2024 yılında yapıldığında; A şirketinin sektörde\ngeçirdiği süre, B şirketinin sektörde geçirdiği sürenin\n4 katı olarak hesaplanmıştır.\nBuna göre A şirketi hangi yıl kurulmuştur?",
+    "options": {
+      "A": "13",
+      "B": "14",
+      "C": "15",
+      "D": "16",
+      "E": "17 28 Diğer sayfaya geçiniz."
+    },
+    "correct_answer": null,
+    "year": 2024
+  },
+  {
+    "question_id": "b9166d9c-c0f7-4429-97d8-ecb8515ab345",
+    "subject": "Matematik",
+    "topic": "Matematik",
+    "difficulty": "orta",
+    "exam_type": "TYT",
+    "stem": "Buna göre Selma’nın 12. adımı tamamladıktan sonra\nkullandığı toplam mandal sayısı, 10. adımı\ntamamladıktan sonra kullandığı toplam mandal\nsayısından kaç fazladır?",
+    "options": {
+      "A": "28",
+      "B": "26",
+      "C": "24",
+      "D": "22",
+      "E": "20 22 Diğer sayfaya geçiniz."
+    },
+    "correct_answer": null,
+    "year": 2024
+  },
+  {
+    "question_id": "bb118038-e8b3-4634-a0f7-d91f30b6aa59",
+    "subject": "Matematik",
+    "topic": "Matematik",
+    "difficulty": "orta",
+    "exam_type": "TYT",
+    "stem": "Bir okula cam ve plastik şişelerin geri dönüşümü için iki 26. Müge’nin bilgisayarında 6 tane dosyanın yer aldığı\ntane geri dönüşüm kutusu konulmuştur. Bu kutulardan bir klasörün ekran görünümü aşağıdaki şekilde\nbirine özdeş cam şişeler, diğerine ise özdeş plastik verilmiştir.\nşişeler boş olarak atılmıştır. Boş olan bu kutuların\nkonulduğu ilk günün sonunda cam şişelerin olduğu\nkutudaki şişe sayısı, plastik şişelerin olduğu kutudaki\nşişe sayısının ’üne eşittir. Ayrıca ilk gün toplanan\ncam şişelerin toplam kütlesinin, plastik şişelerin toplam\nkütlesine oranı olarak hesaplanmıştır.\nBuna göre bir plastik şişenin kütlesi, bir cam şişenin\nkütlesinin kaç katıdır?",
+    "options": {
+      "A": "1",
+      "B": "2",
+      "C": "3",
+      "D": "4",
+      "E": "5"
+    },
+    "correct_answer": null,
+    "year": 2024
+  },
+  {
+    "question_id": "c43eb2cd-5d15-41b2-afa3-dc830af0049c",
+    "subject": "Matematik",
+    "topic": "Matematik",
+    "difficulty": "orta",
+    "exam_type": "TYT",
+    "stem": "A ve B iki küme olmak üzere 11. Ayşe, uçakla yapacağı bir yolculuk için aşağıdakilerden\nolduğu ve kendine uygun olanları seçerek biletleme işlemini\ntamamlamıştır.\n kümesinin elemanlarından ikisinin\ntoplamının 8 olduğu,\n kümesinin elemanlarından ikisinin farkının\n8 olduğu,\n kümesinin elemanlarından ikisinin\nçarpımının 8 olduğu\nbiliniyor.\nA kümesindeki elemanların toplamı B kümesindeki\nelemanların toplamına eşit olduğuna göre\nkümesindeki elemanların toplamı kaçtır?",
+    "options": {
+      "A": "10",
+      "B": "17",
+      "C": "18",
+      "D": "23",
+      "E": "25 Diğer sayfaya geçiniz."
+    },
+    "correct_answer": null,
+    "year": 2024
+  },
+  {
+    "question_id": "c6a0d693-4aa9-4b97-9772-546e3031d66d",
+    "subject": "Matematik",
+    "topic": "Matematik",
+    "difficulty": "orta",
+    "exam_type": "TYT",
+    "stem": "Duru, sınıfındaki öğrencilerden oluşturulabilecek tüm\nüç kişilik grupların 45 tanesinde kendisinin yer aldığını\ngözlemlemiştir.\nBuna göre Duru’nun sınıfındaki öğrencilerden\noluşturulabilecek tüm üç kişilik grupların kaç\ntanesinde Duru bulunmamaktadır?",
+    "options": {
+      "A": "20",
+      "B": "35",
+      "C": "90",
+      "D": "105",
+      "E": "120 31 Diğer sayfaya geçiniz."
+    },
+    "correct_answer": null,
+    "year": 2024
+  },
+  {
+    "question_id": "ca933d36-db85-4014-8ba0-3803659ab842",
+    "subject": "Matematik",
+    "topic": "Matematik",
+    "difficulty": "orta",
+    "exam_type": "TYT",
+    "stem": "İlkay; bir dağın yamacına tırmanırken kullandığı farklı\nrenklerdeki üç halattan siyah ve mavi olanların bir ucunu\nzeminde aynı noktaya, diğer uçlarını yamacın farklı\nnoktalarına sabitlemiştir.\nKırmızı halatın bir ucunu mavi halatı yamaca sabitlediği\nnoktaya, diğer ucunu ise siyah halatın üzerindeki bir\nnoktaya, siyah halatın doğrusallığını bozmayacak\nBuna göre kartpostala yerleştirilen ilk iki fotoğrafın\nbiçimde, şekildeki gibi sabitlemiştir.\nŞekil 3’te görünmeyen kısımlarının alanları toplamı\nkaç santimetrekaredir?",
+    "options": {
+      "A": "60",
+      "B": "65",
+      "C": "70",
+      "D": "75",
+      "E": "80 33 Diğer sayfaya geçiniz."
+    },
+    "correct_answer": null,
+    "year": 2024
+  },
+  {
+    "question_id": "cde16017-e827-43cf-9064-b2c9520cf914",
+    "subject": "Matematik",
+    "topic": "Matematik",
+    "difficulty": "orta",
+    "exam_type": "TYT",
+    "stem": "30 gün için bir yürüyüş planı yapan Merve, ilk gün belirli",
+    "options": {
+      "A": "30",
+      "B": "35",
+      "C": "40",
+      "D": "45",
+      "E": "50 27 Diğer sayfaya geçiniz."
+    },
+    "correct_answer": null,
+    "year": 2024
+  },
+  {
+    "question_id": "d9e8e8b7-e2aa-4cfe-98d7-76145866b59a",
+    "subject": "Matematik",
+    "topic": "Matematik",
+    "difficulty": "orta",
+    "exam_type": "TYT",
+    "stem": "39. Dikdörtgenler prizması biçimindeki 12 özdeş blok\nşekildeki gibi birleştirilerek bir küp elde ediliyor.\nBir sanatçı, yamuk biçiminde olan özdeş dört adet camı\naralarında boşluk kalmayacak biçimde şekildeki gibi\nbirleştirerek çevresi 40 birim olan dikdörtgen biçiminde\nBuna göre elde edilen küpün yüzey alanının, özdeş\nbir vitray elde etmiştir.\nbloklardan birinin yüzey alanına oranı kaçtır?\nBuna göre yamuk biçimindeki bu camlardan birinin",
+    "options": {
+      "A": "24",
+      "B": "22",
+      "C": "20",
+      "D": "18",
+      "E": "16"
+    },
+    "correct_answer": null,
+    "year": 2024
+  },
+  {
+    "question_id": "e031acfe-fb21-4ce0-842d-a15a43e25d8a",
+    "subject": "Matematik",
+    "topic": "Matematik",
+    "difficulty": "orta",
+    "exam_type": "TYT",
+    "stem": "Alanı santimetrekare türünden bir doğal sayıya eşit olan 36. Özge, Denizli’nin tanıtımında kullanılacak bir kartpostal\nüçgenlere şanslı üçgen denir. hazırlamak istemektedir. Hazırlayacağı dikdörtgen\nbiçimindeki kartpostalda kenar uzunlukları santimetre\nİç açılarından birinin ölçüsü vekenar\ntüründen verilmiş Şekil 1’deki üç fotoğrafı kullanmayı\nuzunluklarından ikisi 4 ve 6 cm olan\nplanlamaktadır.\nüçgenlerinden hangileri şanslı üçgendir?",
+    "options": {
+      "A": "Yalnız I",
+      "B": "Yalnız II",
+      "C": "Yalnız III",
+      "D": "I ve II",
+      "E": "I ve III Özge, Şekil 1’deki fotoğraflardan ilk ikisini her iki fotoğrafın da tamamı görünecek ve aralarında boşluk kalmayacak biçimde Şekil 2’deki gibi yerleştirmiştir. Diğer fotoğrafı ise fotoğrafın tamamı görünecek biçimde Şekil 3’teki gibi yerleştirmiştir."
+    },
+    "correct_answer": null,
+    "year": 2024
+  },
+  {
+    "question_id": "e2ccfe6e-3137-4cf8-b662-9d0b42909cff",
+    "subject": "Matematik",
+    "topic": "Matematik",
+    "difficulty": "orta",
+    "exam_type": "TYT",
+    "stem": "Doğa filozofları; görünüş ve gerçeklik arasında bir ayrım 25. Dilthey; tarihi yeni bir bakış açısıyla yorumlayarak\nyaparak görünüşün arkasındaki gerçekliğe, çokluğun insanın, sürekli değişen ve dinamik bir tarih olduğunu\nardındaki birliğe ulaşmaya çalıştı. Onlar, tüm varlıkların öne sürer. Ona göre insanla ilgili her şey bir zaman\narkasındaki bu birliğe “arkhe” adını vererek onun ne parçası içinde gerçekleşir ve bu değişken doğasıyla\nolduğunu sorguladı. Thales suyu, Anaximenes havayı, insan, kendi göreceliği ve tarihselliği içinde, yön\nEmpedokles ise toprak, su, hava ve ateşten oluşan dört değiştiren bir rüzgârgülüne benzer. Nitekim insan,\nana maddeyi evrenin arkhesi olarak belirledi. Platon ise yaşarken içinde bulunduğu zamanı kendisi kurar ve\ndüşüncesinin merkezine doğaya ait unsurlar yerine anılar yoluyla şimdiki zamanını belirleyen geçmişi de\n“idealar” adı verilen ve asıl varlıklar olarak gördüğü hep yanında taşır.\nkavramsal nesneleri yerleştirerek felsefe tarihinde yeni\nDilthey’ın bu parçadaki görüşlerinden aşağıdakilerin\nbir dönemi başlattı.\nhangisine ulaşılamaz?\nBuna göre Platon’u doğa filozoflarından ayıran",
+    "options": {
+      "A": "Birliğin değil çokluğun felsefesini yapması",
+      "B": "Evrenin göründüğü gibi olduğuna inanması oluşturur.",
+      "C": "Geçmiş, insanın şimdiki zamanının şekillenmesinde açıklaması etkilidir.",
+      "D": "Tarih, insanın hem var ettiği hem de ondan etkilendiği bir süreçtir.",
+      "E": "İnsan, zaman içinde olan bir varlık olduğu için tarihseldir."
+    },
+    "correct_answer": null,
+    "year": 2024
+  },
+  {
+    "question_id": "f32e0783-d176-451f-a992-3ba05a5d4c12",
+    "subject": "Matematik",
+    "topic": "Matematik",
+    "difficulty": "orta",
+    "exam_type": "TYT",
+    "stem": "Dik koordinat düzleminde f, g ve h fonksiyonlarının 14. A, B ve C birbirinden farklı rakamlar olmak üzere\ngrafikleri şekilde verilmiştir. A rakamı B rakamının, B rakamı ise C rakamının birer\ntam sayı katıdır.\nABC üç basamaklı doğal sayısı 3 ile tam\nbölünebildiğine göre bu sayının rakamları çarpımı\nkaçtır?",
+    "options": {
+      "A": "21",
+      "B": "22",
+      "C": "23",
+      "D": "24",
+      "E": "25"
+    },
+    "correct_answer": null,
+    "year": 2024
+  },
+  {
+    "question_id": "fafc5cae-7d1e-41fe-a124-b7b45116a2f1",
+    "subject": "Matematik",
+    "topic": "Matematik",
+    "difficulty": "orta",
+    "exam_type": "TYT",
+    "stem": "Bir veri grubundaki sayılar küçükten büyüğe doğru 18. Düz bir zemin üzerinde bulunan iki merdivenden; 4 eş\nsıralandığında veri sayısı tek ise ortadaki sayıya, veri basamaktan oluşan Şekil 1’deki merdivenin üçüncü\nsayısı çift ise ortadaki iki sayının aritmetik ortalamasına basamağında ve 5 eş basamaktan oluşan Şekil 2’deki\no veri grubunun medyanı (ortanca) denir. merdivenin dördüncü basamağında bulunan kedilerin\nyerden yükseklikleri birbirine eşittir.\nBirbirinden farklı tam sayılardan oluşan ve küçükten\nbüyüğe doğru sıralanmış\nveri grubunun aritmetik ortalaması ile medyanı ardışık\ntam sayılardır.\nBuna göre toplamı kaçtır?",
+    "options": {
+      "A": "30",
+      "B": "36",
+      "C": "42",
+      "D": "48",
+      "E": "54 Bu merdivenlerin her bir basamağının üst yüzleri zemine paralel, yan yüzleri ise zemine diktir. Bu iki merdivenin en üstteki basamaklarının yerden yükseklikleri toplamı 124 cm olduğuna göre kedilerden birinin yerden yüksekliği kaç cm'dir?"
+    },
+    "correct_answer": null,
+    "year": 2024
+  }
+]

@@ -1,0 +1,81 @@
+# Kiro IDE - Ignore Pattern
+# Bu dosya Kiro'nun yedeklemesi gereken dosyaları belirler
+
+# Large directories
+node_modules/
+__pycache__/
+.pytest_cache/
+htmlcov/
+.venv/
+venv/
+env/
+
+# Backups
+backups/
+*.backup
+*_backup_*/
+
+# Logs
+logs/
+*.log
+app.log
+
+# Cache
+cache/
+.cache/
+*.cache
+
+# Data
+data/
+uploads/
+vector_db/
+
+# Git
+.git/
+
+# IDE
+.vscode/
+.idea/
+
+# Build artifacts
+dist/
+build/
+*.egg-info/
+
+# Temporary files
+temp/
+tmp/
+*.tmp
+*.swp
+*.swo
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+
+# Environment files (keep example)
+.env
+.env.development
+.env.production
+.env.docker
+
+# Docker volumes
+postgres_data/
+redis_data/
+elasticsearch_data/
+
+# Coverage reports
+.coverage
+coverage.xml
+coverage.json
+htmlcov/
+
+# Test outputs
+test_results/
+reports/
+
+# Large markdown files
+*_COMPLETE.md
+*_SUMMARY.md
+*_REPORT.md

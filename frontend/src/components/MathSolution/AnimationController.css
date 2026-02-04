@@ -1,0 +1,36 @@
+/**
+ * AnimationController Accessibility Styles
+ * WCAG 2.1 Level AA Compliance
+ * REQ-9: Erişilebilirlik ve Kapsayıcı Tasarım
+ */
+
+/* Reduced Motion Support (WCAG 2.3.3) */
+@media (prefers-reduced-motion: reduce) {
+  .animation-controller * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Focus Indicators (WCAG 2.4.7) */
+.animation-controller button:focus-visible {
+  outline: 2px solid #2563eb;
+  outline-offset: 2px;
+}
+
+/* High Contrast Mode Support */
+@media (prefers-contrast: high) {
+  .animation-controller button {
+    border: 2px solid currentColor;
+  }
+  
+  .animation-controller [role="status"] {
+    border: 2px solid currentColor;
+  }
+}
+
+/* Ensure sufficient color contrast */
+.animation-controller .text-gray-700 {
+  color: #374151; /* 4.6:1 contrast ratio on white */
+}

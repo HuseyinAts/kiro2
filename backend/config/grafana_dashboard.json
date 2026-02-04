@@ -1,0 +1,247 @@
+{
+  "dashboard": {
+    "title": "Kiro Education Platform - Database Monitoring",
+    "tags": ["database", "postgresql", "performance", "replication"],
+    "timezone": "Europe/Istanbul",
+    "schemaVersion": 27,
+    "version": 0,
+    "refresh": "30s",
+    "panels": [
+      {
+        "id": 1,
+        "title": "Database Connections",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "pg_stat_database_numbackends{datname=\"kiro_education\"}",
+            "legendFormat": "Active Connections"
+          },
+          {
+            "expr": "pg_settings_max_connections",
+            "legendFormat": "Max Connections"
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 0}
+      },
+      {
+        "id": 2,
+        "title": "Query Performance (P95)",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "histogram_quantile(0.95, rate(http_request_duration_seconds_bucket[5m]))",
+            "legendFormat": "P95 Query Time"
+          },
+          {
+            "expr": "histogram_quantile(0.99, rate(http_request_duration_seconds_bucket[5m]))",
+            "legendFormat": "P99 Query Time"
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 0}
+      },
+      {
+        "id": 3,
+        "title": "Database Size",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "pg_database_size_bytes{datname=\"kiro_education\"}",
+            "legendFormat": "Database Size (Bytes)"
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 8}
+      },
+      {
+        "id": 4,
+        "title": "Replication Lag",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "pg_replication_lag_seconds",
+            "legendFormat": "{{replica_name}} Lag (seconds)"
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 8},
+        "alert": {
+          "name": "High Replication Lag",
+          "conditions": [
+            {
+              "evaluator": {"type": "gt", "params": [5]},
+              "query": {"params": ["A", "5m", "now"]},
+              "type": "query"
+            }
+          ],
+          "frequency": "60s",
+          "for": "5m",
+          "message": "Replication lag is above 5 seconds"
+        }
+      },
+      {
+        "id": 5,
+        "title": "Cache Hit Rate",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "rate(redis_hits_total[5m]) / (rate(redis_hits_total[5m]) + rate(redis_misses_total[5m])) * 100",
+            "legendFormat": "Cache Hit Rate %"
+          }
+        ],
+        "gridPos": {"h": 4, "w": 6, "x": 0, "y": 16},
+        "thresholds": [
+          {"value": 0, "color": "red"},
+          {"value": 60, "color": "yellow"},
+          {"value": 80, "color": "green"}
+        ]
+      },
+      {
+        "id": 6,
+        "title": "API Request Rate",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "rate(http_requests_total[5m])",
+            "legendFormat": "{{method}} {{endpoint}}"
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 6, "y": 16}
+      },
+      {
+        "id": 7,
+        "title": "Error Rate",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "rate(http_requests_total{status=~\"5..\"}[5m])",
+            "legendFormat": "5xx Errors"
+          },
+          {
+            "expr": "rate(http_requests_total{status=~\"4..\"}[5m])",
+            "legendFormat": "4xx Errors"
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 18, "y": 16}
+      },
+      {
+        "id": 8,
+        "title": "CPU Usage",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "rate(process_cpu_seconds_total[5m]) * 100",
+            "legendFormat": "CPU %"
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 24}
+      },
+      {
+        "id": 9,
+        "title": "Memory Usage",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "process_resident_memory_bytes",
+            "legendFormat": "Memory Usage (Bytes)"
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 24}
+      },
+      {
+        "id": 10,
+        "title": "Slow Queries (>1s)",
+        "type": "table",
+        "targets": [
+          {
+            "expr": "topk(10, sort_desc(pg_stat_statements_mean_exec_time_seconds > 1))",
+            "format": "table",
+            "instant": true
+          }
+        ],
+        "gridPos": {"h": 8, "w": 24, "x": 0, "y": 32}
+      },
+      {
+        "id": 11,
+        "title": "Backup Status",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "time() - backup_last_success_timestamp_seconds",
+            "legendFormat": "Time Since Last Backup (seconds)"
+          }
+        ],
+        "gridPos": {"h": 4, "w": 6, "x": 0, "y": 40},
+        "thresholds": [
+          {"value": 0, "color": "green"},
+          {"value": 86400, "color": "yellow"},
+          {"value": 172800, "color": "red"}
+        ]
+      },
+      {
+        "id": 12,
+        "title": "Active Users",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "count(user_session_active == 1)",
+            "legendFormat": "Active Users"
+          }
+        ],
+        "gridPos": {"h": 4, "w": 6, "x": 6, "y": 40}
+      },
+      {
+        "id": 13,
+        "title": "Exam Sessions (Last Hour)",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "increase(exam_sessions_total[1h])",
+            "legendFormat": "Exam Sessions"
+          }
+        ],
+        "gridPos": {"h": 4, "w": 6, "x": 12, "y": 40}
+      },
+      {
+        "id": 14,
+        "title": "Questions Answered (Last Hour)",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "increase(questions_answered_total[1h])",
+            "legendFormat": "Questions Answered"
+          }
+        ],
+        "gridPos": {"h": 4, "w": 6, "x": 18, "y": 40}
+      }
+    ],
+    "templating": {
+      "list": [
+        {
+          "name": "datasource",
+          "type": "datasource",
+          "query": "prometheus"
+        },
+        {
+          "name": "replica",
+          "type": "query",
+          "datasource": "$datasource",
+          "query": "label_values(pg_replication_lag_seconds, replica_name)"
+        }
+      ]
+    },
+    "annotations": {
+      "list": [
+        {
+          "name": "Deployments",
+          "datasource": "prometheus",
+          "expr": "deployment_info",
+          "iconColor": "blue"
+        },
+        {
+          "name": "Alerts",
+          "datasource": "prometheus",
+          "expr": "ALERTS{alertstate=\"firing\"}",
+          "iconColor": "red"
+        }
+      ]
+    }
+  }
+}

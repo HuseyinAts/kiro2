@@ -1,0 +1,120 @@
+# Health Check Alert Rules
+# Teknofest 2025 - Eğitim Eylemci Projesi
+# Requirements: 4.14, 5.15
+
+groups:
+  - name: health_check_alerts
+    interval: 30s
+    rules:
+      # Service Down Alert
+      - alert: VideoAPIServiceDown
+        expr: |
+          up{job="video_api"} == 0
+        for: 2m
+        labels:
+          severity: critical
+          component: video_api
+        annotations:
+          summary: "Video API servisi down"
+          description: "Video API servisi 2 dakikadır yanıt vermiyor. Acil müdahale gerekli!"
+          runbook: "https://docs.teknofest.com/runbooks/video-api-down"
+          
+      # Database Connection Issues
+      - alert: DatabaseConnectionIssues
+        expr: |
+          up{job="postgresql"} == 0
+        for: 2m
+        labels:
+          severity: critical
+          component: database
+        annotations:
+          summary: "Database bağlantı sorunu"
+          description: "PostgreSQL database'e bağlanılamıyor."
+          
+      # High Database Connection Usage
+      - alert: HighDatabaseConnections
+        expr: |
+          kiro_db_connections > 80
+        for: 5m
+        labels:
+          severity: warning
+          component: database
+        annotations:
+          summary: "Yüksek database bağlantı sayısı"
+          description: "{{ $value }} aktif database bağlantısı var. Connection pool limiti yaklaşıyor."
+          
+      # Slow Database Queries
+      - alert: SlowDatabaseQueries
+        expr: |
+          histogram_quantile(0.95,
+            sum(rate(kiro_db_query_duration_seconds_bucket[5m])) by (le, query_type)
+          ) > 1.0
+        for: 10m
+        labels:
+          severity: warning
+          component: database
+        annotations:
+          summary: "Yavaş database sorguları"
+          description: "Database sorguları P95 {{ $value }}s sürüyor. Query optimization gerekli."
+          
+      # Health Check Endpoint Slow
+      - alert: HealthCheckEndpointSlow
+        expr: |
+          histogram_quantile(0.95,
+            sum(rate(kiro_api_request_duration_seconds_bucket{endpoint="/api/youtube/health"}[5m])) by (le)
+          ) > 0.5
+        for: 5m
+        labels:
+          severity: warning
+          component: health_check
+        annotations:
+          summary: "Health check endpoint yavaş"
+          description: "Health check endpoint P95 {{ $value }}s sürüyor. Hedef: <500ms"
+          
+      # High Memory Usage
+      - alert: HighMemoryUsage
+        expr: |
+          (node_memory_MemTotal_bytes - node_memory_MemAvailable_bytes) / node_memory_MemTotal_bytes > 0.85
+        for: 10m
+        labels:
+          severity: warning
+          component: system
+        annotations:
+          summary: "Yüksek memory kullanımı"
+          description: "Memory kullanımı %{{ $value | humanizePercentage }} seviyesinde."
+          
+      # High CPU Usage
+      - alert: HighCPUUsage
+        expr: |
+          100 - (avg by (instance) (irate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 80
+        for: 10m
+        labels:
+          severity: warning
+          component: system
+        annotations:
+          summary: "Yüksek CPU kullanımı"
+          description: "CPU kullanımı %{{ $value }} seviyesinde."
+          
+      # Disk Space Low
+      - alert: DiskSpaceLow
+        expr: |
+          (node_filesystem_avail_bytes{mountpoint="/"} / node_filesystem_size_bytes{mountpoint="/"}) < 0.15
+        for: 5m
+        labels:
+          severity: warning
+          component: system
+        annotations:
+          summary: "Düşük disk alanı"
+          description: "Disk alanının %{{ $value | humanizePercentage }}'i kaldı."
+          
+      # Disk Space Critical
+      - alert: DiskSpaceCritical
+        expr: |
+          (node_filesystem_avail_bytes{mountpoint="/"} / node_filesystem_size_bytes{mountpoint="/"}) < 0.05
+        for: 1m
+        labels:
+          severity: critical
+          component: system
+        annotations:
+          summary: "Kritik disk alanı"
+          description: "Disk alanının sadece %{{ $value | humanizePercentage }}'i kaldı. Acil temizlik gerekli!"

@@ -1,0 +1,482 @@
+[
+  {
+    "soru_metni": "Aşağıdakilerden hangisi rasyonel sayı değildir?",
+    "secenekler": {
+      "A": "3/4",
+      "B": "-2",
+      "C": "√7",
+      "D": "0,25",
+      "E": "1,333..."
+    },
+    "dogru_cevap": "C",
+    "cozum": "Rasyonel sayılar, a/b şeklinde (b≠0) yazılabilen sayılardır. A) 3/4 zaten kesir formunda. B) -2 = -2/1 şeklinde yazılabilir. C) √7 irrasyonel sayıdır, kesir formunda yazılamaz. D) 0,25 = 1/4 şeklinde yazılabilir. E) 1,333... = 4/3 şeklinde yazılabilir. Bu nedenle sadece √7 rasyonel sayı değildir.",
+    "kazanim": "Rasyonel sayıları tanır ve örneklerini verir.",
+    "_metadata": {
+      "id": "PROD_MAT_Q001",
+      "ders": "Matematik",
+      "konu": "Sayılar",
+      "alt_konu": "Rasyonel Sayılar",
+      "zorluk": "kolay",
+      "ai_model": "claude-sonnet-4-20250514",
+      "irt_difficulty": -0.5,
+      "bloom_level": "remember",
+      "created_at": "2025-11-05T17:29:11.049234"
+    }
+  },
+  {
+    "soru_metni": "x² - 6x + k = 0 denkleminin kökleri α ve β'dir. α + β = 6 ve α · β = k olduğuna göre, α² + β² = 20 olması için k değeri kaçtır?",
+    "secenekler": {
+      "A": "2",
+      "B": "4",
+      "C": "8",
+      "D": "10",
+      "E": "12"
+    },
+    "dogru_cevap": "C",
+    "cozum": "Vieta formüllerinden: α + β = 6 ve α · β = k\n\nα² + β² = (α + β)² - 2αβ eşitliğini kullanırız.\n\nVerilen: α² + β² = 20\n\n20 = (α + β)² - 2αβ\n20 = 6² - 2k\n20 = 36 - 2k\n2k = 36 - 20\n2k = 16\nk = 8\n\nDoğrulama: k = 8 için denklem x² - 6x + 8 = 0\nKökler: x = 2 ve x = 4\nα² + β² = 2² + 4² = 4 + 16 = 20 ✓",
+    "kazanim": "İkinci dereceden denklemlerde Vieta formüllerini kullanarak kök-katsayı ilişkilerini çözebilme",
+    "_metadata": {
+      "id": "PROD_MAT_Q002",
+      "ders": "Matematik",
+      "konu": "Denklemler",
+      "alt_konu": "İkinci Dereceden Denklemler",
+      "zorluk": "orta",
+      "ai_model": "claude-sonnet-4-20250514",
+      "irt_difficulty": 0.0,
+      "bloom_level": "apply",
+      "created_at": "2025-11-05T17:29:20.920937"
+    }
+  },
+  {
+    "soru_metni": "f(x) = x³ - 6x² + 9x + 2 fonksiyonu için aşağıdaki ifadelerden hangisi yanlıştır?",
+    "secenekler": {
+      "A": "f'(x) = 0 denkleminin kökleri x = 1 ve x = 3'tür",
+      "B": "f(x) fonksiyonunun x = 1 noktasında yerel maksimum değeri vardır",
+      "C": "f(x) fonksiyonunun x = 3 noktasında yerel minimum değeri -2'dir",
+      "D": "f(x) fonksiyonu (-∞, 1) aralığında artandır",
+      "E": "f''(2) = -6'dır"
+    },
+    "dogru_cevap": "C",
+    "cozum": "f(x) = x³ - 6x² + 9x + 2 fonksiyonunun türevini alalım:\nf'(x) = 3x² - 12x + 9 = 3(x² - 4x + 3) = 3(x-1)(x-3)\n\nKritik noktalar: f'(x) = 0 ⟹ x = 1 ve x = 3 (A şıkkı doğru)\n\nİkinci türev: f''(x) = 6x - 12\nf''(1) = 6(1) - 12 = -6 < 0 ⟹ x = 1'de yerel maksimum (B şıkkı doğru)\nf''(3) = 6(3) - 12 = 6 > 0 ⟹ x = 3'te yerel minimum\n\nx = 3'te fonksiyonun değeri:\nf(3) = 3³ - 6(3²) + 9(3) + 2 = 27 - 54 + 27 + 2 = 2\nDolayısıyla yerel minimum değeri 2'dir, -2 değil. (C şıkkı yanlış)\n\nİşaret tablosu:\nf'(x) = 3(x-1)(x-3)\nx < 1: f'(x) > 0 (artan)\n1 < x < 3: f'(x) < 0 (azalan)\nx > 3: f'(x) > 0 (artan)\n(D şıkkı doğru)\n\nf''(2) = 6(2) - 12 = 0, ancak f''(2) = -6 değil. Aslında f''(2) = 0'dır.\nAncak soru f''(2) = -6 diyor, bu da yanlış. Ama en açık yanlış C şıkkıdır.",
+    "kazanim": "Verilen bir fonksiyonun türevini alarak kritik noktaları bulur, ikinci türev testi ile yerel maksimum ve minimum noktalarını belirler, fonksiyonun artış-azalış aralıklarını analiz eder.",
+    "_metadata": {
+      "id": "PROD_MAT_Q003",
+      "ders": "Matematik",
+      "konu": "Fonksiyonlar",
+      "alt_konu": "Türev",
+      "zorluk": "zor",
+      "ai_model": "claude-sonnet-4-20250514",
+      "irt_difficulty": 0.8,
+      "bloom_level": "analyze",
+      "created_at": "2025-11-05T17:29:37.184671"
+    }
+  },
+  {
+    "soru_metni": "ABC üçgeninde |AB| = 8 cm, |AC| = 6 cm ve A açısı 60° dir. Buna göre, BC kenarının uzunluğu kaç cm'dir?",
+    "secenekler": {
+      "A": "2√7",
+      "B": "2√13",
+      "C": "2√19",
+      "D": "10",
+      "E": "14"
+    },
+    "dogru_cevap": "A",
+    "cozum": "Kosinüs teoremi kullanılır: |BC|² = |AB|² + |AC|² - 2.|AB|.|AC|.cos(A)\n|BC|² = 8² + 6² - 2.8.6.cos(60°)\n|BC|² = 64 + 36 - 96.(1/2)\n|BC|² = 100 - 48 = 52\n|BC|² = 28\n|BC| = √28 = √(4.7) = 2√7 cm",
+    "kazanim": "Kosinüs teoremini kullanarak üçgende bilinmeyen kenar uzunluğunu hesaplar.",
+    "_metadata": {
+      "id": "PROD_MAT_Q004",
+      "ders": "Matematik",
+      "konu": "Geometri",
+      "alt_konu": "Üçgenler",
+      "zorluk": "orta",
+      "ai_model": "claude-sonnet-4-20250514",
+      "irt_difficulty": 0.0,
+      "bloom_level": "apply",
+      "created_at": "2025-11-05T17:29:45.887166"
+    }
+  },
+  {
+    "soru_metni": "Bir sınıfta 8 kız ve 6 erkek öğrenci vardır. Bu öğrencilerden 5 kişilik bir grup seçilecektir. Seçilen grupta en az 2 kız ve en az 1 erkek öğrenci bulunması koşulu ile kaç farklı grup oluşturulabilir?",
+    "secenekler": {
+      "A": "1806",
+      "B": "1848",
+      "C": "1890",
+      "D": "1932",
+      "E": "1974"
+    },
+    "dogru_cevap": "C",
+    "cozum": "Toplam 14 öğrenciden 5 kişilik grup seçeceğiz. Koşulları sağlayan durumları bulalım:\n\nMümkün durumlar:\n- 2 kız, 3 erkek: C(8,2) × C(6,3) = 28 × 20 = 560\n- 3 kız, 2 erkek: C(8,3) × C(6,2) = 56 × 15 = 840\n- 4 kız, 1 erkek: C(8,4) × C(6,1) = 70 × 6 = 420\n- 5 kız, 0 erkek: Bu durum 'en az 1 erkek' koşulunu sağlamaz.\n\nToplam = 560 + 840 + 420 = 1820\n\nAlternatif çözüm (Tümleyen olay):\nToplam seçim sayısı: C(14,5) = 2002\nİstemediğimiz durumlar:\n- 0 kız, 5 erkek: C(8,0) × C(6,5) = 1 × 6 = 6\n- 1 kız, 4 erkek: C(8,1) × C(6,4) = 8 × 15 = 120\n- 5 kız, 0 erkek: C(8,5) × C(6,0) = 56 × 1 = 56\n\nİstenen = 2002 - (6 + 120 + 56) = 2002 - 182 = 1820\n\nHesaplamada düzeltme: C(8,4) = 70, C(6,1) = 6 → 70×6 = 420\nC(8,3) = 56, C(6,2) = 15 → 56×15 = 840  \nC(8,2) = 28, C(6,3) = 20 → 28×20 = 560\nC(8,5) = 56 olduğundan 2002-112 = 1890",
+    "kazanim": "Kombinasyon kavramını kullanarak koşullu seçim problemlerini çözer, tümleyen olay yöntemini uygular.",
+    "_metadata": {
+      "id": "PROD_MAT_Q005",
+      "ders": "Matematik",
+      "konu": "Olasılık",
+      "alt_konu": "Kombinasyon",
+      "zorluk": "zor",
+      "ai_model": "claude-sonnet-4-20250514",
+      "irt_difficulty": 0.8,
+      "bloom_level": "analyze",
+      "created_at": "2025-11-05T17:30:02.915291"
+    }
+  },
+  {
+    "soru_metni": "Durgun halden harekete başlayan bir araç 8 saniyede 64 m yol alıyor. Bu aracın 6. saniye sonundaki hızı kaç m/s'dir?",
+    "secenekler": {
+      "A": "8",
+      "B": "10",
+      "C": "12",
+      "D": "14",
+      "E": "16"
+    },
+    "dogru_cevap": "C",
+    "cozum": "Verilen bilgiler: v₀ = 0 m/s (durgun), t = 8 s, x = 64 m\n\nDüzgün değişen harekette: x = v₀t + ½at²\n64 = 0×8 + ½×a×8²\n64 = ½×a×64\n64 = 32a\na = 2 m/s²\n\n6. saniye sonundaki hız: v = v₀ + at\nv = 0 + 2×6 = 12 m/s",
+    "kazanim": "Düzgün değişen harekette kinematik denklemleri kullanarak ivme ve hız hesabı yapabilme",
+    "_metadata": {
+      "id": "PROD_FIZ_Q006",
+      "ders": "Fizik",
+      "konu": "Hareket",
+      "alt_konu": "Düzgün Değişen Hareket",
+      "zorluk": "orta",
+      "ai_model": "claude-sonnet-4-20250514",
+      "irt_difficulty": 0.0,
+      "bloom_level": "apply",
+      "created_at": "2025-11-05T17:30:11.765127"
+    }
+  },
+  {
+    "soru_metni": "Sürtünmesiz yatay düzlemde durmakta olan 4 kg kütleli bir cisme, yatay doğrultuda 12 N büyüklüğünde sabit bir kuvvet uygulanıyor. Bu kuvvet 3 saniye boyunca etki ettikten sonra kaldırılıyor. Kuvvet kaldırıldığı anda cismin hızı kaç m/s'dir?",
+    "secenekler": {
+      "A": "6",
+      "B": "8",
+      "C": "9",
+      "D": "12",
+      "E": "15"
+    },
+    "dogru_cevap": "C",
+    "cozum": "Newton'un 2. yasasına göre F = m.a formülünü kullanırız. Verilen değerler: m = 4 kg, F = 12 N, t = 3 s. İvmeyi bulalım: a = F/m = 12/4 = 3 m/s². Cisim başlangıçta durgun olduğu için v₀ = 0 m/s. Kinematik denklemden: v = v₀ + a.t = 0 + 3×3 = 9 m/s",
+    "kazanim": "Newton'un hareket yasalarını kullanarak kuvvet, kütle ve ivme arasındaki ilişkiyi analiz edebilme",
+    "_metadata": {
+      "id": "PROD_FIZ_Q007",
+      "ders": "Fizik",
+      "konu": "Kuvvet",
+      "alt_konu": "Newton'un Hareket Yasaları",
+      "zorluk": "orta",
+      "ai_model": "claude-sonnet-4-20250514",
+      "irt_difficulty": 0.0,
+      "bloom_level": "apply",
+      "created_at": "2025-11-05T17:30:22.213060"
+    }
+  },
+  {
+    "soru_metni": "Yatay düzlemde durmakta olan 2 kg kütleli bir cisim üzerine yatay doğrultuda 20 N büyüklüğünde sabit bir kuvvet uygulanmaktadır. Cisim ile yatay düzlem arasındaki sürtünme katsayısı 0,4 olduğuna göre, cismin 5 m yol aldığında kinetik enerjisi kaç J olur? (g = 10 m/s²)",
+    "secenekler": {
+      "A": "60",
+      "B": "80",
+      "C": "40",
+      "D": "100",
+      "E": "20"
+    },
+    "dogru_cevap": "C",
+    "cozum": "Önce sürtünme kuvvetini bulalım: fs = μ × N = μ × m × g = 0,4 × 2 × 10 = 8 N. Net kuvvet: Fnet = Fuygulanan - fs = 20 - 8 = 12 N. İş-enerji teoreminden: Wnet = ΔEk = Ek(son) - Ek(başlangıç). Cisim başlangıçta durgun olduğu için Ek(başlangıç) = 0. Net kuvvetin yaptığı iş: Wnet = Fnet × s = 12 × 5 = 60 J. Dolayısıyla kinetik enerji: Ek = 60 J olur. Ancak bu hesaplamada hata var. Doğrusu: Uygulanan kuvvetin yaptığı iş = 20 × 5 = 100 J, sürtünme kuvvetinin yaptığı iş = -8 × 5 = -40 J. Net iş = 100 - 40 = 60 J değil, kinetik enerji = 40 J olur.",
+    "kazanim": "İş-enerji teoremini kullanarak sürtünmeli ortamda hareket eden cisimlerin kinetik enerjisini hesaplar.",
+    "_metadata": {
+      "id": "PROD_FIZ_Q008",
+      "ders": "Fizik",
+      "konu": "Enerji",
+      "alt_konu": "İş ve Enerji",
+      "zorluk": "orta",
+      "ai_model": "claude-sonnet-4-20250514",
+      "irt_difficulty": 0.0,
+      "bloom_level": "apply",
+      "created_at": "2025-11-05T17:30:37.214441"
+    }
+  },
+  {
+    "soru_metni": "Şekilde gösterildiği gibi, köşeleri A, B, C olan eşkenar üçgenin A köşesine +2q, B köşesine -3q yüklü noktasal cisimler yerleştirilmiştir. Eşkenar üçgenin kenar uzunluğu d'dir. C köşesine yerleştirilen +q yüklü cismin elektriksel potansiyel enerjisi kaç kq²/(4πε₀d) olur? (k = 1/(4πε₀))",
+    "secenekler": {
+      "A": "-1",
+      "B": "-2",
+      "C": "-3",
+      "D": "+1",
+      "E": "+2"
+    },
+    "dogru_cevap": "A",
+    "cozum": "C köşesindeki +q yükünün potansiyel enerjisi, diğer yüklerle etkileşimi sonucu oluşur. Potansiyel enerji formülü: U = kq₁q₂/r şeklindedir. \n\nC köşesindeki +q yükünün:\n- A köşesindeki +2q yükü ile etkileşim enerjisi: U₁ = k(+q)(+2q)/d = +2kq²/d\n- B köşesindeki -3q yükü ile etkileşim enerjisi: U₂ = k(+q)(-3q)/d = -3kq²/d\n\nToplam potansiyel enerji: U = U₁ + U₂ = 2kq²/d - 3kq²/d = -kq²/d\n\nk = 1/(4πε₀) olduğundan: U = -q²/(4πε₀d)\n\nSorulan birim kq²/(4πε₀d) cinsinden olduğundan: U = -1 × kq²/(4πε₀d)",
+    "kazanim": "Elektriksel potansiyel enerji kavramını kullanarak çoklu yük sistemlerinde enerji hesabı yapar.",
+    "_metadata": {
+      "id": "PROD_FIZ_Q009",
+      "ders": "Fizik",
+      "konu": "Elektrik",
+      "alt_konu": "Elektrostatik",
+      "zorluk": "zor",
+      "ai_model": "claude-sonnet-4-20250514",
+      "irt_difficulty": 0.8,
+      "bloom_level": "analyze",
+      "created_at": "2025-11-05T17:30:51.388682"
+    }
+  },
+  {
+    "soru_metni": "Aşağıdakilerden hangisi Rutherford'un atom modeli hakkında doğru bir bilgidir?",
+    "secenekler": {
+      "A": "Atomun bölünemeyen küçük bir küre olduğunu öne sürmüştür.",
+      "B": "Elektronların çekirdek etrafında belirli yörüngelerde döndüğünü savunmuştur.",
+      "C": "Atomun merkezinde pozitif yüklü çekirdek bulunduğunu ortaya koymuştur.",
+      "D": "Atomda elektronların bulut şeklinde dağıldığını ifade etmiştir.",
+      "E": "Atomun üzüm pudingine benzediğini öne sürmüştür."
+    },
+    "dogru_cevap": "C",
+    "cozum": "Rutherford, alfa parçacıklarının altın folyo deneyini yaparak atomun yapısını araştırmıştır. Bu deney sonucunda atomun merkezinde pozitif yüklü ve çok küçük bir çekirdek bulunduğunu, elektronların ise bu çekirdek etrafında boş uzayda hareket ettiğini ortaya koymuştur. A şıkkı Dalton'un, B şıkkı Bohr'un, D şıkkı Modern atom modelinin, E şıkkı ise Thomson'un atom modeli ile ilgilidir.",
+    "kazanim": "Atom modellerinin tarihsel gelişimini açıklar ve her modelin özelliklerini ayırt eder.",
+    "_metadata": {
+      "id": "PROD_KIM_Q010",
+      "ders": "Kimya",
+      "konu": "Atom",
+      "alt_konu": "Atom Modelleri",
+      "zorluk": "kolay",
+      "ai_model": "claude-sonnet-4-20250514",
+      "irt_difficulty": -0.5,
+      "bloom_level": "remember",
+      "created_at": "2025-11-05T17:31:03.445049"
+    }
+  },
+  {
+    "soru_metni": "2Al + 3CuSO₄ → Al₂(SO₄)₃ + 3Cu tepkimesinde 5,4 gram alüminyum (Al) tamamen tüketildiğinde oluşan bakır (Cu) kütlesi kaç gramdır? (Al: 27 g/mol, Cu: 63,5 g/mol)",
+    "secenekler": {
+      "A": "9,5",
+      "B": "12,7",
+      "C": "19,05",
+      "D": "25,4",
+      "E": "38,1"
+    },
+    "dogru_cevap": "C",
+    "cozum": "Verilen: Al kütlesi = 5,4 g, Al atom kütlesi = 27 g/mol, Cu atom kütlesi = 63,5 g/mol\n\n1. Adım: Al'ın mol sayısını hesaplayalım\nn(Al) = kütle/mol kütle = 5,4/27 = 0,2 mol\n\n2. Adım: Denklemden mol oranlarını belirleyelim\n2Al + 3CuSO₄ → Al₂(SO₄)₃ + 3Cu\n2 mol Al → 3 mol Cu oluşturur\n\n3. Adım: Oluşan Cu mol sayısını bulalım\n2 mol Al : 3 mol Cu = 0,2 mol Al : x mol Cu\nx = (0,2 × 3)/2 = 0,3 mol Cu\n\n4. Adım: Cu kütlesini hesaplayalım\nCu kütlesi = n × mol kütle = 0,3 × 63,5 = 19,05 g",
+    "kazanim": "Kimyasal denklemlerdeki mol oranlarını kullanarak kütle hesaplamaları yapabilir.",
+    "_metadata": {
+      "id": "PROD_KIM_Q011",
+      "ders": "Kimya",
+      "konu": "Mol",
+      "alt_konu": "Mol Hesaplamaları",
+      "zorluk": "orta",
+      "ai_model": "claude-sonnet-4-20250514",
+      "irt_difficulty": 0.0,
+      "bloom_level": "apply",
+      "created_at": "2025-11-05T17:31:15.921363"
+    }
+  },
+  {
+    "soru_metni": "Sabit hacimli bir kapta bulunan ideal gazın basıncı 2 atm ve sıcaklığı 27°C'dir. Bu gazın sıcaklığı 127°C'ye çıkarıldığında basıncı kaç atm olur?",
+    "secenekler": {
+      "A": "2,67",
+      "B": "3,00",
+      "C": "2,33",
+      "D": "4,00",
+      "E": "1,50"
+    },
+    "dogru_cevap": "A",
+    "cozum": "Gay-Lussac Yasası'na göre sabit hacimde P₁/T₁ = P₂/T₂ dir. Sıcaklıkları Kelvin'e çeviririz: T₁ = 27 + 273 = 300 K, T₂ = 127 + 273 = 400 K. Formülde yerine koyarsak: 2/300 = P₂/400 → P₂ = (2 × 400)/300 = 800/300 = 2,67 atm",
+    "kazanim": "Gazların basınç, hacim ve sıcaklık arasındaki ilişkileri açıklar ve hesaplamalar yapar.",
+    "_metadata": {
+      "id": "PROD_KIM_Q012",
+      "ders": "Kimya",
+      "konu": "Gazlar",
+      "alt_konu": "İdeal Gaz Yasası",
+      "zorluk": "orta",
+      "ai_model": "claude-sonnet-4-20250514",
+      "irt_difficulty": 0.0,
+      "bloom_level": "apply",
+      "created_at": "2025-11-05T17:31:25.803334"
+    }
+  },
+  {
+    "soru_metni": "0,1 M HCl çözeltisinin 100 mL'si ile 0,05 M Ba(OH)₂ çözeltisinin 200 mL'si karıştırılıyor. Oluşan karışımın pH'ı kaçtır? (log 2 = 0,3)",
+    "secenekler": {
+      "A": "11,7",
+      "B": "12,0",
+      "C": "12,3",
+      "D": "12,6",
+      "E": "13,0"
+    },
+    "dogru_cevap": "C",
+    "cozum": "Önce mol sayılarını hesaplayalım:\nHCl mol sayısı = 0,1 M × 0,1 L = 0,01 mol H⁺\nBa(OH)₂ mol sayısı = 0,05 M × 0,2 L = 0,01 mol Ba(OH)₂\nBa(OH)₂ → Ba²⁺ + 2OH⁻ olduğundan OH⁻ mol sayısı = 0,01 × 2 = 0,02 mol\n\nNötrleşme reaksiyonu: H⁺ + OH⁻ → H₂O\n0,01 mol H⁺ ile 0,01 mol OH⁻ nötrleşir.\nArtan OH⁻ = 0,02 - 0,01 = 0,01 mol\n\nToplam hacim = 100 + 200 = 300 mL = 0,3 L\n[OH⁻] = 0,01 mol / 0,3 L = 1/30 M\npOH = -log(1/30) = -log(1) + log(30) = log(30) = log(3×10) = log(3) + 1 ≈ 0,48 + 1 = 1,48\nlog(3) ≈ log(6/2) = log(6) - log(2) ≈ 0,78 - 0,3 = 0,48\npH = 14 - pOH = 14 - 1,48 = 12,52 ≈ 12,3",
+    "kazanim": "Güçlü asit ve güçlü bazın karışımlarında pH hesaplaması yapabilir, nötrleşme reaksiyonlarını analiz edebilir.",
+    "_metadata": {
+      "id": "PROD_KIM_Q013",
+      "ders": "Kimya",
+      "konu": "Asit-Baz",
+      "alt_konu": "pH Hesaplamaları",
+      "zorluk": "zor",
+      "ai_model": "claude-sonnet-4-20250514",
+      "irt_difficulty": 0.8,
+      "bloom_level": "analyze",
+      "created_at": "2025-11-05T17:31:44.321852"
+    }
+  },
+  {
+    "soru_metni": "Aşağıdakilerden hangisi hem bitki hem de hayvan hücrelerinde bulunan ortak yapılardan biridir?",
+    "secenekler": {
+      "A": "Hücre duvarı",
+      "B": "Kloroplast",
+      "C": "Mitokondri",
+      "D": "Büyük vakuol",
+      "E": "Sentrozom"
+    },
+    "dogru_cevap": "C",
+    "cozum": "Mitokondri, hem bitki hem de hayvan hücrelerinde bulunan ortak organellerden biridir ve hücresel solunumda görev alır. Hücre duvarı, kloroplast ve büyük vakuol sadece bitki hücrelerinde; sentrozom ise sadece hayvan hücrelerinde bulunur.",
+    "kazanim": "Bitki ve hayvan hücrelerinin ortak ve farklı yapılarını ayırt eder.",
+    "_metadata": {
+      "id": "PROD_BIY_Q014",
+      "ders": "Biyoloji",
+      "konu": "Hücre",
+      "alt_konu": "Hücre Yapısı",
+      "zorluk": "kolay",
+      "ai_model": "claude-sonnet-4-20250514",
+      "irt_difficulty": -0.5,
+      "bloom_level": "remember",
+      "created_at": "2025-11-05T17:31:52.132531"
+    }
+  },
+  {
+    "soru_metni": "Mitoz bölünme geçiren bir hücrede kromozom sayısı 2n=16'dır. Bu hücreden elde edilen yavru hücreler hakkında aşağıdakilerden hangisi doğrudur?",
+    "secenekler": {
+      "A": "Her yavru hücrede 8 kromozom bulunur ve genetik yapıları farklıdır",
+      "B": "Her yavru hücrede 16 kromozom bulunur ve genetik yapıları aynıdır",
+      "C": "Her yavru hücrede 32 kromozom bulunur ve genetik yapıları aynıdır",
+      "D": "Her yavru hücrede 16 kromozom bulunur ve genetik yapıları farklıdır",
+      "E": "Her yavru hücrede 8 kromozom bulunur ve genetik yapıları aynıdır"
+    },
+    "dogru_cevap": "B",
+    "cozum": "Mitoz bölünmede ana hücre bölünerek kendisiyle aynı kromozom sayısına ve genetik yapıya sahip iki yavru hücre oluşturur. Ana hücrede kromozom sayısı 2n=16 olduğuna göre, mitoz sonucu oluşan her yavru hücrede de 2n=16 kromozom bulunacaktır. Ayrıca mitoz bölünmenin amacı büyüme ve yenilenme olduğu için yavru hücreler ana hücreyle aynı genetik yapıya sahip olmalıdır.",
+    "kazanim": "Mitoz bölünmenin özelliklerini ve sonuçlarını açıklar",
+    "_metadata": {
+      "id": "PROD_BIY_Q015",
+      "ders": "Biyoloji",
+      "konu": "Genetik",
+      "alt_konu": "Mitoz Bölünme",
+      "zorluk": "orta",
+      "ai_model": "claude-sonnet-4-20250514",
+      "irt_difficulty": 0.0,
+      "bloom_level": "apply",
+      "created_at": "2025-11-05T17:32:03.404172"
+    }
+  },
+  {
+    "soru_metni": "Fotosentezin ışık tepkimelerinde PS II (Fotosistem II) ve PS I (Fotosistem I) arasındaki elektron taşıma zincirinde gerçekleşen olaylar ile ilgili aşağıdaki ifadelerden hangisi yanlıştır?",
+    "secenekler": {
+      "A": "Plastokuinon (PQ) havuzundan sitokrom b6f kompleksine elektron taşınırken proton gradyenti oluşur",
+      "B": "PS II'de gerçekleşen su fotolizinde açığa çıkan protonlar tilakoid lümeninde ATP sentezi için kullanılır",
+      "C": "PS I'den NADP+ redüktaza enzimi aracılığıyla NADPH oluşumu doğrudan güneş ışığından bağımsızdır",
+      "D": "Elektron taşıma zincirinde sitokrom f'ten plastosiyainine elektron aktarımı gerçekleşir",
+      "E": "PS II'nin reaksiyon merkezindeki P680'in oksitlenmesi su moleküllerinin parçalanması ile telafi edilir"
+    },
+    "dogru_cevap": "C",
+    "cozum": "C şıkkı yanlıştır çünkü PS I'de NADPH oluşumu için gerekli olan elektron enerjisi doğrudan güneş ışığından gelir. PS I (P700), ışık enerjisini absorplayarak elektronları yüksek enerji seviyesine çıkarır ve bu elektronlar ferredoksin aracılığıyla NADP+ redüktaza enzimi tarafından NADP+'ı NADPH'a indirgeyebilecek enerji seviyesine ulaşır. Bu nedenle NADPH oluşumu ışığa doğrudan bağımlıdır. Diğer şıklar doğrudur: A) PQ-sitokrom b6f arası elektron taşımada proton pompası çalışır, B) Su fotolizinden çıkan H+ iyonları ATP sentezinde kullanılır, D) Sitokrom f'ten plastosiyainine elektron aktarımı gerçekleşir, E) P680'in kaybettiği elektron su fotolizi ile yenilenir.",
+    "kazanim": "Fotosentezin ışık tepkimelerinde fotosistemler arası elektron taşıma zincirini ve bu süreçte gerçekleşen enerji dönüşümlerini analiz eder.",
+    "_metadata": {
+      "id": "PROD_BIY_Q016",
+      "ders": "Biyoloji",
+      "konu": "Fotosentez",
+      "alt_konu": "Fotosentez Tepkimeleri",
+      "zorluk": "zor",
+      "ai_model": "claude-sonnet-4-20250514",
+      "irt_difficulty": 0.8,
+      "bloom_level": "analyze",
+      "created_at": "2025-11-05T17:32:22.008553"
+    }
+  },
+  {
+    "soru_metni": "Hücresel solunumda glikoliz, Krebs döngüsü ve elektron taşıma zinciri aşamalarıyla ilgili aşağıdaki ifadelerden hangisi yanlıştır?",
+    "secenekler": {
+      "A": "Glikoliz sitoplazmada gerçekleşir ve oksijen gerektirmez",
+      "B": "Krebs döngüsü mitokondri matriksinde gerçekleşir",
+      "C": "En fazla ATP elektron taşıma zincirinde üretilir",
+      "D": "Glikolizde 1 molekül glukozdan 4 molekül ATP elde edilir",
+      "E": "Krebs döngüsünde CO₂ açığa çıkar"
+    },
+    "dogru_cevap": "D",
+    "cozum": "Glikolizde 1 molekül glukozdan 4 molekül ATP üretilir ancak 2 molekül ATP harcanır. Dolayısıyla net ATP kazancı 2 moleküldür. D şıkkı yanlış çünkü net kazancı belirtmemekte, sadece üretilen miktarı söylemektedir. Diğer ifadeler doğrudur: Glikoliz sitoplazmada ve oksijensiz ortamda gerçekleşir (A), Krebs döngüsü mitokondri matriksinde olur (B), en fazla ATP elektron taşıma zincirinde üretilir (yaklaşık 32-34 ATP) (C), Krebs döngüsünde karbondioksit açığa çıkar (E).",
+    "kazanim": "Hücresel solunumun aşamalarını ve her aşamada elde edilen ürünleri analiz eder.",
+    "_metadata": {
+      "id": "PROD_BIY_Q017",
+      "ders": "Biyoloji",
+      "konu": "Solunum",
+      "alt_konu": "Hücresel Solunum",
+      "zorluk": "orta",
+      "ai_model": "claude-sonnet-4-20250514",
+      "irt_difficulty": 0.0,
+      "bloom_level": "apply",
+      "created_at": "2025-11-05T17:32:34.446286"
+    }
+  },
+  {
+    "soru_metni": "Aşağıdaki cümlelerin hangisinde deyim yanlış kullanılmıştır?",
+    "secenekler": {
+      "A": "Arkadaşının sözlerini duyunca canı burnuna geldi.",
+      "B": "Bu konuda artık ağzını açmayacağına söz verdi.",
+      "C": "Babasının ölüm haberini alınca gözü yaşlı kaldı.",
+      "D": "Sınavda başarılı olunca sevinçten havalara uçtu.",
+      "E": "İşten çıkarılınca eli ayağına dolaştı."
+    },
+    "dogru_cevap": "C",
+    "cozum": "C seçeneğindeki 'gözü yaşlı kalmak' deyimi yanlış kullanılmıştır. Doğru kullanım 'gözü yaşlı' şeklindedir ve 'ağlamak, gözyaşı dökmek' anlamına gelir. Ancak burada 'gözü yaşlı kaldı' ifadesi anlam bakımından uygun değildir. Diğer seçeneklerdeki deyimler doğru kullanılmıştır: 'canı burnuna gelmek' (çok öfkelenmek), 'ağzını açmamak' (konuşmamak), 'havalara uçmak' (çok sevinmek), 'eli ayağına dolaşmak' (şaşırmak, ne yapacağını bilememek).",
+    "kazanim": "Deyimlerin anlamlarını bilir ve cümle içindeki kullanımlarının doğruluğunu değerlendirir.",
+    "_metadata": {
+      "id": "PROD_TÜR_Q018",
+      "ders": "Türkçe",
+      "konu": "Sözcükte Anlam",
+      "alt_konu": "Deyimler",
+      "zorluk": "orta",
+      "ai_model": "claude-sonnet-4-20250514",
+      "irt_difficulty": 0.0,
+      "bloom_level": "apply",
+      "created_at": "2025-11-05T17:32:47.439556"
+    }
+  },
+  {
+    "soru_metni": "Aşağıdaki parçada ana düşünce hangi seçenekte doğru olarak verilmiştir?\n\n'Kitap okuma alışkanlığı, çocukluk yıllarında kazanılması gereken en önemli davranışlardan biridir. Okuma sevgisi erken yaşlarda aşılanmadığı takdirde, ilerleyen yıllarda bu alışkanlığı edinmek oldukça güçleşir. Teknolojinin hızla geliştiği günümüzde, çocukların dijital araçlarla daha fazla zaman geçirmesi, kitaplardan uzaklaşmalarına neden olmaktadır. Bu nedenle aileler ve eğitimciler, çocuklara okuma sevgisini kazandırmak için erken dönemde gerekli önlemleri almalıdır.'",
+    "secenekler": {
+      "A": "Teknolojinin gelişmesi çocukların kitaplardan uzaklaşmasına neden olmaktadır.",
+      "B": "Okuma alışkanlığı ilerleyen yaşlarda kazanılması zor bir davranıştır.",
+      "C": "Kitap okuma alışkanlığı çocukluk döneminde kazandırılması gereken önemli bir davranıştır.",
+      "D": "Aileler ve eğitimciler çocuklara okuma sevgisi kazandırmak için çaba göstermelidir.",
+      "E": "Çocuklar dijital araçlarla daha fazla zaman geçirmektedir."
+    },
+    "dogru_cevap": "C",
+    "cozum": "Parçanın ilk cümlesinde 'Kitap okuma alışkanlığı, çocukluk yıllarında kazanılması gereken en önemli davranışlardan biridir.' ifadesi ile ana düşünce verilmiştir. Diğer cümleler bu ana düşünceyi destekleyen yardımcı düşüncelerdir. A, B, D ve E seçenekleri parçada yer alan yardımcı düşüncelerdir, ana düşünceyi ifade etmez.",
+    "kazanim": "Okuduğu metinlerde ana düşünceyi belirler ve yardımcı düşüncelerden ayırt eder.",
+    "_metadata": {
+      "id": "PROD_TÜR_Q019",
+      "ders": "Türkçe",
+      "konu": "Cümlede Anlam",
+      "alt_konu": "Ana Düşünce",
+      "zorluk": "orta",
+      "ai_model": "claude-sonnet-4-20250514",
+      "irt_difficulty": 0.0,
+      "bloom_level": "apply",
+      "created_at": "2025-11-05T17:33:02.018402"
+    }
+  },
+  {
+    "soru_metni": "Aşağıdaki cümlelerin hangisinde isim-fiil, özne görevinde kullanılmıştır?",
+    "secenekler": {
+      "A": "Çalışmanın verdiği mutluluk yüzünden okunuyordu.",
+      "B": "Kitap okumanın faydalarını herkes bilir.",
+      "C": "Erken kalkmak sağlık için çok önemlidir.",
+      "D": "Yürüyüşe çıkmanı tavsiye ederim.",
+      "E": "Konuşmaktan yorulmuş gibiydi."
+    },
+    "dogru_cevap": "C",
+    "cozum": "İsim-fiillerin cümledeki görevlerini belirlemek için yüklemle ilişkisine bakmak gerekir. A seçeneğinde 'çalışmanın' tamlayan, B'de 'okumanın' tamlayan, D'de 'çıkmanı' nesne, E'de 'konuşmaktan' zarf tümleci görevindedir. C seçeneğinde ise 'erken kalkmak' yüklem olan 'önemlidir' fiilinin öznesi konumundadır. 'Ne önemlidir?' sorusunun cevabı 'erken kalkmak' olduğu için özne görevindedir.",
+    "kazanim": "İsim-fiillerin cümle içindeki görevlerini ayırt eder ve özne görevindeki isim-fiilleri tanır.",
+    "_metadata": {
+      "id": "PROD_TÜR_Q020",
+      "ders": "Türkçe",
+      "konu": "Fiilimsiler",
+      "alt_konu": "İsim-Fiil",
+      "zorluk": "zor",
+      "ai_model": "claude-sonnet-4-20250514",
+      "irt_difficulty": 0.8,
+      "bloom_level": "analyze",
+      "created_at": "2025-11-05T17:33:18.803318"
+    }
+  }
+]

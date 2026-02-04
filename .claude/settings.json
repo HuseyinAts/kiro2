@@ -1,0 +1,75 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(ruff:*)",
+      "Bash(pytest:*)",
+      "Bash(npm run:*)",
+      "Bash(npm test:*)",
+      "Bash(npm install:*)",
+      "Bash(npx:*)",
+      "Bash(git:*)",
+      "Bash(alembic:*)",
+      "Bash(mypy:*)",
+      "Bash(python:*)",
+      "Bash(pip:*)",
+      "Bash(uvicorn:*)",
+      "Bash(docker:*)",
+      "Bash(docker-compose:*)",
+      "Bash(*--help)",
+      "Bash(*--version)",
+      "Bash(*-h)",
+      "Bash(claude:*)",
+      "WebSearch"
+    ],
+    "deny": [
+      "Bash(rm -rf:*)",
+      "Bash(DROP:*)",
+      "Bash(DELETE FROM:*)",
+      "Bash(TRUNCATE:*)",
+      "Read(.env*)",
+      "Edit(.env*)"
+    ]
+  },
+  "hooks": {
+    "PreCompact": [
+      {
+        "matcher": "",
+        "command": "powershell -ExecutionPolicy Bypass -File C:/Users/husey/kiro2/.claude/hooks/pre-compact.ps1"
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Edit",
+        "command": "powershell -ExecutionPolicy Bypass -File C:/Users/husey/kiro2/.claude/hooks/post-tool-use.ps1 -ToolName Edit -FilePath $CLAUDE_FILE_PATH"
+      },
+      {
+        "matcher": "Write",
+        "command": "powershell -ExecutionPolicy Bypass -File C:/Users/husey/kiro2/.claude/hooks/post-tool-use.ps1 -ToolName Write -FilePath $CLAUDE_FILE_PATH"
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "command": "powershell -ExecutionPolicy Bypass -File C:/Users/husey/kiro2/.claude/hooks/pre-tool-use.ps1 -Command $CLAUDE_BASH_COMMAND"
+      }
+    ],
+    "Stop": [
+      {
+        "matcher": "",
+        "command": "powershell -ExecutionPolicy Bypass -File C:/Users/husey/kiro2/.claude/hooks/stop.ps1"
+      }
+    ]
+  },
+  "contextManagement": {
+    "warningThreshold": 60,
+    "clearThreshold": 70,
+    "progressFile": "progress.md",
+    "autoCompact": false
+  },
+  "env": {
+    "CLAUDE_CODE_TASK_LIST_ID": "kiro2-master",
+    "CLAUDE_CODE_DISABLE_AUTO_COMPACT": "1"
+  },
+  "excludePatterns": ["node_modules", ".venv", "__pycache__", ".git", "*.log", "dist", "build", "htmlcov", ".pytest_cache", ".mypy_cache"],
+  "model": "opus"
+}

@@ -1,0 +1,1233 @@
+
+# N+1 Query Detection Report
+Found 104 potential N+1 query issues
+
+## Summary by Severity
+
+- Critical: 32
+- High: 72
+
+## Critical Issues (Fix Immediately)
+
+
+### services\ai_chat_service.py:174
+**Type:** query_in_loop
+**Description:** Database query executed inside loop - classic N+1 problem
+**Code:**
+```python
+for msg in recent_messages:
+            context.append({"role": msg.role.value, "content": msg.content})
+
+        return context
+
+    async def rate_m...
+```
+
+
+### services\alternative_solutions_service.py:151
+**Type:** query_in_loop
+**Description:** Database query executed inside loop - classic N+1 problem
+**Code:**
+```python
+for s in solutions if s.get("is_active", True)]
+
+            # Kategori filtresi
+            if category:
+                solutions = [s for s in solu...
+```
+
+
+### services\content_management_service.py:132
+**Type:** query_in_loop
+**Description:** Database query executed inside loop - classic N+1 problem
+**Code:**
+```python
+for soru in sorular:
+                    soru_dict = {
+                        "id": soru.id,
+                        "soru_metni": soru.question_text...
+```
+
+
+### services\curriculum_compliance_service.py:107
+**Type:** query_in_loop
+**Description:** Database query executed inside loop - classic N+1 problem
+**Code:**
+```python
+for row in rows:
+                standard = MEBCurriculumStandard(
+                    id=row["id"],
+                    subject=SubjectType(row["subj...
+```
+
+
+### services\department_info_service.py:168
+**Type:** query_in_loop
+**Description:** Database query executed inside loop - classic N+1 problem
+**Code:**
+```python
+for opp in opportunities:
+            if opp.industry_type:
+                industry = opp.industry_type.value
+                industry_counts[industr...
+```
+
+
+### services\eba_catalog_sync.py:64
+**Type:** query_in_loop
+**Description:** Database query executed inside loop - classic N+1 problem
+**Code:**
+```python
+for subject in subjects:
+            for grade_level in grade_levels:
+                try:
+                    result = await self._sync_category(subj...
+```
+
+
+### services\eba_watch_tracking.py:448
+**Type:** query_in_loop
+**Description:** Database query executed inside loop - classic N+1 problem
+**Code:**
+```python
+for pos in positions:
+            percentage = (pos / video_duration) * 100
+
+            if percentage < 25:
+                distribution["0-25%"] += ...
+```
+
+
+### services\exam_answer_tracking_service.py:178
+**Type:** query_in_loop
+**Description:** Database query executed inside loop - classic N+1 problem
+**Code:**
+```python
+for answer in answers:
+                answered_question_ids.add(answer.question_id)
+
+                if answer.selected_answer is None:
+             ...
+```
+
+
+### services\exam_performance_service.py:360
+**Type:** query_in_loop
+**Description:** Database query executed inside loop - classic N+1 problem
+**Code:**
+```python
+for row in subject_stats_result:
+            total = row.total_questions
+            correct = row.correct_answers or 0
+            wrong = row.wrong_...
+```
+
+
+### services\health_check_service.py:187
+**Type:** query_in_loop
+**Description:** Database query executed inside loop - classic N+1 problem
+**Code:**
+```python
+for c in components if c.status == HealthStatus.HEALTHY])}/{len(components)} healthy)"
+        )
+
+        return system_health
+
+    async def _check_y...
+```
+
+
+### services\khan_content_sync.py:62
+**Type:** query_in_loop
+**Description:** Database query executed inside loop - classic N+1 problem
+**Code:**
+```python
+for subject in subjects:
+            try:
+                # Fetch videos
+                videos = await self.khan_client.get_turkish_content(
+        ...
+```
+
+
+### services\khan_content_sync.py:226
+**Type:** query_in_loop
+**Description:** Database query executed inside loop - classic N+1 problem
+**Code:**
+```python
+for progress in progress_list:
+                try:
+                    # Check if we have local progress
+                    stmt = select(KhanUserPr...
+```
+
+
+### services\production_quality_monitor.py:64
+**Type:** query_in_loop
+**Description:** Database query executed inside loop - classic N+1 problem
+**Code:**
+```python
+for log in data]
+            except Exception as e:
+                print(f"[WARNING] Could not load existing logs: {e}")
+                self.logs = ...
+```
+
+
+### services\question_bank_service.py:208
+**Type:** query_in_loop
+**Description:** Database query executed inside loop - classic N+1 problem
+**Code:**
+```python
+for tag_name in tag_names:
+            # Etiket var mı kontrol et
+            result = await self.db.execute(
+                select(QuestionTag).wher...
+```
+
+
+### services\question_crud_service.py:283
+**Type:** query_in_loop
+**Description:** Database query executed inside loop - classic N+1 problem
+**Code:**
+```python
+for tag_name in tags:
+                # Etiketi ara veya oluştur
+                stmt = select(QuestionTag).where(QuestionTag.tag_name == tag_name)
+  ...
+```
+
+
+### services\question_generation_service.py:144
+**Type:** query_in_loop
+**Description:** Database query executed inside loop - classic N+1 problem
+**Code:**
+```python
+for row in rows:
+                question = self._row_to_generated_question(row)
+                if question:
+                    questions.append(que...
+```
+
+
+### services\soru_bankasi_service.py:395
+**Type:** query_in_loop
+**Description:** Database query executed inside loop - classic N+1 problem
+**Code:**
+```python
+for soru in tum_sorular:
+                    bilgi_degeri = await self._hesapla_bilgi_fonksiyonu(
+                        ogrenci_yetenek,
+           ...
+```
+
+
+### services\student_review_service.py:202
+**Type:** query_in_loop
+**Description:** Database query executed inside loop - classic N+1 problem
+**Code:**
+```python
+for rating_obj in rating_objects:
+            await self.db.refresh(rating_obj)
+
+        return rating_objects
+
+    async def get_review_ratings(self,...
+```
+
+
+### services\university_advisory_service.py:362
+**Type:** query_in_loop
+**Description:** Database query executed inside loop - classic N+1 problem
+**Code:**
+```python
+for h in history]
+        scores = [h.base_score for h in history if h.base_score]
+
+        if len(scores) < 2:
+            return None
+
+        # Cal...
+```
+
+
+### services\university_info_service.py:84
+**Type:** query_in_loop
+**Description:** Database query executed inside loop - classic N+1 problem
+**Code:**
+```python
+for campus in campuses:
+            if campus.libraries:
+                all_facilities["libraries"].extend(campus.libraries)
+            if campus.sp...
+```
+
+
+### services\video_analytics_service.py:295
+**Type:** query_in_loop
+**Description:** Database query executed inside loop - classic N+1 problem
+**Code:**
+```python
+for pos in positions:
+            bucket = (pos // bucket_size) * bucket_size
+            buckets[bucket] = buckets.get(bucket, 0) + 1
+
+        # Sort...
+```
+
+
+### services\video_conference_service.py:583
+**Type:** query_in_loop
+**Description:** Database query executed inside loop - classic N+1 problem
+**Code:**
+```python
+for recording in recordings:
+            await self.stop_recording(recording.id)
+
+    async def _update_participant_durations(self, session_id: UUID):...
+```
+
+
+### services\video_transcript_service.py:204
+**Type:** query_in_loop
+**Description:** Database query executed inside loop - classic N+1 problem
+**Code:**
+```python
+for transcript in transcripts:
+                # Eşleşen segmentleri bul
+                matching_segments = []
+                for segment in transcr...
+```
+
+
+### services\whiteboard_service.py:228
+**Type:** query_in_loop
+**Description:** Database query executed inside loop - classic N+1 problem
+**Code:**
+```python
+for stroke in strokes:
+            stroke.is_deleted = True
+            count += 1
+
+        await self.db.commit()
+        return count
+
+    # =======...
+```
+
+
+### api\elasticsearch.py:334
+**Type:** query_in_loop
+**Description:** Database query executed inside loop - classic N+1 problem
+**Code:**
+```python
+for db_session in get_async_session():
+                # Index OSYM questions
+                try:
+                    result = await db_session.execu...
+```
+
+
+### api\encryption_management.py:84
+**Type:** query_in_loop
+**Description:** Database query executed inside loop - classic N+1 problem
+**Code:**
+```python
+for session in get_async_session():
+            # Try to get last rotation from a simple key-value settings table
+            # First ensure the setti...
+```
+
+
+### api\encryption_management.py:187
+**Type:** query_in_loop
+**Description:** Database query executed inside loop - classic N+1 problem
+**Code:**
+```python
+for session in get_async_session():
+                # Ensure settings table exists
+                try:
+                    await session.execute(
+   ...
+```
+
+
+### api\khan_routes.py:546
+**Type:** query_in_loop
+**Description:** Database query executed inside loop - classic N+1 problem
+**Code:**
+```python
+for badge in badges:
+            # Check if already exists
+            stmt = select(KhanCertificate).where(
+                KhanCertificate.badge_id ...
+```
+
+
+### api\video_solution.py:1070
+**Type:** query_in_loop
+**Description:** Database query executed inside loop - classic N+1 problem
+**Code:**
+```python
+for tr_result in transcript_results:
+                video_result = await db.execute(
+                    select(VideoSolution).where(
+               ...
+```
+
+
+### api\wave2b_quality_routes.py:118
+**Type:** query_in_loop
+**Description:** Database query executed inside loop - classic N+1 problem
+**Code:**
+```python
+for db in get_db_session():
+        try:
+            query = text(
+                """
+                SELECT
+                    metin as question_te...
+```
+
+
+### repositories\base.py:181
+**Type:** query_in_loop
+**Description:** Database query executed inside loop - classic N+1 problem
+**Code:**
+```python
+for obj in objects]
+            self.session.add_all(instances)
+            await self.session.flush()
+
+            # Refresh all instances to get gen...
+```
+
+
+### repositories\video_cache_repository.py:92
+**Type:** query_in_loop
+**Description:** Database query executed inside loop - classic N+1 problem
+**Code:**
+```python
+for v in videos])
+
+            logger.info(
+                f"Found {len(videos)} videos for {subject}/{difficulty}/{exam_type} "
+                f"(q...
+```
+
+
+## High Priority Issues
+
+
+### services\admin_service.py:204
+**Type:** loop_relationship_access
+**Description:** Loop accesses relationships/queries for each item in range(sayfa_boyutu)
+**Code:**
+```python
+for i in range(sayfa_boyutu):
+                kullanici = Kullanici(
+                    kullanici_i...
+```
+
+
+### services\ai_chat_service.py:59
+**Type:** missing_eager_load
+**Description:** Query returns multiple items without eager loading, may cause N+1
+**Code:**
+```python
+        query = select(ChatSession).where(ChatSession.id == session_id)
+```
+
+
+### services\ai_chat_service.py:150
+**Type:** missing_eager_load
+**Description:** Query returns multiple items without eager loading, may cause N+1
+**Code:**
+```python
+            select(ChatMessage)
+```
+
+
+### services\ai_chat_service.py:174
+**Type:** loop_relationship_access
+**Description:** Loop accesses relationships/queries for each item in recent_messages
+**Code:**
+```python
+for msg in recent_messages:
+            context.append({"role": msg.role.value, "content": msg.conte...
+```
+
+
+### services\alternative_solutions_service.py:151
+**Type:** loop_relationship_access
+**Description:** Loop accesses relationships/queries for each item in solutions if s.get("is_active", True)]
+
+            # Kategori filtresi
+            if category
+**Code:**
+```python
+for s in solutions if s.get("is_active", True)]
+
+            # Kategori filtresi
+            if cate...
+```
+
+
+### services\content_management_service.py:82
+**Type:** missing_eager_load
+**Description:** Query returns multiple items without eager loading, may cause N+1
+**Code:**
+```python
+                stmt = select(Question).where(Question.is_active == True)
+```
+
+
+### services\content_management_service.py:201
+**Type:** missing_eager_load
+**Description:** Query returns multiple items without eager loading, may cause N+1
+**Code:**
+```python
+                stmt = select(Question).where(Question.id == soru_id)
+```
+
+
+### services\content_management_service.py:400
+**Type:** missing_eager_load
+**Description:** Query returns multiple items without eager loading, may cause N+1
+**Code:**
+```python
+                stmt = select(EducationalContent).where(
+```
+
+
+### services\content_management_service.py:789
+**Type:** missing_eager_load
+**Description:** Query returns multiple items without eager loading, may cause N+1
+**Code:**
+```python
+            stmt = select(EducationalContent).where(
+```
+
+
+### services\content_management_service.py:132
+**Type:** loop_relationship_access
+**Description:** Loop accesses relationships/queries for each item in sorular
+**Code:**
+```python
+for soru in sorular:
+                    soru_dict = {
+                        "id": soru.id,
+      ...
+```
+
+
+### services\department_info_service.py:215
+**Type:** missing_eager_load
+**Description:** Query returns multiple items without eager loading, may cause N+1
+**Code:**
+```python
+            select(SalaryExpectation).where(and_(*conditions))
+```
+
+
+### services\department_info_service.py:168
+**Type:** loop_relationship_access
+**Description:** Loop accesses relationships/queries for each item in opportunities
+**Code:**
+```python
+for opp in opportunities:
+            if opp.industry_type:
+                industry = opp.industry_...
+```
+
+
+### services\eba_catalog_sync.py:64
+**Type:** loop_relationship_access
+**Description:** Loop accesses relationships/queries for each item in subjects
+**Code:**
+```python
+for subject in subjects:
+            for grade_level in grade_levels:
+                try:
+         ...
+```
+
+
+### services\eba_watch_tracking.py:77
+**Type:** missing_eager_load
+**Description:** Query returns multiple items without eager loading, may cause N+1
+**Code:**
+```python
+        stmt = select(EBAVideo).where(EBAVideo.eba_video_id == eba_video_id)
+```
+
+
+### services\elasticsearch_service.py:138
+**Type:** loop_relationship_access
+**Description:** Loop accesses relationships/queries for each item in questions
+**Code:**
+```python
+for question in questions:
+                doc = {
+                    "id": str(question.get("id", ...
+```
+
+
+### services\enhanced_resource_recommendation_engine.py:403
+**Type:** loop_relationship_access
+**Description:** Loop accesses relationships/queries for each item in candidate_videos
+**Code:**
+```python
+for video in candidate_videos:
+            # Rate limiting uygula
+            await self.rate_limite...
+```
+
+
+### services\enhanced_user_service.py:730
+**Type:** loop_relationship_access
+**Description:** Loop accesses relationships/queries for each item in result.items
+**Code:**
+```python
+for user in result.items:
+                user_data.append(
+                    {
+                  ...
+```
+
+
+### services\exam_answer_tracking_service.py:84
+**Type:** missing_eager_load
+**Description:** Query returns multiple items without eager loading, may cause N+1
+**Code:**
+```python
+                select(StudentAnswer).where(
+```
+
+
+### services\exam_answer_tracking_service.py:191
+**Type:** missing_eager_load
+**Description:** Query returns multiple items without eager loading, may cause N+1
+**Code:**
+```python
+                select(ExamQuestion)
+```
+
+
+### services\exam_answer_tracking_service.py:279
+**Type:** missing_eager_load
+**Description:** Query returns multiple items without eager loading, may cause N+1
+**Code:**
+```python
+                select(StudentAnswer).where(
+```
+
+
+### services\exam_answer_tracking_service.py:178
+**Type:** loop_relationship_access
+**Description:** Loop accesses relationships/queries for each item in answers
+**Code:**
+```python
+for answer in answers:
+                answered_question_ids.add(answer.question_id)
+
+              ...
+```
+
+
+### services\exam_performance_service.py:360
+**Type:** loop_relationship_access
+**Description:** Loop accesses relationships/queries for each item in subject_stats_result
+**Code:**
+```python
+for row in subject_stats_result:
+            total = row.total_questions
+            correct = row.c...
+```
+
+
+### services\fsrs_service.py:270
+**Type:** loop_relationship_access
+**Description:** Loop accesses relationships/queries for each item in due_cards
+**Code:**
+```python
+for card in due_cards:
+                # Retention olasılığını hesapla
+                retention_pro...
+```
+
+
+### services\health_check_service.py:187
+**Type:** loop_relationship_access
+**Description:** Loop accesses relationships/queries for each item in components if c.status == HealthStatus.HEALTHY])}/{len(components)} healthy)"
+        )
+
+        return system_health
+
+    async def _check_youtube_api(self) -> ComponentHealth
+**Code:**
+```python
+for c in components if c.status == HealthStatus.HEALTHY])}/{len(components)} healthy)"
+        )
+
+  ...
+```
+
+
+### services\irt_calibration_service.py:100
+**Type:** loop_relationship_access
+**Description:** Loop accesses relationships/queries for each item in words)
+        average_word_length = total_length / word_count
+
+        # Ek karmaşıklığı analizi (basitleştirilmiş)
+        suffix_indicators = [
+            "-lar",
+            "-ler",
+            "-dan",
+            "-den",
+            "-ta",
+            "-te",
+            "-da",
+            "-de",
+            "-ın",
+            "-in",
+            "-un",
+            "-ün",
+            "-ı",
+            "-i",
+            "-u",
+            "-ü",
+            "-dığı",
+            "-diği",
+            "-duğu",
+            "-düğü",
+            "-arak",
+            "-erek",
+            "-ince",
+            "-ınca",
+            "-unca",
+            "-ünce",
+            "-ken",
+            "-iken",
+        ]
+
+        suffix_count = 0
+        for word in words
+**Code:**
+```python
+for word in words)
+        average_word_length = total_length / word_count
+
+        # Ek karmaşıklığ...
+```
+
+
+### services\khan_academy_client.py:317
+**Type:** loop_relationship_access
+**Description:** Loop accesses relationships/queries for each item in data.get("children", [])
+**Code:**
+```python
+for item in data.get("children", []):
+                try:
+                    content = self._parse...
+```
+
+
+### services\khan_content_sync.py:130
+**Type:** missing_eager_load
+**Description:** Query returns multiple items without eager loading, may cause N+1
+**Code:**
+```python
+        stmt = select(KhanContent).where(
+```
+
+
+### services\khan_content_sync.py:62
+**Type:** loop_relationship_access
+**Description:** Loop accesses relationships/queries for each item in subjects
+**Code:**
+```python
+for subject in subjects:
+            try:
+                # Fetch videos
+                videos = aw...
+```
+
+
+### services\khan_content_sync.py:226
+**Type:** loop_relationship_access
+**Description:** Loop accesses relationships/queries for each item in progress_list
+**Code:**
+```python
+for progress in progress_list:
+                try:
+                    # Check if we have local pro...
+```
+
+
+### services\ogretmen_service.py:51
+**Type:** loop_relationship_access
+**Description:** Loop accesses relationships/queries for each item in ogrenci_listesi
+**Code:**
+```python
+for ogrenci in ogrenci_listesi:
+                    son_sinavlar = await sinav_motoru_servisi.ogrenc...
+```
+
+
+### services\osym_question_generator.py:250
+**Type:** loop_relationship_access
+**Description:** Loop accesses relationships/queries for each item in topics
+**Code:**
+```python
+for topic_config in topics:
+            topic = topic_config["topic"]
+            subtopic = topic_c...
+```
+
+
+### services\parent_service.py:155
+**Type:** loop_relationship_access
+**Description:** Loop accesses relationships/queries for each item in relations
+**Code:**
+```python
+for relation in relations:
+            # child zaten yüklü (joinedload sayesinde)
+            child ...
+```
+
+
+### services\production_quality_monitor.py:64
+**Type:** loop_relationship_access
+**Description:** Loop accesses relationships/queries for each item in data]
+            except Exception as e
+**Code:**
+```python
+for log in data]
+            except Exception as e:
+                print(f"[WARNING] Could not load...
+```
+
+
+### services\question_bank_service.py:211
+**Type:** missing_eager_load
+**Description:** Query returns multiple items without eager loading, may cause N+1
+**Code:**
+```python
+                select(QuestionTag).where(QuestionTag.tag_name == tag_name)
+```
+
+
+### services\question_generation_service.py:144
+**Type:** loop_relationship_access
+**Description:** Loop accesses relationships/queries for each item in rows
+**Code:**
+```python
+for row in rows:
+                question = self._row_to_generated_question(row)
+                if ...
+```
+
+
+### services\soru_bankasi_service.py:395
+**Type:** loop_relationship_access
+**Description:** Loop accesses relationships/queries for each item in tum_sorular
+**Code:**
+```python
+for soru in tum_sorular:
+                    bilgi_degeri = await self._hesapla_bilgi_fonksiyonu(
+  ...
+```
+
+
+### services\student_dashboard_service.py:127
+**Type:** loop_relationship_access
+**Description:** Loop accesses relationships/queries for each item in range(gun_sayisi)
+**Code:**
+```python
+for i in range(gun_sayisi):
+            tarih = datetime.now() - timedelta(days=gun_sayisi - i - 1)
+...
+```
+
+
+### services\student_review_service.py:350
+**Type:** missing_eager_load
+**Description:** Query returns multiple items without eager loading, may cause N+1
+**Code:**
+```python
+        query = select(ModerationQueue).where(ModerationQueue.review_id == review.id)
+```
+
+
+### services\teacher_service.py:249
+**Type:** missing_eager_load
+**Description:** Query returns multiple items without eager loading, may cause N+1
+**Code:**
+```python
+        query = select(TeacherExpertise).where(
+```
+
+
+### services\teacher_service.py:404
+**Type:** missing_eager_load
+**Description:** Query returns multiple items without eager loading, may cause N+1
+**Code:**
+```python
+        query = select(TeacherAvailability).where(
+```
+
+
+### services\university_advisory_service.py:481
+**Type:** missing_eager_load
+**Description:** Query returns multiple items without eager loading, may cause N+1
+**Code:**
+```python
+            select(UserUniversityPreference).where(
+```
+
+
+### services\university_info_service.py:157
+**Type:** missing_eager_load
+**Description:** Query returns multiple items without eager loading, may cause N+1
+**Code:**
+```python
+            select(CityLivingCost)
+```
+
+
+### services\university_info_service.py:84
+**Type:** loop_relationship_access
+**Description:** Loop accesses relationships/queries for each item in campuses
+**Code:**
+```python
+for campus in campuses:
+            if campus.libraries:
+                all_facilities["libraries"]...
+```
+
+
+### services\video_conference_service.py:576
+**Type:** missing_eager_load
+**Description:** Query returns multiple items without eager loading, may cause N+1
+**Code:**
+```python
+        query = select(SessionRecording).where(
+```
+
+
+### services\video_conference_service.py:588
+**Type:** missing_eager_load
+**Description:** Query returns multiple items without eager loading, may cause N+1
+**Code:**
+```python
+        query = select(SessionParticipant).where(
+```
+
+
+### services\video_conference_service.py:583
+**Type:** loop_relationship_access
+**Description:** Loop accesses relationships/queries for each item in recordings
+**Code:**
+```python
+for recording in recordings:
+            await self.stop_recording(recording.id)
+
+    async def _upd...
+```
+
+
+### services\video_recommendation_service.py:142
+**Type:** loop_relationship_access
+**Description:** Loop accesses relationships/queries for each item in recommendations
+**Code:**
+```python
+for rec in recommendations:
+                    rec.cache_hit = True
+                    rec.respons...
+```
+
+
+### services\video_transcript_service.py:101
+**Type:** missing_eager_load
+**Description:** Query returns multiple items without eager loading, may cause N+1
+**Code:**
+```python
+                select(VideoSolution).where(VideoSolution.id == video_id)
+```
+
+
+### services\video_transcript_service.py:204
+**Type:** loop_relationship_access
+**Description:** Loop accesses relationships/queries for each item in transcripts
+**Code:**
+```python
+for transcript in transcripts:
+                # Eşleşen segmentleri bul
+                matching_se...
+```
+
+
+### services\whiteboard_service.py:62
+**Type:** missing_eager_load
+**Description:** Query returns multiple items without eager loading, may cause N+1
+**Code:**
+```python
+        query = select(WhiteboardSession).where(WhiteboardSession.id == whiteboard_id)
+```
+
+
+### services\whiteboard_service.py:202
+**Type:** missing_eager_load
+**Description:** Query returns multiple items without eager loading, may cause N+1
+**Code:**
+```python
+            query = select(WhiteboardStroke).where(WhiteboardStroke.id == stroke_id)
+```
+
+
+### services\whiteboard_service.py:228
+**Type:** loop_relationship_access
+**Description:** Loop accesses relationships/queries for each item in strokes
+**Code:**
+```python
+for stroke in strokes:
+            stroke.is_deleted = True
+            count += 1
+
+        await se...
+```
+
+
+### services\youtube_discovery.py:520
+**Type:** loop_relationship_access
+**Description:** Loop accesses relationships/queries for each item in templates
+**Code:**
+```python
+for template in templates:
+            query = template.format(
+                subject=subject.valu...
+```
+
+
+### services\zemberek_morfoloji_service.py:247
+**Type:** loop_relationship_access
+**Description:** Loop accesses relationships/queries for each item in kelimeler
+**Code:**
+```python
+for kelime in kelimeler:
+                if len(kelime) > 1:  # Tek harfli kelimeleri atla
+         ...
+```
+
+
+### api\curriculum_compliance.py:459
+**Type:** loop_relationship_access
+**Description:** Loop accesses relationships/queries for each item in SubjectType
+**Code:**
+```python
+for subject in SubjectType:
+            try:
+                report = await system.generate_complian...
+```
+
+
+### api\elasticsearch.py:337
+**Type:** missing_eager_load
+**Description:** Query returns multiple items without eager loading, may cause N+1
+**Code:**
+```python
+                    result = await db_session.execute(select(OSYMQuestion))
+```
+
+
+### api\elasticsearch.py:387
+**Type:** missing_eager_load
+**Description:** Query returns multiple items without eager loading, may cause N+1
+**Code:**
+```python
+                    result = await db_session.execute(select(Question))
+```
+
+
+### api\elasticsearch.py:334
+**Type:** loop_relationship_access
+**Description:** Loop accesses relationships/queries for each item in get_async_session()
+**Code:**
+```python
+for db_session in get_async_session():
+                # Index OSYM questions
+                try:
+ ...
+```
+
+
+### api\encryption_management.py:84
+**Type:** loop_relationship_access
+**Description:** Loop accesses relationships/queries for each item in get_async_session()
+**Code:**
+```python
+for session in get_async_session():
+            # Try to get last rotation from a simple key-value s...
+```
+
+
+### api\encryption_management.py:187
+**Type:** loop_relationship_access
+**Description:** Loop accesses relationships/queries for each item in get_async_session()
+**Code:**
+```python
+for session in get_async_session():
+                # Ensure settings table exists
+                t...
+```
+
+
+### api\enhanced_chat.py:312
+**Type:** loop_relationship_access
+**Description:** Loop accesses relationships/queries for each item in morphology_results
+                )
+                / len(morphology_results)
+                if morphology_results
+                else 0,
+            }
+
+        except Exception as e
+**Code:**
+```python
+for r in morphology_results
+                )
+                / len(morphology_results)
+            ...
+```
+
+
+### api\khan_routes.py:546
+**Type:** loop_relationship_access
+**Description:** Loop accesses relationships/queries for each item in badges
+**Code:**
+```python
+for badge in badges:
+            # Check if already exists
+            stmt = select(KhanCertificate...
+```
+
+
+### api\soru_bankasi.py:285
+**Type:** loop_relationship_access
+**Description:** Loop accesses relationships/queries for each item in sorular
+**Code:**
+```python
+for soru in sorular:
+            soru_dict = {
+                "id": str(soru.id),
+                "...
+```
+
+
+### api\soru_bankasi.py:364
+**Type:** loop_relationship_access
+**Description:** Loop accesses relationships/queries for each item in sorular
+**Code:**
+```python
+for soru in sorular:
+            # Bilgi değerini hesapla
+            bilgi_degeri = await soru_bank...
+```
+
+
+### api\streaming_chat.py:202
+**Type:** loop_relationship_access
+**Description:** Loop accesses relationships/queries for each item in pipeline.stream_query(
+                    query_text=request.query, k=request.k
+                )
+**Code:**
+```python
+for event in pipeline.stream_query(
+                    query_text=request.query, k=request.k
+      ...
+```
+
+
+### api\streaming_chat.py:306
+**Type:** loop_relationship_access
+**Description:** Loop accesses relationships/queries for each item in llm_client.chat_completion(
+                    messages=messages,
+                    model="gpt-3.5-turbo",
+                    temperature=0.7,
+                    stream=True,
+                )
+**Code:**
+```python
+for chunk in llm_client.chat_completion(
+                    messages=messages,
+                    ...
+```
+
+
+### api\video_solution.py:938
+**Type:** missing_eager_load
+**Description:** Query returns multiple items without eager loading, may cause N+1
+**Code:**
+```python
+            select(VideoTranscript).where(VideoTranscript.id == transcript_id)
+```
+
+
+### api\wave2b_quality_routes.py:118
+**Type:** loop_relationship_access
+**Description:** Loop accesses relationships/queries for each item in get_db_session()
+**Code:**
+```python
+for db in get_db_session():
+        try:
+            query = text(
+                """
+             ...
+```
+
+
+### api\websocket_chat.py:77
+**Type:** loop_relationship_access
+**Description:** Loop accesses relationships/queries for each item in self.active_connections[room_id]
+**Code:**
+```python
+for connection in self.active_connections[room_id]:
+                if connection != exclude:
+      ...
+```
+
+
+### api\websocket_chat.py:294
+**Type:** loop_relationship_access
+**Description:** Loop accesses relationships/queries for each item in connections
+**Code:**
+```python
+for connection in connections:
+            await connection.close()
+            manager.disconnect(c...
+```
+
+
+### api\youtube_routes.py:405
+**Type:** loop_relationship_access
+**Description:** Loop accesses relationships/queries for each item in semantic_matches
+**Code:**
+```python
+for match in semantic_matches:
+                response_video = VideoResponse(
+                    v...
+```
+
+
+### api\youtube_routes.py:666
+**Type:** loop_relationship_access
+**Description:** Loop accesses relationships/queries for each item in recommendations
+**Code:**
+```python
+for rec in recommendations:
+            # Video responses oluştur
+            video_responses = []
+ ...
+```
+

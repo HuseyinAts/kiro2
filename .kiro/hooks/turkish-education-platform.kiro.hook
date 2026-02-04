@@ -1,0 +1,23 @@
+{
+  "enabled": true,
+  "name": "Turkish Education Platform Hooks",
+  "description": "Türkiye Üniversite Sınavı Hazırlık Platformu - Öğrenci kod çalışmalarını gerçek zamanlı analiz eder ve eğitim içeriğini optimize eder",
+  "version": "1",
+  "when": {
+    "type": "fileEdited",
+    "patterns": [
+      "workspace/ogrenci-calismalari/**/*.py",
+      "workspace/ogrenci-calismalari/**/*.java",
+      "workspace/ogrenci-calismalari/**/*.js",
+      "workspace/ogrenci-calismalari/**/*.cpp",
+      "workspace/sinavlar/**/sonuc.json",
+      "content/**/*.pdf",
+      "content/**/*.docx",
+      "content/**/*.mp4"
+    ]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "Öğrencinin kodunu/içeriğini analiz et:\n\n1. Kod Kalitesi (eğer kod dosyası ise):\n   - Syntax doğruluğu\n   - Best practice uyumu\n   - Performans optimizasyonu\n   - Algoritma seçimi ve zaman/alan karmaşıklığı\n\n2. Sınav Sonucu Analizi (eğer sonuc.json ise):\n   - Güçlü ve zayıf konular\n   - YKS sıralaması tahmini\n   - Çalışma planı önerileri\n   - Motivasyon mesajı\n\n3. İçerik Erişilebilirlik (eğer medya dosyası ise):\n   - WCAG 2.1 uyumluluk seviyesi\n   - Eksik özellikler\n   - İyileştirme önerileri\n\n4. MEB/ÖSYM Müfredat Uyumu:\n   - İlgili konu başlıkları\n   - Sınav sorusu benzerlikleri\n   - Öğrenme seviyesi değerlendirmesi\n\nTürkçe olarak detaylı geri bildirim hazırla ve öğrencinin seviyesine uygun öneriler sun. Adaptif zorluk ayarlaması için performans metriklerini de dahil et."
+  }
+}

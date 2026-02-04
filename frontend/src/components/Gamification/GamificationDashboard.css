@@ -1,0 +1,430 @@
+/* GamificationDashboard Component Styles */
+
+.gamification-dashboard {
+  padding: 24px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.gamification-dashboard.loading,
+.gamification-dashboard.error {
+  min-height: 400px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.spinner-large {
+  border: 5px solid rgba(0, 0, 0, 0.1);
+  border-top: 5px solid #667eea;
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  animation: spin 1s linear infinite;
+  margin-bottom: 16px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.dashboard-header {
+  margin-bottom: 32px;
+}
+
+.dashboard-header h2 {
+  font-size: 32px;
+  font-weight: 800;
+  color: #1f2937;
+  margin: 0 0 8px 0;
+}
+
+.dashboard-subtitle {
+  font-size: 16px;
+  color: #6b7280;
+  margin: 0;
+}
+
+/* Grid Layout */
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 24px;
+}
+
+.grid-item {
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.points-section {
+  grid-column: span 6;
+}
+
+.level-section {
+  grid-column: span 6;
+}
+
+.badges-section {
+  grid-column: span 8;
+}
+
+.leaderboard-section {
+  grid-column: span 4;
+}
+
+.achievements-section {
+  grid-column: span 8;
+}
+
+.rank-section {
+  grid-column: span 4;
+}
+
+.section-card {
+  background: white;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  height: 100%;
+}
+
+.section-card h3 {
+  font-size: 20px;
+  font-weight: 700;
+  color: #1f2937;
+  margin: 0 0 20px 0;
+}
+
+/* Recent Achievements */
+.achievements-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 16px;
+}
+
+.achievement-card {
+  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+  border: 2px solid #f59e0b;
+  border-radius: 12px;
+  padding: 20px;
+  text-align: center;
+  transition: transform 0.2s ease;
+}
+
+.achievement-card:hover {
+  transform: translateY(-4px);
+}
+
+.achievement-icon-large {
+  font-size: 48px;
+  margin-bottom: 12px;
+}
+
+.achievement-name {
+  font-size: 14px;
+  font-weight: 700;
+  color: #1f2937;
+  margin-bottom: 8px;
+}
+
+.achievement-rarity {
+  font-size: 11px;
+  font-weight: 600;
+  color: #78350f;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+.achievement-points {
+  font-size: 13px;
+  font-weight: 600;
+  color: #059669;
+}
+
+/* Rank Card */
+.rank-card {
+  background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+  color: white;
+}
+
+.rank-card h3 {
+  color: white;
+}
+
+.rank-display {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.rank-number {
+  font-size: 64px;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.rank-info {
+  flex: 1;
+}
+
+.rank-percentile {
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.rank-total {
+  font-size: 14px;
+  opacity: 0.9;
+}
+
+/* Tabs Layout */
+.tabs-layout .dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.quick-stats {
+  display: flex;
+  gap: 16px;
+}
+
+.quick-stat {
+  background: white;
+  border-radius: 12px;
+  padding: 12px 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.quick-stat .stat-icon {
+  font-size: 28px;
+}
+
+.quick-stat .stat-value {
+  font-size: 24px;
+  font-weight: 700;
+  color: #1f2937;
+}
+
+.quick-stat .stat-label {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.dashboard-tabs {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 24px;
+  border-bottom: 2px solid #e5e7eb;
+}
+
+.dashboard-tab {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 24px;
+  background: transparent;
+  border: none;
+  border-bottom: 3px solid transparent;
+  font-size: 16px;
+  font-weight: 600;
+  color: #6b7280;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-bottom: -2px;
+}
+
+.dashboard-tab:hover {
+  color: #1f2937;
+}
+
+.dashboard-tab.active {
+  color: #667eea;
+  border-bottom-color: #667eea;
+}
+
+.dashboard-tab .tab-icon {
+  font-size: 20px;
+}
+
+.overview-grid {
+  display: grid;
+  gap: 24px;
+}
+
+.overview-section {
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.recent-achievements {
+  background: white;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+}
+
+.recent-achievements h3 {
+  font-size: 20px;
+  font-weight: 700;
+  color: #1f2937;
+  margin: 0 0 20px 0;
+}
+
+.achievements-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.achievement-item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px;
+  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+  border: 2px solid #f59e0b;
+  border-radius: 12px;
+  transition: transform 0.2s ease;
+}
+
+.achievement-item:hover {
+  transform: translateX(4px);
+}
+
+.achievement-icon {
+  font-size: 40px;
+}
+
+.achievement-info {
+  flex: 1;
+}
+
+.achievement-info .achievement-name {
+  font-size: 16px;
+  font-weight: 700;
+  color: #1f2937;
+  margin-bottom: 4px;
+}
+
+.achievement-date {
+  font-size: 13px;
+  color: #78350f;
+}
+
+.achievement-item .achievement-points {
+  font-size: 18px;
+  font-weight: 700;
+  color: #059669;
+}
+
+.error-icon {
+  font-size: 64px;
+  margin-bottom: 16px;
+}
+
+.gamification-dashboard.error h3 {
+  font-size: 24px;
+  color: #1f2937;
+  margin: 0 0 8px 0;
+}
+
+.gamification-dashboard.error p {
+  font-size: 16px;
+  color: #6b7280;
+}
+
+/* Responsive */
+@media (max-width: 1200px) {
+  .points-section,
+  .level-section {
+    grid-column: span 12;
+  }
+
+  .badges-section {
+    grid-column: span 12;
+  }
+
+  .leaderboard-section,
+  .achievements-section,
+  .rank-section {
+    grid-column: span 12;
+  }
+}
+
+@media (max-width: 768px) {
+  .gamification-dashboard {
+    padding: 16px;
+  }
+
+  .dashboard-header h2 {
+    font-size: 24px;
+  }
+
+  .dashboard-subtitle {
+    font-size: 14px;
+  }
+
+  .dashboard-grid {
+    gap: 16px;
+  }
+
+  .quick-stats {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .quick-stat {
+    flex-direction: column;
+    padding: 12px;
+    gap: 4px;
+    flex: 1;
+  }
+
+  .quick-stat .stat-icon {
+    font-size: 24px;
+  }
+
+  .quick-stat .stat-value {
+    font-size: 18px;
+  }
+
+  .dashboard-tab .tab-label {
+    display: none;
+  }
+
+  .dashboard-tab .tab-icon {
+    font-size: 24px;
+  }
+
+  .achievements-grid {
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  }
+
+  .rank-display {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .rank-number {
+    font-size: 48px;
+  }
+
+  .rank-percentile {
+    font-size: 20px;
+  }
+}

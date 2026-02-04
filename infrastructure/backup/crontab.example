@@ -1,0 +1,24 @@
+# PostgreSQL Automated Backup Crontab (Task 52.3)
+# Copy to /etc/cron.d/postgresql-backup
+# Author: Claude
+# Date: 2025-10-27
+
+# Environment variables
+SHELL=/bin/bash
+PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+DB_PASSWORD=your_secure_password_here
+BACKUP_DIR=/var/backups/postgresql
+ENCRYPTION_ENABLED=true
+SLACK_WEBHOOK_URL=https://hooks.slack.com/services/YOUR/WEBHOOK/URL
+
+# Daily full backup at 2:00 AM
+0 2 * * * postgres /opt/kiro2/infrastructure/backup/backup.sh >> /var/log/postgresql/backup.log 2>&1
+
+# Weekly verification backup restore to test environment (Sundays at 3:00 AM)
+0 3 * * 0 postgres /opt/kiro2/infrastructure/backup/verify_backup.sh >> /var/log/postgresql/backup_verify.log 2>&1
+
+# Cleanup old backups daily at 4:00 AM
+0 4 * * * postgres find /var/backups/postgresql -name "kiro2_db_*.sql*" -mtime +30 -delete
+
+# Monitor replication lag every 5 minutes
+*/5 * * * * postgres psql -c "SELECT EXTRACT(EPOCH FROM (now() - pg_last_xact_replay_timestamp())) AS lag_seconds;" >> /var/log/postgresql/replication_lag.log 2>&1

@@ -1,0 +1,288 @@
+/**
+ * QuestionTable Styles
+ * ÖSYM-style table rendering with responsive design
+ */
+
+/* ==================== TABLE WRAPPER ==================== */
+
+.question-table-wrapper {
+  margin: 1.5rem 0;
+  width: 100%;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.question-table-caption {
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: #2c3e50;
+  margin-bottom: 0.75rem;
+  text-align: center;
+  padding: 0.5rem;
+  background-color: #f8f9fa;
+  border-radius: 4px 4px 0 0;
+}
+
+/* ==================== TABLE CONTAINER ==================== */
+
+.question-table-container {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  border-radius: 0 0 4px 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* ==================== TABLE STYLES ==================== */
+
+.question-table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: white;
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+/* Table Headers */
+.question-table thead {
+  background-color: #34495e;
+  color: white;
+}
+
+.question-table th {
+  padding: 0.875rem 1rem;
+  text-align: left;
+  font-weight: 600;
+  border: 1px solid #2c3e50;
+  vertical-align: middle;
+}
+
+/* Table Body */
+.question-table tbody tr {
+  transition: background-color 0.2s ease;
+}
+
+.question-table tbody tr:nth-child(even) {
+  background-color: #f8f9fa;
+}
+
+.question-table tbody tr:hover {
+  background-color: #e9ecef;
+}
+
+.question-table td {
+  padding: 0.75rem 1rem;
+  border: 1px solid #dee2e6;
+  vertical-align: middle;
+  color: #212529;
+}
+
+/* ==================== RESPONSIVE DESIGN ==================== */
+
+/* Tablet and below */
+@media screen and (max-width: 768px) {
+  .question-table-wrapper {
+    margin: 1rem 0;
+  }
+
+  .question-table-caption {
+    font-size: 0.9rem;
+    padding: 0.4rem;
+  }
+
+  .question-table {
+    font-size: 0.875rem;
+  }
+
+  .question-table th,
+  .question-table td {
+    padding: 0.625rem 0.75rem;
+  }
+
+  /* Horizontal scroll indicator */
+  .question-table-container::after {
+    content: '→ Kaydırın';
+    display: block;
+    text-align: center;
+    font-size: 0.75rem;
+    color: #6c757d;
+    padding: 0.5rem;
+    background-color: #f8f9fa;
+    border-top: 1px solid #dee2e6;
+  }
+
+  .question-table-container::-webkit-scrollbar {
+    height: 6px;
+  }
+
+  .question-table-container::-webkit-scrollbar-track {
+    background: #f1f1f1;
+  }
+
+  .question-table-container::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 3px;
+  }
+
+  .question-table-container::-webkit-scrollbar-thumb:hover {
+    background: #555;
+  }
+}
+
+/* Mobile */
+@media screen and (max-width: 480px) {
+  .question-table {
+    font-size: 0.8rem;
+  }
+
+  .question-table th,
+  .question-table td {
+    padding: 0.5rem;
+  }
+}
+
+/* ==================== PRINT STYLES ==================== */
+
+@media print {
+  .question-table-wrapper {
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+
+  .question-table-caption {
+    background-color: transparent !important;
+    border: 1px solid #000;
+    color: #000 !important;
+  }
+
+  .question-table {
+    border: 2px solid #000;
+  }
+
+  .question-table th {
+    background-color: #e0e0e0 !important;
+    color: #000 !important;
+    border: 1px solid #000;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .question-table td {
+    border: 1px solid #000;
+    background-color: white !important;
+  }
+
+  .question-table tbody tr:nth-child(even) {
+    background-color: #f5f5f5 !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .question-table-container::after {
+    display: none;
+  }
+}
+
+/* ==================== ACCESSIBILITY ==================== */
+
+/* Screen reader only content */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* Focus styles for keyboard navigation */
+.question-table th:focus,
+.question-table td:focus {
+  outline: 2px solid #007bff;
+  outline-offset: -2px;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .question-table {
+    border: 2px solid currentColor;
+  }
+
+  .question-table th,
+  .question-table td {
+    border: 1px solid currentColor;
+  }
+
+  .question-table thead {
+    background-color: black;
+    color: white;
+  }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .question-table-wrapper {
+    color: #e9ecef;
+  }
+
+  .question-table-caption {
+    background-color: #343a40;
+    color: #f8f9fa;
+  }
+
+  .question-table {
+    background-color: #212529;
+    color: #e9ecef;
+  }
+
+  .question-table thead {
+    background-color: #495057;
+  }
+
+  .question-table tbody tr:nth-child(even) {
+    background-color: #343a40;
+  }
+
+  .question-table tbody tr:hover {
+    background-color: #495057;
+  }
+
+  .question-table td {
+    border-color: #495057;
+    color: #e9ecef;
+  }
+}
+
+/* ==================== ERROR STATE ==================== */
+
+.question-table-error {
+  padding: 1rem;
+  background-color: #fff3cd;
+  border: 1px solid #ffc107;
+  border-radius: 4px;
+  color: #856404;
+  text-align: center;
+}
+
+.question-table-error p {
+  margin: 0;
+  font-weight: 500;
+}
+
+/* ==================== ANIMATION ==================== */
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.question-table-wrapper {
+  animation: fadeIn 0.3s ease-in-out;
+}

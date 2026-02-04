@@ -1,0 +1,21 @@
+{
+  "enabled": true,
+  "name": "Video Resource Quality Validator",
+  "description": "REQ-21-25: Validates video resources for Turkish content (70%+), subject relevance (60%+), and accessibility",
+  "version": "1.0",
+  "when": {
+    "type": "fileEdited",
+    "patterns": [
+      "backend/services/**/turkish_content_filter.py",
+      "backend/services/**/subject_relevance_scorer.py",
+      "backend/services/**/video_quality_validator.py",
+      "backend/services/**/enhanced_resource_recommendation_engine.py",
+      "backend/integrations/**/youtube*.py",
+      "backend/integrations/**/ebatv*.py"
+    ]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "🎥 VIDEO QUALITY VALIDATION (REQ-21-25)\n\nValidate video resource quality system against MASTER_SPEC:\n\n## REQ-21: Turkish Content Guarantee\n   ✓ Minimum 70% Turkish score\n   ✓ Trusted Turkish education channels list\n   ✓ Language detection accuracy\n   ✓ Video title + description analysis\n\n## REQ-22: Subject Relevance Validation\n   ✓ Minimum 60% relevance score\n   ✓ Embedding-based semantic similarity\n   ✓ Topic matching with student profile\n   ✓ 80%+ relevance for module-specific videos\n\n## REQ-23: Video Accessibility Control\n   ✓ YouTube API verification\n   ✓ Embeddable status check\n   ✓ Public/private/unlisted status\n   ✓ Broken link detection\n\n## REQ-24: Quality Metrics\n   ✓ Channel reliability score\n   ✓ View count + like ratio\n   ✓ 5-60 minute ideal duration\n   ✓ Subtitle support (+10% bonus)\n   ✓ Trusted channel (+20% bonus)\n\n## REQ-25: Real-Time Validation\n   ✓ Max 5 seconds validation time\n   ✓ Fallback mechanism for API limits\n   ✓ Cache for alternative videos\n   ✓ Loading indicator for users\n\n## TESTS TO RUN:\n1. `pytest backend/tests/test_turkish_content_filter.py -v`\n2. `pytest backend/tests/test_subject_relevance_scorer.py -v`\n3. `pytest backend/tests/test_video_quality_validator.py -v`\n4. Integration test: `pytest backend/tests/integration/test_enhanced_recommendation_engine.py -v`\n\n## PERFORMANCE CHECK:\n- Turkish filter: < 500ms per video\n- Relevance scorer: < 300ms per video\n- Quality validator: < 2s per batch (10 videos)\n\nProvide Türkçe analysis with improvement suggestions."
+  }
+}

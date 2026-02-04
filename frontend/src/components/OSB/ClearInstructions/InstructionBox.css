@@ -1,0 +1,323 @@
+/**
+ * Task 95: Clear Instructions CSS
+ */
+
+/* Container */
+.instruction-box {
+  background: white;
+  border: 3px solid;
+  border-radius: 8px;
+  overflow: hidden;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+}
+
+.osb-mode.instruction-box {
+  border-radius: 4px;
+  border-width: 4px;
+}
+
+/* Header */
+.instruction-header {
+  padding: 16px 20px;
+  color: white;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.instruction-icon {
+  font-size: 28px;
+}
+
+.instruction-title {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.osb-mode .instruction-title {
+  font-size: 22px;
+}
+
+/* Description */
+.instruction-description {
+  padding: 16px 20px;
+  background: #f8f9fa;
+  border-bottom: 2px solid #dee2e6;
+}
+
+.instruction-description p {
+  margin: 0;
+  font-size: 16px;
+  line-height: 1.6;
+  color: #495057;
+}
+
+.osb-mode .instruction-description p {
+  font-size: 17px;
+  line-height: 1.8;
+}
+
+/* Steps */
+.instruction-steps {
+  padding: 20px;
+}
+
+.instruction-step {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 16px;
+  margin-bottom: 20px;
+  padding-bottom: 20px;
+  border-bottom: 2px solid #e9ecef;
+}
+
+.instruction-step:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+/* Step Number */
+.step-number-box {
+  width: 48px;
+  height: 48px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.osb-mode .step-number-box {
+  width: 56px;
+  height: 56px;
+  border-radius: 4px;
+}
+
+.step-number {
+  font-size: 24px;
+  font-weight: 700;
+  color: white;
+}
+
+.osb-mode .step-number {
+  font-size: 28px;
+}
+
+/* Step Content */
+.step-content {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.step-text {
+  margin: 0;
+  font-size: 16px;
+  line-height: 1.7;
+  color: #212529;
+  font-weight: 500;
+}
+
+.osb-mode .step-text {
+  font-size: 18px;
+  line-height: 1.9;
+  font-weight: 600;
+}
+
+/* Example */
+.step-example {
+  background: #e7f3ff;
+  border-left: 4px solid #0d6efd;
+  padding: 12px 16px;
+  border-radius: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.example-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #084298;
+}
+
+.example-icon {
+  font-size: 16px;
+}
+
+.example-text {
+  font-size: 15px;
+  color: #052c65;
+  line-height: 1.6;
+}
+
+.osb-mode .example-text {
+  font-size: 16px;
+  font-weight: 500;
+}
+
+/* Step Image */
+.step-image {
+  margin-top: 8px;
+}
+
+.step-image img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 6px;
+  border: 2px solid #dee2e6;
+}
+
+/* Tip */
+.step-tip {
+  background: #fff3cd;
+  border-left: 4px solid #ffc107;
+  padding: 10px 14px;
+  border-radius: 4px;
+  display: flex;
+  gap: 8px;
+  align-items: start;
+}
+
+.tip-icon {
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.tip-text {
+  font-size: 14px;
+  color: #664d03;
+  line-height: 1.5;
+}
+
+.osb-mode .tip-text {
+  font-size: 15px;
+  font-weight: 500;
+}
+
+/* Overall Example */
+.overall-example {
+  margin: 20px;
+  padding: 20px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border: 3px solid #0d6efd;
+}
+
+.osb-mode .overall-example {
+  border-radius: 4px;
+  border-width: 4px;
+}
+
+.overall-example-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.overall-example-icon {
+  font-size: 24px;
+}
+
+.overall-example-title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #0d6efd;
+}
+
+.overall-example-description {
+  margin: 0 0 12px 0;
+  font-size: 15px;
+  line-height: 1.7;
+  color: #495057;
+}
+
+.osb-mode .overall-example-description {
+  font-size: 16px;
+  line-height: 1.8;
+}
+
+.overall-example-image {
+  margin-top: 12px;
+}
+
+.overall-example-image img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 6px;
+  border: 2px solid #dee2e6;
+}
+
+/* Type Variants */
+.instruction-box--warning .step-example {
+  background: #fff3cd;
+  border-left-color: #ffc107;
+}
+
+.instruction-box--success .step-example {
+  background: #d1e7dd;
+  border-left-color: #198754;
+}
+
+.instruction-box--info .step-example {
+  background: #cff4fc;
+  border-left-color: #0dcaf0;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .instruction-step {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .step-number-box {
+    width: 40px;
+    height: 40px;
+  }
+
+  .step-number {
+    font-size: 20px;
+  }
+
+  .step-text {
+    font-size: 15px;
+  }
+}
+
+/* Accessibility */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+  }
+}
+
+@media (prefers-contrast: high) {
+  .instruction-box {
+    border-width: 4px;
+  }
+
+  .step-example,
+  .step-tip,
+  .overall-example {
+    border-width: 4px;
+  }
+}
+
+/* Print */
+@media print {
+  .instruction-box {
+    page-break-inside: avoid;
+  }
+
+  .instruction-step {
+    page-break-inside: avoid;
+  }
+}

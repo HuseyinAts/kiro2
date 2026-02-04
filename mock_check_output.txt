@@ -1,0 +1,90 @@
+============================================================
+KIRO2 MOCK DATA & TODO DETECTOR
+============================================================
+Timestamp: 2025-11-09 06:34:32
+
+📁 Scanning: backend/services (Backend Services)
+   Mock occurrences: 280
+   TODO/FIXME: 3
+   Hardcoded/Placeholder: 39
+   Top files with 'mock':
+      - backend/services/adaptive_testing_service.py (4)
+      - backend/services/adaptive_test_engine.py (1)
+      - backend/services/admin_service.py (9)
+      - backend/services/advanced_youtube_search.py (5)
+      - backend/services/ai_chat_service.py (2)
+
+📁 Scanning: backend/api (Backend API Routes)
+   Mock occurrences: 145
+   TODO/FIXME: 6
+   Hardcoded/Placeholder: 5
+   Top files with 'mock':
+      - backend/api/advanced_reports.py (5)
+      - backend/api/agents.py (3)
+      - backend/api/analytics.py (25)
+      - backend/api/content_management.py (67)
+      - backend/api/ebatv.py (2)
+
+📁 Scanning: backend/core (Backend Core)
+   Mock occurrences: 61
+   TODO/FIXME: 1
+   Hardcoded/Placeholder: 31
+   Top files with 'mock':
+      - backend/core/automated_question_generator.py (2)
+      - backend/core/curriculum_compliance_system.py (1)
+      - backend/core/database.py (1)
+      - backend/core/dependencies.py (10)
+      - backend/core/improved_base_agent.py (11)
+
+📁 Scanning: frontend/src/pages (Frontend Pages)
+   Mock occurrences: 2
+   TODO/FIXME: 0
+   Hardcoded/Placeholder: 10
+   Top files with 'mock':
+      - frontend/src/pages/TeacherExamsPage.tsx (1)
+      - frontend/src/pages/TeacherStudentsPage.tsx (1)
+
+📁 Scanning: frontend/src/components (Frontend Components)
+   Mock occurrences: 1966
+   TODO/FIXME: 4
+   Hardcoded/Placeholder: 123
+   Top files with 'mock':
+      - frontend/src/components/Accessibility/ADHD/__tests__/FocusMode.test.tsx (61)
+      - frontend/src/components/Accessibility/ADHD/__tests__/TaskProgressVisualization.accessibility.test.tsx (20)
+      - frontend/src/components/Accessibility/ADHD/__tests__/TaskProgressVisualization.test.tsx (52)
+      - frontend/src/components/Accessibility/ADHD/__tests__/VisualTimer.test.tsx (5)
+      - frontend/src/components/Accessibility/__tests__/TextToSpeech.test.tsx (19)
+
+============================================================
+SUMMARY
+============================================================
+Total 'mock' occurrences: 2454
+Total 'TODO/FIXME': 14
+Total 'hardcoded/placeholder': 208
+
+ASSESSMENT:
+❌ CRITICAL: High number of mock data (2454 occurrences)
+   - System heavily reliant on mock data
+   - NOT production-ready
+
+REPORTING GUIDANCE:
+   ❌ Do NOT say: 'System fully functional' or 'Production-ready'
+   ✓ DO say: 'System in development with 2454 mock data points'
+
+📄 Detailed results saved to: .claude/scripts/mock_facts.json
+
+============================================================
+SPECIFIC ISSUES DETECTED
+============================================================
+Checking for anti-patterns...
+⚠️  Found 2 hardcoded statistics (should be from DB)
+backend/services/student_dashboard_service.py:38:            tamamlanan_dersler=45,
+backend/services/student_dashboard_service.py:41:            ortalama_puan=78.5,
+
+⚠️  Found 8106 mock response messages
+backend/api/content_management.py:105:        # Mock response
+backend/api/content_management.py:287:        # Mock response
+backend/api/content_management.py:501:        # Mock response
+
+============================================================
+

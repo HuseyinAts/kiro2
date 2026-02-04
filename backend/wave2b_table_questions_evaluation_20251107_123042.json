@@ -1,0 +1,73 @@
+{
+  "evaluation_date": "2025-11-07T12:30:42.873714",
+  "phase": "Phase 1 - Tables",
+  "total_questions": 5,
+  "valid_evaluations": 5,
+  "average_score": 0.8975,
+  "min_score": 0.8875,
+  "max_score": 0.9,
+  "target_score": 0.85,
+  "target_met": true,
+  "results": [
+    {
+      "question_id": 1,
+      "spec_name": "Q1_Math_Frequency",
+      "table_type": "frequency_table",
+      "stem_length": 549,
+      "has_table": true,
+      "quality_score": 0.9,
+      "grade": "Excellent",
+      "decision": "APPROVE",
+      "status": "[EXCELLENT] Target exceeded!",
+      "timestamp": "2025-11-07T12:30:42.870712"
+    },
+    {
+      "question_id": 2,
+      "spec_name": "Q2_Math_Statistics",
+      "table_type": "statistics_summary",
+      "stem_length": 501,
+      "has_table": true,
+      "quality_score": 0.9,
+      "grade": "Excellent",
+      "decision": "APPROVE",
+      "status": "[EXCELLENT] Target exceeded!",
+      "timestamp": "2025-11-07T12:30:42.870712"
+    },
+    {
+      "question_id": 3,
+      "spec_name": "Q3_Turkish_Comparison",
+      "table_type": "comparison_table",
+      "stem_length": 630,
+      "has_table": true,
+      "quality_score": 0.8875,
+      "grade": "Good",
+      "decision": "APPROVE",
+      "status": "[EXCELLENT] Target exceeded!",
+      "timestamp": "2025-11-07T12:30:42.871714"
+    },
+    {
+      "question_id": 4,
+      "spec_name": "Q4_Physics_Experiment",
+      "table_type": "comparison_table",
+      "stem_length": 573,
+      "has_table": true,
+      "quality_score": 0.9,
+      "grade": "Excellent",
+      "decision": "APPROVE",
+      "status": "[EXCELLENT] Target exceeded!",
+      "timestamp": "2025-11-07T12:30:42.872715"
+    },
+    {
+      "question_id": 5,
+      "spec_name": "Q5_Chemistry_Elements",
+      "table_type": "comparison_table",
+      "stem_length": 522,
+      "has_table": true,
+      "quality_score": 0.9,
+      "grade": "Excellent",
+      "decision": "APPROVE",
+      "status": "[EXCELLENT] Target exceeded!",
+      "timestamp": "2025-11-07T12:30:42.873714"
+    }
+  ]
+}

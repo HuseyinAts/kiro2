@@ -1,0 +1,288 @@
+{
+  "summary": {
+    "total_images": 4,
+    "total_videos": 25,
+    "total_css_js_bundles": 6,
+    "total_fonts": 5,
+    "total_cdn_links": 3,
+    "broken_links": 8
+  },
+  "details": {
+    "images": [
+      {
+        "src": "test.jpg",
+        "file": "src\\test\\accessibility\\task24-wcag-compliance.test.tsx",
+        "type": "local"
+      },
+      {
+        "src": "test2.jpg",
+        "file": "src\\test\\accessibility\\task24-wcag-compliance.test.tsx",
+        "type": "local"
+      },
+      {
+        "src": "test.jpg",
+        "file": "src\\test\\accessibility\\task24-wcag-compliance.test.tsx",
+        "type": "local"
+      },
+      {
+        "src": "test2.jpg",
+        "file": "src\\test\\accessibility\\task24-wcag-compliance.test.tsx",
+        "type": "local"
+      }
+    ],
+    "videos": [
+      {
+        "url": "JNs3RfpNvU4",
+        "file": "src\\main.tsx",
+        "type": "local"
+      },
+      {
+        "url": "3gG0DbrJOJ8",
+        "file": "src\\main.tsx",
+        "type": "local"
+      },
+      {
+        "url": "L_LUpnjgPso",
+        "file": "src\\main.tsx",
+        "type": "local"
+      },
+      {
+        "url": "watch",
+        "file": "src\\main.tsx",
+        "type": "local"
+      },
+      {
+        "url": "watch",
+        "file": "src\\main.tsx",
+        "type": "local"
+      },
+      {
+        "url": "watch",
+        "file": "src\\main.tsx",
+        "type": "local"
+      },
+      {
+        "url": "watch",
+        "file": "src\\main.tsx",
+        "type": "local"
+      },
+      {
+        "url": "dQw4w9WgXcQ",
+        "file": "src\\main.tsx",
+        "type": "local"
+      },
+      {
+        "url": "YX5I4RwdIME",
+        "file": "src\\main.tsx",
+        "type": "local"
+      },
+      {
+        "url": "example",
+        "file": "src\\components\\Admin\\ContentManagement.tsx",
+        "type": "local"
+      },
+      {
+        "url": "https://www.w3schools.com/html/mov_bbb.mp4",
+        "file": "src\\pages\\AccessibilityDemoPage.tsx",
+        "type": "external"
+      },
+      {
+        "url": "/test-video.mp4",
+        "file": "src\\test\\accessibility.test.tsx",
+        "type": "local"
+      },
+      {
+        "url": "/test-video.mp4",
+        "file": "src\\test\\accessibility.test.tsx",
+        "type": "local"
+      },
+      {
+        "url": "/test-video.mp4",
+        "file": "src\\test\\accessibility.test.tsx",
+        "type": "local"
+      },
+      {
+        "url": "https://example.com/video.mp4",
+        "file": "src\\test\\EbaTVIntegration.test.tsx",
+        "type": "external"
+      },
+      {
+        "url": "test-video.mp4",
+        "file": "src\\test\\accessibility\\task24-wcag-compliance.test.tsx",
+        "type": "local"
+      },
+      {
+        "url": "test-video.mp4",
+        "file": "src\\test\\accessibility\\task24-wcag-compliance.test.tsx",
+        "type": "local"
+      },
+      {
+        "url": "test-video.mp4",
+        "file": "src\\test\\accessibility\\task24-wcag-compliance.test.tsx",
+        "type": "local"
+      },
+      {
+        "url": "test-video.mp4",
+        "file": "src\\test\\accessibility\\task24-wcag-compliance.test.tsx",
+        "type": "local"
+      },
+      {
+        "url": "test-video.mp4",
+        "file": "src\\test\\accessibility\\task24-wcag-compliance.test.tsx",
+        "type": "local"
+      },
+      {
+        "url": "test-video.mp4",
+        "file": "src\\test\\accessibility\\task24-wcag-compliance.test.tsx",
+        "type": "local"
+      },
+      {
+        "url": "test1",
+        "file": "src\\test\\components\\LearningPath\\VideoResourceGrid.test.tsx",
+        "type": "local"
+      },
+      {
+        "url": "test2",
+        "file": "src\\test\\components\\LearningPath\\VideoResourceGrid.test.tsx",
+        "type": "local"
+      },
+      {
+        "url": "test3",
+        "file": "src\\test\\components\\LearningPath\\VideoResourceGrid.test.tsx",
+        "type": "local"
+      },
+      {
+        "url": "legacy",
+        "file": "src\\test\\components\\LearningPath\\VideoResourceGrid.test.tsx",
+        "type": "local"
+      }
+    ],
+    "css_js_bundles": [
+      {
+        "bundle": "./styles/touch-optimized.css",
+        "file": "src\\app.tsx",
+        "type": "relative"
+      },
+      {
+        "bundle": "./styles.css",
+        "file": "src\\index.tsx",
+        "type": "relative"
+      },
+      {
+        "bundle": "../../styles/accessibility.css",
+        "file": "src\\components\\Common\\AccessibilityProvider.tsx",
+        "type": "relative"
+      },
+      {
+        "bundle": "@/styles/variables.scss",
+        "file": "vite.config.ts",
+        "type": "local"
+      },
+      {
+        "bundle": "./assets/index-X8b7Z_4p.css",
+        "file": "html\\index.html",
+        "type": "relative"
+      },
+      {
+        "bundle": "./assets/index-D_ryMEPs.js",
+        "file": "html\\index.html",
+        "type": "relative"
+      }
+    ],
+    "fonts": [
+      {
+        "font": "./assets/fonts/OpenDyslexic-Regular.woff2",
+        "file": "src\\index.css",
+        "type": "relative"
+      },
+      {
+        "font": "./assets/fonts/OpenDyslexic-Regular.woff",
+        "file": "src\\index.css",
+        "type": "relative"
+      },
+      {
+        "font": "./assets/fonts/OpenDyslexic-Regular.woff2",
+        "file": "src\\index.css",
+        "type": "relative"
+      },
+      {
+        "font": "./assets/fonts/OpenDyslexic-Regular.woff",
+        "file": "src\\index.css",
+        "type": "relative"
+      },
+      {
+        "font": "/fonts/turkish-font.woff2",
+        "file": "index.html",
+        "type": "local"
+      }
+    ],
+    "cdn_links": [
+      {
+        "url": "https://fonts.googleapis.com",
+        "file": "html\\index.html",
+        "cdn": "Google Fonts"
+      },
+      {
+        "url": "https://fonts.gstatic.com",
+        "file": "html\\index.html",
+        "cdn": "Google Static"
+      },
+      {
+        "url": "https://fonts.googleapis.com/css2?family=Readex+Pro:wght@300;400&display=swap",
+        "file": "html\\index.html",
+        "cdn": "Google Fonts"
+      }
+    ],
+    "broken_links": [
+      {
+        "asset": "test.jpg",
+        "type": "image",
+        "file": "src\\test\\accessibility\\task24-wcag-compliance.test.tsx",
+        "status": "❌ File not found"
+      },
+      {
+        "asset": "test2.jpg",
+        "type": "image",
+        "file": "src\\test\\accessibility\\task24-wcag-compliance.test.tsx",
+        "status": "❌ File not found"
+      },
+      {
+        "asset": "test.jpg",
+        "type": "image",
+        "file": "src\\test\\accessibility\\task24-wcag-compliance.test.tsx",
+        "status": "❌ File not found"
+      },
+      {
+        "asset": "test2.jpg",
+        "type": "image",
+        "file": "src\\test\\accessibility\\task24-wcag-compliance.test.tsx",
+        "status": "❌ File not found"
+      },
+      {
+        "asset": "@/styles/variables.scss",
+        "type": "bundle",
+        "file": "vite.config.ts",
+        "status": "❌ File not found"
+      },
+      {
+        "asset": "/fonts/turkish-font.woff2",
+        "type": "font",
+        "file": "index.html",
+        "status": "❌ File not found"
+      },
+      {
+        "asset": "https://fonts.googleapis.com",
+        "type": "cdn",
+        "file": "html\\index.html",
+        "status": "⚠️  Status 404"
+      },
+      {
+        "asset": "https://fonts.gstatic.com",
+        "type": "cdn",
+        "file": "html\\index.html",
+        "status": "⚠️  Status 404"
+      }
+    ]
+  },
+  "health_score": 81.4
+}

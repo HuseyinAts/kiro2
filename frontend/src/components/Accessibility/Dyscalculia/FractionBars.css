@@ -1,0 +1,317 @@
+/* FractionBars Component Styles - Diskalkuli Desteği */
+
+.fraction-bars-container {
+  padding: 24px;
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.fraction-bars-header {
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 2px solid #e0e0e0;
+}
+
+.fraction-bars-header h3 {
+  margin: 0;
+  color: #333;
+  font-size: 24px;
+}
+
+.fraction-input-section {
+  display: flex;
+  gap: 32px;
+  margin-bottom: 32px;
+  padding: 20px;
+  background: #f8f9fa;
+  border-radius: 8px;
+}
+
+.fraction-input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.fraction-input-group label {
+  font-weight: 600;
+  color: #555;
+  font-size: 16px;
+}
+
+.fraction-inputs {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.fraction-inputs input {
+  width: 80px;
+  padding: 10px;
+  font-size: 20px;
+  text-align: center;
+  border: 2px solid #ddd;
+  border-radius: 6px;
+}
+
+.fraction-inputs span {
+  font-size: 24px;
+  font-weight: bold;
+  color: #333;
+}
+
+.fraction-visualization {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  margin-bottom: 32px;
+}
+
+.fraction-bar-wrapper {
+  padding: 20px;
+  background: white;
+  border-radius: 8px;
+  border: 2px solid #e0e0e0;
+}
+
+.fraction-label {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.fraction-text {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 28px;
+  font-weight: bold;
+  color: #333;
+}
+
+.numerator {
+  color: #2196F3;
+}
+
+.fraction-line {
+  color: #666;
+}
+
+.denominator {
+  color: #FF6B6B;
+}
+
+.decimal-value {
+  font-size: 18px;
+  color: #666;
+  font-weight: 500;
+}
+
+.fraction-bar-container {
+  position: relative;
+}
+
+.fraction-bar-background {
+  display: flex;
+  height: 80px;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.fraction-segment {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-right: 2px solid white;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.fraction-segment:last-child {
+  border-right: none;
+}
+
+.fraction-segment.filled {
+  opacity: 1;
+}
+
+.fraction-segment.empty {
+  opacity: 0.3;
+}
+
+.fraction-segment.animating {
+  animation: segmentPulse 0.8s ease-in-out;
+}
+
+@keyframes segmentPulse {
+  0%, 100% { transform: scaleY(1); }
+  50% { transform: scaleY(1.1); }
+}
+
+.segment-label {
+  color: white;
+  font-weight: bold;
+  font-size: 14px;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.percentage-label {
+  margin-top: 8px;
+  text-align: right;
+  font-size: 16px;
+  font-weight: 600;
+  color: #555;
+}
+
+.comparison-symbol {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.comparison-symbol .symbol {
+  font-size: 48px;
+  font-weight: bold;
+  color: #2196F3;
+  padding: 20px;
+  background: #f0f0f0;
+  border-radius: 50%;
+  width: 80px;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.operation-controls {
+  margin-bottom: 24px;
+  padding: 20px;
+  background: #f0f0f0;
+  border-radius: 8px;
+}
+
+.operation-controls h4 {
+  margin: 0 0 16px 0;
+  color: #333;
+}
+
+.operation-buttons {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+
+.op-btn {
+  padding: 12px 20px;
+  font-size: 16px;
+  font-weight: 600;
+  background: #2196F3;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.op-btn:hover:not(:disabled) {
+  background: #0b7dda;
+  transform: translateY(-2px);
+}
+
+.op-btn:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+.operation-animation {
+  margin-top: 16px;
+  padding: 12px;
+  background: #fff3cd;
+  border: 2px solid #ffc107;
+  border-radius: 6px;
+  text-align: center;
+  font-weight: 600;
+  color: #856404;
+  animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.equivalent-fractions {
+  padding: 20px;
+  background: #f8f9fa;
+  border-radius: 8px;
+}
+
+.equivalent-fractions h4 {
+  margin: 0 0 16px 0;
+  color: #333;
+}
+
+.equivalent-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 16px;
+}
+
+.equivalent-item {
+  background: white;
+  border-radius: 8px;
+  padding: 12px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .fraction-input-section {
+    flex-direction: column;
+  }
+  
+  .operation-buttons {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .equivalent-list {
+    grid-template-columns: 1fr;
+  }
+  
+  .fraction-text {
+    font-size: 24px;
+  }
+  
+  .comparison-symbol .symbol {
+    font-size: 36px;
+    width: 60px;
+    height: 60px;
+  }
+}
+
+/* Accessibility */
+.fraction-inputs input:focus {
+  outline: 3px solid #2196F3;
+  outline-offset: 2px;
+}
+
+.op-btn:focus {
+  outline: 3px solid #2196F3;
+  outline-offset: 2px;
+}
+
+/* High Contrast Mode */
+@media (prefers-contrast: high) {
+  .fraction-segment {
+    border-right: 3px solid #000;
+  }
+  
+  .fraction-bar-wrapper {
+    border-color: #000;
+  }
+}

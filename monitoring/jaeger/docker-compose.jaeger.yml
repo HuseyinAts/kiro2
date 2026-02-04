@@ -1,0 +1,113 @@
+# Jaeger Distributed Tracing Stack
+# Sprint 11: OpenTelemetry + Jaeger
+#
+# Components:
+# - Jaeger All-in-One (collector, query, UI)
+# - OpenTelemetry Collector (optional)
+
+version: '3.8'
+
+services:
+  # Jaeger All-in-One (includes collector, query, and UI)
+  jaeger:
+    image: jaegertracing/all-in-one:latest
+    container_name: kiro2-jaeger
+    environment:
+      # Storage configuration
+      - SPAN_STORAGE_TYPE=badger
+      - BADGER_EPHEMERAL=false
+      - BADGER_DIRECTORY_VALUE=/badger/data
+      - BADGER_DIRECTORY_KEY=/badger/key
+
+      # Collector configuration
+      - COLLECTOR_ZIPKIN_HOST_PORT=:9411
+      - COLLECTOR_OTLP_ENABLED=true
+
+      # Query configuration
+      - QUERY_BASE_PATH=/jaeger
+
+      # Sampling configuration
+      - SAMPLING_STRATEGIES_FILE=/etc/jaeger/sampling_strategies.json
+    ports:
+      # Jaeger UI
+      - "16686:16686"
+
+      # Collector HTTP
+      - "14268:14268"
+
+      # Collector gRPC
+      - "14250:14250"
+
+      # Agent (for Thrift compact)
+      - "6831:6831/udp"
+
+      # Agent (for Thrift binary)
+      - "6832:6832/udp"
+
+      # Admin port
+      - "14269:14269"
+
+      # Zipkin compatible endpoint
+      - "9411:9411"
+
+      # OTLP gRPC
+      - "4317:4317"
+
+      # OTLP HTTP
+      - "4318:4318"
+    volumes:
+      - jaeger-badger-data:/badger/data
+      - jaeger-badger-key:/badger/key
+      - ./sampling_strategies.json:/etc/jaeger/sampling_strategies.json:ro
+    networks:
+      - kiro2-monitoring
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:14269/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # OpenTelemetry Collector (optional - for advanced use cases)
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib:latest
+    container_name: kiro2-otel-collector
+    command: ["--config=/etc/otel-collector-config.yaml"]
+    volumes:
+      - ./otel-collector-config.yaml:/etc/otel-collector-config.yaml:ro
+    ports:
+      # OTLP gRPC receiver
+      - "4317:4317"
+
+      # OTLP HTTP receiver
+      - "4318:4318"
+
+      # Jaeger Thrift compact receiver
+      - "6831:6831/udp"
+
+      # Zipkin receiver
+      - "9411:9411"
+
+      # Prometheus metrics
+      - "8888:8888"
+
+      # Health check
+      - "13133:13133"
+    networks:
+      - kiro2-monitoring
+    depends_on:
+      - jaeger
+    restart: unless-stopped
+    profiles:
+      - with-otel-collector  # Only start if explicitly requested
+
+volumes:
+  jaeger-badger-data:
+    driver: local
+  jaeger-badger-key:
+    driver: local
+
+networks:
+  kiro2-monitoring:
+    driver: bridge
+    name: kiro2-monitoring-network

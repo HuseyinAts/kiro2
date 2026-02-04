@@ -1,0 +1,696 @@
+/**
+ * WCAG 2.1 Level AA Uyumlu Erişilebilirlik Stilleri
+ * Türkiye Üniversite Sınavları Hazırlık Platformu
+ */
+
+/* ===== TEMEL ERİŞİLEBİLİRLİK SINIFLARI ===== */
+
+/* Screen Reader Only - Sadece ekran okuyucular için görünür */
+.sr-only {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+
+/* WCAG AA Minimum Target Size - 44x44px */
+.wcag-aa-target-size {
+  min-height: 44px !important;
+  min-width: 44px !important;
+}
+
+/* WCAG AA Text Contrast - Normal Text (4.5:1) */
+.wcag-aa-normal-text {
+  color: #212121 !important;
+  background-color: #ffffff !important;
+}
+
+/* WCAG AA Text Contrast - Large Text (3:1) */
+.wcag-aa-large-text {
+  color: #424242 !important;
+  background-color: #ffffff !important;
+  font-size: 1.2rem !important;
+  font-weight: bold !important;
+}
+
+/* Enhanced Focus Indicators */
+.wcag-aa-focus,
+*:focus {
+  outline: 2px solid #005fcc !important;
+  outline-offset: 2px !important;
+  border-radius: 4px !important;
+}
+
+/* Skip Links */
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 6px;
+  background: #000000;
+  color: #ffffff;
+  padding: 8px 12px;
+  text-decoration: none;
+  border-radius: 4px;
+  z-index: 9999;
+  font-weight: bold;
+  transition: top 0.3s ease;
+}
+
+.skip-link:focus {
+  top: 6px;
+}
+
+/* ===== YÜKSEK KONTRAST MODU ===== */
+
+.high-contrast {
+  filter: contrast(150%) brightness(110%);
+}
+
+.high-contrast * {
+  border-color: #000000 !important;
+}
+
+.high-contrast a {
+  color: #0000ff !important;
+  text-decoration: underline !important;
+}
+
+.high-contrast a:visited {
+  color: #800080 !important;
+}
+
+.high-contrast button {
+  background-color: #ffffff !important;
+  color: #000000 !important;
+  border: 2px solid #000000 !important;
+}
+
+.high-contrast button:hover,
+.high-contrast button:focus {
+  background-color: #000000 !important;
+  color: #ffffff !important;
+}
+
+.high-contrast input,
+.high-contrast textarea,
+.high-contrast select {
+  background-color: #ffffff !important;
+  color: #000000 !important;
+  border: 2px solid #000000 !important;
+}
+
+/* ===== FONT BOYUTU AYARLARI ===== */
+
+.font-small {
+  font-size: 14px !important;
+}
+
+.font-small h1 { font-size: 1.8rem !important; }
+.font-small h2 { font-size: 1.6rem !important; }
+.font-small h3 { font-size: 1.4rem !important; }
+.font-small h4 { font-size: 1.2rem !important; }
+.font-small h5 { font-size: 1.1rem !important; }
+.font-small h6 { font-size: 1rem !important; }
+
+.font-medium {
+  font-size: 16px !important;
+}
+
+.font-medium h1 { font-size: 2rem !important; }
+.font-medium h2 { font-size: 1.75rem !important; }
+.font-medium h3 { font-size: 1.5rem !important; }
+.font-medium h4 { font-size: 1.25rem !important; }
+.font-medium h5 { font-size: 1.125rem !important; }
+.font-medium h6 { font-size: 1rem !important; }
+
+.font-large {
+  font-size: 18px !important;
+}
+
+.font-large h1 { font-size: 2.25rem !important; }
+.font-large h2 { font-size: 2rem !important; }
+.font-large h3 { font-size: 1.75rem !important; }
+.font-large h4 { font-size: 1.5rem !important; }
+.font-large h5 { font-size: 1.25rem !important; }
+.font-large h6 { font-size: 1.125rem !important; }
+
+.font-extra-large {
+  font-size: 20px !important;
+}
+
+.font-extra-large h1 { font-size: 2.5rem !important; }
+.font-extra-large h2 { font-size: 2.25rem !important; }
+.font-extra-large h3 { font-size: 2rem !important; }
+.font-extra-large h4 { font-size: 1.75rem !important; }
+.font-extra-large h5 { font-size: 1.5rem !important; }
+.font-extra-large h6 { font-size: 1.25rem !important; }
+
+/* ===== AZALTILMIŞ ANİMASYON ===== */
+
+.reduced-motion,
+.reduced-motion * {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+  scroll-behavior: auto !important;
+}
+
+/* ===== KLAVYE NAVİGASYONU ===== */
+
+.keyboard-navigation *:focus {
+  outline: 3px solid #005fcc !important;
+  outline-offset: 2px !important;
+  box-shadow: 0 0 0 1px #ffffff, 0 0 0 4px #005fcc !important;
+}
+
+.enhanced-focus *:focus {
+  outline: 3px solid #ff6b35 !important;
+  outline-offset: 3px !important;
+  background-color: rgba(255, 107, 53, 0.1) !important;
+}
+
+/* Klavye navigasyonu için görünür focus */
+.keyboard-navigation button:focus,
+.keyboard-navigation a:focus,
+.keyboard-navigation input:focus,
+.keyboard-navigation select:focus,
+.keyboard-navigation textarea:focus {
+  position: relative;
+  z-index: 1;
+}
+
+/* ===== EKRAN OKUYUCU OPTİMİZASYONU ===== */
+
+.screen-reader-optimized {
+  /* Daha fazla boşluk */
+  line-height: 1.8 !important;
+  letter-spacing: 0.05em !important;
+  word-spacing: 0.1em !important;
+}
+
+.screen-reader-optimized h1,
+.screen-reader-optimized h2,
+.screen-reader-optimized h3,
+.screen-reader-optimized h4,
+.screen-reader-optimized h5,
+.screen-reader-optimized h6 {
+  margin-bottom: 1rem !important;
+  margin-top: 1.5rem !important;
+}
+
+.screen-reader-optimized p {
+  margin-bottom: 1rem !important;
+}
+
+.screen-reader-optimized ul,
+.screen-reader-optimized ol {
+  margin-bottom: 1rem !important;
+  padding-left: 2rem !important;
+}
+
+.screen-reader-optimized li {
+  margin-bottom: 0.5rem !important;
+}
+
+/* Ekran okuyucu aktifken görünür olmayan elementler */
+.screen-reader-active .decorative-image {
+  display: none !important;
+}
+
+/* ===== DİSLEKSİ DESTEĞİ ===== */
+
+.dyslexia-support {
+  font-family: 'OpenDyslexic', 'Comic Sans MS', cursive !important;
+  line-height: 1.8 !important;
+  letter-spacing: 0.1em !important;
+  word-spacing: 0.15em !important;
+}
+
+.dyslexia-support p {
+  text-align: left !important;
+  margin-bottom: 1.5rem !important;
+}
+
+.dyslexia-support h1,
+.dyslexia-support h2,
+.dyslexia-support h3,
+.dyslexia-support h4,
+.dyslexia-support h5,
+.dyslexia-support h6 {
+  color: #2c3e50 !important;
+  background-color: #ecf0f1 !important;
+  padding: 0.5rem !important;
+  border-left: 4px solid #3498db !important;
+}
+
+/* Bionic Reading Desteği */
+.bionic-reading strong {
+  font-weight: 700 !important;
+  color: #2c3e50 !important;
+}
+
+/* ===== RENK KÖRLÜĞÜ DESTEĞİ ===== */
+
+.color-blind-support {
+  /* Renk körlüğü dostu palet */
+}
+
+.color-blind-support .success {
+  background-color: #0173b2 !important; /* Mavi */
+  color: #ffffff !important;
+}
+
+.color-blind-support .warning {
+  background-color: #de8f05 !important; /* Turuncu */
+  color: #ffffff !important;
+}
+
+.color-blind-support .error {
+  background-color: #cc78bc !important; /* Pembe */
+  color: #ffffff !important;
+}
+
+.color-blind-support .info {
+  background-color: #029e73 !important; /* Yeşil */
+  color: #ffffff !important;
+}
+
+/* Grafiklerde pattern kullanımı */
+.color-blind-support .chart-bar-1 {
+  background-image: repeating-linear-gradient(45deg, transparent, transparent 2px, rgba(0,0,0,0.1) 2px, rgba(0,0,0,0.1) 4px) !important;
+}
+
+.color-blind-support .chart-bar-2 {
+  background-image: repeating-linear-gradient(-45deg, transparent, transparent 2px, rgba(0,0,0,0.1) 2px, rgba(0,0,0,0.1) 4px) !important;
+}
+
+.color-blind-support .chart-bar-3 {
+  background-image: repeating-linear-gradient(90deg, transparent, transparent 2px, rgba(0,0,0,0.1) 2px, rgba(0,0,0,0.1) 4px) !important;
+}
+
+/* ===== MOTOR BOZUKLUK DESTEĞİ ===== */
+
+.motor-impairment-support {
+  /* Daha büyük tıklama alanları */
+}
+
+.motor-impairment-support button,
+.motor-impairment-support a,
+.motor-impairment-support input,
+.motor-impairment-support select {
+  min-height: 56px !important;
+  min-width: 56px !important;
+  padding: 12px 16px !important;
+  margin: 4px !important;
+}
+
+.motor-impairment-support .clickable {
+  cursor: pointer;
+  padding: 8px !important;
+}
+
+/* Hover alanını genişlet */
+.motor-impairment-support button::before,
+.motor-impairment-support a::before {
+  content: '';
+  position: absolute;
+  top: -8px;
+  left: -8px;
+  right: -8px;
+  bottom: -8px;
+  z-index: -1;
+}
+
+/* ===== SINAV ARAYÜZÜ ERİŞİLEBİLİRLİK ===== */
+
+/* Soru seçenekleri için özel stiller */
+.exam-option {
+  border: 2px solid #e0e0e0 !important;
+  border-radius: 8px !important;
+  padding: 16px !important;
+  margin: 8px 0 !important;
+  transition: all 0.2s ease !important;
+  cursor: pointer;
+}
+
+.exam-option:hover {
+  border-color: #2196f3 !important;
+  background-color: #f3f9ff !important;
+}
+
+.exam-option:focus-within {
+  border-color: #1976d2 !important;
+  background-color: #e3f2fd !important;
+  outline: 2px solid #1976d2 !important;
+  outline-offset: 2px !important;
+}
+
+.exam-option.selected {
+  border-color: #4caf50 !important;
+  background-color: #e8f5e8 !important;
+}
+
+.exam-option.selected:focus-within {
+  border-color: #388e3c !important;
+  background-color: #c8e6c9 !important;
+}
+
+/* Sınav timer için erişilebilir stiller */
+.exam-timer {
+  font-size: 1.2rem !important;
+  font-weight: bold !important;
+  padding: 8px 16px !important;
+  border-radius: 4px !important;
+}
+
+.exam-timer.warning {
+  background-color: #fff3cd !important;
+  color: #856404 !important;
+  border: 2px solid #ffeaa7 !important;
+}
+
+.exam-timer.critical {
+  background-color: #f8d7da !important;
+  color: #721c24 !important;
+  border: 2px solid #f5c6cb !important;
+  animation: pulse 1s infinite !important;
+}
+
+@keyframes pulse {
+  0% { opacity: 1; }
+  50% { opacity: 0.7; }
+  100% { opacity: 1; }
+}
+
+.reduced-motion .exam-timer.critical {
+  animation: none !important;
+  border-style: dashed !important;
+}
+
+/* ===== TABLO ERİŞİLEBİLİRLİK ===== */
+
+.accessible-table {
+  border-collapse: collapse !important;
+  width: 100% !important;
+}
+
+.accessible-table th,
+.accessible-table td {
+  border: 1px solid #ddd !important;
+  padding: 12px !important;
+  text-align: left !important;
+}
+
+.accessible-table th {
+  background-color: #f5f5f5 !important;
+  font-weight: bold !important;
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 1 !important;
+}
+
+.accessible-table tr:nth-child(even) {
+  background-color: #f9f9f9 !important;
+}
+
+.accessible-table tr:hover {
+  background-color: #e3f2fd !important;
+}
+
+.accessible-table tr:focus-within {
+  outline: 2px solid #1976d2 !important;
+  outline-offset: -2px !important;
+}
+
+/* Tablo hücre odaklanma */
+.accessible-table td:focus,
+.accessible-table th:focus {
+  background-color: #bbdefb !important;
+  outline: 2px solid #1976d2 !important;
+  outline-offset: -2px !important;
+}
+
+/* ===== VİDEO PLAYER ERİŞİLEBİLİRLİK ===== */
+
+.accessible-video-player {
+  position: relative !important;
+  background-color: #000000 !important;
+  border-radius: 8px !important;
+  overflow: hidden !important;
+}
+
+.accessible-video-player:focus-within {
+  outline: 3px solid #ff6b35 !important;
+  outline-offset: 4px !important;
+}
+
+.video-controls {
+  background: linear-gradient(transparent, rgba(0,0,0,0.8)) !important;
+  padding: 16px !important;
+}
+
+.video-control-button {
+  background-color: rgba(255,255,255,0.1) !important;
+  border: 2px solid rgba(255,255,255,0.3) !important;
+  color: #ffffff !important;
+  border-radius: 4px !important;
+  min-height: 44px !important;
+  min-width: 44px !important;
+}
+
+.video-control-button:hover {
+  background-color: rgba(255,255,255,0.2) !important;
+  border-color: rgba(255,255,255,0.5) !important;
+}
+
+.video-control-button:focus {
+  outline: 2px solid #ffffff !important;
+  outline-offset: 2px !important;
+  background-color: rgba(255,255,255,0.3) !important;
+}
+
+/* Altyazı stilleri */
+.video-captions {
+  position: absolute !important;
+  bottom: 60px !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  background-color: rgba(0,0,0,0.8) !important;
+  color: #ffffff !important;
+  padding: 8px 16px !important;
+  border-radius: 4px !important;
+  font-size: 1rem !important;
+  line-height: 1.4 !important;
+  max-width: 80% !important;
+  text-align: center !important;
+}
+
+/* ===== FORM ERİŞİLEBİLİRLİK ===== */
+
+.accessible-form .form-field {
+  margin-bottom: 24px !important;
+}
+
+.accessible-form label {
+  display: block !important;
+  margin-bottom: 8px !important;
+  font-weight: 600 !important;
+  color: #333333 !important;
+}
+
+.accessible-form input,
+.accessible-form textarea,
+.accessible-form select {
+  width: 100% !important;
+  min-height: 44px !important;
+  padding: 12px !important;
+  border: 2px solid #cccccc !important;
+  border-radius: 4px !important;
+  font-size: 1rem !important;
+  line-height: 1.4 !important;
+}
+
+.accessible-form input:focus,
+.accessible-form textarea:focus,
+.accessible-form select:focus {
+  border-color: #1976d2 !important;
+  outline: 2px solid #1976d2 !important;
+  outline-offset: 2px !important;
+  box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.1) !important;
+}
+
+.accessible-form .error input,
+.accessible-form .error textarea,
+.accessible-form .error select {
+  border-color: #d32f2f !important;
+  background-color: #ffebee !important;
+}
+
+.accessible-form .error-message {
+  color: #d32f2f !important;
+  font-size: 0.875rem !important;
+  margin-top: 4px !important;
+  display: flex !important;
+  align-items: center !important;
+}
+
+.accessible-form .error-message::before {
+  content: '⚠️' !important;
+  margin-right: 4px !important;
+}
+
+.accessible-form .helper-text {
+  color: #666666 !important;
+  font-size: 0.875rem !important;
+  margin-top: 4px !important;
+}
+
+.accessible-form .required::after {
+  content: ' *' !important;
+  color: #d32f2f !important;
+  font-weight: bold !important;
+}
+
+/* ===== RESPONSIVE ERİŞİLEBİLİRLİK ===== */
+
+@media (max-width: 768px) {
+  .wcag-aa-target-size {
+    min-height: 48px !important;
+    min-width: 48px !important;
+  }
+  
+  .font-large {
+    font-size: 20px !important;
+  }
+  
+  .font-extra-large {
+    font-size: 22px !important;
+  }
+  
+  .accessible-form input,
+  .accessible-form textarea,
+  .accessible-form select {
+    min-height: 48px !important;
+    font-size: 1.1rem !important;
+  }
+}
+
+/* ===== PRINT ERİŞİLEBİLİRLİK ===== */
+
+@media print {
+  .skip-link,
+  .video-controls,
+  .interactive-element {
+    display: none !important;
+  }
+  
+  .accessible-table {
+    border-collapse: collapse !important;
+  }
+  
+  .accessible-table th,
+  .accessible-table td {
+    border: 1px solid #000000 !important;
+    padding: 8px !important;
+  }
+  
+  a::after {
+    content: ' (' attr(href) ')' !important;
+    font-size: 0.8em !important;
+    color: #666666 !important;
+  }
+}
+
+/* ===== DARK MODE ERİŞİLEBİLİRLİK ===== */
+
+@media (prefers-color-scheme: dark) {
+  .wcag-aa-normal-text {
+    color: #ffffff !important;
+    background-color: #121212 !important;
+  }
+  
+  .wcag-aa-large-text {
+    color: #e0e0e0 !important;
+    background-color: #121212 !important;
+  }
+  
+  .accessible-form input,
+  .accessible-form textarea,
+  .accessible-form select {
+    background-color: #1e1e1e !important;
+    color: #ffffff !important;
+    border-color: #444444 !important;
+  }
+  
+  .accessible-table th {
+    background-color: #2c2c2c !important;
+    color: #ffffff !important;
+  }
+  
+  .accessible-table tr:nth-child(even) {
+    background-color: #1a1a1a !important;
+  }
+}
+
+/* ===== UTILITY CLASSES ===== */
+
+.visually-hidden {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+
+.focus-trap {
+  position: relative !important;
+}
+
+.focus-trap:focus-within {
+  outline: 2px solid #1976d2 !important;
+  outline-offset: 2px !important;
+}
+
+.aria-live-region {
+  position: absolute !important;
+  left: -10000px !important;
+  width: 1px !important;
+  height: 1px !important;
+  overflow: hidden !important;
+}
+
+/* Landmark rolleri için görsel ipuçları (geliştirme amaçlı) */
+[role="banner"]::before,
+[role="navigation"]::before,
+[role="main"]::before,
+[role="complementary"]::before,
+[role="contentinfo"]::before {
+  content: attr(role) !important;
+  position: absolute !important;
+  top: -20px !important;
+  left: 0 !important;
+  font-size: 10px !important;
+  color: #666666 !important;
+  background-color: #f0f0f0 !important;
+  padding: 2px 4px !important;
+  border-radius: 2px !important;
+  display: none !important;
+}
+
+/* Geliştirme modunda landmark'ları göster */
+.development-mode [role="banner"]::before,
+.development-mode [role="navigation"]::before,
+.development-mode [role="main"]::before,
+.development-mode [role="complementary"]::before,
+.development-mode [role="contentinfo"]::before {
+  display: block !important;
+}

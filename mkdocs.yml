@@ -1,0 +1,259 @@
+# MkDocs Configuration for Kiro2 Platform
+# Sprint 9: Documentation
+
+# Site Information
+site_name: Kiro2 Platform Documentation
+site_url: https://docs.kiro2.com
+site_author: Kiro2 Development Team
+site_description: Comprehensive documentation for Kiro2 - Türkiye Üniversite Sınavları Hazırlık Platformu
+
+# Repository
+repo_name: kiro2/platform
+repo_url: https://github.com/yourusername/kiro2
+edit_uri: edit/main/docs/
+
+# Copyright
+copyright: Copyright &copy; 2025 Kiro2 Platform
+
+# Theme Configuration
+theme:
+  name: material
+  language: tr
+  palette:
+    # Light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: indigo
+      accent: blue
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    # Dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: indigo
+      accent: blue
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  font:
+    text: Roboto
+    code: Roboto Mono
+  features:
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.sections
+    - navigation.expand
+    - navigation.path
+    - navigation.top
+    - navigation.tracking
+    - search.suggest
+    - search.highlight
+    - search.share
+    - header.autohide
+    - content.code.copy
+    - content.code.annotate
+    - content.tabs.link
+    - announce.dismiss
+  icon:
+    logo: material/school
+    repo: fontawesome/brands/github
+
+# Navigation Structure
+nav:
+  - Home: index.md
+
+  - Getting Started:
+      - Introduction: getting-started/introduction.md
+      - Quick Start: getting-started/quickstart.md
+      - Installation: getting-started/installation.md
+      - Configuration: getting-started/configuration.md
+      - First Steps: getting-started/first-steps.md
+
+  - Architecture:
+      - Overview: architecture/overview.md
+      - System Design: architecture/system-design.md
+      - Database Schema: architecture/database-schema.md
+      - API Design: architecture/api-design.md
+      - Security Architecture: architecture/security.md
+      - Performance: architecture/performance.md
+
+  - API Reference:
+      - Overview: api/overview.md
+      - Authentication: api/authentication.md
+      - User Management: api/user-management.md
+      - Exam System: api/exam-system.md
+      - Question Bank: api/question-bank.md
+      - Learning Path: api/learning-path.md
+      - Analytics: api/analytics.md
+      - Content: api/content.md
+      - KVKK: api/kvkk.md
+      - Admin: api/admin.md
+      - Rate Limiting: api/rate-limiting.md
+      - OpenAPI Spec: api/openapi.md
+
+  - AI & Algorithms:
+      - Overview: ai/overview.md
+      - FSRS Algorithm: ai/fsrs.md
+      - IRT Model: ai/irt.md
+      - ZPD System: ai/zpd.md
+      - CAT Engine: ai/cat.md
+      - Turkish NLP: ai/turkish-nlp.md
+      - Recommendation Engine: ai/recommendations.md
+
+  - Development:
+      - Setup: development/setup.md
+      - Project Structure: development/structure.md
+      - Coding Standards: development/coding-standards.md
+      - Testing: development/testing.md
+      - Debugging: development/debugging.md
+      - Contributing: development/contributing.md
+
+  - Deployment:
+      - Overview: deployment/overview.md
+      - Docker: deployment/docker.md
+      - Environment Variables: deployment/environment.md
+      - Database Migrations: deployment/migrations.md
+      - Monitoring: deployment/monitoring.md
+      - Scaling: deployment/scaling.md
+
+  - User Guides:
+      - For Students: guides/students.md
+      - For Teachers: guides/teachers.md
+      - For Parents: guides/parents.md
+      - For Admins: guides/admins.md
+
+  - Reference:
+      - Sprint Reports:
+          - Sprint 6 - Rate Limiting: reference/sprint-6.md
+          - Sprint 7 - Testing: reference/sprint-7.md
+          - Sprint 8 - Code Quality: reference/sprint-8.md
+          - Sprint 9 - Documentation: reference/sprint-9.md
+      - Code Quality Guide: reference/code-quality.md
+      - Error Handling: reference/error-handling.md
+      - Glossary: reference/glossary.md
+      - FAQ: reference/faq.md
+
+# Plugins
+plugins:
+  - search:
+      lang:
+        - tr
+        - en
+      separator: '[\s\-,:!=\[\]()"/]+|(?!\b)(?=[A-Z][a-z])|\.(?!\d)|&[lg]t;'
+  - tags:
+      tags_file: reference/tags.md
+  - git-revision-date-localized:
+      enable_creation_date: true
+      type: timeago
+  - minify:
+      minify_html: true
+      minify_js: true
+      minify_css: true
+      htmlmin_opts:
+        remove_comments: true
+      cache_safe: true
+  - awesome-pages
+
+# Markdown Extensions
+markdown_extensions:
+  # Python Markdown
+  - abbr
+  - admonition
+  - attr_list
+  - def_list
+  - footnotes
+  - md_in_html
+  - tables
+  - toc:
+      permalink: true
+      toc_depth: 4
+
+  # Python Markdown Extensions
+  - pymdownx.arithmatex:
+      generic: true
+  - pymdownx.betterem:
+      smart_enable: all
+  - pymdownx.caret
+  - pymdownx.details
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.keys
+  - pymdownx.mark
+  - pymdownx.smartsymbols
+  - pymdownx.snippets:
+      auto_append:
+        - includes/abbreviations.md
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.tilde
+
+# Extra Configuration
+extra:
+  version:
+    provider: mike
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/yourusername/kiro2
+    - icon: fontawesome/brands/twitter
+      link: https://twitter.com/kiro2platform
+    - icon: fontawesome/brands/linkedin
+      link: https://linkedin.com/company/kiro2
+  analytics:
+    provider: google
+    property: G-XXXXXXXXXX
+  consent:
+    title: Cookie Consent
+    description: >-
+      We use cookies to recognize your repeated visits and preferences, as well
+      as to measure the effectiveness of our documentation and whether users
+      find what they're searching for. With your consent, you're helping us to
+      make our documentation better.
+  alternate:
+    - name: Türkçe
+      link: /tr/
+      lang: tr
+    - name: English
+      link: /en/
+      lang: en
+
+# Extra CSS/JS
+extra_css:
+  - stylesheets/extra.css
+  - stylesheets/custom.css
+
+extra_javascript:
+  - javascripts/mathjax.js
+  - https://polyfill.io/v3/polyfill.min.js?features=es6
+  - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
+
+# Validation
+strict: true
+validation:
+  nav:
+    omitted_files: warn
+    not_found: warn
+    absolute_links: warn
+  links:
+    not_found: warn
+    absolute_links: warn
+    unrecognized_links: warn
+
+# Watch for changes
+watch:
+  - backend/
+  - docs/
+  - mkdocs.yml

@@ -1,0 +1,574 @@
+# Learning Path Alert Rules
+# P1.7: Alert Rules Configuration for Learning Path System
+# Teknofest 2025 - Eğitim Eylemci Projesi
+# Date: 2025-01-04
+
+groups:
+  # ============================================================================
+  # Learning Path Creation Alerts
+  # ============================================================================
+  - name: learning_path_creation
+    interval: 30s
+    rules:
+      # High failure rate on path creation
+      - alert: HighLearningPathCreationFailureRate
+        expr: |
+          (
+            rate(learning_path_creation_total{status="failure"}[5m])
+            /
+            rate(learning_path_creation_total[5m])
+          ) > 0.05
+        for: 5m
+        labels:
+          severity: critical
+          component: learning_path
+          service: path_creation
+        annotations:
+          summary: "Learning Path oluşturma hata oranı yüksek"
+          description: "Learning Path oluşturma hata oranı %{{ $value | humanizePercentage }} seviyesinde (hedef: <%5). Son 5 dakikada sürekli yüksek. Öğrenciler yeni path oluşturamıyor."
+          runbook: "https://docs.teknofest.com/runbooks/learning-path-high-failure-rate"
+          dashboard: "http://grafana:3000/d/learning-path/learning-path-dashboard"
+
+      # Very high failure rate - critical
+      - alert: CriticalLearningPathCreationFailures
+        expr: |
+          (
+            rate(learning_path_creation_total{status="failure"}[5m])
+            /
+            rate(learning_path_creation_total[5m])
+          ) > 0.20
+        for: 2m
+        labels:
+          severity: critical
+          component: learning_path
+          service: path_creation
+        annotations:
+          summary: "CRITICAL: Learning Path oluşturma çöktü"
+          description: "Learning Path oluşturma %{{ $value | humanizePercentage }} başarısızlık oranıyla çalışmıyor! Acil müdahale gerekli. LLM servisi veya YouTube API'de sorun olabilir."
+          runbook: "https://docs.teknofest.com/runbooks/learning-path-critical-failures"
+
+      # No path creation requests (might indicate frontend issue)
+      - alert: NoLearningPathCreationRequests
+        expr: |
+          rate(learning_path_creation_total[5m]) == 0
+        for: 10m
+        labels:
+          severity: warning
+          component: learning_path
+          service: path_creation
+        annotations:
+          summary: "Learning Path oluşturma istekleri gelmiyor"
+          description: "Son 10 dakikada hiç Learning Path oluşturma isteği gelmedi. Frontend'de sorun veya kullanıcı trafiği yok olabilir."
+          runbook: "https://docs.teknofest.com/runbooks/learning-path-no-requests"
+
+      # Slow path creation (AI agent taking too long)
+      - alert: SlowLearningPathCreation
+        expr: |
+          histogram_quantile(0.95,
+            rate(learning_path_creation_duration_seconds_bucket[5m])
+          ) > 30
+        for: 5m
+        labels:
+          severity: warning
+          component: learning_path
+          service: ai_agent
+        annotations:
+          summary: "Learning Path oluşturma yavaş"
+          description: "Learning Path oluşturma P95 süresi {{ $value | humanizeDuration }} (hedef: <30s). AI agent yavaş çalışıyor veya LLM servisi gecikmeli."
+          runbook: "https://docs.teknofest.com/runbooks/learning-path-slow-creation"
+
+      # Very slow path creation - critical
+      - alert: VerySlowLearningPathCreation
+        expr: |
+          histogram_quantile(0.95,
+            rate(learning_path_creation_duration_seconds_bucket[5m])
+          ) > 60
+        for: 3m
+        labels:
+          severity: critical
+          component: learning_path
+          service: ai_agent
+        annotations:
+          summary: "CRITICAL: Learning Path oluşturma çok yavaş"
+          description: "Learning Path oluşturma P95 süresi {{ $value | humanizeDuration }}! Kullanıcı deneyimi kötü. Acil optimizasyon gerekli."
+          runbook: "https://docs.teknofest.com/runbooks/learning-path-very-slow-creation"
+
+  # ============================================================================
+  # API Request & Error Alerts
+  # ============================================================================
+  - name: learning_path_api
+    interval: 30s
+    rules:
+      # High API error rate (5xx errors)
+      - alert: HighLearningPathAPIErrorRate
+        expr: |
+          (
+            rate(learning_path_api_requests_total{status=~"5.."}[5m])
+            /
+            rate(learning_path_api_requests_total[5m])
+          ) > 0.05
+        for: 5m
+        labels:
+          severity: critical
+          component: learning_path
+          service: api
+        annotations:
+          summary: "Learning Path API hata oranı yüksek"
+          description: "Learning Path API %{{ $value | humanizePercentage }} hata oranıyla çalışıyor (hedef: <%5). Backend'de sorun var."
+          runbook: "https://docs.teknofest.com/runbooks/learning-path-api-high-errors"
+
+      # 4xx client errors (might indicate frontend bugs)
+      - alert: HighLearningPathAPIClientErrors
+        expr: |
+          (
+            rate(learning_path_api_requests_total{status=~"4.."}[5m])
+            /
+            rate(learning_path_api_requests_total[5m])
+          ) > 0.10
+        for: 10m
+        labels:
+          severity: warning
+          component: learning_path
+          service: api
+        annotations:
+          summary: "Learning Path API client error oranı yüksek"
+          description: "Learning Path API'de %{{ $value | humanizePercentage }} 4xx hata oranı var. Frontend'de validation hatası veya authentication sorunu olabilir."
+          runbook: "https://docs.teknofest.com/runbooks/learning-path-api-client-errors"
+
+      # Specific endpoint failures - /create-path
+      - alert: LearningPathCreateEndpointFailures
+        expr: |
+          (
+            rate(learning_path_api_requests_total{endpoint="/api/learning-path/create-path", status=~"5.."}[5m])
+            /
+            rate(learning_path_api_requests_total{endpoint="/api/learning-path/create-path"}[5m])
+          ) > 0.03
+        for: 5m
+        labels:
+          severity: critical
+          component: learning_path
+          service: create_endpoint
+        annotations:
+          summary: "/create-path endpoint başarısız"
+          description: "Learning Path creation endpoint %{{ $value | humanizePercentage }} hata oranıyla çalışıyor. Öğrenciler path oluşturamıyor!"
+          runbook: "https://docs.teknofest.com/runbooks/learning-path-create-endpoint-failures"
+
+      # Specific endpoint failures - /quiz/submit
+      - alert: LearningPathQuizEndpointFailures
+        expr: |
+          (
+            rate(learning_path_api_requests_total{endpoint=~"/api/learning-path/quiz/.*/submit", status=~"5.."}[5m])
+            /
+            rate(learning_path_api_requests_total{endpoint=~"/api/learning-path/quiz/.*/submit"}[5m])
+          ) > 0.03
+        for: 5m
+        labels:
+          severity: critical
+          component: learning_path
+          service: quiz_endpoint
+        annotations:
+          summary: "/quiz/submit endpoint başarısız"
+          description: "Quiz submission endpoint %{{ $value | humanizePercentage }} hata oranıyla çalışıyor. Öğrenciler quiz gönderemiyor!"
+          runbook: "https://docs.teknofest.com/runbooks/learning-path-quiz-endpoint-failures"
+
+      # High API request rate (might indicate DDoS or bug causing loops)
+      - alert: VeryHighLearningPathAPIRequestRate
+        expr: |
+          rate(learning_path_api_requests_total[1m]) > 200
+        for: 2m
+        labels:
+          severity: warning
+          component: learning_path
+          service: api
+        annotations:
+          summary: "Learning Path API istek oranı çok yüksek"
+          description: "Learning Path API'ye {{ $value }} req/s geliyor. DDoS veya frontend'de loop olabilir."
+          runbook: "https://docs.teknofest.com/runbooks/learning-path-high-request-rate"
+
+  # ============================================================================
+  # Resource Search & Recommendation Alerts
+  # ============================================================================
+  - name: learning_path_resources
+    interval: 30s
+    rules:
+      # Slow resource search
+      - alert: SlowResourceSearch
+        expr: |
+          histogram_quantile(0.95,
+            rate(resource_search_duration_seconds_bucket[5m])
+          ) > 5
+        for: 5m
+        labels:
+          severity: warning
+          component: learning_path
+          service: resource_search
+        annotations:
+          summary: "Video arama yavaş"
+          description: "Video arama P95 süresi {{ $value | humanizeDuration }} (hedef: <5s). YouTube API veya recommendation engine yavaş."
+          runbook: "https://docs.teknofest.com/runbooks/learning-path-slow-resource-search"
+
+      # Very slow resource search - critical
+      - alert: VerySlowResourceSearch
+        expr: |
+          histogram_quantile(0.95,
+            rate(resource_search_duration_seconds_bucket[5m])
+          ) > 10
+        for: 3m
+        labels:
+          severity: critical
+          component: learning_path
+          service: resource_search
+        annotations:
+          summary: "CRITICAL: Video arama çok yavaş"
+          description: "Video arama P95 süresi {{ $value | humanizeDuration }}! Kullanıcılar bekliyor. YouTube API timeout alabilir."
+          runbook: "https://docs.teknofest.com/runbooks/learning-path-very-slow-resource-search"
+
+      # High rate of empty search results
+      - alert: HighEmptySearchResultsRate
+        expr: |
+          (
+            rate(resource_search_results_total{has_results="no"}[10m])
+            /
+            rate(resource_search_results_total[10m])
+          ) > 0.20
+        for: 10m
+        labels:
+          severity: warning
+          component: learning_path
+          service: resource_search
+        annotations:
+          summary: "Video aramaları sonuçsuz dönüyor"
+          description: "Video aramalarının %{{ $value | humanizePercentage }}'i sonuçsuz. YouTube API sorunu veya arama query'leri kötü olabilir."
+          runbook: "https://docs.teknofest.com/runbooks/learning-path-empty-search-results"
+
+      # Critical: Almost all searches returning empty
+      - alert: CriticalEmptySearchResults
+        expr: |
+          (
+            rate(resource_search_results_total{has_results="no"}[5m])
+            /
+            rate(resource_search_results_total[5m])
+          ) > 0.50
+        for: 5m
+        labels:
+          severity: critical
+          component: learning_path
+          service: resource_search
+        annotations:
+          summary: "CRITICAL: Video aramaları çalışmıyor"
+          description: "Video aramalarının %{{ $value | humanizePercentage }}'i sonuçsuz! YouTube API down olabilir veya quota aşılmış olabilir."
+          runbook: "https://docs.teknofest.com/runbooks/learning-path-critical-empty-search"
+
+  # ============================================================================
+  # Quiz & Assessment Alerts
+  # ============================================================================
+  - name: learning_path_quiz
+    interval: 30s
+    rules:
+      # Very low quiz pass rate (might indicate quiz difficulty issue)
+      - alert: LowQuizPassRate
+        expr: |
+          (
+            rate(quiz_submissions_total{passed="true"}[30m])
+            /
+            rate(quiz_submissions_total[30m])
+          ) < 0.30
+        for: 30m
+        labels:
+          severity: warning
+          component: learning_path
+          service: quiz
+        annotations:
+          summary: "Quiz başarı oranı düşük"
+          description: "Quiz başarı oranı %{{ $value | humanizePercentage }} seviyesinde (beklenen: >%30). Quizler çok zor olabilir veya öğretim materyalleri yetersiz."
+          runbook: "https://docs.teknofest.com/runbooks/learning-path-low-quiz-pass-rate"
+
+      # Critical: Almost no quizzes passing
+      - alert: CriticalLowQuizPassRate
+        expr: |
+          (
+            rate(quiz_submissions_total{passed="true"}[15m])
+            /
+            rate(quiz_submissions_total[15m])
+          ) < 0.10
+        for: 15m
+        labels:
+          severity: critical
+          component: learning_path
+          service: quiz
+        annotations:
+          summary: "CRITICAL: Quiz başarı oranı çok düşük"
+          description: "Quiz başarı oranı sadece %{{ $value | humanizePercentage }}! Quiz sistemi hatalı olabilir veya scoring logic bozuk."
+          runbook: "https://docs.teknofest.com/runbooks/learning-path-critical-quiz-pass-rate"
+
+      # Very high quiz pass rate (might indicate cheating or too easy quizzes)
+      - alert: VeryHighQuizPassRate
+        expr: |
+          (
+            rate(quiz_submissions_total{passed="true"}[30m])
+            /
+            rate(quiz_submissions_total[30m])
+          ) > 0.95
+        for: 30m
+        labels:
+          severity: warning
+          component: learning_path
+          service: quiz
+        annotations:
+          summary: "Quiz başarı oranı çok yüksek"
+          description: "Quiz başarı oranı %{{ $value | humanizePercentage }} seviyesinde. Quizler çok kolay olabilir veya cheating olabilir."
+          runbook: "https://docs.teknofest.com/runbooks/learning-path-very-high-quiz-pass-rate"
+
+      # No quiz submissions (might indicate UI issue)
+      - alert: NoQuizSubmissions
+        expr: |
+          rate(quiz_submissions_total[10m]) == 0
+        for: 15m
+        labels:
+          severity: warning
+          component: learning_path
+          service: quiz
+        annotations:
+          summary: "Quiz submission yok"
+          description: "Son 15 dakikada hiç quiz submission gelmedi. Quiz UI'da sorun olabilir veya kullanıcı trafiği yok."
+          runbook: "https://docs.teknofest.com/runbooks/learning-path-no-quiz-submissions"
+
+  # ============================================================================
+  # Student Progress & Engagement Alerts
+  # ============================================================================
+  - name: learning_path_progress
+    interval: 60s
+    rules:
+      # Low average student progress
+      - alert: LowAverageStudentProgress
+        expr: |
+          avg_student_progress_percentage < 20
+        for: 30m
+        labels:
+          severity: warning
+          component: learning_path
+          service: progress_tracking
+        annotations:
+          summary: "Ortalama öğrenci progress düşük"
+          description: "Öğrencilerin ortalama ilerlemesi %{{ $value }}. Öğrenciler path'lerini tamamlamıyor, engagement düşük."
+          runbook: "https://docs.teknofest.com/runbooks/learning-path-low-progress"
+
+      # Very low progress - critical engagement issue
+      - alert: CriticalLowStudentProgress
+        expr: |
+          avg_student_progress_percentage < 10
+        for: 1h
+        labels:
+          severity: critical
+          component: learning_path
+          service: progress_tracking
+        annotations:
+          summary: "CRITICAL: Öğrenci engagement çok düşük"
+          description: "Öğrencilerin ortalama ilerlemesi sadece %{{ $value }}! Öğrenciler path'leri terk ediyor. Content veya UX sorunu olabilir."
+          runbook: "https://docs.teknofest.com/runbooks/learning-path-critical-low-progress"
+
+      # Topic completion update failures
+      - alert: HighTopicCompletionFailureRate
+        expr: |
+          (
+            rate(topic_completion_updates_total{status="failure"}[10m])
+            /
+            rate(topic_completion_updates_total[10m])
+          ) > 0.10
+        for: 10m
+        labels:
+          severity: warning
+          component: learning_path
+          service: progress_tracking
+        annotations:
+          summary: "Topic completion güncellemeleri başarısız"
+          description: "Topic completion güncellemelerinin %{{ $value | humanizePercentage }}'i başarısız. Database veya backend sorunu olabilir."
+          runbook: "https://docs.teknofest.com/runbooks/learning-path-topic-completion-failures"
+
+  # ============================================================================
+  # System Capacity & Load Alerts
+  # ============================================================================
+  - name: learning_path_capacity
+    interval: 60s
+    rules:
+      # Very high number of active paths (capacity warning)
+      - alert: HighActiveLearningPaths
+        expr: |
+          active_learning_paths > 10000
+        for: 10m
+        labels:
+          severity: warning
+          component: learning_path
+          service: capacity
+        annotations:
+          summary: "Aktif learning path sayısı yüksek"
+          description: "Sistemde {{ $value }} aktif learning path var. Capacity planning gerekebilir."
+          runbook: "https://docs.teknofest.com/runbooks/learning-path-high-capacity"
+
+      # Critical capacity
+      - alert: CriticalActiveLearningPaths
+        expr: |
+          active_learning_paths > 50000
+        for: 5m
+        labels:
+          severity: critical
+          component: learning_path
+          service: capacity
+        annotations:
+          summary: "CRITICAL: Learning path kapasitesi sınırda"
+          description: "Sistemde {{ $value }} aktif learning path var! Sistem yavaşlayabilir veya yeni path oluşturulamayabilir."
+          runbook: "https://docs.teknofest.com/runbooks/learning-path-critical-capacity"
+
+  # ============================================================================
+  # AI Adaptation & Personalization Alerts
+  # ============================================================================
+  - name: learning_path_ai
+    interval: 60s
+    rules:
+      # No AI adaptations happening (might indicate adaptation logic broken)
+      - alert: NoLearningPathAdaptations
+        expr: |
+          rate(learning_path_adaptations_total[30m]) == 0
+        for: 1h
+        labels:
+          severity: warning
+          component: learning_path
+          service: ai_adaptation
+        annotations:
+          summary: "AI adaptasyon çalışmıyor"
+          description: "Son 1 saatte hiç learning path adaptasyonu olmadı. AI adaptation logic çalışmıyor olabilir."
+          runbook: "https://docs.teknofest.com/runbooks/learning-path-no-adaptations"
+
+      # High rate of difficulty adjustments (might indicate content difficulty mismatch)
+      - alert: HighDifficultyAdjustmentRate
+        expr: |
+          (
+            rate(learning_path_adaptations_total{adaptation_type="difficulty_adjustment"}[30m])
+            /
+            rate(learning_path_adaptations_total[30m])
+          ) > 0.50
+        for: 30m
+        labels:
+          severity: warning
+          component: learning_path
+          service: ai_adaptation
+        annotations:
+          summary: "Yüksek difficulty adjustment oranı"
+          description: "Adaptasyonların %{{ $value | humanizePercentage }}'i difficulty adjustment. Content zorluk seviyeleri öğrenci seviyelerine uymuyor olabilir."
+          runbook: "https://docs.teknofest.com/runbooks/learning-path-high-difficulty-adjustments"
+
+  # ============================================================================
+  # Fallback System Alerts
+  # ============================================================================
+  - name: learning_path_fallback
+    interval: 30s
+    rules:
+      # High fallback video usage (indicates primary recommendation system issues)
+      - alert: HighFallbackVideoUsage
+        expr: |
+          (
+            rate(fallback_video_requests_total{found="true"}[10m])
+            /
+            (
+              rate(fallback_video_requests_total{found="true"}[10m])
+              +
+              rate(resource_search_results_total{has_results="yes"}[10m])
+            )
+          ) > 0.30
+        for: 10m
+        labels:
+          severity: warning
+          component: learning_path
+          service: fallback_system
+        annotations:
+          summary: "Fallback video sistemi sık kullanılıyor"
+          description: "Video isteklerinin %{{ $value | humanizePercentage }}'i fallback videoları kullanıyor. Primary recommendation system sorunlu olabilir."
+          runbook: "https://docs.teknofest.com/runbooks/learning-path-high-fallback-usage"
+
+      # Fallback videos not found
+      - alert: FallbackVideosNotFound
+        expr: |
+          (
+            rate(fallback_video_requests_total{found="false"}[10m])
+            /
+            rate(fallback_video_requests_total[10m])
+          ) > 0.20
+        for: 10m
+        labels:
+          severity: critical
+          component: learning_path
+          service: fallback_system
+        annotations:
+          summary: "Fallback videoları bile bulunamıyor"
+          description: "Fallback video isteklerinin %{{ $value | humanizePercentage }}'i başarısız! Hem primary hem fallback sistem çalışmıyor."
+          runbook: "https://docs.teknofest.com/runbooks/learning-path-fallback-not-found"
+
+  # ============================================================================
+  # Authentication & Authorization Alerts (from P1.5)
+  # ============================================================================
+  - name: learning_path_auth
+    interval: 30s
+    rules:
+      # High authentication failure rate
+      - alert: HighLearningPathAuthFailureRate
+        expr: |
+          (
+            rate(learning_path_api_requests_total{status="401"}[5m])
+            +
+            rate(learning_path_api_requests_total{status="403"}[5m])
+          )
+          /
+          rate(learning_path_api_requests_total[5m]) > 0.10
+        for: 5m
+        labels:
+          severity: warning
+          component: learning_path
+          service: authentication
+        annotations:
+          summary: "Learning Path authentication hata oranı yüksek"
+          description: "Learning Path API'de %{{ $value | humanizePercentage }} authentication/authorization hatası var. JWT token sorunu veya frontend'de token management hatası olabilir."
+          runbook: "https://docs.teknofest.com/runbooks/learning-path-auth-failures"
+
+      # Critical: Most requests failing auth
+      - alert: CriticalLearningPathAuthFailures
+        expr: |
+          (
+            rate(learning_path_api_requests_total{status="401"}[5m])
+            +
+            rate(learning_path_api_requests_total{status="403"}[5m])
+          )
+          /
+          rate(learning_path_api_requests_total[5m]) > 0.50
+        for: 3m
+        labels:
+          severity: critical
+          component: learning_path
+          service: authentication
+        annotations:
+          summary: "CRITICAL: Learning Path authentication çöktü"
+          description: "Learning Path API isteklerinin %{{ $value | humanizePercentage }}'i auth hatası veriyor! JWT service down olabilir veya token generation bozulmuş."
+          runbook: "https://docs.teknofest.com/runbooks/learning-path-critical-auth-failures"
+
+  # ============================================================================
+  # Student Profile & Data Management Alerts
+  # ============================================================================
+  - name: learning_path_profiles
+    interval: 60s
+    rules:
+      # High profile operation failure rate
+      - alert: HighProfileOperationFailureRate
+        expr: |
+          (
+            rate(student_profile_operations_total{status="failure"}[10m])
+            /
+            rate(student_profile_operations_total[10m])
+          ) > 0.10
+        for: 10m
+        labels:
+          severity: warning
+          component: learning_path
+          service: profile_management
+        annotations:
+          summary: "Student profile operasyonları başarısız"
+          description: "Profile operasyonlarının %{{ $value | humanizePercentage }}'i başarısız. Database veya validation sorunu olabilir."
+          runbook: "https://docs.teknofest.com/runbooks/learning-path-profile-failures"

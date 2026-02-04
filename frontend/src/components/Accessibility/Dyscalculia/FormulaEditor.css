@@ -1,0 +1,698 @@
+/**
+ * Formula Editor Styles
+ * 
+ * Formül editörü için erişilebilir tasarım.
+ * WCAG 2.1 Level AA uyumlu.
+ */
+
+.formula-editor {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 20px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.editor-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  color: white;
+}
+
+.editor-header h2 {
+  margin: 0;
+  font-size: 1.8rem;
+  font-weight: 600;
+}
+
+.library-toggle {
+  padding: 10px 20px;
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 8px;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.library-toggle:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: translateY(-2px);
+}
+
+.library-toggle:focus {
+  outline: 3px solid #ffd700;
+  outline-offset: 2px;
+}
+
+.editor-body {
+  background: white;
+  border-radius: 15px;
+  padding: 20px;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+}
+
+/* LaTeX girişi */
+.latex-input-section {
+  margin-bottom: 20px;
+}
+
+.latex-input-section label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: #333;
+  font-size: 1.1rem;
+}
+
+.latex-input-section textarea {
+  width: 100%;
+  padding: 15px;
+  border: 2px solid #e0e0e0;
+  border-radius: 10px;
+  font-size: 1rem;
+  font-family: 'Courier New', monospace;
+  resize: vertical;
+  transition: border-color 0.3s ease;
+}
+
+.latex-input-section textarea:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.input-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.input-actions button {
+  padding: 10px 20px;
+  background: #f0f0f0;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.input-actions button:hover {
+  background: #e0e0e0;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.input-actions button:focus {
+  outline: 3px solid #667eea;
+  outline-offset: 2px;
+}
+
+.input-actions .save-btn {
+  background: #4caf50;
+  color: white;
+}
+
+.input-actions .save-btn:hover {
+  background: #45a049;
+}
+
+/* Hızlı ekleme */
+.quick-insert-section {
+  margin-bottom: 20px;
+}
+
+.quick-insert-section h3 {
+  margin: 0 0 10px 0;
+  color: #333;
+  font-size: 1.1rem;
+}
+
+.quick-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.quick-btn {
+  padding: 8px 16px;
+  background: #e3f2fd;
+  border: 2px solid #bbdefb;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: #1976d2;
+  font-size: 1.1rem;
+}
+
+.quick-btn:hover {
+  background: #bbdefb;
+  transform: translateY(-2px);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+.quick-btn:focus {
+  outline: 3px solid #667eea;
+  outline-offset: 2px;
+}
+
+/* Önizleme */
+.preview-section {
+  margin-bottom: 20px;
+  padding: 20px;
+  background: #f9f9f9;
+  border-radius: 10px;
+}
+
+.preview-section h3 {
+  margin: 0 0 15px 0;
+  color: #333;
+  font-size: 1.1rem;
+}
+
+.formula-preview {
+  min-height: 100px;
+  padding: 20px;
+  background: white;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.latex-display {
+  text-align: center;
+}
+
+.latex-display code {
+  display: block;
+  font-size: 1.2rem;
+  color: #333;
+  background: #f0f0f0;
+  padding: 15px;
+  border-radius: 6px;
+  margin-bottom: 10px;
+  font-family: 'Courier New', monospace;
+}
+
+.preview-note {
+  color: #666;
+  font-size: 0.9rem;
+  font-style: italic;
+  margin: 0;
+}
+
+.empty-preview {
+  color: #999;
+  font-style: italic;
+  margin: 0;
+}
+
+/* Formül kütüphanesi */
+.formula-library {
+  margin-top: 30px;
+  padding: 20px;
+  background: #f9f9f9;
+  border-radius: 10px;
+}
+
+.library-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+  border-bottom: 2px solid #e0e0e0;
+}
+
+.library-header h3 {
+  margin: 0;
+  color: #333;
+  font-size: 1.3rem;
+}
+
+.category-filter {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.category-filter label {
+  font-weight: 600;
+  color: #333;
+}
+
+.category-filter select {
+  padding: 8px 12px;
+  border: 2px solid #e0e0e0;
+  border-radius: 6px;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.category-filter select:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+/* Şablon kartları */
+.templates-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 15px;
+  margin-bottom: 30px;
+}
+
+.template-card {
+  background: white;
+  padding: 15px;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.template-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.template-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.template-header h4 {
+  margin: 0;
+  color: #333;
+  font-size: 1.1rem;
+}
+
+.template-category {
+  padding: 4px 8px;
+  background: #e3f2fd;
+  color: #1976d2;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.template-formula {
+  padding: 10px;
+  background: #f9f9f9;
+  border-radius: 6px;
+  margin-bottom: 10px;
+}
+
+.template-formula code {
+  font-family: 'Courier New', monospace;
+  color: #333;
+  font-size: 0.95rem;
+}
+
+.template-description {
+  color: #666;
+  font-size: 0.9rem;
+  margin: 0 0 10px 0;
+}
+
+.use-template-btn {
+  width: 100%;
+  padding: 8px;
+  background: #667eea;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.use-template-btn:hover {
+  background: #5568d3;
+  transform: translateY(-2px);
+}
+
+.use-template-btn:focus {
+  outline: 3px solid #ffd700;
+  outline-offset: 2px;
+}
+
+/* Kaydedilmiş formüller */
+.saved-formulas {
+  margin-top: 30px;
+}
+
+.saved-formulas h3 {
+  margin: 0 0 15px 0;
+  color: #333;
+  font-size: 1.2rem;
+}
+
+.saved-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.saved-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.saved-item code {
+  flex: 1;
+  font-family: 'Courier New', monospace;
+  color: #333;
+  font-size: 0.95rem;
+}
+
+.saved-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.saved-actions button {
+  padding: 6px 12px;
+  background: #f0f0f0;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.saved-actions button:hover {
+  background: #e0e0e0;
+  transform: translateY(-2px);
+}
+
+.saved-actions button:focus {
+  outline: 3px solid #667eea;
+  outline-offset: 2px;
+}
+
+.saved-actions .delete-btn:hover {
+  background: #ffebee;
+  color: #f44336;
+}
+
+/* LaTeX yardımı */
+.latex-help {
+  margin-top: 20px;
+}
+
+.latex-help details {
+  background: #f9f9f9;
+  padding: 15px;
+  border-radius: 10px;
+}
+
+.latex-help summary {
+  cursor: pointer;
+  font-weight: 600;
+  color: #667eea;
+  font-size: 1.1rem;
+  user-select: none;
+}
+
+.latex-help summary:hover {
+  color: #5568d3;
+}
+
+.latex-help summary:focus {
+  outline: 3px solid #667eea;
+  outline-offset: 2px;
+  border-radius: 5px;
+}
+
+.help-content {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+  margin-top: 15px;
+}
+
+.help-section h4 {
+  margin: 0 0 10px 0;
+  color: #333;
+  font-size: 1rem;
+}
+
+.help-section ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.help-section li {
+  margin: 8px 0;
+  color: #555;
+  line-height: 1.6;
+}
+
+.help-section code {
+  background: #e0e0e0;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-family: 'Courier New', monospace;
+  font-size: 0.9em;
+}
+
+/* Responsive tasarım */
+@media (max-width: 768px) {
+  .formula-editor {
+    padding: 15px;
+  }
+
+  .editor-header {
+    flex-direction: column;
+    gap: 10px;
+    align-items: stretch;
+  }
+
+  .editor-header h2 {
+    font-size: 1.4rem;
+    text-align: center;
+  }
+
+  .library-toggle {
+    width: 100%;
+  }
+
+  .templates-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .library-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+
+  .category-filter {
+    width: 100%;
+  }
+
+  .category-filter select {
+    flex: 1;
+  }
+
+  .help-content {
+    grid-template-columns: 1fr;
+  }
+
+  .saved-item {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+
+  .saved-actions {
+    justify-content: stretch;
+  }
+
+  .saved-actions button {
+    flex: 1;
+  }
+}
+
+/* Yüksek kontrast modu */
+@media (prefers-contrast: high) {
+  .latex-input-section textarea,
+  .formula-preview {
+    border: 3px solid #000;
+  }
+
+  .template-card {
+    border: 2px solid #333;
+  }
+}
+
+/* Azaltılmış hareket modu */
+@media (prefers-reduced-motion: reduce) {
+  .library-toggle,
+  .input-actions button,
+  .quick-btn,
+  .use-template-btn,
+  .saved-actions button,
+  .template-card {
+    transition: none;
+  }
+
+  .library-toggle:hover,
+  .input-actions button:hover,
+  .quick-btn:hover,
+  .use-template-btn:hover,
+  .saved-actions button:hover,
+  .template-card:hover {
+    transform: none;
+  }
+}
+
+/* Karanlık mod desteği */
+@media (prefers-color-scheme: dark) {
+  .editor-body {
+    background: #2a2a3e;
+  }
+
+  .latex-input-section label,
+  .quick-insert-section h3,
+  .preview-section h3 {
+    color: #e0e0e0;
+  }
+
+  .latex-input-section textarea {
+    background: #3a3a4e;
+    border-color: #555;
+    color: #e0e0e0;
+  }
+
+  .input-actions button {
+    background: #3a3a4e;
+    color: #e0e0e0;
+  }
+
+  .input-actions button:hover {
+    background: #4a4a5e;
+  }
+
+  .quick-btn {
+    background: #3a3a4e;
+    border-color: #555;
+    color: #8b9cff;
+  }
+
+  .quick-btn:hover {
+    background: #4a4a5e;
+  }
+
+  .preview-section {
+    background: #3a3a4e;
+  }
+
+  .formula-preview {
+    background: #2a2a3e;
+    border-color: #555;
+  }
+
+  .latex-display code {
+    background: #3a3a4e;
+    color: #e0e0e0;
+  }
+
+  .preview-note,
+  .empty-preview {
+    color: #aaa;
+  }
+
+  .formula-library {
+    background: #3a3a4e;
+  }
+
+  .library-header {
+    border-bottom-color: #555;
+  }
+
+  .library-header h3,
+  .saved-formulas h3 {
+    color: #e0e0e0;
+  }
+
+  .category-filter label {
+    color: #e0e0e0;
+  }
+
+  .category-filter select {
+    background: #3a3a4e;
+    border-color: #555;
+    color: #e0e0e0;
+  }
+
+  .template-card,
+  .saved-item {
+    background: #2a2a3e;
+  }
+
+  .template-header h4 {
+    color: #e0e0e0;
+  }
+
+  .template-formula {
+    background: #3a3a4e;
+  }
+
+  .template-formula code,
+  .saved-item code {
+    color: #e0e0e0;
+  }
+
+  .template-description {
+    color: #aaa;
+  }
+
+  .saved-actions button {
+    background: #3a3a4e;
+    color: #e0e0e0;
+  }
+
+  .saved-actions button:hover {
+    background: #4a4a5e;
+  }
+
+  .latex-help details {
+    background: #3a3a4e;
+  }
+
+  .latex-help summary {
+    color: #8b9cff;
+  }
+
+  .help-section h4 {
+    color: #e0e0e0;
+  }
+
+  .help-section li {
+    color: #ccc;
+  }
+
+  .help-section code {
+    background: #4a4a5e;
+    color: #e0e0e0;
+  }
+}

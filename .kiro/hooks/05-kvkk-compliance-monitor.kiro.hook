@@ -1,0 +1,31 @@
+{
+  "enabled": true,
+  "name": "KVKK Compliance Monitor",
+  "description": "REQ-48: KVKK (GDPR Turkish equivalent) compliance validation - Personal data protection, consent management, audit logging",
+  "version": "1.0",
+  "priority": "critical",
+
+  "when": {
+    "type": "fileEdited",
+    "patterns": [
+      "backend/models/user.py",
+      "backend/models/student.py",
+      "backend/models/parent.py",
+      "backend/core/kvkk_compliance.py",
+      "backend/core/data_encryption.py",
+      "backend/api/auth.py",
+      "backend/api/user_management.py",
+      "backend/database/audit_logging.py",
+      "backend/services/consent_management.py",
+      "backend/services/data_anonymization.py",
+      "frontend/src/components/Auth/**/*.tsx",
+      "frontend/src/components/Privacy/**/*.tsx",
+      "frontend/src/pages/DataProtection/**/*.tsx"
+    ]
+  },
+
+  "then": {
+    "type": "askAgent",
+    "prompt": "CRITICAL KVKK COMPLIANCE VALIDATION (REQ-48):\n\nAnalyze code changes for KVKK (Turkish GDPR) compliance violations:\n\n1. **Personal Data Protection** (REQ-48.1):\n   - Student name, email, phone MUST be encrypted at rest (AES-256)\n   - Password MUST use bcrypt with salt (min 12 rounds)\n   - Sensitive data (exam scores, learning profiles) MUST be encrypted\n   - Check: Are all PII fields using encryption decorators?\n\n2. **Explicit Consent Management** (REQ-48.2):\n   - Parent consent REQUIRED for students under 18\n   - Marketing consent separate from service consent\n   - Consent timestamp and version tracking REQUIRED\n   - Check: Is consent explicitly obtained before data collection?\n\n3. **Data Minimization** (REQ-48.3):\n   - Only collect necessary data for educational purposes\n   - Auto-delete temporary data after 90 days\n   - Student data retention: Max 2 years after graduation\n   - Check: Are we collecting only necessary fields?\n\n4. **Right to Access & Deletion** (REQ-48.4):\n   - Students can download all their data (JSON export)\n   - DELETE requests must cascade to all related tables\n   - Anonymization for statistical data after deletion\n   - Check: Are CRUD operations respecting deletion requests?\n\n5. **Audit Logging** (REQ-48.5):\n   - Log ALL access to personal data (who, when, why)\n   - Tamper-proof audit logs (append-only, signed)\n   - Minimum 5-year retention for audit logs\n   - Check: Are sensitive operations being logged?\n\n6. **Data Breach Notification** (REQ-48.6):\n   - Detect unauthorized access within 1 hour\n   - Notify affected users within 72 hours\n   - Report to KVKK authority if >100 users affected\n   - Check: Are security events triggering alerts?\n\n7. **Cross-Border Data Transfer** (REQ-48.7):\n   - External APIs (YouTube, Khan Academy) MUST have adequacy decision\n   - Student data CANNOT be sent to non-EU/non-adequate countries\n   - Check: Are external API calls respecting data locality?\n\n8. **Turkish Language Requirements** (REQ-48.8):\n   - Privacy policy MUST be in Turkish\n   - Consent forms MUST be in Turkish\n   - Data subject requests MUST be handled in Turkish\n   - Check: Are UI strings using Turkish?\n\n**Security Checklist**:\n- [ ] Encryption at rest (AES-256)\n- [ ] Encryption in transit (TLS 1.3+)\n- [ ] Password hashing (bcrypt, rounds >= 12)\n- [ ] JWT expiry (max 1 hour, refresh tokens)\n- [ ] SQL injection protection (parameterized queries)\n- [ ] XSS protection (input sanitization)\n- [ ] CSRF protection (tokens)\n- [ ] Rate limiting (prevent abuse)\n- [ ] Session timeout (15 min inactivity)\n- [ ] Two-factor authentication (optional for teachers)\n\n**KVKK Violation Examples to REJECT**:\n❌ Storing plaintext passwords\n❌ Collecting data without consent\n❌ Sharing student data with third parties without consent\n❌ No encryption for sensitive fields\n❌ Missing audit logs for data access\n❌ No data deletion mechanism\n❌ Sending student PII to non-adequate countries\n❌ Privacy policy only in English\n\n**Output Format**:\n```\nKVKK COMPLIANCE STATUS: [PASS/FAIL]\n\nViolations Found: [count]\n1. [Violation description]\n   - File: [filename:line]\n   - Risk Level: [CRITICAL/HIGH/MEDIUM/LOW]\n   - Fix: [Suggested fix]\n\nCompliant Checks: [count]\n✓ [Compliant aspect]\n\nRecommendations:\n- [Action item 1]\n- [Action item 2]\n```\n\n**Performance Target**: Analysis < 10 seconds\n**Critical Threshold**: Any CRITICAL violation = Block commit"
+  }
+}

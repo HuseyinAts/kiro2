@@ -1,0 +1,37 @@
+============================================================
+PHASE 1: TABLE GENERATION DEMO
+============================================================
+
+1. Frequency Table:
+| Kategori | Frekans | Yüzde (%) |
+| --- | --- | --- |
+| A | 21 | 30.0 |
+| B | 24 | 34.3 |
+| C | 19 | 27.1 |
+| D | 6 | 8.6 |
+
+2. Comparison Table:
+| Ürün | Özellik 1 | Özellik 2 |
+| --- | --- | --- |
+| Ürün A | 48 | 19 |
+| Ürün B | 62 | Evet |
+| Ürün C | Evet | 18 |
+| Ürün D | Hayýr | Hayýr |
+
+3. Statistics Table:
+| Ýstatistik | Deðer |
+| --- | --- |
+| Ortalama | 63.95 |
+| Medyan | 67.81 |
+| Mod | 53 |
+| Standart Sapma | 6.74 |
+| Varyans | 151.13 |
+
+4. Price Table:
+Traceback (most recent call last):
+  File "C:\Users\husey\kiro2\backend\services\visual_content_generator.py", line 369, in <module>
+    print(price_table["content"])
+  File "C:\Users\husey\AppData\Local\Programs\Python\Python311\Lib\encodings\cp1254.py", line 19, in encode
+    return codecs.charmap_encode(input,self.errors,encoding_table)[0]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+UnicodeEncodeError: 'charmap' codec can't encode character '\u20ba' in position 16: character maps to <undefined>

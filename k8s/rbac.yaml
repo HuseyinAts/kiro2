@@ -1,0 +1,56 @@
+# =============================================================================
+# Service Account
+# =============================================================================
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: turkiye-sinav-service-account
+  namespace: turkiye-sinav-platform
+  labels:
+    app.kubernetes.io/name: turkiye-sinav-platform
+    app.kubernetes.io/component: rbac
+automountServiceAccountToken: true
+
+---
+# =============================================================================
+# Role for Application Permissions
+# =============================================================================
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: turkiye-sinav-role
+  namespace: turkiye-sinav-platform
+  labels:
+    app.kubernetes.io/name: turkiye-sinav-platform
+    app.kubernetes.io/component: rbac
+rules:
+- apiGroups: [""]
+  resources: ["pods", "services", "endpoints", "configmaps", "secrets"]
+  verbs: ["get", "list", "watch"]
+- apiGroups: ["apps"]
+  resources: ["deployments", "replicasets"]
+  verbs: ["get", "list", "watch"]
+- apiGroups: [""]
+  resources: ["events"]
+  verbs: ["create", "patch"]
+
+---
+# =============================================================================
+# RoleBinding
+# =============================================================================
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: turkiye-sinav-role-binding
+  namespace: turkiye-sinav-platform
+  labels:
+    app.kubernetes.io/name: turkiye-sinav-platform
+    app.kubernetes.io/component: rbac
+subjects:
+- kind: ServiceAccount
+  name: turkiye-sinav-service-account
+  namespace: turkiye-sinav-platform
+roleRef:
+  kind: Role
+  name: turkiye-sinav-role
+  apiGroup: rbac.authorization.k8s.io

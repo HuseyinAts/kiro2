@@ -1,0 +1,554 @@
+/**
+ * Graphing Calculator Styles
+ * 
+ * Grafik hesap makinesi için erişilebilir ve görsel tasarım.
+ * WCAG 2.1 Level AA uyumlu.
+ */
+
+.graphing-calculator {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 20px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 20px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.calculator-header {
+  margin-bottom: 20px;
+  color: white;
+}
+
+.calculator-header h2 {
+  margin: 0;
+  font-size: 1.8rem;
+  font-weight: 600;
+  text-align: center;
+}
+
+.calculator-body {
+  background: white;
+  border-radius: 15px;
+  padding: 20px;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+}
+
+/* Fonksiyon girişi */
+.function-input-section {
+  margin-bottom: 20px;
+}
+
+.input-group {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.input-group label {
+  font-weight: 600;
+  color: #333;
+  min-width: 120px;
+}
+
+.input-group input[type="text"] {
+  flex: 1;
+  padding: 12px;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-family: 'Courier New', monospace;
+  transition: border-color 0.3s ease;
+}
+
+.input-group input[type="text"]:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.input-group button {
+  padding: 12px 24px;
+  background: #4caf50;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.input-group button:hover {
+  background: #45a049;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.input-group button:focus {
+  outline: 3px solid #ffd700;
+  outline-offset: 2px;
+}
+
+/* Fonksiyon yardımı */
+.function-help {
+  margin-top: 10px;
+}
+
+.function-help details {
+  background: #f9f9f9;
+  padding: 10px;
+  border-radius: 8px;
+}
+
+.function-help summary {
+  cursor: pointer;
+  font-weight: 600;
+  color: #667eea;
+  user-select: none;
+}
+
+.function-help summary:hover {
+  color: #5568d3;
+}
+
+.function-help summary:focus {
+  outline: 3px solid #667eea;
+  outline-offset: 2px;
+  border-radius: 5px;
+}
+
+.function-help ul {
+  margin: 10px 0 0 20px;
+  padding: 0;
+  list-style: none;
+}
+
+.function-help li {
+  margin: 5px 0;
+  color: #555;
+}
+
+.function-help code {
+  background: #e0e0e0;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-family: 'Courier New', monospace;
+}
+
+/* Fonksiyon listesi */
+.function-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.function-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  background: #f9f9f9;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.function-item:hover {
+  background: #f0f0f0;
+  transform: translateX(5px);
+}
+
+.function-color {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2px solid #333;
+}
+
+.function-expression {
+  flex: 1;
+  font-family: 'Courier New', monospace;
+  font-size: 1.1rem;
+  color: #333;
+}
+
+.visibility-btn,
+.remove-btn {
+  padding: 8px 12px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 1.2rem;
+  transition: all 0.2s ease;
+}
+
+.visibility-btn:hover,
+.remove-btn:hover {
+  transform: scale(1.2);
+}
+
+.visibility-btn:focus,
+.remove-btn:focus {
+  outline: 3px solid #667eea;
+  outline-offset: 2px;
+  border-radius: 5px;
+}
+
+.visibility-btn.hidden {
+  opacity: 0.5;
+}
+
+.remove-btn:hover {
+  color: #f44336;
+}
+
+/* Grafik alanı */
+.graph-container {
+  width: 100%;
+  height: 500px;
+  background: white;
+  border: 2px solid #e0e0e0;
+  border-radius: 10px;
+  margin-bottom: 20px;
+  overflow: hidden;
+}
+
+.graph-canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* Kontroller */
+.graph-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.control-group {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.control-group button {
+  padding: 10px 16px;
+  background: #667eea;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.control-group button:hover {
+  background: #5568d3;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.control-group button:focus {
+  outline: 3px solid #ffd700;
+  outline-offset: 2px;
+}
+
+.control-group button.active {
+  background: #4caf50;
+}
+
+.control-group input[type="range"] {
+  width: 200px;
+  height: 8px;
+  border-radius: 4px;
+  background: #e0e0e0;
+  outline: none;
+  -webkit-appearance: none;
+}
+
+.control-group input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #667eea;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.control-group input[type="range"]::-webkit-slider-thumb:hover {
+  background: #5568d3;
+  transform: scale(1.2);
+}
+
+.control-group input[type="range"]::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #667eea;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s ease;
+}
+
+.control-group input[type="range"]::-moz-range-thumb:hover {
+  background: #5568d3;
+  transform: scale(1.2);
+}
+
+.control-group input[type="range"]:focus {
+  outline: 3px solid #667eea;
+  outline-offset: 2px;
+}
+
+/* Eksen ayarları */
+.axis-settings {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  padding: 15px;
+  background: #f9f9f9;
+  border-radius: 10px;
+  margin-bottom: 20px;
+}
+
+.axis-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.axis-group label {
+  font-weight: 600;
+  color: #333;
+}
+
+.axis-group input[type="number"] {
+  width: 80px;
+  padding: 8px;
+  border: 2px solid #e0e0e0;
+  border-radius: 6px;
+  font-size: 1rem;
+  text-align: center;
+}
+
+.axis-group input[type="number"]:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.axis-group span {
+  color: #666;
+}
+
+/* Değer tablosu */
+.value-table {
+  margin-top: 20px;
+  padding: 20px;
+  background: #f9f9f9;
+  border-radius: 10px;
+}
+
+.value-table h3 {
+  margin: 0 0 20px 0;
+  color: #333;
+  font-size: 1.3rem;
+}
+
+.table-section {
+  margin-bottom: 30px;
+}
+
+.table-section h4 {
+  margin: 0 0 10px 0;
+  font-size: 1.1rem;
+  font-family: 'Courier New', monospace;
+}
+
+.value-table table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.value-table th,
+.value-table td {
+  padding: 12px;
+  text-align: center;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.value-table th {
+  background: #667eea;
+  color: white;
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.9rem;
+}
+
+.value-table tr:last-child td {
+  border-bottom: none;
+}
+
+.value-table tr:hover {
+  background: #f5f5f5;
+}
+
+/* Responsive tasarım */
+@media (max-width: 768px) {
+  .graphing-calculator {
+    padding: 15px;
+  }
+
+  .calculator-header h2 {
+    font-size: 1.4rem;
+  }
+
+  .graph-container {
+    height: 400px;
+  }
+
+  .input-group {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .input-group label {
+    min-width: auto;
+  }
+
+  .graph-controls {
+    flex-direction: column;
+  }
+
+  .control-group {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .control-group input[type="range"] {
+    width: 100%;
+  }
+
+  .axis-settings {
+    flex-direction: column;
+  }
+
+  .axis-group {
+    width: 100%;
+  }
+}
+
+/* Yüksek kontrast modu */
+@media (prefers-contrast: high) {
+  .graph-container {
+    border: 3px solid #000;
+  }
+
+  .function-item {
+    border: 2px solid #333;
+  }
+
+  .control-group button {
+    border: 2px solid #000;
+  }
+}
+
+/* Azaltılmış hareket modu */
+@media (prefers-reduced-motion: reduce) {
+  .control-group button,
+  .function-item,
+  .input-group button {
+    transition: none;
+  }
+
+  .control-group button:hover,
+  .function-item:hover {
+    transform: none;
+  }
+}
+
+/* Karanlık mod desteği */
+@media (prefers-color-scheme: dark) {
+  .calculator-body {
+    background: #2a2a3e;
+  }
+
+  .input-group input[type="text"],
+  .axis-group input[type="number"] {
+    background: #3a3a4e;
+    border-color: #555;
+    color: #e0e0e0;
+  }
+
+  .function-help details {
+    background: #3a3a4e;
+  }
+
+  .function-help summary {
+    color: #8b9cff;
+  }
+
+  .function-help li {
+    color: #ccc;
+  }
+
+  .function-help code {
+    background: #4a4a5e;
+    color: #e0e0e0;
+  }
+
+  .function-item {
+    background: #3a3a4e;
+  }
+
+  .function-item:hover {
+    background: #4a4a5e;
+  }
+
+  .function-expression {
+    color: #e0e0e0;
+  }
+
+  .axis-settings {
+    background: #3a3a4e;
+  }
+
+  .axis-group label {
+    color: #e0e0e0;
+  }
+
+  .axis-group span {
+    color: #aaa;
+  }
+
+  .value-table {
+    background: #3a3a4e;
+  }
+
+  .value-table h3,
+  .table-section h4 {
+    color: #e0e0e0;
+  }
+
+  .value-table table {
+    background: #2a2a3e;
+  }
+
+  .value-table td {
+    color: #e0e0e0;
+    border-bottom-color: #555;
+  }
+
+  .value-table tr:hover {
+    background: #3a3a4e;
+  }
+}

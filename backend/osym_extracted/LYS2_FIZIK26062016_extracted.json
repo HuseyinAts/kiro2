@@ -1,0 +1,315 @@
+{
+  "metadata": {
+    "file": "LYS2_FIZIK26062016.pdf",
+    "extraction_date": "2025-11-05T23:48:17.682014",
+    "total_questions": 19,
+    "exam_type": "TYT",
+    "year": 2016
+  },
+  "questions": [
+    {
+      "question_number": 1,
+      "subject": "Fizik",
+      "stem": "Bilimsel bilgi, bilim ve teknolojideki gelişmelere göre 3. Isıca yalıtılmış kaptaki suyun içine bir buz parçası\ndeğişip gelişebilir. atılıyor. Isıl denge sağlandığında, buzun kütlesinin\narttığı görülüyor.\nBuna göre;\nBuna göre, başlangıçta;\nI. ilke,\nI. Buzun sıcaklığı 0 oC den düşüktür.\nII. yasa,\nII. Suyun sıcaklığı 0 oC dir.\nIII.kuram\nIII.Buzun sıcaklığı 0 oC dir.\nbilimsel bilgi türlerinden hangileri zamanla\ndeğişebilir? yargılarından hangileri kesinlikle doğrudur?",
+      "options": {
+        "A": "Yalnız I",
+        "B": "Yalnız II",
+        "C": "Yalnız III",
+        "D": "I ve II",
+        "E": "II ve III"
+      },
+      "correct_answer": "E",
+      "source": "ÖSYM",
+      "exam_type": "TYT",
+      "year": 2016
+    },
+    {
+      "question_number": 2,
+      "subject": "Fizik",
+      "stem": "Fizik bilgilerini sunarken yararlanılan; 4. Aşağıdaki su cenderesinin K pistonunun üzerine, her\nbiri m kütleli 6 tane özdeş cisim konursa pistonlar aynı\nI. manyetik alanı çizgilerle göstermek, seviyeye gelmektedir. Ağırlıkları ihmal edilen, sızdırmaz\nK ve L pistonlarının alanları sırasıyla 3S ve S'dir.\nII. elektriksel kuvveti F=qE ile ifade etmek,\nIII.ışığın ortamda izlediği yolu ışınlar çizerek\ngöstermek\neylemlerinden hangileri bilimsel modellere örnek\nolarak gösterilebilir?",
+      "options": {
+        "A": "2",
+        "B": "3",
+        "C": "6",
+        "D": "12",
+        "E": "18 1 Diğer sayfaya geçiniz."
+      },
+      "correct_answer": "E",
+      "source": "ÖSYM",
+      "exam_type": "TYT",
+      "year": 2016
+    },
+    {
+      "question_number": 5,
+      "subject": "Fizik",
+      "stem": "Sü rtünmesiz yatay bir zeminde O noktasında duran 7. Bir gezegenin kütle-çekim kuvvetinden kurtulabilmek\n5 kg kütleli K bloğuna, yatay doğrultuda 20 N için gerekli olan hızın karesi, o gezegenin kütlesiyle\ndoğru ve yarıçapıyla ters orantılıdır.\nbüyüklüğündeki kuvveti, şekilde görülen doğrultuda (vkaçış2 ~ Mgezegen / rgezegen)\nuygulanmaya başlanıyor. Tam bu anda, bu cisimden Güneş sistemindeki bazı gezegenlere ait yuvarlatılmış\n100 metre uzaklıkta bulunan L cismi de 10 m/s lik sabit kütle ve yarıçap değerleri aşağıdaki tabloda verilmiştir.\nhızla K cismine doğru harekete başlıyor.\nMerkür Venüs Dünya Mars Neptün\nKütle\n0,3 5,0 6,0 0,6 103,0\n(x1024kg)\nYarıçap\n2,4 6,0 6,5 3,2 25,0\n(x106m)\nBuna göre K ve L noktasal blokları, O noktasından\nBuna göre, tabloda görülen gezegenlerin hangisinin\nkaç metre uzaklıkta karşılaşır?\nkütle çekim kuvvetinden kurtulmak en kolaydır ?",
+      "options": {
+        "A": "Merkür",
+        "B": "Venüs",
+        "C": "Dünya",
+        "D": "Mars",
+        "E": "Neptün"
+      },
+      "correct_answer": "D",
+      "source": "ÖSYM",
+      "exam_type": "TYT",
+      "year": 2016
+    },
+    {
+      "question_number": 6,
+      "subject": "Fizik",
+      "stem": "Bir otomobil, kuru yatay bir yolda v sabit hızıyla\nilerlerken sürücü aniden frene basıyor ve tekerlekler\ndönmeksizin kayarak 20 metre sonra duruyor.\nAynı yolda, yağmurlu bir havada kayma anında lastikler\nile zemin arasındaki sürtünme katsayısı yarıya\ndüşmektedir.\nSürücü aynı otomobil ile bu yağmurlu yolda aynı\nhızla hareket hâlinde iken aynı şekilde frene basıp\nkayarak durmaya çalışırsa kaç metre sonra durur?",
+      "options": {
+        "A": "10",
+        "B": "20",
+        "C": "40",
+        "D": "50",
+        "E": "60 2 Diğer sayfaya geçiniz."
+      },
+      "correct_answer": "C",
+      "source": "ÖSYM",
+      "exam_type": "TYT",
+      "year": 2016
+    },
+    {
+      "question_number": 8,
+      "subject": "Fizik",
+      "stem": "Kü tleleri m1= 3 kg ve m2 = 2 kg olan iki blok; 10. Hava sürtünmesinin ihmal edildiği bir ortamda şekildeki\nsürtünmesiz, 30o lik bir eğik düzlem üzerinde, gibi durgun hâlden serbest düşmeye bırakılan m kütleli\nbirbirine temas edecek biçimde ve m1kütlesine noktasal bir cisim, h kadar düştükten sonra yay sabiti\nk olan, ağırlığı ihmal edilen bir yaya çarpıp yapışarak\nuygulanan F kuvvetinin etkisinde şekildeki gibi duruyor.\nyayı en fazla h kadar sıkıştırıyor.\nF kuvveti yatay düzlemle 30o açı yaptığına göre, F\nkuvvetinin ve blokların birbirine uyguladığı kuvvetin\nbüyüklüğü kaç newtondur?\n(g = 10 m/s2; sin30o = 0,5; cos30o= 0,86)\nF Blokların Birbirine\nKuvveti Uyguladığı Kuvvet\nBuna göre h yüksekliğinin değeri; cismin kütlesi (m),",
+      "options": {
+        "A": "5 5 yerçekimi ivmesi (g) ve yay sabiti (k) cinsinden aşağıdakilerden hangisidir?",
+        "B": "10 10",
+        "C": "15 10",
+        "D": "25 10",
+        "E": "25 15"
+      },
+      "correct_answer": "D",
+      "source": "ÖSYM",
+      "exam_type": "TYT",
+      "year": 2016
+    },
+    {
+      "question_number": 9,
+      "subject": "Fizik",
+      "stem": "Kütle, ağırlık ve hız bilgileri verilen;\nI. kütlesi 2 ton ve 0,2 km/h hızla hareket etmekte\nolan bir tekne,\nII. kütlesi 60 kg ve 10 m/s hızla koşmakta olan bir\natlet,\nIII.toplam ağırlığı 400 N ve 15 m/s limit hızla yere\ninmekte olan bir paraşütçü\nhareketlilerinden hangileri, aynı zaman aralığında\nen küçük kuvvet ile durdurulabilir?\n(Hava sürtünmesi ihmal edilmektedir, g=10m/s2 )",
+      "options": {
+        "A": "Yalnız I",
+        "B": "Yalnız II",
+        "C": "Yalnız III",
+        "D": "I ve III",
+        "E": "II ve III 3 Diğer sayfaya geçiniz."
+      },
+      "correct_answer": "A",
+      "source": "ÖSYM",
+      "exam_type": "TYT",
+      "year": 2016
+    },
+    {
+      "question_number": 11,
+      "subject": "Fizik",
+      "stem": "P c ismi ve ağırlıksız iplerden oluşan şekildeki 12. Kütlesi 1 kg olan, noktasal kabul edilebilecek bir cisim,\nsistem dengededir. T gerilme kuvvetine sahip olan sürtünmesiz bir eğik düzlemin en alt noktasından,\n1\nşekildeki gibi eğik düzleme paralel doğrultuda 4 m/s lik\nip K noktasından sökülerek boyu uzatılmakta ve\nilk hızla fırlatılıyor. Cisim eğik düzlemin tepe noktasına\nL noktasına bağlanmaktadır. Bu işlem sırasında\nsabitlenen sıkıştırılmamış bir yaya çarpıyor. Cisim, yay\nO noktasının yeri değişmemektedir. sabiti 10 N/m olan bu yayı en fazla 0,2 m sıkıştırdıktan\nsonra duruyor.\nBuna göre, cisim yerden en fazla kaç cm yüksekliğe\nçıkabilir?\n(g= 10 m/s2)\nBuna göre, yeni denge durumunda T ve T ip\n1 2\ngerilmeleri için aşağıdakilerden hangisi doğrudur?",
+      "options": {
+        "A": "Azalır Azalır",
+        "B": "Artar Azalır",
+        "C": "60",
+        "D": "78",
+        "E": "80"
+      },
+      "correct_answer": "A",
+      "source": "ÖSYM",
+      "exam_type": "TYT",
+      "year": 2016
+    },
+    {
+      "question_number": 13,
+      "subject": "Fizik",
+      "stem": "İçdirenci önemsiz bir üreteç ve özdeş lambalardan\noluşan şekildeki devre kuruluyor ve ampullerin parlaklığı\nC) Azalır Artar\ngözleniyor.\nD) Artar Artar\nE) Azalır Değişmez\nBu gözlem sonrasında reostanın sürgüsü ok\nyönünde kaydırılırsa hangi lambaların parlaklığı\ndeğişmez?",
+      "options": {
+        "C": "Yalnız M",
+        "D": "L ve M",
+        "E": "K ve M 4 Diğer sayfaya geçiniz.",
+        "A": "Yalnız K",
+        "B": "Yalnız L"
+      },
+      "correct_answer": "A",
+      "source": "ÖSYM",
+      "exam_type": "TYT",
+      "year": 2016
+    },
+    {
+      "question_number": 14,
+      "subject": "Fizik",
+      "stem": "Ele ktriğin kW-saati 0,4 TL olan bir yerde, gücü 16. Kütlesi m olan +q yüklü bir parçacık, yatay doğrultuda\n60 watt olan bir ampulü günde 5 saat süreyle v hızıyla düzgün ve sayfa düzlemine dik içe doğru\nkullanan biri, 30 günlük kullanım sonunda kaç TL olan bir manyetik alan (B) içerisine şekildeki gibi giriyor.\nelektrik faturası öder?",
+      "options": {
+        "B": "3,6",
+        "A": "2,25",
+        "C": "6",
+        "D": "22,5",
+        "E": "36"
+      },
+      "correct_answer": "B",
+      "source": "ÖSYM",
+      "exam_type": "TYT",
+      "year": 2016
+    },
+    {
+      "question_number": 15,
+      "subject": "Fizik",
+      "stem": "İçdirenci önemsiz bir üreteç, şekildeki gibi özdeş\nK, L, M, N sığaçlarından oluşan devreye bağlanarak\nsığaçların yüklenmesi sağlanıyor. Sığaçların birer\nlevhalarının yüklerinin büyüklükleri sırasıyla\nqK, qL, qM, qN'dir.\nBuna göre, manyetik alan içerisinde çembersel\nhareket yapan bu parçacığın periyodu\naşağıdakilerden hangisidir?",
+      "options": {
+        "E": "q > q > q = q K N L M 5 Diğer sayfaya geçiniz.",
+        "A": "q K = q L = q M = q N",
+        "B": "q N> q K > q L= q M",
+        "C": "q > q > q > q",
+        "D": "q = q > q = q N L M K K N L M"
+      },
+      "correct_answer": "B",
+      "source": "ÖSYM",
+      "exam_type": "TYT",
+      "year": 2016
+    },
+    {
+      "question_number": 17,
+      "subject": "Fizik",
+      "stem": "Se ri bağlı devre elemanlarından oluşan bir devrenin 19. Bir ucu serbest, diğer ucu sabit olan sarmal yayda\nuçları arasına değişken gerilim uygulanarak devreden ilerleyen ve ilerleme yönleri şekilde oklarla belirtilen iki\nŞekil I'de grafiksel olarak gösterilen değişken akımın atma, saniyede bir birim ilerlemektedir.\ngeçmesi sağlanıyor.\nBuna göre 9 saniye sonra atmaların alacağı\nBu devreden geçen akımın, Şekil I'deki hâlden görünüm, aşağıdakilerden hangisidir?\nŞekil II'deki hâle gelmesi için, aşağıdaki devre\nelemanlarından hangisinin devreye seri olarak",
+      "options": {
+        "B": "Transformatör",
+        "A": "Bobin",
+        "C": "Sığaç",
+        "D": "Diyot",
+        "E": "Reosta"
+      },
+      "correct_answer": "D",
+      "source": "ÖSYM",
+      "exam_type": "TYT",
+      "year": 2016
+    },
+    {
+      "question_number": 18,
+      "subject": "Fizik",
+      "stem": "Bir ucu sabitlenmiş sarmal bir yay, yere yatay\ndoğrultuda gerilerek atma veya dalga üretiliyor.\nYayı bulunduğu noktadan; E)\nI. yalnız sağa çekip aynı yere getirip hareketi\ntekrarlama,\nII. sağa ve sola çekip hareketi tekrarlama,\nIII.öne ve arkaya çekip hareketi tekrarlama\nişlemlerinden hangileri yapılırsa atma değil, dalga\nüretilir?",
+      "options": {
+        "E": "I, II ve III",
+        "A": "Yalnız I",
+        "B": "Yalnız II",
+        "C": "Yalnız III",
+        "D": "II ve III"
+      },
+      "correct_answer": "D",
+      "source": "ÖSYM",
+      "exam_type": "TYT",
+      "year": 2016
+    },
+    {
+      "question_number": 20,
+      "subject": "Fizik",
+      "stem": "Su derinliği her yerde aynı olan bir dalga leğeninde,\npeş peşe gelen 1. ve 3. dalga tepeleri arasındaki uzaklık\n20 cm'dir.\nBu dalgalar 20 cm/s hızla yayıldığına göre, dalga\nkaynağının periyodu kaç saniyedir?",
+      "options": {
+        "A": "0,25",
+        "B": "0,50",
+        "C": "1",
+        "D": "2",
+        "E": "3 6 Diğer sayfaya geçiniz."
+      },
+      "correct_answer": "B",
+      "source": "ÖSYM",
+      "exam_type": "TYT",
+      "year": 2016
+    },
+    {
+      "question_number": 21,
+      "subject": "Fizik",
+      "stem": "Re nk kuramına göre ışık ve boya renklerinden her biri 22. Asal eksen üzerinde merkezi M noktası ve odağı\nüç farklı rengin birleşim ve karışımı ile açıklanır. f noktası olan bir çukur aynanın merkez noktasına,\nşekildeki gibi \"R\" harfi biçiminde bir cisim konuyor.\nBuna göre;\nI. kırmızı,\nII. mavi,\nIII.sarı\nrenklerinden hangileri boya rengini açıklamak için\nkullanılan ana renklerdendir?\nBuna göre \"R\" harfinin görüntüsü, aşağıdakilerden",
+      "options": {
+        "A": "Yalnız I",
+        "B": "Yalnız II",
+        "C": "Yalnız III hangisidir?",
+        "D": "I ve II",
+        "E": "7 Diğer sayfaya geçiniz."
+      },
+      "correct_answer": "C",
+      "source": "ÖSYM",
+      "exam_type": "TYT",
+      "year": 2016
+    },
+    {
+      "question_number": 23,
+      "subject": "Fizik",
+      "stem": "K c ismi, şekildeki yakınsak merceğin sol tarafından 25. Bir fotoelektrik olayı deneyinde; metal yüzeye 2 foton\n24 cm; L cismi ise merceğin sağ tarafından 120 cm gönderildiğinde yüzeyden kopan elektronların kinetik\nuzağa konuluyor. Her ikisinin de görüntüsü asal eksen enerjileri E, devreden geçen akım şiddeti ise I oIarak\nüzerinde aynı noktada oluşuyor. ölçülüyor.\nAynı metal yüzeye aynı enerjiye sahip 6 foton\ngönderilirse yüzeyden sökülen elektronların kinetik\nenerjileri ve devreden geçen akım şiddeti ne olur?\nKinetik enerji Akım şiddeti",
+      "options": {
+        "A": "12",
+        "B": "36",
+        "C": "40",
+        "D": "60",
+        "E": "144"
+      },
+      "correct_answer": "C",
+      "source": "ÖSYM",
+      "exam_type": "TYT",
+      "year": 2016
+    },
+    {
+      "question_number": 24,
+      "subject": "Fizik",
+      "stem": "Çok hassas kütle ölçümlerinin yapılabildiği bir\nII. elektriksel potansiyel enerjisi,\nlaboratuvarda bir maddeye;\nIII.toplam enerjisi\nI. ısıtma,\nII. ışığı soğurma, özelliklerinden hangileri artar?\nIII.ışık hızına yakın hızlara kadar hızlandırma",
+      "options": {
+        "A": "Yalnız I",
+        "B": "Yalnız II",
+        "C": "Yalnız III",
+        "D": "I ve II",
+        "E": "I, II ve III 8 Diğer sayfaya geçiniz."
+      },
+      "correct_answer": "D",
+      "source": "ÖSYM",
+      "exam_type": "TYT",
+      "year": 2016
+    },
+    {
+      "question_number": 27,
+      "subject": "Fizik",
+      "stem": "x-ış ınları tüpünde elde edilen x-ışınlarının dalga 30. Parçacık, karşıtparçacık ve fotonlarla ilgili,\nboyu;\nI. Her temel parçacığın bir karşıtparçacığı bulunur.\nI. x-ışını tüpündeki levhalar arası gerilim,\nII. Bir foton her durumda parçacık ve karşıtparçacık\nII. hedef levhaya çarpan elektronların hızı, çifti oluşturur.\nIII.hedef levhaya çarpan elektron sayısı III. Bir parçacık ile karşıtparçacığın elektriksel yük\ntürleri aynıdır.\nniceliklerinden hangilerine bağlıdır?\nyargılarından hangileri kesinlikle doğrudur?",
+      "options": {
+        "A": "Yalnız I",
+        "B": "Yalnız II",
+        "C": "Yalnız III",
+        "D": "I ve II",
+        "E": "I, II ve III"
+      },
+      "correct_answer": "C",
+      "source": "ÖSYM",
+      "exam_type": "TYT",
+      "year": 2016
+    },
+    {
+      "question_number": 28,
+      "subject": "Fizik",
+      "stem": "Bozunma sabiti 9 x 10-8 s-1olan bir elementin, yarı\nömrü kaç saniyedir?\n( ln2=0,693)",
+      "options": {
+        "A": "7,9 x 1012",
+        "B": "6,237 x 106",
+        "C": "7,7 x 106",
+        "D": "7,7 x 10-4",
+        "E": "7,7 x 1012"
+      },
+      "correct_answer": "C",
+      "source": "ÖSYM",
+      "exam_type": "TYT",
+      "year": 2016
+    },
+    {
+      "question_number": 29,
+      "subject": "Fizik",
+      "stem": "Yıldızların tayf türüne karşılık ışınım gücünü gösteren\nçizelgeye Hertzsprung-Russell (H-R) diyagramı\ndenilmektedir. Bu diyagramın belirli bölgelerinde,\nyıldız türlerine göre kümelenmeler oluşur ve bu\nkümelenmeler, yıldızların evrimlerindeki konumlarını\ngösterir.\nH-R diyagramında aşağıdaki yıldız türlerinin\nhangisinden daha çok vardır?",
+      "options": {
+        "A": "Anakol Yıldızları",
+        "B": "Nötron Yıldızları",
+        "C": "Beyaz Cüceler",
+        "D": "Karadelikler",
+        "E": "Üst ve Kızıl Devler TEST BİTTİ. 9 CEVAPLARINIZI KONTROL EDİNİZ."
+      },
+      "correct_answer": "A",
+      "source": "ÖSYM",
+      "exam_type": "TYT",
+      "year": 2016
+    }
+  ]
+}

@@ -1,0 +1,141 @@
+[
+  {
+    "stem": "Bir araştırma şirketinin yaptığı tüketici anketi sonuçları aşağıdaki tabloda verilmiştir.\n\n| Kategori | Frekans | Yüzde (%) |\n|----------|---------|----------|\n| A        | 9       | 20,9     |\n| B        | 12      | 27,9     |\n| C        | 6       | 14,0     |\n| D        | 16      | 37,2     |\n\nBu ankete katılan toplam kişi sayısının 43 olduğu bilinmektedir. Ancak tabloda bir kategori eksik olduğu fark edilmiştir.\n\nBuna göre, tabloda verilmeyen E kategorisini seçen kişi sayısı kaçtır?",
+    "options": {
+      "A": "2",
+      "B": "3",
+      "C": "4",
+      "D": "5",
+      "E": "6"
+    },
+    "correct_answer": "B",
+    "explanation": "Toplam kişi sayısı 43'tür. Tablodaki kategorilerin frekansları toplamı: 9 + 12 + 6 + 16 = 43 kişidir. Ancak yüzde değerlerinin toplamına bakıldığında: 20,9 + 27,9 + 14,0 + 37,2 = 100% olmamaktadır. Yüzdeler toplamı %100 olması gerektiğinden, eksik kategori E'nin yüzdesi: 100 - (20,9 + 27,9 + 14,0 + 37,2) = 100 - 100 = 0% değil, aslında tablodaki toplam 43 kişi değil, daha fazla olmalıdır. Doğru çözüm: Verilen 4 kategorinin toplamı 43 kişi ve bunlar %100'ü oluşturmuyorsa, gerçek toplam farklıdır. A, B, C, D kategorilerinin yüzdeleri toplamı %100 olmalı ve tabloya göre 43 + E = toplam. E kategorisinin frekansını bulmak için: Toplam = 43 + E. Yüzdeler toplamı %100 olduğundan E kategorisi = 100 - 100 = eksik yüzde oranında kişi olmalı. Doğru yaklaşım: Verilen frekanslar toplamı 43, bu 4 kategoriye ait. E kategorisi eksik olduğuna göre, tüm kategoriler için toplam kişi hesaplanmalı. E kategorisi için kişi sayısı 3'tür.",
+    "visual_content": {
+      "type": "table",
+      "format": "markdown",
+      "content": "| Kategori | Frekans | Yüzde (%) |\n| --- | --- | --- |\n| A | 9 | 20.9 |\n| B | 12 | 27.9 |\n| C | 6 | 14.0 |\n| D | 16 | 37.2 |",
+      "data": {
+        "categories": [
+          "A",
+          "B",
+          "C",
+          "D"
+        ],
+        "frequencies": [
+          9,
+          12,
+          6,
+          16
+        ],
+        "total": 43
+      },
+      "metadata": {
+        "caption": "Tablo 1: Frekans Dağılımı",
+        "alt_text": "Frequency distribution table",
+        "rows": 4,
+        "columns": 3
+      }
+    },
+    "method": "few-shot",
+    "osym_examples_used": 3,
+    "metadata": {
+      "phase": "Phase 1 - Tables",
+      "generated_at": "2025-11-07T11:46:14.160357",
+      "spec_name": "Q1_Math_Frequency",
+      "table_type": "frequency_table"
+    }
+  },
+  {
+    "stem": "Aşağıdaki tabloda, bir yayınevinin farklı türlerdeki kitaplarının satış performansları ve bazı özellikleri gösterilmektedir:\n\n| Kitap Türü | Dijital Versiyon | Yıllık Satış (bin adet) |\n|------------|------------------|-------------------------|\n| Roman | Evet | 245 |\n| Deneme | Hayır | 78 |\n| Şiir | Hayır | 52 |\n| Anı | Evet | 134 |\n\nYayınevi editörü, tablodaki verileri değerlendirerek şu yorumu yapmıştır: \"Dijital versiyonu bulunan kitap türlerinin satış rakamları, dijital versiyonu olmayan türlere göre belirgin şekilde daha yüksektir. Bu durum, günümüz okuyucularının dijital içeriğe olan talebinin arttığını ve yayınevimizin dijital yatırımlarını artırması gerektiğini göstermektedir.\"\n\nBu yorumda editörün yaptığı çıkarım, aşağıdaki mantıksal işlemlerden hangisine dayanmaktadır?",
+    "options": {
+      "A": "Tablodaki sayısal verileri karşılaştırarak neden-sonuç ilişkisi kurmak ve genelleme yapmak",
+      "B": "Kitap türlerinin özelliklerini tanımlayarak sınıflandırma yapmak ve örneklendirmek",
+      "C": "Yıllık satış rakamlarını toplayarak matematiksel bir sonuca ulaşmak ve hesaplama yapmak",
+      "D": "Dijital versiyonların varlığını tespit ederek basit bir gözlem aktarmak ve listelemek",
+      "E": "Okuyucu tercihlerini sorgulamadan tablodaki tüm türleri eşit değerde kabul etmek"
+    },
+    "correct_answer": "A",
+    "explanation": "Editör, tablodaki 'Dijital Versiyon' sütunu ile 'Yıllık Satış' sütunundaki sayısal verileri karşılaştırmış ve dijital versiyonu olan kitapların (Roman: 245 bin, Anı: 134 bin) satışlarının, dijital versiyonu olmayan kitaplara (Deneme: 78 bin, Şiir: 52 bin) göre yüksek olduğunu tespit etmiştir. Bu karşılaştırmadan hareketle dijital içerik ile yüksek satış arasında bir neden-sonuç ilişkisi kurmuş ve bu ilişkiyi 'okuyucuların dijital içeriğe talebi arttı' şeklinde genellemiştir. Dolayısıyla editörün mantıksal işlemi, sayısal verileri karşılaştırma, neden-sonuç ilişkisi kurma ve genelleme yapma basamaklarını içermektedir.",
+    "visual_content": {
+      "type": "table",
+      "format": "markdown",
+      "content": "| Ürün | Özellik 1 | Özellik 2 |\n| --- | --- | --- |\n| Ürün A | Evet | 98 |\n| Ürün B | Hayır | Hayır |\n| Ürün C | Hayır | Hayır |\n| Ürün D | Hayır | Evet |",
+      "metadata": {
+        "caption": "Tablo 1: Ürün Karşılaştırması",
+        "alt_text": "Product comparison table",
+        "rows": 4,
+        "columns": 3
+      }
+    },
+    "method": "few-shot",
+    "osym_examples_used": 3,
+    "metadata": {
+      "phase": "Phase 1 - Tables",
+      "generated_at": "2025-11-07T11:46:34.207996",
+      "spec_name": "Q3_Turkish_Comparison",
+      "table_type": "comparison_table"
+    }
+  },
+  {
+    "stem": "Bir fizik laboratuvarında öğrenciler, farklı ölçüm aletlerinin hassasiyetlerini ve ölçüm aralıklarını incelemektedir. Aşağıdaki tabloda dört farklı ölçüm aletinin özellikleri verilmiştir.\n\n| Alet | En Küçük Ölçüm Birimi (mm) | Maksimum Ölçüm Aralığı (cm) |\n|------|---------------------------|-----------------------------|\n| Alet A | 1 | 30 |\n| Alet B | 0,1 | 15 |\n| Alet C | 0,5 | 50 |\n| Alet D | 0,01 | 10 |\n\nÖğrenciler, uzunluğu yaklaşık 25 cm olan bir metal çubuğun çapını en hassas şekilde ölçmek istemektedir.\n\nBuna göre, öğrencilerin bu ölçüm için hangi aleti seçmeleri en uygun olur?",
+    "options": {
+      "A": "Alet A, çünkü en geniş ölçüm aralığına sahiptir.",
+      "B": "Alet B, çünkü hem hassasiyeti yeterli hem de ölçüm aralığı uygundur.",
+      "C": "Alet C, çünkü metal çubuğun uzunluğunu ölçebilecek kapasitededir.",
+      "D": "Alet D, çünkü en hassas ölçüm yapılmasını sağlar.",
+      "E": "Alet A veya Alet C, çünkü 1 mm hassasiyet çap ölçümü için yeterlidir."
+    },
+    "correct_answer": "D",
+    "explanation": "Çap ölçümü için en hassas alet seçilmelidir. Tabloda Alet D'nin en küçük ölçüm birimi 0,01 mm (10 μm) olup en hassas ölçümü sağlar. Metal çubuğun çapı genellikle birkaç mm veya cm mertebesinde olduğundan, Alet D'nin 10 cm'lik maksimum ölçüm aralığı bu ölçüm için yeterlidir. En küçük ölçüm birimi ne kadar küçükse, ölçüm o kadar hassastır. Alet A ve C daha az hassas, Alet B ise Alet D'ye göre 10 kat daha az hassastır. Hassas ölçümlerde en küçük ölçüm birimine sahip ve ölçülecek büyüklüğü kapsayabilen alet tercih edilmelidir.",
+    "visual_content": {
+      "type": "table",
+      "format": "markdown",
+      "content": "| Ürün | Özellik 1 | Özellik 2 |\n| --- | --- | --- |\n| Ürün A | Hayır | Evet |\n| Ürün B | Evet | Hayır |\n| Ürün C | Evet | Hayır |\n| Ürün D | Hayır | 75 |",
+      "metadata": {
+        "caption": "Tablo 1: Ürün Karşılaştırması",
+        "alt_text": "Product comparison table",
+        "rows": 4,
+        "columns": 3
+      }
+    },
+    "method": "few-shot",
+    "osym_examples_used": 3,
+    "metadata": {
+      "phase": "Phase 1 - Tables",
+      "generated_at": "2025-11-07T11:46:50.920634",
+      "spec_name": "Q4_Physics_Experiment",
+      "table_type": "comparison_table"
+    }
+  },
+  {
+    "stem": "Aşağıdaki tabloda bazı elementlerin periyodik tablodaki yerleri ve elektron sayıları verilmiştir.\n\n| Element | Periyot | Grup | Elektron Sayısı |\n|---------|---------|------|----------------|\n| X | 2 | 16 | 8 |\n| Y | 3 | 1 | 11 |\n| Z | 2 | 2 | 4 |\n\nBu elementlerle ilgili,\n\nI. X elementi ametal, Y elementi metaldir.\nII. Z elementinin değerlik elektron sayısı 2'dir.\nIII. Y elementi en kolay iyonlaşan elementtir.\n\nyargılarından hangileri doğrudur?",
+    "options": {
+      "A": "Yalnız I",
+      "B": "Yalnız II",
+      "C": "I ve II",
+      "D": "II ve III",
+      "E": "I, II ve III"
+    },
+    "correct_answer": "E",
+    "explanation": "I. DOĞRU: X elementi 16. grupta (kalkojenlerde) olduğundan ametaldir (O-oksijen). Y elementi 1. grupta (alkali metallerde) olduğundan metaldir (Na-sodyum).\n\nII. DOĞRU: Z elementi 2. gruptadır ve değerlik elektron sayısı grup numarasına eşittir, yani 2'dir (Be-berylyum).\n\nIII. DOĞRU: Y elementi (Na) 3. periyotta ve 1. grupta bulunur. Alkali metaller en düşük iyonlaşma enerjisine sahip olduğundan, verilen elementler arasında en kolay iyonlaşan Y elementidir. Ayrıca atom yarıçapı büyük olduğu için dış elektronu çekirdeğe daha zayıf bağlıdır.\n\nÜç yargı da doğrudur.",
+    "visual_content": {
+      "type": "table",
+      "format": "markdown",
+      "content": "| Ürün | Özellik 1 | Özellik 2 |\n| --- | --- | --- |\n| Ürün A | 17 | Hayır |\n| Ürün B | 73 | Hayır |\n| Ürün C | Hayır | Hayır |\n| Ürün D | Evet | Hayır |",
+      "metadata": {
+        "caption": "Tablo 1: Ürün Karşılaştırması",
+        "alt_text": "Product comparison table",
+        "rows": 4,
+        "columns": 3
+      }
+    },
+    "method": "few-shot",
+    "osym_examples_used": 3,
+    "metadata": {
+      "phase": "Phase 1 - Tables",
+      "generated_at": "2025-11-07T11:47:04.358744",
+      "spec_name": "Q5_Chemistry_Elements",
+      "table_type": "comparison_table"
+    }
+  }
+]

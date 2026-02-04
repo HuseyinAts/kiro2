@@ -1,0 +1,84 @@
+# Production Dockerfile for KIRO Platform - Question Bank v2.0
+# Multi-stage build for optimal image size
+
+# ============================================================================
+# STAGE 1: Python Dependencies Builder
+# ============================================================================
+FROM python:3.11-slim as builder
+
+WORKDIR /build
+
+# Install build dependencies
+RUN apt-get update && apt-get install -y \
+    gcc \
+    g++ \
+    postgresql-client \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy requirements
+COPY backend/requirements.txt backend/requirements-test.txt ./
+
+# Create virtual environment
+RUN python -m venv /opt/venv
+ENV PATH="/opt/venv/bin:$PATH"
+
+# Install Python dependencies
+RUN pip install --no-cache-dir --upgrade pip && \
+    pip install --no-cache-dir -r requirements.txt
+
+# ============================================================================
+# STAGE 2: Production Runtime
+# ============================================================================
+FROM python:3.11-slim
+
+LABEL maintainer="KIRO Platform Team"
+LABEL description="KIRO - AI-Powered Educational Platform (Question Bank v2.0)"
+LABEL version="2.0.0"
+
+# Create app user (non-root for security)
+RUN groupadd -r kiro && useradd -r -g kiro kiro
+
+# Install runtime dependencies
+RUN apt-get update && apt-get install -y \
+    postgresql-client \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy virtual environment from builder
+COPY --from=builder /opt/venv /opt/venv
+ENV PATH="/opt/venv/bin:$PATH"
+
+# Set working directory
+WORKDIR /app
+
+# Copy application code
+COPY --chown=kiro:kiro backend/ ./backend/
+COPY --chown=kiro:kiro frontend/dist/ ./frontend/dist/
+
+# Create directories for ML models and logs
+RUN mkdir -p /app/backend/ml/models \
+             /app/backend/ml/embeddings \
+             /app/logs \
+             /app/data && \
+    chown -R kiro:kiro /app
+
+# Switch to non-root user
+USER kiro
+
+# Set environment variables
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONPATH=/app/backend \
+    LOG_LEVEL=INFO \
+    WORKERS=4 \
+    PORT=8000
+
+# Expose port
+EXPOSE 8000
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
+    CMD curl -f http://localhost:8000/api/v2/health || exit 1
+
+# Run application
+CMD ["uvicorn", "backend.main:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "4"]

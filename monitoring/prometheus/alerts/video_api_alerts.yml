@@ -1,0 +1,114 @@
+# Video API Alert Rules
+# Teknofest 2025 - Eğitim Eylemci Projesi
+# Requirements: 4.14, 5.15
+
+groups:
+  - name: video_api_alerts
+    interval: 30s
+    rules:
+      # High Error Rate Alert
+      - alert: HighVideoAPIErrorRate
+        expr: |
+          (
+            sum(rate(video_errors_total[5m])) 
+            / 
+            sum(rate(video_requests_total[5m]))
+          ) > 0.05
+        for: 5m
+        labels:
+          severity: critical
+          component: video_api
+        annotations:
+          summary: "Video API yüksek hata oranı"
+          description: "Video API hata oranı %5'in üzerinde ({{ $value | humanizePercentage }}). Son 5 dakikada {{ $value | humanize }} hata oluştu."
+          dashboard: "http://grafana:3000/d/video-api/video-api-dashboard"
+          
+      # Slow Response Time Alert
+      - alert: SlowVideoAPIResponse
+        expr: |
+          histogram_quantile(0.95, 
+            sum(rate(video_response_time_seconds_bucket[5m])) by (le, endpoint)
+          ) > 3.0
+        for: 10m
+        labels:
+          severity: warning
+          component: video_api
+        annotations:
+          summary: "Video API yavaş yanıt süresi"
+          description: "Video API P95 yanıt süresi 3 saniyenin üzerinde ({{ $value }}s). Hedef: <3s"
+          dashboard: "http://grafana:3000/d/video-api/video-api-dashboard"
+          
+      # Very Slow Response Time Alert (Critical)
+      - alert: VerySlowVideoAPIResponse
+        expr: |
+          histogram_quantile(0.95, 
+            sum(rate(video_response_time_seconds_bucket[5m])) by (le, endpoint)
+          ) > 10.0
+        for: 5m
+        labels:
+          severity: critical
+          component: video_api
+        annotations:
+          summary: "Video API çok yavaş yanıt süresi"
+          description: "Video API P95 yanıt süresi 10 saniyenin üzerinde ({{ $value }}s). Acil müdahale gerekli!"
+          dashboard: "http://grafana:3000/d/video-api/video-api-dashboard"
+          
+      # High Request Rate Alert
+      - alert: HighVideoAPIRequestRate
+        expr: |
+          sum(rate(video_requests_total[1m])) > 100
+        for: 5m
+        labels:
+          severity: info
+          component: video_api
+        annotations:
+          summary: "Video API yüksek istek oranı"
+          description: "Video API dakikada {{ $value }} istek alıyor. Normal kapasiteyi aşabilir."
+          
+      # YouTube API Quota Warning
+      - alert: YouTubeAPIQuotaWarning
+        expr: |
+          (youtube_api_quota_used / youtube_api_quota_limit) > 0.80
+        for: 5m
+        labels:
+          severity: warning
+          component: youtube_api
+        annotations:
+          summary: "YouTube API quota %80'e ulaştı"
+          description: "YouTube API günlük quota'nın %{{ $value | humanizePercentage }}'i kullanıldı. Cache kullanımı artırılmalı."
+          
+      # YouTube API Quota Critical
+      - alert: YouTubeAPIQuotaCritical
+        expr: |
+          (youtube_api_quota_used / youtube_api_quota_limit) > 0.95
+        for: 1m
+        labels:
+          severity: critical
+          component: youtube_api
+        annotations:
+          summary: "YouTube API quota %95'e ulaştı"
+          description: "YouTube API günlük quota'nın %{{ $value | humanizePercentage }}'i kullanıldı. Acil önlem gerekli!"
+          
+      # No Requests Alert (Service Down?)
+      - alert: VideoAPINoRequests
+        expr: |
+          sum(rate(video_requests_total[5m])) == 0
+        for: 10m
+        labels:
+          severity: warning
+          component: video_api
+        annotations:
+          summary: "Video API'ye istek gelmiyor"
+          description: "Son 10 dakikada Video API'ye hiç istek gelmedi. Servis down olabilir veya frontend bağlantısı kopmuş olabilir."
+          
+      # High Active Requests (Potential Bottleneck)
+      - alert: HighActiveVideoRequests
+        expr: |
+          active_video_requests > 50
+        for: 5m
+        labels:
+          severity: warning
+          component: video_api
+        annotations:
+          summary: "Yüksek aktif istek sayısı"
+          description: "{{ $value }} aktif video isteği var. Potansiyel bottleneck."

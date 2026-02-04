@@ -1,0 +1,37 @@
+# Development Backend Dockerfile
+# Includes hot reload and development tools
+FROM python:3.11-slim
+
+# Working directory
+WORKDIR /app
+
+# Install system dependencies including dev tools
+RUN apt-get update && apt-get install -y \
+    gcc \
+    g++ \
+    git \
+    curl \
+    make \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy and install all Python dependencies (including dev)
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Install additional dev tools
+RUN pip install --no-cache-dir \
+    ipython \
+    ipdb \
+    watchdog
+
+# Copy application
+COPY . .
+
+# Create necessary directories
+RUN mkdir -p /app/vector_db /app/data /app/logs
+
+# Expose port
+EXPOSE 8000
+
+# Development start command with hot reload
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--reload", "--reload-dir", "/app"]

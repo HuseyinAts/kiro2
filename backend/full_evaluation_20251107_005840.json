@@ -1,0 +1,384 @@
+{
+  "timestamp": "2025-11-07T00:58:40.055887",
+  "statistics": {
+    "total": 22,
+    "approved": 12,
+    "review": 10,
+    "rejected": 0,
+    "bloom_levels": {
+      "Seviye 2": 2,
+      "Seviye 3": 12,
+      "Seviye 1": 8
+    },
+    "by_subject": {
+      "Türkçe - Sözcükte Anlam": {
+        "total": 1,
+        "approved": 0,
+        "avg_score": 0.7250000000000001
+      },
+      "Fizik - Enerji": {
+        "total": 1,
+        "approved": 1,
+        "avg_score": 0.9
+      },
+      "Biyoloji - Genetik": {
+        "total": 1,
+        "approved": 1,
+        "avg_score": 0.8275
+      },
+      "Türkçe": {
+        "total": 1,
+        "approved": 0,
+        "avg_score": 0.71625
+      },
+      "Biyoloji - Solunum": {
+        "total": 1,
+        "approved": 1,
+        "avg_score": 0.8125
+      },
+      "Fizik - Kuvvet": {
+        "total": 1,
+        "approved": 1,
+        "avg_score": 0.9
+      },
+      "Kimya - Asit-Baz": {
+        "total": 1,
+        "approved": 1,
+        "avg_score": 0.8175
+      },
+      "Matematik": {
+        "total": 2,
+        "approved": 0,
+        "avg_score": 0.71625
+      },
+      "Biyoloji - Hücre": {
+        "total": 1,
+        "approved": 0,
+        "avg_score": 0.7675000000000001
+      },
+      "Türkçe - Fiilimsiler": {
+        "total": 1,
+        "approved": 0,
+        "avg_score": 0.74125
+      },
+      "Matematik - Denklemler": {
+        "total": 1,
+        "approved": 1,
+        "avg_score": 0.8087500000000001
+      },
+      "Fizik - Hareket": {
+        "total": 1,
+        "approved": 0,
+        "avg_score": 0.795
+      },
+      "Matematik - Fonksiyonlar": {
+        "total": 1,
+        "approved": 0,
+        "avg_score": 0.75125
+      },
+      "Matematik - Geometri": {
+        "total": 1,
+        "approved": 0,
+        "avg_score": 0.77875
+      },
+      "Kimya - Gazlar": {
+        "total": 1,
+        "approved": 1,
+        "avg_score": 0.83125
+      },
+      "Fizik - Elektrik": {
+        "total": 1,
+        "approved": 1,
+        "avg_score": 0.9
+      },
+      "Kimya - Atom": {
+        "total": 1,
+        "approved": 0,
+        "avg_score": 0.7475
+      },
+      "Biyoloji - Fotosentez": {
+        "total": 1,
+        "approved": 1,
+        "avg_score": 0.88375
+      },
+      "Matematik - Olasılık": {
+        "total": 1,
+        "approved": 1,
+        "avg_score": 0.9
+      },
+      "Türkçe - Cümlede Anlam": {
+        "total": 1,
+        "approved": 1,
+        "avg_score": 0.9
+      },
+      "Kimya - Mol": {
+        "total": 1,
+        "approved": 1,
+        "avg_score": 0.8500000000000001
+      }
+    }
+  },
+  "similar_pairs": [],
+  "questions": [
+    {
+      "id": "2c30d564-7e5b-4525-b1a2-565fbddbe651",
+      "question_text": "Aşağıdaki cümlelerin hangisinde deyim yanlış kullanılmıştır?",
+      "difficulty": "orta",
+      "subject": "Türkçe - Sözcükte Anlam",
+      "correct_answer": "C",
+      "length": 60,
+      "wave2b_evaluation": {
+        "overall_score": 0.7250000000000001,
+        "decision": "REVIEW",
+        "bloom_level": 2
+      }
+    },
+    {
+      "id": "e4f3c8fb-2396-451f-ad04-3a483e7c625b",
+      "question_text": "Yatay düzlemde durmakta olan 2 kg kütleli bir cisim üzerine yatay doğrultuda 20 N büyüklüğünde sabit bir kuvvet uygulanmaktadır. Cisim ile yatay düzlem arasındaki sürtünme katsayısı 0,4 olduğuna göre, cismin 5 m yol aldığında kinetik enerjisi kaç J olur? (g = 10 m/s²)",
+      "difficulty": "orta",
+      "subject": "Fizik - Enerji",
+      "correct_answer": "C",
+      "length": 268,
+      "wave2b_evaluation": {
+        "overall_score": 0.9,
+        "decision": "APPROVE",
+        "bloom_level": 3
+      }
+    },
+    {
+      "id": "69c27b95-c130-4b1e-bbd5-999901f108ea",
+      "question_text": "Mitoz bölünme geçiren bir hücrede kromozom sayısı 2n=16'dır. Bu hücreden elde edilen yavru hücreler hakkında aşağıdakilerden hangisi doğrudur?",
+      "difficulty": "orta",
+      "subject": "Biyoloji - Genetik",
+      "correct_answer": "B",
+      "length": 142,
+      "wave2b_evaluation": {
+        "overall_score": 0.8275,
+        "decision": "APPROVE",
+        "bloom_level": 1
+      }
+    },
+    {
+      "id": "2fbe7712-c84d-4d80-994f-8243f6f28d71",
+      "question_text": "Aşağıdaki cümlelerin hangisinde yazım yanlışı vardır?",
+      "difficulty": "COK_KOLAY",
+      "subject": "Türkçe",
+      "correct_answer": "B",
+      "length": 53,
+      "wave2b_evaluation": {
+        "overall_score": 0.71625,
+        "decision": "REVIEW",
+        "bloom_level": 2
+      }
+    },
+    {
+      "id": "bf017873-f2f4-4b2c-acf8-d3c136df2ea5",
+      "question_text": "Hücresel solunumda glikoliz, Krebs döngüsü ve elektron taşıma zinciri aşamalarıyla ilgili aşağıdaki ifadelerden hangisi yanlıştır?",
+      "difficulty": "orta",
+      "subject": "Biyoloji - Solunum",
+      "correct_answer": "D",
+      "length": 130,
+      "wave2b_evaluation": {
+        "overall_score": 0.8125,
+        "decision": "APPROVE",
+        "bloom_level": 1
+      }
+    },
+    {
+      "id": "94d4ebec-1b75-43b8-8899-001e5368f068",
+      "question_text": "Sürtünmesiz yatay düzlemde durmakta olan 4 kg kütleli bir cisme, yatay doğrultuda 12 N büyüklüğünde sabit bir kuvvet uygulanıyor. Bu kuvvet 3 saniye boyunca etki ettikten sonra kaldırılıyor. Kuvvet kaldırıldığı anda cismin hızı kaç m/s'dir?",
+      "difficulty": "orta",
+      "subject": "Fizik - Kuvvet",
+      "correct_answer": "C",
+      "length": 240,
+      "wave2b_evaluation": {
+        "overall_score": 0.9,
+        "decision": "APPROVE",
+        "bloom_level": 3
+      }
+    },
+    {
+      "id": "2d1204b6-2bb3-43ea-adf4-dd16ac51e984",
+      "question_text": "0,1 M HCl çözeltisinin 100 mL'si ile 0,05 M Ba(OH)₂ çözeltisinin 200 mL'si karıştırılıyor. Oluşan karışımın pH'ı kaçtır? (log 2 = 0,3)",
+      "difficulty": "zor",
+      "subject": "Kimya - Asit-Baz",
+      "correct_answer": "C",
+      "length": 134,
+      "wave2b_evaluation": {
+        "overall_score": 0.8175,
+        "decision": "APPROVE",
+        "bloom_level": 3
+      }
+    },
+    {
+      "id": "84abb771-dbb8-4e17-8ebb-e9b624414d9e",
+      "question_text": "Bir sayının 3 katının 5 fazlası 26 ise, bu sayı kaçtır?",
+      "difficulty": "KOLAY",
+      "subject": "Matematik",
+      "correct_answer": "C",
+      "length": 55,
+      "wave2b_evaluation": {
+        "overall_score": 0.71875,
+        "decision": "REVIEW",
+        "bloom_level": 3
+      }
+    },
+    {
+      "id": "0a0774b0-6da2-4335-9be9-1ae41844bb40",
+      "question_text": "Aşağıdakilerden hangisi hem bitki hem de hayvan hücrelerinde bulunan ortak yapılardan biridir?",
+      "difficulty": "kolay",
+      "subject": "Biyoloji - Hücre",
+      "correct_answer": "C",
+      "length": 94,
+      "wave2b_evaluation": {
+        "overall_score": 0.7675000000000001,
+        "decision": "REVIEW",
+        "bloom_level": 1
+      }
+    },
+    {
+      "id": "74873fc1-8afc-401a-afb2-0c1b668eac1f",
+      "question_text": "Aşağıdaki cümlelerin hangisinde isim-fiil, özne görevinde kullanılmıştır?",
+      "difficulty": "zor",
+      "subject": "Türkçe - Fiilimsiler",
+      "correct_answer": "C",
+      "length": 73,
+      "wave2b_evaluation": {
+        "overall_score": 0.74125,
+        "decision": "REVIEW",
+        "bloom_level": 1
+      }
+    },
+    {
+      "id": "e6b4b63b-44c0-4e3f-aa1c-b1b9ab909468",
+      "question_text": "x² - 6x + k = 0 denkleminin kökleri α ve β'dir. α + β = 6 ve α · β = k olduğuna göre, α² + β² = 20 olması için k değeri kaçtır?",
+      "difficulty": "orta",
+      "subject": "Matematik - Denklemler",
+      "correct_answer": "C",
+      "length": 127,
+      "wave2b_evaluation": {
+        "overall_score": 0.8087500000000001,
+        "decision": "APPROVE",
+        "bloom_level": 3
+      }
+    },
+    {
+      "id": "72cbfffa-ede8-4251-a400-b75fadee0c77",
+      "question_text": "Durgun halden harekete başlayan bir araç 8 saniyede 64 m yol alıyor. Bu aracın 6. saniye sonundaki hızı kaç m/s'dir?",
+      "difficulty": "orta",
+      "subject": "Fizik - Hareket",
+      "correct_answer": "C",
+      "length": 116,
+      "wave2b_evaluation": {
+        "overall_score": 0.795,
+        "decision": "REVIEW",
+        "bloom_level": 3
+      }
+    },
+    {
+      "id": "f93f5741-fe1f-4318-8120-fd32a0868745",
+      "question_text": "f(x) = x³ - 6x² + 9x + 2 fonksiyonu için aşağıdaki ifadelerden hangisi yanlıştır?",
+      "difficulty": "zor",
+      "subject": "Matematik - Fonksiyonlar",
+      "correct_answer": "C",
+      "length": 81,
+      "wave2b_evaluation": {
+        "overall_score": 0.75125,
+        "decision": "REVIEW",
+        "bloom_level": 1
+      }
+    },
+    {
+      "id": "0e356624-4d27-4d69-8139-dfa025e3ee1a",
+      "question_text": "ABC üçgeninde |AB| = 8 cm, |AC| = 6 cm ve A açısı 60° dir. Buna göre, BC kenarının uzunluğu kaç cm'dir?",
+      "difficulty": "orta",
+      "subject": "Matematik - Geometri",
+      "correct_answer": "A",
+      "length": 103,
+      "wave2b_evaluation": {
+        "overall_score": 0.77875,
+        "decision": "REVIEW",
+        "bloom_level": 3
+      }
+    },
+    {
+      "id": "57314508-4d84-4d8c-91d5-5e278396c51f",
+      "question_text": "Sabit hacimli bir kapta bulunan ideal gazın basıncı 2 atm ve sıcaklığı 27°C'dir. Bu gazın sıcaklığı 127°C'ye çıkarıldığında basıncı kaç atm olur?",
+      "difficulty": "orta",
+      "subject": "Kimya - Gazlar",
+      "correct_answer": "A",
+      "length": 145,
+      "wave2b_evaluation": {
+        "overall_score": 0.83125,
+        "decision": "APPROVE",
+        "bloom_level": 3
+      }
+    },
+    {
+      "id": "b850ec67-aee6-4695-b593-ee6a9471df18",
+      "question_text": "Şekilde gösterildiği gibi, köşeleri A, B, C olan eşkenar üçgenin A köşesine +2q, B köşesine -3q yüklü noktasal cisimler yerleştirilmiştir. Eşkenar üçgenin kenar uzunluğu d'dir. C köşesine yerleştirilen +q yüklü cismin elektriksel potansiyel enerjisi kaç kq²/(4πε₀d) olur? (k = 1/(4πε₀))",
+      "difficulty": "zor",
+      "subject": "Fizik - Elektrik",
+      "correct_answer": "A",
+      "length": 286,
+      "wave2b_evaluation": {
+        "overall_score": 0.9,
+        "decision": "APPROVE",
+        "bloom_level": 3
+      }
+    },
+    {
+      "id": "ad270e48-435b-4efd-b198-fce1048c62e0",
+      "question_text": "Aşağıdakilerden hangisi Rutherford'un atom modeli hakkında doğru bir bilgidir?",
+      "difficulty": "kolay",
+      "subject": "Kimya - Atom",
+      "correct_answer": "C",
+      "length": 78,
+      "wave2b_evaluation": {
+        "overall_score": 0.7475,
+        "decision": "REVIEW",
+        "bloom_level": 1
+      }
+    },
+    {
+      "id": "7f03e354-d738-47b1-b831-8a436f165fa1",
+      "question_text": "Fotosentezin ışık tepkimelerinde PS II (Fotosistem II) ve PS I (Fotosistem I) arasındaki elektron taşıma zincirinde gerçekleşen olaylar ile ilgili aşağıdaki ifadelerden hangisi yanlıştır?",
+      "difficulty": "zor",
+      "subject": "Biyoloji - Fotosentez",
+      "correct_answer": "C",
+      "length": 187,
+      "wave2b_evaluation": {
+        "overall_score": 0.88375,
+        "decision": "APPROVE",
+        "bloom_level": 1
+      }
+    },
+    {
+      "id": "7f3d0f80-01fd-44fe-a082-4923aeeb2a69",
+      "question_text": "x² - 5x + 6 = 0 denkleminin kökleri çarpımı kaçtır?",
+      "difficulty": "ORTA",
+      "subject": "Matematik",
+      "correct_answer": "D",
+      "length": 51,
+      "wave2b_evaluation": {
+        "overall_score": 0.71375,
+        "decision": "REVIEW",
+        "bloom_level": 3
+      }
+    },
+    {
+      "id": "d3860bdf-7a90-468f-a452-f4859df2c380",
+      "question_text": "Bir sınıfta 8 kız ve 6 erkek öğrenci vardır. Bu öğrencilerden 5 kişilik bir grup seçilecektir. Seçilen grupta en az 2 kız ve en az 1 erkek öğrenci bulunması koşulu ile kaç farklı grup oluşturulabilir?",
+      "difficulty": "zor",
+      "subject": "Matematik - Olasılık",
+      "correct_answer": "C",
+      "length": 200,
+      "wave2b_evaluation": {
+        "overall_score": 0.9,
+        "decision": "APPROVE",
+        "bloom_level": 3
+      }
+    }
+  ]
+}

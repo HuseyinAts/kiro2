@@ -1,0 +1,254 @@
+/* Dyscalculia Support Page Styles */
+
+.dyscalculia-support-page {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  padding: 24px;
+}
+
+.page-header {
+  max-width: 1200px;
+  margin: 0 auto 32px;
+  text-align: center;
+  padding: 32px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.page-header h1 {
+  margin: 0 0 16px 0;
+  color: #333;
+  font-size: 32px;
+  font-weight: 700;
+}
+
+.page-description {
+  margin: 0;
+  color: #666;
+  font-size: 16px;
+  line-height: 1.6;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.tab-navigation {
+  max-width: 1200px;
+  margin: 0 auto 32px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  padding: 0 16px;
+}
+
+.tab-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 20px;
+  background: white;
+  border: 2px solid #e0e0e0;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.tab-btn:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  border-color: #2196F3;
+}
+
+.tab-btn.active {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-color: #667eea;
+  color: white;
+  transform: translateY(-4px);
+  box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
+}
+
+.tab-icon {
+  font-size: 32px;
+}
+
+.tab-label {
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.tab-btn.active .tab-label {
+  color: white;
+}
+
+.page-content {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.tool-section {
+  background: white;
+  border-radius: 12px;
+  padding: 32px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  animation: fadeIn 0.5s ease-in;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.section-intro {
+  margin-bottom: 32px;
+  padding-bottom: 24px;
+  border-bottom: 2px solid #e0e0e0;
+}
+
+.section-intro h2 {
+  margin: 0 0 12px 0;
+  color: #333;
+  font-size: 28px;
+  font-weight: 700;
+}
+
+.section-intro p {
+  margin: 0 0 16px 0;
+  color: #666;
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+.features-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.feature-badge {
+  padding: 6px 12px;
+  background: #e3f2fd;
+  color: #1565C0;
+  border-radius: 16px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.page-footer {
+  max-width: 1200px;
+  margin: 32px auto 0;
+  padding: 32px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.footer-content h3 {
+  margin: 0 0 16px 0;
+  color: #333;
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.footer-content p {
+  margin: 0 0 16px 0;
+  color: #666;
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+.support-info {
+  padding: 16px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  margin-top: 16px;
+}
+
+.support-info p {
+  margin: 8px 0;
+  font-size: 14px;
+}
+
+.support-info strong {
+  color: #333;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .tab-navigation {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .dyscalculia-support-page {
+    padding: 16px;
+  }
+  
+  .page-header {
+    padding: 24px 16px;
+  }
+  
+  .page-header h1 {
+    font-size: 24px;
+  }
+  
+  .tab-navigation {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  
+  .tab-btn {
+    flex-direction: row;
+    justify-content: flex-start;
+    padding: 16px;
+  }
+  
+  .tab-icon {
+    font-size: 24px;
+  }
+  
+  .tool-section {
+    padding: 20px 16px;
+  }
+  
+  .section-intro h2 {
+    font-size: 22px;
+  }
+  
+  .page-footer {
+    padding: 24px 16px;
+  }
+}
+
+/* Accessibility */
+.tab-btn:focus {
+  outline: 3px solid #2196F3;
+  outline-offset: 2px;
+}
+
+/* Print Styles */
+@media print {
+  .tab-navigation,
+  .page-footer {
+    display: none;
+  }
+  
+  .page-header {
+    box-shadow: none;
+    border: 1px solid #ddd;
+  }
+  
+  .tool-section {
+    box-shadow: none;
+    border: 1px solid #ddd;
+    page-break-inside: avoid;
+  }
+}

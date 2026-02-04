@@ -1,0 +1,42 @@
+{
+  "timestamp": "2025-10-19T17:10:27.420963",
+  "summary": {
+    "total_services": 6,
+    "connected": 1,
+    "not_configured": 2,
+    "errors": 1,
+    "health_score": 16.67
+  },
+  "services": {
+    "youtube": {
+      "status": "⚠️  Not Configured",
+      "message": "API key bulunamadı",
+      "response_time": null
+    },
+    "khan_academy": {
+      "status": "⚠️  Status 410",
+      "response_time": 1130.56
+    },
+    "eba_tv": {
+      "status": "✅ Accessible",
+      "response_time": 648.08,
+      "note": "EBA TV API public değil, ana sayfa kontrolü yapıldı"
+    },
+    "openai": {
+      "status": "⚠️  Not Configured",
+      "message": "API key bulunamadı"
+    },
+    "zemberek": {
+      "status": "❌ Not Running",
+      "message": "Servis çalışmıyor veya erişilemiyor",
+      "url": "http://localhost:8080"
+    },
+    "other_services": [
+      {
+        "name": "Wikipedia API",
+        "status": "⚠️  Status 403",
+        "response_time": 807.48
+      }
+    ]
+  }
+}

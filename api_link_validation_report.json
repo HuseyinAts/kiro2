@@ -1,0 +1,2786 @@
+{
+  "summary": {
+    "total_backend_endpoints": 453,
+    "total_frontend_calls": 141,
+    "matched": 0,
+    "unmatched_frontend": 141,
+    "unused_backend": 384,
+    "version_mismatches": 0
+  },
+  "details": {
+    "matched": [],
+    "unmatched_frontend": [
+      {
+        "endpoint": "/api/sync/progress",
+        "method": "GET",
+        "file": "src\\sw.ts",
+        "status": "❌ Backend endpoint bulunamadı"
+      },
+      {
+        "endpoint": "/api/sync/exam-results",
+        "method": "GET",
+        "file": "src\\sw.ts",
+        "status": "❌ Backend endpoint bulunamadı"
+      },
+      {
+        "endpoint": "/api/sync/analytics",
+        "method": "GET",
+        "file": "src\\sw.ts",
+        "status": "❌ Backend endpoint bulunamadı"
+      },
+      {
+        "endpoint": "/api/v1/bionic-reading/preferences",
+        "method": "GET",
+        "file": "src\\hooks\\useBionicReading.ts",
+        "status": "❌ Backend endpoint bulunamadı"
+      },
+      {
+        "endpoint": "/api/v1/bionic-reading/preferences",
+        "method": "GET",
+        "file": "src\\hooks\\useBionicReading.ts",
+        "status": "❌ Backend endpoint bulunamadı"
+      },
+      {
+        "endpoint": "/api/v1/bionic-reading/process",
+        "method": "GET",
+        "file": "src\\hooks\\useBionicReading.ts",
+        "status": "❌ Backend endpoint bulunamadı"
+      },
+      {
+        "endpoint": "/api/v1/bionic-reading/preferences",
+        "method": "GET",
+        "file": "src\\hooks\\useBionicReading.ts",
+        "status": "❌ Backend endpoint bulunamadı"
+      },
+      {
+        "endpoint": "/api/v1/bionic-reading/preferences",
+        "method": "GET",
+        "file": "src\\hooks\\useBionicReading.ts",
+        "status": "❌ Backend endpoint bulunamadı"
+      },
+      {
+        "endpoint": "/api/v1/bionic-reading/process",
+        "method": "GET",
+        "file": "src\\hooks\\useBionicReading.ts",
+        "status": "❌ Backend endpoint bulunamadı"
+      },
+      {
+        "endpoint": "/api/v1/admin",
+        "method": "GET",
+        "file": "src\\services\\adminService.ts",
+        "status": "❌ Backend endpoint bulunamadı"
+      },
+      {
+        "endpoint": "/api/v1/analytics",
+        "method": "GET",
+        "file": "src\\services\\analyticsService.ts",
+        "status": "❌ Backend endpoint bulunamadı"
+      },
+      {
+        "endpoint": "/api/v1/auth",
+        "method": "GET",
+        "file": "src\\services\\authService.ts",
+        "status": "❌ Backend endpoint bulunamadı"
+      },
+      {
+        "endpoint": "/api/v1/sync/exam-sessions",
+        "method": "GET",
+        "file": "src\\services\\backgroundSyncService.ts",
+        "status": "❌ Backend endpoint bulunamadı"
+      },
+      {
+        "endpoint": "/api/v1/sync/study-notes",
+        "method": "GET",
+        "file": "src\\services\\backgroundSyncService.ts",
+        "status": "❌ Backend endpoint bulunamadı"
+      },
+      {
+        "endpoint": "/api/v1/sync/progress",
+        "method": "GET",
+        "file": "src\\services\\backgroundSyncService.ts",
+        "status": "❌ Backend endpoint bulunamadı"
+      },
+      {
+        "endpoint": "/api/v1/push/subscribe",
+        "method": "GET",
+        "file": "src\\services\\backgroundSyncService.ts",
+        "status": "❌ Backend endpoint bulunamadı"
+      },
+      {
+        "endpoint": "/api/v1/sync/exam-sessions",
+        "method": "GET",
+        "file": "src\\services\\backgroundSyncService.ts",
+        "status": "❌ Backend endpoint bulunamadı"
+      },
+      {
+        "endpoint": "/api/v1/sync/study-notes",
+        "method": "GET",
+        "file": "src\\services\\backgroundSyncService.ts",
+        "status": "❌ Backend endpoint bulunamadı"
+      },
+      {
+        "endpoint": "/api/v1/sync/progress",
+        "method": "GET",
+        "file": "src\\services\\backgroundSyncService.ts",
+        "status": "❌ Backend endpoint bulunamadı"
+      },
+      {
+        "endpoint": "/api/v1/push/subscribe",
+        "method": "GET",
+        "file": "src\\services\\backgroundSyncService.ts",
+        "status": "❌ Backend endpoint bulunamadı"
+      },
+      {
+        "endpoint": "/api/v1/enhanced-chat",
+        "method": "GET",
+        "file": "src\\services\\chatService.ts",
+        "status": "❌ Backend endpoint bulunamadı"
+      },
+      {
+        "endpoint": "/api/v1/eba-tv",
+        "method": "GET",
+        "file": "src\\services\\ebaTVService.ts",
+        "status": "❌ Backend endpoint bulunamadı"
+      },
+      {
+        "endpoint": "/api/v1/exam-performance",
+        "method": "GET",
+        "file": "src\\services\\examPerformanceService.ts",
+        "status": "❌ Backend endpoint bulunamadı"
+      },
+      {
+        "endpoint": "/api/v1/osym-exam/create",
+        "method": "POST",
+        "file": "src\\services\\examService.ts",
+        "status": "❌ Backend endpoint bulunamadı"
+      },
+      {
+        "endpoint": "/api/v1/osym-exam/my-exams",
+        "method": "GET",
+        "file": "src\\services\\examService.ts",
+        "status": "❌ Backend endpoint bulunamadı"
+      },
+      {
+        "endpoint": "/api/v1/osym-exam/exam-configs",
+        "method": "GET",
+        "file": "src\\services\\examService.ts",
+        "status": "❌ Backend endpoint bulunamadı"
+      },
+      {
+        "endpoint": "/api/v1/osym-exam/create",
+        "method": "GET",
+        "file": "src\\services\\examService.ts",
+        "status": "❌ Backend endpoint bulunamadı"
+      },
+      {
+        "endpoint": "/api/v1/osym-exam/my-exams",
+        "method": "GET",
+        "file": "src\\services\\examService.ts",
+        "status": "❌ Backend endpoint bulunamadı"
+      },
+      {
+        "endpoint": "/api/v1/osym-exam/exam-configs",
+        "method": "GET",
+        "file": "src\\services\\examService.ts",
+        "status": "❌ Backend endpoint bulunamadı"
+      },
+      {
+        "endpoint": "/api/v1/osym-exam/:param/start",
+        "method": "GET",
+        "file": "src\\services\\examService.ts",
+        "status": "❌ Backend endpoint bulunamadı"
+      },
+      {
+        "endpoint": "/api/v1/osym-exam/:param/session",
+        "method": "GET",
+        "file": "src\\services\\examService.ts",
+        "status": "❌ Backend endpoint bulunamadı"
+      },
+      {
+        "endpoint": "/api/v1/osym-exam/:param/current-question",
+        "method": "GET",
+        "file": "src\\services\\examService.ts",
+        "status": "❌ Backend endpoint bulunamadı"
+      },
+      {
+        "endpoint": "/api/v1/osym-exam/:param/save-answer",
+        "method": "GET",
+        "file": "src\\services\\examService.ts",
+        "status": "❌ Backend endpoint bulunamadı"
+      },
+      {
+        "endpoint": "/api/v1/osym-exam/:param/navigate",
+        "method": "GET",
+        "file": "src\\services\\examService.ts",
+        "status": "❌ Backend endpoint bulunamadı"
+      },
+      {
+        "endpoint": "/api/v1/osym-exam/:param/flag-question",
+        "method": "GET",
+        "file": "src\\services\\examService.ts",
+        "status": "❌ Backend endpoint bulunamadı"
+      },
+      {
+        "endpoint": "/api/v1/osym-exam/:param/remaining-time",
+        "method": "GET",
+        "file": "src\\services\\examService.ts",
+        "status": "❌ Backend endpoint bulunamadı"
+      },
+      {
+        "endpoint": "/api/v1/osym-exam/:param/complete",
+        "method": "GET",
+        "file": "src\\services\\examService.ts",
+        "status": "❌ Backend endpoint bulunamadı"
+      },
+      {
+        "endpoint": "/api/v1/osym-exam/:param/performance",
+        "method": "GET",
+        "file": "src\\services\\examService.ts",
+        "status": "❌ Backend endpoint bulunamadı"
+      },
+      {
+        "endpoint": "/api/v1/osym-exam/:param/subject-performance",
+        "method": "GET",
+        "file": "src\\services\\examService.ts",
+        "status": "❌ Backend endpoint bulunamadı"
+      },
+      {
+        "endpoint": "/api/v1/osym-exam/:param/result",
+        "method": "GET",
+        "file": "src\\services\\examService.ts",
+        "status": "❌ Backend endpoint bulunamadı"
+      },
+      {
+        "endpoint": "/api/v1/learning-style/hybrid-codes",
+        "method": "GET",
+        "file": "src\\services\\learningStyleService.ts",
+        "status": "❌ Backend endpoint bulunamadı"
+      },
+      {
+        "endpoint": "/api/v1/learning-style/statistics",
+        "method": "GET",
+        "file": "src\\services\\learningStyleService.ts",
+        "status": "❌ Backend endpoint bulunamadı"
+      },
+      {
+        "endpoint": "/api/v1/learning-style/detect/:param",
+        "method": "GET",
+        "file": "src\\services\\learningStyleService.ts",
+        "status": "❌ Backend endpoint bulunamadı"
+      },
+      {
+        "endpoint": "/api/v1/learning-style/recommendations/:param",
+        "method": "GET",
+        "file": "src\\services\\learningStyleService.ts",
+        "status": "❌ Backend endpoint bulunamadı"
+      },
+      {
+        "endpoint": "/api/v1/learning-style/behavioral-data/:param",
+        "method": "GET",
+        "file": "src\\services\\learningStyleService.ts",
+        "status": "❌ Backend endpoint bulunamadı"
+      },
+      {
+        "endpoint": "/api/v1/learning-style/questionnaire/:param",
+        "method": "GET",
+        "file": "src\\services\\learningStyleService.ts",
+        "status": "❌ Backend endpoint bulunamadı"
+      },
+      {
+        "endpoint": "/api/v1/learning-style/export/:param",
+        "method": "GET",
+        "file": "src\\services\\learningStyleService.ts",
+        "status": "❌ Backend endpoint bulunamadı"
+      },
+      {
+        "endpoint": "/api/v1/questions/download",
+        "method": "GET",
+        "file": "src\\services\\offlineStorageService.ts",
+        "status": "❌ Backend endpoint bulunamadı"
+      },
+      {
+        "endpoint": "/api/v1/parent",
+        "method": "GET",
+        "file": "src\\services\\parentService.ts",
+        "status": "❌ Backend endpoint bulunamadı"
+      },
+      {
+        "endpoint": "/api/v1/ogretmen",
+        "method": "GET",
+        "file": "src\\services\\teacherService.ts",
+        "status": "❌ Backend endpoint bulunamadı"
+      },
+      {
+        "endpoint": "/api/v1/osym-exam/create",
+        "method": "GET",
+        "file": "src\\services\\__tests__\\examService.test.ts",
+        "status": "❌ Backend endpoint bulunamadı"
+      },
+      {
+        "endpoint": "/api/v1/osym-exam/create",
+        "method": "GET",
+        "file": "src\\services\\__tests__\\examService.test.ts",
+        "status": "❌ Backend endpoint bulunamadı"
+      },
+      {
+        "endpoint": "/api/v1/osym-exam/:param/start",
+        "method": "GET",
+        "file": "src\\services\\__tests__\\examService.test.ts",
+        "status": "❌ Backend endpoint bulunamadı"
+      },
+      {
+        "endpoint": "/api/v1/osym-exam/:param/session",
+        "method": "GET",
+        "file": "src\\services\\__tests__\\examService.test.ts",
+        "status": "❌ Backend endpoint bulunamadı"
+      },
+      {
+        "endpoint": "/api/v1/osym-exam/:param/current-question",
+        "method": "GET",
+        "file": "src\\services\\__tests__\\examService.test.ts",
+        "status": "❌ Backend endpoint bulunamadı"
+      },
+      {
+        "endpoint": "/api/v1/osym-exam/:param/save-answer",
+        "method": "GET",
+        "file": "src\\services\\__tests__\\examService.test.ts",
+        "status": "❌ Backend endpoint bulunamadı"
+      },
+      {
+        "endpoint": "/api/v1/osym-exam/:param/navigate",
+        "method": "GET",
+        "file": "src\\services\\__tests__\\examService.test.ts",
+        "status": "❌ Backend endpoint bulunamadı"
+      },
+      {
+        "endpoint": "/api/v1/osym-exam/:param/flag-question",
+        "method": "GET",
+        "file": "src\\services\\__tests__\\examService.test.ts",
+        "status": "❌ Backend endpoint bulunamadı"
+      },
+      {
+        "endpoint": "/api/v1/osym-exam/:param/remaining-time",
+        "method": "GET",
+        "file": "src\\services\\__tests__\\examService.test.ts",
+        "status": "❌ Backend endpoint bulunamadı"
+      },
+      {
+        "endpoint": "/api/v1/osym-exam/:param/complete",
+        "method": "GET",
+        "file": "src\\services\\__tests__\\examService.test.ts",
+        "status": "❌ Backend endpoint bulunamadı"
+      },
+      {
+        "endpoint": "/api/v1/osym-exam/:param/performance",
+        "method": "GET",
+        "file": "src\\services\\__tests__\\examService.test.ts",
+        "status": "❌ Backend endpoint bulunamadı"
+      },
+      {
+        "endpoint": "/api/v1/osym-exam/:param/subject-performance",
+        "method": "GET",
+        "file": "src\\services\\__tests__\\examService.test.ts",
+        "status": "❌ Backend endpoint bulunamadı"
+      },
+      {
+        "endpoint": "/api/v1/osym-exam/:param/navigate",
+        "method": "GET",
+        "file": "src\\services\\__tests__\\examService.test.ts",
+        "status": "❌ Backend endpoint bulunamadı"
+      },
+      {
+        "endpoint": "/api/v1/osym-exam/:param/navigate",
+        "method": "GET",
+        "file": "src\\services\\__tests__\\examService.test.ts",
+        "status": "❌ Backend endpoint bulunamadı"
+      },
+      {
+        "endpoint": "/api/v1/auth/login",
+        "method": "GET",
+        "file": "src\\test\\mocks\\handlers.ts",
+        "status": "❌ Backend endpoint bulunamadı"
+      },
+      {
+        "endpoint": "/api/v1/auth/register",
+        "method": "GET",
+        "file": "src\\test\\mocks\\handlers.ts",
+        "status": "❌ Backend endpoint bulunamadı"
+      },
+      {
+        "endpoint": "/api/v1/auth/refresh",
+        "method": "GET",
+        "file": "src\\test\\mocks\\handlers.ts",
+        "status": "❌ Backend endpoint bulunamadı"
+      },
+      {
+        "endpoint": "/api/v1/auth/me",
+        "method": "GET",
+        "file": "src\\test\\mocks\\handlers.ts",
+        "status": "❌ Backend endpoint bulunamadı"
+      },
+      {
+        "endpoint": "/api/v1/exams",
+        "method": "GET",
+        "file": "src\\test\\mocks\\handlers.ts",
+        "status": "❌ Backend endpoint bulunamadı"
+      },
+      {
+        "endpoint": "/api/v1/exams/:param",
+        "method": "GET",
+        "file": "src\\test\\mocks\\handlers.ts",
+        "status": "❌ Backend endpoint bulunamadı"
+      },
+      {
+        "endpoint": "/api/v1/exams/:param/start",
+        "method": "GET",
+        "file": "src\\test\\mocks\\handlers.ts",
+        "status": "❌ Backend endpoint bulunamadı"
+      },
+      {
+        "endpoint": "/api/v1/exams/sessions/:param/answer",
+        "method": "GET",
+        "file": "src\\test\\mocks\\handlers.ts",
+        "status": "❌ Backend endpoint bulunamadı"
+      },
+      {
+        "endpoint": "/api/v1/exams/sessions/:param/submit",
+        "method": "GET",
+        "file": "src\\test\\mocks\\handlers.ts",
+        "status": "❌ Backend endpoint bulunamadı"
+      },
+      {
+        "endpoint": "/api/v1/exams/results/:param",
+        "method": "GET",
+        "file": "src\\test\\mocks\\handlers.ts",
+        "status": "❌ Backend endpoint bulunamadı"
+      },
+      {
+        "endpoint": "/api/v1/learning-style/:param",
+        "method": "GET",
+        "file": "src\\test\\mocks\\handlers.ts",
+        "status": "❌ Backend endpoint bulunamadı"
+      },
+      {
+        "endpoint": "/api/v1/learning-style/detect",
+        "method": "GET",
+        "file": "src\\test\\mocks\\handlers.ts",
+        "status": "❌ Backend endpoint bulunamadı"
+      },
+      {
+        "endpoint": "/api/v1/revolutionary-features/fsrs/:param",
+        "method": "GET",
+        "file": "src\\test\\mocks\\handlers.ts",
+        "status": "❌ Backend endpoint bulunamadı"
+      },
+      {
+        "endpoint": "/api/v1/revolutionary-features/bionic-reading",
+        "method": "GET",
+        "file": "src\\test\\mocks\\handlers.ts",
+        "status": "❌ Backend endpoint bulunamadı"
+      },
+      {
+        "endpoint": "/api/v1/revolutionary-features/multi-agent/status",
+        "method": "GET",
+        "file": "src\\test\\mocks\\handlers.ts",
+        "status": "❌ Backend endpoint bulunamadı"
+      },
+      {
+        "endpoint": "/api/v1/admin/users",
+        "method": "GET",
+        "file": "src\\test\\mocks\\handlers.ts",
+        "status": "❌ Backend endpoint bulunamadı"
+      },
+      {
+        "endpoint": "/api/v1/admin/dashboard/stats",
+        "method": "GET",
+        "file": "src\\test\\mocks\\handlers.ts",
+        "status": "❌ Backend endpoint bulunamadı"
+      },
+      {
+        "endpoint": "/api/v1/teacher/students",
+        "method": "GET",
+        "file": "src\\test\\mocks\\handlers.ts",
+        "status": "❌ Backend endpoint bulunamadı"
+      },
+      {
+        "endpoint": "/api/v1/teacher/class-report",
+        "method": "GET",
+        "file": "src\\test\\mocks\\handlers.ts",
+        "status": "❌ Backend endpoint bulunamadı"
+      },
+      {
+        "endpoint": "/api/v1/chat/message",
+        "method": "GET",
+        "file": "src\\test\\mocks\\handlers.ts",
+        "status": "❌ Backend endpoint bulunamadı"
+      },
+      {
+        "endpoint": "/api/v1/error/500",
+        "method": "GET",
+        "file": "src\\test\\mocks\\handlers.ts",
+        "status": "❌ Backend endpoint bulunamadı"
+      },
+      {
+        "endpoint": "/api/v1/error/404",
+        "method": "GET",
+        "file": "src\\test\\mocks\\handlers.ts",
+        "status": "❌ Backend endpoint bulunamadı"
+      },
+      {
+        "endpoint": "/api/v1/error/401",
+        "method": "GET",
+        "file": "src\\test\\mocks\\handlers.ts",
+        "status": "❌ Backend endpoint bulunamadı"
+      },
+      {
+        "endpoint": "/api/v1/admin/content/questions",
+        "method": "GET",
+        "file": "src\\components\\Admin\\ContentManagement.tsx",
+        "status": "❌ Backend endpoint bulunamadı"
+      },
+      {
+        "endpoint": "/api/v1/admin/content/educational",
+        "method": "GET",
+        "file": "src\\components\\Admin\\ContentManagement.tsx",
+        "status": "❌ Backend endpoint bulunamadı"
+      },
+      {
+        "endpoint": "/api/v1/admin/content/questions",
+        "method": "GET",
+        "file": "src\\components\\Admin\\ContentManagement.tsx",
+        "status": "❌ Backend endpoint bulunamadı"
+      },
+      {
+        "endpoint": "/api/v1/admin/content/educational",
+        "method": "GET",
+        "file": "src\\components\\Admin\\ContentManagement.tsx",
+        "status": "❌ Backend endpoint bulunamadı"
+      },
+      {
+        "endpoint": "/api/v1/admin/content/questions",
+        "method": "GET",
+        "file": "src\\components\\Admin\\ContentManagement.tsx",
+        "status": "❌ Backend endpoint bulunamadı"
+      },
+      {
+        "endpoint": "/api/v1/admin/content/educational",
+        "method": "GET",
+        "file": "src\\components\\Admin\\ContentManagement.tsx",
+        "status": "❌ Backend endpoint bulunamadı"
+      },
+      {
+        "endpoint": "/api/v1/admin/content/questions",
+        "method": "GET",
+        "file": "src\\components\\Admin\\ContentManagement.tsx",
+        "status": "❌ Backend endpoint bulunamadı"
+      },
+      {
+        "endpoint": "/api/v1/admin/content/educational",
+        "method": "GET",
+        "file": "src\\components\\Admin\\ContentManagement.tsx",
+        "status": "❌ Backend endpoint bulunamadı"
+      },
+      {
+        "endpoint": "/api/v1/admin/content/questions/:param/approve",
+        "method": "GET",
+        "file": "src\\components\\Admin\\ContentManagement.tsx",
+        "status": "❌ Backend endpoint bulunamadı"
+      },
+      {
+        "endpoint": "/api/v1/admin/content/questions/:param/reject",
+        "method": "GET",
+        "file": "src\\components\\Admin\\ContentManagement.tsx",
+        "status": "❌ Backend endpoint bulunamadı"
+      },
+      {
+        "endpoint": "/api/chat",
+        "method": "GET",
+        "file": "src\\components\\AgentChat\\index.tsx",
+        "status": "❌ Backend endpoint bulunamadı"
+      },
+      {
+        "endpoint": "/api/errors/report",
+        "method": "GET",
+        "file": "src\\components\\Common\\ErrorBoundary.tsx",
+        "status": "❌ Backend endpoint bulunamadı"
+      },
+      {
+        "endpoint": "/api/v1/health",
+        "method": "GET",
+        "file": "src\\components\\Exam\\ExamStart.tsx",
+        "status": "❌ Backend endpoint bulunamadı"
+      },
+      {
+        "endpoint": "/api/v1/health",
+        "method": "GET",
+        "file": "src\\components\\Exam\\ExamStart.tsx",
+        "status": "❌ Backend endpoint bulunamadı"
+      },
+      {
+        "endpoint": "/api/v1/ogretmen/raporlar?limit=10",
+        "method": "GET",
+        "file": "src\\components\\Teacher\\ClassReport.tsx",
+        "status": "❌ Backend endpoint bulunamadı"
+      },
+      {
+        "endpoint": "/api/v1/ogretmen/rapor/sinif",
+        "method": "GET",
+        "file": "src\\components\\Teacher\\ClassReport.tsx",
+        "status": "❌ Backend endpoint bulunamadı"
+      },
+      {
+        "endpoint": "/api/v1/ogretmen/raporlar?limit=10",
+        "method": "GET",
+        "file": "src\\components\\Teacher\\ClassReport.tsx",
+        "status": "❌ Backend endpoint bulunamadı"
+      },
+      {
+        "endpoint": "/api/v1/ogretmen/rapor/sinif",
+        "method": "GET",
+        "file": "src\\components\\Teacher\\ClassReport.tsx",
+        "status": "❌ Backend endpoint bulunamadı"
+      },
+      {
+        "endpoint": "/api/v1/ogretmen/rapor/:param",
+        "method": "GET",
+        "file": "src\\components\\Teacher\\ClassReport.tsx",
+        "status": "❌ Backend endpoint bulunamadı"
+      },
+      {
+        "endpoint": "/api/v1/ogretmen/ogrenciler?sayfa=:param",
+        "method": "GET",
+        "file": "src\\components\\Teacher\\StudentList.tsx",
+        "status": "❌ Backend endpoint bulunamadı"
+      },
+      {
+        "endpoint": "/api/v1/ogretmen/ogrenci/:param/performans",
+        "method": "GET",
+        "file": "src\\components\\Teacher\\StudentList.tsx",
+        "status": "❌ Backend endpoint bulunamadı"
+      },
+      {
+        "endpoint": "/api/v1/ogretmen/dashboard",
+        "method": "GET",
+        "file": "src\\components\\Teacher\\TeacherDashboard.tsx",
+        "status": "❌ Backend endpoint bulunamadı"
+      },
+      {
+        "endpoint": "/api/v1/ogretmen/dashboard",
+        "method": "GET",
+        "file": "src\\components\\Teacher\\TeacherDashboard.tsx",
+        "status": "❌ Backend endpoint bulunamadı"
+      },
+      {
+        "endpoint": "/api/v1/ogretmen/bildirimler?limit=50",
+        "method": "GET",
+        "file": "src\\components\\Teacher\\TeacherNotifications.tsx",
+        "status": "❌ Backend endpoint bulunamadı"
+      },
+      {
+        "endpoint": "/api/v1/ogretmen/bildirim",
+        "method": "GET",
+        "file": "src\\components\\Teacher\\TeacherNotifications.tsx",
+        "status": "❌ Backend endpoint bulunamadı"
+      },
+      {
+        "endpoint": "/api/v1/ogretmen/bildirimler?limit=50",
+        "method": "GET",
+        "file": "src\\components\\Teacher\\TeacherNotifications.tsx",
+        "status": "❌ Backend endpoint bulunamadı"
+      },
+      {
+        "endpoint": "/api/v1/ogretmen/bildirim",
+        "method": "GET",
+        "file": "src\\components\\Teacher\\TeacherNotifications.tsx",
+        "status": "❌ Backend endpoint bulunamadı"
+      },
+      {
+        "endpoint": "/api/v1/ogretmen/bildirim/:param/okundu",
+        "method": "GET",
+        "file": "src\\components\\Teacher\\TeacherNotifications.tsx",
+        "status": "❌ Backend endpoint bulunamadı"
+      },
+      {
+        "endpoint": "/api/users",
+        "method": "GET",
+        "file": "src\\hooks\\useAsync.tsx",
+        "status": "❌ Backend endpoint bulunamadı"
+      },
+      {
+        "endpoint": "/api/users",
+        "method": "GET",
+        "file": "src\\hooks\\useAsync.tsx",
+        "status": "❌ Backend endpoint bulunamadı"
+      },
+      {
+        "endpoint": "/api/v1/auth/login",
+        "method": "GET",
+        "file": "src\\test\\components\\Auth\\LoginPage.test.tsx",
+        "status": "❌ Backend endpoint bulunamadı"
+      },
+      {
+        "endpoint": "/api/v1/auth/login",
+        "method": "GET",
+        "file": "src\\test\\components\\Auth\\LoginPage.test.tsx",
+        "status": "❌ Backend endpoint bulunamadı"
+      },
+      {
+        "endpoint": "/api/v1/auth/login",
+        "method": "GET",
+        "file": "src\\test\\components\\Auth\\LoginPage.test.tsx",
+        "status": "❌ Backend endpoint bulunamadı"
+      },
+      {
+        "endpoint": "/api/v1/auth/login",
+        "method": "GET",
+        "file": "src\\test\\components\\Auth\\LoginPage.test.tsx",
+        "status": "❌ Backend endpoint bulunamadı"
+      },
+      {
+        "endpoint": "/api/v1/exams/sessions/:param/answer",
+        "method": "GET",
+        "file": "src\\test\\components\\Exam\\ExamInterface.test.tsx",
+        "status": "❌ Backend endpoint bulunamadı"
+      },
+      {
+        "endpoint": "/api/v1/learning-style/:param",
+        "method": "GET",
+        "file": "src\\test\\components\\Revolutionary\\RevolutionaryDashboard.test.tsx",
+        "status": "❌ Backend endpoint bulunamadı"
+      },
+      {
+        "endpoint": "/api/v1/revolutionary-features/fsrs/:param",
+        "method": "GET",
+        "file": "src\\test\\components\\Revolutionary\\RevolutionaryDashboard.test.tsx",
+        "status": "❌ Backend endpoint bulunamadı"
+      },
+      {
+        "endpoint": "/api/v1/revolutionary-features/multi-agent/status",
+        "method": "GET",
+        "file": "src\\test\\components\\Revolutionary\\RevolutionaryDashboard.test.tsx",
+        "status": "❌ Backend endpoint bulunamadı"
+      },
+      {
+        "endpoint": "/api/v1/learning-style/:param",
+        "method": "GET",
+        "file": "src\\test\\components\\Revolutionary\\RevolutionaryDashboard.test.tsx",
+        "status": "❌ Backend endpoint bulunamadı"
+      },
+      {
+        "endpoint": "/api/v1/learning-style/:param",
+        "method": "GET",
+        "file": "src\\test\\components\\Revolutionary\\RevolutionaryDashboard.test.tsx",
+        "status": "❌ Backend endpoint bulunamadı"
+      },
+      {
+        "endpoint": "/api/v1/revolutionary-features/multi-agent/status",
+        "method": "GET",
+        "file": "src\\test\\components\\Revolutionary\\RevolutionaryDashboard.test.tsx",
+        "status": "❌ Backend endpoint bulunamadı"
+      },
+      {
+        "endpoint": "/api/v1/revolutionary-features/fsrs/:param",
+        "method": "GET",
+        "file": "src\\test\\components\\Revolutionary\\RevolutionaryDashboard.test.tsx",
+        "status": "❌ Backend endpoint bulunamadı"
+      },
+      {
+        "endpoint": "/api/v1/auth/login",
+        "method": "GET",
+        "file": "src\\test\\e2e\\exam-flow.test.tsx",
+        "status": "❌ Backend endpoint bulunamadı"
+      },
+      {
+        "endpoint": "/api/v1/auth/me",
+        "method": "GET",
+        "file": "src\\test\\e2e\\exam-flow.test.tsx",
+        "status": "❌ Backend endpoint bulunamadı"
+      },
+      {
+        "endpoint": "/api/v1/exams",
+        "method": "GET",
+        "file": "src\\test\\e2e\\exam-flow.test.tsx",
+        "status": "❌ Backend endpoint bulunamadı"
+      },
+      {
+        "endpoint": "/api/v1/exams/:param/start",
+        "method": "GET",
+        "file": "src\\test\\e2e\\exam-flow.test.tsx",
+        "status": "❌ Backend endpoint bulunamadı"
+      },
+      {
+        "endpoint": "/api/v1/exams/sessions/:param/answer",
+        "method": "GET",
+        "file": "src\\test\\e2e\\exam-flow.test.tsx",
+        "status": "❌ Backend endpoint bulunamadı"
+      },
+      {
+        "endpoint": "/api/v1/exams/sessions/:param/submit",
+        "method": "GET",
+        "file": "src\\test\\e2e\\exam-flow.test.tsx",
+        "status": "❌ Backend endpoint bulunamadı"
+      },
+      {
+        "endpoint": "/api/v1/exams/results/:param",
+        "method": "GET",
+        "file": "src\\test\\e2e\\exam-flow.test.tsx",
+        "status": "❌ Backend endpoint bulunamadı"
+      },
+      {
+        "endpoint": "/api/v1/exams",
+        "method": "GET",
+        "file": "src\\test\\e2e\\exam-flow.test.tsx",
+        "status": "❌ Backend endpoint bulunamadı"
+      },
+      {
+        "endpoint": "/api/v1/exams/:param/start",
+        "method": "GET",
+        "file": "src\\test\\e2e\\exam-flow.test.tsx",
+        "status": "❌ Backend endpoint bulunamadı"
+      },
+      {
+        "endpoint": "/api/v1/exams/sessions/:param/answer",
+        "method": "GET",
+        "file": "src\\test\\e2e\\exam-flow.test.tsx",
+        "status": "❌ Backend endpoint bulunamadı"
+      },
+      {
+        "endpoint": "/api/v1/exams/sessions/:param/answer",
+        "method": "GET",
+        "file": "src\\test\\e2e\\exam-flow.test.tsx",
+        "status": "❌ Backend endpoint bulunamadı"
+      },
+      {
+        "endpoint": "/api/v1/exams/sessions/current",
+        "method": "GET",
+        "file": "src\\test\\e2e\\exam-flow.test.tsx",
+        "status": "❌ Backend endpoint bulunamadı"
+      }
+    ],
+    "unused_backend": [
+      {
+        "endpoint": "/api/adaptation-summary",
+        "method": "get",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/v1/cache",
+        "method": "PREFIX",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/adapt-path",
+        "method": "post",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/osym/standards/:param",
+        "method": "get",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/stats",
+        "method": "get",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/:param/flag-question",
+        "method": "post",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/makale/:param",
+        "method": "delete",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/:param/navigate",
+        "method": "post",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/bulk-import",
+        "method": "post",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/health",
+        "method": "PREFIX",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/search",
+        "method": "get",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/export/excel",
+        "method": "post",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/recommendations",
+        "method": "post",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/v1/ogretmen",
+        "method": "PREFIX",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/admin/reindex/questions",
+        "method": "post",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/user/:param/export",
+        "method": "get",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/raporlar",
+        "method": "get",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/documents/:param",
+        "method": "delete",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/cikis",
+        "method": "post",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/educational/:param/approve",
+        "method": "put",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/llm-pool",
+        "method": "get",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/sentences",
+        "method": "post",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/hedefler",
+        "method": "get",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/questions/:param/approve",
+        "method": "put",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/status/:param",
+        "method": "get",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/study-sessions/:param/end",
+        "method": "post",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/v1/auth",
+        "method": "PREFIX",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/v1/users",
+        "method": "PREFIX",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/performance/stats",
+        "method": "get",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/chat/room/:param/clear",
+        "method": "post",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/flashcards/:param/review",
+        "method": "post",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/onay-talepleri",
+        "method": "get",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/v1/learning-style",
+        "method": "PREFIX",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/v1/question-bank",
+        "method": "PREFIX",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/simplification-levels",
+        "method": "get",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/video-recommendations/stats",
+        "method": "get",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/v1/student-dashboard",
+        "method": "PREFIX",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/bottlenecks",
+        "method": "get",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/full-analysis/:param",
+        "method": "get",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/gecmis/:param",
+        "method": "get",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/reports/compliance",
+        "method": "get",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/optimize",
+        "method": "post",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/behavioral-data/:param",
+        "method": "post",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/:param/session",
+        "method": "get",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/questions/search",
+        "method": "post",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/v1/cultural-adaptation",
+        "method": "PREFIX",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/compliance/:param",
+        "method": "get",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/context",
+        "method": "post",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/profil/kulturel/:param",
+        "method": "get",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/chat/room/:param/users",
+        "method": "get",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/content/questions/:param",
+        "method": "put",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/filter-options",
+        "method": "get",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/content/search",
+        "method": "post",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/zpd-maarif/revolutionary/maarif-alignment",
+        "method": "post",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/konular",
+        "method": "get",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/startup",
+        "method": "get",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/key/:param",
+        "method": "get",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/documents",
+        "method": "get",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/soru/:param",
+        "method": "get",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/makale",
+        "method": "get",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/invalidate/pattern",
+        "method": "post",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/categories",
+        "method": "get",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/hedef-guncelle/:param",
+        "method": "put",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/user/:param/anonymize",
+        "method": "post",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/bildirimler/:param/okundu",
+        "method": "post",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/makale/:param",
+        "method": "get",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/v1/elasticsearch",
+        "method": "PREFIX",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/rastgele-sorular",
+        "method": "post",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/notifications/:param/read",
+        "method": "put",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/profil-guncelle",
+        "method": "put",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/performance/api",
+        "method": "get",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/content/questions/:param",
+        "method": "delete",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/metrics/prometheus",
+        "method": "get",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/revolutionary/recommend",
+        "method": "post",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/hybrid-codes",
+        "method": "get",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/v1/fast-learning",
+        "method": "PREFIX",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/users",
+        "method": "get",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/content/questions",
+        "method": "get",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/flashcards",
+        "method": "post",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/content/educational/:param",
+        "method": "put",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/video-recommendations/reset-metrics",
+        "method": "post",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/content",
+        "method": "get",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/morphology/batch",
+        "method": "post",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/alignment/analyze",
+        "method": "post",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/performance/database",
+        "method": "get",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/profil/kulturel/:param",
+        "method": "put",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/content/educational/:param/approve",
+        "method": "put",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/questions/:param",
+        "method": "put",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/consent/grant",
+        "method": "post",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/v1/multi-agent",
+        "method": "PREFIX",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/giris",
+        "method": "post",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/data-processing/log",
+        "method": "post",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/v1/enhanced-chat",
+        "method": "PREFIX",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/zpd-maarif/revolutionary/calculate",
+        "method": "post",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/soru-sil/:param",
+        "method": "delete",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/zpd-maarif/revolutionary/recommend",
+        "method": "post",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/children",
+        "method": "get",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/validate",
+        "method": "post",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/v1/kvkk",
+        "method": "PREFIX",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/cache/clear/:param",
+        "method": "delete",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/istatistikler",
+        "method": "get",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/v1/fsrs",
+        "method": "PREFIX",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/sorular",
+        "method": "get",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/exam/:param/osym-ets-comparison",
+        "method": "get",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/text/complexity",
+        "method": "post",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/consent/check",
+        "method": "get",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/status",
+        "method": "get",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/read/:param",
+        "method": "get",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/key/:param",
+        "method": "delete",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/video-recommendations/errors",
+        "method": "get",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/makale",
+        "method": "post",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/invalidate/event",
+        "method": "post",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/quality/analyze/:param",
+        "method": "get",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/questionnaire/:param",
+        "method": "post",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/youtube",
+        "method": "PREFIX",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/cache-stats",
+        "method": "get",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/step-by-step-solution",
+        "method": "post",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/osym-ets-comparison",
+        "method": "post",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/coordination/respond",
+        "method": "post",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/events/history",
+        "method": "get",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/create-path",
+        "method": "post",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/cultural-period",
+        "method": "get",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/generate-bulk",
+        "method": "post",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/revolutionary/cultural-context",
+        "method": "post",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/monitoring",
+        "method": "PREFIX",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/experts/:param/pending",
+        "method": "get",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/bildirim-okundu/:param",
+        "method": "put",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/:param/save-answer",
+        "method": "post",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/write",
+        "method": "post",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/exam/:param/generate-pdf",
+        "method": "post",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/children/:param/weekly-report",
+        "method": "get",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/question-bank/compliance/:param/:param",
+        "method": "get",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/student/:param",
+        "method": "get",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/revolutionary/health",
+        "method": "get",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/v1",
+        "method": "PREFIX",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/cocuklar",
+        "method": "get",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/spell-check",
+        "method": "post",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/exam/:param/irt-analysis",
+        "method": "get",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/system-status",
+        "method": "get",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/v1/turkish-nlp-chat",
+        "method": "PREFIX",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/performance",
+        "method": "get",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/v1/parent",
+        "method": "PREFIX",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/intent/detect",
+        "method": "post",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/educational",
+        "method": "post",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/educational/:param",
+        "method": "put",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/ready",
+        "method": "get",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/process",
+        "method": "post",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/download/:param",
+        "method": "get",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/export/:param",
+        "method": "get",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/assess-knowledge",
+        "method": "post",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/video",
+        "method": "get",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/performance/summary",
+        "method": "get",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/test-adaptation",
+        "method": "post",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/index/file",
+        "method": "post",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/flashcards/due",
+        "method": "get",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/study-sessions/start",
+        "method": "post",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/content/educational",
+        "method": "post",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/v1/reports",
+        "method": "PREFIX",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/content/questions/bulk-upload",
+        "method": "post",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/makale/:param/like",
+        "method": "post",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/v1/exam-performance",
+        "method": "PREFIX",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/approval/:param",
+        "method": "put",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/trending",
+        "method": "get",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/start-monitoring",
+        "method": "post",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/agents/test",
+        "method": "get",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/:param/start",
+        "method": "post",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/tokenize",
+        "method": "post",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/rag-pipeline",
+        "method": "get",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/meb/standards/:param",
+        "method": "get",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/zpd-maarif/revolutionary/demo/:param",
+        "method": "get",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/delete/:param",
+        "method": "delete",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/cache",
+        "method": "get",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/v1/curriculum",
+        "method": "PREFIX",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/batch/analyze",
+        "method": "post",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/validation",
+        "method": "PREFIX",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/questions/:param",
+        "method": "get",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/video-recommendations/performance",
+        "method": "get",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/recommendations/:param",
+        "method": "get",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/stop-monitoring",
+        "method": "post",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/preferences",
+        "method": "put",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/analytics/user/:param",
+        "method": "get",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/hesapla",
+        "method": "post",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/v1/admin",
+        "method": "PREFIX",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/data-breach/report",
+        "method": "post",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/live",
+        "method": "get",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/ogrenci/:param/performans",
+        "method": "get",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/vector-store",
+        "method": "get",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/context/manage",
+        "method": "post",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/context/:param/:param",
+        "method": "get",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/v1/irt-morfoloji",
+        "method": "PREFIX",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/create-profile",
+        "method": "post",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/health-check",
+        "method": "get",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/statistics",
+        "method": "get",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/search",
+        "method": "post",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/background/update",
+        "method": "post",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/feedback/:param",
+        "method": "post",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/revolutionary/calculate",
+        "method": "post",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/agents/status",
+        "method": "get",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/sinav-gecmisi",
+        "method": "get",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/database",
+        "method": "get",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/v1/streaming",
+        "method": "PREFIX",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/rapor/:param",
+        "method": "get",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/service-stats",
+        "method": "get",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/data-subject/request",
+        "method": "post",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/detect/:param",
+        "method": "get",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/subscribe",
+        "method": "post",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/dashboard",
+        "method": "get",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/explanation/:param",
+        "method": "get",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/v1/zpd-maarif",
+        "method": "PREFIX",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/questions/:param/similar",
+        "method": "get",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/exam-configs",
+        "method": "get",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/ozet",
+        "method": "get",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/exam/:param/zpd-recommendations",
+        "method": "get",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/zpd-maarif/revolutionary/cultural-context",
+        "method": "post",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/batch-simplify",
+        "method": "post",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/compliance/report",
+        "method": "get",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/children/:param/performance",
+        "method": "get",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/notifications",
+        "method": "get",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/meb/standards",
+        "method": "post",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/morphology-insights",
+        "method": "post",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/v1/turkish-nlp",
+        "method": "PREFIX",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/users/:param",
+        "method": "get",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/recommendations",
+        "method": "get",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/database-performance",
+        "method": "get",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api-response-times",
+        "method": "get",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/v1/soru-bankasi",
+        "method": "PREFIX",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/content/educational/:param",
+        "method": "delete",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/bionic-reading",
+        "method": "post",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/learning-style/hybrid-codes",
+        "method": "get",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/cache",
+        "method": "delete",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/regional-culture/:param",
+        "method": "get",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/irt-parametreli-sorular",
+        "method": "post",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/hedef-sil/:param",
+        "method": "delete",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/performance/system",
+        "method": "get",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/learning-path",
+        "method": "PREFIX",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/questions/:param",
+        "method": "delete",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/educational/:param",
+        "method": "get",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/curriculum/:param/:param/:param",
+        "method": "get",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/istatistikler/:param",
+        "method": "get",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/categories",
+        "method": "post",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/context/:param/:param",
+        "method": "delete",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/video-recommendations/health",
+        "method": "get",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/osym/standards",
+        "method": "post",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/bildirim",
+        "method": "post",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/:param/performance",
+        "method": "get",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/process-multiple",
+        "method": "post",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/bildirim/:param/okundu",
+        "method": "put",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/v1/text-simplification",
+        "method": "PREFIX",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/coordination/request",
+        "method": "post",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/export/csv",
+        "method": "post",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/users/:param",
+        "method": "put",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/bildirimler",
+        "method": "get",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/analytics",
+        "method": "get",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/agents",
+        "method": "get",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/users",
+        "method": "post",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/learning-style/detect/:param",
+        "method": "post",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/onay-talebi-olustur",
+        "method": "post",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/content/questions",
+        "method": "post",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/logs/analysis",
+        "method": "get",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/detailed",
+        "method": "get",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/:param",
+        "method": "delete",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/create",
+        "method": "post",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/content/search",
+        "method": "get",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/video/:param",
+        "method": "get",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/bulk/validate-all-subjects",
+        "method": "post",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/chat/rooms",
+        "method": "get",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/message",
+        "method": "post",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/rag",
+        "method": "post",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/v1/content",
+        "method": "PREFIX",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/preferences",
+        "method": "get",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/notifications",
+        "method": "post",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/key",
+        "method": "post",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/revolutionary/learning-balance",
+        "method": "post",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/rapor/sinif",
+        "method": "post",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/:param/current-question",
+        "method": "get",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/contextual/extract",
+        "method": "post",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/users/:param",
+        "method": "delete",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/calibrate-irt",
+        "method": "post",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/request/:param",
+        "method": "get",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/updates/request",
+        "method": "post",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/zorluk-seviyesi",
+        "method": "get",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/text/normalize",
+        "method": "post",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/children",
+        "method": "post",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/",
+        "method": "get",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/video-recommendations/validation-failures",
+        "method": "get",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/random-questions",
+        "method": "get",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/monitoring/start",
+        "method": "post",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/profil",
+        "method": "get",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/revolutionary-features-performance",
+        "method": "get",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/analyze-question",
+        "method": "post",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/word/complexity/:param",
+        "method": "get",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/ogrenci-profil",
+        "method": "post",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/educational/:param",
+        "method": "delete",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/history",
+        "method": "get",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/v1/veli",
+        "method": "PREFIX",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/v1/bionic-reading",
+        "method": "PREFIX",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/user/:param",
+        "method": "delete",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/soru-ekle",
+        "method": "post",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/index/text",
+        "method": "post",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/onay-talepleri/:param/yanitla",
+        "method": "post",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/simplify",
+        "method": "post",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/hedef-olustur",
+        "method": "post",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/update-recommendations/:param",
+        "method": "post",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/revolutionary/maarif-alignment",
+        "method": "post",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/exam-explanation",
+        "method": "post",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/complexity-analysis/:param",
+        "method": "get",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/performans-trendi",
+        "method": "get",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/v1/performance",
+        "method": "PREFIX",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/dashboard/stats",
+        "method": "get",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/revolutionary/adapt-difficulty",
+        "method": "post",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/system-info",
+        "method": "get",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/cultural-periods",
+        "method": "get",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/subjects",
+        "method": "get",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/v1/analytics",
+        "method": "PREFIX",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/normalize",
+        "method": "post",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/health",
+        "method": "get",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/meb/learning-outcomes/:param",
+        "method": "get",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/questions",
+        "method": "get",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/kayit",
+        "method": "post",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/educational/bulk-upload",
+        "method": "post",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/student/:param/behavioral-update",
+        "method": "put",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/admin/indices/stats",
+        "method": "get",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/v1/berturk",
+        "method": "PREFIX",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/quick-assessment",
+        "method": "post",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/class/:param",
+        "method": "get",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/soru-guncelle/:param",
+        "method": "put",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/cache/clear",
+        "method": "post",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/cocuk/:param/performans",
+        "method": "get",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/export/pdf",
+        "method": "post",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/ogretmen-profil",
+        "method": "post",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/calculate-probability",
+        "method": "post",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/:param/remaining-time",
+        "method": "get",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/clear-cache",
+        "method": "post",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/chat",
+        "method": "post",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/generate",
+        "method": "post",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/ogrenci-profil/:param",
+        "method": "get",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/profil/maarif/:param",
+        "method": "get",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/experts/register",
+        "method": "post",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/toplu-soru-ekle",
+        "method": "post",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/video",
+        "method": "post",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/questions/bulk-upload",
+        "method": "post",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/bulk-quality-analysis",
+        "method": "post",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/:param/complete",
+        "method": "post",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/templates",
+        "method": "get",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/irt-parametreleri-yeniden-hesapla/:param",
+        "method": "post",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/my-exams",
+        "method": "get",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/metrics",
+        "method": "get",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/morphology/analyze",
+        "method": "post",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/statistics/overview",
+        "method": "get",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/ogrenciler",
+        "method": "get",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/motivation/assess",
+        "method": "post",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/consent/withdraw",
+        "method": "post",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/monitoring/stop",
+        "method": "post",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/cocuk/:param/haftalik-rapor",
+        "method": "post",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/educational",
+        "method": "get",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/text/clean",
+        "method": "post",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/video-recommendations/filter-stats",
+        "method": "get",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/sentiment/analyze",
+        "method": "post",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/moderation",
+        "method": "post",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/zorluk-filtrele",
+        "method": "get",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/exam",
+        "method": "delete",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/revolutionary/demo/:param",
+        "method": "get",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/exam/:param/advanced",
+        "method": "get",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/exam/:param/learning-style-analysis",
+        "method": "get",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/warm-up",
+        "method": "post",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/soru-performans-guncelle",
+        "method": "post",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/veli-profil",
+        "method": "post",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/content-explanation/:param/:param",
+        "method": "get",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/revolutionary/cultural-patterns",
+        "method": "post",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/v1/monitoring",
+        "method": "PREFIX",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/admin/dashboard",
+        "method": "get",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/makale/:param",
+        "method": "put",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/profil/maarif/:param",
+        "method": "put",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/content/educational",
+        "method": "get",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/difficulty-recommendation",
+        "method": "post",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/batch-analyze",
+        "method": "post",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/test",
+        "method": "get",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/recommend-questions",
+        "method": "post",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/data-subject/request/:param/process",
+        "method": "post",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/search-resources",
+        "method": "post",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/:param/subject-performance",
+        "method": "get",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/questions",
+        "method": "post",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/submit",
+        "method": "post",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      },
+      {
+        "endpoint": "/api/v1/osym-exam",
+        "method": "PREFIX",
+        "status": "⚠️  Frontend'de kullanılmıyor"
+      }
+    ],
+    "version_mismatches": [],
+    "missing_implementations": []
+  },
+  "health_score": 0.0
+}

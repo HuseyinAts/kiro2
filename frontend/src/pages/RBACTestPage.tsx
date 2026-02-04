@@ -1,0 +1,334 @@
+import React from 'react'
+import {
+  Container,
+  Typography,
+  Box,
+  Grid,
+  Card,
+  CardContent,
+  Alert,
+  Chip,
+  List,
+  ListItem,
+  ListItemText,
+  Divider
+} from '@mui/material'
+import {
+  Security,
+  CheckCircle,
+  Cancel,
+  Person,
+  School,
+  People,
+  AdminPanelSettings
+} from '@mui/icons-material'
+import { useAuthStore } from '@/store/authStore'
+import { useRoleAccess } from '../hooks/useRoleAccess.tsx'
+import { RoleBasedComponent, StudentOnly, TeacherOnly, ParentOnly, AdminOnly } from '../components/Common/RoleBasedComponent'
+
+export const RBACTestPage: React.FC = () => {
+  const {  user, hasRole, hasPermission, isAuthorized  } = useAuthStore()
+  const { 
+    hasAccess, 
+    canView, 
+    canEdit, 
+    canDelete, 
+    canCreate,
+    isStudent,
+    isTeacher,
+    isParent,
+    isAdmin
+  } = useRoleAccess()
+
+  const testPermissions = [
+    { resource: 'dashboard', action: 'read' },
+    { resource: 'exam', action: 'create' },
+    { resource: 'students', action: 'read' },
+    { resource: 'admin', action: 'read' },
+    { resource: 'content', action: 'update' },
+    { resource: 'users', action: 'delete' }
+  ]
+
+  const testRoles = ['ogrenci', 'ogretmen', 'veli', 'admin'] as const
+
+  return (
+    <Container maxWidth="lg" sx={{ mt: 2, mb: 4 }}>
+      {/* Sayfa Başlığı */}
+      <Box sx={{ mb: 4 }}>
+        <Typography variant="h4" component="h1" gutterBottom sx={{ display: 'flex', alignItems: 'center' }}>
+          <Security sx={{ mr: 2 }} />
+          RBAC Test Sayfası
+        </Typography>
+        <Typography variant="body1" color="text.secondary">
+          Role-Based Access Control sisteminin test edilmesi için oluşturulmuş sayfa
+        </Typography>
+      </Box>
+
+      <Grid container spacing={3}>
+        {/* Kullanıcı Bilgileri */}
+        <Grid item xs={12} md={6}>
+          <Card>
+            <CardContent>
+              <Typography variant="h6" gutterBottom>
+                Mevcut Kullanıcı Bilgileri
+              </Typography>
+              
+              {user ? (
+                <List>
+                  <ListItem>
+                    <ListItemText 
+                      primary="Ad Soyad" 
+                      secondary={`${user.ad} ${user.soyad}`} 
+                    />
+                  </ListItem>
+                  <ListItem>
+                    <ListItemText 
+                      primary="E-posta" 
+                      secondary={user.email} 
+                    />
+                  </ListItem>
+                  <ListItem>
+                    <ListItemText 
+                      primary="Rol" 
+                      secondary={
+                        <Chip 
+                          label={user.rol} 
+                          color="primary" 
+                          icon={
+                            user.rol === 'ogrenci' ? <Person /> :
+                            user.rol === 'ogretmen' ? <School /> :
+                            user.rol === 'veli' ? <People /> :
+                            <AdminPanelSettings />
+                          }
+                        />
+                      } 
+                    />
+                  </ListItem>
+                  <ListItem>
+                    <ListItemText 
+                      primary="Hesap Durumu" 
+                      secondary={
+                        <Chip 
+                          label={user.aktif ? 'Aktif' : 'Pasif'} 
+                          color={user.aktif ? 'success' : 'error'}
+                          icon={user.aktif ? <CheckCircle /> : <Cancel />}
+                        />
+                      } 
+                    />
+                  </ListItem>
+                </List>
+              ) : (
+                <Alert severity="warning">
+                  Kullanıcı bilgileri yüklenemedi
+                </Alert>
+              )}
+            </CardContent>
+          </Card>
+        </Grid>
+
+        {/* Rol Kontrolleri */}
+        <Grid item xs={12} md={6}>
+          <Card>
+            <CardContent>
+              <Typography variant="h6" gutterBottom>
+                Rol Kontrolleri
+              </Typography>
+              
+              <List>
+                <ListItem>
+                  <ListItemText 
+                    primary="Öğrenci mi?" 
+                    secondary={
+                      <Chip 
+                        label={isStudent ? 'Evet' : 'Hayır'} 
+                        color={isStudent ? 'success' : 'default'}
+                        icon={isStudent ? <CheckCircle /> : <Cancel />}
+                      />
+                    } 
+                  />
+                </ListItem>
+                <ListItem>
+                  <ListItemText 
+                    primary="Öğretmen mi?" 
+                    secondary={
+                      <Chip 
+                        label={isTeacher ? 'Evet' : 'Hayır'} 
+                        color={isTeacher ? 'success' : 'default'}
+                        icon={isTeacher ? <CheckCircle /> : <Cancel />}
+                      />
+                    } 
+                  />
+                </ListItem>
+                <ListItem>
+                  <ListItemText 
+                    primary="Veli mi?" 
+                    secondary={
+                      <Chip 
+                        label={isParent ? 'Evet' : 'Hayır'} 
+                        color={isParent ? 'success' : 'default'}
+                        icon={isParent ? <CheckCircle /> : <Cancel />}
+                      />
+                    } 
+                  />
+                </ListItem>
+                <ListItem>
+                  <ListItemText 
+                    primary="Admin mi?" 
+                    secondary={
+                      <Chip 
+                        label={isAdmin ? 'Evet' : 'Hayır'} 
+                        color={isAdmin ? 'success' : 'default'}
+                        icon={isAdmin ? <CheckCircle /> : <Cancel />}
+                      />
+                    } 
+                  />
+                </ListItem>
+              </List>
+            </CardContent>
+          </Card>
+        </Grid>
+
+        {/* İzin Kontrolleri */}
+        <Grid item xs={12}>
+          <Card>
+            <CardContent>
+              <Typography variant="h6" gutterBottom>
+                İzin Kontrolleri
+              </Typography>
+              
+              <Grid container spacing={2}>
+                {testPermissions.map((permission, index) => (
+                  <Grid item xs={12} sm={6} md={4} key={index}>
+                    <Box sx={{ p: 2, border: 1, borderColor: 'divider', borderRadius: 1 }}>
+                      <Typography variant="body2" gutterBottom>
+                        <strong>{permission.resource}</strong> - {permission.action}
+                      </Typography>
+                      <Chip 
+                        label={hasPermission(permission.resource, permission.action) ? 'İzinli' : 'İzinsiz'} 
+                        color={hasPermission(permission.resource, permission.action) ? 'success' : 'error'}
+                        size="small"
+                        icon={hasPermission(permission.resource, permission.action) ? <CheckCircle /> : <Cancel />}
+                      />
+                    </Box>
+                  </Grid>
+                ))}
+              </Grid>
+            </CardContent>
+          </Card>
+        </Grid>
+
+        {/* Rol Bazlı Bileşen Testleri */}
+        <Grid item xs={12}>
+          <Card>
+            <CardContent>
+              <Typography variant="h6" gutterBottom>
+                Rol Bazlı Bileşen Testleri
+              </Typography>
+              
+              <Grid container spacing={2}>
+                <Grid item xs={12} sm={6} md={3}>
+                  <StudentOnly fallback={<Alert severity="info">Öğrenci değilsiniz</Alert>}>
+                    <Alert severity="success">
+                      <Typography variant="body2">
+                        Bu içerik sadece öğrenciler tarafından görülebilir
+                      </Typography>
+                    </Alert>
+                  </StudentOnly>
+                </Grid>
+                
+                <Grid item xs={12} sm={6} md={3}>
+                  <TeacherOnly fallback={<Alert severity="info">Öğretmen değilsiniz</Alert>}>
+                    <Alert severity="success">
+                      <Typography variant="body2">
+                        Bu içerik sadece öğretmenler tarafından görülebilir
+                      </Typography>
+                    </Alert>
+                  </TeacherOnly>
+                </Grid>
+                
+                <Grid item xs={12} sm={6} md={3}>
+                  <ParentOnly fallback={<Alert severity="info">Veli değilsiniz</Alert>}>
+                    <Alert severity="success">
+                      <Typography variant="body2">
+                        Bu içerik sadece veliler tarafından görülebilir
+                      </Typography>
+                    </Alert>
+                  </ParentOnly>
+                </Grid>
+                
+                <Grid item xs={12} sm={6} md={3}>
+                  <AdminOnly fallback={<Alert severity="info">Admin değilsiniz</Alert>}>
+                    <Alert severity="success">
+                      <Typography variant="body2">
+                        Bu içerik sadece adminler tarafından görülebilir
+                      </Typography>
+                    </Alert>
+                  </AdminOnly>
+                </Grid>
+              </Grid>
+            </CardContent>
+          </Card>
+        </Grid>
+
+        {/* Özel İzin Testleri */}
+        <Grid item xs={12}>
+          <Card>
+            <CardContent>
+              <Typography variant="h6" gutterBottom>
+                Özel İzin Testleri
+              </Typography>
+              
+              <Grid container spacing={2}>
+                <Grid item xs={12} sm={6} md={3}>
+                  <RoleBasedComponent 
+                    requiredPermissions={[{ resource: 'exam', action: 'create' }]}
+                    fallback={<Alert severity="warning">Sınav oluşturma izniniz yok</Alert>}
+                  >
+                    <Alert severity="success">
+                      Sınav oluşturabilirsiniz
+                    </Alert>
+                  </RoleBasedComponent>
+                </Grid>
+                
+                <Grid item xs={12} sm={6} md={3}>
+                  <RoleBasedComponent 
+                    requiredPermissions={[{ resource: 'students', action: 'read' }]}
+                    fallback={<Alert severity="warning">Öğrenci listesi görme izniniz yok</Alert>}
+                  >
+                    <Alert severity="success">
+                      Öğrenci listesini görebilirsiniz
+                    </Alert>
+                  </RoleBasedComponent>
+                </Grid>
+                
+                <Grid item xs={12} sm={6} md={3}>
+                  <RoleBasedComponent 
+                    requiredPermissions={[{ resource: 'content', action: 'update' }]}
+                    fallback={<Alert severity="warning">İçerik düzenleme izniniz yok</Alert>}
+                  >
+                    <Alert severity="success">
+                      İçerik düzenleyebilirsiniz
+                    </Alert>
+                  </RoleBasedComponent>
+                </Grid>
+                
+                <Grid item xs={12} sm={6} md={3}>
+                  <RoleBasedComponent 
+                    requiredPermissions={[{ resource: 'users', action: 'delete' }]}
+                    fallback={<Alert severity="warning">Kullanıcı silme izniniz yok</Alert>}
+                  >
+                    <Alert severity="success">
+                      Kullanıcı silebilirsiniz
+                    </Alert>
+                  </RoleBasedComponent>
+                </Grid>
+              </Grid>
+            </CardContent>
+          </Card>
+        </Grid>
+      </Grid>
+    </Container>
+  )
+}
+
+export default RBACTestPage

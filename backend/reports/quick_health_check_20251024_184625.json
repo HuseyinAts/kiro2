@@ -1,0 +1,92 @@
+{
+  "timestamp": "2025-10-24T18:46:25.594157",
+  "health_score": 58.142857142857146,
+  "status": "KRİTİK",
+  "status_emoji": "🔴",
+  "checks": [
+    {
+      "category": "API Files",
+      "total": 41,
+      "existing": 41,
+      "missing": 0,
+      "missing_files": [],
+      "status": "PASS",
+      "score": 100
+    },
+    {
+      "category": "Core Services",
+      "total": 20,
+      "existing": 13,
+      "missing": 7,
+      "missing_files": [
+        "encryption_service.py",
+        "performance_middleware.py",
+        "monitoring.py",
+        "production_health_monitor.py",
+        "elasticsearch_config.py",
+        "elasticsearch_logger.py",
+        "analytics_monitoring.py"
+      ],
+      "status": "WARNING",
+      "score": 65
+    },
+    {
+      "category": "AI Agents",
+      "total": 4,
+      "existing": 2,
+      "missing": 2,
+      "missing_files": [
+        "study_agent.py",
+        "exam_agent.py"
+      ],
+      "status": "WARNING",
+      "score": 50
+    },
+    {
+      "category": "Integrations",
+      "total": 3,
+      "existing": 3,
+      "missing": 0,
+      "missing_files": [],
+      "status": "PASS",
+      "score": 100
+    },
+    {
+      "category": "Environment Config",
+      "total": 5,
+      "configured": 4,
+      "missing": 1,
+      "missing_vars": [
+        "ENCRYPTION_KEY"
+      ],
+      "status": "WARNING",
+      "score": 80
+    },
+    {
+      "category": "Test Coverage",
+      "coverage_percent": 12.336949162742414,
+      "status": "WARNING",
+      "score": 12,
+      "message": "Test coverage: 12.3%"
+    },
+    {
+      "category": "Documentation",
+      "total": 3,
+      "existing": 0,
+      "missing": 3,
+      "missing_files": [
+        "API_DOCUMENTATION.md",
+        "DEPLOYMENT_GUIDE.md",
+        "SECURITY_GUIDE.md"
+      ],
+      "status": "WARNING",
+      "score": 0
+    }
+  ],
+  "summary": {
+    "total_checks": 7,
+    "passed": 2,
+    "warnings": 5,
+    "failed": 0
+  }
+}

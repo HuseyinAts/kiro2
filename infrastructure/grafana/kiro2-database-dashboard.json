@@ -1,0 +1,96 @@
+{
+  "dashboard": {
+    "title": "Kiro2 - PostgreSQL Database Monitoring (Task 52.4)",
+    "tags": ["postgres", "database", "kiro2"],
+    "timezone": "browser",
+    "refresh": "30s",
+    "time": {
+      "from": "now-6h",
+      "to": "now"
+    },
+    "panels": [
+      {
+        "title": "Database Connections",
+        "type": "graph",
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 0},
+        "targets": [{
+          "expr": "pg_stat_database_numbackends{datname=\"kiro2_db\"}",
+          "legendFormat": "Active Connections"
+        }],
+        "yaxes": [{"label": "Connections"}]
+      },
+      {
+        "title": "Connection Pool Status",
+        "type": "graph",
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 0},
+        "targets": [
+          {"expr": "pg_pool_active_connections", "legendFormat": "Active"},
+          {"expr": "pg_pool_idle_connections", "legendFormat": "Idle"},
+          {"expr": "pg_pool_waiting_connections", "legendFormat": "Waiting"}
+        ]
+      },
+      {
+        "title": "Query Performance (p50, p95, p99)",
+        "type": "graph",
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 8},
+        "targets": [
+          {"expr": "histogram_quantile(0.50, rate(pg_query_duration_seconds_bucket[5m]))", "legendFormat": "p50"},
+          {"expr": "histogram_quantile(0.95, rate(pg_query_duration_seconds_bucket[5m]))", "legendFormat": "p95"},
+          {"expr": "histogram_quantile(0.99, rate(pg_query_duration_seconds_bucket[5m]))", "legendFormat": "p99"}
+        ],
+        "yaxes": [{"label": "Duration (seconds)"}]
+      },
+      {
+        "title": "Replication Lag (seconds)",
+        "type": "graph",
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 8},
+        "targets": [{
+          "expr": "pg_replication_lag_seconds",
+          "legendFormat": "{{replica}}"
+        }],
+        "alert": {
+          "conditions": [{"evaluator": {"params": [10], "type": "gt"}}],
+          "frequency": "60s",
+          "message": "Replication lag exceeds 10 seconds!"
+        }
+      },
+      {
+        "title": "Cache Hit Ratio",
+        "type": "singlestat",
+        "gridPos": {"h": 4, "w": 6, "x": 0, "y": 16},
+        "targets": [{
+          "expr": "rate(pg_stat_database_blks_hit{datname=\"kiro2_db\"}[5m]) / (rate(pg_stat_database_blks_hit{datname=\"kiro2_db\"}[5m]) + rate(pg_stat_database_blks_read{datname=\"kiro2_db\"}[5m])) * 100"
+        }],
+        "format": "percent",
+        "thresholds": "80,95"
+      },
+      {
+        "title": "Database Size (GB)",
+        "type": "singlestat",
+        "gridPos": {"h": 4, "w": 6, "x": 6, "y": 16},
+        "targets": [{
+          "expr": "pg_database_size_bytes{datname=\"kiro2_db\"} / 1024 / 1024 / 1024"
+        }],
+        "format": "bytes"
+      },
+      {
+        "title": "Transaction Rate (TPS)",
+        "type": "singlestat",
+        "gridPos": {"h": 4, "w": 6, "x": 12, "y": 16},
+        "targets": [{
+          "expr": "rate(pg_stat_database_xact_commit{datname=\"kiro2_db\"}[1m]) + rate(pg_stat_database_xact_rollback{datname=\"kiro2_db\"}[1m])"
+        }],
+        "format": "ops"
+      },
+      {
+        "title": "Deadlocks",
+        "type": "singlestat",
+        "gridPos": {"h": 4, "w": 6, "x": 18, "y": 16},
+        "targets": [{
+          "expr": "rate(pg_stat_database_deadlocks{datname=\"kiro2_db\"}[5m])"
+        }],
+        "thresholds": "0,1"
+      }
+    ]
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "timestamp": "2025-10-29T17:02:10.123263",
+  "total": 0,
+  "by_priority": {
+    "P0_CRITICAL": 0,
+    "P1_HIGH": 0,
+    "P2_MEDIUM": 0,
+    "P3_LOW": 0
+  },
+  "todos": []
+}

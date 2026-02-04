@@ -1,0 +1,79 @@
+# Prometheus Configuration for Video API Monitoring
+# Teknofest 2025 - Eğitim Eylemci Projesi
+# Requirements: 4.14, 5.15
+
+global:
+  scrape_interval: 15s  # Varsayılan scrape interval
+  evaluation_interval: 15s  # Alert rule evaluation interval
+  external_labels:
+    cluster: 'teknofest-egitim'
+    environment: 'production'
+
+# Alertmanager configuration
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+            - 'alertmanager:9093'
+
+# Alert rules dosyaları
+rule_files:
+  - 'alerts/video_api_alerts.yml'
+  - 'alerts/cache_alerts.yml'
+  - 'alerts/health_alerts.yml'
+  - 'alerts/learning_path_alerts.yml'  # P1.2: Learning Path alert rules
+
+# Scrape configurations
+scrape_configs:
+  # Backend Video API metrics
+  - job_name: 'video_api'
+    static_configs:
+      - targets: ['backend:8000']
+    metrics_path: '/metrics'
+    scrape_interval: 10s
+    scrape_timeout: 5s
+    honor_labels: true
+
+  # P1.2: Learning Path API metrics
+  - job_name: 'learning_path_api'
+    static_configs:
+      - targets: ['backend:8000']  # Same backend, different metrics namespace
+    metrics_path: '/metrics'
+    scrape_interval: 10s  # 10s interval for real-time monitoring
+    scrape_timeout: 5s
+    honor_labels: true
+    metric_relabel_configs:
+      # Only scrape learning_path_* metrics for this job
+      - source_labels: [__name__]
+        regex: 'learning_path_.*'
+        action: keep
+    
+  # Prometheus Exporter (custom metrics)
+  - job_name: 'prometheus_exporter'
+    static_configs:
+      - targets: ['prometheus-exporter:9091']
+    metrics_path: '/metrics'
+    scrape_interval: 15s
+    
+  # Redis Cache metrics (if redis_exporter is running)
+  - job_name: 'redis_cache'
+    static_configs:
+      - targets: ['redis-exporter:9121']
+    scrape_interval: 15s
+    
+  # PostgreSQL metrics (if postgres_exporter is running)
+  - job_name: 'postgresql'
+    static_configs:
+      - targets: ['postgres-exporter:9187']
+    scrape_interval: 30s
+    
+  # Node exporter (system metrics)
+  - job_name: 'node'
+    static_configs:
+      - targets: ['node-exporter:9100']
+    scrape_interval: 30s
+    
+  # Prometheus self-monitoring
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']

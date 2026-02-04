@@ -1,0 +1,549 @@
+{
+  "summary": {
+    "total_models": 111,
+    "total_foreign_keys": 0,
+    "valid_foreign_keys": 0,
+    "total_relationships": 5,
+    "valid_relationships": 5,
+    "missing_back_populates": 5,
+    "circular_dependencies": 0,
+    "cascade_rules": 0
+  },
+  "details": {
+    "models_found": [
+      {
+        "model": "ChatRequest",
+        "file": "models.py"
+      },
+      {
+        "model": "ChatResponse",
+        "file": "models.py"
+      },
+      {
+        "model": "AgentInfo",
+        "file": "models.py"
+      },
+      {
+        "model": "SessionMessage",
+        "file": "models.py"
+      },
+      {
+        "model": "WebSocketMessage",
+        "file": "models.py"
+      },
+      {
+        "model": "Kullanici",
+        "file": "models.py"
+      },
+      {
+        "model": "KullaniciOlustur",
+        "file": "models.py"
+      },
+      {
+        "model": "MakaleIcerik",
+        "file": "models\\content_models.py"
+      },
+      {
+        "model": "VideoIcerik",
+        "file": "models\\content_models.py"
+      },
+      {
+        "model": "QuizIcerik",
+        "file": "models\\content_models.py"
+      },
+      {
+        "model": "ContentInteraction",
+        "file": "models\\content_models.py"
+      },
+      {
+        "model": "ContentStats",
+        "file": "models\\content_models.py"
+      },
+      {
+        "model": "ContentFilter",
+        "file": "models\\content_models.py"
+      },
+      {
+        "model": "ContentSearchRequest",
+        "file": "models\\content_models.py"
+      },
+      {
+        "model": "BulkContentImport",
+        "file": "models\\content_models.py"
+      },
+      {
+        "model": "MEBCurriculumStandard",
+        "file": "models\\curriculum.py"
+      },
+      {
+        "model": "OSYMStandard",
+        "file": "models\\curriculum.py"
+      },
+      {
+        "model": "CurriculumAlignment",
+        "file": "models\\curriculum.py"
+      },
+      {
+        "model": "LearningOutcome",
+        "file": "models\\curriculum.py"
+      },
+      {
+        "model": "QuestionBankCompliance",
+        "file": "models\\curriculum.py"
+      },
+      {
+        "model": "CurriculumComplianceReport",
+        "file": "models\\curriculum.py"
+      },
+      {
+        "model": "CurriculumUpdateRequest",
+        "file": "models\\curriculum.py"
+      },
+      {
+        "model": "DashboardIstatistikleri",
+        "file": "models\\dashboard.py"
+      },
+      {
+        "model": "SinavSonucu",
+        "file": "models\\dashboard.py"
+      },
+      {
+        "model": "Hedef",
+        "file": "models\\dashboard.py"
+      },
+      {
+        "model": "Bildirim",
+        "file": "models\\dashboard.py"
+      },
+      {
+        "model": "PerformansVerisi",
+        "file": "models\\dashboard.py"
+      },
+      {
+        "model": "ProfilGuncelleme",
+        "file": "models\\dashboard.py"
+      },
+      {
+        "model": "User",
+        "file": "models\\database.py"
+      },
+      {
+        "model": "StudentProfile",
+        "file": "models\\database.py"
+      },
+      {
+        "model": "TeacherProfile",
+        "file": "models\\database.py"
+      },
+      {
+        "model": "ParentProfile",
+        "file": "models\\database.py"
+      },
+      {
+        "model": "Question",
+        "file": "models\\database.py"
+      },
+      {
+        "model": "ExamSession",
+        "file": "models\\database.py"
+      },
+      {
+        "model": "ExamQuestion",
+        "file": "models\\database.py"
+      },
+      {
+        "model": "StudentAnswer",
+        "file": "models\\database.py"
+      },
+      {
+        "model": "LearningAnalytics",
+        "file": "models\\database.py"
+      },
+      {
+        "model": "EducationalContent",
+        "file": "models\\database.py"
+      },
+      {
+        "model": "ClassRoom",
+        "file": "models\\database.py"
+      },
+      {
+        "model": "SystemConfiguration",
+        "file": "models\\database.py"
+      },
+      {
+        "model": "AuditLog",
+        "file": "models\\database.py"
+      },
+      {
+        "model": "EBAVideo",
+        "file": "models\\database.py"
+      },
+      {
+        "model": "EBAVideoUsage",
+        "file": "models\\database.py"
+      },
+      {
+        "model": "EBAVideoRecommendation",
+        "file": "models\\database.py"
+      },
+      {
+        "model": "EBAContentCollection",
+        "file": "models\\database.py"
+      },
+      {
+        "model": "EBAContentAnalytics",
+        "file": "models\\database.py"
+      },
+      {
+        "model": "FSRSCard",
+        "file": "models\\database.py"
+      },
+      {
+        "model": "FSRSReview",
+        "file": "models\\database.py"
+      },
+      {
+        "model": "FSRSSchedule",
+        "file": "models\\database.py"
+      },
+      {
+        "model": "FSRSStudentProfile",
+        "file": "models\\database.py"
+      },
+      {
+        "model": "FSRSStudySession",
+        "file": "models\\database.py"
+      },
+      {
+        "model": "FSRSSubjectStats",
+        "file": "models\\database.py"
+      },
+      {
+        "model": "EBACurriculumAlignment",
+        "file": "models\\ebatv_content.py"
+      },
+      {
+        "model": "EBAVideoMetadata",
+        "file": "models\\ebatv_content.py"
+      },
+      {
+        "model": "EBAContentCollection",
+        "file": "models\\ebatv_content.py"
+      },
+      {
+        "model": "EBAVideoSearchRequest",
+        "file": "models\\ebatv_content.py"
+      },
+      {
+        "model": "EBAVideoSearchResponse",
+        "file": "models\\ebatv_content.py"
+      },
+      {
+        "model": "EBAContentRecommendationRequest",
+        "file": "models\\ebatv_content.py"
+      },
+      {
+        "model": "EBAContentRecommendationResponse",
+        "file": "models\\ebatv_content.py"
+      },
+      {
+        "model": "EBAContentStatistics",
+        "file": "models\\ebatv_content.py"
+      },
+      {
+        "model": "EBAVideoQualityAnalysis",
+        "file": "models\\ebatv_content.py"
+      },
+      {
+        "model": "EBAContentModerationRequest",
+        "file": "models\\ebatv_content.py"
+      },
+      {
+        "model": "EBAContentModerationResponse",
+        "file": "models\\ebatv_content.py"
+      },
+      {
+        "model": "EBAContentUsageAnalytics",
+        "file": "models\\ebatv_content.py"
+      },
+      {
+        "model": "SinavSorusu",
+        "file": "models\\exam.py"
+      },
+      {
+        "model": "SinavOturumu",
+        "file": "models\\exam.py"
+      },
+      {
+        "model": "SinavCevabi",
+        "file": "models\\exam.py"
+      },
+      {
+        "model": "KonuPerformansi",
+        "file": "models\\exam.py"
+      },
+      {
+        "model": "SinavSonucu",
+        "file": "models\\exam.py"
+      },
+      {
+        "model": "PerformansRaporu",
+        "file": "models\\exam.py"
+      },
+      {
+        "model": "MorfolojiAnalizi",
+        "file": "models\\irt_morfoloji.py"
+      },
+      {
+        "model": "IRTParametreleri",
+        "file": "models\\irt_morfoloji.py"
+      },
+      {
+        "model": "SoruMorfolojiAnalizi",
+        "file": "models\\irt_morfoloji.py"
+      },
+      {
+        "model": "OgrenciMorfolojiProfili",
+        "file": "models\\irt_morfoloji.py"
+      },
+      {
+        "model": "IRTKalibrasyonSonucu",
+        "file": "models\\irt_morfoloji.py"
+      },
+      {
+        "model": "TurkceIRTSoruAnalizi",
+        "file": "models\\irt_morfoloji.py"
+      },
+      {
+        "model": "MorfolojiIRTRaporu",
+        "file": "models\\irt_morfoloji.py"
+      },
+      {
+        "model": "VARKProfile",
+        "file": "models\\learning_style.py"
+      },
+      {
+        "model": "FelderProfile",
+        "file": "models\\learning_style.py"
+      },
+      {
+        "model": "HybridLearningProfile",
+        "file": "models\\learning_style.py"
+      },
+      {
+        "model": "BehavioralData",
+        "file": "models\\learning_style.py"
+      },
+      {
+        "model": "QuestionnaireResponse",
+        "file": "models\\learning_style.py"
+      },
+      {
+        "model": "ContentRecommendation",
+        "file": "models\\learning_style.py"
+      },
+      {
+        "model": "LearningStyleUpdate",
+        "file": "models\\learning_style.py"
+      },
+      {
+        "model": "ParentChildRelation",
+        "file": "models\\parent.py"
+      },
+      {
+        "model": "ParentNotification",
+        "file": "models\\parent.py"
+      },
+      {
+        "model": "WeeklyReport",
+        "file": "models\\parent.py"
+      },
+      {
+        "model": "ParentChildRelationCreate",
+        "file": "models\\parent.py"
+      },
+      {
+        "model": "ParentChildRelationResponse",
+        "file": "models\\parent.py"
+      },
+      {
+        "model": "ChildPerformanceData",
+        "file": "models\\parent.py"
+      },
+      {
+        "model": "WeeklyReportData",
+        "file": "models\\parent.py"
+      },
+      {
+        "model": "ParentNotificationCreate",
+        "file": "models\\parent.py"
+      },
+      {
+        "model": "ParentNotificationResponse",
+        "file": "models\\parent.py"
+      },
+      {
+        "model": "ParentDashboardData",
+        "file": "models\\parent.py"
+      },
+      {
+        "model": "OSYMQuestionFormat",
+        "file": "models\\question_generation.py"
+      },
+      {
+        "model": "GeneratedQuestion",
+        "file": "models\\question_generation.py"
+      },
+      {
+        "model": "QuestionGenerationRequest",
+        "file": "models\\question_generation.py"
+      },
+      {
+        "model": "QuestionTemplate",
+        "file": "models\\question_generation.py"
+      },
+      {
+        "model": "QuestionValidationResult",
+        "file": "models\\question_generation.py"
+      },
+      {
+        "model": "QuestionBankStatus",
+        "file": "models\\question_generation.py"
+      },
+      {
+        "model": "QuestionGenerationReport",
+        "file": "models\\question_generation.py"
+      },
+      {
+        "model": "KullaniciBase",
+        "file": "models\\user.py"
+      },
+      {
+        "model": "KullaniciOlustur",
+        "file": "models\\user.py"
+      },
+      {
+        "model": "Kullanici",
+        "file": "models\\user.py"
+      },
+      {
+        "model": "OgrenciProfili",
+        "file": "models\\user.py"
+      },
+      {
+        "model": "OgretmenProfili",
+        "file": "models\\user.py"
+      },
+      {
+        "model": "VeliProfili",
+        "file": "models\\user.py"
+      },
+      {
+        "model": "KullaniciGiris",
+        "file": "models\\user.py"
+      },
+      {
+        "model": "TokenYaniti",
+        "file": "models\\user.py"
+      },
+      {
+        "model": "KulturelBaglamProfili",
+        "file": "models\\zpd_maarif.py"
+      },
+      {
+        "model": "MaarifDegerleriProfili",
+        "file": "models\\zpd_maarif.py"
+      },
+      {
+        "model": "TurkZPDAraligi",
+        "file": "models\\zpd_maarif.py"
+      },
+      {
+        "model": "ZPDHesaplamaParametreleri",
+        "file": "models\\zpd_maarif.py"
+      },
+      {
+        "model": "ZPDHesaplamaGecmisi",
+        "file": "models\\zpd_maarif.py"
+      },
+      {
+        "model": "ZPDOptimizasyonSonucu",
+        "file": "models\\zpd_maarif.py"
+      }
+    ],
+    "foreign_keys": [],
+    "relationships": [
+      {
+        "model": "ParentChildRelation",
+        "relationship": "parent",
+        "target": "User",
+        "back_populates": null,
+        "status": "✅ Valid"
+      },
+      {
+        "model": "ParentChildRelation",
+        "relationship": "child",
+        "target": "User",
+        "back_populates": null,
+        "status": "✅ Valid"
+      },
+      {
+        "model": "ParentChildRelation",
+        "relationship": "parent",
+        "target": "User",
+        "back_populates": null,
+        "status": "✅ Valid"
+      },
+      {
+        "model": "ParentChildRelation",
+        "relationship": "child",
+        "target": "User",
+        "back_populates": null,
+        "status": "✅ Valid"
+      },
+      {
+        "model": "ParentChildRelation",
+        "relationship": "child",
+        "target": "User",
+        "back_populates": null,
+        "status": "✅ Valid"
+      }
+    ],
+    "cascade_rules": [],
+    "missing_back_populates": [
+      {
+        "model": "ParentChildRelation",
+        "relationship": "parent",
+        "target": "User",
+        "status": "⚠️  Missing back_populates"
+      },
+      {
+        "model": "ParentChildRelation",
+        "relationship": "child",
+        "target": "User",
+        "status": "⚠️  Missing back_populates"
+      },
+      {
+        "model": "ParentChildRelation",
+        "relationship": "parent",
+        "target": "User",
+        "status": "⚠️  Missing back_populates"
+      },
+      {
+        "model": "ParentChildRelation",
+        "relationship": "child",
+        "target": "User",
+        "status": "⚠️  Missing back_populates"
+      },
+      {
+        "model": "ParentChildRelation",
+        "relationship": "child",
+        "target": "User",
+        "status": "⚠️  Missing back_populates"
+      }
+    ],
+    "circular_dependencies": []
+  },
+  "health_score": 16.67
+}

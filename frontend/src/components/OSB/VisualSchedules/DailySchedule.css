@@ -1,0 +1,697 @@
+/**
+ * Task 94.1: Daily Schedule CSS
+ * Günlük program görselleştirmesi stilleri
+ */
+
+/* ============================================================================
+   Daily Schedule Container
+   ============================================================================ */
+
+.daily-schedule {
+  background-color: #ffffff;
+  border-radius: 8px;
+  border: 2px solid #dee2e6;
+  padding: 24px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+}
+
+.osb-mode.daily-schedule {
+  /* OSB modunda keskin köşeler */
+  border-radius: 4px;
+  border-width: 3px;
+}
+
+/* ============================================================================
+   Header
+   ============================================================================ */
+
+.daily-schedule__header {
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 2px solid #dee2e6;
+}
+
+.schedule-title {
+  margin: 0 0 8px 0;
+  font-size: 24px;
+  font-weight: 600;
+  color: #212529;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.title-icon {
+  font-size: 28px;
+}
+
+.schedule-date {
+  margin: 0 0 16px 0;
+  font-size: 16px;
+  color: #6c757d;
+  font-weight: 500;
+}
+
+/* View mode selector */
+.view-mode-selector {
+  display: flex;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.view-mode-button {
+  padding: 8px 16px;
+  background-color: #f8f9fa;
+  border: 2px solid #dee2e6;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #495057;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.osb-mode .view-mode-button {
+  border-radius: 4px;
+}
+
+.view-mode-button:hover {
+  background-color: #e9ecef;
+}
+
+.view-mode-button.active {
+  background-color: #0d6efd;
+  border-color: #0d6efd;
+  color: white;
+}
+
+.view-mode-button:focus {
+  outline: 2px solid #0d6efd;
+  outline-offset: 2px;
+}
+
+/* ============================================================================
+   Timeline View
+   ============================================================================ */
+
+.daily-schedule__timeline {
+  position: relative;
+  min-height: 200px;
+  padding: 40px 0;
+}
+
+.timeline-track {
+  position: relative;
+  height: 120px;
+  background: linear-gradient(to right, #f8f9fa 0%, #e9ecef 100%);
+  border-radius: 8px;
+  border: 2px solid #dee2e6;
+}
+
+.osb-mode .timeline-track {
+  border-radius: 4px;
+  border-width: 3px;
+  background: #f8f9fa;
+}
+
+/* Hour marks */
+.timeline-hour-mark {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background-color: #dee2e6;
+}
+
+.hour-label {
+  position: absolute;
+  top: -24px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 11px;
+  color: #6c757d;
+  white-space: nowrap;
+}
+
+/* Current time indicator */
+.timeline-current-time {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  z-index: 10;
+}
+
+.current-time-line {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 2px;
+  background-color: #dc3545;
+}
+
+.osb-mode .current-time-line {
+  width: 3px;
+}
+
+.current-time-label {
+  position: absolute;
+  top: -28px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #dc3545;
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* Timeline activities */
+.timeline-activity {
+  position: absolute;
+  top: 10px;
+  bottom: 10px;
+  border: 2px solid;
+  border-radius: 6px;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  overflow: hidden;
+}
+
+.osb-mode .timeline-activity {
+  border-radius: 4px;
+  border-width: 3px;
+}
+
+.timeline-activity:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.osb-mode .timeline-activity:hover {
+  box-shadow: none;
+  border-color: #212529;
+}
+
+.timeline-activity.current {
+  animation: pulse 2s infinite;
+  z-index: 5;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+.osb-mode .timeline-activity.current {
+  animation: none;
+  border-color: #212529;
+  border-width: 4px;
+}
+
+.timeline-activity.completed {
+  opacity: 0.6;
+}
+
+.timeline-activity .activity-icon {
+  font-size: 20px;
+}
+
+.timeline-activity .activity-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: #212529;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+.timeline-activity .activity-time {
+  font-size: 10px;
+  color: #495057;
+}
+
+.timeline-activity .activity-check {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  font-size: 16px;
+  color: #198754;
+}
+
+/* ============================================================================
+   List View
+   ============================================================================ */
+
+.daily-schedule__list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.list-activity {
+  display: grid;
+  grid-template-columns: auto auto 1fr auto;
+  gap: 16px;
+  align-items: center;
+  padding: 16px;
+  background-color: #f8f9fa;
+  border: 2px solid #dee2e6;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.osb-mode .list-activity {
+  border-radius: 4px;
+  border-width: 3px;
+}
+
+.list-activity:hover {
+  background-color: #e9ecef;
+  border-color: #adb5bd;
+}
+
+.list-activity.current {
+  background-color: #cfe2ff;
+  border-color: #0d6efd;
+  border-width: 3px;
+}
+
+.osb-mode .list-activity.current {
+  border-width: 4px;
+}
+
+.list-activity.completed {
+  opacity: 0.7;
+}
+
+/* Activity number */
+.activity-number {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  background-color: #495057;
+  color: white;
+  border-radius: 50%;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.osb-mode .activity-number {
+  border-radius: 6px;
+}
+
+/* Icon box */
+.activity-icon-box {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 8px;
+  font-size: 24px;
+}
+
+.osb-mode .activity-icon-box {
+  border-radius: 4px;
+  border: 2px solid #212529;
+}
+
+/* Activity info */
+.activity-info {
+  flex: 1;
+}
+
+.activity-info .activity-title {
+  margin: 0 0 4px 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #212529;
+}
+
+.activity-info .activity-time,
+.activity-info .activity-location {
+  margin: 2px 0;
+  font-size: 14px;
+  color: #6c757d;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.activity-info .activity-description {
+  margin: 8px 0 0 0;
+  font-size: 14px;
+  color: #495057;
+  line-height: 1.5;
+}
+
+/* Complete button */
+.activity-complete {
+  display: flex;
+  align-items: center;
+}
+
+.complete-button {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 2px solid #dee2e6;
+  background-color: white;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.osb-mode .complete-button {
+  border-radius: 6px;
+  border-width: 3px;
+}
+
+.complete-button:hover {
+  border-color: #198754;
+  background-color: #d1e7dd;
+}
+
+.complete-button.checked {
+  background-color: #198754;
+  border-color: #198754;
+}
+
+.complete-button .check-icon {
+  font-size: 18px;
+  color: white;
+}
+
+/* ============================================================================
+   Cards View
+   ============================================================================ */
+
+.daily-schedule__cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+.card-activity {
+  background-color: white;
+  border: 2px solid #dee2e6;
+  border-radius: 8px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.osb-mode .card-activity {
+  border-radius: 4px;
+  border-width: 3px;
+}
+
+.card-activity:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.osb-mode .card-activity:hover {
+  box-shadow: none;
+  border-color: #495057;
+}
+
+.card-activity.current {
+  border-color: #0d6efd;
+  border-width: 3px;
+}
+
+.osb-mode .card-activity.current {
+  border-width: 4px;
+}
+
+.card-activity.completed {
+  opacity: 0.7;
+}
+
+/* Card header */
+.card-header {
+  padding: 16px;
+  color: white;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.card-number {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 50%;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.osb-mode .card-number {
+  border-radius: 6px;
+}
+
+.card-icon {
+  font-size: 28px;
+}
+
+.card-title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  flex: 1;
+}
+
+/* Card body */
+.card-body {
+  padding: 16px;
+}
+
+.card-time,
+.card-location {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+  font-size: 14px;
+  color: #495057;
+}
+
+.card-description {
+  margin: 12px 0 0 0;
+  font-size: 14px;
+  color: #6c757d;
+  line-height: 1.5;
+}
+
+.card-status {
+  margin-top: 12px;
+}
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.osb-mode .status-badge {
+  border-radius: 6px;
+}
+
+.status-current {
+  background-color: #cfe2ff;
+  color: #084298;
+}
+
+.status-completed {
+  background-color: #d1e7dd;
+  color: #0f5132;
+}
+
+.status-upcoming {
+  background-color: #fff3cd;
+  color: #664d03;
+}
+
+/* Card footer */
+.card-footer {
+  padding: 12px 16px;
+  border-top: 1px solid #dee2e6;
+  background-color: #f8f9fa;
+}
+
+.card-complete-button {
+  width: 100%;
+  padding: 8px 16px;
+  background-color: #198754;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.osb-mode .card-complete-button {
+  border-radius: 4px;
+  border: 2px solid #198754;
+}
+
+.card-complete-button:hover:not(:disabled) {
+  background-color: #146c43;
+}
+
+.card-complete-button:disabled {
+  background-color: #6c757d;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* ============================================================================
+   Summary
+   ============================================================================ */
+
+.daily-schedule__summary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 2px solid #dee2e6;
+}
+
+.summary-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 16px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  border: 2px solid #dee2e6;
+}
+
+.osb-mode .summary-stat {
+  border-radius: 4px;
+  border-width: 3px;
+}
+
+.stat-icon {
+  font-size: 28px;
+}
+
+.stat-label {
+  font-size: 12px;
+  color: #6c757d;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.stat-value {
+  font-size: 16px;
+  font-weight: 600;
+  color: #212529;
+}
+
+/* ============================================================================
+   Responsive
+   ============================================================================ */
+
+@media (max-width: 768px) {
+  .daily-schedule {
+    padding: 16px;
+  }
+
+  .daily-schedule__cards {
+    grid-template-columns: 1fr;
+  }
+
+  .view-mode-selector {
+    flex-direction: column;
+  }
+
+  .list-activity {
+    grid-template-columns: auto 1fr;
+    gap: 12px;
+  }
+
+  .activity-number,
+  .activity-icon-box {
+    grid-row: span 2;
+  }
+
+  .activity-complete {
+    grid-column: 2;
+    justify-self: end;
+  }
+}
+
+/* ============================================================================
+   Accessibility
+   ============================================================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  .daily-schedule *,
+  .daily-schedule *::before,
+  .daily-schedule *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+@media (prefers-contrast: high) {
+  .daily-schedule {
+    border-width: 4px;
+  }
+
+  .timeline-activity,
+  .list-activity,
+  .card-activity {
+    border-width: 3px;
+  }
+}
+
+/* ============================================================================
+   Print
+   ============================================================================ */
+
+@media print {
+  .daily-schedule {
+    border: 2px solid black;
+  }
+
+  .view-mode-selector {
+    display: none;
+  }
+
+  .timeline-activity,
+  .list-activity,
+  .card-activity {
+    page-break-inside: avoid;
+  }
+}

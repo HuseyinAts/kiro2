@@ -1,0 +1,273 @@
+/**
+ * ColorCoding Component Styles
+ * 
+ * Renkli kodlama sistemi için stil tanımlamaları.
+ * WCAG AAA uyumlu kontrast oranları ve erişilebilirlik desteği.
+ * 
+ * Gereksinimler: REQ-51.61 - REQ-51.80
+ */
+
+.color-coding {
+  font-family: 'Courier New', monospace;
+  padding: 1.5rem;
+  background-color: #ffffff;
+  border-radius: 0.5rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .color-coding {
+    background-color: #1f2937;
+    color: #f3f4f6;
+  }
+}
+
+/* Expression container */
+.color-coding__expression {
+  font-size: 1.5rem;
+  line-height: 2;
+  padding: 1rem;
+  background-color: #f9fafb;
+  border-radius: 0.375rem;
+  margin-bottom: 1.5rem;
+  overflow-x: auto;
+  white-space: nowrap;
+}
+
+@media (prefers-color-scheme: dark) {
+  .color-coding__expression {
+    background-color: #374151;
+  }
+}
+
+/* Token styling */
+.color-coding__token {
+  font-weight: 600;
+  padding: 0.125rem 0.25rem;
+  border-radius: 0.25rem;
+  transition: all 0.2s ease;
+  display: inline-block;
+}
+
+/* Hover effect for better interaction */
+.color-coding__token:hover {
+  transform: scale(1.1);
+  background-color: rgba(0, 0, 0, 0.05);
+  cursor: help;
+}
+
+@media (prefers-color-scheme: dark) {
+  .color-coding__token:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+  }
+}
+
+/* Specific token types */
+.color-coding__token--positive {
+  font-weight: 700;
+}
+
+.color-coding__token--negative {
+  font-weight: 700;
+}
+
+.color-coding__token--zero {
+  font-weight: 600;
+  opacity: 0.8;
+}
+
+.color-coding__token--addition,
+.color-coding__token--subtraction,
+.color-coding__token--multiplication,
+.color-coding__token--division {
+  font-size: 1.75rem;
+  font-weight: 700;
+  padding: 0.25rem 0.5rem;
+}
+
+.color-coding__token--parenthesis {
+  font-size: 2rem;
+  font-weight: 700;
+  padding: 0.25rem 0.375rem;
+}
+
+.color-coding__token--variable {
+  font-style: italic;
+  font-weight: 600;
+}
+
+.color-coding__token--constant {
+  font-weight: 700;
+}
+
+.color-coding__token--coefficient {
+  font-weight: 700;
+}
+
+/* Legend */
+.color-coding__legend {
+  padding: 1rem;
+  background-color: #f3f4f6;
+  border-radius: 0.375rem;
+  border: 1px solid #e5e7eb;
+}
+
+@media (prefers-color-scheme: dark) {
+  .color-coding__legend {
+    background-color: #374151;
+    border-color: #4b5563;
+  }
+}
+
+.color-coding__legend-title {
+  font-size: 1.125rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  color: #111827;
+}
+
+@media (prefers-color-scheme: dark) {
+  .color-coding__legend-title {
+    color: #f9fafb;
+  }
+}
+
+.color-coding__legend-section {
+  margin-bottom: 1rem;
+}
+
+.color-coding__legend-section:last-child {
+  margin-bottom: 0;
+}
+
+.color-coding__legend-section h5 {
+  font-size: 0.875rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+@media (prefers-color-scheme: dark) {
+  .color-coding__legend-section h5 {
+    color: #9ca3af;
+  }
+}
+
+.color-coding__legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.375rem 0;
+  font-size: 0.875rem;
+  color: #374151;
+}
+
+@media (prefers-color-scheme: dark) {
+  .color-coding__legend-item {
+    color: #d1d5db;
+  }
+}
+
+.color-coding__legend-color {
+  width: 1.25rem;
+  height: 1.25rem;
+  border-radius: 0.25rem;
+  border: 1px solid #d1d5db;
+  flex-shrink: 0;
+}
+
+@media (prefers-color-scheme: dark) {
+  .color-coding__legend-color {
+    border-color: #6b7280;
+  }
+}
+
+/* High contrast mode */
+.color-coding--high-contrast .color-coding__token {
+  font-weight: 900;
+  text-shadow: 0 0 2px rgba(0, 0, 0, 0.5);
+}
+
+.color-coding--high-contrast .color-coding__expression {
+  background-color: #000000;
+  color: #ffffff;
+}
+
+/* Responsive design */
+@media (max-width: 640px) {
+  .color-coding {
+    padding: 1rem;
+  }
+
+  .color-coding__expression {
+    font-size: 1.25rem;
+    padding: 0.75rem;
+  }
+
+  .color-coding__token--addition,
+  .color-coding__token--subtraction,
+  .color-coding__token--multiplication,
+  .color-coding__token--division {
+    font-size: 1.5rem;
+  }
+
+  .color-coding__token--parenthesis {
+    font-size: 1.75rem;
+  }
+
+  .color-coding__legend {
+    padding: 0.75rem;
+  }
+}
+
+/* Print styles */
+@media print {
+  .color-coding {
+    box-shadow: none;
+    border: 1px solid #000;
+  }
+
+  .color-coding__token:hover {
+    transform: none;
+    background-color: transparent;
+  }
+
+  .color-coding__legend {
+    page-break-inside: avoid;
+  }
+}
+
+/* Accessibility: Focus styles */
+.color-coding__token:focus {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}
+
+/* Accessibility: Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .color-coding__token {
+    transition: none;
+  }
+
+  .color-coding__token:hover {
+    transform: none;
+  }
+}
+
+/* Accessibility: High contrast mode (Windows) */
+@media (prefers-contrast: high) {
+  .color-coding {
+    border: 2px solid currentColor;
+  }
+
+  .color-coding__token {
+    font-weight: 900;
+  }
+
+  .color-coding__legend {
+    border: 2px solid currentColor;
+  }
+}

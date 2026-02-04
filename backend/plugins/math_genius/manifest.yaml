@@ -1,0 +1,24 @@
+name: MathGenius
+version: 1.0.0
+description: Advanced mathematics tutoring agent with step-by-step solutions
+author: Teknofest AI Team
+capabilities:
+  - TEACHING
+  - PROBLEM_SOLVING
+  - ASSESSMENT
+supported_languages:
+  - tr
+  - en
+supported_subjects:
+  - matematik
+  - geometri
+  - cebir
+  - trigonometri
+configuration:
+  max_problem_complexity: 5
+  show_step_by_step: true
+  use_visual_aids: true
+dependencies:
+  - numpy
+  - sympy
+entry_point: agent

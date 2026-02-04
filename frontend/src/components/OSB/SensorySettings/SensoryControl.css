@@ -1,0 +1,419 @@
+/**
+ * Task 96: Sensory Load Reduction CSS
+ * Duyusal Yük Azaltma stilleri
+ */
+
+/* ========================================
+   CONTROL PANEL
+   ======================================== */
+
+.sensory-control-panel {
+  background: white;
+  border: 2px solid #dee2e6;
+  border-radius: 8px;
+  padding: 24px;
+  max-width: 800px;
+  margin: 0 auto;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* OSB mode: stronger borders, simpler rounded corners */
+.osb-mode.sensory-control-panel {
+  border-radius: 4px;
+  border-width: 3px;
+}
+
+/* Panel Header */
+.panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 2px solid #dee2e6;
+}
+
+.panel-title {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 600;
+  color: #212529;
+}
+
+.close-button {
+  background: none;
+  border: 2px solid #dee2e6;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  font-size: 20px;
+  cursor: pointer;
+  color: #6c757d;
+  transition: all 0.2s;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.close-button:hover {
+  background: #f8f9fa;
+  border-color: #adb5bd;
+  color: #212529;
+}
+
+/* ========================================
+   PRESETS SECTION
+   ======================================== */
+
+.presets-section {
+  margin-bottom: 32px;
+}
+
+.section-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #495057;
+  margin: 0 0 16px 0;
+}
+
+.preset-buttons {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px;
+}
+
+.preset-btn {
+  padding: 16px 24px;
+  border: 2px solid #dee2e6;
+  background: white;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: center;
+}
+
+.osb-mode .preset-btn {
+  border-radius: 4px;
+  border-width: 3px;
+}
+
+.preset-btn:hover {
+  background: #f8f9fa;
+  border-color: #adb5bd;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.preset-minimal {
+  border-color: #6c757d;
+  color: #6c757d;
+}
+
+.preset-minimal:hover {
+  background: #6c757d;
+  color: white;
+}
+
+.preset-comfortable {
+  border-color: #198754;
+  color: #198754;
+}
+
+.preset-comfortable:hover {
+  background: #198754;
+  color: white;
+}
+
+.preset-standard {
+  border-color: #0d6efd;
+  color: #0d6efd;
+}
+
+.preset-standard:hover {
+  background: #0d6efd;
+  color: white;
+}
+
+/* ========================================
+   SETTINGS SECTIONS
+   ======================================== */
+
+.settings-section {
+  margin-bottom: 24px;
+  padding: 20px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border: 1px solid #dee2e6;
+}
+
+.osb-mode .settings-section {
+  border-radius: 4px;
+  border-width: 2px;
+}
+
+.settings-section .section-title {
+  margin-bottom: 16px;
+  font-size: 16px;
+}
+
+/* Setting Item */
+.setting-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px;
+  margin-bottom: 12px;
+  background: white;
+  border-radius: 6px;
+  border: 1px solid #dee2e6;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.osb-mode .setting-item {
+  border-radius: 4px;
+  border-width: 2px;
+  padding: 16px;
+}
+
+.setting-item:hover {
+  background: #e9ecef;
+  border-color: #adb5bd;
+}
+
+.setting-item:last-child {
+  margin-bottom: 0;
+}
+
+.setting-item input[type="checkbox"] {
+  margin-top: 4px;
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.osb-mode .setting-item input[type="checkbox"] {
+  width: 24px;
+  height: 24px;
+}
+
+.setting-item > div {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.setting-label {
+  font-size: 16px;
+  font-weight: 600;
+  color: #212529;
+  display: block;
+}
+
+.osb-mode .setting-label {
+  font-size: 18px;
+}
+
+.setting-description {
+  font-size: 14px;
+  color: #6c757d;
+  display: block;
+}
+
+.osb-mode .setting-description {
+  font-size: 16px;
+}
+
+/* ========================================
+   PANEL FOOTER
+   ======================================== */
+
+.panel-footer {
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 2px solid #dee2e6;
+  text-align: center;
+}
+
+.reset-button {
+  padding: 12px 32px;
+  border: 2px solid #6c757d;
+  background: white;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  color: #6c757d;
+  transition: all 0.2s;
+}
+
+.osb-mode .reset-button {
+  border-radius: 4px;
+  border-width: 3px;
+}
+
+.reset-button:hover {
+  background: #6c757d;
+  color: white;
+}
+
+/* ========================================
+   GLOBAL SENSORY SETTINGS (Applied to :root)
+   ======================================== */
+
+/* Task 96.1: Minimal Animation */
+.reduce-motion * {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+}
+
+.no-animations * {
+  animation: none !important;
+  transition: none !important;
+}
+
+.subtle-transitions * {
+  transition-duration: 150ms !important;
+  transition-timing-function: ease-in-out !important;
+}
+
+/* Task 96.2: Silent Mode */
+.mute-all audio,
+.mute-all video {
+  muted: true;
+  volume: 0;
+}
+
+/* Task 96.3: Plain Backgrounds */
+.plain-backgrounds {
+  background: white !important;
+}
+
+.plain-backgrounds * {
+  background-image: none !important;
+}
+
+.no-patterns * {
+  background-image: none !important;
+  background-pattern: none !important;
+}
+
+.solid-colors * {
+  background-image: none !important;
+  background: linear-gradient(0deg, currentColor, currentColor) !important;
+}
+
+/* Task 96.4: Clean Design */
+.minimal-clutter .optional-element,
+.minimal-clutter .decorative-element,
+.minimal-clutter .secondary-info {
+  display: none !important;
+}
+
+.extra-whitespace {
+  padding: 32px !important;
+  margin: 24px !important;
+}
+
+.extra-whitespace * {
+  padding: 16px !important;
+  margin: 12px !important;
+}
+
+.clear-hierarchy h1 {
+  font-size: 32px !important;
+  font-weight: 700 !important;
+  margin-bottom: 24px !important;
+}
+
+.clear-hierarchy h2 {
+  font-size: 28px !important;
+  font-weight: 600 !important;
+  margin-bottom: 20px !important;
+}
+
+.clear-hierarchy h3 {
+  font-size: 24px !important;
+  font-weight: 600 !important;
+  margin-bottom: 16px !important;
+}
+
+.large-spacing * {
+  margin: 16px !important;
+  padding: 16px !important;
+  gap: 16px !important;
+}
+
+/* ========================================
+   RESPONSIVE DESIGN
+   ======================================== */
+
+@media (max-width: 768px) {
+  .sensory-control-panel {
+    padding: 16px;
+  }
+
+  .panel-title {
+    font-size: 20px;
+  }
+
+  .preset-buttons {
+    grid-template-columns: 1fr;
+  }
+
+  .preset-btn {
+    padding: 12px 16px;
+    font-size: 14px;
+  }
+
+  .setting-label {
+    font-size: 14px;
+  }
+
+  .setting-description {
+    font-size: 12px;
+  }
+}
+
+/* ========================================
+   ACCESSIBILITY - REDUCED MOTION
+   ======================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .preset-btn:hover {
+    transform: none;
+  }
+}
+
+/* ========================================
+   PRINT STYLES
+   ======================================== */
+
+@media print {
+  .sensory-control-panel {
+    border: 1px solid #000;
+    box-shadow: none;
+  }
+
+  .close-button,
+  .preset-buttons,
+  .panel-footer {
+    display: none;
+  }
+
+  .setting-item {
+    page-break-inside: avoid;
+  }
+}

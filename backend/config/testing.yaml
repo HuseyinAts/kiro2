@@ -1,0 +1,100 @@
+# Testing Environment Configuration
+# Türkiye Üniversite Sınavları Hazırlık Platformu
+
+# Application Settings
+app_name: "Türkiye Üniversite Sınavları Hazırlık Platformu - Testing"
+app_version: "1.0.0-test"
+environment: "testing"
+debug: true
+
+# Server Configuration
+server:
+  host: "127.0.0.1"
+  port: 8080
+  workers: 1
+  allowed_origins:
+    - "http://localhost:3000"
+    - "http://localhost:5173"
+    - "http://localhost:8080"
+    - "http://127.0.0.1:3000"
+    - "http://127.0.0.1:5173"
+    - "http://127.0.0.1:8080"  # Testing environment - restricted to localhost only
+  max_request_size: 1048576  # 1MB
+
+# Database Configuration - In-memory or test database
+database:
+  url: "sqlite+aiosqlite:///:memory:"  # In-memory database for tests
+  echo: false  # Disable SQL logging in tests for cleaner output
+  pool_size: 1
+  max_overflow: 0
+  pool_timeout: 5
+
+# Redis Configuration - Mock or test instance
+redis:
+  url: "redis://localhost:6379/15"  # Use database 15 for testing
+  password: null
+  max_connections: 5
+  socket_timeout: 3
+
+# Elasticsearch Configuration - Test index
+elasticsearch:
+  url: "http://localhost:9200"
+  index: "turkiye_sinav_platform_test"
+  username: null
+  password: null
+  timeout: 10
+
+# Security Configuration - Relaxed for testing
+security:
+  secret_key: "test-secret-key-for-testing-only"
+  algorithm: "HS256"
+  access_token_expire_minutes: 5  # Short expiry for test speed
+  refresh_token_expire_days: 1
+  password_min_length: 4
+
+# External API Configuration - Mocked
+external_apis:
+  openai_api_key: "test-openai-key"
+  youtube_api_key: "test-youtube-key"
+  huggingface_api_key: "test-hf-key"
+  google_api_key: "test-google-key"
+  huggingface_endpoint: "http://localhost:8888/mock-hf"  # Mock endpoint
+  custom_llm_endpoint: "http://localhost:8888/mock-llm"
+  api_timeout: 5  # Short timeout for tests
+  max_retries: 1
+  rate_limit_per_minute: 10000  # Very high limit for tests
+
+# Monitoring Configuration - Minimal for testing
+monitoring:
+  enable_monitoring: false
+  metrics_port: 8002
+  log_level: "ERROR"  # Only log errors during tests
+  log_format: "%(levelname)s - %(message)s"
+  enable_structured_logging: false
+  log_retention_days: 1
+
+# Turkish Language Support
+encoding: "utf-8"
+locale: "tr_TR.UTF-8"
+timezone: "Europe/Istanbul"
+
+# Feature Flags - Configured for testing
+enable_caching: false  # Disable caching for predictable tests
+enable_rate_limiting: false
+enable_swagger: false
+enable_background_tasks: false  # Disable for cleaner tests
+
+# Testing-specific settings
+custom_settings:
+  mock_external_apis: true
+  enable_test_endpoints: true
+  auto_reload: false
+  enable_cors_all: true
+  fake_authentication: true  # Enable fake auth for testing
+  seed_database: true
+  enable_profiling: false
+  test_database_cleanup: true
+  parallel_test_support: true
+  mock_email_service: true
+  mock_file_storage: true
+  fast_password_hashing: true  # Use faster hashing for tests

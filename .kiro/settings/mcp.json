@@ -1,0 +1,27 @@
+{
+  "mcpServers": {
+    "zemberek-nlp": {
+      "command": "python",
+      "args": [
+        "-m",
+        "backend.mcp_servers.zemberek_mcp"
+      ],
+      "env": {
+        "ZEMBEREK_SERVICE_URL": "http://localhost:8081"
+      }
+    },
+    "youtube-education-api": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-youtube"
+      ],
+      "env": {
+        "YOUTUBE_API_KEY": "${YOUTUBE_API_KEY}",
+        "YOUTUBE_CHANNEL_FILTER": "education",
+        "YOUTUBE_LANGUAGE": "tr",
+        "YOUTUBE_REGION": "TR"
+      }
+    }
+  }
+}

@@ -1,0 +1,56 @@
+# Alertmanager Configuration for Kiro2 Platform
+# Sprint 10: Monitoring & Observability
+
+global:
+  slack_api_url: '${SLACK_WEBHOOK_URL}'
+  smtp_smarthost: '${SMTP_HOST}:${SMTP_PORT}'
+  smtp_from: 'alerts@kiro2.com'
+
+templates:
+  - '/etc/alertmanager/templates/*.tmpl'
+
+route:
+  receiver: 'default'
+  group_by: ['alertname', 'severity']
+  group_wait: 10s
+  group_interval: 5m
+  repeat_interval: 4h
+
+  routes:
+    - match:
+        severity: critical
+      receiver: 'critical-alerts'
+      group_wait: 10s
+      repeat_interval: 30m
+
+    - match:
+        component: security
+      receiver: 'security-team'
+      group_wait: 10s
+
+receivers:
+  - name: 'default'
+    slack_configs:
+      - channel: '#kiro2-alerts'
+        title: '{{ .GroupLabels.alertname }}'
+        send_resolved: true
+
+  - name: 'critical-alerts'
+    slack_configs:
+      - channel: '#kiro2-critical'
+        title: '🚨 CRITICAL ALERT'
+        send_resolved: true
+        color: 'danger'
+
+  - name: 'security-team'
+    slack_configs:
+      - channel: '#kiro2-security'
+        title: '🔒 Security Alert'
+        send_resolved: true
+
+inhibit_rules:
+  - source_match:
+      severity: 'critical'
+    target_match:
+      severity: 'warning'
+    equal: ['alertname', 'instance']

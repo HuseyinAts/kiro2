@@ -1,0 +1,48 @@
+======================================================================
+KIRO2 PROJECT ANALYSIS REPORT
+======================================================================
+Generated: 2025-09-27T17:25:14.864705
+
+[INFO] FILE STRUCTURE
+------------------------------
+Total Files: 6578
+Python Files: 495
+TypeScript/JS Files: 190
+Test Files: 174
+Config Files: 5585
+Documentation Files: 120
+
+[INFO] DEPENDENCIES
+------------------------------
+Backend Dependencies: 31
+Frontend Dependencies: 61
+
+[INFO] CODE QUALITY
+------------------------------
+Total Lines of Code: 236389
+Large Files (>500 lines): 223
+
+[INFO] TEST COVERAGE
+------------------------------
+Test Files: 456
+Test Directories: 29
+
+[INFO] DOCKER SETUP
+------------------------------
+Has Docker Setup: True
+Dockerfiles: 5
+Docker Compose Files: 3
+
+[INFO] SECURITY
+------------------------------
+Environment Files: 3
+Security Files: 3
+
+[RECOMMEND] RECOMMENDATIONS
+------------------------------
+- Increase test coverage (consider adding more test files)
+- Consider code refactoring for better maintainability
+
+======================================================================
+END OF REPORT
+======================================================================

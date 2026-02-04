@@ -1,0 +1,413 @@
+/**
+ * Task 93.4: Standard Icons CSS
+ * Evrensel ve tutarlı ikon stilleri
+ */
+
+/* ============================================================================
+   Standard Icon - Temel Stil
+   ============================================================================ */
+
+.standard-icon {
+  display: inline-block;
+  vertical-align: middle;
+  flex-shrink: 0;
+
+  /* Tutarlı görünüm */
+  stroke-linecap: round;
+  stroke-linejoin: round;
+
+  /* No fill by default */
+  fill: none;
+}
+
+/* Icon wrapper - label ile birlikte kullanım */
+.standard-icon-wrapper {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: inherit;
+}
+
+.standard-icon-wrapper.osb-mode {
+  /* OSB modunda daha belirgin */
+  gap: 12px;
+}
+
+.standard-icon-wrapper.interactive {
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 6px;
+  transition: background-color 0.2s ease;
+}
+
+.standard-icon-wrapper.interactive:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.standard-icon-wrapper.interactive:focus {
+  outline: 2px solid #0d6efd;
+  outline-offset: 2px;
+}
+
+.osb-mode .standard-icon-wrapper.interactive {
+  /* OSB modunda keskin köşeler */
+  border-radius: 4px;
+
+  /* Daha belirgin kenarlık */
+  border: 2px solid transparent;
+}
+
+.osb-mode .standard-icon-wrapper.interactive:hover {
+  border-color: #dee2e6;
+  background-color: #f8f9fa;
+}
+
+.osb-mode .standard-icon-wrapper.interactive:focus {
+  outline-width: 3px;
+  border-color: #0d6efd;
+}
+
+/* Icon label - OSB için önemli */
+.standard-icon-label {
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.osb-mode .standard-icon-label {
+  /* OSB modunda sabit font boyutu */
+  font-size: 14px !important;
+  font-weight: 500 !important;
+}
+
+/* Icon button - sadece ikon olarak kullanım */
+.standard-icon-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+  background: none;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  color: inherit;
+  transition: background-color 0.2s ease;
+}
+
+.standard-icon-button:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.standard-icon-button:focus {
+  outline: 2px solid #0d6efd;
+  outline-offset: 2px;
+}
+
+.standard-icon-button:active {
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+/* ============================================================================
+   Icon Sizes - Sabit Boyutlar
+   ============================================================================ */
+
+.standard-icon--size-16 {
+  width: 16px;
+  height: 16px;
+  stroke-width: 2;
+}
+
+.standard-icon--size-20 {
+  width: 20px;
+  height: 20px;
+  stroke-width: 2;
+}
+
+.standard-icon--size-24 {
+  width: 24px;
+  height: 24px;
+  stroke-width: 2;
+}
+
+.standard-icon--size-32 {
+  width: 32px;
+  height: 32px;
+  stroke-width: 2;
+}
+
+.standard-icon--size-40 {
+  width: 40px;
+  height: 40px;
+  stroke-width: 2;
+}
+
+.standard-icon--size-48 {
+  width: 48px;
+  height: 48px;
+  stroke-width: 1.5;
+}
+
+/* ============================================================================
+   Icon Color Variants - Tutarlı Renkler
+   ============================================================================ */
+
+.standard-icon--primary {
+  color: #0d6efd;
+}
+
+.standard-icon--secondary {
+  color: #6c757d;
+}
+
+.standard-icon--success {
+  color: #198754;
+}
+
+.standard-icon--warning {
+  color: #ffc107;
+}
+
+.standard-icon--error {
+  color: #dc3545;
+}
+
+.standard-icon--info {
+  color: #0dcaf0;
+}
+
+/* ============================================================================
+   Specific Icon Styles - Her İkon İçin Tutarlı Stil
+   ============================================================================ */
+
+/* Navigation icons - her zaman aynı */
+.standard-icon--home,
+.standard-icon--back,
+.standard-icon--forward {
+  stroke-width: 2.5;
+}
+
+/* Action icons - biraz daha kalın */
+.standard-icon--add,
+.standard-icon--remove,
+.standard-icon--edit,
+.standard-icon--delete {
+  stroke-width: 2.5;
+}
+
+/* Status icons - renkli kullanım */
+.standard-icon--success {
+  color: #198754;
+  stroke-width: 2.5;
+}
+
+.standard-icon--error {
+  color: #dc3545;
+  stroke-width: 2.5;
+}
+
+.standard-icon--warning {
+  color: #ffc107;
+  stroke-width: 2.5;
+}
+
+.standard-icon--info {
+  color: #0dcaf0;
+  stroke-width: 2.5;
+}
+
+/* ============================================================================
+   Icon Groups - Birlikte Kullanım
+   ============================================================================ */
+
+.icon-group {
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.osb-mode .icon-group {
+  gap: 12px;
+}
+
+/* Vertical icon group */
+.icon-group--vertical {
+  flex-direction: column;
+  gap: 4px;
+}
+
+.osb-mode .icon-group--vertical {
+  gap: 8px;
+}
+
+/* ============================================================================
+   Icon with Badge - Bildirim ikonları için
+   ============================================================================ */
+
+.standard-icon-with-badge {
+  position: relative;
+  display: inline-block;
+}
+
+.standard-icon-badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 4px;
+  background-color: #dc3545;
+  color: white;
+  border-radius: 9px;
+  font-size: 11px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid white;
+}
+
+.osb-mode .standard-icon-badge {
+  /* OSB modunda daha büyük ve belirgin */
+  min-width: 20px;
+  height: 20px;
+  font-size: 12px;
+  border-width: 3px;
+}
+
+/* ============================================================================
+   Accessibility - Screen Reader Support
+   ============================================================================ */
+
+.standard-icon[aria-hidden="true"] {
+  /* İkon dekoratif ise, screen reader'lar görmez */
+  pointer-events: none;
+}
+
+/* Keyboard focus için belirgin outline */
+.standard-icon-wrapper:focus-visible,
+.standard-icon-button:focus-visible {
+  outline: 3px solid #0d6efd;
+  outline-offset: 2px;
+}
+
+.osb-mode .standard-icon-wrapper:focus-visible,
+.osb-mode .standard-icon-button:focus-visible {
+  outline-width: 4px;
+  outline-offset: 4px;
+}
+
+/* ============================================================================
+   High Contrast Mode
+   ============================================================================ */
+
+@media (prefers-contrast: high) {
+  .standard-icon {
+    stroke-width: 3;
+  }
+
+  .standard-icon-wrapper.interactive,
+  .standard-icon-button {
+    border: 2px solid currentColor;
+  }
+
+  .standard-icon-wrapper:focus,
+  .standard-icon-button:focus {
+    outline-width: 4px;
+  }
+}
+
+/* ============================================================================
+   Reduced Motion - OSB Support
+   ============================================================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  .standard-icon,
+  .standard-icon-wrapper,
+  .standard-icon-button {
+    transition: none !important;
+  }
+}
+
+/* ============================================================================
+   Print Styles
+   ============================================================================ */
+
+@media print {
+  .standard-icon {
+    /* İkonlar yazdırıldığında siyah */
+    stroke: black;
+  }
+
+  .standard-icon-wrapper.interactive,
+  .standard-icon-button {
+    /* Interaktif özellikler kaldırılır */
+    background: none;
+    border: none;
+  }
+}
+
+/* ============================================================================
+   Disabled State
+   ============================================================================ */
+
+.standard-icon-wrapper.disabled,
+.standard-icon-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.osb-mode .standard-icon-wrapper.disabled,
+.osb-mode .standard-icon-button:disabled {
+  opacity: 0.4;
+  filter: grayscale(100%);
+}
+
+/* ============================================================================
+   Loading State - İkon animasyonu
+   ============================================================================ */
+
+.standard-icon.loading {
+  animation: icon-spin 1s linear infinite;
+}
+
+@keyframes icon-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* OSB modunda loading animasyonu yok */
+.osb-mode .standard-icon.loading {
+  animation: none;
+}
+
+/* ============================================================================
+   Responsive - Mobil için ayarlamalar
+   ============================================================================ */
+
+@media (max-width: 768px) {
+  .standard-icon-wrapper {
+    gap: 6px;
+  }
+
+  .standard-icon-label {
+    font-size: 13px;
+  }
+
+  .standard-icon-button {
+    padding: 6px;
+  }
+}
+
+/* Touch devices için daha büyük tıklama alanı */
+@media (hover: none) and (pointer: coarse) {
+  .standard-icon-wrapper.interactive,
+  .standard-icon-button {
+    min-width: 44px;
+    min-height: 44px;
+  }
+}

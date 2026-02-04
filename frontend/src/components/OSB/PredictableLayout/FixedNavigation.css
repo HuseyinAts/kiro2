@@ -1,0 +1,443 @@
+/**
+ * Task 93.2: Fixed Navigation CSS
+ * Sabit ve değişmeyen menü stilleri
+ */
+
+/* ============================================================================
+   Navigation Container - Asla Hareket Etmez
+   ============================================================================ */
+
+.fixed-navigation {
+  display: flex;
+  align-items: center;
+  background-color: #ffffff;
+  border-bottom: 2px solid #dee2e6;
+
+  /* SABIT pozisyon - asla değişmez */
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+
+  /* SABIT yükseklik - asla değişmez */
+  height: 64px;
+  min-height: 64px;
+  max-height: 64px;
+
+  /* Padding - tutarlı */
+  padding: 0 24px;
+
+  /* Font ayarları - tutarlı */
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+}
+
+.osb-mode.fixed-navigation {
+  /* OSB modunda daha belirgin kenarlık */
+  border-bottom: 3px solid #495057;
+
+  /* Shadow yok - daha tahmin edilebilir */
+  box-shadow: none;
+}
+
+/* Horizontal variant (default) */
+.fixed-navigation--horizontal {
+  flex-direction: row;
+  justify-content: space-between;
+  gap: 32px;
+}
+
+/* Vertical variant - sol tarafta sabit */
+.fixed-navigation--vertical {
+  flex-direction: column;
+  align-items: stretch;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: auto;
+  width: 240px;
+  min-width: 240px;
+  max-width: 240px;
+  height: 100vh;
+  border-bottom: none;
+  border-right: 2px solid #dee2e6;
+  padding: 24px 16px;
+}
+
+.osb-mode.fixed-navigation--vertical {
+  border-right: 3px solid #495057;
+
+  /* Kesinlikle sabit genişlik */
+  width: 240px !important;
+  min-width: 240px !important;
+  max-width: 240px !important;
+}
+
+/* Position variants */
+.fixed-navigation--top {
+  top: 0;
+  bottom: auto;
+}
+
+.fixed-navigation--left {
+  left: 0;
+  right: auto;
+}
+
+.fixed-navigation--bottom {
+  top: auto;
+  bottom: 0;
+  border-bottom: none;
+  border-top: 2px solid #dee2e6;
+}
+
+.osb-mode.fixed-navigation--bottom {
+  border-top: 3px solid #495057;
+}
+
+/* ============================================================================
+   Logo - Her Zaman Solda (veya En Üstte)
+   ============================================================================ */
+
+.fixed-navigation__logo {
+  flex-shrink: 0;
+}
+
+.logo-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px 12px;
+  border-radius: 6px;
+  transition: background-color 0.2s ease;
+}
+
+.logo-button:hover {
+  background-color: #f8f9fa;
+}
+
+.logo-button:focus {
+  outline: 2px solid #0d6efd;
+  outline-offset: 2px;
+}
+
+.logo-text {
+  font-size: 20px;
+  font-weight: 700;
+  color: #212529;
+  letter-spacing: -0.5px;
+}
+
+.osb-mode .logo-text {
+  /* OSB modunda sabit font boyutu */
+  font-size: 20px !important;
+  font-weight: 700 !important;
+}
+
+/* ============================================================================
+   Menu - Her Zaman Aynı Sırada
+   ============================================================================ */
+
+.fixed-navigation__menu {
+  display: flex;
+  gap: 8px;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  flex: 1;
+}
+
+.fixed-navigation--horizontal .fixed-navigation__menu {
+  flex-direction: row;
+  justify-content: center;
+}
+
+.fixed-navigation--vertical .fixed-navigation__menu {
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 24px;
+}
+
+/* Menu item */
+.fixed-navigation__item {
+  /* Sabit pozisyon attribute'u için */
+  position: relative;
+}
+
+/* Navigation link - Her zaman aynı stil */
+.nav-link {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border-radius: 6px;
+  text-decoration: none;
+  color: #495057;
+  font-size: 15px;
+  font-weight: 500;
+  transition: background-color 0.2s ease, color 0.2s ease;
+  position: relative;
+
+  /* Sabit minimum genişlik - düğmeler eşit boyutta */
+  min-width: 100px;
+  justify-content: center;
+}
+
+.osb-mode .nav-link {
+  /* OSB modunda daha belirgin kenarlık */
+  border: 2px solid transparent;
+
+  /* Sabit font boyutu */
+  font-size: 15px !important;
+  font-weight: 500 !important;
+}
+
+.fixed-navigation--vertical .nav-link {
+  justify-content: flex-start;
+  width: 100%;
+  min-width: auto;
+}
+
+/* Hover state - tutarlı */
+.nav-link:hover {
+  background-color: #e9ecef;
+  color: #212529;
+}
+
+.osb-mode .nav-link:hover {
+  border-color: #adb5bd;
+}
+
+/* Focus state - erişilebilirlik */
+.nav-link:focus {
+  outline: 2px solid #0d6efd;
+  outline-offset: 2px;
+}
+
+.osb-mode .nav-link:focus {
+  outline-width: 3px;
+}
+
+/* Active state - aktif sayfa */
+.nav-link--active {
+  background-color: #0d6efd;
+  color: white;
+}
+
+.osb-mode .nav-link--active {
+  border-color: #0d6efd;
+
+  /* OSB modunda daha belirgin aktif durum */
+  font-weight: 600 !important;
+}
+
+.nav-link--active:hover {
+  background-color: #0b5ed7;
+  color: white;
+}
+
+/* Icon - Her zaman solda */
+.nav-link__icon {
+  font-size: 18px;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.osb-mode .nav-link__icon {
+  /* OSB modunda sabit boyut */
+  font-size: 18px !important;
+}
+
+/* Label - Her zaman aynı font */
+.nav-link__label {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Active indicator - aktif sayfa göstergesi */
+.nav-link__indicator {
+  position: absolute;
+  bottom: -2px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 40px;
+  height: 3px;
+  background-color: white;
+  border-radius: 2px 2px 0 0;
+}
+
+.fixed-navigation--vertical .nav-link__indicator {
+  bottom: auto;
+  left: auto;
+  right: -2px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 3px;
+  height: 24px;
+  border-radius: 2px 0 0 2px;
+}
+
+.osb-mode .nav-link__indicator {
+  /* OSB modunda daha belirgin gösterge */
+  height: 4px;
+  width: 50px;
+}
+
+.osb-mode .fixed-navigation--vertical .nav-link__indicator {
+  width: 4px;
+  height: 30px;
+}
+
+/* ============================================================================
+   User Section - Her Zaman Sağda (veya En Altta)
+   ============================================================================ */
+
+.fixed-navigation__user {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+}
+
+.fixed-navigation--vertical .fixed-navigation__user {
+  margin-top: auto;
+  padding-top: 16px;
+  border-top: 2px solid #dee2e6;
+}
+
+.user-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  background-color: #e9ecef;
+  border-radius: 50%;
+  font-size: 20px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.user-indicator:hover {
+  background-color: #dee2e6;
+}
+
+.user-indicator:focus {
+  outline: 2px solid #0d6efd;
+  outline-offset: 2px;
+}
+
+.osb-mode .user-indicator {
+  /* OSB modunda kare - daha tahmin edilebilir */
+  border-radius: 6px;
+
+  /* Daha belirgin kenarlık */
+  border: 2px solid #adb5bd;
+}
+
+/* ============================================================================
+   Responsive - Ama Yine de Tutarlı
+   ============================================================================ */
+
+@media (max-width: 992px) {
+  .fixed-navigation--horizontal {
+    /* Tablet'te menü daraltılır */
+    gap: 16px;
+    padding: 0 16px;
+  }
+
+  .nav-link {
+    /* Daha küçük padding */
+    padding: 8px 12px;
+    min-width: 80px;
+  }
+
+  .nav-link__label {
+    /* Mobilde kısaltılmış label */
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 768px) {
+  .fixed-navigation--horizontal {
+    /* Mobilde vertical menü daha iyi */
+    height: auto;
+    max-height: none;
+    flex-direction: column;
+    gap: 8px;
+    padding: 12px;
+  }
+
+  .fixed-navigation__menu {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .nav-link {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .fixed-navigation__user {
+    width: 100%;
+    justify-content: center;
+    padding-top: 12px;
+    border-top: 2px solid #dee2e6;
+  }
+}
+
+/* ============================================================================
+   OSB Specific - Reduced Motion Support
+   ============================================================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  .fixed-navigation *,
+  .fixed-navigation *::before,
+  .fixed-navigation *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ============================================================================
+   High Contrast Mode Support
+   ============================================================================ */
+
+@media (prefers-contrast: high) {
+  .fixed-navigation {
+    border-width: 4px;
+  }
+
+  .nav-link {
+    border: 2px solid currentColor;
+  }
+
+  .nav-link:focus {
+    outline-width: 4px;
+  }
+}
+
+/* ============================================================================
+   Print Styles - Hide navigation when printing
+   ============================================================================ */
+
+@media print {
+  .fixed-navigation {
+    display: none;
+  }
+}
+
+/* ============================================================================
+   Keyboard Navigation - Visual feedback
+   ============================================================================ */
+
+.nav-link:focus-visible {
+  outline: 3px solid #0d6efd;
+  outline-offset: 2px;
+}
+
+.osb-mode .nav-link:focus-visible {
+  outline-width: 4px;
+  outline-offset: 4px;
+}

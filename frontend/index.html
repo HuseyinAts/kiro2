@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="tr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+    <title>KIRO2 - Türkiye Üniversite Sınavları Hazırlık Platformu</title>
+    
+    <!-- PWA Meta Tags -->
+    <meta name="description" content="YKS (TYT/AYT/YDT) sınavlarına hazırlık için AI destekli eğitim platformu" />
+    <meta name="theme-color" content="#1976d2" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="KIRO2 Eğitim" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="/manifest.json" />
+    
+    <!-- Favicon and Icons -->
+    <link rel="icon" type="image/png" sizes="32x32" href="/images/icon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/images/icon-16x16.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/images/icon-180x180.png" />
+    <link rel="apple-touch-icon" sizes="152x152" href="/images/icon-152x152.png" />
+    <link rel="apple-touch-icon" sizes="144x144" href="/images/icon-144x144.png" />
+    <link rel="apple-touch-icon" sizes="120x120" href="/images/icon-120x120.png" />
+    <link rel="apple-touch-icon" sizes="114x114" href="/images/icon-114x114.png" />
+    <link rel="apple-touch-icon" sizes="76x76" href="/images/icon-76x76.png" />
+    <link rel="apple-touch-icon" sizes="72x72" href="/images/icon-72x72.png" />
+    <link rel="apple-touch-icon" sizes="60x60" href="/images/icon-60x60.png" />
+    <link rel="apple-touch-icon" sizes="57x57" href="/images/icon-57x57.png" />
+    
+    <!-- Microsoft Tiles -->
+    <meta name="msapplication-TileColor" content="#1976d2" />
+    <meta name="msapplication-TileImage" content="/images/icon-144x144.png" />
+    <meta name="msapplication-config" content="/browserconfig.xml" />
+    
+    <!-- Modern Fonts - Inter & Poppins -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+
+    <!-- Preload Critical Resources -->
+    <link rel="preload" href="/fonts/turkish-font.woff2" as="font" type="font/woff2" crossorigin />
+
+    <!-- MathJax for Accessible Math Formulas -->
+    <script>
+      window.MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          displayMath: [['$$', '$$'], ['\\[', '\\]']],
+          packages: {'[+]': ['ams', 'newcommand', 'configmacros']},
+        },
+        svg: {
+          fontCache: 'global',
+        },
+        options: {
+          enableMenu: true,
+          enableAssistiveMml: true,
+          menuOptions: {
+            settings: {
+              assistiveMml: true,
+              collapsible: true,
+              explorer: true,
+            },
+          },
+        },
+        startup: {
+          pageReady: () => {
+            return window.MathJax.startup.defaultPageReady().then(() => {
+              console.log('MathJax with accessibility features loaded');
+            });
+          },
+        },
+        loader: {load: ['[tex]/ams', 'a11y/assistive-mml', 'a11y/semantic-enrich']},
+      };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg-full.js"></script>
+    
+    <!-- Touch and Interaction -->
+    <meta name="format-detection" content="telephone=no" />
+    <meta name="msapplication-tap-highlight" content="no" />
+    
+    <!-- Security -->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="referrer" content="strict-origin-when-cross-origin" />
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+    
+    <!-- PWA Installation Prompt -->
+    <script>
+      // PWA kurulum prompt'u
+      let deferredPrompt;
+      
+      window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+        
+        // Kurulum butonunu göster
+        const installButton = document.createElement('button');
+        installButton.textContent = '📱 Uygulamayı Yükle';
+        installButton.style.cssText = `
+          position: fixed;
+          bottom: 20px;
+          right: 20px;
+          background: #1976d2;
+          color: white;
+          border: none;
+          padding: 12px 20px;
+          border-radius: 25px;
+          cursor: pointer;
+          box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+          z-index: 1000;
+          font-size: 14px;
+          font-weight: bold;
+        `;
+        
+        installButton.addEventListener('click', async () => {
+          if (deferredPrompt) {
+            deferredPrompt.prompt();
+            const { outcome } = await deferredPrompt.userChoice;
+            
+            if (outcome === 'accepted') {
+              console.log('PWA kurulumu kabul edildi');
+            }
+            
+            deferredPrompt = null;
+            installButton.remove();
+          }
+        });
+        
+        document.body.appendChild(installButton);
+        
+        // 10 saniye sonra otomatik gizle
+        setTimeout(() => {
+          if (installButton.parentNode) {
+            installButton.remove();
+          }
+        }, 10000);
+      });
+      
+      // PWA kurulumu tamamlandığında
+      window.addEventListener('appinstalled', () => {
+        console.log('PWA başarıyla kuruldu');
+        deferredPrompt = null;
+      });
+    </script>
+  </body>
+</html>

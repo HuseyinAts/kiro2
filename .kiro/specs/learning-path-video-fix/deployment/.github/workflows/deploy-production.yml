@@ -1,0 +1,388 @@
+# ============================================================================
+# Video API Production Deployment Workflow
+# GitHub Actions CI/CD Pipeline
+# ============================================================================
+
+name: Deploy Video API to Production
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'backend/**'
+      - '.kiro/specs/learning-path-video-fix/deployment/**'
+  
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Deployment environment'
+        required: true
+        default: 'production'
+        type: choice
+        options:
+          - production
+          - staging
+      skip_tests:
+        description: 'Skip tests'
+        required: false
+        default: false
+        type: boolean
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository_owner }}/video-api
+  NAMESPACE: video-api
+
+jobs:
+  # ============================================================================
+  # Build and Test
+  # ============================================================================
+  build-and-test:
+    name: Build and Test
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+      
+      - name: Install dependencies
+        run: |
+          cd backend
+          pip install -r requirements.txt
+          pip install -r requirements-test.txt
+      
+      - name: Run linting
+        run: |
+          cd backend
+          ruff check .
+          black --check .
+          mypy .
+      
+      - name: Run unit tests
+        if: ${{ !inputs.skip_tests }}
+        run: |
+          cd backend
+          pytest tests/services/test_video_recommendation_service.py \
+                 tests/services/test_turkish_content_filter.py \
+                 tests/services/test_health_check_service.py \
+                 --cov=services \
+                 --cov-report=xml \
+                 --cov-report=term
+      
+      - name: Run integration tests
+        if: ${{ !inputs.skip_tests }}
+        run: |
+          cd backend
+          pytest tests/integration/test_video_api_integration.py \
+                 --cov-append \
+                 --cov=api \
+                 --cov-report=xml
+      
+      - name: Upload coverage reports
+        if: ${{ !inputs.skip_tests }}
+        uses: codecov/codecov-action@v3
+        with:
+          files: ./backend/coverage.xml
+          flags: video-api
+          name: video-api-coverage
+      
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      
+      - name: Log in to Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=ref,event=branch
+            type=ref,event=pr
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=sha,prefix={{branch}}-
+            type=raw,value=latest,enable={{is_default_branch}}
+      
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: .kiro/specs/learning-path-video-fix/deployment/Dockerfile.video-api
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          build-args: |
+            BUILD_DATE=${{ github.event.head_commit.timestamp }}
+            VCS_REF=${{ github.sha }}
+            VERSION=${{ github.ref_name }}
+      
+      - name: Test Docker image
+        run: |
+          docker run --rm -d \
+            --name video-api-test \
+            -p 8000:8000 \
+            -e DATABASE_URL="sqlite:///./test.db" \
+            -e REDIS_URL="redis://localhost:6379/0" \
+            -e YOUTUBE_API_KEY="test_key" \
+            -e ENVIRONMENT="test" \
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+          
+          # Wait for container to start
+          sleep 15
+          
+          # Test health endpoint
+          curl -f http://localhost:8000/api/youtube/health || exit 1
+          
+          # Cleanup
+          docker stop video-api-test
+      
+      - name: Scan image for vulnerabilities
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+          severity: 'CRITICAL,HIGH'
+      
+      - name: Upload Trivy results to GitHub Security
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+          sarif_file: 'trivy-results.sarif'
+
+  # ============================================================================
+  # Deploy to Production
+  # ============================================================================
+  deploy-production:
+    name: Deploy to Production
+    runs-on: ubuntu-latest
+    needs: build-and-test
+    if: github.ref == 'refs/heads/main'
+    environment:
+      name: production
+      url: https://api.yourdomain.com
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Configure kubectl
+        uses: azure/k8s-set-context@v3
+        with:
+          method: kubeconfig
+          kubeconfig: ${{ secrets.KUBE_CONFIG }}
+      
+      - name: Create namespace if not exists
+        run: |
+          kubectl create namespace ${{ env.NAMESPACE }} --dry-run=client -o yaml | kubectl apply -f -
+      
+      - name: Create secrets
+        run: |
+          kubectl create secret generic video-api-secrets \
+            --namespace=${{ env.NAMESPACE }} \
+            --from-literal=SECRET_KEY='${{ secrets.SECRET_KEY }}' \
+            --from-literal=JWT_SECRET_KEY='${{ secrets.JWT_SECRET_KEY }}' \
+            --from-literal=DATABASE_URL='${{ secrets.DATABASE_URL }}' \
+            --from-literal=REDIS_URL='${{ secrets.REDIS_URL }}' \
+            --from-literal=REDIS_PASSWORD='${{ secrets.REDIS_PASSWORD }}' \
+            --from-literal=YOUTUBE_API_KEY='${{ secrets.YOUTUBE_API_KEY }}' \
+            --from-literal=SENTRY_DSN='${{ secrets.SENTRY_DSN }}' \
+            --dry-run=client -o yaml | kubectl apply -f -
+      
+      - name: Create image pull secret
+        run: |
+          kubectl create secret docker-registry ghcr-secret \
+            --namespace=${{ env.NAMESPACE }} \
+            --docker-server=${{ env.REGISTRY }} \
+            --docker-username=${{ github.actor }} \
+            --docker-password=${{ secrets.GITHUB_TOKEN }} \
+            --dry-run=client -o yaml | kubectl apply -f -
+      
+      - name: Deploy to Kubernetes
+        run: |
+          kubectl apply -f .kiro/specs/learning-path-video-fix/deployment/k8s/video-api-deployment.yaml
+      
+      - name: Wait for rollout
+        run: |
+          kubectl rollout status deployment/video-api \
+            -n ${{ env.NAMESPACE }} \
+            --timeout=10m
+      
+      - name: Verify deployment
+        run: |
+          # Get pod names
+          PODS=$(kubectl get pods -n ${{ env.NAMESPACE }} \
+            -l app.kubernetes.io/name=video-api \
+            -o jsonpath='{.items[*].metadata.name}')
+          
+          # Check each pod
+          for POD in $PODS; do
+            echo "Checking pod: $POD"
+            
+            # Check pod status
+            STATUS=$(kubectl get pod $POD -n ${{ env.NAMESPACE }} \
+              -o jsonpath='{.status.phase}')
+            
+            if [ "$STATUS" != "Running" ]; then
+              echo "Pod $POD is not running (status: $STATUS)"
+              kubectl describe pod $POD -n ${{ env.NAMESPACE }}
+              exit 1
+            fi
+            
+            # Check health endpoint
+            kubectl exec $POD -n ${{ env.NAMESPACE }} -- \
+              curl -sf http://localhost:8000/api/youtube/health || exit 1
+            
+            echo "Pod $POD is healthy"
+          done
+      
+      - name: Run smoke tests
+        run: |
+          # Port forward to service
+          kubectl port-forward -n ${{ env.NAMESPACE }} \
+            service/video-api-service 8000:8000 &
+          PID=$!
+          
+          # Wait for port forward
+          sleep 5
+          
+          # Test health endpoint
+          curl -sf http://localhost:8000/api/youtube/health || exit 1
+          
+          # Test video recommendations
+          curl -sf -X POST http://localhost:8000/api/youtube/recommendations \
+            -H "Content-Type: application/json" \
+            -d '{
+              "goals": ["Matematik TYT"],
+              "currentLevel": {"matematik": 50},
+              "learningStyle": "visual",
+              "preferences": {"language": "tr"}
+            }' || exit 1
+          
+          # Cleanup
+          kill $PID
+      
+      - name: Get deployment info
+        run: |
+          echo "=== Deployment Information ==="
+          echo "Namespace: ${{ env.NAMESPACE }}"
+          echo "Image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest"
+          echo ""
+          echo "=== Pods ==="
+          kubectl get pods -n ${{ env.NAMESPACE }} -l app.kubernetes.io/name=video-api
+          echo ""
+          echo "=== Services ==="
+          kubectl get services -n ${{ env.NAMESPACE }}
+          echo ""
+          echo "=== HPA ==="
+          kubectl get hpa -n ${{ env.NAMESPACE }}
+      
+      - name: Notify Slack on success
+        if: success()
+        uses: slackapi/slack-github-action@v1
+        with:
+          payload: |
+            {
+              "text": "✅ Video API deployed successfully to production",
+              "blocks": [
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "*Video API Deployment Successful*\n\n*Environment:* Production\n*Version:* ${{ github.sha }}\n*Deployed by:* ${{ github.actor }}"
+                  }
+                }
+              ]
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+      
+      - name: Notify Slack on failure
+        if: failure()
+        uses: slackapi/slack-github-action@v1
+        with:
+          payload: |
+            {
+              "text": "❌ Video API deployment failed",
+              "blocks": [
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "*Video API Deployment Failed*\n\n*Environment:* Production\n*Version:* ${{ github.sha }}\n*Deployed by:* ${{ github.actor }}\n\n<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View workflow run>"
+                  }
+                }
+              ]
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+      
+      - name: Create Sentry release
+        if: success()
+        uses: getsentry/action-release@v1
+        env:
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
+          SENTRY_PROJECT: video-api
+        with:
+          environment: production
+          version: ${{ github.sha }}
+
+  # ============================================================================
+  # Rollback on Failure
+  # ============================================================================
+  rollback:
+    name: Rollback on Failure
+    runs-on: ubuntu-latest
+    needs: deploy-production
+    if: failure()
+    
+    steps:
+      - name: Configure kubectl
+        uses: azure/k8s-set-context@v3
+        with:
+          method: kubeconfig
+          kubeconfig: ${{ secrets.KUBE_CONFIG }}
+      
+      - name: Rollback deployment
+        run: |
+          kubectl rollout undo deployment/video-api -n ${{ env.NAMESPACE }}
+          kubectl rollout status deployment/video-api -n ${{ env.NAMESPACE }} --timeout=5m
+      
+      - name: Notify Slack
+        uses: slackapi/slack-github-action@v1
+        with:
+          payload: |
+            {
+              "text": "⚠️ Video API deployment rolled back",
+              "blocks": [
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "*Video API Deployment Rolled Back*\n\n*Environment:* Production\n*Reason:* Deployment verification failed\n\n<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View workflow run>"
+                  }
+                }
+              ]
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}

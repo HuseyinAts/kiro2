@@ -1,0 +1,10 @@
+[pytest]
+testpaths = tests/fast
+python_files = test_*.py
+python_classes = Test*
+python_functions = test_*
+addopts = -v --strict-markers --tb=short
+markers =
+    quick: Quick tests (run always)
+    comprehensive: Comprehensive tests
+    integration: Integration tests

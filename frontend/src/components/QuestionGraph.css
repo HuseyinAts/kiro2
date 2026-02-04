@@ -1,0 +1,200 @@
+/**
+ * QuestionGraph Styles
+ * ÖSYM-style graph rendering with responsive design
+ */
+
+/* ==================== GRAPH WRAPPER ==================== */
+
+.question-graph-wrapper {
+  margin: 1.5rem 0;
+  width: 100%;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.question-graph-caption {
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: #2c3e50;
+  margin-bottom: 0.75rem;
+  text-align: center;
+  padding: 0.5rem;
+  background-color: #f8f9fa;
+  border-radius: 4px 4px 0 0;
+}
+
+/* ==================== GRAPH CONTAINER ==================== */
+
+.question-graph-container {
+  border-radius: 0 0 4px 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  background-color: white;
+  padding: 1rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.question-graph-svg {
+  width: 100%;
+  max-width: 800px;
+  height: auto;
+}
+
+.question-graph-svg svg {
+  width: 100%;
+  height: auto;
+  max-height: 500px;
+}
+
+/* ==================== RESPONSIVE DESIGN ==================== */
+
+/* Tablet and below */
+@media screen and (max-width: 768px) {
+  .question-graph-wrapper {
+    margin: 1rem 0;
+  }
+
+  .question-graph-caption {
+    font-size: 0.9rem;
+    padding: 0.4rem;
+  }
+
+  .question-graph-container {
+    padding: 0.75rem;
+  }
+
+  .question-graph-svg svg {
+    max-height: 400px;
+  }
+}
+
+/* Mobile */
+@media screen and (max-width: 480px) {
+  .question-graph-container {
+    padding: 0.5rem;
+  }
+
+  .question-graph-svg svg {
+    max-height: 300px;
+  }
+}
+
+/* ==================== PRINT STYLES ==================== */
+
+@media print {
+  .question-graph-wrapper {
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+
+  .question-graph-caption {
+    background-color: transparent !important;
+    border: 1px solid #000;
+    color: #000 !important;
+  }
+
+  .question-graph-container {
+    border: 1px solid #000;
+    box-shadow: none;
+    padding: 0.5rem;
+  }
+
+  .question-graph-svg svg {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+}
+
+/* ==================== ACCESSIBILITY ==================== */
+
+/* Screen reader only content */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* Focus styles for keyboard navigation */
+.question-graph-container:focus-within {
+  outline: 2px solid #007bff;
+  outline-offset: 2px;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .question-graph-container {
+    border: 2px solid currentColor;
+  }
+
+  .question-graph-caption {
+    background-color: black;
+    color: white;
+  }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .question-graph-wrapper {
+    color: #e9ecef;
+  }
+
+  .question-graph-caption {
+    background-color: #343a40;
+    color: #f8f9fa;
+  }
+
+  .question-graph-container {
+    background-color: #212529;
+  }
+
+  /* Invert SVG colors for dark mode */
+  .question-graph-svg svg {
+    filter: invert(1) hue-rotate(180deg);
+  }
+
+  /* Don't invert colors in print */
+  @media print {
+    .question-graph-svg svg {
+      filter: none;
+    }
+  }
+}
+
+/* ==================== ERROR STATE ==================== */
+
+.question-graph-error {
+  padding: 1rem;
+  background-color: #fff3cd;
+  border: 1px solid #ffc107;
+  border-radius: 4px;
+  color: #856404;
+  text-align: center;
+}
+
+.question-graph-error p {
+  margin: 0;
+  font-weight: 500;
+}
+
+/* ==================== ANIMATION ==================== */
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.question-graph-wrapper {
+  animation: fadeIn 0.3s ease-in-out;
+}

@@ -1,0 +1,23 @@
+{
+  "enabled": true,
+  "name": "Test Coverage Monitor",
+  "description": "Monitors test coverage for the entire project (minimum 70%) and ensures new files have at least 80% test coverage. Automatically installs dependencies, completes missing parts, removes unnecessary code, and ensures full project integration.",
+  "version": "1",
+  "when": {
+    "type": "fileEdited",
+    "patterns": [
+      "backend/**/*.py",
+      "frontend/**/*.ts",
+      "frontend/**/*.tsx",
+      "frontend/**/*.js",
+      "**/*.test.py",
+      "**/*.spec.ts",
+      "**/*.spec.js",
+      "tests/**/*.py"
+    ]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "A file has been modified in the project. Please analyze the current test coverage and ensure:\n\n1. Overall project test coverage is at least 70%\n2. For any newly added files, ensure they have at least 80% test coverage\n3. Install any missing dependencies required for the new/modified files\n4. Complete any missing implementation parts in the modified files\n5. Remove any unnecessary or redundant code\n6. Ensure the new/modified files are fully integrated and compatible with the existing project structure\n\nFocus on:\n- Running coverage analysis using pytest-cov for Python files\n- Creating comprehensive test files following the test_*.py naming convention\n- Ensuring Turkish language support and educational content compliance\n- Maintaining the agent-based architecture (LearningPathAgent, StudyAgent, ExamAgent)\n- Following the established code standards (type hints, async patterns, error handling)\n- Verifying integration with core services (llm_service, rag_service, monitoring_service)\n\nPlease provide a detailed report of coverage status and any actions taken to meet the requirements."
+  }
+}

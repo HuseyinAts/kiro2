@@ -1,0 +1,38 @@
+{
+  "timestamp": "2025-09-17T17:13:11.437214",
+  "setup_results": {
+    "python_setup": false,
+    "backend_dependencies": true,
+    "frontend_dependencies": false,
+    "test_coverage": false,
+    "integration_tests": false,
+    "system_health": true
+  },
+  "test_results": {
+    "unit_tests": {
+      "passed": 0,
+      "failed": 0,
+      "coverage": 0.0
+    },
+    "integration_tests": {
+      "passed": 0,
+      "failed": 0
+    },
+    "api_tests": {
+      "passed": 0,
+      "failed": 0
+    },
+    "frontend_tests": {
+      "passed": 0,
+      "failed": 0
+    }
+  },
+  "summary": {
+    "total_setup_steps": 6,
+    "successful_setup_steps": 2,
+    "setup_success_rate": 33.33333333333333,
+    "total_tests_passed": 0,
+    "total_tests_failed": 0,
+    "test_coverage": 0.0
+  }
+}

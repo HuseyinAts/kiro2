@@ -1,0 +1,46 @@
+{
+  "stem": "Bir araştırmada, şehir merkezindeki 42 kişiye alışveriş tercihleri sorulmuş ve sonuçlar aşağıdaki tabloda verilmiştir.\n\n| Kategori | Frekans | Yüzde (%) |\n|----------|---------|------------|\n| Market   | 12      | 28.6       |\n| Çarşı    | 7       | 16.7       |\n| AVM      | 18      | 42.9       |\n| İnternet | 5       | 11.9       |\n\nBu araştırmaya 28 kişi daha katılmış ve bunların 14'ü Market, 8'i Çarşı, 4'ü AVM, 2'si İnternet alışverişi tercih etmiştir.\n\nBuna göre, yeni durumda Market kategorisinin yüzdesi ilk duruma göre kaç puan artmıştır?",
+  "options": {
+    "A": "5,4",
+    "B": "8,3",
+    "C": "8,6",
+    "D": "10,2",
+    "E": "12,5"
+  },
+  "correct_answer": "C",
+  "explanation": "İlk durumda Market kategorisinin yüzdesi %28.6'dır.\n\nYeni durumda:\n- Toplam kişi sayısı: 42 + 28 = 70 kişi\n- Market tercih eden: 12 + 14 = 26 kişi\n- Market kategorisinin yeni yüzdesi: (26/70) × 100 = %37.14\n\nArtış: 37.14 - 28.6 = 8.54 ≈ 8.6 puan\n\nÇeldiriciler:\nA) Sadece eklenen kişilerin oranı hesaplanmış (14/28 × 20)\nB) Yanlış oran hesaplaması (26-12)/42 × 25\nD) İlk frekansın artış oranı kullanılmış (14/12 × 8.5)\nE) Yeni durumun ilk duruma oranı hesaplanmış",
+  "visual_content": {
+    "type": "table",
+    "format": "markdown",
+    "content": "| Kategori | Frekans | Yüzde (%) |\n| --- | --- | --- |\n| A | 12 | 28.6 |\n| B | 7 | 16.7 |\n| C | 18 | 42.9 |\n| D | 5 | 11.9 |",
+    "data": {
+      "categories": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "frequencies": [
+        12,
+        7,
+        18,
+        5
+      ],
+      "total": 42
+    },
+    "metadata": {
+      "caption": "Tablo 1: Frekans Dağılımı",
+      "alt_text": "Frequency distribution table",
+      "rows": 4,
+      "columns": 3
+    }
+  },
+  "method": "few-shot",
+  "osym_examples_used": 3,
+  "metadata": {
+    "phase": "Phase 1 - Tables",
+    "generated_at": "2025-11-07T11:49:46.281979",
+    "spec_name": "Q1_Math_Frequency",
+    "table_type": "frequency_table"
+  }
+}

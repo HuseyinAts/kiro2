@@ -1,0 +1,433 @@
+/**
+ * Geometry Tools Styles
+ * 
+ * Geometri araçları için erişilebilir tasarım.
+ * WCAG 2.1 Level AA uyumlu.
+ */
+
+.geometry-tools {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 20px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.tools-header {
+  margin-bottom: 20px;
+  color: white;
+  text-align: center;
+}
+
+.tools-header h2 {
+  margin: 0;
+  font-size: 1.8rem;
+  font-weight: 600;
+}
+
+.tools-body {
+  background: white;
+  border-radius: 15px;
+  padding: 20px;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+}
+
+/* Araç seçimi */
+.tool-selection {
+  margin-bottom: 20px;
+}
+
+.tool-selection h3 {
+  margin: 0 0 10px 0;
+  color: #333;
+  font-size: 1.1rem;
+}
+
+.tool-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.tool-buttons button {
+  padding: 12px 20px;
+  background: #f0f0f0;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  color: #333;
+}
+
+.tool-buttons button:hover {
+  background: #e0e0e0;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.tool-buttons button.active {
+  background: #667eea;
+  color: white;
+  border-color: #667eea;
+}
+
+.tool-buttons button:focus {
+  outline: 3px solid #ffd700;
+  outline-offset: 2px;
+}
+
+/* Ayarlar */
+.tool-settings {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  padding: 15px;
+  background: #f9f9f9;
+  border-radius: 10px;
+  margin-bottom: 20px;
+}
+
+.setting-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.setting-group label {
+  font-weight: 600;
+  color: #333;
+  font-size: 0.95rem;
+}
+
+.setting-group select {
+  padding: 8px 12px;
+  border: 2px solid #e0e0e0;
+  border-radius: 6px;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.setting-group select:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.setting-group input[type="range"] {
+  width: 200px;
+  height: 8px;
+  border-radius: 4px;
+  background: #e0e0e0;
+  outline: none;
+  -webkit-appearance: none;
+}
+
+.setting-group input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #667eea;
+  cursor: pointer;
+}
+
+.setting-group input[type="range"]::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #667eea;
+  cursor: pointer;
+  border: none;
+}
+
+.setting-group input[type="checkbox"] {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+}
+
+/* Renk seçici */
+.color-picker {
+  display: flex;
+  gap: 8px;
+}
+
+.color-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 3px solid transparent;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.color-btn:hover {
+  transform: scale(1.1);
+}
+
+.color-btn.active {
+  border-color: #333;
+  box-shadow: 0 0 0 2px white, 0 0 0 4px #333;
+}
+
+.color-btn:focus {
+  outline: 3px solid #ffd700;
+  outline-offset: 2px;
+}
+
+/* Canvas */
+.canvas-container {
+  width: 100%;
+  height: 600px;
+  background: white;
+  border: 2px solid #e0e0e0;
+  border-radius: 10px;
+  margin-bottom: 20px;
+  overflow: hidden;
+  cursor: crosshair;
+}
+
+.geometry-canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* Kontroller */
+.canvas-controls {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.canvas-controls button {
+  padding: 12px 24px;
+  background: #667eea;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.canvas-controls button:hover {
+  background: #5568d3;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.canvas-controls button:focus {
+  outline: 3px solid #ffd700;
+  outline-offset: 2px;
+}
+
+.canvas-controls .clear-btn {
+  background: #f44336;
+}
+
+.canvas-controls .clear-btn:hover {
+  background: #da190b;
+}
+
+/* Ölçümler paneli */
+.measurements-panel {
+  padding: 15px;
+  background: #f9f9f9;
+  border-radius: 10px;
+  margin-bottom: 20px;
+}
+
+.measurements-panel h3 {
+  margin: 0 0 10px 0;
+  color: #333;
+  font-size: 1.1rem;
+}
+
+.measurements-panel ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.measurements-panel li {
+  padding: 8px 12px;
+  background: white;
+  border-left: 4px solid #667eea;
+  border-radius: 4px;
+  margin-bottom: 8px;
+  color: #555;
+  font-family: 'Courier New', monospace;
+}
+
+/* Yardım */
+.tool-help {
+  margin-top: 20px;
+}
+
+.tool-help details {
+  background: #f9f9f9;
+  padding: 15px;
+  border-radius: 10px;
+}
+
+.tool-help summary {
+  cursor: pointer;
+  font-weight: 600;
+  color: #667eea;
+  user-select: none;
+}
+
+.tool-help summary:hover {
+  color: #5568d3;
+}
+
+.tool-help summary:focus {
+  outline: 3px solid #667eea;
+  outline-offset: 2px;
+  border-radius: 5px;
+}
+
+.tool-help ul {
+  margin: 10px 0 0 20px;
+  padding: 0;
+}
+
+.tool-help li {
+  margin: 8px 0;
+  color: #555;
+  line-height: 1.6;
+}
+
+.tool-help strong {
+  color: #333;
+}
+
+/* Responsive tasarım */
+@media (max-width: 768px) {
+  .geometry-tools {
+    padding: 15px;
+  }
+
+  .tools-header h2 {
+    font-size: 1.4rem;
+  }
+
+  .tool-buttons {
+    justify-content: center;
+  }
+
+  .tool-buttons button {
+    flex: 1 1 calc(50% - 5px);
+    min-width: 120px;
+  }
+
+  .tool-settings {
+    flex-direction: column;
+  }
+
+  .canvas-container {
+    height: 400px;
+  }
+
+  .canvas-controls {
+    flex-direction: column;
+  }
+
+  .canvas-controls button {
+    width: 100%;
+  }
+}
+
+/* Yüksek kontrast modu */
+@media (prefers-contrast: high) {
+  .canvas-container {
+    border: 3px solid #000;
+  }
+
+  .tool-buttons button {
+    border: 2px solid #333;
+  }
+}
+
+/* Azaltılmış hareket modu */
+@media (prefers-reduced-motion: reduce) {
+  .tool-buttons button,
+  .canvas-controls button,
+  .color-btn {
+    transition: none;
+  }
+
+  .tool-buttons button:hover,
+  .canvas-controls button:hover,
+  .color-btn:hover {
+    transform: none;
+  }
+}
+
+/* Karanlık mod desteği */
+@media (prefers-color-scheme: dark) {
+  .tools-body {
+    background: #2a2a3e;
+  }
+
+  .tool-selection h3,
+  .measurements-panel h3 {
+    color: #e0e0e0;
+  }
+
+  .tool-buttons button {
+    background: #3a3a4e;
+    border-color: #555;
+    color: #e0e0e0;
+  }
+
+  .tool-buttons button:hover {
+    background: #4a4a5e;
+  }
+
+  .tool-settings {
+    background: #3a3a4e;
+  }
+
+  .setting-group label {
+    color: #e0e0e0;
+  }
+
+  .setting-group select {
+    background: #3a3a4e;
+    border-color: #555;
+    color: #e0e0e0;
+  }
+
+  .measurements-panel {
+    background: #3a3a4e;
+  }
+
+  .measurements-panel li {
+    background: #2a2a3e;
+    color: #ccc;
+  }
+
+  .tool-help details {
+    background: #3a3a4e;
+  }
+
+  .tool-help summary {
+    color: #8b9cff;
+  }
+
+  .tool-help li {
+    color: #ccc;
+  }
+
+  .tool-help strong {
+    color: #e0e0e0;
+  }
+}

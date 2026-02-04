@@ -1,0 +1,15 @@
+{
+  "dashboard": {
+    "title": "Kiro2 - AI/ML Metrics",
+    "uid": "kiro2-ai-ml-metrics",
+    "tags": ["kiro2", "ai", "ml", "algorithms"],
+    "refresh": "30s",
+    "panels": [
+      {"id": 1, "title": "FSRS Reviews Scheduled", "type": "timeseries", "gridPos": {"h": 8, "w": 12, "x": 0, "y": 0}, "targets": [{"expr": "sum by (difficulty) (rate(kiro_fsrs_reviews_scheduled_total[5m]))", "legendFormat": "{{difficulty}}"}]},
+      {"id": 2, "title": "IRT Theta Distribution", "type": "heatmap", "gridPos": {"h": 8, "w": 12, "x": 12, "y": 0}, "targets": [{"expr": "sum(rate(kiro_irt_theta_estimates_bucket[5m])) by (le)", "format": "heatmap"}]},
+      {"id": 3, "title": "AI Model Latency", "type": "graph", "gridPos": {"h": 8, "w": 12, "x": 0, "y": 8}, "targets": [{"expr": "histogram_quantile(0.95, sum(rate(kiro_ai_model_latency_seconds_bucket[5m])) by (le, model))", "legendFormat": "{{model}} (p95)"}], "fieldConfig": {"defaults": {"unit": "s"}}},
+      {"id": 4, "title": "Recommendation Accuracy", "type": "gauge", "gridPos": {"h": 8, "w": 12, "x": 12, "y": 8}, "targets": [{"expr": "avg(kiro_recommendation_accuracy)", "legendFormat": "Accuracy"}], "fieldConfig": {"defaults": {"unit": "percentunit", "min": 0, "max": 1}}},
+      {"id": 5, "title": "AI Token Usage", "type": "stat", "gridPos": {"h": 6, "w": 24, "x": 0, "y": 16}, "targets": [{"expr": "sum(increase(kiro_ai_model_tokens_used_total[24h]))", "legendFormat": "Tokens (24h)"}], "fieldConfig": {"defaults": {"unit": "short"}}}
+    ]
+  }
+}

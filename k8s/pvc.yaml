@@ -1,0 +1,78 @@
+# =============================================================================
+# Static Files PersistentVolumeClaim
+# =============================================================================
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: static-files-pvc
+  namespace: turkiye-sinav-platform
+  labels:
+    app.kubernetes.io/name: turkiye-sinav-platform
+    app.kubernetes.io/component: storage
+spec:
+  accessModes:
+    - ReadWriteMany
+  storageClassName: "efs-sc"
+  resources:
+    requests:
+      storage: 10Gi
+
+---
+# =============================================================================
+# Media Files PersistentVolumeClaim
+# =============================================================================
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: media-files-pvc
+  namespace: turkiye-sinav-platform
+  labels:
+    app.kubernetes.io/name: turkiye-sinav-platform
+    app.kubernetes.io/component: storage
+spec:
+  accessModes:
+    - ReadWriteMany
+  storageClassName: "efs-sc"
+  resources:
+    requests:
+      storage: 50Gi
+
+---
+# =============================================================================
+# Frontend Files PersistentVolumeClaim
+# =============================================================================
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: frontend-files-pvc
+  namespace: turkiye-sinav-platform
+  labels:
+    app.kubernetes.io/name: turkiye-sinav-platform
+    app.kubernetes.io/component: storage
+spec:
+  accessModes:
+    - ReadWriteMany
+  storageClassName: "efs-sc"
+  resources:
+    requests:
+      storage: 5Gi
+
+---
+# =============================================================================
+# Backup Storage PersistentVolumeClaim
+# =============================================================================
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: backup-storage-pvc
+  namespace: turkiye-sinav-platform
+  labels:
+    app.kubernetes.io/name: turkiye-sinav-platform
+    app.kubernetes.io/component: backup
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: "gp2"
+  resources:
+    requests:
+      storage: 100Gi

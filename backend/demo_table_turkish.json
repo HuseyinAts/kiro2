@@ -1,0 +1,25 @@
+{
+  "stem": "Aşağıdaki tabloda, Türkçede kullanılan bazı sözcüklerin günlük konuşma dilindeki ve yazı dilindeki kullanım sıklıkları ile bu sözcüklerin kökenleri verilmiştir:\n\n| Sözcük | Konuşma Dilinde | Yazı Dilinde | Köken |\n|--------|-----------------|--------------|-------|\n| Müdahale | Az | Çok | Arapça |\n| Karışmak | Çok | Az | Türkçe |\n| İstihdam | Hayır | Evet | Arapça |\n| Çalıştırmak | Evet | Hayır | Türkçe |\n\nTabloda verilen bilgilere göre, Türkçede hangi yargıya ulaşılabilir?",
+  "options": {
+    "A": "Arapça kökenli sözcükler genellikle konuşma dilinde daha yaygın kullanılmaktadır",
+    "B": "Türkçe kökenli sözcükler yazı dilinde tercih edilmemekte, günlük konuşmalarda daha çok yer almaktadır",
+    "C": "Konuşma dilinde kullanılmayan sözcükler mutlaka Arapça kökenlidir ve yazı dilinde sıkça yer alır",
+    "D": "Sözcüklerin kökenine bakılmaksızın her iki dil katmanında eşit oranda kullanıldığı görülmektedir",
+    "E": "Yazı dilinde sıkça kullanılan Arapça kökenli sözcükler, konuşma dilinde Türkçe kökenli karşılıklarıyla ifade edilmektedir"
+  },
+  "correct_answer": "E",
+  "explanation": "Tabloda 'müdahale-karışmak' ve 'istihdam-çalıştırmak' çiftleri incelendiğinde, Arapça kökenli sözcüklerin (müdahale, istihdam) yazı dilinde yaygın olduğu; buna karşılık Türkçe kökenli karşılıklarının (karışmak, çalıştırmak) konuşma dilinde daha çok tercih edildiği görülmektedir. Bu durum, Türkçede anlam bakımından benzer olan sözcüklerin kullanım alanlarına göre farklılaştığını göstermektedir. A seçeneği tablodaki bilgilerle çelişmektedir çünkü Arapça kökenli sözcükler yazı dilinde yaygındır. B seçeneği kısmen doğru olsa da tam bir genelleme değildir. C seçeneği hatalıdır çünkü böyle mutlak bir ilişki yoktur. D seçeneği tablodaki verilere tamamen aykırıdır.",
+  "visual_content": {
+    "type": "table",
+    "format": "markdown",
+    "content": "| Ürün | Özellik 1 | Özellik 2 |\n| --- | --- | --- |\n| Ürün A | Hayır | 26 |\n| Ürün B | 12 | 72 |\n| Ürün C | Evet | Hayır |\n| Ürün D | 43 | Hayır |",
+    "metadata": {
+      "caption": "Tablo 1: Ürün Karşılaştırması",
+      "alt_text": "Product comparison table",
+      "rows": 4,
+      "columns": 3
+    }
+  },
+  "method": "few-shot",
+  "osym_examples_used": 3
+}

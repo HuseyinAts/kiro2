@@ -1,0 +1,83 @@
+{
+  "environment": "development",
+  "feature_flags": {
+    "semantic_search": true,
+    "advanced_search": true,
+    "hybrid_search": true,
+    "turkish_content_filter": true,
+    "relevance_filter": true,
+    "difficulty_filter": true,
+    "multi_layer_cache": true,
+    "cache_warming": false,
+    "aggressive_caching": false,
+    "parallel_discovery": true,
+    "circuit_breaker": false,
+    "rate_limiting": false,
+    "quality_scoring": true,
+    "trusted_channels_boost": true,
+    "detailed_logging": true,
+    "metrics_collection": true,
+    "ai_relevance_scoring": true,
+    "personalized_ranking": true
+  },
+  "quality_thresholds": {
+    "language": {
+      "min_score": 0.6,
+      "turkish_char_weight": 0.3
+    },
+    "relevance": {
+      "min_score": 0.5,
+      "keyword_weight": 0.6,
+      "subtopic_weight": 0.4
+    },
+    "difficulty": {
+      "min_match": 0.3,
+      "tolerance": 2
+    },
+    "overall": {
+      "min_score": 0.5,
+      "language_weight": 0.3,
+      "relevance_weight": 0.5,
+      "difficulty_weight": 0.2
+    },
+    "video_quality": {
+      "min_views": 10,
+      "min_duration": 30,
+      "max_duration": 7200
+    },
+    "channel_trust": {
+      "boost": 0.2,
+      "min_subscribers": 100
+    }
+  },
+  "performance_config": {
+    "cache": {
+      "ttl_seconds": 600,
+      "memory_size": 20,
+      "warming_enabled": false
+    },
+    "parallel": {
+      "max_searches": 10,
+      "timeout_seconds": 30
+    },
+    "rate_limiting": {
+      "per_ip": 1000,
+      "per_user": 1000,
+      "youtube_quota": 10000
+    },
+    "circuit_breaker": {
+      "failure_threshold": 10,
+      "timeout_seconds": 10,
+      "success_threshold": 1
+    },
+    "targets": {
+      "p95_ms": 10000,
+      "p99_ms": 15000
+    },
+    "discovery": {
+      "max_per_subject": 20,
+      "max_total": 50
+    }
+  },
+  "ab_tests": []
+}

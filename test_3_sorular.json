@@ -1,0 +1,41 @@
+[
+  {
+    "soru_metni": "f(x) = x³ - 6x² + 9x + 2 fonksiyonunun yerel maksimum noktasındaki fonksiyon değeri kaçtır?",
+    "secenekler": {
+      "A": "4",
+      "B": "6",
+      "C": "8",
+      "D": "10",
+      "E": "12"
+    },
+    "dogru_cevap": "B",
+    "cozum": "Yerel maksimum noktasını bulmak için önce türevi alırız: f'(x) = 3x² - 12x + 9. Kritik noktalar için f'(x) = 0 denklemini çözeriz: 3x² - 12x + 9 = 0 → x² - 4x + 3 = 0 → (x-1)(x-3) = 0 → x = 1 veya x = 3. İkinci türevi buluruz: f''(x) = 6x - 12. x = 1 için f''(1) = 6(1) - 12 = -6 < 0 (yerel maksimum). x = 3 için f''(3) = 6(3) - 12 = 6 > 0 (yerel minimum). Yerel maksimum noktası x = 1'de olduğundan, fonksiyon değerini hesaplarız: f(1) = 1³ - 6(1)² + 9(1) + 2 = 1 - 6 + 9 + 2 = 6",
+    "_id": "TEST_Q1"
+  },
+  {
+    "soru_metni": "Sürtünmesiz yatay düzlemde durmakta olan 4 kg kütleli bir cisme, yatay doğrultuda 12 N büyüklüğünde sabit bir kuvvet uygulanıyor. Bu kuvvet 5 saniye boyunca etki ettikten sonra kaldırılıyor. Cismin kuvvet kaldırıldıktan sonraki hızı kaç m/s'dir?",
+    "secenekler": {
+      "A": "10",
+      "B": "12",
+      "C": "15",
+      "D": "18",
+      "E": "20"
+    },
+    "dogru_cevap": "C",
+    "cozum": "Newton'un 2. yasasına göre F = m.a olduğundan, cismin ivmesi: a = F/m = 12 N / 4 kg = 3 m/s² olur. Cisim başlangıçta durgun olduğu için v₀ = 0 m/s'dir. Sabit ivmeli hareket denkleminden: v = v₀ + a.t = 0 + 3 × 5 = 15 m/s. Kuvvet kaldırıldıktan sonra cisim Newton'un 1. yasası gereği sabit hızla hareket etmeye devam eder.",
+    "_id": "TEST_Q2"
+  },
+  {
+    "soru_metni": "1 mol H₂O (su) molekülünde kaç tane atom bulunur? (Avogadro sayısı = 6,02 × 10²³)",
+    "secenekler": {
+      "A": "6,02 × 10²³",
+      "B": "1,204 × 10²⁴",
+      "C": "1,806 × 10²⁴",
+      "D": "3,612 × 10²⁴",
+      "E": "2,408 × 10²⁴"
+    },
+    "dogru_cevap": "C",
+    "cozum": "1 mol H₂O molekülü = 6,02 × 10²³ adet H₂O molekülü. Her H₂O molekülünde 2 adet H atomu ve 1 adet O atomu olmak üzere toplam 3 atom vardır. Toplam atom sayısı = 6,02 × 10²³ × 3 = 1,806 × 10²⁴ atom",
+    "_id": "TEST_Q3"
+  }
+]

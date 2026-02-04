@@ -1,0 +1,314 @@
+{
+  "metadata": {
+    "file": "LYS2_BIYOLOJI26062016.pdf",
+    "extraction_date": "2025-11-05T23:48:16.406768",
+    "total_questions": 19,
+    "exam_type": "TYT",
+    "year": 2016
+  },
+  "questions": [
+    {
+      "question_number": 1,
+      "subject": "Biyoloji",
+      "stem": "İşaretli kükürt (35 S ) içeren bir besi ortamında 3. Tabloda K ve L canlılarına ait bazı özellikler verilmiştir.\nçoğaltılan bakterilerden elde edilen;\nÖZELLİK K Canlısı L Canlısı\nI. DNA,\nPlazmit + -\nII. protein,\nFotosentez yapma - +\nIII.polisakkarit\nOksijenli solunum yapma + +\nmoleküllerinin hangilerinde işaretli kükürt\nFermantasyon yapma + -\nbulunması beklenir?\nEndospor oluşturma + -",
+      "options": {
+        "A": "Yalnız I",
+        "B": "Yalnız II",
+        "C": "Yalnız III Mitokondri - +",
+        "D": "I ve II",
+        "E": "II ve III (Tabloda \"+\" işareti özelliğin bulunduğunu, \"-\" işareti ise özelliğin bulunmadığını göstermektedir.) Buna göre, bu canlılarla ilgili aşağıdaki eşleştirmelerden hangisi doğru olabilir?"
+      },
+      "correct_answer": "B",
+      "source": "ÖSYM",
+      "exam_type": "TYT",
+      "year": 2016
+    },
+    {
+      "question_number": 2,
+      "subject": "Biyoloji",
+      "stem": "Mitokondri ve kloroplastın ökaryotik hücre yapısına K L\nendosimbiyoz olayı sonucunda katıldığı\nvarsayılmaktadır.",
+      "options": {
+        "A": "Mitokondrinin boyutlarının kloroplasttan daha küçük olması",
+        "B": "Mitokondrinin iki zarlı, kloroplastın üç zarlı olması",
+        "C": "Mitokondrinin, hücre içindeki sayısının göreceli olarak daha fazla olması",
+        "D": "Mitokondrinin ökaryotik canlıların hepsinde, kloroplastın ise yalnızca bitkilerde ve bazı bir hücrelilerde bulunması",
+        "E": "Fotosentez sırasında kloroplastta üretilen oksijenin mitokondri tarafından kullanılabilmesi 1 Diğer sayfaya geçiniz."
+      },
+      "correct_answer": "D",
+      "source": "ÖSYM",
+      "exam_type": "TYT",
+      "year": 2016
+    },
+    {
+      "question_number": 4,
+      "subject": "Biyoloji",
+      "stem": "Hü cre zarından madde taşınımıyla ilgili, 5. Tabloda canlılarda ATP elde edilen bazı süreçler\nI, II ve III ile gösterilmiştir.\nI. Oksijen, hücre zarından daima pasif taşıma\nyoluyla geçer.\nII. Hücre zarının iki tarafında derişim farkına sahip\nolan her madde, kolaylaştırılmış difüzyonla geçiş\nyapabilir.\nIII.Aktif taşımada moleküller yalnızca hücre dışından\nhücre içine doğru taşınır.\nifadelerinden hangileri doğrudur?",
+      "options": {
+        "A": "Laktik asit Etil alkol Aerobik fermantasyonu fermantasyonu solunum",
+        "B": "Laktik asit Anaerobik Etil alkol fermantasyonu solunum fermantasyonu",
+        "C": "Aerobik Etil alkol Laktik asit solunum fermantasyonu fermantasyonu",
+        "D": "Anaerobik Laktik asit Etil alkol solunum fermantasyonu fermantasyonu",
+        "E": "Etil alkol Laktik asit Aerobik fermantasyonu fermantasyonu solunum 2 Diğer sayfaya geçiniz."
+      },
+      "correct_answer": "A",
+      "source": "ÖSYM",
+      "exam_type": "TYT",
+      "year": 2016
+    },
+    {
+      "question_number": 6,
+      "subject": "Biyoloji",
+      "stem": "Bir miktar üzüm suyu içerisine yeterli miktarda bira 8. Şekilde, insanda dişi üreme sisteminin bazı kısımları\nmayası eklenip ortam oksijensiz bırakıldığında, bazı numaralarla gösterilmiştir.\nmoleküllerin miktarlarındaki değişimler aşağıdaki\ngrafikte 1 ve 2 numaralı eğrilerle gösterilmiştir.\nNormal menstruasyon döngüsünde önce dokusu\nBu grafikteki 1 ve 2 numaralı eğriler aşağıdaki kalınlaşan, kılcal damarları genişleyen, kan\nmoleküllerden hangilerine ait olabilir? miktarı ve mukus salgısı artan, döllenme\ngerçekleşmediğinde ise kalınlaşmış dokusu\n1 2 parçalanarak dışarı atılan yapı aşağıdakilerden\nhangisidir?",
+      "options": {
+        "A": "I",
+        "B": "CO Enzim 2",
+        "C": "Etil alkol CO 2",
+        "D": "Enzim Glikoz",
+        "E": "V"
+      },
+      "correct_answer": "E",
+      "source": "ÖSYM",
+      "exam_type": "TYT",
+      "year": 2016
+    },
+    {
+      "question_number": 9,
+      "subject": "Biyoloji",
+      "stem": "Aşağıdakilerden hangisi hayvan hücrelerinde hücre\nE) Glikoz CO\n2 döngüsünün mitoz evresinde gerçekleşmez?",
+      "options": {
+        "E": "Glikoz CO 2 döngüsünün mitoz evresinde gerçekleşmez?",
+        "A": "Kromozomların kutuplara çekilmesi",
+        "B": "İğ ipliklerinin oluşumu",
+        "C": "Sentrozomların birbirinden uzaklaşması"
+      },
+      "correct_answer": "D",
+      "source": "ÖSYM",
+      "exam_type": "TYT",
+      "year": 2016
+    },
+    {
+      "question_number": 7,
+      "subject": "Biyoloji",
+      "stem": "Fotosentez sırasında su molekülü aşağıdaki gibi ayrışır.\nD)DNA’nın kendini eşlemesi\nE) İğ ipliklerinin kinetokorlara bağlanması\nBuna göre I, II ve III ile numaralandırılmış olan\nelemanlardan hangileri fotosentezin ışıktan\nbağımsız tepkimelerinde kullanılacak moleküllerin\nsentezinde işlev görür?",
+      "options": {
+        "D": "I ve II",
+        "E": "II ve III 3 Diğer sayfaya geçiniz.",
+        "A": "Yalnız I",
+        "B": "Yalnız II",
+        "C": "Yalnız III"
+      },
+      "correct_answer": "D",
+      "source": "ÖSYM",
+      "exam_type": "TYT",
+      "year": 2016
+    },
+    {
+      "question_number": 10,
+      "subject": "Biyoloji",
+      "stem": "12. Aşağıda verilen canlılar arasındaki ilişkilerden\nhangisi mutualizme örnek oluşturmaz?",
+      "options": {
+        "A": "Üreticilerin toplam kütlesi, birincil tüketicilerin toplam paylaşan algler arasındaki ilişki kütlesinden fazladır.",
+        "B": "Üçüncül tüketiciler biyolojik birikimin en fazla olduğu bitki arasındaki ilişki gruptur.",
+        "C": "Bir trofik düzeyden bir üst düzeye geçerken aktarılan sentezleyen bakteriler ile insan arasındaki ilişki enerji azalmaktadır.",
+        "D": "İkincil tüketicilerin birey sayısı, üreticilerden daha azdır.",
+        "E": "En büyük vücuda sahip bireyler, her zaman piramidin tepesinde yer alır."
+      },
+      "correct_answer": "E",
+      "source": "ÖSYM",
+      "exam_type": "TYT",
+      "year": 2016
+    },
+    {
+      "question_number": 11,
+      "subject": "Biyoloji",
+      "stem": "Doğadaki azot döngüsündeki denitrifikasyon\nbasamağı aşağıdakilerden hangisinin\ngerçekleşmesini sağlar?",
+      "options": {
+        "A": "Amonyaktan nitrit oluşumu",
+        "B": "Nitritten nitrat oluşumu",
+        "C": "Azotun gaz hâlinde atmosfere verilmesi",
+        "D": "Atmosferdeki azotun, bazı bakterilerce bağlanması",
+        "E": "Bitkilerin suda çözünen azot tuzlarını alması 4 Diğer sayfaya geçiniz."
+      },
+      "correct_answer": "C",
+      "source": "ÖSYM",
+      "exam_type": "TYT",
+      "year": 2016
+    },
+    {
+      "question_number": 13,
+      "subject": "Biyoloji",
+      "stem": "Aşa ğıdaki grafikler, K ve L türlerinin popülasyon 15. Kromozom sayısı 2n = 16 olan çiçekli bir bitkinin;\nyoğunlukları ile hayatta kalma ilişkilerini göstermektedir.\nI. kök ucu meristem hücrelerindeki,\nII. yumurta hücresindeki,\nIII.sperm hücresindeki,\nIV.endospermindeki\nkromozom sayıları aşağıdakilerin hangisinde doğru\nverilmiştir?\nI II III IV",
+      "options": {
+        "A": "Yalnız I",
+        "B": "Yalnız II",
+        "C": "I ve II",
+        "D": "16 16 8 48 olumsuz yönde etkiler. III.L popülasyonu hayatta kalma grafiğinin,",
+        "E": "8 8 16 16 K popülasyonu hayatta kalma grafiğinden farklı olmasının nedeni, L popülasyonunda genetik çeşitliliğin daha yüksek olmasıdır. yargılarından hangilerine ulaşılabilir?"
+      },
+      "correct_answer": "C",
+      "source": "ÖSYM",
+      "exam_type": "TYT",
+      "year": 2016
+    },
+    {
+      "question_number": 14,
+      "subject": "Biyoloji",
+      "stem": "Eşeyli üremeyle çoğalan otsu bir çiçekli bitkiyle almalarına neden olabilir?\nilgili olarak aşağıdaki ifadelerden hangisi yanlıştır?",
+      "options": {
+        "A": "Açık tohumlu olabilir.",
+        "B": "Tek çenekli olabilir.",
+        "C": "Üremelerinde çifte döllenme görülür.",
+        "D": "Yaprakları paralel damarlı olabilir.",
+        "E": "Tohumlarında endosperm bulunur. 5 Diğer sayfaya geçiniz."
+      },
+      "correct_answer": "A",
+      "source": "ÖSYM",
+      "exam_type": "TYT",
+      "year": 2016
+    },
+    {
+      "question_number": 17,
+      "subject": "Biyoloji",
+      "stem": "Tab loda dört çiftin kan grubu fenotipleri belirtilmiştir. 18. Aşağıdaki soyağacında, koyu renkle gösterilen bireyler,\nbelirli bir özellik bakımından aynı fenotiptedir.\nÇiftler Çiftlerin Kan Grupları\nZekiye X Ömer A x O\nFunda X Enes AB x AB\nCeren X Ali O x AB\nAyşe X Yakup B x A\nBu çiftlerle ilgili olarak aşağıdaki ifadelerden hangisi\nyanlıştır?",
+      "options": {
+        "A": "I ve II",
+        "B": "I ve III",
+        "C": "II ve III",
+        "D": "II ve IV",
+        "E": "III ve IV grubuna sahip bir çocuklarının olma olasılıkları aynıdır."
+      },
+      "correct_answer": "E",
+      "source": "ÖSYM",
+      "exam_type": "TYT",
+      "year": 2016
+    },
+    {
+      "question_number": 19,
+      "subject": "Biyoloji",
+      "stem": "Eşeyli üremenin görüldüğü bir popülasyonda, A ve B\ngenleri farklı özellikleri kontrol etmektedir.\nBu genlerin her birinin üçer aleli (A , A , A ve B ,\n1 2 3 1\nB , B ) mevcut ise bu popülasyonda bu iki genin\n2 3\noluşturacağı kaç farklı genotipe rastlanabilir?",
+      "options": {
+        "A": "9",
+        "B": "16",
+        "C": "27",
+        "D": "36",
+        "E": "81 6 Diğer sayfaya geçiniz."
+      },
+      "correct_answer": "D",
+      "source": "ÖSYM",
+      "exam_type": "TYT",
+      "year": 2016
+    },
+    {
+      "question_number": 20,
+      "subject": "Biyoloji",
+      "stem": "Bir ökaryotik hücre içerisindeki bilgi akışının 22. İnsan sindirim sisteminde işlev gören;\nDNA→RNA→Polipeptit yönünde olduğu bilinmektedir.\nI. gastrin,\nAşağıda bir DNA molekülü ile üzerinde yer alan ve\nII. sekretin,\nbirbirinden bağımsız olarak çalışan iki gen, bölgesel\nolarak gösterilmiştir. III.kolesistokinin\nhormonlarından hangileri onikiparmak\nbağırsağından salgılanır?",
+      "options": {
+        "A": "Yalnız I",
+        "B": "Yalnız II",
+        "C": "II ve III",
+        "D": "I ve II",
+        "E": "I, II ve III Bu DNA molekülü üzerinden bilgi akışıyla ilgili, I. DNA zincirlerinden herhangi birinde ortaya çıkan bir nükleotit değişikliği mRNA’da mutlaka kendisini gösterir."
+      },
+      "correct_answer": "B",
+      "source": "ÖSYM",
+      "exam_type": "TYT",
+      "year": 2016
+    },
+    {
+      "question_number": 23,
+      "subject": "Biyoloji",
+      "stem": "Aşağıdakilerden hangisinin gerçekleşebilmesi için\nII. Kural olarak genlerin birinde meydana gelen bir\nenerji harcanmaz?\nmutasyonun, diğer genin kontrol ettiği protein\nsentezini etkilemesi beklenmez.",
+      "options": {
+        "A": "Yalnız I",
+        "B": "Yalnız II",
+        "C": "Yalnız III",
+        "D": "I ve II",
+        "E": "Glikozun hücre solunumunda yıkılması"
+      },
+      "correct_answer": "A",
+      "source": "ÖSYM",
+      "exam_type": "TYT",
+      "year": 2016
+    },
+    {
+      "question_number": 21,
+      "subject": "Biyoloji",
+      "stem": "Aşağıdakilerden hangisi genetik çalışmalarda\n\"model organizma\" olarak kullanılacak bir hayvanda\nbulunması istenen özelliklerden biri değildir?",
+      "options": {
+        "A": "Bir defada çok sayıda yavru üretmesi",
+        "B": "Yeni döl verme süresinin uzun olması",
+        "C": "Yavrularının gelişim evresinin kısa olması",
+        "D": "Laboratuvar koşullarında üretilebilmesi",
+        "E": "Üzerinde çalışma yapmaya elverişli olması 7 Diğer sayfaya geçiniz."
+      },
+      "correct_answer": "B",
+      "source": "ÖSYM",
+      "exam_type": "TYT",
+      "year": 2016
+    },
+    {
+      "question_number": 24,
+      "subject": "Biyoloji",
+      "stem": "Aş ağıdaki grafiklerden hangisi, sağlıklı bir insanın 25. Tabloda, sağlıklı bir insanın kan plazması ve idrarındaki\nkan dolaşımında kanın; atardamar, kılcal damar ve bazı maddelerin yaklaşık miktarları verilmiştir.\ntoplardamardan geçerken basıncındaki değişimi\ngöstermektedir?",
+      "options": {
+        "A": "Üre Glikoz Sodyum",
+        "B": "Üre Sodyum Glikoz",
+        "C": "Glikoz Sodyum Üre",
+        "D": "Glikoz Üre Sodyum",
+        "E": "8 Diğer sayfaya geçiniz."
+      },
+      "correct_answer": "C",
+      "source": "ÖSYM",
+      "exam_type": "TYT",
+      "year": 2016
+    },
+    {
+      "question_number": 26,
+      "subject": "Biyoloji",
+      "stem": "Bir kasabada, 1940 yılında meydana gelen kızamık 28.\nsalgınından 50 yıl sonra bir kızamık salgını daha\nmeydana gelmiştir. Birinci salgında hastalığı geçirip hâla\nyaşayanlar (M) ve aşılanmış kişiler (N) ikinci salgında\nhastalığa yakalanmamışlardır.\nBuna göre, M ve N gruplarının ikinci salgına karşı\ngösterdiği bağışıklık tipleri aşağıdakilerin\nhangisinde doğru verilmiştir?\nM N",
+      "options": {
+        "A": "Kasılır Gevşer Uyarılır İnhibe olur",
+        "B": "Kasılır Gevşer İnhibe olur Uyarılır",
+        "C": "Gevşer Kasılır Uyarılır Uyarılır",
+        "D": "Pasif bağışıklık Doğal bağışıklık Motor Motor",
+        "E": "Pasif bağışıklık Pasif bağışıklık A kası B kası sinir 1 sinir 2"
+      },
+      "correct_answer": "A",
+      "source": "ÖSYM",
+      "exam_type": "TYT",
+      "year": 2016
+    },
+    {
+      "question_number": 27,
+      "subject": "Biyoloji",
+      "stem": "Hayvanlarda gözlenen;\nD)Gevşer Kasılır Uyarılır İnhibe olur\nI. bal arılarının buldukları besinin kovana göre\nkonumunu diğer arılara bildirmek için vücut\nE) Kasılır Kasılır Uyarılır Uyarılır\ndansları yapması,\nII. bir yaşındaki çita yavrularının anneleriyle birlikte\nkatıldıkları üçüncü avda bir ceylan yakalamaları,\nIII.bir bahçe örümceğinin böcek yakalamak için türe\nözgü ağ örmesi,\nIV.yeni doğmuş bir geyik yavrusunun ayağa kalkar\nkalkmaz annesini emmeye çalışması 29. Aşağıdakilerden hangisi insanlarda, paratiroit bezi\ntarafından salgılanan parathormonun işlevlerinden\ndavranışlarından hangileri içgüdüsel davranışlara\nbiridir?\nörnektir?",
+      "options": {
+        "D": "Kanın ozmotik basıncını azaltma",
+        "E": "Böbreklerden sodyum emilimini uyarma 9 Diğer sayfaya geçiniz.",
+        "A": "Yalnız I",
+        "B": "Boşaltım sistemi yoluyla kalsiyum atılmasını uyarma",
+        "C": "Sodyum potasyum metabolizmasını düzenleme"
+      },
+      "correct_answer": "D",
+      "source": "ÖSYM",
+      "exam_type": "TYT",
+      "year": 2016
+    },
+    {
+      "question_number": 30,
+      "subject": "Biyoloji",
+      "stem": "Bir popülasyonda, a alelinin frekansının bir süre sonra\ndeğiştiği gözleniyor.\nBu duruma aşağıdaki etkenlerden hangisi neden\nolmaz?",
+      "options": {
+        "A": "Göç",
+        "B": "Rastgele çiftleşme",
+        "C": "Doğal seçilim",
+        "D": "Mutasyon",
+        "E": "Bazı bireylerin daha fazla yavru meydana getirmesi TEST BİTTİ. 10 CEVAPLARINIZI KONTROL EDİNİZ."
+      },
+      "correct_answer": "B",
+      "source": "ÖSYM",
+      "exam_type": "TYT",
+      "year": 2016
+    }
+  ]
+}

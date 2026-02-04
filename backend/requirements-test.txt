@@ -1,0 +1,32 @@
+# Testing dependencies
+pytest==7.4.3
+pytest-asyncio==0.21.1
+pytest-cov==4.1.0
+pytest-timeout==2.4.0
+pytest-xdist==3.8.0
+
+# Testcontainers for real integration testing
+testcontainers[postgres]==4.0.1
+testcontainers[redis]==4.0.1
+
+# Database drivers
+psycopg2-binary==2.9.9
+redis==5.0.1
+
+# Additional testing tools
+faker==37.5.3
+freezegun==1.4.0
+responses==0.24.1
+
+# Load testing
+locust==2.41.5
+
+# Sprint 8: Code Quality Tools
+black==24.1.1
+flake8==7.0.0
+flake8-docstrings==1.7.0
+flake8-import-order==0.18.2
+flake8-bugbear==24.1.17
+isort==5.13.2
+mypy==1.8.0
+pre-commit==3.6.0

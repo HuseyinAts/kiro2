@@ -1,0 +1,129 @@
+{
+  "name": "Türkiye Üniversite Sınavları Hazırlık Platformu",
+  "short_name": "KIRO2 Eğitim",
+  "description": "YKS (TYT/AYT/YDT) sınavlarına hazırlık için AI destekli eğitim platformu",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#1976d2",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "lang": "tr",
+  "dir": "ltr",
+  "categories": ["education", "productivity"],
+  "icons": [
+    {
+      "src": "/images/icon-72x72.png",
+      "sizes": "72x72",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/images/icon-96x96.png",
+      "sizes": "96x96",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/images/icon-128x128.png",
+      "sizes": "128x128",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/images/icon-144x144.png",
+      "sizes": "144x144",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/images/icon-152x152.png",
+      "sizes": "152x152",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/images/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/images/icon-384x384.png",
+      "sizes": "384x384",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/images/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable any"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/images/screenshot-wide.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Ana Dashboard Görünümü"
+    },
+    {
+      "src": "/images/screenshot-narrow.png",
+      "sizes": "750x1334",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Mobil Sınav Arayüzü"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Deneme Sınavı",
+      "short_name": "Sınav",
+      "description": "Hızlı deneme sınavı başlat",
+      "url": "/exam/quick-start",
+      "icons": [
+        {
+          "src": "/images/shortcut-exam.png",
+          "sizes": "96x96"
+        }
+      ]
+    },
+    {
+      "name": "Çalışma Planı",
+      "short_name": "Plan",
+      "description": "Kişisel çalışma planını görüntüle",
+      "url": "/study-plan",
+      "icons": [
+        {
+          "src": "/images/shortcut-plan.png",
+          "sizes": "96x96"
+        }
+      ]
+    },
+    {
+      "name": "AI Asistan",
+      "short_name": "Asistan",
+      "description": "AI eğitim asistanı ile sohbet et",
+      "url": "/chat",
+      "icons": [
+        {
+          "src": "/images/shortcut-chat.png",
+          "sizes": "96x96"
+        }
+      ]
+    }
+  ],
+  "related_applications": [],
+  "prefer_related_applications": false,
+  "edge_side_panel": {
+    "preferred_width": 400
+  },
+  "protocol_handlers": [
+    {
+      "protocol": "web+kiro2exam",
+      "url": "/exam?id=%s"
+    }
+  ]
+}

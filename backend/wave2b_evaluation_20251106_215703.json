@@ -1,0 +1,201 @@
+{
+  "timestamp": "2025-11-06T21:57:03.793585",
+  "statistics": {
+    "total": 10,
+    "approved": 6,
+    "review": 4,
+    "rejected": 0,
+    "scores": [
+      0.88375,
+      0.795,
+      0.8175,
+      0.77875,
+      0.9,
+      0.7675000000000001,
+      0.75125,
+      0.8087500000000001,
+      0.9,
+      0.9
+    ],
+    "bloom_levels": {
+      "Seviye 1": 3,
+      "Seviye 3": 7
+    }
+  },
+  "questions": [
+    {
+      "question_text": "Fotosentezin ışık tepkimelerinde PS II (Fotosistem II) ve PS I (Fotosistem I) arasındaki elektron taşıma zincirinde gerçekleşen olaylar ile ilgili aşağıdaki ifadelerden hangisi yanlıştır?",
+      "difficulty": "zor",
+      "subject": "Biyoloji - Fotosentez",
+      "correct_answer": "C",
+      "length": 187,
+      "wave2b_evaluation": {
+        "overall_score": 0.88375,
+        "overall_grade": "Good",
+        "decision": "APPROVE",
+        "bloom_level": 1,
+        "bloom_confidence": 1.0,
+        "strengths": [],
+        "weaknesses": [
+          "Question too short (187 chars, min 200)"
+        ]
+      }
+    },
+    {
+      "question_text": "Durgun halden harekete başlayan bir araç 8 saniyede 64 m yol alıyor. Bu aracın 6. saniye sonundaki hızı kaç m/s'dir?",
+      "difficulty": "orta",
+      "subject": "Fizik - Hareket",
+      "correct_answer": "C",
+      "length": 116,
+      "wave2b_evaluation": {
+        "overall_score": 0.795,
+        "overall_grade": "Acceptable",
+        "decision": "REVIEW",
+        "bloom_level": 3,
+        "bloom_confidence": 1.0,
+        "strengths": [],
+        "weaknesses": [
+          "Question too short (116 chars, min 200)"
+        ]
+      }
+    },
+    {
+      "question_text": "0,1 M HCl çözeltisinin 100 mL'si ile 0,05 M Ba(OH)₂ çözeltisinin 200 mL'si karıştırılıyor. Oluşan karışımın pH'ı kaçtır? (log 2 = 0,3)",
+      "difficulty": "zor",
+      "subject": "Kimya - Asit-Baz",
+      "correct_answer": "C",
+      "length": 134,
+      "wave2b_evaluation": {
+        "overall_score": 0.8175,
+        "overall_grade": "Good",
+        "decision": "APPROVE",
+        "bloom_level": 3,
+        "bloom_confidence": 1.0,
+        "strengths": [],
+        "weaknesses": [
+          "Question too short (134 chars, min 200)"
+        ]
+      }
+    },
+    {
+      "question_text": "ABC üçgeninde |AB| = 8 cm, |AC| = 6 cm ve A açısı 60° dir. Buna göre, BC kenarının uzunluğu kaç cm'dir?",
+      "difficulty": "orta",
+      "subject": "Matematik - Geometri",
+      "correct_answer": "A",
+      "length": 103,
+      "wave2b_evaluation": {
+        "overall_score": 0.77875,
+        "overall_grade": "Acceptable",
+        "decision": "REVIEW",
+        "bloom_level": 3,
+        "bloom_confidence": 1.0,
+        "strengths": [],
+        "weaknesses": [
+          "Question too short (103 chars, min 200)"
+        ]
+      }
+    },
+    {
+      "question_text": "Şekilde gösterildiği gibi, köşeleri A, B, C olan eşkenar üçgenin A köşesine +2q, B köşesine -3q yüklü noktasal cisimler yerleştirilmiştir. Eşkenar üçgenin kenar uzunluğu d'dir. C köşesine yerleştirilen +q yüklü cismin elektriksel potansiyel enerjisi kaç kq²/(4πε₀d) olur? (k = 1/(4πε₀))",
+      "difficulty": "zor",
+      "subject": "Fizik - Elektrik",
+      "correct_answer": "A",
+      "length": 286,
+      "wave2b_evaluation": {
+        "overall_score": 0.9,
+        "overall_grade": "Excellent",
+        "decision": "APPROVE",
+        "bloom_level": 3,
+        "bloom_confidence": 1.0,
+        "strengths": [],
+        "weaknesses": []
+      }
+    },
+    {
+      "question_text": "Aşağıdakilerden hangisi hem bitki hem de hayvan hücrelerinde bulunan ortak yapılardan biridir?",
+      "difficulty": "kolay",
+      "subject": "Biyoloji - Hücre",
+      "correct_answer": "C",
+      "length": 94,
+      "wave2b_evaluation": {
+        "overall_score": 0.7675000000000001,
+        "overall_grade": "Acceptable",
+        "decision": "REVIEW",
+        "bloom_level": 1,
+        "bloom_confidence": 1.0,
+        "strengths": [],
+        "weaknesses": [
+          "Question too short (94 chars, min 200)"
+        ]
+      }
+    },
+    {
+      "question_text": "f(x) = x³ - 6x² + 9x + 2 fonksiyonu için aşağıdaki ifadelerden hangisi yanlıştır?",
+      "difficulty": "zor",
+      "subject": "Matematik - Fonksiyonlar",
+      "correct_answer": "C",
+      "length": 81,
+      "wave2b_evaluation": {
+        "overall_score": 0.75125,
+        "overall_grade": "Acceptable",
+        "decision": "REVIEW",
+        "bloom_level": 1,
+        "bloom_confidence": 1.0,
+        "strengths": [],
+        "weaknesses": [
+          "Question too short (81 chars, min 200)"
+        ]
+      }
+    },
+    {
+      "question_text": "x² - 6x + k = 0 denkleminin kökleri α ve β'dir. α + β = 6 ve α · β = k olduğuna göre, α² + β² = 20 olması için k değeri kaçtır?",
+      "difficulty": "orta",
+      "subject": "Matematik - Denklemler",
+      "correct_answer": "C",
+      "length": 127,
+      "wave2b_evaluation": {
+        "overall_score": 0.8087500000000001,
+        "overall_grade": "Good",
+        "decision": "APPROVE",
+        "bloom_level": 3,
+        "bloom_confidence": 1.0,
+        "strengths": [],
+        "weaknesses": [
+          "Question too short (127 chars, min 200)"
+        ]
+      }
+    },
+    {
+      "question_text": "Sürtünmesiz yatay düzlemde durmakta olan 4 kg kütleli bir cisme, yatay doğrultuda 12 N büyüklüğünde sabit bir kuvvet uygulanıyor. Bu kuvvet 3 saniye boyunca etki ettikten sonra kaldırılıyor. Kuvvet kaldırıldığı anda cismin hızı kaç m/s'dir?",
+      "difficulty": "orta",
+      "subject": "Fizik - Kuvvet",
+      "correct_answer": "C",
+      "length": 240,
+      "wave2b_evaluation": {
+        "overall_score": 0.9,
+        "overall_grade": "Excellent",
+        "decision": "APPROVE",
+        "bloom_level": 3,
+        "bloom_confidence": 1.0,
+        "strengths": [],
+        "weaknesses": []
+      }
+    },
+    {
+      "question_text": "Bir sınıfta 8 kız ve 6 erkek öğrenci vardır. Bu öğrencilerden 5 kişilik bir grup seçilecektir. Seçilen grupta en az 2 kız ve en az 1 erkek öğrenci bulunması koşulu ile kaç farklı grup oluşturulabilir?",
+      "difficulty": "zor",
+      "subject": "Matematik - Olasılık",
+      "correct_answer": "C",
+      "length": 200,
+      "wave2b_evaluation": {
+        "overall_score": 0.9,
+        "overall_grade": "Excellent",
+        "decision": "APPROVE",
+        "bloom_level": 3,
+        "bloom_confidence": 1.0,
+        "strengths": [],
+        "weaknesses": []
+      }
+    }
+  ]
+}

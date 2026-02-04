@@ -1,0 +1,124 @@
+{
+  "timestamp": "2025-11-06T21:59:08.009438",
+  "statistics": {
+    "total": 22,
+    "approved": 12,
+    "review": 10,
+    "rejected": 0,
+    "bloom_levels": {
+      "Seviye 1": 8,
+      "Seviye 2": 2,
+      "Seviye 3": 12
+    },
+    "by_subject": {
+      "Biyoloji - Solunum": {
+        "total": 1,
+        "approved": 1,
+        "avg_score": 0.8125
+      },
+      "Türkçe": {
+        "total": 1,
+        "approved": 0,
+        "avg_score": 0.71625
+      },
+      "Fizik - Hareket": {
+        "total": 1,
+        "approved": 0,
+        "avg_score": 0.795
+      },
+      "Türkçe - Fiilimsiler": {
+        "total": 1,
+        "approved": 0,
+        "avg_score": 0.74125
+      },
+      "Biyoloji - Fotosentez": {
+        "total": 1,
+        "approved": 1,
+        "avg_score": 0.88375
+      },
+      "Matematik": {
+        "total": 2,
+        "approved": 0,
+        "avg_score": 0.71625
+      },
+      "Fizik - Elektrik": {
+        "total": 1,
+        "approved": 1,
+        "avg_score": 0.9
+      },
+      "Kimya - Mol": {
+        "total": 1,
+        "approved": 1,
+        "avg_score": 0.8500000000000001
+      },
+      "Matematik - Fonksiyonlar": {
+        "total": 1,
+        "approved": 0,
+        "avg_score": 0.75125
+      },
+      "Matematik - Geometri": {
+        "total": 1,
+        "approved": 0,
+        "avg_score": 0.77875
+      },
+      "Matematik - Olasılık": {
+        "total": 1,
+        "approved": 1,
+        "avg_score": 0.9
+      },
+      "Türkçe - Sözcükte Anlam": {
+        "total": 1,
+        "approved": 0,
+        "avg_score": 0.7250000000000001
+      },
+      "Biyoloji - Hücre": {
+        "total": 1,
+        "approved": 0,
+        "avg_score": 0.7675000000000001
+      },
+      "Kimya - Gazlar": {
+        "total": 1,
+        "approved": 1,
+        "avg_score": 0.83125
+      },
+      "Kimya - Atom": {
+        "total": 1,
+        "approved": 0,
+        "avg_score": 0.7475
+      },
+      "Matematik - Denklemler": {
+        "total": 1,
+        "approved": 1,
+        "avg_score": 0.8087500000000001
+      },
+      "Türkçe - Cümlede Anlam": {
+        "total": 1,
+        "approved": 1,
+        "avg_score": 0.9
+      },
+      "Biyoloji - Genetik": {
+        "total": 1,
+        "approved": 1,
+        "avg_score": 0.8275
+      },
+      "Fizik - Kuvvet": {
+        "total": 1,
+        "approved": 1,
+        "avg_score": 0.9
+      },
+      "Fizik - Enerji": {
+        "total": 1,
+        "approved": 1,
+        "avg_score": 0.9
+      },
+      "Kimya - Asit-Baz": {
+        "total": 1,
+        "approved": 1,
+        "avg_score": 0.8175
+      }
+    }
+  },
+  "similar_pairs": [],
+  "questions": [
+    {
+      "id": 

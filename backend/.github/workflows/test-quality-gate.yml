@@ -1,0 +1,76 @@
+name: Test Quality Gate
+
+on:
+  pull_request:
+    branches: [ main, master, develop ]
+  push:
+    branches: [ main, master, develop ]
+
+jobs:
+  test-quality:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:15-alpine
+        env:
+          POSTGRES_USER: test_user
+          POSTGRES_PASSWORD: test_password
+          POSTGRES_DB: kiro2_test
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+      redis:
+        image: redis:7-alpine
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 6379:6379
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0  # Full history for coverage diff
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+          pip install -r requirements-test.txt
+
+      - name: Run tests with coverage
+        run: |
+          pytest --cov=. --cov-report=json:coverage.json --cov-report=term-missing -v
+        env:
+          DATABASE_URL: postgresql://test_user:test_password@localhost:5432/kiro2_test
+          REDIS_URL: redis://localhost:6379/0
+
+      - name: Check coverage thresholds
+        run: |
+          python scripts/check_coverage_gate.py
+
+      - name: Check for mock overuse
+        run: |
+          python scripts/check_mock_usage.py
+
+      - name: Fail if coverage decreased
+        run: |
+          python scripts/coverage_diff.py
+
+      - name: Upload coverage report
+        uses: codecov/codecov-action@v3
+        with:
+          file: ./coverage.json
+          fail_ci_if_error: true

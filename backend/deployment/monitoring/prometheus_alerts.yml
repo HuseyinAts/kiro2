@@ -1,0 +1,439 @@
+groups:
+  - name: video_api_alerts
+    interval: 30s
+    rules:
+      # High Error Rate Alert
+      - alert: HighErrorRate
+        expr: |
+          (
+            rate(video_requests_total{status="error"}[5m]) 
+            / 
+            rate(video_requests_total[5m])
+          ) * 100 > 5
+        for: 5m
+        labels:
+          severity: warning
+          service: video-api
+          component: backend
+        annotations:
+          summary: "High error rate detected in Video API"
+          description: |
+            Error rate is {{ $value | humanizePercentage }} (threshold: 5%)
+            Current error rate is above acceptable levels.
+            
+            Troubleshooting steps:
+            1. Check application logs: kubectl logs -n production deployment/video-api --tail=100
+            2. Check error types: Check Grafana dashboard "Top Error Types" panel
+            3. Verify external dependencies (YouTube API, Redis, Database)
+            4. Consider rollback if error rate continues to increase
+          dashboard: "http://grafana/d/video-api-dashboard"
+          runbook: "https://wiki/runbooks/video-api-high-error-rate"
+
+      # Critical Error Rate Alert
+      - alert: CriticalErrorRate
+        expr: |
+          (
+            rate(video_requests_total{status="error"}[5m]) 
+            / 
+            rate(video_requests_total[5m])
+          ) * 100 > 10
+        for: 2m
+        labels:
+          severity: critical
+          service: video-api
+          component: backend
+          page: "true"
+        annotations:
+          summary: "CRITICAL: Very high error rate in Video API"
+          description: |
+            Error rate is {{ $value | humanizePercentage }} (threshold: 10%)
+            This is a critical situation requiring immediate attention.
+            
+            Immediate actions:
+            1. Check if service is up: kubectl get pods -n production -l app=video-api
+            2. Check recent deployments: kubectl rollout history deployment/video-api -n production
+            3. Consider immediate rollback: kubectl rollout undo deployment/video-api -n production
+            4. Page on-call engineer
+          dashboard: "http://grafana/d/video-api-dashboard"
+
+      # Slow Response Time Alert
+      - alert: SlowResponseTime
+        expr: |
+          histogram_quantile(0.95, 
+            rate(video_response_time_seconds_bucket[5m])
+          ) > 3
+        for: 5m
+        labels:
+          severity: warning
+          service: video-api
+          component: backend
+        annotations:
+          summary: "Slow response time detected in Video API"
+          description: |
+            P95 response time is {{ $value | humanizeDuration }} (threshold: 3s)
+            Users are experiencing slow video loading times.
+            
+            Troubleshooting steps:
+            1. Check resource usage: kubectl top pods -n production -l app=video-api
+            2. Check cache hit rate: Should be >80%
+            3. Check database query performance
+            4. Check YouTube API response times
+            5. Consider scaling up: kubectl scale deployment/video-api -n production --replicas=5
+          dashboard: "http://grafana/d/video-api-dashboard"
+
+      # Very Slow Response Time Alert
+      - alert: VerySlowResponseTime
+        expr: |
+          histogram_quantile(0.95, 
+            rate(video_response_time_seconds_bucket[5m])
+          ) > 5
+        for: 3m
+        labels:
+          severity: critical
+          service: video-api
+          component: backend
+        annotations:
+          summary: "CRITICAL: Very slow response time in Video API"
+          description: |
+            P95 response time is {{ $value | humanizeDuration }} (threshold: 5s)
+            This is causing user timeouts and poor experience.
+            
+            Immediate actions:
+            1. Scale up immediately: kubectl scale deployment/video-api -n production --replicas=10
+            2. Check for resource bottlenecks
+            3. Enable cache-only mode if needed
+            4. Consider rollback if recent deployment
+          dashboard: "http://grafana/d/video-api-dashboard"
+
+      # Low Cache Hit Rate Alert
+      - alert: LowCacheHitRate
+        expr: cache_hit_rate < 60
+        for: 10m
+        labels:
+          severity: warning
+          service: video-api
+          component: cache
+        annotations:
+          summary: "Low cache hit rate in Video API"
+          description: |
+            Cache hit rate is {{ $value | humanizePercentage }} (threshold: 60%)
+            This increases load on YouTube API and slows down responses.
+            
+            Troubleshooting steps:
+            1. Check Redis status: kubectl get pods -n production -l app=redis
+            2. Check Redis memory: kubectl exec -n production deployment/redis -- redis-cli INFO memory
+            3. Check cache eviction rate
+            4. Consider increasing cache TTL or size
+            5. Verify cache key generation logic
+          dashboard: "http://grafana/d/video-api-dashboard"
+
+      # Very Low Cache Hit Rate Alert
+      - alert: VeryLowCacheHitRate
+        expr: cache_hit_rate < 40
+        for: 5m
+        labels:
+          severity: critical
+          service: video-api
+          component: cache
+        annotations:
+          summary: "CRITICAL: Very low cache hit rate"
+          description: |
+            Cache hit rate is {{ $value | humanizePercentage }} (threshold: 40%)
+            Cache is not functioning properly.
+            
+            Immediate actions:
+            1. Check if Redis is down
+            2. Check Redis logs for errors
+            3. Restart Redis if needed: kubectl rollout restart deployment/redis -n production
+            4. Monitor YouTube API quota usage
+          dashboard: "http://grafana/d/video-api-dashboard"
+
+      # YouTube API Quota Warning
+      - alert: YouTubeQuotaLow
+        expr: youtube_api_quota_remaining < 2000
+        for: 5m
+        labels:
+          severity: warning
+          service: video-api
+          component: youtube-api
+        annotations:
+          summary: "YouTube API quota running low"
+          description: |
+            Remaining quota: {{ $value }} (threshold: 2000)
+            API quota is running low, may run out before daily reset.
+            
+            Actions:
+            1. Enable more aggressive caching
+            2. Reduce cache TTL to keep data longer
+            3. Monitor quota usage rate
+            4. Prepare for cache-only mode if quota runs out
+          dashboard: "http://grafana/d/video-api-dashboard"
+
+      # YouTube API Quota Critical
+      - alert: YouTubeQuotaCritical
+        expr: youtube_api_quota_remaining < 500
+        for: 1m
+        labels:
+          severity: critical
+          service: video-api
+          component: youtube-api
+        annotations:
+          summary: "CRITICAL: YouTube API quota almost exhausted"
+          description: |
+            Remaining quota: {{ $value }} (threshold: 500)
+            API quota is critically low.
+            
+            Immediate actions:
+            1. Switch to cache-only mode: kubectl set env deployment/video-api -n production YOUTUBE_API_ENABLED=false
+            2. Notify team about quota exhaustion
+            3. Prepare communication for users
+            4. Monitor cache hit rate closely
+          dashboard: "http://grafana/d/video-api-dashboard"
+
+      # Service Down Alert
+      - alert: ServiceDown
+        expr: up{job="video-api"} == 0
+        for: 1m
+        labels:
+          severity: critical
+          service: video-api
+          component: backend
+          page: "true"
+        annotations:
+          summary: "CRITICAL: Video API service is down"
+          description: |
+            Video API service is not responding to health checks.
+            
+            Immediate actions:
+            1. Check pod status: kubectl get pods -n production -l app=video-api
+            2. Check pod logs: kubectl logs -n production deployment/video-api --tail=100
+            3. Check recent events: kubectl get events -n production --sort-by='.lastTimestamp'
+            4. Restart deployment if needed: kubectl rollout restart deployment/video-api -n production
+            5. Page on-call engineer immediately
+          dashboard: "http://grafana/d/video-api-dashboard"
+
+      # High Memory Usage Alert
+      - alert: HighMemoryUsage
+        expr: |
+          (
+            container_memory_usage_bytes{pod=~"video-api-.*"} 
+            / 
+            container_spec_memory_limit_bytes{pod=~"video-api-.*"}
+          ) * 100 > 80
+        for: 5m
+        labels:
+          severity: warning
+          service: video-api
+          component: backend
+        annotations:
+          summary: "High memory usage in Video API"
+          description: |
+            Memory usage is {{ $value | humanizePercentage }} (threshold: 80%)
+            Pod {{ $labels.pod }} is using high memory.
+            
+            Troubleshooting steps:
+            1. Check for memory leaks in application logs
+            2. Check cache size (in-memory cache may be too large)
+            3. Consider increasing memory limits
+            4. Monitor for OOMKilled events
+          dashboard: "http://grafana/d/video-api-dashboard"
+
+      # High CPU Usage Alert
+      - alert: HighCPUUsage
+        expr: |
+          (
+            rate(container_cpu_usage_seconds_total{pod=~"video-api-.*"}[5m]) 
+            / 
+            container_spec_cpu_quota{pod=~"video-api-.*"} 
+            * 
+            container_spec_cpu_period{pod=~"video-api-.*"}
+          ) * 100 > 80
+        for: 5m
+        labels:
+          severity: warning
+          service: video-api
+          component: backend
+        annotations:
+          summary: "High CPU usage in Video API"
+          description: |
+            CPU usage is {{ $value | humanizePercentage }} (threshold: 80%)
+            Pod {{ $labels.pod }} is using high CPU.
+            
+            Troubleshooting steps:
+            1. Check for CPU-intensive operations in logs
+            2. Check request rate (may need to scale up)
+            3. Consider increasing CPU limits
+            4. Check for inefficient algorithms or loops
+          dashboard: "http://grafana/d/video-api-dashboard"
+
+      # Database Connection Pool Exhausted
+      - alert: DatabaseConnectionPoolExhausted
+        expr: database_connection_pool_active >= database_connection_pool_max * 0.9
+        for: 2m
+        labels:
+          severity: warning
+          service: video-api
+          component: database
+        annotations:
+          summary: "Database connection pool nearly exhausted"
+          description: |
+            Active connections: {{ $value }} (threshold: 90% of max)
+            Database connection pool is running out of connections.
+            
+            Troubleshooting steps:
+            1. Check for connection leaks
+            2. Check slow queries
+            3. Increase connection pool size
+            4. Check for long-running transactions
+          dashboard: "http://grafana/d/video-api-dashboard"
+
+      # Redis Connection Failures
+      - alert: RedisConnectionFailures
+        expr: rate(redis_connection_errors_total[5m]) > 0.1
+        for: 3m
+        labels:
+          severity: warning
+          service: video-api
+          component: redis
+        annotations:
+          summary: "Redis connection failures detected"
+          description: |
+            Connection error rate: {{ $value }} errors/sec
+            Application is having trouble connecting to Redis.
+            
+            Troubleshooting steps:
+            1. Check Redis pod status: kubectl get pods -n production -l app=redis
+            2. Check Redis logs: kubectl logs -n production deployment/redis
+            3. Check network connectivity
+            4. Restart Redis if needed
+          dashboard: "http://grafana/d/video-api-dashboard"
+
+      # Request Rate Spike
+      - alert: RequestRateSpike
+        expr: |
+          rate(video_requests_total[5m]) 
+          > 
+          avg_over_time(rate(video_requests_total[5m])[1h:5m]) * 2
+        for: 5m
+        labels:
+          severity: info
+          service: video-api
+          component: backend
+        annotations:
+          summary: "Request rate spike detected"
+          description: |
+            Current rate: {{ $value }} req/sec
+            Request rate is 2x higher than normal.
+            
+            This may be normal (e.g., peak hours) or indicate:
+            1. Sudden increase in users
+            2. Potential DDoS attack
+            3. Retry storm from clients
+            
+            Monitor closely and scale if needed.
+          dashboard: "http://grafana/d/video-api-dashboard"
+
+      # Turkish Content Filter Failures
+      - alert: TurkishContentFilterFailures
+        expr: rate(turkish_content_filter_errors_total[5m]) > 0.05
+        for: 5m
+        labels:
+          severity: warning
+          service: video-api
+          component: content-filter
+        annotations:
+          summary: "Turkish content filter experiencing failures"
+          description: |
+            Filter error rate: {{ $value }} errors/sec
+            Content filtering is failing, may return non-Turkish videos.
+            
+            Troubleshooting steps:
+            1. Check filter service logs
+            2. Check language detection library
+            3. Verify taxonomy data is loaded
+            4. Check for malformed video metadata
+          dashboard: "http://grafana/d/video-api-dashboard"
+
+      # Deployment Rollout Stuck
+      - alert: DeploymentRolloutStuck
+        expr: |
+          kube_deployment_status_condition{condition="Progressing",status="false"} 
+          * 
+          on(deployment) 
+          kube_deployment_spec_replicas{deployment="video-api"}
+        for: 10m
+        labels:
+          severity: warning
+          service: video-api
+          component: deployment
+        annotations:
+          summary: "Deployment rollout is stuck"
+          description: |
+            Deployment {{ $labels.deployment }} rollout is not progressing.
+            
+            Troubleshooting steps:
+            1. Check rollout status: kubectl rollout status deployment/video-api -n production
+            2. Check pod events: kubectl describe pods -n production -l app=video-api
+            3. Check for image pull errors
+            4. Check resource availability
+            5. Consider rollback: kubectl rollout undo deployment/video-api -n production
+          dashboard: "http://grafana/d/video-api-dashboard"
+
+  - name: video_api_slo_alerts
+    interval: 1m
+    rules:
+      # SLO: 99.9% Availability
+      - alert: SLOAvailabilityBreach
+        expr: |
+          (
+            sum(rate(video_requests_total{status="success"}[1h])) 
+            / 
+            sum(rate(video_requests_total[1h]))
+          ) * 100 < 99.9
+        for: 5m
+        labels:
+          severity: critical
+          service: video-api
+          slo: availability
+        annotations:
+          summary: "SLO breach: Availability below 99.9%"
+          description: |
+            Current availability: {{ $value | humanizePercentage }}
+            SLO target: 99.9%
+            
+            This is a critical SLO breach requiring immediate attention.
+
+      # SLO: P95 Response Time < 3s
+      - alert: SLOResponseTimeBreach
+        expr: |
+          histogram_quantile(0.95, 
+            rate(video_response_time_seconds_bucket[1h])
+          ) > 3
+        for: 10m
+        labels:
+          severity: warning
+          service: video-api
+          slo: response-time
+        annotations:
+          summary: "SLO breach: P95 response time above 3s"
+          description: |
+            Current P95: {{ $value | humanizeDuration }}
+            SLO target: 3s
+            
+            Performance is below SLO target.
+
+      # SLO: Cache Hit Rate > 80%
+      - alert: SLOCacheHitRateBreach
+        expr: cache_hit_rate < 80
+        for: 30m
+        labels:
+          severity: warning
+          service: video-api
+          slo: cache-performance
+        annotations:
+          summary: "SLO breach: Cache hit rate below 80%"
+          description: |
+            Current cache hit rate: {{ $value | humanizePercentage }}
+            SLO target: 80%
+            
+            Cache performance is below SLO target.

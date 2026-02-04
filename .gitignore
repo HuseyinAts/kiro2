@@ -1,0 +1,104 @@
+# Minimal AI Education Platform
+# Simple .gitignore for minimal system
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyc
+.Python
+venv/
+env/
+
+# Environment Variables (CRITICAL: Never commit sensitive data)
+.env
+.env.local
+.env.production
+.env.development
+.env.test
+*.env.backup
+.env.*
+
+# Node.js
+node_modules/
+npm-debug.log*
+.npm
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Temporary
+*.tmp
+temp/
+tmp/
+
+# Build
+dist/
+build/
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# Test Coverage
+htmlcov/
+.coverage
+.coverage.*
+coverage.json
+*.cover
+.pytest_cache/
+
+# Docker
+docker-compose.override.yml
+
+# Secrets & Keys
+*.pem
+*.key
+*.crt
+*.p12
+secrets/
+.secrets/
+
+# Cache
+.cache/
+*.cache
+
+# Backups
+backups/*.rdb
+backups/*.aof
+*.backup
+
+# Vector DB
+vector_db/chroma/
+vector_db/*.index
+
+# Uploads
+uploads/*
+!uploads/.gitkeep
+
+# Reports
+reports/*.html
+reports/*.json
+reports/*.xml
+
+# Alembic
+*.pyc
+alembic/versions/*.pyc
+backend/api/nul
+
+# Windows nul device files
+nul
+*/nul
+
+# Git submodules
+mcp-servers/

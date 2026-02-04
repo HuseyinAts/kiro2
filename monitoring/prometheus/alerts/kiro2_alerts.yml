@@ -1,0 +1,330 @@
+# Kiro2 Platform - Prometheus Alert Rules
+# Sprint 10: Monitoring & Observability
+#
+# Alert Rules covering:
+# - System Health
+# - Application Performance
+# - Business Metrics
+# - Security
+# - Database & Cache
+
+groups:
+  # ==================== SYSTEM HEALTH ALERTS ====================
+  - name: system_health
+    interval: 30s
+    rules:
+      - alert: HighCPUUsage
+        expr: kiro_system_cpu_usage_percent > 80
+        for: 5m
+        labels:
+          severity: warning
+          component: system
+        annotations:
+          summary: "High CPU usage detected"
+          description: "CPU usage is {{ $value }}% (threshold: 80%)"
+          runbook_url: "https://docs.kiro2.com/runbooks/high-cpu"
+
+      - alert: CriticalCPUUsage
+        expr: kiro_system_cpu_usage_percent > 95
+        for: 2m
+        labels:
+          severity: critical
+          component: system
+        annotations:
+          summary: "CRITICAL: CPU usage at {{ $value }}%"
+          description: "Immediate action required - CPU at {{ $value }}%"
+          runbook_url: "https://docs.kiro2.com/runbooks/critical-cpu"
+
+      - alert: HighMemoryUsage
+        expr: kiro_system_memory_percent > 85
+        for: 5m
+        labels:
+          severity: warning
+          component: system
+        annotations:
+          summary: "High memory usage: {{ $value }}%"
+          description: "Memory usage above 85% for 5 minutes"
+
+      - alert: CriticalMemoryUsage
+        expr: kiro_system_memory_percent > 95
+        for: 2m
+        labels:
+          severity: critical
+          component: system
+        annotations:
+          summary: "CRITICAL: Memory at {{ $value }}%"
+          description: "System may become unstable - memory at {{ $value }}%"
+
+      - alert: DiskSpaceLow
+        expr: (kiro_system_disk_free_bytes / (kiro_system_disk_usage_bytes + kiro_system_disk_free_bytes)) * 100 < 15
+        for: 10m
+        labels:
+          severity: warning
+          component: storage
+        annotations:
+          summary: "Disk space low on {{ $labels.mountpoint }}"
+          description: "Only {{ $value }}% free space remaining"
+
+  # ==================== APPLICATION PERFORMANCE ALERTS ====================
+  - name: application_performance
+    interval: 1m
+    rules:
+      - alert: HighErrorRate
+        expr: sum(rate(kiro_errors_total[5m])) > 10
+        for: 5m
+        labels:
+          severity: warning
+          component: application
+        annotations:
+          summary: "High error rate detected"
+          description: "Error rate: {{ $value }} errors/sec over 5 minutes"
+          runbook_url: "https://docs.kiro2.com/runbooks/high-error-rate"
+
+      - alert: APILatencyHigh
+        expr: histogram_quantile(0.95, sum(rate(kiro_http_request_duration_seconds_bucket[5m])) by (le, endpoint)) > 2
+        for: 10m
+        labels:
+          severity: warning
+          component: api
+        annotations:
+          summary: "High API latency on {{ $labels.endpoint }}"
+          description: "P95 latency: {{ $value }}s (threshold: 2s)"
+
+      - alert: APILatencyCritical
+        expr: histogram_quantile(0.95, sum(rate(kiro_http_request_duration_seconds_bucket[5m])) by (le, endpoint)) > 5
+        for: 5m
+        labels:
+          severity: critical
+          component: api
+        annotations:
+          summary: "CRITICAL: API latency {{ $value }}s on {{ $labels.endpoint }}"
+          description: "Users experiencing severe degradation"
+
+      - alert: HTTP5xxErrors
+        expr: sum(rate(kiro_http_requests_total{status_code=~"5.."}[5m])) > 5
+        for: 5m
+        labels:
+          severity: critical
+          component: api
+        annotations:
+          summary: "High rate of 5xx errors"
+          description: "{{ $value }} 5xx errors/sec - check application logs"
+
+  # ==================== BUSINESS METRICS ALERTS ====================
+  - name: business_metrics
+    interval: 5m
+    rules:
+      - alert: LowActiveUsers
+        expr: sum(kiro_active_users_daily) < 100
+        for: 30m
+        labels:
+          severity: warning
+          component: business
+        annotations:
+          summary: "Active users dropped to {{ $value }}"
+          description: "Check for platform issues or marketing campaigns"
+
+      - alert: HighExamAbandonmentRate
+        expr: |
+          (
+            sum(increase(kiro_exams_completed_total{completion_status="abandoned"}[1h]))
+            /
+            sum(increase(kiro_exams_started_total[1h]))
+          ) * 100 > 50
+        for: 15m
+        labels:
+          severity: warning
+          component: business
+        annotations:
+          summary: "High exam abandonment rate: {{ $value }}%"
+          description: "Over 50% of exams are being abandoned"
+
+      - alert: NoExamsStarted
+        expr: sum(increase(kiro_exams_started_total[1h])) == 0
+        for: 2h
+        labels:
+          severity: critical
+          component: business
+        annotations:
+          summary: "No exams started in last 2 hours"
+          description: "Potential platform issue preventing exam access"
+
+  # ==================== SECURITY ALERTS ====================
+  - name: security
+    interval: 1m
+    rules:
+      - alert: HighAuthFailureRate
+        expr: sum(rate(kiro_auth_failures_total[5m])) > 10
+        for: 5m
+        labels:
+          severity: warning
+          component: security
+        annotations:
+          summary: "High authentication failure rate"
+          description: "{{ $value }} auth failures/sec - possible brute force attack"
+          runbook_url: "https://docs.kiro2.com/runbooks/auth-failures"
+
+      - alert: RateLimitAbuse
+        expr: sum(increase(kiro_rate_limit_hits_total[5m])) > 1000
+        for: 5m
+        labels:
+          severity: warning
+          component: security
+        annotations:
+          summary: "Excessive rate limiting detected"
+          description: "{{ $value }} rate limit violations in 5 minutes"
+
+      - alert: SecurityEventDetected
+        expr: sum(increase(kiro_security_events_total{event_type=~"sql_injection|xss"}[5m])) > 0
+        for: 1m
+        labels:
+          severity: critical
+          component: security
+        annotations:
+          summary: "SECURITY: Attack detected - {{ $labels.event_type }}"
+          description: "Immediate investigation required"
+
+      - alert: UnusualIPBlocking
+        expr: sum(increase(kiro_blocked_ips_total[10m])) > 100
+        for: 5m
+        labels:
+          severity: warning
+          component: security
+        annotations:
+          summary: "Unusual number of IPs blocked"
+          description: "{{ $value }} IPs blocked in 10 minutes - possible DDoS"
+
+  # ==================== DATABASE ALERTS ====================
+  - name: database
+    interval: 30s
+    rules:
+      - alert: DatabaseConnectionPoolExhausted
+        expr: kiro_db_connections_idle{pool="main"} < 5
+        for: 5m
+        labels:
+          severity: critical
+          component: database
+        annotations:
+          summary: "Database connection pool nearly exhausted"
+          description: "Only {{ $value }} idle connections remaining"
+
+      - alert: SlowQueryDetected
+        expr: sum(increase(kiro_db_slow_queries_total[5m])) > 10
+        for: 5m
+        labels:
+          severity: warning
+          component: database
+        annotations:
+          summary: "{{ $value }} slow queries detected"
+          description: "Check query performance and indexes"
+
+      - alert: DatabaseDeadlock
+        expr: sum(increase(kiro_db_deadlocks_total[5m])) > 0
+        for: 1m
+        labels:
+          severity: critical
+          component: database
+        annotations:
+          summary: "Database deadlock detected"
+          description: "{{ $value }} deadlocks in last 5 minutes"
+
+  # ==================== CACHE ALERTS ====================
+  - name: cache
+    interval: 1m
+    rules:
+      - alert: LowCacheHitRatio
+        expr: kiro_cache_hit_ratio{cache_layer="L2"} < 0.7
+        for: 10m
+        labels:
+          severity: warning
+          component: cache
+        annotations:
+          summary: "Low Redis cache hit ratio: {{ $value }}"
+          description: "Cache effectiveness degraded - check cache strategy"
+
+      - alert: CacheConnectionFailure
+        expr: sum(increase(kiro_cache_operations_total{result="error"}[5m])) > 10
+        for: 5m
+        labels:
+          severity: critical
+          component: cache
+        annotations:
+          summary: "Cache connection failures detected"
+          description: "{{ $value }} cache errors in 5 minutes"
+
+  # ==================== AI/ML ALERTS ====================
+  - name: ai_ml
+    interval: 2m
+    rules:
+      - alert: AIModelLatencyHigh
+        expr: histogram_quantile(0.95, sum(rate(kiro_ai_model_latency_seconds_bucket[5m])) by (le, model)) > 10
+        for: 10m
+        labels:
+          severity: warning
+          component: ai
+        annotations:
+          summary: "High AI model latency: {{ $labels.model }}"
+          description: "P95 latency {{ $value }}s (threshold: 10s)"
+
+      - alert: RecommendationAccuracyLow
+        expr: avg(kiro_recommendation_accuracy) < 0.7
+        for: 30m
+        labels:
+          severity: warning
+          component: ai
+        annotations:
+          summary: "Low recommendation accuracy: {{ $value }}"
+          description: "Model may need retraining or investigation"
+
+  # ==================== DISTRIBUTED TRACING ALERTS (Sprint 11) ====================
+  - name: distributed_tracing
+    interval: 30s
+    rules:
+      - alert: HighTraceExportFailureRate
+        expr: |
+          rate(jaeger_tracer_reporter_spans_total{result="err"}[5m])
+          / rate(jaeger_tracer_reporter_spans_total[5m])
+          > 0.1
+        for: 5m
+        labels:
+          severity: warning
+          component: tracing
+        annotations:
+          summary: "High trace export failure rate"
+          description: "{{ $value | humanizePercentage }} of traces failing to export"
+          runbook_url: "https://docs.kiro2.com/runbooks/trace-export-failures"
+
+      - alert: JaegerServiceDown
+        expr: up{job="jaeger"} == 0
+        for: 2m
+        labels:
+          severity: critical
+          component: tracing
+        annotations:
+          summary: "Jaeger service is down"
+          description: "Jaeger has been down for more than 2 minutes - distributed tracing unavailable"
+          runbook_url: "https://docs.kiro2.com/runbooks/jaeger-down"
+
+      - alert: OTELCollectorHighQueue
+        expr: otelcol_processor_batch_queue_length > 1000
+        for: 5m
+        labels:
+          severity: warning
+          component: tracing
+        annotations:
+          summary: "OTEL Collector queue is growing"
+          description: "Queue length is {{ $value }}, may indicate export issues"
+          runbook_url: "https://docs.kiro2.com/runbooks/otel-collector-queue"
+
+      - alert: HighTraceDropRate
+        expr: |
+          rate(jaeger_tracer_reporter_spans_total{result="dropped"}[5m])
+          / rate(jaeger_tracer_reporter_spans_total[5m])
+          > 0.05
+        for: 5m
+        labels:
+          severity: warning
+          component: tracing
+        annotations:
+          summary: "High trace drop rate detected"
+          description: "{{ $value | humanizePercentage }} of traces are being dropped"

@@ -1,0 +1,193 @@
+{
+  "version": "1.0",
+  "language": "Turkish",
+  "word_count": 1000,
+  "source": "Compiled from TNC (Turkish National Corpus) and educational materials",
+  "date_created": "2025-10-19",
+  "categories": {
+    "function_words": 150,
+    "content_words": 850
+  },
+  "words": [
+    "bir", "bu", "ve", "için", "ile", "ne", "mi", "var", "yok", "çok",
+    "çünkü", "ama", "fakat", "ancak", "veya", "ya", "da", "de", "ki", "şey",
+    "gibi", "kadar", "daha", "en", "her", "hiç", "bazı", "tüm", "hep", "yani",
+    "şimdi", "sonra", "önce", "biz", "siz", "onlar", "ben", "sen", "o", "olan",
+    "eden", "yapan", "gelen", "giden", "alan", "veren", "iyi", "kötü", "büyük", "küçük",
+
+    "yeni", "eski", "güzel", "çirkin", "uzun", "kısa", "geniş", "dar", "yüksek", "alçak",
+    "sıcak", "soğuk", "ılık", "serin", "açık", "kapalı", "kolay", "zor", "basit", "karmaşık",
+    "hızlı", "yavaş", "erken", "geç", "yakın", "uzak", "yukarı", "aşağı", "ileri", "geri",
+    "sağ", "sol", "orta", "kenar", "merkez", "taraf", "yan", "ön", "arka", "alt",
+
+    "üst", "iç", "dış", "ara", "arası", "içinde", "dışında", "üzerinde", "altında", "yanında",
+    "önünde", "arkasında", "arasında", "karşısında", "yakınında", "uzağında", "etrafında", "çevresinde", "boyunca", "doğru",
+    "göre", "rağmen", "karşı", "birlikte", "beraber", "hariç", "başka", "öteki", "diğer", "öbür",
+
+    "şu", "o", "bunlar", "şunlar", "onlar", "hepsi", "hiçbiri", "bazıları", "çoğu", "tamamı",
+    "kendi", "kendisi", "kendine", "kendinden", "kendisiyle", "kendi", "öz", "bizim", "sizin", "onların",
+
+    "soru", "cevap", "yanıt", "sual", "doğru", "yanlış", "düzgün", "hatalı", "tam", "eksik",
+    "sınav", "test", "değerlendirme", "ölçme", "yoklama", "deneme", "imtihan", "müfredat", "program", "ders",
+    "konu", "kısım", "bölüm", "ünite", "alan", "dal", "şube", "kategori", "grup", "sınıf",
+
+    "matematik", "geometri", "cebir", "aritmetik", "analiz", "trigonometri", "logaritma", "üstel", "köklü", "rasyonel",
+    "sayı", "rakam", "numara", "miktar", "adet", "tane", "değer", "tutar", "toplam", "cümlesi",
+    "işlem", "hesap", "hesaplama", "bulma", "çözme", "çözüm", "sonuç", "netice", "ürün", "bölüm",
+    "toplama", "çıkarma", "çarpma", "bölme", "işaret", "sembol", "simge", "gösterim", "notasyon", "ifade",
+
+    "eşit", "denk", "aynı", "benzer", "farklı", "zıt", "ters", "aksi", "karşıt", "ضد",
+    "büyük", "ufak", "dev", "minyon", "iri", "minik", "azami", "asgari", "maksimum", "minimum",
+    "artı", "eksi", "pozitif", "negatif", "sıfır", "bir", "iki", "üç", "dört", "beş",
+    "altı", "yedi", "sekiz", "dokuz", "on", "yüz", "bin", "milyon", "milyar", "trilyon",
+
+    "birinci", "ikinci", "üçüncü", "dördüncü", "beşinci", "altıncı", "yedinci", "sekizinci", "dokuzuncu", "onuncu",
+    "ilk", "son", "orta", "ara", "başlangıç", "bitiş", "sonuç", "final", "esas", "asıl",
+
+    "fen", "bilim", "ilim", "bilgi", "malumat", "veri", "enformasyon", "haber", "bildirim", "rapor",
+    "fizik", "kimya", "biyoloji", "astronomi", "jeoloji", "coğrafya", "tarih", "tarihçe", "geçmiş", "gelecek",
+    "madde", "cisim", "nesne", "obje", "şey", "eşya", "varlık", "öge", "unsur", "element",
+    "atom", "molekül", "hücre", "doku", "organ", "sistem", "yapı", "örgü", "organizasyon", "düzen",
+
+    "hareket", "durgun", "sabit", "değişken", "hareketli", "devingen", "dinamik", "statik", "kinetik", "potansiyel",
+    "enerji", "güç", "kuvvet", "ivme", "hız", "sürat", "yol", "mesafe", "uzaklık", "konum",
+    "zaman", "süre", "vakit", "an", "dakika", "saat", "gün", "hafta", "ay", "yıl",
+    "saniye", "salise", "anlık", "geçici", "kalıcı", "ebedi", "sonsuz", "sonlu", "sınırlı", "sınırsız",
+
+    "kütle", "ağırlık", "tartı", "yoğunluk", "özkütle", "hacim", "boyut", "ebat", "ölçü", "birim",
+    "metre", "santimetre", "milimetre", "kilometre", "gram", "kilogram", "ton", "litre", "derece", "santigrat",
+
+    "edebiyat", "yazın", "metin", "yazı", "kitap", "eser", "yapıt", "çalışma", "araştırma", "inceleme",
+    "roman", "hikaye", "öykü", "şiir", "manzum", "nazım", "nesir", "düzyazı", "makale", "deneme",
+    "yazar", "şair", "edip", "muharrir", "kalem", "fikir", "düşünce", "görüş", "kanı", "rey",
+
+    "dil", "lisan", "söz", "kelime", "sözcük", "terim", "tabir", "kavram", "lafız", "mana",
+    "anlam", "mefhum", "muhteva", "içerik", "öz", "mahiyet", "cevher", "asıl", "esas", "temel",
+    "gramer", "dilbilgisi", "sözdizimi", "sentaks", "morfoloji", "biçimbilgisi", "fonetik", "sesbilim", "semantik", "anlamsal",
+
+    "cümle", "tümce", "fıkra", "paragraf", "bölüm", "fasıl", "kısım", "parça", "bölge", "kesim",
+    "harf", "karakter", "sembol", "işaret", "iz", "nişan", "alamet", "belirti", "emare", "delil",
+    "nokta", "virgül", "ünlem", "soru", "tire", "kısa", "uzun", "çizgi", "ayraç", "parantez",
+
+    "isim", "ad", "nam", "lakapَ", "takma", "rumuz", "künye", "ünvan", "san", "payeَ",
+    "fiil", "eylem", "iş", "ediş", "kılış", "hareket", "davranış", "tutum", "tavır", "hareketَ",
+    "sıfat", "nitelik", "özellik", "vasıf", "hususiyet", "karakter", "nevi", "cins", "tür", "çeşit",
+    "zamir", "adıl", "işaret", "gösterge", "delalet", "ibare", "ima", "kinaye", "mecaz", "istiare",
+
+    "tarih", "mazi", "geçmiş", "eski", "kadim", "antika", "atik", "köhne", "yeni", "modern",
+    "çağ", "asır", "yüzyıl", "devir", "dönem", "era", "zaman", "vakit", "mevsim", "fasıl",
+    "olay", "vaka", "hadise", "hادثه", "kaza", "tehlike", "afet", "felaket", "musibet", "bela",
+
+    "devlet", "hükümet", "idare", "yönetim", "kabine", "vekalet", "nezaret", "daire", "müdüriyet", "şube",
+    "millet", "ulus", "kavim", "cemaat", "toplum", "halk", "ahali", "nüfus", "insanlar", "fertler",
+    "vatan", "yurt", "ülke", "diyar", "memleket", "il", "şehir", "kasaba", "köy", "mahalle",
+
+    "coğrafya", "arazi", "arz", "toprak", "zemin", "taban", "yer", "mevki", "mahal", "mevze",
+    "dağ", "tepe", "bayır", "yokuş", "iniş", "çıkış", "zirve", "doruk", "yar", "uçurum",
+    "nehir", "ırmak", "çay", "dere", "akarsu", "göl", "deniz", "okyanus", "körfez", "boğaz",
+    "ada", "yarımada", "kıta", "anakaraَ", "sahil", "kıyı", "plaj", "kumsal", "liman", "iskele",
+
+    "iklim", "hava", "atmosfer", "cevv", "manzara", "tabiat", "doğa", "kainat", "evren", "alem",
+    "yağmur", "kar", "dolu", "sis", "bulut", "güneş", "ay", "yıldız", "gezegen", "uydu",
+    "rüzgar", "fırtına", "kasırga", "hortum", "tsunami", "deprem", "zelzele", "sallanma", "sarsıntı", "titreşim",
+
+    "bitki", "nebat", "ot", "çiçek", "gül", "yaprak", "dal", "kök", "gövde", "meyve",
+    "ağaç", "orman", "şecere", "kütük", "odun", "kereste", "tahta", "ince", "kalın", "çubuk",
+    "hayvan", "canlı", "varlık", "mahluk", "yaratık", "tür", "cins", "nevi", "soy", "ırk",
+
+    "insan", "adam", "kişi", "fert", "şahıs", "kimse", "zat", "beden", "vücut", "cesed",
+    "baş", "kafa", "kelle", "ser", "beyin", "dimağ", "akıl", "zihin", "hafıza", "bellek",
+    "göz", "çeşm", "nazar", "bakış", "görüş", "rؤyet", "ibsar", "seyre", "temaşa", "seyir",
+    "kulak", "işitme", "duyma", "semi", "istima", "dinleme", "kulaktan", "işiten", "duyan", "semii",
+    "burun", "enfiye", "koku", "rayiha", "öشمة", "kokusَ", "esans", "parfüm", "ıtır", "güzel",
+
+    "ağız", "dil", "dudak", "leb", "şefه", "dişَ", "diş", "azı", "kesici", "köpek",
+    "boyun", "ense", "gerdان", "gerdanlık", "kolye", "zincir", "halka", "çember", "daire", "yuvarlak",
+    "omuz", "kol", "dirsek", "bilek", "el", "dest", "yed", "pençe", "yumruk", "şakak",
+    "parmak", "başparmak", "şahadet", "orta", "yüzük", "serçe", "avuç", "aya", "kف", "beş",
+
+    "göğüs", "sine", "sadr", "yürek", "kalp", "gönül", "dil", "ciğer", "akciğer", "nefes",
+    "karın", "batın", "mide", "bağırsak", "barsak", "işkembe", "dalak", "böbrek", "karaciğer", "safra",
+
+    "bacak", "but", "diz", "baldır", "incik", "ayak", "kadem", "topuk", "ökçe", "parmak",
+    "tırnak", "pençe", "yüz", "çehre", "sima", "suret", "yüz", "kaş", "kirpik", "saç",
+
+    "renk", "reng", "boya", "leke", "iz", "nişان", "alamet", "işaret", "beyaz", "ak",
+    "siyah", "kara", "kül", "gri", "boz", "kır", "yeşil", "mavi", "kırmızı", "sarı",
+    "turuncu", "pembe", "mor", "eflatun", "kahverengi", "altın", "gümüş", "bronz", "bakır", "demir",
+
+    "yemek", "aş", "taam", "meal", "yiyecek", "içecek", "şerbet", "şurup", "su", "meyve",
+    "sebze", "et", "balık", "tavuk", "süt", "yoğurt", "peynir", "yumurta", "ekmek", "un",
+    "pirinç", "bulgur", "makarna", "çorba", "pilav", "börek", "tatlı", "helva", "şeker", "bal",
+
+    "giysi", "elbise", "libas", "don", "pantolон", "gömlek", "tişört", "kazak", "ceket", "manto",
+    "palto", "kaban", "şapka", "külah", "başlık", "fes", "takke", "atkı", "eşarp", "şal",
+    "çorap", "ayakkabı", "pabuç", "nalın", "terlik", "çizme", "bot", "sandalet", "paten", "kayak",
+
+    "ev", "hane", "mesken", "konut", "ikametgah", "sükan", "barınak", "sığınak", "kulübe", "çardak",
+    "oda", "salon", "hol", "koridor", "dehliz", "sofa", "eyvan", "balkon", "teras", "bahçe",
+    "mutfak", "aşhane", "yatak", "döşek", "yorgan", "battaniye", "yastık", "çarşaf", "kılıf", "örtü",
+
+    "kapı", "pencere", "duvar", "tavan", "yer", "zemin", "döşeme", "parke", "halı", "kilim",
+    "merdiven", "basamak", "asansör", "çatı", "dam", "oluk", "teras", "seki", "kaide", "temel",
+
+    "araç", "vasıta", "alet", "edevat", "cihaz", "makine", "motor", "teçhizat", "donanım", "ekipman",
+    "araba", "otomobil", "taşıt", "kamyon", "otobüs", "minibüs", "dolmuş", "taksi", "tramvay", "metro",
+    "tren", "vagon", "lokomotif", "ray", "istasyon", "durak", "uçak", "helikopter", "gemi", "tekne",
+
+    "okul", "mektep", "medrese", "dershane", "lise", "kolej", "üniversite", "fakülte", "enstitü", "akademi",
+    "öğrenci", "talebe", "şakirt", "talebي", "öğretmen", "muallim", "hoca", "üstat", "müdür", "müدir",
+    "sınıf", "derslik", "amfi", "salon", "masa", "sıra", "sandalye", "koltuk", "iskemle", "tabure",
+
+    "kalem", "kurşun", "tükenmez", "dolma", "rapido", "silgi", "削除", "kazıma", "defter", "kitap",
+    "sayfa", "sahife", "varak", "yaprak", "satır", "sütun", "paragraf", "fıkra", "madde", "bent",
+    "kağıt", "varaka", "karton", "mukavva", "tahta", "levha", "yazı", "metin", "kompozisyon", "inşa",
+
+    "bilgisayar", "kompüter", "klavye", "tuş", "fare", "ekran", "monitör", "işlemci", "bellek", "hafıza",
+    "disk", "CD", "DVD", "USB", "flash", "kart", "veri", "dosya", "klasör", "dizin",
+    "program", "yazılım", "uygulama", "oyun", "sistem", "işletim", "ağ", "internet", "site", "sayfa",
+
+    "para", "akçe", "nakit", "fلوس", "mangır", "servet", "mal", "mülk", "emlak", "arazi",
+    "lira", "kuruş", "dolar", "euro", "sterlin", "yen", "yuan", "ruble", "frank", "mark",
+    "banka", "sandık", "kasa", "çekmece", "dolap", "gardırop", "raf", "kitaplık", "vitrin", "cam",
+
+    "iş", "çalışma", "mesai", "vazife", "görev", "hizmet", "memelet", "şغل", "sanat", "meslek",
+    "işçi", "amele", "esnaf", "tüccar", "tacir", "bezirgan", "pazarcı", "satıcı", "alıcı", "müşteri",
+    "patron", "şef", "amir", "müdür", "başkan", "reis", "kumandan", "komutan", "zabıt", "memur",
+
+    "oyun", "eğlence", "zevk", "lezzet", "keyif", "mzه", "sevinç", "neşe", "sürür", "haz",
+    "top", "oyuncak", "kukla", "bebek", "araba", "uçak", "tren", "bisiklet", "paten", "kayak",
+    "müzik", "musiki", "saz", "çalgı", "nota", "beste", "şarkı", "türkü", "nağme", "makam",
+
+    "sağlık", "hastalık", "maraz", "امراض", "dert", "illet", "belا", "ağrı", "acı", "sızı",
+    "doktor", "hekim", "tabib", "cerrah", "eczacı", "saydalı", "hemşire", "tımarjı", "bakıcı", "hastabakıcı",
+    "hastane", "şفاخانه", "dispanser", "klinik", "muayenehane", "eczane", "saydaخane", "ilaç", "devا", "hap",
+
+    "din", "diانت", "iman", "inanç", "اعتقاد", "meذهب", "itikat", "akide", "şeriat", "kanun",
+    "hak", "hakيקת", "doğru", "haق", "adalet", "عدل", "insaf", "vicdan", "ahlak", "etik"
+  ],
+  "morphological_roots": [
+    "gel", "git", "gör", "al", "ver", "yap", "et", "ol", "bil", "söyle",
+    "oku", "yaz", "konuş", "dinle", "anla", "öğren", "çalış", "oyna", "düşün", "iste",
+    "sev", "nefret", "beğen", "hoş", "sor", "cevapla", "başla", "bitir", "devam", "dur",
+    "kalk", "otur", "yat", "uyu", "uyan", "aç", "kapa", "koy", "çıkar", "tak",
+    "söyle", "anlat", "şırh", "açıkla", "belirt", "göster", "bulَ", "ara", "arتır", "azalt"
+  ],
+  "common_suffixes": [
+    "lar", "ler", "ı", "i", "u", "ü", "yı", "yi", "yu", "yü",
+    "ın", "in", "un", "ün", "nın", "nin", "nun", "nün", "a", "e",
+    "ya", "ye", "da", "de", "ta", "te", "dan", "den", "tan", "ten",
+    "ım", "im", "um", "üm", "yım", "yim", "yum", "yüm", "mış", "miş",
+    "muş", "müş", "dı", "di", "du", "dü", "tı", "ti", "tu", "tü"
+  ],
+  "osym_specific_terms": [
+    "soru", "şık", "cevap", "doğru", "yanlış", "çeldirici", "sınav", "test", "değerlendirme",
+    "puan", "not", "başarı", "başarısız", "geçer", "kalır", "derece", "sıralama", "yüzdelik",
+    "TYT", "AYT", "YDT", "LGS", "KPSS", "ALES", "DGS", "YDS", "YÖKDİL"
+  ],
+  "academic_terms": [
+    "analiz", "sentez", "değerlendirme", "uygulama", "kavrama", "bilgi", "beceri", "yeterlik",
+    "kazanım", "hedef", "davranış", "performans", "ölçme", "değerlendirme", "geçerlik", "güvenirlik",
+    "norm", "standart", "kriter", "rubrik", "puanlama", "derecelendirme", "sıralama", "karşılaştırma"
+  ]
+}

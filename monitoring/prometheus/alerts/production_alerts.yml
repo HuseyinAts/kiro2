@@ -1,0 +1,404 @@
+# Production Alert Rules for YKS Hazırlık Platform
+# Prometheus AlertManager Configuration
+
+groups:
+  # ==========================================
+  # APPLICATION HEALTH ALERTS
+  # ==========================================
+  - name: application_health
+    interval: 30s
+    rules:
+      - alert: ApplicationDown
+        expr: up{job="yks-backend"} == 0
+        for: 2m
+        labels:
+          severity: critical
+          component: backend
+        annotations:
+          summary: "Backend application is DOWN"
+          description: "Backend has been down for more than 2 minutes"
+          runbook: "Check backend logs, restart service if needed"
+
+      - alert: HighErrorRate
+        expr: rate(http_requests_total{status=~"5.."}[5m]) > 0.05
+        for: 5m
+        labels:
+          severity: critical
+          component: backend
+        annotations:
+          summary: "High error rate detected"
+          description: "More than 5% of requests are failing (HTTP 5xx)"
+          runbook: "Check application logs, investigate error cause"
+
+      - alert: SlowResponseTime
+        expr: http_request_duration_seconds{quantile="0.95"} > 2
+        for: 5m
+        labels:
+          severity: warning
+          component: backend
+        annotations:
+          summary: "Slow response time"
+          description: "95th percentile response time is above 2 seconds"
+          runbook: "Check database queries, review slow endpoints"
+
+  # ==========================================
+  # DATABASE ALERTS
+  # ==========================================
+  - name: database_health
+    interval: 1m
+    rules:
+      - alert: DatabaseDown
+        expr: pg_up == 0
+        for: 1m
+        labels:
+          severity: critical
+          component: database
+        annotations:
+          summary: "PostgreSQL database is DOWN"
+          description: "Cannot connect to PostgreSQL database"
+          runbook: "Check PostgreSQL service status, verify credentials"
+
+      - alert: DatabaseConnectionPoolExhausted
+        expr: pg_connections_active / pg_connections_max > 0.9
+        for: 5m
+        labels:
+          severity: warning
+          component: database
+        annotations:
+          summary: "Database connection pool near exhaustion"
+          description: "More than 90% of connection pool is used"
+          runbook: "Increase pool size or investigate connection leaks"
+
+      - alert: SlowDatabaseQueries
+        expr: rate(pg_slow_queries_total[5m]) > 10
+        for: 5m
+        labels:
+          severity: warning
+          component: database
+        annotations:
+          summary: "High number of slow queries"
+          description: "More than 10 slow queries per second"
+          runbook: "Review query performance, add indexes if needed"
+
+      - alert: DatabaseDiskUsageHigh
+        expr: (pg_database_size_bytes / pg_disk_size_bytes) > 0.85
+        for: 10m
+        labels:
+          severity: warning
+          component: database
+        annotations:
+          summary: "Database disk usage above 85%"
+          description: "Database is using {{ $value | humanizePercentage }} of available disk"
+          runbook: "Clean up old data, increase disk size"
+
+  # ==========================================
+  # REDIS ALERTS
+  # ==========================================
+  - name: redis_health
+    interval: 1m
+    rules:
+      - alert: RedisDown
+        expr: redis_up == 0
+        for: 2m
+        labels:
+          severity: critical
+          component: cache
+        annotations:
+          summary: "Redis is DOWN"
+          description: "Cannot connect to Redis cache"
+          runbook: "Check Redis service, restart if needed"
+
+      - alert: RedisMemoryHigh
+        expr: redis_memory_used_bytes / redis_memory_max_bytes > 0.9
+        for: 5m
+        labels:
+          severity: warning
+          component: cache
+        annotations:
+          summary: "Redis memory usage above 90%"
+          description: "Redis is using {{ $value | humanizePercentage }} of max memory"
+          runbook: "Review cache eviction policy, increase memory if needed"
+
+      - alert: RedisHighConnectionCount
+        expr: redis_connected_clients > 1000
+        for: 5m
+        labels:
+          severity: warning
+          component: cache
+        annotations:
+          summary: "High Redis connection count"
+          description: "Redis has {{ $value }} active connections"
+          runbook: "Check for connection leaks, review client configuration"
+
+  # ==========================================
+  # SYSTEM RESOURCES ALERTS
+  # ==========================================
+  - name: system_resources
+    interval: 1m
+    rules:
+      - alert: HighCPUUsage
+        expr: 100 - (avg by (instance) (rate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 80
+        for: 5m
+        labels:
+          severity: warning
+          component: system
+        annotations:
+          summary: "High CPU usage"
+          description: "CPU usage is above 80% for more than 5 minutes"
+          runbook: "Check top processes, scale horizontally if needed"
+
+      - alert: HighMemoryUsage
+        expr: (1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) > 0.9
+        for: 5m
+        labels:
+          severity: critical
+          component: system
+        annotations:
+          summary: "High memory usage"
+          description: "Memory usage is above 90%"
+          runbook: "Check memory leaks, restart services, add more RAM"
+
+      - alert: DiskSpaceLow
+        expr: (node_filesystem_avail_bytes / node_filesystem_size_bytes) < 0.15
+        for: 5m
+        labels:
+          severity: warning
+          component: system
+        annotations:
+          summary: "Low disk space"
+          description: "Only {{ $value | humanizePercentage }} disk space remaining"
+          runbook: "Clean up logs, old backups, or increase disk size"
+
+      - alert: DiskSpaceCritical
+        expr: (node_filesystem_avail_bytes / node_filesystem_size_bytes) < 0.05
+        for: 2m
+        labels:
+          severity: critical
+          component: system
+        annotations:
+          summary: "CRITICAL: Disk space almost full"
+          description: "Only {{ $value | humanizePercentage }} disk space remaining"
+          runbook: "Immediate action required: clean up disk space"
+
+  # ==========================================
+  # BACKUP ALERTS
+  # ==========================================
+  - name: backup_health
+    interval: 1h
+    rules:
+      - alert: BackupFailed
+        expr: time() - backup_last_success_timestamp > 86400
+        for: 1h
+        labels:
+          severity: critical
+          component: backup
+        annotations:
+          summary: "Database backup failed"
+          description: "No successful backup in last 24 hours"
+          runbook: "Check backup logs, verify backup script"
+
+      - alert: BackupTooOld
+        expr: time() - backup_last_success_timestamp > 172800
+        for: 1h
+        labels:
+          severity: critical
+          component: backup
+        annotations:
+          summary: "Database backup too old"
+          description: "Last successful backup is older than 48 hours"
+          runbook: "Investigate backup failure, restore backup process"
+
+      - alert: BackupSizeTooSmall
+        expr: backup_file_size_bytes < 1048576
+        for: 5m
+        labels:
+          severity: warning
+          component: backup
+        annotations:
+          summary: "Backup file suspiciously small"
+          description: "Backup file is less than 1 MB"
+          runbook: "Verify backup integrity, check for partial backup"
+
+  # ==========================================
+  # SSL CERTIFICATE ALERTS
+  # ==========================================
+  - name: ssl_certificate
+    interval: 1h
+    rules:
+      - alert: SSLCertificateExpiringSoon
+        expr: ssl_certificate_expiry_days < 30
+        for: 1h
+        labels:
+          severity: warning
+          component: ssl
+        annotations:
+          summary: "SSL certificate expiring soon"
+          description: "Certificate expires in {{ $value }} days"
+          runbook: "Renew SSL certificate with certbot"
+
+      - alert: SSLCertificateExpiringSoon7Days
+        expr: ssl_certificate_expiry_days < 7
+        for: 1h
+        labels:
+          severity: critical
+          component: ssl
+        annotations:
+          summary: "SSL certificate expiring in less than 7 days"
+          description: "Certificate expires in {{ $value }} days"
+          runbook: "URGENT: Renew SSL certificate immediately"
+
+      - alert: SSLCertificateExpired
+        expr: ssl_certificate_expiry_days < 0
+        for: 5m
+        labels:
+          severity: critical
+          component: ssl
+        annotations:
+          summary: "SSL certificate EXPIRED"
+          description: "Certificate expired {{ $value }} days ago"
+          runbook: "CRITICAL: Users cannot access site, renew certificate immediately"
+
+  # ==========================================
+  # RATE LIMITING ALERTS
+  # ==========================================
+  - name: rate_limiting
+    interval: 30s
+    rules:
+      - alert: HighRateLimitHitRate
+        expr: rate(rate_limit_exceeded_total[5m]) > 100
+        for: 5m
+        labels:
+          severity: warning
+          component: security
+        annotations:
+          summary: "High rate limit violations"
+          description: "More than 100 rate limit violations per second"
+          runbook: "Investigate potential DDoS attack or misconfigured client"
+
+      - alert: PossibleDDoSAttack
+        expr: rate(http_requests_total[1m]) > 10000
+        for: 2m
+        labels:
+          severity: critical
+          component: security
+        annotations:
+          summary: "Possible DDoS attack detected"
+          description: "Extremely high request rate: {{ $value }} req/sec"
+          runbook: "Enable DDoS protection, check CloudFlare/WAF"
+
+  # ==========================================
+  # BUSINESS METRICS ALERTS
+  # ==========================================
+  - name: business_metrics
+    interval: 5m
+    rules:
+      - alert: LowUserLoginRate
+        expr: rate(user_logins_total[1h]) < 1
+        for: 2h
+        labels:
+          severity: warning
+          component: business
+        annotations:
+          summary: "Abnormally low user login rate"
+          description: "Less than 1 login per hour"
+          runbook: "Check if users can access the platform"
+
+      - alert: HighQuizFailureRate
+        expr: rate(quiz_submissions_total{status="failed"}[30m]) / rate(quiz_submissions_total[30m]) > 0.5
+        for: 30m
+        labels:
+          severity: warning
+          component: business
+        annotations:
+          summary: "High quiz failure rate"
+          description: "More than 50% of quizzes are failing"
+          runbook: "Check quiz difficulty, review question quality"
+
+      - alert: NoQuizSubmissions
+        expr: rate(quiz_submissions_total[1h]) == 0
+        for: 2h
+        labels:
+          severity: warning
+          component: business
+        annotations:
+          summary: "No quiz submissions in last 2 hours"
+          description: "Students may be experiencing issues with quiz system"
+          runbook: "Verify quiz system is working, check for errors"
+
+  # ==========================================
+  # EXTERNAL API ALERTS
+  # ==========================================
+  - name: external_apis
+    interval: 1m
+    rules:
+      - alert: YouTubeAPIQuotaExceeded
+        expr: youtube_api_quota_remaining < 1000
+        for: 5m
+        labels:
+          severity: warning
+          component: external_api
+        annotations:
+          summary: "YouTube API quota running low"
+          description: "Only {{ $value }} quota units remaining"
+          runbook: "Switch to backup API key, request quota increase"
+
+      - alert: OpenAIAPIDown
+        expr: openai_api_success_rate < 0.9
+        for: 5m
+        labels:
+          severity: warning
+          component: external_api
+        annotations:
+          summary: "OpenAI API experiencing issues"
+          description: "Success rate dropped to {{ $value | humanizePercentage }}"
+          runbook: "Check OpenAI status page, implement fallback mechanism"
+
+      - alert: EBAAPIDown
+        expr: eba_api_success_rate < 0.9
+        for: 10m
+        labels:
+          severity: warning
+          component: external_api
+        annotations:
+          summary: "EBA API experiencing issues"
+          description: "Success rate dropped to {{ $value | humanizePercentage }}"
+          runbook: "Check EBA service status, use cached content"
+
+  # ==========================================
+  # MONITORING SYSTEM HEALTH
+  # ==========================================
+  - name: monitoring_health
+    interval: 1m
+    rules:
+      - alert: PrometheusDown
+        expr: up{job="prometheus"} == 0
+        for: 5m
+        labels:
+          severity: critical
+          component: monitoring
+        annotations:
+          summary: "Prometheus is DOWN"
+          description: "Prometheus monitoring system is not responding"
+          runbook: "Restart Prometheus service immediately"
+
+      - alert: AlertManagerDown
+        expr: up{job="alertmanager"} == 0
+        for: 5m
+        labels:
+          severity: critical
+          component: monitoring
+        annotations:
+          summary: "AlertManager is DOWN"
+          description: "Cannot send alerts - AlertManager is down"
+          runbook: "Restart AlertManager, check configuration"
+
+      - alert: TooManyAlerts
+        expr: count(ALERTS{alertstate="firing"}) > 50
+        for: 10m
+        labels:
+          severity: warning
+          component: monitoring
+        annotations:
+          summary: "Too many active alerts"
+          description: "{{ $value }} alerts are currently firing"
+          runbook: "Review alerts, investigate system-wide issues"

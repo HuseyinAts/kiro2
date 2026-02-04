@@ -1,0 +1,806 @@
+{
+  "dashboard": {
+    "title": "Learning Path Monitoring Dashboard",
+    "tags": ["learning-path", "teknofest", "p1-monitoring"],
+    "timezone": "browser",
+    "schemaVersion": 16,
+    "version": 1,
+    "refresh": "30s",
+    "time": {
+      "from": "now-1h",
+      "to": "now"
+    },
+    "annotations": {
+      "list": [
+        {
+          "datasource": "Prometheus",
+          "enable": true,
+          "expr": "ALERTS{alertname=~\".*LearningPath.*\"}",
+          "iconColor": "red",
+          "name": "Learning Path Alerts",
+          "tagKeys": "alertname,severity",
+          "textFormat": "{{alertname}}: {{summary}}",
+          "titleFormat": "Alert"
+        }
+      ]
+    },
+    "panels": [
+      {
+        "id": 1,
+        "title": "📊 Overview - Key Metrics",
+        "type": "row",
+        "gridPos": {"x": 0, "y": 0, "w": 24, "h": 1},
+        "collapsed": false
+      },
+      {
+        "id": 2,
+        "title": "Path Creation Success Rate",
+        "type": "stat",
+        "gridPos": {"x": 0, "y": 1, "w": 6, "h": 4},
+        "targets": [
+          {
+            "expr": "sum(rate(learning_path_creation_total{status=\"success\"}[5m])) / sum(rate(learning_path_creation_total[5m])) * 100",
+            "legendFormat": "Success Rate",
+            "refId": "A"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "percent",
+            "decimals": 1,
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {"value": null, "color": "red"},
+                {"value": 80, "color": "orange"},
+                {"value": 95, "color": "green"}
+              ]
+            }
+          }
+        },
+        "options": {
+          "graphMode": "area",
+          "colorMode": "value",
+          "orientation": "auto",
+          "textMode": "value_and_name"
+        }
+      },
+      {
+        "id": 3,
+        "title": "Active Learning Paths",
+        "type": "stat",
+        "gridPos": {"x": 6, "y": 1, "w": 6, "h": 4},
+        "targets": [
+          {
+            "expr": "active_learning_paths",
+            "legendFormat": "Active Paths",
+            "refId": "A"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "short",
+            "decimals": 0,
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {"value": null, "color": "green"},
+                {"value": 5000, "color": "yellow"},
+                {"value": 10000, "color": "red"}
+              ]
+            }
+          }
+        },
+        "options": {
+          "graphMode": "area",
+          "colorMode": "background",
+          "orientation": "auto"
+        }
+      },
+      {
+        "id": 4,
+        "title": "Average Student Progress",
+        "type": "gauge",
+        "gridPos": {"x": 12, "y": 1, "w": 6, "h": 4},
+        "targets": [
+          {
+            "expr": "avg_student_progress_percentage",
+            "legendFormat": "Progress",
+            "refId": "A"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "percent",
+            "min": 0,
+            "max": 100,
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {"value": 0, "color": "red"},
+                {"value": 20, "color": "orange"},
+                {"value": 40, "color": "yellow"},
+                {"value": 60, "color": "green"}
+              ]
+            }
+          }
+        },
+        "options": {
+          "showThresholdLabels": true,
+          "showThresholdMarkers": true
+        }
+      },
+      {
+        "id": 5,
+        "title": "Quiz Pass Rate",
+        "type": "stat",
+        "gridPos": {"x": 18, "y": 1, "w": 6, "h": 4},
+        "targets": [
+          {
+            "expr": "sum(rate(quiz_submissions_total{passed=\"true\"}[5m])) / sum(rate(quiz_submissions_total[5m])) * 100",
+            "legendFormat": "Pass Rate",
+            "refId": "A"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "percent",
+            "decimals": 1,
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {"value": null, "color": "red"},
+                {"value": 50, "color": "orange"},
+                {"value": 70, "color": "green"}
+              ]
+            }
+          }
+        },
+        "options": {
+          "graphMode": "area",
+          "colorMode": "value"
+        }
+      },
+      {
+        "id": 6,
+        "title": "🚀 Performance Metrics",
+        "type": "row",
+        "gridPos": {"x": 0, "y": 5, "w": 24, "h": 1},
+        "collapsed": false
+      },
+      {
+        "id": 7,
+        "title": "Path Creation Duration (P50, P95, P99)",
+        "type": "graph",
+        "gridPos": {"x": 0, "y": 6, "w": 12, "h": 8},
+        "targets": [
+          {
+            "expr": "histogram_quantile(0.50, sum(rate(learning_path_creation_duration_seconds_bucket[5m])) by (le))",
+            "legendFormat": "P50",
+            "refId": "A"
+          },
+          {
+            "expr": "histogram_quantile(0.95, sum(rate(learning_path_creation_duration_seconds_bucket[5m])) by (le))",
+            "legendFormat": "P95",
+            "refId": "B"
+          },
+          {
+            "expr": "histogram_quantile(0.99, sum(rate(learning_path_creation_duration_seconds_bucket[5m])) by (le))",
+            "legendFormat": "P99",
+            "refId": "C"
+          }
+        ],
+        "yaxes": [
+          {"format": "s", "label": "Duration"},
+          {"format": "short"}
+        ],
+        "legend": {"show": true, "alignAsTable": true, "avg": true, "current": true, "max": true},
+        "tooltip": {"shared": true, "sort": 0, "value_type": "individual"},
+        "alert": {
+          "conditions": [
+            {
+              "evaluator": {"params": [30], "type": "gt"},
+              "operator": {"type": "and"},
+              "query": {"params": ["B", "5m", "now"]},
+              "reducer": {"params": [], "type": "avg"},
+              "type": "query"
+            }
+          ],
+          "name": "Path Creation P95 > 30s"
+        }
+      },
+      {
+        "id": 8,
+        "title": "Resource Search Duration (P50, P95)",
+        "type": "graph",
+        "gridPos": {"x": 12, "y": 6, "w": 12, "h": 8},
+        "targets": [
+          {
+            "expr": "histogram_quantile(0.50, sum(rate(resource_search_duration_seconds_bucket[5m])) by (le))",
+            "legendFormat": "P50",
+            "refId": "A"
+          },
+          {
+            "expr": "histogram_quantile(0.95, sum(rate(resource_search_duration_seconds_bucket[5m])) by (le))",
+            "legendFormat": "P95",
+            "refId": "B"
+          }
+        ],
+        "yaxes": [
+          {"format": "s", "label": "Duration"},
+          {"format": "short"}
+        ],
+        "legend": {"show": true, "alignAsTable": true, "avg": true, "current": true},
+        "alert": {
+          "conditions": [
+            {
+              "evaluator": {"params": [5], "type": "gt"},
+              "operator": {"type": "and"},
+              "query": {"params": ["B", "5m", "now"]},
+              "reducer": {"params": [], "type": "avg"},
+              "type": "query"
+            }
+          ],
+          "name": "Resource Search P95 > 5s"
+        }
+      },
+      {
+        "id": 9,
+        "title": "📈 API Request Metrics",
+        "type": "row",
+        "gridPos": {"x": 0, "y": 14, "w": 24, "h": 1},
+        "collapsed": false
+      },
+      {
+        "id": 10,
+        "title": "API Request Rate by Endpoint",
+        "type": "graph",
+        "gridPos": {"x": 0, "y": 15, "w": 12, "h": 8},
+        "targets": [
+          {
+            "expr": "sum(rate(learning_path_api_requests_total[5m])) by (endpoint)",
+            "legendFormat": "{{endpoint}}",
+            "refId": "A"
+          }
+        ],
+        "yaxes": [
+          {"format": "reqps", "label": "Requests/sec"},
+          {"format": "short"}
+        ],
+        "legend": {"show": true, "alignAsTable": true, "avg": true, "current": true, "max": true},
+        "tooltip": {"shared": true, "sort": 2, "value_type": "individual"}
+      },
+      {
+        "id": 11,
+        "title": "API Error Rate by Status",
+        "type": "graph",
+        "gridPos": {"x": 12, "y": 15, "w": 12, "h": 8},
+        "targets": [
+          {
+            "expr": "sum(rate(learning_path_api_requests_total{status=~\"4..\"}[5m])) by (status)",
+            "legendFormat": "4xx - {{status}}",
+            "refId": "A"
+          },
+          {
+            "expr": "sum(rate(learning_path_api_requests_total{status=~\"5..\"}[5m])) by (status)",
+            "legendFormat": "5xx - {{status}}",
+            "refId": "B"
+          }
+        ],
+        "yaxes": [
+          {"format": "reqps", "label": "Errors/sec"},
+          {"format": "short"}
+        ],
+        "seriesOverrides": [
+          {"alias": "/5xx.*/", "color": "red"},
+          {"alias": "/4xx.*/", "color": "orange"}
+        ],
+        "legend": {"show": true, "alignAsTable": true, "avg": true, "current": true}
+      },
+      {
+        "id": 12,
+        "title": "💾 Cache Performance",
+        "type": "row",
+        "gridPos": {"x": 0, "y": 23, "w": 24, "h": 1},
+        "collapsed": false
+      },
+      {
+        "id": 13,
+        "title": "Overall Cache Hit Rate",
+        "type": "gauge",
+        "gridPos": {"x": 0, "y": 24, "w": 8, "h": 6},
+        "targets": [
+          {
+            "expr": "(sum(increase(cache_hits_total[5m])) / (sum(increase(cache_hits_total[5m])) + sum(increase(cache_misses_total[5m])))) * 100",
+            "legendFormat": "Hit Rate",
+            "refId": "A"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "percent",
+            "min": 0,
+            "max": 100,
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {"value": 0, "color": "red"},
+                {"value": 60, "color": "orange"},
+                {"value": 80, "color": "green"}
+              ]
+            }
+          }
+        },
+        "options": {
+          "showThresholdLabels": true,
+          "showThresholdMarkers": true
+        }
+      },
+      {
+        "id": 14,
+        "title": "Cache Hits vs Misses",
+        "type": "graph",
+        "gridPos": {"x": 8, "y": 24, "w": 8, "h": 6},
+        "targets": [
+          {
+            "expr": "sum(rate(cache_hits_total[5m]))",
+            "legendFormat": "Hits",
+            "refId": "A"
+          },
+          {
+            "expr": "sum(rate(cache_misses_total[5m]))",
+            "legendFormat": "Misses",
+            "refId": "B"
+          }
+        ],
+        "yaxes": [
+          {"format": "ops", "label": "Operations/sec"},
+          {"format": "short"}
+        ],
+        "seriesOverrides": [
+          {"alias": "Hits", "color": "green"},
+          {"alias": "Misses", "color": "orange"}
+        ]
+      },
+      {
+        "id": 15,
+        "title": "L1 Cache Utilization",
+        "type": "stat",
+        "gridPos": {"x": 16, "y": 24, "w": 8, "h": 6},
+        "targets": [
+          {
+            "expr": "l1_cache_size / l1_cache_max_size * 100",
+            "legendFormat": "Utilization",
+            "refId": "A"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "percent",
+            "decimals": 1,
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {"value": null, "color": "green"},
+                {"value": 80, "color": "yellow"},
+                {"value": 95, "color": "red"}
+              ]
+            }
+          }
+        }
+      },
+      {
+        "id": 16,
+        "title": "🎓 Student Engagement",
+        "type": "row",
+        "gridPos": {"x": 0, "y": 30, "w": 24, "h": 1},
+        "collapsed": false
+      },
+      {
+        "id": 17,
+        "title": "Quiz Submissions Over Time",
+        "type": "graph",
+        "gridPos": {"x": 0, "y": 31, "w": 12, "h": 8},
+        "targets": [
+          {
+            "expr": "sum(rate(quiz_submissions_total{passed=\"true\"}[5m]))",
+            "legendFormat": "Passed",
+            "refId": "A"
+          },
+          {
+            "expr": "sum(rate(quiz_submissions_total{passed=\"false\"}[5m]))",
+            "legendFormat": "Failed",
+            "refId": "B"
+          }
+        ],
+        "yaxes": [
+          {"format": "ops", "label": "Submissions/sec"},
+          {"format": "short"}
+        ],
+        "seriesOverrides": [
+          {"alias": "Passed", "color": "green"},
+          {"alias": "Failed", "color": "red"}
+        ],
+        "stack": true
+      },
+      {
+        "id": 18,
+        "title": "Quiz Score Distribution",
+        "type": "heatmap",
+        "gridPos": {"x": 12, "y": 31, "w": 12, "h": 8},
+        "targets": [
+          {
+            "expr": "sum(rate(quiz_scores_bucket[5m])) by (le)",
+            "format": "heatmap",
+            "legendFormat": "{{le}}",
+            "refId": "A"
+          }
+        ],
+        "dataFormat": "tsbuckets",
+        "heatmap": {},
+        "yAxis": {
+          "format": "short",
+          "label": "Score"
+        },
+        "xAxis": {
+          "show": true
+        },
+        "color": {
+          "mode": "spectrum",
+          "colorScheme": "interpolateGnYlRd",
+          "exponent": 0.5
+        }
+      },
+      {
+        "id": 19,
+        "title": "🔄 Resource Search Metrics",
+        "type": "row",
+        "gridPos": {"x": 0, "y": 39, "w": 24, "h": 1},
+        "collapsed": false
+      },
+      {
+        "id": 20,
+        "title": "Search Results Success Rate",
+        "type": "stat",
+        "gridPos": {"x": 0, "y": 40, "w": 8, "h": 4},
+        "targets": [
+          {
+            "expr": "sum(rate(resource_search_results_total{has_results=\"yes\"}[5m])) / sum(rate(resource_search_results_total[5m])) * 100",
+            "legendFormat": "Success Rate",
+            "refId": "A"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "percent",
+            "decimals": 1,
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {"value": null, "color": "red"},
+                {"value": 70, "color": "orange"},
+                {"value": 90, "color": "green"}
+              ]
+            }
+          }
+        }
+      },
+      {
+        "id": 21,
+        "title": "Resource Searches by Subject",
+        "type": "piechart",
+        "gridPos": {"x": 8, "y": 40, "w": 8, "h": 8},
+        "targets": [
+          {
+            "expr": "sum(increase(resource_search_results_total[1h])) by (subject)",
+            "legendFormat": "{{subject}}",
+            "refId": "A"
+          }
+        ],
+        "options": {
+          "legend": {
+            "displayMode": "table",
+            "placement": "right",
+            "values": ["value", "percent"]
+          },
+          "pieType": "pie",
+          "tooltip": {
+            "mode": "single"
+          }
+        }
+      },
+      {
+        "id": 22,
+        "title": "Fallback Video Usage",
+        "type": "graph",
+        "gridPos": {"x": 16, "y": 40, "w": 8, "h": 8},
+        "targets": [
+          {
+            "expr": "sum(rate(fallback_video_requests_total{found=\"true\"}[5m]))",
+            "legendFormat": "Fallback Used",
+            "refId": "A"
+          },
+          {
+            "expr": "sum(rate(fallback_video_requests_total{found=\"false\"}[5m]))",
+            "legendFormat": "Fallback Not Found",
+            "refId": "B"
+          }
+        ],
+        "yaxes": [
+          {"format": "ops", "label": "Requests/sec"},
+          {"format": "short"}
+        ],
+        "seriesOverrides": [
+          {"alias": "Fallback Used", "color": "yellow"},
+          {"alias": "Fallback Not Found", "color": "red"}
+        ]
+      },
+      {
+        "id": 23,
+        "title": "🤖 AI Adaptation",
+        "type": "row",
+        "gridPos": {"x": 0, "y": 48, "w": 24, "h": 1},
+        "collapsed": false
+      },
+      {
+        "id": 24,
+        "title": "Learning Path Adaptations by Type",
+        "type": "graph",
+        "gridPos": {"x": 0, "y": 49, "w": 12, "h": 8},
+        "targets": [
+          {
+            "expr": "sum(rate(learning_path_adaptations_total[5m])) by (adaptation_type)",
+            "legendFormat": "{{adaptation_type}}",
+            "refId": "A"
+          }
+        ],
+        "yaxes": [
+          {"format": "ops", "label": "Adaptations/sec"},
+          {"format": "short"}
+        ],
+        "legend": {"show": true, "alignAsTable": true, "avg": true, "current": true}
+      },
+      {
+        "id": 25,
+        "title": "Profile Operations",
+        "type": "graph",
+        "gridPos": {"x": 12, "y": 49, "w": 12, "h": 8},
+        "targets": [
+          {
+            "expr": "sum(rate(student_profile_operations_total{status=\"success\"}[5m])) by (operation)",
+            "legendFormat": "{{operation}} (success)",
+            "refId": "A"
+          },
+          {
+            "expr": "sum(rate(student_profile_operations_total{status=\"failure\"}[5m])) by (operation)",
+            "legendFormat": "{{operation}} (failure)",
+            "refId": "B"
+          }
+        ],
+        "yaxes": [
+          {"format": "ops", "label": "Operations/sec"},
+          {"format": "short"}
+        ],
+        "seriesOverrides": [
+          {"alias": "/.*(success)/", "color": "green"},
+          {"alias": "/.*(failure)/", "color": "red"}
+        ]
+      },
+      {
+        "id": 26,
+        "title": "🔔 Circuit Breaker Status",
+        "type": "row",
+        "gridPos": {"x": 0, "y": 57, "w": 24, "h": 1},
+        "collapsed": false
+      },
+      {
+        "id": 27,
+        "title": "Circuit Breaker States",
+        "type": "stat",
+        "gridPos": {"x": 0, "y": 58, "w": 12, "h": 4},
+        "targets": [
+          {
+            "expr": "circuit_breaker_state{name=\"ai_agent\"}",
+            "legendFormat": "AI Agent",
+            "refId": "A"
+          },
+          {
+            "expr": "circuit_breaker_state{name=\"resource_search\"}",
+            "legendFormat": "Resource Search",
+            "refId": "B"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "mappings": [
+              {"type": "value", "value": 0, "text": "CLOSED"},
+              {"type": "value", "value": 1, "text": "HALF_OPEN"},
+              {"type": "value", "value": 2, "text": "OPEN"}
+            ],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {"value": 0, "color": "green"},
+                {"value": 1, "color": "yellow"},
+                {"value": 2, "color": "red"}
+              ]
+            }
+          }
+        },
+        "options": {
+          "colorMode": "background",
+          "graphMode": "none",
+          "orientation": "horizontal"
+        }
+      },
+      {
+        "id": 28,
+        "title": "Circuit Breaker Failure Counts",
+        "type": "graph",
+        "gridPos": {"x": 12, "y": 58, "w": 12, "h": 8},
+        "targets": [
+          {
+            "expr": "circuit_breaker_failure_count{name=\"ai_agent\"}",
+            "legendFormat": "AI Agent Failures",
+            "refId": "A"
+          },
+          {
+            "expr": "circuit_breaker_failure_count{name=\"resource_search\"}",
+            "legendFormat": "Resource Search Failures",
+            "refId": "B"
+          }
+        ],
+        "yaxes": [
+          {"format": "short", "label": "Failures"},
+          {"format": "short"}
+        ],
+        "alert": {
+          "conditions": [
+            {
+              "evaluator": {"params": [5], "type": "gt"},
+              "operator": {"type": "or"},
+              "query": {"params": ["A", "5m", "now"]},
+              "reducer": {"params": [], "type": "last"},
+              "type": "query"
+            }
+          ],
+          "name": "Circuit Breaker Failures > 5"
+        }
+      },
+      {
+        "id": 29,
+        "title": "📊 System Health",
+        "type": "row",
+        "gridPos": {"x": 0, "y": 66, "w": 24, "h": 1},
+        "collapsed": false
+      },
+      {
+        "id": 30,
+        "title": "Topic Completion Rate",
+        "type": "stat",
+        "gridPos": {"x": 0, "y": 67, "w": 8, "h": 4},
+        "targets": [
+          {
+            "expr": "sum(rate(topic_completion_updates_total{status=\"success\"}[5m])) / sum(rate(topic_completion_updates_total[5m])) * 100",
+            "legendFormat": "Success Rate",
+            "refId": "A"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "percent",
+            "decimals": 1,
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {"value": null, "color": "red"},
+                {"value": 90, "color": "orange"},
+                {"value": 99, "color": "green"}
+              ]
+            }
+          }
+        }
+      },
+      {
+        "id": 31,
+        "title": "Path Creation by Subject",
+        "type": "bargauge",
+        "gridPos": {"x": 8, "y": 67, "w": 8, "h": 8},
+        "targets": [
+          {
+            "expr": "sum(increase(learning_path_creation_total{status=\"success\"}[1h])) by (subject)",
+            "legendFormat": "{{subject}}",
+            "refId": "A"
+          }
+        ],
+        "options": {
+          "orientation": "horizontal",
+          "displayMode": "gradient",
+          "showUnfilled": true
+        },
+        "fieldConfig": {
+          "defaults": {
+            "unit": "short",
+            "color": {
+              "mode": "palette-classic"
+            }
+          }
+        }
+      },
+      {
+        "id": 32,
+        "title": "Overall System Health Score",
+        "type": "gauge",
+        "gridPos": {"x": 16, "y": 67, "w": 8, "h": 8},
+        "targets": [
+          {
+            "expr": "(\n  (sum(rate(learning_path_creation_total{status=\"success\"}[5m])) / sum(rate(learning_path_creation_total[5m])) * 30) +\n  (min(active_learning_paths < 10000) * 20) +\n  ((sum(rate(cache_hits_total[5m])) / (sum(rate(cache_hits_total[5m])) + sum(rate(cache_misses_total[5m])))) * 25) +\n  (sum(rate(quiz_submissions_total{passed=\"true\"}[5m])) / sum(rate(quiz_submissions_total[5m])) * 15) +\n  ((1 - (sum(rate(learning_path_api_requests_total{status=~\"5..\"}[5m])) / sum(rate(learning_path_api_requests_total[5m])))) * 10)\n)",
+            "legendFormat": "Health Score",
+            "refId": "A"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "percent",
+            "min": 0,
+            "max": 100,
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {"value": 0, "color": "red"},
+                {"value": 50, "color": "orange"},
+                {"value": 70, "color": "yellow"},
+                {"value": 85, "color": "green"}
+              ]
+            }
+          }
+        },
+        "options": {
+          "showThresholdLabels": true,
+          "showThresholdMarkers": true
+        }
+      }
+    ],
+    "templating": {
+      "list": [
+        {
+          "name": "datasource",
+          "type": "datasource",
+          "query": "prometheus",
+          "current": {
+            "text": "Prometheus",
+            "value": "Prometheus"
+          }
+        },
+        {
+          "name": "subject",
+          "type": "query",
+          "datasource": "Prometheus",
+          "query": "label_values(learning_path_creation_total, subject)",
+          "current": {
+            "text": "All",
+            "value": "$__all"
+          },
+          "includeAll": true,
+          "multi": false,
+          "refresh": 1
+        },
+        {
+          "name": "student_id",
+          "type": "query",
+          "datasource": "Prometheus",
+          "query": "label_values(learning_path_creation_total, student_id)",
+          "current": {
+            "text": "All",
+            "value": "$__all"
+          },
+          "includeAll": true,
+          "multi": false,
+          "refresh": 2,
+          "hide": 2
+        }
+      ]
+    }
+  },
+  "overwrite": true
+}

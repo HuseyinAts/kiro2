@@ -1,0 +1,1 @@
+{"success":false,"status":"error","message":"Sunucu hatası oluştu","errors":[{"code":"INTERNAL_SERVER_ERROR","message":"Sunucu hatası oluştu"}],"meta":{"timestamp":"2025-11-05T04:53:26.130044","request_id":"9765efe5-ec4d-4c9b-82f3-37fb4931f1a6","api_version":"v1"}}

@@ -1,0 +1,146 @@
+.score-calculator {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.calculator-form {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 24px;
+  margin-bottom: 20px;
+}
+
+.form-group {
+  margin-bottom: 16px;
+}
+
+.form-group label {
+  display: block;
+  font-weight: 500;
+  margin-bottom: 6px;
+  color: #374151;
+}
+
+.form-group select,
+.form-group input {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.scores-section {
+  margin: 24px 0;
+  padding: 20px;
+  background: #f9fafb;
+  border-radius: 8px;
+}
+
+.scores-section h3 {
+  margin: 0 0 16px 0;
+  color: #1f2937;
+}
+
+.score-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 12px;
+}
+
+.score-input label {
+  display: block;
+  font-size: 14px;
+  color: #6b7280;
+  margin-bottom: 4px;
+}
+
+.bonus-section {
+  margin-top: 24px;
+}
+
+.bonus-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+}
+
+.btn-calculate {
+  width: 100%;
+  padding: 12px 24px;
+  background: #3b82f6;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 24px;
+}
+
+.btn-calculate:hover {
+  background: #2563eb;
+}
+
+.btn-calculate:disabled {
+  background: #9ca3af;
+  cursor: not-allowed;
+}
+
+.result-panel {
+  background: #fff;
+  border: 2px solid #10b981;
+  border-radius: 8px;
+  padding: 24px;
+}
+
+.result-summary {
+  margin-top: 16px;
+}
+
+.result-main {
+  text-align: center;
+  padding: 24px;
+  background: #f0fdf4;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+.result-label {
+  font-size: 14px;
+  color: #6b7280;
+  margin-bottom: 8px;
+}
+
+.result-value.total {
+  font-size: 48px;
+  font-weight: 700;
+  color: #10b981;
+}
+
+.result-breakdown {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px;
+}
+
+.result-item {
+  padding: 12px;
+  background: #f9fafb;
+  border-radius: 6px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.result-item span {
+  color: #6b7280;
+  font-size: 14px;
+}
+
+.result-item strong {
+  color: #1f2937;
+  font-size: 18px;
+}

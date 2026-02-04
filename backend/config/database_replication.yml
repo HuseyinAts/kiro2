@@ -1,0 +1,224 @@
+# Database Replication Configuration - Task 52.2
+# PostgreSQL Master-Slave Replication Setup
+
+# ==================== MASTER DATABASE ====================
+master:
+  host: ${DB_MASTER_HOST:-localhost}
+  port: ${DB_MASTER_PORT:-5432}
+  database: ${DB_NAME:-kiro_education}
+  user: ${DB_MASTER_USER:-postgres}
+  password: ${DB_MASTER_PASSWORD}
+
+  # Connection pool settings
+  pool:
+    min_size: 10
+    max_size: 50
+    max_overflow: 20
+    pool_timeout: 30
+    pool_recycle: 3600  # 1 hour
+    pool_pre_ping: true  # Test connections before using
+
+  # Performance settings
+  performance:
+    statement_timeout: 30000  # 30 seconds
+    idle_in_transaction_session_timeout: 60000  # 60 seconds
+
+  # Replication settings
+  replication:
+    enabled: true
+    wal_level: replica  # Write-Ahead Logging level
+    max_wal_senders: 10
+    wal_keep_segments: 64  # Keep 64 WAL segments (1GB each)
+    synchronous_commit: on
+    synchronous_standby_names: 'replica1,replica2'
+
+
+# ==================== READ REPLICAS ====================
+replicas:
+  # Replica 1 - Primary read replica
+  - name: replica1
+    host: ${DB_REPLICA1_HOST:-localhost}
+    port: ${DB_REPLICA1_PORT:-5433}
+    database: ${DB_NAME:-kiro_education}
+    user: ${DB_REPLICA1_USER:-postgres}
+    password: ${DB_REPLICA1_PASSWORD}
+    priority: 1  # Higher number = higher priority
+
+    # Connection pool settings (smaller than master)
+    pool:
+      min_size: 5
+      max_size: 30
+      max_overflow: 10
+      pool_timeout: 20
+      pool_recycle: 3600
+      pool_pre_ping: true
+
+    # Read-only settings
+    settings:
+      default_transaction_read_only: on
+      hot_standby: on
+      max_standby_streaming_delay: 30s
+
+    # Health check
+    health_check:
+      enabled: true
+      interval_seconds: 30
+      max_lag_bytes: 10485760  # 10MB max replication lag
+
+  # Replica 2 - Secondary read replica
+  - name: replica2
+    host: ${DB_REPLICA2_HOST:-localhost}
+    port: ${DB_REPLICA2_PORT:-5434}
+    database: ${DB_NAME:-kiro_education}
+    user: ${DB_REPLICA2_USER:-postgres}
+    password: ${DB_REPLICA2_PASSWORD}
+    priority: 2
+
+    pool:
+      min_size: 5
+      max_size: 30
+      max_overflow: 10
+      pool_timeout: 20
+      pool_recycle: 3600
+      pool_pre_ping: true
+
+    settings:
+      default_transaction_read_only: on
+      hot_standby: on
+      max_standby_streaming_delay: 30s
+
+    health_check:
+      enabled: true
+      interval_seconds: 30
+      max_lag_bytes: 10485760
+
+
+# ==================== LOAD BALANCING ====================
+load_balancing:
+  strategy: round_robin  # Options: round_robin, least_connections, weighted
+
+  # Read query routing
+  read_routing:
+    enabled: true
+    use_replicas_for_reads: true
+    master_read_percentage: 10  # Send 10% of reads to master
+
+  # Failover configuration
+  failover:
+    enabled: true
+    auto_promote_replica: true
+    promotion_priority_order:
+      - replica1
+      - replica2
+    health_check_interval: 10
+    max_failover_attempts: 3
+    failover_timeout: 60  # seconds
+
+
+# ==================== MONITORING ====================
+monitoring:
+  # Replication lag monitoring
+  replication_lag:
+    enabled: true
+    alert_threshold_seconds: 5
+    critical_threshold_seconds: 30
+    check_interval: 10
+
+  # Replica health monitoring
+  replica_health:
+    enabled: true
+    check_interval: 30
+    unhealthy_threshold: 3  # Mark unhealthy after 3 failed checks
+
+  # Connection pool monitoring
+  pool_monitoring:
+    enabled: true
+    alert_threshold_percent: 80  # Alert when 80% of pool is in use
+
+  # Metrics export
+  metrics:
+    enabled: true
+    export_to_prometheus: true
+    port: 9187
+
+
+# ==================== BACKUP ====================
+# Backup configuration (works with replication)
+backup:
+  # Take backups from replica to reduce master load
+  source: replica1
+
+  # WAL archiving for Point-in-Time Recovery (PITR)
+  wal_archive:
+    enabled: true
+    location: ${WAL_ARCHIVE_PATH:-/var/lib/postgresql/wal_archive}
+    compression: gzip
+    retention_days: 7
+
+
+# ==================== SECURITY ====================
+security:
+  # SSL for replication connections
+  ssl:
+    enabled: true
+    mode: require  # Options: disable, allow, prefer, require, verify-ca, verify-full
+    cert_file: /path/to/server.crt
+    key_file: /path/to/server.key
+    ca_file: /path/to/ca.crt
+
+  # Replication user permissions
+  replication_user:
+    username: ${REPLICATION_USER:-replicator}
+    password: ${REPLICATION_PASSWORD}
+    allowed_ips:
+      - ${DB_REPLICA1_IP}/32
+      - ${DB_REPLICA2_IP}/32
+
+
+# ==================== ADVANCED SETTINGS ====================
+advanced:
+  # Synchronous vs Asynchronous replication
+  replication_mode: synchronous  # Options: synchronous, asynchronous
+
+  # Cascading replication (replica can be master for other replicas)
+  cascading:
+    enabled: false
+
+  # Logical replication (for selective data)
+  logical_replication:
+    enabled: false
+
+  # Automatic vacuum on replicas
+  autovacuum:
+    enabled: true
+    naptime: 60  # seconds
+
+
+# ==================== ENVIRONMENT-SPECIFIC OVERRIDES ====================
+environments:
+  development:
+    master:
+      pool:
+        min_size: 2
+        max_size: 10
+    replicas: []  # No replicas in development
+
+  staging:
+    master:
+      pool:
+        min_size: 5
+        max_size: 20
+    replicas:
+      - name: replica1
+        host: staging-replica1.internal
+
+  production:
+    master:
+      pool:
+        min_size: 10
+        max_size: 50
+    replicas:
+      - name: replica1
+        host: prod-replica1.internal
+      - name: replica2
+        host: prod-replica2.internal

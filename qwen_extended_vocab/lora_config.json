@@ -1,0 +1,23 @@
+{
+  "task_type": "CAUSAL_LM",
+  "inference_mode": false,
+  "r": 16,
+  "lora_alpha": 32,
+  "lora_dropout": 0.05,
+  "target_modules": [
+    "q_proj",
+    "k_proj",
+    "v_proj",
+    "o_proj",
+    "gate_proj",
+    "up_proj",
+    "down_proj",
+    "embed_tokens",
+    "lm_head"
+  ],
+  "bias": "none",
+  "modules_to_save": [
+    "embed_tokens",
+    "lm_head"
+  ]
+}

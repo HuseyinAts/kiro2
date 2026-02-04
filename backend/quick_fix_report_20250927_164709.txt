@@ -1,0 +1,114 @@
+======================================================================
+QUICK FIX GENERATOR REPORT
+======================================================================
+Generated: 2025-09-27T16:47:09.933372
+
+[OK] Quick fix generation completed
+[INFO] Security issues found: 92
+[INFO] Deployment issues found: 0
+
+[OK] Fixes applied:
+  - Created nginx.conf
+
+[SECURE] Security fixes:
+  - Logged security issue: Potential secret exposure: TOKEN
+  - Logged security issue: Potential secret exposure: SECRET_KEY
+  - Logged security issue: Potential secret exposure: PASSWORD
+  - Logged security issue: Potential secret exposure: TOKEN
+  - Logged security issue: Potential secret exposure: TOKEN
+  - Logged security issue: Potential secret exposure: SECRET_KEY
+  - Logged security issue: Potential secret exposure: PASSWORD
+  - Logged security issue: Potential secret exposure: SECRET_KEY
+  - Logged security issue: Potential secret exposure: PASSWORD
+  - Logged security issue: Potential secret exposure: SECRET_KEY
+  - Logged security issue: Potential secret exposure: API_KEY
+  - Logged security issue: Potential secret exposure: PASSWORD
+  - Logged security issue: Potential secret exposure: TOKEN
+  - Logged security issue: Potential secret exposure: PRIVATE_KEY
+  - Logged security issue: Potential secret exposure: SECRET_KEY
+  - Logged security issue: Potential secret exposure: PASSWORD
+  - Logged security issue: Potential secret exposure: PASSWORD
+  - Logged security issue: Potential secret exposure: SECRET_KEY
+  - Logged security issue: Potential secret exposure: API_KEY
+  - Logged security issue: Potential secret exposure: TOKEN
+  - Logged security issue: Potential secret exposure: API_KEY
+  - Logged security issue: Potential secret exposure: TOKEN
+  - Logged security issue: Potential secret exposure: TOKEN
+  - Logged security issue: Potential secret exposure: TOKEN
+  - Logged security issue: Potential secret exposure: API_KEY
+  - Logged security issue: Potential secret exposure: TOKEN
+  - Logged security issue: Potential secret exposure: API_KEY
+  - Logged security issue: Potential secret exposure: TOKEN
+  - Logged security issue: Potential secret exposure: SECRET_KEY
+  - Logged security issue: Potential secret exposure: API_KEY
+  - Logged security issue: Potential secret exposure: TOKEN
+  - Logged security issue: Potential secret exposure: PASSWORD
+  - Logged security issue: Potential secret exposure: API_KEY
+  - Logged security issue: Potential secret exposure: TOKEN
+  - Logged security issue: Potential secret exposure: PASSWORD
+  - Logged security issue: Potential secret exposure: SECRET_KEY
+  - Logged security issue: Potential secret exposure: API_KEY
+  - Logged security issue: Potential secret exposure: PASSWORD
+  - Logged security issue: Potential secret exposure: TOKEN
+  - Logged security issue: Potential secret exposure: SECRET_KEY
+  - Logged security issue: Potential secret exposure: PASSWORD
+  - Logged security issue: Potential secret exposure: API_KEY
+  - Logged security issue: Potential secret exposure: PASSWORD
+  - Logged security issue: Potential secret exposure: TOKEN
+  - Logged security issue: Potential secret exposure: API_KEY
+  - Logged security issue: Potential secret exposure: TOKEN
+  - Logged security issue: Potential secret exposure: API_KEY
+  - Logged security issue: Potential secret exposure: TOKEN
+  - Logged security issue: Potential secret exposure: API_KEY
+  - Logged security issue: Potential secret exposure: TOKEN
+  - Logged security issue: Potential secret exposure: PASSWORD
+  - Logged security issue: Potential secret exposure: SECRET_KEY
+  - Logged security issue: Potential secret exposure: TOKEN
+  - Logged security issue: Potential secret exposure: PASSWORD
+  - Logged security issue: Potential secret exposure: TOKEN
+  - Logged security issue: Potential secret exposure: TOKEN
+  - Logged security issue: Potential secret exposure: API_KEY
+  - Logged security issue: Potential secret exposure: PASSWORD
+  - Logged security issue: Potential secret exposure: PASSWORD
+  - Logged security issue: Potential secret exposure: TOKEN
+  - Logged security issue: Potential secret exposure: API_KEY
+  - Logged security issue: Potential secret exposure: TOKEN
+  - Logged security issue: Potential secret exposure: API_KEY
+  - Logged security issue: Potential secret exposure: API_KEY
+  - Logged security issue: Potential secret exposure: API_KEY
+  - Logged security issue: Potential secret exposure: API_KEY
+  - Logged security issue: Potential secret exposure: API_KEY
+  - Logged security issue: Potential secret exposure: API_KEY
+  - Logged security issue: Potential secret exposure: TOKEN
+  - Logged security issue: Potential secret exposure: SECRET_KEY
+  - Logged security issue: Potential secret exposure: API_KEY
+  - Logged security issue: Potential secret exposure: PASSWORD
+  - Logged security issue: Potential secret exposure: TOKEN
+  - Logged security issue: Potential secret exposure: PASSWORD
+  - Logged security issue: Potential secret exposure: API_KEY
+  - Logged security issue: Potential secret exposure: API_KEY
+  - Logged security issue: Potential secret exposure: TOKEN
+  - Logged security issue: Potential secret exposure: API_KEY
+  - Logged security issue: Potential secret exposure: TOKEN
+  - Logged security issue: Potential secret exposure: API_KEY
+  - Logged security issue: Potential secret exposure: TOKEN
+  - Logged security issue: Potential secret exposure: API_KEY
+  - Logged security issue: Potential secret exposure: API_KEY
+  - Logged security issue: Potential secret exposure: TOKEN
+  - Logged security issue: Potential secret exposure: API_KEY
+  - Logged security issue: Potential secret exposure: API_KEY
+  - Logged security issue: Potential secret exposure: TOKEN
+  - Logged security issue: Potential secret exposure: SECRET_KEY
+  - Logged security issue: Potential secret exposure: API_KEY
+  - Logged security issue: Potential secret exposure: PASSWORD
+  - Logged security issue: Potential secret exposure: SECRET_KEY
+  - Logged security issue: Potential secret exposure: PASSWORD
+
+[NEXT] Recommended next steps:
+1. Review generated Docker files
+2. Update .env.example with actual values
+3. Set up SSL certificates for production
+4. Run 'docker-compose up -d' to test deployment
+5. Configure production secrets securely
+
+======================================================================

@@ -1,0 +1,294 @@
+"""
+FSRS (Free Spaced Repetition Scheduler) Database Modelleri
+
+Bu modül, Türk öğrenci davranışlarına optimize edilmiş FSRS sistemi için
+database modellerini içerir.
+"""
+
+import uuid
+
+from sqlalchemy import (
+    JSON,
+    Boolean,
+    Column,
+    DateTime,
+    Float,
+    ForeignKey,
+    Integer,
+    String,
+    Text,
+)
+from sqlalchemy.orm import relationship
+from sqlalchemy.sql import func
+
+from .database import Base
+
+
+class FSRSCard(Base):
+    """
+    FSRS Flashcard modeli
+    
+    Her flashcard'ın FSRS parametrelerini ve durumunu saklar.
+    """
+    __tablename__ = "fsrs_cards"
+    __table_args__ = {"extend_existing": True}
+    
+    id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
+    student_id = Column(String, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
+    subject = Column(String, nullable=False)  # Konu (Matematik, Türkçe, vb.)
+    topic = Column(String, nullable=True)     # Alt konu
+    content = Column(Text, nullable=False)    # Kart içeriği
+    answer = Column(Text, nullable=True)      # Cevap
+    
+    # FSRS parametreleri
+    difficulty = Column(Float, default=0.0)      # Zorluk seviyesi (1-10)
+    stability = Column(Float, default=0.0)       # Kararlılık
+    retrievability = Column(Float, default=0.0)  # Geri getirilebilirlik
+    
+    # Tekrar bilgileri
+    last_review = Column(DateTime, nullable=True)
+    due_date = Column(DateTime, nullable=True)
+    review_count = Column(Integer, default=0)
+    lapse_count = Column(Integer, default=0)    # Başarısızlık sayısı
+    elapsed_days = Column(Integer, default=0)
+    scheduled_days = Column(Integer, default=0)
+    reps = Column(Integer, default=0)           # Toplam tekrar sayısı
+    lapses = Column(Integer, default=0)         # Toplam başarısızlık
+    
+    # Durum bilgisi
+    state = Column(String, default="new")  # new, learning, review, relearning
+    
+    # Metadata
+    created_at = Column(DateTime, default=func.now())
+    updated_at = Column(DateTime, default=func.now(), onupdate=func.now())
+    
+    # İlişkiler
+    student = relationship("User", back_populates="fsrs_cards")
+    schedules = relationship("FSRSSchedule", back_populates="card", cascade="all, delete-orphan")
+    reviews = relationship("FSRSReview", back_populates="card", cascade="all, delete-orphan")
+    
+    def __repr__(self):
+        return f"<FSRSCard(id={self.id}, subject={self.subject}, difficulty={self.difficulty})>"
+
+
+class FSRSSchedule(Base):
+    """
+    FSRS Tekrar Zamanlaması modeli
+    
+    Her kart için hesaplanan tekrar zamanlamalarını saklar.
+    """
+    __tablename__ = "fsrs_schedules"
+    __table_args__ = {"extend_existing": True}
+    
+    id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
+    card_id = Column(String, ForeignKey("fsrs_cards.id", ondelete="CASCADE"), nullable=False)
+    student_id = Column(String, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
+    
+    # Zamanlama bilgileri
+    scheduled_date = Column(DateTime, nullable=False)
+    interval_days = Column(Integer, nullable=False)
+    grade = Column(Integer, nullable=True)  # Son verilen not (1-4)
+    
+    # FSRS parametreleri (zamanlama anındaki değerler)
+    stability = Column(Float, nullable=False)
+    difficulty = Column(Float, nullable=False)
+    retrievability = Column(Float, nullable=False)
+    
+    # Kültürel faktörler
+    cultural_factors = Column(JSON, nullable=True)  # Kültürel ayarlamalar
+    
+    # Durum
+    is_completed = Column(Boolean, default=False)
+    completed_at = Column(DateTime, nullable=True)
+    
+    # Metadata
+    created_at = Column(DateTime, default=func.now())
+    updated_at = Column(DateTime, default=func.now(), onupdate=func.now())
+    
+    # İlişkiler - using fully qualified path
+    card = relationship("models.fsrs.FSRSCard", back_populates="schedules")
+    student = relationship("User", back_populates="fsrs_schedules")
+    
+    def __repr__(self):
+        return f"<FSRSSchedule(id={self.id}, scheduled_date={self.scheduled_date})>"
+
+
+class FSRSReview(Base):
+    """
+    FSRS İnceleme Geçmişi modeli
+    
+    Öğrencinin her kart incelemesini ve verdiği notları saklar.
+    """
+    __tablename__ = "fsrs_reviews"
+    __table_args__ = {"extend_existing": True}
+    
+    id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
+    card_id = Column(String, ForeignKey("fsrs_cards.id", ondelete="CASCADE"), nullable=False)
+    student_id = Column(String, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
+    schedule_id = Column(String, ForeignKey("fsrs_schedules.id", ondelete="CASCADE"), nullable=True)
+    
+    # İnceleme bilgileri
+    review_date = Column(DateTime, default=func.now())
+    grade = Column(Integer, nullable=False)  # 1=Again, 2=Hard, 3=Good, 4=Easy
+    response_time_ms = Column(Integer, nullable=True)  # Yanıt süresi (milisaniye)
+    
+    # İnceleme öncesi durumu
+    pre_difficulty = Column(Float, nullable=True)
+    pre_stability = Column(Float, nullable=True)
+    pre_retrievability = Column(Float, nullable=True)
+    
+    # İnceleme sonrası durumu
+    post_difficulty = Column(Float, nullable=True)
+    post_stability = Column(Float, nullable=True)
+    post_retrievability = Column(Float, nullable=True)
+    
+    # Bağlam bilgileri
+    study_session_id = Column(String, nullable=True)  # Çalışma oturumu ID'si
+    device_type = Column(String, nullable=True)       # Cihaz türü
+    study_environment = Column(String, nullable=True) # Çalışma ortamı
+    
+    # Metadata
+    created_at = Column(DateTime, default=func.now())
+    
+    # İlişkiler - using fully qualified path
+    card = relationship("models.fsrs.FSRSCard", back_populates="reviews")
+    student = relationship("User", back_populates="fsrs_reviews")
+    schedule = relationship("FSRSSchedule")
+    
+    def __repr__(self):
+        return f"<FSRSReview(id={self.id}, grade={self.grade}, review_date={self.review_date})>"
+
+
+class FSRSStudentProfile(Base):
+    """
+    FSRS Öğrenci Profili modeli
+    
+    Her öğrencinin FSRS ile ilgili kişisel ayarlarını ve istatistiklerini saklar.
+    """
+    __tablename__ = "fsrs_student_profiles"
+    __table_args__ = {"extend_existing": True}
+    
+    id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
+    student_id = Column(String, ForeignKey("users.id", ondelete="CASCADE"), nullable=False, unique=True)
+    
+    # Kişisel FSRS ayarları
+    target_retention = Column(Float, default=0.85)    # Hedef retention oranı
+    max_interval = Column(Integer, default=36500)     # Maksimum interval (gün)
+    min_interval = Column(Integer, default=1)         # Minimum interval (gün)
+    
+    # Türk kültürü faktörleri
+    group_study_preference = Column(Boolean, default=False)
+    family_pressure_level = Column(Float, default=0.5)    # 0-1 arası
+    exam_anxiety_level = Column(Float, default=0.5)       # 0-1 arası
+    study_consistency = Column(Float, default=0.5)        # 0-1 arası
+    cultural_background = Column(String, default="turkish")
+    timezone = Column(String, default="Europe/Istanbul")
+    
+    # İstatistikler
+    total_cards = Column(Integer, default=0)
+    total_reviews = Column(Integer, default=0)
+    average_retention = Column(Float, default=0.0)
+    study_streak_days = Column(Integer, default=0)
+    last_study_date = Column(DateTime, nullable=True)
+    
+    # Performans metrikleri
+    cards_due_today = Column(Integer, default=0)
+    cards_learned_today = Column(Integer, default=0)
+    study_time_today_minutes = Column(Integer, default=0)
+    
+    # Metadata
+    created_at = Column(DateTime, default=func.now())
+    updated_at = Column(DateTime, default=func.now(), onupdate=func.now())
+    
+    # İlişkiler
+    student = relationship("User", back_populates="fsrs_profile")
+    
+    def __repr__(self):
+        return f"<FSRSStudentProfile(student_id={self.student_id}, total_cards={self.total_cards})>"
+
+
+class FSRSStudySession(Base):
+    """
+    FSRS Çalışma Oturumu modeli
+    
+    Öğrencinin çalışma oturumlarını ve performansını takip eder.
+    """
+    __tablename__ = "fsrs_study_sessions"
+    __table_args__ = {"extend_existing": True}
+    
+    id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
+    student_id = Column(String, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
+    
+    # Oturum bilgileri
+    session_start = Column(DateTime, default=func.now())
+    session_end = Column(DateTime, nullable=True)
+    duration_minutes = Column(Integer, nullable=True)
+    
+    # Performans metrikleri
+    cards_reviewed = Column(Integer, default=0)
+    cards_learned = Column(Integer, default=0)
+    cards_relearned = Column(Integer, default=0)
+    average_grade = Column(Float, nullable=True)
+    
+    # Oturum türü ve bağlam
+    session_type = Column(String, default="regular")  # regular, exam_prep, review
+    study_environment = Column(String, nullable=True) # home, school, library
+    device_type = Column(String, nullable=True)       # mobile, desktop, tablet
+    
+    # Kültürel bağlam
+    cultural_period = Column(String, nullable=True)   # ramadan, exam_season, etc.
+    is_group_study = Column(Boolean, default=False)
+    
+    # Metadata
+    created_at = Column(DateTime, default=func.now())
+    
+    # İlişkiler
+    student = relationship("User", back_populates="fsrs_study_sessions")
+    
+    def __repr__(self):
+        return f"<FSRSStudySession(id={self.id}, duration={self.duration_minutes}min)>"
+
+
+class FSRSSubjectStats(Base):
+    """
+    FSRS Konu İstatistikleri modeli
+    
+    Her öğrencinin konu bazlı FSRS performansını takip eder.
+    """
+    __tablename__ = "fsrs_subject_stats"
+    
+    id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
+    student_id = Column(String, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
+    subject = Column(String, nullable=False)  # Matematik, Türkçe, vb.
+    
+    # Konu istatistikleri
+    total_cards = Column(Integer, default=0)
+    cards_mastered = Column(Integer, default=0)      # Yüksek stability
+    cards_learning = Column(Integer, default=0)      # Öğrenme aşamasında
+    cards_difficult = Column(Integer, default=0)     # Yüksek difficulty
+    
+    # Performans metrikleri
+    average_difficulty = Column(Float, default=0.0)
+    average_stability = Column(Float, default=0.0)
+    average_retention = Column(Float, default=0.0)
+    success_rate = Column(Float, default=0.0)        # Grade 3-4 oranı
+    
+    # Zaman metrikleri
+    total_study_time_minutes = Column(Integer, default=0)
+    last_studied = Column(DateTime, nullable=True)
+    study_streak_days = Column(Integer, default=0)
+    
+    # Metadata
+    created_at = Column(DateTime, default=func.now())
+    updated_at = Column(DateTime, default=func.now(), onupdate=func.now())
+    
+    # İlişkiler
+    student = relationship("User", back_populates="fsrs_subject_stats")
+    
+    # Unique constraint
+    __table_args__ = (
+        {"extend_existing": True}
+    )
+    
+    def __repr__(self):
+        return f"<FSRSSubjectStats(student_id={self.student_id}, subject={self.subject})>"

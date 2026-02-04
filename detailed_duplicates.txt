@@ -1,0 +1,353 @@
+=== test_advanced_reports.py ===
+./backend/tests/test_advanced_reports.py
+./backend/test_advanced_reports.py
+
+=== test_algorithms.py ===
+./backend/tests/test_algorithms.py
+./backend/venv/Lib/site-packages/sympy/codegen/tests/test_algorithms.py
+
+=== test_all_services.py ===
+./backend/tests/test_all_services.py
+./tests/test_all_services.py
+
+=== test_api.py ===
+./backend/venv/Lib/site-packages/matplotlib/tests/test_api.py
+./backend/venv/Lib/site-packages/numpy/core/tests/test_api.py
+
+=== test_api_auth_comprehensive.py ===
+./backend/tests/test_api_auth_comprehensive.py
+./backend/test_api_auth_comprehensive.py
+
+=== test_api_health_comprehensive.py ===
+./backend/tests/test_api_health_comprehensive.py
+./backend/test_api_health_comprehensive.py
+
+=== test_arpack.py ===
+./backend/venv/Lib/site-packages/scipy/sparse/linalg/_eigen/arpack/tests/test_arpack.py
+./backend/venv/Lib/site-packages/sklearn/utils/tests/test_arpack.py
+
+=== test_array_api.py ===
+./backend/venv/Lib/site-packages/scipy/sparse/tests/test_array_api.py
+./backend/venv/Lib/site-packages/scipy/_lib/tests/test_array_api.py
+./backend/venv/Lib/site-packages/sklearn/utils/tests/test_array_api.py
+
+=== test_autowrap.py ===
+./backend/venv/Lib/site-packages/sympy/external/tests/test_autowrap.py
+./backend/venv/Lib/site-packages/sympy/utilities/tests/test_autowrap.py
+
+=== test_base.py ===
+./backend/venv/Lib/site-packages/scipy/sparse/tests/test_base.py
+./backend/venv/Lib/site-packages/sklearn/datasets/tests/test_base.py
+./backend/venv/Lib/site-packages/sklearn/ensemble/tests/test_base.py
+./backend/venv/Lib/site-packages/sklearn/feature_selection/tests/test_base.py
+./backend/venv/Lib/site-packages/sklearn/impute/tests/test_base.py
+./backend/venv/Lib/site-packages/sklearn/linear_model/tests/test_base.py
+./backend/venv/Lib/site-packages/sklearn/neural_network/tests/test_base.py
+./backend/venv/Lib/site-packages/sklearn/tests/test_base.py
+
+=== test_basic.py ===
+./backend/venv/Lib/site-packages/matplotlib/tests/test_basic.py
+./backend/venv/Lib/site-packages/networkx/algorithms/bipartite/tests/test_basic.py
+./backend/venv/Lib/site-packages/scipy/fft/tests/test_basic.py
+./backend/venv/Lib/site-packages/scipy/fft/_pocketfft/tests/test_basic.py
+./backend/venv/Lib/site-packages/scipy/fftpack/tests/test_basic.py
+./backend/venv/Lib/site-packages/scipy/linalg/tests/test_basic.py
+./backend/venv/Lib/site-packages/scipy/special/tests/test_basic.py
+./backend/venv/Lib/site-packages/sympy/core/tests/test_basic.py
+
+=== test_berturk_api.py ===
+./backend/tests/test_berturk_api.py
+./backend/test_berturk_api.py
+
+=== test_berturk_service.py ===
+./backend/tests/test_berturk_service.py
+./backend/test_berturk_service.py
+
+=== test_bicluster.py ===
+./backend/venv/Lib/site-packages/sklearn/cluster/tests/test_bicluster.py
+./backend/venv/Lib/site-packages/sklearn/metrics/cluster/tests/test_bicluster.py
+
+=== test_bsplines.py ===
+./backend/venv/Lib/site-packages/scipy/interpolate/tests/test_bsplines.py
+./backend/venv/Lib/site-packages/scipy/signal/tests/test_bsplines.py
+./backend/venv/Lib/site-packages/sympy/functions/special/tests/test_bsplines.py
+
+=== test_bunch.py ===
+./backend/venv/Lib/site-packages/scipy/_lib/tests/test_bunch.py
+./backend/venv/Lib/site-packages/sklearn/utils/tests/test_bunch.py
+
+=== test_cache.py ===
+./backend/tests/test_cache.py
+./backend/venv/Lib/site-packages/sympy/core/tests/test_cache.py
+
+=== test_case.py ===
+./backend/venv/Lib/site-packages/torch/_dynamo/test_case.py
+./backend/venv/Lib/site-packages/torch/_inductor/test_case.py
+
+=== test_centrality.py ===
+./backend/venv/Lib/site-packages/networkx/algorithms/bipartite/tests/test_centrality.py
+./backend/venv/Lib/site-packages/networkx/algorithms/community/tests/test_centrality.py
+
+=== test_clique.py ===
+./backend/venv/Lib/site-packages/networkx/algorithms/approximation/tests/test_clique.py
+./backend/venv/Lib/site-packages/networkx/algorithms/tests/test_clique.py
+
+=== test_cluster.py ===
+./backend/venv/Lib/site-packages/networkx/algorithms/bipartite/tests/test_cluster.py
+./backend/venv/Lib/site-packages/networkx/algorithms/tests/test_cluster.py
+
+=== test_codegen.py ===
+./backend/venv/Lib/site-packages/sympy/external/tests/test_codegen.py
+./backend/venv/Lib/site-packages/sympy/utilities/tests/test_codegen.py
+
+=== test_common.py ===
+./backend/venv/Lib/site-packages/numpy/f2py/tests/test_common.py
+./backend/venv/Lib/site-packages/sklearn/datasets/tests/test_common.py
+./backend/venv/Lib/site-packages/sklearn/ensemble/tests/test_common.py
+./backend/venv/Lib/site-packages/sklearn/impute/tests/test_common.py
+./backend/venv/Lib/site-packages/sklearn/linear_model/tests/test_common.py
+./backend/venv/Lib/site-packages/sklearn/metrics/cluster/tests/test_common.py
+./backend/venv/Lib/site-packages/sklearn/metrics/tests/test_common.py
+./backend/venv/Lib/site-packages/sklearn/preprocessing/tests/test_common.py
+./backend/venv/Lib/site-packages/sklearn/tests/test_common.py
+./backend/venv/Lib/site-packages/torch/testing/_internal/distributed/_shard/test_common.py
+
+=== test_compatibility.py ===
+./backend/venv/Lib/site-packages/mpmath/tests/test_compatibility.py
+./backend/venv/Lib/site-packages/sympy/core/tests/test_compatibility.py
+
+=== test_config.py ===
+./backend/tests/test_config.py
+./backend/venv/Lib/site-packages/joblib/test/test_config.py
+./backend/venv/Lib/site-packages/networkx/utils/tests/test_config.py
+./backend/venv/Lib/site-packages/scipy/_lib/tests/test_config.py
+./backend/venv/Lib/site-packages/sklearn/tests/test_config.py
+
+=== test_connectivity.py ===
+./backend/venv/Lib/site-packages/networkx/algorithms/approximation/tests/test_connectivity.py
+./backend/venv/Lib/site-packages/networkx/algorithms/assortativity/tests/test_connectivity.py
+./backend/venv/Lib/site-packages/networkx/algorithms/connectivity/tests/test_connectivity.py
+
+=== test_constants.py ===
+./backend/venv/Lib/site-packages/scipy/constants/tests/test_constants.py
+./backend/venv/Lib/site-packages/sympy/physics/quantum/tests/test_constants.py
+
+=== test_content_models.py ===
+./backend/models/tests/test_content_models.py
+./backend/tests/test_content_models.py
+
+=== test_context.py ===
+./backend/venv/Lib/site-packages/passlib/tests/test_context.py
+./backend/venv/Lib/site-packages/sympy/assumptions/tests/test_context.py
+
+=== test_convert.py ===
+./backend/venv/Lib/site-packages/mpmath/tests/test_convert.py
+./backend/venv/Lib/site-packages/networkx/tests/test_convert.py
+
+=== test_core.py ===
+./backend/venv/Lib/site-packages/networkx/algorithms/tests/test_core.py
+./backend/venv/Lib/site-packages/numpy/ma/tests/test_core.py
+./backend/venv/Lib/site-packages/sympy/multipledispatch/tests/test_core.py
+./backend/venv/Lib/site-packages/sympy/strategies/branch/tests/test_core.py
+./backend/venv/Lib/site-packages/sympy/strategies/tests/test_core.py
+
+=== test_core_database_comprehensive.py ===
+./backend/tests/test_core_database_comprehensive.py
+./backend/test_core_database_comprehensive.py
+
+=== test_core_services.py ===
+./backend/tests/test_core_services.py
+./backend/test_core_services.py
+
+=== test_correlation.py ===
+./backend/venv/Lib/site-packages/networkx/algorithms/assortativity/tests/test_correlation.py
+./backend/venv/Lib/site-packages/scipy/stats/tests/test_correlation.py
+
+=== test_covering.py ===
+./backend/venv/Lib/site-packages/networkx/algorithms/bipartite/tests/test_covering.py
+./backend/venv/Lib/site-packages/networkx/algorithms/tests/test_covering.py
+
+=== test_curriculum_compliance.py ===
+./backend/tests/test_curriculum_compliance.py
+./backend/test_curriculum_compliance.py
+
+=== test_curve.py ===
+./backend/venv/Lib/site-packages/sympy/geometry/tests/test_curve.py
+./backend/venv/Lib/site-packages/sympy/physics/biomechanics/tests/test_curve.py
+
+=== test_cuts.py ===
+./backend/venv/Lib/site-packages/networkx/algorithms/connectivity/tests/test_cuts.py
+./backend/venv/Lib/site-packages/networkx/algorithms/tests/test_cuts.py
+
+=== test_cycles.py ===
+./backend/venv/Lib/site-packages/matplotlib/tests/test_cycles.py
+./backend/venv/Lib/site-packages/networkx/algorithms/tests/test_cycles.py
+
+=== test_cython_blas.py ===
+./backend/venv/Lib/site-packages/scipy/linalg/tests/test_cython_blas.py
+./backend/venv/Lib/site-packages/sklearn/utils/tests/test_cython_blas.py
+
+=== test_data.py ===
+./backend/tests/fixtures/test_data.py
+./backend/venv/Lib/site-packages/scipy/datasets/tests/test_data.py
+./backend/venv/Lib/site-packages/scipy/special/tests/test_data.py
+./backend/venv/Lib/site-packages/sklearn/preprocessing/tests/test_data.py
+
+=== test_dense.py ===
+./backend/venv/Lib/site-packages/networkx/algorithms/shortest_paths/tests/test_dense.py
+./backend/venv/Lib/site-packages/sympy/polys/matrices/tests/test_dense.py
+
+=== test_density.py ===
+./backend/venv/Lib/site-packages/networkx/algorithms/approximation/tests/test_density.py
+./backend/venv/Lib/site-packages/sympy/physics/quantum/tests/test_density.py
+
+=== test_deprecated.py ===
+./backend/venv/Lib/site-packages/sympy/testing/tests/test_deprecated.py
+./backend/venv/Lib/site-packages/sympy/utilities/tests/test_deprecated.py
+
+=== test_deprecation.py ===
+./backend/venv/Lib/site-packages/scipy/_lib/tests/test_deprecation.py
+./backend/venv/Lib/site-packages/sklearn/utils/tests/test_deprecation.py
+
+=== test_deprecations.py ===
+./backend/venv/Lib/site-packages/numpy/core/tests/test_deprecations.py
+./backend/venv/Lib/site-packages/numpy/linalg/tests/test_deprecations.py
+./backend/venv/Lib/site-packages/numpy/ma/tests/test_deprecations.py
+./backend/venv/Lib/site-packages/sqlalchemy/testing/suite/test_deprecations.py
+
+=== test_determinant.py ===
+./backend/venv/Lib/site-packages/sympy/matrices/expressions/tests/test_determinant.py
+./backend/venv/Lib/site-packages/sympy/matrices/tests/test_determinant.py
+
+=== test_diff.py ===
+./backend/venv/Lib/site-packages/mpmath/tests/test_diff.py
+./backend/venv/Lib/site-packages/sympy/core/tests/test_diff.py
+
+=== test_direct.py ===
+./backend/venv/Lib/site-packages/numpy/random/tests/test_direct.py
+./backend/venv/Lib/site-packages/scipy/optimize/tests/test_direct.py
+
+=== test_dispersion.py ===
+./backend/venv/Lib/site-packages/networkx/algorithms/centrality/tests/test_dispersion.py
+./backend/venv/Lib/site-packages/sympy/polys/tests/test_dispersion.py
+
+=== test_distance_measures.py ===
+./backend/venv/Lib/site-packages/networkx/algorithms/approximation/tests/test_distance_measures.py
+./backend/venv/Lib/site-packages/networkx/algorithms/tests/test_distance_measures.py
+
+=== test_docs.py ===
+./backend/venv/Lib/site-packages/bs4/tests/test_docs.py
+./backend/venv/Lib/site-packages/numpy/f2py/tests/test_docs.py
+
+=== test_domains.py ===
+./backend/venv/Lib/site-packages/sympy/matrices/tests/test_domains.py
+./backend/venv/Lib/site-packages/sympy/polys/domains/tests/test_domains.py
+
+=== test_dyadic.py ===
+./backend/venv/Lib/site-packages/sympy/physics/vector/tests/test_dyadic.py
+./backend/venv/Lib/site-packages/sympy/vector/tests/test_dyadic.py
+
+=== test_ebatv_service.py ===
+./backend/test_ebatv_service.py
+./tests/test_ebatv_service.py
+
+=== test_edgelist.py ===
+./backend/venv/Lib/site-packages/networkx/algorithms/bipartite/tests/test_edgelist.py
+./backend/venv/Lib/site-packages/networkx/readwrite/tests/test_edgelist.py
+
+=== test_eigen.py ===
+./backend/venv/Lib/site-packages/mpmath/tests/test_eigen.py
+./backend/venv/Lib/site-packages/sympy/matrices/tests/test_eigen.py
+./backend/venv/Lib/site-packages/sympy/polys/matrices/tests/test_eigen.py
+
+=== test_euler.py ===
+./backend/venv/Lib/site-packages/networkx/algorithms/tests/test_euler.py
+./backend/venv/Lib/site-packages/sympy/calculus/tests/test_euler.py
+
+=== test_exam_performance.py ===
+./backend/tests/test_exam_performance.py
+./backend/test_exam_performance.py
+
+=== test_exceptions.py ===
+./backend/tests/test_exceptions.py
+./backend/venv/Lib/site-packages/mypyc/test/test_exceptions.py
+./backend/venv/Lib/site-packages/networkx/tests/test_exceptions.py
+./backend/venv/Lib/site-packages/sympy/utilities/tests/test_exceptions.py
+
+=== test_extending.py ===
+./backend/venv/Lib/site-packages/numpy/random/tests/test_extending.py
+./backend/venv/Lib/site-packages/scipy/linalg/tests/test_extending.py
+./backend/venv/Lib/site-packages/scipy/optimize/tests/test_extending.py
+./backend/venv/Lib/site-packages/scipy/special/tests/test_extending.py
+
+=== test_filters.py ===
+./backend/venv/Lib/site-packages/networkx/classes/tests/test_filters.py
+./backend/venv/Lib/site-packages/scipy/ndimage/tests/test_filters.py
+
+=== test_fortran.py ===
+./backend/venv/Lib/site-packages/scipy/io/tests/test_fortran.py
+./backend/venv/Lib/site-packages/sympy/printing/tests/test_fortran.py
+
+=== test_fourier.py ===
+./backend/venv/Lib/site-packages/scipy/ndimage/tests/test_fourier.py
+./backend/venv/Lib/site-packages/sympy/matrices/expressions/tests/test_fourier.py
+./backend/venv/Lib/site-packages/sympy/series/tests/test_fourier.py
+
+=== test_function.py ===
+./backend/venv/Lib/site-packages/networkx/classes/tests/test_function.py
+./backend/venv/Lib/site-packages/sympy/core/tests/test_function.py
+./backend/venv/Lib/site-packages/sympy/simplify/tests/test_function.py
+
+=== test_function_base.py ===
+./backend/venv/Lib/site-packages/numpy/core/tests/test_function_base.py
+./backend/venv/Lib/site-packages/numpy/lib/tests/test_function_base.py
+
+=== test_functions.py ===
+./backend/venv/Lib/site-packages/mpmath/tests/test_functions.py
+./backend/venv/Lib/site-packages/sympy/physics/mechanics/tests/test_functions.py
+./backend/venv/Lib/site-packages/sympy/physics/vector/tests/test_functions.py
+./backend/venv/Lib/site-packages/sympy/tensor/tests/test_functions.py
+./backend/venv/Lib/site-packages/sympy/vector/tests/test_functions.py
+
+=== test_generators.py ===
+./backend/venv/Lib/site-packages/networkx/algorithms/bipartite/tests/test_generators.py
+./backend/venv/Lib/site-packages/sympy/combinatorics/tests/test_generators.py
+
+=== test_gradient_boosting.py ===
+./backend/venv/Lib/site-packages/sklearn/ensemble/tests/test_gradient_boosting.py
+./backend/venv/Lib/site-packages/sklearn/ensemble/_hist_gradient_boosting/tests/test_gradient_boosting.py
+
+=== test_graph.py ===
+./backend/venv/Lib/site-packages/networkx/classes/tests/test_graph.py
+./backend/venv/Lib/site-packages/sklearn/neighbors/tests/test_graph.py
+./backend/venv/Lib/site-packages/sklearn/utils/tests/test_graph.py
+./backend/venv/Lib/site-packages/sympy/matrices/tests/test_graph.py
+
+=== test_helper.py ===
+./backend/venv/Lib/site-packages/numpy/fft/tests/test_helper.py
+./backend/venv/Lib/site-packages/scipy/fft/tests/test_helper.py
+./backend/venv/Lib/site-packages/scipy/fftpack/tests/test_helper.py
+
+=== test_hierarchy.py ===
+./backend/venv/Lib/site-packages/networkx/algorithms/tests/test_hierarchy.py
+./backend/venv/Lib/site-packages/scipy/cluster/tests/test_hierarchy.py
+
+=== test_homomorphisms.py ===
+./backend/venv/Lib/site-packages/sympy/combinatorics/tests/test_homomorphisms.py
+./backend/venv/Lib/site-packages/sympy/polys/agca/tests/test_homomorphisms.py
+
+=== test_hypothesis.py ===
+./backend/venv/Lib/site-packages/sympy/ntheory/tests/test_hypothesis.py
+./backend/venv/Lib/site-packages/sympy/polys/tests/test_hypothesis.py
+
+=== test_image.py ===
+./backend/venv/Lib/site-packages/matplotlib/tests/test_image.py
+./backend/venv/Lib/site-packages/sklearn/feature_extraction/tests/test_image.py
+
+=== test_import.py ===
+./backend/venv/Lib/site-packages/networkx/tests/test_import.py
+./backend/venv/Lib/site-packages/scipy/fftpack/tests/test_import.py
+
+=== test_indexing.py ===
+./backend/venv/Lib/site-packages/numpy/core/tests/test_indexing.py
+./backend/venv/Lib/site-packages/sympy/matrices/expressions/tests/test_indexing.py

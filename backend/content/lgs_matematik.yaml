@@ -1,0 +1,134 @@
+topics:
+  - id: "sayilar_islemler"
+    title: "Sayılar ve İşlemler"
+    grade: 8
+    exam: "LGS"
+    subtopics:
+      - name: "Çarpanlar ve Katlar"
+        content: |
+          EBOB (En Büyük Ortak Bölen) ve EKOK (En Küçük Ortak Kat) problemleri
+          Asal çarpanlara ayırma teknikleri
+          Aralarında asal sayıların özellikleri
+        examples:
+          - "12 ve 18'in EBOB'u = 6"
+          - "12 ve 18'in EKOK'u = 36"
+        difficulty_levels:
+          beginner: "Temel EBOB-EKOK bulma"
+          intermediate: "Problem çözümünde EBOB-EKOK kullanımı"
+          advanced: "Karmaşık sözel problemler"
+      
+      - name: "Üslü İfadeler"
+        content: |
+          Tam sayıların pozitif ve negatif kuvvetleri
+          Bilimsel gösterim (a × 10^n formatı)
+          Üslü ifadelerde dört işlem
+        examples:
+          - "2³ = 8"
+          - "10⁻² = 0.01"
+          - "3.5 × 10⁴ = 35000"
+        practice_questions:
+          - question: "2⁵ × 2³ = ?"
+            answer: "2⁸ = 256"
+            hint: "Aynı tabanlı üslü sayıların çarpımında üsler toplanır"
+
+  - id: "cebirsel_ifadeler"
+    title: "Cebirsel İfadeler ve Denklemler"
+    grade: 8
+    exam: "LGS"
+    subtopics:
+      - name: "Özdeşlikler"
+        content: |
+          Tam kare özdeşlikleri: (a+b)², (a-b)²
+          İki kare farkı: a²-b² = (a+b)(a-b)
+          Çarpanlara ayırma teknikleri
+        examples:
+          - "(x+3)² = x² + 6x + 9"
+          - "(x-5)² = x² - 10x + 25"
+          - "x² - 16 = (x+4)(x-4)"
+        visual_aids:
+          - type: "diagram"
+            description: "Geometrik kare modeli ile (a+b)² gösterimi"
+
+  - id: "geometri"
+    title: "Geometri ve Ölçme"
+    grade: 8
+    exam: "LGS"
+    subtopics:
+      - name: "Pisagor Teoremi"
+        content: |
+          Dik üçgenlerde a² + b² = c²
+          3-4-5, 5-12-13 gibi özel üçgenler
+          Pisagor teoremi uygulamaları
+        examples:
+          - "3-4-5 üçgeni: 3² + 4² = 9 + 16 = 25 = 5²"
+        practice_problems:
+          - "Bir dik üçgenin dik kenarları 6 cm ve 8 cm ise hipotenüs kaç cm'dir?"
+
+resources:
+  videos:
+    - title: "EBOB-EKOK Konu Anlatımı"
+      url: "https://example.com/ebob-ekok"
+      duration: 15
+      provider: "Khan Academy TR"
+    
+    - title: "Üslü Sayılar Çözümlü Sorular"
+      url: "https://example.com/uslu-sayilar"
+      duration: 20
+      provider: "Tonguç Akademi"
+  
+  practice_sets:
+    - title: "LGS Matematik Deneme Seti 1"
+      difficulty: "intermediate"
+      questions_count: 20
+      estimated_time: 40
+  
+  books:
+    - title: "LGS Matematik Soru Bankası"
+      author: "MEB Yayınları"
+      chapters_relevant: [1, 2, 3]
+
+study_plans:
+  intensive_4_weeks:
+    week1:
+      - topic: "sayilar_islemler"
+        hours: 6
+        focus: "EBOB-EKOK ve üslü sayılar"
+    week2:
+      - topic: "cebirsel_ifadeler"
+        hours: 6
+        focus: "Özdeşlikler ve denklemler"
+    week3:
+      - topic: "geometri"
+        hours: 6
+        focus: "Pisagor ve üçgenler"
+    week4:
+      - topic: "mixed"
+        hours: 8
+        focus: "Karma sorular ve deneme sınavları"
+  
+  regular_3_months:
+    month1:
+      topics: ["sayilar_islemler"]
+      weekly_hours: 4
+      practice_tests: 2
+    month2:
+      topics: ["cebirsel_ifadeler", "geometri"]
+      weekly_hours: 5
+      practice_tests: 3
+    month3:
+      topics: ["all"]
+      weekly_hours: 6
+      practice_tests: 4
+
+tips:
+  general:
+    - "Her gün en az 1 saat matematik çalışın"
+    - "Formülleri ezberlemek yerine mantığını anlayın"
+    - "Bol soru çözün (günde minimum 20 soru)"
+    - "Yanlışlarınızı mutlaka analiz edin"
+  
+  exam_day:
+    - "Soru başına ortalama 2 dakikanız var"
+    - "Kolay soruları önce çözün"
+    - "İşlem hatalarına dikkat edin"
+    - "Şıkları eleyerek ilerleyin"

@@ -1,0 +1,14 @@
+{
+  "dashboard": {
+    "title": "Kiro2 - Security & Authentication",
+    "uid": "kiro2-security-auth",
+    "tags": ["kiro2", "security", "auth"],
+    "refresh": "30s",
+    "panels": [
+      {"id": 1, "title": "Auth Attempts", "type": "timeseries", "gridPos": {"h": 8, "w": 12, "x": 0, "y": 0}, "targets": [{"expr": "sum by (result) (rate(kiro_auth_attempts_total[5m]))", "legendFormat": "{{result}}"}]},
+      {"id": 2, "title": "Rate Limit Hits", "type": "stat", "gridPos": {"h": 8, "w": 12, "x": 12, "y": 0}, "targets": [{"expr": "sum(increase(kiro_rate_limit_hits_total[1h]))", "legendFormat": "Rate Limit Hits"}], "options": {"colorMode": "background"}, "fieldConfig": {"defaults": {"thresholds": {"steps": [{"value": null, "color": "green"}, {"value": 100, "color": "yellow"}, {"value": 500, "color": "red"}]}}}},
+      {"id": 3, "title": "Security Events", "type": "bargauge", "gridPos": {"h": 8, "w": 12, "x": 0, "y": 8}, "targets": [{"expr": "sum by (event_type) (increase(kiro_security_events_total[1h]))", "legendFormat": "{{event_type}}"}], "options": {"orientation": "horizontal"}},
+      {"id": 4, "title": "2FA Adoption", "type": "piechart", "gridPos": {"h": 8, "w": 12, "x": 12, "y": 8}, "targets": [{"expr": "kiro_two_factor_enabled_users", "legendFormat": "2FA Enabled"}, {"expr": "kiro_users_total - kiro_two_factor_enabled_users", "legendFormat": "2FA Disabled"}]}
+    ]
+  }
+}

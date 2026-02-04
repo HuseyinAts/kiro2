@@ -1,0 +1,10 @@
+=== TEST SUMMARY ===
+Date: 30 Eyl 2025 Sal 23:37:35
+
+260 tests passed
+61 tests skipped
+0 tests failed
+Execution time: 48.26s
+Coverage: 4%
+
+PostgreSQL container: Running on port 5433

@@ -1,0 +1,418 @@
+/**
+ * Task 98: Khan Academy Dashboard Styles
+ */
+
+.khan-dashboard {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+/* Loading State */
+.khan-dashboard.loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+}
+
+.spinner {
+  width: 50px;
+  height: 50px;
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #14BF96;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Not Connected State */
+.khan-dashboard.not-connected {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 500px;
+}
+
+.connect-card {
+  max-width: 500px;
+  text-align: center;
+  background: white;
+  padding: 48px;
+  border-radius: 16px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+}
+
+.khan-logo {
+  height: 60px;
+  margin-bottom: 24px;
+}
+
+.connect-card h2 {
+  margin: 0 0 16px 0;
+  font-size: 28px;
+  color: #14BF96;
+}
+
+.connect-card p {
+  margin: 0 0 24px 0;
+  color: #6c757d;
+  line-height: 1.6;
+}
+
+.benefits-list {
+  text-align: left;
+  list-style: none;
+  padding: 0;
+  margin: 24px 0;
+}
+
+.benefits-list li {
+  padding: 8px 0;
+  color: #495057;
+}
+
+.connect-button {
+  padding: 14px 32px;
+  background: #14BF96;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.connect-button:hover {
+  background: #0FA881;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(20, 191, 150, 0.3);
+}
+
+/* Connected Dashboard */
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 32px;
+}
+
+.dashboard-header h1 {
+  margin: 0;
+  font-size: 32px;
+  color: #14BF96;
+}
+
+.connection-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: #d1fae5;
+  border-radius: 20px;
+  color: #059669;
+  font-weight: 600;
+}
+
+.status-indicator {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #059669;
+}
+
+/* Analytics Summary */
+.analytics-summary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.stat-card {
+  background: white;
+  padding: 24px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.stat-value {
+  font-size: 32px;
+  font-weight: 700;
+  color: #14BF96;
+  margin-bottom: 8px;
+}
+
+.stat-label {
+  font-size: 14px;
+  color: #6c757d;
+}
+
+/* Tabs */
+.tabs {
+  display: flex;
+  gap: 8px;
+  border-bottom: 2px solid #dee2e6;
+  margin-bottom: 24px;
+}
+
+.tab {
+  padding: 12px 24px;
+  background: none;
+  border: none;
+  border-bottom: 3px solid transparent;
+  font-size: 16px;
+  font-weight: 600;
+  color: #6c757d;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.tab:hover {
+  color: #14BF96;
+}
+
+.tab.active {
+  color: #14BF96;
+  border-bottom-color: #14BF96;
+}
+
+/* Content Grid */
+.content-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 24px;
+}
+
+.content-card {
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s;
+  cursor: pointer;
+}
+
+.content-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+}
+
+.content-thumbnail {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+}
+
+.content-info {
+  padding: 16px;
+}
+
+.content-info h3 {
+  margin: 0 0 12px 0;
+  font-size: 16px;
+  color: #212529;
+}
+
+.content-meta {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+
+.badge {
+  padding: 4px 10px;
+  background: #e7f3ff;
+  color: #1e40af;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.content-description {
+  margin: 0;
+  font-size: 14px;
+  color: #6c757d;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Progress Section */
+.progress-section,
+.badges-section {
+  background: white;
+  padding: 24px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.section-header h2 {
+  margin: 0;
+  font-size: 24px;
+  color: #212529;
+}
+
+.sync-button {
+  padding: 10px 20px;
+  background: #14BF96;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.sync-button:hover {
+  background: #0FA881;
+}
+
+.progress-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.progress-card {
+  padding: 16px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border-left: 4px solid #14BF96;
+}
+
+.progress-card h3 {
+  margin: 0 0 12px 0;
+  font-size: 16px;
+  color: #212529;
+}
+
+.progress-stats {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  font-size: 14px;
+}
+
+.proficiency {
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-weight: 600;
+}
+
+.proficiency.mastered {
+  background: #d1fae5;
+  color: #059669;
+}
+
+.proficiency.proficient {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.proficiency.practicing {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.completed {
+  padding: 4px 10px;
+  background: #d1fae5;
+  color: #059669;
+  border-radius: 12px;
+  font-weight: 600;
+}
+
+/* Badges Grid */
+.badges-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 24px;
+}
+
+.badge-card {
+  background: white;
+  padding: 24px;
+  border-radius: 12px;
+  border: 2px solid #dee2e6;
+  text-align: center;
+  transition: all 0.3s;
+}
+
+.badge-card:hover {
+  border-color: #14BF96;
+  transform: translateY(-4px);
+  box-shadow: 0 8px 16px rgba(20, 191, 150, 0.2);
+}
+
+.badge-icon {
+  width: 80px;
+  height: 80px;
+  margin-bottom: 16px;
+}
+
+.badge-card h3 {
+  margin: 0 0 8px 0;
+  font-size: 16px;
+  color: #212529;
+}
+
+.badge-category {
+  display: block;
+  margin-bottom: 8px;
+  padding: 4px 10px;
+  background: #e7f3ff;
+  color: #1e40af;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+  display: inline-block;
+}
+
+.badge-date {
+  display: block;
+  font-size: 12px;
+  color: #6c757d;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .khan-dashboard {
+    padding: 16px;
+  }
+
+  .analytics-summary {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .content-grid,
+  .badges-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .tabs {
+    overflow-x: auto;
+  }
+
+  .section-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+}

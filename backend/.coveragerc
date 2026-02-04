@@ -1,0 +1,88 @@
+[run]
+# Specific source directories for better performance
+source =
+    core
+    models
+    services
+    api
+    agents
+    algorithms
+    analytics
+
+omit =
+    */tests/*
+    */test_*
+    */conftest.py
+    */__pycache__/*
+    */venv/*
+    */env/*
+    */migrations/*
+    */alembic/*
+    */site-packages/*
+    setup.py
+    analyze_*.py
+    count_*.py
+    *_test.py
+    */node_modules/*
+    */frontend/*
+    */cache/*
+    */config/*
+
+[report]
+# Precision for coverage percentages
+precision = 2
+
+# Show missing lines
+show_missing = True
+
+# Sort by coverage percentage
+sort = Cover
+
+# Exclude lines from coverage
+exclude_lines =
+    # Standard pragma
+    pragma: no cover
+
+    # Don't complain about missing debug code
+    def __repr__
+    def __str__
+
+    # Don't complain if tests don't hit defensive assertion code
+    raise AssertionError
+    raise NotImplementedError
+
+    # Don't complain if non-runnable code isn't run
+    if __name__ == .__main__.:
+    if TYPE_CHECKING:
+    if typing.TYPE_CHECKING:
+
+    # Don't complain about abstract methods
+    @abstractmethod
+    @abc.abstractmethod
+
+    # Don't complain about overload signatures
+    @overload
+    @typing.overload
+
+    # Don't complain about protocol methods
+    \.\.\.
+    # Only exclude pass in abstract methods, not all pass statements
+    @abstractmethod\s*\n\s*def.*:\s*pass
+
+    # Don't complain about type stubs
+    \.\.\. # pragma: no cover
+
+# Show errors for debugging
+ignore_errors = False
+
+# Fail under threshold - CI/CD will fail if coverage drops below this
+fail_under = 18.0
+
+[html]
+directory = htmlcov
+title = Türkiye Üniversite Sınavları Platform - Test Coverage Report
+
+[json]
+output = coverage.json
+pretty_print = True
+show_contexts = True

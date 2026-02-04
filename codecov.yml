@@ -1,0 +1,140 @@
+# Codecov Configuration for Coverage Analysis
+# This file configures Codecov.io integration for coverage reporting and analysis
+
+# Coverage settings
+coverage:
+  precision: 2
+  round: down
+  range: "70...100"
+  
+  # Status checks configuration
+  status:
+    project:
+      default:
+        target: 80%
+        threshold: 1%
+        base: auto
+        flags:
+          - backend
+        paths:
+          - "backend/"
+    patch:
+      default:
+        target: 75%
+        threshold: 2%
+        base: auto
+        flags:
+          - backend
+    changes:
+      default:
+        target: 70%
+        threshold: 1%
+        base: auto
+
+# Component-based coverage (optional)
+component_management:
+  default_rules:
+    flag_coverage_not_uploaded_behavior: exclude
+  individual_components:
+    - component_id: core
+      name: Core Modules
+      paths:
+        - backend/core/
+      flag_regexes:
+        - backend
+    - component_id: agents
+      name: AI Agents
+      paths:
+        - backend/agents/
+      flag_regexes:
+        - backend
+    - component_id: services
+      name: Services
+      paths:
+        - backend/services/
+      flag_regexes:
+        - backend
+    - component_id: api
+      name: API Endpoints
+      paths:
+        - backend/api/
+      flag_regexes:
+        - backend
+
+# Flag management
+flag_management:
+  default_rules:
+    carryforward: true
+    statuses:
+      - type: project
+        target: 80%
+      - type: patch
+        target: 75%
+  individual_flags:
+    - name: backend
+      paths:
+        - backend/
+      carryforward: true
+
+# Ignore paths
+ignore:
+  - "backend/tests/"
+  - "backend/migrations/"
+  - "backend/static/"
+  - "backend/media/"
+  - "backend/uploads/"
+  - "backend/htmlcov/"
+  - "backend/.pytest_cache/"
+  - "backend/venv/"
+  - "backend/env/"
+  - "backend/__pycache__/"
+  - "**/*.pyc"
+  - "**/*.pyo"
+  - "**/*.pyd"
+  - "**/conftest.py"
+  - "**/setup.py"
+  - "**/manage.py"
+  - "**/wsgi.py"
+  - "**/asgi.py"
+
+# Comment configuration
+comment:
+  layout: "header, diff, flags, components, tree"
+  behavior: default
+  require_changes: false
+  require_base: no
+  require_head: yes
+  branches:
+    - main
+    - master
+    - develop
+
+# GitHub integration
+github_checks:
+  annotations: true
+
+# Pull request settings
+parsers:
+  gcov:
+    branch_detection:
+      conditional: yes
+      loop: yes
+      method: no
+      macro: no
+
+# Notification settings
+slack:
+  url: "secret:SLACK_WEBHOOK_URL"
+  threshold: 1%
+  message: "Coverage report for {{owner}}/{{repo}}"
+  attachments:
+    - color: "{{color}}"
+      text: "Coverage {{changed}} {{coverage}}% on {{commit}}"
+
+# Coverage report format
+codecov:
+  max_report_age: 24
+  require_ci_to_pass: yes
+  notify:
+    after_n_builds: 1
+    wait_for_ci: yes

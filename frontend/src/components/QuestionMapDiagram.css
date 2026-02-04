@@ -1,0 +1,243 @@
+/**
+ * QuestionMapDiagram Component Styles
+ *
+ * Responsive, accessible, print-friendly styles for maps and diagrams
+ * WCAG 2.1 AA compliant
+ */
+
+/* ==================== WRAPPER ==================== */
+
+.question-map-diagram-wrapper {
+  margin: 1.5rem 0;
+  padding: 1rem;
+  background-color: #ffffff;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* ==================== CAPTION ==================== */
+
+.question-map-diagram-caption {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 1rem;
+  text-align: center;
+  font-family: 'DejaVu Sans', Arial, sans-serif;
+}
+
+/* ==================== CONTAINER ==================== */
+
+.question-map-diagram-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 200px;
+  max-height: 600px;
+  padding: 1rem;
+  background-color: #fafafa;
+  border-radius: 4px;
+  overflow: auto;
+}
+
+.question-map-diagram-svg {
+  max-width: 100%;
+  max-height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.question-map-diagram-svg svg {
+  max-width: 100%;
+  max-height: 100%;
+  height: auto;
+  display: block;
+}
+
+/* ==================== ACCESSIBILITY ==================== */
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* ==================== RESPONSIVE DESIGN ==================== */
+
+/* Mobile (< 480px) */
+@media screen and (max-width: 480px) {
+  .question-map-diagram-wrapper {
+    padding: 0.75rem;
+    margin: 1rem 0;
+  }
+
+  .question-map-diagram-container {
+    max-height: 350px;
+    min-height: 150px;
+    padding: 0.5rem;
+  }
+
+  .question-map-diagram-caption {
+    font-size: 0.85rem;
+    margin-bottom: 0.75rem;
+  }
+}
+
+/* Tablet (481px - 768px) */
+@media screen and (min-width: 481px) and (max-width: 768px) {
+  .question-map-diagram-container {
+    max-height: 450px;
+  }
+
+  .question-map-diagram-caption {
+    font-size: 0.9rem;
+  }
+}
+
+/* Desktop (> 768px) */
+@media screen and (min-width: 769px) {
+  .question-map-diagram-container {
+    max-height: 600px;
+  }
+}
+
+/* ==================== DARK MODE SUPPORT ==================== */
+
+@media (prefers-color-scheme: dark) {
+  .question-map-diagram-wrapper {
+    background-color: #2d2d2d;
+    border-color: #444;
+  }
+
+  .question-map-diagram-caption {
+    color: #e0e0e0;
+  }
+
+  .question-map-diagram-container {
+    background-color: #1a1a1a;
+  }
+
+  /* Invert SVG colors for dark mode */
+  .question-map-diagram-svg svg {
+    filter: invert(1) hue-rotate(180deg);
+  }
+}
+
+/* ==================== HIGH CONTRAST MODE ==================== */
+
+@media (prefers-contrast: high) {
+  .question-map-diagram-wrapper {
+    border: 3px solid #000;
+    box-shadow: none;
+  }
+
+  .question-map-diagram-caption {
+    font-weight: 700;
+    color: #000;
+  }
+
+  .question-map-diagram-container {
+    border: 2px solid #000;
+  }
+}
+
+/* ==================== PRINT STYLES ==================== */
+
+@media print {
+  .question-map-diagram-wrapper {
+    page-break-inside: avoid;
+    border: 2px solid #000;
+    box-shadow: none;
+    margin: 1rem 0;
+    padding: 1rem;
+  }
+
+  .question-map-diagram-container {
+    max-height: none;
+    background-color: #fff;
+    border: 1px solid #000;
+    overflow: visible;
+  }
+
+  .question-map-diagram-caption {
+    color: #000;
+    font-weight: bold;
+  }
+
+  /* Ensure SVG prints correctly */
+  .question-map-diagram-svg svg {
+    max-width: 100%;
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+}
+
+/* ==================== LOADING STATE ==================== */
+
+.question-map-diagram-wrapper.loading {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.question-map-diagram-wrapper.loading::after {
+  content: "Yükleniyor...";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 1rem;
+  color: #666;
+}
+
+/* ==================== ERROR STATE ==================== */
+
+.question-map-diagram-wrapper.error {
+  border-color: #d32f2f;
+  background-color: #ffebee;
+}
+
+.question-map-diagram-wrapper.error .question-map-diagram-caption::before {
+  content: "⚠ ";
+  color: #d32f2f;
+}
+
+/* ==================== FOCUS STYLES (Accessibility) ==================== */
+
+.question-map-diagram-container:focus-within {
+  outline: 3px solid #4285f4;
+  outline-offset: 2px;
+}
+
+/* ==================== ANIMATION ==================== */
+
+@media (prefers-reduced-motion: no-preference) {
+  .question-map-diagram-wrapper {
+    animation: fadeIn 0.3s ease-in;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+}
+
+/* Respect reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  .question-map-diagram-wrapper {
+    animation: none;
+  }
+}

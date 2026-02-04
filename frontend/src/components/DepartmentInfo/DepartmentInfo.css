@@ -1,0 +1,614 @@
+/**
+ * Task 103: Department Information - Styles
+ */
+
+.department-info {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+/* Header */
+.info-header {
+  margin-bottom: 30px;
+}
+
+.info-header h2 {
+  margin: 0 0 20px 0;
+  color: #1f2937;
+  font-size: 28px;
+}
+
+.quick-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 15px;
+}
+
+.stat-card {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #fff;
+  padding: 20px;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.stat-label {
+  font-size: 14px;
+  opacity: 0.9;
+}
+
+.stat-value {
+  font-size: 28px;
+  font-weight: 700;
+}
+
+/* Tabs */
+.info-tabs {
+  display: flex;
+  gap: 10px;
+  border-bottom: 2px solid #e5e7eb;
+  margin-bottom: 30px;
+}
+
+.tab {
+  padding: 12px 24px;
+  background: none;
+  border: none;
+  border-bottom: 3px solid transparent;
+  color: #6b7280;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.tab:hover {
+  color: #374151;
+}
+
+.tab.active {
+  color: #3b82f6;
+  border-bottom-color: #3b82f6;
+}
+
+/* Content */
+.info-content {
+  min-height: 400px;
+}
+
+/* Loading & Error States */
+.department-info.loading,
+.department-info.error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  text-align: center;
+}
+
+.spinner {
+  width: 50px;
+  height: 50px;
+  border: 4px solid #e5e7eb;
+  border-top-color: #3b82f6;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.error-message {
+  color: #ef4444;
+  margin-bottom: 15px;
+}
+
+.btn-retry {
+  padding: 10px 20px;
+  background: #3b82f6;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+/* ============================================================
+   Curriculum Tab
+   ============================================================ */
+
+.curriculum-tab {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+.curriculum-overview {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+  padding: 20px;
+  background: #f9fafb;
+  border-radius: 8px;
+}
+
+.overview-item {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.overview-item .label {
+  font-size: 14px;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+.overview-item .value {
+  font-size: 20px;
+  color: #1f2937;
+  font-weight: 600;
+}
+
+.specializations h3,
+.skills-section h3 {
+  margin: 0 0 15px 0;
+  color: #1f2937;
+  font-size: 18px;
+}
+
+.specialization-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.specialization-badge {
+  padding: 10px 16px;
+  background: #dbeafe;
+  color: #1e40af;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.skills-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.skill-tag {
+  padding: 8px 14px;
+  background: #f3f4f6;
+  color: #374151;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 13px;
+}
+
+/* ============================================================
+   Careers Tab
+   ============================================================ */
+
+.careers-tab {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+.employment-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 15px;
+}
+
+.stat-box {
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  text-align: center;
+}
+
+.stat-title {
+  font-size: 13px;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+.stat-number {
+  font-size: 32px;
+  color: #1f2937;
+  font-weight: 700;
+}
+
+.careers-list {
+  display: grid;
+  gap: 15px;
+}
+
+.career-card {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 20px;
+  transition: all 0.2s;
+}
+
+.career-card:hover {
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+}
+
+.career-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 10px;
+}
+
+.career-header h4 {
+  margin: 0;
+  color: #1f2937;
+  font-size: 18px;
+}
+
+.demand-badge {
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.demand-badge.high {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.demand-badge.medium {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.demand-badge.low {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.career-industry {
+  color: #6b7280;
+  font-size: 14px;
+  margin-bottom: 15px;
+  font-style: italic;
+}
+
+.career-stats {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.career-stat {
+  display: flex;
+  gap: 6px;
+  font-size: 14px;
+}
+
+.career-stat .label {
+  color: #6b7280;
+}
+
+.career-stat .value {
+  color: #1f2937;
+  font-weight: 600;
+}
+
+.career-stat .value.capitalize {
+  text-transform: capitalize;
+}
+
+/* ============================================================
+   Salaries Tab
+   ============================================================ */
+
+.salaries-tab {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+
+.salary-progression h3,
+.regional-salaries h3 {
+  margin: 0 0 20px 0;
+  color: #1f2937;
+  font-size: 20px;
+}
+
+.progression-chart {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.progression-item {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+}
+
+.level-name {
+  min-width: 120px;
+  font-weight: 600;
+  color: #374151;
+  font-size: 14px;
+}
+
+.salary-bar {
+  flex: 1;
+  position: relative;
+}
+
+.salary-range {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  font-size: 13px;
+  color: #6b7280;
+}
+
+.salary-range .avg {
+  font-weight: 700;
+  color: #1f2937;
+}
+
+.bar-fill {
+  height: 30px;
+  background: linear-gradient(90deg, #60a5fa 0%, #3b82f6 100%);
+  border-radius: 4px;
+  transition: width 0.5s ease;
+}
+
+.regional-list {
+  display: grid;
+  gap: 12px;
+}
+
+.regional-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+}
+
+.city-name {
+  font-weight: 600;
+  color: #1f2937;
+  font-size: 15px;
+}
+
+.city-salary {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+}
+
+.avg-salary {
+  font-size: 18px;
+  font-weight: 700;
+  color: #3b82f6;
+}
+
+.salary-range-text {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+/* ============================================================
+   Sectors Tab
+   ============================================================ */
+
+.sectors-tab {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+.market-overview h3,
+.top-skills h3,
+.sectors-list h3 {
+  margin: 0 0 20px 0;
+  color: #1f2937;
+  font-size: 20px;
+}
+
+.market-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 15px;
+}
+
+.market-stat {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.market-stat .label {
+  font-size: 13px;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+.market-stat .value {
+  font-size: 24px;
+  color: #1f2937;
+  font-weight: 700;
+}
+
+.market-stat .value.growth-high {
+  color: #059669;
+}
+
+.market-stat .value.growth-medium {
+  color: #d97706;
+}
+
+.market-stat .value.growth-low {
+  color: #dc2626;
+}
+
+.skills-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.skill-badge {
+  padding: 10px 16px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #fff;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 500;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.sectors-list {
+  display: grid;
+  gap: 15px;
+}
+
+.sector-card {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 20px;
+}
+
+.sector-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 15px;
+}
+
+.sector-header h4 {
+  margin: 0;
+  color: #1f2937;
+  font-size: 18px;
+}
+
+.demand-indicator {
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.demand-indicator.high {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.demand-indicator.medium {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.demand-indicator.low {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.sector-metrics {
+  display: flex;
+  gap: 30px;
+}
+
+.metric {
+  display: flex;
+  gap: 6px;
+  font-size: 14px;
+}
+
+.metric-label {
+  color: #6b7280;
+}
+
+.metric-value {
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.metric-value.risk-high {
+  color: #dc2626;
+}
+
+.metric-value.risk-medium {
+  color: #d97706;
+}
+
+.metric-value.risk-low {
+  color: #059669;
+}
+
+/* Empty State */
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  color: #6b7280;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .info-header h2 {
+    font-size: 22px;
+  }
+
+  .quick-stats {
+    grid-template-columns: 1fr;
+  }
+
+  .info-tabs {
+    overflow-x: auto;
+  }
+
+  .tab {
+    white-space: nowrap;
+  }
+
+  .progression-item {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .level-name {
+    min-width: auto;
+  }
+
+  .sector-metrics {
+    flex-direction: column;
+    gap: 10px;
+  }
+}

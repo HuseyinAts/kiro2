@@ -1,0 +1,114 @@
+# Prometheus Configuration - Task 52.4
+
+global:
+  scrape_interval: 15s  # Scrape targets every 15 seconds
+  evaluation_interval: 15s  # Evaluate rules every 15 seconds
+  external_labels:
+    cluster: 'kiro-education'
+    environment: '${ENVIRONMENT:-production}'
+
+# Alertmanager configuration
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+            - alertmanager:9093
+
+# Load rules
+rule_files:
+  - '/etc/prometheus/alerts/*.yml'
+  - '/etc/prometheus/prometheus_video_alerts.yml'
+
+# Scrape configurations
+scrape_configs:
+  # FastAPI Application Metrics
+  - job_name: 'fastapi'
+    static_configs:
+      - targets:
+          - 'backend:8000'
+    metrics_path: '/api/metrics'
+    scrape_interval: 10s
+
+  # PostgreSQL Metrics
+  - job_name: 'postgresql'
+    static_configs:
+      - targets:
+          - 'postgres_exporter:9187'
+    scrape_interval: 30s
+
+  # Redis Metrics
+  - job_name: 'redis'
+    static_configs:
+      - targets:
+          - 'redis_exporter:9121'
+    scrape_interval: 15s
+
+  # System Metrics (Node Exporter)
+  - job_name: 'node'
+    static_configs:
+      - targets:
+          - 'node_exporter:9100'
+    scrape_interval: 15s
+
+  # Prometheus itself
+  - job_name: 'prometheus'
+    static_configs:
+      - targets:
+          - 'localhost:9090'
+
+  # Database Replication Metrics (custom exporter)
+  - job_name: 'replication'
+    static_configs:
+      - targets:
+          - 'backend:8000'
+    metrics_path: '/api/monitoring/replication/metrics'
+    scrape_interval: 30s
+
+  # Backup Metrics (custom exporter)
+  - job_name: 'backup'
+    static_configs:
+      - targets:
+          - 'backend:8000'
+    metrics_path: '/api/monitoring/backup/metrics'
+    scrape_interval: 60s
+
+  # Performance Metrics
+  - job_name: 'performance'
+    static_configs:
+      - targets:
+          - 'backend:8000'
+    metrics_path: '/api/monitoring/performance/metrics'
+    scrape_interval: 10s
+
+  # Cache Metrics
+  - job_name: 'cache'
+    static_configs:
+      - targets:
+          - 'backend:8000'
+    metrics_path: '/api/monitoring/cache/metrics'
+    scrape_interval: 15s
+
+  # Query Optimizer Metrics
+  - job_name: 'query_optimizer'
+    static_configs:
+      - targets:
+          - 'backend:8000'
+    metrics_path: '/api/monitoring/query/metrics'
+    scrape_interval: 30s
+
+  # Video API Metrics (Custom Prometheus Exporter)
+  - job_name: 'video-api'
+    static_configs:
+      - targets:
+          - 'prometheus-exporter:9091'
+    metrics_path: '/metrics'
+    scrape_interval: 15s
+    scrape_timeout: 10s
+
+  # Health Check Metrics
+  - job_name: 'health-check'
+    static_configs:
+      - targets:
+          - 'backend:8000'
+    metrics_path: '/api/youtube/health'
+    scrape_interval: 30s

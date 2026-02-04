@@ -1,0 +1,114 @@
+{
+  "environment": "staging",
+  "feature_flags": {
+    "semantic_search": true,
+    "advanced_search": true,
+    "hybrid_search": true,
+    "turkish_content_filter": true,
+    "relevance_filter": true,
+    "difficulty_filter": true,
+    "multi_layer_cache": true,
+    "cache_warming": true,
+    "aggressive_caching": true,
+    "parallel_discovery": true,
+    "circuit_breaker": true,
+    "rate_limiting": true,
+    "quality_scoring": true,
+    "trusted_channels_boost": true,
+    "detailed_logging": true,
+    "metrics_collection": true,
+    "ai_relevance_scoring": true,
+    "personalized_ranking": true
+  },
+  "quality_thresholds": {
+    "language": {
+      "min_score": 0.75,
+      "turkish_char_weight": 0.3
+    },
+    "relevance": {
+      "min_score": 0.65,
+      "keyword_weight": 0.6,
+      "subtopic_weight": 0.4
+    },
+    "difficulty": {
+      "min_match": 0.4,
+      "tolerance": 1
+    },
+    "overall": {
+      "min_score": 0.65,
+      "language_weight": 0.3,
+      "relevance_weight": 0.5,
+      "difficulty_weight": 0.2
+    },
+    "video_quality": {
+      "min_views": 50,
+      "min_duration": 60,
+      "max_duration": 3600
+    },
+    "channel_trust": {
+      "boost": 0.15,
+      "min_subscribers": 500
+    }
+  },
+  "performance_config": {
+    "cache": {
+      "ttl_seconds": 1800,
+      "memory_size": 50,
+      "warming_enabled": true
+    },
+    "parallel": {
+      "max_searches": 5,
+      "timeout_seconds": 10
+    },
+    "rate_limiting": {
+      "per_ip": 50,
+      "per_user": 100,
+      "youtube_quota": 10000
+    },
+    "circuit_breaker": {
+      "failure_threshold": 3,
+      "timeout_seconds": 30,
+      "success_threshold": 2
+    },
+    "targets": {
+      "p95_ms": 5000,
+      "p99_ms": 8000
+    },
+    "discovery": {
+      "max_per_subject": 10,
+      "max_total": 30
+    }
+  },
+  "ab_tests": [
+    {
+      "test_id": "cache_strategy_test",
+      "name": "Aggressive Caching Strategy",
+      "description": "Test agresif cache stratejisi",
+      "variants": [
+        {
+          "name": "control",
+          "description": "Normal cache (1 saat TTL)",
+          "traffic_percentage": 50,
+          "config_overrides": {
+            "cache_ttl_seconds": 3600,
+            "aggressive_caching": false
+          },
+          "enabled": true
+        },
+        {
+          "name": "treatment",
+          "description": "Agresif cache (2 saat TTL)",
+          "traffic_percentage": 50,
+          "config_overrides": {
+            "cache_ttl_seconds": 7200,
+            "aggressive_caching": true
+          },
+          "enabled": true
+        }
+      ],
+      "start_date": "2025-11-01T00:00:00",
+      "end_date": null,
+      "enabled": true
+    }
+  ]
+}

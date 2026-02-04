@@ -1,0 +1,341 @@
+# =============================================================================
+# Application Deployment
+# =============================================================================
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: turkiye-sinav-app
+  namespace: turkiye-sinav-platform
+  labels:
+    app.kubernetes.io/name: turkiye-sinav-app
+    app.kubernetes.io/component: backend
+    app.kubernetes.io/part-of: turkiye-sinav-platform
+spec:
+  replicas: 3
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: turkiye-sinav-app
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: turkiye-sinav-app
+        app.kubernetes.io/component: backend
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8000"
+        prometheus.io/path: "/metrics"
+    spec:
+      serviceAccountName: turkiye-sinav-service-account
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        fsGroup: 1000
+      containers:
+      - name: app
+        image: ghcr.io/turkiye-universite-sinav-platform/app:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8000
+          name: http
+          protocol: TCP
+        env:
+        - name: DATABASE_URL
+          valueFrom:
+            secretKeyRef:
+              name: turkiye-sinav-secrets
+              key: database-url
+        - name: REDIS_URL
+          value: "redis://$(REDIS_HOST):$(REDIS_PORT)/$(REDIS_DB)"
+        - name: ELASTICSEARCH_URL
+          value: "http://$(ELASTICSEARCH_HOST):$(ELASTICSEARCH_PORT)"
+        - name: SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: turkiye-sinav-secrets
+              key: secret-key
+        - name: JWT_SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: turkiye-sinav-secrets
+              key: jwt-secret-key
+        - name: OPENAI_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: turkiye-sinav-secrets
+              key: openai-api-key
+        envFrom:
+        - configMapRef:
+            name: turkiye-sinav-config
+        resources:
+          requests:
+            memory: "1Gi"
+            cpu: "500m"
+          limits:
+            memory: "2Gi"
+            cpu: "1000m"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+            httpHeaders:
+            - name: X-Health-Check
+              value: "liveness"
+          initialDelaySeconds: 60
+          periodSeconds: 30
+          timeoutSeconds: 10
+          failureThreshold: 3
+          successThreshold: 1
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+            httpHeaders:
+            - name: X-Health-Check
+              value: "readiness"
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+          successThreshold: 1
+        startupProbe:
+          httpGet:
+            path: /health
+            port: 8000
+            httpHeaders:
+            - name: X-Health-Check
+              value: "startup"
+          initialDelaySeconds: 10
+          periodSeconds: 5
+          timeoutSeconds: 3
+          failureThreshold: 30
+          successThreshold: 1
+        volumeMounts:
+        - name: static-files
+          mountPath: /app/static
+        - name: media-files
+          mountPath: /app/media
+        - name: logs
+          mountPath: /app/logs
+      volumes:
+      - name: static-files
+        persistentVolumeClaim:
+          claimName: static-files-pvc
+      - name: media-files
+        persistentVolumeClaim:
+          claimName: media-files-pvc
+      - name: logs
+        emptyDir: {}
+      imagePullSecrets:
+      - name: ghcr-secret
+
+---
+# =============================================================================
+# Celery Worker Deployment
+# =============================================================================
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: turkiye-sinav-worker
+  namespace: turkiye-sinav-platform
+  labels:
+    app.kubernetes.io/name: turkiye-sinav-worker
+    app.kubernetes.io/component: worker
+    app.kubernetes.io/part-of: turkiye-sinav-platform
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: turkiye-sinav-worker
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: turkiye-sinav-worker
+        app.kubernetes.io/component: worker
+    spec:
+      serviceAccountName: turkiye-sinav-service-account
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        fsGroup: 1000
+      containers:
+      - name: worker
+        image: ghcr.io/turkiye-universite-sinav-platform/app:latest
+        imagePullPolicy: Always
+        command: ["celery"]
+        args: ["-A", "backend.celery_app", "worker", "--loglevel=info", "--concurrency=4"]
+        env:
+        - name: DATABASE_URL
+          valueFrom:
+            secretKeyRef:
+              name: turkiye-sinav-secrets
+              key: database-url
+        - name: CELERY_BROKER_URL
+          value: "redis://$(REDIS_HOST):$(REDIS_PORT)/$(CELERY_BROKER_DB)"
+        - name: CELERY_RESULT_BACKEND
+          value: "redis://$(REDIS_HOST):$(REDIS_PORT)/$(CELERY_RESULT_DB)"
+        envFrom:
+        - configMapRef:
+            name: turkiye-sinav-config
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "250m"
+          limits:
+            memory: "1Gi"
+            cpu: "500m"
+        volumeMounts:
+        - name: logs
+          mountPath: /app/logs
+      volumes:
+      - name: logs
+        emptyDir: {}
+      imagePullSecrets:
+      - name: ghcr-secret
+
+---
+# =============================================================================
+# Celery Beat Scheduler Deployment
+# =============================================================================
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: turkiye-sinav-scheduler
+  namespace: turkiye-sinav-platform
+  labels:
+    app.kubernetes.io/name: turkiye-sinav-scheduler
+    app.kubernetes.io/component: scheduler
+    app.kubernetes.io/part-of: turkiye-sinav-platform
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: turkiye-sinav-scheduler
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: turkiye-sinav-scheduler
+        app.kubernetes.io/component: scheduler
+    spec:
+      serviceAccountName: turkiye-sinav-service-account
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        fsGroup: 1000
+      containers:
+      - name: scheduler
+        image: ghcr.io/turkiye-universite-sinav-platform/app:latest
+        imagePullPolicy: Always
+        command: ["celery"]
+        args: ["-A", "backend.celery_app", "beat", "--loglevel=info"]
+        env:
+        - name: DATABASE_URL
+          valueFrom:
+            secretKeyRef:
+              name: turkiye-sinav-secrets
+              key: database-url
+        - name: CELERY_BROKER_URL
+          value: "redis://$(REDIS_HOST):$(REDIS_PORT)/$(CELERY_BROKER_DB)"
+        - name: CELERY_RESULT_BACKEND
+          value: "redis://$(REDIS_HOST):$(REDIS_PORT)/$(CELERY_RESULT_DB)"
+        envFrom:
+        - configMapRef:
+            name: turkiye-sinav-config
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "100m"
+          limits:
+            memory: "512Mi"
+            cpu: "200m"
+        volumeMounts:
+        - name: logs
+          mountPath: /app/logs
+      volumes:
+      - name: logs
+        emptyDir: {}
+      imagePullSecrets:
+      - name: ghcr-secret
+
+---
+# =============================================================================
+# Nginx Deployment
+# =============================================================================
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: turkiye-sinav-nginx
+  namespace: turkiye-sinav-platform
+  labels:
+    app.kubernetes.io/name: turkiye-sinav-nginx
+    app.kubernetes.io/component: nginx
+    app.kubernetes.io/part-of: turkiye-sinav-platform
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: turkiye-sinav-nginx
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: turkiye-sinav-nginx
+        app.kubernetes.io/component: nginx
+    spec:
+      serviceAccountName: turkiye-sinav-service-account
+      containers:
+      - name: nginx
+        image: nginx:1.25-alpine
+        ports:
+        - containerPort: 80
+          name: http
+        - containerPort: 443
+          name: https
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "256Mi"
+            cpu: "200m"
+        volumeMounts:
+        - name: nginx-config
+          mountPath: /etc/nginx/nginx.conf
+          subPath: nginx.conf
+        - name: static-files
+          mountPath: /var/www/static
+          readOnly: true
+        - name: media-files
+          mountPath: /var/www/media
+          readOnly: true
+        - name: frontend-files
+          mountPath: /var/www/html
+          readOnly: true
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 80
+          initialDelaySeconds: 30
+          periodSeconds: 30
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 80
+          initialDelaySeconds: 10
+          periodSeconds: 10
+      volumes:
+      - name: nginx-config
+        configMap:
+          name: nginx-config
+      - name: static-files
+        persistentVolumeClaim:
+          claimName: static-files-pvc
+      - name: media-files
+        persistentVolumeClaim:
+          claimName: media-files-pvc
+      - name: frontend-files
+        persistentVolumeClaim:
+          claimName: frontend-files-pvc

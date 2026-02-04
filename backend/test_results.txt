@@ -1,0 +1,488 @@
+============================= test session starts =============================
+platform win32 -- Python 3.11.9, pytest-7.4.3, pluggy-1.6.0
+rootdir: C:\Users\husey\kiro2\backend
+configfile: pytest.ini
+plugins: anyio-3.7.1, Faker-37.5.3, langsmith-0.4.14, asyncio-0.21.1, cov-4.1.0, env-1.1.5, flask-1.3.0, html-4.1.1, metadata-3.1.1, mock-3.12.0, picked-0.5.1, testmon-2.1.3, timeout-2.4.0, xdist-3.8.0
+asyncio: mode=Mode.AUTO
+collected 1794 items / 4 skipped
+
+tests\fast\test_agents_accessibility.py .................                [  0%]
+tests\fast\test_agents_study_buddy.py ..................                 [  1%]
+tests\fast\test_algorithm_implementations.py ssssss.................     [  3%]
+tests\fast\test_algorithms_agents_imports.py ...............sss......... [  4%]
+.......                                                                  [  5%]
+tests\fast\test_algorithms_with_data.py ..                               [  5%]
+tests\fast\test_api_agents.py ...........                                [  5%]
+tests\fast\test_api_cache.py .................s..........                [  7%]
+tests\fast\test_api_endpoints_basic.py .............ss............ss.... [  9%]
+ss....ss....ssss........ss                                               [ 10%]
+tests\fast\test_api_endpoints_detailed.py ....................           [ 11%]
+tests\fast\test_api_health_comprehensive.py ...F........FF.FF....        [ 12%]
+tests\fast\test_api_health_real.py ..F                                   [ 13%]
+tests\fast\test_api_integration.py ...................                   [ 14%]
+tests\fast\test_api_method_coverage.py .........................         [ 15%]
+tests\fast\test_api_monitoring.py ...................                    [ 16%]
+tests\fast\test_api_quick.py .....                                       [ 16%]
+tests\fast\test_api_quick_wins.py .........................s............ [ 19%]
+s                                                                        [ 19%]
+tests\fast\test_api_validation.py ....EF....E..E.......E......           [ 20%]
+tests\fast\test_auth_system_deepened_fixed.py .sssssss                   [ 21%]
+tests\fast\test_breakthrough_25_percent.py s...s.............s..s....... [ 22%]
+s...s.....                                                               [ 23%]
+tests\fast\test_cache_system_deepened_fixed.py ........s.                [ 23%]
+tests\fast\test_comprehensive_execution.py .....ssssss..ssss.s..ss       [ 25%]
+tests\fast\test_config_value_access.py ..............                    [ 25%]
+tests\fast\test_core_assessment_system.py ...F.FF.FF.......              [ 26%]
+tests\fast\test_core_base_service_fixed.py .....                         [ 27%]
+tests\fast\test_core_base_service_realistic.py ......................... [ 28%]
+...                                                                      [ 28%]
+tests\fast\test_core_config_comprehensive.py ........................... [ 30%]
+..............                                                           [ 30%]
+tests\fast\test_core_config_fixed.py .............                       [ 31%]
+tests\fast\test_core_database_comprehensive.py ssssssssssssssssssssss    [ 32%]
+tests\fast\test_core_encoding_comprehensive.py ......................... [ 34%]
+...................                                                      [ 35%]
+tests\fast\test_core_exceptions_fixed.py .........                       [ 35%]
+tests\fast\test_core_expert_validation.py ..FF.FF.F....F........         [ 37%]
+tests\fast\test_core_logging_config.py ...........                       [ 37%]
+tests\fast\test_core_logging_middleware.py .............                 [ 38%]
+tests\fast\test_core_method_coverage.py ...s.s......s...ss..             [ 39%]
+tests\fast\test_core_metrics_collector.py .............                  [ 40%]
+tests\fast\test_core_modules_comprehensive.py ....ssss..s..........s     [ 41%]
+tests\fast\test_core_modules_final.py .F.sssssss..sFs..F..ssss           [ 42%]
+tests\fast\test_core_rag_service.py ...s....s.F..                        [ 43%]
+tests\fast\test_core_services_execution.py .s.s.........                 [ 44%]
+tests\fast\test_core_structured_logger.py ..FFFFFFF.FFFFFF............   [ 45%]
+tests\fast\test_core_systems_execution.py sssss...ss..ss                 [ 46%]
+tests\fast\test_database_query_optimizer.py ........F.FFFF........ss     [ 47%]
+tests\fast\test_database_repositories.py ssssss                          [ 48%]
+tests\fast\test_embedding_cache.py .....................F...ss           [ 49%]
+tests\fast\test_enum_instantiation.py ....sssFssss                       [ 50%]
+tests\fast\test_exception_handling_execution.py ssssssssssssss           [ 51%]
+tests\fast\test_fastapi_comprehensive.py ...Fssssssssssssssssss          [ 52%]
+tests\fast\test_final_25_percent_push.py s..s...s..s..s.....s....s..s... [ 54%]
+s.s...                                                                   [ 54%]
+tests\fast\test_final_coverage_push.py ......ss.....s...s.               [ 55%]
+tests\fast\test_final_milestone_25.py ......................s...         [ 57%]
+tests\fast\test_final_push_25_percent.py sssss..ss....                   [ 57%]
+tests\fast\test_high_value_zero_coverage.py s.s..s..s........s..s..s...s [ 59%]
+..s..                                                                    [ 59%]
+tests\fast\test_integrations_modules.py ss........                       [ 60%]
+tests\fast\test_large_modules_boost.py .s.s..ss.s.......s                [ 61%]
+tests\fast\test_learning_path_agent_methods.py ..ss.                     [ 61%]
+tests\fast\test_learning_style_comprehensive.py ........................ [ 62%]
+..                                                                       [ 62%]
+tests\fast\test_llm_cache.py .......................s                    [ 64%]
+tests\fast\test_microservices_mocked.py ss.s...sss                       [ 64%]
+tests\fast\test_models_comprehensive.py ....FFFFF.FFFFFFF....            [ 65%]
+tests\fast\test_models_dashboard_comprehensive.py ...................... [ 67%]
+.............                                                            [ 67%]
+tests\fast\test_models_enums_comprehensive.py .......................... [ 69%]
+................                                                         [ 70%]
+tests\fast\test_models_exam_comprehensive.py ........................... [ 71%]
+........                                                                 [ 72%]
+tests\fast\test_models_learning.py ..................................... [ 74%]
+........                                                                 [ 74%]
+tests\fast\test_models_revolutionary.py ................................ [ 76%]
+................................                                         [ 78%]
+tests\fast\test_models_user_comprehensive.py ........................... [ 79%]
+.........                                                                [ 80%]
+tests\fast\test_monitoring_quick.py .....                                [ 80%]
+tests\fast\test_monitoring_system_deepened_fixed.py ....s.s.s.           [ 81%]
+tests\fast\test_more_agents.py ...ssss                                   [ 81%]
+tests\fast\test_more_algorithms.py .s.s...........                       [ 82%]
+tests\fast\test_more_models.py .ss...sss.s...s.s.s                       [ 83%]
+tests\fast\test_question_generator_methods.py ..s.s.                     [ 83%]
+tests\fast\test_real_coverage_boost.py ......................            [ 85%]
+tests\fast\test_real_method_execution.py .......s.......s                [ 85%]
+tests\fast\test_service_layer.py ssssssssss.sss.                         [ 86%]
+tests\fast\test_services_initialization.py ....ss...s.s................. [ 88%]
+s.sss.s..ss                                                              [ 88%]
+tests\fast\test_simple_function_calls.py ....sss......                   [ 89%]
+tests\fast\test_sinav_motoru_critical.py ............................... [ 91%]
+.                                                                        [ 91%]
+tests\fast\test_sinav_motoru_full.py .......................             [ 92%]
+tests\fast\test_sinav_simple.py .........                                [ 93%]
+tests\fast\test_ultra_boost_25.py ................                       [ 94%]
+tests\fast\test_unified_logging_system.py ..........                     [ 94%]
+tests\fast\test_unified_session_system.py ............                   [ 95%]
+tests\fast\test_utility_scripts_execution.py ....ss...F..ssss.sFF        [ 96%]
+tests\fast\test_utils_modules.py .ss                                     [ 96%]
+tests\fast\test_youtube_discovery_methods.py ssssss                      [ 96%]
+tests\fast\test_zero_coverage_boost.py s.s.s..F..s..s..s..F..s.s..       [ 98%]
+tests\fast\test_zero_to_hero.py s.........s..s..s..s..s.s..              [100%]
+
+============================== warnings summary ===============================
+models_unified.py:20
+  C:\Users\husey\kiro2\backend\models_unified.py:20: MovedIn20Warning: The ``declarative_base()`` function is now available as sqlalchemy.orm.declarative_base(). (deprecated since: 2.0) (Background on SQLAlchemy 2.0 at: https://sqlalche.me/e/b8d9)
+    Base = declarative_base()
+
+..\..\AppData\Local\Programs\Python\Python311\Lib\site-packages\pydantic\_internal\_generate_schema.py:298: 11 warnings
+tests/fast/test_algorithms_agents_imports.py: 10 warnings
+  C:\Users\husey\AppData\Local\Programs\Python\Python311\Lib\site-packages\pydantic\_internal\_generate_schema.py:298: PydanticDeprecatedSince20: `json_encoders` is deprecated. See https://docs.pydantic.dev/2.11/concepts/serialization/#custom-serializers for alternatives. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.11/migration/
+    warnings.warn(
+
+..\..\AppData\Local\Programs\Python\Python311\Lib\site-packages\pydantic\fields.py:1062
+tests/fast/test_algorithms_agents_imports.py::TestCoreModulesImports::test_automated_question_generator_import
+tests/fast/test_api_endpoints_basic.py::TestSoruBankasiAPI::test_import
+tests/fast/test_api_endpoints_basic.py::TestQuestionBankManagementAPI::test_import
+tests/fast/test_api_endpoints_basic.py::TestTurkishNLPAPI::test_import
+  C:\Users\husey\AppData\Local\Programs\Python\Python311\Lib\site-packages\pydantic\fields.py:1062: PydanticDeprecatedSince20: `min_items` is deprecated and will be removed, use `min_length` instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.11/migration/
+    warn('`min_items` is deprecated and will be removed, use `min_length` instead', DeprecationWarning)
+
+..\..\AppData\Local\Programs\Python\Python311\Lib\site-packages\pydantic\fields.py:1068
+tests/fast/test_algorithms_agents_imports.py::TestCoreModulesImports::test_automated_question_generator_import
+tests/fast/test_api_endpoints_basic.py::TestSoruBankasiAPI::test_import
+tests/fast/test_api_endpoints_basic.py::TestQuestionBankManagementAPI::test_import
+tests/fast/test_api_endpoints_basic.py::TestTurkishNLPAPI::test_import
+  C:\Users\husey\AppData\Local\Programs\Python\Python311\Lib\site-packages\pydantic\fields.py:1068: PydanticDeprecatedSince20: `max_items` is deprecated and will be removed, use `max_length` instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.11/migration/
+    warn('`max_items` is deprecated and will be removed, use `max_length` instead', DeprecationWarning)
+
+..\..\AppData\Local\Programs\Python\Python311\Lib\site-packages\pydantic\_internal\_config.py:323: 9 warnings
+tests/fast/test_algorithm_implementations.py: 1 warning
+tests/fast/test_algorithms_agents_imports.py: 4 warnings
+tests/fast/test_api_endpoints_basic.py: 23 warnings
+tests/fast/test_api_integration.py: 2 warnings
+  C:\Users\husey\AppData\Local\Programs\Python\Python311\Lib\site-packages\pydantic\_internal\_config.py:323: PydanticDeprecatedSince20: Support for class-based `config` is deprecated, use ConfigDict instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.11/migration/
+    warnings.warn(DEPRECATION_MESSAGE, DeprecationWarning)
+
+core\rag_service.py:77
+  C:\Users\husey\kiro2\backend\core\rag_service.py:77: LangChainDeprecationWarning: The class `HuggingFaceEmbeddings` was deprecated in LangChain 0.2.2 and will be removed in 1.0. An updated version of the class exists in the :class:`~langchain-huggingface package and should be used instead. To use it run `pip install -U :class:`~langchain-huggingface` and import as `from :class:`~langchain_huggingface import HuggingFaceEmbeddings``.
+    self.embeddings = HuggingFaceEmbeddings(
+
+core\vector_store_factory.py:139
+  C:\Users\husey\kiro2\backend\core\vector_store_factory.py:139: LangChainDeprecationWarning: The class `Chroma` was deprecated in LangChain 0.2.9 and will be removed in 1.0. An updated version of the class exists in the :class:`~langchain-chroma package and should be used instead. To use it run `pip install -U :class:`~langchain-chroma` and import as `from :class:`~langchain_chroma import Chroma``.
+    vector_store = Chroma(
+
+tests/fast/test_algorithm_implementations.py::TestMorphologyAwareIRT::test_morphology_irt_class_exists
+  C:\Users\husey\AppData\Local\Programs\Python\Python311\Lib\site-packages\antlr4\Lexer.py:12: DeprecationWarning: typing.io is deprecated, import directly from typing instead. typing.io will be removed in Python 3.12.
+    from typing.io import TextIO
+
+tests/fast/test_algorithm_implementations.py::TestMorphologyAwareIRT::test_morphology_irt_class_exists
+  C:\Users\husey\AppData\Local\Programs\Python\Python311\Lib\site-packages\antlr4\Parser.py:6: DeprecationWarning: typing.io is deprecated, import directly from typing instead. typing.io will be removed in Python 3.12.
+    from typing.io import TextIO
+
+tests/fast/test_algorithm_implementations.py::TestMorphologyAwareIRT::test_morphology_irt_class_exists
+  C:\Users\husey\AppData\Local\Programs\Python\Python311\Lib\site-packages\zemberek\tokenization\antlr\turkish_lexer.py:3: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+    from pkg_resources import resource_filename
+
+tests/fast/test_algorithm_implementations.py::TestMorphologyAwareIRT::test_morphology_irt_class_exists
+  C:\Users\husey\AppData\Local\Programs\Python\Python311\Lib\site-packages\pkg_resources\__init__.py:3146: DeprecationWarning: Deprecated call to `pkg_resources.declare_namespace('mpl_toolkits')`.
+  Implementing implicit namespace packages (as specified in PEP 420) is preferred to `pkg_resources.declare_namespace`. See https://setuptools.pypa.io/en/latest/references/keywords.html#keyword-namespace-packages
+    declare_namespace(pkg)
+
+tests/fast/test_algorithms_agents_imports.py::TestCoreModulesImports::test_langchain_llm_service_import
+  C:\Users\husey\kiro2\backend\core\langchain_llm_service.py:13: LangChainDeprecationWarning: Importing InMemoryCache from langchain is deprecated. Please replace deprecated imports:
+  
+  >> from langchain import InMemoryCache
+  
+  with new imports of:
+  
+  >> from langchain_community.cache import InMemoryCache
+  You can use the langchain cli to **automatically** upgrade many imports. Please see documentation here <https://python.langchain.com/docs/versions/v0_2/>
+    from langchain.cache import InMemoryCache, RedisCache
+
+tests/fast/test_algorithms_agents_imports.py::TestCoreModulesImports::test_langchain_llm_service_import
+  C:\Users\husey\kiro2\backend\core\langchain_llm_service.py:13: LangChainDeprecationWarning: Importing RedisCache from langchain is deprecated. Please replace deprecated imports:
+  
+  >> from langchain import RedisCache
+  
+  with new imports of:
+  
+  >> from langchain_community.cache import RedisCache
+  You can use the langchain cli to **automatically** upgrade many imports. Please see documentation here <https://python.langchain.com/docs/versions/v0_2/>
+    from langchain.cache import InMemoryCache, RedisCache
+
+tests/fast/test_algorithms_agents_imports.py::TestCoreModulesImports::test_langchain_llm_service_import
+tests/fast/test_algorithms_agents_imports.py::TestCoreModulesImports::test_langchain_llm_service_import
+  C:\Users\husey\kiro2\backend\core\langchain_llm_service.py:18: LangChainDeprecationWarning: Importing chat models from langchain is deprecated. Importing from langchain will no longer be supported as of langchain==0.2.0. Please import from langchain-community instead:
+  
+  `from langchain_community.chat_models import ChatAnthropic`.
+  
+  To install langchain-community run `pip install -U langchain-community`.
+    from langchain.chat_models import ChatAnthropic, ChatOpenAI
+
+tests/fast/test_algorithms_agents_imports.py::TestCoreModulesImports::test_langchain_llm_service_import
+tests/fast/test_algorithms_agents_imports.py::TestCoreModulesImports::test_langchain_llm_service_import
+  C:\Users\husey\kiro2\backend\core\langchain_llm_service.py:18: LangChainDeprecationWarning: Importing chat models from langchain is deprecated. Importing from langchain will no longer be supported as of langchain==0.2.0. Please import from langchain-community instead:
+  
+  `from langchain_community.chat_models import ChatOpenAI`.
+  
+  To install langchain-community run `pip install -U langchain-community`.
+    from langchain.chat_models import ChatAnthropic, ChatOpenAI
+
+tests/fast/test_algorithms_agents_imports.py::TestCoreModulesImports::test_langchain_llm_service_import
+tests/fast/test_algorithms_agents_imports.py::TestCoreModulesImports::test_langchain_llm_service_import
+  C:\Users\husey\kiro2\backend\core\langchain_llm_service.py:19: LangChainDeprecationWarning: Importing HuggingFaceEmbeddings from langchain.embeddings is deprecated. Please replace deprecated imports:
+  
+  >> from langchain.embeddings import HuggingFaceEmbeddings
+  
+  with new imports of:
+  
+  >> from langchain_community.embeddings import HuggingFaceEmbeddings
+  You can use the langchain cli to **automatically** upgrade many imports. Please see documentation here <https://python.langchain.com/docs/versions/v0_2/>
+    from langchain.embeddings import HuggingFaceEmbeddings, OpenAIEmbeddings
+
+tests/fast/test_algorithms_agents_imports.py::TestCoreModulesImports::test_langchain_llm_service_import
+tests/fast/test_algorithms_agents_imports.py::TestCoreModulesImports::test_langchain_llm_service_import
+  C:\Users\husey\kiro2\backend\core\langchain_llm_service.py:19: LangChainDeprecationWarning: Importing OpenAIEmbeddings from langchain.embeddings is deprecated. Please replace deprecated imports:
+  
+  >> from langchain.embeddings import OpenAIEmbeddings
+  
+  with new imports of:
+  
+  >> from langchain_community.embeddings import OpenAIEmbeddings
+  You can use the langchain cli to **automatically** upgrade many imports. Please see documentation here <https://python.langchain.com/docs/versions/v0_2/>
+    from langchain.embeddings import HuggingFaceEmbeddings, OpenAIEmbeddings
+
+tests/fast/test_algorithms_agents_imports.py::TestCoreModulesImports::test_langchain_llm_service_import
+tests/fast/test_algorithms_agents_imports.py::TestCoreModulesImports::test_langchain_llm_service_import
+  C:\Users\husey\kiro2\backend\core\langchain_llm_service.py:20: LangChainDeprecationWarning: Importing LLMs from langchain is deprecated. Importing from langchain will no longer be supported as of langchain==0.2.0. Please import from langchain-community instead:
+  
+  `from langchain_community.llms import HuggingFaceHub`.
+  
+  To install langchain-community run `pip install -U langchain-community`.
+    from langchain.llms import HuggingFaceHub, OpenAI
+
+tests/fast/test_algorithms_agents_imports.py::TestCoreModulesImports::test_langchain_llm_service_import
+tests/fast/test_algorithms_agents_imports.py::TestCoreModulesImports::test_langchain_llm_service_import
+  C:\Users\husey\kiro2\backend\core\langchain_llm_service.py:20: LangChainDeprecationWarning: Importing LLMs from langchain is deprecated. Importing from langchain will no longer be supported as of langchain==0.2.0. Please import from langchain-community instead:
+  
+  `from langchain_community.llms import OpenAI`.
+  
+  To install langchain-community run `pip install -U langchain-community`.
+    from langchain.llms import HuggingFaceHub, OpenAI
+
+tests/fast/test_algorithms_agents_imports.py::TestCoreModulesImports::test_langchain_llm_service_import
+tests/fast/test_algorithms_agents_imports.py::TestCoreModulesImports::test_langchain_llm_service_import
+  C:\Users\husey\kiro2\backend\core\langchain_llm_service.py:37: LangChainDeprecationWarning: Importing tools from langchain is deprecated. Importing from langchain will no longer be supported as of langchain==0.2.0. Please import from langchain-community instead:
+  
+  `from langchain_community.tools import DuckDuckGoSearchRun`.
+  
+  To install langchain-community run `pip install -U langchain-community`.
+    from langchain.tools import DuckDuckGoSearchRun, Tool, WikipediaQueryRun
+
+tests/fast/test_algorithms_agents_imports.py::TestCoreModulesImports::test_langchain_llm_service_import
+tests/fast/test_algorithms_agents_imports.py::TestCoreModulesImports::test_langchain_llm_service_import
+  C:\Users\husey\kiro2\backend\core\langchain_llm_service.py:37: LangChainDeprecationWarning: Importing tools from langchain is deprecated. Importing from langchain will no longer be supported as of langchain==0.2.0. Please import from langchain-community instead:
+  
+  `from langchain_community.tools import WikipediaQueryRun`.
+  
+  To install langchain-community run `pip install -U langchain-community`.
+    from langchain.tools import DuckDuckGoSearchRun, Tool, WikipediaQueryRun
+
+tests/fast/test_algorithms_agents_imports.py::TestCoreModulesImports::test_langchain_llm_service_import
+tests/fast/test_algorithms_agents_imports.py::TestCoreModulesImports::test_langchain_llm_service_import
+  C:\Users\husey\kiro2\backend\core\langchain_llm_service.py:40: LangChainDeprecationWarning: Importing FAISS from langchain.vectorstores is deprecated. Please replace deprecated imports:
+  
+  >> from langchain.vectorstores import FAISS
+  
+  with new imports of:
+  
+  >> from langchain_community.vectorstores import FAISS
+  You can use the langchain cli to **automatically** upgrade many imports. Please see documentation here <https://python.langchain.com/docs/versions/v0_2/>
+    from langchain.vectorstores import FAISS, Chroma
+
+tests/fast/test_algorithms_agents_imports.py::TestCoreModulesImports::test_langchain_llm_service_import
+tests/fast/test_algorithms_agents_imports.py::TestCoreModulesImports::test_langchain_llm_service_import
+  C:\Users\husey\kiro2\backend\core\langchain_llm_service.py:40: LangChainDeprecationWarning: Importing Chroma from langchain.vectorstores is deprecated. Please replace deprecated imports:
+  
+  >> from langchain.vectorstores import Chroma
+  
+  with new imports of:
+  
+  >> from langchain_community.vectorstores import Chroma
+  You can use the langchain cli to **automatically** upgrade many imports. Please see documentation here <https://python.langchain.com/docs/versions/v0_2/>
+    from langchain.vectorstores import FAISS, Chroma
+
+tests/fast/test_algorithms_with_data.py::TestZPDWithData::test_zpd_with_student
+  C:\Users\husey\kiro2\backend\models\zpd_maarif.py:91: PydanticDeprecatedSince20: Pydantic V1 style `@validator` validators are deprecated. You should migrate to Pydantic V2 style `@field_validator` validators, see the migration guide for more details. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.11/migration/
+    @validator('grup_calismasi_tercihi', 'ogretmene_saygi_seviyesi',
+
+tests/fast/test_algorithms_with_data.py::TestZPDWithData::test_zpd_with_student
+  C:\Users\husey\kiro2\backend\models\zpd_maarif.py:172: PydanticDeprecatedSince20: Pydantic V1 style `@validator` validators are deprecated. You should migrate to Pydantic V2 style `@field_validator` validators, see the migration guide for more details. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.11/migration/
+    @validator('alt_sinir', 'ust_sinir', 'optimal_zorluk')
+
+tests/fast/test_api_endpoints_basic.py::TestSinavAPI::test_import
+tests/fast/test_api_endpoints_basic.py::TestExamPerformanceAPI::test_import
+tests/fast/test_final_milestone_25.py::TestMainApplicationComprehensive::test_openapi_schema_generation
+  C:\Users\husey\AppData\Local\Programs\Python\Python311\Lib\site-packages\pydantic\_internal\_config.py:373: UserWarning: Valid config keys have changed in V2:
+  * 'schema_extra' has been renamed to 'json_schema_extra'
+    warnings.warn(message, UserWarning)
+
+tests/fast/test_api_endpoints_basic.py::TestContentAPI::test_import
+  C:\Users\husey\kiro2\backend\api\content_api.py:562: DeprecationWarning: `regex` has been deprecated, please use `pattern` instead
+    period: str = Query("week", regex="^(day|week|month)$"),
+
+tests/fast/test_api_endpoints_basic.py::TestYouTubeAPI::test_import
+  C:\Users\husey\kiro2\backend\api\youtube_routes.py:453: DeprecationWarning: 
+          on_event is deprecated, use lifespan event handlers instead.
+  
+          Read more about it in the
+          [FastAPI docs for Lifespan Events](https://fastapi.tiangolo.com/advanced/events/).
+          
+    @router.on_event("shutdown")
+
+tests/fast/test_api_endpoints_basic.py::TestAdvancedReportsAPI::test_import
+  C:\Users\husey\kiro2\backend\models\irt_morfoloji.py:54: PydanticDeprecatedSince20: Pydantic V1 style `@validator` validators are deprecated. You should migrate to Pydantic V2 style `@field_validator` validators, see the migration guide for more details. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.11/migration/
+    @validator('ek_sayisi')
+
+tests/fast/test_api_health_comprehensive.py: 9 warnings
+tests/fast/test_api_integration.py: 1 warning
+  C:\Users\husey\kiro2\backend\api\health.py:297: DeprecationWarning: Call to deprecated close. (Use aclose() instead) -- Deprecated since version 5.0.0.
+    await client.close()
+
+tests/fast/test_comprehensive_execution.py::TestMiddlewarePipelineExecution::test_global_exception_handler
+  C:\Users\husey\AppData\Local\Programs\Python\Python311\Lib\site-packages\pydantic\main.py:463: UserWarning: Pydantic serializer warnings:
+    PydanticSerializationUnexpectedValue(Expected `str` - serialized value may not be as expected [input_value=<MagicMock name='mock.sta..._id' id='2377801666448'>, input_type=MagicMock])
+    PydanticSerializationUnexpectedValue(Expected `str` - serialized value may not be as expected [input_value=<MagicMock name='mock.sta...ion' id='2377803739984'>, input_type=MagicMock])
+    PydanticSerializationUnexpectedValue(Expected `float` - serialized value may not be as expected [input_value=<MagicMock name='mock.sta...ime' id='2377803761424'>, input_type=MagicMock])
+    return self.__pydantic_serializer__.to_python(
+
+tests/fast/test_core_rag_service.py::TestRAGService::test_add_document
+  C:\Users\husey\kiro2\backend\tests\fast\test_core_rag_service.py:28: RuntimeWarning: coroutine 'RAGService.add_document' was never awaited
+    rag_service.add_document(
+  Enable tracemalloc to get traceback where the object was allocated.
+  See https://docs.pytest.org/en/stable/how-to/capture-warnings.html#resource-warnings for more info.
+
+tests/fast/test_core_rag_service.py::TestRAGService::test_add_documents_batch
+  C:\Users\husey\kiro2\backend\tests\fast\test_core_rag_service.py:46: RuntimeWarning: coroutine 'RAGService.add_documents' was never awaited
+    rag_service.add_documents(documents)
+  Enable tracemalloc to get traceback where the object was allocated.
+  See https://docs.pytest.org/en/stable/how-to/capture-warnings.html#resource-warnings for more info.
+
+tests/fast/test_core_rag_service.py::TestRAGService::test_search
+  C:\Users\husey\kiro2\backend\tests\fast\test_core_rag_service.py:57: RuntimeWarning: coroutine 'RAGService.add_document' was never awaited
+    rag_service.add_document(
+  Enable tracemalloc to get traceback where the object was allocated.
+  See https://docs.pytest.org/en/stable/how-to/capture-warnings.html#resource-warnings for more info.
+
+tests/fast/test_database_query_optimizer.py::TestQueryOptimizer::test_bulk_insert
+  C:\Users\husey\kiro2\backend\core\database_query_optimizer.py:304: RuntimeWarning: coroutine 'AsyncMockMixin._execute_mock_call' was never awaited
+    self.session.add_all(instances)
+  Enable tracemalloc to get traceback where the object was allocated.
+  See https://docs.pytest.org/en/stable/how-to/capture-warnings.html#resource-warnings for more info.
+
+tests/fast/test_final_25_percent_push.py::TestLangchainLLMService::test_llm_service_init
+  C:\Users\husey\kiro2\backend\core\langchain_llm_service_enhanced.py:56: LangChainDeprecationWarning: Importing InMemoryCache from langchain is deprecated. Please replace deprecated imports:
+  
+  >> from langchain import InMemoryCache
+  
+  with new imports of:
+  
+  >> from langchain_community.cache import InMemoryCache
+  You can use the langchain cli to **automatically** upgrade many imports. Please see documentation here <https://python.langchain.com/docs/versions/v0_2/>
+    from langchain.cache import InMemoryCache
+
+tests/fast/test_final_25_percent_push.py::TestLangchainLLMService::test_llm_service_init
+  C:\Users\husey\kiro2\backend\core\langchain_llm_service_enhanced.py:59: LangChainDeprecationWarning: Importing RedisCache from langchain is deprecated. Please replace deprecated imports:
+  
+  >> from langchain import RedisCache
+  
+  with new imports of:
+  
+  >> from langchain_community.cache import RedisCache
+  You can use the langchain cli to **automatically** upgrade many imports. Please see documentation here <https://python.langchain.com/docs/versions/v0_2/>
+    from langchain.cache import RedisCache
+
+tests/fast/test_final_25_percent_push.py::TestLangchainLLMService::test_llm_service_init
+tests/fast/test_final_25_percent_push.py::TestLangchainLLMService::test_llm_service_init
+  C:\Users\husey\kiro2\backend\core\langchain_llm_service_enhanced.py:65: LangChainDeprecationWarning: Importing FAISS from langchain.vectorstores is deprecated. Please replace deprecated imports:
+  
+  >> from langchain.vectorstores import FAISS
+  
+  with new imports of:
+  
+  >> from langchain_community.vectorstores import FAISS
+  You can use the langchain cli to **automatically** upgrade many imports. Please see documentation here <https://python.langchain.com/docs/versions/v0_2/>
+    from langchain.vectorstores import FAISS, Chroma
+
+tests/fast/test_final_25_percent_push.py::TestLangchainLLMService::test_llm_service_init
+tests/fast/test_final_25_percent_push.py::TestLangchainLLMService::test_llm_service_init
+  C:\Users\husey\kiro2\backend\core\langchain_llm_service_enhanced.py:65: LangChainDeprecationWarning: Importing Chroma from langchain.vectorstores is deprecated. Please replace deprecated imports:
+  
+  >> from langchain.vectorstores import Chroma
+  
+  with new imports of:
+  
+  >> from langchain_community.vectorstores import Chroma
+  You can use the langchain cli to **automatically** upgrade many imports. Please see documentation here <https://python.langchain.com/docs/versions/v0_2/>
+    from langchain.vectorstores import FAISS, Chroma
+
+tests/fast/test_final_25_percent_push.py::TestEnhancedContentManager::test_content_manager_init
+  C:\Users\husey\kiro2\backend\tests\fast\test_final_25_percent_push.py:524: RuntimeWarning: coroutine 'EnhancedContentManager._load_all_content' was never awaited
+    assert True
+  Enable tracemalloc to get traceback where the object was allocated.
+  See https://docs.pytest.org/en/stable/how-to/capture-warnings.html#resource-warnings for more info.
+
+tests/fast/test_llm_cache.py::TestLLMCache::test_redis_cache_with_mock
+  C:\Users\husey\kiro2\backend\core\llm_cache.py:291: PydanticDeprecatedSince20: The `json` method is deprecated; use `model_dump_json` instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.11/migration/
+    entry_json = entry.json()
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/fast/test_api_health_comprehensive.py::TestBasicHealthCheck::test_health_check_status_healthy
+FAILED tests/fast/test_api_health_comprehensive.py::TestDetailedHealthCheck::test_detailed_health_response_structure
+FAILED tests/fast/test_api_health_comprehensive.py::TestDetailedHealthCheck::test_detailed_health_includes_all_checks
+FAILED tests/fast/test_api_health_comprehensive.py::TestDetailedHealthCheck::test_detailed_health_unhealthy_database
+FAILED tests/fast/test_api_health_comprehensive.py::TestDetailedHealthCheck::test_detailed_health_exception_handling
+FAILED tests/fast/test_api_health_real.py::TestHealthAPI::test_health_status_ok
+FAILED tests/fast/test_api_validation.py::TestSubmitContentEndpoint::test_submit_content_invalid_type
+FAILED tests/fast/test_core_assessment_system.py::TestAssessmentSystem::test_generate_quick_test
+FAILED tests/fast/test_core_assessment_system.py::TestAssessmentSystem::test_conduct_self_assessment
+FAILED tests/fast/test_core_assessment_system.py::TestAssessmentSystem::test_evaluate_assessment
+FAILED tests/fast/test_core_assessment_system.py::TestAssessmentSystem::test_get_self_assessment
+FAILED tests/fast/test_core_assessment_system.py::TestAssessmentSystem::test_analyze_performance
+FAILED tests/fast/test_core_expert_validation.py::TestContentSubmission::test_submit_question_for_validation
+FAILED tests/fast/test_core_expert_validation.py::TestContentSubmission::test_submit_exam_for_validation
+FAILED tests/fast/test_core_expert_validation.py::TestExpertFeedback::test_submit_expert_feedback
+FAILED tests/fast/test_core_expert_validation.py::TestExpertFeedback::test_multiple_expert_feedbacks
+FAILED tests/fast/test_core_expert_validation.py::TestValidationStatus::test_validation_status_transitions
+FAILED tests/fast/test_core_expert_validation.py::TestComplianceReporting::test_compliance_report_generation
+FAILED tests/fast/test_core_modules_final.py::TestCoreConfig::test_settings_database_url
+FAILED tests/fast/test_core_modules_final.py::TestCoreLogging::test_structured_logger
+FAILED tests/fast/test_core_modules_final.py::TestCoreUnified::test_unified_cache_system
+FAILED tests/fast/test_core_rag_service.py::TestRAGService::test_search_empty_query
+FAILED tests/fast/test_core_structured_logger.py::TestStructuredLoggerInitialization::test_default_log_level_info
+FAILED tests/fast/test_core_structured_logger.py::TestStructuredLoggerInitialization::test_custom_log_level_debug
+FAILED tests/fast/test_core_structured_logger.py::TestStructuredLoggerInitialization::test_custom_log_level_warning
+FAILED tests/fast/test_core_structured_logger.py::TestStructuredLoggerInitialization::test_custom_log_level_error
+FAILED tests/fast/test_core_structured_logger.py::TestStructuredLoggerInitialization::test_logger_has_handler
+FAILED tests/fast/test_core_structured_logger.py::TestStructuredLoggerInfoMethod::test_info_without_extra
+FAILED tests/fast/test_core_structured_logger.py::TestStructuredLoggerInfoMethod::test_info_with_extra
+FAILED tests/fast/test_core_structured_logger.py::TestStructuredLoggerErrorMethod::test_error_without_extra
+FAILED tests/fast/test_core_structured_logger.py::TestStructuredLoggerErrorMethod::test_error_with_extra
+FAILED tests/fast/test_core_structured_logger.py::TestStructuredLoggerWarningMethod::test_warning_without_extra
+FAILED tests/fast/test_core_structured_logger.py::TestStructuredLoggerWarningMethod::test_warning_with_extra
+FAILED tests/fast/test_core_structured_logger.py::TestStructuredLoggerDebugMethod::test_debug_without_extra
+FAILED tests/fast/test_core_structured_logger.py::TestStructuredLoggerDebugMethod::test_debug_with_extra
+FAILED tests/fast/test_database_query_optimizer.py::TestQueryOptimizer::test_load_with_relationships_basic
+FAILED tests/fast/test_database_query_optimizer.py::TestCommonQueryPatterns::test_get_student_dashboard_data_not_found
+FAILED tests/fast/test_database_query_optimizer.py::TestCommonQueryPatterns::test_get_student_dashboard_data_found
+FAILED tests/fast/test_database_query_optimizer.py::TestCommonQueryPatterns::test_get_exam_with_questions
+FAILED tests/fast/test_database_query_optimizer.py::TestCommonQueryPatterns::test_get_class_performance_summary
+FAILED tests/fast/test_embedding_cache.py::TestEmbeddingCache::test_search - ...
+FAILED tests/fast/test_enum_instantiation.py::TestModelCreation::test_create_kullanici_model
+FAILED tests/fast/test_fastapi_comprehensive.py::TestUserEndpoints::test_get_users_endpoint
+FAILED tests/fast/test_models_comprehensive.py::TestModelCreation::test_create_kullanici_model
+FAILED tests/fast/test_models_comprehensive.py::TestModelCreation::test_create_sinav_sorusu_model
+FAILED tests/fast/test_models_comprehensive.py::TestModelCreation::test_create_learning_profile_model
+FAILED tests/fast/test_models_comprehensive.py::TestModelCreation::test_create_sinav_model
+FAILED tests/fast/test_models_comprehensive.py::TestModelRelationships::test_user_profile_relationship
+FAILED tests/fast/test_models_comprehensive.py::TestModelMethods::test_kullanici_repr
+FAILED tests/fast/test_models_comprehensive.py::TestModelMethods::test_model_to_dict
+FAILED tests/fast/test_models_comprehensive.py::TestModelValidation::test_email_validation
+FAILED tests/fast/test_models_comprehensive.py::TestModelValidation::test_enum_validation
+FAILED tests/fast/test_models_comprehensive.py::TestModelDefaults::test_kullanici_defaults
+FAILED tests/fast/test_models_comprehensive.py::TestModelDefaults::test_question_defaults
+FAILED tests/fast/test_models_comprehensive.py::TestAllModelImports::test_import_all_main_models
+FAILED tests/fast/test_utility_scripts_execution.py::TestCoreConfigExecution::test_settings_creation
+FAILED tests/fast/test_utility_scripts_execution.py::TestEnumCreationExecution::test_kullanici_rolu_enum_execution
+FAILED tests/fast/test_utility_scripts_execution.py::TestEnumCreationExecution::test_zorluk_seviyesi_enum_execution
+FAILED tests/fast/test_zero_coverage_boost.py::TestAPIOptimizer::test_api_optimizer_initialization
+FAILED tests/fast/test_zero_coverage_boost.py::TestDatabaseOptimizer::test_database_optimizer_initialization
+ERROR tests/fast/test_api_validation.py::TestSubmitContentEndpoint::test_submit_content_success
+ERROR tests/fast/test_api_validation.py::TestGetStatusEndpoint::test_get_status_success
+ERROR tests/fast/test_api_validation.py::TestGetRequestEndpoint::test_get_request_success
+ERROR tests/fast/test_api_validation.py::TestGetPendingRequestsEndpoint::test_get_pending_requests_success
+= 60 failed, 1442 passed, 292 skipped, 130 warnings, 4 errors in 471.25s (0:07:51) =

@@ -1,0 +1,184 @@
+name: Claude PR Review
+
+on:
+  pull_request:
+    types: [opened, synchronize, ready_for_review]
+  issue_comment:
+    types: [created]
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+
+jobs:
+  # PR acildiginda veya guncellediginde otomatik review
+  auto-review:
+    name: Automatic PR Review
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request' && !github.event.pull_request.draft
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Run Claude Review
+        uses: anthropics/claude-code-action@v1
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          model: claude-sonnet-4-20250514
+          prompt: |
+            Bu PR'i KIRO2 standartlarina gore incele.
+
+            ## Review Checklist
+
+            ### Guvenlik
+            - [ ] SQL injection korunmasi
+            - [ ] XSS korunmasi
+            - [ ] Hardcoded secrets yok
+            - [ ] Input validation var
+
+            ### Performans
+            - [ ] N+1 query yok
+            - [ ] Gereksiz re-render yok
+            - [ ] Memory leak riski yok
+
+            ### KIRO2 Spesifik
+            - [ ] IRT parametreleri valid: difficulty [-4,4], discrimination [0.2,4], guessing [0,0.35]
+            - [ ] Turkce karakter handling dogru (I/i donusumu)
+            - [ ] authStore.ts kullanilmis (useAuth.ts DEGIL!)
+            - [ ] DB port 5434 kullanilmis
+            - [ ] ZPD optimal zone: %15-85 basari olasiligi
+
+            ### Kod Kalitesi
+            - [ ] Type hints tam (Python)
+            - [ ] TypeScript strict mode (Frontend)
+            - [ ] Testler eklenmis
+            - [ ] Docstring/comments var
+
+            ## Cikti Formati
+
+            ### Ozet
+            [1-2 cumle PR ozeti]
+
+            ### Bulgular
+            - 🔴 **KRITIK:** [engel olan sorunlar]
+            - 🟡 **UYARI:** [onemli ama engel olmayan]
+            - 🟢 **ONERI:** [iyilestirme fikirleri]
+
+            ### Sonuc
+            - [ ] ONAYLANDI
+            - [ ] DEGISIKLIK GEREKLI
+            - [ ] REDDEDILDI
+
+            Turkce olarak yanit ver.
+
+  # @claude mention'i ile tetiklenen review
+  mention-review:
+    name: Claude Mention Review
+    runs-on: ubuntu-latest
+    if: |
+      github.event_name == 'issue_comment' &&
+      github.event.issue.pull_request &&
+      contains(github.event.comment.body, '@claude')
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.issue.pull_request.head.ref }}
+
+      - name: Parse command
+        id: parse
+        run: |
+          COMMENT="${{ github.event.comment.body }}"
+
+          if echo "$COMMENT" | grep -qi "@claude review"; then
+            echo "command=review" >> $GITHUB_OUTPUT
+          elif echo "$COMMENT" | grep -qi "@claude security"; then
+            echo "command=security" >> $GITHUB_OUTPUT
+          elif echo "$COMMENT" | grep -qi "@claude test"; then
+            echo "command=test" >> $GITHUB_OUTPUT
+          elif echo "$COMMENT" | grep -qi "@claude fix"; then
+            echo "command=fix" >> $GITHUB_OUTPUT
+          else
+            echo "command=general" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Run Claude Action
+        uses: anthropics/claude-code-action@v1
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          model: claude-sonnet-4-20250514
+          prompt: |
+            Kullanici istegi: ${{ github.event.comment.body }}
+            Komut tipi: ${{ steps.parse.outputs.command }}
+
+            ${{ steps.parse.outputs.command == 'review' && 'Kapsamli kod incelemesi yap.' || '' }}
+            ${{ steps.parse.outputs.command == 'security' && 'Guvenlik odakli tarama yap: SQL injection, XSS, secrets, auth bypass.' || '' }}
+            ${{ steps.parse.outputs.command == 'test' && 'Test coverage analizi yap ve eksik testleri belirle.' || '' }}
+            ${{ steps.parse.outputs.command == 'fix' && 'Belirtilen sorunu duzeltmek icin oneriler sun.' || '' }}
+
+            KIRO2 standartlarini uygula. Turkce yanit ver.
+
+      - name: Add reaction
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.reactions.createForIssueComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              comment_id: context.payload.comment.id,
+              content: 'eyes'
+            });
+
+  # PR karsilama mesaji
+  welcome:
+    name: PR Welcome Message
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request' && github.event.action == 'opened'
+
+    steps:
+      - name: Post welcome comment
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const prAuthor = context.payload.pull_request.user.login;
+            const body = `
+            ## KIRO2 PR Review
+
+            Merhaba @${prAuthor}! PR'iniz icin tesekkurler. 🎓
+
+            ### Otomatik Kontroller
+            - ⏳ CI pipeline calisıyor...
+            - ⏳ Claude Code review basliyor...
+
+            ### Claude Komutlari
+            Asagidaki komutlari comment olarak yazabilirsiniz:
+
+            | Komut | Aciklama |
+            |-------|----------|
+            | \`@claude review\` | Kapsamli kod incelemesi |
+            | \`@claude security\` | Guvenlik taramasi |
+            | \`@claude test\` | Test coverage analizi |
+            | \`@claude fix [sorun]\` | Duzeltme onerileri |
+
+            ### KIRO2 Standartlari
+            - IRT: difficulty [-4,4], discrimination [0.2,4], guessing [0,0.35]
+            - ZPD: %15-85 basari olasiligi
+            - Turkce I/i donusumu kontrol edilecek
+            - authStore.ts kullanimi kontrol edilecek
+
+            ---
+            *Otomatik olusturuldu by KIRO2 CI/CD*
+            `;
+
+            github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: body
+            });

@@ -1,0 +1,43 @@
+{
+  "generated_at": "2025-11-05T19:12:10.112346",
+  "comparison": {
+    "osym": {
+      "total": 73,
+      "by_subject": {
+        "Felsefe": 7,
+        "Fen Bilimleri": 13,
+        "Matematik": 22,
+        "Sosyal Bilimler": 6,
+        "Türkçe": 25
+      },
+      "by_difficulty": {
+        "orta": 73
+      },
+      "by_exam_type": {
+        "TYT": 73
+      },
+      "metrics": {
+        "avg_stem_length": 600.1780821917808,
+        "avg_word_count": 77.95890410958904,
+        "with_answers": 0
+      }
+    },
+    "ai": {
+      "total": 0,
+      "by_subject": {},
+      "by_difficulty": {},
+      "by_exam_type": {},
+      "metrics": {
+        "avg_stem_length": 0,
+        "avg_word_count": 0,
+        "with_answers": 0
+      }
+    }
+  },
+  "summary": {
+    "osym_questions": 73,
+    "ai_questions": 0,
+    "osym_with_answers": 0,
+    "ai_with_answers": 0
+  }
+}

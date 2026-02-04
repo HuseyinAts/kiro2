@@ -1,0 +1,316 @@
+...............FF......F................................................ [ 28%]
+............F........................FFFFF....FFFF..FFFFFFFFFFFFFFFFFFFF [ 56%]
+FFFFFFF.FFFFFF..F...F...F...FF..........................FFFFFFFFFFFFFFFF [ 84%]
+FFFFFFFFFFFFFFF.FFFFFFFFFFFFFFFFFFFFFFF                                  [100%]
+============================== warnings summary ===============================
+tests/test_all_services.py::test_api_endpoints
+  C:\Users\husey\kiro2\backend\models\content_models.py:55: PydanticDeprecatedSince20: Pydantic V1 style `@validator` validators are deprecated. You should migrate to Pydantic V2 style `@field_validator` validators, see the migration guide for more details. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.5/migration/
+    @validator('baslik')
+
+tests/test_all_services.py::test_api_endpoints
+  C:\Users\husey\kiro2\backend\models\content_models.py:61: PydanticDeprecatedSince20: Pydantic V1 style `@validator` validators are deprecated. You should migrate to Pydantic V2 style `@field_validator` validators, see the migration guide for more details. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.5/migration/
+    @validator('etiketler')
+
+tests/test_all_services.py::test_api_endpoints
+  C:\Users\husey\kiro2\backend\models\content_models.py:68: PydanticDeprecatedSince20: Pydantic V1 style `@validator` validators are deprecated. You should migrate to Pydantic V2 style `@field_validator` validators, see the migration guide for more details. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.5/migration/
+    @validator('okunma_suresi')
+
+tests/test_all_services.py: 15 warnings
+tests/test_rbac_system.py: 7 warnings
+  C:\Users\husey\AppData\Local\Programs\Python\Python311\Lib\site-packages\pydantic\_internal\_config.py:268: PydanticDeprecatedSince20: Support for class-based `config` is deprecated, use ConfigDict instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.5/migration/
+    warnings.warn(DEPRECATION_MESSAGE, DeprecationWarning)
+
+tests/test_all_services.py: 11 warnings
+  C:\Users\husey\AppData\Local\Programs\Python\Python311\Lib\site-packages\pydantic\_internal\_generate_schema.py:252: PydanticDeprecatedSince20: `json_encoders` is deprecated. See https://docs.pydantic.dev/2.5/concepts/serialization/#custom-serializers for alternatives. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.5/migration/
+    warnings.warn(
+
+tests/test_all_services.py::test_api_endpoints
+  C:\Users\husey\kiro2\backend\models\content_models.py:121: PydanticDeprecatedSince20: Pydantic V1 style `@validator` validators are deprecated. You should migrate to Pydantic V2 style `@field_validator` validators, see the migration guide for more details. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.5/migration/
+    @validator('video_url')
+
+tests/test_all_services.py::test_api_endpoints
+  C:\Users\husey\kiro2\backend\models\content_models.py:139: PydanticDeprecatedSince20: Pydantic V1 style `@validator` validators are deprecated. You should migrate to Pydantic V2 style `@field_validator` validators, see the migration guide for more details. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.5/migration/
+    @validator('sure')
+
+tests/test_all_services.py::test_api_endpoints
+  C:\Users\husey\kiro2\backend\models\content_models.py:270: PydanticDeprecatedSince20: Pydantic V1 style `@validator` validators are deprecated. You should migrate to Pydantic V2 style `@field_validator` validators, see the migration guide for more details. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.5/migration/
+    @validator('max_sure')
+
+tests/test_all_services.py::test_api_endpoints
+  C:\Users\husey\kiro2\backend\models\content_models.py:289: PydanticDeprecatedSince20: Pydantic V1 style `@validator` validators are deprecated. You should migrate to Pydantic V2 style `@field_validator` validators, see the migration guide for more details. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.5/migration/
+    @validator('sort_by')
+
+tests/test_all_services.py::test_api_endpoints
+  C:\Users\husey\kiro2\backend\models\content_models.py:296: PydanticDeprecatedSince20: Pydantic V1 style `@validator` validators are deprecated. You should migrate to Pydantic V2 style `@field_validator` validators, see the migration guide for more details. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.5/migration/
+    @validator('sort_order')
+
+tests/test_all_services.py::test_api_endpoints
+  C:\Users\husey\kiro2\backend\models\content_models.py:320: PydanticDeprecatedSince20: Pydantic V1 style `@validator` validators are deprecated. You should migrate to Pydantic V2 style `@field_validator` validators, see the migration guide for more details. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.5/migration/
+    @validator('status')
+
+tests/test_all_services.py::test_api_endpoints
+  C:\Users\husey\AppData\Local\Programs\Python\Python311\Lib\site-packages\pydantic\fields.py:768: PydanticDeprecatedSince20: `min_items` is deprecated and will be removed, use `min_length` instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.5/migration/
+    warn('`min_items` is deprecated and will be removed, use `min_length` instead', DeprecationWarning)
+
+tests/test_all_services.py::test_api_endpoints
+  C:\Users\husey\AppData\Local\Programs\Python\Python311\Lib\site-packages\pydantic\fields.py:774: PydanticDeprecatedSince20: `max_items` is deprecated and will be removed, use `max_length` instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.5/migration/
+    warn('`max_items` is deprecated and will be removed, use `max_length` instead', DeprecationWarning)
+
+tests/test_all_services.py::test_api_endpoints
+  C:\Users\husey\kiro2\backend\api\turkish_nlp_chat.py:402: DeprecationWarning: 
+          on_event is deprecated, use lifespan event handlers instead.
+  
+          Read more about it in the
+          [FastAPI docs for Lifespan Events](https://fastapi.tiangolo.com/advanced/events/).
+          
+    @router.on_event("startup")
+
+tests/test_all_services.py::test_api_endpoints
+  C:\Users\husey\kiro2\backend\api\turkish_nlp_chat.py:413: DeprecationWarning: 
+          on_event is deprecated, use lifespan event handlers instead.
+  
+          Read more about it in the
+          [FastAPI docs for Lifespan Events](https://fastapi.tiangolo.com/advanced/events/).
+          
+    @router.on_event("shutdown")
+
+tests/test_database_connection.py::TestDatabaseConfiguration::test_default_database_url
+  C:\Users\husey\kiro2\backend\database\models.py:25: MovedIn20Warning: The ``declarative_base()`` function is now available as sqlalchemy.orm.declarative_base(). (deprecated since: 2.0) (Background on SQLAlchemy 2.0 at: https://sqlalche.me/e/b8d9)
+    Base = declarative_base()
+
+tests/test_langchain_study_buddy.py::TestLangChainStudyBuddy::test_initialization
+tests/test_langchain_study_buddy.py::TestLangChainStudyBuddy::test_initialization
+  C:\Users\husey\AppData\Local\Programs\Python\Python311\Lib\site-packages\pydantic\fields.py:799: PydanticDeprecatedSince20: Using extra keyword arguments on `Field` is deprecated and will be removed. Use `json_schema_extra` instead. (Extra keys: 'coerce_numbers_to_str'). Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.5/migration/
+    warn(
+
+tests/test_langchain_study_buddy.py::TestLangChainStudyBuddy::test_initialization
+  C:\Users\husey\kiro2\backend\core\langchain_llm_service.py:13: LangChainDeprecationWarning: Importing InMemoryCache from langchain is deprecated. Please replace deprecated imports:
+  
+  >> from langchain import InMemoryCache
+  
+  with new imports of:
+  
+  >> from langchain_community.cache import InMemoryCache
+  You can use the langchain cli to **automatically** upgrade many imports. Please see documentation here <https://python.langchain.com/docs/versions/v0_2/>
+    from langchain.cache import InMemoryCache, RedisCache
+
+tests/test_langchain_study_buddy.py::TestLangChainStudyBuddy::test_initialization
+  C:\Users\husey\kiro2\backend\core\langchain_llm_service.py:13: LangChainDeprecationWarning: Importing RedisCache from langchain is deprecated. Please replace deprecated imports:
+  
+  >> from langchain import RedisCache
+  
+  with new imports of:
+  
+  >> from langchain_community.cache import RedisCache
+  You can use the langchain cli to **automatically** upgrade many imports. Please see documentation here <https://python.langchain.com/docs/versions/v0_2/>
+    from langchain.cache import InMemoryCache, RedisCache
+
+tests/test_langchain_study_buddy.py::TestLangChainStudyBuddy::test_initialization
+tests/test_langchain_study_buddy.py::TestLangChainStudyBuddy::test_initialization
+  C:\Users\husey\kiro2\backend\core\langchain_llm_service.py:18: LangChainDeprecationWarning: Importing chat models from langchain is deprecated. Importing from langchain will no longer be supported as of langchain==0.2.0. Please import from langchain-community instead:
+  
+  `from langchain_community.chat_models import ChatAnthropic`.
+  
+  To install langchain-community run `pip install -U langchain-community`.
+    from langchain.chat_models import ChatAnthropic, ChatOpenAI
+
+tests/test_langchain_study_buddy.py::TestLangChainStudyBuddy::test_initialization
+tests/test_langchain_study_buddy.py::TestLangChainStudyBuddy::test_initialization
+  C:\Users\husey\kiro2\backend\core\langchain_llm_service.py:18: LangChainDeprecationWarning: Importing chat models from langchain is deprecated. Importing from langchain will no longer be supported as of langchain==0.2.0. Please import from langchain-community instead:
+  
+  `from langchain_community.chat_models import ChatOpenAI`.
+  
+  To install langchain-community run `pip install -U langchain-community`.
+    from langchain.chat_models import ChatAnthropic, ChatOpenAI
+
+tests/test_langchain_study_buddy.py::TestLangChainStudyBuddy::test_initialization
+tests/test_langchain_study_buddy.py::TestLangChainStudyBuddy::test_initialization
+  C:\Users\husey\kiro2\backend\core\langchain_llm_service.py:19: LangChainDeprecationWarning: Importing HuggingFaceEmbeddings from langchain.embeddings is deprecated. Please replace deprecated imports:
+  
+  >> from langchain.embeddings import HuggingFaceEmbeddings
+  
+  with new imports of:
+  
+  >> from langchain_community.embeddings import HuggingFaceEmbeddings
+  You can use the langchain cli to **automatically** upgrade many imports. Please see documentation here <https://python.langchain.com/docs/versions/v0_2/>
+    from langchain.embeddings import HuggingFaceEmbeddings, OpenAIEmbeddings
+
+tests/test_langchain_study_buddy.py::TestLangChainStudyBuddy::test_initialization
+  C:\Users\husey\kiro2\backend\core\langchain_llm_service.py:19: LangChainDeprecationWarning: Importing OpenAIEmbeddings from langchain.embeddings is deprecated. Please replace deprecated imports:
+  
+  >> from langchain.embeddings import OpenAIEmbeddings
+  
+  with new imports of:
+  
+  >> from langchain_community.embeddings import OpenAIEmbeddings
+  You can use the langchain cli to **automatically** upgrade many imports. Please see documentation here <https://python.langchain.com/docs/versions/v0_2/>
+    from langchain.embeddings import HuggingFaceEmbeddings, OpenAIEmbeddings
+
+tests/test_langchain_study_buddy.py::TestLangChainStudyBuddy::test_initialization
+tests/test_langchain_study_buddy.py::TestLangChainStudyBuddy::test_initialization
+  C:\Users\husey\kiro2\backend\core\langchain_llm_service.py:20: LangChainDeprecationWarning: Importing LLMs from langchain is deprecated. Importing from langchain will no longer be supported as of langchain==0.2.0. Please import from langchain-community instead:
+  
+  `from langchain_community.llms import HuggingFaceHub`.
+  
+  To install langchain-community run `pip install -U langchain-community`.
+    from langchain.llms import HuggingFaceHub, OpenAI
+
+tests/test_langchain_study_buddy.py::TestLangChainStudyBuddy::test_initialization
+tests/test_langchain_study_buddy.py::TestLangChainStudyBuddy::test_initialization
+  C:\Users\husey\kiro2\backend\core\langchain_llm_service.py:20: LangChainDeprecationWarning: Importing LLMs from langchain is deprecated. Importing from langchain will no longer be supported as of langchain==0.2.0. Please import from langchain-community instead:
+  
+  `from langchain_community.llms import OpenAI`.
+  
+  To install langchain-community run `pip install -U langchain-community`.
+    from langchain.llms import HuggingFaceHub, OpenAI
+
+tests/test_langchain_study_buddy.py::TestLangChainStudyBuddy::test_initialization
+  C:\Users\husey\kiro2\backend\core\langchain_llm_service.py:37: LangChainDeprecationWarning: Importing tools from langchain is deprecated. Importing from langchain will no longer be supported as of langchain==0.2.0. Please import from langchain-community instead:
+  
+  `from langchain_community.tools import DuckDuckGoSearchRun`.
+  
+  To install langchain-community run `pip install -U langchain-community`.
+    from langchain.tools import DuckDuckGoSearchRun, Tool, WikipediaQueryRun
+
+tests/test_langchain_study_buddy.py::TestLangChainStudyBuddy::test_initialization
+  C:\Users\husey\kiro2\backend\core\langchain_llm_service.py:37: LangChainDeprecationWarning: Importing tools from langchain is deprecated. Importing from langchain will no longer be supported as of langchain==0.2.0. Please import from langchain-community instead:
+  
+  `from langchain_community.tools import WikipediaQueryRun`.
+  
+  To install langchain-community run `pip install -U langchain-community`.
+    from langchain.tools import DuckDuckGoSearchRun, Tool, WikipediaQueryRun
+
+tests/test_langchain_study_buddy.py::TestLangChainStudyBuddy::test_initialization
+  C:\Users\husey\kiro2\backend\core\langchain_llm_service.py:40: LangChainDeprecationWarning: Importing FAISS from langchain.vectorstores is deprecated. Please replace deprecated imports:
+  
+  >> from langchain.vectorstores import FAISS
+  
+  with new imports of:
+  
+  >> from langchain_community.vectorstores import FAISS
+  You can use the langchain cli to **automatically** upgrade many imports. Please see documentation here <https://python.langchain.com/docs/versions/v0_2/>
+    from langchain.vectorstores import FAISS, Chroma
+
+tests/test_langchain_study_buddy.py::TestLangChainStudyBuddy::test_initialization
+  C:\Users\husey\kiro2\backend\core\langchain_llm_service.py:40: LangChainDeprecationWarning: Importing Chroma from langchain.vectorstores is deprecated. Please replace deprecated imports:
+  
+  >> from langchain.vectorstores import Chroma
+  
+  with new imports of:
+  
+  >> from langchain_community.vectorstores import Chroma
+  You can use the langchain cli to **automatically** upgrade many imports. Please see documentation here <https://python.langchain.com/docs/versions/v0_2/>
+    from langchain.vectorstores import FAISS, Chroma
+
+tests/test_langchain_study_buddy.py::TestLangChainStudyBuddy::test_chains_creation
+  C:\Users\husey\kiro2\backend\agents\langchain_study_buddy.py:75: LangChainDeprecationWarning: Please see the migration guide at: https://python.langchain.com/docs/versions/migrating_memory/
+    self.memory = ConversationSummaryBufferMemory(
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_database_connection.py::TestSessionManagement::test_get_async_session_success
+FAILED tests/test_database_connection.py::TestSessionManagement::test_get_async_session_error
+FAILED tests/test_database_connection.py::TestDatabaseInitialization::test_database_health_check_healthy
+FAILED tests/test_ebatv_service.py::TestEBAContentCollector::test_estimate_difficulty_medium_grade
+FAILED tests/test_langchain_study_buddy.py::TestLangChainStudyBuddy::test_chains_creation
+FAILED tests/test_langchain_study_buddy.py::TestLangChainStudyBuddy::test_agent_creation
+FAILED tests/test_langchain_study_buddy.py::TestLangChainStudyBuddy::test_chat_functionality
+FAILED tests/test_langchain_study_buddy.py::TestLangChainStudyBuddy::test_chat_with_context
+FAILED tests/test_langchain_study_buddy.py::TestLangChainStudyBuddy::test_chat_error_handling
+FAILED tests/test_langchain_study_buddy.py::TestLangChainStudyBuddy::test_memory_management
+FAILED tests/test_langchain_study_buddy.py::TestLangChainStudyBuddy::test_conversation_summary_with_messages
+FAILED tests/test_langchain_study_buddy.py::TestLangChainStudyBuddy::test_structured_quiz_generation
+FAILED tests/test_langchain_study_buddy.py::TestLangChainStudyBuddy::test_student_assessment
+FAILED tests/test_parent_service.py::TestParentService::test_parent_service_initialization
+FAILED tests/test_parent_service.py::TestParentService::test_create_parent_child_relation_success
+FAILED tests/test_parent_service.py::TestParentService::test_create_parent_child_relation_child_not_found
+FAILED tests/test_parent_service.py::TestParentService::test_create_parent_child_relation_not_student
+FAILED tests/test_parent_service.py::TestParentService::test_create_parent_child_relation_already_exists
+FAILED tests/test_parent_service.py::TestParentService::test_approve_parent_child_relation_success
+FAILED tests/test_parent_service.py::TestParentService::test_approve_parent_child_relation_reject
+FAILED tests/test_parent_service.py::TestParentService::test_approve_parent_child_relation_not_found
+FAILED tests/test_parent_service.py::TestParentService::test_get_parent_children
+FAILED tests/test_parent_service.py::TestParentService::test_get_child_performance_success
+FAILED tests/test_parent_service.py::TestParentService::test_get_child_performance_no_permission
+FAILED tests/test_parent_service.py::TestParentService::test_generate_weekly_report
+FAILED tests/test_parent_service.py::TestParentService::test_generate_weekly_report_child_not_found
+FAILED tests/test_parent_service.py::TestParentService::test_create_notification_success
+FAILED tests/test_parent_service.py::TestParentService::test_create_notification_no_permission
+FAILED tests/test_parent_service.py::TestParentService::test_get_parent_notifications
+FAILED tests/test_parent_service.py::TestParentService::test_get_parent_notifications_unread_only
+FAILED tests/test_parent_service.py::TestParentService::test_mark_notification_as_read_success
+FAILED tests/test_parent_service.py::TestParentService::test_mark_notification_as_read_not_found
+FAILED tests/test_parent_service.py::TestParentService::test_get_parent_dashboard_data
+FAILED tests/test_parent_service.py::TestParentService::test_send_approval_request_notification
+FAILED tests/test_parent_service.py::TestParentService::test_send_approval_confirmation_notification_approved
+FAILED tests/test_parent_service.py::TestParentService::test_send_approval_confirmation_notification_rejected
+FAILED tests/test_parent_service.py::TestParentServicePerformanceCalculations::test_performance_calculations_no_exams
+FAILED tests/test_parent_service.py::TestParentServicePerformanceCalculations::test_performance_calculations_multiple_exams
+FAILED tests/test_parent_service.py::TestParentServicePerformanceCalculations::test_weekly_report_performance_trend
+FAILED tests/test_parent_service.py::TestParentServicePerformanceCalculations::test_weekly_report_low_performance
+FAILED tests/test_production_ready_agent.py::TestProductionLearningAgent::test_process_success
+FAILED tests/test_production_ready_agent.py::TestProductionLearningAgent::test_process_error_handling
+FAILED tests/test_production_ready_agent.py::TestProductionLearningAgent::test_process_mock_lgs_math
+FAILED tests/test_production_ready_agent.py::TestProductionLearningAgent::test_process_mock_study_plan
+FAILED tests/test_production_ready_agent.py::TestProductionLearningAgent::test_process_mock_resources
+FAILED tests/test_production_ready_agent.py::TestProductionLearningAgent::test_process_with_llm_cache_hit
+FAILED tests/test_production_ready_agent.py::TestProductionLearningAgent::test_build_enhanced_prompt_with_context
+FAILED tests/test_production_ready_agent.py::TestProductionLearningAgent::test_get_content_based_response
+FAILED tests/test_production_ready_agent.py::TestProductionLearningAgent::test_get_health_status
+FAILED tests/test_production_ready_agent.py::TestAgentFactory::test_singleton_behavior
+FAILED tests/test_production_ready_agent.py::TestAgentFactory::test_cleanup_all
+FAILED tests/test_rbac_system.py::TestRBACEnums::test_resource_type_enum - Ty...
+FAILED tests/test_rbac_system.py::TestRBACEnums::test_action_enum - TypeError...
+FAILED tests/test_rbac_system.py::TestRBACEnums::test_permission_effect_enum
+FAILED tests/test_rbac_system.py::TestRBACEnums::test_role_type_enum - TypeEr...
+FAILED tests/test_rbac_system.py::TestRBACEnums::test_audit_action_enum - Typ...
+FAILED tests/test_rbac_system.py::TestPermissionDataClass::test_permission_creation_basic
+FAILED tests/test_rbac_system.py::TestPermissionDataClass::test_permission_creation_with_resource_id
+FAILED tests/test_rbac_system.py::TestPermissionDataClass::test_permission_creation_with_conditions
+FAILED tests/test_rbac_system.py::TestPermissionDataClass::test_permission_creation_with_temporal_validity
+FAILED tests/test_rbac_system.py::TestPermissionDataClass::test_permission_string_representation
+FAILED tests/test_rbac_system.py::TestPermissionDataClass::test_permission_equality
+FAILED tests/test_rbac_system.py::TestPermissionDataClass::test_permission_deny_effect
+FAILED tests/test_rbac_system.py::TestRoleDataClass::test_role_creation_basic
+FAILED tests/test_rbac_system.py::TestRoleDataClass::test_role_creation_with_permissions
+FAILED tests/test_rbac_system.py::TestRoleDataClass::test_role_creation_with_parent_roles
+FAILED tests/test_rbac_system.py::TestRoleDataClass::test_role_creation_with_temporal_validity
+FAILED tests/test_rbac_system.py::TestRoleDataClass::test_role_inactive - Typ...
+FAILED tests/test_rbac_system.py::TestRoleDataClass::test_role_with_metadata
+FAILED tests/test_rbac_system.py::TestRoleAssignmentDataClass::test_role_assignment_creation_basic
+FAILED tests/test_rbac_system.py::TestRoleAssignmentDataClass::test_role_assignment_with_temporal_validity
+FAILED tests/test_rbac_system.py::TestRoleAssignmentDataClass::test_role_assignment_with_context
+FAILED tests/test_rbac_system.py::TestRoleAssignmentDataClass::test_role_assignment_inactive
+FAILED tests/test_rbac_system.py::TestAuthorizationContextDataClass::test_authorization_context_creation_basic
+FAILED tests/test_rbac_system.py::TestAuthorizationContextDataClass::test_authorization_context_with_all_fields
+FAILED tests/test_rbac_system.py::TestAuditLogDataClass::test_audit_log_creation
+FAILED tests/test_rbac_system.py::TestAuditLogDataClass::test_audit_log_with_details
+FAILED tests/test_rbac_system.py::TestDataClassDefaults::test_permission_defaults
+FAILED tests/test_rbac_system.py::TestDataClassDefaults::test_role_defaults
+FAILED tests/test_rbac_system.py::TestDataClassDefaults::test_role_assignment_defaults
+FAILED tests/test_rbac_system.py::TestDataClassDefaults::test_authorization_context_defaults
+FAILED tests/test_rbac_system.py::TestDataClassDefaults::test_audit_log_defaults
+FAILED tests/test_turkish_exam_middleware.py::TestExamEnums::test_exam_security_level_enum
+FAILED tests/test_turkish_exam_middleware.py::TestExamContext::test_exam_context_creation
+FAILED tests/test_turkish_exam_middleware.py::TestExamContext::test_exam_context_with_values
+FAILED tests/test_turkish_exam_middleware.py::TestTurkishLanguageMiddleware::test_middleware_initialization
+FAILED tests/test_turkish_exam_middleware.py::TestTurkishLanguageMiddleware::test_turkish_subjects_mapping
+FAILED tests/test_turkish_exam_middleware.py::TestTurkishLanguageMiddleware::test_exam_translations_mapping
+FAILED tests/test_turkish_exam_middleware.py::TestTurkishLanguageMiddleware::test_common_phrases_mapping
+FAILED tests/test_turkish_exam_middleware.py::TestTurkishLanguageMiddleware::test_middleware_call_basic
+FAILED tests/test_turkish_exam_middleware.py::TestTurkishLanguageMiddleware::test_middleware_call_with_subject_translation
+FAILED tests/test_turkish_exam_middleware.py::TestTurkishLanguageMiddleware::test_middleware_call_with_exam_type
+FAILED tests/test_turkish_exam_middleware.py::TestTurkishLanguageMiddleware::test_middleware_error_handling
+FAILED tests/test_turkish_exam_middleware.py::TestTurkishLanguageMiddleware::test_get_subject_translation_existing
+FAILED tests/test_turkish_exam_middleware.py::TestTurkishLanguageMiddleware::test_get_subject_translation_non_existing
+FAILED tests/test_turkish_exam_middleware.py::TestTurkishLanguageMiddleware::test_get_exam_translation_existing
+FAILED tests/test_turkish_exam_middleware.py::TestTurkishLanguageMiddleware::test_get_common_phrase_existing
+FAILED tests/test_turkish_exam_middleware.py::TestTurkishLanguageMiddlewareIntegration::test_complete_exam_flow
+FAILED tests/test_turkish_exam_middleware.py::TestTurkishLanguageMiddlewareIntegration::test_question_navigation_flow
+FAILED tests/test_turkish_exam_middleware.py::TestTurkishLanguageMiddlewareIntegration::test_exam_completion_flow
+FAILED tests/test_turkish_exam_middleware.py::TestMiddlewareConfigurationScenarios::test_middleware_with_minimal_config
+FAILED tests/test_turkish_exam_middleware.py::TestMiddlewareConfigurationScenarios::test_middleware_with_custom_config
+FAILED tests/test_turkish_exam_middleware.py::TestEdgeCases::test_middleware_with_empty_request_body
+FAILED tests/test_turkish_exam_middleware.py::TestEdgeCases::test_middleware_with_none_body
+FAILED tests/test_turkish_exam_middleware.py::TestEdgeCases::test_middleware_with_existing_metadata
+105 failed, 150 passed, 67 warnings in 5.28s

@@ -1,0 +1,31 @@
+{
+  "stem": "Aşağıda, bir kitabevinin farklı edebî türlerdeki yayınlarına ait bazı özellikler verilmiştir:\n\n| Tür | Sayfa Sayısı | Çeviri Eserleri İçeriyor mu? |\n|---|---|---|\n| Roman | 320 | Evet |\n| Öykü | 180 | Hayır |\n| Şiir | 95 | Evet |\n| Deneme | 210 | Hayır |\n\nBu kitabevi, yeni bir tanıtım broşürü hazırlamaktadır. Broşürde, \"Özgün Türkçe eserlerimiz, okurlarımıza zengin bir dil deneyimi sunmaktadır.\" ifadesiyle hangi türlerin tanıtılacağı belirtilmek istenmektedir. Buna göre tablodaki bilgilerden hareketle bu ifadenin hangi türleri kapsadığı ve bu türlerin ortak özelliğinin ne olduğu aşağıdakilerin hangisinde doğru verilmiştir?",
+  "options": {
+    "A": "Roman ve Şiir türleri - Her ikisi de çeviri eserler içermektedir",
+    "B": "Öykü ve Deneme türleri - Her ikisi de çeviri eser içermemektedir",
+    "C": "Roman ve Deneme türleri - Her ikisi de 200 sayfanın üzerindedir",
+    "D": "Şiir ve Öykü türleri - Her ikisi de 200 sayfanın altındadır",
+    "E": "Roman, Öykü ve Deneme türleri - Hiçbiri çeviri eser içermemektedir"
+  },
+  "correct_answer": "B",
+  "explanation": "Broşürde 'Özgün Türkçe eserlerimiz' ifadesi kullanıldığına göre, çeviri olmayan, yani orijinal Türkçe yazılmış eserlerden bahsedilmektedir. Tabloya göre 'Çeviri Eserleri İçeriyor mu?' sütununda 'Hayır' yazan türler Öykü ve Deneme'dir. Bu iki tür, özgün Türkçe eserler oldukları için broşürde tanıtılacak türlerdir ve ortak özellikleri çeviri eser içermemeleridir.",
+  "visual_content": {
+    "type": "table",
+    "format": "markdown",
+    "content": "| Ürün | Özellik 1 | Özellik 2 |\n| --- | --- | --- |\n| Ürün A | 50 | Hayır |\n| Ürün B | 19 | Evet |\n| Ürün C | 82 | Hayır |\n| Ürün D | Evet | Evet |",
+    "metadata": {
+      "caption": "Tablo 1: Ürün Karşılaştırması",
+      "alt_text": "Product comparison table",
+      "rows": 4,
+      "columns": 3
+    }
+  },
+  "method": "few-shot",
+  "osym_examples_used": 3,
+  "metadata": {
+    "phase": "Phase 1 - Tables",
+    "generated_at": "2025-11-07T11:50:12.547107",
+    "spec_name": "Q3_Turkish_Comparison",
+    "table_type": "comparison_table"
+  }
+}

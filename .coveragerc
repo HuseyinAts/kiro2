@@ -1,0 +1,9 @@
+[run]
+source = .
+branch = true
+omit = */tests/*, */venv/*, */__init__.py
+
+[report]
+precision = 2
+show_missing = true
+exclude_lines = pragma: no cover, def __repr__, if TYPE_CHECKING:

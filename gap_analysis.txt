@@ -1,0 +1,30 @@
+CRITICAL GAP ANALYSIS - NOT LOADED ROUTERS
+__init__
+api_key_api
+audit_api
+audit_logs_api
+content_api
+ddos_management_api
+difficulty_classification_api
+eba_routes
+encryption_management
+enhanced_user_management_api
+exam_answer_tracking
+fast_learning_api
+gamification_api
+khan_routes
+kvkk_api
+manipulatives_progress_api
+monitoring_api
+monitoring_endpoints
+multisensory_learning_api
+question_bank_management
+question_generation
+revolutionary_features
+similar_questions
+validation
+visual_supports_api
+websocket_chat
+
+=== DUPLICATES ===
+from api.adhd_task_management_api

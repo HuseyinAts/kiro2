@@ -1,0 +1,176 @@
+-- Task 97: EBA TV Integration Database Tables
+-- Created: 2025-10-26
+
+-- ============================================
+-- Table 1: eba_videos (Task 97.2: Video Catalog)
+-- ============================================
+
+CREATE TABLE IF NOT EXISTS eba_videos (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+
+    -- EBA specific IDs
+    eba_video_id VARCHAR(100) UNIQUE NOT NULL,
+    meb_content_id VARCHAR(100),
+
+    -- Video metadata
+    title VARCHAR(500) NOT NULL,
+    description TEXT,
+    duration_seconds INTEGER NOT NULL,
+    thumbnail_url VARCHAR(1000),
+    video_url VARCHAR(1000) NOT NULL,
+
+    -- Classification (Task 97.3: Subject filtering)
+    subject VARCHAR(50) NOT NULL,
+    grade_level VARCHAR(20) NOT NULL,
+    topic VARCHAR(200),
+    subtopics TEXT[],  -- Array of strings
+    keywords TEXT[],  -- For search
+
+    -- Curriculum alignment
+    kazanim_codes TEXT[],  -- MEB curriculum codes
+    curriculum_aligned BOOLEAN DEFAULT TRUE,
+
+    -- Video properties
+    quality VARCHAR(10) DEFAULT '720p',
+    has_turkish_subtitle BOOLEAN DEFAULT TRUE,
+
+    -- Analytics from EBA
+    view_count INTEGER DEFAULT 0,
+    publish_date TIMESTAMP WITH TIME ZONE,
+
+    -- Sync metadata
+    last_synced_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Indexes for fast filtering (Task 97.3)
+CREATE INDEX idx_eba_videos_eba_id ON eba_videos(eba_video_id);
+CREATE INDEX idx_eba_videos_subject ON eba_videos(subject);
+CREATE INDEX idx_eba_videos_grade_level ON eba_videos(grade_level);
+CREATE INDEX idx_eba_videos_subject_grade ON eba_videos(subject, grade_level);
+CREATE INDEX idx_eba_videos_kazanim ON eba_videos USING GIN (kazanim_codes);  -- GIN for array search
+CREATE INDEX idx_eba_videos_keywords ON eba_videos USING GIN (keywords);
+
+
+-- ============================================
+-- Table 2: eba_video_watches (Task 97.4: Watch Tracking)
+-- ============================================
+
+CREATE TABLE IF NOT EXISTS eba_video_watches (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+
+    -- Foreign keys
+    user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    eba_video_id UUID NOT NULL REFERENCES eba_videos(id) ON DELETE CASCADE,
+
+    -- Watch session info
+    session_start TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    session_end TIMESTAMP WITH TIME ZONE,
+    last_updated TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+
+    -- Progress tracking
+    last_position INTEGER DEFAULT 0,  -- seconds
+    watch_percentage FLOAT DEFAULT 0.0,  -- 0-100
+    completed BOOLEAN DEFAULT FALSE,  -- TRUE if >= 90% watched
+    completed_at TIMESTAMP WITH TIME ZONE,
+
+    -- Analytics
+    total_watch_time INTEGER DEFAULT 0,  -- Total seconds watched
+
+    -- Metadata
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Indexes for analytics queries
+CREATE INDEX idx_eba_watches_user ON eba_video_watches(user_id);
+CREATE INDEX idx_eba_watches_video ON eba_video_watches(eba_video_id);
+CREATE INDEX idx_eba_watches_user_video ON eba_video_watches(user_id, eba_video_id);
+CREATE INDEX idx_eba_watches_completed ON eba_video_watches(completed);
+CREATE INDEX idx_eba_watches_updated ON eba_video_watches(last_updated DESC);
+
+
+-- ============================================
+-- Table 3: eba_subject_taxonomy (Task 97.3: Taxonomy)
+-- ============================================
+
+CREATE TABLE IF NOT EXISTS eba_subject_taxonomy (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+
+    subject VARCHAR(50) NOT NULL,
+    topic VARCHAR(200) NOT NULL,
+    subtopics TEXT[],
+
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Indexes
+CREATE INDEX idx_eba_taxonomy_subject ON eba_subject_taxonomy(subject);
+CREATE UNIQUE INDEX idx_eba_taxonomy_subject_topic ON eba_subject_taxonomy(subject, topic);
+
+
+-- ============================================
+-- Sample Data (for testing)
+-- ============================================
+
+-- Insert sample EBA videos
+
+-- ============================================
+-- Functions
+-- ============================================
+
+-- Function: Update last_updated on eba_video_watches
+CREATE OR REPLACE FUNCTION update_eba_watch_timestamp()
+RETURNS TRIGGER AS $$
+BEGIN
+    NEW.last_updated = NOW();
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trigger_update_eba_watch_timestamp
+BEFORE UPDATE ON eba_video_watches
+FOR EACH ROW
+EXECUTE FUNCTION update_eba_watch_timestamp();
+
+
+-- Function: Auto-complete video when watch_percentage >= 90
+CREATE OR REPLACE FUNCTION auto_complete_eba_video()
+RETURNS TRIGGER AS $$
+BEGIN
+    IF NEW.watch_percentage >= 90 AND OLD.completed = FALSE THEN
+        NEW.completed = TRUE;
+        NEW.completed_at = NOW();
+    END IF;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trigger_auto_complete_eba_video
+BEFORE UPDATE ON eba_video_watches
+FOR EACH ROW
+EXECUTE FUNCTION auto_complete_eba_video();
+
+
+-- ============================================
+-- Permissions
+-- ============================================
+
+-- Grant permissions (adjust as needed for your user)
+-- GRANT SELECT, INSERT, UPDATE ON eba_videos TO kiro_app_user;
+-- GRANT SELECT, INSERT, UPDATE ON eba_video_watches TO kiro_app_user;
+-- GRANT SELECT ON eba_subject_taxonomy TO kiro_app_user;
+
+
+-- ============================================
+-- Comments
+-- ============================================
+
+COMMENT ON TABLE eba_videos IS 'Task 97.2: EBA TV video catalog synced from MEB API';
+COMMENT ON TABLE eba_video_watches IS 'Task 97.4: User video watch progress and analytics';
+COMMENT ON TABLE eba_subject_taxonomy IS 'Task 97.3: Subject-topic hierarchy for filtering';
+
+COMMENT ON COLUMN eba_videos.eba_video_id IS 'Unique EBA video identifier';
+COMMENT ON COLUMN eba_videos.kazanim_codes IS 'MEB curriculum achievement codes (e.g., 8.1.2.1)';
+COMMENT ON COLUMN eba_video_watches.watch_percentage IS 'Percentage of video watched (0-100)';
+COMMENT ON COLUMN eba_video_watches.completed IS 'TRUE if user watched >= 90% of video';

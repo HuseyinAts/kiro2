@@ -1,0 +1,182 @@
+{
+  "mcpServers": {
+    "youtube-education-api": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-youtube"],
+      "env": {
+        "YOUTUBE_API_KEY": "${YOUTUBE_API_KEY}",
+        "YOUTUBE_CHANNEL_FILTER": "education",
+        "YOUTUBE_LANGUAGE": "tr",
+        "YOUTUBE_REGION": "TR"
+      }
+    },
+    "khan-academy-turkish": {
+      "command": "python",
+      "args": ["-m", "backend.integrations.khan_academy_service"],
+      "env": {
+        "KHAN_ACADEMY_LOCALE": "tr",
+        "KHAN_ACADEMY_CURRICULUM": "meb_2024"
+      }
+    },
+    "eba-tv-integration": {
+      "command": "python",
+      "args": ["-m", "backend.integrations.ebatv_service"],
+      "env": {
+        "EBA_TV_API_URL": "https://eba.gov.tr/api/v1",
+        "EBA_TV_CURRICULUM_LEVEL": "lise"
+      }
+    },
+    "turkish-content-filter": {
+      "command": "python",
+      "args": ["-m", "backend.services.turkish_content_filter"],
+      "env": {
+        "MIN_TURKISH_SCORE": "0.70",
+        "TRUSTED_CHANNELS_FILE": "config/trusted_turkish_channels.json",
+        "ZEMBEREK_SERVICE_URL": "http://localhost:8081"
+      }
+    },
+    "subject-relevance-scorer": {
+      "command": "python",
+      "args": ["-m", "backend.services.subject_relevance_scorer"],
+      "env": {
+        "MIN_RELEVANCE_SCORE": "0.60",
+        "MODULE_SPECIFIC_MIN_SCORE": "0.80",
+        "EMBEDDING_MODEL": "sentence-transformers/paraphrase-multilingual-mpnet-base-v2",
+        "ELASTICSEARCH_URL": "http://localhost:9200"
+      }
+    },
+    "video-quality-validator": {
+      "command": "python",
+      "args": ["-m", "backend.services.video_quality_validator"],
+      "env": {
+        "YOUTUBE_API_KEY": "${YOUTUBE_API_KEY}",
+        "CHANNEL_RELIABILITY_THRESHOLD": "0.70",
+        "VIEW_COUNT_MIN": "1000",
+        "LIKE_RATIO_MIN": "0.80"
+      }
+    },
+    "enhanced-recommendation-engine": {
+      "command": "python",
+      "args": ["-m", "backend.services.enhanced_resource_recommendation_engine"],
+      "env": {
+        "REDIS_URL": "redis://localhost:6379/0",
+        "RECOMMENDATION_CACHE_TTL": "3600",
+        "MAX_RECOMMENDATIONS": "50"
+      }
+    },
+    "video-recommendation-monitoring": {
+      "command": "python",
+      "args": ["-m", "backend.services.video_recommendation_monitoring"],
+      "env": {
+        "PROMETHEUS_PORT": "9090",
+        "ALERT_WEBHOOK_URL": "${ALERT_WEBHOOK_URL}",
+        "LOG_LEVEL": "INFO"
+      }
+    },
+    "zemberek-nlp-service": {
+      "command": "python",
+      "args": ["-m", "backend.services.zemberek_nlp_server"],
+      "env": {
+        "ZEMBEREK_PORT": "8081",
+        "ZEMBEREK_HOST": "0.0.0.0"
+      }
+    },
+    "hybrid-learning-style-detector": {
+      "command": "python",
+      "args": ["-m", "backend.services.hybrid_learning_style_detector"],
+      "env": {
+        "VARK_FELDER_PROFILES": "64",
+        "TURKISH_ZPD_ENABLED": "true",
+        "MEB_MAARIF_CULTURAL_FACTORS": "true"
+      }
+    },
+    "multi-agent-blackboard": {
+      "command": "python",
+      "args": ["-m", "backend.agents.blackboard_coordinator"],
+      "env": {
+        "WEBSOCKET_PORT": "8765",
+        "REDIS_PUBSUB_URL": "redis://localhost:6379/1",
+        "AUTO_RECONNECT_ENABLED": "true"
+      }
+    },
+    "platform-health-audit": {
+      "command": "python",
+      "args": ["-m", "backend.analytics.health_audit_service"],
+      "env": {
+        "HEALTH_CHECK_INTERVAL_SECONDS": "300",
+        "ALERT_THRESHOLD_SCORE": "80",
+        "REPORT_OUTPUT_DIR": "reports/health"
+      }
+    },
+    "prometheus-metrics-exporter": {
+      "command": "python",
+      "args": ["-m", "backend.monitoring.prometheus_exporter"],
+      "env": {
+        "PROMETHEUS_PORT": "9091",
+        "METRICS_COLLECTION_INTERVAL": "15",
+        "ENABLE_CUSTOM_METRICS": "true"
+      }
+    },
+    "grafana-dashboard-provisioner": {
+      "command": "python",
+      "args": ["-m", "backend.monitoring.grafana_provisioner"],
+      "env": {
+        "GRAFANA_URL": "http://localhost:3001",
+        "GRAFANA_API_KEY": "${GRAFANA_API_KEY}",
+        "DASHBOARD_CONFIG_DIR": "config/grafana/dashboards"
+      }
+    },
+    "elasticsearch-apm": {
+      "command": "python",
+      "args": ["-m", "elasticapm.contrib.flask"],
+      "env": {
+        "ELASTIC_APM_SERVICE_NAME": "kiro-platform",
+        "ELASTIC_APM_SERVER_URL": "http://localhost:8200",
+        "ELASTIC_APM_ENVIRONMENT": "production",
+        "ELASTIC_APM_TRANSACTION_SAMPLE_RATE": "0.1"
+      }
+    },
+    "sentry-error-tracking": {
+      "command": "python",
+      "args": ["-m", "backend.monitoring.sentry_integration"],
+      "env": {
+        "SENTRY_DSN": "${SENTRY_DSN}",
+        "SENTRY_ENVIRONMENT": "production",
+        "SENTRY_TRACES_SAMPLE_RATE": "0.1",
+        "SENTRY_PROFILES_SAMPLE_RATE": "0.05"
+      }
+    },
+    "database-backup-scheduler": {
+      "command": "python",
+      "args": ["-m", "backend.database.backup_scheduler"],
+      "env": {
+        "BACKUP_SCHEDULE_FULL": "0 2 * * *",
+        "BACKUP_SCHEDULE_INCREMENTAL": "0 * * * *",
+        "BACKUP_RETENTION_DAYS_FULL": "30",
+        "BACKUP_RETENTION_DAYS_INCREMENTAL": "7",
+        "BACKUP_S3_BUCKET": "kiro-backups-production",
+        "BACKUP_ENCRYPTION_ENABLED": "true"
+      }
+    },
+    "alerting-notification-service": {
+      "command": "python",
+      "args": ["-m", "backend.monitoring.alerting_service"],
+      "env": {
+        "SLACK_WEBHOOK_URL": "${SLACK_WEBHOOK_URL}",
+        "EMAIL_ALERT_RECIPIENTS": "${ALERT_EMAIL_RECIPIENTS}",
+        "PAGERDUTY_API_KEY": "${PAGERDUTY_API_KEY}",
+        "ALERT_COOLDOWN_MINUTES": "15"
+      }
+    },
+    "log-aggregation-service": {
+      "command": "python",
+      "args": ["-m", "backend.monitoring.log_aggregation"],
+      "env": {
+        "ELASTICSEARCH_URL": "http://localhost:9200",
+        "LOG_INDEX_PREFIX": "kiro-logs",
+        "LOG_RETENTION_DAYS": "90",
+        "STRUCTURED_LOGGING_ENABLED": "true"
+      }
+    }
+  }
+}

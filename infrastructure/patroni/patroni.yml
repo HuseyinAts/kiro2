@@ -1,0 +1,233 @@
+# Patroni Configuration for Automatic PostgreSQL Failover (Task 52.2)
+# High Availability with etcd for Distributed Consensus
+# Author: Claude
+# Date: 2025-10-27
+
+# =============================================================================
+# CLUSTER CONFIGURATION
+# =============================================================================
+
+scope: kiro2-postgres-cluster
+namespace: /db/
+name: postgres-node-1  # Change for each node: postgres-node-1, postgres-node-2, postgres-node-3
+
+# =============================================================================
+# REST API (for health checks and management)
+# =============================================================================
+
+restapi:
+  listen: 0.0.0.0:8008
+  connect_address: 10.0.1.10:8008  # Change to actual node IP
+  # Authentication for REST API
+  authentication:
+    username: patroni
+    password: your_secure_patroni_password
+
+# =============================================================================
+# ETCD CONFIGURATION (Distributed Consensus Store)
+# =============================================================================
+
+etcd:
+  # Multiple etcd hosts for redundancy (minimum 3 for quorum)
+  hosts:
+    - etcd1.example.com:2379
+    - etcd2.example.com:2379
+    - etcd3.example.com:2379
+
+  # Alternative: Use single host for development
+  # host: 127.0.0.1:2379
+
+# Alternative: Use Consul instead of etcd
+# consul:
+#   host: 127.0.0.1:8500
+#   scheme: http
+#   register_service: true
+
+# =============================================================================
+# BOOTSTRAP CONFIGURATION (First-time cluster setup)
+# =============================================================================
+
+bootstrap:
+  # DCS (Distributed Configuration Store) settings
+  dcs:
+    ttl: 30                    # Leader lease time
+    loop_wait: 10              # Seconds between checks
+    retry_timeout: 10          # Seconds to retry failover
+    maximum_lag_on_failover: 1048576  # Max lag (1MB) for failover eligibility
+
+    # PostgreSQL parameters to set on all nodes
+    postgresql:
+      use_pg_rewind: true
+      use_slots: true
+      parameters:
+        max_connections: 200
+        shared_buffers: 2GB
+        effective_cache_size: 6GB
+        maintenance_work_mem: 512MB
+        work_mem: 16MB
+        wal_level: replica
+        max_wal_senders: 10
+        max_replication_slots: 10
+        hot_standby: on
+        hot_standby_feedback: on
+        wal_keep_size: 1GB
+        max_wal_size: 2GB
+        checkpoint_timeout: 10min
+        checkpoint_completion_target: 0.9
+        random_page_cost: 1.1
+        effective_io_concurrency: 200
+        log_min_duration_statement: 1000
+        log_connections: on
+        log_disconnections: on
+        shared_preload_libraries: 'pg_stat_statements'
+        pg_stat_statements.track: all
+        track_io_timing: on
+
+  # Initialize new cluster
+  initdb:
+    - encoding: UTF8
+    - locale: en_US.UTF-8
+    - data-checksums
+
+  # Create replication user
+  users:
+    replicator:
+      password: your_secure_replication_password
+      options:
+        - replication
+
+    admin:
+      password: your_secure_admin_password
+      options:
+        - createrole
+        - createdb
+
+# =============================================================================
+# POSTGRESQL CONFIGURATION
+# =============================================================================
+
+postgresql:
+  listen: 0.0.0.0:5432
+  connect_address: 10.0.1.10:5432  # Change to actual node IP
+  data_dir: /var/lib/postgresql/data
+  bin_dir: /usr/lib/postgresql/14/bin  # Adjust for your PostgreSQL version
+
+  # Authentication for Patroni to connect to PostgreSQL
+  authentication:
+    replication:
+      username: replicator
+      password: your_secure_replication_password
+    superuser:
+      username: postgres
+      password: your_secure_postgres_password
+    rewind:
+      username: replicator
+      password: your_secure_replication_password
+
+  # Custom PostgreSQL parameters (override bootstrap settings if needed)
+  parameters:
+    unix_socket_directories: '/var/run/postgresql'
+
+  # pg_hba.conf entries
+  pg_hba:
+    - host replication replicator 0.0.0.0/0 scram-sha-256
+    - host all all 0.0.0.0/0 scram-sha-256
+    - local all all trust
+
+  # Callbacks for lifecycle events
+  create_replica_methods:
+    - basebackup
+
+  basebackup:
+    checkpoint: 'fast'
+    max-rate: '100M'
+
+# =============================================================================
+# WATCHDOG (Optional - for split-brain prevention)
+# =============================================================================
+
+# watchdog:
+#   mode: automatic  # required, automatic, off
+#   device: /dev/watchdog
+#   safety_margin: 5
+
+# =============================================================================
+# TAGS (for routing and priorities)
+# =============================================================================
+
+tags:
+  nofailover: false      # Allow this node to become primary
+  noloadbalance: false   # Allow this node to handle read queries
+  clonefrom: false       # Don't use as clone source
+  nosync: false          # Allow synchronous replication
+  replicatefrom: postgres-node-1  # Prefer to replicate from this node
+
+# =============================================================================
+# LOGGING
+# =============================================================================
+
+log:
+  level: INFO
+  format: '%(asctime)s %(levelname)s: %(message)s'
+  dateformat: '%Y-%m-%d %H:%M:%S'
+  # Optional: log to file
+  # file: /var/log/patroni/patroni.log
+  # max_queue_size: 1000
+
+# =============================================================================
+# USAGE INSTRUCTIONS
+# =============================================================================
+
+# 1. Install Patroni:
+#    pip install patroni[etcd]
+#
+# 2. Install etcd on 3 separate servers (or use managed service):
+#    apt-get install etcd
+#
+# 3. Configure etcd cluster (on each etcd server):
+#    Edit /etc/default/etcd with cluster configuration
+#
+# 4. Copy this file to each PostgreSQL node:
+#    sudo cp patroni.yml /etc/patroni/patroni.yml
+#    # Change 'name' and IP addresses for each node!
+#
+# 5. Start Patroni on all nodes:
+#    sudo systemctl start patroni
+#    sudo systemctl enable patroni
+#
+# 6. Check cluster status:
+#    patronictl -c /etc/patroni/patroni.yml list
+#
+# 7. Test failover:
+#    # Stop primary node
+#    sudo systemctl stop patroni
+#    # Watch automatic failover (< 30 seconds)
+#    patronictl -c /etc/patroni/patroni.yml list
+#
+# 8. Manual failover:
+#    patronictl -c /etc/patroni/patroni.yml failover
+#
+# 9. Manual switchover (graceful):
+#    patronictl -c /etc/patroni/patroni.yml switchover
+#
+# 10. Reinitialize failed node:
+#     patronictl -c /etc/patroni/patroni.yml reinit
+
+# =============================================================================
+# MONITORING ENDPOINTS
+# =============================================================================
+
+# Health check (returns 200 if healthy):
+# curl http://10.0.1.10:8008/health
+#
+# Cluster status:
+# curl http://10.0.1.10:8008/cluster
+#
+# Leader status (returns 200 if this node is leader):
+# curl http://10.0.1.10:8008/leader
+#
+# Replica status (returns 200 if this node is replica):
+# curl http://10.0.1.10:8008/replica
+#
+# Patroni configuration:
+# curl http://10.0.1.10:8008/config

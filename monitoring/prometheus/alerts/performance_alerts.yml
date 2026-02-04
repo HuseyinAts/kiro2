@@ -1,0 +1,208 @@
+# Performance Alerting Rules
+# Teknofest 2025 - Eğitim Eylemci Projesi
+# Requirements: 5.4, 5.12
+
+groups:
+  - name: performance_alerts
+    interval: 30s
+    rules:
+      # High CPU Usage
+      - alert: HighCPUUsage
+        expr: |
+          100 - (avg by (instance) (rate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 80
+        for: 10m
+        labels:
+          severity: warning
+          component: system
+          team: devops
+        annotations:
+          summary: "Yüksek CPU kullanımı"
+          description: |
+            CPU kullanımı %80'in üzerinde.
+            Mevcut CPU kullanımı: {{ $value | humanizePercentage }}
+            Instance: {{ $labels.instance }}
+            Sistem yavaşlayabilir.
+          runbook_url: "https://docs.teknofest-egitim.com/runbooks/high-cpu"
+
+      # Critical CPU Usage
+      - alert: CriticalCPUUsage
+        expr: |
+          100 - (avg by (instance) (rate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 95
+        for: 5m
+        labels:
+          severity: critical
+          component: system
+          team: devops
+        annotations:
+          summary: "Kritik CPU kullanımı!"
+          description: |
+            CPU kullanımı %95'in üzerinde!
+            Mevcut CPU kullanımı: {{ $value | humanizePercentage }}
+            Instance: {{ $labels.instance }}
+            Acil müdahale gerekli!
+          runbook_url: "https://docs.teknofest-egitim.com/runbooks/critical-cpu"
+
+      # High Memory Usage
+      - alert: HighMemoryUsage
+        expr: |
+          (1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) * 100 > 80
+        for: 10m
+        labels:
+          severity: warning
+          component: system
+          team: devops
+        annotations:
+          summary: "Yüksek memory kullanımı"
+          description: |
+            Memory kullanımı %80'in üzerinde.
+            Mevcut memory kullanımı: {{ $value | humanizePercentage }}
+            Instance: {{ $labels.instance }}
+            Memory leak olabilir.
+          runbook_url: "https://docs.teknofest-egitim.com/runbooks/high-memory"
+
+      # Critical Memory Usage
+      - alert: CriticalMemoryUsage
+        expr: |
+          (1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) * 100 > 95
+        for: 5m
+        labels:
+          severity: critical
+          component: system
+          team: devops
+        annotations:
+          summary: "Kritik memory kullanımı!"
+          description: |
+            Memory kullanımı %95'in üzerinde!
+            Mevcut memory kullanımı: {{ $value | humanizePercentage }}
+            Instance: {{ $labels.instance }}
+            OOM (Out of Memory) riski var!
+          runbook_url: "https://docs.teknofest-egitim.com/runbooks/critical-memory"
+
+      # High Disk Usage
+      - alert: HighDiskUsage
+        expr: |
+          (1 - (node_filesystem_avail_bytes{fstype!="tmpfs"} / node_filesystem_size_bytes{fstype!="tmpfs"})) * 100 > 80
+        for: 30m
+        labels:
+          severity: warning
+          component: system
+          team: devops
+        annotations:
+          summary: "Yüksek disk kullanımı"
+          description: |
+            Disk kullanımı %80'in üzerinde.
+            Mevcut disk kullanımı: {{ $value | humanizePercentage }}
+            Mount point: {{ $labels.mountpoint }}
+            Instance: {{ $labels.instance }}
+            Disk temizliği gerekebilir.
+          runbook_url: "https://docs.teknofest-egitim.com/runbooks/high-disk"
+
+      # Critical Disk Usage
+      - alert: CriticalDiskUsage
+        expr: |
+          (1 - (node_filesystem_avail_bytes{fstype!="tmpfs"} / node_filesystem_size_bytes{fstype!="tmpfs"})) * 100 > 95
+        for: 10m
+        labels:
+          severity: critical
+          component: system
+          team: devops
+        annotations:
+          summary: "Kritik disk kullanımı!"
+          description: |
+            Disk kullanımı %95'in üzerinde!
+            Mevcut disk kullanımı: {{ $value | humanizePercentage }}
+            Mount point: {{ $labels.mountpoint }}
+            Instance: {{ $labels.instance }}
+            Disk dolu! Acil temizlik gerekli!
+          runbook_url: "https://docs.teknofest-egitim.com/runbooks/critical-disk"
+
+      # High Request Rate
+      - alert: HighRequestRate
+        expr: |
+          sum(rate(video_requests_total[5m])) > 100
+        for: 10m
+        labels:
+          severity: warning
+          component: video_api
+          team: backend
+        annotations:
+          summary: "Yüksek istek oranı"
+          description: |
+            Video API'ye saniyede 100'den fazla istek geliyor.
+            Mevcut istek oranı: {{ $value }} req/s
+            Sistem yükü yüksek, scaling gerekebilir.
+          runbook_url: "https://docs.teknofest-egitim.com/runbooks/high-request-rate"
+
+      # Database Connection Pool Exhausted
+      - alert: DatabaseConnectionPoolExhausted
+        expr: |
+          kiro_db_connections{pool="main"} > 90
+        for: 5m
+        labels:
+          severity: critical
+          component: database
+          team: backend
+        annotations:
+          summary: "Database connection pool doldu!"
+          description: |
+            Database connection pool neredeyse dolu.
+            Mevcut connection sayısı: {{ $value }}
+            Yeni istekler bekleyebilir veya başarısız olabilir.
+          runbook_url: "https://docs.teknofest-egitim.com/runbooks/db-pool-exhausted"
+
+      # Slow Database Queries
+      - alert: SlowDatabaseQueries
+        expr: |
+          histogram_quantile(0.95,
+            sum(rate(kiro_db_query_duration_seconds_bucket[5m])) by (le, query_type)
+          ) > 1.0
+        for: 10m
+        labels:
+          severity: warning
+          component: database
+          team: backend
+        annotations:
+          summary: "Yavaş database query'leri"
+          description: |
+            Database query'lerinin P95'i 1 saniyenin üzerinde.
+            Mevcut P95: {{ $value | humanizeDuration }}
+            Query type: {{ $labels.query_type }}
+            Index veya query optimization gerekebilir.
+          runbook_url: "https://docs.teknofest-egitim.com/runbooks/slow-queries"
+
+      # High P99 Response Time
+      - alert: HighP99ResponseTime
+        expr: |
+          histogram_quantile(0.99,
+            sum(rate(video_response_time_seconds_bucket[5m])) by (le, endpoint)
+          ) > 5.0
+        for: 15m
+        labels:
+          severity: warning
+          component: video_api
+          team: backend
+        annotations:
+          summary: "Yüksek P99 yanıt süresi"
+          description: |
+            Video API P99 yanıt süresi 5 saniyenin üzerinde.
+            Mevcut P99: {{ $value | humanizeDuration }}
+            Endpoint: {{ $labels.endpoint }}
+            Bazı kullanıcılar yavaş deneyim yaşıyor.
+          runbook_url: "https://docs.teknofest-egitim.com/runbooks/high-p99"
+
+      # Redis Connection Issues
+      - alert: RedisConnectionIssues
+        expr: |
+          rate(cache_operations_total{operation="error"}[5m]) > 0.1
+        for: 5m
+        labels:
+          severity: warning
+          component: cache
+          team: backend
+        annotations:
+          summary: "Redis bağlantı sorunları"
+          description: |
+            Redis cache operasyonlarında hata oranı yüksek.
+            Hata oranı: {{ $value }} errors/s
+            Redis bağlantısı kontrol edilmeli.
+          runbook_url: "https://docs.teknofest-egitim.com/runbooks/redis-connection-issues"

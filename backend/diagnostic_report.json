@@ -1,0 +1,67 @@
+{
+  "timestamp": "2025-10-29T20:05:04.401586",
+  "checks": {
+    "backend_service": {
+      "status": "OK",
+      "details": {
+        "success": true,
+        "status": "healthy",
+        "message": "Sistem alyor"
+      }
+    },
+    "test_endpoint": {
+      "status": "OK",
+      "response": {
+        "status": "OK",
+        "message": "YouTube Legacy API çalışıyor!",
+        "redirect": "Use /api/youtube-fast for better performance"
+      }
+    },
+    "recommendations_endpoint": {
+      "status": "OK",
+      "video_count": 1,
+      "response_sample": [
+        {
+          "subject_exam": "kimya_TYT",
+          "videos": [
+            {
+              "video_id": "BvV6rq9V7xQ",
+              "title": "TYT Kimya - Atom Yapısı",
+              "channel": "TonguçAkademi",
+              "channel_id": "UC_TonguçAkademi",
+              "duration": "20:00",
+              "view_count": 145760,
+              "upload_date": "2023-08-01",
+              "thumbnail": "https://img.youtube.com/vi/BvV6rq9V7xQ/maxresdefault.jpg",
+              "quality_score": 8.5,
+              "subject": "kimya",
+              "difficulty": "orta",
+              "exam_type": "TYT",
+              "url": "https://www.youtube.com/embed/BvV6rq9V7xQ"
+            }
+          ],
+          "total_count": 1,
+          "performance_note": "Legacy endpoint: 0.0ms - Use /api/youtube-fast for better performance"
+        }
+      ]
+    },
+    "cors": {
+      "status": "OK",
+      "headers": {
+        "Access-Control-Allow-Origin": "http://localhost:3001",
+        "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, PATCH, OPTIONS",
+        "Access-Control-Allow-Headers": "Accept, Accept-Language, Authorization, Content-Language, Content-Type, X-Request-ID",
+        "Access-Control-Allow-Credentials": "true"
+      }
+    },
+    "backend_logs": {
+      "status": "OK",
+      "error_count": 0,
+      "warning_count": 0,
+      "youtube_log_count": 0,
+      "recent_errors": []
+    }
+  },
+  "fixes_applied": [],
+  "recommendations": []
+}

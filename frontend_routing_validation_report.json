@@ -1,0 +1,587 @@
+{
+  "summary": {
+    "total_routes": 66,
+    "total_navigation_links": 69,
+    "total_components": 172,
+    "broken_links": 0,
+    "missing_components": 0,
+    "unused_components": 28,
+    "deep_links": 2,
+    "redirects": 4
+  },
+  "details": {
+    "routes": [
+      {
+        "path": "/login",
+        "component": "LoginPage",
+        "file": "src\\app.tsx",
+        "status": "✅ Defined"
+      },
+      {
+        "path": "/register",
+        "component": "RegisterPage",
+        "file": "src\\app.tsx",
+        "status": "✅ Defined"
+      },
+      {
+        "path": "/unauthorized",
+        "component": "UnauthorizedPage",
+        "file": "src\\app.tsx",
+        "status": "✅ Defined"
+      },
+      {
+        "path": "/dashboard",
+        "component": "ProtectedRoute",
+        "file": "src\\app.tsx",
+        "status": "✅ Defined"
+      },
+      {
+        "path": "/chat",
+        "component": "ProtectedRoute",
+        "file": "src\\app.tsx",
+        "status": "✅ Defined"
+      },
+      {
+        "path": "/exam/start",
+        "component": "ProtectedRoute",
+        "file": "src\\app.tsx",
+        "status": "✅ Defined"
+      },
+      {
+        "path": "/exam/history",
+        "component": "ProtectedRoute",
+        "file": "src\\app.tsx",
+        "status": "✅ Defined"
+      },
+      {
+        "path": "/exam/:sinavId",
+        "component": "ProtectedRoute",
+        "file": "src\\app.tsx",
+        "status": "✅ Defined"
+      },
+      {
+        "path": "/exam/:sinavId/results",
+        "component": "ProtectedRoute",
+        "file": "src\\app.tsx",
+        "status": "✅ Defined"
+      },
+      {
+        "path": "/exams",
+        "component": "ProtectedRoute",
+        "file": "src\\app.tsx",
+        "status": "✅ Defined"
+      },
+      {
+        "path": "/learning-path",
+        "component": "ProtectedRoute",
+        "file": "src\\app.tsx",
+        "status": "✅ Defined"
+      },
+      {
+        "path": "/profile",
+        "component": "ProtectedRoute",
+        "file": "src\\app.tsx",
+        "status": "✅ Defined"
+      },
+      {
+        "path": "/teacher/dashboard",
+        "component": "ProtectedRoute",
+        "file": "src\\app.tsx",
+        "status": "✅ Defined"
+      },
+      {
+        "path": "/teacher/classes",
+        "component": "ProtectedRoute",
+        "file": "src\\app.tsx",
+        "status": "✅ Defined"
+      },
+      {
+        "path": "/teacher/students",
+        "component": "ProtectedRoute",
+        "file": "src\\app.tsx",
+        "status": "✅ Defined"
+      },
+      {
+        "path": "/teacher/exams",
+        "component": "ProtectedRoute",
+        "file": "src\\app.tsx",
+        "status": "✅ Defined"
+      },
+      {
+        "path": "/teacher/assignments",
+        "component": "ProtectedRoute",
+        "file": "src\\app.tsx",
+        "status": "✅ Defined"
+      },
+      {
+        "path": "/teacher/reports",
+        "component": "ProtectedRoute",
+        "file": "src\\app.tsx",
+        "status": "✅ Defined"
+      },
+      {
+        "path": "/teacher/content",
+        "component": "ProtectedRoute",
+        "file": "src\\app.tsx",
+        "status": "✅ Defined"
+      },
+      {
+        "path": "/parent/dashboard",
+        "component": "ProtectedRoute",
+        "file": "src\\app.tsx",
+        "status": "✅ Defined"
+      },
+      {
+        "path": "/parent/children",
+        "component": "ProtectedRoute",
+        "file": "src\\app.tsx",
+        "status": "✅ Defined"
+      },
+      {
+        "path": "/parent/reports",
+        "component": "ProtectedRoute",
+        "file": "src\\app.tsx",
+        "status": "✅ Defined"
+      },
+      {
+        "path": "/parent/notifications",
+        "component": "ProtectedRoute",
+        "file": "src\\app.tsx",
+        "status": "✅ Defined"
+      },
+      {
+        "path": "/admin/dashboard",
+        "component": "ProtectedRoute",
+        "file": "src\\app.tsx",
+        "status": "✅ Defined"
+      },
+      {
+        "path": "/admin/panel",
+        "component": "ProtectedRoute",
+        "file": "src\\app.tsx",
+        "status": "✅ Defined"
+      },
+      {
+        "path": "/admin/users",
+        "component": "ProtectedRoute",
+        "file": "src\\app.tsx",
+        "status": "✅ Defined"
+      },
+      {
+        "path": "/admin/content",
+        "component": "ProtectedRoute",
+        "file": "src\\app.tsx",
+        "status": "✅ Defined"
+      },
+      {
+        "path": "/admin/settings",
+        "component": "ProtectedRoute",
+        "file": "src\\app.tsx",
+        "status": "✅ Defined"
+      },
+      {
+        "path": "/settings",
+        "component": "ProtectedRoute",
+        "file": "src\\app.tsx",
+        "status": "✅ Defined"
+      },
+      {
+        "path": "/rbac-test",
+        "component": "ProtectedRoute",
+        "file": "src\\app.tsx",
+        "status": "✅ Defined"
+      },
+      {
+        "path": "/accessibility-demo",
+        "component": "AccessibilityDemoPage",
+        "file": "src\\app.tsx",
+        "status": "✅ Defined"
+      },
+      {
+        "path": "/",
+        "component": "Navigate",
+        "file": "src\\app.tsx",
+        "status": "✅ Defined"
+      },
+      {
+        "path": "*",
+        "component": "Navigate",
+        "file": "src\\app.tsx",
+        "status": "✅ Defined"
+      },
+      {
+        "path": "/login",
+        "component": "LoginPage",
+        "file": "src\\App.tsx",
+        "status": "✅ Defined"
+      },
+      {
+        "path": "/register",
+        "component": "RegisterPage",
+        "file": "src\\App.tsx",
+        "status": "✅ Defined"
+      },
+      {
+        "path": "/unauthorized",
+        "component": "UnauthorizedPage",
+        "file": "src\\App.tsx",
+        "status": "✅ Defined"
+      },
+      {
+        "path": "/dashboard",
+        "component": "ProtectedRoute",
+        "file": "src\\App.tsx",
+        "status": "✅ Defined"
+      },
+      {
+        "path": "/chat",
+        "component": "ProtectedRoute",
+        "file": "src\\App.tsx",
+        "status": "✅ Defined"
+      },
+      {
+        "path": "/exam/start",
+        "component": "ProtectedRoute",
+        "file": "src\\App.tsx",
+        "status": "✅ Defined"
+      },
+      {
+        "path": "/exam/history",
+        "component": "ProtectedRoute",
+        "file": "src\\App.tsx",
+        "status": "✅ Defined"
+      },
+      {
+        "path": "/exam/:sinavId",
+        "component": "ProtectedRoute",
+        "file": "src\\App.tsx",
+        "status": "✅ Defined"
+      },
+      {
+        "path": "/exam/:sinavId/results",
+        "component": "ProtectedRoute",
+        "file": "src\\App.tsx",
+        "status": "✅ Defined"
+      },
+      {
+        "path": "/exams",
+        "component": "ProtectedRoute",
+        "file": "src\\App.tsx",
+        "status": "✅ Defined"
+      },
+      {
+        "path": "/learning-path",
+        "component": "ProtectedRoute",
+        "file": "src\\App.tsx",
+        "status": "✅ Defined"
+      },
+      {
+        "path": "/profile",
+        "component": "ProtectedRoute",
+        "file": "src\\App.tsx",
+        "status": "✅ Defined"
+      },
+      {
+        "path": "/teacher/dashboard",
+        "component": "ProtectedRoute",
+        "file": "src\\App.tsx",
+        "status": "✅ Defined"
+      },
+      {
+        "path": "/teacher/classes",
+        "component": "ProtectedRoute",
+        "file": "src\\App.tsx",
+        "status": "✅ Defined"
+      },
+      {
+        "path": "/teacher/students",
+        "component": "ProtectedRoute",
+        "file": "src\\App.tsx",
+        "status": "✅ Defined"
+      },
+      {
+        "path": "/teacher/exams",
+        "component": "ProtectedRoute",
+        "file": "src\\App.tsx",
+        "status": "✅ Defined"
+      },
+      {
+        "path": "/teacher/assignments",
+        "component": "ProtectedRoute",
+        "file": "src\\App.tsx",
+        "status": "✅ Defined"
+      },
+      {
+        "path": "/teacher/reports",
+        "component": "ProtectedRoute",
+        "file": "src\\App.tsx",
+        "status": "✅ Defined"
+      },
+      {
+        "path": "/teacher/content",
+        "component": "ProtectedRoute",
+        "file": "src\\App.tsx",
+        "status": "✅ Defined"
+      },
+      {
+        "path": "/parent/dashboard",
+        "component": "ProtectedRoute",
+        "file": "src\\App.tsx",
+        "status": "✅ Defined"
+      },
+      {
+        "path": "/parent/children",
+        "component": "ProtectedRoute",
+        "file": "src\\App.tsx",
+        "status": "✅ Defined"
+      },
+      {
+        "path": "/parent/reports",
+        "component": "ProtectedRoute",
+        "file": "src\\App.tsx",
+        "status": "✅ Defined"
+      },
+      {
+        "path": "/parent/notifications",
+        "component": "ProtectedRoute",
+        "file": "src\\App.tsx",
+        "status": "✅ Defined"
+      },
+      {
+        "path": "/admin/dashboard",
+        "component": "ProtectedRoute",
+        "file": "src\\App.tsx",
+        "status": "✅ Defined"
+      },
+      {
+        "path": "/admin/panel",
+        "component": "ProtectedRoute",
+        "file": "src\\App.tsx",
+        "status": "✅ Defined"
+      },
+      {
+        "path": "/admin/users",
+        "component": "ProtectedRoute",
+        "file": "src\\App.tsx",
+        "status": "✅ Defined"
+      },
+      {
+        "path": "/admin/content",
+        "component": "ProtectedRoute",
+        "file": "src\\App.tsx",
+        "status": "✅ Defined"
+      },
+      {
+        "path": "/admin/settings",
+        "component": "ProtectedRoute",
+        "file": "src\\App.tsx",
+        "status": "✅ Defined"
+      },
+      {
+        "path": "/settings",
+        "component": "ProtectedRoute",
+        "file": "src\\App.tsx",
+        "status": "✅ Defined"
+      },
+      {
+        "path": "/rbac-test",
+        "component": "ProtectedRoute",
+        "file": "src\\App.tsx",
+        "status": "✅ Defined"
+      },
+      {
+        "path": "/accessibility-demo",
+        "component": "AccessibilityDemoPage",
+        "file": "src\\App.tsx",
+        "status": "✅ Defined"
+      },
+      {
+        "path": "/",
+        "component": "Navigate",
+        "file": "src\\App.tsx",
+        "status": "✅ Defined"
+      },
+      {
+        "path": "*",
+        "component": "Navigate",
+        "file": "src\\App.tsx",
+        "status": "✅ Defined"
+      }
+    ],
+    "broken_links": [],
+    "missing_components": [],
+    "unused_components": [
+      {
+        "component": "AdminContentPage",
+        "file": "src\\pages\\AdminContentPage.tsx",
+        "status": "⚠️  Route'da kullanılmıyor"
+      },
+      {
+        "component": "AdminDashboardPage",
+        "file": "src\\pages\\AdminDashboardPage.tsx",
+        "status": "⚠️  Route'da kullanılmıyor"
+      },
+      {
+        "component": "AdminSettingsPage",
+        "file": "src\\pages\\AdminSettingsPage.tsx",
+        "status": "⚠️  Route'da kullanılmıyor"
+      },
+      {
+        "component": "AdminUsersPage",
+        "file": "src\\pages\\AdminUsersPage.tsx",
+        "status": "⚠️  Route'da kullanılmıyor"
+      },
+      {
+        "component": "ChatPage",
+        "file": "src\\pages\\ChatPage.tsx",
+        "status": "⚠️  Route'da kullanılmıyor"
+      },
+      {
+        "component": "ExamHistoryPage",
+        "file": "src\\pages\\ExamHistoryPage.tsx",
+        "status": "⚠️  Route'da kullanılmıyor"
+      },
+      {
+        "component": "ExamPage",
+        "file": "src\\pages\\ExamPage.tsx",
+        "status": "⚠️  Route'da kullanılmıyor"
+      },
+      {
+        "component": "ExamResultsPage",
+        "file": "src\\pages\\ExamResultsPage.tsx",
+        "status": "⚠️  Route'da kullanılmıyor"
+      },
+      {
+        "component": "ExamStartPage",
+        "file": "src\\pages\\ExamStartPage.tsx",
+        "status": "⚠️  Route'da kullanılmıyor"
+      },
+      {
+        "component": "LearningPathPage",
+        "file": "src\\pages\\LearningPathPage.tsx",
+        "status": "⚠️  Route'da kullanılmıyor"
+      },
+      {
+        "component": "ParentChildrenPage",
+        "file": "src\\pages\\ParentChildrenPage.tsx",
+        "status": "⚠️  Route'da kullanılmıyor"
+      },
+      {
+        "component": "ParentDashboardPage",
+        "file": "src\\pages\\ParentDashboardPage.tsx",
+        "status": "⚠️  Route'da kullanılmıyor"
+      },
+      {
+        "component": "ParentNotificationsPage",
+        "file": "src\\pages\\ParentNotificationsPage.tsx",
+        "status": "⚠️  Route'da kullanılmıyor"
+      },
+      {
+        "component": "ParentPage",
+        "file": "src\\pages\\ParentPage.tsx",
+        "status": "⚠️  Route'da kullanılmıyor"
+      },
+      {
+        "component": "ParentReportsPage",
+        "file": "src\\pages\\ParentReportsPage.tsx",
+        "status": "⚠️  Route'da kullanılmıyor"
+      },
+      {
+        "component": "ProfilePage",
+        "file": "src\\pages\\ProfilePage.tsx",
+        "status": "⚠️  Route'da kullanılmıyor"
+      },
+      {
+        "component": "RBACTestPage",
+        "file": "src\\pages\\RBACTestPage.tsx",
+        "status": "⚠️  Route'da kullanılmıyor"
+      },
+      {
+        "component": "SettingsPage",
+        "file": "src\\pages\\SettingsPage.tsx",
+        "status": "⚠️  Route'da kullanılmıyor"
+      },
+      {
+        "component": "StudentDashboardPage",
+        "file": "src\\pages\\StudentDashboardPage.tsx",
+        "status": "⚠️  Route'da kullanılmıyor"
+      },
+      {
+        "component": "TeacherAssignmentsPage",
+        "file": "src\\pages\\TeacherAssignmentsPage.tsx",
+        "status": "⚠️  Route'da kullanılmıyor"
+      },
+      {
+        "component": "TeacherClassesPage",
+        "file": "src\\pages\\TeacherClassesPage.tsx",
+        "status": "⚠️  Route'da kullanılmıyor"
+      },
+      {
+        "component": "TeacherContentPage",
+        "file": "src\\pages\\TeacherContentPage.tsx",
+        "status": "⚠️  Route'da kullanılmıyor"
+      },
+      {
+        "component": "TeacherDashboardPage",
+        "file": "src\\pages\\TeacherDashboardPage.tsx",
+        "status": "⚠️  Route'da kullanılmıyor"
+      },
+      {
+        "component": "TeacherExamsPage",
+        "file": "src\\pages\\TeacherExamsPage.tsx",
+        "status": "⚠️  Route'da kullanılmıyor"
+      },
+      {
+        "component": "TeacherPage",
+        "file": "src\\pages\\TeacherPage.tsx",
+        "status": "⚠️  Route'da kullanılmıyor"
+      },
+      {
+        "component": "TeacherReportsPage",
+        "file": "src\\pages\\TeacherReportsPage.tsx",
+        "status": "⚠️  Route'da kullanılmıyor"
+      },
+      {
+        "component": "TeacherStudentsPage",
+        "file": "src\\pages\\TeacherStudentsPage.tsx",
+        "status": "⚠️  Route'da kullanılmıyor"
+      },
+      {
+        "component": "FullPageLoader",
+        "file": "src\\components\\Common\\LoadingStates.tsx",
+        "status": "⚠️  Route'da kullanılmıyor"
+      }
+    ],
+    "deep_links": [
+      {
+        "path": "/exam/:sinavId/results",
+        "component": "ProtectedRoute",
+        "status": "✅ Deep link"
+      },
+      {
+        "path": "/exam/:sinavId/results",
+        "component": "ProtectedRoute",
+        "status": "✅ Deep link"
+      }
+    ],
+    "redirect_chains": [
+      {
+        "from": "/",
+        "status": "✅ Redirect tanımlı"
+      },
+      {
+        "from": "*",
+        "status": "✅ Redirect tanımlı"
+      },
+      {
+        "from": "/",
+        "status": "✅ Redirect tanımlı"
+      },
+      {
+        "from": "*",
+        "status": "✅ Redirect tanımlı"
+      }
+    ]
+  },
+  "health_score": 100.0
+}

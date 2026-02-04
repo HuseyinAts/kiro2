@@ -1,0 +1,274 @@
+/**
+ * QuestionGeometry Component Styles
+ *
+ * Responsive, accessible, print-friendly styles for geometric figures
+ * WCAG 2.1 AA compliant
+ */
+
+/* ==================== WRAPPER ==================== */
+
+.question-geometry-wrapper {
+  margin: 1.5rem 0;
+  padding: 1rem;
+  background-color: #ffffff;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* ==================== CAPTION ==================== */
+
+.question-geometry-caption {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 1rem;
+  text-align: center;
+  font-family: 'DejaVu Sans', Arial, sans-serif;
+}
+
+/* ==================== CONTAINER ==================== */
+
+.question-geometry-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 200px;
+  max-height: 500px;
+  padding: 1rem;
+  background-color: #fafafa;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.question-geometry-svg {
+  max-width: 100%;
+  max-height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.question-geometry-svg svg {
+  max-width: 100%;
+  max-height: 100%;
+  height: auto;
+  display: block;
+}
+
+/* ==================== DIMENSION INFO ==================== */
+
+.question-geometry-info {
+  margin-top: 1rem;
+  padding: 0.75rem;
+  background-color: #f5f5f5;
+  border-left: 4px solid #4285f4;
+  font-size: 0.9rem;
+  color: #555;
+  font-family: monospace;
+  text-align: center;
+}
+
+/* ==================== ACCESSIBILITY ==================== */
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* ==================== RESPONSIVE DESIGN ==================== */
+
+/* Mobile (< 480px) */
+@media screen and (max-width: 480px) {
+  .question-geometry-wrapper {
+    padding: 0.75rem;
+    margin: 1rem 0;
+  }
+
+  .question-geometry-container {
+    max-height: 300px;
+    min-height: 150px;
+    padding: 0.5rem;
+  }
+
+  .question-geometry-caption {
+    font-size: 0.85rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .question-geometry-info {
+    font-size: 0.8rem;
+    padding: 0.5rem;
+  }
+}
+
+/* Tablet (481px - 768px) */
+@media screen and (min-width: 481px) and (max-width: 768px) {
+  .question-geometry-container {
+    max-height: 400px;
+  }
+
+  .question-geometry-caption {
+    font-size: 0.9rem;
+  }
+}
+
+/* Desktop (> 768px) */
+@media screen and (min-width: 769px) {
+  .question-geometry-container {
+    max-height: 500px;
+  }
+}
+
+/* ==================== DARK MODE SUPPORT ==================== */
+
+@media (prefers-color-scheme: dark) {
+  .question-geometry-wrapper {
+    background-color: #2d2d2d;
+    border-color: #444;
+  }
+
+  .question-geometry-caption {
+    color: #e0e0e0;
+  }
+
+  .question-geometry-container {
+    background-color: #1a1a1a;
+  }
+
+  .question-geometry-info {
+    background-color: #333;
+    border-left-color: #5a9fd4;
+    color: #ccc;
+  }
+
+  /* Invert SVG colors for dark mode */
+  .question-geometry-svg svg {
+    filter: invert(1) hue-rotate(180deg);
+  }
+}
+
+/* ==================== HIGH CONTRAST MODE ==================== */
+
+@media (prefers-contrast: high) {
+  .question-geometry-wrapper {
+    border: 3px solid #000;
+    box-shadow: none;
+  }
+
+  .question-geometry-caption,
+  .question-geometry-info {
+    font-weight: 700;
+    color: #000;
+  }
+
+  .question-geometry-container {
+    border: 2px solid #000;
+  }
+}
+
+/* ==================== PRINT STYLES ==================== */
+
+@media print {
+  .question-geometry-wrapper {
+    page-break-inside: avoid;
+    border: 2px solid #000;
+    box-shadow: none;
+    margin: 1rem 0;
+    padding: 1rem;
+  }
+
+  .question-geometry-container {
+    max-height: none;
+    background-color: #fff;
+    border: 1px solid #000;
+  }
+
+  .question-geometry-caption {
+    color: #000;
+    font-weight: bold;
+  }
+
+  .question-geometry-info {
+    background-color: #f9f9f9;
+    border-left: 3px solid #000;
+    color: #000;
+    page-break-inside: avoid;
+  }
+
+  /* Ensure SVG prints correctly */
+  .question-geometry-svg svg {
+    max-width: 100%;
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+}
+
+/* ==================== LOADING STATE ==================== */
+
+.question-geometry-wrapper.loading {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.question-geometry-wrapper.loading::after {
+  content: "Yükleniyor...";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 1rem;
+  color: #666;
+}
+
+/* ==================== ERROR STATE ==================== */
+
+.question-geometry-wrapper.error {
+  border-color: #d32f2f;
+  background-color: #ffebee;
+}
+
+.question-geometry-wrapper.error .question-geometry-caption::before {
+  content: "⚠ ";
+  color: #d32f2f;
+}
+
+/* ==================== FOCUS STYLES (Accessibility) ==================== */
+
+.question-geometry-container:focus-within {
+  outline: 3px solid #4285f4;
+  outline-offset: 2px;
+}
+
+/* ==================== ANIMATION ==================== */
+
+@media (prefers-reduced-motion: no-preference) {
+  .question-geometry-wrapper {
+    animation: fadeIn 0.3s ease-in;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+}
+
+/* Respect reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  .question-geometry-wrapper {
+    animation: none;
+  }
+}

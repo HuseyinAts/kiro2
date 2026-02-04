@@ -1,0 +1,48 @@
+{
+  "evaluation_date": "2025-11-07T12:27:48.210044",
+  "phase": "Phase 1 - Tables",
+  "total_questions": 5,
+  "valid_evaluations": 0,
+  "average_score": null,
+  "min_score": null,
+  "max_score": null,
+  "target_score": 0.85,
+  "target_met": false,
+  "results": [
+    {
+      "question_id": 1,
+      "spec_name": "Q1_Math_Frequency",
+      "table_type": "frequency_table",
+      "quality_score": null,
+      "error": "'ComprehensiveQualityEvaluator' object has no attribute 'evaluate_question_quality'"
+    },
+    {
+      "question_id": 2,
+      "spec_name": "Q2_Math_Statistics",
+      "table_type": "statistics_summary",
+      "quality_score": null,
+      "error": "'ComprehensiveQualityEvaluator' object has no attribute 'evaluate_question_quality'"
+    },
+    {
+      "question_id": 3,
+      "spec_name": "Q3_Turkish_Comparison",
+      "table_type": "comparison_table",
+      "quality_score": null,
+      "error": "'ComprehensiveQualityEvaluator' object has no attribute 'evaluate_question_quality'"
+    },
+    {
+      "question_id": 4,
+      "spec_name": "Q4_Physics_Experiment",
+      "table_type": "comparison_table",
+      "quality_score": null,
+      "error": "'ComprehensiveQualityEvaluator' object has no attribute 'evaluate_question_quality'"
+    },
+    {
+      "question_id": 5,
+      "spec_name": "Q5_Chemistry_Elements",
+      "table_type": "comparison_table",
+      "quality_score": null,
+      "error": "'ComprehensiveQualityEvaluator' object has no attribute 'evaluate_question_quality'"
+    }
+  ]
+}

@@ -1,0 +1,93 @@
+# Development Environment Configuration
+# Türkiye Üniversite Sınavları Hazırlık Platformu
+
+# Application Settings
+app_name: "Türkiye Üniversite Sınavları Hazırlık Platformu - Development"
+app_version: "1.0.0-dev"
+environment: "development"
+debug: true
+
+# Server Configuration
+server:
+  host: "127.0.0.1"
+  port: 8000
+  workers: 1
+  allowed_origins:
+    - "http://localhost:3000"
+    - "http://localhost:5173"
+    - "http://127.0.0.1:3000"
+    - "http://127.0.0.1:5173"
+  max_request_size: 10485760  # 10MB
+
+# Database Configuration
+database:
+  url: "sqlite+aiosqlite:///./dev_turkiye_sinav.db"
+  echo: true
+  pool_size: 10
+  max_overflow: 20
+  pool_timeout: 30
+
+# Redis Configuration
+redis:
+  url: "redis://localhost:6379/0"
+  password: null
+  max_connections: 10
+  socket_timeout: 5
+
+# Elasticsearch Configuration
+elasticsearch:
+  url: "http://localhost:9200"
+  index: "turkiye_sinav_platform_dev"
+  username: null
+  password: null
+  timeout: 30
+
+# Security Configuration
+security:
+  secret_key: "dev-secret-key-not-for-production-use"
+  algorithm: "HS256"
+  access_token_expire_minutes: 60  # Longer expiry for development
+  refresh_token_expire_days: 30
+  password_min_length: 6  # Relaxed for testing
+
+# External API Configuration
+external_apis:
+  openai_api_key: null  # Set via environment variable
+  youtube_api_key: null  # Set via environment variable
+  huggingface_api_key: null  # Set via environment variable
+  google_api_key: null
+  huggingface_endpoint: "https://api-inference.huggingface.co"
+  custom_llm_endpoint: null
+  api_timeout: 30
+  max_retries: 3
+  rate_limit_per_minute: 1000  # Higher limit for development
+
+# Monitoring Configuration
+monitoring:
+  enable_monitoring: true
+  metrics_port: 8001
+  log_level: "DEBUG"
+  log_format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  enable_structured_logging: true
+  log_retention_days: 7  # Shorter retention for development
+
+# Turkish Language Support
+encoding: "utf-8"
+locale: "tr_TR.UTF-8"
+timezone: "Europe/Istanbul"
+
+# Feature Flags
+enable_caching: true
+enable_rate_limiting: false  # Disabled for easier development
+enable_swagger: true
+enable_background_tasks: true
+
+# Development-specific settings
+custom_settings:
+  mock_external_apis: true
+  enable_test_endpoints: true
+  auto_reload: true
+  enable_cors_all: true
+  fake_authentication: false  # Set to true for frontend development
+  seed_database: true
+  enable_profiling: true

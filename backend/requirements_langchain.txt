@@ -1,0 +1,47 @@
+# LangChain Core Dependencies
+langchain==0.1.0
+langchain-community==0.0.10
+langchain-openai==0.0.5
+langchain-anthropic==0.1.1
+langchain-google-genai==0.0.1
+
+# Vector Stores
+chromadb==0.4.22
+faiss-cpu==1.7.4
+pinecone-client==3.0.0
+
+# Document Processing
+langchain-text-splitters==0.0.1
+unstructured==0.11.8
+pypdf==3.17.4
+docx2txt==0.8
+
+# LangChain Tools
+langchain-experimental==0.0.47
+wikipedia==1.4.0
+duckduckgo-search==4.1.0
+google-search-results==2.4.2
+
+# Memory & Caching
+redis==5.0.1
+momento==1.13.0
+
+# Embeddings
+sentence-transformers==2.2.2
+tiktoken==0.5.2
+
+# Monitoring & Tracing
+langsmith==0.0.75
+opentelemetry-api==1.22.0
+opentelemetry-sdk==1.22.0
+
+# Database
+sqlalchemy==2.0.25
+pgvector==0.2.4
+
+# Additional Tools
+numexpr==2.8.8
+anthropic==0.8.1
+openai==1.6.1
+cohere==4.44
+huggingface-hub==0.20.2

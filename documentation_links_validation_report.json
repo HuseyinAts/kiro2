@@ -1,0 +1,4552 @@
+{
+  "summary": {
+    "total_readme_links": 164,
+    "total_api_doc_links": 0,
+    "total_code_comment_links": 694,
+    "broken_links": 13,
+    "tested_urls": 19
+  },
+  "details": {
+    "readme_links": [
+      {
+        "text": "![Quality Gate Status",
+        "url": "https://sonarcloud.io/api/project_badges/measure?project=your-project-key&metric=alert_status",
+        "file": "README.md",
+        "type": "external"
+      },
+      {
+        "text": "![codecov",
+        "url": "https://codecov.io/gh/your-username/teknofest-2025-egitim-eylemci/branch/main/graph/badge.svg",
+        "file": "README.md",
+        "type": "external"
+      },
+      {
+        "text": "![Coverage Status",
+        "url": "https://coveralls.io/repos/github/your-username/teknofest-2025-egitim-eylemci/badge.svg?branch=main",
+        "file": "README.md",
+        "type": "external"
+      },
+      {
+        "text": "![Code Quality",
+        "url": "https://github.com/your-username/teknofest-2025-egitim-eylemci/workflows/Code%20Quality%20Analysis/badge.svg",
+        "file": "README.md",
+        "type": "external"
+      },
+      {
+        "text": "![Quality Gates",
+        "url": "https://github.com/your-username/teknofest-2025-egitim-eylemci/workflows/Quality%20Gates/badge.svg",
+        "file": "README.md",
+        "type": "external"
+      },
+      {
+        "text": "![Security Rating",
+        "url": "https://sonarcloud.io/api/project_badges/measure?project=your-project-key&metric=security_rating",
+        "file": "README.md",
+        "type": "external"
+      },
+      {
+        "text": "![Maintainability Rating",
+        "url": "https://sonarcloud.io/api/project_badges/measure?project=your-project-key&metric=sqale_rating",
+        "file": "README.md",
+        "type": "external"
+      },
+      {
+        "text": "![Reliability Rating",
+        "url": "https://sonarcloud.io/api/project_badges/measure?project=your-project-key&metric=reliability_rating",
+        "file": "README.md",
+        "type": "external"
+      },
+      {
+        "text": "![Python",
+        "url": "https://img.shields.io/badge/python-3.11%2B-blue",
+        "file": "README.md",
+        "type": "external"
+      },
+      {
+        "text": "![FastAPI",
+        "url": "https://img.shields.io/badge/FastAPI-0.104%2B-green",
+        "file": "README.md",
+        "type": "external"
+      },
+      {
+        "text": "![React",
+        "url": "https://img.shields.io/badge/React-18%2B-blue",
+        "file": "README.md",
+        "type": "external"
+      },
+      {
+        "text": "![Learning Profiles",
+        "url": "https://img.shields.io/badge/Learning%20Profiles-64-orange",
+        "file": "README.md",
+        "type": "external"
+      },
+      {
+        "text": "View Detailed Quality Dashboard",
+        "url": "CODE_QUALITY.md",
+        "file": "README.md",
+        "type": "relative"
+      },
+      {
+        "text": "requirements.md",
+        "url": "./requirements.md",
+        "file": ".kiro\\specs\\MASTER_SPEC\\README.md",
+        "type": "relative"
+      },
+      {
+        "text": "design.md",
+        "url": "./design.md",
+        "file": ".kiro\\specs\\MASTER_SPEC\\README.md",
+        "type": "relative"
+      },
+      {
+        "text": "tasks.md",
+        "url": "./tasks.md",
+        "file": ".kiro\\specs\\MASTER_SPEC\\README.md",
+        "type": "relative"
+      },
+      {
+        "text": "README.md",
+        "url": "./README.md",
+        "file": ".kiro\\specs\\MASTER_SPEC\\README.md",
+        "type": "relative"
+      },
+      {
+        "text": "Ana Platform Spec",
+        "url": "../turkiye-universite-sinav-hazirlik-platformu/",
+        "file": ".kiro\\specs\\MASTER_SPEC\\README.md",
+        "type": "relative"
+      },
+      {
+        "text": "Sağlık Denetimi Spec",
+        "url": "../project-health-audit/",
+        "file": ".kiro\\specs\\MASTER_SPEC\\README.md",
+        "type": "relative"
+      },
+      {
+        "text": "İçerik Yönetimi Spec",
+        "url": "../content-management-system/",
+        "file": ".kiro\\specs\\MASTER_SPEC\\README.md",
+        "type": "relative"
+      },
+      {
+        "text": "Kaynak Kalitesi Spec",
+        "url": "../learning-path-resource-quality/",
+        "file": ".kiro\\specs\\MASTER_SPEC\\README.md",
+        "type": "relative"
+      },
+      {
+        "text": "the docs",
+        "url": "https://docs.pytest.org/en/stable/how-to/cache.html",
+        "file": "backend\\.pytest_cache\\README.md",
+        "type": "external"
+      },
+      {
+        "text": "TEST_BEST_PRACTICES.md",
+        "url": "TEST_BEST_PRACTICES.md",
+        "file": "backend\\tests\\README.md",
+        "type": "relative"
+      },
+      {
+        "text": "FIXTURE_GUIDE.md",
+        "url": "FIXTURE_GUIDE.md",
+        "file": "backend\\tests\\README.md",
+        "type": "relative"
+      },
+      {
+        "text": "FIXTURE_REFERENCE.md",
+        "url": "FIXTURE_REFERENCE.md",
+        "file": "backend\\tests\\README.md",
+        "type": "relative"
+      },
+      {
+        "text": "TEST_BEST_PRACTICES.md > Test Structure",
+        "url": "TEST_BEST_PRACTICES.md#test-structure",
+        "file": "backend\\tests\\README.md",
+        "type": "relative"
+      },
+      {
+        "text": "FIXTURE_GUIDE.md > Which Fixture",
+        "url": "FIXTURE_GUIDE.md#which-fixture-to-use",
+        "file": "backend\\tests\\README.md",
+        "type": "relative"
+      },
+      {
+        "text": "FIXTURE_REFERENCE.md",
+        "url": "FIXTURE_REFERENCE.md",
+        "file": "backend\\tests\\README.md",
+        "type": "relative"
+      },
+      {
+        "text": "../TEST_CONFIG_SUMMARY.md",
+        "url": "../TEST_CONFIG_SUMMARY.md",
+        "file": "backend\\tests\\README.md",
+        "type": "relative"
+      },
+      {
+        "text": "TEST_BEST_PRACTICES.md > Performance",
+        "url": "TEST_BEST_PRACTICES.md#performance",
+        "file": "backend\\tests\\README.md",
+        "type": "relative"
+      },
+      {
+        "text": "TEST_BEST_PRACTICES.md > Common Pitfalls",
+        "url": "TEST_BEST_PRACTICES.md#common-pitfalls",
+        "file": "backend\\tests\\README.md",
+        "type": "relative"
+      },
+      {
+        "text": "TEST_BEST_PRACTICES.md",
+        "url": "TEST_BEST_PRACTICES.md",
+        "file": "backend\\tests\\README.md",
+        "type": "relative"
+      },
+      {
+        "text": "FIXTURE_GUIDE.md",
+        "url": "FIXTURE_GUIDE.md",
+        "file": "backend\\tests\\README.md",
+        "type": "relative"
+      },
+      {
+        "text": "TEST_BEST_PRACTICES.md > Code Review Checklist",
+        "url": "TEST_BEST_PRACTICES.md#code-review-checklist",
+        "file": "backend\\tests\\README.md",
+        "type": "relative"
+      },
+      {
+        "text": "FIXTURE_REFERENCE.md",
+        "url": "FIXTURE_REFERENCE.md",
+        "file": "backend\\tests\\README.md",
+        "type": "relative"
+      },
+      {
+        "text": "pytest.ini",
+        "url": "../pytest.ini",
+        "file": "backend\\tests\\README.md",
+        "type": "relative"
+      },
+      {
+        "text": ".coveragerc",
+        "url": "../.coveragerc",
+        "file": "backend\\tests\\README.md",
+        "type": "relative"
+      },
+      {
+        "text": "conftest.py",
+        "url": "../conftest.py",
+        "file": "backend\\tests\\README.md",
+        "type": "relative"
+      },
+      {
+        "text": "TEST_CONFIG_SUMMARY.md",
+        "url": "../TEST_CONFIG_SUMMARY.md",
+        "file": "backend\\tests\\README.md",
+        "type": "relative"
+      },
+      {
+        "text": "conftest.py",
+        "url": "conftest.py",
+        "file": "backend\\tests\\README.md",
+        "type": "relative"
+      },
+      {
+        "text": "integration/conftest.py",
+        "url": "integration/conftest.py",
+        "file": "backend\\tests\\README.md",
+        "type": "relative"
+      },
+      {
+        "text": "fixtures/",
+        "url": "fixtures/",
+        "file": "backend\\tests\\README.md",
+        "type": "relative"
+      },
+      {
+        "text": "TEST_BEST_PRACTICES.md",
+        "url": "TEST_BEST_PRACTICES.md",
+        "file": "backend\\tests\\README.md",
+        "type": "relative"
+      },
+      {
+        "text": "TEST_BEST_PRACTICES.md",
+        "url": "TEST_BEST_PRACTICES.md",
+        "file": "backend\\tests\\README.md",
+        "type": "relative"
+      },
+      {
+        "text": "FIXTURE_GUIDE.md",
+        "url": "FIXTURE_GUIDE.md",
+        "file": "backend\\tests\\README.md",
+        "type": "relative"
+      },
+      {
+        "text": "FIXTURE_REFERENCE.md",
+        "url": "FIXTURE_REFERENCE.md",
+        "file": "backend\\tests\\README.md",
+        "type": "relative"
+      },
+      {
+        "text": "TEST_BEST_PRACTICES.md",
+        "url": "TEST_BEST_PRACTICES.md",
+        "file": "backend\\tests\\README.md",
+        "type": "relative"
+      },
+      {
+        "text": "FIXTURE_REFERENCE.md",
+        "url": "FIXTURE_REFERENCE.md",
+        "file": "backend\\tests\\README.md",
+        "type": "relative"
+      },
+      {
+        "text": "TEST_BEST_PRACTICES.md > Performance",
+        "url": "TEST_BEST_PRACTICES.md#performance",
+        "file": "backend\\tests\\README.md",
+        "type": "relative"
+      },
+      {
+        "text": "../TEST_CONFIG_SUMMARY.md",
+        "url": "../TEST_CONFIG_SUMMARY.md",
+        "file": "backend\\tests\\README.md",
+        "type": "relative"
+      },
+      {
+        "text": "../TEST_OPTIMIZATION_COMPLETE.md",
+        "url": "../TEST_OPTIMIZATION_COMPLETE.md",
+        "file": "backend\\tests\\README.md",
+        "type": "relative"
+      },
+      {
+        "text": "../pytest.ini",
+        "url": "../pytest.ini",
+        "file": "backend\\tests\\README.md",
+        "type": "relative"
+      },
+      {
+        "text": "../.coveragerc",
+        "url": "../.coveragerc",
+        "file": "backend\\tests\\README.md",
+        "type": "relative"
+      },
+      {
+        "text": "pytest Documentation",
+        "url": "https://docs.pytest.org/",
+        "file": "backend\\tests\\README.md",
+        "type": "external"
+      },
+      {
+        "text": "pytest-asyncio",
+        "url": "https://pytest-asyncio.readthedocs.io/",
+        "file": "backend\\tests\\README.md",
+        "type": "external"
+      },
+      {
+        "text": "unittest.mock",
+        "url": "https://docs.python.org/3/library/unittest.mock.html",
+        "file": "backend\\tests\\README.md",
+        "type": "external"
+      },
+      {
+        "text": "TEST_BEST_PRACTICES.md > Common Pitfalls",
+        "url": "TEST_BEST_PRACTICES.md#common-pitfalls",
+        "file": "backend\\tests\\README.md",
+        "type": "relative"
+      },
+      {
+        "text": "TEST_BEST_PRACTICES.md > Performance",
+        "url": "TEST_BEST_PRACTICES.md#performance",
+        "file": "backend\\tests\\README.md",
+        "type": "relative"
+      },
+      {
+        "text": "TEST_BEST_PRACTICES.md",
+        "url": "TEST_BEST_PRACTICES.md",
+        "file": "backend\\tests\\README.md",
+        "type": "relative"
+      },
+      {
+        "text": "the docs",
+        "url": "https://docs.pytest.org/en/stable/how-to/cache.html",
+        "file": "backend\\tests\\.pytest_cache\\README.md",
+        "type": "external"
+      },
+      {
+        "text": "Genel Bakış",
+        "url": "#genel-bakış",
+        "file": "backend\\tests\\accessibility\\README.md",
+        "type": "anchor"
+      },
+      {
+        "text": "Test Modülleri",
+        "url": "#test-modülleri",
+        "file": "backend\\tests\\accessibility\\README.md",
+        "type": "anchor"
+      },
+      {
+        "text": "Kurulum",
+        "url": "#kurulum",
+        "file": "backend\\tests\\accessibility\\README.md",
+        "type": "anchor"
+      },
+      {
+        "text": "Kullanım",
+        "url": "#kullanım",
+        "file": "backend\\tests\\accessibility\\README.md",
+        "type": "anchor"
+      },
+      {
+        "text": "Test Kapsamı",
+        "url": "#test-kapsamı",
+        "file": "backend\\tests\\accessibility\\README.md",
+        "type": "anchor"
+      },
+      {
+        "text": "Raporlama",
+        "url": "#raporlama",
+        "file": "backend\\tests\\accessibility\\README.md",
+        "type": "anchor"
+      },
+      {
+        "text": "Standartlar",
+        "url": "#standartlar",
+        "file": "backend\\tests\\accessibility\\README.md",
+        "type": "anchor"
+      },
+      {
+        "text": "WCAG 2.1 Official Documentation",
+        "url": "https://www.w3.org/WAI/WCAG21/quickref/",
+        "file": "backend\\tests\\accessibility\\README.md",
+        "type": "external"
+      },
+      {
+        "text": "Understanding WCAG 2.1",
+        "url": "https://www.w3.org/WAI/WCAG21/Understanding/",
+        "file": "backend\\tests\\accessibility\\README.md",
+        "type": "external"
+      },
+      {
+        "text": "How to Meet WCAG (Quick Reference)",
+        "url": "https://www.w3.org/WAI/WCAG21/quickref/",
+        "file": "backend\\tests\\accessibility\\README.md",
+        "type": "external"
+      },
+      {
+        "text": "WAI-ARIA 1.2",
+        "url": "https://www.w3.org/TR/wai-aria-1.2/",
+        "file": "backend\\tests\\accessibility\\README.md",
+        "type": "external"
+      },
+      {
+        "text": "ARIA Authoring Practices Guide",
+        "url": "https://www.w3.org/WAI/ARIA/apg/",
+        "file": "backend\\tests\\accessibility\\README.md",
+        "type": "external"
+      },
+      {
+        "text": "NVDA User Guide",
+        "url": "https://www.nvaccess.org/files/nvda/documentation/userGuide.html",
+        "file": "backend\\tests\\accessibility\\README.md",
+        "type": "external"
+      },
+      {
+        "text": "JAWS Documentation",
+        "url": "https://www.freedomscientific.com/training/jaws/",
+        "file": "backend\\tests\\accessibility\\README.md",
+        "type": "external"
+      },
+      {
+        "text": "VoiceOver User Guide",
+        "url": "https://support.apple.com/guide/voiceover/welcome/mac",
+        "file": "backend\\tests\\accessibility\\README.md",
+        "type": "external"
+      },
+      {
+        "text": "UTF-8 Encoding",
+        "url": "https://en.wikipedia.org/wiki/UTF-8",
+        "file": "backend\\tests\\accessibility\\README.md",
+        "type": "external"
+      },
+      {
+        "text": "Turkish Alphabet",
+        "url": "https://en.wikipedia.org/wiki/Turkish_alphabet",
+        "file": "backend\\tests\\accessibility\\README.md",
+        "type": "external"
+      },
+      {
+        "text": "FSRS Algorithm",
+        "url": "https://github.com/open-spaced-repetition/fsrs4anki",
+        "file": "frontend\\src\\components\\Revolutionary\\README.md",
+        "type": "external"
+      },
+      {
+        "text": "Bionic Reading",
+        "url": "https://bionic-reading.com/",
+        "file": "frontend\\src\\components\\Revolutionary\\README.md",
+        "type": "external"
+      },
+      {
+        "text": "Multi-Agent Systems",
+        "url": "https://en.wikipedia.org/wiki/Multi-agent_system",
+        "file": "frontend\\src\\components\\Revolutionary\\README.md",
+        "type": "external"
+      },
+      {
+        "text": "Material-UI Components",
+        "url": "https://mui.com/",
+        "file": "frontend\\src\\components\\Revolutionary\\README.md",
+        "type": "external"
+      },
+      {
+        "text": "React Testing Library",
+        "url": "https://testing-library.com/docs/react-testing-library/intro/",
+        "file": "frontend\\src\\components\\Revolutionary\\README.md",
+        "type": "external"
+      },
+      {
+        "text": "![Quality Gate Status",
+        "url": "https://sonarcloud.io/api/project_badges/measure?project=your-project-key&metric=alert_status",
+        "file": "readme.md",
+        "type": "external"
+      },
+      {
+        "text": "![codecov",
+        "url": "https://codecov.io/gh/your-username/teknofest-2025-egitim-eylemci/branch/main/graph/badge.svg",
+        "file": "readme.md",
+        "type": "external"
+      },
+      {
+        "text": "![Coverage Status",
+        "url": "https://coveralls.io/repos/github/your-username/teknofest-2025-egitim-eylemci/badge.svg?branch=main",
+        "file": "readme.md",
+        "type": "external"
+      },
+      {
+        "text": "![Code Quality",
+        "url": "https://github.com/your-username/teknofest-2025-egitim-eylemci/workflows/Code%20Quality%20Analysis/badge.svg",
+        "file": "readme.md",
+        "type": "external"
+      },
+      {
+        "text": "![Quality Gates",
+        "url": "https://github.com/your-username/teknofest-2025-egitim-eylemci/workflows/Quality%20Gates/badge.svg",
+        "file": "readme.md",
+        "type": "external"
+      },
+      {
+        "text": "![Security Rating",
+        "url": "https://sonarcloud.io/api/project_badges/measure?project=your-project-key&metric=security_rating",
+        "file": "readme.md",
+        "type": "external"
+      },
+      {
+        "text": "![Maintainability Rating",
+        "url": "https://sonarcloud.io/api/project_badges/measure?project=your-project-key&metric=sqale_rating",
+        "file": "readme.md",
+        "type": "external"
+      },
+      {
+        "text": "![Reliability Rating",
+        "url": "https://sonarcloud.io/api/project_badges/measure?project=your-project-key&metric=reliability_rating",
+        "file": "readme.md",
+        "type": "external"
+      },
+      {
+        "text": "![Python",
+        "url": "https://img.shields.io/badge/python-3.11%2B-blue",
+        "file": "readme.md",
+        "type": "external"
+      },
+      {
+        "text": "![FastAPI",
+        "url": "https://img.shields.io/badge/FastAPI-0.104%2B-green",
+        "file": "readme.md",
+        "type": "external"
+      },
+      {
+        "text": "![React",
+        "url": "https://img.shields.io/badge/React-18%2B-blue",
+        "file": "readme.md",
+        "type": "external"
+      },
+      {
+        "text": "![Learning Profiles",
+        "url": "https://img.shields.io/badge/Learning%20Profiles-64-orange",
+        "file": "readme.md",
+        "type": "external"
+      },
+      {
+        "text": "View Detailed Quality Dashboard",
+        "url": "CODE_QUALITY.md",
+        "file": "readme.md",
+        "type": "relative"
+      },
+      {
+        "text": "requirements.md",
+        "url": "./requirements.md",
+        "file": ".kiro\\specs\\MASTER_SPEC\\readme.md",
+        "type": "relative"
+      },
+      {
+        "text": "design.md",
+        "url": "./design.md",
+        "file": ".kiro\\specs\\MASTER_SPEC\\readme.md",
+        "type": "relative"
+      },
+      {
+        "text": "tasks.md",
+        "url": "./tasks.md",
+        "file": ".kiro\\specs\\MASTER_SPEC\\readme.md",
+        "type": "relative"
+      },
+      {
+        "text": "README.md",
+        "url": "./README.md",
+        "file": ".kiro\\specs\\MASTER_SPEC\\readme.md",
+        "type": "relative"
+      },
+      {
+        "text": "Ana Platform Spec",
+        "url": "../turkiye-universite-sinav-hazirlik-platformu/",
+        "file": ".kiro\\specs\\MASTER_SPEC\\readme.md",
+        "type": "relative"
+      },
+      {
+        "text": "Sağlık Denetimi Spec",
+        "url": "../project-health-audit/",
+        "file": ".kiro\\specs\\MASTER_SPEC\\readme.md",
+        "type": "relative"
+      },
+      {
+        "text": "İçerik Yönetimi Spec",
+        "url": "../content-management-system/",
+        "file": ".kiro\\specs\\MASTER_SPEC\\readme.md",
+        "type": "relative"
+      },
+      {
+        "text": "Kaynak Kalitesi Spec",
+        "url": "../learning-path-resource-quality/",
+        "file": ".kiro\\specs\\MASTER_SPEC\\readme.md",
+        "type": "relative"
+      },
+      {
+        "text": "the docs",
+        "url": "https://docs.pytest.org/en/stable/how-to/cache.html",
+        "file": "backend\\.pytest_cache\\readme.md",
+        "type": "external"
+      },
+      {
+        "text": "TEST_BEST_PRACTICES.md",
+        "url": "TEST_BEST_PRACTICES.md",
+        "file": "backend\\tests\\readme.md",
+        "type": "relative"
+      },
+      {
+        "text": "FIXTURE_GUIDE.md",
+        "url": "FIXTURE_GUIDE.md",
+        "file": "backend\\tests\\readme.md",
+        "type": "relative"
+      },
+      {
+        "text": "FIXTURE_REFERENCE.md",
+        "url": "FIXTURE_REFERENCE.md",
+        "file": "backend\\tests\\readme.md",
+        "type": "relative"
+      },
+      {
+        "text": "TEST_BEST_PRACTICES.md > Test Structure",
+        "url": "TEST_BEST_PRACTICES.md#test-structure",
+        "file": "backend\\tests\\readme.md",
+        "type": "relative"
+      },
+      {
+        "text": "FIXTURE_GUIDE.md > Which Fixture",
+        "url": "FIXTURE_GUIDE.md#which-fixture-to-use",
+        "file": "backend\\tests\\readme.md",
+        "type": "relative"
+      },
+      {
+        "text": "FIXTURE_REFERENCE.md",
+        "url": "FIXTURE_REFERENCE.md",
+        "file": "backend\\tests\\readme.md",
+        "type": "relative"
+      },
+      {
+        "text": "../TEST_CONFIG_SUMMARY.md",
+        "url": "../TEST_CONFIG_SUMMARY.md",
+        "file": "backend\\tests\\readme.md",
+        "type": "relative"
+      },
+      {
+        "text": "TEST_BEST_PRACTICES.md > Performance",
+        "url": "TEST_BEST_PRACTICES.md#performance",
+        "file": "backend\\tests\\readme.md",
+        "type": "relative"
+      },
+      {
+        "text": "TEST_BEST_PRACTICES.md > Common Pitfalls",
+        "url": "TEST_BEST_PRACTICES.md#common-pitfalls",
+        "file": "backend\\tests\\readme.md",
+        "type": "relative"
+      },
+      {
+        "text": "TEST_BEST_PRACTICES.md",
+        "url": "TEST_BEST_PRACTICES.md",
+        "file": "backend\\tests\\readme.md",
+        "type": "relative"
+      },
+      {
+        "text": "FIXTURE_GUIDE.md",
+        "url": "FIXTURE_GUIDE.md",
+        "file": "backend\\tests\\readme.md",
+        "type": "relative"
+      },
+      {
+        "text": "TEST_BEST_PRACTICES.md > Code Review Checklist",
+        "url": "TEST_BEST_PRACTICES.md#code-review-checklist",
+        "file": "backend\\tests\\readme.md",
+        "type": "relative"
+      },
+      {
+        "text": "FIXTURE_REFERENCE.md",
+        "url": "FIXTURE_REFERENCE.md",
+        "file": "backend\\tests\\readme.md",
+        "type": "relative"
+      },
+      {
+        "text": "pytest.ini",
+        "url": "../pytest.ini",
+        "file": "backend\\tests\\readme.md",
+        "type": "relative"
+      },
+      {
+        "text": ".coveragerc",
+        "url": "../.coveragerc",
+        "file": "backend\\tests\\readme.md",
+        "type": "relative"
+      },
+      {
+        "text": "conftest.py",
+        "url": "../conftest.py",
+        "file": "backend\\tests\\readme.md",
+        "type": "relative"
+      },
+      {
+        "text": "TEST_CONFIG_SUMMARY.md",
+        "url": "../TEST_CONFIG_SUMMARY.md",
+        "file": "backend\\tests\\readme.md",
+        "type": "relative"
+      },
+      {
+        "text": "conftest.py",
+        "url": "conftest.py",
+        "file": "backend\\tests\\readme.md",
+        "type": "relative"
+      },
+      {
+        "text": "integration/conftest.py",
+        "url": "integration/conftest.py",
+        "file": "backend\\tests\\readme.md",
+        "type": "relative"
+      },
+      {
+        "text": "fixtures/",
+        "url": "fixtures/",
+        "file": "backend\\tests\\readme.md",
+        "type": "relative"
+      },
+      {
+        "text": "TEST_BEST_PRACTICES.md",
+        "url": "TEST_BEST_PRACTICES.md",
+        "file": "backend\\tests\\readme.md",
+        "type": "relative"
+      },
+      {
+        "text": "TEST_BEST_PRACTICES.md",
+        "url": "TEST_BEST_PRACTICES.md",
+        "file": "backend\\tests\\readme.md",
+        "type": "relative"
+      },
+      {
+        "text": "FIXTURE_GUIDE.md",
+        "url": "FIXTURE_GUIDE.md",
+        "file": "backend\\tests\\readme.md",
+        "type": "relative"
+      },
+      {
+        "text": "FIXTURE_REFERENCE.md",
+        "url": "FIXTURE_REFERENCE.md",
+        "file": "backend\\tests\\readme.md",
+        "type": "relative"
+      },
+      {
+        "text": "TEST_BEST_PRACTICES.md",
+        "url": "TEST_BEST_PRACTICES.md",
+        "file": "backend\\tests\\readme.md",
+        "type": "relative"
+      },
+      {
+        "text": "FIXTURE_REFERENCE.md",
+        "url": "FIXTURE_REFERENCE.md",
+        "file": "backend\\tests\\readme.md",
+        "type": "relative"
+      },
+      {
+        "text": "TEST_BEST_PRACTICES.md > Performance",
+        "url": "TEST_BEST_PRACTICES.md#performance",
+        "file": "backend\\tests\\readme.md",
+        "type": "relative"
+      },
+      {
+        "text": "../TEST_CONFIG_SUMMARY.md",
+        "url": "../TEST_CONFIG_SUMMARY.md",
+        "file": "backend\\tests\\readme.md",
+        "type": "relative"
+      },
+      {
+        "text": "../TEST_OPTIMIZATION_COMPLETE.md",
+        "url": "../TEST_OPTIMIZATION_COMPLETE.md",
+        "file": "backend\\tests\\readme.md",
+        "type": "relative"
+      },
+      {
+        "text": "../pytest.ini",
+        "url": "../pytest.ini",
+        "file": "backend\\tests\\readme.md",
+        "type": "relative"
+      },
+      {
+        "text": "../.coveragerc",
+        "url": "../.coveragerc",
+        "file": "backend\\tests\\readme.md",
+        "type": "relative"
+      },
+      {
+        "text": "pytest Documentation",
+        "url": "https://docs.pytest.org/",
+        "file": "backend\\tests\\readme.md",
+        "type": "external"
+      },
+      {
+        "text": "pytest-asyncio",
+        "url": "https://pytest-asyncio.readthedocs.io/",
+        "file": "backend\\tests\\readme.md",
+        "type": "external"
+      },
+      {
+        "text": "unittest.mock",
+        "url": "https://docs.python.org/3/library/unittest.mock.html",
+        "file": "backend\\tests\\readme.md",
+        "type": "external"
+      },
+      {
+        "text": "TEST_BEST_PRACTICES.md > Common Pitfalls",
+        "url": "TEST_BEST_PRACTICES.md#common-pitfalls",
+        "file": "backend\\tests\\readme.md",
+        "type": "relative"
+      },
+      {
+        "text": "TEST_BEST_PRACTICES.md > Performance",
+        "url": "TEST_BEST_PRACTICES.md#performance",
+        "file": "backend\\tests\\readme.md",
+        "type": "relative"
+      },
+      {
+        "text": "TEST_BEST_PRACTICES.md",
+        "url": "TEST_BEST_PRACTICES.md",
+        "file": "backend\\tests\\readme.md",
+        "type": "relative"
+      },
+      {
+        "text": "the docs",
+        "url": "https://docs.pytest.org/en/stable/how-to/cache.html",
+        "file": "backend\\tests\\.pytest_cache\\readme.md",
+        "type": "external"
+      },
+      {
+        "text": "Genel Bakış",
+        "url": "#genel-bakış",
+        "file": "backend\\tests\\accessibility\\readme.md",
+        "type": "anchor"
+      },
+      {
+        "text": "Test Modülleri",
+        "url": "#test-modülleri",
+        "file": "backend\\tests\\accessibility\\readme.md",
+        "type": "anchor"
+      },
+      {
+        "text": "Kurulum",
+        "url": "#kurulum",
+        "file": "backend\\tests\\accessibility\\readme.md",
+        "type": "anchor"
+      },
+      {
+        "text": "Kullanım",
+        "url": "#kullanım",
+        "file": "backend\\tests\\accessibility\\readme.md",
+        "type": "anchor"
+      },
+      {
+        "text": "Test Kapsamı",
+        "url": "#test-kapsamı",
+        "file": "backend\\tests\\accessibility\\readme.md",
+        "type": "anchor"
+      },
+      {
+        "text": "Raporlama",
+        "url": "#raporlama",
+        "file": "backend\\tests\\accessibility\\readme.md",
+        "type": "anchor"
+      },
+      {
+        "text": "Standartlar",
+        "url": "#standartlar",
+        "file": "backend\\tests\\accessibility\\readme.md",
+        "type": "anchor"
+      },
+      {
+        "text": "WCAG 2.1 Official Documentation",
+        "url": "https://www.w3.org/WAI/WCAG21/quickref/",
+        "file": "backend\\tests\\accessibility\\readme.md",
+        "type": "external"
+      },
+      {
+        "text": "Understanding WCAG 2.1",
+        "url": "https://www.w3.org/WAI/WCAG21/Understanding/",
+        "file": "backend\\tests\\accessibility\\readme.md",
+        "type": "external"
+      },
+      {
+        "text": "How to Meet WCAG (Quick Reference)",
+        "url": "https://www.w3.org/WAI/WCAG21/quickref/",
+        "file": "backend\\tests\\accessibility\\readme.md",
+        "type": "external"
+      },
+      {
+        "text": "WAI-ARIA 1.2",
+        "url": "https://www.w3.org/TR/wai-aria-1.2/",
+        "file": "backend\\tests\\accessibility\\readme.md",
+        "type": "external"
+      },
+      {
+        "text": "ARIA Authoring Practices Guide",
+        "url": "https://www.w3.org/WAI/ARIA/apg/",
+        "file": "backend\\tests\\accessibility\\readme.md",
+        "type": "external"
+      },
+      {
+        "text": "NVDA User Guide",
+        "url": "https://www.nvaccess.org/files/nvda/documentation/userGuide.html",
+        "file": "backend\\tests\\accessibility\\readme.md",
+        "type": "external"
+      },
+      {
+        "text": "JAWS Documentation",
+        "url": "https://www.freedomscientific.com/training/jaws/",
+        "file": "backend\\tests\\accessibility\\readme.md",
+        "type": "external"
+      },
+      {
+        "text": "VoiceOver User Guide",
+        "url": "https://support.apple.com/guide/voiceover/welcome/mac",
+        "file": "backend\\tests\\accessibility\\readme.md",
+        "type": "external"
+      },
+      {
+        "text": "UTF-8 Encoding",
+        "url": "https://en.wikipedia.org/wiki/UTF-8",
+        "file": "backend\\tests\\accessibility\\readme.md",
+        "type": "external"
+      },
+      {
+        "text": "Turkish Alphabet",
+        "url": "https://en.wikipedia.org/wiki/Turkish_alphabet",
+        "file": "backend\\tests\\accessibility\\readme.md",
+        "type": "external"
+      },
+      {
+        "text": "FSRS Algorithm",
+        "url": "https://github.com/open-spaced-repetition/fsrs4anki",
+        "file": "frontend\\src\\components\\Revolutionary\\readme.md",
+        "type": "external"
+      },
+      {
+        "text": "Bionic Reading",
+        "url": "https://bionic-reading.com/",
+        "file": "frontend\\src\\components\\Revolutionary\\readme.md",
+        "type": "external"
+      },
+      {
+        "text": "Multi-Agent Systems",
+        "url": "https://en.wikipedia.org/wiki/Multi-agent_system",
+        "file": "frontend\\src\\components\\Revolutionary\\readme.md",
+        "type": "external"
+      },
+      {
+        "text": "Material-UI Components",
+        "url": "https://mui.com/",
+        "file": "frontend\\src\\components\\Revolutionary\\readme.md",
+        "type": "external"
+      },
+      {
+        "text": "React Testing Library",
+        "url": "https://testing-library.com/docs/react-testing-library/intro/",
+        "file": "frontend\\src\\components\\Revolutionary\\readme.md",
+        "type": "external"
+      }
+    ],
+    "api_doc_links": [],
+    "code_comment_links": [
+      {
+        "url": "http://localhost:8000",
+        "file": "add_cache_to_all_endpoints.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:8000/health",
+        "file": "complete_setup_and_test.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:8000/api/v1/learning-style/detect/test_student_123",
+        "file": "debug_500_errors.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:8000/api/v1/learning-style/hybrid-codes",
+        "file": "debug_500_errors.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:8000/api/v1/learning-style/statistics",
+        "file": "debug_500_errors.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:8000/api/v1/learning-style/statistics",
+        "file": "fix_cache_initialization.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:8000/api/v1/learning-style/statistics",
+        "file": "fix_cache_initialization.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:8000/api/v1/learning-style/cache-stats",
+        "file": "implement_redis_cache.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:8000",
+        "file": "load_test.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:8000",
+        "file": "master_dashboard.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:9200'",
+        "file": "permanent_test_fix.py",
+        "type": "external"
+      },
+      {
+        "url": "http://test",
+        "file": "permanent_test_fix.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:9200",
+        "file": "permanent_test_fix.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:8000/health",
+        "file": "quick_fix_generator.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:3000",
+        "file": "quick_fix_generator.py",
+        "type": "external"
+      },
+      {
+        "url": "https://$server_name$request_uri",
+        "file": "quick_fix_generator.py",
+        "type": "external"
+      },
+      {
+        "url": "http://kiro2_backend",
+        "file": "quick_fix_generator.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:8000/health",
+        "file": "quick_load_test.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:8000/",
+        "file": "quick_load_test.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:8000/api/v1/learning-style/hybrid-codes",
+        "file": "quick_load_test.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:8000/api/v1/learning-style/statistics",
+        "file": "quick_load_test.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:8000/health",
+        "file": "setup_database.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:8000/api/v1/learning-style/detect/test_student_123",
+        "file": "setup_database.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:8000/api/v1/learning-style/statistics",
+        "file": "setup_database.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:8000/api/v1/learning-style/hybrid-codes",
+        "file": "setup_database.py",
+        "type": "external"
+      },
+      {
+        "url": "https://www.python.org/downloads/",
+        "file": "setup_python_environment.py",
+        "type": "external"
+      },
+      {
+        "url": "https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)",
+        "file": "setup_python_environment.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:8000/health",
+        "file": "test_current_performance.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:8000/",
+        "file": "test_current_performance.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:8000/api/learning-path/create-profile",
+        "file": "test_learning_api.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:8000/api/learning-path/create-path",
+        "file": "test_learning_api.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:8000/api/chat'",
+        "file": "test_lgs_chat.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:8000/api/chat'",
+        "file": "test_lgs_comprehensive.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:8000",
+        "file": "test_performance_optimizations.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:8000/health",
+        "file": "test_real_endpoints.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:8000/",
+        "file": "test_real_endpoints.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:8000/api/v1/learning-style/hybrid-codes",
+        "file": "test_real_endpoints.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:8000/api/v1/learning-style/statistics",
+        "file": "test_real_endpoints.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:8000/api/v1/learning-style/detect/test_student_123",
+        "file": "test_real_endpoints.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:8000/api/agents",
+        "file": "test_real_endpoints.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:8000/health",
+        "file": "test_single_request.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:8000/api/v1/learning-style/hybrid-codes",
+        "file": "test_single_request.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:8000/api/v1/learning-style/statistics",
+        "file": "test_single_request.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:8000/",
+        "file": "test_single_request.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:3000",
+        "file": ".claude\\files\\02_backend_services\\main.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:3001",
+        "file": ".claude\\files\\02_backend_services\\main.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:5173",
+        "file": ".claude\\files\\02_backend_services\\main.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:8000",
+        "file": ".claude\\files\\08_deployment\\complete_setup_and_test.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:3000",
+        "file": ".claude\\files\\08_deployment\\complete_setup_and_test.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:8000/docs",
+        "file": ".claude\\files\\08_deployment\\complete_setup_and_test.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:3000",
+        "file": "backend\\conftest.py",
+        "type": "external"
+      },
+      {
+        "url": "https://i.ytimg.com/vi/J9lS14nM1xg/mqdefault.jpg",
+        "file": "backend\\fast_youtube_endpoint.py",
+        "type": "external"
+      },
+      {
+        "url": "https://i.ytimg.com/vi/kJQP7kiw5Fk/mqdefault.jpg",
+        "file": "backend\\fast_youtube_endpoint.py",
+        "type": "external"
+      },
+      {
+        "url": "https://i.ytimg.com/vi/BvV6rq9V7xQ/mqdefault.jpg",
+        "file": "backend\\fast_youtube_endpoint.py",
+        "type": "external"
+      },
+      {
+        "url": "https://i.ytimg.com/vi/dQw4w9WgXcQ/mqdefault.jpg",
+        "file": "backend\\fast_youtube_endpoint.py",
+        "type": "external"
+      },
+      {
+        "url": "https://i.ytimg.com/vi/9bZkp7q19f0/mqdefault.jpg",
+        "file": "backend\\fast_youtube_endpoint.py",
+        "type": "external"
+      },
+      {
+        "url": "https://i.ytimg.com/vi/oHg5SJYRHA0/mqdefault.jpg",
+        "file": "backend\\fast_youtube_endpoint.py",
+        "type": "external"
+      },
+      {
+        "url": "https://i.ytimg.com/vi/tg_oHg5SJ0/mqdefault.jpg",
+        "file": "backend\\fast_youtube_endpoint.py",
+        "type": "external"
+      },
+      {
+        "url": "https://i.ytimg.com/vi/bio_video1/mqdefault.jpg",
+        "file": "backend\\fast_youtube_endpoint.py",
+        "type": "external"
+      },
+      {
+        "url": "https://www.youtube.com/watch?v=example1",
+        "file": "backend\\init_db.py",
+        "type": "external"
+      },
+      {
+        "url": "https://cf781mfqobm2ynkk.us-east-1.aws.endpoints.huggingface.cloud",
+        "file": "backend\\install_verify_langchain.py",
+        "type": "external"
+      },
+      {
+        "url": "https://kiro2.app",
+        "file": "backend\\main.py",
+        "type": "external"
+      },
+      {
+        "url": "https://www.kiro2.app",
+        "file": "backend\\main.py",
+        "type": "external"
+      },
+      {
+        "url": "https://api.kiro2.app",
+        "file": "backend\\main.py",
+        "type": "external"
+      },
+      {
+        "url": "https://kiro2.app",
+        "file": "backend\\main.py",
+        "type": "external"
+      },
+      {
+        "url": "https://www.kiro2.app",
+        "file": "backend\\main.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:3000",
+        "file": "backend\\main.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:5173",
+        "file": "backend\\main.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:8080",
+        "file": "backend\\main.py",
+        "type": "external"
+      },
+      {
+        "url": "http://127.0.0.1:3000",
+        "file": "backend\\main.py",
+        "type": "external"
+      },
+      {
+        "url": "http://127.0.0.1:5173",
+        "file": "backend\\main.py",
+        "type": "external"
+      },
+      {
+        "url": "http://127.0.0.1:8080",
+        "file": "backend\\main.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:3000",
+        "file": "backend\\main.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:3001",
+        "file": "backend\\main.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:3002",
+        "file": "backend\\main.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:3003",
+        "file": "backend\\main.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:5173",
+        "file": "backend\\main.py",
+        "type": "external"
+      },
+      {
+        "url": "http://127.0.0.1:3000",
+        "file": "backend\\main.py",
+        "type": "external"
+      },
+      {
+        "url": "http://127.0.0.1:5173",
+        "file": "backend\\main.py",
+        "type": "external"
+      },
+      {
+        "url": "https://kiro2.app",
+        "file": "backend\\main.py",
+        "type": "external"
+      },
+      {
+        "url": "https://www.kiro2.app",
+        "file": "backend\\main.py",
+        "type": "external"
+      },
+      {
+        "url": "https://api.kiro2.app",
+        "file": "backend\\main.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:3000",
+        "file": "backend\\main.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:3001",
+        "file": "backend\\main.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:5173",
+        "file": "backend\\main.py",
+        "type": "external"
+      },
+      {
+        "url": "http://127.0.0.1:3000",
+        "file": "backend\\main.py",
+        "type": "external"
+      },
+      {
+        "url": "https://img.youtube.com/vi/",
+        "file": "backend\\main.py",
+        "type": "external"
+      },
+      {
+        "url": "https://www.youtube.com/embed/",
+        "file": "backend\\main.py",
+        "type": "external"
+      },
+      {
+        "url": "https://img.shields.io/badge/coverage-",
+        "file": "backend\\run_coverage_analysis.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:8000/docs",
+        "file": "backend\\setup_database.py",
+        "type": "external"
+      },
+      {
+        "url": "https://adoptium.net/",
+        "file": "backend\\setup_zemberek.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:8000",
+        "file": "backend\\test_api_endpoints.py",
+        "type": "external"
+      },
+      {
+        "url": "https://api.example.com/users",
+        "file": "backend\\test_async_comprehensive.py",
+        "type": "external"
+      },
+      {
+        "url": "https://api.example.com/posts",
+        "file": "backend\\test_async_comprehensive.py",
+        "type": "external"
+      },
+      {
+        "url": "https://api.example.com/comments",
+        "file": "backend\\test_async_comprehensive.py",
+        "type": "external"
+      },
+      {
+        "url": "https://api.example.com/categories",
+        "file": "backend\\test_async_comprehensive.py",
+        "type": "external"
+      },
+      {
+        "url": "https://api.example.com/tags",
+        "file": "backend\\test_async_comprehensive.py",
+        "type": "external"
+      },
+      {
+        "url": "https://api.example.com/users",
+        "file": "backend\\test_async_comprehensive.py",
+        "type": "external"
+      },
+      {
+        "url": "https://api.example.com/error",
+        "file": "backend\\test_async_comprehensive.py",
+        "type": "external"
+      },
+      {
+        "url": "https://api.example.com/slow",
+        "file": "backend\\test_async_comprehensive.py",
+        "type": "external"
+      },
+      {
+        "url": "https://api.example.com/normal",
+        "file": "backend\\test_async_comprehensive.py",
+        "type": "external"
+      },
+      {
+        "url": "https://api.example.com/rate-limit",
+        "file": "backend\\test_async_comprehensive.py",
+        "type": "external"
+      },
+      {
+        "url": "https://youtube.com/watch?v=example123",
+        "file": "backend\\test_content_management_api.py",
+        "type": "external"
+      },
+      {
+        "url": "https://cf781mfqobm2ynkk.us-east-1.aws.endpoints.huggingface.cloud",
+        "file": "backend\\test_custom_hf_endpoint.py",
+        "type": "external"
+      },
+      {
+        "url": "https://cf781mfqobm2ynkk.us-east-1.aws.endpoints.huggingface.cloud",
+        "file": "backend\\test_custom_hf_endpoint.py",
+        "type": "external"
+      },
+      {
+        "url": "https://huggingface.co/settings/tokens",
+        "file": "backend\\test_custom_hf_endpoint.py",
+        "type": "external"
+      },
+      {
+        "url": "https://api.example.com",
+        "file": "backend\\test_edge_cases_error_conditions.py",
+        "type": "external"
+      },
+      {
+        "url": "https://api.example.com",
+        "file": "backend\\test_edge_cases_error_conditions.py",
+        "type": "external"
+      },
+      {
+        "url": "https://api.example.com",
+        "file": "backend\\test_edge_cases_error_conditions.py",
+        "type": "external"
+      },
+      {
+        "url": "https://cf781mfqobm2ynkk.us-east-1.aws.endpoints.huggingface.cloud",
+        "file": "backend\\test_huggingface_integration.py",
+        "type": "external"
+      },
+      {
+        "url": "https://cf781mfqobm2ynkk.us-east-1.aws.endpoints.huggingface.cloud",
+        "file": "backend\\test_langchain_complete.py",
+        "type": "external"
+      },
+      {
+        "url": "https://cf781mfqobm2ynkk.us-east-1.aws.endpoints.huggingface.cloud",
+        "file": "backend\\test_langchain_with_custom_endpoint.py",
+        "type": "external"
+      },
+      {
+        "url": "https://cf781mfqobm2ynkk.us-east-1.aws.endpoints.huggingface.cloud",
+        "file": "backend\\test_langchain_with_custom_endpoint.py",
+        "type": "external"
+      },
+      {
+        "url": "https://cf781mfqobm2ynkk.us-east-1.aws.endpoints.huggingface.cloud",
+        "file": "backend\\test_langchain_with_custom_endpoint.py",
+        "type": "external"
+      },
+      {
+        "url": "https://cf781mfqobm2ynkk.us-east-1.aws.endpoints.huggingface.cloud",
+        "file": "backend\\test_langchain_with_custom_endpoint.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:3000",
+        "file": "backend\\test_main_application.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:3001",
+        "file": "backend\\test_main_application.py",
+        "type": "external"
+      },
+      {
+        "url": "https://img.youtube.com/vi/J9lS14nM1xg/maxresdefault.jpg",
+        "file": "backend\\test_main_fixed.py",
+        "type": "external"
+      },
+      {
+        "url": "https://www.youtube.com/embed/J9lS14nM1xg",
+        "file": "backend\\test_main_fixed.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:3000",
+        "file": "backend\\test_main_fixed.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:3000",
+        "file": "backend\\test_services_and_security.py",
+        "type": "external"
+      },
+      {
+        "url": "https://kiro2.com",
+        "file": "backend\\test_services_and_security.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:3000",
+        "file": "backend\\test_services_and_security.py",
+        "type": "external"
+      },
+      {
+        "url": "http://malicious-site.com",
+        "file": "backend\\test_services_and_security.py",
+        "type": "external"
+      },
+      {
+        "url": "https://img.youtube.com/vi/J9lS14nM1xg/maxresdefault.jpg",
+        "file": "backend\\test_simple_apis.py",
+        "type": "external"
+      },
+      {
+        "url": "https://www.youtube.com/embed/J9lS14nM1xg",
+        "file": "backend\\test_simple_apis.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:3000",
+        "file": "backend\\test_simple_apis.py",
+        "type": "external"
+      },
+      {
+        "url": "https://monitoring.kiro2.com/dashboard",
+        "file": "backend\\test_ultra_high_impact_coverage.py",
+        "type": "external"
+      },
+      {
+        "url": "https://cf781mfqobm2ynkk.us-east-1.aws.endpoints.huggingface.cloud",
+        "file": "backend\\verify_langchain_status.py",
+        "type": "external"
+      },
+      {
+        "url": "https://cf781mfqobm2ynkk...)",
+        "file": "backend\\verify_langchain_status.py",
+        "type": "external"
+      },
+      {
+        "url": "https://www.youtube.com/watch?v=",
+        "file": "backend\\video_validator.py",
+        "type": "external"
+      },
+      {
+        "url": "https://www.youtube.com/watch?v=",
+        "file": "backend\\agents\\learning_path_agent.py",
+        "type": "external"
+      },
+      {
+        "url": "https://tr.khanacademy.org/course/",
+        "file": "backend\\agents\\learning_path_agent.py",
+        "type": "external"
+      },
+      {
+        "url": "https://tr.khanacademy.org/search?q=",
+        "file": "backend\\agents\\learning_path_agent.py",
+        "type": "external"
+      },
+      {
+        "url": "https://youtube.com/results?q=",
+        "file": "backend\\agents\\learning_path_agent.py",
+        "type": "external"
+      },
+      {
+        "url": "https://tr.wikipedia.org/wiki/",
+        "file": "backend\\agents\\learning_path_agent.py",
+        "type": "external"
+      },
+      {
+        "url": "https://eba.gov.tr/search?q=",
+        "file": "backend\\agents\\learning_path_agent.py",
+        "type": "external"
+      },
+      {
+        "url": "https://example.com/resource/",
+        "file": "backend\\ai_engine\\adaptive_learning_paths.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:9200",
+        "file": "backend\\analytics\\health_audit_service.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:8000",
+        "file": "backend\\analytics\\health_audit_service.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:9090",
+        "file": "backend\\analytics\\health_audit_service.py",
+        "type": "external"
+      },
+      {
+        "url": "https://img.youtube.com/vi/",
+        "file": "backend\\api\\content_api.py",
+        "type": "external"
+      },
+      {
+        "url": "https://youtube.com/watch?v=example",
+        "file": "backend\\api\\content_management.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:9200",
+        "file": "backend\\api\\health.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:3000",
+        "file": "backend\\core\\auth_security_utils.py",
+        "type": "external"
+      },
+      {
+        "url": "https://kiro2.com",
+        "file": "backend\\core\\auth_security_utils.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:9200",
+        "file": "backend\\core\\comprehensive_health_check.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:9200",
+        "file": "backend\\core\\config.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:3000,http://localhost:5173",
+        "file": "backend\\core\\config.py",
+        "type": "external"
+      },
+      {
+        "url": "https://yourdomain.com",
+        "file": "backend\\core\\cors_config.py",
+        "type": "external"
+      },
+      {
+        "url": "https://www.yourdomain.com",
+        "file": "backend\\core\\cors_config.py",
+        "type": "external"
+      },
+      {
+        "url": "https://app.yourdomain.com",
+        "file": "backend\\core\\cors_config.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:3000",
+        "file": "backend\\core\\cors_config.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:3001",
+        "file": "backend\\core\\cors_config.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:3002",
+        "file": "backend\\core\\cors_config.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:3003",
+        "file": "backend\\core\\cors_config.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:5173",
+        "file": "backend\\core\\cors_config.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:8080",
+        "file": "backend\\core\\cors_config.py",
+        "type": "external"
+      },
+      {
+        "url": "http://127.0.0.1:3000",
+        "file": "backend\\core\\cors_config.py",
+        "type": "external"
+      },
+      {
+        "url": "http://127.0.0.1:5173",
+        "file": "backend\\core\\cors_config.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost",
+        "file": "backend\\core\\cors_config.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:9200",
+        "file": "backend\\core\\elasticsearch_client.py",
+        "type": "external"
+      },
+      {
+        "url": "https://cf781mfqobm2ynkk.us-east-1.aws.endpoints.huggingface.cloud",
+        "file": "backend\\core\\langchain_llm_service_enhanced.py",
+        "type": "external"
+      },
+      {
+        "url": "https://api.openai.com/v1",
+        "file": "backend\\core\\llm_pool.py",
+        "type": "external"
+      },
+      {
+        "url": "https://cf781mfqobm2ynkk.us-east-1.aws.endpoints.huggingface.cloud",
+        "file": "backend\\core\\llm_service.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:3000",
+        "file": "backend\\core\\security_middleware.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:6789",
+        "file": "backend\\core\\turkish_nlp_service.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:9200",
+        "file": "backend\\core\\unified_config.py",
+        "type": "external"
+      },
+      {
+        "url": "https://api-inference.huggingface.co",
+        "file": "backend\\core\\unified_config.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:3000",
+        "file": "backend\\core\\unified_config.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:5173",
+        "file": "backend\\core\\unified_config.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:3000",
+        "file": "backend\\core\\unified\\security_system.py",
+        "type": "external"
+      },
+      {
+        "url": "https://www.youtube.com/watch?v=B5zOYfz0-Fw",
+        "file": "backend\\integrations\\ebatv_service.py",
+        "type": "external"
+      },
+      {
+        "url": "https://www.youtube.com/watch?v=hP8ZVjGx0zQ",
+        "file": "backend\\integrations\\ebatv_service.py",
+        "type": "external"
+      },
+      {
+        "url": "https://www.youtube.com/watch?v=8LwvvFw6Qvg",
+        "file": "backend\\integrations\\ebatv_service.py",
+        "type": "external"
+      },
+      {
+        "url": "https://www.youtube.com/watch?v=c3T7gGK5qLg",
+        "file": "backend\\integrations\\ebatv_service.py",
+        "type": "external"
+      },
+      {
+        "url": "https://www.youtube.com/watch?v=iFzJUO5t-MA",
+        "file": "backend\\integrations\\ebatv_service.py",
+        "type": "external"
+      },
+      {
+        "url": "https://www.youtube.com/watch?v=RjrA4b9lZxo",
+        "file": "backend\\integrations\\ebatv_service.py",
+        "type": "external"
+      },
+      {
+        "url": "https://www.youtube.com/watch?v=c3T7gGK5qLg",
+        "file": "backend\\integrations\\ebatv_service.py",
+        "type": "external"
+      },
+      {
+        "url": "https://www.khanacademy.org/api/v1",
+        "file": "backend\\integrations\\khan_academy_service.py",
+        "type": "external"
+      },
+      {
+        "url": "https://tr.khanacademy.org/api/v1",
+        "file": "backend\\integrations\\khan_academy_service.py",
+        "type": "external"
+      },
+      {
+        "url": "https://www.khanacademy.org/api/internal",
+        "file": "backend\\integrations\\khan_academy_service.py",
+        "type": "external"
+      },
+      {
+        "url": "https://tr.khanacademy.org/video/xxx",
+        "file": "backend\\integrations\\khan_academy_service.py",
+        "type": "external"
+      },
+      {
+        "url": "https://tr.khanacademy.org/exercise/xxx",
+        "file": "backend\\integrations\\khan_academy_service.py",
+        "type": "external"
+      },
+      {
+        "url": "https://tr.khanacademy.org/exercise/yyy",
+        "file": "backend\\integrations\\khan_academy_service.py",
+        "type": "external"
+      },
+      {
+        "url": "https://tr.khanacademy.org/video/zzz",
+        "file": "backend\\integrations\\khan_academy_service.py",
+        "type": "external"
+      },
+      {
+        "url": "https://tr.khanacademy.org/exercise/zzz",
+        "file": "backend\\integrations\\khan_academy_service.py",
+        "type": "external"
+      },
+      {
+        "url": "https://tr.khanacademy.org/article/zzz",
+        "file": "backend\\integrations\\khan_academy_service.py",
+        "type": "external"
+      },
+      {
+        "url": "https://www.oercommons.org/api/v1",
+        "file": "backend\\integrations\\oer_service.py",
+        "type": "external"
+      },
+      {
+        "url": "https://ocw.mit.edu",
+        "file": "backend\\integrations\\oer_service.py",
+        "type": "external"
+      },
+      {
+        "url": "https://commons.wikimedia.org/w/api.php",
+        "file": "backend\\integrations\\oer_service.py",
+        "type": "external"
+      },
+      {
+        "url": "https://www.oercommons.org",
+        "file": "backend\\integrations\\oer_service.py",
+        "type": "external"
+      },
+      {
+        "url": "https://www.oercommons.org/api/v1",
+        "file": "backend\\integrations\\oer_service.py",
+        "type": "external"
+      },
+      {
+        "url": "https://ocw.mit.edu",
+        "file": "backend\\integrations\\oer_service.py",
+        "type": "external"
+      },
+      {
+        "url": "https://ocw.mit.edu/search/",
+        "file": "backend\\integrations\\oer_service.py",
+        "type": "external"
+      },
+      {
+        "url": "https://commons.wikimedia.org",
+        "file": "backend\\integrations\\oer_service.py",
+        "type": "external"
+      },
+      {
+        "url": "https://commons.wikimedia.org/w/api.php",
+        "file": "backend\\integrations\\oer_service.py",
+        "type": "external"
+      },
+      {
+        "url": "https://commons.wikimedia.org/wiki/File",
+        "file": "backend\\integrations\\oer_service.py",
+        "type": "external"
+      },
+      {
+        "url": "https://www.oercommons.org/search?q=",
+        "file": "backend\\integrations\\oer_service.py",
+        "type": "external"
+      },
+      {
+        "url": "https://www.oercommons.org/browse?q=",
+        "file": "backend\\integrations\\oer_service.py",
+        "type": "external"
+      },
+      {
+        "url": "https://www.oercommons.org/materials?q=",
+        "file": "backend\\integrations\\oer_service.py",
+        "type": "external"
+      },
+      {
+        "url": "https://ocw.mit.edu/search/?q=",
+        "file": "backend\\integrations\\oer_service.py",
+        "type": "external"
+      },
+      {
+        "url": "https://ocw.mit.edu/courses/find-by-topic/",
+        "file": "backend\\integrations\\oer_service.py",
+        "type": "external"
+      },
+      {
+        "url": "https://tr.wikipedia.org/api/rest_v1",
+        "file": "backend\\integrations\\wikipedia_service.py",
+        "type": "external"
+      },
+      {
+        "url": "https://en.wikipedia.org/api/rest_v1",
+        "file": "backend\\integrations\\wikipedia_service.py",
+        "type": "external"
+      },
+      {
+        "url": "https://tr.wikipedia.org/wiki/Hücre_bölünmesi",
+        "file": "backend\\integrations\\wikipedia_service.py",
+        "type": "external"
+      },
+      {
+        "url": "https://example.com/cell_division.jpg",
+        "file": "backend\\integrations\\wikipedia_service.py",
+        "type": "external"
+      },
+      {
+        "url": "https://tr.wikipedia.org/wiki/Mitoz",
+        "file": "backend\\integrations\\wikipedia_service.py",
+        "type": "external"
+      },
+      {
+        "url": "https://example.com/mitosis.jpg",
+        "file": "backend\\integrations\\wikipedia_service.py",
+        "type": "external"
+      },
+      {
+        "url": "https://tr.wikipedia.org/wiki/Matematik",
+        "file": "backend\\integrations\\wikipedia_service.py",
+        "type": "external"
+      },
+      {
+        "url": "https://example.com/math.jpg",
+        "file": "backend\\integrations\\wikipedia_service.py",
+        "type": "external"
+      },
+      {
+        "url": "https://tr.wikipedia.org/api/rest_v1",
+        "file": "backend\\integrations\\wikipedia_service_with_auth.py",
+        "type": "external"
+      },
+      {
+        "url": "https://en.wikipedia.org/api/rest_v1",
+        "file": "backend\\integrations\\wikipedia_service_with_auth.py",
+        "type": "external"
+      },
+      {
+        "url": "https://www.googleapis.com/youtube/v3",
+        "file": "backend\\integrations\\youtube_service.py",
+        "type": "external"
+      },
+      {
+        "url": "https://img.youtube.com/vi/fallback_001/maxresdefault.jpg",
+        "file": "backend\\integrations\\youtube_service.py",
+        "type": "external"
+      },
+      {
+        "url": "https://img.youtube.com/vi/fallback_002/maxresdefault.jpg",
+        "file": "backend\\integrations\\youtube_service.py",
+        "type": "external"
+      },
+      {
+        "url": "https://img.youtube.com/vi/fallback_003/maxresdefault.jpg",
+        "file": "backend\\integrations\\youtube_service.py",
+        "type": "external"
+      },
+      {
+        "url": "https://i.ytimg.com/vi/abc123/maxresdefault.jpg",
+        "file": "backend\\integrations\\youtube_service.py",
+        "type": "external"
+      },
+      {
+        "url": "https://i.ytimg.com/vi/def456/maxresdefault.jpg",
+        "file": "backend\\integrations\\youtube_service.py",
+        "type": "external"
+      },
+      {
+        "url": "https://i.ytimg.com/vi/ghi789/maxresdefault.jpg",
+        "file": "backend\\integrations\\youtube_service.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:8081",
+        "file": "backend\\mcp_servers\\zemberek_mcp.py",
+        "type": "external"
+      },
+      {
+        "url": "www.youtube.com'",
+        "file": "backend\\models\\content_models.py",
+        "type": "external"
+      },
+      {
+        "url": "www.vimeo.com'",
+        "file": "backend\\models\\content_models.py",
+        "type": "external"
+      },
+      {
+        "url": "www.dailymotion.com'",
+        "file": "backend\\models\\content_models.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost",
+        "file": "backend\\monitoring\\prometheus_exporter.py",
+        "type": "external"
+      },
+      {
+        "url": "https://cdn.jsdelivr.net/npm/chart.js",
+        "file": "backend\\scripts\\coverage_dashboard.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost",
+        "file": "backend\\scripts\\run_coverage_automation.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost",
+        "file": "backend\\scripts\\run_coverage_automation.py",
+        "type": "external"
+      },
+      {
+        "url": "https://www.youtube.com/watch?v=example1'",
+        "file": "backend\\scripts\\seed_database.py",
+        "type": "external"
+      },
+      {
+        "url": "https://www.youtube.com/watch?v=example2'",
+        "file": "backend\\scripts\\seed_database.py",
+        "type": "external"
+      },
+      {
+        "url": "https://tr.khanacademy.org/math/limit-continuity'",
+        "file": "backend\\scripts\\seed_database.py",
+        "type": "external"
+      },
+      {
+        "url": "https://www.eba.gov.tr/fizik-hareket'",
+        "file": "backend\\scripts\\seed_database.py",
+        "type": "external"
+      },
+      {
+        "url": "https://img.youtube.com/vi/",
+        "file": "backend\\services\\advanced_youtube_search.py",
+        "type": "external"
+      },
+      {
+        "url": "https://www.youtube-nocookie.com/embed/",
+        "file": "backend\\services\\advanced_youtube_search.py",
+        "type": "external"
+      },
+      {
+        "url": "https://img.youtube.com/vi/",
+        "file": "backend\\services\\advanced_youtube_search.py",
+        "type": "external"
+      },
+      {
+        "url": "https://www.youtube-nocookie.com/embed/",
+        "file": "backend\\services\\advanced_youtube_search.py",
+        "type": "external"
+      },
+      {
+        "url": "https://www.youtube.com/watch?v=",
+        "file": "backend\\services\\enhanced_resource_recommendation_engine.py",
+        "type": "external"
+      },
+      {
+        "url": "https://eba.gov.tr/video/",
+        "file": "backend\\services\\exam_performance_service.py",
+        "type": "external"
+      },
+      {
+        "url": "https://tr.khanacademy.org/",
+        "file": "backend\\services\\exam_performance_service.py",
+        "type": "external"
+      },
+      {
+        "url": "https://www.youtube.com/embed/",
+        "file": "backend\\services\\real_youtube_api.py",
+        "type": "external"
+      },
+      {
+        "url": "https://www.googleapis.com/youtube/v3",
+        "file": "backend\\services\\semantic_youtube_search.py",
+        "type": "external"
+      },
+      {
+        "url": "https://www.youtube.com/embed/",
+        "file": "backend\\services\\semantic_youtube_search.py",
+        "type": "external"
+      },
+      {
+        "url": "https://img.youtube.com/vi/VuwKz2TVVKA/maxresdefault.jpg'",
+        "file": "backend\\services\\semantic_youtube_search.py",
+        "type": "external"
+      },
+      {
+        "url": "https://img.youtube.com/vi/L_42C1qoQTE/maxresdefault.jpg'",
+        "file": "backend\\services\\semantic_youtube_search.py",
+        "type": "external"
+      },
+      {
+        "url": "https://www.googleapis.com/youtube/v3",
+        "file": "backend\\services\\video_quality_validator.py",
+        "type": "external"
+      },
+      {
+        "url": "https://www.youtube.com/results?search_query=",
+        "file": "backend\\services\\youtube_discovery.py",
+        "type": "external"
+      },
+      {
+        "url": "https://www.youtube.com/watch?v=",
+        "file": "backend\\services\\youtube_discovery.py",
+        "type": "external"
+      },
+      {
+        "url": "https://cf781mfqobm2ynkk.us-east-1.aws.endpoints.huggingface.cloud",
+        "file": "backend\\services\\youtube_discovery.py",
+        "type": "external"
+      },
+      {
+        "url": "https://img.youtube.com/vi/",
+        "file": "backend\\services\\youtube_discovery.py",
+        "type": "external"
+      },
+      {
+        "url": "https://img.youtube.com/vi/",
+        "file": "backend\\services\\youtube_discovery.py",
+        "type": "external"
+      },
+      {
+        "url": "https://img.youtube.com/vi/default_math/maxresdefault.jpg'",
+        "file": "backend\\services\\youtube_discovery.py",
+        "type": "external"
+      },
+      {
+        "url": "https://i.ytimg.com/vi/mock_math_1/default.jpg",
+        "file": "backend\\services\\youtube_error_handlers.py",
+        "type": "external"
+      },
+      {
+        "url": "https://www.youtube.com/watch?v=mock_math_1",
+        "file": "backend\\services\\youtube_error_handlers.py",
+        "type": "external"
+      },
+      {
+        "url": "https://i.ytimg.com/vi/mock_physics_1/default.jpg",
+        "file": "backend\\services\\youtube_error_handlers.py",
+        "type": "external"
+      },
+      {
+        "url": "https://www.youtube.com/watch?v=mock_physics_1",
+        "file": "backend\\services\\youtube_error_handlers.py",
+        "type": "external"
+      },
+      {
+        "url": "https://i.ytimg.com/vi/mock_chemistry_1/default.jpg",
+        "file": "backend\\services\\youtube_error_handlers.py",
+        "type": "external"
+      },
+      {
+        "url": "https://www.youtube.com/watch?v=mock_chemistry_1",
+        "file": "backend\\services\\youtube_error_handlers.py",
+        "type": "external"
+      },
+      {
+        "url": "https://i.ytimg.com/vi/mock_math_2/default.jpg",
+        "file": "backend\\services\\youtube_error_handlers.py",
+        "type": "external"
+      },
+      {
+        "url": "https://www.youtube.com/watch?v=mock_math_2",
+        "file": "backend\\services\\youtube_error_handlers.py",
+        "type": "external"
+      },
+      {
+        "url": "https://i.ytimg.com/vi/mock_biology_1/default.jpg",
+        "file": "backend\\services\\youtube_error_handlers.py",
+        "type": "external"
+      },
+      {
+        "url": "https://www.youtube.com/watch?v=mock_biology_1",
+        "file": "backend\\services\\youtube_error_handlers.py",
+        "type": "external"
+      },
+      {
+        "url": "https://test.endpoint.com'",
+        "file": "backend\\tests\\conftest.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:3000",
+        "file": "backend\\tests\\conftest.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:5173",
+        "file": "backend\\tests\\conftest.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:3000,http://localhost:5173,http://localhost:8080'",
+        "file": "backend\\tests\\conftest.py",
+        "type": "external"
+      },
+      {
+        "url": "http://test",
+        "file": "backend\\tests\\conftest.py",
+        "type": "external"
+      },
+      {
+        "url": "https://test.endpoint.com'",
+        "file": "backend\\tests\\conftest.py",
+        "type": "external"
+      },
+      {
+        "url": "https://example.com/thumb.jpg",
+        "file": "backend\\tests\\test_enhanced_resource_recommendation_engine.py",
+        "type": "external"
+      },
+      {
+        "url": "https://youtube.com/watch?v=test123",
+        "file": "backend\\tests\\test_enhanced_resource_recommendation_engine.py",
+        "type": "external"
+      },
+      {
+        "url": "https://example.com/thumb_",
+        "file": "backend\\tests\\test_performance_optimizations.py",
+        "type": "external"
+      },
+      {
+        "url": "https://youtube.com/watch?v=video_",
+        "file": "backend\\tests\\test_performance_optimizations.py",
+        "type": "external"
+      },
+      {
+        "url": "https://youtube.com/watch?v=",
+        "file": "backend\\tests\\test_performance_optimizations.py",
+        "type": "external"
+      },
+      {
+        "url": "https://example.com/thumb.jpg",
+        "file": "backend\\tests\\test_performance_optimizations.py",
+        "type": "external"
+      },
+      {
+        "url": "https://youtube.com/watch?v=test_id",
+        "file": "backend\\tests\\test_performance_optimizations.py",
+        "type": "external"
+      },
+      {
+        "url": "https://example.com/thumb.jpg",
+        "file": "backend\\tests\\test_performance_optimizations.py",
+        "type": "external"
+      },
+      {
+        "url": "https://youtube.com/watch?v=test_id",
+        "file": "backend\\tests\\test_performance_optimizations.py",
+        "type": "external"
+      },
+      {
+        "url": "https://example.com/thumb.jpg",
+        "file": "backend\\tests\\test_performance_optimizations.py",
+        "type": "external"
+      },
+      {
+        "url": "https://youtube.com/watch?v=test_id",
+        "file": "backend\\tests\\test_performance_optimizations.py",
+        "type": "external"
+      },
+      {
+        "url": "https://youtube.com/test",
+        "file": "backend\\tests\\test_real_modules_coverage.py",
+        "type": "external"
+      },
+      {
+        "url": "http://www.w3.org/1998/Math/MathML",
+        "file": "backend\\tests\\accessibility\\test_screen_reader_compatibility.py",
+        "type": "external"
+      },
+      {
+        "url": "https://example.com/search?q=çalışma",
+        "file": "backend\\tests\\accessibility\\test_turkish_encoding.py",
+        "type": "external"
+      },
+      {
+        "url": "https://example.com/search?q=%C3%A7al%C4%B1%C5%9Fma",
+        "file": "backend\\tests\\accessibility\\test_turkish_encoding.py",
+        "type": "external"
+      },
+      {
+        "url": "https://example.com/search?q=%C3%A7al%C4%B1%C5%9Fma",
+        "file": "backend\\tests\\accessibility\\test_turkish_encoding.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:8001",
+        "file": "backend\\tests\\fast\\test_breakthrough_25_percent.py",
+        "type": "external"
+      },
+      {
+        "url": "https://example.com,https://app.example.com",
+        "file": "backend\\tests\\fast\\test_core_config_comprehensive.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:6379",
+        "file": "backend\\tests\\fast\\test_core_config_comprehensive.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:3000",
+        "file": "backend\\tests\\fast\\test_core_config_comprehensive.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:5173",
+        "file": "backend\\tests\\fast\\test_core_config_comprehensive.py",
+        "type": "external"
+      },
+      {
+        "url": "http://example.com,http://test.com",
+        "file": "backend\\tests\\fast\\test_core_config_comprehensive.py",
+        "type": "external"
+      },
+      {
+        "url": "http://example.com",
+        "file": "backend\\tests\\fast\\test_core_config_comprehensive.py",
+        "type": "external"
+      },
+      {
+        "url": "http://test.com",
+        "file": "backend\\tests\\fast\\test_core_config_comprehensive.py",
+        "type": "external"
+      },
+      {
+        "url": "http://example.com",
+        "file": "backend\\tests\\fast\\test_core_config_comprehensive.py",
+        "type": "external"
+      },
+      {
+        "url": "http://test.com",
+        "file": "backend\\tests\\fast\\test_core_config_comprehensive.py",
+        "type": "external"
+      },
+      {
+        "url": "http://example.com",
+        "file": "backend\\tests\\fast\\test_core_config_comprehensive.py",
+        "type": "external"
+      },
+      {
+        "url": "http://test.com",
+        "file": "backend\\tests\\fast\\test_core_config_comprehensive.py",
+        "type": "external"
+      },
+      {
+        "url": "https://test.com/video",
+        "file": "backend\\tests\\fast\\test_enum_instantiation.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:3000",
+        "file": "backend\\tests\\fast\\test_fastapi_comprehensive.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:8001",
+        "file": "backend\\tests\\fast\\test_high_value_zero_coverage.py",
+        "type": "external"
+      },
+      {
+        "url": "https://youtube.com/watch?v=",
+        "file": "backend\\tests\\fixtures\\factories.py",
+        "type": "external"
+      },
+      {
+        "url": "https://example.com/test-video.mp4",
+        "file": "backend\\tests\\fixtures\\integration_fixtures.py",
+        "type": "external"
+      },
+      {
+        "url": "https://example.com/test-video.mp4",
+        "file": "backend\\tests\\fixtures\\integration_fixtures.py",
+        "type": "external"
+      },
+      {
+        "url": "https://mock.endpoint.com",
+        "file": "backend\\tests\\fixtures\\mock_data.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:9200",
+        "file": "backend\\tests\\fixtures\\mock_data.py",
+        "type": "external"
+      },
+      {
+        "url": "https://mock.endpoint.com",
+        "file": "backend\\tests\\fixtures\\mock_data.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:9200",
+        "file": "backend\\tests\\fixtures\\mock_data.py",
+        "type": "external"
+      },
+      {
+        "url": "http://testserver",
+        "file": "backend\\tests\\integration\\test_client_helper.py",
+        "type": "external"
+      },
+      {
+        "url": "https://youtube.com/watch?v=test123",
+        "file": "backend\\tests\\integration\\test_content_models.py",
+        "type": "external"
+      },
+      {
+        "url": "https://youtube.com/watch?v=test123",
+        "file": "backend\\tests\\integration\\test_content_models.py",
+        "type": "external"
+      },
+      {
+        "url": "https://youtube.com/watch?v=detailed123",
+        "file": "backend\\tests\\integration\\test_content_models.py",
+        "type": "external"
+      },
+      {
+        "url": "https://test.com",
+        "file": "backend\\tests\\integration\\test_content_models.py",
+        "type": "external"
+      },
+      {
+        "url": "https://test.com",
+        "file": "backend\\tests\\integration\\test_content_models.py",
+        "type": "external"
+      },
+      {
+        "url": "https://test.com/video",
+        "file": "backend\\tests\\integration\\test_content_models.py",
+        "type": "external"
+      },
+      {
+        "url": "https://youtube.com/watch?v=turkce123",
+        "file": "backend\\tests\\integration\\test_content_models.py",
+        "type": "external"
+      },
+      {
+        "url": "https://youtube.com/watch?v=newton123",
+        "file": "backend\\tests\\integration\\test_content_models.py",
+        "type": "external"
+      },
+      {
+        "url": "https://youtube.com/watch?v=viral123",
+        "file": "backend\\tests\\integration\\test_content_models.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:9200",
+        "file": "backend\\tests\\integration\\test_core_config.py",
+        "type": "external"
+      },
+      {
+        "url": "http://remote:9200",
+        "file": "backend\\tests\\integration\\test_core_config.py",
+        "type": "external"
+      },
+      {
+        "url": "http://remote:9200",
+        "file": "backend\\tests\\integration\\test_core_config.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:3000,https://example.com,https://app.com",
+        "file": "backend\\tests\\integration\\test_core_config.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:3000",
+        "file": "backend\\tests\\integration\\test_core_config.py",
+        "type": "external"
+      },
+      {
+        "url": "https://example.com",
+        "file": "backend\\tests\\integration\\test_core_config.py",
+        "type": "external"
+      },
+      {
+        "url": "https://app.com",
+        "file": "backend\\tests\\integration\\test_core_config.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:3000",
+        "file": "backend\\tests\\integration\\test_core_config.py",
+        "type": "external"
+      },
+      {
+        "url": "https://example.com",
+        "file": "backend\\tests\\integration\\test_core_config.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:3000",
+        "file": "backend\\tests\\integration\\test_critical_api.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:9200",
+        "file": "backend\\tests\\integration\\test_elasticsearch_logger.py",
+        "type": "external"
+      },
+      {
+        "url": "http://test-es:9200",
+        "file": "backend\\tests\\integration\\test_elasticsearch_logger.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:9200",
+        "file": "backend\\tests\\integration\\test_elasticsearch_logger_fixed.py",
+        "type": "external"
+      },
+      {
+        "url": "http://test-es:9200",
+        "file": "backend\\tests\\integration\\test_elasticsearch_logger_fixed.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:8000/api/v1/auth/login",
+        "file": "backend\\tests\\integration\\test_end_to_end_platform.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:8000/api/v1/exam/start",
+        "file": "backend\\tests\\integration\\test_end_to_end_platform.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:8000/api/v1/exam/",
+        "file": "backend\\tests\\integration\\test_end_to_end_platform.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:8000/api/v1/exam/",
+        "file": "backend\\tests\\integration\\test_end_to_end_platform.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:8000/api/v1/exam/",
+        "file": "backend\\tests\\integration\\test_end_to_end_platform.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:8000/api/v1/exam/",
+        "file": "backend\\tests\\integration\\test_end_to_end_platform.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:8000/api/v1/exam/",
+        "file": "backend\\tests\\integration\\test_end_to_end_platform.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:8000/api/v1/adaptive/recommendations/",
+        "file": "backend\\tests\\integration\\test_end_to_end_platform.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:8000/api/v1/auth/login",
+        "file": "backend\\tests\\integration\\test_end_to_end_platform.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:8000/api/v1/exam/start",
+        "file": "backend\\tests\\integration\\test_end_to_end_platform.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:8000/api/v1/exam/",
+        "file": "backend\\tests\\integration\\test_end_to_end_platform.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:8000/api/v1/exam/",
+        "file": "backend\\tests\\integration\\test_end_to_end_platform.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:8000/api/v1/auth/login",
+        "file": "backend\\tests\\integration\\test_end_to_end_platform.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:8000",
+        "file": "backend\\tests\\integration\\test_end_to_end_platform.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:8000",
+        "file": "backend\\tests\\integration\\test_end_to_end_platform.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:8000/api/v1/health",
+        "file": "backend\\tests\\integration\\test_end_to_end_platform.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:8000/api/v1/health",
+        "file": "backend\\tests\\integration\\test_end_to_end_platform.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:8000/api/v1/auth/register",
+        "file": "backend\\tests\\integration\\test_end_to_end_platform.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:8000/api/v1/auth/login",
+        "file": "backend\\tests\\integration\\test_end_to_end_platform.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:8000/api/v1/student/profile",
+        "file": "backend\\tests\\integration\\test_end_to_end_platform.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:8000/api/v1/revolutionary/learning-style/detect",
+        "file": "backend\\tests\\integration\\test_end_to_end_platform.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:8000/api/v1/exam/start",
+        "file": "backend\\tests\\integration\\test_end_to_end_platform.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:8000/api/v1/exam/",
+        "file": "backend\\tests\\integration\\test_end_to_end_platform.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:8000/api/v1/exam/",
+        "file": "backend\\tests\\integration\\test_end_to_end_platform.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:8000/api/v1/exam/",
+        "file": "backend\\tests\\integration\\test_end_to_end_platform.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:8000/api/v1/exam/",
+        "file": "backend\\tests\\integration\\test_end_to_end_platform.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:8000/api/v1/exam/",
+        "file": "backend\\tests\\integration\\test_end_to_end_platform.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:8000/api/v1/adaptive/recommendations/",
+        "file": "backend\\tests\\integration\\test_end_to_end_platform.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:8000/api/v1/content/recommendations",
+        "file": "backend\\tests\\integration\\test_end_to_end_platform.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:8000/api/v1/adaptive/learning-path",
+        "file": "backend\\tests\\integration\\test_end_to_end_platform.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:8000/api/v1/auth/register",
+        "file": "backend\\tests\\integration\\test_end_to_end_platform.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:8000/api/v1/auth/login",
+        "file": "backend\\tests\\integration\\test_end_to_end_platform.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:8000/api/v1/auth/register",
+        "file": "backend\\tests\\integration\\test_end_to_end_platform.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:8000/api/v1/auth/login",
+        "file": "backend\\tests\\integration\\test_end_to_end_platform.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:8000/api/v1/auth/register",
+        "file": "backend\\tests\\integration\\test_end_to_end_platform.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:8000/api/v1/auth/login",
+        "file": "backend\\tests\\integration\\test_end_to_end_platform.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:8000/api/v1/parent/link-student",
+        "file": "backend\\tests\\integration\\test_end_to_end_platform.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:8000/api/v1/teacher/class/create",
+        "file": "backend\\tests\\integration\\test_end_to_end_platform.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:8000/api/v1/teacher/class/",
+        "file": "backend\\tests\\integration\\test_end_to_end_platform.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:8000/api/v1/teacher/assignment/create",
+        "file": "backend\\tests\\integration\\test_end_to_end_platform.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:8000/api/v1/student/assignments",
+        "file": "backend\\tests\\integration\\test_end_to_end_platform.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:8000/api/v1/student/assignment/",
+        "file": "backend\\tests\\integration\\test_end_to_end_platform.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:8000/api/v1/teacher/class/",
+        "file": "backend\\tests\\integration\\test_end_to_end_platform.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:8000/api/v1/parent/weekly-report",
+        "file": "backend\\tests\\integration\\test_end_to_end_platform.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:8000/api/v1/parent/message-teacher",
+        "file": "backend\\tests\\integration\\test_end_to_end_platform.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:8000/api/v1/teacher/messages",
+        "file": "backend\\tests\\integration\\test_end_to_end_platform.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:8000/api/v1/auth/login",
+        "file": "backend\\tests\\integration\\test_end_to_end_platform.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:8000/api/v1/pwa/offline-package",
+        "file": "backend\\tests\\integration\\test_end_to_end_platform.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:8000/api/v1/pwa/sync",
+        "file": "backend\\tests\\integration\\test_end_to_end_platform.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:8000/api/v1/exam/",
+        "file": "backend\\tests\\integration\\test_end_to_end_platform.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:8000/api/v1/pwa/sync-progress",
+        "file": "backend\\tests\\integration\\test_end_to_end_platform.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:8000/api/v1/pwa/sync-status",
+        "file": "backend\\tests\\integration\\test_end_to_end_platform.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:8000/api/v1/pwa/resolve-conflict",
+        "file": "backend\\tests\\integration\\test_end_to_end_platform.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:8000/api/v1/auth/login",
+        "file": "backend\\tests\\integration\\test_end_to_end_platform.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:8000/api/v1/pwa/cache-content",
+        "file": "backend\\tests\\integration\\test_end_to_end_platform.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:8000/api/v1/pwa/cache-status",
+        "file": "backend\\tests\\integration\\test_end_to_end_platform.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:8000/api/v1/pwa/cached-content",
+        "file": "backend\\tests\\integration\\test_end_to_end_platform.py",
+        "type": "external"
+      },
+      {
+        "url": "https://img.youtube.com/vi/video_001/maxresdefault.jpg",
+        "file": "backend\\tests\\integration\\test_enhanced_recommendation_engine.py",
+        "type": "external"
+      },
+      {
+        "url": "https://img.youtube.com/vi/video_002/maxresdefault.jpg",
+        "file": "backend\\tests\\integration\\test_enhanced_recommendation_engine.py",
+        "type": "external"
+      },
+      {
+        "url": "https://img.youtube.com/vi/video_003/maxresdefault.jpg",
+        "file": "backend\\tests\\integration\\test_enhanced_recommendation_engine.py",
+        "type": "external"
+      },
+      {
+        "url": "https://img.youtube.com/vi/video_004/maxresdefault.jpg",
+        "file": "backend\\tests\\integration\\test_enhanced_recommendation_engine.py",
+        "type": "external"
+      },
+      {
+        "url": "https://img.youtube.com/vi/video_005/maxresdefault.jpg",
+        "file": "backend\\tests\\integration\\test_enhanced_recommendation_engine.py",
+        "type": "external"
+      },
+      {
+        "url": "https://example.com/thumb1.jpg",
+        "file": "backend\\tests\\integration\\test_high_impact_modules.py",
+        "type": "external"
+      },
+      {
+        "url": "http://test.com",
+        "file": "backend\\tests\\integration\\test_learning_path_agent.py",
+        "type": "external"
+      },
+      {
+        "url": "http://test",
+        "file": "backend\\tests\\integration\\test_main_async.py",
+        "type": "external"
+      },
+      {
+        "url": "http://test",
+        "file": "backend\\tests\\integration\\test_main_async.py",
+        "type": "external"
+      },
+      {
+        "url": "http://test",
+        "file": "backend\\tests\\integration\\test_main_async.py",
+        "type": "external"
+      },
+      {
+        "url": "http://test",
+        "file": "backend\\tests\\integration\\test_main_async.py",
+        "type": "external"
+      },
+      {
+        "url": "http://test",
+        "file": "backend\\tests\\integration\\test_main_async.py",
+        "type": "external"
+      },
+      {
+        "url": "http://test",
+        "file": "backend\\tests\\integration\\test_main_async.py",
+        "type": "external"
+      },
+      {
+        "url": "http://test",
+        "file": "backend\\tests\\integration\\test_main_async.py",
+        "type": "external"
+      },
+      {
+        "url": "http://test",
+        "file": "backend\\tests\\integration\\test_main_async.py",
+        "type": "external"
+      },
+      {
+        "url": "http://test",
+        "file": "backend\\tests\\integration\\test_main_async.py",
+        "type": "external"
+      },
+      {
+        "url": "http://test",
+        "file": "backend\\tests\\integration\\test_main_async.py",
+        "type": "external"
+      },
+      {
+        "url": "http://test",
+        "file": "backend\\tests\\integration\\test_main_async.py",
+        "type": "external"
+      },
+      {
+        "url": "http://test",
+        "file": "backend\\tests\\integration\\test_main_async.py",
+        "type": "external"
+      },
+      {
+        "url": "http://test",
+        "file": "backend\\tests\\integration\\test_main_async.py",
+        "type": "external"
+      },
+      {
+        "url": "http://test",
+        "file": "backend\\tests\\integration\\test_main_async.py",
+        "type": "external"
+      },
+      {
+        "url": "http://test",
+        "file": "backend\\tests\\integration\\test_main_async.py",
+        "type": "external"
+      },
+      {
+        "url": "http://test",
+        "file": "backend\\tests\\integration\\test_main_async.py",
+        "type": "external"
+      },
+      {
+        "url": "https://youtube.com/watch?v=abc123",
+        "file": "backend\\tests\\integration\\test_models.py",
+        "type": "external"
+      },
+      {
+        "url": "https://youtube.com/watch?v=abc123",
+        "file": "backend\\tests\\integration\\test_models_content.py",
+        "type": "external"
+      },
+      {
+        "url": "https://www.youtube.com/watch?v=test",
+        "file": "backend\\tests\\integration\\test_models_content.py",
+        "type": "external"
+      },
+      {
+        "url": "https://invalid-site.com/video",
+        "file": "backend\\tests\\integration\\test_models_content.py",
+        "type": "external"
+      },
+      {
+        "url": "https://youtube.com/watch?v=long",
+        "file": "backend\\tests\\integration\\test_models_content.py",
+        "type": "external"
+      },
+      {
+        "url": "https://youtube.com/watch?v=medium",
+        "file": "backend\\tests\\integration\\test_models_content.py",
+        "type": "external"
+      },
+      {
+        "url": "https://youtube.com/watch?v=toolong",
+        "file": "backend\\tests\\integration\\test_models_content.py",
+        "type": "external"
+      },
+      {
+        "url": "https://youtube.com/watch?v=hd",
+        "file": "backend\\tests\\integration\\test_models_content.py",
+        "type": "external"
+      },
+      {
+        "url": "https://wiki-proxy.example.com",
+        "file": "backend\\tests\\integration\\test_wikipedia_auth.py",
+        "type": "external"
+      },
+      {
+        "url": "https://example.com/quantum'",
+        "file": "backend\\tests\\integration\\test_wikipedia_auth.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:8000/api/v1/health",
+        "file": "backend\\tests\\load\\test_100k_concurrent_users.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:8000/api/v1/auth/login",
+        "file": "backend\\tests\\load\\test_100k_concurrent_users.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:8000",
+        "file": "backend\\tests\\load\\test_100k_concurrent_users.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:8000/api/v1/health",
+        "file": "backend\\tests\\load\\test_100k_concurrent_users.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:8000/api/v1/health",
+        "file": "backend\\tests\\load\\test_100k_concurrent_users.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:8000/api/v1/health",
+        "file": "backend\\tests\\load\\test_100k_concurrent_users.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:8000",
+        "file": "backend\\tests\\performance\\locustfile.py",
+        "type": "external"
+      },
+      {
+        "url": "http://example.com",
+        "file": "backend\\tests\\slow\\test_agents_working.py",
+        "type": "external"
+      },
+      {
+        "url": "http://test",
+        "file": "backend\\tests\\slow\\test_api_integration_comprehensive.py",
+        "type": "external"
+      },
+      {
+        "url": "https://example.com'",
+        "file": "backend\\tests\\slow\\test_authentication_comprehensive.py",
+        "type": "external"
+      },
+      {
+        "url": "https://hooks.slack.com/test",
+        "file": "backend\\tests\\slow\\test_core_services_comprehensive.py",
+        "type": "external"
+      },
+      {
+        "url": "https://hooks.slack.com/test",
+        "file": "backend\\tests\\slow\\test_core_services_comprehensive.py",
+        "type": "external"
+      },
+      {
+        "url": "https://discord.com/api/webhooks/test",
+        "file": "backend\\tests\\slow\\test_core_services_comprehensive.py",
+        "type": "external"
+      },
+      {
+        "url": "https://discord.com/api/webhooks/test",
+        "file": "backend\\tests\\slow\\test_core_services_comprehensive.py",
+        "type": "external"
+      },
+      {
+        "url": "http://test-es:9200",
+        "file": "backend\\tests\\slow\\test_core_services_comprehensive.py",
+        "type": "external"
+      },
+      {
+        "url": "http://test-es:9200",
+        "file": "backend\\tests\\slow\\test_core_services_comprehensive.py",
+        "type": "external"
+      },
+      {
+        "url": "http://test.com",
+        "file": "backend\\tests\\slow\\test_error_handling_comprehensive.py",
+        "type": "external"
+      },
+      {
+        "url": "http://test.com",
+        "file": "backend\\tests\\slow\\test_error_handling_comprehensive.py",
+        "type": "external"
+      },
+      {
+        "url": "http://invalid-domain-xyz.com",
+        "file": "backend\\tests\\slow\\test_error_handling_comprehensive.py",
+        "type": "external"
+      },
+      {
+        "url": "https://test.com",
+        "file": "backend\\tests\\slow\\test_error_handling_comprehensive.py",
+        "type": "external"
+      },
+      {
+        "url": "http://api.test.com",
+        "file": "backend\\tests\\slow\\test_error_handling_comprehensive.py",
+        "type": "external"
+      },
+      {
+        "url": "http://test.jpg'",
+        "file": "backend\\tests\\slow\\test_integrations.py",
+        "type": "external"
+      },
+      {
+        "url": "http://test.wiki",
+        "file": "backend\\tests\\slow\\test_integrations.py",
+        "type": "external"
+      },
+      {
+        "url": "http://thumbnail_",
+        "file": "backend\\tests\\slow\\test_phase4_external_api_integration.py",
+        "type": "external"
+      },
+      {
+        "url": "https://i.ytimg.com/vi/dQw4w9WgXcQ/default.jpg'",
+        "file": "backend\\tests\\slow\\test_youtube_wikipedia.py",
+        "type": "external"
+      },
+      {
+        "url": "https://i.ytimg.com/vi/abc123xyz/default.jpg'",
+        "file": "backend\\tests\\slow\\test_youtube_wikipedia.py",
+        "type": "external"
+      },
+      {
+        "url": "https://example.com/thumb.jpg'",
+        "file": "backend\\tests\\slow\\test_youtube_wikipedia.py",
+        "type": "external"
+      },
+      {
+        "url": "https://example.com/calc.jpg'",
+        "file": "backend\\tests\\slow\\test_youtube_wikipedia.py",
+        "type": "external"
+      },
+      {
+        "url": "https://en.wikipedia.org/wiki/Mathematics'",
+        "file": "backend\\tests\\slow\\test_youtube_wikipedia.py",
+        "type": "external"
+      },
+      {
+        "url": "https://en.wikipedia.org/wiki/Mathematical_notation'",
+        "file": "backend\\tests\\slow\\test_youtube_wikipedia.py",
+        "type": "external"
+      },
+      {
+        "url": "https://en.wikipedia.org/wiki/Algebra'",
+        "file": "backend\\tests\\slow\\test_youtube_wikipedia.py",
+        "type": "external"
+      },
+      {
+        "url": "https://tr.wikipedia.org/wiki/Matematik'",
+        "file": "backend\\tests\\slow\\test_youtube_wikipedia.py",
+        "type": "external"
+      },
+      {
+        "url": "https://en.wikipedia.org/wiki/Physics'",
+        "file": "backend\\tests\\slow\\test_youtube_wikipedia.py",
+        "type": "external"
+      },
+      {
+        "url": "http://example.com/q.jpg'",
+        "file": "backend\\tests\\slow\\test_youtube_wikipedia.py",
+        "type": "external"
+      },
+      {
+        "url": "https://en.wikipedia.org/wiki/Quantum_physics'",
+        "file": "backend\\tests\\slow\\test_youtube_wikipedia.py",
+        "type": "external"
+      },
+      {
+        "url": "http://example.com/bio.jpg'",
+        "file": "backend\\tests\\slow\\test_youtube_wikipedia.py",
+        "type": "external"
+      },
+      {
+        "url": "https://en.wikipedia.org/wiki/Biology'",
+        "file": "backend\\tests\\slow\\test_youtube_wikipedia.py",
+        "type": "external"
+      },
+      {
+        "url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+        "file": "backend\\tests\\unit\\test_api_batch1.py",
+        "type": "external"
+      },
+      {
+        "url": "https://www.youtube.com/watch?v=test123",
+        "file": "backend\\tests\\unit\\test_api_batch1.py",
+        "type": "external"
+      },
+      {
+        "url": "https://example.com/api",
+        "file": "backend\\tests\\unit\\test_api_batch2.py",
+        "type": "external"
+      },
+      {
+        "url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+        "file": "backend\\tests\\unit\\test_content_models.py",
+        "type": "external"
+      },
+      {
+        "url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+        "file": "backend\\tests\\unit\\test_content_models.py",
+        "type": "external"
+      },
+      {
+        "url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+        "file": "backend\\tests\\unit\\test_content_models.py",
+        "type": "external"
+      },
+      {
+        "url": "https://youtube.com/watch?v=dQw4w9WgXcQ",
+        "file": "backend\\tests\\unit\\test_content_models.py",
+        "type": "external"
+      },
+      {
+        "url": "https://youtu.be/dQw4w9WgXcQ",
+        "file": "backend\\tests\\unit\\test_content_models.py",
+        "type": "external"
+      },
+      {
+        "url": "https://www.youtube.com/watch?v=abc123DEF_-",
+        "file": "backend\\tests\\unit\\test_content_models.py",
+        "type": "external"
+      },
+      {
+        "url": "https://www.youtube.com/embed/dQw4w9WgXcQ",
+        "file": "backend\\tests\\unit\\test_content_models.py",
+        "type": "external"
+      },
+      {
+        "url": "https://www.youtube.com/v/dQw4w9WgXcQ",
+        "file": "backend\\tests\\unit\\test_content_models.py",
+        "type": "external"
+      },
+      {
+        "url": "https://vimeo.com/123456789",
+        "file": "backend\\tests\\unit\\test_content_models.py",
+        "type": "external"
+      },
+      {
+        "url": "https://www.vimeo.com/123456789",
+        "file": "backend\\tests\\unit\\test_content_models.py",
+        "type": "external"
+      },
+      {
+        "url": "https://vimeo.com/channels/staffpicks/123456789",
+        "file": "backend\\tests\\unit\\test_content_models.py",
+        "type": "external"
+      },
+      {
+        "url": "https://dailymotion.com/video/x123abc",
+        "file": "backend\\tests\\unit\\test_content_models.py",
+        "type": "external"
+      },
+      {
+        "url": "https://www.dailymotion.com/video/x123abc",
+        "file": "backend\\tests\\unit\\test_content_models.py",
+        "type": "external"
+      },
+      {
+        "url": "https://example.com/video",
+        "file": "backend\\tests\\unit\\test_content_models.py",
+        "type": "external"
+      },
+      {
+        "url": "https://facebook.com/video",
+        "file": "backend\\tests\\unit\\test_content_models.py",
+        "type": "external"
+      },
+      {
+        "url": "https://tiktok.com/video",
+        "file": "backend\\tests\\unit\\test_content_models.py",
+        "type": "external"
+      },
+      {
+        "url": "https://instagram.com/video",
+        "file": "backend\\tests\\unit\\test_content_models.py",
+        "type": "external"
+      },
+      {
+        "url": "https://twitter.com/video",
+        "file": "backend\\tests\\unit\\test_content_models.py",
+        "type": "external"
+      },
+      {
+        "url": "https://twitch.tv/video",
+        "file": "backend\\tests\\unit\\test_content_models.py",
+        "type": "external"
+      },
+      {
+        "url": "www.youtube.com/watch",
+        "file": "backend\\tests\\unit\\test_content_models.py",
+        "type": "external"
+      },
+      {
+        "url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+        "file": "backend\\tests\\unit\\test_content_models.py",
+        "type": "external"
+      },
+      {
+        "url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+        "file": "backend\\tests\\unit\\test_content_models.py",
+        "type": "external"
+      },
+      {
+        "url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+        "file": "backend\\tests\\unit\\test_content_models.py",
+        "type": "external"
+      },
+      {
+        "url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+        "file": "backend\\tests\\unit\\test_content_models.py",
+        "type": "external"
+      },
+      {
+        "url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+        "file": "backend\\tests\\unit\\test_content_models.py",
+        "type": "external"
+      },
+      {
+        "url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+        "file": "backend\\tests\\unit\\test_content_models.py",
+        "type": "external"
+      },
+      {
+        "url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+        "file": "backend\\tests\\unit\\test_content_models.py",
+        "type": "external"
+      },
+      {
+        "url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+        "file": "backend\\tests\\unit\\test_content_models.py",
+        "type": "external"
+      },
+      {
+        "url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+        "file": "backend\\tests\\unit\\test_content_models.py",
+        "type": "external"
+      },
+      {
+        "url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+        "file": "backend\\tests\\unit\\test_content_models.py",
+        "type": "external"
+      },
+      {
+        "url": "https://youtube.com/watch?v=abc123DEF_-",
+        "file": "backend\\tests\\unit\\test_content_models.py",
+        "type": "external"
+      },
+      {
+        "url": "https://youtu.be/dQw4w9WgXcQ",
+        "file": "backend\\tests\\unit\\test_content_models.py",
+        "type": "external"
+      },
+      {
+        "url": "https://youtu.be/abc123DEF_-",
+        "file": "backend\\tests\\unit\\test_content_models.py",
+        "type": "external"
+      },
+      {
+        "url": "https://www.youtube.com/embed/dQw4w9WgXcQ",
+        "file": "backend\\tests\\unit\\test_content_models.py",
+        "type": "external"
+      },
+      {
+        "url": "https://vimeo.com/123456789",
+        "file": "backend\\tests\\unit\\test_content_models.py",
+        "type": "external"
+      },
+      {
+        "url": "https://dailymotion.com/video/x123",
+        "file": "backend\\tests\\unit\\test_content_models.py",
+        "type": "external"
+      },
+      {
+        "url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+        "file": "backend\\tests\\unit\\test_content_models.py",
+        "type": "external"
+      },
+      {
+        "url": "https://example.com/thumb.jpg",
+        "file": "backend\\tests\\unit\\test_content_models.py",
+        "type": "external"
+      },
+      {
+        "url": "https://example.com'",
+        "file": "backend\\tests\\unit\\test_core_batch1.py",
+        "type": "external"
+      },
+      {
+        "url": "https://example.com",
+        "file": "backend\\tests\\unit\\test_core_batch1.py",
+        "type": "external"
+      },
+      {
+        "url": "https://example.com",
+        "file": "backend\\tests\\unit\\test_core_batch1.py",
+        "type": "external"
+      },
+      {
+        "url": "https://example.com",
+        "file": "backend\\tests\\unit\\test_core_batch1.py",
+        "type": "external"
+      },
+      {
+        "url": "http://example.com",
+        "file": "backend\\tests\\unit\\test_core_batch1.py",
+        "type": "external"
+      },
+      {
+        "url": "https://example.com/path?query=1",
+        "file": "backend\\tests\\unit\\test_core_batch1.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:9200",
+        "file": "backend\\tests\\unit\\test_core_batch2.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:3000",
+        "file": "backend\\tests\\unit\\test_core_batch2.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:6379",
+        "file": "backend\\tests\\unit\\test_core_batch2.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:3000",
+        "file": "backend\\tests\\unit\\test_core_batch2.py",
+        "type": "external"
+      },
+      {
+        "url": "https://example.com",
+        "file": "backend\\tests\\unit\\test_core_batch2.py",
+        "type": "external"
+      },
+      {
+        "url": "https://example.com",
+        "file": "backend\\tests\\unit\\test_core_utils.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:3000",
+        "file": "backend\\tests\\unit\\test_core_utils.py",
+        "type": "external"
+      },
+      {
+        "url": "http://example.onion",
+        "file": "backend\\tests\\unit\\test_core_utils.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:3000",
+        "file": "backend\\tests\\unit\\test_core_utils.py",
+        "type": "external"
+      },
+      {
+        "url": "http://127.0.0.1:8000",
+        "file": "backend\\tests\\unit\\test_core_utils.py",
+        "type": "external"
+      },
+      {
+        "url": "https://example.com",
+        "file": "backend\\tests\\unit\\test_core_utils.py",
+        "type": "external"
+      },
+      {
+        "url": "https://test.com",
+        "file": "backend\\tests\\unit\\test_core_utils.py",
+        "type": "external"
+      },
+      {
+        "url": "https://example.com",
+        "file": "backend\\tests\\unit\\test_core_utils.py",
+        "type": "external"
+      },
+      {
+        "url": "https://example.com",
+        "file": "backend\\tests\\unit\\test_core_utils.py",
+        "type": "external"
+      },
+      {
+        "url": "https://test.com",
+        "file": "backend\\tests\\unit\\test_core_utils.py",
+        "type": "external"
+      },
+      {
+        "url": "https://anything.com",
+        "file": "backend\\tests\\unit\\test_core_utils.py",
+        "type": "external"
+      },
+      {
+        "url": "https://example.com",
+        "file": "backend\\tests\\unit\\test_core_utils.py",
+        "type": "external"
+      },
+      {
+        "url": "https://example.com",
+        "file": "backend\\tests\\unit\\test_core_utils.py",
+        "type": "external"
+      },
+      {
+        "url": "https://example.com",
+        "file": "backend\\tests\\unit\\test_core_utils.py",
+        "type": "external"
+      },
+      {
+        "url": "https://other.com",
+        "file": "backend\\tests\\unit\\test_core_utils.py",
+        "type": "external"
+      },
+      {
+        "url": "https://example.com",
+        "file": "backend\\tests\\unit\\test_core_utils.py",
+        "type": "external"
+      },
+      {
+        "url": "https://example.com",
+        "file": "backend\\tests\\unit\\test_core_utils.py",
+        "type": "external"
+      },
+      {
+        "url": "https://example.com",
+        "file": "backend\\tests\\unit\\test_core_utils.py",
+        "type": "external"
+      },
+      {
+        "url": "https://example.com",
+        "file": "backend\\tests\\unit\\test_core_utils.py",
+        "type": "external"
+      },
+      {
+        "url": "https://example.com",
+        "file": "backend\\tests\\unit\\test_core_utils.py",
+        "type": "external"
+      },
+      {
+        "url": "https://example.com",
+        "file": "backend\\tests\\unit\\test_core_utils.py",
+        "type": "external"
+      },
+      {
+        "url": "https://evil.com",
+        "file": "backend\\tests\\unit\\test_core_utils.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:3000,https://kiro2.app",
+        "file": "backend\\tests\\unit\\test_main_application.py",
+        "type": "external"
+      },
+      {
+        "url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+        "file": "backend\\tests\\unit\\test_response_models.py",
+        "type": "external"
+      },
+      {
+        "url": "https://youtu.be/dQw4w9WgXcQ",
+        "file": "backend\\tests\\unit\\test_response_models.py",
+        "type": "external"
+      },
+      {
+        "url": "https://vimeo.com/123456789",
+        "file": "backend\\tests\\unit\\test_response_models.py",
+        "type": "external"
+      },
+      {
+        "url": "https://www.dailymotion.com/video/x123456",
+        "file": "backend\\tests\\unit\\test_response_models.py",
+        "type": "external"
+      },
+      {
+        "url": "https://invalid-site.com/video",
+        "file": "backend\\tests\\unit\\test_response_models.py",
+        "type": "external"
+      },
+      {
+        "url": "http://example.com/video.mp4",
+        "file": "backend\\tests\\unit\\test_response_models.py",
+        "type": "external"
+      },
+      {
+        "url": "https://youtube.com/watch?v=test",
+        "file": "backend\\tests\\unit\\test_response_models.py",
+        "type": "external"
+      },
+      {
+        "url": "https://youtube.com/watch?v=test",
+        "file": "backend\\tests\\unit\\test_response_models.py",
+        "type": "external"
+      },
+      {
+        "url": "https://example.com/avatar1.jpg",
+        "file": "backend\\tests\\unit\\test_user_service.py",
+        "type": "external"
+      },
+      {
+        "url": "https://example.com/avatar2.png",
+        "file": "backend\\tests\\unit\\test_user_service.py",
+        "type": "external"
+      },
+      {
+        "url": "https://cdn.example.com/photo.jpg",
+        "file": "backend\\tests\\unit\\test_user_service.py",
+        "type": "external"
+      },
+      {
+        "url": "https://api.example.com/users",
+        "file": "backend\\tools\\response_format_checker.py",
+        "type": "external"
+      },
+      {
+        "url": "https://api.example.com/users",
+        "file": "backend\\tools\\response_format_checker.py",
+        "type": "external"
+      },
+      {
+        "url": "https://api.example.com/posts",
+        "file": "backend\\tools\\response_format_checker.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:6789",
+        "file": "backend\\utils\\zemberek_integration.py",
+        "type": "external"
+      },
+      {
+        "url": "https://github.com/ahmetaa/zemberek-nlp/releases",
+        "file": "backend\\utils\\zemberek_integration.py",
+        "type": "external"
+      },
+      {
+        "url": "https://fcm.googleapis.com",
+        "file": "integrations\\communication_services_integration.py",
+        "type": "external"
+      },
+      {
+        "url": "https://kiro2.com/icon.png",
+        "file": "integrations\\communication_services_integration.py",
+        "type": "external"
+      },
+      {
+        "url": "https://kiro2.com/app",
+        "file": "integrations\\communication_services_integration.py",
+        "type": "external"
+      },
+      {
+        "url": "https://graph.facebook.com/v18.0",
+        "file": "integrations\\communication_services_integration.py",
+        "type": "external"
+      },
+      {
+        "url": "https://api.telegram.org/bot",
+        "file": "integrations\\communication_services_integration.py",
+        "type": "external"
+      },
+      {
+        "url": "https://api.zoom.us/v2",
+        "file": "integrations\\communication_services_integration.py",
+        "type": "external"
+      },
+      {
+        "url": "https://api.sms-provider.com",
+        "file": "integrations\\communication_services_integration.py",
+        "type": "external"
+      },
+      {
+        "url": "https://api.sendgrid.com",
+        "file": "integrations\\communication_services_integration.py",
+        "type": "external"
+      },
+      {
+        "url": "https://fcm.googleapis.com",
+        "file": "integrations\\communication_services_integration.py",
+        "type": "external"
+      },
+      {
+        "url": "https://graph.facebook.com",
+        "file": "integrations\\communication_services_integration.py",
+        "type": "external"
+      },
+      {
+        "url": "https://kiro2.com/login",
+        "file": "integrations\\communication_services_integration.py",
+        "type": "external"
+      },
+      {
+        "url": "https://kiro2.com/app",
+        "file": "integrations\\communication_services_integration.py",
+        "type": "external"
+      },
+      {
+        "url": "https://api.netgsm.com.tr",
+        "file": "integrations\\communication_services_integration.py",
+        "type": "external"
+      },
+      {
+        "url": "https://api.sendgrid.com",
+        "file": "integrations\\communication_services_integration.py",
+        "type": "external"
+      },
+      {
+        "url": "https://e-okul.meb.gov.tr/api/v2",
+        "file": "integrations\\meb_api_integration.py",
+        "type": "external"
+      },
+      {
+        "url": "https://mebbis.meb.gov.tr/api/v1",
+        "file": "integrations\\meb_api_integration.py",
+        "type": "external"
+      },
+      {
+        "url": "https://fatih.meb.gov.tr/api/v1",
+        "file": "integrations\\meb_api_integration.py",
+        "type": "external"
+      },
+      {
+        "url": "https://akademi.meb.gov.tr/api/v1",
+        "file": "integrations\\meb_api_integration.py",
+        "type": "external"
+      },
+      {
+        "url": "https://eba.gov.tr/api/v2",
+        "file": "integrations\\meb_api_integration.py",
+        "type": "external"
+      },
+      {
+        "url": "https://osym-bridge.meb.gov.tr/api/v1",
+        "file": "integrations\\meb_api_integration.py",
+        "type": "external"
+      },
+      {
+        "url": "https://ogrenci.meb.gov.tr/api/v1",
+        "file": "integrations\\meb_api_integration.py",
+        "type": "external"
+      },
+      {
+        "url": "https://ogretmen.meb.gov.tr/api/v1",
+        "file": "integrations\\meb_api_integration.py",
+        "type": "external"
+      },
+      {
+        "url": "https://veli.meb.gov.tr/api/v1",
+        "file": "integrations\\meb_api_integration.py",
+        "type": "external"
+      },
+      {
+        "url": "https://api.payment-provider.com",
+        "file": "integrations\\payment_gateway_integration.py",
+        "type": "external"
+      },
+      {
+        "url": "https://sandbox-api.iyzipay.com",
+        "file": "integrations\\payment_gateway_integration.py",
+        "type": "external"
+      },
+      {
+        "url": "https://www.paytr.com",
+        "file": "integrations\\payment_gateway_integration.py",
+        "type": "external"
+      },
+      {
+        "url": "https://kiro2.com/payment/success",
+        "file": "integrations\\payment_gateway_integration.py",
+        "type": "external"
+      },
+      {
+        "url": "https://kiro2.com/payment/failure",
+        "file": "integrations\\payment_gateway_integration.py",
+        "type": "external"
+      },
+      {
+        "url": "https://kiro2.com/payment/callback",
+        "file": "integrations\\payment_gateway_integration.py",
+        "type": "external"
+      },
+      {
+        "url": "https://sandbox-api.iyzipay.com",
+        "file": "integrations\\payment_gateway_integration.py",
+        "type": "external"
+      },
+      {
+        "url": "https://api.meb.gov.tr",
+        "file": "integrations\\unified_integration_framework.py",
+        "type": "external"
+      },
+      {
+        "url": "https://yoksis.yok.gov.tr/api/v1",
+        "file": "integrations\\university_systems_integration.py",
+        "type": "external"
+      },
+      {
+        "url": "https://ubys.uni.edu.tr/api/v1",
+        "file": "integrations\\university_systems_integration.py",
+        "type": "external"
+      },
+      {
+        "url": "https://obs.uni.edu.tr/api/v1",
+        "file": "integrations\\university_systems_integration.py",
+        "type": "external"
+      },
+      {
+        "url": "https://abys.uni.edu.tr/api/v1",
+        "file": "integrations\\university_systems_integration.py",
+        "type": "external"
+      },
+      {
+        "url": "https://bologna.yok.gov.tr/api/v1",
+        "file": "integrations\\university_systems_integration.py",
+        "type": "external"
+      },
+      {
+        "url": "https://erasmus.ua.gov.tr/api/v1",
+        "file": "integrations\\university_systems_integration.py",
+        "type": "external"
+      },
+      {
+        "url": "https://diploma.yok.gov.tr/api/v1",
+        "file": "integrations\\university_systems_integration.py",
+        "type": "external"
+      },
+      {
+        "url": "https://library-api.uni.edu.tr/v1",
+        "file": "integrations\\university_systems_integration.py",
+        "type": "external"
+      },
+      {
+        "url": "https://tercih.osym.gov.tr/api/v1",
+        "file": "integrations\\university_systems_integration.py",
+        "type": "external"
+      },
+      {
+        "url": "https://portal.uni.edu.tr/api/v1",
+        "file": "integrations\\university_systems_integration.py",
+        "type": "external"
+      },
+      {
+        "url": "https://cdn-",
+        "file": "performance\\advanced_caching_cdn_management.py",
+        "type": "external"
+      },
+      {
+        "url": "https://cdn-",
+        "file": "performance\\advanced_caching_cdn_management.py",
+        "type": "external"
+      },
+      {
+        "url": "https://cdn-global.kiro2.com/content/",
+        "file": "performance\\advanced_caching_cdn_management.py",
+        "type": "external"
+      },
+      {
+        "url": "https://api.kiro2.com",
+        "file": "performance\\advanced_caching_cdn_management.py",
+        "type": "external"
+      },
+      {
+        "url": "https://cdn.kiro2.com",
+        "file": "performance\\advanced_caching_cdn_management.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:9200",
+        "file": "scripts\\check_mcp_health.py",
+        "type": "external"
+      },
+      {
+        "url": "https://.*@sentry",
+        "file": "scripts\\env-validator.py",
+        "type": "external"
+      },
+      {
+        "url": "https://api.github.com",
+        "file": "scripts\\setup-branch-protection.py",
+        "type": "external"
+      },
+      {
+        "url": "https://sonarcloud.io/project/overview?id=your-project-key",
+        "file": "scripts\\setup-quality-tools.py",
+        "type": "external"
+      },
+      {
+        "url": "https://codecov.io/gh/your-username/teknofest-2025-egitim-eylemci",
+        "file": "scripts\\setup-quality-tools.py",
+        "type": "external"
+      },
+      {
+        "url": "https://coveralls.io/github/your-username/teknofest-2025-egitim-eylemci",
+        "file": "scripts\\setup-quality-tools.py",
+        "type": "external"
+      },
+      {
+        "url": "https://github.com/your-username/teknofest-2025-egitim-eylemci/actions",
+        "file": "scripts\\setup-quality-tools.py",
+        "type": "external"
+      },
+      {
+        "url": "http://')",
+        "file": "scripts\\validate_documentation_links.py",
+        "type": "external"
+      },
+      {
+        "url": "https://')",
+        "file": "scripts\\validate_documentation_links.py",
+        "type": "external"
+      },
+      {
+        "url": "https://www.googleapis.com/youtube/v3/search",
+        "file": "scripts\\validate_external_services.py",
+        "type": "external"
+      },
+      {
+        "url": "https://www.khanacademy.org/api/v1/topictree",
+        "file": "scripts\\validate_external_services.py",
+        "type": "external"
+      },
+      {
+        "url": "https://www.eba.gov.tr",
+        "file": "scripts\\validate_external_services.py",
+        "type": "external"
+      },
+      {
+        "url": "https://api.openai.com/v1/models",
+        "file": "scripts\\validate_external_services.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:8080')",
+        "file": "scripts\\validate_external_services.py",
+        "type": "external"
+      },
+      {
+        "url": "https://tr.wikipedia.org/w/api.php",
+        "file": "scripts\\validate_external_services.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:8080",
+        "file": "scripts\\validate_external_services.py",
+        "type": "external"
+      },
+      {
+        "url": "http://')",
+        "file": "scripts\\validate_static_assets.py",
+        "type": "external"
+      },
+      {
+        "url": "https://')",
+        "file": "scripts\\validate_static_assets.py",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:8001'",
+        "file": "frontend\\vite.config.ts",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:8000'",
+        "file": "frontend\\vitest.config.ts",
+        "type": "external"
+      },
+      {
+        "url": "https://fonts.googleapis.com'",
+        "file": "frontend\\src\\sw.ts",
+        "type": "external"
+      },
+      {
+        "url": "https://fonts.gstatic.com'",
+        "file": "frontend\\src\\sw.ts",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:8001'",
+        "file": "frontend\\src\\services\\apiClient.ts",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:8000'",
+        "file": "frontend\\src\\services\\learningStyleService.ts",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:8001/api'",
+        "file": "frontend\\src\\services\\modernApiClient.ts",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:8001/api'",
+        "file": "frontend\\src\\services\\__tests__\\modernApiClient.test.ts",
+        "type": "external"
+      },
+      {
+        "url": "https://api.example.com')",
+        "file": "frontend\\src\\services\\__tests__\\modernApiClient.test.ts",
+        "type": "external"
+      },
+      {
+        "url": "https://api.example.com')",
+        "file": "frontend\\src\\services\\__tests__\\modernApiClient.test.ts",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:8000'",
+        "file": "frontend\\src\\test\\setup.ts",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:8001'",
+        "file": "frontend\\src\\main.tsx",
+        "type": "external"
+      },
+      {
+        "url": "https://www.youtube.com/embed/JNs3RfpNvU4'",
+        "file": "frontend\\src\\main.tsx",
+        "type": "external"
+      },
+      {
+        "url": "https://www.youtube.com/embed/3gG0DbrJOJ8'",
+        "file": "frontend\\src\\main.tsx",
+        "type": "external"
+      },
+      {
+        "url": "https://www.youtube.com/embed/L_LUpnjgPso'",
+        "file": "frontend\\src\\main.tsx",
+        "type": "external"
+      },
+      {
+        "url": "https://www.youtube-nocookie.com/embed/$",
+        "file": "frontend\\src\\main.tsx",
+        "type": "external"
+      },
+      {
+        "url": "https://www.youtube.com/watch?v=$",
+        "file": "frontend\\src\\main.tsx",
+        "type": "external"
+      },
+      {
+        "url": "https://www.youtube.com/watch?v=$",
+        "file": "frontend\\src\\main.tsx",
+        "type": "external"
+      },
+      {
+        "url": "https://www.youtube-nocookie.com/embed/$",
+        "file": "frontend\\src\\main.tsx",
+        "type": "external"
+      },
+      {
+        "url": "https://www.youtube.com/watch?v=$",
+        "file": "frontend\\src\\main.tsx",
+        "type": "external"
+      },
+      {
+        "url": "https://www.youtube.com/watch?v=$",
+        "file": "frontend\\src\\main.tsx",
+        "type": "external"
+      },
+      {
+        "url": "https://www.youtube.com/embed/dQw4w9WgXcQ",
+        "file": "frontend\\src\\main.tsx",
+        "type": "external"
+      },
+      {
+        "url": "https://www.youtube.com/embed/YX5I4RwdIME",
+        "file": "frontend\\src\\main.tsx",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:3007$",
+        "file": "frontend\\src\\main.tsx",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:3007$",
+        "file": "frontend\\src\\main.tsx",
+        "type": "external"
+      },
+      {
+        "url": "https://youtube.com/watch?v=example'",
+        "file": "frontend\\src\\components\\Admin\\ContentManagement.tsx",
+        "type": "external"
+      },
+      {
+        "url": "http://www.w3.org/1998/Math/MathML",
+        "file": "frontend\\src\\components\\Common\\AccessibleMathFormula.tsx",
+        "type": "external"
+      },
+      {
+        "url": "https://www.eba.gov.tr/video/matematik-8-sinif-carpanlar-katlar",
+        "file": "frontend\\src\\components\\EbaTV\\EbaTVContentSearch.tsx",
+        "type": "external"
+      },
+      {
+        "url": "https://via.placeholder.com/320x180?text=Matematik+Video",
+        "file": "frontend\\src\\components\\EbaTV\\EbaTVContentSearch.tsx",
+        "type": "external"
+      },
+      {
+        "url": "https://www.eba.gov.tr/video/turkce-8-sinif-okuma-becerileri",
+        "file": "frontend\\src\\components\\EbaTV\\EbaTVContentSearch.tsx",
+        "type": "external"
+      },
+      {
+        "url": "https://via.placeholder.com/320x180?text=Türkçe+Video",
+        "file": "frontend\\src\\components\\EbaTV\\EbaTVContentSearch.tsx",
+        "type": "external"
+      },
+      {
+        "url": "https://www.eba.gov.tr/video/fizik-12-sinif-elektrik-manyetizma",
+        "file": "frontend\\src\\components\\EbaTV\\EbaTVContentSearch.tsx",
+        "type": "external"
+      },
+      {
+        "url": "https://via.placeholder.com/320x180?text=Fizik+Video",
+        "file": "frontend\\src\\components\\EbaTV\\EbaTVContentSearch.tsx",
+        "type": "external"
+      },
+      {
+        "url": "https://via.placeholder.com/320x180?text=EBA+TV'",
+        "file": "frontend\\src\\components\\EbaTV\\EbaTVContentSearch.tsx",
+        "type": "external"
+      },
+      {
+        "url": "https://www.eba.gov.tr/video/matematik-8-sinif-carpanlar-katlar",
+        "file": "frontend\\src\\components\\EbaTV\\EbaTVDashboard.tsx",
+        "type": "external"
+      },
+      {
+        "url": "https://via.placeholder.com/320x180?text=Matematik+Video",
+        "file": "frontend\\src\\components\\EbaTV\\EbaTVDashboard.tsx",
+        "type": "external"
+      },
+      {
+        "url": "https://www.eba.gov.tr/video/turkce-8-sinif-okuma-becerileri",
+        "file": "frontend\\src\\components\\EbaTV\\EbaTVDashboard.tsx",
+        "type": "external"
+      },
+      {
+        "url": "https://via.placeholder.com/320x180?text=Türkçe+Video",
+        "file": "frontend\\src\\components\\EbaTV\\EbaTVDashboard.tsx",
+        "type": "external"
+      },
+      {
+        "url": "https://via.placeholder.com/80x60?text=EBA'",
+        "file": "frontend\\src\\components\\EbaTV\\EbaTVDashboard.tsx",
+        "type": "external"
+      },
+      {
+        "url": "https://via.placeholder.com/80x60?text=EBA'",
+        "file": "frontend\\src\\components\\EbaTV\\EbaTVDashboard.tsx",
+        "type": "external"
+      },
+      {
+        "url": "https://www.eba.gov.tr/video/matematik-8-sinif-carpanlar-katlar",
+        "file": "frontend\\src\\components\\EbaTV\\EbaTVRecommendations.tsx",
+        "type": "external"
+      },
+      {
+        "url": "https://via.placeholder.com/320x180?text=Matematik+Video",
+        "file": "frontend\\src\\components\\EbaTV\\EbaTVRecommendations.tsx",
+        "type": "external"
+      },
+      {
+        "url": "https://www.eba.gov.tr/video/turkce-8-sinif-okuma-becerileri",
+        "file": "frontend\\src\\components\\EbaTV\\EbaTVRecommendations.tsx",
+        "type": "external"
+      },
+      {
+        "url": "https://via.placeholder.com/320x180?text=Türkçe+Video",
+        "file": "frontend\\src\\components\\EbaTV\\EbaTVRecommendations.tsx",
+        "type": "external"
+      },
+      {
+        "url": "https://www.eba.gov.tr/video/fen-8-sinif-madde-degisim",
+        "file": "frontend\\src\\components\\EbaTV\\EbaTVRecommendations.tsx",
+        "type": "external"
+      },
+      {
+        "url": "https://via.placeholder.com/320x180?text=Fen+Video",
+        "file": "frontend\\src\\components\\EbaTV\\EbaTVRecommendations.tsx",
+        "type": "external"
+      },
+      {
+        "url": "https://via.placeholder.com/320x180?text=EBA+TV'",
+        "file": "frontend\\src\\components\\EbaTV\\EbaTVRecommendations.tsx",
+        "type": "external"
+      },
+      {
+        "url": "https://www.w3schools.com/html/mov_bbb.mp4",
+        "file": "frontend\\src\\pages\\AccessibilityDemoPage.tsx",
+        "type": "external"
+      },
+      {
+        "url": "https://via.placeholder.com/800x450?text=Matematik+Dersi",
+        "file": "frontend\\src\\pages\\AccessibilityDemoPage.tsx",
+        "type": "external"
+      },
+      {
+        "url": "https://example.com/video.mp4'",
+        "file": "frontend\\src\\test\\EbaTVIntegration.test.tsx",
+        "type": "external"
+      },
+      {
+        "url": "https://example.com/video.mp4'",
+        "file": "frontend\\src\\test\\EbaTVIntegration.test.tsx",
+        "type": "external"
+      },
+      {
+        "url": "https://example.com/thumb1.jpg'",
+        "file": "frontend\\src\\test\\components\\LearningPath\\VideoResourceGrid.test.tsx",
+        "type": "external"
+      },
+      {
+        "url": "https://youtube.com/watch?v=test1'",
+        "file": "frontend\\src\\test\\components\\LearningPath\\VideoResourceGrid.test.tsx",
+        "type": "external"
+      },
+      {
+        "url": "https://example.com/thumb2.jpg'",
+        "file": "frontend\\src\\test\\components\\LearningPath\\VideoResourceGrid.test.tsx",
+        "type": "external"
+      },
+      {
+        "url": "https://youtube.com/watch?v=test2'",
+        "file": "frontend\\src\\test\\components\\LearningPath\\VideoResourceGrid.test.tsx",
+        "type": "external"
+      },
+      {
+        "url": "https://example.com/thumb3.jpg'",
+        "file": "frontend\\src\\test\\components\\LearningPath\\VideoResourceGrid.test.tsx",
+        "type": "external"
+      },
+      {
+        "url": "https://youtube.com/watch?v=test3'",
+        "file": "frontend\\src\\test\\components\\LearningPath\\VideoResourceGrid.test.tsx",
+        "type": "external"
+      },
+      {
+        "url": "https://example.com/thumb.jpg'",
+        "file": "frontend\\src\\test\\components\\LearningPath\\VideoResourceGrid.test.tsx",
+        "type": "external"
+      },
+      {
+        "url": "https://youtube.com/watch?v=legacy'",
+        "file": "frontend\\src\\test\\components\\LearningPath\\VideoResourceGrid.test.tsx",
+        "type": "external"
+      },
+      {
+        "url": "http://www.apache.org/licenses/LICENSE-2.0",
+        "file": "backend\\htmlcov\\coverage_html_cb_497bf287.js",
+        "type": "external"
+      },
+      {
+        "url": "https://github.com/nedbat/coveragepy/blob/master/NOTICE.txt",
+        "file": "backend\\htmlcov\\coverage_html_cb_497bf287.js",
+        "type": "external"
+      },
+      {
+        "url": "http://www.apache.org/licenses/LICENSE-2.0",
+        "file": "backend\\htmlcov\\sinav_motoru\\coverage_html_cb_497bf287.js",
+        "type": "external"
+      },
+      {
+        "url": "https://github.com/nedbat/coveragepy/blob/master/NOTICE.txt",
+        "file": "backend\\htmlcov\\sinav_motoru\\coverage_html_cb_497bf287.js",
+        "type": "external"
+      },
+      {
+        "url": "http://www.apache.org/licenses/LICENSE-2.0",
+        "file": "backend\\tests\\unit\\htmlcov\\coverage_html_cb_497bf287.js",
+        "type": "external"
+      },
+      {
+        "url": "https://github.com/nedbat/coveragepy/blob/master/NOTICE.txt",
+        "file": "backend\\tests\\unit\\htmlcov\\coverage_html_cb_497bf287.js",
+        "type": "external"
+      },
+      {
+        "url": "http://www.w3.org/2000/svg",
+        "file": "frontend\\generate-icons.js",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:8000/api')",
+        "file": "frontend\\webpack.config.js",
+        "type": "external"
+      },
+      {
+        "url": "http://localhost:8000'",
+        "file": "frontend\\webpack.config.js",
+        "type": "external"
+      },
+      {
+        "url": "https://vuejs.org/error-reference/#runtime-$",
+        "file": "frontend\\html\\assets\\index-D_ryMEPs.js",
+        "type": "external"
+      },
+      {
+        "url": "http://www.w3.org/2000/svg",
+        "file": "frontend\\html\\assets\\index-D_ryMEPs.js",
+        "type": "external"
+      },
+      {
+        "url": "http://www.w3.org/1998/Math/MathML",
+        "file": "frontend\\html\\assets\\index-D_ryMEPs.js",
+        "type": "external"
+      },
+      {
+        "url": "http://www.w3.org/1999/xlink",
+        "file": "frontend\\html\\assets\\index-D_ryMEPs.js",
+        "type": "external"
+      },
+      {
+        "url": "http://foo.com",
+        "file": "frontend\\html\\assets\\index-D_ryMEPs.js",
+        "type": "external"
+      },
+      {
+        "url": "http://foo.com/",
+        "file": "frontend\\html\\assets\\index-D_ryMEPs.js",
+        "type": "external"
+      },
+      {
+        "url": "https://vitest.dev/guide/migration",
+        "file": "frontend\\html\\assets\\index-D_ryMEPs.js",
+        "type": "external"
+      },
+      {
+        "url": "https://github.com/broofa/mime/blob/main/README.md#custom-mime-instances",
+        "file": "frontend\\html\\assets\\index-D_ryMEPs.js",
+        "type": "external"
+      },
+      {
+        "url": "http://www.w3.org/1999/xhtml",
+        "file": "frontend\\html\\assets\\index-D_ryMEPs.js",
+        "type": "external"
+      },
+      {
+        "url": "http://www.w3.org/2000/svg",
+        "file": "frontend\\html\\assets\\index-D_ryMEPs.js",
+        "type": "external"
+      },
+      {
+        "url": "http://www.w3.org/1999/xlink",
+        "file": "frontend\\html\\assets\\index-D_ryMEPs.js",
+        "type": "external"
+      },
+      {
+        "url": "http://www.w3.org/XML/1998/namespace",
+        "file": "frontend\\html\\assets\\index-D_ryMEPs.js",
+        "type": "external"
+      },
+      {
+        "url": "http://www.w3.org/2000/xmlns/",
+        "file": "frontend\\html\\assets\\index-D_ryMEPs.js",
+        "type": "external"
+      },
+      {
+        "url": "http://www.w3.org/2000/svg",
+        "file": "frontend\\html\\assets\\index-D_ryMEPs.js",
+        "type": "external"
+      },
+      {
+        "url": "https://github.com/w3c/IntersectionObserver/tree/master/polyfill",
+        "file": "frontend\\html\\assets\\index-D_ryMEPs.js",
+        "type": "external"
+      }
+    ],
+    "broken_links": [
+      {
+        "url": "http://remote:9200",
+        "source": "code_comment",
+        "file": "backend\\tests\\integration\\test_core_config.py",
+        "status": "❌ HTTPConnectionPool(host='remote', port=9200): Max "
+      },
+      {
+        "url": "http://localhost:8000'",
+        "source": "code_comment",
+        "file": "frontend\\webpack.config.js",
+        "status": "❌ Failed to parse: http://localhost:8000'"
+      },
+      {
+        "url": "http://localhost:3003",
+        "source": "code_comment",
+        "file": "backend\\main.py",
+        "status": "❌ HTTPConnectionPool(host='localhost', port=3003): M"
+      },
+      {
+        "url": "http://localhost:8000",
+        "source": "code_comment",
+        "file": "load_test.py",
+        "status": "❌ HTTPConnectionPool(host='localhost', port=8000): M"
+      },
+      {
+        "url": "https://api.example.com/categories",
+        "source": "code_comment",
+        "file": "backend\\test_async_comprehensive.py",
+        "status": "❌ HTTPSConnectionPool(host='api.example.com', port=4"
+      },
+      {
+        "url": "https://api.example.com')",
+        "source": "code_comment",
+        "file": "frontend\\src\\services\\__tests__\\modernApiClient.test.ts",
+        "status": "❌ HTTPSConnectionPool(host=\"api.example.com')\", port"
+      },
+      {
+        "url": "https://api.example.com/normal",
+        "source": "code_comment",
+        "file": "backend\\test_async_comprehensive.py",
+        "status": "❌ HTTPSConnectionPool(host='api.example.com', port=4"
+      },
+      {
+        "url": "https://i.ytimg.com/vi/mock_physics_1/default.jpg",
+        "source": "code_comment",
+        "file": "backend\\services\\youtube_error_handlers.py",
+        "status": "❌ Status 404"
+      },
+      {
+        "url": "http://localhost:8001'",
+        "source": "code_comment",
+        "file": "frontend\\src\\main.tsx",
+        "status": "❌ Failed to parse: http://localhost:8001'"
+      },
+      {
+        "url": "https://tercih.osym.gov.tr/api/v1",
+        "source": "code_comment",
+        "file": "integrations\\university_systems_integration.py",
+        "status": "❌ HTTPSConnectionPool(host='tercih.osym.gov.tr', por"
+      },
+      {
+        "url": "http://localhost:8000/api/v1/exam/",
+        "source": "code_comment",
+        "file": "backend\\tests\\integration\\test_end_to_end_platform.py",
+        "status": "❌ HTTPConnectionPool(host='localhost', port=8000): M"
+      },
+      {
+        "url": "http://localhost:8000/api/v1/auth/register",
+        "source": "code_comment",
+        "file": "backend\\tests\\integration\\test_end_to_end_platform.py",
+        "status": "❌ HTTPConnectionPool(host='localhost', port=8000): M"
+      },
+      {
+        "url": "http://localhost:8000/api/v1/learning-style/detect/test_student_123",
+        "source": "code_comment",
+        "file": "test_real_endpoints.py",
+        "status": "❌ HTTPConnectionPool(host='localhost', port=8000): M"
+      }
+    ],
+    "external_links": []
+  },
+  "health_score": 31.58
+}

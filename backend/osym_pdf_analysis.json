@@ -1,0 +1,43 @@
+{
+  "file": "C:\\Users\\husey\\kiro2\\osym\\tyt\\yks_tyt_2024_kitapcik_T24kt.pdf",
+  "total_pages": 43,
+  "page_samples": [
+    {
+      "page_num": 1,
+      "sample_text": "T.C. Ölçme, Seçme ve Yerleştirme Merkezi\nZ\nYÜKSEKÖĞRETİM KURUMLARI SINAVI\nTEMEL YETERLİLİK TESTİ\n(2024-TYT)\n8 HAZİRAN 2024 CUMARTESİ\nBu testlerin her hakkı saklıdır. Hangi amaçla olursa olsun, testlerin tamamının veya bir kısmının Merkezimizin yazılı izni olmadan kopya edilmesi,\nfotoğrafının çekilmesi, herhangi bir yolla çoğaltılması, yayımlanması ya da kullanılması yasaktır. Bu yasağa uymayanlar gerekli cezai sorumluluğu ve\ntestlerin hazırlanmasındaki mali külfeti peşinen kabullenmiş sayılır."
+    },
+    {
+      "page_num": 3,
+      "sample_text": "2024-TYT/TÜR TÜRKÇE TESTİ\n1. Bu testte 40 soru vardır.\n2. Cevaplarınızı, cevap kâğıdının Türkçe Testi için ayrılan kısmına işaretleyiniz.\n1. Araştırmacılar doğada bulunmanın sağlığa olan 3. “Yazdıkların kime hitap ediyor?” sorusuna verilmiş net\nbir cevabım yok. Bir iyelik ekiyle “okurlarım” demeyi de\nfaydalarına işaret ediyor (dikkat çekiyor). Açık doğrusu beni hiç okumamış olanlara bir saygısızlık\nI olarak değerlendiriyorum. Ancak yine de boşluğa\nalanlarda vakit geçirmenin ruh sağlığı üzerinde "
+    },
+    {
+      "page_num": 4,
+      "sample_text": "2024-TYT/TÜR\n5. I. İster ebeveyn isterse eğitimci olsun çoğu yetişkin, 6. (I) Parlak mor çizgileriyle bir masal kitabına aitmiş gibi\nçocuğunun okuduğu her kitaptan “iyi, yararlı ve görünen bir balık türü; Tanzanya açıklarında, Hint\ngündelik hayattaki pratiklerini kolaylaştıracağı” bir Okyanusu’nun 80 metre derinliklerinde keşfedildi.\nşeyler öğrenmesini beklemektedir. (II) Cirrhilabrus wakanda denilen bu balık, ismini çizgi\nII. Toplumun bazı kesimlerinde edebî eserler; roman evreninin süper kahra"
+    },
+    {
+      "page_num": 5,
+      "sample_text": "2024-TYT/TÜR\n8. Bu caddenin taşlarının üzerinden yüzyıllar boyunca 10. Kirli bir sokaktan geçipköşkün merdivenlerini tırmandım.\ngeçen insanların ayak seslerini takip edenler, bir kalenin I\noya gibi işlenmiş kapısı önünde bulurlar izlerini. İlk bakışta hepsi birbirine benzeyen kapıların arasında\nII\nBu cümledeki ögelerin dizilişi aşağıdakilerin düz tahta kapıyı tanıdım. Çaldığım kapı açıldığında az\nhangisinde sırasıyla verilmiştir?\nevvel yaşadığım keşmekeşten eser kalmamıştı. Zevkli\nA) Özne - yükl"
+    }
+  ],
+  "detected_patterns": {
+    "questions": [
+      "1. ",
+      "2. ",
+      "1. ",
+      "5. ",
+      "7. ",
+      "8. ",
+      "9. "
+    ],
+    "options": [
+      "A)",
+      "B)",
+      "D)",
+      "E)",
+      "C)"
+    ],
+    "subjects": [
+      "TÜRKÇE"
+    ]
+  }
+}

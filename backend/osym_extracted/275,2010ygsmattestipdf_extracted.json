@@ -1,0 +1,346 @@
+{
+  "metadata": {
+    "file": "275,2010ygsmattestipdf.pdf",
+    "extraction_date": "2025-11-05T23:46:42.100884",
+    "total_questions": 21,
+    "exam_type": "TYT",
+    "year": 2010
+  },
+  "questions": [
+    {
+      "question_number": 1,
+      "subject": "Matematik",
+      "stem": "3.\n0,2−0,025 6 2\n−\n0,5 3 3 +1\nişleminin sonucu kaçtır? işleminin sonucu kaçtır?\n3 4 7",
+      "options": {
+        "A": "3",
+        "B": "2 3",
+        "C": "5 5 20",
+        "D": "3 +1",
+        "E": "25 25"
+      },
+      "correct_answer": "E",
+      "source": "ÖSYM",
+      "exam_type": "TYT",
+      "year": 2010
+    },
+    {
+      "question_number": 2,
+      "subject": "Matematik",
+      "stem": "⎛ 3 ⎞\n5⎜2− ⎟\n⎝ 5 ⎠\n⎛ 5 ⎞ 4.\n2⎜ ⎝3− 2 ⎟ ⎠ (a+1)2 −(a−1)2\nişleminin sonucu kaçtır? ifadesi aşağıdakilerden hangisine eşittir?\n5 7",
+      "options": {
+        "A": "a",
+        "B": "2a",
+        "C": "3",
+        "D": "5",
+        "E": "7 2 2 Diğer sayfaya geçiniz. 22"
+      },
+      "correct_answer": "D",
+      "source": "ÖSYM",
+      "exam_type": "TYT",
+      "year": 2010
+    },
+    {
+      "question_number": 5,
+      "subject": "Matematik",
+      "stem": "8.\n−1 −2 −3 1 1\n10 +10 +10 −3a= +3b\n2 8\nişleminin sonucu kaçtır?\nolduğuna göre, a+b toplamı kaçtır?",
+      "options": {
+        "A": "0,011",
+        "B": "0,101",
+        "C": "0,111 3 5 1",
+        "D": "0,123",
+        "E": "8 9"
+      },
+      "correct_answer": "E",
+      "source": "ÖSYM",
+      "exam_type": "TYT",
+      "year": 2010
+    },
+    {
+      "question_number": 6,
+      "subject": "Matematik",
+      "stem": "3n 5\n(16) =8 9.\n−5 7\nolduğuna göre, n kaçtır? <x<\n4 3\n3 4 3 eşitsizliğini sağlayan x tam sayılarının toplamı",
+      "options": {
+        "C": "0",
+        "A": "−2",
+        "B": "−1",
+        "D": "1",
+        "E": "4 6"
+      },
+      "correct_answer": null,
+      "source": "ÖSYM",
+      "exam_type": "TYT",
+      "year": 2010
+    },
+    {
+      "question_number": 10,
+      "subject": "Matematik",
+      "stem": "7. 3\nx −2y=7\n13 13 13\n15 +6•15 +8•15\n4\nx −2xy=21\nişleminin sonucu kaçtır?\nolduğuna göre, x kaçtır?\n15 14 13",
+      "options": {
+        "A": "3",
+        "B": "5",
+        "C": "7",
+        "D": "10•1613",
+        "E": "1613 Diğer sayfaya geçiniz. 23"
+      },
+      "correct_answer": "A",
+      "source": "ÖSYM",
+      "exam_type": "TYT",
+      "year": 2010
+    },
+    {
+      "question_number": 11,
+      "subject": "Matematik",
+      "stem": "x ve y doğal sayıları için 14. Aşağıdakilerden hangisi bir rasyonel sayıdır?\nx 10 y 15 1",
+      "options": {
+        "A": "0",
+        "B": "1",
+        "C": "2",
+        "E": "4",
+        "D": "3"
+      },
+      "correct_answer": null,
+      "source": "ÖSYM",
+      "exam_type": "TYT",
+      "year": 2010
+    },
+    {
+      "question_number": 15,
+      "subject": "Matematik",
+      "stem": "lerden hangisidir?\nf(x)=x2\na 3a 3a",
+      "options": {
+        "A": "0",
+        "B": "3",
+        "C": "5",
+        "E": "9",
+        "D": "7"
+      },
+      "correct_answer": null,
+      "source": "ÖSYM",
+      "exam_type": "TYT",
+      "year": 2010
+    },
+    {
+      "question_number": 13,
+      "subject": "Matematik",
+      "stem": "x, y ve z gerçel sayıları için\ny >0\nx−y >z\nolduğuna göre, aşağıdakilerden hangisi her za-\nman doğrudur?",
+      "options": {
+        "A": "x > z",
+        "B": "x > y",
+        "C": "z > y",
+        "D": "x > 0",
+        "E": "z > 0 Diğer sayfaya geçiniz. 24"
+      },
+      "correct_answer": null,
+      "source": "ÖSYM",
+      "exam_type": "TYT",
+      "year": 2010
+    },
+    {
+      "question_number": 16,
+      "subject": "Matematik",
+      "stem": "p, q ve r önermelerinin değilleri sırasıyla p′,q′,r′ 19. Üç basamaklı ABC ve iki basamaklı AB sayılarının\nile gösterildiğine göre, aşağıdakilerden hangisi toplamı 392’dir.\np∨q⇒q∧r Buna göre, A+B+C toplamı kaçtır?\nönermesine denktir?",
+      "options": {
+        "A": "p′∧q′⇒q′∨r′",
+        "B": "p′∧q′⇒q′∧r′",
+        "C": "p′∨q′⇒q′∧r′",
+        "D": "q′∧r′⇒p′∨q′",
+        "E": "q′∨r′⇒p′∧q′"
+      },
+      "correct_answer": null,
+      "source": "ÖSYM",
+      "exam_type": "TYT",
+      "year": 2010
+    },
+    {
+      "question_number": 17,
+      "subject": "Matematik",
+      "stem": "A={a,b,e}\nB={a,b,c,d}\nolduğuna göre, (A∩B)⊆K⊆(A∪B) koşulunu\nsağlayan kaç tane K kümesi vardır?",
+      "options": {
+        "B": "4",
+        "A": "3",
+        "C": "5",
+        "D": "8",
+        "E": "9"
+      },
+      "correct_answer": null,
+      "source": "ÖSYM",
+      "exam_type": "TYT",
+      "year": 2010
+    },
+    {
+      "question_number": 20,
+      "subject": "Matematik",
+      "stem": "İki basamaklı bir AB sayısı asal olduğunda BA sayısı\nda asalsa AB’ye simetrik asal denir.\nBir AB simetrik asal sayısı için A•B çarpımı aşa-\nğıdakilerden hangisi olamaz?",
+      "options": {
+        "A": "7",
+        "B": "9",
+        "C": "15",
+        "D": "21",
+        "E": "63"
+      },
+      "correct_answer": "D",
+      "source": "ÖSYM",
+      "exam_type": "TYT",
+      "year": 2010
+    },
+    {
+      "question_number": 18,
+      "subject": "Matematik",
+      "stem": "Pozitif tam sayılar kümesi üzerinde ⊕ve⊗ işlemleri\nen büyük ortak bölen ve en küçük ortak kat yardımı\nile,\na⊕b=EBOB(a,b)\na⊗b=EKOK(a,b)\nolarak tanımlanıyor.\nBuna göre, 18⊕(12⊗4) işleminin sonucu kaçtır?",
+      "options": {
+        "A": "2",
+        "B": "3",
+        "C": "6",
+        "D": "8",
+        "E": "9 Diğer sayfaya geçiniz. 25"
+      },
+      "correct_answer": null,
+      "source": "ÖSYM",
+      "exam_type": "TYT",
+      "year": 2010
+    },
+    {
+      "question_number": 21,
+      "subject": "Matematik",
+      "stem": "Bir manav, limonları, her birinde 12 limon bulunan 23. Bir çiftçi 5, 9, 12, 15, 23 ve 45 litrelik altı bidonun beş\nfilelerle almış ve üçer üçer satmıştır. Manav bir file tanesini ayçiçeği yağı ve zeytinyağı ile doldurmuştur.\nlimonu 5 TL’ye almış ve 3 adet limonu 2 TL’ye Bidonlara koyduğu ayçiçeği yağı miktarı zeytinyağı\nsatmıştır. miktarının 4 katıdır.\nBu manav 4 file limonun satışından kaç TL kâr Buna göre, boş kalan bidon kaç litreliktir?\nelde etmiştir?",
+      "options": {
+        "A": "6",
+        "B": "8",
+        "C": "9",
+        "D": "10",
+        "E": "12"
+      },
+      "correct_answer": null,
+      "source": "ÖSYM",
+      "exam_type": "TYT",
+      "year": 2010
+    },
+    {
+      "question_number": 22,
+      "subject": "Matematik",
+      "stem": "Bir otomobil lastiği satıcısı, lastiklerde % 25 mevsim\n−3,5\nsonu indirimi uyguladığında bir günde satılan lastik\n−4\nsayısının % 40 arttığını görüyor.\nBuna göre, satıcının kasasına bir günde giren pa-\nSporcuların ağırlıklarının ortalaması ilk ölçümde\nra yüzde kaç artmıştır?\n56 kilogram olduğuna göre, ikinci ölçümde kaç",
+      "options": {
+        "A": "53",
+        "B": "54",
+        "C": "55",
+        "D": "57",
+        "E": "58 Diğer sayfaya geçiniz. 26"
+      },
+      "correct_answer": null,
+      "source": "ÖSYM",
+      "exam_type": "TYT",
+      "year": 2010
+    },
+    {
+      "question_number": 25,
+      "subject": "Matematik",
+      "stem": "Bir sokakta, yolun üst tarafındaki evler ardışık tek sa- 27. Bir mağaza sahibi, tüm ürünlerde etiket fiyatı üzerin-\nyılarla, alt tarafındakiler ise ardışık çift sayılarla nu- den % 20 indirim yapıyor. Aynı üründen 5’in üzerin-\nmaralandırılmıştır. Numaralar soldan sağa doğru de alınan her adet için ayrıca indirimli fiyat üzerinden\nartmaktadır. % 25’lik bir indirim daha yapıyor. (İkinci indirimi ilk 5\nürüne uygulamıyor.)\ntekler\nBu mağazadan etiket fiyatı 15 TL olan bir üründen\nA C 8 adet alan bir müşteri kaç TL öder?\nSol Sağ",
+      "options": {
+        "A": "9",
+        "B": "11",
+        "C": "13",
+        "D": "15",
+        "E": "17"
+      },
+      "correct_answer": null,
+      "source": "ÖSYM",
+      "exam_type": "TYT",
+      "year": 2010
+    },
+    {
+      "question_number": 26,
+      "subject": "Matematik",
+      "stem": "Aşağıda beş lambadan oluşan bir reklam panosu miktarlarda kullanılması gerektiğini belirtmiştir.\ngösterilmiştir.\nUn (kg)\n10\nA B C D E\n8\n6\nPanodaki lambalar A lambasından başlayarak soldan\nsağa doğru, E lambasından sonra ise sağdan sola 4\ndoğru devamlı olarak yanıp sönmektedir. Örneğin,\nlambalar A-B-C-D-E-D-C-B-A-B… sırasında yanıp Şeker (kg)\nsöndüğünden 7. sırada yanıp sönen lamba C lamba-\n1 2 3 4\nsıdır. Buna göre, un ve şekerin toplam miktarının\n23 kilogram olduğu kıvamlı bir pastada kaç\nBuna göre, 2010. sırada yanıp sönen lamba han-\nkilogram şeker vardır?\ngisidir?",
+      "options": {
+        "A": "A",
+        "B": "B",
+        "C": "C",
+        "D": "D",
+        "E": "E Diğer sayfaya geçiniz. 27"
+      },
+      "correct_answer": null,
+      "source": "ÖSYM",
+      "exam_type": "TYT",
+      "year": 2010
+    },
+    {
+      "question_number": 29,
+      "subject": "Matematik",
+      "stem": "31.\nSatış fiyatı (TL)\nMasa\nc\nb\na\nBirim\n5 20 50\nYukarıdaki şekilde, tamamı eş kare motiflerle işlen-\nBir malın miktarlara bağlı olarak değişen birim satış\nmiş bir masa örtüsünün masadan sarkan parçası\nfiyatı yukarıdaki doğrusal grafikte gösterilmiştir.\ngösterilmiştir. Bu parçanın yan kenarlarında bulunan\nkarelerin içi dolu, diğerlerininki ise boştur. c−a=24 olduğuna göre, c−b kaçtır?\nSarkan parçadaki dolu karelerin sayısı 21 olduğu-",
+      "options": {
+        "A": "81",
+        "B": "84",
+        "C": "100",
+        "D": "105",
+        "E": "121"
+      },
+      "correct_answer": null,
+      "source": "ÖSYM",
+      "exam_type": "TYT",
+      "year": 2010
+    },
+    {
+      "question_number": 30,
+      "subject": "Matematik",
+      "stem": "Bir çiftçinin bahçesindeki meyve ağaçlarının dağılımı 32. Bir torbada 2 kırmızı, 2 beyaz ve 1 sarı bilye vardır.\naşağıdaki dairesel grafikte gösterilmiştir.\nTorbadan rastgele 4 bilye alındığında torbada ka-\nlan bilyenin kırmızı renkte olma olasılığı kaçtır?\nArmut 1 2 3",
+      "options": {
+        "C": "8",
+        "D": "10",
+        "E": "12 Diğer sayfaya geçiniz. 28",
+        "A": "4",
+        "B": "6"
+      },
+      "correct_answer": null,
+      "source": "ÖSYM",
+      "exam_type": "TYT",
+      "year": 2010
+    },
+    {
+      "question_number": 33,
+      "subject": "Matematik",
+      "stem": "35.\nA D 4 C ABCD bir paralel-\nABC bir üçgen kenar\nc 100 ] AECD bir yamuk\nb m(ABC)=50°\n] BE =3cm\nB\n50 m(CAB)=100°\na C A B 3 E DC =4cm\na−b + b−c + c−a\nYukarıdaki verilere göre, 2\n2 Şekildeki ABCD paralelkenarının alanı 20 cm ol-\nifadesi aşağıdakilerden hangisine eşittir? duğuna göre, CBE üçgeninin alanı kaç cm2 dir?",
+      "options": {
+        "C": "8",
+        "B": "7,5",
+        "A": "7",
+        "D": "b−a",
+        "E": "c−b"
+      },
+      "correct_answer": null,
+      "source": "ÖSYM",
+      "exam_type": "TYT",
+      "year": 2010
+    },
+    {
+      "question_number": 36,
+      "subject": "Matematik",
+      "stem": "34. D C ABCD bir\ndikdörtgen\nD C ABCD bir dikdörtgen (cid:112)\n8 CE, A merkezli\nAD =1cm 4 çember yayı\n1\nF AE = EB =2cm DA =4cm\nx\nA 2 E 2 B FE =x A B E AC =8cm\nYukarıdaki verilere göre, taralı daire diliminin ala-\nYukarıdaki verilere göre, x kaç cm’dir?\nnı kaç\ncm2\ndir?",
+      "options": {
+        "A": "16π",
+        "B": "20π",
+        "C": "25π 2 2 3 3 3 3 5 7 28π 32π",
+        "E": "3 3 3 3 Diğer sayfaya geçiniz. 29"
+      },
+      "correct_answer": null,
+      "source": "ÖSYM",
+      "exam_type": "TYT",
+      "year": 2010
+    },
+    {
+      "question_number": 38,
+      "subject": "Matematik",
+      "stem": "a b\nc 40. Köşeleri A(3,1),B(5,3),C(2,5) ve D(a,b) kö-\nşegenleri [AC]ve[BD] olan paralelkenarın [BD]\nd e\nköşegeninin uzunluğu kaç birimdir?\nYukarıda bir küpün açınımı verilmiştir.",
+      "options": {
+        "A": "a",
+        "B": "b",
+        "C": "c",
+        "D": "d",
+        "E": "e TEMEL MATEMATİK TESTİ BİTTİ. FEN BİLİMLERİ TESTİNE GEÇİNİZ. Diğer sayfaya geçiniz. 30"
+      },
+      "correct_answer": null,
+      "source": "ÖSYM",
+      "exam_type": "TYT",
+      "year": 2010
+    }
+  ]
+}

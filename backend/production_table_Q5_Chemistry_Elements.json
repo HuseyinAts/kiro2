@@ -1,0 +1,31 @@
+{
+  "stem": "Aşağıdaki tabloda bazı elementlerin özellikleri verilmiştir.\n\n| Element | Periyot | Değerlik Elektronu Sayısı |\n|---------|---------|---------------------------|\n| X       | 3       | 1                         |\n| Y       | 2       | 6                         |\n| Z       | 3       | 7                         |\n| T       | 4       | 2                         |\n\nBu elementlerle ilgili,\nI. X ve Z aynı periyottadır.\nII. Y en küçük atom yarıçapına sahiptir.\nIII. T toprak alkali metalidir.\nyargılarından hangileri doğrudur?",
+  "options": {
+    "A": "Yalnız I",
+    "B": "Yalnız II",
+    "C": "I ve II",
+    "D": "I ve III",
+    "E": "I, II ve III"
+  },
+  "correct_answer": "E",
+  "explanation": "I. Doğru - Tabloda X ve Z elementlerinin her ikisi de 3. periyotta yer almaktadır.\n\nII. Doğru - Y elementi 2. periyotta ve 6 değerlik elektronuna sahiptir, yani 16. gruptadır (O). 2. periyottaki elementler arasında en sağda bulunduğu için en küçük atom yarıçapına sahiptir. Periyotta soldan sağa gidildikçe atom yarıçapı azalır.\n\nIII. Doğru - T elementi 4. periyotta ve 2 değerlik elektronuna sahiptir. Bu özellikler 2. grup (IIA) elementlerinin özelliğidir ve toprak alkali metalleri oluşturur.\n\nÜç yargı da doğru olduğundan cevap E şıkkıdır.",
+  "visual_content": {
+    "type": "table",
+    "format": "markdown",
+    "content": "| Ürün | Özellik 1 | Özellik 2 |\n| --- | --- | --- |\n| Ürün A | Hayır | 62 |\n| Ürün B | 27 | Hayır |\n| Ürün C | Evet | Hayır |\n| Ürün D | Evet | 100 |",
+    "metadata": {
+      "caption": "Tablo 1: Ürün Karşılaştırması",
+      "alt_text": "Product comparison table",
+      "rows": 4,
+      "columns": 3
+    }
+  },
+  "method": "few-shot",
+  "osym_examples_used": 3,
+  "metadata": {
+    "phase": "Phase 1 - Tables",
+    "generated_at": "2025-11-07T11:50:39.175630",
+    "spec_name": "Q5_Chemistry_Elements",
+    "table_type": "comparison_table"
+  }
+}

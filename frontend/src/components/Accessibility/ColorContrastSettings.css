@@ -1,0 +1,849 @@
+/**
+ * Renk ve Kontrast Ayarları Stilleri
+ * REQ-50.14 - REQ-50.27: Renk ve Kontrast Ayarları
+ * WCAG 2.1 Level AA Uyumlu
+ * 
+ * Task 77: Renk ve Kontrast Ayarları
+ * - 77.1: Renkli overlay (6 renk)
+ * - 77.2: Opacity ayarlama (%10-%90)
+ * - 77.3: Yüksek kontrast modları
+ * - 77.4: WCAG AAA uyumu (7:1 kontrast oranı)
+ */
+
+/* ============================================
+   TEMEL CONTAINER
+   ============================================ */
+
+.color-contrast-settings {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 24px;
+  background-color: var(--background-color, #ffffff);
+  color: var(--text-color, #000000);
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Loading durumu */
+.color-contrast-settings .loading-spinner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 48px;
+  font-size: 16px;
+  color: #595959; /* WCAG AA: 4.54:1 */
+}
+
+/* ============================================
+   HEADER
+   ============================================ */
+
+.settings-header {
+  margin-bottom: 32px;
+  border-bottom: 2px solid #e0e0e0;
+  padding-bottom: 16px;
+}
+
+.settings-header h2 {
+  margin: 0 0 8px 0;
+  font-size: 28px;
+  font-weight: 600;
+  color: #1a1a1a; /* WCAG AAA: 15.3:1 */
+}
+
+.settings-description {
+  margin: 0;
+  font-size: 16px;
+  color: #595959; /* WCAG AA: 4.54:1 */
+  line-height: 1.5;
+}
+
+/* ============================================
+   PRESET SECTION
+   ============================================ */
+
+.preset-section {
+  margin-bottom: 32px;
+  padding: 20px;
+  background-color: #f5f5f5;
+  border-radius: 8px;
+}
+
+.preset-section h3 {
+  margin: 0 0 16px 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+.preset-buttons {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+}
+
+.preset-button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 16px;
+  background-color: #ffffff;
+  border: 2px solid #d0d0d0;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: center;
+}
+
+.preset-button:hover {
+  border-color: #0066cc;
+  background-color: #f0f7ff;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 102, 204, 0.15);
+}
+
+.preset-button:focus {
+  outline: 3px solid #0066cc;
+  outline-offset: 2px;
+}
+
+.preset-button:active {
+  transform: translateY(0);
+}
+
+.preset-icon {
+  font-size: 32px;
+  margin-bottom: 8px;
+}
+
+.preset-label {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin-bottom: 4px;
+}
+
+.preset-description {
+  font-size: 14px;
+  color: #595959;
+}
+
+/* Reduced motion desteği */
+@media (prefers-reduced-motion: reduce) {
+  .preset-button {
+    transition: none;
+  }
+  
+  .preset-button:hover {
+    transform: none;
+  }
+}
+
+/* ============================================
+   SETTING GROUP
+   ============================================ */
+
+.setting-group {
+  margin-bottom: 32px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.setting-group:last-of-type {
+  border-bottom: none;
+}
+
+.setting-label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+.label-text {
+  font-size: 18px;
+}
+
+.label-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 12px;
+  background-color: #4caf50;
+  color: #ffffff;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.label-value {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 12px;
+  background-color: #e3f2fd;
+  color: #0d47a1; /* WCAG AAA: 10.7:1 */
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.setting-description {
+  margin: 8px 0 16px 0;
+  font-size: 14px;
+  color: #595959;
+  line-height: 1.6;
+}
+
+/* ============================================
+   COLOR GRID (Task 77.1)
+   ============================================ */
+
+.color-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.color-option {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 12px;
+  background-color: #ffffff;
+  border: 2px solid #d0d0d0;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.color-option:hover {
+  border-color: #0066cc;
+  background-color: #f0f7ff;
+  transform: scale(1.05);
+}
+
+.color-option:focus {
+  outline: 3px solid #0066cc;
+  outline-offset: 2px;
+}
+
+.color-option.active {
+  border-color: #0066cc;
+  border-width: 3px;
+  background-color: #e3f2fd;
+}
+
+.color-swatch {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.color-label {
+  font-size: 14px;
+  font-weight: 500;
+  color: #1a1a1a;
+  text-align: center;
+}
+
+.check-icon {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 24px;
+  height: 24px;
+  background-color: #4caf50;
+  color: #ffffff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  font-weight: bold;
+}
+
+/* ============================================
+   SLIDER CONTROLS (Task 77.2)
+   ============================================ */
+
+.slider-controls {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin: 16px 0;
+}
+
+.slider-button {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #0066cc;
+  color: #ffffff;
+  border: none;
+  border-radius: 50%;
+  font-size: 24px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.slider-button:hover:not(:disabled) {
+  background-color: #0052a3;
+  transform: scale(1.1);
+}
+
+.slider-button:focus {
+  outline: 3px solid #0066cc;
+  outline-offset: 2px;
+}
+
+.slider-button:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.slider {
+  flex: 1;
+  height: 8px;
+  -webkit-appearance: none;
+  appearance: none;
+  background: linear-gradient(to right, #e0e0e0 0%, #0066cc 100%);
+  border-radius: 4px;
+  outline: none;
+  cursor: pointer;
+}
+
+/* Slider thumb - Chrome/Safari */
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 24px;
+  height: 24px;
+  background-color: #0066cc;
+  border: 3px solid #ffffff;
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  transition: all 0.2s ease;
+}
+
+.slider::-webkit-slider-thumb:hover {
+  background-color: #0052a3;
+  transform: scale(1.2);
+}
+
+.slider:focus::-webkit-slider-thumb {
+  box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.3);
+}
+
+/* Slider thumb - Firefox */
+.slider::-moz-range-thumb {
+  width: 24px;
+  height: 24px;
+  background-color: #0066cc;
+  border: 3px solid #ffffff;
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  transition: all 0.2s ease;
+}
+
+.slider::-moz-range-thumb:hover {
+  background-color: #0052a3;
+  transform: scale(1.2);
+}
+
+.slider:focus::-moz-range-thumb {
+  box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.3);
+}
+
+.slider-labels {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 8px;
+  font-size: 12px;
+  color: #757575;
+}
+
+/* ============================================
+   CONTRAST MODES (Task 77.3)
+   ============================================ */
+
+.contrast-modes {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.contrast-mode-button {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 16px;
+  background-color: #ffffff;
+  border: 2px solid #d0d0d0;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: left;
+  position: relative;
+}
+
+.contrast-mode-button:hover {
+  border-color: #0066cc;
+  background-color: #f0f7ff;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 102, 204, 0.15);
+}
+
+.contrast-mode-button:focus {
+  outline: 3px solid #0066cc;
+  outline-offset: 2px;
+}
+
+.contrast-mode-button.active {
+  border-color: #0066cc;
+  border-width: 3px;
+  background-color: #e3f2fd;
+}
+
+.mode-label {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin-bottom: 4px;
+}
+
+.mode-description {
+  font-size: 14px;
+  color: #595959;
+}
+
+/* ============================================
+   WCAG COMPLIANCE (Task 77.4)
+   ============================================ */
+
+.wcag-compliance {
+  padding: 20px;
+  background-color: #f5f5f5;
+  border-radius: 8px;
+}
+
+.wcag-compliance h3 {
+  margin: 0 0 16px 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+.compliance-status {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  width: fit-content;
+}
+
+.status-badge.compliant {
+  background-color: #4caf50;
+  color: #ffffff;
+}
+
+.status-badge.non-compliant {
+  background-color: #ff9800;
+  color: #000000; /* WCAG AA: 6.3:1 */
+}
+
+.status-icon {
+  font-size: 20px;
+}
+
+.contrast-info {
+  padding: 16px;
+  background-color: #ffffff;
+  border-radius: 8px;
+  border-left: 4px solid #0066cc;
+}
+
+.contrast-info p {
+  margin: 8px 0;
+  font-size: 14px;
+  color: #1a1a1a;
+}
+
+.contrast-info strong {
+  font-weight: 600;
+  color: #000000;
+}
+
+.warning-text {
+  color: #d32f2f; /* WCAG AA: 4.5:1 */
+  font-weight: 500;
+  margin-top: 12px !important;
+}
+
+/* Auto-fix section */
+.auto-fix-section {
+  margin-top: 16px;
+  padding: 16px;
+  background-color: #fff3e0;
+  border-radius: 8px;
+  border-left: 4px solid #ff9800;
+}
+
+.auto-fix-description {
+  margin: 0 0 12px 0;
+  font-size: 14px;
+  color: #1a1a1a;
+}
+
+.auto-fix-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  background-color: #ff9800;
+  color: #000000; /* WCAG AA: 6.3:1 */
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.auto-fix-button:hover {
+  background-color: #f57c00;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(255, 152, 0, 0.3);
+}
+
+.auto-fix-button:focus {
+  outline: 3px solid #ff9800;
+  outline-offset: 2px;
+}
+
+/* ============================================
+   COLOR PICKER
+   ============================================ */
+
+.color-picker-group {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-top: 12px;
+}
+
+.color-picker {
+  width: 80px;
+  height: 40px;
+  border: 2px solid #d0d0d0;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.color-picker:hover {
+  border-color: #0066cc;
+}
+
+.color-picker:focus {
+  outline: 3px solid #0066cc;
+  outline-offset: 2px;
+}
+
+.color-value {
+  font-family: 'Courier New', monospace;
+  font-size: 14px;
+  font-weight: 600;
+  color: #1a1a1a;
+  padding: 8px 12px;
+  background-color: #f5f5f5;
+  border-radius: 4px;
+}
+
+/* ============================================
+   PREVIEW SECTION
+   ============================================ */
+
+.preview-section {
+  margin-top: 32px;
+  padding: 20px;
+  background-color: #f5f5f5;
+  border-radius: 8px;
+}
+
+.preview-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.preview-header h3 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+.preview-toggle {
+  padding: 8px 16px;
+  background-color: #0066cc;
+  color: #ffffff;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.preview-toggle:hover {
+  background-color: #0052a3;
+}
+
+.preview-toggle:focus {
+  outline: 3px solid #0066cc;
+  outline-offset: 2px;
+}
+
+.preview-content {
+  padding: 24px;
+  border-radius: 8px;
+  border: 2px solid #d0d0d0;
+  min-height: 200px;
+  position: relative;
+  overflow: hidden;
+}
+
+.preview-overlay {
+  pointer-events: none;
+  z-index: 0;
+}
+
+.preview-content p {
+  margin: 12px 0;
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+/* ============================================
+   FOOTER
+   ============================================ */
+
+.settings-footer {
+  margin-top: 32px;
+  padding-top: 24px;
+  border-top: 2px solid #e0e0e0;
+  display: flex;
+  justify-content: center;
+}
+
+.reset-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 24px;
+  background-color: #f44336;
+  color: #ffffff;
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.reset-button:hover {
+  background-color: #d32f2f;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(244, 67, 54, 0.3);
+}
+
+.reset-button:focus {
+  outline: 3px solid #f44336;
+  outline-offset: 2px;
+}
+
+/* ============================================
+   RESPONSIVE DESIGN
+   ============================================ */
+
+@media (max-width: 768px) {
+  .color-contrast-settings {
+    padding: 16px;
+  }
+  
+  .settings-header h2 {
+    font-size: 24px;
+  }
+  
+  .preset-buttons {
+    grid-template-columns: 1fr;
+  }
+  
+  .color-grid {
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 12px;
+  }
+  
+  .contrast-modes {
+    grid-template-columns: 1fr;
+  }
+  
+  .slider-controls {
+    gap: 12px;
+  }
+  
+  .slider-button {
+    width: 36px;
+    height: 36px;
+    font-size: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .color-contrast-settings {
+    padding: 12px;
+  }
+  
+  .settings-header h2 {
+    font-size: 20px;
+  }
+  
+  .color-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .preview-content {
+    padding: 16px;
+  }
+}
+
+/* ============================================
+   HIGH CONTRAST MODE SUPPORT
+   ============================================ */
+
+@media (prefers-contrast: high) {
+  .color-contrast-settings {
+    border: 3px solid currentColor;
+  }
+  
+  .preset-button,
+  .color-option,
+  .contrast-mode-button {
+    border-width: 3px;
+  }
+  
+  .slider-button:focus,
+  .preset-button:focus,
+  .color-option:focus,
+  .contrast-mode-button:focus {
+    outline-width: 4px;
+  }
+}
+
+/* ============================================
+   DARK MODE SUPPORT
+   ============================================ */
+
+@media (prefers-color-scheme: dark) {
+  .color-contrast-settings {
+    background-color: #1e1e1e;
+    color: #e0e0e0;
+  }
+  
+  .settings-header {
+    border-bottom-color: #404040;
+  }
+  
+  .settings-header h2,
+  .setting-label,
+  .mode-label,
+  .color-label {
+    color: #ffffff;
+  }
+  
+  .settings-description,
+  .setting-description,
+  .mode-description {
+    color: #b0b0b0;
+  }
+  
+  .preset-section,
+  .wcag-compliance,
+  .preview-section {
+    background-color: #2a2a2a;
+  }
+  
+  .preset-button,
+  .color-option,
+  .contrast-mode-button,
+  .contrast-info {
+    background-color: #2a2a2a;
+    border-color: #505050;
+  }
+  
+  .preset-button:hover,
+  .color-option:hover,
+  .contrast-mode-button:hover {
+    background-color: #353535;
+    border-color: #0066cc;
+  }
+  
+  .color-value {
+    background-color: #2a2a2a;
+    color: #e0e0e0;
+  }
+  
+  .preview-content {
+    border-color: #505050;
+  }
+}
+
+/* ============================================
+   PRINT STYLES
+   ============================================ */
+
+@media print {
+  .color-contrast-settings {
+    box-shadow: none;
+    border: 1px solid #000000;
+  }
+  
+  .preset-button,
+  .slider-button,
+  .auto-fix-button,
+  .preview-toggle,
+  .reset-button {
+    display: none;
+  }
+  
+  .preview-content {
+    border: 1px solid #000000;
+  }
+}

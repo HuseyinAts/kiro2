@@ -1,0 +1,548 @@
+/**
+ * Focus Mode Styles - Odak Modu Stilleri
+ * 
+ * DEHB desteği için odak modu görsel stilleri.
+ * Minimal, dikkat dağıtmayan tasarım.
+ */
+
+/* ===== Setup View ===== */
+.focus-mode-setup {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.setup-container {
+  background: white;
+  border-radius: 16px;
+  padding: 3rem;
+  max-width: 600px;
+  width: 100%;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+.setup-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.setup-header h2 {
+  font-size: 2rem;
+  color: #333;
+  margin-bottom: 0.5rem;
+}
+
+.setup-header p {
+  color: #666;
+  font-size: 1rem;
+}
+
+/* Loading State */
+.loading-state {
+  text-align: center;
+  padding: 2rem;
+}
+
+.loading-state .spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #667eea;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 1rem;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Error State */
+.error-state {
+  background: #ffebee;
+  border: 1px solid #ef5350;
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.error-icon {
+  font-size: 1.5rem;
+}
+
+.error-state p {
+  color: #c62828;
+  margin: 0;
+}
+
+/* Task Preview */
+.task-preview {
+  background: #f8f9fa;
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.task-preview h3 {
+  font-size: 1.25rem;
+  color: #333;
+  margin-bottom: 0.75rem;
+}
+
+.task-description {
+  color: #666;
+  line-height: 1.6;
+  margin-bottom: 1rem;
+}
+
+.task-duration {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #667eea;
+  font-weight: 500;
+  margin-bottom: 0.75rem;
+}
+
+.duration-icon {
+  font-size: 1.25rem;
+}
+
+.task-priority {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  border: 2px solid;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.priority-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+/* Settings Panel */
+.settings-panel {
+  margin-bottom: 2rem;
+}
+
+.settings-panel h3 {
+  font-size: 1.125rem;
+  color: #333;
+  margin-bottom: 1rem;
+}
+
+.settings-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.setting-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  background: #f8f9fa;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.setting-item:hover {
+  background: #e9ecef;
+}
+
+.setting-item input[type="checkbox"] {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+}
+
+.setting-item span {
+  font-size: 0.9375rem;
+  color: #495057;
+}
+
+/* Setup Actions */
+.setup-actions {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.btn-activate {
+  flex: 1;
+  padding: 1rem 2rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.btn-activate:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+}
+
+.btn-activate:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-cancel {
+  padding: 1rem 2rem;
+  background: #e9ecef;
+  color: #495057;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.btn-cancel:hover {
+  background: #dee2e6;
+}
+
+/* Keyboard Shortcuts */
+.keyboard-shortcuts {
+  text-align: center;
+  padding-top: 1.5rem;
+  border-top: 1px solid #e9ecef;
+}
+
+.keyboard-shortcuts p {
+  color: #6c757d;
+  font-size: 0.875rem;
+  margin: 0.5rem 0;
+}
+
+.keyboard-shortcuts kbd {
+  display: inline-block;
+  padding: 0.25rem 0.5rem;
+  background: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 4px;
+  font-family: monospace;
+  font-size: 0.875rem;
+  margin-right: 0.5rem;
+}
+
+/* ===== Active Focus Mode View ===== */
+.focus-mode-active-view {
+  min-height: 100vh;
+  background: #1a1a2e;
+  color: #eee;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Focus Header */
+.focus-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+}
+
+.focus-title {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #fff;
+}
+
+.focus-icon {
+  font-size: 1.5rem;
+}
+
+.btn-exit {
+  padding: 0.5rem 1rem;
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 6px;
+  font-size: 1.25rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.btn-exit:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* Main Task Container */
+.focus-task-container {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 2rem;
+}
+
+.focus-task {
+  max-width: 800px;
+  width: 100%;
+  text-align: center;
+}
+
+.task-title {
+  font-size: 3rem;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 1.5rem;
+  line-height: 1.2;
+}
+
+.focus-task .task-description {
+  font-size: 1.25rem;
+  color: #b8b8d1;
+  line-height: 1.8;
+  margin-bottom: 2rem;
+}
+
+.task-subject {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1.5rem;
+  background: rgba(102, 126, 234, 0.2);
+  border-radius: 30px;
+  font-size: 1.125rem;
+  color: #667eea;
+  margin-bottom: 2rem;
+}
+
+.subject-icon {
+  font-size: 1.5rem;
+}
+
+/* Focus Timer */
+.focus-timer {
+  margin: 3rem 0;
+}
+
+.timer-display {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.timer-icon {
+  font-size: 3rem;
+}
+
+.timer-value {
+  font-size: 5rem;
+  font-weight: 700;
+  color: #fff;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.05em;
+}
+
+.timer-estimate {
+  font-size: 1.125rem;
+  color: #b8b8d1;
+}
+
+/* Focus Progress */
+.focus-progress {
+  margin-top: 3rem;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 12px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  overflow: hidden;
+  margin-bottom: 1rem;
+}
+
+.progress-fill {
+  height: 100%;
+  background: #667eea;
+  border-radius: 6px;
+  transition: width 0.3s ease;
+}
+
+.progress-label {
+  font-size: 1.125rem;
+  color: #b8b8d1;
+  font-weight: 500;
+}
+
+/* Minimal Exit Button */
+.btn-exit-minimal {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  width: 48px;
+  height: 48px;
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  font-size: 1.5rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-exit-minimal:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: scale(1.1);
+}
+
+/* ===== Body Classes for Focus Mode ===== */
+body.focus-mode-active {
+  overflow: hidden;
+}
+
+body.focus-mode-hide-sidebar .sidebar,
+body.focus-mode-hide-sidebar aside {
+  display: none !important;
+}
+
+body.focus-mode-hide-navigation nav:not(.focus-header),
+body.focus-mode-hide-navigation header:not(.focus-header) {
+  display: none !important;
+}
+
+body.focus-mode-hide-notifications .notification,
+body.focus-mode-hide-notifications .toast,
+body.focus-mode-hide-notifications .alert {
+  display: none !important;
+}
+
+body.focus-mode-minimal-ui .footer,
+body.focus-mode-minimal-ui .breadcrumb,
+body.focus-mode-minimal-ui .toolbar {
+  display: none !important;
+}
+
+/* ===== Screen Reader Only ===== */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* ===== Responsive Design ===== */
+@media (max-width: 768px) {
+  .setup-container {
+    padding: 2rem;
+  }
+
+  .task-title {
+    font-size: 2rem;
+  }
+
+  .timer-value {
+    font-size: 3.5rem;
+  }
+
+  .settings-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .setup-actions {
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 480px) {
+  .setup-container {
+    padding: 1.5rem;
+  }
+
+  .task-title {
+    font-size: 1.75rem;
+  }
+
+  .timer-value {
+    font-size: 2.5rem;
+  }
+
+  .focus-task .task-description {
+    font-size: 1rem;
+  }
+}
+
+/* ===== High Contrast Mode ===== */
+@media (prefers-contrast: high) {
+  .focus-mode-active-view {
+    background: #000;
+    color: #fff;
+  }
+
+  .btn-exit,
+  .btn-exit-minimal {
+    border: 2px solid #fff;
+  }
+
+  .progress-bar {
+    background: #333;
+  }
+}
+
+/* ===== Reduced Motion ===== */
+@media (prefers-reduced-motion: reduce) {
+  .btn-activate,
+  .btn-exit-minimal,
+  .progress-fill {
+    transition: none;
+  }
+
+  .loading-state .spinner {
+    animation: none;
+    border-top-color: transparent;
+  }
+}
+
+/* ===== Print Styles ===== */
+@media print {
+  .focus-mode-setup,
+  .focus-mode-active-view {
+    background: white;
+    color: black;
+  }
+
+  .btn-exit,
+  .btn-exit-minimal,
+  .setup-actions {
+    display: none;
+  }
+}

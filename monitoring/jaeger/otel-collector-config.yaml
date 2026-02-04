@@ -1,0 +1,186 @@
+# OpenTelemetry Collector Configuration
+# Sprint 11: Advanced Trace Processing
+
+receivers:
+  # OTLP receiver for traces, metrics, and logs
+  otlp:
+    protocols:
+      grpc:
+        endpoint: 0.0.0.0:4317
+      http:
+        endpoint: 0.0.0.0:4318
+
+  # Jaeger receiver (Thrift protocol)
+  jaeger:
+    protocols:
+      thrift_compact:
+        endpoint: 0.0.0.0:6831
+      thrift_binary:
+        endpoint: 0.0.0.0:6832
+      thrift_http:
+        endpoint: 0.0.0.0:14268
+
+  # Zipkin receiver (compatibility)
+  zipkin:
+    endpoint: 0.0.0.0:9411
+
+processors:
+  # Batch processor for efficient export
+  batch:
+    timeout: 10s
+    send_batch_size: 1024
+    send_batch_max_size: 2048
+
+  # Memory limiter to prevent OOM
+  memory_limiter:
+    check_interval: 1s
+    limit_mib: 512
+    spike_limit_mib: 128
+
+  # Probabilistic sampling
+  probabilistic_sampler:
+    sampling_percentage: 10.0
+
+  # Tail sampling for intelligent trace selection
+  tail_sampling:
+    decision_wait: 10s
+    num_traces: 100
+    expected_new_traces_per_sec: 10
+    policies:
+      # Always sample errors
+      - name: error-traces
+        type: status_code
+        status_code:
+          status_codes:
+            - ERROR
+
+      # Always sample slow requests (>2s)
+      - name: slow-traces
+        type: latency
+        latency:
+          threshold_ms: 2000
+
+      # Sample high-value operations
+      - name: business-critical
+        type: string_attribute
+        string_attribute:
+          key: business.operation
+          values:
+            - exam_taking
+            - payment_processing
+            - ai_inference
+          enabled_regex_matching: true
+          invert_match: false
+
+      # Sample probabilistically for normal traces
+      - name: normal-traces
+        type: probabilistic
+        probabilistic:
+          sampling_percentage: 10.0
+
+  # Resource detection
+  resource:
+    attributes:
+      - key: deployment.environment
+        value: ${DEPLOYMENT_ENV}
+        action: upsert
+      - key: service.namespace
+        value: kiro2
+        action: upsert
+
+  # Add metadata attributes
+  attributes:
+    actions:
+      - key: collector.name
+        value: kiro2-otel-collector
+        action: insert
+      - key: collector.version
+        value: 1.0.0
+        action: insert
+
+  # Filter sensitive data
+  filter:
+    traces:
+      span:
+        - 'attributes["http.url"] != nil and IsMatch(attributes["http.url"], ".*password.*")'
+        - 'attributes["http.url"] != nil and IsMatch(attributes["http.url"], ".*token.*")'
+
+exporters:
+  # Jaeger exporter
+  jaeger:
+    endpoint: jaeger:14250
+    tls:
+      insecure: true
+
+  # OTLP exporter (for future use with other backends)
+  otlp:
+    endpoint: jaeger:4317
+    tls:
+      insecure: true
+
+  # Logging exporter for debugging
+  logging:
+    loglevel: info
+    sampling_initial: 5
+    sampling_thereafter: 200
+
+  # Prometheus exporter for metrics
+  prometheus:
+    endpoint: "0.0.0.0:8888"
+    namespace: kiro2_otel
+
+extensions:
+  # Health check extension
+  health_check:
+    endpoint: 0.0.0.0:13133
+
+  # Performance profiler
+  pprof:
+    endpoint: 0.0.0.0:1777
+
+  # zPages for debugging
+  zpages:
+    endpoint: 0.0.0.0:55679
+
+service:
+  extensions:
+    - health_check
+    - pprof
+    - zpages
+
+  pipelines:
+    # Traces pipeline
+    traces:
+      receivers:
+        - otlp
+        - jaeger
+        - zipkin
+      processors:
+        - memory_limiter
+        - resource
+        - attributes
+        - batch
+        - tail_sampling
+      exporters:
+        - jaeger
+        - otlp
+        - logging
+
+    # Metrics pipeline (collector metrics)
+    metrics:
+      receivers:
+        - otlp
+      processors:
+        - memory_limiter
+        - resource
+        - batch
+      exporters:
+        - prometheus
+        - logging
+
+  telemetry:
+    logs:
+      level: info
+    metrics:
+      level: detailed
+      address: 0.0.0.0:8888

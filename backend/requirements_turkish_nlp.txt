@@ -1,0 +1,34 @@
+# Türkçe NLP Servisi Gereksinimleri
+
+# Temel NLP kütüphaneleri
+aiohttp>=3.8.0
+asyncio-throttle>=1.0.2
+
+# Metin işleme
+unicodedata2>=15.0.0
+regex>=2023.0.0
+
+# Performans ve cache
+functools32>=3.2.3  # Python 3.2+ için lru_cache backport (gerekirse)
+
+# Zemberek-NLP entegrasyonu için Java bağımlılıkları
+# Not: Zemberek-NLP Java kütüphanesi ayrıca kurulmalıdır
+# Kurulum talimatları:
+# 1. Java 11+ kurulmalı
+# 2. Zemberek-NLP JAR dosyası indirilmeli
+# 3. JAR dosyası proje kök dizinine koyulmalı
+
+# Test bağımlılıkları
+pytest-asyncio>=0.21.0
+pytest-mock>=3.10.0
+
+# Logging ve monitoring
+structlog>=23.0.0
+
+# Encoding ve karakter işleme
+chardet>=5.0.0
+ftfy>=6.1.0  # Encoding sorunlarını düzeltmek için
+
+# Performans profiling (opsiyonel)
+memory-profiler>=0.60.0
+line-profiler>=4.0.0

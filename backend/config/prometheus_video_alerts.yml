@@ -1,0 +1,337 @@
+# Prometheus Alert Rules for Video Recommendation System
+# Learning Path Video Yükleme Sorunu Çözümü - Task 19
+# Requirements: 4.5, 4.11, 5.4, 5.12
+
+groups:
+  # Video API Performance Alerts
+  - name: video_api_performance
+    interval: 30s
+    rules:
+      # High error rate on video recommendations
+      - alert: HighVideoAPIErrorRate
+        expr: |
+          (
+            rate(kiro_api_requests_total{endpoint="/api/youtube/recommendations", status=~"5.."}[5m])
+            /
+            rate(kiro_api_requests_total{endpoint="/api/youtube/recommendations"}[5m])
+          ) > 0.05
+        for: 5m
+        labels:
+          severity: critical
+          component: youtube_api
+          service: video_recommendations
+        annotations:
+          summary: "Video API error rate yüksek"
+          description: "Video önerileri endpoint'inde hata oranı %5'in üzerinde ({{ $value | humanizePercentage }}). Son 5 dakikada sürekli yüksek."
+          runbook_url: "https://docs.teknofest-egitim.com/runbooks/video-api-high-error-rate"
+          dashboard_url: "http://grafana:3000/d/video-api/video-api-dashboard"
+
+      # Slow video API response time (P95 > 3 seconds)
+      - alert: SlowVideoAPIResponse
+        expr: |
+          histogram_quantile(0.95,
+            rate(kiro_api_request_duration_seconds_bucket{endpoint="/api/youtube/recommendations"}[5m])
+          ) > 3
+        for: 5m
+        labels:
+          severity: warning
+          component: youtube_api
+          service: video_recommendations
+        annotations:
+          summary: "Video API yanıt süresi yavaş"
+          description: "Video önerileri P95 yanıt süresi 3 saniyenin üzerinde ({{ $value | humanizeDuration }}). Hedef: <3s."
+          runbook_url: "https://docs.teknofest-egitim.com/runbooks/video-api-slow-response"
+          d"
+raded-uxks/degom/runboo.cgitimst-eocs.teknofes://d_url: "http   runbook  
+     yor."lenikiz etmi olumsu deneyi. Kullanıcı veya hatalıavaş y"Video APIription:    desc     
+  " kötüleşticı deneyiminılla "Video kury:umma    s:
+       annotations  ons
+     mmendati_recoe: videorvic     se  _api
+   tube: yount   compone   ng
+    rni: waitysever          ls:
+abe    l: 5m
+            for) > 0.02
+          }[5m])
+ions"mmendate/recopi/youtub="/a{endpointotalsts_tuepi_reqiro_a(k   rate
+              /     "}[5m])
+  tus=~"5..", stansecommendatiobe/rpi/youtudpoint="/aotal{en_trequestsiro_api_e(krat              (
+ r
+                 o   )
+5
+          ) >        [5m])
+  dations"}recommenube/"/api/youtoint={endpconds_bucket_seest_duration_api_requate(kiro       r95,
+       quantile(0.ogram_    hist    (
+                 expr: |
+
+     perienceideoUserEx DegradedV   - alert:)
+   low + errorsxperience (sr egraded use   # De  rate"
+
+ ut-s/high-timeookom/runboest-egitim.c.teknofps://docstturl: "hk_oounb  r       rüyor."
+  göideolarllback vanıcılar fa}}). Kullage nterceumanizeP $value | hzerinde ({{'un üanı %10imeout orideo API t: "Vscription de        
+ ek"oranı yüksPI timeout o A "Videry:      summa  ations:
+     annot
+     ndationsdeo_recommervice: vi          seapi
+youtube_omponent:           cical
+ crit severity::
+            labels
+        for: 5m
+       ) > 0.10])
+        s"}[10mndationcommereyoutube/pi/oint="/atotal{endpi_requests_te(kiro_ap     ra       
+        /0m])
+    }[1"504"atus=ions", stecommendate/r/api/youtubt="otal{endpoinsts_tro_api_reque    rate(ki               (
+r: |
+     exp   utRate
+   TimeoAPIeohVid: Higalerte
+      -  timeout rat      # Highules:
+0s
+    rrval: 6interience
+    er_expeeo_usname: vidlerts
+  - perience A  # User Exsts"
+
+requerunbooks/no-im.com/fest-egitteknottps://docs.rl: "hunbook_u          rir."
+uş olabilopmntısı kğlafrontend balir veya labis down ovii. Ser gelmedeke hiç istdeo API'yikada vin 5 dakSon: " descriptio       or"
+  gelmiyPI'ye istek "Video A summary:      ons:
+       annotati
+     ationsecommendideo_rce: vervi      s   _api
+  youtubent:ne compo  ng
+        warni  severity:
+        els:        lab for: 5m
+0
+       [5m]) == "}ndationscommee/reapi/youtubt="/l{endpointotapi_requests_(kiro_a      ratexpr: |
+            eests
+IRequoVideoAP alert: Nn)
+      -ght be dowmiice servquests (    # No re
+
+  e"st-rath-requehigs/bookim.com/runest-egitofcs.tekn://do "httpsurl:runbook_         ."
+  olabiliraldırısı soS veya boteliyor. DDtek g is{{ $value }}e dakikada deo API'y"Viption:     descri
+      üksek"ok y oranı ç API istek"Video  summary:       ations:
+        annot  mendations
+ideo_recomce: v       servi   utube_api
+omponent: yo        c warning
+  ty:everi         sabels:
+ 
+        lr: 2m
+        fom]) > 100s"}[1ommendationoutube/rec/api/ynt="ndpois_total{eequesto_api_r  rate(kir
+             expr: |te
+   APIRequestRaHighVideolert: 
+      - aDDoS)ntial e (potest ratigh reque # H   s:
+    rule
+  nterval: 30s
+    iesourcesdeo_system_r - name: vierts
+ esource Alm R # Systescore"
+
+ ish-y-low-turkunbooks/verom/regitim.cs.teknofest-ps://doc: "htt runbook_url     or!"
+    çalışmıyi eme sistrelem. Filte }})zePercentaglue | humani{{ $vaa (in altınd score %50'n contentn Turkishediation: "Mripesc     d
+     ICAL"şük - CRITçok düoru filtre skçe içerik y: "Türkmar       sum  ons:
+ ti    annota
+    onsommendati: video_rec   service
+       outube_apiponent: y    comical
+      ity: crit     severels:
+     ab   l   
+  r: 5m       fo0
+      ) < 0.5     ])
+t[10more_buckent_filter_sch_contekisiro_ture(k   rat        50,
+ uantile(0.am_qogr     hist  pr: |
+      excore
+     ntentSurkishCoowTVeryLrt:  - ale
+     er scoreontent filt ckishry low Tur   # Ve
+
+   re"rkish-scotuunbooks/low-egitim.com/rst-ofedocs.tekn//rl: "https: runbook_u
+         ." olabilirriliyorr önez videola). Alakasıntage }}ceanizePer | hum$value ({{ ltındae %70'in aontent scorrkish cdian Tu"Me: escription
+          d düşük"filtre skoruk  içeri"Türkçeummary:      s
+     ions: annotat       mendations
+ecom_r: video     servicei
+     ube_apyoutomponent:  c
+         warningseverity:       
+    els:ab       lr: 10m
+        fo0.70
+    ) < 
+       [10m])score_bucketilter_content_frkish_ate(kiro_tu  r      .50,
+    quantile(0stogram_  hi   : |
+     xpr       e
+ tScoreonten LowTurkishC    - alert:e
+  scorter t filh conten# Low Turkis     ules:
+ s
+    rl: 60
+    intervaent_qualityvideo_cont - name: 
+ y Alertslitontent Qua
+  # C"
+resilufautive-ooks/conseccom/runbtim.t-egiknofess.te//doc "https:k_url: runboo
+         mda!"itik durustem kr Siası.k hatealth chec h }} ardışıklue "{{ $variption:scde          taları"
+lth check haeaık hrdış: "Aary       summ
+   otations:   ann    endations
+ video_recomm   service: ck
+       ealth_cheent: h  componal
+        icerity: crit   sev   :
+          labels
+      for: 1m >= 3
+    resilufaconsecutive_k_h_checlt expr: heares
+       kFailuhCheceHealt Consecutivert: - al    ures
+ k failealth chective h Consecu  #k"
+
+    ealth-checlow-hrunbooks/segitim.com/teknofest-s.ps://doc: "httrl_uook     runb     ."
+edef: <500ms}ms). Halue }{{ $vun sürüyor (n uz00ms'deth check 5ealription: "H desc         yavaş"
+ süresi  check yanıt: "Healtharysumm
+          otations:    annns
+    ommendatio video_rec   service:ck
+       h_chehealtomponent: 
+          cwarning: rity       seves:
+      label
+     5mor:     f0
+    me_ms > 50e_tiponsck_reshealth_che    expr:   
+  ownseTimeSleckRespoCht: Health- alerlow
+      time sck response Health che# "
+
+      nts-downomponele-cipoks/mult/runbogitim.comnofest-eekdocs.t://: "httpsunbook_url      r"
+    run var.soinde tem genelmda. Sislıksız durusağbileşen  }} "{{ $valueription: desc
+          lıksız"ileşen sağ fazla brdenmmary: "Bi         suations:
+   annot      endations
+eo_recommservice: vid        
+  ecklth_chent: heapon  com  ical
+      ritrity: ceve     s
+         labels:r: 2m
+      fo
+      s == 0) >= 2t_statuponenh_check_comcount(healt expr: 
+       DegradedntsponeComt: Multiple   - aler   
+gradedmponents deultiple co      # Mlthy"
+
+unheabase-books/datatim.com/runest-egiknofdocs.te"https://rl: ook_urunb        or."
+  ilemiydata eriş. Video metak başarısızecse health chon: "Databa   descripti       "
+ıksızeni sağlleş"Database bisummary: 
+          ons:tinnota a
+       ationsmmend: video_reco   servicee
+       nt: databas  compone       l
+ ca: critierityev          s:
+els  lab
+          for: 2m == 0
+    "}"databases{component=_statunent_check_compoexpr: health        hy
+altntUnheponeaseCom: Datab- alert    healthy
+  mponent unase coab# Dat      lthy"
+
+pi-unheas/youtube-a/runbookgitim.comknofest-eocs.te"https://dnbook_url:    ru       ."
+ışmıyoralvery çcoeo disısız. Vidck başaralth cheheI ouTube APtion: "Yescrip          dız"
+ıksni sağl API bileşebe"YouTummary:    su     
+  ations: annot       ns
+mmendatiodeo_recovice: vi      serapi
+    outube_t: ynen      compol
+    tica crierity:       sevabels:
+   m
+        l      for: 2
+   0pi"} ==="youtube_aus{componentponent_stat_comheck health_c      expr:althy
+  heUnomponentbeAPICouTuert: Y - aly
+     althmponent unhee API coYouTub      # 
+
+oard"-dashbi/video-apid/video-ap3000/p://grafana:rl: "httoard_uashb        dalthy"
+  heideo-api-unbooks/v.com/runtim-egiknofestocs.te"https://d: _urlrunbook          labilir."
+ down oleşen bien fazlaBirdrısız. k başaec chealth overall h"Video APIon: ipti       descr
+   ksız"rvisi sağlı API se: "Videommary       suations:
+   not     an  
+ ommendations: video_rec    serviceck
+      health_cheonent:         compl
+  : criticaseverity          s:
+abel   l   3m
+        for: tus == 0
+  overall_stack_helth_cexpr: hea       hy
+ nhealtviceUideoAPISeralert: V    - 
+  hyunhealte ico API serv      # Vide:
+ules: 30s
+    rrvals
+    intehealth_checkideo_
+  - name: vertsth Check Al  # Heallable"
+
+edis-unavaiks/rboom/runco-egitim.cs.teknofesttps://do_url: "htrunbook    k."
+      layaca yavaş önerileriız. Videoarıseck başealth chcache h"Redis n: iptio       descreğil"
+   ir dilebilişcache ery: "Redis mar  sum:
+        tions  annota  
+    ionsrecommendato_rvice: vide   se       he
+onent: cac      comp
+    riticaleverity: c     s:
+     ls    labe
+     for: 2m     0
+  che"} == s_cant="redi{component_statusheck_componehealth_cexpr:        ailable
+ navacheU RedisClert:
+      - ale unavailabis cache   # Red  "
+
+ he-hit-rateacs/very-low-cookim.com/runbgitfest-es.teknotps://doc"htnbook_url:      ru
+     !"or olabiliri çalışmıysistem }}). Cache ePercentageniz| humalue ında ({{ $va'ın altrate %40he hit deo cacVin: "  descriptio  AL"
+       CRITICük -ate çok düşit ro cache h"Videy: mmar   su      ns:
+ tiota        annoons
+commendativideo_rece:    servi    
+   nt: cachene  compo
+        lticari severity: c        abels:
+ 
+        l    for: 5m0.40
+        ) <        )
+   
+        m])ations"}[10ommend="video_recypeotal{cache_t_misses_t_cache(kiro  rate           +
+             0m])
+  ns"}[1atiorecommende="video_cache_typtal{che_hits_toe(kiro_ca         rat
+          (
+              /)
+     0m]"}[1mmendations"video_recotype=e_total{cachits_ro_cache_h(ki     rate     (
+  
+          pr: |        exHitRate
+deoCacheryLowVi - alert: Vecal)
+     rate (critiw cache hit  loery V #
+
+     ashboard"ideo-api-di/v/d/video-ap00:30://grafanaurl: "httpdashboard_
+          e-hit-rate"s/low-cach/runbookegitim.coms.teknofest-s://doc "httprunbook_url:      ."
+     geçirilmeliözdensi ge strateji Cach80.>% Hedef:  }}).centagemanizePer hu |lueva{{ $altında (rate %60'ın hit ideo cache "Vcription:      desşük"
+     rate dü hit o cachey: "Vide     summar  s:
+   notation      ans
+  ionrecommendat: video_service       che
+   nent: ca      comporning
+    ty: waeri    sevls:
+            labe0m
+       for: 1 0.60
+     ) < )
+                   10m])
+ations"}[commendideo_reype="votal{cache_te_misses_tcachate(kiro_           r +
+              "}[10m])
+  onsndatiecommeeo_rpe="vidache_tyhits_total{c_cache_(kiro   rate                   (
+ /
+          m])
+     ions"}[10endatcommdeo_ree_type="vicach_hits_total{acherate(kiro_c              (
+ 
+        |r:       expheHitRate
+ eoCacrt: LowVid   - ale rate
+   cache hit # Low ules:
+      30s
+    rterval:ance
+    inorm_perfchecao_name: vides
+  - lertmance Aache Perfor
+  # Cspike"
+o-latency-videnbooks//rut-egitim.comocs.teknofestps://d "htrunbook_url:        
+  olabilir."sorunu a API ache vey}). C }eDurationanizvalue | hum{ $ üzerinde ({niyenin say'si 5overy latencdiscon: "Video  descripti       
+  si yüksek"ri latency'ideo öneummary: "V
+          stations:   annoons
+     atienddeo_recomme: vi servic       
+  utube_apionent: yo    comping
+      rity: warnvese
+          els:       lab  for: 3m
+ 
+      ) > 5         m])
+ s_bucket[5_secondlatencytion_commendaeo_rekiro_vid       rate(95,
+     le(0.am_quanti     histogr: |
+      expr       Spike
+nLatencyendatioomm VideoRecalert:e
+      - ncy spiktemendation laVideo recom
+      # "
+rdshboaapi-dadeo-api/vio-3000/d/videa:://grafanrl: "http_u   dashboard"
+       wry-sloeo-api-vebooks/vidm/runt-egitim.coescs.teknof"https://dorl:  runbook_u      
+   !"meout alıyorlar tillanıcıKu}}). uration manizeD$value | hu{ nde ({in üzerii 10 saniyenresnıt sü95 yaileri Pner"Video öption:       descri"
+    LCRITICAok yavaş - ıt süresi çPI yandeo A"Vimary:        sum  tions:
+     annotans
+    tiorecommendae: video_ervic s
+         utube_apint: yo  compone
+        ly: criticaeritsev
+               labels:m
+        for: 2    > 10
+       ))
+   5m]ndations"}[mee/recomub"/api/youtt=int{endpos_bucke_secondurationuest_diro_api_reqrate(k            tile(0.95,
+am_quanistogr  h |
+          expr:     
+ IResponseideoAPVerySlowV   - alert: 
+   econds) > 10 stime (P95onse deo API respy slow vi Ver #
+
+     "dashboardeo-api-vidapi/video-a:3000/d/ttp://grafanurl: "hashboard_

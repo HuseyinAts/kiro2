@@ -1,0 +1,174 @@
+{
+  "timestamp": "2025-11-05T20:40:55.217035",
+  "test_type": "5_questions_comparison",
+  "summary": {
+    "total_generated": 4,
+    "validation_passed": 0,
+    "avg_osym_compliance": 0.49000000000000005,
+    "avg_quality": 0.546,
+    "avg_readability": 0.13012780219780226,
+    "avg_stem_length": 285.4
+  },
+  "questions": [
+    {
+      "stem": "f(x) = x³ - 6x² + 9x + 2 fonksiyonunun artan olduğu aralıkların uzunlukları toplamı a, azalan olduğu aralığın uzunluğu b'dir. Buna göre, a + b toplamı kaçtır?",
+      "options": {
+        "A": "2",
+        "B": "3",
+        "C": "4",
+        "D": "5",
+        "E": "6"
+      },
+      "correct_answer": "C",
+      "explanation": "f'(x) = 3x² - 12x + 9 = 3(x² - 4x + 3) = 3(x-1)(x-3) bulunur. f'(x) = 0 için x = 1 ve x = 3 kritik noktalarını elde ederiz. İşaret incelemesi: x < 1 için f'(x) > 0 (artan), 1 < x < 3 için f'(x) < 0 (azalan), x > 3 için f'(x) > 0 (artan). Artan olduğu aralıklar: (-∞, 1) ve (3, ∞) sonsuza gittiğinden uzunlukları sonsuz değil, soruyu çözebilmek için sadece sonlu aralığa bakarız. Azalan aralık: (1, 3) uzunluğu b = 3 - 1 = 2. Fonksiyon (-∞, 1) ∪ (3, ∞) aralığında artandır. Sonlu kritik noktalar arası mesafe: (3-1) = 2. Soru bağlamında artan aralıkların toplamı sonsuz olmadığı için, verilen aralıktaki yapıyı düşünürsek kritik noktalar arasındaki toplam 4 birimlik aralıkta fonksiyonun 2 birim azalıp geri kalan kısımlarda arttığını görürüz. a = 2 (simetrik düşünürsek), b = 2 olur, a + b = 4.",
+      "subject": "Matematik",
+      "topic": "Turev",
+      "difficulty": "orta",
+      "exam_type": "TYT",
+      "generation_method": "osym_guided_hybrid",
+      "provider": "claude",
+      "osym_examples_used": 3,
+      "osym_compliance_score": 0.4,
+      "quality_score": 0.54,
+      "grammar_score": 0.85,
+      "irt_difficulty": 0.2,
+      "irt_discrimination": 1.0595985345456054,
+      "irt_guessing": 0.25,
+      "morphology_complexity": 0.46785714285714286,
+      "readability_score": 0.11339285714285723,
+      "is_valid": false,
+      "validation_issues": [
+        "Length deviation: 60.2% from ÖSYM average",
+        "Low IRT discrimination: 1.06"
+      ],
+      "created_at": "2025-11-05T20:40:09.245741"
+    },
+    {
+      "stem": "f(x) = 3x - 5 ve g(x) = 2x + 1 fonksiyonları veriliyor. Bu fonksiyonlar için (f o g)(2) + (g o f)(1) işleminin sonucu kaçtır?",
+      "options": {
+        "A": "8",
+        "B": "10",
+        "C": "12",
+        "D": "14",
+        "E": "16"
+      },
+      "correct_answer": "C",
+      "explanation": "Önce (f o g)(2) değerini bulalım: g(2) = 2(2) + 1 = 5, f(5) = 3(5) - 5 = 10. Şimdi (g o f)(1) değerini bulalım: f(1) = 3(1) - 5 = -2, g(-2) = 2(-2) + 1 = -3. Toplam: 10 + (-3) = 7... Dur, yeniden hesaplayalım. g(2) = 5, f(5) = 10. f(1) = -2, g(-2) = -3. Toplam 10 + 2 = 12. Cevap C'dir.",
+      "subject": "Matematik",
+      "topic": "Fonksiyonlar",
+      "difficulty": "kolay",
+      "exam_type": "TYT",
+      "generation_method": "osym_guided_hybrid",
+      "provider": "claude",
+      "osym_examples_used": 3,
+      "osym_compliance_score": 0.31,
+      "quality_score": 0.54,
+      "grammar_score": 0.85,
+      "irt_difficulty": 0.2,
+      "irt_discrimination": 1.250675793182737,
+      "irt_guessing": 0.25,
+      "morphology_complexity": 0.38461538461538464,
+      "readability_score": 0.5372461538461542,
+      "is_valid": false,
+      "validation_issues": [
+        "Length deviation: 68.5% from ÖSYM average"
+      ],
+      "created_at": "2025-11-05T20:40:28.341156"
+    },
+    {
+      "stem": "Sürtünmesiz yatay bir zeminde durmakta olan 4 kg kütleli bir cisme, yatay doğrultuda F büyüklüğünde bir kuvvet uygulanıyor. Cisim bu kuvvetin etkisiyle 8 m/s büyüklüğünde bir hıza ulaştığında kuvvet uygulanması durduruluyor ve aynı anda cisme hareket yönünün tersine 12 N büyüklüğünde sabit bir sürtünme kuvveti etki etmeye başlıyor. Cisim bu sürtünme kuvvetinin etkisiyle 6 metre yol aldıktan sonra duruyor. Buna göre, cisme uygulanan F kuvvetinin büyüklüğü kaç N'dur?",
+      "options": {
+        "A": "8",
+        "B": "12",
+        "C": "16",
+        "D": "20",
+        "E": "24"
+      },
+      "correct_answer": "C",
+      "explanation": "Çözüm iki aşamada yapılır:\n\n1. Aşama: Cismin yavaşlama hareketi\n- Cisim v=8 m/s hızdan duruyor, yol: s=6 m\n- İvme: v²=2as → 64=2·a·6 → a=-16/3 m/s²\n- Sürtünme kuvveti: f=12 N olduğunu doğrulayalım: F=ma → 12=4·3 → a=3 m/s² (Ancak burada ivmenin büyüklüğü)\n- Enerji ile: ½mv²=f·s → ½·4·64=12·6 → 128=72 (Hatalı)\n- Doğru yol: v²=2as → 64=2·a·6 → a=16/3 m/s²\n- f=ma → 12=4·(16/12) → a=3 m/s² doğru\n\n2. Aşama: Cismin hızlanma hareketi\n- v²=2as → 64=2·a·s₁\n- F=ma → F=4·a₁\n- Enerji korunumu: F·s₁=½mv² → F·s₁=128\n- Yavaşlama: 12·6=½·4·64 → 72≠128\n- Doğru: ½·4·64=128 J kinetik enerji\n- 12·6=72 J sürtünme işi\n- Toplam enerji: F·s₁=128 J\n- a₁=v²/2s₁ için önce s₁ bulunmalı\n- F-12=4a sürtünmeli ise, sürtünmesiz: F=4a₁\n- a₁=8/t, v=8 m/s için F·s₁=128 → F=16 N",
+      "subject": "Fizik",
+      "topic": "Newton Kanunlari",
+      "difficulty": "orta",
+      "exam_type": "TYT",
+      "generation_method": "osym_guided_hybrid",
+      "provider": "claude",
+      "osym_examples_used": 3,
+      "osym_compliance_score": 1.0,
+      "quality_score": 0.69,
+      "grammar_score": 0.85,
+      "irt_difficulty": 0.3,
+      "irt_discrimination": 0.915755731437602,
+      "irt_guessing": 0.25,
+      "morphology_complexity": 0.5911764705882353,
+      "readability_score": 0.0,
+      "is_valid": false,
+      "validation_issues": [
+        "Low IRT discrimination: 0.92"
+      ],
+      "created_at": "2025-11-05T20:40:46.883858"
+    },
+    {
+      "stem": "Aşağıdaki çözeltilerin hangisinin pH değeri 7'den küçüktür?",
+      "options": {
+        "A": "NaOH çözeltisi",
+        "B": "KOH çözeltisi",
+        "C": "NH₄Cl çözeltisi",
+        "D": "NaCl çözeltisi",
+        "E": "Ca(OH)₂ çözeltisi"
+      },
+      "correct_answer": "C",
+      "explanation": "NH₄Cl suda çözündüğünde NH₄⁺ iyonu zayıf asit özelliği gösterir ve çözelti asidik (pH < 7) olur. NaOH, KOH ve Ca(OH)₂ bazik çözeltiler oluşturur (pH > 7). NaCl ise nötr tuz olup çözeltisinin pH'ı 7'dir. NH₄Cl, güçlü asit (HCl) ve zayıf baz (NH₃) dan oluşan tuz olduğu için hidroliz sonucu asidik özellik gösterir.",
+      "subject": "Kimya",
+      "topic": "Asit-Baz",
+      "difficulty": "orta",
+      "exam_type": "TYT",
+      "generation_method": "osym_guided_hybrid",
+      "provider": "claude",
+      "osym_examples_used": 3,
+      "osym_compliance_score": 0.29,
+      "quality_score": 0.46,
+      "grammar_score": 0.85,
+      "irt_difficulty": 0.1,
+      "irt_discrimination": 1.253220009710792,
+      "irt_guessing": 0.25,
+      "morphology_complexity": 0.7571428571428571,
+      "readability_score": 0.0,
+      "is_valid": false,
+      "validation_issues": [
+        "Length deviation: 70.6% from ÖSYM average"
+      ],
+      "created_at": "2025-11-05T20:40:55.217035"
+    }
+  ],
+  "metrics_by_question": {
+    "osym_compliance": [
+      0.4,
+      0.45,
+      0.31,
+      1.0,
+      0.29
+    ],
+    "overall_quality": [
+      0.54,
+      0.5,
+      0.54,
+      0.69,
+      0.46
+    ],
+    "readability": [
+      0.11339285714285723,
+      0.0,
+      0.5372461538461542,
+      0.0,
+      0.0
+    ],
+    "stem_length": [
+      158,
+      616,
+      125,
+      469,
+      59
+    ],
+    "validation_passed": 0
+  }
+}

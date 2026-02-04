@@ -1,0 +1,23 @@
+{
+  "enabled": true,
+  "name": "Revolutionary AI Features Monitor",
+  "description": "REQ-10: Monitors and optimizes 7 Revolutionary AI features (VARK+Felder, Turkish ZPD, Morphology IRT, Turkish FSRS, 3-Level Simplification, Bionic Reading, Multi-Agent Blackboard)",
+  "version": "1.0",
+  "when": {
+    "type": "fileEdited",
+    "patterns": [
+      "backend/agents/**/*.py",
+      "backend/services/**/hybrid_learning_style_detector.py",
+      "backend/services/**/turkish_zpd_maarif_system.py",
+      "backend/services/**/turkish_morphology_irt.py",
+      "backend/services/**/turkish_optimized_fsrs.py",
+      "backend/services/**/three_level_turkish_simplification.py",
+      "backend/services/**/turkish_bionic_reading.py",
+      "backend/services/**/multi_agent_blackboard.py"
+    ]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "🤖 REVOLUTIONARY AI FEATURE ANALYSIS (REQ-10)\n\nAnalyze the modified AI service/agent against MASTER_SPEC requirements:\n\n## 1. VARK + Felder-Silverman Hybrid (REQ-10.1)\n   - Validates 64 learning profile combinations\n   - Checks behavioral data collection\n   - Verifies confidence level calculation\n\n## 2. Turkish ZPD + MEB Maarif (REQ-10.2)\n   - Cultural factors integration (Ramadan, exam seasons)\n   - Group learning preference analysis\n   - ZPD range calculation accuracy\n\n## 3. Turkish Morphology IRT (REQ-10.3)\n   - Morphological complexity analysis\n   - ÖSYM/ETS standard comparison\n   - Item Characteristic Curve (ICC) validation\n\n## 4. Turkish FSRS (REQ-10.4)\n   - 17-parameter optimization\n   - Cultural adjustment algorithms\n   - Spaced repetition scheduling\n\n## 5. 3-Level Simplification (REQ-10.5)\n   - Lexical simplification (Ottoman/academic words)\n   - Syntactic simplification (sentence structure)\n   - Semantic simplification (meaning preservation)\n\n## 6. Turkish Bionic Reading (REQ-10.6)\n   - Root-suffix separation accuracy\n   - Dyslexia-friendly formatting\n   - Bold ratio calculation for Turkish\n\n## 7. Multi-Agent Blackboard (REQ-10.7, REQ-11)\n   - Real-time agent coordination (< 100ms notification)\n   - WebSocket communication stability\n   - Agent synergy optimization\n\n## ACTION ITEMS:\n1. Run integration tests for the modified feature\n2. Verify performance benchmarks (REQ-7: <200ms response)\n3. Check Turkish language support (REQ-12)\n4. Validate MEB/ÖSYM curriculum alignment (REQ-3)\n5. Ensure WCAG 2.1 Level AA compliance (REQ-9)\n\nProvide detailed analysis in Turkish with specific improvement recommendations."
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "timestamp": "2025-11-09T07:21:08.299285",
+  "databases": {
+    "kiro2.db": {
+      "path": "backend/kiro2.db",
+      "exists": true,
+      "size": 0,
+      "tables": {},
+      "all_tables": []
+    },
+    "turkiye_sinav.db": {
+      "path": "turkiye_sinav.db",
+      "exists": true,
+      "size": 0,
+      "tables": {},
+      "all_tables": []
+    }
+  },
+  "summary": {
+    "databases_found": 2,
+    "non_empty_databases": 0,
+    "total_tables": 5,
+    "total_rows": 0
+  }
+}

@@ -1,0 +1,97 @@
+# Cache Alert Rules
+# Teknofest 2025 - Eğitim Eylemci Projesi
+# Requirements: 4.14, 5.15
+
+groups:
+  - name: cache_alerts
+    interval: 30s
+    rules:
+      # Low Cache Hit Rate Alert
+      - alert: LowCacheHitRate
+        expr: |
+          cache_hit_rate < 0.60
+        for: 15m
+        labels:
+          severity: warning
+          component: cache
+        annotations:
+          summary: "Düşük cache hit rate"
+          description: "Cache hit rate %{{ $value | humanizePercentage }} seviyesinde. Hedef: >%80. Cache stratejisi gözden geçirilmeli."
+          dashboard: "http://grafana:3000/d/video-api/video-api-dashboard"
+          
+      # Very Low Cache Hit Rate Alert (Critical)
+      - alert: VeryLowCacheHitRate
+        expr: |
+          cache_hit_rate < 0.40
+        for: 10m
+        labels:
+          severity: critical
+          component: cache
+        annotations:
+          summary: "Çok düşük cache hit rate"
+          description: "Cache hit rate %{{ $value | humanizePercentage }} seviyesinde. Cache sistemi düzgün çalışmıyor olabilir!"
+          dashboard: "http://grafana:3000/d/video-api/video-api-dashboard"
+          
+      # High Cache Size Alert
+      - alert: HighCacheSize
+        expr: |
+          cache_size_entries > 9000
+        for: 5m
+        labels:
+          severity: warning
+          component: cache
+        annotations:
+          summary: "Cache boyutu limite yaklaştı"
+          description: "Cache'de {{ $value }} entry var. Limit: 10,000. Eviction policy kontrol edilmeli."
+          
+      # Cache Full Alert
+      - alert: CacheFull
+        expr: |
+          cache_size_entries >= 10000
+        for: 1m
+        labels:
+          severity: critical
+          component: cache
+        annotations:
+          summary: "Cache dolu"
+          description: "Cache kapasitesi doldu ({{ $value }} entries). Yeni veriler cache'lenemeyebilir."
+          
+      # High Cache Miss Rate
+      - alert: HighCacheMissRate
+        expr: |
+          rate(cache_operations_total{operation="get"}[5m]) > 0 
+          and 
+          (1 - cache_hit_rate) > 0.50
+        for: 10m
+        labels:
+          severity: warning
+          component: cache
+        annotations:
+          summary: "Yüksek cache miss oranı"
+          description: "Cache miss oranı %{{ $value | humanizePercentage }}. Cache warming stratejisi uygulanmalı."
+          
+      # Redis Connection Issues
+      - alert: RedisConnectionIssues
+        expr: |
+          up{job="redis_cache"} == 0
+        for: 2m
+        labels:
+          severity: critical
+          component: redis
+        annotations:
+          summary: "Redis bağlantı sorunu"
+          description: "Redis cache'e bağlanılamıyor. Fallback to in-memory cache aktif olmalı."
+          
+      # High Cache Operation Latency
+      - alert: HighCacheOperationLatency
+        expr: |
+          histogram_quantile(0.95,
+            sum(rate(cache_operation_duration_seconds_bucket[5m])) by (le, operation)
+          ) > 0.1
+        for: 5m
+        labels:
+          severity: warning
+          component: cache
+        annotations:
+          summary: "Yüksek cache operasyon gecikmesi"
+          description: "Cache operasyonları P95 {{ $value }}s sürüyor. Hedef: <100ms"

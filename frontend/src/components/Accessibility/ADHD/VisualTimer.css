@@ -1,0 +1,388 @@
+/**
+ * Visual Timer Styles - Görsel Zamanlayıcı Stilleri
+ * 
+ * DEHB desteği için görsel zamanlayıcı stilleri.
+ * WCAG 2.1 Level AA uyumlu, erişilebilir tasarım.
+ * 
+ * Requirements: REQ-52.6 - REQ-52.10
+ */
+
+/* ============================================================================
+   Container Styles
+   ============================================================================ */
+
+.visual-timer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  border-radius: 1rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  min-height: 400px;
+}
+
+.visual-timer:focus-within {
+  box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.5);
+  outline: 2px solid #4299e1; /* Visible focus indicator for keyboard navigation */
+  outline-offset: 2px;
+}
+
+/* Size Variants */
+.visual-timer-small {
+  padding: 1rem;
+  min-height: 250px;
+}
+
+.visual-timer-medium {
+  padding: 2rem;
+  min-height: 400px;
+}
+
+.visual-timer-large {
+  padding: 3rem;
+  min-height: 550px;
+}
+
+/* ============================================================================
+   Header Styles
+   ============================================================================ */
+
+.timer-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 2rem;
+}
+
+.session-emoji {
+  font-size: 2rem;
+  line-height: 1;
+}
+
+.session-type {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin: 0;
+  color: #2d3748; /* Contrast ratio: 12.6:1 (WCAG AAA) */
+}
+
+/* ============================================================================
+   Progress Ring Styles
+   ============================================================================ */
+
+.timer-ring-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 1.5rem 0;
+}
+
+.timer-ring {
+  transform: rotate(0deg);
+  transition: transform 0.3s ease;
+}
+
+.progress-ring {
+  transition: stroke-dashoffset 1s linear;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}
+
+/* ============================================================================
+   Time Display Styles
+   ============================================================================ */
+
+.time-display {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  color: #2d3748;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.05em;
+}
+
+.time-text {
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* ============================================================================
+   Timer Info Styles
+   ============================================================================ */
+
+.timer-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 1.5rem;
+  width: 100%;
+}
+
+.progress-percentage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.percentage-value {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #2d3748;
+}
+
+.percentage-label {
+  font-size: 0.875rem;
+  color: #4a5568; /* Changed from #718096 (3.5:1) to #4a5568 (7.5:1) for WCAG AA compliance */
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* ============================================================================
+   Status Indicator Styles
+   ============================================================================ */
+
+.status-indicator {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background-color: rgba(255, 255, 255, 0.8);
+  border-radius: 2rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.status-dot {
+  width: 0.75rem;
+  height: 0.75rem;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+}
+
+.status-dot.active {
+  background-color: #48bb78;
+  box-shadow: 0 0 0 3px rgba(72, 187, 120, 0.3);
+  animation: blink 2s ease-in-out infinite;
+}
+
+.status-dot.paused {
+  background-color: #ed8936;
+}
+
+@keyframes blink {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.status-text {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #4a5568;
+}
+
+/* ============================================================================
+   Loading State
+   ============================================================================ */
+
+.visual-timer-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem;
+  min-height: 400px;
+}
+
+.spinner {
+  width: 3rem;
+  height: 3rem;
+  border: 4px solid #e2e8f0;
+  border-top-color: #4299e1;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ============================================================================
+   Error State
+   ============================================================================ */
+
+.visual-timer-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  background-color: #fff5f5;
+  border: 2px solid #fc8181;
+  border-radius: 0.5rem;
+  color: #c53030;
+  min-height: 200px;
+}
+
+.error-icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+.visual-timer-error p {
+  margin: 0;
+  font-size: 1rem;
+  text-align: center;
+}
+
+/* ============================================================================
+   Screen Reader Only
+   ============================================================================ */
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* ============================================================================
+   Responsive Design
+   ============================================================================ */
+
+@media (max-width: 640px) {
+  .visual-timer {
+    padding: 1.5rem;
+    min-height: 350px;
+  }
+
+  .timer-header {
+    margin-bottom: 1.5rem;
+  }
+
+  .session-emoji {
+    font-size: 1.5rem;
+  }
+
+  .session-type {
+    font-size: 1.25rem;
+  }
+
+  .percentage-value {
+    font-size: 1.5rem;
+  }
+}
+
+/* ============================================================================
+   High Contrast Mode
+   ============================================================================ */
+
+@media (prefers-contrast: high) {
+  .visual-timer {
+    border: 2px solid currentColor;
+  }
+
+  .status-dot.active {
+    border: 2px solid #000;
+  }
+
+  .status-dot.paused {
+    border: 2px solid #000;
+  }
+}
+
+/* ============================================================================
+   Reduced Motion (WCAG 2.3.3 Animation from Interactions)
+   ============================================================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .progress-ring,
+  .status-dot.active,
+  .timer-ring,
+  .visual-timer {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+/* ============================================================================
+   Dark Mode Support
+   ============================================================================ */
+
+@media (prefers-color-scheme: dark) {
+  .visual-timer {
+    background-color: #2d3748;
+  }
+
+  .session-type,
+  .time-text,
+  .percentage-value {
+    color: #f7fafc;
+  }
+
+  .percentage-label,
+  .status-text {
+    color: #cbd5e0;
+  }
+
+  .status-indicator {
+    background-color: rgba(0, 0, 0, 0.3);
+  }
+
+  .visual-timer-error {
+    background-color: #742a2a;
+    border-color: #fc8181;
+    color: #feb2b2;
+  }
+}
+
+/* ============================================================================
+   Print Styles
+   ============================================================================ */
+
+@media print {
+  .visual-timer {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  .progress-ring,
+  .status-dot {
+    animation: none;
+  }
+}

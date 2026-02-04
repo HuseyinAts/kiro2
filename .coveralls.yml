@@ -1,0 +1,40 @@
+# Coveralls Configuration for Coverage Tracking
+# This file configures Coveralls.io integration for coverage reporting
+
+# Service configuration
+service_name: github-actions
+repo_token: ${COVERALLS_REPO_TOKEN}
+
+# Coverage source settings
+coverage_clover: backend/coverage.xml
+json_path: backend/coverage.json
+
+# Source files configuration
+source_dirs:
+  - backend/
+
+# Parallel build support
+parallel: true
+
+# Git configuration
+git:
+  head:
+    id: ${GITHUB_SHA}
+    author_name: ${GITHUB_ACTOR}
+    author_email: "${GITHUB_ACTOR}@users.noreply.github.com"
+    committer_name: ${GITHUB_ACTOR}
+    committer_email: "${GITHUB_ACTOR}@users.noreply.github.com"
+    message: ${GITHUB_EVENT_NAME}
+  branch: ${GITHUB_REF_NAME}
+  remotes:
+    - name: origin
+      url: ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}.git
+
+# Flag management for multi-part coverage
+flag_name: backend-python
+
+# Merge configuration
+merge: true
+
+# Source encoding
+encoding: utf-8

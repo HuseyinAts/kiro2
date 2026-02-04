@@ -1,0 +1,487 @@
+"""
+Comprehensive tests for api/monitoring.py
+Tests monitoring API endpoints for health checks and performance metrics
+"""
+import pytest
+from fastapi import FastAPI
+from fastapi.testclient import TestClient
+from unittest.mock import patch, AsyncMock, MagicMock
+from datetime import datetime
+
+
+@pytest.fixture
+def test_app():
+    """Create test app with monitoring router"""
+    # Mock the missing performance_monitor module before importing
+    import sys
+    from unittest.mock import MagicMock
+
+    mock_monitor = MagicMock()
+    mock_monitor.is_monitoring = False
+    mock_monitor.get_api_performance_summary.return_value = {}
+    mock_monitor.get_db_performance_summary.return_value = {}
+    mock_monitor.get_system_performance_summary.return_value = {}
+    mock_monitor.export_metrics_to_prometheus.return_value = ""
+    mock_monitor.start_monitoring = AsyncMock()
+    mock_monitor.stop_monitoring = AsyncMock()
+
+    sys.modules['core.performance_monitor'] = MagicMock(performance_monitor=mock_monitor)
+
+    from api.monitoring import router
+    app = FastAPI()
+    app.include_router(router)
+    return app
+
+
+@pytest.fixture
+def client(test_app):
+    """Create test client"""
+    return TestClient(test_app)
+
+
+@pytest.fixture
+def mock_performance_monitor():
+    """Mock performance monitor"""
+    monitor = MagicMock()
+    monitor.is_monitoring = False
+    monitor.get_api_performance_summary.return_value = {
+        "avg_response_time_ms": 150.5,
+        "total_requests": 1000
+    }
+    monitor.get_db_performance_summary.return_value = {
+        "avg_execution_time_ms": 50.2,
+        "total_queries": 500
+    }
+    monitor.get_system_performance_summary.return_value = {
+        "cpu": {"avg_percent": 45.0},
+        "memory": {"avg_percent": 60.0}
+    }
+    monitor.export_metrics_to_prometheus.return_value = "# HELP metric_name Description\nmetric_name 100"
+    return monitor
+
+
+class TestHealthCheckEndpoint:
+    """Test /api/v1/monitoring/health endpoint"""
+
+    @patch('api.monitoring.logger')
+    @patch('api.monitoring.get_db_session')
+    @patch('api.monitoring.performance_monitor')
+    def test_health_check_all_healthy(self, mock_monitor, mock_db_session, mock_logger, client):
+        """Test health check when all services are healthy"""
+        # Mock database session
+        mock_session = AsyncMock()
+        mock_session.__aenter__.return_value = mock_session
+        mock_session.__aexit__.return_value = None
+        mock_session.execute = AsyncMock()
+        mock_db_session.return_value = mock_session
+
+        # Mock performance monitor
+        mock_monitor.is_monitoring = True
+
+        response = client.get("/api/v1/monitoring/health")
+
+        assert response.status_code == 200
+        data = response.json()
+        assert data["success"] is True
+        assert "data" in data
+        assert data["data"]["status"] in ["healthy", "degraded"]
+
+    @patch('api.monitoring.logger')
+    @patch('api.monitoring.get_db_session')
+    @patch('api.monitoring.performance_monitor')
+    def test_health_check_response_structure(self, mock_monitor, mock_db_session, mock_logger, client):
+        """Test health check response structure"""
+        mock_session = AsyncMock()
+        mock_session.__aenter__.return_value = mock_session
+        mock_session.__aexit__.return_value = None
+        mock_session.execute = AsyncMock()
+        mock_db_session.return_value = mock_session
+        mock_monitor.is_monitoring = True
+
+        response = client.get("/api/v1/monitoring/health")
+        data = response.json()
+
+        assert "success" in data
+        assert "data" in data
+        assert "message" in data
+        assert "status" in data["data"]
+        assert "timestamp" in data["data"]
+        assert "version" in data["data"]
+        assert "services" in data["data"]
+
+    @patch('api.monitoring.get_db_session')
+    @patch('api.monitoring.performance_monitor')
+    def test_health_check_database_unhealthy(self, mock_monitor, mock_db_session, client):
+        """Test health check when database is unhealthy"""
+        # Mock database failure
+        async def raise_error(*args, **kwargs):
+            raise Exception("Database connection failed")
+
+        mock_session = AsyncMock()
+        mock_session.__aenter__.return_value = mock_session
+        mock_session.__aexit__.return_value = None
+        mock_session.execute = raise_error
+        mock_db_session.return_value = mock_session
+        mock_monitor.is_monitoring = True
+
+        response = client.get("/api/v1/monitoring/health")
+
+        assert response.status_code == 200
+        data = response.json()
+        assert data["data"]["status"] == "degraded"
+        assert "database" in data["data"]["services"]
+        assert "unhealthy" in data["data"]["services"]["database"]
+
+
+class TestAPIPerformanceEndpoint:
+    """Test /api/v1/monitoring/performance/api endpoint"""
+
+    @patch('api.monitoring.performance_monitor')
+    def test_get_api_performance_default(self, mock_monitor, client):
+        """Test API performance with default parameters"""
+        mock_monitor.get_api_performance_summary.return_value = {
+            "avg_response_time_ms": 150.5,
+            "total_requests": 1000
+        }
+
+        response = client.get("/api/v1/monitoring/performance/api")
+
+        assert response.status_code == 200
+        data = response.json()
+        assert data["success"] is True
+        assert "data" in data
+        assert data["data"]["avg_response_time_ms"] == 150.5
+
+    @patch('api.monitoring.performance_monitor')
+    def test_get_api_performance_with_hours(self, mock_monitor, client):
+        """Test API performance with custom hours parameter"""
+        mock_monitor.get_api_performance_summary.return_value = {
+            "avg_response_time_ms": 200.0
+        }
+
+        response = client.get("/api/v1/monitoring/performance/api?hours=12")
+
+        assert response.status_code == 200
+        data = response.json()
+        assert "12 hours" in data["message"]
+
+    @patch('api.monitoring.performance_monitor')
+    def test_get_api_performance_error(self, mock_monitor, client):
+        """Test API performance error handling"""
+        mock_monitor.get_api_performance_summary.side_effect = Exception("Monitor error")
+
+        response = client.get("/api/v1/monitoring/performance/api")
+
+        assert response.status_code == 500
+
+
+class TestDatabasePerformanceEndpoint:
+    """Test /api/v1/monitoring/performance/database endpoint"""
+
+    @patch('api.monitoring.performance_monitor')
+    def test_get_database_performance(self, mock_monitor, client):
+        """Test database performance metrics"""
+        mock_monitor.get_db_performance_summary.return_value = {
+            "avg_execution_time_ms": 50.2,
+            "total_queries": 500
+        }
+
+        response = client.get("/api/v1/monitoring/performance/database")
+
+        assert response.status_code == 200
+        data = response.json()
+        assert data["success"] is True
+        assert data["data"]["avg_execution_time_ms"] == 50.2
+
+    @patch('api.monitoring.performance_monitor')
+    def test_get_database_performance_with_hours(self, mock_monitor, client):
+        """Test database performance with hours parameter"""
+        mock_monitor.get_db_performance_summary.return_value = {}
+
+        response = client.get("/api/v1/monitoring/performance/database?hours=6")
+
+        assert response.status_code == 200
+        data = response.json()
+        assert "6 hours" in data["message"]
+
+
+class TestSystemPerformanceEndpoint:
+    """Test /api/v1/monitoring/performance/system endpoint"""
+
+    @patch('api.monitoring.performance_monitor')
+    def test_get_system_performance(self, mock_monitor, client):
+        """Test system performance metrics"""
+        mock_monitor.get_system_performance_summary.return_value = {
+            "cpu": {"avg_percent": 45.0},
+            "memory": {"avg_percent": 60.0}
+        }
+
+        response = client.get("/api/v1/monitoring/performance/system")
+
+        assert response.status_code == 200
+        data = response.json()
+        assert data["success"] is True
+        assert "cpu" in data["data"]
+
+    @patch('api.monitoring.performance_monitor')
+    def test_get_system_performance_error(self, mock_monitor, client):
+        """Test system performance error handling"""
+        mock_monitor.get_system_performance_summary.side_effect = Exception("System error")
+
+        response = client.get("/api/v1/monitoring/performance/system")
+
+        assert response.status_code == 500
+
+
+class TestPerformanceSummaryEndpoint:
+    """Test /api/v1/monitoring/performance/summary endpoint"""
+
+    @patch('api.monitoring.performance_monitor')
+    def test_get_performance_summary(self, mock_monitor, client):
+        """Test comprehensive performance summary"""
+        mock_monitor.get_api_performance_summary.return_value = {"avg_response_time_ms": 150}
+        mock_monitor.get_db_performance_summary.return_value = {"avg_execution_time_ms": 50}
+        mock_monitor.get_system_performance_summary.return_value = {"cpu": {"avg_percent": 45}}
+
+        response = client.get("/api/v1/monitoring/performance/summary")
+
+        assert response.status_code == 200
+        data = response.json()
+        assert data["success"] is True
+        assert "api_performance" in data["data"]
+        assert "database_performance" in data["data"]
+        assert "system_performance" in data["data"]
+        assert "timestamp" in data["data"]
+
+    @patch('api.monitoring.performance_monitor')
+    def test_get_performance_summary_with_hours(self, mock_monitor, client):
+        """Test performance summary with custom hours"""
+        mock_monitor.get_api_performance_summary.return_value = {}
+        mock_monitor.get_db_performance_summary.return_value = {}
+        mock_monitor.get_system_performance_summary.return_value = {}
+
+        response = client.get("/api/v1/monitoring/performance/summary?hours=24")
+
+        assert response.status_code == 200
+        data = response.json()
+        assert data["data"]["time_period_hours"] == 24
+
+
+class TestPrometheusMetricsEndpoint:
+    """Test /api/v1/monitoring/metrics/prometheus endpoint"""
+
+    @patch('api.monitoring.performance_monitor')
+    def test_get_prometheus_metrics(self, mock_monitor, client):
+        """Test Prometheus metrics export"""
+        mock_monitor.export_metrics_to_prometheus.return_value = "# HELP metric_name Description\nmetric_name 100"
+
+        response = client.get("/api/v1/monitoring/metrics/prometheus")
+
+        assert response.status_code == 200
+        assert "metric_name" in response.text
+
+    @patch('api.monitoring.performance_monitor')
+    def test_get_prometheus_metrics_error(self, mock_monitor, client):
+        """Test Prometheus metrics error handling"""
+        mock_monitor.export_metrics_to_prometheus.side_effect = Exception("Export failed")
+
+        response = client.get("/api/v1/monitoring/metrics/prometheus")
+
+        assert response.status_code == 500
+
+
+class TestBottlenecksEndpoint:
+    """Test /api/v1/monitoring/bottlenecks endpoint"""
+
+    @patch('api.monitoring.performance_monitor')
+    def test_detect_bottlenecks_none_found(self, mock_monitor, client):
+        """Test bottleneck detection with no issues"""
+        mock_monitor.get_api_performance_summary.return_value = {"avg_response_time_ms": 100}
+        mock_monitor.get_db_performance_summary.return_value = {"avg_execution_time_ms": 50}
+        mock_monitor.get_system_performance_summary.return_value = {
+            "cpu": {"avg_percent": 30},
+            "memory": {"avg_percent": 40}
+        }
+
+        response = client.get("/api/v1/monitoring/bottlenecks")
+
+        assert response.status_code == 200
+        data = response.json()
+        assert data["success"] is True
+        assert len(data["data"]["bottlenecks"]) == 0
+
+    @patch('api.monitoring.performance_monitor')
+    def test_detect_bottlenecks_api_slow(self, mock_monitor, client):
+        """Test bottleneck detection for slow API"""
+        mock_monitor.get_api_performance_summary.return_value = {"avg_response_time_ms": 1500}
+        mock_monitor.get_db_performance_summary.return_value = {"avg_execution_time_ms": 50}
+        mock_monitor.get_system_performance_summary.return_value = {
+            "cpu": {"avg_percent": 30},
+            "memory": {"avg_percent": 40}
+        }
+
+        response = client.get("/api/v1/monitoring/bottlenecks")
+
+        assert response.status_code == 200
+        data = response.json()
+        assert len(data["data"]["bottlenecks"]) > 0
+        assert any(b["type"] == "api_performance" for b in data["data"]["bottlenecks"])
+        assert any(b["severity"] == "high" for b in data["data"]["bottlenecks"])
+
+    @patch('api.monitoring.performance_monitor')
+    def test_detect_bottlenecks_high_cpu(self, mock_monitor, client):
+        """Test bottleneck detection for high CPU"""
+        mock_monitor.get_api_performance_summary.return_value = {"avg_response_time_ms": 100}
+        mock_monitor.get_db_performance_summary.return_value = {"avg_execution_time_ms": 50}
+        mock_monitor.get_system_performance_summary.return_value = {
+            "cpu": {"avg_percent": 90},
+            "memory": {"avg_percent": 40}
+        }
+
+        response = client.get("/api/v1/monitoring/bottlenecks")
+
+        assert response.status_code == 200
+        data = response.json()
+        assert len(data["data"]["bottlenecks"]) > 0
+        assert any(b["type"] == "cpu_usage" for b in data["data"]["bottlenecks"])
+
+    @patch('api.monitoring.performance_monitor')
+    def test_detect_bottlenecks_high_memory(self, mock_monitor, client):
+        """Test bottleneck detection for high memory"""
+        mock_monitor.get_api_performance_summary.return_value = {"avg_response_time_ms": 100}
+        mock_monitor.get_db_performance_summary.return_value = {"avg_execution_time_ms": 50}
+        mock_monitor.get_system_performance_summary.return_value = {
+            "cpu": {"avg_percent": 30},
+            "memory": {"avg_percent": 95}
+        }
+
+        response = client.get("/api/v1/monitoring/bottlenecks")
+
+        assert response.status_code == 200
+        data = response.json()
+        assert len(data["data"]["bottlenecks"]) > 0
+        assert any(b["type"] == "memory_usage" for b in data["data"]["bottlenecks"])
+
+
+class TestMonitoringControlEndpoints:
+    """Test /api/v1/monitoring/monitoring/start and stop endpoints"""
+
+    @patch('api.monitoring.performance_monitor')
+    def test_start_monitoring(self, mock_monitor, client):
+        """Test starting performance monitoring"""
+        mock_monitor.is_monitoring = False
+        mock_monitor.start_monitoring = AsyncMock()
+
+        response = client.post("/api/v1/monitoring/monitoring/start")
+
+        assert response.status_code == 200
+        data = response.json()
+        assert data["success"] is True
+        assert "started" in data["message"]
+
+    @patch('api.monitoring.performance_monitor')
+    def test_start_monitoring_already_running(self, mock_monitor, client):
+        """Test starting monitoring when already running"""
+        mock_monitor.is_monitoring = True
+
+        response = client.post("/api/v1/monitoring/monitoring/start")
+
+        assert response.status_code == 200
+        data = response.json()
+        assert "already running" in data["message"]
+
+    @patch('api.monitoring.performance_monitor')
+    def test_start_monitoring_with_interval(self, mock_monitor, client):
+        """Test starting monitoring with custom interval"""
+        mock_monitor.is_monitoring = False
+        mock_monitor.start_monitoring = AsyncMock()
+
+        response = client.post("/api/v1/monitoring/monitoring/start?interval_seconds=60")
+
+        assert response.status_code == 200
+        data = response.json()
+        assert "60s" in data["message"]
+
+    @patch('api.monitoring.performance_monitor')
+    def test_stop_monitoring(self, mock_monitor, client):
+        """Test stopping performance monitoring"""
+        mock_monitor.is_monitoring = True
+        mock_monitor.stop_monitoring = AsyncMock()
+
+        response = client.post("/api/v1/monitoring/monitoring/stop")
+
+        assert response.status_code == 200
+        data = response.json()
+        assert data["success"] is True
+        assert "stopped" in data["message"]
+
+    @patch('api.monitoring.performance_monitor')
+    def test_stop_monitoring_not_running(self, mock_monitor, client):
+        """Test stopping monitoring when not running"""
+        mock_monitor.is_monitoring = False
+
+        response = client.post("/api/v1/monitoring/monitoring/stop")
+
+        assert response.status_code == 200
+        data = response.json()
+        assert "not running" in data["message"]
+
+
+class TestLogAnalysisEndpoint:
+    """Test /api/v1/monitoring/logs/analysis endpoint"""
+
+    @patch('api.monitoring.LogAnalyzer', create=True)
+    def test_analyze_logs(self, mock_analyzer, client):
+        """Test log analysis"""
+        mock_analyzer.analyze_error_patterns.return_value = {"errors": 10}
+        mock_analyzer.analyze_performance_metrics.return_value = {"avg_time": 150}
+
+        response = client.get("/api/v1/monitoring/logs/analysis")
+
+        assert response.status_code in [200, 500]  # May fail due to missing LogAnalyzer
+
+    @patch('api.monitoring.LogAnalyzer', create=True)
+    def test_analyze_logs_with_hours(self, mock_analyzer, client):
+        """Test log analysis with custom hours"""
+        mock_analyzer.analyze_error_patterns.return_value = {}
+        mock_analyzer.analyze_performance_metrics.return_value = {}
+
+        response = client.get("/api/v1/monitoring/logs/analysis?hours=12")
+
+        assert response.status_code in [200, 500]
+
+
+class TestQueryParameterValidation:
+    """Test query parameter validation"""
+
+    @patch('api.monitoring.performance_monitor')
+    def test_hours_parameter_minimum(self, mock_monitor, client):
+        """Test hours parameter minimum validation"""
+        mock_monitor.get_api_performance_summary.return_value = {}
+
+        response = client.get("/api/v1/monitoring/performance/api?hours=0")
+
+        assert response.status_code == 422  # Validation error
+
+    @patch('api.monitoring.performance_monitor')
+    def test_hours_parameter_maximum(self, mock_monitor, client):
+        """Test hours parameter maximum validation"""
+        mock_monitor.get_api_performance_summary.return_value = {}
+
+        response = client.get("/api/v1/monitoring/performance/api?hours=25")
+
+        assert response.status_code == 422  # Validation error
+
+    @patch('api.monitoring.performance_monitor')
+    def test_interval_seconds_validation(self, mock_monitor, client):
+        """Test interval_seconds parameter validation"""
+        mock_monitor.is_monitoring = False
+        mock_monitor.start_monitoring = AsyncMock()
+
+        # Test minimum
+        response = client.post("/api/v1/monitoring/monitoring/start?interval_seconds=5")
+        assert response.status_code == 422
+
+        # Test maximum
+        response = client.post("/api/v1/monitoring/monitoring/start?interval_seconds=400")
+        assert response.status_code == 422

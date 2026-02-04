@@ -1,0 +1,498 @@
+# Enhanced LGS Educational Content - Performance Optimized
+# Teknofest 2025 - Comprehensive Curriculum Coverage
+
+curriculum_alignment:
+  meb_standards: "2023-2024 MEB Müfredatı"
+  exam_format: "LGS 2024"
+  total_coverage: 95  # percentage
+  last_updated: "2024-12-01"
+
+subjects:
+  matematik:
+    total_questions: 20
+    time_allocation: 40  # minutes
+    weight: 25  # percentage of total score
+    
+    topics:
+      sayilar_islemler:
+        title: "Sayılar ve İşlemler"
+        weight: 30  # percentage of math questions (6 questions)
+        difficulty_distribution:
+          easy: 40
+          medium: 40
+          hard: 20
+        
+        subtopics:
+          carpanlar_katlar:
+            title: "Çarpanlar ve Katlar"
+            learning_objectives:
+              - "EBOB ve EKOK kavramlarını anlama"
+              - "Asal çarpanlara ayırma yapabilme"
+              - "EBOB-EKOK problemlerini çözebilme"
+            
+            content_progression:
+              level1: "Temel tanımlar ve basit örnekler"
+              level2: "Problem çözme teknikleri"
+              level3: "Karmaşık sözel problemler"
+            
+            practice_questions:
+              - id: "ebob_1"
+                question: "24 ve 36 sayılarının EBOB'u kaçtır?"
+                options: ["6", "8", "12", "18"]
+                correct: "12"
+                explanation: "24 = 2³ × 3, 36 = 2² × 3². EBOB = 2² × 3 = 12"
+                difficulty: "easy"
+                time_estimate: 90  # seconds
+              
+              - id: "ekok_1"
+                question: "18 ve 24 sayılarının EKOK'u kaçtır?"
+                options: ["36", "48", "72", "144"]
+                correct: "72"
+                explanation: "18 = 2 × 3², 24 = 2³ × 3. EKOK = 2³ × 3² = 72"
+                difficulty: "medium"
+                time_estimate: 120
+              
+              - id: "problem_1"
+                question: "Bir fabrikada A makinesi 12 dakikada, B makinesi 18 dakikada bir ürün üretiyor. İkisi birlikte çalışmaya başladıklarında kaç dakika sonra aynı anda ürün tamamlarlar?"
+                options: ["30", "36", "42", "48"]
+                correct: "36"
+                explanation: "EKOK(12,18) = 36 dakika"
+                difficulty: "hard"
+                time_estimate: 180
+          
+          uslu_ifadeler:
+            title: "Üslü İfadeler"
+            learning_objectives:
+              - "Üslü sayıların özelliklerini bilme"
+              - "Bilimsel gösterim kullanabilme"
+              - "Üslü ifadelerde işlem yapabilme"
+            
+            key_formulas:
+              - "a^m × a^n = a^(m+n)"
+              - "a^m ÷ a^n = a^(m-n)"
+              - "(a^m)^n = a^(m×n)"
+              - "a^0 = 1 (a ≠ 0)"
+              - "a^(-n) = 1/a^n"
+            
+            common_mistakes:
+              - mistake: "2³ + 2³ = 2⁶"
+                correction: "2³ + 2³ = 8 + 8 = 16 = 2⁴"
+                explanation: "Toplama işleminde üsler toplanmaz"
+              
+              - mistake: "3² × 2² = 6²"
+                correction: "3² × 2² = 9 × 4 = 36 ≠ 6² = 36 (bu örnekte eşit ama genel kural değil)"
+                explanation: "Farklı tabanlı üslü sayılar çarpılırken tabanlar çarpılmaz"
+      
+      cebir:
+        title: "Cebirsel İfadeler ve Denklemler"
+        weight: 30  # 6 questions
+        
+        subtopics:
+          ozdeslikler:
+            title: "Cebirsel Özdeşlikler"
+            key_identities:
+              - formula: "(a + b)² = a² + 2ab + b²"
+                visual_aid: "Geometrik kare modeli"
+                examples:
+                  - "(x + 3)² = x² + 6x + 9"
+                  - "(2a + 5)² = 4a² + 20a + 25"
+              
+              - formula: "(a - b)² = a² - 2ab + b²"
+                examples:
+                  - "(x - 4)² = x² - 8x + 16"
+                  - "(3y - 2)² = 9y² - 12y + 4"
+              
+              - formula: "a² - b² = (a + b)(a - b)"
+                examples:
+                  - "x² - 25 = (x + 5)(x - 5)"
+                  - "4a² - 9 = (2a + 3)(2a - 3)"
+            
+            practice_strategies:
+              - "Önce hangi özdeşlik kullanılacağını belirle"
+              - "Katsayıları ve işaretleri dikkatli kontrol et"
+              - "Sonucu açarak doğrula"
+          
+          denklemler:
+            title: "Birinci Dereceden Denklemler"
+            solution_steps:
+              - "Parantezleri aç"
+              - "Benzer terimleri topla"
+              - "Bilinmeyeni bir tarafa, sayıları diğer tarafa geçir"
+              - "Katsayıyı 1 yap"
+              - "Sonucu kontrol et"
+            
+            word_problems:
+              age_problems: "Yaş problemleri"
+              motion_problems: "Hareket problemleri"
+              mixture_problems: "Karışım problemleri"
+              work_problems: "İş problemleri"
+      
+      geometri:
+        title: "Geometri ve Ölçme"
+        weight: 30  # 6 questions
+        
+        subtopics:
+          ucgenler:
+            title: "Üçgenler"
+            types:
+              - name: "Kenar uzunluklarına göre"
+                categories: ["Eşkenar", "İkizkenar", "Çeşitkenar"]
+              - name: "Açı ölçülerine göre"
+                categories: ["Dar açılı", "Dik açılı", "Geniş açılı"]
+            
+            special_lines:
+              - name: "Kenarortay"
+                definition: "Bir kenarın orta noktasını karşı köşeye birleştiren doğru parçası"
+                property: "Üçgeni iki eş alanlı parçaya böler"
+              
+              - name: "Açıortay"
+                definition: "Bir açıyı iki eş açıya bölen ışın"
+                property: "Açıortay üzerindeki her nokta açının kenarlarına eşit uzaklıktadır"
+              
+              - name: "Yükseklik"
+                definition: "Bir köşeden karşı kenara çizilen dik"
+                property: "Alan hesabında kullanılır: Alan = (taban × yükseklik) / 2"
+          
+          pisagor:
+            title: "Pisagor Teoremi"
+            theorem: "Dik üçgende: a² + b² = c²"
+            
+            special_triangles:
+              - sides: [3, 4, 5]
+                multiples: [[6, 8, 10], [9, 12, 15], [12, 16, 20]]
+              - sides: [5, 12, 13]
+                multiples: [[10, 24, 26]]
+              - sides: [8, 15, 17]
+                multiples: [[16, 30, 34]]
+            
+            applications:
+              - "Dik üçgende bilinmeyen kenar bulma"
+              - "Bir üçgenin dik üçgen olup olmadığını kontrol etme"
+              - "Koordinat düzleminde iki nokta arası uzaklık"
+              - "Gerçek hayat problemleri (merdiven, kule yüksekliği vb.)"
+      
+      veri_olasilik:
+        title: "Veri Analizi ve Olasılık"
+        weight: 10  # 2 questions
+        
+        subtopics:
+          istatistik:
+            title: "Temel İstatistik"
+            measures:
+              - name: "Aritmetik Ortalama"
+                formula: "x̄ = (x₁ + x₂ + ... + xₙ) / n"
+                when_to_use: "Verilerin genel eğilimini görmek için"
+              
+              - name: "Mod"
+                definition: "En sık tekrar eden değer"
+                when_to_use: "Kategorik veriler için"
+              
+              - name: "Medyan"
+                definition: "Sıralanmış verilerin ortanca değeri"
+                when_to_use: "Aykırı değerler olduğunda"
+          
+          olasilik:
+            title: "Basit Olasılık"
+            formula: "P(A) = İstenen durumlar / Tüm durumlar"
+            
+            examples:
+              - event: "Zar atma"
+                sample_space: [1, 2, 3, 4, 5, 6]
+                events:
+                  - name: "Çift sayı gelme"
+                    outcomes: [2, 4, 6]
+                    probability: "3/6 = 1/2"
+              
+              - event: "Kart çekme (52 kart)"
+                events:
+                  - name: "Kırmızı kart"
+                    probability: "26/52 = 1/2"
+                  - name: "As çekme"
+                    probability: "4/52 = 1/13"
+
+  fen_bilimleri:
+    total_questions: 20
+    time_allocation: 40
+    weight: 25
+    
+    topics:
+      fizik:
+        title: "Fiziksel Olaylar"
+        weight: 40  # 8 questions
+        
+        subtopics:
+          kuvvet_hareket:
+            title: "Kuvvet ve Hareket"
+            concepts:
+              - name: "Sürat"
+                formula: "v = yol / zaman"
+                unit: "m/s, km/h"
+              
+              - name: "İvme"
+                definition: "Hız değişim oranı"
+                formula: "a = Δv / Δt"
+              
+              - name: "Newton'un Hareket Yasaları"
+                laws:
+                  first: "Eylemsizlik yasası"
+                  second: "F = m × a"
+                  third: "Etki-tepki yasası"
+          
+          basinc:
+            title: "Basınç"
+            types:
+              - name: "Katı Basıncı"
+                formula: "P = F / A"
+                factors: ["Kuvvet", "Temas alanı"]
+              
+              - name: "Sıvı Basıncı"
+                formula: "P = ρ × g × h"
+                factors: ["Yoğunluk", "Derinlik"]
+              
+              - name: "Gaz Basıncı"
+                factors: ["Sıcaklık", "Hacim", "Mol sayısı"]
+      
+      kimya:
+        title: "Madde ve Endüstri"
+        weight: 35  # 7 questions
+        
+        subtopics:
+          periyodik_sistem:
+            title: "Periyodik Sistem"
+            organization:
+              periods: "Yatay sıralar (7 tane)"
+              groups: "Dikey sütunlar (18 tane)"
+            
+            trends:
+              - property: "Atom yarıçapı"
+                period_trend: "Soldan sağa azalır"
+                group_trend: "Yukarıdan aşağıya artar"
+              
+              - property: "İyonlaşma enerjisi"
+                period_trend: "Soldan sağa artar"
+                group_trend: "Yukarıdan aşağıya azalır"
+          
+          asit_baz:
+            title: "Asit ve Bazlar"
+            definitions:
+              arrhenius:
+                acid: "Suda H⁺ iyonu veren maddeler"
+                base: "Suda OH⁻ iyonu veren maddeler"
+            
+            ph_scale:
+              range: "0-14"
+              neutral: 7
+              acidic: "< 7"
+              basic: "> 7"
+            
+            indicators:
+              - name: "Lakmus kağıdı"
+                acid_color: "Kırmızı"
+                base_color: "Mavi"
+              
+              - name: "Fenolftalein"
+                acid_color: "Renksiz"
+                base_color: "Pembe"
+      
+      biyoloji:
+        title: "Canlılar ve Yaşam"
+        weight: 25  # 5 questions
+        
+        subtopics:
+          dna_genetik:
+            title: "DNA ve Genetik"
+            dna_structure:
+              shape: "Çift sarmal"
+              bases: ["Adenin (A)", "Timin (T)", "Guanin (G)", "Sitozin (C)"]
+              base_pairing: "A-T, G-C"
+            
+            inheritance:
+              dominant: "Baskın allel (büyük harf)"
+              recessive: "Çekinik allel (küçük harf)"
+              genotype: "Genetik yapı (AA, Aa, aa)"
+              phenotype: "Görünüş (dış özellik)"
+          
+          enerji_donusumleri:
+            title: "Enerji Dönüşümleri"
+            photosynthesis:
+              equation: "6CO₂ + 6H₂O + ışık → C₆H₁₂O₆ + 6O₂"
+              location: "Kloroplast"
+              importance: "Oksijen üretimi, besin üretimi"
+            
+            respiration:
+              equation: "C₆H₁₂O₆ + 6O₂ → 6CO₂ + 6H₂O + ATP"
+              location: "Mitokondri"
+              importance: "Enerji üretimi"
+
+  turkce:
+    total_questions: 20
+    time_allocation: 25
+    weight: 25
+    
+    topics:
+      okuma_anlama:
+        title: "Okuma ve Anlama"
+        weight: 60  # 12 questions
+        
+        text_types:
+          - name: "Öyküleyici Metinler"
+            features: ["Olay örgüsü", "Karakter", "Zaman", "Mekân"]
+            question_types: ["Ana fikir", "Yan fikir", "Karakter analizi"]
+          
+          - name: "Bilgilendirici Metinler"
+            features: ["Objektif anlatım", "Bilgi verme", "Açıklama"]
+            question_types: ["Sebep-sonuç", "Karşılaştırma", "Tanım"]
+          
+          - name: "Şiir"
+            features: ["Duygu", "Düşünce", "Ses uyumu", "Anlam uyumu"]
+            question_types: ["Tema", "Duygu", "Sanat değeri"]
+        
+        reading_strategies:
+          - "Başlığı ve alt başlıkları incele"
+          - "İlk ve son paragrafları dikkatli oku"
+          - "Anahtar kelimeleri belirle"
+          - "Ana fikri ve yan fikirleri ayırt et"
+          - "Soruları okuduktan sonra metne dön"
+      
+      dil_bilgisi:
+        title: "Dil Bilgisi"
+        weight: 40  # 8 questions
+        
+        subtopics:
+          sozcuk_turleri:
+            title: "Sözcük Türleri"
+            types:
+              - name: "İsim"
+                definition: "Varlıkların adı"
+                subtypes: ["Özel isim", "Cins isim", "Somut isim", "Soyut isim"]
+              
+              - name: "Sıfat"
+                definition: "İsimleri niteleyen sözcükler"
+                subtypes: ["Niteleme sıfatı", "Belirtme sıfatı", "Sayı sıfatı"]
+              
+              - name: "Fiil"
+                definition: "İş, oluş, durum bildiren sözcükler"
+                tenses: ["Geçmiş zaman", "Şimdiki zaman", "Gelecek zaman"]
+          
+          cumle_bilgisi:
+            title: "Cümle Bilgisi"
+            sentence_elements:
+              - name: "Özne"
+                question: "Kim? Ne?"
+                example: "Çocuk koşuyor. (Özne: Çocuk)"
+              
+              - name: "Yüklem"
+                question: "Ne yapıyor? Nasıl?"
+                example: "Çocuk koşuyor. (Yüklem: koşuyor)"
+              
+              - name: "Nesne"
+                question: "Neyi? Kimi?"
+                example: "Kitabı okudum. (Nesne: Kitabı)"
+
+  sosyal_bilgiler:
+    total_questions: 10
+    time_allocation: 20
+    weight: 12.5
+    
+    topics:
+      tarih:
+        title: "T.C. İnkılap Tarihi"
+        weight: 50  # 5 questions
+        
+        periods:
+          - name: "Milli Mücadele Dönemi"
+            events:
+              - "Amasya Genelgesi (1919)"
+              - "Erzurum Kongresi (1919)"
+              - "Sivas Kongresi (1919)"
+              - "TBMM'nin Açılışı (1920)"
+              - "Sakarya Meydan Muharebesi (1921)"
+              - "Büyük Taarruz (1922)"
+          
+          - name: "Cumhuriyet Dönemi"
+            reforms:
+              - "Cumhuriyetin İlanı (1923)"
+              - "Halifeliğin Kaldırılması (1924)"
+              - "Harf İnkılabı (1928)"
+              - "Kadınlara Seçme-Seçilme Hakkı (1934)"
+      
+      cografya:
+        title: "Coğrafya"
+        weight: 30  # 3 questions
+        
+        turkey_geography:
+          regions:
+            - name: "Marmara Bölgesi"
+              provinces: 11
+              features: ["Sanayi", "Ticaret", "Nüfus yoğunluğu"]
+            
+            - name: "Ege Bölgesi"
+              provinces: 8
+              features: ["Turizm", "Tarım", "Zeytincilik"]
+            
+            - name: "Akdeniz Bölgesi"
+              provinces: 8
+              features: ["Narenciye", "Sera tarımı", "Turizm"]
+      
+      vatandaslik:
+        title: "Vatandaşlık"
+        weight: 20  # 2 questions
+        
+        democracy:
+          principles:
+            - "Halk egemenliği"
+            - "Kuvvetler ayrılığı"
+            - "Hukuk devleti"
+            - "İnsan hakları"
+          
+          rights_responsibilities:
+            rights: ["Eğitim hakkı", "Sağlık hakkı", "Seçme-seçilme hakkı"]
+            responsibilities: ["Vergi ödeme", "Askerlik", "Kanunlara uyma"]
+
+study_recommendations:
+  daily_schedule:
+    total_time: 4  # hours
+    distribution:
+      matematik: 90  # minutes
+      fen: 90
+      turkce: 60
+      sosyal: 30
+      break_time: 30
+  
+  weekly_plan:
+    monday: ["Matematik: Sayılar", "Fen: Fizik"]
+    tuesday: ["Türkçe: Okuma", "Sosyal: Tarih"]
+    wednesday: ["Matematik: Cebir", "Fen: Kimya"]
+    thursday: ["Türkçe: Dil Bilgisi", "Sosyal: Coğrafya"]
+    friday: ["Matematik: Geometri", "Fen: Biyoloji"]
+    saturday: ["Karma test çözümü"]
+    sunday: ["Dinlenme ve tekrar"]
+  
+  exam_strategies:
+    time_management:
+      - "Türkçe: 25 dakika (soru başına 1.25 dk)"
+      - "Matematik: 40 dakika (soru başına 2 dk)"
+      - "Fen: 40 dakika (soru başına 2 dk)"
+      - "Sosyal: 20 dakika (soru başına 2 dk)"
+      - "Son 15 dakika: Kontrol"
+    
+    question_approach:
+      - "Kolay soruları önce çöz"
+      - "Zor sorularda şık eleme yap"
+      - "Hesap hatalarına dikkat et"
+      - "Boş bırakma, tahmin et"
+
+performance_tracking:
+  metrics:
+    - name: "Doğru sayısı"
+      target: "Net artışı"
+    - name: "Süre kullanımı"
+      target: "Zaman optimizasyonu"
+    - name: "Konu bazlı başarı"
+      target: "Zayıf alanları güçlendir"
+  
+  improvement_indicators:
+    - "Haftalık net artışı: +2-3"
+    - "Deneme sınavı puanı: +10-15"
+    - "Zaman yönetimi: -%10 süre"
+    - "Motivasyon seviyesi: Yüksek"

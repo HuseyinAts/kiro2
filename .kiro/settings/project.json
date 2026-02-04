@@ -1,0 +1,50 @@
+{
+  "kiro": {
+    "backup": {
+      "enabled": false,
+      "autoBackup": false,
+      "maxBackups": 0
+    },
+    "watcher": {
+      "ignore": [
+        "**/.git/**",
+        "**/node_modules/**",
+        "**/__pycache__/**",
+        "**/venv/**",
+        "**/env/**",
+        "**/.venv/**",
+        "**/cache/**",
+        "**/logs/**",
+        "**/temp/**",
+        "**/backups/**",
+        "**/*.log",
+        "**/*.db",
+        "**/*.sqlite",
+        "**/htmlcov/**",
+        "**/.pytest_cache/**",
+        "**/coverage/**"
+      ]
+    },
+    "indexing": {
+      "exclude": [
+        "**/.git/**",
+        "**/node_modules/**",
+        "**/__pycache__/**",
+        "**/venv/**",
+        "**/cache/**",
+        "**/logs/**",
+        "**/backups/**"
+      ]
+    },
+    "maxFileSize": "1MB",
+    "performance": {
+      "lazyLoad": true,
+      "maxConcurrentFiles": 50
+    }
+  },
+  "claude": {
+    "conversationBackup": {
+      "enabled": false
+    }
+  }
+}

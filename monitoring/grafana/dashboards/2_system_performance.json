@@ -1,0 +1,78 @@
+{
+  "dashboard": {
+    "title": "Kiro2 - System Performance",
+    "uid": "kiro2-system-performance",
+    "tags": ["kiro2", "system", "performance"],
+    "refresh": "10s",
+    "panels": [
+      {
+        "id": 1,
+        "title": "CPU Usage %",
+        "type": "timeseries",
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 0},
+        "targets": [{"expr": "kiro_system_cpu_usage_percent", "legendFormat": "CPU %"}],
+        "fieldConfig": {"defaults": {"unit": "percent", "min": 0, "max": 100}}
+      },
+      {
+        "id": 2,
+        "title": "Memory Usage",
+        "type": "timeseries",
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 0},
+        "targets": [
+          {"expr": "kiro_system_memory_usage_bytes / 1024 / 1024 / 1024", "legendFormat": "Used GB"},
+          {"expr": "kiro_system_memory_available_bytes / 1024 / 1024 / 1024", "legendFormat": "Available GB"}
+        ],
+        "fieldConfig": {"defaults": {"unit": "decgbytes"}}
+      },
+      {
+        "id": 3,
+        "title": "HTTP Request Rate",
+        "type": "graph",
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 8},
+        "targets": [{"expr": "sum(rate(kiro_http_requests_total[5m]))", "legendFormat": "Requests/sec"}],
+        "fieldConfig": {"defaults": {"unit": "reqps"}}
+      },
+      {
+        "id": 4,
+        "title": "HTTP Request Duration (p95)",
+        "type": "graph",
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 8},
+        "targets": [
+          {"expr": "histogram_quantile(0.95, sum(rate(kiro_http_request_duration_seconds_bucket[5m])) by (le, endpoint))", "legendFormat": "{{endpoint}}"}
+        ],
+        "fieldConfig": {"defaults": {"unit": "s"}}
+      },
+      {
+        "id": 5,
+        "title": "Error Rate",
+        "type": "stat",
+        "gridPos": {"h": 6, "w": 6, "x": 0, "y": 16},
+        "targets": [{"expr": "sum(rate(kiro_errors_total[5m]))", "legendFormat": "Errors/sec"}],
+        "options": {"colorMode": "background"},
+        "fieldConfig": {
+          "defaults": {
+            "unit": "reqps",
+            "thresholds": {
+              "steps": [
+                {"value": null, "color": "green"},
+                {"value": 0.1, "color": "yellow"},
+                {"value": 1, "color": "red"}
+              ]
+            }
+          }
+        }
+      },
+      {
+        "id": 6,
+        "title": "Network I/O",
+        "type": "timeseries",
+        "gridPos": {"h": 6, "w": 18, "x": 6, "y": 16},
+        "targets": [
+          {"expr": "rate(kiro_system_network_sent_bytes_total[5m])", "legendFormat": "Sent"},
+          {"expr": "rate(kiro_system_network_received_bytes_total[5m])", "legendFormat": "Received"}
+        ],
+        "fieldConfig": {"defaults": {"unit": "Bps"}}
+      }
+    ]
+  }
+}

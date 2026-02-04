@@ -1,0 +1,83 @@
+{
+  "evaluation_date": "2025-11-07T19:49:17.187008",
+  "phase": "Phase 2 - Graphs",
+  "total_questions": 5,
+  "valid_evaluations": 5,
+  "average_score": 0.9,
+  "min_score": 0.9,
+  "max_score": 0.9,
+  "target_score": 0.85,
+  "target_met": true,
+  "comparison_with_phase1": {
+    "phase1_avg": 0.897,
+    "phase2_avg": 0.9,
+    "difference": 0.0030000000000000027
+  },
+  "results": [
+    {
+      "question_id": 1,
+      "test_case": "Line Graph - Fizik (Hareket)",
+      "graph_type": "line",
+      "stem_length": 440,
+      "has_graph": true,
+      "svg_size": 26415,
+      "quality_score": 0.9,
+      "grade": "Excellent",
+      "decision": "APPROVE",
+      "status": "[EXCELLENT] Target exceeded!",
+      "timestamp": "2025-11-07T19:49:17.185009"
+    },
+    {
+      "question_id": 2,
+      "test_case": "Bar Chart - Matematik (Istatistik)",
+      "graph_type": "bar",
+      "stem_length": 326,
+      "has_graph": true,
+      "svg_size": 31683,
+      "quality_score": 0.9,
+      "grade": "Excellent",
+      "decision": "APPROVE",
+      "status": "[EXCELLENT] Target exceeded!",
+      "timestamp": "2025-11-07T19:49:17.186009"
+    },
+    {
+      "question_id": 3,
+      "test_case": "Pie Chart - Matematik (Kategori Dagilimi)",
+      "graph_type": "pie",
+      "stem_length": 363,
+      "has_graph": true,
+      "svg_size": 18154,
+      "quality_score": 0.9,
+      "grade": "Excellent",
+      "decision": "APPROVE",
+      "status": "[EXCELLENT] Target exceeded!",
+      "timestamp": "2025-11-07T19:49:17.186009"
+    },
+    {
+      "question_id": 4,
+      "test_case": "Scatter Plot - Matematik (Korelasyon)",
+      "graph_type": "scatter",
+      "stem_length": 432,
+      "has_graph": true,
+      "svg_size": 29599,
+      "quality_score": 0.9,
+      "grade": "Excellent",
+      "decision": "APPROVE",
+      "status": "[EXCELLENT] Target exceeded!",
+      "timestamp": "2025-11-07T19:49:17.187008"
+    },
+    {
+      "question_id": 5,
+      "test_case": "Histogram - Biyoloji (Dagilim)",
+      "graph_type": "histogram",
+      "stem_length": 416,
+      "has_graph": true,
+      "svg_size": 34747,
+      "quality_score": 0.9,
+      "grade": "Excellent",
+      "decision": "APPROVE",
+      "status": "[EXCELLENT] Target exceeded!",
+      "timestamp": "2025-11-07T19:49:17.187008"
+    }
+  ]
+}

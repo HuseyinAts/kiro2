@@ -1,0 +1,111 @@
+{
+  "environment": "production",
+  "feature_flags": {
+    "semantic_search": true,
+    "advanced_search": true,
+    "hybrid_search": true,
+    "turkish_content_filter": true,
+    "relevance_filter": true,
+    "difficulty_filter": true,
+    "multi_layer_cache": true,
+    "cache_warming": true,
+    "aggressive_caching": false,
+    "parallel_discovery": true,
+    "circuit_breaker": true,
+    "rate_limiting": true,
+    "quality_scoring": true,
+    "trusted_channels_boost": true,
+    "detailed_logging": false,
+    "metrics_collection": true,
+    "ai_relevance_scoring": false,
+    "personalized_ranking": false
+  },
+  "quality_thresholds": {
+    "language": {
+      "min_score": 0.8,
+      "turkish_char_weight": 0.3
+    },
+    "relevance": {
+      "min_score": 0.7,
+      "keyword_weight": 0.6,
+      "subtopic_weight": 0.4
+    },
+    "difficulty": {
+      "min_match": 0.5,
+      "tolerance": 1
+    },
+    "overall": {
+      "min_score": 0.7,
+      "language_weight": 0.3,
+      "relevance_weight": 0.5,
+      "difficulty_weight": 0.2
+    },
+    "video_quality": {
+      "min_views": 100,
+      "min_duration": 60,
+      "max_duration": 3600
+    },
+    "channel_trust": {
+      "boost": 0.1,
+      "min_subscribers": 1000
+    }
+  },
+  "performance_config": {
+    "cache": {
+      "ttl_seconds": 3600,
+      "memory_size": 100,
+      "warming_enabled": true
+    },
+    "parallel": {
+      "max_searches": 3,
+      "timeout_seconds": 5
+    },
+    "rate_limiting": {
+      "per_ip": 10,
+      "per_user": 20,
+      "youtube_quota": 10000
+    },
+    "circuit_breaker": {
+      "failure_threshold": 5,
+      "timeout_seconds": 60,
+      "success_threshold": 2
+    },
+    "targets": {
+      "p95_ms": 3000,
+      "p99_ms": 5000
+    },
+    "discovery": {
+      "max_per_subject": 5,
+      "max_total": 15
+    }
+  },
+  "ab_tests": [
+    {
+      "test_id": "relevance_scoring_v2",
+      "name": "Relevance Scoring Algorithm V2",
+      "description": "Test yeni alakalılık skorlama algoritması",
+      "variants": [
+        {
+          "name": "control",
+          "description": "Mevcut algoritma",
+          "traffic_percentage": 50,
+          "config_overrides": {},
+          "enabled": true
+        },
+        {
+          "name": "treatment",
+          "description": "Yeni algoritma (AI-based)",
+          "traffic_percentage": 50,
+          "config_overrides": {
+            "ai_relevance_scoring": true,
+            "relevance_weight": 0.6
+          },
+          "enabled": true
+        }
+      ],
+      "start_date": "2025-11-01T00:00:00",
+      "end_date": "2025-12-01T00:00:00",
+      "enabled": false
+    }
+  ]
+}

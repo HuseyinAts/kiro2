@@ -1,0 +1,141 @@
+ÖSYM EXAM API TEST STRUCTURE
+=============================
+
+backend/tests/unit/test_sinav_api.py (1,644 lines)
+│
+├── IMPORTS & SETUP
+│   ├── FastAPI TestClient
+│   ├── Mock utilities
+│   ├── Models (ExamType, ExamStatus, etc.)
+│   └── Test app creation
+│
+├── FIXTURES (11 total)
+│   ├── client - TestClient instance
+│   ├── mock_current_user - Authenticated user
+│   ├── mock_exam_config_tyt - TYT configuration
+│   ├── mock_exam_config_ayt - AYT configuration  
+│   ├── mock_exam_config_ydt - YDT configuration
+│   ├── mock_session_data_tyt - TYT session
+│   ├── mock_session_data_in_progress - Active session
+│   ├── mock_session_data_completed - Finished session
+│   └── mock_question - Sample question
+│
+├── PRIMARY TEST CLASSES (14)
+│   │
+│   ├── TestCreateExam (100+ tests)
+│   │   ├── test_create_exam_success_all_types [TYT, AYT, YDT]
+│   │   ├── test_create_exam_tyt_default_config
+│   │   ├── test_create_exam_ayt_default_config
+│   │   ├── test_create_exam_ydt_default_config
+│   │   ├── test_create_exam_custom_duration
+│   │   ├── test_create_exam_invalid_exam_type [5 invalid types]
+│   │   ├── test_create_exam_missing_exam_type
+│   │   ├── test_create_exam_engine_error
+│   │   ├── test_create_exam_session_not_created
+│   │   ├── test_create_exam_response_structure
+│   │   └── test_create_exam_various_durations [6 durations]
+│   │
+│   ├── TestStartExam (80+ tests)
+│   │   ├── test_start_exam_success
+│   │   ├── test_start_exam_not_found
+│   │   ├── test_start_exam_wrong_user
+│   │   ├── test_start_exam_already_started
+│   │   ├── test_start_exam_already_completed
+│   │   └── test_start_exam_all_types [TYT, AYT, YDT]
+│   │
+│   ├── TestGetCurrentQuestion (60+ tests)
+│   │   ├── test_get_current_question_success
+│   │   ├── test_get_current_question_not_found
+│   │   ├── test_get_current_question_wrong_user
+│   │   ├── test_get_current_question_exam_completed
+│   │   └── test_get_current_question_response_structure
+│   │
+│   ├── TestSaveAnswer (60+ tests)
+│   │   ├── test_save_answer_valid_options [A, B, C, D, E]
+│   │   ├── test_save_answer_empty
+│   │   ├── test_save_answer_update_existing
+│   │   ├── test_save_answer_not_found
+│   │   ├── test_save_answer_wrong_user
+│   │   ├── test_save_answer_failed
+│   │   └── test_save_answer_various_response_times [5 times]
+│   │
+│   ├── TestNavigateToQuestion (50+ tests)
+│   │   ├── test_navigate_valid_indices [0, 10, 50, 100, 119]
+│   │   ├── test_navigate_invalid_indices [-1, 120, 999]
+│   │   ├── test_navigate_first_question
+│   │   └── test_navigate_last_question
+│   │
+│   ├── TestFlagQuestion (30+ tests)
+│   │   ├── test_flag_question_success
+│   │   ├── test_unflag_question
+│   │   └── test_flag_question_failed
+│   │
+│   ├── TestGetRemainingTime (20+ tests)
+│   │   ├── test_get_remaining_time_success
+│   │   └── test_get_remaining_time_warning [3 scenarios]
+│   │
+│   ├── TestCompleteExam (30+ tests)
+│   │   ├── test_complete_exam_success
+│   │   └── test_complete_exam_already_completed
+│   │
+│   ├── TestGetSessionInfo (20+ tests)
+│   │   └── test_get_session_info_success
+│   │
+│   ├── TestGetPerformance (20+ tests)
+│   │   ├── test_get_performance_success
+│   │   └── test_get_performance_not_completed
+│   │
+│   ├── TestGetSubjectPerformance (20+ tests)
+│   │   └── test_get_subject_performance_success
+│   │
+│   ├── TestGetMyExams (30+ tests)
+│   │   ├── test_get_my_exams_success
+│   │   └── test_get_my_exams_pagination [3 combos]
+│   │
+│   ├── TestGetExamConfigs (20+ tests)
+│   │   └── test_get_exam_configs_success
+│   │
+│   └── TestCancelExam (30+ tests)
+│       ├── test_cancel_exam_success
+│       └── test_cancel_exam_already_completed
+│
+├── EXTENDED TEST CLASSES (7)
+│   │
+│   ├── TestCreateExamExtended (50+ tests)
+│   │   ├── test_create_exam_multiple_students [5 students]
+│   │   ├── test_create_exam_custom_subject_distribution [5 configs]
+│   │   └── test_create_exam_different_times [24 hours]
+│   │
+│   ├── TestStartExamExtended (20+ tests)
+│   │   ├── test_start_exam_various_delays [6 delays]
+│   │   └── test_start_multiple_sessions [5 counts]
+│   │
+│   ├── TestSaveAnswerExtended (140+ tests)
+│   │   ├── test_save_answer_all_questions [120 questions]
+│   │   ├── test_save_answer_patterns [5 patterns]
+│   │   └── test_save_answer_response_time_variations [11 times]
+│   │
+│   ├── TestNavigateExtended (30+ tests)
+│   │   ├── test_navigate_sequential_ranges [5 ranges x 10 = 50]
+│   │   └── test_navigate_jump_patterns [4 patterns]
+│   │
+│   ├── TestFlagQuestionExtended (20+ tests)
+│   │   ├── test_flag_multiple_questions [5 counts]
+│   │   └── test_flag_unflag_sequences [3 sequences]
+│   │
+│   ├── TestRemainingTimeExtended (12+ tests)
+│   │   └── test_remaining_time_countdown [12 timepoints]
+│   │
+│   └── TestCompleteExamExtended (7+ tests)
+│       └── test_complete_exam_various_scores [7 combos]
+│
+└── SUMMARY FUNCTION
+    └── test_summary() - Prints comprehensive test statistics
+
+TOTAL STRUCTURE:
+================
+Test Classes: 21
+Base Test Functions: 64
+Parametrized Tests: ~336
+Total Tests: 400+
+Lines of Code: 1,644

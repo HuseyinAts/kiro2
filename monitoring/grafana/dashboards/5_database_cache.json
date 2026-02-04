@@ -1,0 +1,15 @@
+{
+  "dashboard": {
+    "title": "Kiro2 - Database & Cache",
+    "uid": "kiro2-database-cache",
+    "tags": ["kiro2", "database", "cache", "redis", "postgresql"],
+    "refresh": "10s",
+    "panels": [
+      {"id": 1, "title": "DB Connections", "type": "timeseries", "gridPos": {"h": 8, "w": 12, "x": 0, "y": 0}, "targets": [{"expr": "sum(kiro_db_connections_active)", "legendFormat": "Active"}, {"expr": "sum(kiro_db_connections_idle)", "legendFormat": "Idle"}]},
+      {"id": 2, "title": "DB Query Duration (p95)", "type": "graph", "gridPos": {"h": 8, "w": 12, "x": 12, "y": 0}, "targets": [{"expr": "histogram_quantile(0.95, sum(rate(kiro_db_query_duration_seconds_bucket[5m])) by (le, query_type))", "legendFormat": "{{query_type}}"}], "fieldConfig": {"defaults": {"unit": "s"}}},
+      {"id": 3, "title": "Cache Hit Ratio", "type": "gauge", "gridPos": {"h": 8, "w": 12, "x": 0, "y": 8}, "targets": [{"expr": "kiro_cache_hit_ratio{cache_layer=\"L2\"}", "legendFormat": "Redis"}], "fieldConfig": {"defaults": {"unit": "percentunit", "min": 0, "max": 1, "thresholds": {"steps": [{"value": null, "color": "red"}, {"value": 0.7, "color": "yellow"}, {"value": 0.9, "color": "green"}]}}}},
+      {"id": 4, "title": "Cache Operations", "type": "timeseries", "gridPos": {"h": 8, "w": 12, "x": 12, "y": 8}, "targets": [{"expr": "sum by (result) (rate(kiro_cache_operations_total{operation=\"get\"}[5m]))", "legendFormat": "{{result}}"}]},
+      {"id": 5, "title": "Slow Queries (>1s)", "type": "stat", "gridPos": {"h": 6, "w": 24, "x": 0, "y": 16}, "targets": [{"expr": "sum(increase(kiro_db_slow_queries_total[1h]))", "legendFormat": "Slow Queries"}], "options": {"colorMode": "background"}, "fieldConfig": {"defaults": {"thresholds": {"steps": [{"value": null, "color": "green"}, {"value": 10, "color": "yellow"}, {"value": 50, "color": "red"}]}}}}
+    ]
+  }
+}

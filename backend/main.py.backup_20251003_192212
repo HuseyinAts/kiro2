@@ -1,0 +1,964 @@
+"""
+Trkiye niversite Snavlar Hazrlk Platformu - Ana Uygulama
+FastAPI tabanl backend servisi
+"""
+import os
+from contextlib import asynccontextmanager
+
+import uvicorn
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.middleware.trustedhost import TrustedHostMiddleware
+
+# Trke karakter destei iin UTF-8 encoding
+os.environ.setdefault('PYTHONIOENCODING', 'utf-8')
+# Windows konsolu iin encoding ayar
+os.environ.setdefault('PYTHONLEGACYWINDOWSSTDIO', 'utf-8')
+
+from .core.logging_config import setup_production_logging
+from .core.logging_middleware import setup_logging_middleware
+
+# Structured Logging Setup
+from .core.structured_logger import get_logger
+
+# Production logging'i balat
+setup_production_logging()
+
+logger = get_logger("main")
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """Uygulama balatma ve kapatma olaylar"""
+    logger.info(
+        "[ROCKET] Trkiye niversite Snavlar Hazrlk Platformu balatlyor...",
+        extra_data={"component": "startup", "version": "1.0.0"}
+    )
+    
+    # Redis Cache Manager' balat
+    try:
+        from .core.cache import cache_manager, cache_invalidation_manager
+
+        # Ana cache manager' balat
+        cache_success = await cache_manager.initialize()
+        if cache_success:
+            logger.info("[OK] Redis Cache Manager balatld")
+        else:
+            logger.warning("[WARNING] Redis Cache Manager fallback modda alyor")
+        
+        # Cache invalidation' balat
+        await cache_invalidation_manager.start_scheduled_invalidation()
+        logger.info("[OK] Cache Invalidation Manager balatld")
+        
+    except Exception as e:
+        logger.error(f"[ERROR] Redis Cache balatma hatas: {e}")
+    
+    # Performance tracking balat
+    try:
+        from .core.performance_middleware import system_monitor
+        system_monitor.start_monitoring(interval=30)
+        logger.info("[OK] System Performance Monitor balatld")
+    except Exception as e:
+        logger.error(f"[ERROR] Performance Monitor balatma hatas: {e}")
+    
+    # Revolutionary features optimizer balat
+    try:
+        from .core.revolutionary_optimizer import optimize_all_revolutionary_features
+        await optimize_all_revolutionary_features()
+        logger.info("[OK] Revolutionary Features Optimizer balatld")
+    except Exception as e:
+        logger.error(f"[ERROR] Revolutionary Optimizer balatma hatas: {e}")
+    
+    # Database balantsn balat
+    try:
+        from .core.database import init_database
+        await init_database()
+        logger.info("[OK] Database balants balatld")
+    except Exception as e:
+        logger.error(f"[ERROR] Database balatma hatas: {e}")
+    
+    # Database performance indexes olutur
+    try:
+        from .core.database import get_async_session
+        from .core.database_optimizer import create_performance_indexes
+        async with get_async_session() as session:
+            await create_performance_indexes(session)
+        logger.info("[OK] Database Performance Indexes oluturuldu")
+    except Exception as e:
+        logger.error(f"[ERROR] Database Indexes oluturma hatas: {e}")
+    
+    # Monitoring servislerini balat
+    try:
+        from .core.monitoring import monitoring_service
+        await monitoring_service.start()
+        logger.info("[OK] Advanced monitoring service balatld")
+    except Exception as e:
+        logger.error(f"[ERROR] Monitoring service balatma hatas: {e}")
+    
+    # Production Health Monitor' balat
+    try:
+        from .core.production_health_monitor import production_health_monitor
+        await production_health_monitor.start_monitoring()
+        logger.info("[OK] [HOSPITAL] Production Health Monitor balatld - API/DB/System monitoring aktif!")
+    except Exception as e:
+        logger.error(f"[ERROR] Production Health Monitor balatma hatas: {e}")
+    
+    # Elasticsearch'i balat
+    try:
+        from .core.elasticsearch_config import initialize_elasticsearch
+        es_service = await initialize_elasticsearch()
+        if es_service:
+            logger.info("[OK] Elasticsearch service balatld")
+        else:
+            logger.warning("[WARNING] Elasticsearch service balatlamad")
+    except Exception as e:
+        logger.error(f"[ERROR] Elasticsearch balatma hatas: {e}")
+    
+    # Elasticsearch logger' balat
+    try:
+        from .core.elasticsearch_logger import get_elasticsearch_logger
+        es_logger = get_elasticsearch_logger()
+        await es_logger.start()
+        logger.info("[OK] Elasticsearch logger balatld")
+    except Exception as e:
+        logger.error(f"[ERROR] Elasticsearch logger balatma hatas: {e}")
+    
+    # Analytics manager' balat
+    try:
+        from .core.analytics_monitoring import get_analytics_manager
+        analytics_manager = get_analytics_manager()
+        await analytics_manager.initialize()
+        logger.info("[OK] Analytics manager balatld")
+    except Exception as e:
+        logger.error(f"[ERROR] Analytics manager balatma hatas: {e}")
+    
+    yield
+    
+    # Servisleri kapat
+    logger.info(" Platform kapatlyor...")
+
+    try:
+        from .core.cache import cache_manager, cache_invalidation_manager
+
+        # Cache invalidation' durdur
+        await cache_invalidation_manager.stop_scheduled_invalidation()
+        logger.info("[OK] Cache Invalidation Manager durduruldu")
+        
+        # Cache manager' kapat
+        await cache_manager.close()
+        logger.info("[OK] Redis Cache Manager kapatld")
+        
+    except Exception as e:
+        logger.error(f"[ERROR] Cache kapatma hatas: {e}")
+    
+    try:
+        from .core.performance_middleware import system_monitor
+        system_monitor.stop_monitoring()
+        logger.info("[OK] System Performance Monitor kapatld")
+    except Exception as e:
+        logger.error(f"[ERROR] Performance Monitor kapatma hatas: {e}")
+    
+    try:
+        from .core.database import close_database
+        await close_database()
+        logger.info("[OK] Database balants kapatld")
+    except Exception as e:
+        logger.error(f"[ERROR] Database kapatma hatas: {e}")
+    
+    try:
+        await monitoring_service.stop()
+        logger.info("[OK] Monitoring service kapatld")
+    except Exception as e:
+        logger.error(f"[ERROR] Monitoring service kapatma hatas: {e}")
+    
+    try:
+        from .core.production_health_monitor import production_health_monitor
+        await production_health_monitor.stop_monitoring()
+        logger.info("[OK] Production Health Monitor kapatld")
+    except Exception as e:
+        logger.error(f"[ERROR] Production Health Monitor kapatma hatas: {e}")
+    
+    try:
+        from .core.elasticsearch_config import (
+            get_global_elasticsearch_service,
+            shutdown_elasticsearch,
+        )
+        es_service = await get_global_elasticsearch_service()
+        await shutdown_elasticsearch(es_service)
+        logger.info("[OK] Elasticsearch service kapatld")
+    except Exception as e:
+        logger.error(f"[ERROR] Elasticsearch kapatma hatas: {e}")
+    
+    try:
+        es_logger = get_elasticsearch_logger()
+        await es_logger.stop()
+        logger.info("[OK] Elasticsearch logger kapatld")
+    except Exception as e:
+        logger.error(f"[ERROR] Elasticsearch logger kapatma hatas: {e}")
+    
+    try:
+        analytics_manager = get_analytics_manager()
+        await analytics_manager.shutdown()
+        logger.info("[OK] Analytics manager kapatld")
+    except Exception as e:
+        logger.error(f"[ERROR] Analytics manager kapatma hatas: {e}")
+
+# FastAPI uygulamas
+app = FastAPI(
+    title="Trkiye niversite Snavlar Hazrlk Platformu",
+    description="YKS (TYT/AYT/YDT) snavlarna hazrlk iin AI destekli eitim platformu",
+    version="1.0.0",
+    lifespan=lifespan
+)
+
+# Global Exception Handlers Setup (must be before other middleware)
+try:
+    from .core.global_exception_handler import (
+        ExceptionHandlerConfig,
+        HandlerMode,
+        setup_global_exception_handlers,
+    )
+
+    config = ExceptionHandlerConfig(
+        mode=HandlerMode.GRACEFUL,
+        enable_error_recovery=True,
+        enable_detailed_logging=True,
+        enable_circuit_breaker=True,
+        enable_turkish_messages=True,
+        circuit_breaker_threshold=10,
+        circuit_breaker_timeout=300,
+        expose_internal_errors=os.getenv("DEBUG", "false").lower() == "true"
+    )
+
+    exception_handler = setup_global_exception_handlers(app, config)
+    app.state.global_exception_handler = exception_handler
+    logger.info(
+        "[OK] Global Exception Handlers registered - Circuit Breaker, Error Recovery, Turkish Messages"
+    )
+
+except Exception as e:
+    logger.error(f"[ERROR] Exception handlers setup failed: {e}")
+
+# Structured Logging Middleware (en nce ekle)
+setup_logging_middleware(app)
+
+# ==================== SECURITY MIDDLEWARE STACK ====================
+
+# 1. Comprehensive Security Middleware (JWT, Rate Limiting, Input Validation, CORS)
+try:
+    from .core.security_middleware import (
+        ComprehensiveSecurityMiddleware,
+        SecurityMiddlewareConfig,
+    )
+    from .core.rate_limiting import RateLimitMiddleware, create_rate_limiter
+
+    # Environment-based CORS configuration
+    environment = os.getenv("ENVIRONMENT", "development").lower()
+
+    # Define allowed origins based on environment with security validation
+    if environment == "production":
+        # Production: ONLY specific production domains - NO localhost, NO wildcards
+        cors_origins = [
+            "https://kiro2.app",
+            "https://www.kiro2.app",
+            "https://api.kiro2.app"
+        ]
+        # Allow environment variable override for production
+        env_origins = os.getenv("CORS_ALLOWED_ORIGINS", "")
+        if env_origins:
+            cors_origins = [origin.strip() for origin in env_origins.split(",")]
+
+        # CRITICAL: Validate no wildcards or localhost in production
+        if "*" in cors_origins:
+            logger.error("[CRITICAL SECURITY ERROR] Wildcard CORS detected in PRODUCTION! Removing wildcard.")
+            cors_origins = [origin for origin in cors_origins if origin != "*"]
+
+        # Remove localhost from production
+        cors_origins = [origin for origin in cors_origins if "localhost" not in origin and "127.0.0.1" not in origin]
+
+        if not cors_origins:
+            logger.error("[CRITICAL ERROR] No valid CORS origins in production! Using safe defaults.")
+            cors_origins = ["https://kiro2.app", "https://www.kiro2.app"]
+
+    elif environment == "testing":
+        # Testing: Localhost only - no external domains
+        cors_origins = [
+            "http://localhost:3000",
+            "http://localhost:5173",
+            "http://localhost:8080",
+            "http://127.0.0.1:3000",
+            "http://127.0.0.1:5173",
+            "http://127.0.0.1:8080"
+        ]
+    else:
+        # Development: Localhost + common dev ports
+        cors_origins = [
+            "http://localhost:3000",
+            "http://localhost:3001",
+            "http://localhost:3002",
+            "http://localhost:3003",
+            "http://localhost:5173",
+            "http://127.0.0.1:3000",
+            "http://127.0.0.1:5173"
+        ]
+
+    logger.info(f"[SECURITY] CORS configured for '{environment}' environment with {len(cors_origins)} allowed origins")
+    logger.info(f"[SECURITY] Allowed origins: {', '.join(cors_origins[:3])}{'...' if len(cors_origins) > 3 else ''}")
+
+    # Security configuration with environment-aware CORS
+    security_config = SecurityMiddlewareConfig(
+        # Authentication
+        enable_authentication=True,
+        authentication_required_paths=["/api/"],
+        authentication_exempt_paths=[
+            "/health",
+            "/docs",
+            "/openapi.json",
+            "/api/auth/login",
+            "/api/auth/register",
+            "/api/auth/reset-password"
+        ],
+
+        # Rate Limiting
+        enable_rate_limiting=True,
+        global_rate_limit_per_minute=1000,
+        user_rate_limit_per_minute=100,
+        ip_rate_limit_per_minute=200,
+        burst_threshold=50,
+
+        # CORS - Environment-based Configuration with Security Validation
+        enable_cors=True,
+        allowed_origins=cors_origins,
+        allowed_methods=["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+        allowed_headers=[
+            "Authorization",
+            "Content-Type",
+            "X-API-Key",
+            "X-Request-ID",
+            "X-Session-ID",
+            "Accept",
+            "Origin"
+        ],
+        allow_credentials=True,
+
+        # Security Headers
+        enable_security_headers=True,
+
+        # Input Validation
+        enable_input_validation=True,
+        max_request_size=10 * 1024 * 1024,  # 10MB
+        max_json_depth=10,
+
+        # IP Filtering
+        enable_ip_filtering=True,
+        ip_whitelist=set(),  # Production'da admin IP'leri eklenebilir
+        ip_blacklist=set(),
+
+        # Bot Detection
+        enable_bot_detection=True,
+
+        # Logging
+        log_security_events=True,
+        log_failed_auth=True
+    )
+
+    # Add comprehensive security middleware
+    app.add_middleware(ComprehensiveSecurityMiddleware, config=security_config)
+    logger.info("[OK] [SHIELD] Comprehensive Security Middleware enabled - JWT, Rate Limiting, Input Validation, CORS!")
+
+except Exception as e:
+    logger.error(f"[ERROR] Security middleware setup failed: {e}")
+
+    # Fallback to basic CORS - still environment-aware!
+    environment = os.getenv("ENVIRONMENT", "development").lower()
+
+    if environment == "production":
+        fallback_origins = ["https://kiro2.app", "https://www.kiro2.app", "https://api.kiro2.app"]
+        logger.warning("[FALLBACK] Using basic CORS middleware for PRODUCTION with restricted origins")
+    else:
+        fallback_origins = ["http://localhost:3000", "http://localhost:3001", "http://localhost:5173", "http://127.0.0.1:3000"]
+        logger.warning(f"[FALLBACK] Using basic CORS middleware for {environment.upper()}")
+
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=fallback_origins,
+        allow_credentials=True,
+        allow_methods=["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+        allow_headers=["Authorization", "Content-Type", "Accept", "X-Request-ID"],
+    )
+    logger.info(f"[FALLBACK CORS] {len(fallback_origins)} origins allowed")
+
+# 2. Advanced Rate Limiting & DDoS Protection Middleware
+try:
+    # Legacy rate limiter
+    rate_limiter = create_rate_limiter()
+    app.add_middleware(RateLimitMiddleware, rate_limiter=rate_limiter)
+
+    # NEW: SlowAPI + Adaptive DDoS Protection
+    from .core.ddos_protection import setup_ddos_protection
+
+    ddos_components = setup_ddos_protection(
+        app,
+        redis_url=os.getenv("REDIS_URL"),
+        enable_slowapi=True,
+        enable_adaptive=True,
+        enable_pattern_analysis=True
+    )
+
+    # Add DDoS middleware
+    app.add_middleware(
+        type(ddos_components["middleware"]),
+        app=app,
+        redis_client=ddos_components.get("redis"),
+        enable_adaptive=True,
+        enable_pattern_analysis=True
+    )
+
+    logger.info("[OK] [SHIELD] Advanced DDoS Protection enabled - SlowAPI, Adaptive Limiting, Pattern Analysis!")
+    logger.info(f"[DDoS PROTECTION] Redis: {'✓' if ddos_components.get('redis') else '✗'}")
+
+except Exception as e:
+    logger.error(f"[ERROR] DDoS protection setup failed: {e}")
+    logger.warning("[FALLBACK] Using basic rate limiting only")
+
+# Performance monitoring middleware'leri ekle
+try:
+    from .core.performance_middleware import (
+        PerformanceTrackingMiddleware,
+        setup_performance_monitoring,
+    )
+
+    # Performance tracking middleware
+    app.add_middleware(PerformanceTrackingMiddleware, enable_detailed_logging=True)
+    
+    # Setup comprehensive performance monitoring
+    setup_performance_monitoring(app)
+    
+    logger.info("Performance Monitoring Middleware'leri eklendi - API, Database, System Metrics!")
+except Exception as e:
+    logger.error(f"[ERROR] Performance monitoring middleware ekleme hatas: {e}")
+
+# Legacy performance middleware (fallback) - DISABLED
+# PerformanceMiddleware ve RateLimiter bu dosyada mevcut deil
+# Bu middleware'lar yerine PerformanceTrackingMiddleware kullanlyor
+
+# Monitoring middleware'leri ekle
+try:
+    from core.elasticsearch_logger import (
+        ElasticsearchLoggingMiddleware,
+        get_elasticsearch_logger,
+    )
+    from core.monitoring import MetricsMiddleware
+
+    # Metrics middleware
+    app.add_middleware(MetricsMiddleware)
+    
+    # Elasticsearch logging middleware
+    es_logger = get_elasticsearch_logger()
+    app.add_middleware(ElasticsearchLoggingMiddleware, logger=es_logger)
+    
+    logger.info("[OK] Monitoring middleware'leri eklendi")
+except Exception as e:
+    logger.error(f"[ERROR] Monitoring middleware ekleme hatas: {e}")
+
+# Gvenlik middleware (test ortamnda devre d)
+if os.getenv("TESTING") != "true":
+    app.add_middleware(
+        TrustedHostMiddleware,
+        allowed_hosts=["localhost", "127.0.0.1", "*.localhost"]
+    )
+
+# API Router'lar dahil et
+try:
+    from .api.health import router as health_router
+    app.include_router(health_router)
+    logger.info("[OK] Health Check API'si yklendi")
+except ImportError as e:
+    logger.warning(f"[WARNING] Health API router yklenemedi: {e}")
+except Exception as e:
+    logger.error(f"[ERROR] Health API router ykleme hatas: {e}")
+
+try:
+    from .api.auth import router as auth_router
+    app.include_router(auth_router)
+    logger.info("[OK] Kimlik dorulama API'si yklendi")
+except ImportError as e:
+    logger.warning(f"[WARNING] Auth API router yklenemedi: {e}")
+except Exception as e:
+    logger.error(f"[ERROR] Auth API router ykleme hatas: {e}")
+
+try:
+    from .api.sinav import router as sinav_router
+    app.include_router(sinav_router)
+    logger.info("[OK] Snav API'si yklendi")
+except ImportError as e:
+    logger.warning(f"[WARNING] Snav API router yklenemedi: {e}")
+except Exception as e:
+    logger.error(f"[ERROR] Snav API router ykleme hatas: {e}")
+
+try:
+    from .api.exam_performance import router as exam_performance_router
+    app.include_router(exam_performance_router)
+    logger.info("[OK] [CHART] Snav Performans Analizi API'si yklendi - Detayl analiz, zayflk tespiti ve alma nerileri!")
+except ImportError as e:
+    logger.warning(f"[WARNING] Exam Performance API router yklenemedi: {e}")
+except Exception as e:
+    logger.error(f"[ERROR] Exam Performance API router ykleme hatas: {e}")
+
+try:
+    from .api.monitoring import router as monitoring_router
+    app.include_router(monitoring_router)
+    logger.info("[OK] [CHART] Production Monitoring API'si yklendi - Performance Metrics, Health Checks, Log Analysis!")
+except ImportError as e:
+    logger.warning(f"[WARNING] Monitoring API router yklenemedi: {e}")
+except Exception as e:
+    logger.error(f"[ERROR] Monitoring API router ykleme hatas: {e}")
+
+# Advanced Analytics API'si (TASK 66.2)
+try:
+    from .api.analytics import router as analytics_router
+    app.include_router(analytics_router)
+    logger.info("[OK] [CHART] Advanced Analytics API'si yklendi - KAPSAMLI ANALYTICS VE EXPORT!")
+except ImportError as e:
+    logger.warning(f"[WARNING] Analytics API router yklenemedi: {e}")
+except Exception as e:
+    logger.error(f"[ERROR] Analytics API router ykleme hatas: {e}")
+
+try:
+    from .api.learning_style import router as learning_style_router
+    app.include_router(learning_style_router)
+    logger.info("[OK] Hibrit renme Stili API'si yklendi - 64 profil kombinasyonu hazr")
+except ImportError as e:
+    logger.warning(f"[WARNING] Learning Style API router yklenemedi: {e}")
+except Exception as e:
+    logger.error(f"[ERROR] Learning Style API router ykleme hatas: {e}")
+
+try:
+    from .api.zpd_maarif import router as zpd_maarif_router
+    app.include_router(zpd_maarif_router)
+    logger.info("[OK] ZPD + MEB Maarif API'si yklendi - Trk eitim kltrne uyarlanm sistem hazr")
+except ImportError as e:
+    logger.warning(f"[WARNING] ZPD Maarif API router yklenemedi: {e}")
+except Exception as e:
+    logger.error(f"[ERROR] ZPD Maarif API router ykleme hatas: {e}")
+
+try:
+    from .api.irt_morfoloji import router as irt_morfoloji_router
+    app.include_router(irt_morfoloji_router)
+    logger.info("[OK] IRT + Trke Morfoloji API'si yklendi - SYM/ETS standartlarn aan sistem hazr")
+except ImportError as e:
+    logger.warning(f"[WARNING] IRT Morfoloji API router yklenemedi: {e}")
+except Exception as e:
+    logger.error(f"[ERROR] IRT Morfoloji API router ykleme hatas: {e}")
+
+try:
+    from .api.student_dashboard import router as student_dashboard_router
+    app.include_router(student_dashboard_router)
+    logger.info("[OK] renci Dashboard API'si yklendi")
+except ImportError as e:
+    logger.warning(f"[WARNING] Student Dashboard API router yklenemedi: {e}")
+except Exception as e:
+    logger.error(f"[ERROR] Student Dashboard API router ykleme hatas: {e}")
+
+try:
+    from .api.cache import router as cache_router
+    app.include_router(cache_router)
+    logger.info("[OK] Redis Cache Management API'si yklendi")
+except ImportError as e:
+    logger.warning(f"[WARNING] Cache API router yklenemedi: {e}")
+except Exception as e:
+    logger.error(f"[ERROR] Cache API router ykleme hatas: {e}")
+
+try:
+    from .api.agents import router as agents_router
+    app.include_router(agents_router)
+    logger.info("[OK] AI Agents API'si yklendi")
+except ImportError as e:
+    logger.warning(f"[WARNING] Agents API router yklenemedi: {e}")
+except Exception as e:
+    logger.error(f"[ERROR] Agents API router ykleme hatas: {e}")
+
+try:
+    from .api.soru_bankasi import router as soru_bankasi_router
+    app.include_router(soru_bankasi_router)
+    logger.info("[OK] Soru Bankas API'si yklendi - IRT parametreli adaptif soru seimi hazr")
+except ImportError as e:
+    logger.warning(f"[WARNING] Soru Bankas API router yklenemedi: {e}")
+except Exception as e:
+    logger.error(f"[ERROR] Soru Bankas API router ykleme hatas: {e}")
+
+try:
+    from .api.content_management import router as content_management_router
+    app.include_router(content_management_router)
+    logger.info("[OK] erik Ynetim API'si yklendi - Soru bankas ve eitim materyali CRUD ilemleri hazr")
+except ImportError as e:
+    logger.warning(f"[WARNING] Content Management API router yklenemedi: {e}")
+except Exception as e:
+    logger.error(f"[ERROR] Content Management API router ykleme hatas: {e}")
+
+try:
+    from .api.admin import router as admin_router
+    app.include_router(admin_router)
+    logger.info("[OK] Admin Panel API'si yklendi - Kullanc ynetimi ve dashboard istatistikleri hazr")
+except ImportError as e:
+    logger.warning(f"[WARNING] Admin API router yklenemedi: {e}")
+except Exception as e:
+    logger.error(f"[ERROR] Admin API router ykleme hatas: {e}")
+
+try:
+    from .api.text_simplification import router as text_simplification_router
+    app.include_router(text_simplification_router)
+    logger.info("[OK] [ROCKET] 3 Seviyeli Trke Metin Basitletirme API'si yklendi - DNYADA LK!")
+except ImportError as e:
+    logger.warning(f"[WARNING] Text Simplification API router yklenemedi: {e}")
+except Exception as e:
+    logger.error(f"[ERROR] Text Simplification API router ykleme hatas: {e}")
+
+try:
+    from .api.ogretmen import router as ogretmen_router
+    app.include_router(ogretmen_router)
+    logger.info("[OK] retmen Paneli API'si yklendi - Snf ynetimi ve performans takibi hazr")
+except ImportError as e:
+    logger.warning(f"[WARNING] retmen API router yklenemedi: {e}")
+except Exception as e:
+    logger.error(f"[ERROR] retmen API router ykleme hatas: {e}")
+
+try:
+    from .api.advanced_reports import router as advanced_reports_router
+    app.include_router(advanced_reports_router)
+    logger.info("[OK] [ROCKET] Gelimi Snav Raporlama API'si yklendi - IRT + Morfoloji + ZPD + Hibrit renme Stili!")
+except ImportError as e:
+    logger.warning(f"[WARNING] Advanced Reports API router yklenemedi: {e}")
+except Exception as e:
+    logger.error(f"[ERROR] Advanced Reports API router ykleme hatas: {e}")
+
+try:
+    from .api.performance import router as performance_router
+    app.include_router(performance_router)
+    logger.info("[OK] [ROCKET] Performance Optimization API'si yklendi - Cache, Database, Revolutionary Features!")
+except ImportError as e:
+    logger.warning(f"[WARNING] Performance API router yklenemedi: {e}")
+except Exception as e:
+    logger.error(f"[ERROR] Performance API router ykleme hatas: {e}")
+
+try:
+    from .api.fsrs import router as fsrs_router
+    app.include_router(fsrs_router)
+    logger.info("[OK] [ROCKET] FSRS API'si yklendi - 17 Parametreli Trk renci Davranlar Optimize Edilmi Sistem!")
+except ImportError as e:
+    logger.warning(f"[WARNING] FSRS API router yklenemedi: {e}")
+except Exception as e:
+    logger.error(f"[ERROR] FSRS API router ykleme hatas: {e}")
+
+# Zemberek-NLP API'si (Türkçe Morfolojik Analiz)
+try:
+    from .api.zemberek import router as zemberek_router
+    app.include_router(zemberek_router)
+    logger.info("[OK] [ROCKET] Zemberek-NLP API'si yüklendi - Türkçe Morfolojik Analiz, Tokenization, Spell Check!")
+except ImportError as e:
+    logger.warning(f"[WARNING] Zemberek API router yüklenemedi: {e}")
+except Exception as e:
+    logger.error(f"[ERROR] Zemberek API router yükleme hatası: {e}")
+
+try:
+    from .api.berturk_api import router as berturk_router
+    app.include_router(berturk_router)
+    logger.info("[OK] [ROCKET] BERTurk API'si yklendi - Duygu Analizi, Motivasyon Tespiti ve Intent Detection!")
+except ImportError as e:
+    logger.warning(f"[WARNING] BERTurk API router yklenemedi: {e}")
+except Exception as e:
+    logger.error(f"[ERROR] BERTurk API router ykleme hatas: {e}")
+
+# Multi-Agent Blackboard API'si (DEVRMSEL ZELLK #7)
+# Multi-Agent Blackboard API'si - DISABLED (duplicate router)
+
+# RAG (Retrieval-Augmented Generation) API'si
+try:
+    from .api.rag import router as rag_router
+    app.include_router(rag_router)
+    logger.info("[OK] [ROCKET] RAG API'si yüklendi - Document Indexing, Semantic Search, LLM Context Retrieval!")
+except ImportError as e:
+    logger.warning(f"[WARNING] RAG API router yüklenemedi: {e}")
+except Exception as e:
+    logger.error(f"[ERROR] RAG API router yükleme hatası: {e}")
+
+# Enhanced Chat API'si (TASK 22 - AI sohbet sistemi ve NLP entegrasyonu)
+try:
+    from .api.enhanced_chat import router as enhanced_chat_router
+    app.include_router(enhanced_chat_router)
+    logger.info("[OK] [ROCKET] Enhanced Chat API'si yklendi - ZPD + renme Stili + IRT Morfoloji + Agent Koordinasyonu!")
+except ImportError as e:
+    logger.warning(f"[WARNING] Enhanced Chat API router yklenemedi: {e}")
+except Exception as e:
+    logger.error(f"[ERROR] Enhanced Chat API router ykleme hatas: {e}")
+
+# Kltrel Adaptasyon Motoru API'si (TASK 70 - Trk Kltr Faktrleri Dinamik Ayarlama)
+try:
+    from .api.cultural_adaptation_api import router as cultural_adaptation_router
+    app.include_router(cultural_adaptation_router)
+    logger.info("[OK] [ROCKET] Kltrel Adaptasyon Motoru API'si yklendi - Trk Kltr Faktrleri Dinamik Ayarlama!")
+except ImportError as e:
+    logger.warning(f"[WARNING] Cultural Adaptation API router yklenemedi: {e}")
+except Exception as e:
+    logger.error(f"[ERROR] Cultural Adaptation API router ykleme hatas: {e}")
+except Exception as e:
+    logger.error(f"[ERROR] Enhanced Chat API router ykleme hatas: {e}")
+
+# Bionic Reading API'si (DEVRMSEL ZELLK #6)
+try:
+    from .api.bionic_reading import router as bionic_reading_router
+    app.include_router(bionic_reading_router)
+    logger.info("[OK] [ROCKET] Bionic Reading API'si yklendi - Disleksi iin Trke'ye zel Okuma Destei!")
+except ImportError as e:
+    logger.warning(f"[WARNING] Bionic Reading API router yklenemedi: {e}")
+except Exception as e:
+    logger.error(f"[ERROR] Bionic Reading API router ykleme hatas: {e}")
+
+# Turkish NLP API'si
+try:
+    from .api.turkish_nlp import router as turkish_nlp_router
+    app.include_router(turkish_nlp_router)
+    logger.info("[OK] [ROCKET] Turkish NLP API'si yklendi - Zemberek Entegrasyonu ile Morfolojik Analiz!")
+except ImportError as e:
+    logger.warning(f"[WARNING] Turkish NLP API router yklenemedi: {e}")
+except Exception as e:
+    logger.error(f"[ERROR] Turkish NLP API router ykleme hatas: {e}")
+# Curriculum Compliance API'si (TASK 8 - MEB ve SYM Mfredat Uyumluluk Sistemi)
+try:
+    from .api.curriculum_compliance import router as curriculum_compliance_router
+    app.include_router(curriculum_compliance_router)
+    logger.info("[OK] [ROCKET] Curriculum Compliance API'si yklendi - MEB ve SYM Mfredat Uyumluluk Sistemi!")
+except ImportError as e:
+    logger.warning(f"[WARNING] Curriculum Compliance API router yklenemedi: {e}")
+except Exception as e:
+    logger.error(f"[ERROR] Curriculum Compliance API router ykleme hatas: {e}")
+
+try:
+    from .api.multi_agent import router as multi_agent_router
+    app.include_router(multi_agent_router)
+    
+    logger.info("[OK] [ROCKET] Multi-Agent Blackboard API'si yklendi - GEREK ZAMANLI AGENT KOORDNASYONU!")
+except ImportError as e:
+    logger.error(f"[ERROR] Multi-Agent API yklenemedi: {e}")
+
+# Duplicate Bionic Reading API removed - already included above
+
+# Elasticsearch API'si (KRTK ENTEGRASYON)
+try:
+    from .api.elasticsearch import router as elasticsearch_router
+    app.include_router(elasticsearch_router)
+    
+    logger.info("[OK] [SEARCH] Elasticsearch API'si yklendi - TRKE FULL-TEXT SEARCH VE ANALYTICS!")
+except ImportError as e:
+    logger.error(f"[ERROR] Elasticsearch API yklenemedi: {e}")
+except Exception as e:
+    logger.error(f"[ERROR] Elasticsearch API ykleme hatas: {e}")
+
+# Duplicate Turkish NLP API removed - already included above
+
+# Veli Takip Sistemi API'si (TASK 26)
+try:
+    from .api.veli import router as veli_router
+    app.include_router(veli_router)
+    
+    logger.info("[OK] [FAMILY] Veli Takip Sistemi API'si yklendi - OCUK PERFORMANS TAKB VE HAFTALIK RAPORLAR!")
+except ImportError as e:
+    logger.error(f"[ERROR] Veli API yklenemedi: {e}")
+except Exception as e:
+    logger.error(f"[ERROR] Veli API ykleme hatas: {e}")
+
+# Parent Tracking System API (TASK 26 - Enhanced)
+try:
+    from .api.parent import router as parent_router
+    app.include_router(parent_router)
+    
+    logger.info("[OK] [FAMILY] Parent Tracking System API'si yklendi - ENHANCED PARENT-CHILD RELATIONSHIP MANAGEMENT!")
+except ImportError as e:
+    logger.error(f"[ERROR] Parent API yklenemedi: {e}")
+except Exception as e:
+    logger.error(f"[ERROR] Parent API ykleme hatas: {e}")
+
+# EBA TV API'sini ekle
+try:
+    from .api.ebatv import router as ebatv_router
+    app.include_router(ebatv_router)
+    
+    logger.info("[OK] [MOVIE] EBA TV API'si yklendi - TRT EBA TV erik Entegrasyonu, Kalite Analizi ve Kiiselletirilmi neriler!")
+except ImportError as e:
+    logger.error(f"[ERROR] EBA TV API router yklenemedi: {e}")
+except Exception as e:
+    logger.error(f"[ERROR] EBA TV API ykleme hatas: {e}")
+
+# Turkish NLP Chat API'sini ekle
+try:
+    from .api.turkish_nlp_chat import router as turkish_nlp_chat_router
+    app.include_router(turkish_nlp_chat_router)
+    
+    logger.info("[OK] [ROBOT] Trke NLP Chat API'si yklendi - Balamsal Konuma, Eitim Terminolojisi ve Adm Adm zmler!")
+except ImportError as e:
+    logger.error(f"[ERROR] Trke NLP Chat API router yklenemedi: {e}")
+except Exception as e:
+    logger.error(f"[ERROR] Trke NLP Chat API ykleme hatas: {e}")
+
+# PERFORMANCE OPTIMIZED YouTube API - Real Data + Enhanced Security
+try:
+    # SECURITY FIX: Remove hard-coded API key (os already imported at top)
+    if not os.getenv('YOUTUBE_API_KEY'):
+        logger.warning("YOUTUBE_API_KEY environment variable not set - using curated fallback")
+        # Use empty key to trigger secure fallback behavior
+        os.environ.setdefault('YOUTUBE_API_KEY', '')
+    
+    # Import performance optimized endpoint
+    try:
+        from .fast_youtube_endpoint import router as fast_youtube_router
+        app.include_router(fast_youtube_router)
+        logger.info("[OK] [ROCKET] Fast YouTube API loaded - <200ms response time target!")
+    except ImportError as import_error:
+        logger.error(f"[ERROR] Fast YouTube endpoint import failed: {import_error}")
+        logger.warning("[FALLBACK] Fast YouTube API disabled - using legacy endpoints")
+    
+    # Legacy compatibility endpoint (kept for backward compatibility)
+    import random
+    import time
+
+    from fastapi import APIRouter
+    
+    youtube_router_legacy = APIRouter(prefix="/api/youtube", tags=["YouTube Legacy"])
+    
+    @youtube_router_legacy.get("/test")
+    async def youtube_test():
+        """Legacy test endpoint"""
+        return {"status": "OK", "message": "YouTube Legacy API çalışıyor!", "redirect": "Use /api/youtube-fast for better performance"}
+    
+    @youtube_router_legacy.post("/recommendations")
+    async def get_legacy_recommendations(request: dict):
+        """Legacy endpoint - redirects to fast version"""
+        start_time = time.time()
+        
+        # Simple curated response for compatibility
+        video_pool = [
+            {'id': 'J9lS14nM1xg', 'title': 'TYT Matematik - Fonksiyonlar', 'ch': 'TonguçAkademi', 's': 'matematik'},
+            {'id': 'kJQP7kiw5Fk', 'title': 'TYT Fizik - Hareket', 'ch': 'Fizik Öğretmeni', 's': 'fizik'},
+            {'id': 'BvV6rq9V7xQ', 'title': 'TYT Kimya - Atom Yapısı', 'ch': 'TonguçAkademi', 's': 'kimya'}
+        ]
+        
+        random.seed(int(time.time() * 1000))
+        selected = random.choice(video_pool)
+        
+        response_time = round((time.time() - start_time) * 1000, 2)
+        
+        return [{
+            "subject_exam": f"{selected['s']}_TYT",
+            "videos": [{
+                "video_id": selected['id'],
+                "title": selected['title'],
+                "channel": selected['ch'],
+                "channel_id": f"UC_{selected['ch'].replace(' ', '_')}",
+                "duration": "20:00",
+                "view_count": random.randint(50000, 200000),
+                "upload_date": "2023-08-01",
+                "thumbnail": f"https://img.youtube.com/vi/{selected['id']}/maxresdefault.jpg",
+                "quality_score": 8.5,
+                "subject": selected['s'],
+                "difficulty": "orta",
+                "exam_type": "TYT",
+                "url": f"https://www.youtube.com/embed/{selected['id']}"
+            }],
+            "total_count": 1,
+            "performance_note": f"Legacy endpoint: {response_time}ms - Use /api/youtube-fast for better performance"
+        }]
+    
+    app.include_router(youtube_router_legacy)
+    logger.info("[OK] [LEGACY] YouTube Legacy API loaded - Consider migrating to /api/youtube-fast")
+
+except Exception as e:
+    logger.error(f"[ERROR] YouTube API setup hatası: {e}")
+    logger.warning("[FALLBACK] YouTube API running in fallback mode - check YOUTUBE_API_KEY environment variable")
+
+# WebSocket Router'lar dahil et
+try:
+    from .websocket_exam import websocket_router
+    app.include_router(websocket_router)
+    logger.info("[OK] Snav WebSocket API'si yklendi - Gerek zamanl snav durumu gncellemeleri hazr")
+except ImportError as e:
+    logger.warning(f"[WARNING] WebSocket Exam router yklenemedi: {e}")
+except Exception as e:
+    logger.error(f"[ERROR] WebSocket Exam router ykleme hatas: {e}")
+
+# Streaming Chat API Router - Server-Sent Events (SSE)
+try:
+    from .api.streaming_chat import router as streaming_router
+    app.include_router(streaming_router)
+    logger.info("[OK] [ROCKET] Streaming Chat API yklendi - SSE ile gerek zamanl token streaming aktif!")
+except ImportError as e:
+    logger.warning(f"[WARNING] Streaming Chat router yklenemedi: {e}")
+except Exception as e:
+    logger.error(f"[ERROR] Streaming Chat router ykleme hatas: {e}")
+
+# Performance Monitoring API Router
+try:
+    from .api.performance_monitoring import router as perf_monitoring_router
+    app.include_router(perf_monitoring_router)
+    logger.info("[OK] [CHART] Performance Monitoring API yklendi - LLM Pool, Vector Store, Cache metrikleri hazr!")
+except ImportError as e:
+    logger.warning(f"[WARNING] Performance Monitoring router yklenemedi: {e}")
+except Exception as e:
+    logger.error(f"[ERROR] Performance Monitoring router ykleme hatas: {e}")
+
+@app.get("/")
+async def root():
+    """Ana endpoint - sistem durumu"""
+    return {
+        "success": True,
+        "message": "Trkiye niversite Snavlar Hazrlk Platformu aktif",
+        "version": "1.0.0"
+    }
+
+@app.get("/health")
+async def health_check():
+    """Sistem salk kontrol"""
+    return {
+        "success": True,
+        "status": "healthy",
+        "message": "Sistem alyor"
+    }
+
+@app.get("/api/agents")
+async def get_agents_direct():
+    """Direct agents endpoint without router"""
+    return [
+        {
+            "id": "matematik_uzman",
+            "name": "Matematik Uzman", 
+            "description": "TYT ve AYT matematik sorularnda uzman AI asistan",
+            "type": "subject_expert",
+            "available": True,
+            "specialties": ["matematik", "geometri"],
+            "model": "gpt-4"
+        }
+    ]
+
+# WebSocket balant yneticisi - DISABLED FOR NOW
+# from websocket import ConnectionManager
+# from fastapi import WebSocket, WebSocketDisconnect
+# import json
+
+# manager = ConnectionManager()
+
+# @app.websocket("/ws/chat/{client_id}")
+# async def websocket_chat_endpoint(websocket: WebSocket, client_id: str):
+#     """Chat WebSocket endpoint"""
+#     pass
+
+# @app.websocket("/ws/sinav/{sinav_id}")
+# async def websocket_exam_endpoint(websocket: WebSocket, sinav_id: str):
+#     """Snav WebSocket endpoint - gerek zamanl snav gncellemeleri"""
+#     pass
+
+if __name__ == "__main__":
+    uvicorn.run(
+        "main:app",
+        host="0.0.0.0",
+        port=8000,  # Port 8000 to match docker-compose config
+        reload=False,  # DISABLED RELOAD TO FIX INFINITE LOOPS
+        log_level="info"
+    )

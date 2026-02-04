@@ -1,0 +1,96 @@
+# Production Environment Configuration
+# Türkiye Üniversite Sınavları Hazırlık Platformu
+
+# Application Settings
+app_name: "Türkiye Üniversite Sınavları Hazırlık Platformu"
+app_version: "1.0.0"
+environment: "production"
+debug: false
+
+# Server Configuration
+server:
+  host: "0.0.0.0"
+  port: 8000
+  workers: 4
+  allowed_origins:
+    - "https://turkiye-sinav.edu.tr"
+    - "https://www.turkiye-sinav.edu.tr"
+    - "https://api.turkiye-sinav.edu.tr"
+  max_request_size: 5242880  # 5MB
+
+# Database Configuration (will be overridden by environment variables)
+database:
+  url: "postgresql+asyncpg://username:password@localhost:5432/turkiye_sinav_prod"
+  echo: false
+  pool_size: 30
+  max_overflow: 50
+  pool_timeout: 60
+
+# Redis Configuration
+redis:
+  url: "redis://redis-server:6379/0"
+  password: null  # Set via environment variable
+  max_connections: 100
+  socket_timeout: 10
+
+# Elasticsearch Configuration
+elasticsearch:
+  url: "http://elasticsearch:9200"
+  index: "turkiye_sinav_platform"
+  username: "elastic"
+  password: null  # Set via environment variable
+  timeout: 60
+
+# Security Configuration
+security:
+  secret_key: "MUST_BE_SET_VIA_ENVIRONMENT_VARIABLE"
+  algorithm: "HS256"
+  access_token_expire_minutes: 30
+  refresh_token_expire_days: 7
+  password_min_length: 8
+
+# External API Configuration
+external_apis:
+  openai_api_key: null  # Set via environment variable
+  youtube_api_key: null  # Set via environment variable
+  huggingface_api_key: null  # Set via environment variable
+  google_api_key: null
+  huggingface_endpoint: "https://api-inference.huggingface.co"
+  custom_llm_endpoint: null
+  api_timeout: 45
+  max_retries: 5
+  rate_limit_per_minute: 100
+
+# Monitoring Configuration
+monitoring:
+  enable_monitoring: true
+  metrics_port: 8001
+  log_level: "INFO"
+  log_format: "%(asctime)s - %(name)s - %(levelname)s - %(funcName)s:%(lineno)d - %(message)s"
+  enable_structured_logging: true
+  log_retention_days: 90
+
+# Turkish Language Support
+encoding: "utf-8"
+locale: "tr_TR.UTF-8"
+timezone: "Europe/Istanbul"
+
+# Feature Flags
+enable_caching: true
+enable_rate_limiting: true
+enable_swagger: false  # Disabled in production
+enable_background_tasks: true
+
+# Production-specific settings
+custom_settings:
+  mock_external_apis: false
+  enable_test_endpoints: false
+  auto_reload: false
+  enable_cors_all: false
+  fake_authentication: false
+  seed_database: false
+  enable_profiling: false
+  enable_health_checks: true
+  enable_metrics_collection: true
+  enable_distributed_tracing: true
+  backup_retention_days: 30

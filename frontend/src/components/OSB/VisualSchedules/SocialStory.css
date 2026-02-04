@@ -1,0 +1,27 @@
+/* Task 94.4: Social Story CSS */
+.social-story { background: white; padding: 24px; border-radius: 8px; border: 2px solid #dee2e6; max-width: 800px; margin: 0 auto; }
+.osb-mode.social-story { border-radius: 4px; border-width: 3px; }
+.story-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; padding-bottom: 16px; border-bottom: 2px solid #dee2e6; }
+.story-title { margin: 0; font-size: 24px; font-weight: 600; }
+.page-indicator { font-size: 16px; font-weight: 600; color: #6c757d; background: #f8f9fa; padding: 8px 16px; border-radius: 20px; }
+.story-page { min-height: 400px; display: flex; flex-direction: column; gap: 24px; }
+.page-image { text-align: center; }
+.page-image img { max-width: 100%; height: auto; border-radius: 8px; border: 2px solid #dee2e6; }
+.page-content { flex: 1; }
+.page-emotion { text-align: center; margin-bottom: 16px; }
+.emotion-icon { font-size: 64px; }
+.page-text { font-size: 20px; line-height: 1.8; color: #212529; text-align: center; padding: 24px; background: #f8f9fa; border-radius: 8px; border: 2px solid #dee2e6; }
+.osb-mode .page-text { border-radius: 4px; border-width: 3px; font-size: 22px; }
+.story-navigation { display: flex; justify-content: space-between; align-items: center; margin-top: 24px; padding-top: 16px; border-top: 2px solid #dee2e6; }
+.nav-btn { padding: 12px 32px; border: 2px solid #dee2e6; background: white; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+.osb-mode .nav-btn { border-radius: 4px; border-width: 3px; }
+.nav-btn:hover:not(:disabled) { background: #e9ecef; }
+.nav-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.nav-btn.primary { background: #0d6efd; color: white; border-color: #0d6efd; }
+.nav-btn.primary:hover { background: #0b5ed7; }
+.page-dots { display: flex; gap: 8px; }
+.dot { width: 12px; height: 12px; border-radius: 50%; border: 2px solid #dee2e6; background: white; cursor: pointer; padding: 0; }
+.dot.active { background: #0d6efd; border-color: #0d6efd; }
+.dot.completed { background: #198754; border-color: #198754; }
+.osb-mode .dot { width: 16px; height: 16px; border-radius: 4px; }
+@media (max-width: 768px) { .story-page { min-height: 300px; } .page-text { font-size: 18px; } }

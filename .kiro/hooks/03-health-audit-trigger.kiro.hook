@@ -1,0 +1,23 @@
+{
+  "enabled": true,
+  "name": "Platform Health Audit Trigger",
+  "description": "REQ-26-47: Triggers health audit when critical files are modified (47 automated checks)",
+  "version": "1.0",
+  "when": {
+    "type": "fileEdited",
+    "patterns": [
+      "backend/main.py",
+      "backend/core/**/*.py",
+      "backend/api/**/*.py",
+      "backend/database/**/*.py",
+      "backend/integrations/**/*.py",
+      "docker-compose.yml",
+      ".env",
+      "backend/requirements.txt"
+    ]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "🏥 PLATFORM HEALTH AUDIT (REQ-26-47)\n\nCritical file modified! Run comprehensive health checks:\n\n## 1. API HEALTH (REQ-26)\n   - All endpoints returning 200 OK?\n   - Response times < 500ms? (p95 < 200ms for REQ-7)\n   - Unused endpoints (30+ days)?\n\n## 2. AI AGENTS (REQ-27)\n   - LearningPathAgent importable?\n   - StudyAgent importable?\n   - ExamAgent importable?\n   - Response times < 3000ms?\n\n## 3. EXTERNAL SERVICES (REQ-28)\n   - YouTube API active?\n   - EBA TV API active?\n   - Wikipedia API active?\n   - Timeout < 3s?\n\n## 4. DATABASE (REQ-29)\n   - PostgreSQL connection pool active?\n   - Redis cache active (hit ratio > 70%)?\n   - Elasticsearch connection active?\n\n## 5. SECURITY (REQ-31, REQ-45)\n   - Rate limiting active (100 req/min)?\n   - SQL injection prevention?\n   - XSS protection (CSP headers)?\n   - CORS policy configured?\n\n## 6. PERFORMANCE (REQ-35)\n   - API p95 < 200ms?\n   - Memory usage normal?\n   - CPU usage < 80%?\n   - Slow queries (> 1000ms)?\n\n## 7. HEALTH ENDPOINTS (REQ-40)\n   - /health returns 200?\n   - /readiness returns 200?\n   - /liveness returns 200?\n\n## AUTOMATED ACTIONS:\n1. Run: `pytest backend/tests/integration/test_health_audit.py -v`\n2. Generate health report (HTML + JSON)\n3. Calculate health score (0-100%)\n4. Alert if score < 80%\n\n## CRITICAL THRESHOLDS:\n- 🟢 Score > 90%: Healthy\n- 🟡 Score 80-90%: Warning\n- 🔴 Score < 80%: Critical - notify team!\n\nProvide Türkçe health status report with action items."
+  }
+}

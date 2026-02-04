@@ -1,0 +1,592 @@
+# ============================================================================
+# Video API Kubernetes Deployment
+# Learning Path Video Yükleme Sistemi - Production Deployment
+# Requirements: 4.9, 4.13
+# ============================================================================
+
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: video-api
+  labels:
+    name: video-api
+    environment: production
+    app.kubernetes.io/part-of: turkiye-sinav-platform
+
+---
+# ============================================================================
+# ConfigMap - Application Configuration
+# ============================================================================
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: video-api-config
+  namespace: video-api
+  labels:
+    app.kubernetes.io/name: video-api
+    app.kubernetes.io/component: config
+data:
+  # Application settings
+  APP_NAME: "Turkiye_Sinav_Video_API"
+  APP_VERSION: "1.0.0"
+  ENVIRONMENT: "production"
+  DEBUG: "false"
+  LOG_LEVEL: "INFO"
+  
+  # Performance settings
+  VIDEO_DISCOVERY_TIMEOUT: "3000"
+  VIDEO_DISCOVERY_MAX_PARALLEL: "5"
+  VIDEO_MIN_RELEVANCE_SCORE: "0.7"
+  VIDEO_MIN_LANGUAGE_SCORE: "0.8"
+  VIDEO_DIFFICULTY_TOLERANCE: "1"
+  
+  # Cache settings
+  VIDEO_CACHE_TTL: "3600"
+  MEMORY_CACHE_SIZE: "100"
+  CACHE_WARMING_ENABLED: "true"
+  
+  # Rate limiting
+  RATE_LIMIT_ENABLED: "true"
+  RATE_LIMIT_PER_IP_PER_MINUTE: "10"
+  RATE_LIMIT_PER_USER_PER_MINUTE: "20"
+  
+  # Health check
+  HEALTH_CHECK_ENABLED: "true"
+  HEALTH_CHECK_TIMEOUT: "500"
+  HEALTH_CHECK_INTERVAL: "30"
+  STARTUP_HEALTH_CHECK_ENABLED: "true"
+  
+  # Monitoring
+  PROMETHEUS_METRICS_ENABLED: "true"
+  STRUCTURED_LOGGING_ENABLED: "true"
+  LOG_FORMAT: "json"
+  
+  # Circuit breaker
+  CIRCUIT_BREAKER_ENABLED: "true"
+  CIRCUIT_BREAKER_FAILURE_THRESHOLD: "5"
+  CIRCUIT_BREAKER_TIMEOUT: "60"
+  
+  # Turkish settings
+  DEFAULT_LANGUAGE: "tr_TR"
+  TIMEZONE: "Europe/Istanbul"
+  LOCALE: "tr_TR.UTF-8"
+  TURKISH_LANGUAGE_CODE: "tr"
+  
+  # Feature flags
+  ENABLE_SEMANTIC_SEARCH: "true"
+  ENABLE_HYBRID_SEARCH: "true"
+  ENABLE_QUALITY_SCORING: "true"
+
+---
+# ============================================================================
+# Secret - Sensitive Configuration
+# Note: In production, use external secret management (e.g., AWS Secrets Manager)
+# ============================================================================
+apiVersion: v1
+kind: Secret
+metadata:
+  name: video-api-secrets
+  namespace: video-api
+  labels:
+    app.kubernetes.io/name: video-api
+    app.kubernetes.io/component: secrets
+type: Opaque
+stringData:
+  # IMPORTANT: Replace these with actual secrets from secret management system
+  SECRET_KEY: "REPLACE_WITH_ACTUAL_SECRET_KEY"
+  JWT_SECRET_KEY: "REPLACE_WITH_ACTUAL_JWT_SECRET"
+  DATABASE_URL: "postgresql+asyncpg://user:password@postgres-service:5432/video_api_db"
+  REDIS_URL: "redis://redis-service:6379/0"
+  REDIS_PASSWORD: "REPLACE_WITH_REDIS_PASSWORD"
+  YOUTUBE_API_KEY: "REPLACE_WITH_YOUTUBE_API_KEY"
+  SENTRY_DSN: "REPLACE_WITH_SENTRY_DSN"
+
+---
+# ============================================================================
+# Deployment - Video API Service
+# Rolling update strategy with health checks
+# ============================================================================
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: video-api
+  namespace: video-api
+  labels:
+    app.kubernetes.io/name: video-api
+    app.kubernetes.io/component: backend
+    app.kubernetes.io/part-of: turkiye-sinav-platform
+    app.kubernetes.io/version: "1.0.0"
+  annotations:
+    deployment.kubernetes.io/revision: "1"
+    description: "Video recommendation API with Turkish content filtering"
+spec:
+  # Replicas - will be managed by HPA
+  replicas: 3
+  
+  # Rolling update strategy (Req 4.9)
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1        # Allow 1 extra pod during update
+      maxUnavailable: 0  # Ensure zero downtime
+  
+  # Selector
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: video-api
+      app.kubernetes.io/component: backend
+  
+  # Pod template
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: video-api
+        app.kubernetes.io/component: backend
+        app.kubernetes.io/version: "1.0.0"
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8000"
+        prometheus.io/path: "/metrics"
+        # Force pod restart on config change
+        checksum/config: "{{ include (print $.Template.BasePath \"/configmap.yaml\") . | sha256sum }}"
+        checksum/secret: "{{ include (print $.Template.BasePath \"/secret.yaml\") . | sha256sum }}"
+    
+    spec:
+      # Service account
+      serviceAccountName: video-api-sa
+      
+      # Security context (run as non-root)
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        seccompProfile:
+          type: RuntimeDefault
+      
+      # Init container - startup health check
+      initContainers:
+      - name: startup-check
+        image: ghcr.io/turkiye-sinav/video-api:latest
+        imagePullPolicy: IfNotPresent
+        command: ["/app/startup-check.sh"]
+        env:
+        - name: DATABASE_URL
+          valueFrom:
+            secretKeyRef:
+              name: video-api-secrets
+              key: DATABASE_URL
+        - name: REDIS_URL
+          valueFrom:
+            secretKeyRef:
+              name: video-api-secrets
+              key: REDIS_URL
+        - name: YOUTUBE_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: video-api-secrets
+              key: YOUTUBE_API_KEY
+        envFrom:
+        - configMapRef:
+            name: video-api-config
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "256Mi"
+            cpu: "200m"
+      
+      # Main container
+      containers:
+      - name: video-api
+        image: ghcr.io/turkiye-sinav/video-api:latest
+        imagePullPolicy: IfNotPresent
+        
+        # Ports
+        ports:
+        - name: http
+          containerPort: 8000
+          protocol: TCP
+        - name: metrics
+          containerPort: 9090
+          protocol: TCP
+        
+        # Environment variables from ConfigMap
+        envFrom:
+        - configMapRef:
+            name: video-api-config
+        
+        # Environment variables from Secret
+        env:
+        - name: SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: video-api-secrets
+              key: SECRET_KEY
+        - name: JWT_SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: video-api-secrets
+              key: JWT_SECRET_KEY
+        - name: DATABASE_URL
+          valueFrom:
+            secretKeyRef:
+              name: video-api-secrets
+              key: DATABASE_URL
+        - name: REDIS_URL
+          valueFrom:
+            secretKeyRef:
+              name: video-api-secrets
+              key: REDIS_URL
+        - name: REDIS_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: video-api-secrets
+              key: REDIS_PASSWORD
+        - name: YOUTUBE_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: video-api-secrets
+              key: YOUTUBE_API_KEY
+        - name: SENTRY_DSN
+          valueFrom:
+            secretKeyRef:
+              name: video-api-secrets
+              key: SENTRY_DSN
+        - name: INSTANCE_ID
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: POD_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+        - name: NODE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        
+        # Resource limits (Req 4.13)
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "250m"
+          limits:
+            memory: "2Gi"
+            cpu: "1000m"
+        
+        # Liveness probe (Req 4.9)
+        # Checks if container is alive and should be restarted
+        livenessProbe:
+          httpGet:
+            path: /api/youtube/health
+            port: 8000
+            httpHeaders:
+            - name: X-Health-Check
+              value: liveness
+          initialDelaySeconds: 60
+          periodSeconds: 30
+          timeoutSeconds: 10
+          successThreshold: 1
+          failureThreshold: 3
+        
+        # Readiness probe (Req 4.9)
+        # Checks if container is ready to receive traffic
+        readinessProbe:
+          httpGet:
+            path: /api/youtube/health
+            port: 8000
+            httpHeaders:
+            - name: X-Health-Check
+              value: readiness
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          successThreshold: 1
+          failureThreshold: 3
+        
+        # Startup probe
+        # Gives container time to start before liveness/readiness checks
+        startupProbe:
+          httpGet:
+            path: /api/youtube/health
+            port: 8000
+          initialDelaySeconds: 10
+          periodSeconds: 5
+          timeoutSeconds: 3
+          successThreshold: 1
+          failureThreshold: 12  # 60 seconds total
+        
+        # Volume mounts
+        volumeMounts:
+        - name: logs
+          mountPath: /app/logs
+        - name: cache
+          mountPath: /app/cache
+        - name: temp
+          mountPath: /app/temp
+        
+        # Security context
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: false
+          runAsNonRoot: true
+          runAsUser: 1000
+          capabilities:
+            drop:
+            - ALL
+      
+      # Volumes
+      volumes:
+      - name: logs
+        emptyDir:
+          sizeLimit: 1Gi
+      - name: cache
+        emptyDir:
+          sizeLimit: 2Gi
+      - name: temp
+        emptyDir:
+          sizeLimit: 1Gi
+      
+      # Image pull secrets
+      imagePullSecrets:
+      - name: ghcr-secret
+      
+      # DNS policy
+      dnsPolicy: ClusterFirst
+      
+      # Restart policy
+      restartPolicy: Always
+      
+      # Termination grace period
+      terminationGracePeriodSeconds: 30
+      
+      # Affinity rules - spread pods across nodes
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app.kubernetes.io/name
+                  operator: In
+                  values:
+                  - video-api
+              topologyKey: kubernetes.io/hostname
+
+---
+# ============================================================================
+# Service - ClusterIP
+# ============================================================================
+apiVersion: v1
+kind: Service
+metadata:
+  name: video-api-service
+  namespace: video-api
+  labels:
+    app.kubernetes.io/name: video-api
+    app.kubernetes.io/component: service
+  annotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "8000"
+spec:
+  type: ClusterIP
+  sessionAffinity: ClientIP
+  sessionAffinityConfig:
+    clientIP:
+      timeoutSeconds: 3600
+  ports:
+  - name: http
+    port: 8000
+    targetPort: 8000
+    protocol: TCP
+  - name: metrics
+    port: 9090
+    targetPort: 9090
+    protocol: TCP
+  selector:
+    app.kubernetes.io/name: video-api
+    app.kubernetes.io/component: backend
+
+---
+# ============================================================================
+# ServiceAccount
+# ============================================================================
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: video-api-sa
+  namespace: video-api
+  labels:
+    app.kubernetes.io/name: video-api
+    app.kubernetes.io/component: serviceaccount
+
+---
+# ============================================================================
+# HorizontalPodAutoscaler
+# Auto-scaling based on CPU and memory
+# ============================================================================
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: video-api-hpa
+  namespace: video-api
+  labels:
+    app.kubernetes.io/name: video-api
+    app.kubernetes.io/component: autoscaling
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: video-api
+  
+  minReplicas: 3
+  maxReplicas: 10
+  
+  metrics:
+  # CPU utilization
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 70
+  
+  # Memory utilization
+  - type: Resource
+    resource:
+      name: memory
+      target:
+        type: Utilization
+        averageUtilization: 80
+  
+  # Custom metric - request rate (if available)
+  # - type: Pods
+  #   pods:
+  #     metric:
+  #       name: http_requests_per_second
+  #     target:
+  #       type: AverageValue
+  #       averageValue: "1000"
+  
+  # Scaling behavior
+  behavior:
+    scaleDown:
+      stabilizationWindowSeconds: 300  # 5 minutes
+      policies:
+      - type: Percent
+        value: 10
+        periodSeconds: 60
+      - type: Pods
+        value: 1
+        periodSeconds: 60
+      selectPolicy: Min
+    
+    scaleUp:
+      stabilizationWindowSeconds: 60  # 1 minute
+      policies:
+      - type: Percent
+        value: 50
+        periodSeconds: 60
+      - type: Pods
+        value: 2
+        periodSeconds: 60
+      selectPolicy: Max
+
+---
+# ============================================================================
+# PodDisruptionBudget
+# Ensure minimum availability during disruptions
+# ============================================================================
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: video-api-pdb
+  namespace: video-api
+  labels:
+    app.kubernetes.io/name: video-api
+spec:
+  minAvailable: 2
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: video-api
+      app.kubernetes.io/component: backend
+
+---
+# ============================================================================
+# NetworkPolicy
+# Control network traffic to/from pods
+# ============================================================================
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: video-api-netpol
+  namespace: video-api
+  labels:
+    app.kubernetes.io/name: video-api
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: video-api
+  
+  policyTypes:
+  - Ingress
+  - Egress
+  
+  # Ingress rules
+  ingress:
+  # Allow from nginx/ingress
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          name: ingress-nginx
+    ports:
+    - protocol: TCP
+      port: 8000
+  
+  # Allow from prometheus
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          name: monitoring
+    ports:
+    - protocol: TCP
+      port: 9090
+  
+  # Egress rules
+  egress:
+  # Allow to PostgreSQL
+  - to:
+    - namespaceSelector:
+        matchLabels:
+          name: database
+    ports:
+    - protocol: TCP
+      port: 5432
+  
+  # Allow to Redis
+  - to:
+    - namespaceSelector:
+        matchLabels:
+          name: cache
+    ports:
+    - protocol: TCP
+      port: 6379
+  
+  # Allow DNS
+  - to:
+    - namespaceSelector:
+        matchLabels:
+          name: kube-system
+    ports:
+    - protocol: UDP
+      port: 53
+  
+  # Allow external HTTPS (YouTube API, etc.)
+  - to:
+    - namespaceSelector: {}
+    ports:
+    - protocol: TCP
+      port: 443

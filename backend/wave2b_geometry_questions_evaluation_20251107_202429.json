@@ -1,0 +1,90 @@
+{
+  "evaluation_date": "2025-11-07T20:24:29.246497",
+  "phase": "Phase 3 - Geometry",
+  "total_questions": 5,
+  "valid_evaluations": 5,
+  "average_score": 0.9,
+  "min_score": 0.9,
+  "max_score": 0.9,
+  "target_score": 0.85,
+  "target_met": true,
+  "comparison_with_previous_phases": {
+    "phase1_avg": 0.897,
+    "phase2_avg": 0.9,
+    "phase3_avg": 0.9,
+    "difference_from_phase1": 0.0030000000000000027,
+    "difference_from_phase2": 0.0
+  },
+  "results": [
+    {
+      "question_id": 1,
+      "test_case": "Right Triangle - Matematik (Pisagor)",
+      "geometry_type": "triangle",
+      "shape_subtype": "right_triangle",
+      "stem_length": 297,
+      "has_geometry": true,
+      "svg_size": 3490,
+      "quality_score": 0.9,
+      "grade": "Excellent",
+      "decision": "APPROVE",
+      "status": "[EXCELLENT] Target exceeded!",
+      "timestamp": "2025-11-07T20:24:29.243477"
+    },
+    {
+      "question_id": 2,
+      "test_case": "Complete Circle - Matematik (Daire)",
+      "geometry_type": "circle",
+      "shape_subtype": "complete_circle",
+      "stem_length": 295,
+      "has_geometry": true,
+      "svg_size": 8972,
+      "quality_score": 0.9,
+      "grade": "Excellent",
+      "decision": "APPROVE",
+      "status": "[EXCELLENT] Target exceeded!",
+      "timestamp": "2025-11-07T20:24:29.244501"
+    },
+    {
+      "question_id": 3,
+      "test_case": "Square - Matematik (Alan Hesaplama)",
+      "geometry_type": "quadrilateral",
+      "shape_subtype": "square",
+      "stem_length": 247,
+      "has_geometry": true,
+      "svg_size": 8263,
+      "quality_score": 0.9,
+      "grade": "Excellent",
+      "decision": "APPROVE",
+      "status": "[EXCELLENT] Target exceeded!",
+      "timestamp": "2025-11-07T20:24:29.244501"
+    },
+    {
+      "question_id": 4,
+      "test_case": "Regular Hexagon - Matematik (Çokgenler)",
+      "geometry_type": "polygon",
+      "shape_subtype": "hexagon",
+      "stem_length": 342,
+      "has_geometry": true,
+      "svg_size": 7260,
+      "quality_score": 0.9,
+      "grade": "Excellent",
+      "decision": "APPROVE",
+      "status": "[EXCELLENT] Target exceeded!",
+      "timestamp": "2025-11-07T20:24:29.245498"
+    },
+    {
+      "question_id": 5,
+      "test_case": "Cube (3D) - Matematik (Hacim)",
+      "geometry_type": "3d_shape",
+      "shape_subtype": "cube",
+      "stem_length": 328,
+      "has_geometry": true,
+      "svg_size": 990,
+      "quality_score": 0.9,
+      "grade": "Excellent",
+      "decision": "APPROVE",
+      "status": "[EXCELLENT] Target exceeded!",
+      "timestamp": "2025-11-07T20:24:29.246497"
+    }
+  ]
+}

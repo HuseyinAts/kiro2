@@ -1,0 +1,558 @@
+{
+  "dashboard": {
+    "title": "Video API Monitoring - Learning Path",
+    "tags": ["video", "youtube", "recommendations", "learning-path"],
+    "timezone": "Europe/Istanbul",
+    "schemaVersion": 27,
+    "version": 1,
+    "refresh": "30s",
+    "time": {
+      "from": "now-1h",
+      "to": "now"
+    },
+    "panels": [
+      {
+        "id": 1,
+        "title": "Video API Request Rate",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "rate(kiro_api_requests_total{endpoint=\"/api/youtube/recommendations\"}[5m])",
+            "legendFormat": "Total Requests/sec"
+          },
+          {
+            "expr": "rate(kiro_api_requests_total{endpoint=\"/api/youtube/recommendations\", status=\"200\"}[5m])",
+            "legendFormat": "Success (200)"
+          },
+          {
+            "expr": "rate(kiro_api_requests_total{endpoint=\"/api/youtube/recommendations\", status=~\"5..\"}[5m])",
+            "legendFormat": "Server Errors (5xx)"
+          },
+          {
+            "expr": "rate(kiro_api_requests_total{endpoint=\"/api/youtube/recommendations\", status=\"504\"}[5m])",
+            "legendFormat": "Timeouts (504)"
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 0},
+        "yaxes": [
+          {"format": "reqps", "label": "Requests/sec"},
+          {"format": "short"}
+        ]
+      },
+      {
+        "id": 2,
+        "title": "Video API Response Time (P50, P95, P99)",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "histogram_quantile(0.50, rate(kiro_api_request_duration_seconds_bucket{endpoint=\"/api/youtube/recommendations\"}[5m]))",
+            "legendFormat": "P50"
+          },
+          {
+            "expr": "histogram_quantile(0.95, rate(kiro_api_request_duration_seconds_bucket{endpoint=\"/api/youtube/recommendations\"}[5m]))",
+            "legendFormat": "P95"
+          },
+          {
+            "expr": "histogram_quantile(0.99, rate(kiro_api_request_duration_seconds_bucket{endpoint=\"/api/youtube/recommendations\"}[5m]))",
+            "legendFormat": "P99"
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 0},
+        "yaxes": [
+          {"format": "s", "label": "Response Time"},
+          {"format": "short"}
+        ],
+        "alert": {
+          "name": "High P95 Response Time",
+          "conditions": [
+            {
+              "evaluator": {"type": "gt", "params": [3]},
+              "query": {"params": ["A", "5m", "now"]},
+              "type": "query"
+            }
+          ],
+          "frequency": "60s",
+          "for": "5m",
+          "message": "Video API P95 response time is above 3 seconds"
+        },
+        "thresholds": [
+          {"value": 3, "colorMode": "critical", "op": "gt", "fill": true, "line": true}
+        ]
+      },
+      {
+        "id": 3,
+        "title": "Error Rate (%)",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "(rate(kiro_api_requests_total{endpoint=\"/api/youtube/recommendations\", status=~\"5..\"}[5m]) / rate(kiro_api_requests_total{endpoint=\"/api/youtube/recommendations\"}[5m])) * 100",
+            "legendFormat": "Error Rate"
+          }
+        ],
+        "gridPos": {"h": 4, "w": 4, "x": 0, "y": 8},
+        "thresholds": [
+          {"value": 0, "color": "green"},
+          {"value": 2, "color": "yellow"},
+          {"value": 5, "color": "red"}
+        ],
+        "options": {
+          "reduceOptions": {
+            "values": false,
+            "calcs": ["lastNotNull"]
+          },
+          "textMode": "value_and_name"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "unit": "percent",
+            "decimals": 2
+          }
+        }
+      },
+      {
+        "id": 4,
+        "title": "Cache Hit Rate (%)",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "(rate(kiro_cache_hits_total{cache_type=\"video_recommendations\"}[10m]) / (rate(kiro_cache_hits_total{cache_type=\"video_recommendations\"}[10m]) + rate(kiro_cache_misses_total{cache_type=\"video_recommendations\"}[10m]))) * 100",
+            "legendFormat": "Cache Hit Rate"
+          }
+        ],
+        "gridPos": {"h": 4, "w": 4, "x": 4, "y": 8},
+        "thresholds": [
+          {"value": 0, "color": "red"},
+          {"value": 60, "color": "yellow"},
+          {"value": 80, "color": "green"}
+        ],
+        "options": {
+          "reduceOptions": {
+            "values": false,
+            "calcs": ["lastNotNull"]
+          },
+          "textMode": "value_and_name"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "unit": "percent",
+            "decimals": 1
+          }
+        }
+      },
+      {
+        "id": 5,
+        "title": "Overall Health Status",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "health_check_overall_status",
+            "legendFormat": "Health Status"
+          }
+        ],
+        "gridPos": {"h": 4, "w": 4, "x": 8, "y": 8},
+        "thresholds": [
+          {"value": 0, "color": "red"},
+          {"value": 1, "color": "green"}
+        ],
+        "options": {
+          "reduceOptions": {
+            "values": false,
+            "calcs": ["lastNotNull"]
+          },
+          "textMode": "name"
+        },
+        "mappings": [
+          {"type": "value", "value": "0", "text": "UNHEALTHY"},
+          {"type": "value", "value": "1", "text": "HEALTHY"}
+        ]
+      },
+      {
+        "id": 6,
+        "title": "Video Recommendation Latency",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "histogram_quantile(0.50, rate(kiro_video_recommendation_latency_seconds_bucket[5m]))",
+            "legendFormat": "P50 Latency"
+          },
+          {
+            "expr": "histogram_quantile(0.95, rate(kiro_video_recommendation_latency_seconds_bucket[5m]))",
+            "legendFormat": "P95 Latency"
+          },
+          {
+            "expr": "histogram_quantile(0.99, rate(kiro_video_recommendation_latency_seconds_bucket[5m]))",
+            "legendFormat": "P99 Latency"
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 8},
+        "yaxes": [
+          {"format": "s", "label": "Latency"},
+          {"format": "short"}
+        ]
+      },
+      {
+        "id": 7,
+        "title": "Component Health Status",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "health_check_component_status{component=\"youtube_api\"}",
+            "legendFormat": "YouTube API"
+          },
+          {
+            "expr": "health_check_component_status{component=\"database\"}",
+            "legendFormat": "Database"
+          },
+          {
+            "expr": "health_check_component_status{component=\"redis_cache\"}",
+            "legendFormat": "Redis Cache"
+          }
+        ],
+        "gridPos": {"h": 4, "w": 12, "x": 0, "y": 12},
+        "thresholds": [
+          {"value": 0, "color": "red"},
+          {"value": 1, "color": "green"}
+        ],
+        "options": {
+          "orientation": "horizontal",
+          "reduceOptions": {
+            "values": false,
+            "calcs": ["lastNotNull"]
+          },
+          "textMode": "value_and_name"
+        },
+        "mappings": [
+          {"type": "value", "value": "0", "text": "DOWN"},
+          {"type": "value", "value": "1", "text": "UP"}
+        ]
+      },
+      {
+        "id": 8,
+        "title": "Turkish Content Filter Score Distribution",
+        "type": "heatmap",
+        "targets": [
+          {
+            "expr": "rate(kiro_turkish_content_filter_score_bucket[5m])",
+            "legendFormat": "{{le}}",
+            "format": "heatmap"
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 16},
+        "dataFormat": "tsbuckets",
+        "yAxis": {
+          "format": "short",
+          "decimals": 1
+        },
+        "cards": {
+          "cardPadding": 2
+        },
+        "color": {
+          "mode": "spectrum",
+          "colorScheme": "interpolateSpectral",
+          "exponent": 0.5
+        }
+      },
+      {
+        "id": 9,
+        "title": "Cache Operations",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "rate(kiro_cache_hits_total{cache_type=\"video_recommendations\"}[5m])",
+            "legendFormat": "Cache Hits/sec"
+          },
+          {
+            "expr": "rate(kiro_cache_misses_total{cache_type=\"video_recommendations\"}[5m])",
+            "legendFormat": "Cache Misses/sec"
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 16},
+        "yaxes": [
+          {"format": "ops", "label": "Operations/sec"},
+          {"format": "short"}
+        ]
+      },
+      {
+        "id": 10,
+        "title": "Health Check Response Time",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "health_check_response_time_ms",
+            "legendFormat": "Response Time"
+          }
+        ],
+        "gridPos": {"h": 6, "w": 8, "x": 0, "y": 24},
+        "yaxes": [
+          {"format": "ms", "label": "Response Time"},
+          {"format": "short"}
+        ],
+        "thresholds": [
+          {"value": 500, "colorMode": "critical", "op": "gt", "fill": true, "line": true}
+        ]
+      },
+      {
+        "id": 11,
+        "title": "Health Check Executions",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "rate(health_check_executions_total{status=\"success\"}[5m])",
+            "legendFormat": "Success"
+          },
+          {
+            "expr": "rate(health_check_executions_total{status=\"failure\"}[5m])",
+            "legendFormat": "Failure"
+          }
+        ],
+        "gridPos": {"h": 6, "w": 8, "x": 8, "y": 24},
+        "yaxes": [
+          {"format": "ops", "label": "Checks/sec"},
+          {"format": "short"}
+        ]
+      },
+      {
+        "id": 12,
+        "title": "Consecutive Failures",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "health_check_consecutive_failures",
+            "legendFormat": "Consecutive Failures"
+          }
+        ],
+        "gridPos": {"h": 6, "w": 8, "x": 16, "y": 24},
+        "thresholds": [
+          {"value": 0, "color": "green"},
+          {"value": 2, "color": "yellow"},
+          {"value": 3, "color": "red"}
+        ],
+        "options": {
+          "reduceOptions": {
+            "values": false,
+            "calcs": ["lastNotNull"]
+          },
+          "textMode": "value_and_name"
+        }
+      },
+      {
+        "id": 13,
+        "title": "Video Recommendations by Subject",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "rate(kiro_video_recommendations_total[5m])",
+            "legendFormat": "{{subject}} - {{learning_style}}"
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 30},
+        "yaxes": [
+          {"format": "ops", "label": "Recommendations/sec"},
+          {"format": "short"}
+        ]
+      },
+      {
+        "id": 14,
+        "title": "Component Failures",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "rate(health_check_component_failures_total[5m])",
+            "legendFormat": "{{component}}"
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 30},
+        "yaxes": [
+          {"format": "ops", "label": "Failures/sec"},
+          {"format": "short"}
+        ]
+      },
+      {
+        "id": 15,
+        "title": "Active Alerts",
+        "type": "table",
+        "targets": [
+          {
+            "expr": "ALERTS{alertstate=\"firing\", component=~\"youtube_api|cache|health_check\"}",
+            "format": "table",
+            "instant": true
+          }
+        ],
+        "gridPos": {"h": 8, "w": 24, "x": 0, "y": 38},
+        "transformations": [
+          {
+            "id": "organize",
+            "options": {
+              "excludeByName": {},
+              "indexByName": {},
+              "renameByName": {
+                "alertname": "Alert",
+                "severity": "Severity",
+                "component": "Component",
+                "Value": "Status"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "id": 16,
+        "title": "Last Successful Health Check",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "time() - health_check_last_successful_timestamp",
+            "legendFormat": "Time Since Last Success"
+          }
+        ],
+        "gridPos": {"h": 4, "w": 6, "x": 0, "y": 46},
+        "thresholds": [
+          {"value": 0, "color": "green"},
+          {"value": 120, "color": "yellow"},
+          {"value": 300, "color": "red"}
+        ],
+        "options": {
+          "reduceOptions": {
+            "values": false,
+            "calcs": ["lastNotNull"]
+          },
+          "textMode": "value_and_name"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "unit": "s",
+            "decimals": 0
+          }
+        }
+      },
+      {
+        "id": 17,
+        "title": "Request Success Rate (%)",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "(rate(kiro_api_requests_total{endpoint=\"/api/youtube/recommendations\", status=\"200\"}[5m]) / rate(kiro_api_requests_total{endpoint=\"/api/youtube/recommendations\"}[5m])) * 100",
+            "legendFormat": "Success Rate"
+          }
+        ],
+        "gridPos": {"h": 4, "w": 6, "x": 6, "y": 46},
+        "thresholds": [
+          {"value": 0, "color": "red"},
+          {"value": 95, "color": "yellow"},
+          {"value": 99, "color": "green"}
+        ],
+        "options": {
+          "reduceOptions": {
+            "values": false,
+            "calcs": ["lastNotNull"]
+          },
+          "textMode": "value_and_name"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "unit": "percent",
+            "decimals": 2
+          }
+        }
+      },
+      {
+        "id": 18,
+        "title": "Avg Turkish Content Score",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "histogram_quantile(0.50, rate(kiro_turkish_content_filter_score_bucket[10m]))",
+            "legendFormat": "Median Score"
+          }
+        ],
+        "gridPos": {"h": 4, "w": 6, "x": 12, "y": 46},
+        "thresholds": [
+          {"value": 0, "color": "red"},
+          {"value": 0.70, "color": "yellow"},
+          {"value": 0.85, "color": "green"}
+        ],
+        "options": {
+          "reduceOptions": {
+            "values": false,
+            "calcs": ["lastNotNull"]
+          },
+          "textMode": "value_and_name"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "unit": "percentunit",
+            "decimals": 2
+          }
+        }
+      },
+      {
+        "id": 19,
+        "title": "Total Requests (24h)",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "increase(kiro_api_requests_total{endpoint=\"/api/youtube/recommendations\"}[24h])",
+            "legendFormat": "Total Requests"
+          }
+        ],
+        "gridPos": {"h": 4, "w": 6, "x": 18, "y": 46},
+        "options": {
+          "reduceOptions": {
+            "values": false,
+            "calcs": ["lastNotNull"]
+          },
+          "textMode": "value_and_name"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "unit": "short",
+            "decimals": 0
+          }
+        }
+      }
+    ],
+    "templating": {
+      "list": [
+        {
+          "name": "datasource",
+          "type": "datasource",
+          "query": "prometheus"
+        },
+        {
+          "name": "subject",
+          "type": "query",
+          "datasource": "$datasource",
+          "query": "label_values(kiro_video_recommendations_total, subject)",
+          "multi": true,
+          "includeAll": true
+        },
+        {
+          "name": "learning_style",
+          "type": "query",
+          "datasource": "$datasource",
+          "query": "label_values(kiro_video_recommendations_total, learning_style)",
+          "multi": true,
+          "includeAll": true
+        }
+      ]
+    },
+    "annotations": {
+      "list": [
+        {
+          "name": "Deployments",
+          "datasource": "prometheus",
+          "expr": "deployment_info",
+          "iconColor": "blue",
+          "enable": true
+        },
+        {
+          "name": "Video API Alerts",
+          "datasource": "prometheus",
+          "expr": "ALERTS{alertstate=\"firing\", component=~\"youtube_api|cache|health_check\"}",
+          "iconColor": "red",
+          "enable": true
+        }
+      ]
+    }
+  }
+}

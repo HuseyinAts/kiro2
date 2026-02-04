@@ -1,0 +1,96 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database (Development)
+  postgres:
+    image: postgres:15-alpine
+    container_name: turkiye_sinav_postgres_dev
+    environment:
+      POSTGRES_DB: turkiye_sinav_dev_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres123
+      POSTGRES_INITDB_ARGS: "--encoding=UTF8 --locale=tr_TR.UTF-8"
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_dev_data:/var/lib/postgresql/data
+      - ./init-scripts:/docker-entrypoint-initdb.d
+    networks:
+      - turkiye_sinav_dev_network
+    restart: unless-stopped
+
+  # Redis Cache (Development)
+  redis:
+    image: redis:7-alpine
+    container_name: turkiye_sinav_redis_dev
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_dev_data:/data
+    networks:
+      - turkiye_sinav_dev_network
+    restart: unless-stopped
+    command: redis-server --appendonly yes
+
+  # Backend API (Development with hot reload)
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.dev
+    container_name: turkiye_sinav_backend_dev
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://postgres:postgres123@postgres:5432/turkiye_sinav_dev_db
+      - REDIS_URL=redis://redis:6379/0
+      - SECRET_KEY=dev-secret-key-not-for-production-32-chars
+      - JWT_SECRET_KEY=dev-jwt-secret-not-for-production-32-chars
+      - DEBUG=true
+      - ENVIRONMENT=development
+      - LOG_LEVEL=DEBUG
+      - PYTHONUNBUFFERED=1
+      - USE_MOCK_SERVICES=true
+      - ENABLE_PERFORMANCE_MONITORING=true
+      - HUGGINGFACE_ENDPOINT=${HUGGINGFACE_ENDPOINT:-https://cf781mfqobm2ynkk.us-east-1.aws.endpoints.huggingface.cloud}
+      - HUGGINGFACE_API_TOKEN=${HUGGINGFACE_API_TOKEN:-}
+      - USE_MOCK_RESPONSES=${USE_MOCK_RESPONSES:-true}
+    depends_on:
+      - postgres
+      - redis
+    volumes:
+      - ./backend:/app  # Mount source code for hot reload
+      - ./logs:/app/logs
+      - ./uploads:/app/uploads
+      - ./cache:/app/cache
+      - ./vector_db:/app/vector_db
+      - ./data:/app/data
+    networks:
+      - turkiye_sinav_dev_network
+    restart: unless-stopped
+
+  # Frontend (Development)
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: teknofest-frontend-dev
+    ports:
+      - "3000:3000"
+    environment:
+      - VITE_API_URL=http://localhost:8000
+      - NODE_ENV=development
+    volumes:
+      - ./frontend:/app  # Mount source code for hot reload
+      - /app/node_modules  # Prevent node_modules from being overwritten
+    depends_on:
+      - backend
+    networks:
+      - teknofest-network
+    restart: unless-stopped
+
+networks:
+  teknofest-network:
+    driver: bridge
+
+# Development setup with hot reload for both backend and frontend
+# Use: docker-compose -f docker-compose.dev.yml up

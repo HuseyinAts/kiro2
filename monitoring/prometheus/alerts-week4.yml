@@ -1,0 +1,138 @@
+# Prometheus Alert Rules for KIRO Platform - Week 4
+
+groups:
+  - name: kiro_backend_alerts
+    interval: 30s
+    rules:
+      # High Error Rate
+      - alert: HighErrorRate
+        expr: rate(http_requests_total{status=~"5.."}[5m]) > 0.05
+        for: 5m
+        labels:
+          severity: critical
+          component: backend
+        annotations:
+          summary: "High error rate detected"
+          description: "Error rate is {{ $value | humanizePercentage }} for {{ $labels.instance }}"
+
+      # High Response Time
+      - alert: HighResponseTime
+        expr: histogram_quantile(0.95, rate(http_request_duration_seconds_bucket[5m])) > 1
+        for: 10m
+        labels:
+          severity: warning
+          component: backend
+        annotations:
+          summary: "High response time (P95 > 1s)"
+          description: "P95 response time is {{ $value }}s for {{ $labels.instance }}"
+
+      # Service Down
+      - alert: ServiceDown
+        expr: up{job="kiro-backend"} == 0
+        for: 2m
+        labels:
+          severity: critical
+          component: backend
+        annotations:
+          summary: "KIRO Backend is down"
+          description: "Instance {{ $labels.instance }} is down"
+
+      # High CPU Usage
+      - alert: HighCPUUsage
+        expr: rate(process_cpu_seconds_total[5m]) > 0.8
+        for: 10m
+        labels:
+          severity: warning
+          component: backend
+        annotations:
+          summary: "High CPU usage"
+          description: "CPU usage is {{ $value | humanizePercentage }} for {{ $labels.instance }}"
+
+      # High Memory Usage
+      - alert: HighMemoryUsage
+        expr: process_resident_memory_bytes / (1024*1024*1024) > 1.5
+        for: 10m
+        labels:
+          severity: warning
+          component: backend
+        annotations:
+          summary: "High memory usage"
+          description: "Memory usage is {{ $value }}GB for {{ $labels.instance }}"
+
+  - name: database_alerts
+    interval: 30s
+    rules:
+      # Database Connection Issues
+      - alert: DatabaseConnectionFailed
+        expr: pg_up == 0
+        for: 2m
+        labels:
+          severity: critical
+          component: database
+        annotations:
+          summary: "PostgreSQL is down"
+          description: "Cannot connect to PostgreSQL"
+
+      # High Database Connection Usage
+      - alert: HighDatabaseConnections
+        expr: pg_stat_activity_count / pg_settings_max_connections > 0.8
+        for: 5m
+        labels:
+          severity: warning
+          component: database
+        annotations:
+          summary: "High database connection usage"
+          description: "Database connections at {{ $value | humanizePercentage }} of max"
+
+  - name: redis_alerts
+    interval: 30s
+    rules:
+      # Redis Down
+      - alert: RedisDown
+        expr: redis_up == 0
+        for: 2m
+        labels:
+          severity: critical
+          component: redis
+        annotations:
+          summary: "Redis is down"
+          description: "Cannot connect to Redis cache"
+
+      # High Memory Usage
+      - alert: RedisHighMemory
+        expr: redis_memory_used_bytes / redis_memory_max_bytes > 0.9
+        for: 5m
+        labels:
+          severity: warning
+          component: redis
+        annotations:
+          summary: "Redis memory usage high"
+          description: "Redis memory at {{ $value | humanizePercentage }}"
+
+  - name: cat_system_alerts
+    interval: 60s
+    rules:
+      # High CAT Session Failure Rate
+      - alert: HighCATFailureRate
+        expr: rate(cat_session_failures_total[10m]) / rate(cat_session_starts_total[10m]) > 0.1
+        for: 10m
+        labels:
+          severity: warning
+          component: cat-engine
+        annotations:
+          summary: "High CAT session failure rate"
+          description: "CAT failure rate is {{ $value | humanizePercentage }}"
+
+  - name: ml_model_alerts
+    interval: 60s
+    rules:
+      # ML Model Inference Slow
+      - alert: SlowMLInference
+        expr: histogram_quantile(0.95, rate(ml_inference_duration_seconds_bucket[10m])) > 0.5
+        for: 10m
+        labels:
+          severity: warning
+          component: ml-models
+        annotations:
+          summary: "ML model inference is slow"
+          description: "P95 inference time is {{ $value }}s"
