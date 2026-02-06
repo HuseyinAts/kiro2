@@ -6,7 +6,20 @@ Requirements: REQ-52.1 - REQ-52.20
 """
 
 import pytest
+from datetime import datetime, timedelta, timezone
 from fastapi.testclient import TestClient
+
+# Import centralized JWT constants from conftest (DRY)
+try:
+    from tests.conftest import _generate_test_jwt, TEST_JWT_SECRET, TEST_JWT_ALGORITHM
+except ImportError:
+    import jwt as _jwt
+    TEST_JWT_SECRET = "test-secret-key-for-testing"
+    TEST_JWT_ALGORITHM = "HS256"
+    def _generate_test_jwt(user_id="1", email="test@test.com", role="student"):
+        import time
+        payload = {"sub": user_id, "email": email, "role": role, "exp": int(time.time()) + 3600}
+        return _jwt.encode(payload, TEST_JWT_SECRET, algorithm=TEST_JWT_ALGORITHM)
 
 
 class TestPomodoroTimer:
@@ -247,6 +260,13 @@ def client():
 
 
 @pytest.fixture
-def auth_headers():
-    """Mock authentication headers"""
-    return {"Authorization": "Bearer mock_token"}
+def auth_headers(monkeypatch):
+    """Generate valid JWT authentication headers for testing.
+
+    Uses centralized JWT helper from conftest (DRY).
+    """
+    monkeypatch.setattr("core.dependencies.JWT_SECRET", TEST_JWT_SECRET)
+    monkeypatch.setattr("core.dependencies.JWT_ALGORITHM", TEST_JWT_ALGORITHM)
+
+    token = _generate_test_jwt("1", "test@example.com", "student")
+    return {"Authorization": f"Bearer {token}"}

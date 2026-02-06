@@ -4,12 +4,23 @@ Helper functions and classes for integration testing
 """
 import asyncio
 import time
-import json
 import logging
-from typing import Dict, List, Any, Optional, Callable
-from datetime import datetime, timedelta
+from typing import Dict, List, Any, Callable
+from datetime import datetime, timedelta, timezone
 from contextlib import asynccontextmanager
 import uuid
+
+# Import centralized JWT helper from conftest (DRY)
+try:
+    from tests.conftest import _generate_test_jwt, TEST_JWT_SECRET, TEST_JWT_ALGORITHM
+except ImportError:
+    import jwt as _jwt
+    TEST_JWT_SECRET = "test-secret-key-for-testing"
+    TEST_JWT_ALGORITHM = "HS256"
+    def _generate_test_jwt(user_id="1", email="test@test.com", role="student"):
+        import time
+        payload = {"sub": user_id, "email": email, "role": role, "exp": int(time.time()) + 3600}
+        return _jwt.encode(payload, TEST_JWT_SECRET, algorithm=TEST_JWT_ALGORITHM)
 
 
 class IntegrationTestHelper:
@@ -104,7 +115,7 @@ class APITestClient:
         return {
             "status_code": 200,
             "json": {
-                "access_token": f"mock_token_{uuid.uuid4().hex[:16]}",
+                "access_token": _generate_test_jwt(str(uuid.uuid4()), data["email"]),
                 "token_type": "bearer",
                 "expires_in": 3600,
                 "kullanici": {

@@ -6,11 +6,37 @@ Devrimsel özellikler için kapsamlı testler
 
 import pytest
 import asyncio
-from unittest.mock import Mock, patch, AsyncMock, MagicMock
-from datetime import datetime, timedelta
-from typing import Dict, List, Optional
-import json
-import uuid
+from unittest.mock import Mock, patch, AsyncMock
+from typing import Dict, List
+
+# Import centralized JWT helper from conftest (DRY)
+try:
+    from tests.conftest import (
+        _generate_test_jwt,
+        TEST_JWT_SECRET,
+        TEST_JWT_ALGORITHM,
+    )
+except ImportError:
+    import jwt as _jwt
+    TEST_JWT_SECRET = "test-secret-key-for-testing"
+    TEST_JWT_ALGORITHM = "HS256"
+    def _generate_test_jwt(user_id="1", email="test@test.com", role="student"):
+        import time
+        payload = {"sub": user_id, "email": email, "role": role, "exp": int(time.time()) + 3600}
+        return _jwt.encode(payload, TEST_JWT_SECRET, algorithm=TEST_JWT_ALGORITHM)
+
+
+def _generate_test_auth_headers() -> dict:
+    """Generate valid JWT auth headers for testing."""
+    token = _generate_test_jwt("1", "test@example.com", "student")
+    return {"Authorization": f"Bearer {token}"}
+
+
+@pytest.fixture(autouse=True)
+def patch_jwt_secrets(monkeypatch):
+    """Patch JWT secrets for all tests in this module."""
+    monkeypatch.setattr("core.dependencies.JWT_SECRET", TEST_JWT_SECRET)
+    monkeypatch.setattr("core.dependencies.JWT_ALGORITHM", TEST_JWT_ALGORITHM)
 
 # Test edilecek modülleri import et
 try:
@@ -536,7 +562,7 @@ class TestRevolutionaryFeatures:
             response = client.post(
                 "/api/revolutionary/bionic-reading",
                 json={"text": "Test", "level": "medium"},
-                headers={"Authorization": "Bearer test_token"},
+                headers=_generate_test_auth_headers(),
             )
             responses.append(response.status_code)
 

@@ -4,12 +4,38 @@ Bu testler tüm API endpointlerini çalıştırarak coverage'ı maksimum arttır
 Target: API modüllerinin %50+ coverage'ı için comprehensive endpoint testing
 """
 import pytest
-import asyncio
-from unittest.mock import patch, MagicMock, AsyncMock
-from datetime import datetime, timedelta
+from unittest.mock import patch
 from fastapi.testclient import TestClient
 from fastapi import FastAPI
-import json
+
+# Import centralized JWT helper from conftest (DRY)
+try:
+    from tests.conftest import (
+        _generate_test_jwt,
+        TEST_JWT_SECRET,
+        TEST_JWT_ALGORITHM,
+    )
+except ImportError:
+    import jwt as _jwt
+    TEST_JWT_SECRET = "test-secret-key-for-testing"
+    TEST_JWT_ALGORITHM = "HS256"
+    def _generate_test_jwt(user_id="1", email="test@test.com", role="student"):
+        import time
+        payload = {"sub": user_id, "email": email, "role": role, "exp": int(time.time()) + 3600}
+        return _jwt.encode(payload, TEST_JWT_SECRET, algorithm=TEST_JWT_ALGORITHM)
+
+
+def _generate_test_auth_headers() -> dict:
+    """Generate valid JWT auth headers for testing."""
+    token = _generate_test_jwt("1", "test@example.com", "student")
+    return {"Authorization": f"Bearer {token}"}
+
+
+@pytest.fixture(autouse=True)
+def patch_jwt_secrets(monkeypatch):
+    """Patch JWT secrets for all tests in this module."""
+    monkeypatch.setattr("core.dependencies.JWT_SECRET", TEST_JWT_SECRET)
+    monkeypatch.setattr("core.dependencies.JWT_ALGORITHM", TEST_JWT_ALGORITHM)
 
 
 class TestComprehensiveAPIEndpoints:
@@ -522,7 +548,7 @@ class TestComprehensiveAPIMiddleware:
                         response = client.post(path, json=auth_data["token_refresh"])
                     elif "logout" in path.lower():
                         response = client.post(
-                            path, headers={"Authorization": "Bearer test_token"}
+                            path, headers=_generate_test_auth_headers()
                         )
                     else:
                         response = client.get(path)

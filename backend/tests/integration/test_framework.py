@@ -11,13 +11,24 @@ import shutil
 import tempfile
 import uuid
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any, Callable, Dict, List, Optional
 from unittest.mock import AsyncMock, MagicMock
 
-import redis.asyncio as redis
-import pytest
+# Import centralized JWT helper from conftest (DRY)
+try:
+    from tests.conftest import _generate_test_jwt, TEST_JWT_SECRET, TEST_JWT_ALGORITHM
+except ImportError:
+    # Fallback: conftest may resolve to wrong module with importlib mode
+    import jwt as _jwt
+    TEST_JWT_SECRET = "test-secret-key-for-testing"
+    TEST_JWT_ALGORITHM = "HS256"
+    def _generate_test_jwt(user_id="1", email="test@test.com", role="student"):
+        import time
+        payload = {"sub": user_id, "email": email, "role": role, "exp": int(time.time()) + 3600}
+        return _jwt.encode(payload, TEST_JWT_SECRET, algorithm=TEST_JWT_ALGORITHM)
+
 import pytest_asyncio
 from core.application_metrics import get_metrics_collector
 from core.auth_middleware import AuthUser, UserRole
@@ -209,7 +220,7 @@ class TestDataGenerator:
 
         if user:
             headers["X-User-ID"] = str(user.user_id)
-            headers["Authorization"] = f"Bearer test_token_{user.user_id}"
+            headers["Authorization"] = f"Bearer {_generate_test_jwt(str(user.user_id))}"
 
         return {
             "method": method,
@@ -814,7 +825,7 @@ if __name__ == "__main__":
         try:
             # Example test
             async def sample_test(context: TestContext, env: TestEnvironment):
-                assert True, "Sample test"
+                assert context is not None, "Context should be provided"
                 return {"result": "success"}
 
             context = await create_test_context("Sample test", "Örnek test")

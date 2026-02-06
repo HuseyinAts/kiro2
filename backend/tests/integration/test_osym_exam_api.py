@@ -9,11 +9,27 @@ Bu modül ÖSYM sınav API endpoint'lerinin tüm fonksiyonalitelerini test eder:
 - Hata durumları ve güvenlik kontrolleri
 """
 
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
 from unittest.mock import MagicMock, patch
 
 import pytest
 from fastapi.testclient import TestClient
+
+# Import centralized JWT helper from conftest (DRY)
+try:
+    from tests.conftest import (
+        _generate_test_jwt,
+        TEST_JWT_SECRET,
+        TEST_JWT_ALGORITHM,
+    )
+except ImportError:
+    import jwt as _jwt
+    TEST_JWT_SECRET = "test-secret-key-for-testing"
+    TEST_JWT_ALGORITHM = "HS256"
+    def _generate_test_jwt(user_id="1", email="test@test.com", role="student"):
+        import time
+        payload = {"sub": user_id, "email": email, "role": role, "exp": int(time.time()) + 3600}
+        return _jwt.encode(payload, TEST_JWT_SECRET, algorithm=TEST_JWT_ALGORITHM)
 
 from core.osym_exam_engine import (
     ExamPerformanceMetrics,
@@ -47,9 +63,13 @@ class TestOSYMExamAPI:
         return user
 
     @pytest.fixture
-    def auth_headers(self):
-        """Kimlik doğrulama başlıkları"""
-        return {"Authorization": "Bearer test_token"}
+    def auth_headers(self, monkeypatch):
+        """Generate valid JWT authentication headers for testing."""
+        monkeypatch.setattr("core.dependencies.JWT_SECRET", TEST_JWT_SECRET)
+        monkeypatch.setattr("core.dependencies.JWT_ALGORITHM", TEST_JWT_ALGORITHM)
+
+        token = _generate_test_jwt("1", "test@example.com", "student")
+        return {"Authorization": f"Bearer {token}"}
 
     @pytest.fixture
     def mock_session_data(self):
@@ -819,8 +839,13 @@ class TestOSYMExamAPIIntegration:
         return TestClient(app)
 
     @pytest.fixture
-    def auth_headers(self):
-        return {"Authorization": "Bearer test_token"}
+    def auth_headers(self, monkeypatch):
+        """Generate valid JWT authentication headers for testing."""
+        monkeypatch.setattr("core.dependencies.JWT_SECRET", TEST_JWT_SECRET)
+        monkeypatch.setattr("core.dependencies.JWT_ALGORITHM", TEST_JWT_ALGORITHM)
+
+        token = _generate_test_jwt("1", "test@example.com", "student")
+        return {"Authorization": f"Bearer {token}"}
 
     def test_full_exam_workflow_api(self, client, auth_headers):
         """Tam sınav akışı API entegrasyon testi"""

@@ -3,12 +3,21 @@ Integration Test Fixtures and Utilities
 Reusable fixtures for integration testing
 """
 import pytest
-import asyncio
-from datetime import datetime, timedelta
-from typing import Dict, List, Optional, Any
+from datetime import datetime
 import uuid
-import json
-from unittest.mock import Mock, AsyncMock, MagicMock
+from unittest.mock import Mock, AsyncMock
+
+# Import centralized JWT helper from conftest (DRY)
+try:
+    from tests.conftest import _generate_test_jwt, TEST_JWT_SECRET, TEST_JWT_ALGORITHM
+except ImportError:
+    import jwt as _jwt
+    TEST_JWT_SECRET = "test-secret-key-for-testing"
+    TEST_JWT_ALGORITHM = "HS256"
+    def _generate_test_jwt(user_id="1", email="test@test.com", role="student"):
+        import time
+        payload = {"sub": user_id, "email": email, "role": role, "exp": int(time.time()) + 3600}
+        return _jwt.encode(payload, TEST_JWT_SECRET, algorithm=TEST_JWT_ALGORITHM)
 
 
 # ==================== DATABASE FIXTURES ====================
@@ -203,14 +212,17 @@ def mock_user_service():
         }
     )
 
-    # Mock authentication
+    # Mock authentication - generate real JWT token
+    test_user_id = "test_user_123"
+    test_email = "test@example.com"
+    test_role = "ogrenci"
     service.kullanici_giris = AsyncMock(
         return_value={
-            "access_token": "test_token_123",
+            "access_token": _generate_test_jwt(test_user_id, test_email, test_role),
             "kullanici": {
-                "kullanici_id": "test_user_123",
-                "email": "test@example.com",
-                "rol": "ogrenci",
+                "kullanici_id": test_user_id,
+                "email": test_email,
+                "rol": test_role,
             },
         }
     )
