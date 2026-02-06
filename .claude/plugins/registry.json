@@ -1,0 +1,45 @@
+{
+  "$schema": "https://claude.ai/schemas/plugin-registry.json",
+  "version": "1.0.0",
+  "description": "KIRO2 Claude Code Plugin Registry",
+
+  "installed": [
+    {
+      "name": "kiro2-yks",
+      "version": "1.0.0",
+      "description": "YKS-specific tools and skills for KIRO2",
+      "enabled": true,
+      "installedAt": "2026-01-26T00:00:00Z",
+      "path": "./installed/kiro2-yks"
+    },
+    {
+      "name": "kiro2-taxonomy",
+      "version": "1.0.0",
+      "description": "Multi-taxonomy classification tools (Bloom, SOLO, Marzano, Webb DOK, CLT)",
+      "enabled": true,
+      "installedAt": "2026-02-06T00:00:00Z",
+      "path": "./installed/kiro2-taxonomy"
+    }
+  ],
+
+  "available": [
+    {
+      "name": "kiro2-analytics",
+      "version": "1.0.0",
+      "description": "Advanced analytics tools for KIRO2",
+      "status": "planned"
+    },
+    {
+      "name": "kiro2-accessibility",
+      "version": "1.0.0",
+      "description": "WCAG compliance tools for KIRO2",
+      "status": "planned"
+    }
+  ],
+
+  "metadata": {
+    "lastUpdated": "2026-02-06T00:00:00Z",
+    "totalInstalled": 2,
+    "totalAvailable": 2
+  }
+}

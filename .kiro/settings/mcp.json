@@ -1,6 +1,6 @@
 {
   "mcpServers": {
-    "zemberek-nlp": {
+    "zemberek-mcp": {
       "command": "python",
       "args": [
         "-m",
@@ -8,20 +8,65 @@
       ],
       "env": {
         "ZEMBEREK_SERVICE_URL": "http://localhost:8081"
-      }
+      },
+      "defer_loading": true,
+      "serverInstructions": "Türkçe doğal dil işleme servisi. Morfolojik analiz, lemmatization, spell-check, NER, tokenization. Türkçe metin işleme gerektiren durumlarda kullanılır."
     },
-    "youtube-education-api": {
-      "command": "npx",
+    "chromadb-mcp": {
+      "command": "python",
       "args": [
-        "-y",
-        "@modelcontextprotocol/server-youtube"
+        "-m",
+        "backend.mcp_servers.chromadb_mcp"
       ],
       "env": {
-        "YOUTUBE_API_KEY": "${YOUTUBE_API_KEY}",
-        "YOUTUBE_CHANNEL_FILTER": "education",
-        "YOUTUBE_LANGUAGE": "tr",
-        "YOUTUBE_REGION": "TR"
-      }
+        "CHROMA_HOST": "localhost",
+        "CHROMA_PORT": "8001"
+      },
+      "defer_loading": true,
+      "serverInstructions": "YKS soru bankası semantic search servisi. Benzer sorular bulma, embedding oluşturma, duplicate detection, soru kalitesi doğrulama. Soru işleme ve arama için kullanılır."
+    },
+    "gemini-mcp": {
+      "command": "python",
+      "args": [
+        "-m",
+        "backend.mcp_servers.gemini_mcp"
+      ],
+      "env": {
+        "GOOGLE_API_KEY": "${GOOGLE_API_KEY}"
+      },
+      "defer_loading": true,
+      "serverInstructions": "Google Gemini AI servisi. Eğitim içeriği üretimi, öğrenci cevap analizi, YKS soru oluşturma, kişiselleştirilmiş öğrenme yolu önerileri. AI içerik üretimi için kullanılır."
+    },
+    "gemini-reasoning-mcp": {
+      "command": "python",
+      "args": [
+        "-m",
+        "backend.mcp_servers.gemini_reasoning_mcp"
+      ],
+      "env": {
+        "GOOGLE_API_KEY": "${GOOGLE_API_KEY}"
+      },
+      "defer_loading": true,
+      "serverInstructions": "Gemini Sequential Thinking servisi. Adım adım muhakeme, karmaşık problem çözme, matematiksel ispat. Derin analiz gerektiren işlemler için kullanılır."
+    },
+    "kiro2-orchestrator": {
+      "command": "python",
+      "args": [".claude/orchestration/mcp_orchestrator.py"],
+      "cwd": "C:\\Users\\husey\\kiro2",
+      "env": {
+        "PYTHONPATH": "C:\\Users\\husey\\kiro2;C:\\Users\\husey\\kiro2\\orchestrator"
+      },
+      "defer_loading": false,
+      "serverInstructions": "Ana KIRO2 orkestratör servisi. Multi-agent koordinasyonu, task dağıtımı, session yönetimi. LangGraph v2.5.0 ile tam entegre."
+    },
+    "claude-md-improvement": {
+      "command": "python",
+      "args": [
+        "-m",
+        "backend.mcp_servers.claude_md_improvement_mcp"
+      ],
+      "defer_loading": true,
+      "serverInstructions": "CLAUDE.md self-improvement servisi. Task feedback kaydetme, rule effectiveness analizi, otomatik iyileştirme önerileri. Kalite artırımı için kullanılır."
     }
   }
 }
