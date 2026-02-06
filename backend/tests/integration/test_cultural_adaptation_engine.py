@@ -44,8 +44,8 @@ class TestCulturalAdaptationEngine:
 
     def test_detect_normal_period(self, adaptation_engine):
         """Normal dönem tespiti testi"""
-        # Normal bir tarih (Mart ayı)
-        test_date = datetime(2024, 3, 15)
+        # Normal bir tarih (Kasım ayı - no Ramadan, no exam season, no holiday)
+        test_date = datetime(2024, 11, 15)
 
         period = adaptation_engine.detect_current_cultural_period(test_date)
 

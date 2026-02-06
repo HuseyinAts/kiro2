@@ -1,10 +1,9 @@
-from unittest.mock import Mock, patch, AsyncMock
 
 """
 Critical Models Tests
 Database model'larının temel testleri
 """
-from datetime import datetime
+from datetime import datetime, timezone
 
 
 class TestCriticalModels:
@@ -19,7 +18,7 @@ class TestCriticalModels:
                 self.username = username
                 self.email = email
                 self.password_hash = password_hash
-                self.created_at = datetime.utcnow()
+                self.created_at = datetime.now(timezone.utc)
                 self.is_active = True
                 self.role = "student"
 
@@ -58,7 +57,7 @@ class TestCriticalModels:
                 self.title = title
                 self.subject = subject
                 self.duration_minutes = duration_minutes
-                self.created_at = datetime.utcnow()
+                self.created_at = datetime.now(timezone.utc)
                 self.is_active = True
                 self.questions = []
 
@@ -95,7 +94,7 @@ class TestCriticalModels:
                 self.options = options
                 self.difficulty = "orta"
                 self.subject = "matematik"
-                self.created_at = datetime.utcnow()
+                self.created_at = datetime.now(timezone.utc)
 
             def is_correct(self, answer: str) -> bool:
                 return answer == self.correct_answer
@@ -144,7 +143,7 @@ class TestCriticalModels:
                     "sequential_global": 0,
                 }
                 self.confidence_level = "LOW"
-                self.last_updated = datetime.utcnow()
+                self.last_updated = datetime.now(timezone.utc)
 
             def update_vark_score(self, scores: dict):
                 self.vark_score.update(scores)
@@ -191,7 +190,7 @@ class TestCriticalModels:
                 self.id = None
                 self.user_id = user_id
                 self.exam_id = exam_id
-                self.started_at = datetime.utcnow()
+                self.started_at = datetime.now(timezone.utc)
                 self.finished_at = None
                 self.status = "IN_PROGRESS"
                 self.answers = {}
@@ -200,11 +199,11 @@ class TestCriticalModels:
             def answer_question(self, question_id: int, answer: str):
                 self.answers[question_id] = {
                     "answer": answer,
-                    "answered_at": datetime.utcnow(),
+                    "answered_at": datetime.now(timezone.utc),
                 }
 
             def finish_exam(self):
-                self.finished_at = datetime.utcnow()
+                self.finished_at = datetime.now(timezone.utc)
                 self.status = "COMPLETED"
 
             def calculate_score(self, correct_answers: dict):
@@ -242,8 +241,8 @@ class TestCriticalModels:
         correct_answers = {1: "A", 2: "C", 3: "B"}
         score = session.calculate_score(correct_answers)
 
-        assert score == 33.33  # 1 correct out of 3 questions
-        assert session.score == 33.33
+        assert abs(score - 33.33) < 0.01  # 1 correct out of 3 questions
+        assert abs(session.score - 33.33) < 0.01
 
         # Test finishing exam
         session.finish_exam()
@@ -262,7 +261,7 @@ class TestCriticalModels:
                 self.subject = "matematik"
                 self.difficulty = "orta"
                 self.tags = []
-                self.created_at = datetime.utcnow()
+                self.created_at = datetime.now(timezone.utc)
                 self.is_published = False
 
             def add_tag(self, tag: str):
