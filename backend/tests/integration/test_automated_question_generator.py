@@ -4,7 +4,6 @@ Otomatik Soru Üretim Sistemi için kapsamlı testler
 """
 
 import pytest
-import json
 from datetime import datetime
 from unittest.mock import Mock, patch, AsyncMock
 from core.automated_question_generator import AutomatedQuestionGenerator
@@ -40,7 +39,7 @@ except ImportError:
         YKS_AYT = "yks_ayt"
 
     class SubjectType(Enum):
-        MATHEMATICS = "mathematics"
+        MATEMATIK = "matematik"
         PHYSICS = "physics"
         CHEMISTRY = "chemistry"
         BIOLOGY = "biology"
@@ -209,7 +208,7 @@ class TestAutomatedQuestionGenerator:
             id="template_001",
             name="Matematik Temel Şablon",
             description="Temel matematik soruları için şablon",
-            subject=SubjectType.MATHEMATICS,
+            subject=SubjectType.MATEMATIK,
             topic_pattern="cebir_*",
             question_template="{{variable}} + {{number}} = {{result}} ise {{variable}} kaçtır?",
             options_template=["{{correct}}", "{{wrong1}}", "{{wrong2}}", "{{wrong3}}"],
@@ -239,7 +238,7 @@ class TestAutomatedQuestionGenerator:
         """Test için örnek üretim talebi"""
         return QuestionGenerationRequest(
             id="req_001",
-            subject=SubjectType.MATHEMATICS,
+            subject=SubjectType.MATEMATIK,
             topic_id="cebir_001",
             exam_type=ExamType.LGS,
             grade_level="8",
@@ -314,7 +313,7 @@ class TestAutomatedQuestionGenerator:
     async def test_generate_questions_for_topic_success(self, generator):
         """Başarılı konu soru üretimi testi"""
         topic_id = "cebir_001"
-        subject = SubjectType.MATHEMATICS
+        subject = SubjectType.MATEMATIK
         exam_type = ExamType.LGS
 
         # Mock dependencies
@@ -422,7 +421,7 @@ class TestAutomatedQuestionGenerator:
             mock_count.return_value = 1000  # Yeterli soru var
 
             questions = await generator.generate_questions_for_topic(
-                topic_id, SubjectType.MATHEMATICS, ExamType.LGS
+                topic_id, SubjectType.MATEMATIK, ExamType.LGS
             )
 
             assert len(questions) == 0  # Yeni soru üretilmemeli
@@ -484,7 +483,7 @@ class TestAutomatedQuestionGenerator:
         # Geçerli ÖSYM formatında soru
         valid_question = GeneratedQuestion(
             id="valid_q",
-            subject=SubjectType.MATHEMATICS,
+            subject=SubjectType.MATEMATIK,
             topic_id="test",
             topic_name="Test",
             subtopic="Test",
@@ -529,7 +528,7 @@ class TestAutomatedQuestionGenerator:
         # Geçersiz ÖSYM formatında soru (çok az seçenek)
         invalid_question = GeneratedQuestion(
             id="invalid_q",
-            subject=SubjectType.MATHEMATICS,
+            subject=SubjectType.MATEMATIK,
             topic_id="test",
             topic_name="Test",
             subtopic="Test",
@@ -650,7 +649,7 @@ class TestAutomatedQuestionGenerator:
         """Öncelik bazlı üretim testi"""
         high_priority_request = QuestionGenerationRequest(
             id="high_req",
-            subject=SubjectType.MATHEMATICS,
+            subject=SubjectType.MATEMATIK,
             topic_id="urgent_topic",
             exam_type=ExamType.LGS,
             grade_level="8",
@@ -748,7 +747,7 @@ class TestAutomatedQuestionGenerator:
     @pytest.mark.asyncio
     async def test_template_caching(self, generator):
         """Şablon cache sistemi testi"""
-        subject_key = SubjectType.MATHEMATICS.value
+        subject_key = SubjectType.MATEMATIK.value
 
         # Cache boş
         assert subject_key not in generator.question_templates
@@ -763,12 +762,12 @@ class TestAutomatedQuestionGenerator:
 
             # İlk yükleme - cache'e kaydedilmeli
             templates1 = await generator._get_templates_for_subject(
-                SubjectType.MATHEMATICS
+                SubjectType.MATEMATIK
             )
 
             # Cache'den ikinci erişim
             templates2 = await generator._get_templates_for_subject(
-                SubjectType.MATHEMATICS
+                SubjectType.MATEMATIK
             )
 
             # Cache çalışıyorsa aynı sonuç dönmeli
@@ -806,7 +805,7 @@ class TestAutomatedQuestionGenerator:
         requests = [
             QuestionGenerationRequest(
                 id=f"concurrent_req_{i}",
-                subject=SubjectType.MATHEMATICS,
+                subject=SubjectType.MATEMATIK,
                 topic_id=f"topic_{i}",
                 exam_type=ExamType.LGS,
                 grade_level="8",
@@ -926,7 +925,7 @@ class TestAutomatedQuestionGeneratorIntegration:
                                     questions = (
                                         await generator.generate_questions_for_topic(
                                             "integration_topic",
-                                            SubjectType.MATHEMATICS,
+                                            SubjectType.MATEMATIK,
                                             ExamType.LGS,
                                             target_count=1,
                                         )

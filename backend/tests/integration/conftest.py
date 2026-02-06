@@ -5,7 +5,7 @@ Use existing Docker PostgreSQL container for faster testing
 
 import os
 import pytest
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, text
 from sqlalchemy.orm import sessionmaker
 
 
@@ -30,30 +30,17 @@ for key in ["ALLOWED_ORIGINS", "SERVER_ALLOWED_ORIGINS"]:
 def db_engine():
     """Use existing Docker PostgreSQL container"""
     # Use the test-postgres container running on port 5433
-    engine = create_engine("postgresql://testuser:test123@localhost:5433/testdb")
+    try:
+        engine = create_engine("postgresql://testuser:test123@localhost:5433/testdb")
+        # Test connection before proceeding
+        with engine.connect() as conn:
+            conn.execute(text("SELECT 1"))
+    except Exception:
+        pytest.skip("Test PostgreSQL not available on port 5433")
 
     # Import all models to register with Base
     from models.database import (
         Base,
-        User,
-        StudentProfile,
-        TeacherProfile,
-        ParentProfile,
-        ExamSession,
-        Question,
-        ExamQuestion,
-        StudentAnswer,
-        LearningAnalytics,
-        EducationalContent,
-        ClassRoom,
-        SystemConfiguration,
-        AuditLog,
-        FSRSCard,
-        FSRSReview,
-        FSRSSchedule,
-        FSRSStudentProfile,
-        FSRSStudySession,
-        FSRSSubjectStats,
     )
 
     # Create all tables

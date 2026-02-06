@@ -2,8 +2,6 @@
 Real authentication tests - NO MOCKS
 Tests actual password hashing and JWT operations
 """
-import pytest
-from datetime import datetime, timedelta
 
 try:
     from core.password_validator import validate_password_strength
@@ -36,19 +34,17 @@ class TestPasswordValidationReal:
 
     def test_strong_passwords_accepted(self):
         """Test strong passwords are accepted"""
+        # Use passwords without sequential chars (123, abc) to pass validation
         strong_passwords = [
-            "StrongP@ssw0rd123!",
-            "MyV3ry$ecureP@ss",
-            "C0mpl3x!Pass#2024",
+            "Str0ng$P@ssW9rD!",
+            "MyV3ry$ecur3P@ss",
+            "C0mpl3x!P@ss#Qw5",
         ]
 
         for pwd in strong_passwords:
             result = validate_password_strength(pwd)
-            if result is not None:
-                # Function should return True or not raise exception
-                assert (
-                    result is True or result is None
-                ), f"Strong password rejected: {pwd}"
+            # Function returns the password string if valid, raises on invalid
+            assert result == pwd, f"Strong password rejected: {pwd}"
 
     def test_password_strength_requirements(self):
         """Test password meets minimum requirements"""
@@ -63,7 +59,7 @@ class TestPasswordValidationReal:
 
 
 class TestAuthenticationFlow:
-    """Test real authentication flow"""
+    """Test real authentication flow - requires running PostgreSQL"""
 
     def test_user_registration_flow(self, sync_db_session):
         """Test complete user registration"""
