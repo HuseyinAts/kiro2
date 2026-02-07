@@ -47,12 +47,17 @@ def upgrade() -> None:
         return result.scalar()
 
     def safe_create_index(name, table, columns, **kwargs):
-        """Create index only if it doesn't exist."""
-        if index_exists(name):
-            return
+        """Create index only if it doesn't exist. Uses savepoints for safety."""
         try:
+            conn.execute(sa.text(f"SAVEPOINT sp_{name[:40]}"))
+            if index_exists(name):
+                conn.execute(sa.text(f"RELEASE SAVEPOINT sp_{name[:40]}"))
+                return
             op.create_index(name, table, columns, **kwargs)
+            conn.execute(sa.text(f"RELEASE SAVEPOINT sp_{name[:40]}"))
+            print(f"  + {name}")
         except Exception as e:
+            conn.execute(sa.text(f"ROLLBACK TO SAVEPOINT sp_{name[:40]}"))
             print(f"  SKIP {name}: {e}")
 
     # ========================================================================
@@ -63,23 +68,29 @@ def upgrade() -> None:
     if table_exists('sorular'):
         # Full-text search on question content (Turkish)
         try:
+            conn.execute(sa.text("SAVEPOINT sp_sorular_gin"))
             conn.execute(sa.text(
                 "CREATE INDEX IF NOT EXISTS idx_sorular_metin_gin "
                 "ON sorular USING gin (to_tsvector('simple', COALESCE(metin, '')))"
             ))
+            conn.execute(sa.text("RELEASE SAVEPOINT sp_sorular_gin"))
             print("  + idx_sorular_metin_gin (GIN text search)")
         except Exception as e:
+            conn.execute(sa.text("ROLLBACK TO SAVEPOINT sp_sorular_gin"))
             print(f"  SKIP idx_sorular_metin_gin: {e}")
 
         # Trigram index for fuzzy matching (requires pg_trgm extension)
         try:
+            conn.execute(sa.text("SAVEPOINT sp_sorular_trgm"))
             conn.execute(sa.text("CREATE EXTENSION IF NOT EXISTS pg_trgm"))
             conn.execute(sa.text(
                 "CREATE INDEX IF NOT EXISTS idx_sorular_metin_trgm "
                 "ON sorular USING gin (metin gin_trgm_ops)"
             ))
+            conn.execute(sa.text("RELEASE SAVEPOINT sp_sorular_trgm"))
             print("  + idx_sorular_metin_trgm (trigram fuzzy search)")
         except Exception as e:
+            conn.execute(sa.text("ROLLBACK TO SAVEPOINT sp_sorular_trgm"))
             print(f"  SKIP idx_sorular_metin_trgm: {e}")
 
         # Composite: exam_type + difficulty + active (most common filter)
@@ -95,20 +106,23 @@ def upgrade() -> None:
         )
 
     if table_exists('questions'):
-        # GIN for English question text search
+        # GIN for question text search (actual column: question_text)
         try:
+            conn.execute(sa.text("SAVEPOINT gin_questions"))
             conn.execute(sa.text(
-                "CREATE INDEX IF NOT EXISTS idx_questions_content_gin "
-                "ON questions USING gin (to_tsvector('simple', COALESCE(content, '')))"
+                "CREATE INDEX IF NOT EXISTS idx_questions_text_gin "
+                "ON questions USING gin (to_tsvector('simple', COALESCE(question_text, '')))"
             ))
-            print("  + idx_questions_content_gin (GIN text search)")
+            conn.execute(sa.text("RELEASE SAVEPOINT gin_questions"))
+            print("  + idx_questions_text_gin (GIN text search)")
         except Exception as e:
-            print(f"  SKIP idx_questions_content_gin: {e}")
+            conn.execute(sa.text("ROLLBACK TO SAVEPOINT gin_questions"))
+            print(f"  SKIP idx_questions_text_gin: {e}")
 
-        # Composite: subject + difficulty + is_active
+        # Composite: subject + difficulty + aktif (actual column names)
         safe_create_index(
-            'idx_questions_subj_diff_active', 'questions',
-            ['subject_area', 'difficulty', 'is_active'],
+            'idx_questions_subj_diff_aktif', 'questions',
+            ['subject_area', 'difficulty', 'aktif'],
         )
 
         # Created_at for recent questions
@@ -148,8 +162,8 @@ def upgrade() -> None:
             'idx_learning_paths_student', 'learning_paths', ['student_id'],
         )
         safe_create_index(
-            'idx_learning_paths_student_active', 'learning_paths',
-            ['student_id', 'is_active'],
+            'idx_learning_paths_subject', 'learning_paths',
+            ['student_id', 'subject'],
         )
 
     if table_exists('ogrenme_yollari'):
@@ -161,6 +175,7 @@ def upgrade() -> None:
     # 4. PGVECTOR HNSW INDEX (if extension available)
     # ========================================================================
     try:
+        conn.execute(sa.text("SAVEPOINT sp_pgvector"))
         conn.execute(sa.text("CREATE EXTENSION IF NOT EXISTS vector"))
         # Check if embeddings table exists
         if table_exists('question_embeddings'):
@@ -170,7 +185,9 @@ def upgrade() -> None:
                 "WITH (m = 16, ef_construction = 200)"
             ))
             print("  + idx_question_embeddings_hnsw (HNSW vector search)")
+        conn.execute(sa.text("RELEASE SAVEPOINT sp_pgvector"))
     except Exception as e:
+        conn.execute(sa.text("ROLLBACK TO SAVEPOINT sp_pgvector"))
         print(f"  SKIP pgvector HNSW: {e}")
 
     # ========================================================================
@@ -200,14 +217,14 @@ def downgrade() -> None:
         ('idx_notifications_created', 'notifications'),
         ('idx_notifications_user_read', 'notifications'),
         ('idx_ogrenme_yollari_ogrenci', 'ogrenme_yollari'),
-        ('idx_learning_paths_student_active', 'learning_paths'),
+        ('idx_learning_paths_subject', 'learning_paths'),
         ('idx_learning_paths_student', 'learning_paths'),
         ('idx_student_answers_session_correct', 'student_answers'),
         ('idx_sinav_sonuclari_puan', 'sinav_sonuclari'),
         ('idx_sinav_sonuclari_ogrenci_tarih', 'sinav_sonuclari'),
         ('idx_questions_created_at', 'questions'),
-        ('idx_questions_subj_diff_active', 'questions'),
-        ('idx_questions_content_gin', 'questions'),
+        ('idx_questions_subj_diff_aktif', 'questions'),
+        ('idx_questions_text_gin', 'questions'),
         ('idx_sorular_created_at', 'sorular'),
         ('idx_sorular_sinav_zorluk_aktif', 'sorular'),
         ('idx_sorular_metin_trgm', 'sorular'),

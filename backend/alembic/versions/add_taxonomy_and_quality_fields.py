@@ -20,6 +20,17 @@ depends_on = None
 
 
 def upgrade() -> None:
+    conn = op.get_bind()
+    result = conn.execute(
+        sa.text(
+            "SELECT EXISTS(SELECT 1 FROM information_schema.tables "
+            "WHERE table_schema='public' AND table_name='sorular')"
+        )
+    )
+    if not result.scalar():
+        print("  SKIP add_taxonomy_fields: 'sorular' table does not exist")
+        return
+
     # Taxonomy fields
     op.add_column("sorular", sa.Column("solo_level", sa.String(), nullable=True))
     op.add_column("sorular", sa.Column("marzano_system", sa.String(), nullable=True))
@@ -45,6 +56,16 @@ def upgrade() -> None:
 
 
 def downgrade() -> None:
+    conn = op.get_bind()
+    result = conn.execute(
+        sa.text(
+            "SELECT EXISTS(SELECT 1 FROM information_schema.tables "
+            "WHERE table_schema='public' AND table_name='sorular')"
+        )
+    )
+    if not result.scalar():
+        return
+
     op.drop_column("sorular", "turkish_readability_index")
     op.drop_column("sorular", "linked_misconceptions")
     op.drop_column("sorular", "difficulty_trend")
