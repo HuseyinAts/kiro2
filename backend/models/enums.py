@@ -101,10 +101,11 @@ class IcerikTipi(str, Enum):
 class KullaniciRolu(str, Enum):
     """Sistem kullanıcı rolleri"""
 
-    STUDENT = "STUDENT"
-    TEACHER = "TEACHER"
-    PARENT = "PARENT"
-    ADMIN = "ADMIN"
+    OGRENCI = "ogrenci"
+    OGRETMEN = "ogretmen"
+    VELI = "veli"
+    ADMIN = "admin"
+    SUPER_ADMIN = "super_admin"
 
 
 class SinavDurumu(str, Enum):

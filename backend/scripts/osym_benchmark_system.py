@@ -7,7 +7,7 @@ import asyncpg
 import json
 from pathlib import Path
 import sys
-from typing import List, Dict, Tuple
+from typing import List, Dict
 from datetime import datetime
 import statistics
 

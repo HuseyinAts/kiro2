@@ -5,7 +5,6 @@ Advanced DDoS detection and mitigation with connection throttling and IP managem
 Author: Claude
 Date: 2025-10-27
 """
-import ipaddress
 import time
 from collections import defaultdict
 from dataclasses import dataclass, field

@@ -255,7 +255,7 @@ async def seed_fallback_videos():
                 session, FALLBACK_VIDEOS
             )
             print(f"✅ Successfully seeded {count} fallback videos!")
-            print(f"📊 Subjects covered: matematik, fizik, kimya, biyoloji")
+            print("📊 Subjects covered: matematik, fizik, kimya, biyoloji")
             print(f"📹 Total videos: {len(FALLBACK_VIDEOS)}")
             return count
         except Exception as e:

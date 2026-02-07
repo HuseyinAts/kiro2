@@ -1,0 +1,56 @@
+{
+  "language": {
+    "name": "Türkçe"
+  },
+  "common": {
+    "welcome": "Hoş geldiniz",
+    "loading": "Yükleniyor...",
+    "error": "Hata",
+    "success": "Başarılı",
+    "save": "Kaydet",
+    "cancel": "İptal",
+    "delete": "Sil",
+    "edit": "Düzenle",
+    "search": "Ara"
+  },
+  "exam": {
+    "type": {
+      "tyt": "Temel Yeterlilik Testi",
+      "ayt": "Alan Yeterlilik Testi",
+      "ydt": "Yabancı Dil Testi"
+    },
+    "difficulty": {
+      "easy": "Kolay",
+      "medium": "Orta",
+      "hard": "Zor",
+      "very_hard": "Çok Zor"
+    }
+  },
+  "question": {
+    "count": {
+      "zero": "Soru yok",
+      "one": "{count} soru",
+      "other": "{count} soru"
+    },
+    "quality": "Kalite Skoru",
+    "difficulty": "Zorluk"
+  },
+  "subject": {
+    "matematik": "Matematik",
+    "fizik": "Fizik",
+    "kimya": "Kimya",
+    "biyoloji": "Biyoloji",
+    "turkce": "Türkçe",
+    "tarih": "Tarih",
+    "cografya": "Coğrafya",
+    "english": "İngilizce",
+    "german": "Almanca"
+  },
+  "batch": {
+    "generation": {
+      "started": "Toplu üretim başladı",
+      "completed": "Toplu üretim tamamlandı",
+      "failed": "Toplu üretim başarısız"
+    }
+  }
+}

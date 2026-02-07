@@ -1,0 +1,41 @@
+1. Adding exam_type column...
+   ✅ exam_type added
+2. Adding subject column...
+   ✅ subject added
+3. Adding topic column...
+   ✅ topic added
+4. Updating subject names from subjects table...
+   ✅ Updated: UPDATE 3
+5. Setting default exam_type = 'TYT'...
+   ✅ Updated: UPDATE 3
+
+=== UPDATED SCHEMA ===
+  id: uuid
+  external_id: character varying
+  stem: text
+  stem_image_url: text
+  options: jsonb
+  correct_option: character
+  explanation: text
+  difficulty: numeric
+  discrimination: numeric
+  guessing: numeric
+  irt_calibrated: boolean
+  subject_id: uuid
+  topic_id: uuid
+  subtopic_id: uuid
+  source: character varying
+  year: smallint
+  tags: ARRAY
+  is_active: boolean
+  created_at: timestamp with time zone
+  exam_type: character varying
+  subject: character varying
+  topic: character varying
+
+=== SAMPLE DATA ===
+  e79c5a77-9dc6-4428-9371-c6c6e0880d88: subject=Matematik, exam_type=TYT, source=Test
+  aec83f88-b7af-4eeb-a086-ac1a916afd87: subject=Matematik, exam_type=TYT, source=Test
+  e86245ef-b8e5-47bb-b2b5-34763abfb8f4: subject=Cografya, exam_type=TYT, source=Test
+
+✅ SCHEMA FIX COMPLETE!

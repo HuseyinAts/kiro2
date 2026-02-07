@@ -12,7 +12,6 @@ from fastapi import (
     APIRouter,
     Depends,
     File,
-    Form,
     HTTPException,
     Query,
     UploadFile,
@@ -85,8 +84,13 @@ class QuestionSearchRequest(BaseModel):
     difficulty: Optional[str] = Field(None, description="Zorluk filtresi")
     grade_level: Optional[int] = Field(None, description="Sınıf seviyesi")
     min_quality: Optional[float] = Field(None, description="Minimum kalite skoru")
-    irt_difficulty_min: Optional[float] = Field(None, description="Min IRT zorluk")
-    irt_difficulty_max: Optional[float] = Field(None, description="Max IRT zorluk")
+    # IRT difficulty constraints from CLAUDE.md: [-4.0, 4.0]
+    irt_difficulty_min: Optional[float] = Field(
+        None, ge=-4.0, le=4.0, description="Min IRT zorluk [-4.0, 4.0]"
+    )
+    irt_difficulty_max: Optional[float] = Field(
+        None, ge=-4.0, le=4.0, description="Max IRT zorluk [-4.0, 4.0]"
+    )
     osym_compliant: Optional[bool] = Field(None, description="ÖSYM uyumlu mu")
     facets: Optional[List[str]] = Field(
         None, description="Facet alanları (exam_type, subject_area, difficulty)"

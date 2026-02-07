@@ -5,12 +5,8 @@ Teknofest 2025 - Eğitim Eylemci Projesi
 """
 
 import os
-import sys
-import json
 import logging
-from typing import Dict, List, Optional
 from fastapi import FastAPI, HTTPException
-from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 import uvicorn
 

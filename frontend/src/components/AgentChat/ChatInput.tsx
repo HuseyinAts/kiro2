@@ -1,16 +1,16 @@
-import { useState, useRef, KeyboardEvent } from 'react'
-import { motion } from 'framer-motion'
-import { 
-  Send, 
-  AttachFile, 
-  Mic, 
-  Stop, 
+import {
+  Send,
+  AttachFile,
+  Mic,
+  Stop,
   EmojiEmotions,
   Code,
   FormatBold,
-  FormatItalic
-} from '@mui/icons-material'
-import { IconButton, Tooltip, TextField, Paper } from '@mui/material'
+  FormatItalic,
+} from '@mui/icons-material';
+import { IconButton, Tooltip, TextField, Paper } from '@mui/material';
+import { motion } from 'framer-motion';
+import { useState, useRef, KeyboardEvent } from 'react';
 
 interface ChatInputProps {
   onSendMessage: (message: string) => void
@@ -19,110 +19,110 @@ interface ChatInputProps {
 }
 
 export function ChatInput({ onSendMessage, isLoading, placeholder }: ChatInputProps) {
-  const [message, setMessage] = useState('')
-  const [isRecording, setIsRecording] = useState(false)
-  const inputRef = useRef<HTMLInputElement>(null)
+  const [message, setMessage] = useState('');
+  const [isRecording, setIsRecording] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const handleSend = () => {
     if (message.trim() && !isLoading) {
-      onSendMessage(message.trim())
-      setMessage('')
+      onSendMessage(message.trim());
+      setMessage('');
     }
-  }
+  };
 
   const handleKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault()
-      handleSend()
+      e.preventDefault();
+      handleSend();
     }
-  }
+  };
 
   const handleVoiceToggle = () => {
-    setIsRecording(!isRecording)
+    setIsRecording(!isRecording);
     // Voice recording logic would go here
-  }
+  };
 
   const insertFormatting = (format: string) => {
-    const input = inputRef.current
-    if (!input) return
+    const input = inputRef.current;
+    if (!input) {return;}
 
-    const start = input.selectionStart || 0
-    const end = input.selectionEnd || 0
-    const selectedText = message.substring(start, end)
-    
-    let formattedText = ''
+    const start = input.selectionStart || 0;
+    const end = input.selectionEnd || 0;
+    const selectedText = message.substring(start, end);
+
+    let formattedText = '';
     switch (format) {
       case 'bold':
-        formattedText = `**${selectedText || 'metin'}**`
-        break
+        formattedText = `**${selectedText || 'metin'}**`;
+        break;
       case 'italic':
-        formattedText = `*${selectedText || 'metin'}*`
-        break
+        formattedText = `*${selectedText || 'metin'}*`;
+        break;
       case 'code':
-        formattedText = `\`${selectedText || 'kod'}\``
-        break
+        formattedText = `\`${selectedText || 'kod'}\``;
+        break;
       default:
-        formattedText = selectedText
+        formattedText = selectedText;
     }
 
-    const newMessage = 
-      message.substring(0, start) + 
-      formattedText + 
-      message.substring(end)
-    
-    setMessage(newMessage)
+    const newMessage =
+      message.substring(0, start) +
+      formattedText +
+      message.substring(end);
+
+    setMessage(newMessage);
     setTimeout(() => {
-      input.focus()
+      input.focus();
       input.setSelectionRange(
         start + formattedText.length,
-        start + formattedText.length
-      )
-    }, 0)
-  }
+        start + formattedText.length,
+      );
+    }, 0);
+  };
 
   return (
-    <Paper 
-      elevation={3} 
+    <Paper
+      elevation={3}
       className="p-4 border-t border-gray-200 bg-white"
     >
       <div className="flex flex-col gap-2">
         {/* Formatting Toolbar */}
         <div className="flex items-center gap-1 px-2">
           <Tooltip title="Kalın">
-            <IconButton 
-              size="small" 
+            <IconButton
+              size="small"
               onClick={() => insertFormatting('bold')}
             >
               <FormatBold fontSize="small" />
             </IconButton>
           </Tooltip>
-          
+
           <Tooltip title="İtalik">
-            <IconButton 
-              size="small" 
+            <IconButton
+              size="small"
               onClick={() => insertFormatting('italic')}
             >
               <FormatItalic fontSize="small" />
             </IconButton>
           </Tooltip>
-          
+
           <Tooltip title="Kod">
-            <IconButton 
-              size="small" 
+            <IconButton
+              size="small"
               onClick={() => insertFormatting('code')}
             >
               <Code fontSize="small" />
             </IconButton>
           </Tooltip>
-          
+
           <div className="w-px h-6 bg-gray-300 mx-1" />
-          
+
           <Tooltip title="Emoji">
             <IconButton size="small">
               <EmojiEmotions fontSize="small" />
             </IconButton>
           </Tooltip>
-          
+
           <Tooltip title="Dosya Ekle">
             <IconButton size="small">
               <AttachFile fontSize="small" />
@@ -138,7 +138,7 @@ export function ChatInput({ onSendMessage, isLoading, placeholder }: ChatInputPr
             maxRows={4}
             fullWidth
             variant="outlined"
-            placeholder={placeholder || "Mesajınızı yazın..."}
+            placeholder={placeholder || 'Mesajınızı yazın...'}
             value={message}
             onChange={(e) => setMessage(e.target.value)}
             onKeyDown={handleKeyDown}
@@ -163,10 +163,10 @@ export function ChatInput({ onSendMessage, isLoading, placeholder }: ChatInputPr
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >
-            <Tooltip title={isRecording ? "Kaydı Durdur" : "Sesli Mesaj"}>
+            <Tooltip title={isRecording ? 'Kaydı Durdur' : 'Sesli Mesaj'}>
               <IconButton
                 onClick={handleVoiceToggle}
-                color={isRecording ? "error" : "default"}
+                color={isRecording ? 'error' : 'default'}
                 className={isRecording ? 'animate-pulse' : ''}
               >
                 {isRecording ? <Stop /> : <Mic />}
@@ -203,5 +203,5 @@ export function ChatInput({ onSendMessage, isLoading, placeholder }: ChatInputPr
         </div>
       </div>
     </Paper>
-  )
+  );
 }

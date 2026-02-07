@@ -10,10 +10,9 @@ Bu sistem:
 """
 
 import math
-from dataclasses import dataclass
-from datetime import datetime
+from datetime import datetime, timezone
 from enum import Enum
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional
 
 from pydantic import BaseModel, Field
 
@@ -57,11 +56,17 @@ class ValidationType(Enum):
 
 
 class IRTParameters(BaseModel):
-    """IRT parametreleri (3PL Model)"""
+    """IRT parametreleri (3PL Model)
 
-    discrimination: float = Field(..., ge=0, le=5)  # a parametresi (ayırt edicilik)
-    difficulty: float = Field(..., ge=-4, le=4)  # b parametresi (zorluk)
-    guessing: float = Field(default=0.0, ge=0, le=1)  # c parametresi (şans)
+    KIRO2 Standards:
+    - discrimination (a): [0.2, 4.0] - Values below 0.2 indicate poor item quality
+    - difficulty (b): [-4.0, 4.0] - Standard psychometric range
+    - guessing (c): [0.0, 0.35] - Values above 0.35 indicate easily guessed items
+    """
+
+    discrimination: float = Field(..., ge=0.2, le=4.0)  # a parametresi (ayırt edicilik)
+    difficulty: float = Field(..., ge=-4.0, le=4.0)  # b parametresi (zorluk)
+    guessing: float = Field(default=0.0, ge=0.0, le=0.35)  # c parametresi (şans)
 
     # Kalibrasyon bilgileri
     calibration_sample_size: int = 0
@@ -824,7 +829,7 @@ class ExamQualityValidator:
         return {
             "exam_id": blueprint.exam_id,
             "exam_name": blueprint.exam_name,
-            "validation_timestamp": datetime.utcnow().isoformat(),
+            "validation_timestamp": datetime.now(timezone.utc).isoformat(),
             "total_questions": len(questions),
             "summary": summary,
             "results": [r.model_dump(mode="json") for r in all_results],

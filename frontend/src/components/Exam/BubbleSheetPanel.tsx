@@ -1,12 +1,19 @@
 /**
  * Optik Form Paneli - Çoklu Soru Görünümü
  * ÖSYM optik formlarına benzer tam sayfa görünümü
- * 
+ *
  * REQ-1.1: TYT/AYT/YDT sınav formatı desteği
  * REQ-1.6: Otomatik kaydetme ile veri kaybı önleme
  */
-import React, { useState, useMemo } from 'react'
-import { motion } from 'framer-motion'
+import {
+  Visibility,
+  VisibilityOff,
+  GridView,
+  ViewList,
+  Info,
+  CheckCircle,
+  Warning,
+} from '@mui/icons-material';
 import {
   Box,
   Paper,
@@ -22,18 +29,13 @@ import {
   Dialog,
   DialogTitle,
   DialogContent,
-  DialogActions
-} from '@mui/material'
-import {
-  Visibility,
-  VisibilityOff,
-  GridView,
-  ViewList,
-  Info,
-  CheckCircle,
-  Warning
-} from '@mui/icons-material'
-import BubbleSheetInterface from './BubbleSheetInterface'
+  DialogActions,
+} from '@mui/material';
+import { motion } from 'framer-motion';
+import * as React from 'react';
+import {  useState, useMemo  } from 'react';
+
+import BubbleSheetInterface from './BubbleSheetInterface';
 
 interface Question {
   id: string
@@ -66,56 +68,56 @@ export const BubbleSheetPanel: React.FC<BubbleSheetPanelProps> = ({
   disabled = false,
   showSubjects = true,
   columns = 2,
-  size = 'medium'
+  size = 'medium',
 }) => {
-  const theme = useTheme()
-  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
-  const [showInfo, setShowInfo] = useState(false)
-  const [highlightUnanswered, setHighlightUnanswered] = useState(false)
+  const theme = useTheme();
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+  const [showInfo, setShowInfo] = useState(false);
+  const [highlightUnanswered, setHighlightUnanswered] = useState(false);
 
   // Standart ÖSYM seçenekleri
-  const standardOptions = ['A', 'B', 'C', 'D', 'E']
+  const standardOptions = ['A', 'B', 'C', 'D', 'E'];
 
   /**
    * İstatistikleri hesapla
    */
   const stats = useMemo(() => {
-    const answered = Object.keys(answers).filter(key => answers[key]).length
-    const unanswered = questions.length - answered
-    const percentage = questions.length > 0 ? (answered / questions.length) * 100 : 0
+    const answered = Object.keys(answers).filter(key => answers[key]).length;
+    const unanswered = questions.length - answered;
+    const percentage = questions.length > 0 ? (answered / questions.length) * 100 : 0;
 
     return {
       total: questions.length,
       answered,
       unanswered,
-      percentage: Math.round(percentage)
-    }
-  }, [questions, answers])
+      percentage: Math.round(percentage),
+    };
+  }, [questions, answers]);
 
   /**
    * Konuya göre soruları grupla
    */
   const groupedQuestions = useMemo(() => {
-    if (!showSubjects) return { 'Tüm Sorular': questions }
+    if (!showSubjects) {return { 'Tüm Sorular': questions };}
 
     return questions.reduce((groups, question) => {
-      const subject = question.subject || 'Diğer'
+      const subject = question.subject || 'Diğer';
       if (!groups[subject]) {
-        groups[subject] = []
+        groups[subject] = [];
       }
-      groups[subject].push(question)
-      return groups
-    }, {} as Record<string, Question[]>)
-  }, [questions, showSubjects])
+      groups[subject].push(question);
+      return groups;
+    }, {} as Record<string, Question[]>);
+  }, [questions, showSubjects]);
 
   /**
    * Soru tıklama işleyicisi
    */
   const handleQuestionClick = (questionIndex: number) => {
     if (onQuestionNavigate && !disabled) {
-      onQuestionNavigate(questionIndex)
+      onQuestionNavigate(questionIndex);
     }
-  }
+  };
 
   /**
    * Grid görünümü
@@ -142,9 +144,9 @@ export const BubbleSheetPanel: React.FC<BubbleSheetPanelProps> = ({
 
           <Grid container spacing={1}>
             {subjectQuestions.map((question) => {
-              const isCurrentQuestion = currentQuestionIndex === question.number - 1
-              const isAnswered = !!answers[question.id]
-              const shouldHighlight = highlightUnanswered && !isAnswered
+              const isCurrentQuestion = currentQuestionIndex === question.number - 1;
+              const isAnswered = !!answers[question.id];
+              const shouldHighlight = highlightUnanswered && !isAnswered;
 
               return (
                 <Grid item xs={12} sm={12 / columns} key={question.id}>
@@ -172,8 +174,8 @@ export const BubbleSheetPanel: React.FC<BubbleSheetPanelProps> = ({
                         transition: 'all 0.2s',
                         '&:hover': onQuestionNavigate && !disabled ? {
                           boxShadow: theme.shadows[4],
-                          transform: 'translateY(-2px)'
-                        } : {}
+                          transform: 'translateY(-2px)',
+                        } : {},
                       }}
                       onClick={() => handleQuestionClick(question.number - 1)}
                     >
@@ -198,13 +200,13 @@ export const BubbleSheetPanel: React.FC<BubbleSheetPanelProps> = ({
                     </Paper>
                   </motion.div>
                 </Grid>
-              )
+              );
             })}
           </Grid>
         </Grid>
       ))}
     </Grid>
-  )
+  );
 
   /**
    * Liste görünümü
@@ -212,9 +214,9 @@ export const BubbleSheetPanel: React.FC<BubbleSheetPanelProps> = ({
   const renderListView = () => (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
       {questions.map((question) => {
-        const isCurrentQuestion = currentQuestionIndex === question.number - 1
-        const isAnswered = !!answers[question.id]
-        const shouldHighlight = highlightUnanswered && !isAnswered
+        const isCurrentQuestion = currentQuestionIndex === question.number - 1;
+        const isAnswered = !!answers[question.id];
+        const shouldHighlight = highlightUnanswered && !isAnswered;
 
         return (
           <motion.div
@@ -241,8 +243,8 @@ export const BubbleSheetPanel: React.FC<BubbleSheetPanelProps> = ({
                   : 'background.paper',
                 transition: 'all 0.2s',
                 '&:hover': onQuestionNavigate && !disabled ? {
-                  boxShadow: theme.shadows[4]
-                } : {}
+                  boxShadow: theme.shadows[4],
+                } : {},
               }}
               onClick={() => handleQuestionClick(question.number - 1)}
             >
@@ -256,10 +258,10 @@ export const BubbleSheetPanel: React.FC<BubbleSheetPanelProps> = ({
               />
             </Paper>
           </motion.div>
-        )
+        );
       })}
     </Box>
-  )
+  );
 
   return (
     <Box>
@@ -328,13 +330,13 @@ export const BubbleSheetPanel: React.FC<BubbleSheetPanelProps> = ({
         <DialogContent>
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
             <Typography variant="body2">
-              <strong>Cevap İşaretleme:</strong> Doğru cevabı seçmek için ilgili bubble'a (daire) tıklayın.
+              <strong>Cevap İşaretleme:</strong> Doğru cevabı seçmek için ilgili bubble&apos;a (daire) tıklayın.
             </Typography>
             <Typography variant="body2">
-              <strong>İşareti Kaldırma:</strong> Seçili bubble'a tekrar tıklayarak işareti kaldırabilirsiniz.
+              <strong>İşareti Kaldırma:</strong> Seçili bubble&apos;a tekrar tıklayarak işareti kaldırabilirsiniz.
             </Typography>
             <Typography variant="body2">
-              <strong>Klavye Kullanımı:</strong> Tab tuşu ile bubble'lar arasında gezinebilir, Enter veya Space tuşu ile seçim yapabilirsiniz.
+              <strong>Klavye Kullanımı:</strong> Tab tuşu ile bubble&apos;lar arasında gezinebilir, Enter veya Space tuşu ile seçim yapabilirsiniz.
             </Typography>
             <Typography variant="body2">
               <strong>Otomatik Kaydetme:</strong> Cevaplarınız her 30 saniyede bir otomatik olarak kaydedilir.
@@ -351,7 +353,7 @@ export const BubbleSheetPanel: React.FC<BubbleSheetPanelProps> = ({
         </DialogActions>
       </Dialog>
     </Box>
-  )
-}
+  );
+};
 
-export default BubbleSheetPanel
+export default BubbleSheetPanel;

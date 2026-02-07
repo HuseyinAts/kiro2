@@ -1,0 +1,49 @@
+# Dockerfile for Expert Agents Service
+# Task 18.2: Deployment Configuration
+# KIRO2 - Konu Bazli Subagent Sistemi
+
+FROM python:3.11-slim
+
+# Set working directory
+WORKDIR /app
+
+# Environment variables
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
+ENV PYTHONPATH=/app
+ENV PIP_NO_CACHE_DIR=1
+ENV PIP_DISABLE_PIP_VERSION_CHECK=1
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    gcc \
+    libpq-dev \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy requirements first (for caching)
+COPY requirements.txt .
+
+# Install Python dependencies
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy application code
+COPY . .
+
+# Create non-root user
+RUN groupadd -r kiro2 && useradd -r -g kiro2 kiro2
+RUN chown -R kiro2:kiro2 /app
+USER kiro2
+
+# Create directories for logs and prometheus multiproc
+RUN mkdir -p /app/logs /tmp/prometheus_multiproc
+
+# Expose port
+EXPOSE 8006
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=10s --retries=3 \
+    CMD curl -f http://localhost:8006/health || exit 1
+
+# Default command
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8006", "--workers", "2"]

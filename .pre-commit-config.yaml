@@ -1,4 +1,4 @@
-# Pre-commit hooks for code quality
+# Pre-commit hooks for KIRO2 project
 # Run: pre-commit install
 # Manual run: pre-commit run --all-files
 
@@ -20,34 +20,25 @@ repos:
       - id: detect-private-key
       - id: check-case-conflict
       - id: mixed-line-ending
+      - id: check-docstring-first
+        files: '\.py$'
+      - id: debug-statements
+        files: '\.py$'
 
-  # Python-specific hooks
-  - repo: https://github.com/psf/black
-    rev: 23.12.1
+  # Python - Ruff (replaces black, isort, flake8)
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.7.1
     hooks:
-      - id: black
-        language_version: python3.11
-        args: [--line-length=88]
+      - id: ruff
+        name: Ruff linter
+        args: ['--fix', '--exit-non-zero-on-fix']
         files: ^backend/.*\.py$
-
-  - repo: https://github.com/pycqa/isort
-    rev: 5.13.2
-    hooks:
-      - id: isort
-        args: [--profile=black, --line-length=88]
+        exclude: ^backend/(alembic/versions/|migrations/)
+      
+      - id: ruff-format
+        name: Ruff formatter
         files: ^backend/.*\.py$
-
-  - repo: https://github.com/pycqa/flake8
-    rev: 7.0.0
-    hooks:
-      - id: flake8
-        additional_dependencies:
-          - flake8-docstrings
-          - flake8-import-order
-          - flake8-bugbear
-          - flake8-comprehensions
-        args: [--max-line-length=88, --extend-ignore=E203,W503]
-        files: ^backend/.*\.py$
+        exclude: ^backend/(alembic/versions/|migrations/)
 
   - repo: https://github.com/pycqa/bandit
     rev: 1.7.5
@@ -57,17 +48,27 @@ repos:
         files: ^backend/.*\.py$
         exclude: ^backend/(tests/|.*test.*\.py)
 
+  # Type checking with MyPy
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.8.0
+    rev: v1.11.2
     hooks:
       - id: mypy
+        name: MyPy type checker
         additional_dependencies:
+          - pydantic==2.5.0
+          - sqlalchemy==2.0.23
+          - fastapi==0.104.1
           - types-requests
+          - types-passlib
           - types-PyYAML
           - types-python-dateutil
-        args: [--ignore-missing-imports, --follow-imports=skip]
+        args: [
+          '--config-file=pyproject.toml',
+          '--ignore-missing-imports',
+          '--no-strict-optional',
+        ]
         files: ^backend/.*\.py$
-        exclude: ^backend/(tests/|.*test.*\.py|migrations/)
+        exclude: ^backend/(tests/|.*test.*\.py|migrations/|alembic/)
 
   # Security checks
   - repo: https://github.com/Yelp/detect-secrets
@@ -77,30 +78,22 @@ repos:
         args: ['--baseline', '.secrets.baseline']
         exclude: package.lock.json
 
-  # Documentation
-  - repo: https://github.com/pycqa/pydocstyle
-    rev: 6.3.0
-    hooks:
-      - id: pydocstyle
-        files: ^backend/.*\.py$
-        exclude: ^backend/(tests/|.*test.*\.py|migrations/)
-        args:
-          - --ignore=D100,D101,D102,D103,D104,D105,D106,D107,D203,D212,D213
-
-  # Jupyter notebooks (if any)
+  # Jupyter notebooks (using ruff)
   - repo: https://github.com/nbQA-dev/nbQA
     rev: 1.7.1
     hooks:
-      - id: nbqa-black
-        additional_dependencies: [black==23.12.1]
-      - id: nbqa-isort
-        additional_dependencies: [isort==5.13.2]
-      - id: nbqa-flake8
-        additional_dependencies: [flake8==7.0.0]
+      - id: nbqa-ruff
+        name: Ruff on notebooks
+        args: ['--fix']
+        files: '\.ipynb$'
+      
+      - id: nbqa-mypy
+        name: MyPy on notebooks
+        files: '\.ipynb$'
 
   # YAML formatting
   - repo: https://github.com/pre-commit/mirrors-prettier
-    rev: v4.0.0-alpha.8
+    rev: v3.1.0
     hooks:
       - id: prettier
         types: [yaml]
@@ -111,6 +104,38 @@ repos:
     rev: v0.9.0.6
     hooks:
       - id: shellcheck
+
+  # KIRO2 Custom Hooks
+  - repo: local
+    hooks:
+      # SECURITY: Custom secret detector for KIRO2-specific patterns
+      - id: kiro2-secret-detector
+        name: KIRO2 Secret Detector
+        entry: python backend/hooks/secret_detector.py
+        language: system
+        types: [python]
+        pass_filenames: true
+        stages: [commit]
+        verbose: true
+
+      - id: pytest-changed
+        name: Pytest on changed files
+        entry: pytest
+        language: system
+        pass_filenames: false
+        always_run: false
+        stages: [pre-push]
+        args: [-x, --tb=short, -q, backend/tests/]
+
+      - id: reward-hacking-check
+        name: Reward Hacking Prevention (Daisy Stanton Standards)
+        entry: python -m backend.hooks.reward_hacking.cli
+        language: system
+        types: [python]
+        pass_filenames: true
+        always_run: false
+        stages: [pre-push]
+        verbose: true
 
   # Conventional commits
   - repo: https://github.com/compilerla/conventional-pre-commit

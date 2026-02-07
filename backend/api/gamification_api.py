@@ -19,7 +19,7 @@ P2.2 Enhancements:
 
 import logging
 from typing import Any, Dict, List, Optional
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from uuid import UUID
 
 from fastapi import APIRouter, HTTPException, Query, Depends
@@ -29,14 +29,10 @@ from redis import Redis
 
 from core.database import get_db, get_redis_client
 from core.redis_cache import get_cache
-from core.gamification.experience_manager import get_experience_manager
-from core.gamification.badge_manager import get_badge_manager
 from core.gamification.leaderboard_manager import (
     get_leaderboard_manager,
     LeaderboardType,
 )
-from models.database import User
-from models.user_badge import UserBadge
 from models.user_achievement import UserAchievement
 
 logger = logging.getLogger(__name__)
@@ -156,7 +152,7 @@ async def get_points_summary(user_id: str = Query(..., description="Kullanıcı 
         total_points = _user_points.get(user_id, 0)
 
         # Bugün ve bu hafta kazanılan puanları hesapla
-        now = datetime.utcnow()
+        now = datetime.now(timezone.utc)
         today_start = now.replace(hour=0, minute=0, second=0, microsecond=0)
         week_start = now - timedelta(days=7)
 
@@ -215,7 +211,7 @@ async def get_point_history(
     try:
         logger.info(f"Puan geçmişi API çağrısı - Kullanıcı: {user_id}, Gün: {days}")
 
-        cutoff_date = datetime.utcnow() - timedelta(days=days)
+        cutoff_date = datetime.now(timezone.utc) - timedelta(days=days)
 
         # Kullanıcının işlemlerini filtrele
         transactions = [
@@ -277,7 +273,7 @@ async def award_points(
             "points": points,
             "reason": reason,
             "metadata": None,
-            "timestamp": datetime.utcnow(),
+            "timestamp": datetime.now(timezone.utc),
         }
         _point_transactions.append(transaction)
 
@@ -466,7 +462,7 @@ async def get_earned_badges(user_id: str = Query(..., description="Kullanıcı I
                     rarity=badge_def["rarity"],
                     icon=badge_def["icon"],
                     earned=True,
-                    earned_at=datetime.utcnow(),  # Demo
+                    earned_at=datetime.now(timezone.utc),  # Demo
                 )
                 earned_badges.append(badge_info.model_dump())
 

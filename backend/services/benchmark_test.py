@@ -5,7 +5,6 @@ REQ-49.45-49.48: Ulusal ortalama karşılaştırma, percentile ranking, performa
 
 import logging
 from typing import Dict, List
-import numpy as np
 from services.test_types import BaseTestType, TestConfiguration
 
 logger = logging.getLogger(__name__)

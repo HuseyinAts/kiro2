@@ -2,8 +2,10 @@
  * Expert Dashboard - HITL (Human-in-the-Loop) Workflow
  * Gamified expert review system for question quality control
  */
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import * as React from 'react';
+import {  useState, useEffect  } from 'react';
+
+import { apiClient } from '../services/apiClient';
 
 interface ReviewTask {
   task_id: string;
@@ -42,7 +44,7 @@ export const ExpertDashboardPage: React.FC = () => {
 
   const loadDashboard = async () => {
     try {
-      const response = await axios.get(`/api/v2/hitl/dashboard/${expertId}`);
+      const response = await apiClient.get(`/api/v2/hitl/dashboard/${expertId}`);
       setStats(response.data.statistics);
       setAssignedTasks(response.data.assigned_tasks_preview || []);
     } catch (error) {
@@ -51,16 +53,16 @@ export const ExpertDashboardPage: React.FC = () => {
   };
 
   const submitReview = async () => {
-    if (!currentTask || !decision) return;
+    if (!currentTask || !decision) {return;}
 
     try {
-      await axios.post(`/api/v2/hitl/tasks/${currentTask.task_id}/review`, {
+      await apiClient.post(`/api/v2/hitl/tasks/${currentTask.task_id}/review`, {
         task_id: currentTask.task_id,
         expert_id: expertId,
         decision,
         pedagogy_score: score,
         comments,
-        review_time_seconds: 180
+        review_time_seconds: 180,
       });
 
       alert('İnceleme gönderildi!');

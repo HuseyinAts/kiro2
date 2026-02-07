@@ -5,7 +5,6 @@ REQ-49.49-49.52: Tam ÖSYM simülasyonu, zaman yönetimi, gerçekçi ortam, deta
 
 import logging
 from typing import Dict, List
-from datetime import datetime, timedelta
 from services.test_types import BaseTestType, TestConfiguration
 
 logger = logging.getLogger(__name__)
@@ -150,7 +149,7 @@ class MockExam(BaseTestType):
             )
 
         # Zorluk analizi
-        recommendations.append(f"\n📊 Zorluk Seviyesi Performansı:")
+        recommendations.append("\n📊 Zorluk Seviyesi Performansı:")
         for diff, perf in feedback["difficulty_performance"].items():
             if perf["total"] > 0:
                 recommendations.append(
@@ -160,11 +159,11 @@ class MockExam(BaseTestType):
 
         # Genel öneriler
         recommendations.append(
-            f"\n💡 Öneriler:\n"
-            f"  1. Gerçek sınavda benzer performans beklenir\n"
-            f"  2. Zaman yönetiminizi geliştirin\n"
-            f"  3. Zayıf konulara odaklanın\n"
-            f"  4. Düzenli mock exam çözmeye devam edin"
+            "\n💡 Öneriler:\n"
+            "  1. Gerçek sınavda benzer performans beklenir\n"
+            "  2. Zaman yönetiminizi geliştirin\n"
+            "  3. Zayıf konulara odaklanın\n"
+            "  4. Düzenli mock exam çözmeye devam edin"
         )
 
         return recommendations

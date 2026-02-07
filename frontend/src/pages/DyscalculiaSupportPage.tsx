@@ -1,16 +1,18 @@
 /**
  * Dyscalculia Support Demo Page
- * 
+ *
  * Diskalkuli desteği için görsel matematik temsilleri demo sayfası.
  * Tüm 4 component'i tek bir sayfada gösterir.
  */
 
-import React, { useState } from 'react';
+import * as React from 'react';
+import {  useState  } from 'react';
+
 import {
   NumberBlocks,
   FractionBars,
   GeometricShapes3D,
-  GraphPlotter
+  GraphPlotter,
 } from '../components/Accessibility/Dyscalculia';
 import './DyscalculiaSupportPage.css';
 
@@ -77,7 +79,7 @@ const DyscalculiaSupportPage: React.FC = () => {
                 <span className="feature-badge">✓ Renkli Kodlama</span>
               </div>
             </div>
-            <NumberBlocks 
+            <NumberBlocks
               initialValue={1234}
               showAnimation={true}
             />
@@ -99,7 +101,7 @@ const DyscalculiaSupportPage: React.FC = () => {
                 <span className="feature-badge">✓ Gerçek Zamanlı Değer Gösterimi</span>
               </div>
             </div>
-            <FractionBars 
+            <FractionBars
               showEquivalent={true}
               showComparison={true}
             />
@@ -121,7 +123,7 @@ const DyscalculiaSupportPage: React.FC = () => {
                 <span className="feature-badge">✓ Şekil Açılımı (Net)</span>
               </div>
             </div>
-            <GeometricShapes3D 
+            <GeometricShapes3D
               showMeasurements={true}
               showNet={true}
             />
@@ -143,9 +145,8 @@ const DyscalculiaSupportPage: React.FC = () => {
                 <span className="feature-badge">✓ Renkli Eksenler</span>
               </div>
             </div>
-            <GraphPlotter 
+            <GraphPlotter
               initialFunction="x^2"
-              showMeasurements={true}
             />
           </section>
         )}

@@ -5,12 +5,12 @@
 
 /// <reference lib="webworker" />
 
+import { BackgroundSyncPlugin } from 'workbox-background-sync';
+import { BroadcastUpdatePlugin } from 'workbox-broadcast-update';
+import { ExpirationPlugin } from 'workbox-expiration';
 import { precacheAndRoute, cleanupOutdatedCaches } from 'workbox-precaching';
 import { registerRoute, NavigationRoute } from 'workbox-routing';
 import { StaleWhileRevalidate, CacheFirst, NetworkFirst } from 'workbox-strategies';
-import { ExpirationPlugin } from 'workbox-expiration';
-import { BackgroundSyncPlugin } from 'workbox-background-sync';
-import { BroadcastUpdatePlugin } from 'workbox-broadcast-update';
 
 declare const self: ServiceWorkerGlobalScope;
 
@@ -32,7 +32,7 @@ registerRoute(
       }),
       new BroadcastUpdatePlugin(),
     ],
-  })
+  }),
 );
 
 // Cache strategy for user data
@@ -46,7 +46,7 @@ registerRoute(
         maxAgeSeconds: 60 * 30, // 30 minutes
       }),
     ],
-  })
+  }),
 );
 
 // Cache strategy for exam content
@@ -60,7 +60,7 @@ registerRoute(
         maxAgeSeconds: 60 * 60, // 1 hour
       }),
     ],
-  })
+  }),
 );
 
 // Cache strategy for static content (Turkish educational materials)
@@ -74,7 +74,7 @@ registerRoute(
         maxAgeSeconds: 60 * 60 * 24, // 24 hours
       }),
     ],
-  })
+  }),
 );
 
 // Cache strategy for images and media
@@ -88,7 +88,7 @@ registerRoute(
         maxAgeSeconds: 60 * 60 * 24 * 30, // 30 days
       }),
     ],
-  })
+  }),
 );
 
 // Cache strategy for fonts (including Turkish character support)
@@ -102,7 +102,7 @@ registerRoute(
         maxAgeSeconds: 60 * 60 * 24 * 365, // 1 year
       }),
     ],
-  })
+  }),
 );
 
 // Cache strategy for Google Fonts (Turkish character support)
@@ -110,7 +110,7 @@ registerRoute(
   ({ url }) => url.origin === 'https://fonts.googleapis.com',
   new StaleWhileRevalidate({
     cacheName: 'google-fonts-stylesheets',
-  })
+  }),
 );
 
 registerRoute(
@@ -123,39 +123,39 @@ registerRoute(
         maxAgeSeconds: 60 * 60 * 24 * 365, // 1 year
       }),
     ],
-  })
+  }),
 );
 
 // Cache strategy for JavaScript and CSS
 registerRoute(
-  ({ request }) => 
-    request.destination === 'script' || 
+  ({ request }) =>
+    request.destination === 'script' ||
     request.destination === 'style',
   new StaleWhileRevalidate({
     cacheName: 'static-resources',
-  })
+  }),
 );
 
 // Background sync for form submissions
 const bgSyncPlugin = new BackgroundSyncPlugin('form-sync-queue', {
-  maxRetentionTime: 24 * 60 // Retry for max of 24 Hours (specified in minutes)
+  maxRetentionTime: 24 * 60, // Retry for max of 24 Hours (specified in minutes)
 });
 
 registerRoute(
-  ({ url, request }) => 
-    url.pathname.match(/\/api\/(submit|save|update)/) && 
+  ({ url, request }) =>
+    url.pathname.match(/\/api\/(submit|save|update)/) &&
     request.method === 'POST',
   new NetworkFirst({
     cacheName: 'form-submissions',
-    plugins: [bgSyncPlugin]
-  })
+    plugins: [bgSyncPlugin],
+  }),
 );
 
 // Navigation route (SPA support)
 const navigationRoute = new NavigationRoute(
   new StaleWhileRevalidate({
     cacheName: 'navigation-cache',
-  })
+  }),
 );
 
 registerRoute(navigationRoute);
@@ -171,9 +171,9 @@ self.addEventListener('install', (event) => {
     (async () => {
       const cache = await caches.open(CACHE_NAME);
       await cache.add(new Request(OFFLINE_URL, { cache: 'reload' }));
-    })()
+    })(),
   );
-  
+
   // Skip waiting to activate immediately
   self.skipWaiting();
 });
@@ -186,17 +186,17 @@ self.addEventListener('activate', (event) => {
       if ('navigationPreload' in self.registration) {
         await self.registration.navigationPreload.enable();
       }
-      
+
       // Clean up old caches
       const cacheNames = await caches.keys();
       await Promise.all(
         cacheNames
           .filter(name => name !== CACHE_NAME)
-          .map(name => caches.delete(name))
+          .map(name => caches.delete(name)),
       );
-    })()
+    })(),
   );
-  
+
   // Claim all clients immediately
   self.clients.claim();
 });
@@ -218,12 +218,12 @@ self.addEventListener('fetch', (event) => {
         } catch (error) {
           // Network failed, serve offline page
           console.log('Fetch failed; returning offline page instead.', error);
-          
+
           const cache = await caches.open(CACHE_NAME);
           const cachedResponse = await cache.match(OFFLINE_URL);
           return cachedResponse;
         }
-      })()
+      })(),
     );
   }
 });
@@ -238,17 +238,17 @@ self.addEventListener('sync', (event) => {
 async function doBackgroundSync() {
   // Implement background sync logic for Turkish educational platform
   console.log('Background sync triggered');
-  
+
   try {
     // Sync user progress
     await syncUserProgress();
-    
+
     // Sync exam results
     await syncExamResults();
-    
+
     // Sync learning analytics
     await syncLearningAnalytics();
-    
+
     console.log('Background sync completed successfully');
   } catch (error) {
     console.error('Background sync failed:', error);
@@ -267,7 +267,7 @@ async function syncUserProgress() {
         },
         body: JSON.stringify(progressData),
       });
-      
+
       // Clear synced data from local storage
       await clearStoredProgressData();
     } catch (error) {
@@ -288,7 +288,7 @@ async function syncExamResults() {
         },
         body: JSON.stringify(examResults),
       });
-      
+
       // Clear synced data from local storage
       await clearStoredExamResults();
     } catch (error) {
@@ -309,7 +309,7 @@ async function syncLearningAnalytics() {
         },
         body: JSON.stringify(analyticsData),
       });
-      
+
       // Clear synced data from local storage
       await clearStoredAnalyticsData();
     } catch (error) {
@@ -362,24 +362,24 @@ self.addEventListener('push', (event) => {
       vibrate: [100, 50, 100],
       data: {
         dateOfArrival: Date.now(),
-        primaryKey: 1
+        primaryKey: 1,
       },
       actions: [
         {
           action: 'explore',
           title: 'İncele',
-          icon: '/images/checkmark.png'
+          icon: '/images/checkmark.png',
         },
         {
           action: 'close',
           title: 'Kapat',
-          icon: '/images/xmark.png'
-        }
-      ]
+          icon: '/images/xmark.png',
+        },
+      ],
     };
-    
+
     event.waitUntil(
-      self.registration.showNotification('KIRO2 Bildirimi', options)
+      self.registration.showNotification('KIRO2 Bildirimi', options),
     );
   }
 });
@@ -387,11 +387,11 @@ self.addEventListener('push', (event) => {
 // Handle notification clicks
 self.addEventListener('notificationclick', (event) => {
   event.notification.close();
-  
+
   if (event.action === 'explore') {
     // Open the app
     event.waitUntil(
-      clients.openWindow('/')
+      self.clients.openWindow('/'),
     );
   }
 });

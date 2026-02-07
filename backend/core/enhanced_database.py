@@ -56,8 +56,8 @@ class ConnectionPoolConfig:
 
     def __init__(
         self,
-        pool_size: int = 20,
-        max_overflow: int = 30,
+        pool_size: int = 30,
+        max_overflow: int = 50,
         pool_timeout: int = 30,
         pool_recycle: int = 3600,
         pool_pre_ping: bool = True,

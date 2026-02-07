@@ -6,7 +6,7 @@ Requirements: REQ-51.21-51.40 (Diskalkuli Desteği - Adım Adım Çözüm)
 import logging
 from typing import Optional
 
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field
 
 from services.math_solution_step_service import (

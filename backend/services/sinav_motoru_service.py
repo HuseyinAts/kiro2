@@ -1,10 +1,13 @@
 """
-ÖSYM uyumlu sınav motoru servisi
+ÖSYM uyumlu sınav motoru servisi.
+
+IRT tabanlı adaptif sınav yönetimi, gerçek zamanlı süre takibi
+ve ÖSYM formatında sonuç hesaplama sağlar.
 """
 import asyncio
 import uuid
 from datetime import datetime, timedelta
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Any
 
 from models import (
     KonuPerformansi,
@@ -24,14 +27,26 @@ except ImportError:
 
 
 class SinavMotoruServisi:
-    """ÖSYM uyumlu sınav motoru servisi"""
+    """ÖSYM uyumlu sınav motoru servisi.
+    
+    TYT, AYT ve YDT formatında sınav oturumları oluşturur,
+    süre yönetimi yapar ve ÖSYM standartlarında sonuç hesaplar.
+    
+    Attributes:
+        aktif_oturumlar: Aktif sınav oturumları
+        sinav_cevaplari: Sınav cevapları (sinav_id -> cevaplar)
+        sinav_sonuclari: Hesaplanan sınav sonuçları
+        zaman_takip: Zaman takip bilgileri
+        sinav_konfigurasyonlari: ÖSYM sınav yapılandırmaları
+    """
 
-    def __init__(self):
+    def __init__(self) -> None:
+        """Sınav motorunu başlatır."""
         # In-memory veri saklama
         self.aktif_oturumlar: Dict[str, SinavOturumu] = {}
         self.sinav_cevaplari: Dict[str, List[SinavCevabi]] = {}  # sinav_id -> cevaplar
         self.sinav_sonuclari: Dict[str, SinavSonucu] = {}
-        self.zaman_takip: Dict[str, Dict] = {}  # sinav_id -> zaman bilgileri
+        self.zaman_takip: Dict[str, Dict[str, Any]] = {}  # sinav_id -> zaman bilgileri
 
         # ÖSYM sınav konfigürasyonları
         self.sinav_konfigurasyonlari = {
@@ -66,9 +81,30 @@ class SinavMotoruServisi:
         self,
         ogrenci_id: str,
         sinav_tipi: SinavTipi,
-        ozel_konfigurasyonlar: Optional[Dict] = None,
+        ozel_konfigurasyonlar: Optional[Dict[str, Any]] = None,
     ) -> SinavOturumu:
-        """Yeni sınav oturumu oluştur"""
+        """Yeni sınav oturumu oluşturur.
+        
+        ÖSYM formatında sınav oturumu oluşturur ve soru bankasından
+        uygun soruları seçer.
+        
+        Args:
+            ogrenci_id: Öğrenci kimlik numarası
+            sinav_tipi: Sınav tipi (TYT, AYT, YDT)
+            ozel_konfigurasyonlar: Özel yapılandırma parametreleri
+            
+        Returns:
+            SinavOturumu: Oluşturulan sınav oturumu
+            
+        Raises:
+            ValueError: Yeterli soru bulunamazsa
+            
+        Example:
+            >>> oturum = await sinav_motoru.sinav_olustur(
+            ...     ogrenci_id="123",
+            ...     sinav_tipi=SinavTipi.TYT
+            ... )
+        """
         sinav_id = str(uuid.uuid4())
 
         # Sınav konfigürasyonunu al
@@ -108,7 +144,24 @@ class SinavMotoruServisi:
         return sinav_oturumu
 
     async def sinav_baslat(self, sinav_id: str) -> SinavOturumu:
-        """Sınavı başlat"""
+        """Sınavı başlatır.
+        
+        Sınav süresini başlatır, otomatik tamamlama task'ını oluşturur
+        ve WebSocket bildirimi gönderir.
+        
+        Args:
+            sinav_id: Başlatılacak sınav kimliği
+            
+        Returns:
+            SinavOturumu: Başlatılan sınav oturumu
+            
+        Raises:
+            ValueError: Sınav bulunamazsa veya zaten başlatılmışsa
+            
+        Example:
+            >>> oturum = await sinav_motoru.sinav_baslat("abc-123")
+            >>> assert oturum.durum == SinavDurumu.DEVAM_EDIYOR
+        """
         if sinav_id not in self.aktif_oturumlar:
             raise ValueError("Sınav oturumu bulunamadı")
 
@@ -257,7 +310,18 @@ class SinavMotoruServisi:
         return True
 
     async def kalan_sure_getir(self, sinav_id: str) -> Optional[int]:
-        """Kalan süreyi getir (saniye)"""
+        """Kalan süreyi saniye cinsinden döndürür.
+        
+        Args:
+            sinav_id: Sınav kimliği
+            
+        Returns:
+            Optional[int]: Kalan süre (saniye) veya None
+            
+        Example:
+            >>> kalan = await sinav_motoru.kalan_sure_getir("abc-123")
+            >>> print(f"Kalan süre: {kalan} saniye")
+        """
         if sinav_id not in self.aktif_oturumlar:
             return None
 
@@ -461,8 +525,20 @@ class SinavMotoruServisi:
             if oturum.ogrenci_id == ogrenci_id
         ]
 
-    async def _send_websocket_update(self, sinav_id: str, data: dict):
-        """WebSocket güncellemesi gönder"""
+    async def _send_websocket_update(self, sinav_id: str, data: Dict[str, Any]) -> None:
+        """WebSocket güncellemesi gönderir.
+        
+        Sınav durumu değişikliklerini gerçek zamanlı olarak
+        istemcilere iletir.
+        
+        Args:
+            sinav_id: Sınav kimliği
+            data: Gönderilecek veri
+            
+        Note:
+            WebSocket manager'a erişim döngüsel bağımlılık
+            nedeniyle runtime'da import edilir.
+        """
         try:
             # WebSocket manager'a erişim için global import
             # Bu import döngüsel bağımlılığı önlemek için burada yapılıyor
@@ -474,4 +550,4 @@ class SinavMotoruServisi:
 
 
 # Global servis instance
-sinav_motoru_servisi = SinavMotoruServisi()
+sinav_motoru_servisi: SinavMotoruServisi = SinavMotoruServisi()

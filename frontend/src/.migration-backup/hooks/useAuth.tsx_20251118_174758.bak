@@ -1,0 +1,292 @@
+import { useState, useEffect, useContext, createContext, ReactNode } from 'react'
+import { User, AuthState, LoginRequest, LoginResponse, RegisterRequest, UserRole } from '../types'
+import { authService } from '../services/authService'
+
+interface AuthContextType extends AuthState {
+  login: (credentials: LoginRequest) => Promise<boolean>
+  register: (userData: RegisterRequest) => Promise<boolean>
+  logout: () => void
+  refreshAuth: () => Promise<boolean>
+  hasRole: (role: UserRole) => boolean
+  hasPermission: (resource: string, action: string) => boolean
+  isAuthorized: (requiredRoles: UserRole[]) => boolean
+  updateProfile: (userData: Partial<User>) => Promise<void>
+}
+
+const AuthContext = createContext<AuthContextType | undefined>(undefined)
+
+interface AuthProviderProps {
+  children: ReactNode
+}
+
+export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
+  const [authState, setAuthState] = useState<AuthState>({
+    isAuthenticated: false,
+    user: null,
+    token: null,
+    refreshToken: null,
+    loading: true,
+    error: null
+  })
+
+  // Rol bazlı izinler tanımları
+  const rolePermissions = {
+    ogrenci: [
+      { resource: 'dashboard', action: 'read' },
+      { resource: 'exam', action: 'read' },
+      { resource: 'exam', action: 'create' },
+      { resource: 'profile', action: 'read' },
+      { resource: 'profile', action: 'update' },
+      { resource: 'chat', action: 'read' },
+      { resource: 'chat', action: 'create' },
+      { resource: 'learning-path', action: 'read' }
+    ],
+    ogretmen: [
+      { resource: 'dashboard', action: 'read' },
+      { resource: 'students', action: 'read' },
+      { resource: 'class', action: 'read' },
+      { resource: 'class', action: 'update' },
+      { resource: 'exam', action: 'read' },
+      { resource: 'exam', action: 'create' },
+      { resource: 'exam', action: 'update' },
+      { resource: 'reports', action: 'read' },
+      { resource: 'content', action: 'read' },
+      { resource: 'content', action: 'create' }
+    ],
+    veli: [
+      { resource: 'dashboard', action: 'read' },
+      { resource: 'child-progress', action: 'read' },
+      { resource: 'reports', action: 'read' },
+      { resource: 'notifications', action: 'read' },
+      { resource: 'profile', action: 'read' },
+      { resource: 'profile', action: 'update' }
+    ],
+    admin: [
+      { resource: '*', action: '*' } // Admin tüm kaynaklara erişebilir
+    ]
+  }
+
+  // Sayfa yüklendiğinde token kontrolü
+  useEffect(() => {
+    const initAuth = async () => {
+      try {
+        const token = localStorage.getItem('access_token')
+        const refreshToken = localStorage.getItem('refresh_token')
+
+        if (token && refreshToken) {
+          // Token geçerliliğini kontrol et
+          const isValid = await authService.validateToken(token)
+          
+          if (isValid) {
+            const user = await authService.getCurrentUser(token)
+            setAuthState({
+              isAuthenticated: true,
+              user,
+              token,
+              refreshToken,
+              loading: false,
+              error: null
+            })
+          } else {
+            // Token geçersizse refresh token ile yenile
+            const refreshed = await refreshAuth()
+            if (!refreshed) {
+              logout()
+            }
+          }
+        } else {
+          setAuthState(prev => ({ ...prev, loading: false }))
+        }
+      } catch (error) {
+        console.error('Auth initialization error:', error)
+        setAuthState(prev => ({ 
+          ...prev, 
+          loading: false, 
+          error: 'Kimlik doğrulama başlatılamadı' 
+        }))
+      }
+    }
+
+    initAuth()
+  }, [])
+
+  const login = async (credentials: LoginRequest): Promise<boolean> => {
+    try {
+      setAuthState(prev => ({ ...prev, loading: true, error: null }))
+      
+      const response: LoginResponse = await authService.login(credentials)
+      
+      if (response.success) {
+        // Token'ları localStorage'a kaydet
+        localStorage.setItem('access_token', response.token)
+        localStorage.setItem('refresh_token', response.refreshToken)
+
+        setAuthState({
+          isAuthenticated: true,
+          user: response.user,
+          token: response.token,
+          refreshToken: response.refreshToken,
+          loading: false,
+          error: null
+        })
+        
+        return true
+      } else {
+        setAuthState(prev => ({ 
+          ...prev, 
+          loading: false, 
+          error: response.message || 'Giriş başarısız' 
+        }))
+        return false
+      }
+    } catch (error: any) {
+      setAuthState(prev => ({ 
+        ...prev, 
+        loading: false, 
+        error: error.message || 'Giriş sırasında hata oluştu' 
+      }))
+      return false
+    }
+  }
+
+  const register = async (userData: RegisterRequest): Promise<boolean> => {
+    try {
+      setAuthState(prev => ({ ...prev, loading: true, error: null }))
+      
+      const response = await authService.register(userData)
+      
+      if (response.success) {
+        // Kayıt başarılı, otomatik giriş yap
+        return await login({ email: userData.email, password: userData.password })
+      } else {
+        setAuthState(prev => ({ 
+          ...prev, 
+          loading: false, 
+          error: response.message || 'Kayıt başarısız' 
+        }))
+        return false
+      }
+    } catch (error: any) {
+      setAuthState(prev => ({ 
+        ...prev, 
+        loading: false, 
+        error: error.message || 'Kayıt sırasında hata oluştu' 
+      }))
+      return false
+    }
+  }
+
+  const logout = () => {
+    // Token'ları temizle
+    localStorage.removeItem('auth_token')
+    localStorage.removeItem('refresh_token')
+    
+    setAuthState({
+      isAuthenticated: false,
+      user: null,
+      token: null,
+      refreshToken: null,
+      loading: false,
+      error: null
+    })
+  }
+
+  const refreshAuth = async (): Promise<boolean> => {
+    try {
+      const refreshToken = localStorage.getItem('refresh_token')
+      
+      if (!refreshToken) {
+        return false
+      }
+      
+      const response = await authService.refreshToken(refreshToken)
+
+      if (response.success) {
+        localStorage.setItem('access_token', response.token)
+        localStorage.setItem('refresh_token', response.refreshToken)
+
+        setAuthState(prev => ({
+          ...prev,
+          token: response.token,
+          refreshToken: response.refreshToken,
+          error: null
+        }))
+        
+        return true
+      } else {
+        return false
+      }
+    } catch (error) {
+      console.error('Token refresh error:', error)
+      return false
+    }
+  }
+
+  const hasRole = (role: UserRole): boolean => {
+    return authState.user?.rol === role
+  }
+
+  const hasPermission = (resource: string, action: string): boolean => {
+    if (!authState.user) return false
+    
+    const userRole = authState.user.rol
+    const permissions = rolePermissions[userRole] || []
+    
+    // Admin tüm izinlere sahip
+    if (userRole === 'admin') return true
+    
+    // Belirli izin kontrolü
+    return permissions.some(permission => 
+      (permission.resource === resource || permission.resource === '*') &&
+      (permission.action === action || permission.action === '*')
+    )
+  }
+
+  const isAuthorized = (requiredRoles: UserRole[]): boolean => {
+    if (!authState.user) return false
+    return requiredRoles.includes(authState.user.rol)
+  }
+
+  const updateProfile = async (userData: Partial<User>): Promise<void> => {
+    try {
+      const response = await authService.updateProfile(userData)
+      
+      if (response.success) {
+        setAuthState(prev => ({
+          ...prev,
+          user: response.user
+        }))
+      } else {
+        throw new Error('Profil güncelleme başarısız')
+      }
+    } catch (error: any) {
+      throw new Error(error.message || 'Profil güncelleme sırasında hata oluştu')
+    }
+  }
+
+  const contextValue: AuthContextType = {
+    ...authState,
+    login,
+    register,
+    logout,
+    refreshAuth,
+    hasRole,
+    hasPermission,
+    isAuthorized,
+    updateProfile
+  }
+
+  return (
+    <AuthContext.Provider value={contextValue}>
+      {children}
+    </AuthContext.Provider>
+  )
+}
+
+export const useAuth = (): AuthContextType => {
+  const context = useContext(AuthContext)
+  if (context === undefined) {
+    throw new Error('useAuth must be used within an AuthProvider')
+  }
+  return context
+}

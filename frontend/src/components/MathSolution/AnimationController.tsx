@@ -1,7 +1,7 @@
 /**
  * Animasyon Kontrol Bileşeni
  * Requirements: REQ-51.26-51.30 (Animasyonlu geçişler)
- * 
+ *
  * Bu bileşen:
  * - Animasyon hızı kontrolü (yavaş/normal/hızlı)
  * - Animasyonları açma/kapama
@@ -9,8 +9,9 @@
  * - Visual transformation effects
  */
 
-import React, { createContext, useContext, useState, ReactNode } from 'react';
 import { Zap, ZapOff } from 'lucide-react';
+import * as React from 'react';
+import {  createContext, useContext, useState, ReactNode  } from 'react';
 import './AnimationController.css';
 
 // Animation speed presets
@@ -18,18 +19,18 @@ export const ANIMATION_SPEEDS = {
   slow: {
     duration: 800,
     label: 'Yavaş',
-    icon: '🐢'
+    icon: '🐢',
   },
   normal: {
     duration: 400,
     label: 'Normal',
-    icon: '🚶'
+    icon: '🚶',
   },
   fast: {
     duration: 200,
     label: 'Hızlı',
-    icon: '🏃'
-  }
+    icon: '🏃',
+  },
 } as const;
 
 export type AnimationSpeed = keyof typeof ANIMATION_SPEEDS;
@@ -65,7 +66,7 @@ interface AnimationProviderProps {
 export const AnimationProvider: React.FC<AnimationProviderProps> = ({
   children,
   defaultEnabled = true,
-  defaultSpeed = 'normal'
+  defaultSpeed = 'normal',
 }) => {
   const [enabled, setEnabled] = useState(defaultEnabled);
   const [speed, setSpeed] = useState<AnimationSpeed>(defaultSpeed);
@@ -76,7 +77,7 @@ export const AnimationProvider: React.FC<AnimationProviderProps> = ({
 
   const getTransitionConfig = () => ({
     duration: enabled ? ANIMATION_SPEEDS[speed].duration / 1000 : 0,
-    ease: 'easeOut'
+    ease: 'easeOut',
   });
 
   const value: AnimationContextType = {
@@ -85,7 +86,7 @@ export const AnimationProvider: React.FC<AnimationProviderProps> = ({
     duration: ANIMATION_SPEEDS[speed].duration,
     toggleAnimations,
     setSpeed,
-    getTransitionConfig
+    getTransitionConfig,
   };
 
   return (
@@ -137,7 +138,7 @@ const AnimationController: React.FC<AnimationControllerProps> = ({ className = '
           </button>
 
           {/* Status Indicator */}
-          <div 
+          <div
             className={`w-3 h-3 rounded-full ${
               enabled ? 'bg-green-500 animate-pulse' : 'bg-gray-400'
             }`}
@@ -154,7 +155,7 @@ const AnimationController: React.FC<AnimationControllerProps> = ({ className = '
               {(Object.keys(ANIMATION_SPEEDS) as AnimationSpeed[]).map((speedKey) => {
                 const speedConfig = ANIMATION_SPEEDS[speedKey];
                 const isActive = speed === speedKey;
-                
+
                 return (
                   <button
                     key={speedKey}
@@ -182,7 +183,7 @@ const AnimationController: React.FC<AnimationControllerProps> = ({ className = '
       </div>
 
       {/* Info Text */}
-      <div 
+      <div
         className="mt-3 text-xs text-gray-700"
         role="status"
         aria-live="polite"

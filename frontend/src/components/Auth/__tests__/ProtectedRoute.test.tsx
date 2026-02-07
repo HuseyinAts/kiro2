@@ -1,12 +1,19 @@
-import React from 'react'
+import * as React from 'react'
 import { render, screen } from '@testing-library/react'
 import { BrowserRouter } from 'react-router-dom'
 import { ProtectedRoute } from '../ProtectedRoute'
 import { AuthProvider } from '../../../context/AuthProvider'
 import { UserRole } from '../../../types'
+import { vi } from 'vitest';
 
 // Mock useAuthStore hook
-const mockUseAuthStore = {
+const mockUseAuthStore: {
+  isAuthenticated: boolean;
+  user: any;
+  loading: boolean;
+  hasPermission: ReturnType<typeof vi.fn>;
+  isAuthorized: ReturnType<typeof vi.fn>;
+} = {
   isAuthenticated: false,
   user: null,
   loading: false,

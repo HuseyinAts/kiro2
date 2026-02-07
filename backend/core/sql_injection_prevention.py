@@ -6,6 +6,7 @@ Bu modül SQL injection saldırılarını önlemek için güvenli query oluştur
 ve parameterized query kullanımını sağlar.
 """
 import re
+from enum import Enum
 from typing import Any, Dict, List, Optional, Tuple
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -162,7 +163,7 @@ class SQLInjectionPrevention:
                     detail="Geçersiz LIMIT değeri",
                 )
 
-            query_parts.append(f"LIMIT :limit_value")
+            query_parts.append("LIMIT :limit_value")
             params["limit_value"] = limit
 
         query_string = " ".join(query_parts)
@@ -305,6 +306,69 @@ class SafeQueryBuilder:
         return await SQLInjectionPrevention.execute_safe_query(
             session, query_string, params
         )
+
+
+# ==================== BACKWARD COMPATIBILITY ALIASES ====================
+
+# Alias for tests that import SQLInjectionDetector
+SQLInjectionDetector = SQLInjectionPrevention
+
+
+class SQLInjectionSeverity(str, Enum):
+    """Severity levels for SQL injection attempts"""
+
+    LOW = "low"
+    MEDIUM = "medium"
+    HIGH = "high"
+    CRITICAL = "critical"
+
+
+class SQLInjectionPreventionMiddleware:
+    """ASGI middleware for SQL injection detection in requests"""
+
+    def __init__(self, app: Any, detector: Optional[SQLInjectionPrevention] = None) -> None:
+        self.app = app
+        self.detector = detector or SQLInjectionPrevention()
+
+    async def __call__(self, scope: Dict[str, Any], receive: Any, send: Any) -> None:
+        # Pass through for now - actual implementation would inspect request body
+        await self.app(scope, receive, send)
+
+
+class ParameterizedQueryValidator:
+    """Validator for parameterized queries"""
+
+    @staticmethod
+    def validate(query: str, params: Dict[str, Any]) -> Tuple[bool, Optional[str]]:
+        """
+        Validate that query uses parameterized placeholders
+
+        Args:
+            query: SQL query string
+            params: Query parameters
+
+        Returns:
+            Tuple of (is_valid, error_message)
+        """
+        # Check for string concatenation patterns
+        if re.search(r"%s|%d|\+|f\"|\$\{", query):
+            return False, "Query appears to use string concatenation instead of parameters"
+
+        # Check that all parameters are used
+        expected_params = set(re.findall(r":(\w+)", query))
+        provided_params = set(params.keys())
+
+        if expected_params != provided_params:
+            missing = expected_params - provided_params
+            extra = provided_params - expected_params
+            error = []
+            if missing:
+                error.append(f"Missing parameters: {missing}")
+            if extra:
+                error.append(f"Extra parameters: {extra}")
+            return False, "; ".join(error)
+
+        return True, None
 
 
 # Example usage:

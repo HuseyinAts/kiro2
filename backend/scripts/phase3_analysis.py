@@ -66,7 +66,7 @@ class Phase3AnalysisStrategy:
         print(
             f"Current Overall Coverage: {coverage_data['totals']['percent_covered']:.2f}%"
         )
-        print(f"Target Coverage: 50.0%")
+        print("Target Coverage: 50.0%")
         print(f"Gap to Close: {50.0 - coverage_data['totals']['percent_covered']:.1f}%")
         print()
 
@@ -228,7 +228,7 @@ class Phase3AnalysisStrategy:
         for i, scenario in enumerate(workflow_scenarios, 1):
             print(f"{i}. {scenario['name']} ({scenario['priority']})")
             print(f"   Components: {' → '.join(scenario['components'])}")
-            print(f"   Test Focus: End-to-end integration, error handling, performance")
+            print("   Test Focus: End-to-end integration, error handling, performance")
             print()
 
         # Implementation strategy
@@ -270,8 +270,8 @@ class Phase3AnalysisStrategy:
         print(f"Critical Workflow Lines: {total_critical_lines:,}")
         print(f"Missing Coverage Lines: {total_missing_lines:,}")
         print(f"End-to-End Scenarios: {estimated_scenarios}")
-        print(f"Integration Tests: ~75-100")
-        print(f"Estimated Time: 3-4 days")
+        print("Integration Tests: ~75-100")
+        print("Estimated Time: 3-4 days")
         print()
 
         # Success criteria

@@ -1,7 +1,7 @@
 /**
  * Hata Vurgulama Bileşeni
  * Requirements: REQ-51.36-51.40 (Hata vurgulama)
- * 
+ *
  * Bu bileşen:
  * - Yanlış adımları kırmızı ile vurgular
  * - Hata türünü belirler (işlem, kavram, dikkat hatası)
@@ -9,9 +9,10 @@
  * - Doğru düzeltmelerde pozitif geri bildirim verir
  */
 
-import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { AlertTriangle, CheckCircle, XCircle, Lightbulb } from 'lucide-react';
+import { CheckCircle, XCircle, Lightbulb } from 'lucide-react';
+import * as React from 'react';
+import {  useState  } from 'react';
 
 export enum ErrorType {
   OPERATION = 'operation',      // İşlem hatası (2+2=5 gibi)
@@ -38,7 +39,7 @@ const ErrorHighlight: React.FC<ErrorHighlightProps> = ({
   studentAnswer,
   correctAnswer,
   onCorrection,
-  showFeedback = true
+  showFeedback = true,
 }) => {
   const [error, setError] = useState<MathError | null>(null);
   const [isCorrected, setIsCorrected] = useState(false);
@@ -67,14 +68,14 @@ const ErrorHighlight: React.FC<ErrorHighlightProps> = ({
     // İşlem hatası kontrolü (sayısal fark)
     const studentNum = parseFloat(student.replace(/[^0-9.-]/g, ''));
     const correctNum = parseFloat(correct.replace(/[^0-9.-]/g, ''));
-    
+
     if (!isNaN(studentNum) && !isNaN(correctNum) && studentNum !== correctNum) {
       return {
         type: ErrorType.OPERATION,
         description: 'İşlem Hatası',
         incorrectPart: student,
         correctPart: correct,
-        suggestion: 'İşlemi tekrar kontrol et. Hesap makinesini kullanabilirsin.'
+        suggestion: 'İşlemi tekrar kontrol et. Hesap makinesini kullanabilirsin.',
       };
     }
 
@@ -85,7 +86,7 @@ const ErrorHighlight: React.FC<ErrorHighlightProps> = ({
         description: 'Dikkat Hatası (İşaret)',
         incorrectPart: student,
         correctPart: correct,
-        suggestion: 'Pozitif/negatif işaretini kontrol et.'
+        suggestion: 'Pozitif/negatif işaretini kontrol et.',
       };
     }
 
@@ -95,7 +96,7 @@ const ErrorHighlight: React.FC<ErrorHighlightProps> = ({
       description: 'Kavram Hatası',
       incorrectPart: student,
       correctPart: correct,
-      suggestion: 'Bu adımda kullanılan yöntemi tekrar gözden geçir.'
+      suggestion: 'Bu adımda kullanılan yöntemi tekrar gözden geçir.',
     };
   };
 
@@ -104,7 +105,7 @@ const ErrorHighlight: React.FC<ErrorHighlightProps> = ({
     const colors = {
       [ErrorType.OPERATION]: 'bg-red-100 border-red-400 text-red-800',
       [ErrorType.CONCEPT]: 'bg-orange-100 border-orange-400 text-orange-800',
-      [ErrorType.ATTENTION]: 'bg-yellow-100 border-yellow-400 text-yellow-800'
+      [ErrorType.ATTENTION]: 'bg-yellow-100 border-yellow-400 text-yellow-800',
     };
     return colors[type];
   };
@@ -114,7 +115,7 @@ const ErrorHighlight: React.FC<ErrorHighlightProps> = ({
     const icons = {
       [ErrorType.OPERATION]: '🔢',
       [ErrorType.CONCEPT]: '💡',
-      [ErrorType.ATTENTION]: '⚠️'
+      [ErrorType.ATTENTION]: '⚠️',
     };
     return icons[type];
   };

@@ -3,7 +3,9 @@
  * React performance optimization and lazy loading utilities
  */
 
-import { lazy, Suspense, ComponentType, ReactNode } from 'react';
+import * as React from 'react';
+import {  lazy, Suspense, ComponentType, ReactNode  } from 'react';
+import * as React from 'react';
 import { Route } from 'react-router-dom';
 
 // Performance monitoring
@@ -25,12 +27,12 @@ export class PerformanceMonitor {
   };
 
   static initialize() {
-    if (typeof window === 'undefined') return;
+    if (typeof window === 'undefined') {return;}
 
     // Navigation timing
     window.addEventListener('load', () => {
       const navigation = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming;
-      
+
       this.metrics = {
         navigationStart: navigation.startTime,
         domContentLoaded: navigation.domContentLoadedEventEnd - navigation.startTime,
@@ -52,7 +54,7 @@ export class PerformanceMonitor {
 
     try {
       fcpObserver.observe({ entryTypes: ['paint'] });
-    } catch (e) {
+    } catch {
       console.warn('FCP measurement not supported');
     }
 
@@ -65,7 +67,7 @@ export class PerformanceMonitor {
 
     try {
       lcpObserver.observe({ entryTypes: ['largest-contentful-paint'] });
-    } catch (e) {
+    } catch {
       console.warn('LCP measurement not supported');
     }
 
@@ -79,7 +81,7 @@ export class PerformanceMonitor {
 
     try {
       fidObserver.observe({ entryTypes: ['first-input'] });
-    } catch (e) {
+    } catch {
       console.warn('FID measurement not supported');
     }
 
@@ -97,7 +99,7 @@ export class PerformanceMonitor {
 
     try {
       clsObserver.observe({ entryTypes: ['layout-shift'] });
-    } catch (e) {
+    } catch {
       console.warn('CLS measurement not supported');
     }
   }
@@ -107,23 +109,23 @@ export class PerformanceMonitor {
     console.log('📊 Navigation Start:', this.metrics.navigationStart, 'ms');
     console.log('🎯 DOM Content Loaded:', this.metrics.domContentLoaded, 'ms');
     console.log('✅ Load Complete:', this.metrics.loadComplete, 'ms');
-    
+
     if (this.metrics.firstContentfulPaint) {
       console.log('🎨 First Contentful Paint:', this.metrics.firstContentfulPaint, 'ms');
     }
-    
+
     if (this.metrics.largestContentfulPaint) {
       console.log('🖼️ Largest Contentful Paint:', this.metrics.largestContentfulPaint, 'ms');
     }
-    
+
     if (this.metrics.firstInputDelay) {
       console.log('⚡ First Input Delay:', this.metrics.firstInputDelay, 'ms');
     }
-    
+
     if (this.metrics.cumulativeLayoutShift) {
       console.log('📐 Cumulative Layout Shift:', this.metrics.cumulativeLayoutShift);
     }
-    
+
     console.groupEnd();
 
     // Send metrics to analytics (if implemented)
@@ -152,10 +154,10 @@ interface LazyComponentProps {
 
 export function createLazyComponent<T extends ComponentType<any>>(
   importFunc: () => Promise<{ default: T }>,
-  options: LazyComponentProps = {}
+  options: LazyComponentProps = {},
 ) {
   const LazyComponent = lazy(importFunc);
-  
+
   const WrappedComponent = (props: any) => {
     return (
       <Suspense
@@ -173,7 +175,7 @@ export function createLazyComponent<T extends ComponentType<any>>(
   };
 
   WrappedComponent.displayName = `LazyComponent(${(LazyComponent as any).displayName || 'Component'})`;
-  
+
   return WrappedComponent;
 }
 
@@ -181,10 +183,10 @@ export function createLazyComponent<T extends ComponentType<any>>(
 export function createLazyRoute(
   path: string,
   importFunc: () => Promise<{ default: ComponentType<any> }>,
-  options: LazyComponentProps = {}
+  options: LazyComponentProps = {},
 ) {
   const LazyComponent = createLazyComponent(importFunc, options);
-  
+
   return <Route path={path} element={<LazyComponent />} />;
 }
 
@@ -223,10 +225,10 @@ export class ImageOptimizer {
   static generateSrcSet(
     baseUrl: string,
     widths: number[] = [320, 640, 768, 1024, 1280, 1536],
-    options: ImageOptimizationOptions = {}
+    options: ImageOptimizationOptions = {},
   ): string {
     const { quality = 80, format = 'webp' } = options;
-    
+
     return widths
       .map(width => {
         const url = `${baseUrl}?w=${width}&q=${quality}&f=${format}`;
@@ -239,12 +241,12 @@ export class ImageOptimizer {
     '(max-width: 640px)': '100vw',
     '(max-width: 768px)': '50vw',
     '(max-width: 1024px)': '33vw',
-    default: '25vw'
+    default: '25vw',
   }): string {
     const entries = Object.entries(breakpoints);
     const mediaQueries = entries.slice(0, -1).map(([media, size]) => `${media} ${size}`);
     const defaultSize = entries[entries.length - 1][1];
-    
+
     return [...mediaQueries, defaultSize].join(', ');
   }
 }
@@ -252,7 +254,7 @@ export class ImageOptimizer {
 // Component memoization utilities
 export function createMemoizedComponent<T extends ComponentType<any>>(
   Component: T,
-  areEqual?: (prevProps: any, nextProps: any) => boolean
+  areEqual?: (prevProps: any, nextProps: any) => boolean,
 ): React.MemoExoticComponent<T> {
   const MemoizedComponent = React.memo(Component, areEqual);
   MemoizedComponent.displayName = `Memo(${Component.displayName || Component.name})`;
@@ -306,7 +308,7 @@ export class ResourcePrefetcher {
   }
 
   static preconnect(domain: string) {
-    if (typeof window === 'undefined') return;
+    if (typeof window === 'undefined') {return;}
 
     const link = document.createElement('link');
     link.rel = 'preconnect';
@@ -315,7 +317,7 @@ export class ResourcePrefetcher {
   }
 
   static dnsPrefetch(domain: string) {
-    if (typeof window === 'undefined') return;
+    if (typeof window === 'undefined') {return;}
 
     const link = document.createElement('link');
     link.rel = 'dns-prefetch';
@@ -337,15 +339,15 @@ export function useVirtualScroll({
   items,
   itemHeight,
   containerHeight,
-  renderItem,
-  buffer = 5
+  renderItem: _renderItem,
+  buffer = 5,
 }: VirtualScrollProps) {
   const [scrollTop, setScrollTop] = useState(0);
 
   const visibleStart = Math.max(0, Math.floor(scrollTop / itemHeight) - buffer);
   const visibleEnd = Math.min(
     items.length,
-    Math.ceil((scrollTop + containerHeight) / itemHeight) + buffer
+    Math.ceil((scrollTop + containerHeight) / itemHeight) + buffer,
   );
 
   const visibleItems = items.slice(visibleStart, visibleEnd);
@@ -362,7 +364,7 @@ export function useVirtualScroll({
     offsetY,
     handleScroll,
     visibleStart,
-    visibleEnd
+    visibleEnd,
   };
 }
 
@@ -370,7 +372,7 @@ export function useVirtualScroll({
 export class TurkishContentOptimizer {
   private static turkishChars: Record<string, string> = {
     'ç': 'c', 'ğ': 'g', 'ı': 'i', 'İ': 'I', 'ö': 'o', 'ş': 's', 'ü': 'u',
-    'Ç': 'C', 'Ğ': 'G', 'Ö': 'O', 'Ş': 'S', 'Ü': 'U'
+    'Ç': 'C', 'Ğ': 'G', 'Ö': 'O', 'Ş': 'S', 'Ü': 'U',
   };
 
   static normalizeForSearch(text: string): string {
@@ -405,7 +407,7 @@ export class TurkishContentOptimizer {
     return new Intl.Collator('tr-TR', {
       sensitivity: 'base',
       numeric: true,
-      ignorePunctuation: true
+      ignorePunctuation: true,
     });
   }
 }
@@ -423,9 +425,9 @@ export class ServiceWorkerManager {
     try {
       const registration = await navigator.serviceWorker.register(swUrl);
       this.swRegistration = registration;
-      
+
       console.log('Service Worker registered successfully:', registration.scope);
-      
+
       // Check for updates
       registration.addEventListener('updatefound', () => {
         const newWorker = registration.installing;
@@ -453,7 +455,7 @@ export class ServiceWorkerManager {
   }
 
   static async unregister(): Promise<boolean> {
-    if (!this.swRegistration) return false;
+    if (!this.swRegistration) {return false;}
 
     try {
       const result = await this.swRegistration.unregister();
@@ -472,4 +474,3 @@ if (typeof window !== 'undefined') {
 }
 
 // Export React import
-import React, { useState, useCallback } from 'react';

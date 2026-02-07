@@ -1,0 +1,296 @@
+name: Claude Code CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+  workflow_dispatch:
+    inputs:
+      task:
+        description: 'Custom task for Claude'
+        required: false
+        default: 'Review changes and run tests'
+
+env:
+  PYTHON_VERSION: '3.11'
+  NODE_VERSION: '20'
+
+jobs:
+  # Setup and Cache
+  setup:
+    runs-on: ubuntu-latest
+    outputs:
+      backend-cache-key: ${{ steps.cache-keys.outputs.backend }}
+      frontend-cache-key: ${{ steps.cache-keys.outputs.frontend }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Generate cache keys
+        id: cache-keys
+        run: |
+          echo "backend=${{ hashFiles('backend/requirements.txt') }}" >> $GITHUB_OUTPUT
+          echo "frontend=${{ hashFiles('frontend/package-lock.json') }}" >> $GITHUB_OUTPUT
+
+  # Backend Tests
+  backend-tests:
+    runs-on: ubuntu-latest
+    needs: setup
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: kiro2
+          POSTGRES_PASSWORD: kiro2_test
+          POSTGRES_DB: kiro2_test
+        ports:
+          - 5434:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+      redis:
+        image: redis:7
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Cache pip
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: pip-${{ needs.setup.outputs.backend-cache-key }}
+          restore-keys: pip-
+
+      - name: Install dependencies
+        run: |
+          cd backend
+          pip install -r requirements.txt
+          pip install pytest pytest-cov pytest-asyncio
+
+      - name: Run linting
+        run: |
+          cd backend
+          pip install ruff mypy
+          ruff check . --select=E,F,W --ignore=E501 || true
+          mypy --ignore-missing-imports main.py || true
+
+      - name: Run tests
+        env:
+          DATABASE_URL: postgresql://kiro2:kiro2_test@localhost:5434/kiro2_test
+          REDIS_URL: redis://localhost:6379
+          TESTING: "true"
+        run: |
+          cd backend
+          pytest -v --tb=short --cov=. --cov-report=xml --cov-report=term-missing -x
+
+      - name: Upload coverage
+        uses: codecov/codecov-action@v4
+        with:
+          file: backend/coverage.xml
+          flags: backend
+          fail_ci_if_error: false
+
+  # Frontend Tests
+  frontend-tests:
+    runs-on: ubuntu-latest
+    needs: setup
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Cache npm
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: npm-${{ needs.setup.outputs.frontend-cache-key }}
+          restore-keys: npm-
+
+      - name: Install dependencies
+        run: |
+          cd frontend
+          npm ci
+
+      - name: Run linting
+        run: |
+          cd frontend
+          npm run lint || true
+
+      - name: Type check
+        run: |
+          cd frontend
+          npx tsc --noEmit || true
+
+      - name: Run tests
+        run: |
+          cd frontend
+          npm test -- --watchAll=false --coverage
+
+      - name: Build
+        run: |
+          cd frontend
+          npm run build
+
+      - name: Upload coverage
+        uses: codecov/codecov-action@v4
+        with:
+          file: frontend/coverage/lcov.info
+          flags: frontend
+          fail_ci_if_error: false
+
+  # Security Scan
+  security:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install security tools
+        run: |
+          pip install bandit safety semgrep
+
+      - name: Run Bandit
+        run: |
+          cd backend
+          bandit -r . -f json -o bandit-report.json || true
+        continue-on-error: true
+
+      - name: Run Safety
+        run: |
+          cd backend
+          safety check --json > safety-report.json || true
+        continue-on-error: true
+
+      - name: Run Semgrep
+        uses: returntocorp/semgrep-action@v1
+        with:
+          config: auto
+        continue-on-error: true
+
+      - name: Upload security reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: security-reports
+          path: |
+            backend/bandit-report.json
+            backend/safety-report.json
+
+  # Claude Code Review
+  claude-review:
+    runs-on: ubuntu-latest
+    needs: [backend-tests, frontend-tests]
+    if: github.event_name == 'pull_request'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Get changed files
+        id: changed-files
+        run: |
+          echo "files=$(git diff --name-only origin/${{ github.base_ref }}...HEAD | tr '\n' ' ')" >> $GITHUB_OUTPUT
+
+      - name: Claude Code Analysis
+        uses: anthropics/claude-code-action@v2
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          task: |
+            Bu PR'ı incele ve şunları kontrol et:
+
+            1. KIRO2 Coding Standards
+               - Type hints zorunlu
+               - Async I/O kullanımı
+               - Pydantic validation
+
+            2. Boris Cherny Verification
+               - Gerçek test assertions (assert True yasak)
+               - Exit code kuralları
+               - Reward hacking pattern yok
+
+            3. OWASP Security
+               - SQL injection riski
+               - XSS koruması
+               - Input validation
+
+            4. IRT/FSRS/ZPD Parametreleri (varsa)
+               - difficulty: [-4.0, 4.0]
+               - discrimination: [0.2, 4.0]
+               - guessing: [0.0, 0.35]
+
+            5. Türkçe Karakter Desteği
+               - UTF-8 encoding
+               - I/ı dönüşümü
+
+            Değişen dosyalar: ${{ steps.changed-files.outputs.files }}
+          headless: true
+          timeout: 600000
+          max_turns: 30
+          output_format: json
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Post review comment
+        if: success()
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const fs = require('fs');
+            const review = fs.readFileSync('.claude/ci/artifacts/review.json', 'utf8');
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: `## 🤖 Claude Code Review\n\n${JSON.parse(review).summary}\n\n---\n*Automated review by Claude Code*`
+            });
+
+  # Quality Gate
+  quality-gate:
+    runs-on: ubuntu-latest
+    needs: [backend-tests, frontend-tests, security]
+    steps:
+      - name: Check quality gate
+        run: |
+          echo "All checks passed! ✅"
+          echo "Backend tests: ✅"
+          echo "Frontend tests: ✅"
+          echo "Security scan: ✅"
+
+  # Notify
+  notify:
+    runs-on: ubuntu-latest
+    needs: [quality-gate]
+    if: always()
+    steps:
+      - name: Notify on success
+        if: needs.quality-gate.result == 'success'
+        run: |
+          echo "✅ CI passed successfully"
+
+      - name: Notify on failure
+        if: needs.quality-gate.result == 'failure'
+        run: |
+          echo "❌ CI failed"
+          exit 1

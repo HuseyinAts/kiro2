@@ -30,12 +30,12 @@ export const TeacherAssignmentsPage = lazyWithRetry(() => import('../pages/Teach
 export const TeacherContentPage = lazyWithRetry(() => import('../pages/TeacherContentPage'));
 
 // ==================== PARENT ROUTES ====================
-export const ParentDashboard = lazyWithRetry(() => import('../pages/ParentDashboard'));
+export const ParentDashboard = lazyWithRetry(() => import('../pages/ParentDashboardPage'));
 export const ParentReportsPage = lazyWithRetry(() => import('../pages/ParentReportsPage'));
 export const ParentNotificationsPage = lazyWithRetry(() => import('../pages/ParentNotificationsPage'));
 
 // ==================== ADMIN ROUTES ====================
-export const AdminDashboard = lazyWithRetry(() => import('../pages/AdminDashboard'));
+export const AdminDashboard = lazyWithRetry(() => import('../pages/AdminDashboardPage'));
 export const AdminUsersPage = lazyWithRetry(() => import('../pages/AdminUsersPage'));
 export const AdminContentPage = lazyWithRetry(() => import('../pages/AdminContentPage'));
 export const AdminSettingsPage = lazyWithRetry(() => import('../pages/AdminSettingsPage'));
@@ -44,6 +44,12 @@ export const TokenOptimizationDashboard = lazyWithRetry(() => import('../pages/T
 
 // ==================== QUESTION GENERATION ====================
 export const OSYMQuestionGeneratorPage = lazyWithRetry(() => import('../pages/OSYMQuestionGeneratorPage'));
+
+// ==================== QUESTION UPLOAD (YOLO) ====================
+export const QuestionUploadPage = lazyWithRetry(() => import('../pages/QuestionUploadPage'));
+
+// ==================== SEQUENTIAL THINKING ====================
+export const SequentialThinkingPage = lazyWithRetry(() => import('../pages/SequentialThinkingPage'));
 
 // ==================== ROUTE CONFIGURATION ====================
 
@@ -65,13 +71,13 @@ export const routes: RouteConfig[] = [
     path: '/login',
     component: LoginPage,
     fallback: LoadingFallbacks.page,
-    preload: true
+    preload: true,
   },
   {
     path: '/register',
     component: RegisterPage,
     fallback: LoadingFallbacks.page,
-    preload: true
+    preload: true,
   },
 
   // Student Routes (high priority for students)
@@ -80,36 +86,36 @@ export const routes: RouteConfig[] = [
     component: StudentDashboard,
     fallback: LoadingFallbacks.dashboard,
     preload: true,
-    roles: ['student']
+    roles: ['student'],
   },
   {
     path: '/exam/:examId',
     component: ExamInterface,
     fallback: LoadingFallbacks.page,
-    roles: ['student']
+    roles: ['student'],
   },
   {
     path: '/osym-exam/:examId',
     component: OSYMExamInterface,
     fallback: LoadingFallbacks.page,
-    roles: ['student']
+    roles: ['student'],
   },
 
   // Accessibility Settings (load on demand)
   {
     path: '/settings/accessibility/color-contrast',
     component: ColorContrastSettingsPage,
-    fallback: LoadingFallbacks.page
+    fallback: LoadingFallbacks.page,
   },
   {
     path: '/settings/accessibility/typography',
     component: TypographySettingsPage,
-    fallback: LoadingFallbacks.page
+    fallback: LoadingFallbacks.page,
   },
   {
     path: '/accessibility/dyscalculia',
     component: DyscalculiaSupportPage,
-    fallback: LoadingFallbacks.page
+    fallback: LoadingFallbacks.page,
   },
 
   // Manipulatives (load on demand)
@@ -117,7 +123,7 @@ export const routes: RouteConfig[] = [
     path: '/manipulatives',
     component: ManipulativesPage,
     fallback: LoadingFallbacks.page,
-    roles: ['student']
+    roles: ['student'],
   },
 
   // Teacher Routes
@@ -126,37 +132,37 @@ export const routes: RouteConfig[] = [
     component: TeacherDashboard,
     fallback: LoadingFallbacks.dashboard,
     preload: true,
-    roles: ['teacher']
+    roles: ['teacher'],
   },
   {
     path: '/teacher/students',
     component: TeacherStudentsPage,
     fallback: LoadingFallbacks.page,
-    roles: ['teacher']
+    roles: ['teacher'],
   },
   {
     path: '/teacher/exams',
     component: TeacherExamsPage,
     fallback: LoadingFallbacks.page,
-    roles: ['teacher']
+    roles: ['teacher'],
   },
   {
     path: '/teacher/reports',
     component: TeacherReportsPage,
     fallback: LoadingFallbacks.page,
-    roles: ['teacher']
+    roles: ['teacher'],
   },
   {
     path: '/teacher/assignments',
     component: TeacherAssignmentsPage,
     fallback: LoadingFallbacks.page,
-    roles: ['teacher']
+    roles: ['teacher'],
   },
   {
     path: '/teacher/content',
     component: TeacherContentPage,
     fallback: LoadingFallbacks.page,
-    roles: ['teacher']
+    roles: ['teacher'],
   },
 
   // Parent Routes
@@ -165,19 +171,19 @@ export const routes: RouteConfig[] = [
     component: ParentDashboard,
     fallback: LoadingFallbacks.dashboard,
     preload: true,
-    roles: ['parent']
+    roles: ['parent'],
   },
   {
     path: '/parent/reports',
     component: ParentReportsPage,
     fallback: LoadingFallbacks.page,
-    roles: ['parent']
+    roles: ['parent'],
   },
   {
     path: '/parent/notifications',
     component: ParentNotificationsPage,
     fallback: LoadingFallbacks.page,
-    roles: ['parent']
+    roles: ['parent'],
   },
 
   // Admin Routes
@@ -186,37 +192,37 @@ export const routes: RouteConfig[] = [
     component: AdminDashboard,
     fallback: LoadingFallbacks.dashboard,
     preload: true,
-    roles: ['admin']
+    roles: ['admin'],
   },
   {
     path: '/admin/users',
     component: AdminUsersPage,
     fallback: LoadingFallbacks.page,
-    roles: ['admin']
+    roles: ['admin'],
   },
   {
     path: '/admin/content',
     component: AdminContentPage,
     fallback: LoadingFallbacks.page,
-    roles: ['admin']
+    roles: ['admin'],
   },
   {
     path: '/admin/settings',
     component: AdminSettingsPage,
     fallback: LoadingFallbacks.page,
-    roles: ['admin']
+    roles: ['admin'],
   },
   {
     path: '/admin/ab-tests',
     component: ABTestResultsPage,
     fallback: LoadingFallbacks.page,
-    roles: ['admin']
+    roles: ['admin'],
   },
   {
     path: '/admin/token-optimization',
     component: TokenOptimizationDashboard,
     fallback: LoadingFallbacks.page,
-    roles: ['admin']
+    roles: ['admin'],
   },
 
   // Question Generation (admin/teacher)
@@ -224,8 +230,24 @@ export const routes: RouteConfig[] = [
     path: '/osym-generator',
     component: OSYMQuestionGeneratorPage,
     fallback: LoadingFallbacks.page,
-    roles: ['admin', 'teacher']
-  }
+    roles: ['admin', 'teacher'],
+  },
+
+  // Question Upload - YOLO Detection
+  {
+    path: '/question-upload',
+    component: QuestionUploadPage,
+    fallback: LoadingFallbacks.page,
+    roles: ['admin', 'teacher'],
+  },
+
+  // Sequential Thinking - AI Problem Solving
+  {
+    path: '/sequential-thinking',
+    component: SequentialThinkingPage,
+    fallback: LoadingFallbacks.page,
+    roles: ['student', 'teacher', 'admin'],
+  },
 ];
 
 /**
@@ -234,7 +256,7 @@ export const routes: RouteConfig[] = [
  */
 export function getRoutesByRole(userRole: string): RouteConfig[] {
   return routes.filter(route =>
-    !route.roles || route.roles.includes(userRole)
+    !route.roles || route.roles.includes(userRole),
   );
 }
 

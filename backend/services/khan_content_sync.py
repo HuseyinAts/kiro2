@@ -4,12 +4,11 @@ Task 98.2 & 98.3: Khan Academy Content & Progress Synchronization
 
 import logging
 from typing import List, Optional, Dict, Any
-from datetime import datetime, timedelta
+from datetime import datetime
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, and_
 
 from services.khan_academy_client import (
-    KhanAcademyClient,
     get_khan_client,
     KhanContentMetadata,
     KhanUserProgress,
@@ -42,7 +41,6 @@ class KhanContentSyncService:
 
         Fetches all Turkish content and stores locally
         """
-        from models.khan_content import KhanContent
 
         stats = {
             "total_fetched": 0,

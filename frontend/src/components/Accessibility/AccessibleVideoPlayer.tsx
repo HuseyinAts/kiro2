@@ -1,4 +1,5 @@
-import React, { useRef, useState, useEffect } from 'react';
+import * as React from 'react';
+import {  useRef, useState, useEffect  } from 'react';
 import './AccessibleVideoPlayer.css';
 
 interface Subtitle {
@@ -81,7 +82,7 @@ export const AccessibleVideoPlayer: React.FC<AccessibleVideoPlayerProps> = ({
   useEffect(() => {
     if (parsedSubtitles.length > 0 && showCaptions) {
       const current = parsedSubtitles.find(
-        sub => currentTime >= sub.startTime && currentTime <= sub.endTime
+        sub => currentTime >= sub.startTime && currentTime <= sub.endTime,
       );
       setCurrentSubtitle(current ? current.text : '');
     } else {
@@ -232,12 +233,12 @@ export const AccessibleVideoPlayer: React.FC<AccessibleVideoPlayerProps> = ({
       case 'arrowup':
         e.preventDefault();
         setVolume(prev => Math.min(1, prev + 0.1));
-        if (videoRef.current) videoRef.current.volume = Math.min(1, volume + 0.1);
+        if (videoRef.current) {videoRef.current.volume = Math.min(1, volume + 0.1);}
         break;
       case 'arrowdown':
         e.preventDefault();
         setVolume(prev => Math.max(0, prev - 0.1));
-        if (videoRef.current) videoRef.current.volume = Math.max(0, volume - 0.1);
+        if (videoRef.current) {videoRef.current.volume = Math.max(0, volume - 0.1);}
         break;
       case 'm':
         e.preventDefault();

@@ -21,7 +21,7 @@ async def test_import():
     try:
         conn = await asyncpg.connect(
             host="localhost",
-            port=5432,
+            port=5434,
             user="postgres",
             password="changeme_strong_password_here",
             database="turkiye_sinav_db",

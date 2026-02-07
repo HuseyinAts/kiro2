@@ -6,7 +6,6 @@ SECURITY FIX: Prevent brute force attacks on auth endpoints
 import time
 from collections import defaultdict
 from dataclasses import dataclass
-from datetime import datetime, timedelta
 from typing import Dict, Optional, Tuple
 
 from fastapi import HTTPException, Request, status
@@ -148,7 +147,7 @@ class AuthRateLimiter:
         is_blocked, remaining = self._is_blocked(identifier)
         if is_blocked:
             logger.warning(
-                f"Blocked authentication attempt",
+                "Blocked authentication attempt",
                 extra_data={
                     "identifier": identifier,
                     "endpoint": endpoint,
@@ -173,7 +172,7 @@ class AuthRateLimiter:
             self.blocked[identifier] = block_until
 
             logger.error(
-                f"Rate limit exceeded - blocking user",
+                "Rate limit exceeded - blocking user",
                 extra_data={
                     "identifier": identifier,
                     "endpoint": endpoint,
@@ -225,7 +224,7 @@ class AuthRateLimiter:
                 del self.blocked[identifier]
 
         logger.info(
-            f"Auth attempt recorded",
+            "Auth attempt recorded",
             extra_data={
                 "identifier": identifier,
                 "endpoint": endpoint,
@@ -281,7 +280,8 @@ class AuthRateLimitMiddleware(BaseHTTPMiddleware):
                     if "application/json" in content_type:
                         # For JSON, we'll check after processing
                         pass
-                except:
+                except (KeyError, AttributeError) as e:
+                    logger.debug(f"Content type check failed: {e}")
                     pass
 
             # Check rate limit BEFORE processing request

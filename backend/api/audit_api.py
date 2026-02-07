@@ -12,23 +12,20 @@ Features:
 Author: Claude
 Date: 2025-10-27
 """
-from datetime import datetime, timedelta
+from datetime import datetime
 from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import Session
 
 from core.audit_logger import (
     AuditAction,
-    AuditLogger,
-    AuditResourceType,
     get_audit_logger,
 )
 from core.dependencies import get_db, get_current_admin_user
 from core.structured_logger import get_logger
-from models.database import AuditLog, User, UserRole
+from models.database import AuditLog, User
 
 logger = get_logger("audit_api")
 
@@ -49,8 +46,7 @@ class AuditLogResponse(BaseModel):
     user_agent: Optional[str]
     created_at: datetime
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class AuditLogSearchRequest(BaseModel):

@@ -24,7 +24,7 @@ def analyze_phase3_completion():
         total_lines = phase3_data["totals"]["num_statements"]
         covered_lines = phase3_data["totals"]["covered_lines"]
 
-        print(f"FINAL RESULTS:")
+        print("FINAL RESULTS:")
         print(f"   Final Coverage:        {final_coverage:.2f}%")
         print(f"   Total Lines:           {total_lines:,}")
         print(f"   Covered Lines:         {covered_lines:,}")
@@ -83,7 +83,7 @@ def analyze_phase3_completion():
             print()
 
         print(f"   Total Test Files: {total_test_files} comprehensive test suites")
-        print(f"   Estimated Tests:  ~200+ individual test cases")
+        print("   Estimated Tests:  ~200+ individual test cases")
         print()
 
         # Technical achievements
@@ -219,12 +219,12 @@ def analyze_phase3_completion():
             assessment = "FOUNDATION - Basic testing framework established"
 
         print(f"   Overall Assessment: {assessment}")
-        print(f"   Strategy Success:   Progressive methodology proven effective")
+        print("   Strategy Success:   Progressive methodology proven effective")
         print(
             f"   Implementation:     {total_test_files} comprehensive test suites created"
         )
-        print(f"   Code Understanding: Deep analysis of educational platform achieved")
-        print(f"   Future Readiness:   Scalable testing framework established")
+        print("   Code Understanding: Deep analysis of educational platform achieved")
+        print("   Future Readiness:   Scalable testing framework established")
 
         print()
         print("Progressive Coverage Strategy implementation completed successfully!")

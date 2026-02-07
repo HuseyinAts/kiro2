@@ -1,0 +1,7 @@
+{
+  "name": "kiro2-lsp",
+  "version": "1.0.0",
+  "description": "KIRO2 YKS Platform - Python & TypeScript LSP Support",
+  "author": "KIRO2 Team",
+  "keywords": ["lsp", "python", "typescript", "pyright", "code-intelligence"]
+}

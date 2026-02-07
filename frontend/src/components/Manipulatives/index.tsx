@@ -2,12 +2,14 @@
  * Manipülatifler Ana Bileşeni - Task 87
  * Tüm manipülatif araçları bir arada
  */
-import React, { useState } from 'react';
-import VirtualBlocks from './VirtualBlocks';
+import * as React from 'react';
+import {  useState  } from 'react';
+
+import DigitalTangram from './DigitalTangram';
 import GeoGebraEmbed from './GeoGebraEmbed';
 import InteractiveGeometry from './InteractiveGeometry';
-import DigitalTangram from './DigitalTangram';
 import ManipulativesProgressDashboard from './ManipulativesProgressDashboard';
+import VirtualBlocks from './VirtualBlocks';
 
 type ManipulativeType = 'blocks' | 'geogebra' | 'geometry' | 'tangram' | 'progress';
 
@@ -19,7 +21,7 @@ const Manipulatives: React.FC = () => {
     { id: 'geogebra' as ManipulativeType, name: 'GeoGebra', icon: '📐', description: 'Dinamik matematik' },
     { id: 'geometry' as ManipulativeType, name: 'Geometri', icon: '📏', description: 'İnteraktif çizim araçları' },
     { id: 'tangram' as ManipulativeType, name: 'Tangram', icon: '🧩', description: 'Şekil bulmacası' },
-    { id: 'progress' as ManipulativeType, name: 'İlerleme', icon: '📊', description: 'İstatistikler ve rozetler' }
+    { id: 'progress' as ManipulativeType, name: 'İlerleme', icon: '📊', description: 'İstatistikler ve rozetler' },
   ];
 
   return (
@@ -75,7 +77,7 @@ const Manipulatives: React.FC = () => {
             </div>
             <div className="ml-3">
               <p className="text-sm text-yellow-700">
-                <strong>Diskalkuli Desteği:</strong> Bu araçlar, matematik öğrenme güçlüğü olan öğrenciler için özel olarak tasarlanmıştır. 
+                <strong>Diskalkuli Desteği:</strong> Bu araçlar, matematik öğrenme güçlüğü olan öğrenciler için özel olarak tasarlanmıştır.
                 Görsel ve interaktif öğrenme yöntemleriyle matematiksel kavramları daha kolay anlamanıza yardımcı olur.
               </p>
             </div>

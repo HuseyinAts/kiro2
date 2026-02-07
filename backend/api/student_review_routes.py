@@ -8,7 +8,7 @@ from typing import List, Optional, Dict, Any
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, Query
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.database import get_db
@@ -86,8 +86,7 @@ class ReviewResponse(BaseModel):
     view_count: int
     created_at: Any
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class ReviewStatisticsResponse(BaseModel):
@@ -104,8 +103,7 @@ class ReviewStatisticsResponse(BaseModel):
     category_averages: Optional[Dict[str, float]]
     top_tags: Optional[List[str]]
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 # ============================================================

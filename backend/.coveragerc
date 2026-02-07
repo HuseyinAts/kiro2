@@ -1,42 +1,62 @@
 [run]
 # Specific source directories for better performance
-source =
-    core
-    models
-    services
-    api
-    agents
-    algorithms
-    analytics
+source = api,services,core,algorithms,analytics,agents
+branch = true
 
+# Comprehensive omit list
 omit =
     */tests/*
     */test_*
-    */conftest.py
-    */__pycache__/*
+    *_test.py
     */venv/*
     */env/*
+    */.venv/*
+    */__pycache__/*
     */migrations/*
     */alembic/*
+    */static/*
+    */media/*
+    */uploads/*
+    */htmlcov/*
+    */scripts/*
     */site-packages/*
-    setup.py
-    analyze_*.py
-    count_*.py
-    *_test.py
     */node_modules/*
     */frontend/*
     */cache/*
     */config/*
+    setup.py
+    manage.py
+    conftest.py
+    run_*.py
+    test_*.py
+    *_demo.py
+    demo_*.py
+    verify_*.py
+    install_*.py
+    quick_*.py
+    ultra_*.py
+    minimal_*.py
+    simple_*.py
+    mock_*.py
+    analyze_*.py
+    count_*.py
+    _*.py
 
 [report]
 # Precision for coverage percentages
 precision = 2
 
 # Show missing lines
-show_missing = True
+show_missing = true
+
+# Skip empty files
+skip_empty = true
+
+# Skip covered files for cleaner output
+skip_covered = true
 
 # Sort by coverage percentage
-sort = Cover
+sort = cover
 
 # Exclude lines from coverage
 exclude_lines =
@@ -47,36 +67,40 @@ exclude_lines =
     def __repr__
     def __str__
 
+    # Don't complain if settings.DEBUG
+    if self.debug:
+    if settings.DEBUG
+
     # Don't complain if tests don't hit defensive assertion code
     raise AssertionError
     raise NotImplementedError
 
     # Don't complain if non-runnable code isn't run
+    if 0:
     if __name__ == .__main__.:
     if TYPE_CHECKING:
     if typing.TYPE_CHECKING:
 
+    # Don't complain about protocol methods
+    class .*\bProtocol\):
+
     # Don't complain about abstract methods
     @abstractmethod
     @abc.abstractmethod
+    @(abc\.)?abstractmethod
 
     # Don't complain about overload signatures
     @overload
     @typing.overload
 
-    # Don't complain about protocol methods
-    \.\.\.
-    # Only exclude pass in abstract methods, not all pass statements
-    @abstractmethod\s*\n\s*def.*:\s*pass
-
-    # Don't complain about type stubs
-    \.\.\. # pragma: no cover
+    # NOTE: 'pass' and '...' intentionally NOT excluded.
+    # Excluding them artificially inflates coverage by hiding empty stubs.
 
 # Show errors for debugging
-ignore_errors = False
+ignore_errors = false
 
 # Fail under threshold - CI/CD will fail if coverage drops below this
-fail_under = 18.0
+fail_under = 60.0
 
 [html]
 directory = htmlcov
@@ -84,5 +108,41 @@ title = Türkiye Üniversite Sınavları Platform - Test Coverage Report
 
 [json]
 output = coverage.json
-pretty_print = True
-show_contexts = True
+pretty_print = true
+show_contexts = true
+
+# ============================================================================
+# MODULE-BASED COVERAGE RULES (Task #30)
+# ============================================================================
+# Different modules have different coverage requirements.
+# These are enforced via CI/CD pipeline validation.
+#
+# CRITICAL (90%+) - Security-sensitive code:
+#   - core/auth*.py
+#   - core/jwt_auth.py
+#   - core/security*.py
+#   - core/data_encryption.py
+#   - core/kvkk_compliance.py
+#
+# HIGH (85%+) - Core algorithms:
+#   - algorithms/irt_model.py
+#   - algorithms/fsrs*.py
+#   - algorithms/turkish_*.py
+#   - services/sinav_motoru_service.py
+#
+# STANDARD (80%+) - Business logic:
+#   - services/* (except external integrations)
+#   - core/config.py
+#   - core/database.py
+#
+# MODERATE (75%+) - API endpoints:
+#   - api/*
+#
+# BASIC (70%+) - Data models:
+#   - models/*
+#
+# INTEGRATION (60%+) - External integrations:
+#   - services/*_client.py
+#   - services/*_sync.py
+#   - integrations/*
+# ============================================================================

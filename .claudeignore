@@ -1,0 +1,63 @@
+# Claude Code Ignore File
+# Bu dizinler aramalarda otomatik hariç tutulur
+
+# Node.js
+node_modules/
+.npm/
+.yarn/
+
+# Python
+venv/
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+.eggs/
+dist/
+build/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+htmlcov/
+
+# Git
+.git/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Build outputs
+*.min.js
+*.min.css
+*.bundle.js
+*.chunk.js
+
+# Logs
+*.log
+logs/
+
+# Temp
+tmp/
+temp/
+.temp/
+.tmp/
+
+# Coverage
+coverage/
+.coverage
+.nyc_output/
+
+# Dependencies lock files (büyük dosyalar)
+package-lock.json
+yarn.lock
+poetry.lock
+
+# Large data files
+*.csv
+*.xlsx
+*.sqlite
+*.db

@@ -3,14 +3,15 @@
  * Tests for virtual blocks drag-and-drop manipulative
  */
 
-import React from 'react';
+import * as React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import axios from 'axios';
 import VirtualBlocks from '../VirtualBlocks';
+import { vi, Mocked } from 'vitest';
 
 vi.mock('axios');
-const mockedAxios = axios as jest.Mocked<typeof axios>;
+const mockedAxios = axios as Mocked<typeof axios>;
 
 // Mock canvas context
 const mockContext = {
@@ -31,10 +32,10 @@ const mockContext = {
   scale: vi.fn(),
   font: '',
   fillText: vi.fn(),
-  measureText: jest.fn(() => ({ width: 0 })),
+  measureText: vi.fn(() => ({ width: 0 })),
 };
 
-HTMLCanvasElement.prototype.getContext = jest.fn(() => mockContext) as any;
+HTMLCanvasElement.prototype.getContext = vi.fn(() => mockContext) as any;
 
 describe('VirtualBlocks Component', () => {
   const mockOnOperationComplete = vi.fn();

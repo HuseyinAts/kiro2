@@ -1,0 +1,191 @@
+======================================================================
+  CEVAP ANAHTARI OCR - DETAYLI DEBUG
+======================================================================
+
+EasyOCR yükleniyor...
+EasyOCR hazır!
+
+
+────────────────────────────────────────────────────────────
+📚 2019-2020-Acil Matematiğin ilacı-1
+────────────────────────────────────────────────────────────
+
+  📄 sayfa_0005_cevap_0.png
+     Boyut: 183x64 px
+     OCR: 'İÇİNDeKİLER'
+     Pattern1 (1.A): []
+     Pattern2 (harfler): []
+     Pattern3 (tablo): []
+
+  📄 sayfa_0009_cevap_0.png
+     Boyut: 142x49 px
+     OCR: 'YANINDA BULUNSUN'
+     Pattern1 (1.A): []
+     Pattern2 (harfler): []
+     Pattern3 (tablo): []
+
+  📄 sayfa_0010_cevap_0.png
+     Boyut: 162x54 px
+     OCR: 'SAYI KÜMELERİ'
+     Pattern1 (1.A): []
+     Pattern2 (harfler): []
+     Pattern3 (tablo): []
+
+────────────────────────────────────────────────────────────
+📚 2019-2020-Acil-Matematiğin ilacı Tyt Matematik Sor
+────────────────────────────────────────────────────────────
+
+  📄 sayfa_0003_cevap_0.png
+     Boyut: 187x59 px
+     OCR: 'İçİNDeKİLER'
+     Pattern1 (1.A): []
+     Pattern2 (harfler): []
+     Pattern3 (tablo): []
+
+  📄 sayfa_0003_cevap_1.png
+     Boyut: 109x55 px
+     OCR: 'BÖLÜM'
+     Pattern1 (1.A): []
+     Pattern2 (harfler): []
+     Pattern3 (tablo): []
+
+  📄 sayfa_0006_cevap_0.png
+     Boyut: 298x56 px
+     OCR: 'TAM SAYILAR HARFLI ifADeler'
+     Pattern1 (1.A): []
+     Pattern2 (harfler): []
+     Pattern3 (tablo): []
+
+────────────────────────────────────────────────────────────
+📚 2019-2020-ACİL-AYT-Matematik Soru Bankası
+────────────────────────────────────────────────────────────
+
+  📄 sayfa_0004_cevap_0.png
+     Boyut: 175x54 px
+     OCR: 'içİNDeKİLER'
+     Pattern1 (1.A): []
+     Pattern2 (harfler): []
+     Pattern3 (tablo): []
+
+  📄 sayfa_0008_cevap_0.png
+     Boyut: 130x55 px
+     OCR: '10LA BASLA'
+     Pattern1 (1.A): []
+     Pattern2 (harfler): []
+     Pattern3 (tablo): []
+
+  📄 sayfa_0009_cevap_0.png
+     Boyut: 130x51 px
+     OCR: '1OLA BASLA'
+     Pattern1 (1.A): []
+     Pattern2 (harfler): []
+     Pattern3 (tablo): []
+
+────────────────────────────────────────────────────────────
+📚 2019-2020-ACİL-TYT-Soru Bankası
+────────────────────────────────────────────────────────────
+
+  📄 sayfa_0003_cevap_0.png
+     Boyut: 171x55 px
+     OCR: 'İÇİNDeKİLER'
+     Pattern1 (1.A): []
+     Pattern2 (harfler): []
+     Pattern3 (tablo): []
+
+  📄 sayfa_0003_cevap_1.png
+     Boyut: 269x51 px
+     OCR: 'BÖLOM YENİ NESİL İŞLEM YETENEĞİ Neguelern Yeleneni YJn'
+     Pattern1 (1.A): []
+     Pattern2 (harfler): []
+     Pattern3 (tablo): []
+
+  📄 sayfa_0003_cevap_2.png
+     Boyut: 332x53 px
+     OCR: 'B@LÜM 9: BİRİNCİ DERECEDEN DENKLEMLER Birirci Dereceden Denkiemiier'
+     Pattern1 (1.A): []
+     Pattern2 (harfler): ['B']
+     Pattern3 (tablo): []
+
+────────────────────────────────────────────────────────────
+📚 2019-2020-Apotemi-Tyt Matematik Soru Bankası
+────────────────────────────────────────────────────────────
+
+  📄 sayfa_0002_cevap_0.png
+     Boyut: 209x80 px
+     OCR: 'İÇİNDEKİLER'
+     Pattern1 (1.A): []
+     Pattern2 (harfler): []
+     Pattern3 (tablo): []
+
+  📄 sayfa_0003_cevap_0.png
+     Boyut: 213x68 px
+     OCR: 'ISTİKLAL MARŞI'
+     Pattern1 (1.A): []
+     Pattern2 (harfler): []
+     Pattern3 (tablo): []
+
+  📄 sayfa_0006_cevap_0.png
+     Boyut: 184x59 px
+     OCR: 'Kitaptaki Bölümler'
+     Pattern1 (1.A): []
+     Pattern2 (harfler): []
+     Pattern3 (tablo): []
+
+────────────────────────────────────────────────────────────
+📚 2020-2021-Acil-Problemlerin ilacı
+────────────────────────────────────────────────────────────
+
+  📄 sayfa_0003_cevap_0.png
+     Boyut: 244x85 px
+     OCR: 'İÇİNDeKİLER'
+     Pattern1 (1.A): []
+     Pattern2 (harfler): []
+     Pattern3 (tablo): []
+
+  📄 sayfa_0006_cevap_0.png
+     Boyut: 165x56 px
+     OCR: 'ORAN ORANTI'
+     Pattern1 (1.A): []
+     Pattern2 (harfler): []
+     Pattern3 (tablo): []
+
+  📄 sayfa_0007_cevap_0.png
+     Boyut: 170x57 px
+     OCR: 'ORAN ORANTI'
+     Pattern1 (1.A): []
+     Pattern2 (harfler): []
+     Pattern3 (tablo): []
+
+────────────────────────────────────────────────────────────
+📚 2020-2021-Acil-Tyt Ayt Geometrinin ilacı Soru Bank
+────────────────────────────────────────────────────────────
+
+  📄 sayfa_0001_cevap_0.png
+     Boyut: 179x54 px
+     OCR: 'İçİNDeKİLER'
+     Pattern1 (1.A): []
+     Pattern2 (harfler): []
+     Pattern3 (tablo): []
+
+  📄 sayfa_0001_cevap_1.png
+     Boyut: 177x56 px
+     OCR: 'BÖLÜM ÜÇGEN Ernpi Ss'
+     Pattern1 (1.A): []
+     Pattern2 (harfler): []
+     Pattern3 (tablo): []
+
+  📄 sayfa_0003_cevap_0.png
+     Boyut: 197x57 px
+     OCR: 'DOĞRUDA AÇILAR'
+     Pattern1 (1.A): []
+     Pattern2 (harfler): []
+     Pattern3 (tablo): []
+
+======================================================================
+  ÖZET
+======================================================================
+
+  Test edilen crop: 21
+  Metin bulunan: 21
+  Cevap bulunan: 0
+  Başarı oranı: 0.0%

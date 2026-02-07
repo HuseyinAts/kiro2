@@ -3,7 +3,8 @@
  * Browse and filter EBA videos by subject, grade level, topic
  */
 
-import React, { useState, useEffect } from 'react';
+import * as React from 'react';
+import {  useState, useEffect  } from 'react';
 import './EBAVideoBrowser.css';
 
 export interface EBAVideo {
@@ -26,7 +27,7 @@ export interface EBAVideoBrowserProps {
 
 export const EBAVideoBrowser: React.FC<EBAVideoBrowserProps> = ({
   apiBaseUrl = '/api/v1/eba',
-  onVideoSelect
+  onVideoSelect,
 }) => {
   // State
   const [videos, setVideos] = useState<EBAVideo[]>([]);
@@ -40,7 +41,7 @@ export const EBAVideoBrowser: React.FC<EBAVideoBrowserProps> = ({
   const [page, setPage] = useState<number>(1);
 
   // Taxonomy
-  const [taxonomy, setTaxonomy] = useState<Record<string, string[]>>({});
+  const [_taxonomy, setTaxonomy] = useState<Record<string, string[]>>({});
 
   // Fetch taxonomy on mount
   useEffect(() => {
@@ -55,7 +56,7 @@ export const EBAVideoBrowser: React.FC<EBAVideoBrowserProps> = ({
   const fetchTaxonomy = async () => {
     try {
       const response = await fetch(`${apiBaseUrl}/taxonomy/subjects`);
-      if (!response.ok) throw new Error('Failed to fetch taxonomy');
+      if (!response.ok) {throw new Error('Failed to fetch taxonomy');}
 
       const data = await response.json();
       setTaxonomy(data);
@@ -71,15 +72,15 @@ export const EBAVideoBrowser: React.FC<EBAVideoBrowserProps> = ({
     try {
       const params = new URLSearchParams();
 
-      if (selectedSubject) params.append('subject', selectedSubject);
-      if (selectedGrade) params.append('grade_level', selectedGrade);
-      if (searchQuery) params.append('search', searchQuery);
+      if (selectedSubject) {params.append('subject', selectedSubject);}
+      if (selectedGrade) {params.append('grade_level', selectedGrade);}
+      if (searchQuery) {params.append('search', searchQuery);}
       params.append('page', page.toString());
       params.append('page_size', '20');
 
       const response = await fetch(`${apiBaseUrl}/videos?${params}`);
 
-      if (!response.ok) throw new Error('Failed to fetch videos');
+      if (!response.ok) {throw new Error('Failed to fetch videos');}
 
       const data = await response.json();
       setVideos(data);
@@ -106,7 +107,7 @@ export const EBAVideoBrowser: React.FC<EBAVideoBrowserProps> = ({
       'biyoloji': 'Biyoloji',
       'turkce': 'Türkçe',
       'tarih': 'Tarih',
-      'cografya': 'Coğrafya'
+      'cografya': 'Coğrafya',
     };
     return subjectNames[subject] || subject;
   };
@@ -120,7 +121,7 @@ export const EBAVideoBrowser: React.FC<EBAVideoBrowserProps> = ({
       'lise_9': '9. Sınıf',
       'lise_10': '10. Sınıf',
       'lise_11': '11. Sınıf',
-      'lise_12': '12. Sınıf'
+      'lise_12': '12. Sınıf',
     };
     return gradeNames[grade] || grade;
   };
@@ -258,7 +259,7 @@ export const EBAVideoBrowser: React.FC<EBAVideoBrowserProps> = ({
                 role="button"
                 tabIndex={0}
                 onKeyPress={(e) => {
-                  if (e.key === 'Enter') onVideoSelect?.(video);
+                  if (e.key === 'Enter') {onVideoSelect?.(video);}
                 }}
               >
                 <div className="video-thumbnail">

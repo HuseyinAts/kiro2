@@ -3,11 +3,12 @@
  * Glassmorphism ile sınav yönetimi
  */
 
-import React from 'react'
-import { ModernTeacherExamsPage } from './ModernTeacherExamsPage'
+import * as React from 'react';
+
+import { ModernTeacherExamsPage } from './ModernTeacherExamsPage';
 
 export const TeacherExamsPage: React.FC = () => {
-  return <ModernTeacherExamsPage />
-}
+  return <ModernTeacherExamsPage />;
+};
 
-export default TeacherExamsPage
+export default TeacherExamsPage;

@@ -8,7 +8,6 @@ Methods:
 3. progressive - Fine-tuned if available, else few-shot (future)
 """
 
-from typing import Optional
 from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel, Field
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -169,7 +168,7 @@ async def generate_hybrid_question(
         # Generate based on method
         if request.method == "osym_guided":
             logger.info(
-                f"Generating ÖSYM-guided question",
+                "Generating ÖSYM-guided question",
                 user_id=current_user.id,
                 subject=request.subject,
                 topic=request.topic,
@@ -187,7 +186,7 @@ async def generate_hybrid_question(
 
         elif request.method == "ensemble":
             logger.info(
-                f"Generating ensemble question",
+                "Generating ensemble question",
                 user_id=current_user.id,
                 subject=request.subject,
             )
@@ -201,7 +200,7 @@ async def generate_hybrid_question(
 
         elif request.method == "progressive":
             logger.info(
-                f"Generating progressive question",
+                "Generating progressive question",
                 user_id=current_user.id,
                 subject=request.subject,
             )
@@ -397,7 +396,7 @@ async def generate_bulk_hybrid_questions(
         )
 
         logger.info(
-            f"Bulk generation complete",
+            "Bulk generation complete",
             user_id=current_user.id,
             total_questions=len(all_questions),
             avg_quality=avg_quality,

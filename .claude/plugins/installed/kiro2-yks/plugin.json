@@ -1,0 +1,65 @@
+{
+  "name": "kiro2-yks",
+  "version": "1.0.0",
+  "description": "YKS-specific tools and skills for KIRO2 educational platform",
+  "author": "KIRO2 Team",
+  "license": "MIT",
+
+  "main": "index.py",
+
+  "tools": [
+    {
+      "name": "irt-calculator",
+      "description": "Calculate IRT parameters and success probability",
+      "handler": "tools/irt_calculator.py"
+    },
+    {
+      "name": "zpd-analyzer",
+      "description": "Analyze ZPD zone for question selection",
+      "handler": "tools/zpd_analyzer.py"
+    },
+    {
+      "name": "fsrs-scheduler",
+      "description": "Schedule spaced repetition reviews",
+      "handler": "tools/fsrs_scheduler.py"
+    }
+  ],
+
+  "skills": [
+    {
+      "name": "yks-question-format",
+      "description": "YKS question format validation and generation",
+      "file": "skills/yks-format.md"
+    }
+  ],
+
+  "hooks": [
+    {
+      "event": "PostToolUse",
+      "matcher": "Edit|Write",
+      "handler": "hooks/question-validation.py",
+      "description": "Validate IRT parameters after question edit"
+    }
+  ],
+
+  "dependencies": {
+    "numpy": ">=1.24.0",
+    "scipy": ">=1.10.0"
+  },
+
+  "config": {
+    "irt": {
+      "difficulty_range": [-4.0, 4.0],
+      "discrimination_range": [0.2, 4.0],
+      "guessing_range": [0.0, 0.35]
+    },
+    "zpd": {
+      "optimal_min": 0.15,
+      "optimal_max": 0.85
+    },
+    "fsrs": {
+      "stability_range": [0.1, 3650],
+      "difficulty_range": [0.0, 10.0]
+    }
+  }
+}

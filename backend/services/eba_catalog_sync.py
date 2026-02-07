@@ -7,17 +7,16 @@ import logging
 from typing import List, Optional, Dict, Any
 from datetime import datetime, timedelta
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, and_, or_
+from sqlalchemy import select
 
 from services.eba_tv_client import (
-    EBATVClient,
     get_eba_client,
     EBAVideoMetadata,
     EBAGradeLevel,
     EBASubject,
     EBACatalogFilter,
 )
-from models.database import EBAVideo, User
+from models.database import EBAVideo
 
 logger = logging.getLogger(__name__)
 
@@ -56,7 +55,7 @@ class EBACatalogSyncService:
         if grade_levels is None:
             grade_levels = list(EBAGradeLevel)
 
-        logger.info(f"[EBA SYNC] Starting full catalog sync...")
+        logger.info("[EBA SYNC] Starting full catalog sync...")
         logger.info(
             f"[EBA SYNC] Subjects: {len(subjects)}, Grade levels: {len(grade_levels)}"
         )

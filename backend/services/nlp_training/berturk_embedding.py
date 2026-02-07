@@ -7,7 +7,7 @@ Requirements: REQ-48.21-48.24
 
 import logging
 import numpy as np
-from typing import List, Tuple, Optional, Dict, Any
+from typing import List, Tuple, Optional, Dict
 from dataclasses import dataclass
 import torch
 from transformers import AutoTokenizer, AutoModel

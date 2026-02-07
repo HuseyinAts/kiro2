@@ -1,0 +1,48 @@
+# Prometheus Configuration for Expert Agents
+# Task 18.3: Monitoring Dashboard
+# KIRO2 - Konu Bazli Subagent Sistemi
+
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  external_labels:
+    environment: 'production'
+    service: 'kiro2-expert-agents'
+
+# Alertmanager configuration (optional)
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets: []
+
+# Rule files for alerting (optional)
+rule_files:
+  # - "expert_agents_rules.yml"
+
+scrape_configs:
+  # Expert Agents Service
+  - job_name: 'expert-agents'
+    static_configs:
+      - targets: ['expert-agents-service:8006']
+    metrics_path: '/metrics'
+    scrape_interval: 10s
+    scrape_timeout: 5s
+
+  # Main KIRO2 Backend
+  - job_name: 'kiro2-backend'
+    static_configs:
+      - targets: ['localhost:8000']
+    metrics_path: '/metrics'
+    scrape_interval: 15s
+
+  # Redis Blackboard
+  - job_name: 'redis-blackboard'
+    static_configs:
+      - targets: ['redis-blackboard:6379']
+    scrape_interval: 30s
+
+  # Prometheus self-monitoring
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+    scrape_interval: 30s

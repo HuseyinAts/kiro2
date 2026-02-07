@@ -187,9 +187,9 @@ def main():
         print(f"  {test_name:30} {status}")
 
     print(f"\n{Colors.BOLD}Coverage Reports Generated:{Colors.ENDC}\n")
-    print(f"  • HTML Report:  htmlcov/index.html")
-    print(f"  • JSON Report:  coverage.json")
-    print(f"  • XML Reports:  junit-*.xml")
+    print("  • HTML Report:  htmlcov/index.html")
+    print("  • JSON Report:  coverage.json")
+    print("  • XML Reports:  junit-*.xml")
 
     print(f"\n{Colors.BOLD}View Coverage:{Colors.ENDC}\n")
     print(f"  Open: file:///{Path(__file__).parent.absolute()}/htmlcov/index.html")

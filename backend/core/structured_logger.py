@@ -6,7 +6,7 @@ Enhanced with structlog for better observability and performance monitoring
 import logging
 import os
 import sys
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any, Dict, Optional
 
 import structlog
@@ -87,9 +87,13 @@ def setup_structlog(
         structlog.processors.format_exc_info,
     ]
 
+    # Windows compatibility: disable colors on Windows to avoid [Errno 22]
+    import platform
+    is_windows = platform.system() == "Windows"
+
     if dev_mode:
-        # Development: Colored console output
-        processors.append(structlog.dev.ConsoleRenderer(colors=True))
+        # Development: Colored console output (disabled on Windows)
+        processors.append(structlog.dev.ConsoleRenderer(colors=not is_windows))
     else:
         # Production: JSON output
         if json_logs:
@@ -219,7 +223,7 @@ class StructuredLogger:
             "request_id": request_id,
             "endpoint": endpoint,
             "method": method,
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
         }
 
         if profile:
@@ -265,7 +269,7 @@ class StructuredLogger:
             "status": status,
             "response_time": response_time,
             "response_time_ms": response_time,
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
         }
 
         if cache_hit is not None:
@@ -315,7 +319,7 @@ class StructuredLogger:
             "error_type": error_type,
             "error_message": error_message,
             "context": context,
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
         }
 
         if request_id:
@@ -358,7 +362,7 @@ def log_exam_event(
         sinav_id=sinav_id,
         ogrenci_id=ogrenci_id,
         sinav_tipi=sinav_tipi,
-        timestamp=datetime.utcnow().isoformat(),
+        timestamp=datetime.now(timezone.utc).isoformat(),
         **kwargs,
     )
 
@@ -398,7 +402,7 @@ def log_api_request(
         endpoint=path,  # Alias for compatibility
         user_id=user_id,
         request_id=request_id,
-        timestamp=datetime.utcnow().isoformat(),
+        timestamp=datetime.now(timezone.utc).isoformat(),
         **kwargs,
     )
 
@@ -447,7 +451,7 @@ def log_api_response(
         "response_time": duration_ms,
         "response_time_ms": duration_ms,
         "duration_ms": duration_ms,
-        "timestamp": datetime.utcnow().isoformat(),
+        "timestamp": datetime.now(timezone.utc).isoformat(),
     }
 
     if request_id:
@@ -524,7 +528,7 @@ def log_error_with_context(
         "error_type": type(error).__name__,
         "error_message": str(error),
         "context": context,
-        "timestamp": datetime.utcnow().isoformat(),
+        "timestamp": datetime.now(timezone.utc).isoformat(),
     }
 
     if request_id:

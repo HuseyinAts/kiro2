@@ -4,7 +4,7 @@ Sınav sistemi veri modelleri
 from datetime import datetime
 from typing import Dict, List, Optional
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 from .enums import SinavDurumu, SinavTipi, ZorlukSeviyesi
 
@@ -15,7 +15,7 @@ class SinavSorusu(BaseModel):
     soru_id: str = Field(..., description="Benzersiz soru ID")
     soru_metni: str = Field(..., description="Soru metni")
     secenekler: List[str] = Field(
-        ..., min_items=4, max_items=5, description="Soru seçenekleri"
+        ..., min_length=4, max_length=5, description="Soru seçenekleri"
     )
     dogru_cevap: str = Field(..., description="Doğru cevap (A, B, C, D, E)")
     konu: str = Field(..., description="Soru konusu")
@@ -32,8 +32,7 @@ class SinavSorusu(BaseModel):
     guncelleme_tarihi: datetime = Field(default_factory=datetime.now)
     aktif: bool = Field(True, description="Soru aktif durumu")
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class SinavOturumu(BaseModel):
@@ -67,8 +66,7 @@ class SinavOturumu(BaseModel):
     olusturma_tarihi: datetime = Field(default_factory=datetime.now)
     son_guncelleme: datetime = Field(default_factory=datetime.now)
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class SinavCevabi(BaseModel):
@@ -80,8 +78,7 @@ class SinavCevabi(BaseModel):
     cevap_zamani: datetime = Field(default_factory=datetime.now)
     cevap_suresi: Optional[int] = Field(None, description="Cevaplama süresi (saniye)")
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class KonuPerformansi(BaseModel):
@@ -134,8 +131,7 @@ class SinavSonucu(BaseModel):
     analiz_tarihi: datetime = Field(default_factory=datetime.now)
     gecerli: bool = Field(True, description="Sonuç geçerliliği")
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class PerformansRaporu(BaseModel):
@@ -167,5 +163,4 @@ class PerformansRaporu(BaseModel):
     # Meta Veriler
     rapor_tarihi: datetime = Field(default_factory=datetime.now)
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)

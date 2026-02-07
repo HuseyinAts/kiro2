@@ -1,14 +1,15 @@
 /**
  * useOfflineMode - React hook for offline mode management
- * 
+ *
  * Bu hook, offline mode ve network detection'ı React component'lerinde
  * kullanmak için bir interface sağlar.
- * 
+ *
  * @module useOfflineMode
  * @requires Requirements: 5.19, 10.6, 10.7
  */
 
 import { useState, useEffect, useCallback, useRef } from 'react';
+
 import { NetworkDetector, NetworkState, getNetworkDetector } from '../services/NetworkDetector';
 import { OfflineModeManager, OfflineModeState, createOfflineModeManager } from '../services/OfflineModeManager';
 import { VideoLoadingManager } from '../services/VideoLoadingManager';
@@ -22,20 +23,20 @@ export interface UseOfflineModeReturn {
   isOnline: boolean;
   isOffline: boolean;
   isSlow: boolean;
-  
+
   // Offline mode state
   offlineModeState: OfflineModeState;
   showOfflineUI: boolean;
   offlineDuration: number | null;
   pendingRequestsCount: number;
   reconnectionInProgress: boolean;
-  
+
   // Actions
   checkConnection: () => Promise<boolean>;
   retryCancelledRequests: () => void;
   registerPendingRequest: (requestId: string) => void;
   unregisterPendingRequest: (requestId: string) => void;
-  
+
   // Managers (for advanced usage)
   networkDetector: NetworkDetector;
   offlineModeManager: OfflineModeManager;
@@ -53,10 +54,10 @@ export interface UseOfflineModeOptions {
 
 /**
  * useOfflineMode - React hook for offline mode management
- * 
+ *
  * @param options - Hook options
  * @returns UseOfflineModeReturn
- * 
+ *
  * @example
  * ```tsx
  * function MyComponent() {
@@ -68,7 +69,7 @@ export interface UseOfflineModeOptions {
  *     checkConnection,
  *     retryCancelledRequests,
  *   } = useOfflineMode();
- * 
+ *
  *   return (
  *     <div>
  *       {showOfflineUI && (
@@ -87,9 +88,9 @@ export interface UseOfflineModeOptions {
 export function useOfflineMode(options: UseOfflineModeOptions = {}): UseOfflineModeReturn {
   const {
     videoLoadingManager,
-    autoRetryOnReconnection = true,
-    maxReconnectionAttempts = 5,
-    reconnectionDelay = 2000,
+    autoRetryOnReconnection: _autoRetryOnReconnection = true,
+    maxReconnectionAttempts: _maxReconnectionAttempts = 5,
+    reconnectionDelay: _reconnectionDelay = 2000,
   } = options;
 
   // Create or get singleton instances
@@ -104,7 +105,7 @@ export function useOfflineMode(options: UseOfflineModeOptions = {}): UseOfflineM
   if (!offlineModeManagerRef.current) {
     offlineModeManagerRef.current = createOfflineModeManager(
       networkDetectorRef.current,
-      videoLoadingManager
+      videoLoadingManager,
     );
   }
 
@@ -170,20 +171,20 @@ export function useOfflineMode(options: UseOfflineModeOptions = {}): UseOfflineM
     isOnline,
     isOffline,
     isSlow,
-    
+
     // Offline mode state
     offlineModeState,
     showOfflineUI,
     offlineDuration,
     pendingRequestsCount,
     reconnectionInProgress,
-    
+
     // Actions
     checkConnection,
     retryCancelledRequests,
     registerPendingRequest,
     unregisterPendingRequest,
-    
+
     // Managers
     networkDetector,
     offlineModeManager,
@@ -192,14 +193,14 @@ export function useOfflineMode(options: UseOfflineModeOptions = {}): UseOfflineM
 
 /**
  * useNetworkStatus - Simplified hook for just network status
- * 
+ *
  * @returns Network status information
- * 
+ *
  * @example
  * ```tsx
  * function MyComponent() {
  *   const { isOnline, isSlow, status } = useNetworkStatus();
- * 
+ *
  *   return <div>Network: {status}</div>;
  * }
  * ```

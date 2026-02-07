@@ -1,6 +1,6 @@
 /**
  * WCAG 2.1 Level AA Otomatik Erişilebilirlik Validator
- * 
+ *
  * Bu bileşen sayfadaki erişilebilirlik sorunlarını tespit eder ve raporlar:
  * - Eksik alt metinler
  * - Yetersiz kontrast oranları
@@ -10,7 +10,16 @@
  * - Form erişilebilirliği
  */
 
-import React, { useEffect, useState, useCallback } from 'react';
+import {
+  Error,
+  Warning,
+  Info,
+  CheckCircle,
+  ExpandMore,
+  ExpandLess,
+  Refresh,
+  Accessibility,
+} from '@mui/icons-material';
 import {
   Box,
   Paper,
@@ -20,27 +29,15 @@ import {
   List,
   ListItem,
   ListItemIcon,
-  ListItemText,
   Chip,
   Button,
   Divider,
   Alert,
   LinearProgress,
   useTheme,
-  Tooltip,
 } from '@mui/material';
-import {
-  Error,
-  Warning,
-  Info,
-  CheckCircle,
-  ExpandMore,
-  ExpandLess,
-  Refresh,
-  Close,
-  BugReport,
-  Accessibility,
-} from '@mui/icons-material';
+import * as React from 'react';
+import {  useEffect, useState, useCallback  } from 'react';
 
 interface WCAGIssue {
   id: string;
@@ -55,16 +52,16 @@ interface WCAGIssue {
 interface WCAGValidatorProps {
   // Otomatik validasyon
   autoValidate?: boolean;
-  
+
   // Validasyon interval (ms)
   validationInterval?: number;
-  
+
   // Sadece development modda göster
   developmentOnly?: boolean;
-  
+
   // Pozisyon
   position?: 'bottom-right' | 'bottom-left' | 'top-right' | 'top-left';
-  
+
   // Callback
   onIssuesFound?: (issues: WCAGIssue[]) => void;
 }
@@ -84,32 +81,29 @@ const WCAGValidator: React.FC<WCAGValidatorProps> = ({
 
   // Development mode kontrolü
   const isDevelopment = process.env.NODE_ENV === 'development';
-  
-  if (developmentOnly && !isDevelopment) {
-    return null;
-  }
+  const shouldRender = !developmentOnly || isDevelopment;
 
   // Kontrast oranı hesaplama
   const calculateContrastRatio = (color1: string, color2: string): number => {
     const getLuminance = (color: string): number => {
       const rgb = color.match(/\d+/g);
-      if (!rgb || rgb.length < 3) return 0;
-      
+      if (!rgb || rgb.length < 3) {return 0;}
+
       const [r, g, b] = rgb.map(val => {
         const normalized = parseInt(val) / 255;
         return normalized <= 0.03928
           ? normalized / 12.92
           : Math.pow((normalized + 0.055) / 1.055, 2.4);
       });
-      
+
       return 0.2126 * r + 0.7152 * g + 0.0722 * b;
     };
-    
+
     const lum1 = getLuminance(color1);
     const lum2 = getLuminance(color2);
     const lighter = Math.max(lum1, lum2);
     const darker = Math.min(lum1, lum2);
-    
+
     return (lighter + 0.05) / (darker + 0.05);
   };
 
@@ -117,7 +111,7 @@ const WCAGValidator: React.FC<WCAGValidatorProps> = ({
   const validateImages = (): WCAGIssue[] => {
     const imageIssues: WCAGIssue[] = [];
     const images = document.querySelectorAll('img');
-    
+
     images.forEach((img, index) => {
       if (!img.alt && !img.getAttribute('aria-label')) {
         imageIssues.push({
@@ -131,18 +125,18 @@ const WCAGValidator: React.FC<WCAGValidatorProps> = ({
         });
       }
     });
-    
+
     return imageIssues;
   };
 
   const validateHeadings = (): WCAGIssue[] => {
     const headingIssues: WCAGIssue[] = [];
     const headings = document.querySelectorAll('h1, h2, h3, h4, h5, h6');
-    
+
     let previousLevel = 0;
     headings.forEach((heading, index) => {
       const level = parseInt(heading.tagName.substring(1));
-      
+
       if (level - previousLevel > 1) {
         headingIssues.push({
           id: `heading-hierarchy-${index}`,
@@ -154,10 +148,10 @@ const WCAGValidator: React.FC<WCAGValidatorProps> = ({
           wcagCriterion: 'WCAG 1.3.1 (Level A)',
         });
       }
-      
+
       previousLevel = level;
     });
-    
+
     // H1 kontrolü
     const h1Count = document.querySelectorAll('h1').length;
     if (h1Count === 0) {
@@ -179,14 +173,14 @@ const WCAGValidator: React.FC<WCAGValidatorProps> = ({
         wcagCriterion: 'WCAG 1.3.1 (Level A)',
       });
     }
-    
+
     return headingIssues;
   };
 
   const validateContrast = (): WCAGIssue[] => {
     const contrastIssues: WCAGIssue[] = [];
     const textElements = document.querySelectorAll('p, span, a, button, h1, h2, h3, h4, h5, h6, li, td, th');
-    
+
     textElements.forEach((element, index) => {
       const htmlElement = element as HTMLElement;
       const styles = window.getComputedStyle(htmlElement);
@@ -194,18 +188,18 @@ const WCAGValidator: React.FC<WCAGValidatorProps> = ({
       const backgroundColor = styles.backgroundColor;
       const fontSize = parseFloat(styles.fontSize);
       const fontWeight = styles.fontWeight;
-      
+
       // Şeffaf arka plan kontrolü
       if (backgroundColor === 'rgba(0, 0, 0, 0)' || backgroundColor === 'transparent') {
         return;
       }
-      
+
       const contrastRatio = calculateContrastRatio(color, backgroundColor);
-      
+
       // WCAG AA standartları
       const isLargeText = fontSize >= 18 || (fontSize >= 14 && parseInt(fontWeight) >= 700);
       const minContrast = isLargeText ? 3 : 4.5;
-      
+
       if (contrastRatio < minContrast) {
         contrastIssues.push({
           id: `contrast-${index}`,
@@ -213,25 +207,25 @@ const WCAGValidator: React.FC<WCAGValidatorProps> = ({
           guideline: 'Renk Kontrastı',
           description: `Yetersiz kontrast oranı: ${contrastRatio.toFixed(2)}:1 (minimum: ${minContrast}:1)`,
           element: htmlElement,
-          suggestion: `Metin ve arka plan arasındaki kontrast oranını artırın`,
+          suggestion: 'Metin ve arka plan arasındaki kontrast oranını artırın',
           wcagCriterion: 'WCAG 1.4.3 (Level AA)',
         });
       }
     });
-    
+
     return contrastIssues;
   };
 
   const validateForms = (): WCAGIssue[] => {
     const formIssues: WCAGIssue[] = [];
     const inputs = document.querySelectorAll('input, textarea, select');
-    
+
     inputs.forEach((input, index) => {
       const htmlInput = input as HTMLInputElement;
       const id = htmlInput.id;
       const ariaLabel = htmlInput.getAttribute('aria-label');
       const ariaLabelledBy = htmlInput.getAttribute('aria-labelledby');
-      
+
       // Label kontrolü
       if (!id || !document.querySelector(`label[for="${id}"]`)) {
         if (!ariaLabel && !ariaLabelledBy) {
@@ -246,7 +240,7 @@ const WCAGValidator: React.FC<WCAGValidatorProps> = ({
           });
         }
       }
-      
+
       // Required alan kontrolü
       if (htmlInput.required && !htmlInput.getAttribute('aria-required')) {
         formIssues.push({
@@ -260,18 +254,18 @@ const WCAGValidator: React.FC<WCAGValidatorProps> = ({
         });
       }
     });
-    
+
     return formIssues;
   };
 
   const validateKeyboardAccess = (): WCAGIssue[] => {
     const keyboardIssues: WCAGIssue[] = [];
     const interactiveElements = document.querySelectorAll('a, button, input, select, textarea, [onclick], [role="button"]');
-    
+
     interactiveElements.forEach((element, index) => {
       const htmlElement = element as HTMLElement;
       const tabIndex = htmlElement.tabIndex;
-      
+
       // Negatif tabindex kontrolü (skip links hariç)
       if (tabIndex < -1) {
         keyboardIssues.push({
@@ -284,7 +278,7 @@ const WCAGValidator: React.FC<WCAGValidatorProps> = ({
           wcagCriterion: 'WCAG 2.1.1 (Level A)',
         });
       }
-      
+
       // Onclick olan ama button/link olmayan elementler
       if (htmlElement.onclick && !['A', 'BUTTON', 'INPUT'].includes(htmlElement.tagName)) {
         if (!htmlElement.getAttribute('role') && tabIndex < 0) {
@@ -300,19 +294,19 @@ const WCAGValidator: React.FC<WCAGValidatorProps> = ({
         }
       }
     });
-    
+
     return keyboardIssues;
   };
 
   const validateARIA = (): WCAGIssue[] => {
     const ariaIssues: WCAGIssue[] = [];
-    
+
     // ARIA role kontrolü
     const elementsWithRole = document.querySelectorAll('[role]');
     elementsWithRole.forEach((element, index) => {
       const htmlElement = element as HTMLElement;
       const role = htmlElement.getAttribute('role');
-      
+
       // Geçersiz role değerleri
       const validRoles = [
         'alert', 'alertdialog', 'application', 'article', 'banner', 'button',
@@ -325,9 +319,9 @@ const WCAGValidator: React.FC<WCAGValidatorProps> = ({
         'radiogroup', 'region', 'row', 'rowgroup', 'rowheader', 'scrollbar',
         'search', 'searchbox', 'separator', 'slider', 'spinbutton', 'status',
         'switch', 'tab', 'table', 'tablist', 'tabpanel', 'term', 'textbox',
-        'timer', 'toolbar', 'tooltip', 'tree', 'treegrid', 'treeitem'
+        'timer', 'toolbar', 'tooltip', 'tree', 'treegrid', 'treeitem',
       ];
-      
+
       if (role && !validRoles.includes(role)) {
         ariaIssues.push({
           id: `aria-invalid-role-${index}`,
@@ -340,13 +334,13 @@ const WCAGValidator: React.FC<WCAGValidatorProps> = ({
         });
       }
     });
-    
+
     // aria-labelledby kontrolü
     const elementsWithLabelledBy = document.querySelectorAll('[aria-labelledby]');
     elementsWithLabelledBy.forEach((element, index) => {
       const htmlElement = element as HTMLElement;
       const labelledBy = htmlElement.getAttribute('aria-labelledby');
-      
+
       if (labelledBy) {
         const labelIds = labelledBy.split(' ');
         labelIds.forEach(labelId => {
@@ -364,13 +358,13 @@ const WCAGValidator: React.FC<WCAGValidatorProps> = ({
         });
       }
     });
-    
+
     return ariaIssues;
   };
 
   const validateLandmarks = (): WCAGIssue[] => {
     const landmarkIssues: WCAGIssue[] = [];
-    
+
     // Ana landmark kontrolü
     const mainLandmarks = document.querySelectorAll('main, [role="main"]');
     if (mainLandmarks.length === 0) {
@@ -392,7 +386,7 @@ const WCAGValidator: React.FC<WCAGValidatorProps> = ({
         wcagCriterion: 'WCAG 1.3.1 (Level A)',
       });
     }
-    
+
     // Navigation landmark kontrolü
     const navLandmarks = document.querySelectorAll('nav, [role="navigation"]');
     if (navLandmarks.length === 0) {
@@ -405,17 +399,17 @@ const WCAGValidator: React.FC<WCAGValidatorProps> = ({
         wcagCriterion: 'WCAG 1.3.1 (Level A)',
       });
     }
-    
+
     return landmarkIssues;
   };
 
   // Tüm validasyonları çalıştır
   const runValidation = useCallback(async () => {
     setIsValidating(true);
-    
+
     // Kısa bir gecikme ekle (DOM güncellemelerini bekle)
     await new Promise(resolve => setTimeout(resolve, 100));
-    
+
     const allIssues: WCAGIssue[] = [
       ...validateImages(),
       ...validateHeadings(),
@@ -425,10 +419,10 @@ const WCAGValidator: React.FC<WCAGValidatorProps> = ({
       ...validateARIA(),
       ...validateLandmarks(),
     ];
-    
+
     setIssues(allIssues);
     setIsValidating(false);
-    
+
     if (onIssuesFound) {
       onIssuesFound(allIssues);
     }
@@ -438,7 +432,7 @@ const WCAGValidator: React.FC<WCAGValidatorProps> = ({
   useEffect(() => {
     if (autoValidate) {
       runValidation();
-      
+
       const interval = setInterval(runValidation, validationInterval);
       return () => clearInterval(interval);
     }
@@ -490,7 +484,7 @@ const WCAGValidator: React.FC<WCAGValidatorProps> = ({
       maxWidth: 400,
       maxHeight: '80vh',
     };
-    
+
     switch (position) {
       case 'bottom-right':
         return { ...base, bottom: 16, right: 16 };
@@ -509,7 +503,7 @@ const WCAGValidator: React.FC<WCAGValidatorProps> = ({
       element.scrollIntoView({ behavior: 'smooth', block: 'center' });
       element.style.outline = '3px solid red';
       element.style.outlineOffset = '2px';
-      
+
       setTimeout(() => {
         element.style.outline = '';
         element.style.outlineOffset = '';
@@ -527,6 +521,11 @@ const WCAGValidator: React.FC<WCAGValidatorProps> = ({
     }
     setExpandedCategories(newExpanded);
   };
+
+  // Development mode check - render nothing if not in dev mode
+  if (!shouldRender) {
+    return null;
+  }
 
   return (
     <Paper
@@ -555,7 +554,7 @@ const WCAGValidator: React.FC<WCAGValidatorProps> = ({
           <Accessibility />
           <Typography variant="h6">WCAG Validator</Typography>
         </Box>
-        
+
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
           {errorCount > 0 && (
             <Chip
@@ -579,7 +578,7 @@ const WCAGValidator: React.FC<WCAGValidatorProps> = ({
               color="info"
             />
           )}
-          
+
           <IconButton
             size="small"
             onClick={(e) => {
@@ -610,7 +609,7 @@ const WCAGValidator: React.FC<WCAGValidatorProps> = ({
                 {issues.length} erişilebilirlik sorunu tespit edildi
               </Alert>
             )}
-            
+
             <Button
               fullWidth
               variant="outlined"
@@ -652,7 +651,7 @@ const WCAGValidator: React.FC<WCAGValidatorProps> = ({
                     color={getSeverityColor(categoryIssues[0].severity)}
                   />
                 </Box>
-                
+
                 <IconButton size="small">
                   {expandedCategories.has(category) ? <ExpandLess /> : <ExpandMore />}
                 </IconButton>
@@ -678,16 +677,16 @@ const WCAGValidator: React.FC<WCAGValidatorProps> = ({
                         <ListItemIcon sx={{ minWidth: 'auto', mt: 0.5 }}>
                           {getSeverityIcon(issue.severity)}
                         </ListItemIcon>
-                        
+
                         <Box sx={{ flex: 1 }}>
                           <Typography variant="body2" fontWeight="medium">
                             {issue.description}
                           </Typography>
-                          
+
                           <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 0.5 }}>
                             {issue.wcagCriterion}
                           </Typography>
-                          
+
                           <Typography variant="caption" sx={{ display: 'block', mt: 1, fontStyle: 'italic' }}>
                             💡 {issue.suggestion}
                           </Typography>

@@ -397,7 +397,7 @@ Examples:
         if args.output == "json":
             print(json.dumps(report, indent=2, ensure_ascii=False))
         else:
-            print(f"\\n[CHART] Test Results Summary:")
+            print("\\n[CHART] Test Results Summary:")
             print(f"Test Case: {report['test_case_name']}")
             print(f"Total Tests: {report['summary']['total']}")
             print(f"Passed: {report['summary']['passed']}")
@@ -405,7 +405,7 @@ Examples:
             print(f"Success Rate: {report['summary']['success_rate']}")
 
             if args.verbose:
-                print(f"\\n[MEMO] Detailed Results:")
+                print("\\n[MEMO] Detailed Results:")
                 for result in report["results"]:
                     status_emoji = (
                         "[CHECK]"
@@ -467,7 +467,7 @@ Examples:
 
         # Summary
         summary = report["summary"]
-        print(f"[CHART] Summary:")
+        print("[CHART] Summary:")
         print(f"  Total Sources: {summary['total_sources']}")
         print(f"  [CHECK] Passed: {summary['passed']}")
         print(f"  [X] Failed: {summary['failed']}")
@@ -475,24 +475,24 @@ Examples:
 
         # Response types
         if report["response_types"]:
-            print(f"\\n[CLIPBOARD] Response Types:")
+            print("\\n[CLIPBOARD] Response Types:")
             for response_type, count in report["response_types"].items():
                 print(f"  {response_type}: {count}")
 
         # Common errors
         if report["common_errors"]:
-            print(f"\\n[ALERT] Most Common Errors:")
+            print("\\n[ALERT] Most Common Errors:")
             for error_info in report["common_errors"][:5]:
                 print(f"  [{error_info['count']}x] {error_info['error']}")
 
         # Common warnings
         if report["common_warnings"] and args.verbose:
-            print(f"\\n⚠️ Most Common Warnings:")
+            print("\\n⚠️ Most Common Warnings:")
             for warning_info in report["common_warnings"][:5]:
                 print(f"  [{warning_info['count']}x] {warning_info['warning']}")
 
         # Detailed results
-        print(f"\\n[MEMO] Detailed Results:")
+        print("\\n[MEMO] Detailed Results:")
         for result in all_results:
             status_emoji = "[CHECK]" if result["validation_passed"] else "[X]"
             print(

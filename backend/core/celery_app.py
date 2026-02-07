@@ -27,6 +27,7 @@ celery_app = Celery(
         "tasks.report_tasks",
         "tasks.video_tasks",
         "tasks.bulk_tasks",
+        "tasks.claude_md_improvement_tasks",
     ],
 )
 
@@ -44,12 +45,16 @@ celery_app.conf.update(
         "tasks.report_tasks.*": {"queue": "reports"},
         "tasks.video_tasks.*": {"queue": "videos"},
         "tasks.bulk_tasks.*": {"queue": "bulk"},
+        "tasks.claude_md_improvement_tasks.*": {"queue": "claude_md"},
     },
     # Task queues with priorities
     task_queues=(
         Queue(
             "emails", Exchange("emails"), routing_key="email", priority=9
         ),  # High priority
+        Queue(
+            "claude_md", Exchange("claude_md"), routing_key="claude_md", priority=7
+        ),  # High-medium priority (CLAUDE.md self-improvement)
         Queue(
             "reports", Exchange("reports"), routing_key="report", priority=5
         ),  # Medium priority
@@ -102,6 +107,27 @@ celery_app.conf.update(
         "refresh-video-cache": {
             "task": "tasks.video_tasks.refresh_popular_video_cache",
             "schedule": crontab(minute=0, hour="*/6"),  # Every 6 hours
+        },
+        # CLAUDE.md Self-Improvement Tasks
+        "claude-md-collect-feedback-hourly": {
+            "task": "tasks.claude_md_improvement_tasks.collect_feedback_hourly",
+            "schedule": crontab(minute=0),  # Every hour
+        },
+        "claude-md-detect-patterns-daily": {
+            "task": "tasks.claude_md_improvement_tasks.detect_patterns_daily",
+            "schedule": crontab(hour=2, minute=0),  # Daily at 02:00
+        },
+        "claude-md-monitor-performance": {
+            "task": "tasks.claude_md_improvement_tasks.monitor_performance",
+            "schedule": 300.0,  # Every 5 minutes
+        },
+        "claude-md-detect-anomalies": {
+            "task": "tasks.claude_md_improvement_tasks.detect_anomalies",
+            "schedule": 900.0,  # Every 15 minutes
+        },
+        "claude-md-check-rule-evolution-weekly": {
+            "task": "tasks.claude_md_improvement_tasks.check_rule_evolution",
+            "schedule": crontab(hour=3, minute=0, day_of_week=1),  # Monday 03:00
         },
     },
 )

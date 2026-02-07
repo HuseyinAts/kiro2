@@ -2,7 +2,7 @@
  * Task 91: Gamification System - Frontend Tests
  * Tests for all gamification components and hooks
  */
-import React from 'react';
+import * as React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import axios from 'axios';
@@ -14,10 +14,11 @@ import { LevelDisplay } from '../components/Gamification/LevelDisplay';
 import { BadgeCollection } from '../components/Gamification/BadgeCollection';
 import { Leaderboard } from '../components/Gamification/Leaderboard';
 import { GamificationDashboard } from '../components/Gamification/GamificationDashboard';
+import { vi, Mocked } from 'vitest';
 
 // Mock axios
 vi.mock('axios');
-const mockedAxios = axios as jest.Mocked<typeof axios>;
+const mockedAxios = axios as Mocked<typeof axios>;
 
 // ============================================================================
 // Test Data

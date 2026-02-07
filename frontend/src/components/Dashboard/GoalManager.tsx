@@ -1,4 +1,14 @@
-import React, { useState, useEffect } from 'react'
+import {
+  Add,
+  Edit,
+  Delete,
+  Save,
+  Cancel,
+  Flag,
+  TrendingUp as _TrendingUp,
+  CheckCircle as _CheckCircle,
+  Schedule,
+} from '@mui/icons-material';
 import {
   Dialog,
   DialogTitle,
@@ -20,23 +30,13 @@ import {
   Alert,
   CircularProgress,
   Box,
-  Fab,
-  Divider
-} from '@mui/material'
-import {
-  Add,
-  Edit,
-  Delete,
-  Save,
-  Cancel,
-  Flag,
-  TrendingUp,
-  CheckCircle,
-  Schedule
-} from '@mui/icons-material'
-import { dateUtils } from '@/utils/dateUtils'
-import { Goal } from '../../types'
-import { getGoals, createGoal, updateGoal, deleteGoal } from '../../api'
+  Divider,
+} from '@mui/material';
+import { useState, useEffect } from 'react';
+
+import { getGoals, createGoal, updateGoal, deleteGoal } from '../../api';
+import { Goal } from '../../types';
+import { dateUtils } from '@/utils/dateUtils';
 
 interface GoalManagerProps {
   open: boolean
@@ -55,8 +55,8 @@ interface GoalFormData {
 const GOAL_TYPES = [
   { value: 'gunluk', label: 'Günlük', duration: 1 },
   { value: 'haftalik', label: 'Haftalık', duration: 7 },
-  { value: 'aylik', label: 'Aylık', duration: 30 }
-]
+  { value: 'aylik', label: 'Aylık', duration: 30 },
+];
 
 const GOAL_TEMPLATES = [
   {
@@ -64,38 +64,38 @@ const GOAL_TEMPLATES = [
     aciklama: 'Her gün belirli süre çalışmak',
     hedef_tipi: 'gunluk' as const,
     hedef_degeri: 120,
-    unit: 'dakika'
+    unit: 'dakika',
   },
   {
     baslik: 'Haftalık Deneme Sınavı',
     aciklama: 'Her hafta deneme sınavı çözmek',
     hedef_tipi: 'haftalik' as const,
     hedef_degeri: 3,
-    unit: 'sınav'
+    unit: 'sınav',
   },
   {
     baslik: 'Aylık Ders Tamamlama',
     aciklama: 'Ayda belirli sayıda ders tamamlamak',
     hedef_tipi: 'aylik' as const,
     hedef_degeri: 20,
-    unit: 'ders'
+    unit: 'ders',
   },
   {
     baslik: 'Sınav Ortalaması',
     aciklama: 'Sınavlarda belirli ortalama tutturmak',
     hedef_tipi: 'aylik' as const,
     hedef_degeri: 85,
-    unit: '%'
-  }
-]
+    unit: '%',
+  },
+];
 
 export function GoalManager({ open, onClose }: GoalManagerProps) {
-  const [goals, setGoals] = useState<Goal[]>([])
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-  const [showForm, setShowForm] = useState(false)
-  const [editingGoal, setEditingGoal] = useState<Goal | null>(null)
-  const [saving, setSaving] = useState(false)
+  const [goals, setGoals] = useState<Goal[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [showForm, setShowForm] = useState(false);
+  const [editingGoal, setEditingGoal] = useState<Goal | null>(null);
+  const [saving, setSaving] = useState(false);
 
   const [formData, setFormData] = useState<GoalFormData>({
     baslik: '',
@@ -103,111 +103,111 @@ export function GoalManager({ open, onClose }: GoalManagerProps) {
     hedef_tipi: 'gunluk',
     hedef_degeri: 120,
     baslangic_tarihi: new Date().toISOString().split('T')[0],
-    bitis_tarihi: dateUtils.addDays(new Date(), 30).toISOString().split('T')[0]
-  })
+    bitis_tarihi: dateUtils.addDays(new Date(), 30).toISOString().split('T')[0],
+  });
 
   useEffect(() => {
     if (open) {
-      loadGoals()
+      loadGoals();
     }
-  }, [open])
+  }, [open]);
 
   const loadGoals = async () => {
     try {
-      setLoading(true)
-      setError(null)
-      const goalsData = await getGoals(false) // Tüm hedefler
-      setGoals(goalsData)
+      setLoading(true);
+      setError(null);
+      const goalsData = await getGoals(false); // Tüm hedefler
+      setGoals(goalsData);
     } catch (err) {
-      console.error('Hedefler yüklenirken hata:', err)
-      setError('Hedefler yüklenirken bir hata oluştu')
+      console.error('Hedefler yüklenirken hata:', err);
+      setError('Hedefler yüklenirken bir hata oluştu');
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const handleCreateGoal = () => {
-    setEditingGoal(null)
+    setEditingGoal(null);
     setFormData({
       baslik: '',
       aciklama: '',
       hedef_tipi: 'gunluk',
       hedef_degeri: 120,
       baslangic_tarihi: new Date().toISOString().split('T')[0],
-      bitis_tarihi: dateUtils.addDays(new Date(), 30).toISOString().split('T')[0]
-    })
-    setShowForm(true)
-  }
+      bitis_tarihi: dateUtils.addDays(new Date(), 30).toISOString().split('T')[0],
+    });
+    setShowForm(true);
+  };
 
   const handleEditGoal = (goal: Goal) => {
-    setEditingGoal(goal)
+    setEditingGoal(goal);
     setFormData({
       baslik: goal.baslik,
       aciklama: goal.aciklama || '',
       hedef_tipi: goal.hedef_tipi as 'gunluk' | 'haftalik' | 'aylik',
       hedef_degeri: goal.hedef_degeri,
       baslangic_tarihi: goal.baslangic_tarihi.split('T')[0],
-      bitis_tarihi: goal.bitis_tarihi.split('T')[0]
-    })
-    setShowForm(true)
-  }
+      bitis_tarihi: goal.bitis_tarihi.split('T')[0],
+    });
+    setShowForm(true);
+  };
 
   const handleDeleteGoal = async (goalId: string) => {
     if (!confirm('Bu hedefi silmek istediğinizden emin misiniz?')) {
-      return
+      return;
     }
 
     try {
-      await deleteGoal(goalId)
-      setGoals(goals.filter(g => g.hedef_id !== goalId))
+      await deleteGoal(goalId);
+      setGoals(goals.filter(g => g.hedef_id !== goalId));
     } catch (err) {
-      console.error('Hedef silinirken hata:', err)
-      setError('Hedef silinirken bir hata oluştu')
+      console.error('Hedef silinirken hata:', err);
+      setError('Hedef silinirken bir hata oluştu');
     }
-  }
+  };
 
   const handleSaveGoal = async () => {
     try {
-      setSaving(true)
-      setError(null)
+      setSaving(true);
+      setError(null);
 
       if (editingGoal) {
         // Güncelleme
         const updatedGoal = await updateGoal(editingGoal.hedef_id, {
           ...editingGoal,
-          ...formData
-        })
-        setGoals(goals.map(g => g.hedef_id === editingGoal.hedef_id ? updatedGoal : g))
+          ...formData,
+        });
+        setGoals(goals.map(g => g.hedef_id === editingGoal.hedef_id ? updatedGoal : g));
       } else {
         // Yeni oluşturma
-        const newGoal = await createGoal(formData)
-        setGoals([...goals, newGoal])
+        const newGoal = await createGoal(formData);
+        setGoals([...goals, newGoal]);
       }
 
-      setShowForm(false)
-      setEditingGoal(null)
+      setShowForm(false);
+      setEditingGoal(null);
     } catch (err) {
-      console.error('Hedef kaydedilirken hata:', err)
-      setError('Hedef kaydedilirken bir hata oluştu')
+      console.error('Hedef kaydedilirken hata:', err);
+      setError('Hedef kaydedilirken bir hata oluştu');
     } finally {
-      setSaving(false)
+      setSaving(false);
     }
-  }
+  };
 
   const handleTemplateSelect = (template: typeof GOAL_TEMPLATES[0]) => {
-    const startDate = new Date()
-    let endDate: Date
+    const startDate = new Date();
+    let endDate: Date;
 
     switch (template.hedef_tipi) {
       case 'gunluk':
-        endDate = dateUtils.addDays(startDate, 30) // 30 günlük hedef
-        break
+        endDate = dateUtils.addDays(startDate, 30); // 30 günlük hedef
+        break;
       case 'haftalik':
-        endDate = dateUtils.addWeeks(startDate, 4) // 4 haftalık hedef
-        break
+        endDate = dateUtils.addWeeks(startDate, 4); // 4 haftalık hedef
+        break;
       case 'aylik':
-        endDate = dateUtils.addMonths(startDate, 3) // 3 aylık hedef
-        break
+        endDate = dateUtils.addMonths(startDate, 3); // 3 aylık hedef
+        break;
     }
 
     setFormData({
@@ -216,26 +216,26 @@ export function GoalManager({ open, onClose }: GoalManagerProps) {
       hedef_tipi: template.hedef_tipi,
       hedef_degeri: template.hedef_degeri,
       baslangic_tarihi: startDate.toISOString().split('T')[0],
-      bitis_tarihi: endDate.toISOString().split('T')[0]
-    })
-  }
+      bitis_tarihi: endDate.toISOString().split('T')[0],
+    });
+  };
 
   const getGoalStatusColor = (goal: Goal) => {
-    const progress = (goal.mevcut_deger / goal.hedef_degeri) * 100
-    if (goal.durum === 'tamamlandi') return 'success'
-    if (progress >= 80) return 'success'
-    if (progress >= 50) return 'warning'
-    return 'error'
-  }
+    const progress = (goal.mevcut_deger / goal.hedef_degeri) * 100;
+    if (goal.durum === 'tamamlandi') {return 'success';}
+    if (progress >= 80) {return 'success';}
+    if (progress >= 50) {return 'warning';}
+    return 'error';
+  };
 
   const getGoalIcon = (type: string) => {
     switch (type) {
-      case 'gunluk': return <Schedule />
-      case 'haftalik': return <Flag />
-      case 'aylik': return <Flag />
-      default: return <Flag />
+      case 'gunluk': return <Schedule />;
+      case 'haftalik': return <Flag />;
+      case 'aylik': return <Flag />;
+      default: return <Flag />;
     }
-  }
+  };
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="lg" fullWidth>
@@ -343,7 +343,7 @@ export function GoalManager({ open, onClose }: GoalManagerProps) {
                     Henüz hedef belirlemediniz
                   </Typography>
                   <Typography variant="body2" color="textSecondary" className="mb-4">
-                    İlk hedefinizi oluşturmak için "Yeni Hedef" butonuna tıklayın
+                    İlk hedefinizi oluşturmak için &quot;Yeni Hedef&quot; butonuna tıklayın
                   </Typography>
                   <Button
                     variant="contained"
@@ -378,7 +378,7 @@ export function GoalManager({ open, onClose }: GoalManagerProps) {
               <Grid container spacing={2}>
                 {GOAL_TEMPLATES.map((template, index) => (
                   <Grid item xs={12} sm={6} key={index}>
-                    <Card 
+                    <Card
                       className="cursor-pointer hover:bg-gray-50"
                       onClick={() => handleTemplateSelect(template)}
                     >
@@ -425,9 +425,9 @@ export function GoalManager({ open, onClose }: GoalManagerProps) {
                 <InputLabel>Hedef Türü</InputLabel>
                 <Select
                   value={formData.hedef_tipi}
-                  onChange={(e) => setFormData({ 
-                    ...formData, 
-                    hedef_tipi: e.target.value as 'gunluk' | 'haftalik' | 'aylik'
+                  onChange={(e) => setFormData({
+                    ...formData,
+                    hedef_tipi: e.target.value as 'gunluk' | 'haftalik' | 'aylik',
                   })}
                   label="Hedef Türü"
                 >
@@ -446,9 +446,9 @@ export function GoalManager({ open, onClose }: GoalManagerProps) {
                 type="number"
                 label="Hedef Değeri"
                 value={formData.hedef_degeri}
-                onChange={(e) => setFormData({ 
-                  ...formData, 
-                  hedef_degeri: parseFloat(e.target.value) 
+                onChange={(e) => setFormData({
+                  ...formData,
+                  hedef_degeri: parseFloat(e.target.value),
                 })}
                 required
               />
@@ -460,9 +460,9 @@ export function GoalManager({ open, onClose }: GoalManagerProps) {
                 type="date"
                 label="Başlangıç Tarihi"
                 value={formData.baslangic_tarihi}
-                onChange={(e) => setFormData({ 
-                  ...formData, 
-                  baslangic_tarihi: e.target.value 
+                onChange={(e) => setFormData({
+                  ...formData,
+                  baslangic_tarihi: e.target.value,
                 })}
                 InputLabelProps={{ shrink: true }}
                 required
@@ -475,9 +475,9 @@ export function GoalManager({ open, onClose }: GoalManagerProps) {
                 type="date"
                 label="Bitiş Tarihi"
                 value={formData.bitis_tarihi}
-                onChange={(e) => setFormData({ 
-                  ...formData, 
-                  bitis_tarihi: e.target.value 
+                onChange={(e) => setFormData({
+                  ...formData,
+                  bitis_tarihi: e.target.value,
                 })}
                 InputLabelProps={{ shrink: true }}
                 required
@@ -505,7 +505,7 @@ export function GoalManager({ open, onClose }: GoalManagerProps) {
         </DialogActions>
       </Dialog>
     </Dialog>
-  )
+  );
 }
 
-export default GoalManager
+export default GoalManager;

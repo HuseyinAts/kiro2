@@ -7,7 +7,7 @@ from datetime import datetime
 from enum import Enum
 from typing import Dict, List, Optional
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class SubjectType(str, Enum):
@@ -207,8 +207,7 @@ class CurriculumComplianceReport(BaseModel):
         default_factory=dict, description="Rapor dönemi"
     )
 
-    class Config:
-        json_encoders = {datetime: lambda v: v.isoformat()}
+    model_config = ConfigDict()
 
 
 class CurriculumUpdateRequest(BaseModel):

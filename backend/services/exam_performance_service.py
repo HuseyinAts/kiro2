@@ -241,7 +241,7 @@ class ExamPerformanceService:
                 )
 
                 logger.info(
-                    f"Performans analizi tamamlandı",
+                    "Performans analizi tamamlandı",
                     extra_data={
                         "exam_session_id": exam_session_id,
                         "student_id": exam_session.student_id,

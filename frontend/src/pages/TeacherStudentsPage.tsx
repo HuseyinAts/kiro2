@@ -3,11 +3,12 @@
  * Glassmorphism ile öğrenci yönetimi
  */
 
-import React from 'react'
-import { ModernTeacherStudentsPage } from './ModernTeacherStudentsPage'
+import * as React from 'react';
+
+import { ModernTeacherStudentsPage } from './ModernTeacherStudentsPage';
 
 export const TeacherStudentsPage: React.FC = () => {
-  return <ModernTeacherStudentsPage />
-}
+  return <ModernTeacherStudentsPage />;
+};
 
-export default TeacherStudentsPage
+export default TeacherStudentsPage;

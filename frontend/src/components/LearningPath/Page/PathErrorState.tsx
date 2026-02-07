@@ -5,9 +5,9 @@
  * Extracted from LearningPathPage.tsx
  */
 
-import React from 'react'
-import { Container, Alert, Button } from '@mui/material'
-import { Refresh } from '@mui/icons-material'
+import { Refresh } from '@mui/icons-material';
+import { Container, Alert, Button } from '@mui/material';
+import * as React from 'react';
 
 export interface PathErrorStateProps {
   error: string
@@ -29,7 +29,7 @@ export const PathErrorState: React.FC<PathErrorStateProps> = ({ error, onRetry }
         Tekrar Dene
       </Button>
     </Container>
-  )
-}
+  );
+};
 
-export default PathErrorState
+export default PathErrorState;

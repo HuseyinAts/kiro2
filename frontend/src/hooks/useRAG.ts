@@ -4,6 +4,7 @@
  */
 
 import { useState, useCallback } from 'react';
+
 import {
   searchDocuments,
   hybridSearch,
@@ -14,7 +15,7 @@ import {
   getRAGHealth,
   addEducationalContent,
   searchEducationalContent,
-  queryWithContext
+  queryWithContext,
 } from '../api';
 
 export interface RAGSearchResult {
@@ -58,7 +59,7 @@ export function useRAG() {
       k?: number;
       filter?: any;
       score_threshold?: number;
-    }
+    },
   ) => {
     setLoading(true);
     setError(null);
@@ -68,7 +69,7 @@ export function useRAG() {
         query,
         k: options?.k || 5,
         filter: options?.filter,
-        score_threshold: options?.score_threshold || 0.5
+        score_threshold: options?.score_threshold || 0.5,
       });
 
       setResults(response.results || []);
@@ -88,7 +89,7 @@ export function useRAG() {
     options?: {
       k?: number;
       alpha?: number; // 0=pure keyword, 1=pure semantic
-    }
+    },
   ) => {
     setLoading(true);
     setError(null);
@@ -97,7 +98,7 @@ export function useRAG() {
       const response = await hybridSearch({
         query,
         k: options?.k || 5,
-        alpha: options?.alpha || 0.5
+        alpha: options?.alpha || 0.5,
       });
 
       setResults(response.results || []);
@@ -117,7 +118,7 @@ export function useRAG() {
     options?: {
       k?: number;
       num_expansions?: number;
-    }
+    },
   ) => {
     setLoading(true);
     setError(null);
@@ -126,7 +127,7 @@ export function useRAG() {
       const response = await multiQuerySearch({
         query,
         k: options?.k || 5,
-        num_expansions: options?.num_expansions || 2
+        num_expansions: options?.num_expansions || 2,
       });
 
       setResults(response.results || []);
@@ -149,7 +150,7 @@ export function useRAG() {
       exam_type?: string;
       content_type?: string;
       k?: number;
-    }
+    },
   ) => {
     setLoading(true);
     setError(null);
@@ -161,7 +162,7 @@ export function useRAG() {
         grade: options?.grade,
         exam_type: options?.exam_type,
         content_type: options?.content_type,
-        k: options?.k || 5
+        k: options?.k || 5,
       });
 
       setResults(response.results || []);
@@ -181,7 +182,7 @@ export function useRAG() {
     options?: {
       context_size?: number;
       prompt_template?: string;
-    }
+    },
   ) => {
     setLoading(true);
     setError(null);
@@ -190,7 +191,7 @@ export function useRAG() {
       const response = await queryWithContext({
         query,
         context_size: options?.context_size || 3,
-        prompt_template: options?.prompt_template
+        prompt_template: options?.prompt_template,
       });
 
       return response;
@@ -206,7 +207,7 @@ export function useRAG() {
   // Index text document
   const indexText = useCallback(async (
     content: string,
-    metadata?: any
+    metadata?: any,
   ) => {
     setLoading(true);
     setError(null);
@@ -214,7 +215,7 @@ export function useRAG() {
     try {
       const response = await indexDocument({
         content,
-        metadata
+        metadata,
       });
 
       return response;
@@ -230,7 +231,7 @@ export function useRAG() {
   // Index file
   const indexFileDocument = useCallback(async (
     file: File,
-    metadata?: any
+    metadata?: any,
   ) => {
     setLoading(true);
     setError(null);
@@ -252,7 +253,7 @@ export function useRAG() {
   const addEducational = useCallback(async (
     content: string,
     contentType: string,
-    metadata?: any
+    metadata?: any,
   ) => {
     setLoading(true);
     setError(null);
@@ -261,7 +262,7 @@ export function useRAG() {
       const response = await addEducationalContent({
         content_type: contentType,
         content,
-        metadata
+        metadata,
       });
 
       return response;
@@ -345,7 +346,7 @@ export function useRAG() {
     fetchStats,
     checkHealth,
     clearResults,
-    clearError
+    clearError,
   };
 }
 

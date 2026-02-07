@@ -8,7 +8,6 @@ import os
 import sys
 import subprocess
 import argparse
-import time
 import webbrowser
 from pathlib import Path
 from datetime import datetime
@@ -401,7 +400,7 @@ Examples:
             success = report_file is not None
 
             if success:
-                print(f"\n✅ Coverage analysis completed!")
+                print("\n✅ Coverage analysis completed!")
                 print(f"📋 Report: {report_file}")
 
                 # Show quick summary

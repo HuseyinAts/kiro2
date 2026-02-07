@@ -16,7 +16,6 @@ from starlette.types import ASGIApp
 from core.advanced_rate_limiter import (
     AdvancedRateLimiter,
     UserTier,
-    RateLimitExceeded,
     get_rate_limiter
 )
 from core.structured_logger import get_logger

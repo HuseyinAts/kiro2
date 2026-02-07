@@ -18,7 +18,7 @@ from sqlalchemy import (
     JSON,
 )
 from sqlalchemy.orm import relationship
-from datetime import datetime
+from datetime import datetime, timezone
 import uuid
 
 from .base import Base
@@ -121,19 +121,18 @@ class UserAchievement(Base):
         Returns:
             bool: Başarı tamamlandı mı?
         """
-        self.progress_current = new_value
-        self.progress_percentage = (
-            min(int((new_value / self.progress_target) * 100), 100)
-            if self.progress_target > 0
-            else 0
-        )
+        self.progress_current = new_value  # type: ignore[assignment]
+        target = int(self.progress_target or 0)
+        percentage = int((new_value / target) * 100) if target > 0 else 0
+        self.progress_percentage = min(percentage, 100)  # type: ignore
 
-        if self.progress_current >= self.progress_target and not self.is_completed:
-            self.is_completed = True
-            self.completed_at = datetime.utcnow()
+        current = int(self.progress_current or 0)
+        if current >= target and not self.is_completed:
+            self.is_completed = True  # type: ignore[assignment]
+            self.completed_at = datetime.now(timezone.utc)  # type: ignore[assignment]
             return True
 
-        self.updated_at = datetime.utcnow()
+        self.updated_at = datetime.now(timezone.utc)  # type: ignore[assignment]
         return False
 
     def increment_progress(self, increment: int = 1) -> bool:
@@ -146,7 +145,8 @@ class UserAchievement(Base):
         Returns:
             bool: Başarı tamamlandı mı?
         """
-        return self.update_progress(self.progress_current + increment)
+        current = int(self.progress_current or 0)
+        return self.update_progress(current + increment)
 
     class Config:
         from_attributes = True

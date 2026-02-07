@@ -5,13 +5,14 @@
  * Extracted from LearningPathPage.tsx
  */
 
-import React from 'react'
-import { Paper, Box, Typography, Chip, CircularProgress } from '@mui/material'
-import { PathNodeData } from '../PathNode'
+import { Paper, Box, Typography, Chip, CircularProgress } from '@mui/material';
+import * as React from 'react';
+
 import {
   calculateModuleProgress,
-  getModuleTitle
-} from '../../../utils/learningPathHelpers'
+  getModuleTitle,
+} from '../../../utils/learningPathHelpers';
+import { PathNodeData } from '../PathNode';
 
 export interface ModuleProgressCardProps {
   moduleIndex: number
@@ -27,11 +28,11 @@ export interface ModuleProgressCardProps {
  */
 export const ModuleProgressCard = React.memo<ModuleProgressCardProps>(({
   moduleIndex,
-  moduleNodes
+  moduleNodes,
 }) => {
-  const completedInModule = moduleNodes.filter(n => n.status === 'completed').length
-  const moduleProgress = calculateModuleProgress(moduleNodes)
-  const moduleTitle = getModuleTitle(moduleIndex)
+  const completedInModule = moduleNodes.filter(n => n.status === 'completed').length;
+  const moduleProgress = calculateModuleProgress(moduleNodes);
+  const moduleTitle = getModuleTitle(moduleIndex);
 
   return (
     <Paper elevation={1} sx={{ p: 3, mb: 2 }}>
@@ -64,7 +65,7 @@ export const ModuleProgressCard = React.memo<ModuleProgressCardProps>(({
           backgroundColor: 'rgba(0,0,0,0.1)',
           borderRadius: 2,
           overflow: 'hidden',
-          mb: 2
+          mb: 2,
         }}
       >
         <Box
@@ -72,7 +73,7 @@ export const ModuleProgressCard = React.memo<ModuleProgressCardProps>(({
             width: `${moduleProgress}%`,
             height: '100%',
             backgroundColor: moduleProgress === 100 ? '#4caf50' : '#2196f3',
-            transition: 'width 0.5s ease'
+            transition: 'width 0.5s ease',
           }}
         />
       </Box>
@@ -96,7 +97,7 @@ export const ModuleProgressCard = React.memo<ModuleProgressCardProps>(({
                   ? 'success.light'
                   : node.status === 'current'
                   ? 'primary.light'
-                  : 'divider'
+                  : 'divider',
             }}
           >
             <Box className="flex items-center gap-2">
@@ -126,7 +127,7 @@ export const ModuleProgressCard = React.memo<ModuleProgressCardProps>(({
               {node.status === 'current' && (
                 <Chip label={`${node.progress}%`} size="small" color="primary" />
               )}
-              {node.resources > 0 && (
+              {(node.resources ?? 0) > 0 && (
                 <Chip
                   label={`${node.resources} Kaynak`}
                   size="small"
@@ -138,10 +139,10 @@ export const ModuleProgressCard = React.memo<ModuleProgressCardProps>(({
         ))}
       </Box>
     </Paper>
-  )
-})
+  );
+});
 
 // Display name for React DevTools
-ModuleProgressCard.displayName = 'ModuleProgressCard'
+ModuleProgressCard.displayName = 'ModuleProgressCard';
 
-export default ModuleProgressCard
+export default ModuleProgressCard;

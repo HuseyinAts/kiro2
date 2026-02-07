@@ -7,7 +7,7 @@ Date: 2025-10-19
 """
 
 import re
-from typing import Dict, List, Tuple, Optional
+from typing import Dict, List, Optional
 from dataclasses import dataclass
 import json
 from pathlib import Path

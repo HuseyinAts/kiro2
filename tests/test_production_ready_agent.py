@@ -9,6 +9,11 @@ import sys
 import os
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
+try:
+    from backend.agents.production_ready_agent import ProductionLearningAgent  # noqa: F401
+except ImportError:
+    pytest.skip("production_ready_agent dependencies not available", allow_module_level=True)
+
 
 @pytest.fixture
 def mock_content_provider():

@@ -4,7 +4,6 @@ Teknofest 2025 - Birleştirilmiş Veritabanı Modelleri
 """
 
 from datetime import datetime
-from typing import Optional, List, Dict, Any
 from enum import Enum
 
 from sqlalchemy import (
@@ -12,10 +11,8 @@ from sqlalchemy import (
     Integer,
     String,
     Float,
-    DateTime,
     Boolean,
     Text,
-    JSON,
     ForeignKey,
     Table,
     UniqueConstraint,

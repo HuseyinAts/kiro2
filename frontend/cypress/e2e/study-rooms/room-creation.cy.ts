@@ -90,12 +90,12 @@ describe('Study Room Creation Journey', () => {
       cy.request('POST', '/api/study-rooms', {
         name: 'Test Room 1',
         subject: 'Matematik',
-        visibility: 'public'
+        visibility: 'public',
       });
       cy.request('POST', '/api/study-rooms', {
         name: 'Test Room 2',
         subject: 'Fizik',
-        visibility: 'public'
+        visibility: 'public',
       });
     });
 
@@ -145,7 +145,7 @@ describe('Study Room Creation Journey', () => {
       cy.request('POST', '/api/study-rooms', {
         name: 'Protected Room',
         visibility: 'password',
-        password: 'test123'
+        password: 'test123',
       });
 
       cy.visit('/study-rooms');
@@ -166,7 +166,7 @@ describe('Study Room Creation Journey', () => {
       cy.request('POST', '/api/study-rooms', {
         name: 'Full Room',
         max_members: 1,
-        member_count: 1
+        member_count: 1,
       });
 
       cy.visit('/study-rooms');
@@ -212,7 +212,7 @@ describe('Study Room Creation Journey', () => {
       // Create room with active video
       cy.request('POST', '/api/study-rooms', {
         name: 'Video Room',
-        has_active_video: true
+        has_active_video: true,
       });
 
       cy.visit('/study-rooms');
@@ -225,7 +225,7 @@ describe('Study Room Creation Journey', () => {
       // Create room with unread messages
       cy.request('POST', '/api/study-rooms', {
         name: 'Chat Room',
-        unread_messages: 5
+        unread_messages: 5,
       });
 
       cy.visit('/study-rooms');

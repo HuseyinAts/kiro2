@@ -1,48 +1,66 @@
 """
-Learning Path Agent - Modular Implementation
+Learning Path Agent Module.
+
+This module provides a comprehensive learning path generation and management system.
+
+Main Entry Point:
+    LearningPathFacade - Unified interface for all learning path operations
+
+Services:
+    PathGenerationService - Creates personalized learning paths
+    ResourceDiscoveryService - Discovers educational resources
+    PathAdaptationService - Adapts paths based on performance
+
+Integrations:
+    ChatIntegrationService - Chat-based interactions
+    FormIntegrationService - Form handling
+
+Strategies:
+    YouTubeSearchStrategy - YouTube video search
+    KhanSearchStrategy - Khan Academy search
+    OERSearchStrategy - OER Commons search
+    RAGSearchStrategy - RAG/ChromaDB search
+
 Teknofest 2025 - Eğitim Eylemci Projesi
-
-Refactored from monolithic learning_path_agent.py (3278 lines)
-into modular, maintainable components.
-
-Main Components:
-- agent.py: Main orchestrator
-- models.py: Data models
-- core/: Core business logic (profiling, assessment, resources, path generation)
-- strategies/: Strategy pattern implementations (style, difficulty, time)
-- integrations/: External service integrations (YouTube, Khan, OER, chat, forms)
-- utils/: Utility functions (validators, formatters)
-
-Usage:
-    from backend.agents.learning_path import LearningPathAgent
-
-    agent = LearningPathAgent()
-    profile = await agent.analyze_student(student_id, data)
-    path = await agent.create_learning_path(student_id, goal)
 """
-
-# Public API will be defined when agent.py is created
-# For now, keep this module empty until main agent is implemented
 
 __version__ = "2.0.0"
 __author__ = "Teknofest 2025 Team"
 
 from .agent import LearningPathAgent
+from .facade import (
+    LearningPathFacade,
+    FacadeConfig,
+    get_learning_path_facade,
+)
 from .models import (
     StudentProfile,
     LearningResource,
     LearningPath,
     LearningPhase,
+    PathNode,
     LearningStyle,
     KnowledgeLevel,
 )
+from .config import LearningPathConfig, get_learning_path_config, config
 
 __all__ = [
+    # Legacy Agent (to be replaced)
     "LearningPathAgent",
+    # Facade (Main Entry)
+    "LearningPathFacade",
+    "FacadeConfig",
+    "get_learning_path_facade",
+    # Models
     "StudentProfile",
     "LearningResource",
     "LearningPath",
     "LearningPhase",
+    "PathNode",
     "LearningStyle",
     "KnowledgeLevel",
+    # Config
+    "LearningPathConfig",
+    "get_learning_path_config",
+    "config",
 ]

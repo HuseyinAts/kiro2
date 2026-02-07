@@ -5,6 +5,19 @@ Türkçe morfoloji faktörlü IRT analizi ve kalibrasyon sistemi
 Bu servis 4 Parametreli IRT modelini Türkçe morfolojik karmaşıklık
 faktörleri ile birleştirerek ÖSYM ve ETS standartlarını aşan
 soru analizi ve zorluk belirleme sistemi sunar.
+
+IRT SERVICE HIERARCHY (2025-01-24):
+Bu dosya ana IRT modeli implementasyonudur.
+
+Hiyerarsi:
+1. irt_service.py (BU DOSYA) - Core 4PL IRT model
+2. irt_morfoloji_service.py - Koordinator (IRT + Zemberek)
+3. irt_analysis_service.py - Analiz katmani
+4. irt_calibration_service.py - Kalibrasyon
+5. irt_parameter_estimator.py - Parametre tahmini
+6. irt_psychometric_analysis.py - Psikometrik analiz
+
+Kullanim: Dogrudan IRTService yerine IRTMorfolojiService kullanin.
 """
 
 import logging

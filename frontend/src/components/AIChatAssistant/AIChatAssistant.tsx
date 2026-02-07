@@ -4,10 +4,11 @@
  * Enhanced chat interface with image upload, OCR, and step-by-step solutions
  */
 
-import React, { useState, useEffect, useRef } from 'react';
+import * as React from 'react';
+import {  useState, useEffect, useRef  } from 'react';
 import './AIChatAssistant.css';
 
-const API_BASE = process.env.REACT_APP_API_URL || 'http://localhost:8000';
+const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
 // ============================================================
 // Types
@@ -86,7 +87,7 @@ interface AIChatAssistantProps {
 export const AIChatAssistant: React.FC<AIChatAssistantProps> = ({
   userId,
   initialSubject = 'general',
-  showSessionList = true
+  showSessionList = true,
 }) => {
   const [sessions, setSessions] = useState<ChatSession[]>([]);
   const [currentSession, setCurrentSession] = useState<ChatSession | null>(null);
@@ -131,7 +132,7 @@ export const AIChatAssistant: React.FC<AIChatAssistantProps> = ({
   const fetchSessions = async () => {
     try {
       const response = await fetch(`${API_BASE}/api/chat/sessions?user_id=${userId}&limit=50`);
-      if (!response.ok) throw new Error('Failed to fetch sessions');
+      if (!response.ok) {throw new Error('Failed to fetch sessions');}
       const data = await response.json();
       setSessions(data);
 
@@ -149,7 +150,7 @@ export const AIChatAssistant: React.FC<AIChatAssistantProps> = ({
     setLoading(true);
     try {
       const response = await fetch(`${API_BASE}/api/chat/sessions/${sessionId}/messages`);
-      if (!response.ok) throw new Error('Failed to fetch messages');
+      if (!response.ok) {throw new Error('Failed to fetch messages');}
       const data = await response.json();
       setMessages(data);
     } catch (err) {
@@ -173,11 +174,11 @@ export const AIChatAssistant: React.FC<AIChatAssistantProps> = ({
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           title: newSessionTitle,
-          subject_type: newSessionSubject
-        })
+          subject_type: newSessionSubject,
+        }),
       });
 
-      if (!response.ok) throw new Error('Failed to create session');
+      if (!response.ok) {throw new Error('Failed to create session');}
       const newSession = await response.json();
 
       setSessions([newSession, ...sessions]);
@@ -192,7 +193,7 @@ export const AIChatAssistant: React.FC<AIChatAssistantProps> = ({
 
   const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (!file) return;
+    if (!file) {return;}
 
     // Validate file type
     if (!file.type.startsWith('image/')) {
@@ -217,7 +218,7 @@ export const AIChatAssistant: React.FC<AIChatAssistantProps> = ({
   };
 
   const handleImageUpload = async () => {
-    if (!selectedImage || !currentSession) return;
+    if (!selectedImage || !currentSession) {return;}
 
     setIsProcessingImage(true);
     setError(null);
@@ -230,11 +231,11 @@ export const AIChatAssistant: React.FC<AIChatAssistantProps> = ({
         `${API_BASE}/api/chat/sessions/${currentSession.id}/upload?user_id=${userId}`,
         {
           method: 'POST',
-          body: formData
-        }
+          body: formData,
+        },
       );
 
-      if (!response.ok) throw new Error('Failed to upload image');
+      if (!response.ok) {throw new Error('Failed to upload image');}
       const imageData = await response.json();
 
       setUploadedImage(imageData);
@@ -278,11 +279,11 @@ export const AIChatAssistant: React.FC<AIChatAssistantProps> = ({
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(requestBody)
-        }
+          body: JSON.stringify(requestBody),
+        },
       );
 
-      if (!response.ok) throw new Error('Failed to send message');
+      if (!response.ok) {throw new Error('Failed to send message');}
       const result = await response.json();
 
       // Add both user message and assistant response
@@ -302,7 +303,7 @@ export const AIChatAssistant: React.FC<AIChatAssistantProps> = ({
   };
 
   const handleRateMessage = async (messageId: string, rating: number) => {
-    if (!currentSession) return;
+    if (!currentSession) {return;}
 
     try {
       const response = await fetch(
@@ -310,14 +311,14 @@ export const AIChatAssistant: React.FC<AIChatAssistantProps> = ({
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ rating })
-        }
+          body: JSON.stringify({ rating }),
+        },
       );
 
       if (response.ok) {
         // Update message rating in UI
         setMessages(messages.map(msg =>
-          msg.id === messageId ? { ...msg, user_rating: rating } : msg
+          msg.id === messageId ? { ...msg, user_rating: rating } : msg,
         ));
       }
     } catch (err) {
@@ -581,7 +582,7 @@ function getSubjectLabel(subject: SubjectType): string {
     turkish: 'Türkçe',
     history: 'Tarih',
     geography: 'Coğrafya',
-    english: 'İngilizce'
+    english: 'İngilizce',
   };
   return labels[subject] || subject;
 }
@@ -592,15 +593,15 @@ function formatMessageTime(dateString: string): string {
   const diffMs = now.getTime() - date.getTime();
   const diffMins = Math.floor(diffMs / (1000 * 60));
 
-  if (diffMins < 1) return 'Şimdi';
-  if (diffMins < 60) return `${diffMins} dk önce`;
-  if (diffMins < 1440) return `${Math.floor(diffMins / 60)} saat önce`;
+  if (diffMins < 1) {return 'Şimdi';}
+  if (diffMins < 60) {return `${diffMins} dk önce`;}
+  if (diffMins < 1440) {return `${Math.floor(diffMins / 60)} saat önce`;}
 
   return date.toLocaleDateString('tr-TR', {
     day: 'numeric',
     month: 'short',
     hour: '2-digit',
-    minute: '2-digit'
+    minute: '2-digit',
   });
 }
 
@@ -613,5 +614,5 @@ export type {
   MessageRole,
   SessionStatus,
   SubjectType,
-  ImageProcessingStatus
+  ImageProcessingStatus,
 };

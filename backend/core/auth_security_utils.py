@@ -10,10 +10,10 @@ import logging
 import re
 import secrets
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import datetime, timezone
 from enum import Enum
 from io import BytesIO
-from typing import Any
+from typing import Any, Set
 
 import bcrypt
 import geoip2.database
@@ -66,7 +66,7 @@ class SecurityThreat:
 
     def __post_init__(self):
         if self.timestamp is None:
-            self.timestamp = datetime.utcnow()
+            self.timestamp = datetime.now(timezone.utc)
         if self.additional_data is None:
             self.additional_data = {}
 

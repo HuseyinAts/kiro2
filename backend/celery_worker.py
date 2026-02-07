@@ -11,9 +11,5 @@ Usage:
 from core.celery_app import celery_app
 
 # Import all task modules to register tasks
-import tasks.email_tasks
-import tasks.report_tasks
-import tasks.video_tasks
-import tasks.bulk_tasks
 
 __all__ = ["celery_app"]

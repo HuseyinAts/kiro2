@@ -1,0 +1,177 @@
+{
+  "$schema": "https://claude.ai/schemas/plugin.json",
+  "name": "plugin-template",
+  "version": "1.0.0",
+  "description": "Template for creating KIRO2 Claude Code plugins",
+  "author": "KIRO2 Team",
+  "license": "MIT",
+  "homepage": "https://github.com/kiro2/plugins/template",
+
+  "main": "index.py",
+  "entry": {
+    "python": "index.py",
+    "typescript": "index.ts"
+  },
+
+  "claude": {
+    "minVersion": "2026.1.0",
+    "sdkVersion": "1.0.0"
+  },
+
+  "tools": [
+    {
+      "name": "example-tool",
+      "description": "Example tool that demonstrates plugin capabilities",
+      "handler": "tools/example_tool.py",
+      "parameters": {
+        "input": {
+          "type": "string",
+          "description": "Input text to process",
+          "required": true
+        },
+        "options": {
+          "type": "object",
+          "description": "Optional configuration",
+          "required": false,
+          "properties": {
+            "format": {
+              "type": "string",
+              "enum": ["json", "text", "markdown"],
+              "default": "text"
+            },
+            "verbose": {
+              "type": "boolean",
+              "default": false
+            }
+          }
+        }
+      },
+      "returns": {
+        "type": "object",
+        "properties": {
+          "result": {"type": "string"},
+          "metadata": {"type": "object"}
+        }
+      }
+    }
+  ],
+
+  "skills": [
+    {
+      "name": "example-skill",
+      "description": "Example skill demonstrating skill integration",
+      "file": "skills/SKILL.md",
+      "userInvocable": true,
+      "context": "fork",
+      "allowedTools": ["Read", "Grep", "Glob"]
+    }
+  ],
+
+  "hooks": [
+    {
+      "event": "PostToolUse",
+      "matcher": "Edit|Write",
+      "handler": "hooks/post_edit.py",
+      "async": true
+    },
+    {
+      "event": "PreToolUse",
+      "matcher": "Bash",
+      "handler": "hooks/pre_bash.py",
+      "blocking": true
+    }
+  ],
+
+  "commands": [
+    {
+      "name": "example",
+      "description": "Run example command",
+      "handler": "commands/example.py",
+      "shortcut": "Ctrl+Shift+E"
+    }
+  ],
+
+  "agents": [
+    {
+      "name": "example-agent",
+      "description": "Example agent for demonstration",
+      "file": "agents/example_agent.md",
+      "model": "sonnet",
+      "tools": ["Read", "Grep", "example-tool"]
+    }
+  ],
+
+  "dependencies": {
+    "python": ">=3.11",
+    "packages": {
+      "pydantic": ">=2.0.0"
+    },
+    "optional": {
+      "numpy": ">=1.24.0"
+    }
+  },
+
+  "config": {
+    "defaults": {
+      "enabled": true,
+      "logLevel": "info"
+    },
+    "schema": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "description": "Enable/disable plugin"
+        },
+        "logLevel": {
+          "type": "string",
+          "enum": ["debug", "info", "warn", "error"]
+        },
+        "customSetting": {
+          "type": "string",
+          "description": "Custom plugin setting"
+        }
+      }
+    }
+  },
+
+  "permissions": {
+    "required": [
+      "Read",
+      "Glob",
+      "Grep"
+    ],
+    "optional": [
+      "Edit",
+      "Write",
+      "Bash"
+    ]
+  },
+
+  "resources": {
+    "assets": "assets/",
+    "templates": "templates/",
+    "data": "data/"
+  },
+
+  "lifecycle": {
+    "onInstall": "scripts/install.py",
+    "onUninstall": "scripts/uninstall.py",
+    "onUpdate": "scripts/update.py",
+    "onEnable": "scripts/enable.py",
+    "onDisable": "scripts/disable.py"
+  },
+
+  "compatibility": {
+    "platforms": ["windows", "linux", "macos"],
+    "features": ["tasks", "skills", "hooks", "agents"]
+  },
+
+  "metadata": {
+    "category": "template",
+    "tags": ["example", "template", "starter"],
+    "keywords": ["kiro2", "plugin", "claude-code"],
+    "documentation": "docs/README.md",
+    "changelog": "CHANGELOG.md"
+  }
+}

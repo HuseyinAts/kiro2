@@ -1,4 +1,11 @@
-import React, { useState, useEffect } from 'react'
+import {
+  People,
+  Assessment,
+  TrendingUp,
+  School,
+  QuestionAnswer,
+  Refresh,
+} from '@mui/icons-material';
 import {
   Grid,
   Card,
@@ -8,18 +15,12 @@ import {
   CircularProgress,
   Alert,
   Chip,
-  Button
-} from '@mui/material'
-import {
-  People,
-  LibraryBooks,
-  Assessment,
-  TrendingUp,
-  School,
-  QuestionAnswer,
-  Refresh
-} from '@mui/icons-material'
-import { adminService, DashboardStats } from '../../services/adminService'
+  Button,
+} from '@mui/material';
+import * as React from 'react';
+import {  useState, useEffect  } from 'react';
+
+import { adminService, DashboardStats } from '../../services/adminService';
 
 // DashboardStats tipi artık adminService'den geliyor
 
@@ -54,28 +55,28 @@ const StatCard: React.FC<StatCardProps> = ({ title, value, icon, color, subtitle
       </Box>
     </CardContent>
   </Card>
-)
+);
 
 export const AdminDashboard: React.FC = () => {
-  const [stats, setStats] = useState<DashboardStats | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
+  const [stats, setStats] = useState<DashboardStats | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    fetchDashboardStats()
-  }, [])
+    fetchDashboardStats();
+  }, []);
 
   const fetchDashboardStats = async () => {
     try {
-      setLoading(true)
-      setError(null)
+      setLoading(true);
+      setError(null);
 
-      const dashboardStats = await adminService.getDashboardStats()
-      setStats(dashboardStats)
+      const dashboardStats = await adminService.getDashboardStats();
+      setStats(dashboardStats);
     } catch (err) {
-      console.error('Dashboard stats error:', err)
-      setError(err instanceof Error ? err.message : 'Bilinmeyen hata')
-      
+      console.error('Dashboard stats error:', err);
+      setError(err instanceof Error ? err.message : 'Bilinmeyen hata');
+
       // Geliştirme aşamasında mock data
       setStats({
         toplam_kullanici: 1250,
@@ -91,47 +92,47 @@ export const AdminDashboard: React.FC = () => {
         tamamlanan_sinav_sayisi: 3240,
         ortalama_basari_orani: 72.5,
         sistem_durumu: 'healthy',
-        son_guncelleme: new Date().toISOString()
-      })
+        son_guncelleme: new Date().toISOString(),
+      });
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
-  const getSystemStatusColor = (status: string) => {
+  const getSystemStatusColor = (status: string): 'default' | 'primary' | 'secondary' | 'error' | 'info' | 'success' | 'warning' => {
     switch (status) {
-      case 'healthy': return 'success'
-      case 'warning': return 'warning'
-      case 'error': return 'error'
-      default: return 'primary'
+      case 'healthy': return 'success';
+      case 'warning': return 'warning';
+      case 'error': return 'error';
+      default: return 'primary';
     }
-  }
+  };
 
   const getSystemStatusText = (status: string) => {
     switch (status) {
-      case 'healthy': return 'Sağlıklı'
-      case 'warning': return 'Uyarı'
-      case 'error': return 'Hata'
-      default: return 'Bilinmiyor'
+      case 'healthy': return 'Sağlıklı';
+      case 'warning': return 'Uyarı';
+      case 'error': return 'Hata';
+      default: return 'Bilinmiyor';
     }
-  }
+  };
 
   if (loading) {
     return (
       <Box display="flex" justifyContent="center" alignItems="center" minHeight="400px">
         <CircularProgress />
       </Box>
-    )
+    );
   }
 
   if (error && !stats) {
     return (
-      <Alert 
-        severity="error" 
+      <Alert
+        severity="error"
         action={
-          <Button 
-            color="inherit" 
-            size="small" 
+          <Button
+            color="inherit"
+            size="small"
             onClick={fetchDashboardStats}
             startIcon={<Refresh />}
           >
@@ -141,7 +142,7 @@ export const AdminDashboard: React.FC = () => {
       >
         {error}
       </Alert>
-    )
+    );
   }
 
   return (
@@ -153,7 +154,7 @@ export const AdminDashboard: React.FC = () => {
         {stats && (
           <Chip
             label={`Sistem: ${getSystemStatusText(stats.sistem_durumu)}`}
-            color={getSystemStatusColor(stats.sistem_durumu) as any}
+            color={getSystemStatusColor(stats.sistem_durumu)}
             variant="outlined"
           />
         )}
@@ -251,7 +252,7 @@ export const AdminDashboard: React.FC = () => {
         </Grid>
       )}
     </Box>
-  )
-}
+  );
+};
 
-export default AdminDashboard
+export default AdminDashboard;

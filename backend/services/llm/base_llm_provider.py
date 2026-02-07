@@ -10,8 +10,7 @@ from abc import ABC, abstractmethod
 from typing import Optional, Dict, Any, List
 from datetime import datetime
 import asyncio
-import time
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 from services.llm.multi_llm_config import LLMProvider, LLMModelConfig, LLMCapability
 
@@ -49,8 +48,7 @@ class LLMResponse(BaseModel):
     timestamp: datetime = datetime.now()
     request_id: Optional[str] = None
 
-    class Config:
-        use_enum_values = True
+    model_config = ConfigDict(use_enum_values=True)
 
 
 class BaseLLMProvider(ABC):

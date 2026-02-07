@@ -14,6 +14,7 @@ from collections.abc import Callable
 from dataclasses import dataclass, field
 from datetime import UTC, datetime, timedelta, timezone
 from enum import Enum
+from http import HTTPMethod
 from typing import Any
 
 from core.cache_system_integration import get_unified_cache_system

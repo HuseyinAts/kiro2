@@ -3,32 +3,32 @@
  * Kişiselleştirilmiş öğrenme yolu ve kaynaklar
  */
 
-import { useState, useEffect, useCallback, useMemo, Suspense } from 'react'
-import { Container, Box, Tabs, Tab, Typography } from '@mui/material'
-import { Timeline, VideoLibrary, Assessment, Refresh, AutoAwesome } from '@mui/icons-material'
-import { motion, AnimatePresence } from 'framer-motion'
+import { Timeline, VideoLibrary, Assessment, Refresh, AutoAwesome } from '@mui/icons-material';
+import { Container, Box, Tabs, Tab, Typography } from '@mui/material';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 
 // Custom hooks
-import { useLearningPath } from '../hooks/useLearningPath'
-import { useLearningPathVideos } from '../hooks/useLearningPathVideos'
+import { VideoResponse } from '../api';
+import { ModernLearningPathVisualizer } from '../components/LearningPath/ModernLearningPathVisualizer';
+import { NodeDetailsPanel } from '../components/LearningPath/Page/NodeDetailsPanel';
+import { PathNodeData } from '../components/LearningPath/PathNode';
+import { GlassCard } from '../components/ui/GlassCard';
+import { ModernButton } from '../components/ui/ModernButton';
+import { ModernLoader } from '../components/ui/ModernLoader';
+import { useLearningPath } from '../hooks/useLearningPath';
+import { useLearningPathVideos } from '../hooks/useLearningPathVideos';
 
 // Modern components
-import { GlassCard } from '../components/ui/GlassCard'
-import { ModernButton } from '../components/ui/ModernButton'
-import { ModernLoader } from '../components/ui/ModernLoader'
-import { ModernLearningPathVisualizer } from '../components/LearningPath/ModernLearningPathVisualizer'
-import modernColors from '../theme/modern-colors'
+import learningPathService from '../services/learningPathService';
+import modernColors from '../theme/modern-colors';
 
 // Services
-import learningPathService from '../services/learningPathService'
 
 // Types
-import { VideoResponse } from '../api'
-import { PathNodeData } from '../components/LearningPath/PathNode'
-import { generateConnections } from '../utils/learningPathHelpers'
+import { generateConnections } from '../utils/learningPathHelpers';
 
 // Lazy-loaded tab content components
-import { NodeDetailsPanel } from '../components/LearningPath/Page/NodeDetailsPanel'
 
 interface TabPanelProps {
   children?: React.ReactNode
@@ -37,7 +37,7 @@ interface TabPanelProps {
 }
 
 function TabPanel(props: TabPanelProps) {
-  const { children, value, index, ...other } = props
+  const { children, value, index, ...other } = props;
 
   return (
     <div
@@ -49,7 +49,7 @@ function TabPanel(props: TabPanelProps) {
     >
       {value === index && <Box sx={{ py: 3 }}>{children}</Box>}
     </div>
-  )
+  );
 }
 
 /**
@@ -66,27 +66,27 @@ export function ModernLearningPathPage() {
     loading,
     error,
     reload,
-    setCurrentNode
-  } = useLearningPath()
+    setCurrentNode,
+  } = useLearningPath();
 
   const {
     videos,
-    videoLoadingState,
-    loadingSubjects,
+    videoLoadingState: _videoLoadingState,
+    loadingSubjects: _loadingSubjects,
     videosLoading,
     loadVideosForPath,
     loadVideosForNode,
-    retryLoad,
-    showFallback,
-    cancelLoad
-  } = useLearningPathVideos()
+    retryLoad: _retryLoad,
+    showFallback: _showFallback,
+    cancelLoad: _cancelLoad,
+  } = useLearningPathVideos();
 
   // ========================================
   // Local UI state
   // ========================================
-  const [tabValue, setTabValue] = useState(0)
-  const [showNodeDetails, setShowNodeDetails] = useState(false)
-  const [selectedNode, setSelectedNode] = useState<PathNodeData | null>(null)
+  const [tabValue, setTabValue] = useState(0);
+  const [showNodeDetails, setShowNodeDetails] = useState(false);
+  const [selectedNode, setSelectedNode] = useState<PathNodeData | null>(null);
 
   // ========================================
   // Effects
@@ -97,12 +97,12 @@ export function ModernLearningPathPage() {
    */
   useEffect(() => {
     if (pathNodes.length > 0 && learningStyle) {
-      const path = learningPathService.getCurrentPath()
+      const path = learningPathService.getCurrentPath();
       if (path) {
-        loadVideosForPath(path, learningStyle)
+        loadVideosForPath(path, learningStyle);
       }
     }
-  }, [pathNodes, learningStyle, loadVideosForPath])
+  }, [pathNodes, learningStyle, loadVideosForPath]);
 
   // ========================================
   // Event handlers
@@ -113,33 +113,33 @@ export function ModernLearningPathPage() {
    */
   const handleNodeClick = useCallback(
     async (node: PathNodeData) => {
-      setCurrentNode(node.id)
-      setSelectedNode(node)
-      setShowNodeDetails(true)
+      setCurrentNode(node.id);
+      setSelectedNode(node);
+      setShowNodeDetails(true);
       await loadVideosForNode(
         node.id,
         node.title,
         node.description,
         node.difficulty,
-        learningStyle
-      )
+        learningStyle,
+      );
     },
-    [setCurrentNode, loadVideosForNode, learningStyle]
-  )
+    [setCurrentNode, loadVideosForNode, learningStyle],
+  );
 
   /**
    * Handle video play
    */
   const handleVideoPlay = useCallback((video: VideoResponse) => {
-    window.open(video.url, '_blank')
-  }, [])
+    window.open(video.url, '_blank');
+  }, []);
 
   /**
    * Handle close node details
    */
   const handleCloseDetails = useCallback(() => {
-    setShowNodeDetails(false)
-  }, [])
+    setShowNodeDetails(false);
+  }, []);
 
   // ========================================
   // Memoized values
@@ -150,26 +150,26 @@ export function ModernLearningPathPage() {
    */
   const hasPath = useMemo(
     () => learningPathService.getCurrentPath() !== null,
-    [pathNodes.length]
-  )
+    [pathNodes.length],
+  );
 
   /**
    * Calculate progress stats
    */
   const progressStats = useMemo(() => {
-    const completed = pathNodes.filter((n) => n.status === 'completed').length
-    const inProgress = pathNodes.filter((n) => n.status === 'current').length
-    const available = pathNodes.filter((n) => n.status === 'available').length
-    const total = pathNodes.length
+    const completed = pathNodes.filter((n) => n.status === 'completed').length;
+    const inProgress = pathNodes.filter((n) => n.status === 'current').length;
+    const available = pathNodes.filter((n) => n.status === 'available').length;
+    const total = pathNodes.length;
 
     return {
       completed,
       inProgress,
       available,
       total,
-      percentage: total > 0 ? Math.round((completed / total) * 100) : 0
-    }
-  }, [pathNodes])
+      percentage: total > 0 ? Math.round((completed / total) * 100) : 0,
+    };
+  }, [pathNodes]);
 
   // ========================================
   // Render states
@@ -184,12 +184,12 @@ export function ModernLearningPathPage() {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          background: modernColors.gradients.mesh
+          background: modernColors.gradients.mesh,
         }}
       >
         <ModernLoader message="Öğrenme yolunuz yükleniyor..." size="large" />
       </Box>
-    )
+    );
   }
 
   // Error state
@@ -202,7 +202,7 @@ export function ModernLearningPathPage() {
           alignItems: 'center',
           justifyContent: 'center',
           background: modernColors.gradients.mesh,
-          p: 2
+          p: 2,
         }}
       >
         <Container maxWidth="sm">
@@ -226,7 +226,7 @@ export function ModernLearningPathPage() {
           </GlassCard>
         </Container>
       </Box>
-    )
+    );
   }
 
   // Main render
@@ -235,7 +235,7 @@ export function ModernLearningPathPage() {
       sx={{
         minHeight: '100vh',
         background: modernColors.gradients.mesh,
-        py: 4
+        py: 4,
       }}
     >
       <Container maxWidth="xl">
@@ -256,7 +256,7 @@ export function ModernLearningPathPage() {
                     background: modernColors.gradients.primary,
                     display: 'flex',
                     alignItems: 'center',
-                    justifyContent: 'center'
+                    justifyContent: 'center',
                   }}
                 >
                   <Timeline sx={{ fontSize: 32, color: 'white' }} />
@@ -269,7 +269,7 @@ export function ModernLearningPathPage() {
                       background: modernColors.gradients.primary,
                       backgroundClip: 'text',
                       WebkitBackgroundClip: 'text',
-                      WebkitTextFillColor: 'transparent'
+                      WebkitTextFillColor: 'transparent',
                     }}
                   >
                     Öğrenme Yolunuz
@@ -325,16 +325,16 @@ export function ModernLearningPathPage() {
                   fontWeight: 600,
                   fontSize: 16,
                   textTransform: 'none',
-                  minHeight: 64
+                  minHeight: 64,
                 },
                 '& .Mui-selected': {
-                  color: '#3b82f6'
+                  color: '#3b82f6',
                 },
                 '& .MuiTabs-indicator': {
                   background: modernColors.gradients.primary,
                   height: 3,
-                  borderRadius: '3px 3px 0 0'
-                }
+                  borderRadius: '3px 3px 0 0',
+                },
               }}
             >
               <Tab icon={<Timeline />} label="Yol Haritası" iconPosition="start" />
@@ -408,7 +408,7 @@ export function ModernLearningPathPage() {
                         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                           {videos.map((video, index) => (
                             <motion.div
-                              key={video.id}
+                              key={(video as any).id || video.video_id || index}
                               initial={{ opacity: 0, y: 20 }}
                               animate={{ opacity: 1, y: 0 }}
                               transition={{ duration: 0.3, delay: index * 0.05 }}
@@ -422,8 +422,8 @@ export function ModernLearningPathPage() {
                                 onClick={() => handleVideoPlay(video)}
                                 onKeyDown={(e: React.KeyboardEvent) => {
                                   if (e.key === 'Enter' || e.key === ' ') {
-                                    e.preventDefault()
-                                    handleVideoPlay(video)
+                                    e.preventDefault();
+                                    handleVideoPlay(video);
                                   }
                                 }}
                                 sx={{
@@ -431,7 +431,7 @@ export function ModernLearningPathPage() {
                                   '&:focus': {
                                     outline: '2px solid rgba(59, 130, 246, 0.5)',
                                     outlineOffset: '2px',
-                                  }
+                                  },
                                 }}
                               >
                                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
@@ -551,7 +551,7 @@ export function ModernLearningPathPage() {
         </motion.div>
       </Container>
     </Box>
-  )
+  );
 }
 
-export default ModernLearningPathPage
+export default ModernLearningPathPage;

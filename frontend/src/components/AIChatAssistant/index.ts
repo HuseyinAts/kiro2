@@ -12,5 +12,5 @@ export type {
   MessageRole,
   SessionStatus,
   SubjectType,
-  ImageProcessingStatus
+  ImageProcessingStatus,
 } from './AIChatAssistant';

@@ -10,8 +10,7 @@ Bu modül disleksili öğrenciler için görsel öğrenme destekleri sağlar:
 """
 
 from typing import Dict, List, Optional, Any
-from datetime import datetime
-import json
+from datetime import datetime, timezone
 import hashlib
 from pydantic import BaseModel, Field
 
@@ -248,7 +247,7 @@ class VisualSupportsService:
                 for key, value in updates.items():
                     if hasattr(node, key):
                         setattr(node, key, value)
-                mind_map.updated_at = datetime.utcnow()
+                mind_map.updated_at = datetime.now(timezone.utc)
                 return True
 
         return False
@@ -604,7 +603,7 @@ class VisualSupportsService:
     def _generate_id(self, seed: str) -> str:
         """Benzersiz ID oluştur"""
         return hashlib.md5(
-            f"{seed}_{datetime.utcnow().isoformat()}".encode()
+            f"{seed}_{datetime.now(timezone.utc).isoformat()}".encode()
         ).hexdigest()[:16]
 
     def _extract_key_concepts(self, words: List[str]) -> List[str]:

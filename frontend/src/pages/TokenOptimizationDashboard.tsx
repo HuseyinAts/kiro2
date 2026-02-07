@@ -3,7 +3,14 @@
  * Real-time monitoring of token usage and cost savings
  */
 
-import React, { useState, useEffect } from 'react'
+import {
+  TrendingDown,
+  Savings,
+  Assessment,
+  Refresh,
+  CloudDownload,
+  ArrowUpward,
+} from '@mui/icons-material';
 import {
   Box,
   Card,
@@ -24,21 +31,11 @@ import {
   FormControl,
   InputLabel,
   IconButton,
-  Tooltip
-} from '@mui/material'
+  Tooltip,
+} from '@mui/material';
+import * as React from 'react';
+import {  useState, useEffect  } from 'react';
 import {
-  TrendingDown,
-  Savings,
-  Speed,
-  Assessment,
-  Refresh,
-  CloudDownload,
-  ArrowUpward,
-  ArrowDownward
-} from '@mui/icons-material'
-import {
-  LineChart,
-  Line,
   BarChart,
   Bar,
   PieChart,
@@ -49,8 +46,8 @@ import {
   CartesianGrid,
   Tooltip as RechartsTooltip,
   Legend,
-  ResponsiveContainer
-} from 'recharts'
+  ResponsiveContainer,
+} from 'recharts';
 
 interface TokenStats {
   total_requests: number
@@ -76,72 +73,72 @@ interface MonthlyProjection {
   projected_annual_cost_saved: number
 }
 
-const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042']
+const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
 
 export const TokenOptimizationDashboard: React.FC = () => {
-  const [stats, setStats] = useState<TokenStats | null>(null)
-  const [projection, setProjection] = useState<MonthlyProjection | null>(null)
-  const [timeRange, setTimeRange] = useState<number>(7)
-  const [loading, setLoading] = useState(false)
-  const [lastUpdated, setLastUpdated] = useState<Date>(new Date())
+  const [stats, setStats] = useState<TokenStats | null>(null);
+  const [projection, setProjection] = useState<MonthlyProjection | null>(null);
+  const [timeRange, setTimeRange] = useState<number>(7);
+  const [loading, setLoading] = useState(false);
+  const [lastUpdated, setLastUpdated] = useState<Date>(new Date());
 
   const fetchStats = async () => {
-    setLoading(true)
+    setLoading(true);
     try {
       const [statsRes, projRes] = await Promise.all([
         fetch(`/api/monitoring/token-stats?days=${timeRange}`),
-        fetch('/api/monitoring/token-projection')
-      ])
+        fetch('/api/monitoring/token-projection'),
+      ]);
 
-      const statsData = await statsRes.json()
-      const projData = await projRes.json()
+      const statsData = await statsRes.json();
+      const projData = await projRes.json();
 
-      setStats(statsData)
-      setProjection(projData)
-      setLastUpdated(new Date())
+      setStats(statsData);
+      setProjection(projData);
+      setLastUpdated(new Date());
     } catch (error) {
-      console.error('Failed to fetch stats:', error)
+      console.error('Failed to fetch stats:', error);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   useEffect(() => {
-    fetchStats()
+    fetchStats();
     // Auto-refresh every 30 seconds
-    const interval = setInterval(fetchStats, 30000)
-    return () => clearInterval(interval)
-  }, [timeRange])
+    const interval = setInterval(fetchStats, 30000);
+    return () => clearInterval(interval);
+  }, [timeRange]);
 
   const exportCSV = async () => {
     try {
-      const response = await fetch(`/api/monitoring/export-csv?days=${timeRange}`)
-      const blob = await response.blob()
-      const url = window.URL.createObjectURL(blob)
-      const a = document.createElement('a')
-      a.href = url
-      a.download = `token_usage_${timeRange}days.csv`
-      a.click()
+      const response = await fetch(`/api/monitoring/export-csv?days=${timeRange}`);
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `token_usage_${timeRange}days.csv`;
+      a.click();
     } catch (error) {
-      console.error('Failed to export CSV:', error)
+      console.error('Failed to export CSV:', error);
     }
-  }
+  };
 
   if (!stats || !projection) {
     return (
       <Box sx={{ p: 3 }}>
         <LinearProgress />
       </Box>
-    )
+    );
   }
 
-  const savingsPercentage = stats.average_savings_percentage
+  const savingsPercentage = stats.average_savings_percentage;
   const providerData = Object.entries(stats.provider_breakdown).map(([name, data]) => ({
     name: name.toUpperCase(),
     requests: data.requests,
     tokens_saved: data.tokens_saved,
-    cost_saved: data.cost_saved_usd
-  }))
+    cost_saved: data.cost_saved_usd,
+  }));
 
   return (
     <Box sx={{ p: 3 }}>
@@ -314,7 +311,7 @@ export const TokenOptimizationDashboard: React.FC = () => {
                     outerRadius={100}
                     label
                   >
-                    {providerData.map((entry, index) => (
+                    {providerData.map((_entry, index) => (
                       <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                     ))}
                   </Pie>
@@ -348,7 +345,7 @@ export const TokenOptimizationDashboard: React.FC = () => {
               </TableHead>
               <TableBody>
                 {providerData.map((provider) => {
-                  const savingsPct = ((provider.tokens_saved / stats.provider_breakdown[provider.name.toLowerCase()].original_tokens) * 100) || 0
+                  const savingsPct = ((provider.tokens_saved / stats.provider_breakdown[provider.name.toLowerCase()].original_tokens) * 100) || 0;
                   return (
                     <TableRow key={provider.name}>
                       <TableCell>
@@ -379,7 +376,7 @@ export const TokenOptimizationDashboard: React.FC = () => {
                         </Typography>
                       </TableCell>
                     </TableRow>
-                  )
+                  );
                 })}
               </TableBody>
             </Table>
@@ -387,7 +384,7 @@ export const TokenOptimizationDashboard: React.FC = () => {
         </CardContent>
       </Card>
     </Box>
-  )
-}
+  );
+};
 
-export default TokenOptimizationDashboard
+export default TokenOptimizationDashboard;

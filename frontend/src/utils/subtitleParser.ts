@@ -163,7 +163,7 @@ export const formatTime = (seconds: number, includeHours: boolean = false): stri
  */
 export const getCurrentSubtitle = (subtitles: Subtitle[], currentTime: number): Subtitle | null => {
   return subtitles.find(
-    sub => currentTime >= sub.startTime && currentTime <= sub.endTime
+    sub => currentTime >= sub.startTime && currentTime <= sub.endTime,
   ) || null;
 };
 

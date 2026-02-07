@@ -3,7 +3,13 @@
  * Multi-section bubble sheet with section navigation and progress indicators
  * REQ-1.2, REQ-1.6
  */
-import React, { useState, useMemo } from 'react'
+import {
+  CheckCircle,
+  RadioButtonUnchecked,
+  Bookmark,
+  NavigateNext,
+  NavigateBefore,
+} from '@mui/icons-material';
 import {
   Box,
   Paper,
@@ -17,16 +23,10 @@ import {
   Tooltip,
   IconButton,
   useTheme,
-  useMediaQuery
-} from '@mui/material'
-import {
-  CheckCircle,
-  RadioButtonUnchecked,
-  Bookmark,
-  BookmarkBorder,
-  NavigateNext,
-  NavigateBefore
-} from '@mui/icons-material'
+  useMediaQuery,
+} from '@mui/material';
+import * as React from 'react';
+import {  useState, useMemo  } from 'react';
 
 interface AYTSection {
   name: string
@@ -59,7 +59,7 @@ const DEFAULT_AYT_SECTIONS: AYTSection[] = [
     startIndex: 0,
     endIndex: 39,
     questionCount: 40,
-    color: '#1976d2'
+    color: '#1976d2',
   },
   {
     name: 'fizik',
@@ -67,7 +67,7 @@ const DEFAULT_AYT_SECTIONS: AYTSection[] = [
     startIndex: 40,
     endIndex: 53,
     questionCount: 14,
-    color: '#388e3c'
+    color: '#388e3c',
   },
   {
     name: 'kimya',
@@ -75,7 +75,7 @@ const DEFAULT_AYT_SECTIONS: AYTSection[] = [
     startIndex: 54,
     endIndex: 66,
     questionCount: 13,
-    color: '#f57c00'
+    color: '#f57c00',
   },
   {
     name: 'biyoloji',
@@ -83,7 +83,7 @@ const DEFAULT_AYT_SECTIONS: AYTSection[] = [
     startIndex: 67,
     endIndex: 79,
     questionCount: 13,
-    color: '#7b1fa2'
+    color: '#7b1fa2',
   },
   {
     name: 'edebiyat',
@@ -91,7 +91,7 @@ const DEFAULT_AYT_SECTIONS: AYTSection[] = [
     startIndex: 80,
     endIndex: 103,
     questionCount: 24,
-    color: '#c62828'
+    color: '#c62828',
   },
   {
     name: 'tarih',
@@ -99,7 +99,7 @@ const DEFAULT_AYT_SECTIONS: AYTSection[] = [
     startIndex: 104,
     endIndex: 113,
     questionCount: 10,
-    color: '#00796b'
+    color: '#00796b',
   },
   {
     name: 'cografya',
@@ -107,7 +107,7 @@ const DEFAULT_AYT_SECTIONS: AYTSection[] = [
     startIndex: 114,
     endIndex: 119,
     questionCount: 6,
-    color: '#5d4037'
+    color: '#5d4037',
   },
   {
     name: 'felsefe',
@@ -115,7 +115,7 @@ const DEFAULT_AYT_SECTIONS: AYTSection[] = [
     startIndex: 120,
     endIndex: 131,
     questionCount: 12,
-    color: '#455a64'
+    color: '#455a64',
   },
   {
     name: 'din',
@@ -123,7 +123,7 @@ const DEFAULT_AYT_SECTIONS: AYTSection[] = [
     startIndex: 132,
     endIndex: 137,
     questionCount: 6,
-    color: '#6a1b9a'
+    color: '#6a1b9a',
   },
   {
     name: 'dil',
@@ -131,9 +131,9 @@ const DEFAULT_AYT_SECTIONS: AYTSection[] = [
     startIndex: 138,
     endIndex: 159,
     questionCount: 22,
-    color: '#0277bd'
-  }
-]
+    color: '#0277bd',
+  },
+];
 
 export const AYTOptikForm: React.FC<AYTOptikFormProps> = ({
   totalQuestions,
@@ -144,90 +144,90 @@ export const AYTOptikForm: React.FC<AYTOptikFormProps> = ({
   sections = DEFAULT_AYT_SECTIONS,
   onQuestionSelect,
   onFlagQuestion,
-  compact = false
+  compact = false,
 }) => {
-  const theme = useTheme()
-  const isMobile = useMediaQuery(theme.breakpoints.down('md'))
-  
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+
   // Aktif bölümü belirle
   const [activeTab, setActiveTab] = useState(() => {
     const section = sections.find(
-      s => currentQuestionIndex >= s.startIndex && currentQuestionIndex <= s.endIndex
-    )
-    return section ? sections.indexOf(section) : 0
-  })
+      s => currentQuestionIndex >= s.startIndex && currentQuestionIndex <= s.endIndex,
+    );
+    return section ? sections.indexOf(section) : 0;
+  });
 
   // Bölüm istatistikleri
   const sectionStats = useMemo(() => {
     return sections.map(section => {
-      let answered = 0
-      let flagged = 0
-      
+      let answered = 0;
+      let flagged = 0;
+
       for (let i = section.startIndex; i <= section.endIndex; i++) {
-        const questionId = questionIds[i]
+        const questionId = questionIds[i];
         if (questionId) {
-          if (answers[questionId]) answered++
-          if (flaggedQuestions.has(questionId)) flagged++
+          if (answers[questionId]) {answered++;}
+          if (flaggedQuestions.has(questionId)) {flagged++;}
         }
       }
-      
+
       return {
         answered,
         flagged,
         total: section.questionCount,
-        percentage: (answered / section.questionCount) * 100
-      }
-    })
-  }, [sections, answers, flaggedQuestions, questionIds])
+        percentage: (answered / section.questionCount) * 100,
+      };
+    });
+  }, [sections, answers, flaggedQuestions, questionIds]);
 
   // Soru durumunu belirle
   const getQuestionStatus = (index: number): 'current' | 'answered' | 'flagged' | 'empty' => {
-    if (index === currentQuestionIndex) return 'current'
-    
-    const questionId = questionIds[index]
-    if (!questionId) return 'empty'
-    
-    if (flaggedQuestions.has(questionId)) return 'flagged'
-    if (answers[questionId]) return 'answered'
-    
-    return 'empty'
-  }
+    if (index === currentQuestionIndex) {return 'current';}
+
+    const questionId = questionIds[index];
+    if (!questionId) {return 'empty';}
+
+    if (flaggedQuestions.has(questionId)) {return 'flagged';}
+    if (answers[questionId]) {return 'answered';}
+
+    return 'empty';
+  };
 
   // Soru rengi
   const getQuestionColor = (status: string) => {
     switch (status) {
       case 'current':
-        return theme.palette.primary.main
+        return theme.palette.primary.main;
       case 'answered':
-        return theme.palette.success.main
+        return theme.palette.success.main;
       case 'flagged':
-        return theme.palette.warning.main
+        return theme.palette.warning.main;
       default:
-        return theme.palette.grey[300]
+        return theme.palette.grey[300];
     }
-  }
+  };
 
   // Soru ikonu
   const getQuestionIcon = (status: string) => {
     switch (status) {
       case 'answered':
-        return <CheckCircle fontSize="small" />
+        return <CheckCircle fontSize="small" />;
       case 'flagged':
-        return <Bookmark fontSize="small" />
+        return <Bookmark fontSize="small" />;
       default:
-        return <RadioButtonUnchecked fontSize="small" />
+        return <RadioButtonUnchecked fontSize="small" />;
     }
-  }
+  };
 
   // Bölüm değiştir
   const handleTabChange = (_event: React.SyntheticEvent, newValue: number) => {
-    setActiveTab(newValue)
+    setActiveTab(newValue);
     // İlk soruya git
-    const section = sections[newValue]
+    const section = sections[newValue];
     if (section) {
-      onQuestionSelect(section.startIndex)
+      onQuestionSelect(section.startIndex);
     }
-  }
+  };
 
   // Kompakt mod
   if (compact) {
@@ -238,7 +238,7 @@ export const AYTOptikForm: React.FC<AYTOptikFormProps> = ({
         </Typography>
         <Grid container spacing={0.5}>
           {Array.from({ length: totalQuestions }, (_, i) => {
-            const status = getQuestionStatus(i)
+            const status = getQuestionStatus(i);
             return (
               <Grid item key={i}>
                 <Tooltip title={`Soru ${i + 1}`}>
@@ -252,23 +252,23 @@ export const AYTOptikForm: React.FC<AYTOptikFormProps> = ({
                       color: 'white',
                       '&:hover': {
                         bgcolor: getQuestionColor(status),
-                        opacity: 0.8
-                      }
+                        opacity: 0.8,
+                      },
                     }}
                   >
                     <Typography variant="caption">{i + 1}</Typography>
                   </IconButton>
                 </Tooltip>
               </Grid>
-            )
+            );
           })}
         </Grid>
       </Paper>
-    )
+    );
   }
 
   // Tam mod
-  const activeSection = sections[activeTab]
+  const activeSection = sections[activeTab];
 
   return (
     <Paper elevation={3} sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
@@ -282,8 +282,8 @@ export const AYTOptikForm: React.FC<AYTOptikFormProps> = ({
           sx={{
             '& .MuiTab-root': {
               minHeight: 48,
-              fontSize: { xs: '0.75rem', sm: '0.875rem' }
-            }
+              fontSize: { xs: '0.75rem', sm: '0.875rem' },
+            },
           }}
         >
           {sections.map((section, index) => (
@@ -301,7 +301,7 @@ export const AYTOptikForm: React.FC<AYTOptikFormProps> = ({
               }
               sx={{
                 borderBottom: 3,
-                borderColor: activeTab === index ? section.color : 'transparent'
+                borderColor: activeTab === index ? section.color : 'transparent',
               }}
             />
           ))}
@@ -341,8 +341,8 @@ export const AYTOptikForm: React.FC<AYTOptikFormProps> = ({
               borderRadius: 4,
               bgcolor: 'grey.200',
               '& .MuiLinearProgress-bar': {
-                bgcolor: activeSection.color
-              }
+                bgcolor: activeSection.color,
+              },
             }}
           />
         </Box>
@@ -352,10 +352,10 @@ export const AYTOptikForm: React.FC<AYTOptikFormProps> = ({
       <Box sx={{ flex: 1, overflow: 'auto', p: 2 }}>
         <Grid container spacing={1}>
           {activeSection && Array.from({ length: activeSection.questionCount }, (_, i) => {
-            const questionIndex = activeSection.startIndex + i
-            const questionNumber = questionIndex + 1
-            const status = getQuestionStatus(questionIndex)
-            const questionId = questionIds[questionIndex]
+            const questionIndex = activeSection.startIndex + i;
+            const questionNumber = questionIndex + 1;
+            const status = getQuestionStatus(questionIndex);
+            const questionId = questionIds[questionIndex];
 
             return (
               <Grid item xs={3} sm={2} md={1.5} key={questionIndex}>
@@ -381,9 +381,9 @@ export const AYTOptikForm: React.FC<AYTOptikFormProps> = ({
                       color: status === 'current' ? 'white' : getQuestionColor(status),
                       '&:hover': {
                         bgcolor: status === 'current' ? activeSection.color : 'grey.100',
-                        opacity: 0.9
+                        opacity: 0.9,
                       },
-                      position: 'relative'
+                      position: 'relative',
                     }}
                   >
                     <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
@@ -399,7 +399,7 @@ export const AYTOptikForm: React.FC<AYTOptikFormProps> = ({
                   </Button>
                 </Tooltip>
               </Grid>
-            )
+            );
           })}
         </Grid>
       </Box>
@@ -411,8 +411,8 @@ export const AYTOptikForm: React.FC<AYTOptikFormProps> = ({
             startIcon={<NavigateBefore />}
             onClick={() => {
               if (activeTab > 0) {
-                setActiveTab(activeTab - 1)
-                onQuestionSelect(sections[activeTab - 1].startIndex)
+                setActiveTab(activeTab - 1);
+                onQuestionSelect(sections[activeTab - 1].startIndex);
               }
             }}
             disabled={activeTab === 0}
@@ -423,8 +423,8 @@ export const AYTOptikForm: React.FC<AYTOptikFormProps> = ({
             endIcon={<NavigateNext />}
             onClick={() => {
               if (activeTab < sections.length - 1) {
-                setActiveTab(activeTab + 1)
-                onQuestionSelect(sections[activeTab + 1].startIndex)
+                setActiveTab(activeTab + 1);
+                onQuestionSelect(sections[activeTab + 1].startIndex);
               }
             }}
             disabled={activeTab === sections.length - 1}
@@ -459,7 +459,7 @@ export const AYTOptikForm: React.FC<AYTOptikFormProps> = ({
         </Box>
       </Box>
     </Paper>
-  )
-}
+  );
+};
 
-export default AYTOptikForm
+export default AYTOptikForm;

@@ -1,0 +1,37 @@
+# Node modules
+node_modules/
+
+# Build outputs
+dist/
+build/
+
+# Config files (not in tsconfig)
+*.config.ts
+*.config.js
+vite.config.ts
+vitest.config.ts
+playwright.config.ts
+
+# Test files (excluded from main tsconfig)
+src/test/
+src/**/__tests__/
+src/**/*.test.ts
+src/**/*.test.tsx
+**/*.test.tsx
+**/*.test.ts
+tests/
+
+# Example files
+src/**/*.example.tsx
+
+# Cypress
+cypress/
+
+# Generated files
+src/types/api.generated.ts
+
+# Coverage
+coverage/
+
+# Verification scripts
+verify-setup-fixes.ts

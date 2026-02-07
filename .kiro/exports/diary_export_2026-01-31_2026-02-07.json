@@ -1,0 +1,61 @@
+{
+  "user_id": "2f700102-09ce-4094-93d9-4cadab9e82b2",
+  "export_date": "2026-02-07T11:18:08.503912",
+  "date_range": {
+    "from": "2026-01-31",
+    "to": "2026-02-07"
+  },
+  "entries": [
+    {
+      "id": "<MagicMock name='mock.id' id='2275330287872'>",
+      "date": "2026-02-07",
+      "success_count": 5,
+      "failure_count": "<MagicMock name='mock.failure_count' id='2275330282160'>",
+      "total_tasks": 7,
+      "highlights": [
+        "Task completed"
+      ],
+      "learnings": [],
+      "challenges": []
+    }
+  ],
+  "insights": [
+    {
+      "id": "<MagicMock name='mock.id' id='2275330287872'>",
+      "category": "<MagicMock name='mock.category.value' id='2275330288880'>",
+      "pattern": "<MagicMock name='mock.pattern' id='2275330290224'>",
+      "confidence": "<MagicMock name='mock.confidence' id='2275330278128'>",
+      "recommendation": "<MagicMock name='mock.recommendation' id='2275330282832'>"
+    }
+  ],
+  "reflections": [
+    {
+      "id": "<MagicMock name='mock.id' id='2275330287872'>",
+      "what_went_well": "<MagicMock name='mock.what_went_well' id='2275330281824'>",
+      "what_could_improve": "<MagicMock name='mock.what_could_improve' id='2275330289552'>",
+      "what_did_i_learn": "<MagicMock name='mock.what_did_i_learn' id='2275330289888'>",
+      "depth": "<MagicMock name='mock.depth.value' id='2275330292912'>",
+      "depth_score": "<MagicMock name='mock.depth_score' id='2275330284512'>"
+    }
+  ],
+  "learning_entries": [
+    {
+      "id": "<MagicMock name='mock.id' id='2275330287872'>",
+      "title": "<MagicMock name='mock.title' id='2275330283504'>",
+      "content": "<MagicMock name='mock.content' id='2275330284848'>",
+      "tags": "<MagicMock name='mock.tags' id='2275330286192'>",
+      "domain": "<MagicMock name='mock.domain' id='2275330281488'>",
+      "retention_score": "<MagicMock name='mock.retention_score' id='2275330291904'>"
+    }
+  ],
+  "goals": [
+    {
+      "id": "<MagicMock name='mock.id' id='2275330287872'>",
+      "title": "<MagicMock name='mock.title' id='2275330283504'>",
+      "progress": "<MagicMock name='mock.progress' id='2275330291232'>",
+      "status": "<MagicMock name='mock.status.value' id='2275330285856'>",
+      "target_date": "<MagicMock name='mock.target_date.isoformat()' id='2275408561888'>"
+    }
+  ],
+  "redacted_fields": []
+}

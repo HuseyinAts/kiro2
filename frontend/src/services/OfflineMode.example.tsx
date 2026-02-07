@@ -7,7 +7,7 @@
  * @module OfflineMode.example
  */
 
-import React from 'react';
+import * as React from 'react';
 import { useOfflineMode, useNetworkStatus } from '../hooks/useOfflineMode';
 import { OfflineModeUI, CompactOfflineModeUI } from '../components/OfflineModeUI';
 import { VideoLoadingManager } from './VideoLoadingManager';

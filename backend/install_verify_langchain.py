@@ -68,7 +68,7 @@ def install_package(package: str, version: str = None) -> bool:
         else:
             # Try without version if specified version fails
             if version:
-                print(f"   Trying without version specification...")
+                print("   Trying without version specification...")
                 result = subprocess.run(
                     [sys.executable, "-m", "pip", "install", package],
                     capture_output=True,

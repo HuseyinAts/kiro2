@@ -3,7 +3,7 @@
  * Modern, professional dashboard for teachers
  */
 
-import { ModernTeacherDashboard } from './ModernTeacherDashboard'
+import { ModernTeacherDashboard } from './ModernTeacherDashboard';
 
-export const TeacherDashboard = ModernTeacherDashboard
-export default TeacherDashboard
+export const TeacherDashboard = ModernTeacherDashboard;
+export default TeacherDashboard;

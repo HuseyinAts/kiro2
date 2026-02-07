@@ -3,19 +3,6 @@
  * Beautiful, functional dashboard with glassmorphism and modern design
  */
 
-import React from 'react'
-import { useNavigate } from 'react-router-dom'
-import { motion } from 'framer-motion'
-import {
-  Container,
-  Grid,
-  Typography,
-  Box,
-  LinearProgress,
-  IconButton,
-  Avatar,
-  Chip,
-} from '@mui/material'
 import {
   TrendingUp,
   School,
@@ -26,18 +13,30 @@ import {
   MenuBook,
   ArrowForward,
   LocalFireDepartment,
-  Star,
   CheckCircle,
-} from '@mui/icons-material'
-import { useAuthStore } from '@/store/authStore'
-import modernColors from '@/theme/modern-colors'
-import { GlassCard } from '@/components/ui/GlassCard'
-import { ModernButton } from '@/components/ui/ModernButton'
-import { StaggerContainer, StaggerItem } from '@/components/Animations/PageTransition'
+} from '@mui/icons-material';
+import {
+  Container,
+  Grid,
+  Typography,
+  Box,
+  LinearProgress,
+  Avatar,
+  Chip,
+} from '@mui/material';
+import { motion } from 'framer-motion';
+import * as React from 'react';
+import { useNavigate } from 'react-router-dom';
+
+import { StaggerContainer, StaggerItem } from '@/components/Animations/PageTransition';
+import { GlassCard } from '@/components/ui/GlassCard';
+import { ModernButton } from '@/components/ui/ModernButton';
+import { useAuthStore } from '@/store/authStore';
+import modernColors from '@/theme/modern-colors';
 
 export const ModernStudentDashboard: React.FC = () => {
-  const { user } = useAuthStore()
-  const navigate = useNavigate()
+  const { user } = useAuthStore();
+  const navigate = useNavigate();
 
   // Mock data - gerçek API'den gelecek
   const stats = {
@@ -47,7 +46,7 @@ export const ModernStudentDashboard: React.FC = () => {
     currentStreak: 7,
     rank: 234,
     totalStudents: 10000,
-  }
+  };
 
   const quickActions = [
     {
@@ -74,20 +73,20 @@ export const ModernStudentDashboard: React.FC = () => {
       gradient: modernColors.gradients.sunset,
       path: '/exam/history',
     },
-  ]
+  ];
 
   const recentActivities = [
     { id: 1, title: 'Matematik - Türev', score: 85, date: '2 saat önce', type: 'exam' },
     { id: 2, title: 'Fizik - Newton Kanunları', score: 92, date: '1 gün önce', type: 'lesson' },
     { id: 3, title: 'Kimya - Periyodik Tablo', score: 78, date: '2 gün önce', type: 'exam' },
-  ]
+  ];
 
   const subjects = [
     { name: 'Matematik', progress: 75, color: modernColors.subject.matematik.main },
     { name: 'Fizik', progress: 60, color: modernColors.subject.fizik.main },
     { name: 'Kimya', progress: 85, color: modernColors.subject.kimya.main },
     { name: 'Biyoloji', progress: 70, color: modernColors.subject.biyoloji.main },
-  ]
+  ];
 
   return (
     <Box
@@ -302,8 +301,8 @@ export const ModernStudentDashboard: React.FC = () => {
                         onClick={() => navigate(action.path)}
                         onKeyDown={(e) => {
                           if (e.key === 'Enter' || e.key === ' ') {
-                            e.preventDefault()
-                            navigate(action.path)
+                            e.preventDefault();
+                            navigate(action.path);
                           }
                         }}
                         sx={{
@@ -460,7 +459,7 @@ export const ModernStudentDashboard: React.FC = () => {
         </StaggerContainer>
       </Container>
     </Box>
-  )
-}
+  );
+};
 
-export default ModernStudentDashboard
+export default ModernStudentDashboard;

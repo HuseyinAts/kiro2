@@ -443,7 +443,7 @@ class OERService:
             {
                 "title": f"Advanced {query}",
                 "description": f"Advanced MIT course exploring {query} in depth.",
-                "url": f"https://ocw.mit.edu/courses/find-by-topic/",
+                "url": "https://ocw.mit.edu/courses/find-by-topic/",
                 "subject": subject or query,
                 "course_number": "6.002",
             },
@@ -548,7 +548,8 @@ class OERService:
                 return datetime.fromisoformat(date_string.replace("Z", "+00:00"))
             # Basit format
             return datetime.strptime(date_string, "%Y-%m-%d")
-        except:
+        except (ValueError, TypeError) as e:
+            logger.debug(f"Date parsing failed: {e}")
             return None
 
     async def get_resource_details(

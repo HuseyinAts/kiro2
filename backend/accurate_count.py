@@ -1,31 +1,65 @@
-import re
+import subprocess, sys, os, re
 
-with open("tests/unit/test_exam_curriculum_models.py", "r") as f:
+env = {**os.environ, 'PYTHONDONTWRITEBYTECODE': '1', 'PYTHONIOENCODING': 'utf-8'}
+cwd = r"C:\Users\husey\kiro2\backend"
+
+ignores = [
+    "--ignore=tests/unit/services/claude_md_improvement/test_doc_updater_service.py",
+    "--ignore=tests/unit/test_enums.py",
+    "--ignore=tests/unit/test_services_batch2.py",
+    "--ignore=tests/unit/test_user_models.py",
+    "--ignore=tests/unit/test_core_batch1.py",
+    "--ignore=tests/integration/test_elasticsearch_client.py",
+    "--ignore=tests/integration/test_learning_path_database.py",
+    "--ignore=tests/integration/test_models.py",
+    "--ignore=tests/integration/test_multi_agent_blackboard.py",
+    "--ignore=tests/integration/test_performance_optimization.py",
+    "--ignore=tests/integration/test_production_health_monitor.py",
+    "--ignore=tests/integration/test_real_database_operations.py",
+    "--ignore=tests/integration/test_structured_logging.py",
+]
+
+args = [sys.executable, "-m", "pytest", "tests/unit/", "tests/integration/",
+        "--no-cov", "-p", "no:cacheprovider", "-p", "no:capture",
+        "--tb=no", "-v", "--maxfail=300"] + ignores
+
+outfile = os.path.join(cwd, "_final_verbose.txt")
+with open(outfile, 'w', encoding='utf-8', errors='replace') as fout:
+    result = subprocess.run(args, cwd=cwd, stdout=fout, stderr=subprocess.STDOUT,
+                           timeout=600, env=env)
+
+with open(outfile, 'r', encoding='utf-8', errors='replace') as f:
     content = f.read()
 
-# Find all parametrize decorators with their test counts
-parametrize_pattern = r"@pytest\.mark\.parametrize\([^)]+\[([^\]]+)\]"
-matches = re.findall(parametrize_pattern, content, re.DOTALL)
+clean = re.sub(r'\x1b\[[0-9;]*m', '', content)
+lines = clean.split('\n')
 
-total_param_cases = 0
-for match in matches:
-    # Count tuples (lines starting with '(' after whitespace)
-    tuples = re.findall(r"^\s*\(", match, re.MULTILINE)
-    count = len(tuples)
-    total_param_cases += count
+passed = sum(1 for l in lines if ' PASSED' in l and '::' in l)
+failed = sum(1 for l in lines if ' FAILED' in l and '::' in l)
+errored = sum(1 for l in lines if ' ERROR' in l and '::' in l)
 
-# Count test functions
-test_funcs = len(re.findall(r"^\s+def test_", content, re.MULTILINE))
+print(f"PASSED: {passed}")
+print(f"FAILED: {failed}")
+print(f"ERROR: {errored}")
+print(f"TOTAL: {passed + failed + errored}")
+if passed + failed + errored > 0:
+    print(f"PASS RATE: {passed/(passed+failed+errored)*100:.1f}%")
 
-# Count parametrize decorators
-param_decorators = len(re.findall(r"@pytest\.mark\.parametrize", content))
+# Also find summary line
+for l in lines[-20:]:
+    if 'passed' in l or 'failed' in l or 'error' in l:
+        print(f"SUMMARY: {l.strip()}")
 
-# Non-parametrized tests
-non_param = test_funcs - param_decorators
+# Failures by file
+from collections import Counter
+ff = Counter()
+for l in lines:
+    if ' FAILED' in l and '::' in l:
+        fn = l.split(' FAILED')[0].split('::')[0].strip().split('\\')[-1].split('/')[-1]
+        ff[fn] += 1
+if ff:
+    print("FAILURES BY FILE:")
+    for k,v in sorted(ff.items(), key=lambda x:-x[1]):
+        print(f"  {v:3d} {k}")
 
-total = total_param_cases + non_param
-
-print(f"Parametrize decorators: {param_decorators}")
-print(f"Parametrized test cases: {total_param_cases}")
-print(f"Non-parametrized tests: {non_param}")
-print(f"TOTAL TEST CASES: {total}")
+print(f"\nEXIT CODE: {result.returncode}")

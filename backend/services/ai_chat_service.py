@@ -8,8 +8,7 @@ from typing import List, Optional, Dict, Any
 from uuid import UUID
 from sqlalchemy import select, func, and_, desc
 from sqlalchemy.ext.asyncio import AsyncSession
-from datetime import datetime
-import json
+from datetime import datetime, timezone
 
 from models.ai_chat import (
     ChatSession,
@@ -132,7 +131,7 @@ class AIChatService:
         session = await self.get_session(session_id)
         if session:
             session.message_count += 1
-            session.last_message_at = datetime.utcnow()
+            session.last_message_at = datetime.now(timezone.utc)
             if kwargs.get("tokens_used"):
                 session.total_tokens += kwargs["tokens_used"]
             if kwargs.get("cost"):
@@ -252,7 +251,7 @@ class AIChatService:
         image.processing_status = ImageProcessingStatus.COMPLETED
         image.ocr_text = ocr_text
         image.ocr_confidence = ocr_confidence
-        image.processed_at = datetime.utcnow()
+        image.processed_at = datetime.now(timezone.utc)
 
         # Update optional fields
         for key, value in kwargs.items():
@@ -273,7 +272,7 @@ class AIChatService:
 
         image.processing_status = ImageProcessingStatus.FAILED
         image.error_message = error_message
-        image.processed_at = datetime.utcnow()
+        image.processed_at = datetime.now(timezone.utc)
 
         await self.db.commit()
         await self.db.refresh(image)

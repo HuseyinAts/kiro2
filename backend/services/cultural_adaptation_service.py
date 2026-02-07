@@ -13,7 +13,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.database import get_db_session
 
-from ..algorithms.cultural_adaptation_engine import (
+from algorithms.cultural_adaptation_engine import (
     AgeGroup,
     CulturalAdaptationEngine,
     CulturalAdaptationResult,
@@ -33,8 +33,8 @@ class CulturalAdaptationService:
     Türk öğrenci kültürüne uyarlanmış dinamik öğrenme deneyimi sağlar.
     """
 
-    def __init__(self):
-        """Servisi başlat"""
+    def __init__(self) -> None:
+        """Servisi başlat."""
         self.adaptation_engine = CulturalAdaptationEngine()
         self.context_analyzer = CulturalContextAnalyzer()
 

@@ -190,3 +190,8 @@ pre-commit:
 # Full CI pipeline
 ci: clean format lint type-check security test-coverage
 	@echo "🚀 Full CI pipeline complete"
+
+# Testcontainers - real Docker integration tests
+test-containers:
+	@echo "🐳 Running Testcontainer tests (requires Docker)..."
+	USE_TESTCONTAINERS=true python -m pytest tests/ -v -m testcontainers --timeout=60

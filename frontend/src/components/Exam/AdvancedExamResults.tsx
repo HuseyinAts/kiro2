@@ -3,7 +3,15 @@
  * Advanced Exam Results Component
  * IRT, Morfoloji, ZPD ve Hibrit Öğrenme Stili analizleri dahil
  */
-import React, { useState, useEffect } from 'react';
+import {
+  Assessment,
+  Science,
+  Psychology,
+  MenuBook,
+  CompareArrows,
+  Insights,
+  Refresh,
+} from '@mui/icons-material';
 import {
   Box,
   Paper,
@@ -12,30 +20,24 @@ import {
   Typography,
   Tabs,
   Tab,
-  Button
+  Button,
 } from '@mui/material';
-import {
-  Assessment,
-  Science,
-  Psychology,
-  MenuBook,
-  CompareArrows,
-  Insights,
-  Refresh
-} from '@mui/icons-material';
-import { examService } from '../../services/examService';
+import * as React from 'react';
+import {  useState, useEffect  } from 'react';
+
 import { advancedReportsService, AdvancedExamReport } from '../../services/advancedReportsService';
-import { SinavSonucu } from '../../types';
+import { examService } from '../../services/examService';
+import { SinavSonucu, performanceToSinavSonucu } from '../../types';
 
 // Import sub-components
-import { ResultsHeader } from './Results/ResultsHeader';
 import { BasicResultsTab } from './Results/BasicResultsTab';
-import { IRTMorphologyTab } from './Results/IRTMorphologyTab';
-import { ZPDAnalysisTab } from './Results/ZPDAnalysisTab';
-import { LearningStyleTab } from './Results/LearningStyleTab';
 import { ComparisonTab } from './Results/ComparisonTab';
+import { IRTMorphologyTab } from './Results/IRTMorphologyTab';
+import { LearningStyleTab } from './Results/LearningStyleTab';
 import { PerformanceTrendTab } from './Results/PerformanceTrendTab';
 import { RecommendationsDialog } from './Results/RecommendationsDialog';
+import { ResultsHeader } from './Results/ResultsHeader';
+import { ZPDAnalysisTab } from './Results/ZPDAnalysisTab';
 
 interface AdvancedExamResultsProps {
   sinavId: string;
@@ -69,11 +71,13 @@ export const AdvancedExamResults: React.FC<AdvancedExamResultsProps> = ({ sinavI
       // Load basic result and advanced report in parallel
       const [sonucData, gelismisRaporData] = await Promise.allSettled([
         examService.getExamResult(sinavId),
-        advancedReportsService.getAdvancedExamReport(sinavId)
+        advancedReportsService.getAdvancedExamReport(sinavId),
       ]);
 
       if (sonucData.status === 'fulfilled') {
-        setSonuc(sonucData.value);
+        // Convert PerformanceResponse to SinavSonucu
+        const convertedSonuc = performanceToSinavSonucu(sonucData.value, sinavId);
+        setSonuc(convertedSonuc);
       } else {
         throw new Error('Temel sınav sonucu yüklenemedi');
       }
@@ -126,7 +130,7 @@ export const AdvancedExamResults: React.FC<AdvancedExamResultsProps> = ({ sinavI
   /**
    * Handle tab change
    */
-  const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
+  const handleTabChange = (_event: React.SyntheticEvent, newValue: number) => {
     setActiveTab(newValue);
   };
 

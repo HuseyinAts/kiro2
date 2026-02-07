@@ -7,12 +7,10 @@ Bu modül ÖSYM sorularını toplar, parse eder ve veritabanına kaydeder.
 """
 
 import logging
-from typing import Dict, List, Optional, Any
-from datetime import datetime
+from typing import Dict, List, Any
 import hashlib
 import re
 from sqlalchemy.orm import Session
-from sqlalchemy import and_
 
 logger = logging.getLogger(__name__)
 

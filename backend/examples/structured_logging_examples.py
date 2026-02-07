@@ -3,7 +3,6 @@ Structured Logging Examples
 Demonstrates migration from primitive to structured logging
 """
 
-from datetime import datetime
 from core.structured_logger import (
     get_logger,
     log_exam_event,
@@ -47,7 +46,7 @@ def example_error_logging():
     try:
         # Simulate an error
         result = 10 / 0
-    except Exception as e:
+    except Exception:
         # Old way ❌
         # print(f"Error: {e}")
 
@@ -257,7 +256,7 @@ def example_performance_monitoring():
                 items_per_second=processed_items / (duration_ms / 1000),
             )
 
-        except Exception as e:
+        except Exception:
             duration_ms = (time.time() - start) * 1000
             logger.exception(
                 "operation_failed", operation="data_processing", duration_ms=duration_ms

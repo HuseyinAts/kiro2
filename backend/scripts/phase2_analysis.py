@@ -66,7 +66,7 @@ class Phase2AnalysisStrategy:
         print(
             f"Current Overall Coverage: {coverage_data['totals']['percent_covered']:.2f}%"
         )
-        print(f"Target Coverage: 35.0%")
+        print("Target Coverage: 35.0%")
         print(f"Gap to Close: {35.0 - coverage_data['totals']['percent_covered']:.1f}%")
         print()
 
@@ -185,7 +185,7 @@ class Phase2AnalysisStrategy:
         )
         print(f"Total Missing Lines: {total_missing_lines:,}")
         print(f"Estimated Tests: {estimated_tests}")
-        print(f"Estimated Time: 2-3 days")
+        print("Estimated Time: 2-3 days")
         print()
 
         # Next actions

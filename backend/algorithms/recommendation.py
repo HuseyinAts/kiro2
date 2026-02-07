@@ -149,7 +149,7 @@ class CollaborativeFiltering:
                 self.user_features = self.svd.fit_transform(matrix)
                 self.item_features = self.svd.components_.T
 
-                logger.info(f"Collaborative filtering model trained")
+                logger.info("Collaborative filtering model trained")
 
         except Exception as e:
             logger.error(f"Fit error: {str(e)}")
@@ -471,6 +471,340 @@ class HybridRecommender:
         if total > 0:
             self.alpha = cf_success / total
             logger.info(f"Updated alpha to {self.alpha:.2f}")
+
+
+class ChromaDBRecommender:
+    """
+    ChromaDB embedding-based recommendation system.
+
+    Spec: REQ-4 Content Recommendation
+    - User profile embedding from interaction aggregation
+    - Hybrid approach: 70% content-based + 30% collaborative
+    - Cold-start fallback to popularity-based
+    """
+
+    def __init__(
+        self,
+        chromadb_collection: Any = None,
+        embedding_service: Any = None,
+        content_weight: float = 0.7,
+        collaborative_weight: float = 0.3,
+    ):
+        """
+        Initialize ChromaDB-based recommender.
+
+        Args:
+            chromadb_collection: ChromaDB collection for content embeddings
+            embedding_service: Service for generating embeddings
+            content_weight: Weight for content-based recommendations (default 0.7)
+            collaborative_weight: Weight for collaborative filtering (default 0.3)
+        """
+        self.collection = chromadb_collection
+        self.embedding_service = embedding_service
+        self.content_weight = content_weight
+        self.collaborative_weight = collaborative_weight
+
+        # User profile embedding cache
+        self._user_profile_cache: Dict[str, Tuple[np.ndarray, datetime]] = {}
+        self._cache_ttl_hours = 24
+
+        # Popularity scores for cold-start
+        self._popularity_scores: Dict[str, float] = {}
+
+        # Fallback recommender
+        self._hybrid_recommender = HybridRecommender(alpha=collaborative_weight)
+
+    def get_user_profile_embedding(
+        self,
+        user_id: str,
+        interaction_history: List[Dict[str, Any]],
+    ) -> np.ndarray:
+        """
+        Generate user profile embedding by aggregating interaction embeddings.
+
+        Aggregates embeddings of items the user has interacted with,
+        weighted by interaction type and recency.
+
+        Args:
+            user_id: User identifier
+            interaction_history: List of user interactions
+
+        Returns:
+            Aggregated user profile embedding
+        """
+        # Check cache first
+        if user_id in self._user_profile_cache:
+            cached_embedding, cached_time = self._user_profile_cache[user_id]
+            hours_old = (datetime.now() - cached_time).total_seconds() / 3600
+            if hours_old < self._cache_ttl_hours:
+                return cached_embedding
+
+        if not interaction_history:
+            return self._get_default_profile_embedding()
+
+        # Collect embeddings weighted by interaction score
+        weighted_embeddings = []
+        weights = []
+
+        # Interaction weights
+        interaction_weights = {
+            "view": 1.0,
+            "like": 2.0,
+            "complete": 3.0,
+            "bookmark": 2.5,
+            "share": 4.0,
+            "quiz_pass": 5.0,
+        }
+
+        for interaction in interaction_history:
+            item_id = interaction.get("item_id")
+            action = interaction.get("action", "view")
+
+            if not item_id:
+                continue
+
+            # Try to get embedding from collection
+            embedding = self._get_item_embedding(item_id)
+            if embedding is not None:
+                weight = interaction_weights.get(action, 1.0)
+
+                # Time decay (recent interactions count more)
+                timestamp = interaction.get("timestamp")
+                if timestamp:
+                    try:
+                        if isinstance(timestamp, str):
+                            inter_time = datetime.fromisoformat(timestamp)
+                        else:
+                            inter_time = timestamp
+                        days_old = (datetime.now() - inter_time).days
+                        time_weight = 1.0 / (1.0 + days_old / 30)  # 30-day half-life
+                        weight *= time_weight
+                    except Exception:
+                        pass
+
+                weighted_embeddings.append(embedding)
+                weights.append(weight)
+
+        if not weighted_embeddings:
+            return self._get_default_profile_embedding()
+
+        # Weighted average of embeddings
+        weights_array = np.array(weights)
+        weights_normalized = weights_array / weights_array.sum()
+
+        profile_embedding = np.average(
+            weighted_embeddings,
+            axis=0,
+            weights=weights_normalized,
+        )
+
+        # Normalize
+        norm = np.linalg.norm(profile_embedding)
+        if norm > 0:
+            profile_embedding = profile_embedding / norm
+
+        # Cache the result
+        self._user_profile_cache[user_id] = (profile_embedding, datetime.now())
+
+        return profile_embedding
+
+    def _get_item_embedding(self, item_id: str) -> np.ndarray | None:
+        """Get embedding for an item from ChromaDB collection."""
+        if self.collection is None:
+            return None
+
+        try:
+            result = self.collection.get(ids=[item_id], include=["embeddings"])
+            if result["embeddings"] and len(result["embeddings"]) > 0:
+                return np.array(result["embeddings"][0])
+        except Exception as e:
+            logger.warning(f"Could not get embedding for {item_id}: {e}")
+
+        return None
+
+    def _get_default_profile_embedding(self) -> np.ndarray:
+        """Get a default profile embedding for new users."""
+        # Return a zero vector of appropriate dimension
+        # This will be updated once we know the embedding dimension
+        return np.zeros(384)  # Default MiniLM dimension
+
+    def recommend_with_embeddings(
+        self,
+        user_id: str,
+        interaction_history: List[Dict[str, Any]],
+        k: int = 10,
+        filter_metadata: Dict[str, Any] | None = None,
+    ) -> List[Recommendation]:
+        """
+        Generate recommendations using ChromaDB embeddings.
+
+        Args:
+            user_id: User identifier
+            interaction_history: User's interaction history
+            k: Number of recommendations
+            filter_metadata: Optional metadata filter
+
+        Returns:
+            List of recommendations
+        """
+        # Check for cold-start
+        if self._is_cold_start(interaction_history):
+            return self.handle_cold_start(user_id, k, filter_metadata)
+
+        # Get user profile embedding
+        profile_embedding = self.get_user_profile_embedding(user_id, interaction_history)
+
+        if self.collection is None:
+            logger.warning("ChromaDB collection not available, using fallback")
+            return []
+
+        try:
+            # Query ChromaDB for similar items
+            results = self.collection.query(
+                query_embeddings=[profile_embedding.tolist()],
+                n_results=k * 2,  # Fetch more for filtering
+                where=filter_metadata,
+                include=["documents", "metadatas", "distances"],
+            )
+
+            # Build recommendations
+            recommendations = []
+            seen_items = {i.get("item_id") for i in interaction_history}
+
+            for i, (item_id, distance, metadata) in enumerate(zip(
+                results.get("ids", [[]])[0],
+                results.get("distances", [[]])[0],
+                results.get("metadatas", [[]])[0],
+            )):
+                # Skip already seen items
+                if item_id in seen_items:
+                    continue
+
+                # Convert distance to similarity score
+                similarity = 1.0 / (1.0 + distance)
+
+                # Apply diversity sampling
+                if len(recommendations) >= k:
+                    break
+
+                rec = Recommendation(
+                    user_id=user_id,
+                    item_id=item_id,
+                    score=float(similarity),
+                    method="chromadb_embedding",
+                    reasoning=f"Embedding similarity: {similarity:.3f}",
+                    timestamp=datetime.now(),
+                )
+                recommendations.append(rec)
+
+            logger.info(f"Generated {len(recommendations)} ChromaDB recommendations for {user_id}")
+            return recommendations
+
+        except Exception as e:
+            logger.error(f"ChromaDB recommendation error: {e}")
+            return self.handle_cold_start(user_id, k, filter_metadata)
+
+    def _is_cold_start(self, interaction_history: List[Dict[str, Any]]) -> bool:
+        """
+        Detect if user is in cold-start situation.
+
+        Cold-start: less than 3 meaningful interactions.
+        """
+        if not interaction_history:
+            return True
+
+        # Count meaningful interactions (not just views)
+        meaningful_actions = {"like", "complete", "bookmark", "share", "quiz_pass"}
+        meaningful_count = sum(
+            1 for i in interaction_history
+            if i.get("action") in meaningful_actions
+        )
+
+        return meaningful_count < 3
+
+    def handle_cold_start(
+        self,
+        user_id: str,
+        k: int = 10,
+        filter_metadata: Dict[str, Any] | None = None,
+    ) -> List[Recommendation]:
+        """
+        Handle cold-start users with popularity-based recommendations.
+
+        Spec: REQ-4.5 Cold-start fallback
+
+        Args:
+            user_id: User identifier
+            k: Number of recommendations
+            filter_metadata: Optional metadata filter
+
+        Returns:
+            Popularity-based recommendations
+        """
+        logger.info(f"Cold-start detected for user {user_id}, using popularity fallback")
+
+        # Sort items by popularity
+        sorted_items = sorted(
+            self._popularity_scores.items(),
+            key=lambda x: x[1],
+            reverse=True,
+        )
+
+        recommendations = []
+        for item_id, popularity in sorted_items[:k]:
+            rec = Recommendation(
+                user_id=user_id,
+                item_id=item_id,
+                score=popularity,
+                method="popularity_cold_start",
+                reasoning=f"Popularity score: {popularity:.3f}",
+                timestamp=datetime.now(),
+            )
+            recommendations.append(rec)
+
+        return recommendations
+
+    def update_popularity_scores(self, interactions: List[Dict[str, Any]]) -> None:
+        """
+        Update popularity scores from interaction data.
+
+        Args:
+            interactions: All user interactions
+        """
+        # Count interactions per item
+        item_counts: Dict[str, float] = {}
+
+        for interaction in interactions:
+            item_id = interaction.get("item_id")
+            if not item_id:
+                continue
+
+            action = interaction.get("action", "view")
+            weight = {
+                "view": 1.0,
+                "like": 3.0,
+                "complete": 5.0,
+                "share": 7.0,
+            }.get(action, 1.0)
+
+            item_counts[item_id] = item_counts.get(item_id, 0) + weight
+
+        # Normalize to 0-1 range
+        if item_counts:
+            max_count = max(item_counts.values())
+            self._popularity_scores = {
+                item_id: count / max_count
+                for item_id, count in item_counts.items()
+            }
+
+        logger.info(f"Updated popularity scores for {len(self._popularity_scores)} items")
+
+    def clear_user_cache(self, user_id: str | None = None) -> None:
+        """Clear user profile embedding cache."""
+        if user_id:
+            self._user_profile_cache.pop(user_id, None)
+        else:
+            self._user_profile_cache.clear()
 
 
 # Test için örnek kullanım

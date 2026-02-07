@@ -59,7 +59,7 @@ for r in results:
     total_mat_ans += r["mat_answered"]
 
 print("-" * 105)
-print(f"\nSUMMARY:")
+print("\nSUMMARY:")
 print(f"Total Questions: {total_questions}")
 print(
     f"Total Answered: {total_answered} ({total_answered/total_questions*100 if total_questions > 0 else 0:.1f}%)"

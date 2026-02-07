@@ -1,5 +1,24 @@
-import { useState, useEffect } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import {
+  TrendingUp,
+  TrendingDown,
+  School,
+  EmojiEvents,
+  Timer,
+  CalendarToday as _CalendarToday,
+  Assessment,
+  Star,
+  LocalFireDepartment,
+  Timeline as _Timeline,
+  CheckCircle,
+  RadioButtonUnchecked,
+  MoreVert,
+  Download,
+  Share,
+  Print,
+  Refresh,
+  FilterList as _FilterList,
+  DateRange as _DateRange,
+} from '@mui/icons-material';
 import {
   Grid,
   Paper,
@@ -20,43 +39,25 @@ import {
   Tabs,
   Tab,
   Box,
-  Divider,
-  Badge,
+  Divider as _Divider,
+  Badge as _Badge,
   Tooltip,
   Menu,
-  MenuItem
-} from '@mui/material'
-import {
-  TrendingUp,
-  TrendingDown,
-  School,
-  EmojiEvents,
-  Timer,
-  CalendarToday,
-  Assessment,
-  Star,
-  LocalFireDepartment,
-  Timeline,
-  CheckCircle,
-  RadioButtonUnchecked,
-  MoreVert,
-  Download,
-  Share,
-  Print,
-  Refresh,
-  FilterList,
-  DateRange
-} from '@mui/icons-material'
+  MenuItem,
+} from '@mui/material';
+import clsx from 'clsx';
+import { AnimatePresence as _AnimatePresence } from 'framer-motion';
+import { useState } from 'react';
 import {
   LineChart,
   Line,
   AreaChart,
   Area,
-  BarChart,
-  Bar,
-  PieChart,
-  Pie,
-  Cell,
+  BarChart as _BarChart,
+  Bar as _Bar,
+  PieChart as _PieChart,
+  Pie as _Pie,
+  Cell as _Cell,
   XAxis,
   YAxis,
   CartesianGrid,
@@ -67,10 +68,10 @@ import {
   PolarGrid,
   PolarAngleAxis,
   PolarRadiusAxis,
-  Radar
-} from 'recharts'
-import { dateUtils } from '@/utils/dateUtils'
-import clsx from 'clsx'
+  Radar,
+} from 'recharts';
+
+import { dateUtils } from '@/utils/dateUtils';
 
 interface DashboardData {
   user: {
@@ -166,8 +167,8 @@ const mockData: DashboardData = {
     badges: [
       { id: '1', name: 'Hızlı Başlangıç', icon: '🚀', color: '#3b82f6', earnedAt: '2024-01-15' },
       { id: '2', name: 'Quiz Ustası', icon: '🎯', color: '#10b981', earnedAt: '2024-01-20' },
-      { id: '3', name: 'Hafta Sonu Savaşçısı', icon: '⚔️', color: '#f59e0b', earnedAt: '2024-01-22' }
-    ]
+      { id: '3', name: 'Hafta Sonu Savaşçısı', icon: '⚔️', color: '#f59e0b', earnedAt: '2024-01-22' },
+    ],
   },
   stats: {
     completedLessons: 45,
@@ -176,13 +177,13 @@ const mockData: DashboardData = {
     averageScore: 78,
     studyTime: 1250,
     weeklyGoal: 300,
-    weeklyProgress: 210
+    weeklyProgress: 210,
   },
   recentActivities: [
     { id: '1', type: 'lesson', title: 'Python Temelleri', timestamp: '2024-01-26T14:30:00', duration: 45 },
     { id: '2', type: 'quiz', title: 'Veri Yapıları Quiz', timestamp: '2024-01-26T10:15:00', score: 85 },
     { id: '3', type: 'achievement', title: 'İlk 10 Ders Tamamlandı', timestamp: '2024-01-25T18:00:00' },
-    { id: '4', type: 'lesson', title: 'Algoritmalar', timestamp: '2024-01-25T15:20:00', duration: 60 }
+    { id: '4', type: 'lesson', title: 'Algoritmalar', timestamp: '2024-01-25T15:20:00', duration: 60 },
   ],
   progressHistory: [
     { date: '2024-01-20', lessons: 3, quizzes: 1, points: 120 },
@@ -191,7 +192,7 @@ const mockData: DashboardData = {
     { date: '2024-01-23', lessons: 3, quizzes: 0, points: 90 },
     { date: '2024-01-24', lessons: 5, quizzes: 2, points: 220 },
     { date: '2024-01-25', lessons: 2, quizzes: 1, points: 110 },
-    { date: '2024-01-26', lessons: 3, quizzes: 2, points: 170 }
+    { date: '2024-01-26', lessons: 3, quizzes: 2, points: 170 },
   ],
   skillsRadar: [
     { skill: 'Python', value: 85, fullMark: 100 },
@@ -199,51 +200,51 @@ const mockData: DashboardData = {
     { skill: 'Algoritmalar', value: 65, fullMark: 100 },
     { skill: 'Veri Yapıları', value: 75, fullMark: 100 },
     { skill: 'Veritabanı', value: 60, fullMark: 100 },
-    { skill: 'Web Geliştirme', value: 80, fullMark: 100 }
+    { skill: 'Web Geliştirme', value: 80, fullMark: 100 },
   ],
   achievements: [
     { id: '1', title: 'İlk Adım', description: 'İlk dersini tamamla', icon: '👶', progress: 1, maxProgress: 1, unlocked: true },
     { id: '2', title: 'Hızlı Öğrenci', description: '10 dersi tamamla', icon: '🏃', progress: 10, maxProgress: 10, unlocked: true },
     { id: '3', title: 'Uzman', description: '50 dersi tamamla', icon: '🎓', progress: 45, maxProgress: 50, unlocked: false },
-    { id: '4', title: 'Quiz Kralı', description: '25 quiz\'i %80+ ile geç', icon: '👑', progress: 18, maxProgress: 25, unlocked: false }
+    { id: '4', title: 'Quiz Kralı', description: '25 quiz\'i %80+ ile geç', icon: '👑', progress: 18, maxProgress: 25, unlocked: false },
   ],
   leaderboard: [
     { rank: 1, name: 'Mehmet Öz', points: 23450, change: 'same' },
     { rank: 2, name: 'Ayşe Kaya', points: 22100, change: 'up' },
-    { rank: 3, name: 'Can Demir', points: 21500, change: 'down' }
-  ]
-}
+    { rank: 3, name: 'Can Demir', points: 21500, change: 'down' },
+  ],
+};
 
-export function ProgressDashboard({ 
-  data = mockData, 
+export function ProgressDashboard({
+  data = mockData,
   className,
-  onRefresh 
+  onRefresh,
 }: ProgressDashboardProps) {
-  const [activeTab, setActiveTab] = useState(0)
-  const [menuAnchor, setMenuAnchor] = useState<null | HTMLElement>(null)
-  const [dateFilter, setDateFilter] = useState<'week' | 'month' | 'all'>('week')
+  const [activeTab, setActiveTab] = useState(0);
+  const [menuAnchor, setMenuAnchor] = useState<null | HTMLElement>(null);
+  const [dateFilter, setDateFilter] = useState<'week' | 'month' | 'all'>('week');
 
   const chartColors = {
     primary: '#3b82f6',
     secondary: '#10b981',
     accent: '#f59e0b',
     error: '#ef4444',
-    success: '#10b981'
-  }
+    success: '#10b981',
+  };
 
   const formatStudyTime = (minutes: number) => {
-    const hours = Math.floor(minutes / 60)
-    const mins = minutes % 60
-    return `${hours}s ${mins}dk`
-  }
+    const hours = Math.floor(minutes / 60);
+    const mins = minutes % 60;
+    return `${hours}s ${mins}dk`;
+  };
 
-  const StatCard = ({ 
-    title, 
-    value, 
-    subtitle, 
-    icon, 
-    color, 
-    trend 
+  const StatCard = ({
+    title,
+    value,
+    subtitle,
+    icon,
+    color,
+    trend,
   }: {
     title: string
     value: string | number
@@ -284,7 +285,7 @@ export function ProgressDashboard({
         )}
       </CardContent>
     </Card>
-  )
+  );
 
   return (
     <div className={clsx('space-y-6', className)}>
@@ -292,14 +293,14 @@ export function ProgressDashboard({
       <Paper className="p-6">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-4">
-            <Avatar 
-              src={data.user.avatar} 
+            <Avatar
+              src={data.user.avatar}
               sx={{ width: 80, height: 80 }}
               className="border-4 border-blue-500"
             >
               {data.user.name[0]}
             </Avatar>
-            
+
             <div>
               <Typography variant="h4" className="font-bold">
                 {data.user.name}
@@ -524,19 +525,19 @@ export function ProgressDashboard({
             <div className="space-y-4">
               <div className="flex justify-end mb-4">
                 <ButtonGroup size="small">
-                  <Button 
+                  <Button
                     variant={dateFilter === 'week' ? 'contained' : 'outlined'}
                     onClick={() => setDateFilter('week')}
                   >
                     Haftalık
                   </Button>
-                  <Button 
+                  <Button
                     variant={dateFilter === 'month' ? 'contained' : 'outlined'}
                     onClick={() => setDateFilter('month')}
                   >
                     Aylık
                   </Button>
-                  <Button 
+                  <Button
                     variant={dateFilter === 'all' ? 'contained' : 'outlined'}
                     onClick={() => setDateFilter('all')}
                   >
@@ -699,7 +700,7 @@ export function ProgressDashboard({
         </Box>
       </Paper>
     </div>
-  )
+  );
 }
 
-export default ProgressDashboard
+export default ProgressDashboard;

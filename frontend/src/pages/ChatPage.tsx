@@ -3,11 +3,12 @@
  * Glassmorphism ile AI destekli chat deneyimi
  */
 
-import React from 'react'
-import { ModernChatPage } from './ModernChatPage'
+import * as React from 'react';
+
+import { ModernChatPage } from './ModernChatPage';
 
 export const ChatPage: React.FC = () => {
-  return <ModernChatPage />
-}
+  return <ModernChatPage />;
+};
 
-export default ChatPage
+export default ChatPage;

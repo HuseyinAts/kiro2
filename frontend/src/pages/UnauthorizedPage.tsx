@@ -3,8 +3,6 @@
  * Glassmorphism ile yetkilendirme hatası
  */
 
-import { useNavigate } from 'react-router-dom'
-import { Container, Typography, Box, Alert, Chip, Grid } from '@mui/material'
 import {
   Lock,
   Home,
@@ -13,72 +11,75 @@ import {
   Person,
   Email,
   AdminPanelSettings,
-  ContactSupport
-} from '@mui/icons-material'
-import { motion } from 'framer-motion'
-import { useAuthStore } from '@/store/authStore'
-import { UserRole } from '../types'
-import { GlassCard } from '../components/ui/GlassCard'
-import { ModernButton } from '../components/ui/ModernButton'
-import modernColors from '../theme/modern-colors'
+  ContactSupport,
+} from '@mui/icons-material';
+import { Container, Typography, Box, Chip, Grid } from '@mui/material';
+import { motion } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
+
+import { GlassCard } from '../components/ui/GlassCard';
+import { ModernButton } from '../components/ui/ModernButton';
+import modernColors from '../theme/modern-colors';
+import { UserRole } from '../types';
+import { useAuthStore } from '@/store/authStore';
 
 function getRoleDisplayName(role: UserRole): string {
   switch (role) {
     case 'ogrenci':
-      return 'Öğrenci'
+      return 'Öğrenci';
     case 'ogretmen':
-      return 'Öğretmen'
+      return 'Öğretmen';
     case 'veli':
-      return 'Veli'
+      return 'Veli';
     case 'admin':
-      return 'Admin'
+      return 'Admin';
     default:
-      return 'Kullanıcı'
+      return 'Kullanıcı';
   }
 }
 
 function getRoleIcon(role?: UserRole) {
   switch (role) {
     case 'ogrenci':
-      return <Person />
+      return <Person />;
     case 'ogretmen':
-      return <Shield />
+      return <Shield />;
     case 'veli':
-      return <Shield />
+      return <Shield />;
     case 'admin':
-      return <AdminPanelSettings />
+      return <AdminPanelSettings />;
     default:
-      return <Person />
+      return <Person />;
   }
 }
 
 export function UnauthorizedPage() {
-  const { user } = useAuthStore()
-  const navigate = useNavigate()
+  const { user } = useAuthStore();
+  const navigate = useNavigate();
 
   const getDefaultDashboard = (role?: UserRole): string => {
     switch (role) {
       case 'ogrenci':
-        return '/dashboard'
+        return '/dashboard';
       case 'ogretmen':
-        return '/teacher/dashboard'
+        return '/teacher/dashboard';
       case 'veli':
-        return '/parent/dashboard'
+        return '/parent/dashboard';
       case 'admin':
-        return '/admin/dashboard'
+        return '/admin/dashboard';
       default:
-        return '/login'
+        return '/login';
     }
-  }
+  };
 
   const handleGoHome = () => {
-    const defaultPath = getDefaultDashboard(user?.rol)
-    navigate(defaultPath)
-  }
+    const defaultPath = getDefaultDashboard(user?.rol);
+    navigate(defaultPath);
+  };
 
   const handleGoBack = () => {
-    navigate(-1)
-  }
+    navigate(-1);
+  };
 
   return (
     <Box
@@ -88,7 +89,7 @@ export function UnauthorizedPage() {
         alignItems: 'center',
         justifyContent: 'center',
         background: modernColors.gradients.mesh,
-        py: 4
+        py: 4,
       }}
     >
       <Container maxWidth="md">
@@ -116,7 +117,7 @@ export function UnauthorizedPage() {
                     alignItems: 'center',
                     justifyContent: 'center',
                     mx: 'auto',
-                    mb: 3
+                    mb: 3,
                   }}
                 >
                   <Lock sx={{ fontSize: 80, color: 'white' }} />
@@ -136,7 +137,7 @@ export function UnauthorizedPage() {
                     mb: 2,
                     fontWeight: 700,
                     fontSize: 16,
-                    height: 36
+                    height: 36,
                   }}
                 />
               </motion.div>
@@ -223,7 +224,7 @@ export function UnauthorizedPage() {
                               sx={{
                                 fontWeight: 600,
                                 fontSize: '0.75rem',
-                                wordBreak: 'break-all'
+                                wordBreak: 'break-all',
                               }}
                             >
                               {user.email}
@@ -285,8 +286,8 @@ export function UnauthorizedPage() {
                     m: 0,
                     '& li': {
                       mb: 1,
-                      color: 'text.secondary'
-                    }
+                      color: 'text.secondary',
+                    },
                   }}
                 >
                   <li>Bu sayfa sadece belirli kullanıcı rolleri için erişilebilir</li>
@@ -310,7 +311,7 @@ export function UnauthorizedPage() {
                   sx={{
                     display: 'flex',
                     alignItems: 'center',
-                    gap: 2
+                    gap: 2,
                   }}
                 >
                   <ContactSupport sx={{ fontSize: 32, color: 'primary.main' }} />
@@ -329,7 +330,7 @@ export function UnauthorizedPage() {
         </motion.div>
       </Container>
     </Box>
-  )
+  );
 }
 
-export default UnauthorizedPage
+export default UnauthorizedPage;

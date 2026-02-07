@@ -2,8 +2,9 @@
  * Knowledge Graph Visualization
  * Interactive graph showing topic relationships and learning paths
  */
-import React, { useEffect, useRef, useState } from 'react';
 import axios from 'axios';
+import * as React from 'react';
+import {  useEffect, useRef, useState  } from 'react';
 
 interface GraphNode {
   id: string;
@@ -11,6 +12,8 @@ interface GraphNode {
   type: 'topic' | 'question' | 'kazanim';
   difficulty?: number;
   status?: 'strong' | 'weak' | 'neutral';
+  x?: number;
+  y?: number;
 }
 
 interface GraphEdge {
@@ -21,8 +24,8 @@ interface GraphEdge {
 
 export const KnowledgeGraphViz: React.FC<{ studentId: string }> = ({ studentId }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [nodes, setNodes] = useState<GraphNode[]>([]);
-  const [edges, setEdges] = useState<GraphEdge[]>([]);
+  const [nodes, _setNodes] = useState<GraphNode[]>([]);
+  const [edges, _setEdges] = useState<GraphEdge[]>([]);
   const [stats, setStats] = useState<any>(null);
 
   useEffect(() => {
@@ -31,9 +34,9 @@ export const KnowledgeGraphViz: React.FC<{ studentId: string }> = ({ studentId }
 
   const loadGraphData = async () => {
     try {
-      const [statsRes, gapsRes] = await Promise.all([
+      const [statsRes, _gapsRes] = await Promise.all([
         axios.get('/api/v2/knowledge-graph/stats'),
-        axios.get(`/api/v2/knowledge-graph/student/${studentId}/gaps`)
+        axios.get(`/api/v2/knowledge-graph/student/${studentId}/gaps`),
       ]);
 
       setStats(statsRes.data);
@@ -46,10 +49,10 @@ export const KnowledgeGraphViz: React.FC<{ studentId: string }> = ({ studentId }
 
   const renderGraph = () => {
     const canvas = canvasRef.current;
-    if (!canvas) return;
+    if (!canvas) {return;}
 
     const ctx = canvas.getContext('2d');
-    if (!ctx) return;
+    if (!ctx) {return;}
 
     // Simple force-directed graph rendering
     ctx.clearRect(0, 0, canvas.width, canvas.height);

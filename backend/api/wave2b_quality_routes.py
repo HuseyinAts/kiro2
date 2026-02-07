@@ -3,7 +3,7 @@ Wave 2B Quality Evaluation API Routes
 Production-ready endpoints for quality evaluation
 """
 
-from fastapi import APIRouter, HTTPException, BackgroundTasks
+from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field
 from typing import List, Optional, Dict, Any
 import logging
@@ -31,8 +31,8 @@ class QuestionEvaluationRequest(BaseModel):
         "standard", description="quick, standard, thorough, complete"
     )
 
-    class Config:
-        schema_extra = {
+    model_config = {
+        "json_schema_extra": {
             "example": {
                 "question_text": "Bir sayının 3 katı 15'tir. Bu sayı kaçtır?",
                 "difficulty": "kolay",
@@ -40,6 +40,7 @@ class QuestionEvaluationRequest(BaseModel):
                 "evaluation_stage": "standard",
             }
         }
+    }
 
 
 class EvaluationResponse(BaseModel):
@@ -53,8 +54,8 @@ class EvaluationResponse(BaseModel):
     recommendations: List[str] = []
     execution_time_ms: float
 
-    class Config:
-        schema_extra = {
+    model_config = {
+        "json_schema_extra": {
             "example": {
                 "overall_score": 0.85,
                 "overall_grade": "Good",
@@ -67,6 +68,7 @@ class EvaluationResponse(BaseModel):
                 "execution_time_ms": 1523.5,
             }
         }
+    }
 
 
 class BatchEvaluationRequest(BaseModel):
@@ -120,14 +122,14 @@ async def load_osym_reference_questions(limit: int = 30) -> List[Dict]:
             query = text(
                 """
                 SELECT
-                    metin as question_text,
-                    zorluk as difficulty,
-                    konu as subject,
-                    dogru_cevap as correct_answer
-                FROM sorular
-                WHERE dogru_cevap IS NOT NULL
-                AND metin IS NOT NULL
-                AND LENGTH(metin) > 100
+                    stem as question_text,
+                    difficulty,
+                    subject,
+                    correct_answer
+                FROM questions
+                WHERE correct_answer IS NOT NULL
+                AND stem IS NOT NULL
+                AND LENGTH(stem) > 50
                 ORDER BY RANDOM()
                 LIMIT :limit
             """

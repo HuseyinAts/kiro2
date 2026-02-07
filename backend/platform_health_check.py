@@ -5,10 +5,9 @@ Teknofest 2025 - Eğitim Eylemci Projesi
 Backend çalışmadan da çalıştırılabilir - dosya bazlı kontroller
 """
 import json
-import os
 from pathlib import Path
 from datetime import datetime
-from typing import Dict, List, Any
+from typing import Dict, Any
 
 
 class QuickHealthCheck:
@@ -298,7 +297,7 @@ class QuickHealthCheck:
                     with open(coverage_file, "r", encoding="utf-8") as f:
                         latest_coverage = json.load(f)
                     break
-                except:
+                except (json.JSONDecodeError, OSError, IOError):
                     continue
 
         if latest_coverage and "totals" in latest_coverage:
@@ -456,7 +455,7 @@ class QuickHealthCheck:
                         )
 
                     if check["category"] == "Test Coverage" and check["score"] < 80:
-                        print(f"  - Test coverage'ı artır (hedef: 80%+)")
+                        print("  - Test coverage'ı artır (hedef: 80%+)")
 
         return report
 

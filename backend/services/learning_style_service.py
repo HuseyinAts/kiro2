@@ -7,10 +7,9 @@ Part of Mock Data Cleanup - Phase 4
 
 import logging
 import uuid
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional
 from sqlalchemy.orm import Session
-from sqlalchemy import func
 
 from core.cache import cache_manager
 from models import StudentLearningProfile, LearningAnalytics, ExamSession
@@ -116,7 +115,7 @@ class LearningStyleService:
                 existing_profile.profile_description = profile_description
                 existing_profile.behavioral_data_snapshot = str(behavioral_data)
                 existing_profile.questionnaire_responses = str(questionnaire_responses) if questionnaire_responses else None
-                existing_profile.updated_at = datetime.utcnow()
+                existing_profile.updated_at = datetime.now(timezone.utc)
 
                 db.commit()
                 db.refresh(existing_profile)

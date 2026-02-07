@@ -8,7 +8,7 @@ async def create_database():
         # Connect to postgres default database
         conn = await asyncpg.connect(
             host='localhost',
-            port=5432,
+            port=5434,
             user='postgres',
             password='postgres',
             database='postgres'

@@ -4,7 +4,7 @@
  * REQ-9: Erişilebilirlik ve Kapsayıcı Tasarım
  */
 
-import React from 'react';
+import * as React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { axe, toHaveNoViolations } from 'jest-axe';
 import AnimationController, { AnimationProvider } from '../AnimationController';

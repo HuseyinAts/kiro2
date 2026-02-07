@@ -13,13 +13,6 @@ from pydantic import BaseModel, Field
 
 from core.database import get_db
 from services.video_analytics_service import VideoAnalyticsService
-from models.video_analytics import (
-    VideoWatchSession,
-    VideoCompletionMilestone,
-    VideoNote,
-    VideoBookmark,
-    VideoAnalyticsSummary,
-)
 
 
 router = APIRouter(prefix="/api/video-analytics", tags=["video-analytics"])

@@ -1,11 +1,12 @@
 /**
  * EBA TV Video Player Bileşeni
- * 
+ *
  * TRT EBA TV videolarını oynatmak için özel video player.
  */
 
-import React, { useState, useRef, useEffect } from 'react';
 import { Play, Pause, Volume2, VolumeX, Maximize, Settings, SkipBack, SkipForward } from 'lucide-react';
+import * as React from 'react';
+import {  useState, useRef, useEffect  } from 'react';
 
 interface EbaTVVideoPlayerProps {
   videoUrl: string;
@@ -28,12 +29,12 @@ interface VideoProgress {
 export const EbaTVVideoPlayer: React.FC<EbaTVVideoPlayerProps> = ({
   videoUrl,
   title,
-  duration,
+  duration: _duration,
   thumbnail,
   subtitles = false,
   onProgress,
   onComplete,
-  onTimeUpdate
+  onTimeUpdate,
 }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -43,10 +44,10 @@ export const EbaTVVideoPlayer: React.FC<EbaTVVideoPlayerProps> = ({
     currentTime: 0,
     duration: 0,
     buffered: 0,
-    played: 0
+    played: 0,
   });
   const [showControls, setShowControls] = useState(true);
-  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [_isFullscreen, setIsFullscreen] = useState(false);
   const [playbackRate, setPlaybackRate] = useState(1);
   const [showSettings, setShowSettings] = useState(false);
 
@@ -87,7 +88,7 @@ export const EbaTVVideoPlayer: React.FC<EbaTVVideoPlayerProps> = ({
     if (videoRef.current) {
       videoRef.current.currentTime = Math.min(
         videoRef.current.currentTime + 10,
-        videoRef.current.duration
+        videoRef.current.duration,
       );
     }
   };
@@ -96,7 +97,7 @@ export const EbaTVVideoPlayer: React.FC<EbaTVVideoPlayerProps> = ({
     if (videoRef.current) {
       videoRef.current.currentTime = Math.max(
         videoRef.current.currentTime - 10,
-        0
+        0,
       );
     }
   };
@@ -124,8 +125,8 @@ export const EbaTVVideoPlayer: React.FC<EbaTVVideoPlayerProps> = ({
     if (videoRef.current) {
       const currentTime = videoRef.current.currentTime;
       const duration = videoRef.current.duration;
-      const buffered = videoRef.current.buffered.length > 0 
-        ? videoRef.current.buffered.end(0) 
+      const buffered = videoRef.current.buffered.length > 0
+        ? videoRef.current.buffered.end(0)
         : 0;
       const played = (currentTime / duration) * 100;
 
@@ -133,11 +134,11 @@ export const EbaTVVideoPlayer: React.FC<EbaTVVideoPlayerProps> = ({
         currentTime,
         duration,
         buffered,
-        played
+        played,
       };
 
       setProgress(newProgress);
-      
+
       // Callback'leri çağır
       onProgress?.(played);
       onTimeUpdate?.(currentTime, duration);
@@ -153,7 +154,7 @@ export const EbaTVVideoPlayer: React.FC<EbaTVVideoPlayerProps> = ({
     if (videoRef.current) {
       setProgress(prev => ({
         ...prev,
-        duration: videoRef.current!.duration
+        duration: videoRef.current!.duration,
       }));
     }
   };
@@ -168,7 +169,7 @@ export const EbaTVVideoPlayer: React.FC<EbaTVVideoPlayerProps> = ({
   // Kontrol görünürlüğü
   useEffect(() => {
     let timeout: NodeJS.Timeout;
-    
+
     const resetTimeout = () => {
       clearTimeout(timeout);
       setShowControls(true);
@@ -180,7 +181,7 @@ export const EbaTVVideoPlayer: React.FC<EbaTVVideoPlayerProps> = ({
     };
 
     resetTimeout();
-    
+
     return () => clearTimeout(timeout);
   }, [isPlaying]);
 
@@ -249,7 +250,7 @@ export const EbaTVVideoPlayer: React.FC<EbaTVVideoPlayerProps> = ({
       </div>
 
       {/* Video Kontrolleri */}
-      <div 
+      <div
         className={`absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent p-4 transition-opacity duration-300 ${
           showControls ? 'opacity-100' : 'opacity-0'
         }`}
@@ -258,23 +259,23 @@ export const EbaTVVideoPlayer: React.FC<EbaTVVideoPlayerProps> = ({
         <div className="mb-4">
           <div className="relative h-2 bg-gray-600 rounded-full cursor-pointer">
             {/* Buffered Progress */}
-            <div 
+            <div
               className="absolute h-full bg-gray-400 rounded-full"
               style={{ width: `${(progress.buffered / progress.duration) * 100}%` }}
             />
-            
+
             {/* Played Progress */}
-            <div 
+            <div
               className="absolute h-full bg-red-500 rounded-full"
               style={{ width: `${progress.played}%` }}
             />
-            
+
             {/* Seek Handle */}
-            <div 
+            <div
               className="absolute w-4 h-4 bg-red-500 rounded-full -mt-1 cursor-pointer"
               style={{ left: `calc(${progress.played}% - 8px)` }}
             />
-            
+
             {/* Clickable Area */}
             <input
               type="range"
@@ -322,7 +323,7 @@ export const EbaTVVideoPlayer: React.FC<EbaTVVideoPlayerProps> = ({
               >
                 {isMuted ? <VolumeX size={20} /> : <Volume2 size={20} />}
               </button>
-              
+
               <input
                 type="range"
                 min="0"
@@ -358,8 +359,8 @@ export const EbaTVVideoPlayer: React.FC<EbaTVVideoPlayerProps> = ({
                       key={rate}
                       onClick={() => changePlaybackRate(rate)}
                       className={`block w-full text-left px-2 py-1 text-sm rounded ${
-                        playbackRate === rate 
-                          ? 'bg-red-500 text-white' 
+                        playbackRate === rate
+                          ? 'bg-red-500 text-white'
                           : 'text-gray-300 hover:bg-gray-700'
                       }`}
                     >

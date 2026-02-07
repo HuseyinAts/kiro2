@@ -13,7 +13,7 @@ import json
 import asyncio
 from pathlib import Path
 import io
-from datetime import datetime
+from datetime import datetime, timezone
 
 # UTF-8 encoding
 sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="replace")
@@ -150,7 +150,7 @@ async def evaluate_questions():
                     "grade": eval_result.overall_grade,
                     "decision": eval_result.decision,
                     "status": status,
-                    "timestamp": datetime.utcnow().isoformat(),
+                    "timestamp": datetime.now(timezone.utc).isoformat(),
                 }
             )
 
@@ -190,7 +190,7 @@ async def evaluate_questions():
         print(f"Average Quality Score: {avg_score:.3f}")
         print(f"Minimum Score: {min_score:.3f}")
         print(f"Maximum Score: {max_score:.3f}")
-        print(f"\nTarget Score: 0.850")
+        print("\nTarget Score: 0.850")
 
         if avg_score >= 0.85:
             print(
@@ -204,7 +204,7 @@ async def evaluate_questions():
             print(f"    Gap: {0.85 - avg_score:.3f} points")
 
         # Individual results
-        print(f"\nIndividual Results:")
+        print("\nIndividual Results:")
         print(f"{'='*70}")
 
         for r in results:
@@ -220,7 +220,7 @@ async def evaluate_questions():
                 print(f"[FAIL] Q{r['question_id']}: {r['test_case']:<50} ERROR")
 
         # Breakdown by geometry type
-        print(f"\nBreakdown by Geometry Type:")
+        print("\nBreakdown by Geometry Type:")
         print(f"{'='*70}")
 
         geometry_type_scores = {}
@@ -238,7 +238,7 @@ async def evaluate_questions():
             print(f"  {gt:<35} Avg: {avg:.3f} ({len(scores)} question(s))")
 
         # Comparison with Phase 1 & 2
-        print(f"\nComparison with Previous Phases:")
+        print("\nComparison with Previous Phases:")
         print(f"{'='*70}")
         phase1_avg = 0.897  # From Phase 1 evaluation
         phase2_avg = 0.900  # From Phase 2 evaluation
@@ -262,10 +262,10 @@ async def evaluate_questions():
         print("[ERROR] No valid scores obtained")
 
     # Save results
-    output_file = f"wave2b_geometry_questions_evaluation_{datetime.utcnow().strftime('%Y%m%d_%H%M%S')}.json"
+    output_file = f"wave2b_geometry_questions_evaluation_{datetime.now(timezone.utc).strftime('%Y%m%d_%H%M%S')}.json"
 
     evaluation_report = {
-        "evaluation_date": datetime.utcnow().isoformat(),
+        "evaluation_date": datetime.now(timezone.utc).isoformat(),
         "phase": "Phase 3 - Geometry",
         "total_questions": len(results),
         "valid_evaluations": len(valid_scores),

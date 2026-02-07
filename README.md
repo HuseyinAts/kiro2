@@ -4,11 +4,12 @@
 
 **Teknofest 2025 - Eğitim Eylemcisi Kategorisi**
 
+[![CI](https://github.com/HuseyinAts/kiro2/actions/workflows/ci.yml/badge.svg)](https://github.com/HuseyinAts/kiro2/actions/workflows/ci.yml)
+[![Security](https://github.com/HuseyinAts/kiro2/actions/workflows/security.yml/badge.svg)](https://github.com/HuseyinAts/kiro2/actions/workflows/security.yml)
 [![Platform](https://img.shields.io/badge/Platform-KIRO2-blue)](https://github.com)
 [![Version](https://img.shields.io/badge/Version-2.0.0-green)](https://github.com)
 [![Status](https://img.shields.io/badge/Status-Production_Ready-success)](https://github.com)
-[![Tests](https://img.shields.io/badge/Tests-97%25_Pass-brightgreen)](https://github.com)
-[![Integration](https://img.shields.io/badge/Integration-97%25-brightgreen)](https://github.com)
+[![Coverage](https://img.shields.io/badge/Coverage-80%25-brightgreen)](https://github.com)
 
 </div>
 
@@ -198,6 +199,13 @@ Bu proje, **Teknofest 2025 Eğitim Eylemcisi** kategorisinde yarışmak üzere g
 5. **AI/ML Layer**: GPT-4, BERTurk, özel algoritmalar
 6. **Monitoring Layer**: Prometheus, Grafana, Jaeger, Sentry
 
+### Gerçek Çalışma Yolu (Tek Kaynak)
+
+- **Entrypoint**: `backend/main.py`
+- **Uygulama Factory**: `backend/core/application.py`
+- **Router yükleme**: `backend/routers/loader.py` (dinamik mapping, `backend/api/*.py`)
+- **Not**: `backend/main_old.py` legacy yol olarak durur; default çalışma hattında kullanılmaz.
+
 ### Veritabanı Şeması
 
 - **50+ Model**: User, Question, Exam, LearningPath, vb.
@@ -205,16 +213,115 @@ Bu proje, **Teknofest 2025 Eğitim Eylemcisi** kategorisinde yarışmak üzere g
 - **Connection Pool**: 200 pool size, 50 overflow
 - **Index Optimizasyonu**: Performans için özel indexler
 
+### Veri Durumu (Güncel Gerçeklik)
+
+- Repo içinde küçük SQLite snapshot’ları vardır; bunlar demo/analiz içindir.
+- Gerçekçi veri hacmi için seed süreci gerekir:
+  - `backend/scripts/manage_db.py seed dev` veya `seed prod`
+  - Seed scriptleri: `backend/scripts/seed_database.py`, `backend/scripts/production_seed.py`
+
 ### API Endpoint'leri
 
-- **595+ Route**: RESTful API yapısı
-- **593 Documented Endpoint**: OpenAPI 3.0 dokümantasyonu
+- **Dinamik Route**: `backend/routers/loader.py` üzerinden mapping ile yüklenir
+- **OpenAPI**: /openapi.json ile üretilir (aktif router’lara göre değişir)
 - **Versiyonlama**: /api/v1/ prefix
 - **Rate Limiting**: Endpoint bazlı hız sınırlaması
 
 ---
 
 ## Kurulum
+
+### Modern Python Araçları ile Kurulum (Önerilen)
+
+KIRO2 artık modern Python araçları kullanmaktadır:
+- **uv** - Hızlı paket yöneticisi (pip yerine)
+- **ruff** - Tek bir araçta linting ve formatting (black/isort/flake8 yerine)
+- **pre-commit** - Otomatik kod kalite kontrolleri
+
+#### Hızlı Kurulum (Windows)
+
+```powershell
+# 1. Projeyi klonlayın
+git clone https://github.com/yourusername/kiro2.git
+cd kiro2
+
+# 2. Otomatik kurulum scripti çalıştırın
+.\scripts\setup-dev.ps1
+
+# 3. Veritabanı migration
+cd backend
+alembic upgrade head
+```
+
+#### Hızlı Kurulum (Linux/Mac)
+
+```bash
+# 1. Projeyi klonlayın
+git clone https://github.com/yourusername/kiro2.git
+cd kiro2
+
+# 2. Otomatik kurulum scripti çalıştırın
+bash scripts/setup-dev.sh
+
+# 3. Veritabanı migration
+cd backend
+alembic upgrade head
+```
+
+#### Manuel Kurulum
+
+```bash
+# 1. uv kurulumu
+pip install --upgrade uv
+
+# 2. Virtual environment oluşturma
+uv venv --python 3.11
+source .venv/bin/activate  # Linux/Mac
+# veya
+.venv\Scripts\activate  # Windows
+
+# 3. Bağımlılıkları yükleme
+uv pip sync pyproject.toml
+uv pip install -e ".[dev]"
+
+# 4. Pre-commit hooks kurulumu
+pre-commit install
+
+# 5. Frontend bağımlılıkları
+cd frontend
+npm install
+```
+
+### Geliştirici Komutları
+
+Yeni geliştirici yardımcı scripti ile hızlı komutlar:
+
+```powershell
+# Windows
+.\scripts\dev.ps1 <command>
+
+# Kullanılabilir komutlar:
+.\scripts\dev.ps1 format    # Kodu formatla (ruff)
+.\scripts\dev.ps1 lint      # Linting kontrolü
+.\scripts\dev.ps1 test      # Testleri çalıştır
+.\scripts\dev.ps1 check     # Tüm kontrolleri çalıştır
+.\scripts\dev.ps1 backend   # Backend sunucuyu başlat
+.\scripts\dev.ps1 frontend  # Frontend sunucuyu başlat
+```
+
+### Eski Sistemden Geçiş (pip → uv)
+
+Mevcut bir kurulumdan uv'ye geçiş için:
+
+```powershell
+# Windows
+.\scripts\migrate-to-uv.ps1
+
+# Linux/Mac
+bash scripts/migrate-to-uv.sh
+```
+
+## Kurulum (Eski Yöntem)
 
 ### Gereksinimler
 
@@ -404,6 +511,22 @@ Detaylı API dokümantasyonu için: http://localhost:8000/docs
 
 ## Test
 
+### Kod Kalite Kontrolleri (Modern Araçlar)
+
+```bash
+# Ruff ile linting ve formatting
+ruff check backend/           # Linting kontrolü
+ruff format backend/           # Kodu formatla
+ruff check backend/ --fix      # Otomatik düzeltmeler
+
+# MyPy ile tip kontrolü
+mypy backend/ --config-file pyproject.toml
+
+# Pre-commit hooks çalıştırma
+pre-commit run --all-files     # Tüm dosyalarda
+pre-commit run ruff --all      # Sadece ruff kontrolü
+```
+
 ### Backend Testleri
 
 ```bash
@@ -419,6 +542,23 @@ pytest tests/ -v --cov=. --cov-report=html
 pytest tests/unit/ -v
 pytest tests/integration/ -v
 pytest tests/api/ -v
+
+# Hızlı test (slow testleri atla)
+pytest -m "not slow" --tb=short -x
+```
+
+### Geliştirici Yardımcı Script
+
+```powershell
+# Windows - Tüm kontrolleri tek komutla
+.\scripts\dev.ps1 check  # lint + type check + test
+
+# Diğer kullanışlı komutlar
+.\scripts\dev.ps1 format     # Kodu formatla
+.\scripts\dev.ps1 lint       # Sadece linting
+.\scripts\dev.ps1 test       # Sadece test
+.\scripts\dev.ps1 test-cov   # Test + coverage
+.\scripts\dev.ps1 clean      # Temp dosyaları temizle
 ```
 
 ### Frontend Testleri
@@ -485,7 +625,7 @@ python test_complete_checklists.py
 - [x] **Bilimsel Algoritmalar**: IRT, ZPD, FSRS
 - [x] **Monitoring**: Prometheus, Grafana, Jaeger, Sentry
 - [x] **Docker Support**: Kolay deployment
-- [x] **RESTful API**: 595+ endpoint
+- [x] **RESTful API**: dinamik router mapping ile aktifleşir
 - [x] **Real-time Updates**: WebSocket desteği
 - [x] **Multi-role Support**: Öğrenci, öğretmen, veli, admin
 

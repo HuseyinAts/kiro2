@@ -11,7 +11,7 @@ Teknofest 2025 - Eğitim Eylemci Projesi
 
 import logging
 from dataclasses import dataclass
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, Optional
 from enum import Enum
 
 logger = logging.getLogger(__name__)

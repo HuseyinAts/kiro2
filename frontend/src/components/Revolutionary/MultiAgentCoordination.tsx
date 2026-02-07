@@ -3,7 +3,20 @@
  * Blackboard Pattern ile gerçek zamanlı agent koordinasyonu
  */
 
-import React, { useState, useEffect } from 'react';
+import {
+  Hub as HubIcon,
+  Psychology as PsychologyIcon,
+  School as SchoolIcon,
+  Accessibility as AccessibilityIcon,
+  Refresh as RefreshIcon,
+  CheckCircle as CheckCircleIcon,
+  Error as ErrorIcon,
+  Schedule as ScheduleIcon,
+  TrendingUp as TrendingUpIcon,
+  Group as GroupIcon,
+  Sync as SyncIcon,
+  Timeline as TimelineIcon,
+} from '@mui/icons-material';
 import {
   Card,
   CardContent,
@@ -30,40 +43,26 @@ import {
   ListItemSecondaryAction,
   Divider,
   Avatar,
-  Badge
+  Badge,
 } from '@mui/material';
+import * as React from 'react';
+import {  useState, useEffect  } from 'react';
+
+import multiAgentService, { BlackboardEvent as ServiceBlackboardEvent } from '../../services/multiAgentService';
 import {
-  Hub as HubIcon,
-  Psychology as PsychologyIcon,
-  School as SchoolIcon,
-  Accessibility as AccessibilityIcon,
-  Refresh as RefreshIcon,
-  Info as InfoIcon,
-  CheckCircle as CheckCircleIcon,
-  Error as ErrorIcon,
-  Schedule as ScheduleIcon,
-  Speed as SpeedIcon,
-  TrendingUp as TrendingUpIcon,
-  Group as GroupIcon,
-  Sync as SyncIcon,
-  Timeline as TimelineIcon
-} from '@mui/icons-material';
-import { 
-  MultiAgentStatus, 
-  BlackboardEvent, 
-  AgentCoordination, 
-  ApiResponse 
+  MultiAgentStatus,
+  BlackboardEvent,
+  AgentCoordination,
 } from '../../types/revolutionary';
-import multiAgentService from '../../services/multiAgentService';
 
 interface MultiAgentCoordinationProps {
   studentId: string;
   onCoordinationUpdate?: (coordination: AgentCoordination) => void;
 }
 
-const MultiAgentCoordination: React.FC<MultiAgentCoordinationProps> = ({ 
-  studentId, 
-  onCoordinationUpdate 
+const MultiAgentCoordination: React.FC<MultiAgentCoordinationProps> = ({
+  studentId,
+  onCoordinationUpdate,
 }) => {
   const [agents, setAgents] = useState<MultiAgentStatus[]>([]);
   const [coordination, setCoordination] = useState<AgentCoordination | null>(null);
@@ -82,18 +81,18 @@ const MultiAgentCoordination: React.FC<MultiAgentCoordinationProps> = ({
         setError(null);
 
         console.log(`Loading multi-agent data for student: ${studentId}`);
-        
+
         // Backend API'lerden veri çek
         const [metricsResult, agentStatusResult, eventHistoryResult] = await Promise.all([
           multiAgentService.getMetrics(),
           multiAgentService.getAgentStatus(),
-          multiAgentService.getEventHistory(10)
+          multiAgentService.getEventHistory(10),
         ]);
 
         // Agent durumlarını oluştur
         const agentStatusData = agentStatusResult.success ? agentStatusResult.data : {};
         const metricsData = metricsResult.success ? metricsResult.data : null;
-        
+
         const mockAgents: MultiAgentStatus[] = Object.entries(agentStatusData || {}).map(([agentName, status]) => ({
           agent_id: agentName,
           name: agentName,
@@ -105,8 +104,8 @@ const MultiAgentCoordination: React.FC<MultiAgentCoordinationProps> = ({
           performance_metrics: {
             tasks_completed: Math.floor(Math.random() * 30) + 5,
             success_rate: 0.85 + Math.random() * 0.15,
-            average_response_time: 800 + Math.floor(Math.random() * 1000)
-          }
+            average_response_time: 800 + Math.floor(Math.random() * 1000),
+          },
         }));
 
         // Eğer backend'den agent gelmezse mock data kullan
@@ -121,8 +120,8 @@ const MultiAgentCoordination: React.FC<MultiAgentCoordinationProps> = ({
               performance_metrics: {
                 tasks_completed: 15,
                 success_rate: 0.92,
-                average_response_time: 1200
-              }
+                average_response_time: 1200,
+              },
             },
             {
               agent_id: 'study_buddy_agent',
@@ -133,8 +132,8 @@ const MultiAgentCoordination: React.FC<MultiAgentCoordinationProps> = ({
               performance_metrics: {
                 tasks_completed: 23,
                 success_rate: 0.87,
-                average_response_time: 800
-              }
+                average_response_time: 800,
+              },
             },
             {
               agent_id: 'accessibility_agent',
@@ -145,9 +144,9 @@ const MultiAgentCoordination: React.FC<MultiAgentCoordinationProps> = ({
               performance_metrics: {
                 tasks_completed: 8,
                 success_rate: 0.95,
-                average_response_time: 1500
-              }
-            }
+                average_response_time: 1500,
+              },
+            },
           );
         }
 
@@ -158,32 +157,32 @@ const MultiAgentCoordination: React.FC<MultiAgentCoordinationProps> = ({
           shared_context: {
             student_learning_style: 'visual',
             current_subject: 'matematik',
-            difficulty_level: 6.5
+            difficulty_level: 6.5,
           },
           active_tasks: [
             {
               task_id: 'task_1',
               assigned_agent: 'learning_path_agent',
               status: 'in_progress',
-              dependencies: []
+              dependencies: [],
             },
             {
               task_id: 'task_2',
               assigned_agent: 'study_buddy_agent',
               status: 'pending',
-              dependencies: ['task_1']
-            }
+              dependencies: ['task_1'],
+            },
           ],
           performance_summary: {
             total_tasks: metricsData?.coordination_requests || 50,
             completed_tasks: Math.floor((metricsData?.coordination_requests || 50) * 0.92),
             failed_tasks: Math.floor((metricsData?.coordination_requests || 50) * 0.04),
-            average_completion_time: (metricsData?.average_response_time || 2300) / 1000
-          }
+            average_completion_time: (metricsData?.average_response_time || 2300) / 1000,
+          },
         };
 
         // Event history'yi dönüştür
-        const events: BlackboardEvent[] = eventHistoryResult.success && eventHistoryResult.data ? 
+        const events: BlackboardEvent[] = eventHistoryResult.success && eventHistoryResult.data ?
           eventHistoryResult.data.map((event: any) => ({
             event_id: event.event_id,
             type: event.event_type,
@@ -191,7 +190,7 @@ const MultiAgentCoordination: React.FC<MultiAgentCoordinationProps> = ({
             target_agents: event.target_agents || [],
             data: event.value,
             timestamp: event.timestamp,
-            processed: true
+            processed: true,
           })) : [
             {
               event_id: 'event_1',
@@ -200,7 +199,7 @@ const MultiAgentCoordination: React.FC<MultiAgentCoordinationProps> = ({
               target_agents: ['study_buddy_agent', 'accessibility_agent'],
               data: { style: 'visual', confidence: 0.85 },
               timestamp: new Date(Date.now() - 300000).toISOString(),
-              processed: true
+              processed: true,
             },
             {
               event_id: 'event_2',
@@ -209,8 +208,8 @@ const MultiAgentCoordination: React.FC<MultiAgentCoordinationProps> = ({
               target_agents: ['learning_path_agent'],
               data: { new_difficulty: 6.5, reason: 'performance_improvement' },
               timestamp: new Date(Date.now() - 180000).toISOString(),
-              processed: true
-            }
+              processed: true,
+            },
           ];
 
         setAgents(mockAgents);
@@ -233,7 +232,7 @@ const MultiAgentCoordination: React.FC<MultiAgentCoordinationProps> = ({
 
   // Gerçek zamanlı güncellemeler ve WebSocket bağlantısı
   useEffect(() => {
-    if (!realTimeEnabled || !studentId) return;
+    if (!realTimeEnabled || !studentId) {return;}
 
     let websocketConnected = false;
 
@@ -245,22 +244,33 @@ const MultiAgentCoordination: React.FC<MultiAgentCoordinationProps> = ({
         websocketConnected = true;
 
         // Blackboard event listener ekle
-        multiAgentService.addEventListener('coordination_updates', (event) => {
-          console.log('Blackboard event received:', event);
-          
+        multiAgentService.addEventListener('coordination_updates', (serviceEvent: ServiceBlackboardEvent) => {
+          console.log('Blackboard event received:', serviceEvent);
+
+          // Service event'i BlackboardEvent formatına dönüştür
+          const event: BlackboardEvent = {
+            event_id: serviceEvent.event_id,
+            type: serviceEvent.event_type,
+            source_agent: serviceEvent.source_agent,
+            target_agents: serviceEvent.target_agents || [],
+            data: { key: serviceEvent.key, value: serviceEvent.value, ...serviceEvent.metadata },
+            timestamp: serviceEvent.timestamp,
+            processed: !serviceEvent.requires_response,
+          };
+
           // Event'e göre UI'ı güncelle
           if (event.type === 'learning_style_detected' || event.type === 'difficulty_adjusted') {
             setRecentEvents(prev => [event, ...prev.slice(0, 9)]); // Son 10 event'i tut
           }
-          
+
           // Agent durumlarını güncelle
           if (event.source_agent) {
-            setAgents(prev => prev.map(agent => 
+            setAgents(prev => prev.map(agent =>
               agent.agent_id === event.source_agent ? {
                 ...agent,
                 last_activity: event.timestamp,
-                status: 'active'
-              } : agent
+                status: 'active',
+              } : agent,
             ));
           }
         });
@@ -279,7 +289,7 @@ const MultiAgentCoordination: React.FC<MultiAgentCoordinationProps> = ({
         if (!websocketConnected) {
           // WebSocket bağlantısı yoksa API'den güncelleme al
           const metricsResult = await multiAgentService.getMetrics();
-          
+
           if (metricsResult.success && metricsResult.data) {
             // Agent durumlarını güncelle
             setAgents(prev => prev.map(agent => ({
@@ -287,12 +297,12 @@ const MultiAgentCoordination: React.FC<MultiAgentCoordinationProps> = ({
               last_activity: new Date().toISOString(),
               performance_metrics: {
                 ...agent.performance_metrics,
-                tasks_completed: agent.performance_metrics.tasks_completed + Math.floor(Math.random() * 2)
-              }
+                tasks_completed: agent.performance_metrics.tasks_completed + Math.floor(Math.random() * 2),
+              },
             })));
           }
         }
-        
+
       } catch (err) {
         console.error('Gerçek zamanlı güncelleme hatası:', err);
       }
@@ -310,13 +320,24 @@ const MultiAgentCoordination: React.FC<MultiAgentCoordinationProps> = ({
   }, [studentId, realTimeEnabled]);
 
   // Agent durumu renk kodlaması
-  const getAgentStatusColor = (status: string): 'default' | 'primary' | 'secondary' | 'success' | 'warning' | 'error' => {
+  const getAgentStatusColor = (status: string): 'primary' | 'secondary' | 'success' | 'warning' | 'error' | 'info' | 'default' => {
     switch (status) {
       case 'active': return 'success';
       case 'processing': return 'primary';
       case 'idle': return 'secondary';
       case 'error': return 'error';
       default: return 'default';
+    }
+  };
+
+  // LinearProgress için ayrı renk (inherit yerine primary)
+  const getProgressColor = (status: string): 'primary' | 'secondary' | 'success' | 'warning' | 'error' | 'info' | 'inherit' => {
+    switch (status) {
+      case 'active': return 'success';
+      case 'processing': return 'primary';
+      case 'idle': return 'secondary';
+      case 'error': return 'error';
+      default: return 'primary';
     }
   };
 
@@ -351,11 +372,11 @@ const MultiAgentCoordination: React.FC<MultiAgentCoordinationProps> = ({
   // Performans skoru hesapla
   const calculatePerformanceScore = (agent: MultiAgentStatus): number => {
     const { success_rate, average_response_time, tasks_completed } = agent.performance_metrics;
-    
+
     // Başarı oranı %50, yanıt süresi %30, tamamlanan görev sayısı %20 ağırlık
     const responseScore = Math.max(0, 100 - (average_response_time / 1000) * 10); // ms to score
     const taskScore = Math.min(100, tasks_completed * 2); // Her görev 2 puan
-    
+
     return (success_rate * 50 + responseScore * 30 + taskScore * 20) / 100;
   };
 
@@ -375,8 +396,8 @@ const MultiAgentCoordination: React.FC<MultiAgentCoordinationProps> = ({
       <Alert severity="error" sx={{ m: 2 }}>
         <Typography variant="h6">Hata</Typography>
         <Typography>{error}</Typography>
-        <Button 
-          startIcon={<RefreshIcon />} 
+        <Button
+          startIcon={<RefreshIcon />}
           onClick={() => window.location.reload()}
           sx={{ mt: 1 }}
         >
@@ -396,7 +417,7 @@ const MultiAgentCoordination: React.FC<MultiAgentCoordinationProps> = ({
             Multi-Agent Koordinasyon
           </Typography>
           <Tooltip title="Gerçek zamanlı güncellemeleri aç/kapat">
-            <IconButton 
+            <IconButton
               onClick={() => setRealTimeEnabled(!realTimeEnabled)}
               color={realTimeEnabled ? 'primary' : 'default'}
             >
@@ -407,9 +428,9 @@ const MultiAgentCoordination: React.FC<MultiAgentCoordinationProps> = ({
         <Typography variant="h6" color="text.secondary" gutterBottom>
           Blackboard Pattern ile gerçek zamanlı agent koordinasyonu
         </Typography>
-        <Chip 
-          label="🚀 DEVRİMSEL ÖZELLİK" 
-          color="primary" 
+        <Chip
+          label="🚀 DEVRİMSEL ÖZELLİK"
+          color="primary"
           variant="outlined"
           sx={{ fontWeight: 'bold' }}
         />
@@ -475,14 +496,14 @@ const MultiAgentCoordination: React.FC<MultiAgentCoordinationProps> = ({
               const performanceScore = calculatePerformanceScore(agent);
               return (
                 <Grid item xs={12} md={6} lg={4} key={agent.agent_id}>
-                  <Paper 
-                    sx={{ 
-                      p: 2, 
-                      border: 2, 
+                  <Paper
+                    sx={{
+                      p: 2,
+                      border: 2,
                       borderColor: `${getAgentStatusColor(agent.status)}.main`,
                       bgcolor: `${getAgentStatusColor(agent.status)}.50`,
                       cursor: 'pointer',
-                      '&:hover': { boxShadow: 2 }
+                      '&:hover': { boxShadow: 2 },
                     }}
                     onClick={() => {
                       setSelectedAgent(agent);
@@ -491,7 +512,7 @@ const MultiAgentCoordination: React.FC<MultiAgentCoordinationProps> = ({
                   >
                     <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
                       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                        <Badge 
+                        <Badge
                           color={getAgentStatusColor(agent.status)}
                           variant="dot"
                           overlap="circular"
@@ -504,7 +525,7 @@ const MultiAgentCoordination: React.FC<MultiAgentCoordinationProps> = ({
                           <Typography variant="subtitle1" fontWeight="medium">
                             {agent.name.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
                           </Typography>
-                          <Chip 
+                          <Chip
                             label={agent.status.toUpperCase()}
                             color={getAgentStatusColor(agent.status)}
                             size="small"
@@ -539,7 +560,7 @@ const MultiAgentCoordination: React.FC<MultiAgentCoordinationProps> = ({
                     <LinearProgress
                       variant="determinate"
                       value={agent.performance_metrics.success_rate * 100}
-                      color={getAgentStatusColor(agent.status)}
+                      color={getProgressColor(agent.status)}
                       sx={{ height: 6, borderRadius: 3, mb: 1 }}
                     />
 
@@ -598,7 +619,7 @@ const MultiAgentCoordination: React.FC<MultiAgentCoordinationProps> = ({
                       }
                     />
                     <ListItemSecondaryAction>
-                      <Chip 
+                      <Chip
                         label={task.status}
                         color={getTaskStatusColor(task.status)}
                         size="small"
@@ -635,7 +656,7 @@ const MultiAgentCoordination: React.FC<MultiAgentCoordinationProps> = ({
                       secondary={
                         <Box>
                           <Typography variant="caption" color="text.secondary">
-                            Kaynak: {event.source_agent.replace(/_/g, ' ')} → 
+                            Kaynak: {event.source_agent.replace(/_/g, ' ')} →
                             Hedef: {event.target_agents.join(', ').replace(/_/g, ' ')}
                           </Typography>
                           <Typography variant="caption" color="text.secondary" display="block">
@@ -645,7 +666,7 @@ const MultiAgentCoordination: React.FC<MultiAgentCoordinationProps> = ({
                       }
                     />
                     <ListItemSecondaryAction>
-                      <Chip 
+                      <Chip
                         label={event.processed ? 'İşlendi' : 'Bekliyor'}
                         color={event.processed ? 'success' : 'warning'}
                         size="small"
@@ -676,7 +697,7 @@ const MultiAgentCoordination: React.FC<MultiAgentCoordinationProps> = ({
                   <Typography variant="h6">
                     {selectedAgent.name.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
                   </Typography>
-                  <Chip 
+                  <Chip
                     label={selectedAgent.status.toUpperCase()}
                     color={getAgentStatusColor(selectedAgent.status)}
                     size="small"

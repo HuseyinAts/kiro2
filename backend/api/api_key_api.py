@@ -7,14 +7,14 @@ Date: 2025-10-27
 """
 from typing import List, Optional
 
-from fastapi import APIRouter, Depends, HTTPException, Query, Request, status
+from fastapi import APIRouter, Depends, HTTPException, Query, Request
 from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from core.api_key_manager import APIKeyManager, APIKeyScope, get_api_key_manager
+from core.api_key_manager import APIKeyScope, get_api_key_manager
 from core.dependencies import get_db, get_current_user
 from core.structured_logger import get_logger
-from models.database import APIKey, User
+from models.database import APIKey
 
 logger = get_logger("api_key_api")
 

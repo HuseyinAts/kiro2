@@ -12,13 +12,11 @@ Bu modül veritabanı performans optimizasyonu ve ölçeklenebilirlik için:
 Requirements: 7.1, 7.2, 7.3
 """
 
-import asyncio
 import logging
-from datetime import datetime, timedelta
+from datetime import datetime
 from typing import Any, Dict, List, Optional
 
-from sqlalchemy import Index, event, text
-from sqlalchemy.engine import Engine
+from sqlalchemy import event, text
 from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession
 from sqlalchemy.pool import Pool
 

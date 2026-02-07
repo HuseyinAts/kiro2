@@ -21,7 +21,7 @@ async def run_migration():
 
     DATABASE_URL = os.getenv(
         "DATABASE_URL",
-        "postgresql+asyncpg://teknofest:[REDACTED_DB_PASSWORD]@localhost:5432/teknofest_db",
+        "postgresql+asyncpg://teknofest:[REDACTED_DB_PASSWORD]@localhost:5434/teknofest_db",
     )
 
     # Convert SQLAlchemy URL to asyncpg format

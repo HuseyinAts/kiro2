@@ -1,9 +1,9 @@
 /**
  * VideoErrorHandler - Video yükleme hata yönetimi
- * 
+ *
  * Bu servis, video yükleme sırasında oluşan hataları sınıflandırır,
  * kullanıcı dostu mesajlar üretir ve retry kararları verir.
- * 
+ *
  * @module VideoErrorHandler
  * @requires Requirements: 1.2, 1.3, 3.4, 3.10, 5.3, 10.4, 10.6
  */
@@ -11,7 +11,7 @@
 /**
  * Hata tipleri
  */
-export type VideoErrorType = 
+export type VideoErrorType =
   | 'timeout'      // İstek zaman aşımı
   | 'network'      // Ağ bağlantı hatası
   | 'server'       // Sunucu hatası (5xx)
@@ -26,28 +26,28 @@ export type VideoErrorType =
 export interface VideoError {
   /** Hata tipi */
   type: VideoErrorType;
-  
+
   /** Orijinal hata mesajı (teknik) */
   message: string;
-  
+
   /** Kullanıcı dostu hata mesajı (Türkçe) */
   userMessage: string;
-  
+
   /** Hatanın tekrar denenebilir olup olmadığı */
   retryable: boolean;
-  
+
   /** HTTP status code (varsa) */
   statusCode?: number;
-  
+
   /** Hata detayları */
   details?: Record<string, any>;
-  
+
   /** Hata zamanı */
   timestamp: Date;
-  
+
   /** Request ID (varsa) */
   requestId?: string;
-  
+
   /** Önerilen aksiyon */
   suggestedAction?: string;
 }
@@ -58,19 +58,19 @@ export interface VideoError {
 export interface ErrorContext {
   /** Request ID */
   requestId?: string;
-  
+
   /** API endpoint */
   endpoint?: string;
-  
+
   /** Öğrenci profili özeti */
   profile?: Record<string, any>;
-  
+
   /** Retry sayısı */
   retryCount?: number;
-  
+
   /** Yükleme süresi */
   loadingTime?: number;
-  
+
   /** Ek bilgiler */
   metadata?: Record<string, any>;
 }
@@ -81,22 +81,22 @@ export interface ErrorContext {
 export interface ErrorLog {
   /** Hata tipi */
   type: VideoErrorType;
-  
+
   /** Hata mesajı */
   message: string;
-  
+
   /** Severity level */
   level: 'error' | 'warning' | 'info';
-  
+
   /** Context bilgisi */
   context: ErrorContext;
-  
+
   /** Stack trace */
   stack?: string;
-  
+
   /** Timestamp */
   timestamp: Date;
-  
+
   /** Browser bilgisi */
   browser?: {
     userAgent: string;
@@ -107,7 +107,7 @@ export interface ErrorLog {
 
 /**
  * VideoErrorHandler - Hata yönetimi ve sınıflandırma
- * 
+ *
  * Özellikler:
  * - Hata tipi sınıflandırma
  * - Kullanıcı dostu mesaj üretimi
@@ -121,13 +121,13 @@ export class VideoErrorHandler {
 
   /**
    * VideoErrorHandler constructor
-   * 
+   *
    * @param sentryEnabled - Sentry logging aktif mi? (default: false)
    * @param consoleLoggingEnabled - Console logging aktif mi? (default: true)
    */
   constructor(
     sentryEnabled: boolean = false,
-    consoleLoggingEnabled: boolean = true
+    consoleLoggingEnabled: boolean = true,
   ) {
     this.sentryEnabled = sentryEnabled;
     this.consoleLoggingEnabled = consoleLoggingEnabled;
@@ -135,7 +135,7 @@ export class VideoErrorHandler {
 
   /**
    * Hatayı işle ve VideoError nesnesine dönüştür
-   * 
+   *
    * @param error - Orijinal hata
    * @param context - Hata context bilgisi
    * @returns VideoError
@@ -143,22 +143,22 @@ export class VideoErrorHandler {
   handleError(error: unknown, context?: ErrorContext): VideoError {
     // Hata tipini belirle
     const errorType = this._classifyError(error);
-    
+
     // Hata mesajını çıkar
     const message = this._extractErrorMessage(error);
-    
+
     // Status code'u çıkar
     const statusCode = this._extractStatusCode(error);
-    
+
     // Kullanıcı dostu mesaj üret
     const userMessage = this._generateUserMessage(errorType, statusCode);
-    
+
     // Retry kararı ver
     const retryable = this._shouldRetry(errorType, statusCode);
-    
+
     // Önerilen aksiyon belirle
     const suggestedAction = this._getSuggestedAction(errorType, retryable);
-    
+
     // VideoError nesnesi oluştur
     const videoError: VideoError = {
       type: errorType,
@@ -183,7 +183,7 @@ export class VideoErrorHandler {
 
   /**
    * Kullanıcı dostu hata mesajı al
-   * 
+   *
    * @param error - VideoError nesnesi
    * @returns Kullanıcı dostu mesaj (Türkçe)
    */
@@ -193,7 +193,7 @@ export class VideoErrorHandler {
 
   /**
    * Hatanın tekrar denenebilir olup olmadığını kontrol et
-   * 
+   *
    * @param error - VideoError nesnesi
    * @returns Retry yapılabilir mi?
    */
@@ -203,7 +203,7 @@ export class VideoErrorHandler {
 
   /**
    * Hatayı logla (console + Sentry)
-   * 
+   *
    * @param error - VideoError nesnesi
    * @param context - Hata context bilgisi
    */
@@ -214,8 +214,8 @@ export class VideoErrorHandler {
       message: error.message,
       level: this._getLogLevel(error.type),
       context: context || {},
-      stack: error.details?.originalError instanceof Error 
-        ? error.details.originalError.stack 
+      stack: error.details?.originalError instanceof Error
+        ? error.details.originalError.stack
         : undefined,
       timestamp: error.timestamp,
       browser: {
@@ -238,21 +238,21 @@ export class VideoErrorHandler {
 
   /**
    * Birden fazla hatayı toplu işle
-   * 
+   *
    * @param errors - Hata listesi
    * @param context - Hata context bilgisi
    * @returns VideoError listesi
    */
   handleMultipleErrors(
     errors: unknown[],
-    context?: ErrorContext
+    context?: ErrorContext,
   ): VideoError[] {
     return errors.map(error => this.handleError(error, context));
   }
 
   /**
    * Hata istatistiklerini al (debugging için)
-   * 
+   *
    * @param errors - VideoError listesi
    * @returns Hata istatistikleri
    */
@@ -357,7 +357,7 @@ export class VideoErrorHandler {
   private _extractStatusCode(error: unknown): number | undefined {
     if (error instanceof Error) {
       const message = error.message;
-      
+
       // Extract status code from message (e.g., "Backend error: 500")
       const match = message.match(/\b([45]\d{2})\b/);
       if (match) {
@@ -373,7 +373,7 @@ export class VideoErrorHandler {
    */
   private _generateUserMessage(
     errorType: VideoErrorType,
-    statusCode?: number
+    statusCode?: number,
   ): string {
     switch (errorType) {
       case 'timeout':
@@ -419,7 +419,7 @@ export class VideoErrorHandler {
    */
   private _shouldRetry(
     errorType: VideoErrorType,
-    statusCode?: number
+    statusCode?: number,
   ): boolean {
     switch (errorType) {
       case 'timeout':
@@ -454,7 +454,7 @@ export class VideoErrorHandler {
    */
   private _getSuggestedAction(
     errorType: VideoErrorType,
-    retryable: boolean
+    retryable: boolean,
   ): string {
     if (retryable) {
       return 'retry';
@@ -505,10 +505,10 @@ export class VideoErrorHandler {
    * Console'a logla
    */
   private _logToConsole(errorLog: ErrorLog): void {
-    const logMethod = errorLog.level === 'error' 
-      ? console.error 
-      : errorLog.level === 'warning' 
-        ? console.warn 
+    const logMethod = errorLog.level === 'error'
+      ? console.error
+      : errorLog.level === 'warning'
+        ? console.warn
         : console.info;
 
     logMethod('🎬 VideoErrorHandler:', {
@@ -528,7 +528,7 @@ export class VideoErrorHandler {
   private _logToSentry(errorLog: ErrorLog): void {
     // Sentry entegrasyonu için placeholder
     // Gerçek implementasyonda Sentry SDK kullanılacak
-    
+
     try {
       // @ts-ignore - Sentry global object
       if (typeof window !== 'undefined' && window.Sentry) {
@@ -559,7 +559,7 @@ let globalInstance: VideoErrorHandler | null = null;
 
 /**
  * Get or create global VideoErrorHandler instance
- * 
+ *
  * @returns VideoErrorHandler
  */
 export function getVideoErrorHandler(): VideoErrorHandler {
@@ -571,28 +571,28 @@ export function getVideoErrorHandler(): VideoErrorHandler {
 
 /**
  * Create new VideoErrorHandler instance
- * 
+ *
  * @param sentryEnabled - Sentry logging aktif mi?
  * @param consoleLoggingEnabled - Console logging aktif mi?
  * @returns VideoErrorHandler
  */
 export function createVideoErrorHandler(
   sentryEnabled?: boolean,
-  consoleLoggingEnabled?: boolean
+  consoleLoggingEnabled?: boolean,
 ): VideoErrorHandler {
   return new VideoErrorHandler(sentryEnabled, consoleLoggingEnabled);
 }
 
 /**
  * Helper function: Hatayı hızlıca işle ve kullanıcı mesajı al
- * 
+ *
  * @param error - Orijinal hata
  * @param context - Hata context bilgisi
  * @returns Kullanıcı dostu hata mesajı
  */
 export function getQuickErrorMessage(
   error: unknown,
-  context?: ErrorContext
+  context?: ErrorContext,
 ): string {
   const handler = getVideoErrorHandler();
   const videoError = handler.handleError(error, context);
@@ -601,7 +601,7 @@ export function getQuickErrorMessage(
 
 /**
  * Helper function: Hatanın retry edilebilir olup olmadığını kontrol et
- * 
+ *
  * @param error - Orijinal hata
  * @returns Retry yapılabilir mi?
  */

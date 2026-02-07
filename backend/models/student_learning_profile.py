@@ -1,17 +1,42 @@
 """
-Student Learning Profile ORM Model
-Stores VARK + Felder-Silverman hybrid learning style profiles
+DEPRECATED: Student Learning Profile ORM Model
+
+This module contains legacy student profile models that are deprecated.
+
+Use backend.models.learning_path_models.LearningPathStudentProfile instead.
+
+These models will be removed in v3.0.0.
+
 Part of Mock Data Cleanup - Phase 4
 """
-from datetime import datetime
+import warnings
+from datetime import datetime, timedelta, timezone
+from typing import TYPE_CHECKING
 from sqlalchemy import Column, String, Float, DateTime, ForeignKey, JSON, Text
-from sqlalchemy.orm import relationship
 
 from .base import Base
+
+if TYPE_CHECKING:
+    from .learning_path_models import LearningPathStudentProfile
+
+
+def _deprecation_warning(model_name: str) -> None:
+    """Issue deprecation warning for legacy models."""
+    warnings.warn(
+        f"{model_name} is deprecated. Use LearningPathStudentProfile from "
+        "backend.models.learning_path_models instead. "
+        "This model will be removed in v3.0.0.",
+        DeprecationWarning,
+        stacklevel=3
+    )
 
 
 class StudentLearningProfile(Base):
     """
+    DEPRECATED: Use LearningPathStudentProfile instead.
+
+    This class is kept for backward compatibility and will be removed in v3.0.0.
+
     Student learning style profile model
     Stores VARK + Felder-Silverman hybrid learning styles
 
@@ -19,6 +44,11 @@ class StudentLearningProfile(Base):
     """
 
     __tablename__ = "student_learning_profiles"
+
+    def __init__(self, *args, **kwargs):
+        """Initialize with deprecation warning."""
+        _deprecation_warning("StudentLearningProfile")
+        super().__init__(*args, **kwargs)
 
     # Primary Key
     id = Column(String, primary_key=True, index=True)
@@ -84,11 +114,22 @@ class StudentLearningProfile(Base):
     @property
     def is_high_confidence(self) -> bool:
         """Check if profile detection has high confidence (>0.7)"""
-        return self.confidence_score > 0.7
+        return bool(self.confidence_score > 0.7)
 
     @property
     def needs_update(self) -> bool:
         """Check if profile is older than 30 days and should be recalculated"""
-        from datetime import timedelta
-        age = datetime.utcnow() - self.updated_at
-        return age > timedelta(days=30)
+        if self.updated_at is None:
+            return True
+        age = datetime.now(timezone.utc) - self.updated_at
+        return bool(age > timedelta(days=30))
+
+    def to_canonical(self) -> "LearningPathStudentProfile":
+        """
+        Convert to canonical LearningPathStudentProfile.
+
+        Returns:
+            New LearningPathStudentProfile instance
+        """
+        from .learning_path_models import LearningPathStudentProfile
+        return LearningPathStudentProfile.from_legacy_profile(self)

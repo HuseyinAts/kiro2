@@ -9,14 +9,16 @@
  * - Performance metrics
  */
 
-import React, { useState } from 'react';
+import * as React from 'react';
+import {  useState  } from 'react';
+
 import { useRAGStreaming } from '../hooks/useStreaming';
 
 interface OptimizedRAGProps {
   onQueryComplete?: (result: any) => void;
 }
 
-export const OptimizedRAG: React.FC<OptimizedRAGProps> = ({ onQueryComplete }) => {
+export const OptimizedRAG: React.FC<OptimizedRAGProps> = ({ onQueryComplete: _onQueryComplete }) => {
   const [query, setQuery] = useState<string>('');
   const [k, setK] = useState<number>(5);
   const [expandQueries, setExpandQueries] = useState<boolean>(true);
@@ -28,19 +30,19 @@ export const OptimizedRAG: React.FC<OptimizedRAGProps> = ({ onQueryComplete }) =
     error,
     startStream,
     stopStream,
-    reset
+    reset,
   } = useRAGStreaming();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!query.trim() || isStreaming) return;
+    if (!query.trim() || isStreaming) {return;}
 
     startStream({
       query,
       k,
       expand_queries: expandQueries,
-      use_reranking: useReranking
+      use_reranking: useReranking,
     });
   };
 
@@ -85,7 +87,7 @@ export const OptimizedRAG: React.FC<OptimizedRAGProps> = ({ onQueryComplete }) =
           disabled={isStreaming}
           style={{
             ...styles.input,
-            ...(isStreaming && styles.inputDisabled)
+            ...(isStreaming && styles.inputDisabled),
           }}
         />
 
@@ -140,7 +142,7 @@ export const OptimizedRAG: React.FC<OptimizedRAGProps> = ({ onQueryComplete }) =
               style={{
                 ...styles.button,
                 ...styles.searchButton,
-                ...(!query.trim() && styles.buttonDisabled)
+                ...(!query.trim() && styles.buttonDisabled),
               }}
             >
               🔍 Ara
@@ -193,7 +195,7 @@ export const OptimizedRAG: React.FC<OptimizedRAGProps> = ({ onQueryComplete }) =
 
                 <div style={styles.documentContent}>
                   {doc.content?.substring(0, 200)}
-                  {doc.content?.length > 200 && '...'}
+                  {(doc.content?.length ?? 0) > 200 && '...'}
                 </div>
 
                 {doc.metadata && (
@@ -228,10 +230,10 @@ export const OptimizedRAG: React.FC<OptimizedRAGProps> = ({ onQueryComplete }) =
       {/* Metadata */}
       {state.metadata && (
         <div className="metadata" style={styles.metadata}>
-          ⚡ {state.metadata.total_time_ms}ms total
-          {state.metadata.search_time_ms && ` · ${state.metadata.search_time_ms}ms search`}
-          {state.metadata.generation_time_ms && ` · ${state.metadata.generation_time_ms}ms generation`}
-          {state.metadata.documents_retrieved && ` · ${state.metadata.documents_retrieved} docs`}
+          ⚡ {String(state.metadata.total_time_ms ?? '')}ms total
+          {state.metadata.search_time_ms ? ` · ${String(state.metadata.search_time_ms)}ms search` : null}
+          {state.metadata.generation_time_ms ? ` · ${String(state.metadata.generation_time_ms)}ms generation` : null}
+          {state.metadata.documents_retrieved ? ` · ${String(state.metadata.documents_retrieved)} docs` : null}
         </div>
       )}
     </div>
@@ -247,7 +249,7 @@ const styles: Record<string, React.CSSProperties> = {
     gap: '20px',
     maxWidth: '1000px',
     margin: '0 auto',
-    padding: '20px'
+    padding: '20px',
   },
 
   form: {
@@ -257,7 +259,7 @@ const styles: Record<string, React.CSSProperties> = {
     padding: '20px',
     backgroundColor: '#fff',
     border: '1px solid #ddd',
-    borderRadius: '8px'
+    borderRadius: '8px',
   },
 
   input: {
@@ -265,18 +267,18 @@ const styles: Record<string, React.CSSProperties> = {
     border: '1px solid #ddd',
     borderRadius: '6px',
     fontSize: '14px',
-    outline: 'none'
+    outline: 'none',
   },
 
   inputDisabled: {
     backgroundColor: '#f5f5f5',
-    cursor: 'not-allowed'
+    cursor: 'not-allowed',
   },
 
   options: {
     display: 'flex',
     gap: '20px',
-    flexWrap: 'wrap'
+    flexWrap: 'wrap',
   },
 
   label: {
@@ -284,7 +286,7 @@ const styles: Record<string, React.CSSProperties> = {
     alignItems: 'center',
     gap: '8px',
     fontSize: '14px',
-    color: '#555'
+    color: '#555',
   },
 
   numberInput: {
@@ -292,12 +294,12 @@ const styles: Record<string, React.CSSProperties> = {
     marginLeft: '8px',
     padding: '4px 8px',
     border: '1px solid #ddd',
-    borderRadius: '4px'
+    borderRadius: '4px',
   },
 
   buttonGroup: {
     display: 'flex',
-    gap: '8px'
+    gap: '8px',
   },
 
   button: {
@@ -307,27 +309,27 @@ const styles: Record<string, React.CSSProperties> = {
     fontSize: '14px',
     fontWeight: 500,
     cursor: 'pointer',
-    transition: 'all 0.2s'
+    transition: 'all 0.2s',
   },
 
   searchButton: {
     backgroundColor: '#1976d2',
-    color: '#fff'
+    color: '#fff',
   },
 
   stopButton: {
     backgroundColor: '#d32f2f',
-    color: '#fff'
+    color: '#fff',
   },
 
   resetButton: {
     backgroundColor: '#757575',
-    color: '#fff'
+    color: '#fff',
   },
 
   buttonDisabled: {
     opacity: 0.5,
-    cursor: 'not-allowed'
+    cursor: 'not-allowed',
   },
 
   error: {
@@ -335,7 +337,7 @@ const styles: Record<string, React.CSSProperties> = {
     color: '#c62828',
     padding: '12px',
     borderRadius: '8px',
-    textAlign: 'center'
+    textAlign: 'center',
   },
 
   stage: {
@@ -345,74 +347,74 @@ const styles: Record<string, React.CSSProperties> = {
     padding: '12px 20px',
     backgroundColor: '#e3f2fd',
     border: '1px solid #90caf9',
-    borderRadius: '8px'
+    borderRadius: '8px',
   },
 
   stageIcon: {
-    fontSize: '24px'
+    fontSize: '24px',
   },
 
   stageLabel: {
     fontSize: '14px',
     fontWeight: 500,
-    color: '#1976d2'
+    color: '#1976d2',
   },
 
   documents: {
     padding: '20px',
     backgroundColor: '#fff',
     border: '1px solid #ddd',
-    borderRadius: '8px'
+    borderRadius: '8px',
   },
 
   heading: {
     margin: '0 0 16px 0',
     fontSize: '16px',
     fontWeight: 600,
-    color: '#333'
+    color: '#333',
   },
 
   documentList: {
     display: 'flex',
     flexDirection: 'column',
-    gap: '12px'
+    gap: '12px',
   },
 
   document: {
     padding: '12px',
     backgroundColor: '#f8f9fa',
     border: '1px solid #e0e0e0',
-    borderRadius: '6px'
+    borderRadius: '6px',
   },
 
   documentHeader: {
     display: 'flex',
     justifyContent: 'space-between',
-    marginBottom: '8px'
+    marginBottom: '8px',
   },
 
   documentRank: {
     fontSize: '12px',
     fontWeight: 600,
-    color: '#1976d2'
+    color: '#1976d2',
   },
 
   documentScore: {
     fontSize: '12px',
-    color: '#666'
+    color: '#666',
   },
 
   documentContent: {
     fontSize: '13px',
     lineHeight: '1.5',
     color: '#333',
-    marginBottom: '8px'
+    marginBottom: '8px',
   },
 
   documentMetadata: {
     display: 'flex',
     gap: '8px',
-    flexWrap: 'wrap'
+    flexWrap: 'wrap',
   },
 
   metadataTag: {
@@ -420,26 +422,26 @@ const styles: Record<string, React.CSSProperties> = {
     padding: '2px 8px',
     backgroundColor: '#e0e0e0',
     borderRadius: '4px',
-    color: '#555'
+    color: '#555',
   },
 
   answer: {
     padding: '20px',
     backgroundColor: '#fff',
     border: '1px solid #ddd',
-    borderRadius: '8px'
+    borderRadius: '8px',
   },
 
   answerContent: {
     fontSize: '14px',
     lineHeight: '1.7',
     color: '#333',
-    whiteSpace: 'pre-wrap'
+    whiteSpace: 'pre-wrap',
   },
 
   cursor: {
     animation: 'blink 1s infinite',
-    marginLeft: '2px'
+    marginLeft: '2px',
   },
 
   metadata: {
@@ -449,6 +451,6 @@ const styles: Record<string, React.CSSProperties> = {
     backgroundColor: '#f8f9fa',
     border: '1px solid #e0e0e0',
     borderRadius: '8px',
-    textAlign: 'center'
-  }
+    textAlign: 'center',
+  },
 };

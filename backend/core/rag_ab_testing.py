@@ -3,13 +3,11 @@ A/B Testing Framework for RAG System
 Compare different configurations and strategies
 """
 
-import asyncio
 import hashlib
 import logging
 import time
 from dataclasses import dataclass, field
-from typing import List, Dict, Any, Optional, Callable
-from collections import defaultdict
+from typing import List, Dict, Any, Optional, Callable, Tuple
 import json
 
 logger = logging.getLogger(__name__)

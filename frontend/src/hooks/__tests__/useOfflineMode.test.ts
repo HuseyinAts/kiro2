@@ -9,6 +9,7 @@
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
 import { renderHook, act, waitFor } from '@testing-library/react';
 import { useOfflineMode, useNetworkStatus } from '../useOfflineMode';
+import { getNetworkDetector } from '../../services/NetworkDetector';
 import { VideoLoadingManager } from '../../services/VideoLoadingManager';
 
 describe('useOfflineMode', () => {
@@ -19,6 +20,15 @@ describe('useOfflineMode', () => {
       value: true,
       configurable: true,
     });
+
+    global.fetch = vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({}),
+    });
+
+    const networkDetector = getNetworkDetector();
+    networkDetector.resetReconnectionAttempts();
+    window.dispatchEvent(new Event('online'));
 
     // Mock timers
     vi.useFakeTimers();
@@ -326,6 +336,15 @@ describe('useNetworkStatus', () => {
       value: true,
       configurable: true,
     });
+
+    global.fetch = vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({}),
+    });
+
+    const networkDetector = getNetworkDetector();
+    networkDetector.resetReconnectionAttempts();
+    window.dispatchEvent(new Event('online'));
 
     // Mock timers
     vi.useFakeTimers();

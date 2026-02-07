@@ -8,9 +8,9 @@ from enum import Enum
 from typing import Any, Dict, List, Optional, Union
 from uuid import uuid4
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
-from models.curriculum import ExamType, GradeLevel, SubjectType
+from .curriculum import ExamType, GradeLevel, SubjectType
 
 
 class QuestionType(str, Enum):
@@ -24,11 +24,13 @@ class QuestionType(str, Enum):
 
 
 class DifficultyLevel(str, Enum):
-    """Zorluk seviyeleri"""
+    """Zorluk seviyeleri (5 seviyeli ÖSYM standardı)"""
 
-    KOLAY = "kolay"
-    ORTA = "orta"
-    ZOR = "zor"
+    COK_KOLAY = "cok_kolay"  # Çok Kolay - Direkt formül
+    KOLAY = "kolay"          # Kolay - Tek adım
+    ORTA = "orta"            # Orta - Çok adım, standart
+    ZOR = "zor"              # Zor - Kavram birleştirme
+    COK_ZOR = "cok_zor"      # Çok Zor - Yaratıcı çözüm
 
 
 class CognitiveLevel(str, Enum):
@@ -42,12 +44,48 @@ class CognitiveLevel(str, Enum):
     DEGERLENDIRME = "degerlendirme"  # C6 - Yaratma
 
 
+class SOLOLevel(str, Enum):
+    """SOLO Taksonomi Seviyeleri (Biggs & Collis)"""
+
+    PRESTRUCTURAL = "yapi_oncesi"
+    UNISTRUCTURAL = "tek_yapili"
+    MULTISTRUCTURAL = "cok_yapili"
+    RELATIONAL = "iliskisel"
+    EXTENDED_ABSTRACT = "genisletilmis_soyut"
+
+
+class MarzanoProcessLevel(str, Enum):
+    """Marzano Bilissel Islem Seviyeleri"""
+
+    RETRIEVAL = "geri_cagirma"
+    COMPREHENSION = "kavrama"
+    ANALYSIS = "analiz"
+    KNOWLEDGE_UTILIZATION = "bilgi_kullanimi"
+
+
+class MarzanoSystem(str, Enum):
+    """Marzano Taksonomi Sistemleri"""
+
+    COGNITIVE = "bilissel"
+    METACOGNITIVE = "ustbilissel"
+    SELF_SYSTEM = "oz_sistem"
+
+
+class WebbDOKLevel(str, Enum):
+    """Webb Depth of Knowledge Seviyeleri"""
+
+    RECALL = "hatirlama"
+    SKILL = "beceri"
+    STRATEGIC = "stratejik"
+    EXTENDED = "genisletilmis"
+
+
 class OSYMQuestionFormat(BaseModel):
     """ÖSYM Soru Format Standardı"""
 
     question_number: int = Field(..., description="Soru numarası")
     question_text: str = Field(..., description="Soru metni")
-    options: List[str] = Field(..., min_items=4, max_items=5, description="Seçenekler")
+    options: List[str] = Field(..., min_length=4, max_length=5, description="Seçenekler")
     correct_answer: str = Field(..., description="Doğru cevap (A, B, C, D, E)")
     explanation: Optional[str] = Field(None, description="Çözüm açıklaması")
 
@@ -129,8 +167,7 @@ class GeneratedQuestion(BaseModel):
     updated_at: datetime = Field(default_factory=datetime.now)
     last_used_at: Optional[datetime] = Field(None, description="Son kullanım tarihi")
 
-    class Config:
-        json_encoders = {datetime: lambda v: v.isoformat()}
+    model_config = ConfigDict()
 
 
 class QuestionGenerationRequest(BaseModel):
@@ -183,8 +220,7 @@ class QuestionGenerationRequest(BaseModel):
     status: str = Field(default="pending", description="Durum")
     created_at: datetime = Field(default_factory=datetime.now)
 
-    class Config:
-        json_encoders = {datetime: lambda v: v.isoformat()}
+    model_config = ConfigDict()
 
 
 class QuestionTemplate(BaseModel):
@@ -346,5 +382,4 @@ class QuestionGenerationReport(BaseModel):
     generated_by: str = Field(..., description="Raporu oluşturan")
     generated_at: datetime = Field(default_factory=datetime.now)
 
-    class Config:
-        json_encoders = {datetime: lambda v: v.isoformat()}
+    model_config = ConfigDict()

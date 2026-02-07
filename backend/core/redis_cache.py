@@ -1,14 +1,47 @@
 """
 Redis Caching Layer
 High-performance caching for Knowledge Graph queries, CAT sessions, and hot data
+
+DEPRECATED (2025-01-25):
+Bu dosya deprecated. Kullan: core/cache/cache_manager.py
+
+Migration Guide:
+    # ESKİ (bu dosya)
+    from core.redis_cache import RedisCache, get_cache, cached
+    cache = get_cache()
+    cache.set("key", value, ttl=3600)
+
+    # YENİ (tercih edilen)
+    from core.cache import cache_manager, cache_result
+    await cache_manager.set("key", value, ttl=3600)
+
+    # Decorator kullanimi
+    @cache_result(prefix="my_data", expire=3600)
+    async def my_function():
+        ...
+
+Neden deprecated?
+- core/cache/ dizini ana cache sistemi
+- cache_manager.py async-first design
+- Bu dosya cache_service.py ile overlap ediyor
+
+Backward Compatibility:
+Bu dosya silinmeyecek, ancak yeni kod icin
+core/cache/ kullanilmali. Sync-only kod icin
+bu dosya gecici olarak kullanilabilir.
 """
 import json
+import logging
 import redis
-from typing import Optional, Any, List, Dict
+from typing import Optional, Any, Dict, Callable
 from functools import wraps
 import hashlib
-from datetime import timedelta
-import os
+
+# SECURITY: Use centralized Settings for all configuration
+from core.config import get_settings
+
+# CODE QUALITY: Use structured logger instead of print statements
+logger = logging.getLogger(__name__)
 
 
 class RedisCache:
@@ -26,16 +59,18 @@ class RedisCache:
         Initialize Redis connection
 
         Args:
-            host: Redis host (default: from env or localhost)
-            port: Redis port (default: from env or 6379)
+            host: Redis host (default: from Settings)
+            port: Redis port (default: from Settings)
             db: Redis database number
             password: Redis password (if authentication enabled)
             decode_responses: Decode byte responses to strings
         """
-        self.host = host or os.getenv("REDIS_HOST", "localhost")
-        self.port = port or int(os.getenv("REDIS_PORT", 6379))
-        self.db = db
-        self.password = password or os.getenv("REDIS_PASSWORD")
+        # SECURITY: Get config from centralized Settings
+        settings = get_settings()
+        self.host = host or settings.redis_host
+        self.port = port or settings.redis_port
+        self.db = db or settings.redis_db
+        self.password = password or settings.redis_password
 
         try:
             self.client = redis.Redis(
@@ -51,13 +86,12 @@ class RedisCache:
             # Test connection
             self.client.ping()
             self.connected = True
-            print(f"[OK] Redis connected: {self.host}:{self.port}")
+            logger.info(f"Redis connected: {self.host}:{self.port}")
 
         except (redis.ConnectionError, redis.TimeoutError) as e:
             self.client = None
             self.connected = False
-            print(f"⚠️  Redis not available: {str(e)}")
-            print("   Caching will be disabled (app will work without Redis)")
+            logger.warning(f"Redis not available: {e}. Caching will be disabled.")
 
     def is_connected(self) -> bool:
         """Check if Redis is connected"""
@@ -67,7 +101,7 @@ class RedisCache:
         try:
             self.client.ping()
             return True
-        except:
+        except (redis.ConnectionError, redis.TimeoutError, redis.RedisError):
             return False
 
     def get(self, key: str) -> Optional[Any]:
@@ -94,8 +128,8 @@ class RedisCache:
             except (json.JSONDecodeError, TypeError):
                 return value
 
-        except Exception as e:
-            print(f"Redis GET error: {str(e)}")
+        except (redis.RedisError, ConnectionError) as e:
+            logger.error(f"Redis GET error for key: {e}")
             return None
 
     def set(self, key: str, value: Any, ttl: int = 3600) -> bool:
@@ -121,8 +155,8 @@ class RedisCache:
             self.client.setex(key, ttl, value)
             return True
 
-        except Exception as e:
-            print(f"Redis SET error: {str(e)}")
+        except (redis.RedisError, ConnectionError) as e:
+            logger.error(f"Redis SET error: {e}")
             return False
 
     def delete(self, key: str) -> bool:
@@ -133,8 +167,8 @@ class RedisCache:
         try:
             self.client.delete(key)
             return True
-        except Exception as e:
-            print(f"Redis DELETE error: {str(e)}")
+        except (redis.RedisError, ConnectionError) as e:
+            logger.error(f"Redis DELETE error: {e}")
             return False
 
     def delete_pattern(self, pattern: str) -> int:
@@ -155,8 +189,8 @@ class RedisCache:
             if keys:
                 return self.client.delete(*keys)
             return 0
-        except Exception as e:
-            print(f"Redis DELETE_PATTERN error: {str(e)}")
+        except (redis.RedisError, ConnectionError) as e:
+            logger.error(f"Redis DELETE_PATTERN error for pattern '{pattern}': {e}")
             return 0
 
     def exists(self, key: str) -> bool:
@@ -166,7 +200,7 @@ class RedisCache:
 
         try:
             return self.client.exists(key) > 0
-        except:
+        except (redis.ConnectionError, redis.TimeoutError, redis.RedisError):
             return False
 
     def incr(self, key: str, amount: int = 1) -> Optional[int]:
@@ -176,7 +210,7 @@ class RedisCache:
 
         try:
             return self.client.incr(key, amount)
-        except:
+        except (redis.ConnectionError, redis.TimeoutError, redis.RedisError):
             return None
 
     def expire(self, key: str, ttl: int) -> bool:
@@ -186,7 +220,7 @@ class RedisCache:
 
         try:
             return self.client.expire(key, ttl)
-        except:
+        except (redis.ConnectionError, redis.TimeoutError, redis.RedisError):
             return False
 
     def get_stats(self) -> Dict:
@@ -205,7 +239,7 @@ class RedisCache:
                 "keyspace_misses": info.get("keyspace_misses", 0),
                 "hit_rate": self._calculate_hit_rate(info),
             }
-        except:
+        except (redis.ConnectionError, redis.TimeoutError, redis.RedisError):
             return {"connected": False}
 
     def _calculate_hit_rate(self, info: Dict) -> str:
@@ -228,7 +262,7 @@ class RedisCache:
         try:
             self.client.flushdb()
             return True
-        except:
+        except (redis.ConnectionError, redis.TimeoutError, redis.RedisError):
             return False
 
 
@@ -275,7 +309,7 @@ def cache_key(*args, prefix: str = "", **kwargs) -> str:
     return key_str
 
 
-def cached(ttl: int = 3600, prefix: str = "", key_func: Optional[callable] = None):
+def cached(ttl: int = 3600, prefix: str = "", key_func: Optional[Callable] = None):
     """
     Decorator to cache function results
 
@@ -344,22 +378,25 @@ def get_ttl(cache_type: str) -> int:
 
 # Example usage
 if __name__ == "__main__":
+    # Configure logging for standalone execution
+    logging.basicConfig(level=logging.INFO)
+
     # Test Redis connection
     cache = get_cache()
 
     if cache.connected:
-        print("\n[OK] Redis is working!")
+        logger.info("Redis is working!")
 
         # Test basic operations
         cache.set("test_key", {"message": "Hello Redis!"}, ttl=10)
         value = cache.get("test_key")
-        print(f"   Cached value: {value}")
+        logger.info(f"Cached value: {value}")
 
         # Test stats
         stats = cache.get_stats()
-        print(f"   Stats: {stats}")
+        logger.info(f"Stats: {stats}")
 
         # Clean up
         cache.delete("test_key")
     else:
-        print("\n⚠️  Redis not available (app will work without caching)")
+        logger.warning("Redis not available (app will work without caching)")

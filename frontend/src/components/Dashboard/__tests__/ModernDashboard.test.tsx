@@ -3,15 +3,15 @@
  * Comprehensive test suite for ModernDashboard component
  */
 
-import React from 'react'
+import * as React from 'react'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { screen, within } from '@testing-library/react'
 import { render, mockUsers } from '../../../test/utils/test-utils'
 import { ModernDashboard } from '../ModernDashboard'
 
-// Mock useAuth hook
-vi.mock('../../../hooks/useAuth', () => ({
-  useAuth: () => ({
+// Mock authStore (KIRO2 uses authStore, not useAuth hook)
+vi.mock('../../../stores/authStore', () => ({
+  useAuthStore: () => ({
     user: mockUsers.student,
     isAuthenticated: true,
     login: vi.fn(),
@@ -255,7 +255,7 @@ describe('ModernDashboard', () => {
 
   describe('Error Handling', () => {
     it('handles missing user gracefully', () => {
-      vi.mocked(require('../../../hooks/useAuth').useAuth).mockReturnValue({
+      vi.mocked(require('../../../stores/authStore').useAuthStore).mockReturnValue({
         user: null,
         isAuthenticated: false,
         login: vi.fn(),

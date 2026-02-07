@@ -16,7 +16,7 @@ Date: 2025-10-27
 """
 import hashlib
 import secrets
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from enum import Enum
 from typing import Dict, List, Optional
 
@@ -158,7 +158,7 @@ class APIKeyManager:
             # Calculate expiration
             expires_at = None
             if expires_in_days:
-                expires_at = datetime.utcnow() + timedelta(days=expires_in_days)
+                expires_at = datetime.now(timezone.utc) + timedelta(days=expires_in_days)
 
             # Get IP address
             ip_address = request.client.host if request and request.client else None
@@ -263,7 +263,7 @@ class APIKeyManager:
                 )
 
             # Check expiration
-            if db_api_key.expires_at and db_api_key.expires_at < datetime.utcnow():
+            if db_api_key.expires_at and db_api_key.expires_at < datetime.now(timezone.utc):
                 logger.warning(
                     "[API KEY] Expired API key attempted",
                     extra_data={
@@ -320,7 +320,7 @@ class APIKeyManager:
                     )
 
             # Update usage tracking
-            db_api_key.last_used_at = datetime.utcnow()
+            db_api_key.last_used_at = datetime.now(timezone.utc)
             db_api_key.usage_count += 1
             if request and request.client:
                 db_api_key.last_used_ip = request.client.host
@@ -366,7 +366,7 @@ class APIKeyManager:
                 )
 
             db_api_key.revoked = True
-            db_api_key.revoked_at = datetime.utcnow()
+            db_api_key.revoked_at = datetime.now(timezone.utc)
             db_api_key.revoke_reason = reason
             db_api_key.is_active = False
 
@@ -428,7 +428,7 @@ class APIKeyManager:
                 description=f"Rotated from {old_key.name}",
                 rate_limit=old_key.rate_limit,
                 expires_in_days=(
-                    (old_key.expires_at - datetime.utcnow()).days
+                    (old_key.expires_at - datetime.now(timezone.utc)).days
                     if old_key.expires_at
                     else None
                 ),
@@ -499,7 +499,7 @@ class APIKeyManager:
         if not api_key.rate_limit:
             return  # No rate limit set
 
-        now = datetime.utcnow()
+        now = datetime.now(timezone.utc)
         window = 3600  # 1 hour in seconds
         key = f"api_key_rate_limit:{api_key.id}"
 
@@ -525,7 +525,7 @@ class APIKeyManager:
 
                 if current_count >= api_key.rate_limit:
                     logger.warning(
-                        f"[API KEY] Rate limit exceeded",
+                        "[API KEY] Rate limit exceeded",
                         extra_data={
                             "api_key_id": api_key.id,
                             "current_count": current_count,
@@ -542,7 +542,7 @@ class APIKeyManager:
                     )
 
                 logger.debug(
-                    f"[API KEY] Rate limit check passed (Redis)",
+                    "[API KEY] Rate limit check passed (Redis)",
                     extra_data={
                         "api_key_id": api_key.id,
                         "current_count": current_count,
@@ -580,7 +580,7 @@ class APIKeyManager:
 
                 if estimated_rate >= api_key.rate_limit:
                     logger.warning(
-                        f"[API KEY] Rate limit exceeded (fallback)",
+                        "[API KEY] Rate limit exceeded (fallback)",
                         extra_data={
                             "api_key_id": api_key.id,
                             "estimated_rate": estimated_rate,
@@ -597,7 +597,7 @@ class APIKeyManager:
                     )
 
         logger.debug(
-            f"[API KEY] Rate limit check passed (fallback)",
+            "[API KEY] Rate limit check passed (fallback)",
             extra_data={
                 "api_key_id": api_key.id,
                 "usage_count": api_key.usage_count,

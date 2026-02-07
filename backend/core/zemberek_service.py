@@ -11,11 +11,9 @@ Zemberek-NLP kütüphanesi ile Türkçe dil işleme:
 - Sentence boundary detection
 """
 
-import asyncio
-import logging
 from dataclasses import dataclass
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List
 
 from core.structured_logger import get_logger
 
@@ -111,7 +109,7 @@ class ZemberekService:
                 logger.info("zemberek_initialized", status="success")
                 return True
 
-            except ImportError as e:
+            except ImportError:
                 logger.warning(
                     "zemberek_import_failed",
                     reason="zemberek-python not installed",

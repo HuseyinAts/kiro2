@@ -5,8 +5,16 @@
  * - Chat, File Manager, Video Conference, Whiteboard
  */
 
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import {
+  ArrowBack as BackIcon,
+  Chat as ChatIcon,
+  Folder as FolderIcon,
+  VideoCall as VideoIcon,
+  Dashboard as WhiteboardIcon,
+  Settings as SettingsIcon,
+  MoreVert as MoreVertIcon,
+  ExitToApp as ExitIcon,
+} from '@mui/icons-material';
 import {
   Box,
   Paper,
@@ -18,26 +26,18 @@ import {
   AvatarGroup,
   Chip,
   Badge,
-  Button,
   Menu,
   MenuItem,
   Tooltip,
 } from '@mui/material';
-import {
-  ArrowBack as BackIcon,
-  Chat as ChatIcon,
-  Folder as FolderIcon,
-  VideoCall as VideoIcon,
-  Dashboard as WhiteboardIcon,
-  Settings as SettingsIcon,
-  MoreVert as MoreVertIcon,
-  ExitToApp as ExitIcon,
-} from '@mui/icons-material';
+import axios from 'axios';
+import * as React from 'react';
+import {  useState, useEffect  } from 'react';
 
 import ChatInterface from './ChatInterface';
+import CollaborativeWhiteboard from './CollaborativeWhiteboard';
 import FileManager from './FileManager';
 import VideoConference from './VideoConference';
-import CollaborativeWhiteboard from './CollaborativeWhiteboard';
 
 // ============================================================
 // Types
@@ -89,7 +89,7 @@ const StudyRoomView: React.FC<StudyRoomViewProps> = ({
   const [room, setRoom] = useState<StudyRoom | null>(null);
   const [members, setMembers] = useState<Member[]>([]);
   const [activeTab, setActiveTab] = useState(0); // 0: Chat, 1: Files, 2: Video, 3: Whiteboard
-  const [unreadMessages, setUnreadMessages] = useState(0);
+  const [unreadMessages, _setUnreadMessages] = useState(0);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [isVideoActive, setIsVideoActive] = useState(false);
 
@@ -117,7 +117,7 @@ const StudyRoomView: React.FC<StudyRoomViewProps> = ({
   };
 
   const handleLeaveRoom = async () => {
-    if (!window.confirm('Odadan ayrılmak istediğinizden emin misiniz?')) return;
+    if (!window.confirm('Odadan ayrılmak istediğinizden emin misiniz?')) {return;}
 
     try {
       await axios.post(`/api/study-rooms/${roomId}/leave`);
@@ -128,7 +128,7 @@ const StudyRoomView: React.FC<StudyRoomViewProps> = ({
   };
 
   const handleArchiveRoom = async () => {
-    if (!window.confirm('Bu odayı arşivlemek istediğinizden emin misiniz?')) return;
+    if (!window.confirm('Bu odayı arşivlemek istediğinizden emin misiniz?')) {return;}
 
     try {
       await axios.post(`/api/study-rooms/${roomId}/archive`);
@@ -140,7 +140,7 @@ const StudyRoomView: React.FC<StudyRoomViewProps> = ({
 
   const handleDeleteRoom = async () => {
     if (!window.confirm('Bu odayı silmek istediğinizden emin misiniz? Bu işlem geri alınamaz!'))
-      return;
+      {return;}
 
     try {
       await axios.delete(`/api/study-rooms/${roomId}`);
@@ -207,7 +207,7 @@ const StudyRoomView: React.FC<StudyRoomViewProps> = ({
                     '& .MuiBadge-badge': {
                       backgroundColor: '#44b700',
                       color: '#44b700',
-                      boxShadow: `0 0 0 2px white`,
+                      boxShadow: '0 0 0 2px white',
                     },
                   }}
                 >
@@ -264,7 +264,7 @@ const StudyRoomView: React.FC<StudyRoomViewProps> = ({
 
       {/* Tabs */}
       <Paper sx={{ borderBottom: 1, borderColor: 'divider' }}>
-        <Tabs value={activeTab} onChange={(e, newValue) => setActiveTab(newValue)}>
+        <Tabs value={activeTab} onChange={(_e, newValue) => setActiveTab(newValue)}>
           <Tab
             icon={
               <Badge badgeContent={unreadMessages} color="primary">

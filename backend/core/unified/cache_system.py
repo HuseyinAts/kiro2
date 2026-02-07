@@ -8,7 +8,9 @@ import asyncio
 import hashlib
 import json
 import logging
+import pickle
 import time
+import zlib
 from collections.abc import Callable
 from dataclasses import dataclass
 from datetime import datetime
@@ -238,8 +240,8 @@ class UnifiedCacheManager:
                 import gzip
 
                 return gzip.decompress(data)
-            except:
-                # Not compressed
+            except (OSError, zlib.error):
+                # Not compressed or corrupted
                 return data
         return data
 

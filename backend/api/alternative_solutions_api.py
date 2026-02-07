@@ -7,8 +7,7 @@ REQ-13.1: Makale/Soru içerik yönetimi - Alternatif çözüm yolları
 """
 
 import logging
-from typing import Any, Dict, List, Optional
-from datetime import datetime
+from typing import Dict, List, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from fastapi.responses import JSONResponse
@@ -21,7 +20,7 @@ from services.alternative_solutions_service import AlternativeSolutionsService
 
 logger = logging.getLogger(__name__)
 
-router = APIRouter(prefix="/api/v1/questions", tags=["Alternative Solutions"])
+router = APIRouter(prefix="/api/v1/questions/alternatives", tags=["Alternative Solutions"])
 
 
 # ========================================================================

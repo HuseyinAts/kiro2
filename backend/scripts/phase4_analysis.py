@@ -67,7 +67,7 @@ class Phase4AnalysisStrategy:
         print(
             f"Current Overall Coverage: {coverage_data['totals']['percent_covered']:.2f}%"
         )
-        print(f"Target Coverage: 60.0%")
+        print("Target Coverage: 60.0%")
         print(f"Gap to Close: {60.0 - coverage_data['totals']['percent_covered']:.1f}%")
         print()
 
@@ -245,7 +245,7 @@ class Phase4AnalysisStrategy:
                 f"{i}. {scenario['name']} ({scenario['priority']} - {scenario['complexity']})"
             )
             print(f"   Components: {' -> '.join(scenario['components'])}")
-            print(f"   Test Focus: Integration patterns, error handling, performance")
+            print("   Test Focus: Integration patterns, error handling, performance")
             print()
 
         # Implementation strategy
@@ -291,8 +291,8 @@ class Phase4AnalysisStrategy:
         print(f"Integration Target Lines: {total_integration_lines:,}")
         print(f"Missing Coverage Lines: {total_missing_lines:,}")
         print(f"Integration Scenarios: {estimated_scenarios}")
-        print(f"Performance Tests: ~30-40")
-        print(f"Estimated Time: 4-5 days")
+        print("Performance Tests: ~30-40")
+        print("Estimated Time: 4-5 days")
         print()
 
         # Success criteria

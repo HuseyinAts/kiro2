@@ -11,14 +11,14 @@ Models for:
 """
 import uuid
 from datetime import datetime
-from typing import Optional, Dict
+from typing import Optional
 from enum import Enum
 
 from sqlalchemy import (
-    Boolean, Column, DateTime, Enum as SQLEnum,
+    Boolean, DateTime, Enum as SQLEnum,
     ForeignKey, Integer, JSON, String, Text
 )
-from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy.sql import func
 
 from .base import Base
@@ -60,6 +60,71 @@ class DataProcessingPurpose(str, Enum):
     EXAM_EVALUATION = "exam_evaluation"  # Sınav değerlendirme
     PROGRESS_TRACKING = "progress_tracking"  # İlerleme takibi
     CONTENT_RECOMMENDATION = "content_recommendation"  # İçerik önerisi
+
+
+class DataRetentionPeriod(str, Enum):
+    """KVKK data retention periods (in days)"""
+    # Student data - 2 years after graduation (KVKK requirement)
+    STUDENT_DATA = "730"  # 2 years
+    # Exam results - 5 years for educational records
+    EXAM_RESULTS = "1825"  # 5 years
+    # Temporary data - 90 days
+    TEMPORARY_DATA = "90"
+    # Audit logs - 5 years (legal requirement)
+    AUDIT_LOGS = "1825"
+    # Session data - 30 days
+    SESSION_DATA = "30"
+    # Consent records - permanent (for legal proof)
+    CONSENT_RECORDS = "0"  # 0 = permanent
+    # Export files - 7 days after creation
+    EXPORT_FILES = "7"
+    # Marketing data - until consent withdrawn
+    MARKETING_DATA = "365"  # 1 year renewal required
+
+
+# Data Retention Policy Configuration
+DATA_RETENTION_CONFIG = {
+    "student_profiles": {
+        "retention_days": 730,  # 2 years after graduation
+        "deletion_type": "anonymize",  # Keep statistical data
+        "notification_days": 30,  # Notify 30 days before deletion
+    },
+    "exam_results": {
+        "retention_days": 1825,  # 5 years
+        "deletion_type": "anonymize",
+        "notification_days": 90,
+    },
+    "temporary_files": {
+        "retention_days": 90,
+        "deletion_type": "hard_delete",
+        "notification_days": 0,
+    },
+    "audit_logs": {
+        "retention_days": 1825,  # 5 years (KVKK minimum)
+        "deletion_type": "archive",
+        "notification_days": 30,
+    },
+    "session_data": {
+        "retention_days": 30,
+        "deletion_type": "hard_delete",
+        "notification_days": 0,
+    },
+    "consent_records": {
+        "retention_days": 0,  # Never delete (legal proof)
+        "deletion_type": "none",
+        "notification_days": 0,
+    },
+    "export_files": {
+        "retention_days": 7,
+        "deletion_type": "hard_delete",
+        "notification_days": 1,
+    },
+    "marketing_preferences": {
+        "retention_days": 365,
+        "deletion_type": "reset",
+        "notification_days": 30,
+    },
+}
 
 
 class ExportRequestStatus(str, Enum):
@@ -323,6 +388,8 @@ class KVKKAuditLog(Base):
 __all__ = [
     "ConsentStatus",
     "DataProcessingPurpose",
+    "DataRetentionPeriod",
+    "DATA_RETENTION_CONFIG",
     "ExportRequestStatus",
     "DeletionRequestStatus",
     "KVKKConsent",

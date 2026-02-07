@@ -250,7 +250,10 @@ async def generate_pdf_report(
 
 
 @router.get("/download/{filename}")
-async def download_pdf_report(filename: str) -> FileResponse:
+async def download_pdf_report(
+    filename: str,
+    current_user: dict = Depends(get_current_user)
+) -> FileResponse:
     """
     PDF raporu indir
     """

@@ -8,7 +8,7 @@ from typing import List, Optional, Dict, Any
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, Query
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.database import get_db
@@ -55,8 +55,7 @@ class CampusResponse(BaseModel):
     career_center: bool
     wifi_available: bool
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 # Living Cost Models
@@ -84,8 +83,7 @@ class LivingCostResponse(BaseModel):
     total_avg_budget: Optional[int]
     cost_of_living_index: Optional[float]
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 # Dormitory Models
@@ -117,8 +115,7 @@ class DormitoryResponse(BaseModel):
     wifi_included: bool
     distance_to_campus_km: Optional[float]
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 # Scholarship Models
@@ -149,8 +146,7 @@ class ScholarshipResponse(BaseModel):
     min_exam_score: Optional[float]
     active: bool
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 # ============================================================

@@ -4,13 +4,12 @@ Multi-layer caching with smart invalidation and preloading
 Target: Improve cache hit rate and reduce latency
 """
 import asyncio
-import hashlib
 import json
 import logging
 import time
 from dataclasses import dataclass
 from enum import Enum
-from typing import Any, Callable, Dict, List, Optional, Set
+from typing import Any, Callable, Dict, List, Optional, Set, Tuple
 
 import redis.asyncio as redis
 from redis.asyncio import ConnectionPool

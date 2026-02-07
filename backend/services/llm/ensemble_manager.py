@@ -1,21 +1,23 @@
 """
 Multi-LLM Ensemble Manager
 Coordinates multiple LLM providers for ÖSYM question generation
+and sequential thinking/reasoning
 
 Author: KIRO AI Team
-Date: 2025-10-19
+Date: 2025-10-19 (Updated: 2026-01-16)
 """
 
 from typing import List, Dict, Any, Optional
 import asyncio
-from datetime import datetime
-import statistics
 
 from services.llm.base_llm_provider import BaseLLMProvider, LLMRequest, LLMResponse
 from services.llm.multi_llm_config import LLMProvider, LLMCapability, MultiLLMConfig
-from services.llm.openai_provider import OpenAIProvider
-from services.llm.claude_provider import ClaudeProvider
-from services.llm.qwen_provider import QwenProvider
+from services.llm.sequential_thinking_mixin import (
+    ReasoningResult,
+)
+
+# Lazy imports for providers - avoid import failures when packages are missing
+# These are imported inside try/except blocks in __init__
 
 
 class EnsembleStrategy:
@@ -134,22 +136,40 @@ class MultiLLMEnsembleManager:
         enable_openai: bool = True,
         enable_claude: bool = True,
         enable_qwen: bool = True,
+        enable_gemini: bool = True,
         qwen_use_local: bool = False,
-    ):
-        """
-        Initialize ensemble manager
+        gemini_thinking_mode: bool = True,
+    ) -> None:
+        """Initialize ensemble manager.
 
         Args:
             enable_openai: Enable OpenAI GPT-4
             enable_claude: Enable Claude Sonnet
             enable_qwen: Enable Qwen
+            enable_gemini: Enable Gemini (with thinking mode)
             qwen_use_local: Use local Qwen deployment
+            gemini_thinking_mode: Enable Gemini thinking mode
+
+        Raises:
+            RuntimeError: If no providers can be initialized
         """
         self.providers: Dict[LLMProvider, BaseLLMProvider] = {}
 
-        # Initialize providers
+        # Initialize Gemini first (best for sequential thinking)
+        if enable_gemini:
+            try:
+                from services.llm.gemini_provider import GeminiProvider
+                self.providers[LLMProvider.GEMINI] = GeminiProvider(
+                    MultiLLMConfig.GEMINI_CONFIG, thinking_mode=gemini_thinking_mode
+                )
+                print("✅ Gemini initialized (thinking mode)")
+            except Exception as e:
+                print(f"⚠️  Gemini initialization failed: {e}")
+
+        # Initialize providers (lazy imports)
         if enable_openai:
             try:
+                from services.llm.openai_provider import OpenAIProvider
                 self.providers[LLMProvider.OPENAI] = OpenAIProvider(
                     MultiLLMConfig.OPENAI_CONFIG
                 )
@@ -159,6 +179,7 @@ class MultiLLMEnsembleManager:
 
         if enable_claude:
             try:
+                from services.llm.claude_provider import ClaudeProvider
                 self.providers[LLMProvider.CLAUDE] = ClaudeProvider(
                     MultiLLMConfig.CLAUDE_CONFIG
                 )
@@ -168,6 +189,7 @@ class MultiLLMEnsembleManager:
 
         if enable_qwen:
             try:
+                from services.llm.qwen_provider import QwenProvider
                 self.providers[LLMProvider.QWEN] = QwenProvider(
                     MultiLLMConfig.QWEN_CONFIG, use_local=qwen_use_local
                 )
@@ -383,6 +405,306 @@ class MultiLLMEnsembleManager:
         else:
             return successful_questions[0]
 
-    def __repr__(self):
+    def __repr__(self) -> str:
+        """Return string representation."""
         provider_names = ", ".join([p.value for p in self.providers.keys()])
         return f"<MultiLLMEnsembleManager providers=[{provider_names}]>"
+
+    # =========================================================================
+    # Sequential Thinking Methods
+    # =========================================================================
+
+    async def sequential_thinking_ensemble(
+        self,
+        problem: str,
+        max_steps: int = 10,
+        use_voting: bool = True,
+        preferred_provider: Optional[LLMProvider] = None,
+    ) -> Dict[str, Any]:
+        """
+        Solve problem with sequential thinking using multiple providers
+
+        Args:
+            problem: Problem to solve
+            max_steps: Maximum reasoning steps
+            use_voting: Use ensemble voting for best result
+            preferred_provider: Preferred provider (optional)
+
+        Returns:
+            Best reasoning result from ensemble
+        """
+        # Determine providers to use (prefer sequential thinking capable)
+        thinking_order = MultiLLMConfig.ENSEMBLE_STRATEGY.get(
+            "sequential_thinking_order",
+            [LLMProvider.GEMINI, LLMProvider.CLAUDE, LLMProvider.OPENAI, LLMProvider.QWEN],
+        )
+
+        if preferred_provider:
+            thinking_order = [preferred_provider] + [
+                p for p in thinking_order if p != preferred_provider
+            ]
+
+        # Generate from available providers
+        tasks = []
+        provider_types = []
+
+        for provider_type in thinking_order:
+            if provider_type not in self.providers:
+                continue
+
+            provider = self.providers[provider_type]
+
+            # Use provider's sequential thinking if available
+            if hasattr(provider, "think_step_by_step"):
+                task = provider.think_step_by_step(problem, max_steps=max_steps)
+            else:
+                # Fallback to basic generation with thinking prompt
+                task = self._generate_with_thinking_prompt(provider, problem, max_steps)
+
+            tasks.append(task)
+            provider_types.append(provider_type)
+
+        if not tasks:
+            raise RuntimeError("No providers available for sequential thinking")
+
+        # Run all providers concurrently
+        try:
+            results = await asyncio.wait_for(
+                asyncio.gather(*tasks, return_exceptions=True), timeout=60.0
+            )
+        except asyncio.TimeoutError:
+            print("⚠️  Sequential thinking timeout")
+            results = [asyncio.TimeoutError()] * len(tasks)
+
+        # Process results
+        successful_results = []
+        for i, result in enumerate(results):
+            if isinstance(result, Exception):
+                print(f"⚠️  {provider_types[i].value} failed: {result}")
+                continue
+
+            if isinstance(result, dict):
+                result["provider"] = provider_types[i].value
+                successful_results.append(result)
+            elif isinstance(result, ReasoningResult):
+                successful_results.append(result.to_dict())
+
+        if not successful_results:
+            raise RuntimeError("All providers failed for sequential thinking")
+
+        if use_voting and len(successful_results) > 1:
+            return self._vote_on_reasoning_results(successful_results)
+        else:
+            return successful_results[0]
+
+    async def _generate_with_thinking_prompt(
+        self, provider: BaseLLMProvider, problem: str, max_steps: int
+    ) -> Dict[str, Any]:
+        """Generate with thinking prompt for providers without native support"""
+        prompt = f"""Asagidaki problemi adim adim coz.
+
+Problem: {problem}
+
+Her adimda:
+1. Bu adimda ne yaptigini acikla
+2. Neden bu adimi attigini soyle
+3. Ara sonucu ver
+
+Maksimum {max_steps} adim kullan.
+
+Cozum:"""
+
+        request = LLMRequest(
+            prompt=prompt,
+            system_prompt="Sen bir mantik ve problem cozme uzmanisin. Adim adim dusun.",
+            max_tokens=4096,
+            temperature=0.3,
+        )
+
+        response = await provider.generate(request)
+
+        return {
+            "problem": problem,
+            "understanding": "Generated with thinking prompt",
+            "steps": [{"description": response.content}],
+            "final_answer": response.content,
+            "provider": str(provider.provider),
+            "latency_ms": response.latency_ms,
+        }
+
+    def _vote_on_reasoning_results(
+        self, results: List[Dict[str, Any]]
+    ) -> Dict[str, Any]:
+        """Vote on multiple reasoning results to select best"""
+        if not results:
+            raise ValueError("No results to vote on")
+
+        if len(results) == 1:
+            return results[0]
+
+        # Score each result
+        scored_results = []
+        for result in results:
+            score = 0.0
+
+            # Provider weight
+            provider = result.get("provider", "unknown")
+            weights = MultiLLMConfig.ENSEMBLE_STRATEGY["voting"]["weights"]
+            provider_enum = LLMProvider(provider) if provider in [p.value for p in LLMProvider] else None
+            if provider_enum:
+                score += weights.get(provider_enum, 0.2) * 10
+
+            # Step count (prefer detailed reasoning)
+            steps = result.get("steps", [])
+            if 3 <= len(steps) <= 10:
+                score += 5  # Ideal step count
+            elif len(steps) > 0:
+                score += 2
+
+            # Confidence score
+            confidence = result.get("confidence", 0.5)
+            score += confidence * 5
+
+            # Has verification
+            if result.get("verification"):
+                score += 3
+
+            # Latency penalty (prefer faster)
+            latency = result.get("latency_ms", 5000)
+            if latency < 2000:
+                score += 2
+            elif latency < 5000:
+                score += 1
+
+            scored_results.append((score, result))
+
+        # Sort by score and return best
+        scored_results.sort(key=lambda x: x[0], reverse=True)
+
+        best_result = scored_results[0][1]
+        best_result["ensemble_scores"] = {
+            r.get("provider", "unknown"): s for s, r in scored_results
+        }
+        best_result["voting_winner"] = True
+
+        return best_result
+
+    async def solve_with_best_provider(
+        self, problem: str, capability: LLMCapability = LLMCapability.SEQUENTIAL_THINKING
+    ) -> Dict[str, Any]:
+        """
+        Solve problem with best available provider for capability
+
+        Args:
+            problem: Problem to solve
+            capability: Required capability
+
+        Returns:
+            Solution result
+        """
+        # Find best provider for capability
+        best_provider_type = MultiLLMConfig.get_best_provider_for_capability(
+            capability, prefer_cost_effective=True
+        )
+
+        if best_provider_type not in self.providers:
+            # Fallback to any available
+            available = list(self.providers.keys())
+            if not available:
+                raise RuntimeError("No providers available")
+            best_provider_type = available[0]
+
+        provider = self.providers[best_provider_type]
+
+        # Use appropriate method based on capability
+        if capability == LLMCapability.SEQUENTIAL_THINKING and hasattr(
+            provider, "think_step_by_step"
+        ):
+            return await provider.think_step_by_step(problem)
+        elif capability == LLMCapability.MATH_REASONING and hasattr(
+            provider, "solve_math_problem"
+        ):
+            return await provider.solve_math_problem(problem)
+        else:
+            # Generic generation
+            request = LLMRequest(
+                prompt=problem,
+                max_tokens=4096,
+                temperature=0.3,
+            )
+            response = await provider.generate(request)
+            return {
+                "problem": problem,
+                "answer": response.content,
+                "provider": best_provider_type.value,
+                "latency_ms": response.latency_ms,
+            }
+
+    async def compare_providers(
+        self, problem: str
+    ) -> Dict[str, Any]:
+        """
+        Compare all providers on same problem
+
+        Args:
+            problem: Problem to solve
+
+        Returns:
+            Comparison results from all providers
+        """
+        tasks = []
+        provider_types = []
+
+        for provider_type, provider in self.providers.items():
+            if hasattr(provider, "think_step_by_step"):
+                task = provider.think_step_by_step(problem)
+            else:
+                task = self._generate_with_thinking_prompt(provider, problem, 10)
+
+            tasks.append(task)
+            provider_types.append(provider_type)
+
+        results = await asyncio.gather(*tasks, return_exceptions=True)
+
+        comparison = {
+            "problem": problem,
+            "providers": {},
+            "best_provider": None,
+            "fastest_provider": None,
+        }
+
+        min_latency = float("inf")
+        best_score = 0
+
+        for i, result in enumerate(results):
+            provider_name = provider_types[i].value
+
+            if isinstance(result, Exception):
+                comparison["providers"][provider_name] = {
+                    "error": str(result),
+                    "success": False,
+                }
+                continue
+
+            if isinstance(result, dict):
+                result_dict = result
+            elif isinstance(result, ReasoningResult):
+                result_dict = result.to_dict()
+            else:
+                result_dict = {"raw": str(result)}
+
+            result_dict["success"] = True
+            comparison["providers"][provider_name] = result_dict
+
+            # Track best and fastest
+            latency = result_dict.get("latency_ms", float("inf"))
+            if latency < min_latency:
+                min_latency = latency
+                comparison["fastest_provider"] = provider_name
+
+            steps = len(result_dict.get("steps", []))
+            if steps > best_score:
+                best_score = steps
+                comparison["best_provider"] = provider_name
+
+        return comparison

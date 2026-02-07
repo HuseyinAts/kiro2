@@ -1,16 +1,17 @@
 /**
  * ColorCoding Component - Renkli Kodlama Sistemi
- * 
+ *
  * Diskalkuli desteği için matematiksel ifadelerde renk kodlama.
  * Pozitif/negatif sayılar, işlemler, parantezler ve değişkenler için renk desteği.
- * 
+ *
  * Gereksinimler: REQ-51.61 - REQ-51.80
- * 
+ *
  * @author Kiro AI
  * @date 2025-10-24
  */
 
-import React, { useState, useEffect } from 'react';
+import * as React from 'react';
+import {  useState, useEffect  } from 'react';
 import './ColorCoding.css';
 
 /**
@@ -26,21 +27,21 @@ export interface ColorCodingSettings {
   positiveColor: string;
   negativeColor: string;
   zeroColor: string;
-  
+
   // İşlem renkleri (REQ-51.66-51.70)
   additionColor: string;
   subtractionColor: string;
   multiplicationColor: string;
   divisionColor: string;
-  
+
   // Parantez seviyeleri (REQ-51.71-51.75)
   parenthesesColors: string[];
-  
+
   // Değişken/sabit renkleri (REQ-51.76-51.80)
   variableColor: string;
   constantColor: string;
   coefficientColor: string;
-  
+
   // Genel ayarlar
   colorScheme: ColorScheme;
   highContrast: boolean;
@@ -55,13 +56,13 @@ const DEFAULT_SETTINGS: ColorCodingSettings = {
   positiveColor: '#10b981', // Yeşil - pozitif sayılar
   negativeColor: '#ef4444', // Kırmızı - negatif sayılar
   zeroColor: '#6b7280',     // Gri - sıfır
-  
+
   // İşlemler (REQ-51.66-51.70)
   additionColor: '#3b82f6',      // Mavi - toplama
   subtractionColor: '#f59e0b',   // Turuncu - çıkarma
   multiplicationColor: '#8b5cf6', // Mor - çarpma
   divisionColor: '#ec4899',      // Pembe - bölme
-  
+
   // Parantezler (REQ-51.71-51.75) - Rainbow parentheses
   parenthesesColors: [
     '#ef4444', // Kırmızı - seviye 1
@@ -71,12 +72,12 @@ const DEFAULT_SETTINGS: ColorCodingSettings = {
     '#8b5cf6', // Mor - seviye 5
     '#ec4899', // Pembe - seviye 6
   ],
-  
+
   // Değişken/sabit (REQ-51.76-51.80)
   variableColor: '#06b6d4',   // Cyan - değişkenler (x, y, z)
   constantColor: '#84cc16',   // Lime - sabitler (π, e)
   coefficientColor: '#f97316', // Orange - katsayılar (2x, 3y)
-  
+
   colorScheme: 'default',
   highContrast: false,
   showLegend: true,
@@ -117,9 +118,9 @@ const COLORBLIND_FRIENDLY_SETTINGS: Partial<ColorCodingSettings> = {
 /**
  * Token tipi
  */
-type TokenType = 
-  | 'positive' 
-  | 'negative' 
+type TokenType =
+  | 'positive'
+  | 'negative'
   | 'zero'
   | 'addition'
   | 'subtraction'
@@ -152,12 +153,12 @@ interface ColorCodingProps {
 
 /**
  * ColorCoding Component
- * 
+ *
  * Matematiksel ifadeleri renk kodlayarak görselleştirir.
- * 
+ *
  * @example
  * ```tsx
- * <ColorCoding 
+ * <ColorCoding
  *   expression="2x + 3y - 5 = 0"
  *   settings={{ highContrast: true }}
  * />
@@ -177,17 +178,17 @@ const ColorCoding: React.FC<ColorCodingProps> = ({
   // Ayarlar değiştiğinde güncelle
   useEffect(() => {
     let newSettings = { ...DEFAULT_SETTINGS, ...customSettings };
-    
+
     // Yüksek kontrast modu
     if (newSettings.highContrast) {
       newSettings = { ...newSettings, ...HIGH_CONTRAST_SETTINGS };
     }
-    
+
     // Renk körlüğü dostu mod
     if (newSettings.colorScheme === 'colorblind-friendly') {
       newSettings = { ...newSettings, ...COLORBLIND_FRIENDLY_SETTINGS };
     }
-    
+
     setSettings(newSettings);
   }, [customSettings]);
 
@@ -232,13 +233,13 @@ const ColorCoding: React.FC<ColorCodingProps> = ({
       if (char === '-') {
         // Negatif sayı mı yoksa çıkarma işlemi mi?
         const prevToken = tokens[tokens.length - 1];
-        const isNegativeNumber = !prevToken || 
-          prevToken.type === 'addition' || 
+        const isNegativeNumber = !prevToken ||
+          prevToken.type === 'addition' ||
           prevToken.type === 'subtraction' ||
           prevToken.type === 'multiplication' ||
           prevToken.type === 'division' ||
           prevToken.type === 'parenthesis' && prevToken.value === '(';
-        
+
         if (isNegativeNumber) {
           // Negatif sayı olarak işle
           let numStr = '-';
@@ -268,17 +269,15 @@ const ColorCoding: React.FC<ColorCodingProps> = ({
       // Sayılar (REQ-51.61-51.65)
       if (/\d/.test(char)) {
         let numStr = '';
-        let hasVariable = false;
-        
+
         // Sayıyı oku
         while (i < expr.length && /[\d.]/.test(expr[i])) {
           numStr += expr[i];
           i++;
         }
-        
+
         // Katsayı mı kontrol et (REQ-51.76-51.80)
         if (i < expr.length && /[a-zA-Z]/.test(expr[i])) {
-          hasVariable = true;
           const varChar = expr[i];
           i++;
           tokens.push({ value: numStr, type: 'coefficient' });
@@ -303,7 +302,7 @@ const ColorCoding: React.FC<ColorCodingProps> = ({
         i++;
         continue;
       }
-      
+
       if (/[a-zA-Z]/.test(char)) {
         // 'e' sabiti (Euler sayısı) - tek başına veya üs olarak
         if (char === 'e' && (i === 0 || !/[a-zA-Z]/.test(expr[i - 1]))) {
@@ -315,7 +314,7 @@ const ColorCoding: React.FC<ColorCodingProps> = ({
             continue;
           }
         }
-        
+
         // Diğer harfler değişken
         tokens.push({ value: char, type: 'variable' });
         i++;
@@ -365,7 +364,7 @@ const ColorCoding: React.FC<ColorCodingProps> = ({
   const tokens = tokenize(expression);
 
   return (
-    <div 
+    <div
       className={`color-coding ${className}`}
       role="math"
       aria-label={ariaLabel || `Renkli kodlanmış matematiksel ifade: ${expression}`}
@@ -387,7 +386,7 @@ const ColorCoding: React.FC<ColorCodingProps> = ({
       {settings.showLegend && (
         <div className="color-coding__legend" role="region" aria-label="Renk açıklaması">
           <h4 className="color-coding__legend-title">Renk Açıklaması</h4>
-          
+
           <div className="color-coding__legend-section">
             <h5>Sayılar</h5>
             <div className="color-coding__legend-item">

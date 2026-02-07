@@ -16,7 +16,7 @@ import json
 import logging
 import os
 import secrets
-from datetime import datetime
+from datetime import datetime, timezone
 from enum import Enum
 from typing import Any, Dict, List, Optional, Union
 
@@ -216,7 +216,7 @@ class EncryptionKeyManager:
             key_id=key_id,
             algorithm=EncryptionAlgorithm.AES_256_GCM,
             key_material=key_material,
-            created_at=datetime.utcnow(),
+            created_at=datetime.now(timezone.utc),
             is_active=True,
             version=1,
         )
@@ -282,7 +282,7 @@ class EncryptionKeyManager:
             key_id=key_id,
             algorithm=EncryptionAlgorithm.AES_256_GCM,
             key_material=key_material,
-            created_at=datetime.utcnow(),
+            created_at=datetime.now(timezone.utc),
             is_active=True,
             version=version,
         )

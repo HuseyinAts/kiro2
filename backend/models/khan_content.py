@@ -11,15 +11,13 @@ from sqlalchemy import (
     DateTime,
     ForeignKey,
     Text,
-    JSON,
-    Float,
 )
 from sqlalchemy.dialects.postgresql import UUID, ARRAY
 from sqlalchemy.orm import relationship
 from datetime import datetime
 import uuid
 
-from models.database import Base
+from .database import Base
 
 
 class KhanContent(Base):

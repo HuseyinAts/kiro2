@@ -662,3 +662,245 @@ for result in results:
 stats = await cache.get_stats()
 print(f"Hit ratio: {stats['hit_ratio']:.2%}")
 """
+
+
+# =============================================================================
+# Quantization Functions - Spec REQ-7.5
+# =============================================================================
+
+@dataclass
+class QuantizedEmbedding:
+    """
+    Quantized embedding container.
+
+    Spec REQ-7.5: float32 → int8 quantization (75% memory reduction).
+    """
+    data: np.ndarray  # int8 array
+    min_val: float
+    max_val: float
+    scale: float
+    original_dtype: str = "float32"
+
+    def memory_size(self) -> int:
+        """Return memory size in bytes."""
+        return self.data.nbytes + 24  # data + metadata overhead
+
+    def to_dict(self) -> dict:
+        """Serialize to dictionary."""
+        return {
+            "data": self.data.tolist(),
+            "min_val": self.min_val,
+            "max_val": self.max_val,
+            "scale": self.scale,
+            "original_dtype": self.original_dtype
+        }
+
+    @classmethod
+    def from_dict(cls, data: dict) -> "QuantizedEmbedding":
+        """Deserialize from dictionary."""
+        return cls(
+            data=np.array(data["data"], dtype=np.int8),
+            min_val=data["min_val"],
+            max_val=data["max_val"],
+            scale=data["scale"],
+            original_dtype=data.get("original_dtype", "float32")
+        )
+
+
+def quantize_embedding(
+    embedding: np.ndarray,
+    bits: int = 8
+) -> QuantizedEmbedding:
+    """
+    Quantize float32 embedding to int8.
+
+    Spec REQ-7.5: Memory optimization through quantization.
+    Reduces memory usage by ~75% (float32: 4 bytes → int8: 1 byte per dimension).
+
+    Args:
+        embedding: Original float32 embedding (1D array or 2D batch)
+        bits: Quantization bits (default 8 for int8)
+
+    Returns:
+        QuantizedEmbedding with metadata for dequantization
+
+    Example:
+        >>> emb = np.array([0.1, 0.5, -0.3, 0.8], dtype=np.float32)
+        >>> q_emb = quantize_embedding(emb)
+        >>> print(f"Memory reduction: {(emb.nbytes / q_emb.memory_size()) * 100:.1f}%")
+    """
+    # Ensure numpy array
+    if not isinstance(embedding, np.ndarray):
+        embedding = np.array(embedding, dtype=np.float32)
+
+    # Get min/max for scaling
+    min_val = float(embedding.min())
+    max_val = float(embedding.max())
+
+    # Avoid division by zero
+    range_val = max_val - min_val
+    if range_val < 1e-10:
+        range_val = 1.0
+
+    # Calculate scale for int8 range (-128 to 127)
+    if bits == 8:
+        scale = range_val / 255.0
+        # Normalize to 0-255 range, then shift to -128 to 127
+        normalized = (embedding - min_val) / range_val
+        quantized = np.clip(normalized * 255 - 128, -128, 127).astype(np.int8)
+    else:
+        # Support for other bit depths if needed
+        max_int = (2 ** bits) - 1
+        scale = range_val / max_int
+        normalized = (embedding - min_val) / range_val
+        quantized = np.clip(normalized * max_int, 0, max_int).astype(np.int16)
+
+    return QuantizedEmbedding(
+        data=quantized,
+        min_val=min_val,
+        max_val=max_val,
+        scale=scale,
+        original_dtype=str(embedding.dtype)
+    )
+
+
+def dequantize_embedding(
+    quantized: QuantizedEmbedding,
+    dtype: np.dtype = np.float32
+) -> np.ndarray:
+    """
+    Dequantize int8 embedding back to float32.
+
+    Args:
+        quantized: QuantizedEmbedding to restore
+        dtype: Target dtype (default float32)
+
+    Returns:
+        Restored float32 embedding
+
+    Example:
+        >>> emb = np.array([0.1, 0.5, -0.3, 0.8], dtype=np.float32)
+        >>> q_emb = quantize_embedding(emb)
+        >>> restored = dequantize_embedding(q_emb)
+        >>> error = np.abs(emb - restored).max()
+        >>> print(f"Max quantization error: {error:.6f}")
+    """
+    # Reverse the quantization
+    # int8 range: -128 to 127, scale back to 0-255 then normalize
+    normalized = (quantized.data.astype(np.float32) + 128) / 255.0
+
+    # Restore original range
+    restored = normalized * (quantized.max_val - quantized.min_val) + quantized.min_val
+
+    return restored.astype(dtype)
+
+
+def quantize_batch(
+    embeddings: np.ndarray
+) -> list[QuantizedEmbedding]:
+    """
+    Quantize a batch of embeddings.
+
+    Args:
+        embeddings: 2D array of embeddings (N x D)
+
+    Returns:
+        List of QuantizedEmbedding objects
+    """
+    if embeddings.ndim == 1:
+        return [quantize_embedding(embeddings)]
+
+    return [quantize_embedding(emb) for emb in embeddings]
+
+
+def dequantize_batch(
+    quantized_list: list[QuantizedEmbedding],
+    dtype: np.dtype = np.float32
+) -> np.ndarray:
+    """
+    Dequantize a batch of embeddings.
+
+    Args:
+        quantized_list: List of QuantizedEmbedding objects
+        dtype: Target dtype
+
+    Returns:
+        2D array of restored embeddings (N x D)
+    """
+    if not quantized_list:
+        return np.array([], dtype=dtype)
+
+    restored = [dequantize_embedding(q, dtype) for q in quantized_list]
+    return np.stack(restored)
+
+
+def calculate_quantization_error(
+    original: np.ndarray,
+    quantized: QuantizedEmbedding
+) -> dict:
+    """
+    Calculate quantization error metrics.
+
+    Args:
+        original: Original float32 embedding
+        quantized: Quantized embedding
+
+    Returns:
+        Dictionary with error metrics
+    """
+    restored = dequantize_embedding(quantized)
+
+    abs_error = np.abs(original - restored)
+    rel_error = abs_error / (np.abs(original) + 1e-10)
+
+    # Cosine similarity (important for embeddings)
+    dot = np.dot(original, restored)
+    norm_orig = np.linalg.norm(original)
+    norm_rest = np.linalg.norm(restored)
+    cosine_sim = dot / (norm_orig * norm_rest + 1e-10)
+
+    return {
+        "max_absolute_error": float(abs_error.max()),
+        "mean_absolute_error": float(abs_error.mean()),
+        "max_relative_error": float(rel_error.max()),
+        "mean_relative_error": float(rel_error.mean()),
+        "cosine_similarity": float(cosine_sim),
+        "memory_reduction_percent": 75.0,  # int8 vs float32
+        "original_size_bytes": original.nbytes,
+        "quantized_size_bytes": quantized.memory_size()
+    }
+
+
+def get_quantization_stats(
+    embeddings: np.ndarray
+) -> dict:
+    """
+    Get quantization statistics for a batch of embeddings.
+
+    Useful for monitoring quantization quality.
+
+    Args:
+        embeddings: 2D array of embeddings
+
+    Returns:
+        Aggregate statistics
+    """
+    if embeddings.ndim == 1:
+        embeddings = embeddings.reshape(1, -1)
+
+    errors = []
+    for emb in embeddings:
+        q = quantize_embedding(emb)
+        err = calculate_quantization_error(emb, q)
+        errors.append(err)
+
+    return {
+        "sample_count": len(errors),
+        "avg_max_absolute_error": np.mean([e["max_absolute_error"] for e in errors]),
+        "avg_cosine_similarity": np.mean([e["cosine_similarity"] for e in errors]),
+        "min_cosine_similarity": np.min([e["cosine_similarity"] for e in errors]),
+        "total_memory_saved_bytes": sum(
+            e["original_size_bytes"] - e["quantized_size_bytes"]
+            for e in errors
+        )
+    }

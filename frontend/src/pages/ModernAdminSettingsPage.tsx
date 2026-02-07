@@ -3,8 +3,13 @@
  * Glassmorphism ile sistem ayarları yönetimi
  */
 
-import React, { useState } from 'react'
-import { motion } from 'framer-motion'
+import {
+  Settings as SettingsIcon,
+  Security as SecurityIcon,
+  Notifications as NotificationsIcon,
+  Speed as SpeedIcon,
+  Save as SaveIcon,
+} from '@mui/icons-material';
 import {
   Container,
   Typography,
@@ -17,19 +22,15 @@ import {
   Alert,
   Tabs,
   Tab,
-  MenuItem
-} from '@mui/material'
-import {
-  Settings as SettingsIcon,
-  Security as SecurityIcon,
-  Notifications as NotificationsIcon,
-  Storage as StorageIcon,
-  Speed as SpeedIcon,
-  Save as SaveIcon
-} from '@mui/icons-material'
-import { GlassCard } from '../components/ui/GlassCard'
-import { ModernButton } from '../components/ui/ModernButton'
-import { modernColors } from '../theme/modern-colors'
+  MenuItem,
+} from '@mui/material';
+import { motion } from 'framer-motion';
+import * as React from 'react';
+import {  useState  } from 'react';
+
+import { GlassCard } from '../components/ui/GlassCard';
+import { ModernButton } from '../components/ui/ModernButton';
+import { modernColors } from '../theme/modern-colors';
 
 interface SettingsState {
   siteName: string
@@ -47,8 +48,8 @@ interface SettingsState {
 }
 
 export const ModernAdminSettingsPage: React.FC = () => {
-  const [tabValue, setTabValue] = useState(0)
-  const [saved, setSaved] = useState(false)
+  const [tabValue, setTabValue] = useState(0);
+  const [saved, setSaved] = useState(false);
 
   const [settings, setSettings] = useState<SettingsState>({
     siteName: 'KIRO2 Eğitim Platformu',
@@ -62,13 +63,13 @@ export const ModernAdminSettingsPage: React.FC = () => {
     enableNotifications: true,
     maintenanceMode: false,
     cacheEnabled: true,
-    logLevel: 'info'
-  })
+    logLevel: 'info',
+  });
 
   const handleChange = (field: keyof SettingsState, value: any) => {
-    setSettings(prev => ({ ...prev, [field]: value }))
-    setSaved(false)
-  }
+    setSettings(prev => ({ ...prev, [field]: value }));
+    setSaved(false);
+  };
 
   const handleSave = async () => {
     try {
@@ -76,20 +77,20 @@ export const ModernAdminSettingsPage: React.FC = () => {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${localStorage.getItem('token')}`
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
         },
-        body: JSON.stringify(settings)
-      })
+        body: JSON.stringify(settings),
+      });
 
-      if (!response.ok) throw new Error()
-      setSaved(true)
-      setTimeout(() => setSaved(false), 3000)
+      if (!response.ok) {throw new Error();}
+      setSaved(true);
+      setTimeout(() => setSaved(false), 3000);
     } catch {
       // Simulate save
-      setSaved(true)
-      setTimeout(() => setSaved(false), 3000)
+      setSaved(true);
+      setTimeout(() => setSaved(false), 3000);
     }
-  }
+  };
 
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
@@ -108,7 +109,7 @@ export const ModernAdminSettingsPage: React.FC = () => {
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              mb: 2
+              mb: 2,
             }}
           >
             <SettingsIcon sx={{ fontSize: 32, color: 'white' }} />
@@ -122,7 +123,7 @@ export const ModernAdminSettingsPage: React.FC = () => {
               backgroundClip: 'text',
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent',
-              mb: 1
+              mb: 1,
             }}
           >
             Sistem Ayarları
@@ -393,13 +394,13 @@ export const ModernAdminSettingsPage: React.FC = () => {
       >
         <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
           <ModernButton
-            variant="contained"
+            variant="solid"
             size="large"
             startIcon={<SaveIcon />}
             onClick={handleSave}
             sx={{
               background: modernColors.gradients.fire,
-              px: 6
+              px: 6,
             }}
           >
             Ayarları Kaydet
@@ -407,7 +408,7 @@ export const ModernAdminSettingsPage: React.FC = () => {
         </Box>
       </motion.div>
     </Container>
-  )
-}
+  );
+};
 
-export default ModernAdminSettingsPage
+export default ModernAdminSettingsPage;

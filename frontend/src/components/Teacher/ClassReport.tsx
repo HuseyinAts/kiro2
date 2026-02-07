@@ -1,23 +1,24 @@
-import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Badge } from '@/components/ui/badge';
-import { 
-  FileText, 
-  Download, 
-  BarChart3, 
-  TrendingUp, 
+import {
+  FileText,
+  Download,
+  BarChart3,
+  TrendingUp,
   Users,
-  Calendar,
   Target,
   BookOpen,
   AlertCircle,
-  CheckCircle
+  CheckCircle,
 } from 'lucide-react';
+import * as React from 'react';
+import {  useState, useEffect  } from 'react';
+
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 interface ReportParams {
   baslangic_tarihi?: string;
@@ -65,9 +66,9 @@ const ClassReport: React.FC = () => {
   const [reportParams, setReportParams] = useState<ReportParams>({
     baslangic_tarihi: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
     bitis_tarihi: new Date().toISOString().split('T')[0],
-    sinav_tipi: ''
+    sinav_tipi: '',
   });
-  
+
   const [currentReport, setCurrentReport] = useState<ClassReport | null>(null);
   const [savedReports, setSavedReports] = useState<SavedReport[]>([]);
   const [loading, setLoading] = useState(false);
@@ -82,12 +83,12 @@ const ClassReport: React.FC = () => {
     try {
       setReportsLoading(true);
       const token = localStorage.getItem('token');
-      
+
       const response = await fetch('/api/v1/ogretmen/raporlar?limit=10', {
         headers: {
           'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
+          'Content-Type': 'application/json',
+        },
       });
 
       if (!response.ok) {
@@ -110,14 +111,14 @@ const ClassReport: React.FC = () => {
       setLoading(true);
       setError(null);
       const token = localStorage.getItem('token');
-      
+
       const response = await fetch('/api/v1/ogretmen/rapor/sinif', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
         },
-        body: JSON.stringify(reportParams)
+        body: JSON.stringify(reportParams),
       });
 
       if (!response.ok) {
@@ -142,12 +143,12 @@ const ClassReport: React.FC = () => {
     try {
       setLoading(true);
       const token = localStorage.getItem('token');
-      
+
       const response = await fetch(`/api/v1/ogretmen/rapor/${reportId}`, {
         headers: {
           'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
+          'Content-Type': 'application/json',
+        },
       });
 
       if (!response.ok) {
@@ -166,14 +167,14 @@ const ClassReport: React.FC = () => {
   };
 
   const getPerformanceColor = (percentage: number) => {
-    if (percentage >= 70) return 'text-green-600 bg-green-50';
-    if (percentage >= 50) return 'text-yellow-600 bg-yellow-50';
+    if (percentage >= 70) {return 'text-green-600 bg-green-50';}
+    if (percentage >= 50) {return 'text-yellow-600 bg-yellow-50';}
     return 'text-red-600 bg-red-50';
   };
 
   const getPerformanceIcon = (percentage: number) => {
-    if (percentage >= 70) return <CheckCircle className="h-4 w-4 text-green-600" />;
-    if (percentage >= 50) return <AlertCircle className="h-4 w-4 text-yellow-600" />;
+    if (percentage >= 70) {return <CheckCircle className="h-4 w-4 text-green-600" />;}
+    if (percentage >= 50) {return <AlertCircle className="h-4 w-4 text-yellow-600" />;}
     return <AlertCircle className="h-4 w-4 text-red-600" />;
   };
 
@@ -208,7 +209,7 @@ const ClassReport: React.FC = () => {
                   value={reportParams.baslangic_tarihi}
                   onChange={(e) => setReportParams(prev => ({
                     ...prev,
-                    baslangic_tarihi: e.target.value
+                    baslangic_tarihi: e.target.value,
                   }))}
                 />
               </div>
@@ -221,7 +222,7 @@ const ClassReport: React.FC = () => {
                   value={reportParams.bitis_tarihi}
                   onChange={(e) => setReportParams(prev => ({
                     ...prev,
-                    bitis_tarihi: e.target.value
+                    bitis_tarihi: e.target.value,
                   }))}
                 />
               </div>
@@ -229,10 +230,10 @@ const ClassReport: React.FC = () => {
               <div>
                 <Label htmlFor="exam-type">Sınav Türü (Opsiyonel)</Label>
                 <Select
-                  value={reportParams.sinav_tipi}
+                  value={reportParams.sinav_tipi || ''}
                   onValueChange={(value) => setReportParams(prev => ({
                     ...prev,
-                    sinav_tipi: value
+                    sinav_tipi: value,
                   }))}
                 >
                   <SelectTrigger>
@@ -247,8 +248,8 @@ const ClassReport: React.FC = () => {
                 </Select>
               </div>
 
-              <Button 
-                onClick={generateReport} 
+              <Button
+                onClick={generateReport}
                 disabled={loading}
                 className="w-full"
               >
@@ -275,7 +276,7 @@ const ClassReport: React.FC = () => {
               ) : savedReports.length > 0 ? (
                 <div className="space-y-2">
                   {savedReports.map((report) => (
-                    <div 
+                    <div
                       key={report.rapor_id}
                       className="p-3 border rounded-lg hover:bg-gray-50 cursor-pointer"
                       onClick={() => loadSavedReport(report.rapor_id)}
@@ -286,7 +287,7 @@ const ClassReport: React.FC = () => {
                             {new Date(report.olusturma_tarihi).toLocaleDateString('tr-TR')}
                           </p>
                           <p className="text-xs text-gray-500">
-                            {new Date(report.rapor_donemi.baslangic).toLocaleDateString('tr-TR')} - 
+                            {new Date(report.rapor_donemi.baslangic).toLocaleDateString('tr-TR')} -
                             {new Date(report.rapor_donemi.bitis).toLocaleDateString('tr-TR')}
                           </p>
                         </div>
@@ -317,7 +318,7 @@ const ClassReport: React.FC = () => {
                     <div>
                       <CardTitle>Sınıf Performans Raporu</CardTitle>
                       <p className="text-gray-600 mt-1">
-                        {new Date(currentReport.rapor_donemi.baslangic).toLocaleDateString('tr-TR')} - 
+                        {new Date(currentReport.rapor_donemi.baslangic).toLocaleDateString('tr-TR')} -
                         {new Date(currentReport.rapor_donemi.bitis).toLocaleDateString('tr-TR')}
                       </p>
                     </div>
@@ -397,7 +398,7 @@ const ClassReport: React.FC = () => {
                         </div>
                         <div className="flex items-center space-x-2">
                           <div className="w-32 bg-gray-200 rounded-full h-2">
-                            <div 
+                            <div
                               className={`h-2 rounded-full ${yuzde >= 70 ? 'bg-green-500' : yuzde >= 50 ? 'bg-yellow-500' : 'bg-red-500'}`}
                               style={{ width: `${Math.min(100, yuzde)}%` }}
                             ></div>

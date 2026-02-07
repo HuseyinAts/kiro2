@@ -350,7 +350,7 @@ class ProductionQualityMonitor:
         else:
             report += "[OK] All quality metrics within acceptable range!\n"
 
-        report += f"""
+        report += """
 ---
 
 ## Recommendations

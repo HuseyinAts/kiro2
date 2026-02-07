@@ -3,11 +3,12 @@
  * Glassmorphism ile içerik moderasyonu
  */
 
-import React from 'react'
-import { ModernAdminContentPage } from './ModernAdminContentPage'
+import * as React from 'react';
+
+import { ModernAdminContentPage } from './ModernAdminContentPage';
 
 export const AdminContentPage: React.FC = () => {
-  return <ModernAdminContentPage />
-}
+  return <ModernAdminContentPage />;
+};
 
-export default AdminContentPage
+export default AdminContentPage;

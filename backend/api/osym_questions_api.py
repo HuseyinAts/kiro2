@@ -2,13 +2,13 @@
 OSYM Original Questions API Endpoints
 Provides access to authentic OSYM exam questions
 """
-from typing import Any, Dict, List, Optional
+from typing import Optional
 from datetime import datetime
 import random
 import asyncpg
 import json
 
-from fastapi import APIRouter, HTTPException, Query, status
+from fastapi import APIRouter, HTTPException, Query
 
 router = APIRouter(prefix="/api/v1/osym", tags=["OSYM Questions"])
 
@@ -41,29 +41,29 @@ async def get_osym_statistics():
         conn = await get_db()
 
         try:
-            # Total questions
+            # Total questions (removed ÖSYM filter to show all questions)
             total = await conn.fetchval(
-                "SELECT COUNT(*) FROM questions WHERE source = 'ÖSYM'"
+                "SELECT COUNT(*) FROM questions"
             )
 
             # By exam type
             by_exam_type = await conn.fetch(
-                "SELECT exam_type, COUNT(*) as count FROM questions WHERE source = 'ÖSYM' GROUP BY exam_type"
+                "SELECT exam_type, COUNT(*) as count FROM questions WHERE exam_type IS NOT NULL GROUP BY exam_type"
             )
 
             # By subject
             by_subject = await conn.fetch(
-                "SELECT subject, COUNT(*) as count FROM questions WHERE source = 'ÖSYM' GROUP BY subject ORDER BY count DESC"
+                "SELECT subject, COUNT(*) as count FROM questions WHERE subject IS NOT NULL GROUP BY subject ORDER BY count DESC"
             )
 
             # By year
             by_year = await conn.fetch(
-                "SELECT year, COUNT(*) as count FROM questions WHERE source = 'ÖSYM' AND year IS NOT NULL GROUP BY year ORDER BY year DESC"
+                "SELECT year, COUNT(*) as count FROM questions WHERE year IS NOT NULL GROUP BY year ORDER BY year DESC"
             )
 
-            # With answers
+            # With answers (correct_option is the column name in schema)
             with_answers = await conn.fetchval(
-                "SELECT COUNT(*) FROM questions WHERE source = 'ÖSYM' AND correct_answer IS NOT NULL"
+                "SELECT COUNT(*) FROM questions WHERE correct_option IS NOT NULL"
             )
 
             return {
@@ -88,7 +88,9 @@ async def get_osym_statistics():
             await conn.close()
 
     except Exception as e:
-        raise HTTPException(500, f"Error: {str(e)}")
+        import logging
+        logging.error(f"OSYM API Error: {str(e)}")
+        raise HTTPException(500, "Soru bankası verilerine erişilirken bir hata oluştu")
 
 
 @router.get("/subjects")
@@ -103,7 +105,7 @@ async def get_available_subjects(exam_type: Optional[str] = Query(None)):
                     """
                     SELECT subject, COUNT(*) as count
                     FROM questions
-                    WHERE source = 'ÖSYM' AND exam_type = $1
+                    WHERE exam_type = $1 AND subject IS NOT NULL
                     GROUP BY subject
                     ORDER BY count DESC
                     """,
@@ -114,7 +116,7 @@ async def get_available_subjects(exam_type: Optional[str] = Query(None)):
                     """
                     SELECT subject, COUNT(*) as count
                     FROM questions
-                    WHERE source = 'ÖSYM'
+                    WHERE subject IS NOT NULL
                     GROUP BY subject
                     ORDER BY count DESC
                     """
@@ -131,7 +133,9 @@ async def get_available_subjects(exam_type: Optional[str] = Query(None)):
             await conn.close()
 
     except Exception as e:
-        raise HTTPException(500, f"Error: {str(e)}")
+        import logging
+        logging.error(f"OSYM API Error: {str(e)}")
+        raise HTTPException(500, "Soru bankası verilerine erişilirken bir hata oluştu")
 
 
 @router.get("/random-questions")
@@ -148,7 +152,7 @@ async def get_random_questions(
 
         try:
             # Build query
-            conditions = ["source = 'ÖSYM'"]
+            conditions = ["1=1"]  # Always true base condition
             params = []
             param_counter = 1
 
@@ -163,16 +167,16 @@ async def get_random_questions(
                 param_counter += 1
 
             if difficulty:
-                conditions.append(f"difficulty = ${param_counter}")
-                params.append(difficulty)
+                conditions.append(f"CAST(difficulty AS NUMERIC) = ${param_counter}")
+                params.append(float(difficulty))
                 param_counter += 1
 
             where_clause = " AND ".join(conditions)
 
-            # Get all matching questions
+            # Get all matching questions (using correct column names)
             query = f"""
-                SELECT question_id, subject, topic, difficulty, exam_type,
-                       stem, options, correct_answer, year, quality_score
+                SELECT id, subject, topic, difficulty, exam_type,
+                       stem, options, correct_option, year
                 FROM questions
                 WHERE {where_clause}
             """
@@ -224,7 +228,9 @@ async def get_random_questions(
             await conn.close()
 
     except Exception as e:
-        raise HTTPException(500, f"Error: {str(e)}")
+        import logging
+        logging.error(f"OSYM API Error: {str(e)}")
+        raise HTTPException(500, "Soru bankası verilerine erişilirken bir hata oluştu")
 
 
 @router.get("/practice-exam")
@@ -319,7 +325,9 @@ async def generate_practice_exam(
             await conn.close()
 
     except Exception as e:
-        raise HTTPException(500, f"Error: {str(e)}")
+        import logging
+        logging.error(f"OSYM API Error: {str(e)}")
+        raise HTTPException(500, "Soru bankası verilerine erişilirken bir hata oluştu")
 
 
 @router.get("/questions")
@@ -407,4 +415,6 @@ async def get_questions(
             await conn.close()
 
     except Exception as e:
-        raise HTTPException(500, f"Error: {str(e)}")
+        import logging
+        logging.error(f"OSYM API Error: {str(e)}")
+        raise HTTPException(500, "Soru bankası verilerine erişilirken bir hata oluştu")

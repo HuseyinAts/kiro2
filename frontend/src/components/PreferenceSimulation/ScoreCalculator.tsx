@@ -4,7 +4,8 @@
  * Calculate YKS score with coefficients and bonus points
  */
 
-import React, { useState } from 'react';
+import * as React from 'react';
+import {  useState  } from 'react';
 import './ScoreCalculator.css';
 
 const API_BASE = '/api/preference-simulation';
@@ -15,13 +16,13 @@ export const ScoreCalculator: React.FC = () => {
     turkish: 0,
     math: 0,
     science: 0,
-    social: 0
+    social: 0,
   });
   const [aytScores, setAytScores] = useState({
     math: 0,
     physics: 0,
     chemistry: 0,
-    biology: 0
+    biology: 0,
   });
   const [diplomaGrade, setDiplomaGrade] = useState<number | ''>('');
   const [languageCert, setLanguageCert] = useState<string>('');
@@ -42,8 +43,8 @@ export const ScoreCalculator: React.FC = () => {
           ayt_scores: aytScores,
           diploma_grade: diplomaGrade || null,
           language_certificate: languageCert || null,
-          special_talent: specialTalent
-        })
+          special_talent: specialTalent,
+        }),
       });
 
       const data = await response.json();
@@ -81,7 +82,7 @@ export const ScoreCalculator: React.FC = () => {
                 max="40"
                 step="0.25"
                 value={tytScores.turkish}
-                onChange={(e) => setTytScores({...tytScores, turkish: parseFloat(e.target.value) || 0})}
+                onChange={(e) => setTytScores({ ...tytScores, turkish: parseFloat(e.target.value) || 0 })}
               />
             </div>
             <div className="score-input">
@@ -92,7 +93,7 @@ export const ScoreCalculator: React.FC = () => {
                 max="40"
                 step="0.25"
                 value={tytScores.math}
-                onChange={(e) => setTytScores({...tytScores, math: parseFloat(e.target.value) || 0})}
+                onChange={(e) => setTytScores({ ...tytScores, math: parseFloat(e.target.value) || 0 })}
               />
             </div>
             <div className="score-input">
@@ -103,7 +104,7 @@ export const ScoreCalculator: React.FC = () => {
                 max="20"
                 step="0.25"
                 value={tytScores.science}
-                onChange={(e) => setTytScores({...tytScores, science: parseFloat(e.target.value) || 0})}
+                onChange={(e) => setTytScores({ ...tytScores, science: parseFloat(e.target.value) || 0 })}
               />
             </div>
             <div className="score-input">
@@ -114,7 +115,7 @@ export const ScoreCalculator: React.FC = () => {
                 max="20"
                 step="0.25"
                 value={tytScores.social}
-                onChange={(e) => setTytScores({...tytScores, social: parseFloat(e.target.value) || 0})}
+                onChange={(e) => setTytScores({ ...tytScores, social: parseFloat(e.target.value) || 0 })}
               />
             </div>
           </div>
@@ -129,28 +130,28 @@ export const ScoreCalculator: React.FC = () => {
                   <label>Matematik (40)</label>
                   <input type="number" min="0" max="40" step="0.25"
                     value={aytScores.math}
-                    onChange={(e) => setAytScores({...aytScores, math: parseFloat(e.target.value) || 0})}
+                    onChange={(e) => setAytScores({ ...aytScores, math: parseFloat(e.target.value) || 0 })}
                   />
                 </div>
                 <div className="score-input">
                   <label>Fizik (14)</label>
                   <input type="number" min="0" max="14" step="0.25"
                     value={aytScores.physics}
-                    onChange={(e) => setAytScores({...aytScores, physics: parseFloat(e.target.value) || 0})}
+                    onChange={(e) => setAytScores({ ...aytScores, physics: parseFloat(e.target.value) || 0 })}
                   />
                 </div>
                 <div className="score-input">
                   <label>Kimya (13)</label>
                   <input type="number" min="0" max="13" step="0.25"
                     value={aytScores.chemistry}
-                    onChange={(e) => setAytScores({...aytScores, chemistry: parseFloat(e.target.value) || 0})}
+                    onChange={(e) => setAytScores({ ...aytScores, chemistry: parseFloat(e.target.value) || 0 })}
                   />
                 </div>
                 <div className="score-input">
                   <label>Biyoloji (13)</label>
                   <input type="number" min="0" max="13" step="0.25"
                     value={aytScores.biology}
-                    onChange={(e) => setAytScores({...aytScores, biology: parseFloat(e.target.value) || 0})}
+                    onChange={(e) => setAytScores({ ...aytScores, biology: parseFloat(e.target.value) || 0 })}
                   />
                 </div>
               </>

@@ -1,0 +1,40 @@
+# ============================================================================
+# BUG FIX PIPELINE
+# ============================================================================
+pipeline:
+  name: "bug_fix"
+  description: "Hata düzeltme pipeline'ı"
+
+trigger:
+  keywords:
+    - "bug fix"
+    - "hata düzelt"
+    - "fix error"
+
+steps:
+  - name: "bug_analysis"
+    agent: "quality_agent"
+    model: "claude-sonnet-4"
+    timeout_seconds: 60
+    
+  - name: "fix_implementation"
+    agent: "api_agent"
+    model: "codex"
+    depends_on: ["bug_analysis"]
+    timeout_seconds: 120
+    
+  - name: "regression_test"
+    agent: "quality_agent"
+    model: "codex"
+    depends_on: ["fix_implementation"]
+    timeout_seconds: 60
+    
+  - name: "documentation"
+    agent: "content_agent"
+    model: "codex"
+    depends_on: ["regression_test"]
+    timeout_seconds: 30
+
+error_handling:
+  retry_count: 2
+  on_failure: "alert_developer"

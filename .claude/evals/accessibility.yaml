@@ -1,0 +1,238 @@
+# Accessibility Evaluation
+# KIRO2 WCAG 2.1 AA compliance değerlendirmesi
+
+name: accessibility
+description: WCAG 2.1 AA compliance evaluation
+version: "1.0.0"
+
+triggers:
+  - on: pull_request
+    branches: [main, develop]
+    paths:
+      - "frontend/src/components/**"
+      - "frontend/src/pages/**"
+      - "**/*.tsx"
+      - "**/*.css"
+  - on: schedule
+    cron: "0 8 * * 1"  # Weekly Monday 08:00 UTC
+
+environment:
+  working_dir: frontend
+  requires:
+    - frontend_running: http://localhost:3000
+  node_version: "20"
+
+standards:
+  - WCAG 2.1 Level AA
+  - Section 508
+  - EN 301 549
+
+checks:
+  - name: axe-core-scan
+    description: Automated accessibility testing with axe-core
+    command: |
+      npx axe-cli http://localhost:3000 --exit --save .claude/evals/results/axe-results.json
+    severity: high
+    weight: 40
+    timeout: 120000
+    rules:
+      # Critical rules (must pass)
+      - color-contrast
+      - image-alt
+      - label
+      - button-name
+      - link-name
+      - html-has-lang
+      - document-title
+
+  - name: lighthouse-a11y
+    description: Lighthouse accessibility audit
+    command: |
+      npx lighthouse http://localhost:3000 \
+        --only-categories=accessibility \
+        --output=json \
+        --output-path=.claude/evals/results/lighthouse-a11y.json \
+        --chrome-flags="--headless"
+    threshold: 90  # Score out of 100
+    weight: 30
+    timeout: 180000
+
+  - name: pa11y-scan
+    description: PA11Y accessibility checker
+    command: |
+      npx pa11y http://localhost:3000 --reporter=json > .claude/evals/results/pa11y-results.json
+    threshold: 0  # 0 errors
+    weight: 20
+    timeout: 120000
+
+  - name: keyboard-navigation
+    description: Keyboard navigation test
+    command: |
+      cd frontend && npm run test:a11y:keyboard || echo "Keyboard test skipped"
+    weight: 10
+    timeout: 60000
+
+wcag_criteria:
+  perceivable:
+    - id: "1.1.1"
+      name: "Non-text Content"
+      level: A
+      check: all_images_have_alt
+
+    - id: "1.3.1"
+      name: "Info and Relationships"
+      level: A
+      check: semantic_html_structure
+
+    - id: "1.4.3"
+      name: "Contrast (Minimum)"
+      level: AA
+      check: color_contrast_4_5_1
+
+    - id: "1.4.4"
+      name: "Resize text"
+      level: AA
+      check: text_resizable_200_percent
+
+  operable:
+    - id: "2.1.1"
+      name: "Keyboard"
+      level: A
+      check: all_functionality_keyboard_accessible
+
+    - id: "2.1.2"
+      name: "No Keyboard Trap"
+      level: A
+      check: no_keyboard_traps
+
+    - id: "2.4.4"
+      name: "Link Purpose"
+      level: A
+      check: link_purpose_from_link_text
+
+    - id: "2.4.7"
+      name: "Focus Visible"
+      level: AA
+      check: focus_indicator_visible
+
+  understandable:
+    - id: "3.1.1"
+      name: "Language of Page"
+      level: A
+      check: html_lang_attribute
+
+    - id: "3.2.1"
+      name: "On Focus"
+      level: A
+      check: no_context_change_on_focus
+
+    - id: "3.3.1"
+      name: "Error Identification"
+      level: A
+      check: form_errors_identified
+
+  robust:
+    - id: "4.1.1"
+      name: "Parsing"
+      level: A
+      check: valid_html
+
+    - id: "4.1.2"
+      name: "Name, Role, Value"
+      level: A
+      check: aria_roles_correct
+
+pages_to_test:
+  - url: /
+    name: Homepage
+    priority: high
+
+  - url: /login
+    name: Login Page
+    priority: high
+
+  - url: /dashboard
+    name: Student Dashboard
+    priority: high
+
+  - url: /exam
+    name: Exam Interface
+    priority: critical
+    special_checks:
+      - timer_accessible
+      - question_navigation
+      - answer_selection
+
+  - url: /results
+    name: Results Page
+    priority: medium
+
+kiro2_specific:
+  # YKS platformu için özel erişilebilirlik gereksinimleri
+  exam_interface:
+    - timer_announcements: true  # Kalan süre sesli duyuru
+    - keyboard_shortcuts: true   # Ctrl+1-5 cevap seçimi
+    - high_contrast_mode: true   # Yüksek kontrast modu
+    - font_size_controls: true   # Font büyütme/küçültme
+
+  question_display:
+    - math_accessible: true      # MathML veya aria-label
+    - image_descriptions: true   # Görsel sorularda detaylı alt
+    - turkish_screen_reader: true # Türkçe ekran okuyucu desteği
+
+  special_needs:
+    - dyslexia_font: true        # OpenDyslexic font seçeneği
+    - adhd_focus_mode: true      # Dikkat modu
+    - extended_time: true        # Ek süre desteği
+
+scoring:
+  pass: 90
+  warn: 70
+  fail: 0
+
+  grade_criteria:
+    A: 95+  # Tam uyumluluk
+    B: 85+  # Küçük sorunlar
+    C: 70+  # Orta sorunlar
+    D: 50+  # Ciddi sorunlar
+    F: <50  # Kritik sorunlar
+
+reporting:
+  format: json
+  output: .claude/evals/results/accessibility-{timestamp}.json
+
+  github:
+    enabled: true
+    comment: true
+    check_run: true
+    include_details: true
+
+  html_report:
+    enabled: true
+    output: .claude/evals/results/accessibility-report.html
+
+remediation:
+  auto_fix:
+    enabled: false  # Manual review required
+
+  suggestions:
+    enabled: true
+    include_code_examples: true
+
+  priority_order:
+    - critical  # Must fix immediately
+    - serious   # Fix before release
+    - moderate  # Fix in next sprint
+    - minor     # Nice to have
+
+resources:
+  documentation:
+    - https://www.w3.org/WAI/WCAG21/quickref/
+    - https://dequeuniversity.com/rules/axe/
+    - https://a11yproject.com/checklist/
+
+  tools:
+    - axe DevTools browser extension
+    - WAVE browser extension
+    - NVDA screen reader (Windows)
+    - VoiceOver (macOS/iOS)

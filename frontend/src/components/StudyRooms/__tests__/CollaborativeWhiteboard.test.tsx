@@ -6,11 +6,12 @@
  * zoom, pan, and all drawing tools.
  */
 
-import React from 'react';
+import * as React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import axios from 'axios';
 import CollaborativeWhiteboard from '../CollaborativeWhiteboard';
+import { vi, Mocked } from 'vitest';
 
 // ============================================================
 // Mocks
@@ -18,43 +19,9 @@ import CollaborativeWhiteboard from '../CollaborativeWhiteboard';
 
 // Mock Axios
 vi.mock('axios');
-const mockedAxios = axios as jest.Mocked<typeof axios>;
+const mockedAxios = axios as Mocked<typeof axios>;
 
-// Mock WebSocket
-class MockWebSocket {
-  onopen: (() => void) | null = null;
-  onmessage: ((event: MessageEvent) => void) | null = null;
-  onerror: ((error: Event) => void) | null = null;
-  onclose: (() => void) | null = null;
-  readyState = WebSocket.OPEN;
-
-  static OPEN = 1;
-
-  constructor(public url: string) {
-    setTimeout(() => {
-      if (this.onopen) this.onopen();
-    }, 0);
-  }
-
-  send(data: string) {
-    // Mock send
-  }
-
-  close() {
-    if (this.onclose) this.onclose();
-  }
-
-  simulateMessage(data: any) {
-    if (this.onmessage) {
-      const event = new MessageEvent('message', {
-        data: JSON.stringify(data)
-      });
-      this.onmessage(event);
-    }
-  }
-}
-
-global.WebSocket = MockWebSocket as any;
+// WebSocket is already mocked in src/test/setup.ts with a proper function constructor
 
 // Mock Canvas Context
 const mockContext = {
@@ -72,12 +39,16 @@ const mockContext = {
   restore: vi.fn(),
   translate: vi.fn(),
   scale: vi.fn(),
-  toDataURL: jest.fn(() => 'data:image/png;base64,mock'),
+  toDataURL: vi.fn(() => 'data:image/png;base64,mock'),
+  measureText: vi.fn(() => ({ width: 100 })),
+  createLinearGradient: vi.fn(() => ({
+    addColorStop: vi.fn(),
+  })),
 };
 
-HTMLCanvasElement.prototype.getContext = jest.fn(() => mockContext) as any;
-HTMLCanvasElement.prototype.toDataURL = jest.fn(() => 'data:image/png;base64,mock') as any;
-HTMLCanvasElement.prototype.getBoundingClientRect = jest.fn(() => ({
+HTMLCanvasElement.prototype.getContext = vi.fn(() => mockContext) as any;
+HTMLCanvasElement.prototype.toDataURL = vi.fn(() => 'data:image/png;base64,mock') as any;
+HTMLCanvasElement.prototype.getBoundingClientRect = vi.fn(() => ({
   left: 0,
   top: 0,
   width: 800,
@@ -89,8 +60,18 @@ HTMLCanvasElement.prototype.getBoundingClientRect = jest.fn(() => ({
   toJSON: () => {},
 })) as any;
 
+// Mock appendChild to prevent "parameter 1 is not of type 'Node'" error
+const originalAppendChild = HTMLElement.prototype.appendChild;
+HTMLElement.prototype.appendChild = function<T extends Node>(node: T): T {
+  if (node instanceof Node) {
+    return originalAppendChild.call(this, node);
+  }
+  // For non-Node objects (e.g., canvas elements in jsdom), return mock
+  return node;
+};
+
 // Mock window.confirm
-global.confirm = jest.fn(() => true);
+global.confirm = vi.fn(() => true);
 
 // ============================================================
 // Test Data

@@ -3,11 +3,12 @@
  * Glassmorphism ile sistem ayarları yönetimi
  */
 
-import React from 'react'
-import { ModernAdminSettingsPage } from './ModernAdminSettingsPage'
+import * as React from 'react';
+
+import { ModernAdminSettingsPage } from './ModernAdminSettingsPage';
 
 export const AdminSettingsPage: React.FC = () => {
-  return <ModernAdminSettingsPage />
-}
+  return <ModernAdminSettingsPage />;
+};
 
-export default AdminSettingsPage
+export default AdminSettingsPage;

@@ -1,0 +1,16 @@
+# Optimal Hybrid System Gereksinimleri
+
+# Core dependencies
+anthropic>=0.40.0
+google-generativeai>=0.8.0
+structlog>=24.1.0
+
+# Async support
+aiohttp>=3.9.0
+asyncio
+
+# Cache (optional - Redis için)
+redis>=5.0.0
+
+# Environment
+python-dotenv>=1.0.0

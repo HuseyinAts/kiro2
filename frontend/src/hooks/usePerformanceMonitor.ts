@@ -10,6 +10,7 @@
  */
 
 import { useState, useEffect, useCallback } from 'react';
+
 import {
   getPerformanceMetrics,
   getLLMPoolStats,
@@ -17,7 +18,7 @@ import {
   getCacheStats,
   getRAGPipelineStats,
   clearCacheByTag,
-  PerformanceMetrics
+  PerformanceMetrics,
 } from '../api';
 
 // ==================== PERFORMANCE MONITOR HOOK ====================
@@ -76,7 +77,7 @@ export function usePerformanceMonitor(autoRefresh: boolean = false, refreshInter
     isLoading,
     error,
     refresh,
-    clearCache
+    clearCache,
   };
 }
 
@@ -133,7 +134,7 @@ export function useLLMPoolStats(autoRefresh: boolean = false, refreshInterval: n
     stats,
     isLoading,
     error,
-    refresh
+    refresh,
   };
 }
 
@@ -192,7 +193,7 @@ export function useVectorStoreStats(autoRefresh: boolean = false, refreshInterva
     stats,
     isLoading,
     error,
-    refresh
+    refresh,
   };
 }
 
@@ -263,7 +264,7 @@ export function useCacheStats(autoRefresh: boolean = false, refreshInterval: num
     isLoading,
     error,
     refresh,
-    clearByTag
+    clearByTag,
   };
 }
 
@@ -321,6 +322,6 @@ export function useRAGPipelineStats(autoRefresh: boolean = false, refreshInterva
     stats,
     isLoading,
     error,
-    refresh
+    refresh,
   };
 }

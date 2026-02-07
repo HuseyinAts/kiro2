@@ -1,19 +1,20 @@
 /**
  * Formula Editor Component
- * 
+ *
  * Formül editörü - LaTeX-style matematik formül girişi ve görsel oluşturucu.
- * 
+ *
  * Özellikler:
  * - LaTeX formatında formül girişi
  * - Görsel formül oluşturucu
  * - Formül kütüphanesi
  * - Canlı önizleme
  * - Formül şablonları
- * 
+ *
  * Gereksinimler: REQ-51.56 - REQ-51.60
  */
 
-import React, { useState, useEffect } from 'react';
+import * as React from 'react';
+import {  useState, useEffect  } from 'react';
 import './FormulaEditor.css';
 
 interface FormulaTemplate {
@@ -37,34 +38,34 @@ const FormulaEditor: React.FC = () => {
     { name: 'Alt simge', latex: 'x_{n}', category: 'basic', description: 'Alt simge' },
     { name: 'Karekök', latex: '\\sqrt{x}', category: 'basic', description: 'Karekök' },
     { name: 'n. kök', latex: '\\sqrt[n]{x}', category: 'basic', description: 'n. dereceden kök' },
-    
+
     // Cebir
     { name: 'İkinci derece', latex: 'ax^2 + bx + c = 0', category: 'algebra', description: 'İkinci derece denklem' },
     { name: 'Çözüm formülü', latex: 'x = \\frac{-b \\pm \\sqrt{b^2 - 4ac}}{2a}', category: 'algebra', description: 'İkinci derece çözüm' },
     { name: 'Binom', latex: '(a + b)^2 = a^2 + 2ab + b^2', category: 'algebra', description: 'Binom açılımı' },
-    
+
     // Geometri
     { name: 'Pisagor', latex: 'a^2 + b^2 = c^2', category: 'geometry', description: 'Pisagor teoremi' },
     { name: 'Daire alanı', latex: 'A = \\pi r^2', category: 'geometry', description: 'Daire alanı formülü' },
     { name: 'Daire çevresi', latex: 'C = 2\\pi r', category: 'geometry', description: 'Daire çevresi' },
     { name: 'Üçgen alanı', latex: 'A = \\frac{1}{2}bh', category: 'geometry', description: 'Üçgen alanı' },
-    
+
     // Trigonometri
     { name: 'Sinüs', latex: '\\sin(\\theta)', category: 'trigonometry', description: 'Sinüs fonksiyonu' },
     { name: 'Kosinüs', latex: '\\cos(\\theta)', category: 'trigonometry', description: 'Kosinüs fonksiyonu' },
     { name: 'Tanjant', latex: '\\tan(\\theta)', category: 'trigonometry', description: 'Tanjant fonksiyonu' },
     { name: 'Sinüs teoremi', latex: '\\frac{a}{\\sin A} = \\frac{b}{\\sin B} = \\frac{c}{\\sin C}', category: 'trigonometry', description: 'Sinüs teoremi' },
-    
+
     // Kalkülüs
     { name: 'Türev', latex: '\\frac{d}{dx}f(x)', category: 'calculus', description: 'Türev notasyonu' },
     { name: 'İntegral', latex: '\\int f(x)dx', category: 'calculus', description: 'Belirsiz integral' },
     { name: 'Belirli integral', latex: '\\int_{a}^{b} f(x)dx', category: 'calculus', description: 'Belirli integral' },
     { name: 'Limit', latex: '\\lim_{x \\to a} f(x)', category: 'calculus', description: 'Limit notasyonu' },
-    
+
     // Matrisler
     { name: '2x2 Matris', latex: '\\begin{pmatrix} a & b \\\\ c & d \\end{pmatrix}', category: 'matrix', description: '2x2 matris' },
     { name: 'Determinant', latex: '\\begin{vmatrix} a & b \\\\ c & d \\end{vmatrix}', category: 'matrix', description: 'Determinant' },
-    
+
     // İstatistik
     { name: 'Ortalama', latex: '\\bar{x} = \\frac{1}{n}\\sum_{i=1}^{n} x_i', category: 'statistics', description: 'Aritmetik ortalama' },
     { name: 'Standart sapma', latex: '\\sigma = \\sqrt{\\frac{1}{n}\\sum_{i=1}^{n}(x_i - \\bar{x})^2}', category: 'statistics', description: 'Standart sapma' },

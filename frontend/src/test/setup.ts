@@ -6,21 +6,44 @@
  */
 
 import '@testing-library/jest-dom'
-import { vi } from 'vitest'
+import { vi, expect, describe, it, beforeEach, afterEach, beforeAll, afterAll } from 'vitest'
+
+// Jest compatibility - expose jest globals for tests that use jest.fn(), etc.
+// @ts-expect-error - Adding jest global for backwards compatibility
+globalThis.jest = {
+  fn: vi.fn,
+  spyOn: vi.spyOn,
+  mock: vi.mock,
+  clearAllMocks: vi.clearAllMocks,
+  resetAllMocks: vi.resetAllMocks,
+  restoreAllMocks: vi.restoreAllMocks,
+  useFakeTimers: vi.useFakeTimers,
+  useRealTimers: vi.useRealTimers,
+  advanceTimersByTime: vi.advanceTimersByTime,
+  runAllTimers: vi.runAllTimers,
+  runOnlyPendingTimers: vi.runOnlyPendingTimers,
+  clearAllTimers: vi.clearAllTimers,
+  setSystemTime: vi.setSystemTime,
+  getMockedSystemTime: vi.getMockedSystemTime,
+  getRealSystemTime: vi.getRealSystemTime,
+  isMockFunction: vi.isMockFunction,
+}
 
 // Mock IntersectionObserver
-global.IntersectionObserver = vi.fn().mockImplementation(() => ({
-  observe: vi.fn(),
-  unobserve: vi.fn(),
-  disconnect: vi.fn(),
-}))
+global.IntersectionObserver = class IntersectionObserver {
+  constructor() {}
+  observe = vi.fn()
+  unobserve = vi.fn()
+  disconnect = vi.fn()
+} as any
 
-// Mock ResizeObserver
-global.ResizeObserver = vi.fn().mockImplementation(() => ({
-  observe: vi.fn(),
-  unobserve: vi.fn(),
-  disconnect: vi.fn(),
-}))
+// Mock ResizeObserver - proper class-based mock
+global.ResizeObserver = class ResizeObserver {
+  constructor() {}
+  observe = vi.fn()
+  unobserve = vi.fn()
+  disconnect = vi.fn()
+} as any
 
 // Mock matchMedia
 Object.defineProperty(window, 'matchMedia', {
@@ -59,27 +82,48 @@ const sessionStorageMock = {
 } as Storage
 global.sessionStorage = sessionStorageMock
 
-// Mock fetch
-global.fetch = vi.fn()
+// Mock fetch with default success response
+// Supports both vitest (vi.fn) and jest-style (mockResolvedValue) patterns
+const fetchMock = vi.fn().mockResolvedValue({
+  ok: true,
+  status: 200,
+  json: async () => ({}),
+  text: async () => '',
+  blob: async () => new Blob(),
+  headers: new Headers(),
+});
+global.fetch = fetchMock;
 
-// Mock WebSocket
-const WebSocketMock = vi.fn().mockImplementation(() => ({
-  send: vi.fn(),
-  close: vi.fn(),
-  addEventListener: vi.fn(),
-  removeEventListener: vi.fn(),
-  readyState: 1,
-}))
+// Mock WebSocket - use function constructor to avoid vitest/tinyspy wrapping issues
+// @ts-expect-error - Intentionally using function constructor for compatibility
+function MockWebSocket(this: any, url: string, _protocols?: string | string[]) {
+  this.url = url
+  this.readyState = 1 // OPEN
+  this.onopen = null
+  this.onclose = null
+  this.onmessage = null
+  this.onerror = null
 
-// Add static properties to the mock constructor
-Object.assign(WebSocketMock, {
-  CONNECTING: 0,
-  OPEN: 1,
-  CLOSING: 2,
-  CLOSED: 3
-})
+  // Simulate connection opening
+  setTimeout(() => {
+    if (this.onopen) {
+      this.onopen(new Event('open'))
+    }
+  }, 0)
 
-global.WebSocket = WebSocketMock as any
+  this.send = function(_data: string) {}
+  this.close = function() {
+    if (this.onclose) this.onclose()
+  }
+  this.addEventListener = function() {}
+  this.removeEventListener = function() {}
+}
+MockWebSocket.CONNECTING = 0
+MockWebSocket.OPEN = 1
+MockWebSocket.CLOSING = 2
+MockWebSocket.CLOSED = 3
+
+global.WebSocket = MockWebSocket as any
 
 // Mock canvas context
 HTMLCanvasElement.prototype.getContext = vi.fn().mockReturnValue({
@@ -218,7 +262,62 @@ Object.defineProperty(navigator, 'clipboard', {
   },
 })
 
+// Mock scrollIntoView for jsdom
+Element.prototype.scrollIntoView = vi.fn()
+
+// Mock window.alert, confirm, prompt (jsdom not implemented)
+window.alert = vi.fn()
+window.confirm = vi.fn(() => true)
+window.prompt = vi.fn(() => '')
+
+// Mock HTMLMediaElement for video/audio tests (jsdom limitation)
+Object.defineProperty(HTMLMediaElement.prototype, 'play', {
+  configurable: true,
+  writable: true,
+  value: vi.fn().mockImplementation(() => Promise.resolve()),
+})
+
+Object.defineProperty(HTMLMediaElement.prototype, 'pause', {
+  configurable: true,
+  writable: true,
+  value: vi.fn(),
+})
+
+Object.defineProperty(HTMLMediaElement.prototype, 'load', {
+  configurable: true,
+  writable: true,
+  value: vi.fn(),
+})
+
+Object.defineProperty(HTMLMediaElement.prototype, 'addTextTrack', {
+  configurable: true,
+  writable: true,
+  value: vi.fn(),
+})
+
+// Mock video element properties
+Object.defineProperty(HTMLVideoElement.prototype, 'canPlayType', {
+  configurable: true,
+  writable: true,
+  value: vi.fn(() => 'maybe'),
+})
+
 // Setup test environment variables
 process.env.NODE_ENV = 'test'
 process.env.VITE_API_BASE_URL = 'http://localhost:8000'
 process.env.VITE_WS_URL = 'ws://localhost:8000'
+
+// Global error handler to suppress React concurrent mode errors
+window.onerror = function(message) {
+  if (typeof message === 'string' && message.includes('Should not already be working')) {
+    return true
+  }
+  return false
+}
+
+// MSW Server Setup
+import { server } from './mocks/server'
+
+beforeAll(() => server.listen({ onUnhandledRequest: 'warn' }))
+afterEach(() => server.resetHandlers())
+afterAll(() => server.close())

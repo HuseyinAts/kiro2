@@ -5,6 +5,7 @@ Advanced error context management, distributed tracing, and debugging support
 
 import asyncio
 import inspect
+import logging
 import threading
 import traceback
 import uuid
@@ -18,6 +19,8 @@ from typing import Any, Optional
 
 from .exceptions import EnhancedServiceError
 from .unified_config import get_unified_config
+
+logger = logging.getLogger(__name__)
 
 # ==================== CONTEXT VARIABLES ====================
 
@@ -239,7 +242,8 @@ class ErrorContext:
                     if not k.startswith("_")
                     and isinstance(v, (str, int, float, bool, list, dict))
                 }
-            except:
+            except (AttributeError, TypeError) as e:
+                logger.debug(f"Failed to extract local vars: {e}")
                 pass
 
         # Get context variables
@@ -308,7 +312,8 @@ class ErrorContext:
                         else None,
                     }
                 )
-        except:
+        except (AttributeError, IndexError, TypeError) as e:
+            logger.debug(f"Failed to extract stack trace: {e}")
             pass
 
         return stack

@@ -14,7 +14,7 @@ Model: dbmdz/bert-base-turkish-cased
 
 import logging
 import os
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, Optional
 import numpy as np
 
 logger = logging.getLogger(__name__)
@@ -370,7 +370,7 @@ if __name__ == "__main__":
     )
 
     result = evaluator.evaluate_single(ai_q, osym_q)
-    print(f"\n📊 Single Question Evaluation:")
+    print("\n📊 Single Question Evaluation:")
     print(f"AI Question: {ai_q[:80]}...")
     print(f"ÖSYM Question: {osym_q[:80]}...")
     print(f"F1 Score: {result['f1']:.3f}")
@@ -395,7 +395,7 @@ if __name__ == "__main__":
     print(f"\n📊 Batch Evaluation ({len(ai_questions)} questions):")
     print(f"Mean F1: {batch_result['statistics']['mean_f1']:.3f}")
     print(f"Std F1: {batch_result['statistics']['std_f1']:.3f}")
-    print(f"Quality Distribution:")
+    print("Quality Distribution:")
     for level, count in batch_result["quality_distribution"].items():
         print(f"  {level}: {count}")
 
@@ -409,7 +409,7 @@ if __name__ == "__main__":
     ]
 
     matches = evaluator.find_best_match(ai_questions[0], pool, top_k=3)
-    print(f"\n📊 Best Match Search:")
+    print("\n📊 Best Match Search:")
     print(f"Query: {ai_questions[0]}")
     for match in matches:
         print(

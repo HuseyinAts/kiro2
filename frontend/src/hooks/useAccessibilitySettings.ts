@@ -1,7 +1,7 @@
 /**
  * Erişilebilirlik Ayarları Hook'u
  * WCAG 2.1 Level AA uyumlu erişilebilirlik tercihlerini yönetir
- * 
+ *
  * Özellikler:
  * - Yüksek kontrast modu
  * - Font boyutu ayarlama
@@ -18,22 +18,22 @@ interface AccessibilitySettings {
   highContrast: boolean;
   fontSize: 'small' | 'medium' | 'large' | 'extra-large';
   reducedMotion: boolean;
-  
+
   // Navigasyon ayarları
   keyboardNavigation: boolean;
   focusIndicators: boolean;
   skipLinks: boolean;
-  
+
   // Ekran okuyucu ayarları
   screenReaderOptimized: boolean;
   announcements: boolean;
   verboseDescriptions: boolean;
   speechRate: number; // Sesli okuma hızı (0.5 - 2.0)
-  
+
   // Dil ve bölge
   language: string;
   region: string;
-  
+
   // Özel gereksinimler
   dyslexiaSupport: boolean;
   colorBlindSupport: boolean;
@@ -72,7 +72,7 @@ export const useAccessibilitySettings = () => {
         const parsed = JSON.parse(savedSettings);
         setSettings({ ...DEFAULT_SETTINGS, ...parsed });
       }
-      
+
       // Sistem tercihlerini kontrol et
       detectSystemPreferences();
     } catch (error) {
@@ -104,12 +104,12 @@ export const useAccessibilitySettings = () => {
     }
 
     // Ekran okuyucu tespiti
-    const hasScreenReader = 
+    const hasScreenReader =
       navigator.userAgent.includes('NVDA') ||
       navigator.userAgent.includes('JAWS') ||
       navigator.userAgent.includes('ORCA') ||
       'speechSynthesis' in window;
-    
+
     if (hasScreenReader) {
       updates.screenReaderOptimized = true;
       updates.verboseDescriptions = true;
@@ -134,7 +134,7 @@ export const useAccessibilitySettings = () => {
   // Tek bir ayarı güncelle
   const updateSetting = useCallback(<K extends keyof AccessibilitySettings>(
     key: K,
-    value: AccessibilitySettings[K]
+    value: AccessibilitySettings[K],
   ) => {
     const newSettings = { ...settings, [key]: value };
     saveSettings(newSettings);
@@ -143,67 +143,67 @@ export const useAccessibilitySettings = () => {
   // Ayarları DOM'a uygula
   const applySettingsToDOM = useCallback((settings: AccessibilitySettings) => {
     const root = document.documentElement;
-    
+
     // Yüksek kontrast
     if (settings.highContrast) {
       root.classList.add('high-contrast');
     } else {
       root.classList.remove('high-contrast');
     }
-    
+
     // Font boyutu
     root.classList.remove('font-small', 'font-medium', 'font-large', 'font-extra-large');
     root.classList.add(`font-${settings.fontSize}`);
-    
+
     // Reduced motion
     if (settings.reducedMotion) {
       root.classList.add('reduced-motion');
     } else {
       root.classList.remove('reduced-motion');
     }
-    
+
     // Klavye navigasyon
     if (settings.keyboardNavigation) {
       root.classList.add('keyboard-navigation');
     } else {
       root.classList.remove('keyboard-navigation');
     }
-    
+
     // Focus göstergeleri
     if (settings.focusIndicators) {
       root.classList.add('enhanced-focus');
     } else {
       root.classList.remove('enhanced-focus');
     }
-    
+
     // Ekran okuyucu optimizasyonu
     if (settings.screenReaderOptimized) {
       root.classList.add('screen-reader-optimized');
     } else {
       root.classList.remove('screen-reader-optimized');
     }
-    
+
     // Disleksi desteği
     if (settings.dyslexiaSupport) {
       root.classList.add('dyslexia-support');
     } else {
       root.classList.remove('dyslexia-support');
     }
-    
+
     // Renk körlüğü desteği
     if (settings.colorBlindSupport) {
       root.classList.add('color-blind-support');
     } else {
       root.classList.remove('color-blind-support');
     }
-    
+
     // Motor bozukluk desteği
     if (settings.motorImpairmentSupport) {
       root.classList.add('motor-impairment-support');
     } else {
       root.classList.remove('motor-impairment-support');
     }
-    
+
     // Dil ayarı
     root.setAttribute('lang', settings.language);
   }, []);
@@ -282,21 +282,21 @@ export const useAccessibilitySettings = () => {
   // Erişilebilirlik durumu kontrolü
   const getAccessibilityStatus = useCallback(() => {
     const activeFeatures = [];
-    
-    if (settings.highContrast) activeFeatures.push('Yüksek Kontrast');
-    if (settings.fontSize !== 'medium') activeFeatures.push(`Font Boyutu: ${settings.fontSize}`);
-    if (settings.reducedMotion) activeFeatures.push('Azaltılmış Animasyon');
-    if (settings.dyslexiaSupport) activeFeatures.push('Disleksi Desteği');
-    if (settings.screenReaderOptimized) activeFeatures.push('Ekran Okuyucu Optimizasyonu');
-    if (settings.colorBlindSupport) activeFeatures.push('Renk Körlüğü Desteği');
-    if (settings.motorImpairmentSupport) activeFeatures.push('Motor Bozukluk Desteği');
-    
+
+    if (settings.highContrast) {activeFeatures.push('Yüksek Kontrast');}
+    if (settings.fontSize !== 'medium') {activeFeatures.push(`Font Boyutu: ${settings.fontSize}`);}
+    if (settings.reducedMotion) {activeFeatures.push('Azaltılmış Animasyon');}
+    if (settings.dyslexiaSupport) {activeFeatures.push('Disleksi Desteği');}
+    if (settings.screenReaderOptimized) {activeFeatures.push('Ekran Okuyucu Optimizasyonu');}
+    if (settings.colorBlindSupport) {activeFeatures.push('Renk Körlüğü Desteği');}
+    if (settings.motorImpairmentSupport) {activeFeatures.push('Motor Bozukluk Desteği');}
+
     return {
       activeFeatures,
       isOptimized: activeFeatures.length > 0,
-      summary: activeFeatures.length > 0 
+      summary: activeFeatures.length > 0
         ? `${activeFeatures.length} erişilebilirlik özelliği aktif`
-        : 'Standart erişilebilirlik ayarları'
+        : 'Standart erişilebilirlik ayarları',
     };
   }, [settings]);
 
@@ -304,22 +304,22 @@ export const useAccessibilitySettings = () => {
     // Durum
     settings,
     isLoading,
-    
+
     // Ayar fonksiyonları
     updateSetting,
     saveSettings,
     resetSettings,
-    
+
     // Hızlı toggle fonksiyonları
     toggleHighContrast,
     toggleReducedMotion,
     toggleDyslexiaSupport,
     toggleScreenReaderOptimization,
-    
+
     // Font boyutu kontrolü
     increaseFontSize,
     decreaseFontSize,
-    
+
     // Durum bilgisi
     getAccessibilityStatus,
   };

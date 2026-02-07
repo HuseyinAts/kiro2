@@ -1,19 +1,20 @@
 /**
  * Task Progress Visualization Component
- * 
+ *
  * Görsel ilerleme göstergesi - DEHB desteği için görev ilerlemesini görselleştirir
- * 
+ *
  * Requirements: REQ-52.46 - REQ-52.50
  * - REQ-52.46: Progress bar gösterimi
  * - REQ-52.47: Tamamlanma yüzdesi
  * - REQ-52.48: Görsel milestone göstergeleri
  * - REQ-52.49: Renk kodlu ilerleme
  * - REQ-52.50: Animasyonlu geçişler
- * 
+ *
  * Task: 90.2 Görsel ilerleme göstergesi
  */
 
-import React, { useEffect, useState } from 'react';
+import * as React from 'react';
+import {  useEffect, useState  } from 'react';
 import './TaskProgressVisualization.css';
 
 interface Milestone {
@@ -45,7 +46,7 @@ interface TaskProgressVisualizationProps {
 
 export const TaskProgressVisualization: React.FC<TaskProgressVisualizationProps> = ({
   taskId,
-  onRefresh
+  onRefresh,
 }) => {
   const [progressData, setProgressData] = useState<ProgressVisualizationData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -70,12 +71,12 @@ export const TaskProgressVisualization: React.FC<TaskProgressVisualizationProps>
     try {
       setLoading(true);
       setError(null);
-      
+
       const response = await fetch(`/api/adhd-task-management/tasks/${taskId}/progress`, {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`,
-          'Content-Type': 'application/json'
-        }
+          'Content-Type': 'application/json',
+        },
       });
 
       if (!response.ok) {
@@ -96,7 +97,7 @@ export const TaskProgressVisualization: React.FC<TaskProgressVisualizationProps>
       'not_started': 'Başlanmadı',
       'in_progress': 'Devam Ediyor',
       'completed': 'Tamamlandı',
-      'blocked': 'Engellenmiş'
+      'blocked': 'Engellenmiş',
     };
     return statusMap[status] || status;
   };
@@ -106,7 +107,7 @@ export const TaskProgressVisualization: React.FC<TaskProgressVisualizationProps>
       'not_started': '#9E9E9E',
       'in_progress': '#2196F3',
       'completed': '#4CAF50',
-      'blocked': '#F44336'
+      'blocked': '#F44336',
     };
     return colorMap[status] || '#9E9E9E';
   };
@@ -116,13 +117,13 @@ export const TaskProgressVisualization: React.FC<TaskProgressVisualizationProps>
       'not_started': '⏸️',
       'in_progress': '▶️',
       'completed': '✅',
-      'blocked': '🚫'
+      'blocked': '🚫',
     };
     return iconMap[status] || '❓';
   };
 
   const formatTime = (minutes?: number): string => {
-    if (!minutes) return '-';
+    if (!minutes) {return '-';}
     const hours = Math.floor(minutes / 60);
     const mins = minutes % 60;
     if (hours > 0) {
@@ -134,9 +135,9 @@ export const TaskProgressVisualization: React.FC<TaskProgressVisualizationProps>
   if (loading) {
     return (
       <div className="task-progress-loading">
-        <div 
-          className="spinner" 
-          role="status" 
+        <div
+          className="spinner"
+          role="status"
           aria-label="İlerleme yükleniyor"
         ></div>
         <p>İlerleme yükleniyor...</p>
@@ -150,8 +151,8 @@ export const TaskProgressVisualization: React.FC<TaskProgressVisualizationProps>
         <p className="error-message">
           <span role="img" aria-label="Hata">❌</span> {error}
         </p>
-        <button 
-          onClick={fetchProgressData} 
+        <button
+          onClick={fetchProgressData}
           className="retry-button"
           aria-label="İlerleme verilerini tekrar yükle"
         >
@@ -168,9 +169,9 @@ export const TaskProgressVisualization: React.FC<TaskProgressVisualizationProps>
   return (
     <div className="task-progress-visualization">
       {/* Live region for screen readers - WCAG 4.1.3 */}
-      <div 
-        role="status" 
-        aria-live="polite" 
+      <div
+        role="status"
+        aria-live="polite"
         aria-atomic="true"
         className="sr-only"
       >
@@ -180,7 +181,7 @@ export const TaskProgressVisualization: React.FC<TaskProgressVisualizationProps>
       {/* Header */}
       <div className="progress-header">
         <h2 className="task-title">{progressData.title}</h2>
-        <div 
+        <div
           className="status-badge"
           style={{ backgroundColor: getStatusColor(progressData.status) }}
           role="status"
@@ -197,20 +198,20 @@ export const TaskProgressVisualization: React.FC<TaskProgressVisualizationProps>
       <div className="progress-section">
         <div className="progress-info">
           <span className="progress-label">Genel İlerleme</span>
-          <span 
+          <span
             className="progress-percentage"
             style={{ color: progressData.color }}
           >
             {Math.round(progressData.progress_percentage)}%
           </span>
         </div>
-        
+
         <div className="progress-bar-container">
-          <div 
+          <div
             className="progress-bar-fill"
-            style={{ 
+            style={{
               width: `${animatedProgress}%`,
-              backgroundColor: progressData.color
+              backgroundColor: progressData.color,
             }}
             role="progressbar"
             aria-valuenow={progressData.progress_percentage}
@@ -226,9 +227,9 @@ export const TaskProgressVisualization: React.FC<TaskProgressVisualizationProps>
       {/* Subtasks Progress - REQ-52.47 */}
       <div className="subtasks-section">
         <div className="subtasks-info">
-          <span 
-            className="subtasks-icon" 
-            role="img" 
+          <span
+            className="subtasks-icon"
+            role="img"
             aria-label="Tamamlandı işareti"
           >
             ✓
@@ -244,19 +245,19 @@ export const TaskProgressVisualization: React.FC<TaskProgressVisualizationProps>
         <h3 className="milestones-title">Kilometre Taşları</h3>
         <div className="milestones-container" role="list">
           {progressData.milestones.map((milestone, index) => (
-            <div 
+            <div
               key={index}
               className={`milestone ${milestone.reached ? 'reached' : 'unreached'}`}
-              style={{ 
-                borderColor: milestone.reached ? milestone.color : '#E0E0E0'
+              style={{
+                borderColor: milestone.reached ? milestone.color : '#E0E0E0',
               }}
               role="listitem"
             >
-              <div 
+              <div
                 className="milestone-icon"
-                style={{ 
+                style={{
                   backgroundColor: milestone.reached ? milestone.color : '#F5F5F5',
-                  color: milestone.reached ? '#FFFFFF' : '#9E9E9E'
+                  color: milestone.reached ? '#FFFFFF' : '#9E9E9E',
                 }}
                 role="img"
                 aria-label={`${milestone.label} kilometre taşı ${milestone.reached ? 'tamamlandı' : 'henüz ulaşılmadı'}`}
@@ -268,9 +269,9 @@ export const TaskProgressVisualization: React.FC<TaskProgressVisualizationProps>
                 <span className="milestone-label">{milestone.label}</span>
               </div>
               {milestone.reached && (
-                <div 
-                  className="milestone-checkmark" 
-                  role="img" 
+                <div
+                  className="milestone-checkmark"
+                  role="img"
                   aria-label="Tamamlandı"
                 >
                   ✓
@@ -308,7 +309,7 @@ export const TaskProgressVisualization: React.FC<TaskProgressVisualizationProps>
 
       {/* Actions */}
       <div className="progress-actions">
-        <button 
+        <button
           onClick={fetchProgressData}
           className="refresh-button"
           aria-label="İlerlemeyi yenile"
@@ -316,7 +317,7 @@ export const TaskProgressVisualization: React.FC<TaskProgressVisualizationProps>
           🔄 Yenile
         </button>
         {onRefresh && (
-          <button 
+          <button
             onClick={onRefresh}
             className="custom-action-button"
           >

@@ -18,7 +18,7 @@ from fastapi.responses import JSONResponse
 from core.multi_layer_cache import get_cache_instance
 from core.structured_logger import get_logger
 
-router = APIRouter(prefix="/api/v1/cache", tags=["Cache Monitoring"])
+router = APIRouter(prefix="/api/v1/cache-metrics", tags=["Cache Monitoring"])
 logger = get_logger("cache_metrics_api")
 
 
@@ -240,7 +240,8 @@ async def cache_health_check():
         if l2_healthy:
             try:
                 await cache._redis.ping()
-            except:
+            except (ConnectionError, OSError, AttributeError) as e:
+                logger.debug(f"Redis ping failed: {e}")
                 l2_healthy = False
 
         overall_healthy = l1_healthy  # System works with L1 only
@@ -282,7 +283,7 @@ def _generate_recommendations(metrics: Dict[str, Any], l1_stats: Dict[str, Any])
     def parse_rate(rate_str):
         try:
             return float(rate_str.replace("%", ""))
-        except:
+        except (ValueError, AttributeError):
             return 0.0
 
     overall_hit_rate = parse_rate(metrics.get("overall_hit_rate", "0%"))

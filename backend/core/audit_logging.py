@@ -10,12 +10,10 @@ Logs all security-relevant events for compliance and forensics:
 - Security events
 """
 import logging
-import json
 from datetime import datetime
 from enum import Enum
 from typing import Optional, Dict, Any
 from sqlalchemy import Column, Integer, String, DateTime, Text, JSON
-from sqlalchemy.ext.declarative import declarative_base
 
 from core.database import Base
 

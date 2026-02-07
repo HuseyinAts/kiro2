@@ -2,10 +2,27 @@
 """
 Models Package
 Tüm model sınıflarını export et
+
+CANONICAL MODELS:
+- LearningPathStudentProfile: Primary student profile model for learning paths
+
+DEPRECATED MODELS (will be removed in v3.0.0):
+- StudentProfile (user_models.py): Use for general user profile only
+- StudentLearningProfile: Use LearningPathStudentProfile instead
 """
 
 # Base import (avoid circular import)
 from .base import Base
+
+# Canonical Learning Path Models
+from .learning_path_models import (
+    LearningPathStudentProfile,  # Canonical student profile
+    LearningPath,
+    TopicCompletion,
+    TopicProgress,
+    QuizSubmission,
+    FallbackVideo,
+)
 
 # SQLAlchemy ORM models
 from .database import (
@@ -87,7 +104,15 @@ from .student_goal import StudentGoal
 from .notification import Notification
 
 # Learning Style models (Mock Data Cleanup - Phase 4)
+# DEPRECATED: Use LearningPathStudentProfile instead
 from .student_learning_profile import StudentLearningProfile
+
+# Migration utilities
+from .profile_migration import (
+    ProfileMigrationService,
+    check_migration_status,
+    validate_canonical_profile,
+)
 
 # Pydantic models
 from .user import (
@@ -104,9 +129,19 @@ from .user import (
 Question = Question  # Already imported from database
 Student = StudentProfile  # Alias for StudentProfile
 
+# Convenience alias pointing to canonical model
+CanonicalStudentProfile = LearningPathStudentProfile
+
 __all__ = [
     # Base
     "Base",
+    # Canonical Models
+    "LearningPathStudentProfile",  # PRIMARY student profile model
+    "LearningPath",
+    "TopicCompletion",
+    "TopicProgress",
+    "QuizSubmission",
+    "FallbackVideo",
     # SQLAlchemy Enums
     "UserRole",
     "ExamType",
@@ -115,7 +150,7 @@ __all__ = [
     "SubjectArea",
     # User models
     "User",
-    "StudentProfile",
+    "StudentProfile",  # NOTE: For user-related data only, use LearningPathStudentProfile for learning
     "TeacherProfile",
     "ParentProfile",
     # Question and Exam models
@@ -147,8 +182,12 @@ __all__ = [
     # Dashboard models
     "StudentGoal",
     "Notification",
-    # Learning Style models
-    "StudentLearningProfile",
+    # Learning Style models (DEPRECATED)
+    "StudentLearningProfile",  # DEPRECATED: Use LearningPathStudentProfile
+    # Migration utilities
+    "ProfileMigrationService",
+    "check_migration_status",
+    "validate_canonical_profile",
     # FSRS models
     "FSRSCard",
     "FSRSSchedule",
@@ -183,4 +222,5 @@ __all__ = [
     "KarsilastirmaGrubu",
     # Aliases for backward compatibility
     "Student",
+    "CanonicalStudentProfile",  # Alias for LearningPathStudentProfile
 ]

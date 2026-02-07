@@ -1,6 +1,6 @@
 /**
  * WCAG 2.1 Level AA Uyumlu Matematik Formül Bileşeni
- * 
+ *
  * Özellikler:
  * - MathML desteği ile ekran okuyucu uyumluluğu
  * - Alternatif metin açıklamaları
@@ -9,43 +9,46 @@
  * - LaTeX ve MathML format desteği
  */
 
-import React, { useEffect, useRef, useState } from 'react';
-import { Box, Typography, IconButton, Tooltip, Paper, useTheme } from '@mui/material';
 import { VolumeUp, ContentCopy, ZoomIn, ZoomOut, Info } from '@mui/icons-material';
-import { useScreenReader } from '../../hooks/useScreenReader';
+import { Box, Typography, IconButton, Tooltip, Paper, useTheme } from '@mui/material';
+import * as React from 'react';
+import {  useEffect, useRef, useState  } from 'react';
+
 import { useAccessibilitySettings } from '../../hooks/useAccessibilitySettings';
+import { useScreenReader } from '../../hooks/useScreenReader';
+import { sanitizeMathML } from '../../utils/sanitize';
 
 interface AccessibleMathFormulaProps {
   // LaTeX formatında formül
   latex?: string;
-  
+
   // MathML formatında formül
   mathml?: string;
-  
+
   // Formülün Türkçe açıklaması (ekran okuyucu için)
   description: string;
-  
+
   // Formülün kısa açıklaması
   label?: string;
-  
+
   // Formül ID'si (benzersiz tanımlayıcı)
   id?: string;
-  
+
   // Inline veya block display
   display?: 'inline' | 'block';
-  
+
   // Zoom seviyesi
   initialZoom?: number;
-  
+
   // Sesli okuma desteği
   enableAudio?: boolean;
-  
+
   // Kopyalama desteği
   enableCopy?: boolean;
-  
+
   // Detaylı açıklama göster
   showDetailedDescription?: boolean;
-  
+
   className?: string;
 }
 
@@ -60,17 +63,17 @@ const AccessibleMathFormula: React.FC<AccessibleMathFormulaProps> = ({
   enableAudio = true,
   enableCopy = true,
   showDetailedDescription = false,
-  className
+  className,
 }) => {
   const theme = useTheme();
   const { settings } = useAccessibilitySettings();
   const { announce } = useScreenReader();
-  
+
   const formulaRef = useRef<HTMLDivElement>(null);
   const [zoom, setZoom] = useState(initialZoom);
   const [showDescription, setShowDescription] = useState(showDetailedDescription);
   const [isSpeaking, setIsSpeaking] = useState(false);
-  
+
   // Benzersiz ID oluştur
   const formulaId = id || `math-formula-${Math.random().toString(36).substring(2, 11)}`;
   const descriptionId = `${formulaId}-description`;
@@ -80,9 +83,9 @@ const AccessibleMathFormula: React.FC<AccessibleMathFormulaProps> = ({
   const convertLatexToMathML = (latexStr: string): string => {
     // Bu gerçek bir projede MathJax veya KaTeX kullanılmalı
     // Burada basit bir örnek gösteriyoruz
-    
+
     let mathmlStr = '<math xmlns="http://www.w3.org/1998/Math/MathML" display="block">';
-    
+
     // Basit dönüşümler
     if (latexStr.includes('\\frac')) {
       // Kesir: \frac{a}{b} -> <mfrac><mi>a</mi><mi>b</mi></mfrac>
@@ -112,7 +115,7 @@ const AccessibleMathFormula: React.FC<AccessibleMathFormulaProps> = ({
       // Basit ifade
       mathmlStr += `<mi>${latexStr}</mi>`;
     }
-    
+
     mathmlStr += '</math>';
     return mathmlStr;
   };
@@ -131,26 +134,26 @@ const AccessibleMathFormula: React.FC<AccessibleMathFormulaProps> = ({
   const speakFormula = () => {
     if ('speechSynthesis' in window) {
       setIsSpeaking(true);
-      
+
       // Mevcut konuşmayı durdur
       window.speechSynthesis.cancel();
-      
+
       // Yeni konuşma oluştur
       const utterance = new SpeechSynthesisUtterance(description);
       utterance.lang = 'tr-TR';
       utterance.rate = settings.speechRate || 1;
       utterance.pitch = 1;
-      
+
       utterance.onend = () => {
         setIsSpeaking(false);
         announce('Formül okunması tamamlandı', 'polite');
       };
-      
+
       utterance.onerror = () => {
         setIsSpeaking(false);
         announce('Formül okunamadı', 'assertive');
       };
-      
+
       window.speechSynthesis.speak(utterance);
       announce('Formül okunuyor', 'polite');
     } else {
@@ -161,11 +164,11 @@ const AccessibleMathFormula: React.FC<AccessibleMathFormulaProps> = ({
   // Formülü kopyala
   const copyFormula = async () => {
     const textToCopy = latex || mathml || description;
-    
+
     try {
       await navigator.clipboard.writeText(textToCopy);
       announce('Formül panoya kopyalandı', 'polite');
-    } catch (error) {
+    } catch {
       announce('Formül kopyalanamadı', 'assertive');
     }
   };
@@ -189,7 +192,7 @@ const AccessibleMathFormula: React.FC<AccessibleMathFormulaProps> = ({
     setShowDescription(newState);
     announce(
       newState ? 'Detaylı açıklama gösteriliyor' : 'Detaylı açıklama gizlendi',
-      'polite'
+      'polite',
     );
   };
 
@@ -228,7 +231,7 @@ const AccessibleMathFormula: React.FC<AccessibleMathFormulaProps> = ({
   useEffect(() => {
     // MathJax veya KaTeX render (gerçek implementasyonda)
     // Bu örnekte MathML direkt kullanıyoruz
-    
+
     return () => {
       // Cleanup: Sesli okumayı durdur
       if (isSpeaking && 'speechSynthesis' in window) {
@@ -237,7 +240,8 @@ const AccessibleMathFormula: React.FC<AccessibleMathFormulaProps> = ({
     };
   }, [isSpeaking]);
 
-  const mathMLContent = getMathMLContent();
+  // SECURITY FIX #4: Use DOMPurify for secure MathML sanitization
+  const mathMLContent = sanitizeMathML(getMathMLContent());
 
   return (
     <Box

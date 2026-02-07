@@ -4,8 +4,9 @@
  * EBA TV bileşenlerinin entegrasyon testleri.
  */
 
-import React from 'react';
+import * as React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { vi } from 'vitest';
 import '@testing-library/jest-dom';
 
 // Mock EBA TV bileşenleri

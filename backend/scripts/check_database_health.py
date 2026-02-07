@@ -6,7 +6,7 @@ Verifies database schema, migrations, and data integrity
 import asyncio
 import asyncpg
 from datetime import datetime
-from typing import Dict, List, Any
+from typing import Dict, Any
 
 
 class DatabaseHealthChecker:
@@ -109,7 +109,7 @@ class DatabaseHealthChecker:
                 # Check if this is the latest known version
                 expected_versions = ["60e185cfcca9", "f822e22c28c6"]
                 if current_version in expected_versions:
-                    print(f"  [OK] Version is up to date")
+                    print("  [OK] Version is up to date")
                 else:
                     self.warnings.append(
                         f"[!] Unknown migration version: {current_version}"
@@ -276,7 +276,7 @@ class DatabaseHealthChecker:
                     self.warnings.append(
                         f"[!] Unused index: {idx['indexname']} on {idx['table']}"
                     )
-        except:
+        except Exception:
             pass  # Stats not available
 
     def _build_report(self) -> Dict[str, Any]:
@@ -321,7 +321,7 @@ async def main():
     print("KIRO2 Database Health Check")
     print("=" * 60)
 
-    db_url = "postgresql://postgres:postgres@localhost:5432/turkiye_sinav_db"
+    db_url = "postgresql://postgres:postgres@localhost:5434/turkiye_sinav_db"
 
     checker = DatabaseHealthChecker(db_url)
     report = await checker.check_all()

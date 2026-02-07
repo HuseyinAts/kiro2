@@ -1,19 +1,20 @@
 /**
  * Geometry Tools Component
- * 
+ *
  * Geometri araçları - Sanal cetvel, iletki, pergel ve şekil çizimi.
- * 
+ *
  * Özellikler:
  * - Sanal cetvel (cm ve inch)
  * - İletki (açı ölçme)
  * - Pergel (daire çizme)
  * - Şekil çizim araçları
  * - Ölçüm araçları
- * 
+ *
  * Gereksinimler: REQ-51.51 - REQ-51.55
  */
 
-import React, { useState, useRef, useEffect } from 'react';
+import * as React from 'react';
+import {  useState, useRef, useEffect  } from 'react';
 import './GeometryTools.css';
 
 type Tool = 'ruler' | 'protractor' | 'compass' | 'line' | 'circle' | 'rectangle' | 'triangle' | 'polygon';
@@ -40,7 +41,7 @@ const GeometryTools: React.FC = () => {
   const [isDrawing, setIsDrawing] = useState<boolean>(false);
   const [rulerAngle, setRulerAngle] = useState<number>(0);
   const [protractorAngle, setProtractorAngle] = useState<number>(0);
-  const [compassRadius, setCompassRadius] = useState<number>(50);
+  const [compassRadius, _setCompassRadius] = useState<number>(50);
   const [selectedColor, setSelectedColor] = useState<string>('#2196f3');
   const [gridVisible, setGridVisible] = useState<boolean>(true);
   const [measurements, setMeasurements] = useState<string[]>([]);
@@ -64,10 +65,10 @@ const GeometryTools: React.FC = () => {
 
   const drawCanvas = () => {
     const canvas = canvasRef.current;
-    if (!canvas) return;
+    if (!canvas) {return;}
 
     const ctx = canvas.getContext('2d');
-    if (!ctx) return;
+    if (!ctx) {return;}
 
     // Temizle
     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -141,7 +142,7 @@ const GeometryTools: React.FC = () => {
 
     for (let i = 0; i <= maxUnits; i++) {
       const xPos = -200 + i * unitSize;
-      
+
       // Ana çizgi
       ctx.beginPath();
       ctx.moveTo(xPos, -20);
@@ -238,11 +239,11 @@ const GeometryTools: React.FC = () => {
         }
         break;
 
-      case 'circle':
+      case 'circle': {
         if (shape.points.length >= 2) {
           const radius = Math.sqrt(
             Math.pow(shape.points[1].x - shape.points[0].x, 2) +
-            Math.pow(shape.points[1].y - shape.points[0].y, 2)
+            Math.pow(shape.points[1].y - shape.points[0].y, 2),
           );
           ctx.beginPath();
           ctx.arc(shape.points[0].x, shape.points[0].y, radius, 0, 2 * Math.PI);
@@ -250,8 +251,9 @@ const GeometryTools: React.FC = () => {
           ctx.fill();
         }
         break;
+      }
 
-      case 'rectangle':
+      case 'rectangle': {
         if (shape.points.length >= 2) {
           const width = shape.points[1].x - shape.points[0].x;
           const height = shape.points[1].y - shape.points[0].y;
@@ -261,6 +263,7 @@ const GeometryTools: React.FC = () => {
           ctx.fill();
         }
         break;
+      }
 
       case 'triangle':
         if (shape.points.length >= 3) {
@@ -290,7 +293,7 @@ const GeometryTools: React.FC = () => {
   };
 
   const drawCurrentShape = (ctx: CanvasRenderingContext2D) => {
-    if (currentShape.length === 0) return;
+    if (currentShape.length === 0) {return;}
 
     ctx.strokeStyle = selectedColor;
     ctx.fillStyle = selectedColor + '40';
@@ -308,7 +311,7 @@ const GeometryTools: React.FC = () => {
       if (currentShape.length === 2) {
         const radius = Math.sqrt(
           Math.pow(currentShape[1].x - currentShape[0].x, 2) +
-          Math.pow(currentShape[1].y - currentShape[0].y, 2)
+          Math.pow(currentShape[1].y - currentShape[0].y, 2),
         );
         ctx.beginPath();
         ctx.arc(currentShape[0].x, currentShape[0].y, radius, 0, 2 * Math.PI);
@@ -336,10 +339,10 @@ const GeometryTools: React.FC = () => {
 
   // Mouse olayları
   const handleMouseDown = (e: React.MouseEvent<HTMLCanvasElement>) => {
-    if (tool === 'ruler' || tool === 'protractor') return;
+    if (tool === 'ruler' || tool === 'protractor') {return;}
 
     const canvas = canvasRef.current;
-    if (!canvas) return;
+    if (!canvas) {return;}
 
     const rect = canvas.getBoundingClientRect();
     const x = e.clientX - rect.left;
@@ -350,10 +353,10 @@ const GeometryTools: React.FC = () => {
   };
 
   const handleMouseMove = (e: React.MouseEvent<HTMLCanvasElement>) => {
-    if (!isDrawing || tool === 'ruler' || tool === 'protractor') return;
+    if (!isDrawing || tool === 'ruler' || tool === 'protractor') {return;}
 
     const canvas = canvasRef.current;
-    if (!canvas) return;
+    if (!canvas) {return;}
 
     const rect = canvas.getBoundingClientRect();
     const x = e.clientX - rect.left;
@@ -369,14 +372,14 @@ const GeometryTools: React.FC = () => {
   };
 
   const handleMouseUp = () => {
-    if (!isDrawing) return;
+    if (!isDrawing) {return;}
 
     if (currentShape.length >= 2 && (tool === 'line' || tool === 'circle' || tool === 'rectangle')) {
       const newShape: Shape = {
         type: tool,
         points: currentShape,
         color: selectedColor,
-        id: Date.now().toString()
+        id: Date.now().toString(),
       };
       setShapes([...shapes, newShape]);
       setCurrentShape([]);
@@ -387,10 +390,10 @@ const GeometryTools: React.FC = () => {
   };
 
   const handleClick = (e: React.MouseEvent<HTMLCanvasElement>) => {
-    if (tool !== 'triangle' && tool !== 'polygon') return;
+    if (tool !== 'triangle' && tool !== 'polygon') {return;}
 
     const canvas = canvasRef.current;
-    if (!canvas) return;
+    if (!canvas) {return;}
 
     const rect = canvas.getBoundingClientRect();
     const x = e.clientX - rect.left;
@@ -404,7 +407,7 @@ const GeometryTools: React.FC = () => {
         type: 'triangle',
         points: newPoints,
         color: selectedColor,
-        id: Date.now().toString()
+        id: Date.now().toString(),
       };
       setShapes([...shapes, newShape]);
       setCurrentShape([]);
@@ -418,7 +421,7 @@ const GeometryTools: React.FC = () => {
         type: 'polygon',
         points: currentShape,
         color: selectedColor,
-        id: Date.now().toString()
+        id: Date.now().toString(),
       };
       setShapes([...shapes, newShape]);
       setCurrentShape([]);
@@ -431,27 +434,29 @@ const GeometryTools: React.FC = () => {
     let measurement = '';
 
     switch (shape.type) {
-      case 'line':
+      case 'line': {
         const length = Math.sqrt(
           Math.pow(shape.points[1].x - shape.points[0].x, 2) +
-          Math.pow(shape.points[1].y - shape.points[0].y, 2)
+          Math.pow(shape.points[1].y - shape.points[0].y, 2),
         );
         const lengthInUnits = unit === 'cm' ? length / 20 : length / 25.4;
         measurement = `Çizgi uzunluğu: ${lengthInUnits.toFixed(2)} ${unit}`;
         break;
+      }
 
-      case 'circle':
+      case 'circle': {
         const radius = Math.sqrt(
           Math.pow(shape.points[1].x - shape.points[0].x, 2) +
-          Math.pow(shape.points[1].y - shape.points[0].y, 2)
+          Math.pow(shape.points[1].y - shape.points[0].y, 2),
         );
         const radiusInUnits = unit === 'cm' ? radius / 20 : radius / 25.4;
         const area = Math.PI * radius * radius;
         const areaInUnits = unit === 'cm' ? area / 400 : area / 645.16;
         measurement = `Daire - Yarıçap: ${radiusInUnits.toFixed(2)} ${unit}, Alan: ${areaInUnits.toFixed(2)} ${unit}²`;
         break;
+      }
 
-      case 'rectangle':
+      case 'rectangle': {
         const width = Math.abs(shape.points[1].x - shape.points[0].x);
         const height = Math.abs(shape.points[1].y - shape.points[0].y);
         const widthInUnits = unit === 'cm' ? width / 20 : width / 25.4;
@@ -460,8 +465,9 @@ const GeometryTools: React.FC = () => {
         const rectAreaInUnits = unit === 'cm' ? rectArea / 400 : rectArea / 645.16;
         measurement = `Dikdörtgen - Genişlik: ${widthInUnits.toFixed(2)} ${unit}, Yükseklik: ${heightInUnits.toFixed(2)} ${unit}, Alan: ${rectAreaInUnits.toFixed(2)} ${unit}²`;
         break;
+      }
 
-      case 'triangle':
+      case 'triangle': {
         // Kenar uzunlukları
         const a = Math.sqrt(Math.pow(shape.points[1].x - shape.points[0].x, 2) + Math.pow(shape.points[1].y - shape.points[0].y, 2));
         const b = Math.sqrt(Math.pow(shape.points[2].x - shape.points[1].x, 2) + Math.pow(shape.points[2].y - shape.points[1].y, 2));
@@ -471,6 +477,7 @@ const GeometryTools: React.FC = () => {
         const triAreaInUnits = unit === 'cm' ? triArea / 400 : triArea / 645.16;
         measurement = `Üçgen - Alan: ${triAreaInUnits.toFixed(2)} ${unit}²`;
         break;
+      }
     }
 
     if (measurement) {

@@ -10,7 +10,6 @@ import time
 import statistics
 import json
 from datetime import datetime
-from typing import Dict, List, Any
 import psutil
 import os
 
@@ -94,7 +93,7 @@ class PerformanceBenchmark:
         }
 
         # Print results
-        print(f"\n  Results:")
+        print("\n  Results:")
         print(f"    Average:  {avg*1000:.1f}ms")
         print(f"    Median:   {median*1000:.1f}ms")
         print(f"    P95:      {p95*1000:.1f}ms (target: <3000ms)")
@@ -145,7 +144,7 @@ class PerformanceBenchmark:
         }
 
         # Print results
-        print(f"\n  Results:")
+        print("\n  Results:")
         print(f"    Total Requests: {total_requests}")
         print(f"    Cache Hits:     {cache_hits}")
         print(f"    Cache Misses:   {cache_misses}")
@@ -195,7 +194,7 @@ class PerformanceBenchmark:
         }
 
         # Print results
-        print(f"\n  Results:")
+        print("\n  Results:")
         print(f"    Queries:  {num_queries}")
         print(f"    Average:  {avg*1000:.1f}ms (target: <100ms)")
         print(f"    Median:   {median*1000:.1f}ms")
@@ -247,7 +246,7 @@ class PerformanceBenchmark:
         }
 
         # Print results
-        print(f"\n  Results:")
+        print("\n  Results:")
         print(f"    Samples:  {num_samples}")
         print(f"    Average:  {avg_memory:.1f}MB")
         print(f"    Min:      {min_memory:.1f}MB")
@@ -267,14 +266,14 @@ class PerformanceBenchmark:
         task_duration = 1.0  # seconds
 
         # Sequential processing
-        print(f"  Running sequential processing...")
+        print("  Running sequential processing...")
         sequential_start = time.time()
         for i in range(num_goals):
             await asyncio.sleep(task_duration)
         sequential_time = time.time() - sequential_start
 
         # Parallel processing
-        print(f"  Running parallel processing...")
+        print("  Running parallel processing...")
         parallel_start = time.time()
         tasks = [asyncio.sleep(task_duration) for _ in range(num_goals)]
         await asyncio.gather(*tasks)
@@ -295,7 +294,7 @@ class PerformanceBenchmark:
         }
 
         # Print results
-        print(f"\n  Results:")
+        print("\n  Results:")
         print(f"    Goals:            {num_goals}")
         print(f"    Sequential Time:  {sequential_time:.2f}s")
         print(f"    Parallel Time:    {parallel_time:.2f}s")
@@ -340,7 +339,7 @@ async def main():
 
     # Print summary
     summary = benchmark.results["summary"]
-    print(f"\nSummary:")
+    print("\nSummary:")
     print(f"  Total Benchmarks: {summary['total_benchmarks']}")
     print(f"  Passed:           {summary['passed']}")
     print(f"  Failed:           {summary['failed']}")

@@ -3,9 +3,11 @@
  * Tüm erişilebilirlik özelliklerini merkezi olarak yönetir
  */
 
-import React, { createContext, useContext, useEffect } from 'react';
-import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { CssBaseline } from '@mui/material';
+import { ThemeProvider, createTheme } from '@mui/material/styles';
+import * as React from 'react';
+import {  createContext, useContext, useEffect  } from 'react';
+
 import { useAccessibilitySettings } from '../../hooks/useAccessibilitySettings';
 import { useScreenReader } from '../../hooks/useScreenReader';
 import '../../styles/accessibility.css';
@@ -36,10 +38,7 @@ interface AccessibilityProviderProps {
 
 export const AccessibilityProvider: React.FC<AccessibilityProviderProps> = ({ children }) => {
   const accessibilitySettings = useAccessibilitySettings();
-  const { announce } = useScreenReader({
-    politeness: 'polite',
-    language: accessibilitySettings.settings.language,
-  });
+  const { announce } = useScreenReader();
 
   // Tema oluştur
   const theme = createTheme({
@@ -62,7 +61,7 @@ export const AccessibilityProvider: React.FC<AccessibilityProviderProps> = ({ ch
         large: 18,
         'extra-large': 20,
       }[accessibilitySettings.settings.fontSize],
-      fontFamily: accessibilitySettings.settings.dyslexiaSupport 
+      fontFamily: accessibilitySettings.settings.dyslexiaSupport
         ? '"OpenDyslexic", "Comic Sans MS", cursive'
         : '"Roboto", "Helvetica", "Arial", sans-serif',
     },
@@ -95,11 +94,11 @@ export const AccessibilityProvider: React.FC<AccessibilityProviderProps> = ({ ch
 
   // Erişilebilirlik ayarları değiştiğinde duyuru yap
   useEffect(() => {
-    const status = accessibilitySettings.getAccessibilityStatus();
-    if (status.isOptimized) {
+    const status = accessibilitySettings?.getAccessibilityStatus?.();
+    if (status?.isOptimized) {
       announce(status.summary, 'polite');
     }
-  }, [accessibilitySettings.settings, announce, accessibilitySettings]);
+  }, [accessibilitySettings?.settings, announce, accessibilitySettings]);
 
   const contextValue: AccessibilityContextType = {
     settings: accessibilitySettings.settings,

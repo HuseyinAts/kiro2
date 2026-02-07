@@ -2,7 +2,8 @@
  * Task 94.4: Social Story Component
  * Sosyal hikayeler - beklenen davranışlar, görsel anlatım
  */
-import React, { useState } from 'react';
+import * as React from 'react';
+import {  useState  } from 'react';
 import './SocialStory.css';
 
 export interface StoryPage {
@@ -23,7 +24,7 @@ export const SocialStory: React.FC<SocialStoryProps> = ({
   title,
   pages,
   osbMode = true,
-  onComplete
+  onComplete,
 }) => {
   const [currentPage, setCurrentPage] = useState(0);
 
@@ -32,7 +33,7 @@ export const SocialStory: React.FC<SocialStoryProps> = ({
     sad: '😢',
     worried: '😟',
     calm: '😌',
-    excited: '😃'
+    excited: '😃',
   };
 
   const page = pages[currentPage];

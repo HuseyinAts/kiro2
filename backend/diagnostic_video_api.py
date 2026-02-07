@@ -6,7 +6,6 @@ Task 1: Backend Servis Durumunu Doğrula ve İlk Düzeltmeleri Yap
 import asyncio
 import json
 import logging
-import sys
 from datetime import datetime
 from pathlib import Path
 

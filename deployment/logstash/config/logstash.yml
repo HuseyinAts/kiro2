@@ -1,0 +1,35 @@
+# KIRO2 Logstash Configuration
+# Centralized logging for YKS AI Education Platform
+
+# Node settings
+node.name: kiro2-logstash
+
+# Pipeline settings
+pipeline.workers: 4
+pipeline.batch.size: 125
+pipeline.batch.delay: 50
+
+# Queue settings (persistent queue for durability)
+queue.type: persisted
+queue.max_bytes: 1gb
+queue.checkpoint.writes: 1024
+
+# Dead letter queue for failed events
+dead_letter_queue.enable: true
+dead_letter_queue.max_bytes: 512mb
+
+# HTTP API settings
+http.host: "0.0.0.0"
+http.port: 9600
+
+# Monitoring (disabled for standalone, enable if using X-Pack)
+xpack.monitoring.enabled: false
+
+# Logging
+log.level: info
+log.format: json
+path.logs: /usr/share/logstash/logs
+
+# Performance tuning
+config.reload.automatic: true
+config.reload.interval: 3s

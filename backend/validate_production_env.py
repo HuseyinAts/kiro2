@@ -6,10 +6,9 @@ Usage:
     python validate_production_env.py --env-file .env.production
 """
 
-import os
 import sys
 import re
-from typing import List, Tuple, Dict
+from typing import List, Dict
 from pathlib import Path
 import argparse
 

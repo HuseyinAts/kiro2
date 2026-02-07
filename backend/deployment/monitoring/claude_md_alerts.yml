@@ -1,0 +1,268 @@
+# CLAUDE.md Self-Improvement Alert Rules
+# Prometheus Alertmanager Configuration
+#
+# Spec: claude-md-self-improvement Phase 10 (Deployment)
+# REQ-10.3.1: Set up alerts (regression, anomaly)
+#
+# Author: KIRO2 Team
+# Date: 2026-01-19
+
+groups:
+  - name: claude_md_improvement_alerts
+    rules:
+      # =====================================================================
+      # Task Success Rate Alerts
+      # =====================================================================
+
+      - alert: ClaudeMdTaskSuccessRateLow
+        expr: claude_md_task_success_rate < 0.6
+        for: 15m
+        labels:
+          severity: warning
+          component: claude_md_improvement
+        annotations:
+          summary: "CLAUDE.md task success rate is low"
+          description: |
+            Task success rate is {{ $value | printf "%.2f" }} (threshold: 0.6).
+            This may indicate rule performance degradation.
+            Consider reviewing recent rule changes.
+          runbook_url: "docs/runbooks/CLAUDE_MD_MONITORING.md"
+
+      - alert: ClaudeMdTaskSuccessRateCritical
+        expr: claude_md_task_success_rate < 0.4
+        for: 5m
+        labels:
+          severity: critical
+          component: claude_md_improvement
+        annotations:
+          summary: "CLAUDE.md task success rate critically low"
+          description: |
+            Task success rate is {{ $value | printf "%.2f" }} (critical threshold: 0.4).
+            Immediate investigation required.
+          runbook_url: "docs/runbooks/CLAUDE_MD_REGRESSION.md"
+
+      # =====================================================================
+      # Regression Detection Alerts
+      # =====================================================================
+
+      - alert: ClaudeMdRegressionDetected
+        expr: claude_md_regression_count > 0
+        for: 1m
+        labels:
+          severity: critical
+          component: claude_md_improvement
+        annotations:
+          summary: "Performance regression detected in CLAUDE.md"
+          description: |
+            Regression detected: {{ $value }} regression(s) in the last measurement period.
+            Auto-rollback should have been triggered.
+            Verify rollback was successful.
+          runbook_url: "docs/runbooks/CLAUDE_MD_REGRESSION.md"
+
+      - alert: ClaudeMdRollbackTriggered
+        expr: claude_md_rollback_triggered == 1
+        for: 0m
+        labels:
+          severity: warning
+          component: claude_md_improvement
+        annotations:
+          summary: "Auto-rollback was triggered"
+          description: |
+            An automatic rollback was triggered due to performance regression.
+            Review the rolled-back changes and investigate root cause.
+          runbook_url: "docs/runbooks/CLAUDE_MD_REGRESSION.md"
+
+      # =====================================================================
+      # Anomaly Detection Alerts
+      # =====================================================================
+
+      - alert: ClaudeMdAnomalyDetected
+        expr: claude_md_anomaly_count > 3
+        for: 10m
+        labels:
+          severity: warning
+          component: claude_md_improvement
+        annotations:
+          summary: "Multiple anomalies detected in CLAUDE.md metrics"
+          description: |
+            {{ $value }} anomalies detected (Z-score > 3).
+            Metrics may be exhibiting unusual behavior.
+            Review pattern detection results.
+          runbook_url: "docs/runbooks/CLAUDE_MD_MONITORING.md"
+
+      - alert: ClaudeMdHighLatencyAnomaly
+        expr: claude_md_avg_latency_zscore > 3
+        for: 5m
+        labels:
+          severity: warning
+          component: claude_md_improvement
+        annotations:
+          summary: "Latency anomaly detected"
+          description: |
+            Average latency Z-score is {{ $value | printf "%.2f" }}.
+            This is significantly higher than historical average.
+
+      # =====================================================================
+      # Emergency Stop Alerts
+      # =====================================================================
+
+      - alert: ClaudeMdEmergencyStopActive
+        expr: claude_md_emergency_stop == 1
+        for: 0m
+        labels:
+          severity: critical
+          component: claude_md_improvement
+        annotations:
+          summary: "CLAUDE.md emergency stop is active"
+          description: |
+            The emergency stop mechanism has been activated.
+            All auto-improvement processes are halted.
+            Manual intervention required to restart.
+          runbook_url: "docs/runbooks/CLAUDE_MD_EMERGENCY_STOP.md"
+
+      # =====================================================================
+      # Rule Effectiveness Alerts
+      # =====================================================================
+
+      - alert: ClaudeMdLowEffectivenessRules
+        expr: claude_md_low_effectiveness_rule_count > 5
+        for: 1h
+        labels:
+          severity: warning
+          component: claude_md_improvement
+        annotations:
+          summary: "Multiple low-effectiveness rules detected"
+          description: |
+            {{ $value }} rules have effectiveness < 0.6.
+            Consider running rule evolution or manual review.
+          runbook_url: "docs/runbooks/CLAUDE_MD_MONITORING.md"
+
+      - alert: ClaudeMdRuleEffectivenessAvgLow
+        expr: avg(claude_md_rule_effectiveness) < 0.7
+        for: 1d
+        labels:
+          severity: warning
+          component: claude_md_improvement
+        annotations:
+          summary: "Average rule effectiveness is below target"
+          description: |
+            Average rule effectiveness is {{ $value | printf "%.2f" }}.
+            Target is >= 0.8.
+            Review pattern detection recommendations.
+
+      # =====================================================================
+      # A/B Testing Alerts
+      # =====================================================================
+
+      - alert: ClaudeMdABTestStalled
+        expr: claude_md_ab_test_duration_days > 21
+        for: 1h
+        labels:
+          severity: warning
+          component: claude_md_improvement
+        annotations:
+          summary: "A/B test running longer than expected"
+          description: |
+            A/B test has been running for {{ $value }} days.
+            Maximum expected duration is 14 days.
+            Check if sufficient samples have been collected.
+
+      - alert: ClaudeMdABTestLowWinRate
+        expr: claude_md_ab_test_win_rate < 0.5
+        for: 7d
+        labels:
+          severity: info
+          component: claude_md_improvement
+        annotations:
+          summary: "A/B test win rate below target"
+          description: |
+            Win rate is {{ $value | printf "%.2f" }} (target: >= 0.6).
+            Review rule evolution strategies.
+
+      # =====================================================================
+      # Safety Alerts
+      # =====================================================================
+
+      - alert: ClaudeMdHighRiskChangePending
+        expr: claude_md_high_risk_pending_count > 0
+        for: 4h
+        labels:
+          severity: warning
+          component: claude_md_improvement
+        annotations:
+          summary: "High-risk change pending approval"
+          description: |
+            {{ $value }} high-risk change(s) awaiting manual approval.
+            Review and approve/reject in the approval workflow.
+          runbook_url: "docs/runbooks/CLAUDE_MD_APPROVAL_WORKFLOW.md"
+
+      - alert: ClaudeMdApprovalTimeout
+        expr: claude_md_pending_approval_age_hours > 24
+        for: 1h
+        labels:
+          severity: warning
+          component: claude_md_improvement
+        annotations:
+          summary: "Approval request has been pending too long"
+          description: |
+            An approval request has been pending for {{ $value | printf "%.1f" }} hours.
+            Please review and respond to pending requests.
+          runbook_url: "docs/runbooks/CLAUDE_MD_APPROVAL_WORKFLOW.md"
+
+      # =====================================================================
+      # System Health Alerts
+      # =====================================================================
+
+      - alert: ClaudeMdFeedbackCollectionFailing
+        expr: rate(claude_md_feedback_collection_errors_total[1h]) > 0.1
+        for: 30m
+        labels:
+          severity: warning
+          component: claude_md_improvement
+        annotations:
+          summary: "Feedback collection experiencing errors"
+          description: |
+            Feedback collection error rate: {{ $value | printf "%.2f" }} per second.
+            Check database connectivity and service health.
+
+      - alert: ClaudeMdPatternDetectionSlow
+        expr: claude_md_pattern_detection_duration_seconds > 20
+        for: 15m
+        labels:
+          severity: warning
+          component: claude_md_improvement
+        annotations:
+          summary: "Pattern detection exceeding performance target"
+          description: |
+            Pattern detection took {{ $value | printf "%.1f" }} seconds.
+            Target is < 10 seconds (critical < 20 seconds).
+
+      - alert: ClaudeMdServiceDown
+        expr: up{job="claude_md_improvement"} == 0
+        for: 5m
+        labels:
+          severity: critical
+          component: claude_md_improvement
+        annotations:
+          summary: "CLAUDE.md improvement service is down"
+          description: |
+            The CLAUDE.md self-improvement service is not responding.
+            Check service logs and restart if necessary.
+
+  # =========================================================================
+  # Recording Rules for Derived Metrics
+  # =========================================================================
+  - name: claude_md_improvement_recording
+    rules:
+      - record: claude_md_task_success_rate
+        expr: |
+          sum(rate(claude_md_task_outcomes_total{outcome="success"}[1h])) /
+          sum(rate(claude_md_task_outcomes_total[1h]))
+
+      - record: claude_md_rule_effectiveness_avg
+        expr: avg(claude_md_rule_effectiveness)
+
+      - record: claude_md_ab_test_win_rate
+        expr: |
+          sum(claude_md_ab_test_results{result="treatment_win"}) /
+          sum(claude_md_ab_test_results)

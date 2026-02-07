@@ -26,7 +26,7 @@ RESEARCH BASIS:
 """
 
 import re
-from typing import Dict, List, Tuple, Optional
+from typing import Dict, List, Tuple
 from collections import defaultdict
 
 
@@ -308,7 +308,7 @@ class ImprovedAnswerKeyExtractor:
             print(f"[DEBUG] Question range: {min(q_nums)} - {max(q_nums)}")
             print(f"[DEBUG] Sample answers: {dict(list(answer_key.items())[:5])}")
 
-        print(f"[DEBUG] Strategy usage:")
+        print("[DEBUG] Strategy usage:")
         for strategy, count in self.extraction_stats.items():
             if count > 0:
                 print(f"  {strategy}: {count} times")

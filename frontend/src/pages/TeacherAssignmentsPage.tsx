@@ -3,11 +3,12 @@
  * Glassmorphism ile ödev yönetimi
  */
 
-import React from 'react'
-import { ModernTeacherAssignmentsPage } from './ModernTeacherAssignmentsPage'
+import * as React from 'react';
+
+import { ModernTeacherAssignmentsPage } from './ModernTeacherAssignmentsPage';
 
 export const TeacherAssignmentsPage: React.FC = () => {
-  return <ModernTeacherAssignmentsPage />
-}
+  return <ModernTeacherAssignmentsPage />;
+};
 
-export default TeacherAssignmentsPage
+export default TeacherAssignmentsPage;

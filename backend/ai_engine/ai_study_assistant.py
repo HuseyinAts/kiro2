@@ -3,18 +3,13 @@ AI-Powered Study Assistant
 Intelligent tutoring and study guidance system
 """
 
-import asyncio
 import logging
 import re
-import json
 from dataclasses import dataclass, field
-from datetime import datetime, timedelta
-from typing import Any, Dict, List, Optional, Set, Tuple, Union
+from datetime import datetime
+from typing import Any, Dict, List, Optional
 from enum import Enum
 
-import numpy as np
-from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.metrics.pairwise import cosine_similarity
 
 logger = logging.getLogger(__name__)
 

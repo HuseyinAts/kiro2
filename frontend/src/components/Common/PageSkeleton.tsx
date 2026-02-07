@@ -5,8 +5,8 @@
  * Shows placeholder structure while page loads
  */
 
-import React from 'react'
-import { Container, Box, Skeleton, Paper } from '@mui/material'
+import { Container, Box, Skeleton, Paper } from '@mui/material';
+import * as React from 'react';
 
 /**
  * Generic page skeleton loader
@@ -62,9 +62,9 @@ export const PageSkeleton: React.FC = () => {
         ))}
       </Paper>
     </Container>
-  )
-}
+  );
+};
 
-PageSkeleton.displayName = 'PageSkeleton'
+PageSkeleton.displayName = 'PageSkeleton';
 
-export default PageSkeleton
+export default PageSkeleton;

@@ -11,16 +11,12 @@ Expanded metrics collection covering all platform aspects:
 """
 import logging
 import psutil
-import time
-from datetime import datetime
-from typing import Dict, List, Optional
+from typing import Optional
 
 from prometheus_client import (
     Counter,
     Histogram,
     Gauge,
-    Summary,
-    Info,
     generate_latest,
     REGISTRY,
     CollectorRegistry,

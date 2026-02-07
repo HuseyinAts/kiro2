@@ -43,7 +43,7 @@ class ChatService {
 
     try {
       const response = await sendChatMessage(agent, message, sessionId);
-      
+
       const chatMessage: ChatMessage = {
         id: this.generateMessageId(),
         role: 'agent',
@@ -60,7 +60,7 @@ class ChatService {
       });
 
       this.addMessage(chatMessage);
-      
+
       return chatMessage;
     } catch (error) {
       console.error('Error sending message:', error);
@@ -77,7 +77,7 @@ class ChatService {
       responseMode?: 'simple' | 'detailed' | 'adaptive';
       includeBionic?: boolean;
       contextData?: Record<string, any>;
-    } = {}
+    } = {},
   ): Promise<ChatMessage> {
     try {
       const response = await fetch(`${ENHANCED_CHAT_API}/message`, {
@@ -92,8 +92,8 @@ class ChatService {
           session_id: options.sessionId || this.sessionId,
           response_mode: options.responseMode || 'adaptive',
           include_bionic: options.includeBionic || false,
-          context_data: options.contextData
-        })
+          context_data: options.contextData,
+        }),
       });
 
       if (!response.ok) {
@@ -101,7 +101,7 @@ class ChatService {
       }
 
       const result = await response.json();
-      
+
       if (!result.success) {
         throw new Error(result.message || 'Enhanced chat request failed');
       }
@@ -124,7 +124,7 @@ class ChatService {
 
       // Add agent response
       this.addMessage(chatMessage);
-      
+
       return chatMessage;
     } catch (error) {
       console.error('Enhanced chat error:', error);
@@ -136,31 +136,31 @@ class ChatService {
     try {
       const params = new URLSearchParams({
         student_id: studentId,
-        limit: limit.toString()
+        limit: limit.toString(),
       });
-      
+
       if (sessionId) {
         params.append('session_id', sessionId);
       }
 
       const response = await fetch(`${ENHANCED_CHAT_API}/history?${params}`);
-      
+
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
       const result = await response.json();
-      
+
       if (result.success) {
         return result.data.history.map((msg: any) => ({
           id: msg.id || this.generateMessageId(),
           role: msg.role,
           content: msg.content,
           agent: msg.agent,
-          timestamp: msg.timestamp
+          timestamp: msg.timestamp,
         }));
       }
-      
+
       return [];
     } catch (error) {
       console.error('Get chat history error:', error);
@@ -175,7 +175,7 @@ class ChatService {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ text })
+        body: JSON.stringify({ text }),
       });
 
       if (!response.ok) {
@@ -183,11 +183,11 @@ class ChatService {
       }
 
       const result = await response.json();
-      
+
       if (result.success) {
         return result.data.bionic_text;
       }
-      
+
       return text; // Fallback to original text
     } catch (error) {
       console.error('Bionic reading error:', error);
@@ -236,10 +236,10 @@ class ChatService {
       return;
     }
 
-    this.wsConnection = createWebSocketConnection(
-      (data) => this.handleWebSocketMessage(data),
-      (error) => this.handleWebSocketError(error)
-    );
+    this.wsConnection = createWebSocketConnection({
+      onMessage: (data) => this.handleWebSocketMessage(data),
+      onError: (error) => this.handleWebSocketError(error),
+    });
 
     if (this.wsConnection) {
       this.notifyConnectionListeners(true);
@@ -332,7 +332,7 @@ class ChatService {
         console.error('Error loading messages from localStorage:', error);
       }
     }
-    
+
     const sessionId = localStorage.getItem('chatSessionId');
     if (sessionId) {
       this.sessionId = sessionId;

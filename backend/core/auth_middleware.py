@@ -963,22 +963,13 @@ def create_authorization_middleware(
 async def authenticate_user_credentials(
     username: str, password: str
 ) -> AuthUser | None:
-    """Authenticate user with credentials"""
-    # This would typically query a database
-    # Placeholder implementation
+    """Authenticate user with credentials.
 
-    if username == "test@student.com" and password == "test123":
-        permission_manager = PermissionManager()
-        return AuthUser(
-            user_id=12345,
-            username=username,
-            email=username,
-            role=UserRole.STUDENT,
-            permissions=permission_manager.get_user_permissions(UserRole.STUDENT),
-            is_active=True,
-            is_verified=True,
-        )
-
+    NOTE: This function requires proper database integration.
+    Use UnifiedAuthService.authenticate() for production authentication.
+    """
+    # SECURITY: Hardcoded test credentials removed
+    # Must use proper database authentication via UnifiedAuthService
     return None
 
 

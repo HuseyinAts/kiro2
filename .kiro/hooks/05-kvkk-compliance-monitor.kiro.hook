@@ -2,8 +2,15 @@
   "enabled": true,
   "name": "KVKK Compliance Monitor",
   "description": "REQ-48: KVKK (GDPR Turkish equivalent) compliance validation - Personal data protection, consent management, audit logging",
-  "version": "1.0",
+  "version": "1.1",
   "priority": "critical",
+  "model": "claude-opus-4.5",
+  "exitCodes": {
+    "blocking": [2],
+    "warning": [1],
+    "success": [0]
+  },
+  "timeout": 30000,
 
   "when": {
     "type": "fileEdited",

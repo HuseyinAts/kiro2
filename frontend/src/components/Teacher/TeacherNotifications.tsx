@@ -1,22 +1,24 @@
-import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Badge } from '@/components/ui/badge';
-import { 
-  Bell, 
-  Send, 
+import {
+  Bell,
+  Send,
   Plus,
   Check,
   AlertCircle,
   Info,
   CheckCircle,
-  X
+  X,
 } from 'lucide-react';
+import * as React from 'react';
+import {  useState, useEffect  } from 'react';
+
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Textarea } from '@/components/ui/textarea';
 
 interface Notification {
   bildirim_id: string;
@@ -47,7 +49,7 @@ const TeacherNotifications: React.FC = () => {
   const [newNotification, setNewNotification] = useState<NewNotification>({
     baslik: '',
     mesaj: '',
-    tip: 'bilgi'
+    tip: 'bilgi',
   });
   const [sendingNotification, setSendingNotification] = useState(false);
 
@@ -59,12 +61,12 @@ const TeacherNotifications: React.FC = () => {
     try {
       setLoading(true);
       const token = localStorage.getItem('token');
-      
+
       const response = await fetch('/api/v1/ogretmen/bildirimler?limit=50', {
         headers: {
           'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
+          'Content-Type': 'application/json',
+        },
       });
 
       if (!response.ok) {
@@ -94,14 +96,14 @@ const TeacherNotifications: React.FC = () => {
       setSendingNotification(true);
       setError(null);
       const token = localStorage.getItem('token');
-      
+
       const response = await fetch('/api/v1/ogretmen/bildirim', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
         },
-        body: JSON.stringify(newNotification)
+        body: JSON.stringify(newNotification),
       });
 
       if (!response.ok) {
@@ -114,10 +116,10 @@ const TeacherNotifications: React.FC = () => {
         setNewNotification({
           baslik: '',
           mesaj: '',
-          tip: 'bilgi'
+          tip: 'bilgi',
         });
         setShowCreateForm(false);
-        
+
         // Bildirimleri yenile
         await fetchNotifications();
       } else {
@@ -133,28 +135,28 @@ const TeacherNotifications: React.FC = () => {
   const markAsRead = async (notificationId: string) => {
     try {
       const token = localStorage.getItem('token');
-      
+
       const response = await fetch(`/api/v1/ogretmen/bildirim/${notificationId}/okundu`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
+          'Content-Type': 'application/json',
+        },
       });
 
       if (response.ok) {
         // Bildirimi okundu olarak işaretle
         setNotifications(prev => {
-          if (!prev) return prev;
-          
+          if (!prev) {return prev;}
+
           return {
             ...prev,
             bildirimler: prev.bildirimler.map(bildirim =>
               bildirim.bildirim_id === notificationId
                 ? { ...bildirim, okundu: true }
-                : bildirim
+                : bildirim,
             ),
-            okunmamis: Math.max(0, prev.okunmamis - 1)
+            okunmamis: Math.max(0, prev.okunmamis - 1),
           };
         });
       }
@@ -251,7 +253,7 @@ const TeacherNotifications: React.FC = () => {
                 value={newNotification.baslik}
                 onChange={(e) => setNewNotification(prev => ({
                   ...prev,
-                  baslik: e.target.value
+                  baslik: e.target.value,
                 }))}
               />
             </div>
@@ -262,7 +264,7 @@ const TeacherNotifications: React.FC = () => {
                 value={newNotification.tip}
                 onValueChange={(value) => setNewNotification(prev => ({
                   ...prev,
-                  tip: value
+                  tip: value,
                 }))}
               >
                 <SelectTrigger>
@@ -286,20 +288,20 @@ const TeacherNotifications: React.FC = () => {
                 value={newNotification.mesaj}
                 onChange={(e) => setNewNotification(prev => ({
                   ...prev,
-                  mesaj: e.target.value
+                  mesaj: e.target.value,
                 }))}
               />
             </div>
 
             <div className="flex space-x-2">
-              <Button 
+              <Button
                 onClick={sendNotification}
                 disabled={sendingNotification}
               >
                 {sendingNotification ? 'Gönderiliyor...' : 'Bildirim Gönder'}
               </Button>
-              <Button 
-                variant="outline" 
+              <Button
+                variant="outline"
                 onClick={() => setShowCreateForm(false)}
               >
                 İptal
@@ -359,14 +361,14 @@ const TeacherNotifications: React.FC = () => {
           <div className="space-y-4">
             {notifications && notifications.bildirimler.length > 0 ? (
               notifications.bildirimler.map((bildirim) => (
-                <div 
+                <div
                   key={bildirim.bildirim_id}
                   className={`p-4 border rounded-lg ${getNotificationColor(bildirim.tip)} ${!bildirim.okundu ? 'border-l-4 border-l-blue-500' : ''}`}
                 >
                   <div className="flex items-start justify-between">
                     <div className="flex items-start space-x-3 flex-1">
                       {getNotificationIcon(bildirim.tip)}
-                      
+
                       <div className="flex-1">
                         <div className="flex items-center space-x-2 mb-1">
                           <h3 className={`font-semibold ${!bildirim.okundu ? 'text-gray-900' : 'text-gray-700'}`}>
@@ -379,11 +381,11 @@ const TeacherNotifications: React.FC = () => {
                             <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
                           )}
                         </div>
-                        
+
                         <p className={`text-sm ${!bildirim.okundu ? 'text-gray-800' : 'text-gray-600'}`}>
                           {bildirim.mesaj}
                         </p>
-                        
+
                         <p className="text-xs text-gray-500 mt-2">
                           {new Date(bildirim.olusturma_tarihi).toLocaleString('tr-TR')}
                         </p>

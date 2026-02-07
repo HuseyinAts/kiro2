@@ -3,20 +3,21 @@
  * Optimized card component with accessibility and performance features
  */
 
-import React, { memo, forwardRef } from 'react'
-import { 
-  Card as MuiCard, 
-  CardContent, 
-  CardHeader, 
+import { MoreVert as MoreIcon } from '@mui/icons-material';
+import {
+  Card as MuiCard,
+  CardContent,
+  CardHeader,
   CardActions,
   Typography,
   Box,
   Skeleton,
   Fade,
   IconButton,
-  useTheme
-} from '@mui/material'
-import { MoreVert as MoreIcon } from '@mui/icons-material'
+  useTheme,
+} from '@mui/material';
+import * as React from 'react';
+import {  memo, forwardRef  } from 'react';
 
 interface ModernCardProps {
   title?: string
@@ -39,9 +40,9 @@ const CardSkeleton = memo(({ size = 'medium' }: { size?: 'small' | 'medium' | 'l
   const heights = {
     small: 120,
     medium: 200,
-    large: 300
-  }
-  
+    large: 300,
+  };
+
   return (
     <MuiCard elevation={1}>
       <CardHeader
@@ -52,10 +53,10 @@ const CardSkeleton = memo(({ size = 'medium' }: { size?: 'small' | 'medium' | 'l
         <Skeleton variant="rectangular" height={heights[size]} />
       </CardContent>
     </MuiCard>
-  )
-})
+  );
+});
 
-CardSkeleton.displayName = 'CardSkeleton'
+CardSkeleton.displayName = 'CardSkeleton';
 
 export const ModernCard = memo(forwardRef<HTMLDivElement, ModernCardProps>(({
   title,
@@ -73,44 +74,44 @@ export const ModernCard = memo(forwardRef<HTMLDivElement, ModernCardProps>(({
   'data-testid': testId,
   ...props
 }, ref) => {
-  const theme = useTheme()
-  
+  const theme = useTheme();
+
   // Size configurations
   const sizeConfig = {
     small: { p: 2, headerTypography: 'h6' },
     medium: { p: 3, headerTypography: 'h5' },
-    large: { p: 4, headerTypography: 'h4' }
-  } as const
-  
-  const config = sizeConfig[size]
-  
+    large: { p: 4, headerTypography: 'h4' },
+  } as const;
+
+  const config = sizeConfig[size];
+
   // Variant styles
   const variantStyles = {
     default: {
       elevation,
-      sx: {}
+      sx: {},
     },
     outlined: {
       elevation: 0,
       sx: {
         border: 1,
-        borderColor: 'divider'
-      }
+        borderColor: 'divider',
+      },
     },
     elevated: {
       elevation: 4,
       sx: {
-        boxShadow: theme.shadows[8]
-      }
-    }
-  }
-  
-  const cardStyles = variantStyles[variant]
-  
+        boxShadow: theme.shadows[8],
+      },
+    },
+  };
+
+  const cardStyles = variantStyles[variant];
+
   if (loading) {
-    return <CardSkeleton size={size} />
+    return <CardSkeleton size={size} />;
   }
-  
+
   return (
     <Fade in timeout={300}>
       <MuiCard
@@ -127,18 +128,18 @@ export const ModernCard = memo(forwardRef<HTMLDivElement, ModernCardProps>(({
           transition: 'transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out',
           '&:hover': onClick ? {
             transform: 'translateY(-2px)',
-            boxShadow: theme.shadows[4]
+            boxShadow: theme.shadows[4],
           } : {},
           '&:focus-visible': {
             outline: `2px solid ${theme.palette.primary.main}`,
-            outlineOffset: 2
+            outlineOffset: 2,
           },
-          ...cardStyles.sx
+          ...cardStyles.sx,
         }}
         onKeyDown={(e) => {
           if (onClick && (e.key === 'Enter' || e.key === ' ')) {
-            e.preventDefault()
-            onClick()
+            e.preventDefault();
+            onClick();
           }
         }}
         {...props}
@@ -146,7 +147,7 @@ export const ModernCard = memo(forwardRef<HTMLDivElement, ModernCardProps>(({
         {(title || subtitle || onMenuClick) && (
           <CardHeader
             title={title && (
-              <Typography 
+              <Typography
                 variant={config.headerTypography as any}
                 component="h2"
                 sx={{ fontWeight: 600 }}
@@ -155,8 +156,8 @@ export const ModernCard = memo(forwardRef<HTMLDivElement, ModernCardProps>(({
               </Typography>
             )}
             subtitle={subtitle && (
-              <Typography 
-                variant="body2" 
+              <Typography
+                variant="body2"
                 color="text.secondary"
                 sx={{ mt: 0.5 }}
               >
@@ -164,11 +165,11 @@ export const ModernCard = memo(forwardRef<HTMLDivElement, ModernCardProps>(({
               </Typography>
             )}
             action={onMenuClick && (
-              <IconButton 
+              <IconButton
                 aria-label="diğer seçenekler"
                 onClick={(e) => {
-                  e.stopPropagation()
-                  onMenuClick()
+                  e.stopPropagation();
+                  onMenuClick();
                 }}
                 size="small"
               >
@@ -178,13 +179,13 @@ export const ModernCard = memo(forwardRef<HTMLDivElement, ModernCardProps>(({
             sx={{ pb: title || subtitle ? 2 : 0 }}
           />
         )}
-        
+
         <CardContent sx={{ p: config.p, '&:last-child': { pb: config.p } }}>
           <Box>
             {children}
           </Box>
         </CardContent>
-        
+
         {actions && (
           <CardActions sx={{ px: config.p, pb: config.p }}>
             {actions}
@@ -192,9 +193,9 @@ export const ModernCard = memo(forwardRef<HTMLDivElement, ModernCardProps>(({
         )}
       </MuiCard>
     </Fade>
-  )
-}))
+  );
+}));
 
-ModernCard.displayName = 'ModernCard'
+ModernCard.displayName = 'ModernCard';
 
-export default ModernCard
+export default ModernCard;

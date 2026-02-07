@@ -5,13 +5,13 @@ TASK 48.5: Audit log viewer and export
 Admin-only endpoints for viewing and exporting audit logs.
 """
 from fastapi import APIRouter, Depends, HTTPException, status, Query
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 from typing import Optional, List
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from sqlalchemy.orm import Session
 from sqlalchemy import func, and_
 
-from core.audit_logging import AuditLog, AuditEventType, AuditSeverity
+from core.audit_logging import AuditLog, AuditEventType
 from core.database import get_db
 from core.dependencies import get_current_user
 from models.database import User
@@ -37,8 +37,7 @@ class AuditLogResponse(BaseModel):
     success: str
     error_message: Optional[str]
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class AuditLogListResponse(BaseModel):
@@ -149,7 +148,7 @@ async def get_audit_stats(
     Query Parameters:
         - days: Number of days to analyze (default: 7, max: 90)
     """
-    start_date = datetime.utcnow() - timedelta(days=days)
+    start_date = datetime.now(timezone.utc) - timedelta(days=days)
 
     # Total events
     total_events = (
@@ -194,7 +193,7 @@ async def get_audit_stats(
         db.query(func.count(AuditLog.id))
         .filter(
             and_(
-                AuditLog.timestamp >= datetime.utcnow() - timedelta(hours=24),
+                AuditLog.timestamp >= datetime.now(timezone.utc) - timedelta(hours=24),
                 AuditLog.event_type == AuditEventType.LOGIN_FAILURE.value,
             )
         )
@@ -206,7 +205,7 @@ async def get_audit_stats(
         db.query(func.count(AuditLog.id))
         .filter(
             and_(
-                AuditLog.timestamp >= datetime.utcnow() - timedelta(hours=24),
+                AuditLog.timestamp >= datetime.now(timezone.utc) - timedelta(hours=24),
                 AuditLog.event_type.like("security_%"),
             )
         )
@@ -225,7 +224,7 @@ async def get_audit_stats(
 
 @router.get("/export")
 async def export_audit_logs(
-    format: str = Query("csv", regex="^(csv|json)$"),
+    format: str = Query("csv", pattern="^(csv|json)$"),
     event_type: Optional[str] = None,
     start_date: Optional[datetime] = None,
     end_date: Optional[datetime] = None,
@@ -309,7 +308,7 @@ async def export_audit_logs(
             iter([output.getvalue()]),
             media_type="text/csv",
             headers={
-                "Content-Disposition": f"attachment; filename=audit_logs_{datetime.utcnow().strftime('%Y%m%d_%H%M%S')}.csv"
+                "Content-Disposition": f"attachment; filename=audit_logs_{datetime.now(timezone.utc).strftime('%Y%m%d_%H%M%S')}.csv"
             },
         )
 
@@ -339,7 +338,7 @@ async def export_audit_logs(
             iter([json.dumps(data, indent=2)]),
             media_type="application/json",
             headers={
-                "Content-Disposition": f"attachment; filename=audit_logs_{datetime.utcnow().strftime('%Y%m%d_%H%M%S')}.json"
+                "Content-Disposition": f"attachment; filename=audit_logs_{datetime.now(timezone.utc).strftime('%Y%m%d_%H%M%S')}.json"
             },
         )
 
@@ -362,7 +361,7 @@ async def cleanup_old_logs(
     Returns:
         Number of deleted records
     """
-    cutoff_date = datetime.utcnow() - timedelta(days=days)
+    cutoff_date = datetime.now(timezone.utc) - timedelta(days=days)
 
     deleted_count = db.query(AuditLog).filter(AuditLog.timestamp < cutoff_date).delete()
 

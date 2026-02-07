@@ -4,7 +4,6 @@ Uses real ÖSYM questions as examples for AI generation
 """
 import asyncpg
 import json
-import random
 from typing import List, Dict, Optional
 import anthropic
 import openai

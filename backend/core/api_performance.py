@@ -2,7 +2,7 @@
 API Performance Optimization
 Middleware and utilities for optimizing API response times
 """
-from fastapi import Request, Response
+from fastapi import Response
 from fastapi.responses import JSONResponse
 import time
 from typing import Callable, Dict, List

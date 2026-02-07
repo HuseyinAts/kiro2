@@ -1,0 +1,62 @@
+======================================================================
+  BÜYÜK CEVAP KUTULARI ANALİZİ (>20K px²)
+======================================================================
+
+EasyOCR yükleniyor...
+Hazır!
+
+Bulunan büyük kutu: 311
+
+----------------------------------------------------------------------
+EN BÜYÜK 10 KUTUNUN OCR ANALİZİ
+----------------------------------------------------------------------
+
+[1] Altyapi Tyt Kartlarla Kimya
+    Sayfa: sayfa_0054
+    Boyut: 451x227 (102,377 px²)
+    Güven: 0.31
+
+[2] 2022-2023-Apotemi-Fonksiyonlar
+    Sayfa: sayfa_0001
+    Boyut: 535x114 (60,990 px²)
+    Güven: 0.77
+
+[3] Altyapi Tyt Kartlarla Kimya
+    Sayfa: sayfa_0054
+    Boyut: 444x133 (59,052 px²)
+    Güven: 0.41
+
+[4] 2021-2022-Deneme Deposu-Ucgenler Denemel
+    Sayfa: sayfa_0079
+    Boyut: 368x126 (46,368 px²)
+    Güven: 0.32
+
+[5] Aktif Ogrenme Tyt Dilbilgisi Soru Bankas
+    Sayfa: sayfa_0079
+    Boyut: 647x69 (44,643 px²)
+    Güven: 0.42
+
+[6] 2021-2022-Apotemi-Trigonometri
+    Sayfa: sayfa_0001
+    Boyut: 404x108 (43,632 px²)
+    Güven: 0.69
+
+[7] Altyapi Tyt Kartlarla Tarih
+    Sayfa: sayfa_0110
+    Boyut: 432x95 (41,040 px²)
+    Güven: 0.49
+
+[8] Apotemi 2019 2020 Tyt Ayt Fizik Soru Ban
+    Sayfa: sayfa_0346
+    Boyut: 536x75 (40,200 px²)
+    Güven: 0.40
+
+[9] 345 2025 Tyt Ayt Geometri Soru Bankası 1
+    Sayfa: sayfa_0168
+    Boyut: 609x64 (38,976 px²)
+    Güven: 0.73
+
+[10] 2022-2023-Apotemi-Fonksiyonlar
+    Sayfa: sayfa_0068
+    Boyut: 474x82 (38,868 px²)
+    Güven: 0.80

@@ -1,0 +1,342 @@
+/**
+ * Öğrenci Dashboard - Devrimsel Özellikler Entegrasyonu
+ * VARK + Felder-Silverman, ZPD + Maarif, Kültürel Adaptasyon
+ */
+
+import React, { useState, useEffect } from 'react';
+import { useAuth } from '../hooks/useAuth';
+import LearningStyleProfile from '../components/Revolutionary/LearningStyleProfile';
+import ZPDMaarifDashboard from '../components/Revolutionary/ZPDMaarifDashboard';
+import CulturalAdaptationSettings from '../components/Revolutionary/CulturalAdaptationSettings';
+import { StudentQuickActions, StudentStats } from '../components/RoleSpecific/StudentComponents';
+import { HybridLearningProfile, TurkishZPDRange, CulturalContext } from '../services/revolutionaryFeaturesService';
+
+const StudentDashboard: React.FC = () => {
+  const { user } = useAuth();
+  const [activeTab, setActiveTab] = useState<'dashboard' | 'learning-style' | 'zpd-maarif' | 'cultural-settings'>('dashboard');
+  const [learningProfile, setLearningProfile] = useState<HybridLearningProfile | null>(null);
+  const [zpdRange, setZpdRange] = useState<TurkishZPDRange | null>(null);
+  const [culturalContext, setCulturalContext] = useState<CulturalContext | null>(null);
+
+  // Örnek istatistikler
+  const studentStats = {
+    totalStudyTime: 1250, // dakika
+    completedLessons: 45,
+    averageScore: 78.5,
+    currentStreak: 7
+  };
+
+  // Tab değiştirme
+  const handleTabChange = (tab: typeof activeTab) => {
+    setActiveTab(tab);
+  };
+
+  // Profil güncellendiğinde
+  const handleProfileUpdate = (profile: HybridLearningProfile) => {
+    setLearningProfile(profile);
+  };
+
+  // ZPD güncellendiğinde
+  const handleZPDUpdate = (zpd: TurkishZPDRange) => {
+    setZpdRange(zpd);
+  };
+
+  // Kültürel ayarlar güncellendiğinde
+  const handleCulturalSettingsUpdate = (settings: CulturalContext) => {
+    setCulturalContext(settings);
+  };
+
+  if (!user) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Yükleniyor...</p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      {/* Header */}
+      <div className="bg-white shadow-sm border-b border-gray-200">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="py-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <h1 className="text-2xl font-bold text-gray-900">
+                  Hoş geldin, {user.ad} {user.soyad}!
+                </h1>
+                <p className="text-sm text-gray-600">
+                  🚀 Devrimsel özelliklerle desteklenen kişiselleştirilmiş öğrenme deneyimin
+                </p>
+              </div>
+              <div className="flex items-center space-x-4">
+                {learningProfile && (
+                  <div className="text-right">
+                    <div className="text-sm text-gray-600">Öğrenme Stili</div>
+                    <div className="font-medium text-purple-600">{learningProfile.hybrid_code}</div>
+                  </div>
+                )}
+                {zpdRange && (
+                  <div className="text-right">
+                    <div className="text-sm text-gray-600">ZPD Seviyesi</div>
+                    <div className="font-medium text-blue-600">{zpdRange.optimal_challenge.toFixed(1)}</div>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Tab Navigation */}
+      <div className="bg-white border-b border-gray-200">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <nav className="-mb-px flex space-x-8">
+            <button
+              onClick={() => handleTabChange('dashboard')}
+              className={`py-4 px-1 border-b-2 font-medium text-sm ${
+                activeTab === 'dashboard'
+                  ? 'border-blue-500 text-blue-600'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+              }`}
+            >
+              Ana Sayfa
+            </button>
+            <button
+              onClick={() => handleTabChange('learning-style')}
+              className={`py-4 px-1 border-b-2 font-medium text-sm ${
+                activeTab === 'learning-style'
+                  ? 'border-blue-500 text-blue-600'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+              }`}
+            >
+              🚀 Öğrenme Stili Profili
+            </button>
+            <button
+              onClick={() => handleTabChange('zpd-maarif')}
+              className={`py-4 px-1 border-b-2 font-medium text-sm ${
+                activeTab === 'zpd-maarif'
+                  ? 'border-blue-500 text-blue-600'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+              }`}
+            >
+              🚀 ZPD + Maarif Analizi
+            </button>
+            <button
+              onClick={() => handleTabChange('cultural-settings')}
+              className={`py-4 px-1 border-b-2 font-medium text-sm ${
+                activeTab === 'cultural-settings'
+                  ? 'border-blue-500 text-blue-600'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+              }`}
+            >
+              🚀 Kültürel Adaptasyon
+            </button>
+          </nav>
+        </div>
+      </div>
+
+      {/* Content */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Ana Sayfa Tab */}
+        {activeTab === 'dashboard' && (
+          <div className="space-y-8">
+            {/* İstatistikler */}
+            <div>
+              <h2 className="text-lg font-semibold text-gray-900 mb-4">Genel İstatistikler</h2>
+              <StudentStats stats={studentStats} />
+            </div>
+
+            {/* Hızlı Eylemler */}
+            <div>
+              <h2 className="text-lg font-semibold text-gray-900 mb-4">Hızlı Eylemler</h2>
+              <StudentQuickActions />
+            </div>
+
+            {/* Devrimsel Özellikler Özeti */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              {/* Öğrenme Stili Özeti */}
+              <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                  🚀 Öğrenme Stili
+                </h3>
+                {learningProfile ? (
+                  <div>
+                    <div className="text-center mb-4">
+                      <div className="text-2xl font-bold text-purple-600">{learningProfile.hybrid_code}</div>
+                      <div className="text-sm text-gray-600">Hibrit Kod</div>
+                    </div>
+                    <div className="space-y-2 text-sm">
+                      <div className="flex justify-between">
+                        <span>Görsel:</span>
+                        <span className="font-medium">{(learningProfile.vark_profile.visual * 100).toFixed(0)}%</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>İşitsel:</span>
+                        <span className="font-medium">{(learningProfile.vark_profile.auditory * 100).toFixed(0)}%</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>Güven:</span>
+                        <span className="font-medium">{learningProfile.confidence.score.toFixed(1)}%</span>
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => handleTabChange('learning-style')}
+                      className="mt-4 w-full px-3 py-2 bg-purple-600 text-white text-sm rounded hover:bg-purple-700 transition-colors"
+                    >
+                      Detayları Gör
+                    </button>
+                  </div>
+                ) : (
+                  <div className="text-center text-gray-500">
+                    <p className="mb-4">Öğrenme stili analizi henüz yapılmadı</p>
+                    <button
+                      onClick={() => handleTabChange('learning-style')}
+                      className="px-3 py-2 bg-purple-600 text-white text-sm rounded hover:bg-purple-700 transition-colors"
+                    >
+                      Analizi Başlat
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              {/* ZPD Özeti */}
+              <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                  🚀 ZPD Analizi
+                </h3>
+                {zpdRange ? (
+                  <div>
+                    <div className="text-center mb-4">
+                      <div className="text-2xl font-bold text-blue-600">{zpdRange.optimal_challenge.toFixed(1)}</div>
+                      <div className="text-sm text-gray-600">Optimal Zorluk</div>
+                    </div>
+                    <div className="space-y-2 text-sm">
+                      <div className="flex justify-between">
+                        <span>Mevcut Seviye:</span>
+                        <span className="font-medium">{zpdRange.current_level.toFixed(1)}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>ZPD Aralığı:</span>
+                        <span className="font-medium">{(zpdRange.upper_bound - zpdRange.lower_bound).toFixed(1)}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>Maarif Uyumu:</span>
+                        <span className="font-medium">{(zpdRange.maarif_alignment.overall_alignment * 100).toFixed(0)}%</span>
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => handleTabChange('zpd-maarif')}
+                      className="mt-4 w-full px-3 py-2 bg-blue-600 text-white text-sm rounded hover:bg-blue-700 transition-colors"
+                    >
+                      Detayları Gör
+                    </button>
+                  </div>
+                ) : (
+                  <div className="text-center text-gray-500">
+                    <p className="mb-4">ZPD analizi henüz yapılmadı</p>
+                    <button
+                      onClick={() => handleTabChange('zpd-maarif')}
+                      className="px-3 py-2 bg-blue-600 text-white text-sm rounded hover:bg-blue-700 transition-colors"
+                    >
+                      Analizi Başlat
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              {/* Kültürel Bağlam Özeti */}
+              <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                  🚀 Kültürel Bağlam
+                </h3>
+                {culturalContext ? (
+                  <div>
+                    <div className="space-y-2 text-sm">
+                      <div className="flex justify-between">
+                        <span>Grup Tercihi:</span>
+                        <span className="font-medium">{(culturalContext.group_learning_preference * 100).toFixed(0)}%</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>Öğretmen Saygısı:</span>
+                        <span className="font-medium">{(culturalContext.teacher_respect_level * 100).toFixed(0)}%</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>Aile Katılımı:</span>
+                        <span className="font-medium">{(culturalContext.family_involvement * 100).toFixed(0)}%</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>Sosyal Uyum:</span>
+                        <span className="font-medium">{(culturalContext.social_harmony * 100).toFixed(0)}%</span>
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => handleTabChange('cultural-settings')}
+                      className="mt-4 w-full px-3 py-2 bg-green-600 text-white text-sm rounded hover:bg-green-700 transition-colors"
+                    >
+                      Ayarları Düzenle
+                    </button>
+                  </div>
+                ) : (
+                  <div className="text-center text-gray-500">
+                    <p className="mb-4">Kültürel ayarlar yapılmadı</p>
+                    <button
+                      onClick={() => handleTabChange('cultural-settings')}
+                      className="px-3 py-2 bg-green-600 text-white text-sm rounded hover:bg-green-700 transition-colors"
+                    >
+                      Ayarları Yap
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Öğrenme Stili Tab */}
+        {activeTab === 'learning-style' && (
+          <div>
+            <h2 className="text-xl font-semibold text-gray-900 mb-6">
+              🚀 VARK + Felder-Silverman Hibrit Öğrenme Stili Profili
+            </h2>
+            <LearningStyleProfile 
+              studentId={user.kullanici_id} 
+              onProfileUpdate={handleProfileUpdate}
+            />
+          </div>
+        )}
+
+        {/* ZPD + Maarif Tab */}
+        {activeTab === 'zpd-maarif' && (
+          <div>
+            <h2 className="text-xl font-semibold text-gray-900 mb-6">
+              🚀 Zone of Proximal Development + MEB Maarif Analizi
+            </h2>
+            <ZPDMaarifDashboard 
+              studentId={user.kullanici_id} 
+              onZPDUpdate={handleZPDUpdate}
+            />
+          </div>
+        )}
+
+        {/* Kültürel Adaptasyon Tab */}
+        {activeTab === 'cultural-settings' && (
+          <div>
+            <h2 className="text-xl font-semibold text-gray-900 mb-6">
+              🚀 Kültürel Adaptasyon Ayarları
+            </h2>
+            <CulturalAdaptationSettings 
+              studentId={user.kullanici_id} 
+              onSettingsUpdate={handleCulturalSettingsUpdate}
+            />
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default StudentDashboard;

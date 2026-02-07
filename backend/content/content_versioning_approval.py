@@ -1332,7 +1332,7 @@ if __name__ == "__main__":
             version1.version_id, version2.version_id
         )
 
-        print(f"Version comparison:")
+        print("Version comparison:")
         print(f"  Total changes: {comparison['summary']['total_changes']}")
         print(f"  Categories: {comparison['summary']['categories']}")
 

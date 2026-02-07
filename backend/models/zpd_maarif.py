@@ -16,7 +16,7 @@ from datetime import datetime
 from enum import Enum
 from typing import List, Optional
 
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, Field, field_validator, model_validator
 
 
 class MaarifDegeri(str, Enum):
@@ -199,15 +199,15 @@ class TurkZPDAraligi(BaseModel):
     hesaplama_tarihi: datetime = Field(default_factory=datetime.now)
     gecerlilik_suresi_gun: int = Field(default=7)  # 1 hafta geçerli
 
-    @field_validator("alt_sinir", "ust_sinir", "optimal_zorluk")
-    @classmethod
-    def validate_zpd_bounds(cls, v, values):
+    @model_validator(mode='after')
+    def validate_zpd_bounds(self):
         """ZPD sınırlarının mantıklı olduğunu doğrula"""
-        if "mevcut_seviye" in values:
-            mevcut = values["mevcut_seviye"]
+        mevcut = self.mevcut_seviye
+        for field_name in ['alt_sinir', 'ust_sinir', 'optimal_zorluk']:
+            v = getattr(self, field_name)
             if v < mevcut - 2 or v > mevcut + 5:
-                raise ValueError("ZPD sınırları mevcut seviyeye göre mantıksız")
-        return v
+                raise ValueError(f"{field_name}: ZPD sınırları mevcut seviyeye göre mantıksız")
+        return self
 
     def is_gecerli(self) -> bool:
         """ZPD hesaplamasının hala geçerli olup olmadığını kontrol et"""

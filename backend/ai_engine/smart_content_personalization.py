@@ -3,21 +3,15 @@ Smart Content Personalization Engine
 AI-powered content adaptation and personalization for optimal learning
 """
 
-import asyncio
 import logging
-import math
 import numpy as np
 from dataclasses import dataclass, field
-from datetime import datetime, timedelta
-from typing import Any, Dict, List, Optional, Set, Tuple, Union
+from datetime import datetime
+from typing import Any, Dict, List, Optional
 from enum import Enum
-import json
 
 from sklearn.cluster import KMeans
 from sklearn.preprocessing import StandardScaler
-from sklearn.metrics.pairwise import cosine_similarity
-from sklearn.decomposition import PCA
-import networkx as nx
 
 logger = logging.getLogger(__name__)
 

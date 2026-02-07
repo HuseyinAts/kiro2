@@ -1,12 +1,13 @@
 /**
  * EBA TV İçerik Arama Bileşeni
- * 
+ *
  * EBA TV videolarını arama ve filtreleme için gelişmiş arayüz.
  */
 
-import React, { useState, useEffect, useCallback } from 'react';
-import { Search, Filter, Grid, List, Star, Clock, BookOpen, Users } from 'lucide-react';
 import { debounce } from 'lodash';
+import { Search, Filter, Grid, List, Star, Clock, BookOpen, Users } from 'lucide-react';
+import * as React from 'react';
+import {  useState, useEffect, useCallback  } from 'react';
 
 interface EBAVideo {
   id: number;
@@ -50,7 +51,7 @@ const CATEGORIES = [
   { value: 'kimya', label: 'Kimya' },
   { value: 'biyoloji', label: 'Biyoloji' },
   { value: 'tarih', label: 'Tarih' },
-  { value: 'cografya', label: 'Coğrafya' }
+  { value: 'cografya', label: 'Coğrafya' },
 ];
 
 const GRADE_LEVELS = [
@@ -61,19 +62,19 @@ const GRADE_LEVELS = [
   { value: '9', label: '9. Sınıf' },
   { value: '10', label: '10. Sınıf' },
   { value: '11', label: '11. Sınıf' },
-  { value: '12', label: '12. Sınıf (YKS)' }
+  { value: '12', label: '12. Sınıf (YKS)' },
 ];
 
 export const EbaTVContentSearch: React.FC<EbaTVContentSearchProps> = ({
   onVideoSelect,
-  onSearchResults
+  onSearchResults,
 }) => {
   const [filters, setFilters] = useState<SearchFilters>({
     query: '',
     min_quality: 6.0,
-    accessibility_required: false
+    accessibility_required: false,
   });
-  
+
   const [searchResults, setSearchResults] = useState<EBAVideo[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
@@ -85,80 +86,80 @@ export const EbaTVContentSearch: React.FC<EbaTVContentSearchProps> = ({
   const searchVideos = async (searchFilters: SearchFilters): Promise<EBAVideo[]> => {
     // Simulated API delay
     await new Promise(resolve => setTimeout(resolve, 500));
-    
+
     // Mock data
     const mockVideos: EBAVideo[] = [
       {
         id: 1,
-        title: "8. Sınıf Matematik - Çarpanlar ve Katlar",
-        description: "Bu videoda 8. sınıf matematik dersi çarpanlar ve katlar konusunu detaylı olarak işleyeceğiz. EBOB ve EKOK kavramlarını örneklerle açıklayacağız.",
+        title: '8. Sınıf Matematik - Çarpanlar ve Katlar',
+        description: 'Bu videoda 8. sınıf matematik dersi çarpanlar ve katlar konusunu detaylı olarak işleyeceğiz. EBOB ve EKOK kavramlarını örneklerle açıklayacağız.',
         duration_minutes: 25,
-        category: "matematik",
-        grade_level: "8",
-        difficulty_level: "medium",
+        category: 'matematik',
+        grade_level: '8',
+        difficulty_level: 'medium',
         quality_score: 9.25,
-        video_url: "https://www.eba.gov.tr/video/matematik-8-sinif-carpanlar-katlar",
-        thumbnail_url: "https://via.placeholder.com/320x180?text=Matematik+Video",
-        subject_topics: ["Çarpanlar ve Katlar", "EBOB", "EKOK"],
-        accessibility_features: ["altyazi", "transkript"],
-        curriculum_alignment: { alignment_score: 0.85 }
+        video_url: 'https://www.eba.gov.tr/video/matematik-8-sinif-carpanlar-katlar',
+        thumbnail_url: 'https://via.placeholder.com/320x180?text=Matematik+Video',
+        subject_topics: ['Çarpanlar ve Katlar', 'EBOB', 'EKOK'],
+        accessibility_features: ['altyazi', 'transkript'],
+        curriculum_alignment: { alignment_score: 0.85 },
       },
       {
         id: 2,
-        title: "8. Sınıf Türkçe - Okuma Becerileri",
-        description: "Okuduğunu anlama ve çıkarım yapma becerileri konusunu işleyeceğiz.",
+        title: '8. Sınıf Türkçe - Okuma Becerileri',
+        description: 'Okuduğunu anlama ve çıkarım yapma becerileri konusunu işleyeceğiz.',
         duration_minutes: 20,
-        category: "turkce",
-        grade_level: "8",
-        difficulty_level: "medium",
+        category: 'turkce',
+        grade_level: '8',
+        difficulty_level: 'medium',
         quality_score: 8.75,
-        video_url: "https://www.eba.gov.tr/video/turkce-8-sinif-okuma-becerileri",
-        thumbnail_url: "https://via.placeholder.com/320x180?text=Türkçe+Video",
-        subject_topics: ["Okuma", "Anlama", "Çıkarım"],
-        accessibility_features: ["altyazi"],
-        curriculum_alignment: { alignment_score: 0.78 }
+        video_url: 'https://www.eba.gov.tr/video/turkce-8-sinif-okuma-becerileri',
+        thumbnail_url: 'https://via.placeholder.com/320x180?text=Türkçe+Video',
+        subject_topics: ['Okuma', 'Anlama', 'Çıkarım'],
+        accessibility_features: ['altyazi'],
+        curriculum_alignment: { alignment_score: 0.78 },
       },
       {
         id: 3,
-        title: "12. Sınıf Fizik - Elektrik ve Manyetizma",
-        description: "Elektrik ve manyetizma konusu YKS fizik hazırlık dersi. Detaylı konu anlatımı ve soru çözümleri.",
+        title: '12. Sınıf Fizik - Elektrik ve Manyetizma',
+        description: 'Elektrik ve manyetizma konusu YKS fizik hazırlık dersi. Detaylı konu anlatımı ve soru çözümleri.',
         duration_minutes: 40,
-        category: "fizik",
-        grade_level: "12",
-        difficulty_level: "hard",
+        category: 'fizik',
+        grade_level: '12',
+        difficulty_level: 'hard',
         quality_score: 9.50,
-        video_url: "https://www.eba.gov.tr/video/fizik-12-sinif-elektrik-manyetizma",
-        thumbnail_url: "https://via.placeholder.com/320x180?text=Fizik+Video",
-        subject_topics: ["Elektrik", "Manyetizma", "YKS Fizik"],
-        accessibility_features: ["altyazi", "transkript"],
-        curriculum_alignment: { alignment_score: 0.92 }
-      }
+        video_url: 'https://www.eba.gov.tr/video/fizik-12-sinif-elektrik-manyetizma',
+        thumbnail_url: 'https://via.placeholder.com/320x180?text=Fizik+Video',
+        subject_topics: ['Elektrik', 'Manyetizma', 'YKS Fizik'],
+        accessibility_features: ['altyazi', 'transkript'],
+        curriculum_alignment: { alignment_score: 0.92 },
+      },
     ];
 
     // Filter videos based on search criteria
     return mockVideos.filter(video => {
-      const matchesQuery = !searchFilters.query || 
+      const matchesQuery = !searchFilters.query ||
         video.title.toLowerCase().includes(searchFilters.query.toLowerCase()) ||
         video.description.toLowerCase().includes(searchFilters.query.toLowerCase()) ||
-        video.subject_topics.some(topic => 
-          topic.toLowerCase().includes(searchFilters.query.toLowerCase())
+        video.subject_topics.some(topic =>
+          topic.toLowerCase().includes(searchFilters.query.toLowerCase()),
         );
 
-      const matchesGrade = !searchFilters.grade_level || 
+      const matchesGrade = !searchFilters.grade_level ||
         video.grade_level === searchFilters.grade_level;
 
-      const matchesCategory = !searchFilters.category || 
+      const matchesCategory = !searchFilters.category ||
         video.category === searchFilters.category;
 
       const matchesQuality = video.quality_score >= searchFilters.min_quality;
 
-      const matchesDuration = !searchFilters.max_duration || 
+      const matchesDuration = !searchFilters.max_duration ||
         video.duration_minutes <= searchFilters.max_duration;
 
-      const matchesAccessibility = !searchFilters.accessibility_required || 
+      const matchesAccessibility = !searchFilters.accessibility_required ||
         video.accessibility_features.length > 0;
 
-      return matchesQuery && matchesGrade && matchesCategory && 
+      return matchesQuery && matchesGrade && matchesCategory &&
              matchesQuality && matchesDuration && matchesAccessibility;
     });
   };
@@ -168,11 +169,11 @@ export const EbaTVContentSearch: React.FC<EbaTVContentSearchProps> = ({
     debounce(async (searchFilters: SearchFilters) => {
       setIsLoading(true);
       const startTime = Date.now();
-      
+
       try {
         const results = await searchVideos(searchFilters);
         const endTime = Date.now();
-        
+
         setSearchResults(results);
         setSearchTime(endTime - startTime);
         onSearchResults?.(results);
@@ -183,7 +184,7 @@ export const EbaTVContentSearch: React.FC<EbaTVContentSearchProps> = ({
         setIsLoading(false);
       }
     }, 300),
-    [onSearchResults]
+    [onSearchResults],
   );
 
   // Effect for search
@@ -217,13 +218,13 @@ export const EbaTVContentSearch: React.FC<EbaTVContentSearchProps> = ({
     setFilters({
       query: '',
       min_quality: 6.0,
-      accessibility_required: false
+      accessibility_required: false,
     });
   };
 
   const getQualityColor = (score: number) => {
-    if (score >= 9) return 'text-green-600';
-    if (score >= 7) return 'text-yellow-600';
+    if (score >= 9) {return 'text-green-600';}
+    if (score >= 7) {return 'text-yellow-600';}
     return 'text-red-600';
   };
 
@@ -231,13 +232,13 @@ export const EbaTVContentSearch: React.FC<EbaTVContentSearchProps> = ({
     const colors = {
       easy: 'bg-green-100 text-green-800',
       medium: 'bg-yellow-100 text-yellow-800',
-      hard: 'bg-red-100 text-red-800'
+      hard: 'bg-red-100 text-red-800',
     };
-    
+
     const labels = {
       easy: 'Kolay',
       medium: 'Orta',
-      hard: 'Zor'
+      hard: 'Zor',
     };
 
     return (
@@ -254,7 +255,7 @@ export const EbaTVContentSearch: React.FC<EbaTVContentSearchProps> = ({
         <h2 className="text-2xl font-bold text-gray-900 mb-4">
           EBA TV İçerik Arama
         </h2>
-        
+
         {/* Search Input */}
         <div className="relative mb-4">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
@@ -277,7 +278,7 @@ export const EbaTVContentSearch: React.FC<EbaTVContentSearchProps> = ({
               <Filter size={16} />
               <span>Filtreler</span>
             </button>
-            
+
             {(filters.category || filters.grade_level || filters.min_quality > 6.0 || filters.accessibility_required) && (
               <button
                 onClick={clearFilters}
@@ -414,8 +415,8 @@ export const EbaTVContentSearch: React.FC<EbaTVContentSearchProps> = ({
 
       {/* Results Grid/List */}
       {!isLoading && searchResults.length > 0 && (
-        <div className={viewMode === 'grid' 
-          ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6' 
+        <div className={viewMode === 'grid'
+          ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'
           : 'space-y-4'
         }>
           {sortedResults.map((video) => (
@@ -459,7 +460,7 @@ export const EbaTVContentSearch: React.FC<EbaTVContentSearchProps> = ({
                       <Clock size={14} className="text-gray-400" />
                       <span className="text-gray-600">{video.duration_minutes} dk</span>
                     </div>
-                    
+
                     <div className="flex items-center space-x-1">
                       <BookOpen size={14} className="text-gray-400" />
                       <span className="text-gray-600">{video.grade_level}. Sınıf</span>

@@ -673,7 +673,7 @@ async def monitor_cultural_patterns(request: CulturalPatternAnalysisRequest):
         return ZPDResponse(
             success=True,
             data=patterns,
-            message=f"[ROCKET] DEVRİMSEL kültürel kalıp analizi tamamlandı",
+            message="[ROCKET] DEVRİMSEL kültürel kalıp analizi tamamlandı",
         )
 
     except Exception as e:

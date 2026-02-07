@@ -1,5 +1,21 @@
-import React, { useState } from 'react'
-import { useNavigate, useLocation } from 'react-router-dom'
+import {
+  Menu as MenuIcon,
+  Dashboard,
+  School,
+  People,
+  Assessment,
+  Chat,
+  Settings,
+  Logout,
+  Notifications,
+  AdminPanelSettings,
+  Class,
+  ChildCare,
+  Assignment,
+  BarChart,
+  LibraryBooks,
+  Person,
+} from '@mui/icons-material';
 import {
   AppBar,
   Toolbar,
@@ -19,29 +35,15 @@ import {
   Divider,
   useTheme,
   useMediaQuery,
-  Badge
-} from '@mui/material'
-import {
-  Menu as MenuIcon,
-  Dashboard,
-  School,
-  People,
-  Assessment,
-  Chat,
-  Settings,
-  Logout,
-  Notifications,
-  AdminPanelSettings,
-  Class,
-  ChildCare,
-  Assignment,
-  BarChart,
-  LibraryBooks,
-  Person
-} from '@mui/icons-material'
-import { useAuthStore } from '@/store/authStore'
-import { useRoleAccess } from '../../hooks/useRoleAccess.tsx'
-import { UserRole } from '../../types'
+  Badge,
+} from '@mui/material';
+import * as React from 'react';
+import {  useState  } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
+
+import { useRoleAccess } from '../../hooks/useRoleAccess.tsx';
+import { UserRole } from '../../types';
+import { useAuthStore } from '@/store/authStore';
 
 interface NavigationItem {
   label: string
@@ -57,31 +59,31 @@ const navigationItems: NavigationItem[] = [
     label: 'Dashboard',
     path: '/dashboard',
     icon: <Dashboard />,
-    roles: ['ogrenci']
+    roles: ['ogrenci'],
   },
   {
     label: 'Sınavlar',
     path: '/exams',
     icon: <Assessment />,
-    roles: ['ogrenci']
+    roles: ['ogrenci'],
   },
   {
     label: 'Öğrenme Yolu',
     path: '/learning-path',
     icon: <School />,
-    roles: ['ogrenci']
+    roles: ['ogrenci'],
   },
   {
     label: 'AI Sohbet',
     path: '/chat',
     icon: <Chat />,
-    roles: ['ogrenci']
+    roles: ['ogrenci'],
   },
   {
     label: 'Profil',
     path: '/profile',
     icon: <Person />,
-    roles: ['ogrenci']
+    roles: ['ogrenci'],
   },
 
   // Öğretmen navigasyonu
@@ -89,43 +91,43 @@ const navigationItems: NavigationItem[] = [
     label: 'Öğretmen Dashboard',
     path: '/teacher/dashboard',
     icon: <Dashboard />,
-    roles: ['ogretmen']
+    roles: ['ogretmen'],
   },
   {
     label: 'Sınıflarım',
     path: '/teacher/classes',
     icon: <Class />,
-    roles: ['ogretmen']
+    roles: ['ogretmen'],
   },
   {
     label: 'Öğrencilerim',
     path: '/teacher/students',
     icon: <People />,
-    roles: ['ogretmen']
+    roles: ['ogretmen'],
   },
   {
     label: 'Sınavlar',
     path: '/teacher/exams',
     icon: <Assessment />,
-    roles: ['ogretmen']
+    roles: ['ogretmen'],
   },
   {
     label: 'Ödevler',
     path: '/teacher/assignments',
     icon: <Assignment />,
-    roles: ['ogretmen']
+    roles: ['ogretmen'],
   },
   {
     label: 'Raporlar',
     path: '/teacher/reports',
     icon: <BarChart />,
-    roles: ['ogretmen']
+    roles: ['ogretmen'],
   },
   {
     label: 'İçerik',
     path: '/teacher/content',
     icon: <LibraryBooks />,
-    roles: ['ogretmen']
+    roles: ['ogretmen'],
   },
 
   // Veli navigasyonu
@@ -133,26 +135,26 @@ const navigationItems: NavigationItem[] = [
     label: 'Veli Dashboard',
     path: '/parent/dashboard',
     icon: <Dashboard />,
-    roles: ['veli']
+    roles: ['veli'],
   },
   {
     label: 'Çocuklarım',
     path: '/parent/children',
     icon: <ChildCare />,
-    roles: ['veli']
+    roles: ['veli'],
   },
   {
     label: 'İlerleme Raporları',
     path: '/parent/reports',
     icon: <BarChart />,
-    roles: ['veli']
+    roles: ['veli'],
   },
   {
     label: 'Bildirimler',
     path: '/parent/notifications',
     icon: <Notifications />,
     roles: ['veli'],
-    badge: 3
+    badge: 3,
   },
 
   // Admin navigasyonu
@@ -160,94 +162,94 @@ const navigationItems: NavigationItem[] = [
     label: 'Admin Dashboard',
     path: '/admin/dashboard',
     icon: <Dashboard />,
-    roles: ['admin']
+    roles: ['admin'],
   },
   {
     label: 'Admin Panel',
     path: '/admin/panel',
     icon: <AdminPanelSettings />,
-    roles: ['admin']
+    roles: ['admin'],
   },
   {
     label: 'Kullanıcı Yönetimi',
     path: '/admin/users',
     icon: <People />,
-    roles: ['admin']
+    roles: ['admin'],
   },
   {
     label: 'İçerik Yönetimi',
     path: '/admin/content',
     icon: <LibraryBooks />,
-    roles: ['admin']
+    roles: ['admin'],
   },
   {
     label: 'Sistem Ayarları',
     path: '/admin/settings',
     icon: <Settings />,
-    roles: ['admin']
-  }
-]
+    roles: ['admin'],
+  },
+];
 
 export const RoleBasedNavigation: React.FC = () => {
-  const [mobileOpen, setMobileOpen] = useState(false)
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
-  
-  const {  user, logout  } = useAuthStore()
-  const { canView } = useRoleAccess()
-  const navigate = useNavigate()
-  const location = useLocation()
-  const theme = useTheme()
-  const isMobile = useMediaQuery(theme.breakpoints.down('md'))
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+
+  const {  user, logout  } = useAuthStore();
+  const { canView } = useRoleAccess();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
 
   const handleDrawerToggle = () => {
-    setMobileOpen(!mobileOpen)
-  }
+    setMobileOpen(!mobileOpen);
+  };
 
   const handleProfileMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorEl(event.currentTarget)
-  }
+    setAnchorEl(event.currentTarget);
+  };
 
   const handleProfileMenuClose = () => {
-    setAnchorEl(null)
-  }
+    setAnchorEl(null);
+  };
 
   const handleLogout = () => {
-    logout()
-    navigate('/login')
-    handleProfileMenuClose()
-  }
+    logout();
+    navigate('/login');
+    handleProfileMenuClose();
+  };
 
   const handleNavigation = (path: string) => {
-    navigate(path)
+    navigate(path);
     if (isMobile) {
-      setMobileOpen(false)
+      setMobileOpen(false);
     }
-  }
+  };
 
   // Kullanıcının rolüne göre navigasyon öğelerini filtrele
   const filteredNavigationItems = navigationItems.filter(item =>
-    user && canView(item.roles)
-  )
+    user && canView(item.roles),
+  );
 
   const getRoleDisplayName = (role: UserRole): string => {
     switch (role) {
       case 'ogrenci':
-        return 'Öğrenci'
+        return 'Öğrenci';
       case 'ogretmen':
-        return 'Öğretmen'
+        return 'Öğretmen';
       case 'veli':
-        return 'Veli'
+        return 'Veli';
       case 'admin':
-        return 'Admin'
+        return 'Admin';
       default:
-        return 'Kullanıcı'
+        return 'Kullanıcı';
     }
-  }
+  };
 
   const getInitials = (ad?: string, soyad?: string): string => {
-    if (!ad || !soyad) return 'U'
-    return `${ad.charAt(0)}${soyad.charAt(0)}`.toUpperCase()
-  }
+    if (!ad || !soyad) {return 'U';}
+    return `${ad.charAt(0)}${soyad.charAt(0)}`.toUpperCase();
+  };
 
   const drawer = (
     <Box>
@@ -309,7 +311,7 @@ export const RoleBasedNavigation: React.FC = () => {
         </ListItem>
       </List>
     </Box>
-  )
+  );
 
   return (
     <>
@@ -350,7 +352,7 @@ export const RoleBasedNavigation: React.FC = () => {
                   }
                   onClick={() => handleNavigation(item.path)}
                   sx={{
-                    backgroundColor: location.pathname === item.path ? 'rgba(255,255,255,0.1)' : 'transparent'
+                    backgroundColor: location.pathname === item.path ? 'rgba(255,255,255,0.1)' : 'transparent',
                   }}
                 >
                   {item.label}
@@ -400,13 +402,13 @@ export const RoleBasedNavigation: React.FC = () => {
                   </Box>
                 </MenuItem>
                 <Divider />
-                <MenuItem onClick={() => { handleNavigation('/profile'); handleProfileMenuClose() }}>
+                <MenuItem onClick={() => { handleNavigation('/profile'); handleProfileMenuClose(); }}>
                   <ListItemIcon>
                     <Person fontSize="small" />
                   </ListItemIcon>
                   Profil
                 </MenuItem>
-                <MenuItem onClick={() => { handleNavigation('/settings'); handleProfileMenuClose() }}>
+                <MenuItem onClick={() => { handleNavigation('/settings'); handleProfileMenuClose(); }}>
                   <ListItemIcon>
                     <Settings fontSize="small" />
                   </ListItemIcon>
@@ -460,7 +462,7 @@ export const RoleBasedNavigation: React.FC = () => {
         </Drawer>
       )}
     </>
-  )
-}
+  );
+};
 
-export default RoleBasedNavigation
+export default RoleBasedNavigation;

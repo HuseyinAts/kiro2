@@ -20,7 +20,7 @@ from fastapi import (
     UploadFile,
     status,
 )
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -28,7 +28,6 @@ from core.database import get_db
 from core.dependencies import get_current_user
 from models.database import User
 from models.video_solution import (
-    VideoFormat,
     VideoProcessingStatus,
     VideoSolution,
 )
@@ -84,8 +83,7 @@ class VideoSolutionResponse(BaseModel):
     created_at: str
     processing_completed_at: Optional[str]
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class VideoUploadResponse(BaseModel):
@@ -455,11 +453,11 @@ async def approve_video(
             status_code=status.HTTP_404_NOT_FOUND, detail="Video bulunamadı"
         )
 
-    from datetime import datetime
+    from datetime import datetime, timezone
 
     video.is_approved = True
     video.approved_by = current_user.id
-    video.approved_at = datetime.utcnow()
+    video.approved_at = datetime.now(timezone.utc)
 
     await db.commit()
     await db.refresh(video)
@@ -551,7 +549,6 @@ async def generate_streaming_formats(
             )
 
         # Arka planda streaming formatları oluştur
-        from services.video_solution_service import VideoStreamingService
         from pathlib import Path
 
         asyncio.create_task(
@@ -820,7 +817,6 @@ async def generate_transcript(
             )
 
         # Arka planda transkript oluştur
-        from services.video_transcript_service import VideoTranscriptService
         from pathlib import Path
 
         asyncio.create_task(

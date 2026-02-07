@@ -94,7 +94,7 @@ async def demo_production_workflow():
                     f"  [OK] Wave 2B: {evaluation.overall_score:.3f} | {evaluation.decision} | Bloom L{evaluation.bloom_level}"
                 )
             else:
-                print(f"  [WARNING] Evaluation failed")
+                print("  [WARNING] Evaluation failed")
 
         except Exception as e:
             print(f"  [ERROR] Error: {str(e)}")
@@ -128,7 +128,7 @@ async def demo_production_workflow():
                     f"  [OK] Wave 2B: {evaluation.overall_score:.3f} | {evaluation.decision} | Bloom L{evaluation.bloom_level}"
                 )
             else:
-                print(f"  [WARNING] Evaluation failed")
+                print("  [WARNING] Evaluation failed")
 
         except Exception as e:
             print(f"  [ERROR] Error: {str(e)}")
@@ -182,7 +182,7 @@ async def demo_production_workflow():
     print("=" * 70)
 
     if stats.get("total_questions", 0) > 0:
-        print(f"\nKey Metrics:")
+        print("\nKey Metrics:")
         print(f"  - Generated: {stats['total_questions']} questions")
         print(f"  - Quality: {stats['average_score']:.3f} average")
         print(f"  - Approval: {stats['approval_rate']:.1f}%")
@@ -215,7 +215,7 @@ async def quick_monitoring_check():
         print("Run: py demo_production_monitoring.py")
         return
 
-    print(f"\nProduction Status:")
+    print("\nProduction Status:")
     print(f"  Total Questions: {stats['total_questions']}")
     print(f"  Average Quality: {stats['average_score']:.3f}")
     print(f"  Approval Rate: {stats['approval_rate']:.1f}%")

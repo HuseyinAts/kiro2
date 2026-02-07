@@ -1,0 +1,64 @@
+{
+  "mcpServers": {
+    "kiro2-orchestrator": {
+      "command": "python",
+      "args": [".claude/orchestration/mcp_orchestrator.py"],
+      "cwd": "C:\\Users\\husey\\kiro2",
+      "env": {
+        "PYTHONPATH": "C:\\Users\\husey\\kiro2;C:\\Users\\husey\\kiro2\\orchestrator",
+        "MCP_CACHE_BUST": "20260114_v2"
+      }
+    },
+    "gemini-mcp": {
+      "command": "python",
+      "args": ["backend/mcp_servers/gemini_mcp.py"],
+      "cwd": "C:\\Users\\husey\\kiro2",
+      "env": {
+        "PYTHONPATH": "C:\\Users\\husey\\kiro2\\backend",
+        "GOOGLE_API_KEY": "${GOOGLE_API_KEY}"
+      }
+    },
+    "gemini-reasoning-mcp": {
+      "command": "python",
+      "args": ["backend/mcp_servers/gemini_reasoning_mcp.py"],
+      "cwd": "C:\\Users\\husey\\kiro2",
+      "env": {
+        "PYTHONPATH": "C:\\Users\\husey\\kiro2\\backend",
+        "GOOGLE_API_KEY": "${GOOGLE_API_KEY}"
+      }
+    },
+    "zemberek-mcp": {
+      "command": "python",
+      "args": ["-m", "backend.mcp_servers.zemberek_nlp.server"],
+      "cwd": "C:\\Users\\husey\\kiro2",
+      "env": {
+        "PYTHONPATH": "C:\\Users\\husey\\kiro2",
+        "ZEMBEREK_HOST": "localhost",
+        "ZEMBEREK_PORT": "8081",
+        "REDIS_HOST": "localhost",
+        "REDIS_PORT": "6379"
+      }
+    },
+    "chromadb-mcp": {
+      "command": "python",
+      "args": ["backend/mcp_servers/chromadb_mcp.py"],
+      "cwd": "C:\\Users\\husey\\kiro2",
+      "env": {
+        "PYTHONPATH": "C:\\Users\\husey\\kiro2\\backend",
+        "CHROMA_PERSIST_DIR": "C:\\Users\\husey\\kiro2\\backend\\vector_db"
+      }
+    },
+    "claude-md-improvement": {
+      "command": "python",
+      "args": ["backend/mcp_servers/claude_md_improvement_mcp.py"],
+      "cwd": "C:\\Users\\husey\\kiro2",
+      "env": {
+        "PYTHONPATH": "C:\\Users\\husey\\kiro2\\backend",
+        "POSTGRES_HOST": "localhost",
+        "POSTGRES_PORT": "5434",
+        "REDIS_HOST": "localhost",
+        "REDIS_PORT": "6379"
+      }
+    }
+  }
+}

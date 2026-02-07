@@ -40,7 +40,7 @@ export interface CircuitBreakerOptions {
  */
 export async function retryWithBackoff<T>(
   fn: () => Promise<T>,
-  options: RetryOptions = {}
+  options: RetryOptions = {},
 ): Promise<T> {
   const {
     maxAttempts = 3,
@@ -146,7 +146,7 @@ export class CircuitBreaker {
         throw new Error(
           `Circuit breaker is OPEN. Service unavailable. Retry after ${
             Math.ceil((this.nextAttempt - Date.now()) / 1000)
-          }s`
+          }s`,
         );
       }
       // Transition to HALF_OPEN to test if service recovered
@@ -250,7 +250,7 @@ export function isRetryableError(error: Error): boolean {
 export async function retryWithCircuitBreaker<T>(
   fn: () => Promise<T>,
   retryOptions: RetryOptions = {},
-  circuitOptions: CircuitBreakerOptions = {}
+  circuitOptions: CircuitBreakerOptions = {},
 ): Promise<T> {
   const breaker = new CircuitBreaker(circuitOptions);
 
@@ -267,7 +267,7 @@ export async function retryWithCircuitBreaker<T>(
           ? retryOptions.shouldRetry(error)
           : isRetryableError(error);
       },
-    }
+    },
   );
 }
 

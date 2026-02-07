@@ -1,0 +1,595 @@
+import React, { useState } from 'react'
+import {
+  Container,
+  Typography,
+  Box,
+  Paper,
+  Grid,
+  Card,
+  CardContent,
+  CardActions,
+  Button,
+  Switch,
+  FormControlLabel,
+  Divider,
+  Alert,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+  ListItemSecondaryAction,
+  Chip
+} from '@mui/material'
+import {
+  Settings,
+  Notifications,
+  Security,
+  Palette,
+  Language,
+  Storage,
+  Backup,
+  Download,
+  Delete,
+  Info
+} from '@mui/icons-material'
+import { useAuth } from '../hooks/useAuth'
+import { RoleBasedComponent } from '../components/Common/RoleBasedComponent'
+
+export const SettingsPage: React.FC = () => {
+  const { user } = useAuth()
+  
+  const [settings, setSettings] = useState({
+    // Genel Ayarlar
+    darkMode: false,
+    language: 'tr',
+    autoSave: true,
+    
+    // Bildirim Ayarları
+    emailNotifications: true,
+    pushNotifications: true,
+    soundNotifications: false,
+    weeklyReports: true,
+    performanceAlerts: true,
+    
+    // Gizlilik Ayarları
+    profileVisibility: 'private',
+    shareProgress: false,
+    analyticsOptIn: true,
+    
+    // Performans Ayarları
+    autoSync: true,
+    offlineMode: false,
+    dataCompression: true
+  })
+
+  const handleSettingChange = (setting: string) => (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSettings(prev => ({
+      ...prev,
+      [setting]: event.target.checked
+    }))
+  }
+
+  const handleExportData = async () => {
+    try {
+      // KVKK/GDPR compliance - Kullanıcı verilerini dışa aktar
+      const response = await fetch('/api/v1/user/export-data', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        }
+      })
+
+      if (!response.ok) {
+        throw new Error(`API hatası: ${response.status}`)
+      }
+
+      // Download the exported data as JSON file
+      const blob = await response.blob()
+      const url = window.URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `kiro_verilerim_${new Date().toISOString().split('T')[0]}.json`
+      document.body.appendChild(a)
+      a.click()
+      window.URL.revokeObjectURL(url)
+      document.body.removeChild(a)
+
+      alert('Verileriniz başarıyla dışa aktarıldı')
+
+    } catch (error: any) {
+      console.error('Veri dışa aktarma hatası:', error)
+      alert('Veri dışa aktarılırken hata oluştu: ' + error.message)
+    }
+  }
+
+  const handleClearCache = async () => {
+    try {
+      // Clear browser cache
+      localStorage.removeItem('api_cache')
+      sessionStorage.clear()
+
+      // Backend cache temizleme API çağrısı
+      const response = await fetch('/api/v1/user/clear-cache', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        }
+      })
+
+      if (!response.ok) {
+        throw new Error(`API hatası: ${response.status}`)
+      }
+
+      alert('Önbellek başarıyla temizlendi')
+
+    } catch (error: any) {
+      console.error('Önbellek temizleme hatası:', error)
+      // Browser cache temizlendi ama backend başarısız
+      alert('Tarayıcı önbelleği temizlendi')
+    }
+  }
+
+  const handleDeleteAccount = async () => {
+    if (!window.confirm('Hesabınızı silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.')) {
+      return
+    }
+
+    if (!window.confirm('SON UYARI: Tüm verileriniz kalıcı olarak silinecektir. Devam etmek istiyor musunuz?')) {
+      return
+    }
+
+    try {
+      // KVKK/GDPR compliance - Hesap silme (Right to be forgotten)
+      const response = await fetch('/api/v1/user/delete-account', {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        }
+      })
+
+      if (!response.ok) {
+        throw new Error(`API hatası: ${response.status}`)
+      }
+
+      const apiResult = await response.json()
+
+      if (!apiResult.success) {
+        throw new Error(apiResult.message || 'Hesap silinemedi')
+      }
+
+      // Clear local data and redirect to login
+      localStorage.clear()
+      sessionStorage.clear()
+
+      alert('Hesabınız başarıyla silindi. Giriş sayfasına yönlendiriliyorsunuz.')
+
+      // Redirect to login page
+      window.location.href = '/login'
+
+    } catch (error: any) {
+      console.error('Hesap silme hatası:', error)
+      alert('Hesap silinirken hata oluştu: ' + error.message)
+    }
+  }
+
+  return (
+    <Container maxWidth="lg" sx={{ mt: 2, mb: 4 }}>
+      {/* Sayfa Başlığı */}
+      <Box sx={{ mb: 4 }}>
+        <Typography variant="h4" component="h1" gutterBottom>
+          Ayarlar
+        </Typography>
+        <Typography variant="body1" color="text.secondary">
+          Uygulama ayarlarınızı ve tercihlerinizi yönetin
+        </Typography>
+      </Box>
+
+      <Grid container spacing={3}>
+        {/* Genel Ayarlar */}
+        <Grid item xs={12} md={6}>
+          <Card>
+            <CardContent>
+              <Typography variant="h6" gutterBottom sx={{ display: 'flex', alignItems: 'center' }}>
+                <Settings sx={{ mr: 1 }} />
+                Genel Ayarlar
+              </Typography>
+              
+              <List>
+                <ListItem>
+                  <ListItemIcon>
+                    <Palette />
+                  </ListItemIcon>
+                  <ListItemText 
+                    primary="Koyu Tema" 
+                    secondary="Gözlerinizi korumak için koyu renk teması kullanın"
+                  />
+                  <ListItemSecondaryAction>
+                    <Switch
+                      checked={settings.darkMode}
+                      onChange={handleSettingChange('darkMode')}
+                      disabled
+                    />
+                  </ListItemSecondaryAction>
+                </ListItem>
+                
+                <ListItem>
+                  <ListItemIcon>
+                    <Language />
+                  </ListItemIcon>
+                  <ListItemText 
+                    primary="Dil" 
+                    secondary="Uygulama dili (şu anda sadece Türkçe)"
+                  />
+                  <ListItemSecondaryAction>
+                    <Chip label="Türkçe" size="small" />
+                  </ListItemSecondaryAction>
+                </ListItem>
+                
+                <ListItem>
+                  <ListItemIcon>
+                    <Backup />
+                  </ListItemIcon>
+                  <ListItemText 
+                    primary="Otomatik Kaydetme" 
+                    secondary="Çalışmalarınızı otomatik olarak kaydedin"
+                  />
+                  <ListItemSecondaryAction>
+                    <Switch
+                      checked={settings.autoSave}
+                      onChange={handleSettingChange('autoSave')}
+                    />
+                  </ListItemSecondaryAction>
+                </ListItem>
+              </List>
+            </CardContent>
+          </Card>
+        </Grid>
+
+        {/* Bildirim Ayarları */}
+        <Grid item xs={12} md={6}>
+          <Card>
+            <CardContent>
+              <Typography variant="h6" gutterBottom sx={{ display: 'flex', alignItems: 'center' }}>
+                <Notifications sx={{ mr: 1 }} />
+                Bildirim Ayarları
+              </Typography>
+              
+              <List>
+                <ListItem>
+                  <ListItemText 
+                    primary="E-posta Bildirimleri" 
+                    secondary="Önemli güncellemeler için e-posta alın"
+                  />
+                  <ListItemSecondaryAction>
+                    <Switch
+                      checked={settings.emailNotifications}
+                      onChange={handleSettingChange('emailNotifications')}
+                    />
+                  </ListItemSecondaryAction>
+                </ListItem>
+                
+                <ListItem>
+                  <ListItemText 
+                    primary="Push Bildirimleri" 
+                    secondary="Tarayıcı bildirimleri alın"
+                  />
+                  <ListItemSecondaryAction>
+                    <Switch
+                      checked={settings.pushNotifications}
+                      onChange={handleSettingChange('pushNotifications')}
+                    />
+                  </ListItemSecondaryAction>
+                </ListItem>
+                
+                <ListItem>
+                  <ListItemText 
+                    primary="Ses Bildirimleri" 
+                    secondary="Bildirimler için ses çalın"
+                  />
+                  <ListItemSecondaryAction>
+                    <Switch
+                      checked={settings.soundNotifications}
+                      onChange={handleSettingChange('soundNotifications')}
+                    />
+                  </ListItemSecondaryAction>
+                </ListItem>
+                
+                <ListItem>
+                  <ListItemText 
+                    primary="Haftalık Raporlar" 
+                    secondary="İlerleme raporlarını e-posta ile alın"
+                  />
+                  <ListItemSecondaryAction>
+                    <Switch
+                      checked={settings.weeklyReports}
+                      onChange={handleSettingChange('weeklyReports')}
+                    />
+                  </ListItemSecondaryAction>
+                </ListItem>
+              </List>
+            </CardContent>
+          </Card>
+        </Grid>
+
+        {/* Gizlilik ve Güvenlik */}
+        <Grid item xs={12} md={6}>
+          <Card>
+            <CardContent>
+              <Typography variant="h6" gutterBottom sx={{ display: 'flex', alignItems: 'center' }}>
+                <Security sx={{ mr: 1 }} />
+                Gizlilik ve Güvenlik
+              </Typography>
+              
+              <List>
+                <ListItem>
+                  <ListItemText 
+                    primary="Profil Görünürlüğü" 
+                    secondary="Profilinizin diğer kullanıcılara görünürlüğü"
+                  />
+                  <ListItemSecondaryAction>
+                    <Chip label="Özel" size="small" color="primary" />
+                  </ListItemSecondaryAction>
+                </ListItem>
+                
+                <ListItem>
+                  <ListItemText 
+                    primary="İlerleme Paylaşımı" 
+                    secondary="İlerlemenizi diğer kullanıcılarla paylaşın"
+                  />
+                  <ListItemSecondaryAction>
+                    <Switch
+                      checked={settings.shareProgress}
+                      onChange={handleSettingChange('shareProgress')}
+                    />
+                  </ListItemSecondaryAction>
+                </ListItem>
+                
+                <ListItem>
+                  <ListItemText 
+                    primary="Analitik Verileri" 
+                    secondary="Uygulamayı geliştirmek için anonim veri paylaşın"
+                  />
+                  <ListItemSecondaryAction>
+                    <Switch
+                      checked={settings.analyticsOptIn}
+                      onChange={handleSettingChange('analyticsOptIn')}
+                    />
+                  </ListItemSecondaryAction>
+                </ListItem>
+              </List>
+            </CardContent>
+          </Card>
+        </Grid>
+
+        {/* Performans Ayarları */}
+        <Grid item xs={12} md={6}>
+          <Card>
+            <CardContent>
+              <Typography variant="h6" gutterBottom sx={{ display: 'flex', alignItems: 'center' }}>
+                <Storage sx={{ mr: 1 }} />
+                Performans Ayarları
+              </Typography>
+              
+              <List>
+                <ListItem>
+                  <ListItemText 
+                    primary="Otomatik Senkronizasyon" 
+                    secondary="Verilerinizi otomatik olarak senkronize edin"
+                  />
+                  <ListItemSecondaryAction>
+                    <Switch
+                      checked={settings.autoSync}
+                      onChange={handleSettingChange('autoSync')}
+                    />
+                  </ListItemSecondaryAction>
+                </ListItem>
+                
+                <ListItem>
+                  <ListItemText 
+                    primary="Çevrimdışı Mod" 
+                    secondary="İnternet bağlantısı olmadan çalışın"
+                  />
+                  <ListItemSecondaryAction>
+                    <Switch
+                      checked={settings.offlineMode}
+                      onChange={handleSettingChange('offlineMode')}
+                      disabled
+                    />
+                  </ListItemSecondaryAction>
+                </ListItem>
+                
+                <ListItem>
+                  <ListItemText 
+                    primary="Veri Sıkıştırma" 
+                    secondary="Daha az veri kullanımı için sıkıştırma"
+                  />
+                  <ListItemSecondaryAction>
+                    <Switch
+                      checked={settings.dataCompression}
+                      onChange={handleSettingChange('dataCompression')}
+                    />
+                  </ListItemSecondaryAction>
+                </ListItem>
+              </List>
+            </CardContent>
+          </Card>
+        </Grid>
+
+        {/* Veri Yönetimi */}
+        <Grid item xs={12}>
+          <Card>
+            <CardContent>
+              <Typography variant="h6" gutterBottom sx={{ display: 'flex', alignItems: 'center' }}>
+                <Storage sx={{ mr: 1 }} />
+                Veri Yönetimi
+              </Typography>
+              
+              <Alert severity="info" sx={{ mb: 2 }}>
+                <Typography variant="body2">
+                  Verilerinizi yönetmek ve hesabınızı kontrol etmek için aşağıdaki seçenekleri kullanabilirsiniz.
+                </Typography>
+              </Alert>
+              
+              <Grid container spacing={2}>
+                <Grid item xs={12} sm={6} md={3}>
+                  <Button
+                    variant="outlined"
+                    fullWidth
+                    startIcon={<Download />}
+                    onClick={handleExportData}
+                    sx={{ py: 2 }}
+                  >
+                    Verileri Dışa Aktar
+                  </Button>
+                </Grid>
+                
+                <Grid item xs={12} sm={6} md={3}>
+                  <Button
+                    variant="outlined"
+                    fullWidth
+                    startIcon={<Storage />}
+                    onClick={handleClearCache}
+                    sx={{ py: 2 }}
+                  >
+                    Önbelleği Temizle
+                  </Button>
+                </Grid>
+                
+                <Grid item xs={12} sm={6} md={3}>
+                  <Button
+                    variant="outlined"
+                    fullWidth
+                    startIcon={<Backup />}
+                    disabled
+                    sx={{ py: 2 }}
+                  >
+                    Yedek Oluştur
+                  </Button>
+                </Grid>
+                
+                <Grid item xs={12} sm={6} md={3}>
+                  <Button
+                    variant="outlined"
+                    color="error"
+                    fullWidth
+                    startIcon={<Delete />}
+                    onClick={handleDeleteAccount}
+                    sx={{ py: 2 }}
+                  >
+                    Hesabı Sil
+                  </Button>
+                </Grid>
+              </Grid>
+            </CardContent>
+          </Card>
+        </Grid>
+
+        {/* Admin Ayarları */}
+        <RoleBasedComponent allowedRoles={['admin']}>
+          <Grid item xs={12}>
+            <Card>
+              <CardContent>
+                <Typography variant="h6" gutterBottom color="primary">
+                  Admin Ayarları
+                </Typography>
+                
+                <Alert severity="warning" sx={{ mb: 2 }}>
+                  Bu ayarlar sadece sistem yöneticileri tarafından görülebilir ve değiştirilebilir.
+                </Alert>
+                
+                <Grid container spacing={2}>
+                  <Grid item xs={12} sm={6} md={3}>
+                    <Button
+                      variant="contained"
+                      fullWidth
+                      disabled
+                      sx={{ py: 2 }}
+                    >
+                      Sistem Bakımı
+                    </Button>
+                  </Grid>
+                  
+                  <Grid item xs={12} sm={6} md={3}>
+                    <Button
+                      variant="contained"
+                      fullWidth
+                      disabled
+                      sx={{ py: 2 }}
+                    >
+                      Log Görüntüle
+                    </Button>
+                  </Grid>
+                  
+                  <Grid item xs={12} sm={6} md={3}>
+                    <Button
+                      variant="contained"
+                      fullWidth
+                      disabled
+                      sx={{ py: 2 }}
+                    >
+                      Sistem İstatistikleri
+                    </Button>
+                  </Grid>
+                  
+                  <Grid item xs={12} sm={6} md={3}>
+                    <Button
+                      variant="contained"
+                      fullWidth
+                      disabled
+                      sx={{ py: 2 }}
+                    >
+                      Güvenlik Ayarları
+                    </Button>
+                  </Grid>
+                </Grid>
+              </CardContent>
+            </Card>
+          </Grid>
+        </RoleBasedComponent>
+
+        {/* Uygulama Bilgileri */}
+        <Grid item xs={12}>
+          <Card>
+            <CardContent>
+              <Typography variant="h6" gutterBottom sx={{ display: 'flex', alignItems: 'center' }}>
+                <Info sx={{ mr: 1 }} />
+                Uygulama Bilgileri
+              </Typography>
+              
+              <Grid container spacing={2}>
+                <Grid item xs={12} sm={6}>
+                  <Typography variant="body2" color="text.secondary">
+                    Sürüm: 1.0.0
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    Son Güncelleme: 15 Ocak 2024
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    Geliştirici: EğitimEylemci Ekibi
+                  </Typography>
+                </Grid>
+                
+                <Grid item xs={12} sm={6}>
+                  <Typography variant="body2" color="text.secondary">
+                    Destek: destek@egitimeylemci.com
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    Gizlilik Politikası | Kullanım Şartları
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    © 2024 EğitimEylemci. Tüm hakları saklıdır.
+                  </Typography>
+                </Grid>
+              </Grid>
+            </CardContent>
+          </Card>
+        </Grid>
+      </Grid>
+    </Container>
+  )
+}
+
+export default SettingsPage

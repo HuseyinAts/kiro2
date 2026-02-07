@@ -369,7 +369,7 @@ class VideoQualityValidator:
                         logger.error(f"YouTube API error 403: {error_reason}")
                         raise Exception(f"YouTube API access denied: {error_reason}")
                 elif response.status == 404:
-                    logger.warning(f"Resource not found (404)")
+                    logger.warning("Resource not found (404)")
                     return None
                 elif response.status == 429:
                     # Rate limit exceeded

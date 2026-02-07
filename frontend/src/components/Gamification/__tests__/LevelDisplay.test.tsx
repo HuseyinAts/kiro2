@@ -3,14 +3,15 @@
  * Task 91: Gamification - Level & XP Testing
  */
 
-import React from 'react';
+import * as React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { LevelDisplay } from '../LevelDisplay';
 import * as useGamificationHook from '../../../hooks/useGamification';
+import { vi, Mocked } from 'vitest';
 
 vi.mock('../../../hooks/useGamification');
-const mockedUseGamification = useGamificationHook as jest.Mocked<typeof useGamificationHook>;
+const mockedUseGamification = useGamificationHook as Mocked<typeof useGamificationHook>;
 
 const mockLevelProgress = {
   current_level: 25,
@@ -49,7 +50,7 @@ describe('LevelDisplay - Rendering', () => {
       error: null,
       refresh: vi.fn(),
       getLevelLeaderboard: vi.fn(),
-      getMilestones: vi.fn(),
+      getMilestones: vi.fn().mockResolvedValue([]),
     });
 
     render(<LevelDisplay />);
@@ -63,7 +64,7 @@ describe('LevelDisplay - Rendering', () => {
       error: 'Network error',
       refresh: vi.fn(),
       getLevelLeaderboard: vi.fn(),
-      getMilestones: vi.fn(),
+      getMilestones: vi.fn().mockResolvedValue([]),
     });
 
     render(<LevelDisplay />);
@@ -78,7 +79,7 @@ describe('LevelDisplay - Rendering', () => {
       error: null,
       refresh: vi.fn(),
       getLevelLeaderboard: vi.fn(),
-      getMilestones: vi.fn(),
+      getMilestones: vi.fn().mockResolvedValue([]),
     });
 
     render(<LevelDisplay />);
@@ -341,11 +342,11 @@ describe('LevelDisplay - Milestones', () => {
 
 describe('LevelDisplay - Level Up Animation', () => {
   beforeEach(() => {
-    jest.useFakeTimers();
+    vi.useFakeTimers();
   });
 
   afterEach(() => {
-    jest.useRealTimers();
+    vi.useRealTimers();
   });
 
   it('shows level up animation when level increases', () => {
@@ -399,7 +400,7 @@ describe('LevelDisplay - Level Up Animation', () => {
     rerender(<LevelDisplay />);
     expect(screen.getByText('Seviye Atladın!')).toBeInTheDocument();
 
-    jest.advanceTimersByTime(3000);
+    vi.advanceTimersByTime(3000);
     rerender(<LevelDisplay />);
     expect(document.querySelector('.leveling-up')).not.toHaveClass('leveling-up');
   });

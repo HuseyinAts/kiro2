@@ -2732,3 +2732,550 @@ CREATE INDEX idx_users_level ON users(level DESC);
 - Liderlik tablosu sorgu performansı (< 100ms)
 - Redis cache hit rate (> %80)
 
+---
+
+## 10. Ek Sistemler Mimarisi
+
+### 10.1 Soru Bankası Yönetim Sistemi (REQ-60)
+
+**Mimari Genel Bakış:**
+```
+┌──────────────────────────────────────────────────────────────────┐
+│                    Soru Bankası Yönetim Sistemi                    │
+├──────────────────────────────────────────────────────────────────┤
+│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐               │
+│  │   Content   │  │   Quality   │  │   Import/   │               │
+│  │   Editor    │  │   Control   │  │   Export    │               │
+│  └──────┬──────┘  └──────┬──────┘  └──────┬──────┘               │
+│         │                │                │                       │
+│         └────────────────┼────────────────┘                       │
+│                          ▼                                         │
+│  ┌───────────────────────────────────────────────────────────┐   │
+│  │                  Question Repository                        │   │
+│  │  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐   │   │
+│  │  │  CRUD    │  │ Tagging  │  │ Video    │  │ Analytics │   │   │
+│  │  │ Service  │  │ Service  │  │ Solution │  │  Service  │   │   │
+│  │  └──────────┘  └──────────┘  └──────────┘  └──────────┘   │   │
+│  └───────────────────────────────────────────────────────────┘   │
+│                          │                                         │
+│         ┌────────────────┼────────────────┐                       │
+│         ▼                ▼                ▼                       │
+│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐               │
+│  │ PostgreSQL  │  │   Redis     │  │Elasticsearch│               │
+│  │  (Primary)  │  │  (Cache)    │  │  (Search)   │               │
+│  └─────────────┘  └─────────────┘  └─────────────┘               │
+└──────────────────────────────────────────────────────────────────┘
+```
+
+**Core Components:**
+```python
+# backend/services/question_bank_manager.py
+class QuestionBankManager:
+    """
+    Soru Bankası Yönetim Sistemi
+    REQ-60.1 - REQ-60.25 gereksinimlerini karşılar
+    """
+
+    async def create_question(self, question_data: QuestionCreate) -> Question:
+        """Yeni soru oluştur (REQ-60.1, REQ-60.2)"""
+        # Validation
+        await self._validate_question(question_data)
+        # Duplicate check (REQ-60.24)
+        if await self._check_duplicate(question_data.content):
+            raise DuplicateQuestionError()
+        # Create with tags
+        question = await self.repo.create(question_data)
+        # Index for search
+        await self.search_service.index(question)
+        return question
+
+    async def bulk_import(self, file: UploadFile) -> ImportResult:
+        """Toplu import (REQ-60.7)"""
+        if file.filename.endswith('.csv'):
+            return await self._import_csv(file)
+        elif file.filename.endswith('.xlsx'):
+            return await self._import_excel(file)
+        raise UnsupportedFormatError()
+
+    async def search(self, query: SearchQuery) -> List[Question]:
+        """Tam metin arama (REQ-60.13)"""
+        return await self.search_service.search(query)
+```
+
+**API Endpoints:**
+```
+# Soru CRUD
+POST   /api/v1/questions                    # Soru oluştur
+GET    /api/v1/questions                    # Soru listele (filtreleme)
+GET    /api/v1/questions/{id}               # Soru detay
+PUT    /api/v1/questions/{id}               # Soru güncelle
+DELETE /api/v1/questions/{id}               # Soru sil (soft)
+
+# Toplu İşlemler
+POST   /api/v1/questions/bulk/import        # CSV/Excel import
+GET    /api/v1/questions/bulk/export        # Export
+POST   /api/v1/questions/bulk/tags          # Toplu etiketleme
+
+# Arama ve Filtreleme
+GET    /api/v1/questions/search             # Tam metin arama
+GET    /api/v1/questions/filter             # Çoklu filtre
+GET    /api/v1/questions/stats              # İstatistikler
+
+# Video Çözümler
+POST   /api/v1/questions/{id}/solutions     # Çözüm ekle
+GET    /api/v1/questions/{id}/solutions     # Çözümleri listele
+```
+
+---
+
+### 10.2 Üniversite Tercih Danışmanlığı (REQ-61)
+
+**Mimari Genel Bakış:**
+```
+┌──────────────────────────────────────────────────────────────────┐
+│                Üniversite Tercih Danışmanlığı Sistemi              │
+├──────────────────────────────────────────────────────────────────┤
+│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐               │
+│  │   Search    │  │ Simulation  │  │  Analytics  │               │
+│  │   Engine    │  │   Engine    │  │   Engine    │               │
+│  └──────┬──────┘  └──────┬──────┘  └──────┬──────┘               │
+│         │                │                │                       │
+│         └────────────────┼────────────────┘                       │
+│                          ▼                                         │
+│  ┌───────────────────────────────────────────────────────────┐   │
+│  │                  University Repository                      │   │
+│  │  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐     │   │
+│  │  │  Base Score  │  │   Program    │  │   Placement  │     │   │
+│  │  │   Database   │  │   Database   │  │   Predictor  │     │   │
+│  │  └──────────────┘  └──────────────┘  └──────────────┘     │   │
+│  └───────────────────────────────────────────────────────────┘   │
+└──────────────────────────────────────────────────────────────────┘
+```
+
+**Core Components:**
+```python
+# backend/services/university_advisor.py
+class UniversityAdvisor:
+    """
+    Üniversite Tercih Danışmanlığı
+    REQ-61.1 - REQ-61.25 gereksinimlerini karşılar
+    """
+
+    async def search_programs(self, filters: ProgramFilters) -> List[Program]:
+        """Bölüm arama (REQ-61.2, REQ-61.3)"""
+        query = self._build_query(filters)
+        return await self.repo.search(query)
+
+    async def simulate_placement(
+        self,
+        score: float,
+        preferences: List[int]
+    ) -> SimulationResult:
+        """Tercih simülasyonu (REQ-61.9 - REQ-61.12)"""
+        ranking = await self._estimate_ranking(score)
+        results = []
+        for program_id in preferences:
+            probability = await self._calculate_probability(
+                ranking, program_id
+            )
+            results.append(PlacementPrediction(
+                program_id=program_id,
+                probability=probability,
+                risk_level=self._get_risk_level(probability)
+            ))
+        return SimulationResult(predictions=results)
+
+    async def get_trend_analysis(self, program_id: int) -> TrendData:
+        """5 yıllık trend analizi (REQ-61.17)"""
+        return await self.analytics.get_historical_data(program_id, years=5)
+```
+
+**API Endpoints:**
+```
+# Arama
+GET    /api/v1/universities                        # Üniversite listesi
+GET    /api/v1/universities/{id}                   # Üniversite detay
+GET    /api/v1/programs                            # Bölüm arama
+GET    /api/v1/programs/{id}                       # Bölüm detay
+GET    /api/v1/programs/{id}/base-scores           # Taban puanlar (5 yıl)
+
+# Simülasyon
+POST   /api/v1/placement/simulate                  # Tercih simülasyonu
+POST   /api/v1/placement/estimate-ranking          # Sıralama tahmini
+GET    /api/v1/placement/recommendations           # Öneri listesi
+
+# Karşılaştırma ve Analiz
+POST   /api/v1/universities/compare                # Üniversite karşılaştır
+GET    /api/v1/programs/{id}/statistics            # Bölüm istatistikleri
+GET    /api/v1/programs/{id}/employment            # İstihdam verileri
+```
+
+---
+
+### 10.3 Canlı Ders Sistemi (REQ-62)
+
+**Mimari Genel Bakış:**
+```
+┌──────────────────────────────────────────────────────────────────┐
+│                      Canlı Ders Sistemi                            │
+├──────────────────────────────────────────────────────────────────┤
+│  ┌─────────────────────────────────────────────────────────────┐ │
+│  │                    WebRTC Gateway                            │ │
+│  │  ┌─────────┐  ┌─────────┐  ┌─────────┐  ┌─────────┐        │ │
+│  │  │  Video  │  │  Audio  │  │  Screen │  │  White  │        │ │
+│  │  │ Stream  │  │ Stream  │  │  Share  │  │  Board  │        │ │
+│  │  └─────────┘  └─────────┘  └─────────┘  └─────────┘        │ │
+│  └─────────────────────────────────────────────────────────────┘ │
+│                              │                                    │
+│  ┌───────────────────────────┼───────────────────────────────┐   │
+│  │                     Session Manager                        │   │
+│  │  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐   │   │
+│  │  │  Room    │  │Recording │  │Participant│  │  Chat    │   │   │
+│  │  │ Manager  │  │ Service  │  │  Manager  │  │ Service  │   │   │
+│  │  └──────────┘  └──────────┘  └──────────┘  └──────────┘   │   │
+│  └───────────────────────────────────────────────────────────┘   │
+│                              │                                    │
+│  ┌───────────────────────────┼───────────────────────────────┐   │
+│  │                   Teacher Pool                             │   │
+│  │  ┌──────────┐  ┌──────────┐  ┌──────────┐                 │   │
+│  │  │  Teacher │  │ Calendar │  │ Payment  │                 │   │
+│  │  │  Matcher │  │  Service │  │ Service  │                 │   │
+│  │  └──────────┘  └──────────┘  └──────────┘                 │   │
+│  └───────────────────────────────────────────────────────────┘   │
+└──────────────────────────────────────────────────────────────────┘
+```
+
+**Core Components:**
+```python
+# backend/services/live_class_service.py
+class LiveClassService:
+    """
+    Canlı Ders Sistemi
+    REQ-62.1 - REQ-62.20 gereksinimlerini karşılar
+    """
+
+    async def create_session(self, session_data: SessionCreate) -> LiveSession:
+        """Canlı ders oturumu oluştur (REQ-62.1)"""
+        room_id = await self.webrtc.create_room(session_data.max_participants)
+        return await self.repo.create_session(
+            room_id=room_id,
+            teacher_id=session_data.teacher_id,
+            scheduled_at=session_data.scheduled_at
+        )
+
+    async def start_recording(self, session_id: int) -> Recording:
+        """Ders kaydı başlat (REQ-62.4)"""
+        session = await self.repo.get_session(session_id)
+        return await self.recording_service.start(session.room_id)
+
+    async def find_teachers(self, subject: str, availability: DateRange) -> List[Teacher]:
+        """Öğretmen ara (REQ-62.9 - REQ-62.11)"""
+        return await self.teacher_pool.search(
+            subject=subject,
+            available_between=availability
+        )
+```
+
+**API Endpoints:**
+```
+# Oturum Yönetimi
+POST   /api/v1/live-class/sessions                 # Oturum oluştur
+GET    /api/v1/live-class/sessions/{id}            # Oturum detay
+POST   /api/v1/live-class/sessions/{id}/join       # Oturuma katıl
+POST   /api/v1/live-class/sessions/{id}/leave      # Oturumdan ayrıl
+
+# Kayıt
+POST   /api/v1/live-class/sessions/{id}/record     # Kayıt başlat
+GET    /api/v1/live-class/recordings               # Kayıt listesi
+GET    /api/v1/live-class/recordings/{id}          # Kayıt izle
+
+# Öğretmen Havuzu
+GET    /api/v1/teachers                            # Öğretmen listesi
+GET    /api/v1/teachers/{id}                       # Öğretmen profili
+GET    /api/v1/teachers/{id}/availability          # Müsaitlik takvimi
+POST   /api/v1/teachers/{id}/book                  # Randevu al
+
+# Soru-Cevap
+POST   /api/v1/questions/ask                       # Soru sor
+GET    /api/v1/questions/my                        # Sorularım
+POST   /api/v1/questions/{id}/answer               # Cevapla
+```
+
+---
+
+### 10.4 Mobil Uygulama Sistemi (REQ-63)
+
+**Mimari Genel Bakış:**
+```
+┌──────────────────────────────────────────────────────────────────┐
+│                     Mobil Uygulama Sistemi                        │
+├──────────────────────────────────────────────────────────────────┤
+│  ┌─────────────────────────────────────────────────────────────┐ │
+│  │                   React Native App                          │ │
+│  │  ┌───────────────┐  ┌───────────────┐  ┌───────────────┐   │ │
+│  │  │     iOS       │  │    Android    │  │    Shared     │   │ │
+│  │  │   Native      │  │    Native     │  │   Components  │   │ │
+│  │  └───────────────┘  └───────────────┘  └───────────────┘   │ │
+│  └─────────────────────────────────────────────────────────────┘ │
+│                              │                                    │
+│  ┌───────────────────────────┼───────────────────────────────┐   │
+│  │                   Offline Manager                          │   │
+│  │  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐   │   │
+│  │  │  SQLite  │  │  Content │  │   Sync   │  │  Queue   │   │   │
+│  │  │  Local   │  │  Cache   │  │  Engine  │  │ Manager  │   │   │
+│  │  └──────────┘  └──────────┘  └──────────┘  └──────────┘   │   │
+│  └───────────────────────────────────────────────────────────┘   │
+│                              │                                    │
+│  ┌───────────────────────────┼───────────────────────────────┐   │
+│  │                  Push Notification                         │   │
+│  │  ┌──────────┐  ┌──────────┐  ┌──────────┐                 │   │
+│  │  │   FCM    │  │   APNS   │  │ Scheduler│                 │   │
+│  │  │ (Android)│  │  (iOS)   │  │          │                 │   │
+│  │  └──────────┘  └──────────┘  └──────────┘                 │   │
+│  └───────────────────────────────────────────────────────────┘   │
+└──────────────────────────────────────────────────────────────────┘
+```
+
+**Offline Sync Mekanizması:**
+```typescript
+// mobile/src/services/OfflineSyncService.ts
+class OfflineSyncService {
+  /**
+   * Offline çalışma ve senkronizasyon
+   * REQ-63.9 - REQ-63.15 gereksinimlerini karşılar
+   */
+
+  async downloadContentPackage(packageId: string): Promise<void> {
+    // REQ-63.9: Offline içerik indirme
+    const content = await api.getContentPackage(packageId);
+    await localDB.saveContent(content);
+    await fileCache.cacheMedia(content.mediaFiles);
+  }
+
+  async syncProgress(): Promise<SyncResult> {
+    // REQ-63.11: Otomatik senkronizasyon
+    const localChanges = await localDB.getUnsyncedChanges();
+    const serverChanges = await api.getChangesSince(lastSyncTime);
+
+    // REQ-63.13: Conflict resolution
+    const resolved = await this.resolveConflicts(localChanges, serverChanges);
+
+    await this.applyChanges(resolved);
+    return { synced: resolved.length };
+  }
+}
+```
+
+**Push Notification Service:**
+```python
+# backend/services/push_notification_service.py
+class PushNotificationService:
+    """
+    Push Bildirim Servisi
+    REQ-63.16 - REQ-63.20 gereksinimlerini karşılar
+    """
+
+    async def send_exam_reminder(self, user_id: int, exam: Exam):
+        """Sınav hatırlatması (REQ-63.16)"""
+        await self._send(user_id, {
+            'type': 'exam_reminder',
+            'title': f'{exam.name} yaklaşıyor!',
+            'body': f'Sınavınız {exam.scheduled_at} tarihinde',
+            'data': {'exam_id': exam.id}
+        })
+
+    async def send_study_reminder(self, user_id: int):
+        """Çalışma hatırlatması (REQ-63.17)"""
+        await self._send(user_id, {
+            'type': 'study_reminder',
+            'title': 'Çalışma Vakti!',
+            'body': 'Günlük hedefinize ulaşmak için çalışmaya başlayın'
+        })
+```
+
+---
+
+### 10.5 Sosyal Öğrenme Sistemi (REQ-64)
+
+**Mimari Genel Bakış:**
+```
+┌──────────────────────────────────────────────────────────────────┐
+│                    Sosyal Öğrenme Sistemi                         │
+├──────────────────────────────────────────────────────────────────┤
+│  ┌─────────────────────────────────────────────────────────────┐ │
+│  │                    Study Groups                              │ │
+│  │  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐    │ │
+│  │  │  Group   │  │  Group   │  │  Shared  │  │  Group   │    │ │
+│  │  │  Chat    │  │  Goals   │  │  Files   │  │  Stats   │    │ │
+│  │  └──────────┘  └──────────┘  └──────────┘  └──────────┘    │ │
+│  └─────────────────────────────────────────────────────────────┘ │
+│                              │                                    │
+│  ┌───────────────────────────┼───────────────────────────────┐   │
+│  │                    Forum System                            │   │
+│  │  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐   │   │
+│  │  │  Topics  │  │  Replies │  │  Voting  │  │Moderation│   │   │
+│  │  │ Manager  │  │  Thread  │  │  System  │  │  Queue   │   │   │
+│  │  └──────────┘  └──────────┘  └──────────┘  └──────────┘   │   │
+│  └───────────────────────────────────────────────────────────┘   │
+│                              │                                    │
+│  ┌───────────────────────────┼───────────────────────────────┐   │
+│  │                Achievement Sharing                         │   │
+│  │  ┌──────────┐  ┌──────────┐  ┌──────────┐                 │   │
+│  │  │  Badge   │  │  Story   │  │  Follow  │                 │   │
+│  │  │ Showcase │  │  Share   │  │  System  │                 │   │
+│  │  └──────────┘  └──────────┘  └──────────┘                 │   │
+│  └───────────────────────────────────────────────────────────┘   │
+└──────────────────────────────────────────────────────────────────┘
+```
+
+**API Endpoints:**
+```
+# Çalışma Grupları
+POST   /api/v1/study-groups                        # Grup oluştur
+GET    /api/v1/study-groups                        # Gruplarım
+POST   /api/v1/study-groups/{id}/members           # Üye ekle
+GET    /api/v1/study-groups/{id}/stats             # Grup istatistikleri
+POST   /api/v1/study-groups/{id}/messages          # Mesaj gönder
+
+# Forum
+GET    /api/v1/forum/topics                        # Konular
+POST   /api/v1/forum/topics                        # Konu aç
+GET    /api/v1/forum/topics/{id}                   # Konu detay
+POST   /api/v1/forum/topics/{id}/replies           # Cevap yaz
+POST   /api/v1/forum/posts/{id}/vote               # Oyla
+
+# Takip ve Paylaşım
+POST   /api/v1/users/{id}/follow                   # Takip et
+GET    /api/v1/users/following                     # Takip ettiklerim
+POST   /api/v1/achievements/share                  # Başarı paylaş
+GET    /api/v1/feed                                # Aktivite akışı
+```
+
+---
+
+### 10.6 Psikolojik Destek Sistemi (REQ-65)
+
+**Mimari Genel Bakış:**
+```
+┌──────────────────────────────────────────────────────────────────┐
+│                   Psikolojik Destek Sistemi                       │
+├──────────────────────────────────────────────────────────────────┤
+│  ┌─────────────────────────────────────────────────────────────┐ │
+│  │                  Stress Management                           │ │
+│  │  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐    │ │
+│  │  │  Stress  │  │ Breathing│  │Meditation│  │   Mood   │    │ │
+│  │  │Assessment│  │ Exercise │  │  Guide   │  │ Tracker  │    │ │
+│  │  └──────────┘  └──────────┘  └──────────┘  └──────────┘    │ │
+│  └─────────────────────────────────────────────────────────────┘ │
+│                              │                                    │
+│  ┌───────────────────────────┼───────────────────────────────┐   │
+│  │                 Motivation Tools                           │   │
+│  │  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐   │   │
+│  │  │  Quotes  │  │  Success │  │   Goal   │  │ Positive │   │   │
+│  │  │ Generator│  │  Stories │  │  Board   │  │ Mindset  │   │   │
+│  │  └──────────┘  └──────────┘  └──────────┘  └──────────┘   │   │
+│  └───────────────────────────────────────────────────────────┘   │
+│                              │                                    │
+│  ┌───────────────────────────┼───────────────────────────────┐   │
+│  │                Professional Support                        │   │
+│  │  ┌──────────┐  ┌──────────┐  ┌──────────┐                 │   │
+│  │  │ Hotline  │  │  Online  │  │ Resource │                 │   │
+│  │  │ Connect  │  │ Counselor│  │ Library  │                 │   │
+│  │  └──────────┘  └──────────┘  └──────────┘                 │   │
+│  └───────────────────────────────────────────────────────────┘   │
+└──────────────────────────────────────────────────────────────────┘
+```
+
+**Core Components:**
+```python
+# backend/services/psychological_support_service.py
+class PsychologicalSupportService:
+    """
+    Psikolojik Destek Servisi
+    REQ-65.1 - REQ-65.20 gereksinimlerini karşılar
+    """
+
+    async def assess_stress_level(self, user_id: int, responses: List[int]) -> StressAssessment:
+        """Stres değerlendirmesi (REQ-65.1)"""
+        score = self._calculate_stress_score(responses)
+        level = self._get_stress_level(score)
+        recommendations = await self._get_recommendations(level)
+        return StressAssessment(
+            score=score,
+            level=level,
+            recommendations=recommendations
+        )
+
+    async def start_breathing_exercise(self, exercise_type: str) -> BreathingSession:
+        """Nefes egzersizi başlat (REQ-65.3)"""
+        pattern = BREATHING_PATTERNS[exercise_type]
+        return BreathingSession(
+            pattern=pattern,
+            duration=pattern.recommended_duration,
+            instructions=pattern.instructions
+        )
+
+    async def log_mood(self, user_id: int, mood: MoodEntry) -> MoodLog:
+        """Duygu durumu kaydet (REQ-65.6, REQ-65.7)"""
+        log = await self.mood_repo.create(user_id, mood)
+        if mood.level <= 2:  # Low mood
+            await self._trigger_support_check(user_id)
+        return log
+
+    async def get_crisis_resources(self) -> CrisisResources:
+        """Acil destek kaynakları (REQ-65.8, REQ-65.17)"""
+        return CrisisResources(
+            hotlines=[
+                {'name': 'Alo 182', 'number': '182'},
+                {'name': 'Psikolog Hattı', 'number': '444 0 632'}
+            ],
+            articles=await self._get_crisis_articles(),
+            professionals=await self._get_available_counselors()
+        )
+```
+
+**API Endpoints:**
+```
+# Stres Yönetimi
+POST   /api/v1/wellness/stress/assess              # Stres değerlendirmesi
+GET    /api/v1/wellness/stress/history             # Stres geçmişi
+POST   /api/v1/wellness/breathing/start            # Nefes egzersizi
+POST   /api/v1/wellness/meditation/start           # Meditasyon
+
+# Duygu Durumu
+POST   /api/v1/wellness/mood                       # Duygu kaydı
+GET    /api/v1/wellness/mood/history               # Duygu geçmişi
+GET    /api/v1/wellness/mood/trends                # Trend analizi
+
+# Motivasyon
+GET    /api/v1/wellness/quotes                     # Motivasyon sözleri
+GET    /api/v1/wellness/stories                    # Başarı hikayeleri
+POST   /api/v1/wellness/goals                      # Hedef panosu
+
+# Profesyonel Destek
+GET    /api/v1/wellness/crisis                     # Acil kaynaklar
+GET    /api/v1/wellness/counselors                 # Danışman listesi
+POST   /api/v1/wellness/counselors/{id}/book       # Randevu al
+GET    /api/v1/wellness/resources                  # Eğitici içerikler
+```
+
+---
+
+### 10.7 Ek Sistemler Özeti
+
+| Sistem | REQ | Endpoints | Teknolojiler |
+|--------|-----|-----------|--------------|
+| Soru Bankası | REQ-60 | 12 | PostgreSQL, Elasticsearch, Redis |
+| Tercih Danışmanlığı | REQ-61 | 15 | PostgreSQL, ML Models |
+| Canlı Ders | REQ-62 | 16 | WebRTC, Redis, S3 |
+| Mobil Uygulama | REQ-63 | Backend API | React Native, SQLite |
+| Sosyal Öğrenme | REQ-64 | 14 | PostgreSQL, WebSocket |
+| Psikolojik Destek | REQ-65 | 12 | PostgreSQL, Redis |
+
+**Toplam Yeni Endpoint Sayısı:** ~70 endpoint
+
+---
+
+*Son Güncelleme: Ocak 2026*
+*Versiyon: 2.0*
+

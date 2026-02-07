@@ -1,0 +1,48 @@
+# Kustomize base configuration for KIRO2
+# Task #26: Kubernetes Manifests
+#
+# Usage:
+#   kubectl apply -k kubernetes/base/
+#   kubectl apply -k kubernetes/overlays/production/
+
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+metadata:
+  name: kiro2-base
+
+namespace: kiro2
+
+commonLabels:
+  app.kubernetes.io/name: kiro2
+  app.kubernetes.io/part-of: kiro2-platform
+  app.kubernetes.io/managed-by: kustomize
+
+resources:
+  - namespace.yaml
+  - backend-deployment.yaml
+  - configmap.yaml
+  - secrets.yaml
+  - service-account.yaml
+  - network-policy.yaml
+
+configMapGenerator:
+  - name: kiro2-config
+    literals:
+      - ENVIRONMENT=production
+      - LOG_LEVEL=INFO
+      - CORS_ORIGINS=https://kiro2.edu.tr
+
+secretGenerator:
+  - name: kiro2-secrets
+    type: Opaque
+    literals:
+      - database-url=PLACEHOLDER
+      - redis-url=PLACEHOLDER
+      - jwt-secret=PLACEHOLDER
+    options:
+      disableNameSuffixHash: true
+
+images:
+  - name: ghcr.io/kiro2/backend
+    newTag: latest

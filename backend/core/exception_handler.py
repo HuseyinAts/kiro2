@@ -1,14 +1,28 @@
 """
 Centralized Exception Handling
 ARCHITECTURE FIX: Standardized exception handling across the application
+
+Standard API Error Response Format:
+{
+    "success": false,
+    "error": {
+        "message": "Human readable error message",
+        "code": 1001,
+        "type": "VALIDATION_ERROR",
+        "details": {...}
+    },
+    "timestamp": "2026-01-23T10:30:00Z",
+    "request_id": "uuid-here"
+}
 """
 
-import logging
 import traceback
+from datetime import datetime, timezone
 from enum import Enum
 from typing import Any, Dict, Optional, Type
+from uuid import uuid4
 
-from fastapi import HTTPException, Request, status
+from fastapi import Request, status
 from fastapi.responses import JSONResponse
 
 from .structured_logger import get_logger
@@ -76,8 +90,8 @@ class AppException(Exception):
         self.details = details or {}
         super().__init__(self.message)
 
-    def to_dict(self) -> Dict[str, Any]:
-        """Convert exception to dictionary"""
+    def to_dict(self, request_id: Optional[str] = None) -> Dict[str, Any]:
+        """Convert exception to standardized error response dictionary"""
         return {
             "success": False,
             "error": {
@@ -86,6 +100,8 @@ class AppException(Exception):
                 "type": self.error_code.name,
                 "details": self.details,
             },
+            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "request_id": request_id or str(uuid4()),
         }
 
 
@@ -180,6 +196,11 @@ EXCEPTION_HANDLERS: Dict[Type[Exception], int] = {
 }
 
 
+def _get_request_id(request: Request) -> str:
+    """Extract or generate request ID from request headers."""
+    return request.headers.get("X-Request-ID", str(uuid4()))
+
+
 async def app_exception_handler(request: Request, exc: AppException) -> JSONResponse:
     """
     Handler for AppException
@@ -189,8 +210,10 @@ async def app_exception_handler(request: Request, exc: AppException) -> JSONResp
         exc: AppException instance
 
     Returns:
-        JSONResponse with error details
+        JSONResponse with standardized error response
     """
+    request_id = _get_request_id(request)
+
     logger.error(
         f"Application error: {exc.message}",
         extra_data={
@@ -199,10 +222,15 @@ async def app_exception_handler(request: Request, exc: AppException) -> JSONResp
             "details": exc.details,
             "path": request.url.path,
             "method": request.method,
+            "request_id": request_id,
         },
     )
 
-    return JSONResponse(status_code=exc.status_code, content=exc.to_dict())
+    return JSONResponse(
+        status_code=exc.status_code,
+        content=exc.to_dict(request_id),
+        headers={"X-Request-ID": request_id},
+    )
 
 
 async def validation_exception_handler(
@@ -216,11 +244,17 @@ async def validation_exception_handler(
         exc: Validation exception
 
     Returns:
-        JSONResponse with validation error
+        JSONResponse with standardized validation error
     """
+    request_id = _get_request_id(request)
+
     logger.warning(
         f"Validation error: {str(exc)}",
-        extra_data={"path": request.url.path, "method": request.method},
+        extra_data={
+            "path": request.url.path,
+            "method": request.method,
+            "request_id": request_id,
+        },
     )
 
     return JSONResponse(
@@ -233,7 +267,10 @@ async def validation_exception_handler(
                 "type": ErrorCode.VALIDATION_ERROR.name,
                 "details": {"errors": str(exc)},
             },
+            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "request_id": request_id,
         },
+        headers={"X-Request-ID": request_id},
     )
 
 
@@ -246,8 +283,10 @@ async def generic_exception_handler(request: Request, exc: Exception) -> JSONRes
         exc: Exception instance
 
     Returns:
-        JSONResponse with error details
+        JSONResponse with standardized error response
     """
+    request_id = _get_request_id(request)
+
     # Get status code from mapping or default to 500
     status_code = EXCEPTION_HANDLERS.get(
         type(exc), status.HTTP_500_INTERNAL_SERVER_ERROR
@@ -260,6 +299,7 @@ async def generic_exception_handler(request: Request, exc: Exception) -> JSONRes
             "exception_type": type(exc).__name__,
             "path": request.url.path,
             "method": request.method,
+            "request_id": request_id,
             "traceback": traceback.format_exc(),
         },
     )
@@ -284,7 +324,10 @@ async def generic_exception_handler(request: Request, exc: Exception) -> JSONRes
                 "type": ErrorCode.UNKNOWN_ERROR.name,
                 "details": details,
             },
+            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "request_id": request_id,
         },
+        headers={"X-Request-ID": request_id},
     )
 
 

@@ -9,7 +9,9 @@
  * - Auto-scroll to latest message
  */
 
-import React, { useState, useRef, useEffect } from 'react';
+import * as React from 'react';
+import {  useState, useRef, useEffect  } from 'react';
+
 import { useChatStreaming } from '../hooks/useStreaming';
 
 interface Message {
@@ -30,7 +32,7 @@ export const StreamingChat: React.FC<StreamingChatProps> = ({
   model = 'gpt-3.5-turbo',
   temperature = 0.7,
   maxTokens = 2000,
-  onMessageComplete
+  onMessageComplete,
 }) => {
   const [messages, setMessages] = useState<Message[]>(initialMessages);
   const [input, setInput] = useState<string>('');
@@ -43,7 +45,7 @@ export const StreamingChat: React.FC<StreamingChatProps> = ({
     metadata,
     startStream,
     stopStream,
-    reset: resetStream
+    reset: resetStream,
   } = useChatStreaming();
 
   // Auto-scroll to bottom
@@ -60,7 +62,7 @@ export const StreamingChat: React.FC<StreamingChatProps> = ({
     if (!isStreaming && streamingContent && metadata) {
       const assistantMessage: Message = {
         role: 'assistant',
-        content: streamingContent
+        content: streamingContent,
       };
 
       setMessages(prev => [...prev, assistantMessage]);
@@ -75,12 +77,12 @@ export const StreamingChat: React.FC<StreamingChatProps> = ({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!input.trim() || isStreaming) return;
+    if (!input.trim() || isStreaming) {return;}
 
     // Add user message
     const userMessage: Message = {
       role: 'user',
-      content: input
+      content: input,
     };
 
     const updatedMessages = [...messages, userMessage];
@@ -91,7 +93,7 @@ export const StreamingChat: React.FC<StreamingChatProps> = ({
       messages: updatedMessages.map(m => ({ role: m.role, content: m.content })),
       model,
       temperature,
-      max_tokens: maxTokens
+      max_tokens: maxTokens,
     });
 
     setInput('');
@@ -111,7 +113,7 @@ export const StreamingChat: React.FC<StreamingChatProps> = ({
             className={`message ${message.role}`}
             style={{
               ...styles.message,
-              ...(message.role === 'user' ? styles.userMessage : styles.assistantMessage)
+              ...(message.role === 'user' ? styles.userMessage : styles.assistantMessage),
             }}
           >
             <div className="role" style={styles.role}>
@@ -156,7 +158,7 @@ export const StreamingChat: React.FC<StreamingChatProps> = ({
           disabled={isStreaming}
           style={{
             ...styles.input,
-            ...(isStreaming && styles.inputDisabled)
+            ...(isStreaming && styles.inputDisabled),
           }}
         />
 
@@ -175,7 +177,7 @@ export const StreamingChat: React.FC<StreamingChatProps> = ({
             style={{
               ...styles.button,
               ...styles.sendButton,
-              ...(!input.trim() && styles.buttonDisabled)
+              ...(!input.trim() && styles.buttonDisabled),
             }}
           >
             📤 Gönder
@@ -203,7 +205,7 @@ const styles: Record<string, React.CSSProperties> = {
     border: '1px solid #ddd',
     borderRadius: '8px',
     overflow: 'hidden',
-    backgroundColor: '#fff'
+    backgroundColor: '#fff',
   },
 
   messages: {
@@ -212,7 +214,7 @@ const styles: Record<string, React.CSSProperties> = {
     padding: '20px',
     display: 'flex',
     flexDirection: 'column',
-    gap: '12px'
+    gap: '12px',
   },
 
   message: {
@@ -220,36 +222,36 @@ const styles: Record<string, React.CSSProperties> = {
     gap: '12px',
     padding: '12px',
     borderRadius: '8px',
-    animation: 'fadeIn 0.3s ease-in'
+    animation: 'fadeIn 0.3s ease-in',
   },
 
   userMessage: {
     backgroundColor: '#e3f2fd',
     marginLeft: 'auto',
-    maxWidth: '70%'
+    maxWidth: '70%',
   },
 
   assistantMessage: {
     backgroundColor: '#f5f5f5',
     marginRight: 'auto',
-    maxWidth: '70%'
+    maxWidth: '70%',
   },
 
   role: {
     fontSize: '24px',
-    flexShrink: 0
+    flexShrink: 0,
   },
 
   content: {
     flex: 1,
     lineHeight: '1.5',
     whiteSpace: 'pre-wrap',
-    wordBreak: 'break-word'
+    wordBreak: 'break-word',
   },
 
   cursor: {
     animation: 'blink 1s infinite',
-    marginLeft: '2px'
+    marginLeft: '2px',
   },
 
   error: {
@@ -257,7 +259,7 @@ const styles: Record<string, React.CSSProperties> = {
     color: '#c62828',
     padding: '12px',
     borderRadius: '8px',
-    textAlign: 'center'
+    textAlign: 'center',
   },
 
   form: {
@@ -265,7 +267,7 @@ const styles: Record<string, React.CSSProperties> = {
     gap: '8px',
     padding: '16px',
     borderTop: '1px solid #ddd',
-    backgroundColor: '#fafafa'
+    backgroundColor: '#fafafa',
   },
 
   input: {
@@ -275,12 +277,12 @@ const styles: Record<string, React.CSSProperties> = {
     borderRadius: '6px',
     fontSize: '14px',
     outline: 'none',
-    transition: 'border-color 0.2s'
+    transition: 'border-color 0.2s',
   },
 
   inputDisabled: {
     backgroundColor: '#f5f5f5',
-    cursor: 'not-allowed'
+    cursor: 'not-allowed',
   },
 
   button: {
@@ -290,22 +292,22 @@ const styles: Record<string, React.CSSProperties> = {
     fontSize: '14px',
     fontWeight: 500,
     cursor: 'pointer',
-    transition: 'all 0.2s'
+    transition: 'all 0.2s',
   },
 
   sendButton: {
     backgroundColor: '#1976d2',
-    color: '#fff'
+    color: '#fff',
   },
 
   stopButton: {
     backgroundColor: '#d32f2f',
-    color: '#fff'
+    color: '#fff',
   },
 
   buttonDisabled: {
     opacity: 0.5,
-    cursor: 'not-allowed'
+    cursor: 'not-allowed',
   },
 
   metadata: {
@@ -314,6 +316,6 @@ const styles: Record<string, React.CSSProperties> = {
     color: '#666',
     borderTop: '1px solid #eee',
     backgroundColor: '#fafafa',
-    textAlign: 'center'
-  }
+    textAlign: 'center',
+  },
 };

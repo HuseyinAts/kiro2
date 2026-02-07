@@ -1,13 +1,14 @@
 /**
  * GraphPlotter Component - Diskalkuli Desteği
- * 
+ *
  * İnteraktif fonksiyon grafik çizim aracı.
  * Öğrencilerin matematiksel fonksiyonları görselleştirmelerine ve koordinat sistemini anlamalarına yardımcı olur.
- * 
+ *
  * Gereksinimler: REQ-51.16 - REQ-51.20
  */
 
-import React, { useState, useCallback, useRef, useEffect, useMemo } from 'react';
+import * as React from 'react';
+import {  useState, useCallback, useRef, useEffect, useMemo  } from 'react';
 import './GraphPlotter.css';
 
 interface Point {
@@ -34,7 +35,7 @@ const GraphPlotter: React.FC<GraphPlotterProps> = ({
   yMax = 10,
   gridSize = 1,
   onFunctionChange,
-  readOnly = false
+  readOnly = false,
 }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [functionStr, setFunctionStr] = useState<string>(initialFunction);
@@ -54,10 +55,10 @@ const GraphPlotter: React.FC<GraphPlotterProps> = ({
     const centerX = canvasWidth / 2 + pan.x;
     const centerY = canvasHeight / 2 + pan.y;
     const scale = 30 * zoom;
-    
+
     return {
       x: centerX + x * scale,
-      y: centerY - y * scale
+      y: centerY - y * scale,
     };
   }, [pan, zoom]);
 
@@ -65,10 +66,10 @@ const GraphPlotter: React.FC<GraphPlotterProps> = ({
     const centerX = canvasWidth / 2 + pan.x;
     const centerY = canvasHeight / 2 + pan.y;
     const scale = 30 * zoom;
-    
+
     return {
       x: (canvasX - centerX) / scale,
-      y: (centerY - canvasY) / scale
+      y: (centerY - canvasY) / scale,
     };
   }, [pan, zoom]);
 
@@ -87,19 +88,19 @@ const GraphPlotter: React.FC<GraphPlotterProps> = ({
         .replace(/exp/g, 'Math.exp')
         .replace(/pi/g, 'Math.PI')
         .replace(/e(?![a-z])/g, 'Math.E');
-      
+
       // x değerini yerine koy
       expr = expr.replace(/x/g, `(${x})`);
-      
+
       // Güvenli değerlendirme
       const result = Function(`"use strict"; return (${expr})`)();
-      
+
       if (typeof result !== 'number' || !isFinite(result)) {
         return null;
       }
-      
+
       return result;
-    } catch (e) {
+    } catch {
       return null;
     }
   }, [functionStr]);
@@ -107,14 +108,14 @@ const GraphPlotter: React.FC<GraphPlotterProps> = ({
   // REQ-51.17: Gerçek zamanlı grafik çizimi
   const drawGraph = useCallback(() => {
     const canvas = canvasRef.current;
-    if (!canvas) return;
-    
+    if (!canvas) {return;}
+
     const ctx = canvas.getContext('2d');
-    if (!ctx) return;
+    if (!ctx) {return;}
 
     // Temizle
     ctx.clearRect(0, 0, canvasWidth, canvasHeight);
-    
+
     // Arka plan
     ctx.fillStyle = '#ffffff';
     ctx.fillRect(0, 0, canvasWidth, canvasHeight);
@@ -123,11 +124,11 @@ const GraphPlotter: React.FC<GraphPlotterProps> = ({
     // Grid çiz
     ctx.strokeStyle = '#e0e0e0';
     ctx.lineWidth = 1;
-    
+
     const scale = 30 * zoom;
     const centerX = canvasWidth / 2 + pan.x;
     const centerY = canvasHeight / 2 + pan.y;
-    
+
     // Dikey grid çizgileri
     for (let x = xMin; x <= xMax; x += gridSize) {
       const canvasX = centerX + x * scale;
@@ -138,7 +139,7 @@ const GraphPlotter: React.FC<GraphPlotterProps> = ({
         ctx.stroke();
       }
     }
-    
+
     // Yatay grid çizgileri
     for (let y = yMin; y <= yMax; y += gridSize) {
       const canvasY = centerY - y * scale;
@@ -157,7 +158,7 @@ const GraphPlotter: React.FC<GraphPlotterProps> = ({
     ctx.moveTo(0, centerY);
     ctx.lineTo(canvasWidth, centerY);
     ctx.stroke();
-    
+
     // Y ekseni (mavi)
     ctx.strokeStyle = '#2196F3';
     ctx.lineWidth = 2;
@@ -170,20 +171,20 @@ const GraphPlotter: React.FC<GraphPlotterProps> = ({
     ctx.fillStyle = '#333';
     ctx.font = '12px Arial';
     ctx.textAlign = 'center';
-    
+
     // X ekseni etiketleri
     for (let x = Math.ceil(xMin); x <= Math.floor(xMax); x++) {
-      if (x === 0) continue;
+      if (x === 0) {continue;}
       const canvasX = centerX + x * scale;
       if (canvasX >= 0 && canvasX <= canvasWidth) {
         ctx.fillText(x.toString(), canvasX, centerY + 20);
       }
     }
-    
+
     // Y ekseni etiketleri
     ctx.textAlign = 'right';
     for (let y = Math.ceil(yMin); y <= Math.floor(yMax); y++) {
-      if (y === 0) continue;
+      if (y === 0) {continue;}
       const canvasY = centerY - y * scale;
       if (canvasY >= 0 && canvasY <= canvasHeight) {
         ctx.fillText(y.toString(), centerX - 10, canvasY + 5);
@@ -200,16 +201,16 @@ const GraphPlotter: React.FC<GraphPlotterProps> = ({
     ctx.strokeStyle = '#4CAF50';
     ctx.lineWidth = 3;
     ctx.beginPath();
-    
+
     let firstPoint = true;
     const step = 0.05 / zoom;
-    
+
     for (let x = xMin; x <= xMax; x += step) {
       const y = evaluateFunction(x);
-      
+
       if (y !== null && y >= yMin && y <= yMax) {
         const point = getCanvasCoordinates(x, y);
-        
+
         if (firstPoint) {
           ctx.moveTo(point.x, point.y);
           firstPoint = false;
@@ -220,7 +221,7 @@ const GraphPlotter: React.FC<GraphPlotterProps> = ({
         firstPoint = true;
       }
     }
-    
+
     ctx.stroke();
 
     // Seçili nokta
@@ -230,7 +231,7 @@ const GraphPlotter: React.FC<GraphPlotterProps> = ({
       ctx.beginPath();
       ctx.arc(canvasPoint.x, canvasPoint.y, 6, 0, 2 * Math.PI);
       ctx.fill();
-      
+
       // REQ-51.20: Koordinat değerlerini tooltip ile göster
       ctx.fillStyle = '#333';
       ctx.font = 'bold 14px Arial';
@@ -238,7 +239,7 @@ const GraphPlotter: React.FC<GraphPlotterProps> = ({
       ctx.fillText(
         `(${selectedPoint.x.toFixed(2)}, ${selectedPoint.y.toFixed(2)})`,
         canvasPoint.x + 10,
-        canvasPoint.y - 10
+        canvasPoint.y - 10,
       );
     }
 
@@ -259,15 +260,15 @@ const GraphPlotter: React.FC<GraphPlotterProps> = ({
   // REQ-51.18: Zoom, pan ve nokta seçimi
   const handleCanvasClick = useCallback((e: React.MouseEvent<HTMLCanvasElement>) => {
     const canvas = canvasRef.current;
-    if (!canvas) return;
-    
+    if (!canvas) {return;}
+
     const rect = canvas.getBoundingClientRect();
     const canvasX = e.clientX - rect.left;
     const canvasY = e.clientY - rect.top;
-    
+
     const graphPoint = getGraphCoordinates(canvasX, canvasY);
     const y = evaluateFunction(graphPoint.x);
-    
+
     if (y !== null) {
       setSelectedPoint({ x: graphPoint.x, y });
     }
@@ -277,24 +278,24 @@ const GraphPlotter: React.FC<GraphPlotterProps> = ({
     if (isDragging) {
       const deltaX = e.clientX - dragStart.x;
       const deltaY = e.clientY - dragStart.y;
-      
+
       setPan(prev => ({
         x: prev.x + deltaX,
-        y: prev.y + deltaY
+        y: prev.y + deltaY,
       }));
-      
+
       setDragStart({ x: e.clientX, y: e.clientY });
     } else {
       const canvas = canvasRef.current;
-      if (!canvas) return;
-      
+      if (!canvas) {return;}
+
       const rect = canvas.getBoundingClientRect();
       const canvasX = e.clientX - rect.left;
       const canvasY = e.clientY - rect.top;
-      
+
       const graphPoint = getGraphCoordinates(canvasX, canvasY);
       const y = evaluateFunction(graphPoint.x);
-      
+
       if (y !== null) {
         setHoveredPoint({ x: graphPoint.x, y });
       } else {
@@ -322,7 +323,7 @@ const GraphPlotter: React.FC<GraphPlotterProps> = ({
     setFunctionStr(newFunc);
     setError('');
     onFunctionChange?.(newFunc);
-    
+
     // Fonksiyonu test et
     const testResult = evaluateFunction(0);
     if (testResult === null && newFunc.trim() !== '') {
@@ -344,7 +345,7 @@ const GraphPlotter: React.FC<GraphPlotterProps> = ({
     { label: 'Sinüs: sin(x)', value: 'sin(x)' },
     { label: 'Kosinüs: cos(x)', value: 'cos(x)' },
     { label: 'Üstel: eˣ', value: 'exp(x)' },
-    { label: 'Logaritma: ln(x)', value: 'log(x)' }
+    { label: 'Logaritma: ln(x)', value: 'log(x)' },
   ], []);
 
   return (
@@ -369,7 +370,7 @@ const GraphPlotter: React.FC<GraphPlotterProps> = ({
         </div>
 
         <div className="common-functions">
-          <label>Hızlı Seçim:</label>
+          <div className="function-label" role="group" aria-label="Hızlı Seçim">Hızlı Seçim:</div>
           <div className="function-buttons">
             {commonFunctions.map(func => (
               <button

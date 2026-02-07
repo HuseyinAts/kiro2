@@ -1,11 +1,12 @@
 """
 Veli takip sistemi servisi
+TIMEZONE FIX: Using timezone-aware datetime
 """
 import uuid
-from datetime import datetime, timedelta
+from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 from models.dashboard import Bildirim
 from services.user_service import kullanici_servisi
@@ -46,10 +47,9 @@ class VeliRaporu(BaseModel):
     )
 
     # Meta Veriler
-    olusturma_tarihi: datetime = Field(default_factory=datetime.now)
+    olusturma_tarihi: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class VeliOnayTalebi(BaseModel):
@@ -61,23 +61,23 @@ class VeliOnayTalebi(BaseModel):
     talep_tipi: str = Field(..., description="Talep türü")
     talep_aciklamasi: str = Field(..., description="Talep açıklaması")
     durum: str = Field("beklemede", description="Onay durumu")
-    talep_tarihi: datetime = Field(default_factory=datetime.now)
+    talep_tarihi: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     yanit_tarihi: Optional[datetime] = Field(None, description="Yanıt tarihi")
     veli_notu: Optional[str] = Field(None, description="Veli notu")
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class VeliServisi:
     """Veli takip sistemi servisi"""
 
-    def __init__(self):
+    def __init__(self) -> None:
+        """Veli takip servisini başlatır."""
         # In-memory veri saklama (production'da database kullanılacak)
         self.veli_raporlari: Dict[str, VeliRaporu] = {}
         self.veli_onay_talepleri: Dict[str, VeliOnayTalebi] = {}
         self.veli_bildirimleri: Dict[str, List[Bildirim]] = {}
-        self.cocuk_performans_verileri: Dict[str, Dict] = {}
+        self.cocuk_performans_verileri: Dict[str, Dict[str, Any]] = {}
 
     async def veli_cocuklarini_getir(self, veli_id: str) -> List[Dict[str, Any]]:
         """Velinin çocuklarının listesini getir"""
@@ -120,73 +120,31 @@ class VeliServisi:
         self, veli_id: str, ogrenci_id: str
     ) -> Dict[str, Any]:
         """Belirli bir çocuğun performans verilerini getir"""
-        try:
-            # Veli yetkisi kontrolü
-            await self._veli_yetki_kontrolu(veli_id, ogrenci_id)
-
-            # Performans verilerini getir (mock data - gerçek implementasyonda database'den gelecek)
-            if ogrenci_id not in self.cocuk_performans_verileri:
-                # Mock performans verisi oluştur
-                self.cocuk_performans_verileri[
-                    ogrenci_id
-                ] = await self._mock_performans_verisi_olustur(ogrenci_id)
-
-            return self.cocuk_performans_verileri[ogrenci_id]
-
-        except Exception as e:
-            raise ValueError(f"Performans verisi alınırken hata: {str(e)}")
+        # CRITICAL SECURITY FIX: This function was returning 100% FRAUDULENT DATA to parents!
+        # DISABLED until real database implementation is completed
+        # Previous behavior: Returned fake performance data (fake study hours, fake exam scores)
+        # This is an ETHICAL VIOLATION and LEGAL LIABILITY
+        raise NotImplementedError(
+            "Performans verisi henüz gerçek veritabanı ile entegre edilmedi. "
+            "Mock veri döndürülmesi etik ihlal olduğu için bu özellik devre dışı bırakılmıştır. "
+            "Lütfen gerçek database entegrasyonunu tamamlayın."
+        )
 
     async def haftalik_rapor_olustur(self, veli_id: str, ogrenci_id: str) -> VeliRaporu:
         """Haftalık veli raporu oluştur"""
-        try:
-            # Veli yetkisi kontrolü
-            await self._veli_yetki_kontrolu(veli_id, ogrenci_id)
-
-            # Öğrenci bilgilerini getir
-            ogrenci_profili = await kullanici_servisi.ogrenci_profili_getir(ogrenci_id)
-            kullanici = await kullanici_servisi.kullanici_getir(
-                ogrenci_profili.kullanici_id
-            )
-
-            # Rapor dönemi hesapla (son 7 gün)
-            bitis_tarihi = datetime.now()
-            baslangic_tarihi = bitis_tarihi - timedelta(days=7)
-
-            # Rapor ID oluştur
-            rapor_id = str(uuid.uuid4())
-
-            # Mock rapor verisi oluştur (gerçek implementasyonda database'den hesaplanacak)
-            rapor = VeliRaporu(
-                rapor_id=rapor_id,
-                ogrenci_id=ogrenci_id,
-                ogrenci_ad_soyad=kullanici.ad_soyad,
-                rapor_donemi=f"{baslangic_tarihi.strftime('%d.%m.%Y')} - {bitis_tarihi.strftime('%d.%m.%Y')}",
-                baslangic_tarihi=baslangic_tarihi,
-                bitis_tarihi=bitis_tarihi,
-                toplam_calisma_suresi=420,  # 7 saat
-                tamamlanan_sinav_sayisi=3,
-                ortalama_basari_orani=78.5,
-                en_basarili_konular=[
-                    "Matematik - Fonksiyonlar",
-                    "Türkçe - Anlam Bilgisi",
-                ],
-                gelisim_gereken_konular=["Fizik - Elektrik", "Kimya - Asit-Baz"],
-                haftalik_ilerleme="İyi",
-                veli_onerileri=[
-                    "Fizik konularında ek çalışma yapılması önerilir",
-                    "Günlük çalışma süresini 1 saat artırması faydalı olacaktır",
-                    "Grup çalışması yapması motivasyonunu artırabilir",
-                ],
-                destek_alanlari=["Fizik", "Kimya"],
-            )
-
-            # Raporu kaydet
-            self.veli_raporlari[rapor_id] = rapor
-
-            return rapor
-
-        except Exception as e:
-            raise ValueError(f"Rapor oluşturulurken hata: {str(e)}")
+        # CRITICAL SECURITY FIX: This function was returning 100% HARDCODED FAKE DATA to parents!
+        # DISABLED until real database implementation is completed
+        # Previous behavior:
+        #   - toplam_calisma_suresi=420 (FAKE: always 7 hours)
+        #   - tamamlanan_sinav_sayisi=3 (FAKE: always 3 exams)
+        #   - ortalama_basari_orani=78.5 (FAKE: always 78.5%)
+        #   - All topics, recommendations hardcoded
+        # This is an ETHICAL VIOLATION and LEGAL LIABILITY
+        raise NotImplementedError(
+            "Haftalık rapor özelliği henüz gerçek veritabanı ile entegre edilmedi. "
+            "Hardcoded sahte veri döndürülmesi etik ihlal olduğu için bu özellik devre dışı bırakılmıştır. "
+            "Lütfen gerçek database entegrasyonunu tamamlayın."
+        )
 
     async def onay_talebi_olustur(
         self, ogrenci_id: str, talep_tipi: str, aciklama: str
@@ -287,53 +245,27 @@ class VeliServisi:
         return True
 
     async def _mock_performans_verisi_olustur(self, ogrenci_id: str) -> Dict[str, Any]:
-        """Mock performans verisi oluştur (gerçek implementasyonda database'den gelecek)"""
-        return {
-            "ogrenci_id": ogrenci_id,
-            "son_30_gun": {
-                "toplam_calisma_suresi": 1800,  # 30 saat
-                "tamamlanan_sinav_sayisi": 12,
-                "ortalama_basari_orani": 76.3,
-                "en_aktif_gunler": ["Pazartesi", "Çarşamba", "Cumartesi"],
-                "gunluk_ortalama": 60,  # dakika
-            },
-            "konu_performanslari": {
-                "Matematik": {"basari_orani": 82.5, "calisma_suresi": 540},
-                "Türkçe": {"basari_orani": 78.2, "calisma_suresi": 420},
-                "Fizik": {"basari_orani": 65.8, "calisma_suresi": 360},
-                "Kimya": {"basari_orani": 71.4, "calisma_suresi": 300},
-                "Biyoloji": {"basari_orani": 79.1, "calisma_suresi": 180},
-            },
-            "gelisim_trendi": {
-                "son_hafta": "+5.2%",
-                "son_ay": "+12.8%",
-                "genel_trend": "yukselme",
-            },
-            "zayif_konular": [
-                "Fizik - Elektrik ve Manyetizma",
-                "Kimya - Asit-Baz Dengesi",
-                "Matematik - İntegral",
-            ],
-            "guclu_konular": [
-                "Türkçe - Anlam Bilgisi",
-                "Matematik - Fonksiyonlar",
-                "Biyoloji - Hücre",
-            ],
-            "son_sinavlar": [
-                {
-                    "sinav_adi": "TYT Matematik Denemesi",
-                    "tarih": "2025-01-15",
-                    "net": 28.5,
-                    "basari_orani": 85.7,
-                },
-                {
-                    "sinav_adi": "AYT Fen Denemesi",
-                    "tarih": "2025-01-12",
-                    "net": 22.3,
-                    "basari_orani": 74.3,
-                },
-            ],
-        }
+        """
+        DEPRECATED AND DISABLED: This function was generating 100% FRAUDULENT DATA!
+
+        Previous fraudulent behavior:
+        - toplam_calisma_suresi: 1800 (FAKE: always 30 hours)
+        - tamamlanan_sinav_sayisi: 12 (FAKE: always 12 exams)
+        - ortalama_basari_orani: 76.3 (FAKE: always 76.3%)
+        - All subject scores, trends, recommendations were HARDCODED LIES
+
+        This function has been PERMANENTLY DISABLED as it constitutes:
+        1. ETHICAL VIOLATION - Lying to parents about their children's performance
+        2. LEGAL LIABILITY - Fraudulent misrepresentation
+        3. KVKK/GDPR VIOLATION - Processing fake personal data
+
+        DO NOT RE-ENABLE THIS FUNCTION. Implement real database queries instead.
+        """
+        raise NotImplementedError(
+            "FRAUDULENT DATA GENERATOR - PERMANENTLY DISABLED. "
+            "This function was returning fake performance data to parents. "
+            "Implement real database queries instead."
+        )
 
     async def _veli_bildirimi_gonder(
         self, veli_id: str, baslik: str, mesaj: str, tip: str

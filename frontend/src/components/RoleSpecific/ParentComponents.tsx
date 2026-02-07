@@ -1,4 +1,14 @@
-import React from 'react'
+import {
+  ChildCare,
+  School,
+  Assessment,
+  CalendarToday,
+  Timer,
+  Star,
+  Notifications,
+  BarChart,
+  Phone,
+} from '@mui/icons-material';
 import {
   Box,
   Card,
@@ -13,22 +23,10 @@ import {
   ListItemText,
   Avatar,
   LinearProgress,
-  Paper,
-  Divider
-} from '@mui/material'
-import {
-  ChildCare,
-  School,
-  Assessment,
-  TrendingUp,
-  CalendarToday,
-  Timer,
-  Star,
-  Notifications,
-  BarChart,
-  Phone
-} from '@mui/icons-material'
-import { useNavigate } from 'react-router-dom'
+  Divider,
+} from '@mui/material';
+import * as React from 'react';
+import { useNavigate } from 'react-router-dom';
 
 interface ParentChildCardProps {
   child: {
@@ -48,17 +46,17 @@ export const ParentChildCard: React.FC<ParentChildCardProps> = ({
   child,
   onViewDetails,
   onViewReports,
-  onContactTeacher
+  onContactTeacher,
 }) => {
   const getProgressColor = (progress: number): 'success' | 'warning' | 'error' => {
-    if (progress >= 80) return 'success'
-    if (progress >= 60) return 'warning'
-    return 'error'
-  }
+    if (progress >= 80) {return 'success';}
+    if (progress >= 60) {return 'warning';}
+    return 'error';
+  };
 
   const getInitials = (name: string): string => {
-    return name.split(' ').map(n => n.charAt(0)).join('').toUpperCase()
-  }
+    return name.split(' ').map(n => n.charAt(0)).join('').toUpperCase();
+  };
 
   return (
     <Card sx={{ height: '100%' }}>
@@ -76,14 +74,14 @@ export const ParentChildCard: React.FC<ParentChildCardProps> = ({
             </Typography>
           </Box>
         </Box>
-        
+
         <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
           <CalendarToday sx={{ mr: 1, fontSize: 16, color: 'text.secondary' }} />
           <Typography variant="body2" color="text.secondary">
             Son Aktivite: {new Date(child.son_aktivite).toLocaleDateString('tr-TR')}
           </Typography>
         </Box>
-        
+
         <Box sx={{ mb: 2 }}>
           <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
             <Typography variant="body2">Haftalık İlerleme</Typography>
@@ -97,7 +95,7 @@ export const ParentChildCard: React.FC<ParentChildCardProps> = ({
             color={getProgressColor(child.haftalik_ilerleme)}
           />
         </Box>
-        
+
         <Grid container spacing={1}>
           <Grid item xs={4}>
             <Button
@@ -132,8 +130,8 @@ export const ParentChildCard: React.FC<ParentChildCardProps> = ({
         </Grid>
       </CardContent>
     </Card>
-  )
-}
+  );
+};
 
 interface ParentQuickActionsProps {
   onViewAllChildren?: () => void
@@ -146,36 +144,36 @@ export const ParentQuickActions: React.FC<ParentQuickActionsProps> = ({
   onViewAllChildren,
   onViewReports,
   onViewNotifications,
-  onContactSchool
+  onContactSchool,
 }) => {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   const quickActions = [
     {
       label: 'Çocuklarım',
-      icon: <Child />,
+      icon: <ChildCare />,
       color: 'primary' as const,
-      onClick: () => onViewAllChildren ? onViewAllChildren() : navigate('/parent/children')
+      onClick: () => onViewAllChildren ? onViewAllChildren() : navigate('/parent/children'),
     },
     {
       label: 'Raporlar',
       icon: <BarChart />,
       color: 'secondary' as const,
-      onClick: () => onViewReports ? onViewReports() : navigate('/parent/reports')
+      onClick: () => onViewReports ? onViewReports() : navigate('/parent/reports'),
     },
     {
       label: 'Bildirimler',
       icon: <Notifications />,
       color: 'warning' as const,
-      onClick: () => onViewNotifications ? onViewNotifications() : navigate('/parent/notifications')
+      onClick: () => onViewNotifications ? onViewNotifications() : navigate('/parent/notifications'),
     },
     {
       label: 'Okul İletişim',
       icon: <Phone />,
       color: 'info' as const,
-      onClick: () => onContactSchool ? onContactSchool() : alert('İletişim özelliği yakında eklenecek')
-    }
-  ]
+      onClick: () => onContactSchool ? onContactSchool() : alert('İletişim özelliği yakında eklenecek'),
+    },
+  ];
 
   return (
     <Card>
@@ -201,8 +199,8 @@ export const ParentQuickActions: React.FC<ParentQuickActionsProps> = ({
         </Grid>
       </CardContent>
     </Card>
-  )
-}
+  );
+};
 
 interface WeeklyReportCardProps {
   report: {
@@ -217,19 +215,19 @@ interface WeeklyReportCardProps {
 
 export const WeeklyReportCard: React.FC<WeeklyReportCardProps> = ({
   report,
-  weekLabel
+  weekLabel,
 }) => {
   const formatDuration = (minutes: number): string => {
-    const hours = Math.floor(minutes / 60)
-    const mins = minutes % 60
-    return `${hours}s ${mins}dk`
-  }
+    const hours = Math.floor(minutes / 60);
+    const mins = minutes % 60;
+    return `${hours}s ${mins}dk`;
+  };
 
   const getPerformanceColor = (score: number): 'success' | 'warning' | 'error' => {
-    if (score >= 80) return 'success'
-    if (score >= 60) return 'warning'
-    return 'error'
-  }
+    if (score >= 80) {return 'success';}
+    if (score >= 60) {return 'warning';}
+    return 'error';
+  };
 
   return (
     <Card>
@@ -237,7 +235,7 @@ export const WeeklyReportCard: React.FC<WeeklyReportCardProps> = ({
         <Typography variant="h6" gutterBottom>
           {weekLabel}
         </Typography>
-        
+
         <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
           <Timer sx={{ mr: 1, fontSize: 20, color: 'primary.main' }} />
           <Typography variant="body2">
@@ -272,8 +270,8 @@ export const WeeklyReportCard: React.FC<WeeklyReportCardProps> = ({
         </Box>
       </CardContent>
     </Card>
-  )
-}
+  );
+};
 
 interface ParentNotificationListProps {
   notifications: Array<{
@@ -290,34 +288,34 @@ interface ParentNotificationListProps {
 
 export const ParentNotificationList: React.FC<ParentNotificationListProps> = ({
   notifications,
-  onMarkAsRead,
-  onViewAll
+  onMarkAsRead: _onMarkAsRead,
+  onViewAll,
 }) => {
   const getNotificationIcon = (tip: string) => {
     switch (tip) {
       case 'basari':
-        return <Star sx={{ color: 'success.main' }} />
+        return <Star sx={{ color: 'success.main' }} />;
       case 'uyari':
-        return <Notifications sx={{ color: 'warning.main' }} />
+        return <Notifications sx={{ color: 'warning.main' }} />;
       case 'hata':
-        return <Notifications sx={{ color: 'error.main' }} />
+        return <Notifications sx={{ color: 'error.main' }} />;
       default:
-        return <Notifications sx={{ color: 'info.main' }} />
+        return <Notifications sx={{ color: 'info.main' }} />;
     }
-  }
+  };
 
   const getNotificationColor = (tip: string): 'success' | 'warning' | 'error' | 'info' => {
     switch (tip) {
       case 'basari':
-        return 'success'
+        return 'success';
       case 'uyari':
-        return 'warning'
+        return 'warning';
       case 'hata':
-        return 'error'
+        return 'error';
       default:
-        return 'info'
+        return 'info';
     }
-  }
+  };
 
   return (
     <Card>
@@ -330,7 +328,7 @@ export const ParentNotificationList: React.FC<ParentNotificationListProps> = ({
             Tümünü Gör
           </Button>
         </Box>
-        
+
         <List sx={{ p: 0 }}>
           {notifications.slice(0, 5).map((notification, index) => (
             <React.Fragment key={notification.bildirim_id}>
@@ -339,14 +337,14 @@ export const ParentNotificationList: React.FC<ParentNotificationListProps> = ({
                   px: 0,
                   backgroundColor: notification.okundu ? 'transparent' : 'action.hover',
                   borderRadius: 1,
-                  mb: 1
+                  mb: 1,
                 }}
               >
                 <ListItemIcon>
-                  <Avatar sx={{ 
+                  <Avatar sx={{
                     bgcolor: `${getNotificationColor(notification.tip)}.main`,
                     width: 32,
-                    height: 32
+                    height: 32,
                   }}>
                     {getNotificationIcon(notification.tip)}
                   </Avatar>
@@ -374,12 +372,12 @@ export const ParentNotificationList: React.FC<ParentNotificationListProps> = ({
         </List>
       </CardContent>
     </Card>
-  )
-}
+  );
+};
 
 export default {
   ParentChildCard,
   ParentQuickActions,
   WeeklyReportCard,
-  ParentNotificationList
-}
+  ParentNotificationList,
+};

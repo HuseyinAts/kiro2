@@ -1,11 +1,12 @@
 /**
  * Learning Style Service - Frontend API İstemcisi
- * 
+ *
  * Backend'deki öğrenme stili API'lerine bağlanır
  * Endpoint: /api/v1/learning-style/*
  */
 
 import axios, { AxiosInstance } from 'axios';
+
 import config from '../config';
 
 // Base URL
@@ -29,7 +30,7 @@ api.interceptors.request.use(
     }
     return config;
   },
-  (error) => Promise.reject(error)
+  (error) => Promise.reject(error),
 );
 
 // Response interceptor - hata yönetimi
@@ -42,7 +43,7 @@ api.interceptors.response.use(
       window.location.href = '/login';
     }
     return Promise.reject(error);
-  }
+  },
 );
 
 // Types
@@ -101,11 +102,11 @@ class LearningStyleService {
    */
   async detectLearningStyle(
     studentId: string,
-    behavioralData?: BehavioralData
+    behavioralData?: BehavioralData,
   ): Promise<LearningStyleProfile> {
     try {
       const response = await api.get(`/api/v1/learning-style/detect/${studentId}`, {
-        params: behavioralData
+        params: behavioralData,
       });
       return response.data.data || response.data;
     } catch (error) {
@@ -119,14 +120,14 @@ class LearningStyleService {
    */
   async getRecommendations(
     studentId: string,
-    subject?: string
+    subject?: string,
   ): Promise<Recommendation[]> {
     try {
       const response = await api.get(
         `/api/v1/learning-style/recommendations/${studentId}`,
         {
-          params: { subject }
-        }
+          params: { subject },
+        },
       );
       return response.data.data || response.data;
     } catch (error) {
@@ -140,12 +141,12 @@ class LearningStyleService {
    */
   async updateBehavioralData(
     studentId: string,
-    behavioralData: BehavioralData
+    behavioralData: BehavioralData,
   ): Promise<void> {
     try {
       await api.post(
         `/api/v1/learning-style/behavioral-data/${studentId}`,
-        behavioralData
+        behavioralData,
       );
     } catch (error) {
       console.error('Davranışsal veri güncelleme hatası:', error);
@@ -158,12 +159,12 @@ class LearningStyleService {
    */
   async submitQuestionnaire(
     studentId: string,
-    responses: string[]
+    responses: string[],
   ): Promise<LearningStyleProfile> {
     try {
       const response = await api.post(
         `/api/v1/learning-style/questionnaire/${studentId}`,
-        { responses }
+        { responses },
       );
       return response.data.data || response.data;
     } catch (error) {
@@ -203,15 +204,15 @@ class LearningStyleService {
    */
   async exportProfile(
     studentId: string,
-    format: 'pdf' | 'json' = 'json'
+    format: 'pdf' | 'json' = 'json',
   ): Promise<Blob | any> {
     try {
       const response = await api.get(
         `/api/v1/learning-style/export/${studentId}`,
         {
           params: { format },
-          responseType: format === 'pdf' ? 'blob' : 'json'
-        }
+          responseType: format === 'pdf' ? 'blob' : 'json',
+        },
       );
       return response.data;
     } catch (error) {

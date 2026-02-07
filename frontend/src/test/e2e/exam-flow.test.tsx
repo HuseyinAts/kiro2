@@ -17,16 +17,26 @@ import userEvent from '@testing-library/user-event'
 import { render, createMockUser, createMockExam, createMockQuestion } from '../utils/test-utils'
 import { server, addHandler } from '../mocks/server'
 import { http, HttpResponse } from 'msw'
-import App from '../../app'
+import { App } from '../../app'
 
 // Mock navigation
 const mockNavigate = vi.fn()
+const mockLocation = {
+  pathname: '/',
+  search: '',
+  hash: '',
+  state: null,
+  key: 'default',
+}
+
 vi.mock('react-router-dom', async () => {
   const actual = await vi.importActual('react-router-dom')
   return {
     ...actual,
     useNavigate: () => mockNavigate,
-    BrowserRouter: ({ children }: { children: React.ReactNode }) => <div>{children}</div>
+    useLocation: () => mockLocation,
+    // Use MemoryRouter instead of mocking BrowserRouter
+    BrowserRouter: actual.MemoryRouter,
   }
 })
 

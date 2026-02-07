@@ -8,16 +8,10 @@ import logging
 import os
 from typing import Any
 
-import langchain
+# LangChain Core imports (updated for 2026 - no deprecated paths)
 from langchain.agents import AgentExecutor
-from langchain.cache import InMemoryCache, RedisCache
 from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
 from langchain.chains import ConversationalRetrievalChain, LLMChain, RetrievalQA
-
-# LangChain imports
-from langchain.chat_models import ChatAnthropic, ChatOpenAI
-from langchain.embeddings import HuggingFaceEmbeddings, OpenAIEmbeddings
-from langchain.llms import HuggingFaceHub, OpenAI
 from langchain.memory import (
     ConversationBufferMemory,
     ConversationBufferWindowMemory,
@@ -33,11 +27,34 @@ from langchain.prompts import (
 from langchain.schema import AIMessage, Document, HumanMessage
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 
-# Tools for agents
-from langchain.tools import DuckDuckGoSearchRun, Tool, WikipediaQueryRun
+# LangChain Community imports (migrated from deprecated langchain.* paths)
+from langchain_community.cache import InMemoryCache, RedisCache
+from langchain_community.llms import HuggingFaceHub
+from langchain_community.tools import DuckDuckGoSearchRun, WikipediaQueryRun
+from langchain_community.vectorstores import FAISS, Chroma
 
-# Vector stores
-from langchain.vectorstores import FAISS, Chroma
+# LangChain Partner packages (migrated from deprecated langchain.chat_models/embeddings)
+try:
+    from langchain_openai import ChatOpenAI, OpenAI, OpenAIEmbeddings
+except ImportError:
+    ChatOpenAI = None  # type: ignore
+    OpenAI = None  # type: ignore
+    OpenAIEmbeddings = None  # type: ignore
+
+try:
+    from langchain_anthropic import ChatAnthropic
+except ImportError:
+    ChatAnthropic = None  # type: ignore
+
+try:
+    from langchain_huggingface import HuggingFaceEmbeddings
+except ImportError:
+    from langchain_community.embeddings import HuggingFaceEmbeddings
+
+from langchain.tools import Tool
+
+# Global langchain cache setting
+import langchain
 
 # OpenAIFunctionsAgent import removed - deprecated
 
@@ -90,7 +107,8 @@ class LangChainLLMService:
             try:
                 langchain.llm_cache = RedisCache(redis_url=self.config.redis_url)
                 logger.info("Redis cache enabled for LangChain")
-            except:
+            except (ConnectionError, OSError, Exception) as e:
+                logger.warning(f"Redis cache unavailable ({e}), falling back to in-memory")
                 langchain.llm_cache = InMemoryCache()
                 logger.info("In-memory cache enabled for LangChain")
 
@@ -305,16 +323,25 @@ class LangChainLLMService:
                     )
                 )
 
-            # Create agent
-            if self.chat_model:
-                agent = OpenAIFunctionsAgent.from_llm_and_tools(
-                    llm=self.chat_model, tools=loaded_tools, verbose=self.config.verbose
-                )
+            # Create agent using modern LangChain patterns
+            from langchain.agents import create_openai_functions_agent, create_react_agent
+            from langchain import hub
+
+            if self.chat_model and ChatOpenAI is not None:
+                # Use OpenAI functions agent for compatible models
+                try:
+                    prompt_template = hub.pull("hwchase17/openai-functions-agent")
+                    agent = create_openai_functions_agent(
+                        llm=self.chat_model, tools=loaded_tools, prompt=prompt_template
+                    )
+                except Exception as e:
+                    logger.warning(f"OpenAI functions agent failed: {e}, using ReAct")
+                    prompt_template = hub.pull("hwchase17/react")
+                    agent = create_react_agent(
+                        llm=self.chat_model, tools=loaded_tools, prompt=prompt_template
+                    )
             else:
                 # Use ReAct agent for non-OpenAI models
-                from langchain import hub
-                from langchain.agents import create_react_agent
-
                 prompt_template = hub.pull("hwchase17/react")
                 agent = create_react_agent(
                     llm=self.llm, tools=loaded_tools, prompt=prompt_template

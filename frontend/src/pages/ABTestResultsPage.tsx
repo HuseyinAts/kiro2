@@ -3,7 +3,14 @@
  * Statistical analysis and comparison of model optimization variants
  */
 
-import React, { useState, useEffect } from 'react'
+import {
+  Science,
+  TrendingDown,
+  CheckCircle,
+  Warning,
+  Refresh,
+  EmojiEvents,
+} from '@mui/icons-material';
 import {
   Box,
   Card,
@@ -26,31 +33,20 @@ import {
   IconButton,
   Tooltip,
   Alert,
-  Divider
-} from '@mui/material'
-import {
-  Science,
-  TrendingUp,
-  TrendingDown,
-  CheckCircle,
-  Warning,
-  Refresh,
-  EmojiEvents,
-  CompareArrows
-} from '@mui/icons-material'
+} from '@mui/material';
+import * as React from 'react';
+import {  useState, useEffect  } from 'react';
 import {
   BarChart,
   Bar,
-  LineChart,
-  Line,
   XAxis,
   YAxis,
   CartesianGrid,
   Tooltip as RechartsTooltip,
   Legend,
   ResponsiveContainer,
-  Cell
-} from 'recharts'
+  Cell,
+} from 'recharts';
 
 interface VersionStats {
   requests: number
@@ -86,49 +82,49 @@ const VERSION_LABELS = {
   base: 'Base (No Optimization)',
   optimized_prompt: 'Optimized Prompt',
   optimized_vocab: 'Optimized Vocabulary',
-  optimized_full: 'Full Optimization'
-}
+  optimized_full: 'Full Optimization',
+};
 
 const VERSION_COLORS = {
   base: '#9E9E9E',
   optimized_prompt: '#2196F3',
   optimized_vocab: '#FF9800',
-  optimized_full: '#4CAF50'
-}
+  optimized_full: '#4CAF50',
+};
 
 export const ABTestResultsPage: React.FC = () => {
-  const [results, setResults] = useState<ABTestResults | null>(null)
-  const [provider, setProvider] = useState<string>('all')
-  const [timeRange, setTimeRange] = useState<number>(7)
-  const [loading, setLoading] = useState(false)
-  const [lastUpdated, setLastUpdated] = useState<Date>(new Date())
+  const [results, setResults] = useState<ABTestResults | null>(null);
+  const [provider, setProvider] = useState<string>('all');
+  const [timeRange, setTimeRange] = useState<number>(7);
+  const [loading, setLoading] = useState(false);
+  const [lastUpdated, setLastUpdated] = useState<Date>(new Date());
 
   const fetchResults = async () => {
-    setLoading(true)
+    setLoading(true);
     try {
-      const response = await fetch(`/api/monitoring/ab-test-results?provider=${provider}&days=${timeRange}`)
-      const data = await response.json()
-      setResults(data)
-      setLastUpdated(new Date())
+      const response = await fetch(`/api/monitoring/ab-test-results?provider=${provider}&days=${timeRange}`);
+      const data = await response.json();
+      setResults(data);
+      setLastUpdated(new Date());
     } catch (error) {
-      console.error('Failed to fetch A/B test results:', error)
+      console.error('Failed to fetch A/B test results:', error);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   useEffect(() => {
-    fetchResults()
-    const interval = setInterval(fetchResults, 60000)
-    return () => clearInterval(interval)
-  }, [provider, timeRange])
+    fetchResults();
+    const interval = setInterval(fetchResults, 60000);
+    return () => clearInterval(interval);
+  }, [provider, timeRange]);
 
   if (!results) {
     return (
       <Box sx={{ p: 3 }}>
         <LinearProgress />
       </Box>
-    )
+    );
   }
 
   const versionData = Object.entries(results.versions).map(([version, stats]) => ({
@@ -140,11 +136,11 @@ export const ABTestResultsPage: React.FC = () => {
     avg_quality: stats.avg_quality,
     token_savings: stats.token_savings_vs_base,
     cost_savings: stats.cost_savings_vs_base,
-    quality_change: stats.quality_change_vs_base
-  }))
+    quality_change: stats.quality_change_vs_base,
+  }));
 
-  const winner = results.winner
-  const isSignificant = results.statistical_significance.is_significant
+  const winner = results.winner;
+  const isSignificant = results.statistical_significance.is_significant;
 
   return (
     <Box sx={{ p: 3 }}>
@@ -396,7 +392,7 @@ export const ABTestResultsPage: React.FC = () => {
               </TableHead>
               <TableBody>
                 {versionData.map((version) => {
-                  const isWinner = version.versionKey === winner?.version
+                  const isWinner = version.versionKey === winner?.version;
                   return (
                     <TableRow
                       key={version.versionKey}
@@ -409,7 +405,7 @@ export const ABTestResultsPage: React.FC = () => {
                               width: 12,
                               height: 12,
                               borderRadius: '50%',
-                              bgcolor: VERSION_COLORS[version.versionKey as keyof typeof VERSION_COLORS]
+                              bgcolor: VERSION_COLORS[version.versionKey as keyof typeof VERSION_COLORS],
                             }}
                           />
                           <Typography variant="body2" fontWeight={isWinner ? 'bold' : 'normal'}>
@@ -464,7 +460,7 @@ export const ABTestResultsPage: React.FC = () => {
                         )}
                       </TableCell>
                     </TableRow>
-                  )
+                  );
                 })}
               </TableBody>
             </Table>
@@ -487,7 +483,7 @@ export const ABTestResultsPage: React.FC = () => {
         </Alert>
       </Box>
     </Box>
-  )
-}
+  );
+};
 
-export default ABTestResultsPage
+export default ABTestResultsPage;

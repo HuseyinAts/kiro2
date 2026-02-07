@@ -6,17 +6,17 @@ services:
     image: postgres:15-alpine
     container_name: turkiye_sinav_postgres_dev
     environment:
-      POSTGRES_DB: turkiye_sinav_dev_db
+      POSTGRES_DB: kiro2
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres123
       POSTGRES_INITDB_ARGS: "--encoding=UTF8 --locale=tr_TR.UTF-8"
     ports:
-      - "5432:5432"
+      - "5434:5432"
     volumes:
       - postgres_dev_data:/var/lib/postgresql/data
       - ./init-scripts:/docker-entrypoint-initdb.d
     networks:
-      - turkiye_sinav_dev_network
+      - kiro2-dev-network
     restart: unless-stopped
 
   # Redis Cache (Development)
@@ -28,7 +28,7 @@ services:
     volumes:
       - redis_dev_data:/data
     networks:
-      - turkiye_sinav_dev_network
+      - kiro2-dev-network
     restart: unless-stopped
     command: redis-server --appendonly yes
 
@@ -41,7 +41,7 @@ services:
     ports:
       - "8000:8000"
     environment:
-      - DATABASE_URL=postgresql+asyncpg://postgres:postgres123@postgres:5432/turkiye_sinav_dev_db
+      - DATABASE_URL=postgresql+asyncpg://postgres:postgres123@postgres:5432/kiro2
       - REDIS_URL=redis://redis:6379/0
       - SECRET_KEY=dev-secret-key-not-for-production-32-chars
       - JWT_SECRET_KEY=dev-jwt-secret-not-for-production-32-chars
@@ -65,7 +65,7 @@ services:
       - ./vector_db:/app/vector_db
       - ./data:/app/data
     networks:
-      - turkiye_sinav_dev_network
+      - kiro2-dev-network
     restart: unless-stopped
 
   # Frontend (Development)
@@ -85,11 +85,11 @@ services:
     depends_on:
       - backend
     networks:
-      - teknofest-network
+      - kiro2-dev-network
     restart: unless-stopped
 
 networks:
-  teknofest-network:
+  kiro2-dev-network:
     driver: bridge
 
 # Development setup with hot reload for both backend and frontend

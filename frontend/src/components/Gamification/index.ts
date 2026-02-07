@@ -9,4 +9,5 @@ export { BadgeCollection } from './BadgeCollection';
 export { Leaderboard } from './Leaderboard';
 export { GamificationDashboard } from './GamificationDashboard';
 
+import { GamificationDashboard } from './GamificationDashboard';
 export default GamificationDashboard;

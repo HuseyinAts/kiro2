@@ -1,6 +1,5 @@
 """Analyze Week 6 coverage results"""
 import json
-import sys
 
 
 def analyze_coverage(json_file):

@@ -1,5 +1,6 @@
-import { Card, CardMedia, CardContent, CardActions, Typography, Chip, Button, Box, Rating, Tooltip, LinearProgress } from '@mui/material';
 import { PlayCircle, AccessTime, Visibility, Star, CheckCircle, Language, School, HighQuality, ClosedCaption, Hd, WarningAmber } from '@mui/icons-material';
+import { Card, CardMedia, CardContent, CardActions, Typography, Chip, Button, Box, Rating, Tooltip, LinearProgress } from '@mui/material';
+
 import { VideoResponse } from '../../api';
 
 interface VideoResourceCardProps {
@@ -15,7 +16,7 @@ export function VideoResourceCard({ video, onPlay }: VideoResourceCardProps) {
       const hours = match[1] ? parseInt(match[1]) : 0;
       const minutes = match[2] ? parseInt(match[2]) : 0;
       const seconds = match[3] ? parseInt(match[3]) : 0;
-      
+
       if (hours > 0) {
         return `${hours}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
       }
@@ -25,8 +26,8 @@ export function VideoResourceCard({ video, onPlay }: VideoResourceCardProps) {
   };
 
   const formatViewCount = (count: number): string => {
-    if (count >= 1000000) return `${(count / 1000000).toFixed(1)}M`;
-    if (count >= 1000) return `${(count / 1000).toFixed(1)}K`;
+    if (count >= 1000000) {return `${(count / 1000000).toFixed(1)}M`;}
+    if (count >= 1000) {return `${(count / 1000).toFixed(1)}K`;}
     return count.toString();
   };
 
@@ -39,14 +40,14 @@ export function VideoResourceCard({ video, onPlay }: VideoResourceCardProps) {
   };
 
   return (
-    <Card 
-      elevation={3} 
+    <Card
+      elevation={3}
       className="hover:shadow-xl transition-all duration-300 h-full flex flex-col"
-      sx={{ 
-        '&:hover': { 
+      sx={{
+        '&:hover': {
           transform: 'translateY(-4px)',
-          boxShadow: 6
-        }
+          boxShadow: 6,
+        },
       }}
     >
       {/* Thumbnail */}
@@ -57,7 +58,7 @@ export function VideoResourceCard({ video, onPlay }: VideoResourceCardProps) {
         alt={video.title}
         className="cursor-pointer"
         onClick={handlePlay}
-        sx={{ 
+        sx={{
           objectFit: 'cover',
           position: 'relative',
           '&:hover::after': {
@@ -67,32 +68,32 @@ export function VideoResourceCard({ video, onPlay }: VideoResourceCardProps) {
             left: 0,
             right: 0,
             bottom: 0,
-            backgroundColor: 'rgba(0,0,0,0.3)'
-          }
+            backgroundColor: 'rgba(0,0,0,0.3)',
+          },
         }}
       />
 
       <CardContent className="flex-1">
         {/* Başlık */}
-        <Typography 
-          variant="h6" 
+        <Typography
+          variant="h6"
           className="line-clamp-2 mb-2 font-semibold"
-          sx={{ 
+          sx={{
             fontSize: '1rem',
             minHeight: '3rem',
             display: '-webkit-box',
             WebkitLineClamp: 2,
             WebkitBoxOrient: 'vertical',
-            overflow: 'hidden'
+            overflow: 'hidden',
           }}
         >
           {video.title}
         </Typography>
 
         {/* Kanal */}
-        <Typography 
-          variant="body2" 
-          color="text.secondary" 
+        <Typography
+          variant="body2"
+          color="text.secondary"
           className="mb-2 flex items-center gap-1"
         >
           📺 {video.channel}
@@ -141,15 +142,15 @@ export function VideoResourceCard({ video, onPlay }: VideoResourceCardProps) {
             <Typography variant="caption" color="text.secondary" className="block mb-1">
               Kalite Metrikleri:
             </Typography>
-            
+
             {/* Türkçe Skoru */}
             <Box className="flex items-center gap-1 mb-1">
               <Tooltip title="Türkçe İçerik Skoru">
                 <Language fontSize="small" color={video.scores.turkish_score >= 0.7 ? 'success' : 'warning'} />
               </Tooltip>
-              <LinearProgress 
-                variant="determinate" 
-                value={video.scores.turkish_score * 100} 
+              <LinearProgress
+                variant="determinate"
+                value={video.scores.turkish_score * 100}
                 sx={{ flex: 1, height: 6, borderRadius: 1 }}
                 color={video.scores.turkish_score >= 0.7 ? 'success' : 'warning'}
               />
@@ -157,15 +158,15 @@ export function VideoResourceCard({ video, onPlay }: VideoResourceCardProps) {
                 {(video.scores.turkish_score * 100).toFixed(0)}%
               </Typography>
             </Box>
-            
+
             {/* Konu Uygunluğu Skoru */}
             <Box className="flex items-center gap-1 mb-1">
               <Tooltip title="Konu Uygunluğu Skoru">
                 <School fontSize="small" color={video.scores.relevance_score >= 0.6 ? 'success' : 'warning'} />
               </Tooltip>
-              <LinearProgress 
-                variant="determinate" 
-                value={video.scores.relevance_score * 100} 
+              <LinearProgress
+                variant="determinate"
+                value={video.scores.relevance_score * 100}
                 sx={{ flex: 1, height: 6, borderRadius: 1 }}
                 color={video.scores.relevance_score >= 0.6 ? 'success' : 'warning'}
               />
@@ -173,15 +174,15 @@ export function VideoResourceCard({ video, onPlay }: VideoResourceCardProps) {
                 {(video.scores.relevance_score * 100).toFixed(0)}%
               </Typography>
             </Box>
-            
+
             {/* Video Kalitesi Skoru */}
             <Box className="flex items-center gap-1 mb-1">
               <Tooltip title="Video Kalite Skoru">
                 <HighQuality fontSize="small" color={video.scores.quality_score >= 0.5 ? 'success' : 'warning'} />
               </Tooltip>
-              <LinearProgress 
-                variant="determinate" 
-                value={video.scores.quality_score * 100} 
+              <LinearProgress
+                variant="determinate"
+                value={video.scores.quality_score * 100}
                 sx={{ flex: 1, height: 6, borderRadius: 1 }}
                 color={video.scores.quality_score >= 0.5 ? 'success' : 'warning'}
               />
@@ -189,7 +190,7 @@ export function VideoResourceCard({ video, onPlay }: VideoResourceCardProps) {
                 {(video.scores.quality_score * 100).toFixed(0)}%
               </Typography>
             </Box>
-            
+
             {/* Final Skor */}
             <Box className="flex items-center gap-1 mt-2">
               <Typography variant="caption" fontWeight="bold" color="primary">
@@ -225,7 +226,7 @@ export function VideoResourceCard({ video, onPlay }: VideoResourceCardProps) {
             </Typography>
           </Box>
         )}
-        
+
         {/* Erişilebilirlik ve Özellik Rozetleri */}
         {(video.is_accessible !== undefined || video.caption_available || video.definition === 'hd') && (
           <Box className="flex items-center gap-1 mt-2 flex-wrap">
@@ -289,9 +290,9 @@ export function VideoResourceCard({ video, onPlay }: VideoResourceCardProps) {
           fullWidth
           startIcon={<PlayCircle />}
           onClick={handlePlay}
-          sx={{ 
+          sx={{
             textTransform: 'none',
-            fontWeight: 600
+            fontWeight: 600,
           }}
         >
           İzle

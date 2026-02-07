@@ -1,11 +1,12 @@
 /**
  * Renk ve Kontrast Ayarları Sayfası
  * REQ-50.14 - REQ-50.27: Renk ve Kontrast Ayarları
- * 
+ *
  * Task 77: Renk ve Kontrast Ayarları Demo Sayfası
  */
 
-import React from 'react';
+import * as React from 'react';
+
 import { ColorContrastSettings } from '../components/Accessibility';
 import '../styles/color-contrast-settings.css';
 
@@ -79,7 +80,7 @@ export const ColorContrastSettingsPage: React.FC = () => {
                 <strong>REQ-50.19:</strong> 150ms içinde yumuşak geçiş
               </li>
               <li>
-                <strong>REQ-50.20:</strong> Tercihleri localStorage'da kalıcı saklama
+                <strong>REQ-50.20:</strong> Tercihleri localStorage&apos;da kalıcı saklama
               </li>
               <li>
                 <strong>REQ-50.21:</strong> Önceden tanımlı yüksek kontrast temaları

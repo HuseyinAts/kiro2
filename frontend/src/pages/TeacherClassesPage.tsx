@@ -3,11 +3,12 @@
  * Glassmorphism ile sınıf yönetimi
  */
 
-import React from 'react'
-import { ModernTeacherClassesPage } from './ModernTeacherClassesPage'
+import * as React from 'react';
+
+import { ModernTeacherClassesPage } from './ModernTeacherClassesPage';
 
 export const TeacherClassesPage: React.FC = () => {
-  return <ModernTeacherClassesPage />
-}
+  return <ModernTeacherClassesPage />;
+};
 
-export default TeacherClassesPage
+export default TeacherClassesPage;

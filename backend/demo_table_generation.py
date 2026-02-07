@@ -53,20 +53,20 @@ async def demo_table_generation():
 
         print("\n[SUCCESS] Question generated!")
         print(f"\nStem: {math_question['stem'][:150]}...")
-        print(f"\nOptions:")
+        print("\nOptions:")
         for key, value in math_question["options"].items():
             print(f"  {key}) {value}")
         print(f"\nCorrect Answer: {math_question['correct_answer']}")
 
         # Show table
         if math_question.get("visual_content"):
-            print(f"\n[TABLE] Visual Content:")
+            print("\n[TABLE] Visual Content:")
             print(f"  Type: {math_question['visual_content']['type']}")
             print(f"  Format: {math_question['visual_content']['format']}")
             print(
                 f"  Caption: {math_question['visual_content']['metadata']['caption']}"
             )
-            print(f"\n  Table Content:")
+            print("\n  Table Content:")
             print(math_question["visual_content"]["content"])
         else:
             print("\n[WARNING] No visual content found!")
@@ -100,20 +100,20 @@ async def demo_table_generation():
 
         print("\n[SUCCESS] Question generated!")
         print(f"\nStem: {turkish_question['stem'][:150]}...")
-        print(f"\nOptions:")
+        print("\nOptions:")
         for key, value in turkish_question["options"].items():
             print(f"  {key}) {value}")
         print(f"\nCorrect Answer: {turkish_question['correct_answer']}")
 
         # Show table
         if turkish_question.get("visual_content"):
-            print(f"\n[TABLE] Visual Content:")
+            print("\n[TABLE] Visual Content:")
             print(f"  Type: {turkish_question['visual_content']['type']}")
             print(f"  Format: {turkish_question['visual_content']['format']}")
             print(
                 f"  Caption: {turkish_question['visual_content']['metadata']['caption']}"
             )
-            print(f"\n  Table Content:")
+            print("\n  Table Content:")
             print(turkish_question["visual_content"]["content"])
         else:
             print("\n[WARNING] No visual content found!")

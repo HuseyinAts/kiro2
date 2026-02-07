@@ -7,18 +7,21 @@ This package contains the core business logic for the Learning Path Agent:
 - ResourceFinder: Learning resource discovery
 - PathGenerator: Learning path generation
 - PathOptimizer: Path optimization and sequencing
+- RAGSearchService: RAG-based semantic search
 """
 
-from .student_profiler import StudentProfiler
 from .assessment_creator import AssessmentCreator
-from .resource_finder import ResourceFinder
 from .path_generator import PathGenerator
 from .path_optimizer import PathOptimizer
+from .rag_search import RAGSearchService
+from .resource_finder import ResourceFinder
+from .student_profiler import StudentProfiler
 
 __all__ = [
-    "StudentProfiler",
     "AssessmentCreator",
-    "ResourceFinder",
     "PathGenerator",
     "PathOptimizer",
+    "RAGSearchService",
+    "ResourceFinder",
+    "StudentProfiler",
 ]

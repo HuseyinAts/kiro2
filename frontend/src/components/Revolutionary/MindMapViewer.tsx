@@ -1,7 +1,7 @@
 /**
  * Mind Map Viewer Component - Kavram Haritası Görüntüleyici
  * Task 81.1: Kavram haritaları (REQ-50.73-76)
- * 
+ *
  * Özellikler:
  * - Mind map generation
  * - Interactive node exploration
@@ -9,7 +9,13 @@
  * - Drag-and-drop support
  */
 
-import React, { useState, useRef, useEffect } from 'react';
+import {
+  Add as AddIcon,
+  Download as DownloadIcon,
+  ZoomIn as ZoomInIcon,
+  ZoomOut as ZoomOutIcon,
+  CenterFocusStrong as CenterIcon,
+} from '@mui/icons-material';
 import {
   Box,
   Button,
@@ -27,16 +33,10 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
-  Chip
+  Chip,
 } from '@mui/material';
-import {
-  Add as AddIcon,
-  Download as DownloadIcon,
-  ZoomIn as ZoomInIcon,
-  ZoomOut as ZoomOutIcon,
-  CenterFocusStrong as CenterIcon,
-  Edit as EditIcon
-} from '@mui/icons-material';
+import * as React from 'react';
+import {  useState, useRef, useEffect  } from 'react';
 
 interface MindMapNode {
   id: string;
@@ -70,7 +70,7 @@ const MindMapViewer: React.FC = () => {
     title: '',
     subject: '',
     topic: '',
-    content: ''
+    content: '',
   });
 
   // REQ-50.73: Mind map generation
@@ -79,7 +79,7 @@ const MindMapViewer: React.FC = () => {
       const response = await fetch('/api/v1/visual-supports/mind-maps', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData)
+        body: JSON.stringify(formData),
       });
 
       if (response.ok) {
@@ -96,11 +96,11 @@ const MindMapViewer: React.FC = () => {
 
   // REQ-50.74: Interactive node exploration
   const drawMindMap = () => {
-    if (!selectedMap || !canvasRef.current) return;
+    if (!selectedMap || !canvasRef.current) {return;}
 
     const canvas = canvasRef.current;
     const ctx = canvas.getContext('2d');
-    if (!ctx) return;
+    if (!ctx) {return;}
 
     // Clear canvas
     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -149,16 +149,16 @@ const MindMapViewer: React.FC = () => {
 
   // REQ-50.75: Export functionality
   const handleExport = async (format: 'json' | 'svg' | 'png') => {
-    if (!selectedMap) return;
+    if (!selectedMap) {return;}
 
     try {
       const response = await fetch(
-        `/api/v1/visual-supports/mind-maps/${selectedMap.id}/export?format=${format}`
+        `/api/v1/visual-supports/mind-maps/${selectedMap.id}/export?format=${format}`,
       );
 
       if (response.ok) {
         const data = await response.json();
-        
+
         if (format === 'json') {
           // Download JSON
           const blob = new Blob([JSON.stringify(data.data, null, 2)], { type: 'application/json' });
@@ -287,7 +287,7 @@ const MindMapViewer: React.FC = () => {
                 borderRadius: '8px',
                 width: '100%',
                 maxWidth: '800px',
-                cursor: 'grab'
+                cursor: 'grab',
               }}
             />
 
@@ -300,7 +300,7 @@ const MindMapViewer: React.FC = () => {
         <Card>
           <CardContent>
             <Typography variant="body1" color="text.secondary" align="center">
-              Kavram haritası oluşturmak için "Yeni Kavram Haritası" butonuna tıklayın
+              Kavram haritası oluşturmak için &quot;Yeni Kavram Haritası&quot; butonuna tıklayın
             </Typography>
           </CardContent>
         </Card>

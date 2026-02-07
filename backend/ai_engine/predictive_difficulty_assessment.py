@@ -3,22 +3,18 @@ Predictive Difficulty Assessment System
 AI-powered system for predicting and adjusting content difficulty
 """
 
-import asyncio
 import logging
-import math
 import numpy as np
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
-from typing import Any, Dict, List, Optional, Set, Tuple, Union
+from typing import Any, Dict, List, Optional, Tuple
 from enum import Enum
-import json
 
 from sklearn.ensemble import RandomForestRegressor, GradientBoostingRegressor
-from sklearn.linear_model import LinearRegression, LogisticRegression
-from sklearn.preprocessing import StandardScaler, LabelEncoder
+from sklearn.linear_model import LogisticRegression
+from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import mean_squared_error, mean_absolute_error
-import scipy.stats as stats
+from sklearn.metrics import mean_squared_error
 
 logger = logging.getLogger(__name__)
 

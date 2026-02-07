@@ -3,46 +3,9 @@
  * Öğrenci için tüm devrimsel özelliklerin merkezi ayar paneli
  */
 
-import React, { useState, useEffect } from 'react';
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  Typography,
-  Switch,
-  FormControlLabel,
-  Button,
-  Grid,
-  Box,
-  Paper,
-  Chip,
-  Alert,
-  CircularProgress,
-  Slider,
-  Select,
-  MenuItem,
-  FormControl,
-  InputLabel,
-  Divider,
-  Accordion,
-  AccordionSummary,
-  AccordionDetails,
-  List,
-  ListItem,
-  ListItemText,
-  ListItemIcon,
-  ListItemSecondaryAction,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Tooltip,
-  IconButton
-} from '@mui/material';
 import {
   Settings as SettingsIcon,
   ExpandMore as ExpandMoreIcon,
-  Psychology as PsychologyIcon,
   Visibility as VisibilityIcon,
   Schedule as ScheduleIcon,
   Hub as HubIcon,
@@ -53,18 +16,51 @@ import {
   Restore as RestoreIcon,
   Info as InfoIcon,
   CheckCircle as CheckCircleIcon,
-  Warning as WarningIcon
 } from '@mui/icons-material';
-import { RevolutionaryFeatureSettings, ApiResponse } from '../../types';
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  Typography,
+  Switch,
+  FormControlLabel,
+  Button,
+  Grid,
+  Box,
+  Chip,
+  Alert,
+  CircularProgress,
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel,
+  Accordion,
+  AccordionSummary,
+  AccordionDetails,
+  List,
+  ListItem,
+  ListItemText,
+  ListItemIcon,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Tooltip,
+  IconButton,
+} from '@mui/material';
+import * as React from 'react';
+import {  useState, useEffect  } from 'react';
+
+import { RevolutionaryFeatureSettings } from '../../types';
 
 interface RevolutionarySettingsProps {
   studentId: string;
   onSettingsChange?: (settings: RevolutionaryFeatureSettings) => void;
 }
 
-const RevolutionarySettings: React.FC<RevolutionarySettingsProps> = ({ 
-  studentId, 
-  onSettingsChange 
+const RevolutionarySettings: React.FC<RevolutionarySettingsProps> = ({
+  studentId,
+  onSettingsChange,
 }) => {
   const [settings, setSettings] = useState<RevolutionaryFeatureSettings>({
     fsrs_enabled: true,
@@ -74,15 +70,15 @@ const RevolutionarySettings: React.FC<RevolutionarySettingsProps> = ({
     cultural_adaptations: {
       ramadan_mode: false,
       exam_season_stress: true,
-      group_study_preference: true
+      group_study_preference: true,
     },
     accessibility_features: {
       high_contrast: false,
       large_text: false,
-      screen_reader_optimized: false
-    }
+      screen_reader_optimized: false,
+    },
   });
-  
+
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -183,11 +179,11 @@ const RevolutionarySettings: React.FC<RevolutionarySettingsProps> = ({
       const newSettings = { ...prev };
       const keys = path.split('.');
       let current: any = newSettings;
-      
+
       for (let i = 0; i < keys.length - 1; i++) {
         current = current[keys[i]];
       }
-      
+
       current[keys[keys.length - 1]] = value;
       return newSettings;
     });
@@ -198,23 +194,23 @@ const RevolutionarySettings: React.FC<RevolutionarySettingsProps> = ({
     fsrs: {
       title: 'FSRS Tekrar Sistemi',
       description: '17 parametreli Türk öğrenci davranışlarına optimize edilmiş spaced repetition sistemi',
-      benefits: ['Optimal tekrar zamanlaması', 'Kültürel faktör desteği', 'Anki FSRS 4.5\'i geliştiren algoritma']
+      benefits: ['Optimal tekrar zamanlaması', 'Kültürel faktör desteği', 'Anki FSRS 4.5\'i geliştiren algoritma'],
     },
     bionic_reading: {
       title: 'Türkçe Bionic Reading',
       description: 'Disleksi için Türkçe\'ye özel okuma desteği',
-      benefits: ['Okuma hızı artışı', 'Kök-ek ayrımı', 'Disleksi desteği']
+      benefits: ['Okuma hızı artışı', 'Kök-ek ayrımı', 'Disleksi desteği'],
     },
     text_simplification: {
       title: '3 Seviyeli Metin Basitleştirme',
       description: 'Dünyada ilk 3 seviyeli Türkçe metin basitleştirme sistemi',
-      benefits: ['Kelime seviyesi basitleştirme', 'Cümle yapısı düzenleme', 'Anlam korunumu']
+      benefits: ['Kelime seviyesi basitleştirme', 'Cümle yapısı düzenleme', 'Anlam korunumu'],
     },
     multi_agent: {
       title: 'Multi-Agent Koordinasyon',
       description: 'Blackboard Pattern ile gerçek zamanlı agent koordinasyonu',
-      benefits: ['Agent sinerji', 'Gerçek zamanlı adaptasyon', 'Koordineli öğrenme desteği']
-    }
+      benefits: ['Agent sinerji', 'Gerçek zamanlı adaptasyon', 'Koordineli öğrenme desteği'],
+    },
   };
 
   if (loading) {
@@ -241,9 +237,9 @@ const RevolutionarySettings: React.FC<RevolutionarySettingsProps> = ({
         <Typography variant="h6" color="text.secondary" gutterBottom>
           7 dünya çapında yenilikçi özelliğin merkezi ayar paneli
         </Typography>
-        <Chip 
-          label="🚀 DEVRİMSEL ÖZELLİKLER" 
-          color="primary" 
+        <Chip
+          label="🚀 DEVRİMSEL ÖZELLİKLER"
+          color="primary"
           variant="outlined"
           sx={{ fontWeight: 'bold' }}
         />
@@ -255,7 +251,7 @@ const RevolutionarySettings: React.FC<RevolutionarySettingsProps> = ({
           {error}
         </Alert>
       )}
-      
+
       {success && (
         <Alert severity="success" sx={{ mb: 3 }} onClose={() => setSuccess(null)}>
           {success}
@@ -272,7 +268,7 @@ const RevolutionarySettings: React.FC<RevolutionarySettingsProps> = ({
                 <ScheduleIcon />
                 FSRS Tekrar Sistemi
                 <Tooltip title="Bilgi al">
-                  <IconButton 
+                  <IconButton
                     size="small"
                     onClick={() => {
                       setSelectedFeature('fsrs');
@@ -304,10 +300,10 @@ const RevolutionarySettings: React.FC<RevolutionarySettingsProps> = ({
                   </Box>
                 }
               />
-              
+
               <Box sx={{ mt: 2, p: 2, bgcolor: 'primary.50', borderRadius: 1 }}>
                 <Typography variant="caption" color="primary.main">
-                  Anki'nin FSRS 4.5'ini geliştiren sistem
+                  Anki&apos;nin FSRS 4.5&apos;ini geliştiren sistem
                 </Typography>
               </Box>
             </CardContent>
@@ -322,7 +318,7 @@ const RevolutionarySettings: React.FC<RevolutionarySettingsProps> = ({
                 <VisibilityIcon />
                 Türkçe Bionic Reading
                 <Tooltip title="Bilgi al">
-                  <IconButton 
+                  <IconButton
                     size="small"
                     onClick={() => {
                       setSelectedFeature('bionic_reading');
@@ -349,15 +345,15 @@ const RevolutionarySettings: React.FC<RevolutionarySettingsProps> = ({
                       Bionic Reading Etkin
                     </Typography>
                     <Typography variant="caption" color="text.secondary">
-                      Disleksi için Türkçe'ye özel okuma desteği
+                      Disleksi için Türkçe&apos;ye özel okuma desteği
                     </Typography>
                   </Box>
                 }
               />
-              
+
               <Box sx={{ mt: 2, p: 2, bgcolor: 'secondary.50', borderRadius: 1 }}>
                 <Typography variant="caption" color="secondary.main">
-                  Kök-ek ayrımı ile Türkçe'ye özel
+                  Kök-ek ayrımı ile Türkçe&apos;ye özel
                 </Typography>
               </Box>
             </CardContent>
@@ -372,7 +368,7 @@ const RevolutionarySettings: React.FC<RevolutionarySettingsProps> = ({
                 <AutoFixHighIcon />
                 Metin Basitleştirme
                 <Tooltip title="Bilgi al">
-                  <IconButton 
+                  <IconButton
                     size="small"
                     onClick={() => {
                       setSelectedFeature('text_simplification');
@@ -397,7 +393,7 @@ const RevolutionarySettings: React.FC<RevolutionarySettingsProps> = ({
                   <MenuItem value="semantic">Anlam Seviyesi</MenuItem>
                 </Select>
               </FormControl>
-              
+
               <Box sx={{ p: 2, bgcolor: 'warning.50', borderRadius: 1 }}>
                 <Typography variant="caption" color="warning.main">
                   Dünyada ilk 3 seviyeli Türkçe sistem
@@ -415,7 +411,7 @@ const RevolutionarySettings: React.FC<RevolutionarySettingsProps> = ({
                 <HubIcon />
                 Multi-Agent Koordinasyon
                 <Tooltip title="Bilgi al">
-                  <IconButton 
+                  <IconButton
                     size="small"
                     onClick={() => {
                       setSelectedFeature('multi_agent');
@@ -447,7 +443,7 @@ const RevolutionarySettings: React.FC<RevolutionarySettingsProps> = ({
                   </Box>
                 }
               />
-              
+
               <Box sx={{ mt: 2, p: 2, bgcolor: 'success.50', borderRadius: 1 }}>
                 <Typography variant="caption" color="success.main">
                   Gerçek zamanlı agent koordinasyonu
@@ -486,7 +482,7 @@ const RevolutionarySettings: React.FC<RevolutionarySettingsProps> = ({
                 }
               />
             </Grid>
-            
+
             <Grid item xs={12} md={4}>
               <FormControlLabel
                 control={
@@ -505,7 +501,7 @@ const RevolutionarySettings: React.FC<RevolutionarySettingsProps> = ({
                 }
               />
             </Grid>
-            
+
             <Grid item xs={12} md={4}>
               <FormControlLabel
                 control={
@@ -556,7 +552,7 @@ const RevolutionarySettings: React.FC<RevolutionarySettingsProps> = ({
                 }
               />
             </Grid>
-            
+
             <Grid item xs={12} md={4}>
               <FormControlLabel
                 control={
@@ -575,7 +571,7 @@ const RevolutionarySettings: React.FC<RevolutionarySettingsProps> = ({
                 }
               />
             </Grid>
-            
+
             <Grid item xs={12} md={4}>
               <FormControlLabel
                 control={
@@ -608,7 +604,7 @@ const RevolutionarySettings: React.FC<RevolutionarySettingsProps> = ({
         >
           Varsayılana Sıfırla
         </Button>
-        
+
         <Button
           startIcon={saving ? <CircularProgress size={20} /> : <SaveIcon />}
           onClick={handleSave}
@@ -633,7 +629,7 @@ const RevolutionarySettings: React.FC<RevolutionarySettingsProps> = ({
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setResetDialogOpen(false)}>İptal</Button>
-          <Button 
+          <Button
             onClick={handleReset}
             color="warning"
             variant="contained"
@@ -655,7 +651,7 @@ const RevolutionarySettings: React.FC<RevolutionarySettingsProps> = ({
               <Typography variant="body1" paragraph>
                 {featureInfo[selectedFeature as keyof typeof featureInfo]?.description}
               </Typography>
-              
+
               <Typography variant="h6" gutterBottom>
                 Faydalar:
               </Typography>

@@ -822,7 +822,7 @@ class AuthorizationMiddleware(BaseHTTPMiddleware):
 
     def _get_required_permission(
         self, request: Request
-    ) -> Tuple[ResourceType, Action] | None:
+    ) -> tuple[ResourceType, Action] | None:
         """Get required permission for endpoint"""
 
         endpoint_key = f"{request.method} {request.url.path}"

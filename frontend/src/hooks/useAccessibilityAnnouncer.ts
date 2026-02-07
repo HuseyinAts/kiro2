@@ -4,10 +4,11 @@
  * WCAG 2.1 Level AA - 4.1.3 Status Messages
  */
 
-import { useState, useCallback } from 'react'
-import type { Announcement, AnnouncementPriority } from '../components/ui/AccessibilityAnnouncer'
+import { useState, useCallback } from 'react';
 
-let announcementIdCounter = 0
+import type { Announcement, AnnouncementPriority } from '../components/ui/AccessibilityAnnouncer';
+
+let announcementIdCounter = 0;
 
 export interface UseAccessibilityAnnouncerReturn {
   announcements: Announcement[]
@@ -38,11 +39,11 @@ export interface UseAccessibilityAnnouncerReturn {
  * ```
  */
 export const useAccessibilityAnnouncer = (): UseAccessibilityAnnouncerReturn => {
-  const [announcements, setAnnouncements] = useState<Announcement[]>([])
+  const [announcements, setAnnouncements] = useState<Announcement[]>([]);
 
   const announce = useCallback(
     (message: string, priority: AnnouncementPriority = 'polite', timeout = 3000) => {
-      const id = `announcement-${++announcementIdCounter}`
+      const id = `announcement-${++announcementIdCounter}`;
 
       setAnnouncements((prev) => [
         ...prev,
@@ -52,42 +53,42 @@ export const useAccessibilityAnnouncer = (): UseAccessibilityAnnouncerReturn => 
           priority,
           timeout,
         },
-      ])
+      ]);
 
       // Auto-remove after timeout
       if (timeout) {
         setTimeout(() => {
-          setAnnouncements((prev) => prev.filter((a) => a.id !== id))
-        }, timeout)
+          setAnnouncements((prev) => prev.filter((a) => a.id !== id));
+        }, timeout);
       }
     },
-    []
-  )
+    [],
+  );
 
   const announceSuccess = useCallback(
     (message: string) => {
-      announce(`Başarılı: ${message}`, 'polite', 3000)
+      announce(`Başarılı: ${message}`, 'polite', 3000);
     },
-    [announce]
-  )
+    [announce],
+  );
 
   const announceError = useCallback(
     (message: string) => {
-      announce(`Hata: ${message}`, 'assertive', 5000)
+      announce(`Hata: ${message}`, 'assertive', 5000);
     },
-    [announce]
-  )
+    [announce],
+  );
 
   const announceInfo = useCallback(
     (message: string) => {
-      announce(message, 'polite', 3000)
+      announce(message, 'polite', 3000);
     },
-    [announce]
-  )
+    [announce],
+  );
 
   const clear = useCallback(() => {
-    setAnnouncements([])
-  }, [])
+    setAnnouncements([]);
+  }, []);
 
   return {
     announcements,
@@ -96,7 +97,7 @@ export const useAccessibilityAnnouncer = (): UseAccessibilityAnnouncerReturn => 
     announceError,
     announceInfo,
     clear,
-  }
-}
+  };
+};
 
-export default useAccessibilityAnnouncer
+export default useAccessibilityAnnouncer;

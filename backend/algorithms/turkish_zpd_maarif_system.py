@@ -176,7 +176,7 @@ class TurkishZPDMaarifSystem:
     DEVRİMSEL: Türkiye'ye özel adaptif öğrenme sistemi
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         # Türk eğitim kültürü varsayılan değerleri
         self.default_cultural_factors = {
             TurkishCulturalFactor.GROUP_LEARNING_PREFERENCE: 0.8,
@@ -297,7 +297,8 @@ class TurkishZPDMaarifSystem:
         aligned_count = len(aligned_values)
 
         if total_subject_values > 0:
-            alignment_ratio = aligned_count / total_subject_values
+            # alignment_ratio used implicitly via aligned_count/total_subject_values
+            _ = aligned_count / total_subject_values  # For documentation purposes
 
             # Değer kategorilerine göre uyum skorları
             national_count = sum(

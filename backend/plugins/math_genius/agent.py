@@ -77,20 +77,51 @@ class MathGeniusAgent(BaseAgentPlugin):
 
         equation = equation_match.group(1).strip()
 
-        # Simple equation solver (in production, use sympy)
+        # SECURITY FIX: eval() yerine güvenli matematik hesaplayıcı
         try:
             # Basic arithmetic
             if "x" not in equation and "=" not in equation:
-                result = eval(equation.replace("^", "**"))
+                # Güvenli matematik hesaplama fonksiyonu
+                import ast
+                import operator
+
+                SAFE_OPS = {
+                    ast.Add: operator.add, ast.Sub: operator.sub,
+                    ast.Mult: operator.mul, ast.Div: operator.truediv,
+                    ast.Pow: operator.pow, ast.USub: operator.neg,
+                    ast.UAdd: operator.pos, ast.Mod: operator.mod,
+                }
+
+                def safe_math_eval(node):
+                    if isinstance(node, ast.Constant):
+                        return node.value if isinstance(node.value, (int, float)) else 0
+                    elif isinstance(node, ast.Num):
+                        return node.n
+                    elif isinstance(node, ast.BinOp):
+                        return SAFE_OPS.get(type(node.op), lambda a, b: 0)(
+                            safe_math_eval(node.left), safe_math_eval(node.right)
+                        )
+                    elif isinstance(node, ast.UnaryOp):
+                        return SAFE_OPS.get(type(node.op), lambda a: 0)(safe_math_eval(node.operand))
+                    elif isinstance(node, ast.Expression):
+                        return safe_math_eval(node.body)
+                    return 0
+
+                safe_expr = equation.replace("^", "**")
+                if not re.match(r'^[\d\s\+\-\*\/\.\(\)\%\^]+$', safe_expr.replace("**", "^")):
+                    return "Geçersiz matematiksel ifade"
+
+                tree = ast.parse(safe_expr, mode='eval')
+                result = safe_math_eval(tree)
                 return f"""
                 📐 **Problem:** {equation}
-                
+
                 [CHECK] **Çözüm:** {result}
-                
+
                 **Adımlar:**
                 1. İşlem sırasına göre çözüm yapıldı
                 2. Sonuç: {result}
-                
+
                 [BULB] **İpucu:** İşlem önceliği kurallarını unutmayın!
                 """
             else:

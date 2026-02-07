@@ -13,8 +13,9 @@ export interface AsyncState<T> {
 
 /**
  * UseAsyncOptions - useAsync hook seçenekleri
+ * Generic T type for type-safe onSuccess callback
  */
-export interface UseAsyncOptions {
+export interface UseAsyncOptions<T = unknown> {
   /**
    * Component unmount olduğunda işlemi iptal et
    */
@@ -41,9 +42,9 @@ export interface UseAsyncOptions {
   cacheTime?: number;
 
   /**
-   * Başarılı callback
+   * Başarılı callback - type-safe with T
    */
-  onSuccess?: (data: any) => void;
+  onSuccess?: (data: T) => void;
 
   /**
    * Hata callback
@@ -71,9 +72,9 @@ export interface UseAsyncOptions {
  *   execute(userId);
  * }, [userId]);
  */
-export function useAsync<T = any, Args extends any[] = any[]>(
+export function useAsync<T, Args extends unknown[] = []>(
   asyncFunction: (...args: Args) => Promise<T>,
-  options: UseAsyncOptions = {}
+  options: UseAsyncOptions<T> = {},
 ) {
   const {
     cancelOnUnmount = true,
@@ -121,7 +122,7 @@ export function useAsync<T = any, Args extends any[] = any[]>(
         }
       }
 
-      if (!isMountedRef.current && cancelOnUnmount) return;
+      if (!isMountedRef.current && cancelOnUnmount) {return;}
 
       setState((prev) => ({
         ...prev,
@@ -133,7 +134,7 @@ export function useAsync<T = any, Args extends any[] = any[]>(
       try {
         const data = await asyncFunction(...args);
 
-        if (!isMountedRef.current && cancelOnUnmount) return;
+        if (!isMountedRef.current && cancelOnUnmount) {return;}
 
         // Cache kaydet
         if (cacheTime > 0) {
@@ -156,7 +157,7 @@ export function useAsync<T = any, Args extends any[] = any[]>(
 
         return data;
       } catch (error) {
-        if (!isMountedRef.current && cancelOnUnmount) return;
+        if (!isMountedRef.current && cancelOnUnmount) {return;}
 
         const err = error instanceof Error ? error : new Error(String(error));
 
@@ -181,7 +182,7 @@ export function useAsync<T = any, Args extends any[] = any[]>(
         return undefined;
       }
     },
-    [asyncFunction, cancelOnUnmount, cacheTime, retryCount, retryDelay, onSuccess, onError]
+    [asyncFunction, cancelOnUnmount, cacheTime, retryCount, retryDelay, onSuccess, onError],
   );
 
   const reset = useCallback(() => {
@@ -199,7 +200,8 @@ export function useAsync<T = any, Args extends any[] = any[]>(
   // Immediate execution
   useEffect(() => {
     if (immediate) {
-      execute();
+      // Cast to satisfy TypeScript when no args are needed
+      (execute as () => Promise<T | undefined>)();
     }
   }, [immediate, execute]);
 
@@ -221,14 +223,14 @@ export function useAsync<T = any, Args extends any[] = any[]>(
  *   { method: 'GET' }
  * );
  */
-export function useFetch<T = any>(
+export function useFetch<T>(
   url: string | null,
-  options?: RequestInit & UseAsyncOptions
+  options?: RequestInit & UseAsyncOptions<T>,
 ) {
   const { immediate = true, ...asyncOptions } = options || {};
 
   const fetchData = useCallback(async (): Promise<T> => {
-    if (!url) throw new Error('URL is required');
+    if (!url) {throw new Error('URL is required');}
 
     const response = await fetch(url, options);
 
@@ -267,9 +269,9 @@ export function useFetch<T = any>(
  * // Kullanım
  * await mutate({ name: 'John' });
  */
-export function useMutation<T = any, Args extends any[] = any[]>(
+export function useMutation<T, Args extends unknown[] = []>(
   mutationFn: (...args: Args) => Promise<T>,
-  options?: UseAsyncOptions
+  options?: UseAsyncOptions<T>,
 ) {
   const asyncState = useAsync<T, Args>(mutationFn, {
     ...options,
@@ -332,7 +334,7 @@ export function useLoadingState(initialState = false) {
         return undefined;
       }
     },
-    [startLoading, stopLoading, setLoadingError]
+    [startLoading, stopLoading, setLoadingError],
   );
 
   const reset = useCallback(() => {
@@ -392,15 +394,15 @@ export function useDebounce<T>(value: T, delay: number = 500): T {
  *   console.log('Scrolling...');
  * }, 200);
  */
-export function useThrottle<T extends (...args: any[]) => any>(
+export function useThrottle<T extends (...args: unknown[]) => unknown>(
   callback: T,
-  delay: number = 500
+  delay: number = 500,
 ): T {
   const lastRun = useRef(Date.now());
   const timeoutRef = useRef<NodeJS.Timeout>();
 
   return useCallback(
-    ((...args: any[]) => {
+    ((...args: Parameters<T>) => {
       const now = Date.now();
       const timeSinceLastRun = now - lastRun.current;
 
@@ -417,11 +419,11 @@ export function useThrottle<T extends (...args: any[]) => any>(
             callback(...args);
             lastRun.current = Date.now();
           },
-          delay - timeSinceLastRun
+          delay - timeSinceLastRun,
         );
       }
     }) as T,
-    [callback, delay]
+    [callback, delay],
   );
 }
 
@@ -441,7 +443,7 @@ export function useThrottle<T extends (...args: any[]) => any>(
  *   });
  * };
  */
-export function useApiState<T = any>() {
+export function useApiState<T>() {
   const [data, setData] = useState<T | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);

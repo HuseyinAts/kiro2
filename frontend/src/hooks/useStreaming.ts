@@ -10,6 +10,7 @@
  */
 
 import { useState, useEffect, useCallback, useRef } from 'react';
+
 import {
   streamChat,
   streamRAGQuery,
@@ -17,7 +18,7 @@ import {
   StreamingChatRequest,
   RAGStreamingRequest,
   ExamExplanationStreamingRequest,
-  SSEEvent
+  SSEEvent,
 } from '../api';
 
 // ==================== CHAT STREAMING HOOK ====================
@@ -62,7 +63,7 @@ export function useChatStreaming(): UseChatStreamingResult {
       (err: Error) => {
         setError(err);
         setIsStreaming(false);
-      }
+      },
     );
 
     cleanupRef.current = cleanup;
@@ -99,17 +100,25 @@ export function useChatStreaming(): UseChatStreamingResult {
     metadata,
     startStream,
     stopStream,
-    reset
+    reset,
   };
 }
 
 // ==================== RAG STREAMING HOOK ====================
 
+export interface RAGDocument {
+  id?: string;
+  title?: string;
+  content?: string;
+  score?: number;
+  metadata?: Record<string, unknown>;
+}
+
 export interface RAGStreamingState {
   stage: 'idle' | 'searching' | 'reranking' | 'generating' | 'done';
-  documents: any[];
+  documents: RAGDocument[];
   content: string;
-  metadata: any;
+  metadata: Record<string, unknown> | null;
 }
 
 export interface UseRAGStreamingResult {
@@ -126,7 +135,7 @@ export function useRAGStreaming(): UseRAGStreamingResult {
     stage: 'idle',
     documents: [],
     content: '',
-    metadata: null
+    metadata: null,
   });
   const [isStreaming, setIsStreaming] = useState<boolean>(false);
   const [error, setError] = useState<Error | null>(null);
@@ -138,7 +147,7 @@ export function useRAGStreaming(): UseRAGStreamingResult {
       stage: 'idle',
       documents: [],
       content: '',
-      metadata: null
+      metadata: null,
     });
     setError(null);
     setIsStreaming(true);
@@ -156,7 +165,7 @@ export function useRAGStreaming(): UseRAGStreamingResult {
           case 'documents_found':
             setState(prev => ({
               ...prev,
-              documents: event.data.documents || []
+              documents: (event.data.documents as RAGDocument[]) || [],
             }));
             break;
 
@@ -171,7 +180,7 @@ export function useRAGStreaming(): UseRAGStreamingResult {
           case 'token':
             setState(prev => ({
               ...prev,
-              content: prev.content + event.data.content
+              content: prev.content + event.data.content,
             }));
             break;
 
@@ -179,7 +188,7 @@ export function useRAGStreaming(): UseRAGStreamingResult {
             setState(prev => ({
               ...prev,
               stage: 'done',
-              metadata: event.data
+              metadata: event.data as Record<string, unknown>,
             }));
             setIsStreaming(false);
             break;
@@ -189,7 +198,7 @@ export function useRAGStreaming(): UseRAGStreamingResult {
       (err: Error) => {
         setError(err);
         setIsStreaming(false);
-      }
+      },
     );
 
     cleanupRef.current = cleanup;
@@ -209,7 +218,7 @@ export function useRAGStreaming(): UseRAGStreamingResult {
       stage: 'idle',
       documents: [],
       content: '',
-      metadata: null
+      metadata: null,
     });
     setError(null);
   }, [stopStream]);
@@ -229,7 +238,7 @@ export function useRAGStreaming(): UseRAGStreamingResult {
     error,
     startStream,
     stopStream,
-    reset
+    reset,
   };
 }
 
@@ -275,7 +284,7 @@ export function useExamExplanationStreaming(): UseExamExplanationStreamingResult
       (err: Error) => {
         setError(err);
         setIsStreaming(false);
-      }
+      },
     );
 
     cleanupRef.current = cleanup;
@@ -312,6 +321,6 @@ export function useExamExplanationStreaming(): UseExamExplanationStreamingResult
     metadata,
     startStream,
     stopStream,
-    reset
+    reset,
   };
 }

@@ -5,16 +5,18 @@
  * Requirements: REQ-9.1, REQ-9.2, REQ-9.4, REQ-9.5
  */
 
-import React from 'react';
+import * as React from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
 import { axe, toHaveNoViolations } from 'jest-axe';
 import userEvent from '@testing-library/user-event';
 import TaskProgressVisualization from '../TaskProgressVisualization';
+import { vi, Mock } from 'vitest';
 
 expect.extend(toHaveNoViolations);
 
-// Mock fetch
-global.fetch = vi.fn();
+// Mock fetch with vitest Mock type
+const fetchMock = vi.fn() as Mock;
+global.fetch = fetchMock;
 
 const mockProgressData = {
   task_id: 'task-123',
@@ -61,7 +63,7 @@ const mockProgressData = {
 
 describe('TaskProgressVisualization - WCAG 2.1 AA Compliance', () => {
   beforeEach(() => {
-    (global.fetch as jest.Mock).mockResolvedValue({
+    fetchMock.mockResolvedValue({
       ok: true,
       json: async () => mockProgressData
     });
@@ -129,7 +131,7 @@ describe('TaskProgressVisualization - WCAG 2.1 AA Compliance', () => {
 
       statuses.forEach(({ status, icon }) => {
         const mockData = { ...mockProgressData, status };
-        (global.fetch as jest.Mock).mockResolvedValueOnce({
+        fetchMock.mockResolvedValueOnce({
           ok: true,
           json: async () => mockData
         });
@@ -287,7 +289,7 @@ describe('TaskProgressVisualization - WCAG 2.1 AA Compliance', () => {
     });
 
     it('should have aria-label for loading spinner', async () => {
-      (global.fetch as jest.Mock).mockImplementation(
+      fetchMock.mockImplementation(
         () => new Promise(() => {}) // Never resolves
       );
 
@@ -315,7 +317,7 @@ describe('TaskProgressVisualization - WCAG 2.1 AA Compliance', () => {
     });
 
     it('should announce errors with role="alert"', async () => {
-      (global.fetch as jest.Mock).mockRejectedValue(new Error('Network error'));
+      fetchMock.mockRejectedValue(new Error('Network error'));
 
       render(<TaskProgressVisualization taskId="task-123" />);
       
@@ -423,7 +425,7 @@ describe('TaskProgressVisualization - WCAG 2.1 AA Compliance', () => {
     });
 
     it('should pass axe-core in loading state', async () => {
-      (global.fetch as jest.Mock).mockImplementation(
+      fetchMock.mockImplementation(
         () => new Promise(() => {}) // Never resolves
       );
 
@@ -434,7 +436,7 @@ describe('TaskProgressVisualization - WCAG 2.1 AA Compliance', () => {
     });
 
     it('should pass axe-core in error state', async () => {
-      (global.fetch as jest.Mock).mockRejectedValue(new Error('Test error'));
+      fetchMock.mockRejectedValue(new Error('Test error'));
 
       const { container } = render(<TaskProgressVisualization taskId="task-123" />);
       

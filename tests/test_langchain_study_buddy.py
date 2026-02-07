@@ -10,6 +10,8 @@ import sys
 import os
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
+pytest.importorskip("langchain", reason="langchain not installed")
+
 
 @pytest.fixture
 def mock_langchain_service():

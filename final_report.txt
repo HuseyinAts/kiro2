@@ -1,0 +1,260 @@
+================================================================================
+>>> 50 SORU ÜRETÝMÝ + ÖSYM KALÝTE DEÐERLENDÝRMESÝ
+>>> Method: Template-based (NO LLM)
+================================================================================
+
+[1/2] Generating 50 questions...
+  [1/50] Generated (Difficulty: 0.70)
+  [2/50] Generated (Difficulty: 0.65)
+  [3/50] Generated (Difficulty: 0.70)
+  [4/50] Generated (Difficulty: 0.70)
+  [5/50] Generated (Difficulty: 0.70)
+  [6/50] Generated (Difficulty: 0.65)
+  [7/50] Generated (Difficulty: 0.65)
+  [8/50] Generated (Difficulty: 0.65)
+  [9/50] Generated (Difficulty: 0.25)
+  [10/50] Generated (Difficulty: 0.65)
+  [11/50] Generated (Difficulty: 0.50)
+  [12/50] Generated (Difficulty: 0.25)
+  [13/50] Generated (Difficulty: 0.70)
+  [14/50] Generated (Difficulty: 0.70)
+  [15/50] Generated (Difficulty: 0.65)
+  [16/50] Generated (Difficulty: 0.65)
+  [17/50] Generated (Difficulty: 0.50)
+  [18/50] Generated (Difficulty: 0.50)
+  [19/50] Generated (Difficulty: 0.70)
+  [20/50] Generated (Difficulty: 0.65)
+  [21/50] Generated (Difficulty: 0.70)
+  [22/50] Generated (Difficulty: 0.50)
+  [23/50] Generated (Difficulty: 0.50)
+  [24/50] Generated (Difficulty: 0.70)
+  [25/50] Generated (Difficulty: 0.25)
+  [26/50] Generated (Difficulty: 0.30)
+  [27/50] Generated (Difficulty: 0.25)
+  [28/50] Generated (Difficulty: 0.30)
+  [29/50] Generated (Difficulty: 0.50)
+  [30/50] Generated (Difficulty: 0.25)
+  [31/50] Generated (Difficulty: 0.50)
+  [32/50] Generated (Difficulty: 0.25)
+  [33/50] Generated (Difficulty: 0.25)
+  [34/50] Generated (Difficulty: 0.50)
+  [35/50] Generated (Difficulty: 0.65)
+  [36/50] Generated (Difficulty: 0.70)
+  [37/50] Generated (Difficulty: 0.25)
+  [38/50] Generated (Difficulty: 0.25)
+  [39/50] Generated (Difficulty: 0.25)
+  [40/50] Generated (Difficulty: 0.65)
+  [41/50] Generated (Difficulty: 0.25)
+  [42/50] Generated (Difficulty: 0.70)
+  [43/50] Generated (Difficulty: 0.50)
+  [44/50] Generated (Difficulty: 0.25)
+  [45/50] Generated (Difficulty: 0.25)
+  [46/50] Generated (Difficulty: 0.50)
+  [47/50] Generated (Difficulty: 0.25)
+  [48/50] Generated (Difficulty: 0.30)
+  [49/50] Generated (Difficulty: 0.30)
+  [50/50] Generated (Difficulty: 0.50)
+
+[OK] 50 questions generated
+
+[2/2] Evaluating ÖSYM quality...
+  [1/50] Quality: 1.000
+  [2/50] Quality: 1.000
+  [3/50] Quality: 1.000
+  [4/50] Quality: 1.000
+  [5/50] Quality: 1.000
+  [6/50] Quality: 1.000
+  [7/50] Quality: 1.000
+  [8/50] Quality: 1.000
+  [9/50] Quality: 0.810
+  [10/50] Quality: 1.000
+  [11/50] Quality: 1.000
+  [12/50] Quality: 0.810
+  [13/50] Quality: 1.000
+  [14/50] Quality: 1.000
+  [15/50] Quality: 1.000
+  [16/50] Quality: 1.000
+  [17/50] Quality: 1.000
+  [18/50] Quality: 1.000
+  [19/50] Quality: 1.000
+  [20/50] Quality: 1.000
+  [21/50] Quality: 1.000
+  [22/50] Quality: 1.000
+  [23/50] Quality: 1.000
+  [24/50] Quality: 1.000
+  [25/50] Quality: 0.810
+  [26/50] Quality: 0.850
+  [27/50] Quality: 0.810
+  [28/50] Quality: 0.850
+  [29/50] Quality: 1.000
+  [30/50] Quality: 0.810
+  [31/50] Quality: 1.000
+  [32/50] Quality: 0.810
+  [33/50] Quality: 0.810
+  [34/50] Quality: 1.000
+  [35/50] Quality: 1.000
+  [36/50] Quality: 1.000
+  [37/50] Quality: 0.810
+  [38/50] Quality: 0.810
+  [39/50] Quality: 0.810
+  [40/50] Quality: 1.000
+  [41/50] Quality: 0.810
+  [42/50] Quality: 1.000
+  [43/50] Quality: 1.000
+  [44/50] Quality: 0.810
+  [45/50] Quality: 0.810
+  [46/50] Quality: 1.000
+  [47/50] Quality: 0.810
+  [48/50] Quality: 0.850
+  [49/50] Quality: 0.850
+  [50/50] Quality: 1.000
+
+[OK] Evaluation complete
+
+====================================================================================================
+   50 SORU - ÖSYM KALÝTE DEÐERLENDÝRME RAPORU
+====================================================================================================
+
+Tarih: 2025-11-16 18:38:28
+Toplam Soru: 50
+Method: Template-based (NO LLM)
+
+====================================================================================================
+GENEL KALÝTE SKORU
+====================================================================================================
+Ortalama Skor:  0.9348 / 1.0
+En Düþük:       0.8100
+En Yüksek:      1.0000
+
+Kalite Daðýlýmý:
+  Mükemmel (0.9+):      32 soru ( 64.0%)
+  Ýyi (0.8-0.9):        18 soru ( 36.0%)
+  Kabul Edilebilir:      0 soru (  0.0%)
+  Zayýf (<0.7):          0 soru (  0.0%)
+
+====================================================================================================
+ÖSYM UYUMLULUK
+====================================================================================================
+Ortalama ÖSYM Skoru: 0.9348 / 1.0
+
+NOT: Template-based metodda ÖSYM uyumluluðu sýnýrlýdýr.
+     Gerçek LLM-based generator ile daha yüksek skor beklenir.
+
+====================================================================================================
+BAÞARI KRÝTERLERÝ
+====================================================================================================
+1. Ortalama Kalite >= 0.8:  [OK] (0.9348)
+2. ÖSYM Uyumluluk >= 0.75:  [OK] (0.9348)
+3. Ýyi/Mükemmel >= 80%:     [OK] (100.0%)
+4. Zayýf Soru <= 10%:       [OK] (0.0%)
+
+====================================================================================================
+VERÝTABANINA KAYIT
+====================================================================================================
+  [WARN] Kayýt hatasý: relation "osym_questions" does not exist
+LINE 2:                     INSERT INTO osym_questions (
+                                        ^
+
+  [WARN] Kayýt hatasý: current transaction is aborted, commands ignored until end of transaction block
+
+  [WARN] Kayýt hatasý: current transaction is aborted, commands ignored until end of transaction block
+
+  [WARN] Kayýt hatasý: current transaction is aborted, commands ignored until end of transaction block
+
+  [WARN] Kayýt hatasý: current transaction is aborted, commands ignored until end of transaction block
+
+  [WARN] Kayýt hatasý: current transaction is aborted, commands ignored until end of transaction block
+
+  [WARN] Kayýt hatasý: current transaction is aborted, commands ignored until end of transaction block
+
+  [WARN] Kayýt hatasý: current transaction is aborted, commands ignored until end of transaction block
+
+  [WARN] Kayýt hatasý: current transaction is aborted, commands ignored until end of transaction block
+
+  [WARN] Kayýt hatasý: current transaction is aborted, commands ignored until end of transaction block
+
+  [WARN] Kayýt hatasý: current transaction is aborted, commands ignored until end of transaction block
+
+  [WARN] Kayýt hatasý: current transaction is aborted, commands ignored until end of transaction block
+
+  [WARN] Kayýt hatasý: current transaction is aborted, commands ignored until end of transaction block
+
+  [WARN] Kayýt hatasý: current transaction is aborted, commands ignored until end of transaction block
+
+  [WARN] Kayýt hatasý: current transaction is aborted, commands ignored until end of transaction block
+
+  [WARN] Kayýt hatasý: current transaction is aborted, commands ignored until end of transaction block
+
+  [WARN] Kayýt hatasý: current transaction is aborted, commands ignored until end of transaction block
+
+  [WARN] Kayýt hatasý: current transaction is aborted, commands ignored until end of transaction block
+
+  [WARN] Kayýt hatasý: current transaction is aborted, commands ignored until end of transaction block
+
+  [WARN] Kayýt hatasý: current transaction is aborted, commands ignored until end of transaction block
+
+  [WARN] Kayýt hatasý: current transaction is aborted, commands ignored until end of transaction block
+
+  [WARN] Kayýt hatasý: current transaction is aborted, commands ignored until end of transaction block
+
+  [WARN] Kayýt hatasý: current transaction is aborted, commands ignored until end of transaction block
+
+  [WARN] Kayýt hatasý: current transaction is aborted, commands ignored until end of transaction block
+
+  [WARN] Kayýt hatasý: current transaction is aborted, commands ignored until end of transaction block
+
+  [WARN] Kayýt hatasý: current transaction is aborted, commands ignored until end of transaction block
+
+  [WARN] Kayýt hatasý: current transaction is aborted, commands ignored until end of transaction block
+
+  [WARN] Kayýt hatasý: current transaction is aborted, commands ignored until end of transaction block
+
+  [WARN] Kayýt hatasý: current transaction is aborted, commands ignored until end of transaction block
+
+  [WARN] Kayýt hatasý: current transaction is aborted, commands ignored until end of transaction block
+
+  [WARN] Kayýt hatasý: current transaction is aborted, commands ignored until end of transaction block
+
+  [WARN] Kayýt hatasý: current transaction is aborted, commands ignored until end of transaction block
+
+  [WARN] Kayýt hatasý: current transaction is aborted, commands ignored until end of transaction block
+
+  [WARN] Kayýt hatasý: current transaction is aborted, commands ignored until end of transaction block
+
+  [WARN] Kayýt hatasý: current transaction is aborted, commands ignored until end of transaction block
+
+  [WARN] Kayýt hatasý: current transaction is aborted, commands ignored until end of transaction block
+
+  [WARN] Kayýt hatasý: current transaction is aborted, commands ignored until end of transaction block
+
+  [WARN] Kayýt hatasý: current transaction is aborted, commands ignored until end of transaction block
+
+  [WARN] Kayýt hatasý: current transaction is aborted, commands ignored until end of transaction block
+
+  [WARN] Kayýt hatasý: current transaction is aborted, commands ignored until end of transaction block
+
+  [WARN] Kayýt hatasý: current transaction is aborted, commands ignored until end of transaction block
+
+  [WARN] Kayýt hatasý: current transaction is aborted, commands ignored until end of transaction block
+
+  [WARN] Kayýt hatasý: current transaction is aborted, commands ignored until end of transaction block
+
+  [WARN] Kayýt hatasý: current transaction is aborted, commands ignored until end of transaction block
+
+  [WARN] Kayýt hatasý: current transaction is aborted, commands ignored until end of transaction block
+
+  [WARN] Kayýt hatasý: current transaction is aborted, commands ignored until end of transaction block
+
+  [WARN] Kayýt hatasý: current transaction is aborted, commands ignored until end of transaction block
+
+  [WARN] Kayýt hatasý: current transaction is aborted, commands ignored until end of transaction block
+
+  [WARN] Kayýt hatasý: current transaction is aborted, commands ignored until end of transaction block
+
+  [WARN] Kayýt hatasý: current transaction is aborted, commands ignored until end of transaction block
+
+[OK] 0/50 soru veritabanýna kaydedildi
+
+====================================================================================================
+ÝÞLEM TAMAMLANDI
+====================================================================================================

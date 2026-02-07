@@ -5,15 +5,17 @@
  * Requirements: REQ-9.1 - REQ-9.5, REQ-52.6 - REQ-52.10
  */
 
-import React from 'react';
+import * as React from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
 import { axe, toHaveNoViolations } from 'jest-axe';
 import VisualTimer from '../VisualTimer';
+import { vi, Mock } from 'vitest';
 
 expect.extend(toHaveNoViolations);
 
-// Mock fetch
-global.fetch = vi.fn();
+// Mock fetch with vitest Mock type
+const fetchMock = vi.fn() as Mock;
+global.fetch = fetchMock;
 
 const mockTimerData = {
   session_id: 'test-session-123',
@@ -32,7 +34,7 @@ const mockTimerData = {
 
 describe('VisualTimer - WCAG 2.1 Level AA Compliance', () => {
   beforeEach(() => {
-    (global.fetch as jest.Mock).mockResolvedValue({
+    fetchMock.mockResolvedValue({
       ok: true,
       json: async () => mockTimerData
     });

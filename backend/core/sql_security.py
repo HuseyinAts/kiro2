@@ -41,7 +41,7 @@ class SQLSecurityValidator:
         r"(/\*.*\*/)",  # Multi-line comments
         r"(\bexec\b|\bexecute\b)\s*\(",  # Execute commands
         r"(\bdrop\b\s+\btable\b)",  # DROP TABLE
-        r"(\bdelete\b\s+\bfrom\b)",  # DELETE FROM (without proper context)
+        r"(\bdelete\b\s+\bfrom\b\s+\w+\s*(?!.*\bwhere\b))",  # DELETE without WHERE - SECURITY FIX
         r"(\binsert\b\s+\binto\b)",  # INSERT INTO (without proper context)
         r"(\bupdate\b.*\bset\b)",  # UPDATE SET (without proper context)
         r"(;\s*\b(select|insert|update|delete|drop|create|alter)\b)",  # Statement chaining

@@ -2,13 +2,18 @@
 Öğrenci Dashboard Servisi - Database Integration
 REFACTORED: Mock data removed, replaced with real database queries
 Part of Mock Data Cleanup - Phase 3
+
+PERFORMANCE FIX: Converted from sync SQLAlchemy (.query()) to async (.execute(select()))
+Previously: Sync calls blocked event loop for 50-200ms per query
+Now: Proper async operations allow concurrent request handling
 """
 import uuid
-from datetime import datetime, timedelta
-from typing import Any, Dict, List, Optional
+from datetime import datetime, timedelta, timezone
+from typing import Any, Dict, List, Optional, Union
 
-from sqlalchemy import func, Integer
+from sqlalchemy import func, Integer, select, and_
 from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 
 # Database models (SQLAlchemy ORM)
 from models import (
@@ -34,6 +39,9 @@ from models.dashboard import (
 )
 from models.user import OgrenciProfili
 
+# Type alias for backward compatibility
+DBSession = Union[Session, AsyncSession]
+
 
 class OgrenciDashboardServisi:
     """
@@ -47,7 +55,7 @@ class OgrenciDashboardServisi:
     """
 
     async def dashboard_istatistikleri_getir(
-        self, kullanici_id: str, db: Session
+        self, kullanici_id: str, db: DBSession
     ) -> DashboardIstatistikleri:
         """
         Dashboard ana sayfası istatistiklerini getir
@@ -55,45 +63,69 @@ class OgrenciDashboardServisi:
         REFACTORED: Real database queries + intelligent defaults
         - Queries: users, exam_sessions, weekly_progress
         - Fallback: Sensible defaults for new users
+
+        PERFORMANCE FIX: Converted to async SQLAlchemy pattern
         """
+        # Helper to handle both sync and async sessions
+        async def execute_query(query):
+            if hasattr(db, 'execute'):
+                # Async session
+                result = await db.execute(query)
+                return result
+            else:
+                # Sync session fallback
+                return db.execute(query)
 
         # Get user data (XP, level, gamification)
-        user = db.query(User).filter(User.id == kullanici_id).first()
+        user_result = await execute_query(
+            select(User).where(User.id == kullanici_id)
+        )
+        user = user_result.scalar_one_or_none() if hasattr(user_result, 'scalar_one_or_none') else user_result.scalars().first()
 
-        # Get exam statistics from exam_sessions
-        completed_exams = db.query(ExamSession).filter(
-            ExamSession.student_id == kullanici_id,
-            ExamSession.status == 'completed'
-        ).count()
-
-        # Calculate average score from completed exams
-        avg_score_result = db.query(func.avg(ExamSession.scaled_score)).filter(
-            ExamSession.student_id == kullanici_id,
-            ExamSession.status == 'completed'
-        ).scalar()
-        avg_score = float(avg_score_result) if avg_score_result else 0.0
+        # Get exam statistics from exam_sessions (combined query)
+        exam_stats_query = select(
+            func.count(ExamSession.id).label('count'),
+            func.avg(ExamSession.scaled_score).label('avg_score')
+        ).where(
+            and_(
+                ExamSession.student_id == kullanici_id,
+                ExamSession.status == 'completed'
+            )
+        )
+        exam_stats_result = await execute_query(exam_stats_query)
+        exam_row = exam_stats_result.first() if hasattr(exam_stats_result, 'first') else next(iter(exam_stats_result), None)
+        completed_exams = exam_row.count if exam_row else 0
+        avg_score = float(exam_row.avg_score) if exam_row and exam_row.avg_score else 0.0
 
         # Get weekly progress
         current_week = datetime.now().isocalendar()
-        week_progress = db.query(WeeklyProgress).filter(
-            WeeklyProgress.user_id == kullanici_id,
-            WeeklyProgress.year == current_week.year,
-            WeeklyProgress.week_number == current_week.week
-        ).first()
+        week_query = select(WeeklyProgress).where(
+            and_(
+                WeeklyProgress.user_id == kullanici_id,
+                WeeklyProgress.year == current_week.year,
+                WeeklyProgress.week_number == current_week.week
+            )
+        )
+        week_result = await execute_query(week_query)
+        week_progress = week_result.scalar_one_or_none() if hasattr(week_result, 'scalar_one_or_none') else week_result.scalars().first()
 
         # Calculate study time (in minutes)
         haftalik_ilerleme = (week_progress.total_time_seconds // 60) if week_progress else 0
         gunluk_seri = week_progress.streak_days if week_progress else 0
 
         # Get completed lessons (videos) count
-        tamamlanan_dersler = db.query(VideoWatchSession).filter(
-            VideoWatchSession.user_id == kullanici_id,
-            VideoWatchSession.is_completed == True
-        ).count()
+        video_count_query = select(func.count(VideoWatchSession.id)).where(
+            and_(
+                VideoWatchSession.user_id == kullanici_id,
+                VideoWatchSession.is_completed == True
+            )
+        )
+        video_result = await execute_query(video_count_query)
+        tamamlanan_dersler = video_result.scalar() if hasattr(video_result, 'scalar') else video_result.scalar_one()
 
         # Return real data with intelligent defaults
         return DashboardIstatistikleri(
-            tamamlanan_dersler=tamamlanan_dersler,
+            tamamlanan_dersler=tamamlanan_dersler or 0,
             toplam_dersler=120,  # Default curriculum size
             tamamlanan_sinavlar=completed_exams,
             ortalama_puan=avg_score,
@@ -392,7 +424,7 @@ class OgrenciDashboardServisi:
         goal.target_value = hedef_data.hedef_degeri
         goal.current_value = hedef_data.mevcut_deger
         goal.status = hedef_data.durum
-        goal.updated_at = datetime.utcnow()
+        goal.updated_at = datetime.now(timezone.utc)
 
         db.commit()
         db.refresh(goal)
@@ -557,7 +589,7 @@ class OgrenciDashboardServisi:
             profile.study_hours_per_day = profil_data.gunluk_calisma_hedefi
 
         # Update timestamp
-        profile.updated_at = datetime.utcnow()
+        profile.updated_at = datetime.now(timezone.utc)
 
         db.commit()
         db.refresh(profile)

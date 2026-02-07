@@ -12,7 +12,6 @@ Custom metrics export for Prometheus monitoring:
 import logging
 import os
 import time
-from typing import Dict, List
 from prometheus_client import Counter, Histogram, Gauge, generate_latest, REGISTRY
 
 logger = logging.getLogger(__name__)

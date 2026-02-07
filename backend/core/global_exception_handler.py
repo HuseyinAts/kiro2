@@ -5,7 +5,6 @@ Comprehensive global exception handling with monitoring, logging, and recovery
 
 import asyncio
 import logging
-import traceback
 import uuid
 from collections.abc import Callable
 from contextlib import asynccontextmanager
@@ -689,11 +688,12 @@ class GlobalExceptionHandler:
                 )
 
             # Add debug information in debug mode
+            # SECURITY: Never expose stack traces in API responses
             if self.app_config.debug:
                 details.update(
                     {
                         "exception_type": type(exc).__name__,
-                        "traceback": traceback.format_exc(),
+                        # Traceback logged server-side only, not exposed to client
                         "request_context": {
                             "method": context.request_method,
                             "url": context.request_url,

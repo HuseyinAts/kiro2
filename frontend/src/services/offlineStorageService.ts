@@ -60,7 +60,7 @@ export interface OfflineUserData {
 class OfflineStorageService {
   private readonly STORAGE_KEY = 'kiro2-offline-data';
   private readonly CACHE_NAME = 'kiro2-offline-cache';
-  
+
   /**
    * Çevrimdışı verileri yükle
    */
@@ -73,7 +73,7 @@ class OfflineStorageService {
     } catch (error) {
       console.error('Çevrimdışı veri yükleme hatası:', error);
     }
-    
+
     // Varsayılan veri yapısı
     return {
       questions: [],
@@ -83,11 +83,11 @@ class OfflineStorageService {
       settings: {
         autoSync: true,
         offlineMode: false,
-        downloadLimit: 1000
-      }
+        downloadLimit: 1000,
+      },
     };
   }
-  
+
   /**
    * Çevrimdışı verileri kaydet
    */
@@ -99,17 +99,17 @@ class OfflineStorageService {
       throw new Error('Veri kaydetme başarısız. Depolama alanı dolu olabilir.');
     }
   }
-  
+
   /**
    * Soruları çevrimdışı kullanım için indir
    */
   async downloadQuestionsForOffline(
-    subject: string, 
-    count: number = 50
+    subject: string,
+    count: number = 50,
   ): Promise<OfflineQuestion[]> {
     try {
       // API'den soruları çek
-      const response = await fetch(`/api/v1/questions/download`, {
+      const response = await fetch('/api/v1/questions/download', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -117,25 +117,25 @@ class OfflineStorageService {
         body: JSON.stringify({
           subject,
           count,
-          difficulty: ['easy', 'medium', 'hard']
-        })
+          difficulty: ['easy', 'medium', 'hard'],
+        }),
       });
-      
+
       if (!response.ok) {
         throw new Error('Soru indirme başarısız');
       }
-      
+
       const questions: OfflineQuestion[] = await response.json();
-      
+
       // Mevcut verileri yükle
       const offlineData = await this.loadOfflineData();
-      
+
       // Yeni soruları ekle (duplikasyon kontrolü)
       const existingIds = new Set(offlineData.questions.map(q => q.id));
       const newQuestions = questions.filter(q => !existingIds.has(q.id));
-      
+
       offlineData.questions.push(...newQuestions);
-      
+
       // Limit kontrolü
       if (offlineData.questions.length > offlineData.settings.downloadLimit) {
         // Eski soruları sil (FIFO)
@@ -143,38 +143,38 @@ class OfflineStorageService {
           .sort((a, b) => new Date(b.downloadedAt).getTime() - new Date(a.downloadedAt).getTime())
           .slice(0, offlineData.settings.downloadLimit);
       }
-      
+
       await this.saveOfflineData(offlineData);
-      
+
       return newQuestions;
     } catch (error) {
       console.error('Soru indirme hatası:', error);
       throw error;
     }
   }
-  
+
   /**
    * Çevrimdışı sınav oturumu başlat
    */
   async startOfflineExam(
-    subject: string, 
-    questionCount: number = 20
+    subject: string,
+    questionCount: number = 20,
   ): Promise<OfflineExamSession> {
     const offlineData = await this.loadOfflineData();
-    
+
     // Konuya göre soruları filtrele
-    const availableQuestions = offlineData.questions.filter(q => 
-      q.subject === subject || subject === 'all'
+    const availableQuestions = offlineData.questions.filter(q =>
+      q.subject === subject || subject === 'all',
     );
-    
+
     if (availableQuestions.length < questionCount) {
       throw new Error(`Yeterli çevrimdışı soru yok. Mevcut: ${availableQuestions.length}, Gerekli: ${questionCount}`);
     }
-    
+
     // Rastgele soru seç
     const shuffled = [...availableQuestions].sort(() => Math.random() - 0.5);
     const selectedQuestions = shuffled.slice(0, questionCount);
-    
+
     // Sınav oturumu oluştur
     const examSession: OfflineExamSession = {
       id: `offline-exam-${Date.now()}`,
@@ -182,46 +182,46 @@ class OfflineStorageService {
       answers: {},
       startTime: new Date().toISOString(),
       completed: false,
-      synced: false
+      synced: false,
     };
-    
+
     // Oturumu kaydet
     offlineData.examSessions.push(examSession);
     await this.saveOfflineData(offlineData);
-    
+
     return examSession;
   }
-  
+
   /**
    * Sınav cevabını kaydet
    */
   async saveExamAnswer(
-    examId: string, 
-    questionId: string, 
-    answer: number
+    examId: string,
+    questionId: string,
+    answer: number,
   ): Promise<void> {
     const offlineData = await this.loadOfflineData();
     const exam = offlineData.examSessions.find(e => e.id === examId);
-    
+
     if (!exam) {
       throw new Error('Sınav oturumu bulunamadı');
     }
-    
+
     exam.answers[questionId] = answer;
     await this.saveOfflineData(offlineData);
   }
-  
+
   /**
    * Sınavı tamamla
    */
   async completeOfflineExam(examId: string): Promise<OfflineExamSession> {
     const offlineData = await this.loadOfflineData();
     const exam = offlineData.examSessions.find(e => e.id === examId);
-    
+
     if (!exam) {
       throw new Error('Sınav oturumu bulunamadı');
     }
-    
+
     // Skoru hesapla
     let correctCount = 0;
     exam.questions.forEach(question => {
@@ -229,32 +229,32 @@ class OfflineStorageService {
         correctCount++;
       }
     });
-    
+
     exam.score = Math.round((correctCount / exam.questions.length) * 100);
     exam.completed = true;
     exam.endTime = new Date().toISOString();
-    
+
     // İlerleme verilerini güncelle
     await this.updateProgress(exam);
-    
+
     await this.saveOfflineData(offlineData);
-    
+
     return exam;
   }
-  
+
   /**
    * İlerleme verilerini güncelle
    */
   private async updateProgress(exam: OfflineExamSession): Promise<void> {
     const offlineData = await this.loadOfflineData();
-    
+
     // Her konu için ayrı ilerleme
     const subjectProgress = new Map<string, OfflineProgress>();
-    
+
     exam.questions.forEach(question => {
       const subject = question.subject;
       const isCorrect = exam.answers[question.id] === question.correct;
-      
+
       if (!subjectProgress.has(subject)) {
         const existing = offlineData.progress.find(p => p.subject === subject);
         subjectProgress.set(subject, existing || {
@@ -264,10 +264,10 @@ class OfflineStorageService {
           correctAnswers: 0,
           studyTime: 0,
           lastActivity: new Date().toISOString(),
-          synced: false
+          synced: false,
         });
       }
-      
+
       const progress = subjectProgress.get(subject)!;
       progress.totalQuestions++;
       if (isCorrect) {
@@ -276,18 +276,18 @@ class OfflineStorageService {
       progress.lastActivity = new Date().toISOString();
       progress.synced = false;
     });
-    
+
     // Çalışma süresini hesapla
     if (exam.startTime && exam.endTime) {
       const studyDuration = Math.round(
-        (new Date(exam.endTime).getTime() - new Date(exam.startTime).getTime()) / (1000 * 60)
+        (new Date(exam.endTime).getTime() - new Date(exam.startTime).getTime()) / (1000 * 60),
       );
-      
+
       subjectProgress.forEach(progress => {
         progress.studyTime += Math.round(studyDuration / subjectProgress.size);
       });
     }
-    
+
     // İlerleme verilerini güncelle
     subjectProgress.forEach((progress, subject) => {
       const existingIndex = offlineData.progress.findIndex(p => p.subject === subject);
@@ -298,48 +298,48 @@ class OfflineStorageService {
       }
     });
   }
-  
+
   /**
    * Çalışma notu kaydet
    */
   async saveStudyNote(note: Omit<OfflineStudyNote, 'id' | 'createdAt' | 'updatedAt' | 'synced'>): Promise<OfflineStudyNote> {
     const offlineData = await this.loadOfflineData();
-    
+
     const studyNote: OfflineStudyNote = {
       ...note,
       id: `note-${Date.now()}`,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
-      synced: false
+      synced: false,
     };
-    
+
     offlineData.studyNotes.push(studyNote);
     await this.saveOfflineData(offlineData);
-    
+
     return studyNote;
   }
-  
+
   /**
    * Çalışma notunu güncelle
    */
   async updateStudyNote(noteId: string, updates: Partial<OfflineStudyNote>): Promise<void> {
     const offlineData = await this.loadOfflineData();
     const noteIndex = offlineData.studyNotes.findIndex(n => n.id === noteId);
-    
+
     if (noteIndex === -1) {
       throw new Error('Not bulunamadı');
     }
-    
+
     offlineData.studyNotes[noteIndex] = {
       ...offlineData.studyNotes[noteIndex],
       ...updates,
       updatedAt: new Date().toISOString(),
-      synced: false
+      synced: false,
     };
-    
+
     await this.saveOfflineData(offlineData);
   }
-  
+
   /**
    * Senkronize edilmemiş verileri al
    */
@@ -349,20 +349,20 @@ class OfflineStorageService {
     progress: OfflineProgress[];
   }> {
     const offlineData = await this.loadOfflineData();
-    
+
     return {
       examSessions: offlineData.examSessions.filter(e => !e.synced),
       studyNotes: offlineData.studyNotes.filter(n => !n.synced),
-      progress: offlineData.progress.filter(p => !p.synced)
+      progress: offlineData.progress.filter(p => !p.synced),
     };
   }
-  
+
   /**
    * Verileri senkronize edildi olarak işaretle
    */
   async markAsSynced(type: 'examSessions' | 'studyNotes' | 'progress', ids: string[]): Promise<void> {
     const offlineData = await this.loadOfflineData();
-    
+
     switch (type) {
       case 'examSessions':
         offlineData.examSessions.forEach(session => {
@@ -386,10 +386,10 @@ class OfflineStorageService {
         });
         break;
     }
-    
+
     await this.saveOfflineData(offlineData);
   }
-  
+
   /**
    * Çevrimdışı veri istatistikleri
    */
@@ -402,25 +402,25 @@ class OfflineStorageService {
   }> {
     const offlineData = await this.loadOfflineData();
     const dataString = JSON.stringify(offlineData);
-    
+
     return {
       totalQuestions: offlineData.questions.length,
       totalExams: offlineData.examSessions.length,
       totalNotes: offlineData.studyNotes.length,
-      unsyncedItems: 
+      unsyncedItems:
         offlineData.examSessions.filter(e => !e.synced).length +
         offlineData.studyNotes.filter(n => !n.synced).length +
         offlineData.progress.filter(p => !p.synced).length,
-      storageUsed: Math.round(new Blob([dataString]).size / 1024)
+      storageUsed: Math.round(new Blob([dataString]).size / 1024),
     };
   }
-  
+
   /**
    * Çevrimdışı verileri temizle
    */
   async clearOfflineData(keepSettings: boolean = true): Promise<void> {
     const offlineData = await this.loadOfflineData();
-    
+
     const clearedData: OfflineUserData = {
       questions: [],
       examSessions: [],
@@ -429,26 +429,27 @@ class OfflineStorageService {
       settings: keepSettings ? offlineData.settings : {
         autoSync: true,
         offlineMode: false,
-        downloadLimit: 1000
-      }
+        downloadLimit: 1000,
+      },
     };
-    
+
     await this.saveOfflineData(clearedData);
   }
-  
+
   /**
-   * Cache'den içerik al
+   * Cache'den icerik al
    */
   async getCachedContent(url: string): Promise<Response | null> {
     try {
       const cache = await caches.open(this.CACHE_NAME);
-      return await cache.match(url);
+      const response = await cache.match(url);
+      return response ?? null;
     } catch (error) {
-      console.error('Cache erişim hatası:', error);
+      console.error('Cache erisim hatasi:', error);
       return null;
     }
   }
-  
+
   /**
    * İçeriği cache'e ekle
    */
@@ -465,11 +466,4 @@ class OfflineStorageService {
 // Singleton instance
 export const offlineStorageService = new OfflineStorageService();
 
-// Export types
-export type {
-  OfflineUserData,
-  OfflineQuestion,
-  OfflineExamSession,
-  OfflineStudyNote,
-  OfflineProgress
-};
+// Note: Types are already exported via 'export interface' above

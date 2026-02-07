@@ -1,9 +1,10 @@
 import { useState, useEffect, useCallback } from 'react';
+
+import { getAgents } from '../api';
 import chatService from '../services/chatService';
 import learningPathService from '../services/learningPathService';
-import ragService from '../services/ragService';
 import monitoringService from '../services/monitoringService';
-import { getAgents } from '../api';
+import ragService from '../services/ragService';
 
 export interface Agent {
   id: string;
@@ -22,7 +23,7 @@ export function useApiIntegration() {
   useEffect(() => {
     loadAgents();
     startMonitoring();
-    
+
     return () => {
       monitoringService.stopMonitoring();
     };
@@ -179,27 +180,27 @@ export function useApiIntegration() {
     isLoading,
     error,
     healthStatus,
-    
+
     // Chat
     sendMessage,
     connectWebSocket,
     disconnectWebSocket,
-    
+
     // Learning Path
     createStudentProfile,
     generateLearningPath,
     searchResources,
-    
+
     // RAG
     addDocument,
     searchDocuments,
     askWithContext,
-    
+
     // Clear functions
     clearChat,
     clearLearningData,
     clearRAGDatabase,
-    
+
     // Utilities
     setError,
     reload: loadAgents,

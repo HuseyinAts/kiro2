@@ -5,7 +5,6 @@ Requirements: REQ-50.57 - REQ-50.72
 """
 
 import logging
-from typing import Optional
 
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field
@@ -227,13 +226,13 @@ async def calculate_flesch_score(request: FleschScoreRequest):
             "difficulty": flesch_result["difficulty"],
             "statistics": flesch_result["statistics"],
             "interpretation": {
-                "score_range": self._get_score_range(
+                "score_range": _get_score_range(
                     flesch_result["flesch_reading_ease"]
                 ),
-                "target_audience": self._get_target_audience(
+                "target_audience": _get_target_audience(
                     flesch_result["flesch_reading_ease"]
                 ),
-                "recommendations": self._get_readability_recommendations(flesch_result),
+                "recommendations": _get_readability_recommendations(flesch_result),
             },
         }
 

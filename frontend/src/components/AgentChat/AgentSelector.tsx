@@ -1,14 +1,14 @@
-import { motion } from 'framer-motion'
-import { 
-  School, 
-  Psychology, 
-  Quiz, 
+import {
+  School,
+  Psychology,
+  Quiz,
   Timeline,
   AutoAwesome,
-  TrendingUp
-} from '@mui/icons-material'
-import { Badge, Chip } from '@mui/material'
-import clsx from 'clsx'
+  TrendingUp,
+} from '@mui/icons-material';
+import { Badge, Chip } from '@mui/material';
+import clsx from 'clsx';
+import { motion } from 'framer-motion';
 
 interface Agent {
   id: string
@@ -32,7 +32,7 @@ const defaultAgents: Agent[] = [
     description: 'Kişiselleştirilmiş öğrenme rotaları oluşturur',
     icon: <Timeline />,
     status: 'online',
-    specialties: ['Müfredat', 'Planlama', 'İlerleme']
+    specialties: ['Müfredat', 'Planlama', 'İlerleme'],
   },
   {
     id: 'study-buddy',
@@ -40,7 +40,7 @@ const defaultAgents: Agent[] = [
     description: 'Konuları anlamanıza yardımcı olur',
     icon: <School />,
     status: 'online',
-    specialties: ['Açıklama', 'Örnekler', 'Pratik']
+    specialties: ['Açıklama', 'Örnekler', 'Pratik'],
   },
   {
     id: 'quiz-master',
@@ -48,7 +48,7 @@ const defaultAgents: Agent[] = [
     description: 'Test ve değerlendirmeler hazırlar',
     icon: <Quiz />,
     status: 'online',
-    specialties: ['Test', 'Değerlendirme', 'Analiz']
+    specialties: ['Test', 'Değerlendirme', 'Analiz'],
   },
   {
     id: 'ai-tutor',
@@ -56,7 +56,7 @@ const defaultAgents: Agent[] = [
     description: 'Derin öğrenme ve AI konularında uzman',
     icon: <Psychology />,
     status: 'online',
-    specialties: ['AI', 'ML', 'Derin Öğrenme']
+    specialties: ['AI', 'ML', 'Derin Öğrenme'],
   },
   {
     id: 'motivation-coach',
@@ -64,7 +64,7 @@ const defaultAgents: Agent[] = [
     description: 'Motivasyonunuzu yüksek tutar',
     icon: <AutoAwesome />,
     status: 'online',
-    specialties: ['Motivasyon', 'Hedefler', 'Başarı']
+    specialties: ['Motivasyon', 'Hedefler', 'Başarı'],
   },
   {
     id: 'progress-analyst',
@@ -72,30 +72,21 @@ const defaultAgents: Agent[] = [
     description: 'İlerlemenizi analiz eder ve öneriler sunar',
     icon: <TrendingUp />,
     status: 'online',
-    specialties: ['Analiz', 'Raporlama', 'Öneriler']
-  }
-]
+    specialties: ['Analiz', 'Raporlama', 'Öneriler'],
+  },
+];
 
-export function AgentSelector({ 
-  agents = defaultAgents, 
-  selectedAgent, 
-  onSelectAgent 
+export function AgentSelector({
+  agents = defaultAgents,
+  selectedAgent,
+  onSelectAgent,
 }: AgentSelectorProps) {
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'online': return 'bg-green-500'
-      case 'offline': return 'bg-gray-400'
-      case 'busy': return 'bg-yellow-500'
-      default: return 'bg-gray-400'
-    }
-  }
-
   return (
     <div className="p-4 bg-gray-50 rounded-lg">
       <h3 className="text-lg font-semibold text-gray-800 mb-4">
         AI Asistanlar
       </h3>
-      
+
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
         {agents.map((agent) => (
           <motion.div
@@ -110,7 +101,7 @@ export function AgentSelector({
                 'hover:shadow-lg text-left relative overflow-hidden',
                 selectedAgent === agent.id
                   ? 'border-blue-500 bg-blue-50 shadow-md'
-                  : 'border-gray-200 bg-white hover:border-gray-300'
+                  : 'border-gray-200 bg-white hover:border-gray-300',
               )}
             >
               {/* Status Badge */}
@@ -120,20 +111,20 @@ export function AgentSelector({
                 variant="dot"
                 sx={{
                   '& .MuiBadge-badge': {
-                    backgroundColor: agent.status === 'online' ? '#10b981' : 
+                    backgroundColor: agent.status === 'online' ? '#10b981' :
                                     agent.status === 'busy' ? '#f59e0b' : '#6b7280',
                     width: 12,
                     height: 12,
                     border: '2px solid white',
                     borderRadius: '50%',
-                  }
+                  },
                 }}
               >
                 <div className={clsx(
                   'w-12 h-12 rounded-lg flex items-center justify-center mb-3',
                   selectedAgent === agent.id
                     ? 'bg-blue-500 text-white'
-                    : 'bg-gray-100 text-gray-600'
+                    : 'bg-gray-100 text-gray-600',
                 )}>
                   {agent.icon}
                 </div>
@@ -167,7 +158,7 @@ export function AgentSelector({
                   layoutId="selected-agent"
                   className="absolute inset-0 border-2 border-blue-500 rounded-xl pointer-events-none"
                   initial={false}
-                  transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                  transition={{ type: 'spring', stiffness: 300, damping: 30 }}
                 />
               )}
             </button>
@@ -175,5 +166,5 @@ export function AgentSelector({
         ))}
       </div>
     </div>
-  )
+  );
 }

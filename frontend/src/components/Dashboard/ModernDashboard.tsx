@@ -3,30 +3,31 @@
  * Enhanced dashboard with responsive design and performance optimizations
  */
 
-import React, { memo, useCallback, useMemo } from 'react'
-import { 
-  Grid, 
-  Typography, 
-  Box, 
-  Paper,
-  IconButton,
-  Menu,
-  MenuItem,
-  Fade,
-  useTheme
-} from '@mui/material'
-import { 
+import {
   MoreVert as MoreIcon,
   TrendingUp as TrendingUpIcon,
   Assignment as AssignmentIcon,
   Schedule as ScheduleIcon,
-  Analytics as AnalyticsIcon
-} from '@mui/icons-material'
+  Analytics as AnalyticsIcon,
+} from '@mui/icons-material';
+import {
+  Grid,
+  Typography,
+  Box,
+  Paper as _Paper,
+  IconButton,
+  Menu,
+  MenuItem,
+  Fade,
+  useTheme,
+} from '@mui/material';
+import * as React from 'react';
+import {  memo, useCallback, useMemo  } from 'react';
 
-import { ModernCard } from '../ui/modern-card'
-import { ModernButton } from '../ui/modern-button'
-import { useResponsive } from '../../utils/responsive'
-import { useAuthStore } from '@/store/authStore'
+import { useResponsive } from '../../utils/responsive';
+import { ModernButton } from '../ui/modern-button';
+import { ModernCard } from '../ui/modern-card';
+import { useAuthStore } from '@/store/authStore';
 
 interface DashboardStats {
   completedExams: number
@@ -41,12 +42,12 @@ interface DashboardProps {
 }
 
 // Stat card component
-const StatCard = memo(({ 
-  title, 
-  value, 
-  icon, 
+const StatCard = memo(({
+  title,
+  value,
+  icon,
   color = 'primary',
-  loading = false 
+  loading = false,
 }: {
   title: string
   value: string | number
@@ -54,8 +55,8 @@ const StatCard = memo(({
   color?: 'primary' | 'secondary' | 'success' | 'warning'
   loading?: boolean
 }) => {
-  const theme = useTheme()
-  
+  const theme = useTheme();
+
   return (
     <ModernCard loading={loading} size="small">
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
@@ -67,12 +68,12 @@ const StatCard = memo(({
             color: theme.palette[color].contrastText,
             display: 'flex',
             alignItems: 'center',
-            justifyContent: 'center'
+            justifyContent: 'center',
           }}
         >
           {icon}
         </Box>
-        
+
         <Box sx={{ flex: 1 }}>
           <Typography variant="h4" component="div" sx={{ fontWeight: 700, mb: 0.5 }}>
             {value}
@@ -83,34 +84,34 @@ const StatCard = memo(({
         </Box>
       </Box>
     </ModernCard>
-  )
-})
+  );
+});
 
-StatCard.displayName = 'StatCard'
+StatCard.displayName = 'StatCard';
 
 // Recent activity component
 const RecentActivity = memo(() => {
   const activities = useMemo(() => [
     { id: 1, title: 'Matematik Sınavı Tamamlandı', time: '2 saat önce', type: 'exam' },
     { id: 2, title: 'Fizik Dersi İzlendi', time: '5 saat önce', type: 'study' },
-    { id: 3, title: 'Kimya Ödevi Gönderildi', time: '1 gün önce', type: 'assignment' }
-  ], [])
-  
+    { id: 3, title: 'Kimya Ödevi Gönderildi', time: '1 gün önce', type: 'assignment' },
+  ], []);
+
   return (
     <ModernCard title="Son Aktiviteler" size="medium">
       <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
         {activities.map((activity) => (
-          <Box 
+          <Box
             key={activity.id}
-            sx={{ 
-              display: 'flex', 
-              alignItems: 'center', 
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
               gap: 2,
               p: 2,
               borderRadius: 1,
               backgroundColor: 'background.paper',
               border: 1,
-              borderColor: 'divider'
+              borderColor: 'divider',
             }}
           >
             <Box
@@ -118,8 +119,8 @@ const RecentActivity = memo(() => {
                 width: 8,
                 height: 8,
                 borderRadius: '50%',
-                backgroundColor: activity.type === 'exam' ? 'success.main' : 
-                               activity.type === 'study' ? 'primary.main' : 'warning.main'
+                backgroundColor: activity.type === 'exam' ? 'success.main' :
+                               activity.type === 'study' ? 'primary.main' : 'warning.main',
               }}
             />
             <Box sx={{ flex: 1 }}>
@@ -134,22 +135,22 @@ const RecentActivity = memo(() => {
         ))}
       </Box>
     </ModernCard>
-  )
-})
+  );
+});
 
-RecentActivity.displayName = 'RecentActivity'
+RecentActivity.displayName = 'RecentActivity';
 
 // Quick actions component
 const QuickActions = memo(() => {
-  const { isMobile } = useResponsive()
-  
+  const { isMobile } = useResponsive();
+
   const actions = useMemo(() => [
     { label: 'Sınav Başlat', color: 'primary', variant: 'contained' },
     { label: 'Ders İzle', color: 'secondary', variant: 'outlined' },
     { label: 'Ödev Gönder', color: 'success', variant: 'outlined' },
-    { label: 'İstatistikler', color: 'info', variant: 'outlined' }
-  ] as const, [])
-  
+    { label: 'İstatistikler', color: 'info', variant: 'outlined' },
+  ] as const, []);
+
   return (
     <ModernCard title="Hızlı İşlemler" size="medium">
       <Grid container spacing={2}>
@@ -168,60 +169,60 @@ const QuickActions = memo(() => {
         ))}
       </Grid>
     </ModernCard>
-  )
-})
+  );
+});
 
-QuickActions.displayName = 'QuickActions'
+QuickActions.displayName = 'QuickActions';
 
-export const ModernDashboard: React.FC<DashboardProps> = memo(({ 
+export const ModernDashboard: React.FC<DashboardProps> = memo(({
   stats = {
     completedExams: 12,
     averageScore: 85,
     studyTime: 24,
-    upcomingExams: 3
+    upcomingExams: 3,
   },
-  loading = false 
+  loading = false,
 }) => {
-  const {  user  } = useAuthStore()
-  const { isMobile } = useResponsive()
-  const [menuAnchor, setMenuAnchor] = React.useState<null | HTMLElement>(null)
-  
+  const { user } = useAuthStore();
+  const { isMobile: _isMobile } = useResponsive();
+  const [menuAnchor, setMenuAnchor] = React.useState<null | HTMLElement>(null);
+
   const handleMenuOpen = useCallback((event: React.MouseEvent<HTMLElement>) => {
-    setMenuAnchor(event.currentTarget)
-  }, [])
-  
+    setMenuAnchor(event.currentTarget);
+  }, []);
+
   const handleMenuClose = useCallback(() => {
-    setMenuAnchor(null)
-  }, [])
-  
+    setMenuAnchor(null);
+  }, []);
+
   // Memoize stat cards data
   const statCards = useMemo(() => [
     {
       title: 'Tamamlanan Sınavlar',
       value: stats.completedExams,
       icon: <AssignmentIcon />,
-      color: 'primary' as const
+      color: 'primary' as const,
     },
     {
       title: 'Ortalama Puan',
       value: `${stats.averageScore}%`,
       icon: <TrendingUpIcon />,
-      color: 'success' as const
+      color: 'success' as const,
     },
     {
       title: 'Çalışma Saati',
       value: `${stats.studyTime}h`,
       icon: <ScheduleIcon />,
-      color: 'warning' as const
+      color: 'warning' as const,
     },
     {
       title: 'Yaklaşan Sınavlar',
       value: stats.upcomingExams,
       icon: <AnalyticsIcon />,
-      color: 'secondary' as const
-    }
-  ], [stats])
-  
+      color: 'secondary' as const,
+    },
+  ], [stats]);
+
   return (
     <Fade in timeout={500}>
       <Box>
@@ -229,20 +230,20 @@ export const ModernDashboard: React.FC<DashboardProps> = memo(({
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4 }}>
           <Box>
             <Typography variant="h4" component="h1" sx={{ fontWeight: 700, mb: 1 }}>
-              Merhaba, {user?.adi || 'Öğrenci'}! 👋
+              Merhaba, {user?.ad || 'Öğrenci'}! 👋
             </Typography>
             <Typography variant="body1" color="text.secondary">
               Bugün nasıl ilerleme kaydedeceğiz?
             </Typography>
           </Box>
-          
-          <IconButton 
+
+          <IconButton
             onClick={handleMenuOpen}
             sx={{ display: { xs: 'block', md: 'none' } }}
           >
             <MoreIcon />
           </IconButton>
-          
+
           <Menu
             anchorEl={menuAnchor}
             open={Boolean(menuAnchor)}
@@ -255,7 +256,7 @@ export const ModernDashboard: React.FC<DashboardProps> = memo(({
             <MenuItem onClick={handleMenuClose}>Geri Bildirim</MenuItem>
           </Menu>
         </Box>
-        
+
         {/* Stats Grid */}
         <Grid container spacing={3} sx={{ mb: 4 }}>
           {statCards.map((stat, index) => (
@@ -264,30 +265,30 @@ export const ModernDashboard: React.FC<DashboardProps> = memo(({
             </Grid>
           ))}
         </Grid>
-        
+
         {/* Main Content Grid */}
         <Grid container spacing={3}>
           {/* Recent Activity */}
           <Grid item xs={12} md={8}>
             <RecentActivity />
           </Grid>
-          
+
           {/* Quick Actions */}
           <Grid item xs={12} md={4}>
             <QuickActions />
           </Grid>
-          
+
           {/* Performance Chart Placeholder */}
           <Grid item xs={12}>
             <ModernCard title="Performans Grafiği" size="large">
-              <Box 
-                sx={{ 
-                  height: 300, 
-                  display: 'flex', 
-                  alignItems: 'center', 
+              <Box
+                sx={{
+                  height: 300,
+                  display: 'flex',
+                  alignItems: 'center',
                   justifyContent: 'center',
                   backgroundColor: 'background.default',
-                  borderRadius: 1
+                  borderRadius: 1,
                 }}
               >
                 <Typography variant="body1" color="text.secondary">
@@ -299,9 +300,9 @@ export const ModernDashboard: React.FC<DashboardProps> = memo(({
         </Grid>
       </Box>
     </Fade>
-  )
-})
+  );
+});
 
-ModernDashboard.displayName = 'ModernDashboard'
+ModernDashboard.displayName = 'ModernDashboard';
 
-export default ModernDashboard
+export default ModernDashboard;

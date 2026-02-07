@@ -4,19 +4,17 @@
  */
 
 import { useState, useEffect, useCallback } from 'react';
-import { 
-  FSRSCard, 
-  FSRSSchedule, 
-  BionicReadingResult, 
+
+import revolutionaryFeaturesService from '../services/revolutionaryFeaturesService';
+import {
+  FSRSCard,
+  FSRSSchedule,
+  BionicReadingResult,
   MultiAgentStatus,
   AgentCoordination,
   BlackboardEvent,
   RevolutionaryFeatureSettings,
-  SimplificationResult,
-  TurkishZPDRange,
-  ZPDRecommendation
 } from '../types';
-import revolutionaryFeaturesService from '../services/revolutionaryFeaturesService';
 
 interface UseRevolutionaryFeaturesOptions {
   studentId: string;
@@ -27,18 +25,18 @@ interface RevolutionaryFeaturesState {
   // FSRS
   fsrsCards: FSRSCard[];
   fsrsSchedules: FSRSSchedule[];
-  
+
   // Bionic Reading
   bionicResult: BionicReadingResult | null;
-  
+
   // Multi-Agent
   agentStatus: MultiAgentStatus[];
   agentCoordination: AgentCoordination | null;
   blackboardEvents: BlackboardEvent[];
-  
+
   // Settings
   settings: RevolutionaryFeatureSettings | null;
-  
+
   // Loading states
   loading: {
     fsrs: boolean;
@@ -47,7 +45,7 @@ interface RevolutionaryFeaturesState {
     settings: boolean;
     global: boolean;
   };
-  
+
   // Error states
   errors: {
     fsrs: string | null;
@@ -71,20 +69,20 @@ const initialState: RevolutionaryFeaturesState = {
     bionic: false,
     multiAgent: false,
     settings: false,
-    global: false
+    global: false,
   },
   errors: {
     fsrs: null,
     bionic: null,
     multiAgent: null,
     settings: null,
-    global: null
-  }
+    global: null,
+  },
 };
 
-export const useRevolutionaryFeatures = ({ 
-  studentId, 
-  autoLoad = true 
+export const useRevolutionaryFeatures = ({
+  studentId,
+  autoLoad = true,
 }: UseRevolutionaryFeaturesOptions) => {
   const [state, setState] = useState<RevolutionaryFeaturesState>(initialState);
 
@@ -95,8 +93,8 @@ export const useRevolutionaryFeatures = ({
       ...prev,
       errors: {
         ...prev.errors,
-        [category]: errorMessage
-      }
+        [category]: errorMessage,
+      },
     }));
     console.error(`Revolutionary Features Error (${category}):`, error);
   }, []);
@@ -107,8 +105,8 @@ export const useRevolutionaryFeatures = ({
       ...prev,
       loading: {
         ...prev.loading,
-        [category]: loading
-      }
+        [category]: loading,
+      },
     }));
   }, []);
 
@@ -118,14 +116,14 @@ export const useRevolutionaryFeatures = ({
       ...prev,
       errors: {
         ...prev.errors,
-        [category]: null
-      }
+        [category]: null,
+      },
     }));
   }, []);
 
   // FSRS Functions
   const loadFSRSData = useCallback(async (subject?: string) => {
-    if (!studentId) return;
+    if (!studentId) {return;}
 
     setLoading('fsrs', true);
     clearError('fsrs');
@@ -133,13 +131,13 @@ export const useRevolutionaryFeatures = ({
     try {
       const [cards, schedules] = await Promise.all([
         revolutionaryFeaturesService.getFSRSCards(studentId, subject),
-        revolutionaryFeaturesService.getFSRSSchedules(studentId, subject)
+        revolutionaryFeaturesService.getFSRSSchedules(studentId, subject),
       ]);
 
       setState(prev => ({
         ...prev,
         fsrsCards: cards,
-        fsrsSchedules: schedules
+        fsrsSchedules: schedules,
       }));
     } catch (error) {
       handleError('fsrs', error);
@@ -149,17 +147,17 @@ export const useRevolutionaryFeatures = ({
   }, [studentId, setLoading, clearError, handleError]);
 
   const reviewFSRSCard = useCallback(async (cardId: string, grade: 1 | 2 | 3 | 4) => {
-    if (!studentId) return;
+    if (!studentId) {return;}
 
     try {
       await revolutionaryFeaturesService.reviewFSRSCard(studentId, cardId, grade);
-      
+
       // Kartı listeden kaldır veya güncelle
       setState(prev => ({
         ...prev,
-        fsrsCards: prev.fsrsCards.filter(card => card.card_id !== cardId)
+        fsrsCards: prev.fsrsCards.filter(card => card.card_id !== cardId),
       }));
-      
+
       // Zamanlamaları yenile
       await loadFSRSData();
     } catch (error) {
@@ -189,7 +187,7 @@ export const useRevolutionaryFeatures = ({
 
   // Multi-Agent Functions
   const loadMultiAgentData = useCallback(async () => {
-    if (!studentId) return;
+    if (!studentId) {return;}
 
     setLoading('multiAgent', true);
     clearError('multiAgent');
@@ -198,14 +196,14 @@ export const useRevolutionaryFeatures = ({
       const [status, coordination, events] = await Promise.all([
         revolutionaryFeaturesService.getMultiAgentStatus(studentId),
         revolutionaryFeaturesService.getAgentCoordination(studentId),
-        revolutionaryFeaturesService.getBlackboardEvents(studentId, 10)
+        revolutionaryFeaturesService.getBlackboardEvents(studentId, 10),
       ]);
 
       setState(prev => ({
         ...prev,
         agentStatus: status,
         agentCoordination: coordination,
-        blackboardEvents: events
+        blackboardEvents: events,
       }));
     } catch (error) {
       handleError('multiAgent', error);
@@ -216,7 +214,7 @@ export const useRevolutionaryFeatures = ({
 
   // Settings Functions
   const loadSettings = useCallback(async () => {
-    if (!studentId) return;
+    if (!studentId) {return;}
 
     setLoading('settings', true);
     clearError('settings');
@@ -232,7 +230,7 @@ export const useRevolutionaryFeatures = ({
   }, [studentId, setLoading, clearError, handleError]);
 
   const updateSettings = useCallback(async (newSettings: RevolutionaryFeatureSettings) => {
-    if (!studentId) return;
+    if (!studentId) {return;}
 
     setLoading('settings', true);
     clearError('settings');
@@ -249,7 +247,7 @@ export const useRevolutionaryFeatures = ({
   }, [studentId, setLoading, clearError, handleError]);
 
   const resetSettings = useCallback(async () => {
-    if (!studentId) return;
+    if (!studentId) {return;}
 
     setLoading('settings', true);
     clearError('settings');
@@ -268,7 +266,7 @@ export const useRevolutionaryFeatures = ({
 
   // Load all data
   const loadAllData = useCallback(async () => {
-    if (!studentId) return;
+    if (!studentId) {return;}
 
     setLoading('global', true);
     clearError('global');
@@ -277,7 +275,7 @@ export const useRevolutionaryFeatures = ({
       await Promise.all([
         loadFSRSData(),
         loadMultiAgentData(),
-        loadSettings()
+        loadSettings(),
       ]);
     } catch (error) {
       handleError('global', error);
@@ -300,32 +298,32 @@ export const useRevolutionaryFeatures = ({
   return {
     // State
     ...state,
-    
+
     // Computed
     isAnyLoading,
     hasAnyError,
-    
+
     // FSRS Actions
     loadFSRSData,
     reviewFSRSCard,
-    
+
     // Bionic Reading Actions
     applyBionicReading,
-    
+
     // Multi-Agent Actions
     loadMultiAgentData,
-    
+
     // Settings Actions
     loadSettings,
     updateSettings,
     resetSettings,
-    
+
     // Global Actions
     loadAllData,
     clearError,
-    
+
     // Utilities
-    refresh: loadAllData
+    refresh: loadAllData,
   };
 };
 

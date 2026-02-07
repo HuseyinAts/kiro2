@@ -33,6 +33,16 @@ from .exceptions import ErrorSeverity, NotFoundError, ValidationError
 logger = logging.getLogger(__name__)
 
 
+# Helper function to get value from enum or string
+def _get_value(obj) -> str:
+    """Get string value from enum or return string as-is"""
+    if obj is None:
+        return "none"
+    if hasattr(obj, 'value'):
+        return obj.value
+    return str(obj)
+
+
 # ==================== RBAC ENUMS ====================
 
 
@@ -248,13 +258,20 @@ class AuthorizationContext:
     """Context for authorization decisions"""
 
     user_id: str
-    resource_type: ResourceType
+    resource_type: ResourceType | str = "general"  # Can be enum or string
+    action: Action | None = None  # Made optional for compatibility
     resource_id: str | None = None
-    action: Action
     ip_address: str | None = None
     user_agent: str | None = None
     additional_context: dict[str, Any] = field(default_factory=dict)
     timestamp: datetime = field(default_factory=lambda: datetime.now(UTC))
+    # Additional fields for auth_dependencies.py compatibility
+    user_role: str | None = None
+    required_permissions: list[str] = field(default_factory=list)
+    required_roles: list[str] = field(default_factory=list)
+    resource_owner_id: str | None = None
+    request_path: str | None = None
+    request_method: str | None = None
 
 
 @dataclass
@@ -267,11 +284,27 @@ class AuthorizationResult:
     matched_roles: list[str] = field(default_factory=list)
     context: AuthorizationContext | None = None
     cached: bool = False
+    message: str = ""  # Alias for reason (backward compatibility)
+    granted_permissions: list[str] = field(default_factory=list)  # Alias for matched_permissions
+
+    def __post_init__(self):
+        # Sync aliases
+        if not self.message:
+            self.message = self.reason
+        if not self.granted_permissions:
+            self.granted_permissions = self.matched_permissions
+
+    @property
+    def authorized(self) -> bool:
+        """Alias for granted (backward compatibility with auth_dependencies.py)"""
+        return self.granted
 
     def to_dict(self) -> dict[str, Any]:
         return {
             "granted": self.granted,
+            "authorized": self.authorized,
             "reason": self.reason,
+            "message": self.message,
             "matched_permissions": self.matched_permissions,
             "matched_roles": self.matched_roles,
             "cached": self.cached,
@@ -929,8 +962,8 @@ class RBACManager:
             ctx.tags.update(
                 {
                     "user_id": auth_context.user_id,
-                    "resource_type": auth_context.resource_type.value,
-                    "action": auth_context.action.value,
+                    "resource_type": _get_value(auth_context.resource_type),
+                    "action": _get_value(auth_context.action),
                     "resource_id": auth_context.resource_id or "any",
                 }
             )
@@ -960,7 +993,7 @@ class RBACManager:
                         auth_context.user_id,
                         {
                             "reason": "no_active_roles",
-                            "resource": auth_context.resource_type.value,
+                            "resource": _get_value(auth_context.resource_type),
                         },
                     )
                     return result
@@ -970,7 +1003,7 @@ class RBACManager:
                 matched_roles = []
 
                 required_permission_id = (
-                    f"{auth_context.resource_type.value}:{auth_context.action.value}"
+                    f"{_get_value(auth_context.resource_type)}:{_get_value(auth_context.action)}"
                 )
 
                 for user_role in user_roles:
@@ -1052,7 +1085,7 @@ class RBACManager:
 
     def _get_cache_key(self, auth_context: AuthorizationContext) -> str:
         """Generate cache key for authorization context"""
-        key_data = f"{auth_context.user_id}:{auth_context.resource_type.value}:{auth_context.action.value}:{auth_context.resource_id or 'any'}"
+        key_data = f"{auth_context.user_id}:{_get_value(auth_context.resource_type)}:{_get_value(auth_context.action)}:{auth_context.resource_id or 'any'}"
         return hashlib.md5(key_data.encode()).hexdigest()
 
     def _get_cached_permission(self, cache_key: str) -> AuthorizationResult | None:

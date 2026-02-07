@@ -426,10 +426,8 @@ class OSYMScoringSystem:
                 -0.5 * z * z
             )
 
-            # Aday sayısı tahmini
-            candidates = int(
-                probability * total_candidates * std_dev * math.sqrt(2 * math.pi)
-            )
+            # Aday sayısı tahmini (PDF * bin_width * total)
+            candidates = int(probability * total_candidates)
             distribution[score] = candidates
 
         return distribution

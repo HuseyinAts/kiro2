@@ -1,0 +1,605 @@
+"""add_diary_tables
+
+Revision ID: 20260119_diary
+Revises: 20260118_quality_gates
+Create Date: 2026-01-19 10:00:00.000000
+
+Claude Diary Plugin Tables:
+- diary_entries: Gunluk kayitlari (REQ-1)
+- insights: Icgoruler (REQ-2)
+- reflections: Yansitmalar (REQ-3)
+- learning_entries: Ogrenme gunlugu (REQ-4)
+- emotional_states: Duygusal durumlar (REQ-5)
+- goals: Hedefler (REQ-6)
+- peer_comparisons: Akran karsilastirmalari (REQ-7)
+- diary_exports: Export kayitlari (REQ-8)
+
+Spec: claude-diary-plugin
+"""
+from typing import Sequence, Union
+
+from alembic import op
+import sqlalchemy as sa
+from sqlalchemy.dialects import postgresql
+
+# revision identifiers, used by Alembic.
+revision: str = '20260119_diary'
+down_revision: Union[str, None] = '20260118_quality_gates'
+branch_labels: Union[str, Sequence[str], None] = None
+depends_on: Union[str, Sequence[str], None] = None
+
+
+def upgrade() -> None:
+    # ======================================================================
+    # 1. diary_entries - Gunluk kayitlari (REQ-1)
+    # ======================================================================
+    op.create_table(
+        'diary_entries',
+        sa.Column('id', postgresql.UUID(as_uuid=True), primary_key=True,
+                  server_default=sa.text('gen_random_uuid()')),
+        sa.Column('user_id', postgresql.UUID(as_uuid=True), nullable=False,
+                  comment='User ID'),
+
+        # Tarih (benzersiz)
+        sa.Column('date', sa.Date(), nullable=False, index=True,
+                  comment='Entry date'),
+
+        # Task istatistikleri
+        sa.Column('success_count', sa.Integer(), server_default='0',
+                  comment='Successful task count'),
+        sa.Column('failure_count', sa.Integer(), server_default='0',
+                  comment='Failed task count'),
+        sa.Column('total_tasks', sa.Integer(), server_default='0',
+                  comment='Total task count'),
+        sa.Column('total_duration_minutes', sa.Integer(), server_default='0',
+                  comment='Total duration in minutes'),
+
+        # Icerik (JSONB)
+        sa.Column('highlights', postgresql.JSONB(), server_default='[]',
+                  comment='Highlighted tasks'),
+        sa.Column('learnings', postgresql.JSONB(), server_default='[]',
+                  comment='Key learnings'),
+        sa.Column('challenges', postgresql.JSONB(), server_default='[]',
+                  comment='Challenges faced'),
+        sa.Column('tasks_data', postgresql.JSONB(), server_default='[]',
+                  comment='Raw task data'),
+
+        # Markdown ozet
+        sa.Column('markdown_content', sa.Text(), nullable=True,
+                  comment='Markdown formatted summary'),
+        sa.Column('file_path', sa.String(512), nullable=True,
+                  comment='File path for persisted diary'),
+
+        # Metadata
+        sa.Column('meta_data', postgresql.JSONB(), server_default='{}',
+                  comment='Additional metadata'),
+
+        # Timestamps
+        sa.Column('created_at', sa.DateTime(timezone=True),
+                  server_default=sa.text('NOW()'), comment='Creation timestamp'),
+        sa.Column('updated_at', sa.DateTime(timezone=True),
+                  server_default=sa.text('NOW()'), comment='Update timestamp'),
+
+        # Foreign key
+        sa.ForeignKeyConstraint(['user_id'], ['users.id'], ondelete='CASCADE'),
+    )
+
+    # Indexes
+    op.create_index('ix_diary_entries_user', 'diary_entries', ['user_id'])
+    op.create_index('ix_diary_entries_date', 'diary_entries', ['date'])
+    op.create_index('ix_diary_entries_user_date', 'diary_entries',
+                    ['user_id', 'date'], unique=True)
+
+    # ======================================================================
+    # 2. insights - Icgoruler (REQ-2)
+    # ======================================================================
+    op.create_table(
+        'insights',
+        sa.Column('id', postgresql.UUID(as_uuid=True), primary_key=True,
+                  server_default=sa.text('gen_random_uuid()')),
+        sa.Column('diary_entry_id', postgresql.UUID(as_uuid=True), nullable=False,
+                  comment='Parent diary entry'),
+        sa.Column('user_id', postgresql.UUID(as_uuid=True), nullable=False,
+                  comment='User ID'),
+
+        # Kategori
+        sa.Column('category', sa.String(50), nullable=False,
+                  server_default='technical',
+                  comment='technical, process, communication'),
+
+        # Pattern ve analiz
+        sa.Column('pattern', sa.Text(), nullable=False,
+                  comment='Detected pattern'),
+        sa.Column('root_cause', sa.Text(), nullable=True,
+                  comment='Root cause analysis'),
+        sa.Column('correlation', sa.Text(), nullable=True,
+                  comment='Cause-effect correlation'),
+
+        # Confidence scoring (>= 0.8)
+        sa.Column('confidence', sa.Float(), nullable=False,
+                  comment='Confidence score 0.0-1.0'),
+        sa.Column('evidence_count', sa.Integer(), server_default='1',
+                  comment='Evidence count'),
+
+        # Recommendation
+        sa.Column('recommendation', sa.Text(), nullable=False,
+                  comment='Actionable recommendation'),
+        sa.Column('priority', sa.Integer(), server_default='1',
+                  comment='Priority 1=high, 2=medium, 3=low'),
+
+        # Metadata
+        sa.Column('evidence_data', postgresql.JSONB(), server_default='[]',
+                  comment='Evidence details'),
+        sa.Column('meta_data', postgresql.JSONB(), server_default='{}',
+                  comment='Additional metadata'),
+
+        # Timestamps
+        sa.Column('created_at', sa.DateTime(timezone=True),
+                  server_default=sa.text('NOW()'), comment='Creation timestamp'),
+
+        # Foreign keys
+        sa.ForeignKeyConstraint(['diary_entry_id'], ['diary_entries.id'],
+                                ondelete='CASCADE'),
+        sa.ForeignKeyConstraint(['user_id'], ['users.id'], ondelete='CASCADE'),
+    )
+
+    # Indexes
+    op.create_index('ix_insights_diary_entry', 'insights', ['diary_entry_id'])
+    op.create_index('ix_insights_user', 'insights', ['user_id'])
+    op.create_index('ix_insights_category', 'insights', ['category'])
+    op.create_index('ix_insights_confidence', 'insights', ['confidence'])
+
+    # ======================================================================
+    # 3. reflections - Yansitmalar (REQ-3)
+    # ======================================================================
+    op.create_table(
+        'reflections',
+        sa.Column('id', postgresql.UUID(as_uuid=True), primary_key=True,
+                  server_default=sa.text('gen_random_uuid()')),
+        sa.Column('diary_entry_id', postgresql.UUID(as_uuid=True), nullable=False,
+                  comment='Parent diary entry'),
+        sa.Column('user_id', postgresql.UUID(as_uuid=True), nullable=False,
+                  comment='User ID'),
+
+        # Reflection sorulari ve yanitlari
+        sa.Column('what_went_well', sa.Text(), nullable=True,
+                  comment='What went well?'),
+        sa.Column('what_could_improve', sa.Text(), nullable=True,
+                  comment='What could improve?'),
+        sa.Column('what_did_i_learn', sa.Text(), nullable=True,
+                  comment='What did I learn?'),
+        sa.Column('what_will_i_do_differently', sa.Text(), nullable=True,
+                  comment='What will I do differently?'),
+        sa.Column('additional_notes', sa.Text(), nullable=True,
+                  comment='Additional notes'),
+
+        # Depth measurement
+        sa.Column('depth', sa.String(20), server_default='surface',
+                  comment='surface, moderate, deep'),
+        sa.Column('depth_score', sa.Float(), server_default='0.0',
+                  comment='Depth score 0.0-1.0'),
+
+        # Analysis
+        sa.Column('extracted_learnings', postgresql.JSONB(), server_default='[]',
+                  comment='Extracted learnings'),
+        sa.Column('action_items', postgresql.JSONB(), server_default='[]',
+                  comment='Action items'),
+
+        # Metadata
+        sa.Column('meta_data', postgresql.JSONB(), server_default='{}',
+                  comment='Additional metadata'),
+
+        # Timestamps
+        sa.Column('created_at', sa.DateTime(timezone=True),
+                  server_default=sa.text('NOW()'), comment='Creation timestamp'),
+        sa.Column('updated_at', sa.DateTime(timezone=True),
+                  server_default=sa.text('NOW()'), comment='Update timestamp'),
+
+        # Foreign keys
+        sa.ForeignKeyConstraint(['diary_entry_id'], ['diary_entries.id'],
+                                ondelete='CASCADE'),
+        sa.ForeignKeyConstraint(['user_id'], ['users.id'], ondelete='CASCADE'),
+    )
+
+    # Indexes
+    op.create_index('ix_reflections_diary_entry', 'reflections', ['diary_entry_id'])
+    op.create_index('ix_reflections_user', 'reflections', ['user_id'])
+    op.create_index('ix_reflections_depth', 'reflections', ['depth'])
+
+    # ======================================================================
+    # 4. learning_entries - Ogrenme gunlugu (REQ-4)
+    # ======================================================================
+    op.create_table(
+        'learning_entries',
+        sa.Column('id', postgresql.UUID(as_uuid=True), primary_key=True,
+                  server_default=sa.text('gen_random_uuid()')),
+        sa.Column('user_id', postgresql.UUID(as_uuid=True), nullable=False,
+                  comment='User ID'),
+
+        # Content
+        sa.Column('title', sa.String(255), nullable=False,
+                  comment='Entry title'),
+        sa.Column('content', sa.Text(), nullable=False,
+                  comment='Main content'),
+        sa.Column('summary', sa.Text(), nullable=True,
+                  comment='Short summary'),
+
+        # Tags (domain, skill, tool)
+        sa.Column('tags', postgresql.ARRAY(sa.String()), server_default='{}',
+                  comment='Tags array'),
+        sa.Column('domain', sa.String(100), nullable=True,
+                  comment='Domain e.g. backend, frontend'),
+        sa.Column('skill_type', sa.String(100), nullable=True,
+                  comment='Skill type e.g. python, react'),
+
+        # Related concepts (knowledge graph)
+        sa.Column('related_concepts', postgresql.ARRAY(sa.String()),
+                  server_default='{}', comment='Related concept names'),
+        sa.Column('concept_links', postgresql.JSONB(), server_default='[]',
+                  comment='Concept links with relationship types'),
+
+        # Spaced repetition
+        sa.Column('next_review', sa.DateTime(timezone=True), nullable=True,
+                  comment='Next review datetime'),
+        sa.Column('review_count', sa.Integer(), server_default='0',
+                  comment='Review count'),
+        sa.Column('last_review', sa.DateTime(timezone=True), nullable=True,
+                  comment='Last review datetime'),
+        sa.Column('retention_score', sa.Float(), server_default='0.0',
+                  comment='Retention score 0.0-1.0'),
+        sa.Column('ease_factor', sa.Float(), server_default='2.5',
+                  comment='FSRS ease factor'),
+        sa.Column('interval_days', sa.Integer(), server_default='1',
+                  comment='Current interval in days'),
+
+        # Importance and mastery
+        sa.Column('importance', sa.Integer(), server_default='1',
+                  comment='Importance 1-5'),
+        sa.Column('mastery_level', sa.Float(), server_default='0.0',
+                  comment='Mastery level 0.0-1.0'),
+
+        # Source
+        sa.Column('source_type', sa.String(50), nullable=True,
+                  comment='Source type: task, research, course, book'),
+        sa.Column('source_reference', sa.String(512), nullable=True,
+                  comment='Source reference URL or identifier'),
+
+        # Metadata
+        sa.Column('meta_data', postgresql.JSONB(), server_default='{}',
+                  comment='Additional metadata'),
+
+        # Timestamps
+        sa.Column('created_at', sa.DateTime(timezone=True),
+                  server_default=sa.text('NOW()'), comment='Creation timestamp'),
+        sa.Column('updated_at', sa.DateTime(timezone=True),
+                  server_default=sa.text('NOW()'), comment='Update timestamp'),
+
+        # Foreign key
+        sa.ForeignKeyConstraint(['user_id'], ['users.id'], ondelete='CASCADE'),
+    )
+
+    # Indexes
+    op.create_index('ix_learning_entries_user', 'learning_entries', ['user_id'])
+    op.create_index('ix_learning_entries_next_review', 'learning_entries',
+                    ['next_review'])
+    op.create_index('ix_learning_entries_domain', 'learning_entries', ['domain'])
+    op.create_index('ix_learning_entries_tags', 'learning_entries', ['tags'],
+                    postgresql_using='gin')
+
+    # ======================================================================
+    # 5. emotional_states - Duygusal durumlar (REQ-5)
+    # ======================================================================
+    op.create_table(
+        'emotional_states',
+        sa.Column('id', postgresql.UUID(as_uuid=True), primary_key=True,
+                  server_default=sa.text('gen_random_uuid()')),
+        sa.Column('user_id', postgresql.UUID(as_uuid=True), nullable=False,
+                  comment='User ID'),
+
+        # Timestamp
+        sa.Column('timestamp', sa.DateTime(timezone=True),
+                  server_default=sa.text('NOW()'), comment='State timestamp'),
+
+        # Confidence level (1-10)
+        sa.Column('confidence_level', sa.Integer(), nullable=False,
+                  comment='Confidence level 1-10'),
+
+        # Frustration metrics
+        sa.Column('frustration_score', sa.Float(), server_default='0.0',
+                  comment='Frustration score 0.0-1.0'),
+        sa.Column('retry_count', sa.Integer(), server_default='0',
+                  comment='Retry count'),
+        sa.Column('error_count', sa.Integer(), server_default='0',
+                  comment='Error count'),
+
+        # Flow state
+        sa.Column('flow_state', sa.Boolean(), server_default='false',
+                  comment='Is in flow state'),
+        sa.Column('productivity_score', sa.Float(), server_default='0.0',
+                  comment='Productivity score 0.0-1.0'),
+        sa.Column('tasks_completed', sa.Integer(), server_default='0',
+                  comment='Tasks completed'),
+
+        # Trigger factors
+        sa.Column('trigger_factors', postgresql.JSONB(), server_default='{}',
+                  comment='Trigger factors'),
+        sa.Column('task_type', sa.String(100), nullable=True,
+                  comment='Task type that triggered state'),
+
+        # Self-awareness
+        sa.Column('self_awareness_score', sa.Float(), server_default='0.0',
+                  comment='Self-awareness score 0-100'),
+        sa.Column('predicted_state', sa.String(50), nullable=True,
+                  comment='Predicted state'),
+        sa.Column('actual_state', sa.String(50), nullable=True,
+                  comment='Actual state'),
+
+        # Context
+        sa.Column('context_notes', sa.Text(), nullable=True,
+                  comment='Context notes'),
+
+        # Metadata
+        sa.Column('meta_data', postgresql.JSONB(), server_default='{}',
+                  comment='Additional metadata'),
+
+        # Foreign key
+        sa.ForeignKeyConstraint(['user_id'], ['users.id'], ondelete='CASCADE'),
+    )
+
+    # Indexes
+    op.create_index('ix_emotional_states_user', 'emotional_states', ['user_id'])
+    op.create_index('ix_emotional_states_timestamp', 'emotional_states',
+                    ['timestamp'])
+    op.create_index('ix_emotional_states_flow', 'emotional_states', ['flow_state'])
+    op.create_index('ix_emotional_states_confidence', 'emotional_states',
+                    ['confidence_level'])
+
+    # ======================================================================
+    # 6. goals - Hedefler (REQ-6)
+    # ======================================================================
+    op.create_table(
+        'goals',
+        sa.Column('id', postgresql.UUID(as_uuid=True), primary_key=True,
+                  server_default=sa.text('gen_random_uuid()')),
+        sa.Column('user_id', postgresql.UUID(as_uuid=True), nullable=False,
+                  comment='User ID'),
+
+        # Goal info
+        sa.Column('title', sa.String(255), nullable=False,
+                  comment='Goal title'),
+        sa.Column('description', sa.Text(), nullable=True,
+                  comment='Goal description'),
+
+        # SMART criteria
+        sa.Column('specific', sa.Text(), nullable=True,
+                  comment='Specific: What exactly?'),
+        sa.Column('measurable', sa.Text(), nullable=True,
+                  comment='Measurable: How to measure?'),
+        sa.Column('achievable', sa.Text(), nullable=True,
+                  comment='Achievable: Is it realistic?'),
+        sa.Column('relevant', sa.Text(), nullable=True,
+                  comment='Relevant: Why does it matter?'),
+        sa.Column('time_bound', sa.DateTime(timezone=True), nullable=True,
+                  comment='Time-bound: Deadline'),
+
+        # Progress
+        sa.Column('progress', sa.Integer(), server_default='0',
+                  comment='Progress percentage 0-100'),
+        sa.Column('current_value', sa.Float(), server_default='0.0',
+                  comment='Current value'),
+        sa.Column('target_value', sa.Float(), nullable=False,
+                  comment='Target value'),
+        sa.Column('unit', sa.String(50), nullable=True,
+                  comment='Unit: tasks, hours, points'),
+
+        # Status
+        sa.Column('status', sa.String(20), server_default='active',
+                  comment='active, completed, at_risk, cancelled'),
+
+        # Milestones
+        sa.Column('milestones', postgresql.JSONB(), server_default='[]',
+                  comment='Milestones array'),
+        sa.Column('milestone_celebrations', postgresql.JSONB(), server_default='[]',
+                  comment='Celebration records'),
+
+        # Risk detection
+        sa.Column('is_at_risk', sa.Boolean(), server_default='false',
+                  comment='Is at risk'),
+        sa.Column('risk_factors', postgresql.JSONB(), server_default='[]',
+                  comment='Risk factors'),
+        sa.Column('predicted_completion', sa.DateTime(timezone=True), nullable=True,
+                  comment='Predicted completion date'),
+        sa.Column('velocity', sa.Float(), server_default='0.0',
+                  comment='Progress velocity per day'),
+
+        # Adjustments
+        sa.Column('adjustments', postgresql.JSONB(), server_default='[]',
+                  comment='Adjustment history'),
+
+        # Retrospective
+        sa.Column('lessons_learned', postgresql.JSONB(), server_default='[]',
+                  comment='Lessons learned'),
+        sa.Column('success_factors', postgresql.JSONB(), server_default='[]',
+                  comment='Success factors'),
+        sa.Column('challenges_faced', postgresql.JSONB(), server_default='[]',
+                  comment='Challenges faced'),
+
+        # Dates
+        sa.Column('start_date', sa.DateTime(timezone=True),
+                  server_default=sa.text('NOW()'), comment='Start date'),
+        sa.Column('target_date', sa.DateTime(timezone=True), nullable=False,
+                  comment='Target date'),
+        sa.Column('completed_at', sa.DateTime(timezone=True), nullable=True,
+                  comment='Completion date'),
+
+        # Category and priority
+        sa.Column('category', sa.String(100), nullable=True,
+                  comment='Category: learning, productivity, health'),
+        sa.Column('priority', sa.Integer(), server_default='2',
+                  comment='Priority 1=high, 2=medium, 3=low'),
+
+        # Metadata
+        sa.Column('meta_data', postgresql.JSONB(), server_default='{}',
+                  comment='Additional metadata'),
+
+        # Timestamps
+        sa.Column('created_at', sa.DateTime(timezone=True),
+                  server_default=sa.text('NOW()'), comment='Creation timestamp'),
+        sa.Column('updated_at', sa.DateTime(timezone=True),
+                  server_default=sa.text('NOW()'), comment='Update timestamp'),
+
+        # Foreign key
+        sa.ForeignKeyConstraint(['user_id'], ['users.id'], ondelete='CASCADE'),
+    )
+
+    # Indexes
+    op.create_index('ix_goals_user', 'goals', ['user_id'])
+    op.create_index('ix_goals_status', 'goals', ['status'])
+    op.create_index('ix_goals_target_date', 'goals', ['target_date'])
+    op.create_index('ix_goals_at_risk', 'goals', ['is_at_risk'])
+
+    # ======================================================================
+    # 7. peer_comparisons - Akran karsilastirmalari (REQ-7)
+    # ======================================================================
+    op.create_table(
+        'peer_comparisons',
+        sa.Column('id', postgresql.UUID(as_uuid=True), primary_key=True,
+                  server_default=sa.text('gen_random_uuid()')),
+        sa.Column('user_id', postgresql.UUID(as_uuid=True), nullable=False,
+                  comment='User ID'),
+
+        # Period
+        sa.Column('period_start', sa.Date(), nullable=False,
+                  comment='Period start date'),
+        sa.Column('period_end', sa.Date(), nullable=False,
+                  comment='Period end date'),
+
+        # Percentiles
+        sa.Column('success_rate_percentile', sa.Float(), nullable=True,
+                  comment='Success rate percentile 0-100'),
+        sa.Column('speed_percentile', sa.Float(), nullable=True,
+                  comment='Speed percentile 0-100'),
+        sa.Column('quality_percentile', sa.Float(), nullable=True,
+                  comment='Quality percentile 0-100'),
+        sa.Column('overall_percentile', sa.Float(), nullable=True,
+                  comment='Overall percentile 0-100'),
+
+        # Strengths and improvements
+        sa.Column('strengths', postgresql.JSONB(), server_default='[]',
+                  comment='Strength areas (top 25%)'),
+        sa.Column('improvements', postgresql.JSONB(), server_default='[]',
+                  comment='Improvement areas (bottom 25%)'),
+        sa.Column('best_practices', postgresql.JSONB(), server_default='[]',
+                  comment='Best practices from top performers'),
+
+        # Privacy
+        sa.Column('is_anonymized', sa.Boolean(), server_default='true',
+                  comment='Is anonymized'),
+        sa.Column('noise_added', sa.Boolean(), server_default='true',
+                  comment='Differential privacy noise added'),
+        sa.Column('k_anonymity', sa.Integer(), server_default='5',
+                  comment='k-anonymity level'),
+
+        # Peer group info
+        sa.Column('peer_group_size', sa.Integer(), nullable=True,
+                  comment='Peer group size'),
+        sa.Column('peer_group_avg_success_rate', sa.Float(), nullable=True,
+                  comment='Peer group average success rate'),
+
+        # Metadata
+        sa.Column('meta_data', postgresql.JSONB(), server_default='{}',
+                  comment='Additional metadata'),
+
+        # Timestamps
+        sa.Column('created_at', sa.DateTime(timezone=True),
+                  server_default=sa.text('NOW()'), comment='Creation timestamp'),
+
+        # Foreign key
+        sa.ForeignKeyConstraint(['user_id'], ['users.id'], ondelete='CASCADE'),
+    )
+
+    # Indexes
+    op.create_index('ix_peer_comparisons_user', 'peer_comparisons', ['user_id'])
+    op.create_index('ix_peer_comparisons_period', 'peer_comparisons',
+                    ['period_start', 'period_end'])
+
+    # ======================================================================
+    # 8. diary_exports - Export kayitlari (REQ-8)
+    # ======================================================================
+    op.create_table(
+        'diary_exports',
+        sa.Column('id', postgresql.UUID(as_uuid=True), primary_key=True,
+                  server_default=sa.text('gen_random_uuid()')),
+        sa.Column('user_id', postgresql.UUID(as_uuid=True), nullable=False,
+                  comment='User ID'),
+
+        # Export info
+        sa.Column('format', sa.String(20), nullable=False,
+                  comment='Export format: markdown, pdf, json'),
+
+        # Date range
+        sa.Column('date_from', sa.Date(), nullable=False,
+                  comment='Date from'),
+        sa.Column('date_to', sa.Date(), nullable=False,
+                  comment='Date to'),
+
+        # File info
+        sa.Column('file_path', sa.String(512), nullable=True,
+                  comment='File path'),
+        sa.Column('file_size', sa.Integer(), nullable=True,
+                  comment='File size in bytes'),
+
+        # Privacy
+        sa.Column('privacy_filter_applied', sa.Boolean(), server_default='false',
+                  comment='Privacy filter applied'),
+        sa.Column('redacted_fields', postgresql.JSONB(), server_default='[]',
+                  comment='Redacted fields'),
+
+        # Sharing
+        sa.Column('share_token', sa.String(64), nullable=True, unique=True,
+                  comment='Share token'),
+        sa.Column('share_url', sa.String(512), nullable=True,
+                  comment='Share URL'),
+        sa.Column('share_expires_at', sa.DateTime(timezone=True), nullable=True,
+                  comment='Share expiration'),
+        sa.Column('share_access_count', sa.Integer(), server_default='0',
+                  comment='Share access count'),
+        sa.Column('is_public', sa.Boolean(), server_default='false',
+                  comment='Is public'),
+
+        # Backup
+        sa.Column('is_backup', sa.Boolean(), server_default='false',
+                  comment='Is backup'),
+        sa.Column('is_encrypted', sa.Boolean(), server_default='false',
+                  comment='Is encrypted'),
+        sa.Column('encryption_algorithm', sa.String(50), nullable=True,
+                  comment='Encryption algorithm e.g. AES-256'),
+
+        # Metadata
+        sa.Column('meta_data', postgresql.JSONB(), server_default='{}',
+                  comment='Additional metadata'),
+
+        # Timestamps
+        sa.Column('created_at', sa.DateTime(timezone=True),
+                  server_default=sa.text('NOW()'), comment='Creation timestamp'),
+
+        # Foreign key
+        sa.ForeignKeyConstraint(['user_id'], ['users.id'], ondelete='CASCADE'),
+    )
+
+    # Indexes
+    op.create_index('ix_diary_exports_user', 'diary_exports', ['user_id'])
+    op.create_index('ix_diary_exports_share_token', 'diary_exports', ['share_token'])
+    op.create_index('ix_diary_exports_created', 'diary_exports', ['created_at'])
+
+
+def downgrade() -> None:
+    # Drop tables in reverse order
+    op.drop_table('diary_exports')
+    op.drop_table('peer_comparisons')
+    op.drop_table('goals')
+    op.drop_table('emotional_states')
+    op.drop_table('learning_entries')
+    op.drop_table('reflections')
+    op.drop_table('insights')
+    op.drop_table('diary_entries')

@@ -1,20 +1,21 @@
-import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { 
-  Users, 
-  TrendingUp, 
-  Bell, 
-  Calendar, 
+import {
+  Users,
+  TrendingUp,
+  Bell,
   BookOpen,
   Clock,
   Award,
-  AlertCircle
+  AlertCircle,
 } from 'lucide-react';
-import { parentService } from '@/services/parentService';
+import * as React from 'react';
+import {  useState, useEffect  } from 'react';
+
 import { LoadingSpinner } from '@/components/Common/LoadingSpinner';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { parentService } from '@/services/parentService';
 
 interface ChildPerformance {
   child_id: number;
@@ -56,7 +57,7 @@ export const ParentDashboard: React.FC = () => {
   const [dashboardData, setDashboardData] = useState<DashboardData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [selectedChild, setSelectedChild] = useState<number | null>(null);
+  const [_selectedChild, setSelectedChild] = useState<number | null>(null);
 
   useEffect(() => {
     loadDashboardData();
@@ -82,14 +83,14 @@ export const ParentDashboard: React.FC = () => {
   };
 
   const getPerformanceColor = (score: number): string => {
-    if (score >= 80) return 'text-green-600';
-    if (score >= 60) return 'text-yellow-600';
+    if (score >= 80) {return 'text-green-600';}
+    if (score >= 60) {return 'text-yellow-600';}
     return 'text-red-600';
   };
 
   const getPerformanceBadge = (score: number): string => {
-    if (score >= 80) return 'bg-green-100 text-green-800';
-    if (score >= 60) return 'bg-yellow-100 text-yellow-800';
+    if (score >= 80) {return 'bg-green-100 text-green-800';}
+    if (score >= 60) {return 'bg-yellow-100 text-yellow-800';}
     return 'bg-red-100 text-red-800';
   };
 

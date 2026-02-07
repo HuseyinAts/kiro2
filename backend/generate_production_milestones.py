@@ -58,7 +58,7 @@ async def generate_to_milestone(target: int = 100):
 
     if current_count >= target:
         print(f"\n[OK] Already at or past target ({current_count} >= {target})")
-        print(f"[INFO] Generating final report...")
+        print("[INFO] Generating final report...")
         report = await monitor.generate_report()
         report_file = f"production_report_{current_count}_questions.md"
         with open(report_file, "w", encoding="utf-8") as f:
@@ -97,7 +97,7 @@ async def generate_to_milestone(target: int = 100):
     batches = (questions_needed + batch_size - 1) // batch_size
 
     print(f"\n[STRATEGY] Will generate in {batches} batches of ~{batch_size} questions")
-    print(f"[INFO] Subject split: ~50% Math, ~50% Turkish\n")
+    print("[INFO] Subject split: ~50% Math, ~50% Turkish\n")
 
     # Generate in batches
     for batch_num in range(batches):
@@ -142,7 +142,7 @@ async def generate_to_milestone(target: int = 100):
                         f"    -> Score: {evaluation.overall_score:.3f} | {evaluation.decision} | Length: {len(question.get('stem',''))} chars"
                     )
                 else:
-                    print(f"    -> [WARNING] Evaluation failed")
+                    print("    -> [WARNING] Evaluation failed")
 
             except Exception as e:
                 print(f"    -> [ERROR] {str(e)[:100]}")
@@ -170,7 +170,7 @@ async def generate_to_milestone(target: int = 100):
                         f"    -> Score: {evaluation.overall_score:.3f} | {evaluation.decision} | Length: {len(question.get('stem',''))} chars"
                     )
                 else:
-                    print(f"    -> [WARNING] Evaluation failed")
+                    print("    -> [WARNING] Evaluation failed")
 
             except Exception as e:
                 print(f"    -> [ERROR] {str(e)[:100]}")
@@ -187,18 +187,18 @@ async def generate_to_milestone(target: int = 100):
     # Final summary
     final_count = len(monitor.logs)
     print(f"\n{'='*70}")
-    print(f"GENERATION COMPLETE")
+    print("GENERATION COMPLETE")
     print(f"{'='*70}")
     print(f"\nFinal Count: {final_count} questions")
     print(f"Target: {target}")
     print(f"Status: {'TARGET REACHED' if final_count >= target else 'INCOMPLETE'}")
 
     # Generate final report
-    print(f"\nGenerating final report...")
+    print("\nGenerating final report...")
     stats = monitor.get_stats_summary()
 
     print(f"\n{'='*70}")
-    print(f"FINAL STATISTICS")
+    print("FINAL STATISTICS")
     print(f"{'='*70}")
     print(f"Total Questions: {stats['total_questions']}")
     print(f"Average Score: {stats['average_score']:.3f}")

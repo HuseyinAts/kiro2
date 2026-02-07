@@ -951,261 +951,12 @@ Bu doküman, Türkiye Üniversite Sınavları Hazırlık Platformu için tüm si
 - REQ-48: LLM Tabanlı ÖSYM Soru Üretim Sistemi
 - REQ-49: Adaptif Test Sistemi (CAT)
 - REQ-50-53: Erişilebilirlik Sistemleri (Disleksi, Diskalkuli, DEHB, OSB)
+- REQ-56-59: Gamification Sistemi (Puan, Rozet, Motivasyon, Analytics)
+- REQ-60-65: Opsiyonel Sistemler (Soru Bankası, Üniversite, Canlı Ders, Mobil, Sosyal, Psikolojik)
 
 ---
 
 ## BÖLÜM 6: ERİŞİLEBİLİRLİK SİSTEMLERİ
-
-### REQ-50: Disleksi Desteği Sistemi
-
-**Kullanıcı Hikayesi:** Disleksili bir öğrenci olarak, okuma zorluklarımı azaltacak özel tipografi, renk ayarları ve okuma yardımcıları kullanmak istiyorum, böylece içerikleri daha rahat okuyabilir ve öğrenme sürecime eşit şekilde katılabilirim.
-
-#### Kabul Kriterleri (104 Kriter - Özet)
-
-**Tipografi ve Görsel Düzenlemeler (REQ-50.1 - REQ-50.13)**
-1. **REQ-50.1** WHEN OpenDyslexic font seçildiğinde, THE Platform SHALL tüm metinlerde bu fontu uygulamak
-2. **REQ-50.2** WHEN Dyslexie font seçildiğinde, THE Platform SHALL lisanslı Dyslexie fontunu kullanmak
-3. **REQ-50.3** WHEN Font seçici gösterildiğinde, THE Platform SHALL en az 3 disleksi dostu font sunmak
-4. **REQ-50.4** WHEN Font tercihi kaydedildiğinde, THE Platform SHALL kullanıcı profilinde saklamak
-5. **REQ-50.5** WHEN Font boyutu ayarlandığında, THE Platform SHALL 12-24pt arası değerleri desteklemek
-6. **REQ-50.6** WHEN Real-time preview gösterildiğinde, THE Platform SHALL değişiklikleri anında yansıtmak
-7. **REQ-50.7** WHEN Responsive scaling uygulandığında, THE Platform SHALL tüm ekran boyutlarında çalışmak
-8. **REQ-50.8** WHEN Satır aralığı ayarlandığında, THE Platform SHALL 1.0x-3.0x arası değerleri desteklemek
-9. **REQ-50.9** WHEN Paragraph spacing ayarlandığında, THE Platform SHALL paragraflar arası boşluğu artırmak
-10. **REQ-50.10** WHEN Reading comfort optimize edildiğinde, THE Platform SHALL optimal satır uzunluğu (50-75 karakter) sağlamak
-11. **REQ-50.11** WHEN Letter spacing ayarlandığında, THE Platform SHALL harf arası boşluğu artırmak
-12. **REQ-50.12** WHEN Word spacing ayarlandığında, THE Platform SHALL kelime arası boşluğu artırmak
-13. **REQ-50.13** WHEN Kerning adjustment yapıldığında, THE Platform SHALL harf çiftleri arası boşluğu optimize etmek
-
-**Renk ve Kontrast (REQ-50.14 - REQ-50.27)**
-14-27. **REQ-50.14-27** SHALL renkli overlay (6 renk), opacity ayarlama, yüksek kontrast modları ve WCAG AAA uyumu sağlamak
-
-**Okuma Yardımcıları (REQ-50.28 - REQ-50.42)**
-28-42. **REQ-50.28-42** SHALL okuma cetveli, odak modu, kelime vurgulama ve hece ayırma özellikleri sunmak
-
-**Text-to-Speech (REQ-50.43 - REQ-50.56)**
-43-56. **REQ-50.43-56** SHALL Türkçe TTS, ses hızı/tonu ayarlama ve karaoke mode sağlamak
-
-**Metin Basitleştirme (REQ-50.57 - REQ-50.72)**
-57-72. **REQ-50.57-72** SHALL karmaşık kelime tespiti, basit eşanlamlı değiştirme, uzun cümle bölme ve Flesch-Kincaid skoru hesaplama sunmak
-
-**Görsel Destekler (REQ-50.73 - REQ-50.88)**
-73-88. **REQ-50.73-88** SHALL kavram haritaları, infografikler, resimli sözlük ve renk kodlama sağlamak
-
-**Çoklu Duyusal Öğrenme (REQ-50.89 - REQ-50.104)**
-89-104. **REQ-50.89-104** SHALL görsel+işitsel+kinestetik içerik, interaktif animasyonlar, video içerikler ve VR/AR desteği sunmak
-
----
-
-### REQ-51: Diskalkuli Desteği Sistemi
-
-**Kullanıcı Hikayesi:** Diskalkuli (matematik öğrenme güçlüğü) yaşayan bir öğrenci olarak, görsel matematik temsilleri, adım adım çözümler ve interaktif araçlar kullanmak istiyorum, böylece matematiksel kavramları daha iyi anlayabilir ve matematik kaygımı azaltabilirim.
-
-#### Kabul Kriterleri (100 Kriter - Özet)
-
-**Görsel Matematik Temsilleri (REQ-51.1 - REQ-51.20)**
-1-20. **REQ-51.1-20** SHALL sayı blokları, kesir çubukları, 3D geometrik şekiller ve grafik çizim araçları sağlamak
-
-**Adım Adım Çözüm (REQ-51.21 - REQ-51.40)**
-
-**Her Adımı Ayrı Gösterme (REQ-51.21 - REQ-51.25)**
-21. **REQ-51.21** WHEN öğrenci matematik problemi çözerken, THE Adım Adım Çözüm Sistemi SHALL her çözüm adımını ayrı bir bölüm olarak göstermek
-22. **REQ-51.22** WHEN öğrenci bir adımı görüntülediğinde, THE Adım Adım Çözüm Sistemi SHALL adım numarası, açıklama ve matematiksel ifadeyi içermek
-23. **REQ-51.23** WHEN öğrenci adımlar arasında gezindiğinde, THE Adım Adım Çözüm Sistemi SHALL ileri/geri butonları ile navigasyon sağlamak
-24. **REQ-51.24** WHEN öğrenci progressive disclosure modunu seçtiğinde, THE Adım Adım Çözüm Sistemi SHALL adımları teker teker açığa çıkarmak
-25. **REQ-51.25** WHEN öğrenci tüm adımları görmek istediğinde, THE Adım Adım Çözüm Sistemi SHALL "Tümünü Göster" seçeneği sunmak
-
-**Animasyonlu Geçişler (REQ-51.26 - REQ-51.30)**
-26. **REQ-51.26** WHEN öğrenci bir adımdan diğerine geçtiğinde, THE Adım Adım Çözüm Sistemi SHALL 300-500ms yumuşak geçiş animasyonu göstermek
-27. **REQ-51.27** WHEN matematiksel ifade değiştiğinde, THE Adım Adım Çözüm Sistemi SHALL değişen kısmı vurgulayarak göstermek
-28. **REQ-51.28** WHEN yeni bir adım açıldığında, THE Adım Adım Çözüm Sistemi SHALL fade-in veya slide-in animasyonu kullanmak
-29. **REQ-51.29** WHEN öğrenci animasyon hızını ayarlamak istediğinde, THE Adım Adım Çözüm Sistemi SHALL yavaş/normal/hızlı seçenekleri sunmak
-30. **REQ-51.30** WHEN öğrenci animasyonları kapatmak istediğinde, THE Adım Adım Çözüm Sistemi SHALL "Animasyonsuz Mod" seçeneği sunmak
-
-**İpucu Sistemi (REQ-51.31 - REQ-51.35)**
-31. **REQ-51.31** WHEN öğrenci bir adımda takıldığında, THE İpucu Sistemi SHALL "İpucu Al" butonu göstermek
-32. **REQ-51.32** WHEN öğrenci ilk ipucunu istediğinde, THE İpucu Sistemi SHALL hafif seviye ipucu (genel yönlendirme) sunmak
-33. **REQ-51.33** WHEN öğrenci ikinci ipucunu istediğinde, THE İpucu Sistemi SHALL orta seviye ipucu (daha spesifik yönlendirme) sunmak
-34. **REQ-51.34** WHEN öğrenci üçüncü ipucunu istediğinde, THE İpucu Sistemi SHALL detaylı seviye ipucu (neredeyse tam çözüm) sunmak
-35. **REQ-51.35** WHEN öğrenci ipucu kullandığında, THE İpucu Sistemi SHALL kullanım sayısını kaydetmek ve istatistiklere eklemek
-
-**Hata Vurgulama (REQ-51.36 - REQ-51.40)**
-36. **REQ-51.36** WHEN öğrenci yanlış bir adım girdiğinde, THE Hata Vurgulama Sistemi SHALL hatalı kısmı kırmızı renk ile vurgulamak
-37. **REQ-51.37** WHEN hata tespit edildiğinde, THE Hata Vurgulama Sistemi SHALL hata türünü (işlem hatası, kavram hatası, dikkat hatası) belirlemek
-38. **REQ-51.38** WHEN hata gösterildiğinde, THE Hata Vurgulama Sistemi SHALL düzeltici öneri mesajı göstermek
-39. **REQ-51.39** WHEN öğrenci hatayı düzelttiğinde, THE Hata Vurgulama Sistemi SHALL yeşil onay işareti ve pozitif geri bildirim göstermek
-40. **REQ-51.40** WHEN öğrenci tekrarlayan hata yaptığında, THE Hata Vurgulama Sistemi SHALL ek açıklama ve alternatif çözüm yolu önermek
-
-**Hesap Makinesi ve Araçlar (REQ-51.41 - REQ-51.60)**
-41-60. **REQ-51.41-60** SHALL bilimsel hesap makinesi, grafik hesap makinesi, geometri araçları ve formül editörü sağlamak
-
-**Renkli Kodlama (REQ-51.61 - REQ-51.80)**
-61-80. **REQ-51.61-80** SHALL pozitif/negatif renkleri, işlem renkleri, parantez seviyeleri ve değişken/sabit renkleri sunmak
-
-**Manipülatifler (REQ-51.81 - REQ-51.100)**
-81-100. **REQ-51.81-100** SHALL sanal bloklar, GeoGebra entegrasyonu, interaktif geometri ve dijital tangram sağlamak
-
----
-
-### REQ-52: DEHB (Dikkat Eksikliği ve Hiperaktivite Bozukluğu) Desteği Sistemi
-
-**Kullanıcı Hikayesi:** DEHB tanılı bir öğrenci olarak, dikkatimi yönetmeme yardımcı olacak araçlar, focus mode ve gamification özellikleri kullanmak istiyorum, böylece daha uzun süre odaklanabilir ve öğrenme hedeflerime ulaşabilirim.
-
-#### Kabul Kriterleri (100 Kriter - Özet)
-
-**Dikkat Yönetimi (REQ-52.1 - REQ-52.20)**
-1-20. **REQ-52.1-20** SHALL Pomodoro timer, görsel zamanlayıcı, dikkat dağınıklığı tespiti ve konsantrasyon egzersizleri sağlamak
-
-**Focus Mode (REQ-52.21 - REQ-52.40)**
-21-40. **REQ-52.21-40** SHALL sadece aktif görev görünümü, minimal arayüz, bildirimler kapalı ve dikkat dağıtıcı unsurları gizleme sunmak
-
-**Görev Bölme ve Organizasyon (REQ-52.41 - REQ-52.60)**
-41-60. **REQ-52.41-60** SHALL büyük görevleri küçük adımlara bölme, görsel ilerleme göstergesi, öncelik sıralaması ve renk kodlama sağlamak
-
-**Gamification (REQ-52.61 - REQ-52.80)**
-61-80. **REQ-52.61-80** SHALL puan sistemi, seviye sistemi, rozet koleksiyonu ve liderlik tablosu sunmak
-
-**Anında Geri Bildirim (REQ-52.81 - REQ-52.100)**
-81-100. **REQ-52.81-100** SHALL her doğru cevap kutlaması, puan kazanma animasyonu, streak takibi ve başarı grafiği sağlamak
-
----
-
-### REQ-53: OSB (Otizm Spektrum Bozukluğu) Desteği Sistemi
-
-**Kullanıcı Hikayesi:** Otizm spektrumunda olan bir öğrenci olarak, öngörülebilir arayüz, görsel programlar ve net talimatlar içeren bir platform kullanmak istiyorum, böylece belirsizlik ve kaygı yaşamadan öğrenme sürecime devam edebilirim.
-
-#### Kabul Kriterleri (80 Kriter - Özet)
-
-**Öngörülebilir Arayüz (REQ-53.1 - REQ-53.20)**
-1-20. **REQ-53.1-20** SHALL tutarlı düzen, sabit menü konumları, değişmeyen renk şeması ve standart ikonlar sağlamak
-
-**Görsel Programlar ve Rutinler (REQ-53.21 - REQ-53.40)**
-21-40. **REQ-53.21-40** SHALL günlük program görselleştirmesi, haftalık takvim, adım adım rehberler ve sosyal hikayeler sunmak
-
-**Net ve Açık Talimatlar (REQ-53.41 - REQ-53.60)**
-41-60. **REQ-53.41-60** SHALL basit dil kullanımı, kısa cümleler, numaralandırılmış adımlar ve örnekler sağlamak
-
-**Duyusal Yük Azaltma (REQ-53.61 - REQ-53.80)**
-61-80. **REQ-53.61-80** SHALL minimal animasyon, sessiz mod, basit arka planlar ve temiz tasarım sunmak
-
----
-
-## Versiyon Geçmişi
-
-| Versiyon | Tarih | Değişiklikler | Yazar |
-|----------|-------|---------------|-------|
-| 1.0 | 18 Ekim 2025 | İlk versiyon - Tüm speclerin birleştirilmesi | Claude AI |
-| 1.1 | 20 Ekim 2025 | Spec tutarlılık analizi ve 6 yeni requirement eklendi (REQ-48 to REQ-53) | Kiro AI |
-
----
-
-## Onaylar
-
-| Rol | İsim | Tarih | İmza |
-|-----|------|-------|------|
-| Product Owner | - | - | - |
-| Technical Lead | - | - | - |
-| QA Lead | - | - | - |
-
----
-
-**Toplam Gereksinim Sayısı**: 53 ana gereksinim, 600+ kabul kriteri
-**Kapsanan Spec Sayısı**: 6 (Ana Platform, İçerik Yönetimi, Kaynak Kalitesi, Sağlık Denetimi, Gelişmiş AI, Erişilebilirlik)
-**Tahmini Okuma Süresi**: 90 dakika
-
-**Yeni Eklenen Gereksinimler (v1.1)**:
-- REQ-48: LLM Tabanlı ÖSYM Soru Üretim Sistemi (96 kriter)
-- REQ-49: Adaptif Test Sistemi - CAT (100 kriter)
-- REQ-50: Disleksi Desteği Sistemi (104 kriter)
-- REQ-51: Diskalkuli Desteği Sistemi (100 kriter)
-- REQ-52: DEHB Desteği Sistemi (100 kriter)
-- REQ-53: OSB Desteği Sistemi (80 kriter)
-
-
----
-
-## BÖLÜM 6: ERİŞİLEBİLİRLİK VE ÖZEL GEREKSİNİMLER
-
-### REQ-50: Disleksi Desteği - Tipografi ve Görsel Düzenlemeler
-
-**Kullanıcı Hikayesi:** Disleksisi olan bir öğrenci olarak, okuma zorluğumu azaltacak özel fontlar ve tipografi ayarları kullanmak istiyorum, böylece içerikleri daha rahat okuyabilir ve öğrenme deneyimimi iyileştirebilirim.
-
-#### Kabul Kriterleri
-
-**OpenDyslexic/Dyslexie Font Entegrasyonu (REQ-50.1 - REQ-50.4)**
-
-1. **REQ-50.1** WHEN Platform font seçeneklerini sunduğunda, THE Platform SHALL OpenDyslexic Regular, OpenDyslexic Bold, Dyslexie Regular ve Dyslexie Bold fontlarını WOFF2 formatında yükler ve 500ms içinde kullanılabilir hale getirir
-2. **REQ-50.2** WHEN öğrenci font seçici UI component'i açtığında, THE Platform SHALL minimum 5 font seçeneği (Arial, Verdana, OpenDyslexic, Dyslexie, Comic Sans MS) gösterir ve her font için önizleme metni sunar
-3. **REQ-50.3** WHEN öğrenci bir font seçtiğinde, THE Platform SHALL seçimi localStorage'da "userFontPreference" anahtarı ile kalıcı olarak saklar ve tüm metin içeriklerine 200ms içinde uygular
-4. **REQ-50.4** WHEN öğrenci platformu yeniden açtığında, THE Platform SHALL localStorage'dan font tercihini okur ve sayfa yüklenmesinden sonra 300ms içinde otomatik olarak uygular
-
-**Font Boyutu Ayarlama (REQ-50.5 - REQ-50.7)**
-
-5. **REQ-50.5** WHEN öğrenci font boyutu ayarını açtığında, THE Platform SHALL 12pt ile 24pt arası 1pt artışlarla ayarlama imkanı sunan slider component gösterir ve mevcut boyutu numerik olarak (örn: "16pt") gösterir
-6. **REQ-50.6** WHEN öğrenci font boyutunu değiştirdiğinde, THE Platform SHALL değişikliği 100ms içinde gerçek zamanlı önizleme ile gösterir ve tüm metin içeriklerine anında uygular
-7. **REQ-50.7** WHEN font boyutu değiştirildiğinde, THE Platform SHALL responsive scaling uygulayarak mobil cihazlarda (320px-768px) minimum 14pt, tablet cihazlarda (768px-1024px) seçilen boyutu ve masaüstü cihazlarda (1024px+) seçilen boyutu koruyarak uyumlu görünüm sağlar
-
-**Satır Aralığı Ayarlama (REQ-50.8 - REQ-50.10)**
-
-8. **REQ-50.8** WHEN öğrenci satır aralığı ayarını açtığında, THE Platform SHALL 1.0x ile 3.0x arası 0.1x artışlarla line-height kontrolü sunan slider component gösterir ve mevcut değeri yüzde olarak (örn: "150%") gösterir
-9. **REQ-50.9** WHEN satır aralığı değiştirildiğinde, THE Platform SHALL paragraf aralıklarını (margin-bottom) satır aralığının 1.5 katı olacak şekilde orantılı olarak ayarlar ve 100ms içinde uygular
-10. **REQ-50.10** WHEN satır aralığı 1.5x veya üzerine ayarlandığında, THE Platform SHALL okuma konforunu maksimize etmek için satır uzunluğunu maksimum 75 karakter ile sınırlar ve metin hizalamasını sola yaslar
-
-**Kelime ve Harf Aralığı Ayarlama (REQ-50.11 - REQ-50.13)**
-
-11. **REQ-50.11** WHEN öğrenci harf aralığı ayarını açtığında, THE Platform SHALL letter-spacing kontrolü sunar
-12. **REQ-50.12** WHEN öğrenci kelime aralığı ayarını açtığında, THE Platform SHALL word-spacing kontrolü sunar
-13. **REQ-50.13** WHEN kerning ayarlaması yapıldığında, THE Platform SHALL harf çiftleri arasındaki boşlukları optimize eder
-
----
-
-### REQ-51: Diskalkuli Desteği - Görsel Matematik Temsilleri
-
-**Kullanıcı Hikayesi:** Diskalkulisi olan bir öğrenci olarak, matematiksel kavramları görsel olarak görmek istiyorum, böylece soyut matematik problemlerini daha iyi anlayabilir ve çözebilirim.
-
-#### Kabul Kriterleri
-
-1. **REQ-51.1** WHEN Platform matematik sorusu sunduğunda, THE Platform SHALL sayı bloklarını görsel olarak temsil eder
-2. **REQ-51.2** WHEN kesir problemi gösterildiğinde, THE Platform SHALL kesir çubuklarını interaktif olarak sunar
-3. **REQ-51.3** WHEN geometri sorusu sunulduğunda, THE Platform SHALL 3D şekilleri döndürülebilir ve manipüle edilebilir hale getirir
-4. **REQ-51.4** WHEN grafik çizimi gerektiğinde, THE Platform SHALL interaktif grafik çizim araçları sağlar
-5. **REQ-51.5** WHEN adım adım çözüm gösterildiğinde, THE Platform SHALL her adımı ayrı ve animasyonlu olarak sunar
-
----
-
-### REQ-52: DEHB Desteği - Dikkat Yönetimi
-
-**Kullanıcı Hikayesi:** DEHB'si olan bir öğrenci olarak, dikkatimi yönetmeme yardımcı olacak araçlar kullanmak istiyorum, böylece odaklanabilir ve çalışma verimliliğimi artırabilirim.
-
-#### Kabul Kriterleri
-
-1. **REQ-52.1** WHEN öğrenci çalışma oturumu başlattığında, THE Platform SHALL Pomodoro timer (25dk çalışma, 5dk mola) sunar
-2. **REQ-52.2** WHEN zamanlayıcı çalıştığında, THE Platform SHALL görsel countdown ve progress ring gösterir
-3. **REQ-52.3** WHEN dikkat dağınıklığı tespit edildiğinde, THE Platform SHALL nazik hatırlatma bildirimleri gönderir
-4. **REQ-52.4** WHEN focus mode aktifleştirildiğinde, THE Platform SHALL sadece aktif görevi gösterir ve dikkat dağıtıcı unsurları gizler
-5. **REQ-52.5** WHEN gamification özellikleri kullanıldığında, THE Platform SHALL puan, seviye ve rozet sistemi ile motivasyon sağlar
-
----
-
-### REQ-53: OSB Desteği - Öngörülebilir Arayüz
-
-**Kullanıcı Hikayesi:** Otizm spektrum bozukluğu olan bir öğrenci olarak, tutarlı ve öngörülebilir bir arayüz kullanmak istiyorum, böylece değişikliklerden rahatsız olmadan rahatça öğrenebilirim.
-
-#### Kabul Kriterleri
-
-1. **REQ-53.1** WHEN Platform arayüzü tasarlandığında, THE Platform SHALL tüm sayfalarda tutarlı düzen kullanır
-2. **REQ-53.2** WHEN menü konumları belirlediğinde, THE Platform SHALL sabit ve değişmeyen menü pozisyonları sağlar
-3. **REQ-53.3** WHEN renk şeması uygulandığında, THE Platform SHALL değişmeyen ve tutarlı renk paleti kullanır
-4. **REQ-53.4** WHEN ikonlar gösterildiğinde, THE Platform SHALL standart ve evrensel ikonlar kullanır
-5. **REQ-53.5** WHEN günlük program gösterildiğinde, THE Platform SHALL görsel program ve rutinler sunar
-
----
-
-
-
----
-
-## BÖLÜM 6: ERİŞİLEBİLİRLİK VE ÖZEL GEREKSİNİMLER
 
 ### REQ-50: Disleksi Desteği - Tipografi ve Görsel Düzenlemeler
 
@@ -1409,6 +1160,98 @@ Bu doküman, Türkiye Üniversite Sınavları Hazırlık Platformu için tüm si
 19. **REQ-51.19** WHEN öğrenci grafik üzerinde çalıştığında, THE Görsel Matematik Sistemi SHALL x ve y eksenlerini renkli kodlamak
 20. **REQ-51.20** WHEN öğrenci grafik noktası seçtiğinde, THE Görsel Matematik Sistemi SHALL koordinat değerlerini tooltip ile göstermek
 
+**Adım Adım Çözüm Sistemi (REQ-51.21 - REQ-51.40)**
+
+21. **REQ-51.21** WHEN öğrenci çözüm modunu aktifleştirdiğinde, THE Adım Adım Çözüm Sistemi SHALL her matematiksel işlemi ayrı adım olarak göstermek
+22. **REQ-51.22** WHEN adımlar arasında geçiş yapıldığında, THE Adım Adım Çözüm Sistemi SHALL animasyonlu geçiş efekti kullanmak
+23. **REQ-51.23** WHEN öğrenci geri gitmek istediğinde, THE Adım Adım Çözüm Sistemi SHALL önceki adıma geri dönme butonu sunmak
+24. **REQ-51.24** WHEN öğrenci ileri gitmek istediğinde, THE Adım Adım Çözüm Sistemi SHALL sonraki adıma geçiş butonu sunmak
+25. **REQ-51.25** WHEN adım gösterildiğinde, THE Adım Adım Çözüm Sistemi SHALL hangi matematiksel kuralın uygulandığını açıklamak
+26. **REQ-51.26** WHEN öğrenci animasyon hızını ayarladığında, THE Adım Adım Çözüm Sistemi SHALL %50 ile %200 arası hız kontrolü sunmak
+27. **REQ-51.27** WHEN otomatik oynatma seçildiğinde, THE Adım Adım Çözüm Sistemi SHALL tüm adımları sırasıyla otomatik göstermek
+28. **REQ-51.28** WHEN öğrenci duraklatmak istediğinde, THE Adım Adım Çözüm Sistemi SHALL pause butonu ile durdurma imkanı sunmak
+29. **REQ-51.29** WHEN adım numarası gösterildiğinde, THE Adım Adım Çözüm Sistemi SHALL "Adım X/Y" formatında ilerleme göstermek
+30. **REQ-51.30** WHEN kritik adıma gelindiğinde, THE Adım Adım Çözüm Sistemi SHALL önemli adımları vurgulayarak işaretlemek
+31. **REQ-51.31** WHEN işlem açıklaması gösterildiğinde, THE Adım Adım Çözüm Sistemi SHALL sesli anlatım (TTS) seçeneği sunmak
+32. **REQ-51.32** WHEN çözüm tamamlandığında, THE Adım Adım Çözüm Sistemi SHALL çözüm özetini görsel olarak göstermek
+33. **REQ-51.33** WHEN öğrenci tekrar izlemek istediğinde, THE Adım Adım Çözüm Sistemi SHALL baştan oynatma seçeneği sunmak
+34. **REQ-51.34** WHEN çoklu çözüm yolu varsa, THE Adım Adım Çözüm Sistemi SHALL alternatif çözüm yollarını listelemek
+35. **REQ-51.35** WHEN alternatif yol seçildiğinde, THE Adım Adım Çözüm Sistemi SHALL seçilen yolun adımlarını göstermek
+36. **REQ-51.36** WHEN hata yapılabilecek adım gösterildiğinde, THE Adım Adım Çözüm Sistemi SHALL yaygın hata uyarıları göstermek
+37. **REQ-51.37** WHEN formül kullanıldığında, THE Adım Adım Çözüm Sistemi SHALL formülü görsel olarak vurgulamak
+38. **REQ-51.38** WHEN ara işlem yapıldığında, THE Adım Adım Çözüm Sistemi SHALL ara hesaplamaları ayrı kutucukta göstermek
+39. **REQ-51.39** WHEN birim dönüşümü gerektiğinde, THE Adım Adım Çözüm Sistemi SHALL birim dönüşüm adımını ayrıca göstermek
+40. **REQ-51.40** WHEN çözüm geçmişi kaydedildiğinde, THE Adım Adım Çözüm Sistemi SHALL öğrencinin izlediği çözümleri saklamak
+
+**Hesap Makinesi ve Araçlar (REQ-51.41 - REQ-51.60)**
+
+41. **REQ-51.41** WHEN hesap makinesi açıldığında, THE Hesap Makinesi Sistemi SHALL büyük ve okunabilir butonlar göstermek
+42. **REQ-51.42** WHEN rakam girildiğinde, THE Hesap Makinesi Sistemi SHALL her rakamı sesli olarak okumak (konuşan hesap makinesi)
+43. **REQ-51.43** WHEN işlem seçildiğinde, THE Hesap Makinesi Sistemi SHALL işlem sembolünü (+, -, ×, ÷) görsel olarak vurgulamak
+44. **REQ-51.44** WHEN hesaplama yapıldığında, THE Hesap Makinesi Sistemi SHALL adım adım hesaplama gösterimi sunmak
+45. **REQ-51.45** WHEN sonuç gösterildiğinde, THE Hesap Makinesi Sistemi SHALL sonucu büyük font ile vurgulamak
+46. **REQ-51.46** WHEN işlem geçmişi görüntülendiğinde, THE Hesap Makinesi Sistemi SHALL son 20 işlemi listelemek
+47. **REQ-51.47** WHEN geçmiş işlem seçildiğinde, THE Hesap Makinesi Sistemi SHALL işlemi tekrar düzenleme imkanı vermek
+48. **REQ-51.48** WHEN bilimsel mod aktifleştirildiğinde, THE Hesap Makinesi Sistemi SHALL kök, üs, logaritma işlemlerini sunmak
+49. **REQ-51.49** WHEN trigonometri gerektiğinde, THE Hesap Makinesi Sistemi SHALL sin, cos, tan fonksiyonlarını sunmak
+50. **REQ-51.50** WHEN kesir hesabı yapıldığında, THE Hesap Makinesi Sistemi SHALL kesir giriş modu sunmak
+51. **REQ-51.51** WHEN yüzde hesabı yapıldığında, THE Hesap Makinesi Sistemi SHALL yüzde hesaplama modunu sunmak
+52. **REQ-51.52** WHEN grafik çizici açıldığında, THE Grafik Aracı SHALL x-y koordinat sistemini interaktif olarak sunmak
+53. **REQ-51.53** WHEN fonksiyon girildiğinde, THE Grafik Aracı SHALL fonksiyonu gerçek zamanlı olarak çizmek
+54. **REQ-51.54** WHEN grafik yakınlaştırıldığında, THE Grafik Aracı SHALL zoom in/out özelliği sunmak
+55. **REQ-51.55** WHEN birim dönüştürücü açıldığında, THE Birim Aracı SHALL uzunluk, alan, hacim, ağırlık kategorilerini sunmak
+56. **REQ-51.56** WHEN birim seçildiğinde, THE Birim Aracı SHALL otomatik dönüşüm sonucunu göstermek
+57. **REQ-51.57** WHEN çarpım tablosu açıldığında, THE Çarpım Tablosu Aracı SHALL 1-12 arası interaktif tablo sunmak
+58. **REQ-51.58** WHEN çarpım sorulduğunda, THE Çarpım Tablosu Aracı SHALL görsel kutucuk vurgulama ile cevabı göstermek
+59. **REQ-51.59** WHEN hesaplama doğrulandığında, THE Hesap Makinesi Sistemi SHALL doğru/yanlış geri bildirimi vermek
+60. **REQ-51.60** WHEN araç tercihi kaydedildiğinde, THE Hesap Makinesi Sistemi SHALL kullanıcı tercihlerini saklamak
+
+**Renkli Kodlama Sistemi (REQ-51.61 - REQ-51.80)**
+
+61. **REQ-51.61** WHEN pozitif sayı gösterildiğinde, THE Renkli Kodlama Sistemi SHALL mavi renk ile işaretlemek
+62. **REQ-51.62** WHEN negatif sayı gösterildiğinde, THE Renkli Kodlama Sistemi SHALL kırmızı renk ile işaretlemek
+63. **REQ-51.63** WHEN sıfır gösterildiğinde, THE Renkli Kodlama Sistemi SHALL gri renk ile işaretlemek
+64. **REQ-51.64** WHEN toplama işlemi gösterildiğinde, THE Renkli Kodlama Sistemi SHALL yeşil renk ile vurgulamak
+65. **REQ-51.65** WHEN çıkarma işlemi gösterildiğinde, THE Renkli Kodlama Sistemi SHALL turuncu renk ile vurgulamak
+66. **REQ-51.66** WHEN çarpma işlemi gösterildiğinde, THE Renkli Kodlama Sistemi SHALL mor renk ile vurgulamak
+67. **REQ-51.67** WHEN bölme işlemi gösterildiğinde, THE Renkli Kodlama Sistemi SHALL sarı renk ile vurgulamak
+68. **REQ-51.68** WHEN parantez seviyesi 1 ise, THE Renkli Kodlama Sistemi SHALL açık mavi ile işaretlemek
+69. **REQ-51.69** WHEN parantez seviyesi 2 ise, THE Renkli Kodlama Sistemi SHALL açık yeşil ile işaretlemek
+70. **REQ-51.70** WHEN parantez seviyesi 3+ ise, THE Renkli Kodlama Sistemi SHALL açık sarı ile işaretlemek
+71. **REQ-51.71** WHEN değişken x gösterildiğinde, THE Renkli Kodlama Sistemi SHALL tutarlı renk (pembe) ile işaretlemek
+72. **REQ-51.72** WHEN değişken y gösterildiğinde, THE Renkli Kodlama Sistemi SHALL tutarlı renk (turkuaz) ile işaretlemek
+73. **REQ-51.73** WHEN sabit sayılar gösterildiğinde, THE Renkli Kodlama Sistemi SHALL farklı renk (koyu gri) ile ayırmak
+74. **REQ-51.74** WHEN benzer terimler gösterildiğinde, THE Renkli Kodlama Sistemi SHALL aynı renk ile gruplamak
+75. **REQ-51.75** WHEN işlem önceliği gösterildiğinde, THE Renkli Kodlama Sistemi SHALL öncelikli işlemi vurgulu renk ile göstermek
+76. **REQ-51.76** WHEN hata yapıldığında, THE Renkli Kodlama Sistemi SHALL hatalı kısmı kırmızı arka plan ile göstermek
+77. **REQ-51.77** WHEN doğru cevap verildiğinde, THE Renkli Kodlama Sistemi SHALL yeşil arka plan ile onaylamak
+78. **REQ-51.78** WHEN renk şeması özelleştirildiğinde, THE Renkli Kodlama Sistemi SHALL alternatif renk paletleri sunmak
+79. **REQ-51.79** WHEN renk körlüğü modu aktifleştirildiğinde, THE Renkli Kodlama Sistemi SHALL renk körlüğü dostu palet sunmak
+80. **REQ-51.80** WHEN renk tercihi kaydedildiğinde, THE Renkli Kodlama Sistemi SHALL kullanıcı tercihlerini saklamak
+
+**Manipülatifler ve İnteraktif Araçlar (REQ-51.81 - REQ-51.100)**
+
+81. **REQ-51.81** WHEN VirtualBlocks açıldığında, THE Manipülatif Sistemi SHALL sürüklenebilir sanal bloklar sunmak
+82. **REQ-51.82** WHEN bloklar birleştirildiğinde, THE Manipülatif Sistemi SHALL toplama animasyonu göstermek
+83. **REQ-51.83** WHEN bloklar ayrıldığında, THE Manipülatif Sistemi SHALL çıkarma animasyonu göstermek
+84. **REQ-51.84** WHEN blok grubu oluşturulduğunda, THE Manipülatif Sistemi SHALL çarpma kavramını görselleştirmek
+85. **REQ-51.85** WHEN blok grubu bölündüğünde, THE Manipülatif Sistemi SHALL bölme kavramını görselleştirmek
+86. **REQ-51.86** WHEN GeoGebra embed edildiğinde, THE Manipülatif Sistemi SHALL interaktif geometri ortamı sunmak
+87. **REQ-51.87** WHEN geometri aracı kullanıldığında, THE Manipülatif Sistemi SHALL çizgi, açı, şekil çizim araçları sunmak
+88. **REQ-51.88** WHEN şekil oluşturulduğunda, THE Manipülatif Sistemi SHALL otomatik ölçüm hesaplaması yapmak
+89. **REQ-51.89** WHEN InteractiveGeometry açıldığında, THE Manipülatif Sistemi SHALL dokunmatik ekran desteği sunmak
+90. **REQ-51.90** WHEN şekil döndürüldüğünde, THE Manipülatif Sistemi SHALL açı değişimini anlık göstermek
+91. **REQ-51.91** WHEN şekil ölçeklendiğinde, THE Manipülatif Sistemi SHALL oran değişimini anlık göstermek
+92. **REQ-51.92** WHEN DigitalTangram açıldığında, THE Manipülatif Sistemi SHALL 7 tangram parçasını sunmak
+93. **REQ-51.93** WHEN tangram parçası döndürüldüğünde, THE Manipülatif Sistemi SHALL 15 derecelik adımlarla döndürmek
+94. **REQ-51.94** WHEN tangram şekli tamamlandığında, THE Manipülatif Sistemi SHALL başarı animasyonu göstermek
+95. **REQ-51.95** WHEN sayı doğrusu açıldığında, THE Manipülatif Sistemi SHALL interaktif sayı doğrusu sunmak
+96. **REQ-51.96** WHEN sayı doğrusunda nokta işaretlendiğinde, THE Manipülatif Sistemi SHALL sayı değerini göstermek
+97. **REQ-51.97** WHEN kesir pizzası açıldığında, THE Manipülatif Sistemi SHALL dilimlenebilir pizza görselı sunmak
+98. **REQ-51.98** WHEN pizza dilimlendiğinde, THE Manipülatif Sistemi SHALL kesir değerini otomatik hesaplamak
+99. **REQ-51.99** WHEN manipülatif aktivitesi kaydedildiğinde, THE Manipülatif Sistemi SHALL öğrenci aktivite logunu tutmak
+100. **REQ-51.100** WHEN manipülatif tercihi kaydedildiğinde, THE Manipülatif Sistemi SHALL kullanıcı tercihlerini saklamak
+
 ---
 
 **Kabul Kriterleri Özeti:**
@@ -1416,6 +1259,12 @@ Bu doküman, Türkiye Üniversite Sınavları Hazırlık Platformu için tüm si
 - ✅ REQ-51.6 - REQ-51.10: Kesir Çubukları (fraction bars, denk kesir görselleştirme)
 - ✅ REQ-51.11 - REQ-51.15: Geometrik Şekiller 3D (3D rendering, rotasyon, ölçüm araçları)
 - ✅ REQ-51.16 - REQ-51.20: Grafik Çizim (fonksiyon plotting, interaktif manipülasyon)
+- ✅ REQ-51.21 - REQ-51.40: Adım Adım Çözüm Sistemi (animasyonlu geçişler, tempo kontrolü)
+- ✅ REQ-51.41 - REQ-51.60: Hesap Makinesi ve Araçlar (konuşan hesap makinesi, grafik çizici)
+- ✅ REQ-51.61 - REQ-51.80: Renkli Kodlama (pozitif/negatif, işlem renkleri, parantez seviyeleri)
+- ✅ REQ-51.81 - REQ-51.100: Manipülatifler (VirtualBlocks, GeoGebra, Tangram, NumberLine)
+
+**Toplam Kriter Sayısı:** 100 kriter
 
 **Teknoloji Stack:**
 - **3D Rendering**: Three.js, React Three Fiber
@@ -1438,109 +1287,662 @@ Bu doküman, Türkiye Üniversite Sınavları Hazırlık Platformu için tüm si
 
 ---
 
-## BÖLÜM 6: GAMİFİKASYON SİSTEMİ
+### REQ-52: DEHB Desteği - Dikkat Yönetimi ve Odaklanma Sistemi
 
-### REQ-52: Oyunlaştırma ve Motivasyon Sistemi
+**Kullanıcı Hikayesi:** DEHB (Dikkat Eksikliği ve Hiperaktivite Bozukluğu) tanısı olan bir öğrenci olarak, dikkatimi yönetmeme ve odaklanmama yardımcı olacak araçlar kullanmak istiyorum, böylece çalışma verimliliğimi artırabilir ve öğrenme hedeflerime ulaşabilirim.
 
-**Kullanıcı Hikayesi:** Bir öğrenci olarak, çalışmalarım karşılığında puan kazanmak, seviye atlamak ve rozetler toplamak istiyorum, böylece öğrenme sürecim daha eğlenceli ve motive edici olur.
+#### Kabul Kriterleri
 
-#### Puan Sistemi (REQ-52.61 - REQ-52.65)
+**Pomodoro Timer ve Zaman Yönetimi (REQ-52.1 - REQ-52.10)**
 
-1. **REQ-52.61** WHEN öğrenci bir soruyu doğru cevapladığında, THE Gamification Sistemi SHALL soru zorluğuna göre 10-50 puan arasında puan verir
-2. **REQ-52.62** WHEN öğrenci günlük çalışma hedefini tamamladığında, THE Gamification Sistemi SHALL 100 bonus puan verir
-3. **REQ-52.63** WHEN öğrenci sınavı tamamladığında, THE Gamification Sistemi SHALL performansa göre 50-500 puan arasında puan verir
-4. **REQ-52.64** WHEN öğrenci puan geçmişini görüntülediğinde, THE Gamification Sistemi SHALL son 30 günlük puan kazanımlarını grafik ve liste formatında gösterir
-5. **REQ-52.65** WHEN öğrenci dashboard'unu açtığında, THE Gamification Sistemi SHALL toplam puan, günlük kazanılan puan ve haftalık kazanılan puanı gösterir
+1. **REQ-52.1** WHEN öğrenci çalışma oturumu başlattığında, THE DEHB Destek Sistemi SHALL özelleştirilebilir Pomodoro timer (varsayılan: 25dk çalışma, 5dk mola) sunmak
+2. **REQ-52.2** WHEN zamanlayıcı çalıştığında, THE DEHB Destek Sistemi SHALL görsel countdown, progress ring ve kalan süreyi büyük fontla göstermek
+3. **REQ-52.3** WHEN çalışma süresi özelleştirildiğinde, THE DEHB Destek Sistemi SHALL 5-60 dakika arası özel süre ayarına izin vermek
+4. **REQ-52.4** WHEN mola zamanı geldiğinde, THE DEHB Destek Sistemi SHALL nazik ses ve görsel bildirim ile hatırlatmak
+5. **REQ-52.5** WHEN 4 pomodoro tamamlandığında, THE DEHB Destek Sistemi SHALL uzun mola (15-30dk) önermek
+6. **REQ-52.6** WHEN öğrenci timer istatistiklerini görüntülediğinde, THE DEHB Destek Sistemi SHALL günlük/haftalık/aylık odaklanma sürelerini grafikle göstermek
+7. **REQ-52.7** WHEN timer aktifken, THE DEHB Destek Sistemi SHALL tam ekran modunda dikkat dağıtıcı unsurları gizlemek
+8. **REQ-52.8** WHEN öğrenci erken bitirmek istediğinde, THE DEHB Destek Sistemi SHALL kalan süreyi kaydetme seçeneği sunmak
+9. **REQ-52.9** WHEN mola süresinde, THE DEHB Destek Sistemi SHALL hareket/germe egzersizleri önermek
+10. **REQ-52.10** WHEN günlük hedef belirlendiğinde, THE DEHB Destek Sistemi SHALL hedef pomodoro sayısını takip etmek ve ilerleme göstermek
 
-#### Seviye Sistemi (REQ-52.66 - REQ-52.70)
+**Focus Mode ve Dikkat Dağınıklığı Önleme (REQ-52.11 - REQ-52.20)**
 
-6. **REQ-52.66** WHEN öğrenci yeterli deneyim puanı topladığında, THE Seviye Sistemi SHALL otomatik olarak bir üst seviyeye yükseltir
-7. **REQ-52.67** WHEN öğrenci seviye atladığında, THE Seviye Sistemi SHALL kutlama animasyonu gösterir ve bildirim gönderir
-8. **REQ-52.68** WHEN Seviye Sistemi deneyim puanı hesapladığında, THE Seviye Sistemi SHALL her seviye için gereken XP'yi üstel formül ile hesaplar (Level * 100 * 1.5^Level)
-9. **REQ-52.69** WHEN öğrenci profil sayfasını görüntülediğinde, THE Seviye Sistemi SHALL mevcut seviye, toplam XP, bir sonraki seviyeye kalan XP ve ilerleme çubuğunu gösterir
-10. **REQ-52.70** WHEN öğrenci seviye 10, 25, 50, 75, 100'e ulaştığında, THE Seviye Sistemi SHALL özel milestone rozeti verir
+11. **REQ-52.11** WHEN focus mode aktifleştirildiğinde, THE DEHB Destek Sistemi SHALL sadece aktif görevi ve ilgili içeriği göstermek
+12. **REQ-52.12** WHEN focus mode aktifken, THE DEHB Destek Sistemi SHALL navigasyon menüsünü minimize etmek veya gizlemek
+13. **REQ-52.13** WHEN focus mode aktifken, THE DEHB Destek Sistemi SHALL platform bildirimlerini sessize almak
+14. **REQ-52.14** WHEN öğrenci ekran dışına tıkladığında, THE DEHB Destek Sistemi SHALL nazik geri dönüş hatırlatıcısı göstermek
+15. **REQ-52.15** WHEN inaktivite tespit edildiğinde (2dk), THE DEHB Destek Sistemi SHALL "Hala burada mısın?" popup göstermek
+16. **REQ-52.16** WHEN öğrenci çalışma sayfasından ayrıldığında, THE DEHB Destek Sistemi SHALL otomatik duraklatma yapmak
+17. **REQ-52.17** WHEN minimal arayüz seçildiğinde, THE DEHB Destek Sistemi SHALL sadece soru ve cevap seçeneklerini göstermek
+18. **REQ-52.18** WHEN öğrenci dikkat dağınıklığı yaşadığında, THE DEHB Destek Sistemi SHALL "Bir nefes al" kısa mola önerisi sunmak
+19. **REQ-52.19** WHEN görsel gürültü azaltıldığında, THE DEHB Destek Sistemi SHALL sade renk paleti ve minimal animasyon kullanmak
+20. **REQ-52.20** WHEN focus streak başarıldığında, THE DEHB Destek Sistemi SHALL başarıyı kutlamak ve motivasyon puanı vermek
 
-#### Rozet Koleksiyonu (REQ-52.71 - REQ-52.75)
+**Görev Parçalama ve Organizasyon (REQ-52.21 - REQ-52.35)**
 
-11. **REQ-52.71** WHEN öğrenci belirli bir başarıyı tamamladığında, THE Rozet Sistemi SHALL ilgili rozeti otomatik olarak verir ve bildirim gösterir
-12. **REQ-52.72** WHEN öğrenci rozet koleksiyonunu görüntülediğinde, THE Rozet Sistemi SHALL kazanılan rozetleri renkli, kazanılmayanları gri olarak gösterir
-13. **REQ-52.73** WHEN Rozet Sistemi nadir rozet verdiğinde, THE Rozet Sistemi SHALL özel animasyon ve ses efekti ile kutlama yapar
-14. **REQ-52.74** WHEN öğrenci rozet detayını görüntülediğinde, THE Rozet Sistemi SHALL rozet adı, açıklama, kazanma tarihi ve nadir seviyesini (yaygın/nadir/efsanevi) gösterir
-15. **REQ-52.75** WHEN öğrenci 7 gün üst üste çalıştığında, THE Rozet Sistemi SHALL "Kararlı Öğrenci" rozetini verir
+21. **REQ-52.21** WHEN büyük görev tespit edildiğinde, THE DEHB Destek Sistemi SHALL otomatik alt görevlere bölme önermek
+22. **REQ-52.22** WHEN görev parçalandığında, THE DEHB Destek Sistemi SHALL her alt görevi checkbox ile listelemek
+23. **REQ-52.23** WHEN alt görev tamamlandığında, THE DEHB Destek Sistemi SHALL anında görsel geri bildirim (confetti, tick animasyonu) vermek
+24. **REQ-52.24** WHEN görev listesi görüntülendiğinde, THE DEHB Destek Sistemi SHALL öncelik sıralaması (acil/önemli/normal) sunmak
+25. **REQ-52.25** WHEN görevler sıralandığında, THE DEHB Destek Sistemi SHALL drag-and-drop ile yeniden sıralama imkanı vermek
+26. **REQ-52.26** WHEN deadline yaklaştığında, THE DEHB Destek Sistemi SHALL renkli uyarı (kırmızı=acil, sarı=yakın, yeşil=rahat) göstermek
+27. **REQ-52.27** WHEN ilerleme gösterildiğinde, THE DEHB Destek Sistemi SHALL görsel progress bar ve yüzde ile göstermek
+28. **REQ-52.28** WHEN görev tamamlanamadığında, THE DEHB Destek Sistemi SHALL "Yarın devam et" seçeneği sunmak
+29. **REQ-52.29** WHEN günlük plan yapıldığında, THE DEHB Destek Sistemi SHALL gerçekçi süre tahminleri önermek
+30. **REQ-52.30** WHEN öğrenci hedef belirlerken, THE DEHB Destek Sistemi SHALL SMART hedef formatı önermek
+31. **REQ-52.31** WHEN görev ertelendiğinde, THE DEHB Destek Sistemi SHALL erteleme nedenini nazikçe sormak (analiz için)
+32. **REQ-52.32** WHEN rutin oluşturulduğunda, THE DEHB Destek Sistemi SHALL günlük hatırlatıcılar ayarlamak
+33. **REQ-52.33** WHEN başlangıç zorluğu yaşandığında, THE DEHB Destek Sistemi SHALL "İlk 2 dakika kuralı" önermek
+34. **REQ-52.34** WHEN micro-task tamamlandığında, THE DEHB Destek Sistemi SHALL küçük ödül (emoji, ses) vermek
+35. **REQ-52.35** WHEN haftalık plan görüntülendiğinde, THE DEHB Destek Sistemi SHALL görsel takvim ile görevleri göstermek
 
-#### Liderlik Tablosu (REQ-52.76 - REQ-52.80)
+**Motivasyon ve Ödül Sistemi (REQ-52.36 - REQ-52.50)**
 
-16. **REQ-52.76** WHEN öğrenci liderlik tablosunu görüntülediğinde, THE Liderlik Sistemi SHALL haftalık, aylık ve tüm zamanlar olmak üzere 3 farklı zaman dilimi sunar
-17. **REQ-52.77** WHEN Liderlik Sistemi sıralama yaptığında, THE Liderlik Sistemi SHALL toplam puana göre ilk 100 öğrenciyi listeler
-18. **REQ-52.78** WHEN öğrenci arkadaş karşılaştırması yaptığında, THE Liderlik Sistemi SHALL sadece arkadaş listesindeki öğrencileri gösterir
-19. **REQ-52.79** WHEN öğrenci sınıf sıralamasını görüntülediğinde, THE Liderlik Sistemi SHALL aynı sınıftaki tüm öğrencileri puana göre sıralar
-20. **REQ-52.80** WHEN öğrenci liderlik tablosunda ilk 3'e girdiğinde, THE Liderlik Sistemi SHALL profil sayfasında özel altın/gümüş/bronz rozet gösterir
+36. **REQ-52.36** WHEN görev tamamlandığında, THE DEHB Destek Sistemi SHALL anında kutlama animasyonu göstermek
+37. **REQ-52.37** WHEN puan kazanıldığında, THE DEHB Destek Sistemi SHALL sesli ve görsel puan artış efekti vermek
+38. **REQ-52.38** WHEN streak devam ettiğinde, THE DEHB Destek Sistemi SHALL "X gün üst üste" rozeti göstermek
+39. **REQ-52.39** WHEN günlük hedef tamamlandığında, THE DEHB Destek Sistemi SHALL özel günlük başarı rozeti vermek
+40. **REQ-52.40** WHEN kişisel rekor kırıldığında, THE DEHB Destek Sistemi SHALL "Yeni Rekor!" kutlaması yapmak
+41. **REQ-52.41** WHEN ilerleme grafiği görüntülendiğinde, THE DEHB Destek Sistemi SHALL pozitif trend vurgulamak
+42. **REQ-52.42** WHEN zor görev tamamlandığında, THE DEHB Destek Sistemi SHALL ekstra bonus puan vermek
+43. **REQ-52.43** WHEN haftalık özet hazırlandığında, THE DEHB Destek Sistemi SHALL başarıları vurgulayan rapor sunmak
+44. **REQ-52.44** WHEN motivasyon düştüğünde, THE DEHB Destek Sistemi SHALL motivasyonel alıntılar göstermek
+45. **REQ-52.45** WHEN başarı paylaşıldığında, THE DEHB Destek Sistemi SHALL sosyal medya paylaşım seçeneği sunmak
+46. **REQ-52.46** WHEN avatar özelleştirme açıldığında, THE DEHB Destek Sistemi SHALL kazanılan itemlerle özelleştirme imkanı vermek
+47. **REQ-52.47** WHEN mini-oyun açıldığında, THE DEHB Destek Sistemi SHALL eğitici mola oyunları sunmak
+48. **REQ-52.48** WHEN arkadaş eklediğinde, THE DEHB Destek Sistemi SHALL birlikte çalışma seçeneği sunmak
+49. **REQ-52.49** WHEN lider tahtası görüntülendiğinde, THE DEHB Destek Sistemi SHALL benzer seviyedeki öğrencilerle karşılaştırma göstermek
+50. **REQ-52.50** WHEN ödül mağazası açıldığında, THE DEHB Destek Sistemi SHALL puanla satın alınabilir öğeler sunmak
+
+**Hareket ve Mola Yönetimi (REQ-52.51 - REQ-52.60)**
+
+51. **REQ-52.51** WHEN uzun oturma tespit edildiğinde (45dk), THE DEHB Destek Sistemi SHALL hareket molası önermek
+52. **REQ-52.52** WHEN mola egzersizi seçildiğinde, THE DEHB Destek Sistemi SHALL 2-5 dakikalık germe/hareket videosu göstermek
+53. **REQ-52.53** WHEN nefes egzersizi başlatıldığında, THE DEHB Destek Sistemi SHALL animasyonlu nefes rehberi sunmak
+54. **REQ-52.54** WHEN enerji seviyesi sorulduğunda, THE DEHB Destek Sistemi SHALL 1-5 arası emoji ölçeği göstermek
+55. **REQ-52.55** WHEN düşük enerji bildirildiğinde, THE DEHB Destek Sistemi SHALL kısa mola veya hafif aktivite önermek
+56. **REQ-52.56** WHEN yüksek enerji bildirildiğinde, THE DEHB Destek Sistemi SHALL yoğun çalışma oturumu önermek
+57. **REQ-52.57** WHEN beyin jimnastiği istendiğinde, THE DEHB Destek Sistemi SHALL hızlı bilmece veya puzzle sunmak
+58. **REQ-52.58** WHEN su içme hatırlatıcısı aktifleştirildiğinde, THE DEHB Destek Sistemi SHALL her saat başı nazik hatırlatma vermek
+59. **REQ-52.59** WHEN göz molası zamanı geldiğinde, THE DEHB Destek Sistemi SHALL 20-20-20 kuralını hatırlatmak
+60. **REQ-52.60** WHEN çalışma/mola oranı analiz edildiğinde, THE DEHB Destek Sistemi SHALL optimal oran önerileri sunmak
+
+**Öğrenme Stratejileri ve Adaptasyon (REQ-52.61 - REQ-52.70)**
+
+61. **REQ-52.61** WHEN yeni konu başladığında, THE DEHB Destek Sistemi SHALL çoklu öğrenme formatı seçeneği (video/metin/interaktif) sunmak
+62. **REQ-52.62** WHEN dikkat süresi analiz edildiğinde, THE DEHB Destek Sistemi SHALL kişiye özel oturum süreleri önermek
+63. **REQ-52.63** WHEN öğrenme tarzı tespit edildiğinde, THE DEHB Destek Sistemi SHALL içerik formatını adapte etmek
+64. **REQ-52.64** WHEN metin uzunluğu ayarlandığında, THE DEHB Destek Sistemi SHALL paragrafları kısa tutmak (max 3-4 cümle)
+65. **REQ-52.65** WHEN görselleştirme tercih edildiğinde, THE DEHB Destek Sistemi SHALL her konuyu infografik ile desteklemek
+66. **REQ-52.66** WHEN sesli öğrenme tercih edildiğinde, THE DEHB Destek Sistemi SHALL tüm içeriği TTS ile okumak
+67. **REQ-52.67** WHEN interaktif öğrenme tercih edildiğinde, THE DEHB Destek Sistemi SHALL quiz ve oyunlaştırılmış içerik sunmak
+68. **REQ-52.68** WHEN tekrar stratejisi belirlendiğinde, THE DEHB Destek Sistemi SHALL aralıklı tekrar programı oluşturmak
+69. **REQ-52.69** WHEN zor konu tespit edildiğinde, THE DEHB Destek Sistemi SHALL alternatif açıklama kaynakları önermek
+70. **REQ-52.70** WHEN başarı oranı düşükse, THE DEHB Destek Sistemi SHALL zorluk seviyesini otomatik ayarlamak
+
+**Raporlama ve Analitik (REQ-52.71 - REQ-52.80)**
+
+71. **REQ-52.71** WHEN günlük özet görüntülendiğinde, THE DEHB Destek Sistemi SHALL toplam odaklanma süresi, görev sayısı ve başarı oranını göstermek
+72. **REQ-52.72** WHEN haftalık rapor oluşturulduğunda, THE DEHB Destek Sistemi SHALL trend analizi ile gelişim grafiği sunmak
+73. **REQ-52.73** WHEN optimal çalışma saatleri analiz edildiğinde, THE DEHB Destek Sistemi SHALL kişinin en verimli saatlerini belirlemek
+74. **REQ-52.74** WHEN dikkat dağınıklığı kalıbı tespit edildiğinde, THE DEHB Destek Sistemi SHALL tetikleyici faktörleri raporlamak
+75. **REQ-52.75** WHEN hedef başarı oranı hesaplandığında, THE DEHB Destek Sistemi SHALL gerçekçi hedef önerileri sunmak
+76. **REQ-52.76** WHEN ebeveyn/öğretmen erişimi istendiğinde, THE DEHB Destek Sistemi SHALL paylaşılabilir özet rapor oluşturmak
+77. **REQ-52.77** WHEN DEHB stratejileri değerlendirildiğinde, THE DEHB Destek Sistemi SHALL hangilerinin işe yaradığını göstermek
+78. **REQ-52.78** WHEN ilerleme karşılaştırıldığında, THE DEHB Destek Sistemi SHALL önceki dönemlerle mukayese grafiği sunmak
+79. **REQ-52.79** WHEN motivasyon seviyesi izlendiğinde, THE DEHB Destek Sistemi SHALL duygu durumu trend analizi göstermek
+80. **REQ-52.80** WHEN öneriler oluşturulduğunda, THE DEHB Destek Sistemi SHALL AI tabanlı kişisel iyileştirme tavsiyeleri sunmak
+
+**Duyusal ve Çevresel Ayarlar (REQ-52.81 - REQ-52.90)**
+
+81. **REQ-52.81** WHEN beyaz gürültü seçeneği açıldığında, THE DEHB Destek Sistemi SHALL odaklanma için arka plan sesleri sunmak
+82. **REQ-52.82** WHEN müzik tercihi belirlendiğinde, THE DEHB Destek Sistemi SHALL enstrümantal çalışma müzikleri sunmak
+83. **REQ-52.83** WHEN ses hassasiyeti ayarlandığında, THE DEHB Destek Sistemi SHALL tüm ses efektlerini kişiselleştirmek
+84. **REQ-52.84** WHEN renk duyarlılığı bildirildiğinde, THE DEHB Destek Sistemi SHALL sakin renk paleti seçeneği sunmak
+85. **REQ-52.85** WHEN görsel hassasiyet varsa, THE DEHB Destek Sistemi SHALL düşük kontrast mod sunmak
+86. **REQ-52.86** WHEN animasyon azaltma istendiğinde, THE DEHB Destek Sistemi SHALL reduced motion mod aktiflemek
+87. **REQ-52.87** WHEN gece modu aktifleştirildiğinde, THE DEHB Destek Sistemi SHALL mavi ışık filtresi uygulamak
+88. **REQ-52.88** WHEN font büyüklüğü ayarlandığında, THE DEHB Destek Sistemi SHALL tüm metinleri orantılı büyütmek
+89. **REQ-52.89** WHEN satır aralığı artırıldığında, THE DEHB Destek Sistemi SHALL okunabilirliği optimize etmek
+90. **REQ-52.90** WHEN özel tema oluşturulduğunda, THE DEHB Destek Sistemi SHALL kullanıcı tercihlerini kaydetmek
+
+**Sosyal ve Destek Özellikleri (REQ-52.91 - REQ-52.100)**
+
+91. **REQ-52.91** WHEN çalışma arkadaşı eşleştirildiğinde, THE DEHB Destek Sistemi SHALL benzer hedefleri olan öğrencileri bağlamak
+92. **REQ-52.92** WHEN grup çalışması başlatıldığında, THE DEHB Destek Sistemi SHALL paylaşımlı timer ve hedef göstermek
+93. **REQ-52.93** WHEN motivasyon desteği istendiğinde, THE DEHB Destek Sistemi SHALL canlı motivasyon koçu (AI) sunmak
+94. **REQ-52.94** WHEN topluluk forumu açıldığında, THE DEHB Destek Sistemi SHALL DEHB öğrencileri destek grubunu göstermek
+95. **REQ-52.95** WHEN başarı hikayesi paylaşıldığında, THE DEHB Destek Sistemi SHALL anonim başarı hikayeleri platformu sunmak
+96. **REQ-52.96** WHEN ebeveyn modu aktifleştirildiğinde, THE DEHB Destek Sistemi SHALL çocuk ilerlemesi dashboard göstermek
+97. **REQ-52.97** WHEN öğretmen bağlantısı kurulduğunda, THE DEHB Destek Sistemi SHALL ödev ve ilerleme entegrasyonu sağlamak
+98. **REQ-52.98** WHEN acil yardım butonu tıklandığında, THE DEHB Destek Sistemi SHALL hızlı destek kaynakları sunmak
+99. **REQ-52.99** WHEN DEHB kaynakları görüntülendiğinde, THE DEHB Destek Sistemi SHALL eğitici içerik ve ipuçları sunmak
+100. **REQ-52.100** WHEN geri bildirim verildiğinde, THE DEHB Destek Sistemi SHALL sistem iyileştirme önerileri toplamak
 
 ---
 
-### REQ-53: Rozet Kategorileri ve Başarı Kriterleri
+**REQ-52 Özet:**
+- ✅ REQ-52.1 - REQ-52.10: Pomodoro Timer ve Zaman Yönetimi
+- ✅ REQ-52.11 - REQ-52.20: Focus Mode ve Dikkat Dağınıklığı Önleme
+- ✅ REQ-52.21 - REQ-52.35: Görev Parçalama ve Organizasyon
+- ✅ REQ-52.36 - REQ-52.50: Motivasyon ve Ödül Sistemi
+- ✅ REQ-52.51 - REQ-52.60: Hareket ve Mola Yönetimi
+- ✅ REQ-52.61 - REQ-52.70: Öğrenme Stratejileri ve Adaptasyon
+- ✅ REQ-52.71 - REQ-52.80: Raporlama ve Analitik
+- ✅ REQ-52.81 - REQ-52.90: Duyusal ve Çevresel Ayarlar
+- ✅ REQ-52.91 - REQ-52.100: Sosyal ve Destek Özellikleri
+
+**Toplam Kriter Sayısı:** 100 kriter
+
+---
+
+### REQ-53: OSB Desteği - Öngörülebilir Arayüz ve Duyusal Adaptasyon
+
+**Kullanıcı Hikayesi:** Otizm Spektrum Bozukluğu (OSB) tanısı olan bir öğrenci olarak, tutarlı, öngörülebilir ve duyusal açıdan rahat bir arayüz kullanmak istiyorum, böylece değişikliklerden rahatsız olmadan güvenle öğrenebilir ve çalışabilirim.
+
+#### Kabul Kriterleri
+
+**Tutarlı ve Öngörülebilir Arayüz (REQ-53.1 - REQ-53.15)**
+
+1. **REQ-53.1** WHEN Platform arayüzü tasarlandığında, THE OSB Destek Sistemi SHALL tüm sayfalarda aynı düzen yapısını korumak
+2. **REQ-53.2** WHEN navigasyon menüsü gösterildiğinde, THE OSB Destek Sistemi SHALL sabit ve değişmeyen menü pozisyonları sağlamak
+3. **REQ-53.3** WHEN renk şeması uygulandığında, THE OSB Destek Sistemi SHALL tutarlı ve değişmeyen renk paleti kullanmak
+4. **REQ-53.4** WHEN ikonlar gösterildiğinde, THE OSB Destek Sistemi SHALL standart ve evrensel anlaşılır ikonlar kullanmak
+5. **REQ-53.5** WHEN buton stili belirlediğinde, THE OSB Destek Sistemi SHALL tüm platformda aynı buton tasarımını korumak
+6. **REQ-53.6** WHEN metin formatı uygulandığında, THE OSB Destek Sistemi SHALL tutarlı font ve boyut kullanmak
+7. **REQ-53.7** WHEN sayfa geçişi yapıldığında, THE OSB Destek Sistemi SHALL ani değişiklikler yerine yumuşak geçişler kullanmak
+8. **REQ-53.8** WHEN modal/popup gösterildiğinde, THE OSB Destek Sistemi SHALL her zaman aynı pozisyon ve stilde açmak
+9. **REQ-53.9** WHEN hata mesajı gösterildiğinde, THE OSB Destek Sistemi SHALL standart format ve konum kullanmak
+10. **REQ-53.10** WHEN başarı bildirimi gösterildiğinde, THE OSB Destek Sistemi SHALL öngörülebilir kutlama formatı kullanmak
+11. **REQ-53.11** WHEN loading durumu gösterildiğinde, THE OSB Destek Sistemi SHALL tutarlı loading animasyonu kullanmak
+12. **REQ-53.12** WHEN form tasarlandığında, THE OSB Destek Sistemi SHALL standart form elemanı yerleşimi kullanmak
+13. **REQ-53.13** WHEN geri butonu kullanıldığında, THE OSB Destek Sistemi SHALL her zaman önceki sayfaya dönmek
+14. **REQ-53.14** WHEN breadcrumb gösterildiğinde, THE OSB Destek Sistemi SHALL açık ve anlaşılır yol haritası sunmak
+15. **REQ-53.15** WHEN sayfa yenilenmesinde, THE OSB Destek Sistemi SHALL aynı konumda ve durumda kalmayı sağlamak
+
+**Görsel Programlar ve Rutinler (REQ-53.16 - REQ-53.30)**
+
+16. **REQ-53.16** WHEN günlük program gösterildiğinde, THE OSB Destek Sistemi SHALL görsel timeline ile aktiviteleri listelemek
+17. **REQ-53.17** WHEN haftalık takvim görüntülendiğinde, THE OSB Destek Sistemi SHALL renkli ve görsel takvim sunmak
+18. **REQ-53.18** WHEN aktivite planlandığında, THE OSB Destek Sistemi SHALL aktivite için ikon ve renk atamak
+19. **REQ-53.19** WHEN aktivite yaklaştığında, THE OSB Destek Sistemi SHALL önceden bildirim vermek (15dk, 5dk, 1dk)
+20. **REQ-53.20** WHEN aktivite geçişi olduğunda, THE OSB Destek Sistemi SHALL görsel countdown ve hazırlık hatırlatması yapmak
+21. **REQ-53.21** WHEN rutin değişikliği olduğunda, THE OSB Destek Sistemi SHALL önceden uyarı ve açıklama vermek
+22. **REQ-53.22** WHEN beklenmeyen değişiklik olduğunda, THE OSB Destek Sistemi SHALL görsel "değişiklik kartı" göstermek
+23. **REQ-53.23** WHEN sosyal hikaye gerektiğinde, THE OSB Destek Sistemi SHALL görsel sosyal hikaye formatı sunmak
+24. **REQ-53.24** WHEN görev adımları gösterildiğinde, THE OSB Destek Sistemi SHALL numaralı ve görsel adım listesi sunmak
+25. **REQ-53.25** WHEN tamamlanan adım işaretlendiğinde, THE OSB Destek Sistemi SHALL görsel check işareti göstermek
+26. **REQ-53.26** WHEN ilerleme gösterildiğinde, THE OSB Destek Sistemi SHALL net yüzde ve görsel bar kullanmak
+27. **REQ-53.27** WHEN timer görüntülendiğinde, THE OSB Destek Sistemi SHALL analog ve dijital saat seçeneği sunmak
+28. **REQ-53.28** WHEN geçiş zamanı yaklaştığında, THE OSB Destek Sistemi SHALL "first-then" kartı göstermek
+29. **REQ-53.29** WHEN ödül zamanı geldiğinde, THE OSB Destek Sistemi SHALL "iş bitti, şimdi X" görsel kartı göstermek
+30. **REQ-53.30** WHEN rutin kaydedildiğinde, THE OSB Destek Sistemi SHALL kişisel rutin şablonları oluşturmak
+
+**Net ve Açık Talimatlar (REQ-53.31 - REQ-53.45)**
+
+31. **REQ-53.31** WHEN talimat yazıldığında, THE OSB Destek Sistemi SHALL basit ve kısa cümleler (max 10-15 kelime) kullanmak
+32. **REQ-53.32** WHEN görev açıklandığında, THE OSB Destek Sistemi SHALL belirsiz ifadelerden kaçınmak ("bazı", "birkaç", "biraz")
+33. **REQ-53.33** WHEN sayı belirtildiğinde, THE OSB Destek Sistemi SHALL kesin rakamlar kullanmak ("3 soru çöz")
+34. **REQ-53.34** WHEN zaman belirtildiğinde, THE OSB Destek Sistemi SHALL kesin süre vermek ("10 dakika")
+35. **REQ-53.35** WHEN çoklu adım varsa, THE OSB Destek Sistemi SHALL numaralı liste formatı kullanmak
+36. **REQ-53.36** WHEN soru sorulduğunda, THE OSB Destek Sistemi SHALL tek bir net soru sormak
+37. **REQ-53.37** WHEN seçenek sunulduğunda, THE OSB Destek Sistemi SHALL sınırlı sayıda (2-4) net seçenek göstermek
+38. **REQ-53.38** WHEN örnek verildiğinde, THE OSB Destek Sistemi SHALL görsel örnek ile desteklemek
+39. **REQ-53.39** WHEN kavram açıklandığında, THE OSB Destek Sistemi SHALL somut ve elle tutulur örnekler kullanmak
+40. **REQ-53.40** WHEN mecaz kullanıldığında, THE OSB Destek Sistemi SHALL literal açıklama eklemek
+41. **REQ-53.41** WHEN deyim kullanıldığında, THE OSB Destek Sistemi SHALL gerçek anlam açıklaması vermek
+42. **REQ-53.42** WHEN ironi/şaka yapıldığında, THE OSB Destek Sistemi SHALL "bu bir şaka" etiketi eklemek
+43. **REQ-53.43** WHEN önemli bilgi vurgulandığında, THE OSB Destek Sistemi SHALL görsel işaretleyici kullanmak
+44. **REQ-53.44** WHEN beklenti açıklandığında, THE OSB Destek Sistemi SHALL "yapılması gereken" listesi vermek
+45. **REQ-53.45** WHEN sonraki adım belirtildiğinde, THE OSB Destek Sistemi SHALL açık "sonra ne olacak" bilgisi vermek
+
+**Duyusal Yük Azaltma (REQ-53.46 - REQ-53.60)**
+
+46. **REQ-53.46** WHEN animasyon ayarlandığında, THE OSB Destek Sistemi SHALL animasyon kapatma seçeneği sunmak
+47. **REQ-53.47** WHEN ses ayarlandığında, THE OSB Destek Sistemi SHALL tüm sesleri kapatma seçeneği sunmak
+48. **REQ-53.48** WHEN video otomatik oynatma kapatıldığında, THE OSB Destek Sistemi SHALL kullanıcı onayı ile oynatmak
+49. **REQ-53.49** WHEN parlak renk ayarlandığında, THE OSB Destek Sistemi SHALL yumuşak renk paleti seçeneği sunmak
+50. **REQ-53.50** WHEN arka plan seçildiğinde, THE OSB Destek Sistemi SHALL düz ve sakin arka plan seçenekleri sunmak
+51. **REQ-53.51** WHEN görsel karmaşıklık azaltıldığında, THE OSB Destek Sistemi SHALL minimal UI modu sunmak
+52. **REQ-53.52** WHEN popup sıklığı ayarlandığında, THE OSB Destek Sistemi SHALL popup azaltma seçeneği sunmak
+53. **REQ-53.53** WHEN bildirim sıklığı ayarlandığında, THE OSB Destek Sistemi SHALL bildirim filtreleme sunmak
+54. **REQ-53.54** WHEN flash/yanıp sönen içerik varsa, THE OSB Destek Sistemi SHALL otomatik engellemek
+55. **REQ-53.55** WHEN hareket eden öğe varsa, THE OSB Destek Sistemi SHALL durdurma butonu sunmak
+56. **REQ-53.56** WHEN kontrast ayarlandığında, THE OSB Destek Sistemi SHALL düşük kontrast modu sunmak
+57. **REQ-53.57** WHEN beyaz alan artırıldığında, THE OSB Destek Sistemi SHALL elementler arası boşluğu genişletmek
+58. **REQ-53.58** WHEN metin yoğunluğu azaltıldığında, THE OSB Destek Sistemi SHALL paragraf başına max 3-4 cümle sunmak
+59. **REQ-53.59** WHEN görsel filtre uygulandığında, THE OSB Destek Sistemi SHALL mavi ışık filtresi sunmak
+60. **REQ-53.60** WHEN duyusal profil oluşturulduğunda, THE OSB Destek Sistemi SHALL kişisel duyusal tercihleri kaydetmek
+
+**Sosyal İletişim Desteği (REQ-53.61 - REQ-53.70)**
+
+61. **REQ-53.61** WHEN emoji kullanıldığında, THE OSB Destek Sistemi SHALL emoji anlamlarını açıklayan tooltip sunmak
+62. **REQ-53.62** WHEN duygusal ifade gerektiğinde, THE OSB Destek Sistemi SHALL görsel duygu kartları sunmak
+63. **REQ-53.63** WHEN chat başlatıldığında, THE OSB Destek Sistemi SHALL örnek mesaj şablonları sunmak
+64. **REQ-53.64** WHEN soru sormak istendiğinde, THE OSB Destek Sistemi SHALL hazır soru formatları sunmak
+65. **REQ-53.65** WHEN yardım istendiğinde, THE OSB Destek Sistemi SHALL adım adım yardım isteme rehberi sunmak
+66. **REQ-53.66** WHEN geri bildirim verildiğinde, THE OSB Destek Sistemi SHALL görsel geri bildirim seçenekleri sunmak
+67. **REQ-53.67** WHEN grup çalışması yapıldığında, THE OSB Destek Sistemi SHALL rol kartları ve görev dağılımı göstermek
+68. **REQ-53.68** WHEN sohbet kuralları açıklandığında, THE OSB Destek Sistemi SHALL görsel sohbet kuralları kartı sunmak
+69. **REQ-53.69** WHEN bekleme süresi varsa, THE OSB Destek Sistemi SHALL görsel bekleme sayacı göstermek
+70. **REQ-53.70** WHEN sosyal durum açıklandığında, THE OSB Destek Sistemi SHALL "ne zaman/ne yaparım" kartı sunmak
+
+**Güvenli Alan ve Mola Yönetimi (REQ-53.71 - REQ-53.80)**
+
+71. **REQ-53.71** WHEN stres tespit edildiğinde, THE OSB Destek Sistemi SHALL sakinleşme önerileri sunmak
+72. **REQ-53.72** WHEN mola istendiğinde, THE OSB Destek Sistemi SHALL anında sessiz mola alanı sunmak
+73. **REQ-53.73** WHEN sakinleşme stratejisi seçildiğinde, THE OSB Destek Sistemi SHALL rehberli nefes egzersizi sunmak
+74. **REQ-53.74** WHEN sensory break istendiğinde, THE OSB Destek Sistemi SHALL duyusal mola aktiviteleri sunmak
+75. **REQ-53.75** WHEN güvenli alan açıldığında, THE OSB Destek Sistemi SHALL minimal stimuli ortamı sunmak
+76. **REQ-53.76** WHEN çıkış stratejisi belirlendiğinde, THE OSB Destek Sistemi SHALL "dur" veya "mola" butonu sunmak
+77. **REQ-53.77** WHEN bunaltı hissedildiğinde, THE OSB Destek Sistemi SHALL hızlı çıkış seçeneği sunmak
+78. **REQ-53.78** WHEN tekrar hazır olunduğunda, THE OSB Destek Sistemi SHALL kaldığı yerden devam seçeneği sunmak
+79. **REQ-53.79** WHEN mola süresi ayarlandığında, THE OSB Destek Sistemi SHALL kişiselleştirilmiş mola süreleri sunmak
+80. **REQ-53.80** WHEN destek gerektiğinde, THE OSB Destek Sistemi SHALL kolay erişilebilir yardım butonu sunmak
+
+---
+
+**REQ-53 Özet:**
+- ✅ REQ-53.1 - REQ-53.15: Tutarlı ve Öngörülebilir Arayüz
+- ✅ REQ-53.16 - REQ-53.30: Görsel Programlar ve Rutinler
+- ✅ REQ-53.31 - REQ-53.45: Net ve Açık Talimatlar
+- ✅ REQ-53.46 - REQ-53.60: Duyusal Yük Azaltma
+- ✅ REQ-53.61 - REQ-53.70: Sosyal İletişim Desteği
+- ✅ REQ-53.71 - REQ-53.80: Güvenli Alan ve Mola Yönetimi
+
+**Toplam Kriter Sayısı:** 80 kriter
+
+---
+
+### REQ-54: (Rezerve - Gelecek Kullanım İçin)
+
+**Durum:** Bu REQ numarası gelecekteki özellikler için rezerve edilmiştir.
+
+**Not:** REQ-54 şu anda atanmamıştır. Gelecekte eklenecek erişilebilirlik veya özel gereksinim özellikleri için ayrılmıştır.
+
+---
+
+### REQ-55: (Rezerve - Gelecek Kullanım İçin)
+
+**Durum:** Bu REQ numarası gelecekteki özellikler için rezerve edilmiştir.
+
+**Not:** REQ-55 şu anda atanmamıştır. Gelecekte eklenecek erişilebilirlik veya özel gereksinim özellikleri için ayrılmıştır.
+
+---
+
+## BÖLÜM 7: GAMİFİKASYON SİSTEMİ
+
+### REQ-56: Oyunlaştırma ve Motivasyon Sistemi
+
+**Kullanıcı Hikayesi:** Bir öğrenci olarak, çalışmalarım karşılığında puan kazanmak, seviye atlamak ve rozetler toplamak istiyorum, böylece öğrenme sürecim daha eğlenceli ve motive edici olur.
+
+#### Puan Sistemi (REQ-56.1 - REQ-56.5)
+
+1. **REQ-56.1** WHEN öğrenci bir soruyu doğru cevapladığında, THE Gamification Sistemi SHALL soru zorluğuna göre 10-50 puan arasında puan verir
+2. **REQ-56.2** WHEN öğrenci günlük çalışma hedefini tamamladığında, THE Gamification Sistemi SHALL 100 bonus puan verir
+3. **REQ-56.3** WHEN öğrenci sınavı tamamladığında, THE Gamification Sistemi SHALL performansa göre 50-500 puan arasında puan verir
+4. **REQ-56.4** WHEN öğrenci puan geçmişini görüntülediğinde, THE Gamification Sistemi SHALL son 30 günlük puan kazanımlarını grafik ve liste formatında gösterir
+5. **REQ-56.5** WHEN öğrenci dashboard'unu açtığında, THE Gamification Sistemi SHALL toplam puan, günlük kazanılan puan ve haftalık kazanılan puanı gösterir
+
+#### Seviye Sistemi (REQ-56.6 - REQ-56.10)
+
+6. **REQ-56.6** WHEN öğrenci yeterli deneyim puanı topladığında, THE Seviye Sistemi SHALL otomatik olarak bir üst seviyeye yükseltir
+7. **REQ-56.7** WHEN öğrenci seviye atladığında, THE Seviye Sistemi SHALL kutlama animasyonu gösterir ve bildirim gönderir
+8. **REQ-56.8** WHEN Seviye Sistemi deneyim puanı hesapladığında, THE Seviye Sistemi SHALL her seviye için gereken XP'yi üstel formül ile hesaplar (Level * 100 * 1.5^Level)
+9. **REQ-56.9** WHEN öğrenci profil sayfasını görüntülediğinde, THE Seviye Sistemi SHALL mevcut seviye, toplam XP, bir sonraki seviyeye kalan XP ve ilerleme çubuğunu gösterir
+10. **REQ-56.10** WHEN öğrenci seviye 10, 25, 50, 75, 100'e ulaştığında, THE Seviye Sistemi SHALL özel milestone rozeti verir
+
+#### Rozet Koleksiyonu (REQ-56.11 - REQ-56.15)
+
+11. **REQ-56.11** WHEN öğrenci belirli bir başarıyı tamamladığında, THE Rozet Sistemi SHALL ilgili rozeti otomatik olarak verir ve bildirim gösterir
+12. **REQ-56.12** WHEN öğrenci rozet koleksiyonunu görüntülediğinde, THE Rozet Sistemi SHALL kazanılan rozetleri renkli, kazanılmayanları gri olarak gösterir
+13. **REQ-56.13** WHEN Rozet Sistemi nadir rozet verdiğinde, THE Rozet Sistemi SHALL özel animasyon ve ses efekti ile kutlama yapar
+14. **REQ-56.14** WHEN öğrenci rozet detayını görüntülediğinde, THE Rozet Sistemi SHALL rozet adı, açıklama, kazanma tarihi ve nadir seviyesini (yaygın/nadir/efsanevi) gösterir
+15. **REQ-56.15** WHEN öğrenci 7 gün üst üste çalıştığında, THE Rozet Sistemi SHALL "Kararlı Öğrenci" rozetini verir
+
+#### Liderlik Tablosu (REQ-56.16 - REQ-56.20)
+
+16. **REQ-56.16** WHEN öğrenci liderlik tablosunu görüntülediğinde, THE Liderlik Sistemi SHALL haftalık, aylık ve tüm zamanlar olmak üzere 3 farklı zaman dilimi sunar
+17. **REQ-56.17** WHEN Liderlik Sistemi sıralama yaptığında, THE Liderlik Sistemi SHALL toplam puana göre ilk 100 öğrenciyi listeler
+18. **REQ-56.18** WHEN öğrenci arkadaş karşılaştırması yaptığında, THE Liderlik Sistemi SHALL sadece arkadaş listesindeki öğrencileri gösterir
+19. **REQ-56.19** WHEN öğrenci sınıf sıralamasını görüntülediğinde, THE Liderlik Sistemi SHALL aynı sınıftaki tüm öğrencileri puana göre sıralar
+20. **REQ-56.20** WHEN öğrenci liderlik tablosunda ilk 3'e girdiğinde, THE Liderlik Sistemi SHALL profil sayfasında özel altın/gümüş/bronz rozet gösterir
+
+---
+
+### REQ-57: Rozet Kategorileri ve Başarı Kriterleri
 
 **Kullanıcı Hikayesi:** Bir öğrenci olarak, farklı kategorilerde rozetler kazanmak istiyorum, böylece çeşitli alanlarda gelişimimi görebilirim.
 
 #### Kabul Kriterleri
 
-**Çalışma Rozetleri (REQ-53.1 - REQ-53.5)**
+**Çalışma Rozetleri (REQ-57.1 - REQ-57.5)**
 
-1. **REQ-53.1** WHEN öğrenci 7 gün üst üste çalıştığında, THE Rozet Sistemi SHALL "Kararlı Öğrenci" (yaygın) rozetini verir
-2. **REQ-53.2** WHEN öğrenci 30 gün üst üste çalıştığında, THE Rozet Sistemi SHALL "Azimli Öğrenci" (nadir) rozetini verir
-3. **REQ-53.3** WHEN öğrenci 100 gün üst üste çalıştığında, THE Rozet Sistemi SHALL "Efsane Öğrenci" (efsanevi) rozetini verir
-4. **REQ-53.4** WHEN öğrenci toplam 1000 soru çözdüğünde, THE Rozet Sistemi SHALL "Soru Avcısı" rozetini verir
-5. **REQ-53.5** WHEN öğrenci toplam 100 saat çalıştığında, THE Rozet Sistemi SHALL "Zaman Yöneticisi" rozetini verir
+1. **REQ-57.1** WHEN öğrenci 7 gün üst üste çalıştığında, THE Rozet Sistemi SHALL "Kararlı Öğrenci" (yaygın) rozetini verir
+2. **REQ-57.2** WHEN öğrenci 30 gün üst üste çalıştığında, THE Rozet Sistemi SHALL "Azimli Öğrenci" (nadir) rozetini verir
+3. **REQ-57.3** WHEN öğrenci 100 gün üst üste çalıştığında, THE Rozet Sistemi SHALL "Efsane Öğrenci" (efsanevi) rozetini verir
+4. **REQ-57.4** WHEN öğrenci toplam 1000 soru çözdüğünde, THE Rozet Sistemi SHALL "Soru Avcısı" rozetini verir
+5. **REQ-57.5** WHEN öğrenci toplam 100 saat çalıştığında, THE Rozet Sistemi SHALL "Zaman Yöneticisi" rozetini verir
 
-**Sınav Rozetleri (REQ-53.6 - REQ-53.10)**
+**Sınav Rozetleri (REQ-57.6 - REQ-57.10)**
 
-6. **REQ-53.6** WHEN öğrenci ilk denemesinde %80 üzeri aldığında, THE Rozet Sistemi SHALL "Parlak Başlangıç" rozetini verir
-7. **REQ-53.7** WHEN öğrenci 10 deneme sınavı tamamladığında, THE Rozet Sistemi SHALL "Sınav Ustası" rozetini verir
-8. **REQ-53.8** WHEN öğrenci bir konuda 3 sınavda üst üste %90 üzeri aldığında, THE Rozet Sistemi SHALL "Konu Uzmanı" rozetini verir
-9. **REQ-53.9** WHEN öğrenci tam puan aldığında, THE Rozet Sistemi SHALL "Mükemmeliyetçi" (nadir) rozetini verir
-10. **REQ-53.10** WHEN öğrenci TYT, AYT ve YDT'nin hepsini tamamladığında, THE Rozet Sistemi SHALL "Tam Hazır" rozetini verir
+6. **REQ-57.6** WHEN öğrenci ilk denemesinde %80 üzeri aldığında, THE Rozet Sistemi SHALL "Parlak Başlangıç" rozetini verir
+7. **REQ-57.7** WHEN öğrenci 10 deneme sınavı tamamladığında, THE Rozet Sistemi SHALL "Sınav Ustası" rozetini verir
+8. **REQ-57.8** WHEN öğrenci bir konuda 3 sınavda üst üste %90 üzeri aldığında, THE Rozet Sistemi SHALL "Konu Uzmanı" rozetini verir
+9. **REQ-57.9** WHEN öğrenci tam puan aldığında, THE Rozet Sistemi SHALL "Mükemmeliyetçi" (nadir) rozetini verir
+10. **REQ-57.10** WHEN öğrenci TYT, AYT ve YDT'nin hepsini tamamladığında, THE Rozet Sistemi SHALL "Tam Hazır" rozetini verir
 
-**Sosyal Rozetler (REQ-53.11 - REQ-53.15)**
+**Sosyal Rozetler (REQ-57.11 - REQ-57.15)**
 
-11. **REQ-53.11** WHEN öğrenci 10 arkadaşını platforma davet ettiğinde, THE Rozet Sistemi SHALL "Topluluk Lideri" rozetini verir
-12. **REQ-53.12** WHEN öğrenci liderlik tablosunda ilk 10'a girdiğinde, THE Rozet Sistemi SHALL "Yıldız Öğrenci" rozetini verir
-13. **REQ-53.13** WHEN öğrenci 100 soru paylaştığında, THE Rozet Sistemi SHALL "Bilgi Paylaşımcısı" rozetini verir
-14. **REQ-53.14** WHEN öğrenci 50 yorum yaptığında, THE Rozet Sistemi SHALL "Aktif Katılımcı" rozetini verir
-15. **REQ-53.15** WHEN öğrenci bir arkadaşına 10 kez yardım ettiğinde, THE Rozet Sistemi SHALL "Yardımsever" rozetini verir
+11. **REQ-57.11** WHEN öğrenci 10 arkadaşını platforma davet ettiğinde, THE Rozet Sistemi SHALL "Topluluk Lideri" rozetini verir
+12. **REQ-57.12** WHEN öğrenci liderlik tablosunda ilk 10'a girdiğinde, THE Rozet Sistemi SHALL "Yıldız Öğrenci" rozetini verir
+13. **REQ-57.13** WHEN öğrenci 100 soru paylaştığında, THE Rozet Sistemi SHALL "Bilgi Paylaşımcısı" rozetini verir
+14. **REQ-57.14** WHEN öğrenci 50 yorum yaptığında, THE Rozet Sistemi SHALL "Aktif Katılımcı" rozetini verir
+15. **REQ-57.15** WHEN öğrenci bir arkadaşına 10 kez yardım ettiğinde, THE Rozet Sistemi SHALL "Yardımsever" rozetini verir
 
-**Özel Rozetler (REQ-53.16 - REQ-53.20)**
+**Özel Rozetler (REQ-57.16 - REQ-57.20)**
 
-16. **REQ-53.16** WHEN öğrenci gece 00:00-06:00 arası çalıştığında, THE Rozet Sistemi SHALL "Gece Kuşu" rozetini verir
-17. **REQ-53.17** WHEN öğrenci sabah 05:00-07:00 arası çalıştığında, THE Rozet Sistemi SHALL "Erken Kuş" rozetini verir
-18. **REQ-53.18** WHEN öğrenci bir günde 5 saat çalıştığında, THE Rozet Sistemi SHALL "Maraton Koşucusu" rozetini verir
-19. **REQ-53.19** WHEN öğrenci tüm konuları tamamladığında, THE Rozet Sistemi SHALL "Konu Tamamlayıcı" (efsanevi) rozetini verir
-20. **REQ-53.20** WHEN öğrenci platformda 1 yıl aktif olduğunda, THE Rozet Sistemi SHALL "Sadık Öğrenci" (efsanevi) rozetini verir
+16. **REQ-57.16** WHEN öğrenci gece 00:00-06:00 arası çalıştığında, THE Rozet Sistemi SHALL "Gece Kuşu" rozetini verir
+17. **REQ-57.17** WHEN öğrenci sabah 05:00-07:00 arası çalıştığında, THE Rozet Sistemi SHALL "Erken Kuş" rozetini verir
+18. **REQ-57.18** WHEN öğrenci bir günde 5 saat çalıştığında, THE Rozet Sistemi SHALL "Maraton Koşucusu" rozetini verir
+19. **REQ-57.19** WHEN öğrenci tüm konuları tamamladığında, THE Rozet Sistemi SHALL "Konu Tamamlayıcı" (efsanevi) rozetini verir
+20. **REQ-57.20** WHEN öğrenci platformda 1 yıl aktif olduğunda, THE Rozet Sistemi SHALL "Sadık Öğrenci" (efsanevi) rozetini verir
 
 ---
 
-### REQ-54: Motivasyon ve Bildirimler
+### REQ-58: Motivasyon ve Bildirimler
 
 **Kullanıcı Hikayesi:** Bir öğrenci olarak, başarılarım için anında geri bildirim ve kutlama almak istiyorum, böylece motive olur ve çalışmaya devam ederim.
 
 #### Kabul Kriterleri
 
-1. **REQ-54.1** WHEN öğrenci rozet kazandığında, THE Bildirim Sistemi SHALL modal popup ile kutlama gösterir
-2. **REQ-54.2** WHEN öğrenci seviye atladığında, THE Bildirim Sistemi SHALL tam ekran animasyon ve ses efekti ile kutlar
-3. **REQ-54.3** WHEN öğrenci günlük hedefini tamamladığında, THE Bildirim Sistemi SHALL başarı bildirimi ve konfeti animasyonu gösterir
-4. **REQ-54.4** WHEN öğrenci liderlik tablosunda yükseldiğinde, THE Bildirim Sistemi SHALL sıralama değişikliğini bildirir
-5. **REQ-54.5** WHEN öğrenci 3 gün çalışmadığında, THE Bildirim Sistemi SHALL nazik hatırlatma bildirimi gönderir
+1. **REQ-58.1** WHEN öğrenci rozet kazandığında, THE Bildirim Sistemi SHALL modal popup ile kutlama gösterir
+2. **REQ-58.2** WHEN öğrenci seviye atladığında, THE Bildirim Sistemi SHALL tam ekran animasyon ve ses efekti ile kutlar
+3. **REQ-58.3** WHEN öğrenci günlük hedefini tamamladığında, THE Bildirim Sistemi SHALL başarı bildirimi ve konfeti animasyonu gösterir
+4. **REQ-58.4** WHEN öğrenci liderlik tablosunda yükseldiğinde, THE Bildirim Sistemi SHALL sıralama değişikliğini bildirir
+5. **REQ-58.5** WHEN öğrenci 3 gün çalışmadığında, THE Bildirim Sistemi SHALL nazik hatırlatma bildirimi gönderir
 
 ---
 
-### REQ-55: Gamification Analytics ve Raporlama
+### REQ-59: Gamification Analytics ve Raporlama
 
 **Kullanıcı Hikayesi:** Bir öğrenci olarak, gamification istatistiklerimi görmek istiyorum, böylece ilerlememı takip edebilirim.
 
 #### Kabul Kriterleri
 
-1. **REQ-55.1** WHEN öğrenci istatistikler sayfasını açtığında, THE Analytics Sistemi SHALL toplam puan, seviye, rozet sayısı ve sıralama bilgilerini gösterir
-2. **REQ-55.2** WHEN Analytics Sistemi puan grafiği çizdiğinde, THE Analytics Sistemi SHALL son 30 günlük puan kazanımlarını çizgi grafik ile gösterir
-3. **REQ-55.3** WHEN öğrenci rozet ilerlemesini görüntülediğinde, THE Analytics Sistemi SHALL kategori bazlı rozet tamamlanma yüzdesini gösterir
-4. **REQ-55.4** WHEN öğrenci seviye geçmişini görüntülediğinde, THE Analytics Sistemi SHALL her seviyeye ulaşma tarihini ve süresini gösterir
-5. **REQ-55.5** WHEN öğrenci karşılaştırma yaptığında, THE Analytics Sistemi SHALL kendi istatistiklerini sınıf ortalaması ile karşılaştırır
+1. **REQ-59.1** WHEN öğrenci istatistikler sayfasını açtığında, THE Analytics Sistemi SHALL toplam puan, seviye, rozet sayısı ve sıralama bilgilerini gösterir
+2. **REQ-59.2** WHEN Analytics Sistemi puan grafiği çizdiğinde, THE Analytics Sistemi SHALL son 30 günlük puan kazanımlarını çizgi grafik ile gösterir
+3. **REQ-59.3** WHEN öğrenci rozet ilerlemesini görüntülediğinde, THE Analytics Sistemi SHALL kategori bazlı rozet tamamlanma yüzdesini gösterir
+4. **REQ-59.4** WHEN öğrenci seviye geçmişini görüntülediğinde, THE Analytics Sistemi SHALL her seviyeye ulaşma tarihini ve süresini gösterir
+5. **REQ-59.5** WHEN öğrenci karşılaştırma yaptığında, THE Analytics Sistemi SHALL kendi istatistiklerini sınıf ortalaması ile karşılaştırır
+
+---
+
+## BÖLÜM 8: OPSİYONEL SİSTEMLER
+
+### REQ-60: Soru Bankası Yönetim Sistemi
+
+**Kullanıcı Hikayesi:** Bir içerik yöneticisi olarak, soru bankasını verimli bir şekilde yönetmek istiyorum, böylece kaliteli ve güncel sorular ile öğrencilere hizmet verebilirim.
+
+#### Kabul Kriterleri
+
+**CRUD İşlemleri (REQ-60.1 - REQ-60.8)**
+
+1. **REQ-60.1** WHEN içerik yöneticisi yeni soru eklemek istediğinde, THE Soru Bankası Sistemi SHALL soru oluşturma formu sunmak
+2. **REQ-60.2** WHEN soru oluşturulduğunda, THE Soru Bankası Sistemi SHALL soru metni, seçenekler, doğru cevap ve çözüm alanlarını kaydetmek
+3. **REQ-60.3** WHEN soru düzenlendiğinde, THE Soru Bankası Sistemi SHALL tüm alanları güncelleme imkanı vermek
+4. **REQ-60.4** WHEN soru silindiğinde, THE Soru Bankası Sistemi SHALL soft delete ile arşivlemek
+5. **REQ-60.5** WHEN soru listesi görüntülendiğinde, THE Soru Bankası Sistemi SHALL filtreleme ve sıralama seçenekleri sunmak
+6. **REQ-60.6** WHEN toplu işlem yapıldığında, THE Soru Bankası Sistemi SHALL çoklu soru seçimi ve toplu işlem desteği vermek
+7. **REQ-60.7** WHEN soru import edildiğinde, THE Soru Bankası Sistemi SHALL Excel/CSV dosyasından toplu import desteklemek
+8. **REQ-60.8** WHEN soru export edildiğinde, THE Soru Bankası Sistemi SHALL farklı formatlarda export sunmak
+
+**Etiketleme ve Kategorileme (REQ-60.9 - REQ-60.15)**
+
+9. **REQ-60.9** WHEN soru etiketlendiğinde, THE Soru Bankası Sistemi SHALL ders, konu, alt konu etiketleri atamak
+10. **REQ-60.10** WHEN zorluk atandığında, THE Soru Bankası Sistemi SHALL IRT tabanlı zorluk değeri atamak
+11. **REQ-60.11** WHEN sınav tipi seçildiğinde, THE Soru Bankası Sistemi SHALL TYT/AYT/YDT kategorisini kaydetmek
+12. **REQ-60.12** WHEN müfredat eşleştirildiğinde, THE Soru Bankası Sistemi SHALL MEB kazanımları ile eşleştirmek
+13. **REQ-60.13** WHEN arama yapıldığında, THE Soru Bankası Sistemi SHALL tam metin arama desteği sunmak
+14. **REQ-60.14** WHEN filtre uygulandığında, THE Soru Bankası Sistemi SHALL çoklu filtre kombinasyonunu desteklemek
+15. **REQ-60.15** WHEN istatistik görüntülendiğinde, THE Soru Bankası Sistemi SHALL soru başarı oranı ve kullanım istatistiklerini göstermek
+
+**Video Çözüm Entegrasyonu (REQ-60.16 - REQ-60.20)**
+
+16. **REQ-60.16** WHEN video çözüm eklendiğinde, THE Soru Bankası Sistemi SHALL YouTube/Vimeo linkini kaydetmek
+17. **REQ-60.17** WHEN video önizleme yapıldığında, THE Soru Bankası Sistemi SHALL embed player göstermek
+18. **REQ-60.18** WHEN alternatif çözüm eklendiğinde, THE Soru Bankası Sistemi SHALL çoklu çözüm yolu desteği sunmak
+19. **REQ-60.19** WHEN çözüm adımları tanımlandığında, THE Soru Bankası Sistemi SHALL adım adım metin çözümü kaydetmek
+20. **REQ-60.20** WHEN çözüm kalitesi değerlendirildiğinde, THE Soru Bankası Sistemi SHALL kullanıcı puanlaması toplanmak
+
+**Kalite Kontrol (REQ-60.21 - REQ-60.25)**
+
+21. **REQ-60.21** WHEN soru oluşturulduğunda, THE Soru Bankası Sistemi SHALL otomatik yazım kontrolü yapmak
+22. **REQ-60.22** WHEN formül girildiğinde, THE Soru Bankası Sistemi SHALL LaTeX syntax doğrulaması yapmak
+23. **REQ-60.23** WHEN soru yayınlanmadan önce, THE Soru Bankası Sistemi SHALL review workflow uygulamak
+24. **REQ-60.24** WHEN duplicate tespit edildiğinde, THE Soru Bankası Sistemi SHALL benzer soru uyarısı vermek
+25. **REQ-60.25** WHEN soru rapor edildiğinde, THE Soru Bankası Sistemi SHALL hata bildirim sistemi sunmak
+
+---
+
+### REQ-61: Üniversite Tercih Danışmanlığı Sistemi
+
+**Kullanıcı Hikayesi:** Bir YKS öğrencisi olarak, puanıma göre tercih yapabileceğim üniversite ve bölümleri görmek istiyorum, böylece bilinçli tercih yapabilirim.
+
+#### Kabul Kriterleri
+
+**Taban Puan Veritabanı (REQ-61.1 - REQ-61.8)**
+
+1. **REQ-61.1** WHEN taban puanlar sorgulandığında, THE Tercih Danışmanlığı Sistemi SHALL son 5 yılın taban puanlarını göstermek
+2. **REQ-61.2** WHEN üniversite arandığında, THE Tercih Danışmanlığı Sistemi SHALL 200+ üniversiteyi listelemek
+3. **REQ-61.3** WHEN bölüm arandığında, THE Tercih Danışmanlığı Sistemi SHALL 10.000+ bölümü içeren veritabanı sunmak
+4. **REQ-61.4** WHEN kontenjan bilgisi istendiğinde, THE Tercih Danışmanlığı Sistemi SHALL güncel kontenjan bilgisi göstermek
+5. **REQ-61.5** WHEN şehir filtresi uygulandığında, THE Tercih Danışmanlığı Sistemi SHALL 81 il bazlı filtreleme sunmak
+6. **REQ-61.6** WHEN üniversite türü seçildiğinde, THE Tercih Danışmanlığı Sistemi SHALL devlet/vakıf filtresi sunmak
+7. **REQ-61.7** WHEN puan türü seçildiğinde, THE Tercih Danışmanlığı Sistemi SHALL SAY/EA/SÖZ/DİL filtrelemesi yapmak
+8. **REQ-61.8** WHEN burs bilgisi istendiğinde, THE Tercih Danışmanlığı Sistemi SHALL burs oranlarını göstermek
+
+**Tercih Simülasyonu (REQ-61.9 - REQ-61.16)**
+
+9. **REQ-61.9** WHEN öğrenci puan girdiğinde, THE Tercih Danışmanlığı Sistemi SHALL tahmini sıralama hesaplamak
+10. **REQ-61.10** WHEN simülasyon yapıldığında, THE Tercih Danışmanlığı Sistemi SHALL olası tercih listesi oluşturmak
+11. **REQ-61.11** WHEN risk analizi yapıldığında, THE Tercih Danışmanlığı Sistemi SHALL her tercih için yerleşme olasılığı göstermek
+12. **REQ-61.12** WHEN alternatif tercihler istendiğinde, THE Tercih Danışmanlığı Sistemi SHALL benzer bölüm önerileri sunmak
+13. **REQ-61.13** WHEN tercih listesi oluşturulduğunda, THE Tercih Danışmanlığı Sistemi SHALL 24 tercihlik liste desteği vermek
+14. **REQ-61.14** WHEN tercih sıralaması yapıldığında, THE Tercih Danışmanlığı Sistemi SHALL drag-and-drop sıralama sunmak
+15. **REQ-61.15** WHEN tercih kaydedildiğinde, THE Tercih Danışmanlığı Sistemi SHALL tercih listesini kaydetmek
+16. **REQ-61.16** WHEN tercih paylaşıldığında, THE Tercih Danışmanlığı Sistemi SHALL PDF export sunmak
+
+**İstatistik ve Analiz (REQ-61.17 - REQ-61.25)**
+
+17. **REQ-61.17** WHEN trend analizi yapıldığında, THE Tercih Danışmanlığı Sistemi SHALL 5 yıllık taban puan trendini göstermek
+18. **REQ-61.18** WHEN doluluk oranı sorgulandığında, THE Tercih Danışmanlığı Sistemi SHALL son yıl doluluk oranlarını göstermek
+19. **REQ-61.19** WHEN mezun istatistikleri istendiğinde, THE Tercih Danışmanlığı Sistemi SHALL istihdam oranlarını göstermek
+20. **REQ-61.20** WHEN maaş bilgisi sorgulandığında, THE Tercih Danışmanlığı Sistemi SHALL ortalama başlangıç maaşlarını göstermek
+21. **REQ-61.21** WHEN üniversite karşılaştırması yapıldığında, THE Tercih Danışmanlığı Sistemi SHALL yan yana karşılaştırma sunmak
+22. **REQ-61.22** WHEN kampüs bilgisi istendiğinde, THE Tercih Danışmanlığı Sistemi SHALL tesis ve olanak bilgisi göstermek
+23. **REQ-61.23** WHEN öğrenci yorumları istendiğinde, THE Tercih Danışmanlığı Sistemi SHALL öğrenci değerlendirmelerini göstermek
+24. **REQ-61.24** WHEN akademik kadro sorgulandığında, THE Tercih Danışmanlığı Sistemi SHALL öğretim üyesi sayılarını göstermek
+25. **REQ-61.25** WHEN uluslararası sıralama istendiğinde, THE Tercih Danışmanlığı Sistemi SHALL dünya sıralama bilgilerini göstermek
+
+---
+
+### REQ-62: Canlı Ders ve Öğretmen Desteği Sistemi
+
+**Kullanıcı Hikayesi:** Bir öğrenci olarak, canlı dersler aracılığıyla öğretmenlerden yardım almak istiyorum, böylece anlamadığım konuları sorabilir ve açıklama alabilirim.
+
+#### Kabul Kriterleri
+
+**Video Konferans (REQ-62.1 - REQ-62.8)**
+
+1. **REQ-62.1** WHEN canlı ders başlatıldığında, THE Canlı Ders Sistemi SHALL HD video konferans desteği sunmak
+2. **REQ-62.2** WHEN ekran paylaşımı yapıldığında, THE Canlı Ders Sistemi SHALL ekran paylaşım özelliği sunmak
+3. **REQ-62.3** WHEN beyaz tahta kullanıldığında, THE Canlı Ders Sistemi SHALL interaktif dijital tahta sunmak
+4. **REQ-62.4** WHEN ders kaydedildiğinde, THE Canlı Ders Sistemi SHALL otomatik kayıt özelliği sunmak
+5. **REQ-62.5** WHEN katılımcı listesi görüntülendiğinde, THE Canlı Ders Sistemi SHALL anlık katılımcı sayısını göstermek
+6. **REQ-62.6** WHEN el kaldırma yapıldığında, THE Canlı Ders Sistemi SHALL el kaldırma ve soru sorma butonu sunmak
+7. **REQ-62.7** WHEN anket yapıldığında, THE Canlı Ders Sistemi SHALL anlık anket ve quiz özelliği sunmak
+8. **REQ-62.8** WHEN ders planlandığında, THE Canlı Ders Sistemi SHALL ders takvimi ve hatırlatıcı sunmak
+
+**Öğretmen Havuzu (REQ-62.9 - REQ-62.15)**
+
+9. **REQ-62.9** WHEN öğretmen arandığında, THE Canlı Ders Sistemi SHALL konu bazlı öğretmen listesi sunmak
+10. **REQ-62.10** WHEN öğretmen profili görüntülendiğinde, THE Canlı Ders Sistemi SHALL öğretmen değerlendirme puanı göstermek
+11. **REQ-62.11** WHEN öğretmen seçildiğinde, THE Canlı Ders Sistemi SHALL müsaitlik takvimi göstermek
+12. **REQ-62.12** WHEN randevu alındığında, THE Canlı Ders Sistemi SHALL birebir ders rezervasyonu sağlamak
+13. **REQ-62.13** WHEN ücret hesaplandığında, THE Canlı Ders Sistemi SHALL şeffaf fiyatlandırma göstermek
+14. **REQ-62.14** WHEN ödeme yapıldığında, THE Canlı Ders Sistemi SHALL güvenli ödeme entegrasyonu sunmak
+15. **REQ-62.15** WHEN ders tamamlandığında, THE Canlı Ders Sistemi SHALL öğretmen değerlendirme formu sunmak
+
+**Soru-Cevap Sistemi (REQ-62.16 - REQ-62.20)**
+
+16. **REQ-62.16** WHEN soru sorulduğunda, THE Canlı Ders Sistemi SHALL asenkron soru-cevap platformu sunmak
+17. **REQ-62.17** WHEN fotoğraf yüklendiğinde, THE Canlı Ders Sistemi SHALL soru fotoğrafı yükleme desteği vermek
+18. **REQ-62.18** WHEN cevap verildiğinde, THE Canlı Ders Sistemi SHALL cevap bildirimi göndermek
+19. **REQ-62.19** WHEN soru arşivi arandığında, THE Canlı Ders Sistemi SHALL benzer sorular ve cevaplar göstermek
+20. **REQ-62.20** WHEN cevap puanlandığında, THE Canlı Ders Sistemi SHALL yararlı cevap puanlama sistemi sunmak
+
+---
+
+### REQ-63: Mobil Uygulama Sistemi
+
+**Kullanıcı Hikayesi:** Bir öğrenci olarak, mobil cihazımdan çalışabilmek istiyorum, böylece her yerde ve her zaman öğrenmeye devam edebilirim.
+
+#### Kabul Kriterleri
+
+**Cross-Platform Destek (REQ-63.1 - REQ-63.8)**
+
+1. **REQ-63.1** WHEN iOS cihazda açıldığında, THE Mobil Uygulama SHALL iOS 14+ desteği sunmak
+2. **REQ-63.2** WHEN Android cihazda açıldığında, THE Mobil Uygulama SHALL Android 8+ desteği sunmak
+3. **REQ-63.3** WHEN tablet kullanıldığında, THE Mobil Uygulama SHALL tablet optimize edilmiş arayüz sunmak
+4. **REQ-63.4** WHEN orientasyon değiştiğinde, THE Mobil Uygulama SHALL landscape/portrait desteği sunmak
+5. **REQ-63.5** WHEN güncelleme geldiğinde, THE Mobil Uygulama SHALL otomatik güncelleme desteği sunmak
+6. **REQ-63.6** WHEN performans ölçüldüğünde, THE Mobil Uygulama SHALL 60 FPS akıcı deneyim sunmak
+7. **REQ-63.7** WHEN bellek kullanımı kontrol edildiğinde, THE Mobil Uygulama SHALL optimize edilmiş bellek kullanımı sağlamak
+8. **REQ-63.8** WHEN batarya kullanımı ölçüldüğünde, THE Mobil Uygulama SHALL düşük batarya tüketimi sağlamak
+
+**Offline Çalışma (REQ-63.9 - REQ-63.15)**
+
+9. **REQ-63.9** WHEN içerik indirildiğinde, THE Mobil Uygulama SHALL offline içerik paketi indirme sunmak
+10. **REQ-63.10** WHEN internet yokken, THE Mobil Uygulama SHALL offline mod ile çalışmak
+11. **REQ-63.11** WHEN internet geldiğinde, THE Mobil Uygulama SHALL otomatik senkronizasyon yapmak
+12. **REQ-63.12** WHEN ilerleme kaydedildiğinde, THE Mobil Uygulama SHALL local storage ile ilerleme kaydetmek
+13. **REQ-63.13** WHEN çakışma olduğunda, THE Mobil Uygulama SHALL conflict resolution mekanizması sunmak
+14. **REQ-63.14** WHEN depolama yönetildiğinde, THE Mobil Uygulama SHALL indirilen içerik yönetimi sunmak
+15. **REQ-63.15** WHEN disk alanı dolduğunda, THE Mobil Uygulama SHALL otomatik temizleme önerisi sunmak
+
+**Push Bildirimler (REQ-63.16 - REQ-63.20)**
+
+16. **REQ-63.16** WHEN sınav hatırlatması gerektiğinde, THE Mobil Uygulama SHALL push bildirim göndermek
+17. **REQ-63.17** WHEN günlük çalışma vakti geldiğinde, THE Mobil Uygulama SHALL çalışma hatırlatıcısı göndermek
+18. **REQ-63.18** WHEN başarı elde edildiğinde, THE Mobil Uygulama SHALL kutlama bildirimi göndermek
+19. **REQ-63.19** WHEN yeni içerik eklendiğinde, THE Mobil Uygulama SHALL içerik bildirimi göndermek
+20. **REQ-63.20** WHEN bildirim ayarları yapıldığında, THE Mobil Uygulama SHALL bildirim özelleştirme sunmak
+
+---
+
+### REQ-64: Sosyal Öğrenme ve Topluluk Sistemi
+
+**Kullanıcı Hikayesi:** Bir öğrenci olarak, diğer öğrencilerle birlikte çalışmak ve deneyimlerini paylaşmak istiyorum, böylece motivasyonumu artırabilir ve birlikte öğrenebilirim.
+
+#### Kabul Kriterleri
+
+**Çalışma Grupları (REQ-64.1 - REQ-64.8)**
+
+1. **REQ-64.1** WHEN grup oluşturulduğunda, THE Sosyal Öğrenme Sistemi SHALL özel çalışma grubu oluşturma sunmak
+2. **REQ-64.2** WHEN üye eklendiğinde, THE Sosyal Öğrenme Sistemi SHALL grup üyelik yönetimi sunmak
+3. **REQ-64.3** WHEN grup içi chat yapıldığında, THE Sosyal Öğrenme Sistemi SHALL grup mesajlaşma sunmak
+4. **REQ-64.4** WHEN dosya paylaşıldığında, THE Sosyal Öğrenme Sistemi SHALL dosya paylaşım desteği sunmak
+5. **REQ-64.5** WHEN ortak hedef belirlediğinde, THE Sosyal Öğrenme Sistemi SHALL grup hedefleri sunmak
+6. **REQ-64.6** WHEN ilerleme karşılaştırıldığında, THE Sosyal Öğrenme Sistemi SHALL grup içi ilerleme tablosu sunmak
+7. **REQ-64.7** WHEN çalışma oturumu planlandığında, THE Sosyal Öğrenme Sistemi SHALL grup çalışma seansları sunmak
+8. **REQ-64.8** WHEN grup istatistikleri görüntülendiğinde, THE Sosyal Öğrenme Sistemi SHALL toplam grup aktivitesi göstermek
+
+**Forum ve Tartışma (REQ-64.9 - REQ-64.15)**
+
+9. **REQ-64.9** WHEN konu açıldığında, THE Sosyal Öğrenme Sistemi SHALL konu bazlı forum sunmak
+10. **REQ-64.10** WHEN cevap verildiğinde, THE Sosyal Öğrenme Sistemi SHALL iç içe yanıt desteği sunmak
+11. **REQ-64.11** WHEN yararlı içerik oylandığında, THE Sosyal Öğrenme Sistemi SHALL upvote/downvote sistemi sunmak
+12. **REQ-64.12** WHEN moderasyon yapıldığında, THE Sosyal Öğrenme Sistemi SHALL içerik moderasyonu sunmak
+13. **REQ-64.13** WHEN etiketleme yapıldığında, THE Sosyal Öğrenme Sistemi SHALL konu etiketleme sunmak
+14. **REQ-64.14** WHEN arama yapıldığında, THE Sosyal Öğrenme Sistemi SHALL forum arama sunmak
+15. **REQ-64.15** WHEN bildirim alındığında, THE Sosyal Öğrenme Sistemi SHALL takip edilen konu bildirimleri sunmak
+
+**Başarı Paylaşımı (REQ-64.16 - REQ-64.20)**
+
+16. **REQ-64.16** WHEN başarı elde edildiğinde, THE Sosyal Öğrenme Sistemi SHALL başarı paylaşım özelliği sunmak
+17. **REQ-64.17** WHEN hikaye paylaşıldığında, THE Sosyal Öğrenme Sistemi SHALL motivasyon hikayeleri platformu sunmak
+18. **REQ-64.18** WHEN rozet gösterildiğinde, THE Sosyal Öğrenme Sistemi SHALL rozet vitrin özelliği sunmak
+19. **REQ-64.19** WHEN takip yapıldığında, THE Sosyal Öğrenme Sistemi SHALL öğrenci takip sistemi sunmak
+20. **REQ-64.20** WHEN tebrik gönderildiğinde, THE Sosyal Öğrenme Sistemi SHALL kutlama mesajları sunmak
+
+---
+
+### REQ-65: Psikolojik Destek ve Motivasyon Sistemi
+
+**Kullanıcı Hikayesi:** Bir YKS öğrencisi olarak, sınav stresi ile başa çıkmak için psikolojik destek almak istiyorum, böylece mental sağlığımı koruyarak verimli çalışabilirim.
+
+#### Kabul Kriterleri
+
+**Stres Yönetimi (REQ-65.1 - REQ-65.8)**
+
+1. **REQ-65.1** WHEN stres seviyesi ölçüldüğünde, THE Psikolojik Destek Sistemi SHALL stres değerlendirme anketi sunmak
+2. **REQ-65.2** WHEN yüksek stres tespit edildiğinde, THE Psikolojik Destek Sistemi SHALL sakinleştirici içerik önermek
+3. **REQ-65.3** WHEN nefes egzersizi başlatıldığında, THE Psikolojik Destek Sistemi SHALL rehberli nefes egzersizleri sunmak
+4. **REQ-65.4** WHEN meditasyon seçildiğinde, THE Psikolojik Destek Sistemi SHALL meditasyon seansları sunmak
+5. **REQ-65.5** WHEN progresif gevşeme istendiğinde, THE Psikolojik Destek Sistemi SHALL kas gevşetme egzersizleri sunmak
+6. **REQ-65.6** WHEN günlük tutulduğunda, THE Psikolojik Destek Sistemi SHALL duygu günlüğü özelliği sunmak
+7. **REQ-65.7** WHEN mood takibi yapıldığında, THE Psikolojik Destek Sistemi SHALL duygu durum grafikleri göstermek
+8. **REQ-65.8** WHEN kriz anı tespit edildiğinde, THE Psikolojik Destek Sistemi SHALL profesyonel yardım yönlendirmesi yapmak
+
+**Motivasyon Araçları (REQ-65.9 - REQ-65.15)**
+
+9. **REQ-65.9** WHEN motivasyon düştüğünde, THE Psikolojik Destek Sistemi SHALL motivasyonel alıntılar göstermek
+10. **REQ-65.10** WHEN başarı hikayesi istendiğinde, THE Psikolojik Destek Sistemi SHALL YKS başarı hikayeleri sunmak
+11. **REQ-65.11** WHEN hedef görselleştirildiğinde, THE Psikolojik Destek Sistemi SHALL hedef panosu oluşturma sunmak
+12. **REQ-65.12** WHEN ilerleme kutlandığında, THE Psikolojik Destek Sistemi SHALL milestone kutlamaları yapmak
+13. **REQ-65.13** WHEN olumlu düşünce çalışıldığında, THE Psikolojik Destek Sistemi SHALL pozitif düşünce egzersizleri sunmak
+14. **REQ-65.14** WHEN öz-şefkat pratik yapıldığında, THE Psikolojik Destek Sistemi SHALL self-compassion içerikleri sunmak
+15. **REQ-65.15** WHEN büyüme zihniyeti geliştirildiğinde, THE Psikolojik Destek Sistemi SHALL growth mindset materyalleri sunmak
+
+**Profesyonel Destek (REQ-65.16 - REQ-65.20)**
+
+16. **REQ-65.16** WHEN uzman desteği istendiğinde, THE Psikolojik Destek Sistemi SHALL psikolog iletişim bilgileri sunmak
+17. **REQ-65.17** WHEN acil yardım gerektiğinde, THE Psikolojik Destek Sistemi SHALL acil destek hattı numaraları göstermek
+18. **REQ-65.18** WHEN danışmanlık randevusu istendiğinde, THE Psikolojik Destek Sistemi SHALL online danışmanlık entegrasyonu sunmak
+19. **REQ-65.19** WHEN kaynak materyal istendiğinde, THE Psikolojik Destek Sistemi SHALL sınav stresi hakkında eğitici içerikler sunmak
+20. **REQ-65.20** WHEN ebeveyn bilgilendirmesi gerektiğinde, THE Psikolojik Destek Sistemi SHALL veli bilgilendirme kaynakları sunmak
+
+---
+
+## BÖLÜM 9: GENEL ÖZET VE İSTATİSTİKLER
+
+### Toplam Requirement Dağılımı
+
+| Kategori | REQ Numaraları | Kriter Sayısı |
+|----------|----------------|---------------|
+| Core Platform | REQ-1 to REQ-47 | ~200 |
+| LLM Soru Üretim | REQ-48 | 96 |
+| CAT Adaptif Test | REQ-49 | 100 |
+| Disleksi Desteği | REQ-50 | 104 |
+| Diskalkuli Desteği | REQ-51 | 100 |
+| DEHB Desteği | REQ-52 | 100 |
+| OSB Desteği | REQ-53 | 80 |
+| Gamification | REQ-56-59 | 50 |
+| Opsiyonel Sistemler | REQ-60-65 | 150 |
+| **TOPLAM** | **65 REQ** | **~980 Kriter** |
+
+### EARS/INCOSE Uyumu
+- ✅ Tüm kriterler EARS formatında (WHEN/THEN/SHALL)
+- ✅ Ölçülebilir kabul kriterleri
+- ✅ Çözüm-bağımsız gereksinimler
+- ✅ Aktif ses kullanımı
+- ✅ Tek düşünce per requirement
+
+---
+
+*Son Güncelleme: Ocak 2026*
+*Versiyon: 2.0*
+*Durum: Tamamlanmış*
 

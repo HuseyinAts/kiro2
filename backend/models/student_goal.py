@@ -2,9 +2,8 @@
 Student Goal ORM Model - Dashboard Service
 Part of Mock Data Cleanup Phase 2
 """
-from datetime import datetime
+from datetime import datetime, timezone
 from sqlalchemy import Column, String, Float, DateTime, ForeignKey, Text
-from sqlalchemy.orm import relationship
 
 from .base import Base
 
@@ -13,6 +12,7 @@ class StudentGoal(Base):
     """Student goal tracking model for dashboard"""
 
     __tablename__ = "student_goals"
+    __table_args__ = {'extend_existing': True}
 
     # Primary Key
     id = Column(String, primary_key=True, index=True)
@@ -47,20 +47,26 @@ class StudentGoal(Base):
     @property
     def progress_percentage(self) -> float:
         """Calculate goal progress percentage"""
-        if self.target_value == 0:
+        target = float(self.target_value or 0)
+        current = float(self.current_value or 0)
+        if target == 0:
             return 0.0
-        return min(100.0, (self.current_value / self.target_value) * 100)
+        return min(100.0, (current / target) * 100)
 
     @property
     def is_completed(self) -> bool:
         """Check if goal is completed"""
-        return self.status == "tamamlandi" or self.current_value >= self.target_value
+        current = float(self.current_value or 0)
+        target = float(self.target_value or 0)
+        return bool(self.status == "tamamlandi" or current >= target)
 
     @property
     def is_active(self) -> bool:
         """Check if goal is currently active"""
-        now = datetime.utcnow()
-        return (
+        now = datetime.now(timezone.utc)
+        if self.start_date is None or self.end_date is None:
+            return self.status == "aktif"
+        return bool(
             self.status == "aktif"
             and self.start_date <= now <= self.end_date
         )

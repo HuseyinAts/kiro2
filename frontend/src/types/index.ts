@@ -64,7 +64,7 @@ export interface SinavOturumu {
   soru_listesi: string[]
   cevaplanan_sorular: Record<string, string>
   isaretlenen_sorular: string[]
-  ozel_konfigurasyonlar?: Record<string, any>
+  ozel_konfigurasyonlar?: Record<string, string | number | boolean>
   olusturma_zamani: string
 }
 
@@ -260,7 +260,7 @@ export interface BlackboardEvent {
 export interface AgentCoordination {
   coordination_id: string
   participating_agents: string[]
-  shared_context: Record<string, any>
+  shared_context: Record<string, string | number | boolean | null>
   active_tasks: MultiAgentTask[]
   performance_summary: PerformanceSummary
 }
@@ -288,7 +288,7 @@ export type FSRSGrade = 1 | 2 | 3 | 4 // Again, Hard, Good, Easy
 // Agent Status tipleri
 export type AgentStatus = 'active' | 'idle' | 'processing' | 'error'
 
-// Task Status tipleri  
+// Task Status tipleri
 export type TaskStatus = 'pending' | 'in_progress' | 'completed' | 'failed'
 
 // Text Simplification Level tipleri
@@ -320,7 +320,7 @@ export interface AgentPerformanceMetrics {
 
 // Blackboard Event Data tipleri
 export interface BlackboardEventData {
-  [key: string]: any
+  [key: string]: string | number | boolean | null | undefined | BlackboardEventData
 }
 
 // Multi-Agent Task tipleri
@@ -376,7 +376,7 @@ export interface MultiAgentCoordinationRequest {
   student_id: string
   task_type?: string
   priority?: 'low' | 'medium' | 'high'
-  context?: Record<string, any>
+  context?: Record<string, string | number | boolean | null>
 }
 
 // Revolutionary Features Statistics tipleri
@@ -417,7 +417,7 @@ export interface RevolutionaryFeatureEvent extends WebSocketEvent {
   student_id: string
   event_data: {
     action: string
-    result?: any
+    result?: Record<string, unknown>
     error?: RevolutionaryFeatureError
   }
 }
@@ -635,22 +635,97 @@ export interface EgitimIcerigi {
 export interface AppError {
   code: string
   message: string
-  details?: any
+  details?: Record<string, unknown>
   timestamp: string
 }
 
 // Revolutionary Features - re-export from dedicated file
-export * from './revolutionary'
+export * from './revolutionary';
 
 // Utility tipleri
 export type Optional<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>
 export type RequiredFields<T, K extends keyof T> = T & Required<Pick<T, K>>
 
 // Event tipleri
-export interface WebSocketEvent {
+export interface WebSocketEvent<T = Record<string, unknown>> {
   type: string
-  data: any
+  data: T
   timestamp: string
+}
+
+// API Parameter Types (replacing any types)
+export interface ProgressData {
+  completed_modules?: string[]
+  current_module_id?: string
+  score?: number
+  time_spent_minutes?: number
+  quiz_results?: QuizResult[]
+  weaknesses?: string[]
+  strengths?: string[]
+}
+
+export interface QuizResult {
+  quiz_id: string
+  score: number
+  correct_count: number
+  total_count: number
+  time_taken_seconds: number
+}
+
+export interface DocumentMetadata {
+  subject?: string
+  grade?: number
+  exam_type?: string
+  content_type?: string
+  source?: string
+  difficulty?: number | string
+  topic?: string
+  tags?: string[]
+  created_at?: string
+  [key: string]: string | number | string[] | undefined
+}
+
+export interface SearchFilter {
+  subject?: string
+  grade?: number
+  exam_type?: string
+  content_type?: string
+  difficulty_min?: number
+  difficulty_max?: number
+  tags?: string[]
+  date_from?: string
+  date_to?: string
+}
+
+export interface GoalUpdateData {
+  hedef_tipi?: string
+  hedef_degeri?: number
+  bitis_tarihi?: string
+  aktif?: boolean
+  aciklama?: string
+}
+
+export interface StreamMetadata {
+  total_tokens?: number
+  prompt_tokens?: number
+  completion_tokens?: number
+  finish_reason?: string
+  model?: string
+  processing_time_ms?: number
+}
+
+export interface SSEEventData {
+  content?: string
+  metadata?: StreamMetadata
+  error?: string
+  sources?: DocumentSource[]
+}
+
+export interface DocumentSource {
+  title: string
+  url?: string
+  relevance_score?: number
+  snippet?: string
 }
 
 // Theme tipleri

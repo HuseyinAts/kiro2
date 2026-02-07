@@ -1,7 +1,7 @@
 /**
  * Okuma Yardımcıları Bileşeni
  * REQ-50.28 - REQ-50.42: Okuma Yardımcıları
- * 
+ *
  * Task 78: Okuma Yardımcıları
  * - 78.1: Okuma cetveli (reading ruler)
  * - 78.2: Odak modu (focus mode)
@@ -9,7 +9,9 @@
  * - 78.4: Hece ayırma
  */
 
-import React, { useState } from 'react';
+import * as React from 'react';
+import {  useState  } from 'react';
+
 import { useReadingHelpers } from '../../hooks/useReadingHelpers';
 import './ReadingHelpers.css';
 
@@ -90,7 +92,7 @@ export const ReadingHelpers: React.FC<ReadingHelpersProps> = ({ className = '' }
       {/* Okuma Cetveli - Task 78.1 (REQ-50.28 - REQ-50.31) */}
       <div className="setting-group">
         <div className="setting-header">
-          <label className="setting-label">
+          <label htmlFor="reading-ruler-toggle" className="setting-label">
             <span className="label-text">Okuma Cetveli</span>
             <span className="label-badge">
               {settings.readingRuler.enabled && '✓ Aktif'}
@@ -105,8 +107,8 @@ export const ReadingHelpers: React.FC<ReadingHelpersProps> = ({ className = '' }
               className="toggle-input"
               aria-describedby="reading-ruler-description"
             />
-            <label htmlFor="reading-ruler-toggle" className="toggle-label">
-              <span className="toggle-slider"></span>
+            <label htmlFor="reading-ruler-toggle" className="toggle-label" aria-label="Toggle reading ruler">
+              <span className="toggle-slider" aria-hidden="true"></span>
             </label>
           </div>
         </div>
@@ -145,8 +147,9 @@ export const ReadingHelpers: React.FC<ReadingHelpersProps> = ({ className = '' }
 
             {/* İmleci Takip Et */}
             <div className="sub-setting">
-              <label className="checkbox-label">
+              <label htmlFor="follow-cursor-checkbox" className="checkbox-label">
                 <input
+                  id="follow-cursor-checkbox"
                   type="checkbox"
                   checked={settings.readingRuler.followCursor}
                   onChange={(e) => updateSetting('readingRuler', { ...settings.readingRuler, followCursor: e.target.checked })}
@@ -210,7 +213,7 @@ export const ReadingHelpers: React.FC<ReadingHelpersProps> = ({ className = '' }
       {/* Odak Modu - Task 78.2 (REQ-50.32 - REQ-50.35) */}
       <div className="setting-group">
         <div className="setting-header">
-          <label className="setting-label">
+          <label htmlFor="focus-mode-toggle" className="setting-label">
             <span className="label-text">Odak Modu</span>
             <span className="label-badge">
               {settings.focusMode.enabled && '✓ Aktif'}
@@ -225,8 +228,8 @@ export const ReadingHelpers: React.FC<ReadingHelpersProps> = ({ className = '' }
               className="toggle-input"
               aria-describedby="focus-mode-description"
             />
-            <label htmlFor="focus-mode-toggle" className="toggle-label">
-              <span className="toggle-slider"></span>
+            <label htmlFor="focus-mode-toggle" className="toggle-label" aria-label="Toggle focus mode">
+              <span className="toggle-slider" aria-hidden="true"></span>
             </label>
           </div>
         </div>
@@ -238,10 +241,10 @@ export const ReadingHelpers: React.FC<ReadingHelpersProps> = ({ className = '' }
           <div className="sub-settings">
             {/* Odak Alanı */}
             <div className="sub-setting">
-              <label className="sub-setting-label">
+              <div className="sub-setting-label">
                 <span>Odak Alanı</span>
-              </label>
-              <div className="toggle-group">
+              </div>
+              <div id="focus-area-group" className="toggle-group" role="group" aria-label="Odak alanı seçimi">
                 <button
                   onClick={() => updateSetting('focusMode', { ...settings.focusMode, focusArea: 'line' })}
                   className={`toggle-button ${settings.focusMode.focusArea === 'line' ? 'active' : ''}`}
@@ -317,7 +320,7 @@ export const ReadingHelpers: React.FC<ReadingHelpersProps> = ({ className = '' }
       {/* Kelime Vurgulama - Task 78.3 (REQ-50.36 - REQ-50.39) */}
       <div className="setting-group">
         <div className="setting-header">
-          <label className="setting-label">
+          <label htmlFor="word-highlight-toggle" className="setting-label">
             <span className="label-text">Kelime Vurgulama</span>
             <span className="label-badge">
               {settings.wordHighlight.enabled && '✓ Aktif'}
@@ -332,8 +335,8 @@ export const ReadingHelpers: React.FC<ReadingHelpersProps> = ({ className = '' }
               className="toggle-input"
               aria-describedby="word-highlight-description"
             />
-            <label htmlFor="word-highlight-toggle" className="toggle-label">
-              <span className="toggle-slider"></span>
+            <label htmlFor="word-highlight-toggle" className="toggle-label" aria-label="Toggle word highlight">
+              <span className="toggle-slider" aria-hidden="true"></span>
             </label>
           </div>
         </div>
@@ -345,10 +348,10 @@ export const ReadingHelpers: React.FC<ReadingHelpersProps> = ({ className = '' }
           <div className="sub-settings">
             {/* Vurgulama Modu */}
             <div className="sub-setting">
-              <label className="sub-setting-label">
+              <div className="sub-setting-label">
                 <span>Vurgulama Modu</span>
-              </label>
-              <div className="toggle-group">
+              </div>
+              <div id="highlight-mode-group" className="toggle-group" role="group" aria-label="Vurgulama modu seçimi">
                 <button
                   onClick={() => updateSetting('wordHighlight', { ...settings.wordHighlight, mode: 'hover' })}
                   className={`toggle-button ${settings.wordHighlight.mode === 'hover' ? 'active' : ''}`}
@@ -375,8 +378,9 @@ export const ReadingHelpers: React.FC<ReadingHelpersProps> = ({ className = '' }
 
             {/* Çoklu Renk Vurgulama */}
             <div className="sub-setting">
-              <label className="checkbox-label">
+              <label htmlFor="multi-color-checkbox" className="checkbox-label">
                 <input
+                  id="multi-color-checkbox"
                   type="checkbox"
                   checked={settings.wordHighlight.multiColor}
                   onChange={(e) => updateSetting('wordHighlight', { ...settings.wordHighlight, multiColor: e.target.checked })}
@@ -391,13 +395,14 @@ export const ReadingHelpers: React.FC<ReadingHelpersProps> = ({ className = '' }
 
             {/* Vurgulama Renkleri */}
             <div className="sub-setting">
-              <label className="sub-setting-label">
+              <div className="sub-setting-label">
                 <span>Vurgulama Renkleri</span>
-              </label>
-              <div className="color-palette">
+              </div>
+              <div id="highlight-colors-palette" className="color-palette" role="group" aria-label="Vurgulama renkleri">
                 {settings.wordHighlight.colors.map((color, index) => (
                   <div key={index} className="color-palette-item">
                     <input
+                      id={`highlight-color-${index}`}
                       type="color"
                       value={color}
                       onChange={(e) => {
@@ -419,7 +424,7 @@ export const ReadingHelpers: React.FC<ReadingHelpersProps> = ({ className = '' }
       {/* Hece Ayırma - Task 78.4 (REQ-50.40 - REQ-50.42) */}
       <div className="setting-group">
         <div className="setting-header">
-          <label className="setting-label">
+          <label htmlFor="syllable-breaks-toggle" className="setting-label">
             <span className="label-text">Hece Ayırma</span>
             <span className="label-badge">
               {settings.syllableBreaks.enabled && '✓ Aktif'}
@@ -434,8 +439,8 @@ export const ReadingHelpers: React.FC<ReadingHelpersProps> = ({ className = '' }
               className="toggle-input"
               aria-describedby="syllable-breaks-description"
             />
-            <label htmlFor="syllable-breaks-toggle" className="toggle-label">
-              <span className="toggle-slider"></span>
+            <label htmlFor="syllable-breaks-toggle" className="toggle-label" aria-label="Toggle syllable breaks">
+              <span className="toggle-slider" aria-hidden="true"></span>
             </label>
           </div>
         </div>
@@ -447,10 +452,10 @@ export const ReadingHelpers: React.FC<ReadingHelpersProps> = ({ className = '' }
           <div className="sub-settings">
             {/* Ayırıcı Stil */}
             <div className="sub-setting">
-              <label className="sub-setting-label">
+              <div className="sub-setting-label">
                 <span>Ayırıcı Stil</span>
-              </label>
-              <div className="toggle-group">
+              </div>
+              <div id="separator-style-group" className="toggle-group" role="group" aria-label="Ayırıcı stil seçimi">
                 <button
                   onClick={() => updateSetting('syllableBreaks', { ...settings.syllableBreaks, separator: 'dot' })}
                   className={`toggle-button ${settings.syllableBreaks.separator === 'dot' ? 'active' : ''}`}
@@ -477,8 +482,9 @@ export const ReadingHelpers: React.FC<ReadingHelpersProps> = ({ className = '' }
 
             {/* Görsel İşaretleyici */}
             <div className="sub-setting">
-              <label className="checkbox-label">
+              <label htmlFor="visual-marker-checkbox" className="checkbox-label">
                 <input
+                  id="visual-marker-checkbox"
                   type="checkbox"
                   checked={settings.syllableBreaks.visualMarker}
                   onChange={(e) => updateSetting('syllableBreaks', { ...settings.syllableBreaks, visualMarker: e.target.checked })}

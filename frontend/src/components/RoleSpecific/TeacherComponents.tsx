@@ -1,4 +1,13 @@
-import React from 'react'
+import {
+  Class,
+  People,
+  Assessment,
+  TrendingUp,
+  Add,
+  Visibility,
+  Assignment,
+  BarChart,
+} from '@mui/icons-material';
 import {
   Box,
   Card,
@@ -7,10 +16,6 @@ import {
   Button,
   Chip,
   Grid,
-  List,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
   Avatar,
   LinearProgress,
   Table,
@@ -19,20 +24,9 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  Paper
-} from '@mui/material'
-import {
-  Class,
-  People,
-  Assessment,
-  TrendingUp,
-  Add,
-  Edit,
-  Visibility,
-  Assignment,
-  BarChart
-} from '@mui/icons-material'
-import { useNavigate } from 'react-router-dom'
+} from '@mui/material';
+import * as React from 'react';
+import { useNavigate } from 'react-router-dom';
 
 interface TeacherClassCardProps {
   classInfo: {
@@ -50,13 +44,13 @@ export const TeacherClassCard: React.FC<TeacherClassCardProps> = ({
   classInfo,
   onViewStudents,
   onCreateExam,
-  onViewReports
+  onViewReports,
 }) => {
   const getSuccessColor = (basari: number): 'success' | 'warning' | 'error' => {
-    if (basari >= 80) return 'success'
-    if (basari >= 60) return 'warning'
-    return 'error'
-  }
+    if (basari >= 80) {return 'success';}
+    if (basari >= 60) {return 'warning';}
+    return 'error';
+  };
 
   return (
     <Card sx={{ height: '100%' }}>
@@ -67,14 +61,14 @@ export const TeacherClassCard: React.FC<TeacherClassCardProps> = ({
             {classInfo.sinif_adi}
           </Typography>
         </Box>
-        
+
         <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
           <People sx={{ mr: 1, fontSize: 20, color: 'text.secondary' }} />
           <Typography variant="body2" color="text.secondary">
             {classInfo.ogrenci_sayisi} öğrenci
           </Typography>
         </Box>
-        
+
         <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
           <TrendingUp sx={{ mr: 1, fontSize: 20, color: 'text.secondary' }} />
           <Typography variant="body2" color="text.secondary" sx={{ mr: 1 }}>
@@ -93,7 +87,7 @@ export const TeacherClassCard: React.FC<TeacherClassCardProps> = ({
           color={getSuccessColor(classInfo.ortalama_basari)}
           sx={{ mb: 2 }}
         />
-        
+
         <Grid container spacing={1}>
           <Grid item xs={4}>
             <Button
@@ -128,8 +122,8 @@ export const TeacherClassCard: React.FC<TeacherClassCardProps> = ({
         </Grid>
       </CardContent>
     </Card>
-  )
-}
+  );
+};
 
 interface TeacherQuickActionsProps {
   onCreateClass?: () => void
@@ -142,36 +136,36 @@ export const TeacherQuickActions: React.FC<TeacherQuickActionsProps> = ({
   onCreateClass,
   onCreateExam,
   onViewReports,
-  onManageContent
+  onManageContent,
 }) => {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   const quickActions = [
     {
       label: 'Sınıf Oluştur',
       icon: <Add />,
       color: 'primary' as const,
-      onClick: () => onCreateClass ? onCreateClass() : navigate('/teacher/classes')
+      onClick: () => onCreateClass ? onCreateClass() : navigate('/teacher/classes'),
     },
     {
       label: 'Sınav Oluştur',
       icon: <Assessment />,
       color: 'secondary' as const,
-      onClick: () => onCreateExam ? onCreateExam() : navigate('/teacher/exams')
+      onClick: () => onCreateExam ? onCreateExam() : navigate('/teacher/exams'),
     },
     {
       label: 'Raporları Gör',
       icon: <BarChart />,
       color: 'info' as const,
-      onClick: () => onViewReports ? onViewReports() : navigate('/teacher/reports')
+      onClick: () => onViewReports ? onViewReports() : navigate('/teacher/reports'),
     },
     {
       label: 'İçerik Yönet',
       icon: <Assignment />,
       color: 'success' as const,
-      onClick: () => onManageContent ? onManageContent() : navigate('/teacher/content')
-    }
-  ]
+      onClick: () => onManageContent ? onManageContent() : navigate('/teacher/content'),
+    },
+  ];
 
   return (
     <Card>
@@ -197,8 +191,8 @@ export const TeacherQuickActions: React.FC<TeacherQuickActionsProps> = ({
         </Grid>
       </CardContent>
     </Card>
-  )
-}
+  );
+};
 
 interface StudentPerformanceTableProps {
   students: Array<{
@@ -213,13 +207,13 @@ interface StudentPerformanceTableProps {
 
 export const StudentPerformanceTable: React.FC<StudentPerformanceTableProps> = ({
   students,
-  onViewStudent
+  onViewStudent,
 }) => {
   const getPerformanceColor = (score: number): 'success' | 'warning' | 'error' => {
-    if (score >= 80) return 'success'
-    if (score >= 60) return 'warning'
-    return 'error'
-  }
+    if (score >= 80) {return 'success';}
+    if (score >= 60) {return 'warning';}
+    return 'error';
+  };
 
   return (
     <Card>
@@ -280,8 +274,8 @@ export const StudentPerformanceTable: React.FC<StudentPerformanceTableProps> = (
         </TableContainer>
       </CardContent>
     </Card>
-  )
-}
+  );
+};
 
 interface TeacherStatsProps {
   stats: {
@@ -298,27 +292,27 @@ export const TeacherStats: React.FC<TeacherStatsProps> = ({ stats }) => {
       label: 'Toplam Öğrenci',
       value: stats.toplam_ogrenci.toString(),
       icon: <People />,
-      color: 'primary'
+      color: 'primary',
     },
     {
       label: 'Aktif Öğrenci',
       value: stats.aktif_ogrenci.toString(),
       icon: <People />,
-      color: 'success'
+      color: 'success',
     },
     {
       label: 'Ortalama Başarı',
       value: `${stats.ortalama_basari.toFixed(1)}%`,
       icon: <Assessment />,
-      color: 'warning'
+      color: 'warning',
     },
     {
       label: 'Gelişim Trendi',
       value: `+${stats.gelisme_trendi.toFixed(1)}%`,
       icon: <TrendingUp />,
-      color: 'info'
-    }
-  ]
+      color: 'info',
+    },
+  ];
 
   return (
     <Grid container spacing={2}>
@@ -340,12 +334,12 @@ export const TeacherStats: React.FC<TeacherStatsProps> = ({ stats }) => {
         </Grid>
       ))}
     </Grid>
-  )
-}
+  );
+};
 
 export default {
   TeacherClassCard,
   TeacherQuickActions,
   StudentPerformanceTable,
-  TeacherStats
-}
+  TeacherStats,
+};

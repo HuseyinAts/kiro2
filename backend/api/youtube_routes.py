@@ -15,40 +15,76 @@ from fastapi import (
     HTTPException,
     Request,
     Response as FastAPIResponse,
+    status,
 )
 from pydantic import BaseModel, Field, field_validator
-from slowapi import Limiter
-from slowapi.util import get_remote_address
 
-from services.advanced_youtube_search import (
-    AdvancedYouTubeSearch,
-    get_advanced_youtube_search,
-)
-from services.real_youtube_api import RealYouTubeAPI, get_real_youtube_api
-from services.semantic_youtube_search import (
-    SemanticYouTubeSearch,
-    get_semantic_youtube_search,
-)
-from services.youtube_discovery import (
-    DifficultyLevel,
-    ExamType,
-    SubjectType,
-    YouTubeDiscovery,
-    get_youtube_discovery,
-)
-from services.health_check_service import (
-    HealthCheckService,
-    get_health_check_service,
-)
-from services.video_recommendation_service import (
-    VideoRecommendationService,
-    get_video_recommendation_service,
-)
-from services.youtube_rate_limiter import (
-    get_youtube_rate_limiter,
-    YouTubeRateLimiter,
-)
-from core.metrics_collector import get_metrics_collector, MetricSnapshot
+try:
+    from services.advanced_youtube_search import (
+        AdvancedYouTubeSearch,
+        get_advanced_youtube_search,
+    )
+except (ImportError, TypeError):
+    AdvancedYouTubeSearch = None
+    get_advanced_youtube_search = None
+
+try:
+    from services.real_youtube_api import RealYouTubeAPI, get_real_youtube_api
+except (ImportError, TypeError):
+    RealYouTubeAPI = None
+    get_real_youtube_api = None
+
+try:
+    from services.semantic_youtube_search import (
+        SemanticYouTubeSearch,
+        get_semantic_youtube_search,
+    )
+except (ImportError, TypeError):
+    SemanticYouTubeSearch = None
+    get_semantic_youtube_search = None
+
+try:
+    from services.youtube_discovery import (
+        DifficultyLevel,
+        ExamType,
+        SubjectType,
+        YouTubeDiscovery,
+        get_youtube_discovery,
+    )
+except (ImportError, TypeError):
+    DifficultyLevel = None
+    ExamType = None
+    SubjectType = None
+    YouTubeDiscovery = None
+    get_youtube_discovery = None
+
+try:
+    from services.health_check_service import (
+        HealthCheckService,
+        get_health_check_service,
+    )
+except (ImportError, TypeError):
+    HealthCheckService = None
+    get_health_check_service = None
+
+try:
+    from services.video_recommendation_service import (
+        VideoRecommendationService,
+        get_video_recommendation_service,
+    )
+except (ImportError, TypeError):
+    VideoRecommendationService = None
+    get_video_recommendation_service = None
+
+try:
+    from services.youtube_rate_limiter import (
+        get_youtube_rate_limiter,
+        YouTubeRateLimiter,
+    )
+except (ImportError, TypeError):
+    get_youtube_rate_limiter = None
+    YouTubeRateLimiter = None
+from core.metrics_collector import get_metrics_collector
 from core.ddos_protection import limiter  # Task 12: Use global limiter
 from slowapi.errors import RateLimitExceeded
 
@@ -98,11 +134,6 @@ async def youtube_rate_limit_exceeded_handler(request: Request, exc: RateLimitEx
 
 
 # Import validated models (Task 23: Security Hardening)
-from core.input_validation import (
-    ValidatedVideoSearchRequest,
-    ValidatedStudentProfileRequest,
-    SecurityValidator,
-)
 
 
 # Pydantic modelleri
@@ -198,10 +229,8 @@ class VideoResponse(BaseModel):
             raise ValueError("Bu alan boş olamaz")
         return v.strip()
 
-    class Config:
-        """Pydantic configuration"""
-
-        schema_extra = {
+    model_config = {
+        "json_schema_extra": {
             "example": {
                 "video_id": "dQw4w9WgXcQ",
                 "title": "Matematik - Üçgenler Konu Anlatımı",
@@ -221,6 +250,7 @@ class VideoResponse(BaseModel):
                 "difficulty_match": 0.95,
             }
         }
+    }
 
 
 class RecommendationResponse(BaseModel):
@@ -261,10 +291,8 @@ class RecommendationResponse(BaseModel):
             logger.warning(f"Yanıt süresi çok yüksek: {v}ms")
         return v
 
-    class Config:
-        """Pydantic configuration"""
-
-        schema_extra = {
+    model_config = {
+        "json_schema_extra": {
             "example": {
                 "subject_exam": "Matematik TYT",
                 "videos": [
@@ -292,6 +320,7 @@ class RecommendationResponse(BaseModel):
                 "response_time_ms": 87,
             }
         }
+    }
 
 
 class SearchStatsResponse(BaseModel):

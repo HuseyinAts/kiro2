@@ -6,8 +6,7 @@ Input validation utilities for learning path agent
 """
 
 import re
-from typing import Dict, Any, List, Optional
-from datetime import datetime
+from typing import Dict, Any, Optional
 
 from ..models import LearningStyle, KnowledgeLevel
 

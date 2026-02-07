@@ -2,7 +2,8 @@
  * Task 92.3: Streak Tracker Component
  * Ardışık doğru cevap takibi ve gösterimi
  */
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
+import type { FC } from 'react';
 import './StreakTracker.css';
 
 interface StreakTrackerProps {
@@ -15,7 +16,7 @@ interface StreakTrackerProps {
 
 const STREAK_MILESTONES = [3, 5, 10, 15, 20, 30, 50, 100];
 
-const STREAK_MESSAGES = {
+const STREAK_MESSAGES: Record<number, string> = {
   3: 'Harika başlangıç! 🔥',
   5: 'Devam et! ⚡',
   10: 'Süpersin! 🌟',
@@ -23,15 +24,15 @@ const STREAK_MESSAGES = {
   20: 'Durdurulamazsın! 🚀',
   30: 'Efsane! 👑',
   50: 'Müthiş! 🏆',
-  100: 'Rekor kırdın! 🎊'
+  100: 'Rekor kırdın! 🎊',
 };
 
-export const StreakTracker: React.FC<StreakTrackerProps> = ({
+export const StreakTracker: FC<StreakTrackerProps> = ({
   currentStreak,
   bestStreak = 0,
   onStreakUpdate,
   showFireAnimation = true,
-  position = 'top-right'
+  position = 'top-right',
 }) => {
   const [previousStreak, setPreviousStreak] = useState(currentStreak);
   const [showMilestone, setShowMilestone] = useState(false);
@@ -42,7 +43,7 @@ export const StreakTracker: React.FC<StreakTrackerProps> = ({
     if (currentStreak !== previousStreak) {
       // Check if milestone reached
       const milestone = STREAK_MILESTONES.find(m =>
-        currentStreak >= m && previousStreak < m
+        currentStreak >= m && previousStreak < m,
       );
 
       if (milestone) {
@@ -77,7 +78,7 @@ export const StreakTracker: React.FC<StreakTrackerProps> = ({
                   className="flame"
                   style={{
                     left: `${(i * 10) - flames * 5}%`,
-                    animationDelay: `${i * 0.1}s`
+                    animationDelay: `${i * 0.1}s`,
                   }}
                 />
               ))}
@@ -136,7 +137,7 @@ export const StreakTracker: React.FC<StreakTrackerProps> = ({
                 className="firework"
                 style={{
                   left: `${20 + i * 15}%`,
-                  animationDelay: `${i * 0.2}s`
+                  animationDelay: `${i * 0.2}s`,
                 }}
               >
                 ✨

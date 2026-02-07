@@ -1,0 +1,56 @@
+{
+  "language": {
+    "name": "English"
+  },
+  "common": {
+    "welcome": "Welcome",
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "search": "Search"
+  },
+  "exam": {
+    "type": {
+      "tyt": "Basic Proficiency Test",
+      "ayt": "Field Proficiency Test",
+      "ydt": "Foreign Language Test"
+    },
+    "difficulty": {
+      "easy": "Easy",
+      "medium": "Medium",
+      "hard": "Hard",
+      "very_hard": "Very Hard"
+    }
+  },
+  "question": {
+    "count": {
+      "zero": "No questions",
+      "one": "{count} question",
+      "other": "{count} questions"
+    },
+    "quality": "Quality Score",
+    "difficulty": "Difficulty"
+  },
+  "subject": {
+    "matematik": "Mathematics",
+    "fizik": "Physics",
+    "kimya": "Chemistry",
+    "biyoloji": "Biology",
+    "turkce": "Turkish",
+    "tarih": "History",
+    "cografya": "Geography",
+    "english": "English",
+    "german": "German"
+  },
+  "batch": {
+    "generation": {
+      "started": "Batch generation started",
+      "completed": "Batch generation completed",
+      "failed": "Batch generation failed"
+    }
+  }
+}

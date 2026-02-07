@@ -37,8 +37,8 @@ class CreateExamRequest(BaseModel):
         None, description="Özel sınav konfigürasyonları"
     )
 
-    class Config:
-        schema_extra = {
+    model_config = {
+        "json_schema_extra": {
             "example": {
                 "exam_type": "TYT",
                 "custom_config": {
@@ -52,6 +52,7 @@ class CreateExamRequest(BaseModel):
                 },
             }
         }
+    }
 
 
 class SaveAnswerRequest(BaseModel):
@@ -65,14 +66,15 @@ class SaveAnswerRequest(BaseModel):
         None, description="Cevaplama süresi (saniye)"
     )
 
-    class Config:
-        schema_extra = {
+    model_config = {
+        "json_schema_extra": {
             "example": {
                 "question_id": "550e8400-e29b-41d4-a716-446655440000",
                 "selected_answer": "A",
                 "response_time": 45.5,
             }
         }
+    }
 
 
 class FlagQuestionRequest(BaseModel):
@@ -81,13 +83,14 @@ class FlagQuestionRequest(BaseModel):
     question_id: str = Field(..., description="Soru ID")
     flagged: bool = Field(..., description="İşaretli durumu")
 
-    class Config:
-        schema_extra = {
+    model_config = {
+        "json_schema_extra": {
             "example": {
                 "question_id": "550e8400-e29b-41d4-a716-446655440000",
                 "flagged": True,
             }
         }
+    }
 
 
 class NavigateQuestionRequest(BaseModel):
@@ -95,8 +98,9 @@ class NavigateQuestionRequest(BaseModel):
 
     question_index: int = Field(..., description="Hedef soru indeksi (0-based)", ge=0)
 
-    class Config:
-        schema_extra = {"example": {"question_index": 15}}
+    model_config = {
+        "json_schema_extra": {"example": {"question_index": 15}}
+    }
 
 
 class ExamSessionResponse(BaseModel):
@@ -112,8 +116,8 @@ class ExamSessionResponse(BaseModel):
     started_at: Optional[datetime]
     completed_at: Optional[datetime]
 
-    class Config:
-        schema_extra = {
+    model_config = {
+        "json_schema_extra": {
             "example": {
                 "session_id": "550e8400-e29b-41d4-a716-446655440000",
                 "student_id": "student123",
@@ -126,6 +130,7 @@ class ExamSessionResponse(BaseModel):
                 "completed_at": None,
             }
         }
+    }
 
 
 class QuestionResponse(BaseModel):
@@ -144,8 +149,8 @@ class QuestionResponse(BaseModel):
     difficulty: str
     question_order: int
 
-    class Config:
-        schema_extra = {
+    model_config = {
+        "json_schema_extra": {
             "example": {
                 "id": "550e8400-e29b-41d4-a716-446655440000",
                 "question_text": "Aşağıdakilerden hangisi...",
@@ -161,6 +166,7 @@ class QuestionResponse(BaseModel):
                 "question_order": 16,
             }
         }
+    }
 
 
 class PerformanceResponse(BaseModel):
@@ -177,8 +183,8 @@ class PerformanceResponse(BaseModel):
     estimated_ability: float
     confidence_level: float
 
-    class Config:
-        schema_extra = {
+    model_config = {
+        "json_schema_extra": {
             "example": {
                 "total_questions": 120,
                 "answered_questions": 115,
@@ -192,6 +198,7 @@ class PerformanceResponse(BaseModel):
                 "confidence_level": 0.95,
             }
         }
+    }
 
 
 class SubjectPerformanceResponse(BaseModel):
@@ -206,8 +213,8 @@ class SubjectPerformanceResponse(BaseModel):
     average_response_time: float
     difficulty_level: float
 
-    class Config:
-        schema_extra = {
+    model_config = {
+        "json_schema_extra": {
             "example": {
                 "subject": "MATEMATIK",
                 "total_questions": 40,
@@ -219,6 +226,7 @@ class SubjectPerformanceResponse(BaseModel):
                 "difficulty_level": 0.8,
             }
         }
+    }
 
 
 @router.post(
@@ -226,7 +234,7 @@ class SubjectPerformanceResponse(BaseModel):
 )
 async def create_exam(
     request: CreateExamRequest, current_user: Dict[str, Any] = Depends(get_current_user)
-):
+) -> ExamSessionResponse:
     """
     Yeni ÖSYM formatında sınav oturumu oluştur
 
@@ -254,7 +262,7 @@ async def create_exam(
             )
 
         logger.info(
-            f"ÖSYM sınavı oluşturuldu",
+            "ÖSYM sınavı oluşturuldu",
             extra_data={
                 "session_id": session_id,
                 "student_id": current_user["user_id"],
@@ -304,7 +312,7 @@ async def create_exam(
 )
 async def start_exam(
     session_id: str, current_user: Dict[str, Any] = Depends(get_current_user)
-):
+) -> ExamSessionResponse:
     """
     ÖSYM sınavını başlat ve zaman sayacını çalıştır
 
@@ -331,7 +339,7 @@ async def start_exam(
         updated_session = await osym_exam_engine.start_exam(session_id)
 
         logger.info(
-            f"ÖSYM sınavı başlatıldı",
+            "ÖSYM sınavı başlatıldı",
             extra_data={
                 "session_id": session_id,
                 "student_id": current_user["user_id"],
@@ -381,7 +389,7 @@ async def start_exam(
 )
 async def get_current_question(
     session_id: str, current_user: Dict[str, Any] = Depends(get_current_user)
-):
+) -> QuestionResponse:
     """
     Sınavdaki mevcut soruyu getir
 
@@ -448,7 +456,7 @@ async def save_answer(
     session_id: str,
     request: SaveAnswerRequest,
     current_user: Dict[str, Any] = Depends(get_current_user),
-):
+) -> Dict[str, Any]:
     """
     Soru cevabını kaydet (otomatik kaydetme ile)
 
@@ -485,7 +493,7 @@ async def save_answer(
             )
 
         logger.debug(
-            f"Cevap kaydedildi",
+            "Cevap kaydedildi",
             extra_data={
                 "session_id": session_id,
                 "question_id": request.question_id,
@@ -519,7 +527,7 @@ async def navigate_to_question(
     session_id: str,
     request: NavigateQuestionRequest,
     current_user: Dict[str, Any] = Depends(get_current_user),
-):
+) -> QuestionResponse:
     """
     Belirli bir soruya git (soru navigasyonu)
 
@@ -589,7 +597,7 @@ async def flag_question(
     session_id: str,
     request: FlagQuestionRequest,
     current_user: Dict[str, Any] = Depends(get_current_user),
-):
+) -> Dict[str, Any]:
     """
     Soruyu işaretle veya işareti kaldır
 
@@ -647,7 +655,7 @@ async def flag_question(
 @router.get("/{session_id}/remaining-time", summary="Kalan Süre")
 async def get_remaining_time(
     session_id: str, current_user: Dict[str, Any] = Depends(get_current_user)
-):
+) -> Dict[str, Any]:
     """
     Sınavın kalan süresini getir
 
@@ -721,7 +729,7 @@ async def get_remaining_time(
 )
 async def complete_exam(
     session_id: str, current_user: Dict[str, Any] = Depends(get_current_user)
-):
+) -> PerformanceResponse:
     """
     Sınavı manuel olarak tamamla ve performans analizi yap
 
@@ -751,7 +759,7 @@ async def complete_exam(
         )
 
         logger.info(
-            f"ÖSYM sınavı tamamlandı",
+            "ÖSYM sınavı tamamlandı",
             extra_data={
                 "session_id": session_id,
                 "student_id": current_user["user_id"],
@@ -796,7 +804,7 @@ async def complete_exam(
 )
 async def get_session_info(
     session_id: str, current_user: Dict[str, Any] = Depends(get_current_user)
-):
+) -> ExamSessionResponse:
     """
     Sınav oturum bilgilerini getir
 
@@ -849,7 +857,7 @@ async def get_session_info(
 )
 async def get_performance_analysis(
     session_id: str, current_user: Dict[str, Any] = Depends(get_current_user)
-):
+) -> PerformanceResponse:
     """
     Sınav performans analizini getir (tamamlanmış sınavlar için)
 
@@ -913,7 +921,7 @@ async def get_performance_analysis(
 )
 async def get_subject_performance(
     session_id: str, current_user: Dict[str, Any] = Depends(get_current_user)
-):
+) -> List[SubjectPerformanceResponse]:
     """
     Konu bazlı performans analizini getir
 
@@ -974,7 +982,7 @@ async def get_my_exams(
     current_user: Dict[str, Any] = Depends(get_current_user),
     limit: int = 20,
     offset: int = 0,
-):
+) -> List[ExamSessionResponse]:
     """
     Kullanıcının tüm sınavlarını listele
 
@@ -1021,7 +1029,7 @@ async def get_my_exams(
 
 
 @router.get("/exam-configs", summary="Sınav Konfigürasyonları")
-async def get_exam_configs():
+async def get_exam_configs() -> Dict[str, Any]:
     """
     ÖSYM sınav konfigürasyonlarını getir
 
@@ -1059,7 +1067,7 @@ async def get_exam_configs():
 @router.delete("/{session_id}", summary="Sınavı İptal Et")
 async def cancel_exam(
     session_id: str, current_user: Dict[str, Any] = Depends(get_current_user)
-):
+) -> Dict[str, Any]:
     """
     Sınavı iptal et (sadece başlatılmamış sınavlar için)
 
@@ -1098,7 +1106,7 @@ async def cancel_exam(
             del osym_exam_engine.auto_save_tasks[session_id]
 
         logger.info(
-            f"ÖSYM sınavı iptal edildi",
+            "ÖSYM sınavı iptal edildi",
             extra_data={
                 "session_id": session_id,
                 "student_id": current_user["user_id"],
@@ -1132,8 +1140,8 @@ class UnansweredQuestionsResponse(BaseModel):
     unanswered_count: int
     total_questions: int
 
-    class Config:
-        schema_extra = {
+    model_config = {
+        "json_schema_extra": {
             "example": {
                 "session_id": "550e8400-e29b-41d4-a716-446655440000",
                 "unanswered_question_ids": ["q1", "q5", "q12", "q45", "q78"],
@@ -1141,6 +1149,7 @@ class UnansweredQuestionsResponse(BaseModel):
                 "total_questions": 120,
             }
         }
+    }
 
 
 class CompletionStatsResponse(BaseModel):
@@ -1152,8 +1161,8 @@ class CompletionStatsResponse(BaseModel):
     unanswered_questions: int
     completion_percentage: float
 
-    class Config:
-        schema_extra = {
+    model_config = {
+        "json_schema_extra": {
             "example": {
                 "session_id": "550e8400-e29b-41d4-a716-446655440000",
                 "total_questions": 120,
@@ -1162,6 +1171,7 @@ class CompletionStatsResponse(BaseModel):
                 "completion_percentage": 95.83,
             }
         }
+    }
 
 
 @router.get(
@@ -1171,7 +1181,7 @@ class CompletionStatsResponse(BaseModel):
 )
 async def get_unanswered_questions(
     session_id: str, current_user: Dict[str, Any] = Depends(get_current_user)
-):
+) -> UnansweredQuestionsResponse:
     """
     Cevaplanmamış soruların listesini getir - REQ-1.6
 
@@ -1200,7 +1210,7 @@ async def get_unanswered_questions(
         unanswered_ids = await osym_exam_engine.get_unanswered_questions(session_id)
 
         logger.debug(
-            f"Cevaplanmamış sorular getirildi",
+            "Cevaplanmamış sorular getirildi",
             extra_data={
                 "session_id": session_id,
                 "unanswered_count": len(unanswered_ids),
@@ -1235,7 +1245,7 @@ async def get_unanswered_questions(
 )
 async def get_completion_stats(
     session_id: str, current_user: Dict[str, Any] = Depends(get_current_user)
-):
+) -> CompletionStatsResponse:
     """
     Sınav tamamlanma istatistiklerini getir - REQ-1.6
 
@@ -1265,7 +1275,7 @@ async def get_completion_stats(
         stats = await osym_exam_engine.get_answer_statistics(session_id)
 
         logger.debug(
-            f"Tamamlanma istatistikleri getirildi",
+            "Tamamlanma istatistikleri getirildi",
             extra_data={
                 "session_id": session_id,
                 "completion_percentage": stats["completion_percentage"],

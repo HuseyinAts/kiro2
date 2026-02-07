@@ -13,14 +13,13 @@ Bu modül adaptif test sistemine gerçek zamanlı adaptasyon özellikleri ekler:
 import logging
 import time
 from dataclasses import dataclass, field
-from datetime import datetime, timedelta
+from datetime import datetime
 from typing import Dict, List, Optional, Tuple
 import numpy as np
 from scipy.stats import norm
 
 from services.adaptive_test_engine import (
     AdaptiveTestEngine,
-    StudentKnowledgeState,
     TestSession,
     IRTParameters,
 )

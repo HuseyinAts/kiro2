@@ -3,11 +3,12 @@
  * Glassmorphism ile kişiselleştirilmiş öğrenme yolu
  */
 
-import React from 'react'
-import { ModernLearningPathPage } from './ModernLearningPathPage'
+import * as React from 'react';
+
+import { ModernLearningPathPage } from './ModernLearningPathPage';
 
 export const LearningPathPage: React.FC = () => {
-  return <ModernLearningPathPage />
-}
+  return <ModernLearningPathPage />;
+};
 
-export default LearningPathPage
+export default LearningPathPage;

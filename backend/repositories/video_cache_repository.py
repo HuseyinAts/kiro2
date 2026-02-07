@@ -4,11 +4,11 @@ High-performance repository for video cache operations with prepared statements
 """
 
 import logging
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import List, Optional, Dict, Any
 from uuid import UUID
 
-from sqlalchemy import select, update, delete, func, and_, or_, text
+from sqlalchemy import select, delete, func, and_, text
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.exc import SQLAlchemyError
 
@@ -237,7 +237,7 @@ class OptimizedVideoRepository(BaseRepository[VideoCache]):
         Uses idx_video_last_updated index
         """
         try:
-            cutoff_time = datetime.utcnow() - timedelta(hours=hours)
+            cutoff_time = datetime.now(timezone.utc) - timedelta(hours=hours)
 
             query = (
                 select(VideoCache)

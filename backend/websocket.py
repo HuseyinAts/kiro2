@@ -4,10 +4,13 @@ Real-time chat and exam functionality
 """
 import asyncio
 import json
+import logging
 from datetime import datetime
 from typing import Dict, List
 
-from fastapi import WebSocket
+from fastapi import WebSocket, WebSocketDisconnect
+
+logger = logging.getLogger(__name__)
 
 
 class ConnectionManager:
@@ -55,16 +58,18 @@ class ConnectionManager:
         """Send message to specific client"""
         try:
             await websocket.send_text(message)
-        except:
+        except (WebSocketDisconnect, ConnectionError, RuntimeError) as e:
             # Connection might be closed
+            logger.debug(f"WebSocket send failed: {e}")
             pass
 
     async def send_json_message(self, data: dict, websocket: WebSocket):
         """Send JSON message to specific client"""
         try:
             await websocket.send_text(json.dumps(data))
-        except:
+        except (WebSocketDisconnect, ConnectionError, RuntimeError) as e:
             # Connection might be closed
+            logger.debug(f"WebSocket JSON send failed: {e}")
             pass
 
     async def broadcast_to_exam(self, sinav_id: str, data: dict):
@@ -76,7 +81,7 @@ class ConnectionManager:
             for websocket in self.exam_connections[sinav_id]:
                 try:
                     await websocket.send_text(message)
-                except:
+                except (WebSocketDisconnect, ConnectionError, RuntimeError):
                     disconnected.append(websocket)
 
             # Remove disconnected websockets
@@ -90,7 +95,7 @@ class ConnectionManager:
         for connection in self.active_connections:
             try:
                 await connection.send_text(message)
-            except:
+            except (WebSocketDisconnect, ConnectionError, RuntimeError):
                 disconnected.append(connection)
 
         # Remove disconnected connections

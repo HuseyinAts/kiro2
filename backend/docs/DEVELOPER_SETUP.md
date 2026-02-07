@@ -274,6 +274,10 @@ uvicorn main:app --workers 4 --port 8000
 uvicorn main:app --reload --log-level debug --port 8000
 ```
 
+**Not (Entrypoint):**
+- Aktif çalışma yolu `backend/main.py` -> `backend/core/application.py` -> `backend/routers/loader.py`.
+- `backend/main_old.py` legacy yol olarak durur; default çalışma hattında kullanılmaz.
+
 **Beklenen Output:**
 ```
 INFO:     Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
@@ -293,6 +297,16 @@ curl http://localhost:8000/api/youtube/health
 
 # OpenAPI docs
 open http://localhost:8000/docs
+```
+
+### 4.1 Veri Seed (Opsiyonel ama Önerilir)
+
+Repo içindeki SQLite snapshot’ları demo amaçlıdır. Gerçekçi veri için seed çalıştırın:
+
+```bash
+python backend/scripts/manage_db.py seed dev
+# veya
+python backend/scripts/manage_db.py seed prod
 ```
 
 ### 5. Frontend'i Başlatma

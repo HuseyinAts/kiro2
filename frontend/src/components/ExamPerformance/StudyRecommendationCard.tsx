@@ -1,7 +1,7 @@
 /**
  * Çalışma Önerisi Kartı Bileşeni
  * Türkiye Üniversite Sınavları Hazırlık Platformu
- * 
+ *
  * Bu bileşen tek bir çalışma önerisini görselleştirir:
  * - Öncelik seviyesi ve renk kodlaması
  * - Önerilen çalışma süresi ve soru sayısı
@@ -9,7 +9,23 @@
  * - Zorluk odağı
  */
 
-import React, { useState } from 'react';
+import {
+  Clock,
+  Target,
+  BookOpen,
+  ExternalLink,
+  ChevronDown,
+  ChevronUp,
+  Play,
+  FileText,
+  HelpCircle,
+  BarChart3,
+} from 'lucide-react';
+import * as React from 'react';
+import {  useState  } from 'react';
+
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import {
   Card,
   CardContent,
@@ -17,21 +33,6 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { 
-  Clock, 
-  Target, 
-  BookOpen, 
-  ExternalLink, 
-  ChevronDown, 
-  ChevronUp,
-  Play,
-  FileText,
-  HelpCircle,
-  BarChart3
-} from 'lucide-react';
-
 import {
   StudyRecommendation,
   examPerformanceService,
@@ -117,8 +118,8 @@ const StudyRecommendationCard: React.FC<StudyRecommendationCardProps> = ({
     }
   };
 
-  const visibleResources = showAllResources 
-    ? recommendation.recommended_resources 
+  const visibleResources = showAllResources
+    ? recommendation.recommended_resources
     : recommendation.recommended_resources.slice(0, 2);
 
   return (
@@ -131,10 +132,10 @@ const StudyRecommendationCard: React.FC<StudyRecommendationCardProps> = ({
             </span>
             <CardTitle className="text-lg">{recommendation.topic}</CardTitle>
           </div>
-          <Badge 
-            style={{ 
+          <Badge
+            style={{
               backgroundColor: examPerformanceService.getPriorityColor(recommendation.priority),
-              color: 'white'
+              color: 'white',
             }}
           >
             {examPerformanceService.getPriorityLabel(recommendation.priority)} Öncelik
@@ -155,7 +156,7 @@ const StudyRecommendationCard: React.FC<StudyRecommendationCardProps> = ({
               {recommendation.recommended_study_hours} saat
             </p>
           </div>
-          
+
           <div className="text-center p-3 bg-green-50 rounded-lg">
             <Target className="h-5 w-5 mx-auto mb-2 text-green-600" />
             <p className="text-xs text-muted-foreground">Soru Sayısı</p>
@@ -163,7 +164,7 @@ const StudyRecommendationCard: React.FC<StudyRecommendationCardProps> = ({
               {recommendation.practice_question_count}
             </p>
           </div>
-          
+
           <div className="text-center p-3 bg-orange-50 rounded-lg">
             <BarChart3 className="h-5 w-5 mx-auto mb-2 text-orange-600" />
             <p className="text-xs text-muted-foreground">Zorluk Odağı</p>
@@ -248,9 +249,9 @@ const StudyRecommendationCard: React.FC<StudyRecommendationCardProps> = ({
                     </div>
                   </div>
                   <Button variant="outline" size="sm" asChild>
-                    <a 
-                      href={resource.url} 
-                      target="_blank" 
+                    <a
+                      href={resource.url}
+                      target="_blank"
                       rel="noopener noreferrer"
                       className="flex items-center gap-1"
                     >
@@ -267,11 +268,11 @@ const StudyRecommendationCard: React.FC<StudyRecommendationCardProps> = ({
         {/* Aksiyon Butonu */}
         {onStartStudy && (
           <div className="pt-4 border-t">
-            <Button 
+            <Button
               onClick={onStartStudy}
               className="w-full"
-              style={{ 
-                backgroundColor: examPerformanceService.getPriorityColor(recommendation.priority)
+              style={{
+                backgroundColor: examPerformanceService.getPriorityColor(recommendation.priority),
               }}
             >
               <Play className="h-4 w-4 mr-2" />

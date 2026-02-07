@@ -3,14 +3,15 @@
  * Task 91: Gamification - Points & History Testing
  */
 
-import React from 'react';
+import * as React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { PointsDisplay } from '../PointsDisplay';
 import * as useGamificationHook from '../../../hooks/useGamification';
+import { vi, Mocked } from 'vitest';
 
 vi.mock('../../../hooks/useGamification');
-const mockedUseGamification = useGamificationHook as jest.Mocked<typeof useGamificationHook>;
+const mockedUseGamification = useGamificationHook as Mocked<typeof useGamificationHook>;
 
 const mockHistory = [
   {

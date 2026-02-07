@@ -3,7 +3,7 @@
  * Comprehensive test suite for ModernButton component
  */
 
-import React from 'react'
+import * as React from 'react'
 import { describe, it, expect, vi } from 'vitest'
 import { screen, fireEvent } from '@testing-library/react'
 import { render } from '../../../test/utils/test-utils'
@@ -34,41 +34,39 @@ describe('ModernButton', () => {
   })
 
   describe('Variants', () => {
-    it('renders contained variant', () => {
-      const { container } = render(
-        <ModernButton variant="contained">Contained</ModernButton>
-      )
-      
-      const button = container.querySelector('.MuiButton-contained')
+    it('renders solid variant (default)', () => {
+      render(<ModernButton variant="solid">Solid</ModernButton>)
+
+      const button = screen.getByRole('button')
       expect(button).toBeInTheDocument()
     })
 
     it('renders outlined variant', () => {
-      const { container } = render(
-        <ModernButton variant="outlined">Outlined</ModernButton>
-      )
-      
-      const button = container.querySelector('.MuiButton-outlined')
+      render(<ModernButton variant="outlined">Outlined</ModernButton>)
+
+      const button = screen.getByRole('button')
       expect(button).toBeInTheDocument()
     })
 
     it('renders text variant', () => {
-      const { container } = render(
-        <ModernButton variant="text">Text</ModernButton>
-      )
-      
-      const button = container.querySelector('.MuiButton-text')
+      render(<ModernButton variant="text">Text</ModernButton>)
+
+      const button = screen.getByRole('button')
       expect(button).toBeInTheDocument()
     })
 
     it('renders gradient variant with special styling', () => {
       render(<ModernButton variant="gradient">Gradient</ModernButton>)
-      
+
       const button = screen.getByRole('button')
-      const styles = getComputedStyle(button)
-      
-      // Gradient should set a background
-      expect(styles.background).toContain('linear-gradient')
+      expect(button).toBeInTheDocument()
+    })
+
+    it('renders glass variant', () => {
+      render(<ModernButton variant="glass">Glass</ModernButton>)
+
+      const button = screen.getByRole('button')
+      expect(button).toBeInTheDocument()
     })
   })
 

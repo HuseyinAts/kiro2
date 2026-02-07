@@ -264,7 +264,7 @@ class ProgressiveCoverageStrategy:
         # Effort tahminini hesapla
         effort = self.estimate_effort(plan)
 
-        print(f"\nEFFORT ESTIMATION:")
+        print("\nEFFORT ESTIMATION:")
         print(f"   Files to Test: {effort['files_to_test']}")
         print(f"   Lines to Cover: {effort['total_lines_to_cover']:,}")
         print(f"   Test Lines Needed: {effort['estimated_test_lines']:,}")
@@ -281,7 +281,7 @@ class ProgressiveCoverageStrategy:
         print(f"\nImplementation guide created: {guide_path}")
 
         # Öncelikli dosyaları göster
-        print(f"\nTOP PRIORITY FILES:")
+        print("\nTOP PRIORITY FILES:")
         print("-" * 50)
         print("File".ljust(35) + "Coverage".ljust(12) + "Lines".ljust(8) + "Missing")
         print("-" * 65)
@@ -295,7 +295,7 @@ class ProgressiveCoverageStrategy:
             )
 
         # Next steps
-        print(f"\nNEXT STEPS:")
+        print("\nNEXT STEPS:")
         print("1. Focus on top priority files")
         print("2. Create functional tests that import real modules")
         print("3. Use mocking for external dependencies")

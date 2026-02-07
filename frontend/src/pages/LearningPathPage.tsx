@@ -1,4 +1,9 @@
-import { useState, useEffect, useRef } from 'react';
+import {
+  Timeline,
+  VideoLibrary,
+  Assessment,
+  Refresh,
+} from '@mui/icons-material';
 import {
   Container,
   Typography,
@@ -9,26 +14,22 @@ import {
   Button,
   CircularProgress,
   Alert,
-  Divider
+  Divider,
 } from '@mui/material';
-import {
-  Timeline,
-  VideoLibrary,
-  Assessment,
-  Refresh
-} from '@mui/icons-material';
-import { PathNodeData } from '../components/LearningPath/PathNode';
-import learningPathService from '../services/learningPathService';
+import { useState, useEffect, useRef } from 'react';
+
 import { searchLearningResources, detectLearningStyle, VideoResponse } from '../api';
+import { PathHeader } from '../components/LearningPath/PathHeader';
+import { PathNodeData } from '../components/LearningPath/PathNode';
+import { PathProgressTab } from '../components/LearningPath/PathProgressTab';
+import { PathVideoResourcesTab } from '../components/LearningPath/PathVideoResourcesTab';
+import { PathVisualizationTab } from '../components/LearningPath/PathVisualizationTab';
+import learningPathService from '../services/learningPathService';
+import { VideoErrorHandler } from '../services/VideoErrorHandler';
 import { VideoLoadingManager, VideoLoadingState } from '../services/VideoLoadingManager';
 import { difficultyToTurkish } from '../utils/difficultyTranslation';
-import { VideoErrorHandler } from '../services/VideoErrorHandler';
 
 // Import new sub-components
-import { PathHeader } from '../components/LearningPath/PathHeader';
-import { PathVisualizationTab } from '../components/LearningPath/PathVisualizationTab';
-import { PathVideoResourcesTab } from '../components/LearningPath/PathVideoResourcesTab';
-import { PathProgressTab } from '../components/LearningPath/PathProgressTab';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -70,7 +71,7 @@ export function LearningPathPage() {
   const [videos, setVideos] = useState<VideoResponse[]>([]);
   const [videosLoading, setVideosLoading] = useState(false);
   const [videosError, setVideosError] = useState<string | null>(null);
-  const [retryCount, setRetryCount] = useState(0);
+  const [_retryCount, setRetryCount] = useState(0);
 
   // VideoLoadingManager state
   const [videoLoadingState, setVideoLoadingState] = useState<VideoLoadingState>({
@@ -82,7 +83,7 @@ export function LearningPathPage() {
     requestId: '',
     loadingTime: 0,
     cacheHit: false,
-    errorMessage: null,
+    errorMessage: undefined,
   });
 
   // Refs
@@ -92,14 +93,20 @@ export function LearningPathPage() {
   // Subjects being loaded
   const [loadingSubjects, setLoadingSubjects] = useState<string[]>([]);
 
+  // Track if VideoLoadingManager is initialized
+  const [isVideoManagerReady, setIsVideoManagerReady] = useState(false);
+
   // Initialize VideoLoadingManager and VideoErrorHandler
   useEffect(() => {
-    const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8001';
+    const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
-    videoManagerRef.current = new VideoLoadingManager(API_BASE_URL, 20000, 2);
+    // Create manager instance
+    const manager = new VideoLoadingManager(API_BASE_URL, 20000, 2);
+    videoManagerRef.current = manager;
     videoErrorHandlerRef.current = new VideoErrorHandler(false, true);
 
-    const unsubscribe = videoManagerRef.current.subscribe((state) => {
+    // Subscribe to state changes
+    const unsubscribe = manager.subscribe((state) => {
       setVideoLoadingState(state);
 
       setVideosLoading(state.status === 'loading');
@@ -110,21 +117,31 @@ export function LearningPathPage() {
         const allVideos: VideoResponse[] = [];
         state.videos.forEach(subjectVideo => {
           if (subjectVideo.videos) {
-            allVideos.push(...subjectVideo.videos);
+            // Cast to VideoResponse[] - VideoRecommendation is compatible
+            allVideos.push(...(subjectVideo.videos as unknown as VideoResponse[]));
           }
         });
         setVideos(allVideos);
       }
     });
 
+    // Mark manager as ready after setup is complete
+    setIsVideoManagerReady(true);
+
     return () => {
       unsubscribe();
+      // Clean up manager reference
+      videoManagerRef.current = null;
+      setIsVideoManagerReady(false);
     };
   }, []);
 
+  // Load learning path only after VideoManager is ready
   useEffect(() => {
-    loadLearningPath();
-  }, []);
+    if (isVideoManagerReady) {
+      loadLearningPath();
+    }
+  }, [isVideoManagerReady]);
 
   const loadLearningPath = async () => {
     try {
@@ -134,15 +151,15 @@ export function LearningPathPage() {
       const studentId = learningPathService.getStudentId();
 
       if (!studentId) {
-        const profile = await learningPathService.createProfile({
+        await learningPathService.createProfile({
           name: 'Demo Öğrenci',
           grade: 12,
           subjects: ['matematik', 'fizik', 'kimya'],
           goals: ['YKS hazırlık', 'Matematik geliştirme'],
           learning_style: 'visual',
-          available_time: 120
+          available_time: 120,
         });
-        console.log('Demo profile created:', profile);
+        // Demo profile created
       }
 
       let path = learningPathService.getCurrentPath();
@@ -190,11 +207,11 @@ export function LearningPathPage() {
     let completionStatus: Record<string, boolean> = {};
     try {
       if (studentId) {
-        const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8001';
-        const response = await fetch(`${API_URL}/api/learning-path-v2/completion/${studentId}`, {
+        const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+        const response = await fetch(`${API_URL}/api/learning-path/completion/${studentId}`, {
           headers: {
             'Authorization': `Bearer ${localStorage.getItem('token')}`,
-          }
+          },
         });
         if (response.ok) {
           const data = await response.json();
@@ -223,7 +240,7 @@ export function LearningPathPage() {
           points: 100,
           prerequisites: topicIndex > 0 ? [`${module.module_id}-TOP${topicIndex}`] : [],
           resources: topic.resources?.length || 0,
-          position: { x: 100 + moduleIndex * 300, y: 100 + yPosition }
+          position: { x: 100 + moduleIndex * 300, y: 100 + yPosition },
         });
 
         yPosition += 150;
@@ -246,21 +263,26 @@ export function LearningPathPage() {
       const subjects = (path.modules || []).map((module: any) => extractSubject(module.title));
       setLoadingSubjects(subjects);
 
+      const subjectLevels = subjects.reduce((acc: any, s: string) => {
+        acc[s] = 50;
+        return acc;
+      }, {}) as Record<string, number>;
+
       const studentProfile = {
+        name: 'anonymous',
         goals: subjects.map((s: string) => `${s} öğrenme`),
-        currentLevel: subjects.reduce((acc: any, s: string) => {
-          acc[s] = 50;
-          return acc;
-        }, {}),
+        current_level: subjectLevels,
+        currentLevel: subjectLevels,
+        learning_style: learningStyle || 'visual',
         learningStyle: learningStyle || 'visual',
         preferences: {
           grade: 12,
           exam_type: 'YKS',
-        }
+        },
       };
 
-      console.log('Loading videos with VideoLoadingManager...', studentProfile);
-      await videoManagerRef.current.loadVideos(studentProfile);
+      // Loading videos with VideoLoadingManager
+      await videoManagerRef.current.loadVideos(studentProfile as any);
 
     } catch (err: any) {
       console.error('Error loading videos:', err);
@@ -279,44 +301,46 @@ export function LearningPathPage() {
 
   const extractSubject = (title: string): string => {
     const lowerTitle = title.toLowerCase();
-    if (lowerTitle.includes('matematik')) return 'matematik';
-    if (lowerTitle.includes('fizik')) return 'fizik';
-    if (lowerTitle.includes('kimya')) return 'kimya';
-    if (lowerTitle.includes('biyoloji')) return 'biyoloji';
-    if (lowerTitle.includes('türkçe')) return 'türkçe';
+    if (lowerTitle.includes('matematik')) {return 'matematik';}
+    if (lowerTitle.includes('fizik')) {return 'fizik';}
+    if (lowerTitle.includes('kimya')) {return 'kimya';}
+    if (lowerTitle.includes('biyoloji')) {return 'biyoloji';}
+    if (lowerTitle.includes('türkçe')) {return 'türkçe';}
     return 'matematik';
   };
 
   const extractTopic = (topicName: string): string | undefined => {
     const lowerTopic = topicName.toLowerCase();
 
-    if (lowerTopic.includes('türev')) return 'türev';
-    if (lowerTopic.includes('integral')) return 'integral';
-    if (lowerTopic.includes('limit')) return 'limit';
-    if (lowerTopic.includes('fonksiyon')) return 'fonksiyon';
-    if (lowerTopic.includes('hareket')) return 'hareket';
-    if (lowerTopic.includes('kuvvet')) return 'kuvvet';
-    if (lowerTopic.includes('enerji')) return 'enerji';
-    if (lowerTopic.includes('elektrik')) return 'elektrik';
-    if (lowerTopic.includes('atom')) return 'atom';
-    if (lowerTopic.includes('reaksiyon')) return 'reaksiyon';
-    if (lowerTopic.includes('molekül')) return 'molekül';
+    if (lowerTopic.includes('türev')) {return 'türev';}
+    if (lowerTopic.includes('integral')) {return 'integral';}
+    if (lowerTopic.includes('limit')) {return 'limit';}
+    if (lowerTopic.includes('fonksiyon')) {return 'fonksiyon';}
+    if (lowerTopic.includes('hareket')) {return 'hareket';}
+    if (lowerTopic.includes('kuvvet')) {return 'kuvvet';}
+    if (lowerTopic.includes('enerji')) {return 'enerji';}
+    if (lowerTopic.includes('elektrik')) {return 'elektrik';}
+    if (lowerTopic.includes('atom')) {return 'atom';}
+    if (lowerTopic.includes('reaksiyon')) {return 'reaksiyon';}
+    if (lowerTopic.includes('molekül')) {return 'molekül';}
 
     return undefined;
   };
 
   const handleRetryVideos = async () => {
-    if (!videoManagerRef.current) return;
+    if (!videoManagerRef.current) {return;}
 
     const path = learningPathService.getCurrentPath();
     if (path) {
       setRetryCount(prev => prev + 1);
-      await videoManagerRef.current.retryLoad();
+      // Create a minimal profile for retry
+      const defaultProfile = { name: 'retry', goals: [], current_level: {}, learning_style: 'visual', preferences: {} } as any;
+      await videoManagerRef.current.retryLoad(defaultProfile);
     }
   };
 
   const handleShowFallback = async () => {
-    console.log('Loading fallback/example videos...', loadingSubjects);
+    // Loading fallback/example videos
 
     if (!videoManagerRef.current) {
       console.error('VideoLoadingManager not initialized');
@@ -330,10 +354,10 @@ export function LearningPathPage() {
       const subject = loadingSubjects[0] || 'matematik';
 
       const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8001';
-      const response = await fetch(`${API_URL}/api/learning-path-v2/fallback-videos/${subject}?limit=10`, {
+      const response = await fetch(`${API_URL}/api/learning-path/fallback-videos/${subject}?limit=10`, {
         headers: {
-          'Content-Type': 'application/json'
-        }
+          'Content-Type': 'application/json',
+        },
       });
 
       if (response.ok) {
@@ -352,14 +376,14 @@ export function LearningPathPage() {
             is_accessible: v.is_accessible,
             is_turkish: true,
             is_example: v.is_example,
-            tags: v.tags
+            tags: v.tags,
           }));
 
           setVideos(fallbackVideos);
           setVideosError(null);
 
-          console.log(`✅ Loaded ${fallbackVideos.length} fallback videos for ${subject}`);
-          alert(`✅ ${fallbackVideos.length} örnek video yüklendi! ${subject} için kaliteli eğitim videoları gösteriliyor.`);
+          // Loaded fallback videos for subject
+          alert(`${fallbackVideos.length} ornek video yuklendi! ${subject} icin kaliteli egitim videolari gosteriliyor.`);
         } else {
           setVideosError('Örnek video bulunamadı');
           alert('⚠️ Henüz bu konu için örnek video eklenmemiş.');
@@ -377,13 +401,13 @@ export function LearningPathPage() {
   };
 
   const handleCancelVideoLoad = () => {
-    if (!videoManagerRef.current) return;
+    if (!videoManagerRef.current) {return;}
     videoManagerRef.current.cancelLoad();
-    console.log('Video loading cancelled by user');
+    // Video loading cancelled by user
   };
 
   const handleNodeClick = async (node: PathNodeData) => {
-    console.log('Node clicked:', node);
+    // Node clicked
     setCurrentNodeId(node.id);
     setShowNodeDetails(true);
 
@@ -395,7 +419,7 @@ export function LearningPathPage() {
       const topic = extractTopic(node.title);
       const difficultyTurkish = difficultyToTurkish(node.difficulty);
 
-      console.log(`Loading resources for node: ${node.id}, subject: ${subject}, topic: ${topic}, difficulty: ${difficultyTurkish}`);
+      // Loading resources for node
 
       const result = await searchLearningResources({
         subject: subject,
@@ -405,11 +429,11 @@ export function LearningPathPage() {
         student_profile: {
           learning_style: learningStyle,
           grade: 12,
-        }
+        },
       });
 
       if (result.success && result.resources) {
-        console.log(`Loaded ${result.resources.length} resources for node ${node.id}`);
+        // Loaded resources for node
 
         const sortedResources = result.resources.sort((a, b) => {
           const scoreA = a.scores?.final_score || 0;
@@ -430,7 +454,7 @@ export function LearningPathPage() {
   };
 
   const handleVideoPlay = (video: VideoResponse) => {
-    console.log('Playing video:', video);
+    // Playing video
     window.open(video.url, '_blank');
   };
 

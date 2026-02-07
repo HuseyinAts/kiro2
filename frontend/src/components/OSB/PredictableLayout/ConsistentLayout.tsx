@@ -9,7 +9,8 @@
  * - Grid-based predictable structure
  */
 
-import React, { ReactNode } from 'react';
+import * as React from 'react';
+import {  ReactNode  } from 'react';
 import './ConsistentLayout.css';
 
 export interface ConsistentLayoutProps {
@@ -58,7 +59,7 @@ export const ConsistentLayout: React.FC<ConsistentLayoutProps> = ({
   layoutType = 'default',
   breadcrumbs,
   primaryAction,
-  osbMode = true
+  osbMode = true,
 }) => {
   return (
     <div

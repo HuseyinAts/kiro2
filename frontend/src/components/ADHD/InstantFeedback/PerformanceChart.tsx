@@ -2,8 +2,8 @@
  * Task 92.4: Performance Chart Component
  * Başarı grafiği ve ilerleme görselleştirmesi
  */
-import React from 'react';
-import { LineChart, Line, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
+import type { FC } from 'react';
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, Line } from 'recharts';
 import './PerformanceChart.css';
 
 interface PerformanceDataPoint {
@@ -21,12 +21,12 @@ interface PerformanceChartProps {
   compact?: boolean;
 }
 
-export const PerformanceChart: React.FC<PerformanceChartProps> = ({
+export const PerformanceChart: FC<PerformanceChartProps> = ({
   data,
-  showTrend = true,
+  showTrend: _showTrend = true,
   showAverage = true,
   height = 300,
-  compact = false
+  compact = false,
 }) => {
   if (data.length === 0) {
     return (

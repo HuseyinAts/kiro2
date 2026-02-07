@@ -1,4 +1,13 @@
-import React, { useState, useEffect } from 'react'
+import {
+  Add,
+  Edit,
+  Delete,
+  Visibility,
+  Upload,
+  Download,
+  CheckCircle,
+  Cancel,
+} from '@mui/icons-material';
 import {
   Box,
   Typography,
@@ -23,20 +32,12 @@ import {
   Grid,
   Chip,
   IconButton,
-  Tooltip
-} from '@mui/material'
-import {
-  Add,
-  Edit,
-  Delete,
-  Visibility,
-  Upload,
-  Download,
-  CheckCircle,
-  Cancel
-} from '@mui/icons-material'
-import { adminService, ContentQuestion, EducationalContent, CreateQuestionRequest, CreateContentRequest } from '../../services/adminService'
-import { Question } from '../Quiz/QuizInterface'
+  Tooltip,
+} from '@mui/material';
+import * as React from 'react';
+import {  useState, useEffect  } from 'react';
+
+import { ContentQuestion, EducationalContent } from '../../services/adminService';
 
 // Question ve EducationalContent tipleri artık adminService'den geliyor
 
@@ -47,7 +48,7 @@ interface TabPanelProps {
 }
 
 function TabPanel(props: TabPanelProps) {
-  const { children, value, index, ...other } = props
+  const { children, value, index, ...other } = props;
 
   return (
     <div
@@ -63,21 +64,21 @@ function TabPanel(props: TabPanelProps) {
         </Box>
       )}
     </div>
-  )
+  );
 }
 
 export const ContentManagement: React.FC = () => {
-  const [currentTab, setCurrentTab] = useState(0)
-  const [questions, setQuestions] = useState<ContentQuestion[]>([])
-  const [contents, setContents] = useState<EducationalContent[]>([])
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-  
+  const [currentTab, setCurrentTab] = useState(0);
+  const [questions, setQuestions] = useState<ContentQuestion[]>([]);
+  const [contents, setContents] = useState<EducationalContent[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
   // Dialog states
-  const [openQuestionDialog, setOpenQuestionDialog] = useState(false)
-  const [openContentDialog, setOpenContentDialog] = useState(false)
-  const [editingQuestion, setEditingQuestion] = useState<ContentQuestion | null>(null)
-  const [editingContent, setEditingContent] = useState<EducationalContent | null>(null)
+  const [openQuestionDialog, setOpenQuestionDialog] = useState(false);
+  const [openContentDialog, setOpenContentDialog] = useState(false);
+  const [_editingQuestion, _setEditingQuestion] = useState<ContentQuestion | null>(null);
+  const [_editingContent, _setEditingContent] = useState<EducationalContent | null>(null);
 
   // Form states
   const [questionForm, setQuestionForm] = useState({
@@ -86,8 +87,8 @@ export const ContentManagement: React.FC = () => {
     dogru_cevap: 'A',
     konu: '',
     zorluk_seviyesi: 'orta',
-    sinav_tipi: 'TYT'
-  })
+    sinav_tipi: 'TYT',
+  });
 
   const [contentForm, setContentForm] = useState({
     baslik: '',
@@ -95,44 +96,44 @@ export const ContentManagement: React.FC = () => {
     konu: '',
     seviye: 'orta',
     url: '',
-    aciklama: ''
-  })
+    aciklama: '',
+  });
 
   useEffect(() => {
     if (currentTab === 0) {
-      fetchQuestions()
+      fetchQuestions();
     } else if (currentTab === 1) {
-      fetchContents()
+      fetchContents();
     }
-  }, [currentTab])
+  }, [currentTab]);
 
   const fetchQuestions = async () => {
     try {
-      setLoading(true)
-      setError(null)
+      setLoading(true);
+      setError(null);
 
       const response = await fetch('/api/v1/admin/content/questions', {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
-          'Content-Type': 'application/json'
-        }
-      })
+          'Content-Type': 'application/json',
+        },
+      });
 
       if (!response.ok) {
-        throw new Error('Sorular alınamadı')
+        throw new Error('Sorular alınamadı');
       }
 
-      const data = await response.json()
-      
+      const data = await response.json();
+
       if (data.success) {
-        setQuestions(data.data)
+        setQuestions(data.data);
       } else {
-        throw new Error(data.message || 'Veri alınamadı')
+        throw new Error(data.message || 'Veri alınamadı');
       }
     } catch (err) {
-      console.error('Questions fetch error:', err)
-      setError(err instanceof Error ? err.message : 'Bilinmeyen hata')
-      
+      console.error('Questions fetch error:', err);
+      setError(err instanceof Error ? err.message : 'Bilinmeyen hata');
+
       // Mock data
       const mockQuestions: ContentQuestion[] = [
         {
@@ -147,42 +148,42 @@ export const ContentManagement: React.FC = () => {
           olusturma_tarihi: '2024-01-01T00:00:00Z',
           durum: 'aktif',
           onay_durumu: 'onaylandi',
-          olusturan: 'admin'
-        }
-      ]
-      setQuestions(mockQuestions)
+          olusturan: 'admin',
+        },
+      ];
+      setQuestions(mockQuestions);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const fetchContents = async () => {
     try {
-      setLoading(true)
-      setError(null)
+      setLoading(true);
+      setError(null);
 
       const response = await fetch('/api/v1/admin/content/educational', {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
-          'Content-Type': 'application/json'
-        }
-      })
+          'Content-Type': 'application/json',
+        },
+      });
 
       if (!response.ok) {
-        throw new Error('İçerikler alınamadı')
+        throw new Error('İçerikler alınamadı');
       }
 
-      const data = await response.json()
-      
+      const data = await response.json();
+
       if (data.success) {
-        setContents(data.data)
+        setContents(data.data);
       } else {
-        throw new Error(data.message || 'Veri alınamadı')
+        throw new Error(data.message || 'Veri alınamadı');
       }
     } catch (err) {
-      console.error('Contents fetch error:', err)
-      setError(err instanceof Error ? err.message : 'Bilinmeyen hata')
-      
+      console.error('Contents fetch error:', err);
+      setError(err instanceof Error ? err.message : 'Bilinmeyen hata');
+
       // Mock data
       const mockContents: EducationalContent[] = [
         {
@@ -200,14 +201,14 @@ export const ContentManagement: React.FC = () => {
           goruntulenme_sayisi: 150,
           begeni_sayisi: 25,
           onay_durumu: 'onaylandi',
-          olusturan: 'ogretmen1'
-        }
-      ]
-      setContents(mockContents)
+          olusturan: 'ogretmen1',
+        },
+      ];
+      setContents(mockContents);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const handleCreateQuestion = async () => {
     try {
@@ -215,29 +216,29 @@ export const ContentManagement: React.FC = () => {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
         },
-        body: JSON.stringify(questionForm)
-      })
+        body: JSON.stringify(questionForm),
+      });
 
       if (!response.ok) {
-        throw new Error('Soru oluşturulamadı')
+        throw new Error('Soru oluşturulamadı');
       }
 
-      const data = await response.json()
-      
+      const data = await response.json();
+
       if (data.success) {
-        setOpenQuestionDialog(false)
-        resetQuestionForm()
-        fetchQuestions()
+        setOpenQuestionDialog(false);
+        resetQuestionForm();
+        fetchQuestions();
       } else {
-        throw new Error(data.message || 'Soru oluşturulamadı')
+        throw new Error(data.message || 'Soru oluşturulamadı');
       }
     } catch (err) {
-      console.error('Create question error:', err)
-      setError(err instanceof Error ? err.message : 'Soru oluşturulamadı')
+      console.error('Create question error:', err);
+      setError(err instanceof Error ? err.message : 'Soru oluşturulamadı');
     }
-  }
+  };
 
   const handleCreateContent = async () => {
     try {
@@ -245,69 +246,69 @@ export const ContentManagement: React.FC = () => {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
         },
-        body: JSON.stringify(contentForm)
-      })
+        body: JSON.stringify(contentForm),
+      });
 
       if (!response.ok) {
-        throw new Error('İçerik oluşturulamadı')
+        throw new Error('İçerik oluşturulamadı');
       }
 
-      const data = await response.json()
-      
+      const data = await response.json();
+
       if (data.success) {
-        setOpenContentDialog(false)
-        resetContentForm()
-        fetchContents()
+        setOpenContentDialog(false);
+        resetContentForm();
+        fetchContents();
       } else {
-        throw new Error(data.message || 'İçerik oluşturulamadı')
+        throw new Error(data.message || 'İçerik oluşturulamadı');
       }
     } catch (err) {
-      console.error('Create content error:', err)
-      setError(err instanceof Error ? err.message : 'İçerik oluşturulamadı')
+      console.error('Create content error:', err);
+      setError(err instanceof Error ? err.message : 'İçerik oluşturulamadı');
     }
-  }
+  };
 
   const handleApproveQuestion = async (questionId: string) => {
     try {
       const response = await fetch(`/api/v1/admin/content/questions/${questionId}/approve`, {
         method: 'PUT',
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('access_token')}`
-        }
-      })
+          'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
+        },
+      });
 
       if (!response.ok) {
-        throw new Error('Soru onaylanamadı')
+        throw new Error('Soru onaylanamadı');
       }
 
-      fetchQuestions()
+      fetchQuestions();
     } catch (err) {
-      console.error('Approve question error:', err)
-      setError(err instanceof Error ? err.message : 'Soru onaylanamadı')
+      console.error('Approve question error:', err);
+      setError(err instanceof Error ? err.message : 'Soru onaylanamadı');
     }
-  }
+  };
 
   const handleRejectQuestion = async (questionId: string) => {
     try {
       const response = await fetch(`/api/v1/admin/content/questions/${questionId}/reject`, {
         method: 'PUT',
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('access_token')}`
-        }
-      })
+          'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
+        },
+      });
 
       if (!response.ok) {
-        throw new Error('Soru reddedilemedi')
+        throw new Error('Soru reddedilemedi');
       }
 
-      fetchQuestions()
+      fetchQuestions();
     } catch (err) {
-      console.error('Reject question error:', err)
-      setError(err instanceof Error ? err.message : 'Soru reddedilemedi')
+      console.error('Reject question error:', err);
+      setError(err instanceof Error ? err.message : 'Soru reddedilemedi');
     }
-  }
+  };
 
   const resetQuestionForm = () => {
     setQuestionForm({
@@ -316,9 +317,9 @@ export const ContentManagement: React.FC = () => {
       dogru_cevap: 'A',
       konu: '',
       zorluk_seviyesi: 'orta',
-      sinav_tipi: 'TYT'
-    })
-  }
+      sinav_tipi: 'TYT',
+    });
+  };
 
   const resetContentForm = () => {
     setContentForm({
@@ -327,27 +328,27 @@ export const ContentManagement: React.FC = () => {
       konu: '',
       seviye: 'orta',
       url: '',
-      aciklama: ''
-    })
-  }
+      aciklama: '',
+    });
+  };
 
-  const getStatusColor = (status: string) => {
+  const getStatusColor = (status: string): 'default' | 'primary' | 'secondary' | 'error' | 'info' | 'success' | 'warning' => {
     switch (status) {
-      case 'onaylandi': return 'success'
-      case 'reddedildi': return 'error'
-      case 'bekliyor': return 'warning'
-      default: return 'default'
+      case 'onaylandi': return 'success';
+      case 'reddedildi': return 'error';
+      case 'bekliyor': return 'warning';
+      default: return 'default';
     }
-  }
+  };
 
   const getStatusText = (status: string) => {
     switch (status) {
-      case 'onaylandi': return 'Onaylandı'
-      case 'reddedildi': return 'Reddedildi'
-      case 'bekliyor': return 'Bekliyor'
-      default: return status
+      case 'onaylandi': return 'Onaylandı';
+      case 'reddedildi': return 'Reddedildi';
+      case 'bekliyor': return 'Bekliyor';
+      default: return status;
     }
-  }
+  };
 
   return (
     <Box>
@@ -418,10 +419,10 @@ export const ContentManagement: React.FC = () => {
                         <Chip label={question.konu} size="small" />
                         <Chip label={question.sinav_tipi} size="small" color="primary" />
                         <Chip label={question.zorluk_seviyesi} size="small" color="secondary" />
-                        <Chip 
-                          label={getStatusText(question.onay_durumu)} 
-                          size="small" 
-                          color={getStatusColor(question.onay_durumu) as any}
+                        <Chip
+                          label={getStatusText(question.onay_durumu)}
+                          size="small"
+                          color={getStatusColor(question.onay_durumu)}
                         />
                       </Box>
                       <Typography variant="body2" color="text.secondary">
@@ -433,31 +434,33 @@ export const ContentManagement: React.FC = () => {
                     </CardContent>
                     <CardActions>
                       <Tooltip title="Görüntüle">
-                        <IconButton size="small">
+                        <IconButton size="small" aria-label="Soruyu görüntüle">
                           <Visibility />
                         </IconButton>
                       </Tooltip>
                       <Tooltip title="Düzenle">
-                        <IconButton size="small">
+                        <IconButton size="small" aria-label="Soruyu düzenle">
                           <Edit />
                         </IconButton>
                       </Tooltip>
                       {question.onay_durumu === 'bekliyor' && (
                         <>
                           <Tooltip title="Onayla">
-                            <IconButton 
-                              size="small" 
+                            <IconButton
+                              size="small"
                               color="success"
                               onClick={() => handleApproveQuestion(question.soru_id)}
+                              aria-label="Soruyu onayla"
                             >
                               <CheckCircle />
                             </IconButton>
                           </Tooltip>
                           <Tooltip title="Reddet">
-                            <IconButton 
-                              size="small" 
+                            <IconButton
+                              size="small"
                               color="error"
                               onClick={() => handleRejectQuestion(question.soru_id)}
+                              aria-label="Soruyu reddet"
                             >
                               <Cancel />
                             </IconButton>
@@ -465,7 +468,7 @@ export const ContentManagement: React.FC = () => {
                         </>
                       )}
                       <Tooltip title="Sil">
-                        <IconButton size="small" color="error">
+                        <IconButton size="small" color="error" aria-label="Soruyu sil">
                           <Delete />
                         </IconButton>
                       </Tooltip>
@@ -509,10 +512,10 @@ export const ContentManagement: React.FC = () => {
                         <Chip label={content.icerik_tipi} size="small" />
                         <Chip label={content.konu} size="small" color="primary" />
                         <Chip label={content.seviye} size="small" color="secondary" />
-                        <Chip 
-                          label={getStatusText(content.onay_durumu)} 
-                          size="small" 
-                          color={getStatusColor(content.onay_durumu) as any}
+                        <Chip
+                          label={getStatusText(content.onay_durumu)}
+                          size="small"
+                          color={getStatusColor(content.onay_durumu)}
                         />
                       </Box>
                       <Typography variant="body2" color="text.secondary">
@@ -566,7 +569,7 @@ export const ContentManagement: React.FC = () => {
               margin="normal"
               required
             />
-            
+
             {questionForm.secenekler.map((secenek, index) => (
               <TextField
                 key={index}
@@ -574,9 +577,9 @@ export const ContentManagement: React.FC = () => {
                 label={`Seçenek ${String.fromCharCode(65 + index)}`}
                 value={secenek}
                 onChange={(e) => {
-                  const newSecenekler = [...questionForm.secenekler]
-                  newSecenekler[index] = e.target.value
-                  setQuestionForm({ ...questionForm, secenekler: newSecenekler })
+                  const newSecenekler = [...questionForm.secenekler];
+                  newSecenekler[index] = e.target.value;
+                  setQuestionForm({ ...questionForm, secenekler: newSecenekler });
                 }}
                 margin="normal"
                 required
@@ -703,7 +706,7 @@ export const ContentManagement: React.FC = () => {
         </DialogActions>
       </Dialog>
     </Box>
-  )
-}
+  );
+};
 
-export default ContentManagement
+export default ContentManagement;

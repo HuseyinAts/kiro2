@@ -9,8 +9,6 @@ Based on DEEP_RESEARCH_FINDINGS_2024.md:
 
 from typing import List, Dict, Optional
 import re
-from collections import Counter
-import math
 
 
 class KeywordQuestionReranker:

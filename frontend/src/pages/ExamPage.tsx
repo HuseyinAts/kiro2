@@ -2,120 +2,120 @@
  * Ana Sınav Sayfası - Modern Tasarım
  * Glassmorphism ile sınav başlatma ve arayüz yönetimi
  */
-import React, { useState, useEffect } from 'react'
-import { useParams, useNavigate, useSearchParams } from 'react-router-dom'
+import { Home, Refresh } from '@mui/icons-material';
 import {
   Box,
   Container,
   Alert,
   Typography,
-  Button,
-  Paper
-} from '@mui/material'
-import { Home, Refresh } from '@mui/icons-material'
-import { motion, AnimatePresence } from 'framer-motion'
-import { ModernExamStart } from '../components/Exam/ModernExamStart'
-import { ModernOSYMExamInterface } from '../components/Exam/ModernOSYMExamInterface'
-import { ModernExamResults } from '../components/Exam/ModernExamResults'
-import { ModernLoader } from '../components/ui/ModernLoader'
-import modernColors from '../theme/modern-colors'
-import { GlassCard } from '../components/ui/GlassCard'
-import { ModernButton } from '../components/ui/ModernButton'
-import { examService, ExamType, ExamStatus, ExamSessionResponse } from '../services/examService'
+} from '@mui/material';
+import { motion, AnimatePresence } from 'framer-motion';
+import * as React from 'react';
+import {  useState, useEffect  } from 'react';
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
+
+import { ModernExamResults } from '../components/Exam/ModernExamResults';
+import { ModernExamStart } from '../components/Exam/ModernExamStart';
+import { ModernOSYMExamInterface } from '../components/Exam/ModernOSYMExamInterface';
+import { GlassCard } from '../components/ui/GlassCard';
+import { ModernButton } from '../components/ui/ModernButton';
+import { ModernLoader } from '../components/ui/ModernLoader';
+import { examService, ExamType, ExamStatus, ExamSessionResponse } from '../services/examService';
+import modernColors from '../theme/modern-colors';
 
 export const ExamPage: React.FC = () => {
-  const { sessionId } = useParams<{ sessionId?: string }>()
-  const [searchParams] = useSearchParams()
-  const navigate = useNavigate()
-  
+  const { sessionId } = useParams<{ sessionId?: string }>();
+  const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
+
   // State yönetimi
-  const [currentView, setCurrentView] = useState<'start' | 'exam' | 'results'>('start')
-  const [session, setSession] = useState<ExamSessionResponse | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
-  const [examType, setExamType] = useState<ExamType>(ExamType.TYT)
+  const [currentView, setCurrentView] = useState<'start' | 'exam' | 'results'>('start');
+  const [_session, setSession] = useState<ExamSessionResponse | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [examType, setExamType] = useState<ExamType>(ExamType.TYT);
 
   /**
    * Sayfa yüklendiğinde durumu kontrol et
    */
   useEffect(() => {
-    initializePage()
-  }, [sessionId])
+    initializePage();
+  }, [sessionId]);
 
   /**
    * Sayfa başlatma
    */
   const initializePage = async () => {
     try {
-      setLoading(true)
-      setError(null)
+      setLoading(true);
+      setError(null);
 
       // URL'den sınav türünü al
-      const examTypeParam = searchParams.get('type') as ExamType
+      const examTypeParam = searchParams.get('type') as ExamType;
       if (examTypeParam && Object.values(ExamType).includes(examTypeParam)) {
-        setExamType(examTypeParam)
+        setExamType(examTypeParam);
       }
 
       // Eğer session ID'si varsa, mevcut oturumu kontrol et
       if (sessionId) {
         try {
-          const sessionData = await examService.getExamSession(sessionId)
-          setSession(sessionData)
+          const sessionData = await examService.getExamSession(sessionId);
+          setSession(sessionData);
 
           // Sınav durumuna göre view belirle
           if (sessionData.status === ExamStatus.COMPLETED) {
-            setCurrentView('results')
+            setCurrentView('results');
           } else if (sessionData.status === ExamStatus.IN_PROGRESS) {
-            setCurrentView('exam')
+            setCurrentView('exam');
           } else {
-            setCurrentView('start')
+            setCurrentView('start');
           }
         } catch (err) {
-          console.error('Sınav oturumu bulunamadı:', err)
-          setCurrentView('start')
+          console.error('Sınav oturumu bulunamadı:', err);
+          setCurrentView('start');
         }
       } else {
         // Yeni sınav başlatma
-        setCurrentView('start')
+        setCurrentView('start');
       }
     } catch (err: any) {
-      setError(err.message || 'Sayfa yüklenirken hata oluştu')
+      setError(err.message || 'Sayfa yüklenirken hata oluştu');
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   /**
    * Sınav başlatıldığında
    */
   const handleExamStart = (newSessionId: string) => {
     // URL'yi güncelle
-    navigate(`/exam/${newSessionId}`, { replace: true })
-    setCurrentView('exam')
-  }
+    navigate(`/exam/${newSessionId}`, { replace: true });
+    setCurrentView('exam');
+  };
 
   /**
    * Sınavdan çıkış
    */
   const handleExamExit = () => {
-    navigate('/dashboard')
-  }
+    navigate('/dashboard');
+  };
 
   /**
    * Sınav tekrar çözme
    */
   const handleRetakeExam = () => {
-    setCurrentView('start')
-    setSession(null)
-    navigate(`/exam?type=${examType}`, { replace: true })
-  }
+    setCurrentView('start');
+    setSession(null);
+    navigate(`/exam?type=${examType}`, { replace: true });
+  };
 
   /**
    * Ana sayfaya dön
    */
   const handleGoHome = () => {
-    navigate('/dashboard')
-  }
+    navigate('/dashboard');
+  };
 
   // Loading durumu
   if (loading) {
@@ -131,7 +131,7 @@ export const ExamPage: React.FC = () => {
       >
         <ModernLoader message="Sınav yükleniyor..." size="large" />
       </Box>
-    )
+    );
   }
 
   // Hata durumu
@@ -174,7 +174,7 @@ export const ExamPage: React.FC = () => {
           </GlassCard>
         </Container>
       </Box>
-    )
+    );
   }
 
   return (
@@ -227,7 +227,7 @@ export const ExamPage: React.FC = () => {
         )}
       </AnimatePresence>
     </Box>
-  )
-}
+  );
+};
 
-export default ExamPage
+export default ExamPage;

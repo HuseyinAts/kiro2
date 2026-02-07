@@ -6,7 +6,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from typing import List, Optional
 from pydantic import BaseModel
-from datetime import datetime
+from datetime import datetime, timezone
 
 from core.database import get_db
 from core.auth_dependencies import get_current_user
@@ -30,7 +30,7 @@ class VirtualBlockProgress(BaseModel):
 
     user_id: int
     operation: VirtualBlockOperation
-    timestamp: datetime = datetime.utcnow()
+    timestamp: datetime = datetime.now(timezone.utc)
 
 
 class GeoGebraActivity(BaseModel):
@@ -41,7 +41,7 @@ class GeoGebraActivity(BaseModel):
     activity_type: str  # geometry, algebra, calculus
     duration_seconds: int
     completed: bool
-    timestamp: datetime = datetime.utcnow()
+    timestamp: datetime = datetime.now(timezone.utc)
 
 
 class GeometryToolUsage(BaseModel):
@@ -52,7 +52,7 @@ class GeometryToolUsage(BaseModel):
     shapes_created: List[dict]
     measurements: List[dict]
     duration_seconds: int
-    timestamp: datetime = datetime.utcnow()
+    timestamp: datetime = datetime.now(timezone.utc)
 
 
 class TangramPuzzle(BaseModel):
@@ -64,7 +64,7 @@ class TangramPuzzle(BaseModel):
     completed: bool
     attempts: int
     duration_seconds: int
-    timestamp: datetime = datetime.utcnow()
+    timestamp: datetime = datetime.now(timezone.utc)
 
 
 # API Endpoints

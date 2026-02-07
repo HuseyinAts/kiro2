@@ -6,7 +6,6 @@ Teknofest 2025 - Eğitim Eylemci Projesi
 
 import asyncio
 import logging
-import pickle
 from dataclasses import dataclass
 from typing import Any, Dict, List, Optional
 

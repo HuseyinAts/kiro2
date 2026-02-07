@@ -2,7 +2,9 @@
  * LevelDisplay Component - Task 91
  * Kullanıcı seviye ve XP gösterimi
  */
-import React, { useEffect, useState } from 'react';
+import * as React from 'react';
+import {  useEffect, useState  } from 'react';
+
 import { useLevel } from '../../hooks/useGamification';
 import './LevelDisplay.css';
 
@@ -15,7 +17,7 @@ interface LevelDisplayProps {
 export const LevelDisplay: React.FC<LevelDisplayProps> = ({
   showMilestones = true,
   compact = false,
-  onLevelUp
+  onLevelUp,
 }) => {
   const { levelProgress, loading, error, getMilestones } = useLevel();
   const [milestones, setMilestones] = useState<number[]>([]);
@@ -65,7 +67,7 @@ export const LevelDisplay: React.FC<LevelDisplayProps> = ({
     xp_needed_for_next,
     progress_percentage,
     next_level,
-    next_milestone
+    next_milestone,
   } = levelProgress;
 
   const isMilestone = milestones.includes(current_level);
@@ -120,7 +122,7 @@ export const LevelDisplay: React.FC<LevelDisplayProps> = ({
 
           <div className="progress-section">
             <div className="progress-header">
-              <span className="progress-label">Seviye {next_level}'e İlerleme</span>
+              <span className="progress-label">Seviye {next_level}&apos;e İlerleme</span>
               <span className="progress-percentage">{Math.round(progress_percentage)}%</span>
             </div>
             <div className="progress-bar-container">

@@ -5,9 +5,8 @@ Service for university search, base score analysis, and recommendations
 """
 
 from datetime import datetime
-from typing import List, Optional, Dict, Any, Tuple
+from typing import List, Optional, Dict, Any
 from uuid import UUID
-import asyncio
 
 from sqlalchemy import select, func, and_, or_, desc, asc
 from sqlalchemy.ext.asyncio import AsyncSession

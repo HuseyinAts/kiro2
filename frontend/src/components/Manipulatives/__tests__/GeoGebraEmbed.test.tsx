@@ -6,11 +6,12 @@
  * save/complete functionality, and error handling.
  */
 
-import React from 'react';
+import * as React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import axios from 'axios';
 import GeoGebraEmbed from '../GeoGebraEmbed';
+import { vi, Mocked } from 'vitest';
 
 // ============================================================
 // Mocks
@@ -18,7 +19,7 @@ import GeoGebraEmbed from '../GeoGebraEmbed';
 
 // Mock Axios
 vi.mock('axios');
-const mockedAxios = axios as jest.Mocked<typeof axios>;
+const mockedAxios = axios as Mocked<typeof axios>;
 
 // Mock window.alert
 global.alert = vi.fn();
@@ -320,7 +321,7 @@ describe('GeoGebraEmbed Component - Activity Tracking', () => {
   });
 
   afterEach(() => {
-    jest.restoreAllMocks();
+    vi.restoreAllMocks();
   });
 
   it('tracks start time when applet loaded', async () => {
@@ -367,7 +368,7 @@ describe('GeoGebraEmbed Component - Save', () => {
   });
 
   afterEach(() => {
-    jest.restoreAllMocks();
+    vi.restoreAllMocks();
   });
 
   it('saves activity when save button clicked', async () => {
@@ -466,7 +467,7 @@ describe('GeoGebraEmbed Component - Complete', () => {
   });
 
   afterEach(() => {
-    jest.restoreAllMocks();
+    vi.restoreAllMocks();
   });
 
   it('completes activity when complete button clicked', async () => {
@@ -739,6 +740,6 @@ describe('GeoGebraEmbed Component - Edge Cases', () => {
       );
     });
 
-    jest.restoreAllMocks();
+    vi.restoreAllMocks();
   });
 });

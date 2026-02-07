@@ -3,7 +3,18 @@
  * 17 parametreli Türk öğrenci davranışlarına optimize edilmiş FSRS sistemi
  */
 
-import React, { useState, useEffect } from 'react';
+import {
+  Schedule as ScheduleIcon,
+  Psychology as BrainIcon,
+  TrendingUp as TrendingUpIcon,
+  Refresh as RefreshIcon,
+  Info as InfoIcon,
+  CheckCircle as CheckCircleIcon,
+  Warning as WarningIcon,
+  AccessTime as AccessTimeIcon,
+  Star as StarIcon,
+  School as SchoolIcon,
+} from '@mui/icons-material';
 import {
   Card,
   CardContent,
@@ -27,22 +38,13 @@ import {
   ListItem,
   ListItemText,
   ListItemIcon,
-  Divider
+  Divider as _Divider,
 } from '@mui/material';
-import {
-  Schedule as ScheduleIcon,
-  Psychology as BrainIcon,
-  TrendingUp as TrendingUpIcon,
-  Refresh as RefreshIcon,
-  Info as InfoIcon,
-  CheckCircle as CheckCircleIcon,
-  Warning as WarningIcon,
-  AccessTime as AccessTimeIcon,
-  Star as StarIcon,
-  School as SchoolIcon
-} from '@mui/icons-material';
-import { FSRSCard, FSRSSchedule, ApiResponse, FSRSGrade } from '../../types/revolutionary';
+import * as React from 'react';
+import {  useState, useEffect  } from 'react';
+
 import fsrsService from '../../services/fsrsService';
+import { FSRSCard, FSRSSchedule, FSRSGrade } from '../../types/revolutionary';
 
 interface FSRSSchedulerProps {
   studentId: string;
@@ -50,13 +52,13 @@ interface FSRSSchedulerProps {
   onScheduleUpdate?: (schedule: FSRSSchedule[]) => void;
 }
 
-const FSRSScheduler: React.FC<FSRSSchedulerProps> = ({ 
-  studentId, 
+const FSRSScheduler: React.FC<FSRSSchedulerProps> = ({
+  studentId,
   subject = 'matematik',
-  onScheduleUpdate 
+  onScheduleUpdate,
 }) => {
   const [cards, setCards] = useState<FSRSCard[]>([]);
-  const [schedules, setSchedules] = useState<FSRSSchedule[]>([]);
+  const [_schedules, setSchedules] = useState<FSRSSchedule[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedCard, setSelectedCard] = useState<FSRSCard | null>(null);
@@ -72,12 +74,12 @@ const FSRSScheduler: React.FC<FSRSSchedulerProps> = ({
         setError(null);
 
         console.log(`Loading FSRS data for student: ${studentId}, subject: ${subject}`);
-        
+
         // Backend API'lerden veri çek
-        const [dueCardsResult, statisticsResult, recommendationsResult] = await Promise.all([
+        const [dueCardsResult, _statisticsResult, recommendationsResult] = await Promise.all([
           fsrsService.getDueCards(studentId, 20),
           fsrsService.getStudentStatistics(studentId),
-          fsrsService.getStudyRecommendations(studentId)
+          fsrsService.getStudyRecommendations(studentId),
         ]);
 
         // Vadesi gelen kartları işle
@@ -93,7 +95,7 @@ const FSRSScheduler: React.FC<FSRSSchedulerProps> = ({
             next_review: card.due_date || new Date().toISOString(),
             review_count: card.review_count,
             lapses: card.lapse_count,
-            state: card.state
+            state: card.state,
           }));
           setCards(apiCards);
         } else {
@@ -110,7 +112,7 @@ const FSRSScheduler: React.FC<FSRSSchedulerProps> = ({
               next_review: new Date().toISOString(),
               review_count: 3,
               lapses: 0,
-              state: 'review'
+              state: 'review',
             },
             {
               card_id: '2',
@@ -123,8 +125,8 @@ const FSRSScheduler: React.FC<FSRSSchedulerProps> = ({
               next_review: new Date().toISOString(),
               review_count: 5,
               lapses: 1,
-              state: 'learning'
-            }
+              state: 'learning',
+            },
           ];
           setCards(mockCards);
         }
@@ -136,7 +138,7 @@ const FSRSScheduler: React.FC<FSRSSchedulerProps> = ({
             ramadan_factor: 0.8,
             exam_season_stress: recommendations.student_context?.exam_anxiety_level || 1.3,
             group_study_bonus: recommendations.student_context?.group_study_preference ? 1.2 : 1.0,
-            family_pressure: recommendations.student_context?.family_pressure_level || 1.1
+            family_pressure: recommendations.student_context?.family_pressure_level || 1.1,
           };
           setCulturalFactors(culturalFactors);
         } else {
@@ -145,7 +147,7 @@ const FSRSScheduler: React.FC<FSRSSchedulerProps> = ({
             ramadan_factor: 0.8,
             exam_season_stress: 1.3,
             group_study_bonus: 1.2,
-            family_pressure: 1.1
+            family_pressure: 1.1,
           };
           setCulturalFactors(mockCulturalFactors);
         }
@@ -158,19 +160,19 @@ const FSRSScheduler: React.FC<FSRSSchedulerProps> = ({
               again: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000).toISOString(),
               hard: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString(),
               good: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
-              easy: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString()
+              easy: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString(),
             },
             intervals: { again: 1, hard: 3, good: 7, easy: 14 },
-            cultural_adjustments: { 
-              ramadan_factor: 0.8, 
+            cultural_adjustments: {
+              ramadan_factor: 0.8,
               exam_season_stress: 1.3,
               summer_break_decay: 0.6,
               group_study_bonus: 1.2,
-              family_pressure: 1.1
+              family_pressure: 1.1,
             },
             confidence_score: 0.85,
-            reasoning: 'Türk öğrenci davranış kalıplarına göre optimize edildi'
-          }
+            reasoning: 'Türk öğrenci davranış kalıplarına göre optimize edildi',
+          },
         ];
         setSchedules(mockSchedules);
         onScheduleUpdate?.(mockSchedules);
@@ -199,17 +201,10 @@ const FSRSScheduler: React.FC<FSRSSchedulerProps> = ({
     }
   };
 
-  // Zorluk seviyesi renk kodlaması
-  const getDifficultyColor = (difficulty: number): 'success' | 'warning' | 'error' => {
-    if (difficulty < 3) return 'success';
-    if (difficulty < 7) return 'warning';
-    return 'error';
-  };
-
   // Geri çağırılabilirlik renk kodlaması
   const getRetrievabilityColor = (retrievability: number): 'error' | 'warning' | 'success' => {
-    if (retrievability < 0.3) return 'error';
-    if (retrievability < 0.7) return 'warning';
+    if (retrievability < 0.3) {return 'error';}
+    if (retrievability < 0.7) {return 'warning';}
     return 'success';
   };
 
@@ -217,12 +212,12 @@ const FSRSScheduler: React.FC<FSRSSchedulerProps> = ({
   const handleReview = async (cardId: string, grade: 1 | 2 | 3 | 4) => {
     try {
       console.log(`FSRS Review: Card ${cardId}, Grade ${grade}, Student ${studentId}`);
-      
+
       // Backend API'ye inceleme gönder
       const reviewResult = await fsrsService.reviewFlashcard(studentId, {
         card_id: cardId,
         grade: grade as FSRSGrade,
-        response_time_ms: Math.floor(Math.random() * 5000) + 1000 // 1-6 saniye arası
+        response_time_ms: Math.floor(Math.random() * 5000) + 1000, // 1-6 saniye arası
       });
 
       if (reviewResult.success) {
@@ -230,30 +225,30 @@ const FSRSScheduler: React.FC<FSRSSchedulerProps> = ({
         setCards(prev => prev.filter(card => card.card_id !== cardId));
         setReviewDialogOpen(false);
         setSelectedCard(null);
-        
+
         // Başarı mesajı göster
         setError(null);
-        
+
         console.log('FSRS Review successful:', reviewResult.data);
       } else {
         // API hatası durumunda fallback
         console.warn('FSRS Review API failed, using fallback:', reviewResult.message);
-        
+
         // Kartı listeden kaldır (fallback)
         setCards(prev => prev.filter(card => card.card_id !== cardId));
         setReviewDialogOpen(false);
         setSelectedCard(null);
         setError(null);
       }
-      
+
     } catch (err) {
       console.error('FSRS Review error:', err);
-      
+
       // Hata durumunda da kartı kaldır (kullanıcı deneyimi için)
       setCards(prev => prev.filter(card => card.card_id !== cardId));
       setReviewDialogOpen(false);
       setSelectedCard(null);
-      
+
       setError(err instanceof Error ? err.message : 'İnceleme kaydedilirken hata oluştu');
     }
   };
@@ -289,8 +284,8 @@ const FSRSScheduler: React.FC<FSRSSchedulerProps> = ({
       <Alert severity="error" sx={{ m: 2 }}>
         <Typography variant="h6">Hata</Typography>
         <Typography>{error}</Typography>
-        <Button 
-          startIcon={<RefreshIcon />} 
+        <Button
+          startIcon={<RefreshIcon />}
           onClick={() => window.location.reload()}
           sx={{ mt: 1 }}
         >
@@ -316,11 +311,11 @@ const FSRSScheduler: React.FC<FSRSSchedulerProps> = ({
           </Tooltip>
         </Box>
         <Typography variant="h6" color="text.secondary" gutterBottom>
-          Anki'nin FSRS 4.5'ini geliştiren Türk öğrenci optimizasyonu
+          Anki&apos;nin FSRS 4.5&apos;ini geliştiren Türk öğrenci optimizasyonu
         </Typography>
-        <Chip 
-          label="🚀 DEVRİMSEL ÖZELLİK" 
-          color="primary" 
+        <Chip
+          label="🚀 DEVRİMSEL ÖZELLİK"
+          color="primary"
           variant="outlined"
           sx={{ fontWeight: 'bold' }}
         />
@@ -411,14 +406,14 @@ const FSRSScheduler: React.FC<FSRSSchedulerProps> = ({
             <Grid container spacing={2}>
               {todayCards.slice(0, 6).map((card) => (
                 <Grid item xs={12} md={6} lg={4} key={card.card_id}>
-                  <Paper 
-                    sx={{ 
-                      p: 2, 
-                      border: 2, 
+                  <Paper
+                    sx={{
+                      p: 2,
+                      border: 2,
                       borderColor: 'error.main',
                       bgcolor: 'error.50',
                       cursor: 'pointer',
-                      '&:hover': { boxShadow: 2 }
+                      '&:hover': { boxShadow: 2 },
                     }}
                     onClick={() => {
                       setSelectedCard(card);
@@ -426,7 +421,7 @@ const FSRSScheduler: React.FC<FSRSSchedulerProps> = ({
                     }}
                   >
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 1 }}>
-                      <Chip 
+                      <Chip
                         label={card.state}
                         color={getCardStateColor(card.state)}
                         size="small"
@@ -435,11 +430,11 @@ const FSRSScheduler: React.FC<FSRSSchedulerProps> = ({
                         #{card.review_count}
                       </Typography>
                     </Box>
-                    
+
                     <Typography variant="body1" fontWeight="medium" sx={{ mb: 1 }}>
                       {card.content.length > 50 ? `${card.content.substring(0, 50)}...` : card.content}
                     </Typography>
-                    
+
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
                       <Typography variant="caption" color="text.secondary">
                         Zorluk: {card.difficulty.toFixed(1)}
@@ -448,7 +443,7 @@ const FSRSScheduler: React.FC<FSRSSchedulerProps> = ({
                         Kararlılık: {card.stability.toFixed(1)}
                       </Typography>
                     </Box>
-                    
+
                     <LinearProgress
                       variant="determinate"
                       value={card.retrievability * 100}
@@ -462,7 +457,7 @@ const FSRSScheduler: React.FC<FSRSSchedulerProps> = ({
                 </Grid>
               ))}
             </Grid>
-            
+
             {todayCards.length > 6 && (
               <Box sx={{ textAlign: 'center', mt: 2 }}>
                 <Button variant="outlined" color="primary">
@@ -489,7 +484,7 @@ const FSRSScheduler: React.FC<FSRSSchedulerProps> = ({
                 <Grid item xs={12} md={6} key={card.card_id}>
                   <Paper sx={{ p: 2, border: 1, borderColor: 'warning.main', bgcolor: 'warning.50' }}>
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 1 }}>
-                      <Chip 
+                      <Chip
                         label={card.state}
                         color={getCardStateColor(card.state)}
                         size="small"
@@ -498,11 +493,11 @@ const FSRSScheduler: React.FC<FSRSSchedulerProps> = ({
                         {new Date(card.next_review).toLocaleDateString('tr-TR')}
                       </Typography>
                     </Box>
-                    
+
                     <Typography variant="body2" sx={{ mb: 1 }}>
                       {card.content.length > 80 ? `${card.content.substring(0, 80)}...` : card.content}
                     </Typography>
-                    
+
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                       <Typography variant="caption" color="text.secondary">
                         Zorluk: {card.difficulty.toFixed(1)}
@@ -559,7 +554,7 @@ const FSRSScheduler: React.FC<FSRSSchedulerProps> = ({
               <Typography variant="body1" sx={{ mb: 2 }}>
                 {selectedCard.content}
               </Typography>
-              
+
               <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
                 <Typography variant="caption">
                   Zorluk: {selectedCard.difficulty.toFixed(1)}
@@ -571,7 +566,7 @@ const FSRSScheduler: React.FC<FSRSSchedulerProps> = ({
                   Geri Çağırılabilirlik: {(selectedCard.retrievability * 100).toFixed(0)}%
                 </Typography>
               </Box>
-              
+
               <Typography variant="subtitle2" gutterBottom>
                 Bu kartı ne kadar iyi hatırlıyorsunuz?
               </Typography>
@@ -579,28 +574,28 @@ const FSRSScheduler: React.FC<FSRSSchedulerProps> = ({
           )}
         </DialogContent>
         <DialogActions sx={{ justifyContent: 'space-between', p: 2 }}>
-          <Button 
+          <Button
             onClick={() => selectedCard && handleReview(selectedCard.card_id, 1)}
             color="error"
             variant="contained"
           >
             Tekrar (1)
           </Button>
-          <Button 
+          <Button
             onClick={() => selectedCard && handleReview(selectedCard.card_id, 2)}
             color="warning"
             variant="contained"
           >
             Zor (2)
           </Button>
-          <Button 
+          <Button
             onClick={() => selectedCard && handleReview(selectedCard.card_id, 3)}
             color="success"
             variant="contained"
           >
             İyi (3)
           </Button>
-          <Button 
+          <Button
             onClick={() => selectedCard && handleReview(selectedCard.card_id, 4)}
             color="primary"
             variant="contained"
@@ -617,42 +612,42 @@ const FSRSScheduler: React.FC<FSRSSchedulerProps> = ({
         </DialogTitle>
         <DialogContent>
           <Typography variant="body1" paragraph>
-            Bu sistem, Anki'nin FSRS 4.5 algoritmasını 10,000 Türk öğrenci verisinden çıkarılan 
+            Bu sistem, Anki&apos;nin FSRS 4.5 algoritmasını 10,000 Türk öğrenci verisinden çıkarılan
             parametrelerle optimize eder.
           </Typography>
-          
+
           <Typography variant="h6" gutterBottom>
             Türk Kültürü Ayarlamaları:
           </Typography>
           <List dense>
             <ListItem>
               <ListItemIcon><StarIcon color="primary" /></ListItemIcon>
-              <ListItemText 
-                primary="Ramazan Faktörü" 
+              <ListItemText
+                primary="Ramazan Faktörü"
                 secondary="Ramazan ayında unutma hızı %20 azalır"
               />
             </ListItem>
             <ListItem>
               <ListItemIcon><WarningIcon color="warning" /></ListItemIcon>
-              <ListItemText 
-                primary="Sınav Dönemi Stresi" 
+              <ListItemText
+                primary="Sınav Dönemi Stresi"
                 secondary="Sınav döneminde tekrar sıklığı %30 artar"
               />
             </ListItem>
             <ListItem>
               <ListItemIcon><CheckCircleIcon color="success" /></ListItemIcon>
-              <ListItemText 
-                primary="Grup Çalışması Bonusu" 
+              <ListItemText
+                primary="Grup Çalışması Bonusu"
                 secondary="Grup çalışması yapanlarda %20 bonus"
               />
             </ListItem>
           </List>
-          
+
           <Typography variant="h6" gutterBottom sx={{ mt: 2 }}>
             17 Optimize Parametre:
           </Typography>
           <Typography variant="body2" color="text.secondary">
-            Initial Stability, Grade Factors, Hard Penalty, Easy Bonus, Retention Weight, 
+            Initial Stability, Grade Factors, Hard Penalty, Easy Bonus, Retention Weight,
             Study Time Factor, Failure Factor, Success Factor, ve 9 parametre daha...
           </Typography>
         </DialogContent>

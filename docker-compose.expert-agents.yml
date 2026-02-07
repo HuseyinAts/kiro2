@@ -1,0 +1,198 @@
+# Docker Compose for Expert Agents Service
+# Task 18.2: Deployment Configuration
+# KIRO2 - Konu Bazli Subagent Sistemi
+
+version: '3.8'
+
+services:
+  # ============================================================
+  # Expert Agents Service
+  # ============================================================
+  expert-agents-service:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.expert-agents
+    container_name: kiro2_expert_agents
+    ports:
+      - "${EXPERT_AGENTS_PORT:-8006}:8006"
+    environment:
+      # Database
+      - DATABASE_URL=postgresql+asyncpg://postgres:${POSTGRES_PASSWORD:-postgres}@postgres:5432/${DB_NAME:-kiro2}
+
+      # Redis for Blackboard
+      - REDIS_URL=redis://redis:6379/${BLACKBOARD_REDIS_DB:-2}
+      - BLACKBOARD_REDIS_DB=${BLACKBOARD_REDIS_DB:-2}
+
+      # LLM Service
+      - QWEN_API_URL=${QWEN_API_URL:-http://ollama:11434}
+      - QWEN_MODEL=${QWEN_MODEL:-qwen3:8b}
+
+      # Agent Configuration
+      - AGENT_CONTEXT_MAX_TOKENS=${AGENT_CONTEXT_MAX_TOKENS:-200000}
+      - BLACKBOARD_MESSAGE_TTL=${BLACKBOARD_MESSAGE_TTL:-3600}
+      - BLACKBOARD_CONTEXT_TTL=${BLACKBOARD_CONTEXT_TTL:-600}
+
+      # Performance
+      - AGENT_RESPONSE_TIMEOUT=${AGENT_RESPONSE_TIMEOUT:-30}
+      - MAX_CONCURRENT_AGENTS=${MAX_CONCURRENT_AGENTS:-6}
+
+      # Logging
+      - LOG_LEVEL=${LOG_LEVEL:-INFO}
+      - PYTHONUNBUFFERED=1
+
+      # Metrics
+      - PROMETHEUS_MULTIPROC_DIR=/tmp/prometheus_multiproc
+
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - kiro2_network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8006/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    deploy:
+      resources:
+        limits:
+          memory: 4G
+          cpus: '2'
+        reservations:
+          memory: 2G
+          cpus: '1'
+    volumes:
+      - ./backend/agents:/app/agents:ro
+      - expert_agents_logs:/app/logs
+
+  # ============================================================
+  # Redis for Blackboard (separate instance)
+  # ============================================================
+  redis-blackboard:
+    image: redis:7-alpine
+    container_name: kiro2_redis_blackboard
+    ports:
+      - "${REDIS_BLACKBOARD_PORT:-6380}:6379"
+    volumes:
+      - redis_blackboard_data:/data
+    networks:
+      - kiro2_network
+    restart: unless-stopped
+    command: >
+      redis-server
+      --appendonly yes
+      --maxmemory 256mb
+      --maxmemory-policy allkeys-lru
+      --save 60 1
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  # ============================================================
+  # PostgreSQL (if not using main)
+  # ============================================================
+  postgres:
+    image: postgres:15-alpine
+    container_name: kiro2_postgres_agents
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER:-postgres}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-postgres}
+      - POSTGRES_DB=${DB_NAME:-kiro2}
+    ports:
+      - "${POSTGRES_PORT:-5434}:5432"
+    volumes:
+      - postgres_agents_data:/var/lib/postgresql/data
+    networks:
+      - kiro2_network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ============================================================
+  # Redis (main instance)
+  # ============================================================
+  redis:
+    image: redis:7-alpine
+    container_name: kiro2_redis_main
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    volumes:
+      - redis_main_data:/data
+    networks:
+      - kiro2_network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  # ============================================================
+  # Prometheus (Metrics Collection)
+  # ============================================================
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: kiro2_prometheus
+    ports:
+      - "${PROMETHEUS_PORT:-9090}:9090"
+    volumes:
+      - ./backend/deployment/monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    networks:
+      - kiro2_network
+    restart: unless-stopped
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
+      - '--web.console.templates=/usr/share/prometheus/consoles'
+      - '--web.enable-lifecycle'
+
+  # ============================================================
+  # Grafana (Dashboard)
+  # ============================================================
+  grafana:
+    image: grafana/grafana:latest
+    container_name: kiro2_grafana
+    ports:
+      - "${GRAFANA_PORT:-3000}:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=${GRAFANA_USER:-admin}
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD:-admin}
+      - GF_USERS_ALLOW_SIGN_UP=false
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./backend/deployment/grafana:/etc/grafana/provisioning:ro
+    networks:
+      - kiro2_network
+    restart: unless-stopped
+    depends_on:
+      - prometheus
+
+volumes:
+  redis_blackboard_data:
+    driver: local
+  postgres_agents_data:
+    driver: local
+  redis_main_data:
+    driver: local
+  prometheus_data:
+    driver: local
+  grafana_data:
+    driver: local
+  expert_agents_logs:
+    driver: local
+
+networks:
+  kiro2_network:
+    driver: bridge
+    name: kiro2_network

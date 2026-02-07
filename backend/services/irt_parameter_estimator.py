@@ -7,10 +7,9 @@ Requirements: REQ-48.13-48.16
 """
 
 import logging
-from typing import Dict, List, Tuple, Optional
+from typing import Dict, List
 import numpy as np
 from scipy.optimize import minimize
-from scipy.stats import norm
 
 logger = logging.getLogger(__name__)
 

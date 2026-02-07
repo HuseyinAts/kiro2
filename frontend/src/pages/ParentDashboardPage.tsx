@@ -3,11 +3,12 @@
  * Çocukların eğitim ilerlemesini takip
  */
 
-import React from 'react'
-import { ModernParentDashboard } from './ModernParentDashboard'
+import * as React from 'react';
+
+import { ModernParentDashboard } from './ModernParentDashboard';
 
 export const ParentDashboardPage: React.FC = () => {
-  return <ModernParentDashboard />
-}
+  return <ModernParentDashboard />;
+};
 
-export default ParentDashboardPage
+export default ParentDashboardPage;

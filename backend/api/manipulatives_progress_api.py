@@ -4,10 +4,9 @@ REQ-51.101-51.105: Progress tracking, visualization, achievement badges
 """
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from sqlalchemy import func, and_
-from typing import List, Dict, Any
+from sqlalchemy import func
 from pydantic import BaseModel
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 from core.database import get_db
 from core.auth_dependencies import get_current_user
@@ -15,11 +14,10 @@ from models.database import (
     User,
     ManipulativeProgress,
     ManipulativeActivity,
-    WeeklyProgress,
 )
 from models.user_badge import UserBadge
 
-router = APIRouter(prefix="/api/manipulatives", tags=["manipulatives-progress"])
+router = APIRouter(prefix="/api/manipulatives/progress", tags=["manipulatives-progress"])
 
 
 # Pydantic Models
@@ -225,7 +223,7 @@ async def get_user_badges(
         )
 
         # Check for consecutive days (perfect week)
-        seven_days_ago = datetime.utcnow() - timedelta(days=7)
+        seven_days_ago = datetime.now(timezone.utc) - timedelta(days=7)
         recent_activities = (
             db.query(func.date(ManipulativeActivity.created_at))
             .filter(
@@ -370,7 +368,7 @@ async def get_user_badges(
                 new_badge = UserBadge(
                     user_id=current_user.id,
                     badge_id=badge_id,
-                    earned_at=datetime.utcnow(),
+                    earned_at=datetime.now(timezone.utc),
                     auto_awarded=True,
                 )
                 db.add(new_badge)
@@ -443,7 +441,7 @@ async def get_progress_summary(
 
         current_streak = 0
         if activity_dates:
-            current_date = datetime.utcnow().date()
+            current_date = datetime.now(timezone.utc).date()
             expected_date = current_date
 
             for (activity_date,) in activity_dates:
@@ -483,10 +481,10 @@ async def get_progress_summary(
         )
 
         # Weekly goal progress (current week)
-        current_week = datetime.utcnow().isocalendar()[1]
-        current_year = datetime.utcnow().year
+        current_week = datetime.now(timezone.utc).isocalendar()[1]
+        current_year = datetime.now(timezone.utc).year
 
-        week_start = datetime.utcnow() - timedelta(days=datetime.utcnow().weekday())
+        week_start = datetime.now(timezone.utc) - timedelta(days=datetime.now(timezone.utc).weekday())
         weekly_activities = (
             db.query(ManipulativeActivity)
             .filter(
@@ -620,7 +618,7 @@ async def claim_badge(
         )
 
         # Check for consecutive days
-        seven_days_ago = datetime.utcnow() - timedelta(days=7)
+        seven_days_ago = datetime.now(timezone.utc) - timedelta(days=7)
         recent_activities = (
             db.query(func.date(ManipulativeActivity.created_at))
             .filter(
@@ -695,7 +693,7 @@ async def claim_badge(
         new_badge = UserBadge(
             user_id=current_user.id,
             badge_id=badge_id,
-            earned_at=datetime.utcnow(),
+            earned_at=datetime.now(timezone.utc),
             auto_awarded=False,  # Manually claimed
         )
         db.add(new_badge)
@@ -726,7 +724,7 @@ async def get_weekly_progress(
     """
     try:
         # Calculate last 7 days date range
-        today = datetime.utcnow()
+        today = datetime.now(timezone.utc)
         seven_days_ago = today - timedelta(days=6)  # Include today, so 7 days total
 
         # Turkish day names

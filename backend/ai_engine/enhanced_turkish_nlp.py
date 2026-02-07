@@ -3,19 +3,14 @@ Enhanced Turkish NLP Engine
 Advanced Turkish language processing with machine learning
 """
 
-import asyncio
 import logging
 import re
 from dataclasses import dataclass, field
-from datetime import datetime, timedelta
-from typing import Any, Dict, List, Optional, Set, Tuple, Union
+from typing import Any, Dict, List, Optional
 from enum import Enum
 import numpy as np
 from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.metrics.pairwise import cosine_similarity
-from sklearn.cluster import KMeans
-import spacy
-from transformers import pipeline, AutoTokenizer, AutoModel
+from transformers import pipeline
 import torch
 
 logger = logging.getLogger(__name__)

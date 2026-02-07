@@ -3,14 +3,15 @@
  * Task 91: Leaderboard System Testing
  */
 
-import React from 'react';
+import * as React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { Leaderboard } from '../Leaderboard';
 import * as useGamificationHook from '../../../hooks/useGamification';
+import { vi, Mocked } from 'vitest';
 
 vi.mock('../../../hooks/useGamification');
-const mockedUseGamification = useGamificationHook as jest.Mocked<typeof useGamificationHook>;
+const mockedUseGamification = useGamificationHook as Mocked<typeof useGamificationHook>;
 
 const mockLeaderboard = [
   { rank: 1, user_id: '1', username: 'TopPlayer', score: 10000, level: 50, avatar_url: 'avatar1.jpg' },

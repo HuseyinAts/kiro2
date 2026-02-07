@@ -20,9 +20,10 @@ backend_path = Path(__file__).parent
 sys.path.insert(0, str(backend_path))
 
 # Environment setup
+db_password = os.getenv("DATABASE_PASSWORD", "")
 os.environ[
     "DATABASE_URL"
-] = "postgresql://postgres:changeme_strong_password_here@localhost:5432/turkiye_sinav"
+] = f"postgresql://postgres:{db_password}@localhost:5434/turkiye_sinav"
 os.environ["REDIS_HOST"] = "localhost"
 os.environ["REDIS_PORT"] = "6379"
 os.environ["ENVIRONMENT"] = "development"
@@ -189,7 +190,7 @@ async def main():
                     rejected_count += 1
                     continue
                 else:
-                    print(f"    [PASS] Not plagiarized")
+                    print("    [PASS] Not plagiarized")
             except Exception as e:
                 print(f"    [WARN] Plagiarism check failed: {str(e)[:60]}")
                 similarity = 0.0
@@ -207,7 +208,7 @@ async def main():
                     kazanim=question_data["kazanim"],
                     zorluk=question_data["zorluk"],
                 )
-                print(f"    [OK] Added to knowledge graph")
+                print("    [OK] Added to knowledge graph")
             except Exception as e:
                 print(f"    [WARN] KG add failed: {str(e)[:60]}")
 
@@ -252,7 +253,7 @@ async def main():
                     "irt_c": 0.25,
                 }
 
-                print(f"    [OK] Added to CAT pool")
+                print("    [OK] Added to CAT pool")
                 print(
                     f"    - IRT params: a={irt_params['irt_a']:.2f}, b={irt_params['irt_b']:.2f}, c={irt_params['irt_c']:.2f}"
                 )
@@ -275,7 +276,7 @@ async def main():
 
     # Show Knowledge Graph stats
     if kg_service:
-        print(f"Knowledge Graph Status:")
+        print("Knowledge Graph Status:")
         print(f"  - Total nodes: {len(kg_service.graph.nodes())}")
         print(f"  - Total edges: {len(kg_service.graph.edges())}")
         print()
@@ -285,7 +286,7 @@ async def main():
         pending_tasks = len(
             [t for t in hitl_service.task_queue if t.status.value == "pending"]
         )
-        print(f"HITL Workflow Status:")
+        print("HITL Workflow Status:")
         print(f"  - Pending tasks: {pending_tasks}")
         print(f"  - Total experts: {len(hitl_service.experts)}")
         print()

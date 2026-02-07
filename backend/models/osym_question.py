@@ -18,7 +18,7 @@ from sqlalchemy import (
 )
 from sqlalchemy.orm import relationship
 from datetime import datetime
-from models.base import Base
+from .base import Base
 
 
 class OSYMQuestion(Base):

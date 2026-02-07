@@ -4,7 +4,6 @@ N+1 Query Detection Script - Sprint 1 Phase 2
 Detects real N+1 query patterns vs false positives.
 """
 import re
-import os
 from pathlib import Path
 from collections import defaultdict
 

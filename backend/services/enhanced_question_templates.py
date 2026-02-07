@@ -11,7 +11,6 @@ SUCCESS PATTERN (Physics):
 APPLY TO: Math & Turkish (currently too short)
 """
 
-from typing import Dict, Optional
 
 
 class EnhancedQuestionTemplate:

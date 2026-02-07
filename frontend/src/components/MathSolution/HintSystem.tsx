@@ -3,9 +3,9 @@
  * Requirements: REQ-51.31-51.35 (İpucu sistemi)
  */
 
-import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { Lightbulb, Lock, Unlock } from 'lucide-react';
+import * as React from 'react';
+import {  useState  } from 'react';
 
 interface HintSystemProps {
   problemId: string;
@@ -13,19 +13,19 @@ interface HintSystemProps {
   hints: string[];
 }
 
-const HintSystem: React.FC<HintSystemProps> = ({ problemId, stepNumber, hints }) => {
+const HintSystem: React.FC<HintSystemProps> = ({ problemId: _problemId, stepNumber: _stepNumber, hints }) => {
   const [unlockedHints, setUnlockedHints] = useState<number[]>([]);
 
   const hintLevelNames = [
     'Hafif İpucu',
     'Orta İpucu',
-    'Detaylı İpucu'
+    'Detaylı İpucu',
   ];
 
   const hintLevelColors = [
     'bg-yellow-100 border-yellow-300',
     'bg-orange-100 border-orange-300',
-    'bg-red-100 border-red-300'
+    'bg-red-100 border-red-300',
   ];
 
   const unlockHint = (level: number) => {
@@ -50,7 +50,7 @@ const HintSystem: React.FC<HintSystemProps> = ({ problemId, stepNumber, hints })
         {hints.map((hint, index) => {
           const level = index + 1;
           const isUnlocked = unlockedHints.includes(level);
-          
+
           return (
             <div key={level} className={`border-2 rounded-lg p-3 ${
               isUnlocked ? hintLevelColors[index] : 'bg-gray-50 border-gray-300'

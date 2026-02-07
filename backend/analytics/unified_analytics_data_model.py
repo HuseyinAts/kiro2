@@ -915,6 +915,6 @@ if __name__ == "__main__":
     exam_errors = validator.validate_exam_metrics(exam_metrics)
     context_errors = validator.validate_turkish_education_context(education_context)
 
-    print(f"\nValidation Errors:")
+    print("\nValidation Errors:")
     print(f"Exam Metrics: {exam_errors}")
     print(f"Education Context: {context_errors}")

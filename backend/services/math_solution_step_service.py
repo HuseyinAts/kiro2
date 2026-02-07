@@ -6,7 +6,6 @@ Bu servis matematik problemlerinin adım adım çözümlerini oluşturur ve yön
 """
 
 import logging
-import re
 from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any, Dict, List, Optional

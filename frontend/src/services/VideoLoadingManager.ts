@@ -1,9 +1,9 @@
 /**
  * VideoLoadingManager - Merkezi video yükleme state management
- * 
+ *
  * Bu servis, Learning Path sayfasında video yükleme işlemlerini yönetir.
  * State management, retry logic, timeout handling ve error handling sağlar.
- * 
+ *
  * @module VideoLoadingManager
  * @requires Requirements: 3.1, 3.2, 3.9, 3.14, 10.1, 10.2, 10.3
  */
@@ -78,7 +78,7 @@ export type StateChangeCallback = (state: VideoLoadingState) => void;
 
 /**
  * VideoLoadingManager - Video yükleme orchestration
- * 
+ *
  * Özellikler:
  * - Merkezi state management
  * - Automatic retry with exponential backoff
@@ -97,7 +97,7 @@ export class VideoLoadingManager {
 
   /**
    * VideoLoadingManager constructor
-   * 
+   *
    * @param apiBaseUrl - Backend API base URL
    * @param timeout - Request timeout in milliseconds (default: 20000)
    * @param maxRetries - Maximum retry attempts (default: 2)
@@ -105,7 +105,7 @@ export class VideoLoadingManager {
   constructor(
     apiBaseUrl: string = import.meta.env.VITE_API_URL || 'http://localhost:8001',
     timeout: number = 20000,
-    maxRetries: number = 2
+    maxRetries: number = 2,
   ) {
     this.apiBaseUrl = apiBaseUrl;
     this.timeout = timeout;
@@ -125,7 +125,7 @@ export class VideoLoadingManager {
 
   /**
    * Video yükleme işlemini başlat
-   * 
+   *
    * @param profile - Öğrenci profili
    * @returns Promise<SubjectVideos[]>
    */
@@ -170,24 +170,20 @@ export class VideoLoadingManager {
       const difficulty = avgLevel < 30 ? 'kolay' : avgLevel < 70 ? 'orta' : 'zor';
 
       // Make API call
-      console.log('📤 VideoLoadingManager: Starting API call', {
-        requestId,
-        profile,
-        subject,
-        difficulty,
-        apiUrl: `${this.apiBaseUrl}/api/learning-path-v2/search-resources-with-fallback`,
-      });
+      // VideoLoadingManager: Starting API call
 
       // Get auth token
       const token = localStorage.getItem('access_token');
-      const authHeaders = token ? { 'Authorization': `Bearer ${token}` } : {};
+      const headers: Record<string, string> = {
+        'Content-Type': 'application/json',
+      };
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
 
-      const response = await fetch(`${this.apiBaseUrl}/api/learning-path-v2/search-resources-with-fallback`, {
+      const response = await fetch(`${this.apiBaseUrl}/api/learning-path/search-resources`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          ...authHeaders,
-        },
+        headers,
         body: JSON.stringify({
           subject,
           topic: primaryGoal,
@@ -235,12 +231,7 @@ export class VideoLoadingManager {
         cacheHit: data.cache_hit,
       });
 
-      console.log('✅ VideoLoadingManager: Videos loaded successfully', {
-        requestId,
-        videoCount: recommendations.length,
-        loadingTime: `${loadingTime}ms`,
-        cacheHit: data.cache_hit,
-      });
+      // VideoLoadingManager: Videos loaded successfully
 
       return recommendations;
 
@@ -257,7 +248,7 @@ export class VideoLoadingManager {
 
         // Check if we should retry
         if (this.state.retryCount < this.maxRetries) {
-          console.log(`🔄 VideoLoadingManager: Retrying (attempt ${this.state.retryCount + 1}/${this.maxRetries})`);
+          // VideoLoadingManager: Retrying
           return this.retryLoad(profile);
         }
 
@@ -285,7 +276,7 @@ export class VideoLoadingManager {
 
       // Check if we should retry
       if (this.state.retryCount < this.maxRetries && this._isRetryableError(error)) {
-        console.log(`🔄 VideoLoadingManager: Retrying (attempt ${this.state.retryCount + 1}/${this.maxRetries})`);
+        // VideoLoadingManager: Retrying
         return this.retryLoad(profile);
       }
 
@@ -309,7 +300,7 @@ export class VideoLoadingManager {
 
   /**
    * Retry video loading with exponential backoff
-   * 
+   *
    * @param profile - Öğrenci profili
    * @returns Promise<SubjectVideos[]>
    */
@@ -319,7 +310,7 @@ export class VideoLoadingManager {
     // Calculate exponential backoff delay
     const delay = Math.min(1000 * Math.pow(2, retryCount - 1), 5000); // Max 5 seconds
 
-    console.log(`⏳ VideoLoadingManager: Waiting ${delay}ms before retry...`);
+    // VideoLoadingManager: Waiting before retry
 
     // Update retry count
     this._updateState({
@@ -339,7 +330,7 @@ export class VideoLoadingManager {
    */
   cancelLoad(): void {
     if (this.abortController) {
-      console.log('🛑 VideoLoadingManager: Cancelling request');
+      // VideoLoadingManager: Cancelling request
       this.abortController.abort();
       this.abortController = null;
 
@@ -357,7 +348,7 @@ export class VideoLoadingManager {
 
   /**
    * Get current state
-   * 
+   *
    * @returns VideoLoadingState
    */
   getState(): VideoLoadingState {
@@ -366,7 +357,7 @@ export class VideoLoadingManager {
 
   /**
    * Subscribe to state changes
-   * 
+   *
    * @param callback - State change callback
    * @returns Unsubscribe function
    */
@@ -502,7 +493,7 @@ let globalInstance: VideoLoadingManager | null = null;
 
 /**
  * Get or create global VideoLoadingManager instance
- * 
+ *
  * @returns VideoLoadingManager
  */
 export function getVideoLoadingManager(): VideoLoadingManager {
@@ -514,7 +505,7 @@ export function getVideoLoadingManager(): VideoLoadingManager {
 
 /**
  * Create new VideoLoadingManager instance
- * 
+ *
  * @param apiBaseUrl - Backend API base URL
  * @param timeout - Request timeout in milliseconds
  * @param maxRetries - Maximum retry attempts
@@ -523,7 +514,7 @@ export function getVideoLoadingManager(): VideoLoadingManager {
 export function createVideoLoadingManager(
   apiBaseUrl?: string,
   timeout?: number,
-  maxRetries?: number
+  maxRetries?: number,
 ): VideoLoadingManager {
   return new VideoLoadingManager(apiBaseUrl, timeout, maxRetries);
 }

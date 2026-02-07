@@ -13,7 +13,6 @@ Author: Claude
 Date: 2025-10-27
 """
 import random
-import time
 from contextlib import contextmanager
 from enum import Enum
 from typing import Generator, List, Optional
@@ -21,7 +20,6 @@ from typing import Generator, List, Optional
 from sqlalchemy import create_engine, text
 from sqlalchemy.engine import Engine
 from sqlalchemy.orm import Session, sessionmaker
-from sqlalchemy.pool import NullPool
 
 from core.config import get_settings
 from core.structured_logger import get_logger

@@ -1,0 +1,112 @@
+Requirement already satisfied: fastapi==0.104.1 in c:\users\husey\kiro2\.venv\lib\site-packages (from -r requirements.txt (line 2)) (0.104.1)
+Collecting uvicorn==0.24.0 (from uvicorn[standard]==0.24.0->-r requirements.txt (line 3))
+  Using cached uvicorn-0.24.0-py3-none-any.whl.metadata (6.4 kB)
+Collecting pydantic==2.5.0 (from -r requirements.txt (line 4))
+  Using cached pydantic-2.5.0-py3-none-any.whl.metadata (174 kB)
+Collecting pydantic-settings==2.1.0 (from -r requirements.txt (line 5))
+  Using cached pydantic_settings-2.1.0-py3-none-any.whl.metadata (2.9 kB)
+Collecting asyncpg==0.29.0 (from -r requirements.txt (line 8))
+  Using cached asyncpg-0.29.0.tar.gz (820 kB)
+  Installing build dependencies: started
+  Installing build dependencies: finished with status 'done'
+  Getting requirements to build wheel: started
+  Getting requirements to build wheel: finished with status 'done'
+  Preparing metadata (pyproject.toml): started
+  Preparing metadata (pyproject.toml): finished with status 'done'
+Requirement already satisfied: psycopg>=3.1.0 in c:\users\husey\kiro2\.venv\lib\site-packages (from psycopg[binary]>=3.1.0->-r requirements.txt (line 9)) (3.3.2)
+Requirement already satisfied: sqlalchemy>=2.0.36 in c:\users\husey\kiro2\.venv\lib\site-packages (from sqlalchemy[asyncio]>=2.0.36->-r requirements.txt (line 10)) (2.0.45)
+Requirement already satisfied: alembic==1.13.1 in c:\users\husey\kiro2\.venv\lib\site-packages (from -r requirements.txt (line 11)) (1.13.1)
+Collecting redis==5.0.1 (from redis[hiredis]==5.0.1->-r requirements.txt (line 14))
+  Using cached redis-5.0.1-py3-none-any.whl.metadata (8.9 kB)
+Collecting aioredis==2.0.1 (from -r requirements.txt (line 15))
+  Using cached aioredis-2.0.1-py3-none-any.whl.metadata (15 kB)
+Collecting celery==5.3.4 (from celery[redis]==5.3.4->-r requirements.txt (line 18))
+  Using cached celery-5.3.4-py3-none-any.whl.metadata (21 kB)
+Collecting flower==2.0.1 (from -r requirements.txt (line 19))
+  Using cached flower-2.0.1-py2.py3-none-any.whl.metadata (4.5 kB)
+Collecting kombu==5.3.4 (from -r requirements.txt (line 20))
+  Using cached kombu-5.3.4-py3-none-any.whl.metadata (3.1 kB)
+Collecting pytest==7.4.3 (from -r requirements.txt (line 23))
+  Using cached pytest-7.4.3-py3-none-any.whl.metadata (7.9 kB)
+Collecting pytest-asyncio==0.21.1 (from -r requirements.txt (line 24))
+  Using cached pytest_asyncio-0.21.1-py3-none-any.whl.metadata (4.0 kB)
+Collecting pytest-cov==4.1.0 (from -r requirements.txt (line 25))
+  Using cached pytest_cov-4.1.0-py3-none-any.whl.metadata (26 kB)
+Collecting pytest-mock==3.12.0 (from -r requirements.txt (line 26))
+  Using cached pytest_mock-3.12.0-py3-none-any.whl.metadata (3.8 kB)
+Collecting pytest-xdist==3.8.0 (from -r requirements.txt (line 27))
+  Using cached pytest_xdist-3.8.0-py3-none-any.whl.metadata (3.0 kB)
+Collecting elasticsearch==8.11.0 (from elasticsearch[async]==8.11.0->-r requirements.txt (line 30))
+  Using cached elasticsearch-8.11.0-py3-none-any.whl.metadata (5.1 kB)
+Collecting aiohttp==3.9.1 (from -r requirements.txt (line 33))
+  Using cached aiohttp-3.9.1.tar.gz (7.5 MB)
+  Installing build dependencies: started
+  Installing build dependencies: finished with status 'done'
+  Getting requirements to build wheel: started
+  Getting requirements to build wheel: finished with status 'done'
+  Preparing metadata (pyproject.toml): started
+  Preparing metadata (pyproject.toml): finished with status 'done'
+Collecting httpx==0.25.2 (from -r requirements.txt (line 34))
+  Using cached httpx-0.25.2-py3-none-any.whl.metadata (6.9 kB)
+Collecting passlib==1.7.4 (from passlib[bcrypt]==1.7.4->-r requirements.txt (line 37))
+  Using cached passlib-1.7.4-py2.py3-none-any.whl.metadata (1.7 kB)
+Collecting slowapi==0.1.9 (from -r requirements.txt (line 38))
+  Using cached slowapi-0.1.9-py3-none-any.whl.metadata (3.0 kB)
+Collecting bleach==6.2.0 (from -r requirements.txt (line 39))
+  Using cached bleach-6.2.0-py3-none-any.whl.metadata (30 kB)
+Collecting pyotp==2.9.0 (from -r requirements.txt (line 42))
+  Using cached pyotp-2.9.0-py3-none-any.whl.metadata (9.8 kB)
+Requirement already satisfied: qrcode==7.4.2 in c:\users\husey\kiro2\.venv\lib\site-packages (from qrcode[pil]==7.4.2->-r requirements.txt (line 43)) (7.4.2)
+Requirement already satisfied: Pillow>=12.0.0 in c:\users\husey\kiro2\.venv\lib\site-packages (from -r requirements.txt (line 44)) (12.1.0)
+Collecting zemberek-python==0.1.3 (from -r requirements.txt (line 47))
+  Using cached zemberek_python-0.1.3-py3-none-any.whl.metadata (1.8 kB)
+Collecting hijri-converter==2.3.1 (from -r requirements.txt (line 48))
+  Using cached hijri_converter-2.3.1-py3-none-any.whl.metadata (2.7 kB)
+Collecting langdetect==1.0.9 (from -r requirements.txt (line 49))
+  Using cached langdetect-1.0.9.tar.gz (981 kB)
+  Installing build dependencies: started
+  Installing build dependencies: finished with status 'done'
+  Getting requirements to build wheel: started
+  Getting requirements to build wheel: finished with status 'done'
+  Preparing metadata (pyproject.toml): started
+  Preparing metadata (pyproject.toml): finished with status 'done'
+Collecting prometheus-client==0.19.0 (from -r requirements.txt (line 52))
+  Using cached prometheus_client-0.19.0-py3-none-any.whl.metadata (1.8 kB)
+Collecting psutil==5.9.6 (from -r requirements.txt (line 53))
+  Using cached psutil-5.9.6-cp37-abi3-win_amd64.whl.metadata (22 kB)
+Collecting aiofiles==23.2.1 (from -r requirements.txt (line 54))
+  Using cached aiofiles-23.2.1-py3-none-any.whl.metadata (9.7 kB)
+Collecting structlog==24.1.0 (from -r requirements.txt (line 55))
+  Using cached structlog-24.1.0-py3-none-any.whl.metadata (6.9 kB)
+Requirement already satisfied: numpy>=1.26.0 in c:\users\husey\kiro2\.venv\lib\site-packages (from -r requirements.txt (line 58)) (2.4.0)
+Collecting scikit-learn>=1.3.2 (from -r requirements.txt (line 59))
+  Downloading scikit_learn-1.8.0-cp313-cp313-win_amd64.whl.metadata (11 kB)
+Collecting sympy==1.12 (from -r requirements.txt (line 62))
+  Downloading sympy-1.12-py3-none-any.whl.metadata (12 kB)
+Collecting matplotlib>=3.8.2 (from -r requirements.txt (line 63))
+  Downloading matplotlib-3.10.8-cp313-cp313-win_amd64.whl.metadata (52 kB)
+Collecting plotly==5.18.0 (from -r requirements.txt (line 64))
+  Downloading plotly-5.18.0-py3-none-any.whl.metadata (7.0 kB)
+Collecting openai==1.3.0 (from -r requirements.txt (line 67))
+  Downloading openai-1.3.0-py3-none-any.whl.metadata (16 kB)
+Collecting transformers>=4.35.0 (from -r requirements.txt (line 68))
+  Using cached transformers-4.57.3-py3-none-any.whl.metadata (43 kB)
+Collecting torch>=2.1.0 (from -r requirements.txt (line 69))
+  Using cached torch-2.9.1-cp313-cp313-win_amd64.whl.metadata (30 kB)
+Collecting nltk==3.8.1 (from -r requirements.txt (line 70))
+  Downloading nltk-3.8.1-py3-none-any.whl.metadata (2.8 kB)
+Collecting rouge-score==0.1.2 (from -r requirements.txt (line 71))
+  Downloading rouge_score-0.1.2.tar.gz (17 kB)
+  Installing build dependencies: started
+  Installing build dependencies: finished with status 'done'
+  Getting requirements to build wheel: started
+  Getting requirements to build wheel: finished with status 'done'
+  Preparing metadata (pyproject.toml): started
+  Preparing metadata (pyproject.toml): finished with status 'done'
+Collecting sentencepiece==0.1.99 (from -r requirements.txt (line 72))
+  Downloading sentencepiece-0.1.99.tar.gz (2.6 MB)
+     ---------------------------------------- 2.6/2.6 MB 2.2 MB/s  0:00:01
+  Installing build dependencies: started
+  Installing build dependencies: finished with status 'done'
+  Getting requirements to build wheel: started
+  Getting requirements to build wheel: finished with status 'error'

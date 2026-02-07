@@ -3,9 +3,17 @@
  * Glassmorphism ile detaylı sınav sonuçları analizi
  */
 
-import React, { useState, useEffect } from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
-import { motion } from 'framer-motion'
+import {
+  Assessment as AssessmentIcon,
+  CheckCircle as CheckIcon,
+  Cancel as CancelIcon,
+  HelpOutline as EmptyIcon,
+  TrendingUp as TrendingUpIcon,
+  Speed as SpeedIcon,
+  Replay as ReplayIcon,
+  Home as HomeIcon,
+  EmojiEvents as TrophyIcon,
+} from '@mui/icons-material';
 import {
   Container,
   Typography,
@@ -19,22 +27,15 @@ import {
   TableCell,
   TableHead,
   TableRow,
-  Divider
-} from '@mui/material'
-import {
-  Assessment as AssessmentIcon,
-  CheckCircle as CheckIcon,
-  Cancel as CancelIcon,
-  HelpOutline as EmptyIcon,
-  TrendingUp as TrendingUpIcon,
-  Speed as SpeedIcon,
-  Replay as ReplayIcon,
-  Home as HomeIcon,
-  EmojiEvents as TrophyIcon
-} from '@mui/icons-material'
-import { GlassCard } from '../components/ui/GlassCard'
-import { ModernButton } from '../components/ui/ModernButton'
-import { modernColors } from '../theme/modern-colors'
+} from '@mui/material';
+import { motion } from 'framer-motion';
+import * as React from 'react';
+import {  useState, useEffect  } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+
+import { GlassCard } from '../components/ui/GlassCard';
+import { ModernButton } from '../components/ui/ModernButton';
+import { modernColors } from '../theme/modern-colors';
 
 interface ExamResult {
   sinav_id: string
@@ -65,25 +66,25 @@ interface ExamResult {
 }
 
 export const ModernExamResultsPage: React.FC = () => {
-  const { sinavId } = useParams<{ sinavId: string }>()
-  const navigate = useNavigate()
-  const [loading, setLoading] = useState(true)
-  const [result, setResult] = useState<ExamResult | null>(null)
+  const { sinavId } = useParams<{ sinavId: string }>();
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(true);
+  const [result, setResult] = useState<ExamResult | null>(null);
 
   useEffect(() => {
     if (sinavId) {
-      fetchExamResults()
+      fetchExamResults();
     }
-  }, [sinavId])
+  }, [sinavId]);
 
   const fetchExamResults = async () => {
     try {
       const response = await fetch(`/api/v1/exams/${sinavId}/results`, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-      })
-      if (!response.ok) throw new Error()
-      const data = await response.json()
-      setResult(data)
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+      });
+      if (!response.ok) {throw new Error();}
+      const data = await response.json();
+      setResult(data);
     } catch {
       // Mock data
       setResult({
@@ -103,26 +104,26 @@ export const ModernExamResultsPage: React.FC = () => {
           user_answer: i < 32 ? 'A' : i < 37 ? 'B' : null,
           correct_answer: 'A',
           is_correct: i < 32,
-          time_spent: Math.floor(Math.random() * 120) + 30
+          time_spent: Math.floor(Math.random() * 120) + 30,
         })),
         subject_breakdown: [
           { subject: 'Sayılar', correct: 8, wrong: 1, empty: 1, total: 10 },
           { subject: 'Geometri', correct: 7, wrong: 2, empty: 1, total: 10 },
           { subject: 'Cebir', correct: 10, wrong: 0, empty: 0, total: 10 },
-          { subject: 'Olasılık', correct: 7, wrong: 2, empty: 1, total: 10 }
-        ]
-      })
+          { subject: 'Olasılık', correct: 7, wrong: 2, empty: 1, total: 10 },
+        ],
+      });
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   if (!sinavId) {
     return (
       <Container maxWidth="lg" sx={{ py: 4 }}>
         <Alert severity="error">Sınav ID bulunamadı</Alert>
       </Container>
-    )
+    );
   }
 
   if (loading) {
@@ -133,7 +134,7 @@ export const ModernExamResultsPage: React.FC = () => {
           Sonuçlar yükleniyor...
         </Typography>
       </Container>
-    )
+    );
   }
 
   if (!result) {
@@ -141,32 +142,32 @@ export const ModernExamResultsPage: React.FC = () => {
       <Container maxWidth="lg" sx={{ py: 4 }}>
         <Alert severity="error">Sonuçlar yüklenemedi</Alert>
       </Container>
-    )
+    );
   }
 
   const getScoreGradient = (score: number): string => {
-    if (score >= 85) return modernColors.gradients.success
-    if (score >= 70) return modernColors.gradients.primary
-    if (score >= 50) return modernColors.gradients.warning
-    return modernColors.gradients.error
-  }
+    if (score >= 85) {return modernColors.gradients.success;}
+    if (score >= 70) {return modernColors.gradients.primary;}
+    if (score >= 50) {return modernColors.gradients.warning;}
+    return modernColors.gradients.error;
+  };
 
   const getScoreIcon = (score: number) => {
-    if (score >= 85) return '🏆'
-    if (score >= 70) return '🎯'
-    if (score >= 50) return '📈'
-    return '💪'
-  }
+    if (score >= 85) {return '🏆';}
+    if (score >= 70) {return '🎯';}
+    if (score >= 50) {return '📈';}
+    return '💪';
+  };
 
   const getScoreMessage = (score: number) => {
-    if (score >= 85) return 'Mükemmel! Harika bir performans sergiledinizyürümeye devam edin!'
-    if (score >= 70) return 'Çok iyi! Biraz daha çalışarak daha da iyiye gidebilirsiniz.'
-    if (score >= 50) return 'İyi bir başlangıç! Eksik konularınızı çalışmaya devam edin.'
-    return 'Daha fazla çalışmanız gerekiyor. Pes etmeyin, başarısız olabilirsiniz!'
-  }
+    if (score >= 85) {return 'Mükemmel! Harika bir performans sergiledinizyürümeye devam edin!';}
+    if (score >= 70) {return 'Çok iyi! Biraz daha çalışarak daha da iyiye gidebilirsiniz.';}
+    if (score >= 50) {return 'İyi bir başlangıç! Eksik konularınızı çalışmaya devam edin.';}
+    return 'Daha fazla çalışmanız gerekiyor. Pes etmeyin, başarısız olabilirsiniz!';
+  };
 
-  const successRate = ((result.correct_count / result.question_count) * 100).toFixed(1)
-  const avgTimePerQuestion = (result.duration / result.question_count).toFixed(1)
+  const successRate = ((result.correct_count / result.question_count) * 100).toFixed(1);
+  const avgTimePerQuestion = (result.duration / result.question_count).toFixed(1);
 
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
@@ -185,7 +186,7 @@ export const ModernExamResultsPage: React.FC = () => {
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              mb: 2
+              mb: 2,
             }}
           >
             <AssessmentIcon sx={{ fontSize: 32, color: 'white' }} />
@@ -199,7 +200,7 @@ export const ModernExamResultsPage: React.FC = () => {
               backgroundClip: 'text',
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent',
-              mb: 1
+              mb: 1,
             }}
           >
             Sınav Sonuçları {getScoreIcon(result.score)}
@@ -212,7 +213,7 @@ export const ModernExamResultsPage: React.FC = () => {
                 day: 'numeric',
                 month: 'long',
                 hour: '2-digit',
-                minute: '2-digit'
+                minute: '2-digit',
               })}
             </Typography>
           </Box>
@@ -236,7 +237,7 @@ export const ModernExamResultsPage: React.FC = () => {
               alignItems: 'center',
               justifyContent: 'center',
               mx: 'auto',
-              mb: 2
+              mb: 2,
             }}
           >
             <Typography variant="h2" fontWeight={700} color="white">
@@ -295,8 +296,8 @@ export const ModernExamResultsPage: React.FC = () => {
                   borderRadius: 3,
                   background: 'rgba(0,0,0,0.1)',
                   '& .MuiLinearProgress-bar': {
-                    background: getScoreGradient(result.score)
-                  }
+                    background: getScoreGradient(result.score),
+                  },
                 }}
               />
             </GlassCard>
@@ -316,7 +317,7 @@ export const ModernExamResultsPage: React.FC = () => {
               </Box>
               <Typography variant="h4" fontWeight={700}>{result.duration}<Typography variant="caption">dk</Typography></Typography>
               <Typography variant="caption" color="text.secondary">
-                {result.time_limit} dakika limit
+                {(result as any).time_limit || result.duration} dakika limit
               </Typography>
             </GlassCard>
           </motion.div>
@@ -385,7 +386,7 @@ export const ModernExamResultsPage: React.FC = () => {
             </TableHead>
             <TableBody>
               {result.subject_breakdown.map((item, index) => {
-                const success = ((item.correct / item.total) * 100).toFixed(0)
+                const success = ((item.correct / item.total) * 100).toFixed(0);
                 return (
                   <TableRow key={index}>
                     <TableCell>{item.subject}</TableCell>
@@ -408,13 +409,13 @@ export const ModernExamResultsPage: React.FC = () => {
                           borderRadius: 4,
                           background: 'rgba(0,0,0,0.1)',
                           '& .MuiLinearProgress-bar': {
-                            background: getScoreGradient(parseFloat(success))
-                          }
+                            background: getScoreGradient(parseFloat(success)),
+                          },
                         }}
                       />
                     </TableCell>
                   </TableRow>
-                )
+                );
               })}
             </TableBody>
           </Table>
@@ -429,7 +430,7 @@ export const ModernExamResultsPage: React.FC = () => {
       >
         <Box sx={{ display: 'flex', gap: 2, justifyContent: 'center', flexWrap: 'wrap' }}>
           <ModernButton
-            variant="contained"
+            variant="solid"
             startIcon={<ReplayIcon />}
             onClick={() => navigate('/exam/start')}
             sx={{ background: modernColors.gradients.primary }}
@@ -446,7 +447,7 @@ export const ModernExamResultsPage: React.FC = () => {
         </Box>
       </motion.div>
     </Container>
-  )
-}
+  );
+};
 
-export default ModernExamResultsPage
+export default ModernExamResultsPage;

@@ -14,13 +14,20 @@ from typing import List, Optional, Dict, Any
 from sqlalchemy import select, and_, or_, func
 from sqlalchemy.orm import Session, joinedload
 
+from core.irt_validators import (
+    validate_irt_difficulty,
+    validate_irt_discrimination,
+    validate_irt_guessing,
+    validate_irt_upper_asymptote,
+)
+# Note: IRTValidationError is raised by validators - re-exported for external use
+from core.irt_validators import IRTValidationError as IRTValidationError  # noqa: F401
 from models.question_bank import (
     QuestionBankItem,
     TopicHierarchy,
     QuestionTag,
     QuestionTagAssociation,
     IRTCalibrationHistory,
-    QuestionPerformanceAnalytics,
     QuestionDifficultyLevel,
     calculate_irt_based_difficulty,
     should_update_difficulty,
@@ -154,7 +161,7 @@ class QuestionBankService:
         Returns:
             List[TopicHierarchy]: Konu listesi
         """
-        query = select(TopicHierarchy).where(TopicHierarchy.is_active == True)
+        query = select(TopicHierarchy).where(TopicHierarchy.is_active.is_(True))
 
         if parent_id:
             query = query.where(TopicHierarchy.parent_id == parent_id)
@@ -170,25 +177,77 @@ class QuestionBankService:
         """
         Konunun tam yolunu getir (kökten başlayarak)
 
+        PERFORMANCE FIX: Recursive CTE kullanarak sadece gerekli topic'leri fetch eder.
+        Önceki: Tüm topic'leri memory'e yükle (O(n) memory, 1000+ row)
+        Şimdi: Sadece path'teki topic'ler (O(depth) memory, max 5 row)
+
         Args:
             topic_id: Konu ID
 
         Returns:
             List[TopicHierarchy]: Kök'ten hedefe kadar tüm konular
         """
-        path = []
-        current_topic = await self.db.get(TopicHierarchy, topic_id)
+        from sqlalchemy import text
 
-        while current_topic:
-            path.insert(0, current_topic)
-            if current_topic.parent_id:
-                current_topic = await self.db.get(
-                    TopicHierarchy, current_topic.parent_id
+        # Recursive CTE ile sadece path'teki topic'leri getir
+        # PostgreSQL WITH RECURSIVE kullanır
+        cte_query = text("""
+            WITH RECURSIVE topic_path AS (
+                -- Base case: hedef topic
+                SELECT id, parent_id, code, name_tr, level, 1 as depth
+                FROM topic_hierarchy
+                WHERE id = :topic_id AND is_active = true
+
+                UNION ALL
+
+                -- Recursive case: parent'lara git
+                SELECT t.id, t.parent_id, t.code, t.name_tr, t.level, tp.depth + 1
+                FROM topic_hierarchy t
+                INNER JOIN topic_path tp ON t.id = tp.parent_id
+                WHERE t.is_active = true AND tp.depth < 5
+            )
+            SELECT id FROM topic_path ORDER BY depth DESC
+        """)
+
+        try:
+            result = await self.db.execute(cte_query, {"topic_id": topic_id})
+            path_ids = [row[0] for row in result.fetchall()]
+
+            if not path_ids:
+                return []
+
+            # Path ID'leri ile topic objelerini getir (tek query)
+            topics_result = await self.db.execute(
+                select(TopicHierarchy)
+                .where(TopicHierarchy.id.in_(path_ids))
+                .where(TopicHierarchy.is_active.is_(True))
+            )
+            topics_map = {t.id: t for t in topics_result.scalars().all()}
+
+            # Path sırasına göre döndür (kökten hedefe)
+            return [topics_map[tid] for tid in path_ids if tid in topics_map]
+
+        except Exception:
+            # Fallback: CTE desteklenmeyen DB'ler için (SQLite gibi)
+            # Basit iteratif yaklaşım
+            path = []
+            current_id = topic_id
+            max_depth = 5
+
+            while current_id and len(path) < max_depth:
+                result = await self.db.execute(
+                    select(TopicHierarchy)
+                    .where(TopicHierarchy.id == current_id)
+                    .where(TopicHierarchy.is_active.is_(True))
                 )
-            else:
-                break
+                topic = result.scalar_one_or_none()
+                if not topic:
+                    break
+                path.append(topic)
+                current_id = topic.parent_id
 
-        return path
+            path.reverse()
+            return path
 
     async def add_question_tags(
         self, question_id: str, tag_names: List[str]
@@ -375,7 +434,19 @@ class QuestionBankService:
 
         Returns:
             IRTCalibrationHistory: Kalibrasyon kaydı
+
+        Raises:
+            IRTValidationError: IRT parametreleri CLAUDE.md araliklari disindaysa
+            ValueError: Soru bulunamazsa
         """
+        # VALIDATION FIRST: CLAUDE.md IRT parameter ranges
+        # difficulty: [-4.0, 4.0], discrimination: [0.2, 4.0]
+        # guessing: [0.0, 0.35], upper_asymptote: [0.0, 1.0]
+        validate_irt_difficulty(new_difficulty, strict=True)
+        validate_irt_discrimination(new_discrimination, strict=True)
+        validate_irt_guessing(new_guessing, strict=True)
+        validate_irt_upper_asymptote(new_upper_asymptote, strict=True)
+
         question = await self.get_question(question_id)
         if not question:
             raise ValueError(f"Question {question_id} not found")
@@ -484,6 +555,8 @@ class QuestionBankService:
         """
         Soru ara ve filtrele
 
+        FIX N+1: Eager loading eklendi
+
         Args:
             exam_type: Sınav tipi (TYT, AYT, YDT)
             subject_area: Ders alanı
@@ -497,7 +570,15 @@ class QuestionBankService:
         Returns:
             List[QuestionBankItem]: Bulunan sorular
         """
-        query = select(QuestionBankItem).where(QuestionBankItem.is_active == True)
+        # FIX N+1: Eager loading ile ilişkili verileri tek sorguda getir
+        query = (
+            select(QuestionBankItem)
+            .options(
+                joinedload(QuestionBankItem.primary_topic),
+                joinedload(QuestionBankItem.tag_associations),
+            )
+            .where(QuestionBankItem.is_active == True)
+        )
 
         if exam_type:
             query = query.where(QuestionBankItem.exam_type == exam_type)

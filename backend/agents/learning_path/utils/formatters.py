@@ -132,28 +132,33 @@ class ResourceFormatter:
         Returns:
             Formatted dictionary
         """
+        # Extract learning style tags from metadata if available
+        learning_style_tags = []
+        if resource.metadata and "learning_styles" in resource.metadata:
+            learning_style_tags = resource.metadata["learning_styles"]
+
         return {
             "resource_id": resource.resource_id,
             "title": resource.title,
-            "type": resource.type,
-            "platform": ResourceFormatter._translate_platform(resource.platform),
+            "type": resource.resource_type,
+            "platform": ResourceFormatter._translate_platform(resource.source),
             "url": resource.url,
             "duration": {
-                "minutes": resource.duration,
-                "label": ResourceFormatter._format_duration(resource.duration),
+                "minutes": resource.estimated_time,
+                "label": ResourceFormatter._format_duration(resource.estimated_time),
             },
             "difficulty": {
-                "value": resource.difficulty.value,
+                "value": resource.difficulty_level.value,
                 "label": StudentProfileFormatter._translate_knowledge_level(
-                    resource.difficulty
+                    resource.difficulty_level
                 ),
             },
-            "subjects": resource.subjects,
+            "subjects": resource.tags,
             "learning_style_tags": [
                 ResourceFormatter._translate_style_tag(tag)
-                for tag in resource.learning_style_tags
+                for tag in learning_style_tags
             ],
-            "quality_score": resource.quality_score,
+            "quality_score": resource.rating,
             "metadata": resource.metadata,
         }
 
@@ -190,7 +195,7 @@ class ResourceFormatter:
         if minutes < 60:
             return f"{minutes} dakika"
         elif minutes < 120:
-            return f"~1 saat"
+            return "~1 saat"
         else:
             hours = minutes // 60
             return f"~{hours} saat"
@@ -210,7 +215,7 @@ class PathFormatter:
         Returns:
             Formatted dictionary
         """
-        total_duration = sum(r.duration for r in path.resources)
+        total_duration = sum(r.estimated_time for r in path.resources)
 
         return {
             "path_id": path.path_id,
@@ -234,7 +239,7 @@ class PathFormatter:
     @staticmethod
     def format_phase(phase: LearningPhase) -> Dict[str, Any]:
         """Format learning phase"""
-        phase_duration = sum(r.duration for r in phase.resources)
+        phase_duration = sum(r.estimated_time for r in phase.resources)
 
         return {
             "phase_id": phase.phase_id,
@@ -260,7 +265,7 @@ class PathFormatter:
         Returns:
             Turkish summary string
         """
-        total_duration = sum(r.duration for r in path.resources)
+        total_duration = sum(r.estimated_time for r in path.resources)
         duration_label = ResourceFormatter._format_duration(total_duration)
 
         summary = f"""
@@ -275,7 +280,7 @@ class PathFormatter:
         """.strip()
 
         for i, phase in enumerate(path.phases, 1):
-            phase_duration = sum(r.duration for r in phase.resources)
+            phase_duration = sum(r.estimated_time for r in phase.resources)
             summary += f"\n{i}. {phase.name} ({len(phase.resources)} kaynak, {ResourceFormatter._format_duration(phase_duration)})"
 
         return summary

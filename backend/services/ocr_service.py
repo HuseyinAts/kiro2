@@ -302,7 +302,7 @@ class OCRService:
         # Check file size (max 10MB)
         max_size = 10 * 1024 * 1024  # 10MB
         if path.stat().st_size > max_size:
-            return False, f"File too large. Maximum size: 10MB"
+            return False, "File too large. Maximum size: 10MB"
 
         return True, None
 

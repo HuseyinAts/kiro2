@@ -144,6 +144,12 @@ export const modernColors = {
     lightBlue: 'linear-gradient(135deg, #e0eaff 0%, #f0f4ff 100%)',
     lightPurple: 'linear-gradient(135deg, #f3e8ff 0%, #faf5ff 100%)',
     lightGreen: 'linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%)',
+
+    // Additional gradients for components
+    mesh: 'linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%)',
+    purple: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+    violet: 'linear-gradient(135deg, #8B5CF6 0%, #6D28D9 100%)',
+    indigo: 'linear-gradient(135deg, #6366F1 0%, #4F46E5 100%)',
   },
 
   // ============================================
@@ -311,8 +317,9 @@ export const modernColors = {
     glass: '0 8px 32px 0 rgba(31, 38, 135, 0.37)',
     modern: '0 10px 40px -10px rgba(0,0,0,0.2)',
     glow: '0 0 20px rgba(102, 126, 234, 0.4)',
+    'glow-lg': '0 0 30px rgba(102, 126, 234, 0.6)',
   },
-}
+};
 
 export type ModernColorPalette = typeof modernColors
-export default modernColors
+export default modernColors;

@@ -7,7 +7,8 @@
 
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
 import { render, screen, waitFor, fireEvent } from '@testing-library/react';
-import React, { useState, useEffect } from 'react';
+import * as React from 'react';
+import {  useState, useEffect  } from 'react';
 import {
   VideoLoadingManager,
   StudentProfile,
@@ -176,9 +177,6 @@ describe('VideoLoadingComponent', () => {
     // Mock fetch
     mockFetch = vi.fn();
     global.fetch = mockFetch;
-
-    // Mock timers
-    vi.useFakeTimers();
   });
 
   afterEach(() => {
@@ -598,6 +596,12 @@ describe('VideoLoadingComponent', () => {
 
   describe('Fallback State', () => {
     it('should display fallback state after timeout', async () => {
+      vi.useFakeTimers();
+      const noRetryManager = new VideoLoadingManager(
+        'http://localhost:8001',
+        1000,
+        0
+      );
       // Mock timeout
       mockFetch.mockImplementation(
         () =>
@@ -616,7 +620,7 @@ describe('VideoLoadingComponent', () => {
       render(
         <VideoLoadingComponent
           profile={mockProfile}
-          manager={manager}
+          manager={noRetryManager}
           errorHandler={errorHandler}
         />
       );
@@ -625,7 +629,7 @@ describe('VideoLoadingComponent', () => {
       fireEvent.click(screen.getByTestId('load-button'));
 
       // Fast-forward time to trigger timeout
-      vi.advanceTimersByTime(6000);
+      vi.advanceTimersByTime(1500);
 
       // Wait for fallback state
       await waitFor(() => {

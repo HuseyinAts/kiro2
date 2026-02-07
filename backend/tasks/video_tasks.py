@@ -8,7 +8,7 @@ Low-priority video tasks:
 - Cache warming
 - Metadata extraction
 """
-from typing import Dict, Any, List
+from typing import Dict, Any
 from core.celery_app import celery_app
 from core.structured_logger import get_logger
 

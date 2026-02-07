@@ -1,10 +1,12 @@
 /**
  * Task Progress Visualization Example
- * 
+ *
  * TaskProgressVisualization bileşeninin kullanım örnekleri
  */
 
-import React, { useState } from 'react';
+import * as React from 'react';
+import {  useState  } from 'react';
+
 import TaskProgressVisualization from './TaskProgressVisualization';
 
 export const TaskProgressVisualizationExample: React.FC = () => {
@@ -14,7 +16,7 @@ export const TaskProgressVisualizationExample: React.FC = () => {
     { id: 'task-1', name: 'Matematik Sınavına Hazırlan', progress: 60 },
     { id: 'task-2', name: 'Türkçe Ödevini Tamamla', progress: 25 },
     { id: 'task-3', name: 'Fizik Konularını Tekrarla', progress: 100 },
-    { id: 'task-4', name: 'İngilizce Kelime Çalış', progress: 0 }
+    { id: 'task-4', name: 'İngilizce Kelime Çalış', progress: 0 },
   ];
 
   const handleTaskChange = (taskId: string) => {
@@ -34,14 +36,14 @@ export const TaskProgressVisualizationExample: React.FC = () => {
 
       {/* Task Selector */}
       <div style={{ marginBottom: '32px' }}>
-        <label 
+        <label
           htmlFor="task-selector"
-          style={{ 
-            display: 'block', 
+          style={{
+            display: 'block',
             marginBottom: '8px',
             fontSize: '16px',
             fontWeight: 500,
-            color: '#424242'
+            color: '#424242',
           }}
         >
           Görev Seç:
@@ -57,7 +59,7 @@ export const TaskProgressVisualizationExample: React.FC = () => {
             borderRadius: '8px',
             border: '2px solid #E0E0E0',
             backgroundColor: '#FFFFFF',
-            cursor: 'pointer'
+            cursor: 'pointer',
           }}
         >
           {exampleTasks.map((task) => (
@@ -70,28 +72,28 @@ export const TaskProgressVisualizationExample: React.FC = () => {
 
       {/* Progress Visualization */}
       <div style={{ marginBottom: '32px' }}>
-        <TaskProgressVisualization 
+        <TaskProgressVisualization
           taskId={selectedTaskId}
           onRefresh={handleViewTask}
         />
       </div>
 
       {/* Usage Examples */}
-      <div style={{ 
-        backgroundColor: '#F5F5F5', 
-        padding: '24px', 
+      <div style={{
+        backgroundColor: '#F5F5F5',
+        padding: '24px',
         borderRadius: '8px',
-        marginTop: '32px'
+        marginTop: '32px',
       }}>
         <h2 style={{ marginTop: 0, color: '#212121' }}>Kullanım Örnekleri</h2>
-        
+
         <div style={{ marginBottom: '24px' }}>
           <h3 style={{ color: '#424242' }}>1. Temel Kullanım</h3>
-          <pre style={{ 
-            backgroundColor: '#FFFFFF', 
-            padding: '16px', 
+          <pre style={{
+            backgroundColor: '#FFFFFF',
+            padding: '16px',
             borderRadius: '4px',
-            overflow: 'auto'
+            overflow: 'auto',
           }}>
 {`<TaskProgressVisualization 
   taskId="task-123"
@@ -101,11 +103,11 @@ export const TaskProgressVisualizationExample: React.FC = () => {
 
         <div style={{ marginBottom: '24px' }}>
           <h3 style={{ color: '#424242' }}>2. Callback ile Kullanım</h3>
-          <pre style={{ 
-            backgroundColor: '#FFFFFF', 
-            padding: '16px', 
+          <pre style={{
+            backgroundColor: '#FFFFFF',
+            padding: '16px',
             borderRadius: '4px',
-            overflow: 'auto'
+            overflow: 'auto',
           }}>
 {`<TaskProgressVisualization 
   taskId="task-123"
@@ -133,18 +135,18 @@ export const TaskProgressVisualizationExample: React.FC = () => {
       </div>
 
       {/* Accessibility Features */}
-      <div style={{ 
-        backgroundColor: '#E3F2FD', 
-        padding: '24px', 
+      <div style={{
+        backgroundColor: '#E3F2FD',
+        padding: '24px',
         borderRadius: '8px',
-        marginTop: '24px'
+        marginTop: '24px',
       }}>
         <h2 style={{ marginTop: 0, color: '#1976D2' }}>
           ♿ Erişilebilirlik Özellikleri
         </h2>
         <ul style={{ color: '#424242' }}>
           <li>
-            <strong>ARIA Etiketleri:</strong> Progress bar için role="progressbar" ve aria-* attributes
+            <strong>ARIA Etiketleri:</strong> Progress bar için role=&quot;progressbar&quot; ve aria-* attributes
           </li>
           <li>
             <strong>Klavye Navigasyonu:</strong> Tab ile butonlar arasında gezinme
@@ -162,17 +164,17 @@ export const TaskProgressVisualizationExample: React.FC = () => {
       </div>
 
       {/* DEHB Support Info */}
-      <div style={{ 
-        backgroundColor: '#FFF3E0', 
-        padding: '24px', 
+      <div style={{
+        backgroundColor: '#FFF3E0',
+        padding: '24px',
         borderRadius: '8px',
-        marginTop: '24px'
+        marginTop: '24px',
       }}>
         <h2 style={{ marginTop: 0, color: '#E65100' }}>
           🧠 DEHB Desteği
         </h2>
         <p style={{ color: '#424242', lineHeight: 1.6 }}>
-          Bu bileşen, DEHB (Dikkat Eksikliği ve Hiperaktivite Bozukluğu) tanılı 
+          Bu bileşen, DEHB (Dikkat Eksikliği ve Hiperaktivite Bozukluğu) tanılı
           öğrenciler için özel olarak optimize edilmiştir:
         </p>
         <ul style={{ color: '#616161' }}>

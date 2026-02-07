@@ -183,11 +183,7 @@ export default defineConfig({
   // CSS optimizasyonları
   css: {
     devSourcemap: process.env.NODE_ENV === 'development',
-    preprocessorOptions: {
-      scss: {
-        additionalData: `@import "@/styles/variables.scss";`
-      }
-    }
+    preprocessorOptions: {}
   },
   // JSON optimizasyonu
   json: {

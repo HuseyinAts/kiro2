@@ -15,7 +15,7 @@ from services.revolutionary_features_service import revolutionary_features_servi
 
 logger = logging.getLogger(__name__)
 
-router = APIRouter(prefix="/api/v1", tags=["Revolutionary Features"])
+router = APIRouter(prefix="/api/v1/revolutionary-features", tags=["Revolutionary Features"])
 
 
 # Pydantic modelleri

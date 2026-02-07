@@ -5,7 +5,6 @@ Demonstrates the new centralized error handling pattern consolidation
 SPRINT 3 UPDATE: Email operations now use Celery background tasks
 """
 
-import asyncio
 from datetime import datetime
 from typing import Any, Dict, List, Optional
 
@@ -39,8 +38,21 @@ from core.response_models import (
     SuccessResponse,
     turkish_success_response,
 )
-from models.database import User, UserCreate, UserResponse
-from services.user_service import UserService
+from models.database import User
+from models.user import UserCreate
+from pydantic import BaseModel
+
+# UserResponse placeholder
+class UserResponse(BaseModel):
+    id: str
+    email: str
+    username: str
+    first_name: str
+    last_name: str
+    role: str
+    is_active: bool
+
+from services.user_service import KullaniciServisi as UserService
 from fastapi import APIRouter, Depends, Query, Request, status
 
 router = APIRouter(prefix="/api/v1/users", tags=["Enhanced User Management"])

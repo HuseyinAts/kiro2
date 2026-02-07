@@ -3,26 +3,6 @@
  * Türkçe altyazı desteği ve klavye kısayolları
  */
 
-import React, { useState, useRef, useEffect, useCallback } from 'react';
-import {
-  Box,
-  IconButton,
-  Slider,
-  Typography,
-  Paper,
-  Tooltip,
-  Menu,
-  MenuItem,
-  FormControlLabel,
-  Switch,
-  Button,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Chip,
-  useTheme
-} from '@mui/material';
 import {
   PlayArrow,
   Pause,
@@ -33,14 +13,28 @@ import {
   Settings,
   Subtitles,
   SubtitlesOff,
-  Speed,
-  ClosedCaption,
-  ClosedCaptionOff,
   Replay10,
   Forward10,
-  PictureInPicture,
-  Download
 } from '@mui/icons-material';
+import {
+  Box,
+  IconButton,
+  Slider,
+  Typography,
+  Tooltip,
+  Menu,
+  MenuItem,
+  Button,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Chip,
+  useTheme,
+} from '@mui/material';
+import * as React from 'react';
+import {  useState, useRef, useEffect, useCallback  } from 'react';
+
 import { useAccessibilitySettings } from '../../hooks/useAccessibilitySettings';
 import { useScreenReader } from '../../hooks/useScreenReader';
 
@@ -90,7 +84,7 @@ const AccessibleVideoPlayer: React.FC<AccessibleVideoPlayerProps> = ({
   onEnded,
   onTimeUpdate,
   onVolumeChange,
-  className
+  className,
 }) => {
   const theme = useTheme();
   const { settings } = useAccessibilitySettings();
@@ -111,7 +105,7 @@ const AccessibleVideoPlayer: React.FC<AccessibleVideoPlayerProps> = ({
   const [showCaptions, setShowCaptions] = useState(false);
   const [settingsAnchor, setSettingsAnchor] = useState<null | HTMLElement>(null);
   const [showTranscript, setShowTranscript] = useState(false);
-  const [transcript, setTranscript] = useState<string>('');
+  const [transcript, _setTranscript] = useState<string>('');
 
   // Video ID'leri
   const videoId = `video-${Math.random().toString(36).substr(2, 9)}`;
@@ -122,7 +116,7 @@ const AccessibleVideoPlayer: React.FC<AccessibleVideoPlayerProps> = ({
   const handleLoadedMetadata = useCallback(() => {
     if (videoRef.current) {
       setDuration(videoRef.current.duration);
-      
+
       // Varsayılan track'i etkinleştir
       const defaultTrack = tracks.find(track => track.default);
       if (defaultTrack) {
@@ -243,27 +237,27 @@ const AccessibleVideoPlayer: React.FC<AccessibleVideoPlayerProps> = ({
   const toggleCaptions = useCallback(() => {
     const newShowCaptions = !showCaptions;
     setShowCaptions(newShowCaptions);
-    
+
     if (videoRef.current) {
       const textTracks = videoRef.current.textTracks;
       for (let i = 0; i < textTracks.length; i++) {
         textTracks[i].mode = newShowCaptions && textTracks[i].id === activeTrack ? 'showing' : 'hidden';
       }
     }
-    
+
     announce(newShowCaptions ? 'Altyazılar açıldı' : 'Altyazılar kapatıldı', 'polite');
   }, [showCaptions, activeTrack, announce]);
 
   const selectTrack = useCallback((trackId: string) => {
     setActiveTrack(trackId);
-    
+
     if (videoRef.current) {
       const textTracks = videoRef.current.textTracks;
       for (let i = 0; i < textTracks.length; i++) {
         textTracks[i].mode = textTracks[i].id === trackId && showCaptions ? 'showing' : 'hidden';
       }
     }
-    
+
     const track = tracks.find(t => t.id === trackId);
     if (track) {
       announce(`${track.label} altyazısı seçildi`, 'polite');
@@ -273,7 +267,7 @@ const AccessibleVideoPlayer: React.FC<AccessibleVideoPlayerProps> = ({
   // Klavye kısayolları
   const handleKeyDown = useCallback((event: React.KeyboardEvent) => {
     // Sadece video container'a odaklanıldığında çalışsın
-    if (event.target !== containerRef.current) return;
+    if (event.target !== containerRef.current) {return;}
 
     switch (event.key) {
       case ' ':
@@ -318,11 +312,12 @@ const AccessibleVideoPlayer: React.FC<AccessibleVideoPlayerProps> = ({
       case '6':
       case '7':
       case '8':
-      case '9':
+      case '9': {
         event.preventDefault();
         const percentage = parseInt(event.key) / 10;
         handleSeek(duration * percentage);
         break;
+      }
       case 'Home':
         event.preventDefault();
         handleSeek(0);
@@ -334,23 +329,23 @@ const AccessibleVideoPlayer: React.FC<AccessibleVideoPlayerProps> = ({
     }
   }, [
     togglePlay, skipBackward, skipForward, volume, handleVolumeSliderChange,
-    toggleMute, toggleFullscreen, toggleCaptions, duration, handleSeek
+    toggleMute, toggleFullscreen, toggleCaptions, duration, handleSeek,
   ]);
 
   // Kontrol görünürlüğü
   const showControlsTemporarily = useCallback(() => {
     setShowControls(true);
-    
+
     if (controlsTimeout) {
       clearTimeout(controlsTimeout);
     }
-    
+
     const timeout = setTimeout(() => {
       if (isPlaying) {
         setShowControls(false);
       }
     }, 3000);
-    
+
     setControlsTimeout(timeout);
   }, [isPlaying, controlsTimeout]);
 
@@ -369,7 +364,7 @@ const AccessibleVideoPlayer: React.FC<AccessibleVideoPlayerProps> = ({
   // Component mount/unmount
   useEffect(() => {
     const video = videoRef.current;
-    if (!video) return;
+    if (!video) {return;}
 
     video.addEventListener('loadedmetadata', handleLoadedMetadata);
     video.addEventListener('timeupdate', handleTimeUpdate);
@@ -388,7 +383,7 @@ const AccessibleVideoPlayer: React.FC<AccessibleVideoPlayerProps> = ({
     };
   }, [
     handleLoadedMetadata, handleTimeUpdate, handlePlay, handlePause,
-    handleEnded, handleVolumeChange
+    handleEnded, handleVolumeChange,
   ]);
 
   // Fullscreen değişikliklerini dinle
@@ -426,7 +421,7 @@ const AccessibleVideoPlayer: React.FC<AccessibleVideoPlayerProps> = ({
         '&:focus': {
           outline: `2px solid ${theme.palette.primary.main}`,
           outlineOffset: 2,
-        }
+        },
       }}
       tabIndex={0}
       onKeyDown={handleKeyDown}
@@ -450,7 +445,7 @@ const AccessibleVideoPlayer: React.FC<AccessibleVideoPlayerProps> = ({
         style={{
           width: '100%',
           height: '100%',
-          objectFit: 'contain'
+          objectFit: 'contain',
         }}
         aria-label={title}
         aria-describedby={description ? descriptionId : undefined}
@@ -468,14 +463,14 @@ const AccessibleVideoPlayer: React.FC<AccessibleVideoPlayerProps> = ({
             default={track.default}
           />
         ))}
-        
+
         {/* Fallback */}
         <Typography color="white" sx={{ p: 2 }}>
-          Tarayıcınız video oynatmayı desteklemiyor. 
-          <Button 
-            component="a" 
-            href={src} 
-            download 
+          Tarayıcınız video oynatmayı desteklemiyor.
+          <Button
+            component="a"
+            href={src}
+            download
             color="primary"
             sx={{ ml: 1 }}
           >
@@ -488,12 +483,12 @@ const AccessibleVideoPlayer: React.FC<AccessibleVideoPlayerProps> = ({
       {description && (
         <Typography
           id={descriptionId}
-          sx={{ 
+          sx={{
             position: 'absolute',
             left: -9999,
             width: 1,
             height: 1,
-            overflow: 'hidden'
+            overflow: 'hidden',
           }}
         >
           {description}
@@ -511,7 +506,7 @@ const AccessibleVideoPlayer: React.FC<AccessibleVideoPlayerProps> = ({
             background: 'linear-gradient(transparent, rgba(0,0,0,0.8))',
             opacity: showControls ? 1 : 0,
             transition: 'opacity 0.3s',
-            p: 2
+            p: 2,
           }}
         >
           {/* Progress Bar */}
@@ -533,18 +528,18 @@ const AccessibleVideoPlayer: React.FC<AccessibleVideoPlayerProps> = ({
                 },
                 '& .MuiSlider-track': {
                   backgroundColor: 'primary.main',
-                }
+                },
               }}
             />
           </Box>
 
           {/* Kontrol Butonları */}
-          <Box sx={{ 
-            display: 'flex', 
-            alignItems: 'center', 
+          <Box sx={{
+            display: 'flex',
+            alignItems: 'center',
             justifyContent: 'space-between',
             flexWrap: 'wrap',
-            gap: 1
+            gap: 1,
           }}>
             {/* Sol Kontroller */}
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
@@ -596,7 +591,7 @@ const AccessibleVideoPlayer: React.FC<AccessibleVideoPlayerProps> = ({
                     {isMuted ? <VolumeOff /> : <VolumeUp />}
                   </IconButton>
                 </Tooltip>
-                
+
                 <Slider
                   value={isMuted ? 0 : volume}
                   max={1}
@@ -610,7 +605,7 @@ const AccessibleVideoPlayer: React.FC<AccessibleVideoPlayerProps> = ({
                     '& .MuiSlider-thumb': {
                       width: 12,
                       height: 12,
-                    }
+                    },
                   }}
                 />
               </Box>
@@ -671,7 +666,7 @@ const AccessibleVideoPlayer: React.FC<AccessibleVideoPlayerProps> = ({
         open={Boolean(settingsAnchor)}
         onClose={() => setSettingsAnchor(null)}
         PaperProps={{
-          sx: { minWidth: 200 }
+          sx: { minWidth: 200 },
         }}
       >
         {/* Oynatma Hızı */}
@@ -737,9 +732,9 @@ const AccessibleVideoPlayer: React.FC<AccessibleVideoPlayerProps> = ({
           <Typography
             id={transcriptId}
             variant="body1"
-            sx={{ 
+            sx={{
               lineHeight: 1.8,
-              fontSize: settings.fontSize === 'large' ? '1.2rem' : '1rem'
+              fontSize: settings.fontSize === 'large' ? '1.2rem' : '1rem',
             }}
           >
             {transcript || 'Transkript henüz mevcut değil.'}
@@ -760,22 +755,22 @@ const AccessibleVideoPlayer: React.FC<AccessibleVideoPlayerProps> = ({
             top: 8,
             right: 8,
             opacity: showControls ? 1 : 0,
-            transition: 'opacity 0.3s'
+            transition: 'opacity 0.3s',
           }}
         >
           <Chip
             label="? Kısayollar"
             size="small"
-            sx={{ 
-              backgroundColor: 'rgba(0,0,0,0.7)', 
+            sx={{
+              backgroundColor: 'rgba(0,0,0,0.7)',
               color: 'white',
-              cursor: 'pointer'
+              cursor: 'pointer',
             }}
             onClick={() => {
               announce(
                 'Klavye kısayolları: Space veya K: Oynat/Duraklat, Sol/Sağ ok: Geri/İleri sar, ' +
                 'Yukarı/Aşağı ok: Ses ayarı, M: Sessiz, F: Tam ekran, C: Altyazı, 0-9: Konuma git',
-                'polite'
+                'polite',
               );
             }}
           />

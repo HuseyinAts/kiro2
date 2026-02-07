@@ -3,7 +3,12 @@
  * Dünyada ilk 3 seviyeli Türkçe metin basitleştirme sistemi
  */
 
-import React, { useState } from 'react';
+import {
+  AutoFixHigh as ZapIcon,
+  MenuBook as BookOpenIcon,
+  Psychology as BrainIcon,
+  Lightbulb as LightbulbIcon,
+} from '@mui/icons-material';
 import {
   Card,
   CardContent,
@@ -22,14 +27,11 @@ import {
   Box,
   Paper,
   Checkbox,
-  FormControlLabel
+  FormControlLabel,
 } from '@mui/material';
-import {
-  AutoFixHigh as ZapIcon,
-  MenuBook as BookOpenIcon,
-  Psychology as BrainIcon,
-  Lightbulb as LightbulbIcon
-} from '@mui/icons-material';
+import * as React from 'react';
+import {  useState  } from 'react';
+
 import { revolutionaryFeaturesService } from '../../services/revolutionaryFeaturesService';
 import { SimplificationResult } from '../../types';
 
@@ -49,22 +51,22 @@ const TextSimplifier: React.FC = () => {
       label: 'Kelime Seviyesi',
       icon: <BookOpenIcon />,
       description: 'Osmanlıca ve akademik kelimeleri modern Türkçe\'ye çevirir',
-      color: 'success'
+      color: 'success',
     },
     {
       value: 'syntactic',
-      label: 'Sözdizimi Seviyesi', 
+      label: 'Sözdizimi Seviyesi',
       icon: <BrainIcon />,
       description: 'Karmaşık cümle yapılarını basit cümlelere böler',
-      color: 'primary'
+      color: 'primary',
     },
     {
       value: 'semantic',
       label: 'Anlam Seviyesi',
       icon: <LightbulbIcon />,
       description: 'Metafor ve soyut kavramları somut açıklamalarla değiştirir',
-      color: 'secondary'
-    }
+      color: 'secondary',
+    },
   ];
 
   const handleSimplify = async () => {
@@ -80,9 +82,9 @@ const TextSimplifier: React.FC = () => {
       const result = await revolutionaryFeaturesService.simplifyText(
         inputText,
         simplificationLevel as 'lexical' | 'syntactic' | 'semantic',
-        preserveMeaning
+        preserveMeaning,
       );
-      
+
       setResult(result);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Beklenmeyen hata oluştu');
@@ -92,15 +94,15 @@ const TextSimplifier: React.FC = () => {
   };
 
   const getComplexityColor = (score: number): 'success' | 'warning' | 'error' => {
-    if (score < 30) return 'success';
-    if (score < 60) return 'warning';
+    if (score < 30) {return 'success';}
+    if (score < 60) {return 'warning';}
     return 'error';
   };
 
   const getReadabilityColor = (score: number): 'success' | 'info' | 'warning' | 'error' => {
-    if (score > 80) return 'success';
-    if (score > 60) return 'info';
-    if (score > 40) return 'warning';
+    if (score > 80) {return 'success';}
+    if (score > 60) {return 'info';}
+    if (score > 40) {return 'warning';}
     return 'error';
   };
 
@@ -119,9 +121,9 @@ const TextSimplifier: React.FC = () => {
         <Typography variant="h6" color="text.secondary" gutterBottom>
           Dünyada ilk 3 seviyeli Türkçe metin basitleştirme sistemi
         </Typography>
-        <Chip 
-          label="🚀 DEVRİMSEL ÖZELLİK" 
-          color="warning" 
+        <Chip
+          label="🚀 DEVRİMSEL ÖZELLİK"
+          color="warning"
           variant="outlined"
           sx={{ fontWeight: 'bold' }}
         />
@@ -166,7 +168,7 @@ const TextSimplifier: React.FC = () => {
                     ))}
                   </Select>
                 </FormControl>
-                
+
                 {selectedLevel && (
                   <Typography variant="caption" color="text.secondary">
                     {selectedLevel.description}
@@ -183,7 +185,7 @@ const TextSimplifier: React.FC = () => {
                   label="Anlam korunumu (önerilen)"
                 />
 
-                <Button 
+                <Button
                   variant="contained"
                   onClick={handleSimplify}
                   disabled={loading || !inputText.trim()}
@@ -332,14 +334,14 @@ const TextSimplifier: React.FC = () => {
           <Grid container spacing={2}>
             {simplificationLevels.map((level) => (
               <Grid item xs={12} md={4} key={level.value}>
-                <Paper 
-                  sx={{ 
-                    p: 2, 
+                <Paper
+                  sx={{
+                    p: 2,
                     border: 2,
                     borderColor: simplificationLevel === level.value ? 'primary.main' : 'grey.300',
                     bgcolor: simplificationLevel === level.value ? 'primary.50' : 'background.paper',
                     cursor: 'pointer',
-                    transition: 'all 0.2s'
+                    transition: 'all 0.2s',
                   }}
                   onClick={() => setSimplificationLevel(level.value)}
                 >

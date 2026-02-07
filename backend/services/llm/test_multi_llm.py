@@ -33,7 +33,7 @@ async def test_configuration():
     try:
         # Test OpenAI config
         openai_config = MultiLLMConfig.get_config(LLMProvider.OPENAI)
-        print(f"✅ OpenAI Config:")
+        print("✅ OpenAI Config:")
         print(f"   Model: {openai_config.model_name}")
         print(f"   Max Tokens: {openai_config.max_tokens}")
         print(f"   Cost per 1K: ${openai_config.cost_per_1k_tokens}")
@@ -41,14 +41,14 @@ async def test_configuration():
 
         # Test Claude config
         claude_config = MultiLLMConfig.get_config(LLMProvider.CLAUDE)
-        print(f"\n✅ Claude Config:")
+        print("\n✅ Claude Config:")
         print(f"   Model: {claude_config.model_name}")
         print(f"   Max Tokens: {claude_config.max_tokens}")
         print(f"   Cost per 1K: ${claude_config.cost_per_1k_tokens}")
 
         # Test Qwen config
         qwen_config = MultiLLMConfig.get_config(LLMProvider.QWEN)
-        print(f"\n✅ Qwen Config:")
+        print("\n✅ Qwen Config:")
         print(f"   Model: {qwen_config.model_name}")
         print(f"   Max Tokens: {qwen_config.max_tokens}")
         print(f"   Cost per 1K: ${qwen_config.cost_per_1k_tokens}")
@@ -149,7 +149,7 @@ async def test_simple_generation(manager: MultiLLMEnsembleManager):
         # Test with fallback
         response = await manager.generate_with_fallback(request)
 
-        print(f"\n✅ Response received:")
+        print("\n✅ Response received:")
         print(f"   Provider: {response.provider.value}")
         print(f"   Model: {response.model_name}")
         print(f"   Latency: {response.latency_ms:.2f}ms")
@@ -193,7 +193,7 @@ async def test_osym_question_generation(manager: MultiLLMEnsembleManager):
 
         print("\n✅ Question generated successfully:")
         print(f"\n📋 Stem: {question.get('stem', 'N/A')[:200]}...")
-        print(f"\n🔤 Options:")
+        print("\n🔤 Options:")
         for i, option in enumerate(question.get("options", [])[:5]):
             marker = "✓" if i == question.get("correct_answer", -1) else " "
             print(f"   [{marker}] {chr(65+i)}) {option[:100]}...")
@@ -236,7 +236,7 @@ async def test_ensemble_voting(manager: MultiLLMEnsembleManager):
             request, strategy="majority_voting"
         )
 
-        print(f"\n✅ Ensemble voting completed:")
+        print("\n✅ Ensemble voting completed:")
         print(f"   Selected Provider: {response.provider.value}")
         print(f"   Latency: {response.latency_ms:.2f}ms")
         print(f"   Cost: ${response.cost_usd:.4f}")

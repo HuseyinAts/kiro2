@@ -3,7 +3,10 @@
  * Semantic HTML ve landmark'lar
  */
 
-import React, { useEffect, useRef, useCallback } from 'react';
+import {
+  KeyboardArrowUp as ScrollTopIcon,
+  Accessibility as AccessibilityIcon,
+} from '@mui/icons-material';
 import {
   Box,
   Container,
@@ -12,17 +15,16 @@ import {
   useTheme,
   useMediaQuery,
   Snackbar,
-  Alert
+  Alert,
+  Typography,
 } from '@mui/material';
-import {
-  KeyboardArrowUp as ScrollTopIcon,
-  Accessibility as AccessibilityIcon,
-  Settings as SettingsIcon
-} from '@mui/icons-material';
-import AccessibleNavigation, { NavigationItem, BreadcrumbItem } from '../Navigation/AccessibleNavigation';
+import * as React from 'react';
+import {  useEffect, useRef, useCallback  } from 'react';
+
 import { useAccessibilitySettings } from '../../hooks/useAccessibilitySettings';
-import { useScreenReader } from '../../hooks/useScreenReader';
 import { useKeyboardNavigation } from '../../hooks/useKeyboardNavigation';
+import { useScreenReader } from '../../hooks/useScreenReader';
+import AccessibleNavigation, { NavigationItem, BreadcrumbItem } from '../Navigation/AccessibleNavigation';
 
 interface AccessibleLayoutProps {
   title: string;
@@ -49,14 +51,14 @@ const AccessibleLayout: React.FC<AccessibleLayoutProps> = ({
   showScrollTop = true,
   showAccessibilityFab = true,
   onAccessibilityClick,
-  className
+  className,
 }) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
-  
+
   const { settings, getAccessibilityStatus } = useAccessibilitySettings();
   const { announce, manageFocus, createSkipLink } = useScreenReader();
-  const { focusFirst } = useKeyboardNavigation();
+  const { focusFirst: _focusFirst } = useKeyboardNavigation();
 
   const mainContentRef = useRef<HTMLElement>(null);
   const scrollTopRef = useRef<HTMLButtonElement>(null);
@@ -80,7 +82,7 @@ const AccessibleLayout: React.FC<AccessibleLayoutProps> = ({
   const handleScrollTop = useCallback(() => {
     window.scrollTo({
       top: 0,
-      behavior: settings.reducedMotion ? 'auto' : 'smooth'
+      behavior: settings.reducedMotion ? 'auto' : 'smooth',
     });
     announce('Sayfanın başına gidildi', 'polite');
   }, [settings.reducedMotion, announce]);
@@ -185,7 +187,7 @@ const AccessibleLayout: React.FC<AccessibleLayoutProps> = ({
     footer,
     handleAccessibilityClick,
     handleScrollTop,
-    announce
+    announce,
   ]);
 
   // Skip links oluştur
@@ -244,7 +246,7 @@ const AccessibleLayout: React.FC<AccessibleLayoutProps> = ({
         '& .wcag-aa-target-size': {
           minHeight: 44,
           minWidth: 44,
-        }
+        },
       }}
     >
       {/* Navigation */}
@@ -276,8 +278,8 @@ const AccessibleLayout: React.FC<AccessibleLayoutProps> = ({
               overflow: 'auto',
               '&:focus': {
                 outline: `2px solid ${theme.palette.primary.main}`,
-                outlineOffset: 2
-              }
+                outlineOffset: 2,
+              },
             }}
             tabIndex={-1}
           >
@@ -298,8 +300,8 @@ const AccessibleLayout: React.FC<AccessibleLayoutProps> = ({
             flexDirection: 'column',
             overflow: 'auto',
             '&:focus': {
-              outline: 'none'
-            }
+              outline: 'none',
+            },
           }}
           tabIndex={-1}
         >
@@ -308,7 +310,7 @@ const AccessibleLayout: React.FC<AccessibleLayoutProps> = ({
             sx={{
               flex: 1,
               py: { xs: 2, sm: 3 },
-              px: { xs: 2, sm: 3 }
+              px: { xs: 2, sm: 3 },
             }}
           >
             {children}
@@ -329,8 +331,8 @@ const AccessibleLayout: React.FC<AccessibleLayoutProps> = ({
             bgcolor: 'background.paper',
             '&:focus': {
               outline: `2px solid ${theme.palette.primary.main}`,
-              outlineOffset: 2
-            }
+              outlineOffset: 2,
+            },
           }}
           tabIndex={-1}
         >
@@ -352,7 +354,7 @@ const AccessibleLayout: React.FC<AccessibleLayoutProps> = ({
               position: 'fixed',
               bottom: showAccessibilityFab ? 80 : 16,
               right: 16,
-              zIndex: 1000
+              zIndex: 1000,
             }}
           >
             <ScrollTopIcon />
@@ -372,7 +374,7 @@ const AccessibleLayout: React.FC<AccessibleLayoutProps> = ({
             position: 'fixed',
             bottom: 16,
             right: 16,
-            zIndex: 1000
+            zIndex: 1000,
           }}
         >
           <AccessibilityIcon />
@@ -411,7 +413,7 @@ const AccessibleLayout: React.FC<AccessibleLayoutProps> = ({
             zIndex: 1000,
             maxWidth: 300,
             border: 1,
-            borderColor: 'divider'
+            borderColor: 'divider',
           }}
         >
           <Typography variant="caption" component="div" gutterBottom>
@@ -433,14 +435,14 @@ const AccessibleLayout: React.FC<AccessibleLayoutProps> = ({
         className="sr-only"
         id="live-region-polite"
       />
-      
+
       <div
         aria-live="assertive"
         aria-atomic="true"
         className="sr-only"
         id="live-region-assertive"
       />
-      
+
       <div
         role="status"
         aria-live="polite"

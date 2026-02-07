@@ -49,7 +49,7 @@ async def example_basic_usage():
 
     # Get statistics
     stats = await cache.get_stats()
-    print(f"\nCache Stats:")
+    print("\nCache Stats:")
     print(f"  Hit Ratio: {stats['hit_ratio']:.2%}")
     print(f"  Tokens Saved: {stats['total_tokens_saved']}")
     print(f"  Cost Saved: ${stats['total_cost_saved']:.4f}")
@@ -194,7 +194,7 @@ async def example_cost_tracking():
     # Show savings
     stats = await cache.get_stats()
     print(f"\n{'─' * 80}")
-    print(f"TOTAL SAVINGS:")
+    print("TOTAL SAVINGS:")
     print(f"  Tokens saved: {stats['total_tokens_saved']:,}")
     print(f"  Cost saved:   ${stats['total_cost_saved']:.4f}")
     print(f"  Hit ratio:    {stats['hit_ratio']:.2%}")
@@ -227,7 +227,7 @@ async def example_advanced_config():
     cache = LLMCache(config=config)
     await cache.initialize()
 
-    print(f"Configuration:")
+    print("Configuration:")
     print(f"  Redis URL:      {config.redis_url}")
     print(f"  Default TTL:    {config.default_ttl}s")
     print(f"  Long TTL:       {config.long_ttl}s")
@@ -331,7 +331,7 @@ async def example_real_world():
     # Check stats
     cache = await get_llm_cache()
     stats = await cache.get_stats()
-    print(f"Cache Stats:")
+    print("Cache Stats:")
     print(f"  Total Requests: {stats['total_requests']}")
     print(f"  Cache Hits:     {stats['cache_hits']}")
     print(f"  Hit Ratio:      {stats['hit_ratio']:.2%}")

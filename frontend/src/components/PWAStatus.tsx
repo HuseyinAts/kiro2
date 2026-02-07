@@ -3,7 +3,9 @@
  * Çevrimdışı durum, senkronizasyon ve PWA kurulum bilgilerini gösterir
  */
 
-import React, { useState } from 'react';
+import * as React from 'react';
+import {  useState  } from 'react';
+
 import { usePWA, useNetworkStatus } from '../hooks/usePWA';
 
 interface PWAStatusProps {
@@ -11,9 +13,9 @@ interface PWAStatusProps {
   showDetails?: boolean;
 }
 
-export const PWAStatus: React.FC<PWAStatusProps> = ({ 
-  className = '', 
-  showDetails = false 
+export const PWAStatus: React.FC<PWAStatusProps> = ({
+  className = '',
+  showDetails = false,
 }) => {
   const {
     isInstallable,
@@ -25,7 +27,7 @@ export const PWAStatus: React.FC<PWAStatusProps> = ({
     triggerSync,
     downloadQuestionsForOffline,
     clearOfflineData,
-    subscribeToPushNotifications
+    subscribeToPushNotifications,
   } = usePWA();
 
   const { connectionType } = useNetworkStatus();
@@ -45,7 +47,7 @@ export const PWAStatus: React.FC<PWAStatusProps> = ({
     try {
       await downloadQuestionsForOffline(downloadSubject, 100);
       alert(`${downloadSubject} konusu için 100 soru başarıyla indirildi!`);
-    } catch (error) {
+    } catch {
       alert('Soru indirme başarısız. Lütfen internet bağlantınızı kontrol edin.');
     } finally {
       setIsDownloading(false);
@@ -57,7 +59,7 @@ export const PWAStatus: React.FC<PWAStatusProps> = ({
       try {
         await clearOfflineData();
         alert('Çevrimdışı veriler başarıyla temizlendi.');
-      } catch (error) {
+      } catch {
         alert('Veri temizleme başarısız.');
       }
     }
@@ -73,8 +75,8 @@ export const PWAStatus: React.FC<PWAStatusProps> = ({
   };
 
   const getConnectionIcon = () => {
-    if (!isOnline) return '❌';
-    
+    if (!isOnline) {return '❌';}
+
     switch (connectionType) {
       case '4g': return '📶';
       case '3g': return '📶';
@@ -85,8 +87,8 @@ export const PWAStatus: React.FC<PWAStatusProps> = ({
   };
 
   const getConnectionText = () => {
-    if (!isOnline) return 'Çevrimdışı';
-    
+    if (!isOnline) {return 'Çevrimdışı';}
+
     switch (connectionType) {
       case '4g': return 'Hızlı Bağlantı (4G)';
       case '3g': return 'Orta Hız (3G)';
@@ -99,7 +101,7 @@ export const PWAStatus: React.FC<PWAStatusProps> = ({
   return (
     <div className={`pwa-status ${className}`}>
       {/* Kompakt Durum Çubuğu */}
-      <div 
+      <div
         className="pwa-status-bar"
         onClick={() => setIsExpanded(!isExpanded)}
         style={{
@@ -112,25 +114,25 @@ export const PWAStatus: React.FC<PWAStatusProps> = ({
           borderRadius: '8px',
           cursor: 'pointer',
           fontSize: '14px',
-          marginBottom: isExpanded ? '10px' : '0'
+          marginBottom: isExpanded ? '10px' : '0',
         }}
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           <span>{getConnectionIcon()}</span>
           <span>{getConnectionText()}</span>
-          {syncStatus?.pendingItems > 0 && (
-            <span style={{ 
-              background: '#dc3545', 
-              color: 'white', 
-              padding: '2px 6px', 
+          {(syncStatus?.pendingItems ?? 0) > 0 && (
+            <span style={{
+              background: '#dc3545',
+              color: 'white',
+              padding: '2px 6px',
               borderRadius: '10px',
-              fontSize: '12px'
+              fontSize: '12px',
             }}>
-              {syncStatus.pendingItems} bekliyor
+              {syncStatus?.pendingItems} bekliyor
             </span>
           )}
         </div>
-        
+
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           {isInstalled && <span title="PWA Kurulu">📱</span>}
           {offlineStats && offlineStats.totalQuestions > 0 && (
@@ -146,13 +148,13 @@ export const PWAStatus: React.FC<PWAStatusProps> = ({
 
       {/* Detaylı Panel */}
       {isExpanded && (
-        <div 
+        <div
           className="pwa-details"
           style={{
             background: 'white',
             border: '1px solid #dee2e6',
             borderRadius: '8px',
-            padding: '16px'
+            padding: '16px',
           }}
         >
           {/* PWA Kurulum */}
@@ -173,7 +175,7 @@ export const PWAStatus: React.FC<PWAStatusProps> = ({
                   padding: '8px 16px',
                   borderRadius: '4px',
                   cursor: 'pointer',
-                  fontSize: '14px'
+                  fontSize: '14px',
                 }}
               >
                 Uygulamayı Kur
@@ -187,11 +189,11 @@ export const PWAStatus: React.FC<PWAStatusProps> = ({
               <h4 style={{ margin: '0 0 8px 0', color: '#495057' }}>
                 📊 Çevrimdışı Veriler
               </h4>
-              <div style={{ 
-                display: 'grid', 
-                gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))', 
+              <div style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))',
                 gap: '8px',
-                fontSize: '14px'
+                fontSize: '14px',
               }}>
                 <div>
                   <strong>{offlineStats.totalQuestions}</strong>
@@ -230,7 +232,7 @@ export const PWAStatus: React.FC<PWAStatusProps> = ({
                   padding: '6px 8px',
                   border: '1px solid #ced4da',
                   borderRadius: '4px',
-                  fontSize: '14px'
+                  fontSize: '14px',
                 }}
               >
                 <option value="matematik">Matematik</option>
@@ -253,7 +255,7 @@ export const PWAStatus: React.FC<PWAStatusProps> = ({
                   padding: '6px 12px',
                   borderRadius: '4px',
                   cursor: isOnline ? 'pointer' : 'not-allowed',
-                  fontSize: '14px'
+                  fontSize: '14px',
                 }}
               >
                 {isDownloading ? '⏳ İndiriliyor...' : '📥 100 Soru İndir'}
@@ -277,12 +279,12 @@ export const PWAStatus: React.FC<PWAStatusProps> = ({
                   padding: '6px 12px',
                   borderRadius: '4px',
                   cursor: isOnline ? 'pointer' : 'not-allowed',
-                  fontSize: '14px'
+                  fontSize: '14px',
                 }}
               >
                 {syncStatus?.syncInProgress ? '⏳ Senkronize ediliyor...' : '🔄 Şimdi Senkronize Et'}
               </button>
-              
+
               {syncStatus?.lastSync && (
                 <span style={{ fontSize: '12px', color: '#6c757d' }}>
                   Son: {new Date(syncStatus.lastSync).toLocaleString('tr-TR')}
@@ -305,7 +307,7 @@ export const PWAStatus: React.FC<PWAStatusProps> = ({
                 padding: '6px 12px',
                 borderRadius: '4px',
                 cursor: 'pointer',
-                fontSize: '14px'
+                fontSize: '14px',
               }}
             >
               🔔 Bildirimleri Etkinleştir
@@ -326,7 +328,7 @@ export const PWAStatus: React.FC<PWAStatusProps> = ({
                 padding: '6px 12px',
                 borderRadius: '4px',
                 cursor: 'pointer',
-                fontSize: '14px'
+                fontSize: '14px',
               }}
             >
               🗑️ Çevrimdışı Verileri Temizle
@@ -335,17 +337,17 @@ export const PWAStatus: React.FC<PWAStatusProps> = ({
 
           {/* Çevrimdışı Mod Linki */}
           {!isOnline && (
-            <div style={{ 
-              marginTop: '16px', 
-              padding: '12px', 
-              background: '#fff3cd', 
+            <div style={{
+              marginTop: '16px',
+              padding: '12px',
+              background: '#fff3cd',
               border: '1px solid #ffc107',
-              borderRadius: '4px'
+              borderRadius: '4px',
             }}>
               <p style={{ margin: '0 0 8px 0', fontSize: '14px' }}>
                 İnternet bağlantınız yok. Çevrimdışı modda çalışmaya devam edebilirsiniz.
               </p>
-              <a 
+              <a
                 href="/offline-app.html"
                 style={{
                   display: 'inline-block',
@@ -355,7 +357,7 @@ export const PWAStatus: React.FC<PWAStatusProps> = ({
                   borderRadius: '4px',
                   textDecoration: 'none',
                   fontSize: '14px',
-                  fontWeight: 'bold'
+                  fontWeight: 'bold',
                 }}
               >
                 📚 Çevrimdışı Çalışmaya Başla
@@ -374,7 +376,7 @@ export const PWAStatus: React.FC<PWAStatusProps> = ({
 export const PWAInstallButton: React.FC<{ className?: string }> = ({ className = '' }) => {
   const { isInstallable, installPWA } = usePWA();
 
-  if (!isInstallable) return null;
+  if (!isInstallable) {return null;}
 
   const handleInstall = async () => {
     const success = await installPWA();
@@ -403,7 +405,7 @@ export const PWAInstallButton: React.FC<{ className?: string }> = ({ className =
         fontWeight: 'bold',
         display: 'flex',
         alignItems: 'center',
-        gap: '8px'
+        gap: '8px',
       }}
     >
       📱 Uygulamayı Yükle
@@ -417,7 +419,7 @@ export const PWAInstallButton: React.FC<{ className?: string }> = ({ className =
 export const OfflineIndicator: React.FC<{ className?: string }> = ({ className = '' }) => {
   const { isOnline } = useNetworkStatus();
 
-  if (isOnline) return null;
+  if (isOnline) {return null;}
 
   return (
     <div
@@ -432,7 +434,7 @@ export const OfflineIndicator: React.FC<{ className?: string }> = ({ className =
         padding: '8px',
         textAlign: 'center',
         fontSize: '14px',
-        zIndex: 1001
+        zIndex: 1001,
       }}
     >
       ❌ İnternet bağlantısı yok - Çevrimdışı modda çalışıyorsunuz

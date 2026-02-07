@@ -160,7 +160,7 @@ def example_t5_bart_generation():
     )
 
     print(f"\nSoru: {question_with_options['question'][:100]}...")
-    print(f"Seçenekler:")
+    print("Seçenekler:")
     for i, option in enumerate(question_with_options["options"]):
         marker = "✓" if i == question_with_options["correct_answer"] else " "
         print(f"  {marker} {chr(65+i)}) {option[:50]}...")
@@ -236,7 +236,7 @@ def example_rlhf_training():
     scores = torch.rand(50) * 100  # Kalite skorları
 
     metrics = service.train_reward_model(embeddings, scores, epochs=5)
-    print(f"✓ Training completed")
+    print("✓ Training completed")
     print(f"  Final Loss: {metrics['final_loss']:.4f}")
     print(f"  Avg Loss: {metrics['avg_loss']:.4f}")
 
@@ -275,7 +275,7 @@ def example_rlhf_training():
     print(f"  Avg Quality: {stats['avg_quality_score']:.2f}/100")
     print(f"  Min Quality: {stats['min_quality_score']:.2f}")
     print(f"  Max Quality: {stats['max_quality_score']:.2f}")
-    print(f"  Feedback by Type:")
+    print("  Feedback by Type:")
     for fb_type, count in stats["feedback_by_type"].items():
         print(f"    {fb_type}: {count}")
 

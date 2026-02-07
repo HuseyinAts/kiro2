@@ -6,7 +6,6 @@ import asyncio
 from pathlib import Path
 import sys
 from typing import List
-import json
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
@@ -70,7 +69,7 @@ class BatchOSYMImporter:
                 print(f"[OK] Extracted {len(questions)} questions")
                 return str(output_file)
             else:
-                print(f"[WARN] No questions extracted")
+                print("[WARN] No questions extracted")
                 self.failed_extractions += 1
                 return None
 
@@ -83,7 +82,7 @@ class BatchOSYMImporter:
         """Import all extracted JSON files to database"""
 
         print(f"\n{'='*80}")
-        print(f"Importing Extracted Questions to Database")
+        print("Importing Extracted Questions to Database")
         print(f"{'='*80}\n")
 
         importer = OSYMDatabaseImporter()
@@ -128,7 +127,7 @@ class BatchOSYMImporter:
 
         # Summary
         print(f"\n{'='*80}")
-        print(f"Extraction Summary")
+        print("Extraction Summary")
         print(f"{'='*80}")
         print(f"Total PDFs processed: {self.total_pdfs}")
         print(f"[OK] Successful: {self.successful_extractions}")
@@ -143,7 +142,7 @@ class BatchOSYMImporter:
         await self.import_all_extractions()
 
         print(f"\n{'='*80}")
-        print(f"BATCH IMPORT COMPLETE!")
+        print("BATCH IMPORT COMPLETE!")
         print(f"{'='*80}\n")
 
 

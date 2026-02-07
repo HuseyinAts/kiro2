@@ -1,0 +1,65 @@
+# Zemberek-NLP MCP Server - Systemd Service
+#
+# Installation:
+#   sudo cp zemberek-mcp.service /etc/systemd/system/
+#   sudo systemctl daemon-reload
+#   sudo systemctl enable zemberek-mcp
+#   sudo systemctl start zemberek-mcp
+#
+# Logs:
+#   journalctl -u zemberek-mcp -f
+
+[Unit]
+Description=Zemberek-NLP MCP Server
+Documentation=https://github.com/your-org/kiro2
+After=network.target redis.service
+Wants=redis.service
+
+[Service]
+Type=simple
+User=kiro2
+Group=kiro2
+WorkingDirectory=/opt/kiro2/backend
+
+# Environment
+Environment="PYTHONUNBUFFERED=1"
+Environment="JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64"
+Environment="ZEMBEREK_JAR_PATH=/opt/kiro2/backend/lib/zemberek/zemberek-full.jar"
+Environment="ZEMBEREK_USE_JPYPE=true"
+Environment="ZEMBEREK_REDIS_URL=redis://localhost:6379"
+Environment="ZEMBEREK_CACHE_TTL=3600"
+Environment="ZEMBEREK_LOG_LEVEL=INFO"
+
+# Optionally load from env file
+EnvironmentFile=-/opt/kiro2/backend/.env.zemberek
+
+# Start command
+ExecStart=/opt/kiro2/venv/bin/python -m mcp_servers.zemberek_nlp.server
+
+# Restart policy
+Restart=on-failure
+RestartSec=5
+StartLimitIntervalSec=60
+StartLimitBurst=3
+
+# Security hardening
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/opt/kiro2/backend/logs /opt/kiro2/backend/cache
+CapabilityBoundingSet=
+AmbientCapabilities=
+
+# Resource limits
+MemoryMax=1G
+CPUQuota=200%
+TasksMax=100
+
+# Logging
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=zemberek-mcp
+
+[Install]
+WantedBy=multi-user.target

@@ -99,7 +99,7 @@ export const checkContrastCompliance = (
   ratio: number,
   fontSize: number,
   fontWeight: number,
-  level: 'AA' | 'AAA' = 'AA'
+  level: 'AA' | 'AAA' = 'AA',
 ): ContrastResult => {
   const isLargeText = fontSize >= 18 || (fontSize >= 14 && fontWeight >= 700);
 
@@ -161,7 +161,7 @@ export const validateTextContrast = (root: HTMLElement = document.body): Validat
 export const validateForms = (root: HTMLElement = document.body): ValidationError[] => {
   const errors: ValidationError[] = [];
   const inputs = root.querySelectorAll<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>(
-    'input, textarea, select'
+    'input, textarea, select',
   );
 
   inputs.forEach((input) => {
@@ -257,7 +257,7 @@ export const validateImages = (root: HTMLElement = document.body): ValidationErr
 export const validateKeyboardAccess = (root: HTMLElement = document.body): ValidationError[] => {
   const errors: ValidationError[] = [];
   const interactive = root.querySelectorAll<HTMLElement>(
-    'button, a, input, textarea, select, [onclick], [role="button"], [role="link"]'
+    'button, a, input, textarea, select, [onclick], [role="button"], [role="link"]',
   );
 
   interactive.forEach((element) => {

@@ -5,18 +5,17 @@ YKS Hazırlık Platformu - Veritabanı Kurulum ve Test Scripti
 
 import asyncio
 import sys
-import os
 from pathlib import Path
 
 # Add current directory to path
 sys.path.insert(0, str(Path(__file__).parent))
 
 import asyncpg
-from sqlalchemy import create_engine, text
+from sqlalchemy import create_engine
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 from sqlalchemy.orm import sessionmaker
 import uuid
-from datetime import datetime
+from datetime import datetime, timezone
 from models_unified import (
     Base,
     Kullanici,
@@ -26,10 +25,10 @@ from models_unified import (
     SoruZorluk,
 )
 
-# Database configuration
-DATABASE_URL = "postgresql://postgres:postgres@localhost:5432/turkiye_sinav_db"
+# Database configuration (Port 5434 - KIRO2 Standard)
+DATABASE_URL = "postgresql://postgres:postgres@localhost:5434/turkiye_sinav_db"
 ASYNC_DATABASE_URL = (
-    "postgresql+asyncpg://postgres:postgres@localhost:5432/turkiye_sinav_db"
+    "postgresql+asyncpg://postgres:postgres@localhost:5434/turkiye_sinav_db"
 )
 
 
@@ -39,7 +38,7 @@ async def create_database():
         # Connect to default postgres database
         conn = await asyncpg.connect(
             host="localhost",
-            port=5432,
+            port=5434,
             user="postgres",
             password="postgres",
             database="postgres",
@@ -111,7 +110,7 @@ async def insert_test_data():
                 hedef_universite="Boğaziçi Üniversitesi",
                 hedef_bolum="Bilgisayar Mühendisliği",
                 aktif=True,
-                kayit_tarihi=datetime.utcnow(),
+                kayit_tarihi=datetime.now(timezone.utc),
             )
 
             ogrenci2 = Kullanici(
@@ -128,7 +127,7 @@ async def insert_test_data():
                 hedef_universite="ODTÜ",
                 hedef_bolum="İşletme",
                 aktif=True,
-                kayit_tarihi=datetime.utcnow(),
+                kayit_tarihi=datetime.now(timezone.utc),
             )
 
             ogretmen = Kullanici(
@@ -141,7 +140,7 @@ async def insert_test_data():
                 parola_hash="hash789",
                 okul="Atatürk Lisesi",
                 aktif=True,
-                kayit_tarihi=datetime.utcnow(),
+                kayit_tarihi=datetime.now(timezone.utc),
             )
 
             # Add users to session
@@ -170,7 +169,7 @@ async def insert_test_data():
                 ogretmene_saygi_seviyesi=0.9,
                 aile_katilim_derecesi=0.6,
                 akran_rekabet_egilimi=0.5,
-                ilk_tespit_tarihi=datetime.utcnow(),
+                ilk_tespit_tarihi=datetime.now(timezone.utc),
             )
 
             session.add(profil1)
@@ -353,11 +352,11 @@ async def main():
     print("=" * 60)
 
     print("\n[INFO] Veritabani Bilgileri:")
-    print(f"   - Host: localhost")
-    print(f"   - Port: 5432")
-    print(f"   - Database: turkiye_sinav_db")
-    print(f"   - User: postgres")
-    print(f"   - Password: postgres")
+    print("   - Host: localhost")
+    print("   - Port: 5432")
+    print("   - Database: turkiye_sinav_db")
+    print("   - User: postgres")
+    print("   - Password: postgres")
 
     print("\n[NEXT] Sonraki Adimlar:")
     print("1. Backend'i başlatın: uvicorn main:app --reload")

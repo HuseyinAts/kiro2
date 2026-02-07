@@ -2,7 +2,14 @@
  * ÖSYM Soru Navigasyon Bileşeni
  * Yeni API ile uyumlu soru navigasyonu
  */
-import React, { useState } from 'react'
+import {
+  NavigateNext,
+  NavigateBefore,
+  Bookmark,
+  CheckCircle,
+  RadioButtonUnchecked,
+  GridView,
+} from '@mui/icons-material';
 import {
   Box,
   Paper,
@@ -18,26 +25,20 @@ import {
   Chip,
   Badge,
   useTheme,
-  useMediaQuery
-} from '@mui/material'
-import {
-  NavigateNext,
-  NavigateBefore,
-  Bookmark,
-  BookmarkBorder,
-  CheckCircle,
-  RadioButtonUnchecked,
-  GridView
-} from '@mui/icons-material'
-import { motion } from 'framer-motion'
-import { ExamSessionResponse } from '../../services/examService'
+  useMediaQuery,
+} from '@mui/material';
+import { motion } from 'framer-motion';
+import * as React from 'react';
+import {  useState  } from 'react';
+
+import { ExamSessionResponse } from '../../services/examService';
 
 interface OSYMQuestionNavigationProps {
   session: ExamSessionResponse
   answers: Record<string, string>
   flaggedQuestions: Set<string>
   onQuestionSelect: (questionIndex: number) => void
-  onFlagToggle: (questionId: string) => void
+  onFlagToggle: (_questionId: string) => void
   onNext: () => void
   onPrevious: () => void
   disabled?: boolean
@@ -48,18 +49,18 @@ export const OSYMQuestionNavigation: React.FC<OSYMQuestionNavigationProps> = ({
   answers,
   flaggedQuestions,
   onQuestionSelect,
-  onFlagToggle,
+  onFlagToggle: _onFlagToggle,
   onNext,
   onPrevious,
-  disabled = false
+  disabled = false,
 }) => {
-  const theme = useTheme()
-  const isMobile = useMediaQuery(theme.breakpoints.down('md'))
-  
-  const [showAllQuestions, setShowAllQuestions] = useState(false)
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
 
-  const isFirstQuestion = session.current_question_index === 0
-  const isLastQuestion = session.current_question_index === session.total_questions - 1
+  const [showAllQuestions, setShowAllQuestions] = useState(false);
+
+  const isFirstQuestion = session.current_question_index === 0;
+  const isLastQuestion = session.current_question_index === session.total_questions - 1;
 
   /**
    * Soru durumunu belirle
@@ -67,35 +68,35 @@ export const OSYMQuestionNavigation: React.FC<OSYMQuestionNavigationProps> = ({
   const getQuestionStatus = (questionIndex: number) => {
     // Bu implementasyonda question ID'lerini index'e göre oluşturuyoruz
     // Gerçek implementasyonda backend'den gelen question ID'leri kullanılmalı
-    const questionId = `question_${questionIndex}`
-    const isAnswered = !!answers[questionId]
-    const isFlagged = flaggedQuestions.has(questionId)
-    const isCurrent = questionIndex === session.current_question_index
+    const questionId = `question_${questionIndex}`;
+    const isAnswered = !!answers[questionId];
+    const isFlagged = flaggedQuestions.has(questionId);
+    const isCurrent = questionIndex === session.current_question_index;
 
     return {
       isAnswered,
       isFlagged,
       isCurrent,
-      questionId
-    }
-  }
+      questionId,
+    };
+  };
 
   /**
    * Soru durumuna göre renk getir
    */
   const getQuestionColor = (status: ReturnType<typeof getQuestionStatus>) => {
-    if (status.isCurrent) return theme.palette.primary.main
-    if (status.isAnswered) return theme.palette.success.main
-    return theme.palette.grey[300]
-  }
+    if (status.isCurrent) {return theme.palette.primary.main;}
+    if (status.isAnswered) {return theme.palette.success.main;}
+    return theme.palette.grey[300];
+  };
 
   /**
    * Soru durumuna göre metin rengi getir
    */
   const getQuestionTextColor = (status: ReturnType<typeof getQuestionStatus>) => {
-    if (status.isCurrent || status.isAnswered) return 'white'
-    return theme.palette.text.primary
-  }
+    if (status.isCurrent || status.isAnswered) {return 'white';}
+    return theme.palette.text.primary;
+  };
 
   /**
    * İstatistikleri hesapla
@@ -103,8 +104,8 @@ export const OSYMQuestionNavigation: React.FC<OSYMQuestionNavigationProps> = ({
   const stats = {
     answered: Object.keys(answers).length,
     flagged: flaggedQuestions.size,
-    remaining: session.total_questions - Object.keys(answers).length
-  }
+    remaining: session.total_questions - Object.keys(answers).length,
+  };
 
   /**
    * Hızlı navigasyon (mobil için)
@@ -119,20 +120,20 @@ export const OSYMQuestionNavigation: React.FC<OSYMQuestionNavigationProps> = ({
         <NavigateBefore />
       </IconButton>
 
-      <Box sx={{ 
-        display: 'flex', 
-        gap: 0.5, 
+      <Box sx={{
+        display: 'flex',
+        gap: 0.5,
         overflow: 'auto',
         maxWidth: '200px',
         '&::-webkit-scrollbar': { height: 4 },
-        '&::-webkit-scrollbar-thumb': { backgroundColor: theme.palette.grey[400], borderRadius: 2 }
+        '&::-webkit-scrollbar-thumb': { backgroundColor: theme.palette.grey[400], borderRadius: 2 },
       }}>
         {Array.from({ length: Math.min(session.total_questions, 10) }, (_, index) => {
-          const actualIndex = Math.max(0, session.current_question_index - 5) + index
-          if (actualIndex >= session.total_questions) return null
-          
-          const status = getQuestionStatus(actualIndex)
-          
+          const actualIndex = Math.max(0, session.current_question_index - 5) + index;
+          if (actualIndex >= session.total_questions) {return null;}
+
+          const status = getQuestionStatus(actualIndex);
+
           return (
             <Tooltip key={actualIndex} title={`Soru ${actualIndex + 1}`}>
               <Box
@@ -153,14 +154,14 @@ export const OSYMQuestionNavigation: React.FC<OSYMQuestionNavigationProps> = ({
                   transform: status.isCurrent ? 'scale(1.1)' : 'scale(1)',
                   transition: 'all 0.2s',
                   '&:hover': disabled ? {} : {
-                    transform: 'scale(1.1)'
-                  }
+                    transform: 'scale(1.1)',
+                  },
                 }}
               >
                 {actualIndex + 1}
               </Box>
             </Tooltip>
-          )
+          );
         })}
       </Box>
 
@@ -181,7 +182,7 @@ export const OSYMQuestionNavigation: React.FC<OSYMQuestionNavigationProps> = ({
         Tümü
       </Button>
     </Box>
-  )
+  );
 
   /**
    * Masaüstü navigasyon
@@ -211,17 +212,17 @@ export const OSYMQuestionNavigation: React.FC<OSYMQuestionNavigationProps> = ({
       </Box>
 
       {/* Soru grid'i */}
-      <Box sx={{ 
-        display: 'flex', 
-        flexWrap: 'wrap', 
-        gap: 0.5, 
+      <Box sx={{
+        display: 'flex',
+        flexWrap: 'wrap',
+        gap: 0.5,
         justifyContent: 'center',
         maxHeight: '120px',
-        overflow: 'hidden'
+        overflow: 'hidden',
       }}>
         {Array.from({ length: session.total_questions }, (_, index) => {
-          const status = getQuestionStatus(index)
-          
+          const status = getQuestionStatus(index);
+
           return (
             <Tooltip key={index} title={`Soru ${index + 1}${status.isAnswered ? ' - Cevaplandı' : ''}${status.isFlagged ? ' - İşaretli' : ''}`}>
               <Badge
@@ -254,8 +255,8 @@ export const OSYMQuestionNavigation: React.FC<OSYMQuestionNavigationProps> = ({
                       transition: 'all 0.2s',
                       boxShadow: status.isCurrent ? theme.shadows[4] : theme.shadows[1],
                       '&:hover': disabled ? {} : {
-                        boxShadow: theme.shadows[4]
-                      }
+                        boxShadow: theme.shadows[4],
+                      },
                     }}
                   >
                     {index + 1}
@@ -263,7 +264,7 @@ export const OSYMQuestionNavigation: React.FC<OSYMQuestionNavigationProps> = ({
                 </motion.div>
               </Badge>
             </Tooltip>
-          )
+          );
         })}
       </Box>
 
@@ -292,7 +293,7 @@ export const OSYMQuestionNavigation: React.FC<OSYMQuestionNavigationProps> = ({
         </Button>
       </Box>
     </Box>
-  )
+  );
 
   return (
     <>
@@ -315,7 +316,7 @@ export const OSYMQuestionNavigation: React.FC<OSYMQuestionNavigationProps> = ({
             </Typography>
           </Box>
         </DialogTitle>
-        
+
         <DialogContent>
           {/* İstatistikler */}
           <Box sx={{ display: 'flex', gap: 2, mb: 3, justifyContent: 'center', flexWrap: 'wrap' }}>
@@ -344,8 +345,8 @@ export const OSYMQuestionNavigation: React.FC<OSYMQuestionNavigationProps> = ({
           {/* Soru grid'i */}
           <Grid container spacing={1}>
             {Array.from({ length: session.total_questions }, (_, index) => {
-              const status = getQuestionStatus(index)
-              
+              const status = getQuestionStatus(index);
+
               return (
                 <Grid item xs={2} sm={1.5} md={1} key={index}>
                   <Badge
@@ -355,8 +356,8 @@ export const OSYMQuestionNavigation: React.FC<OSYMQuestionNavigationProps> = ({
                   >
                     <Box
                       onClick={() => {
-                        onQuestionSelect(index)
-                        setShowAllQuestions(false)
+                        onQuestionSelect(index);
+                        setShowAllQuestions(false);
                       }}
                       sx={{
                         width: '100%',
@@ -376,19 +377,19 @@ export const OSYMQuestionNavigation: React.FC<OSYMQuestionNavigationProps> = ({
                         transition: 'all 0.2s',
                         '&:hover': {
                           transform: 'scale(1.1)',
-                          boxShadow: theme.shadows[4]
-                        }
+                          boxShadow: theme.shadows[4],
+                        },
                       }}
                     >
                       {index + 1}
                     </Box>
                   </Badge>
                 </Grid>
-              )
+              );
             })}
           </Grid>
         </DialogContent>
-        
+
         <DialogActions>
           <Button onClick={() => setShowAllQuestions(false)}>
             Kapat
@@ -396,7 +397,7 @@ export const OSYMQuestionNavigation: React.FC<OSYMQuestionNavigationProps> = ({
         </DialogActions>
       </Dialog>
     </>
-  )
-}
+  );
+};
 
-export default OSYMQuestionNavigation
+export default OSYMQuestionNavigation;

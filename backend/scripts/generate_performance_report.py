@@ -8,7 +8,7 @@ Requirements: 2.1, 2.5, 2.12, 6.6
 import json
 import os
 from datetime import datetime
-from typing import Dict, List, Any
+from typing import Dict, Any
 import glob
 
 
@@ -270,7 +270,7 @@ class PerformanceReportGenerator:
             for i, rec in enumerate(self.report["recommendations"], 1):
                 print(f"\n{i}. {rec['category']} (Priority: {rec['priority']})")
                 print(f"   Issue: {rec['issue']}")
-                print(f"   Recommendations:")
+                print("   Recommendations:")
                 for r in rec["recommendations"]:
                     print(f"     - {r}")
 

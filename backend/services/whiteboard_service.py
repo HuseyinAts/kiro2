@@ -5,8 +5,8 @@ Service for managing interactive whiteboard with drawing tools and math equation
 """
 
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, and_, delete
-from datetime import datetime
+from sqlalchemy import select, delete
+from datetime import datetime, timezone
 from typing import Optional, List, Dict, Any
 from uuid import UUID
 import logging
@@ -88,7 +88,7 @@ class WhiteboardService:
             if hasattr(whiteboard, key):
                 setattr(whiteboard, key, value)
 
-        whiteboard.updated_at = datetime.utcnow()
+        whiteboard.updated_at = datetime.now(timezone.utc)
         await self.db.commit()
         await self.db.refresh(whiteboard)
 
@@ -311,7 +311,7 @@ class WhiteboardService:
         if color is not None:
             equation.color = color
 
-        equation.updated_at = datetime.utcnow()
+        equation.updated_at = datetime.now(timezone.utc)
 
         await self.db.commit()
         await self.db.refresh(equation)
@@ -431,7 +431,7 @@ class WhiteboardService:
         This would be implemented with WebSocket tracking in production
         """
         # Placeholder: Return users who have drawn in last 5 minutes
-        five_mins_ago = datetime.utcnow() - timedelta(minutes=5)
+        five_mins_ago = datetime.now(timezone.utc) - timedelta(minutes=5)
 
         query = (
             select(WhiteboardStroke.user_id)

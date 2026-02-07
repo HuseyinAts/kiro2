@@ -1,4 +1,6 @@
-import React, { useEffect, useRef, useState } from 'react';
+import * as React from 'react';
+import {  useEffect, useRef, useState  } from 'react';
+
 import { generateMathDescription } from '../../utils/mathAccessibility';
 
 declare global {
@@ -130,7 +132,7 @@ export const MathFormula: React.FC<MathFormulaProps> = ({
   };
 
   const addAccessibleAttributes = () => {
-    if (!containerRef.current) return;
+    if (!containerRef.current) {return;}
 
     // Find the rendered math element
     const mathElement = containerRef.current.querySelector('[data-mathml]') ||
@@ -227,7 +229,7 @@ export const Derivative: React.FC<{ func?: string }> = ({ func = 'f(x)' }) => (
 export const Integral: React.FC<{ func?: string; from?: string; to?: string }> = ({
   func = 'f(x)',
   from = 'a',
-  to = 'b'
+  to = 'b',
 }) => (
   <MathFormula
     formula={`\\int_{${from}}^{${to}} ${func} \\, dx`}
@@ -238,7 +240,7 @@ export const Integral: React.FC<{ func?: string; from?: string; to?: string }> =
 
 export const Fraction: React.FC<{ numerator: string; denominator: string }> = ({
   numerator,
-  denominator
+  denominator,
 }) => (
   <MathFormula
     formula={`\\frac{${numerator}}{${denominator}}`}

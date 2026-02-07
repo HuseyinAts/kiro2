@@ -12,10 +12,14 @@ import uuid
 from functools import lru_cache
 from typing import Any
 
-from langchain.schema import Document
-from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain_core.documents import Document
+from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_community.vectorstores import Chroma
+
+# Configure logging (must be before any logger usage)
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 # Performance optimization imports
 try:
@@ -25,10 +29,6 @@ try:
 except ImportError:
     REDIS_AVAILABLE = False
     logger.warning("Redis not available for RAG caching")
-
-# Configure logging
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
 
 
 class RAGService:
@@ -62,6 +62,9 @@ class RAGService:
 
     def _initialize(self):
         """Servisi başlat"""
+        if os.environ.get("TESTING") == "true":
+            logger.info("Skipping RAG initialization in test mode")
+            return
         try:
             # Text splitter
             self.text_splitter = RecursiveCharacterTextSplitter(
@@ -293,7 +296,6 @@ class RAGService:
         Returns:
             Document ID
         """
-        import uuid
 
         # Check for duplicates
         from core.document_deduplication import get_deduplicator
@@ -608,6 +610,228 @@ class RAGService:
             logger.error(f"Search error: {e!s}")
             return []
 
+    async def search_with_mmr(
+        self,
+        query: str,
+        k: int = 10,
+        lambda_mult: float = 0.5,
+        fetch_k: int = 20,
+        filter: dict[str, Any] | None = None,
+    ) -> list[dict[str, Any]]:
+        """
+        Search with Maximal Marginal Relevance for diversity.
+
+        Spec: REQ-3 Semantic Question Search - MMR Diversity
+        - lambda_mult: 0 = max diversity, 1 = max relevance
+        - Balances relevance with result diversity
+
+        Args:
+            query: Search query
+            k: Number of results to return
+            lambda_mult: Balance between relevance and diversity (0-1)
+            fetch_k: Number of documents to fetch before MMR reranking
+            filter: Metadata filter
+
+        Returns:
+            Diverse search results
+        """
+        try:
+            if self.vector_store is None:
+                logger.warning("Vector store not initialized")
+                return []
+
+            # Use LangChain's built-in MMR if available
+            if hasattr(self.vector_store, "max_marginal_relevance_search"):
+                results = self.vector_store.max_marginal_relevance_search(
+                    query=query,
+                    k=k,
+                    fetch_k=fetch_k,
+                    lambda_mult=lambda_mult,
+                    filter=filter,
+                )
+
+                return [
+                    {
+                        "content": doc.page_content,
+                        "text": doc.page_content,
+                        "metadata": doc.metadata,
+                        "score": 1.0,  # MMR doesn't return scores
+                    }
+                    for doc in results
+                ]
+
+            # Manual MMR implementation
+            # Step 1: Fetch more results than needed
+            initial_results = await self.search(query, k=fetch_k, filter=filter)
+
+            if not initial_results:
+                return []
+
+            # Step 2: Apply MMR reranking
+            selected = []
+            remaining = list(initial_results)
+
+            # Get query embedding for MMR calculation
+            query_embedding = self.embeddings.embed_query(query)
+
+            while len(selected) < k and remaining:
+                if not selected:
+                    # First selection: highest relevance
+                    best_idx = 0
+                    selected.append(remaining.pop(best_idx))
+                else:
+                    # MMR selection: balance relevance with diversity
+                    best_score = float("-inf")
+                    best_idx = 0
+
+                    for idx, candidate in enumerate(remaining):
+                        # Relevance score (already from search)
+                        relevance = candidate.get("score", 0.5)
+
+                        # Calculate max similarity to already selected
+                        max_sim_to_selected = 0.0
+                        candidate_emb = self.embeddings.embed_query(candidate["content"])
+
+                        for sel in selected:
+                            sel_emb = self.embeddings.embed_query(sel["content"])
+                            sim = self._cosine_similarity(candidate_emb, sel_emb)
+                            max_sim_to_selected = max(max_sim_to_selected, sim)
+
+                        # MMR score
+                        mmr_score = (
+                            lambda_mult * relevance
+                            - (1 - lambda_mult) * max_sim_to_selected
+                        )
+
+                        if mmr_score > best_score:
+                            best_score = mmr_score
+                            best_idx = idx
+
+                    selected.append(remaining.pop(best_idx))
+
+            return selected
+
+        except Exception as e:
+            logger.error(f"MMR search error: {e}")
+            return await self.search(query, k=k, filter=filter)
+
+    def _cosine_similarity(self, vec1: list[float], vec2: list[float]) -> float:
+        """Calculate cosine similarity between two vectors"""
+        import numpy as np
+
+        vec1 = np.array(vec1)
+        vec2 = np.array(vec2)
+
+        norm1 = np.linalg.norm(vec1)
+        norm2 = np.linalg.norm(vec2)
+
+        if norm1 == 0 or norm2 == 0:
+            return 0.0
+
+        return float(np.dot(vec1, vec2) / (norm1 * norm2))
+
+    async def search_hybrid_ranked(
+        self,
+        query: str,
+        k: int = 10,
+        filter: dict[str, Any] | None = None,
+        weights: dict[str, float] | None = None,
+    ) -> list[dict[str, Any]]:
+        """
+        Search with hybrid ranking combining multiple signals.
+
+        Spec: REQ-3 Semantic Question Search - Hybrid Ranking
+        Default weights: 60% similarity + 20% recency + 20% popularity
+
+        Args:
+            query: Search query
+            k: Number of results
+            filter: Metadata filter
+            weights: Custom weights for ranking factors
+
+        Returns:
+            Hybrid-ranked search results
+        """
+        # Default weights as per spec
+        weights = weights or {
+            "similarity": 0.6,
+            "recency": 0.2,
+            "popularity": 0.2,
+        }
+
+        try:
+            # Get initial results (more than needed for reranking)
+            results = await self.search(query, k=k * 2, filter=filter)
+
+            if not results:
+                return []
+
+            import time
+
+            current_time = time.time()
+
+            # Calculate hybrid scores
+            for result in results:
+                # Similarity score (already present)
+                sim_score = result.get("score", 0.5)
+
+                # Recency score (based on created_at metadata)
+                metadata = result.get("metadata", {})
+                created_at = metadata.get("created_at")
+
+                if created_at:
+                    try:
+                        # Handle various timestamp formats
+                        if isinstance(created_at, (int, float)):
+                            age_days = (current_time - created_at) / 86400
+                        else:
+                            from datetime import datetime
+                            if isinstance(created_at, str):
+                                created_dt = datetime.fromisoformat(created_at.replace("Z", "+00:00"))
+                            else:
+                                created_dt = created_at
+                            age_days = (datetime.now() - created_dt).days
+
+                        # Recency decay: newer = higher score
+                        recency_score = 1.0 / (1.0 + age_days / 30)  # 30-day half-life
+                    except Exception:
+                        recency_score = 0.5
+                else:
+                    recency_score = 0.5
+
+                # Popularity score (based on view_count or usage_count)
+                view_count = metadata.get("view_count", 0)
+                usage_count = metadata.get("usage_count", 0)
+                popularity_raw = view_count + usage_count
+
+                # Normalize popularity (log scale)
+                import math
+                popularity_score = math.log1p(popularity_raw) / 10 if popularity_raw > 0 else 0.0
+                popularity_score = min(1.0, popularity_score)  # Cap at 1.0
+
+                # Calculate hybrid score
+                hybrid_score = (
+                    weights["similarity"] * sim_score
+                    + weights["recency"] * recency_score
+                    + weights["popularity"] * popularity_score
+                )
+
+                result["hybrid_score"] = hybrid_score
+                result["score_breakdown"] = {
+                    "similarity": sim_score,
+                    "recency": recency_score,
+                    "popularity": popularity_score,
+                }
+
+            # Sort by hybrid score and return top k
+            results.sort(key=lambda x: x.get("hybrid_score", 0), reverse=True)
+
+            return results[:k]
+
+        except Exception as e:
+            logger.error(f"Hybrid ranked search error: {e}")
+            return await self.search(query, k=k, filter=filter)
+
     async def query_with_context(
         self, query: str, context_size: int = 3, prompt_template: str | None = None
     ) -> dict[str, Any]:
@@ -789,5 +1013,22 @@ Cevap:"""
             return {"success": False, "error": str(e)}
 
 
-# Singleton instance
-rag_service = RAGService()
+# Lazy singleton instance
+_rag_service: RAGService | None = None
+
+
+def _get_rag_service() -> RAGService:
+    global _rag_service
+    if _rag_service is None:
+        _rag_service = RAGService()
+    return _rag_service
+
+
+class _LazyRAGService:
+    """Proxy that delays RAGService initialization until first use."""
+
+    def __getattr__(self, name: str):
+        return getattr(_get_rag_service(), name)
+
+
+rag_service = _LazyRAGService()

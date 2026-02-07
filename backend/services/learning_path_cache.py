@@ -15,7 +15,6 @@ Features:
 import hashlib
 import json
 from typing import Optional, Dict, Any, List
-from datetime import datetime
 
 from core.multi_layer_cache import MultiLayerCache
 from core.structured_logger import get_logger
@@ -44,11 +43,13 @@ class LearningPathCache:
     """
 
     # Cache TTL values (in seconds)
+    # FIX Cache Invalidation: Aligned TTLs for consistency
+    # Progress/Completion TTLs increased to reduce cache misses while still staying fresh
     LEARNING_PATH_TTL = 3600  # 1 hour - learning paths
     RESOURCE_SEARCH_TTL = 1800  # 30 minutes - search results
     QUIZ_TTL = 7200  # 2 hours - quiz data (relatively static)
-    PROGRESS_TTL = 300  # 5 minutes - student progress (frequently updated)
-    COMPLETION_TTL = 600  # 10 minutes - completion status
+    PROGRESS_TTL = 900  # 15 minutes (was 5) - student progress - aligned with completion
+    COMPLETION_TTL = 900  # 15 minutes (was 10) - completion status - aligned with progress
     PROFILE_TTL = 1800  # 30 minutes - student profiles
 
     def __init__(self, redis_url: str = "redis://localhost:6379/0"):
@@ -218,18 +219,23 @@ class LearningPathCache:
         return success
 
     async def invalidate_learning_path(
-        self, student_id: str, subject: Optional[str] = None
+        self, student_id: str, subject: Optional[str] = None, cascade: bool = True
     ) -> int:
         """
         Invalidate learning path cache for student
 
+        FIX Cache Invalidation: Added cascade invalidation for related data
+
         Args:
             student_id: Student ID
             subject: Optional subject filter (if None, invalidates all subjects)
+            cascade: If True, also invalidates related progress and completion caches
 
         Returns:
             Number of entries invalidated
         """
+        total_count = 0
+
         # For now, we need to invalidate by pattern
         # This is a limitation - ideally we'd track all cache keys per student
 
@@ -243,14 +249,38 @@ class LearningPathCache:
             pattern = f"path:{student_id}:*"
             count = await self.cache.delete_pattern(pattern)
 
-        logger.info(
-            "learning_path_cache_invalidated",
-            student_id=student_id,
-            subject=subject,
-            count=count,
-        )
+        total_count += count
 
-        return count
+        # FIX: Cascade invalidation - also invalidate related progress and completion
+        if cascade:
+            # Invalidate all progress for this student
+            progress_pattern = f"progress:*{student_id}*"
+            progress_count = await self.cache.delete_pattern(progress_pattern)
+            total_count += progress_count
+
+            # Invalidate all completion for this student
+            completion_pattern = f"completion:*{student_id}*"
+            completion_count = await self.cache.delete_pattern(completion_pattern)
+            total_count += completion_count
+
+            logger.info(
+                "learning_path_cache_cascade_invalidated",
+                student_id=student_id,
+                subject=subject,
+                path_count=count,
+                progress_count=progress_count,
+                completion_count=completion_count,
+                total_count=total_count,
+            )
+        else:
+            logger.info(
+                "learning_path_cache_invalidated",
+                student_id=student_id,
+                subject=subject,
+                count=count,
+            )
+
+        return total_count
 
     # ============================================================================
     # Resource Search Cache

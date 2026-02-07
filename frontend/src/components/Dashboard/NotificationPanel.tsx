@@ -1,4 +1,16 @@
-import React, { useState, useEffect } from 'react'
+import {
+  Notifications,
+  CheckCircle,
+  Warning,
+  Info,
+  Error,
+  Close as _Close,
+  MarkEmailRead,
+  Delete as _Delete,
+  Refresh,
+  NotificationsActive,
+  NotificationsOff,
+} from '@mui/icons-material';
 import {
   Dialog,
   DialogTitle,
@@ -20,25 +32,15 @@ import {
   Alert,
   CircularProgress,
   Divider,
-  Card,
-  CardContent
-} from '@mui/material'
-import {
-  Notifications,
-  CheckCircle,
-  Warning,
-  Info,
-  Error,
-  Close,
-  MarkEmailRead,
-  Delete,
-  Refresh,
-  NotificationsActive,
-  NotificationsOff
-} from '@mui/icons-material'
-import { dateUtils } from '@/utils/dateUtils'
-import { Notification } from '../../types'
-import { getNotifications, markNotificationAsRead } from '../../api'
+  Card as _Card,
+  CardContent as _CardContent,
+} from '@mui/material';
+import * as React from 'react';
+import {  useState, useEffect  } from 'react';
+
+import { getNotifications, markNotificationAsRead } from '../../api';
+import { Notification } from '../../types';
+import { dateUtils } from '@/utils/dateUtils';
 
 interface NotificationPanelProps {
   open: boolean
@@ -46,109 +48,109 @@ interface NotificationPanelProps {
 }
 
 export function NotificationPanel({ open, onClose }: NotificationPanelProps) {
-  const [notifications, setNotifications] = useState<Notification[]>([])
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-  const [activeTab, setActiveTab] = useState(0)
-  const [markingAsRead, setMarkingAsRead] = useState<string | null>(null)
+  const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState(0);
+  const [markingAsRead, setMarkingAsRead] = useState<string | null>(null);
 
   useEffect(() => {
     if (open) {
-      loadNotifications()
+      loadNotifications();
     }
-  }, [open])
+  }, [open]);
 
   const loadNotifications = async () => {
     try {
-      setLoading(true)
-      setError(null)
-      const notificationsData = await getNotifications(false, 100) // Tüm bildirimler
-      setNotifications(notificationsData)
+      setLoading(true);
+      setError(null);
+      const notificationsData = await getNotifications(false, 100); // Tüm bildirimler
+      setNotifications(notificationsData);
     } catch (err) {
-      console.error('Bildirimler yüklenirken hata:', err)
-      setError('Bildirimler yüklenirken bir hata oluştu')
+      console.error('Bildirimler yüklenirken hata:', err);
+      setError('Bildirimler yüklenirken bir hata oluştu');
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const handleMarkAsRead = async (notificationId: string) => {
     try {
-      setMarkingAsRead(notificationId)
-      await markNotificationAsRead(notificationId)
-      
+      setMarkingAsRead(notificationId);
+      await markNotificationAsRead(notificationId);
+
       // Local state'i güncelle
-      setNotifications(notifications.map(n => 
-        n.bildirim_id === notificationId 
+      setNotifications(notifications.map(n =>
+        n.bildirim_id === notificationId
           ? { ...n, okundu: true }
-          : n
-      ))
+          : n,
+      ));
     } catch (err) {
-      console.error('Bildirim okundu olarak işaretlenirken hata:', err)
-      setError('Bildirim güncellenirken bir hata oluştu')
+      console.error('Bildirim okundu olarak işaretlenirken hata:', err);
+      setError('Bildirim güncellenirken bir hata oluştu');
     } finally {
-      setMarkingAsRead(null)
+      setMarkingAsRead(null);
     }
-  }
+  };
 
   const handleMarkAllAsRead = async () => {
-    const unreadNotifications = notifications.filter(n => !n.okundu)
-    
+    const unreadNotifications = notifications.filter(n => !n.okundu);
+
     try {
       // Tüm okunmamış bildirimleri paralel olarak işaretle
       await Promise.all(
-        unreadNotifications.map(n => markNotificationAsRead(n.bildirim_id))
-      )
-      
+        unreadNotifications.map(n => markNotificationAsRead(n.bildirim_id)),
+      );
+
       // Local state'i güncelle
-      setNotifications(notifications.map(n => ({ ...n, okundu: true })))
+      setNotifications(notifications.map(n => ({ ...n, okundu: true })));
     } catch (err) {
-      console.error('Bildirimler okundu olarak işaretlenirken hata:', err)
-      setError('Bildirimler güncellenirken bir hata oluştu')
+      console.error('Bildirimler okundu olarak işaretlenirken hata:', err);
+      setError('Bildirimler güncellenirken bir hata oluştu');
     }
-  }
+  };
 
   const getNotificationIcon = (type: string) => {
     switch (type) {
       case 'basari':
-        return <CheckCircle className="text-green-500" />
+        return <CheckCircle className="text-green-500" />;
       case 'uyari':
-        return <Warning className="text-yellow-500" />
+        return <Warning className="text-yellow-500" />;
       case 'hata':
-        return <Error className="text-red-500" />
+        return <Error className="text-red-500" />;
       default:
-        return <Info className="text-blue-500" />
+        return <Info className="text-blue-500" />;
     }
-  }
+  };
 
   const getNotificationColor = (type: string) => {
     switch (type) {
-      case 'basari': return 'success'
-      case 'uyari': return 'warning'
-      case 'hata': return 'error'
-      default: return 'info'
+      case 'basari': return 'success';
+      case 'uyari': return 'warning';
+      case 'hata': return 'error';
+      default: return 'info';
     }
-  }
+  };
 
   const filterNotifications = (notifications: Notification[]) => {
     switch (activeTab) {
       case 0: // Tümü
-        return notifications
+        return notifications;
       case 1: // Okunmamış
-        return notifications.filter(n => !n.okundu)
+        return notifications.filter(n => !n.okundu);
       case 2: // Başarı
-        return notifications.filter(n => n.tip === 'basari')
+        return notifications.filter(n => n.tip === 'basari');
       case 3: // Uyarı
-        return notifications.filter(n => n.tip === 'uyari')
+        return notifications.filter(n => n.tip === 'uyari');
       case 4: // Hata
-        return notifications.filter(n => n.tip === 'hata')
+        return notifications.filter(n => n.tip === 'hata');
       default:
-        return notifications
+        return notifications;
     }
-  }
+  };
 
-  const filteredNotifications = filterNotifications(notifications)
-  const unreadCount = notifications.filter(n => !n.okundu).length
+  const filteredNotifications = filterNotifications(notifications);
+  const unreadCount = notifications.filter(n => !n.okundu).length;
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
@@ -192,23 +194,23 @@ export function NotificationPanel({ open, onClose }: NotificationPanelProps) {
           scrollButtons="auto"
           className="border-b"
         >
-          <Tab 
+          <Tab
             label={`Tümü (${notifications.length})`}
             icon={<Notifications />}
           />
-          <Tab 
+          <Tab
             label={`Okunmamış (${unreadCount})`}
             icon={<NotificationsActive />}
           />
-          <Tab 
+          <Tab
             label={`Başarı (${notifications.filter(n => n.tip === 'basari').length})`}
             icon={<CheckCircle />}
           />
-          <Tab 
+          <Tab
             label={`Uyarı (${notifications.filter(n => n.tip === 'uyari').length})`}
             icon={<Warning />}
           />
-          <Tab 
+          <Tab
             label={`Hata (${notifications.filter(n => n.tip === 'hata').length})`}
             icon={<Error />}
           />
@@ -225,7 +227,7 @@ export function NotificationPanel({ open, onClose }: NotificationPanelProps) {
               {activeTab === 1 ? 'Okunmamış bildirim yok' : 'Bildirim bulunamadı'}
             </Typography>
             <Typography variant="body2" color="textSecondary">
-              {activeTab === 1 
+              {activeTab === 1
                 ? 'Tüm bildirimlerinizi okumuşsunuz!'
                 : 'Bu kategoride henüz bildirim bulunmuyor.'
               }
@@ -265,12 +267,12 @@ export function NotificationPanel({ open, onClose }: NotificationPanelProps) {
                       {getNotificationIcon(notification.tip)}
                     </Avatar>
                   </ListItemAvatar>
-                  
+
                   <ListItemText
                     primary={
                       <div className="flex items-center gap-2 mb-1">
-                        <Typography 
-                          variant="subtitle1" 
+                        <Typography
+                          variant="subtitle1"
                           className={`${!notification.okundu ? 'font-bold' : ''}`}
                         >
                           {notification.baslik}
@@ -301,7 +303,7 @@ export function NotificationPanel({ open, onClose }: NotificationPanelProps) {
                             className="ml-2"
                             onClick={() => {
                               // Eylem URL'sine yönlendir
-                              window.location.href = notification.eylem_url!
+                              window.location.href = notification.eylem_url!;
                             }}
                           >
                             Görüntüle
@@ -322,7 +324,7 @@ export function NotificationPanel({ open, onClose }: NotificationPanelProps) {
         <Button onClick={onClose}>Kapat</Button>
       </DialogActions>
     </Dialog>
-  )
+  );
 }
 
-export default NotificationPanel
+export default NotificationPanel;

@@ -1,3 +1,42 @@
+/**
+ * API Error type for type-safe error handling
+ * Replaces 'any' type in catch blocks
+ */
+export interface ApiError {
+  message: string
+  code?: string
+  status?: number
+  details?: Record<string, unknown>
+}
+
+/**
+ * Type guard for ApiError
+ */
+export function isApiError(error: unknown): error is ApiError {
+  return (
+    typeof error === 'object' &&
+    error !== null &&
+    'message' in error &&
+    typeof (error as ApiError).message === 'string'
+  );
+}
+
+/**
+ * Extract error message from unknown error
+ */
+export function getErrorMessage(error: unknown): string {
+  if (isApiError(error)) {
+    return error.message;
+  }
+  if (error instanceof Error) {
+    return error.message;
+  }
+  if (typeof error === 'string') {
+    return error;
+  }
+  return 'Bilinmeyen bir hata oluştu';
+}
+
 export interface Message {
   role: 'user' | 'agent'
   content: string
@@ -197,6 +236,8 @@ export interface ClassInfo {
   sinif_adi: string
   ogrenci_sayisi: number
   ortalama_basari: number
+  seviye?: number
+  ders?: string
 }
 
 export interface StudentSummary {
@@ -271,8 +312,9 @@ export interface RecentActivity {
 // Sınav sistemi türleri
 export enum SinavTipi {
   TYT = 'TYT',
-  AYT = 'AYT', 
-  YDT = 'YDT'
+  AYT = 'AYT',
+  YDT = 'YDT',
+  LGS = 'LGS'
 }
 
 export enum SinavDurumu {
@@ -284,7 +326,7 @@ export enum SinavDurumu {
 
 export enum ZorlukSeviyesi {
   KOLAY = 'KOLAY',
-  ORTA = 'ORTA', 
+  ORTA = 'ORTA',
   ZOR = 'ZOR'
 }
 
@@ -355,4 +397,143 @@ export interface SinavSonucu {
   calisma_onerileri: string[]
   analiz_tarihi: string
   gecerli: boolean
+}
+
+/**
+ * PerformanceResponse -> SinavSonucu adapter
+ * Converts examService.PerformanceResponse to SinavSonucu type
+ */
+export function performanceToSinavSonucu(
+  perf: {
+    total_questions: number
+    answered_questions: number
+    correct_answers: number
+    wrong_answers: number
+    empty_answers: number
+    net_score: number
+    net_sayisi?: number
+    raw_score: number
+    percentile?: number
+    estimated_ability?: number
+    confidence_level?: number
+    konu_performanslari?: Array<{
+      konu: string
+      dogru_sayisi: number
+      toplam_soru: number
+      basari_yuzdesi: number
+    }>
+    calisma_onerileri?: string[]
+  },
+  sessionId: string,
+  studentId: string = 'unknown',
+  examType: SinavTipi = SinavTipi.TYT,
+): SinavSonucu {
+  // Extract strong/weak subjects from konu_performanslari
+  const konuPerformans = perf.konu_performanslari || [];
+  const sortedKonular = [...konuPerformans].sort((a, b) => b.basari_yuzdesi - a.basari_yuzdesi);
+  const gucluKonular = sortedKonular.filter(k => k.basari_yuzdesi >= 60).map(k => k.konu).slice(0, 3);
+  const zayifKonular = sortedKonular.filter(k => k.basari_yuzdesi < 60).map(k => k.konu).slice(0, 3);
+
+  return {
+    sonuc_id: `result_${sessionId}`,
+    sinav_id: sessionId,
+    ogrenci_id: studentId,
+    sinav_tipi: examType,
+    toplam_soru: perf.total_questions,
+    dogru_sayisi: perf.correct_answers,
+    yanlis_sayisi: perf.wrong_answers,
+    bos_sayisi: perf.empty_answers,
+    net_sayisi: perf.net_sayisi ?? perf.net_score,
+    ham_puan: perf.raw_score,
+    konu_performanslari: konuPerformans.map(kp => ({
+      konu: kp.konu,
+      toplam_soru: kp.toplam_soru,
+      dogru_sayisi: kp.dogru_sayisi,
+      yanlis_sayisi: kp.toplam_soru - kp.dogru_sayisi,
+      bos_sayisi: 0,
+      basari_yuzdesi: kp.basari_yuzdesi,
+      ortalama_sure: undefined,
+    })),
+    zorluk_dagilimi: {},
+    zaman_analizi: {},
+    sinif_ortalamasi: undefined,
+    okul_ortalamasi: undefined,
+    ulusal_ortalama: perf.percentile ? perf.percentile : undefined,
+    basari_sirasi: undefined,
+    zayif_konular: zayifKonular,
+    guclu_konular: gucluKonular,
+    calisma_onerileri: perf.calisma_onerileri || [],
+    analiz_tarihi: new Date().toISOString(),
+    gecerli: true,
+  };
+}
+
+// ============================================
+// REVOLUTIONARY FEATURES TYPES
+// Re-exported from types/revolutionary.ts for single source of truth
+// ============================================
+
+export type {
+  RevolutionaryFeatureSettings,
+  SimplificationResult,
+  TurkishZPDRange,
+  ZPDRecommendation,
+  CulturalContext,
+  FSRSCard,
+  FSRSSchedule,
+  FSRSCulturalAdjustments,
+  FSRSGrade,
+  BionicReadingResult,
+  BionicReadingSettings,
+  MultiAgentStatus,
+  AgentCoordination,
+  BlackboardEvent,
+  BlackboardEventData,
+  AgentStatus,
+  TaskStatus,
+  AgentPerformanceMetrics,
+  MultiAgentTask,
+  PerformanceSummary,
+  HybridLearningProfile,
+  ContentRecommendation,
+  MetinBasitlestirmeResult,
+  SimplificationLevel,
+  ApiResponse,
+  FSRSReviewRequest,
+  TextSimplificationRequest,
+  BionicReadingRequest,
+  MultiAgentCoordinationRequest,
+  RevolutionaryFeaturesStats,
+} from './types/revolutionary';
+
+// Additional Revolutionary Types - kept in types.ts for backward compatibility
+export interface QuestionAnalysis {
+  question_id: string
+  difficulty_estimate: number
+  discrimination_index: number
+  topic_tags: string[]
+  cognitive_level: 'remember' | 'understand' | 'apply' | 'analyze' | 'evaluate' | 'create'
+  time_estimate: number
+  common_mistakes: string[]
+}
+
+export interface StudentMorphologyProfile {
+  student_id: string
+  learning_speed: number
+  retention_rate: number
+  preferred_difficulty: number
+  peak_performance_hours: number[]
+  weak_topics: string[]
+  strong_topics: string[]
+  learning_style: string
+}
+
+// AgentInfo kept for backward compatibility (simplified version)
+export interface AgentInfo {
+  id: string
+  name: string
+  type: 'tutor' | 'evaluator' | 'recommender' | 'coordinator'
+  status: 'idle' | 'working' | 'waiting' | 'error'
+  current_task?: string
+  last_action?: string
 }

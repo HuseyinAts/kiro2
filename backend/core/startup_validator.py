@@ -7,7 +7,6 @@ all critical configuration before accepting requests.
 """
 
 import os
-import sys
 from typing import List, Tuple
 import logging
 

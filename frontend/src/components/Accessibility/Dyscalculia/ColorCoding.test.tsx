@@ -8,7 +8,7 @@
  * @date 2025-10-24
  */
 
-import React from 'react';
+import * as React from 'react';
 import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import ColorCoding from './ColorCoding';

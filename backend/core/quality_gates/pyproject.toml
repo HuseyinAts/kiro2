@@ -1,0 +1,101 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "kiro2-quality-gates"
+version = "1.0.0"
+description = "KIRO2 8-Gate Quality Pipeline - Boris Cherny Standards"
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.11"
+authors = [
+    { name = "KIRO2 Team", email = "dev@kiro2.com" }
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Framework :: AsyncIO",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Software Development :: Quality Assurance",
+    "Topic :: Software Development :: Testing",
+    "Typing :: Typed",
+]
+keywords = ["quality", "gates", "pipeline", "ci", "cd", "testing", "kiro2"]
+
+dependencies = [
+    "pydantic>=2.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.4",
+    "pytest-asyncio>=0.21",
+    "pytest-cov>=4.1",
+    "hypothesis>=6.0",
+]
+tools = [
+    "ruff>=0.1",
+    "mypy>=1.0",
+    "radon>=6.0",
+    "bandit>=1.7",
+    "safety>=2.0",
+]
+all = [
+    "kiro2-quality-gates[dev,tools]",
+]
+
+[project.scripts]
+quality-gates = "core.quality_gates.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/kiro2/quality-gates"
+Documentation = "https://docs.kiro2.com/quality-gates"
+Repository = "https://github.com/kiro2/quality-gates"
+
+[tool.hatch.build.targets.wheel]
+packages = ["core/quality_gates"]
+
+[tool.hatch.build.targets.sdist]
+include = [
+    "/core/quality_gates",
+    "/tests",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"
+markers = [
+    "unit: Unit tests with mocks",
+    "integration: Integration tests",
+    "slow: Slow tests (> 10s)",
+]
+
+[tool.coverage.run]
+source = ["core/quality_gates"]
+omit = ["*/tests/*", "*/__pycache__/*"]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "raise NotImplementedError",
+    "if TYPE_CHECKING:",
+    "if __name__ == .__main__.:",
+]
+
+[tool.mypy]
+python_version = "3.11"
+strict = true
+warn_return_any = true
+warn_unused_configs = true
+
+[tool.ruff]
+target-version = "py311"
+line-length = 100
+select = ["E", "F", "W", "I", "N", "UP", "B", "C4"]
+ignore = ["E501"]

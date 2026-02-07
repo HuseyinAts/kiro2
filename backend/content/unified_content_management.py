@@ -1021,7 +1021,7 @@ if __name__ == "__main__":
 
         # Publish content
         await manager.publish_content(content.content_id, 1001)
-        print(f"Content published")
+        print("Content published")
 
         # Search content
         math_content = await repository.search_content(

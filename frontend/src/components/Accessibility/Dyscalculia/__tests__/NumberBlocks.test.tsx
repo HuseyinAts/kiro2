@@ -3,10 +3,11 @@
  * REQ-9.1, REQ-9.2, REQ-9.4, REQ-9.5
  */
 
-import React from 'react';
+import * as React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { axe, toHaveNoViolations } from 'jest-axe';
 import NumberBlocks from '../NumberBlocks';
+import { vi } from 'vitest';
 
 expect.extend(toHaveNoViolations);
 

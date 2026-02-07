@@ -4,12 +4,11 @@ Task 103: Department Information API Routes
 REST API for curriculum, career opportunities, salary expectations, and sector analysis
 """
 
-from datetime import datetime
 from typing import List, Optional, Dict, Any
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, Query
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.database import get_db
@@ -63,8 +62,7 @@ class CurriculumResponse(BaseModel):
     ects_credits: Optional[int]
     exchange_programs_available: bool
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class CareerOpportunityCreateRequest(BaseModel):
@@ -103,8 +101,7 @@ class CareerOpportunityResponse(BaseModel):
     job_satisfaction_rating: Optional[float]
     top_employers: Optional[List[str]]
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class SalaryExpectationCreateRequest(BaseModel):
@@ -148,8 +145,7 @@ class SalaryExpectationResponse(BaseModel):
     stock_options_common: bool
     remote_work_percentage: Optional[float]
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class SectorAnalysisCreateRequest(BaseModel):
@@ -193,8 +189,7 @@ class SectorAnalysisResponse(BaseModel):
     innovation_index: Optional[float]
     year: int
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class EmploymentStatisticsResponse(BaseModel):

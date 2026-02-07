@@ -380,7 +380,7 @@ async def batch_predictions(
                 student_score=student_score, program_id=program_id, year=year
             )
             predictions.append(prediction)
-        except Exception as e:
+        except Exception:
             # Skip failed predictions
             continue
 

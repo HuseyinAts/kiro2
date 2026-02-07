@@ -22,7 +22,6 @@ from starlette.types import ASGIApp
 
 from core.audit_logger import (
     AuditAction,
-    AuditLogger,
     AuditResourceType,
     get_audit_logger,
 )

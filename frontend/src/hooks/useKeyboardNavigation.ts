@@ -4,6 +4,7 @@
  */
 
 import { useCallback, useEffect, useRef } from 'react';
+
 import { useAccessibilitySettings } from './useAccessibilitySettings';
 
 interface KeyboardNavigationHook {
@@ -47,25 +48,25 @@ export const useKeyboardNavigation = (): KeyboardNavigationHook => {
     '[role="radio"]:not([aria-disabled="true"])',
     '[role="slider"]:not([aria-disabled="true"])',
     '[role="spinbutton"]:not([aria-disabled="true"])',
-    '[role="textbox"]:not([aria-disabled="true"])'
+    '[role="textbox"]:not([aria-disabled="true"])',
   ].join(', ');
 
   // Odaklanabilir elementleri bul
   const createFocusableElementsList = useCallback((container: HTMLElement = document.body): HTMLElement[] => {
     const elements = Array.from(container.querySelectorAll(FOCUSABLE_SELECTORS)) as HTMLElement[];
-    
+
     return elements.filter(element => {
       // Görünür ve erişilebilir elementleri filtrele
       const style = window.getComputedStyle(element);
-      const isVisible = style.display !== 'none' && 
-                       style.visibility !== 'hidden' && 
+      const isVisible = style.display !== 'none' &&
+                       style.visibility !== 'hidden' &&
                        style.opacity !== '0' &&
-                       element.offsetWidth > 0 && 
+                       element.offsetWidth > 0 &&
                        element.offsetHeight > 0;
-      
-      const isAccessible = !element.hasAttribute('aria-hidden') || 
+
+      const isAccessible = !element.hasAttribute('aria-hidden') ||
                           element.getAttribute('aria-hidden') !== 'true';
-      
+
       return isVisible && isAccessible;
     });
   }, []);
@@ -86,7 +87,7 @@ export const useKeyboardNavigation = (): KeyboardNavigationHook => {
     updateFocusableElements();
     const currentIndex = getCurrentFocusIndex();
     const nextIndex = (currentIndex + 1) % focusableElements.current.length;
-    
+
     if (focusableElements.current[nextIndex]) {
       focusableElements.current[nextIndex].focus();
       currentFocusIndex.current = nextIndex;
@@ -97,10 +98,10 @@ export const useKeyboardNavigation = (): KeyboardNavigationHook => {
   const focusPrevious = useCallback(() => {
     updateFocusableElements();
     const currentIndex = getCurrentFocusIndex();
-    const previousIndex = currentIndex <= 0 
-      ? focusableElements.current.length - 1 
+    const previousIndex = currentIndex <= 0
+      ? focusableElements.current.length - 1
       : currentIndex - 1;
-    
+
     if (focusableElements.current[previousIndex]) {
       focusableElements.current[previousIndex].focus();
       currentFocusIndex.current = previousIndex;
@@ -129,7 +130,7 @@ export const useKeyboardNavigation = (): KeyboardNavigationHook => {
   // Focus trap (modal, dialog vb. için)
   const trapFocus = useCallback((container: HTMLElement): (() => void) => {
     const focusableInContainer = createFocusableElementsList(container);
-    
+
     if (focusableInContainer.length === 0) {
       // Eğer odaklanabilir element yoksa container'ı kendisini odaklanabilir yap
       container.setAttribute('tabindex', '-1');
@@ -144,7 +145,7 @@ export const useKeyboardNavigation = (): KeyboardNavigationHook => {
     firstElement.focus();
 
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key !== 'Tab') return;
+      if (event.key !== 'Tab') {return;}
 
       if (event.shiftKey) {
         // Shift + Tab (geriye doğru)
@@ -175,7 +176,7 @@ export const useKeyboardNavigation = (): KeyboardNavigationHook => {
     event: KeyboardEvent,
     items: HTMLElement[],
     currentIndex: number,
-    orientation: 'horizontal' | 'vertical' | 'both' = 'both'
+    orientation: 'horizontal' | 'vertical' | 'both' = 'both',
   ): number => {
     let newIndex = currentIndex;
 
@@ -240,7 +241,7 @@ export const useKeyboardNavigation = (): KeyboardNavigationHook => {
   // Mevcut odağı duyur
   const announceCurrentFocus = useCallback(() => {
     const activeElement = document.activeElement as HTMLElement;
-    if (!activeElement) return;
+    if (!activeElement) {return;}
 
     let announcement = '';
 
@@ -249,7 +250,7 @@ export const useKeyboardNavigation = (): KeyboardNavigationHook => {
     const role = activeElement.getAttribute('role');
     const ariaLabel = activeElement.getAttribute('aria-label');
     const ariaLabelledBy = activeElement.getAttribute('aria-labelledby');
-    
+
     // Label'ı bul
     let label = ariaLabel;
     if (!label && ariaLabelledBy) {
@@ -274,24 +275,27 @@ export const useKeyboardNavigation = (): KeyboardNavigationHook => {
       case 'a':
         announcement = `Bağlantı: ${label}`;
         break;
-      case 'input':
+      case 'input': {
         const inputType = (activeElement as HTMLInputElement).type;
         announcement = `${inputType === 'text' ? 'Metin kutusu' : inputType} girişi: ${label}`;
         break;
+      }
       case 'select':
         announcement = `Seçim kutusu: ${label}`;
         break;
       case 'textarea':
         announcement = `Metin alanı: ${label}`;
         break;
-      case 'checkbox':
+      case 'checkbox': {
         const checked = (activeElement as HTMLInputElement).checked;
         announcement = `Onay kutusu: ${label}, ${checked ? 'işaretli' : 'işaretsiz'}`;
         break;
-      case 'radio':
+      }
+      case 'radio': {
         const radioChecked = (activeElement as HTMLInputElement).checked;
         announcement = `Radyo düğmesi: ${label}, ${radioChecked ? 'seçili' : 'seçili değil'}`;
         break;
+      }
       case 'tab':
         announcement = `Sekme: ${label}`;
         break;
@@ -336,7 +340,7 @@ export const useKeyboardNavigation = (): KeyboardNavigationHook => {
 
   // Global klavye event listener'ları
   useEffect(() => {
-    if (!settings.keyboardNavigation) return;
+    if (!settings.keyboardNavigation) {return;}
 
     const handleGlobalKeyDown = (event: KeyboardEvent) => {
       // Tab navigasyonu için özel işlemler
@@ -351,20 +355,20 @@ export const useKeyboardNavigation = (): KeyboardNavigationHook => {
       if (event.key === 'F6') {
         event.preventDefault();
         const landmarks = document.querySelectorAll(
-          'main, nav, aside, header, footer, section, [role="main"], [role="navigation"], [role="complementary"], [role="banner"], [role="contentinfo"]'
+          'main, nav, aside, header, footer, section, [role="main"], [role="navigation"], [role="complementary"], [role="banner"], [role="contentinfo"]',
         );
-        
+
         if (landmarks.length > 0) {
-          const currentLandmark = Array.from(landmarks).find(landmark => 
-            landmark.contains(document.activeElement)
+          const currentLandmark = Array.from(landmarks).find(landmark =>
+            landmark.contains(document.activeElement),
           );
-          
+
           let nextIndex = 0;
           if (currentLandmark) {
             const currentIndex = Array.from(landmarks).indexOf(currentLandmark);
             nextIndex = (currentIndex + 1) % landmarks.length;
           }
-          
+
           const nextLandmark = landmarks[nextIndex] as HTMLElement;
           if (nextLandmark) {
             nextLandmark.setAttribute('tabindex', '-1');
@@ -392,12 +396,12 @@ export const useKeyboardNavigation = (): KeyboardNavigationHook => {
 
   // Focus değişikliklerini izle
   useEffect(() => {
-    if (!settings.keyboardNavigation) return;
+    if (!settings.keyboardNavigation) {return;}
 
     const handleFocusChange = () => {
       // Odaklanabilir elementleri güncelle
       updateFocusableElements();
-      
+
       // Mevcut odağı duyur (sadece klavye navigasyonu ile)
       if (document.activeElement && document.activeElement !== document.body) {
         setTimeout(() => {
@@ -425,7 +429,7 @@ export const useKeyboardNavigation = (): KeyboardNavigationHook => {
     trapFocus,
     createFocusableElementsList,
     handleArrowNavigation,
-    announceCurrentFocus
+    announceCurrentFocus,
   };
 };
 

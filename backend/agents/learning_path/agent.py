@@ -16,6 +16,8 @@ import logging
 from typing import Dict, Any, List, Optional
 from datetime import datetime
 
+from cachetools import TTLCache
+
 from .models import (
     StudentProfile,
     LearningResource,
@@ -145,11 +147,13 @@ class LearningPathAgent:
         self.chat_integration = ChatIntegration(chat_service) if chat_service else None
         self.form_integration = FormIntegration(form_service) if form_service else None
 
-        # Agent state
-        self.paths_cache: Dict[str, LearningPath] = {}
-        self.session_data: Dict[str, Dict[str, Any]] = {}
+        # Agent state with TTLCache to prevent memory leak
+        # Max 500 paths, 1 hour TTL
+        self.paths_cache: TTLCache = TTLCache(maxsize=500, ttl=3600)
+        # Max 1000 sessions, 2 hour TTL
+        self.session_data: TTLCache = TTLCache(maxsize=1000, ttl=7200)
 
-        logger.info("LearningPathAgent initialized successfully")
+        logger.info("LearningPathAgent initialized with TTLCache (paths=500/1h, sessions=1000/2h)")
 
     async def create_learning_path(
         self, student_id: str, student_data: Dict[str, Any], goal: Optional[str] = None

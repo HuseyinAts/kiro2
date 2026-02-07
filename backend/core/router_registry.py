@@ -1,15 +1,25 @@
 """
 Router Registry - Centralized API Router Management
 Replaces 436 lines of repetitive router includes in main.py
+
+API Versioning Standard:
+- /api/v1/* - Existing stable endpoints
+- /api/v2/* - New endpoints (after 2026-01-20)
+- /admin/* - Admin-only endpoints
 """
 import importlib
 import logging
 from dataclasses import dataclass
-from typing import List
+from typing import List, Optional
 
 from fastapi import FastAPI
 
 logger = logging.getLogger(__name__)
+
+# API Version Constants
+API_V1_PREFIX = "/api/v1"
+API_V2_PREFIX = "/api/v2"
+ADMIN_PREFIX = "/admin"
 
 
 @dataclass
@@ -22,6 +32,17 @@ class RouterConfig:
     category: str  # 'core', 'features', 'integrations', 'monitoring'
     priority: int  # Load order (lower = earlier)
     required: bool = True  # If False, failure won't stop app
+    api_version: Optional[str] = None  # 'v1', 'v2', or None for unversioned
+
+    def get_expected_prefix(self) -> Optional[str]:
+        """Get expected API prefix based on version"""
+        if self.api_version == "v1":
+            return API_V1_PREFIX
+        elif self.api_version == "v2":
+            return API_V2_PREFIX
+        elif self.category == "admin":
+            return ADMIN_PREFIX
+        return None
 
 
 class RouterRegistry:
@@ -44,10 +65,10 @@ class RouterRegistry:
         """
         return [
             # CORE ROUTERS (Priority 1-9)
-            RouterConfig("api.health", "router", "Health Check", "core", 1, True),
-            RouterConfig("api.auth", "router", "Authentication", "core", 2, True),
+            RouterConfig("api.health", "router", "Health Check", "core", 1, True, "v1"),
+            RouterConfig("api.auth", "router", "Authentication", "core", 2, True, "v1"),
             # EXAM & ASSESSMENT (Priority 10-29)
-            RouterConfig("api.sinav", "router", "Sınav Motoru", "features", 10, True),
+            RouterConfig("api.sinav", "router", "Sınav Motoru", "features", 10, True, "v1"),
             RouterConfig(
                 "api.exam_performance",
                 "router",
@@ -55,6 +76,7 @@ class RouterRegistry:
                 "features",
                 11,
                 True,
+                "v1",
             ),
             RouterConfig(
                 "api.sinav_motoru_api",
@@ -63,8 +85,9 @@ class RouterRegistry:
                 "features",
                 12,
                 True,
+                "v1",
             ),
-            RouterConfig("api.exam", "router", "WebSocket Exam", "features", 13, False),
+            RouterConfig("api.exam", "router", "WebSocket Exam", "features", 13, False, "v1"),
             # LEARNING & ANALYTICS (Priority 30-49)
             RouterConfig(
                 "api.monitoring",
@@ -73,9 +96,10 @@ class RouterRegistry:
                 "monitoring",
                 30,
                 True,
+                "v1",
             ),
             RouterConfig(
-                "api.analytics", "router", "Advanced Analytics", "features", 31, True
+                "api.analytics", "router", "Advanced Analytics", "features", 31, True, "v1"
             ),
             RouterConfig(
                 "api.learning_style",
@@ -300,7 +324,7 @@ class RouterRegistry:
         except ImportError as e:
             self._handle_router_error(config, f"Import failed: {e}")
 
-        except AttributeError as e:
+        except AttributeError:
             self._handle_router_error(
                 config, f"Router '{config.router_name}' not found in module"
             )
@@ -331,6 +355,41 @@ class RouterRegistry:
             "failed_router_names": self.failed_routers,
             "success_rate": f"{len(self.loaded_routers) / len(self.routers) * 100:.1f}%",
         }
+
+    def audit_api_versioning(self) -> dict:
+        """
+        Audit API versioning consistency across registered routers.
+        Returns a report of version distribution and potential issues.
+        """
+        versioning_report = {
+            "v1_routers": [],
+            "v2_routers": [],
+            "unversioned_routers": [],
+            "admin_routers": [],
+            "total_audited": 0,
+            "recommendations": [],
+        }
+
+        for config in self.routers:
+            versioning_report["total_audited"] += 1
+
+            if config.api_version == "v1":
+                versioning_report["v1_routers"].append(config.display_name)
+            elif config.api_version == "v2":
+                versioning_report["v2_routers"].append(config.display_name)
+            elif config.category == "admin":
+                versioning_report["admin_routers"].append(config.display_name)
+            else:
+                versioning_report["unversioned_routers"].append(config.display_name)
+
+        # Add recommendations
+        unversioned_count = len(versioning_report["unversioned_routers"])
+        if unversioned_count > 0:
+            versioning_report["recommendations"].append(
+                f"Consider adding api_version to {unversioned_count} unversioned routers"
+            )
+
+        return versioning_report
 
 
 def register_all_routers(app: FastAPI) -> RouterRegistry:

@@ -10,7 +10,7 @@ zero_cov = [
     if d["summary"]["percent_covered"] == 0 and not f.startswith("tests/")
 ]
 
-print(f"\n=== COVERAGE ANALYSIS ===")
+print("\n=== COVERAGE ANALYSIS ===")
 print(f'Total Coverage: {data["totals"]["percent_covered"]:.2f}%')
 print(f"Files with 0% coverage: {len(zero_cov)}\n")
 

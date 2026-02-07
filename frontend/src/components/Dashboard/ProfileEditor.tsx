@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import { Save, Cancel } from '@mui/icons-material';
 import {
   Dialog,
   DialogTitle,
@@ -12,15 +12,16 @@ import {
   Select,
   MenuItem,
   Chip,
-  Box,
+  Box as _Box,
   Typography,
   Alert,
   CircularProgress,
-  Autocomplete
-} from '@mui/material'
-import { Save, Cancel } from '@mui/icons-material'
-import { StudentProfile } from '../../types'
-import { getStudentProfile, updateStudentProfile } from '../../api'
+  Autocomplete,
+} from '@mui/material';
+import { useState, useEffect } from 'react';
+
+import { getStudentProfile, updateStudentProfile } from '../../api';
+import { StudentProfile } from '../../types';
 
 interface ProfileEditorProps {
   open: boolean
@@ -58,23 +59,23 @@ const TURKISH_UNIVERSITIES = [
   'Uludağ Üniversitesi',
   'Anadolu Üniversitesi',
   'Pamukkale Üniversitesi',
-  'Süleyman Demirel Üniversitesi'
-]
+  'Süleyman Demirel Üniversitesi',
+];
 
 const EXAM_TYPES = [
   { value: 'YKS', label: 'YKS (Yükseköğretim Kurumları Sınavı)' },
   { value: 'TYT', label: 'TYT (Temel Yeterlilik Testi)' },
   { value: 'AYT', label: 'AYT (Alan Yeterlilik Testi)' },
-  { value: 'YDT', label: 'YDT (Yabancı Dil Testi)' }
-]
+  { value: 'YDT', label: 'YDT (Yabancı Dil Testi)' },
+];
 
 const LEARNING_STYLES = [
   { value: 'GÖRSEL', label: 'Görsel Öğrenme' },
   { value: 'İŞİTSEL', label: 'İşitsel Öğrenme' },
   { value: 'OKUMA', label: 'Okuma/Yazma' },
   { value: 'KİNESTETİK', label: 'Kinestetik Öğrenme' },
-  { value: 'HİBRİT', label: 'Hibrit (Karma)' }
-]
+  { value: 'HİBRİT', label: 'Hibrit (Karma)' },
+];
 
 const SUBJECT_AREAS = [
   'Matematik',
@@ -88,14 +89,14 @@ const SUBJECT_AREAS = [
   'Biyoloji',
   'İngilizce',
   'Almanca',
-  'Fransızca'
-]
+  'Fransızca',
+];
 
 export function ProfileEditor({ open, onClose, onSave }: ProfileEditorProps) {
-  const [loading, setLoading] = useState(false)
-  const [saving, setSaving] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-  const [profile, setProfile] = useState<StudentProfile | null>(null)
+  const [loading, setLoading] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [profile, setProfile] = useState<StudentProfile | null>(null);
 
   // Form state
   const [formData, setFormData] = useState({
@@ -108,23 +109,23 @@ export function ProfileEditor({ open, onClose, onSave }: ProfileEditorProps) {
     ogrenme_stili: '',
     guclu_alanlar: [] as string[],
     zayif_alanlar: [] as string[],
-    gunluk_calisma_hedefi: 120
-  })
+    gunluk_calisma_hedefi: 120,
+  });
 
   useEffect(() => {
     if (open) {
-      loadProfile()
+      loadProfile();
     }
-  }, [open])
+  }, [open]);
 
   const loadProfile = async () => {
     try {
-      setLoading(true)
-      setError(null)
-      
-      const profileData = await getStudentProfile()
-      setProfile(profileData)
-      
+      setLoading(true);
+      setError(null);
+
+      const profileData = await getStudentProfile();
+      setProfile(profileData);
+
       // Form verilerini doldur
       setFormData({
         ad_soyad: '', // Bu backend'den gelecek
@@ -136,58 +137,58 @@ export function ProfileEditor({ open, onClose, onSave }: ProfileEditorProps) {
         ogrenme_stili: profileData.ogrenme_stili || '',
         guclu_alanlar: profileData.guclu_alanlar,
         zayif_alanlar: profileData.zayif_alanlar,
-        gunluk_calisma_hedefi: profileData.gunluk_calisma_hedefi || 120
-      })
-      
+        gunluk_calisma_hedefi: profileData.gunluk_calisma_hedefi || 120,
+      });
+
     } catch (err) {
-      console.error('Profil yüklenirken hata:', err)
-      setError('Profil bilgileri yüklenirken bir hata oluştu')
+      console.error('Profil yüklenirken hata:', err);
+      setError('Profil bilgileri yüklenirken bir hata oluştu');
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const handleSave = async () => {
     try {
-      setSaving(true)
-      setError(null)
+      setSaving(true);
+      setError(null);
 
       // Sadece değişen alanları gönder
-      const updateData: any = {}
-      
-      if (formData.ad_soyad) updateData.ad_soyad = formData.ad_soyad
-      if (formData.telefon) updateData.telefon = formData.telefon
+      const updateData: any = {};
+
+      if (formData.ad_soyad) {updateData.ad_soyad = formData.ad_soyad;}
+      if (formData.telefon) {updateData.telefon = formData.telefon;}
       if (formData.sinif_seviyesi !== profile?.sinif_seviyesi) {
-        updateData.sinif_seviyesi = formData.sinif_seviyesi
+        updateData.sinif_seviyesi = formData.sinif_seviyesi;
       }
       if (formData.okul_adi !== profile?.okul_adi) {
-        updateData.okul_adi = formData.okul_adi
+        updateData.okul_adi = formData.okul_adi;
       }
       if (JSON.stringify(formData.hedef_universiteler) !== JSON.stringify(profile?.hedef_universiteler)) {
-        updateData.hedef_universiteler = formData.hedef_universiteler
+        updateData.hedef_universiteler = formData.hedef_universiteler;
       }
       if (formData.gunluk_calisma_hedefi !== profile?.gunluk_calisma_hedefi) {
-        updateData.gunluk_calisma_hedefi = formData.gunluk_calisma_hedefi
+        updateData.gunluk_calisma_hedefi = formData.gunluk_calisma_hedefi;
       }
 
-      const updatedProfile = await updateStudentProfile(updateData)
-      onSave(updatedProfile)
-      onClose()
-      
+      const updatedProfile = await updateStudentProfile(updateData);
+      onSave(updatedProfile);
+      onClose();
+
     } catch (err) {
-      console.error('Profil güncellenirken hata:', err)
-      setError('Profil güncellenirken bir hata oluştu')
+      console.error('Profil güncellenirken hata:', err);
+      setError('Profil güncellenirken bir hata oluştu');
     } finally {
-      setSaving(false)
+      setSaving(false);
     }
-  }
+  };
 
   const handleInputChange = (field: string, value: any) => {
     setFormData(prev => ({
       ...prev,
-      [field]: value
-    }))
-  }
+      [field]: value,
+    }));
+  };
 
   if (loading) {
     return (
@@ -196,7 +197,7 @@ export function ProfileEditor({ open, onClose, onSave }: ProfileEditorProps) {
           <CircularProgress />
         </DialogContent>
       </Dialog>
-    )
+    );
   }
 
   return (
@@ -204,7 +205,7 @@ export function ProfileEditor({ open, onClose, onSave }: ProfileEditorProps) {
       <DialogTitle>
         <Typography variant="h5">Profil Düzenle</Typography>
       </DialogTitle>
-      
+
       <DialogContent>
         {error && (
           <Alert severity="error" className="mb-4">
@@ -219,7 +220,7 @@ export function ProfileEditor({ open, onClose, onSave }: ProfileEditorProps) {
               Kişisel Bilgiler
             </Typography>
           </Grid>
-          
+
           <Grid item xs={12} sm={6}>
             <TextField
               fullWidth
@@ -229,7 +230,7 @@ export function ProfileEditor({ open, onClose, onSave }: ProfileEditorProps) {
               placeholder="Adınızı ve soyadınızı girin"
             />
           </Grid>
-          
+
           <Grid item xs={12} sm={6}>
             <TextField
               fullWidth
@@ -246,7 +247,7 @@ export function ProfileEditor({ open, onClose, onSave }: ProfileEditorProps) {
               Eğitim Bilgileri
             </Typography>
           </Grid>
-          
+
           <Grid item xs={12} sm={6}>
             <FormControl fullWidth>
               <InputLabel>Sınıf Seviyesi</InputLabel>
@@ -262,7 +263,7 @@ export function ProfileEditor({ open, onClose, onSave }: ProfileEditorProps) {
               </Select>
             </FormControl>
           </Grid>
-          
+
           <Grid item xs={12} sm={6}>
             <TextField
               fullWidth
@@ -272,7 +273,7 @@ export function ProfileEditor({ open, onClose, onSave }: ProfileEditorProps) {
               placeholder="Okulunuzun adını girin"
             />
           </Grid>
-          
+
           <Grid item xs={12} sm={6}>
             <FormControl fullWidth>
               <InputLabel>Hedef Sınav</InputLabel>
@@ -289,7 +290,7 @@ export function ProfileEditor({ open, onClose, onSave }: ProfileEditorProps) {
               </Select>
             </FormControl>
           </Grid>
-          
+
           <Grid item xs={12} sm={6}>
             <TextField
               fullWidth
@@ -334,7 +335,7 @@ export function ProfileEditor({ open, onClose, onSave }: ProfileEditorProps) {
               Öğrenme Özellikleri
             </Typography>
           </Grid>
-          
+
           <Grid item xs={12} sm={6}>
             <FormControl fullWidth>
               <InputLabel>Öğrenme Stili</InputLabel>
@@ -407,7 +408,7 @@ export function ProfileEditor({ open, onClose, onSave }: ProfileEditorProps) {
           </Grid>
         </Grid>
       </DialogContent>
-      
+
       <DialogActions className="p-4">
         <Button
           onClick={onClose}
@@ -426,7 +427,7 @@ export function ProfileEditor({ open, onClose, onSave }: ProfileEditorProps) {
         </Button>
       </DialogActions>
     </Dialog>
-  )
+  );
 }
 
-export default ProfileEditor
+export default ProfileEditor;

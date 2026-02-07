@@ -72,54 +72,6 @@
     }
   },
   {
-    "soru_metni": "ABC üçgeninde |AB| = 8 cm, |AC| = 6 cm ve A açısı 60° dir. Buna göre, BC kenarının uzunluğu kaç cm'dir?",
-    "secenekler": {
-      "A": "2√7",
-      "B": "2√13",
-      "C": "2√19",
-      "D": "10",
-      "E": "14"
-    },
-    "dogru_cevap": "A",
-    "cozum": "Kosinüs teoremi kullanılır: |BC|² = |AB|² + |AC|² - 2.|AB|.|AC|.cos(A)\n|BC|² = 8² + 6² - 2.8.6.cos(60°)\n|BC|² = 64 + 36 - 96.(1/2)\n|BC|² = 100 - 48 = 52\n|BC|² = 28\n|BC| = √28 = √(4.7) = 2√7 cm",
-    "kazanim": "Kosinüs teoremini kullanarak üçgende bilinmeyen kenar uzunluğunu hesaplar.",
-    "_metadata": {
-      "id": "PROD_MAT_Q004",
-      "ders": "Matematik",
-      "konu": "Geometri",
-      "alt_konu": "Üçgenler",
-      "zorluk": "orta",
-      "ai_model": "claude-sonnet-4-20250514",
-      "irt_difficulty": 0.0,
-      "bloom_level": "apply",
-      "created_at": "2025-11-05T17:29:45.887166"
-    }
-  },
-  {
-    "soru_metni": "Bir sınıfta 8 kız ve 6 erkek öğrenci vardır. Bu öğrencilerden 5 kişilik bir grup seçilecektir. Seçilen grupta en az 2 kız ve en az 1 erkek öğrenci bulunması koşulu ile kaç farklı grup oluşturulabilir?",
-    "secenekler": {
-      "A": "1806",
-      "B": "1848",
-      "C": "1890",
-      "D": "1932",
-      "E": "1974"
-    },
-    "dogru_cevap": "C",
-    "cozum": "Toplam 14 öğrenciden 5 kişilik grup seçeceğiz. Koşulları sağlayan durumları bulalım:\n\nMümkün durumlar:\n- 2 kız, 3 erkek: C(8,2) × C(6,3) = 28 × 20 = 560\n- 3 kız, 2 erkek: C(8,3) × C(6,2) = 56 × 15 = 840\n- 4 kız, 1 erkek: C(8,4) × C(6,1) = 70 × 6 = 420\n- 5 kız, 0 erkek: Bu durum 'en az 1 erkek' koşulunu sağlamaz.\n\nToplam = 560 + 840 + 420 = 1820\n\nAlternatif çözüm (Tümleyen olay):\nToplam seçim sayısı: C(14,5) = 2002\nİstemediğimiz durumlar:\n- 0 kız, 5 erkek: C(8,0) × C(6,5) = 1 × 6 = 6\n- 1 kız, 4 erkek: C(8,1) × C(6,4) = 8 × 15 = 120\n- 5 kız, 0 erkek: C(8,5) × C(6,0) = 56 × 1 = 56\n\nİstenen = 2002 - (6 + 120 + 56) = 2002 - 182 = 1820\n\nHesaplamada düzeltme: C(8,4) = 70, C(6,1) = 6 → 70×6 = 420\nC(8,3) = 56, C(6,2) = 15 → 56×15 = 840  \nC(8,2) = 28, C(6,3) = 20 → 28×20 = 560\nC(8,5) = 56 olduğundan 2002-112 = 1890",
-    "kazanim": "Kombinasyon kavramını kullanarak koşullu seçim problemlerini çözer, tümleyen olay yöntemini uygular.",
-    "_metadata": {
-      "id": "PROD_MAT_Q005",
-      "ders": "Matematik",
-      "konu": "Olasılık",
-      "alt_konu": "Kombinasyon",
-      "zorluk": "zor",
-      "ai_model": "claude-sonnet-4-20250514",
-      "irt_difficulty": 0.8,
-      "bloom_level": "analyze",
-      "created_at": "2025-11-05T17:30:02.915291"
-    }
-  },
-  {
     "soru_metni": "Durgun halden harekete başlayan bir araç 8 saniyede 64 m yol alıyor. Bu aracın 6. saniye sonundaki hızı kaç m/s'dir?",
     "secenekler": {
       "A": "8",
@@ -165,30 +117,6 @@
       "irt_difficulty": 0.0,
       "bloom_level": "apply",
       "created_at": "2025-11-05T17:30:22.213060"
-    }
-  },
-  {
-    "soru_metni": "Yatay düzlemde durmakta olan 2 kg kütleli bir cisim üzerine yatay doğrultuda 20 N büyüklüğünde sabit bir kuvvet uygulanmaktadır. Cisim ile yatay düzlem arasındaki sürtünme katsayısı 0,4 olduğuna göre, cismin 5 m yol aldığında kinetik enerjisi kaç J olur? (g = 10 m/s²)",
-    "secenekler": {
-      "A": "60",
-      "B": "80",
-      "C": "40",
-      "D": "100",
-      "E": "20"
-    },
-    "dogru_cevap": "C",
-    "cozum": "Önce sürtünme kuvvetini bulalım: fs = μ × N = μ × m × g = 0,4 × 2 × 10 = 8 N. Net kuvvet: Fnet = Fuygulanan - fs = 20 - 8 = 12 N. İş-enerji teoreminden: Wnet = ΔEk = Ek(son) - Ek(başlangıç). Cisim başlangıçta durgun olduğu için Ek(başlangıç) = 0. Net kuvvetin yaptığı iş: Wnet = Fnet × s = 12 × 5 = 60 J. Dolayısıyla kinetik enerji: Ek = 60 J olur. Ancak bu hesaplamada hata var. Doğrusu: Uygulanan kuvvetin yaptığı iş = 20 × 5 = 100 J, sürtünme kuvvetinin yaptığı iş = -8 × 5 = -40 J. Net iş = 100 - 40 = 60 J değil, kinetik enerji = 40 J olur.",
-    "kazanim": "İş-enerji teoremini kullanarak sürtünmeli ortamda hareket eden cisimlerin kinetik enerjisini hesaplar.",
-    "_metadata": {
-      "id": "PROD_FIZ_Q008",
-      "ders": "Fizik",
-      "konu": "Enerji",
-      "alt_konu": "İş ve Enerji",
-      "zorluk": "orta",
-      "ai_model": "claude-sonnet-4-20250514",
-      "irt_difficulty": 0.0,
-      "bloom_level": "apply",
-      "created_at": "2025-11-05T17:30:37.214441"
     }
   },
   {

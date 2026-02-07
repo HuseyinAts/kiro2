@@ -28,171 +28,104 @@ def upgrade() -> None:
     """
 
     # ============================================================================
-    # USER INDEXES - Authentication and Profile Lookups (kullanicilar table)
-    # NOTE: 'users' is a VIEW, not a table - cannot create indexes on it
-    # Only index the base table 'kullanicilar'
+    # USER INDEXES - Authentication and Profile Lookups (users table)
     # ============================================================================
+    conn = op.get_bind()
 
-    # User email lookup (login, registration, password reset)
-    # Impact: Login queries 20x faster
-    op.create_index(
-        'idx_kullanicilar_email',
-        'kullanicilar',
-        ['email'],
-        unique=False,
-        if_not_exists=True
-    )
+    # Helper: check if table exists before indexing
+    def table_exists(name: str) -> bool:
+        result = conn.execute(
+            sa.text("SELECT EXISTS(SELECT 1 FROM information_schema.tables WHERE table_schema='public' AND table_name=:t)"),
+            {"t": name}
+        )
+        return result.scalar()
 
-    # User active status (filtering active users)
-    op.create_index(
-        'idx_kullanicilar_aktif',
-        'kullanicilar',
-        ['aktif'],
-        unique=False,
-        if_not_exists=True
-    )
+    if table_exists('users'):
+        op.create_index('idx_users_email', 'users', ['email'], unique=False, if_not_exists=True)
+        try:
+            op.create_index('idx_users_is_active', 'users', ['is_active'], unique=False, if_not_exists=True)
+        except Exception:
+            pass
+        try:
+            op.create_index('idx_users_role', 'users', ['role'], unique=False, if_not_exists=True)
+        except Exception:
+            pass
 
-    # User role (filtering by role)
-    op.create_index(
-        'idx_kullanicilar_rol',
-        'kullanicilar',
-        ['rol'],
-        unique=False,
-        if_not_exists=True
-    )
+    if table_exists('kullanicilar'):
+        op.create_index('idx_kullanicilar_email', 'kullanicilar', ['email'], unique=False, if_not_exists=True)
+        op.create_index('idx_kullanicilar_aktif', 'kullanicilar', ['aktif'], unique=False, if_not_exists=True)
+        op.create_index('idx_kullanicilar_rol', 'kullanicilar', ['rol'], unique=False, if_not_exists=True)
 
     # ============================================================================
     # QUESTION INDEXES - Most Frequent Queries (questions table)
     # ============================================================================
 
-    # Question subject + difficulty (question selection, filtering)
-    # Impact: Question search 30x faster
-    op.create_index(
-        'idx_questions_subject_difficulty',
-        'questions',
-        ['subject', 'difficulty'],
-        unique=False,
-        if_not_exists=True
-    )
-
-    # Question exam type (exam preparation)
-    # Impact: Exam question fetch 25x faster
-    op.create_index(
-        'idx_questions_exam_type',
-        'questions',
-        ['exam_type'],
-        unique=False,
-        if_not_exists=True
-    )
-
-    # Question topic + subtopic (content organization)
-    op.create_index(
-        'idx_questions_topic_subtopic',
-        'questions',
-        ['topic', 'subtopic'],
-        unique=False,
-        if_not_exists=True
-    )
+    if table_exists('questions'):
+        # subject_area + difficulty (question selection)
+        try:
+            op.create_index('idx_questions_subject_difficulty', 'questions', ['subject_area', 'difficulty'], unique=False, if_not_exists=True)
+        except Exception:
+            pass
+        try:
+            op.create_index('idx_questions_exam_type', 'questions', ['exam_type'], unique=False, if_not_exists=True)
+        except Exception:
+            pass
+        try:
+            op.create_index('idx_questions_topic_subtopic', 'questions', ['topic', 'subtopic'], unique=False, if_not_exists=True)
+        except Exception:
+            pass
 
     # ============================================================================
-    # SORULAR INDEXES - Turkish Questions Table
+    # SORULAR INDEXES - Turkish Questions Table (if exists)
     # ============================================================================
-
-    # Sorular by sinav_tipi (exam type)
-    op.create_index(
-        'idx_sorular_sinav_tipi',
-        'sorular',
-        ['sinav_tipi'],
-        unique=False,
-        if_not_exists=True
-    )
-
-    # Sorular by konu (subject)
-    op.create_index(
-        'idx_sorular_konu',
-        'sorular',
-        ['konu', 'alt_konu'],
-        unique=False,
-        if_not_exists=True
-    )
-
-    # Sorular by aktif status
-    op.create_index(
-        'idx_sorular_aktif',
-        'sorular',
-        ['aktif'],
-        unique=False,
-        if_not_exists=True,
-        postgresql_where=sa.text('aktif = true')  # Partial index
-    )
+    if table_exists('sorular'):
+        op.create_index('idx_sorular_sinav_tipi', 'sorular', ['sinav_tipi'], unique=False, if_not_exists=True)
+        op.create_index('idx_sorular_konu', 'sorular', ['konu', 'alt_konu'], unique=False, if_not_exists=True)
+        op.create_index('idx_sorular_aktif', 'sorular', ['aktif'], unique=False, if_not_exists=True,
+                        postgresql_where=sa.text('aktif = true'))
 
     # ============================================================================
-    # SINAV INDEXES - Exam Sessions (Turkish)
+    # EXAM SESSION INDEXES (exam_sessions or sinavlar)
     # ============================================================================
+    if table_exists('exam_sessions'):
+        try:
+            op.create_index('idx_exam_sessions_student_created', 'exam_sessions', ['student_id', 'created_at'], unique=False, if_not_exists=True)
+        except Exception:
+            pass
+        try:
+            op.create_index('idx_exam_sessions_exam_type', 'exam_sessions', ['exam_type'], unique=False, if_not_exists=True)
+        except Exception:
+            pass
+        try:
+            op.create_index('idx_exam_sessions_status', 'exam_sessions', ['status'], unique=False, if_not_exists=True)
+        except Exception:
+            pass
 
-    # Exam by student + created date (history, progress tracking)
-    # Impact: Student history queries 40x faster
-    op.create_index(
-        'idx_sinavlar_ogrenci_tarih',
-        'sinavlar',
-        ['ogrenci_id', 'olusturma_tarihi'],
-        unique=False,
-        if_not_exists=True
-    )
-
-    # Exam by type
-    op.create_index(
-        'idx_sinavlar_sinav_tipi',
-        'sinavlar',
-        ['sinav_tipi'],
-        unique=False,
-        if_not_exists=True
-    )
-
-    # Exam by status (if column exists - adding with if_not_exists)
-    # Note: Will fail silently if column doesn't exist
-    try:
-        op.create_index(
-            'idx_sinavlar_durum',
-            'sinavlar',
-            ['durum'],
-            unique=False,
-            if_not_exists=True
-        )
-    except:
-        pass
+    if table_exists('sinavlar'):
+        op.create_index('idx_sinavlar_ogrenci_tarih', 'sinavlar', ['ogrenci_id', 'olusturma_tarihi'], unique=False, if_not_exists=True)
+        op.create_index('idx_sinavlar_sinav_tipi', 'sinavlar', ['sinav_tipi'], unique=False, if_not_exists=True)
+        try:
+            op.create_index('idx_sinavlar_durum', 'sinavlar', ['durum'], unique=False, if_not_exists=True)
+        except Exception:
+            pass
 
     # ============================================================================
-    # SINAV_SONUCLARI INDEXES - Exam Results/Answers
+    # STUDENT ANSWERS INDEXES (student_answers or sinav_sonuclari)
     # ============================================================================
+    if table_exists('student_answers'):
+        try:
+            op.create_index('idx_student_answers_session', 'student_answers', ['exam_session_id'], unique=False, if_not_exists=True)
+        except Exception:
+            pass
+        try:
+            op.create_index('idx_student_answers_question', 'student_answers', ['question_id'], unique=False, if_not_exists=True)
+        except Exception:
+            pass
 
-    # Results by student (student performance analytics)
-    # Impact: Student analytics 50x faster
-    op.create_index(
-        'idx_sinav_sonuclari_ogrenci',
-        'sinav_sonuclari',
-        ['ogrenci_id'],
-        unique=False,
-        if_not_exists=True
-    )
-
-    # Results by exam (exam statistics)
-    op.create_index(
-        'idx_sinav_sonuclari_sinav',
-        'sinav_sonuclari',
-        ['sinav_id'],
-        unique=False,
-        if_not_exists=True
-    )
-
-    # Results by student + exam (composite for faster lookups)
-    op.create_index(
-        'idx_sinav_sonuclari_ogrenci_sinav',
-        'sinav_sonuclari',
-        ['ogrenci_id', 'sinav_id'],
-        unique=False,
-        if_not_exists=True
-    )
+    if table_exists('sinav_sonuclari'):
+        op.create_index('idx_sinav_sonuclari_ogrenci', 'sinav_sonuclari', ['ogrenci_id'], unique=False, if_not_exists=True)
+        op.create_index('idx_sinav_sonuclari_sinav', 'sinav_sonuclari', ['sinav_id'], unique=False, if_not_exists=True)
+        op.create_index('idx_sinav_sonuclari_ogrenci_sinav', 'sinav_sonuclari', ['ogrenci_id', 'sinav_id'], unique=False, if_not_exists=True)
 
     print("SUCCESS: Created 17+ performance indexes on existing tables")
     print("  - kullanicilar: email, aktif, rol (users is a view, indexed base table)")
@@ -203,30 +136,34 @@ def upgrade() -> None:
 
 
 def downgrade() -> None:
-    """
-    Remove performance indexes
-    """
-
-    # Drop indexes in reverse order
-    op.drop_index('idx_sinav_sonuclari_ogrenci_sinav', table_name='sinav_sonuclari', if_exists=True)
-    op.drop_index('idx_sinav_sonuclari_sinav', table_name='sinav_sonuclari', if_exists=True)
-    op.drop_index('idx_sinav_sonuclari_ogrenci', table_name='sinav_sonuclari', if_exists=True)
-
-    try:
-        op.drop_index('idx_sinavlar_durum', table_name='sinavlar', if_exists=True)
-    except:
-        pass
-    op.drop_index('idx_sinavlar_sinav_tipi', table_name='sinavlar', if_exists=True)
-    op.drop_index('idx_sinavlar_ogrenci_tarih', table_name='sinavlar', if_exists=True)
-
-    op.drop_index('idx_sorular_aktif', table_name='sorular', if_exists=True)
-    op.drop_index('idx_sorular_konu', table_name='sorular', if_exists=True)
-    op.drop_index('idx_sorular_sinav_tipi', table_name='sorular', if_exists=True)
-
-    op.drop_index('idx_questions_topic_subtopic', table_name='questions', if_exists=True)
-    op.drop_index('idx_questions_exam_type', table_name='questions', if_exists=True)
-    op.drop_index('idx_questions_subject_difficulty', table_name='questions', if_exists=True)
-
-    op.drop_index('idx_kullanicilar_rol', table_name='kullanicilar', if_exists=True)
-    op.drop_index('idx_kullanicilar_aktif', table_name='kullanicilar', if_exists=True)
-    op.drop_index('idx_kullanicilar_email', table_name='kullanicilar', if_exists=True)
+    """Remove performance indexes (safe - if_exists=True)"""
+    indexes_to_drop = [
+        ('idx_student_answers_question', 'student_answers'),
+        ('idx_student_answers_session', 'student_answers'),
+        ('idx_sinav_sonuclari_ogrenci_sinav', 'sinav_sonuclari'),
+        ('idx_sinav_sonuclari_sinav', 'sinav_sonuclari'),
+        ('idx_sinav_sonuclari_ogrenci', 'sinav_sonuclari'),
+        ('idx_exam_sessions_status', 'exam_sessions'),
+        ('idx_exam_sessions_exam_type', 'exam_sessions'),
+        ('idx_exam_sessions_student_created', 'exam_sessions'),
+        ('idx_sinavlar_durum', 'sinavlar'),
+        ('idx_sinavlar_sinav_tipi', 'sinavlar'),
+        ('idx_sinavlar_ogrenci_tarih', 'sinavlar'),
+        ('idx_sorular_aktif', 'sorular'),
+        ('idx_sorular_konu', 'sorular'),
+        ('idx_sorular_sinav_tipi', 'sorular'),
+        ('idx_questions_topic_subtopic', 'questions'),
+        ('idx_questions_exam_type', 'questions'),
+        ('idx_questions_subject_difficulty', 'questions'),
+        ('idx_users_role', 'users'),
+        ('idx_users_is_active', 'users'),
+        ('idx_users_email', 'users'),
+        ('idx_kullanicilar_rol', 'kullanicilar'),
+        ('idx_kullanicilar_aktif', 'kullanicilar'),
+        ('idx_kullanicilar_email', 'kullanicilar'),
+    ]
+    for idx_name, tbl_name in indexes_to_drop:
+        try:
+            op.drop_index(idx_name, table_name=tbl_name, if_exists=True)
+        except Exception:
+            pass

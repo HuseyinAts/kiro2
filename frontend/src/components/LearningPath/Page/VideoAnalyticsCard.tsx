@@ -5,9 +5,11 @@
  * Extracted from LearningPathPage.tsx
  */
 
-import React, { useMemo } from 'react'
-import { Card, CardContent, Box, Typography, Divider, Chip } from '@mui/material'
-import { VideoResponse } from '../../../api'
+import { Card, CardContent, Box, Typography, Divider, Chip } from '@mui/material';
+import * as React from 'react';
+import {  useMemo  } from 'react';
+
+import { VideoResponse } from '../../../api';
 
 export interface VideoAnalyticsCardProps {
   videos: VideoResponse[]
@@ -18,12 +20,12 @@ export interface VideoAnalyticsCardProps {
  */
 const calculateAverageScore = (
   videos: VideoResponse[],
-  scoreKey: keyof VideoResponse['scores']
+  scoreKey: 'turkish_score' | 'relevance_score' | 'quality_score' | 'final_score',
 ): number => {
-  if (videos.length === 0) return 0
-  const sum = videos.reduce((acc, v) => acc + (v.scores?.[scoreKey] || 0), 0)
-  return Math.round((sum / videos.length) * 100)
-}
+  if (videos.length === 0) {return 0;}
+  const sum = videos.reduce((acc, v) => acc + (v.scores?.[scoreKey] || 0), 0);
+  return Math.round((sum / videos.length) * 100);
+};
 
 /**
  * Card showing video quality analytics
@@ -33,34 +35,36 @@ const calculateAverageScore = (
  * Performance: Memoized with React.memo and useMemo for expensive calculations
  */
 export const VideoAnalyticsCard = React.memo<VideoAnalyticsCardProps>(({
-  videos
+  videos,
 }) => {
-  if (videos.length === 0) return null
+  const hasVideos = videos.length > 0;
 
-  // Memoize expensive score calculations
+  // Memoize expensive score calculations - hooks must be called before any early returns
   const scores = useMemo(
-    () => ({
+    () => hasVideos ? ({
       turkish: calculateAverageScore(videos, 'turkish_score'),
       relevance: calculateAverageScore(videos, 'relevance_score'),
       quality: calculateAverageScore(videos, 'quality_score'),
-      final: calculateAverageScore(videos, 'final_score')
-    }),
-    [videos]
-  )
+      final: calculateAverageScore(videos, 'final_score'),
+    }) : { turkish: 0, relevance: 0, quality: 0, final: 0 },
+    [videos, hasVideos],
+  );
 
   // Memoize feature counts
   const counts = useMemo(
-    () => ({
+    () => hasVideos ? ({
       turkish: videos.filter(v => v.is_turkish).length,
       accessible: videos.filter(v => v.is_accessible).length,
       caption: videos.filter(v => v.caption_available).length,
-      hd: videos.filter(v => v.definition === 'hd').length
-    }),
-    [videos]
-  )
+      hd: videos.filter(v => v.definition === 'hd').length,
+    }) : { turkish: 0, accessible: 0, caption: 0, hd: 0 },
+    [videos, hasVideos],
+  );
 
-  const { turkish: turkishScore, relevance: relevanceScore, quality: qualityScore, final: finalScore } = scores
-  const { turkish: turkishCount, accessible: accessibleCount, caption: captionCount, hd: hdCount } = counts
+  const { turkish: turkishScore, relevance: relevanceScore, quality: qualityScore, final: finalScore } = scores;
+  const { turkish: turkishCount, accessible: accessibleCount, caption: captionCount, hd: hdCount } = counts;
+
+  if (!hasVideos) {return null;}
 
   return (
     <Card
@@ -68,7 +72,7 @@ export const VideoAnalyticsCard = React.memo<VideoAnalyticsCardProps>(({
       sx={{
         mb: 3,
         background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-        color: 'white'
+        color: 'white',
       }}
     >
       <CardContent>
@@ -82,7 +86,7 @@ export const VideoAnalyticsCard = React.memo<VideoAnalyticsCardProps>(({
               textAlign: 'center',
               p: 2,
               backgroundColor: 'rgba(255,255,255,0.2)',
-              borderRadius: 2
+              borderRadius: 2,
             }}
           >
             <Typography variant="h4" fontWeight="bold">
@@ -103,7 +107,7 @@ export const VideoAnalyticsCard = React.memo<VideoAnalyticsCardProps>(({
               textAlign: 'center',
               p: 2,
               backgroundColor: 'rgba(255,255,255,0.2)',
-              borderRadius: 2
+              borderRadius: 2,
             }}
           >
             <Typography variant="h4" fontWeight="bold">
@@ -124,7 +128,7 @@ export const VideoAnalyticsCard = React.memo<VideoAnalyticsCardProps>(({
               textAlign: 'center',
               p: 2,
               backgroundColor: 'rgba(255,255,255,0.2)',
-              borderRadius: 2
+              borderRadius: 2,
             }}
           >
             <Typography variant="h4" fontWeight="bold">
@@ -145,7 +149,7 @@ export const VideoAnalyticsCard = React.memo<VideoAnalyticsCardProps>(({
               textAlign: 'center',
               p: 2,
               backgroundColor: 'rgba(255,255,255,0.2)',
-              borderRadius: 2
+              borderRadius: 2,
             }}
           >
             <Typography variant="h4" fontWeight="bold">
@@ -196,10 +200,10 @@ export const VideoAnalyticsCard = React.memo<VideoAnalyticsCardProps>(({
         </Typography>
       </CardContent>
     </Card>
-  )
-})
+  );
+});
 
 // Display name for React DevTools
-VideoAnalyticsCard.displayName = 'VideoAnalyticsCard'
+VideoAnalyticsCard.displayName = 'VideoAnalyticsCard';
 
-export default VideoAnalyticsCard
+export default VideoAnalyticsCard;

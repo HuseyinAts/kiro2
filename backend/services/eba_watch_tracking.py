@@ -11,7 +11,7 @@ from sqlalchemy import select, and_, func
 from pydantic import BaseModel
 import uuid
 
-from models.database import EBAVideo, User
+from models.database import EBAVideo
 from models.eba_video import EBAVideoWatch
 
 logger = logging.getLogger(__name__)

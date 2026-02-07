@@ -4,7 +4,8 @@
  * Kept for backward compatibility with existing code
  */
 
-import React, { ReactNode } from 'react';
+import * as React from 'react';
+import {  ReactNode  } from 'react';
 
 interface AuthProviderProps {
   children: ReactNode;

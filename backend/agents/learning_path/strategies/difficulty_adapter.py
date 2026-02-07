@@ -11,7 +11,7 @@ Responsibilities:
 """
 
 import logging
-from typing import Dict, Any, Optional
+from typing import Dict, Any
 
 from ..models import KnowledgeLevel
 

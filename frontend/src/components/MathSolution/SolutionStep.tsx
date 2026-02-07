@@ -1,7 +1,7 @@
 /**
  * Tek Çözüm Adımı Bileşeni
  * Requirements: REQ-51.21-51.25, REQ-51.26-51.30 (Animasyonlu geçişler)
- * 
+ *
  * Bu bileşen:
  * - Tek bir çözüm adımını gösterir
  * - Animasyonlu geçişler sağlar
@@ -9,12 +9,13 @@
  * - Hata vurgulama desteği
  */
 
-import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Lightbulb, AlertCircle, CheckCircle2, ChevronDown, ChevronUp } from 'lucide-react';
+import { useState, useEffect } from 'react';
+
+import { useAnimationContext } from './AnimationController';
 import HintSystem from './HintSystem';
 import MathExpressionAnimated from './MathExpressionAnimated';
-import { useAnimationContext } from './AnimationController';
 
 interface SolutionStepProps {
   step: {
@@ -43,12 +44,13 @@ const SolutionStep: React.FC<SolutionStepProps> = ({
   isActive,
   isCompleted,
   showAnimations,
-  previousExpression
+  previousExpression,
 }) => {
   const [showHints, setShowHints] = useState(false);
   const [showCommonErrors, setShowCommonErrors] = useState(false);
   const [isExpanded, setIsExpanded] = useState(isActive);
-  const animationContext = useAnimationContext();
+  // Animation context is available via useAnimationContext hook if needed
+  void useAnimationContext();
 
   // Active olduğunda otomatik aç
   useEffect(() => {
@@ -65,7 +67,7 @@ const SolutionStep: React.FC<SolutionStepProps> = ({
       operation: 'bg-yellow-100 text-yellow-800',
       substitution: 'bg-purple-100 text-purple-800',
       verification: 'bg-pink-100 text-pink-800',
-      conclusion: 'bg-indigo-100 text-indigo-800'
+      conclusion: 'bg-indigo-100 text-indigo-800',
     };
     return colors[type] || 'bg-gray-100 text-gray-800';
   };
@@ -78,53 +80,53 @@ const SolutionStep: React.FC<SolutionStepProps> = ({
       operation: '➗',
       substitution: '🔀',
       verification: '✅',
-      conclusion: '🎯'
+      conclusion: '🎯',
     };
     return icons[type] || '📌';
   };
 
   // Animation variants
   const containerVariants = {
-    hidden: { 
-      opacity: 0, 
+    hidden: {
+      opacity: 0,
       y: 20,
-      scale: 0.95
+      scale: 0.95,
     },
-    visible: { 
-      opacity: 1, 
+    visible: {
+      opacity: 1,
       y: 0,
       scale: 1,
       transition: {
         duration: 0.4,
-        ease: 'easeOut'
-      }
+        ease: 'easeOut',
+      },
     },
     exit: {
       opacity: 0,
       y: -20,
       scale: 0.95,
       transition: {
-        duration: 0.3
-      }
-    }
+        duration: 0.3,
+      },
+    },
   };
 
   const contentVariants = {
-    collapsed: { 
+    collapsed: {
       height: 0,
       opacity: 0,
       transition: {
-        duration: 0.3
-      }
+        duration: 0.3,
+      },
     },
-    expanded: { 
+    expanded: {
       height: 'auto',
       opacity: 1,
       transition: {
         duration: 0.4,
-        ease: 'easeOut'
-      }
-    }
+        ease: 'easeOut',
+      },
+    },
   };
 
   return (
@@ -132,19 +134,19 @@ const SolutionStep: React.FC<SolutionStepProps> = ({
       <motion.div
         key={step.step_number}
         variants={showAnimations ? containerVariants : {}}
-        initial={showAnimations ? 'hidden' : false}
+        initial={showAnimations ? 'hidden' : undefined}
         animate="visible"
-        exit={showAnimations ? 'exit' : false}
+        exit={showAnimations ? 'exit' : undefined}
         className={`bg-white rounded-lg shadow-md overflow-hidden border-2 transition-all ${
-          isActive 
-            ? 'border-blue-500 ring-2 ring-blue-200' 
+          isActive
+            ? 'border-blue-500 ring-2 ring-blue-200'
             : isCompleted
             ? 'border-green-500'
             : 'border-gray-200'
         }`}
       >
         {/* Header */}
-        <div 
+        <div
           className="p-4 cursor-pointer hover:bg-gray-50 transition-colors"
           onClick={() => setIsExpanded(!isExpanded)}
         >
@@ -152,8 +154,8 @@ const SolutionStep: React.FC<SolutionStepProps> = ({
             <div className="flex items-center gap-4">
               {/* Step Number */}
               <div className={`w-12 h-12 rounded-full flex items-center justify-center font-bold text-lg ${
-                isCompleted 
-                  ? 'bg-green-500 text-white' 
+                isCompleted
+                  ? 'bg-green-500 text-white'
                   : isActive
                   ? 'bg-blue-600 text-white'
                   : 'bg-gray-200 text-gray-600'
@@ -274,7 +276,7 @@ const SolutionStep: React.FC<SolutionStepProps> = ({
                           className="mt-4 space-y-2"
                         >
                           {step.common_errors.map((error, index) => (
-                            <div 
+                            <div
                               key={index}
                               className="bg-red-50 border border-red-200 rounded-lg p-3"
                             >

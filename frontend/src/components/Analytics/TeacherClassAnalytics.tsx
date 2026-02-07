@@ -3,40 +3,38 @@
  * Öğretmen sınıf analizi ve raporlama bileşeni
  */
 
-import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
-import { Button } from '../ui/button';
-import { Badge } from '../ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs';
-import { 
-  BarChart, 
-  Bar, 
-  XAxis, 
-  YAxis, 
-  CartesianGrid, 
-  Tooltip, 
-  ResponsiveContainer,
-  PieChart,
-  Pie,
-  Cell,
-  LineChart,
-  Line,
-  ScatterChart,
-  Scatter
-} from 'recharts';
-import { 
-  Users, 
-  TrendingUp, 
-  Award, 
+import {
+  Users,
+  TrendingUp,
+  Award,
   BookOpen,
   Download,
   Search,
   Filter,
   Eye,
   AlertTriangle,
-  CheckCircle
+  CheckCircle,
 } from 'lucide-react';
+import * as React from 'react';
+import {  useState, useEffect  } from 'react';
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  PieChart,
+  Pie,
+  Cell,
+} from 'recharts';
+
 import { analyticsService, ClassAnalytics, ExportRequest } from '../../services/analyticsService';
+import { Badge } from '../ui/badge';
+import { Button } from '../ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs';
 
 interface TeacherClassAnalyticsProps {
   classId: string;
@@ -45,7 +43,7 @@ interface TeacherClassAnalyticsProps {
 
 const TeacherClassAnalytics: React.FC<TeacherClassAnalyticsProps> = ({
   classId,
-  className = ''
+  className = '',
 }) => {
   const [analytics, setAnalytics] = useState<ClassAnalytics | null>(null);
   const [loading, setLoading] = useState(true);
@@ -71,7 +69,7 @@ const TeacherClassAnalytics: React.FC<TeacherClassAnalyticsProps> = ({
         classId,
         startDate,
         endDate,
-        includeStudents
+        includeStudents,
       );
 
       setAnalytics(data);
@@ -95,8 +93,8 @@ const TeacherClassAnalytics: React.FC<TeacherClassAnalyticsProps> = ({
           class_id: classId,
           start_date: startDate,
           end_date: endDate,
-          include_students: includeStudents
-        }
+          include_students: includeStudents,
+        },
       };
 
       let response;
@@ -105,21 +103,21 @@ const TeacherClassAnalytics: React.FC<TeacherClassAnalyticsProps> = ({
         analyticsService.downloadExportFile(
           response.data.pdf_content!,
           response.data.filename,
-          'pdf'
+          'pdf',
         );
       } else if (format === 'excel') {
         response = await analyticsService.exportToExcel(exportRequest);
         analyticsService.downloadExportFile(
           response.data.excel_content!,
           response.data.filename,
-          'excel'
+          'excel',
         );
       } else {
         response = await analyticsService.exportToCsv(exportRequest);
         analyticsService.downloadExportFile(
           response.data.csv_content!,
           response.data.filename,
-          'csv'
+          'csv',
         );
       }
     } catch (err) {
@@ -131,40 +129,40 @@ const TeacherClassAnalytics: React.FC<TeacherClassAnalyticsProps> = ({
 
   // Performans dağılım verilerini hazırla
   const preparePerformanceDistribution = () => {
-    if (!analytics?.performance_distribution?.score_distribution) return [];
+    if (!analytics?.performance_distribution?.score_distribution) {return [];}
 
     return Object.entries(analytics.performance_distribution.score_distribution).map(([range, count]) => ({
       range,
       count,
-      percentage: Math.round((count / analytics.student_count) * 100)
+      percentage: Math.round((count / analytics.student_count) * 100),
     }));
   };
 
   // Konu performans verilerini hazırla
   const prepareSubjectData = () => {
-    if (!analytics?.subject_analysis?.subject_averages) return [];
+    if (!analytics?.subject_analysis?.subject_averages) {return [];}
 
     return Object.entries(analytics.subject_analysis.subject_averages).map(([subject, average]) => ({
       subject,
       average: Math.round(average),
-      color: average >= 80 ? '#10B981' : average >= 60 ? '#F59E0B' : '#EF4444'
+      color: average >= 80 ? '#10B981' : average >= 60 ? '#F59E0B' : '#EF4444',
     }));
   };
 
   // Öğrenme stili dağılım verilerini hazırla
   const prepareLearningStyleDistribution = () => {
-    if (!analytics?.learning_style_distribution?.vark_distribution) return [];
+    if (!analytics?.learning_style_distribution?.vark_distribution) {return [];}
 
     return Object.entries(analytics.learning_style_distribution.vark_distribution).map(([style, percentage]) => ({
       style: style.charAt(0).toUpperCase() + style.slice(1),
       value: Math.round(percentage * 100),
-      color: analyticsService.getLearningStyleColor(style).split(' ')[0].replace('bg-', '#')
+      color: analyticsService.getLearningStyleColor(style).split(' ')[0].replace('bg-', '#'),
     }));
   };
 
   // Öğrenci listesini filtrele
   const filteredStudents = analytics?.student_details?.filter(student =>
-    student.name.toLowerCase().includes(searchTerm.toLowerCase())
+    student.name.toLowerCase().includes(searchTerm.toLowerCase()),
   ) || [];
 
   const COLORS = ['#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6', '#06B6D4'];
@@ -216,13 +214,13 @@ const TeacherClassAnalytics: React.FC<TeacherClassAnalyticsProps> = ({
         <div>
           <h2 className="text-2xl font-bold text-gray-900">Sınıf Analytics</h2>
           <p className="text-gray-600">
-            Sınıf ID: {analytics.class_id} | 
+            Sınıf ID: {analytics.class_id} |
             Öğrenci Sayısı: {analytics.student_count} |
-            Dönem: {new Date(analytics.period.start_date).toLocaleDateString('tr-TR')} - 
+            Dönem: {new Date(analytics.period.start_date).toLocaleDateString('tr-TR')} -
             {new Date(analytics.period.end_date).toLocaleDateString('tr-TR')}
           </p>
         </div>
-        
+
         <div className="flex items-center space-x-2">
           {/* Tarih aralığı seçici */}
           <select
@@ -360,7 +358,7 @@ const TeacherClassAnalytics: React.FC<TeacherClassAnalyticsProps> = ({
                       fill="#8884d8"
                       dataKey="count"
                     >
-                      {performanceData.map((entry, index) => (
+                      {performanceData.map((_entry, index) => (
                         <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                       ))}
                     </Pie>
@@ -538,11 +536,11 @@ const TeacherClassAnalytics: React.FC<TeacherClassAnalyticsProps> = ({
                               </p>
                             </td>
                             <td className="p-2">
-                              <Badge 
-                                variant="secondary" 
+                              <Badge
+                                variant="secondary"
                                 className={
-                                  (student.analytics?.total_events || 0) > 50 
-                                    ? 'bg-green-100 text-green-800' 
+                                  (student.analytics?.total_events || 0) > 50
+                                    ? 'bg-green-100 text-green-800'
                                     : 'bg-yellow-100 text-yellow-800'
                                 }
                               >
@@ -571,7 +569,7 @@ const TeacherClassAnalytics: React.FC<TeacherClassAnalyticsProps> = ({
             <Card>
               <CardContent className="p-4">
                 <p className="text-gray-600">
-                  Öğrenci detaylarını görmek için "Öğrenci Detayları" seçeneğini aktifleştirin.
+                  Öğrenci detaylarını görmek için &quot;Öğrenci Detayları&quot; seçeneğini aktifleştirin.
                 </p>
               </CardContent>
             </Card>

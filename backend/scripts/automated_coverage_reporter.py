@@ -5,7 +5,6 @@ Generates comprehensive coverage reports with trend analysis and actionable insi
 """
 
 import json
-import os
 import sys
 import time
 import subprocess
@@ -754,7 +753,7 @@ def main():
     report_file = automation.run_automated_coverage_analysis(args.test_type)
 
     if report_file:
-        print(f"\n✅ Coverage analysis completed successfully!")
+        print("\n✅ Coverage analysis completed successfully!")
         print(f"📋 Report saved to: {report_file}")
         sys.exit(0)
     else:

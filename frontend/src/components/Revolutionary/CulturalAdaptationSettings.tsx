@@ -3,18 +3,20 @@
  * Türk öğrenci kültürü faktörleri ayarlama
  */
 
-import React, { useState, useEffect } from 'react';
-import { CulturalContext } from '../../types/revolutionary';
+import * as React from 'react';
+import {  useState, useEffect  } from 'react';
+
 import culturalAdaptationService from '../../services/culturalAdaptationService';
+import { CulturalContext } from '../../types/revolutionary';
 
 interface CulturalAdaptationSettingsProps {
   studentId: string;
   onSettingsUpdate?: (settings: CulturalContext) => void;
 }
 
-const CulturalAdaptationSettings: React.FC<CulturalAdaptationSettingsProps> = ({ 
-  studentId, 
-  onSettingsUpdate 
+const CulturalAdaptationSettings: React.FC<CulturalAdaptationSettingsProps> = ({
+  studentId,
+  onSettingsUpdate,
 }) => {
   const [culturalContext, setCulturalContext] = useState<CulturalContext | null>(null);
   const [loading, setLoading] = useState(true);
@@ -31,7 +33,7 @@ const CulturalAdaptationSettings: React.FC<CulturalAdaptationSettingsProps> = ({
     authority_acceptance: 0.8,
     collective_success: 0.75,
     elder_wisdom_value: 0.85,
-    social_harmony: 0.9
+    social_harmony: 0.9,
   });
 
   // Kültürel bağlamı yükle
@@ -48,7 +50,7 @@ const CulturalAdaptationSettings: React.FC<CulturalAdaptationSettingsProps> = ({
 
         if (adaptationResult.success && adaptationResult.data) {
           const adaptation = adaptationResult.data;
-          
+
           // Kültürel bağlam oluştur
           const context: CulturalContext = {
             student_id: studentId,
@@ -60,11 +62,11 @@ const CulturalAdaptationSettings: React.FC<CulturalAdaptationSettingsProps> = ({
             collective_success: adaptation.cultural_factors.collective_success_orientation,
             elder_wisdom_value: adaptation.cultural_factors.elder_wisdom_value,
             social_harmony: adaptation.cultural_factors.social_harmony_importance,
-            detected_at: adaptation.last_updated
+            detected_at: adaptation.last_updated,
           };
 
           setCulturalContext(context);
-          
+
           // Form verilerini güncelle
           setFormData({
             group_learning_preference: context.group_learning_preference,
@@ -74,13 +76,13 @@ const CulturalAdaptationSettings: React.FC<CulturalAdaptationSettingsProps> = ({
             authority_acceptance: context.authority_acceptance,
             collective_success: context.collective_success,
             elder_wisdom_value: context.elder_wisdom_value,
-            social_harmony: context.social_harmony
+            social_harmony: context.social_harmony,
           });
 
         } else {
           // API başarısız olursa fallback: Davranışsal verilerden tespit et
           console.warn('Cultural adaptation API failed, using behavioral detection fallback');
-          
+
           const sampleBehavioralData = {
             group_study_sessions: 15,
             individual_study_sessions: 8,
@@ -95,15 +97,15 @@ const CulturalAdaptationSettings: React.FC<CulturalAdaptationSettingsProps> = ({
             visual_content_performance: 0.82,
             auditory_content_performance: 0.75,
             text_content_performance: 0.80,
-            note_taking_frequency: 8
+            note_taking_frequency: 8,
           };
 
           const contextResult = await culturalAdaptationService.detectCulturalContext(studentId, sampleBehavioralData);
-          
+
           if (contextResult.success && contextResult.data) {
             const context = contextResult.data;
             setCulturalContext(context);
-            
+
             setFormData({
               group_learning_preference: context.group_learning_preference,
               teacher_respect_level: context.teacher_respect_level,
@@ -112,7 +114,7 @@ const CulturalAdaptationSettings: React.FC<CulturalAdaptationSettingsProps> = ({
               authority_acceptance: context.authority_acceptance,
               collective_success: context.collective_success,
               elder_wisdom_value: context.elder_wisdom_value,
-              social_harmony: context.social_harmony
+              social_harmony: context.social_harmony,
             });
           } else {
             // Son fallback: Varsayılan değerler
@@ -127,7 +129,7 @@ const CulturalAdaptationSettings: React.FC<CulturalAdaptationSettingsProps> = ({
               collective_success: 0.75,
               elder_wisdom_value: 0.85,
               social_harmony: 0.9,
-              detected_at: new Date().toISOString()
+              detected_at: new Date().toISOString(),
             };
             setCulturalContext(defaultContext);
           }
@@ -136,7 +138,7 @@ const CulturalAdaptationSettings: React.FC<CulturalAdaptationSettingsProps> = ({
       } catch (err) {
         console.error('Cultural context loading error:', err);
         setError(err instanceof Error ? err.message : 'Kültürel bağlam yüklenirken hata oluştu');
-        
+
         // Hata durumunda varsayılan değerler
         const defaultContext: CulturalContext = {
           student_id: studentId,
@@ -148,7 +150,7 @@ const CulturalAdaptationSettings: React.FC<CulturalAdaptationSettingsProps> = ({
           collective_success: 0.75,
           elder_wisdom_value: 0.85,
           social_harmony: 0.9,
-          detected_at: new Date().toISOString()
+          detected_at: new Date().toISOString(),
         };
         setCulturalContext(defaultContext);
       } finally {
@@ -165,7 +167,7 @@ const CulturalAdaptationSettings: React.FC<CulturalAdaptationSettingsProps> = ({
   const handleInputChange = (field: keyof typeof formData, value: number) => {
     setFormData(prev => ({
       ...prev,
-      [field]: value
+      [field]: value,
     }));
   };
 
@@ -187,7 +189,7 @@ const CulturalAdaptationSettings: React.FC<CulturalAdaptationSettingsProps> = ({
         authority_acceptance_level: formData.authority_acceptance,
         collective_success_orientation: formData.collective_success,
         elder_wisdom_value: formData.elder_wisdom_value,
-        social_harmony_importance: formData.social_harmony
+        social_harmony_importance: formData.social_harmony,
       });
 
       if (updateResult.success) {
@@ -195,31 +197,31 @@ const CulturalAdaptationSettings: React.FC<CulturalAdaptationSettingsProps> = ({
         const updatedContext: CulturalContext = {
           student_id: studentId,
           ...formData,
-          detected_at: new Date().toISOString()
+          detected_at: new Date().toISOString(),
         };
 
         setCulturalContext(updatedContext);
         onSettingsUpdate?.(updatedContext);
-        
+
         setSuccessMessage('Kültürel adaptasyon ayarları başarıyla kaydedildi!');
-        
+
         console.log('Cultural factors updated successfully:', updateResult.data);
       } else {
         // API hatası durumunda fallback
         console.warn('Cultural factors update API failed, using fallback:', updateResult.message);
-        
+
         const updatedContext: CulturalContext = {
           student_id: studentId,
           ...formData,
-          detected_at: new Date().toISOString()
+          detected_at: new Date().toISOString(),
         };
 
         setCulturalContext(updatedContext);
         onSettingsUpdate?.(updatedContext);
-        
+
         setSuccessMessage('Kültürel adaptasyon ayarları yerel olarak kaydedildi!');
       }
-      
+
       // Başarı mesajını 3 saniye sonra temizle
       setTimeout(() => setSuccessMessage(null), 3000);
 
@@ -241,22 +243,15 @@ const CulturalAdaptationSettings: React.FC<CulturalAdaptationSettingsProps> = ({
       authority_acceptance: 0.8,
       collective_success: 0.75,
       elder_wisdom_value: 0.85,
-      social_harmony: 0.9
+      social_harmony: 0.9,
     });
-  };
-
-  // Slider renk kodlaması
-  const getSliderColor = (value: number) => {
-    if (value >= 0.8) return 'bg-green-500';
-    if (value >= 0.6) return 'bg-yellow-500';
-    return 'bg-red-500';
   };
 
   // Değer açıklaması
   const getValueDescription = (value: number) => {
-    if (value >= 0.8) return 'Yüksek';
-    if (value >= 0.6) return 'Orta';
-    if (value >= 0.4) return 'Düşük';
+    if (value >= 0.8) {return 'Yüksek';}
+    if (value >= 0.6) {return 'Orta';}
+    if (value >= 0.4) {return 'Düşük';}
     return 'Çok Düşük';
   };
 
@@ -316,7 +311,7 @@ const CulturalAdaptationSettings: React.FC<CulturalAdaptationSettingsProps> = ({
       {/* Öğrenme Tercihleri */}
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
         <h4 className="text-md font-semibold text-gray-900 mb-4">Öğrenme Tercihleri</h4>
-        
+
         <div className="space-y-6">
           {/* Grup Çalışması Tercihi */}
           <div>
@@ -401,7 +396,7 @@ const CulturalAdaptationSettings: React.FC<CulturalAdaptationSettingsProps> = ({
       {/* Kültürel Değerler */}
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
         <h4 className="text-md font-semibold text-gray-900 mb-4">Kültürel Değerler</h4>
-        
+
         <div className="space-y-6">
           {/* Aile Katılımı */}
           <div>
@@ -519,7 +514,7 @@ const CulturalAdaptationSettings: React.FC<CulturalAdaptationSettingsProps> = ({
       {culturalContext && (
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
           <h4 className="text-md font-semibold text-gray-900 mb-4">Mevcut Profil Özeti</h4>
-          
+
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <div className="text-center p-3 bg-blue-50 rounded-lg">
               <div className="text-lg font-bold text-blue-600">
@@ -557,7 +552,7 @@ const CulturalAdaptationSettings: React.FC<CulturalAdaptationSettingsProps> = ({
         >
           Varsayılana Sıfırla
         </button>
-        
+
         <button
           onClick={handleSave}
           disabled={saving}

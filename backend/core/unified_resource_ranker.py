@@ -414,7 +414,7 @@ class UnifiedResourceRanker:
                     score = 0.6
                 else:
                     score = 0.4
-            except:
+            except (ValueError, TypeError, AttributeError):
                 pass
 
         return score

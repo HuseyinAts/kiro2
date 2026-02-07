@@ -8,8 +8,8 @@
  * - useBadges: Rozet koleksiyonu yönetimi
  * - useLeaderboard: Liderlik tablosu yönetimi
  */
-import { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
+import { useState, useEffect, useCallback } from 'react';
 
 const API_BASE = '/api/v1/gamification';
 
@@ -99,7 +99,7 @@ export function usePoints() {
       const response = await axios.post(`${API_BASE}/points/award`, {
         points: amount,
         reason,
-        metadata
+        metadata,
       });
       setPoints(response.data.total_points);
       setError(null);
@@ -116,7 +116,7 @@ export function usePoints() {
     try {
       setLoading(true);
       const response = await axios.get(`${API_BASE}/points/history`, {
-        params: { limit }
+        params: { limit },
       });
       setError(null);
       return response.data;
@@ -138,7 +138,7 @@ export function usePoints() {
     error,
     refresh: fetchPoints,
     awardPoints,
-    getHistory
+    getHistory,
   };
 }
 
@@ -167,7 +167,7 @@ export function useLevel() {
   const getLevelLeaderboard = useCallback(async (limit = 100) => {
     try {
       const response = await axios.get(`${API_BASE}/level/leaderboard`, {
-        params: { limit }
+        params: { limit },
       });
       return response.data as LeaderboardEntry[];
     } catch (err: any) {
@@ -196,7 +196,7 @@ export function useLevel() {
     error,
     refresh: fetchLevelProgress,
     getLevelLeaderboard,
-    getMilestones
+    getMilestones,
   };
 }
 
@@ -270,7 +270,7 @@ export function useBadges() {
     loading,
     error,
     refresh: fetchEarnedBadges,
-    awardBadge
+    awardBadge,
   };
 }
 
@@ -288,7 +288,7 @@ export function useLeaderboard(type: 'global' | 'weekly' | 'monthly' = 'global')
       setLoading(true);
       const endpoint = `${API_BASE}/leaderboard/${type}`;
       const response = await axios.get(endpoint, {
-        params: { limit, offset }
+        params: { limit, offset },
       });
       setLeaderboard(response.data);
       setError(null);
@@ -302,7 +302,7 @@ export function useLeaderboard(type: 'global' | 'weekly' | 'monthly' = 'global')
   const getNearbyUsers = useCallback(async (rangeSize = 5) => {
     try {
       const response = await axios.get(`${API_BASE}/leaderboard/nearby`, {
-        params: { range_size: rangeSize }
+        params: { range_size: rangeSize },
       });
       return response.data;
     } catch (err: any) {
@@ -335,7 +335,7 @@ export function useLeaderboard(type: 'global' | 'weekly' | 'monthly' = 'global')
     error,
     refresh: fetchLeaderboard,
     getNearbyUsers,
-    syncLeaderboard
+    syncLeaderboard,
   };
 }
 
@@ -369,7 +369,7 @@ export function useGamificationStats() {
     stats,
     loading,
     error,
-    refresh: fetchStats
+    refresh: fetchStats,
   };
 }
 
@@ -389,6 +389,6 @@ export function useGamification() {
     level,
     badges,
     leaderboard,
-    stats
+    stats,
   };
 }

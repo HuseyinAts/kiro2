@@ -2,8 +2,9 @@
  * Sanal Bloklar Bileşeni - Task 87.1
  * REQ-51.81-51.85: Virtual manipulative blocks, drag-and-drop, quantity operations
  */
-import React, { useState, useRef, useEffect } from 'react';
 import axios from 'axios';
+import * as React from 'react';
+import {  useState, useRef, useEffect  } from 'react';
 
 interface Block {
   id: string;
@@ -30,14 +31,14 @@ const VirtualBlocks: React.FC<VirtualBlocksProps> = ({ onOperationComplete }) =>
   const blockColors = {
     unit: '#4CAF50',      // Yeşil - 1'ler
     ten: '#2196F3',       // Mavi - 10'lar
-    hundred: '#FF9800'    // Turuncu - 100'ler
+    hundred: '#FF9800',    // Turuncu - 100'ler
   };
 
   // Blok boyutları
   const blockSizes = {
     unit: { width: 30, height: 30 },
     ten: { width: 30, height: 300 },
-    hundred: { width: 300, height: 300 }
+    hundred: { width: 300, height: 300 },
   };
 
   // Yeni blok ekle
@@ -48,7 +49,7 @@ const VirtualBlocks: React.FC<VirtualBlocksProps> = ({ onOperationComplete }) =>
       value: type === 'unit' ? 1 : type === 'ten' ? 10 : 100,
       x: 50,
       y: 50,
-      isDragging: false
+      isDragging: false,
     };
     setBlocks([...blocks, newBlock]);
     calculateResult([...blocks, newBlock]);
@@ -60,8 +61,8 @@ const VirtualBlocks: React.FC<VirtualBlocksProps> = ({ onOperationComplete }) =>
     setResult(total);
   };
 
-  // Blok sil
-  const removeBlock = (id: string) => {
+  // Blok sil (reserved for future use)
+  void function removeBlock(id: string) {
     const newBlocks = blocks.filter(b => b.id !== id);
     setBlocks(newBlocks);
     calculateResult(newBlocks);
@@ -70,10 +71,10 @@ const VirtualBlocks: React.FC<VirtualBlocksProps> = ({ onOperationComplete }) =>
   // Canvas'a çiz
   useEffect(() => {
     const canvas = canvasRef.current;
-    if (!canvas) return;
+    if (!canvas) {return;}
 
     const ctx = canvas.getContext('2d');
-    if (!ctx) return;
+    if (!ctx) {return;}
 
     // Canvas'ı temizle
     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -92,7 +93,7 @@ const VirtualBlocks: React.FC<VirtualBlocksProps> = ({ onOperationComplete }) =>
       ctx.fillText(
         block.value.toString(),
         block.x + size.width / 2,
-        block.y + size.height / 2
+        block.y + size.height / 2,
       );
     });
   }, [blocks]);
@@ -100,7 +101,7 @@ const VirtualBlocks: React.FC<VirtualBlocksProps> = ({ onOperationComplete }) =>
   // Mouse olayları
   const handleMouseDown = (e: React.MouseEvent<HTMLCanvasElement>) => {
     const canvas = canvasRef.current;
-    if (!canvas) return;
+    if (!canvas) {return;}
 
     const rect = canvas.getBoundingClientRect();
     const x = e.clientX - rect.left;
@@ -116,30 +117,30 @@ const VirtualBlocks: React.FC<VirtualBlocksProps> = ({ onOperationComplete }) =>
     if (clickedBlock) {
       setDraggedBlock(clickedBlock);
       setBlocks(blocks.map(b =>
-        b.id === clickedBlock.id ? { ...b, isDragging: true } : b
+        b.id === clickedBlock.id ? { ...b, isDragging: true } : b,
       ));
     }
   };
 
   const handleMouseMove = (e: React.MouseEvent<HTMLCanvasElement>) => {
-    if (!draggedBlock) return;
+    if (!draggedBlock) {return;}
 
     const canvas = canvasRef.current;
-    if (!canvas) return;
+    if (!canvas) {return;}
 
     const rect = canvas.getBoundingClientRect();
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
 
     setBlocks(blocks.map(b =>
-      b.id === draggedBlock.id ? { ...b, x, y } : b
+      b.id === draggedBlock.id ? { ...b, x, y } : b,
     ));
   };
 
   const handleMouseUp = () => {
     if (draggedBlock) {
       setBlocks(blocks.map(b =>
-        b.id === draggedBlock.id ? { ...b, isDragging: false } : b
+        b.id === draggedBlock.id ? { ...b, isDragging: false } : b,
       ));
       setDraggedBlock(null);
     }
@@ -163,7 +164,7 @@ const VirtualBlocks: React.FC<VirtualBlocksProps> = ({ onOperationComplete }) =>
         operation_type: selectedOperation,
         blocks_used: blocksUsed,
         result,
-        duration_seconds: duration
+        duration_seconds: duration,
       });
 
       if (onOperationComplete) {
@@ -172,7 +173,7 @@ const VirtualBlocks: React.FC<VirtualBlocksProps> = ({ onOperationComplete }) =>
 
       // Başarı mesajı
       alert(`İşlem kaydedildi! Sonuç: ${result}`);
-      
+
       // Yeni işlem için sıfırla
       setBlocks([]);
       setResult(0);
@@ -186,7 +187,7 @@ const VirtualBlocks: React.FC<VirtualBlocksProps> = ({ onOperationComplete }) =>
   return (
     <div className="virtual-blocks-container p-6 bg-white rounded-lg shadow-lg">
       <h2 className="text-2xl font-bold mb-4">Sanal Bloklar</h2>
-      
+
       {/* Blok ekleme butonları */}
       <div className="block-buttons mb-4 flex gap-2">
         <button

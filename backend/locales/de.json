@@ -1,0 +1,56 @@
+{
+  "language": {
+    "name": "Deutsch"
+  },
+  "common": {
+    "welcome": "Willkommen",
+    "loading": "Lädt...",
+    "error": "Fehler",
+    "success": "Erfolg",
+    "save": "Speichern",
+    "cancel": "Abbrechen",
+    "delete": "Löschen",
+    "edit": "Bearbeiten",
+    "search": "Suchen"
+  },
+  "exam": {
+    "type": {
+      "tyt": "Grundkompetenztest",
+      "ayt": "Fachkompetenztest",
+      "ydt": "Fremdsprachentest"
+    },
+    "difficulty": {
+      "easy": "Einfach",
+      "medium": "Mittel",
+      "hard": "Schwer",
+      "very_hard": "Sehr schwer"
+    }
+  },
+  "question": {
+    "count": {
+      "zero": "Keine Fragen",
+      "one": "{count} Frage",
+      "other": "{count} Fragen"
+    },
+    "quality": "Qualitätswert",
+    "difficulty": "Schwierigkeit"
+  },
+  "subject": {
+    "matematik": "Mathematik",
+    "fizik": "Physik",
+    "kimya": "Chemie",
+    "biyoloji": "Biologie",
+    "turkce": "Türkisch",
+    "tarih": "Geschichte",
+    "cografya": "Geographie",
+    "english": "Englisch",
+    "german": "Deutsch"
+  },
+  "batch": {
+    "generation": {
+      "started": "Batch-Generierung gestartet",
+      "completed": "Batch-Generierung abgeschlossen",
+      "failed": "Batch-Generierung fehlgeschlagen"
+    }
+  }
+}

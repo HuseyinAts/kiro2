@@ -424,3 +424,41 @@ def get_openapi_tags() -> List[Dict]:
         List[Dict]: List of OpenAPI tags
     """
     return OPENAPI_TAGS
+
+
+# JWT Security Scheme for OpenAPI
+OPENAPI_SECURITY_SCHEMES = {
+    "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "description": """
+JWT Bearer Token kimlik dogrulama.
+
+Token almak icin:
+1. `POST /api/v1/auth/giris` endpoint'ine istek gonder
+2. Donen `access_token` degerini kullan
+
+Ornek:
+```
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+```
+
+Token suresi: 24 saat (configurable)
+Refresh token: 7 gun
+""",
+    },
+}
+
+# Global Security Requirement (applied to all authenticated endpoints)
+OPENAPI_SECURITY = [{"BearerAuth": []}]
+
+
+def get_security_schemes() -> Dict:
+    """
+    Get OpenAPI security schemes
+
+    Returns:
+        Dict: Security schemes configuration
+    """
+    return OPENAPI_SECURITY_SCHEMES

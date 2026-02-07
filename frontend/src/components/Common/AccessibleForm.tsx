@@ -3,7 +3,13 @@
  * Erişilebilir form yapısı ve doğrulama
  */
 
-import React, { useState, useRef, useCallback, useEffect } from 'react';
+import {
+  Visibility,
+  VisibilityOff,
+  Error as ErrorIcon,
+  CheckCircle as SuccessIcon,
+  Info as InfoIcon,
+} from '@mui/icons-material';
 import {
   Box,
   TextField,
@@ -15,17 +21,12 @@ import {
   InputAdornment,
   IconButton,
   Alert,
-  Chip,
   Paper,
-  useTheme
+  useTheme,
 } from '@mui/material';
-import {
-  Visibility,
-  VisibilityOff,
-  Error as ErrorIcon,
-  CheckCircle as SuccessIcon,
-  Info as InfoIcon
-} from '@mui/icons-material';
+import * as React from 'react';
+import {  useState, useRef, useCallback, useEffect  } from 'react';
+
 import { useAccessibilitySettings } from '../../hooks/useAccessibilitySettings';
 import { useScreenReader } from '../../hooks/useScreenReader';
 
@@ -76,12 +77,12 @@ const AccessibleForm: React.FC<AccessibleFormProps> = ({
   description,
   submitLabel = 'Gönder',
   resetLabel = 'Sıfırla',
-  loading = false,
+  loading: _loading = false,
   disabled = false,
   showRequiredIndicator = true,
   validateOnBlur = true,
   validateOnChange = false,
-  className
+  className,
 }) => {
   const theme = useTheme();
   const { settings } = useAccessibilitySettings();
@@ -103,7 +104,7 @@ const AccessibleForm: React.FC<AccessibleFormProps> = ({
 
   // Doğrulama fonksiyonu
   const validateField = useCallback((field: FormField, value: string): string | null => {
-    if (!field.validation) return null;
+    if (!field.validation) {return null;}
 
     const { required, minLength, maxLength, pattern, email, custom } = field.validation;
 
@@ -113,7 +114,7 @@ const AccessibleForm: React.FC<AccessibleFormProps> = ({
     }
 
     // Değer yoksa diğer kontrolleri yapma
-    if (!value.trim()) return null;
+    if (!value.trim()) {return null;}
 
     // Minimum uzunluk
     if (minLength && value.length < minLength) {
@@ -188,16 +189,16 @@ const AccessibleForm: React.FC<AccessibleFormProps> = ({
       if (field) {
         const value = formData[fieldName] || '';
         const error = validateField(field, value);
-        
+
         setErrors(prev => {
           const filtered = prev.filter(e => e.field !== fieldName);
           const newErrors = error ? [...filtered, { field: fieldName, message: error }] : filtered;
-          
+
           // Hata varsa duyur
           if (error) {
             announceFormError(field.label, error);
           }
-          
+
           return newErrors;
         });
       }
@@ -208,13 +209,13 @@ const AccessibleForm: React.FC<AccessibleFormProps> = ({
   const togglePasswordVisibility = useCallback((fieldName: string) => {
     setShowPasswords(prev => ({
       ...prev,
-      [fieldName]: !prev[fieldName]
+      [fieldName]: !prev[fieldName],
     }));
-    
+
     const isVisible = !showPasswords[fieldName];
     announce(
       isVisible ? 'Şifre gösteriliyor' : 'Şifre gizleniyor',
-      'polite'
+      'polite',
     );
   }, [showPasswords, announce]);
 
@@ -237,7 +238,7 @@ const AccessibleForm: React.FC<AccessibleFormProps> = ({
 
       announce(
         `Form ${formErrors.length} hata içeriyor. İlk hata: ${formErrors[0].message}`,
-        'assertive'
+        'assertive',
       );
       return;
     }
@@ -246,7 +247,7 @@ const AccessibleForm: React.FC<AccessibleFormProps> = ({
       setIsSubmitting(true);
       await onSubmit(formData);
       announceSuccess('Form başarıyla gönderildi');
-    } catch (error) {
+    } catch {
       announce('Form gönderilirken hata oluştu', 'assertive');
     } finally {
       setIsSubmitting(false);
@@ -282,16 +283,16 @@ const AccessibleForm: React.FC<AccessibleFormProps> = ({
       helperText: hasError ? error : field.helperText,
       required: field.required,
       disabled: disabled || isSubmitting,
-      onChange: (e: React.ChangeEvent<HTMLInputElement>) => 
+      onChange: (e: React.ChangeEvent<HTMLInputElement>) =>
         handleFieldChange(field.name, e.target.value),
       onBlur: () => handleFieldBlur(field.name),
       'aria-describedby': [
         field.ariaDescribedBy,
         field.helperText ? `${field.id}-helper` : undefined,
-        hasError ? `${field.id}-error` : undefined
+        hasError ? `${field.id}-error` : undefined,
       ].filter(Boolean).join(' ') || undefined,
       'aria-invalid': hasError,
-      autoComplete: field.autoComplete
+      autoComplete: field.autoComplete,
     };
   }, [formData, touched, submitAttempted, disabled, isSubmitting, getFieldError, handleFieldChange, handleFieldBlur]);
 
@@ -334,7 +335,7 @@ const AccessibleForm: React.FC<AccessibleFormProps> = ({
         '& .wcag-aa-target-size': {
           minHeight: 44,
           minWidth: 44,
-        }
+        },
       }}
       role="form"
       aria-labelledby={title ? titleId : undefined}
@@ -405,12 +406,12 @@ const AccessibleForm: React.FC<AccessibleFormProps> = ({
                       const element = document.getElementById(field?.id || '');
                       element?.focus();
                     }}
-                    sx={{ 
-                      textAlign: 'left', 
+                    sx={{
+                      textAlign: 'left',
                       justifyContent: 'flex-start',
                       textTransform: 'none',
                       p: 0,
-                      minWidth: 'auto'
+                      minWidth: 'auto',
                     }}
                   >
                     {field?.label}: {error.message}
@@ -461,9 +462,9 @@ const AccessibleForm: React.FC<AccessibleFormProps> = ({
                           {showPassword ? <VisibilityOff /> : <Visibility />}
                         </IconButton>
                       </InputAdornment>
-                    )
+                    ),
                   }),
-                  className: 'wcag-aa-target-size'
+                  className: 'wcag-aa-target-size',
                 }}
                 sx={{
                   '& .MuiInputBase-root': {
@@ -471,7 +472,7 @@ const AccessibleForm: React.FC<AccessibleFormProps> = ({
                   },
                   '& .MuiInputBase-input': {
                     fontSize: settings.fontSize === 'large' ? '1.2rem' : '1rem',
-                  }
+                  },
                 }}
               />
 
@@ -496,12 +497,12 @@ const AccessibleForm: React.FC<AccessibleFormProps> = ({
       </Box>
 
       {/* Form Butonları */}
-      <Box sx={{ 
-        display: 'flex', 
-        gap: 2, 
+      <Box sx={{
+        display: 'flex',
+        gap: 2,
         justifyContent: 'flex-end',
         mt: 4,
-        flexWrap: 'wrap'
+        flexWrap: 'wrap',
       }}>
         <Button
           type="button"
@@ -528,7 +529,7 @@ const AccessibleForm: React.FC<AccessibleFormProps> = ({
       {settings.keyboardNavigation && (
         <Box sx={{ mt: 3, p: 2, bgcolor: 'grey.50', borderRadius: 1 }}>
           <Typography variant="caption" color="textSecondary">
-            <strong>Klavye Kısayolları:</strong> Ctrl+Enter: Gönder | Esc: Sıfırla | 
+            <strong>Klavye Kısayolları:</strong> Ctrl+Enter: Gönder | Esc: Sıfırla |
             Tab: Sonraki alan | Shift+Tab: Önceki alan
           </Typography>
         </Box>

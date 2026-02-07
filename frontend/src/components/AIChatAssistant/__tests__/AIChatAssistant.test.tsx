@@ -3,12 +3,15 @@
  * Task 106: AI Chat - Session, Messaging, Image Upload Tests
  */
 
-import React from 'react';
+import * as React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { AIChatAssistant } from '../AIChatAssistant';
+import { vi, Mock } from 'vitest';
 
-global.fetch = vi.fn();
+// Mock fetch with vitest Mock type
+const fetchMock = vi.fn() as Mock;
+global.fetch = fetchMock;
 global.alert = vi.fn();
 
 const mockSessions = [
@@ -48,7 +51,7 @@ const mockMessages = [
 describe('AIChatAssistant - Rendering', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    (global.fetch as jest.Mock)
+    fetchMock
       .mockResolvedValueOnce({ ok: true, json: async () => mockSessions })
       .mockResolvedValueOnce({ ok: true, json: async () => mockMessages });
   });
@@ -85,7 +88,7 @@ describe('AIChatAssistant - Rendering', () => {
 describe('AIChatAssistant - Session Loading', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    (global.fetch as jest.Mock)
+    fetchMock
       .mockResolvedValueOnce({ ok: true, json: async () => mockSessions })
       .mockResolvedValueOnce({ ok: true, json: async () => mockMessages });
   });
@@ -116,7 +119,7 @@ describe('AIChatAssistant - Session Loading', () => {
   });
 
   it('hides session list when showSessionList is false', async () => {
-    (global.fetch as jest.Mock).mockResolvedValueOnce({ ok: true, json: async () => [] });
+    fetchMock.mockResolvedValueOnce({ ok: true, json: async () => [] });
     render(<AIChatAssistant userId="user-123" showSessionList={false} />);
     await waitFor(() => {
       expect(screen.queryByText('Matematik Çalışması')).not.toBeInTheDocument();
@@ -127,7 +130,7 @@ describe('AIChatAssistant - Session Loading', () => {
 describe('AIChatAssistant - Message Display', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    (global.fetch as jest.Mock)
+    fetchMock
       .mockResolvedValueOnce({ ok: true, json: async () => mockSessions })
       .mockResolvedValueOnce({ ok: true, json: async () => mockMessages });
   });
@@ -147,7 +150,7 @@ describe('AIChatAssistant - Message Display', () => {
   });
 
   it('shows loading state', async () => {
-    (global.fetch as jest.Mock)
+    fetchMock
       .mockResolvedValueOnce({ ok: true, json: async () => mockSessions })
       .mockImplementation(() => new Promise(() => {}));
 
@@ -161,7 +164,7 @@ describe('AIChatAssistant - Message Display', () => {
 describe('AIChatAssistant - New Session', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    (global.fetch as jest.Mock).mockResolvedValue({ ok: true, json: async () => [] });
+    fetchMock.mockResolvedValue({ ok: true, json: async () => [] });
   });
 
   it('shows new session button', async () => {
@@ -181,7 +184,7 @@ describe('AIChatAssistant - New Session', () => {
 
   it('creates new session', async () => {
     const newSession = { ...mockSessions[0], id: 'new-session', title: 'Yeni Sohbet' };
-    (global.fetch as jest.Mock)
+    fetchMock
       .mockResolvedValueOnce({ ok: true, json: async () => [] })
       .mockResolvedValueOnce({ ok: true, json: async () => newSession })
       .mockResolvedValueOnce({ ok: true, json: async () => [] });
@@ -203,7 +206,7 @@ describe('AIChatAssistant - New Session', () => {
   });
 
   it('validates session title', async () => {
-    (global.fetch as jest.Mock).mockResolvedValue({ ok: true, json: async () => [] });
+    fetchMock.mockResolvedValue({ ok: true, json: async () => [] });
 
     render(<AIChatAssistant userId="user-123" />);
     await waitFor(() => fireEvent.click(screen.getByText(/Yeni Sohbet/i)));
@@ -216,7 +219,7 @@ describe('AIChatAssistant - New Session', () => {
   });
 
   it('selects subject for new session', async () => {
-    (global.fetch as jest.Mock).mockResolvedValue({ ok: true, json: async () => [] });
+    fetchMock.mockResolvedValue({ ok: true, json: async () => [] });
 
     render(<AIChatAssistant userId="user-123" />);
     await waitFor(() => fireEvent.click(screen.getByText(/Yeni Sohbet/i)));
@@ -231,14 +234,14 @@ describe('AIChatAssistant - New Session', () => {
 describe('AIChatAssistant - Send Message', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    (global.fetch as jest.Mock)
+    fetchMock
       .mockResolvedValueOnce({ ok: true, json: async () => mockSessions })
       .mockResolvedValueOnce({ ok: true, json: async () => mockMessages });
   });
 
   it('sends message', async () => {
     const newMessage = { ...mockMessages[0], id: 'new-msg', content: 'Yeni mesaj' };
-    (global.fetch as jest.Mock)
+    fetchMock
       .mockResolvedValueOnce({ ok: true, json: async () => newMessage });
 
     render(<AIChatAssistant userId="user-123" />);
@@ -261,7 +264,7 @@ describe('AIChatAssistant - Send Message', () => {
   });
 
   it('clears input after send', async () => {
-    (global.fetch as jest.Mock).mockResolvedValue({ ok: true, json: async () => ({}) });
+    fetchMock.mockResolvedValue({ ok: true, json: async () => ({}) });
 
     render(<AIChatAssistant userId="user-123" />);
     await waitFor(() => {
@@ -278,7 +281,7 @@ describe('AIChatAssistant - Send Message', () => {
   });
 
   it('disables send during processing', async () => {
-    (global.fetch as jest.Mock).mockImplementation(() => new Promise(() => {}));
+    fetchMock.mockImplementation(() => new Promise(() => {}));
 
     render(<AIChatAssistant userId="user-123" />);
     await waitFor(() => {
@@ -296,7 +299,7 @@ describe('AIChatAssistant - Send Message', () => {
 describe('AIChatAssistant - Image Upload', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    (global.fetch as jest.Mock)
+    fetchMock
       .mockResolvedValueOnce({ ok: true, json: async () => mockSessions })
       .mockResolvedValueOnce({ ok: true, json: async () => mockMessages });
   });
@@ -353,7 +356,7 @@ describe('AIChatAssistant - Image Upload', () => {
       ocr_text: 'Test OCR'
     };
 
-    (global.fetch as jest.Mock).mockResolvedValueOnce({ ok: true, json: async () => mockImageData });
+    fetchMock.mockResolvedValueOnce({ ok: true, json: async () => mockImageData });
 
     render(<AIChatAssistant userId="user-123" />);
     await waitFor(() => {
@@ -385,7 +388,7 @@ describe('AIChatAssistant - Image Upload', () => {
       processing_status: 'completed'
     };
 
-    (global.fetch as jest.Mock).mockResolvedValueOnce({ ok: true, json: async () => mockImageData });
+    fetchMock.mockResolvedValueOnce({ ok: true, json: async () => mockImageData });
 
     render(<AIChatAssistant userId="user-123" />);
     await waitFor(() => {
@@ -403,7 +406,7 @@ describe('AIChatAssistant - Image Upload', () => {
 
 describe('AIChatAssistant - Error Handling', () => {
   it('handles session loading error', async () => {
-    (global.fetch as jest.Mock).mockRejectedValue(new Error('Network error'));
+    fetchMock.mockRejectedValue(new Error('Network error'));
 
     render(<AIChatAssistant userId="user-123" />);
 
@@ -413,7 +416,7 @@ describe('AIChatAssistant - Error Handling', () => {
   });
 
   it('handles message loading error', async () => {
-    (global.fetch as jest.Mock)
+    fetchMock
       .mockResolvedValueOnce({ ok: true, json: async () => mockSessions })
       .mockRejectedValueOnce(new Error('Failed to load messages'));
 
@@ -428,7 +431,7 @@ describe('AIChatAssistant - Error Handling', () => {
 describe('AIChatAssistant - Subject Selection', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    (global.fetch as jest.Mock).mockResolvedValue({ ok: true, json: async () => [] });
+    fetchMock.mockResolvedValue({ ok: true, json: async () => [] });
   });
 
   it('uses initial subject', () => {
@@ -452,7 +455,7 @@ describe('AIChatAssistant - Subject Selection', () => {
 describe('AIChatAssistant - Message Rating', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    (global.fetch as jest.Mock)
+    fetchMock
       .mockResolvedValueOnce({ ok: true, json: async () => mockSessions })
       .mockResolvedValueOnce({ ok: true, json: async () => mockMessages });
   });
@@ -466,7 +469,7 @@ describe('AIChatAssistant - Message Rating', () => {
   });
 
   it('rates message as helpful', async () => {
-    (global.fetch as jest.Mock).mockResolvedValue({ ok: true, json: async () => ({}) });
+    fetchMock.mockResolvedValue({ ok: true, json: async () => ({}) });
 
     render(<AIChatAssistant userId="user-123" />);
     await waitFor(() => {
@@ -489,7 +492,7 @@ describe('AIChatAssistant - Message Rating', () => {
 describe('AIChatAssistant - Auto Scroll', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    (global.fetch as jest.Mock)
+    fetchMock
       .mockResolvedValueOnce({ ok: true, json: async () => mockSessions })
       .mockResolvedValueOnce({ ok: true, json: async () => mockMessages });
   });

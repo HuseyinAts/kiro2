@@ -9,7 +9,8 @@
  * - Tema değişikliği yok (OSB modunda)
  */
 
-import React, { createContext, useContext, ReactNode } from 'react';
+import * as React from 'react';
+import {  createContext, useContext, ReactNode  } from 'react';
 import './ColorScheme.css';
 
 /**
@@ -22,7 +23,7 @@ export const OSB_COLOR_PALETTE = {
     main: '#0d6efd', // Mavi - her zaman aynı
     light: '#6ea8fe',
     dark: '#0a58ca',
-    contrast: '#ffffff'
+    contrast: '#ffffff',
   },
 
   // Secondary colors - İkincil renkler
@@ -30,7 +31,7 @@ export const OSB_COLOR_PALETTE = {
     main: '#6c757d', // Gri - her zaman aynı
     light: '#adb5bd',
     dark: '#495057',
-    contrast: '#ffffff'
+    contrast: '#ffffff',
   },
 
   // Success - Başarı rengi (her zaman yeşil)
@@ -38,7 +39,7 @@ export const OSB_COLOR_PALETTE = {
     main: '#198754',
     light: '#75b798',
     dark: '#146c43',
-    contrast: '#ffffff'
+    contrast: '#ffffff',
   },
 
   // Warning - Uyarı rengi (her zaman sarı)
@@ -46,7 +47,7 @@ export const OSB_COLOR_PALETTE = {
     main: '#ffc107',
     light: '#ffcd39',
     dark: '#cc9a06',
-    contrast: '#000000'
+    contrast: '#000000',
   },
 
   // Error - Hata rengi (her zaman kırmızı)
@@ -54,7 +55,7 @@ export const OSB_COLOR_PALETTE = {
     main: '#dc3545',
     light: '#e35d6a',
     dark: '#b02a37',
-    contrast: '#ffffff'
+    contrast: '#ffffff',
   },
 
   // Info - Bilgi rengi (her zaman açık mavi)
@@ -62,7 +63,7 @@ export const OSB_COLOR_PALETTE = {
     main: '#0dcaf0',
     light: '#3dd5f3',
     dark: '#087990',
-    contrast: '#000000'
+    contrast: '#000000',
   },
 
   // Neutral colors - Nötr renkler (ASLA DEĞİŞMEZ)
@@ -77,14 +78,14 @@ export const OSB_COLOR_PALETTE = {
     gray600: '#6c757d',
     gray700: '#495057',
     gray800: '#343a40',
-    gray900: '#212529'
+    gray900: '#212529',
   },
 
   // Background colors - Arka plan renkleri
   background: {
     default: '#f8f9fa',
     paper: '#ffffff',
-    elevated: '#ffffff'
+    elevated: '#ffffff',
   },
 
   // Text colors - Metin renkleri
@@ -92,15 +93,15 @@ export const OSB_COLOR_PALETTE = {
     primary: '#212529',
     secondary: '#6c757d',
     disabled: '#adb5bd',
-    hint: '#ced4da'
+    hint: '#ced4da',
   },
 
   // Border colors - Kenarlık renkleri
   border: {
     default: '#dee2e6',
     light: '#e9ecef',
-    dark: '#adb5bd'
-  }
+    dark: '#adb5bd',
+  },
 } as const;
 
 /**
@@ -130,7 +131,7 @@ export const COLOR_USAGE = {
   statusSuccess: OSB_COLOR_PALETTE.success.main,
   statusWarning: OSB_COLOR_PALETTE.warning.main,
   statusError: OSB_COLOR_PALETTE.error.main,
-  statusInfo: OSB_COLOR_PALETTE.info.main
+  statusInfo: OSB_COLOR_PALETTE.info.main,
 } as const;
 
 interface ColorSchemeContextValue {
@@ -142,7 +143,7 @@ interface ColorSchemeContextValue {
 const ColorSchemeContext = createContext<ColorSchemeContextValue>({
   palette: OSB_COLOR_PALETTE,
   usage: COLOR_USAGE,
-  osbMode: true
+  osbMode: true,
 });
 
 export const useColorScheme = () => useContext(ColorSchemeContext);
@@ -158,13 +159,13 @@ interface ColorSchemeProviderProps {
  */
 export const ColorSchemeProvider: React.FC<ColorSchemeProviderProps> = ({
   children,
-  osbMode = true
+  osbMode = true,
 }) => {
   // OSB modunda tema değişikliği devre dışı
   const value: ColorSchemeContextValue = {
     palette: OSB_COLOR_PALETTE,
     usage: COLOR_USAGE,
-    osbMode
+    osbMode,
   };
 
   return (
@@ -184,7 +185,7 @@ export const ColorSchemeProvider: React.FC<ColorSchemeProviderProps> = ({
           '--color-bg-paper': OSB_COLOR_PALETTE.background.paper,
           '--color-text-primary': OSB_COLOR_PALETTE.text.primary,
           '--color-text-secondary': OSB_COLOR_PALETTE.text.secondary,
-          '--color-border': OSB_COLOR_PALETTE.border.default
+          '--color-border': OSB_COLOR_PALETTE.border.default,
         } as React.CSSProperties}
       >
         {children}
@@ -206,7 +207,7 @@ interface ColorBoxProps {
 export const ColorBox: React.FC<ColorBoxProps> = ({
   variant,
   children,
-  className = ''
+  className = '',
 }) => {
   return (
     <div className={`color-box color-box--${variant} ${className}`}>

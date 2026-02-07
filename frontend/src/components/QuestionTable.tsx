@@ -12,7 +12,7 @@
  * - Proper Turkish language support
  */
 
-import React from 'react';
+import * as React from 'react';
 import './QuestionTable.css';
 
 interface VisualContent {
@@ -73,7 +73,7 @@ function parseMarkdownTable(markdown: string): { headers: string[]; rows: string
  */
 export const QuestionTable: React.FC<QuestionTableProps> = ({
   visualContent,
-  className = ''
+  className = '',
 }) => {
   if (!visualContent || visualContent.type !== 'table') {
     return null;

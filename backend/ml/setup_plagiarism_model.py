@@ -2,7 +2,6 @@
 BERT Plagiarism Model Setup
 Downloads and configures multilingual BERT model for Turkish question plagiarism detection
 """
-import os
 import numpy as np
 from typing import List, Dict
 import json
@@ -47,7 +46,7 @@ class PlagiarismModelSetup:
 
             self.model = SentenceTransformer(self.model_name)
 
-            print(f"✅ Model downloaded successfully!")
+            print("✅ Model downloaded successfully!")
             print(
                 f"   Model dimension: {self.model.get_sentence_embedding_dimension()}"
             )
@@ -202,7 +201,7 @@ class PlagiarismModelSetup:
             else "⚠️  SLOW (target: <100ms)",
         }
 
-        print(f"\n📊 Performance Results:")
+        print("\n📊 Performance Results:")
         for key, value in results.items():
             print(f"   {key}: {value}")
 

@@ -242,7 +242,7 @@ class AdvancedRateLimiter:
             try:
                 self.redis_client = redis.from_url(redis_url)
                 self.redis_client.ping()
-            except:
+            except (redis.ConnectionError, redis.TimeoutError, redis.RedisError):
                 self.redis_client = None
 
         # DDoS detector
@@ -419,7 +419,7 @@ class AdvancedRateLimiter:
                 # IP'nin geçerli olduğunu kontrol et
                 ipaddress.ip_address(ip)
                 return ip
-            except:
+            except ValueError:
                 pass
 
         # X-Real-IP header'ını kontrol et
@@ -428,7 +428,7 @@ class AdvancedRateLimiter:
             try:
                 ipaddress.ip_address(real_ip)
                 return real_ip
-            except:
+            except ValueError:
                 pass
 
         # Client IP'yi al
@@ -496,7 +496,8 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
                     token = auth_header.split(" ")[1]
                     payload = jwt_manager.verify_token(token)
                     user_id = payload.sub
-                except:
+                except (ValueError, AttributeError, IndexError, ImportError):
+                    # Token validation failed - continue without user_id
                     pass
 
             # Rate limit kontrolü

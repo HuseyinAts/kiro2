@@ -14,9 +14,8 @@ Technology:
 - Time-series forecasting
 """
 import numpy as np
-import pandas as pd
-from typing import Dict, List, Optional, Tuple
-from datetime import datetime, timedelta
+from typing import Dict, List, Optional
+from datetime import datetime
 from sklearn.ensemble import RandomForestRegressor, GradientBoostingRegressor
 from sklearn.model_selection import cross_val_score
 from sklearn.preprocessing import StandardScaler
@@ -461,6 +460,6 @@ def get_exam_score_predictor() -> ExamScorePredictor:
         # Try to load pre-trained model
         try:
             _predictor.load_model("models/exam_score_predictor.pkl")
-        except:
-            logger.warning("Pre-trained model not found. Model needs training.")
+        except (FileNotFoundError, OSError, ValueError) as e:
+            logger.warning(f"Pre-trained model not found. Model needs training. Error: {e}")
     return _predictor

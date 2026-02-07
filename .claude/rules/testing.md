@@ -71,7 +71,7 @@ it.skip('should do something');  // without reason
 | backend/api | 75% |
 | frontend/src/components | 70% |
 | frontend/src/services | 80% |
-| **Global** | **60%** |
+| **Global** | **80%** |
 
 ## TEST IZOLASYONU
 
@@ -335,4 +335,138 @@ python skip_failing_tests.py --dry-run  # Ne yapacagini goster
 python skip_failing_tests.py --only tests/slow/test_api_auth_comprehensive.py  # Tek dosya
 python -m pytest tests/slow/test_api_auth_comprehensive.py --co  # Collection test
 # Basarili? → Tum dosyalari calistir
+```
+
+### 13. Fix/Skip Oranini Takip Et (Session 6-19 Analizi)
+Her session sonunda fix/skip oranini hesapla. %50+ skip = teknik borc alarm.
+
+```python
+# Her session sonunda hesapla:
+fix_count = 6   # Gercekten duzeltilen test dosya sayisi
+skip_count = 19  # Module/class skip edilen dosya sayisi
+ratio = fix_count / (fix_count + skip_count)  # 0.24 = %24 fix
+
+# HEDEF: ratio >= 0.50 (en az %50 gercek fix)
+# ALARM: ratio < 0.30 (cok fazla skip, teknik borc birikiyor)
+```
+
+### 14. Tekrarlayan Sorunlari ROOT CAUSE'dan Coz (Session 6-19 Analizi)
+Ayni sorun 2+ session'da gorulurse PATCH yapma, root cause coz.
+Ornekler:
+- Health endpoint 503: Session 7, 12, 19'da 3 kez patch yapildi
+- SQLAlchemy import cakismasi: Session 11'de ders cikarildi, Session 19'da tekrarladi
+- httpx AsyncClient deprecated: Session 8, 12'de skip edildi
+
+```python
+# YANLIS - Her testte ayri patch
+def test_health(mock_checker):
+    mock_checker.return_value = {"status": "ok"}  # Patch
+
+# DOGRU - Root cause: Health check neden 503 donuyor?
+# conftest.py'de test ortami icin health check konfigurasyonu
+@pytest.fixture(autouse=True)
+def mock_health_dependencies(monkeypatch):
+    monkeypatch.setenv("REDIS_URL", "redis://localhost:6379")
+    # Health check icin gerekli tum bagimliliklar
+```
+
+### 15. Ogrenilen Dersleri ENFORCE Et (Session 6-19 Analizi)
+Ders cikarilmasi YETMEZ. 3 adim gerekli:
+1. testing.md'ye yaz (YAPILIYOR)
+2. Pre-commit hook veya lint rule ekle (YAPILMIYOR)
+3. CI/CD'de kontrol et (YAPILMIYOR)
+
+```bash
+# Ornek: SQLAlchemy absolute import yasagi
+# .pre-commit-config.yaml'a ekle:
+- repo: local
+  hooks:
+  - id: no-absolute-model-import
+    name: No absolute model imports
+    entry: 'from models\.'
+    language: pygrep
+    files: 'backend/models/.*\.py$'
+    # "from models.xxx" yerine "from .xxx" kullanilmali
+```
+
+### 16. Model/ORM Degisiklikleri En Yuksek Oncelik (Session 19)
+Model dosyalarindaki sorunlar (import, relationship, duplicate class)
+BINLERCE testi etkiler. Session 19'da 7 model fix ile 7973 test acildi.
+
+```
+# Test failure triage sirasi:
+1. ONCE: models/ dizinindeki sorunlari kontrol et
+   - Import cakismasi (absolute vs relative)
+   - Duplicate class tanimi
+   - Relationship path hatalari
+2. SONRA: Test dosyalarindaki sorunlari fix et
+3. EN SON: Test'i skip et (sadece external dependency yoksa)
+```
+
+### 17. Yeni Service/Agent Olusturdugunda Test ZORUNLU (Session 9)
+Session 9'da 5 agent + 1 service olusturuldu, HICBIRININ testi yok.
+
+```python
+# YANLIS - Service olusturduktan sonra baska ise gec
+class CognitiveLoadCalculator:
+    def calculate(self, ...): ...
+# "Test sonra yazilir" → ASLA yazilmaz
+
+# DOGRU - Ayni session'da en az 3 test
+def test_cognitive_load_happy_path():
+    calc = CognitiveLoadCalculator()
+    result = calc.calculate(valid_input)
+    assert result.score > 0
+
+def test_cognitive_load_edge_case():
+    ...
+
+def test_cognitive_load_error():
+    ...
+```
+
+### 18. Session Notu Standart Formati (Session 6-19 Analizi)
+Eksik/tutarsiz session notlari context kaybi yapar.
+
+```markdown
+## Session X (Tarih)
+**Giris:** [passed] passed, [skipped] skipped, [failed] failed
+**Cikis:** [passed] passed, [skipped] skipped, [failed] failed
+**Commit:** [hash]
+**Branch:** [branch]
+**Fix/Skip:** [X] fix, [Y] skip (oran: Z%)
+**Yapilan:** (tablo)
+**Tekrarlayan:** (varsa onceki session referansi)
+**Sonraki:** (1 cumle)
+```
+
+### 19. Toplu Script Dry-Run ZORUNLU (Session 17)
+10+ dosyayi etkileyen script icin dry-run + sample dogrulama zorunlu.
+Session 17'de 3 script 107 dosya bozdu cunku dry-run yapilmadi.
+
+```bash
+# YANLIS - Hemen calistir
+python fix_all_tests.py  # 107 dosya bozuldu!
+
+# DOGRU - 4 adimli guvenli islem
+python fix_all_tests.py --dry-run          # 1. Ne yapacagini goster
+python fix_all_tests.py --only file1.py    # 2. Tek dosyada dene
+pytest file1.py --co                        # 3. Collection dogrula
+python fix_all_tests.py                     # 4. Basariliysa tamamini calistir
+```
+
+### 20. httpx ASGITransport Toplu Migration (Session 8, 12)
+httpx 0.27+ icin AsyncClient(app=...) deprecated. 6+ dosya skip edildi.
+Tek tek skip yerine toplu migration yapilmali.
+
+```python
+# ESKI (deprecated, 6+ test dosyasinda skip sebebi)
+async with AsyncClient(app=app, base_url="http://test") as client:
+    response = await client.get("/api/health")
+
+# YENI (httpx 0.27+ uyumlu)
+from httpx import ASGITransport
+transport = ASGITransport(app=app)
+async with AsyncClient(transport=transport, base_url="http://test") as client:
+    response = await client.get("/api/health")
 ```

@@ -24,33 +24,33 @@ class BackgroundSyncService {
   private syncQueue: Array<() => Promise<void>> = [];
   private retryAttempts = new Map<string, number>();
   private maxRetries = 3;
-  
+
   constructor() {
     this.setupEventListeners();
     this.startPeriodicSync();
   }
-  
+
   /**
    * Event listener'ları kur
    */
   private setupEventListeners(): void {
     // Online/offline durumu değişikliklerini dinle
     window.addEventListener('online', () => {
-      console.log('İnternet bağlantısı geri geldi, senkronizasyon başlatılıyor...');
+      // Internet connection restored, starting sync
       this.performSync();
     });
-    
+
     window.addEventListener('offline', () => {
-      console.log('İnternet bağlantısı kesildi, çevrimdışı moda geçiliyor...');
+      // Internet connection lost, switching to offline mode
     });
-    
+
     // Sayfa kapatılmadan önce senkronize et
     window.addEventListener('beforeunload', () => {
       if (navigator.onLine && !this.syncInProgress) {
         this.performSync();
       }
     });
-    
+
     // Visibility API ile sayfa odağı değişikliklerini dinle
     document.addEventListener('visibilitychange', () => {
       if (!document.hidden && navigator.onLine && !this.syncInProgress) {
@@ -58,7 +58,7 @@ class BackgroundSyncService {
       }
     });
   }
-  
+
   /**
    * Periyodik senkronizasyon başlat
    */
@@ -70,47 +70,47 @@ class BackgroundSyncService {
       }
     }, 5 * 60 * 1000); // 5 dakika
   }
-  
+
   /**
    * Ana senkronizasyon fonksiyonu
    */
   async performSync(): Promise<SyncResult> {
     if (this.syncInProgress) {
-      console.log('Senkronizasyon zaten devam ediyor...');
+      // Sync already in progress
       return {
         success: false,
         syncedItems: 0,
         errors: ['Senkronizasyon zaten devam ediyor'],
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
       };
     }
-    
+
     if (!navigator.onLine) {
-      console.log('İnternet bağlantısı yok, senkronizasyon atlanıyor...');
+      // No internet connection, skipping sync
       return {
         success: false,
         syncedItems: 0,
         errors: ['İnternet bağlantısı yok'],
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
       };
     }
-    
+
     this.syncInProgress = true;
     const errors: string[] = [];
     let syncedItems = 0;
-    
+
     try {
-      console.log('Senkronizasyon başlatıldı...');
-      
+      // Sync started
+
       // Senkronize edilmemiş verileri al
       const unsyncedData = await offlineStorageService.getUnsyncedData();
-      
+
       // Sınav sonuçlarını senkronize et
       if (unsyncedData.examSessions.length > 0) {
         try {
           const syncedExamIds = await this.syncExamSessions(unsyncedData.examSessions);
           syncedItems += syncedExamIds.length;
-          
+
           if (syncedExamIds.length > 0) {
             await offlineStorageService.markAsSynced('examSessions', syncedExamIds);
           }
@@ -118,13 +118,13 @@ class BackgroundSyncService {
           errors.push(`Sınav sonuçları senkronizasyon hatası: ${error}`);
         }
       }
-      
+
       // Çalışma notlarını senkronize et
       if (unsyncedData.studyNotes.length > 0) {
         try {
           const syncedNoteIds = await this.syncStudyNotes(unsyncedData.studyNotes);
           syncedItems += syncedNoteIds.length;
-          
+
           if (syncedNoteIds.length > 0) {
             await offlineStorageService.markAsSynced('studyNotes', syncedNoteIds);
           }
@@ -132,13 +132,13 @@ class BackgroundSyncService {
           errors.push(`Çalışma notları senkronizasyon hatası: ${error}`);
         }
       }
-      
+
       // İlerleme verilerini senkronize et
       if (unsyncedData.progress.length > 0) {
         try {
           const syncedProgressIds = await this.syncProgress(unsyncedData.progress);
           syncedItems += syncedProgressIds.length;
-          
+
           if (syncedProgressIds.length > 0) {
             await offlineStorageService.markAsSynced('progress', syncedProgressIds);
           }
@@ -146,47 +146,47 @@ class BackgroundSyncService {
           errors.push(`İlerleme verileri senkronizasyon hatası: ${error}`);
         }
       }
-      
-      console.log(`Senkronizasyon tamamlandı. ${syncedItems} öğe senkronize edildi.`);
-      
+
+      // Sync completed: syncedItems items synced
+
       // Başarılı senkronizasyon sonrası retry sayaçlarını sıfırla
       this.retryAttempts.clear();
-      
+
       return {
         success: errors.length === 0,
         syncedItems,
         errors,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
       };
-      
+
     } catch (error) {
       console.error('Senkronizasyon genel hatası:', error);
       errors.push(`Genel senkronizasyon hatası: ${error}`);
-      
+
       return {
         success: false,
         syncedItems,
         errors,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
       };
     } finally {
       this.syncInProgress = false;
     }
   }
-  
+
   /**
    * Sınav oturumlarını senkronize et
    */
   private async syncExamSessions(examSessions: any[]): Promise<string[]> {
     const syncedIds: string[] = [];
-    
+
     for (const session of examSessions) {
       try {
         const response = await fetch('/api/v1/sync/exam-sessions', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${this.getAuthToken()}`
+            'Authorization': `Bearer ${this.getAuthToken()}`,
           },
           body: JSON.stringify({
             sessionId: session.id,
@@ -195,49 +195,49 @@ class BackgroundSyncService {
             startTime: session.startTime,
             endTime: session.endTime,
             score: session.score,
-            completed: session.completed
-          })
+            completed: session.completed,
+          }),
         });
-        
+
         if (response.ok) {
           syncedIds.push(session.id);
-          console.log(`Sınav oturumu senkronize edildi: ${session.id}`);
+          // Exam session synced: session.id
         } else {
           throw new Error(`HTTP ${response.status}: ${response.statusText}`);
         }
       } catch (error) {
         console.error(`Sınav oturumu senkronizasyon hatası (${session.id}):`, error);
-        
+
         // Retry mekanizması
         const retryKey = `exam-${session.id}`;
         const attempts = this.retryAttempts.get(retryKey) || 0;
-        
+
         if (attempts < this.maxRetries) {
           this.retryAttempts.set(retryKey, attempts + 1);
           // Retry queue'ya ekle
-          this.addToRetryQueue(() => this.syncExamSessions([session]));
+          this.addToRetryQueue(async () => { await this.syncExamSessions([session]); });
         }
-        
+
         throw error;
       }
     }
-    
+
     return syncedIds;
   }
-  
+
   /**
    * Çalışma notlarını senkronize et
    */
   private async syncStudyNotes(studyNotes: any[]): Promise<string[]> {
     const syncedIds: string[] = [];
-    
+
     for (const note of studyNotes) {
       try {
         const response = await fetch('/api/v1/sync/study-notes', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${this.getAuthToken()}`
+            'Authorization': `Bearer ${this.getAuthToken()}`,
           },
           body: JSON.stringify({
             noteId: note.id,
@@ -245,48 +245,48 @@ class BackgroundSyncService {
             content: note.content,
             subject: note.subject,
             createdAt: note.createdAt,
-            updatedAt: note.updatedAt
-          })
+            updatedAt: note.updatedAt,
+          }),
         });
-        
+
         if (response.ok) {
           syncedIds.push(note.id);
-          console.log(`Çalışma notu senkronize edildi: ${note.id}`);
+          // Study note synced: note.id
         } else {
           throw new Error(`HTTP ${response.status}: ${response.statusText}`);
         }
       } catch (error) {
         console.error(`Çalışma notu senkronizasyon hatası (${note.id}):`, error);
-        
+
         // Retry mekanizması
         const retryKey = `note-${note.id}`;
         const attempts = this.retryAttempts.get(retryKey) || 0;
-        
+
         if (attempts < this.maxRetries) {
           this.retryAttempts.set(retryKey, attempts + 1);
-          this.addToRetryQueue(() => this.syncStudyNotes([note]));
+          this.addToRetryQueue(async () => { await this.syncStudyNotes([note]); });
         }
-        
+
         throw error;
       }
     }
-    
+
     return syncedIds;
   }
-  
+
   /**
    * İlerleme verilerini senkronize et
    */
   private async syncProgress(progressData: any[]): Promise<string[]> {
     const syncedIds: string[] = [];
-    
+
     for (const progress of progressData) {
       try {
         const response = await fetch('/api/v1/sync/progress', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${this.getAuthToken()}`
+            'Authorization': `Bearer ${this.getAuthToken()}`,
           },
           body: JSON.stringify({
             userId: progress.userId,
@@ -294,48 +294,48 @@ class BackgroundSyncService {
             totalQuestions: progress.totalQuestions,
             correctAnswers: progress.correctAnswers,
             studyTime: progress.studyTime,
-            lastActivity: progress.lastActivity
-          })
+            lastActivity: progress.lastActivity,
+          }),
         });
-        
+
         if (response.ok) {
           const progressId = `${progress.userId}-${progress.subject}`;
           syncedIds.push(progressId);
-          console.log(`İlerleme verisi senkronize edildi: ${progressId}`);
+          // Progress data synced: progressId
         } else {
           throw new Error(`HTTP ${response.status}: ${response.statusText}`);
         }
       } catch (error) {
-        console.error(`İlerleme verisi senkronizasyon hatası:`, error);
-        
+        console.error('İlerleme verisi senkronizasyon hatası:', error);
+
         // Retry mekanizması
         const retryKey = `progress-${progress.userId}-${progress.subject}`;
         const attempts = this.retryAttempts.get(retryKey) || 0;
-        
+
         if (attempts < this.maxRetries) {
           this.retryAttempts.set(retryKey, attempts + 1);
-          this.addToRetryQueue(() => this.syncProgress([progress]));
+          this.addToRetryQueue(async () => { await this.syncProgress([progress]); });
         }
-        
+
         throw error;
       }
     }
-    
+
     return syncedIds;
   }
-  
+
   /**
    * Retry queue'ya görev ekle
    */
   private addToRetryQueue(task: () => Promise<void>): void {
     this.syncQueue.push(task);
-    
+
     // 30 saniye sonra retry et
     setTimeout(() => {
       this.processRetryQueue();
     }, 30000);
   }
-  
+
   /**
    * Retry queue'yu işle
    */
@@ -343,7 +343,7 @@ class BackgroundSyncService {
     if (this.syncQueue.length === 0 || !navigator.onLine) {
       return;
     }
-    
+
     const task = this.syncQueue.shift();
     if (task) {
       try {
@@ -353,7 +353,7 @@ class BackgroundSyncService {
       }
     }
   }
-  
+
   /**
    * Auth token'ı al
    */
@@ -361,33 +361,33 @@ class BackgroundSyncService {
     // localStorage'dan token al
     return localStorage.getItem('auth-token') || '';
   }
-  
+
   /**
    * Senkronizasyon durumunu al
    */
   async getSyncStatus(): Promise<SyncStatus> {
     const unsyncedData = await offlineStorageService.getUnsyncedData();
-    const pendingItems = 
-      unsyncedData.examSessions.length + 
-      unsyncedData.studyNotes.length + 
+    const pendingItems =
+      unsyncedData.examSessions.length +
+      unsyncedData.studyNotes.length +
       unsyncedData.progress.length;
-    
+
     return {
       isOnline: navigator.onLine,
       lastSync: localStorage.getItem('last-sync-timestamp'),
       pendingItems,
-      syncInProgress: this.syncInProgress
+      syncInProgress: this.syncInProgress,
     };
   }
-  
+
   /**
    * Manuel senkronizasyon tetikle
    */
   async triggerManualSync(): Promise<SyncResult> {
-    console.log('Manuel senkronizasyon tetiklendi...');
+    // Manual sync triggered
     return await this.performSync();
   }
-  
+
   /**
    * Senkronizasyon ayarlarını güncelle
    */
@@ -396,13 +396,13 @@ class BackgroundSyncService {
     syncInterval?: number; // dakika cinsinden
   }): void {
     localStorage.setItem('sync-settings', JSON.stringify(settings));
-    
+
     // Interval'ı güncelle
     if (settings.syncInterval) {
       this.startPeriodicSync();
     }
   }
-  
+
   /**
    * Service Worker ile background sync kaydet
    */
@@ -411,13 +411,13 @@ class BackgroundSyncService {
       try {
         const registration = await navigator.serviceWorker.ready;
         await registration.sync.register(tag);
-        console.log(`Background sync kaydedildi: ${tag}`);
+        // Background sync registered: tag
       } catch (error) {
         console.error('Background sync kayıt hatası:', error);
       }
     }
   }
-  
+
   /**
    * Push notification için subscription al
    */
@@ -425,46 +425,47 @@ class BackgroundSyncService {
     if ('serviceWorker' in navigator && 'PushManager' in window) {
       try {
         const registration = await navigator.serviceWorker.ready;
-        
+
         const subscription = await registration.pushManager.subscribe({
           userVisibleOnly: true,
           applicationServerKey: this.urlBase64ToUint8Array(
-            process.env.REACT_APP_VAPID_PUBLIC_KEY || ''
-          )
+            import.meta.env.VITE_VAPID_PUBLIC_KEY || '',
+          ),
         });
-        
+
         // Subscription'ı sunucuya gönder
         await this.sendSubscriptionToServer(subscription);
-        
+
         return subscription;
       } catch (error) {
         console.error('Push notification subscription hatası:', error);
         return null;
       }
     }
-    
+
     return null;
   }
-  
+
   /**
    * VAPID key'i Uint8Array'e çevir
    */
-  private urlBase64ToUint8Array(base64String: string): Uint8Array {
+  private urlBase64ToUint8Array(base64String: string): Uint8Array<ArrayBuffer> {
     const padding = '='.repeat((4 - base64String.length % 4) % 4);
     const base64 = (base64String + padding)
       .replace(/-/g, '+')
       .replace(/_/g, '/');
-    
+
     const rawData = window.atob(base64);
-    const outputArray = new Uint8Array(rawData.length);
-    
+    const buffer = new ArrayBuffer(rawData.length);
+    const outputArray = new Uint8Array(buffer);
+
     for (let i = 0; i < rawData.length; ++i) {
       outputArray[i] = rawData.charCodeAt(i);
     }
-    
+
     return outputArray;
   }
-  
+
   /**
    * Subscription'ı sunucuya gönder
    */
@@ -474,9 +475,9 @@ class BackgroundSyncService {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${this.getAuthToken()}`
+          'Authorization': `Bearer ${this.getAuthToken()}`,
         },
-        body: JSON.stringify(subscription)
+        body: JSON.stringify(subscription),
       });
     } catch (error) {
       console.error('Subscription sunucuya gönderme hatası:', error);
@@ -487,5 +488,4 @@ class BackgroundSyncService {
 // Singleton instance
 export const backgroundSyncService = new BackgroundSyncService();
 
-// Export types
-export type { SyncResult, SyncStatus };
+// Note: SyncResult and SyncStatus are already exported via 'export interface' above

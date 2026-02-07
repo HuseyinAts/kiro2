@@ -2,10 +2,9 @@
 Knowledge Graph Service - Question Relationship & Taxonomy Management
 INNOVATION: Neo4j-based semantic relationships for adaptive learning
 """
-from typing import List, Dict, Optional, Set, Tuple
+from typing import List, Dict, Optional
 from dataclasses import dataclass
 import networkx as nx
-from collections import defaultdict
 
 
 @dataclass

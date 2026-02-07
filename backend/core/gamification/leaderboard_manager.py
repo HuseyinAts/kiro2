@@ -8,12 +8,11 @@ Redis tabanlı liderlik tablosu yönetim sistemi
 - Kullanıcı sıralaması ve yakın kullanıcılar
 - Otomatik periyodik sıfırlama
 """
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import List, Dict, Optional
 from uuid import UUID
 from sqlalchemy.orm import Session
 from redis import Redis
-import json
 
 from models.database import User
 from core.structured_logger import get_logger
@@ -46,11 +45,11 @@ class LeaderboardManager:
         if leaderboard_type == LeaderboardType.GLOBAL:
             return "leaderboard:global"
         elif leaderboard_type == LeaderboardType.WEEKLY:
-            week_num = datetime.utcnow().isocalendar()[1]
-            year = datetime.utcnow().year
+            week_num = datetime.now(timezone.utc).isocalendar()[1]
+            year = datetime.now(timezone.utc).year
             return f"leaderboard:weekly:{year}:w{week_num}"
         elif leaderboard_type == LeaderboardType.MONTHLY:
-            month = datetime.utcnow().strftime("%Y-%m")
+            month = datetime.now(timezone.utc).strftime("%Y-%m")
             return f"leaderboard:monthly:{month}"
         elif leaderboard_type == LeaderboardType.FRIENDS:
             return f"leaderboard:friends:{identifier}"
@@ -84,13 +83,13 @@ class LeaderboardManager:
             # Weekly ve monthly için TTL ayarla
             if leaderboard_type == LeaderboardType.WEEKLY:
                 # Haftanın sonuna kadar
-                now = datetime.utcnow()
+                now = datetime.now(timezone.utc)
                 days_until_sunday = (6 - now.weekday()) % 7
                 ttl = (days_until_sunday + 1) * 86400  # Saniye cinsinden
                 self.redis.expire(redis_key, ttl)
             elif leaderboard_type == LeaderboardType.MONTHLY:
                 # Ayın sonuna kadar
-                now = datetime.utcnow()
+                now = datetime.now(timezone.utc)
                 next_month = (now.replace(day=1) + timedelta(days=32)).replace(day=1)
                 ttl = int((next_month - now).total_seconds())
                 self.redis.expire(redis_key, ttl)

@@ -5,10 +5,10 @@ PHASE 2 Sprint 5: KVKK Compliance
 Endpoints for managing user consent (KVKK Article 7)
 """
 import uuid
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import List, Optional
 from fastapi import APIRouter, Depends, HTTPException, Request, status
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -57,8 +57,7 @@ class ConsentResponse(BaseModel):
     withdrawn_at: Optional[datetime] = None
     expires_at: Optional[datetime] = None
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class BulkConsentRequest(BaseModel):
@@ -136,7 +135,7 @@ async def give_consent(
             status=ConsentStatus.GIVEN,
             consent_text=consent_req.consent_text,
             privacy_policy_version=consent_req.privacy_policy_version,
-            given_at=datetime.utcnow(),
+            given_at=datetime.now(timezone.utc),
             ip_address=request.client.host if request.client else None,
             user_agent=request.headers.get("user-agent")
         )
@@ -216,7 +215,7 @@ async def give_bulk_consent(
                 status=ConsentStatus.GIVEN,
                 consent_text=consent_req.consent_text,
                 privacy_policy_version=consent_req.privacy_policy_version,
-                given_at=datetime.utcnow(),
+                given_at=datetime.now(timezone.utc),
                 ip_address=request.client.host if request.client else None,
                 user_agent=request.headers.get("user-agent")
             )
@@ -292,7 +291,7 @@ async def withdraw_consent(
             .where(KVKKConsent.id == consent.id)
             .values(
                 status=ConsentStatus.WITHDRAWN,
-                withdrawn_at=datetime.utcnow()
+                withdrawn_at=datetime.now(timezone.utc)
             )
         )
         await db.execute(stmt)
@@ -323,7 +322,7 @@ async def withdraw_consent(
             "success": True,
             "message": "Consent withdrawn successfully",
             "purpose": withdraw_req.purpose,
-            "withdrawn_at": datetime.utcnow()
+            "withdrawn_at": datetime.now(timezone.utc)
         }
 
     except HTTPException:

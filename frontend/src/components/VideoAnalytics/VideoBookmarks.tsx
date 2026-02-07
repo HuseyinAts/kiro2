@@ -4,7 +4,8 @@
  * Bookmark key moments in videos for quick navigation
  */
 
-import React, { useState, useEffect } from 'react';
+import * as React from 'react';
+import {  useState, useEffect  } from 'react';
 import './VideoBookmarks.css';
 
 export interface VideoBookmark {
@@ -37,7 +38,7 @@ export const VideoBookmarks: React.FC<VideoBookmarksProps> = ({
   videoSource,
   currentTimestamp = 0,
   onSeekToTimestamp,
-  includePublic = false
+  includePublic = false,
 }) => {
   const [bookmarks, setBookmarks] = useState<VideoBookmark[]>([]);
   const [loading, setLoading] = useState(true);
@@ -54,7 +55,7 @@ export const VideoBookmarks: React.FC<VideoBookmarksProps> = ({
     setLoading(true);
     try {
       const response = await fetch(
-        `${API_BASE}/bookmarks?user_id=${userId}&video_id=${videoId}&video_source=${videoSource}&include_public=${includePublic}`
+        `${API_BASE}/bookmarks?user_id=${userId}&video_id=${videoId}&video_source=${videoSource}&include_public=${includePublic}`,
       );
       const data = await response.json();
       setBookmarks(data.map((b: any) => ({
@@ -67,7 +68,7 @@ export const VideoBookmarks: React.FC<VideoBookmarksProps> = ({
         bookmarkType: b.bookmark_type,
         isPublic: b.is_public,
         shareCount: b.share_count,
-        createdAt: b.created_at
+        createdAt: b.created_at,
       })));
     } catch (error) {
       console.error('Failed to load bookmarks:', error);
@@ -77,7 +78,7 @@ export const VideoBookmarks: React.FC<VideoBookmarksProps> = ({
   };
 
   const createBookmark = async () => {
-    if (!newTitle.trim()) return;
+    if (!newTitle.trim()) {return;}
 
     try {
       await fetch(`${API_BASE}/bookmarks?user_id=${userId}`, {
@@ -90,8 +91,8 @@ export const VideoBookmarks: React.FC<VideoBookmarksProps> = ({
           title: newTitle,
           description: newDescription || null,
           bookmark_type: 'manual',
-          is_public: newIsPublic
-        })
+          is_public: newIsPublic,
+        }),
       });
 
       setNewTitle('');
@@ -105,7 +106,7 @@ export const VideoBookmarks: React.FC<VideoBookmarksProps> = ({
   };
 
   const deleteBookmark = async (bookmarkId: string) => {
-    if (!confirm('Bu yer imini silmek istediğinize emin misiniz?')) return;
+    if (!confirm('Bu yer imini silmek istediğinize emin misiniz?')) {return;}
 
     try {
       await fetch(`${API_BASE}/bookmarks/${bookmarkId}`, { method: 'DELETE' });
@@ -118,7 +119,7 @@ export const VideoBookmarks: React.FC<VideoBookmarksProps> = ({
   const shareBookmark = async (bookmarkId: string) => {
     try {
       await fetch(`${API_BASE}/bookmarks/${bookmarkId}/share`, {
-        method: 'POST'
+        method: 'POST',
       });
       await loadBookmarks();
     } catch (error) {

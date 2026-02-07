@@ -1,57 +1,89 @@
-INFO:core.database:PostgreSQL pool configured: size=200, overflow=50
-2025-11-05 17:53:31,355 INFO sqlalchemy.engine.Engine select pg_catalog.version()
-INFO:sqlalchemy.engine.Engine:select pg_catalog.version()
-2025-11-05 17:53:31,355 INFO sqlalchemy.engine.Engine [raw sql] ()
-INFO:sqlalchemy.engine.Engine:[raw sql] ()
-2025-11-05 17:53:31,362 INFO sqlalchemy.engine.Engine select current_schema()
-INFO:sqlalchemy.engine.Engine:select current_schema()
-2025-11-05 17:53:31,362 INFO sqlalchemy.engine.Engine [raw sql] ()
-INFO:sqlalchemy.engine.Engine:[raw sql] ()
-2025-11-05 17:53:31,368 INFO sqlalchemy.engine.Engine show standard_conforming_strings
-INFO:sqlalchemy.engine.Engine:show standard_conforming_strings
-2025-11-05 17:53:31,369 INFO sqlalchemy.engine.Engine [raw sql] ()
-INFO:sqlalchemy.engine.Engine:[raw sql] ()
-2025-11-05 17:53:31,374 INFO sqlalchemy.engine.Engine BEGIN (implicit)
-INFO:sqlalchemy.engine.Engine:BEGIN (implicit)
-2025-11-05 17:53:31,375 INFO sqlalchemy.engine.Engine SELECT 1
-INFO:sqlalchemy.engine.Engine:SELECT 1
-2025-11-05 17:53:31,375 INFO sqlalchemy.engine.Engine [generated in 0.00034s] ()
-INFO:sqlalchemy.engine.Engine:[generated in 0.00034s] ()
-INFO:core.database:Database connection test successful
-2025-11-05 17:53:31,380 INFO sqlalchemy.engine.Engine COMMIT
-INFO:sqlalchemy.engine.Engine:COMMIT
-INFO:core.database:Database connection initialized successfully
-2025-11-05 17:53:31,388 INFO sqlalchemy.engine.Engine BEGIN (implicit)
-INFO:sqlalchemy.engine.Engine:BEGIN (implicit)
-2025-11-05 17:53:31,388 INFO sqlalchemy.engine.Engine 
-            SELECT kod, konu, alt_konu, zorluk, LEFT(metin, 50) as soru_baslik
-            FROM sorular
-            WHERE kod LIKE 'PROD_%'
-            ORDER BY olusturma_tarihi DESC
-            LIMIT 5
-        
-INFO:sqlalchemy.engine.Engine:
-            SELECT kod, konu, alt_konu, zorluk, LEFT(metin, 50) as soru_baslik
-            FROM sorular
-            WHERE kod LIKE 'PROD_%'
-            ORDER BY olusturma_tarihi DESC
-            LIMIT 5
-        
-2025-11-05 17:53:31,388 INFO sqlalchemy.engine.Engine [generated in 0.00026s] ()
-INFO:sqlalchemy.engine.Engine:[generated in 0.00026s] ()
-DATABASE'DEN SON 5 PROD SORULARI:
---------------------------------------------------------------------------------
-PROD_TÜR_Q020        | zor   | Türkçe - Fiilimsiler           | Aþaðýdaki cümlelerin hangisinde isim-fiil, özne gö...
-PROD_TÜR_Q019        | orta  | Türkçe - Cümlede Anlam         | Aþaðýdaki parçada ana düþünce hangi seçenekte doðr...
-PROD_TÜR_Q018        | orta  | Türkçe - Sözcükte Anlam        | Aþaðýdaki cümlelerin hangisinde deyim yanlýþ kulla...
-PROD_BIY_Q017        | orta  | Biyoloji - Solunum             | Hücresel solunumda glikoliz, Krebs döngüsü ve elek...
-PROD_BIY_Q016        | zor   | Biyoloji - Fotosentez          | Fotosentezin ýþýk tepkimelerinde PS II (Fotosistem...
-2025-11-05 17:53:31,401 INFO sqlalchemy.engine.Engine SELECT COUNT(*) FROM sorular WHERE kod LIKE 'PROD_%'
-INFO:sqlalchemy.engine.Engine:SELECT COUNT(*) FROM sorular WHERE kod LIKE 'PROD_%'
-2025-11-05 17:53:31,401 INFO sqlalchemy.engine.Engine [generated in 0.00031s] ()
-INFO:sqlalchemy.engine.Engine:[generated in 0.00031s] ()
+ï»¿Warning: Some services not available for import
+python.exe : Traceback (most recent call last):
+At C:\Users\husey\AppData\Local\Temp\run_tests3.ps1:2 char:1
++ & ..\.venv\Scripts\python.exe -m pytest tests/ -q --tb=no 2>&1 | Out- ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (Traceback (most recent call last)::String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+  File "C:\Users\husey\kiro2\.venv\Lib\site-packages\_pytest\config\__init__.py", line 175, in main
+    ret: ExitCode | int = config.hook.pytest_cmdline_main(config=config)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\husey\kiro2\.venv\Lib\site-packages\pluggy\_hooks.py", line 512, in __call__
+    return self._hookexec(self.name, self._hookimpls.copy(), kwargs, firstresult)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\husey\kiro2\.venv\Lib\site-packages\pluggy\_manager.py", line 120, in _hookexec
+    return self._inner_hookexec(hook_name, methods, kwargs, firstresult)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\husey\kiro2\.venv\Lib\site-packages\pluggy\_callers.py", line 167, in _multicall
+    raise exception
+  File "C:\Users\husey\kiro2\.venv\Lib\site-packages\pluggy\_callers.py", line 121, in _multicall
+    res = hook_impl.function(*args)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\husey\kiro2\.venv\Lib\site-packages\_pytest\main.py", line 330, in pytest_cmdline_main
+    return wrap_session(config, _main)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\husey\kiro2\.venv\Lib\site-packages\_pytest\main.py", line 318, in wrap_session
+    config.hook.pytest_sessionfinish(
+  File "C:\Users\husey\kiro2\.venv\Lib\site-packages\pluggy\_hooks.py", line 512, in __call__
+    return self._hookexec(self.name, self._hookimpls.copy(), kwargs, firstresult)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\husey\kiro2\.venv\Lib\site-packages\pluggy\_manager.py", line 120, in _hookexec
+    return self._inner_hookexec(hook_name, methods, kwargs, firstresult)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\husey\kiro2\.venv\Lib\site-packages\pluggy\_callers.py", line 167, in _multicall
+    raise exception
+  File "C:\Users\husey\kiro2\.venv\Lib\site-packages\pluggy\_callers.py", line 139, in _multicall
+    teardown.throw(exception)
+  File "C:\Users\husey\kiro2\.venv\Lib\site-packages\_pytest\logging.py", line 868, in pytest_sessionfinish
+    return (yield)
+            ^^^^^
+  File "C:\Users\husey\kiro2\.venv\Lib\site-packages\pluggy\_callers.py", line 152, in _multicall
+    teardown.send(result)
+  File "C:\Users\husey\kiro2\.venv\Lib\site-packages\_pytest\terminal.py", line 894, in pytest_sessionfinish
+    self._tw.line("")
+  File "C:\Users\husey\kiro2\.venv\Lib\site-packages\_pytest\_io\terminalwriter.py", line 181, in line
+    self.write("\n")
+  File "C:\Users\husey\kiro2\.venv\Lib\site-packages\_pytest\_io\terminalwriter.py", line 165, in write
+    self._file.write(msg)
+ValueError: I/O operation on closed file.
 
-Toplam PROD sorularý: 20
-2025-11-05 17:53:31,406 INFO sqlalchemy.engine.Engine COMMIT
-INFO:sqlalchemy.engine.Engine:COMMIT
-INFO:core.database:Database connection closed
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "C:\Users\husey\kiro2\.venv\Lib\site-packages\pytest\__main__.py", line 9, in <module>
+    raise SystemExit(pytest.console_main())
+                     ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\husey\kiro2\.venv\Lib\site-packages\_pytest\config\__init__.py", line 201, in console_main
+    code = main()
+           ^^^^^^
+  File "C:\Users\husey\kiro2\.venv\Lib\site-packages\_pytest\config\__init__.py", line 181, in main
+    config._ensure_unconfigure()
+  File "C:\Users\husey\kiro2\.venv\Lib\site-packages\_pytest\config\__init__.py", line 1123, in _ensure_unconfigure
+    self.hook.pytest_unconfigure(config=self)
+  File "C:\Users\husey\kiro2\.venv\Lib\site-packages\pluggy\_hooks.py", line 512, in __call__
+    return self._hookexec(self.name, self._hookimpls.copy(), kwargs, firstresult)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\husey\kiro2\.venv\Lib\site-packages\pluggy\_manager.py", line 120, in _hookexec
+    return self._inner_hookexec(hook_name, methods, kwargs, firstresult)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\husey\kiro2\.venv\Lib\site-packages\pluggy\_callers.py", line 167, in _multicall
+    raise exception
+  File "C:\Users\husey\kiro2\.venv\Lib\site-packages\pluggy\_callers.py", line 121, in _multicall
+    res = hook_impl.function(*args)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\husey\kiro2\.venv\Lib\site-packages\_pytest\terminal.py", line 936, in pytest_unconfigure
+    self._report_keyboardinterrupt()
+  File "C:\Users\husey\kiro2\.venv\Lib\site-packages\_pytest\terminal.py", line 943, in _report_keyboardinterrupt
+    self.write_sep("!", msg)
+  File "C:\Users\husey\kiro2\.venv\Lib\site-packages\_pytest\terminal.py", line 531, in write_sep
+    self._tw.sep(sep, title, fullwidth, **markup)
+  File "C:\Users\husey\kiro2\.venv\Lib\site-packages\_pytest\_io\terminalwriter.py", line 152, in sep
+    self.line(line, **markup)
+  File "C:\Users\husey\kiro2\.venv\Lib\site-packages\_pytest\_io\terminalwriter.py", line 180, in line
+    self.write(s, **markup)
+  File "C:\Users\husey\kiro2\.venv\Lib\site-packages\_pytest\_io\terminalwriter.py", line 165, in write
+    self._file.write(msg)
+ValueError: I/O operation on closed file.

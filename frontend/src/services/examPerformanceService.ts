@@ -1,7 +1,7 @@
 /**
  * Sınav Performans Analizi Servisi
  * Türkiye Üniversite Sınavları Hazırlık Platformu
- * 
+ *
  * Bu servis sınav performans analizi API'si ile iletişim kurar:
  * - Detaylı performans analizi
  * - Konu bazlı zayıflık tespiti
@@ -10,6 +10,12 @@
  */
 
 import { apiClient } from './apiClient';
+
+// Type-safe axios error handler
+function getAxiosErrorMessage(error: unknown, defaultMessage: string): string {
+  const axiosError = error as { response?: { data?: { detail?: string } }; message?: string };
+  return axiosError.response?.data?.detail || axiosError.message || defaultMessage;
+}
 
 // Type definitions
 export interface SubjectWeakness {
@@ -141,14 +147,14 @@ class ExamPerformanceService {
    */
   async getDetailedAnalysis(
     examSessionId: string,
-    includeComparisons: boolean = true
+    includeComparisons: boolean = true,
   ): Promise<DetailedPerformanceAnalysis> {
     try {
       const response = await apiClient.get(
         `${this.baseUrl}/${examSessionId}/detailed-analysis`,
         {
-          params: { include_comparisons: includeComparisons }
-        }
+          params: { include_comparisons: includeComparisons },
+        },
       );
 
       if (response.data.success) {
@@ -156,13 +162,9 @@ class ExamPerformanceService {
       } else {
         throw new Error(response.data.message || 'Performans analizi alınamadı');
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Detaylı performans analizi hatası:', error);
-      throw new Error(
-        error.response?.data?.detail || 
-        error.message || 
-        'Performans analizi sırasında bir hata oluştu'
-      );
+      throw new Error(getAxiosErrorMessage(error, 'Performans analizi sırasında bir hata oluştu'));
     }
   }
 
@@ -172,7 +174,7 @@ class ExamPerformanceService {
   async getSubjectWeaknesses(examSessionId: string): Promise<SubjectWeakness[]> {
     try {
       const response = await apiClient.get(
-        `${this.baseUrl}/${examSessionId}/weaknesses`
+        `${this.baseUrl}/${examSessionId}/weaknesses`,
       );
 
       if (response.data.success) {
@@ -180,13 +182,9 @@ class ExamPerformanceService {
       } else {
         throw new Error(response.data.message || 'Zayıflık analizi alınamadı');
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Zayıflık analizi hatası:', error);
-      throw new Error(
-        error.response?.data?.detail || 
-        error.message || 
-        'Zayıflık analizi sırasında bir hata oluştu'
-      );
+      throw new Error(getAxiosErrorMessage(error, 'Zayıflık analizi sırasında bir hata oluştu'));
     }
   }
 
@@ -196,7 +194,7 @@ class ExamPerformanceService {
   async getStudyRecommendations(examSessionId: string): Promise<StudyRecommendation[]> {
     try {
       const response = await apiClient.get(
-        `${this.baseUrl}/${examSessionId}/study-recommendations`
+        `${this.baseUrl}/${examSessionId}/study-recommendations`,
       );
 
       if (response.data.success) {
@@ -204,13 +202,9 @@ class ExamPerformanceService {
       } else {
         throw new Error(response.data.message || 'Çalışma önerileri alınamadı');
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Çalışma önerileri hatası:', error);
-      throw new Error(
-        error.response?.data?.detail || 
-        error.message || 
-        'Çalışma önerileri sırasında bir hata oluştu'
-      );
+      throw new Error(getAxiosErrorMessage(error, 'Çalışma önerileri sırasında bir hata oluştu'));
     }
   }
 
@@ -220,7 +214,7 @@ class ExamPerformanceService {
   async getPerformanceComparison(examSessionId: string): Promise<PerformanceComparison> {
     try {
       const response = await apiClient.get(
-        `${this.baseUrl}/${examSessionId}/performance-comparison`
+        `${this.baseUrl}/${examSessionId}/performance-comparison`,
       );
 
       if (response.data.success) {
@@ -228,13 +222,9 @@ class ExamPerformanceService {
       } else {
         throw new Error(response.data.message || 'Performans karşılaştırması alınamadı');
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Performans karşılaştırması hatası:', error);
-      throw new Error(
-        error.response?.data?.detail || 
-        error.message || 
-        'Performans karşılaştırması sırasında bir hata oluştu'
-      );
+      throw new Error(getAxiosErrorMessage(error, 'Performans karşılaştırması sırasında bir hata oluştu'));
     }
   }
 
@@ -243,14 +233,14 @@ class ExamPerformanceService {
    */
   async getImprovementTrends(
     studentId: string,
-    examType: 'TYT' | 'AYT' | 'YDT'
+    examType: 'TYT' | 'AYT' | 'YDT',
   ): Promise<ImprovementTrends> {
     try {
       const response = await apiClient.get(
         `${this.baseUrl}/student/${studentId}/improvement-trends`,
         {
-          params: { exam_type: examType }
-        }
+          params: { exam_type: examType },
+        },
       );
 
       if (response.data.success) {
@@ -258,13 +248,9 @@ class ExamPerformanceService {
       } else {
         throw new Error(response.data.message || 'Gelişim trendi alınamadı');
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Gelişim trendi hatası:', error);
-      throw new Error(
-        error.response?.data?.detail || 
-        error.message || 
-        'Gelişim trendi sırasında bir hata oluştu'
-      );
+      throw new Error(getAxiosErrorMessage(error, 'Gelişim trendi sırasında bir hata oluştu'));
     }
   }
 

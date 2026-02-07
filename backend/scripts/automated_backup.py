@@ -72,7 +72,7 @@ class DatabaseBackupManager:
     def __init__(
         self,
         db_host: str = "localhost",
-        db_port: int = 5432,
+        db_port: int = 5434,
         db_name: str = "kiro_education",
         db_user: str = "postgres",
         db_password: str = None,
@@ -165,7 +165,7 @@ class DatabaseBackupManager:
                 cmd, env=env, capture_output=True, text=True, check=True
             )
 
-            logger.info(f"pg_dump completed successfully")
+            logger.info("pg_dump completed successfully")
 
             # Compress if enabled
             if self.enable_compression:
@@ -265,7 +265,7 @@ class DatabaseBackupManager:
                 cmd, env=env, capture_output=True, text=True, check=True
             )
 
-            logger.info(f"pg_basebackup completed successfully")
+            logger.info("pg_basebackup completed successfully")
 
             # Calculate directory size
             total_size = sum(
@@ -372,7 +372,7 @@ class DatabaseBackupManager:
         result = subprocess.run(cmd, env=env, capture_output=True, text=True)
 
         if result.returncode == 0:
-            logger.info(f"Restore completed successfully")
+            logger.info("Restore completed successfully")
             return True
         else:
             logger.error(f"Restore failed: {result.stderr}")
@@ -385,11 +385,11 @@ class DatabaseBackupManager:
 
         logger.warning("Incremental restore requires manual intervention")
         logger.info(f"Backup location: {backup.file_path}")
-        logger.info(f"Instructions:")
-        logger.info(f"1. Stop PostgreSQL service")
-        logger.info(f"2. Remove old data directory")
-        logger.info(f"3. Extract backup to data directory")
-        logger.info(f"4. Start PostgreSQL service")
+        logger.info("Instructions:")
+        logger.info("1. Stop PostgreSQL service")
+        logger.info("2. Remove old data directory")
+        logger.info("3. Extract backup to data directory")
+        logger.info("4. Start PostgreSQL service")
 
         return False  # Manual process
 

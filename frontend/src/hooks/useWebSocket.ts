@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { ChatMessage } from '../services/chatService';
+
 import config from '../config';
+import { ChatMessage } from '../services/chatService';
 
 interface WebSocketMessage {
   type: 'message' | 'response' | 'error' | 'status' | 'typing';
@@ -22,13 +23,13 @@ interface UseWebSocketReturn {
 
 export const useWebSocket = (
   studentId: string,
-  sessionId?: string
+  sessionId?: string,
 ): UseWebSocketReturn => {
   const [isConnected, setIsConnected] = useState(false);
   const [connectionStatus, setConnectionStatus] = useState<'connecting' | 'connected' | 'disconnected' | 'error'>('disconnected');
   const [lastMessage, setLastMessage] = useState<ChatMessage | null>(null);
   const [error, setError] = useState<string | null>(null);
-  
+
   const wsRef = useRef<WebSocket | null>(null);
   const reconnectTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const reconnectAttemptsRef = useRef(0);
@@ -69,14 +70,14 @@ export const useWebSocket = (
           type: 'connect',
           student_id: studentId,
           session_id: sessionId,
-          timestamp: new Date().toISOString()
+          timestamp: new Date().toISOString(),
         }));
       };
 
       ws.onmessage = (event) => {
         try {
           const data: WebSocketMessage = JSON.parse(event.data);
-          
+
           switch (data.type) {
             case 'response':
               if (data.content && data.agent) {
@@ -85,26 +86,26 @@ export const useWebSocket = (
                   role: 'agent',
                   content: data.content,
                   agent: data.agent,
-                  timestamp: data.timestamp || new Date().toISOString()
+                  timestamp: data.timestamp || new Date().toISOString(),
                 };
                 setLastMessage(message);
               }
               break;
-              
+
             case 'error':
               console.error('WebSocket hatası:', data.content);
               setError(data.content || 'Bilinmeyen hata');
               break;
-              
+
             case 'status':
               console.log('WebSocket durum:', data.data);
               break;
-              
+
             case 'typing':
               // Handle typing indicator
               console.log('Agent yazıyor...');
               break;
-              
+
             default:
               console.log('Bilinmeyen WebSocket mesajı:', data);
           }
@@ -123,7 +124,7 @@ export const useWebSocket = (
         if (event.code !== 1000 && reconnectAttemptsRef.current < maxReconnectAttempts) {
           reconnectAttemptsRef.current++;
           console.log(`Yeniden bağlanma denemesi ${reconnectAttemptsRef.current}/${maxReconnectAttempts}`);
-          
+
           reconnectTimeoutRef.current = setTimeout(() => {
             connect();
           }, reconnectDelay * reconnectAttemptsRef.current);
@@ -175,7 +176,7 @@ export const useWebSocket = (
         message,
         student_id: studentId,
         session_id: sessionId,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
       };
 
       wsRef.current.send(JSON.stringify(messageData));
@@ -215,7 +216,7 @@ export const useWebSocket = (
     };
 
     document.addEventListener('visibilitychange', handleVisibilityChange);
-    
+
     return () => {
       document.removeEventListener('visibilitychange', handleVisibilityChange);
     };
@@ -248,6 +249,6 @@ export const useWebSocket = (
     sendMessage,
     lastMessage,
     error,
-    reconnect
+    reconnect,
   };
 };

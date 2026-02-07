@@ -3,7 +3,7 @@ Learning Path Database Models
 Teknofest 2025 - P0 Fix: Database Integration
 
 SQLAlchemy models for Learning Path system
-- Student profiles
+- Student profiles (CANONICAL MODEL)
 - Learning paths
 - Completion status
 - Quiz results
@@ -11,7 +11,7 @@ SQLAlchemy models for Learning Path system
 """
 
 from datetime import datetime
-from typing import List, Optional
+from typing import Any
 from sqlalchemy import (
     Column,
     String,
@@ -19,37 +19,68 @@ from sqlalchemy import (
     Float,
     Boolean,
     DateTime,
+    Date,
     Text,
     JSON,
     ForeignKey,
     Index,
     CheckConstraint,
-    Enum as SQLEnum,
 )
 from sqlalchemy.orm import relationship
-from sqlalchemy.ext.declarative import declarative_base
 
-from database.connection import Base
+from .base import Base
 
 # Learning Path Models
 
 
 class LearningPathStudentProfile(Base):
-    """Student profile for learning path (renamed to avoid conflict with models.database.StudentProfile)"""
+    """
+    CANONICAL student profile model for learning path system.
+
+    This is the primary model for student profiles. Other profile models
+    (StudentProfile, StudentLearningProfile) are deprecated and should
+    migrate to this model.
+
+    Attributes:
+        student_id: Unique identifier
+        user_id: Foreign key to users table
+        name: Student's full name
+        grade: Grade level (9-12 or mezun)
+        exam_target: Target exam (YKS-TYT, AYT-SAY, etc.)
+        learning_style: VARK learning style
+        knowledge_level: Current knowledge level
+        interests: List of subjects to study
+        goals: Learning goals
+        available_time: Daily study time in minutes
+        target_university: Target university name
+        target_department: Target department name
+        target_ranking: Target ranking (top_1000, top_5000, etc.)
+        weekly_study_commitment: Weekly study hours
+        exam_date: Target exam date
+        vark_visual_score: VARK visual score (0.0-1.0)
+        vark_auditory_score: VARK auditory score (0.0-1.0)
+        vark_reading_score: VARK reading/writing score (0.0-1.0)
+        vark_kinesthetic_score: VARK kinesthetic score (0.0-1.0)
+        overall_progress: Overall learning progress (0-100)
+        average_quiz_score: Average quiz score (0-100)
+        total_study_time_minutes: Total study time in minutes
+        last_activity_at: Last activity timestamp
+        created_at: Profile creation timestamp
+        updated_at: Last update timestamp
+    """
 
     __tablename__ = "learning_path_student_profiles"
-    __table_args__ = {"extend_existing": True}
 
     # Primary Key
     student_id = Column(String(100), primary_key=True, index=True)
     user_id = Column(
-        String(100), ForeignKey("users.kullanici_id"), nullable=True, index=True
+        String(100), ForeignKey("users.id"), nullable=True, index=True
     )
 
     # Profile Info
     name = Column(String(200), nullable=False)
-    grade = Column(String(20), nullable=False)  # "9", "10", "11", "12"
-    exam_target = Column(String(50), nullable=False)  # "LGS", "YKS"
+    grade = Column(String(20), nullable=False)  # "9", "10", "11", "12", "mezun"
+    exam_target = Column(String(50), nullable=False)  # "LGS", "YKS-TYT", "YKS-AYT-SAY", etc.
 
     # Learning Preferences
     learning_style = Column(
@@ -61,6 +92,31 @@ class LearningPathStudentProfile(Base):
     interests = Column(JSON, nullable=False, default=list)  # List[str]
     goals = Column(JSON, nullable=False, default=list)  # List[str]
     available_time = Column(Integer, nullable=False, default=60)  # Daily minutes
+
+    # Extended fields (from other models)
+    target_university = Column(String(200), nullable=True)
+    target_department = Column(String(200), nullable=True)
+    target_ranking = Column(String(50), nullable=True)  # top_1000, top_5000, etc.
+    weekly_study_commitment = Column(Integer, nullable=True)  # hours
+    exam_date = Column(Date, nullable=True)
+
+    # Learning style questionnaire results (from StudentLearningProfile)
+    vark_visual_score = Column(Float, nullable=True)  # 0.0-1.0
+    vark_auditory_score = Column(Float, nullable=True)  # 0.0-1.0
+    vark_reading_score = Column(Float, nullable=True)  # 0.0-1.0
+    vark_kinesthetic_score = Column(Float, nullable=True)  # 0.0-1.0
+
+    # Felder-Silverman dimensions (from StudentLearningProfile)
+    felder_active_reflective = Column(Float, nullable=True)  # -1.0 to +1.0
+    felder_sensing_intuitive = Column(Float, nullable=True)  # -1.0 to +1.0
+    felder_visual_verbal = Column(Float, nullable=True)  # -1.0 to +1.0
+    felder_sequential_global = Column(Float, nullable=True)  # -1.0 to +1.0
+
+    # Performance tracking
+    overall_progress = Column(Float, default=0.0)  # 0-100
+    average_quiz_score = Column(Float, nullable=True)  # 0-100
+    total_study_time_minutes = Column(Integer, default=0)
+    last_activity_at = Column(DateTime, nullable=True)
 
     # Metadata
     metadata_json = Column(JSON, nullable=False, default=dict)
@@ -83,12 +139,67 @@ class LearningPathStudentProfile(Base):
         "TopicProgress", back_populates="student", cascade="all, delete-orphan"
     )
 
-    # Indexes
+    # Table configuration
     __table_args__ = (
         Index("idx_student_grade", "grade"),
         Index("idx_student_exam_target", "exam_target"),
         Index("idx_student_learning_style", "learning_style"),
+        Index("idx_student_user_id", "user_id"),
+        Index("idx_student_last_activity", "last_activity_at"),
+        {"extend_existing": True},
     )
+
+    @classmethod
+    def from_legacy_profile(cls, legacy_profile: Any) -> "LearningPathStudentProfile":
+        """
+        Create from legacy StudentProfile or StudentLearningProfile.
+
+        Args:
+            legacy_profile: Legacy profile instance
+
+        Returns:
+            New LearningPathStudentProfile instance
+
+        Raises:
+            ValueError: If legacy profile type is unknown
+        """
+        # Handle StudentProfile (from user_models.py)
+        if hasattr(legacy_profile, 'user_id') and hasattr(legacy_profile, 'grade_level'):
+            return cls(
+                student_id=legacy_profile.id,
+                user_id=legacy_profile.user_id,
+                name=f"{legacy_profile.user.first_name} {legacy_profile.user.last_name}" if hasattr(legacy_profile, 'user') else "",
+                grade=str(legacy_profile.grade_level),
+                exam_target=legacy_profile.hedef_sinav or "YKS",
+                learning_style=legacy_profile.learning_style.value if legacy_profile.learning_style else "mixed",
+                available_time=legacy_profile.study_hours_per_day * 60 if legacy_profile.study_hours_per_day else 60,
+                target_university=legacy_profile.target_university,
+                target_department=legacy_profile.target_department,
+                total_study_time_minutes=legacy_profile.total_study_hours * 60 if legacy_profile.total_study_hours else 0,
+                created_at=legacy_profile.created_at,
+                updated_at=legacy_profile.updated_at,
+            )
+        # Handle StudentLearningProfile (from student_learning_profile.py)
+        elif hasattr(legacy_profile, 'vark_visual') and hasattr(legacy_profile, 'student_id'):
+            return cls(
+                student_id=legacy_profile.id,
+                user_id=legacy_profile.student_id,
+                name="",  # Will need to fetch from User
+                grade="12",  # Default
+                exam_target="YKS",  # Default
+                learning_style=legacy_profile.dominant_vark_style or "mixed",
+                vark_visual_score=legacy_profile.vark_visual,
+                vark_auditory_score=legacy_profile.vark_auditory,
+                vark_reading_score=legacy_profile.vark_reading,
+                vark_kinesthetic_score=legacy_profile.vark_kinesthetic,
+                felder_active_reflective=legacy_profile.felder_active_reflective,
+                felder_sensing_intuitive=legacy_profile.felder_sensing_intuitive,
+                felder_visual_verbal=legacy_profile.felder_visual_verbal,
+                felder_sequential_global=legacy_profile.felder_sequential_global,
+                created_at=legacy_profile.detected_at,
+                updated_at=legacy_profile.updated_at,
+            )
+        raise ValueError(f"Unknown legacy profile type: {type(legacy_profile)}")
 
 
 class LearningPath(Base):
@@ -262,6 +373,86 @@ class QuizSubmission(Base):
         Index("idx_quiz_student_quiz", "student_id", "quiz_id"),
         Index("idx_quiz_submitted_at", "submitted_at"),
         CheckConstraint("score >= 0 AND score <= 100", name="check_quiz_score_range"),
+    )
+
+
+class Quiz(Base):
+    """
+    Quiz model for storing quiz configurations.
+
+    Links to questions via QuizQuestion association table.
+    Enables real database-driven quiz grading instead of mock data.
+    """
+
+    __tablename__ = "quizzes"
+
+    # Primary Key
+    id = Column(String(100), primary_key=True)
+
+    # Quiz Info
+    title = Column(String(500), nullable=False)
+    description = Column(Text, nullable=True)
+    subject = Column(String(100), nullable=False, index=True)
+    topic = Column(String(200), nullable=True, index=True)
+
+    # Configuration
+    time_limit_minutes = Column(Integer, nullable=True)  # None = no limit
+    passing_score = Column(Float, nullable=False, default=70.0)
+    shuffle_questions = Column(Boolean, nullable=False, default=True)
+    show_answers_after = Column(Boolean, nullable=False, default=True)
+
+    # Status
+    is_active = Column(Boolean, nullable=False, default=True)
+    created_at = Column(DateTime, nullable=False, default=datetime.now)
+    updated_at = Column(
+        DateTime, nullable=False, default=datetime.now, onupdate=datetime.now
+    )
+
+    # Relationships
+    questions = relationship(
+        "QuizQuestion", back_populates="quiz", cascade="all, delete-orphan"
+    )
+
+    __table_args__ = (
+        Index("idx_quiz_subject_topic", "subject", "topic"),
+    )
+
+
+class QuizQuestion(Base):
+    """
+    Quiz-Question association with question-specific settings.
+
+    Links Quiz to Question (from questions table) with order and points.
+    """
+
+    __tablename__ = "quiz_questions"
+
+    # Primary Key
+    id = Column(Integer, primary_key=True, autoincrement=True)
+
+    # Foreign Keys
+    quiz_id = Column(
+        String(100),
+        ForeignKey("quizzes.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True
+    )
+    question_id = Column(
+        String,
+        ForeignKey("questions.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True
+    )
+
+    # Question Settings for this Quiz
+    order_number = Column(Integer, nullable=False)  # Question order in quiz
+    points = Column(Float, nullable=False, default=1.0)  # Points for this question
+
+    # Relationships
+    quiz = relationship("Quiz", back_populates="questions")
+
+    __table_args__ = (
+        Index("idx_quiz_question_order", "quiz_id", "order_number"),
     )
 
 

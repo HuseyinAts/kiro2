@@ -24,6 +24,7 @@ from typing import Any
 
 import jwt
 from passlib.context import CryptContext
+from sqlalchemy import or_
 
 # Import enhanced database patterns
 from .enhanced_database import enhanced_db_manager
@@ -34,6 +35,13 @@ from .error_monitoring import log_error
 from .exceptions import AuthorizationError, ErrorSeverity, ValidationError
 from .query_builder import QueryBuilder
 from .transaction_manager import managed_transaction
+
+# Import User model
+try:
+    from models.user import User
+except ImportError:
+    # Fallback if model is not available
+    User = None
 
 # Import response models
 
@@ -1425,3 +1433,9 @@ def verify_access_token(token: str) -> TokenPayload | None:
 
     auth_manager = get_authentication_manager()
     return auth_manager.token_manager.verify_token(token, TokenType.ACCESS)
+
+
+# Alias for backward compatibility - used by multiple API routers
+def get_enhanced_auth_manager() -> EnhancedAuthenticationManager:
+    """Alias for get_authentication_manager() - backward compatibility"""
+    return get_authentication_manager()

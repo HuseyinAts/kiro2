@@ -183,7 +183,7 @@ class ProductionSeeder:
 
                 # Şifreyi güvenli bir şekilde logla (sadece bir kez)
                 logger.info("[LOCKED_KEY] YENİ ADMIN KULLANICISI OLUŞTURULDU!")
-                logger.info(f"[EMAIL] Email: admin@turkiyesinav.com")
+                logger.info("[EMAIL] Email: admin@turkiyesinav.com")
                 logger.info(f"🔑 Şifre: {admin_password}")
                 logger.info(
                     "⚠️ Bu şifreyi güvenli bir yerde saklayın ve hemen değiştirin!"
@@ -289,7 +289,7 @@ class ProductionSeeder:
         logger.info(f"👑 Admin Kullanıcı: {admin_count}")
         logger.info(f"❓ Toplam Soru: {question_count}")
         logger.info(f"[GEAR] Sistem Konfigürasyonu: {config_count}")
-        logger.info(f"🌱 Bu Seeding'de Eklenen:")
+        logger.info("🌱 Bu Seeding'de Eklenen:")
         logger.info(
             f"   - Sistem Konfigürasyonu: {self.seeded_counts['system_configs']}"
         )

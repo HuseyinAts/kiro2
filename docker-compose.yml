@@ -4,33 +4,46 @@ services:
   # PostgreSQL Veritabanı
   postgres:
     image: postgres:15-alpine
-    container_name: turkiye_sinav_postgres
+    container_name: kiro2_postgres
     environment:
-      POSTGRES_DB: turkiye_sinav_db
-      POSTGRES_USER: postgres
-      # SECURITY FIX: Use environment variable for password (set in .env file)
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-changeme_strong_password_here}
+      POSTGRES_DB: ${DB_NAME:-kiro2}
+      POSTGRES_USER: ${DB_USER:-postgres}
+      # SECURITY FIX #3: No default password - must be set in .env
+      POSTGRES_PASSWORD: ${DB_PASSWORD:?DB_PASSWORD must be set in .env file}
       POSTGRES_INITDB_ARGS: "--encoding=UTF8 --locale=tr_TR.UTF-8"
     ports:
-      - "5432:5432"
+      - "5434:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./init-scripts:/docker-entrypoint-initdb.d
     networks:
-      - turkiye_sinav_network
+      - kiro2_network
     restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 2G
+        reservations:
+          cpus: '0.5'
+          memory: 512M
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   # Redis Cache
   redis:
     image: redis:7-alpine
-    container_name: turkiye_sinav_redis
+    container_name: kiro2_redis
     ports:
       - "6379:6379"
     volumes:
       - redis_data:/data
       - ./redis.conf:/usr/local/etc/redis/redis.conf:ro
     networks:
-      - turkiye_sinav_network
+      - kiro2_network
     restart: unless-stopped
     # PERSISTENCE FIX: Hybrid AOF + RDB with custom config
     command: redis-server /usr/local/etc/redis/redis.conf
@@ -39,46 +52,194 @@ services:
       interval: 10s
       timeout: 3s
       retries: 3
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 1G
+        reservations:
+          cpus: '0.25'
+          memory: 256M
+
+  # RabbitMQ - Message Broker for Microservices
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: kiro2_rabbitmq
+    ports:
+      - "5672:5672"    # AMQP protocol
+      - "15672:15672"  # Management UI
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER:-kiro2}
+      # SECURITY FIX #3: No default password - must be set in .env
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD:?RABBITMQ_PASSWORD must be set in .env file}
+      RABBITMQ_DEFAULT_VHOST: /
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+      - rabbitmq_logs:/var/log/rabbitmq
+    networks:
+      - kiro2_network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # ==========================================
+  # ELK STACK - Centralized Logging
+  # ==========================================
 
   # Elasticsearch
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:8.11.0
-    container_name: turkiye_sinav_elasticsearch
+    container_name: kiro2_elasticsearch
     environment:
       - discovery.type=single-node
-      - xpack.security.enabled=false
-      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      # SECURITY FIX: Enable security for production
+      - xpack.security.enabled=true
+      - xpack.security.enrollment.enabled=false
+      - ELASTIC_PASSWORD=${ELASTIC_PASSWORD:?ELASTIC_PASSWORD must be set in .env file}
+      # Increased heap size for production workloads (100K+ users)
+      - "ES_JAVA_OPTS=-Xms2g -Xmx2g"
       - bootstrap.memory_lock=true
+      - cluster.name=kiro2-logging
+      - node.name=kiro2-es-node
     ulimits:
       memlock:
         soft: -1
         hard: -1
+      nofile:
+        soft: 65536
+        hard: 65536
     ports:
       - "9200:9200"
       - "9300:9300"
     volumes:
       - elasticsearch_data:/usr/share/elasticsearch/data
     networks:
-      - turkiye_sinav_network
+      - kiro2_network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "curl -s http://localhost:9200/_cluster/health | grep -q '\"status\":\"green\"\\|\"status\":\"yellow\"'"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 4G
+        reservations:
+          cpus: '1'
+          memory: 2G
+
+  # Logstash - Log Processing Pipeline
+  logstash:
+    image: docker.elastic.co/logstash/logstash:8.11.0
+    container_name: kiro2_logstash
+    environment:
+      - "LS_JAVA_OPTS=-Xms256m -Xmx256m"
+      - ELASTICSEARCH_HOST=elasticsearch:9200
+    ports:
+      - "5044:5044"   # Beats input
+      - "5000:5000"   # TCP input
+      - "9600:9600"   # Monitoring API
+    volumes:
+      - ./deployment/logstash/pipeline:/usr/share/logstash/pipeline:ro
+      - ./deployment/logstash/config/logstash.yml:/usr/share/logstash/config/logstash.yml:ro
+      - logstash_data:/usr/share/logstash/data
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+    networks:
+      - kiro2_network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "curl -s http://localhost:9600/_node/stats | grep -q '\"status\":\"green\"'"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  # Kibana - Log Visualization
+  kibana:
+    image: docker.elastic.co/kibana/kibana:8.11.0
+    container_name: kiro2_kibana
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+      - SERVER_NAME=kiro2-kibana
+      - SERVER_HOST=0.0.0.0
+      - LOGGING_QUIET=true
+    ports:
+      - "5601:5601"
+    volumes:
+      - ./deployment/kibana/kibana.yml:/usr/share/kibana/config/kibana.yml:ro
+      - kibana_data:/usr/share/kibana/data
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+    networks:
+      - kiro2_network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "curl -s http://localhost:5601/api/status | grep -q '\"level\":\"available\"'"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  # Filebeat - Log Shipper
+  filebeat:
+    image: docker.elastic.co/beats/filebeat:8.11.0
+    container_name: kiro2_filebeat
+    user: root
+    command: filebeat -e -strict.perms=false
+    environment:
+      - ELASTICSEARCH_HOST=elasticsearch:9200
+      - LOGSTASH_HOST=logstash:5044
+    volumes:
+      - ./deployment/filebeat/filebeat.yml:/usr/share/filebeat/filebeat.yml:ro
+      - ./logs:/app/logs:ro
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - filebeat_data:/usr/share/filebeat/data
+    depends_on:
+      - logstash
+      - elasticsearch
+    networks:
+      - kiro2_network
     restart: unless-stopped
 
   # Zemberek NLP Service (Turkish Language Processing)
-  # NOTE: Zemberek Docker image not available publicly
-  # Alternative: Use zemberek-python library or run JAR manually
-  # See: https://github.com/ahmetaa/zemberek-nlp
-  # zemberek:
-  #   image: ahmetaa/zemberek-nlp-server:latest
-  #   container_name: turkiye_sinav_zemberek
-  #   ports:
-  #     - "8081:8080"
-  #   networks:
-  #     - turkiye_sinav_network
-  #   restart: unless-stopped
+  zemberek:
+    build:
+      context: ./zemberek
+      dockerfile: Dockerfile
+    container_name: kiro2_zemberek
+    ports:
+      - "8081:8081"
+    environment:
+      - JAVA_OPTS=-Xms256m -Xmx512m -XX:+UseG1GC
+    volumes:
+      - zemberek_cache:/app/cache
+    networks:
+      - kiro2_network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8081/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    deploy:
+      resources:
+        limits:
+          memory: 768M
+        reservations:
+          memory: 256M
 
   # Prometheus Monitoring
   prometheus:
     image: prom/prometheus:latest
-    container_name: turkiye_sinav_prometheus
+    container_name: kiro2_prometheus
     ports:
       - "9090:9090"
     volumes:
@@ -94,18 +255,18 @@ services:
       - '--web.enable-lifecycle'
       - '--web.enable-admin-api'
     networks:
-      - turkiye_sinav_network
+      - kiro2_network
     restart: unless-stopped
 
   # Grafana Dashboard
   grafana:
     image: grafana/grafana:latest
-    container_name: turkiye_sinav_grafana
+    container_name: kiro2_grafana
     ports:
       - "3001:3000"
     environment:
-      # SECURITY FIX: Use environment variable for Grafana password
-      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD:-changeme_grafana_password}
+      # SECURITY FIX #3: No default password - must be set in .env
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD:?GRAFANA_PASSWORD must be set in .env file}
       - GF_USERS_ALLOW_SIGN_UP=false
       - GF_INSTALL_PLUGINS=grafana-clock-panel,grafana-simple-json-datasource
     volumes:
@@ -115,13 +276,13 @@ services:
     depends_on:
       - prometheus
     networks:
-      - turkiye_sinav_network
+      - kiro2_network
     restart: unless-stopped
 
   # Node Exporter (System Metrics)
   node-exporter:
     image: prom/node-exporter:latest
-    container_name: turkiye_sinav_node_exporter
+    container_name: kiro2_node_exporter
     ports:
       - "9100:9100"
     volumes:
@@ -134,13 +295,13 @@ services:
       - '--path.sysfs=/host/sys'
       - '--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)'
     networks:
-      - turkiye_sinav_network
+      - kiro2_network
     restart: unless-stopped
 
   # cAdvisor (Container Metrics)
   cadvisor:
     image: gcr.io/cadvisor/cadvisor:latest
-    container_name: turkiye_sinav_cadvisor
+    container_name: kiro2_cadvisor
     ports:
       - "8080:8080"
     volumes:
@@ -153,34 +314,225 @@ services:
     devices:
       - /dev/kmsg
     networks:
-      - turkiye_sinav_network
+      - kiro2_network
     restart: unless-stopped
 
-  # Backend API
+  # ==========================================
+  # MICROSERVICES
+  # ==========================================
+
+  # Exam Service (Port 8001)
+  exam-service:
+    build:
+      context: ./services/exam-service
+      dockerfile: Dockerfile
+    container_name: kiro2_exam_service
+    ports:
+      - "8001:8001"
+    environment:
+      # SECURITY FIX #3: Use required env vars, no default passwords
+      - DATABASE_URL=postgresql+asyncpg://postgres:${DB_PASSWORD:?DB_PASSWORD required}@postgres:5432/${DB_NAME:-kiro2}
+      - RABBITMQ_URL=amqp://${RABBITMQ_USER:-kiro2}:${RABBITMQ_PASSWORD:?RABBITMQ_PASSWORD required}@rabbitmq:5672/
+      - REDIS_URL=redis://redis:6379/0
+      - SERVICE_NAME=exam-service
+    depends_on:
+      - postgres
+      - redis
+      - rabbitmq
+    networks:
+      - kiro2_network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Question Service (Port 8002)
+  question-service:
+    build:
+      context: ./services/question-service
+      dockerfile: Dockerfile
+    container_name: kiro2_question_service
+    ports:
+      - "8002:8002"
+    environment:
+      # SECURITY FIX #3: Use required env vars, no default passwords
+      - DATABASE_URL=postgresql+asyncpg://postgres:${DB_PASSWORD:?DB_PASSWORD required}@postgres:5432/${DB_NAME:-kiro2}
+      - RABBITMQ_URL=amqp://${RABBITMQ_USER:-kiro2}:${RABBITMQ_PASSWORD:?RABBITMQ_PASSWORD required}@rabbitmq:5672/
+      - REDIS_URL=redis://redis:6379/0
+      - SERVICE_NAME=question-service
+    depends_on:
+      - postgres
+      - redis
+      - rabbitmq
+    networks:
+      - kiro2_network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8002/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # IRT/CAT Service (Port 8003)
+  irt-service:
+    build:
+      context: ./services/irt-service
+      dockerfile: Dockerfile
+    container_name: kiro2_irt_service
+    ports:
+      - "8003:8003"
+    environment:
+      # SECURITY FIX #3: Use required env vars, no default passwords
+      - DATABASE_URL=postgresql+asyncpg://postgres:${DB_PASSWORD:?DB_PASSWORD required}@postgres:5432/${DB_NAME:-kiro2}
+      - RABBITMQ_URL=amqp://${RABBITMQ_USER:-kiro2}:${RABBITMQ_PASSWORD:?RABBITMQ_PASSWORD required}@rabbitmq:5672/
+      - REDIS_URL=redis://redis:6379/0
+      - SERVICE_NAME=irt-service
+    depends_on:
+      - postgres
+      - redis
+      - rabbitmq
+      - question-service
+    networks:
+      - kiro2_network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8003/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # AI Service (Port 8004)
+  ai-service:
+    build:
+      context: ./services/ai-service
+      dockerfile: Dockerfile
+    container_name: kiro2_ai_service
+    ports:
+      - "8004:8004"
+    environment:
+      # SECURITY FIX #3: Use required env vars, no default passwords
+      - DATABASE_URL=postgresql+asyncpg://postgres:${DB_PASSWORD:?DB_PASSWORD required}@postgres:5432/${DB_NAME:-kiro2}
+      - RABBITMQ_URL=amqp://${RABBITMQ_USER:-kiro2}:${RABBITMQ_PASSWORD:?RABBITMQ_PASSWORD required}@rabbitmq:5672/
+      - REDIS_URL=redis://redis:6379/0
+      - QWEN_API_URL=${QWEN_API_URL:-http://localhost:11434}
+      - QWEN_MODEL=${QWEN_MODEL:-qwen3:8b}
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-}
+      - SERVICE_NAME=ai-service
+    depends_on:
+      - postgres
+      - redis
+      - rabbitmq
+    networks:
+      - kiro2_network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8004/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Learning Path Service (Port 8005)
+  learning-path-service:
+    build:
+      context: ./services/learning-path-service
+      dockerfile: Dockerfile
+    container_name: kiro2_learning_path_service
+    ports:
+      - "8005:8005"
+    environment:
+      # SECURITY FIX #3: Use required env vars, no default passwords
+      - DATABASE_URL=postgresql+asyncpg://postgres:${DB_PASSWORD:?DB_PASSWORD required}@postgres:5432/${DB_NAME:-kiro2}
+      - RABBITMQ_URL=amqp://${RABBITMQ_USER:-kiro2}:${RABBITMQ_PASSWORD:?RABBITMQ_PASSWORD required}@rabbitmq:5672/
+      - REDIS_URL=redis://redis:6379/0
+      - SERVICE_NAME=learning-path-service
+    depends_on:
+      - postgres
+      - redis
+      - rabbitmq
+      - irt-service
+    networks:
+      - kiro2_network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8005/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # ==========================================
+  # MONOLITH (Gateway + Remaining Services)
+  # ==========================================
+
+  # Backend API (Monolith - Port 8000)
   backend:
     build:
       context: ./backend
       dockerfile: Dockerfile
-    container_name: turkiye_sinav_backend
+    container_name: kiro2_backend
     ports:
       - "8000:8000"
+    # Resource limits for production stability
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 2G
+        reservations:
+          cpus: '1'
+          memory: 1G
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
     environment:
-      - DATABASE_URL=postgresql+asyncpg://postgres:${POSTGRES_PASSWORD:-changeme_strong_password_here}@postgres:5432/turkiye_sinav_db
+      # SECURITY FIX #3: Use required env vars, no default passwords
+      - DATABASE_URL=postgresql+asyncpg://postgres:${DB_PASSWORD:?DB_PASSWORD required}@postgres:5432/${DB_NAME:-kiro2}
       - REDIS_URL=redis://redis:6379/0
       - ELASTICSEARCH_URL=http://elasticsearch:9200
       - PROMETHEUS_GATEWAY_URL=http://prometheus:9090
-      # SECURITY FIX: Use environment variables for secrets (set in .env file)
-      - SECRET_KEY=${SECRET_KEY}
-      - JWT_SECRET_KEY=${JWT_SECRET_KEY}
+      - RABBITMQ_HOST=rabbitmq
+      - RABBITMQ_PORT=5672
+      - RABBITMQ_USER=${RABBITMQ_USER:-kiro2}
+      - RABBITMQ_PASSWORD=${RABBITMQ_PASSWORD:?RABBITMQ_PASSWORD required}
+      # Microservice URLs
+      - EXAM_SERVICE_URL=http://exam-service:8001
+      - QUESTION_SERVICE_URL=http://question-service:8002
+      - IRT_SERVICE_URL=http://irt-service:8003
+      - AI_SERVICE_URL=http://ai-service:8004
+      - LEARNING_PATH_SERVICE_URL=http://learning-path-service:8005
+      # SECURITY FIX #3: Required secrets - must be set in .env file
+      - SECRET_KEY=${SECRET_KEY:?SECRET_KEY must be set in .env file}
+      - JWT_SECRET_KEY=${JWT_SECRET_KEY:?JWT_SECRET_KEY must be set in .env file}
       - DEBUG=false
       - ENVIRONMENT=production
+    # SECURITY FIX: Health check dependencies to ensure services are ready
     depends_on:
-      - postgres
-      - redis
-      - elasticsearch
-      - prometheus
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+      elasticsearch:
+        condition: service_healthy
+      prometheus:
+        condition: service_started
+      exam-service:
+        condition: service_healthy
+      question-service:
+        condition: service_healthy
+      irt-service:
+        condition: service_healthy
+      ai-service:
+        condition: service_healthy
+      learning-path-service:
+        condition: service_healthy
     networks:
-      - turkiye_sinav_network
+      - kiro2_network
     restart: unless-stopped
     volumes:
       - ./backend:/app
@@ -193,9 +545,24 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
-    container_name: turkiye_sinav_frontend
+    container_name: kiro2_frontend
     ports:
       - "3000:3000"
+    # Resource limits for frontend
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 1G
+        reservations:
+          cpus: '0.5'
+          memory: 512M
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
     environment:
       - VITE_API_BASE_URL=http://localhost:8000
       - VITE_API_URL=http://localhost:8000
@@ -204,7 +571,7 @@ services:
     depends_on:
       - backend
     networks:
-      - turkiye_sinav_network
+      - kiro2_network
     restart: unless-stopped
     volumes:
       - ./frontend:/app
@@ -215,13 +582,25 @@ volumes:
     driver: local
   redis_data:
     driver: local
+  rabbitmq_data:
+    driver: local
+  rabbitmq_logs:
+    driver: local
   elasticsearch_data:
+    driver: local
+  logstash_data:
+    driver: local
+  kibana_data:
+    driver: local
+  filebeat_data:
     driver: local
   prometheus_data:
     driver: local
   grafana_data:
     driver: local
+  zemberek_cache:
+    driver: local
 
 networks:
-  turkiye_sinav_network:
+  kiro2_network:
     driver: bridge

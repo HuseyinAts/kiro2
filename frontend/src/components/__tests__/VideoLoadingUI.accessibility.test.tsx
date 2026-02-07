@@ -7,7 +7,7 @@
  * @module VideoLoadingUI.accessibility.test
  */
 
-import React from 'react';
+import * as React from 'react';
 import { render } from '@testing-library/react';
 import { axe, toHaveNoViolations } from 'jest-axe';
 import { VideoLoadingUI } from '../VideoLoadingUI';
@@ -27,7 +27,7 @@ describe('VideoLoadingUI - WCAG 2.1 Level AA Accessibility', () => {
     requestId: '',
     loadingTime: 0,
     cacheHit: false,
-    errorMessage: null,
+    errorMessage: undefined,
     ...overrides,
   });
 

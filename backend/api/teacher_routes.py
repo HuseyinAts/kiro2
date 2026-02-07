@@ -4,20 +4,17 @@ Task 107: Teacher Pool API Routes
 API endpoints for teacher registration, profile, availability, and appointments.
 """
 
-from fastapi import APIRouter, Depends, HTTPException, Query, UploadFile, File
+from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 from pydantic import BaseModel, Field
 from typing import Optional, List
-from datetime import date, time, datetime
+from datetime import date, time
 from uuid import UUID
 
 from core.database import get_db
 from services.teacher_service import TeacherService
 from models.teacher_pool import (
-    TeacherStatus,
-    VerificationStatus,
     SubjectExpertise,
-    GradeLevel,
     CertificationType,
     DayOfWeek,
     TimeSlotStatus,

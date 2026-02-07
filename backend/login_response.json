@@ -1,0 +1,30 @@
+{
+  "access_token": "K241s7ZLrG0Ir0IEMmCWphmN37ByPhB2GYengAHTXeE",
+  "token_type": "bearer",
+  "expires_in": 86400,
+  "kullanici": {
+    "email": "test@kiro2.com",
+    "ad_soyad": "Test User",
+    "telefon": "",
+    "aktif": true,
+    "kullanici_id": "279f9548-eed0-4613-9e89-588d424f2d9e",
+    "rol": "STUDENT",
+    "olusturma_tarihi": "2025-11-18T20:46:36.966154Z",
+    "son_giris": "2025-11-18T23:30:48.761669"
+  },
+  "success": true,
+  "token": "K241s7ZLrG0Ir0IEMmCWphmN37ByPhB2GYengAHTXeE",
+  "refreshToken": "aSxIwdZCDoyP92j4HkBLq5kCX-nivvTxat2osKzfmbo",
+  "user": {
+    "id": "279f9548-eed0-4613-9e89-588d424f2d9e",
+    "email": "test@kiro2.com",
+    "ad": "Test",
+    "soyad": "User",
+    "rol": "ogrenci",
+    "aktif": true,
+    "olusturma_tarihi": "2025-11-18T20:46:36.966154+00:00",
+    "son_giris": "2025-11-18T23:30:48.761669",
+    "telefon": "",
+    "profil_resmi": null
+  }
+}

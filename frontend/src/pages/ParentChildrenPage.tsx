@@ -3,11 +3,12 @@
  * Glassmorphism ile çocuk yönetimi
  */
 
-import React from 'react'
-import { ModernParentChildrenPage } from './ModernParentChildrenPage'
+import * as React from 'react';
+
+import { ModernParentChildrenPage } from './ModernParentChildrenPage';
 
 export const ParentChildrenPage: React.FC = () => {
-  return <ModernParentChildrenPage />
-}
+  return <ModernParentChildrenPage />;
+};
 
-export default ParentChildrenPage
+export default ParentChildrenPage;

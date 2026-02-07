@@ -502,20 +502,11 @@ class UnifiedAuthManager:
                     ip_address=ip_address,
                 )
             else:
-                # Fallback: mock authentication for backward compatibility
-                logger.warning(
-                    "No database session provided for authentication, using mock data"
+                # SECURITY: Hardcoded test credentials removed
+                # Database session is required for authentication
+                logger.error(
+                    "No database session provided for authentication - cannot authenticate"
                 )
-                if username == "test" and password == "test123":
-                    self.record_login_attempt(username, ip_address, True)
-
-                    return AuthContext(
-                        user_id="test_user_id",
-                        username=username,
-                        roles={UserRole.STUDENT},
-                        authenticated=True,
-                        ip_address=ip_address,
-                    )
                 self.record_login_attempt(username, ip_address, False)
                 return None
 
@@ -673,6 +664,7 @@ def get_auth_manager() -> UnifiedAuthManager:
 
 # Backward compatibility aliases
 AuthenticationManager = UnifiedAuthManager
+get_auth_system = get_auth_manager
 EnhancedAuthManager = UnifiedAuthManager
 AuthMiddleware = UnifiedAuthManager
 AuthDependencies = UnifiedAuthManager

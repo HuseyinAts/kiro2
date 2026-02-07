@@ -9,7 +9,7 @@ Date: 2025-10-19
 import json
 from datetime import datetime, timedelta
 from pathlib import Path
-from typing import Dict, List, Optional, Any
+from typing import Dict, Optional, Any
 from collections import defaultdict
 import statistics
 

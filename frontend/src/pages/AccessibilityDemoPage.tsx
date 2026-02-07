@@ -1,28 +1,28 @@
 /**
  * Erişilebilirlik Demo Sayfası
- * 
+ *
  * Bu sayfa Task 24'ün tamamlandığını gösterir:
  * 1. AccessibleVideoPlayer - EBA içerikleri için Türkçe altyazılı video player
  * 2. AccessibleMathFormula - Screen reader uyumlu matematik formülleri
  * 3. WCAGValidator - Otomatik WCAG 2.1 Level AA validasyonu
  */
 
-import React, { useState } from 'react';
+import { CheckCircle } from '@mui/icons-material';
 import {
-  Container,
   Typography,
   Box,
   Paper,
   Grid,
   Divider,
-  Button,
   Alert,
 } from '@mui/material';
-import { WCAGCompliantLayout } from '../components/Common/WCAGCompliantLayout';
-import AccessibleVideoPlayer from '../components/Common/AccessibleVideoPlayer';
+import * as React from 'react';
+import {  useState  } from 'react';
+
 import AccessibleMathFormula from '../components/Common/AccessibleMathFormula';
+import AccessibleVideoPlayer from '../components/Common/AccessibleVideoPlayer';
+import { WCAGCompliantLayout } from '../components/Common/WCAGCompliantLayout';
 import WCAGValidator from '../components/Common/WCAGValidator';
-import { CheckCircle } from '@mui/icons-material';
 
 const AccessibilityDemoPage: React.FC = () => {
   const [validationIssues, setValidationIssues] = useState(0);
@@ -89,9 +89,9 @@ const AccessibilityDemoPage: React.FC = () => {
           <Typography variant="h4" component="h2" gutterBottom>
             1. Erişilebilir Video Player
           </Typography>
-          
+
           <Typography variant="body1" paragraph>
-            EBA TV içerikleri için Türkçe altyazı desteği, klavye kısayolları ve 
+            EBA TV içerikleri için Türkçe altyazı desteği, klavye kısayolları ve
             ekran okuyucu uyumluluğu ile tam erişilebilir video player.
           </Typography>
 
@@ -105,8 +105,6 @@ const AccessibilityDemoPage: React.FC = () => {
               width="100%"
               height={450}
               controls={true}
-              enableAudio={true}
-              enableCopy={true}
             />
           </Box>
 
@@ -131,9 +129,9 @@ const AccessibilityDemoPage: React.FC = () => {
           <Typography variant="h4" component="h2" gutterBottom>
             2. Erişilebilir Matematik Formülleri
           </Typography>
-          
+
           <Typography variant="body1" paragraph>
-            MathML desteği ile ekran okuyucu uyumlu matematik formülleri. 
+            MathML desteği ile ekran okuyucu uyumlu matematik formülleri.
             Sesli okuma, zoom ve kopyalama özellikleri ile tam erişilebilir.
           </Typography>
 
@@ -234,9 +232,9 @@ const AccessibilityDemoPage: React.FC = () => {
           <Typography variant="h4" component="h2" gutterBottom>
             3. WCAG 2.1 Level AA Otomatik Validator
           </Typography>
-          
+
           <Typography variant="body1" paragraph>
-            Sayfadaki erişilebilirlik sorunlarını otomatik olarak tespit eden validator. 
+            Sayfadaki erişilebilirlik sorunlarını otomatik olarak tespit eden validator.
             Sağ alt köşede bulunan validator panelini açarak detayları görebilirsiniz.
           </Typography>
 
@@ -257,7 +255,7 @@ const AccessibilityDemoPage: React.FC = () => {
 
           <Box sx={{ mt: 3, textAlign: 'center' }}>
             <Typography variant="body2" color="text.secondary">
-              Validator paneli sağ alt köşede görünmektedir. 
+              Validator paneli sağ alt köşede görünmektedir.
               {validationIssues > 0 ? (
                 <span style={{ color: 'red', fontWeight: 'bold' }}>
                   {' '}{validationIssues} sorun tespit edildi.
@@ -276,7 +274,7 @@ const AccessibilityDemoPage: React.FC = () => {
           <Typography variant="h5" gutterBottom>
             ✅ Task 24 Başarıyla Tamamlandı
           </Typography>
-          
+
           <Typography variant="body1" paragraph>
             WCAG 2.1 Level AA uyumlu erişilebilirlik özellikleri tam olarak implement edildi:
           </Typography>

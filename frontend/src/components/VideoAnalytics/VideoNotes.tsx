@@ -4,7 +4,8 @@
  * Timestamped note-taking during video playback
  */
 
-import React, { useState, useEffect } from 'react';
+import * as React from 'react';
+import {  useState, useEffect  } from 'react';
 import './VideoNotes.css';
 
 export interface VideoNote {
@@ -34,7 +35,7 @@ export const VideoNotes: React.FC<VideoNotesProps> = ({
   videoId,
   videoSource,
   currentTimestamp = 0,
-  onSeekToTimestamp
+  onSeekToTimestamp,
 }) => {
   const [notes, setNotes] = useState<VideoNote[]>([]);
   const [loading, setLoading] = useState(true);
@@ -53,7 +54,7 @@ export const VideoNotes: React.FC<VideoNotesProps> = ({
     setLoading(true);
     try {
       const response = await fetch(
-        `${API_BASE}/notes?user_id=${userId}&video_id=${videoId}&video_source=${videoSource}`
+        `${API_BASE}/notes?user_id=${userId}&video_id=${videoId}&video_source=${videoSource}`,
       );
       const data = await response.json();
       setNotes(data.map((n: any) => ({
@@ -65,7 +66,7 @@ export const VideoNotes: React.FC<VideoNotesProps> = ({
         tags: n.tags,
         videoCaption: n.video_caption,
         createdAt: n.created_at,
-        updatedAt: n.updated_at
+        updatedAt: n.updated_at,
       })));
     } catch (error) {
       console.error('Failed to load notes:', error);
@@ -75,7 +76,7 @@ export const VideoNotes: React.FC<VideoNotesProps> = ({
   };
 
   const createNote = async () => {
-    if (!newNoteContent.trim()) return;
+    if (!newNoteContent.trim()) {return;}
 
     try {
       const response = await fetch(`${API_BASE}/notes?user_id=${userId}`, {
@@ -87,8 +88,8 @@ export const VideoNotes: React.FC<VideoNotesProps> = ({
           content: newNoteContent,
           timestamp: currentTimestamp,
           is_important: false,
-          tags: []
-        })
+          tags: [],
+        }),
       });
 
       if (response.ok) {
@@ -101,13 +102,13 @@ export const VideoNotes: React.FC<VideoNotesProps> = ({
   };
 
   const updateNote = async (noteId: string) => {
-    if (!editContent.trim()) return;
+    if (!editContent.trim()) {return;}
 
     try {
       await fetch(`${API_BASE}/notes/${noteId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ content: editContent })
+        body: JSON.stringify({ content: editContent }),
       });
 
       setEditingNoteId(null);
@@ -119,7 +120,7 @@ export const VideoNotes: React.FC<VideoNotesProps> = ({
   };
 
   const deleteNote = async (noteId: string) => {
-    if (!confirm('Bu notu silmek istediğinize emin misiniz?')) return;
+    if (!confirm('Bu notu silmek istediğinize emin misiniz?')) {return;}
 
     try {
       await fetch(`${API_BASE}/notes/${noteId}`, { method: 'DELETE' });
@@ -134,7 +135,7 @@ export const VideoNotes: React.FC<VideoNotesProps> = ({
       await fetch(`${API_BASE}/notes/${note.id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ is_important: !note.isImportant })
+        body: JSON.stringify({ is_important: !note.isImportant }),
       });
       await loadNotes();
     } catch (error) {
@@ -149,7 +150,7 @@ export const VideoNotes: React.FC<VideoNotesProps> = ({
   };
 
   const filteredNotes = notes.filter(note => {
-    if (filterImportant && !note.isImportant) return false;
+    if (filterImportant && !note.isImportant) {return false;}
     if (searchQuery && !note.content.toLowerCase().includes(searchQuery.toLowerCase())) {
       return false;
     }
@@ -297,7 +298,7 @@ export const VideoNotes: React.FC<VideoNotesProps> = ({
 
               {note.videoCaption && (
                 <div className="video-caption">
-                  <small>Video: "{note.videoCaption}"</small>
+                  <small>Video: &quot;{note.videoCaption}&quot;</small>
                 </div>
               )}
 

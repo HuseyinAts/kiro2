@@ -10,7 +10,11 @@ from typing import Any, Dict, List, Optional
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException
 from pydantic import BaseModel, Field
 
-from core.berturk_service import berturk_service
+try:
+    from core.berturk_service import berturk_service
+except (ImportError, TypeError):
+    berturk_service = None
+
 from core.dependencies import get_current_user
 from models.database import User
 

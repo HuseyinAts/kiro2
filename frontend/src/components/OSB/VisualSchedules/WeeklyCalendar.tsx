@@ -2,7 +2,7 @@
  * Task 94.2: Weekly Calendar Component
  * Haftalık takvim görünümü - renk kodlu, tekrarlayan aktiviteler
  */
-import React from 'react';
+import * as React from 'react';
 import './WeeklyCalendar.css';
 
 export interface WeeklyEvent {
@@ -27,7 +27,7 @@ export const WeeklyCalendar: React.FC<WeeklyCalendarProps> = ({
   events,
   currentDay = new Date().getDay(),
   osbMode = true,
-  onEventClick
+  onEventClick,
 }) => {
   const days = ['Pazar', 'Pazartesi', 'Salı', 'Çarşamba', 'Perşembe', 'Cuma', 'Cumartesi'];
 

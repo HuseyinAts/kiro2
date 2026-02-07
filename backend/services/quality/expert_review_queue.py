@@ -9,7 +9,7 @@ Requirements: REQ-48.57 - REQ-48.60
 
 from typing import List, Dict, Optional
 from dataclasses import dataclass, field
-from datetime import datetime, timedelta
+from datetime import datetime
 from enum import Enum
 import uuid
 

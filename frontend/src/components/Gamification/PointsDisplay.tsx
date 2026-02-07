@@ -2,7 +2,9 @@
  * PointsDisplay Component - Task 91
  * Kullanıcı puan gösterimi ve geçmişi
  */
-import React, { useState } from 'react';
+import * as React from 'react';
+import {  useState  } from 'react';
+
 import { usePoints } from '../../hooks/useGamification';
 import './PointsDisplay.css';
 
@@ -13,7 +15,7 @@ interface PointsDisplayProps {
 
 export const PointsDisplay: React.FC<PointsDisplayProps> = ({
   showHistory = false,
-  compact = false
+  compact = false,
 }) => {
   const { points, loading, error, getHistory } = usePoints();
   const [history, setHistory] = useState<any[]>([]);
@@ -103,7 +105,7 @@ export const PointsDisplay: React.FC<PointsDisplayProps> = ({
                         day: 'numeric',
                         month: 'short',
                         hour: '2-digit',
-                        minute: '2-digit'
+                        minute: '2-digit',
                       })}
                     </span>
                   </div>

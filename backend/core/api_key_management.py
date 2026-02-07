@@ -10,7 +10,7 @@ Manages API keys for external integrations with:
 """
 import secrets
 import hashlib
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from enum import Enum
 from typing import Optional, List
 from sqlalchemy import Column, Integer, String, DateTime, Boolean, Text, JSON
@@ -161,7 +161,7 @@ class APIKeyManager:
         # Calculate expiration
         expires_at = None
         if expires_in_days:
-            expires_at = datetime.utcnow() + timedelta(days=expires_in_days)
+            expires_at = datetime.now(timezone.utc) + timedelta(days=expires_in_days)
 
         # Create API key record
         api_key = APIKey(
@@ -217,13 +217,13 @@ class APIKeyManager:
             return None
 
         # Check expiration
-        if api_key.expires_at and api_key.expires_at < datetime.utcnow():
+        if api_key.expires_at and api_key.expires_at < datetime.now(timezone.utc):
             api_key.status = APIKeyStatus.EXPIRED.value
             self.db.commit()
             return None
 
         # Update last used
-        api_key.last_used_at = datetime.utcnow()
+        api_key.last_used_at = datetime.now(timezone.utc)
         api_key.usage_count += 1
         self.db.commit()
 
@@ -256,7 +256,7 @@ class APIKeyManager:
             owner_id=old_key.owner_id,
             service_name=old_key.service_name,
             description=old_key.description,
-            expires_in_days=(old_key.expires_at - datetime.utcnow()).days
+            expires_in_days=(old_key.expires_at - datetime.now(timezone.utc)).days
             if old_key.expires_at
             else None,
             auto_rotate=old_key.auto_rotate,
@@ -346,7 +346,7 @@ class APIKeyManager:
         if not api_key:
             raise ValueError("API key not found")
 
-        days_active = (datetime.utcnow() - api_key.created_at).days
+        days_active = (datetime.now(timezone.utc) - api_key.created_at).days
         avg_daily_usage = api_key.usage_count / max(days_active, 1)
 
         return {
@@ -366,7 +366,7 @@ class APIKeyManager:
             return
 
         last_rotation = api_key.last_rotated_at or api_key.created_at
-        days_since_rotation = (datetime.utcnow() - last_rotation).days
+        days_since_rotation = (datetime.now(timezone.utc) - last_rotation).days
 
         if days_since_rotation >= api_key.rotation_interval_days:
             # Mark for rotation

@@ -1,4 +1,12 @@
-import React from 'react'
+import {
+  Security,
+  CheckCircle,
+  Cancel,
+  Person,
+  School,
+  People,
+  AdminPanelSettings,
+} from '@mui/icons-material';
 import {
   Container,
   Typography,
@@ -11,34 +19,20 @@ import {
   List,
   ListItem,
   ListItemText,
-  Divider
-} from '@mui/material'
-import {
-  Security,
-  CheckCircle,
-  Cancel,
-  Person,
-  School,
-  People,
-  AdminPanelSettings
-} from '@mui/icons-material'
-import { useAuthStore } from '@/store/authStore'
-import { useRoleAccess } from '../hooks/useRoleAccess.tsx'
-import { RoleBasedComponent, StudentOnly, TeacherOnly, ParentOnly, AdminOnly } from '../components/Common/RoleBasedComponent'
+} from '@mui/material';
+
+import { RoleBasedComponent, StudentOnly, TeacherOnly, ParentOnly, AdminOnly } from '../components/Common/RoleBasedComponent';
+import { useRoleAccess } from '../hooks/useRoleAccess.tsx';
+import { useAuthStore } from '@/store/authStore';
 
 export const RBACTestPage: React.FC = () => {
-  const {  user, hasRole, hasPermission, isAuthorized  } = useAuthStore()
-  const { 
-    hasAccess, 
-    canView, 
-    canEdit, 
-    canDelete, 
-    canCreate,
+  const { user, hasPermission } = useAuthStore();
+  const {
     isStudent,
     isTeacher,
     isParent,
-    isAdmin
-  } = useRoleAccess()
+    isAdmin,
+  } = useRoleAccess();
 
   const testPermissions = [
     { resource: 'dashboard', action: 'read' },
@@ -46,10 +40,8 @@ export const RBACTestPage: React.FC = () => {
     { resource: 'students', action: 'read' },
     { resource: 'admin', action: 'read' },
     { resource: 'content', action: 'update' },
-    { resource: 'users', action: 'delete' }
-  ]
-
-  const testRoles = ['ogrenci', 'ogretmen', 'veli', 'admin'] as const
+    { resource: 'users', action: 'delete' },
+  ];
 
   return (
     <Container maxWidth="lg" sx={{ mt: 2, mb: 4 }}>
@@ -72,28 +64,28 @@ export const RBACTestPage: React.FC = () => {
               <Typography variant="h6" gutterBottom>
                 Mevcut Kullanıcı Bilgileri
               </Typography>
-              
+
               {user ? (
                 <List>
                   <ListItem>
-                    <ListItemText 
-                      primary="Ad Soyad" 
-                      secondary={`${user.ad} ${user.soyad}`} 
+                    <ListItemText
+                      primary="Ad Soyad"
+                      secondary={`${user.ad} ${user.soyad}`}
                     />
                   </ListItem>
                   <ListItem>
-                    <ListItemText 
-                      primary="E-posta" 
-                      secondary={user.email} 
+                    <ListItemText
+                      primary="E-posta"
+                      secondary={user.email}
                     />
                   </ListItem>
                   <ListItem>
-                    <ListItemText 
-                      primary="Rol" 
+                    <ListItemText
+                      primary="Rol"
                       secondary={
-                        <Chip 
-                          label={user.rol} 
-                          color="primary" 
+                        <Chip
+                          label={user.rol}
+                          color="primary"
                           icon={
                             user.rol === 'ogrenci' ? <Person /> :
                             user.rol === 'ogretmen' ? <School /> :
@@ -101,19 +93,19 @@ export const RBACTestPage: React.FC = () => {
                             <AdminPanelSettings />
                           }
                         />
-                      } 
+                      }
                     />
                   </ListItem>
                   <ListItem>
-                    <ListItemText 
-                      primary="Hesap Durumu" 
+                    <ListItemText
+                      primary="Hesap Durumu"
                       secondary={
-                        <Chip 
-                          label={user.aktif ? 'Aktif' : 'Pasif'} 
+                        <Chip
+                          label={user.aktif ? 'Aktif' : 'Pasif'}
                           color={user.aktif ? 'success' : 'error'}
                           icon={user.aktif ? <CheckCircle /> : <Cancel />}
                         />
-                      } 
+                      }
                     />
                   </ListItem>
                 </List>
@@ -133,54 +125,54 @@ export const RBACTestPage: React.FC = () => {
               <Typography variant="h6" gutterBottom>
                 Rol Kontrolleri
               </Typography>
-              
+
               <List>
                 <ListItem>
-                  <ListItemText 
-                    primary="Öğrenci mi?" 
+                  <ListItemText
+                    primary="Öğrenci mi?"
                     secondary={
-                      <Chip 
-                        label={isStudent ? 'Evet' : 'Hayır'} 
+                      <Chip
+                        label={isStudent ? 'Evet' : 'Hayır'}
                         color={isStudent ? 'success' : 'default'}
                         icon={isStudent ? <CheckCircle /> : <Cancel />}
                       />
-                    } 
+                    }
                   />
                 </ListItem>
                 <ListItem>
-                  <ListItemText 
-                    primary="Öğretmen mi?" 
+                  <ListItemText
+                    primary="Öğretmen mi?"
                     secondary={
-                      <Chip 
-                        label={isTeacher ? 'Evet' : 'Hayır'} 
+                      <Chip
+                        label={isTeacher ? 'Evet' : 'Hayır'}
                         color={isTeacher ? 'success' : 'default'}
                         icon={isTeacher ? <CheckCircle /> : <Cancel />}
                       />
-                    } 
+                    }
                   />
                 </ListItem>
                 <ListItem>
-                  <ListItemText 
-                    primary="Veli mi?" 
+                  <ListItemText
+                    primary="Veli mi?"
                     secondary={
-                      <Chip 
-                        label={isParent ? 'Evet' : 'Hayır'} 
+                      <Chip
+                        label={isParent ? 'Evet' : 'Hayır'}
                         color={isParent ? 'success' : 'default'}
                         icon={isParent ? <CheckCircle /> : <Cancel />}
                       />
-                    } 
+                    }
                   />
                 </ListItem>
                 <ListItem>
-                  <ListItemText 
-                    primary="Admin mi?" 
+                  <ListItemText
+                    primary="Admin mi?"
                     secondary={
-                      <Chip 
-                        label={isAdmin ? 'Evet' : 'Hayır'} 
+                      <Chip
+                        label={isAdmin ? 'Evet' : 'Hayır'}
                         color={isAdmin ? 'success' : 'default'}
                         icon={isAdmin ? <CheckCircle /> : <Cancel />}
                       />
-                    } 
+                    }
                   />
                 </ListItem>
               </List>
@@ -195,7 +187,7 @@ export const RBACTestPage: React.FC = () => {
               <Typography variant="h6" gutterBottom>
                 İzin Kontrolleri
               </Typography>
-              
+
               <Grid container spacing={2}>
                 {testPermissions.map((permission, index) => (
                   <Grid item xs={12} sm={6} md={4} key={index}>
@@ -203,8 +195,8 @@ export const RBACTestPage: React.FC = () => {
                       <Typography variant="body2" gutterBottom>
                         <strong>{permission.resource}</strong> - {permission.action}
                       </Typography>
-                      <Chip 
-                        label={hasPermission(permission.resource, permission.action) ? 'İzinli' : 'İzinsiz'} 
+                      <Chip
+                        label={hasPermission(permission.resource, permission.action) ? 'İzinli' : 'İzinsiz'}
                         color={hasPermission(permission.resource, permission.action) ? 'success' : 'error'}
                         size="small"
                         icon={hasPermission(permission.resource, permission.action) ? <CheckCircle /> : <Cancel />}
@@ -224,7 +216,7 @@ export const RBACTestPage: React.FC = () => {
               <Typography variant="h6" gutterBottom>
                 Rol Bazlı Bileşen Testleri
               </Typography>
-              
+
               <Grid container spacing={2}>
                 <Grid item xs={12} sm={6} md={3}>
                   <StudentOnly fallback={<Alert severity="info">Öğrenci değilsiniz</Alert>}>
@@ -235,7 +227,7 @@ export const RBACTestPage: React.FC = () => {
                     </Alert>
                   </StudentOnly>
                 </Grid>
-                
+
                 <Grid item xs={12} sm={6} md={3}>
                   <TeacherOnly fallback={<Alert severity="info">Öğretmen değilsiniz</Alert>}>
                     <Alert severity="success">
@@ -245,7 +237,7 @@ export const RBACTestPage: React.FC = () => {
                     </Alert>
                   </TeacherOnly>
                 </Grid>
-                
+
                 <Grid item xs={12} sm={6} md={3}>
                   <ParentOnly fallback={<Alert severity="info">Veli değilsiniz</Alert>}>
                     <Alert severity="success">
@@ -255,7 +247,7 @@ export const RBACTestPage: React.FC = () => {
                     </Alert>
                   </ParentOnly>
                 </Grid>
-                
+
                 <Grid item xs={12} sm={6} md={3}>
                   <AdminOnly fallback={<Alert severity="info">Admin değilsiniz</Alert>}>
                     <Alert severity="success">
@@ -277,10 +269,10 @@ export const RBACTestPage: React.FC = () => {
               <Typography variant="h6" gutterBottom>
                 Özel İzin Testleri
               </Typography>
-              
+
               <Grid container spacing={2}>
                 <Grid item xs={12} sm={6} md={3}>
-                  <RoleBasedComponent 
+                  <RoleBasedComponent
                     requiredPermissions={[{ resource: 'exam', action: 'create' }]}
                     fallback={<Alert severity="warning">Sınav oluşturma izniniz yok</Alert>}
                   >
@@ -289,9 +281,9 @@ export const RBACTestPage: React.FC = () => {
                     </Alert>
                   </RoleBasedComponent>
                 </Grid>
-                
+
                 <Grid item xs={12} sm={6} md={3}>
-                  <RoleBasedComponent 
+                  <RoleBasedComponent
                     requiredPermissions={[{ resource: 'students', action: 'read' }]}
                     fallback={<Alert severity="warning">Öğrenci listesi görme izniniz yok</Alert>}
                   >
@@ -300,9 +292,9 @@ export const RBACTestPage: React.FC = () => {
                     </Alert>
                   </RoleBasedComponent>
                 </Grid>
-                
+
                 <Grid item xs={12} sm={6} md={3}>
-                  <RoleBasedComponent 
+                  <RoleBasedComponent
                     requiredPermissions={[{ resource: 'content', action: 'update' }]}
                     fallback={<Alert severity="warning">İçerik düzenleme izniniz yok</Alert>}
                   >
@@ -311,9 +303,9 @@ export const RBACTestPage: React.FC = () => {
                     </Alert>
                   </RoleBasedComponent>
                 </Grid>
-                
+
                 <Grid item xs={12} sm={6} md={3}>
-                  <RoleBasedComponent 
+                  <RoleBasedComponent
                     requiredPermissions={[{ resource: 'users', action: 'delete' }]}
                     fallback={<Alert severity="warning">Kullanıcı silme izniniz yok</Alert>}
                   >
@@ -328,7 +320,7 @@ export const RBACTestPage: React.FC = () => {
         </Grid>
       </Grid>
     </Container>
-  )
-}
+  );
+};
 
-export default RBACTestPage
+export default RBACTestPage;

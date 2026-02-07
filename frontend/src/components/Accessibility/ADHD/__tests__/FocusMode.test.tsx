@@ -5,17 +5,19 @@
  * Task: 89 Focus Mode
  */
 
-import React from 'react';
+import * as React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import FocusMode from '../FocusMode';
+import { vi, Mock } from 'vitest';
 
-// Mock fetch
-global.fetch = vi.fn();
+// Mock fetch with vitest Mock type
+const fetchMock = vi.fn() as Mock;
+global.fetch = fetchMock;
 
 // Mock localStorage
 const localStorageMock = {
-  getItem: jest.fn(() => 'mock-token'),
+  getItem: vi.fn(() => 'mock-token'),
   setItem: vi.fn(),
   removeItem: vi.fn(),
   clear: vi.fn(),
@@ -29,7 +31,7 @@ document.exitFullscreen = vi.fn();
 describe('FocusMode Component', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    (global.fetch as jest.Mock).mockClear();
+    fetchMock.mockClear();
   });
 
   describe('Setup View', () => {
@@ -50,7 +52,7 @@ describe('FocusMode Component', () => {
         subject: 'Matematik'
       };
 
-      (global.fetch as jest.Mock).mockResolvedValueOnce({
+      fetchMock.mockResolvedValueOnce({
         ok: true,
         json: async () => mockTask
       });
@@ -72,7 +74,7 @@ describe('FocusMode Component', () => {
     });
 
     it('should display loading state while fetching', () => {
-      (global.fetch as jest.Mock).mockImplementation(() => new Promise(() => {}));
+      fetchMock.mockImplementation(() => new Promise(() => {}));
 
       render(<FocusMode taskId="task1" />);
 
@@ -81,7 +83,7 @@ describe('FocusMode Component', () => {
     });
 
     it('should display error state on fetch failure', async () => {
-      (global.fetch as jest.Mock).mockRejectedValueOnce(new Error('Network error'));
+      fetchMock.mockRejectedValueOnce(new Error('Network error'));
 
       render(<FocusMode taskId="task1" />);
 
@@ -130,7 +132,7 @@ describe('FocusMode Component', () => {
         priority: 'medium'
       };
 
-      (global.fetch as jest.Mock)
+      fetchMock
         .mockResolvedValueOnce({
           ok: true,
           json: async () => mockTask
@@ -170,7 +172,7 @@ describe('FocusMode Component', () => {
         estimated_duration_minutes: 30
       };
 
-      (global.fetch as jest.Mock)
+      fetchMock
         .mockResolvedValueOnce({
           ok: true,
           json: async () => mockTask
@@ -204,7 +206,7 @@ describe('FocusMode Component', () => {
         estimated_duration_minutes: 30
       };
 
-      (global.fetch as jest.Mock)
+      fetchMock
         .mockResolvedValueOnce({
           ok: true,
           json: async () => mockTask
@@ -240,7 +242,7 @@ describe('FocusMode Component', () => {
         subject: 'Matematik'
       };
 
-      (global.fetch as jest.Mock)
+      fetchMock
         .mockResolvedValueOnce({
           ok: true,
           json: async () => mockTask
@@ -310,7 +312,7 @@ describe('FocusMode Component', () => {
         estimated_duration_minutes: 30
       };
 
-      (global.fetch as jest.Mock)
+      fetchMock
         .mockResolvedValueOnce({
           ok: true,
           json: async () => mockTask
@@ -362,7 +364,7 @@ describe('FocusMode Component', () => {
         estimated_duration_minutes: 30
       };
 
-      (global.fetch as jest.Mock)
+      fetchMock
         .mockResolvedValueOnce({
           ok: true,
           json: async () => mockTask
@@ -409,7 +411,7 @@ describe('FocusMode Component', () => {
         estimated_duration_minutes: 30
       };
 
-      (global.fetch as jest.Mock)
+      fetchMock
         .mockResolvedValueOnce({
           ok: true,
           json: async () => mockTask
@@ -460,7 +462,7 @@ describe('FocusMode Component', () => {
         estimated_duration_minutes: 30
       };
 
-      (global.fetch as jest.Mock)
+      fetchMock
         .mockResolvedValueOnce({
           ok: true,
           json: async () => mockTask
@@ -494,7 +496,7 @@ describe('FocusMode Component', () => {
         estimated_duration_minutes: 30
       };
 
-      (global.fetch as jest.Mock).mockResolvedValueOnce({
+      fetchMock.mockResolvedValueOnce({
         ok: true,
         json: async () => mockTask
       });

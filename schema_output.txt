@@ -1,0 +1,43 @@
+=== QUESTIONS TABLE COLUMNS ===
+  id: uuid
+  external_id: character varying
+  stem: text
+  stem_image_url: text
+  options: jsonb
+  correct_option: character
+  explanation: text
+  difficulty: numeric
+  discrimination: numeric
+  guessing: numeric
+  irt_calibrated: boolean
+  subject_id: uuid
+  topic_id: uuid
+  subtopic_id: uuid
+  source: character varying
+  year: smallint
+  tags: ARRAY
+  is_active: boolean
+  created_at: timestamp with time zone
+
+=== SAMPLE DATA ===
+  id: e79c5a77-9dc6-4428-9371-c6c6e0880d88
+  external_id: TEST-001
+  stem: 2 + 3 kactir?
+  stem_image_url: None
+  options: {"A": "3", "B": "4", "C": "5", "D": "6"}
+  correct_option: C
+  explanation: None
+  difficulty: 0.2000
+  discrimination: 1.0000
+  guessing: 0.250
+  irt_calibrated: False
+  subject_id: dda946bc-3b13-42d4-9a0f-935c4301d710
+  topic_id: None
+  subtopic_id: None
+  source: Test
+  year: None
+  tags: None
+  is_active: True
+  created_at: 2026-01-02 12:54:17.653807+00:00
+
+=== TOTAL QUESTIONS: 3 ===

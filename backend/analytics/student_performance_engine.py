@@ -1197,7 +1197,7 @@ if __name__ == "__main__":
 
         # Generate recommendations
         recommendations = await analyzer.generate_study_recommendations(profile)
-        print(f"\nStudy Recommendations:")
+        print("\nStudy Recommendations:")
         for rec in recommendations[:3]:
             print(f"- {rec['title_tr']}: {rec['description_tr']}")
 
@@ -1208,7 +1208,7 @@ if __name__ == "__main__":
         if "student_vs_peers" in peer_comparison:
             tyt_comparison = peer_comparison["student_vs_peers"].get("tyt", {})
             if tyt_comparison:
-                print(f"\nTYT vs National Average:")
+                print("\nTYT vs National Average:")
                 print(f"Student: {tyt_comparison['student_score']}")
                 print(f"National Avg: {tyt_comparison['peer_average']}")
                 print(f"Difference: {tyt_comparison['difference']:+.1f} points")

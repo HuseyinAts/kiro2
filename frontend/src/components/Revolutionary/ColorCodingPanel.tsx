@@ -3,7 +3,7 @@
  * Task 81.4: Renk kodlama (REQ-50.85-88)
  */
 
-import React, { useState, useEffect } from 'react';
+import { Save as SaveIcon, Palette as PaletteIcon } from '@mui/icons-material';
 import {
   Box,
   Button,
@@ -16,9 +16,10 @@ import {
   MenuItem,
   FormControl,
   InputLabel,
-  Chip
+  Chip,
 } from '@mui/material';
-import { Save as SaveIcon, Palette as PaletteIcon } from '@mui/icons-material';
+import * as React from 'react';
+import {  useState, useEffect  } from 'react';
 
 interface ColorScheme {
   id: string;
@@ -58,13 +59,13 @@ const ColorCodingPanel: React.FC = () => {
   const handleColorChange = (category: string, newColor: string) => {
     setCustomColors(prev => ({
       ...prev,
-      [category]: newColor
+      [category]: newColor,
     }));
   };
 
   // REQ-50.88: Save user preferences
   const handleSavePreferences = async () => {
-    if (!selectedScheme) return;
+    if (!selectedScheme) {return;}
 
     try {
       // Update color mappings
@@ -72,13 +73,13 @@ const ColorCodingPanel: React.FC = () => {
         await fetch(`/api/v1/visual-supports/color-schemes/${selectedScheme.id}/mapping`, {
           method: 'PATCH',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ category, new_color: color })
+          body: JSON.stringify({ category, new_color: color }),
         });
       }
 
       // Save preferences
       await fetch(`/api/v1/visual-supports/color-schemes/${selectedScheme.id}/save-preferences?user_id=user123`, {
-        method: 'POST'
+        method: 'POST',
       });
 
       alert('Renk tercihleri kaydedildi!');
@@ -140,7 +141,7 @@ const ColorCodingPanel: React.FC = () => {
                         height: 40,
                         bgcolor: color,
                         borderRadius: 1,
-                        border: '2px solid #e0e0e0'
+                        border: '2px solid #e0e0e0',
                       }}
                     />
                     <Box sx={{ flex: 1 }}>
@@ -184,7 +185,7 @@ const ColorCodingPanel: React.FC = () => {
                 sx={{
                   bgcolor: color,
                   color: '#fff',
-                  fontWeight: 'bold'
+                  fontWeight: 'bold',
                 }}
               />
             ))}

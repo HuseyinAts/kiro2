@@ -3,53 +3,47 @@
  * Sistem geneli analytics ve raporlama bileşeni
  */
 
-import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
-import { Button } from '../ui/button';
-import { Badge } from '../ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs';
-import { 
-  BarChart, 
-  Bar, 
-  XAxis, 
-  YAxis, 
-  CartesianGrid, 
-  Tooltip, 
-  ResponsiveContainer,
-  LineChart,
-  Line,
-  PieChart,
-  Pie,
-  Cell,
-  AreaChart,
-  Area
-} from 'recharts';
-import { 
-  Users, 
-  Activity, 
-  Server, 
+import {
+  Users,
+  Activity,
+  Server,
   Database,
-  Clock,
-  TrendingUp,
   AlertCircle,
   CheckCircle,
   Download,
   RefreshCw,
   Monitor,
   Zap,
-  Globe,
   BookOpen,
   Award,
-  Target
 } from 'lucide-react';
+import * as React from 'react';
+import {  useState, useEffect  } from 'react';
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  PieChart,
+  Pie,
+  Cell,
+} from 'recharts';
+
 import { analyticsService, AdminAnalytics, ExportRequest } from '../../services/analyticsService';
+import { Badge } from '../ui/badge';
+import { Button } from '../ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs';
 
 interface AdminSystemAnalyticsProps {
   className?: string;
 }
 
 const AdminSystemAnalytics: React.FC<AdminSystemAnalyticsProps> = ({
-  className = ''
+  className = '',
 }) => {
   const [analytics, setAnalytics] = useState<AdminAnalytics | null>(null);
   const [loading, setLoading] = useState(true);
@@ -97,8 +91,8 @@ const AdminSystemAnalytics: React.FC<AdminSystemAnalyticsProps> = ({
         data_type: 'admin',
         filters: {
           start_date: startDate,
-          end_date: endDate
-        }
+          end_date: endDate,
+        },
       };
 
       let response;
@@ -107,21 +101,21 @@ const AdminSystemAnalytics: React.FC<AdminSystemAnalyticsProps> = ({
         analyticsService.downloadExportFile(
           response.data.pdf_content!,
           response.data.filename,
-          'pdf'
+          'pdf',
         );
       } else if (format === 'excel') {
         response = await analyticsService.exportToExcel(exportRequest);
         analyticsService.downloadExportFile(
           response.data.excel_content!,
           response.data.filename,
-          'excel'
+          'excel',
         );
       } else {
         response = await analyticsService.exportToCsv(exportRequest);
         analyticsService.downloadExportFile(
           response.data.csv_content!,
           response.data.filename,
-          'csv'
+          'csv',
         );
       }
     } catch (err) {
@@ -133,52 +127,52 @@ const AdminSystemAnalytics: React.FC<AdminSystemAnalyticsProps> = ({
 
   // Kullanıcı türü dağılım verilerini hazırla
   const prepareUserTypeData = () => {
-    if (!analytics?.user_statistics?.user_types) return [];
+    if (!analytics?.user_statistics?.user_types) {return [];}
 
     return Object.entries(analytics.user_statistics.user_types).map(([type, count]) => ({
       type: type.charAt(0).toUpperCase() + type.slice(1),
       count,
-      percentage: Math.round((count / analytics.user_statistics.total_users) * 100)
+      percentage: Math.round((count / analytics.user_statistics.total_users) * 100),
     }));
   };
 
   // Sınav türü dağılım verilerini hazırla
   const prepareExamTypeData = () => {
-    if (!analytics?.exam_statistics?.exam_types) return [];
+    if (!analytics?.exam_statistics?.exam_types) {return [];}
 
     return Object.entries(analytics.exam_statistics.exam_types).map(([type, count]) => ({
       type,
       count,
-      average: analytics.exam_statistics.average_scores[type] || 0
+      average: analytics.exam_statistics.average_scores[type] || 0,
     }));
   };
 
   // İçerik kullanım verilerini hazırla
   const prepareContentUsageData = () => {
-    if (!analytics?.content_usage?.content_types) return [];
+    if (!analytics?.content_usage?.content_types) {return [];}
 
     return Object.entries(analytics.content_usage.content_types).map(([type, views]) => ({
       type: type.charAt(0).toUpperCase() + type.slice(1),
       views,
-      percentage: Math.round((views / analytics.content_usage.total_content_views) * 100)
+      percentage: Math.round((views / analytics.content_usage.total_content_views) * 100),
     }));
   };
 
   // Devrimsel özellik kullanım verilerini hazırla
   const prepareRevolutionaryFeaturesData = () => {
-    if (!analytics?.revolutionary_features) return [];
+    if (!analytics?.revolutionary_features) {return [];}
 
     return Object.entries(analytics.revolutionary_features).map(([feature, data]) => ({
       feature: feature.replace(/_/g, ' ').toUpperCase(),
       users: data.total_users,
       satisfaction: Math.round(data.user_satisfaction * 100),
-      effectiveness: data.effectiveness_score ? Math.round(data.effectiveness_score * 100) : null
+      effectiveness: data.effectiveness_score ? Math.round(data.effectiveness_score * 100) : null,
     }));
   };
 
   // Sistem sağlık durumu
   const getSystemHealthStatus = () => {
-    if (!analytics) return 'unknown';
+    if (!analytics) {return 'unknown';}
 
     const uptime = analytics.system_metrics.system_uptime_percentage;
     const responseTime = analytics.performance_metrics.api_metrics.average_response_time_ms;
@@ -246,11 +240,11 @@ const AdminSystemAnalytics: React.FC<AdminSystemAnalyticsProps> = ({
         <div>
           <h2 className="text-2xl font-bold text-gray-900">Sistem Analytics</h2>
           <p className="text-gray-600">
-            Dönem: {new Date(analytics.period.start_date).toLocaleDateString('tr-TR')} - 
+            Dönem: {new Date(analytics.period.start_date).toLocaleDateString('tr-TR')} -
             {new Date(analytics.period.end_date).toLocaleDateString('tr-TR')}
           </p>
         </div>
-        
+
         <div className="flex items-center space-x-2">
           {/* Tarih aralığı seçici */}
           <select
@@ -438,7 +432,7 @@ const AdminSystemAnalytics: React.FC<AdminSystemAnalyticsProps> = ({
                       fill="#8884d8"
                       dataKey="count"
                     >
-                      {userTypeData.map((entry, index) => (
+                      {userTypeData.map((_entry, index) => (
                         <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                       ))}
                     </Pie>
@@ -563,7 +557,7 @@ const AdminSystemAnalytics: React.FC<AdminSystemAnalyticsProps> = ({
                       <p className="text-sm text-gray-600">Churn Rate</p>
                     </div>
                   </div>
-                  
+
                   <ResponsiveContainer width="100%" height={200}>
                     <BarChart data={userTypeData}>
                       <CartesianGrid strokeDasharray="3 3" />

@@ -4,10 +4,10 @@ Task 106: AI Chat Assistant API Routes
 REST API for enhanced chat with image upload and OCR
 """
 
-from typing import List, Optional
+from typing import Optional
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form
+from fastapi import APIRouter, Depends, HTTPException, UploadFile, File
 from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -182,7 +182,6 @@ async def upload_image(
     db: AsyncSession = Depends(get_db),
 ):
     """Upload image for OCR processing"""
-    import os
     from pathlib import Path
 
     # Save file

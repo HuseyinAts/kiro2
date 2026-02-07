@@ -57,7 +57,7 @@ def check_coverage_diff():
     current_coverage = current_data["totals"]["percent_covered"]
     base_coverage = get_base_coverage()
 
-    print(f"\n📊 Coverage Comparison:")
+    print("\n📊 Coverage Comparison:")
     print(f"  Current: {current_coverage:.2f}%")
 
     if base_coverage is not None:

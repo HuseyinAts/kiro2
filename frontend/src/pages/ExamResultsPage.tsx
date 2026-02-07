@@ -3,11 +3,12 @@
  * Glassmorphism ile detaylı sınav sonuçları
  */
 
-import React from 'react'
-import { ModernExamResultsPage } from './ModernExamResultsPage'
+import * as React from 'react';
+
+import { ModernExamResultsPage } from './ModernExamResultsPage';
 
 export const ExamResultsPage: React.FC = () => {
-  return <ModernExamResultsPage />
-}
+  return <ModernExamResultsPage />;
+};
 
-export default ExamResultsPage
+export default ExamResultsPage;

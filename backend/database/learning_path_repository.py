@@ -15,9 +15,9 @@ import logging
 from datetime import datetime
 from typing import List, Optional, Dict, Any
 
-from sqlalchemy import select, update, delete, and_, or_, func
+from sqlalchemy import select, update, delete, and_
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.exc import IntegrityError, SQLAlchemyError
+from sqlalchemy.exc import IntegrityError
 
 from models.learning_path_models import (
     StudentProfile,
@@ -51,7 +51,7 @@ class LearningPathRepository:
         except IntegrityError as e:
             await session.rollback()
             logger.error(f"Duplicate student profile: {profile_data.get('student_id')}")
-            raise ValueError(f"Student profile already exists") from e
+            raise ValueError("Student profile already exists") from e
         except Exception as e:
             await session.rollback()
             logger.error(f"Error creating student profile: {e}")
@@ -127,8 +127,8 @@ class LearningPathRepository:
             return learning_path
         except IntegrityError as e:
             await session.rollback()
-            logger.error(f"Duplicate learning path or invalid student_id")
-            raise ValueError(f"Learning path creation failed") from e
+            logger.error("Duplicate learning path or invalid student_id")
+            raise ValueError("Learning path creation failed") from e
         except Exception as e:
             await session.rollback()
             logger.error(f"Error creating learning path: {e}")
@@ -290,16 +290,69 @@ class LearningPathRepository:
     async def batch_set_completions(
         self, session: AsyncSession, student_id: str, completions: Dict[str, bool]
     ) -> int:
-        """Batch set topic completions"""
-        try:
-            count = 0
-            for node_id, completed in completions.items():
-                await self.set_topic_completion(session, student_id, node_id, completed)
-                count += 1
+        """
+        Batch set topic completions
 
-            logger.info(f"Batch updated {count} completions for student {student_id}")
-            return count
+        PERFORMANCE FIX: Uses batch upsert instead of loop-based individual queries.
+        Previously: 1000 completions = 1000+ database roundtrips (N+1 problem)
+        Now: 1000 completions = 2 queries (fetch existing + batch upsert)
+        """
+        try:
+            if not completions:
+                return 0
+
+            now = datetime.now()
+            node_ids = list(completions.keys())
+
+            # Step 1: Fetch all existing completions in ONE query
+            result = await session.execute(
+                select(TopicCompletion).where(
+                    and_(
+                        TopicCompletion.student_id == student_id,
+                        TopicCompletion.node_id.in_(node_ids),
+                    )
+                )
+            )
+            existing = {tc.node_id: tc for tc in result.scalars().all()}
+
+            # Step 2: Separate updates and inserts
+            to_insert = []
+            updated_count = 0
+
+            for node_id, completed in completions.items():
+                if node_id in existing:
+                    # Update existing record in memory
+                    tc = existing[node_id]
+                    tc.completed = completed
+                    tc.completion_date = now if completed else None
+                    tc.updated_at = now
+                    updated_count += 1
+                else:
+                    # Prepare for batch insert
+                    to_insert.append(
+                        TopicCompletion(
+                            student_id=student_id,
+                            node_id=node_id,
+                            completed=completed,
+                            completion_date=now if completed else None,
+                        )
+                    )
+
+            # Step 3: Batch insert new records
+            if to_insert:
+                session.add_all(to_insert)
+
+            # Step 4: Single commit for all changes
+            await session.commit()
+
+            total_count = updated_count + len(to_insert)
+            logger.info(
+                f"Batch updated {total_count} completions for student {student_id} "
+                f"({updated_count} updates, {len(to_insert)} inserts)"
+            )
+            return total_count
         except Exception as e:
+            await session.rollback()
             logger.error(f"Error batch setting completions: {e}")
             raise
 
@@ -481,7 +534,7 @@ class LearningPathRepository:
                     video = FallbackVideo(**video_data)
                     session.add(video)
                     count += 1
-                except Exception as e:
+                except Exception:
                     logger.warning(
                         f"Skipping duplicate video: {video_data.get('video_id')}"
                     )

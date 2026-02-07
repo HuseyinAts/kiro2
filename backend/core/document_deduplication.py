@@ -169,12 +169,147 @@ class DocumentDeduplicator:
     def _find_embedding_duplicates(
         self, documents: List[Dict[str, Any]]
     ) -> List[DuplicateGroup]:
-        """Find semantic duplicates using embeddings"""
+        """
+        Find semantic duplicates using embedding similarity.
 
-        # This requires embeddings to be available
-        # For now, return empty list
-        logger.info("Embedding-based deduplication requires embedding service")
-        return []
+        Spec: REQ-5 Duplicate Detection
+        - threshold > 0.95 = duplicate
+        - 0.90-0.95 = near-duplicate (flagged)
+        - Paraphrase detection via semantic similarity
+        """
+        groups = []
+        processed: Set[int] = set()
+
+        # Try to get embeddings from documents or generate them
+        embeddings: List[Optional[np.ndarray]] = []
+        for doc in documents:
+            # Check if embedding is already in document
+            if "embedding" in doc:
+                emb = doc["embedding"]
+                if isinstance(emb, list):
+                    emb = np.array(emb)
+                embeddings.append(emb)
+            elif doc.get("id") and doc["id"] in self._embedding_cache:
+                embeddings.append(self._embedding_cache[doc["id"]])
+            else:
+                embeddings.append(None)
+
+        # Check if we have any embeddings to work with
+        valid_embeddings = [e for e in embeddings if e is not None]
+        if not valid_embeddings:
+            logger.info("No embeddings available for semantic deduplication")
+            return []
+
+        # Find duplicates using cosine similarity
+        for i, emb1 in enumerate(embeddings):
+            if i in processed or emb1 is None:
+                continue
+
+            content1 = documents[i].get("content") or documents[i].get("text", "")
+            duplicates = []
+            similarities = []
+
+            for j, emb2 in enumerate(embeddings[i + 1:], start=i + 1):
+                if j in processed or emb2 is None:
+                    continue
+
+                # Calculate cosine similarity
+                similarity = self._cosine_similarity(emb1, emb2)
+
+                if similarity >= self.embedding_threshold:
+                    # Exact semantic duplicate (>= 0.98)
+                    content2 = documents[j].get("content") or documents[j].get("text", "")
+                    duplicates.append(content2)
+                    similarities.append(similarity)
+                    processed.add(j)
+                elif similarity >= 0.90:
+                    # Near-duplicate - log but don't add to group
+                    content2 = documents[j].get("content") or documents[j].get("text", "")
+                    logger.info(
+                        f"Near-duplicate detected (similarity={similarity:.3f}): "
+                        f"'{content1[:50]}...' ~ '{content2[:50]}...'"
+                    )
+
+            if duplicates:
+                avg_similarity = sum(similarities) / len(similarities)
+                groups.append(
+                    DuplicateGroup(
+                        canonical=content1,
+                        duplicates=duplicates,
+                        similarity=avg_similarity,
+                        method="embedding_semantic",
+                    )
+                )
+                processed.add(i)
+
+        logger.info(f"Found {len(groups)} embedding-based duplicate groups")
+        return groups
+
+    def _cosine_similarity(self, vec1: np.ndarray, vec2: np.ndarray) -> float:
+        """Calculate cosine similarity between two vectors"""
+        if vec1 is None or vec2 is None:
+            return 0.0
+
+        # Normalize vectors
+        norm1 = np.linalg.norm(vec1)
+        norm2 = np.linalg.norm(vec2)
+
+        if norm1 == 0 or norm2 == 0:
+            return 0.0
+
+        return float(np.dot(vec1, vec2) / (norm1 * norm2))
+
+    def add_embedding(self, doc_id: str, embedding: np.ndarray) -> None:
+        """Add embedding to cache for a document"""
+        self._embedding_cache[doc_id] = embedding
+
+    def check_duplicate_by_embedding(
+        self,
+        embedding: np.ndarray,
+        threshold: Optional[float] = None,
+    ) -> Tuple[bool, Optional[str], float]:
+        """
+        Check if an embedding is duplicate against cached embeddings.
+
+        Args:
+            embedding: The embedding to check
+            threshold: Similarity threshold (default: self.embedding_threshold)
+
+        Returns:
+            (is_duplicate, matching_doc_id, similarity_score)
+        """
+        threshold = threshold or self.embedding_threshold
+
+        for doc_id, cached_emb in self._embedding_cache.items():
+            similarity = self._cosine_similarity(embedding, cached_emb)
+            if similarity >= threshold:
+                return True, doc_id, similarity
+
+        return False, None, 0.0
+
+    def merge_metadata(
+        self,
+        canonical_metadata: Dict[str, Any],
+        duplicate_metadata: Dict[str, Any],
+    ) -> Dict[str, Any]:
+        """
+        Merge metadata from duplicate document into canonical.
+
+        Spec: REQ-5.6 Metadata merge for duplicates
+        """
+        merged = canonical_metadata.copy()
+
+        for key, value in duplicate_metadata.items():
+            if key not in merged:
+                merged[key] = value
+            elif isinstance(merged[key], list) and isinstance(value, list):
+                # Merge lists
+                merged[key] = list(set(merged[key] + value))
+            elif key in ("view_count", "usage_count"):
+                # Sum numeric counts
+                merged[key] = merged.get(key, 0) + value
+
+        return merged
 
     def _hash_content(self, content: str) -> str:
         """Generate hash for content"""

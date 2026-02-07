@@ -7,10 +7,8 @@ Date: 2025-10-19
 """
 
 import numpy as np
-from typing import Optional, List, Tuple, Dict, Any
+from typing import Optional, List, Tuple
 from dataclasses import dataclass
-from scipy.optimize import minimize
-from scipy.special import expit  # Logistic function
 import matplotlib.pyplot as plt
 
 

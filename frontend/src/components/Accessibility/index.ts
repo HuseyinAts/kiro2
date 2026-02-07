@@ -13,11 +13,11 @@ export { default as ReadingHelpersDefault } from './ReadingHelpers';
 export { default as TextToSpeechDefault } from './TextToSpeech';
 
 // Diskalkuli Desteği - Görsel Matematik Temsilleri
-export { 
-  NumberBlocks, 
-  FractionBars, 
-  GeometricShapes3D, 
-  GraphPlotter 
+export {
+  NumberBlocks,
+  FractionBars,
+  GeometricShapes3D,
+  GraphPlotter,
 } from './Dyscalculia';
 
 // DEHB Desteği - Dikkat Yönetimi
@@ -37,7 +37,7 @@ export {
   Integral,
   Fraction,
   SquareRoot,
-  Exponent
+  Exponent,
 } from './MathFormula';
 export { default as MathFormulaDefault } from './MathFormula';
 

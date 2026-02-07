@@ -3,9 +3,17 @@
  * Beautiful dashboard for parents to track children's progress
  */
 
-import React, { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { motion } from 'framer-motion'
+import {
+  TrendingUp,
+  School,
+  EmojiEvents,
+  Notifications,
+  Assessment,
+  CalendarToday,
+  ArrowForward,
+  LocalFireDepartment,
+  CheckCircle,
+} from '@mui/icons-material';
 import {
   Container,
   Grid,
@@ -14,35 +22,22 @@ import {
   Avatar,
   Chip,
   LinearProgress,
-  Card,
-  CardContent,
-  IconButton,
-} from '@mui/material'
-import {
-  ChildCare,
-  TrendingUp,
-  School,
-  EmojiEvents,
-  Notifications,
-  Assessment,
-  CalendarToday,
-  Message,
-  ArrowForward,
-  StarBorder,
-  LocalFireDepartment,
-  CheckCircle,
-  Warning,
-} from '@mui/icons-material'
-import { useAuthStore } from '@/store/authStore'
-import modernColors from '@/theme/modern-colors'
-import { GlassCard } from '@/components/ui/GlassCard'
-import { ModernButton } from '@/components/ui/ModernButton'
-import { StaggerContainer, StaggerItem } from '@/components/Animations/PageTransition'
+} from '@mui/material';
+import { motion } from 'framer-motion';
+import * as React from 'react';
+import {  useState  } from 'react';
+import { useNavigate } from 'react-router-dom';
+
+import { StaggerContainer, StaggerItem } from '@/components/Animations/PageTransition';
+import { GlassCard } from '@/components/ui/GlassCard';
+import { ModernButton } from '@/components/ui/ModernButton';
+import { useAuthStore } from '@/store/authStore';
+import modernColors from '@/theme/modern-colors';
 
 export const ModernParentDashboard: React.FC = () => {
-  const { user } = useAuthStore()
-  const navigate = useNavigate()
-  const [selectedChild, setSelectedChild] = useState(0)
+  const { user } = useAuthStore();
+  const navigate = useNavigate();
+  const [selectedChild, setSelectedChild] = useState(0);
 
   // Mock data - gerçek API'den gelecek
   const children = [
@@ -78,9 +73,9 @@ export const ModernParentDashboard: React.FC = () => {
         { name: 'Tarih', score: 91, gradient: modernColors.gradients.forest },
       ],
     },
-  ]
+  ];
 
-  const currentChild = children[selectedChild]
+  const currentChild = children[selectedChild];
 
   const recentActivities = [
     {
@@ -109,13 +104,13 @@ export const ModernParentDashboard: React.FC = () => {
       type: 'attendance',
       status: 'info',
     },
-  ]
+  ];
 
   const upcomingEvents = [
     { id: 1, child: 'Ahmet', event: 'Kimya Sınavı', date: 'Yarın, 10:00', type: 'exam' },
     { id: 2, child: 'Ayşe', event: 'İngilizce Sözlü', date: '2 gün sonra', type: 'presentation' },
     { id: 3, child: 'Ahmet', event: 'Matematik Ödevi', date: '3 gün sonra', type: 'assignment' },
-  ]
+  ];
 
   const teacherMessages = [
     {
@@ -134,7 +129,7 @@ export const ModernParentDashboard: React.FC = () => {
       date: '2 gün önce',
       unread: false,
     },
-  ]
+  ];
 
   return (
     <Box
@@ -273,8 +268,8 @@ export const ModernParentDashboard: React.FC = () => {
                         onClick={() => setSelectedChild(index)}
                         onKeyDown={(e) => {
                           if (e.key === 'Enter' || e.key === ' ') {
-                            e.preventDefault()
-                            setSelectedChild(index)
+                            e.preventDefault();
+                            setSelectedChild(index);
                           }
                         }}
                         sx={{
@@ -655,7 +650,7 @@ export const ModernParentDashboard: React.FC = () => {
         </StaggerContainer>
       </Container>
     </Box>
-  )
-}
+  );
+};
 
-export default ModernParentDashboard
+export default ModernParentDashboard;

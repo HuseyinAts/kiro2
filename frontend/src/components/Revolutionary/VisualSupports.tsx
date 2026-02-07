@@ -1,7 +1,7 @@
 /**
  * Visual Supports Component - Görsel Destekler
  * Task 81: Görsel Destekler (REQ-50.73 - REQ-50.88)
- * 
+ *
  * Disleksili öğrenciler için görsel öğrenme destekleri:
  * - Kavram haritaları (mind maps)
  * - İnfografikler
@@ -9,7 +9,13 @@
  * - Renk kodlama
  */
 
-import React, { useState } from 'react';
+import {
+  AccountTree as MindMapIcon,
+  BarChart as InfographicIcon,
+  MenuBook as VocabularyIcon,
+  Palette as ColorIcon,
+  Info as InfoIcon,
+} from '@mui/icons-material';
 import {
   Box,
   Card,
@@ -17,24 +23,18 @@ import {
   Typography,
   Tabs,
   Tab,
-  Button,
   Grid,
   Chip,
   IconButton,
-  Tooltip
+  Tooltip,
 } from '@mui/material';
-import {
-  AccountTree as MindMapIcon,
-  BarChart as InfographicIcon,
-  MenuBook as VocabularyIcon,
-  Palette as ColorIcon,
-  Info as InfoIcon
-} from '@mui/icons-material';
+import * as React from 'react';
+import {  useState  } from 'react';
 
-import MindMapViewer from './MindMapViewer';
-import InfographicViewer from './InfographicViewer';
-import VisualVocabulary from './VisualVocabulary';
 import ColorCodingPanel from './ColorCodingPanel';
+import InfographicViewer from './InfographicViewer';
+import MindMapViewer from './MindMapViewer';
+import VisualVocabulary from './VisualVocabulary';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -62,7 +62,7 @@ const VisualSupports: React.FC = () => {
   const [activeTab, setActiveTab] = useState(0);
   const [showInfo, setShowInfo] = useState(false);
 
-  const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
+  const handleTabChange = (_event: React.SyntheticEvent, newValue: number) => {
     setActiveTab(newValue);
   };
 
@@ -71,26 +71,26 @@ const VisualSupports: React.FC = () => {
       icon: <MindMapIcon />,
       title: 'Kavram Haritaları',
       description: 'Konuları görsel olarak organize edin',
-      color: '#4A90E2'
+      color: '#4A90E2',
     },
     {
       icon: <InfographicIcon />,
       title: 'İnfografikler',
       description: 'Bilgileri görsel özetlerle anlayın',
-      color: '#50C878'
+      color: '#50C878',
     },
     {
       icon: <VocabularyIcon />,
       title: 'Resimli Sözlük',
       description: 'Kelimeleri görsellerle öğrenin',
-      color: '#FFB347'
+      color: '#FFB347',
     },
     {
       icon: <ColorIcon />,
       title: 'Renk Kodlama',
       description: 'Kategorileri renklerle ayırt edin',
-      color: '#FF6B6B'
-    }
+      color: '#FF6B6B',
+    },
   ];
 
   return (
@@ -152,8 +152,8 @@ const VisualSupports: React.FC = () => {
                 border: activeTab === index ? `3px solid ${feature.color}` : '1px solid #e0e0e0',
                 '&:hover': {
                   transform: 'translateY(-4px)',
-                  boxShadow: 4
-                }
+                  boxShadow: 4,
+                },
               }}
               onClick={() => setActiveTab(index)}
             >

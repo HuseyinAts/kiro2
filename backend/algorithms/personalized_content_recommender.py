@@ -6,7 +6,7 @@ import logging
 from dataclasses import dataclass
 from datetime import datetime
 
-# import numpy as np  # Lazy import
+import numpy as np
 from typing import Dict, List, Tuple
 
 from models.learning_style import (

@@ -10,8 +10,7 @@ import logging
 from dataclasses import dataclass
 from typing import Dict, List, Optional, Tuple
 import numpy as np
-from scipy.optimize import minimize, fmin_l_bfgs_b
-from scipy.stats import norm
+from scipy.optimize import minimize
 import matplotlib
 
 matplotlib.use("Agg")  # Non-interactive backend

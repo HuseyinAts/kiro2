@@ -1,6 +1,6 @@
 /**
  * WCAG 2.1 Level AA Uyumlu Ana Layout Bileşeni
- * 
+ *
  * Özellikler:
  * - Semantic HTML5 landmarks
  * - Skip navigation links
@@ -10,11 +10,14 @@
  * - Screen reader optimization
  */
 
-import React, { useRef, useEffect } from 'react';
 import { Box, Container, useTheme } from '@mui/material';
-import { AccessibleNavigation } from './AccessibleNavigation';
-import { useAccessibility } from './AccessibilityProvider';
+import * as React from 'react';
+import {  useRef, useEffect  } from 'react';
+
 import { useScreenReader } from '../../hooks/useScreenReader';
+import AccessibleNavigation from '../Navigation/AccessibleNavigation';
+
+import { useAccessibility } from './AccessibilityProvider';
 
 interface WCAGCompliantLayoutProps {
   children: React.ReactNode;
@@ -82,11 +85,17 @@ export const WCAGCompliantLayout: React.FC<WCAGCompliantLayoutProps> = ({
       <Box component="header" role="banner">
         <AccessibleNavigation
           title={title}
-          navigationItems={navigationItems}
-          breadcrumbs={breadcrumbs}
-          highContrast={settings.highContrast}
-          showSkipLinks={settings.skipLinks}
-          mainContentId="main-content"
+          navigationItems={navigationItems.map(item => ({
+            id: item.id,
+            label: item.label,
+            path: item.href,
+            icon: item.icon,
+          }))}
+          breadcrumbs={breadcrumbs?.map(b => ({
+            label: b.label,
+            path: b.href,
+          }))}
+          showAccessibilityButton={true}
         />
       </Box>
 

@@ -1,12 +1,12 @@
 /**
  * Focus Mode Component - Odak Modu
- * 
+ *
  * DEHB (Dikkat Eksikliği ve Hiperaktivite Bozukluğu) desteği için odak modu.
  * Dikkat dağıtıcı unsurları minimize ederek tek göreve odaklanmayı sağlar.
- * 
+ *
  * Requirements: REQ-52.21 - REQ-52.40
  * Task: 89 Focus Mode
- * 
+ *
  * Features:
  * - Single-task view (sadece aktif görev görünür)
  * - Minimal interface (minimal arayüz)
@@ -15,7 +15,8 @@
  * - Fullscreen mode (tam ekran modu)
  */
 
-import React, { useState, useEffect, useCallback } from 'react';
+import * as React from 'react';
+import {  useState, useEffect, useCallback  } from 'react';
 import './FocusMode.css';
 
 interface FocusModeTask {
@@ -46,7 +47,7 @@ interface FocusModeProps {
 const FocusMode: React.FC<FocusModeProps> = ({
   taskId,
   onExit,
-  initialSettings = {}
+  initialSettings = {},
 }) => {
   const [isActive, setIsActive] = useState(false);
   const [currentTask, setCurrentTask] = useState<FocusModeTask | null>(null);
@@ -58,7 +59,7 @@ const FocusMode: React.FC<FocusModeProps> = ({
     minimal_ui: true,
     show_timer: true,
     show_progress: true,
-    ...initialSettings
+    ...initialSettings,
   });
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
@@ -66,14 +67,14 @@ const FocusMode: React.FC<FocusModeProps> = ({
 
   // Fetch current task
   const fetchTask = useCallback(async () => {
-    if (!taskId) return;
+    if (!taskId) {return;}
 
     setIsLoading(true);
     try {
       const response = await fetch(`/api/adhd-support/focus-mode/task/${taskId}`, {
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        }
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        },
       });
 
       if (!response.ok) {
@@ -118,12 +119,12 @@ const FocusMode: React.FC<FocusModeProps> = ({
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
         },
         body: JSON.stringify({
           task_id: taskId,
-          settings
-        })
+          settings,
+        }),
       });
     } catch (err) {
       console.error('Focus mode activation error:', err);
@@ -140,7 +141,7 @@ const FocusMode: React.FC<FocusModeProps> = ({
         'focus-mode-hide-sidebar',
         'focus-mode-hide-navigation',
         'focus-mode-hide-notifications',
-        'focus-mode-minimal-ui'
+        'focus-mode-minimal-ui',
       );
 
       if (document.fullscreenElement) {
@@ -154,12 +155,12 @@ const FocusMode: React.FC<FocusModeProps> = ({
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
         },
         body: JSON.stringify({
           task_id: taskId,
-          elapsed_seconds: elapsedSeconds
-        })
+          elapsed_seconds: elapsedSeconds,
+        }),
       });
 
       if (onExit) {
@@ -172,7 +173,7 @@ const FocusMode: React.FC<FocusModeProps> = ({
 
   // Timer effect
   useEffect(() => {
-    if (!isActive) return;
+    if (!isActive) {return;}
 
     const interval = setInterval(() => {
       setElapsedSeconds(prev => prev + 1);
@@ -200,7 +201,7 @@ const FocusMode: React.FC<FocusModeProps> = ({
         e.preventDefault();
         setSettings(prev => ({
           ...prev,
-          fullscreen_mode: !prev.fullscreen_mode
+          fullscreen_mode: !prev.fullscreen_mode,
         }));
       }
     };
@@ -223,7 +224,7 @@ const FocusMode: React.FC<FocusModeProps> = ({
 
   // Calculate progress percentage
   const getProgressPercentage = (): number => {
-    if (!currentTask || !currentTask.estimated_duration_minutes) return 0;
+    if (!currentTask || !currentTask.estimated_duration_minutes) {return 0;}
     const estimatedSeconds = currentTask.estimated_duration_minutes * 60;
     return Math.min((elapsedSeconds / estimatedSeconds) * 100, 100);
   };
@@ -233,7 +234,7 @@ const FocusMode: React.FC<FocusModeProps> = ({
     const colors = {
       low: '#4CAF50',
       medium: '#FF9800',
-      high: '#F44336'
+      high: '#F44336',
     };
     return colors[priority as keyof typeof colors] || '#2196F3';
   };
@@ -274,16 +275,16 @@ const FocusMode: React.FC<FocusModeProps> = ({
                 </div>
               )}
               {currentTask.priority && (
-                <div 
+                <div
                   className="task-priority"
                   style={{ borderColor: getPriorityColor(currentTask.priority) }}
                 >
-                  <span 
+                  <span
                     className="priority-dot"
                     style={{ backgroundColor: getPriorityColor(currentTask.priority) }}
                   ></span>
                   <span>
-                    {currentTask.priority === 'high' ? 'Yüksek' : 
+                    {currentTask.priority === 'high' ? 'Yüksek' :
                      currentTask.priority === 'medium' ? 'Orta' : 'Düşük'} Öncelik
                   </span>
                 </div>
@@ -376,7 +377,7 @@ const FocusMode: React.FC<FocusModeProps> = ({
 
   // Active focus mode view
   return (
-    <div 
+    <div
       className="focus-mode-active-view"
       role="main"
       aria-label="Odak modu aktif"
@@ -403,7 +404,7 @@ const FocusMode: React.FC<FocusModeProps> = ({
         {currentTask && (
           <div className="focus-task">
             <h1 className="task-title">{currentTask.title}</h1>
-            
+
             {currentTask.description && (
               <p className="task-description">{currentTask.description}</p>
             )}
@@ -436,11 +437,11 @@ const FocusMode: React.FC<FocusModeProps> = ({
             {settings.show_progress && currentTask.estimated_duration_minutes && (
               <div className="focus-progress">
                 <div className="progress-bar">
-                  <div 
+                  <div
                     className="progress-fill"
-                    style={{ 
+                    style={{
                       width: `${getProgressPercentage()}%`,
-                      backgroundColor: getPriorityColor(currentTask.priority || 'medium')
+                      backgroundColor: getPriorityColor(currentTask.priority || 'medium'),
                     }}
                     role="progressbar"
                     aria-valuenow={getProgressPercentage()}
@@ -472,10 +473,10 @@ const FocusMode: React.FC<FocusModeProps> = ({
 
       {/* Screen Reader Status */}
       <div className="sr-only" aria-live="polite" aria-atomic="true">
-        Odak modu aktif. 
+        Odak modu aktif.
         {currentTask && `Görev: ${currentTask.title}.`}
         Geçen süre: {formatTime(elapsedSeconds)}.
-        {currentTask?.estimated_duration_minutes && 
+        {currentTask?.estimated_duration_minutes &&
           ` İlerleme: yüzde ${getProgressPercentage().toFixed(0)}.`}
         Çıkmak için ESC tuşuna basın.
       </div>

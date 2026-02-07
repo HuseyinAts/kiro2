@@ -13,7 +13,7 @@ import json
 import asyncio
 from pathlib import Path
 import io
-from datetime import datetime
+from datetime import datetime, timezone
 
 # UTF-8 encoding
 sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="replace")
@@ -144,7 +144,7 @@ async def evaluate_questions():
                     "grade": eval_result.overall_grade,
                     "decision": eval_result.decision,
                     "status": status,
-                    "timestamp": datetime.utcnow().isoformat(),
+                    "timestamp": datetime.now(timezone.utc).isoformat(),
                 }
             )
 
@@ -184,7 +184,7 @@ async def evaluate_questions():
         print(f"Average Quality Score: {avg_score:.3f}")
         print(f"Minimum Score: {min_score:.3f}")
         print(f"Maximum Score: {max_score:.3f}")
-        print(f"\nTarget Score: 0.850")
+        print("\nTarget Score: 0.850")
 
         if avg_score >= 0.85:
             print(
@@ -198,7 +198,7 @@ async def evaluate_questions():
             print(f"    Gap: {0.85 - avg_score:.3f} points")
 
         # Individual results
-        print(f"\nIndividual Results:")
+        print("\nIndividual Results:")
         print(f"{'='*70}")
 
         for r in results:
@@ -214,7 +214,7 @@ async def evaluate_questions():
                 print(f"[FAIL] Q{r['question_id']}: {r['test_case']:<40} ERROR")
 
         # Breakdown by graph type
-        print(f"\nBreakdown by Graph Type:")
+        print("\nBreakdown by Graph Type:")
         print(f"{'='*70}")
 
         graph_type_scores = {}
@@ -230,7 +230,7 @@ async def evaluate_questions():
             print(f"  {gt:<20} Avg: {avg:.3f} ({len(scores)} question(s))")
 
         # Comparison with Phase 1
-        print(f"\nComparison with Phase 1:")
+        print("\nComparison with Phase 1:")
         print(f"{'='*70}")
         phase1_avg = 0.897  # From Phase 1 evaluation
         print(f"  Phase 1 (Tables):  Avg: {phase1_avg:.3f}")
@@ -245,10 +245,10 @@ async def evaluate_questions():
         print("[ERROR] No valid scores obtained")
 
     # Save results
-    output_file = f"wave2b_graph_questions_evaluation_{datetime.utcnow().strftime('%Y%m%d_%H%M%S')}.json"
+    output_file = f"wave2b_graph_questions_evaluation_{datetime.now(timezone.utc).strftime('%Y%m%d_%H%M%S')}.json"
 
     evaluation_report = {
-        "evaluation_date": datetime.utcnow().isoformat(),
+        "evaluation_date": datetime.now(timezone.utc).isoformat(),
         "phase": "Phase 2 - Graphs",
         "total_questions": len(results),
         "valid_evaluations": len(valid_scores),

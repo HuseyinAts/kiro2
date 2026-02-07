@@ -91,7 +91,7 @@ def analyze_coverage_gaps():
                 )
 
         # Category analysis
-        print(f"\n* CATEGORY BREAKDOWN:")
+        print("\n* CATEGORY BREAKDOWN:")
         categories = {
             "services": [],
             "api": [],
@@ -141,7 +141,7 @@ def analyze_coverage_gaps():
                 )
 
         # Specific recommendations
-        print(f"\n* RECOMMENDED TEST PRIORITIES:")
+        print("\n* RECOMMENDED TEST PRIORITIES:")
         print("=" * 40)
 
         # Sort priority files by score
@@ -165,7 +165,7 @@ def analyze_coverage_gaps():
         total_covered = data["totals"]["covered_lines"]
         total_missing = data["totals"]["missing_lines"]
 
-        print(f"* OVERALL STATISTICS:")
+        print("* OVERALL STATISTICS:")
         print(f"Current Coverage: {total_coverage:.2f}%")
         print(f"Total Lines: {total_lines:,}")
         print(f"Covered Lines: {total_covered:,}")
@@ -178,7 +178,7 @@ def analyze_coverage_gaps():
                 lines_needed = int((target * total_lines / 100) - total_covered)
                 print(f"To reach {target}%: Need {lines_needed:,} more lines covered")
 
-        print(f"\n* QUICK WINS (Easy coverage gains):")
+        print("\n* QUICK WINS (Easy coverage gains):")
         quick_wins = [f for f in files_coverage if 20 <= f[1] <= 40 and f[2] <= 100][:5]
 
         for file_path, coverage, lines, missing, covered in quick_wins:

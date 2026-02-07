@@ -1,6 +1,7 @@
-import React from 'react'
-import { useAuthStore } from '@/store/authStore'
-import { UserRole } from '../types'
+import * as React from 'react';
+
+import { UserRole } from '../types';
+import { useAuthStore } from '@/store/authStore';
 
 interface RoleAccessConfig {
   allowedRoles?: UserRole[]
@@ -25,53 +26,53 @@ interface RoleAccessResult {
 }
 
 export const useRoleAccess = (config?: RoleAccessConfig): RoleAccessResult => {
-  const {  
-    user, 
-    loading, 
-    isAuthenticated, 
-    hasPermission, 
-    isAuthorized, 
-    hasRole 
-   } = useAuthStore()
+  const {
+    user,
+    loading,
+    isAuthenticated,
+    hasPermission,
+    isAuthorized,
+    hasRole,
+   } = useAuthStore();
 
   const hasAccess = (): boolean => {
-    if (!isAuthenticated || !user) return false
+    if (!isAuthenticated || !user) {return false;}
 
     // Rol kontrolü
     if (config?.allowedRoles && config.allowedRoles.length > 0) {
-      if (!isAuthorized(config.allowedRoles)) return false
+      if (!isAuthorized(config.allowedRoles)) {return false;}
     }
 
     // İzin kontrolü
     if (config?.requiredPermissions && config.requiredPermissions.length > 0) {
       const hasAllPermissions = config.requiredPermissions.every(permission =>
-        hasPermission(permission.resource, permission.action)
-      )
-      if (!hasAllPermissions) return false
+        hasPermission(permission.resource, permission.action),
+      );
+      if (!hasAllPermissions) {return false;}
     }
 
-    return true
-  }
+    return true;
+  };
 
   const canView = (roles: UserRole[]): boolean => {
-    return isAuthenticated && user ? isAuthorized(roles) : false
-  }
+    return isAuthenticated && user ? isAuthorized(roles) : false;
+  };
 
   const canEdit = (resource: string): boolean => {
-    return hasPermission(resource, 'update')
-  }
+    return hasPermission(resource, 'update');
+  };
 
   const canDelete = (resource: string): boolean => {
-    return hasPermission(resource, 'delete')
-  }
+    return hasPermission(resource, 'delete');
+  };
 
   const canCreate = (resource: string): boolean => {
-    return hasPermission(resource, 'create')
-  }
+    return hasPermission(resource, 'create');
+  };
 
   const isRole = (role: UserRole): boolean => {
-    return hasRole(role)
-  }
+    return hasRole(role);
+  };
 
   return {
     hasAccess: hasAccess(),
@@ -85,17 +86,17 @@ export const useRoleAccess = (config?: RoleAccessConfig): RoleAccessResult => {
     isStudent: hasRole('ogrenci'),
     isTeacher: hasRole('ogretmen'),
     isParent: hasRole('veli'),
-    isAdmin: hasRole('admin')
-  }
-}
+    isAdmin: hasRole('admin'),
+  };
+};
 
 // HOC (Higher-Order Component) for role-based access control
 export const withRoleAccess = <P extends object>(
   WrappedComponent: React.ComponentType<P>,
-  config: RoleAccessConfig
+  config: RoleAccessConfig,
 ) => {
   return (props: P) => {
-    const { hasAccess, isLoading } = useRoleAccess(config)
+    const { hasAccess, isLoading } = useRoleAccess(config);
 
     if (isLoading) {
       return <div>Yükleniyor...</div>;
@@ -103,19 +104,19 @@ export const withRoleAccess = <P extends object>(
 
     if (!hasAccess) {
       if (config.fallbackComponent) {
-        const FallbackComponent = config.fallbackComponent
-        return <FallbackComponent />
+        const FallbackComponent = config.fallbackComponent;
+        return <FallbackComponent />;
       }
-      
+
       if (config.showUnauthorized) {
-        return <div>Bu içeriği görüntüleme yetkiniz bulunmamaktadır.</div>
+        return <div>Bu içeriği görüntüleme yetkiniz bulunmamaktadır.</div>;
       }
-      
-      return null
+
+      return null;
     }
 
-    return <WrappedComponent {...props} />
-  }
-}
+    return <WrappedComponent {...props} />;
+  };
+};
 
-export default useRoleAccess
+export default useRoleAccess;

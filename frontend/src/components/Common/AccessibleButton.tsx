@@ -1,6 +1,6 @@
 /**
  * WCAG 2.1 Level AA Uyumlu Erişilebilir Buton Bileşeni
- * 
+ *
  * Özellikler:
  * - Klavye navigasyonu (Tab, Enter, Space)
  * - Ekran okuyucu desteği
@@ -9,9 +9,9 @@
  * - ARIA etiketleri
  */
 
-import React, { forwardRef, KeyboardEvent, MouseEvent } from 'react';
-import { Button, ButtonProps, useTheme } from '@mui/material';
+import { Button, ButtonProps } from '@mui/material';
 import { styled } from '@mui/material/styles';
+import { forwardRef, KeyboardEvent, MouseEvent } from 'react';
 
 interface AccessibleButtonProps extends Omit<ButtonProps, 'onClick'> {
   onClick?: (event: MouseEvent<HTMLButtonElement> | KeyboardEvent<HTMLButtonElement>) => void;
@@ -28,14 +28,14 @@ const StyledAccessibleButton = styled(Button, {
   // WCAG 2.1 AA minimum kontrast oranı: 4.5:1
   minHeight: '44px', // WCAG minimum dokunma hedefi boyutu
   minWidth: '44px',
-  
+
   // Focus görünürlüğü
   '&:focus-visible': {
     outline: `3px solid ${theme.palette.primary.main}`,
     outlineOffset: '2px',
     boxShadow: `0 0 0 3px ${theme.palette.primary.main}40`,
   },
-  
+
   // Yüksek kontrast modu
   ...(highContrast && {
     backgroundColor: '#000000',
@@ -56,7 +56,7 @@ const StyledAccessibleButton = styled(Button, {
       border: '2px solid #CCCCCC',
     },
   }),
-  
+
   // Animasyonları azalt (prefers-reduced-motion)
   '@media (prefers-reduced-motion: reduce)': {
     transition: 'none',
@@ -77,12 +77,10 @@ export const AccessibleButton = forwardRef<HTMLButtonElement, AccessibleButtonPr
       disabled,
       ...props
     },
-    ref
+    ref,
   ) => {
-    const theme = useTheme();
-
     const handleClick = (event: MouseEvent<HTMLButtonElement>) => {
-      if (loading || disabled) return;
+      if (loading || disabled) {return;}
       onClick?.(event);
     };
 
@@ -114,7 +112,7 @@ export const AccessibleButton = forwardRef<HTMLButtonElement, AccessibleButtonPr
         {loading ? loadingText : children}
       </StyledAccessibleButton>
     );
-  }
+  },
 );
 
 AccessibleButton.displayName = 'AccessibleButton';

@@ -1,9 +1,9 @@
 """
 LLM Services Package
-Multi-LLM support for ÖSYM question generation
+Multi-LLM support for ÖSYM question generation and sequential thinking
 
 Author: KIRO AI Team
-Date: 2025-10-19
+Date: 2025-10-19 (Updated: 2026-01-16)
 """
 
 # Core imports (no dependencies)
@@ -13,6 +13,12 @@ from services.llm.multi_llm_config import (
     LLMCapability,
     LLMModelConfig,
     MultiLLMConfig,
+)
+from services.llm.sequential_thinking_mixin import (
+    SequentialThinkingMixin,
+    ReasoningResult,
+    ReasoningStep,
+    ReasoningStepType,
 )
 
 
@@ -35,6 +41,12 @@ def get_qwen_provider():
     return QwenProvider
 
 
+def get_gemini_provider():
+    from services.llm.gemini_provider import GeminiProvider
+
+    return GeminiProvider
+
+
 def get_ensemble_manager():
     from services.llm.ensemble_manager import MultiLLMEnsembleManager, EnsembleStrategy
 
@@ -51,9 +63,15 @@ __all__ = [
     "LLMCapability",
     "LLMModelConfig",
     "MultiLLMConfig",
+    # Sequential Thinking
+    "SequentialThinkingMixin",
+    "ReasoningResult",
+    "ReasoningStep",
+    "ReasoningStepType",
     # Lazy loaders
     "get_openai_provider",
     "get_claude_provider",
     "get_qwen_provider",
+    "get_gemini_provider",
     "get_ensemble_manager",
 ]

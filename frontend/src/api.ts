@@ -1,32 +1,39 @@
-import config from './config';
-import { withRetry, fetchWithErrorHandling, ApiCache, RateLimiter, mergeSignals } from './utils/apiHelpers';
+import appConfig from './config';
+import type {
+  ProgressData,
+  DocumentMetadata,
+  SearchFilter,
+  GoalUpdateData,
+  StreamMetadata,
+} from './types/index';
+import { withRetry, fetchWithErrorHandling, ApiCache, RateLimiter } from './utils/apiHelpers';
 
-const API_BASE_URL = config.api.baseURL;
+const API_BASE_URL = appConfig.api.baseURL;
 const apiCache = new ApiCache(30000); // 30 second cache
 const rateLimiter = new RateLimiter(10, 100); // Max 10 concurrent, 100ms min delay
 
 /**
- * Helper function to get authentication headers
- * Automatically adds Bearer token if available
+ * SECURITY: httpOnly Cookie-based Authentication
+ * Tokens are managed by the server via secure httpOnly cookies.
+ * All requests include credentials: 'include' for cookie transmission.
+ * No more localStorage token storage - XSS attack surface eliminated.
  */
-function getAuthHeaders(additionalHeaders: Record<string, string> = {}): HeadersInit {
-  const token = localStorage.getItem('access_token');
-  const headers: Record<string, string> = {
-    ...additionalHeaders
+
+/**
+ * Helper function to get standard headers
+ * No token handling needed - httpOnly cookies are sent automatically with credentials: 'include'
+ */
+function getHeaders(additionalHeaders: Record<string, string> = {}): HeadersInit {
+  return {
+    ...additionalHeaders,
   };
-
-  if (token) {
-    headers['Authorization'] = `Bearer ${token}`;
-  }
-
-  return headers;
 }
 
-export async function sendChatMessage(agent: string, message: string, sessionId?: string, studentId?: string) {
+export async function sendChatMessage(_agent: string, message: string, sessionId?: string, studentId?: string) {
   return withRetry(async () => {
     const response = await fetchWithErrorHandling(`${API_BASE_URL}/api/v1/enhanced-chat/message`, {
       method: 'POST',
-      headers: getAuthHeaders({
+      headers: getHeaders({
         'Content-Type': 'application/json',
       }),
       body: JSON.stringify({
@@ -34,7 +41,8 @@ export async function sendChatMessage(agent: string, message: string, sessionId?
         message,
         session_id: sessionId,
       }),
-      signal: AbortSignal.timeout(config.api.timeout),
+      signal: AbortSignal.timeout(appConfig.api.timeout),
+      credentials: 'include',
     });
 
     return response.json();
@@ -45,14 +53,15 @@ export async function getAgents() {
   // Use cache for agents list
   const cacheKey = 'agents-list';
   const cached = apiCache.get(cacheKey);
-  if (cached) return cached;
+  if (cached) {return cached;}
 
   return rateLimiter.execute(async () => {
     const response = await fetchWithErrorHandling(`${API_BASE_URL}/api/agents`, {
-      headers: getAuthHeaders(),
-      signal: AbortSignal.timeout(config.api.timeout),
+      headers: getHeaders(),
+      signal: AbortSignal.timeout(appConfig.api.timeout),
+      credentials: 'include',
     });
-    
+
     const data = await response.json();
     apiCache.set(cacheKey, data);
     return data;
@@ -62,16 +71,16 @@ export async function getAgents() {
 export async function clearSessions() {
   const response = await fetch(`${API_BASE_URL}/api/clear`, {
     method: 'DELETE',
-    headers: getAuthHeaders(),
-    signal: AbortSignal.timeout(config.api.timeout),
-  })
+    headers: getHeaders(),
+    signal: AbortSignal.timeout(appConfig.api.timeout),
+  });
 
   if (!response.ok) {
     const error = await response.text();
-    throw new Error(error || 'Failed to clear sessions')
+    throw new Error(error || 'Failed to clear sessions');
   }
 
-  return response.json()
+  return response.json();
 }
 
 // Learning Path API Endpoints
@@ -83,19 +92,19 @@ export async function createStudentProfile(profileData: {
   learning_style?: string;
   available_time?: number;
 }) {
-  const response = await fetch(`${API_BASE_URL}/api/learning-path-v2/create-profile`, {
+  const response = await fetch(`${API_BASE_URL}/api/learning-path/create-profile`, {
     method: 'POST',
-    headers: getAuthHeaders({ 'Content-Type': 'application/json' }),
+    headers: getHeaders({ 'Content-Type': 'application/json' }),
     body: JSON.stringify(profileData),
-    signal: AbortSignal.timeout(config.api.timeout),
-  })
-  
+    signal: AbortSignal.timeout(appConfig.api.timeout),
+  });
+
   if (!response.ok) {
     const error = await response.text();
-    throw new Error(error || 'Failed to create student profile')
+    throw new Error(error || 'Failed to create student profile');
   }
-  
-  return response.json()
+
+  return response.json();
 }
 
 export async function assessKnowledge(assessmentData: {
@@ -103,19 +112,19 @@ export async function assessKnowledge(assessmentData: {
   subject: string;
   questions?: string[];
 }) {
-  const response = await fetch(`${API_BASE_URL}/api/learning-path-v2/assess-knowledge`, {
+  const response = await fetch(`${API_BASE_URL}/api/learning-path/assess-knowledge`, {
     method: 'POST',
-    headers: getAuthHeaders({ 'Content-Type': 'application/json' }),
+    headers: getHeaders({ 'Content-Type': 'application/json' }),
     body: JSON.stringify(assessmentData),
-    signal: AbortSignal.timeout(config.api.timeout),
-  })
-  
+    signal: AbortSignal.timeout(appConfig.api.timeout),
+  });
+
   if (!response.ok) {
     const error = await response.text();
-    throw new Error(error || 'Failed to assess knowledge')
+    throw new Error(error || 'Failed to assess knowledge');
   }
-  
-  return response.json()
+
+  return response.json();
 }
 
 export async function createLearningPath(pathData: {
@@ -124,19 +133,19 @@ export async function createLearningPath(pathData: {
   duration_weeks?: number;
   difficulty_level?: string;
 }) {
-  const response = await fetch(`${API_BASE_URL}/api/learning-path-v2/create-path`, {
+  const response = await fetch(`${API_BASE_URL}/api/learning-path/create-path`, {
     method: 'POST',
-    headers: getAuthHeaders({ 'Content-Type': 'application/json' }),
+    headers: getHeaders({ 'Content-Type': 'application/json' }),
     body: JSON.stringify(pathData),
-    signal: AbortSignal.timeout(config.api.timeout),
-  })
-  
+    signal: AbortSignal.timeout(appConfig.api.timeout),
+  });
+
   if (!response.ok) {
     const error = await response.text();
-    throw new Error(error || 'Failed to create learning path')
+    throw new Error(error || 'Failed to create learning path');
   }
-  
-  return response.json()
+
+  return response.json();
 }
 
 /**
@@ -158,105 +167,105 @@ export async function searchResources(searchData: {
     preferences?: Record<string, any>;
   };
 }) {
-  const response = await fetch(`${API_BASE_URL}/api/learning-path-v2/search-resources-with-fallback`, {
+  const response = await fetch(`${API_BASE_URL}/api/learning-path/search-resources`, {
     method: 'POST',
-    headers: getAuthHeaders({ 'Content-Type': 'application/json' }),
+    headers: getHeaders({ 'Content-Type': 'application/json' }),
     body: JSON.stringify(searchData),
-    signal: AbortSignal.timeout(config.api.timeout),
-  })
+    signal: AbortSignal.timeout(appConfig.api.timeout),
+  });
 
   if (!response.ok) {
     const error = await response.text();
-    throw new Error(error || 'Failed to search resources')
+    throw new Error(error || 'Failed to search resources');
   }
 
-  return response.json()
+  return response.json();
 }
 
 export async function adaptLearningPath(adaptData: {
   path_id: string;
-  progress_data: any;
+  progress_data: ProgressData;
 }) {
-  const response = await fetch(`${API_BASE_URL}/api/learning-path-v2/adapt-path`, {
+  const response = await fetch(`${API_BASE_URL}/api/learning-path/adapt-path`, {
     method: 'POST',
-    headers: getAuthHeaders({ 'Content-Type': 'application/json' }),
+    headers: getHeaders({ 'Content-Type': 'application/json' }),
     body: JSON.stringify(adaptData),
-    signal: AbortSignal.timeout(config.api.timeout),
-  })
-  
+    signal: AbortSignal.timeout(appConfig.api.timeout),
+  });
+
   if (!response.ok) {
     const error = await response.text();
-    throw new Error(error || 'Failed to adapt learning path')
+    throw new Error(error || 'Failed to adapt learning path');
   }
-  
-  return response.json()
+
+  return response.json();
 }
 
 // RAG API Endpoints
 export async function addDocument(documentData: {
   content: string;
-  metadata?: any;
+  metadata?: DocumentMetadata;
 }) {
   const response = await fetch(`${API_BASE_URL}/api/v1/rag/add_document`, {
     method: 'POST',
-    headers: getAuthHeaders({
+    headers: getHeaders({
       'Content-Type': 'application/json',
     }),
     body: JSON.stringify(documentData),
-    signal: AbortSignal.timeout(config.api.timeout),
-  })
+    signal: AbortSignal.timeout(appConfig.api.timeout),
+  });
 
   if (!response.ok) {
     const error = await response.text();
-    throw new Error(error || 'Failed to add document')
+    throw new Error(error || 'Failed to add document');
   }
-  
-  return response.json()
+
+  return response.json();
 }
 
 export async function addEducationalContent(contentData: {
   content_type: string;
   content: string;
-  metadata?: any;
+  metadata?: DocumentMetadata;
 }) {
   const response = await fetch(`${API_BASE_URL}/api/v1/rag/add_educational`, {
     method: 'POST',
-    headers: getAuthHeaders({
+    headers: getHeaders({
       'Content-Type': 'application/json',
     }),
     body: JSON.stringify(contentData),
-    signal: AbortSignal.timeout(config.api.timeout),
-  })
-  
+    signal: AbortSignal.timeout(appConfig.api.timeout),
+  });
+
   if (!response.ok) {
     const error = await response.text();
-    throw new Error(error || 'Failed to add educational content')
+    throw new Error(error || 'Failed to add educational content');
   }
-  
-  return response.json()
+
+  return response.json();
 }
 
 export async function searchDocuments(searchData: {
   query: string;
   k?: number;
-  filter?: any;
+  filter?: SearchFilter;
   score_threshold?: number;
 }) {
   const response = await fetch(`${API_BASE_URL}/api/v1/rag/search`, {
     method: 'POST',
-    headers: getAuthHeaders({
+    headers: getHeaders({
       'Content-Type': 'application/json',
     }),
     body: JSON.stringify(searchData),
-    signal: AbortSignal.timeout(config.api.timeout),
-  })
-  
+    signal: AbortSignal.timeout(appConfig.api.timeout),
+  });
+
   if (!response.ok) {
     const error = await response.text();
-    throw new Error(error || 'Failed to search documents')
+    throw new Error(error || 'Failed to search documents');
   }
-  
-  return response.json()
+
+  return response.json();
 }
 
 export async function searchEducationalContent(searchData: {
@@ -269,19 +278,19 @@ export async function searchEducationalContent(searchData: {
 }) {
   const response = await fetch(`${API_BASE_URL}/api/v1/rag/search_educational`, {
     method: 'POST',
-    headers: getAuthHeaders({
+    headers: getHeaders({
       'Content-Type': 'application/json',
     }),
     body: JSON.stringify(searchData),
-    signal: AbortSignal.timeout(config.api.timeout),
-  })
-  
+    signal: AbortSignal.timeout(appConfig.api.timeout),
+  });
+
   if (!response.ok) {
     const error = await response.text();
-    throw new Error(error || 'Failed to search educational content')
+    throw new Error(error || 'Failed to search educational content');
   }
-  
-  return response.json()
+
+  return response.json();
 }
 
 export async function queryWithContext(queryData: {
@@ -291,34 +300,34 @@ export async function queryWithContext(queryData: {
 }) {
   const response = await fetch(`${API_BASE_URL}/api/v1/rag/query`, {
     method: 'POST',
-    headers: getAuthHeaders({
+    headers: getHeaders({
       'Content-Type': 'application/json',
     }),
     body: JSON.stringify(queryData),
-    signal: AbortSignal.timeout(config.api.timeout),
-  })
-  
+    signal: AbortSignal.timeout(appConfig.api.timeout),
+  });
+
   if (!response.ok) {
     const error = await response.text();
-    throw new Error(error || 'Failed to query with context')
+    throw new Error(error || 'Failed to query with context');
   }
-  
-  return response.json()
+
+  return response.json();
 }
 
 export async function clearRAGDatabase() {
   const response = await fetch(`${API_BASE_URL}/api/v1/rag/clear`, {
     method: 'DELETE',
-    headers: getAuthHeaders(),
-    signal: AbortSignal.timeout(config.api.timeout),
-  })
+    headers: getHeaders(),
+    signal: AbortSignal.timeout(appConfig.api.timeout),
+  });
 
   if (!response.ok) {
     const error = await response.text();
-    throw new Error(error || 'Failed to clear RAG database')
+    throw new Error(error || 'Failed to clear RAG database');
   }
 
-  return response.json()
+  return response.json();
 }
 
 // Advanced RAG Features
@@ -329,17 +338,17 @@ export async function hybridSearch(searchData: {
 }) {
   const response = await fetch(`${API_BASE_URL}/api/v1/rag/hybrid-search`, {
     method: 'POST',
-    headers: getAuthHeaders({ 'Content-Type': 'application/json' }),
+    headers: getHeaders({ 'Content-Type': 'application/json' }),
     body: JSON.stringify(searchData),
-    signal: AbortSignal.timeout(config.api.timeout),
-  })
+    signal: AbortSignal.timeout(appConfig.api.timeout),
+  });
 
   if (!response.ok) {
     const error = await response.text();
-    throw new Error(error || 'Failed to perform hybrid search')
+    throw new Error(error || 'Failed to perform hybrid search');
   }
 
-  return response.json()
+  return response.json();
 }
 
 export async function multiQuerySearch(searchData: {
@@ -349,156 +358,156 @@ export async function multiQuerySearch(searchData: {
 }) {
   const response = await fetch(`${API_BASE_URL}/api/v1/rag/multi-query-search`, {
     method: 'POST',
-    headers: getAuthHeaders({ 'Content-Type': 'application/json' }),
+    headers: getHeaders({ 'Content-Type': 'application/json' }),
     body: JSON.stringify(searchData),
-    signal: AbortSignal.timeout(config.api.timeout),
-  })
+    signal: AbortSignal.timeout(appConfig.api.timeout),
+  });
 
   if (!response.ok) {
     const error = await response.text();
-    throw new Error(error || 'Failed to perform multi-query search')
+    throw new Error(error || 'Failed to perform multi-query search');
   }
 
-  return response.json()
+  return response.json();
 }
 
 export async function indexDocument(documentData: {
   content: string;
-  metadata?: any;
+  metadata?: DocumentMetadata;
 }) {
   const response = await fetch(`${API_BASE_URL}/api/v1/rag/index/text`, {
     method: 'POST',
-    headers: getAuthHeaders({ 'Content-Type': 'application/json' }),
+    headers: getHeaders({ 'Content-Type': 'application/json' }),
     body: JSON.stringify(documentData),
-    signal: AbortSignal.timeout(config.api.timeout),
-  })
+    signal: AbortSignal.timeout(appConfig.api.timeout),
+  });
 
   if (!response.ok) {
     const error = await response.text();
-    throw new Error(error || 'Failed to index document')
+    throw new Error(error || 'Failed to index document');
   }
 
-  return response.json()
+  return response.json();
 }
 
-export async function indexFile(file: File, metadata?: any) {
-  const formData = new FormData()
-  formData.append('file', file)
+export async function indexFile(file: File, metadata?: DocumentMetadata) {
+  const formData = new FormData();
+  formData.append('file', file);
   if (metadata) {
-    formData.append('metadata', JSON.stringify(metadata))
+    formData.append('metadata', JSON.stringify(metadata));
   }
 
   const response = await fetch(`${API_BASE_URL}/api/v1/rag/index/file`, {
     method: 'POST',
-    headers: getAuthHeaders(),
+    headers: getHeaders(),
     body: formData,
-    signal: AbortSignal.timeout(config.api.timeout),
-  })
+    signal: AbortSignal.timeout(appConfig.api.timeout),
+  });
 
   if (!response.ok) {
     const error = await response.text();
-    throw new Error(error || 'Failed to index file')
+    throw new Error(error || 'Failed to index file');
   }
 
-  return response.json()
+  return response.json();
 }
 
 export async function getRAGStats() {
   const response = await fetch(`${API_BASE_URL}/api/v1/rag/stats`, {
-    headers: getAuthHeaders(),
-    signal: AbortSignal.timeout(config.api.timeout),
-  })
+    headers: getHeaders(),
+    signal: AbortSignal.timeout(appConfig.api.timeout),
+  });
 
   if (!response.ok) {
     const error = await response.text();
-    throw new Error(error || 'Failed to get RAG stats')
+    throw new Error(error || 'Failed to get RAG stats');
   }
 
-  return response.json()
+  return response.json();
 }
 
 export async function getRAGHealth() {
   const response = await fetch(`${API_BASE_URL}/api/v1/rag/health`, {
-    signal: AbortSignal.timeout(config.api.timeout),
-  })
+    signal: AbortSignal.timeout(appConfig.api.timeout),
+  });
 
   if (!response.ok) {
     const error = await response.text();
-    throw new Error(error || 'Failed to get RAG health')
+    throw new Error(error || 'Failed to get RAG health');
   }
 
-  return response.json()
+  return response.json();
 }
 
 // Session Management
 export async function getSession(sessionId: string) {
   const response = await fetch(`${API_BASE_URL}/api/sessions/${sessionId}`, {
-    headers: getAuthHeaders(),
-    signal: AbortSignal.timeout(config.api.timeout),
-  })
+    headers: getHeaders(),
+    signal: AbortSignal.timeout(appConfig.api.timeout),
+  });
 
   if (!response.ok) {
     const error = await response.text();
-    throw new Error(error || 'Failed to get session')
+    throw new Error(error || 'Failed to get session');
   }
 
-  return response.json()
+  return response.json();
 }
 
 // Health and Monitoring
 export async function getHealth() {
   const response = await fetch(`${API_BASE_URL}/health`, {
-    signal: AbortSignal.timeout(config.api.timeout),
-  })
-  
+    signal: AbortSignal.timeout(appConfig.api.timeout),
+  });
+
   if (!response.ok) {
     const error = await response.text();
-    throw new Error(error || 'Failed to get health status')
+    throw new Error(error || 'Failed to get health status');
   }
-  
-  return response.json()
+
+  return response.json();
 }
 
 export async function getMetrics() {
   const response = await fetch(`${API_BASE_URL}/metrics`, {
-    signal: AbortSignal.timeout(config.api.timeout),
-  })
-  
+    signal: AbortSignal.timeout(appConfig.api.timeout),
+  });
+
   if (!response.ok) {
     const error = await response.text();
-    throw new Error(error || 'Failed to get metrics')
+    throw new Error(error || 'Failed to get metrics');
   }
-  
-  return response.text()
+
+  return response.text();
 }
 
 // Learning Style API Endpoints - VARK + Felder-Silverman Hibrit Sistem
 export async function detectLearningStyle(studentId: string, forceRecalculation: boolean = false) {
   const response = await fetch(`${API_BASE_URL}/api/v1/learning-style/detect/${studentId}?force_recalculation=${forceRecalculation}`, {
-    headers: getAuthHeaders(),
-    signal: AbortSignal.timeout(config.api.timeout),
-  })
+    headers: getHeaders(),
+    signal: AbortSignal.timeout(appConfig.api.timeout),
+  });
 
   if (!response.ok) {
     const error = await response.text();
-    throw new Error(error || 'Failed to detect learning style')
+    throw new Error(error || 'Failed to detect learning style');
   }
 
-  return response.json()
+  return response.json();
 }
 
 export async function getContentRecommendations(studentId: string, subjectArea: string = 'matematik', difficultyLevel: string = 'orta', forceRefresh: boolean = false) {
   const response = await fetch(`${API_BASE_URL}/api/v1/learning-style/recommendations/${studentId}?subject_area=${subjectArea}&difficulty_level=${difficultyLevel}&force_refresh=${forceRefresh}`, {
-    headers: getAuthHeaders(),
-    signal: AbortSignal.timeout(config.api.timeout),
-  })
-  
+    headers: getHeaders(),
+    signal: AbortSignal.timeout(appConfig.api.timeout),
+  });
+
   if (!response.ok) {
     const error = await response.text();
-    throw new Error(error || 'Failed to get content recommendations')
+    throw new Error(error || 'Failed to get content recommendations');
   }
-  
-  return response.json()
+
+  return response.json();
 }
 
 export async function updateBehavioralData(studentId: string, behavioralData: {
@@ -517,19 +526,19 @@ export async function updateBehavioralData(studentId: string, behavioralData: {
 }) {
   const response = await fetch(`${API_BASE_URL}/api/v1/learning-style/behavioral-data/${studentId}`, {
     method: 'POST',
-    headers: getAuthHeaders({
+    headers: getHeaders({
       'Content-Type': 'application/json',
     }),
     body: JSON.stringify(behavioralData),
-    signal: AbortSignal.timeout(config.api.timeout),
-  })
-  
+    signal: AbortSignal.timeout(appConfig.api.timeout),
+  });
+
   if (!response.ok) {
     const error = await response.text();
-    throw new Error(error || 'Failed to update behavioral data')
+    throw new Error(error || 'Failed to update behavioral data');
   }
-  
-  return response.json()
+
+  return response.json();
 }
 
 export async function submitQuestionnaire(studentId: string, questionnaireData: {
@@ -539,173 +548,173 @@ export async function submitQuestionnaire(studentId: string, questionnaireData: 
 }) {
   const response = await fetch(`${API_BASE_URL}/api/v1/learning-style/questionnaire/${studentId}`, {
     method: 'POST',
-    headers: getAuthHeaders({
+    headers: getHeaders({
       'Content-Type': 'application/json',
     }),
     body: JSON.stringify(questionnaireData),
-    signal: AbortSignal.timeout(config.api.timeout),
-  })
-  
+    signal: AbortSignal.timeout(appConfig.api.timeout),
+  });
+
   if (!response.ok) {
     const error = await response.text();
-    throw new Error(error || 'Failed to submit questionnaire')
+    throw new Error(error || 'Failed to submit questionnaire');
   }
-  
-  return response.json()
+
+  return response.json();
 }
 
 export async function getLearningStyleExplanation(studentId: string) {
   const response = await fetch(`${API_BASE_URL}/api/v1/learning-style/explanation/${studentId}`, {
-    headers: getAuthHeaders(),
-    signal: AbortSignal.timeout(config.api.timeout),
-  })
-  
+    headers: getHeaders(),
+    signal: AbortSignal.timeout(appConfig.api.timeout),
+  });
+
   if (!response.ok) {
     const error = await response.text();
-    throw new Error(error || 'Failed to get learning style explanation')
+    throw new Error(error || 'Failed to get learning style explanation');
   }
-  
-  return response.json()
+
+  return response.json();
 }
 
 export async function getAllHybridCodes() {
   const response = await fetch(`${API_BASE_URL}/api/v1/learning-style/hybrid-codes`, {
-    headers: getAuthHeaders(),
-    signal: AbortSignal.timeout(config.api.timeout),
-  })
-  
+    headers: getHeaders(),
+    signal: AbortSignal.timeout(appConfig.api.timeout),
+  });
+
   if (!response.ok) {
     const error = await response.text();
-    throw new Error(error || 'Failed to get hybrid codes')
+    throw new Error(error || 'Failed to get hybrid codes');
   }
-  
-  return response.json()
+
+  return response.json();
 }
 
 export async function getLearningStyleStatistics() {
   const response = await fetch(`${API_BASE_URL}/api/v1/learning-style/statistics`, {
-    headers: getAuthHeaders(),
-    signal: AbortSignal.timeout(config.api.timeout),
-  })
-  
+    headers: getHeaders(),
+    signal: AbortSignal.timeout(appConfig.api.timeout),
+  });
+
   if (!response.ok) {
     const error = await response.text();
-    throw new Error(error || 'Failed to get learning style statistics')
+    throw new Error(error || 'Failed to get learning style statistics');
   }
-  
-  return response.json()
+
+  return response.json();
 }
 
 export async function exportLearningProfile(studentId: string) {
   const response = await fetch(`${API_BASE_URL}/api/v1/learning-style/export/${studentId}`, {
-    headers: getAuthHeaders(),
-    signal: AbortSignal.timeout(config.api.timeout),
-  })
-  
+    headers: getHeaders(),
+    signal: AbortSignal.timeout(appConfig.api.timeout),
+  });
+
   if (!response.ok) {
     const error = await response.text();
-    throw new Error(error || 'Failed to export learning profile')
+    throw new Error(error || 'Failed to export learning profile');
   }
-  
-  return response.json()
+
+  return response.json();
 }
 
 export async function updateRecommendationsBasedOnPerformance(studentId: string, performanceData: Record<string, number>) {
   const response = await fetch(`${API_BASE_URL}/api/v1/learning-style/update-recommendations/${studentId}`, {
     method: 'POST',
-    headers: getAuthHeaders({
+    headers: getHeaders({
       'Content-Type': 'application/json',
     }),
     body: JSON.stringify(performanceData),
-    signal: AbortSignal.timeout(config.api.timeout),
-  })
-  
+    signal: AbortSignal.timeout(appConfig.api.timeout),
+  });
+
   if (!response.ok) {
     const error = await response.text();
-    throw new Error(error || 'Failed to update recommendations based on performance')
+    throw new Error(error || 'Failed to update recommendations based on performance');
   }
-  
-  return response.json()
+
+  return response.json();
 }
 
 export async function getLearningStyleHealth() {
   const response = await fetch(`${API_BASE_URL}/api/v1/learning-style/health`, {
-    headers: getAuthHeaders(),
-    signal: AbortSignal.timeout(config.api.timeout),
-  })
-  
+    headers: getHeaders(),
+    signal: AbortSignal.timeout(appConfig.api.timeout),
+  });
+
   if (!response.ok) {
     const error = await response.text();
-    throw new Error(error || 'Failed to get learning style system health')
+    throw new Error(error || 'Failed to get learning style system health');
   }
-  
-  return response.json()
+
+  return response.json();
 }
 
 // Öğrenci Dashboard API Fonksiyonları
 export async function getDashboardStats() {
   const response = await fetch(`${API_BASE_URL}/api/v1/student-dashboard/istatistikler`, {
-    headers: getAuthHeaders(),
-    signal: AbortSignal.timeout(config.api.timeout),
-  })
-  
+    headers: getHeaders(),
+    signal: AbortSignal.timeout(appConfig.api.timeout),
+  });
+
   if (!response.ok) {
     const error = await response.text();
-    throw new Error(error || 'Failed to get dashboard stats')
+    throw new Error(error || 'Failed to get dashboard stats');
   }
-  
-  return response.json()
+
+  return response.json();
 }
 
 export async function getExamHistory(limit: number = 20, offset: number = 0, examType?: string) {
   const params = new URLSearchParams({
     limit: limit.toString(),
     offset: offset.toString(),
-  })
-  
+  });
+
   if (examType) {
-    params.append('sinav_tipi', examType)
+    params.append('sinav_tipi', examType);
   }
-  
+
   const response = await fetch(`${API_BASE_URL}/api/v1/student-dashboard/sinav-gecmisi?${params}`, {
-    headers: getAuthHeaders(),
-    signal: AbortSignal.timeout(config.api.timeout),
-  })
-  
+    headers: getHeaders(),
+    signal: AbortSignal.timeout(appConfig.api.timeout),
+  });
+
   if (!response.ok) {
     const error = await response.text();
-    throw new Error(error || 'Failed to get exam history')
+    throw new Error(error || 'Failed to get exam history');
   }
-  
-  return response.json()
+
+  return response.json();
 }
 
 export async function getPerformanceTrend(days: number = 30) {
   const response = await fetch(`${API_BASE_URL}/api/v1/student-dashboard/performans-trendi?gun_sayisi=${days}`, {
-    headers: getAuthHeaders(),
-    signal: AbortSignal.timeout(config.api.timeout),
-  })
-  
+    headers: getHeaders(),
+    signal: AbortSignal.timeout(appConfig.api.timeout),
+  });
+
   if (!response.ok) {
     const error = await response.text();
-    throw new Error(error || 'Failed to get performance trend')
+    throw new Error(error || 'Failed to get performance trend');
   }
-  
-  return response.json()
+
+  return response.json();
 }
 
 export async function getGoals(activeOnly: boolean = false) {
   const response = await fetch(`${API_BASE_URL}/api/v1/student-dashboard/hedefler?aktif_sadece=${activeOnly}`, {
-    headers: getAuthHeaders(),
-    signal: AbortSignal.timeout(config.api.timeout),
-  })
-  
+    headers: getHeaders(),
+    signal: AbortSignal.timeout(appConfig.api.timeout),
+  });
+
   if (!response.ok) {
     const error = await response.text();
-    throw new Error(error || 'Failed to get goals')
+    throw new Error(error || 'Failed to get goals');
   }
-  
-  return response.json()
+
+  return response.json();
 }
 
 export async function createGoal(goalData: {
@@ -718,97 +727,97 @@ export async function createGoal(goalData: {
 }) {
   const response = await fetch(`${API_BASE_URL}/api/v1/student-dashboard/hedef-olustur`, {
     method: 'POST',
-    headers: getAuthHeaders({ 'Content-Type': 'application/json' }),
+    headers: getHeaders({ 'Content-Type': 'application/json' }),
     body: JSON.stringify({
       ...goalData,
       hedef_id: '',
       mevcut_deger: 0,
       durum: 'aktif',
-      olusturma_tarihi: new Date().toISOString()
+      olusturma_tarihi: new Date().toISOString(),
     }),
-    signal: AbortSignal.timeout(config.api.timeout),
-  })
-  
+    signal: AbortSignal.timeout(appConfig.api.timeout),
+  });
+
   if (!response.ok) {
     const error = await response.text();
-    throw new Error(error || 'Failed to create goal')
+    throw new Error(error || 'Failed to create goal');
   }
-  
-  return response.json()
+
+  return response.json();
 }
 
-export async function updateGoal(goalId: string, goalData: any) {
+export async function updateGoal(goalId: string, goalData: GoalUpdateData) {
   const response = await fetch(`${API_BASE_URL}/api/v1/student-dashboard/hedef-guncelle/${goalId}`, {
     method: 'PUT',
-    headers: getAuthHeaders({ 'Content-Type': 'application/json' }),
+    headers: getHeaders({ 'Content-Type': 'application/json' }),
     body: JSON.stringify(goalData),
-    signal: AbortSignal.timeout(config.api.timeout),
-  })
-  
+    signal: AbortSignal.timeout(appConfig.api.timeout),
+  });
+
   if (!response.ok) {
     const error = await response.text();
-    throw new Error(error || 'Failed to update goal')
+    throw new Error(error || 'Failed to update goal');
   }
-  
-  return response.json()
+
+  return response.json();
 }
 
 export async function deleteGoal(goalId: string) {
   const response = await fetch(`${API_BASE_URL}/api/v1/student-dashboard/hedef-sil/${goalId}`, {
     method: 'DELETE',
-    headers: getAuthHeaders(),
-    signal: AbortSignal.timeout(config.api.timeout),
-  })
-  
+    headers: getHeaders(),
+    signal: AbortSignal.timeout(appConfig.api.timeout),
+  });
+
   if (!response.ok) {
     const error = await response.text();
-    throw new Error(error || 'Failed to delete goal')
+    throw new Error(error || 'Failed to delete goal');
   }
-  
-  return response.json()
+
+  return response.json();
 }
 
 export async function getNotifications(unreadOnly: boolean = false, limit: number = 50) {
   const response = await fetch(`${API_BASE_URL}/api/v1/student-dashboard/bildirimler?okunmamis_sadece=${unreadOnly}&limit=${limit}`, {
-    headers: getAuthHeaders(),
-    signal: AbortSignal.timeout(config.api.timeout),
-  })
-  
+    headers: getHeaders(),
+    signal: AbortSignal.timeout(appConfig.api.timeout),
+  });
+
   if (!response.ok) {
     const error = await response.text();
-    throw new Error(error || 'Failed to get notifications')
+    throw new Error(error || 'Failed to get notifications');
   }
-  
-  return response.json()
+
+  return response.json();
 }
 
 export async function markNotificationAsRead(notificationId: string) {
   const response = await fetch(`${API_BASE_URL}/api/v1/student-dashboard/bildirim-okundu/${notificationId}`, {
     method: 'PUT',
-    headers: getAuthHeaders(),
-    signal: AbortSignal.timeout(config.api.timeout),
-  })
-  
+    headers: getHeaders(),
+    signal: AbortSignal.timeout(appConfig.api.timeout),
+  });
+
   if (!response.ok) {
     const error = await response.text();
-    throw new Error(error || 'Failed to mark notification as read')
+    throw new Error(error || 'Failed to mark notification as read');
   }
-  
-  return response.json()
+
+  return response.json();
 }
 
 export async function getStudentProfile() {
   const response = await fetch(`${API_BASE_URL}/api/v1/student-dashboard/profil`, {
-    headers: getAuthHeaders(),
-    signal: AbortSignal.timeout(config.api.timeout),
-  })
-  
+    headers: getHeaders(),
+    signal: AbortSignal.timeout(appConfig.api.timeout),
+  });
+
   if (!response.ok) {
     const error = await response.text();
-    throw new Error(error || 'Failed to get student profile')
+    throw new Error(error || 'Failed to get student profile');
   }
-  
-  return response.json()
+
+  return response.json();
 }
 
 export async function updateStudentProfile(profileData: {
@@ -821,38 +830,44 @@ export async function updateStudentProfile(profileData: {
 }) {
   const response = await fetch(`${API_BASE_URL}/api/v1/student-dashboard/profil-guncelle`, {
     method: 'PUT',
-    headers: getAuthHeaders({ 'Content-Type': 'application/json' }),
+    headers: getHeaders({ 'Content-Type': 'application/json' }),
     body: JSON.stringify(profileData),
-    signal: AbortSignal.timeout(config.api.timeout),
-  })
-  
+    signal: AbortSignal.timeout(appConfig.api.timeout),
+  });
+
   if (!response.ok) {
     const error = await response.text();
-    throw new Error(error || 'Failed to update student profile')
+    throw new Error(error || 'Failed to update student profile');
   }
-  
-  return response.json()
+
+  return response.json();
 }
 
 export async function getDashboardSummary() {
   const response = await fetch(`${API_BASE_URL}/api/v1/student-dashboard/ozet`, {
-    headers: getAuthHeaders(),
-    signal: AbortSignal.timeout(config.api.timeout),
-  })
-  
+    headers: getHeaders(),
+    signal: AbortSignal.timeout(appConfig.api.timeout),
+  });
+
   if (!response.ok) {
     const error = await response.text();
-    throw new Error(error || 'Failed to get dashboard summary')
+    throw new Error(error || 'Failed to get dashboard summary');
   }
-  
-  return response.json()
+
+  return response.json();
 }
 
 // ==================== WEBSOCKET CONNECTION WITH AUTH & RECONNECTION ====================
 
+export interface WebSocketMessage {
+  type: string;
+  payload: Record<string, unknown>;
+  timestamp?: string;
+}
+
 export interface WebSocketOptions {
-  onMessage: (data: any) => void;
-  onError?: (error: any) => void;
+  onMessage: (data: WebSocketMessage) => void;
+  onError?: (error: Error | Event) => void;
   onConnect?: () => void;
   onDisconnect?: () => void;
   reconnect?: boolean;
@@ -877,7 +892,7 @@ export function createWebSocketConnection(options: WebSocketOptions) {
     heartbeatInterval = 30000,
   } = options;
 
-  const wsURL = config.features.websocket ? `${config.api.wsURL}/ws` : null;
+  const wsURL = appConfig.features.websocket ? `${appConfig.api.wsURL}/ws` : null;
 
   if (!wsURL) {
     console.warn('WebSocket is disabled');
@@ -892,16 +907,15 @@ export function createWebSocketConnection(options: WebSocketOptions) {
 
   function connect() {
     try {
-      // ✅ Add JWT token to WebSocket URL as query parameter
-      // (WebSocket doesn't support custom headers, so we use query param)
-      const token = localStorage.getItem('access_token');
-      const urlWithAuth = token ? `${wsURL}?token=${encodeURIComponent(token)}` : wsURL;
-
-      if (!urlWithAuth) {
+      // SECURITY: WebSocket authentication via cookies
+      // httpOnly cookies are sent automatically if the WebSocket server
+      // is on the same domain (or configured for CORS with credentials)
+      // No localStorage token needed - server validates session via cookie
+      if (!wsURL) {
         throw new Error('WebSocket URL is not configured');
       }
 
-      ws = new WebSocket(urlWithAuth);
+      ws = new WebSocket(wsURL);
 
       ws.onopen = () => {
         console.log('✅ WebSocket connected');
@@ -910,7 +924,7 @@ export function createWebSocketConnection(options: WebSocketOptions) {
         // Start heartbeat
         startHeartbeat();
 
-        if (onConnect) onConnect();
+        if (onConnect) {onConnect();}
       };
 
       ws.onmessage = (event) => {
@@ -931,7 +945,7 @@ export function createWebSocketConnection(options: WebSocketOptions) {
 
       ws.onerror = (error) => {
         console.error('❌ WebSocket error:', error);
-        if (onError) onError(error);
+        if (onError) {onError(error);}
       };
 
       ws.onclose = (event) => {
@@ -943,7 +957,7 @@ export function createWebSocketConnection(options: WebSocketOptions) {
 
         stopHeartbeat();
 
-        if (onDisconnect) onDisconnect();
+        if (onDisconnect) {onDisconnect();}
 
         // Attempt reconnection if not manually closed
         if (!isManualClose && reconnect && reconnectAttempts < maxReconnectAttempts) {
@@ -960,12 +974,12 @@ export function createWebSocketConnection(options: WebSocketOptions) {
       };
     } catch (error) {
       console.error('❌ Failed to create WebSocket connection:', error);
-      if (onError) onError(error);
+      if (onError) {onError(error instanceof Error ? error : new Error(String(error)));}
     }
   }
 
   function startHeartbeat() {
-    if (heartbeatTimer) clearInterval(heartbeatTimer);
+    if (heartbeatTimer) {clearInterval(heartbeatTimer);}
 
     heartbeatTimer = setInterval(() => {
       if (ws && ws.readyState === WebSocket.OPEN) {
@@ -986,7 +1000,7 @@ export function createWebSocketConnection(options: WebSocketOptions) {
   connect();
 
   return {
-    send: (data: any) => {
+    send: (data: WebSocketMessage | Record<string, unknown>) => {
       if (ws && ws.readyState === WebSocket.OPEN) {
         ws.send(JSON.stringify(data));
       } else {
@@ -996,11 +1010,11 @@ export function createWebSocketConnection(options: WebSocketOptions) {
     close: () => {
       isManualClose = true;
       stopHeartbeat();
-      if (reconnectTimeout) clearTimeout(reconnectTimeout);
-      if (ws) ws.close();
+      if (reconnectTimeout) {clearTimeout(reconnectTimeout);}
+      if (ws) {ws.close();}
     },
     reconnect: () => {
-      if (ws) ws.close();
+      if (ws) {ws.close();}
       isManualClose = false;
       reconnectAttempts = 0;
       connect();
@@ -1011,9 +1025,15 @@ export function createWebSocketConnection(options: WebSocketOptions) {
 
 // ==================== STREAMING API ENDPOINTS (SSE) ====================
 
+export interface SSEEventData {
+  content?: string;
+  documents?: unknown[];
+  [key: string]: unknown;
+}
+
 export interface SSEEvent {
   event: string;
-  data: any;
+  data: SSEEventData;
 }
 
 export interface StreamingChatRequest {
@@ -1044,12 +1064,12 @@ export interface ExamExplanationStreamingRequest {
 export function streamChat(
   request: StreamingChatRequest,
   onToken: (content: string) => void,
-  onDone: (metadata: any) => void,
-  onError: (error: Error) => void
+  onDone: (metadata: StreamMetadata) => void,
+  onError: (error: Error) => void,
 ): () => void {
   const eventSource = new EventSource(
     `${API_BASE_URL}/api/v1/streaming/chat?` +
-    new URLSearchParams({ data: JSON.stringify(request) })
+    new URLSearchParams({ data: JSON.stringify(request) }),
   );
 
   eventSource.addEventListener('token', (event) => {
@@ -1071,8 +1091,9 @@ export function streamChat(
     }
   });
 
-  eventSource.addEventListener('error', (event: any) => {
-    onError(new Error(event.data || 'Streaming error'));
+  eventSource.addEventListener('error', (event: Event) => {
+    const messageEvent = event as MessageEvent;
+    onError(new Error(messageEvent.data || 'Streaming error'));
     eventSource.close();
   });
 
@@ -1087,11 +1108,11 @@ export function streamChat(
 export function streamRAGQuery(
   request: RAGStreamingRequest,
   onEvent: (event: SSEEvent) => void,
-  onError: (error: Error) => void
+  onError: (error: Error) => void,
 ): () => void {
   const eventSource = new EventSource(
     `${API_BASE_URL}/api/v1/streaming/rag?` +
-    new URLSearchParams({ data: JSON.stringify(request) })
+    new URLSearchParams({ data: JSON.stringify(request) }),
   );
 
   const eventTypes = ['search_started', 'documents_found', 'reranking', 'generation_started', 'token', 'done'];
@@ -1111,8 +1132,9 @@ export function streamRAGQuery(
     });
   });
 
-  eventSource.addEventListener('error', (event: any) => {
-    onError(new Error(event.data || 'RAG streaming error'));
+  eventSource.addEventListener('error', (event: Event) => {
+    const messageEvent = event as MessageEvent;
+    onError(new Error(messageEvent.data || 'RAG streaming error'));
     eventSource.close();
   });
 
@@ -1125,12 +1147,12 @@ export function streamRAGQuery(
 export function streamExamExplanation(
   request: ExamExplanationStreamingRequest,
   onToken: (content: string) => void,
-  onDone: (metadata: any) => void,
-  onError: (error: Error) => void
+  onDone: (metadata: StreamMetadata) => void,
+  onError: (error: Error) => void,
 ): () => void {
   const eventSource = new EventSource(
     `${API_BASE_URL}/api/v1/streaming/exam-explanation?` +
-    new URLSearchParams({ data: JSON.stringify(request) })
+    new URLSearchParams({ data: JSON.stringify(request) }),
   );
 
   eventSource.addEventListener('token', (event) => {
@@ -1152,8 +1174,9 @@ export function streamExamExplanation(
     }
   });
 
-  eventSource.addEventListener('error', (event: any) => {
-    onError(new Error(event.data || 'Explanation streaming error'));
+  eventSource.addEventListener('error', (event: Event) => {
+    const messageEvent = event as MessageEvent;
+    onError(new Error(messageEvent.data || 'Explanation streaming error'));
     eventSource.close();
   });
 
@@ -1195,8 +1218,8 @@ export interface PerformanceMetrics {
  */
 export async function getPerformanceMetrics(): Promise<PerformanceMetrics> {
   const response = await fetch(`${API_BASE_URL}/api/v1/performance/metrics`, {
-    headers: getAuthHeaders(),
-    signal: AbortSignal.timeout(config.api.timeout),
+    headers: getHeaders(),
+    signal: AbortSignal.timeout(appConfig.api.timeout),
   });
 
   if (!response.ok) {
@@ -1212,8 +1235,8 @@ export async function getPerformanceMetrics(): Promise<PerformanceMetrics> {
  */
 export async function getLLMPoolStats() {
   const response = await fetch(`${API_BASE_URL}/api/v1/performance/llm-pool`, {
-    headers: getAuthHeaders(),
-    signal: AbortSignal.timeout(config.api.timeout),
+    headers: getHeaders(),
+    signal: AbortSignal.timeout(appConfig.api.timeout),
   });
 
   if (!response.ok) {
@@ -1249,7 +1272,7 @@ export interface VideoResponse {
   difficulty: string;
   exam_type: string;
   url: string;
-  
+
   // Enhanced scores from recommendation engine
   scores?: {
     turkish_score: number;
@@ -1257,12 +1280,12 @@ export interface VideoResponse {
     quality_score: number;
     final_score: number;
   };
-  
+
   // Validation flags
   is_accessible?: boolean;
   is_embeddable?: boolean;
   is_turkish?: boolean;
-  
+
   // Additional metadata
   description?: string;
   duration_minutes?: number;
@@ -1278,16 +1301,16 @@ export interface VideoResponse {
 export async function searchYouTubeVideos(request: VideoSearchRequest): Promise<VideoResponse[]> {
   const response = await fetch(`${API_BASE_URL}/api/youtube/search`, {
     method: 'POST',
-    headers: getAuthHeaders({ 'Content-Type': 'application/json' }),
+    headers: getHeaders({ 'Content-Type': 'application/json' }),
     body: JSON.stringify({
       subject: request.subject,
       difficulty: request.difficulty,
       exam_type: request.exam_type,
       max_results: request.max_results || 20,
       search_mode: request.search_mode || 'semantic',
-      custom_query: request.custom_query
+      custom_query: request.custom_query,
     }),
-    signal: AbortSignal.timeout(config.api.timeout),
+    signal: AbortSignal.timeout(appConfig.api.timeout),
   });
 
   if (!response.ok) {
@@ -1309,9 +1332,9 @@ export async function getPersonalizedVideoRecommendations(studentProfile: {
 }) {
   const response = await fetch(`${API_BASE_URL}/api/youtube/recommendations`, {
     method: 'POST',
-    headers: getAuthHeaders({ 'Content-Type': 'application/json' }),
+    headers: getHeaders({ 'Content-Type': 'application/json' }),
     body: JSON.stringify(studentProfile),
-    signal: AbortSignal.timeout(config.api.timeout),
+    signal: AbortSignal.timeout(appConfig.api.timeout),
   });
 
   if (!response.ok) {
@@ -1324,7 +1347,7 @@ export async function getPersonalizedVideoRecommendations(studentProfile: {
 
 /**
  * Search learning resources with Enhanced Resource Recommendation Engine
- * 
+ *
  * Bu fonksiyon yeni filtreleme ve skorlama sistemi ile video önerileri alır:
  * - Türkçe içerik filtresi (min score: 0.7)
  * - Konu uygunluğu skorlaması (min score: 0.6)
@@ -1351,12 +1374,12 @@ export async function searchLearningResources(request: {
   };
 }> {
   const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), config.api.timeout);
+  const timeoutId = setTimeout(() => controller.abort(), appConfig.api.timeout);
 
   try {
-    const response = await fetch(`${API_BASE_URL}/api/learning-path-v2/search-resources-with-fallback`, {
+    const response = await fetch(`${API_BASE_URL}/api/learning-path/search-resources`, {
       method: 'POST',
-      headers: getAuthHeaders({
+      headers: getHeaders({
         'Content-Type': 'application/json',
       }),
       body: JSON.stringify({
@@ -1378,10 +1401,32 @@ export async function searchLearningResources(request: {
     }
 
     const data = await response.json();
-    
+
     // Backend'den gelen resource formatını VideoResponse formatına dönüştür
+    interface BackendResource {
+      resource_id: string;
+      title: string;
+      channel_name?: string;
+      channel_id?: string;
+      duration?: string;
+      view_count?: number;
+      upload_date?: string;
+      thumbnail?: string;
+      scores?: { quality_score?: number };
+      difficulty?: string;
+      url?: string;
+      is_accessible?: boolean;
+      is_embeddable?: boolean;
+      is_turkish?: boolean;
+      description?: string;
+      duration_minutes?: number;
+      like_count?: number;
+      tags?: string[];
+      caption_available?: boolean;
+      definition?: string;
+    }
     if (data.success && data.resources) {
-      data.resources = data.resources.map((resource: any) => ({
+      data.resources = data.resources.map((resource: BackendResource) => ({
         video_id: resource.resource_id,
         title: resource.title,
         channel: resource.channel_name,
@@ -1395,15 +1440,15 @@ export async function searchLearningResources(request: {
         difficulty: resource.difficulty,
         exam_type: 'TYT',
         url: resource.url,
-        
+
         // Enhanced scores
         scores: resource.scores,
-        
+
         // Validation flags
         is_accessible: resource.is_accessible,
         is_embeddable: resource.is_embeddable,
         is_turkish: resource.is_turkish,
-        
+
         // Additional metadata
         description: resource.description,
         duration_minutes: resource.duration_minutes,
@@ -1413,15 +1458,15 @@ export async function searchLearningResources(request: {
         definition: resource.definition,
       }));
     }
-    
+
     return data;
-  } catch (error: any) {
+  } catch (error: unknown) {
     clearTimeout(timeoutId);
-    
-    if (error.name === 'AbortError') {
+
+    if (error instanceof Error && error.name === 'AbortError') {
       throw new Error('İstek zaman aşımına uğradı. Lütfen tekrar deneyin.');
     }
-    
+
     throw error;
   }
 }
@@ -1431,8 +1476,8 @@ export async function searchLearningResources(request: {
  */
 export async function getYouTubeSearchStats() {
   const response = await fetch(`${API_BASE_URL}/api/youtube/stats`, {
-    headers: getAuthHeaders(),
-    signal: AbortSignal.timeout(config.api.timeout),
+    headers: getHeaders(),
+    signal: AbortSignal.timeout(appConfig.api.timeout),
   });
 
   if (!response.ok) {
@@ -1448,8 +1493,8 @@ export async function getYouTubeSearchStats() {
  */
 export async function getYouTubeSupportedOptions() {
   const response = await fetch(`${API_BASE_URL}/api/youtube/subjects`, {
-    headers: getAuthHeaders(),
-    signal: AbortSignal.timeout(config.api.timeout),
+    headers: getHeaders(),
+    signal: AbortSignal.timeout(appConfig.api.timeout),
   });
 
   if (!response.ok) {
@@ -1465,8 +1510,8 @@ export async function getYouTubeSupportedOptions() {
  */
 export async function getVectorStoreStats() {
   const response = await fetch(`${API_BASE_URL}/api/v1/performance/vector-store`, {
-    headers: getAuthHeaders(),
-    signal: AbortSignal.timeout(config.api.timeout),
+    headers: getHeaders(),
+    signal: AbortSignal.timeout(appConfig.api.timeout),
   });
 
   if (!response.ok) {
@@ -1482,8 +1527,8 @@ export async function getVectorStoreStats() {
  */
 export async function getCacheStats() {
   const response = await fetch(`${API_BASE_URL}/api/v1/performance/cache`, {
-    headers: getAuthHeaders(),
-    signal: AbortSignal.timeout(config.api.timeout),
+    headers: getHeaders(),
+    signal: AbortSignal.timeout(appConfig.api.timeout),
   });
 
   if (!response.ok) {
@@ -1500,8 +1545,8 @@ export async function getCacheStats() {
 export async function clearCacheByTag(tag: string) {
   const response = await fetch(`${API_BASE_URL}/api/v1/performance/cache/clear/${tag}`, {
     method: 'DELETE',
-    headers: getAuthHeaders(),
-    signal: AbortSignal.timeout(config.api.timeout),
+    headers: getHeaders(),
+    signal: AbortSignal.timeout(appConfig.api.timeout),
   });
 
   if (!response.ok) {
@@ -1517,8 +1562,8 @@ export async function clearCacheByTag(tag: string) {
  */
 export async function getRAGPipelineStats() {
   const response = await fetch(`${API_BASE_URL}/api/v1/performance/rag-pipeline`, {
-    headers: getAuthHeaders(),
-    signal: AbortSignal.timeout(config.api.timeout),
+    headers: getHeaders(),
+    signal: AbortSignal.timeout(appConfig.api.timeout),
   });
 
   if (!response.ok) {

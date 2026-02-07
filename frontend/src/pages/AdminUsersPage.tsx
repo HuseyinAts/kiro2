@@ -3,11 +3,12 @@
  * Glassmorphism ile kullanıcı yönetimi
  */
 
-import React from 'react'
-import { ModernAdminUsersPage } from './ModernAdminUsersPage'
+import * as React from 'react';
+
+import { ModernAdminUsersPage } from './ModernAdminUsersPage';
 
 export const AdminUsersPage: React.FC = () => {
-  return <ModernAdminUsersPage />
-}
+  return <ModernAdminUsersPage />;
+};
 
-export default AdminUsersPage
+export default AdminUsersPage;

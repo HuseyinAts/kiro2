@@ -7,7 +7,7 @@ Soru üretim kalitesini değerlendirmek için kullanılır.
 Requirements: REQ-48.53 - REQ-48.56
 """
 
-from typing import List, Dict, Optional, Tuple
+from typing import List, Dict, Optional
 from dataclasses import dataclass
 import re
 from collections import Counter

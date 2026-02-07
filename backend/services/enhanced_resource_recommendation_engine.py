@@ -2,6 +2,34 @@
 Enhanced Resource Recommendation Engine
 Tüm filtreleri ve skorlayıcıları entegre ederek kaliteli video önerileri oluşturur
 Teknofest 2025 - Eğitim Eylemci Projesi
+
+RECOMMENDATION SERVICE HIERARCHY (2025-01-24):
+Bu proje 4 oneri servisi iceriyor:
+
+1. CONTENT RECOMMENDATIONS (Genel):
+   - content_recommendation_service.py - Hybrid filtering (REQ-4)
+
+2. VIDEO RECOMMENDATIONS (YouTube):
+   - video_recommendation_service.py - Ana orchestrator (caching)
+   - enhanced_resource_recommendation_engine.py (BU DOSYA) - Quality scoring
+   - video_recommendation_monitoring.py - Monitoring
+
+3. YOUTUBE SEARCH:
+   - semantic_youtube_search.py - Semantic search
+   - advanced_youtube_search.py - Advanced filters
+
+BU DOSYANIN ROLU:
+- TurkishContentFilter entegrasyonu
+- SubjectRelevanceScorer entegrasyonu
+- VideoQualityValidator entegrasyonu
+- Rate limiting
+- Error handling
+
+REFACTORING NEEDED:
+Bu dosya 1000+ satir. Bolunmesi onerilen:
+1. recommendation_filters.py - Filtering logic
+2. recommendation_scorers.py - Scoring logic
+3. recommendation_orchestrator.py - Orchestration
 """
 
 import asyncio
@@ -13,11 +41,9 @@ from typing import Any, Dict, List, Optional
 from integrations.youtube_service import YouTubeService, YouTubeVideo
 from services.turkish_content_filter import (
     TurkishContentFilter,
-    TurkishValidationResult,
 )
 from services.subject_relevance_scorer import (
     SubjectRelevanceScorer,
-    RelevanceScore,
 )
 from services.video_quality_validator import (
     VideoQualityValidator,
@@ -34,7 +60,6 @@ from services.youtube_error_handlers import (
 from core.cache import cache_manager
 from services.video_recommendation_monitoring import (
     get_video_recommendation_monitor,
-    VideoRecommendationMonitor,
 )
 
 logger = logging.getLogger(__name__)
@@ -770,7 +795,7 @@ class EnhancedResourceRecommendationEngine:
             if "A" in learning_style_upper:
                 # Assume all videos have audio, give small bonus
                 learning_style_bonus += 0.05
-                logger.debug(f"Auditory learner bonus: +0.05")
+                logger.debug("Auditory learner bonus: +0.05")
 
             # Reading/Writing learners (prefer captions)
             if has_captions and learning_style_upper.startswith("V"):

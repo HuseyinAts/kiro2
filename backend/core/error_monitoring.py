@@ -374,8 +374,12 @@ class AlertRule:
     def trigger(self, metrics: ErrorMetrics) -> str:
         """Trigger alert and return message"""
         self.last_triggered = datetime.now()
+        # Pre-compute method values for format string
         return self.message_template.format(
-            name=self.name, metrics=metrics, timestamp=self.last_triggered.isoformat()
+            name=self.name,
+            metrics=metrics,
+            timestamp=self.last_triggered.isoformat(),
+            error_rate=metrics.get_error_rate_per_minute(),
         )
 
 
@@ -430,7 +434,7 @@ class AlertManager:
                 name="High Error Rate",
                 condition=lambda m: m.get_error_rate_per_minute() > 10,
                 severity=ErrorSeverity.HIGH,
-                message_template="High error rate detected: {metrics.get_error_rate_per_minute():.1f} errors/minute",
+                message_template="High error rate detected: {error_rate:.1f} errors/minute",
             )
         )
 

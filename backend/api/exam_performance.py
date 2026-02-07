@@ -10,8 +10,6 @@ Bu modül sınav performans analizi için API endpoint'lerini sağlar:
 """
 
 from typing import Any, Dict, List, Optional
-import hashlib
-import json
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from fastapi.security import HTTPBearer
@@ -59,8 +57,8 @@ class SubjectWeaknessResponse(BaseModel):
     difficulty_distribution: Dict[str, int] = Field(..., description="Zorluk dağılımı")
     improvement_potential: float = Field(..., description="Gelişim potansiyeli (0-1)")
 
-    class Config:
-        schema_extra = {
+    model_config = {
+        "json_schema_extra": {
             "example": {
                 "subject": "matematik",
                 "topic": "Fonksiyonlar",
@@ -75,6 +73,7 @@ class SubjectWeaknessResponse(BaseModel):
                 "improvement_potential": 0.75,
             }
         }
+    }
 
 
 class StudyRecommendationResponse(BaseModel):
@@ -93,8 +92,8 @@ class StudyRecommendationResponse(BaseModel):
     difficulty_focus: str = Field(..., description="Odaklanılacak zorluk seviyesi")
     explanation: str = Field(..., description="Açıklama")
 
-    class Config:
-        schema_extra = {
+    model_config = {
+        "json_schema_extra": {
             "example": {
                 "subject": "matematik",
                 "topic": "Fonksiyonlar",
@@ -113,6 +112,7 @@ class StudyRecommendationResponse(BaseModel):
                 "explanation": "Orta seviye sorularla pratik yaparak konuyu pekiştirin.",
             }
         }
+    }
 
 
 class PerformanceComparisonResponse(BaseModel):
@@ -125,8 +125,8 @@ class PerformanceComparisonResponse(BaseModel):
     percentile: float = Field(..., description="Yüzdelik dilim")
     ranking_info: Dict[str, Any] = Field(..., description="Sıralama bilgileri")
 
-    class Config:
-        schema_extra = {
+    model_config = {
+        "json_schema_extra": {
             "example": {
                 "student_score": 75.5,
                 "class_average": 68.2,
@@ -140,6 +140,7 @@ class PerformanceComparisonResponse(BaseModel):
                 },
             }
         }
+    }
 
 
 class TimeAnalysisResponse(BaseModel):
@@ -157,8 +158,8 @@ class TimeAnalysisResponse(BaseModel):
     )
     speed_analysis: Dict[str, int] = Field(..., description="Hız analizi")
 
-    class Config:
-        schema_extra = {
+    model_config = {
+        "json_schema_extra": {
             "example": {
                 "total_duration_seconds": 8400,
                 "total_duration_minutes": 140.0,
@@ -171,6 +172,7 @@ class TimeAnalysisResponse(BaseModel):
                 "speed_analysis": {"too_fast": 15, "optimal": 90, "too_slow": 15},
             }
         }
+    }
 
 
 class ImprovementTrendsResponse(BaseModel):
@@ -182,8 +184,8 @@ class ImprovementTrendsResponse(BaseModel):
     recent_scores: List[float] = Field(..., description="Son sınav puanları")
     score_variance: float = Field(..., description="Puan varyansı")
 
-    class Config:
-        schema_extra = {
+    model_config = {
+        "json_schema_extra": {
             "example": {
                 "trend": "improving",
                 "improvement_rate": 3.2,
@@ -192,6 +194,7 @@ class ImprovementTrendsResponse(BaseModel):
                 "score_variance": 12.8,
             }
         }
+    }
 
 
 class NextExamPredictionResponse(BaseModel):
@@ -205,8 +208,8 @@ class NextExamPredictionResponse(BaseModel):
     )
     probability_of_improvement: float = Field(..., description="Gelişim olasılığı (%)")
 
-    class Config:
-        schema_extra = {
+    model_config = {
+        "json_schema_extra": {
             "example": {
                 "predicted_score": 78.7,
                 "confidence_interval": {"lower": 75.2, "upper": 82.1},
@@ -215,6 +218,7 @@ class NextExamPredictionResponse(BaseModel):
                 "probability_of_improvement": 82.0,
             }
         }
+    }
 
 
 class DetailedPerformanceAnalysisResponse(BaseModel):
@@ -376,7 +380,7 @@ async def get_detailed_performance_analysis(
         )
 
         logger.info(
-            f"Detaylı performans analizi sunuldu",
+            "Detaylı performans analizi sunuldu",
             extra_data={
                 "exam_session_id": exam_session_id,
                 "student_id": current_user["user_id"],
@@ -462,7 +466,7 @@ async def get_subject_weaknesses(
             )
 
         logger.info(
-            f"Zayıflık analizi sunuldu",
+            "Zayıflık analizi sunuldu",
             extra_data={
                 "exam_session_id": exam_session_id,
                 "student_id": current_user["user_id"],
@@ -522,7 +526,7 @@ async def get_study_recommendations(
             )
 
         logger.info(
-            f"Çalışma önerileri sunuldu",
+            "Çalışma önerileri sunuldu",
             extra_data={
                 "exam_session_id": exam_session_id,
                 "student_id": current_user["user_id"],
@@ -581,7 +585,7 @@ async def get_performance_comparison(
         )
 
         logger.info(
-            f"Performans karşılaştırması sunuldu",
+            "Performans karşılaştırması sunuldu",
             extra_data={
                 "exam_session_id": exam_session_id,
                 "student_id": current_user["user_id"],
@@ -673,7 +677,7 @@ async def get_student_improvement_trends(
             )
 
             logger.info(
-                f"Gelişim trendi analizi sunuldu",
+                "Gelişim trendi analizi sunuldu",
                 extra_data={
                     "student_id": student_id,
                     "exam_type": exam_type.value,

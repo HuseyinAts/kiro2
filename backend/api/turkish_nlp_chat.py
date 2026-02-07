@@ -11,7 +11,11 @@ from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException
 from pydantic import BaseModel, Field
 
 from core.dependencies import get_current_user
-from core.turkish_nlp_chat_system import turkish_nlp_chat_system
+
+try:
+    from core.turkish_nlp_chat_system import turkish_nlp_chat_system
+except (ImportError, TypeError):
+    turkish_nlp_chat_system = None
 
 logger = logging.getLogger(__name__)
 

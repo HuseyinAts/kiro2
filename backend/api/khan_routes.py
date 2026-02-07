@@ -4,10 +4,9 @@ OAuth, content browsing, progress sync, and certificates
 """
 
 from fastapi import APIRouter, Depends, HTTPException, Query
-from fastapi.responses import RedirectResponse
 from sqlalchemy.ext.asyncio import AsyncSession
-from typing import List, Optional, Dict, Any
-from pydantic import BaseModel, UUID4
+from typing import List, Optional
+from pydantic import BaseModel
 from datetime import datetime
 
 # PHASE 1 FIX: Corrected import paths (removed 'backend.' prefix)

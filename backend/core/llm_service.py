@@ -1,595 +1,628 @@
 """
-HuggingFace Endpoint LLM Service - Performance Optimized
+LLM Service - Ollama Integration for KIRO2
 Teknofest 2025 - Eğitim Eylemci Projesi
+
+This module provides LLM integration using Ollama with Qwen3 models.
+Optimized for Turkish educational content generation.
+
+Supported Models:
+- qwen3:14b - Main text model (best quality)
+- qwen3-vl:8b - Vision model (OCR, image questions)
+- qwen3:8b - Fast model (low latency)
+
+Environment Variables:
+- OLLAMA_BASE_URL: Ollama server URL (default: http://localhost:11434)
+- OLLAMA_MODEL: Default model (default: qwen3:14b)
+- OLLAMA_VISION_MODEL: Vision model (default: qwen3-vl:8b)
+- OLLAMA_TIMEOUT: Request timeout in seconds (default: 120)
+- OLLAMA_THINKING_MODE: Enable thinking mode (default: true)
 """
 
-import hashlib
+from __future__ import annotations
+
 import json
 import logging
 import os
-import time
-from typing import Any
+from typing import Any, AsyncIterator
 
-import aiohttp
-from dotenv import load_dotenv
+import httpx
 
-# Load environment variables
-load_dotenv()
-
-# Configure logging
-logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# Performance optimization imports
-try:
-    import redis.asyncio as redis
 
-    REDIS_AVAILABLE = True
-except ImportError:
-    REDIS_AVAILABLE = False
-    logger.warning("Redis not available, using in-memory cache only")
+class OllamaError(Exception):
+    """Ollama API error."""
+
+    pass
 
 
-class HuggingFaceLLMService:
-    """HuggingFace Endpoint ile LLM işlemleri için servis - Performance Optimized"""
+class LLMService:
+    """
+    LLM Service with Ollama Integration.
 
-    def __init__(self):
-        # Use custom HuggingFace endpoint
-        self.endpoint_url = os.getenv(
-            "HUGGINGFACE_ENDPOINT",
-            "https://cf781mfqobm2ynkk.us-east-1.aws.endpoints.huggingface.cloud",
+    Provides async text generation, chat, and embeddings using Ollama.
+    Optimized for Turkish educational content (YKS/TYT/AYT).
+
+    Features:
+    - Async HTTP client with connection pooling
+    - Thinking mode for step-by-step reasoning
+    - Streaming support for real-time responses
+    - Automatic retry with exponential backoff
+    - Turkish language optimization
+
+    Example:
+        >>> from core.llm_service import llm_service
+        >>> response = await llm_service.generate("Merhaba, nasılsın?")
+        >>> print(response)
+    """
+
+    def __init__(self) -> None:
+        """Initialize LLM service with Ollama configuration."""
+        # Configuration from environment
+        self.base_url: str = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434")
+        self.model: str = os.getenv("OLLAMA_MODEL", "qwen3:14b")
+        self.vision_model: str = os.getenv("OLLAMA_VISION_MODEL", "qwen3-vl:8b")
+        self.timeout: int = int(os.getenv("OLLAMA_TIMEOUT", "120"))
+        self.thinking_mode: bool = os.getenv("OLLAMA_THINKING_MODE", "true").lower() == "true"
+
+        # Provider info
+        self.provider: str = "ollama"
+        self.initialized: bool = False
+        self._client: httpx.AsyncClient | None = None
+
+        # LangChain compatibility - initialize if available
+        self.chat_model: Any = None
+        self.llm: Any = None
+        self._init_langchain()
+
+        logger.info(
+            f"LLM Service initialized with Ollama. "
+            f"Model: {self.model}, Base URL: {self.base_url}"
         )
 
-        self.api_token = os.getenv("HUGGINGFACE_API_TOKEN", "")
-
-        # Headers with or without token
-        self.headers = {"Content-Type": "application/json"}
-        if self.api_token:
-            self.headers["Authorization"] = f"Bearer {self.api_token}"
-
-        # Performance optimizations
-        self._session = None
-        self._redis_client = None
-        self._cache = {}  # In-memory fallback cache
-        self._cache_ttl = int(os.getenv("LLM_CACHE_TTL", "3600"))  # 1 hour default
-        self._max_cache_size = int(os.getenv("LLM_MAX_CACHE_SIZE", "1000"))
-
-        # Connection pooling settings
-        self._connector_limit = int(os.getenv("HTTP_CONNECTOR_LIMIT", "100"))
-        self._connector_limit_per_host = int(
-            os.getenv("HTTP_CONNECTOR_LIMIT_PER_HOST", "30")
-        )
-
-        # Async components will be initialized on first use
-        self._initialized = False
-
-    async def _initialize_async_components(self):
-        """Initialize async components like Redis and HTTP session"""
+    def _init_langchain(self) -> None:
+        """Initialize LangChain-compatible LLM models if available."""
+        if os.environ.get("TESTING") == "true":
+            logger.info("Skipping LangChain init in test mode")
+            return
         try:
-            # Initialize Redis client if available
-            if REDIS_AVAILABLE:
-                redis_url = os.getenv("REDIS_URL", "redis://localhost:6379")
-                self._redis_client = redis.from_url(redis_url, decode_responses=True)
-                await self._redis_client.ping()
-                logger.info("Redis cache initialized successfully")
+            from langchain_ollama import ChatOllama, OllamaLLM
 
-            # Initialize HTTP session with connection pooling
-            connector = aiohttp.TCPConnector(
-                limit=self._connector_limit,
-                limit_per_host=self._connector_limit_per_host,
-                ttl_dns_cache=300,
-                use_dns_cache=True,
-                keepalive_timeout=30,
-                enable_cleanup_closed=True,
+            # Create LangChain-compatible chat model
+            self.chat_model = ChatOllama(
+                model=self.model,
+                base_url=self.base_url,
+                temperature=0.7,
             )
 
-            timeout = aiohttp.ClientTimeout(
-                total=int(os.getenv("LLM_TIMEOUT", "60")), connect=10, sock_read=30
+            # Create LangChain-compatible LLM
+            self.llm = OllamaLLM(
+                model=self.model,
+                base_url=self.base_url,
+                temperature=0.7,
             )
 
-            self._session = aiohttp.ClientSession(
-                connector=connector, timeout=timeout, headers=self.headers
+            logger.info(
+                f"LangChain Ollama models initialized: {self.model}"
             )
 
-            logger.info("HTTP session with connection pooling initialized")
+        except ImportError:
+            # Try older langchain_community package
+            try:
+                from langchain_community.chat_models import ChatOllama
+                from langchain_community.llms import Ollama
 
-        except Exception as e:
-            logger.error(f"Error initializing async components: {e}")
-
-    def _generate_cache_key(self, prompt: str, **kwargs) -> str:
-        """Generate cache key for prompt and parameters"""
-        cache_data = {
-            "prompt": prompt,
-            "max_tokens": kwargs.get("max_tokens", 2048),
-            "temperature": kwargs.get("temperature", 0.7),
-            "top_p": kwargs.get("top_p", 0.95),
-            "system_prompt": kwargs.get("system_prompt", ""),
-        }
-        cache_string = json.dumps(cache_data, sort_keys=True)
-        return hashlib.md5(cache_string.encode()).hexdigest()
-
-    async def _get_cached_response(self, cache_key: str) -> dict[str, Any] | None:
-        """Get cached response from Redis or in-memory cache"""
-        try:
-            # Try Redis first
-            if self._redis_client:
-                cached = await self._redis_client.get(f"llm_cache:{cache_key}")
-                if cached:
-                    logger.info(f"Cache hit (Redis): {cache_key[:8]}...")
-                    return json.loads(cached)
-
-            # Fallback to in-memory cache
-            if cache_key in self._cache:
-                cached_data, timestamp = self._cache[cache_key]
-                if time.time() - timestamp < self._cache_ttl:
-                    logger.info(f"Cache hit (memory): {cache_key[:8]}...")
-                    return cached_data
-                # Remove expired entry
-                del self._cache[cache_key]
-
-        except Exception as e:
-            logger.error(f"Error getting cached response: {e}")
-
-        return None
-
-    async def _set_cached_response(self, cache_key: str, response: dict[str, Any]):
-        """Set cached response in Redis or in-memory cache"""
-        try:
-            # Try Redis first
-            if self._redis_client:
-                await self._redis_client.setex(
-                    f"llm_cache:{cache_key}", self._cache_ttl, json.dumps(response)
+                self.chat_model = ChatOllama(
+                    model=self.model,
+                    base_url=self.base_url,
+                    temperature=0.7,
                 )
-                logger.debug(f"Response cached (Redis): {cache_key[:8]}...")
-                return
 
-            # Fallback to in-memory cache
-            # Implement LRU eviction if cache is full
-            if len(self._cache) >= self._max_cache_size:
-                # Remove oldest entry
-                oldest_key = min(self._cache.keys(), key=lambda k: self._cache[k][1])
-                del self._cache[oldest_key]
+                self.llm = Ollama(
+                    model=self.model,
+                    base_url=self.base_url,
+                    temperature=0.7,
+                )
 
-            self._cache[cache_key] = (response, time.time())
-            logger.debug(f"Response cached (memory): {cache_key[:8]}...")
+                logger.info(
+                    f"LangChain Community Ollama models initialized: {self.model}"
+                )
 
+            except ImportError:
+                logger.warning(
+                    "LangChain Ollama not available. "
+                    "Install with: pip install langchain-ollama"
+                )
+                self.chat_model = None
+                self.llm = None
+
+    async def _get_client(self) -> httpx.AsyncClient:
+        """Get or create async HTTP client with connection pooling."""
+        if self._client is None or self._client.is_closed:
+            self._client = httpx.AsyncClient(
+                base_url=self.base_url,
+                timeout=httpx.Timeout(self.timeout, connect=10.0),
+                limits=httpx.Limits(max_connections=10, max_keepalive_connections=5),
+            )
+            self.initialized = True
+        return self._client
+
+    async def close(self) -> None:
+        """Close HTTP client and release resources."""
+        if self._client and not self._client.is_closed:
+            await self._client.aclose()
+            self._client = None
+            self.initialized = False
+            logger.info("LLM Service client closed")
+
+    async def _check_health(self) -> bool:
+        """Check if Ollama server is healthy."""
+        try:
+            client = await self._get_client()
+            response = await client.get("/api/tags", timeout=5.0)
+            return response.status_code == 200
         except Exception as e:
-            logger.error(f"Error setting cached response: {e}")
-
-    async def _ensure_session(self):
-        """Ensure HTTP session is initialized"""
-        if not self._initialized:
-            await self._initialize_async_components()
-            self._initialized = True
-
-        if not self._session or self._session.closed:
-            await self._initialize_async_components()
+            logger.warning(f"Ollama health check failed: {e}")
+            return False
 
     async def generate(
         self,
         prompt: str,
-        max_tokens: int = 2048,
         temperature: float = 0.7,
-        top_p: float = 0.95,
+        max_tokens: int | None = None,
+        model: str | None = None,
+        thinking: bool | None = None,
         system_prompt: str | None = None,
-        use_cache: bool = True,
-    ) -> dict[str, Any]:
+        **kwargs: Any,
+    ) -> str:
         """
-        LLM'den metin üretimi - Performance Optimized with Caching
+        Generate text using Ollama LLM.
 
         Args:
-            prompt: Kullanıcı girdisi
-            max_tokens: Maximum token sayısı
-            temperature: Çeşitlilik parametresi
-            top_p: Nucleus sampling parametresi
-            system_prompt: Sistem mesajı
-            use_cache: Cache kullanılsın mı
+            prompt: Input prompt (Turkish or English)
+            temperature: Sampling temperature (0.0-1.0, default 0.7)
+            max_tokens: Maximum tokens to generate (None = model default)
+            model: Override default model (optional)
+            thinking: Enable thinking mode for reasoning (default from config)
+            system_prompt: System prompt for context (optional)
+            **kwargs: Additional Ollama parameters
 
         Returns:
-            Dict içinde üretilen metin ve metadata
+            Generated text response
+
+        Raises:
+            OllamaError: If generation fails
+
+        Example:
+            >>> response = await llm_service.generate(
+            ...     prompt="2x + 5 = 15 denklemini çöz",
+            ...     thinking=True
+            ... )
         """
         try:
-            # Check cache first if enabled
-            if use_cache:
-                cache_key = self._generate_cache_key(
-                    prompt,
-                    max_tokens=max_tokens,
-                    temperature=temperature,
-                    top_p=top_p,
-                    system_prompt=system_prompt,
-                )
+            client = await self._get_client()
+            use_model = model or self.model
+            use_thinking = thinking if thinking is not None else self.thinking_mode
 
-                cached_response = await self._get_cached_response(cache_key)
-                if cached_response:
-                    # Add cache hit metadata
-                    cached_response["metadata"]["cache_hit"] = True
-                    return cached_response
+            # Build prompt with thinking mode
+            final_prompt = prompt
+            if use_thinking and "/think" not in prompt.lower():
+                final_prompt = f"/think {prompt}"
 
-            # Ensure HTTP session is ready
-            await self._ensure_session()
-
-            # Prompt'u hazırla
-            full_prompt = self._prepare_prompt(prompt, system_prompt)
-
-            # Payload oluştur
-            payload = {
-                "inputs": full_prompt,
-                "parameters": {
-                    "max_new_tokens": max_tokens,
+            # Build request payload
+            payload: dict[str, Any] = {
+                "model": use_model,
+                "prompt": final_prompt,
+                "stream": False,
+                "options": {
                     "temperature": temperature,
-                    "top_p": top_p,
-                    "do_sample": True,
-                    "return_full_text": False,
                 },
             }
 
-            # Log the request
-            logger.info(f"Sending request to HuggingFace endpoint: {self.endpoint_url}")
-            logger.debug(f"Prompt length: {len(full_prompt)} characters")
+            if max_tokens:
+                payload["options"]["num_predict"] = max_tokens
 
-            # API çağrısı yap - Use optimized session with connection pooling
-            try:
-                logger.info("Making POST request to HuggingFace...")
-                async with self._session.post(
-                    self.endpoint_url, json=payload
-                ) as response:
-                    logger.info(f"Got response status: {response.status}")
-                    if response.status == 200:
-                        result = await response.json()
+            if system_prompt:
+                payload["system"] = system_prompt
 
-                        # Handle different response formats
-                        text = ""
-                        if isinstance(result, list) and len(result) > 0:
-                            # Public HuggingFace API format
-                            if "generated_text" in result[0]:
-                                generated = result[0]["generated_text"]
-                                # Remove the input prompt from the generated text if it's included
-                                if generated.startswith(full_prompt):
-                                    text = generated[len(full_prompt) :].strip()
-                                else:
-                                    text = generated
-                                # Limit response length and extract only first response
-                                if "\n\n### User:" in text:
-                                    text = text.split("\n\n### User:")[0].strip()
-                                elif "\n### User:" in text:
-                                    text = text.split("\n### User:")[0].strip()
-                                # Limit to reasonable length
-                                if len(text) > 1000:
-                                    text = text[:1000] + "..."
-                            # Custom endpoint format
-                            elif "predictions" in result[0]:
-                                text = result[0]["predictions"]
-                                # Skip if it's the placeholder response
-                                if text == "model çıktısı":
-                                    text = self._generate_educational_response(prompt)
-                        elif isinstance(result, dict):
-                            if "predictions" in result:
-                                text = result["predictions"]
-                                if text == "model çıktısı":
-                                    text = self._generate_educational_response(prompt)
-                            elif "generated_text" in result:
-                                text = result["generated_text"]
-                                # Limit response length for dict format too
-                                if "\n\n### User:" in text:
-                                    text = text.split("\n\n### User:")[0].strip()
-                                elif "\n### User:" in text:
-                                    text = text.split("\n### User:")[0].strip()
-                                if len(text) > 1000:
-                                    text = text[:1000] + "..."
-                            elif "error" in result:
-                                logger.error(f"API Error: {result['error']}")
-                                text = self._generate_educational_response(prompt)
+            # Add any extra options
+            for key, value in kwargs.items():
+                if key not in payload:
+                    payload["options"][key] = value
 
-                        response_data = {
-                            "success": True,
-                            "text": text
-                            if text
-                            else self._generate_educational_response(prompt),
-                            "metadata": {
-                                "temperature": temperature,
-                                "max_tokens": max_tokens,
-                                "model": "huggingface-endpoint",
-                                "cache_hit": False,
-                            },
-                        }
+            logger.debug(f"Ollama generate: model={use_model}, prompt_len={len(prompt)}")
 
-                        # Cache the response if caching is enabled
-                        if use_cache and response_data["success"]:
-                            await self._set_cached_response(cache_key, response_data)
+            response = await client.post("/api/generate", json=payload)
+            response.raise_for_status()
 
-                        return response_data
-                    if response.status == 401:
-                        # Authentication error - use fallback
-                        error_text = await response.text()
-                        logger.info(
-                            "No API token provided, using intelligent fallback responses"
-                        )
-                        return {
-                            "success": True,
-                            "text": self._generate_educational_response(prompt),
-                            "metadata": {
-                                "temperature": temperature,
-                                "max_tokens": max_tokens,
-                                "model": "fallback-educational",
-                            },
-                        }
-                    error_text = await response.text()
-                    logger.error(
-                        f"HuggingFace API Error: {response.status} - {error_text}"
-                    )
-                    # Use fallback for any error
-                    return {
-                        "success": True,
-                        "text": self._generate_educational_response(prompt),
-                        "metadata": {
-                            "temperature": temperature,
-                            "max_tokens": max_tokens,
-                            "model": "fallback-educational",
-                        },
-                    }
-            except TimeoutError:
-                logger.warning("HuggingFace request timed out after 15 seconds")
-                return {
-                    "success": True,
-                    "text": self._generate_educational_response(prompt),
-                    "metadata": {
-                        "temperature": temperature,
-                        "max_tokens": max_tokens,
-                        "model": "fallback-timeout",
-                    },
-                }
+            result = response.json()
+            generated_text = result.get("response", "")
+            thinking_text = result.get("thinking", "")
 
+            # Qwen3 puts content in 'thinking' field by default
+            # If response is empty but thinking has content, use thinking
+            if not generated_text and thinking_text:
+                generated_text = thinking_text
+
+            # For educational content, optionally include both
+            include_thinking = kwargs.get("include_thinking", False)
+            if include_thinking and thinking_text and result.get("response"):
+                # Both exist - combine them
+                generated_text = f"<düşünce>\n{thinking_text}\n</düşünce>\n\n{result.get('response', '')}"
+
+            logger.info(
+                f"Generated {len(generated_text)} chars "
+                f"(eval: {result.get('eval_count', 0)} tokens)"
+            )
+
+            return generated_text
+
+        except httpx.HTTPStatusError as e:
+            logger.error(f"Ollama HTTP error: {e.response.status_code}")
+            raise OllamaError(f"HTTP error: {e.response.status_code}") from e
+        except httpx.RequestError as e:
+            logger.error(f"Ollama request error: {e}")
+            raise OllamaError(f"Request error: {e}") from e
         except Exception as e:
-            logger.error(f"LLM Service Error: {e!s}")
-            return {"success": False, "error": str(e)}
-
-    def _prepare_prompt(
-        self, user_prompt: str, system_prompt: str | None = None
-    ) -> str:
-        """Prompt'u formatla"""
-        if system_prompt:
-            return f"""### System:
-{system_prompt}
-
-### User:
-{user_prompt}
-
-### Assistant:"""
-        return user_prompt
-
-    def _generate_educational_response(self, prompt: str) -> str:
-        """Generate a contextual educational response as fallback"""
-        prompt_lower = prompt.lower()
-
-        # Python öğrenme ile ilgili
-        if "python" in prompt_lower:
-            return """Python öğrenmek için harika bir seçim! İşte size özel öğrenme planınız:
-
-1. **Temel Kavramlar (1-2 Hafta)**
-   - Değişkenler ve veri tipleri
-   - Koşullu ifadeler (if/else)
-   - Döngüler (for, while)
-   
-2. **Veri Yapıları (2-3 Hafta)**
-   - Listeler ve tuple'lar
-   - Sözlükler ve kümeler
-   - String işlemleri
-   
-3. **Fonksiyonlar ve Modüller (1-2 Hafta)**
-   - Fonksiyon tanımlama
-   - Parametreler ve dönüş değerleri
-   - Modül import etme
-
-4. **Pratik Projeler**
-   - Basit hesap makinesi
-   - To-do list uygulaması
-   - Veri analizi projesi
-
-Her gün en az 1 saat pratik yapmanızı öneririm!"""
-
-        # Matematik ile ilgili
-        if "matematik" in prompt_lower or "math" in prompt_lower:
-            return """Matematik çalışma planınız hazır:
-
-**Temel Matematik Konuları:**
-- Sayılar ve işlemler
-- Cebir ve denklemler
-- Geometri ve şekiller
-- İstatistik ve olasılık
-
-**Çalışma Önerileri:**
-- Her gün 10 problem çözün
-- Formülleri kartlara yazın
-- Görsel materyaller kullanın
-- Gerçek hayat örnekleri bulun"""
-
-        # LGS/YKS ile ilgili
-        if "lgs" in prompt_lower or "yks" in prompt_lower:
-            return """Sınav hazırlık stratejiniz:
-
-**Etkili Hazırlık Planı:**
-1. Konu anlatımlarını bitirin
-2. Çözümlü sorular üzerinde çalışın
-3. Deneme sınavları çözün
-4. Yanlışlarınızı analiz edin
-
-**Günlük Program:**
-- Sabah: Sayısal dersler (2 saat)
-- Öğlen: Sözel dersler (2 saat)
-- Akşam: Test çözümü (1 saat)
-- Gece: Tekrar (30 dakika)"""
-
-        # Genel öğrenme
-        return """Size nasıl yardımcı olabilirim? 
-
-**Yapabileceğim Şeyler:**
-- Kişiselleştirilmiş öğrenme planları oluşturma
-- Konu anlatımları ve özetler hazırlama
-- Test ve quiz soruları üretme
-- Çalışma teknikleri önerme
-- Motivasyon ve destek sağlama
-
-Hangi konuda yardım istersiniz? Örneğin:
-- "Python öğrenmek istiyorum"
-- "LGS matematik konuları"
-- "Etkili ders çalışma teknikleri"
-
-Detaylı bilgi verirseniz size özel bir plan hazırlayabilirim!"""
+            logger.error(f"Ollama generate error: {e}")
+            raise OllamaError(f"Generate error: {e}") from e
 
     async def generate_for_education(
-        self, task_type: str, content: str, parameters: dict[str, Any] | None = None
-    ) -> dict[str, Any]:
+        self,
+        prompt: str,
+        temperature: float = 0.7,
+        context: dict[str, Any] | None = None,
+        **kwargs: Any,
+    ) -> str:
         """
-        Eğitim amaçlı özel LLM çağrıları
+        Generate educational content optimized for Turkish YKS preparation.
+
+        This method adds educational context to the prompt and uses
+        thinking mode for step-by-step explanations.
 
         Args:
-            task_type: Görev tipi (question_generation, summarization, simplification, etc.)
-            content: İçerik
-            parameters: Ek parametreler
+            prompt: Educational prompt (Turkish)
+            temperature: Sampling temperature (default 0.7)
+            context: Educational context dict with:
+                - subject: Ders adı (matematik, fizik, etc.)
+                - level: Öğrenci seviyesi (TYT, AYT)
+                - topic: Konu başlığı
+                - student_level: Öğrenci yetkinlik seviyesi (0-100)
+            **kwargs: Additional parameters
 
         Returns:
-            Görev tipine göre formatlanmış sonuç
+            Educational content response
+
+        Example:
+            >>> response = await llm_service.generate_for_education(
+            ...     prompt="Türev kavramını açıkla",
+            ...     context={
+            ...         "subject": "matematik",
+            ...         "level": "AYT",
+            ...         "topic": "Türev",
+            ...         "student_level": 60
+            ...     }
+            ... )
         """
-        prompts = {
-            "question_generation": """Aşağıdaki içerikten LGS/YKS sınavlarına uygun sorular oluştur.
-Her soru için:
-1. Soru metni
-2. 4 seçenek (A,B,C,D)
-3. Doğru cevap
-4. Açıklama
-formatında ver.
+        # Build educational system prompt
+        ctx = context or {}
+        subject = ctx.get("subject", "genel")
+        level = ctx.get("level", "TYT")
+        topic = ctx.get("topic", "")
+        student_level = ctx.get("student_level", 50)
 
-İçerik: {content}""",
-            "summarization": """Aşağıdaki içeriği öğrencilerin anlayabileceği şekilde özetle.
-Ana noktaları vurgula ve önemli terimleri açıkla.
+        system_prompt = f"""Sen bir Türk eğitim asistanısın. {level} seviyesinde {subject} dersi için yardım ediyorsun.
 
-İçerik: {content}""",
-            "simplification": """Aşağıdaki metni daha basit ve anlaşılır hale getir.
-Karmaşık cümleleri böl, teknik terimleri açıkla.
+Kurallar:
+- Türkçe yanıt ver
+- Adım adım açıkla
+- Öğrenci seviyesi: {student_level}/100 - buna göre zorluk ayarla
+- Konu: {topic or 'Genel'}
+- Somut örnekler kullan
+- YKS sınav formatına uygun ol"""
 
-Metin: {content}""",
-            "flashcard_generation": """Aşağıdaki içerikten bilgi kartları (flashcard) oluştur.
-Her kart için:
-- Ön yüz (soru/terim)
-- Arka yüz (cevap/açıklama)
-formatında ver.
-
-İçerik: {content}""",
-            "learning_path": """Aşağıdaki öğrenme hedefi için kişiselleştirilmiş bir öğrenme yolu oluştur.
-Hedef: {content}
-Öğrenci seviyesi ve tercihleri de göz önünde bulundurulmalı.""",
-            "accessibility": """Aşağıdaki içeriği erişilebilirlik standartlarına göre iyileştir.
-- Görseller için alt metin öner
-- Karmaşık yapıları sadeleştir
-- Jargon ve kısaltmaları açıkla
-
-İçerik: {content}""",
-        }
-
-        # Prompt seç
-        prompt_template = prompts.get(task_type, "İçeriği analiz et: {content}")
-        prompt = prompt_template.format(content=content)
-
-        # Sistem mesajı
-        system_prompt = """Sen Türkiye'deki öğrenciler için eğitim materyali hazırlayan uzman bir eğitim asistanısın.
-LGS ve YKS sınavlarına hazırlık konusunda uzmansın.
-Öğrenci dostu, anlaşılır ve motive edici bir dil kullan."""
-
-        # LLM çağrısı yap
-        result = await self.generate(
+        return await self.generate(
             prompt=prompt,
+            temperature=temperature,
             system_prompt=system_prompt,
-            temperature=0.7 if task_type != "question_generation" else 0.5,
+            thinking=True,  # Always use thinking for education
+            **kwargs,
         )
-
-        # Sonucu formatla
-        if result["success"]:
-            return {
-                "success": True,
-                "task_type": task_type,
-                "content": result["text"],
-                "original_content": content[:200] + "..."
-                if len(content) > 200
-                else content,
-            }
-        return result
 
     async def chat(
-        self, messages: list[dict[str, str]], max_tokens: int = 1024
-    ) -> dict[str, Any]:
+        self,
+        messages: list[dict[str, str]],
+        temperature: float = 0.7,
+        model: str | None = None,
+        **kwargs: Any,
+    ) -> str:
         """
-        Chat formatında konuşma
+        Multi-turn chat completion with conversation history.
 
         Args:
-            messages: Mesaj listesi [{"role": "user/assistant", "content": "..."}]
-            max_tokens: Maximum token sayısı
+            messages: List of message dicts with 'role' and 'content'
+                - role: "user", "assistant", or "system"
+                - content: Message text
+            temperature: Sampling temperature (default 0.7)
+            model: Override default model (optional)
+            **kwargs: Additional parameters
 
         Returns:
-            Chat yanıtı
+            Assistant's response
+
+        Example:
+            >>> response = await llm_service.chat([
+            ...     {"role": "system", "content": "Sen bir matematik öğretmenisin."},
+            ...     {"role": "user", "content": "Integral nedir?"},
+            ... ])
         """
-        # Mesajları string'e çevir
-        conversation = ""
-        for msg in messages:
-            role = msg.get("role", "user")
-            content = msg.get("content", "")
-            conversation += f"### {role.capitalize()}:\n{content}\n\n"
-
-        conversation += "### Assistant:\n"
-
-        # LLM çağrısı
-        result = await self.generate(
-            prompt=conversation, max_tokens=max_tokens, temperature=0.8
-        )
-
-        return result
-
-    async def close(self):
-        """Clean up resources"""
         try:
-            if self._session and not self._session.closed:
-                await self._session.close()
-                logger.info("HTTP session closed")
+            client = await self._get_client()
+            use_model = model or self.model
 
-            if self._redis_client:
-                await self._redis_client.close()
-                logger.info("Redis connection closed")
+            payload: dict[str, Any] = {
+                "model": use_model,
+                "messages": messages,
+                "stream": False,
+                "options": {
+                    "temperature": temperature,
+                },
+            }
+
+            for key, value in kwargs.items():
+                if key not in payload:
+                    payload["options"][key] = value
+
+            logger.debug(f"Ollama chat: model={use_model}, messages={len(messages)}")
+
+            response = await client.post("/api/chat", json=payload)
+            response.raise_for_status()
+
+            result = response.json()
+            message = result.get("message", {})
+            content = message.get("content", "")
+
+            logger.info(f"Chat response: {len(content)} chars")
+
+            return content
+
+        except httpx.HTTPStatusError as e:
+            logger.error(f"Ollama chat HTTP error: {e.response.status_code}")
+            raise OllamaError(f"HTTP error: {e.response.status_code}") from e
+        except Exception as e:
+            logger.error(f"Ollama chat error: {e}")
+            raise OllamaError(f"Chat error: {e}") from e
+
+    async def generate_stream(
+        self,
+        prompt: str,
+        temperature: float = 0.7,
+        model: str | None = None,
+        **kwargs: Any,
+    ) -> AsyncIterator[str]:
+        """
+        Stream text generation for real-time responses.
+
+        Args:
+            prompt: Input prompt
+            temperature: Sampling temperature
+            model: Override default model
+            **kwargs: Additional parameters
+
+        Yields:
+            Text chunks as they are generated
+
+        Example:
+            >>> async for chunk in llm_service.generate_stream("Hikaye yaz"):
+            ...     print(chunk, end="", flush=True)
+        """
+        try:
+            client = await self._get_client()
+            use_model = model or self.model
+
+            payload = {
+                "model": use_model,
+                "prompt": prompt,
+                "stream": True,
+                "options": {"temperature": temperature},
+            }
+
+            async with client.stream("POST", "/api/generate", json=payload) as response:
+                response.raise_for_status()
+                async for line in response.aiter_lines():
+                    if line:
+                        try:
+                            data = json.loads(line)
+                            if "response" in data:
+                                yield data["response"]
+                            if data.get("done", False):
+                                break
+                        except json.JSONDecodeError:
+                            continue
 
         except Exception as e:
-            logger.error(f"Error during cleanup: {e}")
+            logger.error(f"Ollama stream error: {e}")
+            raise OllamaError(f"Stream error: {e}") from e
 
-    async def clear_cache(self, pattern: str = "*") -> int:
-        """Clear cache entries matching pattern"""
-        cleared_count = 0
+    async def embed(
+        self,
+        text: str,
+        model: str | None = None,
+    ) -> list[float]:
+        """
+        Generate text embeddings using Ollama.
+
+        Args:
+            text: Text to embed
+            model: Embedding model (default: nomic-embed-text or mxbai-embed-large)
+
+        Returns:
+            Embedding vector (typically 768 or 1024 dimensions)
+
+        Note:
+            Requires an embedding model. If not available, returns zero vector.
+            Install with: ollama pull nomic-embed-text
+        """
         try:
-            if self._redis_client:
-                keys = await self._redis_client.keys(f"llm_cache:{pattern}")
-                if keys:
-                    cleared_count = await self._redis_client.delete(*keys)
-                    logger.info(f"Cleared {cleared_count} Redis cache entries")
+            client = await self._get_client()
+            # Use dedicated embedding model if available
+            embed_model = model or os.getenv("OLLAMA_EMBED_MODEL", "nomic-embed-text")
 
-            # Clear in-memory cache
-            if pattern == "*":
-                memory_count = len(self._cache)
-                self._cache.clear()
-                cleared_count += memory_count
-                logger.info(f"Cleared {memory_count} in-memory cache entries")
+            payload = {
+                "model": embed_model,
+                "input": text,
+            }
+
+            response = await client.post("/api/embed", json=payload)
+
+            if response.status_code == 404:
+                # Model not found, return zero vector
+                logger.warning(f"Embedding model {embed_model} not found, using fallback")
+                return [0.0] * 768
+
+            response.raise_for_status()
+            result = response.json()
+
+            embeddings = result.get("embeddings", [[]])
+            if embeddings and len(embeddings) > 0:
+                return embeddings[0]
+
+            return [0.0] * 768
 
         except Exception as e:
-            logger.error(f"Error clearing cache: {e}")
+            logger.warning(f"Ollama embed error: {e}, returning zero vector")
+            return [0.0] * 768
 
-        return cleared_count
+    async def analyze_image(
+        self,
+        prompt: str,
+        image_base64: str,
+        model: str | None = None,
+        **kwargs: Any,
+    ) -> str:
+        """
+        Analyze image using vision model (qwen3-vl).
 
-    def get_cache_stats(self) -> dict[str, Any]:
-        """Get cache statistics"""
-        stats = {
-            "memory_cache_size": len(self._cache),
-            "memory_cache_max_size": self._max_cache_size,
-            "cache_ttl": self._cache_ttl,
-            "redis_available": self._redis_client is not None,
-            "session_active": self._session is not None and not self._session.closed,
+        Useful for OCR, diagram analysis, and visual question answering.
+
+        Args:
+            prompt: Question about the image
+            image_base64: Base64 encoded image data
+            model: Vision model (default: qwen3-vl:8b)
+            **kwargs: Additional parameters
+
+        Returns:
+            Analysis response
+
+        Example:
+            >>> import base64
+            >>> with open("question.png", "rb") as f:
+            ...     img_b64 = base64.b64encode(f.read()).decode()
+            >>> response = await llm_service.analyze_image(
+            ...     "Bu matematik sorusunu çöz",
+            ...     img_b64
+            ... )
+        """
+        try:
+            client = await self._get_client()
+            use_model = model or self.vision_model
+
+            payload = {
+                "model": use_model,
+                "prompt": prompt,
+                "images": [image_base64],
+                "stream": False,
+            }
+
+            response = await client.post("/api/generate", json=payload)
+            response.raise_for_status()
+
+            result = response.json()
+            return result.get("response", "")
+
+        except Exception as e:
+            logger.error(f"Ollama image analysis error: {e}")
+            raise OllamaError(f"Image analysis error: {e}") from e
+
+    def get_model_info(self) -> dict[str, Any]:
+        """
+        Get current model configuration and status.
+
+        Returns:
+            Dict with model info:
+                - provider: "ollama"
+                - model: Current model name
+                - vision_model: Vision model name
+                - base_url: Ollama server URL
+                - status: "configured" or "not_initialized"
+                - thinking_mode: Whether thinking is enabled
+        """
+        return {
+            "provider": self.provider,
+            "model": self.model,
+            "vision_model": self.vision_model,
+            "base_url": self.base_url,
+            "status": "configured" if self.initialized else "ready",
+            "thinking_mode": self.thinking_mode,
+            "timeout": self.timeout,
         }
-        return stats
+
+    async def list_models(self) -> list[dict[str, Any]]:
+        """
+        List available models in Ollama.
+
+        Returns:
+            List of model info dicts with name, size, modified date
+        """
+        try:
+            client = await self._get_client()
+            response = await client.get("/api/tags")
+            response.raise_for_status()
+
+            result = response.json()
+            return result.get("models", [])
+
+        except Exception as e:
+            logger.error(f"Failed to list models: {e}")
+            return []
 
 
-# Singleton instance
-llm_service = HuggingFaceLLMService()
+# Lazy global singleton instance
+_llm_service: LLMService | None = None
+
+
+def _get_llm_service() -> LLMService:
+    global _llm_service
+    if _llm_service is None:
+        _llm_service = LLMService()
+    return _llm_service
+
+
+class _LazyLLMService:
+    """Proxy that delays LLMService initialization until first use."""
+
+    def __getattr__(self, name: str):
+        return getattr(_get_llm_service(), name)
+
+
+llm_service: LLMService = _LazyLLMService()  # type: ignore[assignment]
+
+
+# Convenience functions for direct import
+async def generate(prompt: str, **kwargs: Any) -> str:
+    """Generate text using default LLM service."""
+    return await llm_service.generate(prompt, **kwargs)
+
+
+async def chat(messages: list[dict[str, str]], **kwargs: Any) -> str:
+    """Chat using default LLM service."""
+    return await llm_service.chat(messages, **kwargs)
+
+
+async def embed(text: str) -> list[float]:
+    """Generate embeddings using default LLM service."""
+    return await llm_service.embed(text)
+
+
+# Backward compatibility aliases for legacy imports
+HuggingFaceLLMService = LLMService  # Alias for tests that import this name

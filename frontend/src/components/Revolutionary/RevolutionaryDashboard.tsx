@@ -3,12 +3,20 @@
  * Tüm devrimsel özelliklerin merkezi kontrol paneli
  */
 
-import React, { useState, useEffect } from 'react';
+import {
+  AutoAwesome as AutoAwesomeIcon,
+  Schedule as ScheduleIcon,
+  Visibility as VisibilityIcon,
+  AutoFixHigh as AutoFixHighIcon,
+  Hub as HubIcon,
+  Psychology as PsychologyIcon,
+  School as SchoolIcon,
+  Settings as SettingsIcon,
+  Info as InfoIcon,
+} from '@mui/icons-material';
 import {
   Box,
   Card,
-  CardContent,
-  CardHeader,
   Typography,
   Grid,
   Tabs,
@@ -23,31 +31,21 @@ import {
   Dialog,
   DialogTitle,
   DialogContent,
-  DialogActions
+  DialogActions,
 } from '@mui/material';
-import {
-  AutoAwesome as AutoAwesomeIcon,
-  Schedule as ScheduleIcon,
-  Visibility as VisibilityIcon,
-  AutoFixHigh as AutoFixHighIcon,
-  Hub as HubIcon,
-  Psychology as PsychologyIcon,
-  School as SchoolIcon,
-  Settings as SettingsIcon,
-  Info as InfoIcon,
-  TrendingUp as TrendingUpIcon
-} from '@mui/icons-material';
+import * as React from 'react';
+import {  useState, useEffect  } from 'react';
 
 // Devrimsel bileşenleri import et
-import FSRSScheduler from './FSRSScheduler';
-import BionicReadingToggle from './BionicReadingToggle';
-import TextSimplifier from './TextSimplifier';
-import MultiAgentCoordination from './MultiAgentCoordination';
-import LearningStyleProfile from './LearningStyleProfile';
-import ZPDMaarifDashboard from './ZPDMaarifDashboard';
-import RevolutionarySettings from './RevolutionarySettings';
+import { RevolutionaryFeatureSettings } from '../../types';
 
-import { RevolutionaryFeatureSettings, ApiResponse } from '../../types';
+import BionicReadingToggle from './BionicReadingToggle';
+import FSRSScheduler from './FSRSScheduler';
+import LearningStyleProfile from './LearningStyleProfile';
+import MultiAgentCoordination from './MultiAgentCoordination';
+import RevolutionarySettings from './RevolutionarySettings';
+import TextSimplifier from './TextSimplifier';
+import ZPDMaarifDashboard from './ZPDMaarifDashboard';
 
 interface RevolutionaryDashboardProps {
   studentId: string;
@@ -89,7 +87,7 @@ const RevolutionaryDashboard: React.FC<RevolutionaryDashboardProps> = ({ student
     simplified_texts: 0,
     agent_tasks: 0,
     learning_profiles: 0,
-    zpd_analyses: 0
+    zpd_analyses: 0,
   });
 
   // Ayarları ve istatistikleri yükle
@@ -113,8 +111,8 @@ const RevolutionaryDashboard: React.FC<RevolutionaryDashboardProps> = ({ student
             simplified_texts: 15,
             agent_tasks: 42,
             learning_profiles: 3,
-            zpd_analyses: 12
-          }))
+            zpd_analyses: 12,
+          })),
         ]);
 
         setSettings(loadedSettings);
@@ -133,7 +131,7 @@ const RevolutionaryDashboard: React.FC<RevolutionaryDashboardProps> = ({ student
   }, [studentId]);
 
   // Tab değişikliği
-  const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
+  const handleTabChange = (_event: React.SyntheticEvent, newValue: number) => {
     setActiveTab(newValue);
   };
 
@@ -213,7 +211,7 @@ const RevolutionaryDashboard: React.FC<RevolutionaryDashboardProps> = ({ student
               </Typography>
             </Paper>
           </Grid>
-          
+
           <Grid item xs={6} md={2}>
             <Paper sx={{ p: 2, textAlign: 'center' }}>
               <VisibilityIcon color="secondary" sx={{ fontSize: 32, mb: 1 }} />
@@ -224,7 +222,7 @@ const RevolutionaryDashboard: React.FC<RevolutionaryDashboardProps> = ({ student
               </Typography>
             </Paper>
           </Grid>
-          
+
           <Grid item xs={6} md={2}>
             <Paper sx={{ p: 2, textAlign: 'center' }}>
               <AutoFixHighIcon color="warning" sx={{ fontSize: 32, mb: 1 }} />
@@ -235,7 +233,7 @@ const RevolutionaryDashboard: React.FC<RevolutionaryDashboardProps> = ({ student
               </Typography>
             </Paper>
           </Grid>
-          
+
           <Grid item xs={6} md={2}>
             <Paper sx={{ p: 2, textAlign: 'center' }}>
               <HubIcon color="success" sx={{ fontSize: 32, mb: 1 }} />
@@ -246,7 +244,7 @@ const RevolutionaryDashboard: React.FC<RevolutionaryDashboardProps> = ({ student
               </Typography>
             </Paper>
           </Grid>
-          
+
           <Grid item xs={6} md={2}>
             <Paper sx={{ p: 2, textAlign: 'center' }}>
               <PsychologyIcon color="info" sx={{ fontSize: 32, mb: 1 }} />
@@ -257,7 +255,7 @@ const RevolutionaryDashboard: React.FC<RevolutionaryDashboardProps> = ({ student
               </Typography>
             </Paper>
           </Grid>
-          
+
           <Grid item xs={6} md={2}>
             <Paper sx={{ p: 2, textAlign: 'center' }}>
               <SchoolIcon color="error" sx={{ fontSize: 32, mb: 1 }} />
@@ -274,61 +272,61 @@ const RevolutionaryDashboard: React.FC<RevolutionaryDashboardProps> = ({ student
       {/* Ana Tabs */}
       <Card>
         <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-          <Tabs 
-            value={activeTab} 
-            onChange={handleTabChange} 
+          <Tabs
+            value={activeTab}
+            onChange={handleTabChange}
             aria-label="devrimsel özellikler tabs"
             variant="scrollable"
             scrollButtons="auto"
           >
-            <Tab 
-              label="FSRS Tekrar Sistemi" 
-              icon={<ScheduleIcon />} 
+            <Tab
+              label="FSRS Tekrar Sistemi"
+              icon={<ScheduleIcon />}
               iconPosition="start"
-              {...a11yProps(0)} 
+              {...a11yProps(0)}
             />
-            <Tab 
-              label="Bionic Reading" 
-              icon={<VisibilityIcon />} 
+            <Tab
+              label="Bionic Reading"
+              icon={<VisibilityIcon />}
               iconPosition="start"
-              {...a11yProps(1)} 
+              {...a11yProps(1)}
             />
-            <Tab 
-              label="Metin Basitleştirme" 
-              icon={<AutoFixHighIcon />} 
+            <Tab
+              label="Metin Basitleştirme"
+              icon={<AutoFixHighIcon />}
               iconPosition="start"
-              {...a11yProps(2)} 
+              {...a11yProps(2)}
             />
-            <Tab 
-              label="Multi-Agent" 
-              icon={<HubIcon />} 
+            <Tab
+              label="Multi-Agent"
+              icon={<HubIcon />}
               iconPosition="start"
-              {...a11yProps(3)} 
+              {...a11yProps(3)}
             />
-            <Tab 
-              label="Öğrenme Stili" 
-              icon={<PsychologyIcon />} 
+            <Tab
+              label="Öğrenme Stili"
+              icon={<PsychologyIcon />}
               iconPosition="start"
-              {...a11yProps(4)} 
+              {...a11yProps(4)}
             />
-            <Tab 
-              label="ZPD Maarif" 
-              icon={<SchoolIcon />} 
+            <Tab
+              label="ZPD Maarif"
+              icon={<SchoolIcon />}
               iconPosition="start"
-              {...a11yProps(5)} 
+              {...a11yProps(5)}
             />
-            <Tab 
-              label="Ayarlar" 
-              icon={<SettingsIcon />} 
+            <Tab
+              label="Ayarlar"
+              icon={<SettingsIcon />}
               iconPosition="start"
-              {...a11yProps(6)} 
+              {...a11yProps(6)}
             />
           </Tabs>
         </Box>
 
         {/* Tab Panels */}
         <TabPanel value={activeTab} index={0}>
-          <FSRSScheduler 
+          <FSRSScheduler
             studentId={studentId}
             onScheduleUpdate={(schedules) => {
               console.log('FSRS schedules updated:', schedules);
@@ -337,7 +335,7 @@ const RevolutionaryDashboard: React.FC<RevolutionaryDashboardProps> = ({ student
         </TabPanel>
 
         <TabPanel value={activeTab} index={1}>
-          <BionicReadingToggle 
+          <BionicReadingToggle
             studentId={studentId}
             onTextChange={(bionicText, isEnabled) => {
               console.log('Bionic reading updated:', { bionicText, isEnabled });
@@ -350,7 +348,7 @@ const RevolutionaryDashboard: React.FC<RevolutionaryDashboardProps> = ({ student
         </TabPanel>
 
         <TabPanel value={activeTab} index={3}>
-          <MultiAgentCoordination 
+          <MultiAgentCoordination
             studentId={studentId}
             onCoordinationUpdate={(coordination) => {
               console.log('Multi-agent coordination updated:', coordination);
@@ -359,7 +357,7 @@ const RevolutionaryDashboard: React.FC<RevolutionaryDashboardProps> = ({ student
         </TabPanel>
 
         <TabPanel value={activeTab} index={4}>
-          <LearningStyleProfile 
+          <LearningStyleProfile
             studentId={studentId}
             onProfileUpdate={(profile) => {
               console.log('Learning style profile updated:', profile);
@@ -368,7 +366,7 @@ const RevolutionaryDashboard: React.FC<RevolutionaryDashboardProps> = ({ student
         </TabPanel>
 
         <TabPanel value={activeTab} index={5}>
-          <ZPDMaarifDashboard 
+          <ZPDMaarifDashboard
             studentId={studentId}
             onZPDUpdate={(zpd) => {
               console.log('ZPD Maarif updated:', zpd);
@@ -377,7 +375,7 @@ const RevolutionaryDashboard: React.FC<RevolutionaryDashboardProps> = ({ student
         </TabPanel>
 
         <TabPanel value={activeTab} index={6}>
-          <RevolutionarySettings 
+          <RevolutionarySettings
             studentId={studentId}
             onSettingsChange={(newSettings) => {
               setSettings(newSettings);
@@ -394,10 +392,10 @@ const RevolutionaryDashboard: React.FC<RevolutionaryDashboardProps> = ({ student
         </DialogTitle>
         <DialogContent>
           <Typography variant="body1" paragraph>
-            Bu platform, dünya çapında benzersiz 7 devrimsel eğitim teknolojisini bir araya getirir. 
+            Bu platform, dünya çapında benzersiz 7 devrimsel eğitim teknolojisini bir araya getirir.
             Her özellik, Türk öğrenci kültürüne özel olarak tasarlanmış ve optimize edilmiştir.
           </Typography>
-          
+
           <Grid container spacing={3}>
             <Grid item xs={12} md={6}>
               <Paper sx={{ p: 2, bgcolor: 'primary.50' }}>
@@ -412,7 +410,7 @@ const RevolutionaryDashboard: React.FC<RevolutionaryDashboardProps> = ({ student
                 </Typography>
               </Paper>
             </Grid>
-            
+
             <Grid item xs={12} md={6}>
               <Paper sx={{ p: 2, bgcolor: 'error.50' }}>
                 <Typography variant="h6" color="error.main" gutterBottom>
@@ -426,7 +424,7 @@ const RevolutionaryDashboard: React.FC<RevolutionaryDashboardProps> = ({ student
                 </Typography>
               </Paper>
             </Grid>
-            
+
             <Grid item xs={12} md={6}>
               <Paper sx={{ p: 2, bgcolor: 'success.50' }}>
                 <Typography variant="h6" color="success.main" gutterBottom>
@@ -440,7 +438,7 @@ const RevolutionaryDashboard: React.FC<RevolutionaryDashboardProps> = ({ student
                 </Typography>
               </Paper>
             </Grid>
-            
+
             <Grid item xs={12} md={6}>
               <Paper sx={{ p: 2, bgcolor: 'secondary.50' }}>
                 <Typography variant="h6" color="secondary.main" gutterBottom>
@@ -455,10 +453,10 @@ const RevolutionaryDashboard: React.FC<RevolutionaryDashboardProps> = ({ student
               </Paper>
             </Grid>
           </Grid>
-          
+
           <Alert severity="info" sx={{ mt: 3 }}>
             <Typography variant="body2">
-              <strong>Not:</strong> Bu özellikler sürekli geliştirilmekte ve optimize edilmektedir. 
+              <strong>Not:</strong> Bu özellikler sürekli geliştirilmekte ve optimize edilmektedir.
               Geri bildirimleriniz bizim için çok değerlidir.
             </Typography>
           </Alert>

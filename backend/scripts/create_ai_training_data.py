@@ -8,7 +8,6 @@ import json
 from pathlib import Path
 import sys
 from typing import List, Dict
-from datetime import datetime
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
@@ -182,7 +181,7 @@ Dogru Cevap: {q['correct_answer']}"""
                 by_subject[subject] = []
             by_subject[subject].append(q)
 
-        print(f"\n[OK] Subject-specific datasets:")
+        print("\n[OK] Subject-specific datasets:")
         for subject, subject_questions in by_subject.items():
             subject_file = (
                 self.output_dir / f"osym_{subject.lower().replace(' ', '_')}.json"
@@ -194,7 +193,7 @@ Dogru Cevap: {q['correct_answer']}"""
             )
 
         print(f"\n{'='*80}")
-        print(f"Training data generation complete!")
+        print("Training data generation complete!")
         print(f"Output directory: {self.output_dir}")
         print(f"{'='*80}\n")
 

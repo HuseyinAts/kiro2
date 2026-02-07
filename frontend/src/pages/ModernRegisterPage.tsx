@@ -3,21 +3,6 @@
  * Beautiful registration page with glassmorphism and role-based visuals
  */
 
-import React, { useState } from 'react'
-import { useNavigate, Link as RouterLink } from 'react-router-dom'
-import { motion, AnimatePresence } from 'framer-motion'
-import {
-  Container,
-  Grid,
-  Typography,
-  Box,
-  TextField,
-  Alert,
-  LinearProgress,
-  IconButton,
-  InputAdornment,
-  Link,
-} from '@mui/material'
 import {
   School,
   PersonAdd,
@@ -33,12 +18,29 @@ import {
   Lock,
   Phone,
   Business,
-} from '@mui/icons-material'
-import { useAuthStore } from '@/store/authStore'
-import { RegisterRequest, UserRole } from '../types'
-import modernColors from '@/theme/modern-colors'
-import { GlassCard } from '@/components/ui/GlassCard'
-import { ModernButton } from '@/components/ui/ModernButton'
+} from '@mui/icons-material';
+import {
+  Container,
+  Grid,
+  Typography,
+  Box,
+  TextField,
+  Alert,
+  LinearProgress,
+  IconButton,
+  InputAdornment,
+  Link,
+} from '@mui/material';
+import { motion, AnimatePresence } from 'framer-motion';
+import * as React from 'react';
+import {  useState  } from 'react';
+import { useNavigate, Link as RouterLink } from 'react-router-dom';
+
+import { RegisterRequest, UserRole } from '../types';
+import { GlassCard } from '@/components/ui/GlassCard';
+import { ModernButton } from '@/components/ui/ModernButton';
+import { useAuthStore } from '@/store/authStore';
+import modernColors from '@/theme/modern-colors';
 
 export const ModernRegisterPage: React.FC = () => {
   const [formData, setFormData] = useState<RegisterRequest>({
@@ -49,104 +51,104 @@ export const ModernRegisterPage: React.FC = () => {
     rol: 'ogrenci',
     telefon: '',
     okul_id: '',
-  })
-  const [confirmPassword, setConfirmPassword] = useState('')
-  const [showPassword, setShowPassword] = useState(false)
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
-  const [isLoading, setIsLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-  const [success, setSuccess] = useState<string | null>(null)
+  });
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
 
-  const { register } = useAuthStore()
-  const navigate = useNavigate()
+  const { register } = useAuthStore();
+  const navigate = useNavigate();
 
   // Password strength calculation
   const getPasswordStrength = (password: string): number => {
-    let strength = 0
-    if (password.length >= 6) strength += 25
-    if (password.length >= 10) strength += 25
-    if (/[a-z]/.test(password) && /[A-Z]/.test(password)) strength += 25
-    if (/\d/.test(password)) strength += 15
-    if (/[^a-zA-Z\d]/.test(password)) strength += 10
-    return Math.min(strength, 100)
-  }
+    let strength = 0;
+    if (password.length >= 6) {strength += 25;}
+    if (password.length >= 10) {strength += 25;}
+    if (/[a-z]/.test(password) && /[A-Z]/.test(password)) {strength += 25;}
+    if (/\d/.test(password)) {strength += 15;}
+    if (/[^a-zA-Z\d]/.test(password)) {strength += 10;}
+    return Math.min(strength, 100);
+  };
 
-  const passwordStrength = getPasswordStrength(formData.password)
+  const passwordStrength = getPasswordStrength(formData.password);
 
   const getPasswordStrengthColor = (strength: number): string => {
-    if (strength < 30) return modernColors.gradients.error
-    if (strength < 60) return modernColors.gradients.warning
-    return modernColors.gradients.success
-  }
+    if (strength < 30) {return modernColors.gradients.error;}
+    if (strength < 60) {return modernColors.gradients.warning;}
+    return modernColors.gradients.success;
+  };
 
   const getPasswordStrengthLabel = (strength: number): string => {
-    if (strength < 30) return 'Zayıf'
-    if (strength < 60) return 'Orta'
-    return 'Güçlü'
-  }
+    if (strength < 30) {return 'Zayıf';}
+    if (strength < 60) {return 'Orta';}
+    return 'Güçlü';
+  };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target
+    const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
       [name]: value,
-    }))
-    if (error) setError(null)
-  }
+    }));
+    if (error) {setError(null);}
+  };
 
   const handleRoleSelect = (role: UserRole) => {
-    setFormData((prev) => ({ ...prev, rol: role }))
-  }
+    setFormData((prev) => ({ ...prev, rol: role }));
+  };
 
   const validateForm = (): boolean => {
     if (!formData.email || !formData.password || !formData.ad || !formData.soyad) {
-      setError('Lütfen zorunlu alanları doldurun')
-      return false
+      setError('Lütfen zorunlu alanları doldurun');
+      return false;
     }
 
     if (formData.password.length < 6) {
-      setError('Şifre en az 6 karakter olmalıdır')
-      return false
+      setError('Şifre en az 6 karakter olmalıdır');
+      return false;
     }
 
     if (formData.password !== confirmPassword) {
-      setError('Şifreler eşleşmiyor')
-      return false
+      setError('Şifreler eşleşmiyor');
+      return false;
     }
 
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(formData.email)) {
-      setError('Geçerli bir e-posta adresi girin')
-      return false
+      setError('Geçerli bir e-posta adresi girin');
+      return false;
     }
 
-    return true
-  }
+    return true;
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
 
-    if (!validateForm()) return
+    if (!validateForm()) {return;}
 
-    setIsLoading(true)
-    setError(null)
-    setSuccess(null)
+    setIsLoading(true);
+    setError(null);
+    setSuccess(null);
 
     try {
-      const success = await register(formData)
+      const success = await register(formData);
 
       if (success) {
-        setSuccess('Kayıt başarılı! Giriş sayfasına yönlendiriliyorsunuz...')
+        setSuccess('Kayıt başarılı! Giriş sayfasına yönlendiriliyorsunuz...');
         setTimeout(() => {
-          navigate('/login')
-        }, 2000)
+          navigate('/login');
+        }, 2000);
       }
     } catch (error: any) {
-      setError(error.message || 'Kayıt sırasında bir hata oluştu')
+      setError(error.message || 'Kayıt sırasında bir hata oluştu');
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   const roles = [
     {
@@ -177,7 +179,7 @@ export const ModernRegisterPage: React.FC = () => {
       description: 'Sistem yönetimi',
       gradient: modernColors.gradients.fire,
     },
-  ]
+  ];
 
   return (
     <Box
@@ -277,7 +279,7 @@ export const ModernRegisterPage: React.FC = () => {
                 textShadow: '0 2px 10px rgba(0,0,0,0.2)',
               }}
             >
-              KIRO2'ye Hoş Geldiniz
+              KIRO2&apos;ye Hoş Geldiniz
             </Typography>
             <Typography
               variant="body1"
@@ -341,8 +343,8 @@ export const ModernRegisterPage: React.FC = () => {
                         onClick={() => handleRoleSelect(role.value)}
                         onKeyDown={(e) => {
                           if (e.key === 'Enter' || e.key === ' ') {
-                            e.preventDefault()
-                            handleRoleSelect(role.value)
+                            e.preventDefault();
+                            handleRoleSelect(role.value);
                           }
                         }}
                         sx={{
@@ -716,7 +718,7 @@ export const ModernRegisterPage: React.FC = () => {
         </motion.div>
       </Container>
     </Box>
-  )
-}
+  );
+};
 
-export default ModernRegisterPage
+export default ModernRegisterPage;

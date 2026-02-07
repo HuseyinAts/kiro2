@@ -95,7 +95,7 @@ class MakaleIcerik(BaseModel):
 
         return summary
 
-    model_config = ConfigDict(json_encoders={datetime: lambda v: v.isoformat()})
+    model_config = ConfigDict()
 
 
 class VideoIcerik(BaseModel):
@@ -188,7 +188,7 @@ class VideoIcerik(BaseModel):
 
         return None
 
-    model_config = ConfigDict(json_encoders={datetime: lambda v: v.isoformat()})
+    model_config = ConfigDict()
 
 
 class QuizIcerik(BaseModel):
@@ -207,7 +207,7 @@ class QuizIcerik(BaseModel):
     olusturulma_tarihi: datetime = Field(default_factory=datetime.now)
     guncellenme_tarihi: Optional[datetime] = Field(None)
 
-    model_config = ConfigDict(json_encoders={datetime: lambda v: v.isoformat()})
+    model_config = ConfigDict()
 
 
 class ContentInteraction(BaseModel):
@@ -225,7 +225,7 @@ class ContentInteraction(BaseModel):
     session_id: Optional[str] = Field(None, description="Oturum ID'si")
     device_info: Optional[Dict[str, str]] = Field(None, description="Cihaz bilgisi")
 
-    model_config = ConfigDict(json_encoders={datetime: lambda v: v.isoformat()})
+    model_config = ConfigDict()
 
 
 class ContentStats(BaseModel):
@@ -256,7 +256,7 @@ class ContentStats(BaseModel):
 
         return (total_interactions / self.total_views) * 100
 
-    model_config = ConfigDict(json_encoders={datetime: lambda v: v.isoformat()})
+    model_config = ConfigDict()
 
 
 class ContentFilter(BaseModel):
@@ -355,4 +355,4 @@ class BulkContentImport(BaseModel):
             return 0.0
         return (self.successful_records / self.processed_records) * 100
 
-    model_config = ConfigDict(json_encoders={datetime: lambda v: v.isoformat()})
+    model_config = ConfigDict()

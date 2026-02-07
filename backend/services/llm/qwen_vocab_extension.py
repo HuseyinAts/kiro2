@@ -7,11 +7,9 @@ Date: 2025-10-19
 """
 
 import json
-import os
-from typing import List, Dict, Set, Tuple, Optional
+from typing import List, Dict, Optional
 from pathlib import Path
 from collections import Counter
-import re
 
 
 class QwenVocabExtensionPipeline:

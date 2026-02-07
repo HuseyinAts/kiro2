@@ -984,7 +984,8 @@ class YouTubeService:
                     duration_score = 0.4
                 else:
                     duration_score = 0.2  # Çok kısa veya çok uzun
-            except:
+            except (ValueError, TypeError, AttributeError) as e:
+                logger.debug(f"Duration parsing failed: {e}")
                 duration_score = 0.5  # Parse edilemezse orta değer
 
         score += duration_score * 0.15
@@ -1096,7 +1097,8 @@ class YouTubeService:
             total_minutes = hours * 60 + minutes + seconds / 60
             return int(total_minutes)
 
-        except:
+        except (ValueError, IndexError, AttributeError) as e:
+            logger.debug(f"Duration parsing failed: {e}")
             return 15  # Default 15 dakika
 
     async def get_video_details_by_id(self, video_id: str) -> Optional[YouTubeVideo]:
@@ -1352,7 +1354,8 @@ class YouTubeService:
             else:
                 return f"{minutes}:{seconds:02d}"
 
-        except:
+        except (ValueError, IndexError, AttributeError) as e:
+            logger.debug(f"Duration formatting failed: {e}")
             return duration
 
     async def get_trending_educational(

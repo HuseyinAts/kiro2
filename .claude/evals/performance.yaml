@@ -1,0 +1,202 @@
+# Performance Evaluation
+# KIRO2 performans ve response time değerlendirmesi
+
+name: performance
+description: Performance and response time evaluation
+version: "1.0.0"
+
+triggers:
+  - on: pull_request
+    branches: [main, develop]
+  - on: schedule
+    cron: "0 */6 * * *"  # Every 6 hours
+  - on: manual
+
+environment:
+  working_dir: "."
+  requires:
+    - backend_running: http://localhost:8000/health
+    - database_running: postgresql://localhost:5434
+    - redis_running: redis://localhost:6379
+
+checks:
+  - name: api-response-time
+    description: API endpoint response time
+    command: |
+      curl -w "%{time_total}" -o /dev/null -s http://localhost:8000/health
+    threshold: 0.5  # 500ms
+    weight: 30
+    unit: seconds
+    percentile: p99
+
+  - name: database-query-time
+    description: Database query performance
+    command: |
+      cd backend && python -c "
+      import time
+      from core.database import engine
+      start = time.time()
+      with engine.connect() as conn:
+          conn.execute('SELECT 1')
+      print(time.time() - start)
+      "
+    threshold: 0.1  # 100ms
+    weight: 25
+    unit: seconds
+
+  - name: memory-usage
+    description: Application memory footprint
+    command: |
+      ps aux | grep uvicorn | head -1 | awk '{print $4}'
+    threshold: 5.0  # 5% of system memory
+    weight: 15
+    unit: percent
+
+  - name: bundle-size
+    description: Frontend bundle size
+    command: |
+      cd frontend && npm run build 2>/dev/null && du -sh dist/ | cut -f1
+    threshold: 5M
+    weight: 15
+    unit: megabytes
+
+  - name: startup-time
+    description: Application startup time
+    command: |
+      cd backend && timeout 30 python -c "
+      import time
+      start = time.time()
+      from main import app
+      print(time.time() - start)
+      " 2>/dev/null || echo "30"
+    threshold: 10.0  # 10 seconds
+    weight: 15
+    unit: seconds
+
+benchmarks:
+  api_endpoints:
+    - endpoint: /api/v1/health
+      method: GET
+      max_latency_ms: 100
+      min_rps: 1000
+
+    - endpoint: /api/v1/questions
+      method: GET
+      max_latency_ms: 500
+      min_rps: 100
+
+    - endpoint: /api/v1/auth/login
+      method: POST
+      max_latency_ms: 300
+      min_rps: 50
+
+    - endpoint: /api/v1/exams/submit
+      method: POST
+      max_latency_ms: 1000
+      min_rps: 20
+
+  database_queries:
+    - name: simple_select
+      query: "SELECT * FROM users WHERE id = $1"
+      max_latency_ms: 10
+
+    - name: complex_join
+      query: "SELECT * FROM questions JOIN subjects ON ..."
+      max_latency_ms: 100
+
+    - name: full_text_search
+      query: "SELECT * FROM questions WHERE to_tsvector(...)"
+      max_latency_ms: 200
+
+load_test:
+  enabled: true
+  tool: locust
+  config:
+    users: 100
+    spawn_rate: 10
+    duration: 60  # seconds
+    scenarios:
+      - name: browse_questions
+        weight: 50
+        tasks:
+          - GET /api/v1/questions
+          - GET /api/v1/questions/{id}
+
+      - name: take_exam
+        weight: 30
+        tasks:
+          - POST /api/v1/exams/start
+          - POST /api/v1/exams/{id}/answer
+          - POST /api/v1/exams/{id}/submit
+
+      - name: user_auth
+        weight: 20
+        tasks:
+          - POST /api/v1/auth/login
+          - GET /api/v1/users/me
+
+thresholds:
+  latency:
+    p50: 100ms
+    p90: 300ms
+    p95: 500ms
+    p99: 1000ms
+
+  throughput:
+    min_rps: 100
+    max_error_rate: 1%
+
+  resources:
+    max_cpu: 80%
+    max_memory: 85%
+    max_connections: 100
+
+scoring:
+  pass: 80
+  warn: 60
+  fail: 0
+
+reporting:
+  format: json
+  output: .claude/evals/results/performance-{timestamp}.json
+
+  graphs:
+    - latency_histogram
+    - throughput_timeline
+    - error_rate_timeline
+
+  github:
+    enabled: true
+    comment: true
+    include_graphs: true
+
+alerts:
+  - name: high_latency
+    condition: p99_latency > 1000ms
+    severity: warning
+    action: notify
+
+  - name: low_throughput
+    condition: rps < 50
+    severity: critical
+    action: page
+
+  - name: high_error_rate
+    condition: error_rate > 5%
+    severity: critical
+    action: page
+
+profiling:
+  enabled: false  # Enable manually
+  tools:
+    - py-spy
+    - memory_profiler
+  output: .claude/evals/profiles/
+
+optimization_hints:
+  enabled: true
+  checks:
+    - n_plus_one_queries
+    - missing_indexes
+    - large_payloads
+    - cache_misses

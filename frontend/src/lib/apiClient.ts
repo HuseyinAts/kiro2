@@ -13,8 +13,9 @@
  * - Detailed error context
  */
 
-import { retryWithBackoff, apiCircuitBreaker, RetryOptions } from './retryUtils';
 import config from '../config';
+
+import { retryWithBackoff, apiCircuitBreaker, RetryOptions } from './retryUtils';
 
 const API_BASE_URL = config.api.baseURL;
 
@@ -23,7 +24,7 @@ export class APIError extends Error {
     message: string,
     public status: number,
     public detail?: string,
-    public context?: Record<string, any>
+    public context?: Record<string, any>,
   ) {
     super(message);
     this.name = 'APIError';
@@ -58,16 +59,21 @@ export class APIClient {
   private async request<T>(
     endpoint: string,
     options: RequestInit = {},
-    retryOptions?: RetryOptions
+    retryOptions?: RetryOptions,
   ): Promise<T> {
     const url = this.buildURL(endpoint);
 
     // Add auth token if available
     const token = localStorage.getItem('access_token');
-    const headers: HeadersInit = {
+    const headers: Record<string, string> = {
       'Content-Type': 'application/json',
-      ...options.headers,
     };
+
+    // Add any provided headers
+    if (options.headers) {
+      const providedHeaders = options.headers as Record<string, string>;
+      Object.assign(headers, providedHeaders);
+    }
 
     if (token) {
       headers['Authorization'] = `Bearer ${token}`;
@@ -93,7 +99,7 @@ export class APIClient {
                   url,
                   method: options.method || 'GET',
                   timestamp: new Date().toISOString(),
-                }
+                },
               );
             }
 
@@ -111,7 +117,7 @@ export class APIClient {
                 method: options.method || 'GET',
                 timestamp: new Date().toISOString(),
                 originalError: error,
-              }
+              },
             );
           }
         });
@@ -124,13 +130,13 @@ export class APIClient {
         onRetry: (attempt, error) => {
           console.warn(
             `[API Retry] Attempt ${attempt} failed for ${url}:`,
-            error.message
+            error.message,
           );
           if (retryOptions?.onRetry) {
             retryOptions.onRetry(attempt, error);
           }
         },
-      }
+      },
     );
   }
 
@@ -141,7 +147,7 @@ export class APIClient {
   async post<T>(
     endpoint: string,
     data?: any,
-    retryOptions?: RetryOptions
+    retryOptions?: RetryOptions,
   ): Promise<T> {
     return this.request<T>(
       endpoint,
@@ -149,14 +155,14 @@ export class APIClient {
         method: 'POST',
         body: data ? JSON.stringify(data) : undefined,
       },
-      retryOptions
+      retryOptions,
     );
   }
 
   async put<T>(
     endpoint: string,
     data?: any,
-    retryOptions?: RetryOptions
+    retryOptions?: RetryOptions,
   ): Promise<T> {
     return this.request<T>(
       endpoint,
@@ -164,7 +170,7 @@ export class APIClient {
         method: 'PUT',
         body: data ? JSON.stringify(data) : undefined,
       },
-      retryOptions
+      retryOptions,
     );
   }
 

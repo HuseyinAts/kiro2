@@ -22,7 +22,7 @@ from datetime import datetime
 import uuid
 import enum
 
-from models.database import Base
+from .database import Base
 
 
 class ExperienceLevel(str, enum.Enum):

@@ -6,11 +6,10 @@ Requirements: 5.1, 5.2, 5.7, 5.8, 5.9
 """
 
 import asyncio
-import time
-from datetime import datetime, timedelta
+from datetime import datetime
 from enum import Enum
-from typing import Any, Callable, Dict, Optional, Tuple, List
-from dataclasses import dataclass, field
+from typing import Any, Dict, Tuple, List
+from dataclasses import dataclass
 import logging
 import traceback
 
@@ -22,15 +21,60 @@ from .exceptions import (
     RateLimitError,
     DatabaseError,
 )
-from .circuit_breaker import (
-    CircuitBreaker,
-    CircuitBreakerConfig,
-    CircuitBreakerStats,
-    CircuitState,
-    CircuitBreakerOpenError,
-    CircuitBreakerHalfOpenError,
-    circuit_breaker_manager,
-)
+
+# Re-export circuit breaker classes for backward compatibility
+try:
+    from core.circuit_breaker import (
+        CircuitBreaker,
+        CircuitBreakerConfig,
+        CircuitBreakerStats,
+        CircuitState,
+        CircuitBreakerOpenError,
+        CircuitBreakerHalfOpenError,
+        CircuitBreakerManager,
+    )
+except ImportError:
+    logging.getLogger(__name__).warning("circuit_breaker module not found, using stubs")
+    # Provide stub classes if circuit_breaker module doesn't exist
+    class CircuitState(str, Enum):
+        CLOSED = "closed"
+        OPEN = "open"
+        HALF_OPEN = "half_open"
+
+    class CircuitBreakerOpenError(Exception):
+        pass
+
+    class CircuitBreakerHalfOpenError(Exception):
+        pass
+
+    class CircuitBreakerConfig:
+        def __init__(self, failure_threshold: int = 5, timeout: int = 60, expected_exception: type = Exception):
+            self.failure_threshold = failure_threshold
+            self.timeout = timeout
+            self.expected_exception = expected_exception
+
+    class CircuitBreakerStats:
+        def __init__(self):
+            self.failure_count = 0
+            self.success_count = 0
+            self.state = CircuitState.CLOSED
+
+    class CircuitBreaker:
+        def __init__(self, config: CircuitBreakerConfig):
+            self.config = config
+            self.stats = CircuitBreakerStats()
+
+        async def call(self, func, *args, **kwargs):
+            return await func(*args, **kwargs)
+
+    class CircuitBreakerManager:
+        _breakers: Dict[str, CircuitBreaker] = {}
+
+        @classmethod
+        def get_breaker(cls, name: str, config: CircuitBreakerConfig = None) -> CircuitBreaker:
+            if name not in cls._breakers:
+                cls._breakers[name] = CircuitBreaker(config or CircuitBreakerConfig())
+            return cls._breakers[name]
 
 logger = logging.getLogger(__name__)
 

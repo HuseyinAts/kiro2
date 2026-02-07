@@ -1,5 +1,5 @@
-import { motion } from 'framer-motion'
-import clsx from 'clsx'
+import clsx from 'clsx';
+import { motion } from 'framer-motion';
 
 interface PathConnectionProps {
   from: { x: number; y: number }
@@ -10,25 +10,25 @@ interface PathConnectionProps {
   animated?: boolean
 }
 
-export function PathConnection({ 
-  from, 
-  to, 
-  isActive, 
+export function PathConnection({
+  from,
+  to,
+  isActive,
   isCompleted,
   curved = true,
-  animated = true
+  animated = true,
 }: PathConnectionProps) {
   // Calculate control points for curved path
-  const midX = (from.x + to.x) / 2
-  const midY = (from.y + to.y) / 2
-  const controlPoint1X = curved ? midX : from.x
-  const controlPoint1Y = curved ? from.y : midY
-  const controlPoint2X = curved ? midX : to.x
-  const controlPoint2Y = curved ? to.y : midY
+  const midX = (from.x + to.x) / 2;
+  const midY = (from.y + to.y) / 2;
+  const controlPoint1X = curved ? midX : from.x;
+  const controlPoint1Y = curved ? from.y : midY;
+  const controlPoint2X = curved ? midX : to.x;
+  const controlPoint2Y = curved ? to.y : midY;
 
   const pathData = curved
     ? `M ${from.x} ${from.y} C ${controlPoint1X} ${controlPoint1Y}, ${controlPoint2X} ${controlPoint2Y}, ${to.x} ${to.y}`
-    : `M ${from.x} ${from.y} L ${to.x} ${to.y}`
+    : `M ${from.x} ${from.y} L ${to.x} ${to.y}`;
 
   return (
     <svg
@@ -39,7 +39,7 @@ export function PathConnection({
         width: '100%',
         height: '100%',
         pointerEvents: 'none',
-        zIndex: 0
+        zIndex: 0,
       }}
     >
       <defs>
@@ -86,7 +86,7 @@ export function PathConnection({
         strokeLinecap="round"
         style={{
           transform: 'translate(2px, 2px)',
-          filter: 'blur(2px)'
+          filter: 'blur(2px)',
         }}
       />
 
@@ -95,25 +95,25 @@ export function PathConnection({
         d={pathData}
         fill="none"
         stroke={
-          isCompleted ? '#10b981' : 
-          isActive ? 'url(#activeGradient)' : 
+          isCompleted ? '#10b981' :
+          isActive ? 'url(#activeGradient)' :
           '#d1d5db'
         }
-        strokeWidth={isActive ? "4" : "3"}
+        strokeWidth={isActive ? '4' : '3'}
         strokeLinecap="round"
-        strokeDasharray={isActive && !isCompleted ? "10 5" : "0"}
+        strokeDasharray={isActive && !isCompleted ? '10 5' : '0'}
         markerEnd="url(#arrowhead)"
         initial={{ pathLength: 0, opacity: 0 }}
-        animate={{ 
-          pathLength: 1, 
+        animate={{
+          pathLength: 1,
           opacity: 1,
         }}
         transition={{
-          pathLength: { duration: 1, ease: "easeInOut" },
-          opacity: { duration: 0.5 }
+          pathLength: { duration: 1, ease: 'easeInOut' },
+          opacity: { duration: 0.5 },
         }}
         className={clsx(
-          isActive && !isCompleted && 'animate-pulse'
+          isActive && !isCompleted && 'animate-pulse',
         )}
       />
 
@@ -156,18 +156,18 @@ export function PathConnection({
           strokeLinecap="round"
           opacity="0.3"
           style={{
-            filter: 'blur(8px)'
+            filter: 'blur(8px)',
           }}
           animate={{
-            opacity: [0.2, 0.5, 0.2]
+            opacity: [0.2, 0.5, 0.2],
           }}
           transition={{
             duration: 2,
             repeat: Infinity,
-            ease: "easeInOut"
+            ease: 'easeInOut',
           }}
         />
       )}
     </svg>
-  )
+  );
 }

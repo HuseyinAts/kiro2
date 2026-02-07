@@ -2,8 +2,9 @@
  * Dijital Tangram - Task 87.4
  * REQ-51.96-51.100: Tangram puzzle interface, shape recognition, spatial reasoning
  */
-import React, { useState, useRef, useEffect } from 'react';
 import axios from 'axios';
+import * as React from 'react';
+import {  useState, useRef, useEffect  } from 'react';
 
 interface TangramPiece {
   id: string;
@@ -56,7 +57,7 @@ const DigitalTangram: React.FC<DigitalTangramProps> = ({ onPuzzleComplete }) => 
       // 1 kare
       { id: 'square-1', type: 'square', color: '#9C27B0', x: 550, y: 50, rotation: 0, isDragging: false },
       // 1 paralelkenar
-      { id: 'parallelogram-1', type: 'parallelogram', color: '#E91E63', x: 650, y: 50, rotation: 0, isDragging: false }
+      { id: 'parallelogram-1', type: 'parallelogram', color: '#E91E63', x: 650, y: 50, rotation: 0, isDragging: false },
     ];
     setPieces(initialPieces);
   };
@@ -78,10 +79,10 @@ const DigitalTangram: React.FC<DigitalTangramProps> = ({ onPuzzleComplete }) => 
   // Canvas'a çiz
   useEffect(() => {
     const canvas = canvasRef.current;
-    if (!canvas) return;
+    if (!canvas) {return;}
 
     const ctx = canvas.getContext('2d');
-    if (!ctx) return;
+    if (!ctx) {return;}
 
     // Canvas'ı temizle
     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -162,7 +163,7 @@ const DigitalTangram: React.FC<DigitalTangramProps> = ({ onPuzzleComplete }) => 
   // Mouse olayları
   const handleMouseDown = (e: React.MouseEvent<HTMLCanvasElement>) => {
     const canvas = canvasRef.current;
-    if (!canvas) return;
+    if (!canvas) {return;}
 
     const rect = canvas.getBoundingClientRect();
     const x = e.clientX - rect.left;
@@ -174,7 +175,7 @@ const DigitalTangram: React.FC<DigitalTangramProps> = ({ onPuzzleComplete }) => 
       if (isPointInPiece(x, y, piece)) {
         setDraggedPiece(piece);
         setPieces(pieces.map(p =>
-          p.id === piece.id ? { ...p, isDragging: true } : p
+          p.id === piece.id ? { ...p, isDragging: true } : p,
         ));
         break;
       }
@@ -189,24 +190,24 @@ const DigitalTangram: React.FC<DigitalTangramProps> = ({ onPuzzleComplete }) => 
   };
 
   const handleMouseMove = (e: React.MouseEvent<HTMLCanvasElement>) => {
-    if (!draggedPiece) return;
+    if (!draggedPiece) {return;}
 
     const canvas = canvasRef.current;
-    if (!canvas) return;
+    if (!canvas) {return;}
 
     const rect = canvas.getBoundingClientRect();
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
 
     setPieces(pieces.map(p =>
-      p.id === draggedPiece.id ? { ...p, x, y } : p
+      p.id === draggedPiece.id ? { ...p, x, y } : p,
     ));
   };
 
   const handleMouseUp = () => {
     if (draggedPiece) {
       setPieces(pieces.map(p =>
-        p.id === draggedPiece.id ? { ...p, isDragging: false } : p
+        p.id === draggedPiece.id ? { ...p, isDragging: false } : p,
       ));
       setDraggedPiece(null);
       setAttempts(attempts + 1);
@@ -216,7 +217,7 @@ const DigitalTangram: React.FC<DigitalTangramProps> = ({ onPuzzleComplete }) => 
   // Parçayı döndür
   const rotatePiece = (pieceId: string) => {
     setPieces(pieces.map(p =>
-      p.id === pieceId ? { ...p, rotation: (p.rotation + 45) % 360 } : p
+      p.id === pieceId ? { ...p, rotation: (p.rotation + 45) % 360 } : p,
     ));
   };
 
@@ -224,7 +225,7 @@ const DigitalTangram: React.FC<DigitalTangramProps> = ({ onPuzzleComplete }) => 
   const checkPuzzle = () => {
     // Basit kontrol - tüm parçalar hedef alanda mı?
     const inTargetArea = pieces.filter(p =>
-      p.x >= 50 && p.x <= 450 && p.y >= 200 && p.y <= 600
+      p.x >= 50 && p.x <= 450 && p.y >= 200 && p.y <= 600,
     );
 
     if (inTargetArea.length === pieces.length) {
@@ -237,7 +238,7 @@ const DigitalTangram: React.FC<DigitalTangramProps> = ({ onPuzzleComplete }) => 
 
   // Puzzle'ı kaydet
   const savePuzzle = async (completed: boolean) => {
-    if (!selectedPuzzle) return;
+    if (!selectedPuzzle) {return;}
 
     try {
       const duration = Math.floor((Date.now() - startTime) / 1000);
@@ -250,11 +251,11 @@ const DigitalTangram: React.FC<DigitalTangramProps> = ({ onPuzzleComplete }) => 
           type: p.type,
           x: p.x,
           y: p.y,
-          rotation: p.rotation
+          rotation: p.rotation,
         })),
         completed,
         attempts,
-        duration_seconds: duration
+        duration_seconds: duration,
       });
 
       if (completed && onPuzzleComplete) {
@@ -366,13 +367,13 @@ const DigitalTangram: React.FC<DigitalTangramProps> = ({ onPuzzleComplete }) => 
       <div className="help-text p-4 bg-blue-50 rounded">
         <p className="text-sm text-gray-700">
           <strong>Tangram Nedir?</strong><br />
-          Tangram, 7 geometrik parçadan oluşan Çin kökenli bir bulmacadır. 
+          Tangram, 7 geometrik parçadan oluşan Çin kökenli bir bulmacadır.
           Parçaları kullanarak çeşitli şekiller oluşturabilirsiniz.<br /><br />
           <strong>Nasıl Oynanır:</strong><br />
           1. Bir puzzle seçin<br />
           2. Parçaları sürükleyerek hedef alana yerleştirin<br />
           3. Parçaları döndürmek için butonları kullanın<br />
-          4. "Kontrol Et" ile çözümünüzü kontrol edin<br /><br />
+          4. &quot;Kontrol Et&quot; ile çözümünüzü kontrol edin<br /><br />
           <strong>İpuçları:</strong><br />
           • Büyük parçalardan başlayın<br />
           • Parçaları 45° döndürebilirsiniz<br />

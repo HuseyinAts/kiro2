@@ -4,9 +4,7 @@ Kritik Modüller için Otomatik Test Oluşturucu
 Coverage'ı hızla %50+'ye çıkarmak için
 """
 
-import os
 from pathlib import Path
-from datetime import datetime
 
 
 class CriticalTestBooster:

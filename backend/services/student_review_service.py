@@ -4,11 +4,11 @@ Task 105: Student Review Service
 Service layer for review management, moderation, and statistics
 """
 
-from typing import List, Optional, Dict, Any
+from typing import List, Optional, Dict
 from uuid import UUID
-from sqlalchemy import select, func, and_, or_, desc
+from sqlalchemy import select, and_, desc
 from sqlalchemy.ext.asyncio import AsyncSession
-from datetime import datetime
+from datetime import datetime, timezone
 
 from models.student_review import (
     StudentReview,
@@ -308,10 +308,10 @@ class StudentReviewService:
         review.status = new_status
         review.moderation_notes = notes
         review.moderated_by = moderator_id
-        review.moderated_at = datetime.utcnow()
+        review.moderated_at = datetime.now(timezone.utc)
 
         if new_status == ReviewStatus.APPROVED:
-            review.published_at = datetime.utcnow()
+            review.published_at = datetime.now(timezone.utc)
 
         await self.db.commit()
         await self.db.refresh(review)

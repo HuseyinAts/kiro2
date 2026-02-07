@@ -4,6 +4,7 @@
  */
 
 import { useState, useEffect, useCallback } from 'react';
+
 import { backgroundSyncService, SyncStatus } from '../services/backgroundSyncService';
 import { offlineStorageService } from '../services/offlineStorageService';
 
@@ -68,7 +69,7 @@ export function usePWA(): PWAState & PWAActions {
       const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
       // iOS Safari'de home screen'e eklenmiş mi?
       const isIOSInstalled = (window.navigator as any).standalone === true;
-      
+
       setIsInstalled(isStandalone || isIOSInstalled);
     };
 
@@ -143,7 +144,7 @@ export function usePWA(): PWAState & PWAActions {
     try {
       await installPrompt.prompt();
       const { outcome } = await installPrompt.userChoice;
-      
+
       if (outcome === 'accepted') {
         console.log('PWA kurulumu kabul edildi');
         setIsInstallable(false);
@@ -166,13 +167,13 @@ export function usePWA(): PWAState & PWAActions {
     try {
       console.log('Manuel senkronizasyon başlatılıyor...');
       const result = await backgroundSyncService.triggerManualSync();
-      
+
       if (result.success) {
         console.log(`Senkronizasyon başarılı: ${result.syncedItems} öğe senkronize edildi`);
       } else {
         console.error('Senkronizasyon hatası:', result.errors);
       }
-      
+
       // Durumu güncelle
       const status = await backgroundSyncService.getSyncStatus();
       setSyncStatus(status);
@@ -185,16 +186,16 @@ export function usePWA(): PWAState & PWAActions {
    * Çevrimdışı kullanım için soru indir
    */
   const downloadQuestionsForOffline = useCallback(async (
-    subject: string, 
-    count: number = 50
+    subject: string,
+    count: number = 50,
   ): Promise<void> => {
     try {
       console.log(`${subject} konusu için ${count} soru indiriliyor...`);
-      
+
       const questions = await offlineStorageService.downloadQuestionsForOffline(subject, count);
-      
+
       console.log(`${questions.length} soru başarıyla indirildi`);
-      
+
       // İstatistikleri güncelle
       const stats = await offlineStorageService.getOfflineStats();
       setOfflineStats(stats);
@@ -210,15 +211,15 @@ export function usePWA(): PWAState & PWAActions {
   const clearOfflineData = useCallback(async (): Promise<void> => {
     try {
       console.log('Çevrimdışı veriler temizleniyor...');
-      
+
       await offlineStorageService.clearOfflineData(true); // Ayarları koru
-      
+
       console.log('Çevrimdışı veriler başarıyla temizlendi');
-      
+
       // İstatistikleri güncelle
       const stats = await offlineStorageService.getOfflineStats();
       setOfflineStats(stats);
-      
+
       const status = await backgroundSyncService.getSyncStatus();
       setSyncStatus(status);
     } catch (error) {
@@ -234,15 +235,15 @@ export function usePWA(): PWAState & PWAActions {
     try {
       // Notification izni iste
       const permission = await Notification.requestPermission();
-      
+
       if (permission !== 'granted') {
         console.log('Notification izni reddedildi');
         return false;
       }
-      
+
       // Push subscription oluştur
       const subscription = await backgroundSyncService.subscribeToPushNotifications();
-      
+
       if (subscription) {
         console.log('Push notification subscription başarılı');
         return true;
@@ -263,13 +264,13 @@ export function usePWA(): PWAState & PWAActions {
     isOnline,
     syncStatus,
     offlineStats,
-    
+
     // Actions
     installPWA,
     triggerSync,
     downloadQuestionsForOffline,
     clearOfflineData,
-    subscribeToPushNotifications
+    subscribeToPushNotifications,
   };
 }
 
@@ -302,7 +303,7 @@ export function usePWAInstallPrompt() {
   }, []);
 
   const install = useCallback(async () => {
-    if (!installPrompt) return false;
+    if (!installPrompt) {return false;}
 
     try {
       await installPrompt.prompt();
@@ -316,7 +317,7 @@ export function usePWAInstallPrompt() {
 
   return {
     isInstallable,
-    install
+    install,
   };
 }
 
@@ -360,6 +361,6 @@ export function useNetworkStatus() {
 
   return {
     isOnline,
-    connectionType
+    connectionType,
   };
 }

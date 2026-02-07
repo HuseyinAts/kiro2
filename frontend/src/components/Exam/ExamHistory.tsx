@@ -2,7 +2,16 @@
  * Sınav Geçmişi Bileşeni
  * Kullanıcının tüm sınavlarını listeler ve analiz sağlar
  */
-import React, { useState, useEffect } from 'react'
+import {
+  Visibility,
+  Assessment,
+  TrendingUp,
+  School,
+  Timer,
+  CheckCircle,
+  Search,
+  FilterList,
+} from '@mui/icons-material';
 import {
   Paper,
   Typography,
@@ -10,7 +19,6 @@ import {
   Grid,
   Card,
   CardContent,
-  CardActions,
   Button,
   Chip,
   Table,
@@ -29,203 +37,191 @@ import {
   Select,
   MenuItem,
   TextField,
-  InputAdornment
-} from '@mui/material'
-import {
-  Visibility,
-  Assessment,
-  TrendingUp,
-  TrendingDown,
-  School,
-  Timer,
-  CheckCircle,
-  Cancel,
-  RemoveCircle,
-  Search,
-  FilterList,
-  DateRange
-} from '@mui/icons-material'
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, Legend, ResponsiveContainer } from 'recharts'
-import { dateUtils } from '@/utils/dateUtils'
-import { useNavigate } from 'react-router-dom'
-import { examService, SinavTipi, SinavDurumu, ExamStatus, ExamType, ExamSessionResponse } from '../../services/examService'
-import { SinavOturumu } from '../../types'
+  InputAdornment,
+} from '@mui/material';
+import * as React from 'react';
+import {  useState, useEffect  } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, Legend, ResponsiveContainer } from 'recharts';
+
+import { examService, SinavTipi, SinavDurumu, ExamStatus, ExamType, ExamSessionResponse } from '../../services/examService';
+import { dateUtils } from '@/utils/dateUtils';
 
 interface ExamHistoryProps {
   onViewResult?: (sinavId: string) => void
 }
 
 export const ExamHistory: React.FC<ExamHistoryProps> = ({ onViewResult }) => {
-  const navigate = useNavigate()
-  
-  const [sinavlar, setSinavlar] = useState<ExamSessionResponse[]>([])
-  const [filteredSinavlar, setFilteredSinavlar] = useState<ExamSessionResponse[]>([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
-  const [page, setPage] = useState(0)
-  const [rowsPerPage, setRowsPerPage] = useState(10)
-  
+  const navigate = useNavigate();
+
+  const [sinavlar, setSinavlar] = useState<ExamSessionResponse[]>([]);
+  const [filteredSinavlar, setFilteredSinavlar] = useState<ExamSessionResponse[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
+
   // Filtreleme state'leri
-  const [filterType, setFilterType] = useState<ExamType | 'ALL'>('ALL')
-  const [filterStatus, setFilterStatus] = useState<ExamStatus | 'ALL'>('ALL')
-  const [searchTerm, setSearchTerm] = useState('')
+  const [filterType, setFilterType] = useState<ExamType | 'ALL'>('ALL');
+  const [filterStatus, setFilterStatus] = useState<ExamStatus | 'ALL'>('ALL');
+  const [searchTerm, setSearchTerm] = useState('');
   const [dateRange, setDateRange] = useState<{ start: string; end: string }>({
     start: '',
-    end: ''
-  })
+    end: '',
+  });
 
   /**
    * Bileşen mount edildiğinde sınavları yükle
    */
   useEffect(() => {
-    loadExams()
-  }, [])
+    loadExams();
+  }, []);
 
   /**
    * Filtreler değiştiğinde sınavları filtrele
    */
   useEffect(() => {
-    applyFilters()
-  }, [sinavlar, filterType, filterStatus, searchTerm, dateRange])
+    applyFilters();
+  }, [sinavlar, filterType, filterStatus, searchTerm, dateRange]);
 
   /**
    * Sınavları yükle
    */
   const loadExams = async () => {
     try {
-      setLoading(true)
-      setError(null)
-      const sinavlarData = await examService.getMyExams()
-      setSinavlar(sinavlarData)
+      setLoading(true);
+      setError(null);
+      const sinavlarData = await examService.getMyExams();
+      setSinavlar(sinavlarData);
     } catch (err: any) {
-      setError(err.message || 'Sınavlar yüklenirken hata oluştu')
+      setError(err.message || 'Sınavlar yüklenirken hata oluştu');
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   /**
    * Filtreleri uygula
    */
   const applyFilters = () => {
-    let filtered = [...sinavlar]
+    let filtered = [...sinavlar];
 
     // Sınav türü filtresi
     if (filterType !== 'ALL') {
-      filtered = filtered.filter(sinav => sinav.exam_type === filterType)
+      filtered = filtered.filter(sinav => sinav.exam_type === filterType);
     }
 
     // Durum filtresi
     if (filterStatus !== 'ALL') {
-      filtered = filtered.filter(sinav => sinav.status === filterStatus)
+      filtered = filtered.filter(sinav => sinav.status === filterStatus);
     }
 
     // Arama terimi filtresi
     if (searchTerm) {
-      filtered = filtered.filter(sinav => 
+      filtered = filtered.filter(sinav =>
         sinav.exam_type.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        sinav.session_id.toLowerCase().includes(searchTerm.toLowerCase())
-      )
+        sinav.session_id.toLowerCase().includes(searchTerm.toLowerCase()),
+      );
     }
 
     // Tarih aralığı filtresi
     if (dateRange.start) {
-      filtered = filtered.filter(sinav => 
-        new Date(sinav.started_at || new Date()) >= new Date(dateRange.start)
-      )
+      filtered = filtered.filter(sinav =>
+        new Date(sinav.started_at || new Date()) >= new Date(dateRange.start),
+      );
     }
     if (dateRange.end) {
-      filtered = filtered.filter(sinav => 
-        new Date(sinav.started_at || new Date()) <= new Date(dateRange.end)
-      )
+      filtered = filtered.filter(sinav =>
+        new Date(sinav.started_at || new Date()) <= new Date(dateRange.end),
+      );
     }
 
     // Tarihe göre sırala (en yeni önce)
-    filtered.sort((a, b) => 
-      new Date(b.started_at || new Date()).getTime() - new Date(a.started_at || new Date()).getTime()
-    )
+    filtered.sort((a, b) =>
+      new Date(b.started_at || new Date()).getTime() - new Date(a.started_at || new Date()).getTime(),
+    );
 
-    setFilteredSinavlar(filtered)
-    setPage(0) // Sayfa numarasını sıfırla
-  }
+    setFilteredSinavlar(filtered);
+    setPage(0); // Sayfa numarasını sıfırla
+  };
 
   /**
    * Sınav durumu rengini getir
    */
-  const getStatusColor = (durum: string) => {
+  const getStatusColor = (durum: string): 'default' | 'primary' | 'secondary' | 'error' | 'info' | 'success' | 'warning' => {
     switch (durum) {
       case ExamStatus.COMPLETED:
-        return 'success'
+        return 'success';
       case ExamStatus.IN_PROGRESS:
-        return 'warning'
+        return 'warning';
       case ExamStatus.NOT_STARTED:
-        return 'info'
+        return 'info';
       case ExamStatus.ABANDONED:
-        return 'error'
+        return 'error';
       default:
-        return 'default'
+        return 'default';
     }
-  }
+  };
 
   /**
    * Sınav türü rengini getir
    */
-  const getExamTypeColor = (tip: string) => {
+  const getExamTypeColor = (tip: string): 'default' | 'primary' | 'secondary' | 'error' | 'info' | 'success' | 'warning' => {
     switch (tip) {
       case ExamType.TYT:
-        return 'primary'
+        return 'primary';
       case ExamType.AYT:
-        return 'secondary'
+        return 'secondary';
       case ExamType.YDT:
-        return 'success'
+        return 'success';
       default:
-        return 'default'
+        return 'default';
     }
-  }
+  };
 
   /**
    * Süreyi formatla
    */
   const formatDuration = (dakika: number): string => {
-    const saat = Math.floor(dakika / 60)
-    const kalanDakika = dakika % 60
-    return saat > 0 ? `${saat}s ${kalanDakika}dk` : `${kalanDakika}dk`
-  }
+    const saat = Math.floor(dakika / 60);
+    const kalanDakika = dakika % 60;
+    return saat > 0 ? `${saat}s ${kalanDakika}dk` : `${kalanDakika}dk`;
+  };
 
   /**
    * Tarihi formatla
    */
   const formatDate = (dateString: string): string => {
     try {
-      return dateUtils.format(dateString, 'DD MMM YYYY HH:mm')
+      return dateUtils.format(dateString, 'DD MMM YYYY HH:mm');
     } catch {
-      return dateString
+      return dateString;
     }
-  }
+  };
 
   /**
    * İstatistikleri hesapla
    */
   const calculateStats = () => {
-    const tamamlananSinavlar = sinavlar.filter(s => s.status === ExamStatus.COMPLETED)
-    const toplamSinav = sinavlar.length
-    const tamamlananSayi = tamamlananSinavlar.length
-    const devamEdenSayi = sinavlar.filter(s => s.status === ExamStatus.IN_PROGRESS).length
-    
+    const tamamlananSinavlar = sinavlar.filter(s => s.status === ExamStatus.COMPLETED);
+    const toplamSinav = sinavlar.length;
+    const tamamlananSayi = tamamlananSinavlar.length;
+    const devamEdenSayi = sinavlar.filter(s => s.status === ExamStatus.IN_PROGRESS).length;
+
     // Sınav türü dağılımı
     const tipDagilimi = sinavlar.reduce((acc, sinav) => {
-      acc[sinav.exam_type] = (acc[sinav.exam_type] || 0) + 1
-      return acc
-    }, {} as Record<string, number>)
+      acc[sinav.exam_type] = (acc[sinav.exam_type] || 0) + 1;
+      return acc;
+    }, {} as Record<string, number>);
 
     return {
       toplamSinav,
       tamamlananSayi,
       devamEdenSayi,
       tamamlanmaOrani: toplamSinav > 0 ? (tamamlananSayi / toplamSinav) * 100 : 0,
-      tipDagilimi
-    }
-  }
+      tipDagilimi,
+    };
+  };
 
   /**
    * Performans trend verilerini hazırla
@@ -234,7 +230,7 @@ export const ExamHistory: React.FC<ExamHistoryProps> = ({ onViewResult }) => {
     const tamamlananSinavlar = sinavlar
       .filter(s => s.status === ExamStatus.COMPLETED)
       .sort((a, b) => new Date(a.started_at || new Date()).getTime() - new Date(b.started_at || new Date()).getTime())
-      .slice(-10) // Son 10 sınav
+      .slice(-10); // Son 10 sınav
 
     return tamamlananSinavlar.map((sinav, index) => ({
       sinav: `Sınav ${index + 1}`,
@@ -242,12 +238,12 @@ export const ExamHistory: React.FC<ExamHistoryProps> = ({ onViewResult }) => {
       tip: sinav.exam_type,
       // Not: Gerçek performans verileri için sınav sonuçları gerekli
       // Şimdilik mock veri kullanıyoruz
-      puan: Math.random() * 100
-    }))
-  }
+      puan: Math.random() * 100,
+    }));
+  };
 
-  const stats = calculateStats()
-  const trendData = preparePerformanceTrendData()
+  const stats = calculateStats();
+  const trendData = preparePerformanceTrendData();
 
   if (loading) {
     return (
@@ -257,7 +253,7 @@ export const ExamHistory: React.FC<ExamHistoryProps> = ({ onViewResult }) => {
           Sınav geçmişi yükleniyor...
         </Typography>
       </Box>
-    )
+    );
   }
 
   if (error) {
@@ -269,7 +265,7 @@ export const ExamHistory: React.FC<ExamHistoryProps> = ({ onViewResult }) => {
           Tekrar Dene
         </Button>
       </Alert>
-    )
+    );
   }
 
   return (
@@ -350,10 +346,10 @@ export const ExamHistory: React.FC<ExamHistoryProps> = ({ onViewResult }) => {
               <YAxis />
               <RechartsTooltip />
               <Legend />
-              <Line 
-                type="monotone" 
-                dataKey="puan" 
-                stroke="#10b981" 
+              <Line
+                type="monotone"
+                dataKey="puan"
+                stroke="#10b981"
                 strokeWidth={2}
                 name="Puan"
               />
@@ -368,7 +364,7 @@ export const ExamHistory: React.FC<ExamHistoryProps> = ({ onViewResult }) => {
           <FilterList />
           Filtreler
         </Typography>
-        
+
         <Grid container spacing={2}>
           <Grid item xs={12} sm={6} md={3}>
             <FormControl fullWidth size="small">
@@ -415,7 +411,7 @@ export const ExamHistory: React.FC<ExamHistoryProps> = ({ onViewResult }) => {
                   <InputAdornment position="start">
                     <Search />
                   </InputAdornment>
-                )
+                ),
               }}
             />
           </Grid>
@@ -425,10 +421,10 @@ export const ExamHistory: React.FC<ExamHistoryProps> = ({ onViewResult }) => {
               fullWidth
               variant="outlined"
               onClick={() => {
-                setFilterType('ALL')
-                setFilterStatus('ALL')
-                setSearchTerm('')
-                setDateRange({ start: '', end: '' })
+                setFilterType('ALL');
+                setFilterStatus('ALL');
+                setSearchTerm('');
+                setDateRange({ start: '', end: '' });
               }}
             >
               Filtreleri Temizle
@@ -459,7 +455,7 @@ export const ExamHistory: React.FC<ExamHistoryProps> = ({ onViewResult }) => {
                     <TableCell>
                       <Chip
                         label={sinav.exam_type}
-                        color={getExamTypeColor(sinav.exam_type) as any}
+                        color={getExamTypeColor(sinav.exam_type)}
                         size="small"
                       />
                     </TableCell>
@@ -482,7 +478,7 @@ export const ExamHistory: React.FC<ExamHistoryProps> = ({ onViewResult }) => {
                     <TableCell align="center">
                       <Chip
                         label={sinav.status}
-                        color={getStatusColor(sinav.status) as any}
+                        color={getStatusColor(sinav.status)}
                         size="small"
                       />
                     </TableCell>
@@ -494,9 +490,9 @@ export const ExamHistory: React.FC<ExamHistoryProps> = ({ onViewResult }) => {
                               size="small"
                               onClick={() => {
                                 if (onViewResult) {
-                                  onViewResult(sinav.session_id)
+                                  onViewResult(sinav.session_id);
                                 } else {
-                                  navigate(`/exam/${sinav.session_id}/results`)
+                                  navigate(`/exam/${sinav.session_id}/results`);
                                 }
                               }}
                             >
@@ -542,11 +538,11 @@ export const ExamHistory: React.FC<ExamHistoryProps> = ({ onViewResult }) => {
           page={page}
           onPageChange={(_, newPage) => setPage(newPage)}
           onRowsPerPageChange={(e) => {
-            setRowsPerPage(parseInt(e.target.value, 10))
-            setPage(0)
+            setRowsPerPage(parseInt(e.target.value, 10));
+            setPage(0);
           }}
           labelRowsPerPage="Sayfa başına satır:"
-          labelDisplayedRows={({ from, to, count }) => 
+          labelDisplayedRows={({ from, to, count }) =>
             `${from}-${to} / ${count !== -1 ? count : `${to}'den fazla`}`
           }
         />
@@ -556,13 +552,13 @@ export const ExamHistory: React.FC<ExamHistoryProps> = ({ onViewResult }) => {
         <Box sx={{ textAlign: 'center', py: 4 }}>
           <School sx={{ fontSize: 80, color: 'text.secondary', mb: 2 }} />
           <Typography variant="h6" color="textSecondary">
-            {sinavlar.length === 0 
+            {sinavlar.length === 0
               ? 'Henüz hiç sınav çözmediniz'
               : 'Filtrelere uygun sınav bulunamadı'
             }
           </Typography>
           <Typography variant="body2" color="textSecondary" sx={{ mb: 2 }}>
-            {sinavlar.length === 0 
+            {sinavlar.length === 0
               ? 'İlk sınavınızı çözmek için sınav başlatın'
               : 'Farklı filtreler deneyebilirsiniz'
             }
@@ -576,7 +572,7 @@ export const ExamHistory: React.FC<ExamHistoryProps> = ({ onViewResult }) => {
         </Box>
       )}
     </Box>
-  )
-}
+  );
+};
 
-export default ExamHistory
+export default ExamHistory;

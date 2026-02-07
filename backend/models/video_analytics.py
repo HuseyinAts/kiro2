@@ -20,7 +20,7 @@ from sqlalchemy.orm import relationship
 from datetime import datetime
 import uuid
 
-from models.database import Base
+from .database import Base
 
 
 class VideoWatchSession(Base):

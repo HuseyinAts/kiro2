@@ -3,13 +3,12 @@ Test Coverage Runner ve Reporter
 Teknofest 2025 - YKS Hazırlık Platformu
 """
 
-import os
 import sys
 import json
 import subprocess
 from pathlib import Path
 from datetime import datetime
-from typing import Dict, List, Tuple
+from typing import Dict
 
 
 class CoverageRunner:
@@ -172,7 +171,7 @@ class CoverageRunner:
         for module in analysis["high_coverage_modules"][:10]:
             report_content += f"| {module['name']} | %{module['coverage']:.2f} |\n"
 
-        report_content += f"""
+        report_content += """
 
 ## ⚠️ Düşük Coverage Modülleri (<30%)
 
@@ -186,7 +185,7 @@ class CoverageRunner:
                 f"| {module['name']} | %{module['coverage']:.2f} | {priority} |\n"
             )
 
-        report_content += f"""
+        report_content += """
 
 ## ❌ Test Edilmemiş Modüller
 
@@ -206,7 +205,7 @@ class CoverageRunner:
             "soru_bankasi_service.py",
         ]
 
-        report_content += f"""
+        report_content += """
 
 ## 🎯 Kritik Servisler Durumu
 
@@ -223,7 +222,7 @@ class CoverageRunner:
                 report_content += f"| {service} | N/A | ❓ |\n"
 
         # Öneriler
-        report_content += f"""
+        report_content += """
 
 ## 📈 İyileştirme Önerileri
 

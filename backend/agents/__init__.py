@@ -1,29 +1,54 @@
 """
 Centralized Agent Management with Singleton Pattern
-Teknofest 2025 - Eitim Eylemci Projesi
+Teknofest 2025 - Egitim Eylemci Projesi
 
-Bu modül tüm AI agent'lar1 yönetir ve singleton pattern ile
-tek instance garantisi salar.
+Bu modul tum AI agent'lari yonetir ve singleton pattern ile
+tek instance garantisi saglar.
+
+P0 FIX: RAGSearchService entegrasyonu eklendi (2026-01-27)
+P1 FIX: Thread safety, lru_cache/global conflict çözüldü (2026-02-03)
 """
 
 import logging
-from functools import lru_cache
-from typing import Optional
+import threading
+from typing import Optional, TYPE_CHECKING
 
-from .learning_path_agent import LearningPathAgent
+if TYPE_CHECKING:
+    from .learning_path_agent import LearningPathAgent
+    from .learning_path.core.rag_search import RAGSearchService
 
 logger = logging.getLogger(__name__)
 
-# Global instances (thread-safe lazy initialization)
-_learning_path_agent: Optional[LearningPathAgent] = None
+# Thread-safe singleton management
+_lock = threading.RLock()
+_learning_path_agent: Optional["LearningPathAgent"] = None
+_rag_service: Optional["RAGSearchService"] = None
 
 
-@lru_cache(maxsize=1)
-def get_learning_path_agent() -> LearningPathAgent:
+def _get_rag_service() -> Optional["RAGSearchService"]:
     """
-    Get singleton Learning Path Agent instance
+    Get singleton RAGSearchService instance (thread-safe).
 
-    Thread-safe singleton with lazy initialization.
+    Returns:
+        RAGSearchService or None if initialization fails
+    """
+    global _rag_service
+    if _rag_service is None:
+        with _lock:
+            if _rag_service is None:  # Double-check after lock
+                try:
+                    from .learning_path.core.rag_search import RAGSearchService
+                    _rag_service = RAGSearchService()
+                    logger.info("RAGSearchService initialized for Learning Path Agent")
+                except Exception as e:
+                    logger.warning(f"Failed to initialize RAGSearchService: {e}")
+    return _rag_service
+
+
+def get_learning_path_agent() -> "LearningPathAgent":
+    """
+    Get singleton Learning Path Agent instance (thread-safe).
+
     FastAPI Depends() compatible.
 
     Returns:
@@ -43,50 +68,72 @@ def get_learning_path_agent() -> LearningPathAgent:
     """
     global _learning_path_agent
     if _learning_path_agent is None:
-        logger.info("Initializing Learning Path Agent (singleton)")
-        _learning_path_agent = LearningPathAgent()
+        with _lock:
+            if _learning_path_agent is None:  # Double-check after lock
+                logger.info("Initializing Learning Path Agent (singleton)")
+                from .learning_path_agent import LearningPathAgent
+
+                rag_service = _get_rag_service()
+                _learning_path_agent = LearningPathAgent(rag_service=rag_service)
     return _learning_path_agent
 
 
-def initialize_agents():
+def initialize_agents() -> dict:
     """
-    Initialize all agents on application startup
+    Initialize all agents on application startup.
 
-    Called from main.py lifespan event.
+    Called from app_lifespan in core/application.py.
     Ensures agents are ready before handling requests.
 
     Returns:
         dict: Dictionary of initialized agents
     """
-    logger.info("> Initializing AI agents...")
+    logger.info("> Initializing AI agents...")
 
     agents = {"learning_path": get_learning_path_agent()}
 
-    logger.info(f" Initialized {len(agents)} agent(s)")
+    logger.info(f"Initialized {len(agents)} agent(s)")
 
     return agents
 
 
-async def shutdown_agents():
+async def shutdown_agents() -> None:
     """
-    Cleanup agents on application shutdown
+    Cleanup agents on application shutdown.
 
-    Called from main.py lifespan event.
+    Called from app_lifespan in core/application.py.
     Ensures graceful cleanup of resources.
     """
-    global _learning_path_agent
+    global _learning_path_agent, _rag_service
 
-    logger.info("=Ñ Shutting down AI agents...")
+    logger.info("Shutting down AI agents...")
 
-    if _learning_path_agent:
-        # Cleanup resources if needed
-        logger.info("Cleaned up Learning Path Agent")
-        _learning_path_agent = None
+    with _lock:
+        if _rag_service is not None:
+            if hasattr(_rag_service, "close"):
+                try:
+                    await _rag_service.close()
+                except Exception as e:
+                    logger.warning(f"RAG service close error: {e}")
+            _rag_service = None
+            logger.info("Cleaned up RAG Service")
 
-    # Clear lru_cache
-    get_learning_path_agent.cache_clear()
+        if _learning_path_agent is not None:
+            _learning_path_agent = None
+            logger.info("Cleaned up Learning Path Agent")
 
-    logger.info(" All agents shut down")
+    logger.info("All agents shut down")
+
+
+def __getattr__(name: str):
+    """Lazy import for module-level names."""
+    if name == "LearningPathAgent":
+        from .learning_path_agent import LearningPathAgent
+        return LearningPathAgent
+    if name == "RAGSearchService":
+        from .learning_path.core.rag_search import RAGSearchService
+        return RAGSearchService
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
 
 
 __all__ = [

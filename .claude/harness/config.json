@@ -1,0 +1,199 @@
+{
+  "$schema": "https://claude.ai/schemas/harness-config.json",
+  "name": "kiro2-harness",
+  "version": "1.0.0",
+  "description": "Long-running agent harness for KIRO2 platform",
+
+  "agent": {
+    "maxRuntime": 3600000,
+    "checkpointInterval": 300000,
+    "restartPolicy": "on-failure",
+    "maxRestarts": 3,
+    "gracefulShutdownTimeout": 30000,
+    "heartbeatInterval": 60000
+  },
+
+  "session": {
+    "persistState": true,
+    "stateDir": "~/.claude/state/kiro2",
+    "maxSessionAge": 86400000,
+    "autoResume": true
+  },
+
+  "monitoring": {
+    "enabled": true,
+    "metricsInterval": 60000,
+    "metricsEndpoint": "/metrics",
+    "alertThresholds": {
+      "memoryUsage": 0.8,
+      "cpuUsage": 0.9,
+      "errorRate": 0.1,
+      "responseTime": 5000
+    },
+    "healthCheck": {
+      "enabled": true,
+      "interval": 30000,
+      "timeout": 5000,
+      "endpoint": "/health"
+    }
+  },
+
+  "recovery": {
+    "checkpointDir": "~/.claude/checkpoints/kiro2",
+    "autoRestore": true,
+    "keepCheckpoints": 5,
+    "compressCheckpoints": true,
+    "snapshotInterval": 600000
+  },
+
+  "logging": {
+    "level": "info",
+    "outputDir": "~/.claude/logs/kiro2",
+    "format": "json",
+    "rotateSize": "10M",
+    "keepLogs": 7,
+    "includeTimestamp": true,
+    "includeContext": true,
+    "sensitiveFields": [
+      "password",
+      "api_key",
+      "token",
+      "secret"
+    ]
+  },
+
+  "resources": {
+    "maxConcurrentTasks": 10,
+    "maxMemoryMB": 4096,
+    "maxCPUPercent": 80,
+    "taskQueueSize": 100,
+    "workerPoolSize": 5
+  },
+
+  "rateLimit": {
+    "enabled": true,
+    "requestsPerMinute": 100,
+    "burstSize": 20,
+    "retryAfter": 60000
+  },
+
+  "security": {
+    "sandboxEnabled": true,
+    "allowedHosts": [
+      "api.github.com",
+      "pypi.org",
+      "npmjs.org",
+      "registry.npmjs.org"
+    ],
+    "blockedCommands": [
+      "rm -rf /",
+      "sudo",
+      "DROP TABLE",
+      "DELETE FROM"
+    ],
+    "secretsProvider": "environment",
+    "encryptState": true
+  },
+
+  "retry": {
+    "enabled": true,
+    "maxAttempts": 3,
+    "initialDelay": 1000,
+    "maxDelay": 30000,
+    "backoffMultiplier": 2,
+    "retryableErrors": [
+      "TIMEOUT",
+      "RATE_LIMIT",
+      "SERVICE_UNAVAILABLE"
+    ]
+  },
+
+  "notifications": {
+    "enabled": true,
+    "channels": [
+      {
+        "type": "webhook",
+        "url": "${NOTIFICATION_WEBHOOK_URL}",
+        "events": ["error", "completion", "checkpoint"]
+      },
+      {
+        "type": "email",
+        "to": "${NOTIFICATION_EMAIL}",
+        "events": ["critical"]
+      }
+    ],
+    "throttle": {
+      "enabled": true,
+      "intervalMs": 300000
+    }
+  },
+
+  "plugins": {
+    "enabled": true,
+    "pluginDir": ".claude/plugins/installed",
+    "autoLoad": [
+      "kiro2-yks"
+    ],
+    "registry": ".claude/plugins/registry.json"
+  },
+
+  "tasks": {
+    "enabled": true,
+    "taskDir": "~/.claude/tasks/kiro2-master",
+    "waveParallelism": true,
+    "maxWaveSize": 7,
+    "taskTimeout": 600000,
+    "cleanupCompleted": true,
+    "retentionDays": 7
+  },
+
+  "evals": {
+    "enabled": true,
+    "evalDir": ".claude/evals",
+    "autoRun": false,
+    "schedule": "0 6 * * *",
+    "outputDir": ".claude/evals/results"
+  },
+
+  "kiro2Specific": {
+    "irtValidation": {
+      "enabled": true,
+      "difficultyRange": [-4.0, 4.0],
+      "discriminationRange": [0.2, 4.0],
+      "guessingRange": [0.0, 0.35]
+    },
+    "zpdCheck": {
+      "enabled": true,
+      "optimalMin": 0.15,
+      "optimalMax": 0.85
+    },
+    "turkishNLP": {
+      "enabled": true,
+      "zemberekEndpoint": "http://localhost:8081"
+    },
+    "chromaDB": {
+      "enabled": true,
+      "host": "localhost",
+      "port": 8001
+    },
+    "database": {
+      "port": 5434,
+      "connectionPool": 10,
+      "timeout": 30000
+    }
+  },
+
+  "experimental": {
+    "streamingResponses": true,
+    "adaptiveTimeout": true,
+    "predictivePreloading": false,
+    "cacheEmbeddings": true
+  },
+
+  "debug": {
+    "enabled": false,
+    "verboseLogging": false,
+    "traceToolCalls": false,
+    "dumpState": false
+  }
+}

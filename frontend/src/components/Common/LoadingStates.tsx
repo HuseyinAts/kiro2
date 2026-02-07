@@ -1,5 +1,5 @@
-import React from 'react';
 import { Loader2, AlertCircle, CheckCircle2 } from 'lucide-react';
+import * as React from 'react';
 
 /**
  * LoadingSpinner Component

@@ -14,9 +14,7 @@ import asyncio
 import hashlib
 import logging
 import mimetypes
-import os
-import subprocess
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Dict, Optional, Tuple
 
@@ -25,7 +23,6 @@ from fastapi import UploadFile
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from models.database import User
 from models.video_solution import (
     VideoFormat,
     VideoProcessingStatus,
@@ -437,7 +434,7 @@ class VideoSolutionService:
 
             # 2. Dosyayı geçici olarak kaydet
             file_hash = hashlib.sha256(
-                f"{user_id}{question_id}{datetime.utcnow().isoformat()}".encode()
+                f"{user_id}{question_id}{datetime.now(timezone.utc).isoformat()}".encode()
             ).hexdigest()[:16]
             original_ext = file.filename.split(".")[-1]
             temp_filename = f"{file_hash}_original.{original_ext}"
@@ -478,7 +475,7 @@ class VideoSolutionService:
                 validation_errors=None,
                 # Processing durumu
                 processing_status=VideoProcessingStatus.VALIDATING,
-                processing_started_at=datetime.utcnow(),
+                processing_started_at=datetime.now(timezone.utc),
             )
 
             self.db.add(video_solution)
@@ -551,11 +548,11 @@ class VideoSolutionService:
 
             if success:
                 video.thumbnail_url = str(thumbnail_path)
-                video.thumbnail_generated_at = datetime.utcnow()
+                video.thumbnail_generated_at = datetime.now(timezone.utc)
 
             # 3. İşlem tamamlandı
             video.processing_status = VideoProcessingStatus.READY
-            video.processing_completed_at = datetime.utcnow()
+            video.processing_completed_at = datetime.now(timezone.utc)
             await self.db.commit()
 
             # Geçici dosyayı sil
@@ -578,7 +575,8 @@ class VideoSolutionService:
                     video.processing_status = VideoProcessingStatus.FAILED
                     video.processing_error = str(e)
                     await self.db.commit()
-            except:
+            except Exception as db_err:
+                logger.debug(f"Failed to update video status: {db_err}")
                 pass
 
 
@@ -871,7 +869,7 @@ class VideoAnalyticsService:
                 video_id=video_id,
                 user_id=user_id,
                 session_id=session_id,
-                started_at=datetime.utcnow(),
+                started_at=datetime.now(timezone.utc),
                 watch_duration_seconds=watch_duration_seconds,
                 completion_percentage=completion_percentage,
                 device_type=device_info.get("device_type") if device_info else None,

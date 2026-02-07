@@ -197,7 +197,7 @@ class TestCoverageAnalyzer:
         report.append("TEST COVERAGE ANALYSIS REPORT")
         report.append("=" * 80)
         report.append(f"Generated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
-        report.append(f"Project: Teknofest 2025 Eğitim Eylemci Platform")
+        report.append("Project: Teknofest 2025 Eğitim Eylemci Platform")
         report.append("=" * 80)
 
         # Overall Coverage
@@ -211,7 +211,7 @@ class TestCoverageAnalyzer:
             report.append(f"   Gap: {self.coverage_threshold - overall:.2f}%")
 
         # File Statistics
-        report.append(f"\n📁 FILE STATISTICS:")
+        report.append("\n📁 FILE STATISTICS:")
         report.append(f"   Total Files Analyzed: {analysis.get('total_files', 0)}")
         report.append(
             f"   High Coverage (≥80%): {len(analysis.get('high_coverage', []))}"
@@ -227,7 +227,7 @@ class TestCoverageAnalyzer:
         )
 
         # New/Modified Files
-        report.append(f"\n🆕 NEW/MODIFIED FILES COVERAGE:")
+        report.append("\n🆕 NEW/MODIFIED FILES COVERAGE:")
         report.append("-" * 80)
 
         for file_info in new_files:
@@ -252,7 +252,7 @@ class TestCoverageAnalyzer:
         # High Coverage Files (Top 10)
         high_cov = analysis.get("high_coverage", [])
         if high_cov:
-            report.append(f"\n🏆 TOP 10 HIGH COVERAGE FILES:")
+            report.append("\n🏆 TOP 10 HIGH COVERAGE FILES:")
             report.append("-" * 80)
             for i, file_info in enumerate(high_cov[:10], 1):
                 path = Path(file_info["path"]).name
@@ -261,14 +261,14 @@ class TestCoverageAnalyzer:
         # Low Coverage Files (Bottom 10)
         low_cov = analysis.get("low_coverage", [])
         if low_cov:
-            report.append(f"\n⚠️  BOTTOM 10 LOW COVERAGE FILES (Need Attention):")
+            report.append("\n⚠️  BOTTOM 10 LOW COVERAGE FILES (Need Attention):")
             report.append("-" * 80)
             for i, file_info in enumerate(low_cov[:10], 1):
                 path = Path(file_info["path"]).name
                 report.append(f"{i:2d}. {path:50s} {file_info['coverage']:6.2f}%")
 
         # Recommendations
-        report.append(f"\n💡 RECOMMENDATIONS:")
+        report.append("\n💡 RECOMMENDATIONS:")
         report.append("-" * 80)
 
         if overall < self.coverage_threshold:
@@ -296,17 +296,17 @@ class TestCoverageAnalyzer:
             )
 
         # Task 22 Specific Status
-        report.append(f"\n📋 TASK 22 (LOAD TESTING) STATUS:")
+        report.append("\n📋 TASK 22 (LOAD TESTING) STATUS:")
         report.append("-" * 80)
 
         locustfile_info = next(
             (f for f in new_files if "locustfile" in f["file"]), None
         )
         if locustfile_info:
-            report.append(f"✅ locustfile.py created and implemented")
+            report.append("✅ locustfile.py created and implemented")
             report.append(f"   Coverage: {locustfile_info['coverage']:.2f}%")
         else:
-            report.append(f"⚠️  locustfile.py not found in coverage report")
+            report.append("⚠️  locustfile.py not found in coverage report")
 
         video_service_info = next(
             (f for f in new_files if "video_recommendation_service" in f["file"]), None

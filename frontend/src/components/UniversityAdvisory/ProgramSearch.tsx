@@ -4,7 +4,8 @@
  * Search programs with base scores, quotas, and filters
  */
 
-import React, { useState, useEffect } from 'react';
+import * as React from 'react';
+import {  useState, useEffect  } from 'react';
 import './ProgramSearch.css';
 
 export interface Program {
@@ -32,7 +33,7 @@ export interface ProgramSearchProps {
 const API_BASE = '/api/university-advisory';
 
 export const ProgramSearch: React.FC<ProgramSearchProps> = ({
-  onSelectProgram
+  onSelectProgram,
 }) => {
   const [programs, setPrograms] = useState<Program[]>([]);
   const [loading, setLoading] = useState(false);
@@ -70,13 +71,13 @@ export const ProgramSearch: React.FC<ProgramSearchProps> = ({
     try {
       const params = new URLSearchParams();
       params.append('year', year.toString());
-      if (scoreType) params.append('score_type', scoreType);
-      if (minScore) params.append('min_score', minScore.toString());
-      if (maxScore) params.append('max_score', maxScore.toString());
-      if (city) params.append('city', city);
-      if (universityType) params.append('university_type', universityType);
-      if (departmentName) params.append('department_name', departmentName);
-      if (hasScholarship !== null) params.append('has_scholarship', hasScholarship.toString());
+      if (scoreType) {params.append('score_type', scoreType);}
+      if (minScore) {params.append('min_score', minScore.toString());}
+      if (maxScore) {params.append('max_score', maxScore.toString());}
+      if (city) {params.append('city', city);}
+      if (universityType) {params.append('university_type', universityType);}
+      if (departmentName) {params.append('department_name', departmentName);}
+      if (hasScholarship !== null) {params.append('has_scholarship', hasScholarship.toString());}
       params.append('limit', '100');
 
       const response = await fetch(`${API_BASE}/programs?${params}`);
@@ -97,7 +98,7 @@ export const ProgramSearch: React.FC<ProgramSearchProps> = ({
         filledQuota: p.filled_quota,
         acceptanceRate: p.acceptance_rate,
         scholarship: p.scholarship,
-        tuitionFee: p.tuition_fee
+        tuitionFee: p.tuition_fee,
       })));
     } catch (error) {
       console.error('Failed to search programs:', error);

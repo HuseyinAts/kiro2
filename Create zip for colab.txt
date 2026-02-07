@@ -1,0 +1,52 @@
+# KIRO2 Annotation'ları ZIP'le
+# PowerShell'de çalıştır
+
+$sourcePath = "C:\Users\husey\kiro2\veriseti"
+$outputZip = "C:\Users\husey\Desktop\kiro2_annotations.zip"
+
+Write-Host "🗜️ Annotation'lar zip'leniyor..." -ForegroundColor Yellow
+
+# Geçici klasör oluştur
+$tempDir = "C:\Users\husey\kiro2\temp_zip"
+New-Item -ItemType Directory -Path $tempDir -Force | Out-Null
+
+# Annotation klasörünü kopyala
+Write-Host "📦 annotation/images kopyalanıyor..." -ForegroundColor Cyan
+$annotationSource = "$sourcePath\annotation\images"
+$annotationDest = "$tempDir\annotation\images"
+Copy-Item -Path $annotationSource -Destination $annotationDest -Recurse -Force
+
+# Screenshots klasöründen sadece JSON ve PNG olan klasörleri kopyala
+Write-Host "📦 screenshots annotation'ları kopyalanıyor..." -ForegroundColor Cyan
+$screenshotsSource = "$sourcePath\zkitap\screenshots"
+$screenshotsDest = "$tempDir\zkitap\screenshots"
+
+# Screenshots klasörleri tara
+$folders = Get-ChildItem -Path $screenshotsSource -Directory
+
+foreach ($folder in $folders) {
+    $jsonCount = (Get-ChildItem -Path $folder.FullName -Filter "*.json" -File).Count
+    
+    if ($jsonCount -gt 0) {
+        Write-Host "   ✓ $($folder.Name) ($jsonCount JSON)" -ForegroundColor Gray
+        $destFolder = "$screenshotsDest\$($folder.Name)"
+        Copy-Item -Path $folder.FullName -Destination $destFolder -Recurse -Force
+    }
+}
+
+# ZIP oluştur
+Write-Host ""
+Write-Host "🗜️ ZIP dosyası oluşturuluyor..." -ForegroundColor Yellow
+Compress-Archive -Path "$tempDir\*" -DestinationPath $outputZip -Force
+
+# Geçici klasörü temizle
+Remove-Item -Path $tempDir -Recurse -Force
+
+# Sonuç
+$zipSize = (Get-Item $outputZip).Length / 1MB
+Write-Host ""
+Write-Host "✅ TAMAMLANDI!" -ForegroundColor Green
+Write-Host "📁 ZIP Dosyası: $outputZip" -ForegroundColor White
+Write-Host "📊 Boyut: $([math]::Round($zipSize, 2)) MB" -ForegroundColor White
+Write-Host ""
+Write-Host "🌐 Şimdi bu dosyayı Google Drive'a yükle!" -ForegroundColor Yellow

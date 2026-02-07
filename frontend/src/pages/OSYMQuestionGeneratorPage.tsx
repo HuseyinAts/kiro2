@@ -3,7 +3,9 @@
  * AI-powered OSYM question generation with Turkish optimization
  */
 
-import React, { useState } from 'react'
+import {
+  AutoAwesome,
+} from '@mui/icons-material';
 import {
   Box,
   Card,
@@ -21,17 +23,9 @@ import {
   Alert,
   Slider,
   Paper,
-  Divider
-} from '@mui/material'
-import {
-  AutoAwesome,
-  Science,
-  Calculate,
-  MenuBook,
-  Language,
-  Psychology,
-  Lightbulb
-} from '@mui/icons-material'
+  Divider,
+} from '@mui/material';
+import { useState } from 'react';
 
 interface QuestionGenerationParams {
   topic: string
@@ -65,19 +59,19 @@ export const OSYMQuestionGeneratorPage: React.FC = () => {
     subject: 'Matematik',
     difficulty: 0.5,
     bloomLevel: 3,
-    provider: 'ensemble'
-  })
+    provider: 'ensemble',
+  });
 
-  const [generating, setGenerating] = useState(false)
-  const [question, setQuestion] = useState<GeneratedQuestion | null>(null)
-  const [error, setError] = useState<string | null>(null)
+  const [generating, setGenerating] = useState(false);
+  const [question, setQuestion] = useState<GeneratedQuestion | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   const subjects = {
     TYT: ['Matematik', 'Türkçe', 'Fen Bilimleri', 'Sosyal Bilimler'],
     AYT: ['Matematik', 'Fizik', 'Kimya', 'Biyoloji', 'Edebiyat', 'Tarih', 'Coğrafya'],
     YDT: ['İngilizce', 'Almanca', 'Fransızca'],
-    LGS: ['Matematik', 'Türkçe', 'Fen Bilimleri', 'İnkılap Tarihi', 'Din Kültürü', 'İngilizce']
-  }
+    LGS: ['Matematik', 'Türkçe', 'Fen Bilimleri', 'İnkılap Tarihi', 'Din Kültürü', 'İngilizce'],
+  };
 
   const bloomLevels = [
     { level: 1, label: 'Bilgi (Hatırlama)', icon: '📝' },
@@ -85,38 +79,38 @@ export const OSYMQuestionGeneratorPage: React.FC = () => {
     { level: 3, label: 'Uygulama', icon: '🔧' },
     { level: 4, label: 'Analiz', icon: '🔍' },
     { level: 5, label: 'Sentez (Değerlendirme)', icon: '⚖️' },
-    { level: 6, label: 'Yaratma', icon: '🎨' }
-  ]
+    { level: 6, label: 'Yaratma', icon: '🎨' },
+  ];
 
   const handleGenerate = async () => {
     if (!params.topic || !params.subtopic) {
-      setError('Lütfen konu ve alt konu alanlarını doldurun')
-      return
+      setError('Lütfen konu ve alt konu alanlarını doldurun');
+      return;
     }
 
-    setGenerating(true)
-    setError(null)
-    setQuestion(null)
+    setGenerating(true);
+    setError(null);
+    setQuestion(null);
 
     try {
       const response = await fetch('/api/osym/generate-question', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(params)
-      })
+        body: JSON.stringify(params),
+      });
 
       if (!response.ok) {
-        throw new Error('Soru üretimi başarısız oldu')
+        throw new Error('Soru üretimi başarısız oldu');
       }
 
-      const data = await response.json()
-      setQuestion(data)
+      const data = await response.json();
+      setQuestion(data);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Bir hata oluştu')
+      setError(err instanceof Error ? err.message : 'Bir hata oluştu');
     } finally {
-      setGenerating(false)
+      setGenerating(false);
     }
-  }
+  };
 
   return (
     <Box sx={{ p: 3 }}>
@@ -205,7 +199,7 @@ export const OSYMQuestionGeneratorPage: React.FC = () => {
                   marks={[
                     { value: 0, label: 'Kolay' },
                     { value: 0.5, label: 'Orta' },
-                    { value: 1, label: 'Zor' }
+                    { value: 1, label: 'Zor' },
                   ]}
                 />
               </Box>
@@ -292,7 +286,7 @@ export const OSYMQuestionGeneratorPage: React.FC = () => {
                         mb: 1,
                         bgcolor: index === question.correct_answer ? 'success.light' : 'background.default',
                         border: index === question.correct_answer ? '2px solid' : '1px solid',
-                        borderColor: index === question.correct_answer ? 'success.main' : 'divider'
+                        borderColor: index === question.correct_answer ? 'success.main' : 'divider',
                       }}
                     >
                       <Typography variant="body2">
@@ -376,7 +370,7 @@ export const OSYMQuestionGeneratorPage: React.FC = () => {
                     Henüz soru üretilmedi
                   </Typography>
                   <Typography variant="body2" color="text.secondary">
-                    Sol panelden parametreleri ayarlayın ve "Soru Üret" butonuna tıklayın
+                    Sol panelden parametreleri ayarlayın ve &quot;Soru Üret&quot; butonuna tıklayın
                   </Typography>
                 </Box>
               </CardContent>
@@ -385,7 +379,7 @@ export const OSYMQuestionGeneratorPage: React.FC = () => {
         </Grid>
       </Grid>
     </Box>
-  )
-}
+  );
+};
 
-export default OSYMQuestionGeneratorPage
+export default OSYMQuestionGeneratorPage;

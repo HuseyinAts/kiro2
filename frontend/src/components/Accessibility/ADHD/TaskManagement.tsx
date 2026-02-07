@@ -1,20 +1,21 @@
 /**
  * ADHD Task Management Component
- * 
+ *
  * Görev yönetimi bileşeni - DEHB desteği için öncelik sıralaması ve renk kodlama
- * 
+ *
  * Features:
  * - Öncelik seviyeleri (Critical, High, Medium, Low, None)
  * - Eisenhower Matrix (Urgent/Important)
  * - Otomatik önceliklendirme
  * - Renk kodlama (öncelik, durum, kategori)
  * - Alt görev yönetimi
- * 
+ *
  * Requirements: REQ-52.41 - REQ-52.60
  * Tasks: 90.3, 90.4
  */
 
-import React, { useState, useEffect } from 'react';
+import * as React from 'react';
+import {  useState, useEffect  } from 'react';
 import './TaskManagement.css';
 
 // ============================================================================
@@ -75,7 +76,7 @@ const PRIORITY_LABELS: Record<TaskPriority, string> = {
   high: 'Yüksek',
   medium: 'Orta',
   low: 'Düşük',
-  none: 'Önceliksiz'
+  none: 'Önceliksiz',
 };
 
 const STATUS_LABELS: Record<TaskStatus, string> = {
@@ -83,7 +84,7 @@ const STATUS_LABELS: Record<TaskStatus, string> = {
   in_progress: 'Devam Ediyor',
   completed: 'Tamamlandı',
   cancelled: 'İptal Edildi',
-  on_hold: 'Beklemede'
+  on_hold: 'Beklemede',
 };
 
 const CATEGORY_LABELS: Record<TaskCategory, string> = {
@@ -92,14 +93,14 @@ const CATEGORY_LABELS: Record<TaskCategory, string> = {
   homework: 'Ödev',
   review: 'Tekrar',
   practice: 'Pratik',
-  other: 'Diğer'
+  other: 'Diğer',
 };
 
 const QUADRANT_LABELS: Record<EisenhowerQuadrant, string> = {
   q1_urgent_important: 'Acil ve Önemli',
   q2_not_urgent_important: 'Önemli ama Acil Değil',
   q3_urgent_not_important: 'Acil ama Önemli Değil',
-  q4_not_urgent_not_important: 'Ne Acil Ne Önemli'
+  q4_not_urgent_not_important: 'Ne Acil Ne Önemli',
 };
 
 // ============================================================================
@@ -112,13 +113,13 @@ export const TaskManagement: React.FC = () => {
   const [stats, setStats] = useState<TaskStats | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  
+
   // Filters
   const [priorityFilter, setPriorityFilter] = useState<TaskPriority | 'all'>('all');
   const [statusFilter, setStatusFilter] = useState<TaskStatus | 'all'>('all');
   const [categoryFilter, setCategoryFilter] = useState<TaskCategory | 'all'>('all');
-  const [quadrantFilter, setQuadrantFilter] = useState<EisenhowerQuadrant | 'all'>('all');
-  
+  const [quadrantFilter, _setQuadrantFilter] = useState<EisenhowerQuadrant | 'all'>('all');
+
   // New task form
   const [showNewTaskForm, setShowNewTaskForm] = useState(false);
   const [newTask, setNewTask] = useState({
@@ -128,7 +129,7 @@ export const TaskManagement: React.FC = () => {
     is_urgent: false,
     is_important: false,
     due_date: '',
-    estimated_duration_minutes: 30
+    estimated_duration_minutes: 30,
   });
 
   // ============================================================================
@@ -139,19 +140,19 @@ export const TaskManagement: React.FC = () => {
     try {
       setLoading(true);
       const params = new URLSearchParams();
-      if (priorityFilter !== 'all') params.append('priority_filter', priorityFilter);
-      if (statusFilter !== 'all') params.append('status_filter', statusFilter);
-      if (categoryFilter !== 'all') params.append('category_filter', categoryFilter);
-      if (quadrantFilter !== 'all') params.append('quadrant_filter', quadrantFilter);
-      
+      if (priorityFilter !== 'all') {params.append('priority_filter', priorityFilter);}
+      if (statusFilter !== 'all') {params.append('status_filter', statusFilter);}
+      if (categoryFilter !== 'all') {params.append('category_filter', categoryFilter);}
+      if (quadrantFilter !== 'all') {params.append('quadrant_filter', quadrantFilter);}
+
       const response = await fetch(`/api/adhd-support/tasks/list?${params}`, {
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        }
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        },
       });
-      
-      if (!response.ok) throw new Error('Görevler yüklenemedi');
-      
+
+      if (!response.ok) {throw new Error('Görevler yüklenemedi');}
+
       const data = await response.json();
       setTasks(data.tasks);
     } catch (err) {
@@ -164,7 +165,7 @@ export const TaskManagement: React.FC = () => {
   const fetchColorScheme = async () => {
     try {
       const response = await fetch('/api/adhd-support/tasks/colors/scheme');
-      if (!response.ok) throw new Error('Renk şeması yüklenemedi');
+      if (!response.ok) {throw new Error('Renk şeması yüklenemedi');}
       const data = await response.json();
       setColorScheme(data);
     } catch (err) {
@@ -176,10 +177,10 @@ export const TaskManagement: React.FC = () => {
     try {
       const response = await fetch('/api/adhd-support/tasks/stats/summary', {
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        }
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        },
       });
-      if (!response.ok) throw new Error('İstatistikler yüklenemedi');
+      if (!response.ok) {throw new Error('İstatistikler yüklenemedi');}
       const data = await response.json();
       setStats(data);
     } catch (err) {
@@ -193,13 +194,13 @@ export const TaskManagement: React.FC = () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
         },
-        body: JSON.stringify(newTask)
+        body: JSON.stringify(newTask),
       });
-      
-      if (!response.ok) throw new Error('Görev oluşturulamadı');
-      
+
+      if (!response.ok) {throw new Error('Görev oluşturulamadı');}
+
       // Reset form
       setNewTask({
         title: '',
@@ -208,10 +209,10 @@ export const TaskManagement: React.FC = () => {
         is_urgent: false,
         is_important: false,
         due_date: '',
-        estimated_duration_minutes: 30
+        estimated_duration_minutes: 30,
       });
       setShowNewTaskForm(false);
-      
+
       // Refresh tasks
       fetchTasks();
       fetchStats();
@@ -226,13 +227,13 @@ export const TaskManagement: React.FC = () => {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
         },
-        body: JSON.stringify({ status: newStatus })
+        body: JSON.stringify({ status: newStatus }),
       });
-      
-      if (!response.ok) throw new Error('Görev güncellenemedi');
-      
+
+      if (!response.ok) {throw new Error('Görev güncellenemedi');}
+
       fetchTasks();
       fetchStats();
     } catch (err) {
@@ -241,18 +242,18 @@ export const TaskManagement: React.FC = () => {
   };
 
   const deleteTask = async (taskId: string) => {
-    if (!confirm('Bu görevi silmek istediğinizden emin misiniz?')) return;
-    
+    if (!confirm('Bu görevi silmek istediğinizden emin misiniz?')) {return;}
+
     try {
       const response = await fetch(`/api/adhd-support/tasks/${taskId}`, {
         method: 'DELETE',
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        }
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        },
       });
-      
-      if (!response.ok) throw new Error('Görev silinemedi');
-      
+
+      if (!response.ok) {throw new Error('Görev silinemedi');}
+
       fetchTasks();
       fetchStats();
     } catch (err) {
@@ -318,7 +319,7 @@ export const TaskManagement: React.FC = () => {
   const renderTaskCard = (task: Task) => (
     <div key={task.task_id} className="task-card" data-priority={task.priority}>
       {renderQuadrantIndicator(task)}
-      
+
       <div className="task-header">
         <h3 className="task-title">{task.title}</h3>
         <div className="task-badges">
@@ -327,11 +328,11 @@ export const TaskManagement: React.FC = () => {
           {renderCategoryBadge(task)}
         </div>
       </div>
-      
+
       {task.description && (
         <p className="task-description">{task.description}</p>
       )}
-      
+
       <div className="task-meta">
         {task.due_date && (
           <span className="task-due-date">
@@ -349,7 +350,7 @@ export const TaskManagement: React.FC = () => {
           </span>
         )}
       </div>
-      
+
       <div className="task-actions">
         {task.status !== 'completed' && (
           <button
@@ -378,8 +379,8 @@ export const TaskManagement: React.FC = () => {
   );
 
   const renderStats = () => {
-    if (!stats) return null;
-    
+    if (!stats) {return null;}
+
     return (
       <div className="task-stats">
         <div className="stat-card">
@@ -411,8 +412,9 @@ export const TaskManagement: React.FC = () => {
   const renderFilters = () => (
     <div className="task-filters">
       <div className="filter-group">
-        <label>Öncelik:</label>
+        <label htmlFor="task-priority-filter">Öncelik:</label>
         <select
+          id="task-priority-filter"
           value={priorityFilter}
           onChange={(e) => setPriorityFilter(e.target.value as TaskPriority | 'all')}
         >
@@ -424,10 +426,11 @@ export const TaskManagement: React.FC = () => {
           <option value="none">Önceliksiz</option>
         </select>
       </div>
-      
+
       <div className="filter-group">
-        <label>Durum:</label>
+        <label htmlFor="task-status-filter">Durum:</label>
         <select
+          id="task-status-filter"
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value as TaskStatus | 'all')}
         >
@@ -439,10 +442,11 @@ export const TaskManagement: React.FC = () => {
           <option value="cancelled">İptal Edildi</option>
         </select>
       </div>
-      
+
       <div className="filter-group">
-        <label>Kategori:</label>
+        <label htmlFor="task-category-filter">Kategori:</label>
         <select
+          id="task-category-filter"
           value={categoryFilter}
           onChange={(e) => setCategoryFilter(e.target.value as TaskCategory | 'all')}
         >
@@ -459,15 +463,16 @@ export const TaskManagement: React.FC = () => {
   );
 
   const renderNewTaskForm = () => {
-    if (!showNewTaskForm) return null;
-    
+    if (!showNewTaskForm) {return null;}
+
     return (
       <div className="new-task-form">
         <h3>Yeni Görev Oluştur</h3>
-        
+
         <div className="form-group">
-          <label>Başlık *</label>
+          <label htmlFor="new-task-title">Başlık *</label>
           <input
+            id="new-task-title"
             type="text"
             value={newTask.title}
             onChange={(e) => setNewTask({ ...newTask, title: e.target.value })}
@@ -475,21 +480,23 @@ export const TaskManagement: React.FC = () => {
             required
           />
         </div>
-        
+
         <div className="form-group">
-          <label>Açıklama</label>
+          <label htmlFor="new-task-description">Açıklama</label>
           <textarea
+            id="new-task-description"
             value={newTask.description}
             onChange={(e) => setNewTask({ ...newTask, description: e.target.value })}
             placeholder="Görev açıklaması (opsiyonel)"
             rows={3}
           />
         </div>
-        
+
         <div className="form-row">
           <div className="form-group">
-            <label>Kategori</label>
+            <label htmlFor="new-task-category">Kategori</label>
             <select
+              id="new-task-category"
               value={newTask.category}
               onChange={(e) => setNewTask({ ...newTask, category: e.target.value as TaskCategory })}
             >
@@ -501,10 +508,11 @@ export const TaskManagement: React.FC = () => {
               <option value="other">Diğer</option>
             </select>
           </div>
-          
+
           <div className="form-group">
-            <label>Tahmini Süre (dk)</label>
+            <label htmlFor="new-task-duration">Tahmini Süre (dk)</label>
             <input
+              id="new-task-duration"
               type="number"
               value={newTask.estimated_duration_minutes}
               onChange={(e) => setNewTask({ ...newTask, estimated_duration_minutes: parseInt(e.target.value) })}
@@ -513,16 +521,17 @@ export const TaskManagement: React.FC = () => {
             />
           </div>
         </div>
-        
+
         <div className="form-group">
-          <label>Bitiş Tarihi</label>
+          <label htmlFor="new-task-due-date">Bitiş Tarihi</label>
           <input
+            id="new-task-due-date"
             type="datetime-local"
             value={newTask.due_date}
             onChange={(e) => setNewTask({ ...newTask, due_date: e.target.value })}
           />
         </div>
-        
+
         <div className="form-checkboxes">
           <label>
             <input
@@ -532,7 +541,7 @@ export const TaskManagement: React.FC = () => {
             />
             Acil
           </label>
-          
+
           <label>
             <input
               type="checkbox"
@@ -542,7 +551,7 @@ export const TaskManagement: React.FC = () => {
             Önemli
           </label>
         </div>
-        
+
         <div className="form-actions">
           <button className="btn-primary" onClick={createTask} disabled={!newTask.title}>
             Oluştur
@@ -584,11 +593,11 @@ export const TaskManagement: React.FC = () => {
           {showNewTaskForm ? '✕ İptal' : '+ Yeni Görev'}
         </button>
       </div>
-      
+
       {renderStats()}
       {renderNewTaskForm()}
       {renderFilters()}
-      
+
       <div className="task-list">
         {tasks.length === 0 ? (
           <div className="empty-state">
@@ -598,7 +607,7 @@ export const TaskManagement: React.FC = () => {
           tasks.map(renderTaskCard)
         )}
       </div>
-      
+
       {colorScheme && (
         <div className="color-legend">
           <h4>Renk Açıklaması</h4>

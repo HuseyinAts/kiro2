@@ -2,14 +2,12 @@
 Task 92: Instant Feedback API
 DEHB için anında geri bildirim sistemi
 """
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import List, Dict
-from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
-from sqlalchemy import func
 
 from core.database import get_db
 from core.dependencies import get_current_user
@@ -82,10 +80,10 @@ async def submit_answer_feedback(
         if request.is_correct:
             old_streak = streak.current_streak
             streak.current_streak += 1
-            streak.last_correct_answer = datetime.utcnow()
+            streak.last_correct_answer = datetime.now(timezone.utc)
 
             if streak.current_streak == 1:
-                streak.streak_start_date = datetime.utcnow()
+                streak.streak_start_date = datetime.now(timezone.utc)
 
             if streak.current_streak > streak.best_streak:
                 streak.best_streak = streak.current_streak
@@ -187,7 +185,7 @@ async def record_performance(
         db.add(performance)
         db.commit()
 
-        return {"success": True, "performance_id": str(performance.id), "score": score}
+        return {"success": True, "performance_id": str(performance.id), "score": request.score}
 
     except Exception as e:
         logger.error(f"Failed to record performance: {e}")
@@ -202,7 +200,7 @@ async def get_performance_history(
 ):
     """Performans geçmişini getir"""
     try:
-        cutoff_date = datetime.utcnow() - timedelta(days=days)
+        cutoff_date = datetime.now(timezone.utc) - timedelta(days=days)
 
         performances = (
             db.query(PerformanceHistory)

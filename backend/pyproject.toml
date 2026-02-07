@@ -25,73 +25,7 @@ dynamic = ["version"]
 [tool.setuptools_scm]
 write_to = "backend/_version.py"
 
-# Coverage configuration - UNIFIED STRATEGY
-[tool.coverage.run]
-source = ["."]
-omit = [
-    "*/tests/*",
-    "*/test_*",
-    "*_test.py", 
-    "*/venv/*",
-    "*/env/*",
-    "*/__pycache__/*",
-    "*/migrations/*",
-    "*/static/*",
-    "*/media/*", 
-    "*/uploads/*",
-    "*/htmlcov/*",
-    "*/scripts/*",
-    "setup.py",
-    "manage.py",
-    "wsgi.py", 
-    "asgi.py",
-    "conftest.py",
-    "run_*.py",
-    "test_*.py",
-    "*_demo.py",
-    "demo_*.py",
-    "verify_*.py",
-    "install_*.py",
-    "quick_*.py",
-    "ultra_*.py",
-    "minimal_*.py",
-    "simple_*.py",
-    "mock_*.py"
-]
-branch = true
-parallel = true
-
-[tool.coverage.report]
-precision = 2
-show_missing = true
-skip_covered = true
-sort = "cover"
-exclude_lines = [
-    "pragma: no cover",
-    "def __repr__",
-    "if self.debug:",
-    "if settings.DEBUG",
-    "raise AssertionError", 
-    "raise NotImplementedError",
-    "if 0:",
-    "if __name__ == .__main__.:",
-    "class .*\\bProtocol\\):",
-    "@(abc\\.)?abstractmethod",
-    "pass",
-    "\\.\\.\\.",
-]
-
-[tool.coverage.html]
-directory = "htmlcov"
-show_contexts = true
-skip_covered = false
-
-[tool.coverage.xml]
-output = "coverage.xml"
-
-[tool.coverage.json]
-output = "coverage.json"
-show_contexts = true
+# Coverage configuration: see .coveragerc (single source of truth)
 
 # Black code formatting
 [tool.black]
@@ -167,6 +101,24 @@ module = [
 ]
 ignore_missing_imports = true
 
+# SECURITY FIX #8: Strict type hints for security-critical modules
+[[tool.mypy.overrides]]
+module = [
+    "core.auth",
+    "core.auth_dependencies",
+    "core.auth_middleware",
+    "core.jwt_auth",
+    "core.security_utils",
+    "core.data_encryption",
+    "core.kvkk_compliance",
+    "core.dependencies",
+]
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+check_untyped_defs = true
+warn_return_any = true
+strict_equality = true
+
 # Pytest configuration REMOVED - Using pytest.ini as single source
 # All pytest configuration moved to pytest.ini to avoid conflicts
 
@@ -179,13 +131,14 @@ line-length = 88
 select = [
     # Core rules
     "E",   # pycodestyle errors
-    "W",   # pycodestyle warnings  
+    "W",   # pycodestyle warnings
     "F",   # pyflakes
     "I",   # isort
     "N",   # pep8-naming
     "UP",  # pyupgrade
     "S",   # bandit security
     "B",   # flake8-bugbear
+    "BLE", # flake8-blind-except (SECURITY FIX #7)
     "C4",  # flake8-comprehensions
     "DTZ", # flake8-datetimez
     "EM",  # flake8-errmsg
@@ -200,6 +153,9 @@ select = [
 ignore = [
     "E501",    # Line too long (handled by black)
     "S101",    # Use of assert (common in tests)
+    # SECURITY FIX #7: BLE001 (blind-except) - enabled but ignored for gradual migration
+    # TODO: Fix 168+ instances over time. New code MUST use specific exceptions.
+    "BLE001",  # Blind except - in gradual migration (see .claude/rules/testing.md)
     "PLR0913", # Too many arguments (common in complex APIs)
     "PLR0915", # Too many statements (common in setup functions)
     "N806",    # Variable should be lowercase (for Pydantic models)

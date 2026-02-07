@@ -3,11 +3,12 @@
  * Glassmorphism ile rapor yönetimi
  */
 
-import React from 'react'
-import { ModernParentReportsPage } from './ModernParentReportsPage'
+import * as React from 'react';
+
+import { ModernParentReportsPage } from './ModernParentReportsPage';
 
 export const ParentReportsPage: React.FC = () => {
-  return <ModernParentReportsPage />
-}
+  return <ModernParentReportsPage />;
+};
 
-export default ParentReportsPage
+export default ParentReportsPage;

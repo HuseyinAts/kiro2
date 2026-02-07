@@ -1,9 +1,9 @@
 /**
  * OfflineModeManager - Offline mode UI ve request cancellation yönetimi
- * 
+ *
  * Bu servis, offline mode UI'ını yönetir ve kullanıcı sayfadan ayrıldığında
  * request'leri iptal eder.
- * 
+ *
  * @module OfflineModeManager
  * @requires Requirements: 5.19, 10.6, 10.7
  */
@@ -30,7 +30,7 @@ export type OfflineModeCallback = (state: OfflineModeState) => void;
 
 /**
  * OfflineModeManager - Offline mode orchestration
- * 
+ *
  * Özellikler:
  * - Offline mode UI management
  * - Request cancellation on navigation
@@ -49,13 +49,13 @@ export class OfflineModeManager {
 
   /**
    * OfflineModeManager constructor
-   * 
+   *
    * @param networkDetector - NetworkDetector instance
    * @param videoLoadingManager - VideoLoadingManager instance (optional)
    */
   constructor(
     networkDetector: NetworkDetector,
-    videoLoadingManager?: VideoLoadingManager
+    videoLoadingManager?: VideoLoadingManager,
   ) {
     this.networkDetector = networkDetector;
     this.videoLoadingManager = videoLoadingManager || null;
@@ -73,14 +73,12 @@ export class OfflineModeManager {
     // Start monitoring
     this._startMonitoring();
 
-    console.log('📴 OfflineModeManager: Initialized', {
-      isOffline: this.state.isOffline,
-    });
+    // OfflineModeManager initialized
   }
 
   /**
    * Set VideoLoadingManager instance
-   * 
+   *
    * @param manager - VideoLoadingManager instance
    */
   setVideoLoadingManager(manager: VideoLoadingManager): void {
@@ -134,11 +132,7 @@ export class OfflineModeManager {
     const wasOffline = this.state.isOffline;
     const isOffline = !networkState.isOnline;
 
-    console.log('🌐 OfflineModeManager: Network state changed', {
-      wasOffline,
-      isOffline,
-      status: networkState.status,
-    });
+    // OfflineModeManager: Network state changed
 
     // Update offline duration
     const offlineDuration = isOffline ? this.networkDetector.getOfflineDuration() : null;
@@ -165,7 +159,7 @@ export class OfflineModeManager {
    * Reconnection handler (auto-retry)
    */
   private _handleReconnection = async (): Promise<void> => {
-    console.log('🔄 OfflineModeManager: Reconnection detected - auto-retry');
+    // OfflineModeManager: Reconnection detected - auto-retry
 
     this._updateState({
       reconnectionInProgress: true,
@@ -174,7 +168,7 @@ export class OfflineModeManager {
     try {
       // Auto-retry video loading if there were cancelled requests
       if (this.state.cancelledRequests.size > 0 && this.videoLoadingManager) {
-        console.log('🔄 OfflineModeManager: Auto-retrying video loading');
+        // OfflineModeManager: Auto-retrying video loading
 
         // Get the last student profile from VideoLoadingManager state
         const videoState = this.videoLoadingManager.getState();
@@ -183,7 +177,7 @@ export class OfflineModeManager {
         if (videoState.status === 'error' || videoState.status === 'fallback') {
           // Note: We can't automatically retry without the profile
           // This should be handled by the component
-          console.log('ℹ️ OfflineModeManager: Component should handle retry with profile');
+          // OfflineModeManager: Component should handle retry with profile
         }
       }
 
@@ -211,7 +205,7 @@ export class OfflineModeManager {
   private _handleBeforeUnload = (event: BeforeUnloadEvent): void => {
     // Cancel pending requests
     if (this.state.pendingRequests.size > 0) {
-      console.log('🛑 OfflineModeManager: User navigating away - cancelling requests');
+      // OfflineModeManager: User navigating away - cancelling requests
 
       this._cancelPendingRequests('User navigated away');
 
@@ -226,12 +220,12 @@ export class OfflineModeManager {
    */
   private _handleVisibilityChange = (): void => {
     if (document.hidden) {
-      console.log('👁️ OfflineModeManager: Tab hidden');
+      // OfflineModeManager: Tab hidden
 
       // Optionally pause pending requests
       // (Not cancelling, just logging for now)
     } else {
-      console.log('👁️ OfflineModeManager: Tab visible');
+      // OfflineModeManager: Tab visible
 
       // Check network status when tab becomes visible
       this.networkDetector.checkConnection();
@@ -241,10 +235,8 @@ export class OfflineModeManager {
   /**
    * Cancel pending requests
    */
-  private _cancelPendingRequests(reason: string): void {
-    console.log(`🛑 OfflineModeManager: Cancelling ${this.state.pendingRequests.size} pending requests`, {
-      reason,
-    });
+  private _cancelPendingRequests(_reason: string): void {
+    // OfflineModeManager: Cancelling pending requests
 
     // Cancel video loading
     if (this.videoLoadingManager) {
@@ -283,7 +275,7 @@ export class OfflineModeManager {
 
   /**
    * Register pending request
-   * 
+   *
    * @param requestId - Request ID
    */
   registerPendingRequest(requestId: string): void {
@@ -294,15 +286,12 @@ export class OfflineModeManager {
       pendingRequests,
     });
 
-    console.log('📝 OfflineModeManager: Registered pending request', {
-      requestId,
-      totalPending: pendingRequests.size,
-    });
+    // OfflineModeManager: Registered pending request
   }
 
   /**
    * Unregister pending request
-   * 
+   *
    * @param requestId - Request ID
    */
   unregisterPendingRequest(requestId: string): void {
@@ -313,15 +302,12 @@ export class OfflineModeManager {
       pendingRequests,
     });
 
-    console.log('✅ OfflineModeManager: Unregistered pending request', {
-      requestId,
-      totalPending: pendingRequests.size,
-    });
+    // OfflineModeManager: Unregistered pending request
   }
 
   /**
    * Get current state
-   * 
+   *
    * @returns OfflineModeState
    */
   getState(): OfflineModeState {
@@ -334,7 +320,7 @@ export class OfflineModeManager {
 
   /**
    * Check if offline
-   * 
+   *
    * @returns boolean
    */
   isOffline(): boolean {
@@ -343,7 +329,7 @@ export class OfflineModeManager {
 
   /**
    * Check if should show offline UI
-   * 
+   *
    * @returns boolean
    */
   shouldShowOfflineUI(): boolean {
@@ -352,7 +338,7 @@ export class OfflineModeManager {
 
   /**
    * Get offline duration
-   * 
+   *
    * @returns number | null
    */
   getOfflineDuration(): number | null {
@@ -361,7 +347,7 @@ export class OfflineModeManager {
 
   /**
    * Get pending requests count
-   * 
+   *
    * @returns number
    */
   getPendingRequestsCount(): number {
@@ -370,7 +356,7 @@ export class OfflineModeManager {
 
   /**
    * Subscribe to state changes
-   * 
+   *
    * @param callback - State change callback
    * @returns Unsubscribe function
    */
@@ -398,7 +384,7 @@ export class OfflineModeManager {
    */
   retryCancelledRequests(): void {
     if (this.state.cancelledRequests.size > 0) {
-      console.log('🔄 OfflineModeManager: Manually retrying cancelled requests');
+      // OfflineModeManager: Manually retrying cancelled requests
 
       // Clear cancelled requests
       this._updateState({
@@ -414,7 +400,7 @@ export class OfflineModeManager {
    * Cleanup - stop monitoring
    */
   destroy(): void {
-    console.log('🗑️ OfflineModeManager: Destroying');
+    // OfflineModeManager: Destroying
 
     this._stopMonitoring();
     this.subscribers.clear();
@@ -444,14 +430,14 @@ export class OfflineModeManager {
 
 /**
  * Create OfflineModeManager instance
- * 
+ *
  * @param networkDetector - NetworkDetector instance
  * @param videoLoadingManager - VideoLoadingManager instance (optional)
  * @returns OfflineModeManager
  */
 export function createOfflineModeManager(
   networkDetector: NetworkDetector,
-  videoLoadingManager?: VideoLoadingManager
+  videoLoadingManager?: VideoLoadingManager,
 ): OfflineModeManager {
   return new OfflineModeManager(networkDetector, videoLoadingManager);
 }

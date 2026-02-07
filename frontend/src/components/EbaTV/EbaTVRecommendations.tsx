@@ -1,11 +1,12 @@
 /**
  * EBA TV Öneriler Bileşeni
- * 
+ *
  * Öğrenci profiline göre kişiselleştirilmiş EBA TV video önerileri.
  */
 
-import React, { useState, useEffect } from 'react';
-import { Star, Clock, BookOpen, TrendingUp, Target, Brain, Users } from 'lucide-react';
+import { Star, BookOpen, TrendingUp, Target, Brain, Users } from 'lucide-react';
+import * as React from 'react';
+import {  useState, useEffect  } from 'react';
 
 interface EBAVideo {
   id: number;
@@ -53,7 +54,7 @@ interface EbaTVRecommendationsProps {
 export const EbaTVRecommendations: React.FC<EbaTVRecommendationsProps> = ({
   studentProfile,
   onVideoSelect,
-  maxRecommendations = 10
+  maxRecommendations = 10,
 }) => {
   const [recommendations, setRecommendations] = useState<EBAVideo[]>([]);
   const [recommendationReasons, setRecommendationReasons] = useState<Record<string, RecommendationReason[]>>({});
@@ -74,54 +75,54 @@ export const EbaTVRecommendations: React.FC<EbaTVRecommendationsProps> = ({
     const mockRecommendations: EBAVideo[] = [
       {
         id: 1,
-        title: "8. Sınıf Matematik - Çarpanlar ve Katlar",
-        description: "Bu videoda 8. sınıf matematik dersi çarpanlar ve katlar konusunu detaylı olarak işleyeceğiz.",
+        title: '8. Sınıf Matematik - Çarpanlar ve Katlar',
+        description: 'Bu videoda 8. sınıf matematik dersi çarpanlar ve katlar konusunu detaylı olarak işleyeceğiz.',
         duration_minutes: 25,
-        category: "matematik",
-        grade_level: "8",
-        difficulty_level: "medium",
+        category: 'matematik',
+        grade_level: '8',
+        difficulty_level: 'medium',
         quality_score: 9.25,
-        video_url: "https://www.eba.gov.tr/video/matematik-8-sinif-carpanlar-katlar",
-        thumbnail_url: "https://via.placeholder.com/320x180?text=Matematik+Video",
-        subject_topics: ["Çarpanlar ve Katlar", "EBOB", "EKOK"],
-        accessibility_features: ["altyazi", "transkript"],
-        curriculum_alignment: { alignment_score: 0.85 }
+        video_url: 'https://www.eba.gov.tr/video/matematik-8-sinif-carpanlar-katlar',
+        thumbnail_url: 'https://via.placeholder.com/320x180?text=Matematik+Video',
+        subject_topics: ['Çarpanlar ve Katlar', 'EBOB', 'EKOK'],
+        accessibility_features: ['altyazi', 'transkript'],
+        curriculum_alignment: { alignment_score: 0.85 },
       },
       {
         id: 2,
-        title: "8. Sınıf Türkçe - Okuma Becerileri",
-        description: "Okuduğunu anlama ve çıkarım yapma becerileri konusunu işleyeceğiz.",
+        title: '8. Sınıf Türkçe - Okuma Becerileri',
+        description: 'Okuduğunu anlama ve çıkarım yapma becerileri konusunu işleyeceğiz.',
         duration_minutes: 20,
-        category: "turkce",
-        grade_level: "8",
-        difficulty_level: "medium",
+        category: 'turkce',
+        grade_level: '8',
+        difficulty_level: 'medium',
         quality_score: 8.75,
-        video_url: "https://www.eba.gov.tr/video/turkce-8-sinif-okuma-becerileri",
-        thumbnail_url: "https://via.placeholder.com/320x180?text=Türkçe+Video",
-        subject_topics: ["Okuma", "Anlama", "Çıkarım"],
-        accessibility_features: ["altyazi"],
-        curriculum_alignment: { alignment_score: 0.78 }
+        video_url: 'https://www.eba.gov.tr/video/turkce-8-sinif-okuma-becerileri',
+        thumbnail_url: 'https://via.placeholder.com/320x180?text=Türkçe+Video',
+        subject_topics: ['Okuma', 'Anlama', 'Çıkarım'],
+        accessibility_features: ['altyazi'],
+        curriculum_alignment: { alignment_score: 0.78 },
       },
       {
         id: 3,
-        title: "8. Sınıf Fen Bilimleri - Madde ve Değişim",
-        description: "Maddenin halleri ve fiziksel-kimyasal değişimler konusunu örneklerle açıklıyoruz.",
+        title: '8. Sınıf Fen Bilimleri - Madde ve Değişim',
+        description: 'Maddenin halleri ve fiziksel-kimyasal değişimler konusunu örneklerle açıklıyoruz.',
         duration_minutes: 30,
-        category: "fen_bilimleri",
-        grade_level: "8",
-        difficulty_level: "medium",
+        category: 'fen_bilimleri',
+        grade_level: '8',
+        difficulty_level: 'medium',
         quality_score: 8.90,
-        video_url: "https://www.eba.gov.tr/video/fen-8-sinif-madde-degisim",
-        thumbnail_url: "https://via.placeholder.com/320x180?text=Fen+Video",
-        subject_topics: ["Madde", "Fiziksel Değişim", "Kimyasal Değişim"],
-        accessibility_features: ["altyazi", "transkript"],
-        curriculum_alignment: { alignment_score: 0.82 }
-      }
+        video_url: 'https://www.eba.gov.tr/video/fen-8-sinif-madde-degisim',
+        thumbnail_url: 'https://via.placeholder.com/320x180?text=Fen+Video',
+        subject_topics: ['Madde', 'Fiziksel Değişim', 'Kimyasal Değişim'],
+        accessibility_features: ['altyazi', 'transkript'],
+        curriculum_alignment: { alignment_score: 0.82 },
+      },
     ];
 
     // Generate reasons for each recommendation
     const reasons: Record<string, RecommendationReason[]> = {};
-    
+
     mockRecommendations.forEach(video => {
       const videoReasons: RecommendationReason[] = [];
 
@@ -131,7 +132,7 @@ export const EbaTVRecommendations: React.FC<EbaTVRecommendationsProps> = ({
           type: 'weak_subject',
           description: `Zayıf konu: ${video.category}`,
           icon: <Target size={16} />,
-          color: 'text-red-600'
+          color: 'text-red-600',
         });
       }
 
@@ -141,7 +142,7 @@ export const EbaTVRecommendations: React.FC<EbaTVRecommendationsProps> = ({
           type: 'learning_style',
           description: 'Görsel öğrenme stiline uygun',
           icon: <Brain size={16} />,
-          color: 'text-purple-600'
+          color: 'text-purple-600',
         });
       }
 
@@ -151,7 +152,7 @@ export const EbaTVRecommendations: React.FC<EbaTVRecommendationsProps> = ({
           type: 'quality',
           description: 'Yüksek kalite skoru',
           icon: <Star size={16} />,
-          color: 'text-yellow-600'
+          color: 'text-yellow-600',
         });
       }
 
@@ -161,7 +162,7 @@ export const EbaTVRecommendations: React.FC<EbaTVRecommendationsProps> = ({
           type: 'curriculum',
           description: 'Yüksek müfredat uyumu',
           icon: <BookOpen size={16} />,
-          color: 'text-green-600'
+          color: 'text-green-600',
         });
       }
 
@@ -172,13 +173,13 @@ export const EbaTVRecommendations: React.FC<EbaTVRecommendationsProps> = ({
     const totalScore = mockRecommendations.reduce((sum, video) => {
       return sum + video.quality_score + (video.curriculum_alignment.alignment_score * 10);
     }, 0);
-    
+
     const personalizationScore = totalScore / (mockRecommendations.length * 2);
 
     return {
       recommendations: mockRecommendations,
       reasons,
-      personalizationScore
+      personalizationScore,
     };
   };
 
@@ -202,8 +203,8 @@ export const EbaTVRecommendations: React.FC<EbaTVRecommendationsProps> = ({
   }, [studentProfile]);
 
   // Filter recommendations by category
-  const filteredRecommendations = selectedCategory === 'all' 
-    ? recommendations 
+  const filteredRecommendations = selectedCategory === 'all'
+    ? recommendations
     : recommendations.filter(video => video.category === selectedCategory);
 
   // Get unique categories
@@ -218,14 +219,14 @@ export const EbaTVRecommendations: React.FC<EbaTVRecommendationsProps> = ({
       sosyal_bilgiler: 'Sosyal Bilgiler',
       fizik: 'Fizik',
       kimya: 'Kimya',
-      biyoloji: 'Biyoloji'
+      biyoloji: 'Biyoloji',
     };
     return labels[category] || category;
   };
 
   const getQualityColor = (score: number) => {
-    if (score >= 9) return 'text-green-600';
-    if (score >= 7) return 'text-yellow-600';
+    if (score >= 9) {return 'text-green-600';}
+    if (score >= 7) {return 'text-yellow-600';}
     return 'text-red-600';
   };
 
@@ -233,13 +234,13 @@ export const EbaTVRecommendations: React.FC<EbaTVRecommendationsProps> = ({
     const colors = {
       easy: 'bg-green-100 text-green-800',
       medium: 'bg-yellow-100 text-yellow-800',
-      hard: 'bg-red-100 text-red-800'
+      hard: 'bg-red-100 text-red-800',
     };
-    
+
     const labels = {
       easy: 'Kolay',
       medium: 'Orta',
-      hard: 'Zor'
+      hard: 'Zor',
     };
 
     return (
@@ -268,7 +269,7 @@ export const EbaTVRecommendations: React.FC<EbaTVRecommendationsProps> = ({
           <h2 className="text-2xl font-bold text-gray-900">
             Sizin İçin Önerilen Videolar
           </h2>
-          
+
           {/* Personalization Score */}
           <div className="flex items-center space-x-2 bg-blue-50 px-4 py-2 rounded-lg">
             <TrendingUp className="text-blue-600" size={20} />
@@ -337,7 +338,7 @@ export const EbaTVRecommendations: React.FC<EbaTVRecommendationsProps> = ({
                   alt={video.title}
                   className="w-full h-48 object-cover"
                 />
-                
+
                 {/* Quality Badge */}
                 <div className="absolute top-2 right-2 bg-black bg-opacity-75 text-white px-2 py-1 rounded-lg text-sm flex items-center space-x-1">
                   <Star className={getQualityColor(video.quality_score)} size={14} />

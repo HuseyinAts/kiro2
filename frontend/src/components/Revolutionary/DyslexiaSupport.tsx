@@ -3,7 +3,14 @@
  * Bionic Reading ile entegre disleksi desteği ayarları
  */
 
-import React, { useState } from 'react';
+import {
+  Accessibility as AccessibilityIcon,
+  Visibility as VisibilityIcon,
+  Speed as SpeedIcon,
+  Psychology as PsychologyIcon,
+  School as SchoolIcon,
+  Info as InfoIcon,
+} from '@mui/icons-material';
 import {
   Card,
   CardContent,
@@ -25,16 +32,10 @@ import {
   ListItem,
   ListItemText,
   ListItemIcon,
-  Divider
+  Divider,
 } from '@mui/material';
-import {
-  Accessibility as AccessibilityIcon,
-  Visibility as VisibilityIcon,
-  Speed as SpeedIcon,
-  Psychology as PsychologyIcon,
-  School as SchoolIcon,
-  Info as InfoIcon
-} from '@mui/icons-material';
+import * as React from 'react';
+import {  useState  } from 'react';
 
 interface DyslexiaSupportProps {
   enabled: boolean;
@@ -53,14 +54,14 @@ const DyslexiaSupport: React.FC<DyslexiaSupportProps> = ({
   enabled,
   onEnabledChange,
   settings,
-  onSettingsChange
+  onSettingsChange,
 }) => {
   const [infoOpen, setInfoOpen] = useState(false);
 
   const handleSettingChange = (key: string, value: number) => {
     onSettingsChange({
       ...settings,
-      [key]: value
+      [key]: value,
     });
   };
 
@@ -70,7 +71,7 @@ const DyslexiaSupport: React.FC<DyslexiaSupportProps> = ({
       lineSpacing: 1.5,
       letterSpacing: 0.1,
       contrastLevel: 0.8,
-      readingSpeed: 0.7
+      readingSpeed: 0.7,
     });
   };
 
@@ -82,9 +83,9 @@ const DyslexiaSupport: React.FC<DyslexiaSupportProps> = ({
           <Typography variant="h6">
             Disleksi Desteği
           </Typography>
-          <Chip 
-            label="ERİŞİLEBİLİRLİK" 
-            color="secondary" 
+          <Chip
+            label="ERİŞİLEBİLİRLİK"
+            color="secondary"
             size="small"
             variant="outlined"
           />
@@ -97,7 +98,7 @@ const DyslexiaSupport: React.FC<DyslexiaSupportProps> = ({
           </Button>
         </Box>
       </CardHeader>
-      
+
       <CardContent>
         <Grid container spacing={3}>
           {/* Ana Switch */}
@@ -143,7 +144,7 @@ const DyslexiaSupport: React.FC<DyslexiaSupportProps> = ({
                   marks={[
                     { value: 1.0, label: 'Normal' },
                     { value: 1.5, label: 'Orta' },
-                    { value: 2.0, label: 'Büyük' }
+                    { value: 2.0, label: 'Büyük' },
                   ]}
                   valueLabelDisplay="auto"
                 />
@@ -163,7 +164,7 @@ const DyslexiaSupport: React.FC<DyslexiaSupportProps> = ({
                   marks={[
                     { value: 1.0, label: 'Sık' },
                     { value: 1.5, label: 'Normal' },
-                    { value: 2.5, label: 'Geniş' }
+                    { value: 2.5, label: 'Geniş' },
                   ]}
                   valueLabelDisplay="auto"
                 />
@@ -183,7 +184,7 @@ const DyslexiaSupport: React.FC<DyslexiaSupportProps> = ({
                   marks={[
                     { value: 0, label: 'Normal' },
                     { value: 0.15, label: 'Orta' },
-                    { value: 0.3, label: 'Geniş' }
+                    { value: 0.3, label: 'Geniş' },
                   ]}
                   valueLabelDisplay="auto"
                 />
@@ -203,7 +204,7 @@ const DyslexiaSupport: React.FC<DyslexiaSupportProps> = ({
                   marks={[
                     { value: 0.5, label: 'Düşük' },
                     { value: 0.8, label: 'Normal' },
-                    { value: 1.0, label: 'Yüksek' }
+                    { value: 1.0, label: 'Yüksek' },
                   ]}
                   valueLabelDisplay="auto"
                 />
@@ -223,7 +224,7 @@ const DyslexiaSupport: React.FC<DyslexiaSupportProps> = ({
                   marks={[
                     { value: 0.3, label: 'Yavaş' },
                     { value: 0.7, label: 'Orta' },
-                    { value: 1.0, label: 'Hızlı' }
+                    { value: 1.0, label: 'Hızlı' },
                   ]}
                   valueLabelDisplay="auto"
                 />
@@ -257,47 +258,47 @@ const DyslexiaSupport: React.FC<DyslexiaSupportProps> = ({
         </DialogTitle>
         <DialogContent>
           <Typography variant="body1" paragraph>
-            Disleksi desteği, okuma zorluğu yaşayan öğrenciler için özel olarak tasarlanmış 
-            erişilebilirlik özelliklerini içerir. Bu özellikler Bionic Reading teknolojisi 
+            Disleksi desteği, okuma zorluğu yaşayan öğrenciler için özel olarak tasarlanmış
+            erişilebilirlik özelliklerini içerir. Bu özellikler Bionic Reading teknolojisi
             ile birlikte çalışarak okuma deneyimini önemli ölçüde iyileştirir.
           </Typography>
-          
+
           <Typography variant="h6" gutterBottom sx={{ mt: 3 }}>
             Özellikler:
           </Typography>
           <List dense>
             <ListItem>
               <ListItemIcon><VisibilityIcon color="primary" /></ListItemIcon>
-              <ListItemText 
-                primary="Bionic Reading Entegrasyonu" 
+              <ListItemText
+                primary="Bionic Reading Entegrasyonu"
                 secondary="Türkçe'ye özel kök-ek ayrımı ile optimize edilmiş okuma desteği"
               />
             </ListItem>
             <ListItem>
               <ListItemIcon><SchoolIcon color="success" /></ListItemIcon>
-              <ListItemText 
-                primary="Kişiselleştirilebilir Ayarlar" 
+              <ListItemText
+                primary="Kişiselleştirilebilir Ayarlar"
                 secondary="Font boyutu, satır aralığı ve kontrast ayarları"
               />
             </ListItem>
             <ListItem>
               <ListItemIcon><SpeedIcon color="warning" /></ListItemIcon>
-              <ListItemText 
-                primary="Okuma Hızı Optimizasyonu" 
+              <ListItemText
+                primary="Okuma Hızı Optimizasyonu"
                 secondary="Bireysel okuma hızına göre bold karakter oranı ayarlama"
               />
             </ListItem>
             <ListItem>
               <ListItemIcon><PsychologyIcon color="secondary" /></ListItemIcon>
-              <ListItemText 
-                primary="Bilimsel Temelli" 
+              <ListItemText
+                primary="Bilimsel Temelli"
                 secondary="Disleksi araştırmalarına dayalı tasarım prensipleri"
               />
             </ListItem>
           </List>
-          
+
           <Divider sx={{ my: 2 }} />
-          
+
           <Typography variant="h6" gutterBottom>
             Kullanım İpuçları:
           </Typography>

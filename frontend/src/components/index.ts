@@ -1,6 +1,6 @@
 /**
  * Components Index
- * 
+ *
  * Central export point for all UI components
  */
 

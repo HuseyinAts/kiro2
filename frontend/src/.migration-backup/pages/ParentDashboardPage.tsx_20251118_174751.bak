@@ -1,0 +1,360 @@
+import React, { useState, useEffect } from 'react'
+import {
+  Container,
+  Typography,
+  Box,
+  Grid,
+  Paper,
+  Card,
+  CardContent,
+  CardActions,
+  Button,
+  List,
+  ListItem,
+  ListItemText,
+  ListItemAvatar,
+  Avatar,
+  Chip,
+  Alert,
+  CircularProgress,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  LinearProgress
+} from '@mui/material'
+import {
+  ChildCare,
+  School,
+  Assessment,
+  TrendingUp,
+  Notifications,
+  CalendarToday,
+  Timer,
+  Star
+} from '@mui/icons-material'
+import { useAuth } from '../hooks/useAuth'
+import { ParentDashboardData, ChildInfo, WeeklyReport } from '../types'
+
+export const ParentDashboardPage: React.FC = () => {
+  const [selectedChild, setSelectedChild] = useState<string>('')
+  const [dashboardData, setDashboardData] = useState<ParentDashboardData | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  
+  const { user } = useAuth()
+
+  useEffect(() => {
+    loadDashboardData()
+  }, [])
+
+  useEffect(() => {
+    if (dashboardData && dashboardData.cocuklar.length > 0 && !selectedChild) {
+      setSelectedChild(dashboardData.cocuklar[0].ogrenci_id)
+    }
+  }, [dashboardData, selectedChild])
+
+  const loadDashboardData = async () => {
+    try {
+      setLoading(true)
+
+      // Backend API çağrısı
+      const response = await fetch('/api/v1/parent/dashboard', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        }
+      })
+
+      if (!response.ok) {
+        throw new Error(`API hatası: ${response.status}`)
+      }
+
+      const apiResult = await response.json()
+
+      if (!apiResult.success) {
+        throw new Error(apiResult.message || 'Dashboard verileri alınamadı')
+      }
+
+      setDashboardData(apiResult.data)
+      return
+
+    } catch (error: any) {
+      console.error('Parent Dashboard API hatası:', error)
+      setError(`Dashboard verileri yüklenemedi: ${error.message}`)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleChildChange = (event: any) => {
+    setSelectedChild(event.target.value)
+  }
+
+  const getSelectedChild = (): ChildInfo | undefined => {
+    return dashboardData?.cocuklar.find(child => child.ogrenci_id === selectedChild)
+  }
+
+  const formatDuration = (minutes: number): string => {
+    const hours = Math.floor(minutes / 60)
+    const mins = minutes % 60
+    return `${hours}s ${mins}dk`
+  }
+
+  const getProgressColor = (progress: number): 'success' | 'warning' | 'error' => {
+    if (progress >= 80) return 'success'
+    if (progress >= 60) return 'warning'
+    return 'error'
+  }
+
+  if (loading) {
+    return (
+      <Box display="flex" justifyContent="center" alignItems="center" minHeight="400px">
+        <CircularProgress />
+      </Box>
+    )
+  }
+
+  if (error) {
+    return (
+      <Container maxWidth="lg" sx={{ mt: 4 }}>
+        <Alert severity="error">{error}</Alert>
+      </Container>
+    )
+  }
+
+  if (!dashboardData) {
+    return (
+      <Container maxWidth="lg" sx={{ mt: 4 }}>
+        <Alert severity="warning">Dashboard verileri bulunamadı</Alert>
+      </Container>
+    )
+  }
+
+  const selectedChildData = getSelectedChild()
+
+  return (
+    <Container maxWidth="lg" sx={{ mt: 2, mb: 4 }}>
+      {/* Hoş Geldin Mesajı */}
+      <Box sx={{ mb: 4 }}>
+        <Typography variant="h4" component="h1" gutterBottom>
+          Hoş Geldiniz, {user?.ad} {user?.soyad}
+        </Typography>
+        <Typography variant="body1" color="text.secondary">
+          Veli Dashboard - Çocuklarınızın eğitim ilerlemesini takip edin
+        </Typography>
+      </Box>
+
+      {/* Çocuk Seçimi */}
+      <Box sx={{ mb: 4 }}>
+        <FormControl sx={{ minWidth: 300 }}>
+          <InputLabel id="child-select-label">Çocuk Seçin</InputLabel>
+          <Select
+            labelId="child-select-label"
+            id="child-select"
+            value={selectedChild}
+            label="Çocuk Seçin"
+            onChange={handleChildChange}
+          >
+            {dashboardData.cocuklar.map((child) => (
+              <MenuItem key={child.ogrenci_id} value={child.ogrenci_id}>
+                {child.ad_soyad} - {child.sinif}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+      </Box>
+
+      {selectedChildData && (
+        <>
+          {/* Seçili Çocuk Bilgileri */}
+          <Paper sx={{ p: 3, mb: 4 }}>
+            <Grid container spacing={3} alignItems="center">
+              <Grid item>
+                <Avatar sx={{ width: 80, height: 80, bgcolor: 'primary.main' }}>
+                  <Child sx={{ fontSize: 40 }} />
+                </Avatar>
+              </Grid>
+              <Grid item xs>
+                <Typography variant="h5" gutterBottom>
+                  {selectedChildData.ad_soyad}
+                </Typography>
+                <Typography variant="body1" color="text.secondary" gutterBottom>
+                  {selectedChildData.sinif} - {selectedChildData.okul}
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  Son Aktivite: {new Date(selectedChildData.son_aktivite).toLocaleString('tr-TR')}
+                </Typography>
+              </Grid>
+              <Grid item>
+                <Box sx={{ textAlign: 'center' }}>
+                  <Typography variant="h4" color={getProgressColor(selectedChildData.haftalik_ilerleme)}>
+                    {selectedChildData.haftalik_ilerleme}%
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    Haftalık İlerleme
+                  </Typography>
+                  <LinearProgress
+                    variant="determinate"
+                    value={selectedChildData.haftalik_ilerleme}
+                    color={getProgressColor(selectedChildData.haftalik_ilerleme)}
+                    sx={{ mt: 1, width: 100 }}
+                  />
+                </Box>
+              </Grid>
+            </Grid>
+          </Paper>
+
+          {/* Haftalık Rapor Kartları */}
+          <Grid container spacing={3} sx={{ mb: 4 }}>
+            {dashboardData.haftalik_rapor.slice(0, 2).map((rapor, index) => (
+              <Grid item xs={12} md={6} key={rapor.hafta}>
+                <Card>
+                  <CardContent>
+                    <Typography variant="h6" gutterBottom>
+                      {index === 0 ? 'Bu Hafta' : 'Geçen Hafta'}
+                    </Typography>
+                    
+                    <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                      <Timer sx={{ mr: 1, color: 'primary.main' }} />
+                      <Typography>
+                        Çalışma Süresi: {formatDuration(rapor.calisma_suresi)}
+                      </Typography>
+                    </Box>
+
+                    <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                      <School sx={{ mr: 1, color: 'success.main' }} />
+                      <Typography>
+                        Tamamlanan Ders: {rapor.tamamlanan_dersler}
+                      </Typography>
+                    </Box>
+
+                    <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                      <Assessment sx={{ mr: 1, color: 'warning.main' }} />
+                      <Typography>
+                        Ortalama Puan: {rapor.ortalama_puan.toFixed(1)}
+                      </Typography>
+                    </Box>
+
+                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                      <Star sx={{ mr: 1, color: 'info.main' }} />
+                      <Typography>
+                        Sınav Sayısı: {rapor.sinav_puanlari.length}
+                      </Typography>
+                    </Box>
+                  </CardContent>
+                  <CardActions>
+                    <Button size="small" color="primary">
+                      Detaylı Rapor
+                    </Button>
+                  </CardActions>
+                </Card>
+              </Grid>
+            ))}
+          </Grid>
+        </>
+      )}
+
+      {/* Bildirimler */}
+      <Paper sx={{ mb: 4 }}>
+        <Box sx={{ p: 2, borderBottom: 1, borderColor: 'divider' }}>
+          <Typography variant="h6" sx={{ display: 'flex', alignItems: 'center' }}>
+            <Notifications sx={{ mr: 1 }} />
+            Son Bildirimler
+          </Typography>
+        </Box>
+        <List>
+          {dashboardData.bildirimler.slice(0, 5).map((bildirim, index) => (
+            <ListItem 
+              key={bildirim.bildirim_id} 
+              divider={index < Math.min(dashboardData.bildirimler.length, 5) - 1}
+            >
+              <ListItemAvatar>
+                <Avatar sx={{ 
+                  bgcolor: bildirim.tip === 'basari' ? 'success.main' : 
+                           bildirim.tip === 'uyari' ? 'warning.main' : 
+                           bildirim.tip === 'hata' ? 'error.main' : 'info.main'
+                }}>
+                  {bildirim.tip === 'basari' ? <Star /> : <Notifications />}
+                </Avatar>
+              </ListItemAvatar>
+              <ListItemText
+                primary={bildirim.baslik}
+                secondary={
+                  <Box>
+                    <Typography variant="body2" color="text.secondary">
+                      {bildirim.mesaj}
+                    </Typography>
+                    <Typography variant="caption" color="text.secondary">
+                      {new Date(bildirim.tarih).toLocaleString('tr-TR')}
+                    </Typography>
+                  </Box>
+                }
+              />
+              {!bildirim.okundu && (
+                <Chip label="Yeni" color="primary" size="small" />
+              )}
+            </ListItem>
+          ))}
+        </List>
+        <Box sx={{ p: 2, textAlign: 'center' }}>
+          <Button color="primary">
+            Tüm Bildirimleri Gör
+          </Button>
+        </Box>
+      </Paper>
+
+      {/* Hızlı Eylemler */}
+      <Paper sx={{ p: 3 }}>
+        <Typography variant="h6" gutterBottom>
+          Hızlı Eylemler
+        </Typography>
+        <Grid container spacing={2}>
+          <Grid item xs={12} sm={6} md={3}>
+            <Button
+              fullWidth
+              variant="outlined"
+              startIcon={<Assessment />}
+              sx={{ py: 2 }}
+            >
+              Detaylı Rapor Al
+            </Button>
+          </Grid>
+          <Grid item xs={12} sm={6} md={3}>
+            <Button
+              fullWidth
+              variant="outlined"
+              startIcon={<CalendarToday />}
+              sx={{ py: 2 }}
+            >
+              Çalışma Programı
+            </Button>
+          </Grid>
+          <Grid item xs={12} sm={6} md={3}>
+            <Button
+              fullWidth
+              variant="outlined"
+              startIcon={<School />}
+              sx={{ py: 2 }}
+            >
+              Öğretmenle İletişim
+            </Button>
+          </Grid>
+          <Grid item xs={12} sm={6} md={3}>
+            <Button
+              fullWidth
+              variant="outlined"
+              startIcon={<TrendingUp />}
+              sx={{ py: 2 }}
+            >
+              İlerleme Analizi
+            </Button>
+          </Grid>
+        </Grid>
+      </Paper>
+    </Container>
+  )
+}
+
+export default ParentDashboardPage

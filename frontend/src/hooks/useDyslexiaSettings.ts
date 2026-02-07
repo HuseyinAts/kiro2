@@ -1,7 +1,7 @@
 /**
  * Disleksi Ayarları Hook'u
  * REQ-50.1 - REQ-50.13: Tipografi ve Görsel Düzenlemeler
- * 
+ *
  * Özellikler:
  * - OpenDyslexic/Dyslexie font entegrasyonu
  * - Font boyutu ayarlama (12-24pt)
@@ -16,19 +16,19 @@ export interface DyslexiaSettings {
   fontFamily: 'default' | 'arial' | 'verdana' | 'opendyslexic' | 'dyslexie' | 'comic-sans';
   fontSize: number; // 12-24pt
   fontWeight: 'normal' | 'bold';
-  
+
   // Aralık ayarları
   lineHeight: number; // 1.0-3.0x
   letterSpacing: number; // 0-0.5em
   wordSpacing: number; // 0-0.5em
   paragraphSpacing: number; // 0-3em
-  
+
   // Okuma yardımcıları
   bionicReading: boolean;
   syllableBreaks: boolean;
   readingRuler: boolean;
   focusMode: boolean;
-  
+
   // Renk ve kontrast
   colorOverlay: 'none' | 'blue' | 'green' | 'yellow' | 'pink' | 'purple' | 'gray';
   overlayOpacity: number; // 0.1-0.9
@@ -85,7 +85,7 @@ export const useDyslexiaSettings = () => {
         if (!loadedFonts.has('opendyslexic')) {
           const openDyslexicFont = new FontFace(
             'OpenDyslexic',
-            'url(/fonts/OpenDyslexic-Regular.woff2) format("woff2")'
+            'url(/fonts/OpenDyslexic-Regular.woff2) format("woff2")',
           );
           await openDyslexicFont.load();
           document.fonts.add(openDyslexicFont);
@@ -97,7 +97,7 @@ export const useDyslexiaSettings = () => {
           const openDyslexicBold = new FontFace(
             'OpenDyslexic',
             'url(/fonts/OpenDyslexic-Bold.woff2) format("woff2")',
-            { weight: 'bold' }
+            { weight: 'bold' },
           );
           await openDyslexicBold.load();
           document.fonts.add(openDyslexicBold);
@@ -109,7 +109,7 @@ export const useDyslexiaSettings = () => {
         if (!loadedFonts.has('dyslexie')) {
           const dyslexieFont = new FontFace(
             'Dyslexie',
-            'url(/fonts/Dyslexie-Regular.woff2) format("woff2")'
+            'url(/fonts/Dyslexie-Regular.woff2) format("woff2")',
           );
           await dyslexieFont.load();
           document.fonts.add(dyslexieFont);
@@ -142,7 +142,7 @@ export const useDyslexiaSettings = () => {
   // Tek bir ayarı güncelle
   const updateSetting = useCallback(<K extends keyof DyslexiaSettings>(
     key: K,
-    value: DyslexiaSettings[K]
+    value: DyslexiaSettings[K],
   ) => {
     const newSettings = { ...settings, [key]: value };
     saveSettings(newSettings);
@@ -151,7 +151,7 @@ export const useDyslexiaSettings = () => {
   // Ayarları DOM'a uygula
   const applySettingsToDOM = useCallback((settings: DyslexiaSettings) => {
     const root = document.documentElement;
-    
+
     // Font ailesi
     const fontFamilyMap: Record<DyslexiaSettings['fontFamily'], string> = {
       'default': '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
@@ -162,30 +162,30 @@ export const useDyslexiaSettings = () => {
       'comic-sans': '"Comic Sans MS", cursive',
     };
     root.style.setProperty('--font-family', fontFamilyMap[settings.fontFamily]);
-    
+
     // Font boyutu (12-24pt)
     root.style.setProperty('--font-size-base', `${settings.fontSize}px`);
-    
+
     // Font kalınlığı
     root.style.setProperty('--font-weight', settings.fontWeight);
-    
+
     // Satır aralığı (1.0-3.0x) - REQ-50.8
     root.style.setProperty('--line-height', settings.lineHeight.toString());
-    
+
     // REQ-50.9: Paragraf aralığını satır aralığının 1.5 katı olarak otomatik ayarla
     // 100ms içinde uygulanır (CSS transition ile)
     const autoParagraphSpacing = settings.lineHeight * 1.5;
     root.style.setProperty('--auto-paragraph-spacing', `${autoParagraphSpacing}em`);
-    
+
     // Harf aralığı (0-0.5em)
     root.style.setProperty('--letter-spacing', `${settings.letterSpacing}em`);
-    
+
     // Kelime aralığı (0-0.5em)
     root.style.setProperty('--word-spacing', `${settings.wordSpacing}em`);
-    
+
     // Paragraf aralığı (0-3em) - kullanıcı manuel ayarı
     root.style.setProperty('--paragraph-spacing', `${settings.paragraphSpacing}em`);
-    
+
     // REQ-50.10: Satır aralığı 1.5x veya üzerinde ise optimal okuma genişliği uygula
     if (settings.lineHeight >= 1.5) {
       root.style.setProperty('--optimal-line-length', '75ch'); // 75 karakter
@@ -196,7 +196,7 @@ export const useDyslexiaSettings = () => {
       root.style.setProperty('--text-align', 'inherit');
       root.classList.remove('optimal-reading-width');
     }
-    
+
     // Renk overlay
     if (settings.colorOverlay !== 'none') {
       const overlayColors: Record<Exclude<DyslexiaSettings['colorOverlay'], 'none'>, string> = {
@@ -213,42 +213,42 @@ export const useDyslexiaSettings = () => {
     } else {
       root.classList.remove('color-overlay-active');
     }
-    
+
     // Yüksek kontrast
     if (settings.highContrast) {
       root.classList.add('high-contrast');
     } else {
       root.classList.remove('high-contrast');
     }
-    
+
     // Bionic reading
     if (settings.bionicReading) {
       root.classList.add('bionic-reading');
     } else {
       root.classList.remove('bionic-reading');
     }
-    
+
     // Hece ayırma
     if (settings.syllableBreaks) {
       root.classList.add('syllable-breaks');
     } else {
       root.classList.remove('syllable-breaks');
     }
-    
+
     // Okuma cetveli
     if (settings.readingRuler) {
       root.classList.add('reading-ruler-active');
     } else {
       root.classList.remove('reading-ruler-active');
     }
-    
+
     // Odak modu
     if (settings.focusMode) {
       root.classList.add('focus-mode');
     } else {
       root.classList.remove('focus-mode');
     }
-    
+
     // Disleksi desteği aktif class'ı
     root.classList.add('dyslexia-support-active');
   }, []);
@@ -335,7 +335,7 @@ export const useDyslexiaSettings = () => {
         syllableBreaks: true,
       },
     };
-    
+
     const newSettings = { ...settings, ...presets[preset] };
     saveSettings(newSettings);
   }, [settings, saveSettings]);
@@ -352,13 +352,13 @@ export const useDyslexiaSettings = () => {
     settings,
     isLoading,
     fontsLoaded,
-    
+
     // Ayar fonksiyonları
     updateSetting,
     saveSettings,
     resetSettings,
     applyPreset,
-    
+
     // Hızlı ayarlama fonksiyonları
     increaseFontSize,
     decreaseFontSize,

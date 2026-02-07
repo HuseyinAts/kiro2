@@ -494,8 +494,8 @@ class YDTTimeTrackingService:
                 ).total_seconds() / 60
                 if elapsed > passage_tracking.suggested_time_minutes:
                     suggestions.append(
-                        f"📖 Mevcut metinde önerilen süreden fazla zaman harcıyorsunuz. "
-                        f"Sorulara geçmeyi düşünebilirsiniz."
+                        "📖 Mevcut metinde önerilen süreden fazla zaman harcıyorsunuz. "
+                        "Sorulara geçmeyi düşünebilirsiniz."
                     )
 
         return suggestions

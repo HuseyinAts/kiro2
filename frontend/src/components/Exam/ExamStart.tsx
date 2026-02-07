@@ -2,8 +2,22 @@
  * Sınav Başlatma Bileşeni
  * ÖSYM formatında sınav öncesi hazırlık ve başlatma arayüzü
  */
-import React, { useState, useEffect } from 'react'
-import { motion } from 'framer-motion'
+import {
+  PlayArrow,
+  Timer,
+  Assignment,
+  CheckCircle,
+  Warning,
+  Info,
+  School,
+  MenuBook,
+  Psychology,
+  Speed,
+  VolumeUp,
+  Visibility,
+  TouchApp,
+  Computer,
+} from '@mui/icons-material';
 import {
   Paper,
   Typography,
@@ -26,27 +40,12 @@ import {
   ListItemIcon,
   ListItemText,
   CircularProgress,
-  LinearProgress
-} from '@mui/material'
-import {
-  PlayArrow,
-  Timer,
-  Assignment,
-  CheckCircle,
-  Warning,
-  Info,
-  School,
-  MenuBook,
-  Psychology,
-  Speed,
-  VolumeUp,
-  Visibility,
-  TouchApp,
-  Computer,
-  Smartphone
-} from '@mui/icons-material'
-import { useNavigate } from 'react-router-dom'
-import { examService, ExamType } from '../../services/examService'
+} from '@mui/material';
+import { motion } from 'framer-motion';
+import * as React from 'react';
+import {  useState  } from 'react';
+
+import { examService, ExamType } from '../../services/examService';
 
 interface ExamStartProps {
   examType: ExamType
@@ -55,30 +54,28 @@ interface ExamStartProps {
 }
 
 export const ExamStart: React.FC<ExamStartProps> = ({ examType, onStart, onCancel }) => {
-  const navigate = useNavigate()
-  
   // State yönetimi
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-  const [showInstructions, setShowInstructions] = useState(false)
-  const [showSystemCheck, setShowSystemCheck] = useState(false)
-  const [systemCheckResults, setSystemCheckResults] = useState<Record<string, boolean>>({})
-  const [acceptedTerms, setAcceptedTerms] = useState(false)
-  const [readInstructions, setReadInstructions] = useState(false)
-  const [systemCheckPassed, setSystemCheckPassed] = useState(false)
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [showInstructions, setShowInstructions] = useState(false);
+  const [, setShowSystemCheck] = useState(false);
+  const [systemCheckResults, setSystemCheckResults] = useState<Record<string, boolean>>({});
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
+  const [readInstructions, setReadInstructions] = useState(false);
+  const [systemCheckPassed, setSystemCheckPassed] = useState(false);
 
   /**
    * Sınav bilgilerini getir
    */
-  const examInfo = examService.getExamDuration(examType)
-  const examDescription = examService.getExamTypeDescription(examType)
+  const examInfo = examService.getExamDuration(examType);
+  const examDescription = examService.getExamTypeDescription(examType);
 
   /**
    * Sistem kontrolü yap
    */
   const performSystemCheck = async () => {
-    setShowSystemCheck(true)
-    setLoading(true)
+    setShowSystemCheck(true);
+    setLoading(true);
 
     const checks = {
       internet: false,
@@ -87,97 +84,97 @@ export const ExamStart: React.FC<ExamStartProps> = ({ examType, onStart, onCance
       localStorage: false,
       webSocket: false,
       camera: false,
-      microphone: false
-    }
+      microphone: false,
+    };
 
     try {
       // İnternet bağlantısı kontrolü
-      const response = await fetch('/api/v1/health', { method: 'HEAD' })
-      checks.internet = response.ok
+      const response = await fetch('/api/v1/health', { method: 'HEAD' });
+      checks.internet = response.ok;
 
       // Tarayıcı uyumluluğu
-      checks.browser = !!(window.WebSocket && window.localStorage && window.JSON)
+      checks.browser = !!(window.WebSocket && window.localStorage && window.JSON);
 
       // JavaScript aktif mi
-      checks.javascript = true
+      checks.javascript = true;
 
       // LocalStorage kullanılabilir mi
       try {
-        localStorage.setItem('test', 'test')
-        localStorage.removeItem('test')
-        checks.localStorage = true
+        localStorage.setItem('test', 'test');
+        localStorage.removeItem('test');
+        checks.localStorage = true;
       } catch {
-        checks.localStorage = false
+        checks.localStorage = false;
       }
 
       // WebSocket desteği
-      checks.webSocket = !!window.WebSocket
+      checks.webSocket = !!window.WebSocket;
 
       // Kamera erişimi (opsiyonel)
       try {
-        const stream = await navigator.mediaDevices.getUserMedia({ video: true })
-        checks.camera = true
-        stream.getTracks().forEach(track => track.stop())
+        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+        checks.camera = true;
+        stream.getTracks().forEach(track => track.stop());
       } catch {
-        checks.camera = false
+        checks.camera = false;
       }
 
       // Mikrofon erişimi (opsiyonel)
       try {
-        const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
-        checks.microphone = true
-        stream.getTracks().forEach(track => track.stop())
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        checks.microphone = true;
+        stream.getTracks().forEach(track => track.stop());
       } catch {
-        checks.microphone = false
+        checks.microphone = false;
       }
 
     } catch (error) {
-      console.error('Sistem kontrolü hatası:', error)
+      console.error('Sistem kontrolü hatası:', error);
     }
 
-    setSystemCheckResults(checks)
-    
+    setSystemCheckResults(checks);
+
     // Temel kontroller geçildi mi
-    const basicChecksPassed = checks.internet && checks.browser && checks.javascript && checks.localStorage
-    setSystemCheckPassed(basicChecksPassed)
-    
-    setLoading(false)
-  }
+    const basicChecksPassed = checks.internet && checks.browser && checks.javascript && checks.localStorage;
+    setSystemCheckPassed(basicChecksPassed);
+
+    setLoading(false);
+  };
 
   /**
    * Sınavı başlat
    */
   const handleStartExam = async () => {
     if (!acceptedTerms || !readInstructions) {
-      setError('Lütfen tüm koşulları kabul edin ve talimatları okuyun')
-      return
+      setError('Lütfen tüm koşulları kabul edin ve talimatları okuyun');
+      return;
     }
 
     try {
-      setLoading(true)
-      setError(null)
+      setLoading(true);
+      setError(null);
 
       // Yeni sınav oturumu oluştur
       const session = await examService.createExam({
         exam_type: examType,
         custom_config: {
           system_check_results: systemCheckResults,
-          start_time: new Date().toISOString()
-        }
-      })
+          start_time: new Date().toISOString(),
+        },
+      });
 
       // Sınavı başlat
-      await examService.startExam(session.session_id)
+      await examService.startExam(session.session_id);
 
       // Ana bileşene session ID'sini gönder
-      onStart(session.session_id)
+      onStart(session.session_id);
 
     } catch (err: any) {
-      setError(err.message || 'Sınav başlatılırken hata oluştu')
+      setError(err.message || 'Sınav başlatılırken hata oluştu');
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   /**
    * Sınav kuralları ve talimatları
@@ -190,8 +187,8 @@ export const ExamStart: React.FC<ExamStartProps> = ({ examType, onStart, onCance
     'Süre bitiminde sınav otomatik olarak tamamlanır',
     'Soru işaretleme özelliğini kullanarak geri dönmek istediğiniz soruları işaretleyebilirsiniz',
     'Her soru için sadece bir cevap seçebilirsiniz',
-    'Boş bıraktığınız sorular net hesaplamasını etkilemez'
-  ]
+    'Boş bıraktığınız sorular net hesaplamasını etkilemez',
+  ];
 
   /**
    * Sistem gereksinimleri
@@ -203,8 +200,8 @@ export const ExamStart: React.FC<ExamStartProps> = ({ examType, onStart, onCance
     { name: 'Yerel depolama desteği', icon: <TouchApp />, required: true },
     { name: 'WebSocket desteği', icon: <Speed />, required: true },
     { name: 'Kamera erişimi', icon: <Visibility />, required: false },
-    { name: 'Mikrofon erişimi', icon: <VolumeUp />, required: false }
-  ]
+    { name: 'Mikrofon erişimi', icon: <VolumeUp />, required: false },
+  ];
 
   return (
     <Box sx={{ maxWidth: 800, mx: 'auto', p: 3 }}>
@@ -324,10 +321,10 @@ export const ExamStart: React.FC<ExamStartProps> = ({ examType, onStart, onCance
                                   req.name.toLowerCase().includes('depolama') ? 'localStorage' :
                                   req.name.toLowerCase().includes('websocket') ? 'webSocket' :
                                   req.name.toLowerCase().includes('kamera') ? 'camera' :
-                                  req.name.toLowerCase().includes('mikrofon') ? 'microphone' : ''
-                  
-                  const passed = systemCheckResults[checkKey]
-                  
+                                  req.name.toLowerCase().includes('mikrofon') ? 'microphone' : '';
+
+                  const passed = systemCheckResults[checkKey];
+
                   return (
                     <ListItem key={index}>
                       <ListItemIcon>
@@ -344,7 +341,7 @@ export const ExamStart: React.FC<ExamStartProps> = ({ examType, onStart, onCance
                         icon={passed ? <CheckCircle /> : <Warning />}
                       />
                     </ListItem>
-                  )
+                  );
                 })}
               </List>
 
@@ -492,7 +489,7 @@ export const ExamStart: React.FC<ExamStartProps> = ({ examType, onStart, onCance
         </DialogActions>
       </Dialog>
     </Box>
-  )
-}
+  );
+};
 
-export default ExamStart
+export default ExamStart;

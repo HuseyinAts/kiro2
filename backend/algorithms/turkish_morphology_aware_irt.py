@@ -280,7 +280,7 @@ class TurkishMorphologyAwareIRT:
                 complexity_results.append(complexity_result)
                 total_complexity += complexity_result.total_complexity
 
-            except Exception as e:
+            except Exception:
                 # Analiz hatası durumunda basit hesaplama
                 simple_complexity = min(1.0, len(word) / 20)  # Kelime uzunluğuna göre
                 total_complexity += simple_complexity
@@ -445,7 +445,7 @@ class TurkishMorphologyAwareIRT:
             try:
                 complexity = await task
                 results[question_id] = complexity
-            except Exception as e:
+            except Exception:
                 results[question_id] = 0.5  # Hata durumunda orta değer
 
         return results

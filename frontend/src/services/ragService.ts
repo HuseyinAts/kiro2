@@ -73,7 +73,7 @@ class RAGService {
     scoreThreshold?: number;
   }) {
     const cacheKey = `search:${query}:${JSON.stringify(options || {})}`;
-    
+
     if (this.cache.has(cacheKey)) {
       return this.cache.get(cacheKey);
     }
@@ -105,7 +105,7 @@ class RAGService {
     k?: number;
   }) {
     const cacheKey = `searchEdu:${query}:${JSON.stringify(options || {})}`;
-    
+
     if (this.cache.has(cacheKey)) {
       return this.cache.get(cacheKey);
     }

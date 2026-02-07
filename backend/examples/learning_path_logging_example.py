@@ -5,7 +5,7 @@ P1.9: Error Tracking & Structured Logging
 This file shows how to integrate enhanced logging into Learning Path API
 """
 
-from fastapi import APIRouter, HTTPException, Depends
+from fastapi import APIRouter, HTTPException
 from core.learning_path_logger import (
     get_learning_path_logger,
     track_operation,

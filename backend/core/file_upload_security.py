@@ -4,12 +4,10 @@ SECURITY FIX: Prevent malicious file uploads
 """
 
 import hashlib
-import mimetypes
-import os
 import re
 from dataclasses import dataclass
 from pathlib import Path
-from typing import BinaryIO, List, Optional, Set, Tuple
+from typing import Optional, Set, Tuple
 
 from fastapi import HTTPException, UploadFile, status
 
@@ -242,7 +240,7 @@ class FileUploadValidator:
             max_mb = config.max_file_size / (1024 * 1024)
             actual_mb = file_size / (1024 * 1024)
             logger.warning(
-                f"File size exceeds limit",
+                "File size exceeds limit",
                 extra_data={
                     "filename": file.filename,
                     "size_mb": actual_mb,
@@ -288,7 +286,7 @@ class FileUploadValidator:
                 return True
 
         logger.error(
-            f"Magic bytes mismatch - possible file type spoofing",
+            "Magic bytes mismatch - possible file type spoofing",
             extra_data={
                 "filename": file.filename,
                 "extension": extension,
@@ -328,7 +326,7 @@ class FileUploadValidator:
         )
 
         logger.info(
-            f"File upload validation started",
+            "File upload validation started",
             extra_data={
                 "original_filename": original_filename,
                 "sanitized_filename": sanitized_filename,
@@ -349,7 +347,7 @@ class FileUploadValidator:
             await cls.validate_magic_bytes(file, extension)
 
         logger.info(
-            f"File upload validation passed",
+            "File upload validation passed",
             extra_data={
                 "filename": sanitized_filename,
                 "extension": extension,

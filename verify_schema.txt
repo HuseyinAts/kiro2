@@ -1,0 +1,9 @@
+=== COLUMN CHECK ===
+exam_type exists: True
+subject exists: True
+topic exists: True
+
+All columns: ['id', 'difficulty', 'discrimination', 'guessing', 'irt_calibrated', 'subject_id', 'topic_id', 'subtopic_id', 'year', 'is_active', 'created_at', 'options', 'external_id', 'stem', 'stem_image_url', 'tags', 'correct_option', 'explanation', 'subject', 'topic', 'source', 'exam_type']
+
+=== TESTING QUERY ===
+Query SUCCESS: [<Record exam_type='TYT' count=3>]

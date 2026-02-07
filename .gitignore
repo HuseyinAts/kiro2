@@ -102,3 +102,104 @@ nul
 
 # Git submodules
 mcp-servers/
+
+# ===== LARGE FILES (GitHub 100MB limit) =====
+# ML Model files
+backend/cache/
+*.safetensors
+*.bin
+*.pt
+*.pth
+*.onnx
+*.h5
+*.pkl
+*.joblib
+
+# Virtual environments
+.venv/
+venv/
+ENV/
+
+# Coverage reports
+htmlcov/
+.coverage
+coverage.xml
+
+# Test cache
+.pytest_cache/
+.mypy_cache/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Claude Code personal notes (not for git)
+CLAUDE.local.md
+
+# === KIRO2 SPECIFIC ADDITIONS ===
+
+# Additional venv variants
+.venv-*/
+
+# Ruff cache
+.ruff_cache/
+
+# Hypothesis testing
+.hypothesis/
+
+# Windows specific
+desktop.ini
+
+# Temp sync directories
+.tmp.*/
+.tmp.drivedownload/
+.tmp.driveupload/
+
+# MCP
+.mcp_pids/
+
+# Broken directory names (Windows path issues)
+c:Usershusey*/
+
+# Sub-projects (may have separate repos)
+d-dataset/
+ai_ml/
+mobile/
+agent/
+annotation/
+archive/
+yolo_dataset/
+veriseti/
+qwen_extended_vocab/
+zemberek/
+models/
+
+# Training data (large)
+ai_training_data/
+osym_extracted/
+
+# Reports (generated)
+benchmark_reports/
+coverage_reports/
+raporlar/
+test_results/
+performance/
+
+# Additional caches
+*.pickle
+.secrets.baseline
+
+# Temp files
+temp_pages/
+urun/
+files/
+
+# Root level duplicates (exist in backend)
+/services/
+/tests/
+/monitoring/
+
+# === VISUAL REGRESSION TESTING ===
+# BackstopJS test results and reports (keep reference images)
+frontend/backstop_data/bitmaps_test/
+frontend/backstop_data/html_report/
+frontend/backstop_data/ci_report/

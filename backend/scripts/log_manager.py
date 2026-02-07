@@ -31,7 +31,7 @@ def cli():
 def cleanup(log_dir: str, retention_days: int, dry_run: bool):
     """Eski log dosyalarını temizle"""
 
-    click.echo(f"🧹 Log temizliği başlatılıyor...")
+    click.echo("🧹 Log temizliği başlatılıyor...")
     click.echo(f"[FOLDER] Log dizini: {log_dir}")
     click.echo(f"📅 Saklama süresi: {retention_days} gün")
 
@@ -90,7 +90,7 @@ def cleanup(log_dir: str, retention_days: int, dry_run: bool):
 def compress(log_dir: str, days_old: int):
     """Eski log dosyalarını sıkıştır"""
 
-    click.echo(f"🗜️  Log sıkıştırma başlatılıyor...")
+    click.echo("🗜️  Log sıkıştırma başlatılıyor...")
     click.echo(f"[FOLDER] Log dizini: {log_dir}")
     click.echo(f"📅 Sıkıştırma yaşı: {days_old} gün")
 
@@ -110,7 +110,7 @@ def compress(log_dir: str, days_old: int):
 def sizes(log_dir: str):
     """Log dosya boyutlarını göster"""
 
-    click.echo(f"[CHART] Log dosya boyutları:")
+    click.echo("[CHART] Log dosya boyutları:")
     click.echo(f"[FOLDER] Log dizini: {log_dir}")
 
     manager = LogRetentionManager(log_dir)
@@ -140,23 +140,23 @@ def sizes(log_dir: str):
 def analyze_errors(log_dir: str, hours: int, output: str):
     """Hata kalıplarını analiz et"""
 
-    click.echo(f"[MAG] Hata analizi başlatılıyor...")
+    click.echo("[MAG] Hata analizi başlatılıyor...")
     click.echo(f"[FOLDER] Log dizini: {log_dir}")
     click.echo(f"⏰ Analiz süresi: Son {hours} saat")
 
     analyzer = LogAnalyzer(log_dir)
     patterns = analyzer.analyze_error_patterns(hours)
 
-    click.echo(f"\n[CHART] Hata Analizi Sonuçları:")
+    click.echo("\n[CHART] Hata Analizi Sonuçları:")
     click.echo(f"🔴 Toplam hata sayısı: {patterns['total_errors']}")
 
     if patterns["error_types"]:
-        click.echo(f"\n🏷️  En çok görülen hata tipleri:")
+        click.echo("\n🏷️  En çok görülen hata tipleri:")
         for error_type, count in patterns["top_errors"][:5]:
             click.echo(f"   {count:3d}x - {error_type}")
 
     if patterns["error_endpoints"]:
-        click.echo(f"\n[GLOBE] En çok hata alan endpoint'ler:")
+        click.echo("\n[GLOBE] En çok hata alan endpoint'ler:")
         sorted_endpoints = sorted(
             patterns["error_endpoints"].items(), key=lambda x: x[1], reverse=True
         )[:5]
@@ -164,7 +164,7 @@ def analyze_errors(log_dir: str, hours: int, output: str):
             click.echo(f"   {count:3d}x - {endpoint}")
 
     if patterns["error_timeline"]:
-        click.echo(f"\n[TRENDING_UP] Saatlik hata dağılımı:")
+        click.echo("\n[TRENDING_UP] Saatlik hata dağılımı:")
         for timeline_entry in patterns["error_timeline"][-12:]:  # Son 12 saat
             click.echo(f"   {timeline_entry['hour']}: {timeline_entry['count']} hata")
 
@@ -182,19 +182,19 @@ def analyze_errors(log_dir: str, hours: int, output: str):
 def analyze_performance(log_dir: str, hours: int, output: str):
     """Performans metriklerini analiz et"""
 
-    click.echo(f"[LIGHTNING] Performans analizi başlatılıyor...")
+    click.echo("[LIGHTNING] Performans analizi başlatılıyor...")
     click.echo(f"[FOLDER] Log dizini: {log_dir}")
     click.echo(f"⏰ Analiz süresi: Son {hours} saat")
 
     analyzer = LogAnalyzer(log_dir)
     metrics = analyzer.get_performance_metrics(hours)
 
-    click.echo(f"\n[CHART] Performans Analizi Sonuçları:")
+    click.echo("\n[CHART] Performans Analizi Sonuçları:")
     click.echo(f"[TRENDING_UP] Toplam istek sayısı: {metrics['request_count']}")
     click.echo(f"⏱️  Ortalama yanıt süresi: {metrics['avg_response_time']:.2f} ms")
 
     if metrics["status_codes"]:
-        click.echo(f"\n🚦 HTTP Status Code Dağılımı:")
+        click.echo("\n🚦 HTTP Status Code Dağılımı:")
         for status_code, count in sorted(metrics["status_codes"].items()):
             percentage = (
                 (count / metrics["request_count"]) * 100
@@ -213,7 +213,7 @@ def analyze_performance(log_dir: str, hours: int, output: str):
             )
 
     if metrics["endpoint_performance"]:
-        click.echo(f"\n[TARGET] En yavaş endpoint'ler:")
+        click.echo("\n[TARGET] En yavaş endpoint'ler:")
         sorted_endpoints = sorted(
             metrics["endpoint_performance"].items(),
             key=lambda x: x[1]["avg_time"],
@@ -250,7 +250,7 @@ def analyze_performance(log_dir: str, hours: int, output: str):
 def tail_logs(log_dir: str, level: str, category: str, hours: int, tail: int):
     """Log dosyalarını canlı takip et"""
 
-    click.echo(f"👁️  Log takibi başlatılıyor...")
+    click.echo("👁️  Log takibi başlatılıyor...")
     click.echo(f"[FOLDER] Log dizini: {log_dir}")
 
     if level:

@@ -1,0 +1,70 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(dir:*)",
+      "Bash(for dir in frontend/src/components/*/)",
+      "Bash(powershell \"Get-ChildItem -Path backend -Directory | Select-Object Name, @{Name=''FileCount'';Expression={(Get-ChildItem $_FullName -Recurse -File | Measure-Object).Count}} | Format-Table -AutoSize\")",
+      "Bash(powershell:*)",
+      "Bash(nul)",
+      "Bash(cat:*)",
+      "Bash(python -c:*)",
+      "Bash(py -c:*)",
+      "Bash(py test_yolo_api.py:*)",
+      "Bash(uvicorn main:app:*)",
+      "Bash(npm run dev:*)",
+      "Bash(py -m uvicorn:*)",
+      "Bash(timeout 3 bash:*)",
+      "Bash(py scripts/seed_database.py)",
+      "Bash(py create_admin_simple.py:*)",
+      "Bash(py create_admin_sqlite.py)",
+      "Bash(py create_admin_postgres.py:*)",
+      "Bash(py check_admin_login.py:*)",
+      "Bash(pip install:*)",
+      "Bash(py test_admin_login_api.py:*)",
+      "Bash(python labelme_to_yolo_converter.py:*)",
+      "Bash(py:*)"
+    ],
+    "deny": [],
+    "ask": [],
+    "additionalDirectories": [
+      "C:\\c\\Users\\husey",
+      "C:\\c\\Users\\husey\\teknofest-2025-egitim-eylemci",
+      "C:\\Users\\husey",
+      "C:\\"
+    ]
+  },
+  "hooks": {
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash .claude/hooks/user-prompt-submit.sh \"$USER_MESSAGE\""
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash .claude/hooks/tool-call.sh \"$TOOL_NAME\" \"$TOOL_ARGUMENTS\""
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash .claude/hooks/post-tool-use.sh \"$TOOL_NAME\" \"$TOOL_ARGUMENTS\""
+          }
+        ]
+      }
+    ]
+  }
+}

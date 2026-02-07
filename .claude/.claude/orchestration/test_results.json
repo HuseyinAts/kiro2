@@ -1,0 +1,72 @@
+[
+  {
+    "prompt": "React component yaz modern dashboard için",
+    "expected": "kiro2-frontend-specialist",
+    "actual": "kiro2-frontend-specialist",
+    "confidence": 0.83,
+    "correct": true
+  },
+  {
+    "prompt": "Bu kodda bir hata var düzelt lütfen",
+    "expected": "debugger",
+    "actual": "debugger",
+    "confidence": 0.75,
+    "correct": true
+  },
+  {
+    "prompt": "Test coverage artır %80 üzerine",
+    "expected": "test-runner",
+    "actual": "test-runner",
+    "confidence": 0.7999999999999999,
+    "correct": true
+  },
+  {
+    "prompt": "Deploy the application to production",
+    "expected": "kiro2-devops-engineer",
+    "actual": "kiro2-devops-engineer",
+    "confidence": 0.75,
+    "correct": true
+  },
+  {
+    "prompt": "OSYM sorularını yükle veritabanına",
+    "expected": "kiro2-content-manager",
+    "actual": "kiro2-content-manager",
+    "confidence": 0.7999999999999999,
+    "correct": true
+  },
+  {
+    "prompt": "Review this pull request for security issues",
+    "expected": "code-reviewer",
+    "actual": "code-reviewer",
+    "confidence": 0.75,
+    "correct": true
+  },
+  {
+    "prompt": "Optimize database queries for better performance",
+    "expected": "kiro2-backend-api",
+    "actual": "kiro2-devops-engineer",
+    "confidence": 0.7,
+    "correct": false
+  },
+  {
+    "prompt": "Türkçe NLP analizi yap bu metin için",
+    "expected": "turkish-nlp-specialist",
+    "actual": "code-reviewer",
+    "confidence": 0.7,
+    "correct": false
+  },
+  {
+    "prompt": "Create user authentication endpoints with JWT",
+    "expected": "kiro2-backend-api",
+    "actual": "kiro2-backend-api",
+    "confidence": 0.75,
+    "correct": true
+  },
+  {
+    "prompt": "Fix the failing integration tests",
+    "expected": "debugger",
+    "actual": "test-runner",
+    "confidence": 0.75,
+    "correct": false
+  }
+]

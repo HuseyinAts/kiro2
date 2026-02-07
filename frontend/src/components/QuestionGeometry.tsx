@@ -12,7 +12,9 @@
  * - Proper Turkish language support
  */
 
-import React from 'react';
+import * as React from 'react';
+
+import { sanitizeSVG } from '../utils/sanitize';
 import './QuestionGeometry.css';
 
 interface GeometryMetadata {
@@ -40,21 +42,13 @@ interface QuestionGeometryProps {
  */
 export const QuestionGeometry: React.FC<QuestionGeometryProps> = ({
   visualContent,
-  className = ''
+  className = '',
 }) => {
   if (!visualContent || visualContent.type !== 'geometry') {
     return null;
   }
 
-  // Sanitize SVG content (remove potential script tags)
-  const sanitizeSVG = (svg: string): string => {
-    // Remove script tags and event handlers for XSS protection
-    return svg
-      .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
-      .replace(/on\w+="[^"]*"/g, '')
-      .replace(/on\w+='[^']*'/g, '');
-  };
-
+  // SECURITY FIX #4: Use DOMPurify for secure SVG sanitization
   const sanitizedSVG = sanitizeSVG(visualContent.content);
 
   // Format dimension text for display
@@ -70,7 +64,7 @@ export const QuestionGeometry: React.FC<QuestionGeometryProps> = ({
           'width': 'Genişlik',
           'depth': 'Derinlik',
           'angle': 'Açı',
-          'equal_side': 'Eşit Kenar'
+          'equal_side': 'Eşit Kenar',
         };
         const label = translations[key] || key;
         return `${label}: ${value}${key === 'angle' ? '°' : ' cm'}`;

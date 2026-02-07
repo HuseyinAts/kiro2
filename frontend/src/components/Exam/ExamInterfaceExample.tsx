@@ -1,9 +1,9 @@
 /**
  * ExamInterface Kullanım Örneği
- * 
+ *
  * Task 69: Sınav Arayüzü özellikleri demonstrasyonu
  */
-import React, { useState, useCallback, useEffect } from 'react'
+import { Timer, Save } from '@mui/icons-material';
 import {
   Box,
   Container,
@@ -12,10 +12,12 @@ import {
   Button,
   Alert,
   LinearProgress,
-  Divider
-} from '@mui/material'
-import { Timer, Save } from '@mui/icons-material'
-import ExamInterface, { ExamQuestion, ExamAnswer } from './ExamInterface'
+  Divider,
+} from '@mui/material';
+import * as React from 'react';
+import {  useState, useCallback, useEffect  } from 'react';
+
+import ExamInterface, { ExamQuestion, ExamAnswer } from './ExamInterface';
 
 /**
  * Örnek sınav soruları
@@ -27,7 +29,7 @@ const sampleQuestions: ExamQuestion[] = [
     content: 'Aşağıdaki sayılardan hangisi asal sayıdır?',
     options: ['A', 'B', 'C', 'D', 'E'],
     subject: 'Matematik',
-    topic: 'Sayılar'
+    topic: 'Sayılar',
   },
   {
     id: 'q2',
@@ -35,7 +37,7 @@ const sampleQuestions: ExamQuestion[] = [
     content: 'Türkçe\'de kaç tane ünlü harf vardır?',
     options: ['A', 'B', 'C', 'D', 'E'],
     subject: 'Türkçe',
-    topic: 'Ses Bilgisi'
+    topic: 'Ses Bilgisi',
   },
   {
     id: 'q3',
@@ -43,7 +45,7 @@ const sampleQuestions: ExamQuestion[] = [
     content: 'Newton\'un hareket yasaları kaç tanedir?',
     options: ['A', 'B', 'C', 'D', 'E'],
     subject: 'Fizik',
-    topic: 'Hareket'
+    topic: 'Hareket',
   },
   {
     id: 'q4',
@@ -51,7 +53,7 @@ const sampleQuestions: ExamQuestion[] = [
     content: 'Osmanlı Devleti hangi yüzyılda kurulmuştur?',
     options: ['A', 'B', 'C', 'D', 'E'],
     subject: 'Tarih',
-    topic: 'Osmanlı Tarihi'
+    topic: 'Osmanlı Tarihi',
   },
   {
     id: 'q5',
@@ -59,53 +61,53 @@ const sampleQuestions: ExamQuestion[] = [
     content: 'Periyodik tabloda kaç element vardır?',
     options: ['A', 'B', 'C', 'D', 'E'],
     subject: 'Kimya',
-    topic: 'Periyodik Tablo'
-  }
-]
+    topic: 'Periyodik Tablo',
+  },
+];
 
 /**
  * ExamInterface kullanım örneği
  */
 export const ExamInterfaceExample: React.FC = () => {
-  const [answers, setAnswers] = useState<Record<string, ExamAnswer>>({})
-  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0)
-  const [examStarted, setExamStarted] = useState(false)
-  const [examFinished, setExamFinished] = useState(false)
-  const [timeRemaining, setTimeRemaining] = useState(300) // 5 dakika
-  const [autoSaveStatus, setAutoSaveStatus] = useState<'idle' | 'saving' | 'saved'>('idle')
+  const [answers, setAnswers] = useState<Record<string, ExamAnswer>>({});
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+  const [examStarted, setExamStarted] = useState(false);
+  const [examFinished, setExamFinished] = useState(false);
+  const [timeRemaining, setTimeRemaining] = useState(300); // 5 dakika
+  const [autoSaveStatus, setAutoSaveStatus] = useState<'idle' | 'saving' | 'saved'>('idle');
 
   /**
    * Sınav süre sayacı
    */
   useEffect(() => {
-    if (!examStarted || examFinished) return
+    if (!examStarted || examFinished) {return;}
 
     const timer = setInterval(() => {
       setTimeRemaining((prev) => {
         if (prev <= 1) {
-          handleFinishExam()
-          return 0
+          handleFinishExam();
+          return 0;
         }
-        return prev - 1
-      })
-    }, 1000)
+        return prev - 1;
+      });
+    }, 1000);
 
-    return () => clearInterval(timer)
-  }, [examStarted, examFinished])
+    return () => clearInterval(timer);
+  }, [examStarted, examFinished]);
 
   /**
    * Otomatik kaydetme (her 30 saniyede bir)
    * REQ-1.6: Otomatik kaydetme ile veri kaybını önleme
    */
   useEffect(() => {
-    if (!examStarted || examFinished) return
+    if (!examStarted || examFinished) {return;}
 
     const autoSaveInterval = setInterval(() => {
-      handleAutoSave()
-    }, 30000) // 30 saniye
+      handleAutoSave();
+    }, 30000); // 30 saniye
 
-    return () => clearInterval(autoSaveInterval)
-  }, [examStarted, examFinished, answers])
+    return () => clearInterval(autoSaveInterval);
+  }, [examStarted, examFinished, answers]);
 
   /**
    * Cevap değiştirme işleyicisi
@@ -117,10 +119,10 @@ export const ExamInterfaceExample: React.FC = () => {
         questionId,
         answer,
         flaggedForReview: prev[questionId]?.flaggedForReview || false,
-        timestamp: new Date()
-      }
-    }))
-  }, [])
+        timestamp: new Date(),
+      },
+    }));
+  }, []);
 
   /**
    * Şüpheli işaretleme işleyicisi
@@ -132,59 +134,59 @@ export const ExamInterfaceExample: React.FC = () => {
         questionId,
         answer: prev[questionId]?.answer || '',
         flaggedForReview: !prev[questionId]?.flaggedForReview,
-        timestamp: new Date()
-      }
-    }))
-  }, [])
+        timestamp: new Date(),
+      },
+    }));
+  }, []);
 
   /**
    * Soru navigasyonu işleyicisi
    */
   const handleQuestionNavigate = useCallback((index: number) => {
-    setCurrentQuestionIndex(index)
-  }, [])
+    setCurrentQuestionIndex(index);
+  }, []);
 
   /**
    * Sınavı başlat
    */
   const handleStartExam = () => {
-    setExamStarted(true)
-    setAnswers({})
-    setCurrentQuestionIndex(0)
-    setTimeRemaining(300)
-  }
+    setExamStarted(true);
+    setAnswers({});
+    setCurrentQuestionIndex(0);
+    setTimeRemaining(300);
+  };
 
   /**
    * Sınavı bitir
    */
   const handleFinishExam = () => {
-    setExamFinished(true)
-    handleAutoSave()
-  }
+    setExamFinished(true);
+    handleAutoSave();
+  };
 
   /**
    * Otomatik kaydetme
    */
   const handleAutoSave = async () => {
-    setAutoSaveStatus('saving')
-    
+    setAutoSaveStatus('saving');
+
     // Simüle edilmiş kaydetme işlemi
-    await new Promise(resolve => setTimeout(resolve, 500))
-    
-    console.log('Cevaplar kaydedildi:', answers)
-    setAutoSaveStatus('saved')
-    
-    setTimeout(() => setAutoSaveStatus('idle'), 2000)
-  }
+    await new Promise(resolve => setTimeout(resolve, 500));
+
+    console.log('Cevaplar kaydedildi:', answers);
+    setAutoSaveStatus('saved');
+
+    setTimeout(() => setAutoSaveStatus('idle'), 2000);
+  };
 
   /**
    * Süreyi formatla
    */
   const formatTime = (seconds: number) => {
-    const mins = Math.floor(seconds / 60)
-    const secs = seconds % 60
-    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`
-  }
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+  };
 
   /**
    * İstatistikleri hesapla
@@ -193,8 +195,8 @@ export const ExamInterfaceExample: React.FC = () => {
     total: sampleQuestions.length,
     answered: Object.values(answers).filter(a => a.answer).length,
     flagged: Object.values(answers).filter(a => a.flaggedForReview).length,
-    percentage: Math.round((Object.values(answers).filter(a => a.answer).length / sampleQuestions.length) * 100)
-  }
+    percentage: Math.round((Object.values(answers).filter(a => a.answer).length / sampleQuestions.length) * 100),
+  };
 
   /**
    * Sınav başlamadıysa başlangıç ekranı
@@ -249,7 +251,7 @@ export const ExamInterfaceExample: React.FC = () => {
           </Button>
         </Paper>
       </Container>
-    )
+    );
   }
 
   /**
@@ -289,16 +291,16 @@ export const ExamInterfaceExample: React.FC = () => {
           <Button
             variant="contained"
             onClick={() => {
-              setExamStarted(false)
-              setExamFinished(false)
-              setAnswers({})
+              setExamStarted(false);
+              setExamFinished(false);
+              setAnswers({});
             }}
           >
             Yeni Sınav Başlat
           </Button>
         </Paper>
       </Container>
-    )
+    );
   }
 
   /**
@@ -379,7 +381,7 @@ export const ExamInterfaceExample: React.FC = () => {
         />
       </Container>
     </Box>
-  )
-}
+  );
+};
 
-export default ExamInterfaceExample
+export default ExamInterfaceExample;

@@ -4,7 +4,6 @@ Standardized exception handling for consistent error responses
 """
 
 import logging
-import traceback
 
 from fastapi import HTTPException, Request, status
 from fastapi.exceptions import RequestValidationError
@@ -415,11 +414,13 @@ class ExceptionHandlers:
         )
 
         # Create error detail
+        # SECURITY: Never expose stack traces in API responses (even in debug mode)
+        # Tracebacks are logged via exc_info=True above
         if self.config.debug:
             error_message = str(exc)
             error_details = {
                 "exception_type": type(exc).__name__,
-                "traceback": traceback.format_exc(),
+                # Traceback logged server-side only, not exposed to client
             }
         else:
             error_message = "Internal server error"

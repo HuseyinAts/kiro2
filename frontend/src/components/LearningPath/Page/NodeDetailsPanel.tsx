@@ -5,7 +5,6 @@
  * Extracted from LearningPathPage.tsx
  */
 
-import React from 'react'
 import {
   Paper,
   Box,
@@ -13,10 +12,12 @@ import {
   Button,
   Divider,
   Chip,
-  Alert
-} from '@mui/material'
-import { PathNodeData } from '../PathNode'
-import { formatDifficulty } from '../../../utils/learningPathHelpers'
+  Alert,
+} from '@mui/material';
+import * as React from 'react';
+
+import { formatDifficulty } from '../../../utils/learningPathHelpers';
+import { PathNodeData } from '../PathNode';
 
 export interface NodeDetailsPanelProps {
   node: PathNodeData
@@ -30,7 +31,7 @@ export interface NodeDetailsPanelProps {
  */
 export const NodeDetailsPanel: React.FC<NodeDetailsPanelProps> = ({
   node,
-  onClose
+  onClose,
 }) => {
   return (
     <Paper elevation={3} sx={{ p: 3, mb: 3, position: 'relative' }}>
@@ -57,7 +58,7 @@ export const NodeDetailsPanel: React.FC<NodeDetailsPanelProps> = ({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            fontSize: '1.5rem'
+            fontSize: '1.5rem',
           }}
         >
           📚
@@ -80,7 +81,7 @@ export const NodeDetailsPanel: React.FC<NodeDetailsPanelProps> = ({
             textAlign: 'center',
             p: 2,
             backgroundColor: 'grey.100',
-            borderRadius: 2
+            borderRadius: 2,
           }}
         >
           <Typography variant="caption" color="text.secondary">
@@ -95,7 +96,7 @@ export const NodeDetailsPanel: React.FC<NodeDetailsPanelProps> = ({
             textAlign: 'center',
             p: 2,
             backgroundColor: 'grey.100',
-            borderRadius: 2
+            borderRadius: 2,
           }}
         >
           <Typography variant="caption" color="text.secondary">
@@ -110,7 +111,7 @@ export const NodeDetailsPanel: React.FC<NodeDetailsPanelProps> = ({
             textAlign: 'center',
             p: 2,
             backgroundColor: 'grey.100',
-            borderRadius: 2
+            borderRadius: 2,
           }}
         >
           <Typography variant="caption" color="text.secondary">
@@ -125,7 +126,7 @@ export const NodeDetailsPanel: React.FC<NodeDetailsPanelProps> = ({
             textAlign: 'center',
             p: 2,
             backgroundColor: 'grey.100',
-            borderRadius: 2
+            borderRadius: 2,
           }}
         >
           <Typography variant="caption" color="text.secondary">
@@ -165,7 +166,7 @@ export const NodeDetailsPanel: React.FC<NodeDetailsPanelProps> = ({
         )}
       </Box>
     </Paper>
-  )
-}
+  );
+};
 
-export default NodeDetailsPanel
+export default NodeDetailsPanel;

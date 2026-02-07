@@ -1,0 +1,453 @@
+import React, { useState, useEffect } from 'react'
+import {
+  Container,
+  Typography,
+  Box,
+  Paper,
+  Grid,
+  TextField,
+  Button,
+  Avatar,
+  Alert,
+  CircularProgress,
+  Divider,
+  Card,
+  CardContent,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  Switch,
+  FormControlLabel
+} from '@mui/material'
+import {
+  Person,
+  Edit,
+  Save,
+  Cancel,
+  PhotoCamera,
+  Security,
+  Notifications
+} from '@mui/icons-material'
+import { useAuth } from '../hooks/useAuth'
+import { User, UserRole } from '../types'
+
+export const ProfilePage: React.FC = () => {
+  const { user, updateProfile } = useAuth()
+  const [isEditing, setIsEditing] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const [success, setSuccess] = useState<string | null>(null)
+  
+  const [formData, setFormData] = useState<Partial<User>>({
+    ad: '',
+    soyad: '',
+    email: '',
+    telefon: '',
+    okul_id: ''
+  })
+
+  const [preferences, setPreferences] = useState({
+    emailNotifications: true,
+    pushNotifications: true,
+    weeklyReports: true,
+    performanceAlerts: true
+  })
+
+  useEffect(() => {
+    if (user) {
+      setFormData({
+        ad: user.ad,
+        soyad: user.soyad,
+        email: user.email,
+        telefon: user.telefon || '',
+        okul_id: user.okul_id || ''
+      })
+    }
+  }, [user])
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }))
+    
+    if (error) setError(null)
+  }
+
+  const handlePreferenceChange = (preference: string) => (e: React.ChangeEvent<HTMLInputElement>) => {
+    setPreferences(prev => ({
+      ...prev,
+      [preference]: e.target.checked
+    }))
+  }
+
+  const handleSave = async () => {
+    if (!formData.ad || !formData.soyad || !formData.email) {
+      setError('Ad, soyad ve e-posta alanları zorunludur')
+      return
+    }
+
+    setIsLoading(true)
+    setError(null)
+    setSuccess(null)
+
+    try {
+      await updateProfile(formData)
+      setSuccess('Profil başarıyla güncellendi')
+      setIsEditing(false)
+    } catch (error: any) {
+      setError(error.message || 'Profil güncellenirken hata oluştu')
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const handleCancel = () => {
+    if (user) {
+      setFormData({
+        ad: user.ad,
+        soyad: user.soyad,
+        email: user.email,
+        telefon: user.telefon || '',
+        okul_id: user.okul_id || ''
+      })
+    }
+    setIsEditing(false)
+    setError(null)
+  }
+
+  const getRoleDisplayName = (role: UserRole): string => {
+    switch (role) {
+      case 'ogrenci':
+        return 'Öğrenci'
+      case 'ogretmen':
+        return 'Öğretmen'
+      case 'veli':
+        return 'Veli'
+      case 'admin':
+        return 'Admin'
+      default:
+        return 'Kullanıcı'
+    }
+  }
+
+  const getInitials = (ad?: string, soyad?: string): string => {
+    if (!ad || !soyad) return 'U'
+    return `${ad.charAt(0)}${soyad.charAt(0)}`.toUpperCase()
+  }
+
+  if (!user) {
+    return (
+      <Box display="flex" justifyContent="center" alignItems="center" minHeight="400px">
+        <CircularProgress />
+      </Box>
+    )
+  }
+
+  return (
+    <Container maxWidth="lg" sx={{ mt: 2, mb: 4 }}>
+      {/* Sayfa Başlığı */}
+      <Box sx={{ mb: 4 }}>
+        <Typography variant="h4" component="h1" gutterBottom>
+          Profil Ayarları
+        </Typography>
+        <Typography variant="body1" color="text.secondary">
+          Kişisel bilgilerinizi ve hesap ayarlarınızı yönetin
+        </Typography>
+      </Box>
+
+      {error && (
+        <Alert severity="error" sx={{ mb: 3 }}>
+          {error}
+        </Alert>
+      )}
+
+      {success && (
+        <Alert severity="success" sx={{ mb: 3 }}>
+          {success}
+        </Alert>
+      )}
+
+      <Grid container spacing={3}>
+        {/* Profil Bilgileri */}
+        <Grid item xs={12} md={8}>
+          <Paper sx={{ p: 3 }}>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+              <Typography variant="h6">
+                Kişisel Bilgiler
+              </Typography>
+              {!isEditing ? (
+                <Button
+                  startIcon={<Edit />}
+                  onClick={() => setIsEditing(true)}
+                  variant="outlined"
+                >
+                  Düzenle
+                </Button>
+              ) : (
+                <Box sx={{ display: 'flex', gap: 1 }}>
+                  <Button
+                    startIcon={<Save />}
+                    onClick={handleSave}
+                    variant="contained"
+                    disabled={isLoading}
+                  >
+                    {isLoading ? <CircularProgress size={20} /> : 'Kaydet'}
+                  </Button>
+                  <Button
+                    startIcon={<Cancel />}
+                    onClick={handleCancel}
+                    variant="outlined"
+                    disabled={isLoading}
+                  >
+                    İptal
+                  </Button>
+                </Box>
+              )}
+            </Box>
+
+            <Grid container spacing={3}>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  label="Ad"
+                  name="ad"
+                  value={formData.ad}
+                  onChange={handleInputChange}
+                  disabled={!isEditing || isLoading}
+                  required
+                />
+              </Grid>
+              
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  label="Soyad"
+                  name="soyad"
+                  value={formData.soyad}
+                  onChange={handleInputChange}
+                  disabled={!isEditing || isLoading}
+                  required
+                />
+              </Grid>
+
+              <Grid item xs={12}>
+                <TextField
+                  fullWidth
+                  label="E-posta"
+                  name="email"
+                  type="email"
+                  value={formData.email}
+                  onChange={handleInputChange}
+                  disabled={!isEditing || isLoading}
+                  required
+                />
+              </Grid>
+
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  label="Telefon"
+                  name="telefon"
+                  value={formData.telefon}
+                  onChange={handleInputChange}
+                  disabled={!isEditing || isLoading}
+                />
+              </Grid>
+
+              {(user.rol === 'ogrenci' || user.rol === 'ogretmen') && (
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    fullWidth
+                    label="Okul Kodu"
+                    name="okul_id"
+                    value={formData.okul_id}
+                    onChange={handleInputChange}
+                    disabled={!isEditing || isLoading}
+                  />
+                </Grid>
+              )}
+
+              <Grid item xs={12}>
+                <TextField
+                  fullWidth
+                  label="Rol"
+                  value={getRoleDisplayName(user.rol)}
+                  disabled
+                  helperText="Rol değiştirmek için sistem yöneticisine başvurun"
+                />
+              </Grid>
+            </Grid>
+          </Paper>
+        </Grid>
+
+        {/* Profil Fotoğrafı ve Özet */}
+        <Grid item xs={12} md={4}>
+          <Paper sx={{ p: 3, textAlign: 'center' }}>
+            <Typography variant="h6" gutterBottom>
+              Profil Fotoğrafı
+            </Typography>
+            
+            <Box sx={{ mb: 3 }}>
+              <Avatar
+                sx={{ 
+                  width: 120, 
+                  height: 120, 
+                  mx: 'auto', 
+                  mb: 2,
+                  bgcolor: 'primary.main',
+                  fontSize: '2rem'
+                }}
+              >
+                {getInitials(user.ad, user.soyad)}
+              </Avatar>
+              
+              <Button
+                variant="outlined"
+                startIcon={<PhotoCamera />}
+                size="small"
+                disabled
+              >
+                Fotoğraf Yükle
+              </Button>
+              <Typography variant="caption" display="block" sx={{ mt: 1 }}>
+                Yakında eklenecek
+              </Typography>
+            </Box>
+
+            <Divider sx={{ my: 2 }} />
+
+            <Box sx={{ textAlign: 'left' }}>
+              <Typography variant="body2" color="text.secondary" gutterBottom>
+                Hesap Bilgileri
+              </Typography>
+              
+              <Typography variant="body2" sx={{ mb: 1 }}>
+                <strong>Üyelik Tarihi:</strong><br />
+                {new Date(user.olusturma_tarihi).toLocaleDateString('tr-TR')}
+              </Typography>
+              
+              {user.son_giris && (
+                <Typography variant="body2" sx={{ mb: 1 }}>
+                  <strong>Son Giriş:</strong><br />
+                  {new Date(user.son_giris).toLocaleString('tr-TR')}
+                </Typography>
+              )}
+              
+              <Typography variant="body2">
+                <strong>Hesap Durumu:</strong><br />
+                {user.aktif ? (
+                  <span style={{ color: 'green' }}>Aktif</span>
+                ) : (
+                  <span style={{ color: 'red' }}>Pasif</span>
+                )}
+              </Typography>
+            </Box>
+          </Paper>
+        </Grid>
+
+        {/* Bildirim Ayarları */}
+        <Grid item xs={12}>
+          <Paper sx={{ p: 3 }}>
+            <Typography variant="h6" gutterBottom sx={{ display: 'flex', alignItems: 'center' }}>
+              <Notifications sx={{ mr: 1 }} />
+              Bildirim Ayarları
+            </Typography>
+            
+            <Grid container spacing={2}>
+              <Grid item xs={12} sm={6}>
+                <FormControlLabel
+                  control={
+                    <Switch
+                      checked={preferences.emailNotifications}
+                      onChange={handlePreferenceChange('emailNotifications')}
+                    />
+                  }
+                  label="E-posta Bildirimleri"
+                />
+              </Grid>
+              
+              <Grid item xs={12} sm={6}>
+                <FormControlLabel
+                  control={
+                    <Switch
+                      checked={preferences.pushNotifications}
+                      onChange={handlePreferenceChange('pushNotifications')}
+                    />
+                  }
+                  label="Push Bildirimleri"
+                />
+              </Grid>
+              
+              <Grid item xs={12} sm={6}>
+                <FormControlLabel
+                  control={
+                    <Switch
+                      checked={preferences.weeklyReports}
+                      onChange={handlePreferenceChange('weeklyReports')}
+                    />
+                  }
+                  label="Haftalık Raporlar"
+                />
+              </Grid>
+              
+              <Grid item xs={12} sm={6}>
+                <FormControlLabel
+                  control={
+                    <Switch
+                      checked={preferences.performanceAlerts}
+                      onChange={handlePreferenceChange('performanceAlerts')}
+                    />
+                  }
+                  label="Performans Uyarıları"
+                />
+              </Grid>
+            </Grid>
+          </Paper>
+        </Grid>
+
+        {/* Güvenlik Ayarları */}
+        <Grid item xs={12}>
+          <Paper sx={{ p: 3 }}>
+            <Typography variant="h6" gutterBottom sx={{ display: 'flex', alignItems: 'center' }}>
+              <Security sx={{ mr: 1 }} />
+              Güvenlik
+            </Typography>
+            
+            <Grid container spacing={2}>
+              <Grid item xs={12} sm={6}>
+                <Button
+                  variant="outlined"
+                  fullWidth
+                  disabled
+                >
+                  Şifre Değiştir
+                </Button>
+                <Typography variant="caption" color="text.secondary">
+                  Yakında eklenecek
+                </Typography>
+              </Grid>
+              
+              <Grid item xs={12} sm={6}>
+                <Button
+                  variant="outlined"
+                  fullWidth
+                  disabled
+                >
+                  İki Faktörlü Doğrulama
+                </Button>
+                <Typography variant="caption" color="text.secondary">
+                  Yakında eklenecek
+                </Typography>
+              </Grid>
+            </Grid>
+          </Paper>
+        </Grid>
+      </Grid>
+    </Container>
+  )
+}
+
+export default ProfilePage

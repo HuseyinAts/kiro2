@@ -1,0 +1,1 @@
+/usr/bin/bash: line 1: OPENAI_API_KEY=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: command not found

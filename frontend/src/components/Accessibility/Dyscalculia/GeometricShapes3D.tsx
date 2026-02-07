@@ -1,16 +1,17 @@
 /**
  * GeometricShapes3D Component - Diskalkuli Desteği
- * 
+ *
  * 3D geometrik şekilleri render eden ve manipüle edilebilen interaktif component.
  * Öğrencilerin 3D şekilleri, hacim ve yüzey alanı kavramlarını görsel olarak anlamalarına yardımcı olur.
- * 
+ *
  * Gereksinimler: REQ-51.11 - REQ-51.15
- * 
- * Not: Bu component basit CSS 3D transforms kullanır. 
+ *
+ * Not: Bu component basit CSS 3D transforms kullanır.
  * Daha gelişmiş 3D için Three.js entegrasyonu gerekir.
  */
 
-import React, { useState, useCallback, useEffect, useRef } from 'react';
+import * as React from 'react';
+import {  useState, useCallback, useEffect, useRef  } from 'react';
 import './GeometricShapes3D.css';
 
 type ShapeType = 'cube' | 'sphere' | 'cylinder' | 'cone' | 'pyramid';
@@ -37,7 +38,7 @@ const GeometricShapes3D: React.FC<Shape3DProps> = ({
   showMeasurements = true,
   showNet = false,
   onShapeChange,
-  readOnly = false
+  readOnly = false,
 }) => {
   const [currentShape, setCurrentShape] = useState<ShapeType>(initialShape);
   const [size, setSize] = useState<number>(initialSize);
@@ -54,52 +55,52 @@ const GeometricShapes3D: React.FC<Shape3DProps> = ({
       name: 'Küp',
       volume: `${(size / 10) ** 3} cm³`,
       surfaceArea: `${6 * (size / 10) ** 2} cm²`,
-      description: '6 eşit kare yüzü olan düzgün çokyüzlü'
+      description: '6 eşit kare yüzü olan düzgün çokyüzlü',
     },
     sphere: {
       name: 'Küre',
       volume: `${((4 / 3) * Math.PI * (size / 20) ** 3).toFixed(2)} cm³`,
       surfaceArea: `${(4 * Math.PI * (size / 20) ** 2).toFixed(2)} cm²`,
-      description: 'Merkezden eşit uzaklıktaki noktaların oluşturduğu yuvarlak cisim'
+      description: 'Merkezden eşit uzaklıktaki noktaların oluşturduğu yuvarlak cisim',
     },
     cylinder: {
       name: 'Silindir',
       volume: `${(Math.PI * (size / 20) ** 2 * (size / 10)).toFixed(2)} cm³`,
       surfaceArea: `${(2 * Math.PI * (size / 20) * ((size / 20) + (size / 10))).toFixed(2)} cm²`,
-      description: 'Dairesel taban ve üst yüzeyi olan cisim'
+      description: 'Dairesel taban ve üst yüzeyi olan cisim',
     },
     cone: {
       name: 'Koni',
       volume: `${((1 / 3) * Math.PI * (size / 20) ** 2 * (size / 10)).toFixed(2)} cm³`,
       surfaceArea: `${(Math.PI * (size / 20) * ((size / 20) + Math.sqrt((size / 10) ** 2 + (size / 20) ** 2))).toFixed(2)} cm²`,
-      description: 'Dairesel tabandan tepesine doğru daralan cisim'
+      description: 'Dairesel tabandan tepesine doğru daralan cisim',
     },
     pyramid: {
       name: 'Piramit',
       volume: `${((1 / 3) * (size / 10) ** 2 * (size / 10)).toFixed(2)} cm³`,
       surfaceArea: `${((size / 10) ** 2 + 2 * (size / 10) * Math.sqrt((size / 20) ** 2 + (size / 10) ** 2)).toFixed(2)} cm²`,
-      description: 'Kare tabandan tepesine doğru daralan cisim'
-    }
+      description: 'Kare tabandan tepesine doğru daralan cisim',
+    },
   };
 
   // REQ-51.12: 360 derece rotasyon
   const handleMouseDown = useCallback((e: React.MouseEvent) => {
-    if (readOnly) return;
+    if (readOnly) {return;}
     setIsDragging(true);
     setDragStart({ x: e.clientX, y: e.clientY });
   }, [readOnly]);
 
   const handleMouseMove = useCallback((e: MouseEvent) => {
-    if (!isDragging) return;
-    
+    if (!isDragging) {return;}
+
     const deltaX = e.clientX - dragStart.x;
     const deltaY = e.clientY - dragStart.y;
-    
+
     setRotation(prev => ({
       x: (prev.x + deltaY * 0.5) % 360,
-      y: (prev.y + deltaX * 0.5) % 360
+      y: (prev.y + deltaX * 0.5) % 360,
     }));
-    
+
     setDragStart({ x: e.clientX, y: e.clientY });
   }, [isDragging, dragStart]);
 
@@ -111,7 +112,7 @@ const GeometricShapes3D: React.FC<Shape3DProps> = ({
     if (isDragging) {
       window.addEventListener('mousemove', handleMouseMove);
       window.addEventListener('mouseup', handleMouseUp);
-      
+
       return () => {
         window.removeEventListener('mousemove', handleMouseMove);
         window.removeEventListener('mouseup', handleMouseUp);
@@ -121,15 +122,15 @@ const GeometricShapes3D: React.FC<Shape3DProps> = ({
 
   // Auto-rotation
   useEffect(() => {
-    if (!isRotating) return;
-    
+    if (!isRotating) {return;}
+
     const interval = setInterval(() => {
       setRotation(prev => ({
         x: prev.x,
-        y: (prev.y + 1) % 360
+        y: (prev.y + 1) % 360,
       }));
     }, 30);
-    
+
     return () => clearInterval(interval);
   }, [isRotating]);
 
@@ -149,7 +150,7 @@ const GeometricShapes3D: React.FC<Shape3DProps> = ({
     const style = {
       transform: `rotateX(${rotation.x}deg) rotateY(${rotation.y}deg)`,
       width: `${size}px`,
-      height: `${size}px`
+      height: `${size}px`,
     };
 
     switch (currentShape) {
@@ -164,14 +165,14 @@ const GeometricShapes3D: React.FC<Shape3DProps> = ({
             <div className="face bottom">Alt</div>
           </div>
         );
-      
+
       case 'sphere':
         return (
           <div className="shape-3d sphere-3d" style={style}>
             <div className="sphere-inner"></div>
           </div>
         );
-      
+
       case 'cylinder':
         return (
           <div className="shape-3d cylinder-3d" style={style}>
@@ -180,7 +181,7 @@ const GeometricShapes3D: React.FC<Shape3DProps> = ({
             <div className="cylinder-bottom"></div>
           </div>
         );
-      
+
       case 'cone':
         return (
           <div className="shape-3d cone-3d" style={style}>
@@ -189,7 +190,7 @@ const GeometricShapes3D: React.FC<Shape3DProps> = ({
             <div className="cone-base"></div>
           </div>
         );
-      
+
       case 'pyramid':
         return (
           <div className="shape-3d pyramid-3d" style={style}>
@@ -200,7 +201,7 @@ const GeometricShapes3D: React.FC<Shape3DProps> = ({
             <div className="pyramid-base"></div>
           </div>
         );
-      
+
       default:
         return null;
     }
@@ -208,7 +209,7 @@ const GeometricShapes3D: React.FC<Shape3DProps> = ({
 
   // REQ-51.15: Şeklin açılımını (net) göster
   const renderNet = () => {
-    if (!showNetView) return null;
+    if (!showNetView) {return null;}
 
     return (
       <div className="shape-net">
@@ -251,8 +252,8 @@ const GeometricShapes3D: React.FC<Shape3DProps> = ({
       </div>
 
       <div className="shape-selector">
-        <label>Şekil Seç:</label>
-        <div className="shape-buttons">
+        <label htmlFor="shape-select-buttons">Şekil Seç:</label>
+        <div id="shape-select-buttons" className="shape-buttons" role="group" aria-label="Şekil seçimi">
           {(Object.keys(shapeInfo) as ShapeType[]).map(shape => (
             <button
               key={shape}
@@ -267,7 +268,7 @@ const GeometricShapes3D: React.FC<Shape3DProps> = ({
       </div>
 
       <div className="shape-display-area">
-        <div 
+        <div
           className="shape-viewport"
           onMouseDown={handleMouseDown}
           ref={shapeRef}
@@ -278,8 +279,9 @@ const GeometricShapes3D: React.FC<Shape3DProps> = ({
 
         <div className="shape-controls">
           <div className="control-group">
-            <label>Boyut: {size}px</label>
+            <label htmlFor="shape-size-slider">Boyut: {size}px</label>
             <input
+              id="shape-size-slider"
               type="range"
               min={50}
               max={200}

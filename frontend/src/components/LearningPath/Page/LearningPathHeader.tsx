@@ -5,9 +5,9 @@
  * Extracted from LearningPathPage.tsx
  */
 
-import React from 'react'
-import { Box, Typography, Button } from '@mui/material'
-import { Refresh } from '@mui/icons-material'
+import { Refresh } from '@mui/icons-material';
+import { Box, Typography, Button } from '@mui/material';
+import * as React from 'react';
 
 export interface LearningPathHeaderProps {
   onRefresh: () => void
@@ -34,7 +34,7 @@ export const LearningPathHeader: React.FC<LearningPathHeaderProps> = ({ onRefres
         Kişiselleştirilmiş öğrenme yolunuz ve size özel kaynaklar
       </Typography>
     </Box>
-  )
-}
+  );
+};
 
-export default LearningPathHeader
+export default LearningPathHeader;

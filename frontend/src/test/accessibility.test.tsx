@@ -5,11 +5,12 @@
  * WCAG 2.1 Level AA standartlarına uygunluğunu test eder.
  */
 
-import React from 'react';
+import * as React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { axe, toHaveNoViolations } from 'jest-axe';
 import '@testing-library/jest-dom';
+import { MemoryRouter } from 'react-router-dom';
 
 // Test edilecek bileşenler
 import AccessibleTable from '../components/Common/AccessibleTable';
@@ -18,9 +19,28 @@ import AccessibleForm from '../components/Common/AccessibleForm';
 import AccessibleNavigation from '../components/Navigation/AccessibleNavigation';
 import AccessibleModal from '../components/Common/AccessibleModal';
 import AccessibleLayout from '../components/Layout/AccessibleLayout';
+import { AccessibilityProvider } from '../components/Common/AccessibilityProvider';
+import { vi } from 'vitest';
 
 // Jest-axe matcher'ını ekle
 expect.extend(toHaveNoViolations);
+
+// Test wrapper with AccessibilityProvider and Router
+const renderWithProvider = (ui: React.ReactElement, { withRouter = false } = {}) => {
+  if (withRouter) {
+    return render(
+      <MemoryRouter>
+        <AccessibilityProvider>{ui}</AccessibilityProvider>
+      </MemoryRouter>
+    );
+  }
+  return render(<AccessibilityProvider>{ui}</AccessibilityProvider>);
+};
+
+// Convenience wrapper for components that need Router
+const renderWithRouterAndProvider = (ui: React.ReactElement) => {
+  return renderWithProvider(ui, { withRouter: true });
+};
 
 // Mock hooks
 vi.mock('../hooks/useScreenReader', () => ({
@@ -33,7 +53,7 @@ vi.mock('../hooks/useScreenReader', () => ({
     announceContentChange: vi.fn(),
     announceLandmark: vi.fn(),
     manageFocus: vi.fn(),
-    createSkipLink: jest.fn(() => document.createElement('a')),
+    createSkipLink: vi.fn(() => document.createElement('a')),
     isScreenReaderActive: false,
   }),
 }));
@@ -85,7 +105,7 @@ describe('WCAG 2.1 Level AA Uyumluluk Testleri', () => {
     ];
 
     it('WCAG uyumlu tablo yapısını render eder', async () => {
-      const { container } = render(
+      const { container } = renderWithProvider(
         <AccessibleTable
           columns={mockColumns}
           data={mockData}
@@ -114,7 +134,7 @@ describe('WCAG 2.1 Level AA Uyumluluk Testleri', () => {
     it('klavye navigasyonunu destekler', async () => {
       const user = userEvent.setup();
       
-      render(
+      renderWithProvider(
         <AccessibleTable
           columns={mockColumns}
           data={mockData}
@@ -137,7 +157,7 @@ describe('WCAG 2.1 Level AA Uyumluluk Testleri', () => {
       const user = userEvent.setup();
       const mockOnSort = vi.fn();
       
-      render(
+      renderWithProvider(
         <AccessibleTable
           columns={mockColumns}
           data={mockData}
@@ -168,7 +188,7 @@ describe('WCAG 2.1 Level AA Uyumluluk Testleri', () => {
     ];
 
     it('WCAG uyumlu video player render eder', async () => {
-      const { container } = render(
+      const { container } = renderWithProvider(
         <AccessibleVideoPlayer
           src="/test-video.mp4"
           title="Test Video"
@@ -194,7 +214,7 @@ describe('WCAG 2.1 Level AA Uyumluluk Testleri', () => {
     it('klavye kısayollarını destekler', async () => {
       const user = userEvent.setup();
       
-      render(
+      renderWithProvider(
         <AccessibleVideoPlayer
           src="/test-video.mp4"
           title="Test Video"
@@ -220,7 +240,7 @@ describe('WCAG 2.1 Level AA Uyumluluk Testleri', () => {
     it('altyazı kontrollerini sağlar', async () => {
       const user = userEvent.setup();
       
-      render(
+      renderWithProvider(
         <AccessibleVideoPlayer
           src="/test-video.mp4"
           title="Test Video"
@@ -268,7 +288,7 @@ describe('WCAG 2.1 Level AA Uyumluluk Testleri', () => {
     ];
 
     it('WCAG uyumlu form render eder', async () => {
-      const { container } = render(
+      const { container } = renderWithProvider(
         <AccessibleForm
           fields={mockFields}
           onSubmit={vi.fn()}
@@ -293,7 +313,7 @@ describe('WCAG 2.1 Level AA Uyumluluk Testleri', () => {
       const user = userEvent.setup();
       const mockOnSubmit = vi.fn();
       
-      render(
+      renderWithProvider(
         <AccessibleForm
           fields={mockFields}
           onSubmit={mockOnSubmit}
@@ -317,7 +337,7 @@ describe('WCAG 2.1 Level AA Uyumluluk Testleri', () => {
     it('şifre görünürlük toggle çalışır', async () => {
       const user = userEvent.setup();
       
-      render(
+      renderWithProvider(
         <AccessibleForm
           fields={mockFields}
           onSubmit={vi.fn()}
@@ -360,7 +380,7 @@ describe('WCAG 2.1 Level AA Uyumluluk Testleri', () => {
     ];
 
     it('WCAG uyumlu navigasyon render eder', async () => {
-      const { container } = render(
+      const { container } = renderWithRouterAndProvider(
         <AccessibleNavigation
           title="Test Uygulaması"
           navigationItems={mockNavigationItems}
@@ -373,18 +393,18 @@ describe('WCAG 2.1 Level AA Uyumluluk Testleri', () => {
 
       // Banner role kontrolü
       expect(screen.getByRole('banner')).toBeInTheDocument();
-      
+
       // Navigation role kontrolü
       expect(screen.getByRole('navigation', { name: /Ana navigasyon/i })).toBeInTheDocument();
-      
+
       // Başlık kontrolü
       expect(screen.getByRole('heading', { name: 'Test Uygulaması' })).toBeInTheDocument();
     });
 
     it('alt menü açma/kapama çalışır', async () => {
       const user = userEvent.setup();
-      
-      render(
+
+      renderWithRouterAndProvider(
         <AccessibleNavigation
           title="Test Uygulaması"
           navigationItems={mockNavigationItems}
@@ -394,11 +414,11 @@ describe('WCAG 2.1 Level AA Uyumluluk Testleri', () => {
       // Alt menüye sahip öğeyi bul
       const coursesButton = screen.getByRole('button', { name: /Dersler/i });
       expect(coursesButton).toHaveAttribute('aria-expanded', 'false');
-      
+
       // Alt menüyü aç
       await user.click(coursesButton);
       expect(coursesButton).toHaveAttribute('aria-expanded', 'true');
-      
+
       // Alt menü öğeleri görünmeli
       expect(screen.getByRole('menuitem', { name: 'Matematik' })).toBeInTheDocument();
       expect(screen.getByRole('menuitem', { name: 'Fizik' })).toBeInTheDocument();
@@ -410,8 +430,8 @@ describe('WCAG 2.1 Level AA Uyumluluk Testleri', () => {
         { label: 'Dersler', path: '/courses' },
         { label: 'Matematik' },
       ];
-      
-      render(
+
+      renderWithRouterAndProvider(
         <AccessibleNavigation
           title="Test Uygulaması"
           navigationItems={mockNavigationItems}
@@ -421,7 +441,7 @@ describe('WCAG 2.1 Level AA Uyumluluk Testleri', () => {
 
       // Breadcrumb navigation
       expect(screen.getByRole('navigation', { name: /Sayfa konumu/i })).toBeInTheDocument();
-      
+
       // Current page indicator
       const currentPage = screen.getByText('Matematik');
       expect(currentPage).toHaveAttribute('aria-current', 'page');
@@ -430,7 +450,7 @@ describe('WCAG 2.1 Level AA Uyumluluk Testleri', () => {
 
   describe('AccessibleModal Bileşeni', () => {
     it('WCAG uyumlu modal render eder', async () => {
-      const { container } = render(
+      const { container } = renderWithProvider(
         <AccessibleModal
           open={true}
           onClose={vi.fn()}
@@ -456,7 +476,7 @@ describe('WCAG 2.1 Level AA Uyumluluk Testleri', () => {
     it('Escape tuşu ile kapanır', async () => {
       const mockOnClose = vi.fn();
       
-      render(
+      renderWithProvider(
         <AccessibleModal
           open={true}
           onClose={mockOnClose}
@@ -475,7 +495,7 @@ describe('WCAG 2.1 Level AA Uyumluluk Testleri', () => {
     it('focus trap çalışır', async () => {
       const user = userEvent.setup();
       
-      render(
+      renderWithProvider(
         <AccessibleModal
           open={true}
           onClose={vi.fn()}
@@ -522,7 +542,7 @@ describe('WCAG 2.1 Level AA Uyumluluk Testleri', () => {
     ];
 
     it('WCAG uyumlu layout render eder', async () => {
-      const { container } = render(
+      const { container } = renderWithRouterAndProvider(
         <AccessibleLayout
           title="Test Uygulaması"
           navigationItems={mockNavigationItems}
@@ -540,7 +560,7 @@ describe('WCAG 2.1 Level AA Uyumluluk Testleri', () => {
       expect(screen.getByRole('banner')).toBeInTheDocument();
       expect(screen.getByRole('navigation')).toBeInTheDocument();
       expect(screen.getByRole('main')).toBeInTheDocument();
-      
+
       // Main content kontrolü
       const mainContent = screen.getByRole('main');
       expect(mainContent).toHaveAttribute('id', 'main-content');
@@ -549,8 +569,8 @@ describe('WCAG 2.1 Level AA Uyumluluk Testleri', () => {
 
     it('skip link çalışır', async () => {
       const user = userEvent.setup();
-      
-      render(
+
+      renderWithRouterAndProvider(
         <AccessibleLayout
           title="Test Uygulaması"
           navigationItems={mockNavigationItems}
@@ -562,17 +582,17 @@ describe('WCAG 2.1 Level AA Uyumluluk Testleri', () => {
       // Skip link butonunu bul (DOM'da var ama görünmez)
       const skipButton = document.querySelector('button') as HTMLButtonElement;
       expect(skipButton).toHaveTextContent('Ana içeriğe geç');
-      
+
       // Skip link'e tıkla
       fireEvent.click(skipButton);
-      
+
       // Ana içerik odaklanmalı
       const mainContent = screen.getByRole('main');
       expect(mainContent).toHaveFocus();
     });
 
     it('klavye kısayolları çalışır', async () => {
-      const { container } = render(
+      const { container } = renderWithRouterAndProvider(
         <AccessibleLayout
           title="Test Uygulaması"
           navigationItems={mockNavigationItems}
@@ -583,13 +603,13 @@ describe('WCAG 2.1 Level AA Uyumluluk Testleri', () => {
 
       // Alt+M: Ana içeriğe geç
       fireEvent.keyDown(document, { key: 'm', altKey: true });
-      
+
       const mainContent = screen.getByRole('main');
       expect(mainContent).toHaveFocus();
-      
+
       // Alt+A: Erişilebilirlik paneli
       fireEvent.keyDown(document, { key: 'a', altKey: true });
-      
+
       // Alt+1: Yüksek kontrast
       fireEvent.keyDown(document, { key: '1', altKey: true });
     });
@@ -597,7 +617,7 @@ describe('WCAG 2.1 Level AA Uyumluluk Testleri', () => {
 
   describe('Genel WCAG Uyumluluk', () => {
     it('tüm interaktif elementler minimum boyut gereksinimini karşılar', () => {
-      render(
+      renderWithProvider(
         <div>
           <button>Test Button</button>
           <input type="text" />
@@ -616,7 +636,7 @@ describe('WCAG 2.1 Level AA Uyumluluk Testleri', () => {
     });
 
     it('renk kontrastı gereksinimlerini karşılar', () => {
-      render(
+      renderWithProvider(
         <div>
           <p className="wcag-aa-normal-text">Normal metin</p>
           <h1 className="wcag-aa-large-text">Büyük metin</h1>
@@ -634,7 +654,7 @@ describe('WCAG 2.1 Level AA Uyumluluk Testleri', () => {
     it('focus göstergeleri görünür', async () => {
       const user = userEvent.setup();
       
-      render(
+      renderWithProvider(
         <div>
           <button>Button 1</button>
           <button>Button 2</button>
@@ -674,7 +694,7 @@ describe('Performans Testleri', () => {
 
     const startTime = performance.now();
     
-    render(
+    renderWithProvider(
       <AccessibleTable
         columns={columns}
         data={largeData}
@@ -703,7 +723,7 @@ describe('Performans Testleri', () => {
     ));
 
     const startTime = performance.now();
-    render(<div>{modals}</div>);
+    renderWithProvider(<div>{modals}</div>);
     const endTime = performance.now();
 
     const renderTime = endTime - startTime;

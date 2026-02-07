@@ -1,0 +1,44 @@
+🚀 KIRO2 - LabelMe → YOLO Converter
+============================================================
+📂 Annotation kaynakları:
+   - C:\Users\husey\kiro2\veriseti\annotation\images
+   - C:\Users\husey\kiro2\veriseti\zkitap\screenshots
+📂 Output: C:\Users\husey\kiro2\yolo_dataset
+🏷️ Classes: ['soru', 'cevaplar', 'konu', 'sayfa', 'test no']
+============================================================
+📊 Toplam 1934 JSON dosyası bulundu
+✂️ Split: 1547 train, 387 val
+
+🔄 Train set dönüştürülüyor...
+Train:   0%|          | 0/1547 [00:00<?, ?it/s]Train:   2%|2         | 36/1547 [00:00<00:04, 355.46it/s]Train:   5%|4         | 72/1547 [00:00<00:04, 353.17it/s]Train:   7%|6         | 108/1547 [00:00<00:04, 348.04it/s]Train:   9%|9         | 143/1547 [00:00<00:04, 347.52it/s]Train:  12%|#1        | 180/1547 [00:00<00:03, 351.32it/s]Train:  14%|#4        | 222/1547 [00:00<00:03, 371.81it/s]Train:  17%|#6        | 261/1547 [00:00<00:03, 376.03it/s]Train:  20%|##        | 310/1547 [00:00<00:03, 408.56it/s]Train:  23%|##3       | 358/1547 [00:00<00:02, 430.43it/s]Train:  26%|##6       | 409/1547 [00:01<00:02, 448.96it/s]Train:  30%|##9       | 461/1547 [00:01<00:02, 464.70it/s]Train:  33%|###3      | 511/1547 [00:01<00:02, 474.10it/s]Train:  36%|###6      | 559/1547 [00:01<00:02, 470.69it/s]Train:  39%|###9      | 610/1547 [00:01<00:01, 471.40it/s]Train:  43%|####2     | 658/1547 [00:01<00:01, 473.23it/s]Train:  46%|####5     | 706/1547 [00:01<00:01, 433.37it/s]Train:  49%|####8     | 752/1547 [00:01<00:01, 439.69it/s]Train:  52%|#####1    | 797/1547 [00:01<00:02, 373.88it/s]Train:  54%|#####4    | 837/1547 [00:02<00:02, 304.77it/s]Train:  56%|#####6    | 871/1547 [00:02<00:02, 253.12it/s]Train:  58%|#####8    | 900/1547 [00:02<00:02, 235.82it/s]Train:  60%|#####9    | 926/1547 [00:02<00:02, 225.74it/s]Train:  61%|######1   | 950/1547 [00:02<00:02, 228.26it/s]Train:  63%|######2   | 974/1547 [00:02<00:02, 226.62it/s]Train:  65%|######4   | 1003/1547 [00:02<00:02, 239.76it/s]Train:  67%|######6   | 1036/1547 [00:03<00:01, 263.28it/s]Train:  69%|######9   | 1072/1547 [00:03<00:01, 289.34it/s]Train:  71%|#######1  | 1102/1547 [00:03<00:01, 289.71it/s]Train:  74%|#######4  | 1149/1547 [00:03<00:01, 338.61it/s]Train:  77%|#######7  | 1193/1547 [00:03<00:00, 367.05it/s]Train:  80%|#######9  | 1231/1547 [00:03<00:00, 360.10it/s]Train:  82%|########1 | 1268/1547 [00:03<00:00, 294.71it/s]Train:  84%|########4 | 1301/1547 [00:03<00:00, 302.71it/s]Train:  86%|########6 | 1333/1547 [00:03<00:00, 306.10it/s]Train:  89%|########9 | 1380/1547 [00:04<00:00, 349.69it/s]Train:  92%|#########1| 1418/1547 [00:04<00:00, 356.53it/s]Train:  94%|#########4| 1455/1547 [00:04<00:00, 311.97it/s]Train:  96%|#########6| 1488/1547 [00:04<00:00, 294.25it/s]Train:  99%|#########9| 1533/1547 [00:04<00:00, 333.18it/s]Train: 100%|##########| 1547/1547 [00:04<00:00, 339.53it/s]
+⚠️ Annotation yok: C:\Users\husey\kiro2\veriseti\zkitap\screenshots\Mikro-2024-Tyt Ayt-Geometri Soru Bankası\sayfa_0009.json
+⚠️ Annotation yok: C:\Users\husey\kiro2\veriseti\zkitap\screenshots\Mikro-2024-Tyt Ayt-Geometri Soru Bankası\sayfa_0008.json
+⚠️ Annotation yok: C:\Users\husey\kiro2\veriseti\zkitap\screenshots\Mikro-2024-Tyt Ayt-Geometri Soru Bankası\sayfa_0011.json
+⚠️ Annotation yok: C:\Users\husey\kiro2\veriseti\zkitap\screenshots\Apotemi 2022 2023 Modern Fizik\sayfa_0256.json
+⚠️ Annotation yok: C:\Users\husey\kiro2\veriseti\zkitap\screenshots\Mikro-2024-Tyt Ayt-Geometri Soru Bankası\sayfa_0014.json
+⚠️ Annotation yok: C:\Users\husey\kiro2\veriseti\zkitap\screenshots\Mikro-2024-Tyt Ayt-Geometri Soru Bankası\sayfa_0019.json
+⚠️ Annotation yok: C:\Users\husey\kiro2\veriseti\zkitap\screenshots\Orijinal-2024-Ayt-Trigonometri\sayfa_0002.json
+
+🔄 Val set dönüştürülüyor...
+Val:   0%|          | 0/387 [00:00<?, ?it/s]Val:  10%|#         | 39/387 [00:00<00:00, 383.42it/s]Val:  20%|##        | 78/387 [00:00<00:00, 356.72it/s]Val:  31%|###1      | 120/387 [00:00<00:00, 377.29it/s]Val:  43%|####2     | 165/387 [00:00<00:00, 401.17it/s]Val:  55%|#####5    | 214/387 [00:00<00:00, 432.00it/s]Val:  67%|######7   | 261/387 [00:00<00:00, 440.88it/s]Val:  80%|########  | 310/387 [00:00<00:00, 455.05it/s]Val:  92%|#########1| 356/387 [00:00<00:00, 444.41it/s]Val: 100%|##########| 387/387 [00:00<00:00, 429.72it/s]
+⚠️ Annotation yok: C:\Users\husey\kiro2\veriseti\zkitap\screenshots\Mikro-2024-Tyt Ayt-Geometri Soru Bankası\sayfa_0020.json
+⚠️ Annotation yok: C:\Users\husey\kiro2\veriseti\zkitap\screenshots\Apotemi 2022 2023 Modern Fizik\sayfa_0248.json
+⚠️ Annotation yok: C:\Users\husey\kiro2\veriseti\zkitap\screenshots\Mikro-2024-Tyt Ayt-Geometri Soru Bankası\sayfa_0010.json
+
+✅ Train: 1540/1547 başarılı
+✅ Val: 384/387 başarılı
+📝 Config dosyası: C:\Users\husey\kiro2\yolo_dataset\dataset.yaml
+
+🎉 Dataset hazır: C:\Users\husey\kiro2\yolo_dataset
+
+✅ Conversion tamamlandı!
+
+📁 Dataset yapısı:
+   C:\Users\husey\kiro2\yolo_dataset/
+   ├── images/
+   │   ├── train/
+   │   └── val/
+   ├── labels/
+   │   ├── train/
+   │   └── val/
+   └── dataset.yaml

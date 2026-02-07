@@ -1,14 +1,15 @@
 /**
  * OfflineModeUI - Offline mode kullanıcı arayüzü bileşeni
- * 
+ *
  * Bu bileşen, kullanıcı offline olduğunda gösterilir ve
  * network durumu hakkında bilgi verir.
- * 
+ *
  * @module OfflineModeUI
  * @requires Requirements: 5.19, 10.6, 10.7
  */
 
-import React from 'react';
+import * as React from 'react';
+
 import { NetworkState } from '../services/NetworkDetector';
 import { OfflineModeState } from '../services/OfflineModeManager';
 

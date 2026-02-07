@@ -5,7 +5,7 @@
  * REQ-1.1: TYT sınav formatı desteği
  * REQ-1.6: Otomatik kaydetme ile veri kaybı önleme
  */
-import React from 'react'
+import * as React from 'react'
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { ThemeProvider, createTheme } from '@mui/material'

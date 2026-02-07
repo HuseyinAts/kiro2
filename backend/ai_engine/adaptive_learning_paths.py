@@ -3,13 +3,10 @@ Adaptive Learning Path Generator
 AI-powered personalized learning path creation and optimization
 """
 
-import asyncio
 import logging
-import math
-import numpy as np
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
-from typing import Any, Dict, List, Optional, Set, Tuple
+from typing import Any, Dict, List, Optional, Set
 from enum import Enum
 import networkx as nx
 from sklearn.cluster import KMeans

@@ -1,7 +1,7 @@
 /**
  * Adım Adım Matematik Çözüm Bileşeni
  * Requirements: REQ-51.21-51.25 (Her adımı ayrı gösterme)
- * 
+ *
  * Bu bileşen:
  * - Her çözüm adımını ayrı bir bölüm olarak gösterir
  * - Progressive disclosure (adımları teker teker açma) desteği
@@ -9,12 +9,14 @@
  * - "Tümünü Göster" seçeneği
  */
 
-import React, { useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight, Eye, EyeOff, CheckCircle } from 'lucide-react';
-import SolutionStep from './SolutionStep';
+import * as React from 'react';
+import {  useState, useEffect  } from 'react';
+
 import { useMathSolution } from '../../hooks/useMathSolution';
-import { AnimationProvider } from './AnimationController';
-import AnimationController from './AnimationController';
+
+import AnimationController, { AnimationProvider } from './AnimationController';
+import SolutionStep from './SolutionStep';
 
 interface StepByStepSolutionProps {
   problemId: string;
@@ -29,16 +31,16 @@ const StepByStepSolution: React.FC<StepByStepSolutionProps> = ({
   problemStatement,
   problemType,
   difficultyLevel = 'medium',
-  onComplete
+  onComplete,
 }) => {
   const {
     solution,
     loading,
     error,
     generateSolution,
-    getStep,
+    getStep: _getStep,
     currentStep,
-    setCurrentStep
+    setCurrentStep,
   } = useMathSolution();
 
   const [showAllSteps, setShowAllSteps] = useState(false);
@@ -55,10 +57,10 @@ const StepByStepSolution: React.FC<StepByStepSolutionProps> = ({
     if (solution && currentStep < solution.total_steps) {
       const nextStep = currentStep + 1;
       setCurrentStep(nextStep);
-      
+
       // Mevcut adımı tamamlandı olarak işaretle
       setCompletedSteps(prev => new Set(prev).add(currentStep));
-      
+
       // Son adımsa onComplete callback'i çağır
       if (nextStep === solution.total_steps && onComplete) {
         onComplete();
@@ -132,7 +134,7 @@ const StepByStepSolution: React.FC<StepByStepSolutionProps> = ({
           Adım Adım Çözüm
         </h2>
         <p className="text-gray-600 mb-4">{problemStatement}</p>
-        
+
         {/* Problem Info */}
         <div className="flex flex-wrap gap-4 text-sm">
           <div className="flex items-center gap-2">
@@ -246,10 +248,10 @@ const StepByStepSolution: React.FC<StepByStepSolutionProps> = ({
             // Sadece mevcut adımı göster (Progressive Disclosure)
             <>
               {solution.steps
-                .filter((step) => 
-                  progressiveMode 
-                    ? step.step_number === currentStep 
-                    : step.step_number <= currentStep
+                .filter((step) =>
+                  progressiveMode
+                    ? step.step_number === currentStep
+                    : step.step_number <= currentStep,
                 )
                 .map((step, index, filteredSteps) => (
                   <SolutionStep
@@ -260,10 +262,10 @@ const StepByStepSolution: React.FC<StepByStepSolutionProps> = ({
                     isCompleted={isStepCompleted(step.step_number)}
                     showAnimations={true}
                     previousExpression={
-                      index > 0 
-                        ? filteredSteps[index - 1].math_expression 
-                        : step.step_number > 1 
-                        ? solution.steps[step.step_number - 2]?.math_expression 
+                      index > 0
+                        ? filteredSteps[index - 1].math_expression
+                        : step.step_number > 1
+                        ? solution.steps[step.step_number - 2]?.math_expression
                         : undefined
                     }
                   />
@@ -331,7 +333,7 @@ const StepByStepSolution: React.FC<StepByStepSolutionProps> = ({
                 </ul>
               </div>
             )}
-            
+
             {solution.related_concepts.length > 0 && (
               <div>
                 <h3 className="font-semibold text-gray-800 mb-3">İlgili Kavramlar</h3>

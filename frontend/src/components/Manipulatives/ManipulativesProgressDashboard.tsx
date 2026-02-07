@@ -2,8 +2,9 @@
  * Manipulatives Progress Dashboard - Task 87.9
  * REQ-51.101-51.105: Progress tracking, visualization, achievement badges
  */
-import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import * as React from 'react';
+import {  useState, useEffect  } from 'react';
 import {
   BarChart,
   Bar,
@@ -17,7 +18,7 @@ import {
   CartesianGrid,
   Tooltip,
   Legend,
-  ResponsiveContainer
+  ResponsiveContainer,
 } from 'recharts';
 
 interface ProgressData {
@@ -117,24 +118,24 @@ const ManipulativesProgressDashboard: React.FC<ManipulativesProgressDashboardPro
   // Prepare chart data
   const virtualBlocksData = Object.entries(progressData.virtualBlocks.operations_by_type).map(([key, value]) => ({
     name: key === 'add' ? 'Toplama' : key === 'subtract' ? 'Çıkarma' : key === 'multiply' ? 'Çarpma' : 'Bölme',
-    value
+    value,
   }));
 
   const geogebraData = Object.entries(progressData.geogebra.activities_by_type).map(([key, value]) => ({
     name: key === 'geometry' ? 'Geometri' : key === 'algebra' ? 'Cebir' : 'Hesaplama',
-    value
+    value,
   }));
 
   const geometryData = Object.entries(progressData.geometry.shapes_by_type).map(([key, value]) => ({
     name: key === 'line' ? 'Doğru' : key === 'circle' ? 'Daire' : key === 'rectangle' ? 'Dikdörtgen' : 'Üçgen',
-    value
+    value,
   }));
 
   const overallProgress = [
     { name: 'Sanal Bloklar', mastery: progressData.virtualBlocks.mastery_level },
     { name: 'GeoGebra', completion: progressData.geogebra.completion_rate * 100 },
     { name: 'Geometri', shapes: progressData.geometry.total_shapes },
-    { name: 'Tangram', completion: progressData.tangram.completion_rate * 100 }
+    { name: 'Tangram', completion: progressData.tangram.completion_rate * 100 },
   ];
 
   return (
@@ -249,7 +250,7 @@ const ManipulativesProgressDashboard: React.FC<ManipulativesProgressDashboardPro
                     fill="#8884d8"
                     dataKey="value"
                   >
-                    {geogebraData.map((entry, index) => (
+                    {geogebraData.map((_entry, index) => (
                       <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                     ))}
                   </Pie>

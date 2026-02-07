@@ -28,7 +28,7 @@ def analyze_final_coverage():
         final_total = final["totals"]["percent_covered"]
         improvement = final_total - baseline_total
 
-        print(f"OVERALL COVERAGE IMPROVEMENT:")
+        print("OVERALL COVERAGE IMPROVEMENT:")
         print(f"   Baseline:    {baseline_total:.2f}%")
         print(f"   Final:       {final_total:.2f}%")
         print(f"   Improvement: {improvement:+.2f}%")
@@ -38,13 +38,13 @@ def analyze_final_coverage():
         final_lines = final["totals"]["covered_lines"]
         lines_improvement = final_lines - baseline_lines
 
-        print(f"\nLINES COVERED IMPROVEMENT:")
+        print("\nLINES COVERED IMPROVEMENT:")
         print(f"   Baseline:    {baseline_lines:,} lines")
         print(f"   Final:       {final_lines:,} lines")
         print(f"   Added:       {lines_improvement:+,} lines")
 
         # Significant file improvements
-        print(f"\nSIGNIFICANT FILE IMPROVEMENTS:")
+        print("\nSIGNIFICANT FILE IMPROVEMENTS:")
         print("-" * 50)
 
         improvements = []
@@ -79,19 +79,19 @@ def analyze_final_coverage():
             )
 
         # Success metrics
-        print(f"\nSUCCESS METRICS:")
+        print("\nSUCCESS METRICS:")
         print(f"Files improved:      {len(improvements)}")
         print(f"Total improvement:   {improvement:+.2f}%")
-        print(f"Tests created:       96 tests")
-        print(f"Test files:          5 new test files")
+        print("Tests created:       96 tests")
+        print("Test files:          5 new test files")
 
         # Next targets
         remaining_to_30 = max(0, 30 - final_total)
         if remaining_to_30 > 0:
-            print(f"\nNEXT TARGET:")
+            print("\nNEXT TARGET:")
             print(f"Need {remaining_to_30:.1f}% more to reach 30% coverage")
         else:
-            print(f"\nTARGET ACHIEVED: Over 30% coverage!")
+            print("\nTARGET ACHIEVED: Over 30% coverage!")
 
         return True
 

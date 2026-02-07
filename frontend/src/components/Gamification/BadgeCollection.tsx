@@ -2,7 +2,9 @@
  * BadgeCollection Component - Task 91
  * Rozet koleksiyonu ve ilerleme gösterimi
  */
-import React, { useState, useMemo } from 'react';
+import * as React from 'react';
+import {  useState, useMemo  } from 'react';
+
 import { useBadges, Badge, BadgeProgress } from '../../hooks/useGamification';
 import './BadgeCollection.css';
 
@@ -17,7 +19,7 @@ const RARITY_COLORS = {
   uncommon: '#22c55e',
   rare: '#3b82f6',
   epic: '#a855f7',
-  legendary: '#f59e0b'
+  legendary: '#f59e0b',
 };
 
 const CATEGORY_ICONS: Record<string, string> = {
@@ -26,13 +28,13 @@ const CATEGORY_ICONS: Record<string, string> = {
   streak: '🔥',
   mastery: '⭐',
   special: '💎',
-  seasonal: '🎃'
+  seasonal: '🎃',
 };
 
 export const BadgeCollection: React.FC<BadgeCollectionProps> = ({
   showProgress = true,
   filterByCategory,
-  compact = false
+  compact = false,
 }) => {
   const { allBadges, earnedBadges, badgeProgress, loading, error } = useBadges();
   const [selectedBadge, setSelectedBadge] = useState<Badge | BadgeProgress | null>(null);
@@ -70,7 +72,7 @@ export const BadgeCollection: React.FC<BadgeCollectionProps> = ({
     return {
       total: earnedBadges.length,
       available: allBadges.length,
-      byRarity
+      byRarity,
     };
   }, [earnedBadges, allBadges]);
 
@@ -180,7 +182,7 @@ export const BadgeCollection: React.FC<BadgeCollectionProps> = ({
                     className="badge-progress-fill"
                     style={{
                       width: `${badge.progress_percentage}%`,
-                      background: RARITY_COLORS[badge.rarity]
+                      background: RARITY_COLORS[badge.rarity],
                     }}
                   ></div>
                   <span className="badge-progress-text">
@@ -246,7 +248,7 @@ export const BadgeCollection: React.FC<BadgeCollectionProps> = ({
                     {new Date(selectedBadge.earned_at).toLocaleDateString('tr-TR', {
                       day: 'numeric',
                       month: 'long',
-                      year: 'numeric'
+                      year: 'numeric',
                     })}
                   </span>
                 </div>
@@ -261,7 +263,7 @@ export const BadgeCollection: React.FC<BadgeCollectionProps> = ({
                     className="modal-progress-fill"
                     style={{
                       width: `${selectedBadge.progress_percentage}%`,
-                      background: RARITY_COLORS[selectedBadge.rarity]
+                      background: RARITY_COLORS[selectedBadge.rarity],
                     }}
                   ></div>
                 </div>

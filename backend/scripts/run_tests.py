@@ -89,7 +89,7 @@ def main():
         if run_command(cmd, description):
             success_count += 1
         else:
-            print(f"\n⚠️  Stage failed, but continuing...")
+            print("\n⚠️  Stage failed, but continuing...")
 
     print("\n" + "=" * 50)
     print(f"📊 Test Pipeline Results: {success_count}/{total_stages} stages passed")

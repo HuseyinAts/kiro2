@@ -8,7 +8,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel
 from typing import Optional
 import os
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 from core.encryption_service import get_encryption_service, EncryptionService
 from core.dependencies import get_current_user
@@ -127,7 +127,7 @@ async def get_encryption_status(admin: User = Depends(require_admin)):
         )
     elif old_keys_count == 0:
         recommendation = "Consider rotating encryption key (no rotation history)"
-    elif last_rotation and datetime.utcnow() - last_rotation > timedelta(days=90):
+    elif last_rotation and datetime.now(timezone.utc) - last_rotation > timedelta(days=90):
         recommendation = (
             "⚠️ Encryption key hasn't been rotated in over 90 days. Consider rotation."
         )
@@ -179,7 +179,7 @@ async def rotate_encryption_key(
         service.rotate_key(new_key)
 
         # Track rotation in database
-        rotation_timestamp = datetime.utcnow()
+        rotation_timestamp = datetime.now(timezone.utc)
         try:
             from core.database import get_async_session
             from sqlalchemy import text

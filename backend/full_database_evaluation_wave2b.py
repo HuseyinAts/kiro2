@@ -262,7 +262,7 @@ async def full_evaluation():
     print(" " * 30 + "ÖZET RAPOR")
     print("=" * 80)
 
-    print(f"\n📊 KALİTE İSTATİSTİKLERİ:")
+    print("\n📊 KALİTE İSTATİSTİKLERİ:")
     print(f"   Toplam Soru: {quality_stats['total']}")
     print(
         f"   ✅ Onaylanan: {quality_stats['approved']} ({quality_stats['approved']/max(quality_stats['total'],1):.1%})"
@@ -281,12 +281,12 @@ async def full_evaluation():
         print(f"   En Yüksek: {max(quality_stats['scores']):.3f}")
 
     if quality_stats["bloom_levels"]:
-        print(f"\n📚 BLOOM SEVİYE DAĞILIMI:")
+        print("\n📚 BLOOM SEVİYE DAĞILIMI:")
         for level, count in sorted(quality_stats["bloom_levels"].items()):
             print(f"   {level}: {count} soru ({count/quality_stats['total']:.1%})")
 
     if quality_stats["by_subject"]:
-        print(f"\n📖 KONU BAZINDA ANALİZ:")
+        print("\n📖 KONU BAZINDA ANALİZ:")
         for subject, stats in sorted(
             quality_stats["by_subject"].items(),
             key=lambda x: x[1]["total"],
@@ -299,9 +299,9 @@ async def full_evaluation():
             )
 
     if similar_pairs:
-        print(f"\n🔍 BENZERLİK ANALİZİ:")
+        print("\n🔍 BENZERLİK ANALİZİ:")
         print(f"   Tespit edilen benzer soru çifti: {len(similar_pairs)}")
-        print(f"\n   En benzer 5 çift:")
+        print("\n   En benzer 5 çift:")
         for i, pair in enumerate(
             sorted(similar_pairs, key=lambda x: x["similarity"], reverse=True)[:5], 1
         ):
@@ -359,7 +359,7 @@ async def main():
                 if stats["scores"]
                 else "N/A"
             )
-            print(f"\n🎉 Wave 2B tüm özelliklerle çalışıyor!")
+            print("\n🎉 Wave 2B tüm özelliklerle çalışıyor!")
             return 0
         else:
             return 1

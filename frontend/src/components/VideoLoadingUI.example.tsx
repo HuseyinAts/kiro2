@@ -6,7 +6,7 @@
  * @module VideoLoadingUI.example
  */
 
-import React from 'react';
+import * as React from 'react';
 import { VideoLoadingUI } from './VideoLoadingUI';
 import { VideoLoadingManager, VideoLoadingState } from '../services/VideoLoadingManager';
 

@@ -19,8 +19,15 @@ def setup_turkish_encoding():
     os.environ.setdefault("LC_ALL", "tr_TR.UTF-8")
 
     # Sistem encoding kontrolü
-    if sys.stdout.encoding.lower() != "utf-8":
-        print("⚠️  Uyarı: Sistem encoding UTF-8 değil!")
+    try:
+        if sys.stdout.encoding and sys.stdout.encoding.lower() != "utf-8":
+            # Use safe print without emoji to avoid UnicodeEncodeError on Windows
+            try:
+                print("⚠️  Uyarı: Sistem encoding UTF-8 değil!")
+            except UnicodeEncodeError:
+                print("WARNING: System encoding is not UTF-8!")
+    except Exception:
+        pass
 
     # Locale ayarları
     try:
@@ -29,7 +36,10 @@ def setup_turkish_encoding():
         try:
             locale.setlocale(locale.LC_ALL, "Turkish_Turkey.1254")
         except locale.Error:
-            print("⚠️  Uyarı: Türkçe locale ayarlanamadı")
+            try:
+                print("⚠️  Uyarı: Türkçe locale ayarlanamadı")
+            except UnicodeEncodeError:
+                print("WARNING: Cannot set Turkish locale")
 
 
 def validate_turkish_text(text: str) -> bool:
@@ -42,8 +52,6 @@ def validate_turkish_text(text: str) -> bool:
     Returns:
         bool: Türkçe karakterler doğru ise True
     """
-    turkish_chars = ["ç", "ğ", "ı", "ö", "ş", "ü", "Ç", "Ğ", "I", "İ", "Ö", "Ş", "Ü"]
-
     try:
         # Encoding/decoding testi
         encoded = text.encode("utf-8")
@@ -259,18 +267,32 @@ def test_turkish_encoding():
         "Öğrenci başarı değerlendirmesi",
     ]
 
-    print("🔤 Türkçe Encoding Test Sonuçları:")
+    try:
+        print("🔤 Türkçe Encoding Test Sonuçları:")
+    except UnicodeEncodeError:
+        print("Turkish Encoding Test Results:")
     print("-" * 40)
 
     for text in test_texts:
         is_valid = validate_turkish_text(text)
         status = "[CHECK]" if is_valid else "[X]"
-        print(f"{status} {text}")
+        try:
+            print(f"{status} {text}")
+        except UnicodeEncodeError:
+            # Fallback for Windows console
+            ascii_text = text.encode("ascii", "ignore").decode("ascii")
+            print(f"{status} {ascii_text}")
 
-    print("\n[CHART] Sistem Encoding Bilgileri:")
+    try:
+        print("\n[CHART] Sistem Encoding Bilgileri:")
+    except UnicodeEncodeError:
+        print("\nSystem Encoding Information:")
     print("-" * 40)
     for key, value in get_encoding_info().items():
-        print(f"{key}: {value}")
+        try:
+            print(f"{key}: {value}")
+        except UnicodeEncodeError:
+            print(f"{key}: {str(value).encode('ascii', 'ignore').decode('ascii')}")
 
 
 if __name__ == "__main__":

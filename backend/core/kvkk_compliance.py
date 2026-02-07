@@ -7,19 +7,246 @@ KVKK Madde 11: Veri Güvenliğine İlişkin Yükümlülükler
 KVKK Madde 12: Veri Sorumlusunun Bildirimi
 """
 
+import base64
 import hashlib
 import json
 import logging
-from datetime import datetime, timedelta
+import os
+from datetime import datetime, timedelta, timezone
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Union
 from uuid import uuid4
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 from sqlalchemy import Column, DateTime, Integer, String, Text, Boolean, JSON
 from sqlalchemy.ext.declarative import declarative_base
 
 logger = logging.getLogger(__name__)
+
+
+# ============================================================================
+# PII ENCRYPTION MODULE - KVKK Madde 12: Veri Güvenliği
+# ============================================================================
+
+
+class KVKKEncryption:
+    """
+    KVKK Kişisel Veri Şifreleme Modülü
+
+    KVKK Madde 12/1: Veri sorumlusu, kişisel verilerin hukuka aykırı olarak
+    işlenmesini önlemek ve kişisel verilere hukuka aykırı olarak erişilmesini
+    önlemek amacıyla uygun güvenlik düzeyini temin etmeye yönelik gerekli her
+    türlü teknik ve idari tedbirleri almak zorundadır.
+
+    Uses Fernet symmetric encryption (AES-128-CBC with HMAC-SHA256)
+    """
+
+    def __init__(self, key: Optional[bytes] = None):
+        """
+        Initialize encryption with key.
+
+        Args:
+            key: 32-byte encryption key. If None, loads from KVKK_ENCRYPTION_KEY env var.
+        """
+        try:
+            from cryptography.fernet import Fernet
+        except ImportError:
+            logger.warning("cryptography package not installed, using fallback encryption")
+            self._fernet = None
+            self._key = key or self._get_key_from_env()
+            return
+
+        self._key = key or self._get_key_from_env()
+
+        if self._key:
+            # Ensure key is properly formatted for Fernet (base64-encoded 32 bytes)
+            if len(self._key) == 32:
+                # Raw 32-byte key, encode for Fernet
+                self._fernet = Fernet(base64.urlsafe_b64encode(self._key))
+            elif len(self._key) == 44:
+                # Already base64-encoded
+                self._fernet = Fernet(self._key)
+            else:
+                # Derive key from provided bytes using PBKDF2
+                derived_key = self._derive_key(self._key)
+                self._fernet = Fernet(base64.urlsafe_b64encode(derived_key))
+        else:
+            logger.warning("No encryption key provided, PII encryption disabled")
+            self._fernet = None
+
+    def _get_key_from_env(self) -> Optional[bytes]:
+        """Load encryption key from environment variable."""
+        key_str = os.getenv("KVKK_ENCRYPTION_KEY")
+        if key_str:
+            return key_str.encode("utf-8")
+        return None
+
+    def _derive_key(self, password: bytes) -> bytes:
+        """Derive a 32-byte key from password using PBKDF2."""
+        salt = os.getenv("KVKK_KEY_SALT", "kiro2_kvkk_salt_2024").encode("utf-8")
+        return hashlib.pbkdf2_hmac("sha256", password, salt, 100000)
+
+    def encrypt_pii(self, data: str) -> str:
+        """
+        Encrypt personally identifiable information.
+
+        Args:
+            data: Plain text PII data
+
+        Returns:
+            Encrypted data as base64 string, or original data if encryption unavailable
+        """
+        if not data:
+            return data
+
+        if self._fernet is None:
+            # Fallback: Base64 encoding (not secure, just obfuscation)
+            logger.debug("Using fallback encoding for PII")
+            return f"b64:{base64.b64encode(data.encode('utf-8')).decode('utf-8')}"
+
+        try:
+            encrypted = self._fernet.encrypt(data.encode("utf-8"))
+            return f"enc:{encrypted.decode('utf-8')}"
+        except Exception as e:
+            logger.error(f"Encryption failed: {e}")
+            return data
+
+    def decrypt_pii(self, encrypted_data: str) -> str:
+        """
+        Decrypt personally identifiable information.
+
+        Args:
+            encrypted_data: Encrypted PII data
+
+        Returns:
+            Decrypted plain text, or original data if decryption fails
+        """
+        if not encrypted_data:
+            return encrypted_data
+
+        # Handle base64 fallback
+        if encrypted_data.startswith("b64:"):
+            try:
+                return base64.b64decode(encrypted_data[4:]).decode("utf-8")
+            except Exception:
+                return encrypted_data
+
+        # Handle encrypted data
+        if encrypted_data.startswith("enc:"):
+            if self._fernet is None:
+                logger.error("Cannot decrypt: encryption key not available")
+                return encrypted_data
+
+            try:
+                decrypted = self._fernet.decrypt(encrypted_data[4:].encode("utf-8"))
+                return decrypted.decode("utf-8")
+            except Exception as e:
+                logger.error(f"Decryption failed: {e}")
+                return encrypted_data
+
+        # Plain text (not encrypted)
+        return encrypted_data
+
+    def hash_pii(self, data: str) -> str:
+        """
+        Create a one-way hash of PII (for searching/comparison without decryption).
+
+        Uses SHA-256 with salt for security.
+
+        Args:
+            data: PII data to hash
+
+        Returns:
+            Hexadecimal hash string
+        """
+        if not data:
+            return ""
+
+        salt = os.getenv("KVKK_HASH_SALT", "kiro2_kvkk_hash_2024")
+        salted = f"{salt}:{data}".encode("utf-8")
+        return hashlib.sha256(salted).hexdigest()
+
+    def encrypt_dict(self, data: Dict[str, Any], pii_fields: List[str]) -> Dict[str, Any]:
+        """
+        Encrypt specific PII fields in a dictionary.
+
+        Args:
+            data: Dictionary containing data
+            pii_fields: List of field names to encrypt
+
+        Returns:
+            Dictionary with specified fields encrypted
+        """
+        result = data.copy()
+        for field in pii_fields:
+            if field in result and result[field]:
+                if isinstance(result[field], str):
+                    result[field] = self.encrypt_pii(result[field])
+        return result
+
+    def decrypt_dict(self, data: Dict[str, Any], pii_fields: List[str]) -> Dict[str, Any]:
+        """
+        Decrypt specific PII fields in a dictionary.
+
+        Args:
+            data: Dictionary containing encrypted data
+            pii_fields: List of field names to decrypt
+
+        Returns:
+            Dictionary with specified fields decrypted
+        """
+        result = data.copy()
+        for field in pii_fields:
+            if field in result and result[field]:
+                if isinstance(result[field], str):
+                    result[field] = self.decrypt_pii(result[field])
+        return result
+
+    @staticmethod
+    def generate_key() -> bytes:
+        """Generate a new random encryption key."""
+        return os.urandom(32)
+
+    @staticmethod
+    def generate_key_base64() -> str:
+        """Generate a new random encryption key as base64 string."""
+        return base64.urlsafe_b64encode(os.urandom(32)).decode("utf-8")
+
+
+# Pre-defined PII field lists for common data types
+PII_FIELDS = {
+    "user": ["email", "phone", "tc_kimlik_no", "address", "full_name"],
+    "student": ["student_id", "parent_phone", "parent_email", "school_name"],
+    "exam": ["student_answers", "ip_address"],
+    "audit": ["ip_address", "user_agent"],
+}
+
+
+# Global encryption instance
+_kvkk_encryption: Optional[KVKKEncryption] = None
+
+
+def get_kvkk_encryption() -> KVKKEncryption:
+    """Get global KVKK encryption instance."""
+    global _kvkk_encryption
+    if _kvkk_encryption is None:
+        _kvkk_encryption = KVKKEncryption()
+    return _kvkk_encryption
+
+
+def encrypt_user_pii(data: Dict[str, Any]) -> Dict[str, Any]:
+    """Convenience function to encrypt user PII fields."""
+    return get_kvkk_encryption().encrypt_dict(data, PII_FIELDS["user"])
+
+
+def decrypt_user_pii(data: Dict[str, Any]) -> Dict[str, Any]:
+    """Convenience function to decrypt user PII fields."""
+    return get_kvkk_encryption().decrypt_dict(data, PII_FIELDS["user"])
+
+
+# ============================================================================
+# KVKK DATA CATEGORIES AND ENUMS
+# ============================================================================
 
 Base = declarative_base()
 
@@ -323,7 +550,7 @@ class KVKKComplianceManager:
             status=ConsentStatus.GRANTED.value,
             consent_text=request.consent_text,
             consent_version=request.consent_version,
-            granted_at=datetime.utcnow(),
+            granted_at=datetime.now(timezone.utc),
             ip_address=request.ip_address,
             user_agent=request.user_agent,
             consent_method=request.consent_method,
@@ -331,7 +558,7 @@ class KVKKComplianceManager:
 
         # Süre sonu belirle
         if request.expires_in_days:
-            consent.expires_at = datetime.utcnow() + timedelta(
+            consent.expires_at = datetime.now(timezone.utc) + timedelta(
                 days=request.expires_in_days
             )
 
@@ -365,7 +592,7 @@ class KVKKComplianceManager:
             return False
 
         consent.status = ConsentStatus.WITHDRAWN.value
-        consent.withdrawn_at = datetime.utcnow()
+        consent.withdrawn_at = datetime.now(timezone.utc)
 
         await self.db.commit()
 
@@ -393,7 +620,7 @@ class KVKKComplianceManager:
             return False
 
         # Süre kontrolü
-        if consent.expires_at and consent.expires_at < datetime.utcnow():
+        if consent.expires_at and consent.expires_at < datetime.now(timezone.utc):
             consent.status = ConsentStatus.EXPIRED.value
             await self.db.commit()
             return False
@@ -428,7 +655,7 @@ class KVKKComplianceManager:
         """Veri sahibi talebi oluştur"""
 
         # KVKK Madde 13: 30 gün içinde yanıt
-        deadline = datetime.utcnow() + timedelta(days=30)
+        deadline = datetime.now(timezone.utc) + timedelta(days=30)
 
         data_request = KVKKDataSubjectRequest(
             user_id=request.user_id,
@@ -465,10 +692,10 @@ class KVKKComplianceManager:
 
         data_request.status = status
         data_request.response = response
-        data_request.response_date = datetime.utcnow()
+        data_request.response_date = datetime.now(timezone.utc)
 
         if status == "completed":
-            data_request.completed_at = datetime.utcnow()
+            data_request.completed_at = datetime.now(timezone.utc)
 
         await self.db.commit()
 
@@ -511,7 +738,6 @@ class KVKKComplianceManager:
         72 saat içinde bildirim gereklidir
         """
         import os
-        import aiohttp
         from datetime import datetime, timedelta
 
         notification_data = {
@@ -523,7 +749,7 @@ class KVKKComplianceManager:
             "affected_users_count": report.affected_users_count,
             "breach_type": breach.breach_type,
             "description": breach.description,
-            "notification_timestamp": datetime.utcnow().isoformat(),
+            "notification_timestamp": datetime.now(timezone.utc).isoformat(),
             "organization": {
                 "name": os.getenv("ORGANIZATION_NAME", "KIRO2 Platform"),
                 "registration_number": os.getenv("ORGANIZATION_REG_NUMBER", ""),
@@ -532,7 +758,7 @@ class KVKKComplianceManager:
             },
             "mitigation_actions": report.mitigation_actions,
             "expected_resolution_date": (
-                datetime.utcnow() + timedelta(days=7)
+                datetime.now(timezone.utc) + timedelta(days=7)
             ).isoformat(),
         }
 
@@ -676,7 +902,7 @@ class KVKKComplianceManager:
             notification_record = {
                 "breach_id": breach.breach_id,
                 "notification_type": "kvkk_authority",
-                "notification_date": datetime.utcnow(),
+                "notification_date": datetime.now(timezone.utc),
                 "notification_data": json.dumps(notification_data, ensure_ascii=False),
                 "status": "sent",
             }
@@ -701,7 +927,7 @@ class KVKKComplianceManager:
         # Tüm kullanıcı verilerini topla
         user_data = {
             "user_id": user_id,
-            "export_date": datetime.utcnow().isoformat(),
+            "export_date": datetime.now(timezone.utc).isoformat(),
             "consents": [],
             "processing_logs": [],
             "requests": [],
@@ -730,7 +956,7 @@ class KVKKComplianceManager:
             )
 
         # İşleme kayıtları (son 90 gün)
-        cutoff_date = datetime.utcnow() - timedelta(days=90)
+        cutoff_date = datetime.now(timezone.utc) - timedelta(days=90)
         logs = (
             await self.db.query(KVKKDataProcessingLog)
             .filter(
@@ -913,7 +1139,7 @@ class KVKKComplianceManager:
         )
 
         report["data_subject_requests"]["total"] = len(requests)
-        now = datetime.utcnow()
+        now = datetime.now(timezone.utc)
         for req in requests:
             if req.status == "pending":
                 report["data_subject_requests"]["pending"] += 1

@@ -5,8 +5,16 @@
  * Features: text messages, file sharing, reactions, threads, mentions.
  */
 
-import React, { useState, useEffect, useRef } from 'react';
-import axios from 'axios';
+import {
+  Send as SendIcon,
+  AttachFile as AttachFileIcon,
+  MoreVert as MoreVertIcon,
+  Reply as ReplyIcon,
+  ThumbUp as ThumbUpIcon,
+  Favorite as FavoriteIcon,
+  TagFaces as TagFacesIcon,
+  Link as LinkIcon,
+} from '@mui/icons-material';
 import {
   Box,
   Paper,
@@ -17,27 +25,13 @@ import {
   Chip,
   Menu,
   MenuItem,
-  Tooltip,
   Divider,
-  List,
-  ListItem,
-  ListItemAvatar,
-  ListItemText,
-  InputAdornment,
-  Badge,
 } from '@mui/material';
-import {
-  Send as SendIcon,
-  AttachFile as AttachFileIcon,
-  EmojiEmotions as EmojiIcon,
-  MoreVert as MoreVertIcon,
-  Reply as ReplyIcon,
-  ThumbUp as ThumbUpIcon,
-  Favorite as FavoriteIcon,
-  TagFaces as TagFacesIcon,
-  Image as ImageIcon,
-  Link as LinkIcon,
-} from '@mui/icons-material';
+import axios from 'axios';
+import * as React from 'react';
+import {  useState, useEffect, useRef  } from 'react';
+
+import { config } from '@/config';
 import { dateUtils } from '@/utils/dateUtils';
 
 // ============================================================
@@ -84,7 +78,7 @@ interface ChatInterfaceProps {
 const ChatInterface: React.FC<ChatInterfaceProps> = ({
   roomId,
   currentUserId,
-  currentUserName,
+  currentUserName: _currentUserName,
 }) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState('');
@@ -126,8 +120,8 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
   };
 
   const connectWebSocket = () => {
-    // WebSocket URL - adjust based on your backend configuration
-    const wsUrl = `ws://localhost:8000/ws/study-rooms/${roomId}/chat`;
+    // WebSocket URL - from config
+    const wsUrl = `${config.api.wsURL}/ws/study-rooms/${roomId}/chat`;
     const ws = new WebSocket(wsUrl);
 
     ws.onopen = () => {
@@ -154,7 +148,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
   };
 
   const handleSendMessage = async () => {
-    if (!newMessage.trim()) return;
+    if (!newMessage.trim()) {return;}
 
     try {
       const messageData = {
@@ -180,7 +174,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
 
   const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
-    if (!file) return;
+    if (!file) {return;}
 
     try {
       const formData = new FormData();
@@ -244,7 +238,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
             return { ...msg, reactions };
           }
           return msg;
-        })
+        }),
       );
     } catch (error) {
       console.error('Error adding reaction:', error);
@@ -408,6 +402,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
             <IconButton
               size="small"
               onClick={(e) => handleMenuOpen(e, message)}
+              aria-label="more"
               sx={{
                 position: 'absolute',
                 top: 4,
@@ -495,7 +490,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
             onChange={handleFileUpload}
             accept="image/*,.pdf,.doc,.docx,.txt"
           />
-          <IconButton onClick={() => fileInputRef.current?.click()}>
+          <IconButton onClick={() => fileInputRef.current?.click()} aria-label="attach">
             <AttachFileIcon />
           </IconButton>
 
@@ -516,7 +511,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
             size="small"
           />
 
-          <IconButton color="primary" onClick={handleSendMessage} disabled={!newMessage.trim()}>
+          <IconButton color="primary" onClick={handleSendMessage} disabled={!newMessage.trim()} aria-label="send">
             <SendIcon />
           </IconButton>
         </Box>

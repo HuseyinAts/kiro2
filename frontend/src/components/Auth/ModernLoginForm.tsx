@@ -3,29 +3,29 @@
  * Enhanced login form with modern design and accessibility
  */
 
-import React, { useState, useCallback, memo } from 'react'
-import { 
-  Box, 
-  TextField, 
-  Typography, 
+import {
+  Email as EmailIcon,
+  Lock as LockIcon,
+  Visibility as VisibilityIcon,
+  VisibilityOff as VisibilityOffIcon,
+  School as SchoolIcon,
+} from '@mui/icons-material';
+import {
+  Box,
+  TextField,
+  Typography,
   Alert,
   Paper,
   Fade,
   InputAdornment,
   IconButton,
-  useTheme
-} from '@mui/material'
-import { 
-  Email as EmailIcon,
-  Lock as LockIcon,
-  Visibility as VisibilityIcon,
-  VisibilityOff as VisibilityOffIcon,
-  School as SchoolIcon
-} from '@mui/icons-material'
+  useTheme,
+} from '@mui/material';
+import * as React from 'react';
+import {  useState, useCallback, memo  } from 'react';
 
-import { ModernButton } from '../ui/modern-button'
-import { ModernCard } from '../ui/modern-card'
-import { useResponsive } from '../../utils/responsive'
+import { useResponsive } from '../../utils/responsive';
+import { ModernButton } from '../ui/modern-button';
 
 interface LoginFormData {
   email: string
@@ -43,80 +43,80 @@ export const ModernLoginForm: React.FC<ModernLoginFormProps> = memo(({
   onSubmit,
   loading = false,
   error = null,
-  className
+  className,
 }) => {
-  const theme = useTheme()
-  const { isMobile } = useResponsive()
-  
+  const theme = useTheme();
+  const { isMobile } = useResponsive();
+
   const [formData, setFormData] = useState<LoginFormData>({
     email: '',
-    password: ''
-  })
-  
-  const [showPassword, setShowPassword] = useState(false)
-  const [fieldErrors, setFieldErrors] = useState<Partial<LoginFormData>>({})
-  
+    password: '',
+  });
+
+  const [showPassword, setShowPassword] = useState(false);
+  const [fieldErrors, setFieldErrors] = useState<Partial<LoginFormData>>({});
+
   const handleInputChange = useCallback((field: keyof LoginFormData) => (
-    event: React.ChangeEvent<HTMLInputElement>
+    event: React.ChangeEvent<HTMLInputElement>,
   ) => {
-    const value = event.target.value
-    setFormData(prev => ({ ...prev, [field]: value }))
-    
+    const value = event.target.value;
+    setFormData(prev => ({ ...prev, [field]: value }));
+
     // Clear field error when user starts typing
     if (fieldErrors[field]) {
-      setFieldErrors(prev => ({ ...prev, [field]: undefined }))
+      setFieldErrors(prev => ({ ...prev, [field]: undefined }));
     }
-  }, [fieldErrors])
-  
+  }, [fieldErrors]);
+
   const togglePasswordVisibility = useCallback(() => {
-    setShowPassword(prev => !prev)
-  }, [])
-  
+    setShowPassword(prev => !prev);
+  }, []);
+
   const validateForm = useCallback((): boolean => {
-    const errors: Partial<LoginFormData> = {}
-    
+    const errors: Partial<LoginFormData> = {};
+
     // Email validation
     if (!formData.email) {
-      errors.email = 'E-posta adresi gerekli'
+      errors.email = 'E-posta adresi gerekli';
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      errors.email = 'Geçerli bir e-posta adresi girin'
+      errors.email = 'Geçerli bir e-posta adresi girin';
     }
-    
+
     // Password validation
     if (!formData.password) {
-      errors.password = 'Şifre gerekli'
+      errors.password = 'Şifre gerekli';
     } else if (formData.password.length < 6) {
-      errors.password = 'Şifre en az 6 karakter olmalı'
+      errors.password = 'Şifre en az 6 karakter olmalı';
     }
-    
-    setFieldErrors(errors)
-    return Object.keys(errors).length === 0
-  }, [formData])
-  
+
+    setFieldErrors(errors);
+    return Object.keys(errors).length === 0;
+  }, [formData]);
+
   const handleSubmit = useCallback(async (event: React.FormEvent) => {
-    event.preventDefault()
-    
+    event.preventDefault();
+
     if (!validateForm()) {
-      return
+      return;
     }
-    
+
     try {
-      await onSubmit(formData)
+      await onSubmit(formData);
     } catch (error) {
       // Error handling is done by parent component
-      console.error('Login error:', error)
+      console.error('Login error:', error);
     }
-  }, [formData, validateForm, onSubmit])
-  
+  }, [formData, validateForm, onSubmit]);
+
   return (
-    <Box 
-      sx={{ 
+    <Box
+      sx={{
         minHeight: '100vh',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
         background: `linear-gradient(135deg, ${theme.palette.primary.main}10 0%, ${theme.palette.secondary.main}10 100%)`,
-        p: 2
+        p: 2,
       }}
       className={className}
     >
@@ -130,7 +130,7 @@ export const ModernLoginForm: React.FC<ModernLoginFormProps> = memo(({
             borderRadius: 3,
             boxShadow: '0 20px 60px rgba(0,0,0,0.1)',
             backgroundColor: 'background.paper',
-            border: `1px solid ${theme.palette.divider}`
+            border: `1px solid ${theme.palette.divider}`,
           }}
         >
           {/* Header */}
@@ -146,50 +146,50 @@ export const ModernLoginForm: React.FC<ModernLoginFormProps> = memo(({
                 background: `linear-gradient(135deg, ${theme.palette.primary.main}, ${theme.palette.primary.light})`,
                 color: 'white',
                 mb: 2,
-                boxShadow: `0 8px 32px ${theme.palette.primary.main}40`
+                boxShadow: `0 8px 32px ${theme.palette.primary.main}40`,
               }}
             >
               <SchoolIcon sx={{ fontSize: 32 }} />
             </Box>
-            
-            <Typography 
-              variant="h4" 
-              component="h1" 
-              sx={{ 
+
+            <Typography
+              variant="h4"
+              component="h1"
+              sx={{
                 fontWeight: 700,
                 mb: 1,
                 background: `linear-gradient(135deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`,
                 backgroundClip: 'text',
                 WebkitBackgroundClip: 'text',
-                color: 'transparent'
+                color: 'transparent',
               }}
             >
               KIRO2 Platform
             </Typography>
-            
+
             <Typography variant="body2" color="text.secondary">
               Türkiye Üniversite Sınavları Hazırlık Platformu
             </Typography>
           </Box>
-          
+
           {/* Error Alert */}
           {error && (
             <Fade in>
-              <Alert 
-                severity="error" 
-                sx={{ 
+              <Alert
+                severity="error"
+                sx={{
                   mb: 3,
                   borderRadius: 2,
                   '& .MuiAlert-message': {
-                    width: '100%'
-                  }
+                    width: '100%',
+                  },
                 }}
               >
                 {error}
               </Alert>
             </Fade>
           )}
-          
+
           {/* Login Form */}
           <Box component="form" onSubmit={handleSubmit} noValidate>
             <TextField
@@ -214,20 +214,20 @@ export const ModernLoginForm: React.FC<ModernLoginFormProps> = memo(({
                 sx: {
                   borderRadius: 2,
                   '& .MuiOutlinedInput-notchedOutline': {
-                    borderColor: theme.palette.divider
-                  }
-                }
+                    borderColor: theme.palette.divider,
+                  },
+                },
               }}
               sx={{
                 '& .MuiFormLabel-root': {
-                  fontSize: '0.875rem'
+                  fontSize: '0.875rem',
                 },
                 '& .MuiInputBase-root': {
-                  minHeight: 56 // Touch-friendly height
-                }
+                  minHeight: 56, // Touch-friendly height
+                },
               }}
             />
-            
+
             <TextField
               fullWidth
               label="Şifre"
@@ -262,20 +262,20 @@ export const ModernLoginForm: React.FC<ModernLoginFormProps> = memo(({
                 sx: {
                   borderRadius: 2,
                   '& .MuiOutlinedInput-notchedOutline': {
-                    borderColor: theme.palette.divider
-                  }
-                }
+                    borderColor: theme.palette.divider,
+                  },
+                },
               }}
               sx={{
                 '& .MuiFormLabel-root': {
-                  fontSize: '0.875rem'
+                  fontSize: '0.875rem',
                 },
                 '& .MuiInputBase-root': {
-                  minHeight: 56 // Touch-friendly height
-                }
+                  minHeight: 56, // Touch-friendly height
+                },
               }}
             />
-            
+
             <ModernButton
               type="submit"
               fullWidth
@@ -291,20 +291,20 @@ export const ModernLoginForm: React.FC<ModernLoginFormProps> = memo(({
               Giriş Yap
             </ModernButton>
           </Box>
-          
+
           {/* Footer */}
           <Box sx={{ textAlign: 'center', mt: 3 }}>
             <Typography variant="body2" color="text.secondary">
               Hesabınız yok mu?{' '}
-              <Typography 
-                component="span" 
-                color="primary" 
-                sx={{ 
+              <Typography
+                component="span"
+                color="primary"
+                sx={{
                   fontWeight: 600,
                   cursor: 'pointer',
                   '&:hover': {
-                    textDecoration: 'underline'
-                  }
+                    textDecoration: 'underline',
+                  },
                 }}
               >
                 Kayıt Ol
@@ -314,9 +314,9 @@ export const ModernLoginForm: React.FC<ModernLoginFormProps> = memo(({
         </Paper>
       </Fade>
     </Box>
-  )
-})
+  );
+});
 
-ModernLoginForm.displayName = 'ModernLoginForm'
+ModernLoginForm.displayName = 'ModernLoginForm';
 
-export default ModernLoginForm
+export default ModernLoginForm;

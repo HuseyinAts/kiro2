@@ -12,7 +12,7 @@ Requirements: REQ-14.1, REQ-14.2
 
 import logging
 import re
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 
@@ -88,7 +88,7 @@ class VideoTranscriptService:
                 transcript_status=TranscriptStatus.AUTO_GENERATED,
                 auto_generated_by="Whisper AI (Mock)",
                 auto_generation_confidence=0.95,
-                auto_generated_at=datetime.utcnow(),
+                auto_generated_at=datetime.now(timezone.utc),
                 word_count=len(full_text.split()),
                 average_words_per_minute=150.0,
                 readability_score=75.0,
@@ -155,7 +155,7 @@ class VideoTranscriptService:
             # Manuel düzenleme bilgilerini güncelle
             transcript.transcript_status = TranscriptStatus.MANUALLY_EDITED
             transcript.manually_edited_by = user_id
-            transcript.manually_edited_at = datetime.utcnow()
+            transcript.manually_edited_at = datetime.now(timezone.utc)
             transcript.edit_count += 1
 
             await self.db.commit()

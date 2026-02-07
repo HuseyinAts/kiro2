@@ -5,10 +5,10 @@ Service layer for teacher registration, profile management, availability, and ap
 """
 
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, and_, or_, func, update, delete
-from sqlalchemy.orm import selectinload, joinedload
-from datetime import datetime, date, time, timedelta
-from typing import Optional, List, Dict, Any
+from sqlalchemy import select, and_, or_, func, delete
+from sqlalchemy.orm import selectinload
+from datetime import datetime, date, time, timedelta, timezone
+from typing import Optional, List
 from uuid import UUID
 import logging
 
@@ -20,11 +20,9 @@ from models.teacher_pool import (
     Appointment,
     AppointmentReminder,
     TeacherReview,
-    TeacherStatistics,
     TeacherStatus,
     VerificationStatus,
     SubjectExpertise,
-    GradeLevel,
     CertificationType,
     DayOfWeek,
     TimeSlotStatus,
@@ -131,7 +129,7 @@ class TeacherService:
             if hasattr(teacher, key):
                 setattr(teacher, key, value)
 
-        teacher.updated_at = datetime.utcnow()
+        teacher.updated_at = datetime.now(timezone.utc)
         await self.db.commit()
         await self.db.refresh(teacher)
 
@@ -156,7 +154,7 @@ class TeacherService:
         if approved:
             teacher.status = TeacherStatus.VERIFIED
             teacher.verification_status = VerificationStatus.APPROVED
-            teacher.verified_at = datetime.utcnow()
+            teacher.verified_at = datetime.now(timezone.utc)
             teacher.verified_by = verified_by
         else:
             teacher.status = TeacherStatus.REJECTED
@@ -336,7 +334,7 @@ class TeacherService:
 
         if approved:
             certification.verification_status = VerificationStatus.APPROVED
-            certification.verified_at = datetime.utcnow()
+            certification.verified_at = datetime.now(timezone.utc)
             certification.verified_by = verified_by
         else:
             certification.verification_status = VerificationStatus.REJECTED
@@ -535,7 +533,7 @@ class TeacherService:
             return None
 
         appointment.status = AppointmentStatus.CONFIRMED
-        appointment.confirmed_at = datetime.utcnow()
+        appointment.confirmed_at = datetime.now(timezone.utc)
         appointment.confirmed_by = confirmed_by
 
         if meeting_url:
@@ -561,7 +559,7 @@ class TeacherService:
             return None
 
         appointment.status = AppointmentStatus.CANCELLED
-        appointment.cancelled_at = datetime.utcnow()
+        appointment.cancelled_at = datetime.now(timezone.utc)
         appointment.cancelled_by = cancelled_by
         appointment.cancellation_reason = cancellation_reason
 
@@ -589,7 +587,7 @@ class TeacherService:
             return None
 
         appointment.status = AppointmentStatus.COMPLETED
-        appointment.completed_at = datetime.utcnow()
+        appointment.completed_at = datetime.now(timezone.utc)
         appointment.session_summary = session_summary
         appointment.homework_assigned = homework_assigned
 
@@ -650,7 +648,7 @@ class TeacherService:
         remind_24h = datetime.combine(
             appointment.scheduled_date, appointment.start_time
         ) - timedelta(hours=24)
-        if remind_24h > datetime.utcnow():
+        if remind_24h > datetime.now(timezone.utc):
             await self._create_reminder(
                 appointment.id,
                 appointment.student_id,
@@ -670,7 +668,7 @@ class TeacherService:
         remind_1h = datetime.combine(
             appointment.scheduled_date, appointment.start_time
         ) - timedelta(hours=1)
-        if remind_1h > datetime.utcnow():
+        if remind_1h > datetime.now(timezone.utc):
             await self._create_reminder(
                 appointment.id,
                 appointment.student_id,
@@ -711,7 +709,7 @@ class TeacherService:
         """Get reminders that need to be sent"""
         query = select(AppointmentReminder).where(
             AppointmentReminder.is_sent == False,
-            AppointmentReminder.remind_at <= datetime.utcnow(),
+            AppointmentReminder.remind_at <= datetime.now(timezone.utc),
         )
         result = await self.db.execute(query)
         return list(result.scalars().all())
@@ -726,7 +724,7 @@ class TeacherService:
 
         if reminder:
             reminder.is_sent = True
-            reminder.sent_at = datetime.utcnow()
+            reminder.sent_at = datetime.now(timezone.utc)
             reminder.delivery_status = "sent" if success else "failed"
             reminder.error_message = error_message
             await self.db.commit()

@@ -15,9 +15,8 @@ import random
 import asyncio
 from typing import Dict, Optional
 
-from fastapi import APIRouter, HTTPException, Query, Depends
+from fastapi import APIRouter, HTTPException, Query
 from pydantic import BaseModel
-import sentry_sdk
 from sentry_sdk import capture_exception, capture_message, add_breadcrumb, set_user, set_tag
 
 from core.sentry_middleware import track_business_operation, capture_categorized_error

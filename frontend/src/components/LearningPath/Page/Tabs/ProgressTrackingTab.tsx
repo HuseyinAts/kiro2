@@ -5,14 +5,16 @@
  * Extracted from LearningPathPage.tsx
  */
 
-import React, { useMemo } from 'react'
-import { Box, Typography, Paper, Chip, Alert } from '@mui/material'
-import { PathNodeData } from '../../PathNode'
-import { ModuleProgressCard } from '../ModuleProgressCard'
+import { Box, Typography, Paper, Chip, Alert } from '@mui/material';
+import * as React from 'react';
+import {  useMemo  } from 'react';
+
 import {
   calculateOverallProgress,
-  calculateTotalTime
-} from '../../../../utils/learningPathHelpers'
+  calculateTotalTime,
+} from '../../../../utils/learningPathHelpers';
+import { PathNodeData } from '../../PathNode';
+import { ModuleProgressCard } from '../ModuleProgressCard';
 
 export interface ProgressTrackingTabProps {
   pathNodes: PathNodeData[]
@@ -28,34 +30,34 @@ export interface ProgressTrackingTabProps {
  */
 export const ProgressTrackingTab = React.memo<ProgressTrackingTabProps>(({
   pathNodes,
-  hasPath
+  hasPath,
 }) => {
+  // Memoize expensive calculations - hooks must be called before any early returns
+  const overallProgress = useMemo(() => hasPath ? calculateOverallProgress(pathNodes) : 0, [pathNodes, hasPath]);
+  const totalTime = useMemo(() => hasPath ? calculateTotalTime(pathNodes) : 0, [pathNodes, hasPath]);
+
+  // Memoize filtered counts
+  const counts = useMemo(
+    () => hasPath ? ({
+      completed: pathNodes.filter(n => n.status === 'completed').length,
+      current: pathNodes.filter(n => n.status === 'current').length,
+      available: pathNodes.filter(n => n.status === 'available').length,
+    }) : { completed: 0, current: 0, available: 0 },
+    [pathNodes, hasPath],
+  );
+
+  const { completed: completedCount, current: currentCount, available: availableCount } = counts;
+
   if (!hasPath) {
     return (
       <Box sx={{ px: 2 }}>
         <Alert severity="info">
-          Henüz öğrenme yolu oluşturulmamış. Lütfen "Yol Haritası" sekmesinden
+          Henüz öğrenme yolu oluşturulmamış. Lütfen &quot;Yol Haritası&quot; sekmesinden
           başlayın.
         </Alert>
       </Box>
-    )
+    );
   }
-
-  // Memoize expensive calculations
-  const overallProgress = useMemo(() => calculateOverallProgress(pathNodes), [pathNodes])
-  const totalTime = useMemo(() => calculateTotalTime(pathNodes), [pathNodes])
-
-  // Memoize filtered counts
-  const counts = useMemo(
-    () => ({
-      completed: pathNodes.filter(n => n.status === 'completed').length,
-      current: pathNodes.filter(n => n.status === 'current').length,
-      available: pathNodes.filter(n => n.status === 'available').length
-    }),
-    [pathNodes]
-  )
-
-  const { completed: completedCount, current: currentCount, available: availableCount } = counts
 
   return (
     <Box sx={{ px: 2 }}>
@@ -70,7 +72,7 @@ export const ProgressTrackingTab = React.memo<ProgressTrackingTabProps>(({
           p: 3,
           mb: 3,
           background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-          color: 'white'
+          color: 'white',
         }}
       >
         <Box className="flex items-center justify-between mb-2">
@@ -83,7 +85,7 @@ export const ProgressTrackingTab = React.memo<ProgressTrackingTabProps>(({
               backgroundColor: 'rgba(255,255,255,0.3)',
               color: 'white',
               fontWeight: 'bold',
-              fontSize: '1rem'
+              fontSize: '1rem',
             }}
           />
         </Box>
@@ -101,7 +103,7 @@ export const ProgressTrackingTab = React.memo<ProgressTrackingTabProps>(({
               height: 12,
               backgroundColor: 'rgba(255,255,255,0.3)',
               borderRadius: 2,
-              overflow: 'hidden'
+              overflow: 'hidden',
             }}
           >
             <Box
@@ -109,7 +111,7 @@ export const ProgressTrackingTab = React.memo<ProgressTrackingTabProps>(({
                 width: `${overallProgress}%`,
                 height: '100%',
                 backgroundColor: 'white',
-                transition: 'width 0.5s ease'
+                transition: 'width 0.5s ease',
               }}
             />
           </Box>
@@ -149,8 +151,8 @@ export const ProgressTrackingTab = React.memo<ProgressTrackingTabProps>(({
       </Typography>
 
       {Array.from({ length: 3 }, (_, moduleIndex) => {
-        const moduleId = `MOD${moduleIndex + 1}`
-        const moduleNodes = pathNodes.filter(node => node.id.startsWith(moduleId))
+        const moduleId = `MOD${moduleIndex + 1}`;
+        const moduleNodes = pathNodes.filter(node => node.id.startsWith(moduleId));
 
         return (
           <ModuleProgressCard
@@ -158,7 +160,7 @@ export const ProgressTrackingTab = React.memo<ProgressTrackingTabProps>(({
             moduleIndex={moduleIndex}
             moduleNodes={moduleNodes}
           />
-        )
+        );
       })}
 
       {/* Detailed Statistics */}
@@ -202,10 +204,10 @@ export const ProgressTrackingTab = React.memo<ProgressTrackingTabProps>(({
         </Box>
       </Paper>
     </Box>
-  )
-})
+  );
+});
 
 // Display name for React DevTools
-ProgressTrackingTab.displayName = 'ProgressTrackingTab'
+ProgressTrackingTab.displayName = 'ProgressTrackingTab';
 
-export default ProgressTrackingTab
+export default ProgressTrackingTab;

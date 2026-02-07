@@ -1,9 +1,41 @@
 /**
  * ÖSYM Uyumlu Sınav Arayüzü - Yeni API ile
  * TYT/AYT/YDT formatında gerçek zamanlı sınav deneyimi
+ *
+ * OSYM EXAM INTERFACE HIERARCHY (2025-01-25):
+ * Bu projede 3 OSYM exam interface var:
+ *
+ * 1. OSYMExamInterface.tsx (BU DOSYA) - Ana orkestrasyon component
+ * 2. OSYMExamInterfaceRefactored.tsx - Hooks + store versiyonu
+ * 3. ModernOSYMExamInterface.tsx - Glassmorphism tasarim
+ *
+ * REFACTORED (2025-01-25):
+ * Bu dosya bolundu. Alt componentler Interface/ dizininde:
+ *
+ * - Interface/ExamHeader.tsx - Baslik, timer, progress (~100 satir)
+ * - Interface/QuestionPanel.tsx - Soru gosterimi (~70 satir)
+ * - Interface/AnswerPanel.tsx - Cevap secenekleri (~100 satir)
+ * - Interface/ExamNavigation.tsx - Soru gezinme (~130 satir)
+ * - Interface/ExamDialogs.tsx - Onay diyaloglari (~130 satir)
+ *
+ * Kullanim: import { ExamHeader, QuestionPanel, ... } from './Interface'
  */
-import React, { useState, useEffect, useRef, useCallback } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import {
+  CheckCircle,
+  BookmarkBorder,
+  Bookmark,
+  ExitToApp,
+  Warning,
+  Assessment,
+  Refresh,
+  Home,
+  Save,
+  CloudDone,
+  CloudOff,
+  NavigateNext,
+  NavigateBefore,
+  Flag,
+} from '@mui/icons-material';
 import {
   Paper,
   Button,
@@ -19,7 +51,6 @@ import {
   DialogContent,
   DialogActions,
   IconButton,
-  Tooltip,
   Typography,
   Box,
   Grid,
@@ -27,43 +58,30 @@ import {
   Snackbar,
   useTheme,
   useMediaQuery,
-  LinearProgress
-} from '@mui/material'
+  LinearProgress,
+} from '@mui/material';
+import { motion, AnimatePresence } from 'framer-motion';
+import * as React from 'react';
+import {  useState, useEffect, useRef, useCallback  } from 'react';
+import { useNavigate } from 'react-router-dom';
+
+import useAutoSave from '../../hooks/useAutoSave';
 import {
-  CheckCircle,
-  BookmarkBorder,
-  Bookmark,
-  ExitToApp,
-  Warning,
-  Assessment,
-  Refresh,
-  Home,
-  Save,
-  CloudDone,
-  CloudOff,
-  NavigateNext,
-  NavigateBefore,
-  Timer,
-  Flag
-} from '@mui/icons-material'
-import { useNavigate } from 'react-router-dom'
-import { 
-  examService, 
-  ExamType, 
-  ExamStatus, 
+  examService,
+  ExamType,
+  ExamStatus,
   QuestionDifficulty,
   ExamSessionResponse,
   QuestionResponse,
   PerformanceResponse,
-  RemainingTimeResponse
-} from '../../services/examService'
-import ExamTimer from './ExamTimer'
-import useAutoSave from '../../hooks/useAutoSave'
-import FlaggedQuestionsPanel from './FlaggedQuestionsPanel'
-import QuestionTable from '../QuestionTable'
-import QuestionGraph from '../QuestionGraph'
-import QuestionGeometry from '../QuestionGeometry'
-import QuestionMapDiagram from '../QuestionMapDiagram'
+} from '../../services/examService';
+import QuestionGeometry from '../QuestionGeometry';
+import QuestionGraph from '../QuestionGraph';
+import QuestionMapDiagram from '../QuestionMapDiagram';
+import QuestionTable from '../QuestionTable';
+
+import ExamTimer from './ExamTimer';
+import FlaggedQuestionsPanel from './FlaggedQuestionsPanel';
 
 interface OSYMExamInterfaceProps {
   sessionId: string
@@ -79,14 +97,14 @@ interface ExamState {
   flaggedQuestions: Set<string>
 }
 
-export const OSYMExamInterface: React.FC<OSYMExamInterfaceProps> = ({ 
-  sessionId, 
-  onExit 
+export const OSYMExamInterface: React.FC<OSYMExamInterfaceProps> = ({
+  sessionId,
+  onExit,
 }) => {
-  const navigate = useNavigate()
-  const theme = useTheme()
-  const isMobile = useMediaQuery(theme.breakpoints.down('md'))
-  
+  const navigate = useNavigate();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+
   // State yönetimi
   const [examState, setExamState] = useState<ExamState>({
     session: null,
@@ -94,21 +112,21 @@ export const OSYMExamInterface: React.FC<OSYMExamInterfaceProps> = ({
     performance: null,
     remainingTime: 0,
     answers: {},
-    flaggedQuestions: new Set()
-  })
-  
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
-  const [showExitDialog, setShowExitDialog] = useState(false)
-  const [showTimeWarning, setShowTimeWarning] = useState(false)
-  const [showFlaggedDialog, setShowFlaggedDialog] = useState(false)
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [saveStatus, setSaveStatus] = useState<'saved' | 'saving' | 'error' | null>(null)
-  const [saveMessage, setSaveMessage] = useState('')
-  
+    flaggedQuestions: new Set(),
+  });
+
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [showExitDialog, setShowExitDialog] = useState(false);
+  const [showTimeWarning, setShowTimeWarning] = useState(false);
+  const [showFlaggedDialog, setShowFlaggedDialog] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [saveStatus, setSaveStatus] = useState<'saved' | 'saving' | 'error' | null>(null);
+  const [saveMessage, setSaveMessage] = useState('');
+
   // WebSocket bağlantısı
-  const wsRef = useRef<(() => void) | null>(null)
-  
+  const wsRef = useRef<(() => void) | null>(null);
+
   // Otomatik kaydetme
   const autoSave = useAutoSave({
     sessionId,
@@ -116,129 +134,129 @@ export const OSYMExamInterface: React.FC<OSYMExamInterfaceProps> = ({
     interval: 30000, // 30 saniye
     onSave: (success, error) => {
       if (success) {
-        setSaveStatus('saved')
-        setSaveMessage('Cevaplar otomatik kaydedildi')
+        setSaveStatus('saved');
+        setSaveMessage('Cevaplar otomatik kaydedildi');
       } else {
-        setSaveStatus('error')
-        setSaveMessage(error || 'Kaydetme hatası')
+        setSaveStatus('error');
+        setSaveMessage(error || 'Kaydetme hatası');
       }
-      
-      setTimeout(() => setSaveStatus(null), 3000)
+
+      setTimeout(() => setSaveStatus(null), 3000);
     },
     onError: (error) => {
-      setSaveStatus('error')
-      setSaveMessage(error)
-      setTimeout(() => setSaveStatus(null), 5000)
-    }
-  })
+      setSaveStatus('error');
+      setSaveMessage(error);
+      setTimeout(() => setSaveStatus(null), 5000);
+    },
+  });
 
   /**
    * Bileşen mount edildiğinde sınav bilgilerini yükle
    */
   useEffect(() => {
-    loadExamData()
+    loadExamData();
     return () => {
       // Cleanup
       if (wsRef.current) {
-        wsRef.current()
+        wsRef.current();
       }
-      examService.disconnectWebSocket()
-      
+      examService.disconnectWebSocket();
+
       // Son kaydetme
       if (autoSave.getSaveStatus().pendingCount > 0) {
-        autoSave.saveNow()
+        autoSave.saveNow();
       }
-    }
-  }, [sessionId])
+    };
+  }, [sessionId]);
 
   /**
    * WebSocket bağlantısını kur
    */
   useEffect(() => {
     if (examState.session && examState.session.status === ExamStatus.IN_PROGRESS) {
-      examService.connectWebSocket(sessionId)
-      
+      examService.connectWebSocket(sessionId);
+
       wsRef.current = examService.onWebSocketMessage((data) => {
-        handleWebSocketMessage(data)
-      })
+        handleWebSocketMessage(data);
+      });
     }
-  }, [examState.session, sessionId])
+  }, [examState.session, sessionId]);
 
   /**
    * Kalan süreyi periyodik olarak güncelle
    */
   useEffect(() => {
-    let interval: NodeJS.Timeout | null = null
-    
+    let interval: NodeJS.Timeout | null = null;
+
     if (examState.session?.status === ExamStatus.IN_PROGRESS) {
       interval = setInterval(async () => {
         try {
-          const timeData = await examService.getRemainingTime(sessionId)
+          const timeData = await examService.getRemainingTime(sessionId);
           setExamState(prev => ({
             ...prev,
-            remainingTime: timeData.remaining_seconds
-          }))
-          
+            remainingTime: timeData.remaining_seconds,
+          }));
+
           // Uyarı kontrolü
           if (timeData.warning && !showTimeWarning) {
-            setShowTimeWarning(true)
+            setShowTimeWarning(true);
           }
         } catch (error) {
-          console.error('Kalan süre güncelleme hatası:', error)
+          console.error('Kalan süre güncelleme hatası:', error);
         }
-      }, 1000)
+      }, 1000);
     }
-    
+
     return () => {
-      if (interval) clearInterval(interval)
-    }
-  }, [examState.session?.status, sessionId, showTimeWarning])
+      if (interval) {clearInterval(interval);}
+    };
+  }, [examState.session?.status, sessionId, showTimeWarning]);
 
   /**
    * Sınav verilerini yükle
    */
   const loadExamData = async () => {
     try {
-      setLoading(true)
-      setError(null)
+      setLoading(true);
+      setError(null);
 
       // Oturum bilgilerini getir
-      const sessionData = await examService.getExamSession(sessionId)
-      
+      const sessionData = await examService.getExamSession(sessionId);
+
       // Sınav durumuna göre işlem yap
       if (sessionData.status === ExamStatus.COMPLETED) {
         // Performans verilerini getir
-        const performanceData = await examService.getPerformanceAnalysis(sessionId)
+        const performanceData = await examService.getPerformanceAnalysis(sessionId);
         setExamState(prev => ({
           ...prev,
           session: sessionData,
-          performance: performanceData
-        }))
+          performance: performanceData,
+        }));
       } else if (sessionData.status === ExamStatus.IN_PROGRESS) {
         // Mevcut soruyu ve kalan süreyi getir
         const [questionData, timeData] = await Promise.all([
           examService.getCurrentQuestion(sessionId),
-          examService.getRemainingTime(sessionId)
-        ])
-        
+          examService.getRemainingTime(sessionId),
+        ]);
+
         setExamState(prev => ({
           ...prev,
           session: sessionData,
           currentQuestion: questionData,
-          remainingTime: timeData.remaining_seconds
-        }))
+          remainingTime: timeData.remaining_seconds,
+        }));
       } else {
         setExamState(prev => ({
           ...prev,
-          session: sessionData
-        }))
+          session: sessionData,
+        }));
       }
     } catch (err: any) {
-      setError(err.message || 'Sınav verileri yüklenirken hata oluştu')
+      setError(err.message || 'Sınav verileri yüklenirken hata oluştu');
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   /**
    * WebSocket mesajlarını işle
@@ -248,22 +266,22 @@ export const OSYMExamInterface: React.FC<OSYMExamInterfaceProps> = ({
       case 'time_update':
         setExamState(prev => ({
           ...prev,
-          remainingTime: data.remaining_time
-        }))
-        break
+          remainingTime: data.remaining_time,
+        }));
+        break;
       case 'time_warning':
-        setShowTimeWarning(true)
-        break
+        setShowTimeWarning(true);
+        break;
       case 'auto_submit':
-        handleAutoSubmit()
-        break
+        handleAutoSubmit();
+        break;
       case 'connection':
-        console.log('WebSocket bağlantı durumu:', data.status)
-        break
+        console.log('WebSocket bağlantı durumu:', data.status);
+        break;
       default:
-        console.log('Bilinmeyen WebSocket mesajı:', data)
+        console.log('Bilinmeyen WebSocket mesajı:', data);
     }
-  }
+  };
 
   /**
    * Timer güncellemelerini işle
@@ -271,199 +289,199 @@ export const OSYMExamInterface: React.FC<OSYMExamInterfaceProps> = ({
   const handleTimeUpdate = useCallback((remainingTime: number) => {
     setExamState(prev => ({
       ...prev,
-      remainingTime
-    }))
-  }, [])
+      remainingTime,
+    }));
+  }, []);
 
   /**
    * Timer uyarılarını işle
    */
   const handleTimeWarning = useCallback((warningType: 'halfway' | 'final' | 'critical') => {
     if (warningType === 'final' || warningType === 'critical') {
-      setShowTimeWarning(true)
+      setShowTimeWarning(true);
     }
-  }, [])
+  }, []);
 
   /**
    * Süre bittiğinde otomatik gönder
    */
   const handleTimeUp = useCallback(() => {
-    handleAutoSubmit()
-  }, [])
+    handleAutoSubmit();
+  }, []);
 
   /**
    * Otomatik sınav gönderimi
    */
   const handleAutoSubmit = async () => {
     try {
-      setIsSubmitting(true)
-      
+      setIsSubmitting(true);
+
       // Son kaydetme
-      await autoSave.saveNow()
-      
-      const performanceData = await examService.completeExam(sessionId)
-      
+      await autoSave.saveNow();
+
+      const performanceData = await examService.completeExam(sessionId);
+
       setExamState(prev => ({
         ...prev,
         performance: performanceData,
-        session: prev.session ? { ...prev.session, status: ExamStatus.COMPLETED } : null
-      }))
+        session: prev.session ? { ...prev.session, status: ExamStatus.COMPLETED } : null,
+      }));
     } catch (err: any) {
-      setError(err.message || 'Sınav gönderilirken hata oluştu')
+      setError(err.message || 'Sınav gönderilirken hata oluştu');
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
-  }
+  };
 
   /**
    * Cevap kaydet
    */
   const handleAnswerSave = async (selectedAnswer: string) => {
-    if (!examState.currentQuestion || !examState.session) return
+    if (!examState.currentQuestion || !examState.session) {return;}
 
     // Optimistic update
     setExamState(prev => ({
       ...prev,
       answers: {
         ...prev.answers,
-        [examState.currentQuestion!.id]: selectedAnswer
-      }
-    }))
+        [examState.currentQuestion!.id]: selectedAnswer,
+      },
+    }));
 
     // Otomatik kaydetme kuyruğuna ekle
     autoSave.queueSave({
       question_id: examState.currentQuestion.id,
       selected_answer: selectedAnswer,
-      response_time: undefined
-    })
+      response_time: undefined,
+    });
 
     // Kaydetme durumunu göster
-    setSaveStatus('saving')
-    setSaveMessage('Cevap kaydediliyor...')
-  }
+    setSaveStatus('saving');
+    setSaveMessage('Cevap kaydediliyor...');
+  };
 
   /**
    * Sonraki soruya geç
    */
   const handleNextQuestion = async () => {
-    if (!examState.session) return
-    
+    if (!examState.session) {return;}
+
     try {
-      const questionData = await examService.nextQuestion(sessionId, examState.session.current_question_index)
-      
+      const questionData = await examService.nextQuestion(sessionId, examState.session.current_question_index);
+
       setExamState(prev => ({
         ...prev,
         currentQuestion: questionData,
         session: prev.session ? {
           ...prev.session,
-          current_question_index: prev.session.current_question_index + 1
-        } : null
-      }))
+          current_question_index: prev.session.current_question_index + 1,
+        } : null,
+      }));
     } catch (err: any) {
-      setError(err.message || 'Sonraki soru getirilemedi')
+      setError(err.message || 'Sonraki soru getirilemedi');
     }
-  }
+  };
 
   /**
    * Önceki soruya dön
    */
   const handlePreviousQuestion = async () => {
-    if (!examState.session) return
-    
+    if (!examState.session) {return;}
+
     try {
-      const questionData = await examService.previousQuestion(sessionId, examState.session.current_question_index)
-      
+      const questionData = await examService.previousQuestion(sessionId, examState.session.current_question_index);
+
       setExamState(prev => ({
         ...prev,
         currentQuestion: questionData,
         session: prev.session ? {
           ...prev.session,
-          current_question_index: prev.session.current_question_index - 1
-        } : null
-      }))
+          current_question_index: prev.session.current_question_index - 1,
+        } : null,
+      }));
     } catch (err: any) {
-      setError(err.message || 'Önceki soru getirilemedi')
+      setError(err.message || 'Önceki soru getirilemedi');
     }
-  }
+  };
 
   /**
    * Belirli bir soruya git
    */
   const handleQuestionSelect = async (questionIndex: number) => {
-    if (!examState.session || questionIndex === examState.session.current_question_index) return
+    if (!examState.session || questionIndex === examState.session.current_question_index) {return;}
 
     try {
-      const questionData = await examService.navigateToQuestion(sessionId, { question_index: questionIndex })
-      
+      const questionData = await examService.navigateToQuestion(sessionId, { question_index: questionIndex });
+
       setExamState(prev => ({
         ...prev,
         currentQuestion: questionData,
         session: prev.session ? {
           ...prev.session,
-          current_question_index: questionIndex
-        } : null
-      }))
+          current_question_index: questionIndex,
+        } : null,
+      }));
     } catch (err: any) {
-      setError(err.message || 'Soru değiştirilemedi')
+      setError(err.message || 'Soru değiştirilemedi');
     }
-  }
+  };
 
   /**
    * Soru işaretleme
    */
   const handleFlagQuestion = async (questionId?: string) => {
-    if (!examState.currentQuestion) return
+    if (!examState.currentQuestion) {return;}
 
-    const targetQuestionId = questionId || examState.currentQuestion.id
-    const isCurrentlyFlagged = examState.flaggedQuestions.has(targetQuestionId)
-    
+    const targetQuestionId = questionId || examState.currentQuestion.id;
+    const isCurrentlyFlagged = examState.flaggedQuestions.has(targetQuestionId);
+
     try {
       await examService.flagQuestion(sessionId, {
         question_id: targetQuestionId,
-        flagged: !isCurrentlyFlagged
-      })
+        flagged: !isCurrentlyFlagged,
+      });
 
       setExamState(prev => {
-        const newFlagged = new Set(prev.flaggedQuestions)
+        const newFlagged = new Set(prev.flaggedQuestions);
         if (isCurrentlyFlagged) {
-          newFlagged.delete(targetQuestionId)
+          newFlagged.delete(targetQuestionId);
         } else {
-          newFlagged.add(targetQuestionId)
+          newFlagged.add(targetQuestionId);
         }
-        
+
         return {
           ...prev,
-          flaggedQuestions: newFlagged
-        }
-      })
+          flaggedQuestions: newFlagged,
+        };
+      });
     } catch (err: any) {
-      setError(err.message || 'Soru işaretlenirken hata oluştu')
+      setError(err.message || 'Soru işaretlenirken hata oluştu');
     }
-  }
+  };
 
   /**
    * Sınavı manuel tamamla
    */
   const handleCompleteExam = async () => {
     try {
-      setIsSubmitting(true)
-      
+      setIsSubmitting(true);
+
       // Son kaydetme
-      await autoSave.saveNow()
-      
-      const performanceData = await examService.completeExam(sessionId)
-      
+      await autoSave.saveNow();
+
+      const performanceData = await examService.completeExam(sessionId);
+
       setExamState(prev => ({
         ...prev,
         performance: performanceData,
-        session: prev.session ? { ...prev.session, status: ExamStatus.COMPLETED } : null
-      }))
+        session: prev.session ? { ...prev.session, status: ExamStatus.COMPLETED } : null,
+      }));
     } catch (err: any) {
-      setError(err.message || 'Sınav tamamlanırken hata oluştu')
+      setError(err.message || 'Sınav tamamlanırken hata oluştu');
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
-  }
+  };
 
   /**
    * Zorluk seviyesi rengini getir
@@ -471,15 +489,15 @@ export const OSYMExamInterface: React.FC<OSYMExamInterfaceProps> = ({
   const getDifficultyColor = (difficulty: string): 'success' | 'warning' | 'error' | 'default' => {
     switch (difficulty) {
       case QuestionDifficulty.EASY:
-        return 'success'
+        return 'success';
       case QuestionDifficulty.MEDIUM:
-        return 'warning'
+        return 'warning';
       case QuestionDifficulty.HARD:
-        return 'error'
+        return 'error';
       default:
-        return 'default'
+        return 'default';
     }
-  }
+  };
 
   // Loading durumu
   if (loading) {
@@ -490,7 +508,7 @@ export const OSYMExamInterface: React.FC<OSYMExamInterfaceProps> = ({
           Sınav yükleniyor...
         </Typography>
       </Box>
-    )
+    );
   }
 
   // Hata durumu
@@ -503,7 +521,7 @@ export const OSYMExamInterface: React.FC<OSYMExamInterfaceProps> = ({
           Tekrar Dene
         </Button>
       </Alert>
-    )
+    );
   }
 
   // Sınav tamamlandı - Sonuçları göster
@@ -515,12 +533,12 @@ export const OSYMExamInterface: React.FC<OSYMExamInterfaceProps> = ({
           animate={{ opacity: 1, scale: 1 }}
           className="text-center"
         >
-          <Assessment sx={{ 
-            fontSize: 80, 
-            color: examState.performance.raw_score >= 60 ? 'success.main' : 'error.main', 
-            mb: 2 
+          <Assessment sx={{
+            fontSize: 80,
+            color: examState.performance.raw_score >= 60 ? 'success.main' : 'error.main',
+            mb: 2,
           }} />
-          
+
           <Typography variant="h4" gutterBottom>
             Sınav Tamamlandı!
           </Typography>
@@ -622,33 +640,33 @@ export const OSYMExamInterface: React.FC<OSYMExamInterfaceProps> = ({
           </Box>
         </motion.div>
       </Paper>
-    )
+    );
   }
 
   // Sınav devam ediyor - Soru arayüzü
   if (examState.session && examState.currentQuestion && examState.session.status === ExamStatus.IN_PROGRESS) {
-    const currentAnswer = examState.answers[examState.currentQuestion.id] || ''
-    const isFlagged = examState.flaggedQuestions.has(examState.currentQuestion.id)
-    const totalTimeSeconds = examState.session.duration_minutes * 60
-    const isFirstQuestion = examState.session.current_question_index === 0
-    const isLastQuestion = examState.session.current_question_index === examState.session.total_questions - 1
+    const currentAnswer = examState.answers[examState.currentQuestion.id] || '';
+    const isFlagged = examState.flaggedQuestions.has(examState.currentQuestion.id);
+    const totalTimeSeconds = examState.session.duration_minutes * 60;
+    const isFirstQuestion = examState.session.current_question_index === 0;
+    const isLastQuestion = examState.session.current_question_index === examState.session.total_questions - 1;
 
     return (
       <Box sx={{ height: '100vh', display: 'flex', flexDirection: 'column' }}>
         {/* Header - Responsive */}
-        <Paper elevation={2} sx={{ 
-          p: { xs: 1, sm: 2 }, 
+        <Paper elevation={2} sx={{
+          p: { xs: 1, sm: 2 },
           borderRadius: 0,
-          borderBottom: 1, 
-          borderColor: 'divider'
+          borderBottom: 1,
+          borderColor: 'divider',
         }}>
-          <Box sx={{ 
-            display: 'flex', 
-            justifyContent: 'space-between', 
+          <Box sx={{
+            display: 'flex',
+            justifyContent: 'space-between',
             alignItems: { xs: 'flex-start', sm: 'center' },
             flexDirection: { xs: 'column', sm: 'row' },
             gap: { xs: 2, sm: 1 },
-            mb: { xs: 2, sm: 1 }
+            mb: { xs: 2, sm: 1 },
           }}>
             <Box sx={{ flex: 1 }}>
               <Typography variant="h6" sx={{ fontSize: { xs: '1rem', sm: '1.25rem' } }}>
@@ -658,13 +676,13 @@ export const OSYMExamInterface: React.FC<OSYMExamInterfaceProps> = ({
                 Soru {examState.session.current_question_index + 1} / {examState.session.total_questions}
               </Typography>
             </Box>
-            
-            <Box sx={{ 
-              display: 'flex', 
-              alignItems: 'center', 
+
+            <Box sx={{
+              display: 'flex',
+              alignItems: 'center',
               gap: { xs: 1, sm: 2 },
               alignSelf: { xs: 'stretch', sm: 'center' },
-              justifyContent: { xs: 'space-between', sm: 'flex-end' }
+              justifyContent: { xs: 'space-between', sm: 'flex-end' },
             }}>
               {/* Kaydetme durumu */}
               {saveStatus && (
@@ -676,7 +694,7 @@ export const OSYMExamInterface: React.FC<OSYMExamInterfaceProps> = ({
                   variant="outlined"
                 />
               )}
-              
+
               {/* Timer */}
               <ExamTimer
                 totalTimeSeconds={totalTimeSeconds}
@@ -686,9 +704,9 @@ export const OSYMExamInterface: React.FC<OSYMExamInterfaceProps> = ({
                 onTimeUp={handleTimeUp}
                 showProgress={!isMobile}
               />
-              
-              <IconButton 
-                onClick={() => setShowExitDialog(true)} 
+
+              <IconButton
+                onClick={() => setShowExitDialog(true)}
                 color="error"
                 size="medium"
               >
@@ -698,12 +716,12 @@ export const OSYMExamInterface: React.FC<OSYMExamInterfaceProps> = ({
           </Box>
 
           {/* Soru bilgileri */}
-          <Box sx={{ 
-            display: 'flex', 
+          <Box sx={{
+            display: 'flex',
             gap: 0.5,
             flexWrap: 'wrap',
             justifyContent: { xs: 'center', sm: 'flex-start' },
-            mb: 1
+            mb: 1,
           }}>
             <Chip
               label={`Soru ${examState.session.current_question_index + 1}`}
@@ -716,8 +734,8 @@ export const OSYMExamInterface: React.FC<OSYMExamInterfaceProps> = ({
               color={getDifficultyColor(examState.currentQuestion.difficulty)}
             />
             <Chip
-              label={examState.currentQuestion.topic.length > 15 ? 
-                examState.currentQuestion.topic.substring(0, 15) + '...' : 
+              label={examState.currentQuestion.topic.length > 15 ?
+                examState.currentQuestion.topic.substring(0, 15) + '...' :
                 examState.currentQuestion.topic}
               size="small"
               variant="outlined"
@@ -726,14 +744,14 @@ export const OSYMExamInterface: React.FC<OSYMExamInterfaceProps> = ({
         </Paper>
 
         {/* Main Content Area - Responsive */}
-        <Box sx={{ 
-          flex: 1, 
+        <Box sx={{
+          flex: 1,
           overflow: 'auto',
           display: 'flex',
           flexDirection: { xs: 'column', lg: 'row' },
           gap: 2,
           p: { xs: 2, sm: 3 },
-          WebkitOverflowScrolling: 'touch'
+          WebkitOverflowScrolling: 'touch',
         }}>
           {/* Question Content */}
           <Box sx={{ flex: 1, minWidth: 0 }}>
@@ -747,13 +765,13 @@ export const OSYMExamInterface: React.FC<OSYMExamInterfaceProps> = ({
             >
               {/* Question */}
               <Box sx={{ mb: { xs: 3, sm: 4 } }}>
-                <Box sx={{ 
-                  display: 'flex', 
-                  justifyContent: 'space-between', 
-                  alignItems: 'flex-start', 
+                <Box sx={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'flex-start',
                   mb: 2,
                   flexDirection: { xs: 'column', sm: 'row' },
-                  gap: { xs: 1, sm: 0 }
+                  gap: { xs: 1, sm: 0 },
                 }}>
                   <Typography
                     variant="h6"
@@ -762,7 +780,7 @@ export const OSYMExamInterface: React.FC<OSYMExamInterfaceProps> = ({
                       pr: { xs: 0, sm: 2 },
                       fontSize: { xs: '1rem', sm: '1.25rem' },
                       lineHeight: { xs: 1.5, sm: 1.6 },
-                      wordBreak: 'break-word'
+                      wordBreak: 'break-word',
                     }}
                   >
                     {examState.currentQuestion.question_text}
@@ -773,7 +791,7 @@ export const OSYMExamInterface: React.FC<OSYMExamInterfaceProps> = ({
                     size="small"
                     sx={{
                       alignSelf: { xs: 'flex-end', sm: 'flex-start' },
-                      mt: { xs: 1, sm: 0 }
+                      mt: { xs: 1, sm: 0 },
                     }}
                   >
                     {isFlagged ? (
@@ -804,13 +822,13 @@ export const OSYMExamInterface: React.FC<OSYMExamInterfaceProps> = ({
 
                 {examState.currentQuestion.question_image_url && (
                   <Box sx={{ mb: 2, textAlign: 'center' }}>
-                    <img 
-                      src={examState.currentQuestion.question_image_url} 
+                    <img
+                      src={examState.currentQuestion.question_image_url}
                       alt="Soru görseli"
-                      style={{ 
-                        maxWidth: '100%', 
+                      style={{
+                        maxWidth: '100%',
                         height: 'auto',
-                        borderRadius: theme.shape.borderRadius
+                        borderRadius: theme.shape.borderRadius,
                       }}
                     />
                   </Box>
@@ -828,9 +846,9 @@ export const OSYMExamInterface: React.FC<OSYMExamInterfaceProps> = ({
                     examState.currentQuestion.option_b,
                     examState.currentQuestion.option_c,
                     examState.currentQuestion.option_d,
-                    examState.currentQuestion.option_e
+                    examState.currentQuestion.option_e,
                   ].filter(Boolean).map((option, index) => {
-                    const optionLabel = String.fromCharCode(65 + index) // A, B, C, D, E
+                    const optionLabel = String.fromCharCode(65 + index); // A, B, C, D, E
                     return (
                       <FormControlLabel
                         key={index}
@@ -848,20 +866,20 @@ export const OSYMExamInterface: React.FC<OSYMExamInterfaceProps> = ({
                           minHeight: { xs: 48, sm: 'auto' },
                           alignItems: 'flex-start',
                           '&:hover': {
-                            bgcolor: 'grey.50'
+                            bgcolor: 'grey.50',
                           },
                           '& .MuiFormControlLabel-label': {
                             fontSize: { xs: '0.95rem', sm: '1rem' },
                             lineHeight: { xs: 1.4, sm: 1.5 },
                             wordBreak: 'break-word',
-                            flex: 1
+                            flex: 1,
                           },
                           '& .MuiRadio-root': {
-                            padding: { xs: '6px', sm: '9px' }
-                          }
+                            padding: { xs: '6px', sm: '9px' },
+                          },
                         }}
                       />
-                    )
+                    );
                   })}
                 </RadioGroup>
               </Box>
@@ -887,11 +905,11 @@ export const OSYMExamInterface: React.FC<OSYMExamInterfaceProps> = ({
 
         {/* Footer Navigation */}
         <Paper elevation={2} sx={{ borderRadius: 0, borderTop: 1, borderColor: 'divider' }}>
-          <Box sx={{ 
-            display: 'flex', 
-            justifyContent: 'space-between', 
-            alignItems: 'center', 
-            p: 2 
+          <Box sx={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            p: 2,
           }}>
             <Button
               variant="outlined"
@@ -945,7 +963,7 @@ export const OSYMExamInterface: React.FC<OSYMExamInterfaceProps> = ({
           <DialogTitle>Sınavdan Çıkış</DialogTitle>
           <DialogContent>
             <Typography>
-              Sınavdan çıkmak istediğinizden emin misiniz? 
+              Sınavdan çıkmak istediğinizden emin misiniz?
               Bu işlem geri alınamaz ve sınavınız tamamlanmış sayılacaktır.
             </Typography>
           </DialogContent>
@@ -978,8 +996,8 @@ export const OSYMExamInterface: React.FC<OSYMExamInterfaceProps> = ({
         </Dialog>
 
         {/* Flagged Questions Dialog (Mobile) */}
-        <Dialog 
-          open={showFlaggedDialog} 
+        <Dialog
+          open={showFlaggedDialog}
           onClose={() => setShowFlaggedDialog(false)}
           fullScreen={isMobile}
           maxWidth="sm"
@@ -998,8 +1016,8 @@ export const OSYMExamInterface: React.FC<OSYMExamInterfaceProps> = ({
               currentQuestionIndex={examState.session.current_question_index}
               totalQuestions={examState.session.total_questions}
               onQuestionSelect={(index) => {
-                handleQuestionSelect(index)
-                setShowFlaggedDialog(false)
+                handleQuestionSelect(index);
+                setShowFlaggedDialog(false);
               }}
               onFlagToggle={handleFlagQuestion}
               disabled={isSubmitting}
@@ -1029,7 +1047,7 @@ export const OSYMExamInterface: React.FC<OSYMExamInterfaceProps> = ({
           </Alert>
         </Snackbar>
       </Box>
-    )
+    );
   }
 
   // Varsayılan durum
@@ -1037,7 +1055,7 @@ export const OSYMExamInterface: React.FC<OSYMExamInterfaceProps> = ({
     <Box display="flex" justifyContent="center" alignItems="center" minHeight="400px">
       <Typography variant="h6">Sınav durumu belirsiz</Typography>
     </Box>
-  )
-}
+  );
+};
 
-export default OSYMExamInterface
+export default OSYMExamInterface;

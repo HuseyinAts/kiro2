@@ -3,8 +3,8 @@
  * Teknofest 2025 - Eğitim Eylemci Projesi
  */
 
-import { CulturalContext, ApiResponse } from '../types/revolutionary';
 import config from '../config';
+import { CulturalContext, ApiResponse } from '../types/revolutionary';
 
 const API_BASE_URL = config.api.baseURL;
 
@@ -63,7 +63,7 @@ class CulturalAdaptationService {
    */
   async getStudentCulturalAdaptation(
     studentId: string,
-    forceRefresh: boolean = false
+    forceRefresh: boolean = false,
   ): Promise<ApiResponse<CulturalAdaptationResult>> {
     try {
       const params = new URLSearchParams();
@@ -78,7 +78,7 @@ class CulturalAdaptationService {
           headers: {
             'Authorization': `Bearer ${localStorage.getItem('token')}`,
           },
-        }
+        },
       );
 
       if (!response.ok) {
@@ -106,7 +106,7 @@ class CulturalAdaptationService {
    */
   async updateBehavioralData(
     studentId: string,
-    behavioralUpdate: BehavioralUpdate
+    behavioralUpdate: BehavioralUpdate,
   ): Promise<ApiResponse<CulturalAdaptationResult>> {
     try {
       const response = await fetch(`${this.baseUrl}/student/${studentId}/behavioral-update`, {
@@ -143,7 +143,7 @@ class CulturalAdaptationService {
    */
   async detectCulturalContext(
     studentId: string,
-    behavioralData: Record<string, any>
+    behavioralData: Record<string, any>,
   ): Promise<ApiResponse<CulturalContext>> {
     try {
       const response = await fetch(`${this.baseUrl}/detect-context`, {
@@ -183,7 +183,7 @@ class CulturalAdaptationService {
    */
   async updateCulturalFactors(
     studentId: string,
-    culturalFactors: Record<string, number>
+    culturalFactors: Record<string, number>,
   ): Promise<ApiResponse<CulturalAdaptationResult>> {
     try {
       const response = await fetch(`${this.baseUrl}/student/${studentId}/cultural-factors`, {
@@ -287,12 +287,12 @@ class CulturalAdaptationService {
   async getCulturalRecommendations(
     studentId: string,
     subject?: string,
-    learningObjective?: string
+    learningObjective?: string,
   ): Promise<ApiResponse<any>> {
     try {
       const params = new URLSearchParams();
-      if (subject) params.append('subject', subject);
-      if (learningObjective) params.append('learning_objective', learningObjective);
+      if (subject) {params.append('subject', subject);}
+      if (learningObjective) {params.append('learning_objective', learningObjective);}
 
       const response = await fetch(
         `${this.baseUrl}/student/${studentId}/recommendations?${params}`,
@@ -301,7 +301,7 @@ class CulturalAdaptationService {
           headers: {
             'Authorization': `Bearer ${localStorage.getItem('token')}`,
           },
-        }
+        },
       );
 
       if (!response.ok) {
@@ -329,7 +329,7 @@ class CulturalAdaptationService {
    */
   async getCulturalHistory(
     studentId: string,
-    limit: number = 10
+    limit: number = 10,
   ): Promise<ApiResponse<any[]>> {
     try {
       const response = await fetch(
@@ -339,7 +339,7 @@ class CulturalAdaptationService {
           headers: {
             'Authorization': `Bearer ${localStorage.getItem('token')}`,
           },
-        }
+        },
       );
 
       if (!response.ok) {

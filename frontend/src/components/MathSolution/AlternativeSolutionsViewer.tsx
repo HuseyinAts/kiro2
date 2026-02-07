@@ -9,20 +9,20 @@
  * - Step-by-step breakdown for each solution
  */
 
-import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import {
   Clock,
   Zap,
-  TrendingUp,
   Award,
   Eye,
   ThumbsUp,
   ThumbsDown,
   BookOpen,
   Lightbulb,
-  CheckCircle
+  CheckCircle,
 } from 'lucide-react';
+import * as React from 'react';
+import {  useState, useEffect  } from 'react';
 
 interface SolutionStep {
   step_number: number;
@@ -60,7 +60,7 @@ interface AlternativeSolutionsViewerProps {
 
 const AlternativeSolutionsViewer: React.FC<AlternativeSolutionsViewerProps> = ({
   questionId,
-  onSolutionSelect
+  onSolutionSelect,
 }) => {
   const [solutions, setSolutions] = useState<AlternativeSolution[]>([]);
   const [selectedSolution, setSelectedSolution] = useState<AlternativeSolution | null>(null);
@@ -110,9 +110,10 @@ const AlternativeSolutionsViewer: React.FC<AlternativeSolutionsViewerProps> = ({
           return a.estimated_time_seconds - b.estimated_time_seconds;
         case 'popular':
           return (b.votes.upvotes - b.votes.downvotes) - (a.votes.upvotes - a.votes.downvotes);
-        case 'difficulty':
+        case 'difficulty': {
           const difficultyOrder = { 'kolay': 1, 'orta': 2, 'zor': 3 };
           return difficultyOrder[a.difficulty] - difficultyOrder[b.difficulty];
+        }
         default:
           return 0;
       }
@@ -131,7 +132,7 @@ const AlternativeSolutionsViewer: React.FC<AlternativeSolutionsViewerProps> = ({
   const handleVote = async (solutionId: string, voteType: 'upvote' | 'downvote') => {
     try {
       await axios.post(`/api/v1/questions/${questionId}/solutions/${solutionId}/vote`, {
-        vote_type: voteType
+        vote_type: voteType,
       });
 
       // Refresh solutions
@@ -148,7 +149,7 @@ const AlternativeSolutionsViewer: React.FC<AlternativeSolutionsViewerProps> = ({
       hızlı: { bg: 'bg-green-100', text: 'text-green-800', border: 'border-green-300', icon: '⚡' },
       görsel: { bg: 'bg-purple-100', text: 'text-purple-800', border: 'border-purple-300', icon: '🎨' },
       mantıksal: { bg: 'bg-yellow-100', text: 'text-yellow-800', border: 'border-yellow-300', icon: '🧠' },
-      formül: { bg: 'bg-red-100', text: 'text-red-800', border: 'border-red-300', icon: '∑' }
+      formül: { bg: 'bg-red-100', text: 'text-red-800', border: 'border-red-300', icon: '∑' },
     };
     return styles[category as keyof typeof styles] || styles.klasik;
   };
@@ -157,13 +158,13 @@ const AlternativeSolutionsViewer: React.FC<AlternativeSolutionsViewerProps> = ({
     const badges = {
       kolay: { bg: 'bg-green-500', text: 'Kolay' },
       orta: { bg: 'bg-yellow-500', text: 'Orta' },
-      zor: { bg: 'bg-red-500', text: 'Zor' }
+      zor: { bg: 'bg-red-500', text: 'Zor' },
     };
     return badges[difficulty as keyof typeof badges] || badges.orta;
   };
 
   const formatTime = (seconds: number) => {
-    if (seconds < 60) return `${seconds}s`;
+    if (seconds < 60) {return `${seconds}s`;}
     const minutes = Math.floor(seconds / 60);
     const secs = seconds % 60;
     return `${minutes}d ${secs}s`;

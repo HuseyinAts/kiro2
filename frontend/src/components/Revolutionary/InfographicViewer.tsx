@@ -3,7 +3,7 @@
  * Task 81.2: İnfografikler (REQ-50.77-80)
  */
 
-import React, { useState } from 'react';
+import { Add as AddIcon } from '@mui/icons-material';
 import {
   Box,
   Button,
@@ -19,23 +19,24 @@ import {
   Select,
   MenuItem,
   FormControl,
-  InputLabel
+  InputLabel,
 } from '@mui/material';
-import { Add as AddIcon, Download as DownloadIcon } from '@mui/icons-material';
+import * as React from 'react';
+import {  useState  } from 'react';
 
 const InfographicViewer: React.FC = () => {
-  const [templates, setTemplates] = useState([
+  const [templates, _setTemplates] = useState([
     { id: 'timeline', name: 'Zaman Çizelgesi', icon: '📅' },
     { id: 'comparison', name: 'Karşılaştırma', icon: '⚖️' },
     { id: 'process', name: 'Süreç Akışı', icon: '🔄' },
-    { id: 'hierarchy', name: 'Hiyerarşi', icon: '🏛️' }
+    { id: 'hierarchy', name: 'Hiyerarşi', icon: '🏛️' },
   ]);
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const [formData, setFormData] = useState({
     title: '',
     subject: '',
     topic: '',
-    template: 'timeline'
+    template: 'timeline',
   });
 
   // REQ-50.77: Visual summary generation
@@ -46,8 +47,8 @@ const InfographicViewer: React.FC = () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           ...formData,
-          data: [{ content: 'Örnek veri' }]
-        })
+          data: [{ content: 'Örnek veri' }],
+        }),
       });
 
       if (response.ok) {

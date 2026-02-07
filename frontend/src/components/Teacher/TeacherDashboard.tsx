@@ -1,18 +1,20 @@
-import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { 
-  Users, 
-  BookOpen, 
-  TrendingUp, 
+import {
+  Users,
+  BookOpen,
+  TrendingUp,
   Bell,
   Calendar,
   BarChart3,
   FileText,
-  Settings
+  Settings,
 } from 'lucide-react';
+import * as React from 'react';
+import {  useState, useEffect  } from 'react';
+
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 interface DashboardStats {
   toplam_ogrenci: number;
@@ -69,12 +71,12 @@ const TeacherDashboard: React.FC = () => {
     try {
       setLoading(true);
       const token = localStorage.getItem('token');
-      
+
       const response = await fetch('/api/v1/ogretmen/dashboard', {
         headers: {
           'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
+          'Content-Type': 'application/json',
+        },
       });
 
       if (!response.ok) {
@@ -131,8 +133,8 @@ const TeacherDashboard: React.FC = () => {
       <Alert className="m-4">
         <AlertDescription>
           Hata: {error}
-          <Button 
-            onClick={fetchDashboardData} 
+          <Button
+            onClick={fetchDashboardData}
             className="ml-4"
             size="sm"
           >
@@ -265,7 +267,7 @@ const TeacherDashboard: React.FC = () => {
               ) : (
                 <p className="text-gray-500 text-center py-4">Henüz öğrenci bulunmuyor</p>
               )}
-              
+
               {ogrenci_listesi.length > 0 && (
                 <Button variant="outline" className="w-full mt-4">
                   Tüm Öğrencileri Görüntüle
@@ -287,8 +289,8 @@ const TeacherDashboard: React.FC = () => {
             <div className="space-y-3">
               {son_bildirimler.length > 0 ? (
                 son_bildirimler.map((bildirim) => (
-                  <div 
-                    key={bildirim.bildirim_id} 
+                  <div
+                    key={bildirim.bildirim_id}
                     className={`p-3 rounded-lg border ${getNotificationColor(bildirim.tip)} ${!bildirim.okundu ? 'font-medium' : ''}`}
                   >
                     <div className="flex justify-between items-start">
@@ -308,7 +310,7 @@ const TeacherDashboard: React.FC = () => {
               ) : (
                 <p className="text-gray-500 text-center py-4">Henüz bildirim bulunmuyor</p>
               )}
-              
+
               {son_bildirimler.length > 0 && (
                 <Button variant="outline" className="w-full mt-4">
                   Tüm Bildirimleri Görüntüle

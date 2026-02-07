@@ -1,21 +1,22 @@
-import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { 
-  Bell, 
-  BellRing, 
-  CheckCircle, 
-  Clock, 
-  Award, 
+import {
+  Bell,
+  BellRing,
+  CheckCircle,
+  Clock,
+  Award,
   TrendingUp,
   AlertCircle,
   Filter,
-  MarkAsRead
 } from 'lucide-react';
+import * as React from 'react';
+import {  useState, useEffect  } from 'react';
+
+import { LoadingSpinner } from '@/components/Common/LoadingStates';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { parentService } from '@/services/parentService';
-import { LoadingSpinner } from '@/components/Common/LoadingSpinner';
 
 interface ParentNotification {
   id: number;
@@ -57,14 +58,14 @@ export const ParentNotifications: React.FC = () => {
     try {
       setMarkingAsRead(notificationId);
       await parentService.markNotificationAsRead(notificationId);
-      
+
       // Update local state
-      setNotifications(prev => 
-        prev.map(notification => 
-          notification.id === notificationId 
+      setNotifications(prev =>
+        prev.map(notification =>
+          notification.id === notificationId
             ? { ...notification, is_read: true, read_at: new Date().toISOString() }
-            : notification
-        )
+            : notification,
+        ),
       );
     } catch (err: any) {
       setError(err.message || 'Bildirim güncellenirken hata oluştu');
@@ -206,8 +207,8 @@ export const ParentNotifications: React.FC = () => {
                 <div
                   key={notification.id}
                   className={`border rounded-lg p-4 transition-colors ${
-                    !notification.is_read 
-                      ? 'bg-blue-50 border-blue-200 shadow-sm' 
+                    !notification.is_read
+                      ? 'bg-blue-50 border-blue-200 shadow-sm'
                       : 'bg-gray-50 hover:bg-gray-100'
                   }`}
                 >
@@ -230,7 +231,7 @@ export const ParentNotifications: React.FC = () => {
                         </p>
                       </div>
                     </div>
-                    
+
                     <div className="flex flex-col items-end gap-2">
                       <Badge className={getNotificationTypeBadge(notification.notification_type)}>
                         {getNotificationTypeText(notification.notification_type)}

@@ -213,7 +213,7 @@ class PathOptimizer:
             resources, key=lambda r: difficulty_order.index(r.difficulty_level)
         )
 
-        # Group by type
+        # Group by type - use resource_id set for O(1) lookup
         videos = [r for r in sorted_resources if "video" in r.resource_type.lower()]
         articles = [r for r in sorted_resources if "article" in r.resource_type.lower()]
         practice = [
@@ -222,7 +222,9 @@ class PathOptimizer:
             if "quiz" in r.resource_type.lower()
             or "practice" in r.resource_type.lower()
         ]
-        others = [r for r in sorted_resources if r not in videos + articles + practice]
+        # Use set for O(1) membership test instead of O(N) list lookup
+        categorized_ids = {r.resource_id for r in videos + articles + practice}
+        others = [r for r in sorted_resources if r.resource_id not in categorized_ids]
 
         # Interleave types for variety
         optimized = []

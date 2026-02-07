@@ -3,7 +3,7 @@ Monitoring API Endpoints
 Performance metrics, health checks, system status
 """
 
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any, Dict, Optional
 
 from fastapi import APIRouter, HTTPException, Query
@@ -24,7 +24,7 @@ async def health_check() -> Dict[str, Any]:
     try:
         health_status = {
             "status": "healthy",
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
             "version": "1.0.0",
             "services": {},
         }
@@ -179,7 +179,7 @@ async def get_performance_summary(
 
         summary = {
             "time_period_hours": hours,
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
             "api_performance": api_summary,
             "database_performance": db_summary,
             "system_performance": system_summary,
@@ -297,7 +297,7 @@ async def detect_performance_bottlenecks(
             "data": {
                 "bottlenecks": bottlenecks,
                 "analysis_period_hours": hours,
-                "timestamp": datetime.utcnow().isoformat(),
+                "timestamp": datetime.now(timezone.utc).isoformat(),
             },
             "message": f"Found {len(bottlenecks)} potential bottlenecks",
         }
@@ -385,7 +385,7 @@ async def analyze_logs(
 
         analysis = {
             "time_period_hours": hours,
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
             "error_analysis": error_analysis,
             "performance_analysis": performance_analysis,
         }

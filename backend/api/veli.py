@@ -1,15 +1,22 @@
 """
 Veli takip sistemi API endpoint'leri
-"""
-from typing import Any, Dict, List, Optional
 
-from fastapi import APIRouter, Depends, HTTPException, status
+CODE QUALITY FIX: Improved exception handling, added path validation
+"""
+import logging
+from datetime import datetime
+from typing import Any, Dict, List, Optional
+from uuid import UUID
+
+from fastapi import APIRouter, Depends, HTTPException, Path, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 
 from models import Kullanici, KullaniciRolu
 from models.dashboard import Bildirim
 from services.user_service import kullanici_servisi
 from services.veli_service import VeliOnayTalebi, VeliRaporu, veli_servisi
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/api/v1/veli", tags=["Veli Takip Sistemi"])
 security = HTTPBearer()
@@ -58,7 +65,15 @@ async def cocuk_listesi_getir(mevcut_veli: Kullanici = Depends(mevcut_veli_getir
 
     except ValueError as e:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
+    except (ConnectionError, TimeoutError) as e:
+        logger.error(f"Database/service connection error: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="Servis geçici olarak kullanılamıyor, lütfen tekrar deneyin",
+        )
     except Exception as e:
+        # Log full error for debugging, but don't expose to client
+        logger.error(f"Unexpected error in cocuk_listesi_getir: {e}", exc_info=True)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Çocuk listesi alınırken beklenmeyen hata oluştu",
@@ -71,12 +86,19 @@ async def cocuk_listesi_getir(mevcut_veli: Kullanici = Depends(mevcut_veli_getir
     summary="Çocuk Performansı",
 )
 async def cocuk_performansi_getir(
-    ogrenci_id: str, mevcut_veli: Kullanici = Depends(mevcut_veli_getir)
+    ogrenci_id: str = Path(
+        ...,
+        min_length=1,
+        max_length=100,
+        description="Öğrenci ID'si",
+        example="ogrenci_12345",
+    ),
+    mevcut_veli: Kullanici = Depends(mevcut_veli_getir),
 ):
     """
     Belirli bir çocuğun detaylı performans verilerini getir
 
-    - **ogrenci_id**: Öğrenci ID'si
+    - **ogrenci_id**: Öğrenci ID'si (validated)
     - **Döndürür**: Detaylı performans analizi ve istatistikler
     """
     try:
@@ -92,7 +114,19 @@ async def cocuk_performansi_getir(
 
     except ValueError as e:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
+    except PermissionError:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Bu öğrencinin verilerine erişim yetkiniz yok",
+        )
+    except (ConnectionError, TimeoutError) as e:
+        logger.error(f"Database/service connection error: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="Servis geçici olarak kullanılamıyor",
+        )
     except Exception as e:
+        logger.error(f"Unexpected error in cocuk_performansi_getir: {e}", exc_info=True)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Performans verileri alınırken hata oluştu",
@@ -122,7 +156,7 @@ async def haftalik_rapor_olustur(
 
     except ValueError as e:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
-    except Exception as e:
+    except Exception:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Rapor oluşturulurken hata oluştu",
@@ -151,7 +185,7 @@ async def onay_talepleri_listesi(mevcut_veli: Kullanici = Depends(mevcut_veli_ge
             "message": f"{len(veli_talepleri)} onay talebi bulundu",
         }
 
-    except Exception as e:
+    except Exception:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Onay talepleri alınırken hata oluştu",
@@ -185,7 +219,7 @@ async def onay_talebi_yanitla(
 
     except ValueError as e:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
-    except Exception as e:
+    except Exception:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Onay talebi yanıtlanırken hata oluştu",
@@ -210,7 +244,7 @@ async def veli_bildirimleri(mevcut_veli: Kullanici = Depends(mevcut_veli_getir))
             "message": f"{len(bildirimler)} bildirim bulundu",
         }
 
-    except Exception as e:
+    except Exception:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Bildirimler alınırken hata oluştu",
@@ -240,7 +274,7 @@ async def bildirim_okundu_isaretle(
 
     except HTTPException:
         raise
-    except Exception as e:
+    except Exception:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Bildirim güncellenirken hata oluştu",
@@ -306,7 +340,7 @@ async def veli_dashboard_istatistikleri(
             "message": "İstatistikler başarıyla alındı",
         }
 
-    except Exception as e:
+    except Exception:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="İstatistikler alınırken hata oluştu",
@@ -332,7 +366,7 @@ async def onay_talebi_olustur(ogrenci_id: str, talep_tipi: str, aciklama: str):
 
     except ValueError as e:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
-    except Exception as e:
+    except Exception:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Onay talebi oluşturulurken hata oluştu",

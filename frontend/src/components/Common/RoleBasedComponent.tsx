@@ -1,7 +1,8 @@
-import React from 'react'
-import { Box, Alert } from '@mui/material'
-import { useRoleAccess } from '../../hooks/useRoleAccess.tsx'
-import { UserRole } from '../../types'
+import { Box, Alert } from '@mui/material';
+import * as React from 'react';
+
+import { useRoleAccess } from '../../hooks/useRoleAccess.tsx';
+import { UserRole } from '../../types';
 
 interface RoleBasedComponentProps {
   children: React.ReactNode
@@ -20,16 +21,16 @@ export const RoleBasedComponent: React.FC<RoleBasedComponentProps> = ({
   allowedRoles = [],
   requiredPermissions = [],
   fallback = null,
-  showUnauthorized = false
+  showUnauthorized = false,
 }) => {
   const { hasAccess, isLoading, userRole } = useRoleAccess({
     allowedRoles,
     requiredPermissions,
-    showUnauthorized
-  })
+    showUnauthorized,
+  });
 
   if (isLoading) {
-    return <Box>Yükleniyor...</Box>
+    return <Box>Yükleniyor...</Box>;
   }
 
   if (!hasAccess) {
@@ -39,68 +40,68 @@ export const RoleBasedComponent: React.FC<RoleBasedComponentProps> = ({
           Bu içeriği görüntüleme yetkiniz bulunmamaktadır.
           {userRole && ` (Mevcut rolünüz: ${userRole})`}
         </Alert>
-      )
+      );
     }
-    
-    return <>{fallback}</>
+
+    return <>{fallback}</>;
   }
 
-  return <>{children}</>
-}
+  return <>{children}</>;
+};
 
 // Convenience components for specific roles
-export const StudentOnly: React.FC<{ children: React.ReactNode; fallback?: React.ReactNode }> = ({ 
-  children, 
-  fallback = null 
+export const StudentOnly: React.FC<{ children: React.ReactNode; fallback?: React.ReactNode }> = ({
+  children,
+  fallback = null,
 }) => (
   <RoleBasedComponent allowedRoles={['ogrenci']} fallback={fallback}>
     {children}
   </RoleBasedComponent>
-)
+);
 
-export const TeacherOnly: React.FC<{ children: React.ReactNode; fallback?: React.ReactNode }> = ({ 
-  children, 
-  fallback = null 
+export const TeacherOnly: React.FC<{ children: React.ReactNode; fallback?: React.ReactNode }> = ({
+  children,
+  fallback = null,
 }) => (
   <RoleBasedComponent allowedRoles={['ogretmen']} fallback={fallback}>
     {children}
   </RoleBasedComponent>
-)
+);
 
-export const ParentOnly: React.FC<{ children: React.ReactNode; fallback?: React.ReactNode }> = ({ 
-  children, 
-  fallback = null 
+export const ParentOnly: React.FC<{ children: React.ReactNode; fallback?: React.ReactNode }> = ({
+  children,
+  fallback = null,
 }) => (
   <RoleBasedComponent allowedRoles={['veli']} fallback={fallback}>
     {children}
   </RoleBasedComponent>
-)
+);
 
-export const AdminOnly: React.FC<{ children: React.ReactNode; fallback?: React.ReactNode }> = ({ 
-  children, 
-  fallback = null 
+export const AdminOnly: React.FC<{ children: React.ReactNode; fallback?: React.ReactNode }> = ({
+  children,
+  fallback = null,
 }) => (
   <RoleBasedComponent allowedRoles={['admin']} fallback={fallback}>
     {children}
   </RoleBasedComponent>
-)
+);
 
-export const TeacherOrAdmin: React.FC<{ children: React.ReactNode; fallback?: React.ReactNode }> = ({ 
-  children, 
-  fallback = null 
+export const TeacherOrAdmin: React.FC<{ children: React.ReactNode; fallback?: React.ReactNode }> = ({
+  children,
+  fallback = null,
 }) => (
   <RoleBasedComponent allowedRoles={['ogretmen', 'admin']} fallback={fallback}>
     {children}
   </RoleBasedComponent>
-)
+);
 
-export const AuthenticatedOnly: React.FC<{ children: React.ReactNode; fallback?: React.ReactNode }> = ({ 
-  children, 
-  fallback = null 
+export const AuthenticatedOnly: React.FC<{ children: React.ReactNode; fallback?: React.ReactNode }> = ({
+  children,
+  fallback = null,
 }) => (
   <RoleBasedComponent allowedRoles={['ogrenci', 'ogretmen', 'veli', 'admin']} fallback={fallback}>
     {children}
   </RoleBasedComponent>
-)
+);
 
-export default RoleBasedComponent
+export default RoleBasedComponent;

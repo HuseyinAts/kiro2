@@ -1,9 +1,10 @@
-import { useState, useRef, useEffect } from 'react';
+import { OndemandVideo, CheckCircle, Warning } from '@mui/icons-material';
 import { Grid, Box, Typography, Select, MenuItem, FormControl, InputLabel, Skeleton, Alert, CircularProgress, Chip, Tooltip } from '@mui/material';
-import { OndemandVideo, CheckCircle, Warning, Info } from '@mui/icons-material';
-import { Grid as VirtualGrid } from 'react-window';
-import { VideoResourceCard } from './VideoResourceCard';
+import { useState, useRef } from 'react';
+
 import { VideoResponse } from '../../api';
+
+import { VideoResourceCard } from './VideoResourceCard';
 
 interface VideoResourceGridProps {
   videos: VideoResponse[];
@@ -16,28 +17,7 @@ export function VideoResourceGrid({ videos, loading, error, onVideoPlay }: Video
   const [difficulty, setDifficulty] = useState<string>('all');
   const [duration, setDuration] = useState<string>('all');
   const [sortBy, setSortBy] = useState<string>('quality');
-  const [columnCount, setColumnCount] = useState<number>(3);
   const containerRef = useRef<HTMLDivElement>(null);
-
-  // Responsive column count based on container width
-  useEffect(() => {
-    const updateColumnCount = () => {
-      if (containerRef.current) {
-        const width = containerRef.current.clientWidth;
-        if (width < 600) {
-          setColumnCount(1); // xs
-        } else if (width < 900) {
-          setColumnCount(2); // sm
-        } else {
-          setColumnCount(3); // md+
-        }
-      }
-    };
-
-    updateColumnCount();
-    window.addEventListener('resize', updateColumnCount);
-    return () => window.removeEventListener('resize', updateColumnCount);
-  }, []);
 
   // Filter videos
   const filteredVideos = videos.filter(video => {
@@ -54,9 +34,9 @@ export function VideoResourceGrid({ videos, loading, error, onVideoPlay }: Video
         const minutes = durationMatch[2] ? parseInt(durationMatch[2]) : 0;
         const totalMinutes = hours * 60 + minutes;
 
-        if (duration === 'short' && totalMinutes >= 10) return false;
-        if (duration === 'medium' && (totalMinutes < 10 || totalMinutes > 30)) return false;
-        if (duration === 'long' && totalMinutes <= 30) return false;
+        if (duration === 'short' && totalMinutes >= 10) {return false;}
+        if (duration === 'medium' && (totalMinutes < 10 || totalMinutes > 30)) {return false;}
+        if (duration === 'long' && totalMinutes <= 30) {return false;}
       }
     }
 
@@ -66,21 +46,24 @@ export function VideoResourceGrid({ videos, loading, error, onVideoPlay }: Video
   // Sort videos - Enhanced scoring desteği ile
   const sortedVideos = [...filteredVideos].sort((a, b) => {
     switch (sortBy) {
-      case 'quality':
+      case 'quality': {
         // Yeni skorlama sistemi varsa final_score kullan, yoksa eski quality_score
         const scoreA = a.scores?.final_score ?? a.quality_score;
         const scoreB = b.scores?.final_score ?? b.quality_score;
         return scoreB - scoreA;
-      case 'relevance':
+      }
+      case 'relevance': {
         // Konu uygunluğuna göre sırala
         const relevanceA = a.scores?.relevance_score ?? 0;
         const relevanceB = b.scores?.relevance_score ?? 0;
         return relevanceB - relevanceA;
-      case 'turkish':
+      }
+      case 'turkish': {
         // Türkçe skoruna göre sırala
         const turkishA = a.scores?.turkish_score ?? 0;
         const turkishB = b.scores?.turkish_score ?? 0;
         return turkishB - turkishA;
+      }
       case 'views':
         return b.view_count - a.view_count;
       case 'date':
@@ -89,7 +72,7 @@ export function VideoResourceGrid({ videos, loading, error, onVideoPlay }: Video
         return 0;
     }
   });
-  
+
   // Erişilebilirlik istatistikleri
   const accessibilityStats = {
     total: videos.length,
@@ -97,15 +80,15 @@ export function VideoResourceGrid({ videos, loading, error, onVideoPlay }: Video
     inaccessible: videos.filter(v => v.is_accessible === false).length,
     turkish: videos.filter(v => v.is_turkish === true).length,
     withCaptions: videos.filter(v => v.caption_available === true).length,
-    hd: videos.filter(v => v.definition === 'hd').length
+    hd: videos.filter(v => v.definition === 'hd').length,
   };
 
   // Gelişmiş hata gösterimi
   if (error) {
     return (
       <Box>
-        <Alert 
-          severity="error" 
+        <Alert
+          severity="error"
           sx={{ mb: 3 }}
           action={
             <Typography variant="caption" color="text.secondary">
@@ -120,7 +103,7 @@ export function VideoResourceGrid({ videos, loading, error, onVideoPlay }: Video
             {error}
           </Typography>
         </Alert>
-        
+
         {/* Hata durumunda yardımcı bilgiler */}
         <Alert severity="info" sx={{ mb: 3 }}>
           <Typography variant="body2" fontWeight="bold" gutterBottom>
@@ -190,7 +173,7 @@ export function VideoResourceGrid({ videos, loading, error, onVideoPlay }: Video
           {sortedVideos.length} video bulundu
         </Typography>
       </Box>
-      
+
       {/* Kalite ve Erişilebilirlik İstatistikleri */}
       {!loading && videos.length > 0 && (
         <Box className="flex gap-2 mb-3 flex-wrap">
@@ -248,7 +231,7 @@ export function VideoResourceGrid({ videos, loading, error, onVideoPlay }: Video
           )}
         </Box>
       )}
-      
+
       {/* Yükleme durumu bilgilendirmesi */}
       {loading && (
         <Alert severity="info" icon={<CircularProgress size={20} />} sx={{ mb: 3 }}>
@@ -266,12 +249,12 @@ export function VideoResourceGrid({ videos, loading, error, onVideoPlay }: Video
         <Grid container spacing={3}>
           {[1, 2, 3, 4, 5, 6].map((i) => (
             <Grid item xs={12} sm={6} md={4} key={i}>
-              <Box sx={{ 
+              <Box sx={{
                 border: '1px solid',
                 borderColor: 'divider',
                 borderRadius: 2,
                 overflow: 'hidden',
-                backgroundColor: 'background.paper'
+                backgroundColor: 'background.paper',
               }}>
                 <Skeleton variant="rectangular" height={180} />
                 <Box sx={{ p: 2 }}>
@@ -293,13 +276,13 @@ export function VideoResourceGrid({ videos, loading, error, onVideoPlay }: Video
           ))}
         </Grid>
       ) : sortedVideos.length === 0 ? (
-        <Box 
+        <Box
           className="flex flex-col items-center justify-center py-12"
-          sx={{ 
+          sx={{
             border: '2px dashed',
             borderColor: 'divider',
             borderRadius: 2,
-            backgroundColor: 'background.paper'
+            backgroundColor: 'background.paper',
           }}
         >
           <OndemandVideo sx={{ fontSize: 64, color: 'text.secondary', mb: 2 }} />
@@ -312,27 +295,13 @@ export function VideoResourceGrid({ videos, loading, error, onVideoPlay }: Video
         </Box>
       ) : (
         <Box ref={containerRef} sx={{ width: '100%' }}>
-          <VirtualGrid
-            columnCount={columnCount}
-            columnWidth={containerRef.current ? Math.floor(containerRef.current.clientWidth / columnCount) - 12 : 380}
-            height={Math.min(600, Math.ceil(sortedVideos.length / columnCount) * 420)}
-            rowCount={Math.ceil(sortedVideos.length / columnCount)}
-            rowHeight={420}
-            width={containerRef.current?.clientWidth || window.innerWidth}
-            style={{ overflowX: 'hidden' }}
-          >
-            {({ columnIndex, rowIndex, style }) => {
-              const index = rowIndex * columnCount + columnIndex;
-              if (index >= sortedVideos.length) return null;
-
-              const video = sortedVideos[index];
-              return (
-                <Box style={{ ...style, padding: 12 }}>
-                  <VideoResourceCard video={video} onPlay={onVideoPlay} />
-                </Box>
-              );
-            }}
-          </VirtualGrid>
+          <Grid container spacing={3}>
+            {sortedVideos.map((video) => (
+              <Grid item xs={12} sm={6} md={4} key={video.video_id}>
+                <VideoResourceCard video={video} onPlay={onVideoPlay} />
+              </Grid>
+            ))}
+          </Grid>
         </Box>
       )}
     </Box>

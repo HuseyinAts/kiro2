@@ -1,21 +1,23 @@
-import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { 
-  Search, 
-  Filter, 
-  Eye, 
-  TrendingUp, 
+import {
+  Search,
+  Filter,
+  Eye,
+  TrendingUp,
   TrendingDown,
   Minus,
   Users,
   BookOpen,
   Calendar,
-  Mail
+  Mail,
 } from 'lucide-react';
+import * as React from 'react';
+import {  useState, useEffect, memo, useCallback  } from 'react';
+
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
 
 interface StudentPerformance {
   ortalama_net: number;
@@ -48,13 +50,125 @@ interface StudentListData {
   sayfalama: PaginationInfo;
 }
 
+// Memoized helper functions for performance
+const getTrendIcon = (trend: string) => {
+  switch (trend) {
+    case 'artan':
+      return <TrendingUp className="h-4 w-4 text-green-500" />;
+    case 'azalan':
+      return <TrendingDown className="h-4 w-4 text-red-500" />;
+    default:
+      return <Minus className="h-4 w-4 text-gray-500" />;
+  }
+};
+
+const getTrendText = (trend: string) => {
+  switch (trend) {
+    case 'artan':
+      return 'Yükseliş';
+    case 'azalan':
+      return 'Düşüş';
+    default:
+      return 'Sabit';
+  }
+};
+
+const getPerformanceColor = (net: number) => {
+  if (net >= 60) {return 'bg-green-100 text-green-800';}
+  if (net >= 40) {return 'bg-yellow-100 text-yellow-800';}
+  return 'bg-red-100 text-red-800';
+};
+
+// Memoized Student List Item component for performance optimization
+interface StudentListItemProps {
+  student: Student;
+  onViewDetails: (studentId: string) => void;
+}
+
+const StudentListItem = memo(function StudentListItem({ student, onViewDetails }: StudentListItemProps) {
+  return (
+    <div className="border rounded-lg p-4 hover:bg-gray-50 transition-colors">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center space-x-4">
+          <div className={`w-4 h-4 rounded-full ${student.aktif ? 'bg-green-500' : 'bg-gray-400'}`}></div>
+
+          <div className="flex-1">
+            <div className="flex items-center space-x-2">
+              <h3 className="font-semibold text-lg">{student.ad_soyad}</h3>
+              <Badge variant="outline">{student.sinif_seviyesi}. Sınıf</Badge>
+              {student.hedef_sinav && (
+                <Badge variant="secondary">{student.hedef_sinav}</Badge>
+              )}
+            </div>
+
+            <div className="flex items-center space-x-4 mt-1 text-sm text-gray-600">
+              <div className="flex items-center">
+                <Mail className="h-4 w-4 mr-1" />
+                {student.email}
+              </div>
+              {student.okul_adi && (
+                <div>{student.okul_adi}</div>
+              )}
+            </div>
+          </div>
+        </div>
+
+        <div className="flex items-center space-x-4">
+          {/* Performans Bilgileri */}
+          <div className="text-right">
+            <div className="flex items-center space-x-2">
+              <Badge className={getPerformanceColor(student.performans.ortalama_net)}>
+                {student.performans.ortalama_net.toFixed(1)} net
+              </Badge>
+              <div className="flex items-center space-x-1">
+                {getTrendIcon(student.performans.gelisim_trendi)}
+                <span className="text-xs text-gray-500">
+                  {getTrendText(student.performans.gelisim_trendi)}
+                </span>
+              </div>
+            </div>
+
+            <div className="text-xs text-gray-500 mt-1">
+              {student.performans.toplam_sinav} sınav
+              {student.performans.son_sinav_tarihi && (
+                <span className="ml-2">
+                  Son: {new Date(student.performans.son_sinav_tarihi).toLocaleDateString('tr-TR')}
+                </span>
+              )}
+            </div>
+          </div>
+
+          {/* Eylemler */}
+          <div className="flex space-x-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => onViewDetails(student.ogrenci_id)}
+            >
+              <Eye className="h-4 w-4 mr-1" />
+              Detay
+            </Button>
+          </div>
+        </div>
+      </div>
+
+      {/* Son Giriş Bilgisi */}
+      {student.son_giris && (
+        <div className="mt-2 text-xs text-gray-500">
+          Son giriş: {new Date(student.son_giris).toLocaleString('tr-TR')}
+        </div>
+      )}
+    </div>
+  );
+});
+
 const StudentList: React.FC = () => {
   const [studentData, setStudentData] = useState<StudentListData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
-  const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
+  const [_selectedStudent, _setSelectedStudent] = useState<Student | null>(null);
 
   useEffect(() => {
     fetchStudentList();
@@ -64,12 +178,12 @@ const StudentList: React.FC = () => {
     try {
       setLoading(true);
       const token = localStorage.getItem('token');
-      
+
       const response = await fetch(`/api/v1/ogretmen/ogrenciler?sayfa=${currentPage}&limit=20`, {
         headers: {
           'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
+          'Content-Type': 'application/json',
+        },
       });
 
       if (!response.ok) {
@@ -89,15 +203,16 @@ const StudentList: React.FC = () => {
     }
   };
 
-  const viewStudentDetails = async (studentId: string) => {
+  // Memoized callback to prevent unnecessary re-renders of StudentListItem
+  const viewStudentDetails = useCallback(async (studentId: string) => {
     try {
       const token = localStorage.getItem('token');
-      
+
       const response = await fetch(`/api/v1/ogretmen/ogrenci/${studentId}/performans`, {
         headers: {
           'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
+          'Content-Type': 'application/json',
+        },
       });
 
       if (!response.ok) {
@@ -113,39 +228,11 @@ const StudentList: React.FC = () => {
     } catch (err) {
       console.error('Öğrenci detay hatası:', err);
     }
-  };
-
-  const getTrendIcon = (trend: string) => {
-    switch (trend) {
-      case 'artan':
-        return <TrendingUp className="h-4 w-4 text-green-500" />;
-      case 'azalan':
-        return <TrendingDown className="h-4 w-4 text-red-500" />;
-      default:
-        return <Minus className="h-4 w-4 text-gray-500" />;
-    }
-  };
-
-  const getTrendText = (trend: string) => {
-    switch (trend) {
-      case 'artan':
-        return 'Yükseliş';
-      case 'azalan':
-        return 'Düşüş';
-      default:
-        return 'Sabit';
-    }
-  };
-
-  const getPerformanceColor = (net: number) => {
-    if (net >= 60) return 'bg-green-100 text-green-800';
-    if (net >= 40) return 'bg-yellow-100 text-yellow-800';
-    return 'bg-red-100 text-red-800';
-  };
+  }, []);
 
   const filteredStudents = studentData?.ogrenciler.filter(student =>
     student.ad_soyad.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    student.email.toLowerCase().includes(searchTerm.toLowerCase())
+    student.email.toLowerCase().includes(searchTerm.toLowerCase()),
   ) || [];
 
   if (loading) {
@@ -161,8 +248,8 @@ const StudentList: React.FC = () => {
       <Alert className="m-4">
         <AlertDescription>
           Hata: {error}
-          <Button 
-            onClick={fetchStudentList} 
+          <Button
+            onClick={fetchStudentList}
             className="ml-4"
             size="sm"
           >
@@ -250,7 +337,7 @@ const StudentList: React.FC = () => {
                 <div className="ml-4">
                   <p className="text-sm font-medium text-gray-600">Ortalama Net</p>
                   <p className="text-2xl font-bold">
-                    {filteredStudents.length > 0 
+                    {filteredStudents.length > 0
                       ? (filteredStudents.reduce((sum, s) => sum + s.performans.ortalama_net, 0) / filteredStudents.length).toFixed(1)
                       : '0.0'
                     }
@@ -285,78 +372,11 @@ const StudentList: React.FC = () => {
           <div className="space-y-4">
             {filteredStudents.length > 0 ? (
               filteredStudents.map((student) => (
-                <div key={student.ogrenci_id} className="border rounded-lg p-4 hover:bg-gray-50 transition-colors">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-4">
-                      <div className={`w-4 h-4 rounded-full ${student.aktif ? 'bg-green-500' : 'bg-gray-400'}`}></div>
-                      
-                      <div className="flex-1">
-                        <div className="flex items-center space-x-2">
-                          <h3 className="font-semibold text-lg">{student.ad_soyad}</h3>
-                          <Badge variant="outline">{student.sinif_seviyesi}. Sınıf</Badge>
-                          {student.hedef_sinav && (
-                            <Badge variant="secondary">{student.hedef_sinav}</Badge>
-                          )}
-                        </div>
-                        
-                        <div className="flex items-center space-x-4 mt-1 text-sm text-gray-600">
-                          <div className="flex items-center">
-                            <Mail className="h-4 w-4 mr-1" />
-                            {student.email}
-                          </div>
-                          {student.okul_adi && (
-                            <div>{student.okul_adi}</div>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="flex items-center space-x-4">
-                      {/* Performans Bilgileri */}
-                      <div className="text-right">
-                        <div className="flex items-center space-x-2">
-                          <Badge className={getPerformanceColor(student.performans.ortalama_net)}>
-                            {student.performans.ortalama_net.toFixed(1)} net
-                          </Badge>
-                          <div className="flex items-center space-x-1">
-                            {getTrendIcon(student.performans.gelisim_trendi)}
-                            <span className="text-xs text-gray-500">
-                              {getTrendText(student.performans.gelisim_trendi)}
-                            </span>
-                          </div>
-                        </div>
-                        
-                        <div className="text-xs text-gray-500 mt-1">
-                          {student.performans.toplam_sinav} sınav
-                          {student.performans.son_sinav_tarihi && (
-                            <span className="ml-2">
-                              Son: {new Date(student.performans.son_sinav_tarihi).toLocaleDateString('tr-TR')}
-                            </span>
-                          )}
-                        </div>
-                      </div>
-
-                      {/* Eylemler */}
-                      <div className="flex space-x-2">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => viewStudentDetails(student.ogrenci_id)}
-                        >
-                          <Eye className="h-4 w-4 mr-1" />
-                          Detay
-                        </Button>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Son Giriş Bilgisi */}
-                  {student.son_giris && (
-                    <div className="mt-2 text-xs text-gray-500">
-                      Son giriş: {new Date(student.son_giris).toLocaleString('tr-TR')}
-                    </div>
-                  )}
-                </div>
+                <StudentListItem
+                  key={student.ogrenci_id}
+                  student={student}
+                  onViewDetails={viewStudentDetails}
+                />
               ))
             ) : (
               <div className="text-center py-8">
@@ -379,11 +399,11 @@ const StudentList: React.FC = () => {
               >
                 Önceki
               </Button>
-              
+
               <span className="text-sm text-gray-600">
                 Sayfa {studentData.sayfalama.mevcut_sayfa} / {studentData.sayfalama.toplam_sayfa}
               </span>
-              
+
               <Button
                 variant="outline"
                 size="sm"

@@ -10,10 +10,8 @@ from fastapi import APIRouter, HTTPException, status
 from pydantic import BaseModel
 
 from core.expert_content_validation import (
-    ComplianceLevel,
     ContentType,
     ExpertRole,
-    ValidationStatus,
     expert_validation_system,
 )
 from core.structured_logger import get_logger
@@ -54,6 +52,13 @@ class ExpertFeedbackSubmission(BaseModel):
     feedbacks: List[Dict[str, Any]]
 
 
+class ExpertRegistrationRequest(BaseModel):
+    """Uzman kaydı talebi"""
+
+    expert_id: str
+    expert_roles: List[str]
+
+
 class ValidationStatusResponse(BaseModel):
     """Doğrulama durumu yanıtı"""
 
@@ -82,16 +87,16 @@ async def submit_content_for_validation(
     - Otomatik uzman ataması
     """
 
+    # Content type'ı enum'a çevir
     try:
-        # Content type'ı enum'a çevir
-        try:
-            content_type = ContentType(submission.content_type)
-        except ValueError:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail=f"Invalid content_type: {submission.content_type}",
-            )
+        content_type = ContentType(submission.content_type)
+    except ValueError:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Invalid content_type: {submission.content_type}",
+        )
 
+    try:
         # Validation request oluştur
         request = await expert_validation_system.submit_content_for_validation(
             content_id=submission.content_id,
@@ -386,7 +391,7 @@ async def get_compliance_report(report_id: str) -> Dict[str, Any]:
 
 
 @router.post("/experts/register")
-async def register_expert(expert_id: str, expert_roles: List[str]) -> Dict[str, Any]:
+async def register_expert(request: ExpertRegistrationRequest) -> Dict[str, Any]:
     """
     Uzman kaydı yap
 
@@ -398,7 +403,7 @@ async def register_expert(expert_id: str, expert_roles: List[str]) -> Dict[str, 
     try:
         # Rolleri enum'a çevir
         roles = []
-        for role_str in expert_roles:
+        for role_str in request.expert_roles:
             try:
                 role = ExpertRole(role_str)
                 roles.append(role)
@@ -409,25 +414,25 @@ async def register_expert(expert_id: str, expert_roles: List[str]) -> Dict[str, 
                 )
 
         # Uzman kaydı yap
-        success = await expert_validation_system.register_expert(
-            expert_id=expert_id, expert_roles=roles
+        await expert_validation_system.register_expert(
+            expert_id=request.expert_id, expert_roles=roles
         )
 
         logger.info(
-            "expert_registered", expert_id=expert_id, roles=[r.value for r in roles]
+            "expert_registered", expert_id=request.expert_id, roles=[r.value for r in roles]
         )
 
         return {
             "success": True,
-            "expert_id": expert_id,
-            "roles": expert_roles,
+            "expert_id": request.expert_id,
+            "roles": request.expert_roles,
             "message": "Uzman başarıyla kaydedildi",
         }
 
     except HTTPException:
         raise
     except Exception as e:
-        logger.error("expert_registration_failed", error=str(e), expert_id=expert_id)
+        logger.error("expert_registration_failed", error=str(e), expert_id=request.expert_id)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)
         )

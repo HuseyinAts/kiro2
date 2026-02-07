@@ -3,35 +3,35 @@
  * Glassmorphism ile sınav geçmişi görüntüleme
  */
 
-import React, { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { motion } from 'framer-motion'
+import {
+  History as HistoryIcon,
+  EmojiEvents as TrophyIcon,
+  Visibility as ViewIcon,
+  CheckCircle as CheckIcon,
+  Cancel as CancelIcon,
+  Schedule as ScheduleIcon,
+  AutoGraph as GraphIcon,
+} from '@mui/icons-material';
 import {
   Container,
   Typography,
   Box,
   Grid,
   Chip,
-  Button,
   LinearProgress,
   Alert,
   Tab,
   Tabs,
-  Divider
-} from '@mui/material'
-import {
-  History as HistoryIcon,
-  TrendingUp as TrendingUpIcon,
-  EmojiEvents as TrophyIcon,
-  Visibility as ViewIcon,
-  CheckCircle as CheckIcon,
-  Cancel as CancelIcon,
-  Schedule as ScheduleIcon,
-  AutoGraph as GraphIcon
-} from '@mui/icons-material'
-import { GlassCard } from '../components/ui/GlassCard'
-import { ModernButton } from '../components/ui/ModernButton'
-import { modernColors } from '../theme/modern-colors'
+  Divider,
+} from '@mui/material';
+import { motion } from 'framer-motion';
+import * as React from 'react';
+import {  useState, useEffect  } from 'react';
+import { useNavigate } from 'react-router-dom';
+
+import { GlassCard } from '../components/ui/GlassCard';
+import { ModernButton } from '../components/ui/ModernButton';
+import { modernColors } from '../theme/modern-colors';
 
 interface Exam {
   sinav_id: string
@@ -48,23 +48,23 @@ interface Exam {
 }
 
 export const ModernExamHistoryPage: React.FC = () => {
-  const navigate = useNavigate()
-  const [loading, setLoading] = useState(true)
-  const [exams, setExams] = useState<Exam[]>([])
-  const [tabValue, setTabValue] = useState(0)
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(true);
+  const [exams, setExams] = useState<Exam[]>([]);
+  const [tabValue, setTabValue] = useState(0);
 
   useEffect(() => {
-    fetchExamHistory()
-  }, [])
+    fetchExamHistory();
+  }, []);
 
   const fetchExamHistory = async () => {
     try {
       const response = await fetch('/api/v1/exams/history', {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-      })
-      if (!response.ok) throw new Error()
-      const data = await response.json()
-      setExams(data.exams || [])
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+      });
+      if (!response.ok) {throw new Error();}
+      const data = await response.json();
+      setExams(data.exams || []);
     } catch {
       // Mock data
       setExams([
@@ -79,7 +79,7 @@ export const ModernExamHistoryPage: React.FC = () => {
           score: 85,
           duration: 65,
           completed_at: '2025-11-21T10:30:00',
-          status: 'completed'
+          status: 'completed',
         },
         {
           sinav_id: '2',
@@ -92,7 +92,7 @@ export const ModernExamHistoryPage: React.FC = () => {
           score: 75,
           duration: 52,
           completed_at: '2025-11-20T15:45:00',
-          status: 'completed'
+          status: 'completed',
         },
         {
           sinav_id: '3',
@@ -105,39 +105,39 @@ export const ModernExamHistoryPage: React.FC = () => {
           score: 70,
           duration: 72,
           completed_at: '2025-11-19T14:20:00',
-          status: 'completed'
-        }
-      ])
+          status: 'completed',
+        },
+      ]);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const getScoreGradient = (score: number): string => {
-    if (score >= 85) return modernColors.gradients.success
-    if (score >= 70) return modernColors.gradients.primary
-    if (score >= 50) return modernColors.gradients.warning
-    return modernColors.gradients.error
-  }
+    if (score >= 85) {return modernColors.gradients.success;}
+    if (score >= 70) {return modernColors.gradients.primary;}
+    if (score >= 50) {return modernColors.gradients.warning;}
+    return modernColors.gradients.error;
+  };
 
   const getScoreIcon = (score: number) => {
-    if (score >= 85) return '🏆'
-    if (score >= 70) return '🎯'
-    if (score >= 50) return '📈'
-    return '💪'
-  }
+    if (score >= 85) {return '🏆';}
+    if (score >= 70) {return '🎯';}
+    if (score >= 50) {return '📈';}
+    return '💪';
+  };
 
-  const completedExams = exams.filter(e => e.status === 'completed')
+  const completedExams = exams.filter(e => e.status === 'completed');
   const avgScore = completedExams.length > 0
     ? completedExams.reduce((sum, e) => sum + e.score, 0) / completedExams.length
-    : 0
+    : 0;
 
-  const totalQuestions = completedExams.reduce((sum, e) => sum + e.question_count, 0)
-  const totalCorrect = completedExams.reduce((sum, e) => sum + e.correct_count, 0)
+  const totalQuestions = completedExams.reduce((sum, e) => sum + e.question_count, 0);
+  const totalCorrect = completedExams.reduce((sum, e) => sum + e.correct_count, 0);
 
   const filteredExams = tabValue === 0
     ? exams
-    : exams.filter(e => e.status === (tabValue === 1 ? 'completed' : 'in_progress'))
+    : exams.filter(e => e.status === (tabValue === 1 ? 'completed' : 'in_progress'));
 
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
@@ -156,7 +156,7 @@ export const ModernExamHistoryPage: React.FC = () => {
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              mb: 2
+              mb: 2,
             }}
           >
             <HistoryIcon sx={{ fontSize: 32, color: 'white' }} />
@@ -170,7 +170,7 @@ export const ModernExamHistoryPage: React.FC = () => {
               backgroundClip: 'text',
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent',
-              mb: 1
+              mb: 1,
             }}
           >
             Sınav Geçmişi
@@ -221,8 +221,8 @@ export const ModernExamHistoryPage: React.FC = () => {
                   borderRadius: 3,
                   background: 'rgba(0,0,0,0.1)',
                   '& .MuiLinearProgress-bar': {
-                    background: getScoreGradient(avgScore)
-                  }
+                    background: getScoreGradient(avgScore),
+                  },
                 }}
               />
             </GlassCard>
@@ -308,8 +308,8 @@ export const ModernExamHistoryPage: React.FC = () => {
                       '&:hover': {
                         transform: 'translateY(-4px)',
                         boxShadow: 4,
-                        transition: 'all 0.3s'
-                      }
+                        transition: 'all 0.3s',
+                      },
                     }}
                   >
                     <Grid container spacing={2} alignItems="center">
@@ -327,7 +327,7 @@ export const ModernExamHistoryPage: React.FC = () => {
                               alignItems: 'center',
                               justifyContent: 'center',
                               mx: 'auto',
-                              mb: 1
+                              mb: 1,
                             }}
                           >
                             <Typography variant="h5" fontWeight={700} color="white">
@@ -350,7 +350,7 @@ export const ModernExamHistoryPage: React.FC = () => {
                             day: 'numeric',
                             month: 'long',
                             hour: '2-digit',
-                            minute: '2-digit'
+                            minute: '2-digit',
                           })}
                         </Typography>
                         <Box sx={{ display: 'flex', gap: 2, mt: 1 }}>
@@ -403,12 +403,12 @@ export const ModernExamHistoryPage: React.FC = () => {
       >
         <Box sx={{ textAlign: 'center', mt: 4 }}>
           <ModernButton
-            variant="contained"
+            variant="solid"
             size="large"
             onClick={() => navigate('/exam/start')}
             sx={{
               background: modernColors.gradients.primary,
-              px: 6
+              px: 6,
             }}
           >
             Yeni Sınav Başlat
@@ -416,7 +416,7 @@ export const ModernExamHistoryPage: React.FC = () => {
         </Box>
       </motion.div>
     </Container>
-  )
-}
+  );
+};
 
-export default ModernExamHistoryPage
+export default ModernExamHistoryPage;

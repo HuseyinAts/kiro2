@@ -200,7 +200,8 @@ class EnhancedLangChainLLMService:
             try:
                 langchain.llm_cache = RedisCache(redis_url=self.config.redis_url)
                 logger.info("[CHECK] Redis cache enabled")
-            except:
+            except (ConnectionError, OSError, ImportError) as e:
+                logger.debug(f"Redis cache initialization failed, using memory: {e}")
                 langchain.llm_cache = InMemoryCache()
                 logger.info("[CHECK] In-memory cache enabled")
 
@@ -335,7 +336,8 @@ class EnhancedLangChainLLMService:
                     openai_api_key=self.config.openai_api_key,
                 )
                 logger.info("[CHECK] OpenAI embeddings initialized")
-            except:
+            except (ImportError, ValueError, ConnectionError) as e:
+                logger.debug(f"OpenAI embeddings initialization failed: {e}")
                 pass
 
         # HuggingFace embeddings (always available)

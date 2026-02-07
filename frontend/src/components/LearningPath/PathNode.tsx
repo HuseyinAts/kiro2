@@ -1,15 +1,14 @@
-import { motion } from 'framer-motion'
-import { 
-  CheckCircle, 
+import {
+  CheckCircle,
   RadioButtonUnchecked,
   Lock,
   Star,
   Timer,
-  TrendingUp,
-  School
-} from '@mui/icons-material'
-import { Tooltip, Chip, LinearProgress } from '@mui/material'
-import clsx from 'clsx'
+  School,
+} from '@mui/icons-material';
+import { Tooltip, Chip, LinearProgress } from '@mui/material';
+import clsx from 'clsx';
+import { motion } from 'framer-motion';
 
 export interface PathNodeData {
   id: string
@@ -38,72 +37,72 @@ interface PathNodeProps {
   showDetails?: boolean
 }
 
-export function PathNode({ 
-  node, 
-  onClick, 
-  isHighlighted, 
-  showDetails = true 
+export function PathNode({
+  node,
+  onClick,
+  isHighlighted,
+  showDetails = true,
 }: PathNodeProps) {
   const getIcon = () => {
     switch (node.status) {
       case 'completed':
-        return <CheckCircle className="text-green-500" />
+        return <CheckCircle className="text-green-500" />;
       case 'current':
-        return <RadioButtonUnchecked className="text-blue-500 animate-pulse" />
+        return <RadioButtonUnchecked className="text-blue-500 animate-pulse" />;
       case 'locked':
-        return <Lock className="text-gray-400" />
+        return <Lock className="text-gray-400" />;
       default:
-        return <RadioButtonUnchecked className="text-gray-300" />
+        return <RadioButtonUnchecked className="text-gray-300" />;
     }
-  }
+  };
 
   const getTypeIcon = () => {
     switch (node.type) {
       case 'lesson':
-        return <School fontSize="small" />
+        return <School fontSize="small" />;
       case 'quiz':
-        return '📝'
+        return '📝';
       case 'project':
-        return '🚀'
+        return '🚀';
       case 'milestone':
-        return <Star fontSize="small" />
+        return <Star fontSize="small" />;
       default:
-        return '📚'
+        return '📚';
     }
-  }
+  };
 
   const getDifficultyColor = () => {
     switch (node.difficulty) {
       case 'beginner':
-        return 'success'
+        return 'success';
       case 'intermediate':
-        return 'warning'
+        return 'warning';
       case 'advanced':
-        return 'error'
+        return 'error';
       default:
-        return 'default'
+        return 'default';
     }
-  }
+  };
 
   const nodeVariants = {
     initial: { scale: 0, opacity: 0 },
-    animate: { 
-      scale: 1, 
+    animate: {
+      scale: 1,
       opacity: 1,
       transition: {
-        type: "spring",
+        type: 'spring',
         stiffness: 260,
-        damping: 20
-      }
+        damping: 20,
+      },
     },
     hover: {
       scale: 1.05,
-      transition: { duration: 0.2 }
+      transition: { duration: 0.2 },
     },
     tap: {
-      scale: 0.95
-    }
-  }
+      scale: 0.95,
+    },
+  };
 
   return (
     <motion.div
@@ -119,7 +118,7 @@ export function PathNode({
       }}
       className={clsx(
         'cursor-pointer',
-        isHighlighted && 'z-10'
+        isHighlighted && 'z-10',
       )}
     >
       <Tooltip
@@ -151,7 +150,7 @@ export function PathNode({
             node.status === 'current' && 'border-blue-500 bg-blue-50 animate-pulse',
             node.status === 'locked' && 'border-gray-300 bg-gray-50 opacity-60',
             node.status === 'available' && 'border-gray-300 hover:border-blue-400',
-            isHighlighted && 'ring-4 ring-blue-200 ring-offset-2'
+            isHighlighted && 'ring-4 ring-blue-200 ring-offset-2',
           )}
         >
           {/* Status Icon */}
@@ -166,7 +165,7 @@ export function PathNode({
               node.status === 'completed' ? 'bg-green-100' :
               node.status === 'current' ? 'bg-blue-100' :
               node.status === 'locked' ? 'bg-gray-100' :
-              'bg-gray-50'
+              'bg-gray-50',
             )}>
               {getTypeIcon()}
             </div>
@@ -174,7 +173,7 @@ export function PathNode({
             <div className="flex-1">
               <h3 className={clsx(
                 'font-semibold text-sm mb-1',
-                node.status === 'locked' ? 'text-gray-400' : 'text-gray-800'
+                node.status === 'locked' ? 'text-gray-400' : 'text-gray-800',
               )}>
                 {node.title}
               </h3>
@@ -187,9 +186,9 @@ export function PathNode({
 
                   {/* Progress Bar */}
                   {node.progress > 0 && node.progress < 100 && (
-                    <LinearProgress 
-                      variant="determinate" 
-                      value={node.progress} 
+                    <LinearProgress
+                      variant="determinate"
+                      value={node.progress}
                       className="mb-2"
                       sx={{ height: 4, borderRadius: 2 }}
                     />
@@ -250,5 +249,5 @@ export function PathNode({
         </div>
       </Tooltip>
     </motion.div>
-  )
+  );
 }

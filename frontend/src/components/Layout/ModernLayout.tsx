@@ -3,23 +3,25 @@
  * Responsive design with TypeScript and modern React patterns
  */
 
-import React, { Suspense, memo, useCallback, useMemo } from 'react'
-import { 
-  Box, 
-  AppBar, 
-  Toolbar, 
-  Typography, 
-  IconButton, 
+import { Menu as MenuIcon, Close as CloseIcon } from '@mui/icons-material';
+import {
+  Box,
+  AppBar,
+  Toolbar,
+  Typography,
+  IconButton,
   Drawer,
   useTheme,
   useMediaQuery,
   Container,
   Fade,
-  Skeleton
-} from '@mui/material'
-import { Menu as MenuIcon, Close as CloseIcon } from '@mui/icons-material'
-import { useAuthStore } from '@/store/authStore'
-import { LoadingSpinner } from '../Common/LoadingSpinner'
+  Skeleton,
+} from '@mui/material';
+import * as React from 'react';
+import {  Suspense, memo, useCallback, useMemo  } from 'react';
+
+import { LoadingSpinner } from '../Common/LoadingSpinner';
+import { useAuthStore } from '@/store/authStore';
 
 interface ModernLayoutProps {
   children: React.ReactNode
@@ -31,36 +33,36 @@ interface ModernLayoutProps {
 
 // Memoized navigation component for performance
 const NavigationContent = memo(() => {
-  const {  user, logout  } = useAuthStore()
-  
+  const {  user, logout  } = useAuthStore();
+
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
       <Box sx={{ p: 2, borderBottom: 1, borderColor: 'divider' }}>
         <Typography variant="h6" color="primary">
-          {user?.role === 'student' ? '🎓 Öğrenci Panel' :
-           user?.role === 'teacher' ? '👩‍🏫 Öğretmen Panel' :
-           user?.role === 'parent' ? '👨‍👩‍👧‍👦 Veli Panel' :
-           user?.role === 'admin' ? '⚙️ Admin Panel' : 'Panel'}
+          {user?.rol === 'ogrenci' ? '🎓 Öğrenci Panel' :
+           user?.rol === 'ogretmen' ? '👩‍🏫 Öğretmen Panel' :
+           user?.rol === 'veli' ? '👨‍👩‍👧‍👦 Veli Panel' :
+           user?.rol === 'admin' ? '⚙️ Admin Panel' : 'Panel'}
         </Typography>
       </Box>
-      
+
       <Box sx={{ flex: 1, p: 2 }}>
         {/* Navigation items will be added here */}
         <Typography variant="body2" color="text.secondary">
           Menü öğeleri yakında eklenecek
         </Typography>
       </Box>
-      
+
       <Box sx={{ p: 2, borderTop: 1, borderColor: 'divider' }}>
         <IconButton onClick={logout} color="error" size="small">
           Çıkış Yap
         </IconButton>
       </Box>
     </Box>
-  )
-})
+  );
+});
 
-NavigationContent.displayName = 'NavigationContent'
+NavigationContent.displayName = 'NavigationContent';
 
 // Loading skeleton for better UX
 const LayoutSkeleton = memo(() => (
@@ -71,42 +73,43 @@ const LayoutSkeleton = memo(() => (
       <Skeleton variant="rectangular" height={300} />
     </Container>
   </Box>
-))
+));
 
-LayoutSkeleton.displayName = 'LayoutSkeleton'
+LayoutSkeleton.displayName = 'LayoutSkeleton';
 
 export const ModernLayout: React.FC<ModernLayoutProps> = memo(({
   children,
   title = 'KIRO2 Platform',
   showNavigation = true,
   maxWidth = 'lg',
-  className
+  className,
 }) => {
-  const theme = useTheme()
-  const isMobile = useMediaQuery(theme.breakpoints.down('md'))
-  const [mobileOpen, setMobileOpen] = React.useState(false)
-  
+  const theme = useTheme();
+  // useMediaQuery for mobile detection - currently drawer handles responsiveness via sx prop
+  useMediaQuery(theme.breakpoints.down('md'));
+  const [mobileOpen, setMobileOpen] = React.useState(false);
+
   const handleDrawerToggle = useCallback(() => {
-    setMobileOpen(prev => !prev)
-  }, [])
-  
+    setMobileOpen(prev => !prev);
+  }, []);
+
   const handleDrawerClose = useCallback(() => {
-    setMobileOpen(false)
-  }, [])
-  
+    setMobileOpen(false);
+  }, []);
+
   // Memoize drawer width
-  const drawerWidth = useMemo(() => 280, [])
-  
+  const drawerWidth = useMemo(() => 280, []);
+
   // Memoize app bar content
   const appBarContent = useMemo(() => (
-    <AppBar 
-      position="fixed" 
-      sx={{ 
+    <AppBar
+      position="fixed"
+      sx={{
         zIndex: theme.zIndex.drawer + 1,
         backdropFilter: 'blur(8px)',
         backgroundColor: 'rgba(255, 255, 255, 0.9)',
         color: 'text.primary',
-        boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
+        boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
       }}
     >
       <Toolbar>
@@ -121,37 +124,37 @@ export const ModernLayout: React.FC<ModernLayoutProps> = memo(({
             <MenuIcon />
           </IconButton>
         )}
-        
-        <Typography 
-          variant="h6" 
-          noWrap 
+
+        <Typography
+          variant="h6"
+          noWrap
           component="div"
-          sx={{ 
+          sx={{
             flexGrow: 1,
             fontWeight: 600,
-            color: 'primary.main'
+            color: 'primary.main',
           }}
         >
           {title}
         </Typography>
       </Toolbar>
     </AppBar>
-  ), [showNavigation, handleDrawerToggle, title, theme.zIndex.drawer])
-  
+  ), [showNavigation, handleDrawerToggle, title, theme.zIndex.drawer]);
+
   // Memoize drawer content
   const drawerContent = useMemo(() => (
     <Suspense fallback={<LoadingSpinner />}>
       <NavigationContent />
     </Suspense>
-  ), [])
-  
+  ), []);
+
   return (
-    <Box 
+    <Box
       sx={{ display: 'flex', minHeight: '100vh' }}
       className={className}
     >
       {appBarContent}
-      
+
       {showNavigation && (
         <>
           {/* Mobile drawer */}
@@ -162,12 +165,12 @@ export const ModernLayout: React.FC<ModernLayoutProps> = memo(({
             ModalProps={{ keepMounted: true }}
             sx={{
               display: { xs: 'block', md: 'none' },
-              '& .MuiDrawer-paper': { 
-                boxSizing: 'border-box', 
+              '& .MuiDrawer-paper': {
+                boxSizing: 'border-box',
                 width: drawerWidth,
                 backgroundImage: 'none',
-                backgroundColor: 'background.paper'
-              }
+                backgroundColor: 'background.paper',
+              },
             }}
           >
             <Toolbar>
@@ -177,20 +180,20 @@ export const ModernLayout: React.FC<ModernLayoutProps> = memo(({
             </Toolbar>
             {drawerContent}
           </Drawer>
-          
+
           {/* Desktop drawer */}
           <Drawer
             variant="permanent"
             sx={{
               display: { xs: 'none', md: 'block' },
-              '& .MuiDrawer-paper': { 
-                boxSizing: 'border-box', 
+              '& .MuiDrawer-paper': {
+                boxSizing: 'border-box',
                 width: drawerWidth,
                 backgroundImage: 'none',
                 backgroundColor: 'background.paper',
                 borderRight: '1px solid',
-                borderColor: 'divider'
-              }
+                borderColor: 'divider',
+              },
             }}
             open
           >
@@ -199,7 +202,7 @@ export const ModernLayout: React.FC<ModernLayoutProps> = memo(({
           </Drawer>
         </>
       )}
-      
+
       {/* Main content */}
       <Box
         component="main"
@@ -207,17 +210,17 @@ export const ModernLayout: React.FC<ModernLayoutProps> = memo(({
           flexGrow: 1,
           width: { md: showNavigation ? `calc(100% - ${drawerWidth}px)` : '100%' },
           minHeight: '100vh',
-          backgroundColor: 'background.default'
+          backgroundColor: 'background.default',
         }}
       >
         <Toolbar />
-        
+
         <Fade in timeout={300}>
-          <Container 
-            maxWidth={maxWidth} 
-            sx={{ 
+          <Container
+            maxWidth={maxWidth}
+            sx={{
               py: 3,
-              px: { xs: 2, sm: 3 }
+              px: { xs: 2, sm: 3 },
             }}
           >
             <Suspense fallback={<LayoutSkeleton />}>
@@ -227,9 +230,9 @@ export const ModernLayout: React.FC<ModernLayoutProps> = memo(({
         </Fade>
       </Box>
     </Box>
-  )
-})
+  );
+});
 
-ModernLayout.displayName = 'ModernLayout'
+ModernLayout.displayName = 'ModernLayout';
 
-export default ModernLayout
+export default ModernLayout;

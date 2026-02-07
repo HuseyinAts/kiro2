@@ -3,7 +3,7 @@
  * Task 81.3: Resimli sözlük (REQ-50.81-84)
  */
 
-import React, { useState } from 'react';
+import { Search as SearchIcon } from '@mui/icons-material';
 import {
   Box,
   Button,
@@ -14,9 +14,10 @@ import {
   TextField,
   Grid,
   Chip,
-  LinearProgress
+  LinearProgress,
 } from '@mui/material';
-import { Search as SearchIcon, Add as AddIcon } from '@mui/icons-material';
+import * as React from 'react';
+import {  useState  } from 'react';
 
 interface VocabularyCard {
   id: string;
@@ -34,14 +35,14 @@ const VisualVocabulary: React.FC = () => {
   const [progress, setProgress] = useState({
     total_cards: 100,
     learned_cards: 60,
-    progress_percentage: 60
+    progress_percentage: 60,
   });
 
   // REQ-50.83: Searchable image database
   const handleSearch = async () => {
     try {
       const response = await fetch(
-        `/api/v1/visual-supports/vocabulary-cards/search?query=${searchQuery}`
+        `/api/v1/visual-supports/vocabulary-cards/search?query=${searchQuery}`,
       );
       if (response.ok) {
         const data = await response.json();

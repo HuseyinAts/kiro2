@@ -1,14 +1,16 @@
 /**
  * EBA TV Dashboard Bileşeni
- * 
+ *
  * EBA TV içeriklerini yönetmek için ana dashboard.
  */
 
-import React, { useState, useEffect } from 'react';
-import { Play, Search, TrendingUp, BookOpen, Clock, Star, Filter, Grid, List } from 'lucide-react';
-import { EbaTVVideoPlayer } from './EbaTVVideoPlayer';
+import { Play, TrendingUp, BookOpen, Clock, Star } from 'lucide-react';
+import * as React from 'react';
+import {  useState, useEffect  } from 'react';
+
 import { EbaTVContentSearch } from './EbaTVContentSearch';
 import { EbaTVRecommendations } from './EbaTVRecommendations';
+import { EbaTVVideoPlayer } from './EbaTVVideoPlayer';
 
 interface EBAVideo {
   id: number;
@@ -73,15 +75,15 @@ export const EbaTVDashboard: React.FC = () => {
     performance_data: {
       average_score: 75,
       strong_topics: ['Türkçe', 'Sosyal Bilgiler'],
-      weak_topics: ['Matematik', 'Fen Bilimleri']
-    }
+      weak_topics: ['Matematik', 'Fen Bilimleri'],
+    },
   };
 
   // Mock data loading
   useEffect(() => {
     const loadDashboardData = async () => {
       setIsLoading(true);
-      
+
       // Simulate API calls
       await new Promise(resolve => setTimeout(resolve, 1000));
 
@@ -94,47 +96,47 @@ export const EbaTVDashboard: React.FC = () => {
           fen_bilimleri: { video_count: 250, avg_quality: 8.7, avg_duration: 25 },
           sosyal_bilgiler: { video_count: 200, avg_quality: 8.1, avg_duration: 20 },
           fizik: { video_count: 100, avg_quality: 8.9, avg_duration: 30 },
-          kimya: { video_count: 100, avg_quality: 8.6, avg_duration: 28 }
+          kimya: { video_count: 100, avg_quality: 8.6, avg_duration: 28 },
         },
         quality_distribution: {
           high: 850,
           medium: 320,
-          low: 80
-        }
+          low: 80,
+        },
       });
 
       // Mock recent and popular videos
       const mockVideos: EBAVideo[] = [
         {
           id: 1,
-          title: "8. Sınıf Matematik - Çarpanlar ve Katlar",
-          description: "Bu videoda 8. sınıf matematik dersi çarpanlar ve katlar konusunu detaylı olarak işleyeceğiz.",
+          title: '8. Sınıf Matematik - Çarpanlar ve Katlar',
+          description: 'Bu videoda 8. sınıf matematik dersi çarpanlar ve katlar konusunu detaylı olarak işleyeceğiz.',
           duration_minutes: 25,
-          category: "matematik",
-          grade_level: "8",
-          difficulty_level: "medium",
+          category: 'matematik',
+          grade_level: '8',
+          difficulty_level: 'medium',
           quality_score: 9.25,
-          video_url: "https://www.eba.gov.tr/video/matematik-8-sinif-carpanlar-katlar",
-          thumbnail_url: "https://via.placeholder.com/320x180?text=Matematik+Video",
-          subject_topics: ["Çarpanlar ve Katlar", "EBOB", "EKOK"],
-          accessibility_features: ["altyazi", "transkript"],
-          curriculum_alignment: { alignment_score: 0.85 }
+          video_url: 'https://www.eba.gov.tr/video/matematik-8-sinif-carpanlar-katlar',
+          thumbnail_url: 'https://via.placeholder.com/320x180?text=Matematik+Video',
+          subject_topics: ['Çarpanlar ve Katlar', 'EBOB', 'EKOK'],
+          accessibility_features: ['altyazi', 'transkript'],
+          curriculum_alignment: { alignment_score: 0.85 },
         },
         {
           id: 2,
-          title: "8. Sınıf Türkçe - Okuma Becerileri",
-          description: "Okuduğunu anlama ve çıkarım yapma becerileri konusunu işleyeceğiz.",
+          title: '8. Sınıf Türkçe - Okuma Becerileri',
+          description: 'Okuduğunu anlama ve çıkarım yapma becerileri konusunu işleyeceğiz.',
           duration_minutes: 20,
-          category: "turkce",
-          grade_level: "8",
-          difficulty_level: "medium",
+          category: 'turkce',
+          grade_level: '8',
+          difficulty_level: 'medium',
           quality_score: 8.75,
-          video_url: "https://www.eba.gov.tr/video/turkce-8-sinif-okuma-becerileri",
-          thumbnail_url: "https://via.placeholder.com/320x180?text=Türkçe+Video",
-          subject_topics: ["Okuma", "Anlama", "Çıkarım"],
-          accessibility_features: ["altyazi"],
-          curriculum_alignment: { alignment_score: 0.78 }
-        }
+          video_url: 'https://www.eba.gov.tr/video/turkce-8-sinif-okuma-becerileri',
+          thumbnail_url: 'https://via.placeholder.com/320x180?text=Türkçe+Video',
+          subject_topics: ['Okuma', 'Anlama', 'Çıkarım'],
+          accessibility_features: ['altyazi'],
+          curriculum_alignment: { alignment_score: 0.78 },
+        },
       ];
 
       setRecentVideos(mockVideos);
@@ -167,14 +169,14 @@ export const EbaTVDashboard: React.FC = () => {
       sosyal_bilgiler: 'Sosyal Bilgiler',
       fizik: 'Fizik',
       kimya: 'Kimya',
-      biyoloji: 'Biyoloji'
+      biyoloji: 'Biyoloji',
     };
     return labels[category] || category;
   };
 
   const getQualityColor = (score: number) => {
-    if (score >= 9) return 'text-green-600';
-    if (score >= 7) return 'text-yellow-600';
+    if (score >= 9) {return 'text-green-600';}
+    if (score >= 7) {return 'text-yellow-600';}
     return 'text-red-600';
   };
 
@@ -200,13 +202,13 @@ export const EbaTVDashboard: React.FC = () => {
                 <Play className="text-red-600" size={32} />
                 <h1 className="text-2xl font-bold text-gray-900">EBA TV</h1>
               </div>
-              
+
               <div className="hidden md:flex items-center space-x-1 bg-gray-100 rounded-lg p-1">
                 <button
                   onClick={() => setActiveTab('overview')}
                   className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-                    activeTab === 'overview' 
-                      ? 'bg-white text-blue-600 shadow-sm' 
+                    activeTab === 'overview'
+                      ? 'bg-white text-blue-600 shadow-sm'
                       : 'text-gray-600 hover:text-gray-900'
                   }`}
                 >
@@ -215,8 +217,8 @@ export const EbaTVDashboard: React.FC = () => {
                 <button
                   onClick={() => setActiveTab('search')}
                   className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-                    activeTab === 'search' 
-                      ? 'bg-white text-blue-600 shadow-sm' 
+                    activeTab === 'search'
+                      ? 'bg-white text-blue-600 shadow-sm'
                       : 'text-gray-600 hover:text-gray-900'
                   }`}
                 >
@@ -225,8 +227,8 @@ export const EbaTVDashboard: React.FC = () => {
                 <button
                   onClick={() => setActiveTab('recommendations')}
                   className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-                    activeTab === 'recommendations' 
-                      ? 'bg-white text-blue-600 shadow-sm' 
+                    activeTab === 'recommendations'
+                      ? 'bg-white text-blue-600 shadow-sm'
                       : 'text-gray-600 hover:text-gray-900'
                   }`}
                 >
@@ -236,8 +238,8 @@ export const EbaTVDashboard: React.FC = () => {
                   <button
                     onClick={() => setActiveTab('player')}
                     className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-                      activeTab === 'player' 
-                        ? 'bg-white text-blue-600 shadow-sm' 
+                      activeTab === 'player'
+                        ? 'bg-white text-blue-600 shadow-sm'
                         : 'text-gray-600 hover:text-gray-900'
                     }`}
                   >

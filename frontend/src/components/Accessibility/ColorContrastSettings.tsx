@@ -1,7 +1,7 @@
 /**
  * Renk ve Kontrast Ayarları Bileşeni
  * REQ-50.14 - REQ-50.27: Renk ve Kontrast Ayarları
- * 
+ *
  * Task 77: Renk ve Kontrast Ayarları
  * - 77.1: Renkli overlay (6 renk: mavi, yeşil, sarı, pembe, mor, gri)
  * - 77.2: Opacity ayarlama (%10-%90)
@@ -9,7 +9,9 @@
  * - 77.4: WCAG AAA uyumu (7:1 kontrast oranı)
  */
 
-import React, { useState } from 'react';
+import * as React from 'react';
+import {  useState  } from 'react';
+
 import { useColorContrastSettings } from '../../hooks/useColorContrastSettings';
 import './ColorContrastSettings.css';
 
@@ -196,7 +198,7 @@ export const ColorContrastSettings: React.FC<ColorContrastSettingsProps> = ({ cl
             <span>%90</span>
           </div>
           <p className="setting-description">
-            Overlay'in yoğunluğunu ayarlayın. Düşük değerler daha hafif, yüksek değerler daha belirgin filtre sağlar.
+            Overlay&apos;in yoğunluğunu ayarlayın. Düşük değerler daha hafif, yüksek değerler daha belirgin filtre sağlar.
             {settings.overlayOpacity > 0.7 && (
               <>
                 <br />
@@ -211,9 +213,9 @@ export const ColorContrastSettings: React.FC<ColorContrastSettingsProps> = ({ cl
 
       {/* Kontrast Modu - Task 77.3 (REQ-50.21, REQ-50.22, REQ-50.23, REQ-50.24) */}
       <div className="setting-group">
-        <label className="setting-label">
+        <div className="setting-label" role="group" aria-label="Kontrast Modu">
           <span className="label-text">Kontrast Modu</span>
-        </label>
+        </div>
         <div className="contrast-modes">
           {contrastModes.map((mode) => (
             <button
@@ -282,13 +284,13 @@ export const ColorContrastSettings: React.FC<ColorContrastSettingsProps> = ({ cl
               </p>
               {!isAAA && (
                 <p className="warning-text">
-                  ⚠️ Kontrast oranı WCAG AAA standardını karşılamıyor. 
+                  ⚠️ Kontrast oranı WCAG AAA standardını karşılamıyor.
                   Daha iyi okunabilirlik için kontrast ayarlarını artırın.
                 </p>
               )}
             </div>
           </div>
-          
+
           {/* Otomatik Düzeltme Önerisi - REQ-50.27 */}
           {!isAAA && (
             <div className="auto-fix-section">

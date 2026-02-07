@@ -9,14 +9,6 @@ interface LanguageCorrection {
   explanation?: string;
 }
 
-interface TurkishLanguageError {
-  word: string;
-  position: number;
-  suggestions: string[];
-  type: 'spelling' | 'grammar' | 'punctuation';
-  message: string;
-}
-
 interface UseTurkishLanguageCorrectionReturn {
   checkText: (text: string) => Promise<void>;
   suggestions: LanguageCorrection[];
@@ -51,9 +43,9 @@ const TURKISH_CORRECTIONS = {
     'olabilir': 'olabilir',
     'olabiliyor': 'olabiliyor',
     'yapabilir': 'yapabilir',
-    'yapabiliyor': 'yapabiliyor'
+    'yapabiliyor': 'yapabiliyor',
   },
-  
+
   // Grammar corrections
   grammar: {
     'gidiyorum': 'gidiyorum',
@@ -63,17 +55,17 @@ const TURKISH_CORRECTIONS = {
     'biliyorum': 'biliyorum',
     'görüyorum': 'görüyorum',
     'diyorum': 'diyorum',
-    'söylüyorum': 'söylüyorum'
+    'söylüyorum': 'söylüyorum',
   },
-  
+
   // Style improvements
   style: {
     'çok güzel': 'harika',
     'çok iyi': 'mükemmel',
     'çok kötü': 'berbat',
     'çok büyük': 'devasa',
-    'çok küçük': 'minik'
-  }
+    'çok küçük': 'minik',
+  },
 };
 
 // Turkish punctuation rules
@@ -81,82 +73,37 @@ const PUNCTUATION_RULES = [
   {
     pattern: /\s+([,.!?;:])/g,
     replacement: '$1',
-    message: 'Noktalama işaretlerinden önce boşluk olmamalı'
+    message: 'Noktalama işaretlerinden önce boşluk olmamalı',
   },
   {
     pattern: /([,.!?;:])\s*([a-zA-ZçğıöşüÇĞIİÖŞÜ])/g,
     replacement: '$1 $2',
-    message: 'Noktalama işaretlerinden sonra boşluk olmalı'
+    message: 'Noktalama işaretlerinden sonra boşluk olmalı',
   },
   {
     pattern: /\s{2,}/g,
     replacement: ' ',
-    message: 'Çoklu boşluklar tek boşluk olmalı'
-  }
-];
-
-// Turkish suffix patterns for basic morphological analysis
-const TURKISH_SUFFIXES = [
-  'lar', 'ler', 'dan', 'den', 'tan', 'ten', 'nın', 'nin', 'nun', 'nün',
-  'nda', 'nde', 'ya', 'ye', 'yla', 'yle', 'mış', 'miş', 'muş', 'müş',
-  'dı', 'di', 'du', 'dü', 'tı', 'ti', 'tu', 'tü', 'yor', 'iyor', 'uyor', 'üyor'
+    message: 'Çoklu boşluklar tek boşluk olmalı',
+  },
 ];
 
 export const useTurkishLanguageCorrection = (): UseTurkishLanguageCorrectionReturn => {
   const [suggestions, setSuggestions] = useState<LanguageCorrection[]>([]);
   const [isChecking, setIsChecking] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  
+
   const abortControllerRef = useRef<AbortController | null>(null);
-
-  // Check if a word is likely Turkish
-  const isTurkishWord = useCallback((word: string): boolean => {
-    const turkishChars = /[çğıöşüÇĞIİÖŞÜ]/;
-    const commonTurkishWords = [
-      'ben', 'sen', 'o', 'biz', 'siz', 'onlar', 'bu', 'şu', 'o', 'ne', 'kim',
-      'nerede', 'nasıl', 'neden', 'niçin', 'hangi', 'kaç', 'var', 'yok',
-      'evet', 'hayır', 'belki', 'tabii', 'herhalde', 've', 'veya', 'ile',
-      'için', 'gibi', 'kadar', 'daha', 'en', 'çok', 'az', 'biraz', 'hiç'
-    ];
-    
-    return turkishChars.test(word) || commonTurkishWords.includes(word.toLowerCase());
-  }, []);
-
-  // Basic Turkish morphological analysis
-  const analyzeTurkishWord = useCallback((word: string) => {
-    const lowerWord = word.toLowerCase();
-    
-    // Find potential root by removing common suffixes
-    for (const suffix of TURKISH_SUFFIXES) {
-      if (lowerWord.endsWith(suffix)) {
-        const root = lowerWord.slice(0, -suffix.length);
-        if (root.length >= 2) {
-          return {
-            root,
-            suffix,
-            isComplex: suffix.length > 2
-          };
-        }
-      }
-    }
-    
-    return {
-      root: lowerWord,
-      suffix: '',
-      isComplex: false
-    };
-  }, []);
 
   // Check spelling using built-in corrections
   const checkSpelling = useCallback((text: string): LanguageCorrection[] => {
     const corrections: LanguageCorrection[] = [];
     const words = text.split(/\s+/);
-    
+
     words.forEach(word => {
       const cleanWord = word.replace(/[^\w\sçğıöşüÇĞIİÖŞÜ]/g, '').toLowerCase();
-      
-      if (cleanWord.length < 2) return;
-      
+
+      if (cleanWord.length < 2) {return;}
+
       // Check against known corrections
       Object.entries(TURKISH_CORRECTIONS.spelling).forEach(([wrong, correct]) => {
         if (cleanWord === wrong) {
@@ -166,11 +113,11 @@ export const useTurkishLanguageCorrection = (): UseTurkishLanguageCorrectionRetu
             suggestions: [correct],
             confidence: 0.9,
             type: 'spelling',
-            explanation: `"${wrong}" yerine "${correct}" yazılmalı`
+            explanation: `"${wrong}" yerine "${correct}" yazılmalı`,
           });
         }
       });
-      
+
       // Check for common patterns
       if (cleanWord.includes('birşey')) {
         corrections.push({
@@ -179,10 +126,10 @@ export const useTurkishLanguageCorrection = (): UseTurkishLanguageCorrectionRetu
           suggestions: [word.replace('birşey', 'bir şey')],
           confidence: 0.95,
           type: 'spelling',
-          explanation: '"bir şey" ayrı yazılır'
+          explanation: '"bir şey" ayrı yazılır',
         });
       }
-      
+
       if (cleanWord.includes('herşey')) {
         corrections.push({
           original: word,
@@ -190,18 +137,18 @@ export const useTurkishLanguageCorrection = (): UseTurkishLanguageCorrectionRetu
           suggestions: [word.replace('herşey', 'her şey')],
           confidence: 0.95,
           type: 'spelling',
-          explanation: '"her şey" ayrı yazılır'
+          explanation: '"her şey" ayrı yazılır',
         });
       }
     });
-    
+
     return corrections;
   }, []);
 
   // Check grammar patterns
   const checkGrammar = useCallback((text: string): LanguageCorrection[] => {
     const corrections: LanguageCorrection[] = [];
-    
+
     // Check for common grammar mistakes
     const grammarPatterns = [
       {
@@ -210,52 +157,52 @@ export const useTurkishLanguageCorrection = (): UseTurkishLanguageCorrectionRetu
           const base = match.slice(0, -2);
           return base + 'orum';
         },
-        message: 'Fiil çekimi düzeltildi'
+        message: 'Fiil çekimi düzeltildi',
       },
       {
         pattern: /\b(birşeyi|herşeyi)\b/gi,
         replacement: (match: string) => match.replace('şey', ' şey'),
-        message: '"şey" kelimesi ayrı yazılır'
+        message: '"şey" kelimesi ayrı yazılır',
       },
       {
         pattern: /\b(hemde|yinede|birde)\b/gi,
         replacement: (match: string) => {
-          if (match.toLowerCase().includes('hemde')) return 'hem de';
-          if (match.toLowerCase().includes('yinede')) return 'yine de';
-          if (match.toLowerCase().includes('birde')) return 'bir de';
+          if (match.toLowerCase().includes('hemde')) {return 'hem de';}
+          if (match.toLowerCase().includes('yinede')) {return 'yine de';}
+          if (match.toLowerCase().includes('birde')) {return 'bir de';}
           return match;
         },
-        message: 'Bağlaç ayrı yazılır'
-      }
+        message: 'Bağlaç ayrı yazılır',
+      },
     ];
-    
+
     grammarPatterns.forEach(({ pattern, replacement, message }) => {
       const matches = text.matchAll(pattern);
       for (const match of matches) {
         if (match[0] && match.index !== undefined) {
-          const corrected = typeof replacement === 'function' 
-            ? replacement(match[0]) 
+          const corrected = typeof replacement === 'function'
+            ? replacement(match[0])
             : replacement;
-          
+
           corrections.push({
             original: match[0],
             corrected: corrected,
             suggestions: [corrected],
             confidence: 0.8,
             type: 'grammar',
-            explanation: message
+            explanation: message,
           });
         }
       }
     });
-    
+
     return corrections;
   }, []);
 
   // Check punctuation
   const checkPunctuation = useCallback((text: string): LanguageCorrection[] => {
     const corrections: LanguageCorrection[] = [];
-    
+
     PUNCTUATION_RULES.forEach(({ pattern, replacement, message }) => {
       if (pattern.test(text)) {
         const corrected = text.replace(pattern, replacement);
@@ -266,12 +213,12 @@ export const useTurkishLanguageCorrection = (): UseTurkishLanguageCorrectionRetu
             suggestions: [corrected],
             confidence: 0.7,
             type: 'style',
-            explanation: message
+            explanation: message,
           });
         }
       }
     });
-    
+
     return corrections;
   }, []);
 
@@ -315,8 +262,8 @@ export const useTurkishLanguageCorrection = (): UseTurkishLanguageCorrectionRetu
 
       // Remove duplicates and sort by confidence
       const uniqueCorrections = allCorrections
-        .filter((correction, index, array) => 
-          array.findIndex(c => c.original === correction.original) === index
+        .filter((correction, index, array) =>
+          array.findIndex(c => c.original === correction.original) === index,
         )
         .sort((a, b) => b.confidence - a.confidence)
         .slice(0, 5); // Limit to top 5 suggestions
@@ -344,6 +291,6 @@ export const useTurkishLanguageCorrection = (): UseTurkishLanguageCorrectionRetu
     suggestions,
     isChecking,
     error,
-    clearSuggestions
+    clearSuggestions,
   };
 };

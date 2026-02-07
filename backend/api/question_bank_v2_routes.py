@@ -10,10 +10,10 @@ Endpoints:
 - POST /api/v2/hitl/tasks - Create expert review task
 - GET /api/v2/hitl/dashboard/{expert_id} - Expert dashboard
 """
-from fastapi import APIRouter, Depends, HTTPException, status
-from typing import List, Dict, Optional
+from fastapi import APIRouter, HTTPException, status
+from typing import Dict, Optional
 from pydantic import BaseModel, Field
-from uuid import UUID, uuid4
+from uuid import uuid4
 from datetime import datetime
 
 # Import services
@@ -29,8 +29,6 @@ from services.plagiarism_detection_service import PlagiarismDetectionService
 from services.adaptive_testing_service import ComputerAdaptiveTestingService
 from services.hitl_workflow_service import (
     HITLWorkflowService,
-    ExpertProfile,
-    ExpertiseLevel,
     ReviewDecision,
     ReviewSubmission,
 )

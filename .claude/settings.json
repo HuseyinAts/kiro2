@@ -34,29 +34,54 @@
     "PreCompact": [
       {
         "matcher": "",
-        "command": "powershell -ExecutionPolicy Bypass -File C:/Users/husey/kiro2/.claude/hooks/pre-compact.ps1"
+        "hooks": [
+          {
+            "type": "command",
+            "command": "powershell -ExecutionPolicy Bypass -File C:/Users/husey/kiro2/.claude/hooks/pre-compact.ps1"
+          }
+        ]
       }
     ],
     "PostToolUse": [
       {
         "matcher": "Edit",
-        "command": "powershell -ExecutionPolicy Bypass -File C:/Users/husey/kiro2/.claude/hooks/post-tool-use.ps1 -ToolName Edit -FilePath $CLAUDE_FILE_PATH"
+        "hooks": [
+          {
+            "type": "command",
+            "command": "powershell -ExecutionPolicy Bypass -File C:/Users/husey/kiro2/.claude/hooks/post-tool-use.ps1 -ToolName Edit -FilePath $CLAUDE_FILE_PATH"
+          }
+        ]
       },
       {
         "matcher": "Write",
-        "command": "powershell -ExecutionPolicy Bypass -File C:/Users/husey/kiro2/.claude/hooks/post-tool-use.ps1 -ToolName Write -FilePath $CLAUDE_FILE_PATH"
+        "hooks": [
+          {
+            "type": "command",
+            "command": "powershell -ExecutionPolicy Bypass -File C:/Users/husey/kiro2/.claude/hooks/post-tool-use.ps1 -ToolName Write -FilePath $CLAUDE_FILE_PATH"
+          }
+        ]
       }
     ],
     "PreToolUse": [
       {
         "matcher": "Bash",
-        "command": "powershell -ExecutionPolicy Bypass -File C:/Users/husey/kiro2/.claude/hooks/pre-tool-use.ps1 -Command $CLAUDE_BASH_COMMAND"
+        "hooks": [
+          {
+            "type": "command",
+            "command": "powershell -ExecutionPolicy Bypass -File C:/Users/husey/kiro2/.claude/hooks/pre-tool-use.ps1 -Command $CLAUDE_BASH_COMMAND"
+          }
+        ]
       }
     ],
     "Stop": [
       {
         "matcher": "",
-        "command": "powershell -ExecutionPolicy Bypass -File C:/Users/husey/kiro2/.claude/hooks/stop.ps1"
+        "hooks": [
+          {
+            "type": "command",
+            "command": "powershell -ExecutionPolicy Bypass -File C:/Users/husey/kiro2/.claude/hooks/stop.ps1"
+          }
+        ]
       }
     ]
   },
@@ -70,6 +95,53 @@
     "CLAUDE_CODE_TASK_LIST_ID": "kiro2-master",
     "CLAUDE_CODE_DISABLE_AUTO_COMPACT": "1"
   },
-  "excludePatterns": ["node_modules", ".venv", "__pycache__", ".git", "*.log", "dist", "build", "htmlcov", ".pytest_cache", ".mypy_cache"],
+  "excludePatterns": [
+    "node_modules",
+    "node_modules/**",
+    ".venv",
+    ".venv/**",
+    "venv",
+    "venv/**",
+    "__pycache__",
+    "__pycache__/**",
+    "*.pyc",
+    ".git",
+    ".git/**",
+    "*.log",
+    "dist",
+    "dist/**",
+    "build",
+    "build/**",
+    "htmlcov",
+    "htmlcov/**",
+    ".pytest_cache",
+    ".pytest_cache/**",
+    ".mypy_cache",
+    ".mypy_cache/**",
+    ".ruff_cache",
+    ".ruff_cache/**",
+    "*.egg-info",
+    "*.egg-info/**",
+    ".eggs",
+    ".eggs/**",
+    "coverage",
+    ".coverage",
+    ".nyc_output",
+    "*.min.js",
+    "*.min.css",
+    "*.bundle.js",
+    "*.chunk.js",
+    "package-lock.json",
+    "yarn.lock",
+    "poetry.lock",
+    ".idea",
+    ".vscode",
+    "*.swp",
+    "*.swo",
+    "tmp",
+    "temp",
+    ".temp",
+    ".tmp"
+  ],
   "model": "opus"
 }

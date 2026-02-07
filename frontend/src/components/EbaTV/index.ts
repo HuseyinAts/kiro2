@@ -1,6 +1,6 @@
 /**
  * EBA TV Components Index
- * 
+ *
  * EBA TV bileşenlerini dışa aktarma dosyası.
  */
 
@@ -17,5 +17,5 @@ export type {
   EBARecommendationRequest,
   EBARecommendationResponse,
   EBAStatistics,
-  EBAHealthStatus
+  EBAHealthStatus,
 } from '../../services/ebaTVService';

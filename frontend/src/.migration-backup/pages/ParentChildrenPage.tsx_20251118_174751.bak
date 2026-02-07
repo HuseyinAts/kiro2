@@ -1,0 +1,353 @@
+import React, { useState, useEffect } from 'react'
+import {
+  Container,
+  Typography,
+  Box,
+  Grid,
+  Card,
+  CardContent,
+  CardActions,
+  Button,
+  Avatar,
+  Chip,
+  Alert,
+  CircularProgress,
+  LinearProgress,
+  List,
+  ListItem,
+  ListItemAvatar,
+  ListItemText,
+  Divider,
+  Paper
+} from '@mui/material'
+import {
+  ChildCare,
+  School,
+  Assessment,
+  TrendingUp,
+  CalendarToday,
+  Star,
+  Timer,
+  BarChart
+} from '@mui/icons-material'
+import { useAuth } from '../hooks/useAuth'
+import { ChildInfo, WeeklyReport } from '../types'
+
+export const ParentChildrenPage: React.FC = () => {
+  const [children, setChildren] = useState<ChildInfo[]>([])
+  const [selectedChild, setSelectedChild] = useState<string | null>(null)
+  const [weeklyReports, setWeeklyReports] = useState<WeeklyReport[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  
+  const { user } = useAuth()
+
+  useEffect(() => {
+    loadChildren()
+  }, [])
+
+  useEffect(() => {
+    if (selectedChild) {
+      loadWeeklyReports(selectedChild)
+    }
+  }, [selectedChild])
+
+  const loadChildren = async () => {
+    try {
+      setLoading(true)
+
+      // Backend API çağrısı
+      const response = await fetch('/api/v1/parent/children', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        }
+      })
+
+      if (!response.ok) {
+        throw new Error(`API hatası: ${response.status}`)
+      }
+
+      const apiResult = await response.json()
+
+      if (!apiResult.success && !Array.isArray(apiResult)) {
+        throw new Error(apiResult.message || 'Çocuk listesi alınamadı')
+      }
+
+      const childrenData = Array.isArray(apiResult) ? apiResult : apiResult.data || []
+      setChildren(childrenData)
+      if (childrenData.length > 0) {
+        setSelectedChild(childrenData[0].ogrenci_id)
+      }
+      return
+
+    } catch (error: any) {
+      console.error('Parent Children API hatası:', error)
+      setError(`Çocuk listesi yüklenemedi: ${error.message}`)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const loadWeeklyReports = async (childId: string) => {
+    try {
+      // Backend API çağrısı
+      const response = await fetch(`/api/v1/parent/children/${childId}/weekly-reports`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        }
+      })
+
+      if (!response.ok) {
+        throw new Error(`API hatası: ${response.status}`)
+      }
+
+      const apiResult = await response.json()
+
+      if (!apiResult.success && !Array.isArray(apiResult)) {
+        throw new Error(apiResult.message || 'Haftalık raporlar alınamadı')
+      }
+
+      const reportsData = Array.isArray(apiResult) ? apiResult : apiResult.data || []
+      setWeeklyReports(reportsData)
+      return
+
+    } catch (error: any) {
+      console.error('Weekly Reports API hatası:', error)
+      // Weekly reports optional - silently fail
+      setWeeklyReports([])
+    }
+  }
+
+  const getProgressColor = (progress: number): 'success' | 'warning' | 'error' => {
+    if (progress >= 80) return 'success'
+    if (progress >= 60) return 'warning'
+    return 'error'
+  }
+
+  const formatDuration = (minutes: number): string => {
+    const hours = Math.floor(minutes / 60)
+    const mins = minutes % 60
+    return `${hours}s ${mins}dk`
+  }
+
+  const getInitials = (name: string): string => {
+    return name.split(' ').map(n => n.charAt(0)).join('').toUpperCase()
+  }
+
+  const selectedChildData = children.find(child => child.ogrenci_id === selectedChild)
+
+  if (loading) {
+    return (
+      <Box display="flex" justifyContent="center" alignItems="center" minHeight="400px">
+        <CircularProgress />
+      </Box>
+    )
+  }
+
+  if (error) {
+    return (
+      <Container maxWidth="lg" sx={{ mt: 4 }}>
+        <Alert severity="error">{error}</Alert>
+      </Container>
+    )
+  }
+
+  return (
+    <Container maxWidth="lg" sx={{ mt: 2, mb: 4 }}>
+      {/* Sayfa Başlığı */}
+      <Box sx={{ mb: 4 }}>
+        <Typography variant="h4" component="h1" gutterBottom>
+          Çocuklarım
+        </Typography>
+        <Typography variant="body1" color="text.secondary">
+          Çocuklarınızın eğitim ilerlemesini detaylı olarak takip edin
+        </Typography>
+      </Box>
+
+      {children.length === 0 ? (
+        <Box sx={{ textAlign: 'center', py: 8 }}>
+          <Child sx={{ fontSize: 80, color: 'text.secondary', mb: 2 }} />
+          <Typography variant="h6" color="text.secondary" gutterBottom>
+            Henüz kayıtlı çocuğunuz bulunmuyor
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            Çocuğunuzun hesabını sisteme eklemek için okul yönetimiyle iletişime geçin
+          </Typography>
+        </Box>
+      ) : (
+        <Grid container spacing={3}>
+          {/* Çocuk Listesi */}
+          <Grid item xs={12} md={4}>
+            <Paper sx={{ p: 2 }}>
+              <Typography variant="h6" gutterBottom>
+                Çocuklarım
+              </Typography>
+              <List>
+                {children.map((child, index) => (
+                  <React.Fragment key={child.ogrenci_id}>
+                    <ListItem
+                      button
+                      selected={selectedChild === child.ogrenci_id}
+                      onClick={() => setSelectedChild(child.ogrenci_id)}
+                      sx={{
+                        borderRadius: 1,
+                        mb: 1,
+                        '&.Mui-selected': {
+                          backgroundColor: 'primary.light',
+                          color: 'primary.contrastText',
+                          '&:hover': {
+                            backgroundColor: 'primary.main',
+                          }
+                        }
+                      }}
+                    >
+                      <ListItemAvatar>
+                        <Avatar sx={{ bgcolor: 'primary.main' }}>
+                          {getInitials(child.ad_soyad)}
+                        </Avatar>
+                      </ListItemAvatar>
+                      <ListItemText
+                        primary={child.ad_soyad}
+                        secondary={
+                          <Box>
+                            <Typography variant="body2" component="span">
+                              {child.sinif} - {child.okul}
+                            </Typography>
+                            <Box sx={{ display: 'flex', alignItems: 'center', mt: 1 }}>
+                              <LinearProgress
+                                variant="determinate"
+                                value={child.haftalik_ilerleme}
+                                color={getProgressColor(child.haftalik_ilerleme)}
+                                sx={{ flexGrow: 1, mr: 1 }}
+                              />
+                              <Typography variant="caption">
+                                {child.haftalik_ilerleme}%
+                              </Typography>
+                            </Box>
+                          </Box>
+                        }
+                      />
+                    </ListItem>
+                    {index < children.length - 1 && <Divider />}
+                  </React.Fragment>
+                ))}
+              </List>
+            </Paper>
+          </Grid>
+
+          {/* Seçili Çocuk Detayları */}
+          <Grid item xs={12} md={8}>
+            {selectedChildData && (
+              <Box>
+                {/* Çocuk Bilgi Kartı */}
+                <Card sx={{ mb: 3 }}>
+                  <CardContent>
+                    <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                      <Avatar sx={{ width: 60, height: 60, mr: 2, bgcolor: 'primary.main' }}>
+                        {getInitials(selectedChildData.ad_soyad)}
+                      </Avatar>
+                      <Box sx={{ flexGrow: 1 }}>
+                        <Typography variant="h5" gutterBottom>
+                          {selectedChildData.ad_soyad}
+                        </Typography>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
+                          <School sx={{ fontSize: 16, color: 'text.secondary' }} />
+                          <Typography variant="body2" color="text.secondary">
+                            {selectedChildData.sinif} - {selectedChildData.okul}
+                          </Typography>
+                        </Box>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                          <CalendarToday sx={{ fontSize: 16, color: 'text.secondary' }} />
+                          <Typography variant="body2" color="text.secondary">
+                            Son Aktivite: {new Date(selectedChildData.son_aktivite).toLocaleString('tr-TR')}
+                          </Typography>
+                        </Box>
+                      </Box>
+                      <Box sx={{ textAlign: 'center' }}>
+                        <Typography variant="h4" color={getProgressColor(selectedChildData.haftalik_ilerleme)}>
+                          {selectedChildData.haftalik_ilerleme}%
+                        </Typography>
+                        <Typography variant="body2" color="text.secondary">
+                          Haftalık İlerleme
+                        </Typography>
+                      </Box>
+                    </Box>
+                  </CardContent>
+                  <CardActions>
+                    <Button startIcon={<BarChart />}>
+                      Detaylı Rapor
+                    </Button>
+                    <Button startIcon={<Assessment />}>
+                      Sınav Sonuçları
+                    </Button>
+                    <Button startIcon={<School />}>
+                      Öğretmenle İletişim
+                    </Button>
+                  </CardActions>
+                </Card>
+
+                {/* Haftalık Raporlar */}
+                <Typography variant="h6" gutterBottom>
+                  Haftalık İlerleme Raporları
+                </Typography>
+                <Grid container spacing={2}>
+                  {weeklyReports.map((rapor, index) => (
+                    <Grid item xs={12} sm={6} md={4} key={rapor.hafta}>
+                      <Card>
+                        <CardContent>
+                          <Typography variant="h6" gutterBottom>
+                            {index === 0 ? 'Bu Hafta' : index === 1 ? 'Geçen Hafta' : `${index + 1} Hafta Önce`}
+                          </Typography>
+                          
+                          <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+                            <Timer sx={{ mr: 1, fontSize: 20, color: 'primary.main' }} />
+                            <Typography variant="body2">
+                              {formatDuration(rapor.calisma_suresi)}
+                            </Typography>
+                          </Box>
+
+                          <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+                            <School sx={{ mr: 1, fontSize: 20, color: 'success.main' }} />
+                            <Typography variant="body2">
+                              {rapor.tamamlanan_dersler} ders
+                            </Typography>
+                          </Box>
+
+                          <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+                            <Assessment sx={{ mr: 1, fontSize: 20, color: 'warning.main' }} />
+                            <Typography variant="body2">
+                              {rapor.sinav_puanlari.length} sınav
+                            </Typography>
+                          </Box>
+
+                          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                            <Star sx={{ mr: 1, fontSize: 20, color: 'info.main' }} />
+                            <Typography variant="body2">
+                              Ort: {rapor.ortalama_puan.toFixed(1)}
+                            </Typography>
+                            <Chip
+                              label={rapor.ortalama_puan >= 80 ? 'Mükemmel' : rapor.ortalama_puan >= 60 ? 'İyi' : 'Gelişmeli'}
+                              color={getProgressColor(rapor.ortalama_puan)}
+                              size="small"
+                              sx={{ ml: 1 }}
+                            />
+                          </Box>
+                        </CardContent>
+                      </Card>
+                    </Grid>
+                  ))}
+                </Grid>
+              </Box>
+            )}
+          </Grid>
+        </Grid>
+      )}
+    </Container>
+  )
+}
+
+export default ParentChildrenPage

@@ -387,7 +387,6 @@ class QuestionCRUDService:
             updated_by: Güncelleyen kullanıcı ID
         """
         try:
-            from models.question_bank import QuestionVersion
 
             # Versiyon tablosu yoksa oluştur (migration gerekebilir)
             version = {

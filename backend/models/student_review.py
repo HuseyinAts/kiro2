@@ -4,9 +4,7 @@ Task 105: Student Review Models
 Database models for review system, ratings, moderation, and filtering
 """
 
-from datetime import datetime
-from typing import Optional
-from uuid import UUID, uuid4
+from uuid import uuid4
 
 from sqlalchemy import (
     Column,
@@ -24,7 +22,7 @@ from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 from sqlalchemy.types import DateTime
 
-from models.database import Base
+from .database import Base
 from enum import Enum
 
 

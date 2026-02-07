@@ -1,0 +1,120 @@
+{
+  "timestamp": "2025-11-17T15:58:13.966101",
+  "checks": {
+    "critical_files": {
+      "healthy": true,
+      "status": "healthy",
+      "files": [
+        {
+          "file": "backend/main.py",
+          "exists": true
+        },
+        {
+          "file": "backend/core/database.py",
+          "exists": true
+        },
+        {
+          "file": "backend/core/cache.py",
+          "exists": true
+        },
+        {
+          "file": "backend/api/health.py",
+          "exists": true
+        },
+        {
+          "file": "backend/services/health_check_service.py",
+          "exists": true
+        },
+        {
+          "file": ".env",
+          "exists": true
+        }
+      ]
+    },
+    "sensitive_data_filter": {
+      "healthy": true,
+      "status": "healthy",
+      "redact_email": true,
+      "redact_phone": true,
+      "message": "Hassas veri filtreleme aktif"
+    },
+    "security_middleware": {
+      "healthy": true,
+      "status": "healthy",
+      "features": {
+        "csrf_protection": true,
+        "rate_limiting": true,
+        "cors": true,
+        "security_headers": true,
+        "ddos_protection": true
+      },
+      "active_count": 5,
+      "total_count": 5
+    },
+    "api_routers": {
+      "healthy": true,
+      "status": "healthy",
+      "routers": {
+        "health": true,
+        "auth": true,
+        "2fa": true,
+        "kvkk_consent": true,
+        "kvkk_privacy": true,
+        "rate_limit": true
+      },
+      "active_count": 6,
+      "total_count": 6
+    },
+    "environment_config": {
+      "healthy": true,
+      "status": "healthy",
+      "required_vars": {
+        "DATABASE_URL": true,
+        "SECRET_KEY": true,
+        "ENVIRONMENT": true
+      },
+      "missing_vars": []
+    },
+    "database_files": {
+      "healthy": true,
+      "status": "info",
+      "found_databases": [
+        "backend/turkiye_sinav.db",
+        "backend/kiro2.db",
+        "turkiye_sinav.db",
+        "kiro2.db"
+      ],
+      "message": "4 veritabanı dosyası bulundu"
+    },
+    "agent_files": {
+      "healthy": false,
+      "status": "warning",
+      "agents": [
+        {
+          "file": "backend/agents/__init__.py",
+          "exists": true
+        },
+        {
+          "file": "backend/agents/learning_path_agent.py",
+          "exists": true
+        },
+        {
+          "file": "backend/agents/study_agent.py",
+          "exists": false
+        },
+        {
+          "file": "backend/agents/exam_agent.py",
+          "exists": false
+        }
+      ]
+    }
+  },
+  "score": 97.5,
+  "status": "healthy",
+  "critical_issues": [],
+  "warnings": [
+    "Agent dosyası eksik: backend/agents/study_agent.py",
+    "Agent dosyası eksik: backend/agents/exam_agent.py"
+  ],
+  "recommendations": []
+}

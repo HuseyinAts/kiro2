@@ -7,7 +7,7 @@ content sanitization sağlar.
 """
 import html
 import re
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List
 from fastapi import Response
 from fastapi.responses import JSONResponse
 

@@ -16,7 +16,7 @@ export function difficultyToTurkish(difficulty: DifficultyEnglish): DifficultyTu
   const mapping: Record<DifficultyEnglish, DifficultyTurkish> = {
     'beginner': 'kolay',
     'intermediate': 'orta',
-    'advanced': 'zor'
+    'advanced': 'zor',
   };
 
   return mapping[difficulty] || 'orta'; // Default to 'orta' if unknown
@@ -29,7 +29,7 @@ export function difficultyToEnglish(difficulty: DifficultyTurkish): DifficultyEn
   const mapping: Record<DifficultyTurkish, DifficultyEnglish> = {
     'kolay': 'beginner',
     'orta': 'intermediate',
-    'zor': 'advanced'
+    'zor': 'advanced',
   };
 
   return mapping[difficulty] || 'intermediate'; // Default to 'intermediate' if unknown
@@ -45,7 +45,7 @@ export function getDifficultyLabel(difficulty: DifficultyEnglish | DifficultyTur
     'advanced': 'Zor',
     'kolay': 'Kolay',
     'orta': 'Orta',
-    'zor': 'Zor'
+    'zor': 'Zor',
   };
 
   return labels[difficulty] || 'Orta';
@@ -58,7 +58,7 @@ export function getDifficultyColor(difficulty: DifficultyEnglish | DifficultyTur
   const isEasy = difficulty === 'beginner' || difficulty === 'kolay';
   const isMedium = difficulty === 'intermediate' || difficulty === 'orta';
 
-  if (isEasy) return 'success';
-  if (isMedium) return 'warning';
+  if (isEasy) {return 'success';}
+  if (isMedium) {return 'warning';}
   return 'error';
 }

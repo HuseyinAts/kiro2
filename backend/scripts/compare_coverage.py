@@ -41,30 +41,30 @@ def compare_coverage():
     new_total = new_coverage["totals"]["percent_covered"]
     improvement = new_total - baseline_total
 
-    print(f"OVERALL COVERAGE:")
+    print("OVERALL COVERAGE:")
     print(f"   Baseline:    {baseline_total:.2f}%")
     print(f"   New:         {new_total:.2f}%")
     print(f"   Change:      {improvement:+.2f}%")
 
     if improvement > 0:
-        print(f"   Status:      IMPROVED")
+        print("   Status:      IMPROVED")
     elif improvement < 0:
-        print(f"   Status:      DECREASED")
+        print("   Status:      DECREASED")
     else:
-        print(f"   Status:      NO CHANGE")
+        print("   Status:      NO CHANGE")
 
     # Lines comparison
     baseline_lines = baseline["totals"]["covered_lines"]
     new_lines = new_coverage["totals"]["covered_lines"]
     lines_added = new_lines - baseline_lines
 
-    print(f"\nLINES COVERED:")
+    print("\nLINES COVERED:")
     print(f"   Baseline:    {baseline_lines:,} lines")
     print(f"   New:         {new_lines:,} lines")
     print(f"   Added:       {lines_added:+,} lines")
 
     # File-level improvements
-    print(f"\nFILE-LEVEL IMPROVEMENTS:")
+    print("\nFILE-LEVEL IMPROVEMENTS:")
     print("-" * 50)
 
     file_improvements = []
@@ -119,7 +119,7 @@ def compare_coverage():
             print(f"   {filename}: {coverage:.1f}%")
 
     # Category analysis
-    print(f"\nCATEGORY IMPACT:")
+    print("\nCATEGORY IMPACT:")
     categories = {
         "services": [],
         "api": [],
@@ -166,7 +166,7 @@ def compare_coverage():
             )
 
     # Test effectiveness analysis
-    print(f"\nTEST EFFECTIVENESS:")
+    print("\nTEST EFFECTIVENESS:")
 
     # Calculate tests vs coverage ratio
     test_files = [f for f in new_coverage["files"] if "test_" in f.lower()]
@@ -190,7 +190,7 @@ def compare_coverage():
             )
 
     # Summary and recommendations
-    print(f"\nSUMMARY & RECOMMENDATIONS:")
+    print("\nSUMMARY & RECOMMENDATIONS:")
     print("-" * 40)
 
     if improvement > 1.0:

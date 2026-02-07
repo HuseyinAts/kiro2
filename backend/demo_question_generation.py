@@ -6,7 +6,6 @@ Demonstrates all 4 production services working together
 """
 
 import sys
-import os
 from pathlib import Path
 
 # Set UTF-8 encoding for Windows
@@ -34,7 +33,7 @@ def main():
     try:
         from services.knowledge_graph_service import KnowledgeGraphService, QuestionNode
         from services.plagiarism_detection_service import PlagiarismDetectionService
-        from services.hitl_workflow_service import HITLWorkflowService, TaskPriority
+        from services.hitl_workflow_service import HITLWorkflowService
 
         print("[OK] Tum servisler yuklendi")
     except Exception as e:
@@ -159,11 +158,11 @@ def main():
                 cognitive_skills=["problem_solving", "mathematical_reasoning"],
             )
             kg_service.add_question_node(question_node)
-            print(f"      [OK] Knowledge Graph'a eklendi")
+            print("      [OK] Knowledge Graph'a eklendi")
 
             # Link to topic
             topic_node = (
-                f"TYT:Matematik:Analiz:Turev"
+                "TYT:Matematik:Analiz:Turev"
                 if "turev" in q_data["text"].lower()
                 else None
             )
@@ -183,13 +182,13 @@ def main():
         print(f"      - OSYM sorulari ile benzerlik: {similarity_score:.1%}")
 
         if similarity_score > 0.85:
-            print(f"      [REDDEDILDI] Yuksek benzerlik!")
+            print("      [REDDEDILDI] Yuksek benzerlik!")
             continue
         elif similarity_score > 0.70:
-            print(f"      [UYARI] Orta seviye benzerlik - expert incelemesi gerekli")
+            print("      [UYARI] Orta seviye benzerlik - expert incelemesi gerekli")
             needs_expert_review = True
         else:
-            print(f"      [OK] Benzerlik dusuk - kabul edilebilir")
+            print("      [OK] Benzerlik dusuk - kabul edilebilir")
             needs_expert_review = False
 
         # Step 3: HITL Review (if needed)
@@ -214,7 +213,7 @@ def main():
                 print(f"      [HATA] Task olusturulamadi: {str(e)}")
         else:
             print("  [3] Otomatik onaylandi")
-            print(f"      [ONAYLANDI] Soru sisteme eklendi")
+            print("      [ONAYLANDI] Soru sisteme eklendi")
             approved_count += 1
 
         # Step 4: Get recommendations
@@ -222,7 +221,7 @@ def main():
             # Find prerequisite questions
             predecessors = list(kg_service.graph.predecessors(q_data["id"]))
             if predecessors:
-                print(f"  [4] Onkosuller bulundu:")
+                print("  [4] Onkosuller bulundu:")
                 for pred in predecessors[:3]:
                     if kg_service.graph.nodes[pred].get("type") == "question":
                         print(f"      - {pred}")

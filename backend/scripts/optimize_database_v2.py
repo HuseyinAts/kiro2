@@ -6,7 +6,6 @@ import asyncio
 import asyncpg
 from typing import List, Dict
 import os
-from datetime import datetime
 
 
 class DatabaseOptimizerV2:
@@ -16,7 +15,7 @@ class DatabaseOptimizerV2:
         """Initialize database connection"""
         self.db_url = os.getenv(
             "DATABASE_URL",
-            "postgresql://postgres:changeme_strong_password_here@localhost:5432/kiro",
+            "postgresql://postgres:changeme_strong_password_here@localhost:5434/kiro",
         )
         self.conn = None
 

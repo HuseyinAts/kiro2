@@ -12,7 +12,7 @@ Diagnostic Test özellikleri:
 
 import logging
 from dataclasses import dataclass
-from typing import Dict, List, Optional
+from typing import Dict, List
 import numpy as np
 
 from services.test_types import BaseTestType, TestConfiguration

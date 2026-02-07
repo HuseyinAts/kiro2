@@ -3,7 +3,7 @@
  * Comprehensive test suite for ModernCard component
  */
 
-import React from 'react'
+import * as React from 'react'
 import { describe, it, expect, vi } from 'vitest'
 import { screen, fireEvent } from '@testing-library/react'
 import { render } from '../../../test/utils/test-utils'

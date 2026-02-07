@@ -98,8 +98,7 @@ class DatabaseConfig(BaseSettings):
             raise ValueError(f"Database URL must start with one of: {valid_prefixes}")
         return v
 
-    class Config:
-        env_prefix = "DATABASE_"
+    model_config = ConfigDict(env_prefix="DATABASE_")
 
 
 class RedisConfig(BaseSettings):
@@ -118,8 +117,7 @@ class RedisConfig(BaseSettings):
             raise ValueError("Redis URL must start with redis://")
         return v
 
-    class Config:
-        env_prefix = "REDIS_"
+    model_config = ConfigDict(env_prefix="REDIS_")
 
 
 class ElasticsearchConfig(BaseSettings):
@@ -133,8 +131,7 @@ class ElasticsearchConfig(BaseSettings):
     password: str | None = Field(default=None, description="Elasticsearch password")
     timeout: int = Field(default=30, description="Request timeout in seconds")
 
-    class Config:
-        env_prefix = "ELASTICSEARCH_"
+    model_config = ConfigDict(env_prefix="ELASTICSEARCH_")
 
 
 class SecurityConfig(BaseSettings):
@@ -158,8 +155,7 @@ class SecurityConfig(BaseSettings):
             logger.warning("Secret key should be at least 32 characters long")
         return v
 
-    class Config:
-        env_prefix = "SECURITY_"
+    model_config = ConfigDict(env_prefix="SECURITY_")
 
 
 class ExternalAPIConfig(BaseSettings):
@@ -188,8 +184,7 @@ class ExternalAPIConfig(BaseSettings):
         default=100, description="API rate limit per minute"
     )
 
-    class Config:
-        env_prefix = "API_"
+    model_config = ConfigDict(env_prefix="API_")
 
 
 class MonitoringConfig(BaseSettings):
@@ -214,8 +209,7 @@ class MonitoringConfig(BaseSettings):
             raise ValueError(f"Log level must be one of: {valid_levels}")
         return v.upper()
 
-    class Config:
-        env_prefix = "MONITORING_"
+    model_config = ConfigDict(env_prefix="MONITORING_")
 
 
 class ServerConfig(BaseSettings):
@@ -252,8 +246,7 @@ class ServerConfig(BaseSettings):
             raise ValueError("Port must be between 1 and 65535")
         return v
 
-    class Config:
-        env_prefix = "SERVER_"
+    model_config = ConfigDict(env_prefix="SERVER_")
 
 
 class UnifiedConfig(BaseSettings):
@@ -513,7 +506,7 @@ class ConfigurationManager:
 
     def export_configuration(self, include_secrets: bool = False) -> dict[str, Any]:
         """Export current configuration as dictionary"""
-        config_dict = self.config.dict()
+        config_dict = self.config.model_dump()
 
         if not include_secrets:
             # Remove sensitive information

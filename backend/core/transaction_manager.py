@@ -14,7 +14,9 @@ Bu dosya gelişmiş transaction management sağlar:
 """
 
 import asyncio
+import inspect
 import logging
+import re
 import uuid
 from abc import ABC, abstractmethod
 from collections.abc import AsyncGenerator, Awaitable, Callable
@@ -297,7 +299,7 @@ class TransactionContext:
         # Sanitize savepoint name to prevent SQL injection
         if not re.match(r"^[a-zA-Z0-9_]+$", savepoint_name):
             raise ValidationError(
-                f"Invalid savepoint name: must contain only alphanumeric and underscore"
+                "Invalid savepoint name: must contain only alphanumeric and underscore"
             )
 
         if savepoint_name in self.savepoints:
@@ -341,7 +343,7 @@ class TransactionContext:
         # Validate savepoint name
         if not re.match(r"^[a-zA-Z0-9_]+$", name):
             raise ValidationError(
-                f"Invalid savepoint name: must contain only alphanumeric and underscore"
+                "Invalid savepoint name: must contain only alphanumeric and underscore"
             )
 
         if name not in self.savepoints:
@@ -385,7 +387,7 @@ class TransactionContext:
         # Validate savepoint name
         if not re.match(r"^[a-zA-Z0-9_]+$", name):
             raise ValidationError(
-                f"Invalid savepoint name: must contain only alphanumeric and underscore"
+                "Invalid savepoint name: must contain only alphanumeric and underscore"
             )
 
         if name not in self.savepoints:

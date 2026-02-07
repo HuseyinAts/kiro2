@@ -1,14 +1,23 @@
 /**
  * Sınav Arayüzü - ÖSYM Uyumlu Tam Sınav Deneyimi
- * 
+ *
  * REQ-1.6: Sınav arayüzü özellikleri
  * - İşaretleme sistemi (69.1)
  * - Boş bırakma takibi (69.2)
  * - Şüpheli işaretleme (69.3)
  * - Soru navigasyonu (69.4)
  */
-import React, { useState, useEffect, useCallback } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import {
+  NavigateBefore,
+  NavigateNext,
+  Flag,
+  FlagOutlined,
+  CheckCircle,
+  RadioButtonUnchecked,
+  Warning,
+  GridView,
+  Info,
+} from '@mui/icons-material';
 import {
   Box,
   Paper,
@@ -21,20 +30,13 @@ import {
   Divider,
   useTheme,
   alpha,
-  Badge
-} from '@mui/material'
-import {
-  NavigateBefore,
-  NavigateNext,
-  Flag,
-  FlagOutlined,
-  CheckCircle,
-  RadioButtonUnchecked,
-  Warning,
-  GridView,
-  Info
-} from '@mui/icons-material'
-import BubbleSheetInterface from './BubbleSheetInterface'
+  Badge,
+} from '@mui/material';
+import { motion, AnimatePresence } from 'framer-motion';
+import * as React from 'react';
+import {  useState, useEffect, useCallback  } from 'react';
+
+import BubbleSheetInterface from './BubbleSheetInterface';
 
 export interface ExamQuestion {
   id: string
@@ -74,93 +76,93 @@ export const ExamInterface: React.FC<ExamInterfaceProps> = ({
   onFlagToggle,
   onQuestionNavigate,
   disabled = false,
-  showNavigationPanel = true
+  showNavigationPanel = true,
 }) => {
-  const theme = useTheme()
-  const [showConfirmation, setShowConfirmation] = useState(false)
-  const [lastAnsweredQuestion, setLastAnsweredQuestion] = useState<number | null>(null)
+  const theme = useTheme();
+  const [showConfirmation, setShowConfirmation] = useState(false);
+  const [lastAnsweredQuestion, setLastAnsweredQuestion] = useState<number | null>(null);
 
-  const currentQuestion = questions[currentQuestionIndex]
-  const currentAnswer = currentQuestion ? answers[currentQuestion.id] : null
+  const currentQuestion = questions[currentQuestionIndex];
+  const currentAnswer = currentQuestion ? answers[currentQuestion.id] : null;
 
   /**
    * Cevap değiştiğinde onay göster
    */
   useEffect(() => {
     if (currentAnswer?.answer) {
-      setShowConfirmation(true)
-      setLastAnsweredQuestion(currentQuestionIndex)
-      const timer = setTimeout(() => setShowConfirmation(false), 2000)
-      return () => clearTimeout(timer)
+      setShowConfirmation(true);
+      setLastAnsweredQuestion(currentQuestionIndex);
+      const timer = setTimeout(() => setShowConfirmation(false), 2000);
+      return () => clearTimeout(timer);
     }
-  }, [currentAnswer?.answer, currentQuestionIndex])
+  }, [currentAnswer?.answer, currentQuestionIndex]);
 
   /**
    * Cevap seçme işleyicisi
    */
   const handleAnswerSelect = useCallback((answer: string) => {
-    if (disabled || !currentQuestion) return
-    onAnswerChange(currentQuestion.id, answer)
-  }, [disabled, currentQuestion, onAnswerChange])
+    if (disabled || !currentQuestion) {return;}
+    onAnswerChange(currentQuestion.id, answer);
+  }, [disabled, currentQuestion, onAnswerChange]);
 
   /**
    * Şüpheli işaretleme işleyicisi
    */
   const handleFlagToggle = useCallback(() => {
-    if (disabled || !currentQuestion) return
-    onFlagToggle(currentQuestion.id)
-  }, [disabled, currentQuestion, onFlagToggle])
+    if (disabled || !currentQuestion) {return;}
+    onFlagToggle(currentQuestion.id);
+  }, [disabled, currentQuestion, onFlagToggle]);
 
   /**
    * Önceki soru
    */
   const handlePrevious = useCallback(() => {
     if (currentQuestionIndex > 0) {
-      onQuestionNavigate(currentQuestionIndex - 1)
+      onQuestionNavigate(currentQuestionIndex - 1);
     }
-  }, [currentQuestionIndex, onQuestionNavigate])
+  }, [currentQuestionIndex, onQuestionNavigate]);
 
   /**
    * Sonraki soru
    */
   const handleNext = useCallback(() => {
     if (currentQuestionIndex < questions.length - 1) {
-      onQuestionNavigate(currentQuestionIndex + 1)
+      onQuestionNavigate(currentQuestionIndex + 1);
     }
-  }, [currentQuestionIndex, questions.length, onQuestionNavigate])
+  }, [currentQuestionIndex, questions.length, onQuestionNavigate]);
 
   /**
    * Klavye kısayolları
    */
   useEffect(() => {
     const handleKeyPress = (event: KeyboardEvent) => {
-      if (disabled) return
+      if (disabled) {return;}
 
       // Sol ok: Önceki soru
       if (event.key === 'ArrowLeft') {
-        event.preventDefault()
-        handlePrevious()
+        event.preventDefault();
+        handlePrevious();
       }
       // Sağ ok: Sonraki soru
       else if (event.key === 'ArrowRight') {
-        event.preventDefault()
-        handleNext()
+        event.preventDefault();
+        handleNext();
       }
       // F tuşu: Şüpheli işaretle
       else if (event.key === 'f' || event.key === 'F') {
-        event.preventDefault()
-        handleFlagToggle()
+        event.preventDefault();
+        handleFlagToggle();
       }
       // A-E tuşları: Cevap seç
       else if (['a', 'b', 'c', 'd', 'e'].includes(event.key.toLowerCase())) {
-        event.preventDefault()
-        handleAnswerSelect(event.key.toUpperCase())
+        event.preventDefault();
+        handleAnswerSelect(event.key.toUpperCase());
       }
-    }
+    };
 
-    window.addEventListener('keydown', handleKeyPress)
-    return () => window.removeEventListener('keydown', handleKeyPress)
-  }, [disabled, handlePrevious, handleNext, handleFlagToggle, handleAnswerSelect])
+    window.addEventListener('keydown', handleKeyPress);
+    return () => window.removeEventListener('keydown', handleKeyPress);
+  }, [disabled, handlePrevious, handleNext, handleFlagToggle, handleAnswerSelect]);
 
   if (!currentQuestion) {
     return (
@@ -169,11 +171,11 @@ export const ExamInterface: React.FC<ExamInterfaceProps> = ({
           Soru bulunamadı
         </Typography>
       </Box>
-    )
+    );
   }
 
-  const isFlagged = currentAnswer?.flaggedForReview || false
-  const hasAnswer = !!currentAnswer?.answer
+  const isFlagged = currentAnswer?.flaggedForReview || false;
+  const hasAnswer = !!currentAnswer?.answer;
 
   return (
     <Box sx={{ display: 'flex', gap: 2, height: '100%' }}>
@@ -204,8 +206,8 @@ export const ExamInterface: React.FC<ExamInterfaceProps> = ({
                   sx={{
                     transition: 'all 0.2s',
                     '&:hover': {
-                      transform: 'scale(1.1)'
-                    }
+                      transform: 'scale(1.1)',
+                    },
                   }}
                 >
                   {isFlagged ? <Flag /> : <FlagOutlined />}
@@ -263,7 +265,7 @@ export const ExamInterface: React.FC<ExamInterfaceProps> = ({
                     borderColor: theme.palette.success.main,
                     display: 'flex',
                     alignItems: 'center',
-                    gap: 1
+                    gap: 1,
                   }}
                 >
                   <CheckCircle color="success" />
@@ -323,8 +325,8 @@ export const ExamInterface: React.FC<ExamInterfaceProps> = ({
         />
       )}
     </Box>
-  )
-}
+  );
+};
 
 /**
  * Soru navigasyon paneli bileşeni
@@ -342,50 +344,35 @@ const QuestionNavigationPanel: React.FC<QuestionNavigationPanelProps> = ({
   answers,
   currentQuestionIndex,
   onQuestionNavigate,
-  disabled
+  disabled,
 }) => {
-  const theme = useTheme()
+  const theme = useTheme();
 
   // İstatistikleri hesapla
   const stats = {
     total: questions.length,
     answered: Object.values(answers).filter(a => a.answer).length,
     flagged: Object.values(answers).filter(a => a.flaggedForReview).length,
-    unanswered: questions.length - Object.values(answers).filter(a => a.answer).length
-  }
+    unanswered: questions.length - Object.values(answers).filter(a => a.answer).length,
+  };
 
   /**
    * Soru durumuna göre renk belirle
    */
   const getQuestionColor = (question: ExamQuestion) => {
-    const answer = answers[question.id]
-    const isCurrent = currentQuestionIndex === question.number - 1
+    const answer = answers[question.id];
+    const isCurrent = currentQuestionIndex === question.number - 1;
 
     if (isCurrent) {
-      return theme.palette.primary.main
+      return theme.palette.primary.main;
     } else if (answer?.flaggedForReview) {
-      return theme.palette.warning.main
+      return theme.palette.warning.main;
     } else if (answer?.answer) {
-      return theme.palette.success.main
+      return theme.palette.success.main;
     } else {
-      return theme.palette.grey[400]
+      return theme.palette.grey[400];
     }
-  }
-
-  /**
-   * Soru durumuna göre ikon belirle
-   */
-  const getQuestionIcon = (question: ExamQuestion) => {
-    const answer = answers[question.id]
-
-    if (answer?.flaggedForReview) {
-      return <Flag fontSize="small" />
-    } else if (answer?.answer) {
-      return <CheckCircle fontSize="small" />
-    } else {
-      return <RadioButtonUnchecked fontSize="small" />
-    }
-  }
+  };
 
   return (
     <Paper
@@ -397,7 +384,7 @@ const QuestionNavigationPanel: React.FC<QuestionNavigationPanelProps> = ({
         flexDirection: 'column',
         gap: 2,
         maxHeight: '100%',
-        overflow: 'auto'
+        overflow: 'auto',
       }}
     >
       {/* Başlık */}
@@ -442,9 +429,9 @@ const QuestionNavigationPanel: React.FC<QuestionNavigationPanelProps> = ({
         </Typography>
         <Grid container spacing={1}>
           {questions.map((question) => {
-            const isCurrent = currentQuestionIndex === question.number - 1
-            const answer = answers[question.id]
-            const color = getQuestionColor(question)
+            const isCurrent = currentQuestionIndex === question.number - 1;
+            const answer = answers[question.id];
+            const color = getQuestionColor(question);
 
             return (
               <Grid item xs={3} key={question.id}>
@@ -497,15 +484,15 @@ const QuestionNavigationPanel: React.FC<QuestionNavigationPanelProps> = ({
                           '&:hover': disabled ? {} : {
                             bgcolor: alpha(color, 0.1),
                             transform: 'translateY(-2px)',
-                            boxShadow: theme.shadows[4]
-                          }
+                            boxShadow: theme.shadows[4],
+                          },
                         }}
                       >
                         <Typography
                           variant="body2"
                           sx={{
                             color: isCurrent ? color : 'text.primary',
-                            fontWeight: 'inherit'
+                            fontWeight: 'inherit',
                           }}
                         >
                           {question.number}
@@ -515,7 +502,7 @@ const QuestionNavigationPanel: React.FC<QuestionNavigationPanelProps> = ({
                   </motion.div>
                 </Tooltip>
               </Grid>
-            )
+            );
           })}
         </Grid>
       </Box>
@@ -530,7 +517,7 @@ const QuestionNavigationPanel: React.FC<QuestionNavigationPanelProps> = ({
         </Typography>
       </Box>
     </Paper>
-  )
-}
+  );
+};
 
-export default ExamInterface
+export default ExamInterface;

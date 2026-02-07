@@ -20,13 +20,11 @@ Usage:
 """
 
 import io
-import base64
-from typing import Dict, List, Optional, Literal, Any
+from typing import Dict, Literal, Any
 import matplotlib
 
 matplotlib.use("Agg")  # Non-interactive backend
 import matplotlib.pyplot as plt
-import matplotlib.font_manager as fm
 import numpy as np
 
 # OSYM Style Configuration

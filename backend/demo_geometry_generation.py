@@ -19,7 +19,7 @@ import io
 import os
 import asyncio
 import json
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from dotenv import load_dotenv
 
@@ -125,10 +125,10 @@ async def demo_geometry_generation():
 
             # Add metadata
             question["test_case"] = test_case["name"]
-            question["generated_at"] = datetime.utcnow().isoformat()
+            question["generated_at"] = datetime.now(timezone.utc).isoformat()
 
             # Validate
-            print(f"\n[VALIDATING] Checking question structure...")
+            print("\n[VALIDATING] Checking question structure...")
 
             has_stem = bool(question.get("stem"))
             has_options = len(question.get("options", {})) == 5
@@ -142,7 +142,7 @@ async def demo_geometry_generation():
 
             if has_geometry:
                 geometry_info = question["visual_content"]
-                print(f"\n[GEOMETRY INFO]")
+                print("\n[GEOMETRY INFO]")
                 print(f"  Type: {geometry_info['type']}")
                 print(f"  Format: {geometry_info['format']}")
                 print(f"  Geometry Type: {geometry_info['metadata']['geometry_type']}")
@@ -151,7 +151,7 @@ async def demo_geometry_generation():
                 print(f"  SVG Size: {len(geometry_info['content'])} chars")
 
             # Preview
-            print(f"\n[PREVIEW]")
+            print("\n[PREVIEW]")
             print(f"Stem (first 120 chars): {question['stem'][:120]}...")
             print(f"Options: {list(question['options'].values())}")
             print(f"Correct Answer: {question['correct_answer']}")
@@ -180,7 +180,7 @@ async def demo_geometry_generation():
     print(f"Success Rate: {(success_count/len(test_cases)*100):.1f}%")
 
     # Geometry type breakdown
-    print(f"\nGeometry Type Breakdown:")
+    print("\nGeometry Type Breakdown:")
     geometry_types = {}
     for q in questions:
         if q.get("visual_content"):
@@ -194,7 +194,7 @@ async def demo_geometry_generation():
 
     # Save questions
     if questions:
-        timestamp = datetime.utcnow().strftime("%Y%m%d_%H%M%S")
+        timestamp = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
         output_file = f"demo_geometry_questions_{timestamp}.json"
 
         with open(output_file, "w", encoding="utf-8") as f:

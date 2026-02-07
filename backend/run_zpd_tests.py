@@ -7,8 +7,6 @@ Comprehensive testing for Turkish cultural ZPD calculation service
 
 import asyncio
 import sys
-from datetime import datetime
-from typing import Dict, Any
 
 from services.zpd_maarif_service import ZPDMaarifService
 from models.zpd_maarif import KulturelBaglamProfili, MaarifDegerleriProfili

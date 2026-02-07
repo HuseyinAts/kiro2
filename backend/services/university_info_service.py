@@ -6,7 +6,7 @@ Service layer for campus info, living costs, dormitories, and scholarships
 
 from typing import List, Optional, Dict, Any
 from uuid import UUID
-from sqlalchemy import select, func, and_, or_
+from sqlalchemy import select, and_, or_
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from models.university_info import (

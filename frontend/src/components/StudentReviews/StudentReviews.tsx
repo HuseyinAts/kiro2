@@ -4,10 +4,11 @@
  * Review submission, display, filtering, and voting system
  */
 
-import React, { useState, useEffect } from 'react';
+import * as React from 'react';
+import {  useState, useEffect  } from 'react';
 import './StudentReviews.css';
 
-const API_BASE = process.env.REACT_APP_API_URL || 'http://localhost:8000';
+const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
 // ============================================================
 // Types
@@ -58,7 +59,7 @@ export const StudentReviews: React.FC<StudentReviewsProps> = ({
   reviewType,
   targetId,
   userId,
-  allowSubmit = true
+  allowSubmit = true,
 }) => {
   const [reviews, setReviews] = useState<Review[]>([]);
   const [statistics, setStatistics] = useState<ReviewStatistics | null>(null);
@@ -78,7 +79,7 @@ export const StudentReviews: React.FC<StudentReviewsProps> = ({
     overall_rating: 5,
     pros: '',
     cons: '',
-    tags: ''
+    tags: '',
   });
 
   useEffect(() => {
@@ -95,7 +96,7 @@ export const StudentReviews: React.FC<StudentReviewsProps> = ({
         review_type: reviewType,
         sort_by: sortBy,
         limit: '20',
-        offset: '0'
+        offset: '0',
       });
 
       if (reviewType === 'university') {
@@ -138,7 +139,7 @@ export const StudentReviews: React.FC<StudentReviewsProps> = ({
       }
 
       const response = await fetch(
-        `${API_BASE}/api/reviews/statistics/${reviewType}?${params}`
+        `${API_BASE}/api/reviews/statistics/${reviewType}?${params}`,
       );
 
       if (response.ok) {
@@ -167,7 +168,7 @@ export const StudentReviews: React.FC<StudentReviewsProps> = ({
         pros: submitFormData.pros.split(',').map(p => p.trim()).filter(p => p),
         cons: submitFormData.cons.split(',').map(c => c.trim()).filter(c => c),
         tags: submitFormData.tags.split(',').map(t => t.trim()).filter(t => t),
-        is_current_student: true
+        is_current_student: true,
       };
 
       if (reviewType === 'university') {
@@ -181,8 +182,8 @@ export const StudentReviews: React.FC<StudentReviewsProps> = ({
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(requestBody)
-        }
+          body: JSON.stringify(requestBody),
+        },
       );
 
       if (!response.ok) {
@@ -196,7 +197,7 @@ export const StudentReviews: React.FC<StudentReviewsProps> = ({
         overall_rating: 5,
         pros: '',
         cons: '',
-        tags: ''
+        tags: '',
       });
       setShowSubmitForm(false);
       fetchReviews();
@@ -220,8 +221,8 @@ export const StudentReviews: React.FC<StudentReviewsProps> = ({
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ is_helpful: isHelpful })
-        }
+          body: JSON.stringify({ is_helpful: isHelpful }),
+        },
       );
 
       if (response.ok) {
@@ -240,7 +241,7 @@ export const StudentReviews: React.FC<StudentReviewsProps> = ({
     }
 
     const reason = prompt('Report reason (spam/inappropriate/offensive/fake/misleading/off_topic/other):');
-    if (!reason) return;
+    if (!reason) {return;}
 
     const description = prompt('Additional details (optional):');
 
@@ -250,14 +251,14 @@ export const StudentReviews: React.FC<StudentReviewsProps> = ({
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ reason, description })
-        }
+          body: JSON.stringify({ reason, description }),
+        },
       );
 
       if (response.ok) {
         alert('Report submitted successfully');
       }
-    } catch (err) {
+    } catch {
       alert('Failed to submit report');
     }
   };
@@ -343,7 +344,7 @@ export const StudentReviews: React.FC<StudentReviewsProps> = ({
               <input
                 type="text"
                 value={submitFormData.title}
-                onChange={(e) => setSubmitFormData({...submitFormData, title: e.target.value})}
+                onChange={(e) => setSubmitFormData({ ...submitFormData, title: e.target.value })}
                 required
                 minLength={10}
                 maxLength={255}
@@ -357,7 +358,7 @@ export const StudentReviews: React.FC<StudentReviewsProps> = ({
                   <span
                     key={rating}
                     className={`star ${rating <= submitFormData.overall_rating ? 'filled' : ''}`}
-                    onClick={() => setSubmitFormData({...submitFormData, overall_rating: rating})}
+                    onClick={() => setSubmitFormData({ ...submitFormData, overall_rating: rating })}
                   >
                     ⭐
                   </span>
@@ -369,7 +370,7 @@ export const StudentReviews: React.FC<StudentReviewsProps> = ({
               <label>Your Review * (min 50 characters)</label>
               <textarea
                 value={submitFormData.content}
-                onChange={(e) => setSubmitFormData({...submitFormData, content: e.target.value})}
+                onChange={(e) => setSubmitFormData({ ...submitFormData, content: e.target.value })}
                 required
                 minLength={50}
                 rows={6}
@@ -381,7 +382,7 @@ export const StudentReviews: React.FC<StudentReviewsProps> = ({
               <input
                 type="text"
                 value={submitFormData.pros}
-                onChange={(e) => setSubmitFormData({...submitFormData, pros: e.target.value})}
+                onChange={(e) => setSubmitFormData({ ...submitFormData, pros: e.target.value })}
                 placeholder="Good faculty, Nice campus, etc."
               />
             </div>
@@ -391,7 +392,7 @@ export const StudentReviews: React.FC<StudentReviewsProps> = ({
               <input
                 type="text"
                 value={submitFormData.cons}
-                onChange={(e) => setSubmitFormData({...submitFormData, cons: e.target.value})}
+                onChange={(e) => setSubmitFormData({ ...submitFormData, cons: e.target.value })}
                 placeholder="Expensive, Crowded, etc."
               />
             </div>
@@ -401,7 +402,7 @@ export const StudentReviews: React.FC<StudentReviewsProps> = ({
               <input
                 type="text"
                 value={submitFormData.tags}
-                onChange={(e) => setSubmitFormData({...submitFormData, tags: e.target.value})}
+                onChange={(e) => setSubmitFormData({ ...submitFormData, tags: e.target.value })}
                 placeholder="good-faculty, nice-campus, etc."
               />
             </div>
@@ -499,11 +500,11 @@ function formatDate(dateString: string): string {
   const diffMs = now.getTime() - date.getTime();
   const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
 
-  if (diffDays === 0) return 'Today';
-  if (diffDays === 1) return 'Yesterday';
-  if (diffDays < 7) return `${diffDays} days ago`;
-  if (diffDays < 30) return `${Math.floor(diffDays / 7)} weeks ago`;
-  if (diffDays < 365) return `${Math.floor(diffDays / 30)} months ago`;
+  if (diffDays === 0) {return 'Today';}
+  if (diffDays === 1) {return 'Yesterday';}
+  if (diffDays < 7) {return `${diffDays} days ago`;}
+  if (diffDays < 30) {return `${Math.floor(diffDays / 7)} weeks ago`;}
+  if (diffDays < 365) {return `${Math.floor(diffDays / 30)} months ago`;}
   return `${Math.floor(diffDays / 365)} years ago`;
 }
 

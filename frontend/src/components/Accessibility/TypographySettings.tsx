@@ -1,7 +1,7 @@
 /**
  * Tipografi Ayarları Bileşeni
  * REQ-50.1 - REQ-50.13: Tipografi ve Görsel Düzenlemeler
- * 
+ *
  * Task 76: Tipografi ve Görsel Düzenlemeler
  * - 76.1: OpenDyslexic/Dyslexie font entegrasyonu
  * - 76.2: Font boyutu ayarlama (12-24pt)
@@ -9,7 +9,9 @@
  * - 76.4: Kelime/harf aralığı ayarlama
  */
 
-import React, { useState } from 'react';
+import * as React from 'react';
+import {  useState  } from 'react';
+
 import { useDyslexiaSettings } from '../../hooks/useDyslexiaSettings';
 
 interface TypographySettingsProps {
@@ -392,7 +394,7 @@ export const TypographySettings: React.FC<TypographySettingsProps> = ({ classNam
             id="typography-preview"
             className="preview-content"
             style={{
-              fontFamily: `var(--font-family)`,
+              fontFamily: 'var(--font-family)',
               fontSize: `${settings.fontSize}px`,
               fontWeight: settings.fontWeight,
               lineHeight: settings.lineHeight,

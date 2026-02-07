@@ -5,8 +5,8 @@
  * Provides better UX than a blank screen or spinner
  */
 
-import React from 'react'
-import { Container, Paper, Box, Skeleton } from '@mui/material'
+import { Container, Paper, Box, Skeleton } from '@mui/material';
+import * as React from 'react';
 
 /**
  * Skeleton loader that mimics the LearningPathPage structure
@@ -59,10 +59,10 @@ export const PathLoadingSkeleton: React.FC = () => {
         </Box>
       </Paper>
     </Container>
-  )
-}
+  );
+};
 
 // Display name for React DevTools
-PathLoadingSkeleton.displayName = 'PathLoadingSkeleton'
+PathLoadingSkeleton.displayName = 'PathLoadingSkeleton';
 
-export default PathLoadingSkeleton
+export default PathLoadingSkeleton;

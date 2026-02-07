@@ -6,9 +6,8 @@ from datetime import datetime
 from uuid import uuid4
 from sqlalchemy import Column, String, Boolean, DateTime, ForeignKey
 from sqlalchemy.dialects.postgresql import UUID as PGUUID
-from sqlalchemy.orm import relationship
 
-from models.base import Base
+from .base import Base
 
 
 class OSBSettings(Base):

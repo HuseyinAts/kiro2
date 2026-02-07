@@ -3,11 +3,12 @@
  * Glassmorphism ile bildirim yönetimi
  */
 
-import React from 'react'
-import { ModernParentNotificationsPage } from './ModernParentNotificationsPage'
+import * as React from 'react';
+
+import { ModernParentNotificationsPage } from './ModernParentNotificationsPage';
 
 export const ParentNotificationsPage: React.FC = () => {
-  return <ModernParentNotificationsPage />
-}
+  return <ModernParentNotificationsPage />;
+};
 
-export default ParentNotificationsPage
+export default ParentNotificationsPage;

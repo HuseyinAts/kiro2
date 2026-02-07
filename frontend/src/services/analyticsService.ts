@@ -232,13 +232,13 @@ class AnalyticsService {
     studentId: string,
     startDate?: string,
     endDate?: string,
-    includeDetailed: boolean = false
+    includeDetailed: boolean = false,
   ): Promise<StudentAnalytics> {
     try {
       const params = new URLSearchParams();
-      if (startDate) params.append('start_date', startDate);
-      if (endDate) params.append('end_date', endDate);
-      if (includeDetailed) params.append('include_detailed', 'true');
+      if (startDate) {params.append('start_date', startDate);}
+      if (endDate) {params.append('end_date', endDate);}
+      if (includeDetailed) {params.append('include_detailed', 'true');}
 
       const response = await apiClient.get<{
         success: boolean;
@@ -264,13 +264,13 @@ class AnalyticsService {
     classId: string,
     startDate?: string,
     endDate?: string,
-    includeStudents: boolean = true
+    includeStudents: boolean = true,
   ): Promise<ClassAnalytics> {
     try {
       const params = new URLSearchParams();
-      if (startDate) params.append('start_date', startDate);
-      if (endDate) params.append('end_date', endDate);
-      if (includeStudents) params.append('include_students', 'true');
+      if (startDate) {params.append('start_date', startDate);}
+      if (endDate) {params.append('end_date', endDate);}
+      if (includeStudents) {params.append('include_students', 'true');}
 
       const response = await apiClient.get<{
         success: boolean;
@@ -294,12 +294,12 @@ class AnalyticsService {
    */
   async getAdminAnalytics(
     startDate?: string,
-    endDate?: string
+    endDate?: string,
   ): Promise<AdminAnalytics> {
     try {
       const params = new URLSearchParams();
-      if (startDate) params.append('start_date', startDate);
-      if (endDate) params.append('end_date', endDate);
+      if (startDate) {params.append('start_date', startDate);}
+      if (endDate) {params.append('end_date', endDate);}
 
       const response = await apiClient.get<{
         success: boolean;
@@ -325,7 +325,7 @@ class AnalyticsService {
     try {
       const response = await apiClient.post<ExportResponse>(
         `${this.baseUrl}/export/pdf`,
-        request
+        request,
       );
 
       if (response.data.success) {
@@ -346,7 +346,7 @@ class AnalyticsService {
     try {
       const response = await apiClient.post<ExportResponse>(
         `${this.baseUrl}/export/excel`,
-        request
+        request,
       );
 
       if (response.data.success) {
@@ -367,7 +367,7 @@ class AnalyticsService {
     try {
       const response = await apiClient.post<ExportResponse>(
         `${this.baseUrl}/export/csv`,
-        request
+        request,
       );
 
       if (response.data.success) {
@@ -390,17 +390,17 @@ class AnalyticsService {
 
       if (format === 'pdf') {
         // Hex string'i binary'ye çevir
-        const binaryString = content.match(/.{1,2}/g)?.map(byte => 
-          String.fromCharCode(parseInt(byte, 16))
+        const binaryString = content.match(/.{1,2}/g)?.map(byte =>
+          String.fromCharCode(parseInt(byte, 16)),
         ).join('') || '';
         blob = new Blob([binaryString], { type: 'application/pdf' });
       } else if (format === 'excel') {
         // Hex string'i binary'ye çevir
-        const binaryString = content.match(/.{1,2}/g)?.map(byte => 
-          String.fromCharCode(parseInt(byte, 16))
+        const binaryString = content.match(/.{1,2}/g)?.map(byte =>
+          String.fromCharCode(parseInt(byte, 16)),
         ).join('') || '';
-        blob = new Blob([binaryString], { 
-          type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' 
+        blob = new Blob([binaryString], {
+          type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
         });
       } else {
         // CSV
@@ -432,7 +432,7 @@ class AnalyticsService {
 
     return {
       startDate: startDate.toISOString(),
-      endDate: endDate.toISOString()
+      endDate: endDate.toISOString(),
     };
   }
 
@@ -441,16 +441,16 @@ class AnalyticsService {
    */
   getPerformanceColor(value: number, type: 'percentage' | 'score' | 'time'): string {
     if (type === 'percentage') {
-      if (value >= 80) return 'text-green-600';
-      if (value >= 60) return 'text-yellow-600';
+      if (value >= 80) {return 'text-green-600';}
+      if (value >= 60) {return 'text-yellow-600';}
       return 'text-red-600';
     } else if (type === 'score') {
-      if (value >= 80) return 'text-green-600';
-      if (value >= 60) return 'text-yellow-600';
+      if (value >= 80) {return 'text-green-600';}
+      if (value >= 60) {return 'text-yellow-600';}
       return 'text-red-600';
     } else if (type === 'time') {
-      if (value <= 200) return 'text-green-600';
-      if (value <= 500) return 'text-yellow-600';
+      if (value <= 200) {return 'text-green-600';}
+      if (value <= 500) {return 'text-yellow-600';}
       return 'text-red-600';
     }
     return 'text-gray-600';
@@ -486,7 +486,7 @@ class AnalyticsService {
       'sensing': 'bg-yellow-100 text-yellow-800',
       'intuitive': 'bg-pink-100 text-pink-800',
       'sequential': 'bg-teal-100 text-teal-800',
-      'global': 'bg-gray-100 text-gray-800'
+      'global': 'bg-gray-100 text-gray-800',
     };
     return colors[style.toLowerCase()] || 'bg-gray-100 text-gray-800';
   }

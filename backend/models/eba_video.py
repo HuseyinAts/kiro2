@@ -10,7 +10,6 @@ from sqlalchemy import (
     Boolean,
     DateTime,
     ForeignKey,
-    Text,
     Float,
 )
 from sqlalchemy.dialects.postgresql import UUID, ARRAY
@@ -18,12 +17,12 @@ from sqlalchemy.orm import relationship
 from datetime import datetime
 import uuid
 
-from models.database import Base
+from .database import Base
 
 # Re-export EBAVideo from canonical source (models/eba_models.py)
 # to avoid duplicate class registration in SQLAlchemy mapper registry.
 # The comprehensive EBAVideo model lives in eba_models.py.
-from models.eba_models import EBAVideo  # noqa: F401
+from .eba_models import EBAVideo  # noqa: F401
 
 
 class EBAVideoWatch(Base):

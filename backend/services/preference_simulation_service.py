@@ -4,15 +4,12 @@ Task 102: Preference Simulation Service
 Service for university preference simulation, score calculation, placement prediction
 """
 
-from datetime import datetime
-from typing import List, Optional, Dict, Any, Tuple
+from typing import List, Optional, Dict, Any
 from uuid import UUID
-import math
 
-from sqlalchemy import select, func, and_, or_, desc, asc
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from models.university import UniversityProgram, ScoreType, University, Department
+from models.university import UniversityProgram, ScoreType
 from services.university_advisory_service import UniversityAdvisoryService
 
 

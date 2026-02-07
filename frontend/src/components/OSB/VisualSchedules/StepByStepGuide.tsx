@@ -2,7 +2,8 @@
  * Task 94.3: Step-by-Step Guide Component
  * Adım adım rehber - numaralandırılmış adımlar, ilerleme göstergeleri
  */
-import React, { useState } from 'react';
+import * as React from 'react';
+import {  useState  } from 'react';
 import './StepByStepGuide.css';
 
 export interface GuideStep {
@@ -27,7 +28,7 @@ export const StepByStepGuide: React.FC<StepByStepGuideProps> = ({
   steps,
   currentStep = 0,
   osbMode = true,
-  onStepComplete
+  onStepComplete,
 }) => {
   const [activeStep, setActiveStep] = useState(currentStep);
 

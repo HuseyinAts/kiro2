@@ -1,7 +1,7 @@
 /**
  * Performans Karşılaştırma Grafiği Bileşeni
  * Türkiye Üniversite Sınavları Hazırlık Platformu
- * 
+ *
  * Bu bileşen öğrenci performansını ulusal ortalamalarla karşılaştırır:
  * - Radar chart ile çok boyutlu karşılaştırma
  * - Bar chart ile basit karşılaştırma
@@ -9,18 +9,15 @@
  * - Sıralama bilgileri
  */
 
-import React, { useState } from 'react';
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+  TrendingUp,
+  TrendingDown,
+  Award,
+  Target,
+  BarChart3,
+} from 'lucide-react';
+import * as React from 'react';
+import {  useState  } from 'react';
 import {
   BarChart,
   Bar,
@@ -35,19 +32,18 @@ import {
   PolarRadiusAxis,
   Radar,
   Cell,
-  PieChart,
-  Pie,
 } from 'recharts';
-import {
-  TrendingUp,
-  TrendingDown,
-  Users,
-  Award,
-  Target,
-  BarChart3,
-  PieChart as PieChartIcon,
-} from 'lucide-react';
 
+import { Badge } from '@/components/ui/badge';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
+import { Progress } from '@/components/ui/progress';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
   PerformanceComparison,
   examPerformanceService,
@@ -70,8 +66,8 @@ const PerformanceComparisonChart: React.FC<PerformanceComparisonChartProps> = ({
 }) => {
   const [activeTab, setActiveTab] = useState('overview');
 
-  // Ulusal ortalama veriler (örnek)
-  const nationalAverages = {
+  // Ulusal ortalama veriler (ornek)
+  const nationalAverages: Record<string, Record<string, number>> = {
     TYT: {
       TURKCE: 65.2,
       MATEMATIK: 58.7,
@@ -117,9 +113,9 @@ const PerformanceComparisonChart: React.FC<PerformanceComparisonChartProps> = ({
     }] : []),
   ];
 
-  // Konu bazlı karşılaştırma verisi
+  // Konu bazli karsilastirma verisi
   const subjectComparisonData = subjectPerformances.map(subject => {
-    const nationalAvg = nationalAverages[examType as keyof typeof nationalAverages]?.[subject.subject as keyof any] || 60;
+    const nationalAvg = nationalAverages[examType]?.[subject.subject] || 60;
     return {
       subject: subject.topic,
       student: subject.success_rate,
@@ -130,7 +126,7 @@ const PerformanceComparisonChart: React.FC<PerformanceComparisonChartProps> = ({
 
   // Radar chart verisi
   const radarData = subjectPerformances.slice(0, 6).map(subject => {
-    const nationalAvg = nationalAverages[examType as keyof typeof nationalAverages]?.[subject.subject as keyof any] || 60;
+    const nationalAvg = nationalAverages[examType]?.[subject.subject] || 60;
     return {
       subject: subject.topic.length > 10 ? subject.topic.substring(0, 10) + '...' : subject.topic,
       student: subject.success_rate,
@@ -140,19 +136,19 @@ const PerformanceComparisonChart: React.FC<PerformanceComparisonChartProps> = ({
 
   // Yüzdelik dilim rengi
   const getPercentileColor = (percentile: number) => {
-    if (percentile >= 90) return '#22c55e'; // green
-    if (percentile >= 75) return '#3b82f6'; // blue
-    if (percentile >= 50) return '#f59e0b'; // orange
-    if (percentile >= 25) return '#ef4444'; // red
+    if (percentile >= 90) {return '#22c55e';} // green
+    if (percentile >= 75) {return '#3b82f6';} // blue
+    if (percentile >= 50) {return '#f59e0b';} // orange
+    if (percentile >= 25) {return '#ef4444';} // red
     return '#6b7280'; // gray
   };
 
   // Yüzdelik dilim etiketi
   const getPercentileLabel = (percentile: number) => {
-    if (percentile >= 90) return 'Mükemmel';
-    if (percentile >= 75) return 'Çok İyi';
-    if (percentile >= 50) return 'İyi';
-    if (percentile >= 25) return 'Orta';
+    if (percentile >= 90) {return 'Mükemmel';}
+    if (percentile >= 75) {return 'Çok İyi';}
+    if (percentile >= 50) {return 'İyi';}
+    if (percentile >= 25) {return 'Orta';}
     return 'Geliştirilmeli';
   };
 
@@ -175,7 +171,7 @@ const PerformanceComparisonChart: React.FC<PerformanceComparisonChartProps> = ({
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="category" />
               <YAxis domain={[0, 100]} />
-              <Tooltip 
+              <Tooltip
                 formatter={(value: number) => [`${value.toFixed(1)} puan`, 'Puan']}
               />
               <Bar dataKey="score" radius={[4, 4, 0, 0]}>
@@ -201,16 +197,16 @@ const PerformanceComparisonChart: React.FC<PerformanceComparisonChartProps> = ({
         </CardHeader>
         <CardContent>
           <div className="text-center mb-6">
-            <div 
+            <div
               className="text-4xl font-bold mb-2"
               style={{ color: getPercentileColor(comparison.percentile) }}
             >
               {examPerformanceService.formatPercentile(comparison.percentile)}
             </div>
-            <Badge 
-              style={{ 
+            <Badge
+              style={{
                 backgroundColor: getPercentileColor(comparison.percentile),
-                color: 'white'
+                color: 'white',
               }}
             >
               {getPercentileLabel(comparison.percentile)}
@@ -218,11 +214,11 @@ const PerformanceComparisonChart: React.FC<PerformanceComparisonChartProps> = ({
           </div>
 
           <div className="relative mb-6">
-            <Progress 
-              value={comparison.percentile} 
+            <Progress
+              value={comparison.percentile}
               className="h-4"
               style={{
-                '--progress-background': getPercentileColor(comparison.percentile)
+                '--progress-background': getPercentileColor(comparison.percentile),
               } as React.CSSProperties}
             />
             <div className="flex justify-between text-xs text-muted-foreground mt-2">
@@ -242,7 +238,7 @@ const PerformanceComparisonChart: React.FC<PerformanceComparisonChartProps> = ({
               </p>
               <p className="text-xs text-muted-foreground">öğrenciden daha iyi</p>
             </div>
-            
+
             <div className="text-center p-4 bg-green-50 rounded-lg">
               <p className="text-sm text-muted-foreground">Tahmini Sıralama</p>
               <p className="text-2xl font-bold text-green-600">
@@ -252,7 +248,7 @@ const PerformanceComparisonChart: React.FC<PerformanceComparisonChartProps> = ({
                 / {comparison.ranking_info.total_participants.toLocaleString()}
               </p>
             </div>
-            
+
             <div className="text-center p-4 bg-orange-50 rounded-lg">
               <p className="text-sm text-muted-foreground">Puan Farkı</p>
               <p className="text-2xl font-bold text-orange-600">
@@ -285,17 +281,17 @@ const PerformanceComparisonChart: React.FC<PerformanceComparisonChartProps> = ({
             <ResponsiveContainer width="100%" height={400}>
               <BarChart data={subjectComparisonData}>
                 <CartesianGrid strokeDasharray="3 3" />
-                <XAxis 
-                  dataKey="subject" 
+                <XAxis
+                  dataKey="subject"
                   angle={-45}
                   textAnchor="end"
                   height={100}
                 />
                 <YAxis domain={[0, 100]} />
-                <Tooltip 
+                <Tooltip
                   formatter={(value: number, name: string) => [
-                    `${value.toFixed(1)}%`, 
-                    name === 'student' ? 'Sizin Puanınız' : 'Ulusal Ortalama'
+                    `${value.toFixed(1)}%`,
+                    name === 'student' ? 'Sizin Puanınız' : 'Ulusal Ortalama',
                   ]}
                 />
                 <Bar dataKey="student" fill="#3b82f6" name="student" />
@@ -346,8 +342,8 @@ const PerformanceComparisonChart: React.FC<PerformanceComparisonChartProps> = ({
                   </div>
                 </div>
 
-                <Progress 
-                  value={(subject.student / subject.national) * 50} 
+                <Progress
+                  value={(subject.student / subject.national) * 50}
                   className="h-2"
                 />
                 <div className="text-center text-xs text-muted-foreground mt-1">
@@ -379,9 +375,9 @@ const PerformanceComparisonChart: React.FC<PerformanceComparisonChartProps> = ({
               <RadarChart data={radarData}>
                 <PolarGrid />
                 <PolarAngleAxis dataKey="subject" />
-                <PolarRadiusAxis 
-                  angle={90} 
-                  domain={[0, 100]} 
+                <PolarRadiusAxis
+                  angle={90}
+                  domain={[0, 100]}
                   tick={false}
                 />
                 <Radar

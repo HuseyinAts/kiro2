@@ -1,7 +1,7 @@
 /**
  * Okuma Yardımcıları Hook'u
  * REQ-50.28 - REQ-50.42: Okuma Yardımcıları
- * 
+ *
  * Özellikler:
  * - Okuma cetveli (reading ruler)
  * - Odak modu (focus mode)
@@ -112,12 +112,28 @@ export const useReadingHelpers = () => {
     if (!isLoading) {
       applySettingsToDOM(settings);
     }
+
+    // Cleanup: Component unmount olduğunda tüm DOM değişikliklerini temizle
+    return () => {
+      removeReadingRuler();
+      disableFocusMode();
+      disableWordHighlight();
+      disableSyllableBreaks();
+
+      // CSS class'larını temizle
+      document.body.classList.remove(
+        'reading-ruler-active',
+        'focus-mode-active',
+        'word-highlight-active',
+        'syllable-breaks-active',
+      );
+    };
   }, [settings, isLoading]);
 
   // Ayarları güncelle
   const updateSetting = useCallback(<K extends keyof ReadingHelpersSettings>(
     key: K,
-    value: ReadingHelpersSettings[K]
+    value: ReadingHelpersSettings[K],
   ) => {
     setSettings(prev => ({
       ...prev,
@@ -262,7 +278,13 @@ function applySettingsToDOM(settings: ReadingHelpersSettings) {
 // Okuma cetveli oluştur/güncelle
 function createOrUpdateReadingRuler(settings: ReadingRulerSettings) {
   let ruler = document.getElementById('reading-ruler');
-  
+
+  // Eski event listener'ı temizle (memory leak fix)
+  if (ruler && (ruler as HTMLDivElement & { _mouseMoveHandler?: (e: MouseEvent) => void })._mouseMoveHandler) {
+    document.removeEventListener('mousemove', (ruler as HTMLDivElement & { _mouseMoveHandler: (e: MouseEvent) => void })._mouseMoveHandler);
+    delete (ruler as HTMLDivElement & { _mouseMoveHandler?: (e: MouseEvent) => void })._mouseMoveHandler;
+  }
+
   if (!ruler) {
     ruler = document.createElement('div');
     ruler.id = 'reading-ruler';
@@ -282,33 +304,44 @@ function createOrUpdateReadingRuler(settings: ReadingRulerSettings) {
 
   if (settings.followCursor) {
     const handleMouseMove = (e: MouseEvent) => {
-      if (ruler) {
-        ruler.style.top = `${e.clientY - settings.height / 2}px`;
+      const rulerElement = document.getElementById('reading-ruler');
+      if (rulerElement) {
+        rulerElement.style.top = `${e.clientY - settings.height / 2}px`;
       }
     };
     document.addEventListener('mousemove', handleMouseMove);
-    (ruler as any)._mouseMoveHandler = handleMouseMove;
+    (ruler as HTMLDivElement & { _mouseMoveHandler: (e: MouseEvent) => void })._mouseMoveHandler = handleMouseMove;
   }
 }
 
 // Okuma cetvelini kaldır
 function removeReadingRuler() {
-  const ruler = document.getElementById('reading-ruler');
+  const ruler = document.getElementById('reading-ruler') as HTMLDivElement & { _mouseMoveHandler?: (e: MouseEvent) => void } | null;
   if (ruler) {
-    if ((ruler as any)._mouseMoveHandler) {
-      document.removeEventListener('mousemove', (ruler as any)._mouseMoveHandler);
+    if (ruler._mouseMoveHandler) {
+      document.removeEventListener('mousemove', ruler._mouseMoveHandler);
+      delete ruler._mouseMoveHandler;
     }
     ruler.remove();
   }
 }
 
+// Type for overlay element with focus handler
+type FocusModeOverlay = HTMLDivElement & { _focusHandler?: (e: MouseEvent) => void };
+
 // Odak modunu etkinleştir
 function enableFocusMode(settings: FocusModeSettings) {
   // Odak modu overlay'i oluştur
-  let overlay = document.getElementById('focus-mode-overlay');
-  
+  let overlay = document.getElementById('focus-mode-overlay') as FocusModeOverlay | null;
+
+  // Eski event listener'ı temizle (memory leak fix)
+  if (overlay && overlay._focusHandler) {
+    document.removeEventListener('mousemove', overlay._focusHandler);
+    delete overlay._focusHandler;
+  }
+
   if (!overlay) {
-    overlay = document.createElement('div');
+    overlay = document.createElement('div') as FocusModeOverlay;
     overlay.id = 'focus-mode-overlay';
     overlay.className = 'focus-mode-overlay';
     document.body.appendChild(overlay);
@@ -326,10 +359,10 @@ function enableFocusMode(settings: FocusModeSettings) {
   // Odak alanını vurgula
   const handleFocus = (e: MouseEvent) => {
     const target = e.target as HTMLElement;
-    
+
     // Odak alanını bul
     let focusElement: HTMLElement | null = null;
-    
+
     switch (settings.focusArea) {
       case 'line':
         // En yakın satırı bul (p, div, span, etc.)
@@ -359,15 +392,16 @@ function enableFocusMode(settings: FocusModeSettings) {
   };
 
   document.addEventListener('mousemove', handleFocus);
-  (overlay as any)._focusHandler = handleFocus;
+  overlay._focusHandler = handleFocus;
 }
 
 // Odak modunu devre dışı bırak
 function disableFocusMode() {
-  const overlay = document.getElementById('focus-mode-overlay');
+  const overlay = document.getElementById('focus-mode-overlay') as FocusModeOverlay | null;
   if (overlay) {
-    if ((overlay as any)._focusHandler) {
-      document.removeEventListener('mousemove', (overlay as any)._focusHandler);
+    if (overlay._focusHandler) {
+      document.removeEventListener('mousemove', overlay._focusHandler);
+      delete overlay._focusHandler;
     }
     overlay.remove();
   }
@@ -381,8 +415,26 @@ function disableFocusMode() {
   });
 }
 
+// Type for word highlight handlers
+interface WordHighlightHandlers {
+  hover: (e: MouseEvent) => void;
+  mouseOut: (e: MouseEvent) => void;
+  click: (e: MouseEvent) => void;
+}
+
+type BodyWithWordHighlight = HTMLBodyElement & { _wordHighlightHandlers?: WordHighlightHandlers };
+
 // Kelime vurgulamayı etkinleştir
 function enableWordHighlight(settings: WordHighlightSettings) {
+  // Eski event listener'ları temizle (memory leak fix)
+  const body = document.body as BodyWithWordHighlight;
+  if (body._wordHighlightHandlers) {
+    document.removeEventListener('mouseover', body._wordHighlightHandlers.hover);
+    document.removeEventListener('mouseout', body._wordHighlightHandlers.mouseOut);
+    document.removeEventListener('click', body._wordHighlightHandlers.click);
+    delete body._wordHighlightHandlers;
+  }
+
   let colorIndex = 0;
 
   const highlightWord = (element: HTMLElement) => {
@@ -390,7 +442,7 @@ function enableWordHighlight(settings: WordHighlightSettings) {
       return;
     }
 
-    const color = settings.multiColor 
+    const color = settings.multiColor
       ? settings.colors[colorIndex % settings.colors.length]
       : settings.colors[0];
 
@@ -406,7 +458,7 @@ function enableWordHighlight(settings: WordHighlightSettings) {
 
   const unhighlightWord = (element: HTMLElement) => {
     if (settings.mode === 'click') {
-      return; // Tıklama modunda vurgulama kalıcı
+      return; // Tiklama modunda vurgulama kalici
     }
 
     element.style.backgroundColor = '';
@@ -417,7 +469,7 @@ function enableWordHighlight(settings: WordHighlightSettings) {
 
   const handleHover = (e: MouseEvent) => {
     const target = e.target as HTMLElement;
-    
+
     if (target.tagName === 'SPAN' && target.classList.contains('word')) {
       highlightWord(target);
     }
@@ -425,7 +477,7 @@ function enableWordHighlight(settings: WordHighlightSettings) {
 
   const handleMouseOut = (e: MouseEvent) => {
     const target = e.target as HTMLElement;
-    
+
     if (target.tagName === 'SPAN' && target.classList.contains('word')) {
       unhighlightWord(target);
     }
@@ -433,7 +485,7 @@ function enableWordHighlight(settings: WordHighlightSettings) {
 
   const handleClick = (e: MouseEvent) => {
     const target = e.target as HTMLElement;
-    
+
     if (target.tagName === 'SPAN' && target.classList.contains('word')) {
       if (target.classList.contains('word-highlighted')) {
         unhighlightWord(target);
@@ -452,26 +504,27 @@ function enableWordHighlight(settings: WordHighlightSettings) {
     document.addEventListener('click', handleClick);
   }
 
-  // Event handler'ları sakla
-  (document.body as any)._wordHighlightHandlers = {
+  // Event handler'lari sakla
+  body._wordHighlightHandlers = {
     hover: handleHover,
     mouseOut: handleMouseOut,
     click: handleClick,
   };
 }
 
-// Kelime vurgulamayı devre dışı bırak
+// Kelime vurgulamayi devre disi birak
 function disableWordHighlight() {
-  const handlers = (document.body as any)._wordHighlightHandlers;
-  
+  const body = document.body as BodyWithWordHighlight;
+  const handlers = body._wordHighlightHandlers;
+
   if (handlers) {
     document.removeEventListener('mouseover', handlers.hover);
     document.removeEventListener('mouseout', handlers.mouseOut);
     document.removeEventListener('click', handlers.click);
-    delete (document.body as any)._wordHighlightHandlers;
+    delete body._wordHighlightHandlers;
   }
 
-  // Vurgulamaları temizle
+  // Vurgulamalari temizle
   document.querySelectorAll('.word-highlighted').forEach(el => {
     (el as HTMLElement).style.backgroundColor = '';
     (el as HTMLElement).style.padding = '';
@@ -537,7 +590,7 @@ function enableSyllableBreaks(settings: SyllableBreaksSettings) {
     const walker = document.createTreeWalker(
       element,
       NodeFilter.SHOW_TEXT,
-      null
+      null,
     );
 
     const textNodes: Text[] = [];
@@ -552,7 +605,7 @@ function enableSyllableBreaks(settings: SyllableBreaksSettings) {
       const syllabifiedWords = words.map(word => {
         const syllables = syllabify(word);
         let separator = '';
-        
+
         switch (settings.separator) {
           case 'dot':
             separator = '·';

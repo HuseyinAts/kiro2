@@ -4,10 +4,10 @@ PHASE 2 Sprint 4: Security Hardening
 
 Implements TOTP-based 2FA with QR code setup and backup codes
 """
-from typing import Dict, List, Optional
+from typing import List
 from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel
-from sqlalchemy import select, update
+from sqlalchemy import update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.database import get_db

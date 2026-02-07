@@ -1,5 +1,5 @@
-import { Component, ErrorInfo, ReactNode } from 'react';
 import { AlertTriangle, Home, RefreshCw } from 'lucide-react';
+import { Component, ErrorInfo, ReactNode } from 'react';
 
 interface Props {
   children: ReactNode;
@@ -85,10 +85,10 @@ class ErrorBoundary extends Component<Props, State> {
 
   areResetKeysEqual(
     prevKeys?: Array<string | number>,
-    nextKeys?: Array<string | number>
+    nextKeys?: Array<string | number>,
   ): boolean {
-    if (!prevKeys || !nextKeys) return true;
-    if (prevKeys.length !== nextKeys.length) return false;
+    if (!prevKeys || !nextKeys) {return true;}
+    if (prevKeys.length !== nextKeys.length) {return false;}
     return prevKeys.every((key, index) => key === nextKeys[index]);
   }
 
@@ -248,7 +248,7 @@ class ErrorBoundary extends Component<Props, State> {
                   onClick={this.resetErrorBoundary}
                   className="w-full px-6 py-2 bg-gray-100 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-200 transition-colors"
                 >
-                  🔄 Error Boundary'yi Sıfırla (Dev Only)
+                  🔄 Error Boundary&apos;yi Sıfırla (Dev Only)
                 </button>
               )}
             </div>

@@ -5,9 +5,8 @@ Service for video watch tracking, completion tracking, notes, and bookmarks
 """
 
 from datetime import datetime, timedelta
-from typing import List, Optional, Dict, Any, Tuple
+from typing import List, Optional, Dict, Any
 from uuid import UUID
-import asyncio
 
 from sqlalchemy import select, func, and_, or_, desc
 from sqlalchemy.ext.asyncio import AsyncSession

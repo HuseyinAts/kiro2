@@ -3,7 +3,16 @@
  * Erişilebilir menü yapısı ve klavye navigasyonu
  */
 
-import React, { useState, useRef, useCallback, useEffect } from 'react';
+import {
+  Menu as MenuIcon,
+  Close as CloseIcon,
+  ExpandLess,
+  ExpandMore,
+  Home as HomeIcon,
+  NavigateNext as NavigateNextIcon,
+  KeyboardArrowDown,
+  Accessibility as AccessibilityIcon,
+} from '@mui/icons-material';
 import {
   AppBar,
   Toolbar,
@@ -25,22 +34,15 @@ import {
   Divider,
   useTheme,
   useMediaQuery,
-  Chip
+  Chip,
 } from '@mui/material';
-import {
-  Menu as MenuIcon,
-  Close as CloseIcon,
-  ExpandLess,
-  ExpandMore,
-  Home as HomeIcon,
-  NavigateNext as NavigateNextIcon,
-  KeyboardArrowDown,
-  Accessibility as AccessibilityIcon
-} from '@mui/icons-material';
+import * as React from 'react';
+import {  useState, useRef, useCallback, useEffect  } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+
 import { useAccessibilitySettings } from '../../hooks/useAccessibilitySettings';
-import { useScreenReader } from '../../hooks/useScreenReader';
 import { useKeyboardNavigation } from '../../hooks/useKeyboardNavigation';
+import { useScreenReader } from '../../hooks/useScreenReader';
 
 export interface NavigationItem {
   id: string;
@@ -75,13 +77,13 @@ const AccessibleNavigation: React.FC<AccessibleNavigationProps> = ({
   breadcrumbs = [],
   showAccessibilityButton = true,
   onAccessibilityClick,
-  className
+  className,
 }) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const navigate = useNavigate();
   const location = useLocation();
-  
+
   const { settings, toggleHighContrast } = useAccessibilitySettings();
   const { announce, manageFocus } = useScreenReader();
   const { trapFocus, handleArrowNavigation } = useKeyboardNavigation();
@@ -93,16 +95,16 @@ const AccessibleNavigation: React.FC<AccessibleNavigationProps> = ({
 
   const navRef = useRef<HTMLElement>(null);
   const mobileMenuRef = useRef<HTMLDivElement>(null);
-  const skipLinkRef = useRef<HTMLAnchorElement>(null);
+  const skipLinkRef = useRef<HTMLAnchorElement | null>(null);
 
-  // Navigation ID'leri
-  const navId = `navigation-${Math.random().toString(36).substr(2, 9)}`;
-  const mobileMenuId = `${navId}-mobile`;
-  const breadcrumbId = `${navId}-breadcrumb`;
+  // Navigation ID'leri - available if needed for accessibility purposes
+  // const navId = `navigation-${Math.random().toString(36).substr(2, 9)}`;
+  // const mobileMenuId = `${navId}-mobile`;
+  // const breadcrumbId = `${navId}-breadcrumb`;
 
   // Aktif sayfa tespiti
   const isActivePage = useCallback((path?: string): boolean => {
-    if (!path) return false;
+    if (!path) {return false;}
     return location.pathname === path || location.pathname.startsWith(path + '/');
   }, [location.pathname]);
 
@@ -134,21 +136,21 @@ const AccessibleNavigation: React.FC<AccessibleNavigationProps> = ({
   // Alt menü toggle
   const toggleSubmenu = useCallback((itemId: string, event?: React.MouseEvent) => {
     event?.stopPropagation();
-    
+
     setExpandedItems(prev => {
       const isExpanded = prev.includes(itemId);
-      const newExpanded = isExpanded 
+      const newExpanded = isExpanded
         ? prev.filter(id => id !== itemId)
         : [...prev, itemId];
-      
+
       const item = navigationItems.find(item => item.id === itemId);
       if (item) {
         announce(
           `${item.label} alt menüsü ${isExpanded ? 'kapatıldı' : 'açıldı'}`,
-          'polite'
+          'polite',
         );
       }
-      
+
       return newExpanded;
     });
   }, [navigationItems, announce]);
@@ -166,7 +168,7 @@ const AccessibleNavigation: React.FC<AccessibleNavigationProps> = ({
   const toggleMobileMenu = useCallback(() => {
     const newOpen = !mobileMenuOpen;
     setMobileMenuOpen(newOpen);
-    
+
     if (newOpen) {
       announce('Mobil menü açıldı', 'polite');
       // Focus trap kurulacak
@@ -187,9 +189,9 @@ const AccessibleNavigation: React.FC<AccessibleNavigationProps> = ({
       event.nativeEvent,
       items.map(item => document.getElementById(`nav-item-${item.id}`)).filter(Boolean) as HTMLElement[],
       focusedItemIndex,
-      'horizontal'
+      'horizontal',
     );
-    
+
     if (newIndex !== focusedItemIndex) {
       setFocusedItemIndex(newIndex);
     }
@@ -244,7 +246,7 @@ const AccessibleNavigation: React.FC<AccessibleNavigationProps> = ({
 
       skipLink.addEventListener('click', (e) => {
         e.preventDefault();
-        const mainContent = document.getElementById('main-content') || 
+        const mainContent = document.getElementById('main-content') ||
                            document.querySelector('main') ||
                            document.querySelector('[role="main"]');
         if (mainContent instanceof HTMLElement) {
@@ -297,8 +299,8 @@ const AccessibleNavigation: React.FC<AccessibleNavigationProps> = ({
                   color: theme.palette.primary.contrastText,
                   '&:hover': {
                     backgroundColor: theme.palette.primary.dark,
-                  }
-                }
+                  },
+                },
               }}
             >
               {item.icon && (
@@ -306,10 +308,10 @@ const AccessibleNavigation: React.FC<AccessibleNavigationProps> = ({
                   {item.icon}
                 </ListItemIcon>
               )}
-              <ListItemText 
+              <ListItemText
                 primary={item.label}
                 primaryTypographyProps={{
-                  fontWeight: isActive ? 'bold' : 'normal'
+                  fontWeight: isActive ? 'bold' : 'normal',
                 }}
               />
               {hasChildren && (isExpanded ? <ExpandLess /> : <ExpandMore />)}
@@ -334,11 +336,11 @@ const AccessibleNavigation: React.FC<AccessibleNavigationProps> = ({
                           {child.icon}
                         </ListItemIcon>
                       )}
-                      <ListItemText 
+                      <ListItemText
                         primary={child.label}
                         primaryTypographyProps={{
                           fontSize: '0.9rem',
-                          fontWeight: isActivePage(child.path) ? 'bold' : 'normal'
+                          fontWeight: isActivePage(child.path) ? 'bold' : 'normal',
                         }}
                       />
                     </ListItemButton>
@@ -382,7 +384,7 @@ const AccessibleNavigation: React.FC<AccessibleNavigationProps> = ({
             backgroundColor: isActive ? 'rgba(255,255,255,0.1)' : 'transparent',
             '&:hover': {
               backgroundColor: 'rgba(255,255,255,0.1)',
-            }
+            },
           }}
         >
           {item.icon && <Box sx={{ mr: 1, display: 'flex' }}>{item.icon}</Box>}
@@ -397,10 +399,10 @@ const AccessibleNavigation: React.FC<AccessibleNavigationProps> = ({
             onMouseLeave={() => handleDropdownClose(item.id)}
             MenuListProps={{
               'aria-labelledby': `nav-item-${item.id}`,
-              role: 'menu'
+              role: 'menu',
             }}
             PaperProps={{
-              sx: { mt: 1 }
+              sx: { mt: 1 },
             }}
           >
             {item.children!.map((child) => (
@@ -431,21 +433,21 @@ const AccessibleNavigation: React.FC<AccessibleNavigationProps> = ({
     );
   }, [
     expandedItems, anchorEls, isActivePage, theme, toggleSubmenu, handleItemClick,
-    handleDropdownOpen, handleDropdownClose
+    handleDropdownOpen, handleDropdownClose,
   ]);
 
   return (
     <>
       {/* Ana Navigasyon */}
-      <AppBar 
-        position="sticky" 
+      <AppBar
+        position="sticky"
         className={className}
         role="banner"
         sx={{
           '& .wcag-aa-target-size': {
             minHeight: 44,
             minWidth: 44,
-          }
+          },
         }}
       >
         <Toolbar>
@@ -459,9 +461,9 @@ const AccessibleNavigation: React.FC<AccessibleNavigationProps> = ({
             <Typography
               variant="h6"
               component="h1"
-              sx={{ 
+              sx={{
                 flexGrow: isMobile ? 1 : 0,
-                fontSize: { xs: '1.1rem', sm: '1.25rem' }
+                fontSize: { xs: '1.1rem', sm: '1.25rem' },
               }}
             >
               {title}
@@ -526,21 +528,21 @@ const AccessibleNavigation: React.FC<AccessibleNavigationProps> = ({
               component="button"
               variant="body2"
               onClick={() => navigate('/')}
-              sx={{ 
-                display: 'flex', 
+              sx={{
+                display: 'flex',
                 alignItems: 'center',
                 textDecoration: 'none',
-                '&:hover': { textDecoration: 'underline' }
+                '&:hover': { textDecoration: 'underline' },
               }}
               className="wcag-aa-target-size"
             >
               <HomeIcon sx={{ mr: 0.5, fontSize: 16 }} />
               Ana Sayfa
             </Link>
-            
+
             {breadcrumbs.map((crumb, index) => {
               const isLast = index === breadcrumbs.length - 1;
-              
+
               if (isLast || !crumb.path) {
                 return (
                   <Typography
@@ -553,16 +555,16 @@ const AccessibleNavigation: React.FC<AccessibleNavigationProps> = ({
                   </Typography>
                 );
               }
-              
+
               return (
                 <Link
                   key={index}
                   component="button"
                   variant="body2"
                   onClick={() => navigate(crumb.path!)}
-                  sx={{ 
+                  sx={{
                     textDecoration: 'none',
-                    '&:hover': { textDecoration: 'underline' }
+                    '&:hover': { textDecoration: 'underline' },
                   }}
                   className="wcag-aa-target-size"
                 >
@@ -584,7 +586,7 @@ const AccessibleNavigation: React.FC<AccessibleNavigationProps> = ({
         }}
         PaperProps={{
           ref: mobileMenuRef,
-          sx: { width: 280 }
+          sx: { width: 280 },
         }}
       >
         <Box
@@ -633,7 +635,7 @@ const AccessibleNavigation: React.FC<AccessibleNavigationProps> = ({
             boxShadow: 2,
             fontSize: '0.75rem',
             opacity: 0.8,
-            zIndex: 1000
+            zIndex: 1000,
           }}
         >
           <Typography variant="caption">

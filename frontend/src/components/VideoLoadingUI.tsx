@@ -1,6 +1,6 @@
 /**
  * VideoLoadingUI - Gelişmiş video yükleme UI bileşeni
- * 
+ *
  * Bu bileşen, video yükleme sürecinde kullanıcıya zengin geri bildirim sağlar:
  * - Animasyonlu progress bar ve spinner
  * - Dinamik yükleme mesajları (konu bazlı)
@@ -9,13 +9,14 @@
  * - Tekrar dene ve fallback butonları
  * - Yükleme süresi gösterimi
  * - Smooth fade-in animasyonları
- * 
+ *
  * @module VideoLoadingUI
  * @requires Requirements: 3.1, 3.2, 3.3, 3.4, 3.6, 3.7, 3.11
  */
 
-import React from 'react';
-import { VideoLoadingState, SubjectVideos } from '../services/VideoLoadingManager';
+import type { FC } from 'react';
+
+import { VideoLoadingState } from '../services/VideoLoadingManager';
 
 /**
  * VideoLoadingUI Props
@@ -49,7 +50,7 @@ function getSubjectMessage(subjects: string[], progress: number): string {
   }
 
   const subject = subjects[Math.floor((progress / 100) * subjects.length)] || subjects[0];
-  
+
   if (progress < 30) {
     return `🔍 AI ${subject} konusunda videolar buluyor...`;
   } else if (progress < 60) {
@@ -64,7 +65,7 @@ function getSubjectMessage(subjects: string[], progress: number): string {
 /**
  * VideoLoadingUI Component
  */
-export const VideoLoadingUI: React.FC<VideoLoadingUIProps> = ({
+export const VideoLoadingUI: FC<VideoLoadingUIProps> = ({
   state,
   onRetry,
   onShowFallback,

@@ -1,25 +1,25 @@
 /**
  * Optik Form (Bubble Sheet) Arayüzü
  * ÖSYM sınavlarında kullanılan optik form görünümü
- * 
+ *
  * REQ-1.1: TYT sınav formatı desteği
  * REQ-1.6: Otomatik kaydetme ile veri kaybı önleme
  */
-import React, { useState, useEffect } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
-import {
-  Box,
-  Paper,
-  Typography,
-  Tooltip,
-  useTheme,
-  alpha
-} from '@mui/material'
 import {
   CheckCircle,
   RadioButtonUnchecked,
-  Circle
-} from '@mui/icons-material'
+  Circle,
+} from '@mui/icons-material';
+import {
+  Box,
+  Typography,
+  Tooltip,
+  useTheme,
+  alpha,
+} from '@mui/material';
+import { motion, AnimatePresence } from 'framer-motion';
+import * as React from 'react';
+import {  useState, useEffect, useCallback, useMemo  } from 'react';
 
 interface BubbleSheetInterfaceProps {
   questionNumber: number
@@ -32,6 +32,13 @@ interface BubbleSheetInterfaceProps {
   size?: 'small' | 'medium' | 'large'
 }
 
+// Static bubble sizes - defined outside component to prevent recreation
+const BUBBLE_SIZES = {
+  small: { width: 32, height: 32, fontSize: '0.875rem' },
+  medium: { width: 48, height: 48, fontSize: '1rem' },
+  large: { width: 64, height: 64, fontSize: '1.25rem' },
+} as const;
+
 /**
  * Optik form bubble bileşeni
  */
@@ -43,66 +50,60 @@ export const BubbleSheetInterface: React.FC<BubbleSheetInterfaceProps> = ({
   disabled = false,
   showFeedback = false,
   correctAnswer,
-  size = 'medium'
+  size = 'medium',
 }) => {
-  const theme = useTheme()
-  const [hoveredOption, setHoveredOption] = useState<string | null>(null)
-  const [animatingOption, setAnimatingOption] = useState<string | null>(null)
+  const theme = useTheme();
+  const [hoveredOption, setHoveredOption] = useState<string | null>(null);
+  const [animatingOption, setAnimatingOption] = useState<string | null>(null);
 
-  // Bubble boyutları
-  const bubbleSizes = {
-    small: { width: 32, height: 32, fontSize: '0.875rem' },
-    medium: { width: 48, height: 48, fontSize: '1rem' },
-    large: { width: 64, height: 64, fontSize: '1.25rem' }
-  }
-
-  const bubbleSize = bubbleSizes[size]
+  // Memoized bubble size to prevent object recreation
+  const bubbleSize = useMemo(() => BUBBLE_SIZES[size], [size]);
 
   /**
    * Cevap seçildiğinde animasyon tetikle
    */
   useEffect(() => {
     if (selectedAnswer) {
-      setAnimatingOption(selectedAnswer)
-      const timer = setTimeout(() => setAnimatingOption(null), 300)
-      return () => clearTimeout(timer)
+      setAnimatingOption(selectedAnswer);
+      const timer = setTimeout(() => setAnimatingOption(null), 300);
+      return () => clearTimeout(timer);
     }
-  }, [selectedAnswer])
+  }, [selectedAnswer]);
 
   /**
    * Bubble'ın durumuna göre stil belirle
    */
   const getBubbleStyle = (option: string) => {
-    const isSelected = selectedAnswer === option
-    const isHovered = hoveredOption === option
-    const isAnimating = animatingOption === option
-    const isCorrect = showFeedback && correctAnswer === option
-    const isWrong = showFeedback && isSelected && correctAnswer !== option
+    const isSelected = selectedAnswer === option;
+    const isHovered = hoveredOption === option;
+    const isAnimating = animatingOption === option;
+    const isCorrect = showFeedback && correctAnswer === option;
+    const isWrong = showFeedback && isSelected && correctAnswer !== option;
 
-    let backgroundColor = 'transparent'
-    let borderColor = theme.palette.grey[400]
-    let color = theme.palette.text.primary
+    let backgroundColor = 'transparent';
+    let borderColor = theme.palette.grey[400];
+    let color = theme.palette.text.primary;
 
     if (isSelected) {
       if (isWrong) {
-        backgroundColor = theme.palette.error.main
-        borderColor = theme.palette.error.dark
-        color = 'white'
+        backgroundColor = theme.palette.error.main;
+        borderColor = theme.palette.error.dark;
+        color = 'white';
       } else if (isCorrect) {
-        backgroundColor = theme.palette.success.main
-        borderColor = theme.palette.success.dark
-        color = 'white'
+        backgroundColor = theme.palette.success.main;
+        borderColor = theme.palette.success.dark;
+        color = 'white';
       } else {
-        backgroundColor = theme.palette.primary.main
-        borderColor = theme.palette.primary.dark
-        color = 'white'
+        backgroundColor = theme.palette.primary.main;
+        borderColor = theme.palette.primary.dark;
+        color = 'white';
       }
     } else if (isCorrect && showFeedback) {
-      backgroundColor = alpha(theme.palette.success.main, 0.2)
-      borderColor = theme.palette.success.main
+      backgroundColor = alpha(theme.palette.success.main, 0.2);
+      borderColor = theme.palette.success.main;
     } else if (isHovered && !disabled) {
-      backgroundColor = alpha(theme.palette.primary.main, 0.1)
-      borderColor = theme.palette.primary.main
+      backgroundColor = alpha(theme.palette.primary.main, 0.1);
+      borderColor = theme.palette.primary.main;
     }
 
     return {
@@ -110,35 +111,40 @@ export const BubbleSheetInterface: React.FC<BubbleSheetInterfaceProps> = ({
       borderColor,
       color,
       transform: isAnimating ? 'scale(1.1)' : isHovered && !disabled ? 'scale(1.05)' : 'scale(1)',
-      boxShadow: isSelected 
+      boxShadow: isSelected
         ? `0 0 0 3px ${alpha(isWrong ? theme.palette.error.main : theme.palette.primary.main, 0.2)}`
-        : 'none'
-    }
-  }
+        : 'none',
+    };
+  };
 
   /**
-   * Bubble tıklama işleyicisi
+   * Bubble tıklama işleyicisi - memoized to prevent recreation on each render
    */
-  const handleBubbleClick = (option: string) => {
-    if (disabled) return
+  const handleBubbleClick = useCallback((option: string) => {
+    if (disabled) {return;}
 
     // Aynı cevaba tekrar tıklanırsa işareti kaldır
     if (selectedAnswer === option) {
-      onAnswerSelect('')
+      onAnswerSelect('');
     } else {
-      onAnswerSelect(option)
+      onAnswerSelect(option);
     }
-  }
+  }, [disabled, selectedAnswer, onAnswerSelect]);
 
   /**
-   * Klavye erişilebilirliği
+   * Klavye erişilebilirliği - memoized
    */
-  const handleKeyPress = (event: React.KeyboardEvent, option: string) => {
+  const handleKeyPress = useCallback((event: React.KeyboardEvent, option: string) => {
     if (event.key === 'Enter' || event.key === ' ') {
-      event.preventDefault()
-      handleBubbleClick(option)
+      event.preventDefault();
+      if (disabled) {return;}
+      if (selectedAnswer === option) {
+        onAnswerSelect('');
+      } else {
+        onAnswerSelect(option);
+      }
     }
-  }
+  }, [disabled, selectedAnswer, onAnswerSelect]);
 
   return (
     <Box
@@ -150,7 +156,7 @@ export const BubbleSheetInterface: React.FC<BubbleSheetInterfaceProps> = ({
         borderRadius: 2,
         bgcolor: alpha(theme.palette.background.paper, 0.5),
         border: 1,
-        borderColor: 'divider'
+        borderColor: 'divider',
       }}
       role="radiogroup"
       aria-label={`Soru ${questionNumber} cevap seçenekleri`}
@@ -166,7 +172,7 @@ export const BubbleSheetInterface: React.FC<BubbleSheetInterfaceProps> = ({
           borderRadius: '50%',
           bgcolor: theme.palette.grey[200],
           fontWeight: 'bold',
-          fontSize: '1rem'
+          fontSize: '1rem',
         }}
       >
         {questionNumber}
@@ -178,12 +184,12 @@ export const BubbleSheetInterface: React.FC<BubbleSheetInterfaceProps> = ({
           display: 'flex',
           gap: 1.5,
           flexWrap: 'wrap',
-          flex: 1
+          flex: 1,
         }}
       >
         {options.map((option) => {
-          const isSelected = selectedAnswer === option
-          const bubbleStyle = getBubbleStyle(option)
+          const isSelected = selectedAnswer === option;
+          const bubbleStyle = getBubbleStyle(option);
 
           return (
             <Tooltip
@@ -195,7 +201,7 @@ export const BubbleSheetInterface: React.FC<BubbleSheetInterfaceProps> = ({
                 whileHover={disabled ? {} : { scale: 1.05 }}
                 whileTap={disabled ? {} : { scale: 0.95 }}
                 animate={{
-                  scale: animatingOption === option ? [1, 1.2, 1] : 1
+                  scale: animatingOption === option ? [1, 1.2, 1] : 1,
                 }}
                 transition={{ duration: 0.3 }}
               >
@@ -225,12 +231,12 @@ export const BubbleSheetInterface: React.FC<BubbleSheetInterfaceProps> = ({
                     ...bubbleStyle,
                     '&:focus': {
                       outline: `2px solid ${theme.palette.primary.main}`,
-                      outlineOffset: 2
+                      outlineOffset: 2,
                     },
                     '&:focus-visible': {
                       outline: `2px solid ${theme.palette.primary.main}`,
-                      outlineOffset: 2
-                    }
+                      outlineOffset: 2,
+                    },
                   }}
                 >
                   {/* Seçili işareti */}
@@ -245,13 +251,13 @@ export const BubbleSheetInterface: React.FC<BubbleSheetInterfaceProps> = ({
                           position: 'absolute',
                           display: 'flex',
                           alignItems: 'center',
-                          justifyContent: 'center'
+                          justifyContent: 'center',
                         }}
                       >
                         <Circle
                           sx={{
                             fontSize: bubbleSize.width * 0.6,
-                            color: bubbleStyle.color
+                            color: bubbleStyle.color,
                           }}
                         />
                       </motion.div>
@@ -265,7 +271,7 @@ export const BubbleSheetInterface: React.FC<BubbleSheetInterfaceProps> = ({
                       fontSize: bubbleSize.fontSize,
                       fontWeight: 'inherit',
                       color: 'inherit',
-                      zIndex: 1
+                      zIndex: 1,
                     }}
                   >
                     {option}
@@ -273,7 +279,7 @@ export const BubbleSheetInterface: React.FC<BubbleSheetInterfaceProps> = ({
                 </Box>
               </motion.div>
             </Tooltip>
-          )
+          );
         })}
       </Box>
 
@@ -290,7 +296,7 @@ export const BubbleSheetInterface: React.FC<BubbleSheetInterfaceProps> = ({
         </Box>
       )}
     </Box>
-  )
-}
+  );
+};
 
-export default BubbleSheetInterface
+export default BubbleSheetInterface;

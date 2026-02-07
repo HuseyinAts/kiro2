@@ -12,6 +12,7 @@ from pydantic import BaseModel, Field
 
 try:
     from core.dependencies import get_current_user
+    from core.auth_dependencies import require_role
     from services.elasticsearch_service import (
         ElasticsearchService,
         get_elasticsearch_service,
@@ -19,6 +20,7 @@ try:
 except ImportError:
     # Import the canonical get_current_user function from core.dependencies
     from core.dependencies import get_current_user
+    from core.auth_dependencies import require_role
     from services.elasticsearch_service import (
         ElasticsearchService,
         get_elasticsearch_service,
@@ -305,14 +307,12 @@ async def get_user_analytics(
 async def reindex_questions(
     current_user: Dict[str, Any] = Depends(get_current_user),
     es_service: ElasticsearchService = Depends(get_elasticsearch_service),
+    _: None = Depends(require_role("ADMIN")),
 ):
     """
     Soru bankasını yeniden indeksle (Admin only)
     """
     try:
-        # Admin kontrolü
-        if current_user["role"] != "admin":
-            raise HTTPException(status_code=403, detail="Admin yetkisi gerekli")
 
         # İndeksi yeniden oluştur
         success = await es_service.question_service.initialize_index()
@@ -442,14 +442,12 @@ async def reindex_questions(
 async def get_indices_stats(
     current_user: Dict[str, Any] = Depends(get_current_user),
     es_service: ElasticsearchService = Depends(get_elasticsearch_service),
+    _: None = Depends(require_role("ADMIN")),
 ):
     """
     İndeks istatistiklerini getir (Admin only)
     """
     try:
-        # Admin kontrolü
-        if current_user["role"] != "admin":
-            raise HTTPException(status_code=403, detail="Admin yetkisi gerekli")
 
         stats = {}
 

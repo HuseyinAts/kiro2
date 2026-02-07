@@ -3,7 +3,8 @@
  * IRT + Morfoloji Analizi, Öğrenci Profilleri
  */
 
-import React from 'react';
+import * as React from 'react';
+
 import TeacherDashboard from './TeacherDashboard';
 
 export const TeacherDashboardPage: React.FC = () => {

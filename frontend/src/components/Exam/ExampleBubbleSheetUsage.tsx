@@ -1,11 +1,14 @@
 /**
  * Optik Form Arayüzü Kullanım Örneği
  * BubbleSheetInterface ve BubbleSheetPanel bileşenlerinin entegrasyonu
- * 
+ *
  * Bu dosya, mevcut OSYMExamInterface bileşenine optik form görünümünün
  * nasıl entegre edileceğini gösterir.
  */
-import React, { useState } from 'react'
+import {
+  ViewList,
+  RadioButtonChecked,
+} from '@mui/icons-material';
 import {
   Box,
   Paper,
@@ -13,21 +16,19 @@ import {
   Button,
   ToggleButton,
   ToggleButtonGroup,
-  Divider
-} from '@mui/material'
-import {
-  ViewList,
-  GridView,
-  RadioButtonChecked
-} from '@mui/icons-material'
-import BubbleSheetInterface from './BubbleSheetInterface'
-import BubbleSheetPanel from './BubbleSheetPanel'
+  Divider,
+} from '@mui/material';
+import * as React from 'react';
+import {  useState  } from 'react';
+
+import BubbleSheetInterface from './BubbleSheetInterface';
+import BubbleSheetPanel from './BubbleSheetPanel';
 
 /**
  * Örnek: Tek soru için optik form kullanımı
  */
 export const SingleQuestionExample: React.FC = () => {
-  const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null)
+  const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
 
   return (
     <Paper elevation={3} sx={{ p: 3, maxWidth: 800, mx: 'auto', my: 4 }}>
@@ -41,7 +42,7 @@ export const SingleQuestionExample: React.FC = () => {
       </Typography>
 
       <Typography variant="h6" sx={{ mb: 2 }}>
-        1. Türkiye'nin başkenti neresidir?
+        1. Türkiye&apos;nin başkenti neresidir?
       </Typography>
 
       <BubbleSheetInterface
@@ -65,8 +66,8 @@ export const SingleQuestionExample: React.FC = () => {
         </Button>
       </Box>
     </Paper>
-  )
-}
+  );
+};
 
 /**
  * Örnek: Çoklu soru için optik form paneli kullanımı
@@ -75,10 +76,10 @@ export const MultipleQuestionsExample: React.FC = () => {
   const [answers, setAnswers] = useState<Record<string, string>>({
     'q1': 'A',
     'q2': 'C',
-    'q3': ''
-  })
+    'q3': '',
+  });
 
-  const [currentQuestion, setCurrentQuestion] = useState(0)
+  const [currentQuestion, setCurrentQuestion] = useState(0);
 
   const questions = [
     { id: 'q1', number: 1, subject: 'Matematik', topic: 'Cebir' },
@@ -88,15 +89,15 @@ export const MultipleQuestionsExample: React.FC = () => {
     { id: 'q5', number: 5, subject: 'Fen', topic: 'Fizik' },
     { id: 'q6', number: 6, subject: 'Fen', topic: 'Kimya' },
     { id: 'q7', number: 7, subject: 'Sosyal', topic: 'Tarih' },
-    { id: 'q8', number: 8, subject: 'Sosyal', topic: 'Coğrafya' }
-  ]
+    { id: 'q8', number: 8, subject: 'Sosyal', topic: 'Coğrafya' },
+  ];
 
   const handleAnswerChange = (questionId: string, answer: string) => {
     setAnswers(prev => ({
       ...prev,
-      [questionId]: answer
-    }))
-  }
+      [questionId]: answer,
+    }));
+  };
 
   return (
     <Paper elevation={3} sx={{ p: 3, maxWidth: 1200, mx: 'auto', my: 4 }}>
@@ -123,15 +124,15 @@ export const MultipleQuestionsExample: React.FC = () => {
         </Typography>
       </Box>
     </Paper>
-  )
-}
+  );
+};
 
 /**
  * Örnek: Mevcut OSYMExamInterface'e entegrasyon
  */
 export const IntegrationExample: React.FC = () => {
-  const [viewMode, setViewMode] = useState<'standard' | 'bubble'>('standard')
-  const [selectedAnswer, setSelectedAnswer] = useState<string | null>('B')
+  const [viewMode, setViewMode] = useState<'standard' | 'bubble'>('standard');
+  const [selectedAnswer, setSelectedAnswer] = useState<string | null>('B');
 
   return (
     <Paper elevation={3} sx={{ p: 3, maxWidth: 800, mx: 'auto', my: 4 }}>
@@ -195,8 +196,8 @@ export const IntegrationExample: React.FC = () => {
         </Typography>
       </Box>
     </Paper>
-  )
-}
+  );
+};
 
 /**
  * Ana örnek bileşeni - Tüm örnekleri gösterir
@@ -215,7 +216,7 @@ export const BubbleSheetExamples: React.FC = () => {
       <MultipleQuestionsExample />
       <IntegrationExample />
     </Box>
-  )
-}
+  );
+};
 
-export default BubbleSheetExamples
+export default BubbleSheetExamples;

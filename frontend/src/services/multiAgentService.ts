@@ -3,8 +3,8 @@
  * Teknofest 2025 - Eğitim Eylemci Projesi
  */
 
-import { ApiResponse } from '../types/revolutionary';
 import config from '../config';
+import { ApiResponse } from '../types/revolutionary';
 
 const API_BASE_URL = config.api.baseURL;
 
@@ -241,7 +241,7 @@ class MultiAgentService {
   /**
    * Blackboard metriklerini al
    */
-  async getMetrics(): Promise<ApiResponse<BlackboardMetrics>> {
+  async getMetrics(): Promise<ApiResponse<BlackboardMetrics | null>> {
     try {
       const response = await fetch(`${this.baseUrl}/metrics`, {
         method: 'GET',
@@ -273,7 +273,7 @@ class MultiAgentService {
   /**
    * Agent durumlarını al
    */
-  async getAgentStatus(): Promise<ApiResponse<AgentStatus>> {
+  async getAgentStatus(): Promise<ApiResponse<AgentStatus | null>> {
     try {
       const response = await fetch(`${this.baseUrl}/agents/status`, {
         method: 'GET',
@@ -308,8 +308,8 @@ class MultiAgentService {
   async getEventHistory(
     limit: number = 100,
     eventType?: string,
-    agentName?: string
-  ): Promise<ApiResponse<BlackboardEvent[]>> {
+    agentName?: string,
+  ): Promise<ApiResponse<BlackboardEvent[] | null>> {
     try {
       const params = new URLSearchParams({
         limit: limit.toString(),
@@ -360,17 +360,17 @@ class MultiAgentService {
         this.websocket = new WebSocket(wsUrl);
 
         this.websocket.onopen = () => {
-          console.log('Multi-Agent WebSocket connected');
+          // Multi-Agent WebSocket connected
           resolve();
         };
 
         this.websocket.onmessage = (event) => {
           try {
             const data = JSON.parse(event.data);
-            
+
             if (data.type === 'blackboard_event') {
               const blackboardEvent: BlackboardEvent = data.event;
-              
+
               // Event listener'ları çağır
               this.eventListeners.forEach((listener) => {
                 listener(blackboardEvent);
@@ -387,7 +387,7 @@ class MultiAgentService {
         };
 
         this.websocket.onclose = () => {
-          console.log('Multi-Agent WebSocket disconnected');
+          // Multi-Agent WebSocket disconnected
           this.websocket = null;
         };
 

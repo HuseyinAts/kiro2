@@ -3,7 +3,8 @@
  * Video player with watch tracking and resume functionality
  */
 
-import React, { useState, useEffect, useRef } from 'react';
+import * as React from 'react';
+import {  useState, useEffect, useRef  } from 'react';
 import './EBAVideoPlayer.css';
 
 export interface EBAVideoMetadata {
@@ -29,10 +30,10 @@ export interface EBAVideoPlayerProps {
 
 export const EBAVideoPlayer: React.FC<EBAVideoPlayerProps> = ({
   video,
-  userId,
+  userId: _userId,
   apiBaseUrl = '/api/v1/eba',
   onComplete,
-  onProgress
+  onProgress,
 }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [sessionId, setSessionId] = useState<string | null>(null);
@@ -98,8 +99,8 @@ export const EBAVideoPlayer: React.FC<EBAVideoPlayerProps> = ({
           // Add auth token here
         },
         body: JSON.stringify({
-          eba_video_id: video.video_id
-        })
+          eba_video_id: video.video_id,
+        }),
       });
 
       if (!response.ok) {
@@ -122,7 +123,7 @@ export const EBAVideoPlayer: React.FC<EBAVideoPlayerProps> = ({
   };
 
   const updateProgress = async (currentTimeSeconds: number) => {
-    if (!sessionId) return;
+    if (!sessionId) {return;}
 
     try {
       const response = await fetch(`${apiBaseUrl}/watch/progress`, {
@@ -133,8 +134,8 @@ export const EBAVideoPlayer: React.FC<EBAVideoPlayerProps> = ({
         body: JSON.stringify({
           session_id: sessionId,
           current_time: Math.floor(currentTimeSeconds),
-          video_duration: video.duration_seconds
-        })
+          video_duration: video.duration_seconds,
+        }),
       });
 
       if (!response.ok) {
@@ -162,7 +163,7 @@ export const EBAVideoPlayer: React.FC<EBAVideoPlayerProps> = ({
   };
 
   const endWatchSession = async () => {
-    if (!sessionId || !videoRef.current) return;
+    if (!sessionId || !videoRef.current) {return;}
 
     try {
       const finalTime = Math.floor(videoRef.current.currentTime);
@@ -171,7 +172,7 @@ export const EBAVideoPlayer: React.FC<EBAVideoPlayerProps> = ({
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-        }
+        },
       });
 
       console.log('[EBA WATCH] Session ended');

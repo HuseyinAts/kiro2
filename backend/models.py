@@ -6,7 +6,7 @@ from datetime import datetime
 from enum import Enum
 from typing import Any, Dict, Optional
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class ChatRequest(BaseModel):
@@ -82,9 +82,7 @@ class Kullanici(BaseModel):
     son_guncelleme: Optional[datetime] = None
     profil_resmi: Optional[str] = None
 
-    class Config:
-        # Allow both Turkish and English field names
-        populate_by_name = True
+    model_config = ConfigDict(populate_by_name=True)
 
 
 class KullaniciOlustur(BaseModel):
@@ -106,9 +104,7 @@ class KullaniciGiris(BaseModel):
     sifre: Optional[str] = Field(None, description="Kullanıcı şifresi (Türkçe)")
     password: Optional[str] = Field(None, description="Kullanıcı şifresi (İngilizce)")
 
-    class Config:
-        # Hem 'sifre' hem 'password' field'ını kabul et
-        extra = "allow"
+    model_config = ConfigDict(extra="allow")
 
     def get_password(self) -> str:
         """Şifreyi döndür (sifre veya password, hangisi varsa)"""

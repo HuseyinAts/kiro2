@@ -3,11 +3,12 @@
  * Glassmorphism ile rapor yönetimi
  */
 
-import React from 'react'
-import { ModernTeacherReportsPage } from './ModernTeacherReportsPage'
+import * as React from 'react';
+
+import { ModernTeacherReportsPage } from './ModernTeacherReportsPage';
 
 export const TeacherReportsPage: React.FC = () => {
-  return <ModernTeacherReportsPage />
-}
+  return <ModernTeacherReportsPage />;
+};
 
-export default TeacherReportsPage
+export default TeacherReportsPage;

@@ -19,7 +19,7 @@ import io
 import os
 import asyncio
 import json
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from dotenv import load_dotenv
 
@@ -119,10 +119,10 @@ async def demo_graph_generation():
 
             # Add metadata
             question["test_case"] = test_case["name"]
-            question["generated_at"] = datetime.utcnow().isoformat()
+            question["generated_at"] = datetime.now(timezone.utc).isoformat()
 
             # Validate
-            print(f"\n[VALIDATING] Checking question structure...")
+            print("\n[VALIDATING] Checking question structure...")
 
             has_stem = bool(question.get("stem"))
             has_options = len(question.get("options", {})) == 5
@@ -136,7 +136,7 @@ async def demo_graph_generation():
 
             if has_graph:
                 graph_info = question["visual_content"]
-                print(f"\n[GRAPH INFO]")
+                print("\n[GRAPH INFO]")
                 print(f"  Type: {graph_info['type']}")
                 print(f"  Format: {graph_info['format']}")
                 print(f"  Graph Type: {graph_info['metadata']['graph_type']}")
@@ -144,7 +144,7 @@ async def demo_graph_generation():
                 print(f"  SVG Size: {len(graph_info['content'])} chars")
 
             # Preview
-            print(f"\n[PREVIEW]")
+            print("\n[PREVIEW]")
             print(f"Stem (first 120 chars): {question['stem'][:120]}...")
             print(f"Options: {list(question['options'].values())}")
             print(f"Correct Answer: {question['correct_answer']}")
@@ -173,7 +173,7 @@ async def demo_graph_generation():
     print(f"Success Rate: {(success_count/len(test_cases)*100):.1f}%")
 
     # Graph type breakdown
-    print(f"\nGraph Type Breakdown:")
+    print("\nGraph Type Breakdown:")
     graph_types = {}
     for q in questions:
         if q.get("visual_content"):
@@ -185,7 +185,7 @@ async def demo_graph_generation():
 
     # Save questions
     if questions:
-        timestamp = datetime.utcnow().strftime("%Y%m%d_%H%M%S")
+        timestamp = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
         output_file = f"demo_graph_questions_{timestamp}.json"
 
         with open(output_file, "w", encoding="utf-8") as f:

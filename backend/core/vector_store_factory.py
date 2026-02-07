@@ -5,7 +5,7 @@ Centralized creation of optimized vector stores with HNSW support
 
 import logging
 import os
-from typing import Optional, Any
+from typing import Optional
 from pathlib import Path
 
 logger = logging.getLogger(__name__)

@@ -1,4 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import * as React from 'react';
+import {  useState, useEffect  } from 'react';
+
 import { validateWCAG, generateAccessibilityReport, type ValidationResult } from '../../utils/wcagValidator';
 
 interface AccessibilityValidatorProps {
@@ -46,7 +48,7 @@ export const AccessibilityValidator: React.FC<AccessibilityValidatorProps> = ({
   };
 
   const downloadReport = () => {
-    if (!report) return;
+    if (!report) {return;}
 
     const blob = new Blob([report], { type: 'text/markdown' });
     const url = URL.createObjectURL(blob);

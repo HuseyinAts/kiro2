@@ -1,12 +1,12 @@
 /**
  * Visual Timer Component - Görsel Zamanlayıcı
- * 
+ *
  * DEHB (Dikkat Eksikliği ve Hiperaktivite Bozukluğu) desteği için görsel zamanlayıcı.
  * Pomodoro oturumları için gerçek zamanlı countdown, progress ring ve kalan süre gösterimi.
- * 
+ *
  * Requirements: REQ-52.6 - REQ-52.10
  * Task: 88.2 Görsel zamanlayıcı
- * 
+ *
  * Features:
  * - Visual countdown (görsel geri sayım)
  * - Progress ring (ilerleme halkası)
@@ -15,7 +15,8 @@
  * - Color-coded by session type (oturum tipine göre renk kodlu)
  */
 
-import React, { useEffect, useState } from 'react';
+import * as React from 'react';
+import {  useEffect, useState  } from 'react';
 import './VisualTimer.css';
 
 interface VisualTimerData {
@@ -44,7 +45,7 @@ const VisualTimer: React.FC<VisualTimerProps> = ({
   sessionId,
   onTimerEnd,
   size = 'medium',
-  showControls = true
+  showControls: _showControls = true,
 }) => {
   const [timerData, setTimerData] = useState<VisualTimerData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -54,7 +55,7 @@ const VisualTimer: React.FC<VisualTimerProps> = ({
   const sizeConfig = {
     small: { radius: 60, strokeWidth: 8, fontSize: '1.5rem' },
     medium: { radius: 100, strokeWidth: 12, fontSize: '2.5rem' },
-    large: { radius: 140, strokeWidth: 16, fontSize: '3.5rem' }
+    large: { radius: 140, strokeWidth: 16, fontSize: '3.5rem' },
   };
 
   const config = sizeConfig[size];
@@ -65,8 +66,8 @@ const VisualTimer: React.FC<VisualTimerProps> = ({
     try {
       const response = await fetch(`/api/adhd-support/timer/visual/${sessionId}`, {
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        }
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        },
       });
 
       if (!response.ok) {
@@ -98,7 +99,7 @@ const VisualTimer: React.FC<VisualTimerProps> = ({
 
   // Calculate stroke dash offset for progress ring
   const getStrokeDashOffset = () => {
-    if (!timerData) return circumference;
+    if (!timerData) {return circumference;}
     const progress = timerData.progress_percentage / 100;
     return circumference * (1 - progress);
   };
@@ -115,7 +116,7 @@ const VisualTimer: React.FC<VisualTimerProps> = ({
     const labels = {
       work: 'Çalışma',
       short_break: 'Kısa Mola',
-      long_break: 'Uzun Mola'
+      long_break: 'Uzun Mola',
     };
     return labels[type as keyof typeof labels] || type;
   };
@@ -125,7 +126,7 @@ const VisualTimer: React.FC<VisualTimerProps> = ({
     const emojis = {
       work: '💪',
       short_break: '☕',
-      long_break: '🌟'
+      long_break: '🌟',
     };
     return emojis[type as keyof typeof emojis] || '⏱️';
   };
@@ -155,7 +156,7 @@ const VisualTimer: React.FC<VisualTimerProps> = ({
   const svgSize = (config.radius + config.strokeWidth) * 2;
 
   return (
-    <div 
+    <div
       className={`visual-timer visual-timer-${size}`}
       style={{ backgroundColor: timerData.color_scheme.background }}
       role="timer"
@@ -193,7 +194,7 @@ const VisualTimer: React.FC<VisualTimerProps> = ({
             strokeWidth={config.strokeWidth}
             opacity="0.3"
           />
-          
+
           {/* Progress circle */}
           <circle
             cx={svgSize / 2}
@@ -211,7 +212,7 @@ const VisualTimer: React.FC<VisualTimerProps> = ({
         </svg>
 
         {/* Time Display (centered over ring) */}
-        <div 
+        <div
           className="time-display"
           style={{ fontSize: config.fontSize }}
           aria-label={`Kalan süre: ${Math.floor(timerData.remaining_seconds / 60)} dakika ${timerData.remaining_seconds % 60} saniye`}
@@ -233,7 +234,7 @@ const VisualTimer: React.FC<VisualTimerProps> = ({
 
         {/* Status Indicator */}
         <div className="status-indicator">
-          <span 
+          <span
             className={`status-dot ${timerData.is_active ? 'active' : 'paused'}`}
             aria-hidden="true"
           ></span>
@@ -245,9 +246,9 @@ const VisualTimer: React.FC<VisualTimerProps> = ({
 
       {/* Screen Reader Only - Detailed Status */}
       <div className="sr-only" aria-live="polite" aria-atomic="true">
-        {getSessionTypeLabel(timerData.session_type)} oturumu. 
-        Kalan süre: {Math.floor(timerData.remaining_seconds / 60)} dakika {timerData.remaining_seconds % 60} saniye. 
-        İlerleme: yüzde {timerData.progress_percentage.toFixed(0)}. 
+        {getSessionTypeLabel(timerData.session_type)} oturumu.
+        Kalan süre: {Math.floor(timerData.remaining_seconds / 60)} dakika {timerData.remaining_seconds % 60} saniye.
+        İlerleme: yüzde {timerData.progress_percentage.toFixed(0)}.
         Durum: {timerData.is_active ? 'Aktif' : 'Duraklatıldı'}.
       </div>
     </div>

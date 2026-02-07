@@ -2,12 +2,14 @@
  * GamificationDashboard Component - Task 91
  * Tüm oyunlaştırma özelliklerini tek bir dashboard'da gösteren ana component
  */
-import React from 'react';
+import * as React from 'react';
+
 import { useGamificationStats } from '../../hooks/useGamification';
-import PointsDisplay from './PointsDisplay';
-import LevelDisplay from './LevelDisplay';
+
 import BadgeCollection from './BadgeCollection';
 import Leaderboard from './Leaderboard';
+import LevelDisplay from './LevelDisplay';
+import PointsDisplay from './PointsDisplay';
 import './GamificationDashboard.css';
 
 interface GamificationDashboardProps {
@@ -15,7 +17,7 @@ interface GamificationDashboardProps {
 }
 
 export const GamificationDashboard: React.FC<GamificationDashboardProps> = ({
-  layout = 'grid'
+  layout = 'grid',
 }) => {
   const { stats, loading, error } = useGamificationStats();
   const [activeTab, setActiveTab] = React.useState<'overview' | 'badges' | 'leaderboard'>('overview');

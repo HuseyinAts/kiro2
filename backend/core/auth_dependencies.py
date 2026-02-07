@@ -14,7 +14,7 @@ from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 
 from core.enhanced_authentication import (
     AuthenticationContext,
-    get_enhanced_auth_manager,
+    get_authentication_manager,
 )
 from core.rbac_system import AuthorizationContext, get_rbac_manager
 from core.unified_config import get_unified_config
@@ -33,13 +33,12 @@ class AuthenticationDependency:
 
     def __init__(self, required: bool = True):
         self.required = required
-        self.auth_manager = get_enhanced_auth_manager()
+        self.auth_manager = get_authentication_manager()
 
     async def __call__(
         self,
         request: Request,
-        credentials: HTTPAuthorizationCredentials
-        | None = Depends(security if self.required else optional_security),
+        credentials: HTTPAuthorizationCredentials | None = Depends(security),
     ) -> User | None:
         """Authenticate user from request"""
 
@@ -236,6 +235,9 @@ class AuthorizationDependency:
 # Pre-configured dependency instances
 authenticate_user = AuthenticationDependency(required=True)
 authenticate_optional = AuthenticationDependency(required=False)
+
+# Alias for backward compatibility (many files use get_current_user)
+get_current_user = authenticate_user
 
 # Common authorization dependencies
 require_admin = AuthorizationDependency(required_roles=["admin", "super_admin"])

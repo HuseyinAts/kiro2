@@ -15,7 +15,6 @@ from core.cache import cache_manager
 from core.database import db_manager
 from models import SinavTipi
 from models.database import ExamType, Question, QuestionDifficulty, SubjectArea
-from models.soru_model import Soru
 from services.irt_analysis_service import IRTAnalysisService
 
 
@@ -28,7 +27,8 @@ class SoruBankasiServisi:
     - Konu bazlı dağılım algoritması
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
+        """Soru bankası servisini başlatır."""
         self.irt_service = IRTAnalysisService()
 
         # IRT parametreleri için varsayılan değerler
@@ -240,44 +240,55 @@ class SoruBankasiServisi:
         zorluk_seviyesi: Optional[str] = None,
         limit: int = 100,
         offset: int = 0,
-    ) -> List[Soru]:
+    ) -> List[Question]:
         """
-        Filtrelere göre soru listesi getir - Database'den
+        Filtrelere göre soru listesi getir - Database'den (questions tablosu)
 
         Args:
-            sinav_tipi: Sınav türü filtresi (TYT, AYT, YDT)
-            konu: Konu filtresi
+            sinav_tipi: Sınav türü filtresi (tyt, ayt, ydt, deneme)
+            konu: Konu filtresi (matematik, turkce, fizik, kimya, biyoloji, fen, sosyal, ingilizce)
             zorluk_seviyesi: Zorluk filtresi (easy, medium, hard)
             limit: Maksimum soru sayısı
             offset: Başlangıç offset'i
 
         Returns:
-            List[Soru]: Filtrelenmiş soru listesi
+            List[Question]: Filtrelenmiş soru listesi
         """
         async with db_manager.get_session() as session:
             try:
-                # Base query - use 'aktif' column and sinav_tipi/konu/zorluk as strings
-                stmt = select(Soru).where((Soru.aktif == True) | (Soru.aktif == None))
+                # Base query - questions tablosundan (Question modeli)
+                stmt = select(Question).where((Question.is_active == True) | (Question.is_active == None))
 
-                # Sınav tipi filtresi (use string comparison)
+                # Sınav tipi filtresi (lowercase enum değerleri: tyt, ayt, ydt, deneme)
                 if sinav_tipi:
-                    stmt = stmt.where(Soru.sinav_tipi == sinav_tipi)
+                    sinav_lower = sinav_tipi.lower()
+                    stmt = stmt.where(Question.exam_type == sinav_lower)
 
-                # Konu filtresi (use string comparison)
+                # Konu filtresi (subject_area: matematik, turkce, fizik, vb.)
                 if konu:
-                    stmt = stmt.where(Soru.konu == konu)
+                    konu_lower = konu.lower()
+                    # Türkçe konu adlarını subject_area enum değerlerine çevir
+                    konu_map = {
+                        "matematik": "matematik", "mat": "matematik",
+                        "türkçe": "turkce", "turkce": "turkce",
+                        "fizik": "fizik", "fiz": "fizik",
+                        "kimya": "kimya", "kim": "kimya",
+                        "biyoloji": "biyoloji", "bio": "biyoloji",
+                        "fen": "fen",
+                        "sosyal": "sosyal", "tarih": "sosyal", "coğrafya": "sosyal",
+                        "ingilizce": "ingilizce", "ing": "ingilizce",
+                    }
+                    subject = konu_map.get(konu_lower, konu_lower)
+                    stmt = stmt.where(Question.subject_area == subject)
 
-                # Zorluk filtresi (map to Turkish: easy=kolay, medium=orta, hard=zor)
+                # Zorluk filtresi (difficulty: easy, medium, hard)
                 if zorluk_seviyesi:
-                    zorluk_map = {"easy": "kolay", "medium": "orta", "hard": "zor"}
-                    turkish_zorluk = zorluk_map.get(
-                        zorluk_seviyesi.lower(), zorluk_seviyesi
-                    )
-                    stmt = stmt.where(Soru.zorluk == turkish_zorluk)
+                    zorluk_lower = zorluk_seviyesi.lower()
+                    stmt = stmt.where(Question.difficulty == zorluk_lower)
 
-                # Sıralama ve limit (use Turkish column names)
+                # Sıralama ve limit
                 stmt = (
-                    stmt.order_by(Soru.olusturma_tarihi.desc())
+                    stmt.order_by(Question.created_at.desc())
                     .offset(offset)
                     .limit(limit)
                 )
@@ -297,6 +308,9 @@ class SoruBankasiServisi:
     ) -> List[Question]:
         """
         Rastgele soru seçimi yap - Gelişmiş algoritma ile
+
+        FIX N+1: Tüm konular için tek sorguda sorular getirilir,
+        sonra memory'de dağıtılır.
 
         Args:
             sinav_tipi: Sınav türü (TYT, AYT, YDT)
@@ -328,20 +342,64 @@ class SoruBankasiServisi:
                         )
                         return tum_sorular
 
-                # Konu dağılımı varsa - detaylı seçim
-                secilen_sorular = []
+                # FIX N+1: Konu dağılımı varsa - tek sorguda tüm konuların sorularını getir
+                # Türkçe konu adlarını subject_area enum değerlerine çevir
+                konu_map = {
+                    "Matematik": "matematik", "Mat": "matematik",
+                    "Türkçe": "turkce", "Turkce": "turkce",
+                    "Fizik": "fizik", "Fiz": "fizik",
+                    "Kimya": "kimya", "Kim": "kimya",
+                    "Biyoloji": "biyoloji", "Bio": "biyoloji",
+                    "Fen": "fen", "Fen Bilimleri": "fen",
+                    "Sosyal": "sosyal", "Sosyal Bilimler": "sosyal",
+                    "İngilizce": "ingilizce", "Ing": "ingilizce",
+                }
 
+                # Toplam ihtiyaç duyulan soru sayısını hesapla
+                toplam_ihtiyac = sum(sayi * 3 for sayi in konu_dagilimi.values())
+
+                # Konu listesini hazırla (subject_area enum formatında)
+                konu_listesi = [
+                    konu_map.get(konu, konu.lower())
+                    for konu in konu_dagilimi.keys()
+                ]
+
+                # FIX N+1: Tek sorguda tüm konuların sorularını getir
+                sinav_lower = sinav_tipi.lower() if sinav_tipi else None
+                stmt = select(Question).where(
+                    (Question.is_active == True) | (Question.is_active == None)
+                )
+                if sinav_lower:
+                    stmt = stmt.where(Question.exam_type == sinav_lower)
+
+                # Konu filtresi - IN clause ile tek sorgu
+                if konu_listesi:
+                    stmt = stmt.where(Question.subject_area.in_(konu_listesi))
+
+                stmt = stmt.order_by(func.random()).limit(toplam_ihtiyac)
+
+                result = await session.execute(stmt)
+                tum_sorular = result.scalars().all()
+
+                print(f"[DEBUG] FIX N+1: Tek sorguda {len(tum_sorular)} soru getirildi")
+
+                # Soruları konulara göre grupla (memory'de)
+                konu_gruplari: Dict[str, List[Question]] = {}
+                for soru in tum_sorular:
+                    subject = soru.subject_area if soru.subject_area else "diger"
+                    if subject not in konu_gruplari:
+                        konu_gruplari[subject] = []
+                    konu_gruplari[subject].append(soru)
+
+                # Her konu için istenen sayıda soru seç
+                secilen_sorular = []
                 for konu, sayi in konu_dagilimi.items():
-                    # Konu bazlı sorular getir
+                    subject_key = konu_map.get(konu, konu.lower())
+                    konu_sorulari = konu_gruplari.get(subject_key, [])
+
                     print(
-                        f"[DEBUG] Aranıyor: sinav_tipi={sinav_tipi}, konu={konu}, sayi={sayi}"
+                        f"[DEBUG] Konu: {konu} ({subject_key}), İstenen: {sayi}, Mevcut: {len(konu_sorulari)}"
                     )
-                    konu_sorulari = await self.sorular_listele(
-                        sinav_tipi=sinav_tipi,
-                        konu=konu,
-                        limit=sayi * 3,  # Seçim için fazladan soru getir
-                    )
-                    print(f"[DEBUG] Bulunan: {len(konu_sorulari)} soru")
 
                     if len(konu_sorulari) >= sayi:
                         # Rastgele seçim yap
@@ -884,7 +942,7 @@ class SoruBankasiServisi:
 
     async def toplu_soru_ekle(self, sorular_listesi: List[Dict]) -> Dict[str, int]:
         """
-        Toplu soru ekleme işlemi
+        Toplu soru ekleme işlemi - Batch insert ile N+1 query fix
 
         Args:
             sorular_listesi: Soru verilerinin listesi
@@ -896,13 +954,70 @@ class SoruBankasiServisi:
         basarisiz = 0
         hatalar = []
 
-        for i, soru_data in enumerate(sorular_listesi):
-            try:
-                await self.soru_ekle(soru_data)
-                basarili += 1
-            except Exception as e:
-                basarisiz += 1
-                hatalar.append(f"Soru {i+1}: {str(e)}")
+        # FIX N+1: Batch insert instead of loop
+        async with db_manager.get_session() as session:
+            questions_to_add = []
+
+            for i, soru_data in enumerate(sorular_listesi):
+                try:
+                    # Enum dönüştürmeleri
+                    exam_type, difficulty, subject_area = await self._enum_donusturucu(
+                        soru_data.get("sinav_tipi", "TYT"),
+                        soru_data.get("zorluk_seviyesi", "orta"),
+                        soru_data.get("konu", "Matematik"),
+                    )
+
+                    # IRT parametrelerini hesapla
+                    irt_params = await self._hesapla_irt_parametreleri(
+                        difficulty.value, soru_data.get("konu", "Matematik")
+                    )
+
+                    # Question object oluştur
+                    yeni_soru = Question(
+                        question_text=soru_data["soru_metni"],
+                        option_a=soru_data["secenekler"][0].replace("A) ", ""),
+                        option_b=soru_data["secenekler"][1].replace("B) ", ""),
+                        option_c=soru_data["secenekler"][2].replace("C) ", ""),
+                        option_d=soru_data["secenekler"][3].replace("D) ", ""),
+                        option_e=soru_data["secenekler"][4].replace("E) ", "")
+                        if len(soru_data["secenekler"]) > 4
+                        else None,
+                        correct_answer=soru_data["dogru_cevap"],
+                        explanation=soru_data.get("cozum_aciklamasi"),
+                        exam_type=exam_type,
+                        subject_area=subject_area,
+                        topic=soru_data.get("konu", "Genel"),
+                        subtopic=soru_data.get("alt_konu"),
+                        difficulty=difficulty,
+                        irt_difficulty=irt_params["difficulty"],
+                        irt_discrimination=irt_params["discrimination"],
+                        irt_guessing=irt_params["guessing"],
+                        morphology_complexity=await self._hesapla_morfoloji_karmasikligi(
+                            soru_data["soru_metni"]
+                        ),
+                        readability_score=await self._hesapla_okunabilirlik(
+                            soru_data["soru_metni"]
+                        ),
+                        created_by=soru_data.get("created_by"),
+                    )
+                    questions_to_add.append(yeni_soru)
+                    basarili += 1
+
+                except Exception as e:
+                    basarisiz += 1
+                    hatalar.append(f"Soru {i+1}: {str(e)}")
+
+            # Batch insert - single commit for all questions
+            if questions_to_add:
+                try:
+                    session.add_all(questions_to_add)
+                    await session.commit()
+                except Exception as e:
+                    await session.rollback()
+                    # Rollback durumunda tüm sorular başarısız sayılır
+                    basarisiz = len(sorular_listesi)
+                    basarili = 0
+                    hatalar.append(f"Batch insert hatası: {str(e)}")
 
         return {
             "basarili": basarili,

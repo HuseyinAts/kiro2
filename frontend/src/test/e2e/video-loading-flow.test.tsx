@@ -18,10 +18,10 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { render } from '../utils/test-utils'
+import { renderWithoutRouter } from '../utils/test-utils'
 import { server, addHandler } from '../mocks/server'
 import { http, HttpResponse } from 'msw'
-import App from '../../app'
+import { App } from '../../app'
 
 // Mock window.open for popup tests
 const mockPopup = {
@@ -123,7 +123,7 @@ describe('Video Loading Flow E2E Tests', () => {
         })
       )
 
-      render(<App />)
+      renderWithoutRouter(<App />)
 
       // Navigate to Learning Path page
       await navigateToLearningPath(user)
@@ -172,7 +172,7 @@ describe('Video Loading Flow E2E Tests', () => {
         })
       )
 
-      render(<App />)
+      renderWithoutRouter(<App />)
       await navigateToLearningPath(user)
 
       const videoButton = await screen.findByText(/video/i)
@@ -198,7 +198,7 @@ describe('Video Loading Flow E2E Tests', () => {
         })
       )
 
-      render(<App />)
+      renderWithoutRouter(<App />)
       await navigateToLearningPath(user)
 
       const videoButton = await screen.findByText(/video/i)
@@ -228,7 +228,7 @@ describe('Video Loading Flow E2E Tests', () => {
         })
       )
 
-      render(<App />)
+      renderWithoutRouter(<App />)
       await navigateToLearningPath(user)
 
       const videoButton = await screen.findByText(/video/i)
@@ -257,7 +257,7 @@ describe('Video Loading Flow E2E Tests', () => {
         })
       )
 
-      render(<App />)
+      renderWithoutRouter(<App />)
       await navigateToLearningPath(user)
 
       const videoButton = await screen.findByText(/video/i)
@@ -278,7 +278,7 @@ describe('Video Loading Flow E2E Tests', () => {
         })
       )
 
-      render(<App />)
+      renderWithoutRouter(<App />)
       await navigateToLearningPath(user)
 
       const videoButton = await screen.findByText(/video/i)
@@ -309,7 +309,7 @@ describe('Video Loading Flow E2E Tests', () => {
         })
       )
 
-      render(<App />)
+      renderWithoutRouter(<App />)
       await navigateToLearningPath(user)
 
       const videoButton = await screen.findByText(/video/i)
@@ -344,7 +344,7 @@ describe('Video Loading Flow E2E Tests', () => {
         })
       )
 
-      render(<App />)
+      renderWithoutRouter(<App />)
       await navigateToLearningPath(user)
 
       const videoButton = await screen.findByText(/video/i)
@@ -376,7 +376,7 @@ describe('Video Loading Flow E2E Tests', () => {
         })
       )
 
-      render(<App />)
+      renderWithoutRouter(<App />)
       await navigateToLearningPath(user)
 
       const videoButton = await screen.findByText(/video/i)
@@ -403,7 +403,7 @@ describe('Video Loading Flow E2E Tests', () => {
         })
       )
 
-      render(<App />)
+      renderWithoutRouter(<App />)
       await navigateToLearningPath(user)
 
       const videoButton = await screen.findByText(/video/i)
@@ -431,7 +431,7 @@ describe('Video Loading Flow E2E Tests', () => {
         })
       )
 
-      render(<App />)
+      renderWithoutRouter(<App />)
       await navigateToLearningPath(user)
 
       const videoButton = await screen.findByText(/video/i)
@@ -457,7 +457,7 @@ describe('Video Loading Flow E2E Tests', () => {
         })
       )
 
-      render(<App />)
+      renderWithoutRouter(<App />)
       await navigateToLearningPath(user)
 
       const videoButton = await screen.findByText(/video/i)
@@ -482,7 +482,7 @@ describe('Video Loading Flow E2E Tests', () => {
         })
       )
 
-      render(<App />)
+      renderWithoutRouter(<App />)
       await navigateToLearningPath(user)
 
       const videoButton = await screen.findByText(/video/i)
@@ -506,7 +506,7 @@ describe('Video Loading Flow E2E Tests', () => {
         value: false
       })
 
-      render(<App />)
+      renderWithoutRouter(<App />)
       await navigateToLearningPath(user)
 
       const videoButton = await screen.findByText(/video/i)
@@ -538,7 +538,7 @@ describe('Video Loading Flow E2E Tests', () => {
         })
       )
 
-      render(<App />)
+      renderWithoutRouter(<App />)
       await navigateToLearningPath(user)
 
       const videoButton = await screen.findByText(/video/i)
@@ -564,7 +564,7 @@ describe('Video Loading Flow E2E Tests', () => {
         })
       )
 
-      render(<App />)
+      renderWithoutRouter(<App />)
       await navigateToLearningPath(user)
 
       const videoButton = await screen.findByText(/video/i)
@@ -592,7 +592,7 @@ describe('Video Loading Flow E2E Tests', () => {
         })
       )
 
-      render(<App />)
+      renderWithoutRouter(<App />)
       await navigateToLearningPath(user)
 
       const videoButton = await screen.findByText(/video/i)
@@ -619,7 +619,7 @@ describe('Video Loading Flow E2E Tests', () => {
         })
       )
 
-      render(<App />)
+      renderWithoutRouter(<App />)
       await navigateToLearningPath(user)
 
       const videoButton = await screen.findByText(/video/i)

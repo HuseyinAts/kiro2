@@ -3,7 +3,11 @@
  * Erişilebilir tablo yapısı ve klavye navigasyonu
  */
 
-import React, { useState, useRef, useCallback, useEffect } from 'react';
+import {
+  Search as SearchIcon,
+  FilterList as FilterIcon,
+  GetApp as ExportIcon,
+} from '@mui/icons-material';
 import {
   Table,
   TableBody,
@@ -25,19 +29,13 @@ import {
   TextField,
   InputAdornment,
   Chip,
-  useTheme
+  useTheme,
 } from '@mui/material';
-import {
-  Search as SearchIcon,
-  FilterList as FilterIcon,
-  GetApp as ExportIcon,
-  Visibility as ViewIcon,
-  Edit as EditIcon,
-  Delete as DeleteIcon
-} from '@mui/icons-material';
+import * as React from 'react';
+import {  useState, useRef, useCallback, useEffect  } from 'react';
+
 import { useAccessibilitySettings } from '../../hooks/useAccessibilitySettings';
 import { useScreenReader } from '../../hooks/useScreenReader';
-import { useKeyboardNavigation } from '../../hooks/useKeyboardNavigation';
 
 export interface TableColumn {
   id: string;
@@ -106,8 +104,8 @@ const AccessibleTable: React.FC<AccessibleTableProps> = ({
   searchValue = '',
   onSearchChange,
   filterable = false,
-  filters = {},
-  onFilterChange,
+  filters: _filters = {},
+  onFilterChange: _onFilterChange,
   actions = [],
   selectable = false,
   selectedRows = [],
@@ -115,16 +113,15 @@ const AccessibleTable: React.FC<AccessibleTableProps> = ({
   loading = false,
   emptyMessage = 'Veri bulunamadı',
   ariaLabel,
-  ariaDescribedBy
+  ariaDescribedBy,
 }) => {
   const theme = useTheme();
   const { settings } = useAccessibilitySettings();
   const { announce, announceContentChange } = useScreenReader();
-  const { focusNext, focusPrevious, focusFirst, focusLast } = useKeyboardNavigation();
 
   const tableRef = useRef<HTMLTableElement>(null);
   const [focusedCell, setFocusedCell] = useState<{ row: number; col: number } | null>(null);
-  const [searchFocused, setSearchFocused] = useState(false);
+  const [, setSearchFocused] = useState(false);
 
   // Tablo ID'leri
   const tableId = `accessible-table-${Math.random().toString(36).substr(2, 9)}`;
@@ -133,7 +130,7 @@ const AccessibleTable: React.FC<AccessibleTableProps> = ({
 
   // Sıralama işlevi
   const handleSort = useCallback((columnId: string) => {
-    if (!onSort) return;
+    if (!onSort) {return;}
 
     const newDirection = sortBy === columnId && sortDirection === 'asc' ? 'desc' : 'asc';
     onSort(columnId, newDirection);
@@ -143,14 +140,14 @@ const AccessibleTable: React.FC<AccessibleTableProps> = ({
     if (column) {
       announce(
         `Tablo ${column.label} sütununa göre ${newDirection === 'asc' ? 'artan' : 'azalan'} sırada sıralandı`,
-        'polite'
+        'polite',
       );
     }
   }, [sortBy, sortDirection, onSort, columns, announce]);
 
   // Klavye navigasyonu
   const handleKeyDown = useCallback((event: React.KeyboardEvent) => {
-    if (!focusedCell) return;
+    if (!focusedCell) {return;}
 
     const { row, col } = focusedCell;
     const maxRow = data.length - 1;
@@ -248,7 +245,7 @@ const AccessibleTable: React.FC<AccessibleTableProps> = ({
   }, [onSearchChange]);
 
   // Sayfa değişimi
-  const handlePageChange = useCallback((event: React.ChangeEvent<unknown>, newPage: number) => {
+  const handlePageChange = useCallback((_event: React.ChangeEvent<unknown>, newPage: number) => {
     if (onPageChange) {
       onPageChange(newPage);
       announce(`Sayfa ${newPage}'ye geçildi`, 'polite');
@@ -275,20 +272,20 @@ const AccessibleTable: React.FC<AccessibleTableProps> = ({
   const getTableSummary = useCallback(() => {
     const totalRows = totalCount || data.length;
     const selectedCount = selectedRows.length;
-    
+
     let summary = `${totalRows} satır içeren tablo.`;
-    
+
     if (selectable && selectedCount > 0) {
       summary += ` ${selectedCount} satır seçili.`;
     }
-    
+
     if (sortBy) {
       const column = columns.find(col => col.id === sortBy);
       if (column) {
         summary += ` ${column.label} sütununa göre ${sortDirection === 'asc' ? 'artan' : 'azalan'} sırada sıralı.`;
       }
     }
-    
+
     return summary;
   }, [totalCount, data.length, selectedRows.length, selectable, sortBy, sortDirection, columns]);
 
@@ -307,12 +304,12 @@ const AccessibleTable: React.FC<AccessibleTableProps> = ({
             </Typography>
           )}
 
-          <Box sx={{ 
-            display: 'flex', 
-            gap: 2, 
+          <Box sx={{
+            display: 'flex',
+            gap: 2,
             alignItems: 'center',
             flexWrap: 'wrap',
-            mb: 1
+            mb: 1,
           }}>
             {/* Arama */}
             {searchable && (
@@ -384,16 +381,16 @@ const AccessibleTable: React.FC<AccessibleTableProps> = ({
       </Typography>
 
       {/* Tablo */}
-      <TableContainer 
-        component={Paper} 
-        sx={{ 
+      <TableContainer
+        component={Paper}
+        sx={{
           maxHeight: 600,
           '& .MuiTable-root': {
             '& .wcag-aa-target-size': {
               minHeight: 44,
               minWidth: 44,
-            }
-          }
+            },
+          },
         }}
       >
         <Table
@@ -476,7 +473,7 @@ const AccessibleTable: React.FC<AccessibleTableProps> = ({
           <TableBody>
             {loading ? (
               <TableRow>
-                <TableCell 
+                <TableCell
                   colSpan={columns.length + (selectable ? 1 : 0) + (actions.length > 0 ? 1 : 0)}
                   align="center"
                   sx={{ py: 4 }}
@@ -486,7 +483,7 @@ const AccessibleTable: React.FC<AccessibleTableProps> = ({
               </TableRow>
             ) : data.length === 0 ? (
               <TableRow>
-                <TableCell 
+                <TableCell
                   colSpan={columns.length + (selectable ? 1 : 0) + (actions.length > 0 ? 1 : 0)}
                   align="center"
                   sx={{ py: 4 }}
@@ -513,7 +510,7 @@ const AccessibleTable: React.FC<AccessibleTableProps> = ({
                       },
                       '&.Mui-selected': {
                         backgroundColor: theme.palette.action.selected,
-                      }
+                      },
                     }}
                   >
                     {/* Seçim hücresi */}
@@ -538,7 +535,7 @@ const AccessibleTable: React.FC<AccessibleTableProps> = ({
                           '&:focus': {
                             outline: `2px solid ${theme.palette.primary.main}`,
                             outlineOffset: -2,
-                          }
+                          },
                         }}
                       >
                         <Chip
@@ -568,7 +565,7 @@ const AccessibleTable: React.FC<AccessibleTableProps> = ({
                             '&:focus': {
                               outline: `2px solid ${theme.palette.primary.main}`,
                               outlineOffset: -2,
-                            }
+                            },
                           }}
                         >
                           {formattedValue}
@@ -619,18 +616,18 @@ const AccessibleTable: React.FC<AccessibleTableProps> = ({
 
       {/* Pagination */}
       {paginated && totalCount && totalCount > pageSize && (
-        <Box sx={{ 
-          display: 'flex', 
-          justifyContent: 'space-between', 
-          alignItems: 'center', 
+        <Box sx={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
           mt: 2,
           flexWrap: 'wrap',
-          gap: 2
+          gap: 2,
         }}>
           <Typography variant="body2" color="textSecondary">
             {`${(page - 1) * pageSize + 1}-${Math.min(page * pageSize, totalCount)} / ${totalCount} kayıt`}
           </Typography>
-          
+
           <Pagination
             count={Math.ceil(totalCount / pageSize)}
             page={page}
@@ -647,7 +644,7 @@ const AccessibleTable: React.FC<AccessibleTableProps> = ({
       {settings.keyboardNavigation && (
         <Box sx={{ mt: 2, p: 2, bgcolor: 'grey.50', borderRadius: 1 }}>
           <Typography variant="caption" color="textSecondary">
-            <strong>Klavye Kısayolları:</strong> Ok tuşları: Navigasyon | Enter/Space: Seçim | 
+            <strong>Klavye Kısayolları:</strong> Ok tuşları: Navigasyon | Enter/Space: Seçim |
             Home/End: Başlangıç/Son | Ctrl+Home/End: Tablo başı/sonu | Esc: Odağı kaldır
           </Typography>
         </Box>

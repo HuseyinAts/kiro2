@@ -17,8 +17,6 @@ from typing import Optional, Any, Dict
 from core.circuit_breaker import (
     CircuitBreaker,
     CircuitBreakerConfig,
-    CircuitBreakerOpenError,
-    CircuitBreakerHalfOpenError,
     circuit_breaker_manager,
 )
 

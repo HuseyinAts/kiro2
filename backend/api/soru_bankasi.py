@@ -2,9 +2,12 @@
 Soru Bankası API Endpoint'leri
 Türkiye Üniversite Sınavları Hazırlık Platformu
 """
+import logging
 from typing import Any, Dict, List, Optional
 import hashlib
 import json
+
+logger = logging.getLogger(__name__)
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from fastapi.responses import JSONResponse
@@ -16,7 +19,7 @@ from core.multi_layer_cache import MultiLayerCache
 from models.user import Kullanici
 from services.soru_bankasi_service import soru_bankasi_servisi
 
-router = APIRouter(prefix="/api/v1/soru-bankasi", tags=["Soru Bankası"])
+router = APIRouter(tags=["Soru Bankası"])
 
 # Initialize multi-layer cache for question bank
 # L1: Memory (100 entries), L2: Redis, TTL: 1 hour
@@ -26,6 +29,15 @@ question_cache = MultiLayerCache(
     default_ttl=3600,
     namespace="soru_bankasi",
 )
+
+
+async def invalidate_question_cache():
+    """Soru bankası cache'ini temizle"""
+    try:
+        await question_cache.clear()
+        logger.info("Cache temizlendi: soru_bankasi namespace")
+    except Exception as e:
+        logger.warning(f"Cache temizleme hatası: {e}")
 
 
 @router.get("/sorular", response_model=List[Dict[str, Any]])
@@ -74,7 +86,7 @@ async def sorular_listele(
 
         # Try to get from cache (L1 → L2 → Database)
         async def fetch_questions():
-            """Fetch questions from database"""
+            """Fetch questions from database and convert to JSON-serializable dicts"""
             sorular = await soru_bankasi_servisi.sorular_listele(
                 sinav_tipi=sinav_tipi,
                 konu=konu,
@@ -82,50 +94,49 @@ async def sorular_listele(
                 limit=limit,
                 offset=offset,
             )
-            return sorular
+            # Convert SQLAlchemy objects to JSON-serializable dicts for caching
+            soru_listesi = []
+            for soru in sorular:
+                soru_dict = {
+                    "id": soru.id,
+                    "question_text": soru.question_text,
+                    "options": {
+                        "A": soru.option_a,
+                        "B": soru.option_b,
+                        "C": soru.option_c,
+                        "D": soru.option_d,
+                        "E": soru.option_e,
+                    },
+                    "correct_answer": soru.correct_answer,
+                    "explanation": soru.explanation,
+                    "exam_type": soru.exam_type.value if hasattr(soru.exam_type, 'value') else str(soru.exam_type),
+                    "subject_area": soru.subject_area.value if hasattr(soru.subject_area, 'value') else str(soru.subject_area),
+                    "topic": soru.topic,
+                    "subtopic": soru.subtopic,
+                    "difficulty": soru.difficulty.value if hasattr(soru.difficulty, 'value') else str(soru.difficulty),
+                    "irt_parameters": {
+                        "difficulty": soru.irt_difficulty,
+                        "discrimination": soru.irt_discrimination,
+                        "guessing": soru.irt_guessing,
+                    },
+                    "morphology_complexity": soru.morphology_complexity,
+                    "readability_score": soru.readability_score,
+                    "statistics": {
+                        "times_asked": soru.times_asked,
+                        "times_correct": soru.times_correct,
+                        "success_rate": soru.times_correct / max(1, soru.times_asked),
+                        "average_response_time": soru.average_response_time,
+                    },
+                    "created_at": soru.created_at.isoformat() if soru.created_at else None,
+                    "is_active": soru.is_active,
+                }
+                soru_listesi.append(soru_dict)
+            return soru_listesi
 
         # Get or compute with cache
-        sorular = await question_cache.get_or_compute(
+        soru_listesi = await question_cache.get_or_compute(
             key=cache_key, compute_fn=fetch_questions, ttl=3600  # 1 hour
         )
-
-        # Response formatına dönüştür
-        soru_listesi = []
-        for soru in sorular:
-            soru_dict = {
-                "id": soru.id,
-                "question_text": soru.question_text,
-                "options": {
-                    "A": soru.option_a,
-                    "B": soru.option_b,
-                    "C": soru.option_c,
-                    "D": soru.option_d,
-                    "E": soru.option_e,
-                },
-                "correct_answer": soru.correct_answer,
-                "explanation": soru.explanation,
-                "exam_type": soru.exam_type.value,
-                "subject_area": soru.subject_area.value,
-                "topic": soru.topic,
-                "subtopic": soru.subtopic,
-                "difficulty": soru.difficulty.value,
-                "irt_parameters": {
-                    "difficulty": soru.irt_difficulty,
-                    "discrimination": soru.irt_discrimination,
-                    "guessing": soru.irt_guessing,
-                },
-                "morphology_complexity": soru.morphology_complexity,
-                "readability_score": soru.readability_score,
-                "statistics": {
-                    "times_asked": soru.times_asked,
-                    "times_correct": soru.times_correct,
-                    "success_rate": soru.times_correct / max(1, soru.times_asked),
-                    "average_response_time": soru.average_response_time,
-                },
-                "created_at": soru.created_at.isoformat(),
-                "is_active": soru.is_active,
-            }
-            soru_listesi.append(soru_dict)
 
         return JSONResponse(
             status_code=status.HTTP_200_OK,
@@ -659,6 +670,9 @@ async def soru_ekle(
 
         yeni_soru = await soru_bankasi_servisi.soru_ekle(soru_data)
 
+        # Cache invalidation
+        await invalidate_question_cache()
+
         return JSONResponse(
             status_code=status.HTTP_201_CREATED,
             content={
@@ -731,6 +745,9 @@ async def soru_guncelle(
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND, detail="Soru bulunamadı"
             )
+
+        # Cache invalidation
+        await invalidate_question_cache()
 
         return JSONResponse(
             status_code=status.HTTP_200_OK,
@@ -808,6 +825,9 @@ async def toplu_soru_ekle(
             soru["created_by"] = current_user.get("user_id", "system")
 
         sonuc = await soru_bankasi_servisi.toplu_soru_ekle(request.sorular)
+
+        # Cache invalidation
+        await invalidate_question_cache()
 
         return JSONResponse(
             status_code=status.HTTP_201_CREATED,

@@ -14,9 +14,10 @@ backend_path = Path(__file__).parent
 sys.path.insert(0, str(backend_path))
 
 # Environment setup
+db_password = os.getenv("DATABASE_PASSWORD", "")
 os.environ[
     "DATABASE_URL"
-] = "postgresql://postgres:changeme_strong_password_here@localhost:5432/turkiye_sinav"
+] = f"postgresql://postgres:{db_password}@localhost:5434/turkiye_sinav"
 os.environ["REDIS_HOST"] = "localhost"
 os.environ["REDIS_PORT"] = "6379"
 os.environ["ENVIRONMENT"] = "development"
@@ -182,7 +183,7 @@ async def main():
                     rejected_count += 1
                     continue
                 else:
-                    print(f"    ✓ PASSED - Not plagiarized")
+                    print("    ✓ PASSED - Not plagiarized")
             except Exception as e:
                 print(f"    ! Plagiarism check skipped: {str(e)[:50]}")
                 similarity = 0.0
@@ -200,7 +201,7 @@ async def main():
                     kazanim=question_data["kazanim"],
                     zorluk=question_data["zorluk"],
                 )
-                print(f"    ✓ Added to knowledge graph")
+                print("    ✓ Added to knowledge graph")
             except Exception as e:
                 print(f"    ! KG add skipped: {str(e)[:50]}")
 
@@ -246,7 +247,7 @@ async def main():
                     "irt_c": 0.25,  # Guessing parameter
                 }
 
-                print(f"    ✓ Added to CAT pool")
+                print("    ✓ Added to CAT pool")
                 print(
                     f"    - IRT params: a={irt_params['irt_a']:.2f}, b={irt_params['irt_b']:.2f}, c={irt_params['irt_c']:.2f}"
                 )
@@ -272,14 +273,14 @@ async def main():
 
     # Show Knowledge Graph stats
     if kg_service:
-        print(f"Knowledge Graph Status:")
+        print("Knowledge Graph Status:")
         print(f"  - Total nodes: {len(kg_service.graph.nodes())}")
         print(f"  - Total edges: {len(kg_service.graph.edges())}")
         print()
 
     # Show HITL stats
     if hitl_service:
-        print(f"HITL Workflow Status:")
+        print("HITL Workflow Status:")
         print(
             f"  - Pending tasks: {len([t for t in hitl_service.task_queue if t.status == 'pending'])}"
         )

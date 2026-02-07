@@ -150,7 +150,8 @@ class ErrorDetectionService:
                             suggestion="İşlemi adım adım tekrar yap. Hesap makinesini kullanabilirsin.",
                             severity=3,
                         )
-        except:
+        except (ValueError, SyntaxError) as e:
+            logger.debug(f"Operation check failed: {e}")
             pass
 
         return None
@@ -199,7 +200,8 @@ class ErrorDetectionService:
             cleaned = re.sub(r"[^0-9.\-]", "", text)
             if cleaned:
                 return float(cleaned)
-        except:
+        except (ValueError, TypeError) as e:
+            logger.debug(f"Number extraction failed: {e}")
             pass
         return None
 

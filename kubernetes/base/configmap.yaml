@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: kiro2-config
+  labels:
+    app: kiro2
+data:
+  ENVIRONMENT: "production"
+  LOG_LEVEL: "INFO"
+  LOG_FORMAT: "json"
+  CORS_ORIGINS: "https://kiro2.edu.tr,https://www.kiro2.edu.tr"
+  RATE_LIMIT_REQUESTS: "100"
+  RATE_LIMIT_PERIOD: "60"
+  CACHE_TTL: "300"
+  MAX_CONNECTIONS: "100"
+  # Turkish locale settings
+  LANG: "tr_TR.UTF-8"
+  LC_ALL: "tr_TR.UTF-8"

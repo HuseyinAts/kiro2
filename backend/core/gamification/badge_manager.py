@@ -8,7 +8,7 @@ Rozet koleksiyonu ve başarı sistemi
 - İlerleme takibi
 - Nadir rozetler
 """
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import List, Dict, Optional
 from uuid import UUID
 from sqlalchemy.orm import Session
@@ -266,7 +266,7 @@ class BadgeManager:
         user_badge = UserBadge(
             user_id=user_id,
             badge_id=badge_id,
-            earned_at=datetime.utcnow(),
+            earned_at=datetime.now(timezone.utc),
             auto_awarded=auto_awarded,
         )
 

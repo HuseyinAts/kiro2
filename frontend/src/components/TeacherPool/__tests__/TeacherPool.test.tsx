@@ -3,12 +3,14 @@
  * Task 107: Teacher Pool - Search, Profile, Booking, Appointments Tests
  */
 
-import React from 'react';
+import * as React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { TeacherPool } from '../TeacherPool';
+import { vi, Mock } from 'vitest';
 
-global.fetch = vi.fn();
+const fetchMock = vi.fn() as Mock;
+global.fetch = fetchMock;
 
 const mockTeachers = [
   {
@@ -101,7 +103,7 @@ const mockAvailability = [
 describe('TeacherPool - Rendering', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    (global.fetch as jest.Mock).mockResolvedValue({
+    fetchMock.mockResolvedValue({
       ok: true,
       json: async () => ({ teachers: mockTeachers })
     });
@@ -135,7 +137,7 @@ describe('TeacherPool - Rendering', () => {
 describe('TeacherPool - Teacher Search', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    (global.fetch as jest.Mock).mockResolvedValue({
+    fetchMock.mockResolvedValue({
       ok: true,
       json: async () => ({ teachers: mockTeachers })
     });
@@ -194,7 +196,7 @@ describe('TeacherPool - Teacher Search', () => {
 describe('TeacherPool - Search Filters', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    (global.fetch as jest.Mock).mockResolvedValue({
+    fetchMock.mockResolvedValue({
       ok: true,
       json: async () => ({ teachers: mockTeachers })
     });
@@ -287,7 +289,7 @@ describe('TeacherPool - Search Filters', () => {
 describe('TeacherPool - Teacher Profile', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    (global.fetch as jest.Mock)
+    fetchMock
       .mockResolvedValueOnce({ ok: true, json: async () => ({ teachers: mockTeachers }) })
       .mockResolvedValueOnce({ ok: true, json: async () => mockTeachers[0] })
       .mockResolvedValueOnce({ ok: true, json: async () => ({ availability: mockAvailability }) });
@@ -360,7 +362,7 @@ describe('TeacherPool - Teacher Profile', () => {
 describe('TeacherPool - Booking', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    (global.fetch as jest.Mock)
+    fetchMock
       .mockResolvedValueOnce({ ok: true, json: async () => ({ teachers: mockTeachers }) })
       .mockResolvedValueOnce({ ok: true, json: async () => mockTeachers[0] })
       .mockResolvedValueOnce({ ok: true, json: async () => ({ availability: mockAvailability }) });
@@ -420,7 +422,7 @@ describe('TeacherPool - Booking', () => {
   });
 
   it('submits booking', async () => {
-    (global.fetch as jest.Mock).mockResolvedValueOnce({
+    fetchMock.mockResolvedValueOnce({
       ok: true,
       json: async () => mockAppointments[0]
     });
@@ -449,7 +451,7 @@ describe('TeacherPool - Booking', () => {
 describe('TeacherPool - My Appointments', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    (global.fetch as jest.Mock).mockResolvedValue({
+    fetchMock.mockResolvedValue({
       ok: true,
       json: async () => ({ appointments: mockAppointments })
     });
@@ -494,7 +496,7 @@ describe('TeacherPool - My Appointments', () => {
   });
 
   it('can cancel appointment', async () => {
-    (global.fetch as jest.Mock).mockResolvedValueOnce({ ok: true, json: async () => ({}) });
+    fetchMock.mockResolvedValueOnce({ ok: true, json: async () => ({}) });
 
     render(<TeacherPool userId="student-123" viewMode="appointments" />);
     await waitFor(() => {
@@ -513,7 +515,7 @@ describe('TeacherPool - My Appointments', () => {
 
 describe('TeacherPool - Error Handling', () => {
   it('handles search error', async () => {
-    (global.fetch as jest.Mock).mockRejectedValue(new Error('Network error'));
+    fetchMock.mockRejectedValue(new Error('Network error'));
 
     render(<TeacherPool userId="student-123" />);
 
@@ -523,7 +525,7 @@ describe('TeacherPool - Error Handling', () => {
   });
 
   it('handles profile loading error', async () => {
-    (global.fetch as jest.Mock)
+    fetchMock
       .mockResolvedValueOnce({ ok: true, json: async () => ({ teachers: mockTeachers }) })
       .mockRejectedValueOnce(new Error('Failed to load'));
 
@@ -540,7 +542,7 @@ describe('TeacherPool - Error Handling', () => {
 
 describe('TeacherPool - Loading States', () => {
   it('shows loading during search', async () => {
-    (global.fetch as jest.Mock).mockImplementation(() => new Promise(() => {}));
+    fetchMock.mockImplementation(() => new Promise(() => {}));
 
     render(<TeacherPool userId="student-123" />);
 
@@ -550,7 +552,7 @@ describe('TeacherPool - Loading States', () => {
   });
 
   it('shows loading during profile fetch', async () => {
-    (global.fetch as jest.Mock)
+    fetchMock
       .mockResolvedValueOnce({ ok: true, json: async () => ({ teachers: mockTeachers }) })
       .mockImplementation(() => new Promise(() => {}));
 
@@ -565,7 +567,7 @@ describe('TeacherPool - Loading States', () => {
 
 describe('TeacherPool - Empty States', () => {
   it('shows no teachers message', async () => {
-    (global.fetch as jest.Mock).mockResolvedValue({
+    fetchMock.mockResolvedValue({
       ok: true,
       json: async () => ({ teachers: [] })
     });
@@ -578,7 +580,7 @@ describe('TeacherPool - Empty States', () => {
   });
 
   it('shows no appointments message', async () => {
-    (global.fetch as jest.Mock).mockResolvedValue({
+    fetchMock.mockResolvedValue({
       ok: true,
       json: async () => ({ appointments: [] })
     });

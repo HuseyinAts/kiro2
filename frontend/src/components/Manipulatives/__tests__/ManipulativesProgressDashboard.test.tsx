@@ -6,18 +6,19 @@
  * badges, and view switching.
  */
 
-import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/jest-dom';
+import * as React from 'react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import axios from 'axios';
 import ManipulativesProgressDashboard from '../ManipulativesProgressDashboard';
+import { vi, Mocked } from 'vitest';
 
 // ============================================================
 // Mocks
 // ============================================================
 
 vi.mock('axios');
-const mockedAxios = axios as jest.Mocked<typeof axios>;
+const mockedAxios = axios as Mocked<typeof axios>;
 
 // Mock recharts
 vi.mock('recharts', () => ({

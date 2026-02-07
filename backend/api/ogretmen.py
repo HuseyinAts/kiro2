@@ -72,7 +72,7 @@ async def ogretmen_dashboard(ogretmen: Kullanici = Depends(ogretmen_yetkisi_kont
 
     except ValueError as e:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
-    except Exception as e:
+    except Exception:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Dashboard verisi alınamadı",
@@ -120,7 +120,7 @@ async def ogrenci_listesi(
 
     except ValueError as e:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
-    except Exception as e:
+    except Exception:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Öğrenci listesi alınamadı",
@@ -155,7 +155,7 @@ async def ogrenci_performans_detay(
 
     except ValueError as e:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
-    except Exception as e:
+    except Exception:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Öğrenci performans verisi alınamadı",
@@ -191,7 +191,7 @@ async def sinif_raporu_olustur(
 
     except ValueError as e:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
-    except Exception as e:
+    except Exception:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Sınıf raporu oluşturulamadı",
@@ -229,7 +229,7 @@ async def rapor_listesi(
             "message": f"{len(ogretmen_raporlari[:limit])} rapor listelendi",
         }
 
-    except Exception as e:
+    except Exception:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Rapor listesi alınamadı",
@@ -268,7 +268,7 @@ async def rapor_detay(
 
     except HTTPException:
         raise
-    except Exception as e:
+    except Exception:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Rapor detayı alınamadı",
@@ -300,7 +300,7 @@ async def bildirim_gonder(
 
     except HTTPException:
         raise
-    except Exception as e:
+    except Exception:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Bildirim gönderme hatası",
@@ -330,7 +330,7 @@ async def bildirimler_getir(
             "message": f"{len(bildirimler)} bildirim alındı",
         }
 
-    except Exception as e:
+    except Exception:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Bildirimler alınamadı",
@@ -364,7 +364,7 @@ async def bildirim_okundu_isaretle(
 
     except HTTPException:
         raise
-    except Exception as e:
+    except Exception:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Bildirim güncellenemedi",
@@ -416,7 +416,7 @@ async def ogretmen_istatistikleri(
             "message": "İstatistikler başarıyla alındı",
         }
 
-    except Exception as e:
+    except Exception:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="İstatistikler alınamadı",

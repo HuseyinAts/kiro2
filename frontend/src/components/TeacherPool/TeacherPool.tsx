@@ -4,10 +4,11 @@
  * Main component for teacher search, profiles, booking, and management
  */
 
-import React, { useState, useEffect } from 'react';
+import * as React from 'react';
+import {  useState, useEffect  } from 'react';
 import './TeacherPool.css';
 
-const API_BASE = process.env.REACT_APP_API_URL || 'http://localhost:8000';
+const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
 // ============================================================
 // Types
@@ -100,12 +101,12 @@ interface TeacherPoolProps {
 
 export const TeacherPool: React.FC<TeacherPoolProps> = ({
   userId,
-  viewMode: initialViewMode = 'search'
+  viewMode: initialViewMode = 'search',
 }) => {
   const [viewMode, setViewMode] = useState<'search' | 'profile' | 'appointments' | 'booking'>(initialViewMode);
   const [teachers, setTeachers] = useState<Teacher[]>([]);
   const [selectedTeacher, setSelectedTeacher] = useState<Teacher | null>(null);
-  const [availability, setAvailability] = useState<AvailabilitySlot[]>([]);
+  const [_availability, setAvailability] = useState<AvailabilitySlot[]>([]);
   const [myAppointments, setMyAppointments] = useState<Appointment[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -116,7 +117,7 @@ export const TeacherPool: React.FC<TeacherPoolProps> = ({
     city: '',
     minRating: 0,
     maxHourlyRate: 0,
-    onlineOnly: false
+    onlineOnly: false,
   });
 
   // Booking form
@@ -126,7 +127,7 @@ export const TeacherPool: React.FC<TeacherPoolProps> = ({
     appointmentType: 'one_on_one' as AppointmentType,
     subject: 'mathematics' as SubjectExpertise,
     topic: '',
-    description: ''
+    description: '',
   });
 
   useEffect(() => {
@@ -143,14 +144,14 @@ export const TeacherPool: React.FC<TeacherPoolProps> = ({
 
     try {
       const params = new URLSearchParams();
-      if (searchFilters.subject) params.append('subject', searchFilters.subject);
-      if (searchFilters.city) params.append('city', searchFilters.city);
-      if (searchFilters.minRating > 0) params.append('min_rating', searchFilters.minRating.toString());
-      if (searchFilters.maxHourlyRate > 0) params.append('max_hourly_rate', searchFilters.maxHourlyRate.toString());
-      if (searchFilters.onlineOnly) params.append('online_only', 'true');
+      if (searchFilters.subject) {params.append('subject', searchFilters.subject);}
+      if (searchFilters.city) {params.append('city', searchFilters.city);}
+      if (searchFilters.minRating > 0) {params.append('min_rating', searchFilters.minRating.toString());}
+      if (searchFilters.maxHourlyRate > 0) {params.append('max_hourly_rate', searchFilters.maxHourlyRate.toString());}
+      if (searchFilters.onlineOnly) {params.append('online_only', 'true');}
 
       const response = await fetch(`${API_BASE}/api/teachers/search?${params.toString()}`);
-      if (!response.ok) throw new Error('Failed to search teachers');
+      if (!response.ok) {throw new Error('Failed to search teachers');}
 
       const data = await response.json();
       setTeachers(data.teachers);
@@ -167,7 +168,7 @@ export const TeacherPool: React.FC<TeacherPoolProps> = ({
 
     try {
       const response = await fetch(`${API_BASE}/api/teachers/profile/${teacherId}`);
-      if (!response.ok) throw new Error('Failed to fetch teacher profile');
+      if (!response.ok) {throw new Error('Failed to fetch teacher profile');}
 
       const teacher = await response.json();
       setSelectedTeacher(teacher);
@@ -193,7 +194,7 @@ export const TeacherPool: React.FC<TeacherPoolProps> = ({
 
     try {
       const response = await fetch(`${API_BASE}/api/teachers/my-appointments?student_id=${userId}`);
-      if (!response.ok) throw new Error('Failed to fetch appointments');
+      if (!response.ok) {throw new Error('Failed to fetch appointments');}
 
       const data = await response.json();
       setMyAppointments(data.appointments);
@@ -207,7 +208,7 @@ export const TeacherPool: React.FC<TeacherPoolProps> = ({
   const handleBookAppointment = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!selectedTeacher) return;
+    if (!selectedTeacher) {return;}
 
     setLoading(true);
     setError(null);
@@ -229,11 +230,11 @@ export const TeacherPool: React.FC<TeacherPoolProps> = ({
           appointment_type: bookingForm.appointmentType,
           subject: bookingForm.subject,
           topic: bookingForm.topic,
-          description: bookingForm.description
-        })
+          description: bookingForm.description,
+        }),
       });
 
-      if (!response.ok) throw new Error('Failed to create appointment');
+      if (!response.ok) {throw new Error('Failed to create appointment');}
 
       const data = await response.json();
       alert(`Randevu oluşturuldu! Fiyat: ${data.price} ${data.currency}\nÖğretmen onayı bekleniyor.`);
@@ -245,7 +246,7 @@ export const TeacherPool: React.FC<TeacherPoolProps> = ({
         appointmentType: 'one_on_one',
         subject: 'mathematics',
         topic: '',
-        description: ''
+        description: '',
       });
       setViewMode('profile');
     } catch (err) {
@@ -256,10 +257,10 @@ export const TeacherPool: React.FC<TeacherPoolProps> = ({
   };
 
   const handleCancelAppointment = async (appointmentId: string) => {
-    if (!confirm('Randevuyu iptal etmek istediğinizden emin misiniz?')) return;
+    if (!confirm('Randevuyu iptal etmek istediğinizden emin misiniz?')) {return;}
 
     const reason = prompt('İptal nedeni:');
-    if (!reason) return;
+    if (!reason) {return;}
 
     try {
       const response = await fetch(
@@ -267,11 +268,11 @@ export const TeacherPool: React.FC<TeacherPoolProps> = ({
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ cancellation_reason: reason })
-        }
+          body: JSON.stringify({ cancellation_reason: reason }),
+        },
       );
 
-      if (!response.ok) throw new Error('Failed to cancel appointment');
+      if (!response.ok) {throw new Error('Failed to cancel appointment');}
 
       alert('Randevu iptal edildi');
       fetchMyAppointments();
@@ -688,7 +689,7 @@ function getSubjectLabel(subject: SubjectExpertise): string {
     english: 'İngilizce',
     philosophy: 'Felsefe',
     literature: 'Edebiyat',
-    geometry: 'Geometri'
+    geometry: 'Geometri',
   };
   return labels[subject] || subject;
 }
@@ -699,7 +700,7 @@ function getStatusLabel(status: AppointmentStatus): string {
     confirmed: 'Onaylandı',
     cancelled: 'İptal Edildi',
     completed: 'Tamamlandı',
-    no_show: 'Katılmadı'
+    no_show: 'Katılmadı',
   };
   return labels[status] || status;
 }

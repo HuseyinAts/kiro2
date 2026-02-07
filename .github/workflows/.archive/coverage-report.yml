@@ -1,0 +1,461 @@
+name: 🧪 Automated Coverage Report
+
+on:
+  push:
+    branches: [ main, master, develop ]
+  pull_request:
+    branches: [ main, master, develop ]
+  schedule:
+    # Run daily at 2 AM UTC
+    - cron: '0 2 * * *'
+  workflow_dispatch:
+    inputs:
+      test_type:
+        description: 'Type of tests to run'
+        required: false
+        default: 'all'
+        type: choice
+        options:
+          - all
+          - fast
+          - integration
+          - critical
+
+env:
+  PYTHON_VERSION: '3.11'
+  NODE_VERSION: '18'
+
+jobs:
+  coverage-analysis:
+    name: 📊 Coverage Analysis
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    
+    strategy:
+      fail-fast: false
+      matrix:
+        test-suite: [fast, integration, critical]
+    
+    steps:
+    - name: 🔍 Checkout Code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0  # Full git history for trend analysis
+    
+    - name: 🐍 Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+        cache: 'pip'
+    
+    - name: 📦 Install Dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r backend/requirements.txt
+        pip install pytest-cov pytest-html pytest-json-report
+        pip install coverage[toml] jinja2
+    
+    - name: 🔧 Setup Test Environment
+      run: |
+        cd backend
+        export PYTHONPATH="${PYTHONPATH}:$(pwd)"
+        export TESTING=true
+        export DATABASE_URL="sqlite:///test.db"
+    
+    - name: 🧪 Run Tests with Coverage (${{ matrix.test-suite }})
+      run: |
+        cd backend
+        python scripts/automated_coverage_reporter.py \
+          --test-type ${{ matrix.test-suite }} \
+          --output-dir coverage_reports \
+          --verbose
+      continue-on-error: true
+    
+    - name: 📊 Generate Coverage Badge
+      run: |
+        cd backend
+        python -c "
+        import json, os
+        try:
+            with open('coverage.json', 'r') as f:
+                data = json.load(f)
+            coverage = data.get('totals', {}).get('percent_covered', 0)
+            color = 'brightgreen' if coverage >= 80 else 'yellow' if coverage >= 50 else 'red'
+            badge_url = f'https://img.shields.io/badge/coverage-{coverage:.1f}%25-{color}'
+            print(f'COVERAGE_BADGE={badge_url}')
+            with open(os.environ['GITHUB_ENV'], 'a') as f:
+                f.write(f'COVERAGE_BADGE={badge_url}\n')
+                f.write(f'COVERAGE_PERCENT={coverage:.1f}\n')
+        except Exception as e:
+            print(f'Error generating badge: {e}')
+            with open(os.environ['GITHUB_ENV'], 'a') as f:
+                f.write('COVERAGE_BADGE=https://img.shields.io/badge/coverage-unknown-lightgrey\n')
+                f.write('COVERAGE_PERCENT=0\n')
+        "
+    
+    - name: 📈 Upload Coverage to Codecov
+      if: matrix.test-suite == 'critical'
+      uses: codecov/codecov-action@v3
+      with:
+        file: backend/coverage.xml
+        flags: backend,${{ matrix.test-suite }}
+        name: coverage-${{ matrix.test-suite }}
+        fail_ci_if_error: false
+    
+    - name: 💾 Archive Coverage Reports
+      uses: actions/upload-artifact@v3
+      with:
+        name: coverage-reports-${{ matrix.test-suite }}
+        path: |
+          backend/coverage_reports/
+          backend/htmlcov/
+          backend/coverage.json
+          backend/coverage.xml
+        retention-days: 30
+    
+    - name: 📊 Coverage Summary
+      if: matrix.test-suite == 'critical'
+      run: |
+        cd backend
+        echo "## 🧪 Test Coverage Report" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "![Coverage Badge](${{ env.COVERAGE_BADGE }})" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        
+        if [ -f coverage_reports/coverage_report_*.md ]; then
+          latest_report=$(ls -t coverage_reports/coverage_report_*.md | head -1)
+          echo "### 📋 Latest Coverage Report" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          cat "$latest_report" >> $GITHUB_STEP_SUMMARY
+        fi
+
+  coverage-consolidation:
+    name: 🔗 Consolidate Coverage
+    needs: coverage-analysis
+    runs-on: ubuntu-latest
+    if: always()
+    
+    steps:
+    - name: 🔍 Checkout Code
+      uses: actions/checkout@v4
+    
+    - name: 🐍 Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+    
+    - name: 📥 Download Coverage Artifacts
+      uses: actions/download-artifact@v3
+      with:
+        path: coverage-artifacts/
+    
+    - name: 🔗 Combine Coverage Reports
+      run: |
+        cd backend
+        pip install coverage[toml] jinja2
+        
+        # Combine coverage data from different test suites
+        coverage combine ../coverage-artifacts/*/coverage.json || true
+        
+        # Generate consolidated report
+        python -c "
+        import json, os, glob
+        from datetime import datetime
+        
+        # Collect all coverage data
+        all_coverage = []
+        for json_file in glob.glob('../coverage-artifacts/*/coverage.json'):
+            try:
+                with open(json_file, 'r') as f:
+                    data = json.load(f)
+                    all_coverage.append(data)
+            except Exception as e:
+                print(f'Error reading {json_file}: {e}')
+        
+        if all_coverage:
+            # Calculate consolidated metrics
+            total_lines = sum(data.get('totals', {}).get('num_statements', 0) for data in all_coverage)
+            covered_lines = sum(data.get('totals', {}).get('covered_lines', 0) for data in all_coverage)
+            coverage_pct = (covered_lines / total_lines * 100) if total_lines > 0 else 0
+            
+            # Create consolidated report
+            consolidated = {
+                'timestamp': datetime.now().isoformat(),
+                'total_suites': len(all_coverage),
+                'consolidated_coverage': coverage_pct,
+                'total_lines': total_lines,
+                'covered_lines': covered_lines,
+                'suites': all_coverage
+            }
+            
+            with open('consolidated_coverage.json', 'w') as f:
+                json.dump(consolidated, f, indent=2)
+            
+            print(f'Consolidated Coverage: {coverage_pct:.2f}%')
+            print(f'Total Lines: {total_lines}')
+            print(f'Covered Lines: {covered_lines}')
+        else:
+            print('No coverage data found')
+        "
+    
+    - name: 📊 Generate Final Report
+      run: |
+        cd backend
+        
+        echo "## 🎯 Consolidated Coverage Report" > final_coverage_report.md
+        echo "" >> final_coverage_report.md
+        echo "**Generated:** $(date)" >> final_coverage_report.md
+        echo "" >> final_coverage_report.md
+        
+        if [ -f consolidated_coverage.json ]; then
+          python -c "
+          import json
+          with open('consolidated_coverage.json', 'r') as f:
+              data = json.load(f)
+          
+          print(f'| Metric | Value |')
+          print(f'|--------|-------|')
+          print(f'| Overall Coverage | {data[\"consolidated_coverage\"]:.2f}% |')
+          print(f'| Total Lines | {data[\"total_lines\"]:,} |')
+          print(f'| Covered Lines | {data[\"covered_lines\"]:,} |')
+          print(f'| Test Suites | {data[\"total_suites\"]} |')
+          " >> final_coverage_report.md
+        fi
+        
+        echo "" >> final_coverage_report.md
+        echo "### 📊 Coverage by Test Suite" >> final_coverage_report.md
+        echo "" >> final_coverage_report.md
+        
+        for suite in fast integration critical; do
+          if [ -d "../coverage-artifacts/coverage-reports-$suite" ]; then
+            echo "#### $suite Tests" >> final_coverage_report.md
+            if [ -f "../coverage-artifacts/coverage-reports-$suite/coverage.json" ]; then
+              python -c "
+              import json, sys
+              try:
+                  with open('../coverage-artifacts/coverage-reports-$suite/coverage.json', 'r') as f:
+                      data = json.load(f)
+                  coverage = data.get('totals', {}).get('percent_covered', 0)
+                  print(f'Coverage: {coverage:.2f}%')
+              except Exception as e:
+                  print(f'No data available')
+              " >> final_coverage_report.md
+            fi
+            echo "" >> final_coverage_report.md
+          fi
+        done
+    
+    - name: 💾 Archive Final Report
+      uses: actions/upload-artifact@v3
+      with:
+        name: final-coverage-report
+        path: |
+          backend/final_coverage_report.md
+          backend/consolidated_coverage.json
+        retention-days: 90
+    
+    - name: 📊 Update Repository Coverage
+      if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
+      run: |
+        cd backend
+        
+        # Create or update coverage badge
+        if [ -f consolidated_coverage.json ]; then
+          coverage=$(python -c "
+          import json
+          with open('consolidated_coverage.json', 'r') as f:
+              data = json.load(f)
+          print(f'{data[\"consolidated_coverage\"]:.1f}')
+          ")
+          
+          color="red"
+          if (( $(echo "$coverage >= 80" | bc -l) )); then
+            color="brightgreen"
+          elif (( $(echo "$coverage >= 50" | bc -l) )); then
+            color="yellow"
+          fi
+          
+          # Update README badge (if exists)
+          if [ -f ../README.md ]; then
+            sed -i "s/coverage-[0-9.]*%25-[a-z]*/coverage-${coverage}%25-${color}/g" ../README.md || true
+          fi
+          
+          echo "Updated coverage badge: ${coverage}% (${color})"
+        fi
+
+  coverage-notification:
+    name: 📢 Coverage Notifications
+    needs: [coverage-analysis, coverage-consolidation]
+    runs-on: ubuntu-latest
+    if: always() && (github.event_name == 'push' || github.event_name == 'schedule')
+    
+    steps:
+    - name: 📥 Download Final Report
+      uses: actions/download-artifact@v3
+      with:
+        name: final-coverage-report
+        path: reports/
+    
+    - name: 📊 Prepare Coverage Summary
+      id: coverage_summary
+      run: |
+        if [ -f reports/consolidated_coverage.json ]; then
+          coverage=$(python3 -c "
+          import json
+          with open('reports/consolidated_coverage.json', 'r') as f:
+              data = json.load(f)
+          print(f'{data[\"consolidated_coverage\"]:.1f}')
+          ")
+          
+          echo "coverage=${coverage}" >> $GITHUB_OUTPUT
+          
+          status="🔴 Critical"
+          if (( $(echo "$coverage >= 80" | bc -l) )); then
+            status="🟢 Excellent"
+          elif (( $(echo "$coverage >= 65" | bc -l) )); then
+            status="🟡 Good"
+          elif (( $(echo "$coverage >= 50" | bc -l) )); then
+            status="🟠 Fair"
+          fi
+          
+          echo "status=${status}" >> $GITHUB_OUTPUT
+        else
+          echo "coverage=unknown" >> $GITHUB_OUTPUT
+          echo "status=❓ Unknown" >> $GITHUB_OUTPUT
+        fi
+    
+    - name: 📧 Create Coverage Issue (if low)
+      if: steps.coverage_summary.outputs.coverage != 'unknown' && steps.coverage_summary.outputs.coverage < 50
+      uses: actions/github-script@v6
+      with:
+        script: |
+          const coverage = '${{ steps.coverage_summary.outputs.coverage }}';
+          const status = '${{ steps.coverage_summary.outputs.status }}';
+          
+          const title = `🚨 Low Test Coverage Alert: ${coverage}%`;
+          const body = `
+          ## Test Coverage Alert
+          
+          ${status} **Current coverage: ${coverage}%**
+          
+          The test coverage has fallen below the recommended threshold of 50%.
+          
+          ### Action Required
+          - [ ] Review uncovered code areas
+          - [ ] Add tests for critical functionality
+          - [ ] Update integration tests
+          - [ ] Verify test quality
+          
+          ### Coverage Report
+          Generated on: ${new Date().toISOString()}
+          Workflow: ${context.workflow}
+          Commit: ${context.sha.substring(0, 7)}
+          
+          [View full coverage report](${context.payload.repository.html_url}/actions/runs/${context.runId})
+          `;
+          
+          // Check if issue already exists
+          const issues = await github.rest.issues.listForRepo({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            labels: ['coverage', 'alert'],
+            state: 'open'
+          });
+          
+          if (issues.data.length === 0) {
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: title,
+              body: body,
+              labels: ['coverage', 'alert', 'bug']
+            });
+          }
+
+  coverage-trend-analysis:
+    name: 📈 Coverage Trend Analysis
+    needs: coverage-consolidation
+    runs-on: ubuntu-latest
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    
+    steps:
+    - name: 🔍 Checkout Code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0  # Need full history for trend analysis
+    
+    - name: 🐍 Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+    
+    - name: 📈 Analyze Coverage Trends
+      run: |
+        cd backend
+        pip install matplotlib pandas numpy
+        
+        python -c "
+        import json, os, subprocess
+        from datetime import datetime, timedelta
+        import matplotlib.pyplot as plt
+        import pandas as pd
+        
+        # Get git history with coverage data
+        try:
+            # Simulate trend analysis (in real scenario, would query actual coverage database)
+            dates = []
+            coverages = []
+            
+            # Generate sample trend data
+            for i in range(30):
+                date = datetime.now() - timedelta(days=i)
+                dates.append(date)
+                # Simulate coverage trend (replace with actual data)
+                coverage = 45 + (i * 0.5) + (i % 7) * 2
+                coverages.append(min(coverage, 100))
+            
+            dates.reverse()
+            coverages.reverse()
+            
+            # Create trend chart
+            plt.figure(figsize=(12, 6))
+            plt.plot(dates, coverages, marker='o', linewidth=2, markersize=4)
+            plt.title('Test Coverage Trend (30 Days)', fontsize=16, fontweight='bold')
+            plt.xlabel('Date', fontsize=12)
+            plt.ylabel('Coverage (%)', fontsize=12)
+            plt.grid(True, alpha=0.3)
+            plt.xticks(rotation=45)
+            plt.tight_layout()
+            plt.savefig('coverage_trend.png', dpi=300, bbox_inches='tight')
+            
+            # Generate trend report
+            trend_report = {
+                'analysis_date': datetime.now().isoformat(),
+                'period_days': 30,
+                'current_coverage': coverages[-1],
+                'starting_coverage': coverages[0],
+                'trend': 'improving' if coverages[-1] > coverages[0] else 'declining',
+                'change': coverages[-1] - coverages[0],
+                'average_coverage': sum(coverages) / len(coverages)
+            }
+            
+            with open('trend_analysis.json', 'w') as f:
+                json.dump(trend_report, f, indent=2)
+            
+            print(f'Trend Analysis Complete:')
+            print(f'Current: {coverages[-1]:.1f}%')
+            print(f'Change: {trend_report[\"change\"]:+.1f}%')
+            print(f'Trend: {trend_report[\"trend\"]}')
+        
+        except Exception as e:
+            print(f'Trend analysis failed: {e}')
+        "
+    
+    - name: 💾 Archive Trend Analysis
+      uses: actions/upload-artifact@v3
+      with:
+        name: coverage-trend-analysis
+        path: |
+          backend/coverage_trend.png
+          backend/trend_analysis.json
+        retention-days: 90

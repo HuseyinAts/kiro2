@@ -22,7 +22,7 @@ on:
           - production
           - hotfix
       skip_tests:
-        description: 'Skip Tests (Emergency Only)'
+        description: 'Skip Tests (EMERGENCY ONLY - requires approval)'
         required: false
         type: boolean
         default: false
@@ -46,7 +46,7 @@ env:
   NODE_VERSION: '20'
   
   # Kubernetes Settings
-  KUBE_NAMESPACE: teknofest-egitim
+  KUBE_NAMESPACE: kiro2
   HELM_VERSION: 'v3.13.0'
   
   # Cloud Providers
@@ -132,7 +132,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Run Trivy Security Scan
-        uses: aquasecurity/trivy-action@master
+        uses: aquasecurity/trivy-action@0.28.0
         with:
           scan-type: 'fs'
           scan-ref: '.'
@@ -151,7 +151,7 @@ jobs:
         run: |
           python -m pip install safety bandit
           safety check --json
-          bandit -r src/ -f json -o bandit-report.json
+          bandit -r backend/ -f json -o bandit-report.json
 
       - name: SAST Analysis
         uses: github/super-linter@v5
@@ -166,6 +166,29 @@ jobs:
     runs-on: ubuntu-latest
     needs: [validate, security]
     if: github.event.inputs.skip_tests != 'true'
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: kiro2_test
+        ports:
+          - 5434:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+      redis:
+        image: redis:7
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
     strategy:
       matrix:
         test-suite: [unit, integration, e2e, performance]
@@ -192,14 +215,14 @@ jobs:
       - name: Install Dependencies
         run: |
           python -m pip install --upgrade pip setuptools wheel
-          pip install -r requirements.txt
+          pip install -r backend/requirements.txt
           pip install pytest pytest-cov pytest-xdist pytest-timeout pytest-asyncio
 
       - name: Run ${{ matrix.test-suite }} Tests
         run: |
           if [[ "${{ matrix.test-suite }}" == "unit" ]]; then
             pytest tests/ -m "not integration and not e2e" \
-              --cov=src --cov-report=xml --cov-report=html \
+              --cov=backend --cov-report=xml --cov-report=html \
               -n auto --timeout=${{ env.PYTEST_TIMEOUT }}
           elif [[ "${{ matrix.test-suite }}" == "integration" ]]; then
             pytest tests/ -m integration \
@@ -308,7 +331,7 @@ jobs:
     if: needs.validate.outputs.environment == 'development'
     environment:
       name: development
-      url: https://dev.teknofest-egitim.example.com
+      url: https://dev.kiro2.example.com
     steps:
       - uses: actions/checkout@v4
 
@@ -329,7 +352,7 @@ jobs:
     if: needs.validate.outputs.environment == 'staging'
     environment:
       name: staging
-      url: https://staging.teknofest-egitim.example.com
+      url: https://staging.kiro2.example.com
     steps:
       - uses: actions/checkout@v4
 
@@ -345,7 +368,7 @@ jobs:
 
       - name: Deploy with Helm
         run: |
-          helm upgrade --install teknofest-staging ./k8s/helm \
+          helm upgrade --install kiro2-staging ./k8s/helm \
             --namespace ${{ env.KUBE_NAMESPACE }}-staging \
             --create-namespace \
             --set image.tag=${{ needs.validate.outputs.version }} \
@@ -356,9 +379,48 @@ jobs:
 
       - name: Run Staging Tests
         run: |
-          kubectl run staging-test --image=curlimages/curl:latest \
+          API_URL="http://kiro2-api.${{ env.KUBE_NAMESPACE }}-staging:8000"
+
+          # 1. Health Check
+          echo "1. Testing health endpoint..."
+          kubectl run staging-health --image=curlimages/curl:latest \
             --rm -i --restart=Never \
-            -- curl -f http://teknofest-api.${{ env.KUBE_NAMESPACE }}-staging:8000/health
+            -- curl -f "$API_URL/health" || exit 1
+
+          # 2. Database Connection Test
+          echo "2. Testing database connection..."
+          kubectl run staging-db --image=curlimages/curl:latest \
+            --rm -i --restart=Never \
+            -- curl -f "$API_URL/health/db" || exit 1
+
+          # 3. Auth Flow Test (Login)
+          echo "3. Testing authentication flow..."
+          kubectl run staging-auth --image=curlimages/curl:latest \
+            --rm -i --restart=Never -- /bin/sh -c '
+              TOKEN=$(curl -s -X POST "$API_URL/api/v1/auth/login" \
+                -H "Content-Type: application/json" \
+                -d "{\"email\":\"test@staging.kiro2.com\",\"password\":\"${{ secrets.STAGING_TEST_PASSWORD }}\"}" \
+                | jq -r ".access_token")
+
+              if [ -z "$TOKEN" ] || [ "$TOKEN" = "null" ]; then
+                echo "Auth failed: No token received"
+                exit 1
+              fi
+
+              # 4. Protected Endpoint Test
+              RESPONSE=$(curl -s -w "%{http_code}" -o /tmp/response.json \
+                -H "Authorization: Bearer $TOKEN" \
+                "$API_URL/api/v1/me")
+
+              if [ "$RESPONSE" != "200" ]; then
+                echo "Protected endpoint failed: HTTP $RESPONSE"
+                exit 1
+              fi
+
+              echo "All staging tests passed!"
+            '
+
+          echo "✅ Staging tests completed successfully"
 
   # 7. Deploy to Production (Blue-Green)
   deploy-production:
@@ -368,7 +430,7 @@ jobs:
     if: needs.validate.outputs.environment == 'production' && startsWith(github.ref, 'refs/tags/v')
     environment:
       name: production
-      url: https://teknofest-egitim.example.com
+      url: https://kiro2.example.com
     steps:
       - uses: actions/checkout@v4
 
@@ -385,13 +447,13 @@ jobs:
       - name: Blue-Green Deployment
         run: |
           # Deploy Green version
-          kubectl set image deployment/teknofest-api-green \
-            teknofest-api=${{ env.DOCKER_IMAGE }}:${{ needs.validate.outputs.version }} \
+          kubectl set image deployment/kiro2-api-green \
+            kiro2-api=${{ env.DOCKER_IMAGE }}:${{ needs.validate.outputs.version }} \
             -n ${{ env.KUBE_NAMESPACE }} \
             --record
 
           # Wait for rollout
-          kubectl rollout status deployment/teknofest-api-green \
+          kubectl rollout status deployment/kiro2-api-green \
             -n ${{ env.KUBE_NAMESPACE }} \
             --timeout=600s
 
@@ -399,7 +461,7 @@ jobs:
           ./scripts/health-check.sh production-green
 
           # Switch traffic
-          kubectl patch service teknofest-api \
+          kubectl patch service kiro2-api \
             -n ${{ env.KUBE_NAMESPACE }} \
             -p '{"spec":{"selector":{"deployment":"green"}}}'
 
@@ -407,7 +469,7 @@ jobs:
           sleep 300
 
           # If successful, scale down blue
-          kubectl scale deployment teknofest-api-blue --replicas=0 \
+          kubectl scale deployment kiro2-api-blue --replicas=0 \
             -n ${{ env.KUBE_NAMESPACE }}
 
       - name: Production Validation
@@ -418,9 +480,36 @@ jobs:
       - name: Rollback on Failure
         if: failure()
         run: |
-          echo "Rolling back production deployment"
-          kubectl apply -f deployment-backup.yaml
-          kubectl apply -f service-backup.yaml
+          echo "🔄 Rolling back production deployment..."
+
+          # Verify backup files exist
+          if [ ! -f deployment-backup.yaml ] || [ ! -f service-backup.yaml ]; then
+            echo "❌ Backup files not found, attempting rollback via kubectl"
+            kubectl rollout undo deployment/kiro2-api-green -n ${{ env.KUBE_NAMESPACE }} || true
+            exit 1
+          fi
+
+          # Switch traffic back to blue immediately
+          kubectl patch service kiro2-api \
+            -n ${{ env.KUBE_NAMESPACE }} \
+            -p '{"spec":{"selector":{"deployment":"blue"}}}' || true
+
+          # Restore from backup
+          kubectl apply -f deployment-backup.yaml || true
+          kubectl apply -f service-backup.yaml || true
+
+          # Wait for rollback completion
+          kubectl rollout status deployment/kiro2-api-blue \
+            -n ${{ env.KUBE_NAMESPACE }} \
+            --timeout=300s || true
+
+          # Verify rollback health
+          if ! curl -sf https://kiro2.example.com/health; then
+            echo "❌ Rollback health check failed!"
+            exit 1
+          fi
+
+          echo "✅ Rollback completed successfully"
 
   # 8. Post-deployment Tasks
   post-deploy:
@@ -465,7 +554,31 @@ jobs:
       - name: Rollback to Previous Version
         run: |
           echo "Rolling back ${{ github.event.inputs.environment }} environment"
-          # Add rollback logic
+
+          # Get current deployment
+          CURRENT_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
+
+          if [ -z "$CURRENT_TAG" ]; then
+            echo "❌ No tags found for rollback"
+            exit 1
+          fi
+
+          # Get previous tag
+          PREV_TAG=$(git describe --tags --abbrev=0 $CURRENT_TAG^ 2>/dev/null || echo "")
+
+          if [ -z "$PREV_TAG" ]; then
+            echo "❌ No previous version found for rollback"
+            exit 1
+          fi
+
+          echo "📦 Rolling back from $CURRENT_TAG to $PREV_TAG"
+
+          # Checkout previous version
+          git checkout $PREV_TAG
+
+          # Trigger redeploy with previous version
+          echo "✅ Rollback to $PREV_TAG prepared"
+          echo "ROLLBACK_VERSION=$PREV_TAG" >> $GITHUB_ENV
 
   # 10. Performance Monitoring
   monitor:
@@ -474,14 +587,107 @@ jobs:
     needs: [deploy-production]
     if: needs.validate.outputs.environment == 'production'
     steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Locust
+        run: pip install locust
+
       - name: Run Performance Tests
         run: |
-          echo "Running performance benchmarks"
+          echo "Running performance benchmarks against production..."
+
+          # Create locustfile if not exists
+          if [ ! -f tests/load/locustfile.py ]; then
+            mkdir -p tests/load
+            cat > tests/load/locustfile.py << 'EOF'
+          from locust import HttpUser, task, between
+
+          class APIUser(HttpUser):
+              wait_time = between(1, 3)
+
+              @task(3)
+              def health_check(self):
+                  self.client.get("/health")
+
+              @task(2)
+              def get_questions(self):
+                  self.client.get("/api/v1/questions?limit=10")
+
+              @task(1)
+              def search_questions(self):
+                  self.client.get("/api/v1/questions/search?q=matematik")
+          EOF
+          fi
+
+          # Run load test (100 users, 10 spawn rate, 60 seconds)
+          locust -f tests/load/locustfile.py \
+            --headless \
+            --users 100 \
+            --spawn-rate 10 \
+            --run-time 60s \
+            --host https://api.kiro2.example.com \
+            --csv=results/perf \
+            --html=results/perf_report.html || true
 
       - name: Check SLA Metrics
         run: |
-          echo "Checking SLA compliance"
+          echo "Checking SLA compliance..."
+
+          if [ -f results/perf_stats.csv ]; then
+            # Extract P95 latency from results
+            P95=$(awk -F',' 'NR==2 {print $7}' results/perf_stats.csv)
+
+            echo "P95 Latency: ${P95}ms"
+
+            # SLA: P95 < 500ms
+            if [ ! -z "$P95" ] && [ $(echo "$P95 > 500" | bc -l) -eq 1 ]; then
+              echo "❌ SLA VIOLATION: P95 latency (${P95}ms) exceeds 500ms threshold"
+              # Don't exit 1 - just warn
+            else
+              echo "✅ SLA OK: P95 latency within threshold"
+            fi
+
+            # Extract error rate
+            FAILURES=$(awk -F',' 'NR==2 {print $4}' results/perf_stats.csv)
+            TOTAL=$(awk -F',' 'NR==2 {print $3}' results/perf_stats.csv)
+
+            if [ ! -z "$TOTAL" ] && [ "$TOTAL" -gt 0 ]; then
+              ERROR_RATE=$(echo "scale=2; $FAILURES / $TOTAL * 100" | bc)
+              echo "Error Rate: ${ERROR_RATE}%"
+
+              if [ $(echo "$ERROR_RATE > 5" | bc -l) -eq 1 ]; then
+                echo "❌ SLA VIOLATION: Error rate (${ERROR_RATE}%) exceeds 5% threshold"
+              else
+                echo "✅ SLA OK: Error rate within threshold"
+              fi
+            fi
+          else
+            echo "⚠️ No performance results found"
+          fi
+
+      - name: Upload Performance Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: performance-report
+          path: results/
+          retention-days: 30
 
       - name: Generate Report
         run: |
-          echo "Generating performance report"
+          echo "## Performance Report" > results/REPORT.md
+          echo "" >> results/REPORT.md
+          echo "Date: $(date)" >> results/REPORT.md
+          echo "Environment: Production" >> results/REPORT.md
+          echo "" >> results/REPORT.md
+
+          if [ -f results/perf_stats.csv ]; then
+            echo "### Summary" >> results/REPORT.md
+            head -2 results/perf_stats.csv >> results/REPORT.md
+          fi
+
+          echo "✅ Performance report generated"

@@ -8,12 +8,11 @@ Seviye ve deneyim puanı yönetim sistemi
 - Milestone rozetleri
 - Seviye atlama bildirimleri
 """
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Optional, Dict
 from uuid import UUID
 from sqlalchemy.orm import Session
 from redis import Redis
-import math
 
 from models.database import User
 from core.structured_logger import get_logger
@@ -91,7 +90,7 @@ class ExperienceManager:
         milestone_level = None
 
         if level_up:
-            user.last_level_up_at = datetime.utcnow()
+            user.last_level_up_at = datetime.now(timezone.utc)
             logger.info(f"User {user_id} leveled up: {old_level} -> {new_level}")
 
             # Milestone kontrolü
@@ -164,7 +163,7 @@ class ExperienceManager:
         cache_data = {
             "xp": xp,
             "level": level,
-            "updated_at": datetime.utcnow().isoformat(),
+            "updated_at": datetime.now(timezone.utc).isoformat(),
         }
         try:
             self.redis.setex(cache_key, self.cache_ttl, str(cache_data))

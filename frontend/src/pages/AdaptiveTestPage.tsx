@@ -2,9 +2,11 @@
  * Adaptive Test Page - CAT (Computer Adaptive Testing)
  * Next-Gen feature: Real-time ability estimation with BanditCAT algorithm
  */
-import React, { useState, useEffect } from 'react';
+import * as React from 'react';
+import {  useState, useEffect  } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+
+import { apiClient } from '../services/apiClient';
 
 interface CATSession {
   session_id: string;
@@ -60,10 +62,10 @@ export const AdaptiveTestPage: React.FC = () => {
     try {
       const studentId = localStorage.getItem('userId') || 'demo-student';
 
-      const response = await axios.post('/api/v2/cat/start', {
+      const response = await apiClient.post('/api/v2/cat/start', {
         student_id: studentId,
         konu: konu || 'Matematik',
-        sinav_tipi: 'TYT'
+        sinav_tipi: 'TYT',
       });
 
       setSession({
@@ -71,7 +73,7 @@ export const AdaptiveTestPage: React.FC = () => {
         current_ability: response.data.initial_ability,
         current_sem: 1.0,
         questions_answered: 0,
-        status: 'in_progress'
+        status: 'in_progress',
       });
 
       setCurrentQuestion(response.data.first_question);
@@ -85,17 +87,17 @@ export const AdaptiveTestPage: React.FC = () => {
   };
 
   const submitAnswer = async () => {
-    if (!selectedAnswer || !session || !currentQuestion) return;
+    if (!selectedAnswer || !session || !currentQuestion) {return;}
 
     setIsLoading(true);
     const responseTime = Math.floor((Date.now() - startTime) / 1000);
 
     try {
-      const response = await axios.post('/api/v2/cat/submit', {
+      const response = await apiClient.post('/api/v2/cat/submit', {
         session_id: session.session_id,
         question_id: currentQuestion.id,
         is_correct: selectedAnswer === currentQuestion.dogru_cevap,
-        response_time_seconds: responseTime
+        response_time_seconds: responseTime,
       });
 
       if (response.data.status === 'complete') {
@@ -109,7 +111,7 @@ export const AdaptiveTestPage: React.FC = () => {
           current_ability: response.data.current_ability,
           current_sem: response.data.current_sem,
           questions_answered: response.data.questions_answered,
-          status: 'in_progress'
+          status: 'in_progress',
         });
 
         setCurrentQuestion(response.data.next_question);
@@ -125,9 +127,9 @@ export const AdaptiveTestPage: React.FC = () => {
   };
 
   const getAbilityLabel = (theta: number): string => {
-    if (theta < -1) return 'Temel Seviye';
-    if (theta < 0) return 'Orta-Alt Seviye';
-    if (theta < 1) return 'Orta-Üst Seviye';
+    if (theta < -1) {return 'Temel Seviye';}
+    if (theta < 0) {return 'Orta-Alt Seviye';}
+    if (theta < 1) {return 'Orta-Üst Seviye';}
     return 'İleri Seviye';
   };
 
@@ -170,7 +172,7 @@ export const AdaptiveTestPage: React.FC = () => {
         </div>
 
         <button onClick={() => navigate('/dashboard')}>
-          Dashboard'a Dön
+          Dashboard&apos;a Dön
         </button>
       </div>
     );
@@ -193,7 +195,7 @@ export const AdaptiveTestPage: React.FC = () => {
               <div
                 className="ability-indicator"
                 style={{
-                  left: `${((session.current_ability + 3) / 6) * 100}%`
+                  left: `${((session.current_ability + 3) / 6) * 100}%`,
                 }}
               />
               <div className="meter-labels">
@@ -241,7 +243,7 @@ export const AdaptiveTestPage: React.FC = () => {
         </div>
       )}
 
-      <style jsx>{`
+      <style>{`
         .adaptive-test-page {
           max-width: 800px;
           margin: 0 auto;

@@ -13,7 +13,6 @@ from enum import Enum
 import torch
 from transformers import (
     AutoTokenizer,
-    AutoModelForSeq2SeqLM,
     T5ForConditionalGeneration,
     BartForConditionalGeneration,
     GenerationConfig,

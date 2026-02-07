@@ -9,11 +9,9 @@ Benefits:
 - Real-time ability estimation with ±0.3 error margin
 """
 import math
-import numpy as np
 from typing import List, Dict, Tuple, Optional
 from dataclasses import dataclass, field
 from enum import Enum
-from collections import deque
 
 
 class IRTModel(Enum):

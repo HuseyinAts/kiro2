@@ -15,7 +15,7 @@ Usage:
 import asyncio
 import os
 import json
-from datetime import datetime
+from datetime import datetime, timezone
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -105,7 +105,7 @@ async def generate_5_production_questions():
             # Add metadata
             question["metadata"] = {
                 "phase": "Phase 1 - Tables",
-                "generated_at": datetime.utcnow().isoformat(),
+                "generated_at": datetime.now(timezone.utc).isoformat(),
                 "spec_name": spec["name"],
                 "table_type": spec["table_type"],
             }
@@ -134,7 +134,7 @@ async def generate_5_production_questions():
             traceback.print_exc()
 
     # Save all questions together
-    output_file = f"production_5_table_questions_{datetime.utcnow().strftime('%Y%m%d_%H%M%S')}.json"
+    output_file = f"production_5_table_questions_{datetime.now(timezone.utc).strftime('%Y%m%d_%H%M%S')}.json"
     with open(output_file, "w", encoding="utf-8") as f:
         json.dump(results, f, ensure_ascii=False, indent=2)
 

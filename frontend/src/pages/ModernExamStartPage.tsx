@@ -3,9 +3,14 @@
  * Glassmorphism ile sınav başlatma deneyimi
  */
 
-import React, { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { motion, AnimatePresence } from 'framer-motion'
+import {
+  School as SchoolIcon,
+  Timer as TimerIcon,
+  Psychology as PsychologyIcon,
+  TrendingUp as TrendingUpIcon,
+  Start as StartIcon,
+  Info as InfoIcon,
+} from '@mui/icons-material';
 import {
   Container,
   Typography,
@@ -13,28 +18,23 @@ import {
   Grid,
   Card,
   CardContent,
-  Button,
   TextField,
   MenuItem,
-  Chip,
   LinearProgress,
   Alert,
   FormControl,
   InputLabel,
   Select,
-  SelectChangeEvent
-} from '@mui/material'
-import {
-  School as SchoolIcon,
-  Timer as TimerIcon,
-  Psychology as PsychologyIcon,
-  TrendingUp as TrendingUpIcon,
-  Start as StartIcon,
-  Info as InfoIcon
-} from '@mui/icons-material'
-import { GlassCard } from '../components/ui/GlassCard'
-import { ModernButton } from '../components/ui/ModernButton'
-import { modernColors } from '../theme/modern-colors'
+  SelectChangeEvent,
+} from '@mui/material';
+import { motion } from 'framer-motion';
+import * as React from 'react';
+import {  useState  } from 'react';
+import { useNavigate } from 'react-router-dom';
+
+import { GlassCard } from '../components/ui/GlassCard';
+import { ModernButton } from '../components/ui/ModernButton';
+import { modernColors } from '../theme/modern-colors';
 
 interface ExamConfig {
   exam_type: string
@@ -45,70 +45,70 @@ interface ExamConfig {
 }
 
 export const ModernExamStartPage: React.FC = () => {
-  const navigate = useNavigate()
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const [config, setConfig] = useState<ExamConfig>({
     exam_type: 'TYT',
     subject: 'Matematik',
     difficulty: 'orta',
     question_count: 40,
-    time_limit: 80
-  })
+    time_limit: 80,
+  });
 
   const examTypes = [
     { value: 'TYT', label: 'TYT - Temel Yeterlilik Testi', icon: '📚' },
     { value: 'AYT', label: 'AYT - Alan Yeterlilik Testi', icon: '🎓' },
     { value: 'YDT', label: 'YDT - Yabancı Dil Testi', icon: '🌍' },
-    { value: 'KPSS', label: 'KPSS - Kamu Personeli Sınavı', icon: '🏛️' }
-  ]
+    { value: 'KPSS', label: 'KPSS - Kamu Personeli Sınavı', icon: '🏛️' },
+  ];
 
   const subjects = {
     TYT: ['Matematik', 'Türkçe', 'Fen Bilimleri', 'Sosyal Bilimler'],
     AYT: ['Matematik', 'Fizik', 'Kimya', 'Biyoloji', 'Tarih', 'Coğrafya', 'Edebiyat'],
     YDT: ['İngilizce', 'Almanca', 'Fransızca'],
-    KPSS: ['Genel Yetenek', 'Genel Kültür', 'Eğitim Bilimleri']
-  }
+    KPSS: ['Genel Yetenek', 'Genel Kültür', 'Eğitim Bilimleri'],
+  };
 
   const difficulties = [
     { value: 'kolay', label: 'Kolay', color: modernColors.gradients.success, icon: '😊' },
     { value: 'orta', label: 'Orta', color: modernColors.gradients.primary, icon: '🤔' },
     { value: 'zor', label: 'Zor', color: modernColors.gradients.warning, icon: '😤' },
-    { value: 'cok_zor', label: 'Çok Zor', color: modernColors.gradients.error, icon: '🔥' }
-  ]
+    { value: 'cok_zor', label: 'Çok Zor', color: modernColors.gradients.error, icon: '🔥' },
+  ];
 
   const handleChange = (field: keyof ExamConfig, value: string | number) => {
-    setConfig(prev => ({ ...prev, [field]: value }))
-    setError(null)
-  }
+    setConfig(prev => ({ ...prev, [field]: value }));
+    setError(null);
+  };
 
   const handleStartExam = async () => {
-    setLoading(true)
-    setError(null)
+    setLoading(true);
+    setError(null);
 
     try {
       const response = await fetch('/api/v1/exams/create', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${localStorage.getItem('token')}`
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
         },
-        body: JSON.stringify(config)
-      })
+        body: JSON.stringify(config),
+      });
 
-      if (!response.ok) throw new Error('Sınav oluşturulamadı')
+      if (!response.ok) {throw new Error('Sınav oluşturulamadı');}
 
-      const data = await response.json()
-      navigate(`/exam/${data.sinav_id}`)
+      const data = await response.json();
+      navigate(`/exam/${data.sinav_id}`);
     } catch (err: any) {
-      setError(err.message || 'Bir hata oluştu')
+      setError(err.message || 'Bir hata oluştu');
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
-  const selectedDifficulty = difficulties.find(d => d.value === config.difficulty)
+  const selectedDifficulty = difficulties.find(d => d.value === config.difficulty);
 
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
@@ -128,7 +128,7 @@ export const ModernExamStartPage: React.FC = () => {
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              mb: 2
+              mb: 2,
             }}
           >
             <SchoolIcon sx={{ fontSize: 32, color: 'white' }} />
@@ -142,7 +142,7 @@ export const ModernExamStartPage: React.FC = () => {
               backgroundClip: 'text',
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent',
-              mb: 1
+              mb: 1,
             }}
           >
             Yeni Sınav Başlat
@@ -229,8 +229,8 @@ export const ModernExamStartPage: React.FC = () => {
                           onClick={() => handleChange('difficulty', diff.value)}
                           onKeyDown={(e) => {
                             if (e.key === 'Enter' || e.key === ' ') {
-                              e.preventDefault()
-                              handleChange('difficulty', diff.value)
+                              e.preventDefault();
+                              handleChange('difficulty', diff.value);
                             }
                           }}
                           sx={{
@@ -240,12 +240,12 @@ export const ModernExamStartPage: React.FC = () => {
                             transition: 'all 0.3s',
                             '&:hover': {
                               transform: 'translateY(-4px)',
-                              boxShadow: 4
+                              boxShadow: 4,
                             },
                             '&:focus': {
                               outline: '2px solid rgba(59, 130, 246, 0.5)',
                               outlineOffset: '2px',
-                            }
+                            },
                           }}
                         >
                           <CardContent sx={{ textAlign: 'center', py: 2 }}>
@@ -306,7 +306,7 @@ export const ModernExamStartPage: React.FC = () => {
                       background: modernColors.gradients.ocean,
                       display: 'flex',
                       alignItems: 'center',
-                      justifyContent: 'center'
+                      justifyContent: 'center',
                     }}
                   >
                     <SchoolIcon sx={{ color: 'white' }} />
@@ -326,7 +326,7 @@ export const ModernExamStartPage: React.FC = () => {
                       background: modernColors.gradients.purple,
                       display: 'flex',
                       alignItems: 'center',
-                      justifyContent: 'center'
+                      justifyContent: 'center',
                     }}
                   >
                     <PsychologyIcon sx={{ color: 'white' }} />
@@ -346,7 +346,7 @@ export const ModernExamStartPage: React.FC = () => {
                       background: selectedDifficulty?.color,
                       display: 'flex',
                       alignItems: 'center',
-                      justifyContent: 'center'
+                      justifyContent: 'center',
                     }}
                   >
                     <TrendingUpIcon sx={{ color: 'white' }} />
@@ -368,7 +368,7 @@ export const ModernExamStartPage: React.FC = () => {
                       background: modernColors.gradients.forest,
                       display: 'flex',
                       alignItems: 'center',
-                      justifyContent: 'center'
+                      justifyContent: 'center',
                     }}
                   >
                     <TimerIcon sx={{ color: 'white' }} />
@@ -398,7 +398,7 @@ export const ModernExamStartPage: React.FC = () => {
             {/* Başlat Butonu */}
             <ModernButton
               fullWidth
-              variant="contained"
+              variant="solid"
               size="large"
               onClick={handleStartExam}
               disabled={loading}
@@ -407,7 +407,7 @@ export const ModernExamStartPage: React.FC = () => {
                 height: 56,
                 fontSize: '1.1rem',
                 fontWeight: 600,
-                background: modernColors.gradients.primary
+                background: modernColors.gradients.primary,
               }}
             >
               Sınavı Başlat
@@ -429,7 +429,7 @@ export const ModernExamStartPage: React.FC = () => {
         </Grid>
       </Grid>
     </Container>
-  )
-}
+  );
+};
 
-export default ModernExamStartPage
+export default ModernExamStartPage;

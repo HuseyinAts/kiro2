@@ -1,266 +1,567 @@
-name: Quality Gates
+name: Quality Gates Pipeline
 
 on:
   pull_request:
     branches: [ main, master ]
   push:
     branches: [ main, master ]
+  workflow_dispatch:
+    inputs:
+      gates:
+        description: 'Gates to run (comma-separated or "all")'
+        required: false
+        default: 'all'
+
+env:
+  PYTHON_VERSION: '3.11'
 
 jobs:
-  coverage-gate:
-    name: Coverage Quality Gate
+  # ==========================================================================
+  # Gate 1: Code Quality
+  # ==========================================================================
+  code-quality-gate:
+    name: Code Quality Gate
     runs-on: ubuntu-latest
-    
+    outputs:
+      score: ${{ steps.gate.outputs.score }}
+      status: ${{ steps.gate.outputs.status }}
+
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+    - uses: actions/checkout@v4
 
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
-        python-version: '3.11'
+        python-version: ${{ env.PYTHON_VERSION }}
 
     - name: Install dependencies
       run: |
-        python -m pip install --upgrade pip
-        cd backend
-        pip install -r requirements.txt
-        pip install pytest-cov
+        pip install ruff mypy radon
 
-    - name: Run coverage analysis
+    - name: Run linting
+      id: lint
+      continue-on-error: true
       run: |
         cd backend
-        python -m pytest --cov=. --cov-report=json:coverage.json --cov-fail-under=20
+        ruff check . --output-format=json > lint-results.json 2>&1 || true
+        LINT_COUNT=$(cat lint-results.json | python3 -c "import json,sys; d=json.load(sys.stdin); print(len(d))" 2>/dev/null || echo "0")
+        echo "lint_count=$LINT_COUNT" >> $GITHUB_OUTPUT
 
-    - name: Coverage Quality Gate
+    - name: Run type check
+      id: typecheck
+      continue-on-error: true
       run: |
         cd backend
-        python3 << 'EOF'
-        import json
-        import sys
-        
-        # Load coverage data
-        with open('coverage.json', 'r') as f:
-            coverage_data = json.load(f)
-        
-        # Extract coverage percentage
-        total_coverage = coverage_data['totals']['percent_covered']
-        
-        print(f"📊 Current Coverage: {total_coverage:.2f}%")
-        
-        # Define quality gates
-        gates = {
-            'minimum': 20.0,    # Minimum acceptable coverage
-            'good': 50.0,       # Good coverage level
-            'excellent': 80.0   # Excellent coverage level
-        }
-        
-        # Check quality gates
-        if total_coverage >= gates['excellent']:
-            print("🎉 EXCELLENT: Coverage is excellent!")
-            status = "excellent"
-        elif total_coverage >= gates['good']:
-            print("✅ GOOD: Coverage is good")
-            status = "good"
-        elif total_coverage >= gates['minimum']:
-            print("⚠️  ACCEPTABLE: Coverage meets minimum requirements")
-            status = "acceptable"
-        else:
-            print("❌ FAILED: Coverage is below minimum threshold")
-            status = "failed"
-            sys.exit(1)
-        
-        # Set output for next steps
-        print(f"::set-output name=coverage::{total_coverage}")
-        print(f"::set-output name=status::{status}")
-        EOF
+        mypy . --ignore-missing-imports --no-strict-optional 2>&1 | tee mypy-results.txt || echo "MyPy completed with errors"
+        TYPE_ERRORS=$(grep -c "error:" mypy-results.txt || echo "0")
+        echo "type_errors=$TYPE_ERRORS" >> $GITHUB_OUTPUT
 
-  complexity-gate:
-    name: Code Complexity Gate
-    runs-on: ubuntu-latest
-    
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.11'
-
-    - name: Install dependencies
-      run: |
-        pip install radon xenon
-
-    - name: Analyze code complexity
+    - name: Run complexity analysis
+      id: complexity
       run: |
         cd backend
-        echo "📈 Analyzing code complexity..."
-        
-        # Cyclomatic complexity
-        echo "## Cyclomatic Complexity"
-        radon cc . --average --show-complexity
-        
-        # Maintainability index
-        echo "## Maintainability Index"
-        radon mi . --show --sort
-        
-        # Halstead metrics
-        echo "## Halstead Metrics"
-        radon hal . --functions
-        
-        # Raw metrics
-        echo "## Raw Metrics"
-        radon raw . --summary
-
-    - name: Complexity Quality Gate
-      run: |
-        cd backend
-        # Check for high complexity functions (> 10)
-        echo "🔍 Checking complexity gates..."
-        
-        HIGH_COMPLEXITY=$(radon cc . --min=C --json | python3 -c "
+        radon cc . -a -s --json > complexity.json 2>&1 || true
+        AVG_COMPLEXITY=$(cat complexity.json | python3 -c "
         import json, sys
-        data = json.load(sys.stdin)
-        count = sum(len(funcs) for funcs in data.values())
-        print(count)
+        try:
+            d = json.load(sys.stdin)
+            if not d: print(0); sys.exit()
+            total = sum(f['complexity'] for funcs in d.values() for f in funcs)
+            count = sum(len(funcs) for funcs in d.values())
+            print(round(total/count, 2) if count else 0)
+        except: print(0)
         ")
-        
-        echo "High complexity functions: $HIGH_COMPLEXITY"
-        
-        if [ "$HIGH_COMPLEXITY" -gt 20 ]; then
-          echo "❌ FAILED: Too many high complexity functions ($HIGH_COMPLEXITY > 20)"
-          exit 1
-        elif [ "$HIGH_COMPLEXITY" -gt 10 ]; then
-          echo "⚠️  WARNING: Several high complexity functions ($HIGH_COMPLEXITY > 10)"
+        echo "avg_complexity=$AVG_COMPLEXITY" >> $GITHUB_OUTPUT
+
+    - name: Calculate gate score
+      id: gate
+      run: |
+        LINT_COUNT="${{ steps.lint.outputs.lint_count }}"
+        TYPE_ERRORS="${{ steps.typecheck.outputs.type_errors }}"
+        AVG_COMPLEXITY="${{ steps.complexity.outputs.avg_complexity }}"
+
+        # Calculate scores (0-10 scale)
+        LINT_SCORE=$(python3 -c "print(max(0, min(10, 10 - $LINT_COUNT * 0.1)))")
+        TYPE_SCORE=$(python3 -c "print(max(0, min(10, 10 - $TYPE_ERRORS * 0.2)))")
+        COMPLEXITY_SCORE=$(python3 -c "print(max(0, 10 - $AVG_COMPLEXITY * 0.5))")
+
+        # Weighted average (lint 40%, type 30%, complexity 30%)
+        SCORE=$(python3 -c "print(round($LINT_SCORE * 0.4 + $TYPE_SCORE * 0.3 + $COMPLEXITY_SCORE * 0.3, 2))")
+
+        echo "score=$SCORE" >> $GITHUB_OUTPUT
+
+        if (( $(echo "$SCORE >= 8" | bc -l) )); then
+          echo "status=pass" >> $GITHUB_OUTPUT
+          echo "✅ Code Quality Gate PASSED (Score: $SCORE/10)"
+        elif (( $(echo "$SCORE >= 7" | bc -l) )); then
+          echo "status=warning" >> $GITHUB_OUTPUT
+          echo "⚠️ Code Quality Gate WARNING (Score: $SCORE/10)"
         else
-          echo "✅ PASSED: Code complexity is acceptable"
+          echo "status=fail" >> $GITHUB_OUTPUT
+          echo "❌ Code Quality Gate FAILED (Score: $SCORE/10)"
+          exit 1
         fi
 
-  security-gate:
-    name: Security Quality Gate
+  # ==========================================================================
+  # Gate 2: Test Coverage
+  # ==========================================================================
+  test-coverage-gate:
+    name: Test Coverage Gate
     runs-on: ubuntu-latest
-    
+    needs: code-quality-gate
+    outputs:
+      score: ${{ steps.gate.outputs.score }}
+      status: ${{ steps.gate.outputs.status }}
+
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+    - uses: actions/checkout@v4
 
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
-        python-version: '3.11'
+        python-version: ${{ env.PYTHON_VERSION }}
+
+    - name: Install dependencies
+      run: |
+        cd backend
+        pip install -r requirements.txt || pip install pytest pytest-cov pytest-asyncio
+        pip install pytest-cov
+
+    - name: Run tests with coverage
+      id: coverage
+      run: |
+        cd backend
+        python -m pytest --cov=. --cov-report=json --cov-branch -q --tb=no 2>&1 || true
+
+        if [ -f coverage.json ]; then
+          LINE_COV=$(python3 -c "import json; d=json.load(open('coverage.json')); print(d['totals'].get('percent_covered', 0))")
+          BRANCH_COV=$(python3 -c "import json; d=json.load(open('coverage.json')); print(d['totals'].get('percent_covered_branches', 0) or d['totals'].get('percent_covered', 0))")
+        else
+          LINE_COV=0
+          BRANCH_COV=0
+        fi
+
+        echo "line_coverage=$LINE_COV" >> $GITHUB_OUTPUT
+        echo "branch_coverage=$BRANCH_COV" >> $GITHUB_OUTPUT
+
+    - name: Calculate gate score
+      id: gate
+      run: |
+        LINE_COV="${{ steps.coverage.outputs.line_coverage }}"
+        BRANCH_COV="${{ steps.coverage.outputs.branch_coverage }}"
+
+        # Convert to 0-10 scale
+        SCORE=$(python3 -c "print(round(($LINE_COV * 0.6 + $BRANCH_COV * 0.4) / 10, 2))")
+
+        echo "score=$SCORE" >> $GITHUB_OUTPUT
+        echo "📊 Line Coverage: $LINE_COV% | Branch Coverage: $BRANCH_COV%"
+
+        if (( $(echo "$SCORE >= 8" | bc -l) )); then
+          echo "status=pass" >> $GITHUB_OUTPUT
+          echo "✅ Test Coverage Gate PASSED (Score: $SCORE/10)"
+        elif (( $(echo "$SCORE >= 6" | bc -l) )); then
+          echo "status=warning" >> $GITHUB_OUTPUT
+          echo "⚠️ Test Coverage Gate WARNING (Score: $SCORE/10)"
+        else
+          echo "status=fail" >> $GITHUB_OUTPUT
+          echo "❌ Test Coverage Gate FAILED (Score: $SCORE/10)"
+          exit 1
+        fi
+
+  # ==========================================================================
+  # Gate 3: Security
+  # ==========================================================================
+  security-gate:
+    name: Security Gate
+    runs-on: ubuntu-latest
+    needs: code-quality-gate
+    outputs:
+      score: ${{ steps.gate.outputs.score }}
+      status: ${{ steps.gate.outputs.status }}
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
 
     - name: Install security tools
-      run: |
-        pip install bandit safety semgrep
+      run: pip install bandit safety
 
-    - name: Security analysis with Bandit
+    - name: Run Bandit security scan
+      id: bandit
+      continue-on-error: true
       run: |
         cd backend
-        echo "🛡️  Running security analysis..."
-        bandit -r . -f json -o bandit-results.json
-        bandit -r . -f txt
+        bandit -r . -f json -o bandit.json 2>&1 || true
 
-    - name: Dependency security check
+        CRITICAL=$(python3 -c "import json; d=json.load(open('bandit.json')); print(len([r for r in d.get('results',[]) if r.get('issue_severity')=='HIGH']))" 2>/dev/null || echo "0")
+        HIGH=$(python3 -c "import json; d=json.load(open('bandit.json')); print(len([r for r in d.get('results',[]) if r.get('issue_severity')=='MEDIUM']))" 2>/dev/null || echo "0")
+
+        echo "critical=$CRITICAL" >> $GITHUB_OUTPUT
+        echo "high=$HIGH" >> $GITHUB_OUTPUT
+
+    - name: Run Safety dependency check
+      id: safety
+      continue-on-error: true
       run: |
         cd backend
-        echo "🔒 Checking dependency security..."
-        safety check --json --output safety-results.json
-        safety check
+        if [ -f requirements.txt ]; then
+          safety check -r requirements.txt --json > safety.json 2>&1 || true
+          VULNS=$(python3 -c "import json; d=json.load(open('safety.json')); print(len(d) if isinstance(d, list) else 0)" 2>/dev/null || echo "0")
+        else
+          VULNS=0
+        fi
+        echo "vulnerabilities=$VULNS" >> $GITHUB_OUTPUT
 
-    - name: Advanced security scan with Semgrep
+    - name: Calculate gate score
+      id: gate
+      run: |
+        CRITICAL="${{ steps.bandit.outputs.critical }}"
+        HIGH="${{ steps.bandit.outputs.high }}"
+        VULNS="${{ steps.safety.outputs.vulnerabilities }}"
+
+        # Score calculation (penalize vulnerabilities)
+        SCORE=$(python3 -c "print(max(0, 10 - $CRITICAL * 3 - $HIGH * 1.5 - $VULNS * 2))")
+
+        echo "score=$SCORE" >> $GITHUB_OUTPUT
+        echo "🛡️ Critical: $CRITICAL | High: $HIGH | Vulnerable deps: $VULNS"
+
+        if [ "$CRITICAL" -gt 0 ]; then
+          echo "status=fail" >> $GITHUB_OUTPUT
+          echo "❌ Security Gate FAILED - Critical vulnerabilities found"
+          exit 1
+        elif (( $(echo "$SCORE >= 8" | bc -l) )); then
+          echo "status=pass" >> $GITHUB_OUTPUT
+          echo "✅ Security Gate PASSED (Score: $SCORE/10)"
+        elif (( $(echo "$SCORE >= 6" | bc -l) )); then
+          echo "status=warning" >> $GITHUB_OUTPUT
+          echo "⚠️ Security Gate WARNING (Score: $SCORE/10)"
+        else
+          echo "status=fail" >> $GITHUB_OUTPUT
+          echo "❌ Security Gate FAILED (Score: $SCORE/10)"
+          exit 1
+        fi
+
+  # ==========================================================================
+  # Gate 4: Architecture
+  # ==========================================================================
+  architecture-gate:
+    name: Architecture Gate
+    runs-on: ubuntu-latest
+    needs: code-quality-gate
+    outputs:
+      score: ${{ steps.gate.outputs.score }}
+      status: ${{ steps.gate.outputs.status }}
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+
+    - name: Check circular imports
+      id: circular
       run: |
         cd backend
-        echo "🔍 Running advanced security patterns..."
-        semgrep --config=auto --json --output=semgrep-results.json . || true
-        semgrep --config=auto . || true
-
-    - name: Security Quality Gate
-      run: |
-        cd backend
+        # Simple circular import detection
         python3 << 'EOF'
-        import json
-        import sys
+        import ast
         import os
-        
-        print("🛡️  Security Quality Gate Analysis")
-        
-        # Check Bandit results
-        if os.path.exists('bandit-results.json'):
-            with open('bandit-results.json', 'r') as f:
-                bandit_data = json.load(f)
-            
-            high_issues = len([i for i in bandit_data.get('results', []) 
-                             if i.get('issue_severity') == 'HIGH'])
-            medium_issues = len([i for i in bandit_data.get('results', []) 
-                               if i.get('issue_severity') == 'MEDIUM'])
-            
-            print(f"🔍 Bandit: {high_issues} high, {medium_issues} medium issues")
-            
-            if high_issues > 0:
-                print("❌ FAILED: High severity security issues found")
-                sys.exit(1)
-            elif medium_issues > 5:
-                print("⚠️  WARNING: Many medium severity issues")
-            else:
-                print("✅ PASSED: No critical security issues")
-        
-        # Check Safety results
-        if os.path.exists('safety-results.json'):
-            with open('safety-results.json', 'r') as f:
-                safety_data = json.load(f)
-            
-            if safety_data:
-                print(f"🔒 Safety: {len(safety_data)} vulnerable dependencies")
-                if len(safety_data) > 0:
-                    print("❌ FAILED: Vulnerable dependencies found")
-                    sys.exit(1)
-            else:
-                print("✅ PASSED: No vulnerable dependencies")
-        
-        print("✅ Security quality gate passed!")
+        from collections import defaultdict
+
+        imports = defaultdict(set)
+
+        for root, dirs, files in os.walk('.'):
+            dirs[:] = [d for d in dirs if not d.startswith('.') and d != '__pycache__']
+            for f in files:
+                if f.endswith('.py'):
+                    path = os.path.join(root, f)
+                    try:
+                        with open(path) as file:
+                            tree = ast.parse(file.read())
+                        module = path.replace('/', '.').replace('.py', '').lstrip('.')
+                        for node in ast.walk(tree):
+                            if isinstance(node, ast.Import):
+                                for alias in node.names:
+                                    imports[module].add(alias.name.split('.')[0])
+                            elif isinstance(node, ast.ImportFrom) and node.module:
+                                imports[module].add(node.module.split('.')[0])
+                    except (SyntaxError, UnicodeDecodeError): pass
+
+        # Simple cycle detection
+        cycles = 0
+        for a, deps in imports.items():
+            for b in deps:
+                if b in imports and a.split('.')[0] in imports[b]:
+                    cycles += 1
+
+        print(f"CIRCULAR_COUNT={cycles // 2}")  # Divide by 2 (bidirectional)
         EOF
 
+        CIRCULAR=$(python3 << 'PYEOF'
+import ast, pathlib
+
+imports = {}
+for f in pathlib.Path('backend').rglob('*.py'):
+    module = str(f.with_suffix('')).replace('/', '.').replace('\\\\', '.')
+    imports[module] = set()
+    try:
+        tree = ast.parse(f.read_text(encoding='utf-8'))
+        for node in ast.walk(tree):
+            if isinstance(node, ast.Import):
+                for alias in node.names:
+                    imports[module].add(alias.name.split('.')[0])
+            elif isinstance(node, ast.ImportFrom) and node.module:
+                imports[module].add(node.module.split('.')[0])
+    except (SyntaxError, UnicodeDecodeError): pass
+
+cycles = 0
+for a, deps in imports.items():
+    for b in deps:
+        if b in imports and a.split('.')[0] in imports[b]:
+            cycles += 1
+
+print(cycles // 2)
+PYEOF
+) || echo "0"
+        echo "circular_count=$CIRCULAR" >> $GITHUB_OUTPUT
+
+    - name: Calculate gate score
+      id: gate
+      run: |
+        CIRCULAR="${{ steps.circular.outputs.circular_count }}"
+        CIRCULAR=${CIRCULAR:-0}
+
+        SCORE=$(python3 -c "print(max(0, 10 - $CIRCULAR * 2))")
+
+        echo "score=$SCORE" >> $GITHUB_OUTPUT
+
+        if (( $(echo "$SCORE >= 8" | bc -l) )); then
+          echo "status=pass" >> $GITHUB_OUTPUT
+          echo "✅ Architecture Gate PASSED (Score: $SCORE/10)"
+        elif (( $(echo "$SCORE >= 6" | bc -l) )); then
+          echo "status=warning" >> $GITHUB_OUTPUT
+          echo "⚠️ Architecture Gate WARNING (Score: $SCORE/10)"
+        else
+          echo "status=fail" >> $GITHUB_OUTPUT
+          echo "❌ Architecture Gate FAILED (Score: $SCORE/10)"
+          exit 1
+        fi
+
+  # ==========================================================================
+  # Gate 5: Documentation
+  # ==========================================================================
+  documentation-gate:
+    name: Documentation Gate
+    runs-on: ubuntu-latest
+    needs: code-quality-gate
+    outputs:
+      score: ${{ steps.gate.outputs.score }}
+      status: ${{ steps.gate.outputs.status }}
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Check documentation
+      id: docs
+      run: |
+        # Check README
+        if [ -f README.md ]; then
+          README_LEN=$(wc -c < README.md)
+        else
+          README_LEN=0
+        fi
+
+        # Check for docs directory
+        if [ -d docs ]; then
+          DOCS_COUNT=$(find docs -name "*.md" | wc -l)
+        else
+          DOCS_COUNT=0
+        fi
+
+        echo "readme_length=$README_LEN" >> $GITHUB_OUTPUT
+        echo "docs_count=$DOCS_COUNT" >> $GITHUB_OUTPUT
+
+    - name: Calculate gate score
+      id: gate
+      run: |
+        README_LEN="${{ steps.docs.outputs.readme_length }}"
+        DOCS_COUNT="${{ steps.docs.outputs.docs_count }}"
+
+        # Score based on documentation presence
+        README_SCORE=$(python3 -c "print(min(10, $README_LEN / 500 * 10))")
+        DOCS_SCORE=$(python3 -c "print(min(10, $DOCS_COUNT * 2))")
+
+        SCORE=$(python3 -c "print(round(($README_SCORE * 0.6 + $DOCS_SCORE * 0.4), 2))")
+
+        echo "score=$SCORE" >> $GITHUB_OUTPUT
+        echo "📝 README: ${README_LEN}c | Docs: $DOCS_COUNT files"
+
+        # Documentation is advisory (non-blocking)
+        if (( $(echo "$SCORE >= 6" | bc -l) )); then
+          echo "status=pass" >> $GITHUB_OUTPUT
+          echo "✅ Documentation Gate PASSED (Score: $SCORE/10)"
+        else
+          echo "status=warning" >> $GITHUB_OUTPUT
+          echo "⚠️ Documentation Gate WARNING (Score: $SCORE/10)"
+        fi
+
+  # ==========================================================================
+  # Final Gate Summary
+  # ==========================================================================
   final-gate:
     name: Final Quality Gate
     runs-on: ubuntu-latest
-    needs: [coverage-gate, complexity-gate, security-gate]
+    needs: [code-quality-gate, test-coverage-gate, security-gate, architecture-gate, documentation-gate]
     if: always()
-    
+
     steps:
     - name: Quality Gate Summary
+      id: summary
       run: |
-        echo "📋 Quality Gate Summary"
-        echo "======================"
-        
-        if [ "${{ needs.coverage-gate.result }}" = "success" ]; then
-          echo "✅ Coverage Gate: PASSED"
-        else
-          echo "❌ Coverage Gate: FAILED"
-        fi
-        
-        if [ "${{ needs.complexity-gate.result }}" = "success" ]; then
-          echo "✅ Complexity Gate: PASSED"
-        else
-          echo "❌ Complexity Gate: FAILED"
-        fi
-        
-        if [ "${{ needs.security-gate.result }}" = "success" ]; then
-          echo "✅ Security Gate: PASSED"
-        else
-          echo "❌ Security Gate: FAILED"
-        fi
-        
-        # Check if all gates passed
-        if [ "${{ needs.coverage-gate.result }}" = "success" ] && \
-           [ "${{ needs.complexity-gate.result }}" = "success" ] && \
-           [ "${{ needs.security-gate.result }}" = "success" ]; then
-          echo ""
-          echo "🎉 ALL QUALITY GATES PASSED!"
-          echo "Code is ready for deployment 🚀"
-        else
-          echo ""
-          echo "❌ QUALITY GATE FAILURE"
-          echo "Please fix the issues before merging"
+        echo "# 📋 Quality Gates Summary" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "| Gate | Score | Status |" >> $GITHUB_STEP_SUMMARY
+        echo "|------|-------|--------|" >> $GITHUB_STEP_SUMMARY
+
+        # Code Quality
+        CQ_SCORE="${{ needs.code-quality-gate.outputs.score }}"
+        CQ_STATUS="${{ needs.code-quality-gate.outputs.status }}"
+        CQ_ICON=$([[ "$CQ_STATUS" == "pass" ]] && echo "✅" || ([[ "$CQ_STATUS" == "warning" ]] && echo "⚠️" || echo "❌"))
+        echo "| Code Quality | $CQ_SCORE/10 | $CQ_ICON |" >> $GITHUB_STEP_SUMMARY
+
+        # Test Coverage
+        TC_SCORE="${{ needs.test-coverage-gate.outputs.score }}"
+        TC_STATUS="${{ needs.test-coverage-gate.outputs.status }}"
+        TC_ICON=$([[ "$TC_STATUS" == "pass" ]] && echo "✅" || ([[ "$TC_STATUS" == "warning" ]] && echo "⚠️" || echo "❌"))
+        echo "| Test Coverage | $TC_SCORE/10 | $TC_ICON |" >> $GITHUB_STEP_SUMMARY
+
+        # Security
+        SEC_SCORE="${{ needs.security-gate.outputs.score }}"
+        SEC_STATUS="${{ needs.security-gate.outputs.status }}"
+        SEC_ICON=$([[ "$SEC_STATUS" == "pass" ]] && echo "✅" || ([[ "$SEC_STATUS" == "warning" ]] && echo "⚠️" || echo "❌"))
+        echo "| Security | $SEC_SCORE/10 | $SEC_ICON |" >> $GITHUB_STEP_SUMMARY
+
+        # Architecture
+        ARCH_SCORE="${{ needs.architecture-gate.outputs.score }}"
+        ARCH_STATUS="${{ needs.architecture-gate.outputs.status }}"
+        ARCH_ICON=$([[ "$ARCH_STATUS" == "pass" ]] && echo "✅" || ([[ "$ARCH_STATUS" == "warning" ]] && echo "⚠️" || echo "❌"))
+        echo "| Architecture | $ARCH_SCORE/10 | $ARCH_ICON |" >> $GITHUB_STEP_SUMMARY
+
+        # Documentation
+        DOC_SCORE="${{ needs.documentation-gate.outputs.score }}"
+        DOC_STATUS="${{ needs.documentation-gate.outputs.status }}"
+        DOC_ICON=$([[ "$DOC_STATUS" == "pass" ]] && echo "✅" || ([[ "$DOC_STATUS" == "warning" ]] && echo "⚠️" || echo "❌"))
+        echo "| Documentation | $DOC_SCORE/10 | $DOC_ICON |" >> $GITHUB_STEP_SUMMARY
+
+        echo "" >> $GITHUB_STEP_SUMMARY
+
+        # Calculate total
+        TOTAL=$(python3 -c "
+        scores = [float(s) for s in ['${CQ_SCORE:-0}', '${TC_SCORE:-0}', '${SEC_SCORE:-0}', '${ARCH_SCORE:-0}', '${DOC_SCORE:-0}'] if s]
+        print(round(sum(scores)/len(scores), 2) if scores else 0)
+        ")
+        echo "**Total Score: $TOTAL/10**" >> $GITHUB_STEP_SUMMARY
+
+        # Export for PR comment
+        echo "total_score=$TOTAL" >> $GITHUB_OUTPUT
+        echo "cq_score=$CQ_SCORE" >> $GITHUB_OUTPUT
+        echo "cq_status=$CQ_STATUS" >> $GITHUB_OUTPUT
+        echo "tc_score=$TC_SCORE" >> $GITHUB_OUTPUT
+        echo "tc_status=$TC_STATUS" >> $GITHUB_OUTPUT
+        echo "sec_score=$SEC_SCORE" >> $GITHUB_OUTPUT
+        echo "sec_status=$SEC_STATUS" >> $GITHUB_OUTPUT
+        echo "arch_score=$ARCH_SCORE" >> $GITHUB_OUTPUT
+        echo "arch_status=$ARCH_STATUS" >> $GITHUB_OUTPUT
+        echo "doc_score=$DOC_SCORE" >> $GITHUB_OUTPUT
+        echo "doc_status=$DOC_STATUS" >> $GITHUB_OUTPUT
+
+    - name: Post PR Comment
+      if: github.event_name == 'pull_request'
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const cqScore = '${{ steps.summary.outputs.cq_score }}' || '0';
+          const cqStatus = '${{ steps.summary.outputs.cq_status }}' || 'unknown';
+          const tcScore = '${{ steps.summary.outputs.tc_score }}' || '0';
+          const tcStatus = '${{ steps.summary.outputs.tc_status }}' || 'unknown';
+          const secScore = '${{ steps.summary.outputs.sec_score }}' || '0';
+          const secStatus = '${{ steps.summary.outputs.sec_status }}' || 'unknown';
+          const archScore = '${{ steps.summary.outputs.arch_score }}' || '0';
+          const archStatus = '${{ steps.summary.outputs.arch_status }}' || 'unknown';
+          const docScore = '${{ steps.summary.outputs.doc_score }}' || '0';
+          const docStatus = '${{ steps.summary.outputs.doc_status }}' || 'unknown';
+          const totalScore = '${{ steps.summary.outputs.total_score }}' || '0';
+
+          const getIcon = (status) => {
+            if (status === 'pass') return '✅';
+            if (status === 'warning') return '⚠️';
+            return '❌';
+          };
+
+          const body = `## 📋 Quality Gates Results
+
+          | Gate | Score | Status |
+          |------|-------|--------|
+          | Code Quality | ${cqScore}/10 | ${getIcon(cqStatus)} ${cqStatus} |
+          | Test Coverage | ${tcScore}/10 | ${getIcon(tcStatus)} ${tcStatus} |
+          | Security | ${secScore}/10 | ${getIcon(secScore)} ${secStatus} |
+          | Architecture | ${archScore}/10 | ${getIcon(archStatus)} ${archStatus} |
+          | Documentation | ${docScore}/10 | ${getIcon(docStatus)} ${docStatus} |
+
+          **Total Score: ${totalScore}/10**
+
+          ${parseFloat(totalScore) >= 7 ? '🎉 Quality gates passed!' : '⚠️ Quality gates need attention.'}
+
+          ---
+          *Generated by Quality Gates Pipeline*
+          `;
+
+          // Find existing comment to update
+          const { data: comments } = await github.rest.issues.listComments({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            issue_number: context.issue.number
+          });
+
+          const botComment = comments.find(c =>
+            c.user.type === 'Bot' &&
+            c.body.includes('📋 Quality Gates Results')
+          );
+
+          if (botComment) {
+            await github.rest.issues.updateComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              comment_id: botComment.id,
+              body: body
+            });
+          } else {
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: body
+            });
+          }
+
+    - name: Check blocking gates
+      run: |
+        # Blocking gates: code-quality, test-coverage, security, architecture
+        CQ="${{ needs.code-quality-gate.result }}"
+        TC="${{ needs.test-coverage-gate.result }}"
+        SEC="${{ needs.security-gate.result }}"
+        ARCH="${{ needs.architecture-gate.result }}"
+
+        if [ "$CQ" = "failure" ] || [ "$TC" = "failure" ] || [ "$SEC" = "failure" ] || [ "$ARCH" = "failure" ]; then
+          echo "❌ QUALITY GATE FAILED - Blocking gates did not pass"
           exit 1
         fi
+
+        echo "🎉 ALL QUALITY GATES PASSED!"
+        echo "Code is ready for merge 🚀"

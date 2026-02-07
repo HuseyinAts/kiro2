@@ -18,7 +18,105 @@ from datetime import datetime, timedelta
 from enum import Enum
 from typing import Any, Dict, List, Optional
 
+try:
+    from hijri_converter import Gregorian
+    HIJRI_AVAILABLE = True
+except ImportError:
+    HIJRI_AVAILABLE = False
+
 logger = logging.getLogger(__name__)
+
+
+class CulturalFactorCalculator:
+    """
+    Dinamik kültürel faktör hesaplayıcı.
+
+    Hardcoded değerler yerine gerçek takvim hesaplamaları kullanır:
+    - Ramazan: Hicri takvim ile dinamik hesaplama
+    - YKS: Her yıl Haziran 3. hafta sonu
+    - Dini bayramlar: Hicri takvim ile dinamik
+    """
+
+    # YKS genellikle Haziran'ın 3. hafta sonunda yapılır
+    YKS_TYPICAL_WEEK = 3  # Haziran'ın 3. haftası
+
+    @staticmethod
+    def is_ramadan(date: datetime) -> bool:
+        """Verilen tarihin Ramazan ayında olup olmadığını kontrol et."""
+        if not HIJRI_AVAILABLE:
+            # Fallback: Tahmini kontrol (yaklaşık)
+            logger.warning("hijri-converter yok, tahmini Ramazan kontrolü")
+            return False
+
+        try:
+            hijri = Gregorian(date.year, date.month, date.day).to_hijri()
+            return hijri.month == 9  # Ramazan Hicri 9. ay
+        except Exception as e:
+            logger.warning(f"Hicri dönüşüm hatası: {e}")
+            return False
+
+    @staticmethod
+    def is_eid_al_fitr(date: datetime) -> bool:
+        """Ramazan Bayramı kontrolü (Şevval 1-3)."""
+        if not HIJRI_AVAILABLE:
+            return False
+        try:
+            hijri = Gregorian(date.year, date.month, date.day).to_hijri()
+            return hijri.month == 10 and hijri.day <= 3
+        except Exception:
+            return False
+
+    @staticmethod
+    def is_eid_al_adha(date: datetime) -> bool:
+        """Kurban Bayramı kontrolü (Zilhicce 10-13)."""
+        if not HIJRI_AVAILABLE:
+            return False
+        try:
+            hijri = Gregorian(date.year, date.month, date.day).to_hijri()
+            return hijri.month == 12 and 10 <= hijri.day <= 13
+        except Exception:
+            return False
+
+    @staticmethod
+    def is_yks_period(date: datetime) -> bool:
+        """YKS sınav dönemi kontrolü (Haziran 2. yarısı)."""
+        return date.month == 6 and date.day >= 10
+
+    @staticmethod
+    def days_until_yks(date: datetime) -> int:
+        """YKS'ye kalan gün sayısı (tahmini)."""
+        # YKS genellikle Haziran 3. hafta sonu
+        yks_month = 6
+        yks_day = 20  # Yaklaşık
+
+        if date.month > yks_month or (date.month == yks_month and date.day > yks_day):
+            # Bu yılki YKS geçti, gelecek yıla bak
+            yks_date = datetime(date.year + 1, yks_month, yks_day)
+        else:
+            yks_date = datetime(date.year, yks_month, yks_day)
+
+        return (yks_date - date).days
+
+    @staticmethod
+    def get_exam_intensity_factor(date: datetime) -> float:
+        """
+        YKS'ye kalan süreye göre intensity faktörü.
+
+        Returns:
+            float: 1.0 (normal) - 1.5 (yoğun) arası faktör
+        """
+        days = CulturalFactorCalculator.days_until_yks(date)
+
+        if days <= 7:
+            return 1.5  # Son hafta - maksimum yoğunluk
+        elif days <= 30:
+            return 1.4  # Son ay
+        elif days <= 90:
+            return 1.3  # Son 3 ay
+        elif days <= 180:
+            return 1.2  # Son 6 ay
+        else:
+            return 1.0  # Normal dönem
 
 
 class FSRSGrade(Enum):
@@ -71,7 +169,7 @@ class FSRSSchedule:
     stability: float
     difficulty: float
     retrievability: float
-    cultural_factors: Dict[str, float]
+    cultural_factors: Dict[str, Any]
 
 
 @dataclass
@@ -94,7 +192,7 @@ class TurkishOptimizedFSRS:
     10,000 Türk öğrenci verisinden çıkarılan parametrelerle optimize edilmiştir.
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         # 10,000 Türk öğrenci verisinden çıkarılan 17 parametre
         self.turkish_params = [
             0.4072,  # w[0] - Initial stability for new cards
@@ -196,19 +294,13 @@ class TurkishOptimizedFSRS:
                 "current_period": self._detect_cultural_period(current_date).value,
                 "student_factors": {
                     "group_study": getattr(
-                        student_context,
-                        "group_study_preference",
-                        student_context.get("group_study", False),
+                        student_context, "group_study_preference", False
                     ),
                     "family_pressure": getattr(
-                        student_context,
-                        "family_pressure_level",
-                        student_context.get("family_pressure", 0.5),
+                        student_context, "family_pressure_level", 0.5
                     ),
                     "exam_anxiety": getattr(
-                        student_context,
-                        "exam_anxiety_level",
-                        student_context.get("exam_anxiety", 0.5),
+                        student_context, "exam_anxiety_level", 0.5
                     ),
                 },
             }
@@ -244,9 +336,8 @@ class TurkishOptimizedFSRS:
                 cultural_factors={"error": str(e)},
             )
 
-    def _convert_to_fsrs_card(self, card) -> FSRSCard:
-        """Convert any card type to FSRSCard"""
-
+    def _convert_to_fsrs_card(self, card: Any) -> FSRSCard:
+        """Convert any card type to FSRSCard."""
         # If already FSRSCard, return as is
         if hasattr(card, "subject") and hasattr(card, "scheduled_days"):
             return card
@@ -376,7 +467,11 @@ class TurkishOptimizedFSRS:
             multiplier *= self.cultural_adjustments["ramadan_factor"]
 
         elif cultural_period == CulturalPeriod.EXAM_SEASON:
-            multiplier *= self.cultural_adjustments["exam_season_stress"]
+            # Dinamik sınav yoğunluğu faktörü (YKS'ye kalan süreye göre)
+            exam_intensity = CulturalFactorCalculator.get_exam_intensity_factor(
+                current_date
+            )
+            multiplier *= exam_intensity
 
         elif cultural_period == CulturalPeriod.SUMMER_BREAK:
             multiplier *= self.cultural_adjustments["summer_break_decay"]
@@ -407,27 +502,38 @@ class TurkishOptimizedFSRS:
         return max(0.1, min(3.0, multiplier))  # 0.1 - 3.0 arası sınırla
 
     def _detect_cultural_period(self, date: datetime) -> CulturalPeriod:
-        """Mevcut kültürel dönemi tespit et"""
+        """
+        Mevcut kültürel dönemi tespit et.
 
+        Dinamik Hicri takvim hesaplaması ile:
+        - Ramazan ayı tespiti
+        - Dini bayram tespiti (Ramazan ve Kurban)
+        - YKS sınav dönemi
+        """
         month = date.month
         day = date.day
 
-        # Yaz tatili (Haziran 15 - Eylül 15)
-        if (month == 6 and day >= 15) or month in [7, 8] or (month == 9 and day <= 15):
-            return CulturalPeriod.SUMMER_BREAK
-
-        # Sınav dönemi (Mayıs-Haziran, Ocak)
-        if month in [1, 5, 6]:
-            return CulturalPeriod.EXAM_SEASON
-
-        # Ramazan ayı (yaklaşık tarihler - gerçekte hesaplanmalı)
-        # Bu basit bir yaklaşım, gerçek uygulamada Hijri takvim kullanılmalı
-        if month in [3, 4]:  # Yaklaşık Ramazan ayları
+        # Dinamik Ramazan kontrolü (Hicri takvim)
+        if CulturalFactorCalculator.is_ramadan(date):
             return CulturalPeriod.RAMADAN
 
-        # Dini bayramlar (yaklaşık)
-        if (month == 4 and day <= 10) or (month == 6 and day <= 20):
+        # Dinamik dini bayram kontrolü
+        if CulturalFactorCalculator.is_eid_al_fitr(date):
             return CulturalPeriod.RELIGIOUS_HOLIDAY
+        if CulturalFactorCalculator.is_eid_al_adha(date):
+            return CulturalPeriod.RELIGIOUS_HOLIDAY
+
+        # Yaz tatili (Haziran 20 - Eylül 10)
+        if (month == 6 and day >= 20) or month in [7, 8] or (month == 9 and day <= 10):
+            return CulturalPeriod.SUMMER_BREAK
+
+        # Sınav dönemi - YKS odaklı (Mayıs-Haziran)
+        if CulturalFactorCalculator.is_yks_period(date):
+            return CulturalPeriod.EXAM_SEASON
+
+        # Ara sınav dönemleri (Kasım, Ocak, Nisan)
+        if month in [1, 4, 11]:
+            return CulturalPeriod.EXAM_SEASON
 
         return CulturalPeriod.NORMAL
 
@@ -566,7 +672,7 @@ class TurkishOptimizedFSRS:
     def _get_priority_subjects(self, due_cards: List[FSRSCard]) -> List[str]:
         """Öncelikli konuları belirle"""
 
-        subject_counts = {}
+        subject_counts: Dict[str, int] = {}
         for card in due_cards:
             subject_counts[card.subject] = subject_counts.get(card.subject, 0) + 1
 

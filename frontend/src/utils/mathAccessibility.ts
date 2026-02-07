@@ -172,7 +172,7 @@ export const generateMathDescription = (latex: string): string => {
  */
 export const generateGeometryDescription = (
   shape: string,
-  properties: Record<string, string | number>
+  properties: Record<string, string | number>,
 ): string => {
   const descriptions: Record<string, string> = {
     triangle: 'Üçgen',
@@ -210,7 +210,7 @@ export const generateGraphDescription = (
   type: 'linear' | 'quadratic' | 'exponential' | 'logarithmic' | 'sinusoidal',
   trend: 'increasing' | 'decreasing' | 'constant' | 'oscillating',
   domain?: string,
-  range?: string
+  range?: string,
 ): string => {
   const typeDescriptions = {
     linear: 'Doğrusal fonksiyon',
@@ -246,17 +246,17 @@ export const generateDataTable = (
   xValues: number[],
   yValues: number[],
   xLabel: string = 'x',
-  yLabel: string = 'y'
+  yLabel: string = 'y',
 ): string => {
-  let table = `<table role="table" aria-label="Grafik veri tablosu">\n`;
+  let table = '<table role="table" aria-label="Grafik veri tablosu">\n';
   table += `  <thead>\n    <tr>\n      <th>${xLabel}</th>\n      <th>${yLabel}</th>\n    </tr>\n  </thead>\n`;
-  table += `  <tbody>\n`;
+  table += '  <tbody>\n';
 
   for (let i = 0; i < Math.min(xValues.length, yValues.length); i++) {
     table += `    <tr>\n      <td>${xValues[i]}</td>\n      <td>${yValues[i]}</td>\n    </tr>\n`;
   }
 
-  table += `  </tbody>\n</table>`;
+  table += '  </tbody>\n</table>';
   return table;
 };
 

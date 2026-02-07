@@ -1,0 +1,69 @@
+{
+  "name": "kiro2-taxonomy",
+  "version": "1.0.0",
+  "description": "Multi-taxonomy classification tools for YKS question analysis (SOLO, Marzano, Webb DOK, CLT)",
+  "author": "KIRO2 Team",
+  "license": "MIT",
+
+  "main": "index.py",
+
+  "tools": [
+    {
+      "name": "solo-classifier",
+      "description": "Classify question using SOLO taxonomy (5 levels)",
+      "handler": "tools/solo_classifier.py"
+    },
+    {
+      "name": "marzano-classifier",
+      "description": "Classify question using Marzano taxonomy (3 systems x 4 levels)",
+      "handler": "tools/marzano_classifier.py"
+    },
+    {
+      "name": "webb-dok-classifier",
+      "description": "Classify question using Webb DOK (4 levels)",
+      "handler": "tools/webb_dok_classifier.py"
+    },
+    {
+      "name": "clt-calculator",
+      "description": "Calculate Cognitive Load Theory metrics",
+      "handler": "tools/clt_calculator.py"
+    },
+    {
+      "name": "cross-taxonomy-validator",
+      "description": "Cross-validate Bloom/SOLO/Marzano/Webb DOK consistency",
+      "handler": "tools/cross_taxonomy_validator.py"
+    }
+  ],
+
+  "hooks": [
+    {
+      "event": "PostToolUse",
+      "matcher": "Edit|Write",
+      "handler": "hooks/taxonomy_validation.py",
+      "description": "Validate taxonomy consistency after question edit"
+    }
+  ],
+
+  "dependencies": {
+    "unicodedata": "stdlib"
+  },
+
+  "config": {
+    "solo": {
+      "levels": 5,
+      "primary_subjects": ["turkce", "edebiyat", "tarih", "felsefe", "cografya"]
+    },
+    "marzano": {
+      "systems": 3,
+      "cognitive_levels": 4,
+      "primary_subjects": ["matematik", "fizik", "kimya", "biyoloji"]
+    },
+    "webb_dok": {
+      "levels": 4
+    },
+    "consistency": {
+      "min_score": 0.7,
+      "alert_threshold": 0.5
+    }
+  }
+}

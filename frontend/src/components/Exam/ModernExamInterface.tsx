@@ -3,30 +3,29 @@
  * Enhanced exam interface with accessibility and mobile optimization
  */
 
-import React, { useState, useCallback, useMemo, memo } from 'react'
-import { 
-  Box, 
-  Typography, 
-  LinearProgress,
-  Paper,
-  Chip,
-  IconButton,
-  useTheme,
-  Fade,
-  Grid,
-  Divider
-} from '@mui/material'
-import { 
+import {
   Timer as TimerIcon,
   NavigateNext as NextIcon,
   NavigateBefore as PrevIcon,
   Flag as FlagIcon,
-  CheckCircle as CheckIcon
-} from '@mui/icons-material'
+  CheckCircle as CheckIcon,
+} from '@mui/icons-material';
+import {
+  Box,
+  Typography,
+  LinearProgress,
+  Paper,
+  Chip,
+  IconButton,
+  Fade,
+  Grid,
+} from '@mui/material';
+import * as React from 'react';
+import {  useCallback, memo  } from 'react';
 
-import { ModernCard } from '../ui/modern-card'
-import { ModernButton } from '../ui/modern-button'
-import { useResponsive } from '../../utils/responsive'
+import { useResponsive } from '../../utils/responsive';
+import { ModernButton } from '../ui/modern-button';
+import { ModernCard } from '../ui/modern-card';
 
 interface Question {
   id: number
@@ -55,17 +54,17 @@ interface ModernExamInterfaceProps {
 }
 
 // Question navigation component
-const QuestionNavigation = memo(({ 
-  questions, 
-  currentIndex, 
-  onQuestionClick 
+const QuestionNavigation = memo(({
+  questions,
+  currentIndex,
+  onQuestionClick,
 }: {
   questions: Question[]
   currentIndex: number
   onQuestionClick: (index: number) => void
 }) => {
-  const { isMobile } = useResponsive()
-  
+  const { isMobile } = useResponsive();
+
   return (
     <ModernCard title="Soru Haritası" size="small">
       <Grid container spacing={1}>
@@ -79,26 +78,26 @@ const QuestionNavigation = memo(({
               }
               color={
                 index === currentIndex ? 'primary' :
-                question.selectedAnswer !== undefined ? 'success' : 'inherit'
+                question.selectedAnswer !== undefined ? 'success' : 'secondary'
               }
               onClick={() => onQuestionClick(index)}
               sx={{
                 minWidth: 40,
                 height: 40,
-                position: 'relative'
+                position: 'relative',
               }}
               touchOptimized
             >
               {index + 1}
               {question.flagged && (
-                <FlagIcon 
-                  sx={{ 
+                <FlagIcon
+                  sx={{
                     position: 'absolute',
                     top: -4,
                     right: -4,
                     fontSize: 12,
-                    color: 'warning.main'
-                  }} 
+                    color: 'warning.main',
+                  }}
                 />
               )}
             </ModernButton>
@@ -106,29 +105,27 @@ const QuestionNavigation = memo(({
         ))}
       </Grid>
     </ModernCard>
-  )
-})
+  );
+});
 
-QuestionNavigation.displayName = 'QuestionNavigation'
+QuestionNavigation.displayName = 'QuestionNavigation';
 
 // Timer component
 const ExamTimer = memo(({ timeRemaining }: { timeRemaining: number }) => {
-  const theme = useTheme()
-  
   const formatTime = useCallback((seconds: number) => {
-    const hrs = Math.floor(seconds / 3600)
-    const mins = Math.floor((seconds % 3600) / 60)
-    const secs = seconds % 60
-    
+    const hrs = Math.floor(seconds / 3600);
+    const mins = Math.floor((seconds % 3600) / 60);
+    const secs = seconds % 60;
+
     if (hrs > 0) {
-      return `${hrs}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`
+      return `${hrs}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
     }
-    return `${mins}:${secs.toString().padStart(2, '0')}`
-  }, [])
-  
-  const isLowTime = timeRemaining < 300 // 5 minutes
-  const isCriticalTime = timeRemaining < 60 // 1 minute
-  
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+  }, []);
+
+  const isLowTime = timeRemaining < 300; // 5 minutes
+  const isCriticalTime = timeRemaining < 60; // 1 minute
+
   return (
     <Paper
       elevation={0}
@@ -139,7 +136,7 @@ const ExamTimer = memo(({ timeRemaining }: { timeRemaining: number }) => {
         gap: 2,
         backgroundColor: isCriticalTime ? 'error.main' : isLowTime ? 'warning.main' : 'primary.main',
         color: 'white',
-        borderRadius: 2
+        borderRadius: 2,
       }}
     >
       <TimerIcon />
@@ -152,30 +149,30 @@ const ExamTimer = memo(({ timeRemaining }: { timeRemaining: number }) => {
         </Typography>
       </Box>
     </Paper>
-  )
-})
+  );
+});
 
-ExamTimer.displayName = 'ExamTimer'
+ExamTimer.displayName = 'ExamTimer';
 
 // Question display component
-const QuestionDisplay = memo(({ 
-  question, 
-  onAnswerSelect, 
-  onFlag 
+const QuestionDisplay = memo(({
+  question,
+  onAnswerSelect,
+  onFlag,
 }: {
   question: Question
   onAnswerSelect: (answerIndex: number) => void
   onFlag: () => void
 }) => {
-  const { isMobile } = useResponsive()
-  
+  const { isMobile } = useResponsive();
+
   return (
     <ModernCard size="large">
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 3 }}>
         <Typography variant="h6" component="h2" sx={{ flex: 1, fontWeight: 600 }}>
           {question.text}
         </Typography>
-        
+
         <IconButton
           onClick={onFlag}
           color={question.flagged ? 'warning' : 'default'}
@@ -185,12 +182,12 @@ const QuestionDisplay = memo(({
           <FlagIcon />
         </IconButton>
       </Box>
-      
+
       <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
         {question.options.map((option, index) => {
-          const isSelected = question.selectedAnswer === index
-          const optionLetter = String.fromCharCode(65 + index) // A, B, C, D
-          
+          const isSelected = question.selectedAnswer === index;
+          const optionLetter = String.fromCharCode(65 + index); // A, B, C, D
+
           return (
             <Paper
               key={index}
@@ -209,16 +206,16 @@ const QuestionDisplay = memo(({
                 alignItems: 'center',
                 '&:hover': {
                   borderColor: 'primary.main',
-                  backgroundColor: isSelected ? 'primary.100' : 'primary.50'
-                }
+                  backgroundColor: isSelected ? 'primary.100' : 'primary.50',
+                },
               }}
               role="button"
               tabIndex={0}
               aria-pressed={isSelected}
               onKeyDown={(e) => {
                 if (e.key === 'Enter' || e.key === ' ') {
-                  e.preventDefault()
-                  onAnswerSelect(index)
+                  e.preventDefault();
+                  onAnswerSelect(index);
                 }
               }}
             >
@@ -234,39 +231,39 @@ const QuestionDisplay = memo(({
                   justifyContent: 'center',
                   fontWeight: 600,
                   mr: 2,
-                  flexShrink: 0
+                  flexShrink: 0,
                 }}
               >
                 {optionLetter}
               </Box>
-              
-              <Typography 
-                variant="body1" 
-                sx={{ 
+
+              <Typography
+                variant="body1"
+                sx={{
                   flex: 1,
-                  color: isSelected ? 'primary.main' : 'text.primary'
+                  color: isSelected ? 'primary.main' : 'text.primary',
                 }}
               >
                 {option}
               </Typography>
-              
+
               {isSelected && (
-                <CheckIcon 
-                  sx={{ 
+                <CheckIcon
+                  sx={{
                     color: 'primary.main',
-                    ml: 1
-                  }} 
+                    ml: 1,
+                  }}
                 />
               )}
             </Paper>
-          )
+          );
         })}
       </Box>
     </ModernCard>
-  )
-})
+  );
+});
 
-QuestionDisplay.displayName = 'QuestionDisplay'
+QuestionDisplay.displayName = 'QuestionDisplay';
 
 export const ModernExamInterface: React.FC<ModernExamInterfaceProps> = memo(({
   examData,
@@ -275,32 +272,31 @@ export const ModernExamInterface: React.FC<ModernExamInterfaceProps> = memo(({
   onSubmit,
   onNext,
   onPrevious,
-  currentQuestionIndex
+  currentQuestionIndex,
 }) => {
-  const { isMobile } = useResponsive()
-  const theme = useTheme()
-  
-  const currentQuestion = examData.questions[currentQuestionIndex]
-  const totalQuestions = examData.questions.length
-  const progress = ((currentQuestionIndex + 1) / totalQuestions) * 100
-  const answeredCount = examData.questions.filter(q => q.selectedAnswer !== undefined).length
-  
+  const { isMobile: _isMobile } = useResponsive();
+
+  const currentQuestion = examData.questions[currentQuestionIndex];
+  const totalQuestions = examData.questions.length;
+  const progress = ((currentQuestionIndex + 1) / totalQuestions) * 100;
+  const answeredCount = examData.questions.filter(q => q.selectedAnswer !== undefined).length;
+
   const handleAnswerSelect = useCallback((answerIndex: number) => {
-    onAnswerSelect(currentQuestion.id, answerIndex)
-  }, [currentQuestion.id, onAnswerSelect])
-  
+    onAnswerSelect(currentQuestion.id, answerIndex);
+  }, [currentQuestion.id, onAnswerSelect]);
+
   const handleQuestionFlag = useCallback(() => {
-    onQuestionFlag(currentQuestion.id)
-  }, [currentQuestion.id, onQuestionFlag])
-  
+    onQuestionFlag(currentQuestion.id);
+  }, [currentQuestion.id, onQuestionFlag]);
+
   const handleQuestionClick = useCallback((index: number) => {
     // Navigation logic would be implemented by parent
-    console.log('Navigate to question:', index)
-  }, [])
-  
-  const isFirstQuestion = currentQuestionIndex === 0
-  const isLastQuestion = currentQuestionIndex === totalQuestions - 1
-  
+    console.log('Navigate to question:', index);
+  }, []);
+
+  const isFirstQuestion = currentQuestionIndex === 0;
+  const isLastQuestion = currentQuestionIndex === totalQuestions - 1;
+
   return (
     <Box sx={{ minHeight: '100vh', backgroundColor: 'background.default' }}>
       {/* Header */}
@@ -313,38 +309,38 @@ export const ModernExamInterface: React.FC<ModernExamInterfaceProps> = memo(({
           borderColor: 'divider',
           position: 'sticky',
           top: 0,
-          zIndex: 1
+          zIndex: 1,
         }}
       >
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
           <Typography variant="h6" sx={{ fontWeight: 600 }}>
             {examData.title}
           </Typography>
-          
+
           <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
-            <Chip 
-              label={`${answeredCount}/${totalQuestions} Cevaplandı`} 
-              color="primary" 
+            <Chip
+              label={`${answeredCount}/${totalQuestions} Cevaplandı`}
+              color="primary"
               size="small"
             />
             <ExamTimer timeRemaining={examData.timeRemaining} />
           </Box>
         </Box>
-        
-        <LinearProgress 
-          variant="determinate" 
-          value={progress} 
-          sx={{ 
-            height: 6, 
+
+        <LinearProgress
+          variant="determinate"
+          value={progress}
+          sx={{
+            height: 6,
             borderRadius: 3,
             backgroundColor: 'grey.200',
             '& .MuiLinearProgress-bar': {
-              borderRadius: 3
-            }
-          }} 
+              borderRadius: 3,
+            },
+          }}
         />
       </Paper>
-      
+
       {/* Main Content */}
       <Box sx={{ p: 2 }}>
         <Grid container spacing={3}>
@@ -357,13 +353,13 @@ export const ModernExamInterface: React.FC<ModernExamInterfaceProps> = memo(({
                     Soru {currentQuestionIndex + 1} / {totalQuestions}
                   </Typography>
                 </Box>
-                
+
                 <QuestionDisplay
                   question={currentQuestion}
                   onAnswerSelect={handleAnswerSelect}
                   onFlag={handleQuestionFlag}
                 />
-                
+
                 {/* Navigation Buttons */}
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 3 }}>
                   <ModernButton
@@ -375,7 +371,7 @@ export const ModernExamInterface: React.FC<ModernExamInterfaceProps> = memo(({
                   >
                     Önceki
                   </ModernButton>
-                  
+
                   {isLastQuestion ? (
                     <ModernButton
                       variant="contained"
@@ -399,7 +395,7 @@ export const ModernExamInterface: React.FC<ModernExamInterfaceProps> = memo(({
               </Box>
             </Fade>
           </Grid>
-          
+
           {/* Sidebar */}
           <Grid item xs={12} md={4}>
             <QuestionNavigation
@@ -411,9 +407,9 @@ export const ModernExamInterface: React.FC<ModernExamInterfaceProps> = memo(({
         </Grid>
       </Box>
     </Box>
-  )
-})
+  );
+});
 
-ModernExamInterface.displayName = 'ModernExamInterface'
+ModernExamInterface.displayName = 'ModernExamInterface';
 
-export default ModernExamInterface
+export default ModernExamInterface;

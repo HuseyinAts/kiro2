@@ -1,5 +1,11 @@
 import { apiClient } from './apiClient';
 
+// Type-safe axios error handler
+function getAxiosErrorMessage(error: unknown, defaultMessage: string): string {
+  const axiosError = error as { response?: { data?: { detail?: string } }; message?: string };
+  return axiosError.response?.data?.detail || axiosError.message || defaultMessage;
+}
+
 export interface ChildRelationCreate {
   child_email: string;
   relation_type: string;
@@ -97,11 +103,8 @@ class ParentService {
     try {
       const response = await apiClient.post(`${this.baseUrl}/children`, data);
       return response.data;
-    } catch (error: any) {
-      throw new Error(
-        error.response?.data?.detail || 
-        'Çocuk ilişkisi oluşturulurken hata oluştu'
-      );
+    } catch (error: unknown) {
+      throw new Error(getAxiosErrorMessage(error, 'Çocuk ilişkisi oluşturulurken hata oluştu'));
     }
   }
 
@@ -112,11 +115,8 @@ class ParentService {
     try {
       const response = await apiClient.get(`${this.baseUrl}/children`);
       return response.data;
-    } catch (error: any) {
-      throw new Error(
-        error.response?.data?.detail || 
-        'Çocuk listesi alınırken hata oluştu'
-      );
+    } catch (error: unknown) {
+      throw new Error(getAxiosErrorMessage(error, 'Çocuk listesi alınırken hata oluştu'));
     }
   }
 
@@ -127,11 +127,8 @@ class ParentService {
     try {
       const response = await apiClient.get(`${this.baseUrl}/children/${childId}/performance`);
       return response.data;
-    } catch (error: any) {
-      throw new Error(
-        error.response?.data?.detail || 
-        'Performans verileri alınırken hata oluştu'
-      );
+    } catch (error: unknown) {
+      throw new Error(getAxiosErrorMessage(error, 'Performans verileri alınırken hata oluştu'));
     }
   }
 
@@ -142,11 +139,8 @@ class ParentService {
     try {
       const response = await apiClient.get(`${this.baseUrl}/children/${childId}/weekly-report`);
       return response.data;
-    } catch (error: any) {
-      throw new Error(
-        error.response?.data?.detail || 
-        'Haftalık rapor alınırken hata oluştu'
-      );
+    } catch (error: unknown) {
+      throw new Error(getAxiosErrorMessage(error, 'Haftalık rapor alınırken hata oluştu'));
     }
   }
 
@@ -156,14 +150,11 @@ class ParentService {
   async getNotifications(unreadOnly: boolean = false): Promise<ParentNotification[]> {
     try {
       const response = await apiClient.get(`${this.baseUrl}/notifications`, {
-        params: { unread_only: unreadOnly }
+        params: { unread_only: unreadOnly },
       });
       return response.data;
-    } catch (error: any) {
-      throw new Error(
-        error.response?.data?.detail || 
-        'Bildirimler alınırken hata oluştu'
-      );
+    } catch (error: unknown) {
+      throw new Error(getAxiosErrorMessage(error, 'Bildirimler alınırken hata oluştu'));
     }
   }
 
@@ -173,11 +164,8 @@ class ParentService {
   async markNotificationAsRead(notificationId: number): Promise<void> {
     try {
       await apiClient.put(`${this.baseUrl}/notifications/${notificationId}/read`);
-    } catch (error: any) {
-      throw new Error(
-        error.response?.data?.detail || 
-        'Bildirim güncellenirken hata oluştu'
-      );
+    } catch (error: unknown) {
+      throw new Error(getAxiosErrorMessage(error, 'Bildirim güncellenirken hata oluştu'));
     }
   }
 
@@ -188,11 +176,8 @@ class ParentService {
     try {
       const response = await apiClient.get(`${this.baseUrl}/dashboard`);
       return response.data;
-    } catch (error: any) {
-      throw new Error(
-        error.response?.data?.detail || 
-        'Dashboard verileri alınırken hata oluştu'
-      );
+    } catch (error: unknown) {
+      throw new Error(getAxiosErrorMessage(error, 'Dashboard verileri alınırken hata oluştu'));
     }
   }
 
@@ -202,13 +187,10 @@ class ParentService {
   async approveParentRelation(relationId: number, approved: boolean): Promise<void> {
     try {
       await apiClient.put(`${this.baseUrl}/approval/${relationId}`, null, {
-        params: { approved }
+        params: { approved },
       });
-    } catch (error: any) {
-      throw new Error(
-        error.response?.data?.detail || 
-        'Onay işlemi sırasında hata oluştu'
-      );
+    } catch (error: unknown) {
+      throw new Error(getAxiosErrorMessage(error, 'Onay işlemi sırasında hata oluştu'));
     }
   }
 
@@ -219,14 +201,11 @@ class ParentService {
     try {
       const response = await apiClient.get(
         `${this.baseUrl}/children/${childId}/weekly-report/pdf`,
-        { responseType: 'blob' }
+        { responseType: 'blob' },
       );
       return response.data;
-    } catch (error: any) {
-      throw new Error(
-        error.response?.data?.detail || 
-        'Rapor indirilirken hata oluştu'
-      );
+    } catch (error: unknown) {
+      throw new Error(getAxiosErrorMessage(error, 'Rapor indirilirken hata oluştu'));
     }
   }
 
@@ -237,14 +216,11 @@ class ParentService {
     try {
       const response = await apiClient.get(
         `${this.baseUrl}/children/${childId}/performance/pdf`,
-        { responseType: 'blob' }
+        { responseType: 'blob' },
       );
       return response.data;
-    } catch (error: any) {
-      throw new Error(
-        error.response?.data?.detail || 
-        'Rapor indirilirken hata oluştu'
-      );
+    } catch (error: unknown) {
+      throw new Error(getAxiosErrorMessage(error, 'Rapor indirilirken hata oluştu'));
     }
   }
 
@@ -260,11 +236,8 @@ class ParentService {
     try {
       const response = await apiClient.post(`${this.baseUrl}/notifications`, data);
       return response.data;
-    } catch (error: any) {
-      throw new Error(
-        error.response?.data?.detail || 
-        'Bildirim oluşturulurken hata oluştu'
-      );
+    } catch (error: unknown) {
+      throw new Error(getAxiosErrorMessage(error, 'Bildirim oluşturulurken hata oluştu'));
     }
   }
 
@@ -279,11 +252,8 @@ class ParentService {
   }): Promise<void> {
     try {
       await apiClient.post(`${this.baseUrl}/notifications/bulk`, data);
-    } catch (error: any) {
-      throw new Error(
-        error.response?.data?.detail || 
-        'Toplu bildirim gönderilirken hata oluştu'
-      );
+    } catch (error: unknown) {
+      throw new Error(getAxiosErrorMessage(error, 'Toplu bildirim gönderilirken hata oluştu'));
     }
   }
 
@@ -298,11 +268,8 @@ class ParentService {
     try {
       const response = await apiClient.get(`${this.baseUrl}/children/${childId}/approval-status`);
       return response.data;
-    } catch (error: any) {
-      throw new Error(
-        error.response?.data?.detail || 
-        'Onay durumu kontrol edilirken hata oluştu'
-      );
+    } catch (error: unknown) {
+      throw new Error(getAxiosErrorMessage(error, 'Onay durumu kontrol edilirken hata oluştu'));
     }
   }
 }

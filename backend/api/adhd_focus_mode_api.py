@@ -19,7 +19,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from pydantic import BaseModel, Field
 from typing import Optional, List
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from core.database import get_db
 from core.dependencies import get_current_user
 from models.database import User
@@ -213,14 +213,14 @@ async def activate_focus_mode(
         logger.info(f"Activating focus mode for user {current_user.id}")
 
         # Create focus session
-        session_id = f"focus_{current_user.id}_{datetime.utcnow().timestamp()}"
+        session_id = f"focus_{current_user.id}_{datetime.now(timezone.utc).timestamp()}"
 
         # In production, save to database
         session_data = {
             "session_id": session_id,
             "user_id": str(current_user.id),
             "task_id": request.task_id,
-            "started_at": datetime.utcnow().isoformat(),
+            "started_at": datetime.now(timezone.utc).isoformat(),
             "settings": request.settings.dict(),
             "active": True,
         }
@@ -272,7 +272,7 @@ async def deactivate_focus_mode(
             "task_id": request.task_id,
             "elapsed_seconds": request.elapsed_seconds,
             "duration_minutes": round(duration_minutes, 2),
-            "ended_at": datetime.utcnow().isoformat(),
+            "ended_at": datetime.now(timezone.utc).isoformat(),
         }
 
         logger.info(f"Focus mode deactivated. Duration: {duration_minutes:.2f} minutes")
@@ -342,8 +342,8 @@ async def get_focus_sessions(
                 session_id=f"focus_{current_user.id}_1",
                 user_id=str(current_user.id),
                 task_id="task1",
-                started_at=datetime.utcnow() - timedelta(hours=2),
-                ended_at=datetime.utcnow() - timedelta(hours=1, minutes=30),
+                started_at=datetime.now(timezone.utc) - timedelta(hours=2),
+                ended_at=datetime.now(timezone.utc) - timedelta(hours=1, minutes=30),
                 elapsed_seconds=1800,
                 settings={"minimal_ui": True, "hide_notifications": True},
                 completed=True,
@@ -352,8 +352,8 @@ async def get_focus_sessions(
                 session_id=f"focus_{current_user.id}_2",
                 user_id=str(current_user.id),
                 task_id="task2",
-                started_at=datetime.utcnow() - timedelta(days=1),
-                ended_at=datetime.utcnow() - timedelta(days=1, minutes=-45),
+                started_at=datetime.now(timezone.utc) - timedelta(days=1),
+                ended_at=datetime.now(timezone.utc) - timedelta(days=1, minutes=-45),
                 elapsed_seconds=2700,
                 settings={"minimal_ui": True, "fullscreen_mode": True},
                 completed=True,
@@ -382,7 +382,7 @@ async def focus_mode_health_check():
     return {
         "status": "healthy",
         "service": "ADHD Focus Mode API",
-        "timestamp": datetime.utcnow().isoformat(),
+        "timestamp": datetime.now(timezone.utc).isoformat(),
         "features": {
             "single_task_view": True,
             "minimal_interface": True,

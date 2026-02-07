@@ -1,0 +1,75 @@
+# Code Quality Evaluation - KIRO2
+# Boris Cherny Standards Compliance
+
+name: code-quality
+description: Evaluate code quality against KIRO2 standards
+version: "1.0.0"
+
+triggers:
+  - on: commit
+  - on: pr
+  - on: manual
+
+checks:
+  # Linting
+  - name: python-lint
+    description: Python code linting with ruff
+    command: cd backend && ruff check . --select=E,F,W,S,B
+    threshold: 0
+    weight: 20
+
+  - name: typescript-lint
+    description: TypeScript linting with ESLint
+    command: cd frontend && npm run lint
+    threshold: 0
+    weight: 20
+
+  # Type Checking
+  - name: python-types
+    description: Python type checking with mypy
+    command: cd backend && mypy --ignore-missing-imports main.py
+    threshold: 0
+    weight: 15
+
+  - name: typescript-types
+    description: TypeScript type checking
+    command: cd frontend && npx tsc --noEmit
+    threshold: 0
+    weight: 15
+
+  # Complexity
+  - name: cyclomatic-complexity
+    description: Check cyclomatic complexity
+    command: |
+      cd backend && radon cc . -a -nc
+    threshold: 10
+    weight: 10
+
+  # Documentation
+  - name: docstring-coverage
+    description: Check docstring coverage
+    command: |
+      cd backend && interrogate -v --fail-under 50 .
+    threshold: 50
+    weight: 10
+
+  # Security
+  - name: security-scan
+    description: Security vulnerability scan
+    command: |
+      cd backend && bandit -r . -ll
+    threshold: 0
+    weight: 10
+
+scoring:
+  pass: 80
+  warn: 60
+  fail: 0
+
+report:
+  format: markdown
+  output: .claude/evals/results/code-quality-{date}.md
+
+notifications:
+  on_fail: true
+  on_warn: true

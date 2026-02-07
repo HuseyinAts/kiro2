@@ -11,15 +11,14 @@ Bu modül adaptif test sistemine performans analitikleri ekler:
 """
 
 import logging
-import math
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, Optional
 import numpy as np
 from scipy import stats
 from scipy.optimize import curve_fit
 
-from services.adaptive_test_engine import TestSession, StudentKnowledgeState
+from services.adaptive_test_engine import TestSession
 
 logger = logging.getLogger(__name__)
 

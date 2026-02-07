@@ -11,7 +11,7 @@ import hashlib
 import json
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, Optional, Any, List
+from typing import Dict, Optional, Any
 from enum import Enum
 from dataclasses import dataclass, asdict
 
@@ -339,7 +339,7 @@ Provider: {provider or 'All'}
 
             if "improvements" in stats:
                 imp = stats["improvements"]
-                report += f"\n  IMPROVEMENTS vs BASE:\n"
+                report += "\n  IMPROVEMENTS vs BASE:\n"
                 report += f"    Token Savings: {imp['token_savings_percentage']:.1f}%\n"
                 report += f"    Cost Savings: {imp['cost_savings_percentage']:.1f}%\n"
                 report += f"    Quality Change: {imp['quality_score_change']:+.1f}\n"

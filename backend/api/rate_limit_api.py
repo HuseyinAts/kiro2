@@ -8,7 +8,6 @@ Endpoints for:
 - Rate limit statistics
 """
 from typing import Optional
-from datetime import datetime
 
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 from pydantic import BaseModel
@@ -17,7 +16,6 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from core.database import get_db
 from core.jwt_auth import get_current_user, require_admin
 from core.advanced_rate_limiter import (
-    AdvancedRateLimiter,
     UserTier,
     get_rate_limiter
 )

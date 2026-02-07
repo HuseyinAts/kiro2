@@ -8,9 +8,7 @@ import logging
 from typing import Dict, List, Optional, Any
 from datetime import datetime, timedelta
 from pydantic import BaseModel, Field
-import asyncio
 from enum import Enum
-import hashlib
 import secrets
 
 logger = logging.getLogger(__name__)
@@ -171,7 +169,7 @@ class KhanAcademyClient:
         query_string = "&".join([f"{k}={v}" for k, v in params.items()])
         auth_url = f"https://www.khanacademy.org/api/auth2/authorize?{query_string}"
 
-        logger.info(f"[KHAN OAUTH] Generated authorization URL")
+        logger.info("[KHAN OAUTH] Generated authorization URL")
         return auth_url
 
     async def exchange_code_for_token(
@@ -209,7 +207,7 @@ class KhanAcademyClient:
             # Update headers
             self.client.headers.update({"Authorization": f"Bearer {self.access_token}"})
 
-            logger.info(f"[KHAN OAUTH] Successfully obtained access token")
+            logger.info("[KHAN OAUTH] Successfully obtained access token")
 
             return {
                 "access_token": self.access_token,
@@ -252,7 +250,7 @@ class KhanAcademyClient:
 
             self.client.headers.update({"Authorization": f"Bearer {self.access_token}"})
 
-            logger.info(f"[KHAN OAUTH] Access token refreshed")
+            logger.info("[KHAN OAUTH] Access token refreshed")
 
             return {
                 "access_token": self.access_token,
@@ -358,7 +356,8 @@ class KhanAcademyClient:
         if item.get("date_added"):
             try:
                 created_at = datetime.fromisoformat(item["date_added"])
-            except:
+            except (ValueError, TypeError) as e:
+                logger.debug(f"Failed to parse date_added: {e}")
                 pass
 
         return KhanContentMetadata(
@@ -432,19 +431,22 @@ class KhanAcademyClient:
         if item.get("started"):
             try:
                 started_at = datetime.fromisoformat(item["started"])
-            except:
+            except (ValueError, TypeError) as e:
+                logger.debug(f"Failed to parse started timestamp: {e}")
                 pass
 
         if item.get("completed"):
             try:
                 completed_at = datetime.fromisoformat(item["completed"])
-            except:
+            except (ValueError, TypeError) as e:
+                logger.debug(f"Failed to parse completed timestamp: {e}")
                 pass
 
         if item.get("last_done"):
             try:
                 last_accessed = datetime.fromisoformat(item["last_done"])
-            except:
+            except (ValueError, TypeError) as e:
+                logger.debug(f"Failed to parse last_done timestamp: {e}")
                 pass
 
         return KhanUserProgress(
@@ -528,7 +530,8 @@ class KhanAcademyClient:
         if badge.get("date_earned"):
             try:
                 earned_at = datetime.fromisoformat(badge["date_earned"])
-            except:
+            except (ValueError, TypeError) as e:
+                logger.debug(f"Failed to parse date_earned: {e}")
                 pass
 
         # Generate verification URL

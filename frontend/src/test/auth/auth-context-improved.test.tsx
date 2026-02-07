@@ -3,7 +3,7 @@
  * Comprehensive testing for authentication context and hooks
  */
 
-import React from 'react'
+import * as React from 'react'
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest'
 import { BrowserRouter } from 'react-router-dom'
@@ -23,9 +23,9 @@ const mockAuthContext = {
   resetPassword: vi.fn()
 }
 
-// Mock useAuth hook
-vi.mock('../../hooks/useAuth', () => ({
-  useAuth: () => mockAuthContext,
+// Mock authStore (KIRO2 uses authStore, not useAuth hook)
+vi.mock('../../stores/authStore', () => ({
+  useAuthStore: () => mockAuthContext,
   AuthProvider: ({ children }: { children: React.ReactNode }) => (
     <div data-testid="auth-provider">{children}</div>
   )

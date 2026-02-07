@@ -5,7 +5,8 @@
  * pause/seek detection, and completion tracking
  */
 
-import React, { useRef, useEffect, useState, useCallback } from 'react';
+import * as React from 'react';
+import {  useRef, useEffect, useState  } from 'react';
 import './VideoPlayerWithAnalytics.css';
 
 export interface VideoPlayerProps {
@@ -40,7 +41,7 @@ export const VideoPlayerWithAnalytics: React.FC<VideoPlayerProps> = ({
   onProgress,
   onComplete,
   onNote,
-  onBookmark
+  onBookmark,
 }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [session, setSession] = useState<WatchSession | null>(null);
@@ -57,9 +58,10 @@ export const VideoPlayerWithAnalytics: React.FC<VideoPlayerProps> = ({
   // Start watch session
   useEffect(() => {
     const startSession = async () => {
-      if (!videoRef.current) return;
-
-      const actualDuration = videoDuration || videoRef.current.duration;
+      // If videoDuration prop is provided, don't require videoRef
+      // This enables testing and server-side rendering scenarios
+      const actualDuration = videoDuration || videoRef.current?.duration;
+      if (!actualDuration) {return;}
 
       try {
         const response = await fetch(`${API_BASE}/sessions/start?user_id=${userId}`, {
@@ -68,15 +70,15 @@ export const VideoPlayerWithAnalytics: React.FC<VideoPlayerProps> = ({
           body: JSON.stringify({
             video_id: videoId,
             video_source: videoSource,
-            video_duration: Math.floor(actualDuration)
-          })
+            video_duration: Math.floor(actualDuration),
+          }),
         });
 
         const data = await response.json();
         setSession({
           sessionId: data.session_id,
           videoId: data.video_id,
-          startedAt: data.started_at
+          startedAt: data.started_at,
         });
       } catch (error) {
         console.error('Failed to start watch session:', error);
@@ -116,7 +118,7 @@ export const VideoPlayerWithAnalytics: React.FC<VideoPlayerProps> = ({
   }, [isPlaying, session]);
 
   const updateProgress = async () => {
-    if (!session || !videoRef.current) return;
+    if (!session || !videoRef.current) {return;}
 
     const currentPosition = Math.floor(videoRef.current.currentTime);
 
@@ -128,9 +130,9 @@ export const VideoPlayerWithAnalytics: React.FC<VideoPlayerProps> = ({
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             current_position: currentPosition,
-            playback_speed: playbackSpeed
-          })
-        }
+            playback_speed: playbackSpeed,
+          }),
+        },
       );
 
       const data = await response.json();
@@ -149,12 +151,12 @@ export const VideoPlayerWithAnalytics: React.FC<VideoPlayerProps> = ({
   };
 
   const endSession = async (finalPosition: number) => {
-    if (!session) return;
+    if (!session) {return;}
 
     try {
       await fetch(
         `${API_BASE}/sessions/${session.sessionId}/end?final_position=${finalPosition}`,
-        { method: 'POST' }
+        { method: 'POST' },
       );
     } catch (error) {
       console.error('Failed to end session:', error);
@@ -162,11 +164,11 @@ export const VideoPlayerWithAnalytics: React.FC<VideoPlayerProps> = ({
   };
 
   const recordPause = async () => {
-    if (!session) return;
+    if (!session) {return;}
 
     try {
       await fetch(`${API_BASE}/sessions/${session.sessionId}/pause`, {
-        method: 'POST'
+        method: 'POST',
       });
     } catch (error) {
       console.error('Failed to record pause:', error);
@@ -174,7 +176,7 @@ export const VideoPlayerWithAnalytics: React.FC<VideoPlayerProps> = ({
   };
 
   const recordSeek = async (fromPosition: number, toPosition: number) => {
-    if (!session) return;
+    if (!session) {return;}
 
     try {
       await fetch(`${API_BASE}/sessions/${session.sessionId}/seek`, {
@@ -182,8 +184,8 @@ export const VideoPlayerWithAnalytics: React.FC<VideoPlayerProps> = ({
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           from_position: Math.floor(fromPosition),
-          to_position: Math.floor(toPosition)
-        })
+          to_position: Math.floor(toPosition),
+        }),
       });
     } catch (error) {
       console.error('Failed to record seek:', error);
@@ -202,7 +204,7 @@ export const VideoPlayerWithAnalytics: React.FC<VideoPlayerProps> = ({
   };
 
   const handleTimeUpdate = () => {
-    if (!videoRef.current) return;
+    if (!videoRef.current) {return;}
     setCurrentTime(videoRef.current.currentTime);
   };
 
@@ -213,7 +215,7 @@ export const VideoPlayerWithAnalytics: React.FC<VideoPlayerProps> = ({
   };
 
   const handleSeeked = () => {
-    if (!videoRef.current) return;
+    if (!videoRef.current) {return;}
 
     const currentPosition = videoRef.current.currentTime;
     recordSeek(lastPositionRef.current, currentPosition);
@@ -289,7 +291,7 @@ export const VideoPlayerWithAnalytics: React.FC<VideoPlayerProps> = ({
                 </span>
 
                 <span className="completion-badge">
-                  {completionPercentage.toFixed(0)}%
+                  {(completionPercentage ?? 0).toFixed(0)}%
                 </span>
               </div>
 

@@ -257,7 +257,7 @@ def generate_subject_specific_prompt_addition(config: SubjectConfig) -> str:
 
     # Add misconception-based distractors
     if config.common_misconceptions:
-        prompt += f"""
+        prompt += """
 <distractor_strategy>
   <instruction>Aşağıdaki yaygın öğrenci yanılgılarını çeldiriciler için kullanın</instruction>
   <common_misconceptions>

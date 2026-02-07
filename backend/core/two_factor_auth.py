@@ -7,6 +7,8 @@ Implements TOTP-based 2FA with:
 - QR code generation for authenticator apps
 - TOTP validation
 - Backup codes generation and validation
+- MFA recovery with email verification (REQ-1.5)
+- Admin MFA enforcement (REQ-1.6)
 """
 import pyotp
 import qrcode
@@ -14,24 +16,99 @@ import io
 import base64
 import secrets
 import hashlib
+from dataclasses import dataclass
 from typing import Dict, List, Tuple, Optional
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
 from core.structured_logger import get_logger
 
 logger = get_logger(__name__)
 
 
+# ==================== DATA CLASSES ====================
+
+
+@dataclass
+class RecoveryToken:
+    """
+    MFA kurtarma token'i.
+
+    MFA'yi kaybeden kullanicilar icin email dogrulama ile
+    kurtarma islemi baslatir. REQ-1.5 uyumlu.
+
+    Attributes:
+        token: Benzersiz kurtarma token'i
+        user_email: Kullanici email adresi
+        email_code: Email ile gonderilen dogrulama kodu
+        created_at: Olusturulma zamani
+        expires_at: Son gecerlilik zamani
+        verified: Email dogrulandi mi?
+        used: Kullanildi mi?
+    """
+    token: str
+    user_email: str
+    email_code: str
+    created_at: datetime
+    expires_at: datetime
+    verified: bool = False
+    used: bool = False
+
+
+@dataclass
+class EnforcementResult:
+    """
+    MFA zorunluluk kontrol sonucu.
+
+    Admin kullanicilari icin MFA zorunluluk durumunu raporlar.
+    REQ-1.6 uyumlu.
+
+    Attributes:
+        mfa_required: MFA zorunlu mu?
+        mfa_enabled: MFA aktif mi?
+        enforcement_needed: Zorunluluk uygulanmali mi?
+        role: Kullanici rolu
+        message: Aciklama mesaji
+    """
+    mfa_required: bool
+    mfa_enabled: bool
+    enforcement_needed: bool
+    role: str
+    message: str
+
+
+# ==================== CONSTANTS ====================
+
+
+# MFA zorunlu roller (REQ-1.6)
+MFA_REQUIRED_ROLES: set[str] = {"admin", "super_admin"}
+
+# Recovery token suresi (REQ-1.5: 15 dakika)
+RECOVERY_TOKEN_EXPIRY_MINUTES: int = 15
+
+
 class TwoFactorAuthService:
-    """Two-Factor Authentication service using TOTP"""
-    
+    """
+    Two-Factor Authentication service using TOTP.
+
+    Ozellikler:
+    - TOTP token uretimi ve dogrulama
+    - QR kod olusturma
+    - Backup kod yonetimi
+    - MFA kurtarma (REQ-1.5)
+    - Admin zorunlulugu (REQ-1.6)
+    """
+
     def __init__(self, app_name: str = "Kiro2 Egitim"):
         """
-        Initialize 2FA service
-        
+        2FA servisini baslatir.
+
         Args:
-            app_name: Application name shown in authenticator app
+            app_name: Authenticator uygulamasinda gorunecek uygulama adi
         """
         self.app_name = app_name
+        # Recovery token deposu (production'da Redis kullanilmali)
+        self._recovery_tokens: Dict[str, RecoveryToken] = {}
+        # Kullanici MFA durumu deposu (production'da veritabaninda saklanmali)
+        self._user_mfa_status: Dict[int, bool] = {}
         
     def generate_secret(self) -> str:
         """
@@ -200,24 +277,24 @@ class TwoFactorAuthService:
         return hashlib.sha256(code.encode()).hexdigest()
     
     def verify_backup_code(
-        self, 
-        code: str, 
+        self,
+        code: str,
         hashed_codes: List[str]
     ) -> Tuple[bool, Optional[str]]:
         """
         Verify backup code against hashed codes
-        
+
         Args:
             code: Plain backup code entered by user
             hashed_codes: List of hashed backup codes
-            
+
         Returns:
             (is_valid, matched_hash)
-            
+
         Note: Backup codes are single-use. Remove matched hash after use.
         """
         code_hash = self.hash_backup_code(code)
-        
+
         if code_hash in hashed_codes:
             logger.info("2fa_backup_code_verified")
             return True, code_hash
@@ -225,8 +302,377 @@ class TwoFactorAuthService:
             logger.warning("2fa_backup_code_invalid")
             return False, None
 
+    # ==================== MFA RECOVERY (REQ-1.5) ====================
+
+    def _generate_email_code(self) -> str:
+        """
+        Email dogrulama kodu olusturur.
+
+        Returns:
+            6 haneli numerik kod
+        """
+        return ''.join([str(secrets.randbelow(10)) for _ in range(6)])
+
+    def initiate_mfa_recovery(self, user_email: str) -> RecoveryToken:
+        """
+        MFA kurtarma islemini baslatir.
+
+        Kullaniciya email ile dogrulama kodu gonderilmesi icin
+        kurtarma token'i olusturur. Token 15 dakika gecerlidir (REQ-1.5).
+
+        Args:
+            user_email: Kullanicinin kayitli email adresi
+
+        Returns:
+            RecoveryToken: Kurtarma token bilgileri
+
+        Example:
+            >>> recovery = two_factor_auth.initiate_mfa_recovery("user@example.com")
+            >>> # Email ile recovery.email_code gonder
+            >>> print(f"Token: {recovery.token}")
+
+        Note:
+            email_code degeri kullaniciya email ile gonderilmeli,
+            asla client'a dogrudan verilmemelidir.
+        """
+        now = datetime.now(timezone.utc)
+
+        # Benzersiz token olustur
+        token = secrets.token_urlsafe(32)
+
+        # Email dogrulama kodu olustur
+        email_code = self._generate_email_code()
+
+        # Recovery token olustur
+        recovery = RecoveryToken(
+            token=token,
+            user_email=user_email,
+            email_code=email_code,
+            created_at=now,
+            expires_at=now + timedelta(minutes=RECOVERY_TOKEN_EXPIRY_MINUTES),
+            verified=False,
+            used=False,
+        )
+
+        # Token'i depola
+        self._recovery_tokens[token] = recovery
+
+        logger.info(
+            "mfa_recovery_initiated",
+            email=user_email,
+            token_prefix=token[:8],
+            expires_in_minutes=RECOVERY_TOKEN_EXPIRY_MINUTES,
+        )
+
+        return recovery
+
+    def verify_mfa_recovery(self, token: str, email_code: str) -> bool:
+        """
+        MFA kurtarma email kodunu dogrular.
+
+        Kullanicinin girdigi email dogrulama kodunu kontrol eder.
+
+        Args:
+            token: Kurtarma token'i
+            email_code: Kullanicinin girdigi 6 haneli kod
+
+        Returns:
+            bool: Dogrulama basarili mi?
+
+        Example:
+            >>> is_valid = two_factor_auth.verify_mfa_recovery(
+            ...     token="abc123...",
+            ...     email_code="123456"
+            ... )
+            >>> if is_valid:
+            ...     two_factor_auth.complete_mfa_recovery(token)
+        """
+        recovery = self._recovery_tokens.get(token)
+
+        # Token bulunamadi
+        if not recovery:
+            logger.warning("mfa_recovery_token_not_found", token_prefix=token[:8])
+            return False
+
+        # Token suresi dolmus
+        now = datetime.now(timezone.utc)
+        if now > recovery.expires_at:
+            logger.warning(
+                "mfa_recovery_token_expired",
+                token_prefix=token[:8],
+                expired_at=recovery.expires_at.isoformat(),
+            )
+            # Suresi dolmus token'i temizle
+            del self._recovery_tokens[token]
+            return False
+
+        # Token zaten kullanilmis
+        if recovery.used:
+            logger.warning("mfa_recovery_token_already_used", token_prefix=token[:8])
+            return False
+
+        # Email kodu eslesmesi (buyuk/kucuk harf duyarsiz, bosluk temizle)
+        provided_code = email_code.strip()
+        expected_code = recovery.email_code.strip()
+
+        if provided_code != expected_code:
+            logger.warning(
+                "mfa_recovery_code_mismatch",
+                token_prefix=token[:8],
+                email=recovery.user_email,
+            )
+            return False
+
+        # Dogrulama basarili
+        recovery.verified = True
+
+        logger.info(
+            "mfa_recovery_verified",
+            token_prefix=token[:8],
+            email=recovery.user_email,
+        )
+
+        return True
+
+    def complete_mfa_recovery(self, token: str) -> bool:
+        """
+        MFA kurtarma islemini tamamlar ve MFA'yi devre disi birakir.
+
+        Bu metod, verify_mfa_recovery basarili olduktan sonra
+        cagrilmalidir.
+
+        Args:
+            token: Dogrulanmis kurtarma token'i
+
+        Returns:
+            bool: Islem basarili mi?
+
+        Example:
+            >>> if two_factor_auth.verify_mfa_recovery(token, code):
+            ...     success = two_factor_auth.complete_mfa_recovery(token)
+            ...     if success:
+            ...         print("MFA devre disi birakildi")
+
+        Note:
+            Bu islem MFA'yi tamamen devre disi birakir.
+            Kullanici yeniden MFA kurmalidir.
+        """
+        recovery = self._recovery_tokens.get(token)
+
+        # Token bulunamadi
+        if not recovery:
+            logger.warning("mfa_recovery_complete_token_not_found", token_prefix=token[:8])
+            return False
+
+        # Token dogrulanmamis
+        if not recovery.verified:
+            logger.warning(
+                "mfa_recovery_complete_not_verified",
+                token_prefix=token[:8],
+                email=recovery.user_email,
+            )
+            return False
+
+        # Token zaten kullanilmis
+        if recovery.used:
+            logger.warning("mfa_recovery_complete_already_used", token_prefix=token[:8])
+            return False
+
+        # Token'i kullanildi olarak isaretle
+        recovery.used = True
+
+        # Token'i depolardan kaldir
+        del self._recovery_tokens[token]
+
+        logger.info(
+            "mfa_recovery_completed",
+            email=recovery.user_email,
+            token_prefix=token[:8],
+        )
+
+        # NOT: Gercek implementasyonda burada veritabanindan
+        # kullanicinin MFA ayarlarini silmek gerekir
+
+        return True
+
+    def get_recovery_token_info(self, token: str) -> Optional[RecoveryToken]:
+        """
+        Kurtarma token bilgilerini getirir.
+
+        Args:
+            token: Kurtarma token'i
+
+        Returns:
+            RecoveryToken veya None (bulunamadiysa)
+        """
+        return self._recovery_tokens.get(token)
+
+    def cleanup_expired_recovery_tokens(self) -> int:
+        """
+        Suresi dolmus kurtarma token'larini temizler.
+
+        Returns:
+            int: Temizlenen token sayisi
+        """
+        now = datetime.now(timezone.utc)
+        expired_tokens = [
+            token for token, recovery in self._recovery_tokens.items()
+            if now > recovery.expires_at
+        ]
+
+        for token in expired_tokens:
+            del self._recovery_tokens[token]
+
+        if expired_tokens:
+            logger.info(
+                "mfa_recovery_tokens_cleaned",
+                count=len(expired_tokens),
+            )
+
+        return len(expired_tokens)
+
+    # ==================== MFA ADMIN ENFORCEMENT (REQ-1.6) ====================
+
+    def is_mfa_required_for_role(self, role: str) -> bool:
+        """
+        Rol icin MFA zorunlu mu kontrol eder.
+
+        Admin ve super_admin rolleri icin MFA zorunludur (REQ-1.6).
+
+        Args:
+            role: Kullanici rolu (string)
+
+        Returns:
+            bool: MFA zorunlu mu?
+
+        Example:
+            >>> two_factor_auth.is_mfa_required_for_role("admin")
+            True
+            >>> two_factor_auth.is_mfa_required_for_role("student")
+            False
+        """
+        # Kucuk harfe cevir ve temizle
+        normalized_role = role.lower().strip()
+
+        is_required = normalized_role in MFA_REQUIRED_ROLES
+
+        logger.debug(
+            "mfa_role_check",
+            role=role,
+            normalized_role=normalized_role,
+            is_required=is_required,
+        )
+
+        return is_required
+
+    def set_user_mfa_status(self, user_id: int, enabled: bool) -> None:
+        """
+        Kullanici MFA durumunu ayarlar.
+
+        Args:
+            user_id: Kullanici ID
+            enabled: MFA aktif mi?
+        """
+        self._user_mfa_status[user_id] = enabled
+        logger.info("mfa_status_updated", user_id=user_id, enabled=enabled)
+
+    def get_user_mfa_status(self, user_id: int) -> bool:
+        """
+        Kullanici MFA durumunu getirir.
+
+        Args:
+            user_id: Kullanici ID
+
+        Returns:
+            bool: MFA aktif mi?
+        """
+        return self._user_mfa_status.get(user_id, False)
+
+    def enforce_mfa_for_admin(self, user_id: int, role: str) -> EnforcementResult:
+        """
+        Admin kullanicilari icin MFA zorunlulugunu kontrol eder.
+
+        Admin ve super_admin kullanicilarinin MFA'yi aktif
+        etmesi zorunludur (REQ-1.6).
+
+        Args:
+            user_id: Kullanici ID
+            role: Kullanici rolu
+
+        Returns:
+            EnforcementResult: Zorunluluk kontrol sonucu
+
+        Example:
+            >>> result = two_factor_auth.enforce_mfa_for_admin(
+            ...     user_id=123,
+            ...     role="admin"
+            ... )
+            >>> if result.enforcement_needed:
+            ...     print("MFA kurulumu gerekli!")
+            ...     # Kullaniciyi MFA kurulum sayfasina yonlendir
+        """
+        # Rol icin MFA zorunlu mu?
+        mfa_required = self.is_mfa_required_for_role(role)
+
+        # Kullanicinin MFA durumu
+        mfa_enabled = self.get_user_mfa_status(user_id)
+
+        # Zorunluluk uygulanmali mi?
+        enforcement_needed = mfa_required and not mfa_enabled
+
+        # Mesaj belirleme
+        if not mfa_required:
+            message = f"'{role}' rolu icin MFA zorunlu degildir"
+        elif mfa_enabled:
+            message = "MFA zaten aktif, zorunluluk karsilaniyor"
+        else:
+            message = f"UYARI: '{role}' rolu icin MFA zorunludur. Lutfen MFA'yi aktif edin"
+
+        result = EnforcementResult(
+            mfa_required=mfa_required,
+            mfa_enabled=mfa_enabled,
+            enforcement_needed=enforcement_needed,
+            role=role,
+            message=message,
+        )
+
+        # Zorunluluk ihlali varsa logla
+        if enforcement_needed:
+            logger.warning(
+                "mfa_enforcement_violation",
+                user_id=user_id,
+                role=role,
+                enforcement_message=message,
+            )
+        else:
+            logger.debug(
+                "mfa_enforcement_check",
+                user_id=user_id,
+                role=role,
+                mfa_required=mfa_required,
+                mfa_enabled=mfa_enabled,
+            )
+
+        return result
+
+    def get_mfa_required_roles(self) -> set[str]:
+        """
+        MFA zorunlu rollerin listesini dondurur.
+
+        Returns:
+            set[str]: MFA zorunlu roller
+        """
+        return MFA_REQUIRED_ROLES.copy()
+
 
 # Global instance
 two_factor_auth = TwoFactorAuthService()
 
-__all__ = ["TwoFactorAuthService", "two_factor_auth"]
+__all__ = [
+    "TwoFactorAuthService",
+    "two_factor_auth",
+    "RecoveryToken",
+    "EnforcementResult",
+    "MFA_REQUIRED_ROLES",
+    "RECOVERY_TOKEN_EXPIRY_MINUTES",
+]

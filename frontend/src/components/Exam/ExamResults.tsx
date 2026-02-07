@@ -2,7 +2,20 @@
  * Gelişmiş Sınav Sonuçları Bileşeni
  * IRT, Morfoloji, ZPD ve Hibrit Öğrenme Stili analizleri dahil
  */
-import React, { useState, useEffect } from 'react'
+import {
+  ExpandMore,
+  TrendingUp,
+  TrendingDown,
+  Assessment,
+  CheckCircle,
+  Cancel,
+  RemoveCircle,
+  Star,
+  Warning,
+  Download,
+  Share,
+  Refresh,
+} from '@mui/icons-material';
 import {
   Paper,
   Typography,
@@ -24,72 +37,25 @@ import {
   TableRow,
   Button,
   CircularProgress,
-  Tabs,
-  Tab,
-  Tooltip as MuiTooltip,
-  IconButton,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  List,
-  ListItem,
-  ListItemText,
-  ListItemIcon,
-  Divider,
-  Badge
-} from '@mui/material'
+} from '@mui/material';
+import * as React from 'react';
+import {  useState, useEffect  } from 'react';
 import {
-  ExpandMore,
-  TrendingUp,
-  TrendingDown,
-  Assessment,
-  CheckCircle,
-  Cancel,
-  RemoveCircle,
-  Star,
-  Warning,
-  Download,
-  Share,
-  Refresh,
-  Psychology,
-  Science,
-  School,
-  CompareArrows,
-  Insights,
-  AutoGraph,
-  MenuBook,
-  Language,
-  EmojiObjects,
-  Info,
-  PictureAsPdf,
-  Analytics
-} from '@mui/icons-material'
-import { 
-  PieChart, 
-  Pie, 
-  Cell, 
-  BarChart, 
-  Bar, 
-  XAxis, 
-  YAxis, 
-  CartesianGrid, 
-  Tooltip, 
-  Legend, 
-  ResponsiveContainer, 
-  LineChart, 
-  Line,
-  RadarChart,
-  PolarGrid,
-  PolarAngleAxis,
-  PolarRadiusAxis,
-  Radar,
-  ScatterChart,
-  Scatter
-} from 'recharts'
-import { examService } from '../../services/examService'
-import { advancedReportsService } from '../../services/advancedReportsService'
-import { SinavSonucu, KonuPerformansi } from '../../types'
+  PieChart,
+  Pie,
+  Cell,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+} from 'recharts';
+
+import { advancedReportsService } from '../../services/advancedReportsService';
+import { examService } from '../../services/examService';
+import { SinavSonucu, KonuPerformansi, performanceToSinavSonucu } from '../../types';
 
 interface ExamResultsProps {
   sinavId: string
@@ -97,107 +63,67 @@ interface ExamResultsProps {
 }
 
 export const ExamResults: React.FC<ExamResultsProps> = ({ sinavId, onRetake }) => {
-  const [sonuc, setSonuc] = useState<SinavSonucu | null>(null)
-  const [gelismisRapor, setGelismisRapor] = useState<any>(null)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
-  const [activeTab, setActiveTab] = useState(0)
-  const [pdfGenerating, setPdfGenerating] = useState(false)
-  const [showRecommendations, setShowRecommendations] = useState(false)
+  const [sonuc, setSonuc] = useState<SinavSonucu | null>(null);
+  const [_gelismisRapor, setGelismisRapor] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   /**
    * Bileşen mount edildiğinde sonuçları yükle
    */
   useEffect(() => {
-    loadResults()
-  }, [sinavId])
+    loadResults();
+  }, [sinavId]);
 
   /**
    * Sınav sonuçlarını ve gelişmiş analizi yükle
    */
   const loadResults = async () => {
     try {
-      setLoading(true)
-      setError(null)
-      
+      setLoading(true);
+      setError(null);
+
       // Paralel olarak temel sonuç ve gelişmiş raporu yükle
       const [sonucData, gelismisRaporData] = await Promise.allSettled([
         examService.getExamResult(sinavId),
-        advancedReportsService.getAdvancedExamReport(sinavId)
-      ])
-      
+        advancedReportsService.getAdvancedExamReport(sinavId),
+      ]);
+
       if (sonucData.status === 'fulfilled') {
-        setSonuc(sonucData.value)
+        // Convert PerformanceResponse to SinavSonucu
+        const convertedSonuc = performanceToSinavSonucu(sonucData.value, sinavId);
+        setSonuc(convertedSonuc);
       } else {
-        throw new Error('Temel sınav sonucu yüklenemedi')
+        throw new Error('Temel sınav sonucu yüklenemedi');
       }
-      
+
       if (gelismisRaporData.status === 'fulfilled') {
-        setGelismisRapor(gelismisRaporData.value)
+        setGelismisRapor(gelismisRaporData.value);
       } else {
-        console.warn('Gelişmiş rapor yüklenemedi:', gelismisRaporData.reason)
+        console.warn('Gelişmiş rapor yüklenemedi:', gelismisRaporData.reason);
       }
-      
-    } catch (err: any) {
-      setError(err.message || 'Sonuçlar yüklenirken hata oluştu')
-    } finally {
-      setLoading(false)
-    }
-  }
 
-  /**
-   * PDF rapor oluştur ve indir
-   */
-  const handleGeneratePDF = async () => {
-    try {
-      setPdfGenerating(true)
-      const result = await advancedReportsService.generatePDFReport(sinavId)
-      
-      // PDF oluşturulana kadar bekle (basit polling)
-      setTimeout(async () => {
-        try {
-          const blob = await advancedReportsService.downloadPDFReport(result.pdf_filename)
-          const url = window.URL.createObjectURL(blob)
-          const a = document.createElement('a')
-          a.href = url
-          a.download = result.pdf_filename
-          document.body.appendChild(a)
-          a.click()
-          window.URL.revokeObjectURL(url)
-          document.body.removeChild(a)
-        } catch (downloadError) {
-          console.error('PDF indirme hatası:', downloadError)
-        }
-      }, 3000) // 3 saniye bekle
-      
     } catch (err: any) {
-      console.error('PDF oluşturma hatası:', err)
+      setError(err.message || 'Sonuçlar yüklenirken hata oluştu');
     } finally {
-      setPdfGenerating(false)
+      setLoading(false);
     }
-  }
-
-  /**
-   * Tab değiştirme
-   */
-  const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
-    setActiveTab(newValue)
-  }
+  };
 
   /**
    * Başarı durumunu belirle
    */
   const getSuccessLevel = (puan: number): { level: string; color: string; icon: React.ReactNode } => {
     if (puan >= 80) {
-      return { level: 'Mükemmel', color: 'success', icon: <Star /> }
+      return { level: 'Mükemmel', color: 'success', icon: <Star /> };
     } else if (puan >= 70) {
-      return { level: 'İyi', color: 'info', icon: <TrendingUp /> }
+      return { level: 'İyi', color: 'info', icon: <TrendingUp /> };
     } else if (puan >= 60) {
-      return { level: 'Orta', color: 'warning', icon: <Assessment /> }
+      return { level: 'Orta', color: 'warning', icon: <Assessment /> };
     } else {
-      return { level: 'Geliştirilmeli', color: 'error', icon: <TrendingDown /> }
+      return { level: 'Geliştirilmeli', color: 'error', icon: <TrendingDown /> };
     }
-  }
+  };
 
   /**
    * Pasta grafik verileri hazırla
@@ -206,9 +132,9 @@ export const ExamResults: React.FC<ExamResultsProps> = ({ sinavId, onRetake }) =
     return [
       { name: 'Doğru', value: sonuc.dogru_sayisi, color: '#10b981' },
       { name: 'Yanlış', value: sonuc.yanlis_sayisi, color: '#ef4444' },
-      { name: 'Boş', value: sonuc.bos_sayisi, color: '#6b7280' }
-    ]
-  }
+      { name: 'Boş', value: sonuc.bos_sayisi, color: '#6b7280' },
+    ];
+  };
 
   /**
    * Konu performans grafik verileri hazırla
@@ -219,20 +145,9 @@ export const ExamResults: React.FC<ExamResultsProps> = ({ sinavId, onRetake }) =
       basari: konu.basari_yuzdesi,
       dogru: konu.dogru_sayisi,
       yanlis: konu.yanlis_sayisi,
-      bos: konu.bos_sayisi
-    }))
-  }
-
-  /**
-   * Zorluk dağılım verileri hazırla
-   */
-  const prepareDifficultyData = (zorlukDagilimi: Record<string, number>) => {
-    return Object.entries(zorlukDagilimi).map(([zorluk, sayi]) => ({
-      zorluk,
-      sayi,
-      yuzde: (sayi / Object.values(zorlukDagilimi).reduce((a, b) => a + b, 0)) * 100
-    }))
-  }
+      bos: konu.bos_sayisi,
+    }));
+  };
 
   if (loading) {
     return (
@@ -242,7 +157,7 @@ export const ExamResults: React.FC<ExamResultsProps> = ({ sinavId, onRetake }) =
           Sonuçlar yükleniyor...
         </Typography>
       </Box>
-    )
+    );
   }
 
   if (error) {
@@ -254,7 +169,7 @@ export const ExamResults: React.FC<ExamResultsProps> = ({ sinavId, onRetake }) =
           Tekrar Dene
         </Button>
       </Alert>
-    )
+    );
   }
 
   if (!sonuc) {
@@ -262,13 +177,12 @@ export const ExamResults: React.FC<ExamResultsProps> = ({ sinavId, onRetake }) =
       <Alert severity="info" sx={{ m: 2 }}>
         Sonuç bulunamadı
       </Alert>
-    )
+    );
   }
 
-  const successInfo = getSuccessLevel(sonuc.ham_puan)
-  const pieData = preparePieChartData(sonuc)
-  const topicData = prepareTopicPerformanceData(sonuc.konu_performanslari)
-  const difficultyData = prepareDifficultyData(sonuc.zorluk_dagilimi)
+  const successInfo = getSuccessLevel(sonuc.ham_puan);
+  const pieData = preparePieChartData(sonuc);
+  const topicData = prepareTopicPerformanceData(sonuc.konu_performanslari);
 
   return (
     <Box sx={{ p: 3 }}>
@@ -280,11 +194,11 @@ export const ExamResults: React.FC<ExamResultsProps> = ({ sinavId, onRetake }) =
             Sınav Sonuçları
           </Typography>
         </Box>
-        
+
         <Typography variant="h6" color="textSecondary" gutterBottom>
-          {examService.getExamTypeDescription(sonuc.sinav_tipi)}
+          {examService.getExamTypeDescription(sonuc.sinav_tipi as unknown as import('../../services/examService').ExamType)}
         </Typography>
-        
+
         <Chip
           label={successInfo.level}
           color={successInfo.color as any}
@@ -621,7 +535,7 @@ export const ExamResults: React.FC<ExamResultsProps> = ({ sinavId, onRetake }) =
           startIcon={<Download />}
           onClick={() => {
             // PDF indirme işlevi
-            console.log('PDF indirme işlevi')
+            console.log('PDF indirme işlevi');
           }}
         >
           Raporu İndir
@@ -631,7 +545,7 @@ export const ExamResults: React.FC<ExamResultsProps> = ({ sinavId, onRetake }) =
           startIcon={<Share />}
           onClick={() => {
             // Paylaşma işlevi
-            console.log('Paylaşma işlevi')
+            console.log('Paylaşma işlevi');
           }}
         >
           Paylaş
@@ -648,7 +562,7 @@ export const ExamResults: React.FC<ExamResultsProps> = ({ sinavId, onRetake }) =
         )}
       </Box>
     </Box>
-  )
-}
+  );
+};
 
-export default ExamResults
+export default ExamResults;

@@ -3,14 +3,15 @@
  * Tests for file upload, download, versioning, and management
  */
 
-import React from 'react';
+import * as React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import axios from 'axios';
 import FileManager from '../FileManager';
+import { vi, Mocked } from 'vitest';
 
 vi.mock('axios');
-const mockedAxios = axios as jest.Mocked<typeof axios>;
+const mockedAxios = axios as Mocked<typeof axios>;
 
 const mockFiles = [
   {
@@ -272,7 +273,7 @@ describe('FileManager Component', () => {
     });
 
     it('deletes file when delete is clicked', async () => {
-      window.confirm = jest.fn(() => true);
+      window.confirm = vi.fn(() => true);
 
       render(<FileManager {...mockProps} />);
 
@@ -292,7 +293,7 @@ describe('FileManager Component', () => {
     });
 
     it('does not delete file when confirm is cancelled', async () => {
-      window.confirm = jest.fn(() => false);
+      window.confirm = vi.fn(() => false);
 
       render(<FileManager {...mockProps} />);
 
@@ -426,7 +427,7 @@ describe('FileManager Component', () => {
     });
 
     it('handles delete errors', async () => {
-      window.confirm = jest.fn(() => true);
+      window.confirm = vi.fn(() => true);
       window.alert = vi.fn();
       mockedAxios.delete.mockRejectedValue(new Error('Delete failed'));
 

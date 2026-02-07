@@ -5,7 +5,6 @@ Demonstrates how to use the MetricsCollector for video API monitoring
 
 import asyncio
 import sys
-import time
 from pathlib import Path
 
 # Add backend to path

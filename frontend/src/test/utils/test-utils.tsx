@@ -3,10 +3,11 @@
  * Comprehensive testing utilities with providers and helpers
  */
 
-import React, { ReactElement, ReactNode } from 'react'
+import * as React from 'react';
+import {  ReactElement, ReactNode, createContext, useContext  } from 'react'
 import { render, RenderOptions, RenderResult } from '@testing-library/react'
 import { QueryClient, QueryClientProvider } from 'react-query'
-import { BrowserRouter } from 'react-router-dom'
+import { BrowserRouter, MemoryRouter, MemoryRouterProps } from 'react-router-dom'
 import { ThemeProvider } from '@mui/material/styles'
 import { CssBaseline } from '@mui/material'
 import userEvent from '@testing-library/user-event'
@@ -14,6 +15,69 @@ import { vi, MockedFunction } from 'vitest'
 
 import { lightTheme } from '../../theme/modernTheme'
 import { AuthProvider } from '../../context/AuthProvider'
+
+// ============================================
+// Mock Accessibility Context (Task #71)
+// ============================================
+interface MockAccessibilitySettings {
+  fontSize: 'small' | 'medium' | 'large' | 'extra-large'
+  highContrast: boolean
+  reducedMotion: boolean
+  dyslexiaSupport: boolean
+  motorImpairmentSupport: boolean
+  screenReaderOptimized: boolean
+}
+
+interface MockAccessibilityContextType {
+  settings: MockAccessibilitySettings
+  updateSetting: (key: keyof MockAccessibilitySettings, value: any) => void
+  toggleHighContrast: () => void
+  toggleReducedMotion: () => void
+  increaseFontSize: () => void
+  decreaseFontSize: () => void
+  announce: (message: string, priority?: 'polite' | 'assertive') => void
+}
+
+const defaultAccessibilitySettings: MockAccessibilitySettings = {
+  fontSize: 'medium',
+  highContrast: false,
+  reducedMotion: false,
+  dyslexiaSupport: false,
+  motorImpairmentSupport: false,
+  screenReaderOptimized: false,
+}
+
+const MockAccessibilityContext = createContext<MockAccessibilityContextType | null>(null)
+
+export const MockAccessibilityProvider: React.FC<{
+  children: React.ReactNode
+  settings?: Partial<MockAccessibilitySettings>
+}> = ({ children, settings = {} }) => {
+  const value: MockAccessibilityContextType = {
+    settings: { ...defaultAccessibilitySettings, ...settings },
+    updateSetting: vi.fn(),
+    toggleHighContrast: vi.fn(),
+    toggleReducedMotion: vi.fn(),
+    increaseFontSize: vi.fn(),
+    decreaseFontSize: vi.fn(),
+    announce: vi.fn(),
+  }
+
+  return (
+    <MockAccessibilityContext.Provider value={value}>
+      {children}
+    </MockAccessibilityContext.Provider>
+  )
+}
+
+// Hook for tests that need accessibility context
+export const useMockAccessibility = () => {
+  const context = useContext(MockAccessibilityContext)
+  if (!context) {
+    throw new Error('useMockAccessibility must be used within MockAccessibilityProvider')
+  }
+  return context
+}
 
 // Mock user context
 interface MockUser {
@@ -69,10 +133,14 @@ interface AllProvidersProps {
   children: React.ReactNode
   user?: MockUser
   queryClient?: QueryClient
+  routerType?: 'browser' | 'memory' | 'none'
+  initialEntries?: string[]
+  withAccessibility?: boolean
+  accessibilitySettings?: Partial<MockAccessibilitySettings>
 }
 
-const AllProviders: React.FC<AllProvidersProps> = ({ 
-  children, 
+const AllProviders: React.FC<AllProvidersProps> = ({
+  children,
   user = mockUser,
   queryClient = new QueryClient({
     defaultOptions: {
@@ -81,41 +149,132 @@ const AllProviders: React.FC<AllProvidersProps> = ({
         cacheTime: 0,
       },
     },
-  })
+  }),
+  routerType = 'browser',
+  initialEntries = ['/'],
+  withAccessibility = false,
+  accessibilitySettings = {},
 }) => {
-  return (
-    <QueryClientProvider client={queryClient}>
-      <BrowserRouter>
-        <ThemeProvider theme={lightTheme}>
-          <CssBaseline />
-          <MockAuthProvider user={user}>
-            {children}
-          </MockAuthProvider>
-        </ThemeProvider>
-      </BrowserRouter>
-    </QueryClientProvider>
+  // Content without Router (for components that have their own Router)
+  const innerContent = (
+    <ThemeProvider theme={lightTheme}>
+      <CssBaseline />
+      <MockAuthProvider user={user}>
+        {children}
+      </MockAuthProvider>
+    </ThemeProvider>
   )
+
+  // Wrap with Router if needed
+  let content: React.ReactNode
+  if (routerType === 'none') {
+    // No router wrapper - for App or components with built-in Router
+    content = (
+      <QueryClientProvider client={queryClient}>
+        {innerContent}
+      </QueryClientProvider>
+    )
+  } else if (routerType === 'memory') {
+    content = (
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter initialEntries={initialEntries}>
+          {innerContent}
+        </MemoryRouter>
+      </QueryClientProvider>
+    )
+  } else {
+    content = (
+      <QueryClientProvider client={queryClient}>
+        <BrowserRouter>
+          {innerContent}
+        </BrowserRouter>
+      </QueryClientProvider>
+    )
+  }
+
+  if (withAccessibility) {
+    return (
+      <MockAccessibilityProvider settings={accessibilitySettings}>
+        {content}
+      </MockAccessibilityProvider>
+    )
+  }
+
+  return content
 }
 
 // Custom render function
 interface CustomRenderOptions extends Omit<RenderOptions, 'wrapper'> {
   user?: MockUser
   queryClient?: QueryClient
+  routerType?: 'browser' | 'memory'
+  initialEntries?: string[]
+  withAccessibility?: boolean
+  accessibilitySettings?: Partial<MockAccessibilitySettings>
 }
 
 const customRender = (
   ui: ReactElement,
   options: CustomRenderOptions = {}
 ) => {
-  const { user, queryClient, ...renderOptions } = options
+  const {
+    user,
+    queryClient,
+    routerType,
+    initialEntries,
+    withAccessibility,
+    accessibilitySettings,
+    ...renderOptions
+  } = options
 
   const Wrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-    <AllProviders user={user} queryClient={queryClient}>
+    <AllProviders
+      user={user}
+      queryClient={queryClient}
+      routerType={routerType}
+      initialEntries={initialEntries}
+      withAccessibility={withAccessibility}
+      accessibilitySettings={accessibilitySettings}
+    >
       {children}
     </AllProviders>
   )
 
   return render(ui, { wrapper: Wrapper, ...renderOptions })
+}
+
+// Convenience render functions for specific scenarios
+export const renderWithRouter = (
+  ui: ReactElement,
+  options: CustomRenderOptions & { initialEntries?: string[] } = {}
+) => {
+  return customRender(ui, { ...options, routerType: 'memory' })
+}
+
+export const renderWithAccessibility = (
+  ui: ReactElement,
+  options: CustomRenderOptions = {}
+) => {
+  return customRender(ui, { ...options, withAccessibility: true })
+}
+
+export const renderWithAll = (
+  ui: ReactElement,
+  options: CustomRenderOptions = {}
+) => {
+  return customRender(ui, {
+    ...options,
+    routerType: 'memory',
+    withAccessibility: true,
+  })
+}
+
+// For App or components that have their own Router
+export const renderWithoutRouter = (
+  ui: ReactElement,
+  options: CustomRenderOptions = {}
+) => {
+  return customRender(ui, { ...options, routerType: 'none' })
 }
 
 // Test data factories
@@ -221,7 +380,58 @@ export class TestErrorBoundary extends React.Component<
   }
 }
 
+// Mock users for testing
+export const mockUsers = {
+  student: {
+    id: '1',
+    username: 'test-student',
+    email: 'student@example.com',
+    role: 'student' as const,
+    firstName: 'Test',
+    lastName: 'Student'
+  },
+  teacher: {
+    id: '2',
+    username: 'test-teacher',
+    email: 'teacher@example.com',
+    role: 'teacher' as const,
+    firstName: 'Test',
+    lastName: 'Teacher'
+  },
+  parent: {
+    id: '3',
+    username: 'test-parent',
+    email: 'parent@example.com',
+    role: 'parent' as const,
+    firstName: 'Test',
+    lastName: 'Parent'
+  },
+  admin: {
+    id: '4',
+    username: 'test-admin',
+    email: 'admin@example.com',
+    role: 'admin' as const,
+    firstName: 'Test',
+    lastName: 'Admin'
+  }
+}
+
+// Custom render with user event
+export const renderWithUser = (ui: ReactElement, options: CustomRenderOptions = {}) => {
+  return {
+    user: userEvent.setup(),
+    ...customRender(ui, options)
+  }
+}
+
 // Re-export everything
 export * from '@testing-library/react'
 export { customRender as render }
+export { userEvent }
 export { vi } from 'vitest'
+
+// Export wrapper components for direct use
+export { AllProviders }
+export { MockAccessibilityContext }
+export { defaultAccessibilitySettings }
+export type { MockAccessibilitySettings, MockAccessibilityContextType }

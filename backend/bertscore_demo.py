@@ -51,10 +51,10 @@ def demo_bertscore():
 
     result1 = evaluator.evaluate_single(q1, q2)
     if result1:
-        print(f"\n📊 BERTScore:")
+        print("\n📊 BERTScore:")
         print(f"   F1 Score: {result1['f1']:.3f}")
         print(f"   Yorum: {result1.get('interpretation', 'N/A')}")
-        print(f"   ✅ Beklendiği gibi yüksek benzerlik")
+        print("   ✅ Beklendiği gibi yüksek benzerlik")
 
     # Test case 2: Orta benzerlik (aynı konu, farklı sayılar)
     print("\n" + "=" * 80)
@@ -69,10 +69,10 @@ def demo_bertscore():
 
     result2 = evaluator.evaluate_single(q3, q4)
     if result2:
-        print(f"\n📊 BERTScore:")
+        print("\n📊 BERTScore:")
         print(f"   F1 Score: {result2['f1']:.3f}")
         print(f"   Yorum: {result2.get('interpretation', 'N/A')}")
-        print(f"   ✅ Beklendiği gibi yüksek benzerlik (aynı format)")
+        print("   ✅ Beklendiği gibi yüksek benzerlik (aynı format)")
 
     # Test case 3: Düşük benzerlik (farklı konular)
     print("\n" + "=" * 80)
@@ -87,10 +87,10 @@ def demo_bertscore():
 
     result3 = evaluator.evaluate_single(q5, q6)
     if result3:
-        print(f"\n📊 BERTScore:")
+        print("\n📊 BERTScore:")
         print(f"   F1 Score: {result3['f1']:.3f}")
         print(f"   Yorum: {result3.get('interpretation', 'N/A')}")
-        print(f"   ✅ Beklendiği gibi düşük benzerlik (farklı konular)")
+        print("   ✅ Beklendiği gibi düşük benzerlik (farklı konular)")
 
     # Test case 4: Fizik soruları
     print("\n" + "=" * 80)
@@ -105,10 +105,10 @@ def demo_bertscore():
 
     result4 = evaluator.evaluate_single(q7, q8)
     if result4:
-        print(f"\n📊 BERTScore:")
+        print("\n📊 BERTScore:")
         print(f"   F1 Score: {result4['f1']:.3f}")
         print(f"   Yorum: {result4.get('interpretation', 'N/A')}")
-        print(f"   ✅ Beklendiği gibi yüksek benzerlik (aynı fizik konsepti)")
+        print("   ✅ Beklendiği gibi yüksek benzerlik (aynı fizik konsepti)")
 
     # Test case 5: Toplu değerlendirme
     print("\n" + "=" * 80)
@@ -131,13 +131,13 @@ def demo_bertscore():
 
     batch_result = evaluator.evaluate_batch(candidates, references)
     if batch_result:
-        print(f"\n📊 Toplu Sonuçlar:")
+        print("\n📊 Toplu Sonuçlar:")
         print(f"   Ortalama F1: {batch_result['mean_f1']:.3f}")
         print(f"   Min F1: {batch_result['min_f1']:.3f}")
         print(f"   Max F1: {batch_result['max_f1']:.3f}")
         print(f"   Std Sapma: {batch_result['std_f1']:.3f}")
 
-        print(f"\n   Detay:")
+        print("\n   Detay:")
         for i, score in enumerate(batch_result["individual_scores"], 1):
             print(f"      Çift {i}: F1 = {score['f1']:.3f}")
 

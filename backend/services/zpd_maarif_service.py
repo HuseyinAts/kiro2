@@ -51,9 +51,11 @@ class ZPDMaarifService:
     5. Gerçek zamanlı kültürel adaptasyon
     """
 
-    def __init__(self):
-        """ZPD Maarif servisini başlat"""
-        self.default_parametreler = ZPDHesaplamaParametreleri()
+    def __init__(self) -> None:
+        """ZPD Maarif servisini başlat."""
+        self.default_parametreler: ZPDHesaplamaParametreleri = (
+            ZPDHesaplamaParametreleri()
+        )
         self.hesaplama_gecmisi: Dict[str, List[ZPDHesaplamaGecmisi]] = {}
 
         # DEVRİMSEL: Yeni algoritma sistemi
@@ -494,8 +496,8 @@ class ZPDMaarifService:
         parametreler: ZPDHesaplamaParametreleri,
         kulturel_profil: KulturelBaglamProfili,
         maarif_profili: MaarifDegerleriProfili,
-    ):
-        """Hesaplama geçmişini kaydet"""
+    ) -> None:
+        """Hesaplama geçmişini kaydet."""
         gecmis = ZPDHesaplamaGecmisi(
             ogrenci_id=zpd_araligi.ogrenci_id,
             konu=zpd_araligi.konu,

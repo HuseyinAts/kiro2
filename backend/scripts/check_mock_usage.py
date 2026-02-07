@@ -66,7 +66,7 @@ def check_mock_usage():
     # Calculate percentages
     mock_percentage = (len(files_with_mocks) / len(test_files)) * 100
 
-    print(f"\n🔍 Mock Usage Analysis:")
+    print("\n🔍 Mock Usage Analysis:")
     print(f"  Total test files: {len(test_files)}")
     print(f"  Files using mocks: {len(files_with_mocks)} ({mock_percentage:.1f}%)")
     print(f"  Total mock instances: {total_mocks}")

@@ -3,9 +3,8 @@ Eager Loading Strategy Configuration
 PERFORMANCE FIX: Centralized eager loading patterns for all models
 """
 
-from typing import Dict, List
+from typing import Dict
 
-from sqlalchemy.orm import joinedload, selectinload, subqueryload
 
 # Eager loading strategy map
 # Format: {model_name: {relationship_name: loading_strategy}}

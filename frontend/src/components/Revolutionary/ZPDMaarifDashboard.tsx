@@ -3,7 +3,13 @@
  * Türk eğitim kültürüne uyarlanmış ZPD sistemi görüntüleme
  */
 
-import React, { useState, useEffect } from 'react';
+import {
+  Psychology as PsychologyIcon,
+  School as SchoolIcon,
+  Groups as GroupsIcon,
+  TrendingUp as TrendingUpIcon,
+  Refresh as RefreshIcon,
+} from '@mui/icons-material';
 import {
   Box,
   Card,
@@ -16,15 +22,11 @@ import {
   Paper,
   Alert,
   CircularProgress,
-  Button
+  Button,
 } from '@mui/material';
-import {
-  Psychology as PsychologyIcon,
-  School as SchoolIcon,
-  Groups as GroupsIcon,
-  TrendingUp as TrendingUpIcon,
-  Refresh as RefreshIcon
-} from '@mui/icons-material';
+import * as React from 'react';
+import {  useState, useEffect  } from 'react';
+
 import { revolutionaryFeaturesService } from '../../services/revolutionaryFeaturesService';
 import { TurkishZPDRange, ZPDRecommendation, CulturalContext } from '../../types';
 
@@ -33,9 +35,9 @@ interface ZPDMaarifDashboardProps {
   onZPDUpdate?: (zpd: TurkishZPDRange) => void;
 }
 
-const ZPDMaarifDashboard: React.FC<ZPDMaarifDashboardProps> = ({ 
-  studentId, 
-  onZPDUpdate 
+const ZPDMaarifDashboard: React.FC<ZPDMaarifDashboardProps> = ({
+  studentId,
+  onZPDUpdate,
 }) => {
   const [zpdRange, setZpdRange] = useState<TurkishZPDRange | null>(null);
   const [recommendation, setRecommendation] = useState<ZPDRecommendation | null>(null);
@@ -65,7 +67,7 @@ const ZPDMaarifDashboard: React.FC<ZPDMaarifDashboardProps> = ({
           visual_content_performance: 0.82,
           auditory_content_performance: 0.75,
           text_content_performance: 0.80,
-          note_taking_frequency: 8
+          note_taking_frequency: 8,
         };
 
         // ZPD aralığını hesapla
@@ -74,7 +76,7 @@ const ZPDMaarifDashboard: React.FC<ZPDMaarifDashboardProps> = ({
           'matematik',
           6.5,
           sampleBehavioralData,
-          'Türk matematikçilerin katkıları ve geometri'
+          'Türk matematikçilerin katkıları ve geometri',
         );
         setZpdRange(zpd);
         onZPDUpdate?.(zpd);
@@ -86,7 +88,7 @@ const ZPDMaarifDashboard: React.FC<ZPDMaarifDashboardProps> = ({
           6.5,
           sampleBehavioralData,
           'Geometri konusunda uzmanlaşma',
-          'Türk matematikçilerin katkıları ve geometri'
+          'Türk matematikçilerin katkıları ve geometri',
         );
         setRecommendation(rec);
 
@@ -107,7 +109,7 @@ const ZPDMaarifDashboard: React.FC<ZPDMaarifDashboardProps> = ({
   }, [studentId, onZPDUpdate]);
 
   // Zorluk seviyesi renk kodlaması
-  const getDifficultyColor = (level: string): 'success' | 'warning' | 'error' | 'default' => {
+  const _getDifficultyColor = (level: string): 'success' | 'warning' | 'error' | 'default' => {
     switch (level) {
       case 'kolay': return 'success';
       case 'orta': return 'warning';
@@ -117,7 +119,7 @@ const ZPDMaarifDashboard: React.FC<ZPDMaarifDashboardProps> = ({
   };
 
   // Maarif değeri renk kodlaması
-  const getMaarifColor = (value: string): 'error' | 'primary' | 'success' | 'default' => {
+  const _getMaarifColor = (value: string): 'error' | 'primary' | 'success' | 'default' => {
     switch (value) {
       case 'milli': return 'error';
       case 'evrensel': return 'primary';
@@ -136,6 +138,10 @@ const ZPDMaarifDashboard: React.FC<ZPDMaarifDashboardProps> = ({
     }
   };
 
+  // Mark unused functions as available for future use
+  void _getDifficultyColor;
+  void _getMaarifColor;
+
   if (loading) {
     return (
       <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', p: 4 }}>
@@ -152,8 +158,8 @@ const ZPDMaarifDashboard: React.FC<ZPDMaarifDashboardProps> = ({
       <Alert severity="error" sx={{ m: 2 }}>
         <Typography variant="h6">Hata</Typography>
         <Typography>{error}</Typography>
-        <Button 
-          startIcon={<RefreshIcon />} 
+        <Button
+          startIcon={<RefreshIcon />}
           onClick={() => window.location.reload()}
           sx={{ mt: 1 }}
         >
@@ -235,12 +241,12 @@ const ZPDMaarifDashboard: React.FC<ZPDMaarifDashboardProps> = ({
               <LinearProgress
                 variant="determinate"
                 value={((zpdRange.current_level - zpdRange.lower_bound) / (zpdRange.upper_bound - zpdRange.lower_bound)) * 100}
-                sx={{ 
-                  height: 12, 
+                sx={{
+                  height: 12,
                   borderRadius: 6,
                   '& .MuiLinearProgress-bar': {
-                    background: 'linear-gradient(to right, #4ade80, #3b82f6)'
-                  }
+                    background: 'linear-gradient(to right, #4ade80, #3b82f6)',
+                  },
                 }}
               />
               <Box
@@ -252,7 +258,7 @@ const ZPDMaarifDashboard: React.FC<ZPDMaarifDashboardProps> = ({
                   height: 12,
                   bgcolor: 'secondary.main',
                   borderRadius: 6,
-                  opacity: 0.75
+                  opacity: 0.75,
                 }}
               />
             </Box>
@@ -302,7 +308,7 @@ const ZPDMaarifDashboard: React.FC<ZPDMaarifDashboardProps> = ({
                   </Box>
                 </Box>
               </Grid>
-              
+
               <Grid item xs={12} md={6}>
                 <Typography variant="subtitle1" fontWeight="medium" gutterBottom>
                   Kültürel Değerler
@@ -362,7 +368,7 @@ const ZPDMaarifDashboard: React.FC<ZPDMaarifDashboardProps> = ({
                 </Typography>
               </Paper>
             </Grid>
-            
+
             <Grid item xs={12} md={4}>
               <Paper sx={{ p: 2, border: 2, borderColor: 'primary.light', bgcolor: 'primary.50' }}>
                 <Typography variant="subtitle1" fontWeight="semibold" color="primary.main" gutterBottom>
@@ -376,7 +382,7 @@ const ZPDMaarifDashboard: React.FC<ZPDMaarifDashboardProps> = ({
                 </Typography>
               </Paper>
             </Grid>
-            
+
             <Grid item xs={12} md={4}>
               <Paper sx={{ p: 2, border: 2, borderColor: 'success.light', bgcolor: 'success.50' }}>
                 <Typography variant="subtitle1" fontWeight="semibold" color="success.main" gutterBottom>
@@ -391,7 +397,7 @@ const ZPDMaarifDashboard: React.FC<ZPDMaarifDashboardProps> = ({
               </Paper>
             </Grid>
           </Grid>
-          
+
           <Paper sx={{ p: 2, bgcolor: 'grey.50' }}>
             <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <Typography variant="body1" fontWeight="medium" color="text.primary">
@@ -429,7 +435,7 @@ const ZPDMaarifDashboard: React.FC<ZPDMaarifDashboardProps> = ({
                   <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
                     {recommendation.reasoning}
                   </Typography>
-                  
+
                   <Grid container spacing={2} sx={{ mb: 2 }}>
                     <Grid item xs={6} md={3}>
                       <Box sx={{ textAlign: 'center' }}>
@@ -443,7 +449,7 @@ const ZPDMaarifDashboard: React.FC<ZPDMaarifDashboardProps> = ({
                     </Grid>
                     <Grid item xs={6} md={3}>
                       <Box sx={{ textAlign: 'center' }}>
-                        <Chip 
+                        <Chip
                           label={recommendation.learning_mode}
                           color={getLearningModeColor(recommendation.learning_mode)}
                           size="small"
@@ -474,9 +480,9 @@ const ZPDMaarifDashboard: React.FC<ZPDMaarifDashboardProps> = ({
                       </Box>
                     </Grid>
                   </Grid>
-                  
+
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 1 }}>
-                    <Chip 
+                    <Chip
                       label={recommendation.content_type}
                       color="primary"
                       variant="outlined"
@@ -486,7 +492,7 @@ const ZPDMaarifDashboard: React.FC<ZPDMaarifDashboardProps> = ({
                       Akran Desteği: {(recommendation.peer_support_level * 100).toFixed(0)}%
                     </Typography>
                   </Box>
-                  
+
                   {recommendation.maarif_integration.length > 0 && (
                     <Box sx={{ mt: 1 }}>
                       <Typography variant="caption" color="text.secondary" gutterBottom>
@@ -506,9 +512,9 @@ const ZPDMaarifDashboard: React.FC<ZPDMaarifDashboardProps> = ({
                     </Box>
                   )}
                 </Box>
-                
-                <Button 
-                  variant="contained" 
+
+                <Button
+                  variant="contained"
                   color="primary"
                   size="small"
                   sx={{ ml: 2 }}

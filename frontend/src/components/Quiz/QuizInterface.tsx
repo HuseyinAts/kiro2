@@ -1,5 +1,21 @@
-import { useState, useEffect, useCallback } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import {
+  Timer,
+  CheckCircle,
+  Cancel,
+  NavigateNext,
+  NavigateBefore,
+  BookmarkBorder,
+  Bookmark,
+  Lightbulb,
+  Code,
+  Description,
+  Psychology,
+  Calculate,
+  Send,
+  Refresh,
+  EmojiEvents,
+  TrendingUp,
+} from '@mui/icons-material';
 import {
   Paper,
   Button,
@@ -12,40 +28,16 @@ import {
   Card,
   CardContent,
   Alert,
-  Snackbar,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
   TextField,
   IconButton,
   Tooltip,
-  Fab
-} from '@mui/material'
-import {
-  Timer,
-  CheckCircle,
-  Cancel,
-  NavigateNext,
-  NavigateBefore,
-  Flag,
-  BookmarkBorder,
-  Bookmark,
-  Lightbulb,
-  Code,
-  Description,
-  Psychology,
-  Calculate,
-  Send,
-  Refresh,
-  EmojiEvents,
-  TrendingUp
-} from '@mui/icons-material'
-import ReactMarkdown from 'react-markdown'
-import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter'
-import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism'
-import clsx from 'clsx'
-import confetti from 'canvas-confetti'
+} from '@mui/material';
+import confetti from 'canvas-confetti';
+import clsx from 'clsx';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useState, useEffect } from 'react';
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 
 export interface Question {
   id: string
@@ -95,116 +87,116 @@ export function QuizInterface({
   config,
   onSubmit,
   onExit,
-  className
+  className,
 }: QuizInterfaceProps) {
-  const [currentIndex, setCurrentIndex] = useState(0)
-  const [answers, setAnswers] = useState<Record<string, any>>({})
-  const [flagged, setFlagged] = useState<Set<string>>(new Set())
-  const [showHint, setShowHint] = useState(false)
-  const [currentHintIndex, setCurrentHintIndex] = useState(0)
-  const [timeLeft, setTimeLeft] = useState(config.timeLimit || 0)
-  const [isSubmitted, setIsSubmitted] = useState(false)
-  const [results, setResults] = useState<QuizResults | null>(null)
-  const [showExplanation, setShowExplanation] = useState(false)
-  const [reviewMode, setReviewMode] = useState(false)
-  const [startTime] = useState(Date.now())
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [answers, setAnswers] = useState<Record<string, any>>({});
+  const [flagged, setFlagged] = useState<Set<string>>(new Set());
+  const [showHint, setShowHint] = useState(false);
+  const [currentHintIndex, setCurrentHintIndex] = useState(0);
+  const [timeLeft, setTimeLeft] = useState(config.timeLimit || 0);
+  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [results, setResults] = useState<QuizResults | null>(null);
+  const [_showExplanation, _setShowExplanation] = useState(false);
+  const [reviewMode, setReviewMode] = useState(false);
+  const [startTime] = useState(Date.now());
 
-  const currentQuestion = config.questions[currentIndex]
-  const isLastQuestion = currentIndex === config.questions.length - 1
-  const isFirstQuestion = currentIndex === 0
+  const currentQuestion = config.questions[currentIndex];
+  const isLastQuestion = currentIndex === config.questions.length - 1;
+  const isFirstQuestion = currentIndex === 0;
 
   // Timer effect
   useEffect(() => {
-    if (!config.timeLimit || isSubmitted || timeLeft <= 0) return
+    if (!config.timeLimit || isSubmitted || timeLeft <= 0) {return;}
 
     const timer = setInterval(() => {
       setTimeLeft(prev => {
         if (prev <= 1) {
-          handleSubmit()
-          return 0
+          handleSubmit();
+          return 0;
         }
-        return prev - 1
-      })
-    }, 1000)
+        return prev - 1;
+      });
+    }, 1000);
 
-    return () => clearInterval(timer)
-  }, [timeLeft, isSubmitted, config.timeLimit])
+    return () => clearInterval(timer);
+  }, [timeLeft, isSubmitted, config.timeLimit]);
 
   const formatTime = (seconds: number) => {
-    const mins = Math.floor(seconds / 60)
-    const secs = seconds % 60
-    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`
-  }
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+  };
 
   const handleAnswerChange = (value: any) => {
     setAnswers(prev => ({
       ...prev,
-      [currentQuestion.id]: value
-    }))
-  }
+      [currentQuestion.id]: value,
+    }));
+  };
 
   const handleMultiSelectChange = (option: string) => {
-    const current = answers[currentQuestion.id] || []
+    const current = answers[currentQuestion.id] || [];
     const updated = current.includes(option)
       ? current.filter((o: string) => o !== option)
-      : [...current, option]
-    handleAnswerChange(updated)
-  }
+      : [...current, option];
+    handleAnswerChange(updated);
+  };
 
   const handleNext = () => {
     if (!isLastQuestion) {
-      setCurrentIndex(prev => prev + 1)
-      setShowHint(false)
-      setCurrentHintIndex(0)
+      setCurrentIndex(prev => prev + 1);
+      setShowHint(false);
+      setCurrentHintIndex(0);
     }
-  }
+  };
 
   const handlePrevious = () => {
     if (!isFirstQuestion) {
-      setCurrentIndex(prev => prev - 1)
-      setShowHint(false)
-      setCurrentHintIndex(0)
+      setCurrentIndex(prev => prev - 1);
+      setShowHint(false);
+      setCurrentHintIndex(0);
     }
-  }
+  };
 
   const toggleFlag = () => {
-    const newFlagged = new Set(flagged)
+    const newFlagged = new Set(flagged);
     if (newFlagged.has(currentQuestion.id)) {
-      newFlagged.delete(currentQuestion.id)
+      newFlagged.delete(currentQuestion.id);
     } else {
-      newFlagged.add(currentQuestion.id)
+      newFlagged.add(currentQuestion.id);
     }
-    setFlagged(newFlagged)
-  }
+    setFlagged(newFlagged);
+  };
 
   const calculateResults = (): QuizResults => {
-    let correctCount = 0
-    let totalScore = 0
-    let earnedScore = 0
+    let correctCount = 0;
+    let totalScore = 0;
+    let earnedScore = 0;
 
     config.questions.forEach(question => {
-      totalScore += question.points
-      const userAnswer = answers[question.id]
-      
-      let isCorrect = false
+      totalScore += question.points;
+      const userAnswer = answers[question.id];
+
+      let isCorrect = false;
       if (question.type === 'multiple-select') {
-        const correct = question.correctAnswer as string[]
-        const user = userAnswer || []
-        isCorrect = 
+        const correct = question.correctAnswer as string[];
+        const user = userAnswer || [];
+        isCorrect =
           correct.length === user.length &&
-          correct.every(ans => user.includes(ans))
+          correct.every(ans => user.includes(ans));
       } else {
-        isCorrect = userAnswer === question.correctAnswer
+        isCorrect = userAnswer === question.correctAnswer;
       }
 
       if (isCorrect) {
-        correctCount++
-        earnedScore += question.points
+        correctCount++;
+        earnedScore += question.points;
       }
-    })
+    });
 
-    const percentage = Math.round((earnedScore / totalScore) * 100)
-    const timeSpent = Math.round((Date.now() - startTime) / 1000)
+    const percentage = Math.round((earnedScore / totalScore) * 100);
+    const timeSpent = Math.round((Date.now() - startTime) / 1000);
 
     return {
       score: earnedScore,
@@ -213,49 +205,49 @@ export function QuizInterface({
       answers,
       timeSpent,
       correctCount,
-      incorrectCount: config.questions.length - correctCount
-    }
-  }
+      incorrectCount: config.questions.length - correctCount,
+    };
+  };
 
   const handleSubmit = () => {
-    const quizResults = calculateResults()
-    setResults(quizResults)
-    setIsSubmitted(true)
-    
+    const quizResults = calculateResults();
+    setResults(quizResults);
+    setIsSubmitted(true);
+
     if (quizResults.percentage >= config.passingScore) {
       // Celebration animation
       confetti({
         particleCount: 100,
         spread: 70,
-        origin: { y: 0.6 }
-      })
+        origin: { y: 0.6 },
+      });
     }
 
-    onSubmit?.(quizResults)
-  }
+    onSubmit?.(quizResults);
+  };
 
   const handleReview = () => {
-    setReviewMode(true)
-    setCurrentIndex(0)
-  }
+    setReviewMode(true);
+    setCurrentIndex(0);
+  };
 
   const getDifficultyColor = (difficulty: string) => {
     switch (difficulty) {
-      case 'easy': return 'success'
-      case 'medium': return 'warning'
-      case 'hard': return 'error'
-      default: return 'default'
+      case 'easy': return 'success';
+      case 'medium': return 'warning';
+      case 'hard': return 'error';
+      default: return 'default';
     }
-  }
+  };
 
   const getQuestionIcon = (type: string) => {
     switch (type) {
-      case 'code': return <Code />
-      case 'text': return <Description />
-      case 'true-false': return <Psychology />
-      default: return <Calculate />
+      case 'code': return <Code />;
+      case 'text': return <Description />;
+      case 'true-false': return <Psychology />;
+      default: return <Calculate />;
     }
-  }
+  };
 
   if (isSubmitted && results && !reviewMode) {
     return (
@@ -265,13 +257,13 @@ export function QuizInterface({
           animate={{ opacity: 1, scale: 1 }}
           className="text-center"
         >
-          <EmojiEvents 
+          <EmojiEvents
             className="text-6xl mb-4"
-            style={{ 
-              color: results.percentage >= config.passingScore ? '#10b981' : '#ef4444'
+            style={{
+              color: results.percentage >= config.passingScore ? '#10b981' : '#ef4444',
             }}
           />
-          
+
           <h2 className="text-2xl font-bold mb-4">
             Quiz Tamamlandı!
           </h2>
@@ -357,7 +349,7 @@ export function QuizInterface({
           </div>
         </motion.div>
       </Paper>
-    )
+    );
   }
 
   return (
@@ -369,7 +361,7 @@ export function QuizInterface({
             <h2 className="text-xl font-bold">{config.title}</h2>
             <p className="text-sm text-gray-600">{config.description}</p>
           </div>
-          
+
           {config.timeLimit && (
             <Chip
               icon={<Timer />}
@@ -423,7 +415,7 @@ export function QuizInterface({
                 <h3 className="text-lg font-semibold flex-1">
                   {currentQuestion.question}
                 </h3>
-                
+
                 <IconButton onClick={toggleFlag} size="small">
                   {flagged.has(currentQuestion.id) ? (
                     <Bookmark color="warning" />
@@ -469,7 +461,7 @@ export function QuizInterface({
                         'mb-2 p-2 rounded-lg border transition-all',
                         answers[currentQuestion.id] === option
                           ? 'border-blue-500 bg-blue-50'
-                          : 'border-gray-200 hover:bg-gray-50'
+                          : 'border-gray-200 hover:bg-gray-50',
                       )}
                     />
                   ))}
@@ -492,7 +484,7 @@ export function QuizInterface({
                         'p-2 rounded-lg border transition-all',
                         (answers[currentQuestion.id] || []).includes(option)
                           ? 'border-blue-500 bg-blue-50'
-                          : 'border-gray-200 hover:bg-gray-50'
+                          : 'border-gray-200 hover:bg-gray-50',
                       )}
                     />
                   ))}
@@ -513,7 +505,7 @@ export function QuizInterface({
                       'mr-4 px-4 py-2 rounded-lg border',
                       answers[currentQuestion.id] === 'true'
                         ? 'border-green-500 bg-green-50'
-                        : 'border-gray-200'
+                        : 'border-gray-200',
                     )}
                   />
                   <FormControlLabel
@@ -524,7 +516,7 @@ export function QuizInterface({
                       'px-4 py-2 rounded-lg border',
                       answers[currentQuestion.id] === 'false'
                         ? 'border-red-500 bg-red-50'
-                        : 'border-gray-200'
+                        : 'border-gray-200',
                     )}
                   />
                 </RadioGroup>
@@ -554,8 +546,8 @@ export function QuizInterface({
                   sx={{
                     '& .MuiInputBase-input': {
                       fontFamily: 'monospace',
-                      fontSize: '14px'
-                    }
+                      fontSize: '14px',
+                    },
                   }}
                 />
               )}
@@ -569,10 +561,10 @@ export function QuizInterface({
                   size="small"
                   startIcon={<Lightbulb />}
                   onClick={() => {
-                    setShowHint(true)
-                    setCurrentHintIndex(prev => 
-                      Math.min(prev + 1, currentQuestion.hints!.length - 1)
-                    )
+                    setShowHint(true);
+                    setCurrentHintIndex(prev =>
+                      Math.min(prev + 1, currentQuestion.hints!.length - 1),
+                    );
                   }}
                 >
                   İpucu ({currentHintIndex + 1}/{currentQuestion.hints.length})
@@ -588,10 +580,10 @@ export function QuizInterface({
 
             {/* Review Mode - Show Explanation */}
             {reviewMode && config.showCorrectAnswers && (
-              <Alert 
+              <Alert
                 severity={
-                  answers[currentQuestion.id] === currentQuestion.correctAnswer 
-                    ? 'success' 
+                  answers[currentQuestion.id] === currentQuestion.correctAnswer
+                    ? 'success'
                     : 'error'
                 }
                 className="mt-4"
@@ -634,7 +626,7 @@ export function QuizInterface({
                       : answers[q.id]
                       ? 'bg-green-100 text-green-700'
                       : 'bg-gray-200 text-gray-600',
-                    flagged.has(q.id) && 'ring-2 ring-yellow-400'
+                    flagged.has(q.id) && 'ring-2 ring-yellow-400',
                   )}
                   onClick={() => setCurrentIndex(index)}
                 >
@@ -674,7 +666,7 @@ export function QuizInterface({
         </div>
       </div>
     </Paper>
-  )
+  );
 }
 
-export default QuizInterface
+export default QuizInterface;

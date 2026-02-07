@@ -2,7 +2,17 @@
  * Şüpheli Sorular Paneli - REQ-1.6
  * İşaretlenmiş soruların listesi ve hızlı navigasyon
  */
-import React, { useState } from 'react'
+import {
+  Bookmark,
+  BookmarkBorder,
+  ExpandMore,
+  ExpandLess,
+  Flag,
+  NavigateNext,
+  CheckCircle,
+  RadioButtonUnchecked,
+  Warning,
+} from '@mui/icons-material';
 import {
   Box,
   Paper,
@@ -16,22 +26,11 @@ import {
   Chip,
   Collapse,
   Badge,
-  Divider,
   Tooltip,
-  useTheme
-} from '@mui/material'
-import {
-  Bookmark,
-  BookmarkBorder,
-  ExpandMore,
-  ExpandLess,
-  Flag,
-  NavigateNext,
-  CheckCircle,
-  RadioButtonUnchecked,
-  Warning
-} from '@mui/icons-material'
-import { motion, AnimatePresence } from 'framer-motion'
+} from '@mui/material';
+import { motion, AnimatePresence } from 'framer-motion';
+import * as React from 'react';
+import {  useState  } from 'react';
 
 interface FlaggedQuestionsPanelProps {
   flaggedQuestions: Set<string>
@@ -47,30 +46,29 @@ export const FlaggedQuestionsPanel: React.FC<FlaggedQuestionsPanelProps> = ({
   flaggedQuestions,
   answers,
   currentQuestionIndex,
-  totalQuestions,
+  totalQuestions: _totalQuestions,
   onQuestionSelect,
   onFlagToggle,
-  disabled = false
+  disabled = false,
 }) => {
-  const theme = useTheme()
-  const [isExpanded, setIsExpanded] = useState(true)
+  const [isExpanded, setIsExpanded] = useState(true);
 
   /**
    * İşaretli soruların listesini oluştur
    */
   const flaggedQuestionsList = Array.from(flaggedQuestions).map(questionId => {
     // Question ID'den index'i çıkar (format: question_0, question_1, etc.)
-    const questionIndex = parseInt(questionId.split('_')[1])
-    const isAnswered = !!answers[questionId]
-    const isCurrent = questionIndex === currentQuestionIndex
+    const questionIndex = parseInt(questionId.split('_')[1]);
+    const isAnswered = !!answers[questionId];
+    const isCurrent = questionIndex === currentQuestionIndex;
 
     return {
       questionId,
       questionIndex,
       isAnswered,
-      isCurrent
-    }
-  }).sort((a, b) => a.questionIndex - b.questionIndex)
+      isCurrent,
+    };
+  }).sort((a, b) => a.questionIndex - b.questionIndex);
 
   /**
    * İstatistikleri hesapla
@@ -78,8 +76,8 @@ export const FlaggedQuestionsPanel: React.FC<FlaggedQuestionsPanelProps> = ({
   const stats = {
     total: flaggedQuestions.size,
     answered: flaggedQuestionsList.filter(q => q.isAnswered).length,
-    unanswered: flaggedQuestionsList.filter(q => !q.isAnswered).length
-  }
+    unanswered: flaggedQuestionsList.filter(q => !q.isAnswered).length,
+  };
 
   /**
    * Boş durum
@@ -95,7 +93,7 @@ export const FlaggedQuestionsPanel: React.FC<FlaggedQuestionsPanelProps> = ({
           Şüpheli sorularınızı işaretleyerek daha sonra gözden geçirebilirsiniz
         </Typography>
       </Paper>
-    )
+    );
   }
 
   return (
@@ -110,7 +108,7 @@ export const FlaggedQuestionsPanel: React.FC<FlaggedQuestionsPanelProps> = ({
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
-          cursor: 'pointer'
+          cursor: 'pointer',
         }}
         onClick={() => setIsExpanded(!isExpanded)}
       >
@@ -123,7 +121,7 @@ export const FlaggedQuestionsPanel: React.FC<FlaggedQuestionsPanelProps> = ({
             <Box />
           </Badge>
         </Box>
-        
+
         <IconButton size="small">
           {isExpanded ? <ExpandLess /> : <ExpandMore />}
         </IconButton>
@@ -172,8 +170,8 @@ export const FlaggedQuestionsPanel: React.FC<FlaggedQuestionsPanelProps> = ({
                       <IconButton
                         edge="end"
                         onClick={(e) => {
-                          e.stopPropagation()
-                          onFlagToggle(question.questionId)
+                          e.stopPropagation();
+                          onFlagToggle(question.questionId);
                         }}
                         disabled={disabled}
                         size="small"
@@ -184,7 +182,7 @@ export const FlaggedQuestionsPanel: React.FC<FlaggedQuestionsPanelProps> = ({
                   }
                   sx={{
                     borderBottom: index < flaggedQuestionsList.length - 1 ? 1 : 0,
-                    borderColor: 'divider'
+                    borderColor: 'divider',
                   }}
                 >
                   <ListItemButton
@@ -196,8 +194,8 @@ export const FlaggedQuestionsPanel: React.FC<FlaggedQuestionsPanelProps> = ({
                       '&.Mui-selected': {
                         bgcolor: 'primary.50',
                         borderLeft: 3,
-                        borderColor: 'primary.main'
-                      }
+                        borderColor: 'primary.main',
+                      },
                     }}
                   >
                     <ListItemIcon sx={{ minWidth: 40 }}>
@@ -211,20 +209,20 @@ export const FlaggedQuestionsPanel: React.FC<FlaggedQuestionsPanelProps> = ({
                           justifyContent: 'center',
                           fontSize: '0.875rem',
                           fontWeight: question.isCurrent ? 'bold' : 'normal',
-                          bgcolor: question.isAnswered 
-                            ? 'success.main' 
-                            : question.isCurrent 
-                            ? 'primary.main' 
+                          bgcolor: question.isAnswered
+                            ? 'success.main'
+                            : question.isCurrent
+                            ? 'primary.main'
                             : 'grey.300',
                           color: question.isAnswered || question.isCurrent ? 'white' : 'text.primary',
                           border: 2,
-                          borderColor: 'warning.main'
+                          borderColor: 'warning.main',
                         }}
                       >
                         {question.questionIndex + 1}
                       </Box>
                     </ListItemIcon>
-                    
+
                     <ListItemText
                       primary={
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
@@ -242,7 +240,7 @@ export const FlaggedQuestionsPanel: React.FC<FlaggedQuestionsPanelProps> = ({
                         </Typography>
                       }
                     />
-                    
+
                     <NavigateNext sx={{ color: 'grey.400' }} />
                   </ListItemButton>
                 </ListItem>
@@ -256,7 +254,7 @@ export const FlaggedQuestionsPanel: React.FC<FlaggedQuestionsPanelProps> = ({
           <Typography variant="caption" color="textSecondary" sx={{ display: 'block', mb: 1 }}>
             💡 İpucu: Şüpheli sorularınızı işaretleyerek sınav sonunda tekrar gözden geçirebilirsiniz
           </Typography>
-          
+
           {stats.unanswered > 0 && (
             <Chip
               label={`${stats.unanswered} cevaplanmayan şüpheli soru var`}
@@ -269,7 +267,7 @@ export const FlaggedQuestionsPanel: React.FC<FlaggedQuestionsPanelProps> = ({
         </Box>
       </Collapse>
     </Paper>
-  )
-}
+  );
+};
 
-export default FlaggedQuestionsPanel
+export default FlaggedQuestionsPanel;

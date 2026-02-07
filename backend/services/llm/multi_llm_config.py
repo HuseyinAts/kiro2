@@ -8,7 +8,7 @@ Date: 2025-10-19
 
 from enum import Enum
 from typing import Optional, Dict, Any, List
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 import os
 
 
@@ -18,6 +18,7 @@ class LLMProvider(str, Enum):
     OPENAI = "openai"
     CLAUDE = "claude"
     QWEN = "qwen"
+    GEMINI = "gemini"
 
 
 class LLMCapability(str, Enum):
@@ -28,6 +29,9 @@ class LLMCapability(str, Enum):
     QUALITY_SCORING = "quality_scoring"
     CONTENT_ANALYSIS = "content_analysis"
     FINE_TUNING = "fine_tuning"
+    SEQUENTIAL_THINKING = "sequential_thinking"
+    MATH_REASONING = "math_reasoning"
+    STEP_BY_STEP = "step_by_step"
 
 
 class LLMModelConfig(BaseModel):
@@ -50,8 +54,7 @@ class LLMModelConfig(BaseModel):
     cost_per_1k_tokens: float = 0.0
     avg_response_time_ms: float = 0.0
 
-    class Config:
-        use_enum_values = True
+    model_config = ConfigDict(use_enum_values=True)
 
 
 class MultiLLMConfig:
@@ -107,9 +110,31 @@ class MultiLLMConfig:
             LLMCapability.DISTRACTOR_GENERATION,
             LLMCapability.CONTENT_ANALYSIS,
             LLMCapability.FINE_TUNING,
+            LLMCapability.SEQUENTIAL_THINKING,
+            LLMCapability.STEP_BY_STEP,
         ],
         cost_per_1k_tokens=0.0,  # Free if self-hosted
         avg_response_time_ms=3000.0,
+    )
+
+    # Google Gemini Configuration (Thinking Mode)
+    GEMINI_CONFIG = LLMModelConfig(
+        provider=LLMProvider.GEMINI,
+        model_name="gemini-2.0-flash-thinking-exp",  # Gemini 2.0 Flash Thinking
+        api_key=os.getenv("GOOGLE_API_KEY"),
+        max_tokens=8192,
+        temperature=0.7,
+        capabilities=[
+            LLMCapability.QUESTION_GENERATION,
+            LLMCapability.DISTRACTOR_GENERATION,
+            LLMCapability.QUALITY_SCORING,
+            LLMCapability.CONTENT_ANALYSIS,
+            LLMCapability.SEQUENTIAL_THINKING,
+            LLMCapability.MATH_REASONING,
+            LLMCapability.STEP_BY_STEP,
+        ],
+        cost_per_1k_tokens=0.0,  # Free tier available
+        avg_response_time_ms=2500.0,
     )
 
     # Fine-tuning configurations
@@ -138,11 +163,12 @@ class MultiLLMConfig:
     ENSEMBLE_STRATEGY = {
         "voting": {
             "enabled": True,
-            "min_agreement": 0.66,  # 2 out of 3 LLMs must agree
+            "min_agreement": 0.5,  # 2 out of 4 LLMs must agree
             "weights": {
-                LLMProvider.OPENAI: 0.4,
-                LLMProvider.CLAUDE: 0.35,
-                LLMProvider.QWEN: 0.25,
+                LLMProvider.GEMINI: 0.30,  # Best for sequential thinking
+                LLMProvider.OPENAI: 0.25,
+                LLMProvider.CLAUDE: 0.25,
+                LLMProvider.QWEN: 0.20,
             },
         },
         "quality_threshold": {
@@ -152,9 +178,16 @@ class MultiLLMConfig:
             "max_irt_difficulty": 0.8,
         },
         "fallback_order": [
+            LLMProvider.GEMINI,  # Best for thinking/reasoning
             LLMProvider.CLAUDE,  # Fastest and cost-effective
             LLMProvider.QWEN,  # Free if self-hosted
             LLMProvider.OPENAI,  # Most capable but expensive
+        ],
+        "sequential_thinking_order": [
+            LLMProvider.GEMINI,  # Native thinking mode
+            LLMProvider.CLAUDE,  # Strong reasoning
+            LLMProvider.OPENAI,  # GPT-4 o1 style
+            LLMProvider.QWEN,  # Local option
         ],
     }
 
@@ -252,6 +285,7 @@ Değerlendirme Kriterleri:
             LLMProvider.OPENAI: cls.OPENAI_CONFIG,
             LLMProvider.CLAUDE: cls.CLAUDE_CONFIG,
             LLMProvider.QWEN: cls.QWEN_CONFIG,
+            LLMProvider.GEMINI: cls.GEMINI_CONFIG,
         }
         return configs.get(provider)
 
@@ -261,17 +295,32 @@ Değerlendirme Kriterleri:
     ) -> LLMProvider:
         """Get best LLM provider for specific capability"""
 
-        if prefer_cost_effective:
-            # Prefer Claude (fast + cheap) or Qwen (free if self-hosted)
-            if capability in cls.CLAUDE_CONFIG.capabilities:
+        # Sequential thinking: Gemini is best
+        if capability in [
+            LLMCapability.SEQUENTIAL_THINKING,
+            LLMCapability.MATH_REASONING,
+            LLMCapability.STEP_BY_STEP,
+        ]:
+            if capability in cls.GEMINI_CONFIG.capabilities:
+                return LLMProvider.GEMINI
+            elif capability in cls.CLAUDE_CONFIG.capabilities:
                 return LLMProvider.CLAUDE
+
+        if prefer_cost_effective:
+            # Prefer Gemini (free) > Qwen (free if self-hosted) > Claude (cheap)
+            if capability in cls.GEMINI_CONFIG.capabilities:
+                return LLMProvider.GEMINI
             elif capability in cls.QWEN_CONFIG.capabilities:
                 return LLMProvider.QWEN
+            elif capability in cls.CLAUDE_CONFIG.capabilities:
+                return LLMProvider.CLAUDE
             elif capability in cls.OPENAI_CONFIG.capabilities:
                 return LLMProvider.OPENAI
         else:
-            # Prefer quality: OpenAI > Claude > Qwen
-            if capability in cls.OPENAI_CONFIG.capabilities:
+            # Prefer quality: Gemini (thinking) > OpenAI > Claude > Qwen
+            if capability in cls.GEMINI_CONFIG.capabilities:
+                return LLMProvider.GEMINI
+            elif capability in cls.OPENAI_CONFIG.capabilities:
                 return LLMProvider.OPENAI
             elif capability in cls.CLAUDE_CONFIG.capabilities:
                 return LLMProvider.CLAUDE

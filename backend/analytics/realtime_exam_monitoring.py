@@ -14,7 +14,6 @@ from datetime import datetime, timedelta, timezone
 from enum import Enum
 from typing import Any, Dict, List, Optional, Union
 
-import redis.asyncio as redis
 import websockets
 from analytics.unified_analytics_data_model import (
     AnalyticsEvent,
@@ -904,7 +903,7 @@ if __name__ == "__main__":
                 session.session_id, i, "join"
             )
 
-        print(f"20 students joined the exam")
+        print("20 students joined the exam")
 
         # Simulate some students leaving (creating a dropout alert)
         for i in range(1001, 1011):  # 10 students leave
@@ -912,7 +911,7 @@ if __name__ == "__main__":
                 session.session_id, i, "leave"
             )
 
-        print(f"10 students left the exam (should trigger dropout alert)")
+        print("10 students left the exam (should trigger dropout alert)")
 
         # Get dashboard data
         dashboard_data = monitoring_dashboard.get_dashboard_data()

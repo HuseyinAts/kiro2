@@ -133,7 +133,7 @@ async def generate_questions_with_quality_control(count: int = 5):
                 continue
 
             question = questions[0]
-            print(f"✓ Soru üretildi")
+            print("✓ Soru üretildi")
             print(f"   {question.get('soru_metni', '')[:100]}...")
 
             # 2. Wave 2B kalite kontrolü
@@ -161,20 +161,20 @@ async def generate_questions_with_quality_control(count: int = 5):
             quality_stats["scores"].append(evaluation.overall_score)
 
             # Sonuçları göster
-            print(f"\n📊 KALİTE RAPORU:")
+            print("\n📊 KALİTE RAPORU:")
             print(f"   Genel Skor: {evaluation.overall_score:.3f}")
             print(f"   Derece: {evaluation.overall_grade}")
             print(f"   Karar: {evaluation.decision}")
 
             if evaluation.decision == "APPROVE":
                 quality_stats["approved"] += 1
-                print(f"   Durum: ✅ ONAYLANDI")
+                print("   Durum: ✅ ONAYLANDI")
             elif evaluation.decision == "REVIEW":
                 quality_stats["review"] += 1
-                print(f"   Durum: ⚠️  İNCELENMELİ")
+                print("   Durum: ⚠️  İNCELENMELİ")
             else:
                 quality_stats["rejected"] += 1
-                print(f"   Durum: ❌ REDDEDİLDİ")
+                print("   Durum: ❌ REDDEDİLDİ")
 
             if evaluation.bloom_level:
                 print(
@@ -182,12 +182,12 @@ async def generate_questions_with_quality_control(count: int = 5):
                 )
 
             if evaluation.strengths:
-                print(f"\n   ✓ Güçlü Yönler:")
+                print("\n   ✓ Güçlü Yönler:")
                 for s in evaluation.strengths[:2]:
                     print(f"      - {s}")
 
             if evaluation.weaknesses:
-                print(f"\n   ⚠️  İyileştirme Alanları:")
+                print("\n   ⚠️  İyileştirme Alanları:")
                 for w in evaluation.weaknesses[:2]:
                     print(f"      - {w}")
 
@@ -212,7 +212,7 @@ async def generate_questions_with_quality_control(count: int = 5):
     print(" " * 30 + "ÖZET RAPOR")
     print("=" * 80)
 
-    print(f"\n📊 KALİTE İSTATİSTİKLERİ:")
+    print("\n📊 KALİTE İSTATİSTİKLERİ:")
     print(f"   Toplam Soru: {quality_stats['total']}")
     print(
         f"   ✅ Onaylanan: {quality_stats['approved']} ({quality_stats['approved']/max(quality_stats['total'],1):.1%})"

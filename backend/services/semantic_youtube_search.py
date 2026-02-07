@@ -478,7 +478,7 @@ class SemanticYouTubeSearch:
                 "channel": "TonguçAkademi",
                 "channel_id": "UCQaEgq0uA7wHQlUkE3o8L4w",
                 "description": f"{subject} dersi temel kavramlar {exam_type} sınavına hazırlanma konu anlatımı",
-                "thumbnail": f"https://img.youtube.com/vi/VuwKz2TVVKA/maxresdefault.jpg",
+                "thumbnail": "https://img.youtube.com/vi/VuwKz2TVVKA/maxresdefault.jpg",
                 "duration": "18:43",
                 "view_count": 125000,
                 "upload_date": "2024-09-15",
@@ -489,7 +489,7 @@ class SemanticYouTubeSearch:
                 "channel": "KAMP Online",
                 "channel_id": "UCkamp_online",
                 "description": f"{subject} ileri seviye sorular detaylı çözümler {exam_type} sınav hazırlık",
-                "thumbnail": f"https://img.youtube.com/vi/L_42C1qoQTE/maxresdefault.jpg",
+                "thumbnail": "https://img.youtube.com/vi/L_42C1qoQTE/maxresdefault.jpg",
                 "duration": "32:15",
                 "view_count": 89000,
                 "upload_date": "2024-09-10",
@@ -541,6 +541,15 @@ class SemanticYouTubeSearch:
         if self.session:
             await self.session.close()
         await self._save_cache()
+
+    # FIX Resource Cleanup: Context manager implementation
+    async def __aenter__(self):
+        """Async context manager entry"""
+        return self
+
+    async def __aexit__(self, exc_type, exc_val, exc_tb):
+        """Async context manager exit - ensures session cleanup"""
+        await self.close()
 
 
 # Global instance

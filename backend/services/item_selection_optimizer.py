@@ -12,12 +12,11 @@ Bu modül adaptif test sisteminde soru seçimi ve optimizasyonu sağlar:
 
 import logging
 import math
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from datetime import datetime, timedelta
 from typing import Dict, List, Optional, Set, Tuple
 import numpy as np
 
-from services.irt_psychometric_analysis import IRTParameters
 
 logger = logging.getLogger(__name__)
 

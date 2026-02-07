@@ -2,7 +2,8 @@
  * Task 92.1: Success Animation Component
  * DEHB için anında pozitif geri bildirim animasyonları
  */
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
+import type { FC } from 'react';
 import './SuccessAnimation.css';
 
 interface SuccessAnimationProps {
@@ -19,17 +20,59 @@ const SUCCESS_MESSAGES = {
   correct: ['Harika! 🎉', 'Mükemmel! ⭐', 'Süper! 🌟', 'Bravo! 👏', 'Aferin! 🎯'],
   streak: ['Seri devam! 🔥', 'Durdurulamazsın! ⚡', 'Süpersin! 💪'],
   achievement: ['Başarı kazandın! 🏆', 'Tebrikler! 🎊'],
-  levelup: ['Seviye atladın! 🚀', 'Level Up! 🌠']
+  levelup: ['Seviye atladın! 🚀', 'Level Up! 🌠'],
 };
 
-export const SuccessAnimation: React.FC<SuccessAnimationProps> = ({
+// Helper function - moved outside component to avoid recreation
+const playSuccessSound = (type: string): void => {
+  try {
+    const audioContext = new (window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext)();
+    const oscillator = audioContext.createOscillator();
+    const gainNode = audioContext.createGain();
+
+    oscillator.connect(gainNode);
+    gainNode.connect(audioContext.destination);
+
+    const frequencies: Record<string, number[]> = {
+      correct: [523.25, 659.25, 783.99],
+      streak: [659.25, 783.99, 987.77],
+      achievement: [523.25, 698.46, 880.00],
+      levelup: [523.25, 659.25, 783.99, 1046.50],
+    };
+
+    const notes = frequencies[type] || frequencies.correct;
+
+    oscillator.frequency.value = notes[0];
+    oscillator.type = 'sine';
+    gainNode.gain.value = 0.3;
+
+    oscillator.start(audioContext.currentTime);
+
+    notes.forEach((freq, index) => {
+      setTimeout(() => {
+        oscillator.frequency.value = freq;
+      }, index * 100);
+    });
+
+    oscillator.stop(audioContext.currentTime + 0.5);
+  } catch (error) {
+    console.warn('Audio playback not supported:', error);
+  }
+};
+
+const CONFETTI_COLORS = [
+  '#FF6B6B', '#4ECDC4', '#45B7D1', '#FFA07A',
+  '#98D8C8', '#F7DC6F', '#BB8FCE', '#85C1E2',
+];
+
+export const SuccessAnimation: FC<SuccessAnimationProps> = ({
   isVisible,
   message,
   type = 'correct',
   onComplete,
   duration = 2000,
   showConfetti = true,
-  soundEnabled = true
+  soundEnabled = true,
 }) => {
   const [displayMessage, setDisplayMessage] = useState('');
   const [confettiPieces, setConfettiPieces] = useState<number[]>([]);
@@ -62,62 +105,28 @@ export const SuccessAnimation: React.FC<SuccessAnimationProps> = ({
     }
   }, [isVisible, message, type, onComplete, duration, showConfetti, soundEnabled]);
 
-  const playSuccessSound = (type: string) => {
-    try {
-      // Web Audio API için basit ses
-      const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
-      const oscillator = audioContext.createOscillator();
-      const gainNode = audioContext.createGain();
+  // Pre-compute confetti styles to avoid Math.random() in render
+  const confettiStyles = useMemo(() =>
+    confettiPieces.map((piece) => ({
+      left: `${(piece * 3.33) % 100}%`,
+      animationDelay: `${(piece * 0.017) % 0.5}s`,
+      backgroundColor: CONFETTI_COLORS[piece % CONFETTI_COLORS.length],
+    })),
+    [confettiPieces],
+  );
 
-      oscillator.connect(gainNode);
-      gainNode.connect(audioContext.destination);
-
-      // Farklı tiplar için farklı tonlar
-      const frequencies = {
-        correct: [523.25, 659.25, 783.99], // C, E, G (major chord)
-        streak: [659.25, 783.99, 987.77], // E, G, B
-        achievement: [523.25, 698.46, 880.00], // C, F, A
-        levelup: [523.25, 659.25, 783.99, 1046.50] // C major scale up
-      };
-
-      const notes = frequencies[type as keyof typeof frequencies];
-      let noteIndex = 0;
-
-      oscillator.frequency.value = notes[noteIndex];
-      oscillator.type = 'sine';
-      gainNode.gain.value = 0.3;
-
-      oscillator.start(audioContext.currentTime);
-
-      // Play notes in sequence
-      notes.forEach((freq, index) => {
-        setTimeout(() => {
-          oscillator.frequency.value = freq;
-        }, index * 100);
-      });
-
-      oscillator.stop(audioContext.currentTime + 0.5);
-    } catch (error) {
-      console.warn('Audio playback not supported:', error);
-    }
-  };
-
-  if (!isVisible) return null;
+  if (!isVisible) {return null;}
 
   return (
     <div className={`success-animation ${type}`}>
       {/* Confetti */}
       {showConfetti && (
         <div className="confetti-container">
-          {confettiPieces.map((piece) => (
+          {confettiPieces.map((piece, index) => (
             <div
               key={piece}
               className="confetti-piece"
-              style={{
-                left: `${Math.random() * 100}%`,
-                animationDelay: `${Math.random() * 0.5}s`,
-                backgroundColor: getRandomColor()
-              }}
+              style={confettiStyles[index]}
             />
           ))}
         </div>
@@ -155,13 +164,5 @@ export const SuccessAnimation: React.FC<SuccessAnimationProps> = ({
     </div>
   );
 };
-
-function getRandomColor(): string {
-  const colors = [
-    '#FF6B6B', '#4ECDC4', '#45B7D1', '#FFA07A',
-    '#98D8C8', '#F7DC6F', '#BB8FCE', '#85C1E2'
-  ];
-  return colors[Math.floor(Math.random() * colors.length)];
-}
 
 export default SuccessAnimation;

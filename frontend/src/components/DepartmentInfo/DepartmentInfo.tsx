@@ -4,10 +4,11 @@
  * Displays curriculum, career opportunities, salary expectations, and sector analysis
  */
 
-import React, { useState, useEffect } from 'react';
+import * as React from 'react';
+import {  useState, useEffect  } from 'react';
 import './DepartmentInfo.css';
 
-const API_BASE = process.env.REACT_APP_API_URL || 'http://localhost:8000';
+const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
 // ============================================================
 // Types
@@ -91,7 +92,7 @@ interface DepartmentInfoProps {
 
 export const DepartmentInfo: React.FC<DepartmentInfoProps> = ({
   departmentId,
-  year = 2024
+  year = 2024,
 }) => {
   const [info, setInfo] = useState<ComprehensiveInfo | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
@@ -108,7 +109,7 @@ export const DepartmentInfo: React.FC<DepartmentInfoProps> = ({
 
     try {
       const response = await fetch(
-        `${API_BASE}/api/department-info/comprehensive/${departmentId}?year=${year}`
+        `${API_BASE}/api/department-info/comprehensive/${departmentId}?year=${year}`,
       );
 
       if (!response.ok) {
@@ -266,7 +267,7 @@ const CurriculumTab: React.FC<{ curriculum: Curriculum }> = ({ curriculum }) => 
 
       {curriculum.skills_gained && curriculum.skills_gained.length > 0 && (
         <div className="skills-section">
-          <h3>Skills You'll Gain</h3>
+          <h3>Skills You&apos;ll Gain</h3>
           <div className="skills-list">
             {curriculum.skills_gained.map((skill, idx) => (
               <div key={idx} className="skill-tag">
@@ -488,7 +489,7 @@ function formatExperienceLevel(level: string): string {
     junior: 'Junior',
     mid: 'Mid-Level',
     senior: 'Senior',
-    expert: 'Expert'
+    expert: 'Expert',
   };
   return levels[level] || level;
 }

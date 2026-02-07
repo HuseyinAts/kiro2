@@ -1,4 +1,5 @@
-import React, { useState, useRef, useEffect } from 'react';
+import * as React from 'react';
+import {  useState, useRef, useEffect  } from 'react';
 
 interface SelectProps {
   value: string;
@@ -46,7 +47,7 @@ export const Select: React.FC<SelectProps> = ({ value, onValueChange, children }
           if (child.type === SelectTrigger) {
             return React.cloneElement(child, {
               onClick: () => setIsOpen(!isOpen),
-              isOpen
+              isOpen,
             } as any);
           }
           if (child.type === SelectContent && isOpen) {
@@ -55,7 +56,7 @@ export const Select: React.FC<SelectProps> = ({ value, onValueChange, children }
                 onValueChange(selectedValue);
                 setIsOpen(false);
               },
-              currentValue: value
+              currentValue: value,
             } as any);
           }
         }
@@ -65,11 +66,11 @@ export const Select: React.FC<SelectProps> = ({ value, onValueChange, children }
   );
 };
 
-export const SelectTrigger: React.FC<SelectTriggerProps & { onClick?: () => void; isOpen?: boolean }> = ({ 
-  children, 
-  className = '', 
+export const SelectTrigger: React.FC<SelectTriggerProps & { onClick?: () => void; isOpen?: boolean }> = ({
+  children,
+  className = '',
   onClick,
-  isOpen 
+  isOpen,
 }) => {
   return (
     <button
@@ -92,10 +93,10 @@ export const SelectTrigger: React.FC<SelectTriggerProps & { onClick?: () => void
   );
 };
 
-export const SelectContent: React.FC<SelectContentProps & { onSelect?: (value: string) => void; currentValue?: string }> = ({ 
-  children, 
+export const SelectContent: React.FC<SelectContentProps & { onSelect?: (value: string) => void; currentValue?: string }> = ({
+  children,
   onSelect,
-  currentValue 
+  currentValue,
 }) => {
   return (
     <div className="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-auto">
@@ -103,7 +104,7 @@ export const SelectContent: React.FC<SelectContentProps & { onSelect?: (value: s
         if (React.isValidElement(child) && child.type === SelectItem) {
           return React.cloneElement(child, {
             onSelect,
-            isSelected: child.props.value === currentValue
+            isSelected: child.props.value === currentValue,
           } as any);
         }
         return child;
@@ -112,11 +113,11 @@ export const SelectContent: React.FC<SelectContentProps & { onSelect?: (value: s
   );
 };
 
-export const SelectItem: React.FC<SelectItemProps & { onSelect?: (value: string) => void; isSelected?: boolean }> = ({ 
-  value, 
-  children, 
+export const SelectItem: React.FC<SelectItemProps & { onSelect?: (value: string) => void; isSelected?: boolean }> = ({
+  value,
+  children,
   onSelect,
-  isSelected 
+  isSelected,
 }) => {
   return (
     <div

@@ -1,0 +1,56 @@
+======================================================================
+  SAYFA BAZLI CEVAP ANAHTARI TESTİ
+======================================================================
+
+EasyOCR yükleniyor...
+Hazır!
+
+Cevap içeren sayfa: 5673
+
+----------------------------------------------------------------------
+TÜM SAYFA OCR TESTİ
+----------------------------------------------------------------------
+
+[1] 2019-2020-Acil Matematiğin ilacı-1
+    Sayfa: sayfa_0005
+    ❌ Görüntü dizini yok
+
+[2] 2019-2020-Acil Matematiğin ilacı-1
+    Sayfa: sayfa_0009
+    ❌ Görüntü dizini yok
+
+[3] 2019-2020-Acil Matematiğin ilacı-1
+    Sayfa: sayfa_0010
+    ❌ Görüntü dizini yok
+
+[4] 2019-2020-Acil Matematiğin ilacı-1
+    Sayfa: sayfa_0018
+    ❌ Görüntü dizini yok
+
+[5] 2019-2020-Acil Matematiğin ilacı-1
+    Sayfa: sayfa_0019
+    ❌ Görüntü dizini yok
+
+[6] 2019-2020-Acil Matematiğin ilacı-1
+    Sayfa: sayfa_0020
+    ❌ Görüntü dizini yok
+
+[7] 2019-2020-Acil Matematiğin ilacı-1
+    Sayfa: sayfa_0021
+    ❌ Görüntü dizini yok
+
+[8] 2019-2020-Acil Matematiğin ilacı-1
+    Sayfa: sayfa_0022
+    ❌ Görüntü dizini yok
+
+[9] 2019-2020-Acil Matematiğin ilacı-1
+    Sayfa: sayfa_0023
+    ❌ Görüntü dizini yok
+
+[10] 2019-2020-Acil Matematiğin ilacı-1
+    Sayfa: sayfa_0024
+    ❌ Görüntü dizini yok
+
+======================================================================
+ÖZET: 0 cevap bulundu
+======================================================================

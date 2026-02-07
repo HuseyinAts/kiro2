@@ -5,7 +5,7 @@ Extracts questions from ÖSYM PDF files and structures them for database import
 import pdfplumber
 import re
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, Optional
 import json
 from datetime import datetime
 
@@ -218,7 +218,7 @@ class OSYMQuestionExtractor:
         self.metadata["total_questions"] = len(self.questions)
 
         print(f"\n{'='*80}")
-        print(f"Extraction complete!")
+        print("Extraction complete!")
         print(f"Total questions extracted: {len(self.questions)}")
         print(
             f"Questions with answers: {sum(1 for q in self.questions if q['correct_answer'])}"

@@ -9,7 +9,7 @@ from collections.abc import Callable
 from dataclasses import dataclass, field
 from datetime import UTC, datetime, timedelta, timezone
 from enum import Enum
-from typing import Any
+from typing import Any, Tuple
 
 from core.application_metrics import MetricType, get_metrics_collector
 from core.auth_middleware import AuthContext, AuthUser, UserRole

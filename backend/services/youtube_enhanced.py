@@ -1,17 +1,24 @@
 """
 Task 99: YouTube Education Enhanced Service
 Advanced search, quality scoring, caption extraction, playlist management
+
+Async/Await Fix: googleapiclient is synchronous, so we use asyncio.to_thread()
+to run blocking API calls without blocking the event loop.
 """
 
+import asyncio
 import logging
-from typing import List, Optional, Dict, Any
-from datetime import datetime, timedelta
+from typing import List, Optional, Dict, Any, Callable, TypeVar
+from datetime import datetime
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 import re
 from pydantic import BaseModel
 
 logger = logging.getLogger(__name__)
+
+# Type variable for generic async wrapper
+T = TypeVar("T")
 
 
 class VideoQuality(BaseModel):
@@ -65,11 +72,29 @@ class YouTubeEnhancedService:
     - 99.2: Playlist management (create, curate, share)
     - 99.3: Auto-caption extraction and search
     - 99.4: Quality and educational value scoring
+
+    Async Note: googleapiclient is synchronous. All API calls use
+    asyncio.to_thread() to prevent blocking the event loop.
     """
 
     def __init__(self, api_key: str):
         self.api_key = api_key
         self.youtube = build("youtube", "v3", developerKey=api_key)
+
+    async def _run_sync(self, func: Callable[[], T]) -> T:
+        """
+        Run a synchronous function in a thread pool to avoid blocking.
+
+        The googleapiclient library is synchronous, so we use asyncio.to_thread()
+        to run blocking API calls without blocking the event loop.
+
+        Args:
+            func: Synchronous callable (typically a lambda wrapping an API call)
+
+        Returns:
+            The result of the synchronous function
+        """
+        return await asyncio.to_thread(func)
 
     # ============================================
     # Task 99.1: Enhanced Search
@@ -117,8 +142,10 @@ class YouTubeEnhancedService:
                     duration_range
                 )
 
-            # Execute search
-            search_response = self.youtube.search().list(**search_params).execute()
+            # Execute search (wrapped in thread to avoid blocking)
+            search_response = await self._run_sync(
+                lambda: self.youtube.search().list(**search_params).execute()
+            )
 
             videos = []
             for item in search_response.get("items", []):
@@ -207,8 +234,8 @@ class YouTubeEnhancedService:
     async def get_video_details(self, video_id: str) -> Optional[Dict[str, Any]]:
         """Get detailed video information"""
         try:
-            response = (
-                self.youtube.videos()
+            response = await self._run_sync(
+                lambda: self.youtube.videos()
                 .list(part="snippet,contentDetails,statistics", id=video_id)
                 .execute()
             )
@@ -248,16 +275,18 @@ class YouTubeEnhancedService:
             creds = Credentials(token=access_token)
             youtube_auth = build("youtube", "v3", credentials=creds)
 
-            # Create playlist
-            request = youtube_auth.playlists().insert(
-                part="snippet,status",
-                body={
-                    "snippet": {"title": title, "description": description},
-                    "status": {"privacyStatus": "public" if is_public else "private"},
-                },
-            )
+            # Create playlist (wrapped in thread to avoid blocking)
+            def _create_playlist() -> dict:
+                request = youtube_auth.playlists().insert(
+                    part="snippet,status",
+                    body={
+                        "snippet": {"title": title, "description": description},
+                        "status": {"privacyStatus": "public" if is_public else "private"},
+                    },
+                )
+                return request.execute()
 
-            response = request.execute()
+            response = await self._run_sync(_create_playlist)
             playlist_id = response["id"]
 
             logger.info(f"[YOUTUBE PLAYLIST] Created playlist: {playlist_id}")
@@ -279,17 +308,20 @@ class YouTubeEnhancedService:
             creds = Credentials(token=access_token)
             youtube_auth = build("youtube", "v3", credentials=creds)
 
-            request = youtube_auth.playlistItems().insert(
-                part="snippet",
-                body={
-                    "snippet": {
-                        "playlistId": playlist_id,
-                        "resourceId": {"kind": "youtube#video", "videoId": video_id},
-                    }
-                },
-            )
+            # Add video to playlist (wrapped in thread to avoid blocking)
+            def _add_video() -> None:
+                request = youtube_auth.playlistItems().insert(
+                    part="snippet",
+                    body={
+                        "snippet": {
+                            "playlistId": playlist_id,
+                            "resourceId": {"kind": "youtube#video", "videoId": video_id},
+                        }
+                    },
+                )
+                request.execute()
 
-            request.execute()
+            await self._run_sync(_add_video)
             logger.info(
                 f"[YOUTUBE PLAYLIST] Added video {video_id} to playlist {playlist_id}"
             )
@@ -308,14 +340,17 @@ class YouTubeEnhancedService:
             next_page_token = None
 
             while True:
-                request = self.youtube.playlistItems().list(
-                    part="snippet,contentDetails",
-                    playlistId=playlist_id,
-                    maxResults=50,
-                    pageToken=next_page_token,
-                )
+                # Wrap sync call in thread to avoid blocking
+                def _fetch_page(page_token: Optional[str] = next_page_token) -> dict:
+                    request = self.youtube.playlistItems().list(
+                        part="snippet,contentDetails",
+                        playlistId=playlist_id,
+                        maxResults=50,
+                        pageToken=page_token,
+                    )
+                    return request.execute()
 
-                response = request.execute()
+                response = await self._run_sync(_fetch_page)
 
                 for item in response.get("items", []):
                     videos.append(
@@ -356,9 +391,11 @@ class YouTubeEnhancedService:
         Returns timestamped captions in requested language
         """
         try:
-            # List available captions
-            captions_response = (
-                self.youtube.captions().list(part="snippet", videoId=video_id).execute()
+            # List available captions (wrapped in thread to avoid blocking)
+            captions_response = await self._run_sync(
+                lambda: self.youtube.captions()
+                .list(part="snippet", videoId=video_id)
+                .execute()
             )
 
             # Find Turkish caption track
@@ -387,8 +424,10 @@ class YouTubeEnhancedService:
         Check if video has Turkish captions
         """
         try:
-            captions_response = (
-                self.youtube.captions().list(part="snippet", videoId=video_id).execute()
+            captions_response = await self._run_sync(
+                lambda: self.youtube.captions()
+                .list(part="snippet", videoId=video_id)
+                .execute()
             )
 
             for item in captions_response.get("items", []):

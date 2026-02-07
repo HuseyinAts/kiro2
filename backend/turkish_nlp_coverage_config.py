@@ -312,6 +312,6 @@ if __name__ == "__main__":
 
     # Show test data statistics
     test_data = config.generate_turkish_test_data()
-    print(f"\nTEST DATA GENERATED:")
+    print("\nTEST DATA GENERATED:")
     for category, data in test_data.items():
         print(f"  {category}: {len(data)} items")

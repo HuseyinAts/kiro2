@@ -268,7 +268,8 @@ class EBATVClient:
         if data.get("publish_date"):
             try:
                 publish_date = datetime.fromisoformat(data["publish_date"])
-            except:
+            except (ValueError, TypeError) as e:
+                logger.debug(f"Failed to parse publish_date: {e}")
                 pass
 
         return EBAVideoMetadata(

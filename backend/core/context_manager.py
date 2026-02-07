@@ -15,6 +15,13 @@ from typing import Any
 
 # import redis.asyncio as redis  # Disabled due to Python 3.11 compatibility issues
 
+# Import StudySession from models for history tracking
+try:
+    from models.study_room import StudySession
+except ImportError:
+    # Fallback if model is not available
+    StudySession = None
+
 logger = logging.getLogger(__name__)
 
 

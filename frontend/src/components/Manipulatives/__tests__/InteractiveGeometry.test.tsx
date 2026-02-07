@@ -6,11 +6,12 @@
  * transformations, and tool usage tracking.
  */
 
-import React from 'react';
+import * as React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import axios from 'axios';
 import InteractiveGeometry from '../InteractiveGeometry';
+import { vi, Mocked, Mock } from 'vitest';
 
 // ============================================================
 // Mocks
@@ -18,7 +19,7 @@ import InteractiveGeometry from '../InteractiveGeometry';
 
 // Mock Axios
 vi.mock('axios');
-const mockedAxios = axios as jest.Mocked<typeof axios>;
+const mockedAxios = axios as Mocked<typeof axios>;
 
 // Mock window.alert
 global.alert = vi.fn();
@@ -40,8 +41,8 @@ const mockContext = {
   setLineDash: vi.fn(),
 };
 
-HTMLCanvasElement.prototype.getContext = jest.fn(() => mockContext) as any;
-HTMLCanvasElement.prototype.getBoundingClientRect = jest.fn(() => ({
+HTMLCanvasElement.prototype.getContext = vi.fn(() => mockContext) as any;
+HTMLCanvasElement.prototype.getBoundingClientRect = vi.fn(() => ({
   left: 0,
   top: 0,
   width: 800,
@@ -633,7 +634,7 @@ describe('InteractiveGeometry Component - Save Usage', () => {
   });
 
   afterEach(() => {
-    jest.restoreAllMocks();
+    vi.restoreAllMocks();
   });
 
   it('saves usage data', async () => {
@@ -850,7 +851,7 @@ describe('InteractiveGeometry Component - Edge Cases', () => {
   });
 
   it('handles missing canvas context', () => {
-    (HTMLCanvasElement.prototype.getContext as jest.Mock).mockReturnValueOnce(null);
+    (HTMLCanvasElement.prototype.getContext as Mock).mockReturnValueOnce(null);
 
     // Should not crash
     render(<InteractiveGeometry />);

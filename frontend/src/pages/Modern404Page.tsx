@@ -3,8 +3,6 @@
  * Sayfa bulunamadı
  */
 
-import { useNavigate } from 'react-router-dom'
-import { Container, Typography, Box, Grid } from '@mui/material'
 import {
   SearchOff,
   Home,
@@ -12,69 +10,72 @@ import {
   School,
   MenuBook,
   Quiz,
-  Help
-} from '@mui/icons-material'
-import { motion } from 'framer-motion'
-import { useAuthStore } from '@/store/authStore'
-import { UserRole } from '../types'
-import { GlassCard } from '../components/ui/GlassCard'
-import { ModernButton } from '../components/ui/ModernButton'
-import modernColors from '../theme/modern-colors'
+  Help,
+} from '@mui/icons-material';
+import { Container, Typography, Box, Grid } from '@mui/material';
+import { motion } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
+
+import { GlassCard } from '../components/ui/GlassCard';
+import { ModernButton } from '../components/ui/ModernButton';
+import modernColors from '../theme/modern-colors';
+import { UserRole } from '../types';
+import { useAuthStore } from '@/store/authStore';
 
 export function Modern404Page() {
-  const { user } = useAuthStore()
-  const navigate = useNavigate()
+  const { user } = useAuthStore();
+  const navigate = useNavigate();
 
   const getDefaultDashboard = (role?: UserRole): string => {
     switch (role) {
       case 'ogrenci':
-        return '/dashboard'
+        return '/dashboard';
       case 'ogretmen':
-        return '/teacher/dashboard'
+        return '/teacher/dashboard';
       case 'veli':
-        return '/parent/dashboard'
+        return '/parent/dashboard';
       case 'admin':
-        return '/admin/dashboard'
+        return '/admin/dashboard';
       default:
-        return '/login'
+        return '/login';
     }
-  }
+  };
 
   const handleGoHome = () => {
-    const defaultPath = getDefaultDashboard(user?.rol)
-    navigate(defaultPath)
-  }
+    const defaultPath = getDefaultDashboard(user?.rol);
+    navigate(defaultPath);
+  };
 
   const handleGoBack = () => {
-    navigate(-1)
-  }
+    navigate(-1);
+  };
 
   // Suggested pages based on role
   const getSuggestedPages = () => {
     if (!user) {
       return [
         { label: 'Giriş Yap', path: '/login', icon: <Home /> },
-        { label: 'Kayıt Ol', path: '/register', icon: <School /> }
-      ]
+        { label: 'Kayıt Ol', path: '/register', icon: <School /> },
+      ];
     }
 
     const commonPages = [
       { label: 'Ana Sayfa', path: getDefaultDashboard(user.rol), icon: <Home /> },
-      { label: 'Profil', path: '/profile', icon: <School /> }
-    ]
+      { label: 'Profil', path: '/profile', icon: <School /> },
+    ];
 
     if (user.rol === 'ogrenci') {
       return [
         ...commonPages,
         { label: 'Sınav Başlat', path: '/exam/start', icon: <Quiz /> },
-        { label: 'Öğrenme Yolu', path: '/learning-path', icon: <MenuBook /> }
-      ]
+        { label: 'Öğrenme Yolu', path: '/learning-path', icon: <MenuBook /> },
+      ];
     }
 
-    return commonPages
-  }
+    return commonPages;
+  };
 
-  const suggestedPages = getSuggestedPages()
+  const suggestedPages = getSuggestedPages();
 
   return (
     <Box
@@ -84,7 +85,7 @@ export function Modern404Page() {
         alignItems: 'center',
         justifyContent: 'center',
         background: modernColors.gradients.mesh,
-        py: 4
+        py: 4,
       }}
     >
       <Container maxWidth="md">
@@ -112,7 +113,7 @@ export function Modern404Page() {
                     alignItems: 'center',
                     justifyContent: 'center',
                     mx: 'auto',
-                    mb: 3
+                    mb: 3,
                   }}
                 >
                   <SearchOff sx={{ fontSize: 80, color: 'white' }} />
@@ -134,7 +135,7 @@ export function Modern404Page() {
                     backgroundClip: 'text',
                     WebkitBackgroundClip: 'text',
                     WebkitTextFillColor: 'transparent',
-                    mb: 2
+                    mb: 2,
                   }}
                 >
                   404
@@ -224,8 +225,8 @@ export function Modern404Page() {
                           onClick={() => navigate(page.path)}
                           onKeyDown={(e: React.KeyboardEvent) => {
                             if (e.key === 'Enter' || e.key === ' ') {
-                              e.preventDefault()
-                              navigate(page.path)
+                              e.preventDefault();
+                              navigate(page.path);
                             }
                           }}
                           sx={{
@@ -233,7 +234,7 @@ export function Modern404Page() {
                             '&:focus': {
                               outline: '2px solid rgba(59, 130, 246, 0.5)',
                               outlineOffset: '2px',
-                            }
+                            },
                           }}
                         >
                           <Box
@@ -241,7 +242,7 @@ export function Modern404Page() {
                               display: 'flex',
                               alignItems: 'center',
                               gap: 2,
-                              py: 1
+                              py: 1,
                             }}
                           >
                             <Box
@@ -252,7 +253,7 @@ export function Modern404Page() {
                                 background: modernColors.gradients.primary,
                                 display: 'flex',
                                 alignItems: 'center',
-                                justifyContent: 'center'
+                                justifyContent: 'center',
                               }}
                             >
                               {page.icon}
@@ -281,7 +282,7 @@ export function Modern404Page() {
                     display: 'flex',
                     alignItems: 'center',
                     gap: 2,
-                    textAlign: 'left'
+                    textAlign: 'left',
                   }}
                 >
                   <Help sx={{ fontSize: 32, color: 'primary.main' }} />
@@ -300,7 +301,7 @@ export function Modern404Page() {
         </motion.div>
       </Container>
     </Box>
-  )
+  );
 }
 
-export default Modern404Page
+export default Modern404Page;

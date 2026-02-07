@@ -3,11 +3,12 @@
  * Glassmorphism ile sınav başlatma deneyimi
  */
 
-import React from 'react'
-import { ModernExamStartPage } from './ModernExamStartPage'
+import * as React from 'react';
+
+import { ModernExamStartPage } from './ModernExamStartPage';
 
 export const ExamStartPage: React.FC = () => {
-  return <ModernExamStartPage />
-}
+  return <ModernExamStartPage />;
+};
 
-export default ExamStartPage
+export default ExamStartPage;

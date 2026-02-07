@@ -1,7 +1,7 @@
 /**
  * Zayıflık Kartı Bileşeni
  * Türkiye Üniversite Sınavları Hazırlık Platformu
- * 
+ *
  * Bu bileşen tek bir zayıflığı görselleştirir:
  * - Zayıflık seviyesi ve renk kodlaması
  * - Performans metrikleri
@@ -9,7 +9,10 @@
  * - Zorluk dağılımı
  */
 
-import React from 'react';
+import { AlertTriangle, TrendingUp, Clock, Target } from 'lucide-react';
+import * as React from 'react';
+
+import { Badge } from '@/components/ui/badge';
 import {
   Card,
   CardContent,
@@ -17,10 +20,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import { AlertTriangle, TrendingUp, Clock, Target } from 'lucide-react';
-
 import {
   SubjectWeakness,
   examPerformanceService,
@@ -72,10 +72,10 @@ const WeaknessCard: React.FC<WeaknessCardProps> = ({
             <CardTitle className="text-lg">{weakness.topic}</CardTitle>
           </div>
           <div className="flex items-center gap-2">
-            <Badge 
-              style={{ 
+            <Badge
+              style={{
                 backgroundColor: examPerformanceService.getWeaknessLevelColor(weakness.weakness_level),
-                color: 'white'
+                color: 'white',
               }}
             >
               {examPerformanceService.getWeaknessLevelLabel(weakness.weakness_level)}
@@ -100,11 +100,11 @@ const WeaknessCard: React.FC<WeaknessCardProps> = ({
               %{weakness.success_rate.toFixed(1)}
             </span>
           </div>
-          <Progress 
-            value={weakness.success_rate} 
+          <Progress
+            value={weakness.success_rate}
             className="h-2"
             style={{
-              '--progress-background': examPerformanceService.getWeaknessLevelColor(weakness.weakness_level)
+              '--progress-background': examPerformanceService.getWeaknessLevelColor(weakness.weakness_level),
             } as React.CSSProperties}
           />
         </div>
@@ -159,8 +159,8 @@ const WeaknessCard: React.FC<WeaknessCardProps> = ({
               <div className="flex flex-wrap gap-1">
                 {Object.entries(weakness.difficulty_distribution).map(([difficulty, count]) => (
                   <Badge key={difficulty} variant="outline" className="text-xs">
-                    {difficulty === 'easy' ? 'Kolay' : 
-                     difficulty === 'medium' ? 'Orta' : 
+                    {difficulty === 'easy' ? 'Kolay' :
+                     difficulty === 'medium' ? 'Orta' :
                      difficulty === 'hard' ? 'Zor' : difficulty}: {count}
                   </Badge>
                 ))}

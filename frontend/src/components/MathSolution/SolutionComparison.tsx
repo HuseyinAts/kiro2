@@ -9,8 +9,8 @@
  * - Visual diff highlighting
  */
 
-import React from 'react';
 import { Clock, Zap, Award, CheckCircle, X } from 'lucide-react';
+import * as React from 'react';
 
 interface Solution {
   id: string;
@@ -39,7 +39,7 @@ const SolutionComparison: React.FC<SolutionComparisonProps> = ({ solutions, onCl
   }
 
   const formatTime = (seconds: number) => {
-    if (seconds < 60) return `${seconds}s`;
+    if (seconds < 60) {return `${seconds}s`;}
     return `${Math.floor(seconds / 60)}d ${seconds % 60}s`;
   };
 
@@ -55,7 +55,7 @@ const SolutionComparison: React.FC<SolutionComparisonProps> = ({ solutions, onCl
       </div>
 
       <div className="grid grid-cols-2 gap-6">
-        {solutions.slice(0, 2).map((solution, idx) => (
+        {solutions.slice(0, 2).map((solution) => (
           <div key={solution.id} className="border-2 border-gray-200 rounded-lg p-4">
             {/* Header */}
             <div className="mb-4">

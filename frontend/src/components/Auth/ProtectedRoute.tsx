@@ -1,8 +1,9 @@
-import React from 'react'
-import { Navigate, useLocation } from 'react-router-dom'
-import { Box, CircularProgress, Alert } from '@mui/material'
-import { useAuthStore } from '@/store/authStore'
-import { UserRole } from '../../types'
+import { Box, CircularProgress, Alert } from '@mui/material';
+import * as React from 'react';
+import { Navigate, useLocation } from 'react-router-dom';
+
+import { UserRole } from '../../types';
+import { useAuthStore } from '@/store/authStore';
 
 interface ProtectedRouteProps {
   children: React.ReactNode
@@ -17,28 +18,28 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   requiredRoles = [],
   requiredPermissions = [],
   fallbackPath = '/login',
-  showUnauthorized = false
+  showUnauthorized = false,
 }) => {
-  const {  isAuthenticated, user, loading, hasPermission, isAuthorized  } = useAuthStore()
-  const location = useLocation()
+  const {  isAuthenticated, user, loading, hasPermission, isAuthorized  } = useAuthStore();
+  const location = useLocation();
 
   // Yükleniyor durumu
   if (loading) {
     return (
-      <Box 
-        display="flex" 
-        justifyContent="center" 
-        alignItems="center" 
+      <Box
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
         minHeight="400px"
       >
         <CircularProgress />
       </Box>
-    )
+    );
   }
 
   // Kimlik doğrulama kontrolü
   if (!isAuthenticated) {
-    return <Navigate to={fallbackPath} state={{ from: location }} replace />
+    return <Navigate to={fallbackPath} state={{ from: location }} replace />;
   }
 
   // Rol kontrolü
@@ -47,24 +48,24 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
       return (
         <Box sx={{ p: 3 }}>
           <Alert severity="error">
-            Bu sayfaya erişim yetkiniz bulunmamaktadır. 
+            Bu sayfaya erişim yetkiniz bulunmamaktadır.
             Gerekli rol: {requiredRoles.join(', ')}
             {user && ` (Mevcut rolünüz: ${user.rol})`}
           </Alert>
         </Box>
-      )
+      );
     }
-    
+
     // Rol bazlı yönlendirme
-    const redirectPath = getRedirectPathByRole(user?.rol)
-    return <Navigate to={redirectPath} replace />
+    const redirectPath = getRedirectPathByRole(user?.rol);
+    return <Navigate to={redirectPath} replace />;
   }
 
   // İzin kontrolü
   if (requiredPermissions.length > 0) {
     const hasAllPermissions = requiredPermissions.every(permission =>
-      hasPermission(permission.resource, permission.action)
-    )
+      hasPermission(permission.resource, permission.action),
+    );
 
     if (!hasAllPermissions) {
       if (showUnauthorized) {
@@ -74,31 +75,31 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
               Bu işlem için yetkiniz bulunmamaktadır.
             </Alert>
           </Box>
-        )
+        );
       }
-      
-      const redirectPath = getRedirectPathByRole(user?.rol)
-      return <Navigate to={redirectPath} replace />
+
+      const redirectPath = getRedirectPathByRole(user?.rol);
+      return <Navigate to={redirectPath} replace />;
     }
   }
 
-  return <>{children}</>
-}
+  return <>{children}</>;
+};
 
 // Rol bazlı varsayılan yönlendirme yolları
 function getRedirectPathByRole(role?: UserRole): string {
   switch (role) {
     case 'ogrenci':
-      return '/dashboard'
+      return '/dashboard';
     case 'ogretmen':
-      return '/teacher/dashboard'
+      return '/teacher/dashboard';
     case 'veli':
-      return '/parent/dashboard'
+      return '/parent/dashboard';
     case 'admin':
-      return '/admin/dashboard'
+      return '/admin/dashboard';
     default:
-      return '/login'
+      return '/login';
   }
 }
 
-export default ProtectedRoute
+export default ProtectedRoute;

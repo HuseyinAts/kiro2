@@ -9,7 +9,7 @@ Requirements: 7.1, 7.2, 7.3
 
 import asyncio
 import logging
-from datetime import datetime, timedelta
+from datetime import datetime
 from enum import Enum
 from typing import Any, Callable, Dict, List, Optional
 
@@ -265,7 +265,8 @@ class DatabaseMonitor:
                 tablespaces = [
                     {"name": row[0], "size": row[1]} for row in result.fetchall()
                 ]
-            except:
+            except Exception as e:
+                logger.debug(f"Tablespace query failed: {e}")
                 tablespaces = []
 
             metrics = {

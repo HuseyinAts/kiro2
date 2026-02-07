@@ -1203,7 +1203,7 @@ if __name__ == "__main__":
             print(f"  Average Rating: {content_analytics.average_rating:.1f}")
 
             # Get student analytics
-            print(f"\nAnalyzing student engagement...")
+            print("\nAnalyzing student engagement...")
             student_analytics = await service.get_student_analytics(
                 student_id=1001, days_back=1
             )
@@ -1218,10 +1218,10 @@ if __name__ == "__main__":
             print(f"  Engagement Trend: {student_analytics.engagement_trend}")
 
             # Get platform insights
-            print(f"\nPlatform insights...")
+            print("\nPlatform insights...")
             platform_insights = await service.get_platform_insights(days_back=1)
 
-            print(f"Platform Metrics:")
+            print("Platform Metrics:")
             print(
                 f"  Total Events: {platform_insights['overall_metrics']['total_events']}"
             )
@@ -1233,7 +1233,7 @@ if __name__ == "__main__":
             )
 
             # Generate recommendations
-            print(f"\nGenerating recommendations...")
+            print("\nGenerating recommendations...")
             recommendations = await service.generate_content_recommendations(
                 [content_id], days_back=1
             )

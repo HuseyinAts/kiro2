@@ -21,8 +21,6 @@ from core.database import get_async_session
 from core.dependencies import get_current_user
 from core.structured_logger import get_logger
 from services.exam_answer_tracking_service import (
-    AnswerStatus,
-    CompletionStats,
     create_answer_tracking_service,
 )
 
@@ -44,8 +42,8 @@ class AnswerStatusResponse(BaseModel):
     is_empty: bool = Field(..., description="Boş mu?")
     response_time_seconds: float = Field(..., description="Cevaplama süresi (saniye)")
 
-    class Config:
-        schema_extra = {
+    model_config = {
+        "json_schema_extra": {
             "example": {
                 "question_id": "q123",
                 "question_order": 5,
@@ -55,6 +53,7 @@ class AnswerStatusResponse(BaseModel):
                 "response_time_seconds": 45.2,
             }
         }
+    }
 
 
 class CompletionStatsResponse(BaseModel):
@@ -72,8 +71,8 @@ class CompletionStatsResponse(BaseModel):
         ..., description="Cevaplanmayan soru sıraları"
     )
 
-    class Config:
-        schema_extra = {
+    model_config = {
+        "json_schema_extra": {
             "example": {
                 "total_questions": 120,
                 "answered_questions": 95,
@@ -84,6 +83,7 @@ class CompletionStatsResponse(BaseModel):
                 "unanswered_question_orders": [45, 67, 89],
             }
         }
+    }
 
 
 @router.get(
@@ -114,7 +114,7 @@ async def get_completion_statistics(
             stats = await service.get_completion_stats(exam_session_id)
 
             logger.info(
-                f"Tamamlanma istatistikleri sunuldu",
+                "Tamamlanma istatistikleri sunuldu",
                 extra_data={
                     "exam_session_id": exam_session_id,
                     "user_id": current_user["user_id"],
@@ -184,7 +184,7 @@ async def get_all_answer_statuses(
             ]
 
             logger.info(
-                f"Cevap durumları sunuldu",
+                "Cevap durumları sunuldu",
                 extra_data={
                     "exam_session_id": exam_session_id,
                     "user_id": current_user["user_id"],
@@ -230,7 +230,7 @@ async def get_unanswered_questions(
             stats = await service.get_completion_stats(exam_session_id)
 
             logger.info(
-                f"Cevaplanmayan sorular sunuldu",
+                "Cevaplanmayan sorular sunuldu",
                 extra_data={
                     "exam_session_id": exam_session_id,
                     "user_id": current_user["user_id"],
@@ -283,7 +283,7 @@ async def get_empty_answers(
             ]
 
             logger.info(
-                f"Boş cevaplar sunuldu",
+                "Boş cevaplar sunuldu",
                 extra_data={
                     "exam_session_id": exam_session_id,
                     "user_id": current_user["user_id"],
@@ -339,7 +339,7 @@ async def mark_answer_as_empty(
                 )
 
             logger.info(
-                f"Cevap boş olarak işaretlendi",
+                "Cevap boş olarak işaretlendi",
                 extra_data={
                     "exam_session_id": exam_session_id,
                     "question_id": question_id,

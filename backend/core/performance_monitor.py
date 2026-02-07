@@ -501,3 +501,7 @@ async def reset_performance_metrics():
     metrics.reset()
     return {"message": "Performance metrics reset"}
 """
+
+
+# Global alias for backward compatibility - used by api/monitoring.py
+performance_monitor = _metrics

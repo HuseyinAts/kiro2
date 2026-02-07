@@ -6,25 +6,31 @@ Author: KIRO AI Team
 Date: 2025-10-19
 """
 
-import asyncio
-from typing import List, Dict, Any, Optional
-from datetime import datetime
+from typing import List, Dict, Any
+from datetime import datetime, timezone
 from uuid import UUID, uuid4
-import json
+from enum import Enum
 
 from models.osym_question import (
     OSYMQuestion,
     QuestionGenerationBatch,
 )
-from models.curriculum import ExamType
 from models.question_generation import DifficultyLevel
 from services.llm.ensemble_manager import MultiLLMEnsembleManager
 from services.llm.multi_llm_config import LLMProvider
 from services.llm.turkish_optimizer import TurkishPromptOptimizer
-from services.psychometrics.irt_model import IRTModel, FourParameterIRT
+from services.psychometrics.irt_model import IRTModel
 from services.psychometrics.calibration import AdaptiveCalibrator
 from services.quality.osym_quality_scorer import OSYMQualityScorer
 from services.quality.metrics import QualityMetrics
+
+
+# QuestionStatus enum for question generation status
+class QuestionStatus(str, Enum):
+    """Question status enumeration"""
+    PENDING_REVIEW = "pending"
+    APPROVED = "approved"
+    REJECTED = "rejected"
 
 
 class OSYMQuestionGenerator:
@@ -179,7 +185,7 @@ class OSYMQuestionGenerator:
             "metadata": {
                 "quality_feedback": quality_score.feedback,
                 "quality_improvements": quality_score.improvements,
-                "generation_timestamp": datetime.utcnow().isoformat(),
+                "generation_timestamp": datetime.now(timezone.utc).isoformat(),
             },
         }
 
@@ -216,7 +222,7 @@ class OSYMQuestionGenerator:
             Batch generation results
         """
         batch_id = uuid4()
-        batch_start = datetime.utcnow()
+        batch_start = datetime.now(timezone.utc)
 
         # Create batch record
         if self.db:
@@ -250,7 +256,7 @@ class OSYMQuestionGenerator:
 
             for _ in range(count):
                 try:
-                    start_time = datetime.utcnow()
+                    start_time = datetime.now(timezone.utc)
 
                     question = await self.generate_question(
                         topic=topic,
@@ -263,7 +269,7 @@ class OSYMQuestionGenerator:
                         save_to_db=True,
                     )
 
-                    end_time = datetime.utcnow()
+                    end_time = datetime.now(timezone.utc)
                     generation_time = (end_time - start_time).total_seconds()
                     generation_times.append(generation_time)
 
@@ -293,7 +299,7 @@ class OSYMQuestionGenerator:
         # Update batch record
         if self.db:
             batch.status = "completed"
-            batch.completed_at = datetime.utcnow()
+            batch.completed_at = datetime.now(timezone.utc)
             batch.generated_count = len(generated_questions)
             batch.approved_count = len(
                 [q for q in generated_questions if q["quality_score_total"] >= 80]

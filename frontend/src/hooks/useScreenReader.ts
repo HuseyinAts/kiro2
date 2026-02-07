@@ -4,6 +4,7 @@
  */
 
 import { useCallback, useEffect, useRef } from 'react';
+
 import { useAccessibilitySettings } from './useAccessibilitySettings';
 
 interface ScreenReaderHook {
@@ -30,7 +31,7 @@ export const useScreenReader = (): ScreenReaderHook => {
   useEffect(() => {
     const detectScreenReader = () => {
       // Çeşitli ekran okuyucu tespiti yöntemleri
-      const hasScreenReader = 
+      const hasScreenReader =
         // NVDA, JAWS, ORCA gibi ekran okuyucular
         navigator.userAgent.includes('NVDA') ||
         navigator.userAgent.includes('JAWS') ||
@@ -45,11 +46,11 @@ export const useScreenReader = (): ScreenReaderHook => {
         settings.screenReaderOptimized;
 
       isScreenReaderActiveRef.current = hasScreenReader;
-      
+
       // Ekran okuyucu tespit edilirse optimizasyonları etkinleştir
       if (hasScreenReader) {
         document.documentElement.classList.add('screen-reader-active');
-        
+
         // Reduced motion'ı otomatik etkinleştir
         if (!settings.reducedMotion) {
           document.documentElement.classList.add('reduced-motion');
@@ -127,14 +128,14 @@ export const useScreenReader = (): ScreenReaderHook => {
 
   // Genel duyuru fonksiyonu
   const announce = useCallback((message: string, priority: 'polite' | 'assertive' = 'polite') => {
-    if (!message.trim()) return;
+    if (!message.trim()) {return;}
 
     const region = priority === 'assertive' ? assertiveRegionRef.current : liveRegionRef.current;
-    
+
     if (region) {
       // Önceki mesajı temizle
       region.textContent = '';
-      
+
       // Kısa bir gecikme ile yeni mesajı ekle (ekran okuyucunun algılaması için)
       setTimeout(() => {
         region.textContent = message;
@@ -158,12 +159,12 @@ export const useScreenReader = (): ScreenReaderHook => {
     if (pageDescription) {
       message += `. ${pageDescription}`;
     }
-    
+
     announce(message, 'assertive');
-    
+
     // Sayfa başlığını güncelle
     document.title = pageTitle;
-    
+
     // Ana içeriğe odaklan
     setTimeout(() => {
       const mainContent = document.querySelector('main, [role="main"], #main-content');
@@ -199,7 +200,7 @@ export const useScreenReader = (): ScreenReaderHook => {
   const announceContentChange = useCallback((message: string) => {
     if (statusRegionRef.current) {
       statusRegionRef.current.textContent = message;
-      
+
       setTimeout(() => {
         if (statusRegionRef.current) {
           statusRegionRef.current.textContent = '';
@@ -219,7 +220,7 @@ export const useScreenReader = (): ScreenReaderHook => {
 
   // Odak yönetimi
   const manageFocus = useCallback((element: HTMLElement | null, reason?: string) => {
-    if (!element) return;
+    if (!element) {return;}
 
     // Element'in odaklanabilir olduğundan emin ol
     if (!element.hasAttribute('tabindex') && !element.matches('a, button, input, select, textarea, [tabindex]')) {
@@ -237,16 +238,16 @@ export const useScreenReader = (): ScreenReaderHook => {
     }
 
     // Odak göstergesini geliştir
-    element.style.outline = `2px solid #005fcc`;
+    element.style.outline = '2px solid #005fcc';
     element.style.outlineOffset = '2px';
-    
+
     // Odak kaybedildiğinde outline'ı kaldır
     const handleBlur = () => {
       element.style.outline = '';
       element.style.outlineOffset = '';
       element.removeEventListener('blur', handleBlur);
     };
-    
+
     element.addEventListener('blur', handleBlur);
   }, [announce]);
 
@@ -256,7 +257,7 @@ export const useScreenReader = (): ScreenReaderHook => {
     skipLink.href = `#${targetId}`;
     skipLink.textContent = linkText;
     skipLink.className = 'skip-link';
-    
+
     // Skip link stilleri
     skipLink.style.cssText = `
       position: absolute;
@@ -370,7 +371,7 @@ export const useScreenReader = (): ScreenReaderHook => {
     announceLandmark,
     manageFocus,
     createSkipLink,
-    isScreenReaderActive: isScreenReaderActiveRef.current
+    isScreenReaderActive: isScreenReaderActiveRef.current,
   };
 };
 

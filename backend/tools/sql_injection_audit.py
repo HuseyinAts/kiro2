@@ -10,10 +10,9 @@ Features:
 - Automated security report generation
 """
 import re
-import ast
 import os
 from pathlib import Path
-from typing import List, Dict, Set, Tuple
+from typing import List, Dict, Set
 from dataclasses import dataclass, field
 from enum import Enum
 
@@ -381,13 +380,13 @@ def run_audit():
     print("=" * 70)
 
     summary = report.get_summary()
-    print(f"\n📊 Summary:")
+    print("\n📊 Summary:")
     print(f"  Files scanned: {summary['total_files_scanned']}")
     print(f"  Lines scanned: {summary['total_lines_scanned']:,}")
     print(f"  Total findings: {summary['total_findings']}")
     print(f"  Risk score: {summary['risk_score']}/100")
 
-    print(f"\n🎯 Severity breakdown:")
+    print("\n🎯 Severity breakdown:")
     for severity, count in summary["severity_breakdown"].items():
         if count > 0:
             print(f"  {severity.upper()}: {count}")

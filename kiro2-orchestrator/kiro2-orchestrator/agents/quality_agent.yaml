@@ -1,0 +1,47 @@
+# ============================================================================
+# QUALITY AGENT - KIRO2 KALİTE UZMANI
+# ============================================================================
+agent:
+  name: "quality_agent"
+  display_name: "KIRO2 Quality Specialist"
+  description: "Testing, security audits, code review"
+  icon: "🔒"
+  color: "#EF4444"
+
+model:
+  primary: "codex"
+  security_tasks: "claude-opus-4"
+  security_keywords:
+    - "security audit"
+    - "vulnerability"
+    - "penetration"
+    - "kvkk"
+    - "idor"
+    - "injection"
+
+responsibilities:
+  primary:
+    - name: "test_generation"
+      model_override: "codex"
+    - name: "security_audit"
+      model_override: "claude-opus-4"
+    - name: "code_review"
+      model_override: "claude-sonnet-4"
+    - name: "coverage_analysis"
+      model_override: "codex"
+
+routing:
+  trigger_keywords:
+    high_confidence:
+      - "test"
+      - "pytest"
+      - "security"
+      - "audit"
+      - "vulnerability"
+      - "coverage"
+
+tools:
+  mcp:
+    - "filesystem"
+    - "postgresql"
+    - "memory"

@@ -155,8 +155,8 @@ class MonitoringService {
 
   getClientMetrics(): PerformanceMetrics {
     const apiCalls = this.metrics.get('apiCalls') || [];
-    const recentCalls = apiCalls.filter((call: any) => 
-      Date.now() - call.timestamp < 60000 // Last minute
+    const recentCalls = apiCalls.filter((call: any) =>
+      Date.now() - call.timestamp < 60000, // Last minute
     );
 
     const avgResponseTime = recentCalls.length > 0

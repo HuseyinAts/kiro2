@@ -1,8 +1,8 @@
 /**
  * Graphing Calculator Component
- * 
+ *
  * Grafik hesap makinesi - Fonksiyon grafikleri çizme ve analiz.
- * 
+ *
  * Özellikler:
  * - Fonksiyon grafikleri (y = f(x))
  * - Değer tablosu
@@ -10,11 +10,12 @@
  * - Zoom ve pan
  * - Birden fazla fonksiyon desteği
  * - Kesişim noktaları
- * 
+ *
  * Gereksinimler: REQ-51.46 - REQ-51.50
  */
 
-import React, { useState, useRef, useEffect } from 'react';
+import * as React from 'react';
+import {  useState, useRef, useEffect  } from 'react';
 import './GraphingCalculator.css';
 
 interface Point {
@@ -32,7 +33,7 @@ interface FunctionData {
 const GraphingCalculator: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [functions, setFunctions] = useState<FunctionData[]>([
-    { id: '1', expression: 'x^2', color: '#ff6b6b', visible: true }
+    { id: '1', expression: 'x^2', color: '#ff6b6b', visible: true },
   ]);
   const [currentExpression, setCurrentExpression] = useState<string>('');
   const [xMin, setXMin] = useState<number>(-10);
@@ -42,7 +43,7 @@ const GraphingCalculator: React.FC = () => {
   const [showTable, setShowTable] = useState<boolean>(false);
   const [traceMode, setTraceMode] = useState<boolean>(false);
   const [traceX, setTraceX] = useState<number>(0);
-  const [gridSize, setGridSize] = useState<number>(1);
+  const [gridSize, _setGridSize] = useState<number>(1);
 
   const colors = ['#ff6b6b', '#4ecdc4', '#45b7d1', '#f7b731', '#5f27cd', '#00d2d3'];
 
@@ -65,7 +66,7 @@ const GraphingCalculator: React.FC = () => {
 
       const result = Function('"use strict"; return (' + sanitized + ')')();
       return isFinite(result) ? result : null;
-    } catch (error) {
+    } catch {
       return null;
     }
   };
@@ -73,10 +74,10 @@ const GraphingCalculator: React.FC = () => {
   // Grafik çizimi
   const drawGraph = () => {
     const canvas = canvasRef.current;
-    if (!canvas) return;
+    if (!canvas) {return;}
 
     const ctx = canvas.getContext('2d');
-    if (!ctx) return;
+    if (!ctx) {return;}
 
     const width = canvas.width;
     const height = canvas.height;
@@ -118,7 +119,7 @@ const GraphingCalculator: React.FC = () => {
     xScale: number,
     yScale: number,
     xOrigin: number,
-    yOrigin: number
+    yOrigin: number,
   ) => {
     ctx.strokeStyle = '#e0e0e0';
     ctx.lineWidth = 0.5;
@@ -147,7 +148,7 @@ const GraphingCalculator: React.FC = () => {
     width: number,
     height: number,
     xOrigin: number,
-    yOrigin: number
+    yOrigin: number,
   ) => {
     ctx.strokeStyle = '#333';
     ctx.lineWidth = 2;
@@ -201,7 +202,7 @@ const GraphingCalculator: React.FC = () => {
     xScale: number,
     yScale: number,
     xOrigin: number,
-    yOrigin: number
+    yOrigin: number,
   ) => {
     ctx.strokeStyle = func.color;
     ctx.lineWidth = 2;
@@ -212,7 +213,7 @@ const GraphingCalculator: React.FC = () => {
 
     for (let x = xMin; x <= xMax; x += step) {
       const y = evaluateFunction(func.expression, x);
-      
+
       if (y !== null && y >= yMin && y <= yMax) {
         const canvasX = xOrigin + x * xScale;
         const canvasY = yOrigin - y * yScale;
@@ -236,7 +237,7 @@ const GraphingCalculator: React.FC = () => {
     xScale: number,
     yScale: number,
     xOrigin: number,
-    yOrigin: number
+    yOrigin: number,
   ) => {
     const canvasX = xOrigin + traceX * xScale;
 
@@ -256,7 +257,7 @@ const GraphingCalculator: React.FC = () => {
         const y = evaluateFunction(func.expression, traceX);
         if (y !== null) {
           const canvasY = yOrigin - y * yScale;
-          
+
           ctx.fillStyle = func.color;
           ctx.beginPath();
           ctx.arc(canvasX, canvasY, 5, 0, 2 * Math.PI);
@@ -281,7 +282,7 @@ const GraphingCalculator: React.FC = () => {
         id: Date.now().toString(),
         expression: currentExpression,
         color: colors[functions.length % colors.length],
-        visible: true
+        visible: true,
       };
       setFunctions([...functions, newFunc]);
       setCurrentExpression('');
@@ -295,8 +296,8 @@ const GraphingCalculator: React.FC = () => {
 
   // Fonksiyon görünürlüğü
   const toggleFunctionVisibility = (id: string) => {
-    setFunctions(functions.map(f => 
-      f.id === id ? { ...f, visible: !f.visible } : f
+    setFunctions(functions.map(f =>
+      f.id === id ? { ...f, visible: !f.visible } : f,
     ));
   };
 
@@ -404,7 +405,7 @@ const GraphingCalculator: React.FC = () => {
 
         {/* Fonksiyon listesi */}
         <div className="function-list">
-          {functions.map((func, index) => (
+          {functions.map((func, _index) => (
             <div key={func.id} className="function-item">
               <div
                 className="function-color"
@@ -484,7 +485,7 @@ const GraphingCalculator: React.FC = () => {
         {/* Eksen ayarları */}
         <div className="axis-settings">
           <div className="axis-group">
-            <label>X Ekseni:</label>
+            <div className="axis-label">X Ekseni:</div>
             <input
               type="number"
               value={xMin}
@@ -500,7 +501,7 @@ const GraphingCalculator: React.FC = () => {
             />
           </div>
           <div className="axis-group">
-            <label>Y Ekseni:</label>
+            <div className="axis-label">Y Ekseni:</div>
             <input
               type="number"
               value={yMin}

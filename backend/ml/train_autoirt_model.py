@@ -4,7 +4,7 @@ Train AutoML models to predict IRT parameters (discrimination and difficulty) fr
 """
 import pandas as pd
 import numpy as np
-from typing import Dict, List, Tuple
+from typing import Dict
 import json
 from pathlib import Path
 from datetime import datetime
@@ -335,7 +335,7 @@ class AutoIRTTrainer:
             "test_samples": len(X_test),
         }
 
-        print(f"\n✅ Training complete!")
+        print("\n✅ Training complete!")
         print(f"   IRT-a: RMSE={rmse_a:.4f}, R²={r2_a:.4f}")
         print(f"   IRT-b: RMSE={rmse_b:.4f}, R²={r2_b:.4f}")
 

@@ -1,22 +1,23 @@
-import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Plus,
+  Users,
+  Mail,
+  Clock,
+  CheckCircle,
+  AlertCircle,
+  UserPlus,
+} from 'lucide-react';
+import * as React from 'react';
+import {  useState, useEffect  } from 'react';
+
+import { LoadingSpinner } from '@/components/Common/LoadingStates';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Badge } from '@/components/ui/badge';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { 
-  Plus, 
-  Users, 
-  Mail, 
-  Clock, 
-  CheckCircle, 
-  XCircle,
-  AlertCircle,
-  UserPlus
-} from 'lucide-react';
 import { parentService } from '@/services/parentService';
-import { LoadingSpinner } from '@/components/Common/LoadingSpinner';
 
 interface ChildRelation {
   id: number;
@@ -58,7 +59,7 @@ export const ChildSelection: React.FC = () => {
 
   const handleAddChild = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!newChildEmail.trim()) {
       setError('Email adresi gereklidir');
       return;
@@ -68,9 +69,9 @@ export const ChildSelection: React.FC = () => {
       setAddingChild(true);
       await parentService.createChildRelation({
         child_email: newChildEmail.trim(),
-        relation_type: relationType
+        relation_type: relationType,
       });
-      
+
       setNewChildEmail('');
       setShowAddForm(false);
       setError(null);
@@ -124,7 +125,7 @@ export const ChildSelection: React.FC = () => {
       {/* Header */}
       <div className="flex justify-between items-center">
         <h2 className="text-2xl font-bold text-gray-900">Çocuk Seçimi ve Yönetimi</h2>
-        <Button 
+        <Button
           onClick={() => setShowAddForm(!showAddForm)}
           className="flex items-center gap-2"
         >
@@ -163,7 +164,7 @@ export const ChildSelection: React.FC = () => {
                   required
                 />
                 <p className="text-sm text-gray-600 mt-1">
-                  Çocuğunuzun platformda kayıtlı email adresini girin. 
+                  Çocuğunuzun platformda kayıtlı email adresini girin.
                   Çocuğunuz bu isteği onaylamalıdır.
                 </p>
               </div>
@@ -182,8 +183,8 @@ export const ChildSelection: React.FC = () => {
               </div>
 
               <div className="flex gap-2">
-                <Button 
-                  type="submit" 
+                <Button
+                  type="submit"
                   disabled={addingChild}
                   className="flex items-center gap-2"
                 >
@@ -194,8 +195,8 @@ export const ChildSelection: React.FC = () => {
                   )}
                   Ekle
                 </Button>
-                <Button 
-                  type="button" 
+                <Button
+                  type="button"
                   variant="outline"
                   onClick={() => {
                     setShowAddForm(false);
@@ -258,10 +259,10 @@ export const ChildSelection: React.FC = () => {
                         <p>Onay Tarihi: {new Date(child.approved_at).toLocaleDateString('tr-TR')}</p>
                       )}
                     </div>
-                    
+
                     {child.approved && (
-                      <Button 
-                        variant="outline" 
+                      <Button
+                        variant="outline"
                         size="sm"
                         onClick={() => {
                           // Navigate to child performance page

@@ -3,13 +3,13 @@
  * Teknofest 2025 - Eğitim Eylemci Projesi
  */
 
+import config from '../config';
 import {
   FSRSCard,
   FSRSSchedule,
   ApiResponse,
-  FSRSGrade
+  FSRSGrade,
 } from '../types/revolutionary';
-import config from '../config';
 
 const API_BASE_URL = config.api.baseURL;
 
@@ -111,7 +111,7 @@ class FSRSService {
    */
   async createFlashcard(
     studentId: string,
-    request: CreateFlashcardRequest
+    request: CreateFlashcardRequest,
   ): Promise<ApiResponse<FSRSCard | null>> {
     try {
       const response = await fetch(`${this.baseUrl}/cards`, {
@@ -151,7 +151,7 @@ class FSRSService {
    */
   async reviewFlashcard(
     studentId: string,
-    request: ReviewFlashcardRequest
+    request: ReviewFlashcardRequest,
   ): Promise<ApiResponse<any>> {
     try {
       const response = await fetch(`${this.baseUrl}/cards/${request.card_id}/review`, {
@@ -192,7 +192,7 @@ class FSRSService {
    */
   async getDueCards(
     studentId: string,
-    limit: number = 20
+    limit: number = 20,
   ): Promise<ApiResponse<FSRSCard[] | null>> {
     try {
       const response = await fetch(
@@ -202,7 +202,7 @@ class FSRSService {
           headers: {
             'Authorization': `Bearer ${localStorage.getItem('token')}`,
           },
-        }
+        },
       );
 
       if (!response.ok) {
@@ -229,7 +229,7 @@ class FSRSService {
    * Çalışma önerilerini getir
    */
   async getStudyRecommendations(
-    studentId: string
+    studentId: string,
   ): Promise<ApiResponse<StudyRecommendations | null>> {
     try {
       const response = await fetch(
@@ -239,7 +239,7 @@ class FSRSService {
           headers: {
             'Authorization': `Bearer ${localStorage.getItem('token')}`,
           },
-        }
+        },
       );
 
       if (!response.ok) {
@@ -266,7 +266,7 @@ class FSRSService {
    * Öğrenci istatistiklerini getir
    */
   async getStudentStatistics(
-    studentId: string
+    studentId: string,
   ): Promise<ApiResponse<StudentStatistics | null>> {
     try {
       const response = await fetch(
@@ -276,7 +276,7 @@ class FSRSService {
           headers: {
             'Authorization': `Bearer ${localStorage.getItem('token')}`,
           },
-        }
+        },
       );
 
       if (!response.ok) {
@@ -304,7 +304,7 @@ class FSRSService {
    */
   async startStudySession(
     studentId: string,
-    sessionType: string = 'regular'
+    sessionType: string = 'regular',
   ): Promise<ApiResponse<string | null>> {
     try {
       const response = await fetch(`${this.baseUrl}/sessions/start`, {
@@ -377,7 +377,7 @@ class FSRSService {
   async calculateSchedule(
     studentId: string,
     cardId: string,
-    grade: FSRSGrade
+    grade: FSRSGrade,
   ): Promise<ApiResponse<FSRSSchedule | null>> {
     try {
       const response = await fetch(`${this.baseUrl}/cards/${cardId}/schedule`, {

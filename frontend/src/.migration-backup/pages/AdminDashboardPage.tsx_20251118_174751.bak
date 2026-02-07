@@ -1,0 +1,383 @@
+import React, { useState, useEffect } from 'react'
+import {
+  Container,
+  Typography,
+  Box,
+  Grid,
+  Paper,
+  Card,
+  CardContent,
+  Alert,
+  CircularProgress,
+  List,
+  ListItem,
+  ListItemText,
+  ListItemAvatar,
+  Avatar,
+  Chip,
+  LinearProgress
+} from '@mui/material'
+import {
+  Dashboard,
+  People,
+  Assessment,
+  Computer,
+  TrendingUp,
+  Warning,
+  CheckCircle,
+  Error,
+  Info
+} from '@mui/icons-material'
+import { useAuth } from '../hooks/useAuth'
+import { AdminDashboardData, SystemStats, UserStats, PerformanceMetrics, RecentActivity } from '../types'
+
+export const AdminDashboardPage: React.FC = () => {
+  const [dashboardData, setDashboardData] = useState<AdminDashboardData | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  
+  const { user } = useAuth()
+
+  useEffect(() => {
+    loadDashboardData()
+  }, [])
+
+  const loadDashboardData = async () => {
+    try {
+      setLoading(true)
+
+      // Backend API çağrısı
+      const response = await fetch('/api/v1/admin/dashboard', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        }
+      })
+
+      if (!response.ok) {
+        throw new Error(`API hatası: ${response.status}`)
+      }
+
+      const apiResult = await response.json()
+
+      if (!apiResult.success) {
+        throw new Error(apiResult.message || 'Dashboard verileri alınamadı')
+      }
+
+      setDashboardData(apiResult.data)
+
+    } catch (error: any) {
+      console.error('Admin Dashboard API hatası:', error)
+      setError(`Dashboard verileri yüklenemedi: ${error.message}`)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const getSystemHealthColor = (value: number): 'success' | 'warning' | 'error' => {
+    if (value >= 95) return 'success'
+    if (value >= 80) return 'warning'
+    return 'error'
+  }
+
+  const getActivityIcon = (eylem: string) => {
+    if (eylem.includes('sınav')) return <Assessment />
+    if (eylem.includes('oluştur')) return <CheckCircle />
+    if (eylem.includes('görüntüle')) return <Info />
+    return <Info />
+  }
+
+  if (loading) {
+    return (
+      <Box display="flex" justifyContent="center" alignItems="center" minHeight="400px">
+        <CircularProgress />
+      </Box>
+    )
+  }
+
+  if (error) {
+    return (
+      <Container maxWidth="lg" sx={{ mt: 4 }}>
+        <Alert severity="error">{error}</Alert>
+      </Container>
+    )
+  }
+
+  if (!dashboardData) {
+    return (
+      <Container maxWidth="lg" sx={{ mt: 4 }}>
+        <Alert severity="warning">Dashboard verileri bulunamadı</Alert>
+      </Container>
+    )
+  }
+
+  return (
+    <Container maxWidth="lg" sx={{ mt: 2, mb: 4 }}>
+      {/* Hoş Geldin Mesajı */}
+      <Box sx={{ mb: 4 }}>
+        <Typography variant="h4" component="h1" gutterBottom>
+          Hoş Geldiniz, {user?.ad} {user?.soyad}
+        </Typography>
+        <Typography variant="body1" color="text.secondary">
+          Admin Dashboard - Sistem yönetimi ve genel bakış
+        </Typography>
+      </Box>
+
+      {/* Sistem İstatistikleri */}
+      <Typography variant="h5" gutterBottom sx={{ mb: 2 }}>
+        Sistem İstatistikleri
+      </Typography>
+      <Grid container spacing={3} sx={{ mb: 4 }}>
+        <Grid item xs={12} sm={6} md={3}>
+          <Card>
+            <CardContent>
+              <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                <People sx={{ fontSize: 40, color: 'primary.main', mr: 2 }} />
+                <Box>
+                  <Typography color="text.secondary" gutterBottom>
+                    Toplam Kullanıcı
+                  </Typography>
+                  <Typography variant="h5">
+                    {dashboardData.sistem_istatistikleri.toplam_kullanici.toLocaleString()}
+                  </Typography>
+                  <Typography variant="body2" color="success.main">
+                    {dashboardData.sistem_istatistikleri.aktif_kullanici} aktif
+                  </Typography>
+                </Box>
+              </Box>
+            </CardContent>
+          </Card>
+        </Grid>
+
+        <Grid item xs={12} sm={6} md={3}>
+          <Card>
+            <CardContent>
+              <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                <Assessment sx={{ fontSize: 40, color: 'success.main', mr: 2 }} />
+                <Box>
+                  <Typography color="text.secondary" gutterBottom>
+                    Toplam Sınav
+                  </Typography>
+                  <Typography variant="h5">
+                    {dashboardData.sistem_istatistikleri.toplam_sinav.toLocaleString()}
+                  </Typography>
+                </Box>
+              </Box>
+            </CardContent>
+          </Card>
+        </Grid>
+
+        <Grid item xs={12} sm={6} md={3}>
+          <Card>
+            <CardContent>
+              <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                <Computer sx={{ fontSize: 40, color: 'warning.main', mr: 2 }} />
+                <Box>
+                  <Typography color="text.secondary" gutterBottom>
+                    Sistem Yükü
+                  </Typography>
+                  <Typography variant="h5">
+                    {dashboardData.sistem_istatistikleri.sistem_yuklemesi.toFixed(1)}%
+                  </Typography>
+                  <LinearProgress
+                    variant="determinate"
+                    value={dashboardData.sistem_istatistikleri.sistem_yuklemesi}
+                    color={getSystemHealthColor(100 - dashboardData.sistem_istatistikleri.sistem_yuklemesi)}
+                    sx={{ mt: 1 }}
+                  />
+                </Box>
+              </Box>
+            </CardContent>
+          </Card>
+        </Grid>
+
+        <Grid item xs={12} sm={6} md={3}>
+          <Card>
+            <CardContent>
+              <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                <TrendingUp sx={{ fontSize: 40, color: 'info.main', mr: 2 }} />
+                <Box>
+                  <Typography color="text.secondary" gutterBottom>
+                    Yeni Kayıtlar
+                  </Typography>
+                  <Typography variant="h5">
+                    +{dashboardData.kullanici_istatistikleri.yeni_kayitlar}
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    Bu hafta
+                  </Typography>
+                </Box>
+              </Box>
+            </CardContent>
+          </Card>
+        </Grid>
+      </Grid>
+
+      {/* Kullanıcı Dağılımı */}
+      <Typography variant="h5" gutterBottom sx={{ mb: 2 }}>
+        Kullanıcı Dağılımı
+      </Typography>
+      <Grid container spacing={3} sx={{ mb: 4 }}>
+        <Grid item xs={12} sm={6} md={3}>
+          <Card>
+            <CardContent sx={{ textAlign: 'center' }}>
+              <Typography variant="h4" color="primary.main">
+                {dashboardData.kullanici_istatistikleri.ogrenci_sayisi}
+              </Typography>
+              <Typography color="text.secondary">
+                Öğrenci
+              </Typography>
+            </CardContent>
+          </Card>
+        </Grid>
+
+        <Grid item xs={12} sm={6} md={3}>
+          <Card>
+            <CardContent sx={{ textAlign: 'center' }}>
+              <Typography variant="h4" color="success.main">
+                {dashboardData.kullanici_istatistikleri.ogretmen_sayisi}
+              </Typography>
+              <Typography color="text.secondary">
+                Öğretmen
+              </Typography>
+            </CardContent>
+          </Card>
+        </Grid>
+
+        <Grid item xs={12} sm={6} md={3}>
+          <Card>
+            <CardContent sx={{ textAlign: 'center' }}>
+              <Typography variant="h4" color="warning.main">
+                {dashboardData.kullanici_istatistikleri.veli_sayisi}
+              </Typography>
+              <Typography color="text.secondary">
+                Veli
+              </Typography>
+            </CardContent>
+          </Card>
+        </Grid>
+
+        <Grid item xs={12} sm={6} md={3}>
+          <Card>
+            <CardContent sx={{ textAlign: 'center' }}>
+              <Typography variant="h4" color="info.main">
+                {dashboardData.kullanici_istatistikleri.yeni_kayitlar}
+              </Typography>
+              <Typography color="text.secondary">
+                Yeni Kayıt
+              </Typography>
+            </CardContent>
+          </Card>
+        </Grid>
+      </Grid>
+
+      <Grid container spacing={3}>
+        {/* Performans Metrikleri */}
+        <Grid item xs={12} md={6}>
+          <Paper sx={{ p: 3 }}>
+            <Typography variant="h6" gutterBottom>
+              Performans Metrikleri
+            </Typography>
+            
+            <Box sx={{ mb: 3 }}>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+                <Typography variant="body2">Ortalama Yanıt Süresi</Typography>
+                <Typography variant="body2">{dashboardData.performans_metrikleri.ortalama_yanit_suresi}ms</Typography>
+              </Box>
+              <LinearProgress
+                variant="determinate"
+                value={Math.max(0, 100 - (dashboardData.performans_metrikleri.ortalama_yanit_suresi / 10))}
+                color={dashboardData.performans_metrikleri.ortalama_yanit_suresi < 200 ? 'success' : 'warning'}
+              />
+            </Box>
+
+            <Box sx={{ mb: 3 }}>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+                <Typography variant="body2">Sistem Kullanılabilirlik</Typography>
+                <Typography variant="body2">{dashboardData.performans_metrikleri.sistem_kullanilabilirlik}%</Typography>
+              </Box>
+              <LinearProgress
+                variant="determinate"
+                value={dashboardData.performans_metrikleri.sistem_kullanilabilirlik}
+                color={getSystemHealthColor(dashboardData.performans_metrikleri.sistem_kullanilabilirlik)}
+              />
+            </Box>
+
+            <Box sx={{ mb: 3 }}>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+                <Typography variant="body2">Hata Oranı</Typography>
+                <Typography variant="body2">{dashboardData.performans_metrikleri.hata_orani}%</Typography>
+              </Box>
+              <LinearProgress
+                variant="determinate"
+                value={dashboardData.performans_metrikleri.hata_orani * 10}
+                color={dashboardData.performans_metrikleri.hata_orani < 1 ? 'success' : 'error'}
+              />
+            </Box>
+
+            <Box>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+                <Typography variant="body2">Kullanıcı Memnuniyeti</Typography>
+                <Typography variant="body2">{dashboardData.performans_metrikleri.kullanici_memnuniyeti}/5.0</Typography>
+              </Box>
+              <LinearProgress
+                variant="determinate"
+                value={(dashboardData.performans_metrikleri.kullanici_memnuniyeti / 5) * 100}
+                color="success"
+              />
+            </Box>
+          </Paper>
+        </Grid>
+
+        {/* Son Aktiviteler */}
+        <Grid item xs={12} md={6}>
+          <Paper sx={{ p: 3 }}>
+            <Typography variant="h6" gutterBottom>
+              Son Aktiviteler
+            </Typography>
+            <List>
+              {dashboardData.son_aktiviteler.map((aktivite, index) => (
+                <ListItem 
+                  key={aktivite.aktivite_id} 
+                  divider={index < dashboardData.son_aktiviteler.length - 1}
+                  sx={{ px: 0 }}
+                >
+                  <ListItemAvatar>
+                    <Avatar sx={{ bgcolor: 'primary.main' }}>
+                      {getActivityIcon(aktivite.eylem)}
+                    </Avatar>
+                  </ListItemAvatar>
+                  <ListItemText
+                    primary={aktivite.eylem}
+                    secondary={
+                      <Box>
+                        <Typography variant="body2" color="text.secondary">
+                          {aktivite.kullanici}
+                        </Typography>
+                        {aktivite.detay && (
+                          <Chip 
+                            label={aktivite.detay} 
+                            size="small" 
+                            color="primary" 
+                            variant="outlined"
+                            sx={{ mt: 0.5 }}
+                          />
+                        )}
+                        <Typography variant="caption" color="text.secondary" display="block">
+                          {new Date(aktivite.tarih).toLocaleString('tr-TR')}
+                        </Typography>
+                      </Box>
+                    }
+                  />
+                </ListItem>
+              ))}
+            </List>
+          </Paper>
+        </Grid>
+      </Grid>
+    </Container>
+  )
+}
+
+export default AdminDashboardPage

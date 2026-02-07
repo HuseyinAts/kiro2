@@ -239,6 +239,15 @@ class AdvancedYouTubeSearch:
             await self.session.close()
             self.session = None
 
+    # FIX Resource Cleanup: Context manager implementation
+    async def __aenter__(self):
+        """Async context manager entry"""
+        return self
+
+    async def __aexit__(self, exc_type, exc_val, exc_tb):
+        """Async context manager exit - ensures session cleanup"""
+        await self.close()
+
     def _calculate_video_quality_score(self, video_data: Dict) -> float:
         """Video kalite skorunu hesapla"""
         score = 5.0  # Base score

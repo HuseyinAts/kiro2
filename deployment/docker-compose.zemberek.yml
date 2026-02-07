@@ -1,0 +1,65 @@
+# Zemberek-NLP MCP Server - Docker Compose
+#
+# Usage:
+#   docker-compose -f docker-compose.zemberek.yml up -d
+#
+# Or include in main docker-compose.yml
+
+version: '3.8'
+
+services:
+  zemberek-mcp:
+    build:
+      context: ../backend
+      dockerfile: Dockerfile.zemberek
+    container_name: kiro2-zemberek-mcp
+    restart: unless-stopped
+    environment:
+      - ZEMBEREK_USE_JPYPE=true
+      - ZEMBEREK_REDIS_URL=redis://redis:6379
+      - ZEMBEREK_CACHE_TTL=3600
+      - ZEMBEREK_LOG_LEVEL=INFO
+      - JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
+    volumes:
+      # Persistent cache directory
+      - zemberek-cache:/app/cache
+      # Logs
+      - zemberek-logs:/app/logs
+    networks:
+      - kiro2-network
+    depends_on:
+      - redis
+    healthcheck:
+      test: ["CMD", "python", "-c", "from mcp_servers.zemberek_nlp.bridge import get_bridge; print('OK')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 1G
+        reservations:
+          cpus: '0.5'
+          memory: 512M
+
+  # Redis for caching (if not already defined)
+  redis:
+    image: redis:7-alpine
+    container_name: kiro2-redis
+    restart: unless-stopped
+    volumes:
+      - redis-data:/data
+    networks:
+      - kiro2-network
+    command: redis-server --appendonly yes --maxmemory 256mb --maxmemory-policy allkeys-lru
+
+networks:
+  kiro2-network:
+    driver: bridge
+
+volumes:
+  zemberek-cache:
+  zemberek-logs:
+  redis-data:

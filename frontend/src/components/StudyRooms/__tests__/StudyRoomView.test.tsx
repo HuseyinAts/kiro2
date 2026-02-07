@@ -6,11 +6,12 @@
  * member display, room actions, and component integration.
  */
 
-import React from 'react';
+import * as React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import axios from 'axios';
 import StudyRoomView from '../StudyRoomView';
+import { vi, Mocked } from 'vitest';
 
 // ============================================================
 // Mocks
@@ -18,40 +19,40 @@ import StudyRoomView from '../StudyRoomView';
 
 // Mock Axios
 vi.mock('axios');
-const mockedAxios = axios as jest.Mocked<typeof axios>;
+const mockedAxios = axios as Mocked<typeof axios>;
 
-// Mock child components
-vi.mock('../ChatInterface', () => {
-  return function MockChatInterface({ roomId }: any) {
+// Mock child components - ESM requires { default: ... } export
+vi.mock('../ChatInterface', () => ({
+  default: function MockChatInterface({ roomId }: any) {
     return <div data-testid="chat-interface">Chat Interface - Room {roomId}</div>;
-  };
-});
+  },
+}));
 
-vi.mock('../FileManager', () => {
-  return function MockFileManager({ roomId }: any) {
+vi.mock('../FileManager', () => ({
+  default: function MockFileManager({ roomId }: any) {
     return <div data-testid="file-manager">File Manager - Room {roomId}</div>;
-  };
-});
+  },
+}));
 
-vi.mock('../VideoConference', () => {
-  return function MockVideoConference({ roomId, onLeave }: any) {
+vi.mock('../VideoConference', () => ({
+  default: function MockVideoConference({ roomId, onLeave }: any) {
     return (
       <div data-testid="video-conference">
         Video Conference - Room {roomId}
         <button onClick={onLeave}>Leave Video</button>
       </div>
     );
-  };
-});
+  },
+}));
 
-vi.mock('../CollaborativeWhiteboard', () => {
-  return function MockCollaborativeWhiteboard({ roomId }: any) {
+vi.mock('../CollaborativeWhiteboard', () => ({
+  default: function MockCollaborativeWhiteboard({ roomId }: any) {
     return <div data-testid="whiteboard">Whiteboard - Room {roomId}</div>;
-  };
-});
+  },
+}));
 
 // Mock window.confirm
-global.confirm = jest.fn(() => true);
+global.confirm = vi.fn(() => true);
 
 // ============================================================
 // Test Data

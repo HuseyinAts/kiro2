@@ -5,8 +5,16 @@
  * Shows room cards with quick info and join buttons.
  */
 
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import {
+  Add as AddIcon,
+  Search as SearchIcon,
+  Lock as LockIcon,
+  LockOpen as LockOpenIcon,
+  Public as PublicIcon,
+  People as PeopleIcon,
+  VideoCall as VideoCallIcon,
+  Chat as ChatIcon,
+} from '@mui/icons-material';
 import {
   Box,
   Grid,
@@ -21,8 +29,6 @@ import {
   FormControl,
   InputLabel,
   Chip,
-  Avatar,
-  IconButton,
   Dialog,
   DialogTitle,
   DialogContent,
@@ -31,17 +37,9 @@ import {
   Tab,
   Badge,
 } from '@mui/material';
-import {
-  Add as AddIcon,
-  Search as SearchIcon,
-  Lock as LockIcon,
-  LockOpen as LockOpenIcon,
-  Public as PublicIcon,
-  People as PeopleIcon,
-  VideoCall as VideoCallIcon,
-  Chat as ChatIcon,
-  Description as DescriptionIcon,
-} from '@mui/icons-material';
+import axios from 'axios';
+import * as React from 'react';
+import {  useState, useEffect  } from 'react';
 
 // ============================================================
 // Types
@@ -143,7 +141,7 @@ const StudyRoomList: React.FC<StudyRoomListProps> = ({ onRoomSelect }) => {
         (room) =>
           room.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
           room.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          room.topic?.toLowerCase().includes(searchQuery.toLowerCase())
+          room.topic?.toLowerCase().includes(searchQuery.toLowerCase()),
       );
     }
 
@@ -183,7 +181,7 @@ const StudyRoomList: React.FC<StudyRoomListProps> = ({ onRoomSelect }) => {
     try {
       if (visibility === 'password') {
         const password = prompt('Bu oda şifre korumalı. Lütfen şifreyi girin:');
-        if (!password) return;
+        if (!password) {return;}
         await axios.post(`/api/study-rooms/${roomId}/join`, { password });
       } else {
         await axios.post(`/api/study-rooms/${roomId}/join`);
@@ -239,7 +237,7 @@ const StudyRoomList: React.FC<StudyRoomListProps> = ({ onRoomSelect }) => {
       </Box>
 
       {/* Tabs */}
-      <Tabs value={tabValue} onChange={(e, newValue) => setTabValue(newValue)} sx={{ mb: 2 }}>
+      <Tabs value={tabValue} onChange={(_e, newValue) => setTabValue(newValue)} sx={{ mb: 2 }}>
         <Tab label="Tüm Odalar" />
         <Tab label="Benim Odalarım" />
         <Tab label="Katıldığım Odalar" />

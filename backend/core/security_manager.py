@@ -11,7 +11,7 @@ import os
 import re
 import secrets
 from dataclasses import dataclass
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from enum import Enum
 from typing import Any
 from urllib.parse import urlparse
@@ -247,15 +247,21 @@ class PasswordManager:
         else:
             score += 20
 
-        # Common patterns check
+        # Common patterns check - Extended password blacklist
+        # SECURITY FIX: Extended with Turkish common passwords
         common_patterns = [
-            r"123456",
-            r"password",
-            r"qwerty",
-            r"abc123",
-            r"admin",
-            r"user",
-            r"test",
+            # English common passwords
+            r"123456", r"12345678", r"password", r"password1", r"password123",
+            r"qwerty", r"abc123", r"admin", r"admin123", r"user",
+            r"test", r"letmein", r"welcome", r"monkey", r"dragon",
+            r"master", r"login", r"iloveyou", r"sunshine", r"princess",
+            r"football", r"baseball", r"superman", r"trustno1", r"shadow",
+            r"qazwsx", r"michael", r"ashley", r"654321", r"11111",
+            # Turkish common passwords
+            r"sifre", r"sifre123", r"turkiye", r"istanbul", r"ankara",
+            r"galatasaray", r"fenerbahce", r"besiktas", r"trabzon",
+            r"merhaba", r"sevgi", r"askim", r"12345", r"turk",
+            r"teknofest", r"yks", r"tyt", r"ayt", r"egitim",
         ]
 
         for pattern in common_patterns:
@@ -324,14 +330,14 @@ class TokenManager:
 
     def create_access_token(self, data: dict[str, Any]) -> str:
         """Create JWT access token"""
-        expire = datetime.utcnow() + timedelta(
+        expire = datetime.now(timezone.utc) + timedelta(
             minutes=self.config.jwt_access_token_expire_minutes
         )
 
         payload = {
             **data,
             "exp": expire,
-            "iat": datetime.utcnow(),
+            "iat": datetime.now(timezone.utc),
             "type": "access",
             "jti": secrets.token_urlsafe(32),  # JWT ID
         }
@@ -342,14 +348,14 @@ class TokenManager:
 
     def create_refresh_token(self, data: dict[str, Any]) -> str:
         """Create JWT refresh token"""
-        expire = datetime.utcnow() + timedelta(
+        expire = datetime.now(timezone.utc) + timedelta(
             days=self.config.jwt_refresh_token_expire_days
         )
 
         payload = {
             **data,
             "exp": expire,
-            "iat": datetime.utcnow(),
+            "iat": datetime.now(timezone.utc),
             "type": "refresh",
             "jti": secrets.token_urlsafe(32),
         }
@@ -454,7 +460,7 @@ class SecurityAuditor:
     ):
         """Log security event"""
         event = {
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
             "event_type": event_type,
             "severity": severity.value,
             "description": description,
@@ -484,7 +490,7 @@ class SecurityAuditor:
             for event in self.security_events
             if event["user_id"] == user_id
             and datetime.fromisoformat(event["timestamp"])
-            > datetime.utcnow() - timedelta(hours=1)
+            > datetime.now(timezone.utc) - timedelta(hours=1)
         ]
 
         # Multiple failed login attempts
@@ -508,7 +514,7 @@ class SecurityAuditor:
                 event
                 for event in recent_events
                 if datetime.fromisoformat(event["timestamp"])
-                > datetime.utcnow() - timedelta(minutes=1)
+                > datetime.now(timezone.utc) - timedelta(minutes=1)
             ]
         )
 
@@ -549,7 +555,7 @@ class SecurityAuditor:
 
     def get_security_report(self, hours: int = 24) -> dict[str, Any]:
         """Generate security report"""
-        cutoff = datetime.utcnow() - timedelta(hours=hours)
+        cutoff = datetime.now(timezone.utc) - timedelta(hours=hours)
         recent_events = [
             event
             for event in self.security_events
@@ -712,9 +718,9 @@ class SecurityManager:
             "session_id": session_id,
             "user_id": user_id,
             "csrf_token": csrf_token,
-            "created_at": datetime.utcnow().isoformat(),
+            "created_at": datetime.now(timezone.utc).isoformat(),
             "expires_at": (
-                datetime.utcnow()
+                datetime.now(timezone.utc)
                 + timedelta(minutes=self.config.session_timeout_minutes)
             ).isoformat(),
         }

@@ -3,7 +3,9 @@
  * VARK + Felder-Silverman hibrit öğrenme stili görüntüleme
  */
 
-import React, { useState, useEffect } from 'react';
+import * as React from 'react';
+import {  useState, useEffect  } from 'react';
+
 import { revolutionaryFeaturesService, HybridLearningProfile, ContentRecommendation } from '../../services/revolutionaryFeaturesService';
 
 interface LearningStyleProfileProps {
@@ -11,9 +13,9 @@ interface LearningStyleProfileProps {
   onProfileUpdate?: (profile: HybridLearningProfile) => void;
 }
 
-const LearningStyleProfile: React.FC<LearningStyleProfileProps> = ({ 
-  studentId, 
-  onProfileUpdate 
+const LearningStyleProfile: React.FC<LearningStyleProfileProps> = ({
+  studentId,
+  onProfileUpdate,
 }) => {
   const [profile, setProfile] = useState<HybridLearningProfile | null>(null);
   const [recommendations, setRecommendations] = useState<ContentRecommendation | null>(null);
@@ -127,7 +129,7 @@ const LearningStyleProfile: React.FC<LearningStyleProfileProps> = ({
         <h3 className="text-lg font-semibold text-gray-900 mb-4">
           🚀 Hibrit Öğrenme Stili Profili
         </h3>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
           <div className="text-center">
             <div className="text-2xl font-bold text-purple-600">{profile.hybrid_code}</div>
@@ -148,7 +150,7 @@ const LearningStyleProfile: React.FC<LearningStyleProfileProps> = ({
         <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
           <h4 className="font-medium text-blue-900 mb-2">Profil Özeti</h4>
           <p className="text-sm text-blue-800">
-            Bu profil, VARK duyusal tercihleriniz ve Felder-Silverman bilişsel süreçlerinizi 
+            Bu profil, VARK duyusal tercihleriniz ve Felder-Silverman bilişsel süreçlerinizi
             birleştirerek 64 farklı öğrenme kombinasyonundan size en uygun olanını belirler.
           </p>
         </div>
@@ -159,7 +161,7 @@ const LearningStyleProfile: React.FC<LearningStyleProfileProps> = ({
         <h3 className="text-lg font-semibold text-gray-900 mb-4">
           VARK Duyusal Tercihler
         </h3>
-        
+
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <div className="text-center">
             <div className={`p-4 rounded-lg ${getVARKColor('visual')}`}>
@@ -168,7 +170,7 @@ const LearningStyleProfile: React.FC<LearningStyleProfileProps> = ({
             </div>
             <div className="text-xs text-gray-600 mt-2">Diyagramlar, grafikler</div>
           </div>
-          
+
           <div className="text-center">
             <div className={`p-4 rounded-lg ${getVARKColor('auditory')}`}>
               <div className="text-2xl font-bold">{(profile.vark_profile.auditory * 100).toFixed(0)}%</div>
@@ -176,7 +178,7 @@ const LearningStyleProfile: React.FC<LearningStyleProfileProps> = ({
             </div>
             <div className="text-xs text-gray-600 mt-2">Sesli açıklamalar</div>
           </div>
-          
+
           <div className="text-center">
             <div className={`p-4 rounded-lg ${getVARKColor('reading')}`}>
               <div className="text-2xl font-bold">{(profile.vark_profile.reading * 100).toFixed(0)}%</div>
@@ -184,7 +186,7 @@ const LearningStyleProfile: React.FC<LearningStyleProfileProps> = ({
             </div>
             <div className="text-xs text-gray-600 mt-2">Metin, listeler</div>
           </div>
-          
+
           <div className="text-center">
             <div className={`p-4 rounded-lg ${getVARKColor('kinesthetic')}`}>
               <div className="text-2xl font-bold">{(profile.vark_profile.kinesthetic * 100).toFixed(0)}%</div>
@@ -207,7 +209,7 @@ const LearningStyleProfile: React.FC<LearningStyleProfileProps> = ({
         <h3 className="text-lg font-semibold text-gray-900 mb-4">
           Felder-Silverman Bilişsel Süreçler
         </h3>
-        
+
         <div className="space-y-4">
           <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
             <div>
@@ -215,40 +217,40 @@ const LearningStyleProfile: React.FC<LearningStyleProfileProps> = ({
               <div className="text-sm text-gray-600">Bilgiyi nasıl işlersiniz?</div>
             </div>
             <div className={`px-3 py-1 rounded-full text-sm font-medium ${getFelderColor('active_reflective')}`}>
-              {profile.felder_profile.active_reflective > 0 ? 'Aktif' : 'Yansıtıcı'} 
+              {profile.felder_profile.active_reflective > 0 ? 'Aktif' : 'Yansıtıcı'}
               ({Math.abs(profile.felder_profile.active_reflective).toFixed(1)})
             </div>
           </div>
-          
+
           <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
             <div>
               <div className="font-medium text-gray-900">Algısal ↔ Sezgisel</div>
               <div className="text-sm text-gray-600">Hangi bilgi türünü tercih edersiniz?</div>
             </div>
             <div className={`px-3 py-1 rounded-full text-sm font-medium ${getFelderColor('sensing_intuitive')}`}>
-              {profile.felder_profile.sensing_intuitive > 0 ? 'Algısal' : 'Sezgisel'} 
+              {profile.felder_profile.sensing_intuitive > 0 ? 'Algısal' : 'Sezgisel'}
               ({Math.abs(profile.felder_profile.sensing_intuitive).toFixed(1)})
             </div>
           </div>
-          
+
           <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
             <div>
               <div className="font-medium text-gray-900">Görsel ↔ Sözel</div>
               <div className="text-sm text-gray-600">Bilgiyi nasıl alırsınız?</div>
             </div>
             <div className={`px-3 py-1 rounded-full text-sm font-medium ${getFelderColor('visual_verbal')}`}>
-              {profile.felder_profile.visual_verbal > 0 ? 'Görsel' : 'Sözel'} 
+              {profile.felder_profile.visual_verbal > 0 ? 'Görsel' : 'Sözel'}
               ({Math.abs(profile.felder_profile.visual_verbal).toFixed(1)})
             </div>
           </div>
-          
+
           <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
             <div>
               <div className="font-medium text-gray-900">Sıralı ↔ Bütünsel</div>
               <div className="text-sm text-gray-600">Anlayışa nasıl ulaşırsınız?</div>
             </div>
             <div className={`px-3 py-1 rounded-full text-sm font-medium ${getFelderColor('sequential_global')}`}>
-              {profile.felder_profile.sequential_global > 0 ? 'Sıralı' : 'Bütünsel'} 
+              {profile.felder_profile.sequential_global > 0 ? 'Sıralı' : 'Bütünsel'}
               ({Math.abs(profile.felder_profile.sequential_global).toFixed(1)})
             </div>
           </div>
@@ -272,7 +274,7 @@ const LearningStyleProfile: React.FC<LearningStyleProfileProps> = ({
           <h3 className="text-lg font-semibold text-gray-900 mb-4">
             Kişiselleştirilmiş İçerik Önerileri
           </h3>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <h4 className="font-medium text-gray-700 mb-3">Önerilen İçerik Türleri</h4>
@@ -287,7 +289,7 @@ const LearningStyleProfile: React.FC<LearningStyleProfileProps> = ({
                 ))}
               </div>
             </div>
-            
+
             <div>
               <h4 className="font-medium text-gray-700 mb-3">Öğrenme Stratejileri</h4>
               <div className="space-y-2">
@@ -299,7 +301,7 @@ const LearningStyleProfile: React.FC<LearningStyleProfileProps> = ({
               </div>
             </div>
           </div>
-          
+
           <div className="mt-4">
             <h4 className="font-medium text-gray-700 mb-3">Çalışma Teknikleri</h4>
             <div className="flex flex-wrap gap-2">
@@ -310,7 +312,7 @@ const LearningStyleProfile: React.FC<LearningStyleProfileProps> = ({
               ))}
             </div>
           </div>
-          
+
           <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
             <div className="grid grid-cols-2 gap-4">
               <div>
@@ -336,11 +338,11 @@ const LearningStyleProfile: React.FC<LearningStyleProfileProps> = ({
           <h3 className="text-lg font-semibold text-gray-900 mb-4">
             Profiliniz Hakkında
           </h3>
-          
+
           <div className="prose prose-sm max-w-none">
             <p className="text-gray-700">{explanation.explanation}</p>
           </div>
-          
+
           {explanation.recommendations && (
             <div className="mt-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
               <h4 className="font-medium text-yellow-800 mb-2">Öneriler</h4>
@@ -359,7 +361,7 @@ const LearningStyleProfile: React.FC<LearningStyleProfileProps> = ({
         <h3 className="text-lg font-semibold text-gray-900 mb-4">
           Profil Bilgileri
         </h3>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
           <div>
             <div className="text-gray-600">İlk Tespit Tarihi</div>

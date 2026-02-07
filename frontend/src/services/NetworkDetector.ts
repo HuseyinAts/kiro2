@@ -41,7 +41,7 @@ export type ReconnectionCallback = () => void | Promise<void>;
 
 /**
  * NetworkDetector - Network durumu izleme ve yönetimi
- * 
+ *
  * Özellikler:
  * - Online/offline detection
  * - Network quality monitoring (slow connection detection)
@@ -61,13 +61,13 @@ export class NetworkDetector {
 
   /**
    * NetworkDetector constructor
-   * 
+   *
    * @param maxReconnectionAttempts - Maximum reconnection attempts (default: 5)
    * @param reconnectionDelay - Delay between reconnection attempts in ms (default: 2000)
    */
   constructor(
     maxReconnectionAttempts: number = 5,
-    reconnectionDelay: number = 2000
+    reconnectionDelay: number = 2000,
   ) {
     this.maxReconnectionAttempts = maxReconnectionAttempts;
     this.reconnectionDelay = reconnectionDelay;
@@ -84,10 +84,7 @@ export class NetworkDetector {
     // Start monitoring
     this._startMonitoring();
 
-    console.log('🌐 NetworkDetector: Initialized', {
-      initialStatus: this.state.status,
-      isOnline: this.state.isOnline,
-    });
+    // NetworkDetector initialized
   }
 
   /**
@@ -129,7 +126,7 @@ export class NetworkDetector {
    * Online event handler
    */
   private _handleOnline = (): void => {
-    console.log('🟢 NetworkDetector: Network online');
+    // NetworkDetector: Network online
 
     this._updateState({
       status: 'online',
@@ -146,7 +143,7 @@ export class NetworkDetector {
    * Offline event handler
    */
   private _handleOffline = (): void => {
-    console.log('🔴 NetworkDetector: Network offline');
+    // NetworkDetector: Network offline
 
     this._updateState({
       status: 'offline',
@@ -244,7 +241,7 @@ export class NetworkDetector {
         });
       } else {
         // Backend is down but network is up - keep status as online
-        console.log('🌐 NetworkDetector: Backend unreachable but network is up');
+        // NetworkDetector: Backend unreachable but network is up
         this._updateState({
           status: 'online',
           isOnline: true,
@@ -265,7 +262,7 @@ export class NetworkDetector {
     const attempt = this.state.reconnectionAttempts + 1;
     const delay = this.reconnectionDelay * Math.pow(2, attempt - 1); // Exponential backoff
 
-    console.log(`🔄 NetworkDetector: Reconnection attempt ${attempt}/${this.maxReconnectionAttempts} in ${delay}ms`);
+    // NetworkDetector: Reconnection attempt
 
     this._updateState({
       reconnectionAttempts: attempt,
@@ -278,7 +275,7 @@ export class NetworkDetector {
         await this._performPingTest();
 
         if (this.state.isOnline) {
-          console.log('✅ NetworkDetector: Reconnection successful');
+          // NetworkDetector: Reconnection successful
           this._triggerReconnectionCallbacks();
           return;
         }
@@ -293,7 +290,7 @@ export class NetworkDetector {
    * Reconnection callbacks'i tetikle
    */
   private _triggerReconnectionCallbacks(): void {
-    console.log(`🔄 NetworkDetector: Triggering ${this.reconnectionCallbacks.size} reconnection callbacks`);
+    // NetworkDetector: Triggering reconnection callbacks
 
     this.reconnectionCallbacks.forEach(async (callback) => {
       try {
@@ -306,7 +303,7 @@ export class NetworkDetector {
 
   /**
    * Get current network state
-   * 
+   *
    * @returns NetworkState
    */
   getState(): NetworkState {
@@ -315,7 +312,7 @@ export class NetworkDetector {
 
   /**
    * Check if online
-   * 
+   *
    * @returns boolean
    */
   isOnline(): boolean {
@@ -324,7 +321,7 @@ export class NetworkDetector {
 
   /**
    * Check if offline
-   * 
+   *
    * @returns boolean
    */
   isOffline(): boolean {
@@ -333,7 +330,7 @@ export class NetworkDetector {
 
   /**
    * Check if connection is slow
-   * 
+   *
    * @returns boolean
    */
   isSlow(): boolean {
@@ -342,7 +339,7 @@ export class NetworkDetector {
 
   /**
    * Get offline duration in milliseconds
-   * 
+   *
    * @returns number | null
    */
   getOfflineDuration(): number | null {
@@ -355,7 +352,7 @@ export class NetworkDetector {
 
   /**
    * Subscribe to network state changes
-   * 
+   *
    * @param callback - Network change callback
    * @returns Unsubscribe function
    */
@@ -373,7 +370,7 @@ export class NetworkDetector {
 
   /**
    * Register reconnection callback (auto-retry on reconnection)
-   * 
+   *
    * @param callback - Reconnection callback
    * @returns Unregister function
    */
@@ -390,7 +387,7 @@ export class NetworkDetector {
    * Manually trigger reconnection check
    */
   async checkConnection(): Promise<boolean> {
-    console.log('🔍 NetworkDetector: Manual connection check');
+    // NetworkDetector: Manual connection check
 
     await this._performPingTest();
 
@@ -415,7 +412,7 @@ export class NetworkDetector {
    * Cleanup - stop monitoring
    */
   destroy(): void {
-    console.log('🗑️ NetworkDetector: Destroying');
+    // NetworkDetector: Destroying
 
     this._stopMonitoring();
     this.subscribers.clear();
@@ -428,21 +425,13 @@ export class NetworkDetector {
    * Update state and notify subscribers
    */
   private _updateState(newState: Partial<NetworkState>): void {
-    const previousStatus = this.state.status;
-
     this.state = {
       ...this.state,
       ...newState,
     };
 
-    // Log status change
-    if (previousStatus !== this.state.status) {
-      console.log('🌐 NetworkDetector: Status changed', {
-        from: previousStatus,
-        to: this.state.status,
-        isOnline: this.state.isOnline,
-      });
-    }
+    // Status change logged for debugging
+    // previousStatus !== this.state.status
 
     // Notify all subscribers
     this.subscribers.forEach(callback => {
@@ -462,7 +451,7 @@ let globalInstance: NetworkDetector | null = null;
 
 /**
  * Get or create global NetworkDetector instance
- * 
+ *
  * @returns NetworkDetector
  */
 export function getNetworkDetector(): NetworkDetector {
@@ -474,14 +463,14 @@ export function getNetworkDetector(): NetworkDetector {
 
 /**
  * Create new NetworkDetector instance
- * 
+ *
  * @param maxReconnectionAttempts - Maximum reconnection attempts
  * @param reconnectionDelay - Delay between reconnection attempts in ms
  * @returns NetworkDetector
  */
 export function createNetworkDetector(
   maxReconnectionAttempts?: number,
-  reconnectionDelay?: number
+  reconnectionDelay?: number,
 ): NetworkDetector {
   return new NetworkDetector(maxReconnectionAttempts, reconnectionDelay);
 }

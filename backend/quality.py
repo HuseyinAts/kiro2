@@ -36,7 +36,7 @@ def run_command(cmd: list, description: str) -> tuple[bool, str]:
         return result.returncode == 0, result.stdout
 
     except FileNotFoundError:
-        print(f"  FAILED - Tool not found")
+        print("  FAILED - Tool not found")
         return False, ""
 
 

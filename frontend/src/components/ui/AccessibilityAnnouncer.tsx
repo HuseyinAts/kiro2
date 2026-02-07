@@ -4,8 +4,9 @@
  * WCAG 2.1 Level AA - 4.1.3 Status Messages
  */
 
-import React, { useEffect, useState } from 'react'
-import { Box } from '@mui/material'
+import { Box } from '@mui/material';
+import * as React from 'react';
+import {  useEffect, useState  } from 'react';
 
 export type AnnouncementPriority = 'polite' | 'assertive' | 'off'
 
@@ -54,27 +55,27 @@ export const AccessibilityAnnouncer: React.FC<AccessibilityAnnouncerProps> = ({
   announcements,
   onAnnouncementComplete,
 }) => {
-  const [activeAnnouncements, setActiveAnnouncements] = useState<Announcement[]>([])
+  const [activeAnnouncements, setActiveAnnouncements] = useState<Announcement[]>([]);
 
   useEffect(() => {
-    setActiveAnnouncements(announcements)
+    setActiveAnnouncements(announcements);
 
     // Auto-remove announcements with timeout
     announcements.forEach((announcement) => {
       if (announcement.timeout) {
         setTimeout(() => {
           setActiveAnnouncements((prev) =>
-            prev.filter((a) => a.id !== announcement.id)
-          )
-          onAnnouncementComplete?.(announcement.id)
-        }, announcement.timeout)
+            prev.filter((a) => a.id !== announcement.id),
+          );
+          onAnnouncementComplete?.(announcement.id);
+        }, announcement.timeout);
       }
-    })
-  }, [announcements, onAnnouncementComplete])
+    });
+  }, [announcements, onAnnouncementComplete]);
 
   // Group announcements by priority
-  const politeAnnouncements = activeAnnouncements.filter((a) => a.priority === 'polite')
-  const assertiveAnnouncements = activeAnnouncements.filter((a) => a.priority === 'assertive')
+  const politeAnnouncements = activeAnnouncements.filter((a) => a.priority === 'polite');
+  const assertiveAnnouncements = activeAnnouncements.filter((a) => a.priority === 'assertive');
 
   return (
     <>
@@ -118,7 +119,7 @@ export const AccessibilityAnnouncer: React.FC<AccessibilityAnnouncerProps> = ({
         </Box>
       )}
     </>
-  )
-}
+  );
+};
 
-export default AccessibilityAnnouncer
+export default AccessibilityAnnouncer;

@@ -25,7 +25,7 @@ try:
         EmbeddingResult,
     )
 except ImportError:
-    from nlp_training.berturk_embedding import BERTurkEmbeddingService, EmbeddingResult
+    from nlp_training.berturk_embedding import BERTurkEmbeddingService
 
 logger = logging.getLogger(__name__)
 

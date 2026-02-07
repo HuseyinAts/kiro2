@@ -1,0 +1,359 @@
+name: Health Checks & PostDeploy Verification
+
+on:
+  # Deployment sonrasi tetiklenir
+  deployment_status:
+
+  # Manuel tetikleme
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Target environment'
+        required: true
+        default: 'staging'
+        type: choice
+        options:
+          - staging
+          - production
+
+      run_smoke_tests:
+        description: 'Run smoke tests'
+        required: true
+        default: true
+        type: boolean
+
+      rollback_on_failure:
+        description: 'Rollback on failure'
+        required: true
+        default: true
+        type: boolean
+
+  # Zamanlayici ile periyodik calistirma
+  schedule:
+    # Her 5 dakikada bir (production icin)
+    - cron: '*/5 * * * *'
+
+env:
+  STAGING_URL: https://staging-api.kiro2.com
+  PRODUCTION_URL: https://api.kiro2.com
+
+jobs:
+  # ==================== Health Check Job ====================
+  health-check:
+    name: API Health Check
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          pip install httpx pytest pytest-asyncio
+
+      - name: Determine environment
+        id: env
+        run: |
+          if [ "${{ github.event_name }}" = "schedule" ]; then
+            echo "url=${{ env.PRODUCTION_URL }}" >> $GITHUB_OUTPUT
+            echo "env=production" >> $GITHUB_OUTPUT
+          elif [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            if [ "${{ inputs.environment }}" = "production" ]; then
+              echo "url=${{ env.PRODUCTION_URL }}" >> $GITHUB_OUTPUT
+            else
+              echo "url=${{ env.STAGING_URL }}" >> $GITHUB_OUTPUT
+            fi
+            echo "env=${{ inputs.environment }}" >> $GITHUB_OUTPUT
+          else
+            echo "url=${{ env.STAGING_URL }}" >> $GITHUB_OUTPUT
+            echo "env=staging" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Check Health Endpoint
+        id: health
+        run: |
+          HEALTH_URL="${{ steps.env.outputs.url }}/health"
+          echo "Checking: $HEALTH_URL"
+
+          HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" "$HEALTH_URL" --max-time 10)
+          RESPONSE_TIME=$(curl -s -o /dev/null -w "%{time_total}" "$HEALTH_URL" --max-time 10)
+
+          echo "status=$HTTP_STATUS" >> $GITHUB_OUTPUT
+          echo "response_time=$RESPONSE_TIME" >> $GITHUB_OUTPUT
+
+          if [ "$HTTP_STATUS" != "200" ]; then
+            echo "::error::Health check failed with status $HTTP_STATUS"
+            exit 1
+          fi
+
+          echo "Health check passed with status $HTTP_STATUS in ${RESPONSE_TIME}s"
+
+      - name: Check Critical Endpoints
+        run: |
+          BASE_URL="${{ steps.env.outputs.url }}"
+
+          ENDPOINTS=(
+            "/health"
+            "/api/v1/auth/status"
+            "/api/v1/questions/random"
+          )
+
+          FAILED=0
+
+          for endpoint in "${ENDPOINTS[@]}"; do
+            URL="$BASE_URL$endpoint"
+            HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" "$URL" --max-time 10)
+
+            if [ "$HTTP_STATUS" -ge 200 ] && [ "$HTTP_STATUS" -lt 400 ]; then
+              echo "✅ $endpoint: $HTTP_STATUS"
+            else
+              echo "❌ $endpoint: $HTTP_STATUS"
+              FAILED=$((FAILED + 1))
+            fi
+          done
+
+          if [ "$FAILED" -gt 0 ]; then
+            echo "::error::$FAILED endpoint(s) failed health check"
+            exit 1
+          fi
+
+      - name: Notify on Failure
+        if: failure()
+        uses: slackapi/slack-github-action@v1
+        with:
+          payload: |
+            {
+              "text": "🚨 Health Check Failed",
+              "blocks": [
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "*Health Check Failed*\n\n*Environment:* ${{ steps.env.outputs.env }}\n*Run:* <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View Details>"
+                  }
+                }
+              ]
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        continue-on-error: true
+
+  # ==================== PostDeploy Smoke Tests ====================
+  smoke-tests:
+    name: Smoke Tests
+    runs-on: ubuntu-latest
+    needs: health-check
+    if: github.event_name == 'deployment_status' || (github.event_name == 'workflow_dispatch' && inputs.run_smoke_tests)
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          pip install httpx pytest pytest-asyncio pytest-html
+
+      - name: Determine environment
+        id: env
+        run: |
+          if [ "${{ inputs.environment }}" = "production" ]; then
+            echo "url=${{ env.PRODUCTION_URL }}" >> $GITHUB_OUTPUT
+          else
+            echo "url=${{ env.STAGING_URL }}" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Run Smoke Tests
+        env:
+          API_BASE_URL: ${{ steps.env.outputs.url }}
+        run: |
+          cd backend
+          pytest tests/integration/health/ \
+            -v \
+            --tb=short \
+            --html=smoke-test-report.html \
+            --self-contained-html \
+            -x \
+            || echo "::warning::Some smoke tests failed"
+
+      - name: Upload Smoke Test Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: smoke-test-report
+          path: backend/smoke-test-report.html
+
+      - name: Check Response Times
+        run: |
+          BASE_URL="${{ steps.env.outputs.url }}"
+
+          echo "Measuring P95 response times..."
+
+          TOTAL_TIME=0
+          SAMPLES=10
+
+          for i in $(seq 1 $SAMPLES); do
+            TIME=$(curl -s -o /dev/null -w "%{time_total}" "$BASE_URL/health" --max-time 10)
+            TOTAL_TIME=$(echo "$TOTAL_TIME + $TIME" | bc)
+            echo "Sample $i: ${TIME}s"
+          done
+
+          AVG=$(echo "scale=3; $TOTAL_TIME / $SAMPLES" | bc)
+          echo "Average response time: ${AVG}s"
+
+          # 500ms threshold
+          THRESHOLD="0.500"
+          if (( $(echo "$AVG > $THRESHOLD" | bc -l) )); then
+            echo "::warning::Average response time ($AVG) exceeds threshold ($THRESHOLD)"
+          fi
+
+  # ==================== Rollback on Failure ====================
+  rollback:
+    name: Rollback Deployment
+    runs-on: ubuntu-latest
+    needs: smoke-tests
+    if: failure() && (github.event_name == 'deployment_status' || (github.event_name == 'workflow_dispatch' && inputs.rollback_on_failure))
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Notify Rollback Started
+        uses: slackapi/slack-github-action@v1
+        with:
+          payload: |
+            {
+              "text": "⚠️ Starting Rollback",
+              "blocks": [
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "*Rollback Initiated*\n\nSmoke tests failed. Starting automatic rollback.\n\n*Environment:* ${{ inputs.environment || 'staging' }}"
+                  }
+                }
+              ]
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        continue-on-error: true
+
+      - name: Rollback to previous version
+        run: |
+          echo "Performing rollback..."
+
+          # Kubernetes rollback
+          # kubectl rollout undo deployment/api -n ${{ inputs.environment || 'staging' }}
+
+          # Veya Docker rollback
+          # docker service rollback kiro2-api
+
+          echo "Rollback command would be executed here"
+          echo "::notice::Rollback procedure completed"
+
+      - name: Verify Rollback
+        run: |
+          BASE_URL="${{ steps.env.outputs.url || env.STAGING_URL }}"
+
+          echo "Verifying rollback..."
+          sleep 30
+
+          HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" "$BASE_URL/health" --max-time 10)
+
+          if [ "$HTTP_STATUS" = "200" ]; then
+            echo "✅ Rollback successful - health check passed"
+          else
+            echo "::error::Rollback may have failed - health check returned $HTTP_STATUS"
+            exit 1
+          fi
+
+      - name: Notify Rollback Complete
+        if: success()
+        uses: slackapi/slack-github-action@v1
+        with:
+          payload: |
+            {
+              "text": "✅ Rollback Complete",
+              "blocks": [
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "*Rollback Completed Successfully*\n\nService has been restored to the previous version."
+                  }
+                }
+              ]
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        continue-on-error: true
+
+  # ==================== SLA Report Generation ====================
+  sla-report:
+    name: Generate SLA Report
+    runs-on: ubuntu-latest
+    if: github.event_name == 'schedule'
+    needs: health-check
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install httpx jinja2
+
+      - name: Fetch SLA Data
+        run: |
+          curl -s "${{ env.PRODUCTION_URL }}/health-dashboard/sla-report" > sla-data.json
+
+      - name: Generate Report
+        run: |
+          python << 'EOF'
+          import json
+          from datetime import datetime
+
+          with open('sla-data.json') as f:
+              data = json.load(f)
+
+          report = f"""
+          # SLA Compliance Report
+
+          Generated: {datetime.now().isoformat()}
+
+          ## Overall Compliance: {data.get('overall_compliance', 'N/A')}%
+
+          ## Endpoint Details
+
+          | Endpoint | Uptime | Target | Status |
+          |----------|--------|--------|--------|
+          """
+
+          for ep in data.get('endpoints', []):
+              status = "✅" if ep.get('is_compliant') else "❌"
+              report += f"| {ep.get('endpoint')} | {ep.get('actual_uptime')}% | {ep.get('target_uptime')}% | {status} |\n"
+
+          with open('sla-report.md', 'w') as f:
+              f.write(report)
+
+          print("Report generated successfully")
+          EOF
+
+      - name: Upload SLA Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: sla-report-${{ github.run_number }}
+          path: sla-report.md

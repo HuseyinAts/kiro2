@@ -8,10 +8,8 @@ Requirements: REQ-48.9-48.12
 
 import logging
 from typing import Dict, Tuple
-import re
-from transformers import AutoTokenizer, AutoModelForSequenceClassification
+from transformers import AutoTokenizer
 import torch
-import numpy as np
 
 logger = logging.getLogger(__name__)
 

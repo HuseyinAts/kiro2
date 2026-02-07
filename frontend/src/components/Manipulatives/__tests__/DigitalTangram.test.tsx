@@ -6,18 +6,19 @@
  * and progress tracking.
  */
 
-import React from 'react';
+import * as React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import axios from 'axios';
 import DigitalTangram from '../DigitalTangram';
+import { vi, Mocked, Mock } from 'vitest';
 
 // ============================================================
 // Mocks
 // ============================================================
 
 vi.mock('axios');
-const mockedAxios = axios as jest.Mocked<typeof axios>;
+const mockedAxios = axios as Mocked<typeof axios>;
 
 global.alert = vi.fn();
 
@@ -38,8 +39,8 @@ const mockContext = {
   setLineDash: vi.fn(),
 };
 
-HTMLCanvasElement.prototype.getContext = jest.fn(() => mockContext) as any;
-HTMLCanvasElement.prototype.getBoundingClientRect = jest.fn(() => ({
+HTMLCanvasElement.prototype.getContext = vi.fn(() => mockContext) as any;
+HTMLCanvasElement.prototype.getBoundingClientRect = vi.fn(() => ({
   left: 0,
   top: 0,
   width: 800,
@@ -317,7 +318,7 @@ describe('DigitalTangram - Error Handling', () => {
   });
 
   it('handles missing canvas context', () => {
-    (HTMLCanvasElement.prototype.getContext as jest.Mock).mockReturnValueOnce(null);
+    (HTMLCanvasElement.prototype.getContext as Mock).mockReturnValueOnce(null);
 
     // Should not crash
     render(<DigitalTangram />);

@@ -3,8 +3,8 @@ Video Cache Model
 SQLAlchemy model for video_cache table
 """
 
-from datetime import datetime
-from typing import Dict, Any, Optional
+from datetime import datetime, timezone
+from typing import Dict, Any
 from uuid import uuid4
 
 from sqlalchemy import (
@@ -182,7 +182,7 @@ class VideoCache(Base):
 
     def update_access(self) -> None:
         """Update access tracking"""
-        self.last_accessed = datetime.utcnow()
+        self.last_accessed = datetime.now(timezone.utc)
         self.access_count += 1
 
     def is_expired(self) -> bool:
@@ -190,7 +190,7 @@ class VideoCache(Base):
         if not self.last_updated or not self.cache_ttl:
             return False
 
-        elapsed = (datetime.utcnow() - self.last_updated).total_seconds()
+        elapsed = (datetime.now(timezone.utc) - self.last_updated).total_seconds()
         return elapsed > self.cache_ttl
 
     def calculate_overall_score(self) -> float:

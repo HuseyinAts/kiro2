@@ -1,0 +1,39 @@
+import React from 'react'
+import { Box, Toolbar, useTheme, useMediaQuery } from '@mui/material'
+import { RoleBasedNavigation } from '../Navigation/RoleBasedNavigation'
+import { useAuth } from '../../hooks/useAuth.tsx'
+
+interface RoleBasedLayoutProps {
+  children: React.ReactNode
+}
+
+export const RoleBasedLayout: React.FC<RoleBasedLayoutProps> = ({ children }) => {
+  const { isAuthenticated } = useAuth()
+  const theme = useTheme()
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'))
+
+  // Giriş yapılmamışsa navigation gösterme
+  if (!isAuthenticated) {
+    return <>{children}</>
+  }
+
+  return (
+    <Box sx={{ display: 'flex' }}>
+      <RoleBasedNavigation />
+      <Box
+        component="main"
+        sx={{
+          flexGrow: 1,
+          width: { md: `calc(100% - 280px)` },
+          minHeight: '100vh',
+          backgroundColor: 'grey.50'
+        }}
+      >
+        <Toolbar />
+        {children}
+      </Box>
+    </Box>
+  )
+}
+
+export default RoleBasedLayout

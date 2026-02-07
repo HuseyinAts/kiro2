@@ -3,27 +3,23 @@ ML-Based Performance Analytics Engine
 Advanced analytics for student performance prediction and insights
 """
 
-import asyncio
 import logging
-import math
 import numpy as np
 import pandas as pd
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
-from typing import Any, Dict, List, Optional, Set, Tuple, Union
+from typing import Any, Dict, List, Optional, Tuple
 from enum import Enum
-import json
 
 from sklearn.ensemble import (
     RandomForestRegressor,
     GradientBoostingClassifier,
     IsolationForest,
 )
-from sklearn.linear_model import LinearRegression, LogisticRegression
-from sklearn.cluster import KMeans, DBSCAN
+from sklearn.linear_model import LogisticRegression
 from sklearn.preprocessing import StandardScaler, LabelEncoder
-from sklearn.metrics import mean_squared_error, accuracy_score, silhouette_score
-from sklearn.model_selection import train_test_split, cross_val_score
+from sklearn.metrics import mean_squared_error, accuracy_score
+from sklearn.model_selection import train_test_split
 import warnings
 
 warnings.filterwarnings("ignore")

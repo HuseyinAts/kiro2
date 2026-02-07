@@ -4,6 +4,7 @@
  */
 
 import { useState, useEffect, useCallback, useRef } from 'react';
+
 import { BionicReadingResult, ApiResponse } from '../types/revolutionary';
 
 interface BionicReadingSettings {
@@ -27,7 +28,7 @@ export const useBionicReading = (options: UseBionicReadingOptions = {}) => {
     autoApply = false,
     debounceMs = 500,
     onError,
-    onSuccess
+    onSuccess,
   } = options;
 
   const [enabled, setEnabled] = useState(false);
@@ -38,7 +39,7 @@ export const useBionicReading = (options: UseBionicReadingOptions = {}) => {
     rootBoldRatio: 40,
     suffixBoldRatio: 0,
     minBoldChars: 2,
-    maxBoldChars: 4
+    maxBoldChars: 4,
   });
 
   const debounceRef = useRef<NodeJS.Timeout>();
@@ -46,13 +47,13 @@ export const useBionicReading = (options: UseBionicReadingOptions = {}) => {
 
   // Kullanıcı tercihlerini yükle
   const loadPreferences = useCallback(async () => {
-    if (!studentId) return;
+    if (!studentId) {return;}
 
     try {
       const response = await fetch('/api/v1/bionic-reading/preferences', {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`,
-        }
+        },
       });
 
       if (response.ok) {
@@ -64,7 +65,7 @@ export const useBionicReading = (options: UseBionicReadingOptions = {}) => {
             rootBoldRatio: (prefs.bold_ratio || 0.4) * 100,
             suffixBoldRatio: 0,
             minBoldChars: prefs.min_word_length || 2,
-            maxBoldChars: 4
+            maxBoldChars: 4,
           });
         }
       }
@@ -76,9 +77,9 @@ export const useBionicReading = (options: UseBionicReadingOptions = {}) => {
   // Kullanıcı tercihlerini kaydet
   const savePreferences = useCallback(async (
     newEnabled: boolean,
-    newSettings: BionicReadingSettings
+    newSettings: BionicReadingSettings,
   ) => {
-    if (!studentId) return;
+    if (!studentId) {return;}
 
     try {
       const preferences = {
@@ -86,8 +87,8 @@ export const useBionicReading = (options: UseBionicReadingOptions = {}) => {
         bold_ratio: newSettings.rootBoldRatio / 100,
         min_word_length: newSettings.minBoldChars,
         auto_apply: autoApply,
-        font_weight: "bold",
-        highlight_color: "#000000"
+        font_weight: 'bold',
+        highlight_color: '#000000',
       };
 
       await fetch('/api/v1/bionic-reading/preferences', {
@@ -96,7 +97,7 @@ export const useBionicReading = (options: UseBionicReadingOptions = {}) => {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${localStorage.getItem('token')}`,
         },
-        body: JSON.stringify(preferences)
+        body: JSON.stringify(preferences),
       });
     } catch (error) {
       console.warn('Kullanıcı tercihleri kaydedilemedi:', error);
@@ -130,9 +131,9 @@ export const useBionicReading = (options: UseBionicReadingOptions = {}) => {
         },
         body: JSON.stringify({
           text: text,
-          use_cache: true
+          use_cache: true,
         }),
-        signal: abortControllerRef.current.signal
+        signal: abortControllerRef.current.signal,
       });
 
       if (!response.ok) {
@@ -140,7 +141,7 @@ export const useBionicReading = (options: UseBionicReadingOptions = {}) => {
       }
 
       const apiResult: ApiResponse<any> = await response.json();
-      
+
       if (!apiResult.success) {
         throw new Error(apiResult.message || 'Bionic Reading işlemi başarısız');
       }
@@ -151,13 +152,13 @@ export const useBionicReading = (options: UseBionicReadingOptions = {}) => {
         kok_ek_analizi: [],
         complexity_score: 0,
         readability_score: 0,
-        processing_time: apiResult.data.processing_time_ms || 0
+        processing_time: apiResult.data.processing_time_ms || 0,
       };
-      
+
       setResult(bionicResult);
       onSuccess?.(bionicResult);
       return bionicResult;
-      
+
     } catch (err: any) {
       if (err.name === 'AbortError') {
         return null; // İstek iptal edildi, hata gösterme
@@ -166,7 +167,7 @@ export const useBionicReading = (options: UseBionicReadingOptions = {}) => {
       const errorMessage = err.message || 'Bionic Reading işlemi başarısız';
       setError(errorMessage);
       onError?.(errorMessage);
-      
+
       // Fallback: Mock implementation
       const mockResult: BionicReadingResult = {
         orijinal_metin: text,
@@ -174,12 +175,12 @@ export const useBionicReading = (options: UseBionicReadingOptions = {}) => {
         kok_ek_analizi: [],
         complexity_score: 0,
         readability_score: 0,
-        processing_time: 800
+        processing_time: 800,
       };
-      
+
       setResult(mockResult);
       return mockResult;
-      
+
     } finally {
       setLoading(false);
     }
@@ -212,15 +213,15 @@ export const useBionicReading = (options: UseBionicReadingOptions = {}) => {
   const applyMockBionicReading = useCallback((text: string): string => {
     const words = text.split(/(\s+)/);
     return words.map(word => {
-      if (word.trim().length < 3 || /^\s+$/.test(word)) return word;
-      
+      if (word.trim().length < 3 || /^\s+$/.test(word)) {return word;}
+
       const cleanWord = word.replace(/[.,!?;:]/g, '');
       const punctuation = word.replace(cleanWord, '');
-      
+
       const boldLength = Math.max(2, Math.floor(cleanWord.length * (settings.rootBoldRatio / 100)));
       const boldPart = cleanWord.substring(0, boldLength);
       const normalPart = cleanWord.substring(boldLength);
-      
+
       return `**${boldPart}**${normalPart}${punctuation}`;
     }).join('');
   }, [settings.rootBoldRatio]);
@@ -260,7 +261,7 @@ export const useBionicReading = (options: UseBionicReadingOptions = {}) => {
 
     // Utilities
     clearError: () => setError(null),
-    clearResult: () => setResult(null)
+    clearResult: () => setResult(null),
   };
 };
 

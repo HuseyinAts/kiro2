@@ -16,7 +16,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from pydantic import BaseModel, Field
 from typing import Optional, List
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from enum import Enum
 
 from core.database import get_db
@@ -187,7 +187,7 @@ async def start_pomodoro_session(
 
     # Oturum oluştur
     session_id = str(uuid.uuid4())
-    started_at = datetime.utcnow()
+    started_at = datetime.now(timezone.utc)
     ends_at = started_at + timedelta(minutes=duration_minutes)
 
     # Bugün tamamlanan oturum sayısını hesapla (simüle edilmiş)
@@ -423,7 +423,7 @@ async def detect_inactivity(
     alert = InactivityAlert(
         alert_id=str(uuid.uuid4()),
         user_id=current_user.id,
-        detected_at=datetime.utcnow(),
+        detected_at=datetime.now(timezone.utc),
         inactive_duration_seconds=inactive_duration_seconds,
         alert_message=alert_message,
         suggested_action=suggested_action,
@@ -612,7 +612,7 @@ async def start_focus_exercise(
     progress = FocusExerciseProgress(
         exercise_id=exercise_id,
         user_id=current_user.id,
-        started_at=datetime.utcnow(),
+        started_at=datetime.now(timezone.utc),
         duration_seconds=0,
     )
 
@@ -645,8 +645,8 @@ async def complete_focus_exercise(
     progress = FocusExerciseProgress(
         exercise_id=exercise_id,
         user_id=current_user.id,
-        started_at=datetime.utcnow() - timedelta(seconds=duration_seconds),
-        completed_at=datetime.utcnow(),
+        started_at=datetime.now(timezone.utc) - timedelta(seconds=duration_seconds),
+        completed_at=datetime.now(timezone.utc),
         duration_seconds=duration_seconds,
         success_rate=success_rate,
         notes=notes,
@@ -701,7 +701,7 @@ async def get_daily_adhd_stats(
         dict: Günlük istatistikler
     """
     return {
-        "date": datetime.utcnow().date().isoformat(),
+        "date": datetime.now(timezone.utc).date().isoformat(),
         "pomodoro_sessions": {
             "total": 0,
             "completed": 0,

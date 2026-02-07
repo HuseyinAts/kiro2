@@ -1,0 +1,10 @@
+# BackstopJS Data Directory
+
+This directory stores visual regression test data:
+
+- bitmaps_reference/ - Baseline images (committed to Git)
+- bitmaps_test/ - Test results (ignored by Git)
+- html_report/ - Test reports (ignored by Git)
+- engine_scripts/ - Custom scripts
+
+Reference images are committed to enable CI/CD comparison.

@@ -19,7 +19,6 @@ from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.types import ASGIApp
 
 from core.learning_path_logger import (
-    LearningPathLogger,
     request_id_var,
     get_learning_path_logger,
 )

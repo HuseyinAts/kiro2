@@ -5,7 +5,6 @@ Teknofest 2025 - Eğitim Eylemci Projesi
 """
 
 import logging
-import re
 from dataclasses import dataclass
 from typing import List, Optional, Dict, Any
 

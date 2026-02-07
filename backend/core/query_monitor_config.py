@@ -13,7 +13,6 @@ from typing import Optional
 from prometheus_client import Counter, Histogram
 from sqlalchemy import event
 from sqlalchemy.engine import Engine
-from sqlalchemy.orm import Session
 
 # Configure logger
 logger = logging.getLogger("query_monitor")
@@ -117,7 +116,7 @@ def extract_query_info(statement: str) -> tuple[str, Optional[str]]:
             parts = statement_upper.split("UPDATE")[1].split()
             if parts:
                 table_name = parts[0].strip().lower()
-    except:
+    except (IndexError, AttributeError):
         pass
 
     return query_type, table_name

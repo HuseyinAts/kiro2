@@ -6,7 +6,6 @@ Demonstrates all services generating questions
 """
 
 import sys
-import os
 from pathlib import Path
 
 # Set UTF-8 encoding for Windows
@@ -33,7 +32,6 @@ def main():
     print("[YUKLENIY OR] Servisler yuklen iyor...")
     try:
         from services.knowledge_graph_service import KnowledgeGraphService, QuestionNode
-        from services.plagiarism_detection_service import PlagiarismDetectionService
         from services.hitl_workflow_service import HITLWorkflowService
 
         print("[TAMAM] Tum servisler yuklendi!")
@@ -53,7 +51,7 @@ def main():
 
     print("[BASLATILIYOR] HITL Workflow...")
     hitl_service = HITLWorkflowService()
-    print(f"[TAMAM] Expert sistemi hazir")
+    print("[TAMAM] Expert sistemi hazir")
     print()
 
     print("=" * 80)
@@ -127,7 +125,7 @@ def main():
                 cognitive_skills=["problem_solving"],
             )
             kg_service.add_question_node(node)
-            print(f"  [+] Knowledge Graph'a eklendi")
+            print("  [+] Knowledge Graph'a eklendi")
         except Exception as e:
             print(f"  [!] Hata: {str(e)[:40]}")
 
@@ -150,7 +148,7 @@ def main():
             except Exception as e:
                 print(f"  [!] Task olusturulamadi: {str(e)[:40]}")
         else:
-            print(f"  [OK] Otomatik onaylandi")
+            print("  [OK] Otomatik onaylandi")
             approved += 1
 
         print()
@@ -171,7 +169,7 @@ def main():
         for n in kg_service.graph.nodes()
         if kg_service.graph.nodes[n].get("type") == "question"
     ]
-    print(f"Knowledge Graph:")
+    print("Knowledge Graph:")
     print(f"  Node sayisi:            {len(kg_service.graph.nodes())}")
     print(f"  Edge sayisi:            {len(kg_service.graph.edges())}")
     print(f"  Soru sayisi:            {len(total_questions)}")
@@ -179,7 +177,7 @@ def main():
 
     # HITL stats
     pending = [t for t in hitl_service.task_queue if t.status.value == "pending"]
-    print(f"HITL Workflow:")
+    print("HITL Workflow:")
     print(f"  Bekleyen gorevler:      {len(pending)}")
     print(f"  Kayitli expertler:      {len(hitl_service.experts)}")
     print()

@@ -5,11 +5,10 @@ Learning Path Video Yükleme Sorunu için servis koruma mekanizması
 Requirements: 5.18, 4.11
 """
 
-import asyncio
 import time
 from datetime import datetime
 from enum import Enum
-from typing import Any, Callable, Dict, Optional, List
+from typing import Any, Callable, Dict, Optional
 from dataclasses import dataclass
 import logging
 

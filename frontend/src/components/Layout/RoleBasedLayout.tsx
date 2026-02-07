@@ -1,22 +1,24 @@
-import React from 'react'
-import { Box, Toolbar, useTheme, useMediaQuery } from '@mui/material'
+import { Box, Toolbar, useTheme, useMediaQuery } from '@mui/material';
+import * as React from 'react';
+
 // import { RoleBasedNavigation } from '../Navigation/RoleBasedNavigation'  // Old navigation
-import { ModernNavigation } from '../Navigation/ModernNavigation'  // New modern navigation
-import { useAuthStore } from '@/store/authStore'
-import modernColors from '@/theme/modern-colors'
+import { ModernNavigation } from '../Navigation/ModernNavigation';  // New modern navigation
+import { useAuthStore } from '@/store/authStore';
+import modernColors from '@/theme/modern-colors';
 
 interface RoleBasedLayoutProps {
   children: React.ReactNode
 }
 
 export const RoleBasedLayout: React.FC<RoleBasedLayoutProps> = ({ children }) => {
-  const {  isAuthenticated  } = useAuthStore()
-  const theme = useTheme()
-  const isMobile = useMediaQuery(theme.breakpoints.down('md'))
+  const {  isAuthenticated  } = useAuthStore();
+  // theme and useMediaQuery kept for future responsive enhancements
+  useTheme();
+  useMediaQuery('(max-width:900px)');
 
   // Giriş yapılmamışsa navigation gösterme
   if (!isAuthenticated) {
-    return <>{children}</>
+    return <>{children}</>;
   }
 
   return (
@@ -51,7 +53,7 @@ export const RoleBasedLayout: React.FC<RoleBasedLayoutProps> = ({ children }) =>
         aria-label="Ana içerik"
         sx={{
           flexGrow: 1,
-          width: { md: `calc(100% - 280px)` },
+          width: { md: 'calc(100% - 280px)' },
           minHeight: '100vh',
           background: modernColors.background.gradient,
         }}
@@ -60,7 +62,7 @@ export const RoleBasedLayout: React.FC<RoleBasedLayoutProps> = ({ children }) =>
         {children}
       </Box>
     </Box>
-  )
-}
+  );
+};
 
-export default RoleBasedLayout
+export default RoleBasedLayout;

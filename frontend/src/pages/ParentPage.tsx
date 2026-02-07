@@ -1,19 +1,19 @@
-import React, { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { 
-  Users, 
-  Bell, 
-  BarChart3, 
-  Settings, 
+import {
+  Users,
+  Bell,
+  Settings,
   Home,
   UserCheck,
-  Calendar
+  Calendar,
 } from 'lucide-react';
-import { ParentDashboard } from '@/components/Parent/ParentDashboard';
+import { useState } from 'react';
+
 import { ChildSelection } from '@/components/Parent/ChildSelection';
+import { ParentDashboard } from '@/components/Parent/ParentDashboard';
 import { ParentNotifications } from '@/components/Parent/ParentNotifications';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 type TabType = 'dashboard' | 'children' | 'notifications' | 'settings';
 
@@ -25,26 +25,26 @@ export const ParentPage: React.FC = () => {
       id: 'dashboard' as TabType,
       label: 'Ana Sayfa',
       icon: Home,
-      component: ParentDashboard
+      component: ParentDashboard,
     },
     {
       id: 'children' as TabType,
       label: 'Çocuklarım',
       icon: Users,
-      component: ChildSelection
+      component: ChildSelection,
     },
     {
       id: 'notifications' as TabType,
       label: 'Bildirimler',
       icon: Bell,
-      component: ParentNotifications
+      component: ParentNotifications,
     },
     {
       id: 'settings' as TabType,
       label: 'Ayarlar',
       icon: Settings,
-      component: () => <div className="p-6">Ayarlar sayfası yakında...</div>
-    }
+      component: () => <div className="p-6">Ayarlar sayfası yakında...</div>,
+    },
   ];
 
   const ActiveComponent = tabs.find(tab => tab.id === activeTab)?.component || ParentDashboard;

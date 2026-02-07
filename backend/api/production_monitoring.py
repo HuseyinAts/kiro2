@@ -2,6 +2,14 @@
 Production Monitoring API Endpoints
 
 Endpoints for monitoring enhanced template performance in production
+
+PREFIX CHANGED (2025-01-25):
+- OLD: /api/v1/monitoring (cakisma!)
+- NEW: /api/v1/monitoring/quality
+
+Bu degisiklik monitoring.py ile cakismayi onler:
+- /api/v1/monitoring → System monitoring (monitoring.py)
+- /api/v1/monitoring/quality → Production quality metrics (BU DOSYA)
 """
 
 from fastapi import APIRouter, HTTPException
@@ -10,7 +18,7 @@ from datetime import datetime
 
 from services.production_quality_monitor import get_monitor
 
-router = APIRouter(prefix="/api/v1/monitoring", tags=["Monitoring"])
+router = APIRouter(prefix="/api/v1/monitoring/quality", tags=["Production Quality Monitoring"])
 
 
 @router.get("/stats")

@@ -1,0 +1,19 @@
+Bulunan kitap: 5
+
+2019-2020-Acil Matematiğin ilacı-1: 2 crop
+  sayfa_0005_cevap_0.png: 183x64 px, mode=RGB
+  sayfa_0009_cevap_0.png: 142x49 px, mode=RGB
+
+2019-2020-Acil-Matematigin ilacı Tyt Matematik Soru Bankası: 0 crop
+
+2019-2020-Acil-Matematiğin ilacı Tyt Matematik Soru Bankası: 2 crop
+  sayfa_0003_cevap_0.png: 187x59 px, mode=RGB
+  sayfa_0003_cevap_1.png: 109x55 px, mode=RGB
+
+2019-2020-ACİL-AYT-Matematik Soru Bankası: 2 crop
+  sayfa_0004_cevap_0.png: 175x54 px, mode=RGB
+  sayfa_0008_cevap_0.png: 130x55 px, mode=RGB
+
+2019-2020-ACİL-TYT-Soru Bankası: 2 crop
+  sayfa_0003_cevap_0.png: 171x55 px, mode=RGB
+  sayfa_0003_cevap_1.png: 269x51 px, mode=RGB

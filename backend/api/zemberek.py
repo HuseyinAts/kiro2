@@ -13,7 +13,7 @@ Endpoints:
 - GET /stats - Servis istatistikleri
 """
 
-from typing import List, Optional
+from typing import List
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel, Field
@@ -21,9 +21,6 @@ from pydantic import BaseModel, Field
 from core.auth_dependencies import get_current_user
 from core.structured_logger import get_logger
 from core.zemberek_service import (
-    MorphemeAnalysis,
-    POSTag,
-    TokenInfo,
     get_zemberek_service,
 )
 from models.database import User

@@ -4,9 +4,8 @@ INNOVATION: BERT embeddings + cosine similarity for plagiarism detection
 Research: 95%+ accuracy with multilingual BERT models
 """
 import numpy as np
-from typing import Dict, List, Tuple, Optional
+from typing import Dict, Optional
 from dataclasses import dataclass
-import json
 from datetime import datetime
 
 

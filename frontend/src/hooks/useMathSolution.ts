@@ -3,8 +3,8 @@
  * Requirements: REQ-51.21-51.40
  */
 
-import { useState, useCallback } from 'react';
 import axios from 'axios';
+import { useState, useCallback } from 'react';
 
 interface MathSolution {
   problem_id: string;
@@ -30,7 +30,7 @@ export const useMathSolution = () => {
     problemId: string,
     problemStatement: string,
     problemType: string,
-    difficultyLevel: string = 'medium'
+    difficultyLevel: string = 'medium',
   ) => {
     setLoading(true);
     setError(null);
@@ -40,7 +40,7 @@ export const useMathSolution = () => {
         problem_id: problemId,
         problem_statement: problemStatement,
         problem_type: problemType,
-        difficulty_level: difficultyLevel
+        difficulty_level: difficultyLevel,
       });
 
       if (response.data.success) {
@@ -59,7 +59,7 @@ export const useMathSolution = () => {
   const getStep = useCallback(async (problemId: string, stepNumber: number) => {
     try {
       const response = await axios.get(
-        `/api/v1/math-solution-steps/step/${problemId}/${stepNumber}`
+        `/api/v1/math-solution-steps/step/${problemId}/${stepNumber}`,
       );
       return response.data.data;
     } catch (err: any) {
@@ -71,13 +71,13 @@ export const useMathSolution = () => {
   const getHint = useCallback(async (
     problemId: string,
     stepNumber: number,
-    hintLevel: number
+    hintLevel: number,
   ) => {
     try {
       const response = await axios.post('/api/v1/math-solution-steps/hint', {
         problem_id: problemId,
         step_number: stepNumber,
-        hint_level: hintLevel
+        hint_level: hintLevel,
       });
       return response.data.data.hint;
     } catch (err: any) {
@@ -94,6 +94,6 @@ export const useMathSolution = () => {
     setCurrentStep,
     generateSolution,
     getStep,
-    getHint
+    getHint,
   };
 };

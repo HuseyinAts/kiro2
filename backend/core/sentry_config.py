@@ -524,7 +524,7 @@ if __name__ == "__main__":
         debug=True
     )
 
-    print(f"\nConfiguration:")
+    print("\nConfiguration:")
     print(f"  Environment: {config.environment}")
     print(f"  Release: {config.release}")
     print(f"  Traces Sample Rate: {config.traces_sample_rate}")

@@ -24,6 +24,8 @@ import logging
 from typing import Dict, Any, Optional, List
 from datetime import datetime
 
+from cachetools import TTLCache
+
 from ..models import StudentProfile, LearningStyle, KnowledgeLevel
 
 logger = logging.getLogger(__name__)
@@ -58,11 +60,21 @@ class StudentProfiler:
         self.assessment = assessment_system
         self.style_detector = learning_style_detector
 
-        # In-memory cache for profiles
-        # TODO: Consider using Redis for distributed caching
-        self.profiles_cache: Dict[str, StudentProfile] = {}
+        # In-memory cache for profiles with TTL and max size
+        # Max 1000 profiles, 30 minute TTL to prevent memory leak
+        self.profiles_cache: TTLCache = TTLCache(maxsize=1000, ttl=1800)
 
-        logger.info("StudentProfiler initialized")
+        # Behavior history cache - stores list of behaviors per student
+        # Max 5000 entries (500 students * ~10 behaviors average), 2 hour TTL
+        self.behavior_cache: TTLCache = TTLCache(maxsize=5000, ttl=7200)
+
+        # Performance score history for trend analysis
+        # Max 1000 students, each with list of scores, 24 hour TTL
+        self.score_history_cache: TTLCache = TTLCache(maxsize=1000, ttl=86400)
+
+        logger.info(
+            "StudentProfiler initialized with TTLCache (profiles=1000, behaviors=5000)"
+        )
 
     async def analyze_student(
         self, student_id: str, initial_data: Dict[str, Any]
@@ -276,10 +288,20 @@ class StudentProfiler:
                 "timestamp": datetime.now().isoformat(),
             }
 
-            # TODO: Store in database or send to analytics service
-            # For now, just log
+            # Store behavior in cache
+            cache_key = f"behaviors_{student_id}"
+            if cache_key in self.behavior_cache:
+                behaviors = self.behavior_cache[cache_key]
+                # Keep only last 100 behaviors per student
+                if len(behaviors) >= 100:
+                    behaviors = behaviors[-99:]
+                behaviors.append(behavior)
+                self.behavior_cache[cache_key] = behaviors
+            else:
+                self.behavior_cache[cache_key] = [behavior]
+
             logger.info(
-                f"Behavior recorded: {student_id} - {action} " f"(duration={duration}s)"
+                f"Behavior recorded: {student_id} - {action} (duration={duration}s)"
             )
 
             return True
@@ -288,31 +310,115 @@ class StudentProfiler:
             logger.error(f"Record behavior error: {str(e)}")
             return False
 
+    def get_behavior_history(
+        self, student_id: str, limit: int = 50
+    ) -> List[Dict[str, Any]]:
+        """
+        Get student's behavior history
+
+        Args:
+            student_id: Student identifier
+            limit: Maximum number of behaviors to return
+
+        Returns:
+            List of behavior records, most recent first
+        """
+        cache_key = f"behaviors_{student_id}"
+        behaviors = self.behavior_cache.get(cache_key, [])
+        return behaviors[-limit:][::-1]  # Return most recent first
+
     def analyze_performance_trend(self, student_id: str, current_score: float) -> str:
         """
-        Analyze performance trend from score
+        Analyze performance trend from score using historical tracking
 
         Args:
             student_id: Student identifier
             current_score: Current assessment score (0-100)
 
         Returns:
-            str: Trend description ("excellent", "good", "average", "needs_improvement")
-
-        Note:
-            This is a simple implementation. In production, this should
-            track historical scores and calculate actual trends.
+            str: Trend description with additional detail:
+                - "improving_rapidly": Score increasing >10 points average
+                - "improving": Score increasing 5-10 points average
+                - "stable_excellent": Score stable at 80+
+                - "stable_good": Score stable at 60-79
+                - "stable_average": Score stable at 40-59
+                - "declining": Score decreasing
+                - "needs_improvement": Score below 40
         """
-        # TODO: Implement historical tracking
-        # For now, simple thresholds
-        if current_score >= 80:
-            return "excellent"
+        # Store current score in history
+        cache_key = f"scores_{student_id}"
+        if cache_key in self.score_history_cache:
+            scores = self.score_history_cache[cache_key]
+            # Keep last 20 scores for trend analysis
+            if len(scores) >= 20:
+                scores = scores[-19:]
+            scores.append({
+                "score": current_score,
+                "timestamp": datetime.now().isoformat(),
+            })
+            self.score_history_cache[cache_key] = scores
+        else:
+            self.score_history_cache[cache_key] = [{
+                "score": current_score,
+                "timestamp": datetime.now().isoformat(),
+            }]
+
+        # Get score history for analysis
+        scores = self.score_history_cache.get(cache_key, [])
+
+        # Need at least 3 scores for trend analysis
+        if len(scores) < 3:
+            # Fall back to simple thresholds
+            if current_score >= 80:
+                return "stable_excellent"
+            elif current_score >= 60:
+                return "stable_good"
+            elif current_score >= 40:
+                return "stable_average"
+            else:
+                return "needs_improvement"
+
+        # Calculate trend from recent scores
+        recent_scores = [s["score"] for s in scores[-5:]]
+        older_scores = [s["score"] for s in scores[:-5]] if len(scores) > 5 else []
+
+        avg_recent = sum(recent_scores) / len(recent_scores)
+        avg_older = sum(older_scores) / len(older_scores) if older_scores else avg_recent
+
+        improvement = avg_recent - avg_older
+
+        # Determine trend
+        if improvement > 10:
+            return "improving_rapidly"
+        elif improvement > 5:
+            return "improving"
+        elif improvement < -5:
+            return "declining"
+        elif current_score >= 80:
+            return "stable_excellent"
         elif current_score >= 60:
-            return "good"
+            return "stable_good"
         elif current_score >= 40:
-            return "average"
+            return "stable_average"
         else:
             return "needs_improvement"
+
+    def get_score_history(
+        self, student_id: str, limit: int = 20
+    ) -> List[Dict[str, Any]]:
+        """
+        Get student's score history
+
+        Args:
+            student_id: Student identifier
+            limit: Maximum number of scores to return
+
+        Returns:
+            List of score records, most recent first
+        """
+        cache_key = f"scores_{student_id}"
+        scores = self.score_history_cache.get(cache_key, [])
+        return scores[-limit:][::-1]  # Return most recent first
 
     def get_profile(self, student_id: str) -> Optional[StudentProfile]:
         """

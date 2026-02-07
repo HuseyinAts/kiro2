@@ -4,7 +4,7 @@ Production-ready JWT implementation with refresh tokens, blacklisting, and secur
 """
 import hashlib
 import secrets
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from enum import Enum
 from typing import Optional
 
@@ -93,14 +93,14 @@ class JWTManager:
         if permissions is None:
             permissions = self._get_default_permissions(role)
 
-        expire = datetime.utcnow() + timedelta(minutes=self.access_token_expire_minutes)
+        expire = datetime.now(timezone.utc) + timedelta(minutes=self.access_token_expire_minutes)
 
         payload = {
             "sub": user_id,
             "email": email,
             "role": role.value,
             "exp": expire,
-            "iat": datetime.utcnow(),
+            "iat": datetime.now(timezone.utc),
             "type": TokenType.ACCESS.value,
             "jti": secrets.token_urlsafe(32),
             "device_id": device_id,
@@ -113,14 +113,14 @@ class JWTManager:
         self, user_id: str, email: str, role: UserRole, device_id: str = None
     ) -> str:
         """Refresh token oluştur"""
-        expire = datetime.utcnow() + timedelta(days=self.refresh_token_expire_days)
+        expire = datetime.now(timezone.utc) + timedelta(days=self.refresh_token_expire_days)
 
         payload = {
             "sub": user_id,
             "email": email,
             "role": role.value,
             "exp": expire,
-            "iat": datetime.utcnow(),
+            "iat": datetime.now(timezone.utc),
             "type": TokenType.REFRESH.value,
             "jti": secrets.token_urlsafe(32),
             "device_id": device_id,
@@ -250,19 +250,19 @@ class JWTManager:
                 )
 
             # Token expiration kontrolü
-            if db_token.expires_at < datetime.utcnow():
+            if db_token.expires_at < datetime.now(timezone.utc):
                 raise HTTPException(
                     status_code=status.HTTP_401_UNAUTHORIZED,
                     detail="Refresh token has expired",
                 )
 
             # Usage tracking
-            db_token.last_used_at = datetime.utcnow()
+            db_token.last_used_at = datetime.now(timezone.utc)
             db_token.usage_count += 1
 
             # Revoke eski token (rotation policy)
             db_token.revoked = True
-            db_token.revoked_at = datetime.utcnow()
+            db_token.revoked_at = datetime.now(timezone.utc)
             db_token.revoke_reason = "rotated"
 
         # Yeni token çifti oluştur
@@ -300,7 +300,7 @@ class JWTManager:
             jti = payload.get("jti")
             if jti:
                 self.blacklisted_tokens.add(jti)
-        except:
+        except (jwt.DecodeError, jwt.InvalidTokenError, jwt.ExpiredSignatureError):
             # Token decode edilemese bile güvenlik için ekle
             token_hash = hashlib.sha256(token.encode()).hexdigest()
             self.blacklisted_tokens.add(token_hash)
@@ -317,7 +317,7 @@ class JWTManager:
             jti = payload.get("jti")
             if jti and jti in self.blacklisted_tokens:
                 return True
-        except:
+        except (jwt.DecodeError, jwt.InvalidTokenError):
             pass
 
         # Fallback: token hash kontrolü
@@ -376,11 +376,11 @@ class JWTManager:
         self, identifier: str, max_attempts: int = 5, window_minutes: int = 15
     ) -> bool:
         """Rate limiting kontrolü"""
-        now = datetime.utcnow()
+        now = datetime.now(timezone.utc)
 
         if identifier not in self.device_attempts:
-            self.device_attempts[identifier] = {"attempts": 0, "window_start": now}
-            return True
+            self.device_attempts[identifier] = {"attempts": 1, "window_start": now}
+            return True  # İlk deneme de sayılır
 
         device_data = self.device_attempts[identifier]
 
@@ -398,13 +398,13 @@ class JWTManager:
 
     def create_password_reset_token(self, user_id: str, email: str) -> str:
         """Şifre sıfırlama token'ı oluştur"""
-        expire = datetime.utcnow() + timedelta(hours=1)  # 1 saat geçerli
+        expire = datetime.now(timezone.utc) + timedelta(hours=1)  # 1 saat geçerli
 
         payload = {
             "sub": user_id,
             "email": email,
             "exp": expire,
-            "iat": datetime.utcnow(),
+            "iat": datetime.now(timezone.utc),
             "type": TokenType.RESET_PASSWORD.value,
             "jti": secrets.token_urlsafe(32),
         }
@@ -413,13 +413,13 @@ class JWTManager:
 
     def create_email_verification_token(self, user_id: str, email: str) -> str:
         """Email doğrulama token'ı oluştur"""
-        expire = datetime.utcnow() + timedelta(hours=24)  # 24 saat geçerli
+        expire = datetime.now(timezone.utc) + timedelta(hours=24)  # 24 saat geçerli
 
         payload = {
             "sub": user_id,
             "email": email,
             "exp": expire,
-            "iat": datetime.utcnow(),
+            "iat": datetime.now(timezone.utc),
             "type": TokenType.EMAIL_VERIFICATION.value,
             "jti": secrets.token_urlsafe(32),
         }
@@ -516,7 +516,7 @@ class JWTManager:
 
         if db_token and not db_token.revoked:
             db_token.revoked = True
-            db_token.revoked_at = datetime.utcnow()
+            db_token.revoked_at = datetime.now(timezone.utc)
             db_token.revoke_reason = "manual_revoke"
             db.commit()
 
@@ -536,7 +536,7 @@ class JWTManager:
         ).update(
             {
                 "revoked": True,
-                "revoked_at": datetime.utcnow(),
+                "revoked_at": datetime.now(timezone.utc),
                 "revoke_reason": "logout_all_devices",
             }
         )
@@ -560,7 +560,7 @@ class JWTManager:
         ).update(
             {
                 "revoked": True,
-                "revoked_at": datetime.utcnow(),
+                "revoked_at": datetime.now(timezone.utc),
                 "revoke_reason": "device_revoke",
             }
         )
@@ -577,7 +577,7 @@ class JWTManager:
         from models.database import RefreshToken
 
         # 30 gün önce expire olmuş token'ları sil
-        cutoff_date = datetime.utcnow() - timedelta(days=30)
+        cutoff_date = datetime.now(timezone.utc) - timedelta(days=30)
 
         db.query(RefreshToken).filter(RefreshToken.expires_at < cutoff_date).delete()
         db.commit()
@@ -724,6 +724,37 @@ async def require_permission(
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail=f"Permission required: {required_permission}",
+        )
+
+    return current_user
+
+
+async def require_admin(
+    current_user: TokenPayload = Depends(get_current_user),
+) -> TokenPayload:
+    """
+    Require user to be admin or super_admin
+
+    Usage:
+        @app.get("/admin-panel")
+        async def admin_panel(user: TokenPayload = Depends(require_admin)):
+            return {"admin_data": "..."}
+
+    Args:
+        current_user: Current authenticated user
+
+    Returns:
+        TokenPayload: Current user if admin role
+
+    Raises:
+        HTTPException: 403 if user is not admin
+    """
+    admin_roles = [UserRole.ADMIN, UserRole.SUPER_ADMIN]
+    
+    if current_user.role not in admin_roles:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Admin access required",
         )
 
     return current_user

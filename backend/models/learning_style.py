@@ -6,7 +6,7 @@ from datetime import datetime
 from enum import Enum
 from typing import Any, Dict, List, Optional
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class VARKDimension(str, Enum):
@@ -54,7 +54,7 @@ class VARKProfile(BaseModel):
             VARKDimension.READING: self.reading,
             VARKDimension.KINESTHETIC: self.kinesthetic,
         }
-        return max(scores, key=scores.get)
+        return max(scores, key=lambda x: scores[x])
 
 
 class FelderProfile(BaseModel):
@@ -111,8 +111,7 @@ class HybridLearningProfile(BaseModel):
         ..., description="Analiz için kullanılan veri noktası sayısı"
     )
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class BehavioralData(BaseModel):

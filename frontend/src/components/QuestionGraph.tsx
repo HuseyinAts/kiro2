@@ -12,7 +12,9 @@
  * - Proper Turkish language support
  */
 
-import React from 'react';
+import * as React from 'react';
+
+import { sanitizeSVG } from '../utils/sanitize';
 import './QuestionGraph.css';
 
 interface GraphMetadata {
@@ -41,21 +43,13 @@ interface QuestionGraphProps {
  */
 export const QuestionGraph: React.FC<QuestionGraphProps> = ({
   visualContent,
-  className = ''
+  className = '',
 }) => {
   if (!visualContent || visualContent.type !== 'graph') {
     return null;
   }
 
-  // Sanitize SVG content (remove potential script tags)
-  const sanitizeSVG = (svg: string): string => {
-    // Remove script tags and event handlers for XSS protection
-    return svg
-      .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
-      .replace(/on\w+="[^"]*"/g, '')
-      .replace(/on\w+='[^']*'/g, '');
-  };
-
+  // SECURITY FIX #4: Use DOMPurify for secure SVG sanitization
   const sanitizedSVG = sanitizeSVG(visualContent.content);
 
   return (

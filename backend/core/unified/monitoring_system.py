@@ -522,7 +522,8 @@ class UnifiedMonitoringManager:
             # Active connections
             try:
                 connections = len(psutil.net_connections())
-            except:
+            except (psutil.AccessDenied, OSError) as e:
+                logger.debug(f"Failed to get network connections: {e}")
                 connections = 0
 
             metrics = SystemMetrics(

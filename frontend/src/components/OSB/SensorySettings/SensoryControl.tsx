@@ -9,7 +9,8 @@
  * - 96.4: Clean Design (Minimal clutter, white space)
  */
 
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import * as React from 'react';
+import {  createContext, useContext, useState, useEffect, ReactNode  } from 'react';
 import './SensoryControl.css';
 
 export interface SensorySettings {
@@ -48,7 +49,7 @@ const DEFAULT_SENSORY_SETTINGS: SensorySettings = {
   minimalClutter: true,
   extraWhitespace: true,
   clearHierarchy: true,
-  largeSpacing: false
+  largeSpacing: false,
 };
 
 interface SensoryContextValue {
@@ -62,7 +63,7 @@ const SensoryContext = createContext<SensoryContextValue>({
   settings: DEFAULT_SENSORY_SETTINGS,
   updateSettings: () => {},
   resetSettings: () => {},
-  applyPreset: () => {}
+  applyPreset: () => {},
 });
 
 export const useSensorySettings = () => useContext(SensoryContext);
@@ -74,11 +75,11 @@ interface SensoryProviderProps {
 
 export const SensoryProvider: React.FC<SensoryProviderProps> = ({
   children,
-  initialSettings = {}
+  initialSettings = {},
 }) => {
   const [settings, setSettings] = useState<SensorySettings>({
     ...DEFAULT_SENSORY_SETTINGS,
-    ...initialSettings
+    ...initialSettings,
   });
 
   useEffect(() => {
@@ -128,7 +129,7 @@ export const SensoryProvider: React.FC<SensoryProviderProps> = ({
         minimalClutter: true,
         extraWhitespace: true,
         clearHierarchy: true,
-        largeSpacing: true
+        largeSpacing: true,
       },
       comfortable: DEFAULT_SENSORY_SETTINGS,
       standard: {
@@ -144,8 +145,8 @@ export const SensoryProvider: React.FC<SensoryProviderProps> = ({
         minimalClutter: false,
         extraWhitespace: false,
         clearHierarchy: false,
-        largeSpacing: false
-      }
+        largeSpacing: false,
+      },
     };
     setSettings(presets[preset]);
   };
@@ -164,7 +165,7 @@ interface SensoryControlPanelProps {
 
 export const SensoryControlPanel: React.FC<SensoryControlPanelProps> = ({
   onClose,
-  showPresets = true
+  showPresets = true,
 }) => {
   const { settings, updateSettings, resetSettings, applyPreset } = useSensorySettings();
 

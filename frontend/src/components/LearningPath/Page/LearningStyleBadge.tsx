@@ -5,9 +5,9 @@
  * Extracted from LearningPathPage.tsx
  */
 
-import React from 'react'
-import { Paper, Box, Typography, Divider, Chip, Alert } from '@mui/material'
-import { TrendingUp } from '@mui/icons-material'
+import { TrendingUp } from '@mui/icons-material';
+import { Paper, Box, Typography, Divider, Chip, Alert } from '@mui/material';
+import * as React from 'react';
 
 export interface LearningStyleBadgeProps {
   learningStyle: string
@@ -19,7 +19,7 @@ export interface LearningStyleBadgeProps {
  * Displays learning style code and personalized content preferences
  */
 export const LearningStyleBadge: React.FC<LearningStyleBadgeProps> = ({
-  learningStyle
+  learningStyle,
 }) => {
   return (
     <Paper
@@ -29,7 +29,7 @@ export const LearningStyleBadge: React.FC<LearningStyleBadgeProps> = ({
         mb: 3,
         background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
         color: 'white',
-        borderRadius: 2
+        borderRadius: 2,
       }}
     >
       <Box className="flex items-center gap-2 mb-2">
@@ -55,7 +55,7 @@ export const LearningStyleBadge: React.FC<LearningStyleBadgeProps> = ({
           sx={{
             backgroundColor: 'rgba(255,255,255,0.3)',
             color: 'white',
-            fontWeight: 'bold'
+            fontWeight: 'bold',
           }}
         />
         <Chip
@@ -64,7 +64,7 @@ export const LearningStyleBadge: React.FC<LearningStyleBadgeProps> = ({
           sx={{
             backgroundColor: 'rgba(255,255,255,0.3)',
             color: 'white',
-            fontWeight: 'bold'
+            fontWeight: 'bold',
           }}
         />
         <Chip
@@ -73,7 +73,7 @@ export const LearningStyleBadge: React.FC<LearningStyleBadgeProps> = ({
           sx={{
             backgroundColor: 'rgba(255,255,255,0.3)',
             color: 'white',
-            fontWeight: 'bold'
+            fontWeight: 'bold',
           }}
         />
         <Chip
@@ -82,7 +82,7 @@ export const LearningStyleBadge: React.FC<LearningStyleBadgeProps> = ({
           sx={{
             backgroundColor: 'rgba(255,255,255,0.3)',
             color: 'white',
-            fontWeight: 'bold'
+            fontWeight: 'bold',
           }}
         />
       </Box>
@@ -93,7 +93,7 @@ export const LearningStyleBadge: React.FC<LearningStyleBadgeProps> = ({
           mt: 2,
           backgroundColor: 'rgba(255,255,255,0.2)',
           color: 'white',
-          '& .MuiAlert-icon': { color: 'white' }
+          '& .MuiAlert-icon': { color: 'white' },
         }}
       >
         <Typography variant="body2">
@@ -103,7 +103,7 @@ export const LearningStyleBadge: React.FC<LearningStyleBadgeProps> = ({
         </Typography>
       </Alert>
     </Paper>
-  )
-}
+  );
+};
 
-export default LearningStyleBadge
+export default LearningStyleBadge;

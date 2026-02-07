@@ -1,0 +1,76 @@
+# OWASP ZAP API Scan Rules Configuration for KIRO2
+# Format: RULE_ID	ACTION	DESCRIPTION
+# Actions: IGNORE, WARN, FAIL
+
+# Information Disclosure - Warn (may have legitimate uses)
+10003	WARN	Vulnerable JS Library
+10015	WARN	Re-examine Cache-control Directives
+
+# Authentication Issues - FAIL (Critical for KIRO2)
+10020	FAIL	X-Frame-Options Header Not Set
+10021	FAIL	X-Content-Type-Options Header Missing
+10036	FAIL	Server Leaks Version Information
+10037	FAIL	Server Leaks Information via X-Powered-By
+
+# Session Management - FAIL
+10057	FAIL	Username Hash Found
+10062	FAIL	PII Disclosure
+
+# SSL/TLS Issues
+10011	WARN	Cookie Without Secure Flag
+
+# SQL Injection - FAIL (Critical)
+40018	FAIL	SQL Injection
+40019	FAIL	SQL Injection - MySQL
+40020	FAIL	SQL Injection - Hypersonic SQL
+40021	FAIL	SQL Injection - Oracle
+40022	FAIL	SQL Injection - PostgreSQL
+
+# XSS - FAIL
+40012	FAIL	Reflected XSS
+40014	FAIL	Persistent XSS
+
+# CSRF - FAIL
+40008	FAIL	CSRF
+
+# Path Traversal - FAIL
+40002	FAIL	Path Traversal
+
+# Remote File Inclusion - FAIL
+40004	FAIL	Remote File Inclusion
+
+# Command Injection - FAIL
+90020	FAIL	Remote OS Command Injection
+
+# LDAP Injection - FAIL
+40015	FAIL	LDAP Injection
+
+# XPath Injection - FAIL
+40016	FAIL	XPath Injection
+
+# XML External Entity - FAIL
+90017	FAIL	XML External Entity Attack
+
+# Server Side Include - WARN
+40009	WARN	Server Side Include
+
+# Insecure HTTP Methods - WARN
+90011	WARN	Insecure HTTP Methods
+
+# Content Security Policy - WARN
+10055	WARN	CSP Scanner
+
+# Missing Anti-CSRF Tokens - WARN (API uses JWT)
+10202	WARN	Absence of Anti-CSRF Tokens
+
+# Cookie Issues - WARN
+10023	WARN	Cookie Without HttpOnly Flag
+
+# Clickjacking - FAIL
+10056	FAIL	X-Frame-Options Header Scanner
+
+# KIRO2 Specific Rules
+# Ignore certain endpoints that are expected to be public
+10020	IGNORE	/api/v1/health
+10020	IGNORE	/api/v1/docs
+10020	IGNORE	/openapi.json

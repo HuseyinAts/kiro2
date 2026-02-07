@@ -5,7 +5,7 @@ Teknofest 2025 - Eğitim Eylemci Projesi
 """
 
 import logging
-import re
+import os
 from dataclasses import dataclass
 from typing import List, Optional, Dict, Any
 
@@ -291,6 +291,9 @@ class SubjectRelevanceScorer:
         # Sentence transformers'ı lazy import et
         self._sentence_transformers_available = False
         self._model = None
+        if os.environ.get("TESTING") == "true":
+            logger.info("Skipping SentenceTransformer init in test mode")
+            return
         try:
             from sentence_transformers import SentenceTransformer
 
@@ -468,7 +471,7 @@ class SubjectRelevanceScorer:
                 logger.debug(f"Multiple core keywords found: {core_matches}")
             elif core_matches == 1:
                 score += 0.15
-                logger.debug(f"Single core keyword found")
+                logger.debug("Single core keyword found")
 
         # Ders ile ilgili yaygın kelimeler
         subject_related = {

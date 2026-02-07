@@ -154,7 +154,7 @@ class AssessmentCreator:
             # Generate questions
             logger.info(
                 f"Creating quick assessment: {student_id} - {subject} "
-                f"(difficulty={difficulty.value if difficulty else 'default'})"
+                f"(difficulty={difficulty.value if hasattr(difficulty, 'value') else difficulty or 'default'})"
             )
 
             questions = await self.assessment.generate_quick_test(

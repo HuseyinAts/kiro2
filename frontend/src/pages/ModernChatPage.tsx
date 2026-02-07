@@ -3,29 +3,31 @@
  * Glassmorphism ile modern chat deneyimi
  */
 
-import React, { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { motion } from 'framer-motion'
-import {
-  Container,
-  Typography,
-  Box,
-  Grid,
-  IconButton,
-  Chip
-} from '@mui/material'
 import {
   Chat as ChatIcon,
   ArrowBack as BackIcon,
   Psychology as AIIcon,
-  School as SchoolIcon
-} from '@mui/icons-material'
-import { GlassCard } from '../components/ui/GlassCard'
-import { TurkishChatInterface } from '../components/Chat/TurkishChatInterface'
-import { modernColors } from '../theme/modern-colors'
+  School as SchoolIcon,
+} from '@mui/icons-material';
+import {
+  Container,
+  Typography,
+  Box,
+  IconButton,
+  Chip,
+} from '@mui/material';
+import { motion } from 'framer-motion';
+import * as React from 'react';
+import { useNavigate } from 'react-router-dom';
+
+import { TurkishChatInterface } from '../components/Chat/TurkishChatInterface';
+import { GlassCard } from '../components/ui/GlassCard';
+import { useAuthStore } from '../store/authStore';
+import { modernColors } from '../theme/modern-colors';
 
 export const ModernChatPage: React.FC = () => {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
+  const { user } = useAuthStore();
 
   return (
     <Container maxWidth="xl" sx={{ py: 4, height: 'calc(100vh - 100px)' }}>
@@ -42,8 +44,8 @@ export const ModernChatPage: React.FC = () => {
                 background: 'rgba(255,255,255,0.9)',
                 backdropFilter: 'blur(10px)',
                 '&:hover': {
-                  background: 'rgba(255,255,255,1)'
-                }
+                  background: 'rgba(255,255,255,1)',
+                },
               }}
             >
               <BackIcon />
@@ -57,7 +59,7 @@ export const ModernChatPage: React.FC = () => {
                 background: modernColors.gradients.purple,
                 display: 'flex',
                 alignItems: 'center',
-                justifyContent: 'center'
+                justifyContent: 'center',
               }}
             >
               <ChatIcon sx={{ fontSize: 32, color: 'white' }} />
@@ -71,7 +73,7 @@ export const ModernChatPage: React.FC = () => {
                   background: modernColors.gradients.purple,
                   backgroundClip: 'text',
                   WebkitBackgroundClip: 'text',
-                  WebkitTextFillColor: 'transparent'
+                  WebkitTextFillColor: 'transparent',
                 }}
               >
                 AI Öğretmen Asistanı
@@ -84,7 +86,7 @@ export const ModernChatPage: React.FC = () => {
                   sx={{
                     background: modernColors.gradients.purple,
                     color: 'white',
-                    '& .MuiChip-icon': { color: 'white' }
+                    '& .MuiChip-icon': { color: 'white' },
                   }}
                 />
                 <Chip
@@ -107,11 +109,11 @@ export const ModernChatPage: React.FC = () => {
         style={{ height: 'calc(100% - 100px)' }}
       >
         <GlassCard sx={{ height: '100%', display: 'flex', flexDirection: 'column', p: 0 }}>
-          <TurkishChatInterface />
+          <TurkishChatInterface studentId={user?.id || 'anonymous'} />
         </GlassCard>
       </motion.div>
     </Container>
-  )
-}
+  );
+};
 
-export default ModernChatPage
+export default ModernChatPage;

@@ -2,7 +2,9 @@
  * Leaderboard Component - Task 91
  * Liderlik tablosu gösterimi
  */
-import React, { useState, useEffect } from 'react';
+import * as React from 'react';
+import {  useState, useEffect  } from 'react';
+
 import { useLeaderboard, LeaderboardEntry } from '../../hooks/useGamification';
 import './Leaderboard.css';
 
@@ -17,7 +19,7 @@ const MEDAL_EMOJIS = ['🥇', '🥈', '🥉'];
 export const Leaderboard: React.FC<LeaderboardProps> = ({
   defaultType = 'global',
   showNearby = true,
-  limit = 100
+  limit = 100,
 }) => {
   const [leaderboardType, setLeaderboardType] = useState<'global' | 'weekly' | 'monthly'>(defaultType);
   const { leaderboard, loading, error, refresh, getNearbyUsers } = useLeaderboard(leaderboardType);
@@ -154,7 +156,7 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({
         {viewMode === 'full' ? (
           <div className="leaderboard-list">
             {leaderboard.slice(0, limit).map((entry, index) =>
-              renderLeaderboardEntry(entry, index)
+              renderLeaderboardEntry(entry, index),
             )}
             {leaderboard.length === 0 && (
               <div className="no-entries">Henüz kayıt yok</div>
@@ -168,7 +170,7 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({
                   <div className="nearby-group">
                     <div className="nearby-label">Üstünüzdekiler</div>
                     {nearbyUsers.above.map((entry: LeaderboardEntry, index: number) =>
-                      renderLeaderboardEntry(entry, index)
+                      renderLeaderboardEntry(entry, index),
                     )}
                   </div>
                 )}
@@ -184,7 +186,7 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({
                   <div className="nearby-group">
                     <div className="nearby-label">Altınızdakiler</div>
                     {nearbyUsers.below.map((entry: LeaderboardEntry, index: number) =>
-                      renderLeaderboardEntry(entry, index)
+                      renderLeaderboardEntry(entry, index),
                     )}
                   </div>
                 )}

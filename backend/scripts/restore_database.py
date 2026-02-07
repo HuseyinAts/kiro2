@@ -28,12 +28,11 @@ WARNING: This will DROP and recreate the target database!
 
 import os
 import sys
-import gzip
 import argparse
 import subprocess
 from pathlib import Path
 from datetime import datetime
-from typing import Optional, List
+from typing import Optional
 
 # Add backend to path
 backend_path = Path(__file__).parent.parent
@@ -65,7 +64,7 @@ class DatabaseRestore:
 
         # Database connection info
         self.db_host = os.getenv("POSTGRES_HOST", "localhost")
-        self.db_port = os.getenv("POSTGRES_PORT", "5432")
+        self.db_port = os.getenv("POSTGRES_PORT", "5434")
         self.db_name = target_db or os.getenv("POSTGRES_DB", "kiro2_db")
         self.db_user = os.getenv("POSTGRES_USER", "postgres")
         self.db_password = os.getenv("POSTGRES_PASSWORD", "postgres")

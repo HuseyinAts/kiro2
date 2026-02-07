@@ -18,7 +18,6 @@ from models.live_session import (
     SessionStatus,
     SessionType,
     PlatformType,
-    ParticipantRole,
     WhiteboardToolType,
     ScreenShareType,
 )

@@ -1,6 +1,8 @@
 """YouTube Integration Wrapper"""
 import logging
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Optional
+
+from agents.learning_path.utils.duration_parser import parse_iso8601_duration
 
 logger = logging.getLogger(__name__)
 
@@ -24,7 +26,21 @@ class YouTubeIntegration:
             logger.error(f"YouTube search error: {str(e)}")
             return []
 
-    def parse_duration(self, duration_str: str) -> int:
-        """Parse YouTube duration to minutes"""
-        # Simplified implementation
-        return 10  # Default
+    def parse_duration(self, duration_str: Optional[str], default: int = 10) -> int:
+        """
+        Parse YouTube ISO 8601 duration to minutes.
+
+        Args:
+            duration_str: ISO 8601 duration string (e.g., "PT1H30M15S")
+            default: Default value if parsing fails
+
+        Returns:
+            Duration in minutes
+
+        Examples:
+            >>> integration.parse_duration("PT1H30M")
+            90
+            >>> integration.parse_duration("PT10M")
+            10
+        """
+        return parse_iso8601_duration(duration_str, default=default)

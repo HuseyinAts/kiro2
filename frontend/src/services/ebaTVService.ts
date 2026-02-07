@@ -1,6 +1,6 @@
 /**
  * EBA TV Service
- * 
+ *
  * EBA TV API'si ile iletişim için servis katmanı.
  */
 
@@ -118,9 +118,9 @@ class EbaTVService {
   async getAllContent(forceRefresh: boolean = false): Promise<EBAContentCollection> {
     try {
       const response = await apiClient.get(`${this.baseUrl}/content`, {
-        params: { force_refresh: forceRefresh }
+        params: { force_refresh: forceRefresh },
       });
-      
+
       if (response.data.success) {
         return response.data.data;
       } else {
@@ -138,13 +138,13 @@ class EbaTVService {
   async searchContent(filters: EBASearchFilters): Promise<EBASearchResponse> {
     try {
       const params: Record<string, any> = {
-        query: filters.query
+        query: filters.query,
       };
 
-      if (filters.grade_level) params.grade_level = filters.grade_level;
-      if (filters.category) params.category = filters.category;
-      if (filters.min_quality !== undefined) params.min_quality = filters.min_quality;
-      if (filters.max_duration) params.max_duration = filters.max_duration;
+      if (filters.grade_level) {params.grade_level = filters.grade_level;}
+      if (filters.category) {params.category = filters.category;}
+      if (filters.min_quality !== undefined) {params.min_quality = filters.min_quality;}
+      if (filters.max_duration) {params.max_duration = filters.max_duration;}
       if (filters.accessibility_required !== undefined) {
         params.accessibility_required = filters.accessibility_required;
       }
@@ -176,7 +176,7 @@ class EbaTVService {
   async getContentByCurriculumTopic(
     gradeLevel: string,
     category: string,
-    topic: string
+    topic: string,
   ): Promise<{
     grade_level: string;
     category: string;
@@ -186,9 +186,9 @@ class EbaTVService {
   }> {
     try {
       const response = await apiClient.get(
-        `${this.baseUrl}/curriculum/${gradeLevel}/${category}/${encodeURIComponent(topic)}`
+        `${this.baseUrl}/curriculum/${gradeLevel}/${category}/${encodeURIComponent(topic)}`,
       );
-      
+
       if (response.data.success) {
         return response.data.data;
       } else {
@@ -219,7 +219,7 @@ class EbaTVService {
   async analyzeVideoQuality(videoId: number): Promise<any> {
     try {
       const response = await apiClient.get(`${this.baseUrl}/quality/analyze/${videoId}`);
-      
+
       if (response.data.success) {
         return response.data.data;
       } else {
@@ -250,16 +250,16 @@ class EbaTVService {
   async recordVideoView(videoId: number, watchDuration: number): Promise<void> {
     try {
       // Mock implementation - gerçek uygulamada API endpoint'i olacak
-      console.log(`Video ${videoId} izlendi: ${watchDuration} saniye`);
-      
+      // Video view recorded: videoId, watchDuration
+
       // Local storage'a kaydet
       const viewHistory = this.getViewHistory();
       const viewRecord = {
         videoId,
         watchDuration,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
       };
-      
+
       viewHistory.push(viewRecord);
       localStorage.setItem('eba_tv_view_history', JSON.stringify(viewHistory));
     } catch (error) {
@@ -291,13 +291,13 @@ class EbaTVService {
     try {
       const favorites = this.getFavorites();
       const index = favorites.indexOf(videoId);
-      
+
       if (index > -1) {
         favorites.splice(index, 1);
       } else {
         favorites.push(videoId);
       }
-      
+
       localStorage.setItem('eba_tv_favorites', JSON.stringify(favorites));
       return index === -1; // true if added, false if removed
     } catch (error) {
@@ -333,16 +333,16 @@ class EbaTVService {
   saveSearchHistory(query: string): void {
     try {
       const history = this.getSearchHistory();
-      
+
       // Duplicate'ları kaldır
       const filteredHistory = history.filter(item => item !== query);
-      
+
       // En başa ekle
       filteredHistory.unshift(query);
-      
+
       // Maksimum 10 arama kaydı tut
       const limitedHistory = filteredHistory.slice(0, 10);
-      
+
       localStorage.setItem('eba_tv_search_history', JSON.stringify(limitedHistory));
     } catch (error) {
       console.error('Arama geçmişi kaydedilemedi:', error);
@@ -404,7 +404,7 @@ class EbaTVService {
         volume: 1,
         playbackRate: 1,
         subtitlesEnabled: true,
-        autoplay: false
+        autoplay: false,
       };
     } catch (error) {
       console.error('Oynatıcı ayarları alınamadı:', error);
@@ -412,7 +412,7 @@ class EbaTVService {
         volume: 1,
         playbackRate: 1,
         subtitlesEnabled: true,
-        autoplay: false
+        autoplay: false,
       };
     }
   }

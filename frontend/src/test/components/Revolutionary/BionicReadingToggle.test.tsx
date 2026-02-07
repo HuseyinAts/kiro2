@@ -3,7 +3,7 @@
  * Bionic Reading bileşeni için kapsamlı testler
  */
 
-import React from 'react';
+import * as React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
 import BionicReadingToggle from '../../../components/Revolutionary/BionicReadingToggle';

@@ -1,13 +1,14 @@
 /**
  * NumberBlocks Component - Diskalkuli Desteği
- * 
+ *
  * Base-10 blok sistemi ile sayıları görselleştiren interaktif component.
  * Öğrencilerin basamak değerini ve sayı kavramını somut olarak anlamalarına yardımcı olur.
- * 
+ *
  * Gereksinimler: REQ-51.1 - REQ-51.5
  */
 
-import React, { useState, useCallback, useMemo } from 'react';
+import * as React from 'react';
+import {  useState, useCallback, useMemo  } from 'react';
 import './NumberBlocks.css';
 
 interface NumberBlocksProps {
@@ -30,7 +31,7 @@ const NumberBlocks: React.FC<NumberBlocksProps> = ({
   maxValue = 9999,
   showAnimation = true,
   onValueChange,
-  readOnly = false
+  readOnly = false,
 }) => {
   const [value, setValue] = useState<number>(initialValue);
   const [draggedBlock, setDraggedBlock] = useState<string | null>(null);
@@ -42,17 +43,17 @@ const NumberBlocks: React.FC<NumberBlocksProps> = ({
     const hundreds = Math.floor((value % 1000) / 100);
     const tens = Math.floor((value % 100) / 10);
     const ones = value % 10;
-    
+
     return { thousands, hundreds, tens, ones };
   }, [value]);
 
   // REQ-51.3: Sayı girişinde otomatik blok temsili
   const handleNumberInput = useCallback((newValue: number) => {
-    if (newValue < 0 || newValue > maxValue) return;
-    
+    if (newValue < 0 || newValue > maxValue) {return;}
+
     setValue(newValue);
     onValueChange?.(newValue);
-    
+
     // REQ-51.4: Animasyon göster
     if (showAnimation) {
       setAnimatingBlocks(new Set(['all']));
@@ -62,7 +63,7 @@ const NumberBlocks: React.FC<NumberBlocksProps> = ({
 
   // REQ-51.2: Drag-and-drop ile interaktif manipülasyon
   const handleBlockDragStart = useCallback((blockType: string) => {
-    if (readOnly) return;
+    if (readOnly) {return;}
     setDraggedBlock(blockType);
   }, [readOnly]);
 
@@ -71,31 +72,31 @@ const NumberBlocks: React.FC<NumberBlocksProps> = ({
   }, []);
 
   const handleBlockClick = useCallback((blockType: string, operation: 'add' | 'remove') => {
-    if (readOnly) return;
-    
+    if (readOnly) {return;}
+
     const blockValues: Record<string, number> = {
       thousands: 1000,
       hundreds: 100,
       tens: 10,
-      ones: 1
+      ones: 1,
     };
-    
+
     const changeValue = blockValues[blockType];
-    const newValue = operation === 'add' 
+    const newValue = operation === 'add'
       ? Math.min(value + changeValue, maxValue)
       : Math.max(value - changeValue, 0);
-    
+
     handleNumberInput(newValue);
   }, [value, maxValue, readOnly, handleNumberInput]);
 
   // REQ-51.4: Toplama/çıkarma animasyonu
   const handleOperation = useCallback((operand: number, operation: 'add' | 'subtract') => {
-    if (readOnly) return;
-    
+    if (readOnly) {return;}
+
     const newValue = operation === 'add'
       ? Math.min(value + operand, maxValue)
       : Math.max(value - operand, 0);
-    
+
     if (showAnimation) {
       setAnimatingBlocks(new Set(['operation']));
       setTimeout(() => {
@@ -109,10 +110,10 @@ const NumberBlocks: React.FC<NumberBlocksProps> = ({
 
   // REQ-51.5: Her basamağı farklı renk ve boyutta göster
   const renderBlock = (type: string, count: number, color: string, size: string) => {
-    if (count === 0) return null;
-    
+    if (count === 0) {return null;}
+
     const isAnimating = animatingBlocks.has('all') || animatingBlocks.has('operation');
-    
+
     return (
       <div className={`block-group ${type}-group`} key={type}>
         <div className="block-label">{type.charAt(0).toUpperCase() + type.slice(1)}</div>
@@ -124,7 +125,7 @@ const NumberBlocks: React.FC<NumberBlocksProps> = ({
               style={{
                 backgroundColor: color,
                 width: size,
-                height: size
+                height: size,
               }}
               draggable={!readOnly}
               onDragStart={() => handleBlockDragStart(type)}
@@ -172,15 +173,15 @@ const NumberBlocks: React.FC<NumberBlocksProps> = ({
   return (
     <div className="number-blocks-container" role="region" aria-label="Number blocks visualization">
       {/* REQ-9.2: Screen reader announcements for value changes */}
-      <div 
-        role="status" 
-        aria-live="polite" 
+      <div
+        role="status"
+        aria-live="polite"
         aria-atomic="true"
         className="sr-only"
       >
         Güncel sayı: {value}
       </div>
-      
+
       <div className="number-blocks-header">
         <h3>Sayı Blokları - Base-10 Sistemi</h3>
         <div className="current-value">

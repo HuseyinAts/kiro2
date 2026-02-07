@@ -4,7 +4,7 @@ Generate questions using real ÖSYM questions as inspiration
 """
 from fastapi import APIRouter, HTTPException, Query
 from pydantic import BaseModel, Field
-from typing import Dict, Optional
+from typing import Dict
 import os
 
 router = APIRouter(prefix="/api/v1/osym-inspired", tags=["ÖSYM-Inspired Generation"])

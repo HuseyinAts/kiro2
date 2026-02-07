@@ -77,7 +77,7 @@ def analyze_coverage():
                 priority_files.append((file_path, coverage, lines, missing))
 
         # Category breakdown
-        print(f"\nCATEGORY ANALYSIS:")
+        print("\nCATEGORY ANALYSIS:")
         categories = {
             "services": [],
             "api": [],
@@ -127,7 +127,7 @@ def analyze_coverage():
         total_covered = data["totals"]["covered_lines"]
         total_missing = data["totals"]["missing_lines"]
 
-        print(f"\nOVERALL STATISTICS:")
+        print("\nOVERALL STATISTICS:")
         print(f"Current Coverage: {total_coverage:.2f}%")
         print(f"Total Lines: {total_lines:,}")
         print(f"Covered Lines: {total_covered:,}")
@@ -141,7 +141,7 @@ def analyze_coverage():
                 print(f"To reach {target}%: Need {lines_needed:,} more lines covered")
 
         # Quick wins identification
-        print(f"\nQUICK WINS (High impact, low effort):")
+        print("\nQUICK WINS (High impact, low effort):")
         quick_wins = []
         for file_path, coverage, lines, missing in files_coverage:
             if 10 <= coverage <= 50 and lines <= 200 and missing > 10:

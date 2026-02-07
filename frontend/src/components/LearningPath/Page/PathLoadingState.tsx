@@ -5,8 +5,8 @@
  * Extracted from LearningPathPage.tsx
  */
 
-import React from 'react'
-import { Container, Box, CircularProgress, Typography } from '@mui/material'
+import { Container, Box, CircularProgress, Typography } from '@mui/material';
+import * as React from 'react';
 
 /**
  * Loading state component for learning path
@@ -29,7 +29,7 @@ export const PathLoadingState: React.FC = () => {
         </Typography>
       </Box>
     </Container>
-  )
-}
+  );
+};
 
-export default PathLoadingState
+export default PathLoadingState;

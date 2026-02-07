@@ -10,18 +10,37 @@ Examples show:
 - Trace context propagation
 """
 import asyncio
-import time
 import random
+import logging
 from typing import Dict
 
 from fastapi import APIRouter, HTTPException, Query
 from pydantic import BaseModel
 
-from core.tracing_middleware import (
-    get_business_span_manager,
-    profile_function_performance,
-)
-from core.opentelemetry_config import trace_function
+logger = logging.getLogger(__name__)
+
+try:
+    from core.tracing_middleware import (
+        get_business_span_manager,
+        profile_function_performance,
+    )
+    from core.opentelemetry_config import trace_function
+    TRACING_AVAILABLE = True
+except ImportError as e:
+    logger.warning(f"OpenTelemetry tracing not available: {e}")
+    TRACING_AVAILABLE = False
+    get_business_span_manager = None
+
+    # Dummy decorator that does nothing
+    def profile_function_performance(name):
+        def decorator(func):
+            return func
+        return decorator
+
+    def trace_function(**kwargs):
+        def decorator(func):
+            return func
+        return decorator
 
 router = APIRouter(prefix="/api/tracing-demo", tags=["Distributed Tracing Demo"])
 
@@ -55,6 +74,12 @@ async def simple_traced_request() -> Dict:
     Search for service: kiro2-backend
     Find trace with span: GET /api/tracing-demo/simple
     """
+    if not TRACING_AVAILABLE:
+        return {
+            "message": "Tracing not available",
+            "status": "degraded"
+        }
+
     # Simulate some work
     await asyncio_sleep(0.1)
 
@@ -380,7 +405,6 @@ async def distributed_trace_example() -> Dict:
 
 async def asyncio_sleep(seconds: float):
     """Helper to simulate async work"""
-    import asyncio
 
     await asyncio.sleep(seconds)
 

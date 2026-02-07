@@ -17,6 +17,11 @@ from typing import Any, Dict, List, Optional, Tuple
 
 from core.database import get_db_session_context
 from models.enums import ZorlukSeviyesi
+from models.soru_model import Soru
+from models.exam import SinavCevabi
+
+# Note: Repository classes are not yet implemented, using direct model access
+# TODO: Create SoruRepository and SinavCevabiRepository in repositories/
 
 logger = logging.getLogger(__name__)
 
@@ -65,10 +70,10 @@ class IRTAnalysisService:
 
         async with get_db_session_context() as session:
             # Repository pattern yerine direct session kullanımı
-            pass
-
-            # Soruyu getir
-            soru = await soru_repo.get_soru_by_id(soru_id)
+            # TODO: Replace with proper repository when available
+            from sqlalchemy import select
+            result = await session.execute(select(Soru).where(Soru.id == soru_id))
+            soru = result.scalar_one_or_none()
             if not soru:
                 raise ValueError(f"Soru bulunamadı: {soru_id}")
 
@@ -132,9 +137,11 @@ class IRTAnalysisService:
             sinav_cevaplari: Sınav cevapları (opsiyonel)
         """
 
-        async with get_async_session_context() as session:
-            cevap_repo = SinavCevabiRepository(session)
-            soru_repo = SoruRepository(session)
+        async with get_db_session_context() as session:
+            # TODO: Replace with proper repository when available
+            # cevap_repo = SinavCevabiRepository(session)
+            # soru_repo = SoruRepository(session)
+            pass
 
             # Öğrencinin cevaplarını getir
             if sinav_cevaplari is None:
@@ -191,11 +198,13 @@ class IRTAnalysisService:
             morphology_adjustment: Morfoloji ayarlaması yapılsın mı
         """
 
-        async with get_async_session_context() as session:
-            soru_repo = SoruRepository(session)
+        async with get_db_session_context() as session:
+            # TODO: Replace with proper repository when available
+            from sqlalchemy import select, update
 
             # Mevcut soru verilerini al
-            soru = await soru_repo.get_soru_by_id(soru_id)
+            result = await session.execute(select(Soru).where(Soru.id == soru_id))
+            soru = result.scalar_one_or_none()
             if not soru:
                 raise ValueError(f"Soru bulunamadı: {soru_id}")
 
@@ -223,7 +232,18 @@ class IRTAnalysisService:
                 new_c *= 0.8
 
             # Database'i güncelle
-            await soru_repo.update_irt_parametreleri(soru_id, new_a, new_b, new_c)
+            # TODO: Replace with proper repository when available
+            await session.execute(
+                update(Soru)
+                .where(Soru.id == soru_id)
+                .values(
+                    irt_a_parametresi=new_a,
+                    irt_b_parametresi=new_b,
+                    irt_c_parametresi=new_c,
+                    irt_calibrated=True
+                )
+            )
+            await session.commit()
 
             # Yeni zorluk seviyesini belirle
             new_zorluk_seviyesi = await self._determine_difficulty_level(
@@ -262,11 +282,13 @@ class IRTAnalysisService:
             ability_result = await self.calculate_student_ability(ogrenci_id)
             target_theta = ability_result.theta
 
-        async with get_async_session_context() as session:
-            soru_repo = SoruRepository(session)
+        async with get_db_session_context() as session:
+            # TODO: Replace with proper repository when available
+            from sqlalchemy import select
 
             # Konuya ait tüm soruları getir
-            tum_sorular = await soru_repo.get_sorular_by_konu(konu, limit=1000)
+            result = await session.execute(select(Soru).where(Soru.konu == konu).limit(1000))
+            tum_sorular = result.scalars().all()
 
             if len(tum_sorular) < soru_sayisi:
                 logger.warning(
@@ -361,7 +383,8 @@ class IRTAnalysisService:
         self, soru_id: str, session
     ) -> List[Dict[str, Any]]:
         """Soruya verilen cevapları getir"""
-        cevap_repo = SinavCevabiRepository(session)
+        # TODO: Replace with proper repository when available
+        # cevap_repo = SinavCevabiRepository(session)
 
         # Bu implementasyon basitleştirilmiş - gerçek uygulamada join query kullanılır
         # Şimdilik örnek veri döndürüyoruz

@@ -11,7 +11,7 @@ Bu sistem:
 """
 
 import uuid
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from enum import Enum
 from typing import Any, Dict, List, Optional
 
@@ -281,7 +281,7 @@ class ExpertContentValidationSystem:
         required_roles = self._determine_required_experts(content_type)
 
         # Review deadline hesaplama (48 saat)
-        review_deadline = datetime.utcnow() + timedelta(hours=48)
+        review_deadline = datetime.now(timezone.utc) + timedelta(hours=48)
 
         # Validation request oluştur
         request = ValidationRequest(
@@ -438,7 +438,7 @@ class ExpertContentValidationSystem:
             request.status = ValidationStatus.REJECTED
             request.final_decision = "rejected"
 
-        request.completed_at = datetime.utcnow()
+        request.completed_at = datetime.now(timezone.utc)
 
         # Compliance report oluştur
         await self._generate_compliance_report(request)
@@ -454,10 +454,18 @@ class ExpertContentValidationSystem:
     async def _generate_compliance_report(self, request: ValidationRequest):
         """Uyumluluk raporu oluştur"""
 
+        # Calculate overall compliance based on overall score
+        overall_score = request.overall_score or 0.0
+        overall_compliance = self._determine_compliance_level(overall_score)
+
         report = ContentComplianceReport(
             content_id=request.content_id,
             content_type=request.content_type,
-            overall_score=request.overall_score or 0.0,
+            overall_score=overall_score,
+            # Required ComplianceLevel fields with defaults
+            meb_compliance=ComplianceLevel.PARTIALLY_COMPLIANT,
+            osym_compliance=ComplianceLevel.PARTIALLY_COMPLIANT,
+            overall_compliance=overall_compliance,
         )
 
         # MEB compliance

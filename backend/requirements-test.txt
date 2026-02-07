@@ -4,6 +4,7 @@ pytest-asyncio==0.21.1
 pytest-cov==4.1.0
 pytest-timeout==2.4.0
 pytest-xdist==3.8.0
+pytest-rerunfailures==14.0
 
 # Testcontainers for real integration testing
 testcontainers[postgres]==4.0.1
@@ -20,6 +21,9 @@ responses==0.24.1
 
 # Load testing
 locust==2.41.5
+
+# Contract testing
+schemathesis==3.36.3
 
 # Sprint 8: Code Quality Tools
 black==24.1.1

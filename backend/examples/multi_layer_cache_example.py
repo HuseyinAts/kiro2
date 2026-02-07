@@ -8,7 +8,6 @@ Bu örnek, multi-layer cache sisteminin nasıl kullanılacağını gösterir.
 import asyncio
 import hashlib
 import json
-from typing import Dict, List
 
 from core.multi_layer_cache import MultiLayerCache, get_multi_layer_cache
 

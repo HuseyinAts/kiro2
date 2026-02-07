@@ -4,6 +4,7 @@ PostgreSQL performance optimization for Turkish content
 """
 
 import logging
+import re
 import time
 from collections.abc import Callable
 from contextlib import asynccontextmanager

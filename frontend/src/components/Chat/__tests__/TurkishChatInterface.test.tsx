@@ -1,18 +1,26 @@
-import React from 'react';
+import * as React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { TurkishChatInterface } from '../TurkishChatInterface';
 import chatService from '../../../services/chatService';
+import { vi, Mocked } from 'vitest';
 
 // Mock the services and hooks
 vi.mock('../../../services/chatService');
 vi.mock('../../../hooks/useWebSocket');
 vi.mock('../../../hooks/useTurkishLanguageCorrection');
 
-const mockChatService = chatService as jest.Mocked<typeof chatService>;
+const mockChatService = chatService as Mocked<typeof chatService>;
 
 // Mock WebSocket hook
-const mockUseWebSocket = {
+const mockUseWebSocket: {
+  isConnected: boolean;
+  connectionStatus: 'connected' | 'disconnected' | 'connecting';
+  sendMessage: ReturnType<typeof vi.fn>;
+  lastMessage: any;
+  error: any;
+  reconnect: ReturnType<typeof vi.fn>;
+} = {
   isConnected: true,
   connectionStatus: 'connected' as const,
   sendMessage: vi.fn(),
@@ -22,7 +30,13 @@ const mockUseWebSocket = {
 };
 
 // Mock Turkish language correction hook
-const mockUseTurkishLanguageCorrection = {
+const mockUseTurkishLanguageCorrection: {
+  checkText: ReturnType<typeof vi.fn>;
+  suggestions: any[];
+  isChecking: boolean;
+  error: any;
+  clearSuggestions: ReturnType<typeof vi.fn>;
+} = {
   checkText: vi.fn(),
   suggestions: [],
   isChecking: false,

@@ -6,7 +6,7 @@ RELIABILITY FIX: Production-ready health checks with Kubernetes support
 
 import asyncio
 import time
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any, Dict
 
 from fastapi import APIRouter, Depends, HTTPException, Response, status
@@ -45,7 +45,7 @@ async def health_check(
     # Try to get from cache first
     try:
         cache = get_cache()
-        cached_result = cache.get(cache_key)  # Sync method, no await
+        cached_result = await asyncio.to_thread(cache.get, cache_key)
         if cached_result:
             logger.info(f"[CACHE HIT] {cache_key}")
             return cached_result
@@ -87,7 +87,7 @@ async def health_check(
 
     # Store in cache with 60 second TTL
     try:
-        cache.set(cache_key, response_data, ttl=60)  # Sync method, no await
+        await asyncio.to_thread(cache.set, cache_key, response_data, 60)
         logger.info(f"[CACHE SET] {cache_key} (TTL: 60s)")
     except Exception as e:
         logger.warning(f"Cache write failed: {e}")
@@ -219,7 +219,7 @@ async def detailed_health_check(
 
         result = {
             "status": "healthy" if overall_healthy else "unhealthy",
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
             "response_time_ms": round(total_duration_ms, 2),
             "services": services,
             "system_info": {
@@ -259,7 +259,7 @@ async def detailed_health_check(
             detail={
                 "status": "error",
                 "error": str(e),
-                "timestamp": datetime.utcnow().isoformat(),
+                "timestamp": datetime.now(timezone.utc).isoformat(),
             },
         )
 
@@ -389,30 +389,35 @@ async def check_elasticsearch_health() -> Dict[str, Any]:
 
 
 async def check_llm_health() -> Dict[str, Any]:
-    """Check LLM service availability"""
+    """Check LLM service availability (Ollama/qwen3:14b)"""
     start_time = time.time()
 
     try:
         from core.llm_service import llm_service
 
+        # Generate returns string now (Ollama integration)
         result = await llm_service.generate(
-            prompt="Health check", temperature=0.1, max_tokens=5
+            prompt="Merhaba", temperature=0.1, max_tokens=10, thinking=False
         )
 
         duration_ms = (time.time() - start_time) * 1000
 
-        if result.get("success"):
+        # Check if we got a non-empty response
+        if result and len(result) > 0:
+            model_info = llm_service.get_model_info()
             logger.debug("llm_health_check", status="healthy", duration_ms=duration_ms)
             return {
                 "status": "healthy",
                 "healthy": True,
                 "response_time_ms": round(duration_ms, 2),
+                "provider": model_info.get("provider", "unknown"),
+                "model": model_info.get("model", "unknown"),
             }
         else:
             return {
                 "status": "unhealthy",
                 "healthy": True,  # Non-critical
-                "error": result.get("error"),
+                "error": "Empty response from LLM",
             }
 
     except Exception as e:

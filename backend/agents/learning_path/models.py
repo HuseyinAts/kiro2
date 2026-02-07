@@ -11,6 +11,7 @@ Models:
 - StudentProfile: Student profile data
 - LearningResource: Learning resource data
 - LearningPath: Complete learning path data
+- PathNode: Node in a learning path (topic-based)
 """
 
 from dataclasses import dataclass, field
@@ -354,3 +355,69 @@ class LearningPath:
             if r.resource_id not in completed_resource_ids
         )
         return remaining_time
+
+
+@dataclass
+class PathNode:
+    """
+    Node in a learning path representing a topic with its resources.
+
+    Used by PathGenerationService for topic-based path generation.
+
+    Attributes:
+        node_id: Unique node identifier
+        topic: Topic name
+        order: Order in the sequence
+        resources: Resources for this topic
+        estimated_time: Estimated time in minutes
+        is_completed: Completion status
+        prerequisites: List of prerequisite topics
+        metadata: Additional metadata
+    """
+
+    node_id: str
+    topic: str
+    order: int
+    resources: List[LearningResource]
+    estimated_time: int  # minutes
+    is_completed: bool = False
+    prerequisites: List[str] = field(default_factory=list)
+    metadata: Dict[str, Any] = field(default_factory=dict)
+
+    def __post_init__(self):
+        """Validate after initialization"""
+        if not self.node_id:
+            raise ValueError("node_id cannot be empty")
+        if not self.topic:
+            raise ValueError("topic cannot be empty")
+        if self.order < 0:
+            raise ValueError("order must be non-negative")
+        if self.estimated_time < 0:
+            raise ValueError("estimated_time must be non-negative")
+
+    def to_dict(self) -> Dict[str, Any]:
+        """Convert to dictionary for serialization"""
+        return {
+            "node_id": self.node_id,
+            "topic": self.topic,
+            "order": self.order,
+            "resources": [r.to_dict() for r in self.resources],
+            "estimated_time": self.estimated_time,
+            "is_completed": self.is_completed,
+            "prerequisites": self.prerequisites,
+            "metadata": self.metadata,
+        }
+
+    @classmethod
+    def from_dict(cls, data: Dict[str, Any]) -> "PathNode":
+        """Create from dictionary"""
+        return cls(
+            node_id=data["node_id"],
+            topic=data["topic"],
+            order=data["order"],
+            resources=[LearningResource.from_dict(r) for r in data.get("resources", [])],
+            estimated_time=data["estimated_time"],
+            is_completed=data.get("is_completed", False),
+            prerequisites=data.get("prerequisites", []),
+            metadata=data.get("metadata", {}),
+        )

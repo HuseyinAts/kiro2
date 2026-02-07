@@ -8,8 +8,8 @@ Requirements: 4.4, 4.10, 4.14, 5.12
 import logging
 import time
 from collections import defaultdict
-from dataclasses import dataclass, field
-from datetime import datetime, timedelta
+from dataclasses import dataclass
+from datetime import datetime
 from threading import Lock
 from typing import Dict, List, Optional
 

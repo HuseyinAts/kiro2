@@ -3,11 +3,12 @@
  * Glassmorphism ile sınav geçmişi görüntüleme
  */
 
-import React from 'react'
-import { ModernExamHistoryPage } from './ModernExamHistoryPage'
+import * as React from 'react';
+
+import { ModernExamHistoryPage } from './ModernExamHistoryPage';
 
 export const ExamHistoryPage: React.FC = () => {
-  return <ModernExamHistoryPage />
-}
+  return <ModernExamHistoryPage />;
+};
 
-export default ExamHistoryPage
+export default ExamHistoryPage;

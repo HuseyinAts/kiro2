@@ -836,7 +836,7 @@ class AssessmentSystem:
                         question_score = (
                             scale_value / 5.0
                         )  # 1-5 ölçeğini 0-1'e normalize et
-                    except:
+                    except (ValueError, TypeError):
                         question_score = 0.5  # Default orta değer
 
                 elif question.question_type == QuestionType.TRUE_FALSE:
@@ -995,7 +995,7 @@ class AssessmentSystem:
                         scores.append(
                             scale_value / 5.0
                         )  # 1-5 ölçeğini 0-1'e normalize et
-                    except:
+                    except (ValueError, TypeError):
                         scores.append(0.5)  # Default orta değer
                 elif question.question_type == QuestionType.TRUE_FALSE:
                     # Doğru/Yanlış değerlendirme
@@ -1187,7 +1187,7 @@ class AssessmentSystem:
                     data = json.loads(result["text"])
                     score = data.get("score", 50) / 100.0  # 0-1 aralığına normalize et
                     return max(0.0, min(1.0, score))  # 0-1 aralığında sınırla
-                except:
+                except (json.JSONDecodeError, TypeError, KeyError, ValueError):
                     pass
 
             # Fallback: Basit uzunluk ve anahtar kelime analizi

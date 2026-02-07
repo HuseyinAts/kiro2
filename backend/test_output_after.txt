@@ -1,0 +1,288 @@
+[OK] TESTING environment configured at module level
+........................................................................ [  0%]
+........................................................................ [  1%]
+........................................................................ [  2%]
+........................................................................ [  3%]
+........................................................................ [  4%]
+........................................................................ [  5%]
+........................................................................ [  6%]
+........................................................................ [  6%]
+........................................................................ [  7%]
+...FF......F............................................................ [  8%]
+........................................................................ [  9%]
+..................................................F..................... [ 10%]
+........................................................................ [ 11%]
+........................................................................ [ 12%]
+........................................................................ [ 12%]
+........................................................................ [ 13%]
+........................................................................ [ 14%]
+........................................................................ [ 15%]
+........................................................................ [ 16%]
+........................................................................ [ 17%]
+...................s.................................................... [ 18%]
+........................................................F..FFFFFFFFFFFFF [ 19%]
+FFFFFFFFFFFFFFF...........FFF...............F........................... [ 19%]
+....FFFFF............................................................... [ 20%]
+.............................F.......................................... [ 21%]
+.............................................s.......................... [ 22%]
+........................................................................ [ 23%]
+........................................................................ [ 24%]
+........................................................................ [ 25%]
+........................................................................ [ 25%]
+........................................................................ [ 26%]
+........................................................................ [ 27%]
+........................................................................ [ 28%]
+........................................................................ [ 29%]
+........................................................................ [ 30%]
+........................................................................ [ 31%]
+........................................................................ [ 32%]
+..................................................s............s........ [ 32%]
+........................................ssssssssssssssssssssssssssssssss [ 33%]
+sssssssssss..ss..........s......................................FF...F.F [ 34%]
+........................................................................ [ 35%]
+........................................................................ [ 36%]
+........................................................................ [ 37%]
+........................................................................ [ 38%]
+........................................................................ [ 38%]
+........................................................................ [ 39%]
+........................................................................ [ 40%]
+........................................................................ [ 41%]
+........................................................................ [ 42%]
+........................................................................ [ 43%]
+........................................................................ [ 44%]
+........................................................................ [ 45%]
+........................................................................ [ 45%]
+........................................................................ [ 46%]
+........................................................................ [ 47%]
+........................................................................ [ 48%]
+........................................................................ [ 49%]
+........................................................................ [ 50%]
+........................................................................ [ 51%]
+........................................................................ [ 51%]
+........................................................................ [ 52%]
+........................................................................ [ 53%]
+.......................................................................E [ 54%]
+EE
+============================== warnings summary ===============================
+..\..\AppData\Local\Programs\Python\Python313\Lib\site-packages\_hypothesis_pytestplugin.py:469
+  C:\Users\husey\AppData\Local\Programs\Python\Python313\Lib\site-packages\_hypothesis_pytestplugin.py:469: UserWarning: Skipping collection of '.hypothesis' directory - this usually means you've explicitly set the `norecursedirs` pytest config option, replacing rather than extending the default ignores.
+    warnings.warn(
+
+core\quality_gates\gates\test_coverage.py:39
+  C:\Users\husey\kiro2\backend\core\quality_gates\gates\test_coverage.py:39: PytestCollectionWarning: cannot collect test class 'TestCoverageGate' because it has a __init__ constructor (from: tests/unit/quality_gates/test_test_coverage_gate.py)
+    class TestCoverageGate(BaseGate):
+
+api\content_api.py:593
+  C:\Users\husey\kiro2\backend\api\content_api.py:593: FastAPIDeprecationWarning: `regex` has been deprecated, please use `pattern` instead
+    period: str = Query("week", regex="^(day|week|month)$"),
+
+tests/unit/agents/learning_path/test_assessment_creator.py::TestAssessmentCreator::test_init_success
+  tests\unit\agents\learning_path\test_assessment_creator.py:88: PytestWarning: The test <Function test_init_success> is marked with '@pytest.mark.asyncio' but it is not an async function. Please remove the asyncio mark. If the test is not marked explicitly, check for global marks applied via 'pytestmark'.
+    def test_init_success(self, mock_assessment_system):
+
+tests/unit/agents/learning_path/test_assessment_creator.py::TestAssessmentCreator::test_init_missing_assessment_system
+  tests\unit\agents\learning_path\test_assessment_creator.py:93: PytestWarning: The test <Function test_init_missing_assessment_system> is marked with '@pytest.mark.asyncio' but it is not an async function. Please remove the asyncio mark. If the test is not marked explicitly, check for global marks applied via 'pytestmark'.
+    def test_init_missing_assessment_system(self):
+
+tests/unit/agents/learning_path/test_assessment_creator.py::TestAssessmentCreator::test_analyze_learning_style_responses_visual
+  tests\unit\agents\learning_path\test_assessment_creator.py:178: PytestWarning: The test <Function test_analyze_learning_style_responses_visual> is marked with '@pytest.mark.asyncio' but it is not an async function. Please remove the asyncio mark. If the test is not marked explicitly, check for global marks applied via 'pytestmark'.
+    def test_analyze_learning_style_responses_visual(self, assessment_creator):
+
+tests/unit/agents/learning_path/test_assessment_creator.py::TestAssessmentCreator::test_analyze_learning_style_responses_mixed
+  tests\unit\agents\learning_path\test_assessment_creator.py:194: PytestWarning: The test <Function test_analyze_learning_style_responses_mixed> is marked with '@pytest.mark.asyncio' but it is not an async function. Please remove the asyncio mark. If the test is not marked explicitly, check for global marks applied via 'pytestmark'.
+    def test_analyze_learning_style_responses_mixed(self, assessment_creator):
+
+tests/unit/agents/learning_path/test_resource_finder.py::TestResourceFinder::test_get_style_recommendations
+  tests\unit\agents\learning_path\test_resource_finder.py:100: PytestWarning: The test <Function test_get_style_recommendations> is marked with '@pytest.mark.asyncio' but it is not an async function. Please remove the asyncio mark. If the test is not marked explicitly, check for global marks applied via 'pytestmark'.
+    def test_get_style_recommendations(self, resource_finder):
+
+tests/unit/agents/learning_path/test_student_profiler.py::TestStudentProfiler::test_init_success
+  tests\unit\agents\learning_path\test_student_profiler.py:102: PytestWarning: The test <Function test_init_success> is marked with '@pytest.mark.asyncio' but it is not an async function. Please remove the asyncio mark. If the test is not marked explicitly, check for global marks applied via 'pytestmark'.
+    def test_init_success(self, mock_llm_service):
+
+tests/unit/agents/learning_path/test_student_profiler.py::TestStudentProfiler::test_init_missing_llm_service
+  tests\unit\agents\learning_path\test_student_profiler.py:109: PytestWarning: The test <Function test_init_missing_llm_service> is marked with '@pytest.mark.asyncio' but it is not an async function. Please remove the asyncio mark. If the test is not marked explicitly, check for global marks applied via 'pytestmark'.
+    def test_init_missing_llm_service(self):
+
+tests/unit/agents/learning_path/test_student_profiler.py::TestStudentProfiler::test_record_learning_behavior_success
+  tests\unit\agents\learning_path\test_student_profiler.py:351: PytestWarning: The test <Function test_record_learning_behavior_success> is marked with '@pytest.mark.asyncio' but it is not an async function. Please remove the asyncio mark. If the test is not marked explicitly, check for global marks applied via 'pytestmark'.
+    def test_record_learning_behavior_success(self, student_profiler):
+
+tests/unit/agents/learning_path/test_student_profiler.py::TestStudentProfiler::test_record_learning_behavior_minimal
+  tests\unit\agents\learning_path\test_student_profiler.py:362: PytestWarning: The test <Function test_record_learning_behavior_minimal> is marked with '@pytest.mark.asyncio' but it is not an async function. Please remove the asyncio mark. If the test is not marked explicitly, check for global marks applied via 'pytestmark'.
+    def test_record_learning_behavior_minimal(self, student_profiler):
+
+tests/unit/agents/learning_path/test_student_profiler.py::TestStudentProfiler::test_analyze_performance_trend
+  tests\unit\agents\learning_path\test_student_profiler.py:372: PytestWarning: The test <Function test_analyze_performance_trend> is marked with '@pytest.mark.asyncio' but it is not an async function. Please remove the asyncio mark. If the test is not marked explicitly, check for global marks applied via 'pytestmark'.
+    def test_analyze_performance_trend(self, student_profiler):
+
+tests/unit/agents/learning_path/test_student_profiler.py::TestStudentProfiler::test_get_profile_exists
+  tests\unit\agents\learning_path\test_student_profiler.py:400: PytestWarning: The test <Function test_get_profile_exists> is marked with '@pytest.mark.asyncio' but it is not an async function. Please remove the asyncio mark. If the test is not marked explicitly, check for global marks applied via 'pytestmark'.
+    def test_get_profile_exists(self, student_profiler):
+
+tests/unit/agents/learning_path/test_student_profiler.py::TestStudentProfiler::test_get_profile_not_exists
+  tests\unit\agents\learning_path\test_student_profiler.py:421: PytestWarning: The test <Function test_get_profile_not_exists> is marked with '@pytest.mark.asyncio' but it is not an async function. Please remove the asyncio mark. If the test is not marked explicitly, check for global marks applied via 'pytestmark'.
+    def test_get_profile_not_exists(self, student_profiler):
+
+tests/unit/agents/learning_path/test_student_profiler.py::TestStudentProfiler::test_update_profile_success
+  tests\unit\agents\learning_path\test_student_profiler.py:428: PytestWarning: The test <Function test_update_profile_success> is marked with '@pytest.mark.asyncio' but it is not an async function. Please remove the asyncio mark. If the test is not marked explicitly, check for global marks applied via 'pytestmark'.
+    def test_update_profile_success(self, student_profiler):
+
+tests/unit/agents/learning_path/test_student_profiler.py::TestStudentProfiler::test_update_profile_not_found
+  tests\unit\agents\learning_path\test_student_profiler.py:461: PytestWarning: The test <Function test_update_profile_not_found> is marked with '@pytest.mark.asyncio' but it is not an async function. Please remove the asyncio mark. If the test is not marked explicitly, check for global marks applied via 'pytestmark'.
+    def test_update_profile_not_found(self, student_profiler):
+
+tests/unit/agents/learning_path/test_student_profiler.py::TestStudentProfiler::test_update_profile_ignore_restricted_fields
+  tests\unit\agents\learning_path\test_student_profiler.py:469: PytestWarning: The test <Function test_update_profile_ignore_restricted_fields> is marked with '@pytest.mark.asyncio' but it is not an async function. Please remove the asyncio mark. If the test is not marked explicitly, check for global marks applied via 'pytestmark'.
+    def test_update_profile_ignore_restricted_fields(self, student_profiler):
+
+tests/unit/health/test_redis_health.py::TestRedisHealthCheckerCacheWarming::test_cache_warming_triggered_on_recovery
+tests/unit/health/test_redis_health.py::TestRedisHealthCheckerCacheWarming::test_warming_callback_error_handled
+  c:\Users/husey/kiro2/backend\app\health\dependencies\redis_health.py:-1: RuntimeWarning: coroutine 'AsyncMockMixin._execute_mock_call' was never awaited
+  Enable tracemalloc to get traceback where the object was allocated.
+  See https://docs.pytest.org/en/stable/how-to/capture-warnings.html#resource-warnings for more info.
+
+tests/unit/test_advanced_rate_limiter.py::TestAdvancedRateLimiter::test_check_rate_limit_allowed
+tests/unit/test_advanced_rate_limiter.py::TestAdvancedRateLimiter::test_check_rate_limit_exceeded
+tests/unit/test_advanced_rate_limiter.py::TestAdvancedRateLimiter::test_check_rate_limit_endpoint_specific
+tests/unit/test_advanced_rate_limiter.py::TestAdvancedRateLimiter::test_check_rate_limit_premium_tier
+tests/unit/test_advanced_rate_limiter.py::TestAdvancedRateLimiter::test_ai_endpoint_category_limits
+tests/unit/test_advanced_rate_limiter.py::TestAdvancedRateLimiter::test_export_endpoint_hourly_limit
+  C:\Users\husey\kiro2\backend\core\advanced_rate_limiter.py:213: RuntimeWarning: coroutine 'AsyncMockMixin._execute_mock_call' was never awaited
+    pipe.zremrangebyscore(key, 0, window_start)
+  Enable tracemalloc to get traceback where the object was allocated.
+  See https://docs.pytest.org/en/stable/how-to/capture-warnings.html#resource-warnings for more info.
+
+tests/unit/test_advanced_rate_limiter.py::TestAdvancedRateLimiter::test_check_rate_limit_allowed
+tests/unit/test_advanced_rate_limiter.py::TestAdvancedRateLimiter::test_check_rate_limit_exceeded
+tests/unit/test_advanced_rate_limiter.py::TestAdvancedRateLimiter::test_check_rate_limit_endpoint_specific
+tests/unit/test_advanced_rate_limiter.py::TestAdvancedRateLimiter::test_check_rate_limit_premium_tier
+tests/unit/test_advanced_rate_limiter.py::TestAdvancedRateLimiter::test_ai_endpoint_category_limits
+tests/unit/test_advanced_rate_limiter.py::TestAdvancedRateLimiter::test_export_endpoint_hourly_limit
+  C:\Users\husey\kiro2\backend\core\advanced_rate_limiter.py:216: RuntimeWarning: coroutine 'AsyncMockMixin._execute_mock_call' was never awaited
+    pipe.zcard(key)
+  Enable tracemalloc to get traceback where the object was allocated.
+  See https://docs.pytest.org/en/stable/how-to/capture-warnings.html#resource-warnings for more info.
+
+tests/unit/test_advanced_rate_limiter.py::TestAdvancedRateLimiter::test_check_rate_limit_allowed
+tests/unit/test_advanced_rate_limiter.py::TestAdvancedRateLimiter::test_check_rate_limit_exceeded
+tests/unit/test_advanced_rate_limiter.py::TestAdvancedRateLimiter::test_check_rate_limit_endpoint_specific
+tests/unit/test_advanced_rate_limiter.py::TestAdvancedRateLimiter::test_check_rate_limit_premium_tier
+tests/unit/test_advanced_rate_limiter.py::TestAdvancedRateLimiter::test_ai_endpoint_category_limits
+tests/unit/test_advanced_rate_limiter.py::TestAdvancedRateLimiter::test_export_endpoint_hourly_limit
+  C:\Users\husey\kiro2\backend\core\advanced_rate_limiter.py:219: RuntimeWarning: coroutine 'AsyncMockMixin._execute_mock_call' was never awaited
+    pipe.zadd(key, {str(now): now})
+  Enable tracemalloc to get traceback where the object was allocated.
+  See https://docs.pytest.org/en/stable/how-to/capture-warnings.html#resource-warnings for more info.
+
+tests/unit/test_advanced_rate_limiter.py::TestAdvancedRateLimiter::test_check_rate_limit_allowed
+tests/unit/test_advanced_rate_limiter.py::TestAdvancedRateLimiter::test_check_rate_limit_exceeded
+tests/unit/test_advanced_rate_limiter.py::TestAdvancedRateLimiter::test_check_rate_limit_endpoint_specific
+tests/unit/test_advanced_rate_limiter.py::TestAdvancedRateLimiter::test_check_rate_limit_premium_tier
+tests/unit/test_advanced_rate_limiter.py::TestAdvancedRateLimiter::test_ai_endpoint_category_limits
+tests/unit/test_advanced_rate_limiter.py::TestAdvancedRateLimiter::test_export_endpoint_hourly_limit
+  C:\Users\husey\kiro2\backend\core\advanced_rate_limiter.py:222: RuntimeWarning: coroutine 'AsyncMockMixin._execute_mock_call' was never awaited
+    pipe.expire(key, window + 10)  # Window + 10s buffer
+  Enable tracemalloc to get traceback where the object was allocated.
+  See https://docs.pytest.org/en/stable/how-to/capture-warnings.html#resource-warnings for more info.
+
+tests/unit/test_analytics_api.py: 17 warnings
+  C:\Users\husey\AppData\Local\Programs\Python\Python313\Lib\asyncio\events.py:89: RuntimeWarning: coroutine 'AsyncMockMixin._execute_mock_call' was never awaited
+    self._context.run(self._callback, *self._args)
+  Enable tracemalloc to get traceback where the object was allocated.
+  See https://docs.pytest.org/en/stable/how-to/capture-warnings.html#resource-warnings for more info.
+
+tests/unit/test_analytics_api.py::TestClassAnalyticsEndpoint::test_get_class_analytics_logs_event
+  C:\Users\husey\kiro2\backend\tests\unit\test_analytics_api.py:553: RuntimeWarning: coroutine 'AsyncMockMixin._execute_mock_call' was never awaited
+    await get_class_analytics(
+  Enable tracemalloc to get traceback where the object was allocated.
+  See https://docs.pytest.org/en/stable/how-to/capture-warnings.html#resource-warnings for more info.
+
+tests/unit/test_analytics_api.py::TestAdminDashboardEndpoint::test_get_admin_dashboard_various_periods[30]
+  C:\Users\husey\AppData\Local\Programs\Python\Python313\Lib\unittest\mock.py:2236: RuntimeWarning: coroutine 'AsyncMockMixin._execute_mock_call' was never awaited
+    def __init__(self, name, parent):
+  Enable tracemalloc to get traceback where the object was allocated.
+  See https://docs.pytest.org/en/stable/how-to/capture-warnings.html#resource-warnings for more info.
+
+tests/unit/test_analytics_api.py::TestPerformanceOptimization::test_class_analytics_execution_time
+  C:\Users\husey\kiro2\backend\tests\unit\test_analytics_api.py:1923: RuntimeWarning: coroutine 'AsyncMockMixin._execute_mock_call' was never awaited
+    await get_class_analytics(
+  Enable tracemalloc to get traceback where the object was allocated.
+  See https://docs.pytest.org/en/stable/how-to/capture-warnings.html#resource-warnings for more info.
+
+tests/unit/test_api_batch1.py::TestHealthAPI::test_database_health_check_failure
+  C:\Users\husey\kiro2\backend\core\database.py:294: RuntimeWarning: coroutine 'AsyncMockMixin._execute_mock_call' was never awaited
+    if result.scalar() == 1:
+  Enable tracemalloc to get traceback where the object was allocated.
+  See https://docs.pytest.org/en/stable/how-to/capture-warnings.html#resource-warnings for more info.
+
+tests/unit/test_enhanced_chat_api.py: 71 warnings
+  C:\Users\husey\kiro2\backend\api\enhanced_chat.py:130: RuntimeWarning: coroutine 'AsyncMockMixin._execute_mock_call' was never awaited
+    response = await service.process_message(
+  Enable tracemalloc to get traceback where the object was allocated.
+  See https://docs.pytest.org/en/stable/how-to/capture-warnings.html#resource-warnings for more info.
+
+tests/unit/test_gemini_reasoning_mcp.py::TestGeminiReasoningEngine::test_gemini_reasoning_engine_basic
+  C:\Users\husey\kiro2\backend\mcp_servers\gemini_reasoning_mcp.py:10: FutureWarning: 
+  
+  All support for the `google.generativeai` package has ended. It will no longer be receiving 
+  updates or bug fixes. Please switch to the `google.genai` package as soon as possible.
+  See README for more details:
+  
+  https://github.com/google-gemini/deprecated-generative-ai-python/blob/main/README.md
+  
+    import google.generativeai as genai
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/unit/test_adaptive_test_engine.py::TestThetaEstimation::test_monitor_theta_convergence
+FAILED tests/unit/test_adaptive_test_engine.py::TestThetaEstimation::test_theta_convergence_not_achieved
+FAILED tests/unit/test_adaptive_test_engine.py::TestStoppingRules::test_apply_classification_stopping
+FAILED tests/unit/test_api_batch1.py::TestAuthAPI::test_get_profile_success
+FAILED tests/unit/test_core_batch1.py::TestInputSanitizer::test_string_length_validation[too_long_string-5-False]
+FAILED tests/unit/test_core_batch1.py::TestInputSanitizer::test_string_length_validation[aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa-100-False]
+FAILED tests/unit/test_core_batch1.py::TestInputSanitizer::test_email_validation[user@example.com-True]
+FAILED tests/unit/test_core_batch1.py::TestInputSanitizer::test_email_validation[test.user@domain.co.uk-True]
+FAILED tests/unit/test_core_batch1.py::TestInputSanitizer::test_email_validation[invalid.email-False]
+FAILED tests/unit/test_core_batch1.py::TestInputSanitizer::test_email_validation[@example.com-False]
+FAILED tests/unit/test_core_batch1.py::TestInputSanitizer::test_email_validation[user@-False]
+FAILED tests/unit/test_core_batch1.py::TestInputSanitizer::test_email_validation[user @example.com-False]
+FAILED tests/unit/test_core_batch1.py::TestInputSanitizer::test_email_validation[aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa@example.com-False]
+FAILED tests/unit/test_core_batch1.py::TestInputSanitizer::test_url_validation[https://example.com-True]
+FAILED tests/unit/test_core_batch1.py::TestInputSanitizer::test_url_validation[http://example.com-True]
+FAILED tests/unit/test_core_batch1.py::TestInputSanitizer::test_url_validation[ftp://example.com-False]
+FAILED tests/unit/test_core_batch1.py::TestInputSanitizer::test_url_validation[javascript:alert(1)-False]
+FAILED tests/unit/test_core_batch1.py::TestInputSanitizer::test_url_validation[https://example.com/path?query=1-True]
+FAILED tests/unit/test_core_batch1.py::TestInputSanitizer::test_url_validation[not-a-url-False]
+FAILED tests/unit/test_core_batch1.py::TestInputSanitizer::test_integer_validation[5-0-10-True0]
+FAILED tests/unit/test_core_batch1.py::TestInputSanitizer::test_integer_validation[0-0-10-True]
+FAILED tests/unit/test_core_batch1.py::TestInputSanitizer::test_integer_validation[10-0-10-True]
+FAILED tests/unit/test_core_batch1.py::TestInputSanitizer::test_integer_validation[-1-0-10-False]
+FAILED tests/unit/test_core_batch1.py::TestInputSanitizer::test_integer_validation[11-0-10-False]
+FAILED tests/unit/test_core_batch1.py::TestInputSanitizer::test_integer_validation[5-0-10-True1]
+FAILED tests/unit/test_core_batch1.py::TestInputSanitizer::test_integer_validation[abc-0-10-False]
+FAILED tests/unit/test_core_batch1.py::TestInputSanitizer::test_float_validation[3.14-True0]
+FAILED tests/unit/test_core_batch1.py::TestInputSanitizer::test_float_validation[3.14-True1]
+FAILED tests/unit/test_core_batch1.py::TestInputSanitizer::test_float_validation[inf-False]
+FAILED tests/unit/test_core_batch1.py::TestInputSanitizer::test_float_validation[-inf-False]
+FAILED tests/unit/test_core_batch1.py::TestInputSanitizer::test_float_validation[nan-False]
+FAILED tests/unit/test_core_batch1.py::TestInputSanitizer::test_float_validation[abc-False]
+FAILED tests/unit/test_core_batch1.py::TestInputSanitizer::test_null_byte_rejection
+FAILED tests/unit/test_core_batch1.py::TestJWTAuthentication::test_password_hashing
+FAILED tests/unit/test_core_batch1.py::TestJWTAuthentication::test_rate_limiting
+FAILED tests/unit/test_core_batch1.py::TestRateLimiting::test_token_bucket_consumption
+FAILED tests/unit/test_core_batch1.py::TestQueryOptimizer::test_query_optimizer_basic
+FAILED tests/unit/test_core_batch1.py::TestEdgeCases::test_integer_boundaries[0]
+FAILED tests/unit/test_core_batch1.py::TestEdgeCases::test_integer_boundaries[1]
+FAILED tests/unit/test_core_batch1.py::TestEdgeCases::test_integer_boundaries[-1]
+FAILED tests/unit/test_core_batch1.py::TestEdgeCases::test_integer_boundaries[2147483647]
+FAILED tests/unit/test_core_batch1.py::TestEdgeCases::test_integer_boundaries[-2147483648]
+FAILED tests/unit/test_core_batch2.py::TestAlertManager::test_check_alerts - ...
+FAILED tests/unit/test_enums.py::TestKullaniciRolu::test_kullanici_rolu_values
+FAILED tests/unit/test_enums.py::TestKullaniciRolu::test_kullanici_rolu_count
+FAILED tests/unit/test_enums.py::TestKullaniciRolu::test_kullanici_rolu_parametrized[admin-ADMIN]
+FAILED tests/unit/test_enums.py::TestKullaniciRolu::test_kullanici_rolu_from_string
+ERROR tests/unit/test_gemini_reasoning_mcp.py::TestGeminiReasoningEngine::test_gemini_reasoning_engine_basic
+ERROR tests/unit/test_gemini_reasoning_mcp.py::TestGeminiReasoningEngine::test_gemini_reasoning_with_context
+ERROR tests/unit/test_gemini_reasoning_mcp.py::TestGeminiReasoningEngine::test_gemini_reasoning_without_thinking_mode
+!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 50 failures !!!!!!!!!!!!!!!!!!!!!!!!!!

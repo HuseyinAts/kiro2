@@ -148,7 +148,7 @@ class TeacherService {
     const token = localStorage.getItem('token');
     return {
       'Authorization': `Bearer ${token}`,
-      'Content-Type': 'application/json'
+      'Content-Type': 'application/json',
     };
   }
 
@@ -159,7 +159,7 @@ class TeacherService {
     }
 
     const result: ApiResponse<T> = await response.json();
-    
+
     if (!result.success) {
       throw new Error(result.message || 'İşlem başarısız');
     }
@@ -173,7 +173,7 @@ class TeacherService {
   async getDashboardData(): Promise<DashboardData> {
     const response = await fetch(`${API_BASE_URL}/dashboard`, {
       method: 'GET',
-      headers: this.getAuthHeaders()
+      headers: this.getAuthHeaders(),
     });
 
     return this.handleResponse<DashboardData>(response);
@@ -185,7 +185,7 @@ class TeacherService {
   async getStudentList(page: number = 1, limit: number = 20): Promise<StudentListData> {
     const response = await fetch(`${API_BASE_URL}/ogrenciler?sayfa=${page}&limit=${limit}`, {
       method: 'GET',
-      headers: this.getAuthHeaders()
+      headers: this.getAuthHeaders(),
     });
 
     return this.handleResponse<StudentListData>(response);
@@ -197,7 +197,7 @@ class TeacherService {
   async getStudentDetailPerformance(studentId: string): Promise<StudentDetailPerformance> {
     const response = await fetch(`${API_BASE_URL}/ogrenci/${studentId}/performans`, {
       method: 'GET',
-      headers: this.getAuthHeaders()
+      headers: this.getAuthHeaders(),
     });
 
     return this.handleResponse<StudentDetailPerformance>(response);
@@ -210,7 +210,7 @@ class TeacherService {
     const response = await fetch(`${API_BASE_URL}/rapor/sinif`, {
       method: 'POST',
       headers: this.getAuthHeaders(),
-      body: JSON.stringify(params)
+      body: JSON.stringify(params),
     });
 
     return this.handleResponse<ClassReport>(response);
@@ -222,7 +222,7 @@ class TeacherService {
   async getSavedReports(limit: number = 10): Promise<{ raporlar: ClassReport[]; toplam_rapor: number }> {
     const response = await fetch(`${API_BASE_URL}/raporlar?limit=${limit}`, {
       method: 'GET',
-      headers: this.getAuthHeaders()
+      headers: this.getAuthHeaders(),
     });
 
     return this.handleResponse<{ raporlar: ClassReport[]; toplam_rapor: number }>(response);
@@ -234,7 +234,7 @@ class TeacherService {
   async getReportDetail(reportId: string): Promise<ClassReport> {
     const response = await fetch(`${API_BASE_URL}/rapor/${reportId}`, {
       method: 'GET',
-      headers: this.getAuthHeaders()
+      headers: this.getAuthHeaders(),
     });
 
     return this.handleResponse<ClassReport>(response);
@@ -247,7 +247,7 @@ class TeacherService {
     const response = await fetch(`${API_BASE_URL}/bildirim`, {
       method: 'POST',
       headers: this.getAuthHeaders(),
-      body: JSON.stringify(notification)
+      body: JSON.stringify(notification),
     });
 
     await this.handleResponse<void>(response);
@@ -259,7 +259,7 @@ class TeacherService {
   async getNotifications(limit: number = 20): Promise<NotificationData> {
     const response = await fetch(`${API_BASE_URL}/bildirimler?limit=${limit}`, {
       method: 'GET',
-      headers: this.getAuthHeaders()
+      headers: this.getAuthHeaders(),
     });
 
     return this.handleResponse<NotificationData>(response);
@@ -271,7 +271,7 @@ class TeacherService {
   async markNotificationAsRead(notificationId: string): Promise<void> {
     const response = await fetch(`${API_BASE_URL}/bildirim/${notificationId}/okundu`, {
       method: 'PUT',
-      headers: this.getAuthHeaders()
+      headers: this.getAuthHeaders(),
     });
 
     await this.handleResponse<void>(response);
@@ -294,7 +294,7 @@ class TeacherService {
   }> {
     const response = await fetch(`${API_BASE_URL}/istatistikler?gun_sayisi=${days}`, {
       method: 'GET',
-      headers: this.getAuthHeaders()
+      headers: this.getAuthHeaders(),
     });
 
     return this.handleResponse<{
@@ -326,5 +326,5 @@ export type {
   NotificationData,
   TeacherProfile,
   StudentSummary,
-  Notification
+  Notification,
 };

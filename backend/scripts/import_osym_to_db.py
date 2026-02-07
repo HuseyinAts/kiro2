@@ -7,7 +7,7 @@ import asyncpg
 import json
 from pathlib import Path
 import sys
-from typing import List, Dict
+from typing import Dict
 from datetime import datetime
 
 # Add backend to path
@@ -169,7 +169,7 @@ class OSYMDatabaseImporter:
                 print(f"  Processed {i}/{len(questions)} questions...")
 
         print(f"\n{'='*80}")
-        print(f"Import Complete!")
+        print("Import Complete!")
         print(f"{'='*80}")
         print(f"[OK] Imported: {self.imported_count}")
         print(f"[SKIP] Skipped (duplicates): {self.skipped_count}")

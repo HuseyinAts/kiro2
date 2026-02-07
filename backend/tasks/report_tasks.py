@@ -8,7 +8,7 @@ Medium-priority report tasks:
 - Exam performance reports
 - Weekly/monthly summaries
 """
-from typing import Dict, Any, Optional
+from typing import Dict, Any
 from datetime import datetime, timedelta
 from core.celery_app import celery_app
 from core.structured_logger import get_logger

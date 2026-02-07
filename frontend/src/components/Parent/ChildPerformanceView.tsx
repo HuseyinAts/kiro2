@@ -1,23 +1,25 @@
-import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { 
-  TrendingUp, 
-  TrendingDown, 
-  Clock, 
-  BookOpen, 
-  Award, 
+import {
+  TrendingUp,
+  TrendingDown,
+  Clock,
+  BookOpen,
+  Award,
   Calendar,
   BarChart3,
   Target,
   AlertCircle,
-  Download
+  Download,
 } from 'lucide-react';
-import { parentService } from '@/services/parentService';
+import * as React from 'react';
+import {  useState, useEffect  } from 'react';
+import { useParams } from 'react-router-dom';
+
 import { LoadingSpinner } from '@/components/Common/LoadingSpinner';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { parentService } from '@/services/parentService';
 
 interface ChildPerformance {
   child_id: number;
@@ -61,15 +63,15 @@ export const ChildPerformanceView: React.FC = () => {
   }, [childId]);
 
   const loadPerformanceData = async () => {
-    if (!childId) return;
+    if (!childId) {return;}
 
     try {
       setLoading(true);
       const [performanceData, reportData] = await Promise.all([
         parentService.getChildPerformance(parseInt(childId)),
-        parentService.getWeeklyReport(parseInt(childId))
+        parentService.getWeeklyReport(parseInt(childId)),
       ]);
-      
+
       setPerformance(performanceData);
       setWeeklyReport(reportData);
       setError(null);
@@ -87,14 +89,14 @@ export const ChildPerformanceView: React.FC = () => {
   };
 
   const getPerformanceColor = (score: number): string => {
-    if (score >= 80) return 'text-green-600';
-    if (score >= 60) return 'text-yellow-600';
+    if (score >= 80) {return 'text-green-600';}
+    if (score >= 60) {return 'text-yellow-600';}
     return 'text-red-600';
   };
 
   const getPerformanceBadge = (score: number): string => {
-    if (score >= 80) return 'bg-green-100 text-green-800';
-    if (score >= 60) return 'bg-yellow-100 text-yellow-800';
+    if (score >= 80) {return 'bg-green-100 text-green-800';}
+    if (score >= 60) {return 'bg-yellow-100 text-yellow-800';}
     return 'bg-red-100 text-red-800';
   };
 
@@ -205,7 +207,7 @@ export const ChildPerformanceView: React.FC = () => {
                   {performance.average_score.toFixed(1)}%
                 </div>
                 <Badge className={getPerformanceBadge(performance.average_score)}>
-                  {performance.average_score >= 80 ? 'Mükemmel' : 
+                  {performance.average_score >= 80 ? 'Mükemmel' :
                    performance.average_score >= 60 ? 'İyi' : 'Geliştirilmeli'}
                 </Badge>
               </CardContent>
@@ -337,7 +339,7 @@ export const ChildPerformanceView: React.FC = () => {
                 <Calendar className="h-5 w-5" />
                 Bu Haftanın Özeti
                 <Badge variant="outline">
-                  {new Date(weeklyReport.week_start).toLocaleDateString('tr-TR')} - 
+                  {new Date(weeklyReport.week_start).toLocaleDateString('tr-TR')} -
                   {new Date(weeklyReport.week_end).toLocaleDateString('tr-TR')}
                 </Badge>
               </CardTitle>

@@ -1,488 +1,978 @@
-============================= test session starts =============================
-platform win32 -- Python 3.11.9, pytest-7.4.3, pluggy-1.6.0
-rootdir: C:\Users\husey\kiro2\backend
-configfile: pytest.ini
-plugins: anyio-3.7.1, Faker-37.5.3, langsmith-0.4.14, asyncio-0.21.1, cov-4.1.0, env-1.1.5, flask-1.3.0, html-4.1.1, metadata-3.1.1, mock-3.12.0, picked-0.5.1, testmon-2.1.3, timeout-2.4.0, xdist-3.8.0
-asyncio: mode=Mode.AUTO
-collected 1794 items / 4 skipped
+WARNING: TEST_DATABASE_URL not set, using in-memory SQLite
+WARNING: SYNC_TEST_DATABASE_URL not set, using in-memory SQLite
+[OK] TESTING environment configured at module level
+Warning: Could not import enhanced_chat models: cannot import name 'ChatHistoryRequest' from 'api.enhanced_chat' (C:\Users\husey\kiro2\backend\api\enhanced_chat.py)
 
-tests\fast\test_agents_accessibility.py .................                [  0%]
-tests\fast\test_agents_study_buddy.py ..................                 [  1%]
-tests\fast\test_algorithm_implementations.py ssssss.................     [  3%]
-tests\fast\test_algorithms_agents_imports.py ...............sss......... [  4%]
-.......                                                                  [  5%]
-tests\fast\test_algorithms_with_data.py ..                               [  5%]
-tests\fast\test_api_agents.py ...........                                [  5%]
-tests\fast\test_api_cache.py .................s..........                [  7%]
-tests\fast\test_api_endpoints_basic.py .............ss............ss.... [  9%]
-ss....ss....ssss........ss                                               [ 10%]
-tests\fast\test_api_endpoints_detailed.py ....................           [ 11%]
-tests\fast\test_api_health_comprehensive.py ...F........FF.FF....        [ 12%]
-tests\fast\test_api_health_real.py ..F                                   [ 13%]
-tests\fast\test_api_integration.py ...................                   [ 14%]
-tests\fast\test_api_method_coverage.py .........................         [ 15%]
-tests\fast\test_api_monitoring.py ...................                    [ 16%]
-tests\fast\test_api_quick.py .....                                       [ 16%]
-tests\fast\test_api_quick_wins.py .........................s............ [ 19%]
-s                                                                        [ 19%]
-tests\fast\test_api_validation.py ....EF....E..E.......E......           [ 20%]
-tests\fast\test_auth_system_deepened_fixed.py .sssssss                   [ 21%]
-tests\fast\test_breakthrough_25_percent.py s...s.............s..s....... [ 22%]
-s...s.....                                                               [ 23%]
-tests\fast\test_cache_system_deepened_fixed.py ........s.                [ 23%]
-tests\fast\test_comprehensive_execution.py .....ssssss..ssss.s..ss       [ 25%]
-tests\fast\test_config_value_access.py ..............                    [ 25%]
-tests\fast\test_core_assessment_system.py ...F.FF.FF.......              [ 26%]
-tests\fast\test_core_base_service_fixed.py .....                         [ 27%]
-tests\fast\test_core_base_service_realistic.py ......................... [ 28%]
-...                                                                      [ 28%]
-tests\fast\test_core_config_comprehensive.py ........................... [ 30%]
-..............                                                           [ 30%]
-tests\fast\test_core_config_fixed.py .............                       [ 31%]
-tests\fast\test_core_database_comprehensive.py ssssssssssssssssssssss    [ 32%]
-tests\fast\test_core_encoding_comprehensive.py ......................... [ 34%]
-...................                                                      [ 35%]
-tests\fast\test_core_exceptions_fixed.py .........                       [ 35%]
-tests\fast\test_core_expert_validation.py ..FF.FF.F....F........         [ 37%]
-tests\fast\test_core_logging_config.py ...........                       [ 37%]
-tests\fast\test_core_logging_middleware.py .............                 [ 38%]
-tests\fast\test_core_method_coverage.py ...s.s......s...ss..             [ 39%]
-tests\fast\test_core_metrics_collector.py .............                  [ 40%]
-tests\fast\test_core_modules_comprehensive.py ....ssss..s..........s     [ 41%]
-tests\fast\test_core_modules_final.py .F.sssssss..sFs..F..ssss           [ 42%]
-tests\fast\test_core_rag_service.py ...s....s.F..                        [ 43%]
-tests\fast\test_core_services_execution.py .s.s.........                 [ 44%]
-tests\fast\test_core_structured_logger.py ..FFFFFFF.FFFFFF............   [ 45%]
-tests\fast\test_core_systems_execution.py sssss...ss..ss                 [ 46%]
-tests\fast\test_database_query_optimizer.py ........F.FFFF........ss     [ 47%]
-tests\fast\test_database_repositories.py ssssss                          [ 48%]
-tests\fast\test_embedding_cache.py .....................F...ss           [ 49%]
-tests\fast\test_enum_instantiation.py ....sssFssss                       [ 50%]
-tests\fast\test_exception_handling_execution.py ssssssssssssss           [ 51%]
-tests\fast\test_fastapi_comprehensive.py ...Fssssssssssssssssss          [ 52%]
-tests\fast\test_final_25_percent_push.py s..s...s..s..s.....s....s..s... [ 54%]
-s.s...                                                                   [ 54%]
-tests\fast\test_final_coverage_push.py ......ss.....s...s.               [ 55%]
-tests\fast\test_final_milestone_25.py ......................s...         [ 57%]
-tests\fast\test_final_push_25_percent.py sssss..ss....                   [ 57%]
-tests\fast\test_high_value_zero_coverage.py s.s..s..s........s..s..s...s [ 59%]
-..s..                                                                    [ 59%]
-tests\fast\test_integrations_modules.py ss........                       [ 60%]
-tests\fast\test_large_modules_boost.py .s.s..ss.s.......s                [ 61%]
-tests\fast\test_learning_path_agent_methods.py ..ss.                     [ 61%]
-tests\fast\test_learning_style_comprehensive.py ........................ [ 62%]
-..                                                                       [ 62%]
-tests\fast\test_llm_cache.py .......................s                    [ 64%]
-tests\fast\test_microservices_mocked.py ss.s...sss                       [ 64%]
-tests\fast\test_models_comprehensive.py ....FFFFF.FFFFFFF....            [ 65%]
-tests\fast\test_models_dashboard_comprehensive.py ...................... [ 67%]
-.............                                                            [ 67%]
-tests\fast\test_models_enums_comprehensive.py .......................... [ 69%]
-................                                                         [ 70%]
-tests\fast\test_models_exam_comprehensive.py ........................... [ 71%]
-........                                                                 [ 72%]
-tests\fast\test_models_learning.py ..................................... [ 74%]
-........                                                                 [ 74%]
-tests\fast\test_models_revolutionary.py ................................ [ 76%]
-................................                                         [ 78%]
-tests\fast\test_models_user_comprehensive.py ........................... [ 79%]
-.........                                                                [ 80%]
-tests\fast\test_monitoring_quick.py .....                                [ 80%]
-tests\fast\test_monitoring_system_deepened_fixed.py ....s.s.s.           [ 81%]
-tests\fast\test_more_agents.py ...ssss                                   [ 81%]
-tests\fast\test_more_algorithms.py .s.s...........                       [ 82%]
-tests\fast\test_more_models.py .ss...sss.s...s.s.s                       [ 83%]
-tests\fast\test_question_generator_methods.py ..s.s.                     [ 83%]
-tests\fast\test_real_coverage_boost.py ......................            [ 85%]
-tests\fast\test_real_method_execution.py .......s.......s                [ 85%]
-tests\fast\test_service_layer.py ssssssssss.sss.                         [ 86%]
-tests\fast\test_services_initialization.py ....ss...s.s................. [ 88%]
-s.sss.s..ss                                                              [ 88%]
-tests\fast\test_simple_function_calls.py ....sss......                   [ 89%]
-tests\fast\test_sinav_motoru_critical.py ............................... [ 91%]
-.                                                                        [ 91%]
-tests\fast\test_sinav_motoru_full.py .......................             [ 92%]
-tests\fast\test_sinav_simple.py .........                                [ 93%]
-tests\fast\test_ultra_boost_25.py ................                       [ 94%]
-tests\fast\test_unified_logging_system.py ..........                     [ 94%]
-tests\fast\test_unified_session_system.py ............                   [ 95%]
-tests\fast\test_utility_scripts_execution.py ....ss...F..ssss.sFF        [ 96%]
-tests\fast\test_utils_modules.py .ss                                     [ 96%]
-tests\fast\test_youtube_discovery_methods.py ssssss                      [ 96%]
-tests\fast\test_zero_coverage_boost.py s.s.s..F..s..s..s..F..s.s..       [ 98%]
-tests\fast\test_zero_to_hero.py s.........s..s..s..s..s.s..              [100%]
+=================================== ERRORS ====================================
+_______ ERROR collecting tests/unit/agents/learning_path/test_agent.py ________
+ImportError while importing test module 'C:\Users\husey\kiro2\backend\tests\unit\agents\learning_path\test_agent.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+..\.venv\Lib\site-packages\langchain_community\embeddings\huggingface.py:84: in __init__
+    import sentence_transformers
+..\.venv\Lib\site-packages\sentence_transformers\__init__.py:10: in <module>
+    from sentence_transformers.backend import (
+..\.venv\Lib\site-packages\sentence_transformers\backend\__init__.py:3: in <module>
+    from .load import load_onnx_model, load_openvino_model
+..\.venv\Lib\site-packages\sentence_transformers\backend\load.py:7: in <module>
+    from transformers.configuration_utils import PretrainedConfig
+..\.venv\Lib\site-packages\transformers\__init__.py:30: in <module>
+    from . import dependency_versions_check
+..\.venv\Lib\site-packages\transformers\dependency_versions_check.py:16: in <module>
+    from .utils.versions import require_version, require_version_core
+..\.venv\Lib\site-packages\transformers\utils\__init__.py:22: in <module>
+    from .auto_docstring import (
+..\.venv\Lib\site-packages\transformers\utils\auto_docstring.py:22: in <module>
+    import regex as re
+..\.venv\Lib\site-packages\regex\__init__.py:1: in <module>
+    import regex._main
+..\.venv\Lib\site-packages\regex\_main.py:417: in <module>
+    from regex import _regex_core
+..\.venv\Lib\site-packages\regex\_regex_core.py:21: in <module>
+    from regex import _regex
+E   ImportError: cannot import name '_regex' from partially initialized module 'regex' (most likely due to a circular import) (C:\Users\husey\kiro2\.venv\Lib\site-packages\regex\__init__.py)
 
+The above exception was the direct cause of the following exception:
+core\rag_service.py:77: in _initialize
+    self.embeddings = HuggingFaceEmbeddings(
+..\.venv\Lib\site-packages\langchain_core\_api\deprecation.py:239: in warn_if_direct_instance
+    return wrapped(self, *args, **kwargs)
+..\.venv\Lib\site-packages\langchain_community\embeddings\huggingface.py:87: in __init__
+    raise ImportError(
+E   ImportError: Could not import sentence_transformers python package. Please install it with `pip install sentence-transformers`.
+
+During handling of the above exception, another exception occurred:
+..\..\AppData\Local\Programs\Python\Python312\Lib\importlib\__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+tests\unit\agents\learning_path\test_agent.py:12: in <module>
+    from backend.agents.learning_path.agent import LearningPathAgent
+agents\__init__.py:15: in <module>
+    from .learning_path_agent import LearningPathAgent
+agents\learning_path_agent.py:29: in <module>
+    from core.rag_service import rag_service
+core\rag_service.py:1014: in <module>
+    rag_service = RAGService()
+core\rag_service.py:61: in __init__
+    self._initialize()
+core\rag_service.py:85: in _initialize
+    from langchain.embeddings.base import Embeddings
+E   ModuleNotFoundError: No module named 'langchain'
+_ ERROR collecting tests/unit/agents/learning_path/test_assessment_creator.py _
+ImportError while importing test module 'C:\Users\husey\kiro2\backend\tests\unit\agents\learning_path\test_assessment_creator.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+..\.venv\Lib\site-packages\langchain_community\embeddings\huggingface.py:84: in __init__
+    import sentence_transformers
+..\.venv\Lib\site-packages\sentence_transformers\__init__.py:10: in <module>
+    from sentence_transformers.backend import (
+..\.venv\Lib\site-packages\sentence_transformers\backend\__init__.py:3: in <module>
+    from .load import load_onnx_model, load_openvino_model
+..\.venv\Lib\site-packages\sentence_transformers\backend\load.py:7: in <module>
+    from transformers.configuration_utils import PretrainedConfig
+..\.venv\Lib\site-packages\transformers\__init__.py:30: in <module>
+    from . import dependency_versions_check
+..\.venv\Lib\site-packages\transformers\dependency_versions_check.py:16: in <module>
+    from .utils.versions import require_version, require_version_core
+..\.venv\Lib\site-packages\transformers\utils\__init__.py:22: in <module>
+    from .auto_docstring import (
+..\.venv\Lib\site-packages\transformers\utils\auto_docstring.py:22: in <module>
+    import regex as re
+..\.venv\Lib\site-packages\regex\__init__.py:1: in <module>
+    import regex._main
+..\.venv\Lib\site-packages\regex\_main.py:417: in <module>
+    from regex import _regex_core
+..\.venv\Lib\site-packages\regex\_regex_core.py:21: in <module>
+    from regex import _regex
+E   ImportError: cannot import name '_regex' from partially initialized module 'regex' (most likely due to a circular import) (C:\Users\husey\kiro2\.venv\Lib\site-packages\regex\__init__.py)
+
+The above exception was the direct cause of the following exception:
+core\rag_service.py:77: in _initialize
+    self.embeddings = HuggingFaceEmbeddings(
+..\.venv\Lib\site-packages\langchain_core\_api\deprecation.py:239: in warn_if_direct_instance
+    return wrapped(self, *args, **kwargs)
+..\.venv\Lib\site-packages\langchain_community\embeddings\huggingface.py:87: in __init__
+    raise ImportError(
+E   ImportError: Could not import sentence_transformers python package. Please install it with `pip install sentence-transformers`.
+
+During handling of the above exception, another exception occurred:
+..\..\AppData\Local\Programs\Python\Python312\Lib\importlib\__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+tests\unit\agents\learning_path\test_assessment_creator.py:19: in <module>
+    from backend.agents.learning_path.core.assessment_creator import AssessmentCreator
+agents\__init__.py:15: in <module>
+    from .learning_path_agent import LearningPathAgent
+agents\learning_path_agent.py:29: in <module>
+    from core.rag_service import rag_service
+core\rag_service.py:1014: in <module>
+    rag_service = RAGService()
+core\rag_service.py:61: in __init__
+    self._initialize()
+core\rag_service.py:85: in _initialize
+    from langchain.embeddings.base import Embeddings
+E   ModuleNotFoundError: No module named 'langchain'
+_______ ERROR collecting tests/unit/agents/learning_path/test_facade.py _______
+ImportError while importing test module 'C:\Users\husey\kiro2\backend\tests\unit\agents\learning_path\test_facade.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+..\.venv\Lib\site-packages\langchain_community\embeddings\huggingface.py:84: in __init__
+    import sentence_transformers
+..\.venv\Lib\site-packages\sentence_transformers\__init__.py:10: in <module>
+    from sentence_transformers.backend import (
+..\.venv\Lib\site-packages\sentence_transformers\backend\__init__.py:3: in <module>
+    from .load import load_onnx_model, load_openvino_model
+..\.venv\Lib\site-packages\sentence_transformers\backend\load.py:7: in <module>
+    from transformers.configuration_utils import PretrainedConfig
+..\.venv\Lib\site-packages\transformers\__init__.py:30: in <module>
+    from . import dependency_versions_check
+..\.venv\Lib\site-packages\transformers\dependency_versions_check.py:16: in <module>
+    from .utils.versions import require_version, require_version_core
+..\.venv\Lib\site-packages\transformers\utils\__init__.py:22: in <module>
+    from .auto_docstring import (
+..\.venv\Lib\site-packages\transformers\utils\auto_docstring.py:22: in <module>
+    import regex as re
+..\.venv\Lib\site-packages\regex\__init__.py:1: in <module>
+    import regex._main
+..\.venv\Lib\site-packages\regex\_main.py:417: in <module>
+    from regex import _regex_core
+..\.venv\Lib\site-packages\regex\_regex_core.py:21: in <module>
+    from regex import _regex
+E   ImportError: cannot import name '_regex' from partially initialized module 'regex' (most likely due to a circular import) (C:\Users\husey\kiro2\.venv\Lib\site-packages\regex\__init__.py)
+
+The above exception was the direct cause of the following exception:
+core\rag_service.py:77: in _initialize
+    self.embeddings = HuggingFaceEmbeddings(
+..\.venv\Lib\site-packages\langchain_core\_api\deprecation.py:239: in warn_if_direct_instance
+    return wrapped(self, *args, **kwargs)
+..\.venv\Lib\site-packages\langchain_community\embeddings\huggingface.py:87: in __init__
+    raise ImportError(
+E   ImportError: Could not import sentence_transformers python package. Please install it with `pip install sentence-transformers`.
+
+During handling of the above exception, another exception occurred:
+..\..\AppData\Local\Programs\Python\Python312\Lib\importlib\__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+tests\unit\agents\learning_path\test_facade.py:12: in <module>
+    from agents.learning_path.facade import (
+agents\__init__.py:15: in <module>
+    from .learning_path_agent import LearningPathAgent
+agents\learning_path_agent.py:29: in <module>
+    from core.rag_service import rag_service
+core\rag_service.py:1014: in <module>
+    rag_service = RAGService()
+core\rag_service.py:61: in __init__
+    self._initialize()
+core\rag_service.py:85: in _initialize
+    from langchain.embeddings.base import Embeddings
+E   ModuleNotFoundError: No module named 'langchain'
+__ ERROR collecting tests/unit/agents/learning_path/test_resource_finder.py ___
+ImportError while importing test module 'C:\Users\husey\kiro2\backend\tests\unit\agents\learning_path\test_resource_finder.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+..\.venv\Lib\site-packages\langchain_community\embeddings\huggingface.py:84: in __init__
+    import sentence_transformers
+..\.venv\Lib\site-packages\sentence_transformers\__init__.py:10: in <module>
+    from sentence_transformers.backend import (
+..\.venv\Lib\site-packages\sentence_transformers\backend\__init__.py:3: in <module>
+    from .load import load_onnx_model, load_openvino_model
+..\.venv\Lib\site-packages\sentence_transformers\backend\load.py:7: in <module>
+    from transformers.configuration_utils import PretrainedConfig
+..\.venv\Lib\site-packages\transformers\__init__.py:30: in <module>
+    from . import dependency_versions_check
+..\.venv\Lib\site-packages\transformers\dependency_versions_check.py:16: in <module>
+    from .utils.versions import require_version, require_version_core
+..\.venv\Lib\site-packages\transformers\utils\__init__.py:22: in <module>
+    from .auto_docstring import (
+..\.venv\Lib\site-packages\transformers\utils\auto_docstring.py:22: in <module>
+    import regex as re
+..\.venv\Lib\site-packages\regex\__init__.py:1: in <module>
+    import regex._main
+..\.venv\Lib\site-packages\regex\_main.py:417: in <module>
+    from regex import _regex_core
+..\.venv\Lib\site-packages\regex\_regex_core.py:21: in <module>
+    from regex import _regex
+E   ImportError: cannot import name '_regex' from partially initialized module 'regex' (most likely due to a circular import) (C:\Users\husey\kiro2\.venv\Lib\site-packages\regex\__init__.py)
+
+The above exception was the direct cause of the following exception:
+core\rag_service.py:77: in _initialize
+    self.embeddings = HuggingFaceEmbeddings(
+..\.venv\Lib\site-packages\langchain_core\_api\deprecation.py:239: in warn_if_direct_instance
+    return wrapped(self, *args, **kwargs)
+..\.venv\Lib\site-packages\langchain_community\embeddings\huggingface.py:87: in __init__
+    raise ImportError(
+E   ImportError: Could not import sentence_transformers python package. Please install it with `pip install sentence-transformers`.
+
+During handling of the above exception, another exception occurred:
+..\..\AppData\Local\Programs\Python\Python312\Lib\importlib\__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+tests\unit\agents\learning_path\test_resource_finder.py:16: in <module>
+    from backend.agents.learning_path.core.resource_finder import ResourceFinder
+agents\__init__.py:15: in <module>
+    from .learning_path_agent import LearningPathAgent
+agents\learning_path_agent.py:29: in <module>
+    from core.rag_service import rag_service
+core\rag_service.py:1014: in <module>
+    rag_service = RAGService()
+core\rag_service.py:61: in __init__
+    self._initialize()
+core\rag_service.py:85: in _initialize
+    from langchain.embeddings.base import Embeddings
+E   ModuleNotFoundError: No module named 'langchain'
+__ ERROR collecting tests/unit/agents/learning_path/test_student_profiler.py __
+ImportError while importing test module 'C:\Users\husey\kiro2\backend\tests\unit\agents\learning_path\test_student_profiler.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+..\.venv\Lib\site-packages\langchain_community\embeddings\huggingface.py:84: in __init__
+    import sentence_transformers
+..\.venv\Lib\site-packages\sentence_transformers\__init__.py:10: in <module>
+    from sentence_transformers.backend import (
+..\.venv\Lib\site-packages\sentence_transformers\backend\__init__.py:3: in <module>
+    from .load import load_onnx_model, load_openvino_model
+..\.venv\Lib\site-packages\sentence_transformers\backend\load.py:7: in <module>
+    from transformers.configuration_utils import PretrainedConfig
+..\.venv\Lib\site-packages\transformers\__init__.py:30: in <module>
+    from . import dependency_versions_check
+..\.venv\Lib\site-packages\transformers\dependency_versions_check.py:16: in <module>
+    from .utils.versions import require_version, require_version_core
+..\.venv\Lib\site-packages\transformers\utils\__init__.py:22: in <module>
+    from .auto_docstring import (
+..\.venv\Lib\site-packages\transformers\utils\auto_docstring.py:22: in <module>
+    import regex as re
+..\.venv\Lib\site-packages\regex\__init__.py:1: in <module>
+    import regex._main
+..\.venv\Lib\site-packages\regex\_main.py:417: in <module>
+    from regex import _regex_core
+..\.venv\Lib\site-packages\regex\_regex_core.py:21: in <module>
+    from regex import _regex
+E   ImportError: cannot import name '_regex' from partially initialized module 'regex' (most likely due to a circular import) (C:\Users\husey\kiro2\.venv\Lib\site-packages\regex\__init__.py)
+
+The above exception was the direct cause of the following exception:
+core\rag_service.py:77: in _initialize
+    self.embeddings = HuggingFaceEmbeddings(
+..\.venv\Lib\site-packages\langchain_core\_api\deprecation.py:239: in warn_if_direct_instance
+    return wrapped(self, *args, **kwargs)
+..\.venv\Lib\site-packages\langchain_community\embeddings\huggingface.py:87: in __init__
+    raise ImportError(
+E   ImportError: Could not import sentence_transformers python package. Please install it with `pip install sentence-transformers`.
+
+During handling of the above exception, another exception occurred:
+..\..\AppData\Local\Programs\Python\Python312\Lib\importlib\__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+tests\unit\agents\learning_path\test_student_profiler.py:21: in <module>
+    from backend.agents.learning_path.core.student_profiler import StudentProfiler
+agents\__init__.py:15: in <module>
+    from .learning_path_agent import LearningPathAgent
+agents\learning_path_agent.py:29: in <module>
+    from core.rag_service import rag_service
+core\rag_service.py:1014: in <module>
+    rag_service = RAGService()
+core\rag_service.py:61: in __init__
+    self._initialize()
+core\rag_service.py:85: in _initialize
+    from langchain.embeddings.base import Embeddings
+E   ModuleNotFoundError: No module named 'langchain'
+_ ERROR collecting tests/unit/services/claude_md_improvement/test_doc_updater_service.py _
+E   sqlalchemy.exc.InvalidRequestError: Table 'point_transactions' is already defined for this MetaData instance.  Specify 'extend_existing=True' to redefine options and columns on an existing Table object.
+__________ ERROR collecting tests/unit/test_adaptive_test_engine.py ___________
+ImportError while importing test module 'C:\Users\husey\kiro2\backend\tests\unit\test_adaptive_test_engine.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+..\.venv\Lib\site-packages\scipy\__init__.py:95: in <module>
+    from scipy._lib._ccallback import LowLevelCallable
+..\.venv\Lib\site-packages\scipy\_lib\_ccallback.py:1: in <module>
+    from . import _ccallback_c
+E   ImportError: cannot import name '_ccallback_c' from 'scipy._lib' (C:\Users\husey\kiro2\.venv\Lib\site-packages\scipy\_lib\__init__.py)
+
+The above exception was the direct cause of the following exception:
+..\..\AppData\Local\Programs\Python\Python312\Lib\importlib\__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+tests\unit\test_adaptive_test_engine.py:12: in <module>
+    from services.adaptive_test_engine import (
+services\adaptive_test_engine.py:19: in <module>
+    from scipy.stats import norm
+..\.venv\Lib\site-packages\scipy\__init__.py:100: in <module>
+    raise ImportError(msg) from e
+E   ImportError: The `scipy` install you are using seems to be broken, (extension modules cannot be imported), please try reinstalling.
+_______________ ERROR collecting tests/unit/test_core_batch1.py _______________
+ImportError while importing test module 'C:\Users\husey\kiro2\backend\tests\unit\test_core_batch1.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+..\..\AppData\Local\Programs\Python\Python312\Lib\importlib\__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+tests\unit\test_core_batch1.py:42: in <module>
+    from core.input_validation import (
+E   ImportError: cannot import name 'InputSanitizer' from 'core.input_validation' (C:\Users\husey\kiro2\backend\core\input_validation.py)
+_______________ ERROR collecting tests/unit/test_core_utils.py ________________
+E   UnicodeEncodeError: 'charmap' codec can't encode characters in position 0-1: character maps to <undefined>
+_____ ERROR collecting tests/unit/test_realtime_adaptation_performance.py _____
+ImportError while importing test module 'C:\Users\husey\kiro2\backend\tests\unit\test_realtime_adaptation_performance.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+..\.venv\Lib\site-packages\scipy\__init__.py:95: in <module>
+    from scipy._lib._ccallback import LowLevelCallable
+..\.venv\Lib\site-packages\scipy\_lib\_ccallback.py:1: in <module>
+    from . import _ccallback_c
+E   ImportError: cannot import name '_ccallback_c' from 'scipy._lib' (C:\Users\husey\kiro2\.venv\Lib\site-packages\scipy\_lib\__init__.py)
+
+The above exception was the direct cause of the following exception:
+..\..\AppData\Local\Programs\Python\Python312\Lib\importlib\__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+tests\unit\test_realtime_adaptation_performance.py:7: in <module>
+    from services.realtime_adaptation_system import (
+services\realtime_adaptation_system.py:19: in <module>
+    from scipy.stats import norm
+..\.venv\Lib\site-packages\scipy\__init__.py:100: in <module>
+    raise ImportError(msg) from e
+E   ImportError: The `scipy` install you are using seems to be broken, (extension modules cannot be imported), please try reinstalling.
+_____________ ERROR collecting tests/unit/test_services_batch2.py _____________
+ImportError while importing test module 'C:\Users\husey\kiro2\backend\tests\unit\test_services_batch2.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+..\.venv\Lib\site-packages\scipy\__init__.py:95: in <module>
+    from scipy._lib._ccallback import LowLevelCallable
+..\.venv\Lib\site-packages\scipy\_lib\_ccallback.py:1: in <module>
+    from . import _ccallback_c
+E   ImportError: cannot import name '_ccallback_c' from 'scipy._lib' (C:\Users\husey\kiro2\.venv\Lib\site-packages\scipy\_lib\__init__.py)
+
+The above exception was the direct cause of the following exception:
+..\..\AppData\Local\Programs\Python\Python312\Lib\importlib\__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+tests\unit\test_services_batch2.py:31: in <module>
+    from services.irt_service import IRTService
+services\irt_service.py:29: in <module>
+    import scipy.optimize as opt
+..\.venv\Lib\site-packages\scipy\__init__.py:100: in <module>
+    raise ImportError(msg) from e
+E   ImportError: The `scipy` install you are using seems to be broken, (extension modules cannot be imported), please try reinstalling.
+_____________ ERROR collecting tests/unit/test_two_factor_auth.py _____________
+ImportError while importing test module 'C:\Users\husey\kiro2\backend\tests\unit\test_two_factor_auth.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+..\..\AppData\Local\Programs\Python\Python312\Lib\importlib\__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+tests\unit\test_two_factor_auth.py:11: in <module>
+    from PIL import Image
+..\.venv\Lib\site-packages\PIL\Image.py:95: in <module>
+    from . import _imaging as core
+E   ImportError: cannot import name '_imaging' from 'PIL' (C:\Users\husey\kiro2\.venv\Lib\site-packages\PIL\__init__.py)
+_______ ERROR collecting tests/integration/test_accessibility_agent.py ________
+ImportError while importing test module 'C:\Users\husey\kiro2\backend\tests\integration\test_accessibility_agent.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+..\.venv\Lib\site-packages\langchain_community\embeddings\huggingface.py:84: in __init__
+    import sentence_transformers
+..\.venv\Lib\site-packages\sentence_transformers\__init__.py:10: in <module>
+    from sentence_transformers.backend import (
+..\.venv\Lib\site-packages\sentence_transformers\backend\__init__.py:3: in <module>
+    from .load import load_onnx_model, load_openvino_model
+..\.venv\Lib\site-packages\sentence_transformers\backend\load.py:7: in <module>
+    from transformers.configuration_utils import PretrainedConfig
+..\.venv\Lib\site-packages\transformers\__init__.py:30: in <module>
+    from . import dependency_versions_check
+..\.venv\Lib\site-packages\transformers\dependency_versions_check.py:16: in <module>
+    from .utils.versions import require_version, require_version_core
+..\.venv\Lib\site-packages\transformers\utils\__init__.py:22: in <module>
+    from .auto_docstring import (
+..\.venv\Lib\site-packages\transformers\utils\auto_docstring.py:22: in <module>
+    import regex as re
+..\.venv\Lib\site-packages\regex\__init__.py:1: in <module>
+    import regex._main
+..\.venv\Lib\site-packages\regex\_main.py:417: in <module>
+    from regex import _regex_core
+..\.venv\Lib\site-packages\regex\_regex_core.py:21: in <module>
+    from regex import _regex
+E   ImportError: cannot import name '_regex' from partially initialized module 'regex' (most likely due to a circular import) (C:\Users\husey\kiro2\.venv\Lib\site-packages\regex\__init__.py)
+
+The above exception was the direct cause of the following exception:
+core\rag_service.py:77: in _initialize
+    self.embeddings = HuggingFaceEmbeddings(
+..\.venv\Lib\site-packages\langchain_core\_api\deprecation.py:239: in warn_if_direct_instance
+    return wrapped(self, *args, **kwargs)
+..\.venv\Lib\site-packages\langchain_community\embeddings\huggingface.py:87: in __init__
+    raise ImportError(
+E   ImportError: Could not import sentence_transformers python package. Please install it with `pip install sentence-transformers`.
+
+During handling of the above exception, another exception occurred:
+..\..\AppData\Local\Programs\Python\Python312\Lib\importlib\__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+tests\integration\test_accessibility_agent.py:13: in <module>
+    from agents.accessibility_agent import (
+agents\__init__.py:15: in <module>
+    from .learning_path_agent import LearningPathAgent
+agents\learning_path_agent.py:29: in <module>
+    from core.rag_service import rag_service
+core\rag_service.py:1014: in <module>
+    rag_service = RAGService()
+core\rag_service.py:61: in __init__
+    self._initialize()
+core\rag_service.py:85: in _initialize
+    from langchain.embeddings.base import Embeddings
+E   ModuleNotFoundError: No module named 'langchain'
+____________ ERROR collecting tests/integration/test_algorithms.py ____________
+ImportError while importing test module 'C:\Users\husey\kiro2\backend\tests\integration\test_algorithms.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+..\.venv\Lib\site-packages\sklearn\__check_build\__init__.py:52: in <module>
+    from sklearn.__check_build._check_build import check_build  # noqa: F401
+E   ModuleNotFoundError: No module named 'sklearn.__check_build._check_build'
+
+During handling of the above exception, another exception occurred:
+..\..\AppData\Local\Programs\Python\Python312\Lib\importlib\__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+tests\integration\test_algorithms.py:12: in <module>
+    from algorithms.recommendation import HybridRecommender, Item, User
+algorithms\recommendation.py:13: in <module>
+    from sklearn.decomposition import TruncatedSVD
+..\.venv\Lib\site-packages\sklearn\__init__.py:69: in <module>
+    from sklearn import __check_build, _distributor_init  # noqa: E402 F401
+..\.venv\Lib\site-packages\sklearn\__check_build\__init__.py:54: in <module>
+    raise_build_error(e)
+..\.venv\Lib\site-packages\sklearn\__check_build\__init__.py:35: in raise_build_error
+    raise ImportError(
+E   ImportError: No module named 'sklearn.__check_build._check_build'
+E   ___________________________________________________________________________
+E   Contents of C:\Users\husey\kiro2\.venv\Lib\site-packages\sklearn\__check_build:
+E   desktop.ini               meson.build               _check_build.cp313-win_amd64.lib
+E   _check_build.cp313-win_amd64.pyd_check_build.pyx          __init__.py
+E   __pycache__
+E   ___________________________________________________________________________
+E   It seems that scikit-learn has not been built correctly.
+E   
+E   If you have installed scikit-learn from source, please do not forget
+E   to build the package before using it. For detailed instructions, see:
+E   https://scikit-learn.org/dev/developers/advanced_installation.html#building-from-source
+E   
+E   If you have used an installer, please check that it is suited for your
+E   Python version, your operating system and your platform.
+________ ERROR collecting tests/integration/test_domain_experts_e2e.py ________
+ImportError while importing test module 'C:\Users\husey\kiro2\backend\tests\integration\test_domain_experts_e2e.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+..\.venv\Lib\site-packages\langchain_community\embeddings\huggingface.py:84: in __init__
+    import sentence_transformers
+..\.venv\Lib\site-packages\sentence_transformers\__init__.py:10: in <module>
+    from sentence_transformers.backend import (
+..\.venv\Lib\site-packages\sentence_transformers\backend\__init__.py:3: in <module>
+    from .load import load_onnx_model, load_openvino_model
+..\.venv\Lib\site-packages\sentence_transformers\backend\load.py:7: in <module>
+    from transformers.configuration_utils import PretrainedConfig
+..\.venv\Lib\site-packages\transformers\__init__.py:30: in <module>
+    from . import dependency_versions_check
+..\.venv\Lib\site-packages\transformers\dependency_versions_check.py:16: in <module>
+    from .utils.versions import require_version, require_version_core
+..\.venv\Lib\site-packages\transformers\utils\__init__.py:22: in <module>
+    from .auto_docstring import (
+..\.venv\Lib\site-packages\transformers\utils\auto_docstring.py:22: in <module>
+    import regex as re
+..\.venv\Lib\site-packages\regex\__init__.py:1: in <module>
+    import regex._main
+..\.venv\Lib\site-packages\regex\_main.py:417: in <module>
+    from regex import _regex_core
+..\.venv\Lib\site-packages\regex\_regex_core.py:21: in <module>
+    from regex import _regex
+E   ImportError: cannot import name '_regex' from partially initialized module 'regex' (most likely due to a circular import) (C:\Users\husey\kiro2\.venv\Lib\site-packages\regex\__init__.py)
+
+The above exception was the direct cause of the following exception:
+core\rag_service.py:77: in _initialize
+    self.embeddings = HuggingFaceEmbeddings(
+..\.venv\Lib\site-packages\langchain_core\_api\deprecation.py:239: in warn_if_direct_instance
+    return wrapped(self, *args, **kwargs)
+..\.venv\Lib\site-packages\langchain_community\embeddings\huggingface.py:87: in __init__
+    raise ImportError(
+E   ImportError: Could not import sentence_transformers python package. Please install it with `pip install sentence-transformers`.
+
+During handling of the above exception, another exception occurred:
+..\..\AppData\Local\Programs\Python\Python312\Lib\importlib\__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+tests\integration\test_domain_experts_e2e.py:19: in <module>
+    from agents.domain_experts import (
+agents\__init__.py:15: in <module>
+    from .learning_path_agent import LearningPathAgent
+agents\learning_path_agent.py:29: in <module>
+    from core.rag_service import rag_service
+core\rag_service.py:1014: in <module>
+    rag_service = RAGService()
+core\rag_service.py:61: in __init__
+    self._initialize()
+core\rag_service.py:85: in _initialize
+    from langchain.embeddings.base import Embeddings
+E   ModuleNotFoundError: No module named 'langchain'
+_ ERROR collecting tests/integration/test_e2e_video_recommendations_verification.py _
+ImportError while importing test module 'C:\Users\husey\kiro2\backend\tests\integration\test_e2e_video_recommendations_verification.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+..\..\AppData\Local\Programs\Python\Python312\Lib\importlib\__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+tests\integration\test_e2e_video_recommendations_verification.py:17: in <module>
+    from services.video_recommendation_service import (
+services\video_recommendation_service.py:42: in <module>
+    from services.semantic_youtube_search import SemanticYouTubeSearch
+services\semantic_youtube_search.py:15: in <module>
+    from sentence_transformers import SentenceTransformer
+..\.venv\Lib\site-packages\sentence_transformers\__init__.py:10: in <module>
+    from sentence_transformers.backend import (
+..\.venv\Lib\site-packages\sentence_transformers\backend\__init__.py:3: in <module>
+    from .load import load_onnx_model, load_openvino_model
+..\.venv\Lib\site-packages\sentence_transformers\backend\load.py:7: in <module>
+    from transformers.configuration_utils import PretrainedConfig
+..\.venv\Lib\site-packages\transformers\__init__.py:30: in <module>
+    from . import dependency_versions_check
+..\.venv\Lib\site-packages\transformers\dependency_versions_check.py:16: in <module>
+    from .utils.versions import require_version, require_version_core
+..\.venv\Lib\site-packages\transformers\utils\__init__.py:22: in <module>
+    from .auto_docstring import (
+..\.venv\Lib\site-packages\transformers\utils\auto_docstring.py:22: in <module>
+    import regex as re
+..\.venv\Lib\site-packages\regex\__init__.py:1: in <module>
+    import regex._main
+..\.venv\Lib\site-packages\regex\_main.py:417: in <module>
+    from regex import _regex_core
+..\.venv\Lib\site-packages\regex\_regex_core.py:21: in <module>
+    from regex import _regex
+E   ImportError: cannot import name '_regex' from partially initialized module 'regex' (most likely due to a circular import) (C:\Users\husey\kiro2\.venv\Lib\site-packages\regex\__init__.py)
+_______ ERROR collecting tests/integration/test_elasticsearch_client.py _______
+ImportError while importing test module 'C:\Users\husey\kiro2\backend\tests\integration\test_elasticsearch_client.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+..\..\AppData\Local\Programs\Python\Python312\Lib\importlib\__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+tests\integration\test_elasticsearch_client.py:9: in <module>
+    from core.elasticsearch_client import (
+E   ImportError: cannot import name 'ElasticsearchConfig' from 'core.elasticsearch_client' (C:\Users\husey\kiro2\backend\core\elasticsearch_client.py). Did you mean: 'elasticsearch_client'?
+_______ ERROR collecting tests/integration/test_learning_path_agent.py ________
+ImportError while importing test module 'C:\Users\husey\kiro2\backend\tests\integration\test_learning_path_agent.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+..\.venv\Lib\site-packages\langchain_community\embeddings\huggingface.py:84: in __init__
+    import sentence_transformers
+..\.venv\Lib\site-packages\sentence_transformers\__init__.py:10: in <module>
+    from sentence_transformers.backend import (
+..\.venv\Lib\site-packages\sentence_transformers\backend\__init__.py:3: in <module>
+    from .load import load_onnx_model, load_openvino_model
+..\.venv\Lib\site-packages\sentence_transformers\backend\load.py:7: in <module>
+    from transformers.configuration_utils import PretrainedConfig
+..\.venv\Lib\site-packages\transformers\__init__.py:30: in <module>
+    from . import dependency_versions_check
+..\.venv\Lib\site-packages\transformers\dependency_versions_check.py:16: in <module>
+    from .utils.versions import require_version, require_version_core
+..\.venv\Lib\site-packages\transformers\utils\__init__.py:22: in <module>
+    from .auto_docstring import (
+..\.venv\Lib\site-packages\transformers\utils\auto_docstring.py:22: in <module>
+    import regex as re
+..\.venv\Lib\site-packages\regex\__init__.py:1: in <module>
+    import regex._main
+..\.venv\Lib\site-packages\regex\_main.py:417: in <module>
+    from regex import _regex_core
+..\.venv\Lib\site-packages\regex\_regex_core.py:21: in <module>
+    from regex import _regex
+E   ImportError: cannot import name '_regex' from partially initialized module 'regex' (most likely due to a circular import) (C:\Users\husey\kiro2\.venv\Lib\site-packages\regex\__init__.py)
+
+The above exception was the direct cause of the following exception:
+core\rag_service.py:77: in _initialize
+    self.embeddings = HuggingFaceEmbeddings(
+..\.venv\Lib\site-packages\langchain_core\_api\deprecation.py:239: in warn_if_direct_instance
+    return wrapped(self, *args, **kwargs)
+..\.venv\Lib\site-packages\langchain_community\embeddings\huggingface.py:87: in __init__
+    raise ImportError(
+E   ImportError: Could not import sentence_transformers python package. Please install it with `pip install sentence-transformers`.
+
+During handling of the above exception, another exception occurred:
+..\..\AppData\Local\Programs\Python\Python312\Lib\importlib\__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+tests\integration\test_learning_path_agent.py:15: in <module>
+    from agents.learning_path_agent import (
+agents\__init__.py:15: in <module>
+    from .learning_path_agent import LearningPathAgent
+agents\learning_path_agent.py:29: in <module>
+    from core.rag_service import rag_service
+core\rag_service.py:1014: in <module>
+    rag_service = RAGService()
+core\rag_service.py:61: in __init__
+    self._initialize()
+core\rag_service.py:85: in _initialize
+    from langchain.embeddings.base import Embeddings
+E   ModuleNotFoundError: No module named 'langchain'
+______ ERROR collecting tests/integration/test_learning_path_database.py ______
+ImportError while importing test module 'C:\Users\husey\kiro2\backend\tests\integration\test_learning_path_database.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+..\..\AppData\Local\Programs\Python\Python312\Lib\importlib\__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+tests\integration\test_learning_path_database.py:21: in <module>
+    from database.learning_path_repository import learning_path_repository
+database\learning_path_repository.py:22: in <module>
+    from models.learning_path_models import (
+E   ImportError: cannot import name 'StudentProfile' from 'models.learning_path_models' (C:\Users\husey\kiro2\backend\models\learning_path_models.py). Did you mean: 'FSRSStudentProfile'?
+______________ ERROR collecting tests/integration/test_models.py ______________
+ImportError while importing test module 'C:\Users\husey\kiro2\backend\tests\integration\test_models.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+..\..\AppData\Local\Programs\Python\Python312\Lib\importlib\__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+tests\integration\test_models.py:11: in <module>
+    from models import (
+E   ImportError: cannot import name 'UserCreate' from 'models' (C:\Users\husey\kiro2\backend\models\__init__.py)
+______ ERROR collecting tests/integration/test_multi_agent_blackboard.py ______
+ImportError while importing test module 'C:\Users\husey\kiro2\backend\tests\integration\test_multi_agent_blackboard.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+..\.venv\Lib\site-packages\langchain_community\embeddings\huggingface.py:84: in __init__
+    import sentence_transformers
+..\.venv\Lib\site-packages\sentence_transformers\__init__.py:10: in <module>
+    from sentence_transformers.backend import (
+..\.venv\Lib\site-packages\sentence_transformers\backend\__init__.py:3: in <module>
+    from .load import load_onnx_model, load_openvino_model
+..\.venv\Lib\site-packages\sentence_transformers\backend\load.py:7: in <module>
+    from transformers.configuration_utils import PretrainedConfig
+..\.venv\Lib\site-packages\transformers\__init__.py:30: in <module>
+    from . import dependency_versions_check
+..\.venv\Lib\site-packages\transformers\dependency_versions_check.py:16: in <module>
+    from .utils.versions import require_version, require_version_core
+..\.venv\Lib\site-packages\transformers\utils\__init__.py:22: in <module>
+    from .auto_docstring import (
+..\.venv\Lib\site-packages\transformers\utils\auto_docstring.py:22: in <module>
+    import regex as re
+..\.venv\Lib\site-packages\regex\__init__.py:1: in <module>
+    import regex._main
+..\.venv\Lib\site-packages\regex\_main.py:417: in <module>
+    from regex import _regex_core
+..\.venv\Lib\site-packages\regex\_regex_core.py:21: in <module>
+    from regex import _regex
+E   ImportError: cannot import name '_regex' from partially initialized module 'regex' (most likely due to a circular import) (C:\Users\husey\kiro2\.venv\Lib\site-packages\regex\__init__.py)
+
+The above exception was the direct cause of the following exception:
+core\rag_service.py:77: in _initialize
+    self.embeddings = HuggingFaceEmbeddings(
+..\.venv\Lib\site-packages\langchain_core\_api\deprecation.py:239: in warn_if_direct_instance
+    return wrapped(self, *args, **kwargs)
+..\.venv\Lib\site-packages\langchain_community\embeddings\huggingface.py:87: in __init__
+    raise ImportError(
+E   ImportError: Could not import sentence_transformers python package. Please install it with `pip install sentence-transformers`.
+
+During handling of the above exception, another exception occurred:
+..\..\AppData\Local\Programs\Python\Python312\Lib\importlib\__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+tests\integration\test_multi_agent_blackboard.py:19: in <module>
+    from agents.base_agent import AgentType, BaseAgent
+agents\__init__.py:15: in <module>
+    from .learning_path_agent import LearningPathAgent
+agents\learning_path_agent.py:29: in <module>
+    from core.rag_service import rag_service
+core\rag_service.py:1014: in <module>
+    rag_service = RAGService()
+core\rag_service.py:61: in __init__
+    self._initialize()
+core\rag_service.py:85: in _initialize
+    from langchain.embeddings.base import Embeddings
+E   ModuleNotFoundError: No module named 'langchain'
+_____ ERROR collecting tests/integration/test_performance_optimization.py _____
+ImportError while importing test module 'C:\Users\husey\kiro2\backend\tests\integration\test_performance_optimization.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+..\..\AppData\Local\Programs\Python\Python312\Lib\importlib\__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+tests\integration\test_performance_optimization.py:15: in <module>
+    from core.performance_middleware import RateLimiter, SystemMonitor
+E   ModuleNotFoundError: No module named 'core.performance_middleware'
+____ ERROR collecting tests/integration/test_production_health_monitor.py _____
+ImportError while importing test module 'C:\Users\husey\kiro2\backend\tests\integration\test_production_health_monitor.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+..\..\AppData\Local\Programs\Python\Python312\Lib\importlib\__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+tests\integration\test_production_health_monitor.py:12: in <module>
+    from core.production_health_monitor import (
+E   ModuleNotFoundError: No module named 'core.production_health_monitor'
+_____ ERROR collecting tests/integration/test_real_database_operations.py _____
+ImportError while importing test module 'C:\Users\husey\kiro2\backend\tests\integration\test_real_database_operations.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+..\..\AppData\Local\Programs\Python\Python312\Lib\importlib\__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+tests\integration\test_real_database_operations.py:8: in <module>
+    from models_unified import Kullanici, SinavSorusu
+E   ImportError: cannot import name 'SinavSorusu' from 'models_unified' (C:\Users\husey\kiro2\backend\models_unified.py). Did you mean: 'SinavSonucu'?
+__________ ERROR collecting tests/integration/test_recommendation.py __________
+ImportError while importing test module 'C:\Users\husey\kiro2\backend\tests\integration\test_recommendation.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+..\.venv\Lib\site-packages\sklearn\__check_build\__init__.py:52: in <module>
+    from sklearn.__check_build._check_build import check_build  # noqa: F401
+E   ModuleNotFoundError: No module named 'sklearn.__check_build._check_build'
+
+During handling of the above exception, another exception occurred:
+..\..\AppData\Local\Programs\Python\Python312\Lib\importlib\__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+tests\integration\test_recommendation.py:14: in <module>
+    from algorithms.recommendation import (
+algorithms\recommendation.py:13: in <module>
+    from sklearn.decomposition import TruncatedSVD
+..\.venv\Lib\site-packages\sklearn\__init__.py:69: in <module>
+    from sklearn import __check_build, _distributor_init  # noqa: E402 F401
+..\.venv\Lib\site-packages\sklearn\__check_build\__init__.py:54: in <module>
+    raise_build_error(e)
+..\.venv\Lib\site-packages\sklearn\__check_build\__init__.py:35: in raise_build_error
+    raise ImportError(
+E   ImportError: No module named 'sklearn.__check_build._check_build'
+E   ___________________________________________________________________________
+E   Contents of C:\Users\husey\kiro2\.venv\Lib\site-packages\sklearn\__check_build:
+E   desktop.ini               meson.build               _check_build.cp313-win_amd64.lib
+E   _check_build.cp313-win_amd64.pyd_check_build.pyx          __init__.py
+E   __pycache__
+E   ___________________________________________________________________________
+E   It seems that scikit-learn has not been built correctly.
+E   
+E   If you have installed scikit-learn from source, please do not forget
+E   to build the package before using it. For detailed instructions, see:
+E   https://scikit-learn.org/dev/developers/advanced_installation.html#building-from-source
+E   
+E   If you have used an installer, please check that it is suited for your
+E   Python version, your operating system and your platform.
+________ ERROR collecting tests/integration/test_structured_logging.py ________
+ImportError while importing test module 'C:\Users\husey\kiro2\backend\tests\integration\test_structured_logging.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+..\..\AppData\Local\Programs\Python\Python312\Lib\importlib\__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+tests\integration\test_structured_logging.py:19: in <module>
+    from core.log_config import LogAnalyzer, LogRetentionManager
+E   ModuleNotFoundError: No module named 'core.log_config'
+________ ERROR collecting tests/integration/test_study_buddy_agent.py _________
+ImportError while importing test module 'C:\Users\husey\kiro2\backend\tests\integration\test_study_buddy_agent.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+..\.venv\Lib\site-packages\langchain_community\embeddings\huggingface.py:84: in __init__
+    import sentence_transformers
+..\.venv\Lib\site-packages\sentence_transformers\__init__.py:10: in <module>
+    from sentence_transformers.backend import (
+..\.venv\Lib\site-packages\sentence_transformers\backend\__init__.py:3: in <module>
+    from .load import load_onnx_model, load_openvino_model
+..\.venv\Lib\site-packages\sentence_transformers\backend\load.py:7: in <module>
+    from transformers.configuration_utils import PretrainedConfig
+..\.venv\Lib\site-packages\transformers\__init__.py:30: in <module>
+    from . import dependency_versions_check
+..\.venv\Lib\site-packages\transformers\dependency_versions_check.py:16: in <module>
+    from .utils.versions import require_version, require_version_core
+..\.venv\Lib\site-packages\transformers\utils\__init__.py:22: in <module>
+    from .auto_docstring import (
+..\.venv\Lib\site-packages\transformers\utils\auto_docstring.py:22: in <module>
+    import regex as re
+..\.venv\Lib\site-packages\regex\__init__.py:1: in <module>
+    import regex._main
+..\.venv\Lib\site-packages\regex\_main.py:417: in <module>
+    from regex import _regex_core
+..\.venv\Lib\site-packages\regex\_regex_core.py:21: in <module>
+    from regex import _regex
+E   ImportError: cannot import name '_regex' from partially initialized module 'regex' (most likely due to a circular import) (C:\Users\husey\kiro2\.venv\Lib\site-packages\regex\__init__.py)
+
+The above exception was the direct cause of the following exception:
+core\rag_service.py:77: in _initialize
+    self.embeddings = HuggingFaceEmbeddings(
+..\.venv\Lib\site-packages\langchain_core\_api\deprecation.py:239: in warn_if_direct_instance
+    return wrapped(self, *args, **kwargs)
+..\.venv\Lib\site-packages\langchain_community\embeddings\huggingface.py:87: in __init__
+    raise ImportError(
+E   ImportError: Could not import sentence_transformers python package. Please install it with `pip install sentence-transformers`.
+
+During handling of the above exception, another exception occurred:
+..\..\AppData\Local\Programs\Python\Python312\Lib\importlib\__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+tests\integration\test_study_buddy_agent.py:16: in <module>
+    from agents.study_buddy_agent import (
+agents\__init__.py:15: in <module>
+    from .learning_path_agent import LearningPathAgent
+agents\learning_path_agent.py:29: in <module>
+    from core.rag_service import rag_service
+core\rag_service.py:1014: in <module>
+    rag_service = RAGService()
+core\rag_service.py:61: in __init__
+    self._initialize()
+core\rag_service.py:85: in _initialize
+    from langchain.embeddings.base import Embeddings
+E   ModuleNotFoundError: No module named 'langchain'
+_________ ERROR collecting tests/integration/test_success_metrics.py __________
+ImportError while importing test module 'C:\Users\husey\kiro2\backend\tests\integration\test_success_metrics.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+..\.venv\Lib\site-packages\langchain_community\embeddings\huggingface.py:84: in __init__
+    import sentence_transformers
+..\.venv\Lib\site-packages\sentence_transformers\__init__.py:10: in <module>
+    from sentence_transformers.backend import (
+..\.venv\Lib\site-packages\sentence_transformers\backend\__init__.py:3: in <module>
+    from .load import load_onnx_model, load_openvino_model
+..\.venv\Lib\site-packages\sentence_transformers\backend\load.py:7: in <module>
+    from transformers.configuration_utils import PretrainedConfig
+..\.venv\Lib\site-packages\transformers\__init__.py:30: in <module>
+    from . import dependency_versions_check
+..\.venv\Lib\site-packages\transformers\dependency_versions_check.py:16: in <module>
+    from .utils.versions import require_version, require_version_core
+..\.venv\Lib\site-packages\transformers\utils\__init__.py:22: in <module>
+    from .auto_docstring import (
+..\.venv\Lib\site-packages\transformers\utils\auto_docstring.py:22: in <module>
+    import regex as re
+..\.venv\Lib\site-packages\regex\__init__.py:1: in <module>
+    import regex._main
+..\.venv\Lib\site-packages\regex\_main.py:417: in <module>
+    from regex import _regex_core
+..\.venv\Lib\site-packages\regex\_regex_core.py:21: in <module>
+    from regex import _regex
+E   ImportError: cannot import name '_regex' from partially initialized module 'regex' (most likely due to a circular import) (C:\Users\husey\kiro2\.venv\Lib\site-packages\regex\__init__.py)
+
+The above exception was the direct cause of the following exception:
+core\rag_service.py:77: in _initialize
+    self.embeddings = HuggingFaceEmbeddings(
+..\.venv\Lib\site-packages\langchain_core\_api\deprecation.py:239: in warn_if_direct_instance
+    return wrapped(self, *args, **kwargs)
+..\.venv\Lib\site-packages\langchain_community\embeddings\huggingface.py:87: in __init__
+    raise ImportError(
+E   ImportError: Could not import sentence_transformers python package. Please install it with `pip install sentence-transformers`.
+
+During handling of the above exception, another exception occurred:
+..\..\AppData\Local\Programs\Python\Python312\Lib\importlib\__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+tests\integration\test_success_metrics.py:19: in <module>
+    from agents.domain_experts import (
+agents\__init__.py:15: in <module>
+    from .learning_path_agent import LearningPathAgent
+agents\learning_path_agent.py:29: in <module>
+    from core.rag_service import rag_service
+core\rag_service.py:1014: in <module>
+    rag_service = RAGService()
+core\rag_service.py:61: in __init__
+    self._initialize()
+core\rag_service.py:85: in _initialize
+    from langchain.embeddings.base import Embeddings
+E   ModuleNotFoundError: No module named 'langchain'
+______ ERROR collecting tests/integration/test_video_api_integration.py _______
+ImportError while importing test module 'C:\Users\husey\kiro2\backend\tests\integration\test_video_api_integration.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+..\..\AppData\Local\Programs\Python\Python312\Lib\importlib\__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+tests\integration\test_video_api_integration.py:19: in <module>
+    from services.video_recommendation_service import (
+services\video_recommendation_service.py:42: in <module>
+    from services.semantic_youtube_search import SemanticYouTubeSearch
+services\semantic_youtube_search.py:15: in <module>
+    from sentence_transformers import SentenceTransformer
+..\.venv\Lib\site-packages\sentence_transformers\__init__.py:10: in <module>
+    from sentence_transformers.backend import (
+..\.venv\Lib\site-packages\sentence_transformers\backend\__init__.py:3: in <module>
+    from .load import load_onnx_model, load_openvino_model
+..\.venv\Lib\site-packages\sentence_transformers\backend\load.py:7: in <module>
+    from transformers.configuration_utils import PretrainedConfig
+..\.venv\Lib\site-packages\transformers\__init__.py:30: in <module>
+    from . import dependency_versions_check
+..\.venv\Lib\site-packages\transformers\dependency_versions_check.py:16: in <module>
+    from .utils.versions import require_version, require_version_core
+..\.venv\Lib\site-packages\transformers\utils\__init__.py:22: in <module>
+    from .auto_docstring import (
+..\.venv\Lib\site-packages\transformers\utils\auto_docstring.py:22: in <module>
+    import regex as re
+..\.venv\Lib\site-packages\regex\__init__.py:1: in <module>
+    import regex._main
+..\.venv\Lib\site-packages\regex\_main.py:417: in <module>
+    from regex import _regex_core
+..\.venv\Lib\site-packages\regex\_regex_core.py:21: in <module>
+    from regex import _regex
+E   ImportError: cannot import name '_regex' from partially initialized module 'regex' (most likely due to a circular import) (C:\Users\husey\kiro2\.venv\Lib\site-packages\regex\__init__.py)
 ============================== warnings summary ===============================
-models_unified.py:20
-  C:\Users\husey\kiro2\backend\models_unified.py:20: MovedIn20Warning: The ``declarative_base()`` function is now available as sqlalchemy.orm.declarative_base(). (deprecated since: 2.0) (Background on SQLAlchemy 2.0 at: https://sqlalche.me/e/b8d9)
-    Base = declarative_base()
-
-..\..\AppData\Local\Programs\Python\Python311\Lib\site-packages\pydantic\_internal\_generate_schema.py:298: 11 warnings
-tests/fast/test_algorithms_agents_imports.py: 10 warnings
-  C:\Users\husey\AppData\Local\Programs\Python\Python311\Lib\site-packages\pydantic\_internal\_generate_schema.py:298: PydanticDeprecatedSince20: `json_encoders` is deprecated. See https://docs.pydantic.dev/2.11/concepts/serialization/#custom-serializers for alternatives. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.11/migration/
+..\.venv\Lib\site-packages\_hypothesis_pytestplugin.py:469
+  C:\Users\husey\kiro2\.venv\Lib\site-packages\_hypothesis_pytestplugin.py:469: UserWarning: Skipping collection of '.hypothesis' directory - this usually means you've explicitly set the `norecursedirs` pytest config option, replacing rather than extending the default ignores.
     warnings.warn(
 
-..\..\AppData\Local\Programs\Python\Python311\Lib\site-packages\pydantic\fields.py:1062
-tests/fast/test_algorithms_agents_imports.py::TestCoreModulesImports::test_automated_question_generator_import
-tests/fast/test_api_endpoints_basic.py::TestSoruBankasiAPI::test_import
-tests/fast/test_api_endpoints_basic.py::TestQuestionBankManagementAPI::test_import
-tests/fast/test_api_endpoints_basic.py::TestTurkishNLPAPI::test_import
-  C:\Users\husey\AppData\Local\Programs\Python\Python311\Lib\site-packages\pydantic\fields.py:1062: PydanticDeprecatedSince20: `min_items` is deprecated and will be removed, use `min_length` instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.11/migration/
-    warn('`min_items` is deprecated and will be removed, use `min_length` instead', DeprecationWarning)
+core\llm_service.py:112
+  C:\Users\husey\kiro2\backend\core\llm_service.py:112: LangChainDeprecationWarning: The class `ChatOllama` was deprecated in LangChain 0.3.1 and will be removed in 1.0.0. An updated version of the class exists in the `langchain-ollama package and should be used instead. To use it run `pip install -U `langchain-ollama` and import as `from `langchain_ollama import ChatOllama``.
+    self.chat_model = ChatOllama(
 
-..\..\AppData\Local\Programs\Python\Python311\Lib\site-packages\pydantic\fields.py:1068
-tests/fast/test_algorithms_agents_imports.py::TestCoreModulesImports::test_automated_question_generator_import
-tests/fast/test_api_endpoints_basic.py::TestSoruBankasiAPI::test_import
-tests/fast/test_api_endpoints_basic.py::TestQuestionBankManagementAPI::test_import
-tests/fast/test_api_endpoints_basic.py::TestTurkishNLPAPI::test_import
-  C:\Users\husey\AppData\Local\Programs\Python\Python311\Lib\site-packages\pydantic\fields.py:1068: PydanticDeprecatedSince20: `max_items` is deprecated and will be removed, use `max_length` instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.11/migration/
-    warn('`max_items` is deprecated and will be removed, use `max_length` instead', DeprecationWarning)
-
-..\..\AppData\Local\Programs\Python\Python311\Lib\site-packages\pydantic\_internal\_config.py:323: 9 warnings
-tests/fast/test_algorithm_implementations.py: 1 warning
-tests/fast/test_algorithms_agents_imports.py: 4 warnings
-tests/fast/test_api_endpoints_basic.py: 23 warnings
-tests/fast/test_api_integration.py: 2 warnings
-  C:\Users\husey\AppData\Local\Programs\Python\Python311\Lib\site-packages\pydantic\_internal\_config.py:323: PydanticDeprecatedSince20: Support for class-based `config` is deprecated, use ConfigDict instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.11/migration/
-    warnings.warn(DEPRECATION_MESSAGE, DeprecationWarning)
+core\llm_service.py:118
+  C:\Users\husey\kiro2\backend\core\llm_service.py:118: LangChainDeprecationWarning: The class `Ollama` was deprecated in LangChain 0.3.1 and will be removed in 1.0.0. An updated version of the class exists in the `langchain-ollama package and should be used instead. To use it run `pip install -U `langchain-ollama` and import as `from `langchain_ollama import OllamaLLM``.
+    self.llm = Ollama(
 
 core\rag_service.py:77
-  C:\Users\husey\kiro2\backend\core\rag_service.py:77: LangChainDeprecationWarning: The class `HuggingFaceEmbeddings` was deprecated in LangChain 0.2.2 and will be removed in 1.0. An updated version of the class exists in the :class:`~langchain-huggingface package and should be used instead. To use it run `pip install -U :class:`~langchain-huggingface` and import as `from :class:`~langchain_huggingface import HuggingFaceEmbeddings``.
+  C:\Users\husey\kiro2\backend\core\rag_service.py:77: LangChainDeprecationWarning: The class `HuggingFaceEmbeddings` was deprecated in LangChain 0.2.2 and will be removed in 1.0. An updated version of the class exists in the `langchain-huggingface package and should be used instead. To use it run `pip install -U `langchain-huggingface` and import as `from `langchain_huggingface import HuggingFaceEmbeddings``.
     self.embeddings = HuggingFaceEmbeddings(
 
-core\vector_store_factory.py:139
-  C:\Users\husey\kiro2\backend\core\vector_store_factory.py:139: LangChainDeprecationWarning: The class `Chroma` was deprecated in LangChain 0.2.9 and will be removed in 1.0. An updated version of the class exists in the :class:`~langchain-chroma package and should be used instead. To use it run `pip install -U :class:`~langchain-chroma` and import as `from :class:`~langchain_chroma import Chroma``.
-    vector_store = Chroma(
+core\quality_gates\gates\test_coverage.py:39
+  C:\Users\husey\kiro2\backend\core\quality_gates\gates\test_coverage.py:39: PytestCollectionWarning: cannot collect test class 'TestCoverageGate' because it has a __init__ constructor (from: tests/unit/quality_gates/test_test_coverage_gate.py)
+    class TestCoverageGate(BaseGate):
 
-tests/fast/test_algorithm_implementations.py::TestMorphologyAwareIRT::test_morphology_irt_class_exists
-  C:\Users\husey\AppData\Local\Programs\Python\Python311\Lib\site-packages\antlr4\Lexer.py:12: DeprecationWarning: typing.io is deprecated, import directly from typing instead. typing.io will be removed in Python 3.12.
-    from typing.io import TextIO
+tests\integration\test_framework.py:76
+  C:\Users\husey\kiro2\backend\tests\integration\test_framework.py:76: PytestCollectionWarning: cannot collect test class 'TestContext' because it has a __init__ constructor (from: tests/integration/test_framework.py)
+    @dataclass
 
-tests/fast/test_algorithm_implementations.py::TestMorphologyAwareIRT::test_morphology_irt_class_exists
-  C:\Users\husey\AppData\Local\Programs\Python\Python311\Lib\site-packages\antlr4\Parser.py:6: DeprecationWarning: typing.io is deprecated, import directly from typing instead. typing.io will be removed in Python 3.12.
-    from typing.io import TextIO
+tests\integration\test_framework.py:291
+  C:\Users\husey\kiro2\backend\tests\integration\test_framework.py:291: PytestCollectionWarning: cannot collect test class 'TestEnvironment' because it has a __init__ constructor (from: tests/integration/test_framework.py)
+    class TestEnvironment:
 
-tests/fast/test_algorithm_implementations.py::TestMorphologyAwareIRT::test_morphology_irt_class_exists
-  C:\Users\husey\AppData\Local\Programs\Python\Python311\Lib\site-packages\zemberek\tokenization\antlr\turkish_lexer.py:3: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
-    from pkg_resources import resource_filename
+tests\integration\test_framework.py:382
+  C:\Users\husey\kiro2\backend\tests\integration\test_framework.py:382: PytestCollectionWarning: cannot collect test class 'TestRunner' because it has a __init__ constructor (from: tests/integration/test_framework.py)
+    class TestRunner:
 
-tests/fast/test_algorithm_implementations.py::TestMorphologyAwareIRT::test_morphology_irt_class_exists
-  C:\Users\husey\AppData\Local\Programs\Python\Python311\Lib\site-packages\pkg_resources\__init__.py:3146: DeprecationWarning: Deprecated call to `pkg_resources.declare_namespace('mpl_toolkits')`.
-  Implementing implicit namespace packages (as specified in PEP 420) is preferred to `pkg_resources.declare_namespace`. See https://setuptools.pypa.io/en/latest/references/keywords.html#keyword-namespace-packages
-    declare_namespace(pkg)
+tests\integration\test_monitoring_api.py:63
+  C:\Users\husey\kiro2\backend\tests\integration\test_monitoring_api.py:63: PytestCollectionWarning: cannot collect test class 'TestClient' because it has a __init__ constructor (from: tests/integration/test_monitoring_api.py)
+    class TestClient:
 
-tests/fast/test_algorithms_agents_imports.py::TestCoreModulesImports::test_langchain_llm_service_import
-  C:\Users\husey\kiro2\backend\core\langchain_llm_service.py:13: LangChainDeprecationWarning: Importing InMemoryCache from langchain is deprecated. Please replace deprecated imports:
-  
-  >> from langchain import InMemoryCache
-  
-  with new imports of:
-  
-  >> from langchain_community.cache import InMemoryCache
-  You can use the langchain cli to **automatically** upgrade many imports. Please see documentation here <https://python.langchain.com/docs/versions/v0_2/>
-    from langchain.cache import InMemoryCache, RedisCache
+tests\integration\test_parallel_execution.py:13
+  C:\Users\husey\kiro2\backend\tests\integration\test_parallel_execution.py:13: PytestUnknownMarkWarning: Unknown pytest.mark.unit - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.unit
 
-tests/fast/test_algorithms_agents_imports.py::TestCoreModulesImports::test_langchain_llm_service_import
-  C:\Users\husey\kiro2\backend\core\langchain_llm_service.py:13: LangChainDeprecationWarning: Importing RedisCache from langchain is deprecated. Please replace deprecated imports:
-  
-  >> from langchain import RedisCache
-  
-  with new imports of:
-  
-  >> from langchain_community.cache import RedisCache
-  You can use the langchain cli to **automatically** upgrade many imports. Please see documentation here <https://python.langchain.com/docs/versions/v0_2/>
-    from langchain.cache import InMemoryCache, RedisCache
+tests\integration\test_parallel_execution.py:21
+  C:\Users\husey\kiro2\backend\tests\integration\test_parallel_execution.py:21: PytestUnknownMarkWarning: Unknown pytest.mark.unit - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.unit
 
-tests/fast/test_algorithms_agents_imports.py::TestCoreModulesImports::test_langchain_llm_service_import
-tests/fast/test_algorithms_agents_imports.py::TestCoreModulesImports::test_langchain_llm_service_import
-  C:\Users\husey\kiro2\backend\core\langchain_llm_service.py:18: LangChainDeprecationWarning: Importing chat models from langchain is deprecated. Importing from langchain will no longer be supported as of langchain==0.2.0. Please import from langchain-community instead:
-  
-  `from langchain_community.chat_models import ChatAnthropic`.
-  
-  To install langchain-community run `pip install -U langchain-community`.
-    from langchain.chat_models import ChatAnthropic, ChatOpenAI
+tests\integration\test_parallel_execution.py:29
+  C:\Users\husey\kiro2\backend\tests\integration\test_parallel_execution.py:29: PytestUnknownMarkWarning: Unknown pytest.mark.unit - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.unit
 
-tests/fast/test_algorithms_agents_imports.py::TestCoreModulesImports::test_langchain_llm_service_import
-tests/fast/test_algorithms_agents_imports.py::TestCoreModulesImports::test_langchain_llm_service_import
-  C:\Users\husey\kiro2\backend\core\langchain_llm_service.py:18: LangChainDeprecationWarning: Importing chat models from langchain is deprecated. Importing from langchain will no longer be supported as of langchain==0.2.0. Please import from langchain-community instead:
-  
-  `from langchain_community.chat_models import ChatOpenAI`.
-  
-  To install langchain-community run `pip install -U langchain-community`.
-    from langchain.chat_models import ChatAnthropic, ChatOpenAI
+tests\integration\test_parallel_execution.py:42
+  C:\Users\husey\kiro2\backend\tests\integration\test_parallel_execution.py:42: PytestUnknownMarkWarning: Unknown pytest.mark.unit - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.unit
 
-tests/fast/test_algorithms_agents_imports.py::TestCoreModulesImports::test_langchain_llm_service_import
-tests/fast/test_algorithms_agents_imports.py::TestCoreModulesImports::test_langchain_llm_service_import
-  C:\Users\husey\kiro2\backend\core\langchain_llm_service.py:19: LangChainDeprecationWarning: Importing HuggingFaceEmbeddings from langchain.embeddings is deprecated. Please replace deprecated imports:
-  
-  >> from langchain.embeddings import HuggingFaceEmbeddings
-  
-  with new imports of:
-  
-  >> from langchain_community.embeddings import HuggingFaceEmbeddings
-  You can use the langchain cli to **automatically** upgrade many imports. Please see documentation here <https://python.langchain.com/docs/versions/v0_2/>
-    from langchain.embeddings import HuggingFaceEmbeddings, OpenAIEmbeddings
+tests\integration\test_parallel_execution.py:56
+  C:\Users\husey\kiro2\backend\tests\integration\test_parallel_execution.py:56: PytestUnknownMarkWarning: Unknown pytest.mark.serial - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.serial
 
-tests/fast/test_algorithms_agents_imports.py::TestCoreModulesImports::test_langchain_llm_service_import
-tests/fast/test_algorithms_agents_imports.py::TestCoreModulesImports::test_langchain_llm_service_import
-  C:\Users\husey\kiro2\backend\core\langchain_llm_service.py:19: LangChainDeprecationWarning: Importing OpenAIEmbeddings from langchain.embeddings is deprecated. Please replace deprecated imports:
-  
-  >> from langchain.embeddings import OpenAIEmbeddings
-  
-  with new imports of:
-  
-  >> from langchain_community.embeddings import OpenAIEmbeddings
-  You can use the langchain cli to **automatically** upgrade many imports. Please see documentation here <https://python.langchain.com/docs/versions/v0_2/>
-    from langchain.embeddings import HuggingFaceEmbeddings, OpenAIEmbeddings
+tests\integration\test_parallel_execution.py:81
+  C:\Users\husey\kiro2\backend\tests\integration\test_parallel_execution.py:81: PytestUnknownMarkWarning: Unknown pytest.mark.shared_resource - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.shared_resource
 
-tests/fast/test_algorithms_agents_imports.py::TestCoreModulesImports::test_langchain_llm_service_import
-tests/fast/test_algorithms_agents_imports.py::TestCoreModulesImports::test_langchain_llm_service_import
-  C:\Users\husey\kiro2\backend\core\langchain_llm_service.py:20: LangChainDeprecationWarning: Importing LLMs from langchain is deprecated. Importing from langchain will no longer be supported as of langchain==0.2.0. Please import from langchain-community instead:
-  
-  `from langchain_community.llms import HuggingFaceHub`.
-  
-  To install langchain-community run `pip install -U langchain-community`.
-    from langchain.llms import HuggingFaceHub, OpenAI
+tests\integration\test_parallel_execution.py:98
+  C:\Users\husey\kiro2\backend\tests\integration\test_parallel_execution.py:98: PytestUnknownMarkWarning: Unknown pytest.mark.unit - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.unit
 
-tests/fast/test_algorithms_agents_imports.py::TestCoreModulesImports::test_langchain_llm_service_import
-tests/fast/test_algorithms_agents_imports.py::TestCoreModulesImports::test_langchain_llm_service_import
-  C:\Users\husey\kiro2\backend\core\langchain_llm_service.py:20: LangChainDeprecationWarning: Importing LLMs from langchain is deprecated. Importing from langchain will no longer be supported as of langchain==0.2.0. Please import from langchain-community instead:
-  
-  `from langchain_community.llms import OpenAI`.
-  
-  To install langchain-community run `pip install -U langchain-community`.
-    from langchain.llms import HuggingFaceHub, OpenAI
+tests\integration\test_parallel_execution.py:108
+  C:\Users\husey\kiro2\backend\tests\integration\test_parallel_execution.py:108: PytestUnknownMarkWarning: Unknown pytest.mark.unit - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.unit
 
-tests/fast/test_algorithms_agents_imports.py::TestCoreModulesImports::test_langchain_llm_service_import
-tests/fast/test_algorithms_agents_imports.py::TestCoreModulesImports::test_langchain_llm_service_import
-  C:\Users\husey\kiro2\backend\core\langchain_llm_service.py:37: LangChainDeprecationWarning: Importing tools from langchain is deprecated. Importing from langchain will no longer be supported as of langchain==0.2.0. Please import from langchain-community instead:
-  
-  `from langchain_community.tools import DuckDuckGoSearchRun`.
-  
-  To install langchain-community run `pip install -U langchain-community`.
-    from langchain.tools import DuckDuckGoSearchRun, Tool, WikipediaQueryRun
+tests\integration\test_parallel_execution.py:128
+  C:\Users\husey\kiro2\backend\tests\integration\test_parallel_execution.py:128: PytestUnknownMarkWarning: Unknown pytest.mark.unit - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.unit
 
-tests/fast/test_algorithms_agents_imports.py::TestCoreModulesImports::test_langchain_llm_service_import
-tests/fast/test_algorithms_agents_imports.py::TestCoreModulesImports::test_langchain_llm_service_import
-  C:\Users\husey\kiro2\backend\core\langchain_llm_service.py:37: LangChainDeprecationWarning: Importing tools from langchain is deprecated. Importing from langchain will no longer be supported as of langchain==0.2.0. Please import from langchain-community instead:
-  
-  `from langchain_community.tools import WikipediaQueryRun`.
-  
-  To install langchain-community run `pip install -U langchain-community`.
-    from langchain.tools import DuckDuckGoSearchRun, Tool, WikipediaQueryRun
-
-tests/fast/test_algorithms_agents_imports.py::TestCoreModulesImports::test_langchain_llm_service_import
-tests/fast/test_algorithms_agents_imports.py::TestCoreModulesImports::test_langchain_llm_service_import
-  C:\Users\husey\kiro2\backend\core\langchain_llm_service.py:40: LangChainDeprecationWarning: Importing FAISS from langchain.vectorstores is deprecated. Please replace deprecated imports:
-  
-  >> from langchain.vectorstores import FAISS
-  
-  with new imports of:
-  
-  >> from langchain_community.vectorstores import FAISS
-  You can use the langchain cli to **automatically** upgrade many imports. Please see documentation here <https://python.langchain.com/docs/versions/v0_2/>
-    from langchain.vectorstores import FAISS, Chroma
-
-tests/fast/test_algorithms_agents_imports.py::TestCoreModulesImports::test_langchain_llm_service_import
-tests/fast/test_algorithms_agents_imports.py::TestCoreModulesImports::test_langchain_llm_service_import
-  C:\Users\husey\kiro2\backend\core\langchain_llm_service.py:40: LangChainDeprecationWarning: Importing Chroma from langchain.vectorstores is deprecated. Please replace deprecated imports:
-  
-  >> from langchain.vectorstores import Chroma
-  
-  with new imports of:
-  
-  >> from langchain_community.vectorstores import Chroma
-  You can use the langchain cli to **automatically** upgrade many imports. Please see documentation here <https://python.langchain.com/docs/versions/v0_2/>
-    from langchain.vectorstores import FAISS, Chroma
-
-tests/fast/test_algorithms_with_data.py::TestZPDWithData::test_zpd_with_student
-  C:\Users\husey\kiro2\backend\models\zpd_maarif.py:91: PydanticDeprecatedSince20: Pydantic V1 style `@validator` validators are deprecated. You should migrate to Pydantic V2 style `@field_validator` validators, see the migration guide for more details. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.11/migration/
-    @validator('grup_calismasi_tercihi', 'ogretmene_saygi_seviyesi',
-
-tests/fast/test_algorithms_with_data.py::TestZPDWithData::test_zpd_with_student
-  C:\Users\husey\kiro2\backend\models\zpd_maarif.py:172: PydanticDeprecatedSince20: Pydantic V1 style `@validator` validators are deprecated. You should migrate to Pydantic V2 style `@field_validator` validators, see the migration guide for more details. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.11/migration/
-    @validator('alt_sinir', 'ust_sinir', 'optimal_zorluk')
-
-tests/fast/test_api_endpoints_basic.py::TestSinavAPI::test_import
-tests/fast/test_api_endpoints_basic.py::TestExamPerformanceAPI::test_import
-tests/fast/test_final_milestone_25.py::TestMainApplicationComprehensive::test_openapi_schema_generation
-  C:\Users\husey\AppData\Local\Programs\Python\Python311\Lib\site-packages\pydantic\_internal\_config.py:373: UserWarning: Valid config keys have changed in V2:
-  * 'schema_extra' has been renamed to 'json_schema_extra'
-    warnings.warn(message, UserWarning)
-
-tests/fast/test_api_endpoints_basic.py::TestContentAPI::test_import
-  C:\Users\husey\kiro2\backend\api\content_api.py:562: DeprecationWarning: `regex` has been deprecated, please use `pattern` instead
-    period: str = Query("week", regex="^(day|week|month)$"),
-
-tests/fast/test_api_endpoints_basic.py::TestYouTubeAPI::test_import
-  C:\Users\husey\kiro2\backend\api\youtube_routes.py:453: DeprecationWarning: 
-          on_event is deprecated, use lifespan event handlers instead.
-  
-          Read more about it in the
-          [FastAPI docs for Lifespan Events](https://fastapi.tiangolo.com/advanced/events/).
-          
-    @router.on_event("shutdown")
-
-tests/fast/test_api_endpoints_basic.py::TestAdvancedReportsAPI::test_import
-  C:\Users\husey\kiro2\backend\models\irt_morfoloji.py:54: PydanticDeprecatedSince20: Pydantic V1 style `@validator` validators are deprecated. You should migrate to Pydantic V2 style `@field_validator` validators, see the migration guide for more details. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.11/migration/
-    @validator('ek_sayisi')
-
-tests/fast/test_api_health_comprehensive.py: 9 warnings
-tests/fast/test_api_integration.py: 1 warning
-  C:\Users\husey\kiro2\backend\api\health.py:297: DeprecationWarning: Call to deprecated close. (Use aclose() instead) -- Deprecated since version 5.0.0.
-    await client.close()
-
-tests/fast/test_comprehensive_execution.py::TestMiddlewarePipelineExecution::test_global_exception_handler
-  C:\Users\husey\AppData\Local\Programs\Python\Python311\Lib\site-packages\pydantic\main.py:463: UserWarning: Pydantic serializer warnings:
-    PydanticSerializationUnexpectedValue(Expected `str` - serialized value may not be as expected [input_value=<MagicMock name='mock.sta..._id' id='2377801666448'>, input_type=MagicMock])
-    PydanticSerializationUnexpectedValue(Expected `str` - serialized value may not be as expected [input_value=<MagicMock name='mock.sta...ion' id='2377803739984'>, input_type=MagicMock])
-    PydanticSerializationUnexpectedValue(Expected `float` - serialized value may not be as expected [input_value=<MagicMock name='mock.sta...ime' id='2377803761424'>, input_type=MagicMock])
-    return self.__pydantic_serializer__.to_python(
-
-tests/fast/test_core_rag_service.py::TestRAGService::test_add_document
-  C:\Users\husey\kiro2\backend\tests\fast\test_core_rag_service.py:28: RuntimeWarning: coroutine 'RAGService.add_document' was never awaited
-    rag_service.add_document(
-  Enable tracemalloc to get traceback where the object was allocated.
-  See https://docs.pytest.org/en/stable/how-to/capture-warnings.html#resource-warnings for more info.
-
-tests/fast/test_core_rag_service.py::TestRAGService::test_add_documents_batch
-  C:\Users\husey\kiro2\backend\tests\fast\test_core_rag_service.py:46: RuntimeWarning: coroutine 'RAGService.add_documents' was never awaited
-    rag_service.add_documents(documents)
-  Enable tracemalloc to get traceback where the object was allocated.
-  See https://docs.pytest.org/en/stable/how-to/capture-warnings.html#resource-warnings for more info.
-
-tests/fast/test_core_rag_service.py::TestRAGService::test_search
-  C:\Users\husey\kiro2\backend\tests\fast\test_core_rag_service.py:57: RuntimeWarning: coroutine 'RAGService.add_document' was never awaited
-    rag_service.add_document(
-  Enable tracemalloc to get traceback where the object was allocated.
-  See https://docs.pytest.org/en/stable/how-to/capture-warnings.html#resource-warnings for more info.
-
-tests/fast/test_database_query_optimizer.py::TestQueryOptimizer::test_bulk_insert
-  C:\Users\husey\kiro2\backend\core\database_query_optimizer.py:304: RuntimeWarning: coroutine 'AsyncMockMixin._execute_mock_call' was never awaited
-    self.session.add_all(instances)
-  Enable tracemalloc to get traceback where the object was allocated.
-  See https://docs.pytest.org/en/stable/how-to/capture-warnings.html#resource-warnings for more info.
-
-tests/fast/test_final_25_percent_push.py::TestLangchainLLMService::test_llm_service_init
-  C:\Users\husey\kiro2\backend\core\langchain_llm_service_enhanced.py:56: LangChainDeprecationWarning: Importing InMemoryCache from langchain is deprecated. Please replace deprecated imports:
-  
-  >> from langchain import InMemoryCache
-  
-  with new imports of:
-  
-  >> from langchain_community.cache import InMemoryCache
-  You can use the langchain cli to **automatically** upgrade many imports. Please see documentation here <https://python.langchain.com/docs/versions/v0_2/>
-    from langchain.cache import InMemoryCache
-
-tests/fast/test_final_25_percent_push.py::TestLangchainLLMService::test_llm_service_init
-  C:\Users\husey\kiro2\backend\core\langchain_llm_service_enhanced.py:59: LangChainDeprecationWarning: Importing RedisCache from langchain is deprecated. Please replace deprecated imports:
-  
-  >> from langchain import RedisCache
-  
-  with new imports of:
-  
-  >> from langchain_community.cache import RedisCache
-  You can use the langchain cli to **automatically** upgrade many imports. Please see documentation here <https://python.langchain.com/docs/versions/v0_2/>
-    from langchain.cache import RedisCache
-
-tests/fast/test_final_25_percent_push.py::TestLangchainLLMService::test_llm_service_init
-tests/fast/test_final_25_percent_push.py::TestLangchainLLMService::test_llm_service_init
-  C:\Users\husey\kiro2\backend\core\langchain_llm_service_enhanced.py:65: LangChainDeprecationWarning: Importing FAISS from langchain.vectorstores is deprecated. Please replace deprecated imports:
-  
-  >> from langchain.vectorstores import FAISS
-  
-  with new imports of:
-  
-  >> from langchain_community.vectorstores import FAISS
-  You can use the langchain cli to **automatically** upgrade many imports. Please see documentation here <https://python.langchain.com/docs/versions/v0_2/>
-    from langchain.vectorstores import FAISS, Chroma
-
-tests/fast/test_final_25_percent_push.py::TestLangchainLLMService::test_llm_service_init
-tests/fast/test_final_25_percent_push.py::TestLangchainLLMService::test_llm_service_init
-  C:\Users\husey\kiro2\backend\core\langchain_llm_service_enhanced.py:65: LangChainDeprecationWarning: Importing Chroma from langchain.vectorstores is deprecated. Please replace deprecated imports:
-  
-  >> from langchain.vectorstores import Chroma
-  
-  with new imports of:
-  
-  >> from langchain_community.vectorstores import Chroma
-  You can use the langchain cli to **automatically** upgrade many imports. Please see documentation here <https://python.langchain.com/docs/versions/v0_2/>
-    from langchain.vectorstores import FAISS, Chroma
-
-tests/fast/test_final_25_percent_push.py::TestEnhancedContentManager::test_content_manager_init
-  C:\Users\husey\kiro2\backend\tests\fast\test_final_25_percent_push.py:524: RuntimeWarning: coroutine 'EnhancedContentManager._load_all_content' was never awaited
-    assert True
-  Enable tracemalloc to get traceback where the object was allocated.
-  See https://docs.pytest.org/en/stable/how-to/capture-warnings.html#resource-warnings for more info.
-
-tests/fast/test_llm_cache.py::TestLLMCache::test_redis_cache_with_mock
-  C:\Users\husey\kiro2\backend\core\llm_cache.py:291: PydanticDeprecatedSince20: The `json` method is deprecated; use `model_dump_json` instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.11/migration/
-    entry_json = entry.json()
+tests\integration\test_parallel_execution.py:137
+  C:\Users\husey\kiro2\backend\tests\integration\test_parallel_execution.py:137: PytestUnknownMarkWarning: Unknown pytest.mark.unit - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.unit
 
 -- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
 =========================== short test summary info ===========================
-FAILED tests/fast/test_api_health_comprehensive.py::TestBasicHealthCheck::test_health_check_status_healthy
-FAILED tests/fast/test_api_health_comprehensive.py::TestDetailedHealthCheck::test_detailed_health_response_structure
-FAILED tests/fast/test_api_health_comprehensive.py::TestDetailedHealthCheck::test_detailed_health_includes_all_checks
-FAILED tests/fast/test_api_health_comprehensive.py::TestDetailedHealthCheck::test_detailed_health_unhealthy_database
-FAILED tests/fast/test_api_health_comprehensive.py::TestDetailedHealthCheck::test_detailed_health_exception_handling
-FAILED tests/fast/test_api_health_real.py::TestHealthAPI::test_health_status_ok
-FAILED tests/fast/test_api_validation.py::TestSubmitContentEndpoint::test_submit_content_invalid_type
-FAILED tests/fast/test_core_assessment_system.py::TestAssessmentSystem::test_generate_quick_test
-FAILED tests/fast/test_core_assessment_system.py::TestAssessmentSystem::test_conduct_self_assessment
-FAILED tests/fast/test_core_assessment_system.py::TestAssessmentSystem::test_evaluate_assessment
-FAILED tests/fast/test_core_assessment_system.py::TestAssessmentSystem::test_get_self_assessment
-FAILED tests/fast/test_core_assessment_system.py::TestAssessmentSystem::test_analyze_performance
-FAILED tests/fast/test_core_expert_validation.py::TestContentSubmission::test_submit_question_for_validation
-FAILED tests/fast/test_core_expert_validation.py::TestContentSubmission::test_submit_exam_for_validation
-FAILED tests/fast/test_core_expert_validation.py::TestExpertFeedback::test_submit_expert_feedback
-FAILED tests/fast/test_core_expert_validation.py::TestExpertFeedback::test_multiple_expert_feedbacks
-FAILED tests/fast/test_core_expert_validation.py::TestValidationStatus::test_validation_status_transitions
-FAILED tests/fast/test_core_expert_validation.py::TestComplianceReporting::test_compliance_report_generation
-FAILED tests/fast/test_core_modules_final.py::TestCoreConfig::test_settings_database_url
-FAILED tests/fast/test_core_modules_final.py::TestCoreLogging::test_structured_logger
-FAILED tests/fast/test_core_modules_final.py::TestCoreUnified::test_unified_cache_system
-FAILED tests/fast/test_core_rag_service.py::TestRAGService::test_search_empty_query
-FAILED tests/fast/test_core_structured_logger.py::TestStructuredLoggerInitialization::test_default_log_level_info
-FAILED tests/fast/test_core_structured_logger.py::TestStructuredLoggerInitialization::test_custom_log_level_debug
-FAILED tests/fast/test_core_structured_logger.py::TestStructuredLoggerInitialization::test_custom_log_level_warning
-FAILED tests/fast/test_core_structured_logger.py::TestStructuredLoggerInitialization::test_custom_log_level_error
-FAILED tests/fast/test_core_structured_logger.py::TestStructuredLoggerInitialization::test_logger_has_handler
-FAILED tests/fast/test_core_structured_logger.py::TestStructuredLoggerInfoMethod::test_info_without_extra
-FAILED tests/fast/test_core_structured_logger.py::TestStructuredLoggerInfoMethod::test_info_with_extra
-FAILED tests/fast/test_core_structured_logger.py::TestStructuredLoggerErrorMethod::test_error_without_extra
-FAILED tests/fast/test_core_structured_logger.py::TestStructuredLoggerErrorMethod::test_error_with_extra
-FAILED tests/fast/test_core_structured_logger.py::TestStructuredLoggerWarningMethod::test_warning_without_extra
-FAILED tests/fast/test_core_structured_logger.py::TestStructuredLoggerWarningMethod::test_warning_with_extra
-FAILED tests/fast/test_core_structured_logger.py::TestStructuredLoggerDebugMethod::test_debug_without_extra
-FAILED tests/fast/test_core_structured_logger.py::TestStructuredLoggerDebugMethod::test_debug_with_extra
-FAILED tests/fast/test_database_query_optimizer.py::TestQueryOptimizer::test_load_with_relationships_basic
-FAILED tests/fast/test_database_query_optimizer.py::TestCommonQueryPatterns::test_get_student_dashboard_data_not_found
-FAILED tests/fast/test_database_query_optimizer.py::TestCommonQueryPatterns::test_get_student_dashboard_data_found
-FAILED tests/fast/test_database_query_optimizer.py::TestCommonQueryPatterns::test_get_exam_with_questions
-FAILED tests/fast/test_database_query_optimizer.py::TestCommonQueryPatterns::test_get_class_performance_summary
-FAILED tests/fast/test_embedding_cache.py::TestEmbeddingCache::test_search - ...
-FAILED tests/fast/test_enum_instantiation.py::TestModelCreation::test_create_kullanici_model
-FAILED tests/fast/test_fastapi_comprehensive.py::TestUserEndpoints::test_get_users_endpoint
-FAILED tests/fast/test_models_comprehensive.py::TestModelCreation::test_create_kullanici_model
-FAILED tests/fast/test_models_comprehensive.py::TestModelCreation::test_create_sinav_sorusu_model
-FAILED tests/fast/test_models_comprehensive.py::TestModelCreation::test_create_learning_profile_model
-FAILED tests/fast/test_models_comprehensive.py::TestModelCreation::test_create_sinav_model
-FAILED tests/fast/test_models_comprehensive.py::TestModelRelationships::test_user_profile_relationship
-FAILED tests/fast/test_models_comprehensive.py::TestModelMethods::test_kullanici_repr
-FAILED tests/fast/test_models_comprehensive.py::TestModelMethods::test_model_to_dict
-FAILED tests/fast/test_models_comprehensive.py::TestModelValidation::test_email_validation
-FAILED tests/fast/test_models_comprehensive.py::TestModelValidation::test_enum_validation
-FAILED tests/fast/test_models_comprehensive.py::TestModelDefaults::test_kullanici_defaults
-FAILED tests/fast/test_models_comprehensive.py::TestModelDefaults::test_question_defaults
-FAILED tests/fast/test_models_comprehensive.py::TestAllModelImports::test_import_all_main_models
-FAILED tests/fast/test_utility_scripts_execution.py::TestCoreConfigExecution::test_settings_creation
-FAILED tests/fast/test_utility_scripts_execution.py::TestEnumCreationExecution::test_kullanici_rolu_enum_execution
-FAILED tests/fast/test_utility_scripts_execution.py::TestEnumCreationExecution::test_zorluk_seviyesi_enum_execution
-FAILED tests/fast/test_zero_coverage_boost.py::TestAPIOptimizer::test_api_optimizer_initialization
-FAILED tests/fast/test_zero_coverage_boost.py::TestDatabaseOptimizer::test_database_optimizer_initialization
-ERROR tests/fast/test_api_validation.py::TestSubmitContentEndpoint::test_submit_content_success
-ERROR tests/fast/test_api_validation.py::TestGetStatusEndpoint::test_get_status_success
-ERROR tests/fast/test_api_validation.py::TestGetRequestEndpoint::test_get_request_success
-ERROR tests/fast/test_api_validation.py::TestGetPendingRequestsEndpoint::test_get_pending_requests_success
-= 60 failed, 1442 passed, 292 skipped, 130 warnings, 4 errors in 471.25s (0:07:51) =
+ERROR tests/unit/agents/learning_path/test_agent.py
+ERROR tests/unit/agents/learning_path/test_assessment_creator.py
+ERROR tests/unit/agents/learning_path/test_facade.py
+ERROR tests/unit/agents/learning_path/test_resource_finder.py
+ERROR tests/unit/agents/learning_path/test_student_profiler.py
+ERROR tests/unit/services/claude_md_improvement/test_doc_updater_service.py
+ERROR tests/unit/test_adaptive_test_engine.py
+ERROR tests/unit/test_core_batch1.py
+ERROR tests/unit/test_core_utils.py - UnicodeEncodeError: 'charmap' codec can...
+ERROR tests/unit/test_realtime_adaptation_performance.py
+ERROR tests/unit/test_services_batch2.py
+ERROR tests/unit/test_two_factor_auth.py
+ERROR tests/integration/test_accessibility_agent.py
+ERROR tests/integration/test_algorithms.py
+ERROR tests/integration/test_domain_experts_e2e.py
+ERROR tests/integration/test_e2e_video_recommendations_verification.py
+ERROR tests/integration/test_elasticsearch_client.py
+ERROR tests/integration/test_learning_path_agent.py
+ERROR tests/integration/test_learning_path_database.py
+ERROR tests/integration/test_models.py
+ERROR tests/integration/test_multi_agent_blackboard.py
+ERROR tests/integration/test_performance_optimization.py
+ERROR tests/integration/test_production_health_monitor.pyWarning: Some services not available for import

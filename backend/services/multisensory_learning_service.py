@@ -4,7 +4,7 @@ Task 82: Çoklu Duyusal Öğrenme (REQ-50.89 - REQ-50.104)
 """
 
 from typing import Dict, List, Optional, Any
-from datetime import datetime
+from datetime import datetime, timezone
 from pydantic import BaseModel, Field
 from enum import Enum
 
@@ -153,7 +153,7 @@ class MultisensoryLearningService:
         element = {
             "type": element_type,
             "data": element_data,
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
         }
         content.interactive_elements.append(element)
         return True
@@ -362,14 +362,14 @@ class MultisensoryLearningService:
             "content_type": content.content_type.value,
             "immersive_level": content.immersive_level,
             "experience_data": experience_data,
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
         }
 
     def _generate_id(self, seed: str) -> str:
         import hashlib
 
         return hashlib.md5(
-            f"{seed}_{datetime.utcnow().isoformat()}".encode()
+            f"{seed}_{datetime.now(timezone.utc).isoformat()}".encode()
         ).hexdigest()[:16]
 
 

@@ -12,6 +12,7 @@ Bu dosya kapsamlı query building ve ORM pattern'leri sağlar:
 - Raw SQL execution helpers
 """
 
+import asyncio
 import logging
 from abc import ABC
 from dataclasses import dataclass

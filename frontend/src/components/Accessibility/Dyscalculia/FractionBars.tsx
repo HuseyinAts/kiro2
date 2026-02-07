@@ -1,13 +1,14 @@
 /**
  * FractionBars Component - Diskalkuli Desteği
- * 
+ *
  * Kesir çubuğu modelleri ile kesirleri görselleştiren interaktif component.
  * Öğrencilerin kesir kavramını, denk kesirleri ve kesir işlemlerini somut olarak anlamalarına yardımcı olur.
- * 
+ *
  * Gereksinimler: REQ-51.6 - REQ-51.10
  */
 
-import React, { useState, useCallback, useMemo } from 'react';
+import * as React from 'react';
+import {  useState, useCallback, useMemo  } from 'react';
 import './FractionBars.css';
 
 interface Fraction {
@@ -28,7 +29,7 @@ const FractionBars: React.FC<FractionBarsProps> = ({
   showEquivalent = true,
   showComparison = true,
   onFractionChange,
-  readOnly = false
+  readOnly = false,
 }) => {
   const [fraction1, setFraction1] = useState<Fraction>(initialFraction);
   const [fraction2, setFraction2] = useState<Fraction>({ numerator: 1, denominator: 4 });
@@ -37,8 +38,8 @@ const FractionBars: React.FC<FractionBarsProps> = ({
 
   // REQ-51.6: Kesir çubuğu modellerini görselleştir
   const fractionColors = useMemo(() => [
-    '#FF6B6B', '#4ECDC4', '#FFE66D', '#95E1D3', 
-    '#A8E6CF', '#FFD3B6', '#FFAAA5', '#FF8B94'
+    '#FF6B6B', '#4ECDC4', '#FFE66D', '#95E1D3',
+    '#A8E6CF', '#FFD3B6', '#FFAAA5', '#FF8B94',
   ], []);
 
   // REQ-51.7: Denk kesirleri hesapla
@@ -46,21 +47,21 @@ const FractionBars: React.FC<FractionBarsProps> = ({
     const equivalents: Fraction[] = [];
     const gcd = (a: number, b: number): number => b === 0 ? a : gcd(b, a % b);
     const commonDivisor = gcd(fraction.numerator, fraction.denominator);
-    
+
     // Sadeleştirilmiş hali
     const simplified = {
       numerator: fraction.numerator / commonDivisor,
-      denominator: fraction.denominator / commonDivisor
+      denominator: fraction.denominator / commonDivisor,
     };
-    
+
     // Denk kesirler üret
     for (let i = 1; i <= 4; i++) {
       equivalents.push({
         numerator: simplified.numerator * i,
-        denominator: simplified.denominator * i
+        denominator: simplified.denominator * i,
       });
     }
-    
+
     return equivalents;
   }, []);
 
@@ -68,8 +69,8 @@ const FractionBars: React.FC<FractionBarsProps> = ({
   const compareFractions = useCallback((f1: Fraction, f2: Fraction): string => {
     const value1 = f1.numerator / f1.denominator;
     const value2 = f2.numerator / f2.denominator;
-    
-    if (Math.abs(value1 - value2) < 0.0001) return '=';
+
+    if (Math.abs(value1 - value2) < 0.0001) {return '=';}
     return value1 > value2 ? '>' : '<';
   }, []);
 
@@ -77,45 +78,45 @@ const FractionBars: React.FC<FractionBarsProps> = ({
   const performOperation = useCallback((op: 'add' | 'subtract' | 'multiply' | 'divide') => {
     setOperation(op);
     setAnimating(true);
-    
+
     setTimeout(() => {
       let result: Fraction;
       const gcd = (a: number, b: number): number => b === 0 ? a : gcd(b, a % b);
-      
+
       switch (op) {
         case 'add':
           result = {
             numerator: fraction1.numerator * fraction2.denominator + fraction2.numerator * fraction1.denominator,
-            denominator: fraction1.denominator * fraction2.denominator
+            denominator: fraction1.denominator * fraction2.denominator,
           };
           break;
         case 'subtract':
           result = {
             numerator: fraction1.numerator * fraction2.denominator - fraction2.numerator * fraction1.denominator,
-            denominator: fraction1.denominator * fraction2.denominator
+            denominator: fraction1.denominator * fraction2.denominator,
           };
           break;
         case 'multiply':
           result = {
             numerator: fraction1.numerator * fraction2.numerator,
-            denominator: fraction1.denominator * fraction2.denominator
+            denominator: fraction1.denominator * fraction2.denominator,
           };
           break;
         case 'divide':
           result = {
             numerator: fraction1.numerator * fraction2.denominator,
-            denominator: fraction1.denominator * fraction2.numerator
+            denominator: fraction1.denominator * fraction2.numerator,
           };
           break;
       }
-      
+
       // Sadeleştir
       const divisor = gcd(Math.abs(result.numerator), Math.abs(result.denominator));
       result = {
         numerator: result.numerator / divisor,
-        denominator: result.denominator / divisor
+        denominator: result.denominator / divisor,
       };
-      
+
       setFraction1(result);
       onFractionChange?.(result);
       setAnimating(false);
@@ -124,11 +125,11 @@ const FractionBars: React.FC<FractionBarsProps> = ({
   }, [fraction1, fraction2, onFractionChange]);
 
   // REQ-51.10: Gerçek zamanlı kesir değerini göster
-  const renderFractionBar = (fraction: Fraction, label: string, showValue: boolean = true) => {
+  const renderFractionBar = (fraction: Fraction, _label: string, showValue: boolean = true) => {
     const { numerator, denominator } = fraction;
     const percentage = (numerator / denominator) * 100;
     const decimalValue = (numerator / denominator).toFixed(3);
-    
+
     return (
       <div className="fraction-bar-wrapper">
         <div className="fraction-label">
@@ -141,7 +142,7 @@ const FractionBars: React.FC<FractionBarsProps> = ({
             <span className="decimal-value">= {decimalValue}</span>
           )}
         </div>
-        
+
         <div className="fraction-bar-container">
           <div className="fraction-bar-background">
             {Array.from({ length: denominator }).map((_, index) => (
@@ -150,7 +151,7 @@ const FractionBars: React.FC<FractionBarsProps> = ({
                 className={`fraction-segment ${index < numerator ? 'filled' : 'empty'} ${animating ? 'animating' : ''}`}
                 style={{
                   width: `${100 / denominator}%`,
-                  backgroundColor: index < numerator ? fractionColors[index % fractionColors.length] : '#f0f0f0'
+                  backgroundColor: index < numerator ? fractionColors[index % fractionColors.length] : '#f0f0f0',
                 }}
               >
                 <span className="segment-label">{index + 1}</span>
@@ -166,38 +167,38 @@ const FractionBars: React.FC<FractionBarsProps> = ({
   const handleFractionChange = (
     fractionNum: 1 | 2,
     part: 'numerator' | 'denominator',
-    value: number
+    value: number,
   ) => {
-    if (readOnly) return;
-    
+    if (readOnly) {return;}
+
     const newValue = Math.max(1, Math.min(value, 20));
     const setter = fractionNum === 1 ? setFraction1 : setFraction2;
     const current = fractionNum === 1 ? fraction1 : fraction2;
-    
+
     const newFraction = {
       ...current,
-      [part]: newValue
+      [part]: newValue,
     };
-    
+
     // Payın paydadan büyük olmasını engelle
     if (part === 'denominator' && newFraction.numerator > newValue) {
       newFraction.numerator = newValue;
     }
-    
+
     setter(newFraction);
     if (fractionNum === 1) {
       onFractionChange?.(newFraction);
     }
   };
 
-  const equivalentFractions = useMemo(() => 
-    getEquivalentFractions(fraction1), 
-    [fraction1, getEquivalentFractions]
+  const equivalentFractions = useMemo(() =>
+    getEquivalentFractions(fraction1),
+    [fraction1, getEquivalentFractions],
   );
 
-  const comparisonSymbol = useMemo(() => 
+  const comparisonSymbol = useMemo(() =>
     compareFractions(fraction1, fraction2),
-    [fraction1, fraction2, compareFractions]
+    [fraction1, fraction2, compareFractions],
   );
 
   return (
@@ -208,9 +209,10 @@ const FractionBars: React.FC<FractionBarsProps> = ({
 
       <div className="fraction-input-section">
         <div className="fraction-input-group">
-          <label>Kesir 1:</label>
+          <label htmlFor="fraction1-numerator">Kesir 1:</label>
           <div className="fraction-inputs">
             <input
+              id="fraction1-numerator"
               type="number"
               value={fraction1.numerator}
               onChange={(e) => handleFractionChange(1, 'numerator', parseInt(e.target.value) || 1)}
@@ -221,6 +223,7 @@ const FractionBars: React.FC<FractionBarsProps> = ({
             />
             <span>/</span>
             <input
+              id="fraction1-denominator"
               type="number"
               value={fraction1.denominator}
               onChange={(e) => handleFractionChange(1, 'denominator', parseInt(e.target.value) || 1)}
@@ -234,9 +237,10 @@ const FractionBars: React.FC<FractionBarsProps> = ({
 
         {showComparison && (
           <div className="fraction-input-group">
-            <label>Kesir 2:</label>
+            <label htmlFor="fraction2-numerator">Kesir 2:</label>
             <div className="fraction-inputs">
               <input
+                id="fraction2-numerator"
                 type="number"
                 value={fraction2.numerator}
                 onChange={(e) => handleFractionChange(2, 'numerator', parseInt(e.target.value) || 1)}
@@ -247,6 +251,7 @@ const FractionBars: React.FC<FractionBarsProps> = ({
               />
               <span>/</span>
               <input
+                id="fraction2-denominator"
                 type="number"
                 value={fraction2.denominator}
                 onChange={(e) => handleFractionChange(2, 'denominator', parseInt(e.target.value) || 1)}
@@ -262,7 +267,7 @@ const FractionBars: React.FC<FractionBarsProps> = ({
 
       <div className="fraction-visualization">
         {renderFractionBar(fraction1, 'Kesir 1')}
-        
+
         {showComparison && (
           <>
             <div className="comparison-symbol">

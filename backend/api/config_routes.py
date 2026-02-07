@@ -4,16 +4,17 @@ Configuration API Routes
 Feature flag ve configuration bilgilerini expose eden API endpoint'leri.
 """
 
-from fastapi import APIRouter, HTTPException, Depends
-from typing import Dict, Any, Optional
+from fastapi import APIRouter, Depends, HTTPException
+from typing import Dict, Any
+
+from core.dependencies import get_current_user
 from pydantic import BaseModel
 
-from backend.core.feature_flags import (
+from core.feature_flags import (
     FeatureFlag,
     get_feature_flag_manager,
-    FeatureFlagManager,
 )
-from backend.core.config_utils import get_config_for_user
+from core.config_utils import get_config_for_user
 
 
 router = APIRouter(prefix="/api/config", tags=["configuration"])
@@ -49,7 +50,9 @@ class UserConfigResponse(BaseModel):
 
 
 @router.get("/summary", response_model=ConfigSummaryResponse)
-async def get_config_summary():
+async def get_config_summary(
+    current_user: dict = Depends(get_current_user)
+):
     """
     Sistem konfigürasyon özetini al
 
@@ -67,7 +70,9 @@ async def get_config_summary():
 
 
 @router.get("/features", response_model=list[FeatureFlagResponse])
-async def get_all_features():
+async def get_all_features(
+    current_user: dict = Depends(get_current_user)
+):
     """
     Tüm feature flag'leri listele
 

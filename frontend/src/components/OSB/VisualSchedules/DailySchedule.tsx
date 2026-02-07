@@ -10,7 +10,8 @@
  * - Tamamlanan aktiviteler işaretli
  */
 
-import React, { useState, useEffect } from 'react';
+import * as React from 'react';
+import {  useState, useEffect  } from 'react';
 import './DailySchedule.css';
 
 export interface ScheduleActivity {
@@ -55,7 +56,7 @@ export const DailySchedule: React.FC<DailyScheduleProps> = ({
   viewMode = 'timeline',
   osbMode = true,
   onActivityClick,
-  onActivityComplete
+  onActivityComplete,
 }) => {
   const [currentTime, setCurrentTime] = useState(new Date());
   const [currentActivity, setCurrentActivity] = useState<string | null>(null);
@@ -155,7 +156,7 @@ export const DailySchedule: React.FC<DailyScheduleProps> = ({
                   left: `${left}%`,
                   width: `${width}%`,
                   backgroundColor: activity.color,
-                  borderColor: activity.color
+                  borderColor: activity.color,
                 }}
                 onClick={() => onActivityClick?.(activity)}
                 role="button"
@@ -346,7 +347,7 @@ export const DailySchedule: React.FC<DailyScheduleProps> = ({
             weekday: 'long',
             year: 'numeric',
             month: 'long',
-            day: 'numeric'
+            day: 'numeric',
           })}
         </p>
 

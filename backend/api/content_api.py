@@ -3,7 +3,7 @@
 Teknofest 2025 Eğitim Eylemci Platformu
 """
 
-from fastapi import APIRouter, HTTPException, Query, Depends, BackgroundTasks
+from fastapi import APIRouter, HTTPException, Query, BackgroundTasks
 from typing import List, Optional, Dict, Any
 from datetime import datetime
 from uuid import uuid4
@@ -16,7 +16,6 @@ from models.content_models import (
     ContentStats,
     ContentInteraction,
     InteractionType,
-    ContentFilter,
     ContentSearchRequest,
     BulkContentImport,
 )
@@ -568,7 +567,7 @@ async def get_recommendations(
         if not content_type or content_type == ContentType.VIDEO:
             popular_videos = sorted(
                 [v for v in video_store.values() if v.aktif],
-                key=lambda x: v.izlenme_sayisi + v.begeni_sayisi,
+                key=lambda x: x.izlenme_sayisi + x.begeni_sayisi,
                 reverse=True,
             )[:5]
             recommendations.extend(

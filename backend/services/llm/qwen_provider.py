@@ -354,7 +354,6 @@ class QwenProvider(BaseLLMProvider):
             )
 
             # Create trainer
-            from transformers import Trainer
 
             trainer = Trainer(
                 model=model,

@@ -13,14 +13,14 @@ export const mathJaxConfig = {
   tex: {
     inlineMath: [
       ['$', '$'],
-      ['\\(', '\\)']
+      ['\\(', '\\)'],
     ],
     displayMath: [
       ['$$', '$$'],
-      ['\\[', '\\]']
+      ['\\[', '\\]'],
     ],
     packages: {
-      '[+]': ['ams', 'newcommand', 'configmacros', 'action', 'require']
+      '[+]': ['ams', 'newcommand', 'configmacros', 'action', 'require'],
     },
     // Macros for common Turkish math terms
     macros: {

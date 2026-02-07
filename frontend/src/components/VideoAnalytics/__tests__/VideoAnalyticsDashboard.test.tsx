@@ -3,13 +3,15 @@
  * Task 100: Video Analytics - Dashboard & Insights Tests
  */
 
-import React from 'react';
+import * as React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { VideoAnalyticsDashboard, AnalyticsSummary } from '../VideoAnalyticsDashboard';
+import { vi, Mock } from 'vitest';
 
-// Mock fetch
-global.fetch = vi.fn();
+// Create fetch mock with proper vitest typing
+const fetchMock = vi.fn() as Mock;
+global.fetch = fetchMock;
 
 const mockSummaryData: AnalyticsSummary = {
   userId: 'user-123',
@@ -54,7 +56,7 @@ const mockEmptySummary: AnalyticsSummary = {
 describe('VideoAnalyticsDashboard - Rendering', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    (global.fetch as jest.Mock).mockResolvedValue({
+    fetchMock.mockResolvedValue({
       json: async () => ({
         user_id: mockSummaryData.userId,
         period_type: mockSummaryData.periodType,
@@ -106,7 +108,7 @@ describe('VideoAnalyticsDashboard - Rendering', () => {
 describe('VideoAnalyticsDashboard - Data Loading', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    (global.fetch as jest.Mock).mockResolvedValue({
+    fetchMock.mockResolvedValue({
       json: async () => ({
         user_id: mockSummaryData.userId,
         period_type: mockSummaryData.periodType,
@@ -176,7 +178,7 @@ describe('VideoAnalyticsDashboard - Data Loading', () => {
   });
 
   it('handles API errors gracefully', async () => {
-    (global.fetch as jest.Mock).mockRejectedValue(new Error('Network error'));
+    fetchMock.mockRejectedValue(new Error('Network error'));
     const consoleSpy = vi.spyOn(console, 'error').mockImplementation();
 
     render(<VideoAnalyticsDashboard userId="user-123" />);
@@ -195,7 +197,7 @@ describe('VideoAnalyticsDashboard - Data Loading', () => {
 describe('VideoAnalyticsDashboard - Stats Cards', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    (global.fetch as jest.Mock).mockResolvedValue({
+    fetchMock.mockResolvedValue({
       json: async () => ({
         user_id: mockSummaryData.userId,
         period_type: mockSummaryData.periodType,
@@ -308,7 +310,7 @@ describe('VideoAnalyticsDashboard - Duration Formatting', () => {
   });
 
   it('formats hours and minutes', async () => {
-    (global.fetch as jest.Mock).mockResolvedValue({
+    fetchMock.mockResolvedValue({
       json: async () => ({
         ...mockSummaryData,
         total_watch_time: 3661, // 1 hour 1 minute 1 second
@@ -324,7 +326,7 @@ describe('VideoAnalyticsDashboard - Duration Formatting', () => {
   });
 
   it('formats minutes only when less than an hour', async () => {
-    (global.fetch as jest.Mock).mockResolvedValue({
+    fetchMock.mockResolvedValue({
       json: async () => ({
         ...mockSummaryData,
         total_watch_time: 1800, // 30 minutes
@@ -340,7 +342,7 @@ describe('VideoAnalyticsDashboard - Duration Formatting', () => {
   });
 
   it('formats zero minutes correctly', async () => {
-    (global.fetch as jest.Mock).mockResolvedValue({
+    fetchMock.mockResolvedValue({
       json: async () => ({
         ...mockSummaryData,
         total_watch_time: 0,
@@ -362,7 +364,7 @@ describe('VideoAnalyticsDashboard - Completion Color Coding', () => {
   });
 
   it('shows green for high completion rate (>=80%)', async () => {
-    (global.fetch as jest.Mock).mockResolvedValue({
+    fetchMock.mockResolvedValue({
       json: async () => ({
         ...mockSummaryData,
         average_completion_rate: 85
@@ -378,7 +380,7 @@ describe('VideoAnalyticsDashboard - Completion Color Coding', () => {
   });
 
   it('shows yellow for medium completion rate (60-79%)', async () => {
-    (global.fetch as jest.Mock).mockResolvedValue({
+    fetchMock.mockResolvedValue({
       json: async () => ({
         ...mockSummaryData,
         average_completion_rate: 70
@@ -394,7 +396,7 @@ describe('VideoAnalyticsDashboard - Completion Color Coding', () => {
   });
 
   it('shows red for low completion rate (<60%)', async () => {
-    (global.fetch as jest.Mock).mockResolvedValue({
+    fetchMock.mockResolvedValue({
       json: async () => ({
         ...mockSummaryData,
         average_completion_rate: 45
@@ -413,7 +415,7 @@ describe('VideoAnalyticsDashboard - Completion Color Coding', () => {
 describe('VideoAnalyticsDashboard - Source Breakdown', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    (global.fetch as jest.Mock).mockResolvedValue({
+    fetchMock.mockResolvedValue({
       json: async () => ({
         ...mockSummaryData,
         source_breakdown: mockSummaryData.sourceBreakdown
@@ -450,7 +452,7 @@ describe('VideoAnalyticsDashboard - Source Breakdown', () => {
   });
 
   it('hides source breakdown when empty', async () => {
-    (global.fetch as jest.Mock).mockResolvedValue({
+    fetchMock.mockResolvedValue({
       json: async () => ({
         ...mockSummaryData,
         source_breakdown: {},
@@ -488,7 +490,7 @@ describe('VideoAnalyticsDashboard - Source Breakdown', () => {
 describe('VideoAnalyticsDashboard - Subject Breakdown', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    (global.fetch as jest.Mock).mockResolvedValue({
+    fetchMock.mockResolvedValue({
       json: async () => ({
         ...mockSummaryData,
         subject_breakdown: mockSummaryData.subjectBreakdown
@@ -524,7 +526,7 @@ describe('VideoAnalyticsDashboard - Subject Breakdown', () => {
   });
 
   it('hides subject breakdown when empty', async () => {
-    (global.fetch as jest.Mock).mockResolvedValue({
+    fetchMock.mockResolvedValue({
       json: async () => ({
         ...mockSummaryData,
         subject_breakdown: {},
@@ -546,7 +548,7 @@ describe('VideoAnalyticsDashboard - Insights', () => {
   });
 
   it('displays insights section', async () => {
-    (global.fetch as jest.Mock).mockResolvedValue({
+    fetchMock.mockResolvedValue({
       json: async () => ({ ...mockSummaryData })
     });
 
@@ -558,7 +560,7 @@ describe('VideoAnalyticsDashboard - Insights', () => {
   });
 
   it('shows success insight for high completion rate', async () => {
-    (global.fetch as jest.Mock).mockResolvedValue({
+    fetchMock.mockResolvedValue({
       json: async () => ({
         ...mockSummaryData,
         average_completion_rate: 85
@@ -573,7 +575,7 @@ describe('VideoAnalyticsDashboard - Insights', () => {
   });
 
   it('shows fast learner insight for high playback speed', async () => {
-    (global.fetch as jest.Mock).mockResolvedValue({
+    fetchMock.mockResolvedValue({
       json: async () => ({
         ...mockSummaryData,
         average_playback_speed: 1.75
@@ -589,7 +591,7 @@ describe('VideoAnalyticsDashboard - Insights', () => {
   });
 
   it('shows active learning insight for many notes', async () => {
-    (global.fetch as jest.Mock).mockResolvedValue({
+    fetchMock.mockResolvedValue({
       json: async () => ({
         ...mockSummaryData,
         total_notes: 15
@@ -604,7 +606,7 @@ describe('VideoAnalyticsDashboard - Insights', () => {
   });
 
   it('shows warning for no completed videos', async () => {
-    (global.fetch as jest.Mock).mockResolvedValue({
+    fetchMock.mockResolvedValue({
       json: async () => ({
         ...mockSummaryData,
         total_videos_completed: 0,
@@ -620,7 +622,7 @@ describe('VideoAnalyticsDashboard - Insights', () => {
   });
 
   it('does not show warning when no videos watched', async () => {
-    (global.fetch as jest.Mock).mockResolvedValue({
+    fetchMock.mockResolvedValue({
       json: async () => ({
         ...mockSummaryData,
         total_videos_completed: 0,
@@ -639,7 +641,7 @@ describe('VideoAnalyticsDashboard - Insights', () => {
 describe('VideoAnalyticsDashboard - Empty State', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    (global.fetch as jest.Mock).mockResolvedValue({
+    fetchMock.mockResolvedValue({
       json: async () => ({
         ...mockEmptySummary
       })
@@ -686,7 +688,7 @@ describe('VideoAnalyticsDashboard - Edge Cases', () => {
   });
 
   it('handles zero completion ratio correctly', async () => {
-    (global.fetch as jest.Mock).mockResolvedValue({
+    fetchMock.mockResolvedValue({
       json: async () => ({
         ...mockSummaryData,
         total_videos_completed: 0,
@@ -702,7 +704,7 @@ describe('VideoAnalyticsDashboard - Edge Cases', () => {
   });
 
   it('handles 100% completion ratio', async () => {
-    (global.fetch as jest.Mock).mockResolvedValue({
+    fetchMock.mockResolvedValue({
       json: async () => ({
         ...mockSummaryData,
         total_videos_completed: 10,
@@ -718,7 +720,7 @@ describe('VideoAnalyticsDashboard - Edge Cases', () => {
   });
 
   it('handles single video source', async () => {
-    (global.fetch as jest.Mock).mockResolvedValue({
+    fetchMock.mockResolvedValue({
       json: async () => ({
         ...mockSummaryData,
         source_breakdown: { youtube: 10 }
@@ -734,7 +736,7 @@ describe('VideoAnalyticsDashboard - Edge Cases', () => {
   });
 
   it('handles unknown video source', async () => {
-    (global.fetch as jest.Mock).mockResolvedValue({
+    fetchMock.mockResolvedValue({
       json: async () => ({
         ...mockSummaryData,
         source_breakdown: { unknown: 2 },
@@ -750,7 +752,7 @@ describe('VideoAnalyticsDashboard - Edge Cases', () => {
   });
 
   it('handles very large numbers', async () => {
-    (global.fetch as jest.Mock).mockResolvedValue({
+    fetchMock.mockResolvedValue({
       json: async () => ({
         ...mockSummaryData,
         total_videos_watched: 999,
@@ -769,7 +771,7 @@ describe('VideoAnalyticsDashboard - Edge Cases', () => {
 describe('VideoAnalyticsDashboard - Accessibility', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    (global.fetch as jest.Mock).mockResolvedValue({
+    fetchMock.mockResolvedValue({
       json: async () => ({ ...mockSummaryData })
     });
   });

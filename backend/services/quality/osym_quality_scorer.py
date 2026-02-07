@@ -7,7 +7,7 @@ Date: 2025-10-19
 """
 
 import re
-from typing import Dict, Any, List, Optional
+from typing import List, Optional
 from dataclasses import dataclass
 
 from services.quality.metrics import QualityMetrics

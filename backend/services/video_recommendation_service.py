@@ -2,12 +2,35 @@
 Video Recommendation Service
 Orchestrates video discovery, caching, and filtering for personalized recommendations
 Teknofest 2025 - Eğitim Eylemci Projesi
+
+RECOMMENDATION SERVICE HIERARCHY (2025-01-24):
+Bu proje 4 oneri servisi iceriyor:
+
+1. CONTENT RECOMMENDATIONS (Genel):
+   - content_recommendation_service.py - Hybrid filtering (REQ-4)
+   - ChromaDB embeddings + collaborative filtering
+
+2. VIDEO RECOMMENDATIONS (YouTube):
+   - video_recommendation_service.py (BU DOSYA) - Ana orchestrator
+   - enhanced_resource_recommendation_engine.py - Ek filtreleme
+   - video_recommendation_monitoring.py - Monitoring
+
+3. YOUTUBE SEARCH:
+   - semantic_youtube_search.py - Semantic search
+   - advanced_youtube_search.py - Advanced filters
+
+REFACTORING NEEDED:
+video_recommendation_service.py ve enhanced_resource_recommendation_engine.py
+birlestirilmeli veya sorumluluklar netlestirilmeli.
+
+Onerilen yaklasim:
+- video_recommendation_service.py: Caching + Orchestration
+- enhanced_resource_recommendation_engine.py: Quality scoring + Filtering
 """
 
 import asyncio
 import hashlib
 import json
-import logging
 import time
 from dataclasses import dataclass
 from typing import Dict, List, Optional

@@ -8,11 +8,11 @@ Endpoints for:
 """
 import uuid
 import json
-from datetime import datetime, timedelta
-from typing import Optional, Dict, List
+from datetime import datetime, timedelta, timezone
+from typing import Optional, List
 from fastapi import APIRouter, Depends, HTTPException, Request, BackgroundTasks, status
-from pydantic import BaseModel
-from sqlalchemy import select, update, delete
+from pydantic import BaseModel, ConfigDict
+from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.database import get_db
@@ -60,8 +60,7 @@ class ExportRequestResponse(BaseModel):
     download_expires_at: Optional[datetime] = None
     file_size_bytes: Optional[int] = None
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class DeletionRequestResponse(BaseModel):
@@ -74,8 +73,7 @@ class DeletionRequestResponse(BaseModel):
     completed_at: Optional[datetime] = None
     rejection_reason: Optional[str] = None
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 # ============================================================================
@@ -113,7 +111,7 @@ async def process_data_export(
                 .where(KVKKDataExportRequest.id == request_id)
                 .values(
                     status=ExportRequestStatus.PROCESSING,
-                    processed_at=datetime.utcnow()
+                    processed_at=datetime.now(timezone.utc)
                 )
             )
             await db.execute(stmt)
@@ -123,7 +121,7 @@ async def process_data_export(
             # For now, create a placeholder export
             user_data = {
                 "user_id": user_id,
-                "export_date": datetime.utcnow().isoformat(),
+                "export_date": datetime.now(timezone.utc).isoformat(),
                 "format": export_format,
                 "categories": data_categories or ["all"],
                 "data": {
@@ -138,7 +136,7 @@ async def process_data_export(
             file_path = f"/exports/{user_id}/{request_id}.{export_format}"
             download_url = f"https://api.kiro2.com/downloads/{request_id}"
             file_size = len(json.dumps(user_data).encode())
-            expires_at = datetime.utcnow() + timedelta(days=7)
+            expires_at = datetime.now(timezone.utc) + timedelta(days=7)
 
             # Update request as completed
             stmt = (
@@ -150,7 +148,7 @@ async def process_data_export(
                     file_size_bytes=file_size,
                     download_url=download_url,
                     download_expires_at=expires_at,
-                    completed_at=datetime.utcnow()
+                    completed_at=datetime.now(timezone.utc)
                 )
             )
             await db.execute(stmt)
@@ -177,7 +175,7 @@ async def process_data_export(
                 .values(
                     status=ExportRequestStatus.FAILED,
                     error_message=str(e),
-                    completed_at=datetime.utcnow()
+                    completed_at=datetime.now(timezone.utc)
                 )
             )
             await db.execute(stmt)
@@ -229,7 +227,7 @@ async def request_data_export(
             request_reason=export_req.reason,
             export_format=export_req.export_format,
             data_categories={"categories": export_req.data_categories} if export_req.data_categories else None,
-            requested_at=datetime.utcnow()
+            requested_at=datetime.now(timezone.utc)
         )
 
         db.add(new_request)
@@ -386,7 +384,7 @@ async def request_data_deletion(
             request_reason=deletion_req.reason,
             deletion_type=deletion_req.deletion_type,
             data_categories={"categories": deletion_req.data_categories} if deletion_req.data_categories else None,
-            requested_at=datetime.utcnow()
+            requested_at=datetime.now(timezone.utc)
         )
 
         db.add(new_request)

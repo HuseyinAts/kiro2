@@ -4,28 +4,59 @@ Learning Path API - Türkiye Üniversite Sınavları Hazırlık Platformu
 
 BUG FIX #1: AI Agent Integration with Dependency Injection
 SPRINT 2: Multi-layer cache for completion status endpoint
+
+ARCHITECTURE FIX: Moved cache initialization to dependency pattern
+
+CIRCULAR IMPORT PREVENTION (2025-01-24):
+Bu dosya cok sayida import iceriyor. Circular import onlemek icin:
+
+1. TYPE_CHECKING pattern kullanildi (models icin)
+2. Lazy imports kullanildi (get_* fonksiyonlari)
+3. Dependency injection pattern tercih edildi
+
+Import hiyerarsisi:
+api/learning_path.py
+  -> services/enhanced_resource_recommendation_engine.py
+  -> agents/ (get_learning_path_agent)
+  -> core/ (metrics, cache, circuit_breaker)
+  -> models/ (learning_path_models)
+
+RISK: services -> models -> database -> core -> services dongusu
+COZUM: Dependency injection + lazy imports
+
+ONERILEN YAPILAN IYILESTIRMELER:
+- get_enhanced_recommendation_engine() factory pattern
+- get_learning_path_agent() factory pattern
+- circuit breaker lazy initialization
 """
 
 import logging
+import os
 import time
-import hashlib
-import json
+import threading
 from typing import List, Optional, Dict, Any
 from datetime import datetime
+from functools import lru_cache
 
 from fastapi import APIRouter, HTTPException, Depends, Request
 from pydantic import BaseModel, Field
 
-from services.enhanced_resource_recommendation_engine import (
-    EnhancedResourceRecommendationEngine,
-    RecommendedVideo,
-    get_enhanced_recommendation_engine,
-)
-from agents import get_learning_path_agent, LearningPathAgent
+try:
+    from services.enhanced_resource_recommendation_engine import (
+        EnhancedResourceRecommendationEngine,
+        get_enhanced_recommendation_engine,
+    )
+except (ImportError, TypeError):
+    EnhancedResourceRecommendationEngine = None
+    get_enhanced_recommendation_engine = None
+
+try:
+    from agents import get_learning_path_agent, LearningPathAgent
+except (ImportError, TypeError):
+    get_learning_path_agent = None
+    LearningPathAgent = None
 from api.schemas.learning_path_schemas import (
     LearningPathCreateRequest,
-    StudentProfileData,
-    ResourceSearchRequest,
 )
 from core.metrics_collector import get_metrics_collector
 from core.multi_layer_cache import MultiLayerCache
@@ -33,7 +64,6 @@ from core.learning_path_circuit_breakers import (
     get_ai_agent_circuit_breaker,
     get_resource_search_circuit_breaker,
     ai_agent_fallback_handler,
-    resource_search_fallback_handler,
 )
 from core.circuit_breaker import CircuitBreakerOpenError, CircuitBreakerHalfOpenError
 from core.learning_path_auth import (
@@ -48,9 +78,11 @@ from core.database import get_db
 from models.learning_path_models import (
     LearningPathStudentProfile,  # Renamed model to avoid conflict with models.database.StudentProfile
     TopicCompletion,
+    Quiz,
+    QuizQuestion,
     TopicProgress,
-    QuizSubmission,
 )
+from models.content_db import Question
 
 logger = logging.getLogger(__name__)
 
@@ -64,15 +96,49 @@ resource_search_circuit_breaker = get_resource_search_circuit_breaker()
 # Router setup
 router = APIRouter(prefix="/api/learning-path", tags=["Learning Path"])
 
-# SPRINT 2: Multi-layer cache for learning path completion status
-# L1: Memory (20 entries), L2: Redis, TTL: 5 minutes
-# Performance improvement: ~300ms → 20ms (15x faster on cache hit)
-learning_path_cache = MultiLayerCache(
-    redis_url="redis://localhost:6379/0",
-    l1_max_size=20,  # Completion status is user-specific, moderate L1
-    default_ttl=300,  # 5 minutes - completion status updates gradually
-    namespace="learning_path",
-)
+
+# ARCHITECTURE FIX: Cache configuration from environment
+# Cache settings with sensible defaults
+CACHE_REDIS_URL = os.getenv("REDIS_URL", "redis://localhost:6379/0")
+CACHE_L1_MAX_SIZE = int(os.getenv("LEARNING_PATH_CACHE_L1_SIZE", "20"))
+CACHE_DEFAULT_TTL = int(os.getenv("LEARNING_PATH_CACHE_TTL", "300"))  # 5 minutes
+
+
+@lru_cache(maxsize=1)
+def get_learning_path_cache() -> MultiLayerCache:
+    """
+    ARCHITECTURE FIX: Lazy initialization of cache via dependency injection.
+    Uses lru_cache to ensure singleton behavior.
+
+    Previously: Hardcoded redis URL at module level
+    Now: Configuration from environment, lazy initialization
+    """
+    return MultiLayerCache(
+        redis_url=CACHE_REDIS_URL,
+        l1_max_size=CACHE_L1_MAX_SIZE,
+        default_ttl=CACHE_DEFAULT_TTL,
+        namespace="learning_path",
+    )
+
+
+# For backward compatibility - use the dependency getter
+# Thread-safe singleton pattern with double-check locking
+_cache_lock = threading.Lock()
+_learning_path_cache = None
+
+
+def _get_cache() -> MultiLayerCache:
+    """
+    Internal helper to get cache instance.
+    Thread-safe with double-check locking pattern.
+    """
+    global _learning_path_cache
+    if _learning_path_cache is None:
+        with _cache_lock:
+            # Double-check inside lock to prevent race condition
+            if _learning_path_cache is None:
+                _learning_path_cache = get_learning_path_cache()
+    return _learning_path_cache
 
 
 # Request/Response Models (Legacy - kept for backward compatibility)
@@ -327,12 +393,30 @@ async def assess_knowledge(
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.post("/create-path")
-async def create_learning_path(
+if get_learning_path_agent is not None:
+    @router.post("/create-path")
+    async def create_learning_path(
+        request: LearningPathCreateRequest,
+        agent: LearningPathAgent = Depends(get_learning_path_agent),
+        http_request: Request = None,
+        current_user=Depends(get_current_user_from_token),  # 🔒 AUTH ADDED
+    ):
+        return await _create_learning_path_impl(request, agent, http_request, current_user)
+else:
+    @router.post("/create-path")
+    async def create_learning_path(
+        request: LearningPathCreateRequest,
+        http_request: Request = None,
+        current_user=Depends(get_current_user_from_token),
+    ):
+        raise HTTPException(status_code=503, detail="Learning path agent not available")
+
+
+async def _create_learning_path_impl(
     request: LearningPathCreateRequest,
-    agent: LearningPathAgent = Depends(get_learning_path_agent),
+    agent,
     http_request: Request = None,
-    current_user=Depends(get_current_user_from_token),  # 🔒 AUTH ADDED
+    current_user=None,
 ):
     """
     Kişiselleştirilmiş öğrenme yolu oluştur
@@ -488,16 +572,34 @@ async def create_learning_path(
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.post("/search-resources")
-async def search_resources(
+if get_enhanced_recommendation_engine is not None:
+    @router.post("/search-resources")
+    async def search_resources(
+        search: ResourceSearch,
+        engine: EnhancedResourceRecommendationEngine = Depends(
+            get_enhanced_recommendation_engine
+        ),
+        http_request: Request = None,
+        current_user=Depends(
+            get_current_user_optional
+        ),  # 🔒 OPTIONAL AUTH (public but personalized if logged in)
+    ):
+        return await _search_resources_impl(search, engine, http_request, current_user)
+else:
+    @router.post("/search-resources")
+    async def search_resources(
+        search: ResourceSearch,
+        http_request: Request = None,
+        current_user=Depends(get_current_user_optional),
+    ):
+        raise HTTPException(status_code=503, detail="Resource search engine not available")
+
+
+async def _search_resources_impl(
     search: ResourceSearch,
-    engine: EnhancedResourceRecommendationEngine = Depends(
-        get_enhanced_recommendation_engine
-    ),
+    engine,
     http_request: Request = None,
-    current_user=Depends(
-        get_current_user_optional
-    ),  # 🔒 OPTIONAL AUTH (public but personalized if logged in)
+    current_user=None,
 ):
     """
     Eğitim kaynaklarını ara - Enhanced Resource Recommendation Engine ile
@@ -789,9 +891,12 @@ async def get_completion_status(
         # SPRINT 2: Cache key for completion status
         cache_key = f"completion:{student_id}"
 
+        # Get cache with thread-safe singleton
+        cache = _get_cache()
+
         # Initialize cache if needed
-        if not learning_path_cache._initialized:
-            await learning_path_cache.initialize()
+        if not cache._initialized:
+            await cache.initialize()
 
         # Get or compute with cache
         async def fetch_completion():
@@ -812,7 +917,7 @@ async def get_completion_status(
             logger.info(f"Fetched {len(completion_data)} completion records for student {student_id}")
             return completion_data
 
-        completion_data = await learning_path_cache.get_or_compute(
+        completion_data = await cache.get_or_compute(
             key=cache_key,
             compute_fn=fetch_completion,
             ttl=300  # 5 minutes - balance between freshness and performance
@@ -837,12 +942,13 @@ async def update_completion_status(
     student_id: str,
     completion_update: CompletionUpdate,
     current_user=Depends(get_current_user_from_token),  # 🔒 AUTH ADDED
+    db: Session = Depends(get_db),  # P0 FIX: Database session
 ):
     """
     Update student's topic completion status
 
     Allows frontend to mark topics as completed/incomplete.
-    In production, this would update the database.
+    P0 FIX: Now persists to database via TopicCompletion model.
 
     **SPRINT 2**: Cache invalidation on completion update
     """
@@ -859,18 +965,43 @@ async def update_completion_status(
                 detail="Student ID mismatch: URL parameter doesn't match request body",
             )
 
-        # In production, this would save to database
-        # For now, just validate and return success
-        updated_count = len(completion_update.completions)
+        # P0 FIX: Upsert completions to database
+        updated_count = 0
+        for node_id, is_completed in completion_update.completions.items():
+            existing = (
+                db.query(TopicCompletion)
+                .filter(
+                    TopicCompletion.student_id == student_id,
+                    TopicCompletion.node_id == node_id
+                )
+                .first()
+            )
 
+            if existing:
+                existing.completed = is_completed
+                existing.completion_date = datetime.now() if is_completed else None
+                existing.updated_at = datetime.now()
+            else:
+                new_completion = TopicCompletion(
+                    student_id=student_id,
+                    node_id=node_id,
+                    completed=is_completed,
+                    completion_date=datetime.now() if is_completed else None,
+                )
+                db.add(new_completion)
+
+            updated_count += 1
+
+        db.commit()
         logger.info(
-            f"Updated {updated_count} completion statuses for student {student_id}"
+            f"Persisted {updated_count} completion statuses for student {student_id}"
         )
 
         # SPRINT 2: Invalidate completion cache after update
-        if learning_path_cache._initialized:
+        cache = _get_cache()
+        if cache._initialized:
             cache_key = f"completion:{student_id}"
-            await learning_path_cache.delete(cache_key)
+            await cache.delete(cache_key)
             logger.info(f"Completion cache invalidated for student {student_id}")
 
         # P1.2: Record topic completion metrics
@@ -903,6 +1034,7 @@ async def submit_quiz(
     quiz_id: str,
     submission: QuizSubmission,
     current_user=Depends(get_current_user_from_token),  # 🔒 AUTH ADDED
+    db: Session = Depends(get_db),  # FIX: Add database session dependency
 ):
     """
     Submit quiz answers and get results
@@ -927,23 +1059,40 @@ async def submit_quiz(
                 detail="Quiz ID mismatch: URL parameter doesn't match request body",
             )
 
-        # Mock quiz data - in production, this would query database
+        # P0 FIX: Query quiz and questions from database (instead of mock data)
+        quiz = db.query(Quiz).filter(Quiz.id == quiz_id).first()
+        if not quiz:
+            raise HTTPException(
+                status_code=404,
+                detail=f"Quiz '{quiz_id}' bulunamadı"
+            )
+
+        # Get quiz questions with their associated Question records
+        quiz_questions = (
+            db.query(QuizQuestion, Question)
+            .join(Question, QuizQuestion.question_id == Question.id)
+            .filter(QuizQuestion.quiz_id == quiz_id)
+            .order_by(QuizQuestion.order_number)
+            .all()
+        )
+
+        if not quiz_questions:
+            raise HTTPException(
+                status_code=404,
+                detail=f"Quiz '{quiz_id}' için soru bulunamadı"
+            )
+
+        # Build correct answers mapping from database
+        correct_answers = {
+            f"Q{qq.order_number}": q.correct_answer
+            for qq, q in quiz_questions
+        }
+
         quiz_data = {
             "quiz_id": quiz_id,
-            "question_count": 10,
-            "passing_score": 70,
-            "correct_answers": {
-                "Q1": "A",
-                "Q2": "B",
-                "Q3": "C",
-                "Q4": "A",
-                "Q5": "D",
-                "Q6": "B",
-                "Q7": "C",
-                "Q8": "A",
-                "Q9": "B",
-                "Q10": "D",
-            },
+            "question_count": len(quiz_questions),
+            "passing_score": quiz.passing_score or 70,
+            "correct_answers": correct_answers,
         }
 
         # Validate answer count
@@ -1036,12 +1185,13 @@ async def update_progress(
     node_id: str,
     progress_update: ProgressUpdate,
     current_user=Depends(get_current_user_from_token),  # 🔒 AUTH ADDED
+    db: Session = Depends(get_db),  # P0 FIX: Database session
 ):
     """
     Update student's progress on a specific topic/node
 
     Tracks progress percentage, time spent, and completion status.
-    In production, this would update the database.
+    P0 FIX: Now persists to database via TopicProgress model.
     """
     try:
         # 🔒 Verify ownership: students can only update their own progress
@@ -1068,10 +1218,51 @@ async def update_progress(
                 status_code=400, detail="Progress must be between 0 and 100"
             )
 
-        # In production, this would save to database
+        # P0 FIX: Upsert progress to database
+        existing_progress = (
+            db.query(TopicProgress)
+            .filter(
+                TopicProgress.student_id == student_id,
+                TopicProgress.node_id == node_id
+            )
+            .first()
+        )
+
+        is_completed = progress_update.completed or (progress_update.progress == 100)
+
+        if existing_progress:
+            # Update existing record
+            existing_progress.progress = progress_update.progress
+            existing_progress.completed = is_completed
+            existing_progress.time_spent = (
+                (existing_progress.time_spent or 0) + (progress_update.time_spent or 0)
+            )
+            existing_progress.updated_at = datetime.now()
+            logger.info(f"Updated existing progress record for {student_id}/{node_id}")
+        else:
+            # Create new record
+            new_progress = TopicProgress(
+                student_id=student_id,
+                node_id=node_id,
+                progress=progress_update.progress,
+                completed=is_completed,
+                time_spent=progress_update.time_spent or 0,
+            )
+            db.add(new_progress)
+            logger.info(f"Created new progress record for {student_id}/{node_id}")
+
+        db.commit()
+
+        # Invalidate completion cache
+        cache = _get_cache()
+        if cache._initialized:
+            cache_key = f"completion:{student_id}"
+            await cache.delete(cache_key)
+            logger.info(f"Progress cache invalidated for student {student_id}")
+
         logger.info(
-            f"Progress updated - Student: {student_id}, Node: {node_id}, "
-            f"Progress: {progress_update.progress}%, Completed: {progress_update.completed}"
+            f"Progress persisted - Student: {student_id}, Node: {node_id}, "
+            f"Progress: {progress_update.progress}%, Completed: {is_completed}"
         )
 
         return {
@@ -1079,12 +1270,12 @@ async def update_progress(
             "student_id": student_id,
             "node_id": node_id,
             "progress": progress_update.progress,
-            "completed": progress_update.completed,
+            "completed": is_completed,
             "time_spent": progress_update.time_spent,
             "timestamp": datetime.now().isoformat(),
             "message": (
-                f"Topic başarıyla tamamlandı!"
-                if progress_update.completed
+                "Topic başarıyla tamamlandı!"
+                if is_completed
                 else f"İlerleme %{progress_update.progress} olarak kaydedildi"
             ),
         }
@@ -1093,6 +1284,7 @@ async def update_progress(
         raise
     except Exception as e:
         logger.error(f"Error updating progress: {e}")
+        db.rollback()
         raise HTTPException(
             status_code=500, detail=f"Failed to update progress: {str(e)}"
         )

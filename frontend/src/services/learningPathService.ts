@@ -88,7 +88,7 @@ class LearningPathService {
         student_id: this.studentId,  // ← Flat structure (no nesting)!
         subject: topic,               // ← "subject" not "topic"
         duration_weeks: durationWeeks,
-        difficulty_level: 'intermediate'
+        difficulty_level: 'intermediate',
       });
 
       if (response.success) {

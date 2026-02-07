@@ -3,7 +3,6 @@ AI-Generated Question Quality Validator
 BEST PRACTICE: QUEST Framework + Bloom's Taxonomy + IRT Analysis
 Araştırma: BMC Medical Education 2025, arxiv.org/abs/2508.08314
 """
-import re
 from typing import Dict, List, Optional, Tuple
 from enum import Enum
 from pydantic import BaseModel
@@ -426,10 +425,10 @@ async def main_example():
     print(f"Approved: {'✅ YES' if result.approved else '❌ NO'}")
     print(f"\nPredicted IRT Difficulty: {result.predicted_difficulty:.2f}")
     print(f"Predicted IRT Discrimination: {result.predicted_discrimination:.2f}")
-    print(f"\nStrengths:")
+    print("\nStrengths:")
     for s in result.strengths:
         print(f"  + {s}")
-    print(f"\nWeaknesses:")
+    print("\nWeaknesses:")
     for w in result.weaknesses:
         print(f"  - {w}")
 

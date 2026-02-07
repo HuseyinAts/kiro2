@@ -2,6 +2,14 @@
 Multi-Layer Cache System - Task 7
 Requirements: 6.1, 6.2, 6.3, 6.5, 6.7, 6.10
 
+CACHE HIERARCHY (2025-01-24):
+Bu dosya ADVANCED katmanindadir. Aktif ve kullanilmalidir.
+Video oneri sistemi icin L1 (memory) + L2 (Redis) caching saglar.
+
+Ilgili dosyalar:
+- advanced_cache.py - SmartCacheManager (bu dosya ile birlikte kullanilabilir)
+- core/cache/ - Core cache utilities
+
 Bu modül, video öneri sistemi için optimize edilmiş çok katmanlı cache sistemi sağlar.
 
 Features:
@@ -19,7 +27,6 @@ Architecture:
 """
 
 import asyncio
-import hashlib
 import json
 import time
 from collections import OrderedDict
@@ -263,7 +270,7 @@ class MultiLayerCache:
         """
         try:
             return len(json.dumps(value, default=str).encode("utf-8"))
-        except:
+        except (TypeError, ValueError, OverflowError):
             return 0
 
     async def get(self, key: str) -> Optional[Any]:
@@ -594,7 +601,7 @@ class MultiLayerCache:
         try:
             # Get L1 size synchronously for metrics
             l1_size = len(self._l1_cache)
-        except:
+        except (RuntimeError, TypeError, AttributeError):
             pass
 
         total_size_bytes = sum(entry.size_bytes for entry in self._l1_cache.values())

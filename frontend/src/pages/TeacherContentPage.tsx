@@ -3,11 +3,12 @@
  * Glassmorphism ile içerik yönetimi
  */
 
-import React from 'react'
-import { ModernTeacherContentPage } from './ModernTeacherContentPage'
+import * as React from 'react';
+
+import { ModernTeacherContentPage } from './ModernTeacherContentPage';
 
 export const TeacherContentPage: React.FC = () => {
-  return <ModernTeacherContentPage />
-}
+  return <ModernTeacherContentPage />;
+};
 
-export default TeacherContentPage
+export default TeacherContentPage;

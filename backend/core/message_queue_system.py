@@ -242,7 +242,7 @@ class RedisMessageQueue:
     async def connect(self):
         """Connect to Redis"""
         try:
-            self.redis_client = aioredis.from_url(
+            self.redis_client = redis.from_url(
                 self.redis_url, decode_responses=False, max_connections=20
             )
 

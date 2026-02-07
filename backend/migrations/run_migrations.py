@@ -44,7 +44,7 @@ async def get_database_url() -> str:
 
     # Build from individual components
     host = os.getenv('POSTGRES_HOST', 'localhost')
-    port = os.getenv('POSTGRES_PORT', '5432')
+    port = os.getenv('POSTGRES_PORT', '5434')
     db = os.getenv('POSTGRES_DB', 'kiro2_db')
     user = os.getenv('POSTGRES_USER', 'postgres')
     password = os.getenv('POSTGRES_PASSWORD', 'postgres')
@@ -151,7 +151,7 @@ async def run_migrations():
             try:
                 await apply_migration(conn, version, filepath)
                 success_count += 1
-            except Exception as e:
+            except Exception:
                 print(f"\n{RED}Migration failed, stopping here{RESET}")
                 break
 

@@ -1,0 +1,121 @@
+import React from 'react'
+import { useAuth } from './useAuth.tsx'
+import { UserRole } from '../types'
+
+interface RoleAccessConfig {
+  allowedRoles?: UserRole[]
+  requiredPermissions?: Array<{ resource: string; action: string }>
+  fallbackComponent?: React.ComponentType
+  showUnauthorized?: boolean
+}
+
+interface RoleAccessResult {
+  hasAccess: boolean
+  isLoading: boolean
+  userRole?: UserRole
+  canView: (roles: UserRole[]) => boolean
+  canEdit: (resource: string) => boolean
+  canDelete: (resource: string) => boolean
+  canCreate: (resource: string) => boolean
+  isRole: (role: UserRole) => boolean
+  isStudent: boolean
+  isTeacher: boolean
+  isParent: boolean
+  isAdmin: boolean
+}
+
+export const useRoleAccess = (config?: RoleAccessConfig): RoleAccessResult => {
+  const { 
+    user, 
+    loading, 
+    isAuthenticated, 
+    hasPermission, 
+    isAuthorized, 
+    hasRole 
+  } = useAuth()
+
+  const hasAccess = (): boolean => {
+    if (!isAuthenticated || !user) return false
+
+    // Rol kontrolü
+    if (config?.allowedRoles && config.allowedRoles.length > 0) {
+      if (!isAuthorized(config.allowedRoles)) return false
+    }
+
+    // İzin kontrolü
+    if (config?.requiredPermissions && config.requiredPermissions.length > 0) {
+      const hasAllPermissions = config.requiredPermissions.every(permission =>
+        hasPermission(permission.resource, permission.action)
+      )
+      if (!hasAllPermissions) return false
+    }
+
+    return true
+  }
+
+  const canView = (roles: UserRole[]): boolean => {
+    return isAuthenticated && user ? isAuthorized(roles) : false
+  }
+
+  const canEdit = (resource: string): boolean => {
+    return hasPermission(resource, 'update')
+  }
+
+  const canDelete = (resource: string): boolean => {
+    return hasPermission(resource, 'delete')
+  }
+
+  const canCreate = (resource: string): boolean => {
+    return hasPermission(resource, 'create')
+  }
+
+  const isRole = (role: UserRole): boolean => {
+    return hasRole(role)
+  }
+
+  return {
+    hasAccess: hasAccess(),
+    isLoading: loading,
+    userRole: user?.rol,
+    canView,
+    canEdit,
+    canDelete,
+    canCreate,
+    isRole,
+    isStudent: hasRole('ogrenci'),
+    isTeacher: hasRole('ogretmen'),
+    isParent: hasRole('veli'),
+    isAdmin: hasRole('admin')
+  }
+}
+
+// HOC (Higher-Order Component) for role-based access control
+export const withRoleAccess = <P extends object>(
+  WrappedComponent: React.ComponentType<P>,
+  config: RoleAccessConfig
+) => {
+  return (props: P) => {
+    const { hasAccess, isLoading } = useRoleAccess(config)
+
+    if (isLoading) {
+      return <div>Yükleniyor...</div>;
+    }
+
+    if (!hasAccess) {
+      if (config.fallbackComponent) {
+        const FallbackComponent = config.fallbackComponent
+        return <FallbackComponent />
+      }
+      
+      if (config.showUnauthorized) {
+        return <div>Bu içeriği görüntüleme yetkiniz bulunmamaktadır.</div>
+      }
+      
+      return null
+    }
+
+    return <WrappedComponent {...props} />
+  }
+}
+
+export default useRoleAccess

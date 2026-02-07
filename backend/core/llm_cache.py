@@ -6,8 +6,8 @@ Optimized caching for LLM responses with Turkish language support
 import hashlib
 import json
 import logging
-from datetime import datetime, timedelta
-from typing import Any, Optional, Dict, List
+from datetime import datetime
+from typing import Any, Optional, Dict
 from functools import wraps
 
 import redis.asyncio as redis
@@ -299,7 +299,7 @@ class LLMCache:
                 )
                 del self._memory_cache[oldest_key]
                 del self._memory_cache_access[oldest_key]
-                logger.debug(f"Evicted oldest entry from memory cache")
+                logger.debug("Evicted oldest entry from memory cache")
 
             logger.debug(f"Cached to memory: {cache_key[:16]}...")
             return True
@@ -356,7 +356,7 @@ class LLMCache:
                 info = await self.redis_client.info()
                 stats_dict["redis_memory_used"] = info.get("used_memory_human", "N/A")
                 stats_dict["redis_connected_clients"] = info.get("connected_clients", 0)
-            except:
+            except (redis.ConnectionError, redis.TimeoutError, redis.RedisError):
                 pass
 
         return stats_dict

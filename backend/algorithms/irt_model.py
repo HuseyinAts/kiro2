@@ -1,5 +1,5 @@
 """
-4-Parametreli IRT (Item Response Theory) Model Implementasyonu  
+4-Parametreli IRT (Item Response Theory) Model Implementasyonu
 Adaptif Test Sistemi (CAT) icin temel IRT modeli
 
 Turk Egitim Sistemi icin optimize edilmis:
@@ -13,24 +13,39 @@ Version: 1.0.0
 """
 
 import numpy as np
-from typing import List, Dict, Tuple, Optional, Union
+from typing import List, Dict, Tuple, Optional
 from dataclasses import dataclass, field
-from scipy.optimize import minimize
-from scipy.stats import norm
 from datetime import datetime
 import logging
+
+from core.irt_validators import (
+    validate_irt_difficulty,
+    validate_irt_discrimination,
+    validate_irt_guessing,
+    validate_irt_upper_asymptote,
+    IRTValidationError,
+)
 
 logger = logging.getLogger(__name__)
 
 
 @dataclass
 class IRTItem:
-    """IRT soru/item modeli"""
+    """
+    IRT soru/item modeli.
+
+    Parametre Araliklari (CLAUDE.md):
+    - difficulty: [-4.0, 4.0]
+    - discrimination: [0.2, 4.0]
+    - guessing: [0.0, 0.35]
+    - upper_asymptote: [0.0, 1.0]
+    """
+
     item_id: str
-    discrimination: float  # a parameter
-    difficulty: float      # b parameter
-    guessing: float        # c parameter  
-    upper_asymptote: float = 1.0  # d parameter
+    discrimination: float  # a parameter [0.2, 4.0]
+    difficulty: float      # b parameter [-4.0, 4.0]
+    guessing: float        # c parameter [0.0, 0.35]
+    upper_asymptote: float = 1.0  # d parameter [0.0, 1.0]
 
     subject: str = ""
     topic: str = ""
@@ -43,8 +58,35 @@ class IRTItem:
     se_a: float = 0.0
     se_b: float = 0.0
 
+    # Validation flag - set to False to skip validation (e.g., for legacy data)
+    _validate: bool = field(default=True, repr=False)
 
-@dataclass  
+    def __post_init__(self) -> None:
+        """
+        IRT parametrelerini CLAUDE.md standartlarina gore dogrula.
+
+        Raises:
+            IRTValidationError: Parametre aralik disindaysa
+        """
+        if not self._validate:
+            return
+
+        try:
+            # Validate and potentially clamp values
+            self.difficulty = validate_irt_difficulty(self.difficulty, strict=True)
+            self.discrimination = validate_irt_discrimination(
+                self.discrimination, strict=True
+            )
+            self.guessing = validate_irt_guessing(self.guessing, strict=True)
+            self.upper_asymptote = validate_irt_upper_asymptote(
+                self.upper_asymptote, strict=True
+            )
+        except IRTValidationError as e:
+            logger.warning(f"IRT validation failed for item {self.item_id}: {e}")
+            raise
+
+
+@dataclass
 class StudentAbility:
     """Ogrenci yetenek tahmini"""
     student_id: str
@@ -70,8 +112,8 @@ class IRTResponse:
 class FourParameterIRTModel:
     """4PL IRT Model: P(theta) = c + (d - c) / (1 + exp(-a(theta - b)))"""
 
-    def __init__(self, scaling_constant: float = 1.0):
-        self.D = scaling_constant
+    def __init__(self, scaling_constant: float = 1.0) -> None:
+        self.D: float = scaling_constant
         self.items: Dict[str, IRTItem] = {}
         self.student_abilities: Dict[str, StudentAbility] = {}
         self.responses: List[IRTResponse] = []
@@ -103,8 +145,11 @@ class FourParameterIRTModel:
     ) -> StudentAbility:
         if not responses:
             return StudentAbility(
-                student_id="unknown", ability=0.0, se=999.0, 
-                estimation_method="MLE", n_items=0
+                student_id="unknown",
+                ability=0.0,
+                se=999.0,
+                estimation_method="MLE",
+                n_items=0,
             )
 
         theta = initial_theta
@@ -145,9 +190,55 @@ class FourParameterIRTModel:
             confidence_interval_95=(theta - 1.96 * se, theta + 1.96 * se)
         )
 
-    def select_next_item_cat(self, current_theta: float, available_items: List[IRTItem], answered_items: List[str]) -> Optional[IRTItem]:
+    def select_next_item_cat(
+        self,
+        current_theta: float,
+        available_items: List[IRTItem],
+        answered_items: List[str],
+    ) -> Optional[IRTItem]:
+        """
+        CAT (Computerized Adaptive Testing) icin sonraki soruyu sec.
+
+        Args:
+            current_theta: Mevcut yetenek tahmini.
+            available_items: Mevcut sorular.
+            answered_items: Cevaplanmis soru ID'leri.
+
+        Returns:
+            En yuksek bilgi degerine sahip soru veya None.
+        """
         candidates = [i for i in available_items if i.item_id not in answered_items]
         return max(candidates, key=lambda i: self.information(current_theta, i)) if candidates else None
+
+    def add_item(self, item: IRTItem) -> None:
+        """
+        Yeni bir soru/item ekle.
+
+        Args:
+            item: Eklenecek IRT item.
+        """
+        self.items[item.item_id] = item
+
+    def add_response(self, response: IRTResponse) -> None:
+        """
+        Ogrenci cevabi ekle.
+
+        Args:
+            response: Eklenecek cevap.
+        """
+        self.responses.append(response)
+
+    def get_item(self, item_id: str) -> Optional[IRTItem]:
+        """
+        ID ile item getir.
+
+        Args:
+            item_id: Soru ID'si.
+
+        Returns:
+            Bulunan item veya None.
+        """
+        return self.items.get(item_id)
 
 
 class TurkishIRTUtils:

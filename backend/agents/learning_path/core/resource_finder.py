@@ -20,9 +20,11 @@ Responsibilities:
 
 import logging
 from typing import Dict, Any, List, Optional
-from datetime import datetime
+
+from cachetools import TTLCache
 
 from ..models import LearningResource, KnowledgeLevel, LearningStyle
+from ..utils.duration_parser import parse_iso8601_duration
 
 logger = logging.getLogger(__name__)
 
@@ -61,10 +63,11 @@ class ResourceFinder:
         self.ranker = resource_ranker
         self.rag = rag_service
 
-        # Cache for search results
-        self.resource_cache: Dict[str, List[LearningResource]] = {}
+        # Cache for search results with TTL to prevent memory leak
+        # Max 500 search results, 15 minute TTL
+        self.resource_cache: TTLCache = TTLCache(maxsize=500, ttl=900)
 
-        logger.info("ResourceFinder initialized")
+        logger.info("ResourceFinder initialized with TTLCache (maxsize=500, ttl=900s)")
 
     async def search_resources(
         self,
@@ -139,9 +142,17 @@ class ResourceFinder:
                 oer_resources = await self._search_oer(topic, subjects)
                 all_resources.extend(oer_resources)
 
-            # 4. RAG search (if available)
+            # 4. RAG search (if available) - with subject and difficulty filtering
             if self.rag:
-                rag_resources = await self._search_rag(topic)
+                difficulty_range = (
+                    self._get_difficulty_range(difficulty) if difficulty else None
+                )
+                rag_resources = await self._search_rag(
+                    query=topic,
+                    subject=subjects[0] if subjects else None,
+                    difficulty_range=difficulty_range,
+                    count=count,
+                )
                 all_resources.extend(rag_resources)
 
             logger.info(f"Found {len(all_resources)} resources from all sources")
@@ -361,21 +372,83 @@ class ResourceFinder:
             logger.error(f"OER search error: {str(e)}")
             return []
 
-    async def _search_rag(self, query: str) -> List[LearningResource]:
-        """Search using RAG service for semantic matching"""
+    async def _search_rag(
+        self,
+        query: str,
+        subject: Optional[str] = None,
+        difficulty_range: Optional[tuple] = None,
+        count: int = 10,
+    ) -> List[LearningResource]:
+        """
+        Search using RAG service for semantic matching.
+
+        Args:
+            query: Search query string
+            subject: Subject filter (e.g., 'matematik', 'fizik')
+            difficulty_range: IRT difficulty range tuple (min, max), e.g., (-2.0, 0.5)
+            count: Maximum number of results to return
+
+        Returns:
+            List of LearningResource objects from RAG search
+        """
         try:
-            results = await self.rag.search(query=query, top_k=5)
+            if not self.rag or not hasattr(self.rag, "search"):
+                logger.debug("RAG service not available or no search method")
+                return []
 
-            # Convert RAG results to LearningResource
-            # This is a simplified implementation
-            resources = []
-            # TODO: Implement RAG to LearningResource conversion
+            # Build search kwargs based on what the RAG service supports
+            search_kwargs: Dict[str, Any] = {
+                "query": query,
+                "limit": count,
+            }
 
+            # Add optional filters if provided and service supports them
+            if subject:
+                search_kwargs["subject"] = subject
+            if difficulty_range:
+                search_kwargs["difficulty_range"] = difficulty_range
+
+            resources = await self.rag.search(**search_kwargs)
+            logger.info(
+                f"RAG search returned {len(resources)} resources for "
+                f"query='{query}', subject={subject}, count={count}"
+            )
             return resources
+
+        except TypeError as te:
+            # Fallback if RAG service doesn't support all params
+            logger.warning(f"RAG search param error, trying simple search: {te}")
+            try:
+                resources = await self.rag.search(query=query, limit=count)
+                return resources
+            except Exception as e2:
+                logger.error(f"RAG simple search also failed: {e2}")
+                return []
 
         except Exception as e:
             logger.error(f"RAG search error: {str(e)}")
             return []
+
+    def _get_difficulty_range(self, difficulty: KnowledgeLevel) -> tuple:
+        """
+        Map KnowledgeLevel to IRT difficulty range.
+
+        IRT difficulty scale: -4.0 (easiest) to +4.0 (hardest)
+
+        Args:
+            difficulty: KnowledgeLevel enum value
+
+        Returns:
+            Tuple of (min_difficulty, max_difficulty)
+        """
+        ranges = {
+            KnowledgeLevel.BEGINNER: (-4.0, -2.0),
+            KnowledgeLevel.ELEMENTARY: (-2.0, -0.5),
+            KnowledgeLevel.INTERMEDIATE: (-0.5, 0.5),
+            KnowledgeLevel.ADVANCED: (0.5, 2.0),
+            KnowledgeLevel.EXPERT: (2.0, 4.0),
+        }
+        return ranges.get(difficulty, (-4.0, 4.0))
 
     # Filtering methods
 
@@ -540,13 +613,8 @@ class ResourceFinder:
             return "Düşük uyum"
 
     def _parse_youtube_duration(self, duration: Optional[str]) -> int:
-        """Parse YouTube duration string to minutes"""
-        if not duration:
-            return 10  # Default 10 minutes
-
-        # TODO: Implement proper ISO 8601 duration parsing
-        # For now, return default
-        return 10
+        """Parse YouTube duration string to minutes using ISO 8601 parser"""
+        return parse_iso8601_duration(duration, default=10)
 
     def _parse_khan_difficulty(self, difficulty: Optional[str]) -> KnowledgeLevel:
         """Parse Khan Academy difficulty to KnowledgeLevel"""

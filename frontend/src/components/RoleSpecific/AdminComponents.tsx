@@ -1,4 +1,13 @@
-import React from 'react'
+import {
+  People,
+  Assessment,
+  Computer,
+  CheckCircle,
+  Error,
+  Info,
+  Settings,
+  Storage,
+} from '@mui/icons-material';
 import {
   Box,
   Card,
@@ -13,30 +22,10 @@ import {
   ListItemText,
   Avatar,
   LinearProgress,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Alert
-} from '@mui/material'
-import {
-  Dashboard,
-  People,
-  Assessment,
-  Computer,
-  TrendingUp,
-  Warning,
-  CheckCircle,
-  Error,
-  Info,
-  Settings,
-  Security,
-  Storage,
-  AdminPanelSettings
-} from '@mui/icons-material'
-import { useNavigate } from 'react-router-dom'
+  Alert,
+} from '@mui/material';
+import * as React from 'react';
+import { useNavigate } from 'react-router-dom';
 
 interface AdminQuickActionsProps {
   onUserManagement?: () => void
@@ -49,36 +38,36 @@ export const AdminQuickActions: React.FC<AdminQuickActionsProps> = ({
   onUserManagement,
   onContentManagement,
   onSystemSettings,
-  onViewLogs
+  onViewLogs,
 }) => {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   const quickActions = [
     {
       label: 'Kullanıcı Yönetimi',
       icon: <People />,
       color: 'primary' as const,
-      onClick: () => onUserManagement ? onUserManagement() : navigate('/admin/users')
+      onClick: () => onUserManagement ? onUserManagement() : navigate('/admin/users'),
     },
     {
       label: 'İçerik Yönetimi',
       icon: <Assessment />,
       color: 'secondary' as const,
-      onClick: () => onContentManagement ? onContentManagement() : navigate('/admin/content')
+      onClick: () => onContentManagement ? onContentManagement() : navigate('/admin/content'),
     },
     {
       label: 'Sistem Ayarları',
       icon: <Settings />,
       color: 'warning' as const,
-      onClick: () => onSystemSettings ? onSystemSettings() : navigate('/admin/settings')
+      onClick: () => onSystemSettings ? onSystemSettings() : navigate('/admin/settings'),
     },
     {
       label: 'Sistem Logları',
       icon: <Storage />,
       color: 'info' as const,
-      onClick: () => onViewLogs ? onViewLogs() : alert('Log görüntüleme özelliği yakında eklenecek')
-    }
-  ]
+      onClick: () => onViewLogs ? onViewLogs() : alert('Log görüntüleme özelliği yakında eklenecek'),
+    },
+  ];
 
   return (
     <Card>
@@ -104,8 +93,8 @@ export const AdminQuickActions: React.FC<AdminQuickActionsProps> = ({
         </Grid>
       </CardContent>
     </Card>
-  )
-}
+  );
+};
 
 interface SystemStatsProps {
   stats: {
@@ -118,10 +107,10 @@ interface SystemStatsProps {
 
 export const SystemStats: React.FC<SystemStatsProps> = ({ stats }) => {
   const getSystemHealthColor = (value: number): 'success' | 'warning' | 'error' => {
-    if (value >= 95) return 'success'
-    if (value >= 80) return 'warning'
-    return 'error'
-  }
+    if (value >= 95) {return 'success';}
+    if (value >= 80) {return 'warning';}
+    return 'error';
+  };
 
   const statItems = [
     {
@@ -129,27 +118,27 @@ export const SystemStats: React.FC<SystemStatsProps> = ({ stats }) => {
       value: stats.toplam_kullanici.toLocaleString(),
       subValue: `${stats.aktif_kullanici} aktif`,
       icon: <People />,
-      color: 'primary'
+      color: 'primary',
     },
     {
       label: 'Toplam Sınav',
       value: stats.toplam_sinav.toLocaleString(),
       icon: <Assessment />,
-      color: 'success'
+      color: 'success',
     },
     {
       label: 'Sistem Yükü',
       value: `${stats.sistem_yuklemesi.toFixed(1)}%`,
       icon: <Computer />,
-      color: getSystemHealthColor(100 - stats.sistem_yuklemesi)
+      color: getSystemHealthColor(100 - stats.sistem_yuklemesi),
     },
     {
       label: 'Sistem Durumu',
       value: 'Çevrimiçi',
       icon: <CheckCircle />,
-      color: 'success'
-    }
-  ]
+      color: 'success',
+    },
+  ];
 
   return (
     <Grid container spacing={2}>
@@ -176,8 +165,8 @@ export const SystemStats: React.FC<SystemStatsProps> = ({ stats }) => {
         </Grid>
       ))}
     </Grid>
-  )
-}
+  );
+};
 
 interface UserStatsProps {
   stats: {
@@ -194,27 +183,27 @@ export const UserStats: React.FC<UserStatsProps> = ({ stats }) => {
       label: 'Öğrenci',
       value: stats.ogrenci_sayisi,
       color: 'primary',
-      percentage: (stats.ogrenci_sayisi / (stats.ogrenci_sayisi + stats.ogretmen_sayisi + stats.veli_sayisi)) * 100
+      percentage: (stats.ogrenci_sayisi / (stats.ogrenci_sayisi + stats.ogretmen_sayisi + stats.veli_sayisi)) * 100,
     },
     {
       label: 'Öğretmen',
       value: stats.ogretmen_sayisi,
       color: 'success',
-      percentage: (stats.ogretmen_sayisi / (stats.ogrenci_sayisi + stats.ogretmen_sayisi + stats.veli_sayisi)) * 100
+      percentage: (stats.ogretmen_sayisi / (stats.ogrenci_sayisi + stats.ogretmen_sayisi + stats.veli_sayisi)) * 100,
     },
     {
       label: 'Veli',
       value: stats.veli_sayisi,
       color: 'warning',
-      percentage: (stats.veli_sayisi / (stats.ogrenci_sayisi + stats.ogretmen_sayisi + stats.veli_sayisi)) * 100
+      percentage: (stats.veli_sayisi / (stats.ogrenci_sayisi + stats.ogretmen_sayisi + stats.veli_sayisi)) * 100,
     },
     {
       label: 'Yeni Kayıt',
       value: stats.yeni_kayitlar,
       color: 'info',
-      percentage: 100 // Bu hafta için
-    }
-  ]
+      percentage: 100, // Bu hafta için
+    },
+  ];
 
   return (
     <Card>
@@ -246,8 +235,8 @@ export const UserStats: React.FC<UserStatsProps> = ({ stats }) => {
         </Grid>
       </CardContent>
     </Card>
-  )
-}
+  );
+};
 
 interface PerformanceMetricsProps {
   metrics: {
@@ -261,15 +250,15 @@ interface PerformanceMetricsProps {
 export const PerformanceMetrics: React.FC<PerformanceMetricsProps> = ({ metrics }) => {
   const getHealthColor = (value: number, isInverted: boolean = false): 'success' | 'warning' | 'error' => {
     if (isInverted) {
-      if (value <= 1) return 'success'
-      if (value <= 5) return 'warning'
-      return 'error'
+      if (value <= 1) {return 'success';}
+      if (value <= 5) {return 'warning';}
+      return 'error';
     } else {
-      if (value >= 95) return 'success'
-      if (value >= 80) return 'warning'
-      return 'error'
+      if (value >= 95) {return 'success';}
+      if (value >= 80) {return 'warning';}
+      return 'error';
     }
-  }
+  };
 
   return (
     <Card>
@@ -277,7 +266,7 @@ export const PerformanceMetrics: React.FC<PerformanceMetricsProps> = ({ metrics 
         <Typography variant="h6" gutterBottom>
           Performans Metrikleri
         </Typography>
-        
+
         <Box sx={{ mb: 3 }}>
           <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
             <Typography variant="body2">Ortalama Yanıt Süresi</Typography>
@@ -327,8 +316,8 @@ export const PerformanceMetrics: React.FC<PerformanceMetricsProps> = ({ metrics 
         </Box>
       </CardContent>
     </Card>
-  )
-}
+  );
+};
 
 interface RecentActivityListProps {
   activities: Array<{
@@ -342,19 +331,19 @@ interface RecentActivityListProps {
 
 export const RecentActivityList: React.FC<RecentActivityListProps> = ({ activities }) => {
   const getActivityIcon = (eylem: string) => {
-    if (eylem.includes('sınav')) return <Assessment />
-    if (eylem.includes('oluştur')) return <CheckCircle />
-    if (eylem.includes('görüntüle')) return <Info />
-    if (eylem.includes('hata')) return <Error />
-    return <Info />
-  }
+    if (eylem.includes('sınav')) {return <Assessment />;}
+    if (eylem.includes('oluştur')) {return <CheckCircle />;}
+    if (eylem.includes('görüntüle')) {return <Info />;}
+    if (eylem.includes('hata')) {return <Error />;}
+    return <Info />;
+  };
 
   const getActivityColor = (eylem: string): 'primary' | 'success' | 'info' | 'error' => {
-    if (eylem.includes('sınav')) return 'primary'
-    if (eylem.includes('oluştur')) return 'success'
-    if (eylem.includes('hata')) return 'error'
-    return 'info'
-  }
+    if (eylem.includes('sınav')) {return 'primary';}
+    if (eylem.includes('oluştur')) {return 'success';}
+    if (eylem.includes('hata')) {return 'error';}
+    return 'info';
+  };
 
   return (
     <Card>
@@ -363,9 +352,9 @@ export const RecentActivityList: React.FC<RecentActivityListProps> = ({ activiti
           Son Aktiviteler
         </Typography>
         <List sx={{ p: 0 }}>
-          {activities.map((aktivite, index) => (
-            <ListItem 
-              key={aktivite.aktivite_id} 
+          {activities.map((aktivite, _index) => (
+            <ListItem
+              key={aktivite.aktivite_id}
               sx={{ px: 0, py: 1 }}
             >
               <ListItemIcon>
@@ -381,10 +370,10 @@ export const RecentActivityList: React.FC<RecentActivityListProps> = ({ activiti
                       {aktivite.kullanici}
                     </Typography>
                     {aktivite.detay && (
-                      <Chip 
-                        label={aktivite.detay} 
-                        size="small" 
-                        color="primary" 
+                      <Chip
+                        label={aktivite.detay}
+                        size="small"
+                        color="primary"
                         variant="outlined"
                         sx={{ mt: 0.5, mr: 1 }}
                       />
@@ -400,8 +389,8 @@ export const RecentActivityList: React.FC<RecentActivityListProps> = ({ activiti
         </List>
       </CardContent>
     </Card>
-  )
-}
+  );
+};
 
 interface SystemHealthAlertProps {
   alerts?: Array<{
@@ -420,7 +409,7 @@ export const SystemHealthAlert: React.FC<SystemHealthAlertProps> = ({ alerts = [
           Sistem sağlıklı çalışıyor. Herhangi bir uyarı bulunmuyor.
         </Typography>
       </Alert>
-    )
+    );
   }
 
   return (
@@ -436,8 +425,8 @@ export const SystemHealthAlert: React.FC<SystemHealthAlertProps> = ({ alerts = [
         </Alert>
       ))}
     </Box>
-  )
-}
+  );
+};
 
 export default {
   AdminQuickActions,
@@ -445,5 +434,5 @@ export default {
   UserStats,
   PerformanceMetrics,
   RecentActivityList,
-  SystemHealthAlert
-}
+  SystemHealthAlert,
+};

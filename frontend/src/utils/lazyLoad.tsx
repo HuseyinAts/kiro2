@@ -8,7 +8,8 @@
  * - Retry logic for failed imports
  * - Loading fallback components
  */
-import React, { ComponentType, LazyExoticComponent } from 'react';
+import * as React from 'react';
+import {  ComponentType, LazyExoticComponent  } from 'react';
 
 interface RetryOptions {
   maxRetries?: number;
@@ -27,7 +28,7 @@ interface RetryOptions {
  */
 export function lazyWithRetry<T extends ComponentType<any>>(
   importFunc: () => Promise<{ default: T }>,
-  options: RetryOptions = {}
+  options: RetryOptions = {},
 ): LazyExoticComponent<T> {
   const { maxRetries = 3, delay = 1000 } = options;
 
@@ -62,7 +63,7 @@ export function lazyWithRetry<T extends ComponentType<any>>(
  * preloadComponent(Dashboard); // Preload on hover or beforehand
  */
 export function preloadComponent<T extends ComponentType<any>>(
-  lazyComponent: LazyExoticComponent<T>
+  lazyComponent: LazyExoticComponent<T>,
 ): void {
   // Access the _payload to trigger the import
   const component = lazyComponent as any;
@@ -86,7 +87,7 @@ export function preloadComponent<T extends ComponentType<any>>(
  */
 export function lazyWithFallback<T extends ComponentType<any>>(
   importFunc: () => Promise<{ default: T }>,
-  fallback: React.ReactNode
+  fallback: React.ReactNode,
 ) {
   const LazyComponent = lazyWithRetry(importFunc);
 
@@ -129,7 +130,7 @@ export function batchPreload(components: LazyExoticComponent<any>[]): void {
  * </Link>
  */
 export function createPreloadHandler<T extends ComponentType<any>>(
-  lazyComponent: LazyExoticComponent<T>
+  lazyComponent: LazyExoticComponent<T>,
 ) {
   let hasPreloaded = false;
 
@@ -197,7 +198,7 @@ export const LoadingFallbacks = {
         <div className="h-64 bg-gray-200 rounded"></div>
       </div>
     </div>
-  )
+  ),
 };
 
 /**

@@ -9,7 +9,7 @@
  * - 95.4: Examples (örnekler)
  */
 
-import React from 'react';
+import * as React from 'react';
 import './InstructionBox.css';
 
 export interface InstructionStep {
@@ -64,20 +64,20 @@ export const InstructionBox: React.FC<InstructionBoxProps> = ({
   overallExample,
   icon = '📝',
   type = 'instruction',
-  osbMode = true
+  osbMode = true,
 }) => {
   const typeColors = {
     info: '#0dcaf0',
     warning: '#ffc107',
     success: '#198754',
-    instruction: '#0d6efd'
+    instruction: '#0d6efd',
   };
 
   const typeIcons = {
     info: 'ℹ️',
     warning: '⚠️',
     success: '✅',
-    instruction: '📝'
+    instruction: '📝',
   };
 
   const displayIcon = icon || typeIcons[type];

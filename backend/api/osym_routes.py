@@ -1,15 +1,25 @@
 """
 OSYM Question Generation API Routes
 AI-powered OSYM question generation endpoints
+
+PREFIX CHANGED (2025-01-25):
+- OLD: /api/osym
+- NEW: /api/v1/osym/generate
+
+Bu degisiklik /api/v1/osym (osym_questions_api.py) ile cakismayi onler.
+- /api/v1/osym → Gercek OSYM sorulari (osym_questions_api.py)
+- /api/v1/osym/generate → AI uretimi OSYM sorulari (BU DOSYA)
 """
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, Field
+
+from core.dependencies import get_current_user
 from typing import List, Optional
 import uuid
 import time
 
-router = APIRouter(prefix="/api/osym", tags=["OSYM Question Generation"])
+router = APIRouter(prefix="/api/v1/osym/generate", tags=["OSYM Question Generation"])
 
 
 class QuestionGenerationRequest(BaseModel):
@@ -47,7 +57,10 @@ class BatchGenerationRequest(BaseModel):
 
 
 @router.post("/generate-question")
-async def generate_question(request: QuestionGenerationRequest):
+async def generate_question(
+    request: QuestionGenerationRequest,
+    current_user: dict = Depends(get_current_user)
+):
     """
     Generate OSYM question with AI
     """
@@ -141,7 +154,10 @@ async def generate_question(request: QuestionGenerationRequest):
 
 
 @router.post("/validate-question")
-async def validate_question(request: QuestionValidationRequest):
+async def validate_question(
+    request: QuestionValidationRequest,
+    current_user: dict = Depends(get_current_user)
+):
     """
     Validate an OSYM question
     """
@@ -177,7 +193,10 @@ async def validate_question(request: QuestionValidationRequest):
 
 
 @router.post("/batch-generate")
-async def batch_generate(request: BatchGenerationRequest):
+async def batch_generate(
+    request: BatchGenerationRequest,
+    current_user: dict = Depends(get_current_user)
+):
     """
     Generate multiple OSYM questions in batch
     """

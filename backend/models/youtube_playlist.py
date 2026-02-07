@@ -10,7 +10,6 @@ from sqlalchemy import (
     DateTime,
     ForeignKey,
     Text,
-    JSON,
     Float,
     Table,
 )
@@ -19,7 +18,7 @@ from sqlalchemy.orm import relationship
 from datetime import datetime
 import uuid
 
-from models.database import Base
+from .database import Base
 
 
 # Association table for playlist-video many-to-many

@@ -14,7 +14,6 @@ from sqlalchemy import (
     DateTime,
     ForeignKey,
     Enum as SQLEnum,
-    JSON,
     ARRAY,
 )
 from sqlalchemy.dialects.postgresql import UUID as PGUUID, JSONB
@@ -22,9 +21,8 @@ from sqlalchemy.orm import relationship
 from datetime import datetime
 from uuid import uuid4
 from enum import Enum
-from typing import Optional, List, Dict, Any
 
-from models.database import Base
+from .database import Base
 
 
 # ============================================================

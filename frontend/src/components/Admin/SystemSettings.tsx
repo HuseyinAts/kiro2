@@ -1,4 +1,3 @@
-import React, { useState } from 'react';
 import {
   Card,
   CardContent,
@@ -10,8 +9,10 @@ import {
   Typography,
   Grid,
   Box,
-  Alert
+  Alert,
 } from '@mui/material';
+import * as React from 'react';
+import {  useState  } from 'react';
 
 interface SystemSettings {
   general: {
@@ -67,9 +68,9 @@ const SystemSettings: React.FC = () => {
         <Typography variant="h4" component="h1">
           Sistem Ayarları
         </Typography>
-        <Button 
+        <Button
           variant="contained"
-          onClick={handleSave} 
+          onClick={handleSave}
           disabled={saving}
         >
           {saving ? 'Kaydediliyor...' : saved ? 'Kaydedildi' : 'Kaydet'}

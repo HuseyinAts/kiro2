@@ -1,4 +1,10 @@
-import React, { useState, useEffect } from 'react'
+import {
+  Dashboard,
+  People,
+  LibraryBooks,
+  Settings,
+  Assessment,
+} from '@mui/icons-material';
 import {
   Container,
   Typography,
@@ -7,21 +13,16 @@ import {
   Tab,
   Paper,
   Alert,
-  CircularProgress
-} from '@mui/material'
-import {
-  Dashboard,
-  People,
-  LibraryBooks,
-  Settings,
-  Assessment
-} from '@mui/icons-material'
+  CircularProgress,
+} from '@mui/material';
+import * as React from 'react';
+import {  useState, useEffect  } from 'react';
 
-import AdminDashboard from './AdminDashboard'
-import UserManagement from './UserManagement'
-import ContentManagement from './ContentManagement'
-import SystemSettings from './SystemSettings'
-import { useAuthStore } from '@/store/authStore'
+import AdminDashboard from './AdminDashboard';
+import ContentManagement from './ContentManagement';
+import SystemSettings from './SystemSettings';
+import UserManagement from './UserManagement';
+import { useAuthStore } from '@/store/authStore';
 
 interface TabPanelProps {
   children?: React.ReactNode
@@ -30,7 +31,7 @@ interface TabPanelProps {
 }
 
 function TabPanel(props: TabPanelProps) {
-  const { children, value, index, ...other } = props
+  const { children, value, index, ...other } = props;
 
   return (
     <div
@@ -46,36 +47,36 @@ function TabPanel(props: TabPanelProps) {
         </Box>
       )}
     </div>
-  )
+  );
 }
 
 export const AdminPanel: React.FC = () => {
-  const [currentTab, setCurrentTab] = useState(0)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
-  const {  user, isAuthenticated  } = useAuthStore()
+  const [currentTab, setCurrentTab] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const {  user, isAuthenticated  } = useAuthStore();
 
   useEffect(() => {
     // Admin yetkisi kontrolü
     if (!isAuthenticated || user?.rol !== 'admin') {
-      setError('Bu sayfaya erişim yetkiniz bulunmamaktadır.')
-      setLoading(false)
-      return
+      setError('Bu sayfaya erişim yetkiniz bulunmamaktadır.');
+      setLoading(false);
+      return;
     }
 
-    setLoading(false)
-  }, [isAuthenticated, user])
+    setLoading(false);
+  }, [isAuthenticated, user]);
 
-  const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
-    setCurrentTab(newValue)
-  }
+  const handleTabChange = (_event: React.SyntheticEvent, newValue: number) => {
+    setCurrentTab(newValue);
+  };
 
   if (loading) {
     return (
       <Box display="flex" justifyContent="center" alignItems="center" minHeight="400px">
         <CircularProgress />
       </Box>
-    )
+    );
   }
 
   if (error) {
@@ -83,7 +84,7 @@ export const AdminPanel: React.FC = () => {
       <Container maxWidth="md" sx={{ mt: 4 }}>
         <Alert severity="error">{error}</Alert>
       </Container>
-    )
+    );
   }
 
   return (
@@ -168,7 +169,7 @@ export const AdminPanel: React.FC = () => {
         <SystemSettings />
       </TabPanel>
     </Container>
-  )
-}
+  );
+};
 
-export default AdminPanel
+export default AdminPanel;

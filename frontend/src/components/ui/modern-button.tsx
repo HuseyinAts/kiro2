@@ -3,15 +3,16 @@
  * Enhanced button with loading states, accessibility, and touch optimization
  */
 
-import React, { memo, forwardRef } from 'react'
 import {
   Button as MuiButton,
   ButtonProps as MuiButtonProps,
   CircularProgress,
   Box,
-  useTheme
-} from '@mui/material'
-import { alpha } from '@mui/material/styles'
+  useTheme,
+} from '@mui/material';
+import { alpha } from '@mui/material/styles';
+import * as React from 'react';
+import {  memo, forwardRef  } from 'react';
 
 export interface ModernButtonProps extends Omit<MuiButtonProps, 'variant' | 'color'> {
   children: React.ReactNode
@@ -21,6 +22,7 @@ export interface ModernButtonProps extends Omit<MuiButtonProps, 'variant' | 'col
   loading?: boolean
   touchOptimized?: boolean
   sx?: MuiButtonProps['sx']
+  'data-testid'?: string
 }
 
 export const ModernButton = memo(forwardRef<HTMLButtonElement, ModernButtonProps>(({
@@ -41,29 +43,29 @@ export const ModernButton = memo(forwardRef<HTMLButtonElement, ModernButtonProps
   touchOptimized = true,
   ...props
 }, ref) => {
-  const theme = useTheme()
-  
+  const theme = useTheme();
+
   // Size configurations for touch optimization
   const sizeConfig = {
-    small: { 
+    small: {
       height: touchOptimized ? 40 : 32,
       px: 2,
-      fontSize: '0.875rem'
+      fontSize: '0.875rem',
     },
-    medium: { 
+    medium: {
       height: touchOptimized ? 48 : 36,
       px: 3,
-      fontSize: '0.875rem'
+      fontSize: '0.875rem',
     },
-    large: { 
+    large: {
       height: touchOptimized ? 56 : 42,
       px: 4,
-      fontSize: '1rem'
-    }
-  }
-  
-  const config = sizeConfig[size]
-  
+      fontSize: '1rem',
+    },
+  };
+
+  const config = sizeConfig[size];
+
   // Gradient variant styles
   const gradientStyles = {
     primary: `linear-gradient(45deg, ${theme.palette.primary.main} 30%, ${theme.palette.primary.light} 90%)`,
@@ -71,13 +73,13 @@ export const ModernButton = memo(forwardRef<HTMLButtonElement, ModernButtonProps
     success: `linear-gradient(45deg, ${theme.palette.success.main} 30%, ${theme.palette.success.light} 90%)`,
     error: `linear-gradient(45deg, ${theme.palette.error.main} 30%, ${theme.palette.error.light} 90%)`,
     warning: `linear-gradient(45deg, ${theme.palette.warning.main} 30%, ${theme.palette.warning.light} 90%)`,
-    info: `linear-gradient(45deg, ${theme.palette.info.main} 30%, ${theme.palette.info.light} 90%)`
-  }
-  
-  const buttonVariant = variant === 'gradient' ? 'contained' : variant
-  
-  const isDisabled = disabled || loading
-  
+    info: `linear-gradient(45deg, ${theme.palette.info.main} 30%, ${theme.palette.info.light} 90%)`,
+  };
+
+  const buttonVariant = variant === 'gradient' ? 'contained' : variant;
+
+  const isDisabled = disabled || loading;
+
   return (
     <MuiButton
       ref={ref}
@@ -100,9 +102,9 @@ export const ModernButton = memo(forwardRef<HTMLButtonElement, ModernButtonProps
         fontWeight: 600,
         textTransform: 'none',
         borderRadius: 2,
-        boxShadow: variant === 'contained' || variant === 'gradient' ? 
+        boxShadow: variant === 'contained' || variant === 'gradient' ?
           `0 2px 8px ${alpha(theme.palette[color].main, 0.3)}` : 'none',
-        
+
         // Gradient styles
         ...(variant === 'gradient' && {
           background: gradientStyles[color],
@@ -111,10 +113,10 @@ export const ModernButton = memo(forwardRef<HTMLButtonElement, ModernButtonProps
           '&:hover': {
             background: gradientStyles[color],
             boxShadow: `0 4px 12px ${alpha(theme.palette[color].main, 0.4)}`,
-            transform: 'translateY(-1px)'
-          }
+            transform: 'translateY(-1px)',
+          },
         }),
-        
+
         // Touch optimization
         ...(touchOptimized && {
           minHeight: 44, // iOS minimum touch target
@@ -122,25 +124,25 @@ export const ModernButton = memo(forwardRef<HTMLButtonElement, ModernButtonProps
           '@media (hover: hover)': {
             '&:hover': {
               transform: 'translateY(-1px)',
-              boxShadow: variant === 'contained' || variant === 'gradient' ? 
-                `0 4px 12px ${alpha(theme.palette[color].main, 0.4)}` : 'none'
-            }
-          }
+              boxShadow: variant === 'contained' || variant === 'gradient' ?
+                `0 4px 12px ${alpha(theme.palette[color].main, 0.4)}` : 'none',
+            },
+          },
         }),
-        
+
         // Focus styles for accessibility
         '&:focus-visible': {
           outline: `2px solid ${theme.palette[color].main}`,
-          outlineOffset: 2
+          outlineOffset: 2,
         },
-        
+
         // Loading state
         ...(loading && {
-          color: 'transparent'
+          color: 'transparent',
         }),
-        
+
         // Smooth transitions
-        transition: 'all 0.2s ease-in-out'
+        transition: 'all 0.2s ease-in-out',
       }}
       {...props}
     >
@@ -153,26 +155,26 @@ export const ModernButton = memo(forwardRef<HTMLButtonElement, ModernButtonProps
             transform: 'translate(-50%, -50%)',
             display: 'flex',
             alignItems: 'center',
-            justifyContent: 'center'
+            justifyContent: 'center',
           }}
         >
           <CircularProgress
             size={20}
             sx={{
-              color: variant === 'contained' || variant === 'gradient' ? 
-                'currentColor' : theme.palette[color].main
+              color: variant === 'contained' || variant === 'gradient' ?
+                'currentColor' : theme.palette[color].main,
             }}
           />
         </Box>
       )}
-      
+
       <Box
         sx={{
           display: 'flex',
           alignItems: 'center',
           gap: 1,
           opacity: loading ? 0 : 1,
-          transition: 'opacity 0.2s ease-in-out'
+          transition: 'opacity 0.2s ease-in-out',
         }}
       >
         {startIcon}
@@ -180,9 +182,9 @@ export const ModernButton = memo(forwardRef<HTMLButtonElement, ModernButtonProps
         {endIcon}
       </Box>
     </MuiButton>
-  )
-}))
+  );
+}));
 
-ModernButton.displayName = 'ModernButton'
+ModernButton.displayName = 'ModernButton';
 
-export default ModernButton
+export default ModernButton;

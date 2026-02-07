@@ -1,0 +1,135 @@
+# KIRO2 Filebeat Configuration
+# Log shipping for YKS AI Education Platform
+
+# Filebeat inputs
+filebeat.inputs:
+
+  # KIRO2 Backend Application Logs
+  - type: log
+    id: kiro2-backend
+    enabled: true
+    paths:
+      - /app/logs/*.log
+      - /app/logs/**/*.log
+    json.keys_under_root: true
+    json.add_error_key: true
+    json.message_key: event
+    fields:
+      service: kiro2-backend
+      log_type: application
+    fields_under_root: true
+    multiline.type: pattern
+    multiline.pattern: '^\{'
+    multiline.negate: true
+    multiline.match: after
+    processors:
+      - add_docker_metadata: ~
+      - add_host_metadata: ~
+
+  # Docker container logs
+  - type: container
+    id: docker-containers
+    enabled: true
+    paths:
+      - /var/lib/docker/containers/*/*.log
+    json.keys_under_root: true
+    json.add_error_key: true
+    processors:
+      - add_docker_metadata:
+          host: "unix:///var/run/docker.sock"
+      - add_cloud_metadata: ~
+      - add_host_metadata: ~
+
+# Filebeat modules
+filebeat.config.modules:
+  path: ${path.config}/modules.d/*.yml
+  reload.enabled: false
+
+# Processors
+processors:
+  # Add fingerprint for deduplication
+  - fingerprint:
+      fields: ["message", "log.file.path", "@timestamp"]
+      target_field: "@metadata.fingerprint"
+      method: "sha256"
+      ignore_missing: true
+
+  # Add KIRO2 metadata
+  - add_fields:
+      target: ''
+      fields:
+        platform: kiro2
+        environment: ${ENVIRONMENT:production}
+
+  # Drop empty messages
+  - drop_event:
+      when:
+        or:
+          - equals:
+              message: ""
+          - equals:
+              event: ""
+
+  # Decode JSON if message is JSON string
+  - decode_json_fields:
+      fields: ["message"]
+      target: ""
+      overwrite_keys: true
+      add_error_key: true
+      process_array: false
+      max_depth: 3
+
+# Output to Logstash
+output.logstash:
+  hosts: ["${LOGSTASH_HOST:logstash:5044}"]
+  loadbalance: true
+  bulk_max_size: 2048
+  worker: 2
+  compression_level: 3
+
+  # SSL/TLS (disabled for internal network)
+  # ssl.enabled: true
+  # ssl.certificate_authorities: ["/etc/filebeat/ca.pem"]
+  # ssl.certificate: "/etc/filebeat/cert.pem"
+  # ssl.key: "/etc/filebeat/key.pem"
+
+# Direct to Elasticsearch (fallback if Logstash is down)
+# output.elasticsearch:
+#   hosts: ["${ELASTICSEARCH_HOST:elasticsearch:9200}"]
+#   index: "kiro2-logs-%{+yyyy.MM.dd}"
+#   setup.ilm.enabled: true
+#   setup.ilm.rollover_alias: "kiro2-logs"
+#   setup.ilm.pattern: "{now/d}-000001"
+
+# Logging
+logging.level: info
+logging.to_files: true
+logging.files:
+  path: /var/log/filebeat
+  name: filebeat
+  keepfiles: 7
+  permissions: 0640
+
+# Monitoring (internal)
+monitoring.enabled: false
+
+# Queue settings
+queue.mem:
+  events: 4096
+  flush.min_events: 512
+  flush.timeout: 1s
+
+# Setup (index templates)
+setup.template.enabled: true
+setup.template.name: "kiro2-filebeat"
+setup.template.pattern: "kiro2-logs-*"
+setup.template.settings:
+  index.number_of_shards: 5
+  index.number_of_replicas: 1
+  index.codec: best_compression
+
+# ILM
+setup.ilm.enabled: true
+setup.ilm.rollover_alias: "kiro2-logs"
+setup.ilm.pattern: "{now/d}-000001"
+setup.ilm.policy_name: "kiro2-logs-policy"

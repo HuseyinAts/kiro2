@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, RefObject } from 'react';
+import { useState, useEffect, RefObject } from 'react';
 
 interface UseVideoPlayerOptions {
   autoplay?: boolean;
@@ -32,7 +32,7 @@ interface VideoPlayerControls {
 
 export const useVideoPlayer = (
   videoRef: RefObject<HTMLVideoElement>,
-  options: UseVideoPlayerOptions = {}
+  options: UseVideoPlayerOptions = {},
 ): [VideoPlayerState, VideoPlayerControls] => {
   const { autoplay = false, initialVolume = 1, initialMuted = false } = options;
 
@@ -114,7 +114,7 @@ export const useVideoPlayer = (
     if (videoRef.current) {
       videoRef.current.currentTime = Math.min(
         state.duration,
-        videoRef.current.currentTime + seconds
+        videoRef.current.currentTime + seconds,
       );
     }
   };
@@ -129,7 +129,7 @@ export const useVideoPlayer = (
   // Event handlers
   useEffect(() => {
     const video = videoRef.current;
-    if (!video) return;
+    if (!video) {return;}
 
     const handlePlay = () => setState(prev => ({ ...prev, isPlaying: true }));
     const handlePause = () => setState(prev => ({ ...prev, isPlaying: false }));

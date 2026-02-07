@@ -20,7 +20,7 @@ export const idiomReplacements: Record<string, string> = {
   'ağzından bal damlıyor': 'çok güzel konuşuyor',
   'içinden geçti': 'aklına geldi',
   'yüreği yanıyor': 'çok üzgün',
-  'göz kulak olmak': 'dikkatli olmak'
+  'göz kulak olmak': 'dikkatli olmak',
 };
 
 /**
@@ -49,7 +49,7 @@ export function shortenSentences(text: string): string {
   return sentences
     .map(sentence => {
       const trimmed = sentence.trim();
-      if (trimmed.length <= 50) return trimmed;
+      if (trimmed.length <= 50) {return trimmed;}
 
       // Bağlaçlardan böl
       const conjunctions = [' ve ', ' ama ', ' fakat ', ' ancak ', ' çünkü ', ' eğer '];
@@ -77,7 +77,7 @@ export function numberSteps(text: string): Array<{ number: number; text: string 
 
   return sentences.map((sentence, index) => ({
     number: index + 1,
-    text: sentence.endsWith('.') ? sentence : sentence + '.'
+    text: sentence.endsWith('.') ? sentence : sentence + '.',
   }));
 }
 
@@ -106,7 +106,7 @@ export const commonExamples: Record<string, string> = {
 
   // Biyoloji
   'hücre': 'Örnek: İnsan vücudu milyonlarca hücreden oluşur.',
-  'doku': 'Örnek: Kas dokusu kasılıp gevşeyebilir.'
+  'doku': 'Örnek: Kas dokusu kasılıp gevşeyebilir.',
 };
 
 /**
@@ -135,6 +135,6 @@ export function processForOSB(text: string): {
     simplified,
     shortened,
     steps,
-    hasIdioms
+    hasIdioms,
   };
 }

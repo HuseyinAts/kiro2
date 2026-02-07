@@ -3,7 +3,15 @@
  * Section-specific timers, time allocation suggestions, and pacing guidance
  * REQ-1.2, REQ-1.6
  */
-import React, { useState, useEffect, useMemo } from 'react'
+import {
+  Timer,
+  ExpandMore,
+  ExpandLess,
+  Warning,
+  Speed,
+  TrendingUp,
+  TrendingDown,
+} from '@mui/icons-material';
 import {
   Box,
   Paper,
@@ -14,17 +22,10 @@ import {
   IconButton,
   Collapse,
   Alert,
-  useTheme
-} from '@mui/material'
-import {
-  Timer,
-  ExpandMore,
-  ExpandLess,
-  Warning,
-  Speed,
-  TrendingUp,
-  TrendingDown
-} from '@mui/icons-material'
+  useTheme,
+} from '@mui/material';
+import * as React from 'react';
+import {  useState, useEffect, useMemo  } from 'react';
 
 interface SectionTimeAllocation {
   sectionName: string
@@ -57,8 +58,8 @@ const DEFAULT_SECTION_ALLOCATIONS: SectionTimeAllocation[] = [
   { sectionName: 'cografya', displayName: 'Coğrafya', questionCount: 6, recommendedMinutes: 8, color: '#5d4037' },
   { sectionName: 'felsefe', displayName: 'Felsefe', questionCount: 12, recommendedMinutes: 15, color: '#455a64' },
   { sectionName: 'din', displayName: 'Din Kültürü', questionCount: 6, recommendedMinutes: 8, color: '#6a1b9a' },
-  { sectionName: 'dil', displayName: 'Yabancı Dil', questionCount: 22, recommendedMinutes: 26, color: '#0277bd' }
-]
+  { sectionName: 'dil', displayName: 'Yabancı Dil', questionCount: 22, recommendedMinutes: 26, color: '#0277bd' },
+];
 
 export const AYTSectionTimer: React.FC<AYTSectionTimerProps> = ({
   totalTimeSeconds,
@@ -66,64 +67,63 @@ export const AYTSectionTimer: React.FC<AYTSectionTimerProps> = ({
   currentSectionIndex,
   sections = DEFAULT_SECTION_ALLOCATIONS,
   answeredPerSection,
-  onTimeWarning
+  onTimeWarning,
 }) => {
-  const theme = useTheme()
-  const [expanded, setExpanded] = useState(false)
-  const [lastWarning, setLastWarning] = useState<string | null>(null)
+  const theme = useTheme();
+  const [expanded, setExpanded] = useState(false);
+  const [lastWarning, setLastWarning] = useState<string | null>(null);
 
   // Geçen süre
-  const elapsedSeconds = totalTimeSeconds - remainingTimeSeconds
-  const elapsedMinutes = Math.floor(elapsedSeconds / 60)
+  const elapsedSeconds = totalTimeSeconds - remainingTimeSeconds;
 
   // Kalan süre formatı
   const formatTime = (seconds: number): string => {
-    const hours = Math.floor(seconds / 3600)
-    const minutes = Math.floor((seconds % 3600) / 60)
-    const secs = seconds % 60
-    
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    const secs = seconds % 60;
+
     if (hours > 0) {
-      return `${hours}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`
+      return `${hours}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
     }
-    return `${minutes}:${secs.toString().padStart(2, '0')}`
-  }
+    return `${minutes}:${secs.toString().padStart(2, '0')}`;
+  };
 
   // Bölüm bazlı süre analizi
   const sectionAnalysis = useMemo(() => {
-    let cumulativeTime = 0
-    
+    let cumulativeTime = 0;
+
     return sections.map((section, index) => {
-      const recommendedSeconds = section.recommendedMinutes * 60
-      const startTime = cumulativeTime
-      const endTime = cumulativeTime + recommendedSeconds
-      cumulativeTime = endTime
+      const recommendedSeconds = section.recommendedMinutes * 60;
+      const startTime = cumulativeTime;
+      const endTime = cumulativeTime + recommendedSeconds;
+      cumulativeTime = endTime;
 
       // Bu bölüm için harcanan süre tahmini
-      const isCurrentSection = index === currentSectionIndex
-      const isPastSection = index < currentSectionIndex
-      
-      let spentSeconds = 0
+      const isCurrentSection = index === currentSectionIndex;
+      const isPastSection = index < currentSectionIndex;
+
+      let spentSeconds = 0;
       if (isPastSection) {
-        spentSeconds = recommendedSeconds // Geçmiş bölümler için tahmini süre
+        spentSeconds = recommendedSeconds; // Geçmiş bölümler için tahmini süre
       } else if (isCurrentSection) {
         // Mevcut bölüm için gerçek harcanan süre
         const previousSectionsTime = sections
           .slice(0, index)
-          .reduce((sum, s) => sum + s.recommendedMinutes * 60, 0)
-        spentSeconds = Math.max(0, elapsedSeconds - previousSectionsTime)
+          .reduce((sum, s) => sum + s.recommendedMinutes * 60, 0);
+        spentSeconds = Math.max(0, elapsedSeconds - previousSectionsTime);
       }
 
       // Hız analizi
-      const answered = answeredPerSection[index] || 0
-      const avgTimePerQuestion = answered > 0 ? spentSeconds / answered : 0
-      const recommendedTimePerQuestion = recommendedSeconds / section.questionCount
-      
-      let pace: 'fast' | 'optimal' | 'slow' = 'optimal'
+      const answered = answeredPerSection[index] || 0;
+      const avgTimePerQuestion = answered > 0 ? spentSeconds / answered : 0;
+      const recommendedTimePerQuestion = recommendedSeconds / section.questionCount;
+
+      let pace: 'fast' | 'optimal' | 'slow' = 'optimal';
       if (avgTimePerQuestion > 0) {
         if (avgTimePerQuestion < recommendedTimePerQuestion * 0.8) {
-          pace = 'fast'
+          pace = 'fast';
         } else if (avgTimePerQuestion > recommendedTimePerQuestion * 1.2) {
-          pace = 'slow'
+          pace = 'slow';
         }
       }
 
@@ -136,43 +136,43 @@ export const AYTSectionTimer: React.FC<AYTSectionTimerProps> = ({
         avgTimePerQuestion,
         recommendedTimePerQuestion,
         pace,
-        progress: (answered / section.questionCount) * 100
-      }
-    })
-  }, [sections, currentSectionIndex, elapsedSeconds, answeredPerSection])
+        progress: (answered / section.questionCount) * 100,
+      };
+    });
+  }, [sections, currentSectionIndex, elapsedSeconds, answeredPerSection]);
 
   // Uyarı kontrolü
   useEffect(() => {
-    const currentSection = sectionAnalysis[currentSectionIndex]
-    if (!currentSection) return
+    const currentSection = sectionAnalysis[currentSectionIndex];
+    if (!currentSection) {return;}
 
     // Bölüm süresi uyarısı
-    const sectionTimeUsage = currentSection.spentSeconds / (currentSection.recommendedMinutes * 60)
+    const sectionTimeUsage = currentSection.spentSeconds / (currentSection.recommendedMinutes * 60);
     if (sectionTimeUsage > 0.9 && lastWarning !== 'section') {
-      setLastWarning('section')
-      onTimeWarning?.('section')
+      setLastWarning('section');
+      onTimeWarning?.('section');
     }
 
     // Genel süre uyarıları
-    const timeUsage = elapsedSeconds / totalTimeSeconds
+    const timeUsage = elapsedSeconds / totalTimeSeconds;
     if (timeUsage > 0.9 && lastWarning !== 'critical') {
-      setLastWarning('critical')
-      onTimeWarning?.('critical')
+      setLastWarning('critical');
+      onTimeWarning?.('critical');
     } else if (timeUsage > 0.75 && lastWarning !== 'final') {
-      setLastWarning('final')
-      onTimeWarning?.('final')
+      setLastWarning('final');
+      onTimeWarning?.('final');
     }
-  }, [currentSectionIndex, elapsedSeconds, totalTimeSeconds, sectionAnalysis, lastWarning, onTimeWarning])
+  }, [currentSectionIndex, elapsedSeconds, totalTimeSeconds, sectionAnalysis, lastWarning, onTimeWarning]);
 
   // Renk belirleme
   const getTimeColor = (percentage: number): string => {
-    if (percentage > 75) return theme.palette.error.main
-    if (percentage > 50) return theme.palette.warning.main
-    return theme.palette.success.main
-  }
+    if (percentage > 75) {return theme.palette.error.main;}
+    if (percentage > 50) {return theme.palette.warning.main;}
+    return theme.palette.success.main;
+  };
 
-  const currentSection = sectionAnalysis[currentSectionIndex]
-  const timePercentage = (elapsedSeconds / totalTimeSeconds) * 100
+  const currentSection = sectionAnalysis[currentSectionIndex];
+  const timePercentage = (elapsedSeconds / totalTimeSeconds) * 100;
 
   return (
     <Paper elevation={2} sx={{ overflow: 'hidden' }}>
@@ -189,7 +189,7 @@ export const AYTSectionTimer: React.FC<AYTSectionTimerProps> = ({
             {expanded ? <ExpandLess /> : <ExpandMore />}
           </IconButton>
         </Box>
-        
+
         <LinearProgress
           variant="determinate"
           value={timePercentage}
@@ -198,11 +198,11 @@ export const AYTSectionTimer: React.FC<AYTSectionTimerProps> = ({
             borderRadius: 4,
             bgcolor: 'grey.200',
             '& .MuiLinearProgress-bar': {
-              bgcolor: getTimeColor(timePercentage)
-            }
+              bgcolor: getTimeColor(timePercentage),
+            },
           }}
         />
-        
+
         <Typography variant="caption" color="textSecondary" sx={{ mt: 0.5, display: 'block' }}>
           Toplam: {Math.floor(totalTimeSeconds / 60)} dakika
         </Typography>
@@ -231,7 +231,7 @@ export const AYTSectionTimer: React.FC<AYTSectionTimerProps> = ({
                 variant="outlined"
               />
             </Tooltip>
-            
+
             {currentSection.pace === 'fast' && (
               <Tooltip title="Hızlı ilerliyorsunuz">
                 <Chip
@@ -243,7 +243,7 @@ export const AYTSectionTimer: React.FC<AYTSectionTimerProps> = ({
                 />
               </Tooltip>
             )}
-            
+
             {currentSection.pace === 'slow' && (
               <Tooltip title="Yavaş ilerliyorsunuz">
                 <Chip
@@ -255,7 +255,7 @@ export const AYTSectionTimer: React.FC<AYTSectionTimerProps> = ({
                 />
               </Tooltip>
             )}
-            
+
             {currentSection.pace === 'optimal' && (
               <Tooltip title="Optimal hızdasınız">
                 <Chip
@@ -277,8 +277,8 @@ export const AYTSectionTimer: React.FC<AYTSectionTimerProps> = ({
               borderRadius: 3,
               bgcolor: 'grey.200',
               '& .MuiLinearProgress-bar': {
-                bgcolor: currentSection.color
-              }
+                bgcolor: currentSection.color,
+              },
             }}
           />
         </Box>
@@ -290,11 +290,11 @@ export const AYTSectionTimer: React.FC<AYTSectionTimerProps> = ({
           <Typography variant="subtitle2" gutterBottom fontWeight="bold">
             Bölüm Bazlı Süre Dağılımı
           </Typography>
-          
+
           {sectionAnalysis.map((section, index) => {
-            const isActive = index === currentSectionIndex
-            const isPast = index < currentSectionIndex
-            const timeUsage = (section.spentSeconds / (section.recommendedMinutes * 60)) * 100
+            const isActive = index === currentSectionIndex;
+            const isPast = index < currentSectionIndex;
+            const timeUsage = (section.spentSeconds / (section.recommendedMinutes * 60)) * 100;
 
             return (
               <Box
@@ -306,7 +306,7 @@ export const AYTSectionTimer: React.FC<AYTSectionTimerProps> = ({
                   bgcolor: isActive ? 'white' : 'transparent',
                   border: 1,
                   borderColor: isActive ? section.color : 'transparent',
-                  opacity: isPast ? 0.7 : 1
+                  opacity: isPast ? 0.7 : 1,
                 }}
               >
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 0.5 }}>
@@ -331,8 +331,8 @@ export const AYTSectionTimer: React.FC<AYTSectionTimerProps> = ({
                       borderRadius: 2,
                       bgcolor: 'grey.200',
                       '& .MuiLinearProgress-bar': {
-                        bgcolor: section.color
-                      }
+                        bgcolor: section.color,
+                      },
                     }}
                   />
                   <Typography variant="caption" color="textSecondary" sx={{ minWidth: 40 }}>
@@ -342,12 +342,12 @@ export const AYTSectionTimer: React.FC<AYTSectionTimerProps> = ({
 
                 {isActive && section.avgTimePerQuestion > 0 && (
                   <Typography variant="caption" color="textSecondary" sx={{ mt: 0.5, display: 'block' }}>
-                    Soru başına: {Math.round(section.avgTimePerQuestion)}s 
+                    Soru başına: {Math.round(section.avgTimePerQuestion)}s
                     (Önerilen: {Math.round(section.recommendedTimePerQuestion)}s)
                   </Typography>
                 )}
               </Box>
-            )
+            );
           })}
 
           {/* Hız Önerileri */}
@@ -360,7 +360,7 @@ export const AYTSectionTimer: React.FC<AYTSectionTimerProps> = ({
               <Typography variant="caption">
                 {currentSection.pace === 'slow' ? (
                   <>
-                    <strong>Dikkat:</strong> Bu bölümde yavaş ilerliyorsunuz. 
+                    <strong>Dikkat:</strong> Bu bölümde yavaş ilerliyorsunuz.
                     Soru başına ortalama {Math.round(currentSection.recommendedTimePerQuestion)}s hedefleyin.
                   </>
                 ) : (
@@ -374,7 +374,7 @@ export const AYTSectionTimer: React.FC<AYTSectionTimerProps> = ({
         </Box>
       </Collapse>
     </Paper>
-  )
-}
+  );
+};
 
-export default AYTSectionTimer
+export default AYTSectionTimer;

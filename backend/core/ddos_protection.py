@@ -11,14 +11,13 @@ Features:
 - Automatic IP blocking
 - Whitelist/Blacklist management
 """
-import ipaddress
 import time
 from collections import defaultdict
 from dataclasses import dataclass
-from typing import Any, Callable, Dict, List, Optional, Set
+from typing import Any, Dict, List, Optional, Set
 
 import redis
-from fastapi import FastAPI, Request, Response, HTTPException, status
+from fastapi import FastAPI, Request, HTTPException, status
 from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
 from slowapi.util import get_remote_address
@@ -67,7 +66,7 @@ limiter = Limiter(
     key_func=get_rate_limit_key,
     default_limits=["1000/hour", "200/minute"],  # Default global limits
     storage_uri=settings.redis_url if hasattr(settings, "redis_url") else "memory://",
-    strategy="fixed-window-elastic-expiry",  # Most DDoS-resistant strategy
+    strategy="fixed-window",  # Valid strategies: fixed-window, moving-window
     headers_enabled=True,  # Add X-RateLimit-* headers
 )
 

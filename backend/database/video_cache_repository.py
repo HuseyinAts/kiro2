@@ -10,12 +10,10 @@ Task 8: Database Optimization ve Indexing
 """
 
 import logging
-from datetime import datetime
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, Optional
 
-from sqlalchemy import and_, delete, func, select, text, update
+from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.dialects.postgresql import insert
 
 logger = logging.getLogger(__name__)
 

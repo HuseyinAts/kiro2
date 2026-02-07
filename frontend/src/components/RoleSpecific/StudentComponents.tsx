@@ -1,4 +1,13 @@
-import React from 'react'
+import {
+  School,
+  Assessment,
+  TrendingUp,
+  Star,
+  PlayArrow,
+  History,
+  Chat,
+  MenuBook,
+} from '@mui/icons-material';
 import {
   Box,
   Card,
@@ -12,19 +21,10 @@ import {
   ListItem,
   ListItemIcon,
   ListItemText,
-  Avatar
-} from '@mui/material'
-import {
-  School,
-  Assessment,
-  TrendingUp,
-  Star,
-  PlayArrow,
-  History,
-  Chat,
-  MenuBook
-} from '@mui/icons-material'
-import { useNavigate } from 'react-router-dom'
+  Avatar,
+} from '@mui/material';
+import * as React from 'react';
+import { useNavigate } from 'react-router-dom';
 
 interface StudentQuickActionsProps {
   onExamStart?: () => void
@@ -33,36 +33,36 @@ interface StudentQuickActionsProps {
 
 export const StudentQuickActions: React.FC<StudentQuickActionsProps> = ({
   onExamStart,
-  onChatOpen
+  onChatOpen,
 }) => {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   const quickActions = [
     {
       label: 'Sınav Başlat',
       icon: <PlayArrow />,
       color: 'primary' as const,
-      onClick: () => onExamStart ? onExamStart() : navigate('/exam/start')
+      onClick: () => onExamStart ? onExamStart() : navigate('/exam/start'),
     },
     {
       label: 'AI Sohbet',
       icon: <Chat />,
       color: 'secondary' as const,
-      onClick: () => onChatOpen ? onChatOpen() : navigate('/chat')
+      onClick: () => onChatOpen ? onChatOpen() : navigate('/chat'),
     },
     {
       label: 'Sınav Geçmişi',
       icon: <History />,
       color: 'info' as const,
-      onClick: () => navigate('/exam/history')
+      onClick: () => navigate('/exam/history'),
     },
     {
       label: 'Öğrenme Yolu',
       icon: <MenuBook />,
       color: 'success' as const,
-      onClick: () => navigate('/learning-path')
-    }
-  ]
+      onClick: () => navigate('/learning-path'),
+    },
+  ];
 
   return (
     <Card>
@@ -88,8 +88,8 @@ export const StudentQuickActions: React.FC<StudentQuickActionsProps> = ({
         </Grid>
       </CardContent>
     </Card>
-  )
-}
+  );
+};
 
 interface StudentProgressCardProps {
   title: string
@@ -104,7 +104,7 @@ export const StudentProgressCard: React.FC<StudentProgressCardProps> = ({
   current,
   total,
   percentage,
-  color = 'primary'
+  color = 'primary',
 }) => {
   return (
     <Card>
@@ -131,8 +131,8 @@ export const StudentProgressCard: React.FC<StudentProgressCardProps> = ({
         </Typography>
       </CardContent>
     </Card>
-  )
-}
+  );
+};
 
 interface StudentAchievementProps {
   achievements: Array<{
@@ -145,7 +145,7 @@ interface StudentAchievementProps {
 }
 
 export const StudentAchievements: React.FC<StudentAchievementProps> = ({
-  achievements
+  achievements,
 }) => {
   return (
     <Card>
@@ -161,7 +161,7 @@ export const StudentAchievements: React.FC<StudentAchievementProps> = ({
                   sx={{
                     bgcolor: achievement.earned ? 'success.main' : 'grey.300',
                     width: 32,
-                    height: 32
+                    height: 32,
                   }}
                 >
                   <Star sx={{ fontSize: 20 }} />
@@ -183,8 +183,8 @@ export const StudentAchievements: React.FC<StudentAchievementProps> = ({
         </List>
       </CardContent>
     </Card>
-  )
-}
+  );
+};
 
 interface StudentStatsProps {
   stats: {
@@ -197,37 +197,37 @@ interface StudentStatsProps {
 
 export const StudentStats: React.FC<StudentStatsProps> = ({ stats }) => {
   const formatStudyTime = (minutes: number): string => {
-    const hours = Math.floor(minutes / 60)
-    const mins = minutes % 60
-    return `${hours}s ${mins}dk`
-  }
+    const hours = Math.floor(minutes / 60);
+    const mins = minutes % 60;
+    return `${hours}s ${mins}dk`;
+  };
 
   const statItems = [
     {
       label: 'Toplam Çalışma',
       value: formatStudyTime(stats.totalStudyTime),
       icon: <School />,
-      color: 'primary'
+      color: 'primary',
     },
     {
       label: 'Tamamlanan Ders',
       value: stats.completedLessons.toString(),
       icon: <MenuBook />,
-      color: 'success'
+      color: 'success',
     },
     {
       label: 'Ortalama Puan',
       value: `${stats.averageScore.toFixed(1)}`,
       icon: <Assessment />,
-      color: 'warning'
+      color: 'warning',
     },
     {
       label: 'Günlük Seri',
       value: `${stats.currentStreak} gün`,
       icon: <TrendingUp />,
-      color: 'info'
-    }
-  ]
+      color: 'info',
+    },
+  ];
 
   return (
     <Grid container spacing={2}>
@@ -249,12 +249,12 @@ export const StudentStats: React.FC<StudentStatsProps> = ({ stats }) => {
         </Grid>
       ))}
     </Grid>
-  )
-}
+  );
+};
 
 export default {
   StudentQuickActions,
   StudentProgressCard,
   StudentAchievements,
-  StudentStats
-}
+  StudentStats,
+};

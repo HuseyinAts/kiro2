@@ -5,8 +5,23 @@
  * Supports documents, images, videos, and archives.
  */
 
-import React, { useState, useEffect, useRef } from 'react';
-import axios from 'axios';
+import {
+  CloudUpload as UploadIcon,
+  Description as DocumentIcon,
+  Image as ImageIcon,
+  VideoLibrary as VideoIcon,
+  AudioFile as AudioIcon,
+  Archive as ArchiveIcon,
+  InsertDriveFile as FileIcon,
+  Download as DownloadIcon,
+  Delete as DeleteIcon,
+  MoreVert as MoreVertIcon,
+  History as HistoryIcon,
+  Info as InfoIcon,
+  Folder as FolderIcon,
+  GridView as GridViewIcon,
+  ViewList as ListViewIcon,
+} from '@mui/icons-material';
 import {
   Box,
   Paper,
@@ -33,23 +48,10 @@ import {
   CardContent,
   CardActions,
 } from '@mui/material';
-import {
-  CloudUpload as UploadIcon,
-  Description as DocumentIcon,
-  Image as ImageIcon,
-  VideoLibrary as VideoIcon,
-  AudioFile as AudioIcon,
-  Archive as ArchiveIcon,
-  InsertDriveFile as FileIcon,
-  Download as DownloadIcon,
-  Delete as DeleteIcon,
-  MoreVert as MoreVertIcon,
-  History as HistoryIcon,
-  Info as InfoIcon,
-  Folder as FolderIcon,
-  GridView as GridViewIcon,
-  ViewList as ListViewIcon,
-} from '@mui/icons-material';
+import axios from 'axios';
+import * as React from 'react';
+import {  useState, useEffect, useRef  } from 'react';
+
 import { dateUtils } from '@/utils/dateUtils';
 
 // ============================================================
@@ -143,7 +145,7 @@ const FileManager: React.FC<FileManagerProps> = ({ roomId, currentUserId }) => {
       filtered = filtered.filter(
         (file) =>
           file.file_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          file.description?.toLowerCase().includes(searchQuery.toLowerCase())
+          file.description?.toLowerCase().includes(searchQuery.toLowerCase()),
       );
     }
 
@@ -152,7 +154,7 @@ const FileManager: React.FC<FileManagerProps> = ({ roomId, currentUserId }) => {
 
   const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
-    if (!file) return;
+    if (!file) {return;}
 
     setUploading(true);
     setUploadProgress(0);
@@ -199,8 +201,8 @@ const FileManager: React.FC<FileManagerProps> = ({ roomId, currentUserId }) => {
       // Update local state
       setFiles((prev) =>
         prev.map((f) =>
-          f.id === file.id ? { ...f, download_count: f.download_count + 1 } : f
-        )
+          f.id === file.id ? { ...f, download_count: f.download_count + 1 } : f,
+        ),
       );
     } catch (error) {
       console.error('Error downloading file:', error);
@@ -208,7 +210,7 @@ const FileManager: React.FC<FileManagerProps> = ({ roomId, currentUserId }) => {
   };
 
   const handleFileDelete = async (fileId: string) => {
-    if (!window.confirm('Bu dosyayı silmek istediğinizden emin misiniz?')) return;
+    if (!window.confirm('Bu dosyayı silmek istediğinizden emin misiniz?')) {return;}
 
     try {
       await axios.delete(`/api/study-rooms/${roomId}/files/${fileId}`);
@@ -257,9 +259,9 @@ const FileManager: React.FC<FileManagerProps> = ({ roomId, currentUserId }) => {
   };
 
   const formatFileSize = (bytes: number): string => {
-    if (bytes < 1024) return `${bytes} B`;
-    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(2)} KB`;
-    if (bytes < 1024 * 1024 * 1024) return `${(bytes / 1024 / 1024).toFixed(2)} MB`;
+    if (bytes < 1024) {return `${bytes} B`;}
+    if (bytes < 1024 * 1024) {return `${(bytes / 1024).toFixed(2)} KB`;}
+    if (bytes < 1024 * 1024 * 1024) {return `${(bytes / 1024 / 1024).toFixed(2)} MB`;}
     return `${(bytes / 1024 / 1024 / 1024).toFixed(2)} GB`;
   };
 

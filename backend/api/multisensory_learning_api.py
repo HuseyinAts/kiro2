@@ -15,7 +15,6 @@ from services.multisensory_learning_service import (
     VRARContent,
     LearningModality,
     AnimationType,
-    MediaType,
 )
 
 router = APIRouter(prefix="/api/v1/multisensory", tags=["Multisensory Learning"])

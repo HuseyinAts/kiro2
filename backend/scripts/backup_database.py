@@ -32,8 +32,7 @@ import argparse
 import subprocess
 from pathlib import Path
 from datetime import datetime, timedelta
-from typing import Optional, List
-import asyncio
+from typing import Optional
 import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
@@ -70,7 +69,7 @@ class DatabaseBackup:
 
         # Database connection info
         self.db_host = os.getenv("POSTGRES_HOST", "localhost")
-        self.db_port = os.getenv("POSTGRES_PORT", "5432")
+        self.db_port = os.getenv("POSTGRES_PORT", "5434")
         self.db_name = os.getenv("POSTGRES_DB", "kiro2_db")
         self.db_user = os.getenv("POSTGRES_USER", "postgres")
         self.db_password = os.getenv("POSTGRES_PASSWORD", "postgres")

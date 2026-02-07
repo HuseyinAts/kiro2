@@ -424,7 +424,7 @@ class OSYMBenchmarkComparator:
                         result["chi2_statistic"] = chi2_stat
                         result["chi2_pvalue"] = chi2_pval
                         result["chi2_similar"] = chi2_pval > 0.05
-                    except ValueError as e:
+                    except ValueError:
                         # If still fails, use proportion-based similarity instead
                         prop_diff = np.abs(ai_proportions - ref_proportions).mean()
                         result["proportion_similarity"] = 1 - prop_diff
@@ -667,14 +667,14 @@ if __name__ == "__main__":
 
     # Set reference
     ref_stats = comparator.set_reference_benchmark(osym_questions)
-    print(f"\n📊 ÖSYM Reference Statistics:")
+    print("\n📊 ÖSYM Reference Statistics:")
     print(f"  Questions: {ref_stats.total_count}")
     print(f"  Mean length: {ref_stats.mean_length:.1f} chars")
     print(f"  Difficulty: {ref_stats.difficulty_percentages}")
 
     # Compare AI questions
     comparison = comparator.compare_against_benchmark(ai_questions)
-    print(f"\n📊 Benchmark Comparison:")
+    print("\n📊 Benchmark Comparison:")
     print(
         f"  Overall similarity: {comparison.overall_similarity:.3f} ({comparison.interpretation})"
     )
@@ -683,11 +683,11 @@ if __name__ == "__main__":
     print(f"  Bloom similarity: {comparison.bloom_similarity:.3f}")
 
     if comparison.issues:
-        print(f"\n⚠️ Issues:")
+        print("\n⚠️ Issues:")
         for issue in comparison.issues:
             print(f"  - {issue}")
 
     if comparison.recommendations:
-        print(f"\n💡 Recommendations:")
+        print("\n💡 Recommendations:")
         for rec in comparison.recommendations:
             print(f"  - {rec}")

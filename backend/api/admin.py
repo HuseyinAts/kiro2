@@ -1,7 +1,10 @@
 """
 Admin Panel Backend API'leri
 Kullanıcı yönetimi, dashboard istatistikleri ve içerik yönetimi
+
+CODE QUALITY FIX: Removed sensitive data exposure in error messages
 """
+import logging
 from datetime import datetime
 from typing import Any, Dict, List, Optional
 
@@ -12,6 +15,8 @@ from models.enums import KullaniciRolu
 from models.user import Kullanici, KullaniciOlustur
 from services.admin_service import admin_servisi
 from services.user_service import kullanici_servisi
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/api/v1/admin", tags=["Admin Panel"])
 security = HTTPBearer()
@@ -50,9 +55,9 @@ async def kullanicilari_listele(
     rol: Optional[KullaniciRolu] = Query(None, description="Rol filtresi"),
     aktif: Optional[bool] = Query(None, description="Aktiflik durumu filtresi"),
     sayfa: int = Query(1, ge=1, description="Sayfa numarası"),
-    sayfa_boyutu: int = Query(20, ge=1, le=100, description="Sayfa boyutu"),
+    sayfa_boyutu: int = Query(20, ge=1, le=50, description="Sayfa boyutu (max 50)"),
     _: Kullanici = Depends(admin_kullanici_getir),
-):
+) -> List[Kullanici]:
     """
     Tüm kullanıcıları listele (Admin yetkisi gerekli)
 
@@ -66,17 +71,25 @@ async def kullanicilari_listele(
             rol=rol, aktif=aktif, sayfa=sayfa, sayfa_boyutu=sayfa_boyutu
         )
         return kullanicilar
+    except (ConnectionError, TimeoutError) as e:
+        logger.error(f"Database connection error in kullanicilari_listele: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="Veritabanı bağlantısı kurulamadı",
+        )
     except Exception as e:
+        # SECURITY FIX: Log full error, but don't expose to client
+        logger.error(f"Error in kullanicilari_listele: {e}", exc_info=True)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Kullanıcı listesi alınırken hata: {str(e)}",
+            detail="Kullanıcı listesi alınırken hata oluştu",
         )
 
 
 @router.post("/users", response_model=Kullanici, summary="Yeni Kullanıcı Oluştur")
 async def kullanici_olustur(
     kullanici_data: KullaniciOlustur, _: Kullanici = Depends(admin_kullanici_getir)
-):
+) -> Kullanici:
     """
     Yeni kullanıcı oluştur (Admin yetkisi gerekli)
 
@@ -89,11 +102,20 @@ async def kullanici_olustur(
         kullanici = await admin_servisi.kullanici_olustur(kullanici_data)
         return kullanici
     except ValueError as e:
+        # ValueError is expected for validation errors - safe to show
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
+    except (ConnectionError, TimeoutError) as e:
+        logger.error(f"Database connection error in kullanici_olustur: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="Veritabanı bağlantısı kurulamadı",
+        )
     except Exception as e:
+        # SECURITY FIX: Don't expose internal errors
+        logger.error(f"Error in kullanici_olustur: {e}", exc_info=True)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Kullanıcı oluşturulurken hata: {str(e)}",
+            detail="Kullanıcı oluşturulurken hata oluştu",
         )
 
 
@@ -102,7 +124,7 @@ async def kullanici_olustur(
 )
 async def kullanici_detay(
     kullanici_id: str, _: Kullanici = Depends(admin_kullanici_getir)
-):
+) -> Kullanici:
     """
     Belirli kullanıcının detay bilgilerini getir (Admin yetkisi gerekli)
     """
@@ -123,7 +145,7 @@ async def kullanici_guncelle(
     kullanici_id: str,
     kullanici_data: Dict[str, Any],
     _: Kullanici = Depends(admin_kullanici_getir),
-):
+) -> Kullanici:
     """
     Kullanıcı bilgilerini güncelle (Admin yetkisi gerekli)
 
@@ -148,7 +170,7 @@ async def kullanici_guncelle(
 @router.delete("/users/{kullanici_id}", summary="Kullanıcı Sil")
 async def kullanici_sil(
     kullanici_id: str, _: Kullanici = Depends(admin_kullanici_getir)
-):
+) -> Dict[str, Any]:
     """
     Kullanıcıyı sil (Admin yetkisi gerekli)
 
@@ -174,7 +196,9 @@ async def kullanici_sil(
 
 
 @router.get("/dashboard/stats", summary="Admin Dashboard İstatistikleri")
-async def dashboard_istatistikleri(_: Kullanici = Depends(admin_kullanici_getir)):
+async def dashboard_istatistikleri(
+    _: Kullanici = Depends(admin_kullanici_getir),
+) -> Dict[str, Any]:
     """
     Admin dashboard için genel sistem istatistikleri
 
@@ -207,9 +231,9 @@ async def soru_bankasi_listesi(
     zorluk: Optional[str] = Query(None, description="Zorluk seviyesi filtresi"),
     sinav_tipi: Optional[str] = Query(None, description="Sınav türü filtresi"),
     sayfa: int = Query(1, ge=1, description="Sayfa numarası"),
-    sayfa_boyutu: int = Query(20, ge=1, le=100, description="Sayfa boyutu"),
+    sayfa_boyutu: int = Query(20, ge=1, le=50, description="Sayfa boyutu (max 50)"),
     _: Kullanici = Depends(admin_kullanici_getir),
-):
+) -> Dict[str, Any]:
     """
     Soru bankasındaki soruları listele (Admin yetkisi gerekli)
 
@@ -240,7 +264,7 @@ async def soru_bankasi_listesi(
 @router.post("/content/questions", summary="Yeni Soru Ekle")
 async def soru_ekle(
     soru_data: Dict[str, Any], _: Kullanici = Depends(admin_kullanici_getir)
-):
+) -> Dict[str, Any]:
     """
     Soru bankasına yeni soru ekle (Admin yetkisi gerekli)
 
@@ -269,7 +293,7 @@ async def soru_guncelle(
     soru_id: str,
     soru_data: Dict[str, Any],
     _: Kullanici = Depends(admin_kullanici_getir),
-):
+) -> Dict[str, Any]:
     """
     Mevcut soruyu güncelle (Admin yetkisi gerekli)
     """
@@ -286,7 +310,9 @@ async def soru_guncelle(
 
 
 @router.delete("/content/questions/{soru_id}", summary="Soru Sil")
-async def soru_sil(soru_id: str, _: Kullanici = Depends(admin_kullanici_getir)):
+async def soru_sil(
+    soru_id: str, _: Kullanici = Depends(admin_kullanici_getir)
+) -> Dict[str, Any]:
     """
     Soruyu sil (Admin yetkisi gerekli)
     """
@@ -315,9 +341,9 @@ async def egitim_materyalleri_listesi(
     konu: Optional[str] = Query(None, description="Konu filtresi"),
     onay_durumu: Optional[str] = Query(None, description="Onay durumu filtresi"),
     sayfa: int = Query(1, ge=1, description="Sayfa numarası"),
-    sayfa_boyutu: int = Query(20, ge=1, le=100, description="Sayfa boyutu"),
+    sayfa_boyutu: int = Query(20, ge=1, le=50, description="Sayfa boyutu (max 50)"),
     _: Kullanici = Depends(admin_kullanici_getir),
-):
+) -> Dict[str, Any]:
     """
     Eğitim materyallerini listele (Admin yetkisi gerekli)
 
@@ -344,7 +370,7 @@ async def egitim_materyalleri_listesi(
 @router.post("/content/educational", summary="Yeni Eğitim Materyali Ekle")
 async def egitim_materyali_ekle(
     materyal_data: Dict[str, Any], _: Kullanici = Depends(admin_kullanici_getir)
-):
+) -> Dict[str, Any]:
     """
     Yeni eğitim materyali ekle (Admin yetkisi gerekli)
 
@@ -377,7 +403,7 @@ async def egitim_materyali_guncelle(
     materyal_id: str,
     materyal_data: Dict[str, Any],
     _: Kullanici = Depends(admin_kullanici_getir),
-):
+) -> Dict[str, Any]:
     """
     Eğitim materyalini güncelle (Admin yetkisi gerekli)
     """
@@ -402,7 +428,7 @@ async def egitim_materyali_guncelle(
 @router.delete("/content/educational/{materyal_id}", summary="Eğitim Materyali Sil")
 async def egitim_materyali_sil(
     materyal_id: str, _: Kullanici = Depends(admin_kullanici_getir)
-):
+) -> Dict[str, Any]:
     """
     Eğitim materyalini sil (Admin yetkisi gerekli)
     """
@@ -430,7 +456,7 @@ async def egitim_materyali_onayla(
     materyal_id: str,
     onay_data: Dict[str, Any],
     _: Kullanici = Depends(admin_kullanici_getir),
-):
+) -> Dict[str, Any]:
     """
     Eğitim materyalini onayla veya reddet (Admin yetkisi gerekli)
 
@@ -462,7 +488,7 @@ async def egitim_materyali_onayla(
 @router.post("/content/questions/bulk-upload", summary="Toplu Soru Yükleme")
 async def toplu_soru_yukle(
     sorular_data: List[Dict[str, Any]], _: Kullanici = Depends(admin_kullanici_getir)
-):
+) -> Dict[str, Any]:
     """
     Toplu soru yükleme (Admin yetkisi gerekli)
 
@@ -487,9 +513,9 @@ async def icerik_ara(
     q: str = Query(..., min_length=2, description="Arama terimi"),
     tur: Optional[str] = Query(None, description="İçerik türü filtresi"),
     sayfa: int = Query(1, ge=1, description="Sayfa numarası"),
-    sayfa_boyutu: int = Query(20, ge=1, le=100, description="Sayfa boyutu"),
+    sayfa_boyutu: int = Query(20, ge=1, le=50, description="Sayfa boyutu (max 50)"),
     _: Kullanici = Depends(admin_kullanici_getir),
-):
+) -> Dict[str, Any]:
     """
     İçerik arama (sorular ve eğitim materyalleri)
     """

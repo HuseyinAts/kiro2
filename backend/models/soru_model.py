@@ -4,7 +4,7 @@ Soru modeli - sorular tablosu için doğru mapping
 import uuid
 from datetime import datetime
 from typing import Optional
-from sqlalchemy import Boolean, Column, DateTime, Float, Integer, String, Text, MetaData
+from sqlalchemy import Boolean, DateTime, Float, Integer, String, Text, MetaData
 from sqlalchemy.dialects.postgresql import JSONB, UUID
 from sqlalchemy.orm import Mapped, mapped_column, DeclarativeBase
 
@@ -96,3 +96,16 @@ class Soru(SoruBase):
 
     # Visual content support (Phase 1: Tables, Phase 2: Graphs, Phase 3: Geometry)
     visual_content: Mapped[Optional[dict]] = mapped_column(JSONB)
+
+    # Taxonomy fields (SOLO, Marzano, Webb DOK)
+    solo_level: Mapped[Optional[str]] = mapped_column(String)
+    marzano_system: Mapped[Optional[str]] = mapped_column(String)
+    marzano_cognitive_level: Mapped[Optional[str]] = mapped_column(String)
+    webb_dok_level: Mapped[Optional[str]] = mapped_column(String)
+    taxonomy_consistency_score: Mapped[Optional[float]] = mapped_column(Float)
+
+    # Quality enhancement fields
+    cognitive_load_estimate: Mapped[Optional[float]] = mapped_column(Float)
+    difficulty_trend: Mapped[Optional[str]] = mapped_column(String)
+    linked_misconceptions: Mapped[Optional[list]] = mapped_column(JSONB)
+    turkish_readability_index: Mapped[Optional[float]] = mapped_column(Float)

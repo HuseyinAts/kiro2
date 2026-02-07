@@ -1,0 +1,306 @@
+import React, { useState, useEffect } from 'react'
+import {
+  Container,
+  Typography,
+  Box,
+  Grid,
+  Card,
+  CardContent,
+  CardActions,
+  Button,
+  Chip,
+  Alert,
+  CircularProgress,
+  Fab,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  TextField,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem
+} from '@mui/material'
+import {
+  Class,
+  People,
+  Add,
+  Edit,
+  Assessment,
+  TrendingUp
+} from '@mui/icons-material'
+import { useAuth } from '../hooks/useAuth'
+import { ClassInfo } from '../types'
+
+export const TeacherClassesPage: React.FC = () => {
+  const [classes, setClasses] = useState<ClassInfo[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const [createDialogOpen, setCreateDialogOpen] = useState(false)
+  const [newClass, setNewClass] = useState({
+    sinif_adi: '',
+    seviye: '',
+    ders: ''
+  })
+  
+  const { user } = useAuth()
+
+  useEffect(() => {
+    loadClasses()
+  }, [])
+
+  const loadClasses = async () => {
+    try {
+      setLoading(true)
+
+      // Backend API çağrısı
+      const response = await fetch('/api/v1/teacher/classes', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        }
+      })
+
+      if (!response.ok) {
+        throw new Error(`API hatası: ${response.status}`)
+      }
+
+      const apiResult = await response.json()
+
+      if (!apiResult.success && !Array.isArray(apiResult)) {
+        throw new Error(apiResult.message || 'Sınıf listesi alınamadı')
+      }
+
+      const classesData = Array.isArray(apiResult) ? apiResult : apiResult.data || []
+      setClasses(classesData)
+      return
+
+    } catch (error: any) {
+      console.error('Teacher Classes API hatası:', error)
+      setError(`Sınıf listesi yüklenemedi: ${error.message}`)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleCreateClass = async () => {
+    if (!newClass.sinif_adi || !newClass.seviye || !newClass.ders) {
+      alert('Lütfen tüm alanları doldurun')
+      return
+    }
+
+    try {
+      // Backend API çağrısı
+      const response = await fetch('/api/v1/teacher/classes', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        },
+        body: JSON.stringify(newClass)
+      })
+
+      if (!response.ok) {
+        throw new Error(`API hatası: ${response.status}`)
+      }
+
+      const apiResult = await response.json()
+
+      if (!apiResult.success) {
+        throw new Error(apiResult.message || 'Sınıf oluşturulamadı')
+      }
+
+      const createdClass = apiResult.data
+
+      setClasses(prev => [...prev, createdClass])
+      setCreateDialogOpen(false)
+      setNewClass({ sinif_adi: '', seviye: '', ders: '' })
+
+    } catch (error: any) {
+      console.error('Create Class API hatası:', error)
+      alert(`Sınıf oluşturulamadı: ${error.message}`)
+    }
+  }
+
+  const getSuccessColor = (basari: number): 'success' | 'warning' | 'error' => {
+    if (basari >= 80) return 'success'
+    if (basari >= 60) return 'warning'
+    return 'error'
+  }
+
+  if (loading) {
+    return (
+      <Box display="flex" justifyContent="center" alignItems="center" minHeight="400px">
+        <CircularProgress />
+      </Box>
+    )
+  }
+
+  if (error) {
+    return (
+      <Container maxWidth="lg" sx={{ mt: 4 }}>
+        <Alert severity="error">{error}</Alert>
+      </Container>
+    )
+  }
+
+  return (
+    <Container maxWidth="lg" sx={{ mt: 2, mb: 4 }}>
+      {/* Sayfa Başlığı */}
+      <Box sx={{ mb: 4 }}>
+        <Typography variant="h4" component="h1" gutterBottom>
+          Sınıflarım
+        </Typography>
+        <Typography variant="body1" color="text.secondary">
+          Sınıflarınızı yönetin ve öğrenci performansını takip edin
+        </Typography>
+      </Box>
+
+      {/* Sınıf Kartları */}
+      <Grid container spacing={3}>
+        {classes.map((sinif) => (
+          <Grid item xs={12} sm={6} md={4} key={sinif.sinif_id}>
+            <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+              <CardContent sx={{ flexGrow: 1 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                  <Class sx={{ mr: 1, color: 'primary.main' }} />
+                  <Typography variant="h6" component="h2">
+                    {sinif.sinif_adi}
+                  </Typography>
+                </Box>
+                
+                <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+                  <People sx={{ mr: 1, fontSize: 20, color: 'text.secondary' }} />
+                  <Typography variant="body2" color="text.secondary">
+                    {sinif.ogrenci_sayisi} öğrenci
+                  </Typography>
+                </Box>
+                
+                <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                  <TrendingUp sx={{ mr: 1, fontSize: 20, color: 'text.secondary' }} />
+                  <Typography variant="body2" color="text.secondary">
+                    Ortalama Başarı:
+                  </Typography>
+                  <Chip
+                    label={`${sinif.ortalama_basari.toFixed(1)}%`}
+                    color={getSuccessColor(sinif.ortalama_basari)}
+                    size="small"
+                    sx={{ ml: 1 }}
+                  />
+                </Box>
+              </CardContent>
+              
+              <CardActions>
+                <Button size="small" startIcon={<People />}>
+                  Öğrenciler
+                </Button>
+                <Button size="small" startIcon={<Assessment />}>
+                  Sınavlar
+                </Button>
+                <Button size="small" startIcon={<Edit />}>
+                  Düzenle
+                </Button>
+              </CardActions>
+            </Card>
+          </Grid>
+        ))}
+        
+        {/* Boş Durum */}
+        {classes.length === 0 && (
+          <Grid item xs={12}>
+            <Box sx={{ textAlign: 'center', py: 8 }}>
+              <Class sx={{ fontSize: 80, color: 'text.secondary', mb: 2 }} />
+              <Typography variant="h6" color="text.secondary" gutterBottom>
+                Henüz sınıfınız bulunmuyor
+              </Typography>
+              <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+                İlk sınıfınızı oluşturmak için aşağıdaki butona tıklayın
+              </Typography>
+              <Button
+                variant="contained"
+                startIcon={<Add />}
+                onClick={() => setCreateDialogOpen(true)}
+              >
+                Sınıf Oluştur
+              </Button>
+            </Box>
+          </Grid>
+        )}
+      </Grid>
+
+      {/* Yeni Sınıf Oluştur FAB */}
+      {classes.length > 0 && (
+        <Fab
+          color="primary"
+          aria-label="add class"
+          sx={{ position: 'fixed', bottom: 24, right: 24 }}
+          onClick={() => setCreateDialogOpen(true)}
+        >
+          <Add />
+        </Fab>
+      )}
+
+      {/* Sınıf Oluştur Dialog */}
+      <Dialog open={createDialogOpen} onClose={() => setCreateDialogOpen(false)} maxWidth="sm" fullWidth>
+        <DialogTitle>Yeni Sınıf Oluştur</DialogTitle>
+        <DialogContent>
+          <Box sx={{ pt: 1 }}>
+            <TextField
+              fullWidth
+              label="Sınıf Adı"
+              value={newClass.sinif_adi}
+              onChange={(e) => setNewClass(prev => ({ ...prev, sinif_adi: e.target.value }))}
+              sx={{ mb: 2 }}
+              placeholder="örn: 12-A Matematik"
+            />
+            
+            <FormControl fullWidth sx={{ mb: 2 }}>
+              <InputLabel>Seviye</InputLabel>
+              <Select
+                value={newClass.seviye}
+                label="Seviye"
+                onChange={(e) => setNewClass(prev => ({ ...prev, seviye: e.target.value }))}
+              >
+                <MenuItem value="9">9. Sınıf</MenuItem>
+                <MenuItem value="10">10. Sınıf</MenuItem>
+                <MenuItem value="11">11. Sınıf</MenuItem>
+                <MenuItem value="12">12. Sınıf</MenuItem>
+              </Select>
+            </FormControl>
+            
+            <FormControl fullWidth>
+              <InputLabel>Ders</InputLabel>
+              <Select
+                value={newClass.ders}
+                label="Ders"
+                onChange={(e) => setNewClass(prev => ({ ...prev, ders: e.target.value }))}
+              >
+                <MenuItem value="matematik">Matematik</MenuItem>
+                <MenuItem value="fizik">Fizik</MenuItem>
+                <MenuItem value="kimya">Kimya</MenuItem>
+                <MenuItem value="biyoloji">Biyoloji</MenuItem>
+                <MenuItem value="turkce">Türkçe</MenuItem>
+                <MenuItem value="tarih">Tarih</MenuItem>
+                <MenuItem value="cografya">Coğrafya</MenuItem>
+                <MenuItem value="felsefe">Felsefe</MenuItem>
+                <MenuItem value="ingilizce">İngilizce</MenuItem>
+              </Select>
+            </FormControl>
+          </Box>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setCreateDialogOpen(false)}>
+            İptal
+          </Button>
+          <Button onClick={handleCreateClass} variant="contained">
+            Oluştur
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </Container>
+  )
+}
+
+export default TeacherClassesPage

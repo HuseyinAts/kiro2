@@ -1,0 +1,1803 @@
+
+> teknofest-egitim-frontend@1.0.0 lint
+> eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0
+
+
+C:\Users\husey\kiro2\frontend\src\chat.tsx
+    1:8   warning  Using exported name 'clsx' as identifier for default import  import/no-named-as-default
+  149:23  warning  Component definition is missing display name                 react/display-name
+  200:27  warning  Component definition is missing display name                 react/display-name
+
+C:\Users\husey\kiro2\frontend\src\components\ADHD\InstantFeedback\PerformanceChart.tsx
+  113:45  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\husey\kiro2\frontend\src\components\ADHD\InstantFeedback\SuccessAnimation.tsx
+  5:40  error  'useCallback' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\Users\husey\kiro2\frontend\src\components\AIChatAssistant\AIChatAssistant.tsx
+   41:12  warning  Unexpected any. Specify a different type                                                                                                                                                           @typescript-eslint/no-explicit-any
+   62:22  warning  Unexpected any. Specify a different type                                                                                                                                                           @typescript-eslint/no-explicit-any
+  116:6   warning  React Hook useEffect has a missing dependency: 'fetchSessions'. Either include it or remove the dependency array                                                                                   react-hooks/exhaustive-deps
+  167:7   warning  Unexpected alert                                                                                                                                                                                   no-alert
+  190:7   warning  Unexpected alert                                                                                                                                                                                   no-alert
+  200:7   warning  Unexpected alert                                                                                                                                                                                   no-alert
+  206:7   warning  Unexpected alert                                                                                                                                                                                   no-alert
+  261:7   warning  Unexpected alert                                                                                                                                                                                   no-alert
+  269:26  warning  Unexpected any. Specify a different type                                                                                                                                                           @typescript-eslint/no-explicit-any
+  381:15  warning  Visible, non-interactive elements with click handlers must have at least one keyboard listener                                                                                                     jsx-a11y/click-events-have-key-events
+  381:15  warning  Avoid non-native interactive elements. If using native HTML is not possible, add an appropriate role and support for tabbing, mouse, keyboard, and touch inputs to an interactive content element  jsx-a11y/no-static-element-interactions
+  435:27  warning  Visible, non-interactive elements with click handlers must have at least one keyboard listener                                                                                                     jsx-a11y/click-events-have-key-events
+  435:27  warning  Avoid non-native interactive elements. If using native HTML is not possible, add an appropriate role and support for tabbing, mouse, keyboard, and touch inputs to an interactive content element  jsx-a11y/no-static-element-interactions
+
+C:\Users\husey\kiro2\frontend\src\components\Accessibility\ADHD\TaskManagement.tsx
+  245:10  warning  Unexpected confirm                                                                                             no-alert
+  275:6   warning  React Hook useEffect has a missing dependency: 'fetchTasks'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+C:\Users\husey\kiro2\frontend\src\components\Accessibility\ADHD\TaskProgressVisualization.tsx
+  58:6  warning  React Hook useEffect has a missing dependency: 'fetchProgressData'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+C:\Users\husey\kiro2\frontend\src\components\Accessibility\ADHD\TaskProgressVisualizationExample.tsx
+  10:8  warning  Using exported name 'TaskProgressVisualization' as identifier for default import  import/no-named-as-default
+  27:5  warning  Unexpected alert                                                                  no-alert
+
+C:\Users\husey\kiro2\frontend\src\components\Accessibility\ADHD\VisualTimer.tsx
+  98:6  warning  React Hook useEffect has a missing dependency: 'fetchTimerData'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+C:\Users\husey\kiro2\frontend\src\components\Accessibility\ADHD\VisualTimerExample.tsx
+  32:5  warning  Unexpected console statement  no-console
+
+C:\Users\husey\kiro2\frontend\src\components\Accessibility\AccessibilityValidator.tsx
+  41:7  warning  Unexpected console statement  no-console
+  42:7  warning  Unexpected console statement  no-console
+  43:7  warning  Unexpected console statement  no-console
+  44:7  warning  Unexpected console statement  no-console
+  45:7  warning  Unexpected console statement  no-console
+  46:7  warning  Unexpected console statement  no-console
+
+C:\Users\husey\kiro2\frontend\src\components\Accessibility\AccessibleVideoPlayer.tsx
+   79:6  warning  React Hook useEffect has a missing dependency: 'parseVTT'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  259:5  warning  Non-interactive elements should not be assigned mouse or keyboard event listeners                            jsx-a11y/no-noninteractive-element-interactions
+  262:7  warning  `tabIndex` should only be declared on interactive elements                                                   jsx-a11y/no-noninteractive-tabindex
+  267:9  warning  Media elements such as <audio> and <video> must have a <track> for captions                                  jsx-a11y/media-has-caption
+  396:9  warning  Visible, non-interactive elements with click handlers must have at least one keyboard listener               jsx-a11y/click-events-have-key-events
+
+C:\Users\husey\kiro2\frontend\src\components\Accessibility\ColorContrastSettings.tsx
+  132:76  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  223:74  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\husey\kiro2\frontend\src\components\Accessibility\Dyscalculia\ColorCoding.tsx
+  352:43  warning  Forbidden non-null assertion  @typescript-eslint/no-non-null-assertion
+
+C:\Users\husey\kiro2\frontend\src\components\Accessibility\Dyscalculia\GeometricShapes3D.tsx
+  271:9  warning  Avoid non-native interactive elements. If using native HTML is not possible, add an appropriate role and support for tabbing, mouse, keyboard, and touch inputs to an interactive content element  jsx-a11y/no-static-element-interactions
+
+C:\Users\husey\kiro2\frontend\src\components\Accessibility\Dyscalculia\GeometryTools.tsx
+   59:6   warning  React Hook useEffect has a missing dependency: 'drawCanvas'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+   64:6   warning  React Hook useEffect has a missing dependency: 'drawCanvas'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  587:13  warning  A form label must be associated with a control                                                                 jsx-a11y/label-has-associated-control
+  595:13  warning  A form label must be associated with a control                                                                 jsx-a11y/label-has-associated-control
+
+C:\Users\husey\kiro2\frontend\src\components\Accessibility\Dyscalculia\GraphPlotter.tsx
+  103:14  error    'e' is defined but never used                                                                                          @typescript-eslint/no-unused-vars
+  254:6   warning  React Hook useCallback has an unnecessary dependency: 'functionStr'. Either exclude it or remove the dependency array  react-hooks/exhaustive-deps
+
+C:\Users\husey\kiro2\frontend\src\components\Accessibility\Dyscalculia\GraphingCalculator.tsx
+   69:14  error    'error' is defined but never used                                                                             @typescript-eslint/no-unused-vars
+  250:25  warning  Forbidden non-null assertion                                                                                  @typescript-eslint/no-non-null-assertion
+  354:6   warning  React Hook useEffect has a missing dependency: 'drawGraph'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  364:6   warning  React Hook useEffect has a missing dependency: 'drawGraph'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+C:\Users\husey\kiro2\frontend\src\components\Accessibility\Dyscalculia\ScientificCalculator.tsx
+  114:14  error    'error' is defined but never used                                                                                                                                                              @typescript-eslint/no-unused-vars
+  146:14  error    'error' is defined but never used                                                                                                                                                              @typescript-eslint/no-unused-vars
+  217:6   warning  React Hook useCallback has missing dependencies: 'handleBackspace', 'handleDecimal', 'handleEquals', 'handleNumber', and 'handleOperator'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
+  335:17  warning  Visible, non-interactive elements with click handlers must have at least one keyboard listener                                                                                                 jsx-a11y/click-events-have-key-events
+
+C:\Users\husey\kiro2\frontend\src\components\Accessibility\MathFormula.tsx
+    8:14  warning  Unexpected any. Specify a different type                                                                           @typescript-eslint/no-explicit-any
+   75:6   warning  React Hook useEffect has a missing dependency: 'typesetFormula'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  103:13  warning  Unexpected console statement                                                                                       no-console
+
+C:\Users\husey\kiro2\frontend\src\components\Accessibility\TextToSpeech.tsx
+  186:6  warning  React Hook useCallback has a missing dependency: 'handleFallbackTTS'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  281:6  warning  React Hook useEffect has a missing dependency: 'speak'. Either include it or remove the dependency array                react-hooks/exhaustive-deps
+
+C:\Users\husey\kiro2\frontend\src\components\Accessibility\TypographySettings.tsx
+  110:74  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\husey\kiro2\frontend\src\components\Admin\AdminPanel.tsx
+  21:8  warning  Using exported name 'AdminDashboard' as identifier for default import     import/no-named-as-default
+  22:8  warning  Using exported name 'ContentManagement' as identifier for default import  import/no-named-as-default
+  24:8  warning  Using exported name 'UserManagement' as identifier for default import     import/no-named-as-default
+
+C:\Users\husey\kiro2\frontend\src\components\Admin\BatchQueueMonitor.tsx
+  151:14  error    'err' is defined but never used                                                                                @typescript-eslint/no-unused-vars
+  177:6   warning  React Hook useEffect has a missing dependency: 'refreshAll'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  184:6   warning  React Hook useEffect has a missing dependency: 'refreshAll'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+C:\Users\husey\kiro2\frontend\src\components\Admin\SystemSettings.tsx
+  55:77  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\husey\kiro2\frontend\src\components\Admin\UserManagement.tsx
+   74:6   warning  React Hook useEffect has a missing dependency: 'fetchUsers'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  166:10  warning  Unexpected confirm                                                                                             no-alert
+
+C:\Users\husey\kiro2\frontend\src\components\AgentChat\AgentSelector.tsx
+  10:8  warning  Using exported name 'clsx' as identifier for default import  import/no-named-as-default
+
+C:\Users\husey\kiro2\frontend\src\components\AgentChat\ChatMessage.tsx
+   1:8   warning  Using exported name 'clsx' as identifier for default import  import/no-named-as-default
+  87:59  warning  Unexpected any. Specify a different type                     @typescript-eslint/no-explicit-any
+  92:47  warning  Unexpected any. Specify a different type                     @typescript-eslint/no-explicit-any
+
+C:\Users\husey\kiro2\frontend\src\components\AgentChat\index.tsx
+    3:8   warning  Using exported name 'clsx' as identifier for default import        import/no-named-as-default
+  171:21  warning  Elements with ARIA roles must use a valid, non-abstract ARIA role  jsx-a11y/aria-role
+
+C:\Users\husey\kiro2\frontend\src\components\Analytics\AdminSystemAnalytics.tsx
+   58:6   warning  React Hook useEffect has a missing dependency: 'loadAnalytics'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  102:11  warning  Forbidden non-null assertion                                                                                      @typescript-eslint/no-non-null-assertion
+  109:11  warning  Forbidden non-null assertion                                                                                      @typescript-eslint/no-non-null-assertion
+  116:11  warning  Forbidden non-null assertion                                                                                      @typescript-eslint/no-non-null-assertion
+
+C:\Users\husey\kiro2\frontend\src\components\Analytics\StudentAnalyticsDashboard.tsx
+   58:6   warning  React Hook useEffect has a missing dependency: 'loadAnalytics'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  102:11  warning  Forbidden non-null assertion                                                                                      @typescript-eslint/no-non-null-assertion
+  109:11  warning  Forbidden non-null assertion                                                                                      @typescript-eslint/no-non-null-assertion
+  116:11  warning  Forbidden non-null assertion                                                                                      @typescript-eslint/no-non-null-assertion
+
+C:\Users\husey\kiro2\frontend\src\components\Analytics\TeacherClassAnalytics.tsx
+   60:6   warning  React Hook useEffect has a missing dependency: 'loadAnalytics'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  104:11  warning  Forbidden non-null assertion                                                                                      @typescript-eslint/no-non-null-assertion
+  111:11  warning  Forbidden non-null assertion                                                                                      @typescript-eslint/no-non-null-assertion
+  118:11  warning  Forbidden non-null assertion                                                                                      @typescript-eslint/no-non-null-assertion
+
+C:\Users\husey\kiro2\frontend\src\components\Animations\PageTransition.tsx
+  128:89  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\husey\kiro2\frontend\src\components\Auth\ModernLoginForm.tsx
+  207:15  warning  The autoFocus prop should not be used, as it can reduce usability and accessibility for users  jsx-a11y/no-autofocus
+
+C:\Users\husey\kiro2\frontend\src\components\Chat\TurkishChatInterface.tsx
+  267:6  warning  React Hook useCallback has missing dependencies: 'handleSubmit' and 'settings.enableVoice'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
+
+C:\Users\husey\kiro2\frontend\src\components\Common\AccessibilityProvider.tsx
+  27:14  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+C:\Users\husey\kiro2\frontend\src\components\Common\AccessibleForm.tsx
+  250:14  error    'error' is defined but never used                                                                                                                                                                                                                              @typescript-eslint/no-unused-vars
+  305:31  warning  Unexpected any. Specify a different type                                                                                                                                                                                                                       @typescript-eslint/no-explicit-any
+  311:15  warning  Unexpected confirm                                                                                                                                                                                                                                             no-alert
+  320:28  warning  The ref value 'formRef.current' will likely have changed by the time this effect cleanup function runs. If this ref points to a node rendered by React, copy 'formRef.current' to a variable inside the effect, and use that variable in the cleanup function  react-hooks/exhaustive-deps
+
+C:\Users\husey\kiro2\frontend\src\components\Common\AccessibleMathFormula.tsx
+  171:14  error  'error' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\husey\kiro2\frontend\src\components\Common\AccessibleTable.tsx
+   46:20  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   54:18  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   55:20  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   56:21  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   61:9   warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   77:28  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   78:45  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  256:52  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\husey\kiro2\frontend\src\components\Common\AccessibleVideoPlayer.tsx
+  181:6  warning  React Hook useCallback has a missing dependency: 'announce'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  190:6  warning  React Hook useCallback has a missing dependency: 'announce'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  436:7  warning  Media elements such as <audio> and <video> must have a <track> for captions                                    jsx-a11y/media-has-caption
+
+C:\Users\husey\kiro2\frontend\src\components\Common\ListErrorBoundary.tsx
+  182:17  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+C:\Users\husey\kiro2\frontend\src\components\Common\WCAGValidator.tsx
+  410:25  error    React Hook "useCallback" is called conditionally. React Hooks must be called in the exact same order in every component render  react-hooks/rules-of-hooks
+  432:6   warning  React Hook useCallback has a missing dependency: 'validateContrast'. Either include it or remove the dependency array           react-hooks/exhaustive-deps
+  435:3   error    React Hook "useEffect" is called conditionally. React Hooks must be called in the exact same order in every component render    react-hooks/rules-of-hooks
+
+C:\Users\husey\kiro2\frontend\src\components\Dashboard\GoalManager.tsx
+  156:10  warning  Unexpected confirm  no-alert
+
+C:\Users\husey\kiro2\frontend\src\components\Dashboard\NotificationPanel.tsx
+  283:76  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  306:54  warning  Forbidden non-null assertion              @typescript-eslint/no-non-null-assertion
+
+C:\Users\husey\kiro2\frontend\src\components\Dashboard\ProfileEditor.tsx
+  157:25  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  186:52  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\husey\kiro2\frontend\src\components\Dashboard\ProgressDashboard.tsx
+  48:8  warning  Using exported name 'clsx' as identifier for default import  import/no-named-as-default
+
+C:\Users\husey\kiro2\frontend\src\components\DepartmentInfo\DepartmentInfo.tsx
+   64:12  warning  Unexpected any. Specify a different type                                                                                @typescript-eslint/no-explicit-any
+  104:6   warning  React Hook useEffect has a missing dependency: 'fetchDepartmentInfo'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+C:\Users\husey\kiro2\frontend\src\components\EBA\EBAVideoBrowser.tsx
+  49:6  warning  React Hook useEffect has a missing dependency: 'fetchTaxonomy'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  54:6  warning  React Hook useEffect has a missing dependency: 'fetchVideos'. Either include it or remove the dependency array    react-hooks/exhaustive-deps
+
+C:\Users\husey\kiro2\frontend\src\components\EBA\EBAVideoPlayer.tsx
+   63:6  warning  React Hook useEffect has missing dependencies: 'endWatchSession', 'sessionId', and 'startWatchSession'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
+   88:6  warning  React Hook useEffect has a missing dependency: 'updateProgress'. Either include it or remove the dependency array                                           react-hooks/exhaustive-deps
+  114:7  warning  Unexpected console statement                                                                                                                                no-console
+  115:7  warning  Unexpected console statement                                                                                                                                no-console
+  152:9  warning  Unexpected console statement                                                                                                                                no-console
+  178:7  warning  Unexpected console statement                                                                                                                                no-console
+  197:5  warning  Unexpected console statement                                                                                                                                no-console
+  240:9  warning  Media elements such as <audio> and <video> must have a <track> for captions                                                                                 jsx-a11y/media-has-caption
+
+C:\Users\husey\kiro2\frontend\src\components\EbaTV\EbaTVContentSearch.tsx
+  168:27  warning  React Hook useCallback received a function whose dependencies are unknown. Pass an inline function instead                                                                                         react-hooks/exhaustive-deps
+  213:64  warning  Unexpected any. Specify a different type                                                                                                                                                           @typescript-eslint/no-explicit-any
+  296:60  warning  Unexpected any. Specify a different type                                                                                                                                                           @typescript-eslint/no-explicit-any
+  329:15  warning  A form label must be associated with a control                                                                                                                                                     jsx-a11y/label-has-associated-control
+  348:15  warning  A form label must be associated with a control                                                                                                                                                     jsx-a11y/label-has-associated-control
+  423:13  warning  Visible, non-interactive elements with click handlers must have at least one keyboard listener                                                                                                     jsx-a11y/click-events-have-key-events
+  423:13  warning  Avoid non-native interactive elements. If using native HTML is not possible, add an appropriate role and support for tabbing, mouse, keyboard, and touch inputs to an interactive content element  jsx-a11y/no-static-element-interactions
+
+C:\Users\husey\kiro2\frontend\src\components\EbaTV\EbaTVDashboard.tsx
+  156:5   warning  Unexpected console statement                                                                                                                                                                       no-console
+  160:5   warning  Unexpected console statement                                                                                                                                                                       no-console
+  368:23  warning  Visible, non-interactive elements with click handlers must have at least one keyboard listener                                                                                                     jsx-a11y/click-events-have-key-events
+  368:23  warning  Avoid non-native interactive elements. If using native HTML is not possible, add an appropriate role and support for tabbing, mouse, keyboard, and touch inputs to an interactive content element  jsx-a11y/no-static-element-interactions
+  405:23  warning  Visible, non-interactive elements with click handlers must have at least one keyboard listener                                                                                                     jsx-a11y/click-events-have-key-events
+  405:23  warning  Avoid non-native interactive elements. If using native HTML is not possible, add an appropriate role and support for tabbing, mouse, keyboard, and touch inputs to an interactive content element  jsx-a11y/no-static-element-interactions
+  440:43  warning  Unexpected console statement                                                                                                                                                                       no-console
+
+C:\Users\husey\kiro2\frontend\src\components\EbaTV\EbaTVRecommendations.tsx
+  329:13  warning  Visible, non-interactive elements with click handlers must have at least one keyboard listener                                                                                                     jsx-a11y/click-events-have-key-events
+  329:13  warning  Avoid non-native interactive elements. If using native HTML is not possible, add an appropriate role and support for tabbing, mouse, keyboard, and touch inputs to an interactive content element  jsx-a11y/no-static-element-interactions
+
+C:\Users\husey\kiro2\frontend\src\components\EbaTV\EbaTVVideoPlayer.tsx
+  157:19  warning  Forbidden non-null assertion                                                                                                      @typescript-eslint/no-non-null-assertion
+  217:6   warning  React Hook useEffect has missing dependencies: 'toggleMute' and 'togglePlay'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
+  222:7   warning  Media elements such as <audio> and <video> must have a <track> for captions                                                       jsx-a11y/media-has-caption
+
+C:\Users\husey\kiro2\frontend\src\components\Exam\AdvancedExamResults.tsx
+   61:6   warning  React Hook useEffect has a missing dependency: 'loadResults'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+   91:19  warning  Unexpected any. Specify a different type                                                                        @typescript-eslint/no-explicit-any
+  123:19  warning  Unexpected any. Specify a different type                                                                        @typescript-eslint/no-explicit-any
+
+C:\Users\husey\kiro2\frontend\src\components\Exam\AdvancedExamResultsRefactored.tsx
+  38:8  warning  'C:\Users\husey\kiro2\frontend\src\components\Exam\Results\index.ts' imported multiple times  import/no-duplicates
+  48:8  warning  'C:\Users\husey\kiro2\frontend\src\components\Exam\Results\index.ts' imported multiple times  import/no-duplicates
+
+C:\Users\husey\kiro2\frontend\src\components\Exam\BubbleSheetPanel.tsx
+  38:8  warning  Using exported name 'BubbleSheetInterface' as identifier for default import  import/no-named-as-default
+
+C:\Users\husey\kiro2\frontend\src\components\Exam\ExamHistory.tsx
+  85:6   warning  React Hook useEffect has a missing dependency: 'applyFilters'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  96:19  warning  Unexpected any. Specify a different type                                                                         @typescript-eslint/no-explicit-any
+
+C:\Users\husey\kiro2\frontend\src\components\Exam\ExamInterface.tsx
+  39:8  warning  Using exported name 'BubbleSheetInterface' as identifier for default import  import/no-named-as-default
+
+C:\Users\husey\kiro2\frontend\src\components\Exam\ExamInterfaceExample.tsx
+   20:8  warning  Using exported name 'ExamInterface' as identifier for default import                                                 import/no-named-as-default
+   96:6  warning  React Hook useEffect has a missing dependency: 'handleFinishExam'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  110:6  warning  React Hook useEffect has a missing dependency: 'handleAutoSave'. Either include it or remove the dependency array    react-hooks/exhaustive-deps
+  176:5  warning  Unexpected console statement                                                                                         no-console
+
+C:\Users\husey\kiro2\frontend\src\components\Exam\ExamResults.tsx
+   67:55  warning  Unexpected any. Specify a different type                                                                        @typescript-eslint/no-explicit-any
+   76:6   warning  React Hook useEffect has a missing dependency: 'loadResults'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  106:19  warning  Unexpected any. Specify a different type                                                                        @typescript-eslint/no-explicit-any
+  204:39  warning  Unexpected any. Specify a different type                                                                        @typescript-eslint/no-explicit-any
+  538:13  warning  Unexpected console statement                                                                                    no-console
+  548:13  warning  Unexpected console statement                                                                                    no-console
+
+C:\Users\husey\kiro2\frontend\src\components\Exam\ExamStart.tsx
+  172:19  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\husey\kiro2\frontend\src\components\Exam\ExamTimer.tsx
+  112:65  warning  Unexpected any. Specify a different type                                                                          @typescript-eslint/no-explicit-any
+  133:10  warning  Unexpected any. Specify a different type                                                                          @typescript-eslint/no-explicit-any
+  181:6   warning  React Hook useEffect has a missing dependency: 'checkWarnings'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  229:9   warning  Unexpected console statement                                                                                      no-console
+  280:53  warning  Unexpected any. Specify a different type                                                                          @typescript-eslint/no-explicit-any
+  334:48  warning  Unexpected any. Specify a different type                                                                          @typescript-eslint/no-explicit-any
+  398:40  warning  Unexpected any. Specify a different type                                                                          @typescript-eslint/no-explicit-any
+
+C:\Users\husey\kiro2\frontend\src\components\Exam\ExampleBubbleSheetUsage.tsx
+  24:8  warning  Using exported name 'BubbleSheetInterface' as identifier for default import  import/no-named-as-default
+  25:8  warning  Using exported name 'BubbleSheetPanel' as identifier for default import      import/no-named-as-default
+
+C:\Users\husey\kiro2\frontend\src\components\Exam\ModernExamInterface.tsx
+  294:5  warning  Unexpected console statement  no-console
+
+C:\Users\husey\kiro2\frontend\src\components\Exam\ModernExamResults.tsx
+  41:8   warning  Using exported name 'modernColors' as identifier for default import                                             import/no-named-as-default
+  58:6   warning  React Hook useEffect has a missing dependency: 'loadResults'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  81:19  warning  Unexpected any. Specify a different type                                                                        @typescript-eslint/no-explicit-any
+
+C:\Users\husey\kiro2\frontend\src\components\Exam\ModernExamStart.tsx
+   51:8   warning  Using exported name 'modernColors' as identifier for default import  import/no-named-as-default
+  198:19  warning  Unexpected any. Specify a different type                             @typescript-eslint/no-explicit-any
+
+C:\Users\husey\kiro2\frontend\src\components\Exam\ModernOSYMExamInterface.tsx
+   48:8   warning  Using exported name 'useAutoSave' as identifier for default import                                                                import/no-named-as-default
+   59:8   warning  Using exported name 'modernColors' as identifier for default import                                                               import/no-named-as-default
+  132:6   warning  React Hook useEffect has missing dependencies: 'autoSave' and 'loadExamData'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
+  142:6   warning  React Hook useEffect has a missing dependency: 'handleWebSocketMessage'. Either include it or remove the dependency array         react-hooks/exhaustive-deps
+  200:19  warning  Unexpected any. Specify a different type                                                                                          @typescript-eslint/no-explicit-any
+  207:41  warning  Unexpected any. Specify a different type                                                                                          @typescript-eslint/no-explicit-any
+  714:48  warning  Unexpected any. Specify a different type                                                                                          @typescript-eslint/no-explicit-any
+
+C:\Users\husey\kiro2\frontend\src\components\Exam\OSYMExamInterface.tsx
+   68:8   warning  Using exported name 'useAutoSave' as identifier for default import                                                                import/no-named-as-default
+   78:8   warning  Using exported name 'QuestionGeometry' as identifier for default import                                                           import/no-named-as-default
+   79:8   warning  Using exported name 'QuestionGraph' as identifier for default import                                                              import/no-named-as-default
+   80:8   warning  Using exported name 'QuestionMapDiagram' as identifier for default import                                                         import/no-named-as-default
+   81:8   warning  Using exported name 'QuestionTable' as identifier for default import                                                              import/no-named-as-default
+   83:8   warning  Using exported name 'ExamTimer' as identifier for default import                                                                  import/no-named-as-default
+   84:8   warning  Using exported name 'FlaggedQuestionsPanel' as identifier for default import                                                      import/no-named-as-default
+  170:6   warning  React Hook useEffect has missing dependencies: 'autoSave' and 'loadExamData'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
+  183:6   warning  React Hook useEffect has a missing dependency: 'handleWebSocketMessage'. Either include it or remove the dependency array         react-hooks/exhaustive-deps
+  254:19  warning  Unexpected any. Specify a different type                                                                                          @typescript-eslint/no-explicit-any
+  264:41  warning  Unexpected any. Specify a different type                                                                                          @typescript-eslint/no-explicit-any
+  279:9   warning  Unexpected console statement                                                                                                      no-console
+  282:9   warning  Unexpected console statement                                                                                                      no-console
+  310:6   warning  React Hook useCallback has a missing dependency: 'handleAutoSubmit'. Either include it or remove the dependency array             react-hooks/exhaustive-deps
+  329:19  warning  Unexpected any. Specify a different type                                                                                          @typescript-eslint/no-explicit-any
+  347:10  warning  Forbidden non-null assertion                                                                                                      @typescript-eslint/no-non-null-assertion
+  380:19  warning  Unexpected any. Specify a different type                                                                                          @typescript-eslint/no-explicit-any
+  402:19  warning  Unexpected any. Specify a different type                                                                                          @typescript-eslint/no-explicit-any
+  424:19  warning  Unexpected any. Specify a different type                                                                                          @typescript-eslint/no-explicit-any
+  457:19  warning  Unexpected any. Specify a different type                                                                                          @typescript-eslint/no-explicit-any
+  479:19  warning  Unexpected any. Specify a different type                                                                                          @typescript-eslint/no-explicit-any
+  806:48  warning  Unexpected any. Specify a different type                                                                                          @typescript-eslint/no-explicit-any
+  808:52  warning  Unexpected any. Specify a different type                                                                                          @typescript-eslint/no-explicit-any
+  809:83  warning  Unexpected any. Specify a different type                                                                                          @typescript-eslint/no-explicit-any
+  811:52  warning  Unexpected any. Specify a different type                                                                                          @typescript-eslint/no-explicit-any
+  812:83  warning  Unexpected any. Specify a different type                                                                                          @typescript-eslint/no-explicit-any
+  814:52  warning  Unexpected any. Specify a different type                                                                                          @typescript-eslint/no-explicit-any
+  815:86  warning  Unexpected any. Specify a different type                                                                                          @typescript-eslint/no-explicit-any
+  817:52  warning  Unexpected any. Specify a different type                                                                                          @typescript-eslint/no-explicit-any
+  818:88  warning  Unexpected any. Specify a different type                                                                                          @typescript-eslint/no-explicit-any
+
+C:\Users\husey\kiro2\frontend\src\components\Exam\OSYMExamInterfaceRefactored.tsx
+   21:8  warning  Using exported name 'useAutoSave' as identifier for default import                                                               import/no-named-as-default
+  124:7  warning  Unexpected console statement                                                                                                     no-console
+  142:6  warning  React Hook useEffect has missing dependencies: 'autoSave' and 'loadSession'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
+
+C:\Users\husey\kiro2\frontend\src\components\Exam\Results\ComparisonTab.tsx
+  9:11  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\husey\kiro2\frontend\src\components\Exam\Results\ExamResultsHeader.tsx
+   64:64  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  111:35  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\husey\kiro2\frontend\src\components\Exam\Results\IRTMorphologyTab.tsx
+  9:11  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\husey\kiro2\frontend\src\components\Exam\Results\LearningStyleTab.tsx
+  9:11  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\husey\kiro2\frontend\src\components\Exam\Results\PerformanceTrendTab.tsx
+  9:10  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\husey\kiro2\frontend\src\components\Exam\Results\RecommendationsDialog.tsx
+  25:14  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  26:22  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\husey\kiro2\frontend\src\components\Exam\Results\ResultsHeader.tsx
+   69:64  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  112:37  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\husey\kiro2\frontend\src\components\Exam\Results\Tabs\IRTMorphologyTab.tsx
+  165:93  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\husey\kiro2\frontend\src\components\Exam\Results\Tabs\LearningStyleTab.tsx
+  160:71  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  196:44  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\husey\kiro2\frontend\src\components\Exam\Results\Tabs\ZPDAnalysisTab.tsx
+  134:78  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  160:72  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\husey\kiro2\frontend\src\components\Exam\Results\ZPDAnalysisTab.tsx
+  9:11  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\husey\kiro2\frontend\src\components\Examples\DashboardWithErrorHandling.tsx
+  10:8   warning  Using exported name 'config' as identifier for default import                                                     import/no-named-as-default
+  14:10  warning  Unexpected any. Specify a different type                                                                          @typescript-eslint/no-explicit-any
+  15:16  warning  Unexpected any. Specify a different type                                                                          @typescript-eslint/no-explicit-any
+  44:9   warning  Unexpected console statement                                                                                      no-console
+  53:9   warning  Unexpected console statement                                                                                      no-console
+  69:6   warning  React Hook useEffect has a missing dependency: 'loadDashboard'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+C:\Users\husey\kiro2\frontend\src\components\Examples\ErrorHandlerDemo.tsx
+  15:36  warning  Unexpected any. Specify a different type                                                                                        @typescript-eslint/no-explicit-any
+  36:9   warning  Unexpected console statement                                                                                                    no-console
+  79:14  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+  80:28  warning  A `require()` style import is forbidden                                                                                         @typescript-eslint/no-require-imports
+  85:53  warning  Unexpected any. Specify a different type                                                                                        @typescript-eslint/no-explicit-any
+  86:18  warning  Unexpected any. Specify a different type                                                                                        @typescript-eslint/no-explicit-any
+  93:53  warning  Unexpected any. Specify a different type                                                                                        @typescript-eslint/no-explicit-any
+  94:18  warning  Unexpected any. Specify a different type                                                                                        @typescript-eslint/no-explicit-any
+
+C:\Users\husey\kiro2\frontend\src\components\Gamification\BadgeCollection.tsx
+  164:13  warning  Visible, non-interactive elements with click handlers must have at least one keyboard listener                                                                                                     jsx-a11y/click-events-have-key-events
+  164:13  warning  Avoid non-native interactive elements. If using native HTML is not possible, add an appropriate role and support for tabbing, mouse, keyboard, and touch inputs to an interactive content element  jsx-a11y/no-static-element-interactions
+  205:9   warning  Visible, non-interactive elements with click handlers must have at least one keyboard listener                                                                                                     jsx-a11y/click-events-have-key-events
+  205:9   warning  Avoid non-native interactive elements. If using native HTML is not possible, add an appropriate role and support for tabbing, mouse, keyboard, and touch inputs to an interactive content element  jsx-a11y/no-static-element-interactions
+  206:11  warning  Visible, non-interactive elements with click handlers must have at least one keyboard listener                                                                                                     jsx-a11y/click-events-have-key-events
+  206:11  warning  Avoid non-native interactive elements. If using native HTML is not possible, add an appropriate role and support for tabbing, mouse, keyboard, and touch inputs to an interactive content element  jsx-a11y/no-static-element-interactions
+
+C:\Users\husey\kiro2\frontend\src\components\Gamification\GamificationDashboard.tsx
+   9:8  warning  Using exported name 'BadgeCollection' as identifier for default import  import/no-named-as-default
+  10:8  warning  Using exported name 'Leaderboard' as identifier for default import      import/no-named-as-default
+  11:8  warning  Using exported name 'LevelDisplay' as identifier for default import     import/no-named-as-default
+  12:8  warning  Using exported name 'PointsDisplay' as identifier for default import    import/no-named-as-default
+
+C:\Users\husey\kiro2\frontend\src\components\Gamification\Leaderboard.tsx
+  26:50  warning  Unexpected any. Specify a different type                                                                            @typescript-eslint/no-explicit-any
+  33:6   warning  React Hook useEffect has a missing dependency: 'loadNearbyUsers'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+C:\Users\husey\kiro2\frontend\src\components\Gamification\PointsDisplay.tsx
+  21:42  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\husey\kiro2\frontend\src\components\Khan\KhanDashboard.tsx
+   49:46  warning  Unexpected any. Specify a different type                                                                                                                                 @typescript-eslint/no-explicit-any
+   54:6   warning  React Hook useEffect has a missing dependency: 'checkConnectionStatus'. Either include it or remove the dependency array                                                 react-hooks/exhaustive-deps
+   65:6   warning  React Hook useEffect has missing dependencies: 'fetchAnalytics', 'fetchBadges', 'fetchContent', and 'fetchProgress'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
+   90:7   warning  Unexpected alert                                                                                                                                                         no-alert
+  138:7   warning  Unexpected alert                                                                                                                                                         no-alert
+  143:7   warning  Unexpected alert                                                                                                                                                         no-alert
+  151:7   warning  Unexpected alert                                                                                                                                                         no-alert
+
+C:\Users\husey\kiro2\frontend\src\components\KnowledgeGraphViz.tsx
+  29:38  warning  Unexpected any. Specify a different type                                                                          @typescript-eslint/no-explicit-any
+  33:6   warning  React Hook useEffect has a missing dependency: 'loadGraphData'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+C:\Users\husey\kiro2\frontend\src\components\Layout\RoleBasedLayout.tsx
+  7:8  warning  Using exported name 'modernColors' as identifier for default import  import/no-named-as-default
+
+C:\Users\husey\kiro2\frontend\src\components\LearningPath\LearningPathVisualizer.tsx
+   22:8   warning  Using exported name 'clsx' as identifier for default import                                                                                                                                        import/no-named-as-default
+   94:11  warning  Forbidden non-null assertion                                                                                                                                                                       @typescript-eslint/no-non-null-assertion
+  289:7   warning  Avoid non-native interactive elements. If using native HTML is not possible, add an appropriate role and support for tabbing, mouse, keyboard, and touch inputs to an interactive content element  jsx-a11y/no-static-element-interactions
+
+C:\Users\husey\kiro2\frontend\src\components\LearningPath\ModernLearningPathVisualizer.tsx
+   36:8   warning  Using exported name 'modernColors' as identifier for default import  import/no-named-as-default
+  106:11  warning  Forbidden non-null assertion                                         @typescript-eslint/no-non-null-assertion
+
+C:\Users\husey\kiro2\frontend\src\components\LearningPath\Page\Tabs\ProgressTrackingTab.tsx
+  47:27  error  React Hook "useMemo" is called conditionally. React Hooks must be called in the exact same order in every component render. Did you accidentally call a React Hook after an early return?  react-hooks/rules-of-hooks
+  48:21  error  React Hook "useMemo" is called conditionally. React Hooks must be called in the exact same order in every component render. Did you accidentally call a React Hook after an early return?  react-hooks/rules-of-hooks
+  51:18  error  React Hook "useMemo" is called conditionally. React Hooks must be called in the exact same order in every component render. Did you accidentally call a React Hook after an early return?  react-hooks/rules-of-hooks
+
+C:\Users\husey\kiro2\frontend\src\components\LearningPath\Page\VideoAnalyticsCard.tsx
+  43:18  error  React Hook "useMemo" is called conditionally. React Hooks must be called in the exact same order in every component render. Did you accidentally call a React Hook after an early return?  react-hooks/rules-of-hooks
+  54:18  error  React Hook "useMemo" is called conditionally. React Hooks must be called in the exact same order in every component render. Did you accidentally call a React Hook after an early return?  react-hooks/rules-of-hooks
+
+C:\Users\husey\kiro2\frontend\src\components\LearningPath\PathConnection.tsx
+  1:8  warning  Using exported name 'clsx' as identifier for default import  import/no-named-as-default
+
+C:\Users\husey\kiro2\frontend\src\components\LearningPath\PathNode.tsx
+   10:8   warning  Using exported name 'clsx' as identifier for default import                                                                                                                                        import/no-named-as-default
+  144:9   warning  Visible, non-interactive elements with click handlers must have at least one keyboard listener                                                                                                     jsx-a11y/click-events-have-key-events
+  144:9   warning  Avoid non-native interactive elements. If using native HTML is not possible, add an appropriate role and support for tabbing, mouse, keyboard, and touch inputs to an interactive content element  jsx-a11y/no-static-element-interactions
+  202:54  warning  Unexpected any. Specify a different type                                                                                                                                                           @typescript-eslint/no-explicit-any
+
+C:\Users\husey\kiro2\frontend\src\components\Manipulatives\DigitalTangram.tsx
+  232:7  warning  Unexpected alert                                no-alert
+  235:7  warning  Unexpected alert                                no-alert
+  266:9  warning  Unexpected alert                                no-alert
+  270:7  warning  Unexpected alert                                no-alert
+  288:9  warning  A form label must be associated with a control  jsx-a11y/label-has-associated-control
+
+C:\Users\husey\kiro2\frontend\src\components\Manipulatives\GeoGebraEmbed.tsx
+   39:6  warning  React Hook useEffect has a missing dependency: 'loadApplets'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+   83:7  warning  Unexpected alert                                                                                                no-alert
+   86:7  warning  Unexpected alert                                                                                                no-alert
+  104:9  warning  A form label must be associated with a control                                                                  jsx-a11y/label-has-associated-control
+
+C:\Users\husey\kiro2\frontend\src\components\Manipulatives\InteractiveGeometry.tsx
+   73:6   warning  React Hook useEffect has a missing dependency: 'drawTemporaryShape'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  244:29  warning  Unexpected any. Specify a different type                                                                               @typescript-eslint/no-explicit-any
+  262:7   warning  Unexpected alert                                                                                                       no-alert
+  297:7   warning  Unexpected alert                                                                                                       no-alert
+  305:7   warning  Unexpected alert                                                                                                       no-alert
+
+C:\Users\husey\kiro2\frontend\src\components\Manipulatives\VirtualBlocks.tsx
+   99:6   warning  React Hook useEffect has missing dependencies: 'blockColors' and 'blockSizes'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
+  175:7   warning  Unexpected alert                                                                                                                   no-alert
+  183:7   warning  Unexpected alert                                                                                                                   no-alert
+  218:9   warning  A form label must be associated with a control                                                                                     jsx-a11y/label-has-associated-control
+  221:67  warning  Unexpected any. Specify a different type                                                                                           @typescript-eslint/no-explicit-any
+
+C:\Users\husey\kiro2\frontend\src\components\MathSolution\AlternativeSolutionsViewer.tsx
+   75:6   warning  React Hook useEffect has a missing dependency: 'loadSolutions'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  225:58  warning  Unexpected any. Specify a different type                                                                          @typescript-eslint/no-explicit-any
+
+C:\Users\husey\kiro2\frontend\src\components\MathSolution\AnimationController.tsx
+  52:14  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+C:\Users\husey\kiro2\frontend\src\components\MathSolution\ErrorHighlight.tsx
+  17:13  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+C:\Users\husey\kiro2\frontend\src\components\MathSolution\SolutionComparison.tsx
+  21:10  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\husey\kiro2\frontend\src\components\MathSolution\SolutionStep.tsx
+  149:9  warning  Visible, non-interactive elements with click handlers must have at least one keyboard listener                                                                                                     jsx-a11y/click-events-have-key-events
+  149:9  warning  Avoid non-native interactive elements. If using native HTML is not possible, add an appropriate role and support for tabbing, mouse, keyboard, and touch inputs to an interactive content element  jsx-a11y/no-static-element-interactions
+
+C:\Users\husey\kiro2\frontend\src\components\MathSolution\StepByStepSolution.tsx
+   53:6   warning  React Hook useEffect has a missing dependency: 'generateSolution'. Either include it or remove the dependency array                                                                                react-hooks/exhaustive-deps
+  212:17  warning  Visible, non-interactive elements with click handlers must have at least one keyboard listener                                                                                                     jsx-a11y/click-events-have-key-events
+  212:17  warning  Avoid non-native interactive elements. If using native HTML is not possible, add an appropriate role and support for tabbing, mouse, keyboard, and touch inputs to an interactive content element  jsx-a11y/no-static-element-interactions
+
+C:\Users\husey\kiro2\frontend\src\components\Navigation\AccessibleNavigation.tsx
+  324:18  warning  Forbidden non-null assertion  @typescript-eslint/no-non-null-assertion
+  408:14  warning  Forbidden non-null assertion  @typescript-eslint/no-non-null-assertion
+  564:43  warning  Forbidden non-null assertion  @typescript-eslint/no-non-null-assertion
+
+C:\Users\husey\kiro2\frontend\src\components\Navigation\ModernNavigation.tsx
+  51:8  warning  Using exported name 'modernColors' as identifier for default import  import/no-named-as-default
+
+C:\Users\husey\kiro2\frontend\src\components\OSB\PredictableLayout\ColorScheme.tsx
+  149:14  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+C:\Users\husey\kiro2\frontend\src\components\OSB\PredictableLayout\ConsistentLayout.tsx
+  137:11  warning  The element aside has an implicit role of complementary. Defining this explicitly is redundant and should be avoided  jsx-a11y/no-redundant-roles
+
+C:\Users\husey\kiro2\frontend\src\components\OSB\PredictableLayout\StandardIcons.tsx
+  302:14  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+  439:7   warning  Visible, non-interactive elements with click handlers must have at least one keyboard listener                                  jsx-a11y/click-events-have-key-events
+
+C:\Users\husey\kiro2\frontend\src\components\OSB\SensorySettings\SensoryControl.tsx
+  69:14  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+C:\Users\husey\kiro2\frontend\src\components\OSB\VisualSchedules\DailySchedule.tsx
+  152:15  warning  Visible, non-interactive elements with click handlers must have at least one keyboard listener  jsx-a11y/click-events-have-key-events
+  192:13  warning  Visible, non-interactive elements with click handlers must have at least one keyboard listener  jsx-a11y/click-events-have-key-events
+  261:13  warning  Visible, non-interactive elements with click handlers must have at least one keyboard listener  jsx-a11y/click-events-have-key-events
+
+C:\Users\husey\kiro2\frontend\src\components\OSB\VisualSchedules\WeeklyCalendar.tsx
+  49:19  warning  Visible, non-interactive elements with click handlers must have at least one keyboard listener  jsx-a11y/click-events-have-key-events
+
+C:\Users\husey\kiro2\frontend\src\components\OfflineModeUI.tsx
+  168:13  warning  onMouseOver must be accompanied by onFocus for accessibility  jsx-a11y/mouse-events-have-key-events
+  171:13  warning  onMouseOut must be accompanied by onBlur for accessibility    jsx-a11y/mouse-events-have-key-events
+  207:13  warning  onMouseOver must be accompanied by onFocus for accessibility  jsx-a11y/mouse-events-have-key-events
+  210:13  warning  onMouseOut must be accompanied by onBlur for accessibility    jsx-a11y/mouse-events-have-key-events
+
+C:\Users\husey\kiro2\frontend\src\components\OptimizedRAG.tsx
+  18:30  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\husey\kiro2\frontend\src\components\PWAStatus.tsx
+   41:7   warning  Unexpected alert                                                                                                                                                                                   no-alert
+   49:7   warning  Unexpected alert                                                                                                                                                                                   no-alert
+   50:14  error    'error' is defined but never used                                                                                                                                                                  @typescript-eslint/no-unused-vars
+   51:7   warning  Unexpected alert                                                                                                                                                                                   no-alert
+   58:9   warning  Unexpected confirm                                                                                                                                                                                 no-alert
+   61:9   warning  Unexpected alert                                                                                                                                                                                   no-alert
+   62:16  error    'error' is defined but never used                                                                                                                                                                  @typescript-eslint/no-unused-vars
+   63:9   warning  Unexpected alert                                                                                                                                                                                   no-alert
+   71:7   warning  Unexpected alert                                                                                                                                                                                   no-alert
+   73:7   warning  Unexpected alert                                                                                                                                                                                   no-alert
+  104:7   warning  Visible, non-interactive elements with click handlers must have at least one keyboard listener                                                                                                     jsx-a11y/click-events-have-key-events
+  104:7   warning  Avoid non-native interactive elements. If using native HTML is not possible, add an appropriate role and support for tabbing, mouse, keyboard, and touch inputs to an interactive content element  jsx-a11y/no-static-element-interactions
+  384:7   warning  Unexpected alert                                                                                                                                                                                   no-alert
+
+C:\Users\husey\kiro2\frontend\src\components\Parent\ChildPerformanceView.tsx
+  63:6   warning  React Hook useEffect has a missing dependency: 'loadPerformanceData'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  78:19  warning  Unexpected any. Specify a different type                                                                                @typescript-eslint/no-explicit-any
+
+C:\Users\husey\kiro2\frontend\src\components\Parent\ChildSelection.tsx
+  53:19  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  79:19  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\husey\kiro2\frontend\src\components\Parent\ParentDashboard.tsx
+   53:22  warning  Unexpected any. Specify a different type                                                                                                                                                           @typescript-eslint/no-explicit-any
+   72:19  warning  Unexpected any. Specify a different type                                                                                                                                                           @typescript-eslint/no-explicit-any
+  204:17  warning  Visible, non-interactive elements with click handlers must have at least one keyboard listener                                                                                                     jsx-a11y/click-events-have-key-events
+  204:17  warning  Avoid non-native interactive elements. If using native HTML is not possible, add an appropriate role and support for tabbing, mouse, keyboard, and touch inputs to an interactive content element  jsx-a11y/no-static-element-interactions
+
+C:\Users\husey\kiro2\frontend\src\components\Parent\ParentNotifications.tsx
+  42:6   warning  React Hook useEffect has a missing dependency: 'loadNotifications'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  50:19  warning  Unexpected any. Specify a different type                                                                              @typescript-eslint/no-explicit-any
+  70:19  warning  Unexpected any. Specify a different type                                                                              @typescript-eslint/no-explicit-any
+
+C:\Users\husey\kiro2\frontend\src\components\PerformanceDashboard.tsx
+   56:9  warning  Unexpected confirm                                                                                                                                                                                 no-alert
+   85:9  warning  Visible, non-interactive elements with click handlers must have at least one keyboard listener                                                                                                     jsx-a11y/click-events-have-key-events
+   85:9  warning  Avoid non-native interactive elements. If using native HTML is not possible, add an appropriate role and support for tabbing, mouse, keyboard, and touch inputs to an interactive content element  jsx-a11y/no-static-element-interactions
+  138:9  warning  Visible, non-interactive elements with click handlers must have at least one keyboard listener                                                                                                     jsx-a11y/click-events-have-key-events
+  138:9  warning  Avoid non-native interactive elements. If using native HTML is not possible, add an appropriate role and support for tabbing, mouse, keyboard, and touch inputs to an interactive content element  jsx-a11y/no-static-element-interactions
+  195:9  warning  Visible, non-interactive elements with click handlers must have at least one keyboard listener                                                                                                     jsx-a11y/click-events-have-key-events
+  195:9  warning  Avoid non-native interactive elements. If using native HTML is not possible, add an appropriate role and support for tabbing, mouse, keyboard, and touch inputs to an interactive content element  jsx-a11y/no-static-element-interactions
+  263:9  warning  Visible, non-interactive elements with click handlers must have at least one keyboard listener                                                                                                     jsx-a11y/click-events-have-key-events
+  263:9  warning  Avoid non-native interactive elements. If using native HTML is not possible, add an appropriate role and support for tabbing, mouse, keyboard, and touch inputs to an interactive content element  jsx-a11y/no-static-element-interactions
+
+C:\Users\husey\kiro2\frontend\src\components\PreferenceSimulation\ScoreCalculator.tsx
+   31:40  warning  Unexpected any. Specify a different type        @typescript-eslint/no-explicit-any
+   65:11  warning  A form label must be associated with a control  jsx-a11y/label-has-associated-control
+   78:15  warning  A form label must be associated with a control  jsx-a11y/label-has-associated-control
+   89:15  warning  A form label must be associated with a control  jsx-a11y/label-has-associated-control
+  100:15  warning  A form label must be associated with a control  jsx-a11y/label-has-associated-control
+  111:15  warning  A form label must be associated with a control  jsx-a11y/label-has-associated-control
+  130:19  warning  A form label must be associated with a control  jsx-a11y/label-has-associated-control
+  137:19  warning  A form label must be associated with a control  jsx-a11y/label-has-associated-control
+  144:19  warning  A form label must be associated with a control  jsx-a11y/label-has-associated-control
+  151:19  warning  A form label must be associated with a control  jsx-a11y/label-has-associated-control
+  166:15  warning  A form label must be associated with a control  jsx-a11y/label-has-associated-control
+  177:15  warning  A form label must be associated with a control  jsx-a11y/label-has-associated-control
+
+C:\Users\husey\kiro2\frontend\src\components\QuestionGeometry.tsx
+  31:10  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\husey\kiro2\frontend\src\components\QuestionGraph.tsx
+  32:10  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\husey\kiro2\frontend\src\components\QuestionMapDiagram.tsx
+  24:18  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\husey\kiro2\frontend\src\components\QuestionParser\QuestionParserUpload.tsx
+  43:19  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\husey\kiro2\frontend\src\components\QuestionParser\QuestionReviewDashboard.tsx
+  74:6  warning  React Hook useEffect has a missing dependency: 'loadQuestions'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+C:\Users\husey\kiro2\frontend\src\components\QuestionTable.tsx
+   22:10  warning  Unexpected any. Specify a different type                           @typescript-eslint/no-explicit-any
+  130:21  warning  Interactive elements should not be assigned non-interactive roles  jsx-a11y/no-interactive-element-to-noninteractive-role
+
+C:\Users\husey\kiro2\frontend\src\components\Questions\QuestionBank.tsx
+   29:8  warning  Using exported name 'config' as identifier for default import  import/no-named-as-default
+  157:9  warning  Unexpected console statement                                   no-console
+
+C:\Users\husey\kiro2\frontend\src\components\Questions\QuestionStatsDashboard.tsx
+  17:8  warning  Using exported name 'config' as identifier for default import  import/no-named-as-default
+
+C:\Users\husey\kiro2\frontend\src\components\Quiz\QuizInterface.tsx
+   36:8   warning  Using exported name 'clsx' as identifier for default import                                                                                                                                        import/no-named-as-default
+   80:27  warning  Unexpected any. Specify a different type                                                                                                                                                           @typescript-eslint/no-explicit-any
+   93:57  warning  Unexpected any. Specify a different type                                                                                                                                                           @typescript-eslint/no-explicit-any
+  123:6   warning  React Hook useEffect has a missing dependency: 'handleSubmit'. Either include it or remove the dependency array                                                                                    react-hooks/exhaustive-deps
+  131:38  warning  Unexpected any. Specify a different type                                                                                                                                                           @typescript-eslint/no-explicit-any
+  384:72  warning  Unexpected any. Specify a different type                                                                                                                                                           @typescript-eslint/no-explicit-any
+  566:42  warning  Forbidden non-null assertion                                                                                                                                                                       @typescript-eslint/no-non-null-assertion
+  620:17  warning  Visible, non-interactive elements with click handlers must have at least one keyboard listener                                                                                                     jsx-a11y/click-events-have-key-events
+  620:17  warning  Avoid non-native interactive elements. If using native HTML is not possible, add an appropriate role and support for tabbing, mouse, keyboard, and touch inputs to an interactive content element  jsx-a11y/no-static-element-interactions
+
+C:\Users\husey\kiro2\frontend\src\components\Revolutionary\BionicReadingToggle.tsx
+   88:5  error    'settings' is assigned a value but only used as a type. Allowed unused vars must match /^_/u                  @typescript-eslint/no-unused-vars
+  154:6  warning  React Hook useEffect has a missing dependency: 'inputText'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+C:\Users\husey\kiro2\frontend\src\components\Revolutionary\ColorCodingPanel.tsx
+  85:7  warning  Unexpected alert  no-alert
+
+C:\Users\husey\kiro2\frontend\src\components\Revolutionary\CulturalAdaptationSettings.tsx
+   46:9   warning  Unexpected console statement                    no-console
+  181:7   warning  Unexpected console statement                    no-console
+  208:9   warning  Unexpected console statement                    no-console
+  319:15  warning  A form label must be associated with a control  jsx-a11y/label-has-associated-control
+  345:15  warning  A form label must be associated with a control  jsx-a11y/label-has-associated-control
+  371:15  warning  A form label must be associated with a control  jsx-a11y/label-has-associated-control
+  404:15  warning  A form label must be associated with a control  jsx-a11y/label-has-associated-control
+  426:15  warning  A form label must be associated with a control  jsx-a11y/label-has-associated-control
+  448:15  warning  A form label must be associated with a control  jsx-a11y/label-has-associated-control
+  470:15  warning  A form label must be associated with a control  jsx-a11y/label-has-associated-control
+  492:15  warning  A form label must be associated with a control  jsx-a11y/label-has-associated-control
+
+C:\Users\husey\kiro2\frontend\src\components\Revolutionary\DyslexiaSupport.tsx
+  50:32  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\husey\kiro2\frontend\src\components\Revolutionary\FSRSScheduler.tsx
+   76:9   warning  Unexpected console statement              no-console
+   87:59  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  214:7   warning  Unexpected console statement              no-console
+  232:9   warning  Unexpected console statement              no-console
+
+C:\Users\husey\kiro2\frontend\src\components\Revolutionary\IRTMorphologyAnalysis.tsx
+   54:48  warning  Unexpected any. Specify a different type                                                                              @typescript-eslint/no-explicit-any
+   55:54  warning  Unexpected any. Specify a different type                                                                              @typescript-eslint/no-explicit-any
+  143:6   warning  React Hook useEffect has a missing dependency: 'sampleQuestion.id'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+C:\Users\husey\kiro2\frontend\src\components\Revolutionary\InfographicViewer.tsx
+  55:9  warning  Unexpected alert  no-alert
+
+C:\Users\husey\kiro2\frontend\src\components\Revolutionary\LearningStyleProfile.tsx
+  22:50  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\husey\kiro2\frontend\src\components\Revolutionary\MindMapViewer.tsx
+  172:11  warning  Unexpected alert                                                                                                no-alert
+  191:6   warning  React Hook useEffect has a missing dependency: 'drawMindMap'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+C:\Users\husey\kiro2\frontend\src\components\Revolutionary\MultiAgentCoordination.tsx
+   83:9   warning  Unexpected console statement              no-console
+   99:30  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  103:37  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  186:47  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  248:11  warning  Unexpected console statement              no-console
+  278:9   warning  Unexpected console statement              no-console
+
+C:\Users\husey\kiro2\frontend\src\components\Revolutionary\RevolutionaryDashboard.tsx
+  100:9   warning  Unexpected console statement  no-console
+  332:15  warning  Unexpected console statement  no-console
+  341:15  warning  Unexpected console statement  no-console
+  354:15  warning  Unexpected console statement  no-console
+  363:15  warning  Unexpected console statement  no-console
+  372:15  warning  Unexpected console statement  no-console
+  382:15  warning  Unexpected console statement  no-console
+
+C:\Users\husey\kiro2\frontend\src\components\Revolutionary\RevolutionarySettings.tsx
+   97:9   warning  Unexpected console statement              no-console
+  127:7   warning  Unexpected console statement              no-console
+  154:7   warning  Unexpected console statement              no-console
+  177:53  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  181:20  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\husey\kiro2\frontend\src\components\RoleSpecific\AdminComponents.tsx
+   68:50  warning  Unexpected alert                          no-alert
+  228:42  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\husey\kiro2\frontend\src\components\RoleSpecific\ParentComponents.tsx
+  174:60  warning  Unexpected alert  no-alert
+
+C:\Users\husey\kiro2\frontend\src\components\SequentialThinking\MermaidThoughtTree.tsx
+  205:22  warning  The ref value 'containerRef.current' will likely have changed by the time this effect cleanup function runs. If this ref points to a node rendered by React, copy 'containerRef.current' to a variable inside the effect, and use that variable in the cleanup function  react-hooks/exhaustive-deps
+
+C:\Users\husey\kiro2\frontend\src\components\SequentialThinking\ReasoningStepCard.tsx
+  101:5  warning  Visible, non-interactive elements with click handlers must have at least one keyboard listener                                                                                                     jsx-a11y/click-events-have-key-events
+  101:5  warning  Avoid non-native interactive elements. If using native HTML is not possible, add an appropriate role and support for tabbing, mouse, keyboard, and touch inputs to an interactive content element  jsx-a11y/no-static-element-interactions
+
+C:\Users\husey\kiro2\frontend\src\components\SequentialThinking\ThoughtTree.tsx
+  123:17  warning  Visible, non-interactive elements with click handlers must have at least one keyboard listener                                                                                                     jsx-a11y/click-events-have-key-events
+  123:17  warning  Avoid non-native interactive elements. If using native HTML is not possible, add an appropriate role and support for tabbing, mouse, keyboard, and touch inputs to an interactive content element  jsx-a11y/no-static-element-interactions
+  221:15  warning  Visible, non-interactive elements with click handlers must have at least one keyboard listener                                                                                                     jsx-a11y/click-events-have-key-events
+  221:15  warning  Avoid non-native interactive elements. If using native HTML is not possible, add an appropriate role and support for tabbing, mouse, keyboard, and touch inputs to an interactive content element  jsx-a11y/no-static-element-interactions
+  290:11  warning  Visible, non-interactive elements with click handlers must have at least one keyboard listener                                                                                                     jsx-a11y/click-events-have-key-events
+  290:11  warning  Avoid non-native interactive elements. If using native HTML is not possible, add an appropriate role and support for tabbing, mouse, keyboard, and touch inputs to an interactive content element  jsx-a11y/no-static-element-interactions
+
+C:\Users\husey\kiro2\frontend\src\components\StudentReviews\StudentReviews.tsx
+   88:6   warning  React Hook useEffect has missing dependencies: 'fetchReviews' and 'fetchStatistics'. Either include them or remove the dependency array                                                            react-hooks/exhaustive-deps
+  158:7   warning  Unexpected alert                                                                                                                                                                                   no-alert
+  175:25  warning  Unexpected any. Specify a different type                                                                                                                                                           @typescript-eslint/no-explicit-any
+  177:25  warning  Unexpected any. Specify a different type                                                                                                                                                           @typescript-eslint/no-explicit-any
+  206:7   warning  Unexpected alert                                                                                                                                                                                   no-alert
+  208:7   warning  Unexpected alert                                                                                                                                                                                   no-alert
+  214:7   warning  Unexpected alert                                                                                                                                                                                   no-alert
+  239:7   warning  Unexpected alert                                                                                                                                                                                   no-alert
+  243:20  warning  Unexpected prompt                                                                                                                                                                                  no-alert
+  246:25  warning  Unexpected prompt                                                                                                                                                                                  no-alert
+  259:9   warning  Unexpected alert                                                                                                                                                                                   no-alert
+  261:14  error    'err' is defined but never used                                                                                                                                                                    @typescript-eslint/no-unused-vars
+  262:7   warning  Unexpected alert                                                                                                                                                                                   no-alert
+  282:44  warning  Unexpected any. Specify a different type                                                                                                                                                           @typescript-eslint/no-explicit-any
+  304:79  warning  Unexpected any. Specify a different type                                                                                                                                                           @typescript-eslint/no-explicit-any
+  343:15  warning  A form label must be associated with a control                                                                                                                                                     jsx-a11y/label-has-associated-control
+  355:15  warning  A form label must be associated with a control                                                                                                                                                     jsx-a11y/label-has-associated-control
+  358:19  warning  Visible, non-interactive elements with click handlers must have at least one keyboard listener                                                                                                     jsx-a11y/click-events-have-key-events
+  358:19  warning  Avoid non-native interactive elements. If using native HTML is not possible, add an appropriate role and support for tabbing, mouse, keyboard, and touch inputs to an interactive content element  jsx-a11y/no-static-element-interactions
+  370:15  warning  A form label must be associated with a control                                                                                                                                                     jsx-a11y/label-has-associated-control
+  381:15  warning  A form label must be associated with a control                                                                                                                                                     jsx-a11y/label-has-associated-control
+  391:15  warning  A form label must be associated with a control                                                                                                                                                     jsx-a11y/label-has-associated-control
+  401:15  warning  A form label must be associated with a control                                                                                                                                                     jsx-a11y/label-has-associated-control
+
+C:\Users\husey\kiro2\frontend\src\components\StudyRooms\ChatInterface.tsx
+  111:6   warning  React Hook useEffect has missing dependencies: 'connectWebSocket', 'fetchMessages', and 'wsConnection'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
+  128:7   warning  Unexpected console statement                                                                                                                                no-console
+  142:7   warning  Unexpected console statement                                                                                                                                no-console
+  385:23  warning  Forbidden non-null assertion                                                                                                                                @typescript-eslint/no-non-null-assertion
+
+C:\Users\husey\kiro2\frontend\src\components\StudyRooms\CollaborativeWhiteboard.tsx
+  21:10  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+C:\Users\husey\kiro2\frontend\src\components\StudyRooms\FileManager.tsx
+  117:6   warning  React Hook useEffect has a missing dependency: 'fetchFiles'. Either include it or remove the dependency array   react-hooks/exhaustive-deps
+  121:6   warning  React Hook useEffect has a missing dependency: 'filterFiles'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  186:7   warning  Unexpected alert                                                                                                no-alert
+  213:10  warning  Unexpected confirm                                                                                              no-alert
+  221:7   warning  Unexpected alert                                                                                                no-alert
+  504:32  warning  Forbidden non-null assertion                                                                                    @typescript-eslint/no-non-null-assertion
+
+C:\Users\husey\kiro2\frontend\src\components\StudyRooms\StudyRoomList.tsx
+  110:6   warning  React Hook useEffect has a missing dependency: 'fetchRooms'. Either include it or remove the dependency array   react-hooks/exhaustive-deps
+  114:6   warning  React Hook useEffect has a missing dependency: 'filterRooms'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  183:26  warning  Unexpected prompt                                                                                               no-alert
+  192:7   warning  Unexpected alert                                                                                                no-alert
+
+C:\Users\husey\kiro2\frontend\src\components\StudyRooms\StudyRoomView.tsx
+   40:8   warning  Using exported name 'VideoConference' as identifier for default import                                                                    import/no-named-as-default
+   99:6   warning  React Hook useEffect has missing dependencies: 'fetchMembers' and 'fetchRoomDetails'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
+  120:10  warning  Unexpected confirm                                                                                                                        no-alert
+  131:10  warning  Unexpected confirm                                                                                                                        no-alert
+  142:10  warning  Unexpected confirm                                                                                                                        no-alert
+
+C:\Users\husey\kiro2\frontend\src\components\StudyRooms\VideoConference.tsx
+  23:1  warning  This rule can't verify that `export *` only exports components  react-refresh/only-export-components
+
+C:\Users\husey\kiro2\frontend\src\components\StudyRooms\VideoConference\ScreenShare.tsx
+  38:7  warning  Media elements such as <audio> and <video> must have a <track> for captions  jsx-a11y/media-has-caption
+
+C:\Users\husey\kiro2\frontend\src\components\StudyRooms\VideoConference\VideoConference.tsx
+  261:6  warning  React Hook useEffect has missing dependencies: 'handleAnswer', 'handleIceCandidateMessage', 'handleOffer', 'handleUserJoined', and 'handleUserLeft'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
+
+C:\Users\husey\kiro2\frontend\src\components\StudyRooms\VideoConference\VideoGrid.tsx
+  109:15  warning  Media elements such as <audio> and <video> must have a <track> for captions  jsx-a11y/media-has-caption
+  173:15  warning  Media elements such as <audio> and <video> must have a <track> for captions  jsx-a11y/media-has-caption
+
+C:\Users\husey\kiro2\frontend\src\components\StudyRooms\VideoConference\index.tsx
+   9:10  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+  54:3   warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+  55:3   warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+  56:3   warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+  57:3   warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+  58:3   warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+  59:3   warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+  60:3   warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+  61:3   warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+  62:3   warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+  63:3   warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+  64:3   warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+  65:3   warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+  66:3   warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+  67:3   warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+  68:3   warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+  69:3   warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+  70:3   warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+  71:3   warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+C:\Users\husey\kiro2\frontend\src\components\StudyRooms\Whiteboard\CollaborativeWhiteboard.tsx
+  260:10  warning  Unexpected confirm  no-alert
+
+C:\Users\husey\kiro2\frontend\src\components\StudyRooms\Whiteboard\TextEditor.tsx
+   73:11  warning  The autoFocus prop should not be used, as it can reduce usability and accessibility for users                                   jsx-a11y/no-autofocus
+  121:11  warning  The autoFocus prop should not be used, as it can reduce usability and accessibility for users                                   jsx-a11y/no-autofocus
+  162:14  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+  180:14  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+  200:14  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+  212:14  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+  225:14  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+C:\Users\husey\kiro2\frontend\src\components\StudyRooms\Whiteboard\WhiteboardSync.tsx
+   46:14  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+   64:7   warning  Unexpected console statement                                                                                                    no-console
+   84:7   warning  Unexpected console statement                                                                                                    no-console
+   94:6   warning  React Hook useEffect has a missing dependency: 'handleMessage'. Either include it or remove the dependency array                react-hooks/exhaustive-deps
+  124:11  warning  Unexpected console statement                                                                                                    no-console
+  243:7   warning  Unexpected console statement                                                                                                    no-console
+  278:7   warning  Unexpected console statement                                                                                                    no-console
+  300:14  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+  310:14  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+  317:14  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+C:\Users\husey\kiro2\frontend\src\components\StudyRooms\Whiteboard\index.tsx
+   9:10   warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+  14:37   warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+  14:56   warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+  14:74   warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+  14:90   warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+  15:33   warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+  15:52   warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+  15:75   warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+  15:87   warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+  15:103  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+  20:3    warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+  21:3    warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+  22:3    warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+  23:3    warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+  24:3    warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+  25:3    warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+  26:3    warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+  27:3    warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+  28:3    warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+  29:3    warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+  30:3    warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+  31:3    warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+C:\Users\husey\kiro2\frontend\src\components\TeacherPool\TeacherPool.tsx
+  139:6   warning  React Hook useEffect has missing dependencies: 'fetchMyAppointments' and 'searchTeachers'. Either include them or remove the dependency array                                                      react-hooks/exhaustive-deps
+  240:7   warning  Unexpected alert                                                                                                                                                                                   no-alert
+  260:10  warning  Unexpected confirm                                                                                                                                                                                 no-alert
+  262:20  warning  Unexpected prompt                                                                                                                                                                                  no-alert
+  277:7   warning  Unexpected alert                                                                                                                                                                                   no-alert
+  280:7   warning  Unexpected alert                                                                                                                                                                                   no-alert
+  315:15  warning  A form label must be associated with a control                                                                                                                                                     jsx-a11y/label-has-associated-control
+  333:15  warning  A form label must be associated with a control                                                                                                                                                     jsx-a11y/label-has-associated-control
+  343:15  warning  A form label must be associated with a control                                                                                                                                                     jsx-a11y/label-has-associated-control
+  355:15  warning  A form label must be associated with a control                                                                                                                                                     jsx-a11y/label-has-associated-control
+  385:15  warning  Visible, non-interactive elements with click handlers must have at least one keyboard listener                                                                                                     jsx-a11y/click-events-have-key-events
+  385:15  warning  Avoid non-native interactive elements. If using native HTML is not possible, add an appropriate role and support for tabbing, mouse, keyboard, and touch inputs to an interactive content element  jsx-a11y/no-static-element-interactions
+  534:15  warning  A form label must be associated with a control                                                                                                                                                     jsx-a11y/label-has-associated-control
+  545:15  warning  A form label must be associated with a control                                                                                                                                                     jsx-a11y/label-has-associated-control
+  555:15  warning  A form label must be associated with a control                                                                                                                                                     jsx-a11y/label-has-associated-control
+  568:15  warning  A form label must be associated with a control                                                                                                                                                     jsx-a11y/label-has-associated-control
+  581:15  warning  A form label must be associated with a control                                                                                                                                                     jsx-a11y/label-has-associated-control
+  592:15  warning  A form label must be associated with a control                                                                                                                                                     jsx-a11y/label-has-associated-control
+
+C:\Users\husey\kiro2\frontend\src\components\Teacher\ClassReport.tsx
+  279:21  warning  Visible, non-interactive elements with click handlers must have at least one keyboard listener                                                                                                     jsx-a11y/click-events-have-key-events
+  279:21  warning  Avoid non-native interactive elements. If using native HTML is not possible, add an appropriate role and support for tabbing, mouse, keyboard, and touch inputs to an interactive content element  jsx-a11y/no-static-element-interactions
+
+C:\Users\husey\kiro2\frontend\src\components\Teacher\StudentList.tsx
+  175:6  warning  React Hook useEffect has a missing dependency: 'fetchStudentList'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  225:9  warning  Unexpected console statement                                                                                         no-console
+
+C:\Users\husey\kiro2\frontend\src\components\UniversityAdvisory\ProgramSearch.tsx
+   57:6   warning  React Hook useEffect has a missing dependency: 'handleSearch'. Either include it or remove the dependency array                                                                                    react-hooks/exhaustive-deps
+   86:32  warning  Unexpected any. Specify a different type                                                                                                                                                           @typescript-eslint/no-explicit-any
+  263:15  warning  Visible, non-interactive elements with click handlers must have at least one keyboard listener                                                                                                     jsx-a11y/click-events-have-key-events
+  263:15  warning  Avoid non-native interactive elements. If using native HTML is not possible, add an appropriate role and support for tabbing, mouse, keyboard, and touch inputs to an interactive content element  jsx-a11y/no-static-element-interactions
+
+C:\Users\husey\kiro2\frontend\src\components\UniversityInfo\UniversityInfo.tsx
+   72:25  warning  Unexpected any. Specify a different type                                                                                @typescript-eslint/no-explicit-any
+   74:27  warning  Unexpected any. Specify a different type                                                                                @typescript-eslint/no-explicit-any
+   98:6   warning  React Hook useEffect has a missing dependency: 'fetchUniversityInfo'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  352:15  warning  Unexpected any. Specify a different type                                                                                @typescript-eslint/no-explicit-any
+  414:15  warning  Unexpected any. Specify a different type                                                                                @typescript-eslint/no-explicit-any
+
+C:\Users\husey\kiro2\frontend\src\components\VideoAnalytics\VideoAnalyticsDashboard.tsx
+  45:6  warning  React Hook useEffect has a missing dependency: 'loadSummary'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+C:\Users\husey\kiro2\frontend\src\components\VideoAnalytics\VideoBookmarks.tsx
+   52:6   warning  React Hook useEffect has a missing dependency: 'loadBookmarks'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+   61:33  warning  Unexpected any. Specify a different type                                                                          @typescript-eslint/no-explicit-any
+  109:10  warning  Unexpected confirm                                                                                                no-alert
+  173:15  warning  The autoFocus prop should not be used, as it can reduce usability and accessibility for users                     jsx-a11y/no-autofocus
+
+C:\Users\husey\kiro2\frontend\src\components\VideoAnalytics\VideoNotes.tsx
+   51:6   warning  React Hook useEffect has a missing dependency: 'loadNotes'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+   60:29  warning  Unexpected any. Specify a different type                                                                      @typescript-eslint/no-explicit-any
+  123:10  warning  Unexpected confirm                                                                                            no-alert
+  275:21  warning  The autoFocus prop should not be used, as it can reduce usability and accessibility for users                 jsx-a11y/no-autofocus
+
+C:\Users\husey\kiro2\frontend\src\components\VideoAnalytics\VideoPlayerWithAnalytics.tsx
+   93:40  warning  The ref value 'videoRef.current' will likely have changed by the time this effect cleanup function runs. If this ref points to a node rendered by React, copy 'videoRef.current' to a variable inside the effect, and use that variable in the cleanup function  react-hooks/exhaustive-deps
+   96:6   warning  React Hook useEffect has missing dependencies: 'endSession' and 'session'. Either include them or remove the dependency array                                                                                                                                    react-hooks/exhaustive-deps
+  118:6   warning  React Hook useEffect has a missing dependency: 'updateProgress'. Either include it or remove the dependency array                                                                                                                                                react-hooks/exhaustive-deps
+  257:9   warning  Media elements such as <audio> and <video> must have a <track> for captions                                                                                                                                                                                      jsx-a11y/media-has-caption
+
+C:\Users\husey\kiro2\frontend\src\components\ui\GlassCard.tsx
+  13:8  warning  Using exported name 'modernColors' as identifier for default import  import/no-named-as-default
+
+C:\Users\husey\kiro2\frontend\src\components\ui\ModernButton.tsx
+  11:8  warning  Using exported name 'modernColors' as identifier for default import  import/no-named-as-default
+
+C:\Users\husey\kiro2\frontend\src\components\ui\ModernLoader.tsx
+  10:8  warning  Using exported name 'modernColors' as identifier for default import  import/no-named-as-default
+
+C:\Users\husey\kiro2\frontend\src\components\ui\modern-card.tsx
+  151:53  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\husey\kiro2\frontend\src\components\ui\select.tsx
+   51:18  warning  Unexpected any. Specify a different type                                                                                                                                                           @typescript-eslint/no-explicit-any
+   60:18  warning  Unexpected any. Specify a different type                                                                                                                                                           @typescript-eslint/no-explicit-any
+  108:16  warning  Unexpected any. Specify a different type                                                                                                                                                           @typescript-eslint/no-explicit-any
+  123:5   warning  Visible, non-interactive elements with click handlers must have at least one keyboard listener                                                                                                     jsx-a11y/click-events-have-key-events
+  123:5   warning  Avoid non-native interactive elements. If using native HTML is not possible, add an appropriate role and support for tabbing, mouse, keyboard, and touch inputs to an interactive content element  jsx-a11y/no-static-element-interactions
+
+C:\Users\husey\kiro2\frontend\src\config\reactQuery.ts
+   24:34  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   62:44  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  121:24  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  140:3   warning  Unexpected console statement              no-console
+  147:24  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\husey\kiro2\frontend\src\hooks\queries\useDashboardQueries.ts
+  23:31  warning  Forbidden non-null assertion  @typescript-eslint/no-non-null-assertion
+  51:32  warning  Forbidden non-null assertion  @typescript-eslint/no-non-null-assertion
+  74:39  warning  Forbidden non-null assertion  @typescript-eslint/no-non-null-assertion
+
+C:\Users\husey\kiro2\frontend\src\hooks\useAPI.ts
+   14:44  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   22:28  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   22:43  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   22:51  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   88:37  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  135:36  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\husey\kiro2\frontend\src\hooks\useAccessibilitySettings.ts
+   83:6  warning  React Hook useEffect has a missing dependency: 'detectSystemPreferences'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  132:6  warning  React Hook useCallback has a missing dependency: 'applySettingsToDOM'. Either include it or remove the dependency array     react-hooks/exhaustive-deps
+
+C:\Users\husey\kiro2\frontend\src\hooks\useApiIntegration.ts
+   20:52  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   76:64  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  102:71  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  116:70  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  129:71  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\husey\kiro2\frontend\src\hooks\useAutoSave.ts
+   82:7   warning  Unexpected console statement                                                                                                                                                                                                                                             no-console
+   84:21  warning  Unexpected any. Specify a different type                                                                                                                                                                                                                                 @typescript-eslint/no-explicit-any
+  129:7   warning  Unexpected console statement                                                                                                                                                                                                                                             no-console
+  131:21  warning  Unexpected any. Specify a different type                                                                                                                                                                                                                                 @typescript-eslint/no-explicit-any
+  203:24  warning  The ref value 'saveQueueRef.current' will likely have changed by the time this effect cleanup function runs. If this ref points to a node rendered by React, copy 'saveQueueRef.current' to a variable inside the effect, and use that variable in the cleanup function  react-hooks/exhaustive-deps
+
+C:\Users\husey\kiro2\frontend\src\hooks\useBionicReading.ts
+   60:38  warning  Unexpected any. Specify a different type                                                                                     @typescript-eslint/no-explicit-any
+  143:36  warning  Unexpected any. Specify a different type                                                                                     @typescript-eslint/no-explicit-any
+  162:19  warning  Unexpected any. Specify a different type                                                                                     @typescript-eslint/no-explicit-any
+  187:6   warning  React Hook useCallback has a missing dependency: 'applyMockBionicReading'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+C:\Users\husey\kiro2\frontend\src\hooks\useColorContrastSettings.ts
+  93:6  warning  React Hook useCallback has a missing dependency: 'applySettingsToDOM'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+C:\Users\husey\kiro2\frontend\src\hooks\useDyslexiaSettings.ts
+  120:9  warning  Unexpected console statement                                                                                             no-console
+  140:6  warning  React Hook useCallback has a missing dependency: 'applySettingsToDOM'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+C:\Users\husey\kiro2\frontend\src\hooks\useExamMetrics.ts
+  80:157  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\husey\kiro2\frontend\src\hooks\useExamResults.ts
+  68:19  warning  Unexpected any. Specify a different type                                                                        @typescript-eslint/no-explicit-any
+  79:6   warning  React Hook useEffect has a missing dependency: 'loadResults'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+C:\Users\husey\kiro2\frontend\src\hooks\useExamWebSocket.ts
+   24:10  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   33:39  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  130:9   warning  Unexpected console statement              no-console
+
+C:\Users\husey\kiro2\frontend\src\hooks\useFocusManagement.ts
+  63:63  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\husey\kiro2\frontend\src\hooks\useGamification.ts
+   89:19  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   96:85  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  107:19  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  123:19  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  160:19  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  173:19  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  183:19  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  218:19  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  229:19  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  240:19  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  252:19  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  295:19  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  308:19  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  320:19  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  357:19  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\husey\kiro2\frontend\src\hooks\useKeyboardNavigation.ts
+  72:6  warning  React Hook useCallback has a missing dependency: 'FOCUSABLE_SELECTORS'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+C:\Users\husey\kiro2\frontend\src\hooks\useLearningPath.ts
+   12:8   warning  Using exported name 'config' as identifier for default import  import/no-named-as-default
+  114:9   warning  Unexpected console statement                                   no-console
+  144:19  warning  Unexpected any. Specify a different type                       @typescript-eslint/no-explicit-any
+
+C:\Users\husey\kiro2\frontend\src\hooks\useLearningPathVideos.ts
+   11:8    warning  Using exported name 'config' as identifier for default import  import/no-named-as-default
+   28:29   warning  Unexpected any. Specify a different type                       @typescript-eslint/no-explicit-any
+  108:54   warning  Unexpected any. Specify a different type                       @typescript-eslint/no-explicit-any
+  116:58   warning  Unexpected any. Specify a different type                       @typescript-eslint/no-explicit-any
+  123:51   warning  Unexpected any. Specify a different type                       @typescript-eslint/no-explicit-any
+  142:7    warning  Unexpected console statement                                   no-console
+  143:66   warning  Unexpected any. Specify a different type                       @typescript-eslint/no-explicit-any
+  146:19   warning  Unexpected any. Specify a different type                       @typescript-eslint/no-explicit-any
+  155:14   warning  Unexpected any. Specify a different type                       @typescript-eslint/no-explicit-any
+  180:71   warning  Unexpected any. Specify a different type                       @typescript-eslint/no-explicit-any
+  182:7    warning  Unexpected console statement                                   no-console
+  196:9    warning  Unexpected console statement                                   no-console
+  209:21   warning  Unexpected any. Specify a different type                       @typescript-eslint/no-explicit-any
+  223:122  warning  Unexpected any. Specify a different type                       @typescript-eslint/no-explicit-any
+  254:54   warning  Unexpected any. Specify a different type                       @typescript-eslint/no-explicit-any
+  273:11   warning  Unexpected console statement                                   no-console
+  274:11   warning  Unexpected alert                                               no-alert
+  277:11   warning  Unexpected alert                                               no-alert
+  282:21   warning  Unexpected any. Specify a different type                       @typescript-eslint/no-explicit-any
+  285:7    warning  Unexpected alert                                               no-alert
+  297:5    warning  Unexpected console statement                                   no-console
+
+C:\Users\husey\kiro2\frontend\src\hooks\useMathSolution.ts
+  14:10  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  52:19  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  65:19  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  83:19  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\husey\kiro2\frontend\src\hooks\usePDFGeneration.ts
+  57:19  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\husey\kiro2\frontend\src\hooks\usePWA.ts
+   52:29  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   60:7   warning  Unexpected console statement              no-console
+   71:51  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  149:9   warning  Unexpected console statement              no-console
+  154:9   warning  Unexpected console statement              no-console
+  168:7   warning  Unexpected console statement              no-console
+  172:9   warning  Unexpected console statement              no-console
+  193:7   warning  Unexpected console statement              no-console
+  197:7   warning  Unexpected console statement              no-console
+  213:7   warning  Unexpected console statement              no-console
+  217:7   warning  Unexpected console statement              no-console
+  240:9   warning  Unexpected console statement              no-console
+  248:9   warning  Unexpected console statement              no-console
+  251:9   warning  Unexpected console statement              no-console
+  287:29  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  340:40  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\husey\kiro2\frontend\src\hooks\useQueryKeys.ts
+  22:22  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  53:22  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  96:23  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  98:39  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\husey\kiro2\frontend\src\hooks\useRAG.ts
+   25:13  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   60:16  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  210:16  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  234:16  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  256:16  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\husey\kiro2\frontend\src\hooks\useRevolutionaryFeatures.ts
+    8:8   warning  Using exported name 'revolutionaryFeaturesService' as identifier for default import  import/no-named-as-default
+   90:97  warning  Unexpected any. Specify a different type                                             @typescript-eslint/no-explicit-any
+  169:74  warning  Unexpected any. Specify a different type                                             @typescript-eslint/no-explicit-any
+
+C:\Users\husey\kiro2\frontend\src\hooks\useRoleAccess.tsx
+  98:10  warning  Component definition is missing display name  react/display-name
+
+C:\Users\husey\kiro2\frontend\src\hooks\useScreenReader.ts
+  153:5  warning  Unexpected console statement  no-console
+
+C:\Users\husey\kiro2\frontend\src\hooks\useStreaming.ts
+   30:13  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   40:44  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   58:14  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  251:13  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  261:44  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  279:14  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\husey\kiro2\frontend\src\hooks\useWebSocket.ts
+    3:8   warning  Using exported name 'config' as identifier for default import  import/no-named-as-default
+   10:10  warning  Unexpected any. Specify a different type                       @typescript-eslint/no-explicit-any
+   62:9   warning  Unexpected console statement                                   no-console
+  101:15  warning  Unexpected console statement                                   no-console
+  106:15  warning  Unexpected console statement                                   no-console
+  110:15  warning  Unexpected console statement                                   no-console
+  118:9   warning  Unexpected console statement                                   no-console
+  126:11  warning  Unexpected console statement                                   no-console
+
+C:\Users\husey\kiro2\frontend\src\lib\apiClient.ts
+   16:8   warning  Using exported name 'config' as identifier for default import  import/no-named-as-default
+   27:37  warning  Unexpected any. Specify a different type                       @typescript-eslint/no-explicit-any
+  149:12  warning  Unexpected any. Specify a different type                       @typescript-eslint/no-explicit-any
+  164:12  warning  Unexpected any. Specify a different type                       @typescript-eslint/no-explicit-any
+
+C:\Users\husey\kiro2\frontend\src\lib\retryUtils.ts
+  113:9   warning  Forbidden non-null assertion              @typescript-eslint/no-non-null-assertion
+  203:68  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  207:16  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  208:16  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\husey\kiro2\frontend\src\main.tsx
+  14:34  warning  Forbidden non-null assertion  @typescript-eslint/no-non-null-assertion
+
+C:\Users\husey\kiro2\frontend\src\pages\ABTestResultsPage.tsx
+  120:6  warning  React Hook useEffect has a missing dependency: 'fetchResults'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+C:\Users\husey\kiro2\frontend\src\pages\AdaptiveTestPage.tsx
+   58:6  warning  React Hook useEffect has a missing dependency: 'startSession'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+   83:7  warning  Unexpected alert                                                                                                 no-alert
+  123:7  warning  Unexpected alert                                                                                                 no-alert
+
+C:\Users\husey\kiro2\frontend\src\pages\Admin\AuditLogViewerPage.tsx
+   57:16  warning  Unexpected any. Specify a different type                                                                          @typescript-eslint/no-explicit-any
+   58:16  warning  Unexpected any. Specify a different type                                                                          @typescript-eslint/no-explicit-any
+   92:6   warning  React Hook useEffect has a missing dependency: 'loadAuditLogs'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  116:19  warning  Unexpected any. Specify a different type                                                                          @typescript-eslint/no-explicit-any
+  166:7   warning  Unexpected alert                                                                                                  no-alert
+  171:10  warning  Unexpected confirm                                                                                                no-alert
+  175:7   warning  Unexpected alert                                                                                                  no-alert
+  181:7   warning  Unexpected alert                                                                                                  no-alert
+  453:64  warning  Unexpected any. Specify a different type                                                                          @typescript-eslint/no-explicit-any
+
+C:\Users\husey\kiro2\frontend\src\pages\Admin\BatchOperationsPage.tsx
+   63:12  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  163:9   warning  Unexpected alert                          no-alert
+  167:19  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  198:10  warning  Unexpected confirm                        no-alert
+  210:9   warning  Unexpected alert                          no-alert
+  216:7   warning  Unexpected alert                          no-alert
+  572:64  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\husey\kiro2\frontend\src\pages\Admin\CacheManagementPage.tsx
+  141:19  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  166:9   warning  Unexpected alert                          no-alert
+  173:19  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  175:7   warning  Unexpected alert                          no-alert
+  180:10  warning  Unexpected confirm                        no-alert
+  194:9   warning  Unexpected alert                          no-alert
+  197:19  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  199:7   warning  Unexpected alert                          no-alert
+
+C:\Users\husey\kiro2\frontend\src\pages\Admin\SystemMonitoringPage.tsx
+   98:62  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  163:19  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  184:9   warning  Unexpected alert                          no-alert
+  186:19  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  188:7   warning  Unexpected alert                          no-alert
+  259:55  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  279:52  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\husey\kiro2\frontend\src\pages\BionicReadingPage.tsx
+  124:6   warning  React Hook useEffect has a missing dependency: 'loadUserPreferences'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  177:19  warning  Unexpected any. Specify a different type                                                                                @typescript-eslint/no-explicit-any
+  205:9   warning  Unexpected alert                                                                                                        no-alert
+  209:19  warning  Unexpected any. Specify a different type                                                                                @typescript-eslint/no-explicit-any
+  232:9   warning  Unexpected alert                                                                                                        no-alert
+  242:10  warning  Unexpected confirm                                                                                                      no-alert
+  253:9   warning  Unexpected alert                                                                                                        no-alert
+  257:7   warning  Unexpected alert                                                                                                        no-alert
+  265:5   warning  Unexpected alert                                                                                                        no-alert
+
+C:\Users\husey\kiro2\frontend\src\pages\ExamPage.tsx
+  24:8   warning  Using exported name 'modernColors' as identifier for default import                                                import/no-named-as-default
+  43:6   warning  React Hook useEffect has a missing dependency: 'initializePage'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  81:19  warning  Unexpected any. Specify a different type                                                                           @typescript-eslint/no-explicit-any
+
+C:\Users\husey\kiro2\frontend\src\pages\ExpertDashboardPage.tsx
+   43:6   warning  React Hook useEffect has a missing dependency: 'loadDashboard'. Either include it or remove the dependency array                                                                                   react-hooks/exhaustive-deps
+   68:7   warning  Unexpected alert                                                                                                                                                                                   no-alert
+  108:11  warning  Visible, non-interactive elements with click handlers must have at least one keyboard listener                                                                                                     jsx-a11y/click-events-have-key-events
+  108:11  warning  Avoid non-native interactive elements. If using native HTML is not possible, add an appropriate role and support for tabbing, mouse, keyboard, and touch inputs to an interactive content element  jsx-a11y/no-static-element-interactions
+
+C:\Users\husey\kiro2\frontend\src\pages\FSRSDashboardPage.tsx
+   78:13  warning  Unexpected any. Specify a different type                                                                              @typescript-eslint/no-explicit-any
+  102:6   warning  React Hook useEffect has a missing dependency: 'loadDashboardData'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  142:19  warning  Unexpected any. Specify a different type                                                                              @typescript-eslint/no-explicit-any
+  251:9   warning  Unexpected alert                                                                                                      no-alert
+  260:7   warning  Unexpected alert                                                                                                      no-alert
+
+C:\Users\husey\kiro2\frontend\src\pages\LearningPathPage.tsx
+  144:6    warning  React Hook useEffect has a missing dependency: 'loadLearningPath'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  193:19   warning  Unexpected any. Specify a different type                                                                             @typescript-eslint/no-explicit-any
+  201:43   warning  Unexpected any. Specify a different type                                                                             @typescript-eslint/no-explicit-any
+  225:36   warning  Unexpected any. Specify a different type                                                                             @typescript-eslint/no-explicit-any
+  226:38   warning  Unexpected any. Specify a different type                                                                             @typescript-eslint/no-explicit-any
+  256:42   warning  Unexpected any. Specify a different type                                                                             @typescript-eslint/no-explicit-any
+  263:58   warning  Unexpected any. Specify a different type                                                                             @typescript-eslint/no-explicit-any
+  266:51   warning  Unexpected any. Specify a different type                                                                             @typescript-eslint/no-explicit-any
+  285:66   warning  Unexpected any. Specify a different type                                                                             @typescript-eslint/no-explicit-any
+  287:19   warning  Unexpected any. Specify a different type                                                                             @typescript-eslint/no-explicit-any
+  337:124  warning  Unexpected any. Specify a different type                                                                             @typescript-eslint/no-explicit-any
+  366:54   warning  Unexpected any. Specify a different type                                                                             @typescript-eslint/no-explicit-any
+  386:11   warning  Unexpected alert                                                                                                     no-alert
+  389:11   warning  Unexpected alert                                                                                                     no-alert
+  394:21   warning  Unexpected any. Specify a different type                                                                             @typescript-eslint/no-explicit-any
+  397:7    warning  Unexpected alert                                                                                                     no-alert
+  448:21   warning  Unexpected any. Specify a different type                                                                             @typescript-eslint/no-explicit-any
+
+C:\Users\husey\kiro2\frontend\src\pages\Modern404Page.tsx
+  21:8  warning  Using exported name 'modernColors' as identifier for default import  import/no-named-as-default
+
+C:\Users\husey\kiro2\frontend\src\pages\ModernAdminContentPage.tsx
+   44:8   warning  Using exported name 'apiClient' as identifier for default import     import/no-named-as-default
+   45:8   warning  Using exported name 'modernColors' as identifier for default import  import/no-named-as-default
+  571:48  warning  Unexpected prompt                                                    no-alert
+
+C:\Users\husey\kiro2\frontend\src\pages\ModernAdminDashboard.tsx
+   42:8   warning  Using exported name 'modernColors' as identifier for default import  import/no-named-as-default
+  134:21  warning  Unexpected any. Specify a different type                             @typescript-eslint/no-explicit-any
+
+C:\Users\husey\kiro2\frontend\src\pages\ModernAdminSettingsPage.tsx
+  69:60  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\husey\kiro2\frontend\src\pages\ModernAdminUsersPage.tsx
+   54:8   warning  Using exported name 'apiClient' as identifier for default import     import/no-named-as-default
+   55:8   warning  Using exported name 'modernColors' as identifier for default import  import/no-named-as-default
+  150:7   warning  Unexpected alert                                                     no-alert
+  161:7   warning  Unexpected alert                                                     no-alert
+  175:5   warning  Unexpected alert                                                     no-alert
+  180:25  warning  Unexpected confirm                                                   no-alert
+  690:69  warning  Unexpected any. Specify a different type                             @typescript-eslint/no-explicit-any
+
+C:\Users\husey\kiro2\frontend\src\pages\ModernErrorPage.tsx
+  13:8   warning  Using exported name 'modernColors' as identifier for default import  import/no-named-as-default
+  33:35  warning  Unexpected any. Specify a different type                             @typescript-eslint/no-explicit-any
+
+C:\Users\husey\kiro2\frontend\src\pages\ModernExamResultsPage.tsx
+   78:6   warning  React Hook useEffect has a missing dependency: 'fetchExamResults'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+   91:19  warning  Forbidden non-null assertion                                                                                         @typescript-eslint/no-non-null-assertion
+  320:29  warning  Unexpected any. Specify a different type                                                                             @typescript-eslint/no-explicit-any
+
+C:\Users\husey\kiro2\frontend\src\pages\ModernExamStartPage.tsx
+  104:19  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\husey\kiro2\frontend\src\pages\ModernLearningPathPage.tsx
+   24:8   warning  Using exported name 'modernColors' as identifier for default import                                                     import/no-named-as-default
+  153:5   warning  React Hook useMemo has an unnecessary dependency: 'pathNodes.length'. Either exclude it or remove the dependency array  react-hooks/exhaustive-deps
+  411:46  warning  Unexpected any. Specify a different type                                                                                @typescript-eslint/no-explicit-any
+
+C:\Users\husey\kiro2\frontend\src\pages\ModernLoginPage.tsx
+   32:8   warning  Using exported name 'modernColors' as identifier for default import  import/no-named-as-default
+   86:21  warning  Unexpected any. Specify a different type                             @typescript-eslint/no-explicit-any
+  106:21  warning  Unexpected any. Specify a different type                             @typescript-eslint/no-explicit-any
+
+C:\Users\husey\kiro2\frontend\src\pages\ModernParentChildrenPage.tsx
+   32:8   warning  Using exported name 'modernColors' as identifier for default import  import/no-named-as-default
+   72:21  warning  Unexpected any. Specify a different type                             @typescript-eslint/no-explicit-any
+  115:21  warning  Unexpected any. Specify a different type                             @typescript-eslint/no-explicit-any
+
+C:\Users\husey\kiro2\frontend\src\pages\ModernParentDashboard.tsx
+  35:8  warning  Using exported name 'modernColors' as identifier for default import  import/no-named-as-default
+
+C:\Users\husey\kiro2\frontend\src\pages\ModernParentNotificationsPage.tsx
+  33:8  warning  Using exported name 'apiClient' as identifier for default import     import/no-named-as-default
+  34:8  warning  Using exported name 'modernColors' as identifier for default import  import/no-named-as-default
+
+C:\Users\husey\kiro2\frontend\src\pages\ModernParentReportsPage.tsx
+  33:8  warning  Using exported name 'apiClient' as identifier for default import                                                  import/no-named-as-default
+  34:8  warning  Using exported name 'modernColors' as identifier for default import                                               import/no-named-as-default
+  68:6  warning  React Hook useEffect has a missing dependency: 'fetchChildren'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+C:\Users\husey\kiro2\frontend\src\pages\ModernProfilePage.tsx
+   40:8   warning  Using exported name 'modernColors' as identifier for default import  import/no-named-as-default
+  110:21  warning  Unexpected any. Specify a different type                             @typescript-eslint/no-explicit-any
+
+C:\Users\husey\kiro2\frontend\src\pages\ModernRegisterPage.tsx
+   43:8   warning  Using exported name 'modernColors' as identifier for default import  import/no-named-as-default
+  146:21  warning  Unexpected any. Specify a different type                             @typescript-eslint/no-explicit-any
+
+C:\Users\husey\kiro2\frontend\src\pages\ModernSettingsPage.tsx
+   38:8   warning  Using exported name 'modernColors' as identifier for default import  import/no-named-as-default
+  100:7   warning  Unexpected alert                                                     no-alert
+  101:21  warning  Unexpected any. Specify a different type                             @typescript-eslint/no-explicit-any
+  103:7   warning  Unexpected alert                                                     no-alert
+  124:7   warning  Unexpected alert                                                     no-alert
+  125:21  warning  Unexpected any. Specify a different type                             @typescript-eslint/no-explicit-any
+  127:7   warning  Unexpected alert                                                     no-alert
+  133:8   warning  Unexpected confirm                                                   no-alert
+  141:8   warning  Unexpected confirm                                                   no-alert
+  170:7   warning  Unexpected alert                                                     no-alert
+  173:21  warning  Unexpected any. Specify a different type                             @typescript-eslint/no-explicit-any
+  175:7   warning  Unexpected alert                                                     no-alert
+
+C:\Users\husey\kiro2\frontend\src\pages\ModernStudentDashboard.tsx
+  35:8  warning  Using exported name 'modernColors' as identifier for default import  import/no-named-as-default
+
+C:\Users\husey\kiro2\frontend\src\pages\ModernTeacherAssignmentsPage.tsx
+   43:8   warning  Using exported name 'apiClient' as identifier for default import     import/no-named-as-default
+   44:8   warning  Using exported name 'modernColors' as identifier for default import  import/no-named-as-default
+  151:7   warning  Unexpected alert                                                     no-alert
+  162:7   warning  Unexpected alert                                                     no-alert
+  176:5   warning  Unexpected alert                                                     no-alert
+  181:31  warning  Unexpected confirm                                                   no-alert
+  193:5   warning  Unexpected alert                                                     no-alert
+
+C:\Users\husey\kiro2\frontend\src\pages\ModernTeacherClassesPage.tsx
+   40:8   warning  Using exported name 'modernColors' as identifier for default import  import/no-named-as-default
+   85:21  warning  Unexpected any. Specify a different type                             @typescript-eslint/no-explicit-any
+   95:7   warning  Unexpected alert                                                     no-alert
+  124:21  warning  Unexpected any. Specify a different type                             @typescript-eslint/no-explicit-any
+  126:7   warning  Unexpected alert                                                     no-alert
+
+C:\Users\husey\kiro2\frontend\src\pages\ModernTeacherContentPage.tsx
+   50:8   warning  Using exported name 'apiClient' as identifier for default import     import/no-named-as-default
+   51:8   warning  Using exported name 'modernColors' as identifier for default import  import/no-named-as-default
+  193:7   warning  Unexpected alert                                                     no-alert
+  210:7   warning  Unexpected alert                                                     no-alert
+  224:5   warning  Unexpected alert                                                     no-alert
+  229:28  warning  Unexpected confirm                                                   no-alert
+  241:5   warning  Unexpected alert                                                     no-alert
+  751:75  warning  Unexpected any. Specify a different type                             @typescript-eslint/no-explicit-any
+
+C:\Users\husey\kiro2\frontend\src\pages\ModernTeacherDashboard.tsx
+  35:8  warning  Using exported name 'modernColors' as identifier for default import  import/no-named-as-default
+
+C:\Users\husey\kiro2\frontend\src\pages\ModernTeacherExamsPage.tsx
+   44:8   warning  Using exported name 'apiClient' as identifier for default import     import/no-named-as-default
+   45:8   warning  Using exported name 'modernColors' as identifier for default import  import/no-named-as-default
+  146:7   warning  Unexpected alert                                                     no-alert
+  160:5   warning  Unexpected alert                                                     no-alert
+  165:25  warning  Unexpected confirm                                                   no-alert
+  177:5   warning  Unexpected alert                                                     no-alert
+  619:93  warning  Unexpected any. Specify a different type                             @typescript-eslint/no-explicit-any
+
+C:\Users\husey\kiro2\frontend\src\pages\ModernTeacherReportsPage.tsx
+   37:8  warning  Using exported name 'apiClient' as identifier for default import     import/no-named-as-default
+   38:8  warning  Using exported name 'modernColors' as identifier for default import  import/no-named-as-default
+  215:7  warning  Unexpected alert                                                     no-alert
+
+C:\Users\husey\kiro2\frontend\src\pages\ModernTeacherStudentsPage.tsx
+  31:8  warning  Using exported name 'apiClient' as identifier for default import     import/no-named-as-default
+  32:8  warning  Using exported name 'modernColors' as identifier for default import  import/no-named-as-default
+
+C:\Users\husey\kiro2\frontend\src\pages\OSYMQuestionGeneratorPage.tsx
+  143:87  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  229:87  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\husey\kiro2\frontend\src\pages\QuestionBankPage.tsx
+  13:8  warning  Using exported name 'QuestionBank' as identifier for default import            import/no-named-as-default
+  14:8  warning  Using exported name 'QuestionStatsDashboard' as identifier for default import  import/no-named-as-default
+
+C:\Users\husey\kiro2\frontend\src\pages\QuestionUploadPage.tsx
+  37:8  warning  Using exported name 'YOLOQuestionDetector' as identifier for default import  import/no-named-as-default
+  81:5  warning  Unexpected alert                                                             no-alert
+
+C:\Users\husey\kiro2\frontend\src\pages\StudentDashboardPage.tsx
+  6:8  warning  Using exported name 'StudentDashboard' as identifier for default import  import/no-named-as-default
+
+C:\Users\husey\kiro2\frontend\src\pages\TeacherDashboardPage.tsx
+  8:8  warning  Using exported name 'TeacherDashboard' as identifier for default import  import/no-named-as-default
+
+C:\Users\husey\kiro2\frontend\src\pages\TextSimplificationPage.tsx
+  161:19  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  201:19  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  236:19  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  246:5   warning  Unexpected alert                          no-alert
+
+C:\Users\husey\kiro2\frontend\src\pages\TokenOptimizationDashboard.tsx
+  111:6  warning  React Hook useEffect has a missing dependency: 'fetchStats'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+C:\Users\husey\kiro2\frontend\src\pages\UnauthorizedPage.tsx
+  22:8  warning  Using exported name 'modernColors' as identifier for default import  import/no-named-as-default
+
+C:\Users\husey\kiro2\frontend\src\pages\YOLODetectionPage.tsx
+  207:74  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\husey\kiro2\frontend\src\pages\ZPDMaarifVisualizationPage.tsx
+  118:29  warning  Unexpected any. Specify a different type                                                                         @typescript-eslint/no-explicit-any
+  148:6   warning  React Hook useEffect has a missing dependency: 'loadProfiles'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  212:19  warning  Unexpected any. Specify a different type                                                                         @typescript-eslint/no-explicit-any
+  236:9   warning  Unexpected alert                                                                                                 no-alert
+  242:7   warning  Unexpected alert                                                                                                 no-alert
+  264:9   warning  Unexpected alert                                                                                                 no-alert
+  270:7   warning  Unexpected alert                                                                                                 no-alert
+  294:13  error    'ogrenci_id' is assigned a value but never used. Allowed unused vars must match /^_/u                            @typescript-eslint/no-unused-vars
+
+C:\Users\husey\kiro2\frontend\src\routes\lazyRoutes.tsx
+   58:40  warning  Unexpected any. Specify a different type                                                                                        @typescript-eslint/no-explicit-any
+   68:14  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+  257:17  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+  267:17  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+  278:44  warning  Unexpected any. Specify a different type                                                                                        @typescript-eslint/no-explicit-any
+
+C:\Users\husey\kiro2\frontend\src\services\NetworkDetector.ts
+   11:8    warning  Using exported name 'config' as identifier for default import  import/no-named-as-default
+  168:40   warning  Unexpected any. Specify a different type                       @typescript-eslint/no-explicit-any
+  168:73   warning  Unexpected any. Specify a different type                       @typescript-eslint/no-explicit-any
+  168:109  warning  Unexpected any. Specify a different type                       @typescript-eslint/no-explicit-any
+
+C:\Users\husey\kiro2\frontend\src\services\VideoErrorHandler.ts
+   43:28  warning  Unexpected any. Specify a different type                                                                             @typescript-eslint/no-explicit-any
+   66:28  warning  Unexpected any. Specify a different type                                                                             @typescript-eslint/no-explicit-any
+   75:29  warning  Unexpected any. Specify a different type                                                                             @typescript-eslint/no-explicit-any
+  512:11  warning  Unexpected console statement                                                                                         no-console
+  533:7   warning  Use "@ts-expect-error" instead of "@ts-ignore", as "@ts-ignore" will do nothing if the following line is error-free  @typescript-eslint/ban-ts-comment
+  535:9   warning  Use "@ts-expect-error" instead of "@ts-ignore", as "@ts-ignore" will do nothing if the following line is error-free  @typescript-eslint/ban-ts-comment
+
+C:\Users\husey\kiro2\frontend\src\services\VideoLoadingManager.ts
+  51:32  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\husey\kiro2\frontend\src\services\adminService.ts
+   18:12   warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   26:22   warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   32:22   warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  207:55   warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  215:38   warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  223:36   warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  280:91   warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  345:108  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  355:76   warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  366:79   warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  377:76   warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  390:38   warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  398:40   warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  398:54   warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  406:61   warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  414:31   warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\husey\kiro2\frontend\src\services\advancedReportsService.ts
+  152:16  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\husey\kiro2\frontend\src\services\analyticsService.ts
+   17:19  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  124:16  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  211:27  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\husey\kiro2\frontend\src\services\apiClient.ts
+    8:8   warning  Using exported name 'config' as identifier for default import  import/no-named-as-default
+   98:63  warning  Unexpected any. Specify a different type                       @typescript-eslint/no-explicit-any
+  169:24  warning  Unexpected any. Specify a different type                       @typescript-eslint/no-explicit-any
+  173:25  warning  Unexpected any. Specify a different type                       @typescript-eslint/no-explicit-any
+  173:50  warning  Unexpected any. Specify a different type                       @typescript-eslint/no-explicit-any
+  177:24  warning  Unexpected any. Specify a different type                       @typescript-eslint/no-explicit-any
+  177:49  warning  Unexpected any. Specify a different type                       @typescript-eslint/no-explicit-any
+  181:26  warning  Unexpected any. Specify a different type                       @typescript-eslint/no-explicit-any
+  181:51  warning  Unexpected any. Specify a different type                       @typescript-eslint/no-explicit-any
+  185:27  warning  Unexpected any. Specify a different type                       @typescript-eslint/no-explicit-any
+  192:31  warning  Unexpected any. Specify a different type                       @typescript-eslint/no-explicit-any
+
+C:\Users\husey\kiro2\frontend\src\services\backgroundSyncService.ts
+  180:48  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  193:50  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  231:44  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  280:44  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\husey\kiro2\frontend\src\services\chatService.ts
+   29:25  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   79:36  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  155:46  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  206:50  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  277:40  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  294:39  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\husey\kiro2\frontend\src\services\culturalAdaptationService.ts
+    6:8   warning  Using exported name 'config' as identifier for default import  import/no-named-as-default
+   26:43  warning  Unexpected any. Specify a different type                       @typescript-eslint/no-explicit-any
+   48:35  warning  Unexpected any. Specify a different type                       @typescript-eslint/no-explicit-any
+   49:35  warning  Unexpected any. Specify a different type                       @typescript-eslint/no-explicit-any
+  146:36  warning  Unexpected any. Specify a different type                       @typescript-eslint/no-explicit-any
+  223:57  warning  Unexpected any. Specify a different type                       @typescript-eslint/no-explicit-any
+  255:65  warning  Unexpected any. Specify a different type                       @typescript-eslint/no-explicit-any
+  291:26  warning  Unexpected any. Specify a different type                       @typescript-eslint/no-explicit-any
+  333:26  warning  Unexpected any. Specify a different type                       @typescript-eslint/no-explicit-any
+  368:44  warning  Unexpected any. Specify a different type                       @typescript-eslint/no-explicit-any
+
+C:\Users\husey\kiro2\frontend\src\services\ebaTVService.ts
+   51:35  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  105:32  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  140:36  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  219:55  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\husey\kiro2\frontend\src\services\examService.ts
+   45:34  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  316:50  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\husey\kiro2\frontend\src\services\fsrsService.ts
+    6:8   warning  Using exported name 'config' as identifier for default import  import/no-named-as-default
+  155:26  warning  Unexpected any. Specify a different type                       @typescript-eslint/no-explicit-any
+  418:44  warning  Unexpected any. Specify a different type                       @typescript-eslint/no-explicit-any
+
+C:\Users\husey\kiro2\frontend\src\services\learningPathService.ts
+  144:42  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\husey\kiro2\frontend\src\services\learningStyleService.ts
+   10:8   warning  Using exported name 'config' as identifier for default import  import/no-named-as-default
+  192:34  warning  Unexpected any. Specify a different type                       @typescript-eslint/no-explicit-any
+  208:21  warning  Unexpected any. Specify a different type                       @typescript-eslint/no-explicit-any
+
+C:\Users\husey\kiro2\frontend\src\services\modernApiClient.ts
+   12:8   warning  Using exported name 'config' as identifier for default import                                                                    import/no-named-as-default
+   40:13  warning  Unexpected any. Specify a different type                                                                                         @typescript-eslint/no-explicit-any
+   60:38  warning  Unexpected any. Specify a different type                                                                                         @typescript-eslint/no-explicit-any
+   61:45  warning  Unexpected any. Specify a different type                                                                                         @typescript-eslint/no-explicit-any
+  114:20  error    'refreshError' is defined but never used                                                                                         @typescript-eslint/no-unused-vars
+  189:45  warning  Unexpected any. Specify a different type                                                                                         @typescript-eslint/no-explicit-any
+  193:38  warning  Unexpected any. Specify a different type                                                                                         @typescript-eslint/no-explicit-any
+  202:39  warning  Unexpected any. Specify a different type                                                                                         @typescript-eslint/no-explicit-any
+  243:14  warning  Forbidden non-null assertion                                                                                                     @typescript-eslint/no-non-null-assertion
+  332:12  warning  Caution: `axios` also has a named export `CancelToken`. Check if you meant to write `import {CancelToken} from 'axios'` instead  import/no-named-as-default-member
+  335:19  warning  Unexpected any. Specify a different type                                                                                         @typescript-eslint/no-explicit-any
+  349:35  warning  Unexpected any. Specify a different type                                                                                         @typescript-eslint/no-explicit-any
+  371:48  warning  Unexpected any. Specify a different type                                                                                         @typescript-eslint/no-explicit-any
+  389:36  warning  Unexpected any. Specify a different type                                                                                         @typescript-eslint/no-explicit-any
+
+C:\Users\husey\kiro2\frontend\src\services\monitoringService.ts
+   26:32  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  158:48  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  163:48  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  166:50  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  195:46  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\husey\kiro2\frontend\src\services\multiAgentService.ts
+    6:8   warning  Using exported name 'config' as identifier for default import  import/no-named-as-default
+   13:10  warning  Unexpected any. Specify a different type                       @typescript-eslint/no-explicit-any
+   15:29  warning  Unexpected any. Specify a different type                       @typescript-eslint/no-explicit-any
+   22:30  warning  Unexpected any. Specify a different type                       @typescript-eslint/no-explicit-any
+   28:33  warning  Unexpected any. Specify a different type                       @typescript-eslint/no-explicit-any
+   56:10  warning  Unexpected any. Specify a different type                       @typescript-eslint/no-explicit-any
+   61:28  warning  Unexpected any. Specify a different type                       @typescript-eslint/no-explicit-any
+   78:67  warning  Unexpected any. Specify a different type                       @typescript-eslint/no-explicit-any
+  112:52  warning  Unexpected any. Specify a different type                       @typescript-eslint/no-explicit-any
+  144:54  warning  Unexpected any. Specify a different type                       @typescript-eslint/no-explicit-any
+  176:80  warning  Unexpected any. Specify a different type                       @typescript-eslint/no-explicit-any
+  210:82  warning  Unexpected any. Specify a different type                       @typescript-eslint/no-explicit-any
+  435:44  warning  Unexpected any. Specify a different type                       @typescript-eslint/no-explicit-any
+
+C:\Users\husey\kiro2\frontend\src\services\ocrService.ts
+  418:1  warning  `react` import should occur before import of `./apiClient`  import/order
+
+C:\Users\husey\kiro2\frontend\src\services\offlineStorageService.ts
+  271:24  warning  Forbidden non-null assertion  @typescript-eslint/no-non-null-assertion
+
+C:\Users\husey\kiro2\frontend\src\services\ragService.ts
+  17:20  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  29:20  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  35:13  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  40:30  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  72:14  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\husey\kiro2\frontend\src\services\recommendationService.ts
+   60:14  error    'error' is defined but never used  @typescript-eslint/no-unused-vars
+  140:58  warning  Forbidden non-null assertion       @typescript-eslint/no-non-null-assertion
+  149:64  warning  Forbidden non-null assertion       @typescript-eslint/no-non-null-assertion
+
+C:\Users\husey\kiro2\frontend\src\services\revolutionaryFeaturesService.ts
+  171:16  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  191:36  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  230:66  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  242:36  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  265:73  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  280:36  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  310:36  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  317:50  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  339:59  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  567:65  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  574:29  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  587:21  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  618:21  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  647:66  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  739:36  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  782:59  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  789:29  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\husey\kiro2\frontend\src\services\yoloService.ts
+  23:8  warning  Using exported name 'config' as identifier for default import  import/no-named-as-default
+
+C:\Users\husey\kiro2\frontend\src\sw.ts
+  220:11  warning  Unexpected console statement              no-console
+  240:3   warning  Unexpected console statement              no-console
+  252:5   warning  Unexpected console statement              no-console
+  322:49  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  333:48  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  344:50  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  403:5   warning  Unexpected console statement              no-console
+
+C:\Users\husey\kiro2\frontend\src\theme.ts
+  9:8  warning  Using exported name 'colors' as identifier for default import  import/no-named-as-default
+
+C:\Users\husey\kiro2\frontend\src\theme\accessibility.ts
+  64:3  error  Duplicate enum member value 4.5  @typescript-eslint/no-duplicate-enum-values
+
+C:\Users\husey\kiro2\frontend\src\theme\modern-theme.ts
+    9:8   warning  Using exported name 'modernColors' as identifier for default import      import/no-named-as-default
+   10:8   warning  Using exported name 'modernTypography' as identifier for default import  import/no-named-as-default
+  142:23  warning  Unexpected any. Specify a different type                                 @typescript-eslint/no-explicit-any
+
+C:\Users\husey\kiro2\frontend\src\types\index.ts
+  343:52  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  539:34  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  546:40  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\husey\kiro2\frontend\src\types\revolutionary.ts
+  127:34  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  142:18  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  271:34  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  306:28  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\husey\kiro2\frontend\src\utils\apiHelpers.ts
+   10:27  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   21:17  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   21:59  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   33:18  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   33:43  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   45:17  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   45:42  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   57:20  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   69:19  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   69:44  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   81:24  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  129:41  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  134:37  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  190:11  warning  Forbidden non-null assertion              @typescript-eslint/no-non-null-assertion
+  211:43  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  251:43  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  284:43  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  291:21  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  303:26  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  377:9   warning  Forbidden non-null assertion              @typescript-eslint/no-non-null-assertion
+  432:38  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  451:61  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\husey\kiro2\frontend\src\utils\dateUtils.ts
+   17:1   warning  Caution: `dayjs` also has a named export `extend`. Check if you meant to write `import {extend} from 'dayjs'` instead  import/no-named-as-default-member
+   18:1   warning  Caution: `dayjs` also has a named export `extend`. Check if you meant to write `import {extend} from 'dayjs'` instead  import/no-named-as-default-member
+   19:1   warning  Caution: `dayjs` also has a named export `extend`. Check if you meant to write `import {extend} from 'dayjs'` instead  import/no-named-as-default-member
+   20:1   warning  Caution: `dayjs` also has a named export `extend`. Check if you meant to write `import {extend} from 'dayjs'` instead  import/no-named-as-default-member
+   21:1   warning  Caution: `dayjs` also has a named export `extend`. Check if you meant to write `import {extend} from 'dayjs'` instead  import/no-named-as-default-member
+   22:1   warning  Caution: `dayjs` also has a named export `extend`. Check if you meant to write `import {extend} from 'dayjs'` instead  import/no-named-as-default-member
+   25:1   warning  Caution: `dayjs` also has a named export `locale`. Check if you meant to write `import {locale} from 'dayjs'` instead  import/no-named-as-default-member
+  108:57  warning  Unexpected any. Specify a different type                                                                               @typescript-eslint/no-explicit-any
+  122:54  warning  Unexpected any. Specify a different type                                                                               @typescript-eslint/no-explicit-any
+  130:49  warning  Unexpected any. Specify a different type                                                                               @typescript-eslint/no-explicit-any
+  137:54  warning  Unexpected any. Specify a different type                                                                               @typescript-eslint/no-explicit-any
+  145:37  warning  Unexpected any. Specify a different type                                                                               @typescript-eslint/no-explicit-any
+  153:35  warning  Unexpected any. Specify a different type                                                                               @typescript-eslint/no-explicit-any
+  222:12  warning  Caution: `dayjs` also has a named export `unix`. Check if you meant to write `import {unix} from 'dayjs'` instead      import/no-named-as-default-member
+
+C:\Users\husey\kiro2\frontend\src\utils\errorHandler.ts
+    6:8   warning  Using exported name 'config' as identifier for default import  import/no-named-as-default
+   21:13  warning  Unexpected any. Specify a different type                       @typescript-eslint/no-explicit-any
+   53:25  warning  Unexpected any. Specify a different type                       @typescript-eslint/no-explicit-any
+   67:29  warning  Unexpected any. Specify a different type                       @typescript-eslint/no-explicit-any
+  204:31  warning  Unexpected any. Specify a different type                       @typescript-eslint/no-explicit-any
+
+C:\Users\husey\kiro2\frontend\src\utils\lazyLoad.tsx
+   29:55  warning  Unexpected any. Specify a different type      @typescript-eslint/no-explicit-any
+   35:42  warning  Unexpected any. Specify a different type      @typescript-eslint/no-explicit-any
+   35:83  warning  Unexpected any. Specify a different type      @typescript-eslint/no-explicit-any
+   65:58  warning  Unexpected any. Specify a different type      @typescript-eslint/no-explicit-any
+   69:38  warning  Unexpected any. Specify a different type      @typescript-eslint/no-explicit-any
+   88:58  warning  Unexpected any. Specify a different type      @typescript-eslint/no-explicit-any
+   94:10  warning  Component definition is missing display name  react/display-name
+   94:18  warning  Unexpected any. Specify a different type      @typescript-eslint/no-explicit-any
+  110:62  warning  Unexpected any. Specify a different type      @typescript-eslint/no-explicit-any
+  132:62  warning  Unexpected any. Specify a different type      @typescript-eslint/no-explicit-any
+  210:34  warning  Unexpected any. Specify a different type      @typescript-eslint/no-explicit-any
+
+C:\Users\husey\kiro2\frontend\src\utils\learningPathHelpers.ts
+   86:9   warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   92:34  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   93:36  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  165:5   warning  Forbidden non-null assertion              @typescript-eslint/no-non-null-assertion
+
+C:\Users\husey\kiro2\frontend\src\utils\performance.tsx
+    6:24  warning  'C:\Users\husey\kiro2\frontend\node_modules\@types\react\index.d.ts' imported multiple times  import/no-duplicates
+    8:24  warning  'C:\Users\husey\kiro2\frontend\node_modules\@types\react\index.d.ts' imported multiple times  import/no-duplicates
+   57:14  error    'e' is defined but never used                                                                 @typescript-eslint/no-unused-vars
+   70:14  error    'e' is defined but never used                                                                 @typescript-eslint/no-unused-vars
+   77:31  warning  Unexpected any. Specify a different type                                                      @typescript-eslint/no-explicit-any
+   84:14  error    'e' is defined but never used                                                                 @typescript-eslint/no-unused-vars
+   92:31  warning  Unexpected any. Specify a different type                                                      @typescript-eslint/no-explicit-any
+  102:14  error    'e' is defined but never used                                                                 @typescript-eslint/no-unused-vars
+  108:5   warning  Unexpected console statement                                                                  no-console
+  109:5   warning  Unexpected console statement                                                                  no-console
+  110:5   warning  Unexpected console statement                                                                  no-console
+  111:5   warning  Unexpected console statement                                                                  no-console
+  114:7   warning  Unexpected console statement                                                                  no-console
+  118:7   warning  Unexpected console statement                                                                  no-console
+  122:7   warning  Unexpected console statement                                                                  no-console
+  126:7   warning  Unexpected console statement                                                                  no-console
+  129:5   warning  Unexpected console statement                                                                  no-console
+  140:7   warning  Unexpected console statement                                                                  no-console
+  155:61  warning  Unexpected any. Specify a different type                                                      @typescript-eslint/no-explicit-any
+  161:36  warning  Unexpected any. Specify a different type                                                      @typescript-eslint/no-explicit-any
+  177:69  warning  Unexpected any. Specify a different type                                                      @typescript-eslint/no-explicit-any
+  185:54  warning  Unexpected any. Specify a different type                                                      @typescript-eslint/no-explicit-any
+  207:30  warning  Forbidden non-null assertion                                                                  @typescript-eslint/no-non-null-assertion
+  255:65  warning  Unexpected any. Specify a different type                                                      @typescript-eslint/no-explicit-any
+  257:26  warning  Unexpected any. Specify a different type                                                      @typescript-eslint/no-explicit-any
+  257:42  warning  Unexpected any. Specify a different type                                                      @typescript-eslint/no-explicit-any
+  281:5   warning  Unexpected console statement                                                                  no-console
+  283:7   warning  Unexpected console statement                                                                  no-console
+  285:5   warning  Unexpected console statement                                                                  no-console
+  331:10  warning  Unexpected any. Specify a different type                                                      @typescript-eslint/no-explicit-any
+  334:22  warning  Unexpected any. Specify a different type                                                      @typescript-eslint/no-explicit-any
+  429:7   warning  Unexpected console statement                                                                  no-console
+  452:9   warning  Unexpected confirm                                                                            no-alert
+
+C:\Users\husey\kiro2\frontend\src\utils\performanceOptimizer.tsx
+   59:7   warning  Unexpected console statement              no-console
+   65:7   warning  Unexpected console statement              no-console
+   65:35  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   72:24  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   73:28  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   76:7   warning  Unexpected console statement              no-console
+   88:14  error    'error' is defined but never used         @typescript-eslint/no-unused-vars
+  111:61  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  129:21  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  131:27  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  213:38  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  243:5   warning  Unexpected console statement              no-console
+  283:40  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  316:38  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  346:41  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  346:51  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  359:41  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  359:51  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  394:5   warning  Unexpected console statement              no-console
+
+C:\Users\husey\kiro2\frontend\src\utils\responsive.ts
+  60:37  error  React Hook "useMediaQuery" is called in function "up" that is neither a React function component nor a custom React Hook function. React component names must start with an uppercase letter. React Hook names must start with the word "use"       react-hooks/rules-of-hooks
+  61:39  error  React Hook "useMediaQuery" is called in function "down" that is neither a React function component nor a custom React Hook function. React component names must start with an uppercase letter. React Hook names must start with the word "use"     react-hooks/rules-of-hooks
+  63:7   error  React Hook "useMediaQuery" is called in function "between" that is neither a React function component nor a custom React Hook function. React component names must start with an uppercase letter. React Hook names must start with the word "use"  react-hooks/rules-of-hooks
+
+C:\Users\husey\kiro2\frontend\src\utils\sanitize.ts
+  12:8  warning  Using exported name 'DOMPurify' as identifier for default import  import/no-named-as-default
+
+C:\Users\husey\kiro2\frontend\tests\setup.ts
+  0:0  error  Parsing error: "parserOptions.project" has been provided for @typescript-eslint/parser.
+The file was not found in any of the provided project(s): tests\setup.ts
+
+✖ 1209 problems (32 errors, 1177 warnings)
+

@@ -511,7 +511,6 @@ class ExamResultsReportGenerator:
         """
         try:
             # Try to get real difficulty data from database
-            from sqlalchemy.orm import Session
             from models import ExamQuestion, Question
 
             exam_session_id = subject_data.get('exam_session_id')
@@ -1296,7 +1295,6 @@ class ExamResultsReportGenerator:
 
             # Historical comparison - REFACTORED to use real database data
             try:
-                from sqlalchemy.orm import Session
                 from models import ExamSession
                 from core.database import get_db
 
@@ -1530,7 +1528,7 @@ class ExamResultsReportGenerator:
                             "title": f"{data.get('subject_name_tr', subject)} Konusunu Güçlendirin",
                             "description": f"{data.get('subject_name_tr', subject)} konusunda daha fazla çalışma gerekiyor.",
                             "action_items": data.get("study_suggestions", []),
-                            "estimated_impact": f"15-25 puan artış beklenir",
+                            "estimated_impact": "15-25 puan artış beklenir",
                             "timeframe": "4-6 hafta",
                         }
                     )
@@ -1816,7 +1814,7 @@ if __name__ == "__main__":
 
         # Print overview
         overview = report.overview
-        print(f"\n=== GENEL BAKIŞ ===")
+        print("\n=== GENEL BAKIŞ ===")
         print(f"Sınav Türü: {overview['exam_info']['exam_type_tr']}")
         print(
             f"Toplam Puan: {overview['score_summary']['total_score']}/{overview['score_summary']['max_score']}"
@@ -1830,14 +1828,14 @@ if __name__ == "__main__":
 
         # Print subject breakdown
         subjects = report.subject_breakdown["subjects"]
-        print(f"\n=== KONU BAZLI ANALİZ ===")
+        print("\n=== KONU BAZLI ANALİZ ===")
         for subject, data in subjects.items():
             print(
                 f"{data['subject_name_tr']}: %{data['success_rate']:.1f} ({data['performance_level']})"
             )
 
         # Print recommendations
-        print(f"\n=== ÖNERİLER ===")
+        print("\n=== ÖNERİLER ===")
         for i, rec in enumerate(report.recommendations[:3], 1):
             print(f"{i}. {rec['title']} ({rec['priority']} öncelik)")
             print(f"   {rec['description']}")
@@ -1845,14 +1843,14 @@ if __name__ == "__main__":
         # Print YKS projection if available
         if report.yks_projection:
             yks_proj = report.yks_projection
-            print(f"\n=== YKS TAHMİNİ ===")
+            print("\n=== YKS TAHMİNİ ===")
             print(f"Tahmini YKS Puanı: {yks_proj['projected_yks_score']:.1f}")
             print(f"Güven Seviyesi: %{yks_proj['confidence']*100:.0f}")
 
         # Print university chances
         if report.university_chances and "benchmarks" in report.university_chances:
             benchmarks = report.university_chances["benchmarks"]
-            print(f"\n=== ÜNİVERSİTE ŞANSLARI ===")
+            print("\n=== ÜNİVERSİTE ŞANSLARI ===")
             for tier, data in benchmarks.items():
                 print(f"{data['university_name_tr']}: {data['admission_status_tr']}")
                 if data["score_gap"] > 0:

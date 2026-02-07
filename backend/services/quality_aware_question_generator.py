@@ -11,7 +11,7 @@ Bu modül, Wave 2B değerlendirme modüllerini soru üretim sürecine entegre ed
 """
 
 import logging
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, Optional
 import asyncio
 from datetime import datetime
 
@@ -391,7 +391,7 @@ if __name__ == "__main__":
 
         if soru:
             eval_result = soru.get("quality_evaluation", {})
-            print(f"\n✓ Soru üretildi!")
+            print("\n✓ Soru üretildi!")
             print(f"  Kalite Skoru: {eval_result.get('overall_score', 0):.3f}")
             print(f"  Karar: {eval_result.get('decision')}")
             print(f"  Bloom: Seviye {eval_result.get('bloom_level')}")
@@ -409,7 +409,7 @@ if __name__ == "__main__":
             requirements=requirements, evaluation_stage="quick"
         )
 
-        print(f"\n✓ Toplu üretim tamamlandı:")
+        print("\n✓ Toplu üretim tamamlandı:")
         print(f"  Başarı oranı: {results['statistics']['success_rate']:.1%}")
         print(f"  Ortalama kalite: {results['statistics']['average_quality']:.3f}")
         print(f"  Süre: {results['statistics']['duration_seconds']:.1f}s")

@@ -4,11 +4,7 @@ Interactive Coverage Dashboard
 Real-time coverage monitoring with web interface
 """
 
-import json
 import sqlite3
-import time
-from datetime import datetime, timedelta
-from pathlib import Path
 from typing import Dict, List, Any, Optional
 import threading
 import webbrowser
@@ -647,10 +643,10 @@ class CoverageDashboard:
             print("Dashboard not properly initialized")
             return
 
-        print(f"\n🎯 Coverage Dashboard Starting...")
+        print("\n🎯 Coverage Dashboard Starting...")
         print(f"📊 Dashboard URL: http://{host}:{port}")
-        print(f"🔄 Auto-refresh: Enabled (30s interval)")
-        print(f"📈 Real-time monitoring: Active")
+        print("🔄 Auto-refresh: Enabled (30s interval)")
+        print("📈 Real-time monitoring: Active")
 
         # Auto-open browser
         if not debug:

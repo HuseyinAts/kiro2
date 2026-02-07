@@ -3,21 +3,17 @@ Intelligent Question Recommendation System
 AI-powered question recommendations based on student performance and learning patterns
 """
 
-import asyncio
 import logging
 import math
 import numpy as np
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
-from typing import Any, Dict, List, Optional, Set, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 from enum import Enum
-import json
 
 from sklearn.ensemble import RandomForestRegressor, GradientBoostingClassifier
 from sklearn.cluster import KMeans
-from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.preprocessing import StandardScaler
-import pandas as pd
 
 logger = logging.getLogger(__name__)
 
@@ -829,11 +825,11 @@ class IntelligentQuestionRecommender:
         component_name, score = max_component
 
         reasons = {
-            "performance": f"Bu soru seviyenize uygun ve başarı şansınız yüksek",
-            "engagement": f"Bu tür sorularla daha çok ilgileniyor ve odaklanıyorsunuz",
-            "learning_value": f"Bu soru zayıf olduğunuz alanları güçlendirmeye yardımcı olacak",
-            "difficulty_match": f"Zorluk seviyesi şu anda optimal öğrenme alanınızda",
-            "interest": f"İlgi alanınıza uygun ve motivasyonunuzu artıracak",
+            "performance": "Bu soru seviyenize uygun ve başarı şansınız yüksek",
+            "engagement": "Bu tür sorularla daha çok ilgileniyor ve odaklanıyorsunuz",
+            "learning_value": "Bu soru zayıf olduğunuz alanları güçlendirmeye yardımcı olacak",
+            "difficulty_match": "Zorluk seviyesi şu anda optimal öğrenme alanınızda",
+            "interest": "İlgi alanınıza uygun ve motivasyonunuzu artıracak",
         }
 
         return reasons.get(component_name, "Genel performansınıza uygun bir soru")

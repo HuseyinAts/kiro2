@@ -23,7 +23,6 @@ from core.database import get_db
 from services.difficulty_classification_service import (
     DifficultyClassificationService,
     DifficultyLevel,
-    get_difficulty_label,
 )
 
 logger = logging.getLogger(__name__)

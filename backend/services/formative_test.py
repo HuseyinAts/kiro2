@@ -13,7 +13,6 @@ Formative Test özellikleri:
 import logging
 from dataclasses import dataclass
 from typing import Dict, List, Optional
-import numpy as np
 
 from services.test_types import BaseTestType, TestConfiguration
 
@@ -372,7 +371,7 @@ class FormativeTest(BaseTestType):
                 )
 
         # Mastery durumu
-        recommendations.append(f"\n🎯 Mastery Durumu:")
+        recommendations.append("\n🎯 Mastery Durumu:")
 
         mastered = [p for p in progress if p.mastery_percentage >= 80]
         partial = [p for p in progress if 60 <= p.mastery_percentage < 80]
@@ -394,7 +393,7 @@ class FormativeTest(BaseTestType):
             )
 
         # Öğrenme stratejileri
-        recommendations.append(f"\n💡 Önerilen Öğrenme Stratejileri:\n")
+        recommendations.append("\n💡 Önerilen Öğrenme Stratejileri:\n")
 
         for prog in progress[:3]:  # İlk 3 konu için
             if prog.trend == "improving":
@@ -415,11 +414,11 @@ class FormativeTest(BaseTestType):
 
         # Sonraki adımlar
         recommendations.append(
-            f"\n🎓 Sonraki Adımlar:\n"
-            f"  1. Mastered konularda ileri seviye çalışmaya geçin\n"
-            f"  2. Partial mastery konularda günlük 15-20 dakika pratik yapın\n"
-            f"  3. Needs work konularda temel kavramları pekiştirin\n"
-            f"  4. 1 hafta sonra yeni bir formative test çözün"
+            "\n🎓 Sonraki Adımlar:\n"
+            "  1. Mastered konularda ileri seviye çalışmaya geçin\n"
+            "  2. Partial mastery konularda günlük 15-20 dakika pratik yapın\n"
+            "  3. Needs work konularda temel kavramları pekiştirin\n"
+            "  4. 1 hafta sonra yeni bir formative test çözün"
         )
 
         return recommendations
@@ -501,7 +500,7 @@ class FormativeTest(BaseTestType):
         elif difficulty == "medium":
             return f"İyi gidiyorsunuz! {topic} konusunda daha zor sorulara hazırsınız."
         else:
-            return f"Temel kavramları iyi anlıyorsunuz. Orta seviye sorulara geçebilirsiniz."
+            return "Temel kavramları iyi anlıyorsunuz. Orta seviye sorulara geçebilirsiniz."
 
     def _generate_improvement_tip(self, topic: str, difficulty: str) -> str:
         """İyileştirme ipucu"""
@@ -512,7 +511,7 @@ class FormativeTest(BaseTestType):
                 f"{topic} konusunda daha fazla örnek soru çözün. Formülleri pekiştirin."
             )
         else:
-            return f"Zor sorular için daha fazla pratik gerekli. Önce orta seviye soruları pekiştirin."
+            return "Zor sorular için daha fazla pratik gerekli. Önce orta seviye soruları pekiştirin."
 
     def _get_mastery_status(self, mastery_percentage: float) -> str:
         """Mastery durumunu belirle"""

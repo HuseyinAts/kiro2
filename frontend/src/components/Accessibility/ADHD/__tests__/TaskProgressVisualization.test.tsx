@@ -4,13 +4,15 @@
  * Requirements: REQ-52.46 - REQ-52.50
  */
 
-import React from 'react';
+import * as React from 'react';
 import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import TaskProgressVisualization from '../TaskProgressVisualization';
+import { vi, Mock } from 'vitest';
 
-// Mock fetch
-global.fetch = vi.fn();
+// Mock fetch with vitest Mock type
+const fetchMock = vi.fn() as Mock;
+global.fetch = fetchMock;
 
 const mockProgressData = {
   task_id: 'task-123',
@@ -57,7 +59,7 @@ const mockProgressData = {
 
 describe('TaskProgressVisualization', () => {
   beforeEach(() => {
-    (global.fetch as jest.Mock).mockClear();
+    fetchMock.mockClear();
     localStorage.setItem('token', 'test-token');
   });
 
@@ -67,7 +69,7 @@ describe('TaskProgressVisualization', () => {
 
   describe('REQ-52.46: Progress Bar Gösterimi', () => {
     it('should display progress bar with correct percentage', async () => {
-      (global.fetch as jest.Mock).mockResolvedValueOnce({
+      fetchMock.mockResolvedValueOnce({
         ok: true,
         json: async () => mockProgressData
       });
@@ -85,7 +87,7 @@ describe('TaskProgressVisualization', () => {
     });
 
     it('should display progress bar with correct color', async () => {
-      (global.fetch as jest.Mock).mockResolvedValueOnce({
+      fetchMock.mockResolvedValueOnce({
         ok: true,
         json: async () => mockProgressData
       });
@@ -99,7 +101,7 @@ describe('TaskProgressVisualization', () => {
     });
 
     it('should have ARIA label for accessibility', async () => {
-      (global.fetch as jest.Mock).mockResolvedValueOnce({
+      fetchMock.mockResolvedValueOnce({
         ok: true,
         json: async () => mockProgressData
       });
@@ -115,7 +117,7 @@ describe('TaskProgressVisualization', () => {
 
   describe('REQ-52.47: Tamamlanma Yüzdesi', () => {
     it('should display completion percentage', async () => {
-      (global.fetch as jest.Mock).mockResolvedValueOnce({
+      fetchMock.mockResolvedValueOnce({
         ok: true,
         json: async () => mockProgressData
       });
@@ -128,7 +130,7 @@ describe('TaskProgressVisualization', () => {
     });
 
     it('should display completed subtasks count', async () => {
-      (global.fetch as jest.Mock).mockResolvedValueOnce({
+      fetchMock.mockResolvedValueOnce({
         ok: true,
         json: async () => mockProgressData
       });
@@ -149,7 +151,7 @@ describe('TaskProgressVisualization', () => {
         progress_percentage: 80
       };
 
-      (global.fetch as jest.Mock).mockResolvedValueOnce({
+      fetchMock.mockResolvedValueOnce({
         ok: true,
         json: async () => customData
       });
@@ -164,7 +166,7 @@ describe('TaskProgressVisualization', () => {
 
   describe('REQ-52.48: Görsel Milestone Göstergeleri', () => {
     it('should display all milestones', async () => {
-      (global.fetch as jest.Mock).mockResolvedValueOnce({
+      fetchMock.mockResolvedValueOnce({
         ok: true,
         json: async () => mockProgressData
       });
@@ -180,7 +182,7 @@ describe('TaskProgressVisualization', () => {
     });
 
     it('should show checkmark for reached milestones', async () => {
-      (global.fetch as jest.Mock).mockResolvedValueOnce({
+      fetchMock.mockResolvedValueOnce({
         ok: true,
         json: async () => mockProgressData
       });
@@ -195,7 +197,7 @@ describe('TaskProgressVisualization', () => {
     });
 
     it('should display milestone icons', async () => {
-      (global.fetch as jest.Mock).mockResolvedValueOnce({
+      fetchMock.mockResolvedValueOnce({
         ok: true,
         json: async () => mockProgressData
       });
@@ -211,7 +213,7 @@ describe('TaskProgressVisualization', () => {
     });
 
     it('should display milestone percentages', async () => {
-      (global.fetch as jest.Mock).mockResolvedValueOnce({
+      fetchMock.mockResolvedValueOnce({
         ok: true,
         json: async () => mockProgressData
       });
@@ -229,7 +231,7 @@ describe('TaskProgressVisualization', () => {
 
   describe('Loading and Error States', () => {
     it('should show loading state initially', () => {
-      (global.fetch as jest.Mock).mockImplementation(() => new Promise(() => {}));
+      fetchMock.mockImplementation(() => new Promise(() => {}));
 
       render(<TaskProgressVisualization taskId="task-123" />);
 
@@ -237,7 +239,7 @@ describe('TaskProgressVisualization', () => {
     });
 
     it('should show error state on fetch failure', async () => {
-      (global.fetch as jest.Mock).mockRejectedValueOnce(new Error('Network error'));
+      fetchMock.mockRejectedValueOnce(new Error('Network error'));
 
       render(<TaskProgressVisualization taskId="task-123" />);
 
@@ -247,7 +249,7 @@ describe('TaskProgressVisualization', () => {
     });
 
     it('should show retry button on error', async () => {
-      (global.fetch as jest.Mock).mockRejectedValueOnce(new Error('Network error'));
+      fetchMock.mockRejectedValueOnce(new Error('Network error'));
 
       render(<TaskProgressVisualization taskId="task-123" />);
 
@@ -257,7 +259,7 @@ describe('TaskProgressVisualization', () => {
     });
 
     it('should retry fetch on retry button click', async () => {
-      (global.fetch as jest.Mock)
+      fetchMock
         .mockRejectedValueOnce(new Error('Network error'))
         .mockResolvedValueOnce({
           ok: true,
@@ -281,7 +283,7 @@ describe('TaskProgressVisualization', () => {
 
   describe('Time Tracking', () => {
     it('should display estimated time', async () => {
-      (global.fetch as jest.Mock).mockResolvedValueOnce({
+      fetchMock.mockResolvedValueOnce({
         ok: true,
         json: async () => mockProgressData
       });
@@ -294,7 +296,7 @@ describe('TaskProgressVisualization', () => {
     });
 
     it('should display actual time', async () => {
-      (global.fetch as jest.Mock).mockResolvedValueOnce({
+      fetchMock.mockResolvedValueOnce({
         ok: true,
         json: async () => mockProgressData
       });
@@ -307,7 +309,7 @@ describe('TaskProgressVisualization', () => {
     });
 
     it('should display remaining time', async () => {
-      (global.fetch as jest.Mock).mockResolvedValueOnce({
+      fetchMock.mockResolvedValueOnce({
         ok: true,
         json: async () => mockProgressData
       });
@@ -324,7 +326,7 @@ describe('TaskProgressVisualization', () => {
     it('should call onRefresh callback when custom action button is clicked', async () => {
       const mockOnRefresh = vi.fn();
 
-      (global.fetch as jest.Mock).mockResolvedValueOnce({
+      fetchMock.mockResolvedValueOnce({
         ok: true,
         json: async () => mockProgressData
       });
@@ -342,7 +344,7 @@ describe('TaskProgressVisualization', () => {
     });
 
     it('should refresh data when refresh button is clicked', async () => {
-      (global.fetch as jest.Mock).mockResolvedValue({
+      fetchMock.mockResolvedValue({
         ok: true,
         json: async () => mockProgressData
       });
@@ -364,7 +366,7 @@ describe('TaskProgressVisualization', () => {
 
   describe('Status Display', () => {
     it('should display correct status badge for in_progress', async () => {
-      (global.fetch as jest.Mock).mockResolvedValueOnce({
+      fetchMock.mockResolvedValueOnce({
         ok: true,
         json: async () => mockProgressData
       });
@@ -383,7 +385,7 @@ describe('TaskProgressVisualization', () => {
         progress_percentage: 100
       };
 
-      (global.fetch as jest.Mock).mockResolvedValueOnce({
+      fetchMock.mockResolvedValueOnce({
         ok: true,
         json: async () => completedData
       });
@@ -398,7 +400,7 @@ describe('TaskProgressVisualization', () => {
 
   describe('Accessibility', () => {
     it('should have proper ARIA labels', async () => {
-      (global.fetch as jest.Mock).mockResolvedValueOnce({
+      fetchMock.mockResolvedValueOnce({
         ok: true,
         json: async () => mockProgressData
       });
@@ -412,7 +414,7 @@ describe('TaskProgressVisualization', () => {
     });
 
     it('should be keyboard navigable', async () => {
-      (global.fetch as jest.Mock).mockResolvedValueOnce({
+      fetchMock.mockResolvedValueOnce({
         ok: true,
         json: async () => mockProgressData
       });

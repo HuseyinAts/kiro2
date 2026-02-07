@@ -178,20 +178,20 @@ async def evaluate_questions():
                 )
 
             # Sonuçları göster
-            print(f"\n📊 KALİTE RAPORU:")
+            print("\n📊 KALİTE RAPORU:")
             print(f"   Genel Skor: {evaluation.overall_score:.3f}")
             print(f"   Derece: {evaluation.overall_grade}")
             print(f"   Karar: {evaluation.decision}")
 
             if evaluation.decision == "APPROVE":
                 quality_stats["approved"] += 1
-                print(f"   Durum: ✅ ONAYLANDI")
+                print("   Durum: ✅ ONAYLANDI")
             elif evaluation.decision == "REVIEW":
                 quality_stats["review"] += 1
-                print(f"   Durum: ⚠️  İNCELENMELİ")
+                print("   Durum: ⚠️  İNCELENMELİ")
             else:
                 quality_stats["rejected"] += 1
-                print(f"   Durum: ❌ REDDEDİLDİ")
+                print("   Durum: ❌ REDDEDİLDİ")
 
             if evaluation.bloom_level:
                 print(
@@ -199,12 +199,12 @@ async def evaluate_questions():
                 )
 
             if evaluation.strengths:
-                print(f"\n   ✓ Güçlü Yönler:")
+                print("\n   ✓ Güçlü Yönler:")
                 for s in evaluation.strengths[:2]:
                     print(f"      - {s}")
 
             if evaluation.weaknesses:
-                print(f"\n   ⚠️  İyileştirme Alanları:")
+                print("\n   ⚠️  İyileştirme Alanları:")
                 for w in evaluation.weaknesses[:2]:
                     print(f"      - {w}")
 
@@ -234,7 +234,7 @@ async def evaluate_questions():
     print(" " * 30 + "ÖZET RAPOR")
     print("=" * 80)
 
-    print(f"\n📊 KALİTE İSTATİSTİKLERİ:")
+    print("\n📊 KALİTE İSTATİSTİKLERİ:")
     print(f"   Toplam Soru: {quality_stats['total']}")
     print(
         f"   ✅ Onaylanan: {quality_stats['approved']} ({quality_stats['approved']/max(quality_stats['total'],1):.1%})"
@@ -255,7 +255,7 @@ async def evaluate_questions():
         print(f"   En Yüksek: {max_score:.3f}")
 
     if quality_stats["bloom_levels"]:
-        print(f"\n📚 BLOOM SEVİYE DAĞILIMI:")
+        print("\n📚 BLOOM SEVİYE DAĞILIMI:")
         for level, count in sorted(quality_stats["bloom_levels"].items()):
             print(f"   {level}: {count} soru ({count/quality_stats['total']:.1%})")
 
@@ -292,7 +292,7 @@ async def main():
                 if stats["scores"]
                 else "N/A"
             )
-            print(f"\nWave 2B başarıyla çalışıyor! 🎉")
+            print("\nWave 2B başarıyla çalışıyor! 🎉")
             return 0
         else:
             return 1

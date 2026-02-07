@@ -1,20 +1,19 @@
-import React, { useState } from 'react';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Card, CardContent } from '@/components/ui/card';
-import { 
-  LayoutDashboard, 
-  Users, 
-  FileText, 
+import {
+  LayoutDashboard,
+  Users,
+  FileText,
   Bell,
   BarChart3,
-  Settings
 } from 'lucide-react';
+import { useState } from 'react';
 
 // Öğretmen bileşenlerini import et
-import TeacherDashboard from '@/components/Teacher/TeacherDashboard';
-import StudentList from '@/components/Teacher/StudentList';
 import ClassReport from '@/components/Teacher/ClassReport';
+import StudentList from '@/components/Teacher/StudentList';
+import TeacherDashboard from '@/components/Teacher/TeacherDashboard';
 import TeacherNotifications from '@/components/Teacher/TeacherNotifications';
+import { Card, CardContent } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 const TeacherPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState('dashboard');
@@ -26,40 +25,40 @@ const TeacherPage: React.FC = () => {
           {/* Tab Navigation */}
           <div className="bg-white rounded-lg shadow-sm border">
             <TabsList className="grid w-full grid-cols-5 h-16">
-              <TabsTrigger 
-                value="dashboard" 
+              <TabsTrigger
+                value="dashboard"
                 className="flex flex-col items-center space-y-1 h-full"
               >
                 <LayoutDashboard className="h-5 w-5" />
                 <span className="text-xs">Dashboard</span>
               </TabsTrigger>
-              
-              <TabsTrigger 
-                value="students" 
+
+              <TabsTrigger
+                value="students"
                 className="flex flex-col items-center space-y-1 h-full"
               >
                 <Users className="h-5 w-5" />
                 <span className="text-xs">Öğrenciler</span>
               </TabsTrigger>
-              
-              <TabsTrigger 
-                value="reports" 
+
+              <TabsTrigger
+                value="reports"
                 className="flex flex-col items-center space-y-1 h-full"
               >
                 <FileText className="h-5 w-5" />
                 <span className="text-xs">Raporlar</span>
               </TabsTrigger>
-              
-              <TabsTrigger 
-                value="notifications" 
+
+              <TabsTrigger
+                value="notifications"
                 className="flex flex-col items-center space-y-1 h-full"
               >
                 <Bell className="h-5 w-5" />
                 <span className="text-xs">Bildirimler</span>
               </TabsTrigger>
-              
-              <TabsTrigger 
-                value="analytics" 
+
+              <TabsTrigger
+                value="analytics"
                 className="flex flex-col items-center space-y-1 h-full"
               >
                 <BarChart3 className="h-5 w-5" />

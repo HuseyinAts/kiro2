@@ -223,7 +223,7 @@ class ExamAnswerTrackingService:
             )
 
             logger.info(
-                f"Tamamlanma istatistikleri hesaplandı",
+                "Tamamlanma istatistikleri hesaplandı",
                 extra_data={
                     "exam_session_id": exam_session_id,
                     "completion_percentage": completion_percentage,
@@ -323,7 +323,7 @@ class ExamAnswerTrackingService:
                 statuses.append(status)
 
             logger.info(
-                f"Tüm cevap durumları getirildi",
+                "Tüm cevap durumları getirildi",
                 extra_data={
                     "exam_session_id": exam_session_id,
                     "total_questions": len(statuses),
@@ -372,7 +372,7 @@ class ExamAnswerTrackingService:
             await self.db_session.commit()
 
             logger.info(
-                f"Sınav oturumu istatistikleri güncellendi",
+                "Sınav oturumu istatistikleri güncellendi",
                 extra_data={
                     "exam_session_id": exam_session_id,
                     "total_empty": stats.empty_answers,
@@ -440,7 +440,7 @@ class ExamAnswerTrackingService:
             await self.update_exam_session_stats(exam_session_id)
 
             logger.info(
-                f"Cevap boş olarak işaretlendi",
+                "Cevap boş olarak işaretlendi",
                 extra_data={
                     "exam_session_id": exam_session_id,
                     "question_id": question_id,

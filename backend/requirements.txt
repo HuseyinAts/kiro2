@@ -1,115 +1,143 @@
-# FastAPI ve temel bağımlılıklar
-fastapi==0.104.1
+# Core FastAPI
+fastapi>=0.115.0
 uvicorn[standard]==0.24.0
-pydantic==2.5.0
-pydantic-settings==2.1.0
+pydantic>=2.8.0
+pydantic-settings>=2.4.0
+orjson>=3.9.0
 
-# Veritabanı bağımlılıkları
-asyncpg==0.29.0  # PostgreSQL async driver
-psycopg2-binary==2.9.9  # PostgreSQL sync driver (Alembic için)
-sqlalchemy[asyncio]==2.0.23
+# Database
+asyncpg>=0.29.0
+psycopg[binary]>=3.1.0
+sqlalchemy[asyncio]>=2.0.36
 alembic==1.13.1
+sqlparse>=0.5.0
 
-# Redis cache
-redis[hiredis]==5.0.1
-aioredis==2.0.1
+# Caching
+redis[hiredis]==4.6.0
 
-# Celery - Background Task Processing (Sprint 3)
+# Task Queue
 celery[redis]==5.3.4
-flower==2.0.1  # Celery monitoring dashboard
-kombu==5.3.4  # Celery messaging library
+flower==2.0.1
+kombu==5.3.4
 
-# Test bağımlılıkları
+# Testing
 pytest==7.4.3
 pytest-asyncio==0.21.1
 pytest-cov==4.1.0
 pytest-mock==3.12.0
 pytest-xdist==3.8.0
+aiosqlite>=0.19.0
 
-# Elasticsearch
+# Search
 elasticsearch[async]==8.11.0
 
-# HTTP client
-aiohttp==3.9.1
-httpx==0.25.2
+# HTTP Clients
+aiohttp>=3.9.1
+httpx>=0.27.0
 
-# Güvenlik
+# Scheduling
+APScheduler>=3.10.0
+prometheus-client>=0.19.0
+hypothesis>=6.0
+
+# Security
 passlib[bcrypt]==1.7.4
-slowapi==0.1.9  # DDoS protection and rate limiting
-bleach==6.2.0  # XSS protection
+slowapi==0.1.9
+bleach==6.2.0
+cryptography>=41.0.0
 
-# Sprint 4: 2FA (Two-Factor Authentication)
-pyotp==2.9.0  # TOTP (Time-based One-Time Password)
-qrcode[pil]==7.4.2  # QR code generation
-Pillow==10.1.0  # Image processing for QR codes
+# Privacy
+diffprivlib>=0.6.0
 
-# Türkçe NLP
+# OAuth
+authlib>=1.3.0
+
+# 2FA
+pyotp==2.9.0
+qrcode[pil]==7.4.2
+Pillow>=12.0.0
+
+# Turkish NLP
 zemberek-python==0.1.3
 hijri-converter==2.3.1
-langdetect==1.0.9  # Dil tespiti için
+langdetect>=1.0.9
 
-# Monitoring ve logging
-prometheus-client==0.19.0
-psutil==5.9.6
+# Monitoring
+psutil>=5.9.8
 aiofiles==23.2.1
-structlog==24.1.0  # Structured logging
+structlog==24.1.0
 
-# Analytics ve ML
-numpy==1.24.4
-scikit-learn==1.3.2
+# Data Science
+numpy>=1.26.0
+scikit-learn>=1.4.0
 
-# Matematiksel ve Görsel İşlemler (Task 55)
-sympy==1.12  # Matematiksel doğrulama
-matplotlib==3.8.2  # Grafik ve görsel üretimi
-plotly==5.18.0  # İnteraktif grafikler
+# Math
+sympy==1.12
+matplotlib>=3.8.2
+plotly==5.18.0
 
-# NLP Training Pipeline (Task 54)
-openai==1.3.0  # GPT-4 fine-tuning
-transformers==4.35.0  # BERTurk, T5, BART
-torch==2.1.0  # PyTorch
-nltk==3.8.1  # BLEU score
-rouge-score==0.1.2  # ROUGE score
-sentencepiece==0.1.99  # Tokenization
+# AI/ML
+openai>=1.50.0
+transformers>=4.35.0
+torch>=2.1.0
+nltk==3.8.1
 
-# BERTurk ve Transformers
-torch>=2.0.0
-transformers>=4.30.0
-
-# PDF oluşturma ve Excel export
+# Reporting
 reportlab==4.0.7
-matplotlib==3.7.4
+
 xlsxwriter==3.1.9
 
-# JWT token işleme
+# JWT
 PyJWT==2.8.0
 
-# YouTube ve Web Scraping
+# Scraping
 beautifulsoup4==4.12.2
 
-# Geliştirme araçları (moved to dev-requirements if needed)
-# Text-to-Speech (Task 79)
-gTTS==2.5.0  # Google Text-to-Speech (online, high quality)
-pyttsx3==2.90  # Offline TTS (fallback)
+# TTS
+gTTS==2.5.0
+pyttsx3==2.90
 
-# PDF Parsing and OCR (ÖSYM Question Extraction)
-pdfplumber==0.11.0  # PDF extraction
-PyPDF2==3.0.1  # PDF manipulation
-pytesseract==0.3.10  # OCR engine
-Pillow==10.1.0  # Image processing
-pdf2image==1.16.3  # PDF to image conversion
+# PDF Processing
+pdfplumber==0.11.0
+PyPDF2==3.0.1
+pytesseract==0.3.10
+pdf2image==1.16.3
 
-# Sprint 11: Distributed Tracing (OpenTelemetry + Jaeger)
+# OCR & Vision
+easyocr==1.7.1
+
+# Distributed Tracing
 opentelemetry-api==1.21.0
 opentelemetry-sdk==1.21.0
 opentelemetry-instrumentation==0.42b0
 opentelemetry-instrumentation-fastapi==0.42b0
-opentelemetry-instrumentation-sqlalchemy==0.42b0
-opentelemetry-instrumentation-redis==0.42b0
-opentelemetry-instrumentation-requests==0.42b0
-opentelemetry-instrumentation-logging==0.42b0
 opentelemetry-exporter-jaeger==1.21.0
 opentelemetry-exporter-jaeger-thrift==1.21.0
 opentelemetry-exporter-otlp==1.21.0
 
-# Sprint 12: Error Tracking (Sentry)
+# Error Tracking
 sentry-sdk[fastapi]==1.40.0
+
+# Gemini API
+google-generativeai==0.8.3
+
+# MCP
+mcp==1.0.0
+
+# AI/ML (Additional)
+anthropic>=0.40.0
+scipy>=1.11.0
+pandas>=2.0.0
+sentence-transformers>=2.2.0
+
+# LangChain
+langchain>=0.2.0
+langchain-community>=0.2.0
+langchain-core>=0.2.0
+langchain-openai>=0.1.0
+
+# Web/HTTP (Additional)
+requests>=2.31.0
+
+# Security (Additional)
+bcrypt>=4.0.0,<4.1.0  # passlib uyumluluğu için (4.1.0+ 72-byte limit enforce ediyor)

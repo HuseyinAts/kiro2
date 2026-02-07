@@ -1,0 +1,316 @@
+{
+  "scan_date": "2026-01-24T01:27:35.365532",
+  "platform": "KIRO2 - YKS AI Egitim Platformu",
+  "summary": {
+    "total_checks": 30,
+    "compliant": 21,
+    "non_compliant": 0,
+    "partial": 0,
+    "needs_review": 9,
+    "critical": 1,
+    "high": 4,
+    "compliance_score": 70
+  },
+  "findings": [
+    {
+      "article": "Madde 5.1",
+      "requirement": "Acik riza mekanizmasi",
+      "status": "UYUMLU",
+      "severity": "BILGI",
+      "description": "Riza/consent mekanizmasi kodda tespit edildi",
+      "file_path": null,
+      "evidence": "Bulunan dosyalar: demo_geometry_generation.py, demo_graph_generation.py, demo_map_diagram_generation.py, demo_production_monitoring.py, demo_question_generation.py",
+      "recommendation": ""
+    },
+    {
+      "article": "Madde 5",
+      "requirement": "KVKK modulu",
+      "status": "UYUMLU",
+      "severity": "BILGI",
+      "description": "KVKK modulu mevcut: 5 dosya",
+      "file_path": "c:\\Users\\husey\\kiro2\\backend\\api\\kvkk_consent_api.py",
+      "evidence": "",
+      "recommendation": ""
+    },
+    {
+      "article": "Madde 6",
+      "requirement": "Ozel kategori veri: TC Kimlik No",
+      "status": "INCELEME_GEREKLI",
+      "severity": "YUKSEK",
+      "description": "TC Kimlik No verisi isleniyor olabilir",
+      "file_path": null,
+      "evidence": "Dosyalar: demo_geometry_generation.py, demo_graph_generation.py, demo_map_diagram_generation.py",
+      "recommendation": "Acik riza alindigindan emin olunmali"
+    },
+    {
+      "article": "Madde 6",
+      "requirement": "Ozel kategori veri: Saglik Verisi",
+      "status": "INCELEME_GEREKLI",
+      "severity": "YUKSEK",
+      "description": "Saglik Verisi verisi isleniyor olabilir",
+      "file_path": null,
+      "evidence": "Dosyalar: demo_question_generation.py, diagnostic_video_api.py, fast_youtube_endpoint.py",
+      "recommendation": "Acik riza alindigindan emin olunmali"
+    },
+    {
+      "article": "Madde 6",
+      "requirement": "Ozel kategori veri: Biyometrik Veri",
+      "status": "INCELEME_GEREKLI",
+      "severity": "YUKSEK",
+      "description": "Biyometrik Veri verisi isleniyor olabilir",
+      "file_path": null,
+      "evidence": "Dosyalar: biometric_auth_service.py, kvkk_compliance.py, kvkk_compliance_scanner.py",
+      "recommendation": "Acik riza alindigindan emin olunmali"
+    },
+    {
+      "article": "Madde 6",
+      "requirement": "Ozel kategori veri: Din/Etnik Veri",
+      "status": "INCELEME_GEREKLI",
+      "severity": "YUKSEK",
+      "description": "Din/Etnik Veri verisi isleniyor olabilir",
+      "file_path": null,
+      "evidence": "Dosyalar: add_premium_fields.py, analyze_coverage_week6.py, analyze_json_answers.py",
+      "recommendation": "Acik riza alindigindan emin olunmali"
+    },
+    {
+      "article": "Madde 7",
+      "requirement": "Veri silme mekanizmasi",
+      "status": "UYUMLU",
+      "severity": "BILGI",
+      "description": "Veri silme mekanizmasi mevcut",
+      "file_path": null,
+      "evidence": "Bulunan: health_audit_service.py:data_retention|veri_saklama, admin.py:delete.*user|user.*delete, cache.py:delete.*user|user.*delete, content_api.py:soft_delete|softdelete, kvkk_privacy_api.py:delete.*user|user.*delete",
+      "recommendation": ""
+    },
+    {
+      "article": "Madde 7",
+      "requirement": "Anonimizasyon/Maskeleme",
+      "status": "UYUMLU",
+      "severity": "BILGI",
+      "description": "Anonimizasyon mekanizmasi tespit edildi",
+      "file_path": null,
+      "evidence": "",
+      "recommendation": ""
+    },
+    {
+      "article": "Madde 10",
+      "requirement": "Aydinlatma metni",
+      "status": "UYUMLU",
+      "severity": "BILGI",
+      "description": "Gizlilik politikasi/aydinlatma metni referansi bulundu",
+      "file_path": null,
+      "evidence": "",
+      "recommendation": ""
+    },
+    {
+      "article": "Madde 11",
+      "requirement": "Veri Tasinabilirligi",
+      "status": "UYUMLU",
+      "severity": "BILGI",
+      "description": "Veri Tasinabilirligi implement edilmis",
+      "file_path": null,
+      "evidence": "",
+      "recommendation": ""
+    },
+    {
+      "article": "Madde 11",
+      "requirement": "Veri Erisim Hakki",
+      "status": "UYUMLU",
+      "severity": "BILGI",
+      "description": "Veri Erisim Hakki implement edilmis",
+      "file_path": null,
+      "evidence": "",
+      "recommendation": ""
+    },
+    {
+      "article": "Madde 11",
+      "requirement": "Duzeltme Hakki",
+      "status": "UYUMLU",
+      "severity": "BILGI",
+      "description": "Duzeltme Hakki implement edilmis",
+      "file_path": null,
+      "evidence": "",
+      "recommendation": ""
+    },
+    {
+      "article": "Madde 11",
+      "requirement": "Islemeyi Sinirlandirma",
+      "status": "UYUMLU",
+      "severity": "BILGI",
+      "description": "Islemeyi Sinirlandirma implement edilmis",
+      "file_path": null,
+      "evidence": "",
+      "recommendation": ""
+    },
+    {
+      "article": "Madde 11",
+      "requirement": "Itiraz Hakki",
+      "status": "UYUMLU",
+      "severity": "BILGI",
+      "description": "Itiraz Hakki implement edilmis",
+      "file_path": null,
+      "evidence": "",
+      "recommendation": ""
+    },
+    {
+      "article": "Madde 12",
+      "requirement": "Veri sifreleme",
+      "status": "UYUMLU",
+      "severity": "BILGI",
+      "description": "Sifreleme mekanizmalari tespit edildi",
+      "file_path": null,
+      "evidence": "",
+      "recommendation": ""
+    },
+    {
+      "article": "Madde 12",
+      "requirement": "Erisim kontrolu",
+      "status": "UYUMLU",
+      "severity": "BILGI",
+      "description": "Erisim kontrol mekanizmasi mevcut",
+      "file_path": null,
+      "evidence": "",
+      "recommendation": ""
+    },
+    {
+      "article": "Egitim Sektoru",
+      "requirement": "Sinav sonuclari",
+      "status": "INCELEME_GEREKLI",
+      "severity": "ORTA",
+      "description": "Sinav sonuclari isleniyor - KVKK uyumu dogrulanmali",
+      "file_path": null,
+      "evidence": "Dosyalar: bertscore_demo.py, demo_production_monitoring.py, demo_question_generation.py",
+      "recommendation": "Veri isleme amaci ve suresi belgelenmeli"
+    },
+    {
+      "article": "Egitim Sektoru",
+      "requirement": "Ogrenme stili verileri",
+      "status": "INCELEME_GEREKLI",
+      "severity": "ORTA",
+      "description": "Ogrenme stili verileri isleniyor - KVKK uyumu dogrulanmali",
+      "file_path": null,
+      "evidence": "Dosyalar: platform_health_check.py, run_coverage_analysis.py, blackboard_coordinator.py",
+      "recommendation": "Veri isleme amaci ve suresi belgelenmeli"
+    },
+    {
+      "article": "Egitim Sektoru",
+      "requirement": "Performans verileri",
+      "status": "INCELEME_GEREKLI",
+      "severity": "ORTA",
+      "description": "Performans verileri isleniyor - KVKK uyumu dogrulanmali",
+      "file_path": null,
+      "evidence": "Dosyalar: diagnostic_video_api.py, fast_youtube_endpoint.py, main.py",
+      "recommendation": "Veri isleme amaci ve suresi belgelenmeli"
+    },
+    {
+      "article": "Egitim Sektoru",
+      "requirement": "Ogrenci profili",
+      "status": "INCELEME_GEREKLI",
+      "severity": "ORTA",
+      "description": "Ogrenci profili isleniyor - KVKK uyumu dogrulanmali",
+      "file_path": null,
+      "evidence": "Dosyalar: init_db.py, enhanced_study_buddy_agent.py, learning_path_agent.py",
+      "recommendation": "Veri isleme amaci ve suresi belgelenmeli"
+    },
+    {
+      "article": "Egitim Sektoru",
+      "requirement": "Cocuk verisi korumasi",
+      "status": "INCELEME_GEREKLI",
+      "severity": "KRITIK",
+      "description": "18 yas alti ogrenci verisi isleniyor",
+      "file_path": null,
+      "evidence": "",
+      "recommendation": "Veli rizasi mekanizmasi implement edilmeli"
+    },
+    {
+      "article": "Madde 12 - Audit",
+      "requirement": "Audit logging modulu",
+      "status": "UYUMLU",
+      "severity": "BILGI",
+      "description": "Audit logging modulu mevcut",
+      "file_path": null,
+      "evidence": "",
+      "recommendation": ""
+    },
+    {
+      "article": "Madde 12 - Audit",
+      "requirement": "Erisim kayitlari",
+      "status": "UYUMLU",
+      "severity": "BILGI",
+      "description": "Erisim kayitlari mevcut",
+      "file_path": null,
+      "evidence": "",
+      "recommendation": ""
+    },
+    {
+      "article": "Madde 12 - Audit",
+      "requirement": "Veri erisim kayitlari",
+      "status": "UYUMLU",
+      "severity": "BILGI",
+      "description": "Veri erisim kayitlari mevcut",
+      "file_path": null,
+      "evidence": "",
+      "recommendation": ""
+    },
+    {
+      "article": "Madde 12 - Audit",
+      "requirement": "Degisiklik kayitlari",
+      "status": "UYUMLU",
+      "severity": "BILGI",
+      "description": "Degisiklik kayitlari mevcut",
+      "file_path": null,
+      "evidence": "",
+      "recommendation": ""
+    },
+    {
+      "article": "PII Yonetimi",
+      "requirement": "E-posta adresi",
+      "status": "UYUMLU",
+      "severity": "BILGI",
+      "description": "E-posta adresi isleniyor ve sifreleme/hash kullaniliyor",
+      "file_path": null,
+      "evidence": "Dosyalar: init_db.py, models.py, models_unified.py",
+      "recommendation": ""
+    },
+    {
+      "article": "PII Yonetimi",
+      "requirement": "Telefon numarasi",
+      "status": "UYUMLU",
+      "severity": "BILGI",
+      "description": "Telefon numarasi isleniyor ve sifreleme/hash kullaniliyor",
+      "file_path": null,
+      "evidence": "Dosyalar: models.py, models_unified.py, setup_database.py",
+      "recommendation": ""
+    },
+    {
+      "article": "PII Yonetimi",
+      "requirement": "Adres bilgisi",
+      "status": "UYUMLU",
+      "severity": "BILGI",
+      "description": "Adres bilgisi isleniyor ve sifreleme/hash kullaniliyor",
+      "file_path": null,
+      "evidence": "Dosyalar: models.py, models_unified.py, setup_zemberek.py",
+      "recommendation": ""
+    },
+    {
+      "article": "PII Yonetimi",
+      "requirement": "TC Kimlik No",
+      "status": "UYUMLU",
+      "severity": "BILGI",
+      "description": "TC Kimlik No isleniyor ve sifreleme/hash kullaniliyor",
+      "file_path": null,
+      "evidence": "Dosyalar: demo_geometry_generation.py, demo_graph_generation.py, demo_map_diagram_generation.py",
+      "recommendation": ""
+    },
+    {
+      "article": "PII Yonetimi",
+      "requirement": "IP adresi",
+      "status": "UYUMLU",
+      "severity": "BILGI",
+      "description": "IP adresi isleniyor ve sifreleme/hash kullaniliyor",
+      "file_path": null,
+      "evidence": "Dosyalar: models_unified.py, unified_analytics_data_model.py, audit_api.py",
+      "recommendation": ""
+    }
+  ]
+}

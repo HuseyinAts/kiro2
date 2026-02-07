@@ -1,0 +1,293 @@
+# KIRO2 Platform Configuration
+# Türkiye Üniversite Sınavları Hazırlık Platformu
+# Version: 2.0.0
+
+# Application Settings
+app:
+  name: "KIRO2 - Türkiye Üniversite Sınavları Hazırlık Platformu"
+  version: "2.0.0"
+  environment: "development"
+  debug: true
+  host: "0.0.0.0"
+  port: 8000
+  encoding: "utf-8"
+  locale: "tr_TR.UTF-8"
+
+# Database Configuration (PostgreSQL)
+database:
+  url: "postgresql+asyncpg://teknofest:TeknoFest2025SecurePass@localhost:5432/teknofest_db"
+  echo: true
+  # CRITICAL: Optimized pool settings (fixes 74x concurrency slowdown)
+  pool_size: 200
+  max_overflow: 50
+  pool_pre_ping: true
+  pool_recycle: 3600
+  connect_args:
+    server_settings:
+      jit: "off"
+      application_name: "kiro2-backend"
+
+# Redis Cache Configuration
+redis:
+  url: "redis://localhost:6379/0"
+  password: ""
+  max_connections: 50
+  socket_timeout: 5
+  socket_connect_timeout: 5
+  decode_responses: true
+  encoding: "utf-8"
+
+# Elasticsearch Configuration
+elasticsearch:
+  url: "http://localhost:9200"
+  index: "turkiye_sinav_platform"
+  timeout: 30
+  max_retries: 3
+
+# Security Configuration
+security:
+  secret_key: "${SECRET_KEY}"
+  jwt_secret_key: "${JWT_SECRET_KEY}"
+  jwt_algorithm: "HS256"
+  access_token_expire_minutes: 30
+  refresh_token_expire_days: 7
+  password_min_length: 8
+
+# CORS Configuration
+cors:
+  allowed_origins:
+    - "http://localhost:3000"
+    - "http://localhost:5173"
+    - "http://localhost:8080"
+    - "http://localhost:3002"
+  allow_credentials: true
+  allow_methods:
+    - "GET"
+    - "POST"
+    - "PUT"
+    - "DELETE"
+    - "PATCH"
+    - "OPTIONS"
+  allow_headers:
+    - "*"
+
+# Rate Limiting Configuration
+rate_limiting:
+  enabled: true
+  per_minute: 100
+  per_hour: 1000
+  burst: 20
+  strategy: "fixed-window"
+
+  # Tier-based limits
+  tiers:
+    free:
+      per_minute: 60
+      per_hour: 500
+    premium:
+      per_minute: 200
+      per_hour: 5000
+    teacher:
+      per_minute: 500
+      per_hour: 10000
+
+# API Configuration
+api:
+  version: "v1"
+  prefix: "/api"
+  docs_url: "/docs"
+  redoc_url: "/redoc"
+  openapi_url: "/openapi.json"
+  title: "KIRO2 API"
+  description: "Türkiye Üniversite Sınavları Hazırlık Platformu API"
+
+# External Services Configuration
+external_services:
+  openai:
+    api_key: "${OPENAI_API_KEY}"
+    model: "gpt-4"
+    temperature: 0.7
+    max_tokens: 2000
+    timeout: 60
+
+  youtube:
+    api_key: "${YOUTUBE_API_KEY}"
+    timeout: 30
+    max_results: 50
+
+  eba_tv:
+    base_url: "https://www.eba.gov.tr"
+    timeout: 30
+
+# Monitoring and Logging Configuration
+monitoring:
+  log_level: "DEBUG"
+  prometheus:
+    enabled: true
+    port: 9090
+    metrics_path: "/metrics"
+
+  grafana:
+    enabled: true
+    port: 3000
+
+  jaeger:
+    enabled: false
+    agent_host: "localhost"
+    agent_port: 6831
+
+  sentry:
+    enabled: false
+    dsn: "${SENTRY_DSN}"
+    environment: "development"
+    traces_sample_rate: 0.1
+
+# AI/ML Configuration
+ai_ml:
+  # BERTurk Configuration
+  berturk:
+    model_name: "dbmdz/bert-base-turkish-cased"
+    max_length: 512
+    batch_size: 32
+
+  # IRT Configuration
+  irt:
+    parameters:
+      discrimination_min: 0.5
+      discrimination_max: 2.5
+      difficulty_min: -3.0
+      difficulty_max: 3.0
+      guessing_default: 0.25
+
+  # FSRS Configuration (17 Turkish-optimized parameters)
+  fsrs:
+    parameters: [0.4, 0.6, 2.4, 5.8, 4.93, 0.94, 0.86, 0.01, 1.49, 0.14, 0.94, 2.18, 0.05, 0.34, 1.26, 0.29, 2.61]
+    weights_version: "turkish_v1"
+    decay_factor: 0.9
+
+  # ZPD Configuration
+  zpd:
+    lower_bound_percentage: 0.6
+    upper_bound_percentage: 0.9
+    cultural_factors:
+      exam_anxiety_weight: 1.2
+      family_pressure_weight: 1.1
+      collectivist_culture_weight: 1.15
+
+# Turkish NLP Configuration
+turkish_nlp:
+  # Zemberek Configuration
+  zemberek:
+    enabled: true
+    cache_size: 10000
+
+  # Text Simplification (3 levels - World's First!)
+  text_simplification:
+    enabled: true
+    levels:
+      - "basic"      # A2 seviyesi
+      - "medium"     # B1 seviyesi
+      - "advanced"   # B2 seviyesi
+    word_frequency_threshold: 1000
+
+# Accessibility Configuration
+accessibility:
+  # ADHD Support
+  adhd:
+    enabled: true
+    focus_mode: true
+    pomodoro_default_minutes: 25
+    break_default_minutes: 5
+
+  # Autism (OSB) Support
+  osb:
+    enabled: true
+    predictable_layout: true
+    consistent_colors: true
+    minimal_animations: true
+
+  # Text-to-Speech
+  tts:
+    enabled: true
+    language: "tr-TR"
+    voice: "tr-TR-Standard-A"
+    speed: 1.0
+
+# Gamification Configuration
+gamification:
+  enabled: true
+  points_per_correct_answer: 10
+  streak_bonus_multiplier: 1.5
+  daily_goal_default: 50
+  badges_enabled: true
+  leaderboard_enabled: true
+
+# Performance Configuration
+performance:
+  # Query Monitoring
+  query_monitoring:
+    enabled: true
+    slow_query_threshold_ms: 100
+    n_plus_1_detection: true
+
+  # Caching Strategy
+  cache:
+    default_ttl: 3600
+    question_ttl: 86400
+    user_profile_ttl: 300
+    analytics_ttl: 1800
+
+  # Background Tasks
+  celery:
+    broker_url: "redis://localhost:6379/1"
+    result_backend: "redis://localhost:6379/2"
+    task_serializer: "json"
+    result_serializer: "json"
+    accept_content: ["json"]
+    timezone: "Europe/Istanbul"
+    enable_utc: true
+
+# Content Management
+content:
+  # Question Bank
+  question_bank:
+    min_questions_per_topic: 10
+    max_questions_per_exam: 100
+    difficulty_distribution:
+      easy: 0.3
+      medium: 0.5
+      hard: 0.2
+
+  # OSYM Integration
+  osym:
+    enabled: true
+    authentic_questions: true
+    pdf_processing: true
+
+# Feature Flags
+features:
+  multi_agent_system: true
+  rag_enabled: true
+  bionic_reading: true
+  video_solutions: true
+  parent_tracking: true
+  hybrid_question_generation: true
+  wave2b_quality_monitoring: true
+  cat_adaptive_testing: true
+  knowledge_graph: true
+
+# Development Settings
+development:
+  reload: true
+  debug_toolbar: true
+  sql_echo: true
+  profiling: false
+
+# Production Settings (commented out for development)
+# production:
+#   reload: false
+#   debug: false
+#   workers: 4
+#   ssl_enabled: true
+#   ssl_cert_path: "/path/to/cert.pem"
+#   ssl_key_path: "/path/to/key.pem"

@@ -1,11 +1,11 @@
 // Student Components
-export * from './StudentComponents'
+export * from './StudentComponents';
 
-// Teacher Components  
-export * from './TeacherComponents'
+// Teacher Components
+export * from './TeacherComponents';
 
 // Parent Components
-export * from './ParentComponents'
+export * from './ParentComponents';
 
 // Admin Components
-export * from './AdminComponents'
+export * from './AdminComponents';

@@ -2,7 +2,6 @@
 """Count total test cases including parametrized tests"""
 
 import ast
-import sys
 
 
 def count_test_cases(filename):

@@ -11,13 +11,19 @@ Features:
 - Caching and optimization
 """
 
+import time
 from typing import List, Optional
 
 from fastapi import APIRouter, Depends, File, HTTPException, UploadFile, status
 from pydantic import BaseModel, Field
 
 from core.auth_dependencies import get_current_user
-from core.rag_service import RAGService
+
+try:
+    from core.rag_service import RAGService
+except (ImportError, TypeError):
+    RAGService = None
+
 from core.structured_logger import get_logger
 from models.database import User
 
@@ -377,6 +383,9 @@ async def list_documents(
     try:
         rag_service = get_rag_service()
 
+        # Alias offset to skip for consistency with code below
+        skip = offset
+
         # Get documents from vector store
         documents = []
         total_count = 0
@@ -566,5 +575,3 @@ async def health_check():
         return {"status": "unhealthy", "error": str(e)}
 
 
-# Import for time
-import time

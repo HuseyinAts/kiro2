@@ -2,9 +2,8 @@
 Notification ORM Model - Dashboard Service
 Part of Mock Data Cleanup Phase 2
 """
-from datetime import datetime
+from datetime import datetime, timezone
 from sqlalchemy import Column, String, Boolean, DateTime, ForeignKey, Text
-from sqlalchemy.orm import relationship
 
 from .base import Base
 
@@ -13,6 +12,7 @@ class Notification(Base):
     """User notification model for dashboard"""
 
     __tablename__ = "notifications"
+    __table_args__ = {"extend_existing": True}
 
     # Primary Key
     id = Column(String, primary_key=True, index=True)
@@ -44,13 +44,15 @@ class Notification(Base):
     def is_recent(self) -> bool:
         """Check if notification is from last 24 hours"""
         from datetime import timedelta
-        now = datetime.utcnow()
-        return (now - self.created_at) < timedelta(hours=24)
+        if self.created_at is None:
+            return False
+        now = datetime.now(timezone.utc)
+        return bool((now - self.created_at) < timedelta(hours=24))
 
-    def mark_as_read(self):
+    def mark_as_read(self) -> None:
         """Mark notification as read"""
-        self.is_read = True
+        self.is_read = True  # type: ignore[assignment]
 
-    def mark_as_unread(self):
+    def mark_as_unread(self) -> None:
         """Mark notification as unread"""
-        self.is_read = False
+        self.is_read = False  # type: ignore[assignment]

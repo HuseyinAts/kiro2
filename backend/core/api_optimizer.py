@@ -8,7 +8,7 @@ import json
 import logging
 import time
 from collections.abc import Callable
-from datetime import datetime
+from datetime import datetime, timezone
 from functools import wraps
 from typing import Any
 
@@ -379,7 +379,7 @@ class ResponseCacheMiddleware(BaseHTTPMiddleware):
             # Parse JSON response
             try:
                 content = json.loads(response_body.decode("utf-8"))
-            except:
+            except (json.JSONDecodeError, UnicodeDecodeError, ValueError):
                 return  # Don't cache non-JSON responses
 
             cache_data = {
@@ -390,7 +390,7 @@ class ResponseCacheMiddleware(BaseHTTPMiddleware):
                         "Content-Type", "application/json"
                     )
                 },
-                "cached_at": datetime.utcnow().isoformat(),
+                "cached_at": datetime.now(timezone.utc).isoformat(),
             }
 
             await self.optimizer.redis_client.setex(
@@ -469,7 +469,7 @@ def cache_response(ttl: int = 300, key_prefix: str = "api"):
                     if cached_result:
                         optimizer.stats["cache_hits"] += 1
                         return json.loads(cached_result)
-            except:
+            except (redis.ConnectionError, redis.TimeoutError, redis.RedisError, json.JSONDecodeError, ImportError):
                 pass
 
             # Execute function
@@ -484,7 +484,7 @@ def cache_response(ttl: int = 300, key_prefix: str = "api"):
                         json.dumps(result, ensure_ascii=False, default=str),
                     )
                     optimizer.stats["cache_misses"] += 1
-            except:
+            except (redis.ConnectionError, redis.TimeoutError, redis.RedisError, TypeError, ValueError):
                 pass
 
             return result

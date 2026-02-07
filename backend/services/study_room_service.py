@@ -5,9 +5,9 @@ Service for managing study rooms, members, chat, and file sharing.
 """
 
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, and_, or_, func, delete
-from datetime import datetime, timedelta
-from typing import Optional, List, Dict, Any
+from sqlalchemy import select, or_
+from datetime import datetime, timedelta, timezone
+from typing import Optional, List
 from uuid import UUID
 import secrets
 import hashlib
@@ -20,8 +20,6 @@ from models.study_room import (
     RoomChatMessage,
     SharedFile,
     FileVersion,
-    StudySession,
-    RoomAnalytics,
     RoomSettings,
     RoomStatus,
     RoomVisibility,
@@ -29,7 +27,6 @@ from models.study_room import (
     MemberStatus,
     MessageType,
     FileType,
-    FileVersionStatus,
 )
 
 logger = logging.getLogger(__name__)
@@ -109,7 +106,7 @@ class StudyRoomService:
             if hasattr(room, key):
                 setattr(room, key, value)
 
-        room.updated_at = datetime.utcnow()
+        room.updated_at = datetime.now(timezone.utc)
         await self.db.commit()
         await self.db.refresh(room)
 
@@ -284,7 +281,7 @@ class StudyRoomService:
             invitee_email=invitee_email,
             message=message,
             invitation_code=secrets.token_urlsafe(16),
-            expires_at=datetime.utcnow() + timedelta(days=expires_in_days),
+            expires_at=datetime.now(timezone.utc) + timedelta(days=expires_in_days),
         )
 
         self.db.add(invitation)
@@ -305,11 +302,11 @@ class StudyRoomService:
             return None
 
         # Check expiration
-        if invitation.expires_at and invitation.expires_at < datetime.utcnow():
+        if invitation.expires_at and invitation.expires_at < datetime.now(timezone.utc):
             return None
 
         invitation.is_accepted = True
-        invitation.accepted_at = datetime.utcnow()
+        invitation.accepted_at = datetime.now(timezone.utc)
 
         # Add member to room
         member = await self.add_member(
@@ -423,7 +420,7 @@ class StudyRoomService:
             return False
 
         message.is_deleted = True
-        message.deleted_at = datetime.utcnow()
+        message.deleted_at = datetime.now(timezone.utc)
         message.deleted_by = deleted_by
 
         await self.db.commit()
@@ -537,7 +534,7 @@ class StudyRoomService:
         file.version_number = new_version_number
         file.file_path = file_path
         file.file_size_bytes = file_size_bytes
-        file.updated_at = datetime.utcnow()
+        file.updated_at = datetime.now(timezone.utc)
 
         await self.db.commit()
         await self.db.refresh(version)
@@ -554,7 +551,7 @@ class StudyRoomService:
             return False
 
         file.is_deleted = True
-        file.deleted_at = datetime.utcnow()
+        file.deleted_at = datetime.now(timezone.utc)
         file.deleted_by = deleted_by
 
         await self.db.commit()

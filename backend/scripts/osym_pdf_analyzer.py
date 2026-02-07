@@ -5,7 +5,7 @@ Analyzes PDF structure to understand question format
 import pdfplumber
 import re
 from pathlib import Path
-from typing import Dict, List, Any
+from typing import Dict, Any
 import json
 
 

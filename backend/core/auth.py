@@ -2,6 +2,45 @@
 JWT Authentication System
 P0 Fix: Authentication and authorization for Learning Path API
 
+AUTH SYSTEM HIERARCHY (2025-01-24):
+Bu proje 16+ auth modulu iceriyor! Hiyerarsi:
+
+1. CORE AUTH (Temel):
+   - auth.py (BU DOSYA) - JWT token + RBAC
+   - auth_dependencies.py - FastAPI dependency injection
+   - jwt_auth.py - JWT helpers (DUPLICATE risk!)
+
+2. MIDDLEWARE:
+   - auth_middleware.py - Request auth middleware
+   - auth_rate_limiting.py - Rate limiting for auth
+
+3. ENHANCED AUTH:
+   - enhanced_authentication.py - Gelismis auth (50KB!)
+   - two_factor_auth.py - 2FA/MFA
+   - passwordless_auth.py - Magic link auth
+   - biometric_auth_service.py - Biometric auth
+   - oauth2_service.py - OAuth2 integration
+
+4. SPECIALIZED:
+   - learning_path_auth.py - Learning path ozel auth
+   - auth_security_utils.py - Security utilities
+   - authorization.py - Authorization helpers
+   - session_auth_caching.py - Session caching
+
+5. UNIFIED/CONSOLIDATED (Hedef):
+   - unified_auth_service.py - Unified servis
+   - consolidated_auth_dependencies.py - Consolidated deps
+
+REFACTORING NEEDED:
+16 dosya cok fazla! Konsolidasyon onerisi:
+1. core/auth/base.py - Temel auth (JWT, password)
+2. core/auth/middleware.py - Auth middleware
+3. core/auth/advanced.py - 2FA, OAuth2, passwordless
+4. core/auth/dependencies.py - FastAPI deps
+
+ONEMLI: auth/ klasoru olusturulamadi (auth.py cakismasi).
+Oncelikle auth.py -> core_auth.py yeniden adlandirilmali.
+
 Features:
 - JWT token generation and validation
 - Password hashing with bcrypt
@@ -10,9 +49,10 @@ Features:
 """
 
 import logging
-import os
-from datetime import datetime, timedelta
+import secrets
+from datetime import datetime, timedelta, timezone
 from typing import Optional
+from uuid import uuid4
 
 import jwt
 from fastapi import Depends, HTTPException, status
@@ -20,19 +60,17 @@ from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from passlib.context import CryptContext
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from core.config import get_settings
 from database.connection import get_async_session
 from models.user import Kullanici, KullaniciRolu
 
 logger = logging.getLogger(__name__)
 
-# JWT Configuration
-JWT_SECRET_KEY = os.getenv(
-    "JWT_SECRET_KEY", "[REDACTED_JWT_SECRET]"
-)
-JWT_ALGORITHM = "HS256"
-JWT_ACCESS_TOKEN_EXPIRE_MINUTES = int(
-    os.getenv("JWT_ACCESS_TOKEN_EXPIRE_MINUTES", "1440")
-)  # 24 hours
+# JWT Configuration - SECURITY: Use centralized Settings, no hardcoded defaults
+_settings = get_settings()
+JWT_SECRET_KEY = _settings.jwt_secret_key
+JWT_ALGORITHM = _settings.jwt_algorithm
+JWT_ACCESS_TOKEN_EXPIRE_MINUTES = _settings.jwt_access_token_expire_minutes
 
 # Password hashing
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -62,13 +100,13 @@ class AuthService:
         to_encode = data.copy()
 
         if expires_delta:
-            expire = datetime.utcnow() + expires_delta
+            expire = datetime.now(timezone.utc) + expires_delta
         else:
-            expire = datetime.utcnow() + timedelta(
+            expire = datetime.now(timezone.utc) + timedelta(
                 minutes=JWT_ACCESS_TOKEN_EXPIRE_MINUTES
             )
 
-        to_encode.update({"exp": expire, "iat": datetime.utcnow(), "type": "access"})
+        to_encode.update({"exp": expire, "iat": datetime.now(timezone.utc), "type": "access"})
 
         encoded_jwt = jwt.encode(to_encode, JWT_SECRET_KEY, algorithm=JWT_ALGORITHM)
         return encoded_jwt
@@ -94,11 +132,24 @@ class AuthService:
 
     @staticmethod
     def generate_student_id(name: str) -> str:
-        """Generate unique student ID"""
-        timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
-        # Use first 3 chars of name + timestamp
-        name_part = "".join(filter(str.isalnum, name))[:3].upper()
-        return f"STU_{name_part}_{timestamp}"
+        """
+        Generate unique, unpredictable student ID.
+
+        SECURITY FIX: Previous implementation used timestamp + name which
+        was predictable and vulnerable to account enumeration attacks.
+        Now uses cryptographically secure random values for unpredictability.
+
+        Args:
+            name: Student name (used only for prefix, not for uniqueness)
+
+        Returns:
+            Unique student ID in format: STU_{uuid8}_{hex8}
+        """
+        # Use UUID v4 (random) for uniqueness
+        uuid_part = uuid4().hex[:8].upper()
+        # Add cryptographically secure random hex for extra entropy
+        random_part = secrets.token_hex(4).upper()
+        return f"STU_{uuid_part}_{random_part}"
 
 
 # Dependency: Get current user from token

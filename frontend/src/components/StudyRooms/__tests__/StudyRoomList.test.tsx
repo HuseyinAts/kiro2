@@ -4,15 +4,16 @@
  * Tests for study room listing, filtering, and creation
  */
 
-import React from 'react';
+import * as React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import axios from 'axios';
 import StudyRoomList from '../StudyRoomList';
+import { vi, Mocked } from 'vitest';
 
 // Mock axios
 vi.mock('axios');
-const mockedAxios = axios as jest.Mocked<typeof axios>;
+const mockedAxios = axios as Mocked<typeof axios>;
 
 // Mock data
 const mockRooms = [

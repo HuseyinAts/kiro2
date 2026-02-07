@@ -4,11 +4,10 @@ RELIABILITY FIX: Production-ready health monitoring with Kubernetes support
 """
 
 import asyncio
-import os
 import shutil
 import time
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import datetime, timezone
 from enum import Enum
 from typing import Any, Dict, List, Optional
 
@@ -145,7 +144,7 @@ class HealthChecker:
 
         return SystemHealth(
             status=overall_status,
-            timestamp=datetime.utcnow().isoformat(),
+            timestamp=datetime.now(timezone.utc).isoformat(),
             response_time_ms=round(total_time, 2),
             components=components,
             summary=summary,
@@ -188,7 +187,8 @@ class HealthChecker:
                 )
                 table_count = table_result.scalar()
                 pool_stats["tables"] = table_count
-            except:
+            except Exception as e:
+                logger.debug(f"Could not get table count: {e}")
                 pass
 
             duration_ms = (time.time() - start_time) * 1000

@@ -3,19 +3,6 @@
  * Professional dashboard for teachers with modern design
  */
 
-import React from 'react'
-import { useNavigate } from 'react-router-dom'
-import { motion } from 'framer-motion'
-import {
-  Container,
-  Grid,
-  Typography,
-  Box,
-  LinearProgress,
-  Avatar,
-  AvatarGroup,
-  Chip,
-} from '@mui/material'
 import {
   People,
   Class,
@@ -25,19 +12,31 @@ import {
   CheckCircle,
   Schedule,
   BarChart,
-  LibraryBooks,
   Add,
   ArrowForward,
-} from '@mui/icons-material'
-import { useAuthStore } from '@/store/authStore'
-import modernColors from '@/theme/modern-colors'
-import { GlassCard } from '@/components/ui/GlassCard'
-import { ModernButton } from '@/components/ui/ModernButton'
-import { StaggerContainer, StaggerItem } from '@/components/Animations/PageTransition'
+} from '@mui/icons-material';
+import {
+  Container,
+  Grid,
+  Typography,
+  Box,
+  LinearProgress,
+  Avatar,
+  Chip,
+} from '@mui/material';
+import { motion } from 'framer-motion';
+import * as React from 'react';
+import { useNavigate } from 'react-router-dom';
+
+import { StaggerContainer, StaggerItem } from '@/components/Animations/PageTransition';
+import { GlassCard } from '@/components/ui/GlassCard';
+import { ModernButton } from '@/components/ui/ModernButton';
+import { useAuthStore } from '@/store/authStore';
+import modernColors from '@/theme/modern-colors';
 
 export const ModernTeacherDashboard: React.FC = () => {
-  const { user } = useAuthStore()
-  const navigate = useNavigate()
+  const { user } = useAuthStore();
+  const navigate = useNavigate();
 
   // Mock data
   const stats = {
@@ -47,7 +46,7 @@ export const ModernTeacherDashboard: React.FC = () => {
     completedExams: 28,
     averageClassScore: 82.5,
     attendanceRate: 94.2,
-  }
+  };
 
   const quickActions = [
     {
@@ -74,25 +73,25 @@ export const ModernTeacherDashboard: React.FC = () => {
       gradient: modernColors.gradients.ocean,
       path: '/teacher/reports',
     },
-  ]
+  ];
 
   const recentClasses = [
     { id: 1, name: '12-A Matematik', students: 32, avgScore: 85, gradient: modernColors.gradients.primary },
     { id: 2, name: '11-B Matematik', students: 28, avgScore: 78, gradient: modernColors.gradients.forest },
     { id: 3, name: '10-C Matematik', students: 30, avgScore: 82, gradient: modernColors.gradients.ocean },
-  ]
+  ];
 
   const pendingTasks = [
     { id: 1, title: '12-A Türev Sınavı Değerlendirmesi', type: 'exam', count: 32, deadline: 'Bugün' },
     { id: 2, title: '11-B Limit Ödevi Kontrolü', type: 'assignment', count: 28, deadline: 'Yarın' },
     { id: 3, title: '10-C İntegral Quiz', type: 'quiz', count: 30, deadline: '2 gün' },
-  ]
+  ];
 
   const upcomingLessons = [
     { id: 1, class: '12-A', topic: 'Türev Uygulamaları', time: '09:00', room: 'A-204' },
     { id: 2, class: '11-B', topic: 'Limit Problemleri', time: '11:00', room: 'A-205' },
     { id: 3, class: '10-C', topic: 'İntegral Giriş', time: '14:00', room: 'B-101' },
-  ]
+  ];
 
   return (
     <Box
@@ -307,8 +306,8 @@ export const ModernTeacherDashboard: React.FC = () => {
                         onClick={() => navigate(action.path)}
                         onKeyDown={(e) => {
                           if (e.key === 'Enter' || e.key === ' ') {
-                            e.preventDefault()
-                            navigate(action.path)
+                            e.preventDefault();
+                            navigate(action.path);
                           }
                         }}
                         sx={{
@@ -550,7 +549,7 @@ export const ModernTeacherDashboard: React.FC = () => {
         </StaggerContainer>
       </Container>
     </Box>
-  )
-}
+  );
+};
 
-export default ModernTeacherDashboard
+export default ModernTeacherDashboard;

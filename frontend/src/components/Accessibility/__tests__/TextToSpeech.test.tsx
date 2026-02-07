@@ -1,6 +1,7 @@
-import React from 'react';
+import * as React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
+import { vi, Mock } from 'vitest';
 import TextToSpeech from '../TextToSpeech';
 
 // Mock Web Speech API
@@ -27,7 +28,7 @@ global.speechSynthesis = {
   cancel: mockCancel,
   pause: mockPause,
   resume: mockResume,
-  getVoices: jest.fn(() => [
+  getVoices: vi.fn(() => [
     { name: 'Turkish Voice', lang: 'tr-TR', default: true },
     { name: 'English Voice', lang: 'en-US', default: false },
   ]),
@@ -326,7 +327,7 @@ describe('TextToSpeech Component', () => {
       fireEvent.click(playButton);
 
       // Utterance'ın onend event'ini tetikle
-      const utteranceInstance = (SpeechSynthesisUtterance as jest.Mock).mock.results[0].value;
+      const utteranceInstance = (SpeechSynthesisUtterance as Mock).mock.results[0].value;
       if (utteranceInstance.onend) {
         utteranceInstance.onend();
       }

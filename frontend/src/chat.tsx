@@ -1,6 +1,8 @@
-import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react'
-import { Message, Agent } from './types'
-import clsx from 'clsx'
+import clsx from 'clsx';
+import * as React from 'react';
+import {  useState, useRef, useEffect, useCallback, useMemo  } from 'react';
+
+import { Message, Agent } from './types';
 
 interface ChatProps {
   messages: Message[]
@@ -10,27 +12,27 @@ interface ChatProps {
 }
 
 export function Chat({ messages, onSendMessage, isLoading, currentAgent }: ChatProps) {
-  const [input, setInput] = useState('')
-  const messagesEndRef = useRef<HTMLDivElement>(null)
-  const inputRef = useRef<HTMLInputElement>(null)
+  const [input, setInput] = useState('');
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   // Auto-scroll to bottom when new messages arrive - optimized with debouncing
   useEffect(() => {
     const timeoutId = setTimeout(() => {
-      messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
-    }, 100)
-    
-    return () => clearTimeout(timeoutId)
-  }, [messages])
+      messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    }, 100);
+
+    return () => clearTimeout(timeoutId);
+  }, [messages]);
 
   // Memoized submit handler for performance
   const handleSubmit = useCallback((e: React.FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
     if (input.trim() && !isLoading) {
-      onSendMessage(input.trim())
-      setInput('')
+      onSendMessage(input.trim());
+      setInput('');
     }
-  }, [input, isLoading, onSendMessage])
+  }, [input, isLoading, onSendMessage]);
 
   // Memoized message formatter to avoid re-renders
   const formatMessage = useCallback((content: string) => {
@@ -40,21 +42,21 @@ export function Chat({ messages, onSendMessage, isLoading, currentAgent }: ChatP
         {line}
         {i < content.split('\n').length - 1 && <br />}
       </span>
-    ))
-  }, [])
+    ));
+  }, []);
 
   // Memoized quick action buttons
   const quickActions = useMemo(() => [
     { text: 'Öğrenme planı oluştur', icon: '📚' },
     { text: 'Quiz oluştur', icon: '❓' },
     { text: 'Sınav stratejileri', icon: '📝' },
-    { text: 'Flashcard oluştur', icon: '🎴' }
-  ], [])
+    { text: 'Flashcard oluştur', icon: '🎴' },
+  ], []);
 
   // Memoized agent info to prevent unnecessary re-renders
   const agentInfo = useMemo(() => {
-    if (!currentAgent) return null
-    
+    if (!currentAgent) {return null;}
+
     return (
       <div className="flex items-center space-x-3">
         <span className="text-2xl">{currentAgent.icon}</span>
@@ -63,8 +65,8 @@ export function Chat({ messages, onSendMessage, isLoading, currentAgent }: ChatP
           <p className="text-sm text-gray-600">{currentAgent.description}</p>
         </div>
       </div>
-    )
-  }, [currentAgent])
+    );
+  }, [currentAgent]);
 
   return (
     <div className="flex flex-col h-full">
@@ -90,7 +92,7 @@ export function Chat({ messages, onSendMessage, isLoading, currentAgent }: ChatP
             />
           ))
         )}
-        
+
         {isLoading && (
           <div className="flex justify-start">
             <div className="bg-gray-100 rounded-lg px-4 py-3">
@@ -102,7 +104,7 @@ export function Chat({ messages, onSendMessage, isLoading, currentAgent }: ChatP
             </div>
           </div>
         )}
-        
+
         <div ref={messagesEndRef} />
       </div>
 
@@ -126,7 +128,7 @@ export function Chat({ messages, onSendMessage, isLoading, currentAgent }: ChatP
             {isLoading ? '⏳' : '📤'} Gönder
           </button>
         </div>
-        
+
         {/* Optimized Quick Actions */}
         <div className="mt-2 flex flex-wrap gap-2">
           {quickActions.map((action) => (
@@ -140,7 +142,7 @@ export function Chat({ messages, onSendMessage, isLoading, currentAgent }: ChatP
         </div>
       </form>
     </div>
-  )
+  );
 }
 
 // Memoized MessageBubble component for better performance
@@ -149,22 +151,22 @@ const MessageBubble = React.memo(({ message, formatMessage }: {
   formatMessage: (content: string) => React.ReactNode
 }) => {
   const agentLabel = useMemo(() => {
-    if (message.role !== 'agent' || !message.agent) return null
-    
+    if (message.role !== 'agent' || !message.agent) {return null;}
+
     const labels = {
       'learning': '📚 Öğrenme Yolu',
       'study': '💡 Çalışma Arkadaşı',
-      'exam': '📝 Sınav Uzmanı'
-    }
-    
-    return labels[message.agent as keyof typeof labels]
-  }, [message.agent, message.role])
+      'exam': '📝 Sınav Uzmanı',
+    };
+
+    return labels[message.agent as keyof typeof labels];
+  }, [message.agent, message.role]);
 
   return (
     <div
       className={clsx(
         'flex',
-        message.role === 'user' ? 'justify-end' : 'justify-start'
+        message.role === 'user' ? 'justify-end' : 'justify-start',
       )}
     >
       <div
@@ -172,7 +174,7 @@ const MessageBubble = React.memo(({ message, formatMessage }: {
           'max-w-2xl rounded-lg px-4 py-3',
           message.role === 'user'
             ? 'bg-blue-500 text-white'
-            : 'bg-gray-100 text-gray-800'
+            : 'bg-gray-100 text-gray-800',
         )}
       >
         {agentLabel && (
@@ -185,14 +187,14 @@ const MessageBubble = React.memo(({ message, formatMessage }: {
         </div>
         <div className={clsx(
           'text-xs mt-2',
-          message.role === 'user' ? 'text-blue-100' : 'text-gray-500'
+          message.role === 'user' ? 'text-blue-100' : 'text-gray-500',
         )}>
           {new Date(message.timestamp).toLocaleTimeString('tr-TR')}
         </div>
       </div>
     </div>
-  )
-})
+  );
+});
 
 // Memoized QuickActionButton component
 const QuickActionButton = React.memo(({ text, icon, onClick }: {
@@ -207,4 +209,4 @@ const QuickActionButton = React.memo(({ text, icon, onClick }: {
   >
     {icon} {text.replace(/oluştur|stratejileri/, '').trim()}
   </button>
-))
+));

@@ -7,7 +7,7 @@
  * - 69.3: Şüpheli işaretleme
  * - 69.4: Soru navigasyonu
  */
-import React from 'react'
+import * as React from 'react'
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { ThemeProvider, createTheme } from '@mui/material'

@@ -13,8 +13,7 @@ Features:
 Author: Claude
 Date: 2025-10-27
 """
-import json
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from enum import Enum
 from typing import Any, Dict, Optional
 
@@ -161,7 +160,7 @@ class AuditLogger:
 
             # Extra data enrichment
             enriched_extra = extra_data or {}
-            enriched_extra["timestamp"] = datetime.utcnow().isoformat()
+            enriched_extra["timestamp"] = datetime.now(timezone.utc).isoformat()
             enriched_extra["action_type"] = action.value
 
             # Create audit log entry
@@ -315,7 +314,7 @@ class AuditLogger:
         try:
             from models.database import AuditLog
 
-            cutoff_date = datetime.utcnow() - timedelta(days=retention_days)
+            cutoff_date = datetime.now(timezone.utc) - timedelta(days=retention_days)
 
             result = self.db.execute(
                 delete(AuditLog).where(AuditLog.created_at < cutoff_date)

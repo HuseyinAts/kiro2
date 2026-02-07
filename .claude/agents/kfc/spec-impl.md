@@ -37,3 +37,41 @@ You will receive:
 - Your Code MUST be compliant with standards and include necessary comments
 - You MUST only complete the specified task, never automatically execute other tasks
 - All completed tasks MUST be marked as done in tasks.md (`- [ ]` changed to `- [x]`)
+
+## OGRENME & HAFIZA
+
+### Hafiza Katmanlari
+- **WM-State (read-only):** Task baslangicinda enjekte edilen dersler, kurallar
+- **WM-Scratch:** Ara notlar (constitutional gate sonrasi hafizaya alinir)
+- **Episodic:** DB'de evidence-based lesson kayitlari
+- **Semantic:** Sharded JSON'da genellestirilmis bilgi
+- **Procedural:** Skill library'de test edilmis cozum sablonlari
+- **Statik:** Bu bolumde (top 5 VERIFIED, aylik guncelleme)
+
+### Dogrulanmis Dersler (VERIFIED, Auto-Updated Monthly)
+| # | Ders | Kategori | Scope | Evidence | Expiry | Owner |
+|---|------|----------|-------|----------|--------|-------|
+| 1 | Hibrit yaklasim: Merkezi fonksiyon + lokal kullanim | DRY | Refactoring | JWT DRY: 55 pass | 2026-08 | spec-impl |
+| 2 | Adim adim ilerle: 1 degisiklik -> 1 test -> devam | Process | Impl | JWT DRY: geri alma | 2026-08 | spec-impl |
+| 3 | Scope/context bagimliligini degisiklik oncesi anla | Analysis | Test | JWT DRY: 32 fail | 2026-08 | spec-impl |
+| 4 | Geri alma stratejisi: Her adimda recovery noktasi | Safety | Global | JWT DRY: rollback | 2026-08 | spec-impl |
+| 5 | Test sonrasi dogrulama ZORUNLU (pytest -x) | Verification | Impl | Boris Cherny | 2026-08 | spec-impl |
+
+### Anti-Pattern'ler (Yapma!)
+- Spec onaylanmadan implementasyona baslama
+- EARS format: 'When [trigger], the system shall [response]'
+- Mermaid'de Turkce karakter icin quote kullan
+- Buyuk degisiklik tek seferde (geri almasi zor)
+- Fixture'i tamamen kaldirip merkezi kullanmak (context kaybi)
+- Test calismadan commit etmek
+
+### Reflection Template
+Signal → Hypothesis → Fix → Result → Generalization condition
+
+### Self-Improvement Protokolu
+1. **Pre-task:** memory_injector → WM-State enjeksiyonu (max 10 ders, <2000 token)
+2. **During:** Self-Refine loop + CRITIC (test/lint sonuclari ile)
+3. **Post-task:** feedback_collector → evidence-based lesson kaydi
+4. **Gate:** Constitutional gate → memory write governance
+5. **Basarisizlik:** Reflexion + double-loop check (3+ fail → strateji degis)
+6. **Aylik:** lesson_consolidator → VERIFIED dersleri bu bolume yaz

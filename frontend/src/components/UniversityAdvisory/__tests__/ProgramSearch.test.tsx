@@ -3,13 +3,15 @@
  * Task 101: University Advisory - Program Search & Filters Tests
  */
 
-import React from 'react';
+import * as React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { ProgramSearch, Program } from '../ProgramSearch';
+import { vi, Mock } from 'vitest';
 
 // Mock fetch
-global.fetch = vi.fn();
+const fetchMock = vi.fn() as Mock;
+global.fetch = fetchMock;
 
 const mockPrograms: Program[] = [
   {
@@ -70,7 +72,7 @@ const mockCities = ['İstanbul', 'Ankara', 'İzmir', 'Bursa'];
 describe('ProgramSearch - Rendering', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    (global.fetch as jest.Mock)
+    fetchMock
       .mockResolvedValueOnce({ json: async () => mockCities })
       .mockResolvedValueOnce({ json: async () => mockPrograms });
   });
@@ -93,9 +95,10 @@ describe('ProgramSearch - Rendering', () => {
     expect(screen.getByLabelText('Burs')).toBeInTheDocument();
   });
 
-  it('renders search and clear buttons', () => {
+  it('renders search and clear buttons', async () => {
     render(<ProgramSearch />);
-    expect(screen.getByText('Ara')).toBeInTheDocument();
+
+    expect(await screen.findByText('Ara')).toBeInTheDocument();
     expect(screen.getByText('Filtreleri Temizle')).toBeInTheDocument();
   });
 
@@ -114,7 +117,7 @@ describe('ProgramSearch - Data Loading', () => {
   });
 
   it('loads cities on mount', async () => {
-    (global.fetch as jest.Mock)
+    fetchMock
       .mockResolvedValueOnce({ json: async () => mockCities })
       .mockResolvedValueOnce({ json: async () => [] });
 
@@ -128,7 +131,7 @@ describe('ProgramSearch - Data Loading', () => {
   });
 
   it('performs initial search on mount', async () => {
-    (global.fetch as jest.Mock)
+    fetchMock
       .mockResolvedValueOnce({ json: async () => mockCities })
       .mockResolvedValueOnce({ json: async () => mockPrograms });
 
@@ -142,7 +145,7 @@ describe('ProgramSearch - Data Loading', () => {
   });
 
   it('displays loading state during search', async () => {
-    (global.fetch as jest.Mock)
+    fetchMock
       .mockResolvedValueOnce({ json: async () => mockCities })
       .mockImplementation(() => new Promise(() => {}));
 
@@ -156,7 +159,7 @@ describe('ProgramSearch - Data Loading', () => {
   });
 
   it('displays programs after loading', async () => {
-    (global.fetch as jest.Mock)
+    fetchMock
       .mockResolvedValueOnce({ json: async () => mockCities })
       .mockResolvedValueOnce({ json: async () => mockPrograms });
 
@@ -169,7 +172,7 @@ describe('ProgramSearch - Data Loading', () => {
   });
 
   it('handles API errors gracefully', async () => {
-    (global.fetch as jest.Mock)
+    fetchMock
       .mockResolvedValueOnce({ json: async () => mockCities })
       .mockRejectedValueOnce(new Error('Network error'));
 
@@ -191,7 +194,7 @@ describe('ProgramSearch - Data Loading', () => {
 describe('ProgramSearch - Filters', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    (global.fetch as jest.Mock)
+    fetchMock
       .mockResolvedValueOnce({ json: async () => mockCities })
       .mockResolvedValueOnce({ json: async () => mockPrograms });
   });
@@ -273,7 +276,7 @@ describe('ProgramSearch - Filters', () => {
 describe('ProgramSearch - Search Button', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    (global.fetch as jest.Mock)
+    fetchMock
       .mockResolvedValueOnce({ json: async () => mockCities })
       .mockResolvedValueOnce({ json: async () => mockPrograms });
   });
@@ -285,10 +288,10 @@ describe('ProgramSearch - Search Button', () => {
       expect(global.fetch).toHaveBeenCalledTimes(2);
     });
 
-    (global.fetch as jest.Mock).mockClear();
-    (global.fetch as jest.Mock).mockResolvedValueOnce({ json: async () => [] });
+    fetchMock.mockClear();
+    fetchMock.mockResolvedValueOnce({ json: async () => [] });
 
-    const searchButton = screen.getByText('Ara');
+    const searchButton = await screen.findByRole('button', { name: 'Ara' });
     fireEvent.click(searchButton);
 
     await waitFor(() => {
@@ -308,10 +311,10 @@ describe('ProgramSearch - Search Button', () => {
     const minScoreInput = screen.getByLabelText('Min. Taban Puan');
     fireEvent.change(minScoreInput, { target: { value: '450' } });
 
-    (global.fetch as jest.Mock).mockClear();
-    (global.fetch as jest.Mock).mockResolvedValueOnce({ json: async () => [] });
+    fetchMock.mockClear();
+    fetchMock.mockResolvedValueOnce({ json: async () => [] });
 
-    const searchButton = screen.getByText('Ara');
+    const searchButton = await screen.findByRole('button', { name: 'Ara' });
     fireEvent.click(searchButton);
 
     await waitFor(() => {
@@ -322,7 +325,7 @@ describe('ProgramSearch - Search Button', () => {
   });
 
   it('disables button during search', async () => {
-    (global.fetch as jest.Mock)
+    fetchMock
       .mockResolvedValueOnce({ json: async () => mockCities })
       .mockImplementation(() => new Promise(() => {}));
 
@@ -338,7 +341,7 @@ describe('ProgramSearch - Search Button', () => {
 describe('ProgramSearch - Clear Filters', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    (global.fetch as jest.Mock)
+    fetchMock
       .mockResolvedValueOnce({ json: async () => mockCities })
       .mockResolvedValueOnce({ json: async () => mockPrograms });
   });
@@ -372,7 +375,7 @@ describe('ProgramSearch - Clear Filters', () => {
 describe('ProgramSearch - Program Display', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    (global.fetch as jest.Mock)
+    fetchMock
       .mockResolvedValueOnce({ json: async () => mockCities })
       .mockResolvedValueOnce({ json: async () => mockPrograms });
   });
@@ -469,7 +472,7 @@ describe('ProgramSearch - Program Display', () => {
 describe('ProgramSearch - Empty State', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    (global.fetch as jest.Mock)
+    fetchMock
       .mockResolvedValueOnce({ json: async () => mockCities })
       .mockResolvedValueOnce({ json: async () => [] });
   });
@@ -494,7 +497,7 @@ describe('ProgramSearch - Empty State', () => {
 describe('ProgramSearch - Score Types', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    (global.fetch as jest.Mock)
+    fetchMock
       .mockResolvedValueOnce({ json: async () => mockCities })
       .mockResolvedValueOnce({ json: async () => [] });
   });
@@ -512,7 +515,7 @@ describe('ProgramSearch - Score Types', () => {
 describe('ProgramSearch - University Types', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    (global.fetch as jest.Mock)
+    fetchMock
       .mockResolvedValueOnce({ json: async () => mockCities })
       .mockResolvedValueOnce({ json: async () => [] });
   });
@@ -535,7 +538,7 @@ describe('ProgramSearch - Cities Loading', () => {
   });
 
   it('displays loaded cities in dropdown', async () => {
-    (global.fetch as jest.Mock)
+    fetchMock
       .mockResolvedValueOnce({ json: async () => mockCities })
       .mockResolvedValueOnce({ json: async () => [] });
 
@@ -555,7 +558,7 @@ describe('ProgramSearch - Cities Loading', () => {
   });
 
   it('handles city loading errors', async () => {
-    (global.fetch as jest.Mock)
+    fetchMock
       .mockRejectedValueOnce(new Error('Failed to load cities'))
       .mockResolvedValueOnce({ json: async () => [] });
 
@@ -583,7 +586,7 @@ describe('ProgramSearch - Edge Cases', () => {
       medianScore: 0
     }];
 
-    (global.fetch as jest.Mock)
+    fetchMock
       .mockResolvedValueOnce({ json: async () => mockCities })
       .mockResolvedValueOnce({ json: async () => programWithoutScores });
 
@@ -601,7 +604,7 @@ describe('ProgramSearch - Edge Cases', () => {
       filledQuota: 0
     }];
 
-    (global.fetch as jest.Mock)
+    fetchMock
       .mockResolvedValueOnce({ json: async () => mockCities })
       .mockResolvedValueOnce({ json: async () => programWithoutQuota });
 
@@ -618,7 +621,7 @@ describe('ProgramSearch - Edge Cases', () => {
       tuitionFee: null
     }];
 
-    (global.fetch as jest.Mock)
+    fetchMock
       .mockResolvedValueOnce({ json: async () => mockCities })
       .mockResolvedValueOnce({ json: async () => programWithoutFee });
 

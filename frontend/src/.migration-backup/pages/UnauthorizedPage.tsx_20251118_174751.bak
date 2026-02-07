@@ -1,0 +1,146 @@
+import React from 'react'
+import { useNavigate } from 'react-router-dom'
+import {
+  Container,
+  Typography,
+  Box,
+  Button,
+  Paper,
+  Alert
+} from '@mui/material'
+import {
+  Lock,
+  Home,
+  ArrowBack
+} from '@mui/icons-material'
+import { useAuth } from '../hooks/useAuth'
+import { UserRole } from '../types'
+
+export const UnauthorizedPage: React.FC = () => {
+  const { user } = useAuth()
+  const navigate = useNavigate()
+
+  const getDefaultDashboard = (role?: UserRole): string => {
+    switch (role) {
+      case 'ogrenci':
+        return '/dashboard'
+      case 'ogretmen':
+        return '/teacher/dashboard'
+      case 'veli':
+        return '/parent/dashboard'
+      case 'admin':
+        return '/admin/dashboard'
+      default:
+        return '/login'
+    }
+  }
+
+  const handleGoHome = () => {
+    const defaultPath = getDefaultDashboard(user?.rol)
+    navigate(defaultPath)
+  }
+
+  const handleGoBack = () => {
+    navigate(-1)
+  }
+
+  return (
+    <Container component="main" maxWidth="sm">
+      <Box
+        sx={{
+          marginTop: 8,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+        }}
+      >
+        <Paper elevation={3} sx={{ padding: 4, width: '100%', textAlign: 'center' }}>
+          {/* İkon */}
+          <Box sx={{ mb: 3 }}>
+            <Lock sx={{ fontSize: 80, color: 'error.main' }} />
+          </Box>
+
+          {/* Başlık */}
+          <Typography component="h1" variant="h4" gutterBottom color="error">
+            Erişim Engellendi
+          </Typography>
+
+          {/* Açıklama */}
+          <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
+            Bu sayfaya erişim yetkiniz bulunmamaktadır.
+          </Typography>
+
+          {/* Kullanıcı Bilgisi */}
+          {user && (
+            <Alert severity="info" sx={{ mb: 3, textAlign: 'left' }}>
+              <Typography variant="body2">
+                <strong>Kullanıcı:</strong> {user.ad} {user.soyad}
+              </Typography>
+              <Typography variant="body2">
+                <strong>Rol:</strong> {getRoleDisplayName(user.rol)}
+              </Typography>
+              <Typography variant="body2">
+                <strong>E-posta:</strong> {user.email}
+              </Typography>
+            </Alert>
+          )}
+
+          {/* Açıklama Metni */}
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 4 }}>
+            Bu sayfayı görüntülemek için gerekli yetkilere sahip değilsiniz. 
+            Eğer bu sayfaya erişmeniz gerektiğini düşünüyorsanız, 
+            lütfen sistem yöneticinizle iletişime geçin.
+          </Typography>
+
+          {/* Eylem Butonları */}
+          <Box sx={{ display: 'flex', gap: 2, justifyContent: 'center' }}>
+            <Button
+              variant="contained"
+              startIcon={<Home />}
+              onClick={handleGoHome}
+              size="medium"
+            >
+              Ana Sayfaya Dön
+            </Button>
+            
+            <Button
+              variant="outlined"
+              startIcon={<ArrowBack />}
+              onClick={handleGoBack}
+              size="medium"
+            >
+              Geri Dön
+            </Button>
+          </Box>
+
+          {/* Yardım Metni */}
+          <Box sx={{ mt: 4, pt: 3, borderTop: 1, borderColor: 'divider' }}>
+            <Typography variant="body2" color="text.secondary">
+              Yardıma mı ihtiyacınız var?
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              Destek için: <strong>destek@egitimeylemci.com</strong>
+            </Typography>
+          </Box>
+        </Paper>
+      </Box>
+    </Container>
+  )
+}
+
+function getRoleDisplayName(role: UserRole): string {
+  switch (role) {
+    case 'ogrenci':
+      return 'Öğrenci'
+    case 'ogretmen':
+      return 'Öğretmen'
+    case 'veli':
+      return 'Veli'
+    case 'admin':
+      return 'Admin'
+    default:
+      return 'Kullanıcı'
+  }
+}
+
+export default UnauthorizedPage

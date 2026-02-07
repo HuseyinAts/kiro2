@@ -2,7 +2,8 @@
  * Task 92.2: Point Gain Animation Component
  * Puan kazanma görsel geri bildirimi
  */
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
+import type { FC } from 'react';
 import './PointGainAnimation.css';
 
 interface PointGainAnimationProps {
@@ -15,14 +16,14 @@ interface PointGainAnimationProps {
   multiplier?: number;
 }
 
-export const PointGainAnimation: React.FC<PointGainAnimationProps> = ({
+export const PointGainAnimation: FC<PointGainAnimationProps> = ({
   points,
   isVisible,
   onComplete,
   position,
   color = '#4ade80',
   showMultiplier = false,
-  multiplier = 1
+  multiplier = 1,
 }) => {
   const [particles, setParticles] = useState<Array<{ id: number; angle: number }>>([]);
 
@@ -32,7 +33,7 @@ export const PointGainAnimation: React.FC<PointGainAnimationProps> = ({
       const particleCount = Math.min(Math.floor(points / 10) + 5, 20);
       const newParticles = Array.from({ length: particleCount }, (_, i) => ({
         id: i,
-        angle: (360 / particleCount) * i
+        angle: (360 / particleCount) * i,
       }));
       setParticles(newParticles);
 
@@ -46,7 +47,7 @@ export const PointGainAnimation: React.FC<PointGainAnimationProps> = ({
     }
   }, [isVisible, points, onComplete]);
 
-  if (!isVisible || points === 0) return null;
+  if (!isVisible || points === 0) {return null;}
 
   const displayPoints = Math.round(points * multiplier);
   const style = position
@@ -74,7 +75,7 @@ export const PointGainAnimation: React.FC<PointGainAnimationProps> = ({
             className="particle"
             style={{
               transform: `rotate(${particle.angle}deg) translateY(-50px)`,
-              backgroundColor: color
+              backgroundColor: color,
             }}
           />
         ))}
@@ -93,12 +94,12 @@ export const PointGainAnimation: React.FC<PointGainAnimationProps> = ({
                 className="coin"
                 style={{
                   left: `${20 + i * 15}%`,
-                  animationDelay: `${i * 0.1}s`
+                  animationDelay: `${i * 0.1}s`,
                 }}
               >
                 💰
               </div>
-            )
+            ),
           )}
         </div>
       )}

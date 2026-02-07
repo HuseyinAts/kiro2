@@ -4,6 +4,7 @@ Utility Functions
 This package contains utility functions:
 - validators: Input validation utilities
 - formatters: Data formatting utilities
+- duration_parser: ISO 8601 duration parsing utilities
 """
 
 from .validators import (
@@ -25,6 +26,10 @@ from .formatters import (
     ErrorFormatter,
     format_success_response,
 )
+from .duration_parser import (
+    parse_iso8601_duration,
+    format_duration_minutes,
+)
 
 __all__ = [
     # Validators
@@ -44,4 +49,7 @@ __all__ = [
     "ChatFormatter",
     "ErrorFormatter",
     "format_success_response",
+    # Duration Parser
+    "parse_iso8601_duration",
+    "format_duration_minutes",
 ]

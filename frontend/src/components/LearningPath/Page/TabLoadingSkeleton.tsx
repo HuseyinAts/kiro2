@@ -5,8 +5,8 @@
  * Provides smooth loading experience when switching tabs
  */
 
-import React from 'react'
-import { Box, Skeleton, Paper } from '@mui/material'
+import { Box, Skeleton, Paper } from '@mui/material';
+import * as React from 'react';
 
 /**
  * Skeleton loader for tab content
@@ -37,10 +37,10 @@ export const TabLoadingSkeleton: React.FC = () => {
         ))}
       </Box>
     </Box>
-  )
-}
+  );
+};
 
 // Display name for React DevTools
-TabLoadingSkeleton.displayName = 'TabLoadingSkeleton'
+TabLoadingSkeleton.displayName = 'TabLoadingSkeleton';
 
-export default TabLoadingSkeleton
+export default TabLoadingSkeleton;

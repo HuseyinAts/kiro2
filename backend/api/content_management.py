@@ -11,7 +11,7 @@ from fastapi.responses import JSONResponse
 from core.dependencies import get_current_user
 
 # Mock implementations for testing
-router = APIRouter(prefix="/api/v1/content", tags=["İçerik Yönetimi"])
+router = APIRouter(prefix="/api/v1/content-management", tags=["İçerik Yönetimi"])
 
 
 # Mock user class

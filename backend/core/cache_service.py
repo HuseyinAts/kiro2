@@ -2,20 +2,33 @@
 Redis Cache Service - Task 58.3
 REQ-48.89-48.92: Cache sistemi
 
-Features:
-- Redis-based caching
-- TTL (Time To Live) support
-- Cache invalidation strategies
-- Async support
-- JSON serialization
-- Cache key namespacing
+DEPRECATED (2025-01-25):
+Bu dosya deprecated. Kullan: core/cache/cache_manager.py
+
+Migration Guide:
+    # ESKİ (bu dosya)
+    from core.cache_service import CacheService, get_cache_service
+    cache = get_cache_service()
+    await cache.async_set("key", value, ttl=3600)
+
+    # YENİ (tercih edilen)
+    from core.cache import cache_manager
+    await cache_manager.set("key", value, ttl=3600)
+
+Neden deprecated?
+- core/cache/ dizini ana cache sistemi
+- cache_manager.py async-first design
+- Bu dosya redis_cache.py ile overlap ediyor
+
+Backward Compatibility:
+Bu dosya silinmeyecek, ancak yeni kod icin
+core/cache/ kullanilmali.
 """
 import json
 import pickle
 import hashlib
-from typing import Any, Optional, Union, Callable
+from typing import Any, Optional, Callable
 from functools import wraps
-from datetime import timedelta
 import redis
 from redis.asyncio import Redis as AsyncRedis
 

@@ -3,9 +3,24 @@
  * Glassmorphism design with smooth animations
  */
 
-import React, { useState } from 'react'
-import { useNavigate, useLocation } from 'react-router-dom'
-import { motion, AnimatePresence } from 'framer-motion'
+import {
+  Menu as MenuIcon,
+  Dashboard,
+  School,
+  People,
+  Assessment,
+  Chat,
+  Settings,
+  Logout,
+  Notifications,
+  AdminPanelSettings,
+  Class,
+  ChildCare,
+  BarChart,
+  Person,
+  Close,
+  CameraAlt,
+} from '@mui/icons-material';
 import {
   AppBar,
   Toolbar,
@@ -25,31 +40,16 @@ import {
   Menu,
   MenuItem,
   Divider,
-  Chip,
-} from '@mui/material'
-import {
-  Menu as MenuIcon,
-  Dashboard,
-  School,
-  People,
-  Assessment,
-  Chat,
-  Settings,
-  Logout,
-  Notifications,
-  AdminPanelSettings,
-  Class,
-  ChildCare,
-  Assignment,
-  BarChart,
-  LibraryBooks,
-  Person,
-  Close,
-} from '@mui/icons-material'
-import { useAuthStore } from '@/store/authStore'
-import { useRoleAccess } from '@/hooks/useRoleAccess'
-import { UserRole } from '@/types'
-import modernColors from '@/theme/modern-colors'
+} from '@mui/material';
+import { motion, AnimatePresence } from 'framer-motion';
+import * as React from 'react';
+import {  useState  } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
+
+import { useRoleAccess } from '@/hooks/useRoleAccess';
+import { useAuthStore } from '@/store/authStore';
+import modernColors from '@/theme/modern-colors';
+import { UserRole } from '@/types';
 
 interface NavigationItem {
   label: string
@@ -120,6 +120,13 @@ const navigationItems: NavigationItem[] = [
     roles: ['ogretmen'],
     gradient: modernColors.gradients.fire,
   },
+  {
+    label: 'Soru Yükle',
+    path: '/question-upload',
+    icon: <CameraAlt />,
+    roles: ['ogretmen'],
+    gradient: modernColors.gradients.sunset,
+  },
 
   // Parent
   {
@@ -174,27 +181,34 @@ const navigationItems: NavigationItem[] = [
     roles: ['admin'],
     gradient: modernColors.gradients.ocean,
   },
-]
+  {
+    label: 'Soru Yükle',
+    path: '/question-upload',
+    icon: <CameraAlt />,
+    roles: ['admin'],
+    gradient: modernColors.gradients.sunset,
+  },
+];
 
 export const ModernNavigation: React.FC = () => {
-  const [mobileOpen, setMobileOpen] = useState(false)
-  const [profileMenuAnchor, setProfileMenuAnchor] = useState<null | HTMLElement>(null)
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [profileMenuAnchor, setProfileMenuAnchor] = useState<null | HTMLElement>(null);
 
-  const { user, logout } = useAuthStore()
-  const { canView } = useRoleAccess()
-  const navigate = useNavigate()
-  const location = useLocation()
-  const theme = useTheme()
-  const isMobile = useMediaQuery(theme.breakpoints.down('md'))
+  const { user, logout } = useAuthStore();
+  const { canView } = useRoleAccess();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
 
   const filteredNavItems = navigationItems.filter(
-    (item) => user && canView(item.roles)
-  )
+    (item) => user && canView(item.roles),
+  );
 
   const handleNavigation = (path: string) => {
-    navigate(path)
-    if (isMobile) setMobileOpen(false)
-  }
+    navigate(path);
+    if (isMobile) {setMobileOpen(false);}
+  };
 
   const getRoleInfo = (role?: UserRole) => {
     const roles = {
@@ -202,11 +216,11 @@ export const ModernNavigation: React.FC = () => {
       ogretmen: { name: 'Öğretmen', color: modernColors.gradients.forest },
       veli: { name: 'Veli', color: modernColors.gradients.sunset },
       admin: { name: 'Admin', color: modernColors.gradients.fire },
-    }
-    return role ? roles[role] : { name: 'Kullanıcı', color: modernColors.gradients.primary }
-  }
+    };
+    return role ? roles[role] : { name: 'Kullanıcı', color: modernColors.gradients.primary };
+  };
 
-  const roleInfo = getRoleInfo(user?.rol)
+  const roleInfo = getRoleInfo(user?.rol);
 
   return (
     <>
@@ -232,6 +246,9 @@ export const ModernNavigation: React.FC = () => {
             <motion.div whileTap={{ scale: 0.95 }}>
               <IconButton
                 onClick={() => setMobileOpen(true)}
+                aria-label="Navigasyon menüsünü aç"
+                aria-expanded={mobileOpen}
+                aria-controls="mobile-navigation-drawer"
                 sx={{
                   mr: 2,
                   background: modernColors.glass.white.medium,
@@ -304,6 +321,8 @@ export const ModernNavigation: React.FC = () => {
                 >
                   <IconButton
                     onClick={() => handleNavigation(item.path)}
+                    aria-label={`${item.label} sayfasına git`}
+                    aria-current={location.pathname === item.path ? 'page' : undefined}
                     sx={{
                       background:
                         location.pathname === item.path
@@ -408,16 +427,16 @@ export const ModernNavigation: React.FC = () => {
                   },
                 }}
               >
-                <MenuItem onClick={() => { handleNavigation('/profile'); setProfileMenuAnchor(null) }}>
+                <MenuItem onClick={() => { handleNavigation('/profile'); setProfileMenuAnchor(null); }}>
                   <ListItemIcon><Person /></ListItemIcon>
                   Profil
                 </MenuItem>
-                <MenuItem onClick={() => { handleNavigation('/settings'); setProfileMenuAnchor(null) }}>
+                <MenuItem onClick={() => { handleNavigation('/settings'); setProfileMenuAnchor(null); }}>
                   <ListItemIcon><Settings /></ListItemIcon>
                   Ayarlar
                 </MenuItem>
                 <Divider sx={{ my: 0.5 }} />
-                <MenuItem onClick={() => { logout(); navigate('/login'); setProfileMenuAnchor(null) }}>
+                <MenuItem onClick={() => { logout(); navigate('/login'); setProfileMenuAnchor(null); }}>
                   <ListItemIcon><Logout /></ListItemIcon>
                   Çıkış Yap
                 </MenuItem>
@@ -431,6 +450,7 @@ export const ModernNavigation: React.FC = () => {
       <AnimatePresence>
         {(mobileOpen || !isMobile) && (
           <Drawer
+            id="mobile-navigation-drawer"
             variant={isMobile ? 'temporary' : 'permanent'}
             open={mobileOpen}
             onClose={() => setMobileOpen(false)}
@@ -457,7 +477,10 @@ export const ModernNavigation: React.FC = () => {
             {/* Mobile Close Button */}
             {isMobile && (
               <Box sx={{ p: 2, display: 'flex', justifyContent: 'flex-end' }}>
-                <IconButton onClick={() => setMobileOpen(false)}>
+                <IconButton
+                  onClick={() => setMobileOpen(false)}
+                  aria-label="Menüyü kapat"
+                >
                   <Close />
                 </IconButton>
               </Box>
@@ -545,7 +568,7 @@ export const ModernNavigation: React.FC = () => {
         )}
       </AnimatePresence>
     </>
-  )
-}
+  );
+};
 
-export default ModernNavigation
+export default ModernNavigation;

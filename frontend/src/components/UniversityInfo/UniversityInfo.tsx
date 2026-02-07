@@ -4,10 +4,11 @@
  * Displays campus info, living costs, dormitories, and scholarships
  */
 
-import React, { useState, useEffect } from 'react';
+import * as React from 'react';
+import {  useState, useEffect  } from 'react';
 import './UniversityInfo.css';
 
-const API_BASE = process.env.REACT_APP_API_URL || 'http://localhost:8000';
+const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
 // ============================================================
 // Types
@@ -85,7 +86,7 @@ interface UniversityInfoProps {
 
 export const UniversityInfo: React.FC<UniversityInfoProps> = ({
   universityId,
-  year = 2024
+  year = 2024,
 }) => {
   const [info, setInfo] = useState<ComprehensiveInfo | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
@@ -102,7 +103,7 @@ export const UniversityInfo: React.FC<UniversityInfoProps> = ({
 
     try {
       const response = await fetch(
-        `${API_BASE}/api/university-info/comprehensive/${universityId}?year=${year}`
+        `${API_BASE}/api/university-info/comprehensive/${universityId}?year=${year}`,
       );
 
       if (!response.ok) {
@@ -489,7 +490,7 @@ function formatCampusType(type: string): string {
     main_campus: 'Main Campus',
     satellite_campus: 'Satellite Campus',
     medical_campus: 'Medical Campus',
-    research_campus: 'Research Campus'
+    research_campus: 'Research Campus',
   };
   return types[type] || type;
 }
@@ -500,7 +501,7 @@ function formatAccommodationType(type: string): string {
     university_dormitory: 'University Dormitory',
     private_dormitory: 'Private Dormitory',
     apartment: 'Apartment',
-    shared_apartment: 'Shared Apartment'
+    shared_apartment: 'Shared Apartment',
   };
   return types[type] || type;
 }
@@ -513,20 +514,20 @@ function formatScholarshipType(type: string): string {
     need_based: 'Need-Based',
     sports: 'Sports Scholarship',
     academic_excellence: 'Academic Excellence',
-    special_talent: 'Special Talent'
+    special_talent: 'Special Talent',
   };
   return types[type] || type;
 }
 
 function getCostIndexClass(index: number): string {
-  if (index < 80) return 'low';
-  if (index < 100) return 'medium';
+  if (index < 80) {return 'low';}
+  if (index < 100) {return 'medium';}
   return 'high';
 }
 
 function getCoverageClass(percentage: number): string {
-  if (percentage >= 100) return 'full';
-  if (percentage >= 50) return 'high';
+  if (percentage >= 100) {return 'full';}
+  if (percentage >= 50) {return 'high';}
   return 'low';
 }
 

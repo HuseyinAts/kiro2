@@ -330,8 +330,9 @@ class CulturalAdaptationEngine:
             ).to_hijri()
 
             return hijri_date.month == 9
-        except:
+        except (ValueError, AttributeError) as e:
             # Hata durumunda yaklaşık hesaplama
+            logger.debug(f"Hicri takvim hesaplama hatası: {e}")
             return False
 
     def _is_kurban_bayrami(self, current_date: datetime) -> bool:
@@ -794,7 +795,7 @@ class CulturalContextAnalyzer:
         """Aile katılım seviyesini değerlendir"""
 
         involvement_indicators = 0.0
-        total_indicators = 0
+        total_indicators = 0.0
 
         # Veli hesabı aktivitesi
         if "parent_account_activity" in behavioral_data:
@@ -1022,7 +1023,7 @@ class CulturalContextAnalyzer:
         )
 
         # Davranış verilerine göre özelleştir
-        customizations = {}
+        customizations: Dict[str, Any] = {}
 
         if behavioral_data.get("study_time_preference") == "evening":
             customizations["optimal_study_times"] = ["19:00-21:00", "21:00-23:00"]

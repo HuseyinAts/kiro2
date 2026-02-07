@@ -1,9 +1,10 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { Volume2, VolumeX, Play, Pause, SkipForward, SkipBack, Settings } from 'lucide-react';
+import { VolumeX, Play, Pause, Settings } from 'lucide-react';
+import * as React from 'react';
+import {  useState, useEffect, useRef, useCallback  } from 'react';
 
 /**
  * Text-to-Speech Sistemi
- * 
+ *
  * Özellikler:
  * - Web Speech API entegrasyonu
  * - Türkçe ses desteği
@@ -11,7 +12,7 @@ import { Volume2, VolumeX, Play, Pause, SkipForward, SkipBack, Settings } from '
  * - Ses hızı ayarlama (%50-%200)
  * - Ses tonu ayarlama
  * - Karaoke mode (kelime vurgulama)
- * 
+ *
  * Requirements: REQ-50.43 - REQ-50.56
  */
 
@@ -89,8 +90,8 @@ export const TextToSpeech: React.FC<TextToSpeechProps> = ({
     // REQ-50.44: Türkçe ses seçimi
     const loadVoices = () => {
       const voices = window.speechSynthesis.getVoices();
-      const turkishVoices = voices.filter(voice => 
-        voice.lang.startsWith('tr') || voice.lang.startsWith('TR')
+      const turkishVoices = voices.filter(voice =>
+        voice.lang.startsWith('tr') || voice.lang.startsWith('TR'),
       );
       setAvailableVoices(turkishVoices.length > 0 ? turkishVoices : voices);
     };
@@ -115,7 +116,7 @@ export const TextToSpeech: React.FC<TextToSpeechProps> = ({
 
   // REQ-50.53, REQ-50.54: Karaoke mode - kelime kelime vurgulama
   const handleBoundary = useCallback((event: SpeechSynthesisEvent) => {
-    if (!settings.karaokeModeEnabled) return;
+    if (!settings.karaokeModeEnabled) {return;}
 
     const charIndex = event.charIndex;
     const currentText = text.substring(0, charIndex);
@@ -134,9 +135,9 @@ export const TextToSpeech: React.FC<TextToSpeechProps> = ({
     window.speechSynthesis.cancel();
 
     const utterance = new SpeechSynthesisUtterance(text);
-    
+
     // REQ-50.44: Türkçe ses seçimi
-    const selectedVoice = availableVoices.find(v => v.name.includes(settings.voice)) 
+    const selectedVoice = availableVoices.find(v => v.name.includes(settings.voice))
       || availableVoices[0];
     if (selectedVoice) {
       utterance.voice = selectedVoice;
@@ -144,10 +145,10 @@ export const TextToSpeech: React.FC<TextToSpeechProps> = ({
 
     // REQ-50.47, REQ-50.49: Ses hızı ayarlama
     utterance.rate = settings.rate;
-    
+
     // REQ-50.50: Ses tonu ayarlama
     utterance.pitch = settings.pitch;
-    
+
     utterance.volume = settings.volume;
 
     // REQ-50.46: Ses kalitesi ve akıcılığı optimize et
@@ -172,7 +173,7 @@ export const TextToSpeech: React.FC<TextToSpeechProps> = ({
       setIsPlaying(false);
       setIsPaused(false);
       onError?.(new Error(event.error));
-      
+
       // REQ-50.45: Hata durumunda fallback
       handleFallbackTTS();
     };
@@ -199,23 +200,23 @@ export const TextToSpeech: React.FC<TextToSpeechProps> = ({
         }),
       });
 
-      if (!response.ok) throw new Error('Fallback TTS başarısız');
+      if (!response.ok) {throw new Error('Fallback TTS başarısız');}
 
       const audioBlob = await response.blob();
       const audioUrl = URL.createObjectURL(audioBlob);
       const audio = new Audio(audioUrl);
-      
+
       audio.onplay = () => {
         setIsPlaying(true);
         onStart?.();
       };
-      
+
       audio.onended = () => {
         setIsPlaying(false);
         URL.revokeObjectURL(audioUrl);
         onEnd?.();
       };
-      
+
       audio.play();
     } catch (error) {
       console.error('Fallback TTS hatası:', error);
@@ -305,7 +306,7 @@ export const TextToSpeech: React.FC<TextToSpeechProps> = ({
     );
   };
 
-  if (!settings.enabled) return null;
+  if (!settings.enabled) {return null;}
 
   return (
     <div className={`tts-container ${className}`}>
@@ -425,10 +426,11 @@ export const TextToSpeech: React.FC<TextToSpeechProps> = ({
               {/* REQ-50.51, REQ-50.52: Ses Seçimi */}
               {availableVoices.length > 0 && (
                 <div>
-                  <label className="block text-sm font-medium mb-2">
+                  <label htmlFor="tts-voice-select" className="block text-sm font-medium mb-2">
                     Ses Seçimi
                   </label>
                   <select
+                    id="tts-voice-select"
                     value={settings.voice}
                     onChange={(e) => updateVoice(e.target.value)}
                     className="w-full p-2 border border-gray-300 rounded"
@@ -449,9 +451,9 @@ export const TextToSpeech: React.FC<TextToSpeechProps> = ({
                   type="checkbox"
                   id="karaoke-mode"
                   checked={settings.karaokeModeEnabled}
-                  onChange={(e) => setSettings(prev => ({ 
-                    ...prev, 
-                    karaokeModeEnabled: e.target.checked 
+                  onChange={(e) => setSettings(prev => ({
+                    ...prev,
+                    karaokeModeEnabled: e.target.checked,
                   }))}
                   className="w-4 h-4"
                 />
@@ -463,9 +465,9 @@ export const TextToSpeech: React.FC<TextToSpeechProps> = ({
               {/* REQ-50.55: Vurgulama Rengi */}
               {settings.karaokeModeEnabled && (
                 <div>
-                  <label className="block text-sm font-medium mb-2">
+                  <div className="block text-sm font-medium mb-2" role="group" aria-label="Vurgulama Rengi">
                     Vurgulama Rengi
-                  </label>
+                  </div>
                   <div className="flex gap-2">
                     {['#FFD700', '#90EE90', '#87CEEB', '#FFB6C1', '#DDA0DD'].map(color => (
                       <button
@@ -495,9 +497,9 @@ export const TextToSpeech: React.FC<TextToSpeechProps> = ({
                   max="1"
                   step="0.1"
                   value={settings.volume}
-                  onChange={(e) => setSettings(prev => ({ 
-                    ...prev, 
-                    volume: parseFloat(e.target.value) 
+                  onChange={(e) => setSettings(prev => ({
+                    ...prev,
+                    volume: parseFloat(e.target.value),
                   }))}
                   className="w-full"
                   aria-label="Ses seviyesi ayarlama"
@@ -509,7 +511,7 @@ export const TextToSpeech: React.FC<TextToSpeechProps> = ({
           {/* Durum Mesajları */}
           {!isSpeechSupported && (
             <div className="p-3 bg-yellow-50 border border-yellow-200 rounded text-sm text-yellow-800">
-              ⚠️ Tarayıcınız Web Speech API'yi desteklemiyor. Alternatif TTS servisi kullanılıyor.
+              ⚠️ Tarayıcınız Web Speech API&apos;yi desteklemiyor. Alternatif TTS servisi kullanılıyor.
             </div>
           )}
         </div>

@@ -3,7 +3,7 @@
  * Lazy loading, code splitting ve performans optimizasyonları
  */
 
-import React, { lazy, ComponentType, ReactElement, Suspense } from 'react';
+import { lazy, ComponentType, ReactElement, Suspense } from 'react';
 import { QueryClient } from 'react-query';
 
 // Performance metrikleri
@@ -21,12 +21,12 @@ class PerformanceTracker {
   // Component load time'ını ölç
   trackComponentLoad(componentName: string, startTime: number): void {
     const loadTime = performance.now() - startTime;
-    
+
     this.metrics.push({
       loadTime,
       renderTime: 0,
       componentName,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     });
 
     // Yavaş yüklenen component'leri logla
@@ -38,7 +38,7 @@ class PerformanceTracker {
   // Render performance'ını ölç
   trackRenderTime(componentName: string, renderTime: number): void {
     const existingMetric = this.metrics.find(
-      m => m.componentName === componentName && m.renderTime === 0
+      m => m.componentName === componentName && m.renderTime === 0,
     );
 
     if (existingMetric) {
@@ -82,10 +82,10 @@ class PerformanceTracker {
       const observer = new PerformanceObserver((list) => {
         callback(list.getEntries());
       });
-      
+
       observer.observe({ type, buffered: true });
       this.observers.set(type, observer);
-    } catch (error) {
+    } catch {
       console.warn(`Performance observer not supported: ${type}`);
     }
   }
@@ -110,10 +110,10 @@ export const performanceTracker = new PerformanceTracker();
 // Lazy loading wrapper with performance tracking
 export function createLazyComponent<T extends ComponentType<any>>(
   importFunc: () => Promise<{ default: T }>,
-  componentName: string
+  componentName: string,
 ): ComponentType<T extends ComponentType<infer P> ? P : never> {
   const startTime = performance.now();
-  
+
   const LazyComponent = lazy(async () => {
     try {
       const module = await importFunc();
@@ -134,7 +134,7 @@ export function createLazyComponent<T extends ComponentType<any>>(
 // Suspense wrapper with loading indicator
 export function withSuspense<P extends object>(
   Component: ComponentType<P>,
-  fallback?: ReactElement
+  fallback?: ReactElement,
 ): ComponentType<P> {
   const SuspenseWrapper = (props: P) => (
     <Suspense fallback={fallback || <div className="loading-spinner">Yükleniyor...</div>}>
@@ -169,8 +169,8 @@ export class ImageLazyLoader {
       },
       {
         rootMargin: '50px 0px', // 50px önce yüklemeye başla
-        threshold: 0.1
-      }
+        threshold: 0.1,
+      },
     );
   }
 
@@ -223,14 +223,14 @@ export const createOptimizedQueryClient = (): QueryClient => {
         // Background refetch
         refetchOnWindowFocus: false,
         refetchOnReconnect: true,
-        refetchOnMount: true
+        refetchOnMount: true,
       },
       mutations: {
         // Mutation retry
         retry: 1,
-        retryDelay: 1000
-      }
-    }
+        retryDelay: 1000,
+      },
+    },
   });
 };
 
@@ -263,8 +263,8 @@ Bundle Analiz Raporu:
 - Toplam boyut: ${(totalSize / 1024).toFixed(2)} KB
 - Chunk sayısı: ${this.chunks.size}
 - En büyük chunk'lar:
-${largestChunks.map(chunk => 
-  `  - ${chunk.name}: ${(chunk.size / 1024).toFixed(2)} KB`
+${largestChunks.map(chunk =>
+  `  - ${chunk.name}: ${(chunk.size / 1024).toFixed(2)} KB`,
 ).join('\n')}
     `.trim();
   }
@@ -284,7 +284,7 @@ export class MemoryTracker {
         this.measurements.push({
           timestamp: Date.now(),
           used: memory.usedJSHeapSize,
-          total: memory.totalJSHeapSize
+          total: memory.totalJSHeapSize,
         });
 
         // Son 100 ölçümü tut
@@ -296,7 +296,7 @@ export class MemoryTracker {
         if (this.measurements.length > 10) {
           const recent = this.measurements.slice(-10);
           const trend = recent[recent.length - 1].used - recent[0].used;
-          
+
           if (trend > 10 * 1024 * 1024) { // 10MB artış
             console.warn('Potansiyel memory leak tespit edildi');
           }
@@ -306,7 +306,7 @@ export class MemoryTracker {
 
     // İlk ölçüm
     track();
-    
+
     // Periyodik ölçüm
     setInterval(track, interval);
   }
@@ -316,7 +316,7 @@ export class MemoryTracker {
       const memory = (performance as any).memory;
       return {
         used: memory.usedJSHeapSize,
-        total: memory.totalJSHeapSize
+        total: memory.totalJSHeapSize,
       };
     }
     return null;
@@ -335,7 +335,7 @@ export const usePerformanceOptimization = () => {
   // Component mount/unmount tracking
   const trackComponentLifecycle = (componentName: string) => {
     const startTime = performance.now();
-    
+
     return () => {
       const renderTime = performance.now() - startTime;
       performanceTracker.trackRenderTime(componentName, renderTime);
@@ -345,10 +345,10 @@ export const usePerformanceOptimization = () => {
   // Debounced function
   const debounce = <T extends (...args: any[]) => any>(
     func: T,
-    delay: number
+    delay: number,
   ): ((...args: Parameters<T>) => void) => {
     let timeoutId: NodeJS.Timeout;
-    
+
     return (...args: Parameters<T>) => {
       clearTimeout(timeoutId);
       timeoutId = setTimeout(() => func(...args), delay);
@@ -358,10 +358,10 @@ export const usePerformanceOptimization = () => {
   // Throttled function
   const throttle = <T extends (...args: any[]) => any>(
     func: T,
-    delay: number
+    delay: number,
   ): ((...args: Parameters<T>) => void) => {
     let lastCall = 0;
-    
+
     return (...args: Parameters<T>) => {
       const now = Date.now();
       if (now - lastCall >= delay) {
@@ -374,7 +374,7 @@ export const usePerformanceOptimization = () => {
   return {
     trackComponentLifecycle,
     debounce,
-    throttle
+    throttle,
   };
 };
 
@@ -382,13 +382,13 @@ export const usePerformanceOptimization = () => {
 export const initializePerformanceTracking = (): void => {
   // Web Vitals tracking
   performanceTracker.initWebVitals();
-  
+
   // Image lazy loading
   imageLazyLoader.init();
-  
+
   // Memory tracking
   memoryTracker.startTracking();
-  
+
   // Bundle size tracking (development only)
   if (process.env.NODE_ENV === 'development') {
     console.log('Performance tracking initialized');
@@ -408,8 +408,8 @@ export const getPerformanceReport = (): string => {
   const memoryUsage = memoryTracker.getCurrentUsage();
   const bundleReport = bundleAnalyzer.getReport();
 
-  const avgLoadTime = metrics.length > 0 
-    ? metrics.reduce((sum, m) => sum + m.loadTime, 0) / metrics.length 
+  const avgLoadTime = metrics.length > 0
+    ? metrics.reduce((sum, m) => sum + m.loadTime, 0) / metrics.length
     : 0;
 
   const avgRenderTime = metrics.filter(m => m.renderTime > 0).length > 0

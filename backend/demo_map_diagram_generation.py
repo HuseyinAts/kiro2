@@ -20,7 +20,7 @@ import sys
 import io
 import asyncio
 import json
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 
 # UTF-8 encoding
@@ -142,13 +142,13 @@ async def generate_demo_questions():
             question["test_case"] = test_case["name"]
             question["metadata"] = {
                 "spec_name": f"phase4_{test_case['diagram_subtype']}",
-                "generated_at": datetime.utcnow().isoformat(),
+                "generated_at": datetime.now(timezone.utc).isoformat(),
             }
 
             questions.append(question)
 
             # Display info
-            print(f"[OK] Question generated successfully!")
+            print("[OK] Question generated successfully!")
             print(f"     Stem:      {question['stem'][:100]}...")
             print(f"     Options:   {len(question['options'])} choices")
             print(f"     Answer:    {question['correct_answer']}")
@@ -171,8 +171,8 @@ async def generate_demo_questions():
             traceback.print_exc()
 
     # Save all questions
-    print(f"[3/3] Saving questions...")
-    timestamp = datetime.utcnow().strftime("%Y%m%d_%H%M%S")
+    print("[3/3] Saving questions...")
+    timestamp = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
     output_file = f"demo_map_diagram_questions_{timestamp}.json"
 
     with open(output_file, "w", encoding="utf-8") as f:

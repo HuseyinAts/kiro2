@@ -1,23 +1,25 @@
 /**
  * Visual Timer Example - Görsel Zamanlayıcı Örnek Kullanım
- * 
+ *
  * VisualTimer bileşeninin nasıl kullanılacağını gösteren örnek component.
- * 
+ *
  * Requirements: REQ-52.6 - REQ-52.10
  * Task: 88.2 Görsel zamanlayıcı
  */
 
-import React, { useState } from 'react';
+import * as React from 'react';
+import {  useState  } from 'react';
+
 import VisualTimer from './VisualTimer';
 
 const VisualTimerExample: React.FC = () => {
-  const [sessionId, setSessionId] = useState<string>('demo-session-123');
+  const [sessionId, _setSessionId] = useState<string>('demo-session-123');
   const [size, setSize] = useState<'small' | 'medium' | 'large'>('medium');
   const [showNotification, setShowNotification] = useState<boolean>(false);
 
   const handleTimerEnd = () => {
     setShowNotification(true);
-    
+
     // Bildirimi 3 saniye sonra gizle
     setTimeout(() => {
       setShowNotification(false);
@@ -41,11 +43,11 @@ const VisualTimerExample: React.FC = () => {
       </h1>
 
       {/* Size Selector */}
-      <div style={{ 
-        display: 'flex', 
-        justifyContent: 'center', 
-        gap: '1rem', 
-        marginBottom: '2rem' 
+      <div style={{
+        display: 'flex',
+        justifyContent: 'center',
+        gap: '1rem',
+        marginBottom: '2rem',
       }}>
         <button
           onClick={() => handleSizeChange('small')}
@@ -56,7 +58,7 @@ const VisualTimerExample: React.FC = () => {
             border: 'none',
             borderRadius: '0.5rem',
             cursor: 'pointer',
-            fontWeight: size === 'small' ? 'bold' : 'normal'
+            fontWeight: size === 'small' ? 'bold' : 'normal',
           }}
         >
           Küçük
@@ -70,7 +72,7 @@ const VisualTimerExample: React.FC = () => {
             border: 'none',
             borderRadius: '0.5rem',
             cursor: 'pointer',
-            fontWeight: size === 'medium' ? 'bold' : 'normal'
+            fontWeight: size === 'medium' ? 'bold' : 'normal',
           }}
         >
           Orta
@@ -84,7 +86,7 @@ const VisualTimerExample: React.FC = () => {
             border: 'none',
             borderRadius: '0.5rem',
             cursor: 'pointer',
-            fontWeight: size === 'large' ? 'bold' : 'normal'
+            fontWeight: size === 'large' ? 'bold' : 'normal',
           }}
         >
           Büyük
@@ -104,7 +106,7 @@ const VisualTimerExample: React.FC = () => {
             borderRadius: '0.5rem',
             boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
             zIndex: 1000,
-            animation: 'slideIn 0.3s ease-out'
+            animation: 'slideIn 0.3s ease-out',
           }}
           role="alert"
         >
@@ -113,10 +115,10 @@ const VisualTimerExample: React.FC = () => {
       )}
 
       {/* Visual Timer */}
-      <div style={{ 
-        display: 'flex', 
+      <div style={{
+        display: 'flex',
         justifyContent: 'center',
-        marginBottom: '2rem'
+        marginBottom: '2rem',
       }}>
         <VisualTimer
           sessionId={sessionId}
@@ -131,7 +133,7 @@ const VisualTimerExample: React.FC = () => {
         backgroundColor: '#f7fafc',
         padding: '1.5rem',
         borderRadius: '0.5rem',
-        marginTop: '2rem'
+        marginTop: '2rem',
       }}>
         <h3 style={{ marginTop: 0 }}>ℹ️ Bilgi</h3>
         <ul style={{ lineHeight: '1.8' }}>
@@ -164,7 +166,7 @@ const VisualTimerExample: React.FC = () => {
         marginTop: '2rem',
         fontFamily: 'monospace',
         fontSize: '0.875rem',
-        overflow: 'auto'
+        overflow: 'auto',
       }}>
         <h3 style={{ marginTop: 0, color: '#f7fafc' }}>📝 Kullanım Örneği</h3>
         <pre style={{ margin: 0, whiteSpace: 'pre-wrap' }}>
@@ -191,7 +193,7 @@ function PomodoroPage() {
         backgroundColor: '#edf2f7',
         padding: '1.5rem',
         borderRadius: '0.5rem',
-        marginTop: '2rem'
+        marginTop: '2rem',
       }}>
         <h3 style={{ marginTop: 0 }}>✅ Requirements (REQ-52.6 - REQ-52.10)</h3>
         <ul style={{ lineHeight: '1.8' }}>

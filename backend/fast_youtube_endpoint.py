@@ -14,7 +14,7 @@ import os
 import time
 from typing import Dict, List, Optional
 
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, Query
 from pydantic import BaseModel, Field
 
 from core.structured_logger import get_logger
@@ -289,7 +289,7 @@ async def get_video_recommendations(request: VideoRecommendationRequest):
     video_cache.set(cache_key, response_data)
 
     logger.info(
-        f"Video recommendations fetched",
+        "Video recommendations fetched",
         subject=request.subject,
         count=len(videos),
         response_time_ms=response_time,

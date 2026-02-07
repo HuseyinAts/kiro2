@@ -1,19 +1,20 @@
 /**
  * Scientific Calculator Component
- * 
+ *
  * Bilimsel hesap makinesi - Diskalkuli desteği için gelişmiş matematik işlemleri.
- * 
+ *
  * Özellikler:
  * - Temel aritmetik işlemler (+, -, *, /)
  * - Bilimsel fonksiyonlar (sin, cos, tan, log, ln, sqrt, pow)
  * - Sabitler (π, e)
  * - İşlem geçmişi
  * - Klavye desteği
- * 
+ *
  * Gereksinimler: REQ-51.41 - REQ-51.45
  */
 
-import React, { useState, useEffect, useCallback } from 'react';
+import * as React from 'react';
+import {  useState, useEffect, useCallback  } from 'react';
 import './ScientificCalculator.css';
 
 interface CalculationHistory {
@@ -110,14 +111,14 @@ const ScientificCalculator: React.FC = () => {
       const expr = `${func}(${display})`;
       addToHistory(expr, result.toString());
       setDisplay(result.toString());
-    } catch (error) {
+    } catch {
       setDisplay('Error');
     }
   };
 
   const factorial = (n: number): number => {
-    if (n < 0) throw new Error('Negative factorial');
-    if (n === 0 || n === 1) return 1;
+    if (n < 0) {throw new Error('Negative factorial');}
+    if (n === 0 || n === 1) {return 1;}
     return n * factorial(n - 1);
   };
 
@@ -142,7 +143,7 @@ const ScientificCalculator: React.FC = () => {
       addToHistory(fullExpression, result.toString());
       setDisplay(result.toString());
       setExpression('');
-    } catch (error) {
+    } catch {
       setDisplay('Error');
     }
   };
@@ -180,7 +181,7 @@ const ScientificCalculator: React.FC = () => {
     const newEntry: CalculationHistory = {
       expression: expr,
       result: result,
-      timestamp: new Date()
+      timestamp: new Date(),
     };
     setHistory([newEntry, ...history].slice(0, 50)); // Son 50 işlem
   };
@@ -197,7 +198,7 @@ const ScientificCalculator: React.FC = () => {
   // Klavye desteği
   const handleKeyPress = useCallback((event: KeyboardEvent) => {
     const key = event.key;
-    
+
     if (key >= '0' && key <= '9') {
       handleNumber(key);
     } else if (key === '.') {

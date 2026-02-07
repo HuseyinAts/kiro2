@@ -1,0 +1,77 @@
+# Zemberek-NLP MCP Server Docker Image
+# Multi-stage build for optimized image size
+
+# Stage 1: Download Zemberek JAR
+FROM python:3.11-slim as downloader
+
+WORKDIR /download
+
+# Install wget for downloading
+RUN apt-get update && apt-get install -y wget && rm -rf /var/lib/apt/lists/*
+
+# Download Zemberek JAR from Maven Central
+ARG ZEMBEREK_VERSION=0.17.1
+RUN mkdir -p lib/zemberek && \
+    wget -q "https://repo1.maven.org/maven2/zemberek-nlp/zemberek-full/${ZEMBEREK_VERSION}/zemberek-full-${ZEMBEREK_VERSION}.jar" \
+    -O lib/zemberek/zemberek-full.jar
+
+# Stage 2: Runtime image
+FROM python:3.11-slim
+
+# Labels
+LABEL maintainer="KIRO2 Team"
+LABEL description="Zemberek-NLP MCP Server with JPype Bridge"
+LABEL version="1.0.0"
+
+# Environment variables
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PIP_NO_CACHE_DIR=1 \
+    PIP_DISABLE_PIP_VERSION_CHECK=1 \
+    JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64 \
+    ZEMBEREK_JAR_PATH=/app/lib/zemberek/zemberek-full.jar \
+    ZEMBEREK_USE_JPYPE=true \
+    ZEMBEREK_LOG_LEVEL=INFO
+
+# Install OpenJDK 17 and other dependencies
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+        openjdk-17-jdk-headless \
+        libgomp1 \
+    && rm -rf /var/lib/apt/lists/* \
+    && java -version
+
+# Create app directory
+WORKDIR /app
+
+# Copy requirements first for better caching
+COPY requirements_zemberek.txt .
+
+# Install Python dependencies
+RUN pip install --no-cache-dir -r requirements_zemberek.txt
+
+# Copy Zemberek JAR from downloader stage
+COPY --from=downloader /download/lib /app/lib
+
+# Copy application code
+COPY mcp_servers/zemberek_nlp /app/mcp_servers/zemberek_nlp
+COPY mcp_servers/__init__.py /app/mcp_servers/
+
+# Create non-root user for security
+RUN useradd -m -u 1000 zemberek && \
+    chown -R zemberek:zemberek /app
+
+USER zemberek
+
+# Expose port (if running as HTTP server)
+EXPOSE 8081
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+    CMD python -c "from mcp_servers.zemberek_nlp.bridge import get_bridge; print('OK')" || exit 1
+
+# Default command - run MCP server
+ENTRYPOINT ["python", "-m", "mcp_servers.zemberek_nlp.server"]
+
+# Alternative: Run as HTTP server for debugging
+# CMD ["python", "-m", "uvicorn", "mcp_servers.zemberek_nlp.http_server:app", "--host", "0.0.0.0", "--port", "8081"]

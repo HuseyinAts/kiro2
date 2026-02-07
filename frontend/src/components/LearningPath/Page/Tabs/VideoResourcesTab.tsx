@@ -5,14 +5,15 @@
  * Extracted from LearningPathPage.tsx
  */
 
-import React from 'react'
-import { Box, Typography, Button, Alert } from '@mui/material'
-import { VideoLibrary, Refresh } from '@mui/icons-material'
-import { VideoResponse } from '../../../../api'
-import { VideoLoadingState } from '../../../../services/VideoLoadingManager'
-import { VideoLoadingUI } from '../../../VideoLoadingUI'
-import { VideoResourceGrid } from '../../VideoResourceGrid'
-import { VideoAnalyticsCard } from '../VideoAnalyticsCard'
+import { VideoLibrary, Refresh } from '@mui/icons-material';
+import { Box, Typography, Button, Alert } from '@mui/material';
+import * as React from 'react';
+
+import { VideoResponse } from '../../../../api';
+import { VideoLoadingState } from '../../../../services/VideoLoadingManager';
+import { VideoLoadingUI } from '../../../VideoLoadingUI';
+import { VideoResourceGrid } from '../../VideoResourceGrid';
+import { VideoAnalyticsCard } from '../VideoAnalyticsCard';
 
 export interface VideoResourcesTabProps {
   videos: VideoResponse[]
@@ -40,7 +41,7 @@ export const VideoResourcesTab = React.memo<VideoResourcesTabProps>(({
   onRetry,
   onShowFallback,
   onCancel,
-  onVideoPlay
+  onVideoPlay,
 }) => {
   return (
     <Box sx={{ px: 2 }}>
@@ -88,7 +89,7 @@ export const VideoResourcesTab = React.memo<VideoResourcesTabProps>(({
         <VideoResourceGrid
           videos={videos}
           loading={false}
-          error={null}
+          error={undefined}
           onVideoPlay={onVideoPlay}
         />
       )}
@@ -100,10 +101,10 @@ export const VideoResourcesTab = React.memo<VideoResourcesTabProps>(({
         </Alert>
       )}
     </Box>
-  )
-})
+  );
+});
 
 // Display name for React DevTools
-VideoResourcesTab.displayName = 'VideoResourcesTab'
+VideoResourcesTab.displayName = 'VideoResourcesTab';
 
-export default VideoResourcesTab
+export default VideoResourcesTab;

@@ -139,7 +139,7 @@ async def create_sample_exam_templates():
             }
         )
 
-        logger.info(f"[CHECK] Sınav şablonları oluşturuldu: TYT, AYT, YDT")
+        logger.info("[CHECK] Sınav şablonları oluşturuldu: TYT, AYT, YDT")
 
 
 async def create_sample_questions():

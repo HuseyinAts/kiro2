@@ -3,20 +3,20 @@
  * Generic placeholder for pages under development
  */
 
-import React from 'react'
+import {
+  Construction as ConstructionIcon,
+  ArrowBack as ArrowBackIcon,
+} from '@mui/icons-material';
 import {
   Box,
   Container,
   Typography,
   Paper,
   Button,
-  Stack
-} from '@mui/material'
-import {
-  Construction as ConstructionIcon,
-  ArrowBack as ArrowBackIcon
-} from '@mui/icons-material'
-import { useNavigate } from 'react-router-dom'
+  Stack,
+} from '@mui/material';
+import * as React from 'react';
+import { useNavigate } from 'react-router-dom';
 
 interface ComingSoonProps {
   title: string
@@ -29,9 +29,9 @@ export const ComingSoon: React.FC<ComingSoonProps> = ({
   title,
   description,
   estimatedDate,
-  features
+  features,
 }) => {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   return (
     <Container maxWidth="md">
@@ -41,7 +41,7 @@ export const ComingSoon: React.FC<ComingSoonProps> = ({
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          py: 4
+          py: 4,
         }}
       >
         <Paper
@@ -49,37 +49,37 @@ export const ComingSoon: React.FC<ComingSoonProps> = ({
           sx={{
             p: 4,
             textAlign: 'center',
-            width: '100%'
+            width: '100%',
           }}
         >
           <ConstructionIcon
             sx={{
               fontSize: 80,
               color: 'primary.main',
-              mb: 2
+              mb: 2,
             }}
           />
-          
+
           <Typography variant="h3" gutterBottom>
             {title}
           </Typography>
-          
+
           <Typography variant="h5" color="text.secondary" gutterBottom>
             Yakında Geliyor
           </Typography>
-          
+
           {description && (
             <Typography variant="body1" sx={{ mt: 2, mb: 3 }}>
               {description}
             </Typography>
           )}
-          
+
           {estimatedDate && (
             <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
               Tahmini Yayın Tarihi: {estimatedDate}
             </Typography>
           )}
-          
+
           {features && features.length > 0 && (
             <Box sx={{ mt: 3, mb: 3 }}>
               <Typography variant="h6" gutterBottom>
@@ -94,7 +94,7 @@ export const ComingSoon: React.FC<ComingSoonProps> = ({
               </Stack>
             </Box>
           )}
-          
+
           <Button
             variant="contained"
             startIcon={<ArrowBackIcon />}
@@ -106,7 +106,7 @@ export const ComingSoon: React.FC<ComingSoonProps> = ({
         </Paper>
       </Box>
     </Container>
-  )
-}
+  );
+};
 
-export default ComingSoon
+export default ComingSoon;

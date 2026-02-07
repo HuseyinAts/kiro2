@@ -3,7 +3,7 @@
  * Focus trap ve klavye navigasyonu
  */
 
-import React, { useEffect, useRef, useCallback } from 'react';
+import { Close as CloseIcon } from '@mui/icons-material';
 import {
   Dialog,
   DialogTitle,
@@ -14,12 +14,14 @@ import {
   Box,
   useTheme,
   Fade,
-  Backdrop
+  Backdrop,
 } from '@mui/material';
-import { Close as CloseIcon } from '@mui/icons-material';
+import * as React from 'react';
+import {  useEffect, useRef, useCallback  } from 'react';
+
 import { useAccessibilitySettings } from '../../hooks/useAccessibilitySettings';
-import { useScreenReader } from '../../hooks/useScreenReader';
 import { useFocusTrap } from '../../hooks/useFocusTrap';
+import { useScreenReader } from '../../hooks/useScreenReader';
 
 interface AccessibleModalProps {
   open: boolean;
@@ -54,7 +56,7 @@ const AccessibleModal: React.FC<AccessibleModalProps> = ({
   showCloseButton = true,
   ariaLabelledBy,
   ariaDescribedBy,
-  className
+  className,
 }) => {
   const theme = useTheme();
   const { settings } = useAccessibilitySettings();
@@ -71,7 +73,7 @@ const AccessibleModal: React.FC<AccessibleModalProps> = ({
   const dialogRef = useFocusTrap<HTMLDivElement>({
     enabled: open,
     autoFocus: true,
-    returnFocus: true,
+    returnFocus: document.activeElement as HTMLElement,
     escapeDeactivates: !disableEscapeKeyDown,
     onEscape: disableEscapeKeyDown ? undefined : onClose,
     initialFocus: titleRef.current || undefined,
@@ -96,13 +98,13 @@ const AccessibleModal: React.FC<AccessibleModalProps> = ({
   }, [open, title, announce, manageFocus]);
 
   // Klavye event handler (useFocusTrap already handles Escape)
-  const handleKeyDown = useCallback((event: React.KeyboardEvent) => {
+  const handleKeyDown = useCallback((_event: React.KeyboardEvent) => {
     // Additional keyboard handling can be added here if needed
     // Escape key is already handled by useFocusTrap hook
   }, []);
 
   // Backdrop tıklama
-  const handleBackdropClick = useCallback((event: React.MouseEvent) => {
+  const handleBackdropClick = useCallback((_event: React.MouseEvent) => {
     if (!disableBackdropClick) {
       onClose();
     }
@@ -129,15 +131,15 @@ const AccessibleModal: React.FC<AccessibleModalProps> = ({
       role="dialog"
       TransitionComponent={settings.reducedMotion ? undefined : Fade}
       TransitionProps={{
-        timeout: settings.reducedMotion ? 0 : 300
+        timeout: settings.reducedMotion ? 0 : 300,
       }}
       BackdropComponent={Backdrop}
       BackdropProps={{
         onClick: handleBackdropClick,
         sx: {
           backgroundColor: 'rgba(0, 0, 0, 0.5)',
-          backdropFilter: 'blur(2px)'
-        }
+          backdropFilter: 'blur(2px)',
+        },
       }}
       PaperProps={{
         sx: {
@@ -145,13 +147,13 @@ const AccessibleModal: React.FC<AccessibleModalProps> = ({
           boxShadow: theme.shadows[24],
           '&:focus': {
             outline: `2px solid ${theme.palette.primary.main}`,
-            outlineOffset: 2
+            outlineOffset: 2,
           },
           '& .wcag-aa-target-size': {
             minHeight: 44,
             minWidth: 44,
-          }
-        }
+          },
+        },
       }}
     >
       {/* Modal Header */}
@@ -164,7 +166,7 @@ const AccessibleModal: React.FC<AccessibleModalProps> = ({
           alignItems: 'center',
           justifyContent: 'space-between',
           pb: 1,
-          fontSize: settings.fontSize === 'large' ? '1.5rem' : '1.25rem'
+          fontSize: settings.fontSize === 'large' ? '1.5rem' : '1.25rem',
         }}
       >
         <Typography
@@ -174,12 +176,12 @@ const AccessibleModal: React.FC<AccessibleModalProps> = ({
             fontSize: 'inherit',
             fontWeight: 'bold',
             flex: 1,
-            pr: showCloseButton ? 2 : 0
+            pr: showCloseButton ? 2 : 0,
           }}
         >
           {title}
         </Typography>
-        
+
         {showCloseButton && (
           <IconButton
             onClick={handleCloseClick}
@@ -188,8 +190,8 @@ const AccessibleModal: React.FC<AccessibleModalProps> = ({
             sx={{
               color: 'text.secondary',
               '&:hover': {
-                backgroundColor: 'action.hover'
-              }
+                backgroundColor: 'action.hover',
+              },
             }}
           >
             <CloseIcon />
@@ -205,7 +207,7 @@ const AccessibleModal: React.FC<AccessibleModalProps> = ({
             variant="body2"
             color="text.secondary"
             sx={{
-              fontSize: settings.fontSize === 'large' ? '1.1rem' : '0.875rem'
+              fontSize: settings.fontSize === 'large' ? '1.1rem' : '0.875rem',
             }}
           >
             {description}
@@ -219,14 +221,14 @@ const AccessibleModal: React.FC<AccessibleModalProps> = ({
           px: 3,
           py: 2,
           '&:focus': {
-            outline: 'none'
-          }
+            outline: 'none',
+          },
         }}
       >
         <Box
           sx={{
             fontSize: settings.fontSize === 'large' ? '1.1rem' : '1rem',
-            lineHeight: settings.screenReaderOptimized ? 1.8 : 1.5
+            lineHeight: settings.screenReaderOptimized ? 1.8 : 1.5,
           }}
         >
           {children}
@@ -242,7 +244,7 @@ const AccessibleModal: React.FC<AccessibleModalProps> = ({
             pt: 1,
             gap: 1,
             justifyContent: 'flex-end',
-            flexWrap: 'wrap'
+            flexWrap: 'wrap',
           }}
         >
           {actions}
@@ -258,7 +260,7 @@ const AccessibleModal: React.FC<AccessibleModalProps> = ({
             left: 8,
             right: 8,
             textAlign: 'center',
-            opacity: 0.7
+            opacity: 0.7,
           }}
         >
           <Typography variant="caption" color="text.secondary">

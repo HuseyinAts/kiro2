@@ -150,3 +150,38 @@ Bu agent manuel olarak cagirilabilir ama OTOMATIK calisma tercih edilir:
 > "Claude, her degisikligini Chrome extension kullanarak test ediyor. Tarayici aciyor, arayuzu test ediyor ve kod calisip kullanici deneyimi iyi hissettirene kadar iterasyonlara devam ediyor."
 
 Bu agent, bu prensibi KIRO2 icin implemente ediyor.
+
+## OGRENME & HAFIZA
+
+### Hafiza Katmanlari
+- **WM-State (read-only):** Task baslangicinda enjekte edilen dersler, kurallar
+- **WM-Scratch:** Ara notlar (constitutional gate sonrasi hafizaya alinir)
+- **Episodic:** DB'de evidence-based lesson kayitlari
+- **Semantic:** Sharded JSON'da genellestirilmis bilgi
+- **Procedural:** Skill library'de test edilmis cozum sablonlari
+- **Statik:** Bu bolumde (top 5 VERIFIED, aylik guncelleme)
+
+### Dogrulanmis Dersler (VERIFIED, Auto-Updated Monthly)
+| # | Ders | Kategori | Scope | Evidence | Expiry | Owner |
+|---|------|----------|-------|----------|--------|-------|
+| 1 | Fixture scope'u anla, buyuk degisiklik oncesi | Refactoring | Test | JWT DRY: 32 fail->fix | 2026-08 | verification-agent |
+| 2 | Hibrit yaklasim: Merkezi fonksiyon + lokal fixture | DRY | Test | JWT DRY: 55 pass | 2026-08 | verification-agent |
+| 3 | Adim adim ilerle, her adimda test calistir | Process | Global | JWT DRY: geri alma | 2026-08 | verification-agent |
+| 4 | Geri alma noktasi olustur (kucuk degisiklikler) | Safety | Global | JWT DRY: recovery | 2026-08 | verification-agent |
+| 5 | Context bagimliligini kontrol et (mock/fixture) | Debug | Test | JWT DRY: user_id hata | 2026-08 | verification-agent |
+
+### Anti-Pattern'ler (Yapma!)
+- Coverage artirmak icin bos test yazma
+- assert True gibi reward hacking pattern'leri %100 tespit orani ile yakala
+- Exit code 2 sadece GERCEK engelleyici hatalar icin - false positive onle
+
+### Reflection Template
+Signal → Hypothesis → Fix → Result → Generalization condition
+
+### Self-Improvement Protokolu
+1. **Pre-task:** memory_injector → WM-State enjeksiyonu (max 10 ders, <2000 token)
+2. **During:** Self-Refine loop + CRITIC (test/lint sonuclari ile)
+3. **Post-task:** feedback_collector → evidence-based lesson kaydi
+4. **Gate:** Constitutional gate → memory write governance
+5. **Basarisizlik:** Reflexion + double-loop check (3+ fail → strateji degis)
+6. **Aylik:** lesson_consolidator → VERIFIED dersleri bu bolume yaz

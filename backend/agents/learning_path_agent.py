@@ -109,10 +109,20 @@ class LearningPath:
 class LearningPathAgent:
     """Kişiselleştirilmiş Öğrenme Yolu Oluşturan Ajan"""
 
-    def __init__(self):
-        self.profiles = {}  # Öğrenci profilleri cache
-        self.learning_paths = {}  # Oluşturulan öğrenme yolları
-        self.resource_cache = {}  # Kaynak cache'i
+    def __init__(self, rag_service: Optional[Any] = None):
+        self.profiles: Dict[str, StudentProfile] = {}
+        self.learning_paths: Dict[str, Any] = {}
+        self.resource_cache: Dict[str, Any] = {}
+        self.rag_service = rag_service
+
+        # Initialize ZPD+Maarif system for culturally-adapted difficulty selection
+        try:
+            from algorithms.turkish_zpd_maarif_system import TurkishZPDMaarifSystem
+            self.zpd_system = TurkishZPDMaarifSystem()
+            logger.info("ZPD+Maarif system initialized for LearningPathAgent")
+        except ImportError:
+            self.zpd_system = None
+            logger.warning("TurkishZPDMaarifSystem not available")
 
     async def analyze_student(
         self, student_id: str, initial_data: Dict[str, Any]
@@ -161,8 +171,9 @@ class LearningPathAgent:
             if result["success"]:
                 try:
                     analysis = json.loads(result["text"])
-                except:
+                except (json.JSONDecodeError, TypeError) as e:
                     # JSON parse edilemezse default değerler
+                    logger.debug(f"JSON parsing failed for student analysis: {e}")
                     analysis = {
                         "learning_style": "mixed",
                         "knowledge_level": "beginner",
@@ -1260,8 +1271,9 @@ class LearningPathAgent:
             if result["success"]:
                 try:
                     plan = json.loads(result["text"])
-                except:
+                except (json.JSONDecodeError, TypeError) as e:
                     # Default plan
+                    logger.debug(f"JSON parsing failed for learning plan: {e}")
                     plan = {
                         "phases": [
                             {
@@ -2036,39 +2048,17 @@ class LearningPathAgent:
         """
         YouTube duration formatını dakikaya çevir
 
+        Uses centralized ISO 8601 parser for consistent behavior.
+
         Args:
-            duration: PT15M30S formatında süre
+            duration: PT15M30S formatında süre (ISO 8601)
 
         Returns:
             Dakika cinsinden süre
         """
-        if not duration:
-            return 15  # Default 15 dakika
-
-        try:
-            # PT15M30S -> 15.5 dakika
-            duration = duration.replace("PT", "")
-
-            hours = 0
-            minutes = 0
-            seconds = 0
-
-            if "H" in duration:
-                hours = int(duration.split("H")[0])
-                duration = duration.split("H")[1]
-
-            if "M" in duration:
-                minutes = int(duration.split("M")[0])
-                duration = duration.split("M")[1]
-
-            if "S" in duration:
-                seconds = int(duration.replace("S", ""))
-
-            total_minutes = hours * 60 + minutes + (seconds // 60)
-            return max(total_minutes, 1)  # En az 1 dakika
-
-        except:
-            return 15  # Parse edilemezse default 15 dakika
+        # Use centralized parser for consistent ISO 8601 handling
+        from agents.learning_path.utils.duration_parser import parse_iso8601_duration
+        return parse_iso8601_duration(duration, default=10)
 
     def _map_topic_to_subject(self, topic: str) -> str:
         """
@@ -2507,9 +2497,9 @@ class LearningPathAgent:
                         "title": "Günlük Çalışma Programı",
                         "description": f"{available_time} dakikalık günlük {subject} çalışma planı",
                         "details": [
-                            f"İlk 15 dakika: Konu tekrarı",
+                            "İlk 15 dakika: Konu tekrarı",
                             f"Sonraki {available_time-30} dakika: Yeni konu öğrenme",
-                            f"Son 15 dakika: Soru çözümü",
+                            "Son 15 dakika: Soru çözümü",
                         ],
                     },
                     {

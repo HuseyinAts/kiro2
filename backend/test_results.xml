@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites><testsuite name="pytest" errors="27" failures="0" skipped="15" tests="42" time="48.164" timestamp="2026-01-31T05:52:03.146945+03:00" hostname="ates"><testcase classname="" name="tests.fixtures.test_data" time="0.000"><error message="collection failure">ImportError while importing test module 'C:\Users\husey\kiro2\backend\tests\fixtures\test_data.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+..\..\AppData\Local\Programs\Python\Python312\Lib\importlib\__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+tests\fixtures\test_data.py:12: in &lt;module&gt;
+    from models.exam import ExamType
+E   ImportError: cannot import name 'ExamType' from 'models.exam' (C:\Users\husey\kiro2\backend\models\exam.py)</error></testcase><testcase classname="" name="tests.integration.test_analytics_api" time="0.000"><skipped message="collection skipped">('C:\\Users\\husey\\kiro2\\backend\\tests\\integration\\test_analytics_api.py', 29, "Skipped: Cannot import analytics API: 'NoneType' object is not subscriptable")</skipped></testcase><testcase classname="" name="tests.integration.test_automated_question_generator" time="0.000"><error message="collection failure">import file mismatch:
+imported module 'test_automated_question_generator' has this __file__ attribute:
+  C:\Users\husey\kiro2\backend\tests\fast\test_automated_question_generator.py
+which is not the same as the test file we want to collect:
+  C:\Users\husey\kiro2\backend\tests\integration\test_automated_question_generator.py
+HINT: remove __pycache__ / .pyc files and/or use a unique basename for your test file modules</error></testcase><testcase classname="" name="tests.integration.test_e2e_video_recommendations_verification" time="0.000"><skipped message="collection skipped">('C:\\Users\\husey\\kiro2\\backend\\tests\\integration\\test_e2e_video_recommendations_verification.py', 22, 'Skipped: Cannot import video_recommendation_service: Failed to load PyTorch C extensions:\n    It appears that PyTorch has loaded the `torch/_C` folder\n    of the PyTorch repository rather than the C extensions which\n    are expected in the `torch._C` namespace. This can occur when\n    using the `install` workflow. e.g.\n        $ python -m pip install --no-build-isolation -v . &amp;&amp; python -c "import torch"\n\n    This error can generally be solved using the `develop` workflow\n        $ python -m pip install --no-build-isolation -v -e . &amp;&amp; python -c "import torch"  # This should succeed\n    or by running Python from a different directory.')</skipped></testcase><testcase classname="" name="tests.integration.test_elasticsearch_client" time="0.000"><skipped message="collection skipped">('C:\\Users\\husey\\kiro2\\backend\\tests\\integration\\test_elasticsearch_client.py', 20, "Skipped: Cannot import elasticsearch_client: 'NoneType' object is not subscriptable")</skipped></testcase><testcase classname="" name="tests.integration.test_elk_integration" time="0.000"><skipped message="collection skipped">('C:\\Users\\husey\\kiro2\\backend\\tests\\integration\\test_elk_integration.py', 46, 'Skipped: elasticsearch or alert_service dependencies not available')</skipped></testcase><testcase classname="" name="tests.integration.test_learning_path_database" time="0.000"><skipped message="collection skipped">('C:\\Users\\husey\\kiro2\\backend\\tests\\integration\\test_learning_path_database.py', 24, 'Skipped: database dependencies not available')</skipped></testcase><testcase classname="" name="tests.integration.test_models" time="0.000"><skipped message="collection skipped">('C:\\Users\\husey\\kiro2\\backend\\tests\\integration\\test_models.py', 46, 'Skipped: models module not available')</skipped></testcase><testcase classname="" name="tests.integration.test_multi_agent_blackboard" time="0.000"><skipped message="collection skipped">('C:\\Users\\husey\\kiro2\\backend\\tests\\integration\\test_multi_agent_blackboard.py', 33, 'Skipped: agent and blackboard dependencies not available')</skipped></testcase><testcase classname="" name="tests.integration.test_performance_optimization" time="0.000"><skipped message="collection skipped">('C:\\Users\\husey\\kiro2\\backend\\tests\\integration\\test_performance_optimization.py', 24, 'Skipped: core optimization modules not available')</skipped></testcase><testcase classname="" name="tests.integration.test_production_health_monitor" time="0.000"><skipped message="collection skipped">('C:\\Users\\husey\\kiro2\\backend\\tests\\integration\\test_production_health_monitor.py', 24, 'Skipped: production_health_monitor module not available')</skipped></testcase><testcase classname="" name="tests.integration.test_structured_logging" time="0.000"><skipped message="collection skipped">('C:\\Users\\husey\\kiro2\\backend\\tests\\integration\\test_structured_logging.py', 30, 'Skipped: logging modules not available')</skipped></testcase><testcase classname="" name="tests.integration.test_video_api_integration" time="0.000"><skipped message="collection skipped">('C:\\Users\\husey\\kiro2\\backend\\tests\\integration\\test_video_api_integration.py', 42, 'Skipped: video services or torch dependencies not available')</skipped></testcase><testcase classname="" name="tests.load.test_websocket_load" time="0.000"><skipped message="collection skipped">('C:\\Users\\husey\\kiro2\\backend\\tests\\load\\test_websocket_load.py', 37, 'Skipped: locust not installed')</skipped></testcase><testcase classname="" name="tests.services.test_video_recommendation_service" time="0.000"><error message="collection failure">ImportError while importing test module 'C:\Users\husey\kiro2\backend\tests\services\test_video_recommendation_service.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+..\..\AppData\Local\Programs\Python\Python312\Lib\importlib\__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+tests\services\test_video_recommendation_service.py:13: in &lt;module&gt;
+    from services.video_recommendation_service import (
+services\video_recommendation_service.py:42: in &lt;module&gt;
+    from services.semantic_youtube_search import SemanticYouTubeSearch
+services\semantic_youtube_search.py:15: in &lt;module&gt;
+    from sentence_transformers import SentenceTransformer
+..\.venv\Lib\site-packages\sentence_transformers\__init__.py:10: in &lt;module&gt;
+    from sentence_transformers.backend import (
+..\.venv\Lib\site-packages\sentence_transformers\backend\__init__.py:3: in &lt;module&gt;
+    from .load import load_onnx_model, load_openvino_model
+..\.venv\Lib\site-packages\sentence_transformers\backend\load.py:7: in &lt;module&gt;
+    from transformers.configuration_utils import PretrainedConfig
+..\.venv\Lib\site-packages\transformers\__init__.py:30: in &lt;module&gt;
+    from . import dependency_versions_check
+..\.venv\Lib\site-packages\transformers\dependency_versions_check.py:16: in &lt;module&gt;
+    from .utils.versions import require_version, require_version_core
+..\.venv\Lib\site-packages\transformers\utils\__init__.py:22: in &lt;module&gt;
+    from .auto_docstring import (
+..\.venv\Lib\site-packages\transformers\utils\auto_docstring.py:30: in &lt;module&gt;
+    from .generic import ModelOutput
+..\.venv\Lib\site-packages\transformers\utils\generic.py:44: in &lt;module&gt;
+    import torch
+..\.venv\Lib\site-packages\torch\__init__.py:1028: in &lt;module&gt;
+    raise ImportError(
+E   ImportError: Failed to load PyTorch C extensions:
+E       It appears that PyTorch has loaded the `torch/_C` folder
+E       of the PyTorch repository rather than the C extensions which
+E       are expected in the `torch._C` namespace. This can occur when
+E       using the `install` workflow. e.g.
+E           $ python -m pip install --no-build-isolation -v . &amp;&amp; python -c "import torch"
+E   
+E       This error can generally be solved using the `develop` workflow
+E           $ python -m pip install --no-build-isolation -v -e . &amp;&amp; python -c "import torch"  # This should succeed
+E       or by running Python from a different directory.</error></testcase><testcase classname="" name="tests.slow.test_agents" time="0.000"><error message="collection failure">ImportError while importing test module 'C:\Users\husey\kiro2\backend\tests\slow\test_agents.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+..\..\AppData\Local\Programs\Python\Python312\Lib\importlib\__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+tests\slow\test_agents.py:13: in &lt;module&gt;
+    from simple_agents import ExamAgent, LearningAgent, LLMClient, StudyAgent
+E   ModuleNotFoundError: No module named 'simple_agents'</error></testcase><testcase classname="" name="tests.slow.test_api_endpoints_comprehensive" time="0.000"><error message="collection failure">ImportError while importing test module 'C:\Users\husey\kiro2\backend\tests\slow\test_api_endpoints_comprehensive.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+..\..\AppData\Local\Programs\Python\Python312\Lib\importlib\__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+tests\slow\test_api_endpoints_comprehensive.py:16: in &lt;module&gt;
+    from models.learning_style import LearningStyleProfile
+E   ImportError: cannot import name 'LearningStyleProfile' from 'models.learning_style' (C:\Users\husey\kiro2\backend\models\learning_style.py). Did you mean: 'LearningPathStudentProfile'?</error></testcase><testcase classname="" name="tests.slow.test_api_health_comprehensive" time="0.000"><error message="collection failure">import file mismatch:
+imported module 'test_api_health_comprehensive' has this __file__ attribute:
+  C:\Users\husey\kiro2\backend\tests\fast\test_api_health_comprehensive.py
+which is not the same as the test file we want to collect:
+  C:\Users\husey\kiro2\backend\tests\slow\test_api_health_comprehensive.py
+HINT: remove __pycache__ / .pyc files and/or use a unique basename for your test file modules</error></testcase><testcase classname="" name="tests.slow.test_api_integration_comprehensive" time="0.000"><error message="collection failure">ImportError while importing test module 'C:\Users\husey\kiro2\backend\tests\slow\test_api_integration_comprehensive.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+..\..\AppData\Local\Programs\Python\Python312\Lib\importlib\__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+tests\slow\test_api_integration_comprehensive.py:18: in &lt;module&gt;
+    from models.exam import Exam, ExamSession, ExamType
+E   ImportError: cannot import name 'Exam' from 'models.exam' (C:\Users\husey\kiro2\backend\models\exam.py). Did you mean: 'exam'?</error></testcase><testcase classname="" name="tests.slow.test_core_config_comprehensive" time="0.000"><error message="collection failure">import file mismatch:
+imported module 'test_core_config_comprehensive' has this __file__ attribute:
+  C:\Users\husey\kiro2\backend\tests\fast\test_core_config_comprehensive.py
+which is not the same as the test file we want to collect:
+  C:\Users\husey\kiro2\backend\tests\slow\test_core_config_comprehensive.py
+HINT: remove __pycache__ / .pyc files and/or use a unique basename for your test file modules</error></testcase><testcase classname="" name="tests.slow.test_core_encoding_comprehensive" time="0.000"><error message="collection failure">import file mismatch:
+imported module 'test_core_encoding_comprehensive' has this __file__ attribute:
+  C:\Users\husey\kiro2\backend\tests\fast\test_core_encoding_comprehensive.py
+which is not the same as the test file we want to collect:
+  C:\Users\husey\kiro2\backend\tests\slow\test_core_encoding_comprehensive.py
+HINT: remove __pycache__ / .pyc files and/or use a unique basename for your test file modules</error></testcase><testcase classname="" name="tests.slow.test_core_exceptions_comprehensive" time="0.000"><error message="collection failure">ImportError while importing test module 'C:\Users\husey\kiro2\backend\tests\slow\test_core_exceptions_comprehensive.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+..\..\AppData\Local\Programs\Python\Python312\Lib\importlib\__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+tests\slow\test_core_exceptions_comprehensive.py:6: in &lt;module&gt;
+    from core.exceptions import (
+E   ImportError: cannot import name 'TurkishEducationPlatformException' from 'core.exceptions' (C:\Users\husey\kiro2\backend\core\exceptions.py)</error></testcase><testcase classname="" name="tests.slow.test_core_services_comprehensive" time="0.000"><error message="collection failure">ImportError while importing test module 'C:\Users\husey\kiro2\backend\tests\slow\test_core_services_comprehensive.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+..\..\AppData\Local\Programs\Python\Python312\Lib\importlib\__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+tests\slow\test_core_services_comprehensive.py:10: in &lt;module&gt;
+    from core.analytics_monitoring import AnalyticsManager
+E   ModuleNotFoundError: No module named 'core.analytics_monitoring'</error></testcase><testcase classname="" name="tests.slow.test_elasticsearch_integration" time="0.000"><error message="collection failure">E   TypeError: 'NoneType' object is not subscriptable</error></testcase><testcase classname="" name="tests.slow.test_multi_agent_blackboard_integration" time="0.000"><error message="collection failure">ImportError while importing test module 'C:\Users\husey\kiro2\backend\tests\slow\test_multi_agent_blackboard_integration.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+..\..\AppData\Local\Programs\Python\Python312\Lib\importlib\__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+tests\slow\test_multi_agent_blackboard_integration.py:23: in &lt;module&gt;
+    from core.websocket_manager import WebSocketManager
+E   ModuleNotFoundError: No module named 'core.websocket_manager'</error></testcase><testcase classname="" name="tests.slow.test_redis_cache_integration" time="0.000"><error message="collection failure">ImportError while importing test module 'C:\Users\husey\kiro2\backend\tests\slow\test_redis_cache_integration.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+..\..\AppData\Local\Programs\Python\Python312\Lib\importlib\__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+tests\slow\test_redis_cache_integration.py:13: in &lt;module&gt;
+    from core.cache_invalidation import cache_invalidation_manager
+E   ModuleNotFoundError: No module named 'core.cache_invalidation'</error></testcase><testcase classname="" name="tests.slow.test_revolutionary_features" time="0.000"><error message="collection failure">import file mismatch:
+imported module 'test_revolutionary_features' has this __file__ attribute:
+  C:\Users\husey\kiro2\backend\tests\fast\test_revolutionary_features.py
+which is not the same as the test file we want to collect:
+  C:\Users\husey\kiro2\backend\tests\slow\test_revolutionary_features.py
+HINT: remove __pycache__ / .pyc files and/or use a unique basename for your test file modules</error></testcase><testcase classname="" name="tests.slow.test_services_comprehensive" time="0.000"><error message="collection failure">ImportError while importing test module 'C:\Users\husey\kiro2\backend\tests\slow\test_services_comprehensive.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+..\..\AppData\Local\Programs\Python\Python312\Lib\importlib\__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+tests\slow\test_services_comprehensive.py:15: in &lt;module&gt;
+    from core.exceptions import NotFoundError, UnauthorizedError, ValidationError
+E   ImportError: cannot import name 'UnauthorizedError' from 'core.exceptions' (C:\Users\husey\kiro2\backend\core\exceptions.py)</error></testcase><testcase classname="" name="tests.slow.test_services_user_service_comprehensive" time="0.000"><error message="collection failure">ImportError while importing test module 'C:\Users\husey\kiro2\backend\tests\slow\test_services_user_service_comprehensive.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+..\..\AppData\Local\Programs\Python\Python312\Lib\importlib\__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+tests\slow\test_services_user_service_comprehensive.py:8: in &lt;module&gt;
+    from services.user_service import UserService
+E   ImportError: cannot import name 'UserService' from 'services.user_service' (c:\Users/husey/kiro2/backend\services\user_service.py). Did you mean: 'user_service'?</error></testcase><testcase classname="" name="tests.slow.test_websocket_realtime_comprehensive" time="0.000"><error message="collection failure">ImportError while importing test module 'C:\Users\husey\kiro2\backend\tests\slow\test_websocket_realtime_comprehensive.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+..\..\AppData\Local\Programs\Python\Python312\Lib\importlib\__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+tests\slow\test_websocket_realtime_comprehensive.py:25: in &lt;module&gt;
+    from models.websocket_models import AgentCoordinationMessage
+E   ModuleNotFoundError: No module named 'models.websocket_models'</error></testcase><testcase classname="" name="tests.test_irt_psychometric_analysis" time="0.000"><error message="collection failure">ImportError while importing test module 'C:\Users\husey\kiro2\backend\tests\test_irt_psychometric_analysis.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+..\..\AppData\Local\Programs\Python\Python312\Lib\importlib\__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+tests\test_irt_psychometric_analysis.py:8: in &lt;module&gt;
+    from services.irt_psychometric_analysis import (
+services\irt_psychometric_analysis.py:14: in &lt;module&gt;
+    import matplotlib
+..\.venv\Lib\site-packages\matplotlib\__init__.py:161: in &lt;module&gt;
+    from . import _api, _version, cbook, _docstring, rcsetup
+..\.venv\Lib\site-packages\matplotlib\cbook.py:32: in &lt;module&gt;
+    from matplotlib import _api, _c_internal_utils
+E   ImportError: cannot import name '_c_internal_utils' from partially initialized module 'matplotlib' (most likely due to a circular import) (C:\Users\husey\kiro2\.venv\Lib\site-packages\matplotlib\__init__.py)</error></testcase><testcase classname="" name="tests.test_psychometrics" time="0.000"><error message="collection failure">ImportError while importing test module 'C:\Users\husey\kiro2\backend\tests\test_psychometrics.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+..\..\AppData\Local\Programs\Python\Python312\Lib\importlib\__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+tests\test_psychometrics.py:9: in &lt;module&gt;
+    from services.psychometrics.dif_analyzer import DIFAnalyzer
+services\psychometrics\__init__.py:9: in &lt;module&gt;
+    from services.psychometrics.irt_model import (
+services\psychometrics\irt_model.py:12: in &lt;module&gt;
+    import matplotlib.pyplot as plt
+..\.venv\Lib\site-packages\matplotlib\__init__.py:161: in &lt;module&gt;
+    from . import _api, _version, cbook, _docstring, rcsetup
+..\.venv\Lib\site-packages\matplotlib\cbook.py:32: in &lt;module&gt;
+    from matplotlib import _api, _c_internal_utils
+E   ImportError: cannot import name '_c_internal_utils' from partially initialized module 'matplotlib' (most likely due to a circular import) (C:\Users\husey\kiro2\.venv\Lib\site-packages\matplotlib\__init__.py)</error></testcase><testcase classname="" name="tests.test_video_recommendation_service" time="0.000"><error message="collection failure">ImportError while importing test module 'C:\Users\husey\kiro2\backend\tests\test_video_recommendation_service.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+..\..\AppData\Local\Programs\Python\Python312\Lib\importlib\__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+tests\test_video_recommendation_service.py:16: in &lt;module&gt;
+    from services.video_recommendation_service import (
+services\video_recommendation_service.py:42: in &lt;module&gt;
+    from services.semantic_youtube_search import SemanticYouTubeSearch
+services\semantic_youtube_search.py:15: in &lt;module&gt;
+    from sentence_transformers import SentenceTransformer
+..\.venv\Lib\site-packages\sentence_transformers\__init__.py:10: in &lt;module&gt;
+    from sentence_transformers.backend import (
+..\.venv\Lib\site-packages\sentence_transformers\backend\__init__.py:3: in &lt;module&gt;
+    from .load import load_onnx_model, load_openvino_model
+..\.venv\Lib\site-packages\sentence_transformers\backend\load.py:7: in &lt;module&gt;
+    from transformers.configuration_utils import PretrainedConfig
+..\.venv\Lib\site-packages\transformers\__init__.py:30: in &lt;module&gt;
+    from . import dependency_versions_check
+..\.venv\Lib\site-packages\transformers\dependency_versions_check.py:16: in &lt;module&gt;
+    from .utils.versions import require_version, require_version_core
+..\.venv\Lib\site-packages\transformers\utils\__init__.py:22: in &lt;module&gt;
+    from .auto_docstring import (
+..\.venv\Lib\site-packages\transformers\utils\auto_docstring.py:30: in &lt;module&gt;
+    from .generic import ModelOutput
+..\.venv\Lib\site-packages\transformers\utils\generic.py:44: in &lt;module&gt;
+    import torch
+..\.venv\Lib\site-packages\torch\__init__.py:1028: in &lt;module&gt;
+    raise ImportError(
+E   ImportError: Failed to load PyTorch C extensions:
+E       It appears that PyTorch has loaded the `torch/_C` folder
+E       of the PyTorch repository rather than the C extensions which
+E       are expected in the `torch._C` namespace. This can occur when
+E       using the `install` workflow. e.g.
+E           $ python -m pip install --no-build-isolation -v . &amp;&amp; python -c "import torch"
+E   
+E       This error can generally be solved using the `develop` workflow
+E           $ python -m pip install --no-build-isolation -v -e . &amp;&amp; python -c "import torch"  # This should succeed
+E       or by running Python from a different directory.</error></testcase><testcase classname="" name="tests.unit.agents.learning_path.test_agent" time="0.000"><error message="collection failure">ImportError while importing test module 'C:\Users\husey\kiro2\backend\tests\unit\agents\learning_path\test_agent.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+..\..\AppData\Local\Programs\Python\Python312\Lib\importlib\__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+E   ModuleNotFoundError: No module named 'learning_path.test_agent'</error></testcase><testcase classname="" name="tests.unit.agents.learning_path.test_assessment_creator" time="0.000"><error message="collection failure">ImportError while importing test module 'C:\Users\husey\kiro2\backend\tests\unit\agents\learning_path\test_assessment_creator.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+..\..\AppData\Local\Programs\Python\Python312\Lib\importlib\__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+E   ModuleNotFoundError: No module named 'learning_path.test_assessment_creator'</error></testcase><testcase classname="" name="tests.unit.agents.learning_path.test_facade" time="0.000"><error message="collection failure">ImportError while importing test module 'C:\Users\husey\kiro2\backend\tests\unit\agents\learning_path\test_facade.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+..\..\AppData\Local\Programs\Python\Python312\Lib\importlib\__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+E   ModuleNotFoundError: No module named 'learning_path.test_facade'</error></testcase><testcase classname="" name="tests.unit.agents.learning_path.test_resource_finder" time="0.000"><error message="collection failure">ImportError while importing test module 'C:\Users\husey\kiro2\backend\tests\unit\agents\learning_path\test_resource_finder.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+..\..\AppData\Local\Programs\Python\Python312\Lib\importlib\__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+E   ModuleNotFoundError: No module named 'learning_path.test_resource_finder'</error></testcase><testcase classname="" name="tests.unit.agents.learning_path.test_student_profiler" time="0.000"><error message="collection failure">ImportError while importing test module 'C:\Users\husey\kiro2\backend\tests\unit\agents\learning_path\test_student_profiler.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+..\..\AppData\Local\Programs\Python\Python312\Lib\importlib\__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+E   ModuleNotFoundError: No module named 'learning_path.test_student_profiler'</error></testcase><testcase classname="" name="tests.unit.services.claude_md_improvement.test_doc_updater_service" time="0.000"><skipped message="collection skipped">('C:\\Users\\husey\\kiro2\\backend\\tests\\unit\\services\\claude_md_improvement\\test_doc_updater_service.py', 33, "Skipped: Cannot import doc_updater_service: Table 'point_transactions' is already defined for this MetaData instance.  Specify 'extend_existing=True' to redefine options and columns on an existing Table object.")</skipped></testcase><testcase classname="" name="tests.unit.test_adaptive_test_engine" time="0.000"><skipped message="collection skipped">('C:\\Users\\husey\\kiro2\\backend\\tests\\unit\\test_adaptive_test_engine.py', 19, "Skipped: Cannot import adaptive_test_engine: cannot import name '_c_internal_utils' from partially initialized module 'matplotlib' (most likely due to a circular import) (C:\\Users\\husey\\kiro2\\.venv\\Lib\\site-packages\\matplotlib\\__init__.py)")</skipped></testcase><testcase classname="" name="tests.unit.test_enhanced_chat_api" time="0.000"><error message="collection failure">E   ImportError: cannot import name 'ChatHistoryRequest' from 'api.enhanced_chat' (C:\Users\husey\kiro2\backend\api\enhanced_chat.py)
+
+During handling of the above exception, another exception occurred:
+E   ValueError: I/O operation on closed file.</error></testcase><testcase classname="" name="tests.unit.test_realtime_adaptation_performance" time="0.000"><skipped message="collection skipped">('C:\\Users\\husey\\kiro2\\backend\\tests\\unit\\test_realtime_adaptation_performance.py', 23, "Skipped: Cannot import required services: cannot import name '_c_internal_utils' from partially initialized module 'matplotlib' (most likely due to a circular import) (C:\\Users\\husey\\kiro2\\.venv\\Lib\\site-packages\\matplotlib\\__init__.py)")</skipped></testcase></testsuite></testsuites>

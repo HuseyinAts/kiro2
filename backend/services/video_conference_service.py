@@ -5,8 +5,8 @@ Service for managing video conferences with Zoom and Google Meet integration.
 """
 
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, and_, or_, func
-from datetime import datetime, timedelta
+from sqlalchemy import select, func
+from datetime import datetime, timezone
 from typing import Optional, List, Dict, Any
 from uuid import UUID
 import logging
@@ -20,7 +20,6 @@ from models.live_session import (
     SessionChatMessage,
     SessionAnalytics,
     SessionRecording,
-    RecordingView,
     SessionStatus,
     SessionType,
     PlatformType,
@@ -124,7 +123,7 @@ class VideoConferenceService:
             return None
 
         session.status = SessionStatus.LIVE
-        session.actual_start = datetime.utcnow()
+        session.actual_start = datetime.now(timezone.utc)
 
         # Start recording if auto-record is enabled
         if session.auto_record and session.allow_recording:
@@ -143,7 +142,7 @@ class VideoConferenceService:
             return None
 
         session.status = SessionStatus.ENDED
-        session.actual_end = datetime.utcnow()
+        session.actual_end = datetime.now(timezone.utc)
 
         if session.actual_start:
             duration = session.actual_end - session.actual_start
@@ -195,7 +194,7 @@ class VideoConferenceService:
 
         if upcoming_only:
             query = query.where(
-                LiveSession.scheduled_start > datetime.utcnow(),
+                LiveSession.scheduled_start > datetime.now(timezone.utc),
                 LiveSession.status == SessionStatus.SCHEDULED,
             )
 
@@ -275,7 +274,7 @@ class VideoConferenceService:
     def _generate_jitsi_room_name(self, session: LiveSession) -> str:
         """Generate unique Jitsi room name"""
         # Create a unique, readable room name
-        hash_input = f"{session.id}{session.title}{datetime.utcnow()}"
+        hash_input = f"{session.id}{session.title}{datetime.now(timezone.utc)}"
         hash_short = hashlib.sha256(hash_input.encode()).hexdigest()[:8]
         safe_title = "".join(c for c in session.title if c.isalnum())[:20]
         return f"kiro_{safe_title}_{hash_short}"
@@ -316,7 +315,7 @@ class VideoConferenceService:
             participant = await self.add_participant(session_id, user_id)
 
         participant.is_present = True
-        participant.joined_at = datetime.utcnow()
+        participant.joined_at = datetime.now(timezone.utc)
 
         # Update session participant count
         session = await self.get_session(session_id)
@@ -343,7 +342,7 @@ class VideoConferenceService:
             return None
 
         participant.is_present = False
-        participant.left_at = datetime.utcnow()
+        participant.left_at = datetime.now(timezone.utc)
 
         if participant.joined_at:
             duration = participant.left_at - participant.joined_at
@@ -378,7 +377,7 @@ class VideoConferenceService:
             share_type=share_type,
             window_title=window_title,
             application_name=application_name,
-            started_at=datetime.utcnow(),
+            started_at=datetime.now(timezone.utc),
         )
 
         self.db.add(screen_share)
@@ -408,7 +407,7 @@ class VideoConferenceService:
         if not screen_share:
             return None
 
-        screen_share.ended_at = datetime.utcnow()
+        screen_share.ended_at = datetime.now(timezone.utc)
         duration = screen_share.ended_at - screen_share.started_at
         screen_share.duration_seconds = int(duration.total_seconds())
 
@@ -443,7 +442,7 @@ class VideoConferenceService:
             session_id=session_id,
             title=title or f"Recording: {session.title}",
             description=session.description,
-            started_at=datetime.utcnow(),
+            started_at=datetime.now(timezone.utc),
             status=RecordingStatus.RECORDING,
         )
 
@@ -465,7 +464,7 @@ class VideoConferenceService:
         if not recording:
             return None
 
-        recording.ended_at = datetime.utcnow()
+        recording.ended_at = datetime.now(timezone.utc)
         recording.status = RecordingStatus.PROCESSING
 
         if recording.started_at:
@@ -501,7 +500,7 @@ class VideoConferenceService:
 
         if recording:
             recording.status = RecordingStatus.READY
-            recording.processing_completed_at = datetime.utcnow()
+            recording.processing_completed_at = datetime.now(timezone.utc)
             recording.file_url = (
                 f"https://cdn.example.com/recordings/{recording_id}.mp4"
             )
@@ -594,10 +593,10 @@ class VideoConferenceService:
 
         for participant in participants:
             if participant.joined_at:
-                duration = datetime.utcnow() - participant.joined_at
+                duration = datetime.now(timezone.utc) - participant.joined_at
                 participant.duration_minutes = int(duration.total_seconds() / 60)
                 participant.is_present = False
-                participant.left_at = datetime.utcnow()
+                participant.left_at = datetime.now(timezone.utc)
 
         await self.db.commit()
 

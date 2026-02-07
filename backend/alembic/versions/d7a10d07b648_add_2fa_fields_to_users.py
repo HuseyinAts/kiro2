@@ -22,50 +22,29 @@ depends_on: Union[str, Sequence[str], None] = None
 
 
 def upgrade() -> None:
-    """Add 2FA fields to users table"""
+    """Add 2FA fields to users table (idempotent)"""
+    conn = op.get_bind()
 
-    # Add secret_2fa column (TOTP secret key)
-    op.add_column(
-        'users',
-        sa.Column(
-            'secret_2fa',
-            sa.String(32),
-            nullable=True,
-            comment='TOTP secret key for 2FA'
+    def column_exists(table: str, column: str) -> bool:
+        result = conn.execute(
+            sa.text("SELECT EXISTS(SELECT 1 FROM information_schema.columns WHERE table_name=:t AND column_name=:c)"),
+            {"t": table, "c": column}
         )
-    )
+        return result.scalar()
 
-    # Add is_2fa_enabled column
-    op.add_column(
-        'users',
-        sa.Column(
-            'is_2fa_enabled',
-            sa.Boolean(),
-            nullable=False,
-            server_default='false',
-            comment='2FA enabled status'
-        )
-    )
+    if not column_exists('users', 'secret_2fa'):
+        op.add_column('users', sa.Column('secret_2fa', sa.String(32), nullable=True))
 
-    # Add backup_codes_hashed column (JSON array of hashed codes)
-    op.add_column(
-        'users',
-        sa.Column(
-            'backup_codes_hashed',
-            JSON,
-            nullable=True,
-            comment='Hashed backup codes for 2FA recovery'
-        )
-    )
+    if not column_exists('users', 'is_2fa_enabled'):
+        op.add_column('users', sa.Column('is_2fa_enabled', sa.Boolean(), nullable=False, server_default='false'))
 
-    # Create index on is_2fa_enabled for quick lookup
-    op.create_index(
-        'idx_users_2fa_enabled',
-        'users',
-        ['is_2fa_enabled']
-    )
+    if not column_exists('users', 'backup_codes_hashed'):
+        op.add_column('users', sa.Column('backup_codes_hashed', JSON, nullable=True))
 
-    print("SUCCESS: 2FA fields added to users table")
+    try:
+        op.create_index('idx_users_2fa_enabled', 'users', ['is_2fa_enabled'], if_not_exists=True)
+    except Exception:
+        pass
 
 
 def downgrade() -> None:

@@ -2,8 +2,9 @@
  * İnteraktif Geometri - Task 87.3
  * REQ-51.91-51.95: Construction tools, measurement tools, transformation tools
  */
-import React, { useState, useRef, useEffect } from 'react';
 import axios from 'axios';
+import * as React from 'react';
+import {  useState, useRef, useEffect  } from 'react';
 
 interface Point {
   x: number;
@@ -24,7 +25,7 @@ interface Measurement {
   points: Point[];
 }
 
-type Tool = 'select' | 'line' | 'circle' | 'rectangle' | 'triangle' | 
+type Tool = 'select' | 'line' | 'circle' | 'rectangle' | 'triangle' |
             'ruler' | 'protractor' | 'rotate' | 'reflect' | 'translate';
 
 interface InteractiveGeometryProps {
@@ -44,10 +45,10 @@ const InteractiveGeometry: React.FC<InteractiveGeometryProps> = ({ onToolUsage }
   // Canvas'a çiz
   useEffect(() => {
     const canvas = canvasRef.current;
-    if (!canvas) return;
+    if (!canvas) {return;}
 
     const ctx = canvas.getContext('2d');
-    if (!ctx) return;
+    if (!ctx) {return;}
 
     // Canvas'ı temizle
     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -113,7 +114,7 @@ const InteractiveGeometry: React.FC<InteractiveGeometryProps> = ({ onToolUsage }
         if (shape.points.length >= 2) {
           const radius = Math.sqrt(
             Math.pow(shape.points[1].x - shape.points[0].x, 2) +
-            Math.pow(shape.points[1].y - shape.points[0].y, 2)
+            Math.pow(shape.points[1].y - shape.points[0].y, 2),
           );
           ctx.beginPath();
           ctx.arc(shape.points[0].x, shape.points[0].y, radius, 0, 2 * Math.PI);
@@ -149,7 +150,7 @@ const InteractiveGeometry: React.FC<InteractiveGeometryProps> = ({ onToolUsage }
 
   // Geçici şekil çiz
   const drawTemporaryShape = (ctx: CanvasRenderingContext2D) => {
-    if (!startPoint || !currentPoint) return;
+    if (!startPoint || !currentPoint) {return;}
 
     ctx.strokeStyle = '#2196F3';
     ctx.setLineDash([5, 5]);
@@ -163,23 +164,25 @@ const InteractiveGeometry: React.FC<InteractiveGeometryProps> = ({ onToolUsage }
         ctx.stroke();
         break;
 
-      case 'circle':
+      case 'circle': {
         const radius = Math.sqrt(
           Math.pow(currentPoint.x - startPoint.x, 2) +
-          Math.pow(currentPoint.y - startPoint.y, 2)
+          Math.pow(currentPoint.y - startPoint.y, 2),
         );
         ctx.beginPath();
         ctx.arc(startPoint.x, startPoint.y, radius, 0, 2 * Math.PI);
         ctx.stroke();
         break;
+      }
 
-      case 'rectangle':
+      case 'rectangle': {
         const width = currentPoint.x - startPoint.x;
         const height = currentPoint.y - startPoint.y;
         ctx.beginPath();
         ctx.rect(startPoint.x, startPoint.y, width, height);
         ctx.stroke();
         break;
+      }
     }
 
     ctx.setLineDash([]);
@@ -202,12 +205,12 @@ const InteractiveGeometry: React.FC<InteractiveGeometryProps> = ({ onToolUsage }
   // Mouse olayları
   const handleMouseDown = (e: React.MouseEvent<HTMLCanvasElement>) => {
     const canvas = canvasRef.current;
-    if (!canvas) return;
+    if (!canvas) {return;}
 
     const rect = canvas.getBoundingClientRect();
     const point: Point = {
       x: e.clientX - rect.left,
-      y: e.clientY - rect.top
+      y: e.clientY - rect.top,
     };
 
     if (['line', 'circle', 'rectangle'].includes(selectedTool)) {
@@ -218,29 +221,29 @@ const InteractiveGeometry: React.FC<InteractiveGeometryProps> = ({ onToolUsage }
   };
 
   const handleMouseMove = (e: React.MouseEvent<HTMLCanvasElement>) => {
-    if (!isDrawing) return;
+    if (!isDrawing) {return;}
 
     const canvas = canvasRef.current;
-    if (!canvas) return;
+    if (!canvas) {return;}
 
     const rect = canvas.getBoundingClientRect();
     const point: Point = {
       x: e.clientX - rect.left,
-      y: e.clientY - rect.top
+      y: e.clientY - rect.top,
     };
 
     setCurrentPoint(point);
   };
 
   const handleMouseUp = () => {
-    if (!isDrawing || !startPoint || !currentPoint) return;
+    if (!isDrawing || !startPoint || !currentPoint) {return;}
 
     // Yeni şekil oluştur
     const newShape: Shape = {
       id: `shape-${Date.now()}`,
       type: selectedTool as any,
       points: [startPoint, currentPoint],
-      color: '#2196F3'
+      color: '#2196F3',
     };
 
     setShapes([...shapes, newShape]);
@@ -264,14 +267,14 @@ const InteractiveGeometry: React.FC<InteractiveGeometryProps> = ({ onToolUsage }
     if (lastShape.points.length >= 2) {
       const length = Math.sqrt(
         Math.pow(lastShape.points[1].x - lastShape.points[0].x, 2) +
-        Math.pow(lastShape.points[1].y - lastShape.points[0].y, 2)
+        Math.pow(lastShape.points[1].y - lastShape.points[0].y, 2),
       );
 
       const newMeasurement: Measurement = {
         id: `measurement-${Date.now()}`,
         type: 'length',
         value: length,
-        points: lastShape.points
+        points: lastShape.points,
       };
 
       setMeasurements([...measurements, newMeasurement]);
@@ -288,11 +291,11 @@ const InteractiveGeometry: React.FC<InteractiveGeometryProps> = ({ onToolUsage }
         tool_type: selectedTool,
         shapes_created: shapes.map(s => ({ type: s.type, points: s.points.length })),
         measurements: measurements.map(m => ({ type: m.type, value: m.value })),
-        duration_seconds: duration
+        duration_seconds: duration,
       });
 
       alert('Kullanım kaydedildi!');
-      
+
       // Yeni çalışma için sıfırla
       setShapes([]);
       setMeasurements([]);

@@ -219,7 +219,7 @@ class HybridQuestionGenerator:
             )
 
             # Step 1: RAG - Get similar ÖSYM questions
-            logger.info(f"[RAG] Retrieving 3 ÖSYM examples...")
+            logger.info("[RAG] Retrieving 3 ÖSYM examples...")
             osym_examples = await self.osym_generator.get_similar_osym_questions(
                 subject=subject, exam_type=exam_type, count=3
             )
@@ -229,7 +229,7 @@ class HybridQuestionGenerator:
                 # Fallback: Continue without examples (zero-shot)
 
             # Step 2: Style Analysis
-            logger.info(f"[STYLE] Analyzing ÖSYM style patterns...")
+            logger.info("[STYLE] Analyzing ÖSYM style patterns...")
             style_guide = await self.osym_generator.analyze_osym_style(
                 subject=subject, exam_type=exam_type
             )
@@ -246,7 +246,7 @@ class HybridQuestionGenerator:
             )
 
             # Step 4: IRT Parameter Calculation
-            logger.info(f"[IRT] Calculating IRT parameters...")
+            logger.info("[IRT] Calculating IRT parameters...")
             irt_params = await self._calculate_irt_params(
                 question_text=ai_question["stem"],
                 difficulty=difficulty,
@@ -254,11 +254,11 @@ class HybridQuestionGenerator:
             )
 
             # Step 5: Turkish Morphology Analysis
-            logger.info(f"[MORPH] Analyzing Turkish morphology...")
+            logger.info("[MORPH] Analyzing Turkish morphology...")
             morphology = await self._analyze_turkish_morphology(ai_question["stem"])
 
             # Step 6: Quality Scoring
-            logger.info(f"[QUALITY] Calculating quality score...")
+            logger.info("[QUALITY] Calculating quality score...")
             quality_score = self._calculate_quality_score(
                 ai_question=ai_question,
                 style_guide=style_guide,
@@ -270,7 +270,7 @@ class HybridQuestionGenerator:
             if validate:
                 is_valid = self._validate_question(quality_score)
                 if not is_valid:
-                    logger.warning(f"[QUALITY] Question did not pass validation")
+                    logger.warning("[QUALITY] Question did not pass validation")
                     quality_score["is_valid"] = False
                 else:
                     quality_score["is_valid"] = True
@@ -278,7 +278,7 @@ class HybridQuestionGenerator:
             # Step 7.5: Wave 2B Evaluation (NEW)
             wave2b_evaluation = None
             if self.enable_wave2b and self._wave2b_evaluator:
-                logger.info(f"[WAVE2B] Running advanced quality evaluation...")
+                logger.info("[WAVE2B] Running advanced quality evaluation...")
                 wave2b_evaluation = await self._run_wave2b_evaluation(
                     question_dict={
                         "question_text": ai_question["stem"],
@@ -370,10 +370,10 @@ class HybridQuestionGenerator:
         """
 
         try:
-            logger.info(f"[ENSEMBLE] Starting multi-model generation...")
+            logger.info("[ENSEMBLE] Starting multi-model generation...")
 
             # Generate with Claude
-            logger.info(f"[ENSEMBLE] Generating with Claude...")
+            logger.info("[ENSEMBLE] Generating with Claude...")
             claude_question = await self.generate_osym_quality_question(
                 subject=subject,
                 topic=topic,
@@ -384,7 +384,7 @@ class HybridQuestionGenerator:
             )
 
             # Generate with GPT-4
-            logger.info(f"[ENSEMBLE] Generating with GPT-4...")
+            logger.info("[ENSEMBLE] Generating with GPT-4...")
             gpt4_question = await self.generate_osym_quality_question(
                 subject=subject,
                 topic=topic,
@@ -441,11 +441,11 @@ class HybridQuestionGenerator:
         has_finetuned_model = False
 
         if has_finetuned_model:
-            logger.info(f"[PROGRESSIVE] Using fine-tuned model...")
+            logger.info("[PROGRESSIVE] Using fine-tuned model...")
             # return await self.generate_with_finetuned(...)
             pass
         else:
-            logger.info(f"[PROGRESSIVE] Fallback to ÖSYM-guided generation...")
+            logger.info("[PROGRESSIVE] Fallback to ÖSYM-guided generation...")
             return await self.generate_osym_quality_question(
                 subject=subject, topic=topic, difficulty=difficulty, exam_type=exam_type
             )
@@ -653,7 +653,7 @@ async def example_usage():
         provider="claude",
     )
 
-    print(f"Generated Question:")
+    print("Generated Question:")
     print(f"Stem: {question['stem']}")
     print(f"Quality Score: {question['quality_score']}")
     print(f"ÖSYM Compliance: {question['osym_compliance_score']}")

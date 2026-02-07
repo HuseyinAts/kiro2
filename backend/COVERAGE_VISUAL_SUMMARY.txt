@@ -1,0 +1,212 @@
+================================================================================
+KIRO2 BACKEND - COVERAGE ANALYSIS REPORT
+algorithms, analytics, agents Modules
+Analysis Date: 2026-01-30
+================================================================================
+
+OVERALL COVERAGE STATUS
+--------------------------------------------------------------------------------
+Current Coverage:   13.05%
+Target Coverage:    60.00%
+Gap:               -46.95 percentage points
+Status:             CRITICAL - RED ALERT
+
+Progress: [###############.............................................] 21.7%
+          0%                  25%                  50%                  75%   100%
+
+
+MODULE BREAKDOWN
+--------------------------------------------------------------------------------
+
+algorithms (50 files, 6,789 statements)
+  Current: 18.0%   Target: 65.0%   Gap: -47.0%
+  Progress: [########........................] 27.7%
+  Files with 0% coverage: 18
+  Critical files: adaptive_learning.py, irt_morfoloji_service.py
+
+analytics (8 files, 2,516 statements)
+  Current: 0.0%    Target: 60.0%   Gap: -60.0%
+  Progress: [............................] 0.0%
+  Files with 0% coverage: 8 (ALL FILES!)
+  Critical files: exam_results_reporting.py, student_performance_engine.py
+
+agents (44 files, 5,907 statements)
+  Current: 37.0%   Target: 60.0%   Gap: -23.0%
+  Progress: [##################..........] 61.7%
+  Files with 0% coverage: 12
+  Critical files: study_buddy_agent.py, coordination/blackboard.py
+
+
+TOP 10 CRITICAL FILES (0% Coverage, Highest Priority)
+--------------------------------------------------------------------------------
+Rank  File                                              Stmts  Priority  Impact
+--------------------------------------------------------------------------------
+  1.  analytics/exam_results_reporting.py              574    P0        YKS reporting
+  2.  analytics/student_performance_engine.py          416    P0        Performance tracking
+  3.  agents/study_buddy_agent.py                      412    P0        AI tutor
+  4.  algorithms/multi_agent_blackboard.py             352    P0        Agent coordination
+  5.  algorithms/cultural_adaptation_engine.py         340    P0        Turkish adaptation
+  6.  algorithms/recommendation.py                     327    P0        Question recommender
+  7.  algorithms/irt_morfoloji_service.py              320    P0        Turkish IRT
+  8.  algorithms/adaptive_learning.py                  233    P0        Adaptive difficulty
+  9.  agents/coordination/blackboard.py                200    P1        Multi-agent system
+ 10.  agents/domain_experts/matematik_agent.py         169    P1        Math expert agent
+--------------------------------------------------------------------------------
+TOTAL CRITICAL STATEMENTS:                            3,343
+
+
+GOOD COVERAGE FILES (Keep These!)
+--------------------------------------------------------------------------------
+File                                                  Stmts  Coverage
+--------------------------------------------------------------------------------
+algorithms/irt_model.py                               115    92.17%  (Excellent!)
+agents/learning_path/agent.py                         180    82.78%  (Good)
+agents/learning_path/core/assessment_creator.py       137    70.80%  (Good)
+agents/learning_path/core/student_profiler.py         178    72.47%  (Good)
+algorithms/turkish_optimized_fsrs.py                  276    66.30%  (Acceptable)
+
+
+4-WEEK ACTION PLAN
+--------------------------------------------------------------------------------
+
+Week 1: IRT, Adaptive Learning, Analytics Foundation
+  Target Coverage: 22% (+9%)
+  Target Tests: 220
+  Focus: Critical algorithms, analytics foundation
+  Progress: [###########.....................] 36.7%
+
+Week 2: Agent Systems, Study Buddy, Domain Experts
+  Target Coverage: 35% (+13%)
+  Target Tests: 440 (cumulative)
+  Focus: Agent systems, coordination, domain experts
+  Progress: [##################..............] 58.3%
+
+Week 3: Turkish Features, Bionic Reading
+  Target Coverage: 48% (+13%)
+  Target Tests: 660 (cumulative)
+  Focus: Turkish NLP, cultural adaptation, bionic reading
+  Progress: [########################........] 80.0%
+
+Week 4: Gap Filling, Refactoring, Final Push
+  Target Coverage: 60% (+12%)
+  Target Tests: 850 (cumulative)
+  Focus: Fill remaining gaps, refactor, verify quality
+  Progress: [##############################..] 100.0%
+
+
+ESTIMATED EFFORT
+--------------------------------------------------------------------------------
+Total Tests Needed:        850 tests
+Total Assertions Needed:   ~2,550 assertions (3 per test)
+Estimated Hours:           152 hours (19 days @ 8h/day)
+Tests per Day:             ~45 tests
+Coverage Gain per Day:     ~2.5 percentage points
+
+
+IMMEDIATE ACTIONS (TODAY)
+--------------------------------------------------------------------------------
+1. [ ] Review this report with team
+2. [ ] Create test directory structure
+3. [ ] Write first test file: tests/unit/algorithms/test_irt_morfoloji.py
+4. [ ] Target: 50 tests for IRT morphology
+5. [ ] Run verification: ruff + mypy + pytest
+6. [ ] Update coverage_tracking.json
+
+
+NEXT FILES TO TEST (Priority Order)
+--------------------------------------------------------------------------------
+Day 1-2:  tests/unit/algorithms/test_irt_morfoloji.py (50 tests)
+Day 2-3:  tests/unit/algorithms/test_adaptive_learning.py (40 tests)
+Day 3-4:  tests/unit/analytics/test_student_performance.py (40 tests)
+Day 4-5:  tests/unit/analytics/test_exam_reporting.py (40 tests)
+Day 5:    tests/unit/algorithms/test_recommendation.py (50 tests)
+
+
+QUALITY GATES (MANDATORY)
+--------------------------------------------------------------------------------
+Before ANY commit:
+  [x] ruff check tests/ --fix
+  [x] mypy tests/ --ignore-missing-imports
+  [x] pytest -x --tb=short
+  [x] Coverage check >= target
+  [x] No reward hacking patterns (grep -r "assert True" tests/)
+
+
+TESTING STANDARDS
+--------------------------------------------------------------------------------
+DO:
+  - Write meaningful assertions
+  - Test edge cases with parametrize
+  - Mock external dependencies only
+  - Test Turkish-specific features (I/i, ğ/Ğ, etc.)
+  - Verify IRT parameters (difficulty: [-4, 4])
+  - Check ZPD boundaries (success prob: 15-85%)
+
+DON'T:
+  - assert True  (reward hacking!)
+  - pass  (empty test!)
+  - assert 1 == 1  (meaningless!)
+  - Skip tests without reason
+
+
+SUCCESS CRITERIA
+--------------------------------------------------------------------------------
+[ ] Global coverage >= 60%
+[ ] All P0 files >= 70% coverage
+[ ] All P1 files >= 60% coverage
+[ ] Zero reward hacking patterns
+[ ] All tests pass
+[ ] Type checking passes (mypy)
+[ ] Linting passes (ruff)
+[ ] Production ready
+
+
+DOCUMENTS CREATED
+--------------------------------------------------------------------------------
+1. COVERAGE_REPORT_ALGORITHMS_ANALYTICS_AGENTS.md
+   - Detailed line-by-line coverage analysis
+   - Module-specific breakdown
+   - Test writing guidelines
+
+2. TEST_COVERAGE_ACTION_PLAN.md
+   - 4-week implementation plan
+   - Daily task breakdown
+   - Test templates
+   - Verification checklist
+
+3. QUICK_TEST_REFERENCE.md
+   - Quick commands
+   - Test patterns
+   - Fixture templates
+   - Priority files
+
+4. COVERAGE_ANALYSIS_SUMMARY.md
+   - Executive summary
+   - Business risk assessment
+   - Impact analysis
+   - Metrics & tracking
+
+5. coverage_tracking.json
+   - Structured data for progress tracking
+   - Module statistics
+   - Top priority files
+   - Milestone targets
+
+6. COVERAGE_VISUAL_SUMMARY.txt
+   - This file
+   - Visual progress bars
+   - Quick reference
+
+
+CONTACT & REFERENCES
+--------------------------------------------------------------------------------
+Test Standards:      .claude/rules/testing.md
+Verification Rules:  .claude/rules/verification.md
+Project Config:      CLAUDE.md
+Test Worker Agent:   .claude/agents/kfc/spec-test.md
+
+
+================================================================================
+STATUS: ANALYSIS COMPLETE - READY FOR IMPLEMENTATION
+NEXT ACTION: Start writing tests for algorithms/irt_morfoloji_service.py
+================================================================================

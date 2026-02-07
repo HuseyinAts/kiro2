@@ -5,12 +5,13 @@
  * Extracted from LearningPathPage.tsx
  */
 
-import React from 'react'
-import { Box, Typography } from '@mui/material'
-import { PathNodeData } from '../../PathNode'
-import { LearningPathVisualizer } from '../../LearningPathVisualizer'
-import { NodeDetailsPanel } from '../NodeDetailsPanel'
-import { generateConnections } from '../../../../utils/learningPathHelpers'
+import { Box, Typography } from '@mui/material';
+import * as React from 'react';
+
+import { generateConnections } from '../../../../utils/learningPathHelpers';
+import { LearningPathVisualizer } from '../../LearningPathVisualizer';
+import { PathNodeData } from '../../PathNode';
+import { NodeDetailsPanel } from '../NodeDetailsPanel';
 
 export interface PathVisualizationTabProps {
   pathNodes: PathNodeData[]
@@ -34,7 +35,7 @@ export const PathVisualizationTab = React.memo<PathVisualizationTabProps>(({
   showNodeDetails,
   selectedNode,
   onNodeClick,
-  onCloseDetails
+  onCloseDetails,
 }) => {
   return (
     <Box>
@@ -60,10 +61,10 @@ export const PathVisualizationTab = React.memo<PathVisualizationTabProps>(({
         </Box>
       )}
     </Box>
-  )
-})
+  );
+});
 
 // Display name for React DevTools
-PathVisualizationTab.displayName = 'PathVisualizationTab'
+PathVisualizationTab.displayName = 'PathVisualizationTab';
 
-export default PathVisualizationTab
+export default PathVisualizationTab;

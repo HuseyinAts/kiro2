@@ -5,7 +5,8 @@
  * completion rates, engagement metrics, and trends
  */
 
-import React, { useState, useEffect } from 'react';
+import * as React from 'react';
+import {  useState, useEffect  } from 'react';
 import './VideoAnalyticsDashboard.css';
 
 export interface AnalyticsSummary {
@@ -31,12 +32,12 @@ export interface VideoAnalyticsDashboardProps {
 const API_BASE = '/api/video-analytics';
 
 export const VideoAnalyticsDashboard: React.FC<VideoAnalyticsDashboardProps> = ({
-  userId
+  userId,
 }) => {
   const [summary, setSummary] = useState<AnalyticsSummary | null>(null);
   const [loading, setLoading] = useState(true);
   const [selectedDate, setSelectedDate] = useState(
-    new Date().toISOString().split('T')[0]
+    new Date().toISOString().split('T')[0],
   );
 
   useEffect(() => {
@@ -47,7 +48,7 @@ export const VideoAnalyticsDashboard: React.FC<VideoAnalyticsDashboardProps> = (
     setLoading(true);
     try {
       const response = await fetch(
-        `${API_BASE}/summary/daily?user_id=${userId}&date=${selectedDate}`
+        `${API_BASE}/summary/daily?user_id=${userId}&date=${selectedDate}`,
       );
       const data = await response.json();
       setSummary({
@@ -63,7 +64,7 @@ export const VideoAnalyticsDashboard: React.FC<VideoAnalyticsDashboardProps> = (
         totalBookmarks: data.total_bookmarks,
         averagePlaybackSpeed: data.average_playback_speed,
         sourceBreakdown: data.source_breakdown,
-        subjectBreakdown: data.subject_breakdown
+        subjectBreakdown: data.subject_breakdown,
       });
     } catch (error) {
       console.error('Failed to load summary:', error);
@@ -83,8 +84,8 @@ export const VideoAnalyticsDashboard: React.FC<VideoAnalyticsDashboardProps> = (
   };
 
   const getCompletionColor = (rate: number): string => {
-    if (rate >= 80) return '#10b981';
-    if (rate >= 60) return '#f59e0b';
+    if (rate >= 80) {return '#10b981';}
+    if (rate >= 60) {return '#f59e0b';}
     return '#ef4444';
   };
 
@@ -210,7 +211,7 @@ export const VideoAnalyticsDashboard: React.FC<VideoAnalyticsDashboardProps> = (
                         className="breakdown-bar-fill"
                         style={{
                           width: `${(count / summary.totalVideosWatched) * 100}%`,
-                          background: getSourceColor(source)
+                          background: getSourceColor(source),
                         }}
                       />
                     </div>
@@ -233,7 +234,7 @@ export const VideoAnalyticsDashboard: React.FC<VideoAnalyticsDashboardProps> = (
                       <div
                         className="breakdown-bar-fill"
                         style={{
-                          width: `${(count / summary.totalVideosWatched) * 100}%`
+                          width: `${(count / summary.totalVideosWatched) * 100}%`,
                         }}
                       />
                     </div>
@@ -299,7 +300,7 @@ function getSourceName(source: string): string {
     youtube: 'YouTube',
     eba: 'EBA TV',
     khan: 'Khan Academy',
-    vimeo: 'Vimeo'
+    vimeo: 'Vimeo',
   };
   return names[source] || source;
 }
@@ -309,7 +310,7 @@ function getSourceColor(source: string): string {
     youtube: '#ff0000',
     eba: '#10b981',
     khan: '#14b8a6',
-    vimeo: '#06b6d4'
+    vimeo: '#06b6d4',
   };
   return colors[source] || '#6b7280';
 }

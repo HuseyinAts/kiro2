@@ -8,9 +8,9 @@ from datetime import datetime
 from enum import Enum
 from typing import Any, Dict, List, Optional
 
-from pydantic import BaseModel, Field, HttpUrl, field_validator
+from pydantic import BaseModel, ConfigDict, Field, HttpUrl, field_validator
 
-from models.question_generation import DifficultyLevel
+from .question_generation import DifficultyLevel
 
 
 class EBAContentCategory(str, Enum):
@@ -62,8 +62,7 @@ class EBACurriculumAlignment(BaseModel):
     suggestions: List[str] = Field(default_factory=list, description="Öneriler")
     curriculum_coverage: str = Field(..., description="Müfredat kapsama oranı")
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class EBAVideoMetadata(BaseModel):
@@ -128,8 +127,7 @@ class EBAVideoMetadata(BaseModel):
         ]
         return [feature for feature in v if feature in valid_features]
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class EBAContentCollection(BaseModel):
@@ -160,8 +158,7 @@ class EBAContentCollection(BaseModel):
             return len(values["videos"])
         return v
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class EBAVideoSearchRequest(BaseModel):
@@ -182,8 +179,7 @@ class EBAVideoSearchRequest(BaseModel):
         False, description="Erişilebilirlik gerekli mi"
     )
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class EBAVideoSearchResponse(BaseModel):
@@ -199,8 +195,7 @@ class EBAVideoSearchResponse(BaseModel):
     )
     search_time_ms: float = Field(0.0, ge=0, description="Arama süresi (ms)")
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class EBAContentRecommendationRequest(BaseModel):
@@ -216,8 +211,7 @@ class EBAContentRecommendationRequest(BaseModel):
         10, ge=1, le=50, description="Maksimum öneri sayısı"
     )
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class EBAContentRecommendationResponse(BaseModel):
@@ -237,8 +231,7 @@ class EBAContentRecommendationResponse(BaseModel):
         default_factory=datetime.now, description="Oluşturma zamanı"
     )
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class EBAContentStatistics(BaseModel):
@@ -261,8 +254,7 @@ class EBAContentStatistics(BaseModel):
     )
     cache_status: str = Field("empty", description="Cache durumu")
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class EBAVideoQualityAnalysis(BaseModel):
@@ -294,8 +286,7 @@ class EBAVideoQualityAnalysis(BaseModel):
     )
     analyzer_version: str = Field("1.0", description="Analiz algoritması versiyonu")
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class EBAContentModerationRequest(BaseModel):
@@ -307,8 +298,7 @@ class EBAContentModerationRequest(BaseModel):
     reason: Optional[str] = Field(None, description="Moderasyon nedeni")
     notes: Optional[str] = Field(None, max_length=500, description="Moderatör notları")
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class EBAContentModerationResponse(BaseModel):
@@ -322,8 +312,7 @@ class EBAContentModerationResponse(BaseModel):
     )
     action_taken: str = Field(..., description="Alınan aksiyon")
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class EBAContentUsageAnalytics(BaseModel):
@@ -370,5 +359,4 @@ class EBAContentUsageAnalytics(BaseModel):
         default_factory=datetime.now, description="Son güncelleme"
     )
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)

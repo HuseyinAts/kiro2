@@ -13,11 +13,25 @@
  * - Accessibility attributes
  */
 
-import React from 'react';
+import * as React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import AccessibleMathFormula from './AccessibleMathFormula';
+import { AccessibilityProvider } from './AccessibilityProvider';
+
+// Test wrapper with AccessibilityProvider
+const renderWithProvider = (ui: React.ReactElement) => {
+  return render(<AccessibilityProvider>{ui}</AccessibilityProvider>);
+};
+
+// Mock sanitize utility
+vi.mock('../../utils/sanitize', () => ({
+  sanitizeMathML: (content: string) => content, // Pass through for tests
+  default: {
+    sanitizeMathML: (content: string) => content,
+  },
+}));
 
 // Mock hooks
 vi.mock('../../hooks/useScreenReader', () => ({
@@ -86,7 +100,7 @@ vi.mock('@mui/material', async () => {
 
 describe('AccessibleMathFormula', () => {
   const mockDescription = 'x kare artı 2x artı 1 eşittir 0';
-  
+
   beforeEach(() => {
     // Mock clipboard API
     Object.assign(navigator, {
@@ -107,11 +121,12 @@ describe('AccessibleMathFormula', () => {
 
   afterEach(() => {
     vi.clearAllMocks();
+    vi.restoreAllMocks();
   });
 
   describe('Rendering', () => {
     it('should render with LaTeX formula', () => {
-      render(
+      renderWithProvider(
         <AccessibleMathFormula
           latex="x^2"
           description={mockDescription}
@@ -123,7 +138,7 @@ describe('AccessibleMathFormula', () => {
 
     it('should render with MathML formula', () => {
       const mathml = '<math><mi>x</mi><mo>+</mo><mn>1</mn></math>';
-      render(
+      renderWithProvider(
         <AccessibleMathFormula
           mathml={mathml}
           description={mockDescription}
@@ -134,7 +149,7 @@ describe('AccessibleMathFormula', () => {
     });
 
     it('should render with label', () => {
-      render(
+      renderWithProvider(
         <AccessibleMathFormula
           latex="x^2"
           description={mockDescription}
@@ -146,7 +161,7 @@ describe('AccessibleMathFormula', () => {
     });
 
     it('should render in block display mode', () => {
-      render(
+      renderWithProvider(
         <AccessibleMathFormula
           latex="x^2"
           description={mockDescription}
@@ -159,7 +174,7 @@ describe('AccessibleMathFormula', () => {
     });
 
     it('should render in inline display mode', () => {
-      render(
+      renderWithProvider(
         <AccessibleMathFormula
           latex="x^2"
           description={mockDescription}
@@ -228,7 +243,7 @@ describe('AccessibleMathFormula', () => {
 
   describe('Accessibility Attributes', () => {
     it('should have proper ARIA attributes', () => {
-      render(
+      renderWithProvider(
         <AccessibleMathFormula
           latex="x^2"
           description={mockDescription}
@@ -244,7 +259,7 @@ describe('AccessibleMathFormula', () => {
     });
 
     it('should have hidden description for screen readers', () => {
-      render(
+      renderWithProvider(
         <AccessibleMathFormula
           latex="x^2"
           description={mockDescription}
@@ -273,7 +288,7 @@ describe('AccessibleMathFormula', () => {
 
   describe('Zoom Functionality', () => {
     it('should zoom in when zoom in button is clicked', async () => {
-      render(
+      renderWithProvider(
         <AccessibleMathFormula
           latex="x^2"
           description={mockDescription}
@@ -289,7 +304,7 @@ describe('AccessibleMathFormula', () => {
     });
 
     it('should zoom out when zoom out button is clicked', async () => {
-      render(
+      renderWithProvider(
         <AccessibleMathFormula
           latex="x^2"
           description={mockDescription}
@@ -305,7 +320,7 @@ describe('AccessibleMathFormula', () => {
     });
 
     it('should disable zoom in at maximum zoom', async () => {
-      render(
+      renderWithProvider(
         <AccessibleMathFormula
           latex="x^2"
           description={mockDescription}
@@ -319,7 +334,7 @@ describe('AccessibleMathFormula', () => {
     });
 
     it('should disable zoom out at minimum zoom', async () => {
-      render(
+      renderWithProvider(
         <AccessibleMathFormula
           latex="x^2"
           description={mockDescription}
@@ -335,7 +350,7 @@ describe('AccessibleMathFormula', () => {
 
   describe('Audio Functionality', () => {
     it('should play audio when audio button is clicked', async () => {
-      render(
+      renderWithProvider(
         <AccessibleMathFormula
           latex="x^2"
           description={mockDescription}
@@ -351,7 +366,7 @@ describe('AccessibleMathFormula', () => {
     });
 
     it('should not render audio button when disabled', () => {
-      render(
+      renderWithProvider(
         <AccessibleMathFormula
           latex="x^2"
           description={mockDescription}
@@ -364,7 +379,7 @@ describe('AccessibleMathFormula', () => {
     });
 
     it('should disable audio button while speaking', async () => {
-      render(
+      renderWithProvider(
         <AccessibleMathFormula
           latex="x^2"
           description={mockDescription}
@@ -385,7 +400,7 @@ describe('AccessibleMathFormula', () => {
 
   describe('Copy Functionality', () => {
     it('should copy formula when copy button is clicked', async () => {
-      render(
+      renderWithProvider(
         <AccessibleMathFormula
           latex="x^2"
           description={mockDescription}
@@ -401,7 +416,7 @@ describe('AccessibleMathFormula', () => {
     });
 
     it('should not render copy button when disabled', () => {
-      render(
+      renderWithProvider(
         <AccessibleMathFormula
           latex="x^2"
           description={mockDescription}
@@ -416,7 +431,7 @@ describe('AccessibleMathFormula', () => {
 
   describe('Keyboard Navigation', () => {
     it('should zoom in with + key', async () => {
-      render(
+      renderWithProvider(
         <AccessibleMathFormula
           latex="x^2"
           description={mockDescription}
@@ -433,7 +448,7 @@ describe('AccessibleMathFormula', () => {
     });
 
     it('should zoom out with - key', async () => {
-      render(
+      renderWithProvider(
         <AccessibleMathFormula
           latex="x^2"
           description={mockDescription}
@@ -450,7 +465,7 @@ describe('AccessibleMathFormula', () => {
     });
 
     it('should trigger audio with s key', async () => {
-      render(
+      renderWithProvider(
         <AccessibleMathFormula
           latex="x^2"
           description={mockDescription}
@@ -467,7 +482,7 @@ describe('AccessibleMathFormula', () => {
     });
 
     it('should copy with Ctrl+C', async () => {
-      render(
+      renderWithProvider(
         <AccessibleMathFormula
           latex="x^2"
           description={mockDescription}
@@ -486,7 +501,7 @@ describe('AccessibleMathFormula', () => {
     });
 
     it('should toggle description with i key', async () => {
-      render(
+      renderWithProvider(
         <AccessibleMathFormula
           latex="x^2"
           description={mockDescription}
@@ -508,7 +523,7 @@ describe('AccessibleMathFormula', () => {
 
   describe('Description Toggle', () => {
     it('should show description when info button is clicked', async () => {
-      render(
+      renderWithProvider(
         <AccessibleMathFormula
           latex="x^2"
           description={mockDescription}
@@ -525,7 +540,7 @@ describe('AccessibleMathFormula', () => {
     });
 
     it('should hide description when info button is clicked again', async () => {
-      render(
+      renderWithProvider(
         <AccessibleMathFormula
           latex="x^2"
           description={mockDescription}
@@ -550,7 +565,7 @@ describe('AccessibleMathFormula', () => {
 
   describe('Control Buttons Visibility', () => {
     it('should show control buttons in block display mode', () => {
-      render(
+      renderWithProvider(
         <AccessibleMathFormula
           latex="x^2"
           description={mockDescription}
@@ -566,7 +581,7 @@ describe('AccessibleMathFormula', () => {
     });
 
     it('should not show control buttons in inline display mode', () => {
-      render(
+      renderWithProvider(
         <AccessibleMathFormula
           latex="x^2"
           description={mockDescription}
@@ -581,7 +596,7 @@ describe('AccessibleMathFormula', () => {
 
   describe('Keyboard Shortcuts Info', () => {
     it('should show keyboard shortcuts info in block mode with keyboard navigation enabled', () => {
-      render(
+      renderWithProvider(
         <AccessibleMathFormula
           latex="x^2"
           description={mockDescription}
@@ -595,7 +610,7 @@ describe('AccessibleMathFormula', () => {
 
   describe('Button Minimum Touch Target Size', () => {
     it('should have minimum 44x44 touch target for all buttons', () => {
-      render(
+      renderWithProvider(
         <AccessibleMathFormula
           latex="x^2"
           description={mockDescription}
@@ -628,7 +643,7 @@ describe('AccessibleMathFormula', () => {
         },
       });
 
-      render(
+      renderWithProvider(
         <AccessibleMathFormula
           latex="x^2"
           description={mockDescription}
@@ -651,7 +666,7 @@ describe('AccessibleMathFormula', () => {
       // @ts-ignore
       delete window.speechSynthesis;
 
-      render(
+      renderWithProvider(
         <AccessibleMathFormula
           latex="x^2"
           description={mockDescription}

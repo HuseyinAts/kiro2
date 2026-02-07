@@ -1,0 +1,62 @@
+# KIRO2 Kibana Configuration
+# Log visualization for YKS AI Education Platform
+
+# Server settings
+server.name: kiro2-kibana
+server.host: "0.0.0.0"
+server.port: 5601
+server.publicBaseUrl: "http://localhost:5601"
+
+# Elasticsearch connection
+elasticsearch.hosts: ["http://elasticsearch:9200"]
+elasticsearch.requestTimeout: 30000
+elasticsearch.shardTimeout: 30000
+
+# Kibana index
+kibana.index: ".kibana"
+kibana.defaultAppId: "discover"
+
+# Security (disabled for development)
+xpack.security.enabled: false
+
+# Monitoring (disabled for standalone)
+xpack.monitoring.ui.enabled: false
+
+# Reporting
+xpack.reporting.enabled: true
+xpack.reporting.kibanaServer.hostname: localhost
+
+# Logging
+logging.root.level: info
+logging.appenders.default:
+  type: console
+  layout:
+    type: json
+
+# i18n - Turkish language support
+i18n.locale: "tr"
+
+# Dashboard settings
+uiSettings.overrides:
+  defaultIndex: "kiro2-logs-*"
+  dateFormat: "DD.MM.YYYY HH:mm:ss"
+  dateFormat:tz: "Europe/Istanbul"
+  theme:darkMode: false
+
+# Discover settings
+discover.searchFields: ["event", "message", "log_level", "service_name", "correlation_id"]
+
+# Maps (disabled to reduce memory)
+xpack.maps.enabled: false
+
+# APM (disabled)
+apm_oss.enabled: false
+
+# Canvas (disabled to reduce memory)
+xpack.canvas.enabled: false
+
+# Graph (disabled)
+xpack.graph.enabled: false
+
+# ML (disabled for standalone)
+xpack.ml.enabled: false

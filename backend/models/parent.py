@@ -7,8 +7,8 @@ Türkiye Üniversite Sınavları Hazırlık Platformu için veli takip sistemi
 from datetime import datetime
 from typing import List, Optional
 
-from models.database import Base
-from pydantic import BaseModel, Field
+from .database import Base
+from pydantic import BaseModel, ConfigDict, Field
 from sqlalchemy import (
     Boolean,
     Column,
@@ -123,8 +123,7 @@ class ParentChildRelationResponse(BaseModel):
     created_at: datetime
     approved_at: Optional[datetime]
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class ChildPerformanceData(BaseModel):
@@ -183,8 +182,7 @@ class ParentNotificationResponse(BaseModel):
     created_at: datetime
     read_at: Optional[datetime]
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class ParentDashboardData(BaseModel):

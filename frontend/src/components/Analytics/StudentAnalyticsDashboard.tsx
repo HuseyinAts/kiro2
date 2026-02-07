@@ -3,44 +3,38 @@
  * Öğrenci performans analizi ve raporlama bileşeni
  */
 
-import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
-import { Button } from '../ui/button';
-import { Badge } from '../ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs';
-import { 
-  BarChart, 
-  Bar, 
-  XAxis, 
-  YAxis, 
-  CartesianGrid, 
-  Tooltip, 
+import {
+  Clock,
+  Target,
+  BookOpen,
+  Download,
+  BarChart3,
+  Activity,
+} from 'lucide-react';
+import * as React from 'react';
+import {  useState, useEffect  } from 'react';
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
   ResponsiveContainer,
   LineChart,
   Line,
-  PieChart,
-  Pie,
-  Cell,
   RadarChart,
   PolarGrid,
   PolarAngleAxis,
   PolarRadiusAxis,
-  Radar
+  Radar,
 } from 'recharts';
-import { 
-  TrendingUp, 
-  TrendingDown, 
-  Clock, 
-  Target, 
-  BookOpen, 
-  Award,
-  Download,
-  Calendar,
-  BarChart3,
-  PieChart as PieChartIcon,
-  Activity
-} from 'lucide-react';
+
 import { analyticsService, StudentAnalytics, ExportRequest } from '../../services/analyticsService';
+import { Badge } from '../ui/badge';
+import { Button } from '../ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs';
 
 interface StudentAnalyticsDashboardProps {
   studentId: string;
@@ -49,7 +43,7 @@ interface StudentAnalyticsDashboardProps {
 
 const StudentAnalyticsDashboard: React.FC<StudentAnalyticsDashboardProps> = ({
   studentId,
-  className = ''
+  className = '',
 }) => {
   const [analytics, setAnalytics] = useState<StudentAnalytics | null>(null);
   const [loading, setLoading] = useState(true);
@@ -73,7 +67,7 @@ const StudentAnalyticsDashboard: React.FC<StudentAnalyticsDashboardProps> = ({
         studentId,
         startDate,
         endDate,
-        includeDetailed
+        includeDetailed,
       );
 
       setAnalytics(data);
@@ -97,8 +91,8 @@ const StudentAnalyticsDashboard: React.FC<StudentAnalyticsDashboardProps> = ({
           student_id: studentId,
           start_date: startDate,
           end_date: endDate,
-          include_detailed: includeDetailed
-        }
+          include_detailed: includeDetailed,
+        },
       };
 
       let response;
@@ -107,21 +101,21 @@ const StudentAnalyticsDashboard: React.FC<StudentAnalyticsDashboardProps> = ({
         analyticsService.downloadExportFile(
           response.data.pdf_content!,
           response.data.filename,
-          'pdf'
+          'pdf',
         );
       } else if (format === 'excel') {
         response = await analyticsService.exportToExcel(exportRequest);
         analyticsService.downloadExportFile(
           response.data.excel_content!,
           response.data.filename,
-          'excel'
+          'excel',
         );
       } else {
         response = await analyticsService.exportToCsv(exportRequest);
         analyticsService.downloadExportFile(
           response.data.csv_content!,
           response.data.filename,
-          'csv'
+          'csv',
         );
       }
     } catch (err) {
@@ -133,20 +127,20 @@ const StudentAnalyticsDashboard: React.FC<StudentAnalyticsDashboardProps> = ({
 
   // Konu performans verilerini hazırla
   const prepareSubjectData = () => {
-    if (!analytics?.subject_analysis?.subjects) return [];
+    if (!analytics?.subject_analysis?.subjects) {return [];}
 
     return Object.entries(analytics.subject_analysis.subjects).map(([subject, data]) => ({
       subject,
       accuracy: Math.round(data.accuracy_rate * 100),
       questions: data.questions_solved,
       hours: data.time_spent_hours,
-      trend: data.improvement_trend
+      trend: data.improvement_trend,
     }));
   };
 
   // Öğrenme stili radar chart verisi
   const prepareLearningStyleData = () => {
-    if (!analytics?.learning_style) return [];
+    if (!analytics?.learning_style) {return [];}
 
     const vark = analytics.learning_style.vark_profile;
     const felder = analytics.learning_style.felder_silverman_profile;
@@ -157,13 +151,13 @@ const StudentAnalyticsDashboard: React.FC<StudentAnalyticsDashboardProps> = ({
       { style: 'Okuma', value: Math.round(vark.reading * 100) },
       { style: 'Kinestetik', value: Math.round(vark.kinesthetic * 100) },
       { style: 'Aktif', value: Math.round(felder.active_reflective * 100) },
-      { style: 'Görsel/Sözel', value: Math.round(felder.visual_verbal * 100) }
+      { style: 'Görsel/Sözel', value: Math.round(felder.visual_verbal * 100) },
     ];
   };
 
   // Sınav performans trend verisi
   const prepareExamTrendData = () => {
-    if (!analytics?.exam_performance) return [];
+    if (!analytics?.exam_performance) {return [];}
 
     // Mock trend data - gerçek implementasyonda API'den gelecek
     return [
@@ -171,7 +165,7 @@ const StudentAnalyticsDashboard: React.FC<StudentAnalyticsDashboardProps> = ({
       { exam: 'Deneme 2', score: 72, date: '2024-01-22' },
       { exam: 'Deneme 3', score: 68, date: '2024-01-29' },
       { exam: 'Deneme 4', score: 78, date: '2024-02-05' },
-      { exam: 'Deneme 5', score: 82, date: '2024-02-12' }
+      { exam: 'Deneme 5', score: 82, date: '2024-02-12' },
     ];
   };
 
@@ -222,12 +216,12 @@ const StudentAnalyticsDashboard: React.FC<StudentAnalyticsDashboardProps> = ({
         <div>
           <h2 className="text-2xl font-bold text-gray-900">Öğrenci Analytics</h2>
           <p className="text-gray-600">
-            Öğrenci ID: {analytics.student_id} | 
-            Dönem: {new Date(analytics.period.start_date).toLocaleDateString('tr-TR')} - 
+            Öğrenci ID: {analytics.student_id} |
+            Dönem: {new Date(analytics.period.start_date).toLocaleDateString('tr-TR')} -
             {new Date(analytics.period.end_date).toLocaleDateString('tr-TR')}
           </p>
         </div>
-        
+
         <div className="flex items-center space-x-2">
           {/* Tarih aralığı seçici */}
           <select
@@ -399,7 +393,7 @@ const StudentAnalyticsDashboard: React.FC<StudentAnalyticsDashboardProps> = ({
                     ))}
                   </div>
                 </div>
-                
+
                 <div>
                   <h4 className="font-semibold text-red-600 mb-2">Zayıf Konular</h4>
                   <div className="flex flex-wrap gap-2">
@@ -492,7 +486,7 @@ const StudentAnalyticsDashboard: React.FC<StudentAnalyticsDashboardProps> = ({
               </CardHeader>
               <CardContent className="space-y-4">
                 <div>
-                  <p className="font-semibold">Hibrit Kod: 
+                  <p className="font-semibold">Hibrit Kod:
                     <span className="ml-2 px-2 py-1 bg-blue-100 text-blue-800 rounded">
                       {analytics.learning_style.hybrid_code}
                     </span>
@@ -533,10 +527,10 @@ const StudentAnalyticsDashboard: React.FC<StudentAnalyticsDashboardProps> = ({
                     <XAxis dataKey="exam" />
                     <YAxis />
                     <Tooltip />
-                    <Line 
-                      type="monotone" 
-                      dataKey="score" 
-                      stroke="#3B82F6" 
+                    <Line
+                      type="monotone"
+                      dataKey="score"
+                      stroke="#3B82F6"
                       strokeWidth={2}
                       dot={{ fill: '#3B82F6', strokeWidth: 2, r: 4 }}
                     />

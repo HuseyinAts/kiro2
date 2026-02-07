@@ -10,13 +10,15 @@
  * - Auto-refresh capability
  */
 
-import React, { useState } from 'react';
+import * as React from 'react';
+import {  useState  } from 'react';
+
 import {
   usePerformanceMonitor,
   useLLMPoolStats,
   useVectorStoreStats,
   useCacheStats,
-  useRAGPipelineStats
+  useRAGPipelineStats,
 } from '../hooks/usePerformanceMonitor';
 
 interface PerformanceDashboardProps {
@@ -26,13 +28,13 @@ interface PerformanceDashboardProps {
 
 export const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({
   autoRefresh = true,
-  refreshInterval = 10000
+  refreshInterval = 10000,
 }) => {
   const [showDetails, setShowDetails] = useState<string | null>(null);
 
-  const { metrics, isLoading: metricsLoading, refresh: refreshMetrics } = usePerformanceMonitor(
+  const { metrics: _metrics, isLoading: metricsLoading, refresh: refreshMetrics } = usePerformanceMonitor(
     autoRefresh,
-    refreshInterval
+    refreshInterval,
   );
 
   const { stats: llmStats, refresh: refreshLLM } = useLLMPoolStats(autoRefresh, 5000);
@@ -46,7 +48,7 @@ export const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({
       refreshLLM(),
       refreshVector(),
       refreshCache(),
-      refreshRAG()
+      refreshRAG(),
     ]);
   };
 
@@ -61,8 +63,8 @@ export const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({
   };
 
   const getPerformanceColor = (value: number, thresholds: { good: number; warning: number }) => {
-    if (value >= thresholds.good) return '#4caf50';
-    if (value >= thresholds.warning) return '#ff9800';
+    if (value >= thresholds.good) {return '#4caf50';}
+    if (value >= thresholds.warning) {return '#ff9800';}
     return '#f44336';
   };
 
@@ -354,21 +356,21 @@ const styles: Record<string, React.CSSProperties> = {
   container: {
     padding: '20px',
     maxWidth: '1400px',
-    margin: '0 auto'
+    margin: '0 auto',
   },
 
   header: {
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: '24px'
+    marginBottom: '24px',
   },
 
   title: {
     margin: 0,
     fontSize: '24px',
     fontWeight: 600,
-    color: '#333'
+    color: '#333',
   },
 
   refreshButton: {
@@ -380,14 +382,14 @@ const styles: Record<string, React.CSSProperties> = {
     fontSize: '14px',
     fontWeight: 500,
     cursor: 'pointer',
-    transition: 'all 0.2s'
+    transition: 'all 0.2s',
   },
 
   cardGrid: {
     display: 'grid',
     gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
     gap: '20px',
-    marginBottom: '24px'
+    marginBottom: '24px',
   },
 
   card: {
@@ -397,24 +399,24 @@ const styles: Record<string, React.CSSProperties> = {
     borderRadius: '8px',
     cursor: 'pointer',
     transition: 'all 0.2s',
-    boxShadow: '0 2px 4px rgba(0,0,0,0.05)'
+    boxShadow: '0 2px 4px rgba(0,0,0,0.05)',
   },
 
   cardHeader: {
     display: 'flex',
     alignItems: 'center',
     gap: '12px',
-    marginBottom: '16px'
+    marginBottom: '16px',
   },
 
   cardIcon: {
-    fontSize: '24px'
+    fontSize: '24px',
   },
 
   cardTitle: {
     fontSize: '14px',
     fontWeight: 600,
-    color: '#555'
+    color: '#555',
   },
 
   cardMetric: {
@@ -424,27 +426,27 @@ const styles: Record<string, React.CSSProperties> = {
     marginBottom: '16px',
     padding: '16px',
     backgroundColor: '#f8f9fa',
-    borderRadius: '6px'
+    borderRadius: '6px',
   },
 
   metricValue: {
     fontSize: '32px',
     fontWeight: 700,
     color: '#1976d2',
-    marginBottom: '4px'
+    marginBottom: '4px',
   },
 
   metricLabel: {
     fontSize: '12px',
     color: '#666',
     textTransform: 'uppercase',
-    letterSpacing: '0.5px'
+    letterSpacing: '0.5px',
   },
 
   cardStats: {
     display: 'grid',
     gridTemplateColumns: 'repeat(3, 1fr)',
-    gap: '12px'
+    gap: '12px',
   },
 
   stat: {
@@ -453,19 +455,19 @@ const styles: Record<string, React.CSSProperties> = {
     alignItems: 'center',
     padding: '8px',
     backgroundColor: '#fafafa',
-    borderRadius: '4px'
+    borderRadius: '4px',
   },
 
   statLabel: {
     fontSize: '11px',
     color: '#666',
-    marginBottom: '4px'
+    marginBottom: '4px',
   },
 
   statValue: {
     fontSize: '16px',
     fontWeight: 600,
-    color: '#333'
+    color: '#333',
   },
 
   details: {
@@ -473,7 +475,7 @@ const styles: Record<string, React.CSSProperties> = {
     padding: '12px',
     backgroundColor: '#f8f9fa',
     borderRadius: '6px',
-    borderTop: '2px solid #e0e0e0'
+    borderTop: '2px solid #e0e0e0',
   },
 
   detailRow: {
@@ -481,13 +483,13 @@ const styles: Record<string, React.CSSProperties> = {
     justifyContent: 'space-between',
     padding: '8px 0',
     fontSize: '13px',
-    borderBottom: '1px solid #e0e0e0'
+    borderBottom: '1px solid #e0e0e0',
   },
 
   cacheActions: {
     display: 'flex',
     gap: '8px',
-    marginTop: '12px'
+    marginTop: '12px',
   },
 
   actionButton: {
@@ -498,27 +500,27 @@ const styles: Record<string, React.CSSProperties> = {
     border: 'none',
     borderRadius: '4px',
     fontSize: '12px',
-    cursor: 'pointer'
+    cursor: 'pointer',
   },
 
   targets: {
     padding: '20px',
     backgroundColor: '#fff',
     border: '1px solid #ddd',
-    borderRadius: '8px'
+    borderRadius: '8px',
   },
 
   targetsTitle: {
     margin: '0 0 16px 0',
     fontSize: '16px',
     fontWeight: 600,
-    color: '#333'
+    color: '#333',
   },
 
   targetGrid: {
     display: 'grid',
     gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-    gap: '12px'
+    gap: '12px',
   },
 
   targetItem: {
@@ -526,17 +528,17 @@ const styles: Record<string, React.CSSProperties> = {
     justifyContent: 'space-between',
     padding: '12px',
     backgroundColor: '#f8f9fa',
-    borderRadius: '6px'
+    borderRadius: '6px',
   },
 
   targetLabel: {
     fontSize: '13px',
-    color: '#555'
+    color: '#555',
   },
 
   targetValue: {
     fontSize: '13px',
     fontWeight: 600,
-    color: '#1976d2'
-  }
+    color: '#1976d2',
+  },
 };

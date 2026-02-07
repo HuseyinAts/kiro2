@@ -23,13 +23,13 @@ Usage:
 
 import io
 import math
-from typing import Dict, List, Optional, Literal, Any, Tuple
+from typing import Dict, Optional, Literal, Any
 import matplotlib
 
 matplotlib.use("Agg")  # Non-interactive backend
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
-from matplotlib.patches import FancyBboxPatch, Wedge, Polygon as MplPolygon
+from matplotlib.patches import Wedge, Polygon as MplPolygon
 import numpy as np
 
 # OSYM Style Configuration

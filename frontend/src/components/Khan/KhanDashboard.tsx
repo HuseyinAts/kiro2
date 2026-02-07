@@ -3,7 +3,8 @@
  * OAuth connection, content browsing, progress tracking, badges
  */
 
-import React, { useState, useEffect } from 'react';
+import * as React from 'react';
+import {  useState, useEffect  } from 'react';
 import './KhanDashboard.css';
 
 export interface KhanContent {
@@ -20,7 +21,7 @@ export interface KhanContent {
 export interface KhanProgress {
   content_id: string;
   content_title: string;
-  energy_points: int;
+  energy_points: number;
   proficiency_level?: string;
   video_completed: boolean;
 }
@@ -38,7 +39,7 @@ export interface KhanDashboardProps {
 }
 
 export const KhanDashboard: React.FC<KhanDashboardProps> = ({
-  apiBaseUrl = '/api/v1/khan'
+  apiBaseUrl = '/api/v1/khan',
 }) => {
   const [isConnected, setIsConnected] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(true);

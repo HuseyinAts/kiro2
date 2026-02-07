@@ -1,15 +1,19 @@
 /**
  * Animasyonlu Matematik İfadesi Bileşeni
  * Requirements: REQ-51.27 (Değişen kısmı vurgulama)
- * 
+ *
  * Bu bileşen:
  * - Matematiksel ifadelerdeki değişiklikleri vurgular
  * - Smooth transitions ile değişimleri gösterir
  * - Highlight changes (değişiklikleri vurgulama)
  */
 
-import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import * as React from 'react';
+import {  useEffect, useState  } from 'react';
+
+import { sanitizeHTML } from '../../utils/sanitize';
+
 import { useAnimationContext } from './AnimationController';
 
 interface MathExpressionAnimatedProps {
@@ -23,7 +27,7 @@ const MathExpressionAnimated: React.FC<MathExpressionAnimatedProps> = ({
   expression,
   previousExpression,
   highlightColor = '#FCD34D', // Yellow-300
-  className = ''
+  className = '',
 }) => {
   const { enabled, getTransitionConfig } = useAnimationContext();
   const [showHighlight, setShowHighlight] = useState(false);
@@ -49,11 +53,11 @@ const MathExpressionAnimated: React.FC<MathExpressionAnimatedProps> = ({
   // Değişen kısımları bul (basit implementasyon)
   const findChangedParts = (prev: string, current: string): string[] => {
     const changed: string[] = [];
-    
+
     // Basit karakter karşılaştırması
     const maxLen = Math.max(prev.length, current.length);
     let changeStart = -1;
-    
+
     for (let i = 0; i < maxLen; i++) {
       if (prev[i] !== current[i]) {
         if (changeStart === -1) {
@@ -64,11 +68,11 @@ const MathExpressionAnimated: React.FC<MathExpressionAnimatedProps> = ({
         changeStart = -1;
       }
     }
-    
+
     if (changeStart !== -1) {
       changed.push(current.substring(changeStart));
     }
-    
+
     return changed;
   };
 
@@ -82,7 +86,7 @@ const MathExpressionAnimated: React.FC<MathExpressionAnimatedProps> = ({
     changedParts.forEach((part) => {
       result = result.replace(
         part,
-        `<span style="background-color: ${highlightColor}; padding: 2px 4px; border-radius: 4px; animation: pulse 1s ease-in-out;">${part}</span>`
+        `<span style="background-color: ${highlightColor}; padding: 2px 4px; border-radius: 4px; animation: pulse 1s ease-in-out;">${part}</span>`,
       );
     });
 
@@ -96,15 +100,16 @@ const MathExpressionAnimated: React.FC<MathExpressionAnimatedProps> = ({
       <AnimatePresence mode="wait">
         <motion.div
           key={expression}
-          initial={enabled ? { opacity: 0, y: 10, scale: 0.95 } : false}
+          initial={enabled ? { opacity: 0, y: 10, scale: 0.95 } : undefined}
           animate={{ opacity: 1, y: 0, scale: 1 }}
-          exit={enabled ? { opacity: 0, y: -10, scale: 0.95 } : false}
+          exit={enabled ? { opacity: 0, y: -10, scale: 0.95 } : undefined}
           transition={transitionConfig}
           className="text-center"
         >
+          {/* SECURITY FIX #4: Sanitize HTML before rendering */}
           <div
             className="text-2xl font-mono text-gray-800 inline-block"
-            dangerouslySetInnerHTML={{ __html: renderHighlightedExpression() }}
+            dangerouslySetInnerHTML={{ __html: sanitizeHTML(renderHighlightedExpression()) }}
           />
         </motion.div>
       </AnimatePresence>

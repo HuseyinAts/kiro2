@@ -3,11 +3,6 @@
  * Task 82: Çoklu Duyusal Öğrenme (REQ-50.89 - REQ-50.104)
  */
 
-import React, { useState } from 'react';
-import {
-  Box, Card, CardContent, Typography, Tabs, Tab,
-  Button, Grid, Chip, IconButton, Tooltip, LinearProgress
-} from '@mui/material';
 import {
   Visibility as VisualIcon,
   Hearing as AudioIcon,
@@ -15,8 +10,14 @@ import {
   Animation as AnimationIcon,
   VideoLibrary as VideoIcon,
   ViewInAr as VRIcon,
-  PlayArrow, Pause, Replay, Speed
+  PlayArrow, Pause, Replay, Speed,
 } from '@mui/icons-material';
+import {
+  Box, Card, CardContent, Typography, Tabs, Tab,
+  Button, Grid, Chip, IconButton, Tooltip, LinearProgress,
+} from '@mui/material';
+import * as React from 'react';
+import {  useState  } from 'react';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -42,14 +43,14 @@ const MultisensoryLearning: React.FC = () => {
   // REQ-50.95: Animation control
   const handleAnimationControl = async (action: string) => {
     try {
-      const response = await fetch(`/api/v1/multisensory/animations/demo/control`, {
+      const response = await fetch('/api/v1/multisensory/animations/demo/control', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action })
+        body: JSON.stringify({ action }),
       });
       if (response.ok) {
-        if (action === 'play') setAnimationPlaying(true);
-        if (action === 'pause') setAnimationPlaying(false);
+        if (action === 'play') {setAnimationPlaying(true);}
+        if (action === 'pause') {setAnimationPlaying(false);}
       }
     } catch (error) {
       console.error('Animation control failed:', error);
@@ -60,7 +61,7 @@ const MultisensoryLearning: React.FC = () => {
   const handleAnimationSpeed = async (speed: number) => {
     try {
       await fetch(`/api/v1/multisensory/animations/demo/speed?speed=${speed}`, {
-        method: 'PATCH'
+        method: 'PATCH',
       });
       setAnimationSpeed(speed);
     } catch (error) {
@@ -128,7 +129,7 @@ const MultisensoryLearning: React.FC = () => {
       {/* Tabs */}
       <Card>
         <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-          <Tabs value={activeTab} onChange={(e, v) => setActiveTab(v)} variant="fullWidth">
+          <Tabs value={activeTab} onChange={(_e, v) => setActiveTab(v)} variant="fullWidth">
             <Tab icon={<AnimationIcon />} label="Animasyonlar" />
             <Tab icon={<VideoIcon />} label="Videolar" />
             <Tab icon={<VRIcon />} label="VR/AR" />
@@ -138,7 +139,7 @@ const MultisensoryLearning: React.FC = () => {
         {/* Animations Tab (REQ-50.93-96) */}
         <TabPanel value={activeTab} index={0}>
           <Typography variant="h6" sx={{ mb: 2 }}>🎬 İnteraktif Animasyonlar</Typography>
-          
+
           <Card sx={{ mb: 2, bgcolor: '#f5f5f5' }}>
             <CardContent>
               <Typography variant="subtitle1" fontWeight="bold" gutterBottom>
@@ -207,7 +208,7 @@ const MultisensoryLearning: React.FC = () => {
         {/* Videos Tab (REQ-50.97-100) */}
         <TabPanel value={activeTab} index={1}>
           <Typography variant="h6" sx={{ mb: 2 }}>📹 Eğitim Videoları</Typography>
-          
+
           <Grid container spacing={2}>
             <Grid item xs={12} md={6}>
               <Card>
@@ -248,7 +249,7 @@ const MultisensoryLearning: React.FC = () => {
         {/* VR/AR Tab (REQ-50.101-104) */}
         <TabPanel value={activeTab} index={2}>
           <Typography variant="h6" sx={{ mb: 2 }}>🥽 VR/AR Deneyimleri</Typography>
-          
+
           <Grid container spacing={2}>
             <Grid item xs={12} md={6}>
               <Card sx={{ borderLeft: '4px solid #9B59B6' }}>

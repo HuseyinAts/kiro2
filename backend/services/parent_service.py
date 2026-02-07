@@ -5,7 +5,7 @@ Türkiye Üniversite Sınavları Hazırlık Platformu için veli takip sistemi
 """
 
 import json
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import List
 
 from models.database import ExamSession
@@ -112,7 +112,7 @@ class ParentService:
 
         if approved:
             relation.approved = True
-            relation.approved_at = datetime.utcnow()
+            relation.approved_at = datetime.now(timezone.utc)
 
             # Veliye onay bildirimi gönder
             await self._send_approval_confirmation_notification(
@@ -198,7 +198,7 @@ class ParentService:
             raise ValueError("Çocuk bulunamadı")
 
         # Son 30 günün verilerini al
-        thirty_days_ago = datetime.utcnow() - timedelta(days=30)
+        thirty_days_ago = datetime.now(timezone.utc) - timedelta(days=30)
 
         # Sınav sonuçları
         exam_results = (
@@ -254,7 +254,7 @@ class ParentService:
         """Haftalık rapor oluştur"""
 
         # Bu haftanın başlangıç ve bitiş tarihleri
-        today = datetime.utcnow()
+        today = datetime.now(timezone.utc)
         week_start = today - timedelta(days=today.weekday())
         week_end = week_start + timedelta(days=6)
 
@@ -448,7 +448,7 @@ class ParentService:
             raise ValueError("Bildirim bulunamadı")
 
         notification.is_read = True
-        notification.read_at = datetime.utcnow()
+        notification.read_at = datetime.now(timezone.utc)
 
         self.db.commit()
         return True

@@ -1,29 +1,26 @@
-import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react';
-import { 
-  Send, 
-  Mic, 
-  MicOff, 
-  Volume2, 
-  VolumeX, 
-  Settings, 
-  History, 
+import {
+  Send,
+  Mic,
+  MicOff,
+  Settings,
+  History,
   Trash2,
-  CheckCircle,
   AlertCircle,
   Wifi,
   WifiOff,
-  MessageSquare,
   Bot,
   User,
   Lightbulb,
   BookOpen,
   Target,
-  Zap
+  Zap,
 } from 'lucide-react';
-import { Message, Agent } from '../../types';
-import chatService, { ChatMessage } from '../../services/chatService';
-import { useWebSocket } from '../../hooks/useWebSocket';
+import * as React from 'react';
+import {  useState, useRef, useEffect, useCallback, useMemo  } from 'react';
+
 import { useTurkishLanguageCorrection } from '../../hooks/useTurkishLanguageCorrection';
+import { useWebSocket } from '../../hooks/useWebSocket';
+import chatService, { ChatMessage } from '../../services/chatService';
 
 interface TurkishChatInterfaceProps {
   studentId: string;
@@ -62,7 +59,7 @@ async function convertSpeechToText(audioBlob: Blob): Promise<string> {
     const response = await fetch('/api/v1/speech-to-text', {
       method: 'POST',
       body: formData,
-      signal: AbortSignal.timeout(30000) // 30 second timeout
+      signal: AbortSignal.timeout(30000), // 30 second timeout
     });
 
     if (!response.ok) {
@@ -85,7 +82,7 @@ export const TurkishChatInterface: React.FC<TurkishChatInterfaceProps> = ({
   subject = 'genel',
   onMessageSent,
   onAgentResponse,
-  className = ''
+  className = '',
 }) => {
   // State management
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -94,16 +91,16 @@ export const TurkishChatInterface: React.FC<TurkishChatInterfaceProps> = ({
   const [isRecording, setIsRecording] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
-  const [languageCorrections, setLanguageCorrections] = useState<LanguageCorrection[]>([]);
-  
+  const [, setLanguageCorrections] = useState<LanguageCorrection[]>([]);
+
   // Settings state
-  const [settings, setSettings] = useState<ChatSettings>({
+  const [settings] = useState<ChatSettings>({
     enableVoice: false,
     enableBionicReading: false,
     enableLanguageCorrection: true,
     responseMode: 'adaptive',
     fontSize: 'medium',
-    theme: 'light'
+    theme: 'light',
   });
 
   // Refs
@@ -112,17 +109,16 @@ export const TurkishChatInterface: React.FC<TurkishChatInterfaceProps> = ({
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
 
   // Custom hooks
-  const { 
-    isConnected, 
-    connectionStatus, 
+  const {
+    isConnected,
     sendMessage: sendWebSocketMessage,
-    lastMessage 
+    lastMessage,
   } = useWebSocket(studentId, sessionId);
 
   const {
     checkText,
     suggestions,
-    isChecking
+    isChecking,
   } = useTurkishLanguageCorrection();
 
   // Load messages on component mount
@@ -131,7 +127,7 @@ export const TurkishChatInterface: React.FC<TurkishChatInterfaceProps> = ({
       try {
         const storedMessages = chatService.loadMessagesFromLocalStorage();
         setMessages(storedMessages);
-        
+
         if (sessionId) {
           const sessionMessages = await chatService.loadSession(sessionId);
           setMessages(sessionMessages);
@@ -158,7 +154,7 @@ export const TurkishChatInterface: React.FC<TurkishChatInterfaceProps> = ({
     const timeoutId = setTimeout(() => {
       messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     }, 100);
-    
+
     return () => clearTimeout(timeoutId);
   }, [messages]);
 
@@ -176,8 +172,8 @@ export const TurkishChatInterface: React.FC<TurkishChatInterfaceProps> = ({
   // Handle message submission
   const handleSubmit = useCallback(async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (!input.trim() || isLoading) return;
+
+    if (!input.trim() || isLoading) {return;}
 
     const messageText = input.trim();
     setInput('');
@@ -189,7 +185,7 @@ export const TurkishChatInterface: React.FC<TurkishChatInterfaceProps> = ({
         id: `user-${Date.now()}`,
         role: 'user',
         content: messageText,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
       };
 
       setMessages(prev => [...prev, userMessage]);
@@ -208,13 +204,13 @@ export const TurkishChatInterface: React.FC<TurkishChatInterfaceProps> = ({
     } catch (error) {
       console.error('Mesaj gönderilirken hata:', error);
       setIsLoading(false);
-      
+
       // Add error message
       const errorMessage: ChatMessage = {
         id: `error-${Date.now()}`,
         role: 'system',
         content: 'Üzgünüm, mesajınızı işleyemedim. Lütfen tekrar deneyin.',
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
       };
       setMessages(prev => [...prev, errorMessage]);
     }
@@ -228,7 +224,7 @@ export const TurkishChatInterface: React.FC<TurkishChatInterfaceProps> = ({
       mediaRecorderRef.current = mediaRecorder;
 
       const audioChunks: Blob[] = [];
-      
+
       mediaRecorder.ondataavailable = (event) => {
         audioChunks.push(event.data);
       };
@@ -246,8 +242,8 @@ export const TurkishChatInterface: React.FC<TurkishChatInterfaceProps> = ({
 
             // Optionally auto-send the message
             if (settings.enableVoice) {
-              // Create a temporary message event
-              handleSendMessage();
+              // Create a synthetic submit event
+              handleSubmit({ preventDefault: () => {} } as React.FormEvent);
             }
           }
         } catch (error) {
@@ -257,7 +253,7 @@ export const TurkishChatInterface: React.FC<TurkishChatInterfaceProps> = ({
             id: `error-${Date.now()}`,
             role: 'system',
             content: 'Ses kaydı metne dönüştürülemedi. Lütfen tekrar deneyin.',
-            timestamp: new Date().toISOString()
+            timestamp: new Date().toISOString(),
           };
           setMessages(prev => [...prev, errorMsg]);
         }
@@ -280,26 +276,26 @@ export const TurkishChatInterface: React.FC<TurkishChatInterfaceProps> = ({
 
   // Quick action buttons
   const quickActions = useMemo(() => [
-    { 
-      text: 'Konu açıkla', 
+    {
+      text: 'Konu açıkla',
       icon: <BookOpen className="w-4 h-4" />,
-      prompt: 'Bu konuyu detaylı olarak açıklar mısın?'
+      prompt: 'Bu konuyu detaylı olarak açıklar mısın?',
     },
-    { 
-      text: 'Soru sor', 
+    {
+      text: 'Soru sor',
       icon: <Target className="w-4 h-4" />,
-      prompt: 'Bu konu hakkında bana soru sorabilir misin?'
+      prompt: 'Bu konu hakkında bana soru sorabilir misin?',
     },
-    { 
-      text: 'Örnek ver', 
+    {
+      text: 'Örnek ver',
       icon: <Lightbulb className="w-4 h-4" />,
-      prompt: 'Bu konuya örnek verebilir misin?'
+      prompt: 'Bu konuya örnek verebilir misin?',
     },
-    { 
-      text: 'Özet çıkar', 
+    {
+      text: 'Özet çıkar',
       icon: <Zap className="w-4 h-4" />,
-      prompt: 'Bu konunun özetini çıkarabilir misin?'
-    }
+      prompt: 'Bu konunun özetini çıkarabilir misin?',
+    },
   ], []);
 
   // Clear chat history
@@ -336,7 +332,7 @@ export const TurkishChatInterface: React.FC<TurkishChatInterfaceProps> = ({
         return <span key={index}>{word} </span>;
       });
     }
-    
+
     return content.split('\n').map((line, i) => (
       <span key={i}>
         {line}
@@ -360,7 +356,7 @@ export const TurkishChatInterface: React.FC<TurkishChatInterfaceProps> = ({
             </p>
           </div>
         </div>
-        
+
         <div className="flex items-center space-x-2">
           {/* Connection status */}
           <div className="flex items-center space-x-1">
@@ -370,7 +366,7 @@ export const TurkishChatInterface: React.FC<TurkishChatInterfaceProps> = ({
               <WifiOff className="w-4 h-4 text-red-500" />
             )}
           </div>
-          
+
           {/* Settings button */}
           <button
             onClick={() => setShowSettings(!showSettings)}
@@ -378,7 +374,7 @@ export const TurkishChatInterface: React.FC<TurkishChatInterfaceProps> = ({
           >
             <Settings className="w-5 h-5" />
           </button>
-          
+
           {/* History button */}
           <button
             onClick={() => setShowHistory(!showHistory)}
@@ -386,7 +382,7 @@ export const TurkishChatInterface: React.FC<TurkishChatInterfaceProps> = ({
           >
             <History className="w-5 h-5" />
           </button>
-          
+
           {/* Clear history button */}
           <button
             onClick={clearHistory}
@@ -427,7 +423,7 @@ export const TurkishChatInterface: React.FC<TurkishChatInterfaceProps> = ({
             <div className="text-6xl mb-4">💬</div>
             <p className="text-lg font-medium">Merhaba! Size nasıl yardımcı olabilirim?</p>
             <p className="text-sm mt-2">Türkçe sorularınızı sorabilir, konuları açıklamamı isteyebilirsiniz.</p>
-            
+
             {/* Quick actions for empty state */}
             <div className="mt-6 grid grid-cols-2 gap-3 max-w-md mx-auto">
               {quickActions.map((action, index) => (
@@ -452,7 +448,7 @@ export const TurkishChatInterface: React.FC<TurkishChatInterfaceProps> = ({
             />
           ))
         )}
-        
+
         {isLoading && (
           <div className="flex justify-start">
             <div className="bg-gray-100 rounded-lg px-4 py-3 max-w-xs">
@@ -467,7 +463,7 @@ export const TurkishChatInterface: React.FC<TurkishChatInterfaceProps> = ({
             </div>
           </div>
         )}
-        
+
         <div ref={messagesEndRef} />
       </div>
 
@@ -487,7 +483,7 @@ export const TurkishChatInterface: React.FC<TurkishChatInterfaceProps> = ({
             </button>
           ))}
         </div>
-        
+
         <div className="flex items-end space-x-3">
           {/* Text input */}
           <div className="flex-1 relative">
@@ -507,7 +503,7 @@ export const TurkishChatInterface: React.FC<TurkishChatInterfaceProps> = ({
                 }
               }}
             />
-            
+
             {/* Language checking indicator */}
             {isChecking && (
               <div className="absolute right-3 top-3">
@@ -515,22 +511,22 @@ export const TurkishChatInterface: React.FC<TurkishChatInterfaceProps> = ({
               </div>
             )}
           </div>
-          
+
           {/* Voice recording button */}
           {settings.enableVoice && (
             <button
               type="button"
               onClick={isRecording ? stopRecording : startRecording}
               className={`p-3 rounded-lg transition-colors ${
-                isRecording 
-                  ? 'bg-red-500 text-white hover:bg-red-600' 
+                isRecording
+                  ? 'bg-red-500 text-white hover:bg-red-600'
                   : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
               }`}
             >
               {isRecording ? <MicOff className="w-5 h-5" /> : <Mic className="w-5 h-5" />}
             </button>
           )}
-          
+
           {/* Send button */}
           <button
             type="submit"
@@ -540,7 +536,7 @@ export const TurkishChatInterface: React.FC<TurkishChatInterfaceProps> = ({
             <Send className="w-5 h-5" />
           </button>
         </div>
-        
+
         {/* Input hints */}
         <div className="mt-2 text-xs text-gray-500">
           <span>Enter ile gönder • Shift+Enter ile yeni satır</span>
@@ -560,23 +556,23 @@ interface MessageBubbleProps {
   settings: ChatSettings;
 }
 
-const MessageBubble: React.FC<MessageBubbleProps> = React.memo(({ 
-  message, 
-  formatContent, 
-  settings 
+const MessageBubble: React.FC<MessageBubbleProps> = React.memo(({
+  message,
+  formatContent,
+  settings,
 }) => {
   const isUser = message.role === 'user';
   const isSystem = message.role === 'system';
-  
+
   return (
     <div className={`flex ${isUser ? 'justify-end' : 'justify-start'}`}>
       <div className={`flex items-start space-x-3 max-w-2xl ${isUser ? 'flex-row-reverse space-x-reverse' : ''}`}>
         {/* Avatar */}
         <div className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center ${
-          isUser 
-            ? 'bg-blue-500' 
-            : isSystem 
-              ? 'bg-gray-400' 
+          isUser
+            ? 'bg-blue-500'
+            : isSystem
+              ? 'bg-gray-400'
               : 'bg-green-500'
         }`}>
           {isUser ? (
@@ -587,7 +583,7 @@ const MessageBubble: React.FC<MessageBubbleProps> = React.memo(({
             <Bot className="w-4 h-4 text-white" />
           )}
         </div>
-        
+
         {/* Message content */}
         <div className={`rounded-lg px-4 py-3 ${
           isUser
@@ -602,19 +598,19 @@ const MessageBubble: React.FC<MessageBubbleProps> = React.memo(({
               🤖 {message.agent === 'turkish_nlp' ? 'Türkçe AI Asistan' : message.agent}
             </div>
           )}
-          
+
           {/* Message text */}
           <div className={`whitespace-pre-wrap ${settings.fontSize === 'small' ? 'text-sm' : settings.fontSize === 'large' ? 'text-lg' : 'text-base'}`}>
             {formatContent(message.content)}
           </div>
-          
+
           {/* Timestamp */}
           <div className={`text-xs mt-2 opacity-75 ${
             isUser ? 'text-blue-100' : 'text-gray-500'
           }`}>
             {new Date(message.timestamp).toLocaleTimeString('tr-TR', {
               hour: '2-digit',
-              minute: '2-digit'
+              minute: '2-digit',
             })}
           </div>
         </div>

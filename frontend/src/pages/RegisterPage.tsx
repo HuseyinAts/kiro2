@@ -3,11 +3,12 @@
  * Glassmorphism ve rol-bazlı görsel kayıt deneyimi
  */
 
-import React from 'react'
-import { ModernRegisterPage } from './ModernRegisterPage'
+import * as React from 'react';
+
+import { ModernRegisterPage } from './ModernRegisterPage';
 
 export const RegisterPage: React.FC = () => {
-  return <ModernRegisterPage />
-}
+  return <ModernRegisterPage />;
+};
 
-export default RegisterPage
+export default RegisterPage;

@@ -1,8 +1,8 @@
 /**
  * Dyscalculia Support Components - Index
- * 
+ *
  * Diskalkuli (matematik öğrenme güçlüğü) desteği için görsel matematik temsilleri.
- * 
+ *
  * Gereksinimler: REQ-51.1 - REQ-51.60
  */
 

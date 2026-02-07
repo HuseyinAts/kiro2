@@ -23,10 +23,13 @@ if os.getenv("TESTING") == "true":
     SYNC_DATABASE_URL = "sqlite:///./test_db.sqlite"
 else:
     # Production environment - use PostgreSQL
-    DATABASE_URL = os.getenv(
-        "DATABASE_URL",
-        "postgresql+asyncpg://teknofest:[REDACTED_DB_PASSWORD]@localhost:5432/teknofest_db",
-    )
+    # SECURITY: No hardcoded fallback - DATABASE_URL must be set in .env
+    DATABASE_URL = os.getenv("DATABASE_URL")
+    if not DATABASE_URL:
+        raise ValueError(
+            "CRITICAL: DATABASE_URL environment variable is required. "
+            "Set it in .env file: DATABASE_URL=postgresql+asyncpg://user:pass@host:port/db"
+        )
     SYNC_DATABASE_URL = DATABASE_URL.replace("postgresql+asyncpg://", "postgresql://")
 
 # Async Engine (Ana uygulama için)

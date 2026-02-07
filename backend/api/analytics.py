@@ -17,11 +17,13 @@ from reportlab.pdfgen import canvas
 
 try:
     from core.dependencies import get_current_user
+    from core.auth_dependencies import require_role
     from core.redis_cache import get_cache
     from models.database import User
     from services.elasticsearch_service import get_elasticsearch_service
 except ImportError:
     from core.dependencies import get_current_user
+    from core.auth_dependencies import require_role
     from core.redis_cache import get_cache
     from models.database import User
     from services.elasticsearch_service import get_elasticsearch_service
@@ -259,6 +261,7 @@ async def get_admin_dashboard_analytics(
     start_date: Optional[datetime] = Query(None, description="Başlangıç tarihi"),
     end_date: Optional[datetime] = Query(None, description="Bitiş tarihi"),
     current_user: User = Depends(get_current_user),
+    _: None = Depends(require_role("ADMIN")),
 ):
     """
     Admin dashboard analytics verilerini getir
@@ -266,9 +269,6 @@ async def get_admin_dashboard_analytics(
     Requirements: 6.5 - Sistem geneli analytics ve raporlama
     """
     try:
-        # Admin yetkisi kontrolü
-        if not hasattr(current_user, "role") or current_user.role != "admin":
-            raise HTTPException(status_code=403, detail="Admin yetkisi gerekli")
 
         # Tarih aralığı ayarla
         if not end_date:

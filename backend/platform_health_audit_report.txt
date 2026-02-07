@@ -1,0 +1,26 @@
+================================================================================
+PLATFORM SAĞLIK DENETİMİ RAPORU
+================================================================================
+
+Tarih: 2025-11-17T15:58:13.966101
+Sağlık Skoru: 97.5%
+Durum: HEALTHY
+
+🟢 Platform Sağlıklı
+
+KONTROL SONUÇLARI:
+--------------------------------------------------------------------------------
+✅ CRITICAL_FILES: healthy
+✅ SENSITIVE_DATA_FILTER: healthy
+✅ SECURITY_MIDDLEWARE: healthy
+✅ API_ROUTERS: healthy
+✅ ENVIRONMENT_CONFIG: healthy
+ℹ️ DATABASE_FILES: info
+❌ AGENT_FILES: warning
+
+🟡 UYARILAR:
+--------------------------------------------------------------------------------
+  • Agent dosyası eksik: backend/agents/study_agent.py
+  • Agent dosyası eksik: backend/agents/exam_agent.py
+
+================================================================================

@@ -4,7 +4,6 @@ Provides categorized logging with structured output
 """
 import logging
 from enum import Enum
-from typing import Any
 
 
 class LogCategory(str, Enum):
@@ -25,6 +24,8 @@ class LogCategory(str, Enum):
     CONTENT = "content"
     ANALYTICS = "analytics"
     SYSTEM = "system"
+    JOBS = "jobs"
+    REALTIME = "realtime"
 
 
 def get_logger(

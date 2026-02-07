@@ -4,7 +4,7 @@ ARCHITECTURE FIX: Version management and deprecation strategy
 """
 
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import datetime, timezone
 from enum import Enum
 from typing import Callable, Optional
 
@@ -344,7 +344,7 @@ def deprecated_endpoint(
 
     def decorator(func: Callable) -> Callable:
         async def wrapper(*args, **kwargs):
-            now = datetime.utcnow()
+            now = datetime.now(timezone.utc)
 
             # Check if sunset
             if now >= sunset_date:

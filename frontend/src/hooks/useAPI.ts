@@ -21,7 +21,7 @@ export interface UseAPIReturn<T, P extends any[]> {
 
 export function useAPI<T = any, P extends any[] = any[]>(
   apiFunction: (...args: P) => Promise<T>,
-  options?: UseAPIOptions<T>
+  options?: UseAPIOptions<T>,
 ): UseAPIReturn<T, P> {
   const [data, setData] = useState<T | null>(options?.initialData || null);
   const [loading, setLoading] = useState(false);
@@ -65,7 +65,7 @@ export function useAPI<T = any, P extends any[] = any[]>(
     loading,
     error,
     execute,
-    reset
+    reset,
   };
 }
 
@@ -87,14 +87,14 @@ export interface PaginatedData<T> {
 
 export function usePaginatedAPI<T = any>(
   apiFunction: (page: number, pageSize: number) => Promise<PaginatedData<T>>,
-  options?: UsePaginatedAPIOptions<PaginatedData<T>>
+  options?: UsePaginatedAPIOptions<PaginatedData<T>>,
 ) {
   const [page, setPage] = useState(options?.initialPage || 1);
   const pageSize = options?.pageSize || 20;
 
   const api = useAPI(
     () => apiFunction(page, pageSize),
-    options
+    options,
   );
 
   const nextPage = useCallback(() => {
@@ -125,7 +125,7 @@ export function usePaginatedAPI<T = any>(
     nextPage,
     prevPage,
     goToPage,
-    resetPagination
+    resetPagination,
   };
 }
 
@@ -134,7 +134,7 @@ export function usePaginatedAPI<T = any>(
  */
 export function useInfiniteAPI<T = any>(
   apiFunction: (page: number, pageSize: number) => Promise<PaginatedData<T>>,
-  options?: UsePaginatedAPIOptions<PaginatedData<T>>
+  options?: UsePaginatedAPIOptions<PaginatedData<T>>,
 ) {
   const [allItems, setAllItems] = useState<T[]>([]);
   const [page, setPage] = useState(1);
@@ -150,7 +150,7 @@ export function useInfiniteAPI<T = any>(
 
       return result;
     },
-    options
+    options,
   );
 
   const loadMore = useCallback(() => {
@@ -172,7 +172,7 @@ export function useInfiniteAPI<T = any>(
     error: api.error,
     hasMore,
     loadMore,
-    reset
+    reset,
   };
 }
 

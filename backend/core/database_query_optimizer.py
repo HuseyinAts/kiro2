@@ -7,15 +7,13 @@ import logging
 from typing import List, Optional, Any, Type, TypeVar
 from datetime import datetime
 
-from sqlalchemy import select, func, and_, or_
+from sqlalchemy import select, func, and_
 from sqlalchemy.orm import (
     joinedload,
     selectinload,
     subqueryload,
-    contains_eager,
     load_only,
     defer,
-    undefer,
 )
 from sqlalchemy.ext.asyncio import AsyncSession
 

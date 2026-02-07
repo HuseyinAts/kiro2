@@ -2,7 +2,8 @@
  * Tabs UI Component
  */
 
-import React, { createContext, useContext, useState } from 'react';
+import * as React from 'react';
+import {  createContext, useContext, useState  } from 'react';
 
 interface TabsContextType {
   value: string;
@@ -24,10 +25,10 @@ export const Tabs: React.FC<TabsProps> = ({
   value: controlledValue,
   onValueChange,
   children,
-  className = ''
+  className = '',
 }) => {
   const [internalValue, setInternalValue] = useState(defaultValue || '');
-  
+
   const value = controlledValue !== undefined ? controlledValue : internalValue;
   const handleValueChange = (newValue: string) => {
     if (controlledValue === undefined) {
@@ -100,7 +101,7 @@ export const TabsContent: React.FC<TabsContentProps> = ({ value, children, class
   }
 
   const { value: currentValue } = context;
-  
+
   if (currentValue !== value) {
     return null;
   }

@@ -13,5 +13,5 @@ export {
   addExample,
   processForOSB,
   idiomReplacements,
-  commonExamples
+  commonExamples,
 } from './textSimplifier';

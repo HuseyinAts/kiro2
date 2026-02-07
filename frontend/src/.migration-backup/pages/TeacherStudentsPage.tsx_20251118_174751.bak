@@ -1,0 +1,537 @@
+/**
+ * Teacher Students Page
+ * Öğretmen öğrenci yönetimi sayfası
+ */
+
+import React, { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
+import {
+  Container,
+  Typography,
+  Box,
+  Paper,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Button,
+  TextField,
+  InputAdornment,
+  Chip,
+  Avatar,
+  IconButton,
+  Menu,
+  MenuItem,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Grid,
+  Card,
+  CardContent,
+  LinearProgress
+} from '@mui/material'
+import {
+  Search as SearchIcon,
+  MoreVert as MoreVertIcon,
+  Person as PersonIcon,
+  Email as EmailIcon,
+  Phone as PhoneIcon,
+  School as SchoolIcon,
+  TrendingUp as TrendingUpIcon,
+  Assignment as AssignmentIcon
+} from '@mui/icons-material'
+import { useAuth } from '../hooks/useAuth'
+import apiClient from '../services/apiClient'
+
+interface Student {
+  id: string
+  ad: string
+  soyad: string
+  email: string
+  telefon?: string
+  sinif: string
+  ortalama: number
+  tamamlanan_sinav: number
+  toplam_sinav: number
+  son_giris?: string
+}
+
+export const TeacherStudentsPage: React.FC = () => {
+  const { user } = useAuth()
+  const navigate = useNavigate()
+  const [students, setStudents] = useState<Student[]>([])
+  const [loading, setLoading] = useState(true)
+  const [searchTerm, setSearchTerm] = useState('')
+  const [selectedStudent, setSelectedStudent] = useState<Student | null>(null)
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
+  const [detailsOpen, setDetailsOpen] = useState(false)
+  const [messageDialogOpen, setMessageDialogOpen] = useState(false)
+  const [messageText, setMessageText] = useState('')
+  const [sendingMessage, setSendingMessage] = useState(false)
+
+  useEffect(() => {
+    fetchStudents()
+  }, [])
+
+  const fetchStudents = async () => {
+    try {
+      setLoading(true)
+      const response = await apiClient.get('/api/v1/teacher/students')
+      setStudents(response.data.students || [])
+    } catch (error) {
+      console.error('Öğrenciler yüklenemedi:', error)
+      // Mock data for demo
+      setStudents([
+        {
+          id: '1',
+          ad: 'Ahmet',
+          soyad: 'Yılmaz',
+          email: 'ahmet.yilmaz@example.com',
+          telefon: '0555 123 4567',
+          sinif: '12-A',
+          ortalama: 85.5,
+          tamamlanan_sinav: 15,
+          toplam_sinav: 20,
+          son_giris: '2025-10-19T10:30:00'
+        },
+        {
+          id: '2',
+          ad: 'Ayşe',
+          soyad: 'Demir',
+          email: 'ayse.demir@example.com',
+          sinif: '12-A',
+          ortalama: 92.3,
+          tamamlanan_sinav: 18,
+          toplam_sinav: 20,
+          son_giris: '2025-10-19T09:15:00'
+        },
+        {
+          id: '3',
+          ad: 'Mehmet',
+          soyad: 'Kaya',
+          email: 'mehmet.kaya@example.com',
+          telefon: '0555 987 6543',
+          sinif: '12-B',
+          ortalama: 78.9,
+          tamamlanan_sinav: 12,
+          toplam_sinav: 20,
+          son_giris: '2025-10-18T16:45:00'
+        }
+      ])
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const filteredStudents = students.filter(student =>
+    `${student.ad} ${student.soyad}`.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    student.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    student.sinif.toLowerCase().includes(searchTerm.toLowerCase())
+  )
+
+  const handleMenuOpen = (event: React.MouseEvent<HTMLElement>, student: Student) => {
+    setAnchorEl(event.currentTarget)
+    setSelectedStudent(student)
+  }
+
+  const handleMenuClose = () => {
+    setAnchorEl(null)
+  }
+
+  const handleViewDetails = () => {
+    setDetailsOpen(true)
+    handleMenuClose()
+  }
+
+  const handleSendMessage = () => {
+    // Open messaging dialog
+    setMessageDialogOpen(true)
+    handleMenuClose()
+  }
+
+  const handleCloseMessageDialog = () => {
+    setMessageDialogOpen(false)
+    setMessageText('')
+    setSendingMessage(false)
+  }
+
+  const handleSendMessageSubmit = async () => {
+    if (!selectedStudent || !messageText.trim()) {
+      return
+    }
+
+    try {
+      setSendingMessage(true)
+
+      // Send message to student via API
+      await apiClient.post('/api/v1/teacher/send-message', {
+        student_id: selectedStudent.id,
+        message: messageText,
+        subject: 'Öğretmen Mesajı'
+      })
+
+      // Show success message
+      alert(`Mesaj başarıyla gönderildi: ${selectedStudent.ad} ${selectedStudent.soyad}`)
+
+      // Close dialog
+      handleCloseMessageDialog()
+    } catch (error) {
+      console.error('Mesaj gönderilirken hata:', error)
+      alert('Mesaj gönderilemedi. Lütfen tekrar deneyin.')
+    } finally {
+      setSendingMessage(false)
+    }
+  }
+
+  const handleViewReports = () => {
+    // Navigate to student reports page with student ID
+    if (selectedStudent) {
+      navigate(`/teacher/reports/${selectedStudent.id}`, {
+        state: {
+          studentName: `${selectedStudent.ad} ${selectedStudent.soyad}`,
+          studentClass: selectedStudent.sinif
+        }
+      })
+    }
+    handleMenuClose()
+  }
+
+  const getPerformanceColor = (ortalama: number) => {
+    if (ortalama >= 85) return 'success'
+    if (ortalama >= 70) return 'warning'
+    return 'error'
+  }
+
+  return (
+    <Container maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
+      <Box sx={{ mb: 4 }}>
+        <Typography variant="h4" gutterBottom>
+          Öğrenci Yönetimi
+        </Typography>
+        <Typography variant="body1" color="text.secondary">
+          Öğrencilerinizi takip edin ve performanslarını izleyin
+        </Typography>
+      </Box>
+
+      {/* Statistics Cards */}
+      <Grid container spacing={3} sx={{ mb: 4 }}>
+        <Grid item xs={12} sm={6} md={3}>
+          <Card>
+            <CardContent>
+              <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+                <PersonIcon color="primary" sx={{ mr: 1 }} />
+                <Typography variant="h6">Toplam Öğrenci</Typography>
+              </Box>
+              <Typography variant="h3">{students.length}</Typography>
+            </CardContent>
+          </Card>
+        </Grid>
+        <Grid item xs={12} sm={6} md={3}>
+          <Card>
+            <CardContent>
+              <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+                <TrendingUpIcon color="success" sx={{ mr: 1 }} />
+                <Typography variant="h6">Ortalama Başarı</Typography>
+              </Box>
+              <Typography variant="h3">
+                {students.length > 0
+                  ? (students.reduce((sum, s) => sum + s.ortalama, 0) / students.length).toFixed(1)
+                  : 0}%
+              </Typography>
+            </CardContent>
+          </Card>
+        </Grid>
+        <Grid item xs={12} sm={6} md={3}>
+          <Card>
+            <CardContent>
+              <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+                <AssignmentIcon color="info" sx={{ mr: 1 }} />
+                <Typography variant="h6">Aktif Sınavlar</Typography>
+              </Box>
+              <Typography variant="h3">5</Typography>
+            </CardContent>
+          </Card>
+        </Grid>
+        <Grid item xs={12} sm={6} md={3}>
+          <Card>
+            <CardContent>
+              <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+                <SchoolIcon color="warning" sx={{ mr: 1 }} />
+                <Typography variant="h6">Sınıf Sayısı</Typography>
+              </Box>
+              <Typography variant="h3">
+                {new Set(students.map(s => s.sinif)).size}
+              </Typography>
+            </CardContent>
+          </Card>
+        </Grid>
+      </Grid>
+
+      {/* Search Bar */}
+      <Paper sx={{ p: 2, mb: 3 }}>
+        <TextField
+          fullWidth
+          placeholder="Öğrenci ara (isim, email, sınıf)..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <SearchIcon />
+              </InputAdornment>
+            ),
+          }}
+        />
+      </Paper>
+
+      {/* Students Table */}
+      <TableContainer component={Paper}>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell>Öğrenci</TableCell>
+              <TableCell>Sınıf</TableCell>
+              <TableCell>İletişim</TableCell>
+              <TableCell>Ortalama</TableCell>
+              <TableCell>İlerleme</TableCell>
+              <TableCell>Son Giriş</TableCell>
+              <TableCell align="right">İşlemler</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {loading ? (
+              <TableRow>
+                <TableCell colSpan={7}>
+                  <LinearProgress />
+                </TableCell>
+              </TableRow>
+            ) : filteredStudents.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={7} align="center">
+                  <Typography variant="body1" color="text.secondary">
+                    Öğrenci bulunamadı
+                  </Typography>
+                </TableCell>
+              </TableRow>
+            ) : (
+              filteredStudents.map((student) => (
+                <TableRow key={student.id} hover>
+                  <TableCell>
+                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                      <Avatar sx={{ mr: 2, bgcolor: 'primary.main' }}>
+                        {student.ad[0]}{student.soyad[0]}
+                      </Avatar>
+                      <Box>
+                        <Typography variant="body1" fontWeight="medium">
+                          {student.ad} {student.soyad}
+                        </Typography>
+                        <Typography variant="caption" color="text.secondary">
+                          ID: {student.id}
+                        </Typography>
+                      </Box>
+                    </Box>
+                  </TableCell>
+                  <TableCell>
+                    <Chip label={student.sinif} size="small" />
+                  </TableCell>
+                  <TableCell>
+                    <Box>
+                      <Typography variant="body2" sx={{ display: 'flex', alignItems: 'center', mb: 0.5 }}>
+                        <EmailIcon fontSize="small" sx={{ mr: 0.5 }} />
+                        {student.email}
+                      </Typography>
+                      {student.telefon && (
+                        <Typography variant="body2" sx={{ display: 'flex', alignItems: 'center' }}>
+                          <PhoneIcon fontSize="small" sx={{ mr: 0.5 }} />
+                          {student.telefon}
+                        </Typography>
+                      )}
+                    </Box>
+                  </TableCell>
+                  <TableCell>
+                    <Chip
+                      label={`${student.ortalama.toFixed(1)}%`}
+                      color={getPerformanceColor(student.ortalama)}
+                      size="small"
+                    />
+                  </TableCell>
+                  <TableCell>
+                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                      <Box sx={{ width: '100%', mr: 1 }}>
+                        <LinearProgress
+                          variant="determinate"
+                          value={(student.tamamlanan_sinav / student.toplam_sinav) * 100}
+                          color={getPerformanceColor(student.ortalama)}
+                        />
+                      </Box>
+                      <Typography variant="body2" color="text.secondary">
+                        {student.tamamlanan_sinav}/{student.toplam_sinav}
+                      </Typography>
+                    </Box>
+                  </TableCell>
+                  <TableCell>
+                    {student.son_giris ? (
+                      <Typography variant="body2">
+                        {new Date(student.son_giris).toLocaleDateString('tr-TR')}
+                      </Typography>
+                    ) : (
+                      <Typography variant="body2" color="text.secondary">
+                        -
+                      </Typography>
+                    )}
+                  </TableCell>
+                  <TableCell align="right">
+                    <IconButton
+                      onClick={(e) => handleMenuOpen(e, student)}
+                      size="small"
+                    >
+                      <MoreVertIcon />
+                    </IconButton>
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
+          </TableBody>
+        </Table>
+      </TableContainer>
+
+      {/* Context Menu */}
+      <Menu
+        anchorEl={anchorEl}
+        open={Boolean(anchorEl)}
+        onClose={handleMenuClose}
+      >
+        <MenuItem onClick={handleViewDetails}>Detayları Görüntüle</MenuItem>
+        <MenuItem onClick={handleViewReports}>Raporları Görüntüle</MenuItem>
+        <MenuItem onClick={handleSendMessage}>Mesaj Gönder</MenuItem>
+      </Menu>
+
+      {/* Student Details Dialog */}
+      <Dialog
+        open={detailsOpen}
+        onClose={() => setDetailsOpen(false)}
+        maxWidth="md"
+        fullWidth
+      >
+        <DialogTitle>
+          Öğrenci Detayları
+        </DialogTitle>
+        <DialogContent>
+          {selectedStudent && (
+            <Box sx={{ pt: 2 }}>
+              <Grid container spacing={2}>
+                <Grid item xs={12} sm={6}>
+                  <Typography variant="subtitle2" color="text.secondary">
+                    Ad Soyad
+                  </Typography>
+                  <Typography variant="body1" gutterBottom>
+                    {selectedStudent.ad} {selectedStudent.soyad}
+                  </Typography>
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <Typography variant="subtitle2" color="text.secondary">
+                    Sınıf
+                  </Typography>
+                  <Typography variant="body1" gutterBottom>
+                    {selectedStudent.sinif}
+                  </Typography>
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <Typography variant="subtitle2" color="text.secondary">
+                    Email
+                  </Typography>
+                  <Typography variant="body1" gutterBottom>
+                    {selectedStudent.email}
+                  </Typography>
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <Typography variant="subtitle2" color="text.secondary">
+                    Telefon
+                  </Typography>
+                  <Typography variant="body1" gutterBottom>
+                    {selectedStudent.telefon || '-'}
+                  </Typography>
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <Typography variant="subtitle2" color="text.secondary">
+                    Ortalama Başarı
+                  </Typography>
+                  <Typography variant="body1" gutterBottom>
+                    {selectedStudent.ortalama.toFixed(1)}%
+                  </Typography>
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <Typography variant="subtitle2" color="text.secondary">
+                    Tamamlanan Sınavlar
+                  </Typography>
+                  <Typography variant="body1" gutterBottom>
+                    {selectedStudent.tamamlanan_sinav} / {selectedStudent.toplam_sinav}
+                  </Typography>
+                </Grid>
+              </Grid>
+            </Box>
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setDetailsOpen(false)}>Kapat</Button>
+          <Button variant="contained" onClick={handleViewReports}>
+            Raporları Görüntüle
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Message Dialog */}
+      <Dialog
+        open={messageDialogOpen}
+        onClose={handleCloseMessageDialog}
+        maxWidth="sm"
+        fullWidth
+      >
+        <DialogTitle>
+          Öğrenciye Mesaj Gönder
+        </DialogTitle>
+        <DialogContent>
+          {selectedStudent && (
+            <Box sx={{ pt: 2 }}>
+              <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+                Alıcı: {selectedStudent.ad} {selectedStudent.soyad}
+              </Typography>
+              <Typography variant="caption" color="text.secondary" gutterBottom display="block" sx={{ mb: 2 }}>
+                Email: {selectedStudent.email}
+              </Typography>
+              <TextField
+                autoFocus
+                multiline
+                rows={6}
+                fullWidth
+                label="Mesajınız"
+                variant="outlined"
+                value={messageText}
+                onChange={(e) => setMessageText(e.target.value)}
+                placeholder="Öğrencinize göndermek istediğiniz mesajı yazın..."
+                disabled={sendingMessage}
+              />
+            </Box>
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseMessageDialog} disabled={sendingMessage}>
+            İptal
+          </Button>
+          <Button
+            variant="contained"
+            onClick={handleSendMessageSubmit}
+            disabled={sendingMessage || !messageText.trim()}
+          >
+            {sendingMessage ? 'Gönderiliyor...' : 'Gönder'}
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </Container>
+  )
+}
+
+export default TeacherStudentsPage

@@ -5,9 +5,8 @@ REST endpoints for EBA TV integration
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.ext.asyncio import AsyncSession
-from typing import List, Optional, Dict, Any
+from typing import List, Optional, Dict
 from pydantic import BaseModel, UUID4
-from datetime import datetime
 
 # PHASE 1 FIX: Corrected import paths (removed 'backend.' prefix)
 from core.database import get_db
@@ -15,12 +14,12 @@ from models.database import User
 from services.eba_tv_client import (
     EBASubject,
     EBAGradeLevel,
-    EBACatalogFilter,
     get_eba_client,
 )
 from services.eba_catalog_sync import EBACatalogSyncService
 from services.eba_watch_tracking import EBAWatchTrackingService, WatchAnalytics
 from core.dependencies import get_current_user
+from core.auth_dependencies import require_role
 import logging
 
 logger = logging.getLogger(__name__)
@@ -519,15 +518,13 @@ async def trigger_full_catalog_sync(
     use_mock: bool = Query(False),
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
+    _: None = Depends(require_role("ADMIN")),
 ):
     """
     Admin: Trigger full EBA catalog sync
 
     WARNING: This can take several minutes!
     """
-    # Check if user is admin
-    if current_user.role != "admin":
-        raise HTTPException(status_code=403, detail="Admin only")
 
     sync_service = EBACatalogSyncService(db, use_mock=use_mock)
 
@@ -554,14 +551,13 @@ async def trigger_incremental_sync(
     use_mock: bool = Query(False),
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
+    _: None = Depends(require_role("ADMIN")),
 ):
     """
     Admin: Trigger incremental catalog sync
 
     Syncs only recent videos (last X hours)
     """
-    if current_user.role != "admin":
-        raise HTTPException(status_code=403, detail="Admin only")
 
     sync_service = EBACatalogSyncService(db, use_mock=use_mock)
 
@@ -582,13 +578,13 @@ async def trigger_incremental_sync(
 
 @router.get("/admin/sync/status")
 async def get_sync_status(
-    current_user: User = Depends(get_current_user), db: AsyncSession = Depends(get_db)
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+    _: None = Depends(require_role("ADMIN")),
 ):
     """
     Admin: Get catalog sync status
     """
-    if current_user.role != "admin":
-        raise HTTPException(status_code=403, detail="Admin only")
 
     sync_service = EBACatalogSyncService(db)
 

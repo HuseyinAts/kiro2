@@ -27,7 +27,7 @@ def analyze_phase1_results():
         phase1_total = phase1["totals"]["percent_covered"]
         improvement = phase1_total - baseline_total
 
-        print(f"OVERALL PROGRESS:")
+        print("OVERALL PROGRESS:")
         print(f"   Baseline:      {baseline_total:.2f}%")
         print(f"   Phase 1:       {phase1_total:.2f}%")
         print(f"   Improvement:   {improvement:+.2f}%")
@@ -36,16 +36,16 @@ def analyze_phase1_results():
 
         # Phase 1 target assessment
         if phase1_total >= 25.0:
-            print(f"   Status:        PHASE 1 COMPLETED!")
+            print("   Status:        PHASE 1 COMPLETED!")
         elif phase1_total >= 20.0:
-            print(f"   Status:        VERY CLOSE TO TARGET")
+            print("   Status:        VERY CLOSE TO TARGET")
         elif improvement > 0:
-            print(f"   Status:        GOOD PROGRESS")
+            print("   Status:        GOOD PROGRESS")
         else:
-            print(f"   Status:        NEEDS IMPROVEMENT")
+            print("   Status:        NEEDS IMPROVEMENT")
 
         # Top file improvements
-        print(f"\nTOP FILE IMPROVEMENTS:")
+        print("\nTOP FILE IMPROVEMENTS:")
         print("-" * 50)
 
         improvements = []
@@ -82,7 +82,7 @@ def analyze_phase1_results():
             total_files_improved += 1
 
         # Phase 1 strategy effectiveness
-        print(f"\nPHASE 1 STRATEGY EFFECTIVENESS:")
+        print("\nPHASE 1 STRATEGY EFFECTIVENESS:")
         phase1_priority_files = [
             "berturk_service.py",
             "learning_analytics.py",
@@ -118,7 +118,7 @@ def analyze_phase1_results():
                     )
 
         # Test effectiveness metrics
-        print(f"\nTEST EFFECTIVENESS METRICS:")
+        print("\nTEST EFFECTIVENESS METRICS:")
         print(
             f"   Priority files improved: {priority_improvements}/{len(phase1_priority_files)}"
         )
@@ -132,13 +132,13 @@ def analyze_phase1_results():
         phase1_lines = phase1["totals"]["covered_lines"]
         lines_added = phase1_lines - baseline_lines
 
-        print(f"\nLINES OF CODE IMPACT:")
+        print("\nLINES OF CODE IMPACT:")
         print(f"   Baseline lines covered: {baseline_lines:,}")
         print(f"   Phase 1 lines covered:  {phase1_lines:,}")
         print(f"   New lines covered:      {lines_added:+,}")
 
         # Next phase readiness
-        print(f"\nNEXT PHASE READINESS:")
+        print("\nNEXT PHASE READINESS:")
         if phase1_total >= 25.0:
             print("Ready for Phase 2 (Target: 35% coverage)")
             print("Focus areas: Core modules, API endpoints, Database layer")
@@ -148,10 +148,10 @@ def analyze_phase1_results():
             print("Recommendation: Focus on completing current priority files")
 
         # Success metrics summary
-        print(f"\nPHASE 1 SUCCESS METRICS:")
+        print("\nPHASE 1 SUCCESS METRICS:")
         print(f"Coverage Improvement: {improvement:+.2f}%")
         print(f"Files Significantly Improved: {total_files_improved}")
-        print(f"Tests Created: ~36 functional tests")
+        print("Tests Created: ~36 functional tests")
         print(f"High-Impact Modules Targeted: {priority_improvements}")
 
         return True

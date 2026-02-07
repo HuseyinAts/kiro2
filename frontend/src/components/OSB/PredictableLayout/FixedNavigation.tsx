@@ -9,7 +9,8 @@
  * - Öngörülebilir navigasyon
  */
 
-import React, { useState } from 'react';
+import * as React from 'react';
+import {  useState  } from 'react';
 import './FixedNavigation.css';
 
 export interface NavigationItem {
@@ -55,12 +56,12 @@ export const FixedNavigation: React.FC<FixedNavigationProps> = ({
   onLogoClick,
   variant = 'horizontal',
   osbMode = true,
-  position = 'top'
+  position = 'top',
 }) => {
   // Items'ı pozisyona göre sırala - her zaman aynı sıra
   const sortedItems = [...items].sort((a, b) => a.position - b.position);
 
-  const [focusedIndex, setFocusedIndex] = useState<number>(-1);
+  const [_focusedIndex, setFocusedIndex] = useState<number>(-1);
 
   const handleKeyDown = (e: React.KeyboardEvent, index: number) => {
     if (variant === 'horizontal') {
