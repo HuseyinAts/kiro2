@@ -359,7 +359,7 @@ class TestSegmentationIntegration:
         assert result["sentence_count"] == 3
 
     @pytest.mark.asyncio
-    @pytest.mark.skipif(True, reason="JPype segmentation splits on 'Dr.' abbreviation (2 vs 1 sentence)")
+    @pytest.mark.skip(reason="JPype segmentation splits on 'Dr.' abbreviation (2 vs 1 sentence)")
     async def test_segmentation_handles_abbreviations(
         self, mock_config, mock_bridge, mock_cache
     ):
@@ -523,7 +523,7 @@ class TestFallbackBehavior:
     """Integration tests for JPype -> HTTP fallback."""
 
     @pytest.mark.asyncio
-    @pytest.mark.skipif(True, reason="Fallback returns 'jpype' backend instead of 'http' (handler logic changed)")
+    @pytest.mark.skip(reason="Fallback returns 'jpype' backend instead of 'http' (handler logic changed)")
     async def test_fallback_on_jpype_error(self, mock_config, mock_cache):
         """Should fall back to HTTP when JPype fails."""
         # Bridge that fails
