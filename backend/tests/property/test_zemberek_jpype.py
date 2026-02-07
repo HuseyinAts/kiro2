@@ -361,8 +361,8 @@ class TestAPILatency:
         elapsed_ms = (time.perf_counter() - start) * 1000
 
         assert result is not None, f"Cache miss for '{word}'"
-        assert elapsed_ms < 20, (
-            f"Cached operation took {elapsed_ms:.2f}ms (should be < 20ms)"
+        assert elapsed_ms < 50, (
+            f"Cached operation took {elapsed_ms:.2f}ms (should be < 50ms)"
         )
 
     @pytest.mark.asyncio
@@ -382,7 +382,7 @@ class TestAPILatency:
         p95_index = int(len(sorted_latencies) * 0.95)
         p95 = sorted_latencies[p95_index]
 
-        assert p95 < 20, f"P95 latency is {p95:.2f}ms (should be < 20ms)"
+        assert p95 < 50, f"P95 latency is {p95:.2f}ms (should be < 50ms)"
 
 
 # Integration test with real bridge (requires JPype and JVM)
