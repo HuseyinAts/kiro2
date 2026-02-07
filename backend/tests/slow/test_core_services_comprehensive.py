@@ -3,11 +3,6 @@ Core Services Kapsamlı Test Modülü
 Tüm core servislerinin kapsamlı testleri
 """
 
-# UNIVERSAL_SKIP_APPLIED
-import pytest
-pytest.skip("Module has import errors or API changes - skip to prevent collection failure", allow_module_level=True)
-
-
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest

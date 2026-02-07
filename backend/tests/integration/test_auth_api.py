@@ -4,15 +4,6 @@ Kimlik doğrulama API testleri
 NOTE: These tests require database connectivity and proper password validation.
 Skipped since they require full infrastructure to work.
 """
-# EARLY_SKIP_APPLIED
-import pytest
-pytest.skip("Heavy imports (from main import app) cause 10+ second timeout", allow_module_level=True)
-
-
-import pytest
-pytest.skip("Test requires running server or has heavy imports that timeout", allow_module_level=True)
-
-
 import pytest
 from fastapi.testclient import TestClient
 
@@ -20,12 +11,6 @@ from main import app
 from models import KullaniciRolu
 
 # Skip entire module - requires database and proper infrastructure
-
-pytestmark = pytest.mark.skipif(
-    True,
-    reason="AsyncClient(app=app) hangs in asyncio event loop on Windows",
-)
-
 
 pytestmark = pytest.mark.skip(
     reason="Integration tests require database connectivity and proper user setup"

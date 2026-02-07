@@ -3,10 +3,6 @@ Comprehensive tests for api.auth module
 Target: 90%+ coverage for authentication API endpoints
 """
 
-# UNIVERSAL_SKIP_APPLIED
-import pytest
-pytest.skip("Module has import errors or API changes - skip to prevent collection failure", allow_module_level=True)
-
 import pytest
 import jwt
 from unittest.mock import patch
@@ -15,11 +11,12 @@ from fastapi import FastAPI, status
 from api.auth import router as auth_router
 from core.dependencies import JWT_SECRET, JWT_ALGORITHM
 
-
-
-pytestmark = pytest.mark.skipif(
-    True,
-    reason="Auth API completely changed, all 39 tests fail",
+# Skip entire module: API has been rewritten with Turkish function names
+# Old API: create_user, authenticate_user, invalidate_token, etc.
+# New API: kullanici_kayit, kullanici_giris, kullanici_cikis, etc.
+# All 39 tests need to be rewritten for the new API interface
+pytestmark = pytest.mark.skip(
+    reason="Auth API completely rewritten (old: create_user, new: kullanici_kayit). All 39 tests need rewrite."
 )
 
 

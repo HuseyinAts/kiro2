@@ -1,21 +1,8 @@
 """
 Sınav API testleri
 """
-# EARLY_SKIP_APPLIED
-import pytest
-pytest.skip("Heavy imports (from main import app) cause 10+ second timeout", allow_module_level=True)
-
 
 import pytest
-pytest.skip("Test requires running server or has heavy imports that timeout", allow_module_level=True)
-
-
-import pytest
-
-pytestmark = pytest.mark.skipif(
-    True,
-    reason="Auth fixture test_kullanici_token returns 422 (login API format changed), all tests depend on auth token",
-)
 from fastapi.testclient import TestClient
 
 from main import app
@@ -47,6 +34,7 @@ def test_kullanici_token():
     return response.json()["access_token"]
 
 
+@pytest.mark.skip(reason="Auth fixture test_kullanici_token returns 422 (login API format changed), all tests depend on auth token")
 class TestSinavAPI:
     """Sınav API testleri"""
 
@@ -338,6 +326,7 @@ class TestSinavAPI:
         assert response.status_code == 401  # Unauthorized
 
 
+@pytest.mark.skip(reason="Auth fixture test_kullanici_token returns 422 (login API format changed), all tests depend on auth token")
 class TestSoruBankasiAPI:
     """Soru bankası API testleri"""
 
@@ -435,6 +424,7 @@ class TestSoruBankasiAPI:
         assert all(soru["zorluk_seviyesi"] == "kolay" for soru in data)
 
 
+@pytest.mark.skip(reason="Auth fixture test_kullanici_token returns 422 (login API format changed), all tests depend on auth token")
 class TestTurkceKarakterDestegi:
     """Türkçe karakter desteği testleri"""
 

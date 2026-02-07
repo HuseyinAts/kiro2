@@ -4,24 +4,13 @@ Kapsamlı API Entegrasyon Testleri
 
 Bu dosya kritik API endpoint'leri için integration testlerini içerir.
 """
-# EARLY_SKIP_APPLIED
 import pytest
-pytest.skip("Heavy imports (from main import app) cause 10+ second timeout", allow_module_level=True)
-
-
-
-import pytest
-pytest.skip("Test requires running server or has heavy imports that timeout", allow_module_level=True)
-
+pytest.skip("AsyncClient(app=...) deprecated in httpx 0.27+, requires ASGITransport migration", allow_module_level=True)
 
 import asyncio
 import uuid
 from datetime import datetime, timedelta
 from unittest.mock import patch
-
-import pytest
-
-pytestmark = pytest.mark.skipif(True, reason="AsyncClient(app=...) deprecated in httpx 0.27+ (needs ASGITransport)")
 
 from fastapi.testclient import TestClient
 from httpx import AsyncClient
