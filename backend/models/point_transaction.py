@@ -9,7 +9,7 @@ from datetime import datetime
 from sqlalchemy import Column, String, Integer, DateTime, ForeignKey, JSON
 from sqlalchemy.orm import relationship
 
-from models.base import Base
+from .base import Base
 
 
 class PointTransaction(Base):

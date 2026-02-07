@@ -11,7 +11,6 @@ from sqlalchemy import (
     DateTime,
     ForeignKey,
     Text,
-    JSON,
     Float,
 )
 from sqlalchemy.dialects.postgresql import UUID, ARRAY
@@ -21,61 +20,10 @@ import uuid
 
 from models.database import Base
 
-
-class EBAVideo(Base):
-    """
-    Task 97.2: EBA Video Catalog Model
-
-    Stores EBA TV video metadata synced from MEB API
-    """
-
-    __tablename__ = "eba_videos"
-
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-
-    # EBA specific IDs
-    eba_video_id = Column(String(100), unique=True, nullable=False, index=True)
-    meb_content_id = Column(String(100), nullable=True)  # MEB content ID
-
-    # Video metadata
-    title = Column(String(500), nullable=False)
-    description = Column(Text, nullable=True)
-    duration_seconds = Column(Integer, nullable=False)
-    thumbnail_url = Column(String(1000), nullable=True)
-    video_url = Column(String(1000), nullable=False)
-
-    # Classification (Task 97.3: Subject-based filtering)
-    subject = Column(String(50), nullable=False, index=True)  # matematik, fizik, etc.
-    grade_level = Column(
-        String(20), nullable=False, index=True
-    )  # ortaokul_8, lise_11, etc.
-    topic = Column(String(200), nullable=True)  # "Sayılar ve İşlemler"
-    subtopics = Column(
-        ARRAY(String), nullable=True
-    )  # ["Kareköklü Sayılar", "Karekök Alma"]
-    keywords = Column(ARRAY(String), nullable=True)  # For search
-
-    # Curriculum alignment
-    kazanim_codes = Column(ARRAY(String), nullable=True)  # ["8.1.2.1", "8.1.2.2"]
-    curriculum_aligned = Column(Boolean, default=True)
-
-    # Video properties
-    quality = Column(String(10), default="720p")  # 360p, 480p, 720p, 1080p
-    has_turkish_subtitle = Column(Boolean, default=True)
-
-    # Analytics from EBA
-    view_count = Column(Integer, default=0)  # From EBA API
-    publish_date = Column(DateTime(timezone=True), nullable=True)
-
-    # Sync metadata
-    last_synced_at = Column(DateTime(timezone=True), default=datetime.now)
-    created_at = Column(DateTime(timezone=True), default=datetime.now)
-
-    # Relationships
-    watch_sessions = relationship("EBAVideoWatch", back_populates="video")
-
-    def __repr__(self):
-        return f"<EBAVideo {self.eba_video_id}: {self.title}>"
+# Re-export EBAVideo from canonical source (models/eba_models.py)
+# to avoid duplicate class registration in SQLAlchemy mapper registry.
+# The comprehensive EBAVideo model lives in eba_models.py.
+from models.eba_models import EBAVideo  # noqa: F401
 
 
 class EBAVideoWatch(Base):
@@ -120,7 +68,7 @@ class EBAVideoWatch(Base):
     created_at = Column(DateTime(timezone=True), default=datetime.now)
 
     # Relationships
-    video = relationship("EBAVideo", back_populates="watch_sessions")
+    video = relationship("EBAVideo")
     user = relationship("User")
 
     def __repr__(self):

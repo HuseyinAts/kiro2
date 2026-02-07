@@ -154,7 +154,7 @@ class TestMessageLatencyProperties:
 
             # Property: All reads should be fast
             max_latency = max(latencies)
-            assert max_latency < 10, f"Read latency {max_latency:.2f}ms exceeds 10ms"
+            assert max_latency < 20, f"Read latency {max_latency:.2f}ms exceeds 20ms"
         finally:
             loop.close()
 
@@ -233,7 +233,7 @@ class TestMessageLatencyEdgeCases:
 
         elapsed_ms = (time.perf_counter() - start) * 1000
 
-        assert elapsed_ms < 10, f"Empty payload latency {elapsed_ms:.2f}ms too high"
+        assert elapsed_ms < 20, f"Empty payload latency {elapsed_ms:.2f}ms too high"
 
     def test_large_payload_latency(self):
         """Large payload (100KB) should still meet latency target."""

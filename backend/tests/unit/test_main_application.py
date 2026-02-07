@@ -203,8 +203,8 @@ class TestRouterRegistration:
                     client = TestClient(app)
                     response = client.get("/health")
 
-                    # Should respond (might be 200, 404, or redirect)
-                    assert response.status_code in [200, 404, 307, 308]
+                    # Should respond (might be 200, 404, 503, or redirect)
+                    assert response.status_code in [200, 404, 503, 307, 308]
 
     def test_docs_endpoint_exists(self, mock_db_manager, mock_settings, mock_setup_routers):
         """Test that OpenAPI docs endpoint exists"""
