@@ -521,16 +521,18 @@ class TestRBACHierarchyProperties:
         """
         Property 4.11: Kullanici birden fazla role sahip olabilmeli.
         """
+        # Fresh RBAC to avoid state leakage between hypothesis examples
+        rbac = RBACSystem()
         user_id = "multi_role_user"
         all_permissions = set()
 
         for i in range(role_count):
             perms = {f"role_{i}:read", f"role_{i}:write"}
             all_permissions.update(perms)
-            self.rbac.create_role(f"role_{i}", f"Role {i}", perms)
-            self.rbac.assign_role_to_user(user_id, f"role_{i}")
+            rbac.create_role(f"role_{i}", f"Role {i}", perms)
+            rbac.assign_role_to_user(user_id, f"role_{i}")
 
-        user_perms = self.rbac.get_user_permissions(user_id)
+        user_perms = rbac.get_user_permissions(user_id)
 
         assert user_perms == all_permissions, \
             f"User should have all permissions from {role_count} roles"

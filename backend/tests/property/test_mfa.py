@@ -245,8 +245,10 @@ class TestTOTPValidityProperties:
         assert uri.startswith("otpauth://totp/"), \
             f"URI should start with otpauth://totp/, got: {uri}"
 
-        # Email ve secret icermeli
-        assert email in uri, \
+        # Email ve secret icermeli (URL-encoded olabilir, orn. @ -> %40)
+        from urllib.parse import unquote
+        decoded_uri = unquote(uri)
+        assert email in decoded_uri, \
             f"URI should contain email: {email}"
         assert self.secret in uri, \
             "URI should contain secret"

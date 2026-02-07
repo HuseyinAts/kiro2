@@ -8,7 +8,7 @@ import time
 from unittest.mock import AsyncMock, MagicMock
 
 try:
-    from hypothesis import given, settings, strategies as st, assume
+    from hypothesis import given, settings, strategies as st, assume, HealthCheck
     HYPOTHESIS_AVAILABLE = True
 except ImportError:
     HYPOTHESIS_AVAILABLE = False
@@ -91,7 +91,7 @@ class TestMorphologicalCompleteness:
     """
 
     @given(st.sampled_from(TURKISH_WORDS))
-    @settings(max_examples=100)
+    @settings(max_examples=100, suppress_health_check=[HealthCheck.function_scoped_fixture])
     @pytest.mark.asyncio
     async def test_known_words_have_analysis(self, mock_http_client, mock_cache, word):
         """Known Turkish words should have at least one analysis"""
@@ -120,7 +120,7 @@ class TestMorphologicalCompleteness:
         assert word_data["word"] == word
 
     @given(st.text(alphabet=TURKISH_ALPHABET, min_size=2, max_size=15))
-    @settings(max_examples=50)
+    @settings(max_examples=50, suppress_health_check=[HealthCheck.function_scoped_fixture])
     @pytest.mark.asyncio
     async def test_random_text_returns_structure(self, mock_http_client, mock_cache, word):
         """Random Turkish-alphabet text should return valid structure"""
@@ -159,7 +159,7 @@ class TestLemmatizationConsistency:
     """
 
     @given(st.sampled_from(TURKISH_WORDS))
-    @settings(max_examples=100)
+    @settings(max_examples=100, suppress_health_check=[HealthCheck.function_scoped_fixture])
     @pytest.mark.asyncio
     async def test_consistent_lemma(self, mock_http_client, mock_cache, word):
         """Same word should always produce same lemma"""
@@ -202,7 +202,7 @@ class TestSpellCheckAccuracy:
     """
 
     @given(st.sampled_from(CORRECT_TURKISH_WORDS))
-    @settings(max_examples=100)
+    @settings(max_examples=100, suppress_health_check=[HealthCheck.function_scoped_fixture])
     @pytest.mark.asyncio
     async def test_correct_words_pass(self, mock_http_client, mock_cache, word):
         """Dictionary words should pass spell check"""
@@ -244,7 +244,7 @@ class TestTokenizationBoundary:
     """
 
     @given(st.text(alphabet=TURKISH_ALPHABET + " .,!?", min_size=1, max_size=50))
-    @settings(max_examples=100)
+    @settings(max_examples=100, suppress_health_check=[HealthCheck.function_scoped_fixture])
     @pytest.mark.asyncio
     async def test_token_reconstruction(self, mock_http_client, mock_cache, text):
         """Tokens should reconstruct original text"""
@@ -291,7 +291,7 @@ class TestCacheConsistency:
     """
 
     @given(st.sampled_from(TURKISH_WORDS))
-    @settings(max_examples=50)
+    @settings(max_examples=50, suppress_health_check=[HealthCheck.function_scoped_fixture])
     @pytest.mark.asyncio
     async def test_cached_matches_fresh(self, mock_http_client, word):
         """Cached result should match fresh result"""
@@ -356,7 +356,7 @@ class TestAPILatency:
     """
 
     @given(st.sampled_from(TURKISH_WORDS))
-    @settings(max_examples=50)
+    @settings(max_examples=50, suppress_health_check=[HealthCheck.function_scoped_fixture])
     @pytest.mark.asyncio
     async def test_cached_latency_under_10ms(self, mock_http_client, word):
         """Cached operations should complete in under 10ms"""
