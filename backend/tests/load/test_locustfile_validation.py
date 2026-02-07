@@ -5,6 +5,8 @@ Ensures load testing configuration meets all requirements
 Task 22: Load Testing Validation (Requirement 11.3)
 """
 import pytest
+
+locust_available = pytest.importorskip("locust", reason="locust package not installed")
 import importlib.util
 import inspect
 from pathlib import Path
