@@ -254,6 +254,12 @@ class SoruBankasiServisi:
         Returns:
             List[Question]: Filtrelenmiş soru listesi
         """
+        # PERFORMANCE: Cache question listings (5 min TTL)
+        cache_key = f"sorular_liste:{sinav_tipi}:{konu}:{zorluk_seviyesi}:{limit}:{offset}"
+        cached = await cache_manager.get(cache_key)
+        if cached is not None:
+            return cached
+
         async with db_manager.get_session() as session:
             try:
                 # Base query - questions tablosundan (Question modeli)
@@ -294,7 +300,13 @@ class SoruBankasiServisi:
                 )
 
                 result = await session.execute(stmt)
-                return result.scalars().all()
+                questions = result.scalars().all()
+
+                # PERFORMANCE: Cache result for 5 minutes
+                if questions:
+                    await cache_manager.set(cache_key, questions, ttl=300)
+
+                return questions
 
             except Exception as e:
                 print(f"Soru listeleme hatası: {str(e)}")

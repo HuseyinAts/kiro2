@@ -29,9 +29,13 @@ npm-debug.log*
 *.swp
 *.swo
 
+# Deprecated directories
+kiro2-orchestrator/
+
 # OS
 .DS_Store
 Thumbs.db
+desktop.ini
 
 # Logs
 *.log
