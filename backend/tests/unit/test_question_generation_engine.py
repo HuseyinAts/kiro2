@@ -4,8 +4,6 @@ Task 55: Question Generation Engine Tests
 """
 
 import pytest
-from unittest.mock import Mock, AsyncMock
-from datetime import datetime
 
 from models.curriculum import SubjectType
 from models.question_generation import CognitiveLevel, DifficultyLevel, QuestionType

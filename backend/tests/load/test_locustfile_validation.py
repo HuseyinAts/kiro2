@@ -8,7 +8,6 @@ import pytest
 import importlib.util
 import inspect
 from pathlib import Path
-from typing import List, Dict, Any
 
 
 class TestLocustfileStructure:

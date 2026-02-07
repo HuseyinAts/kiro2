@@ -3,8 +3,7 @@ Tests for core/logging_config.py
 Simple logging configuration tests
 """
 import logging
-import pytest
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch
 
 
 class TestSetupProductionLogging:

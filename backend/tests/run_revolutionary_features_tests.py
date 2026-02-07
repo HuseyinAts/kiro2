@@ -175,7 +175,7 @@ class RevolutionaryFeaturesTestRunner:
         print("=" * 80)
 
         print(f"⏱️  Toplam Süre: {duration:.2f} saniye")
-        print(f"[CHART] Test İstatistikleri:")
+        print("[CHART] Test İstatistikleri:")
         print(f"   • Toplam Test: {self.total_tests}")
         print(f"   • Başarılı: {self.passed_tests} [CHECK]")
         print(f"   • Başarısız: {self.failed_tests} [X]")
@@ -185,7 +185,7 @@ class RevolutionaryFeaturesTestRunner:
             success_rate = (self.passed_tests / self.total_tests) * 100
             print(f"   • Başarı Oranı: {success_rate:.1f}%")
 
-        print(f"\n[CLIPBOARD] Modül Sonuçları:")
+        print("\n[CLIPBOARD] Modül Sonuçları:")
         for module_name, result in self.test_results.items():
             status = "[CHECK] BAŞARILI" if result["success"] else "[X] BAŞARISIZ"
             print(f"   • {module_name}: {status}")
@@ -194,7 +194,7 @@ class RevolutionaryFeaturesTestRunner:
         self._save_detailed_report()
 
         print(
-            f"\n[PAGE] Detaylı rapor: reports/revolutionary_features_final_report.json"
+            "\n[PAGE] Detaylı rapor: reports/revolutionary_features_final_report.json"
         )
         print("=" * 80)
 

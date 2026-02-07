@@ -7,7 +7,6 @@ Target: 100 concurrent users, P95 < 3s
 """
 
 from locust import HttpUser, task, between, events
-import json
 import random
 import time
 from datetime import datetime
@@ -118,7 +117,7 @@ class VideoAPIUser(HttpUser):
             if response.status_code == 200:
                 response.success()
             else:
-                response.failure(f"Test endpoint failed")
+                response.failure("Test endpoint failed")
 
 
 class CacheOptimizedUser(HttpUser):
@@ -155,7 +154,7 @@ class CacheOptimizedUser(HttpUser):
                 else:
                     response.success()
             else:
-                response.failure(f"Request failed")
+                response.failure("Request failed")
 
 
 # Event listeners for custom metrics
@@ -166,8 +165,8 @@ def on_test_start(environment, **kwargs):
     print("LOAD TEST STARTED - Video API")
     print("=" * 60)
     print(f"Start Time: {datetime.now().isoformat()}")
-    print(f"Target: 100 concurrent users")
-    print(f"Performance Target: P95 < 3s")
+    print("Target: 100 concurrent users")
+    print("Performance Target: P95 < 3s")
     print("=" * 60 + "\n")
 
 
@@ -186,7 +185,7 @@ def on_test_stop(environment, **kwargs):
 
     if total_requests > 0:
         failure_rate = (total_failures / total_requests) * 100
-        print(f"\nResults:")
+        print("\nResults:")
         print(f"  Total Requests:  {total_requests}")
         print(f"  Total Failures:  {total_failures}")
         print(f"  Failure Rate:    {failure_rate:.2f}%")

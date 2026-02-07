@@ -3,14 +3,9 @@ Simplified tests for Monitoring System components
 Target: 80%+ test coverage
 """
 
-import asyncio
 import pytest
-import time
-from datetime import datetime, timedelta
-from unittest.mock import AsyncMock, MagicMock, patch
-from typing import Dict, Any
+from datetime import datetime
 
-import psutil
 
 # Import individual components to avoid bcrypt issues
 from core.unified.monitoring_system import (
@@ -20,9 +15,6 @@ from core.unified.monitoring_system import (
     MonitoringCategory,
     MetricPoint,
     SystemMetrics,
-    APIMetrics,
-    DatabaseMetrics,
-    Alert,
     MetricsAggregator,
     AlertManager,
 )

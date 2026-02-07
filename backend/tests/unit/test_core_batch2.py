@@ -9,14 +9,11 @@ Tests for:
 Total: ~400+ unit tests
 """
 
-import asyncio
 import json
 import tempfile
-import time
-from collections import deque
 from datetime import datetime, timedelta
 from pathlib import Path
-from unittest.mock import MagicMock, Mock, patch
+from unittest.mock import Mock
 
 import pytest
 
@@ -26,7 +23,6 @@ from core.config_validator import (
     ConfigValidator,
     ValidationIssue,
     ValidationSeverity,
-    print_validation_report,
     validate_configuration,
 )
 
@@ -41,14 +37,11 @@ from core.error_monitoring import (
     ErrorMonitor,
     FileLogProcessor,
     LogLevel,
-    LogProcessor,
     get_error_monitor,
     get_health_status,
     log_error,
     reset_consecutive_errors,
     setup_error_monitoring,
-    start_monitoring,
-    stop_monitoring,
 )
 
 # Exceptions

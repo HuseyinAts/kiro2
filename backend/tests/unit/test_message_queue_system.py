@@ -3,10 +3,8 @@ Comprehensive tests for core/message_queue_system.py
 Target: 518 lines, 0% → 60%+ coverage
 """
 
-import asyncio
-import uuid
 from datetime import UTC, datetime, timedelta
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import AsyncMock, patch
 
 import pytest
 
@@ -516,7 +514,7 @@ class TestRedisMessageQueue:
     @pytest.mark.asyncio
     async def test_queue_connect_success(self):
         """Test successful Redis connection"""
-        with patch("core.message_queue_system.aioredis.from_url") as mock_from_url:
+        with patch("core.message_queue_system.redis.from_url") as mock_from_url:
             mock_redis = AsyncMock()
             mock_redis.ping = AsyncMock(return_value=True)
             mock_from_url.return_value = mock_redis
@@ -531,7 +529,7 @@ class TestRedisMessageQueue:
     async def test_queue_connect_failure(self):
         """Test Redis connection failure handling"""
         with patch(
-            "core.message_queue_system.aioredis.from_url",
+            "core.message_queue_system.redis.from_url",
             side_effect=Exception("Connection failed"),
         ):
             queue = RedisMessageQueue()
@@ -546,7 +544,7 @@ class TestRedisMessageQueue:
     @pytest.mark.asyncio
     async def test_queue_disconnect(self):
         """Test queue disconnect"""
-        with patch("core.message_queue_system.aioredis.from_url") as mock_from_url:
+        with patch("core.message_queue_system.redis.from_url") as mock_from_url:
             mock_redis = AsyncMock()
             mock_redis.ping = AsyncMock(return_value=True)
             mock_redis.close = AsyncMock()

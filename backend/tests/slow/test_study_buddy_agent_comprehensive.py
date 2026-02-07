@@ -4,13 +4,11 @@ Coverage target: %80+
 """
 
 import pytest
-from unittest.mock import Mock, AsyncMock, patch
-import asyncio
 
 try:
     from agents.study_buddy_agent import StudyBuddyAgent
 except ImportError:
-    StudyBuddyAgent = None
+    pytest.skip("study_buddy_agent module archived", allow_module_level=True)
 
 
 @pytest.fixture

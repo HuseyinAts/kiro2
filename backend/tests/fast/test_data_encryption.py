@@ -3,7 +3,6 @@ Fast unit tests for data encryption system
 Tests: Enums, Basic encryption/decryption
 Coverage target: 50-70% of core.data_encryption
 """
-import pytest
 
 
 class TestEncryptionEnums:

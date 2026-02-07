@@ -3,9 +3,6 @@ Fast unit tests for KVKK compliance system
 Tests: Enums, Models, Basic operations
 Coverage target: 60-80% of core.kvkk_compliance
 """
-import pytest
-from datetime import datetime, timedelta
-from uuid import uuid4
 
 
 class TestKVKKEnums:

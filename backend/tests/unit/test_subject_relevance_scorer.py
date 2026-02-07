@@ -1,13 +1,16 @@
 """
 Subject Relevance Scorer Unit Tests
 Video içeriğinin ders ve konu ile uygunluğunu skorlayan servisi test eder
+All external dependencies are mocked.
 """
 
+import os
+
 import pytest
+
 from services.subject_relevance_scorer import (
     SubjectRelevanceScorer,
     RelevanceScore,
-    SUBJECT_KEYWORDS,
 )
 
 
@@ -16,8 +19,18 @@ class TestSubjectRelevanceScorer:
 
     @pytest.fixture
     def scorer_service(self):
-        """Test için scorer instance'ı oluştur"""
-        return SubjectRelevanceScorer()
+        """Test için scorer instance'ı oluştur - mock SentenceTransformer"""
+        # Ensure TESTING env var is set to prevent model loading
+        os.environ["TESTING"] = "true"
+
+        # Create scorer instance (should skip model loading due to TESTING=true)
+        scorer = SubjectRelevanceScorer()
+
+        # Double-check that model wasn't loaded
+        assert scorer._sentence_transformers_available is False
+        assert scorer._model is None
+
+        return scorer
 
     # ==================== Yüksek Uygunluk Skorlama Testleri ====================
 

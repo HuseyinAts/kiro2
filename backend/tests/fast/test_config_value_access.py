@@ -5,7 +5,6 @@ Target: +1% coverage through config access
 """
 
 import pytest
-import os
 
 
 class TestSettingsAccess:
@@ -167,8 +166,8 @@ class TestOpenAIConfig:
 
             # Access OpenAI API key if exists
             if hasattr(settings, "OPENAI_API_KEY"):
-                # Key exists (may be None or empty in test env)
-                assert True
+                # Key attribute exists (value may be None or empty in test env)
+                assert hasattr(settings, "OPENAI_API_KEY")
             else:
                 assert settings is not None
         except (ImportError, AttributeError):

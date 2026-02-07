@@ -2,10 +2,8 @@
 Comprehensive tests for core/logging_middleware.py
 Tests logging middleware for FastAPI request/response logging
 """
-import pytest
-import logging
-from unittest.mock import patch, MagicMock, AsyncMock
-from fastapi import FastAPI, Request, Response
+from unittest.mock import patch
+from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
 

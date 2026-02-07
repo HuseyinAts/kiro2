@@ -8,11 +8,9 @@ Requirements: 7.1, 7.2, 7.3, 7.6
 """
 
 import asyncio
-import json
 import os
 import time
-from datetime import datetime
-from typing import Dict, List, Any
+from typing import Dict, Any
 
 import aiohttp
 import psutil
@@ -497,7 +495,7 @@ class Test100KConcurrentUsers:
             )
 
             # Fazlar arası bekleme (ölçeklendirme için)
-            await asyncio.sleep(5)
+            await asyncio.sleep(2)  # Reduced from 5s for faster test execution
 
         # Ölçeklendirme analizi
         # Başarı oranının yük artışıyla birlikte stabil kalması beklenir

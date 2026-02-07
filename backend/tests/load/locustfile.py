@@ -100,7 +100,7 @@ class VideoRecommendationUser(HttpUser):
 
                     # Validate response format
                     if not isinstance(data, list):
-                        response.failure(f"Invalid response format: expected list")
+                        response.failure("Invalid response format: expected list")
                         return
 
                     # Track cache hits/misses
@@ -395,8 +395,8 @@ def on_test_start(environment, **kwargs):
     print("VIDEO API LOAD TEST STARTING")
     print("=" * 70)
     print(f"Target Host: {environment.host}")
-    print(f"Test Scenario: Video Recommendations API")
-    print(f"Requirement: 11.3 - 100 concurrent user load test")
+    print("Test Scenario: Video Recommendations API")
+    print("Requirement: 11.3 - 100 concurrent user load test")
     print(f"Start Time: {datetime.now().isoformat()}")
     print("=" * 70 + "\n")
 
@@ -462,7 +462,7 @@ def check_video_api_performance(environment, **kwargs):
     print("-" * 70)
 
     # Requirement 11.3: 100 concurrent user load test
-    print(f"✓ Requirement 11.3: 100 concurrent user load test - COMPLETED")
+    print("✓ Requirement 11.3: 100 concurrent user load test - COMPLETED")
 
     # Requirement 2.1: P95 response time < 3000ms
     if p95_response_time <= 3000:
@@ -504,10 +504,10 @@ def check_video_api_performance(environment, **kwargs):
     # Cache performance analysis
     video_rec_stats = stats.get("Video Recommendations", None)
     if video_rec_stats:
-        print(f"\nCache Performance:")
+        print("\nCache Performance:")
         print(f"  Video Recommendations: {video_rec_stats.num_requests:,} requests")
         print(f"  Average Response Time: {video_rec_stats.avg_response_time:.0f}ms")
-        print(f"  Note: Cache hit rate tracked in application metrics")
+        print("  Note: Cache hit rate tracked in application metrics")
 
     print("=" * 70)
 

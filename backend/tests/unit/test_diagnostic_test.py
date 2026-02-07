@@ -4,7 +4,7 @@ Task 61.1: Diagnostic Test
 """
 
 import pytest
-from services.diagnostic_test import DiagnosticTest, WeakArea
+from services.diagnostic_test import DiagnosticTest
 
 
 class TestDiagnosticTest:

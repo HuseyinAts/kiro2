@@ -3,8 +3,6 @@ Sinav Motoru Service - Comprehensive Tests
 """
 
 import pytest
-from unittest.mock import Mock, AsyncMock
-from datetime import datetime
 
 try:
     from services.sinav_motoru_service import SinavMotoruService

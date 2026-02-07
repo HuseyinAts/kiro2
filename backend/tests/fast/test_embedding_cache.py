@@ -5,7 +5,6 @@ Tests for Embedding Cache System
 import pytest
 import numpy as np
 from datetime import datetime
-from unittest.mock import AsyncMock, MagicMock, patch
 
 from core.embedding_cache import (
     EmbeddingCache,
@@ -350,18 +349,27 @@ class TestEmbeddingCache:
     @pytest.mark.asyncio
     async def test_search(self, embedding_cache):
         """Test semantic search"""
-        # Add embeddings to index
+        # Use 768-dimensional embeddings to match cache configuration
+        dim = 768
+        similar1 = np.zeros(dim)
+        similar1[0] = 1.0
+        similar2 = np.zeros(dim)
+        similar2[0] = 0.9
+        similar2[1] = 0.1
+        different = np.zeros(dim)
+        different[2] = 1.0
+
         embeddings = [
-            ("Similar 1", np.array([1.0, 0.0, 0.0])),
-            ("Similar 2", np.array([0.9, 0.1, 0.0])),
-            ("Different", np.array([0.0, 0.0, 1.0])),
+            ("Similar 1", similar1),
+            ("Similar 2", similar2),
+            ("Different", different),
         ]
 
         for text, emb in embeddings:
             await embedding_cache.set(text, emb)
 
-        # Search for similar to [1, 0, 0]
-        query = np.array([1.0, 0.0, 0.0])
+        # Search for similar to similar1
+        query = similar1.copy()
         results = await embedding_cache.search(query, top_k=2, threshold=0.5)
 
         # Should find similar embeddings

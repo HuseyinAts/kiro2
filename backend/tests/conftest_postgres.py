@@ -8,14 +8,13 @@ from typing import AsyncGenerator, Generator
 
 import pytest
 import pytest_asyncio
-from sqlalchemy import event, text
+from sqlalchemy import text
 from sqlalchemy.ext.asyncio import (
     AsyncEngine,
     AsyncSession,
     async_sessionmaker,
     create_async_engine,
 )
-from sqlalchemy.orm import Session, sessionmaker
 from sqlalchemy.pool import NullPool
 
 # Import database models to ensure they're registered
@@ -31,16 +30,8 @@ TEST_DATABASE_URL = os.getenv(
 # Database Engine Fixtures
 # ============================================================================
 
-
-@pytest.fixture(scope="session")
-def event_loop() -> Generator[asyncio.AbstractEventLoop, None, None]:
-    """
-    Create an event loop for the entire test session.
-    Required for async fixtures with session scope.
-    """
-    loop = asyncio.get_event_loop_policy().new_event_loop()
-    yield loop
-    loop.close()
+# Note: event_loop fixture removed - pytest-asyncio auto mode handles this
+# Duplicate fixtures cause conflicts with pytest-asyncio>=0.21
 
 
 @pytest_asyncio.fixture(scope="session")
@@ -191,7 +182,7 @@ def user_factory(db_session: AsyncSession):
             )
     """
     from models.database import User
-    from datetime import datetime
+    from datetime import datetime, timezone
     import uuid
 
     async def _create_user(
@@ -220,8 +211,8 @@ def user_factory(db_session: AsyncSession):
             role=role,
             is_active=is_active,
             is_verified=is_verified,
-            created_at=datetime.utcnow(),
-            updated_at=datetime.utcnow(),
+            created_at=datetime.now(timezone.utc),
+            updated_at=datetime.now(timezone.utc),
             **kwargs,
         )
 
@@ -258,8 +249,8 @@ def student_profile_factory(db_session: AsyncSession, user_factory):
             user_id=user.id,
             grade_level=grade_level,
             target_exam=target_exam,
-            created_at=datetime.utcnow(),
-            updated_at=datetime.utcnow(),
+            created_at=datetime.now(timezone.utc),
+            updated_at=datetime.now(timezone.utc),
             **kwargs,
         )
 
@@ -309,8 +300,8 @@ def question_factory(db_session: AsyncSession):
             times_correct=0,
             average_response_time=0.0,
             is_active=True,
-            created_at=datetime.utcnow(),
-            updated_at=datetime.utcnow(),
+            created_at=datetime.now(timezone.utc),
+            updated_at=datetime.now(timezone.utc),
             **kwargs,
         )
 

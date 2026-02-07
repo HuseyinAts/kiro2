@@ -6,7 +6,6 @@ Simple unit tests that don't require full database setup
 """
 
 import pytest
-from unittest.mock import Mock, AsyncMock, patch
 from datetime import datetime
 
 from services.health_check_service import HealthStatus, ComponentHealth, SystemHealth

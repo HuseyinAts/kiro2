@@ -26,14 +26,22 @@ class TestFSRSWithData:
                 card.stability = 1.0
                 card.difficulty = 5.0
 
+                # Verify FSRS instance was created
+                assert fsrs is not None
+
                 if hasattr(fsrs, "schedule"):
                     try:
                         result = fsrs.schedule(card=card, rating=4)
-                        assert result is not None or True
-                    except:
-                        assert True
-        except:
-            assert True
+                        assert result is not None
+                    except Exception as e:
+                        # FSRS schedule can fail with mock card - verify error is descriptive
+                        assert isinstance(e, (AttributeError, TypeError, ValueError))
+        except ImportError:
+            pytest.skip("FSRS algorithm module not available")
+        except Exception as e:
+            # Database connection may not be available, or table may not exist in test DB
+            err_msg = str(e).lower()
+            assert "connection" in err_msg or "database" in err_msg or "table" in err_msg or isinstance(e, (AttributeError, ImportError))
 
 
 class TestZPDWithData:
@@ -53,8 +61,17 @@ class TestZPDWithData:
 
             if student:
                 service = ZPDMaarifService(db=async_db_session)
+                # Verify service was created
+                assert service is not None
+
                 if hasattr(service, "calculate_zpd"):
                     zpd = await service.calculate_zpd(user_id=student.id)
-                    assert zpd is not None or True
-        except:
-            assert True
+                    assert zpd is not None
+                    # ZPD should be a dict or numeric value
+                    assert isinstance(zpd, (dict, int, float))
+        except ImportError:
+            pytest.skip("ZPD service module not available")
+        except Exception as e:
+            # Database connection may not be available, or table may not exist in test DB
+            err_msg = str(e).lower()
+            assert "connection" in err_msg or "database" in err_msg or "table" in err_msg or isinstance(e, (AttributeError, ImportError))

@@ -14,7 +14,7 @@ Tests:
 """
 
 import pytest
-from datetime import datetime, timedelta
+from datetime import datetime, timezone
 from typing import Dict, List, Optional
 
 
@@ -70,7 +70,7 @@ class StudentAnswer:
         self.answer = answer  # None = boş
         self.time_spent = time_spent  # saniye
         self.is_correct = False
-        self.answered_at = datetime.utcnow()
+        self.answered_at = datetime.now(timezone.utc)
 
 
 class ExamResult:
@@ -97,7 +97,7 @@ class Exam:
         self.exam_id = exam_id
         self.config = config
         self.questions = questions
-        self.created_at = datetime.utcnow()
+        self.created_at = datetime.now(timezone.utc)
         self.start_time = None
         self.end_time = None
         self.student_answers = {}
@@ -105,7 +105,7 @@ class Exam:
 
     def start_exam(self) -> datetime:
         """Sınavı başlat"""
-        self.start_time = datetime.utcnow()
+        self.start_time = datetime.now(timezone.utc)
         self.status = "in_progress"
         return self.start_time
 
@@ -114,7 +114,7 @@ class Exam:
         if not self.start_time or self.status == "completed":
             return 0
 
-        elapsed = (datetime.utcnow() - self.start_time).total_seconds()
+        elapsed = (datetime.now(timezone.utc) - self.start_time).total_seconds()
         total_seconds = self.config.duration_minutes * 60
         remaining = max(0, total_seconds - elapsed)
 
@@ -141,7 +141,7 @@ class Exam:
 
     def complete_exam(self):
         """Sınavı tamamla"""
-        self.end_time = datetime.utcnow()
+        self.end_time = datetime.now(timezone.utc)
         self.status = "completed"
 
 
@@ -321,7 +321,7 @@ class ExamEngine:
         result.empty_answers = score_data["empty"]
         result.net_score = score_data["net_score"]
         result.raw_score = score_data["raw_score"]
-        result.completed_at = datetime.utcnow()
+        result.completed_at = datetime.now(timezone.utc)
 
         # Ders bazlı skorları hesapla
         for subject in exam.config.subjects.keys():

@@ -11,8 +11,7 @@ Requirements: 9.2, 9.3, 9.4
 import os
 import sys
 import pytest
-from typing import Dict, List, Any
-from unittest.mock import Mock, patch, AsyncMock
+from typing import Dict, Any
 import re
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -236,9 +235,10 @@ class ScreenReaderCompatibilityTester:
                     "TH elementlerine scope='col' veya scope='row' ekleyin"
                 )
         else:
-            result["passed"] = True  # Tablo yoksa test geçer
+            result["skipped"] = True
+            result["skip_reason"] = "Tablo element bulunamadı - test uygulanamaz"
 
-        if not result["issues"]:
+        if not result["issues"] and not result.get("skipped"):
             result["passed"] = True
 
         self.test_results.append(result)
@@ -270,7 +270,8 @@ class ScreenReaderCompatibilityTester:
                     "MathML kullanın veya formüllere aria-label ekleyin"
                 )
         else:
-            result["passed"] = True  # Matematik içeriği yoksa test geçer
+            result["skipped"] = True
+            result["skip_reason"] = "Matematik içeriği bulunamadı - test uygulanamaz"
 
         self.test_results.append(result)
         return result
@@ -309,12 +310,14 @@ class ScreenReaderCompatibilityTester:
     def generate_compatibility_report(self) -> Dict[str, Any]:
         """Ekran okuyucu uyumluluk raporu oluştur"""
         total_tests = len(self.test_results)
-        passed_tests = sum(1 for r in self.test_results if r["passed"])
+        passed_tests = sum(1 for r in self.test_results if r.get("passed", False))
+        skipped_tests = sum(1 for r in self.test_results if r.get("skipped", False))
 
         return {
             "total_tests": total_tests,
             "passed": passed_tests,
-            "failed": total_tests - passed_tests,
+            "skipped": skipped_tests,
+            "failed": total_tests - passed_tests - skipped_tests,
             "compatibility_percentage": (passed_tests / total_tests * 100)
             if total_tests > 0
             else 0,
@@ -344,21 +347,21 @@ def exam_interface_html():
         <header role="banner">
             <h1>TYT Matematik Sınavı</h1>
         </header>
-        
+
         <nav role="navigation" aria-label="Sınav navigasyonu">
             <a href="#main-content">İçeriğe atla</a>
         </nav>
-        
+
         <main id="main-content" role="main">
             <div class="timer" aria-live="polite" aria-atomic="true">
                 <span>Kalan Süre: <span id="time">165:00</span></span>
             </div>
-            
+
             <form aria-label="Sınav formu">
                 <fieldset>
                     <legend>Soru 1</legend>
                     <p>2x + 5 = 13 denkleminde x kaçtır?</p>
-                    
+
                     <label>
                         <input type="radio" name="q1" value="A" aria-label="Seçenek A: 4">
                         <span>A) 4</span>
@@ -368,10 +371,10 @@ def exam_interface_html():
                         <span>B) 5</span>
                     </label>
                 </fieldset>
-                
+
                 <button type="submit" aria-label="Sınavı bitir ve sonuçları gör">Sınavı Bitir</button>
             </form>
-            
+
             <div role="status" aria-live="polite" class="save-status">
                 <p>Yanıtlarınız otomatik olarak kaydedildi</p>
             </div>
@@ -390,7 +393,7 @@ def math_content_html():
     <body>
         <main role="main">
             <h1>Matematik Dersi: İntegral</h1>
-            
+
             <h2>Temel İntegral Formülü</h2>
             <div class="math-formula">
                 <math xmlns="http://www.w3.org/1998/Math/MathML">
@@ -410,7 +413,7 @@ def math_content_html():
                 </math>
                 <span class="sr-only" aria-label="İntegral x dx eşittir x kare bölü 2 artı C"></span>
             </div>
-            
+
             <p>Bu formül, <span aria-label="x'in integrali">∫x dx</span> hesaplamasını gösterir.</p>
         </main>
     </body>
@@ -427,7 +430,7 @@ def results_table_html():
     <body>
         <main role="main">
             <h1>Sınav Sonuçları</h1>
-            
+
             <table>
                 <caption>TYT Matematik Sınav Sonuçları - Son 5 Deneme</caption>
                 <thead>
@@ -473,7 +476,7 @@ async def test_aria_live_regions_exam_timer(sr_tester, exam_interface_html):
     """
     result = sr_tester.test_aria_live_regions(exam_interface_html)
 
-    assert result["passed"] == True, "Zamanlayıcı aria-live attribute içermeli"
+    assert result["passed"], "Zamanlayıcı aria-live attribute içermeli"
     assert len(result["issues"]) == 0
 
 
@@ -485,7 +488,7 @@ async def test_form_field_descriptions_exam(sr_tester, exam_interface_html):
     """
     result = sr_tester.test_form_field_descriptions(exam_interface_html)
 
-    assert result["passed"] == True, "Tüm form alanları etiketlenmeli"
+    assert result["passed"], "Tüm form alanları etiketlenmeli"
 
 
 @pytest.mark.asyncio
@@ -496,7 +499,7 @@ async def test_heading_structure_navigation(sr_tester, exam_interface_html):
     """
     result = sr_tester.test_heading_structure(exam_interface_html)
 
-    assert result["passed"] == True, "Başlık hiyerarşisi doğru olmalı"
+    assert result["passed"], "Başlık hiyerarşisi doğru olmalı"
     assert "<h1>" in exam_interface_html
 
 
@@ -508,7 +511,7 @@ async def test_landmark_regions_page_structure(sr_tester, exam_interface_html):
     """
     result = sr_tester.test_landmark_regions(exam_interface_html)
 
-    assert result["passed"] == True, "Tüm gerekli landmark'lar mevcut olmalı"
+    assert result["passed"], "Tüm gerekli landmark'lar mevcut olmalı"
     assert 'role="main"' in exam_interface_html
     assert 'role="navigation"' in exam_interface_html
 
@@ -521,7 +524,7 @@ async def test_button_labels_descriptive(sr_tester, exam_interface_html):
     """
     result = sr_tester.test_button_and_link_labels(exam_interface_html)
 
-    assert result["passed"] == True, "Tüm button'lar açıklayıcı etiket içermeli"
+    assert result["passed"], "Tüm button'lar açıklayıcı etiket içermeli"
 
 
 @pytest.mark.asyncio
@@ -532,7 +535,7 @@ async def test_table_accessibility_results(sr_tester, results_table_html):
     """
     result = sr_tester.test_table_accessibility(results_table_html)
 
-    assert result["passed"] == True, "Tablolar caption ve th elementleri içermeli"
+    assert result["passed"], "Tablolar caption ve th elementleri içermeli"
     assert "<caption>" in results_table_html
     assert "<th scope=" in results_table_html
 
@@ -546,7 +549,7 @@ async def test_math_formula_accessibility(sr_tester, math_content_html):
     result = sr_tester.test_math_formula_accessibility(math_content_html)
 
     assert (
-        result["passed"] == True
+        result["passed"]
     ), "Matematik formülleri MathML veya aria-label içermeli"
     assert "<math" in math_content_html or "aria-label" in math_content_html
 
@@ -560,7 +563,7 @@ async def test_status_messages_auto_save(sr_tester, exam_interface_html):
     result = sr_tester.test_status_messages(exam_interface_html)
 
     assert (
-        result["passed"] == True
+        result["passed"]
     ), "Durum mesajları role='status' veya aria-live içermeli"
 
 
@@ -616,7 +619,7 @@ async def test_generate_full_sr_compatibility_report(
     # En az %85 uyumluluk bekliyoruz
     assert report["compatibility_percentage"] >= 85.0
 
-    print(f"\n=== Ekran Okuyucu Uyumluluk Raporu ===")
+    print("\n=== Ekran Okuyucu Uyumluluk Raporu ===")
     print(f"Toplam Test: {report['total_tests']}")
     print(f"Başarılı: {report['passed']}")
     print(f"Başarısız: {report['failed']}")

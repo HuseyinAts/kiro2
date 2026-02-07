@@ -4,7 +4,6 @@ Test system performance with 1000 concurrent users
 """
 from locust import HttpUser, task, between, events
 import random
-import json
 from typing import Dict
 
 
@@ -193,8 +192,8 @@ def on_test_start(environment, **kwargs):
     print("\n" + "=" * 80)
     print("QUESTION BANK v2.0 LOAD TEST - STARTING")
     print("=" * 80)
-    print(f"Target: 1000 concurrent users")
-    print(f"Test duration: As configured in Locust UI")
+    print("Target: 1000 concurrent users")
+    print("Test duration: As configured in Locust UI")
     print("=" * 80 + "\n")
 
 

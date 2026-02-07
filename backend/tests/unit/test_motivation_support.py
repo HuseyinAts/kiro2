@@ -5,14 +5,6 @@ Requirements: REQ-49.77-49.80
 """
 
 import pytest
-from datetime import datetime, timedelta
-from services.motivation_support import (
-    MotivationSupportSystem,
-    MotivationState,
-    MotivationLevel,
-    MessageType,
-    MotivationMessage,
-)
 
 
 class TestMotivationSupportSystem:

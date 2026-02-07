@@ -5,7 +5,6 @@ Goal: Increase core.exceptions coverage from 25% to 70%+
 
 import pytest
 from datetime import datetime, timedelta
-from unittest.mock import patch, MagicMock
 
 from core.exceptions import (
     # Base exceptions

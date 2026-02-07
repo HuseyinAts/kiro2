@@ -10,7 +10,11 @@ import httpx
 import pytest
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from simple_agents import ExamAgent, LearningAgent, LLMClient, StudyAgent
+simple_agents = pytest.importorskip("simple_agents", reason="simple_agents module removed")
+ExamAgent = simple_agents.ExamAgent
+LearningAgent = simple_agents.LearningAgent
+LLMClient = simple_agents.LLMClient
+StudyAgent = simple_agents.StudyAgent
 
 
 class TestLLMClient:

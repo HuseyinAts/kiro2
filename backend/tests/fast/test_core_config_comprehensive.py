@@ -28,7 +28,7 @@ class TestSettingsDefaults:
         """Test debug defaults to False"""
         from core.config import Settings
 
-        with patch.dict(os.environ, {}, clear=True):
+        with patch.dict(os.environ, {"DATABASE_URL": "sqlite+aiosqlite:///./test.db"}, clear=True):
             settings = Settings()
             assert settings.debug is False
 
@@ -36,7 +36,7 @@ class TestSettingsDefaults:
         """Test default environment is development"""
         from core.config import Settings
 
-        with patch.dict(os.environ, {}, clear=True):
+        with patch.dict(os.environ, {"DATABASE_URL": "sqlite+aiosqlite:///./test.db"}, clear=True):
             settings = Settings()
             assert settings.environment == "development"
 
@@ -44,7 +44,7 @@ class TestSettingsDefaults:
         """Test default host"""
         from core.config import Settings
 
-        with patch.dict(os.environ, {}, clear=True):
+        with patch.dict(os.environ, {"DATABASE_URL": "sqlite+aiosqlite:///./test.db"}, clear=True):
             settings = Settings()
             assert settings.host == "0.0.0.0"
 
@@ -52,7 +52,7 @@ class TestSettingsDefaults:
         """Test default port"""
         from core.config import Settings
 
-        with patch.dict(os.environ, {}, clear=True):
+        with patch.dict(os.environ, {"DATABASE_URL": "sqlite+aiosqlite:///./test.db"}, clear=True):
             settings = Settings()
             assert settings.port == 8000
 
@@ -60,7 +60,8 @@ class TestSettingsDefaults:
         """Test default database URL"""
         from core.config import Settings
 
-        with patch.dict(os.environ, {}, clear=True):
+        # DATABASE_URL is now required, test with valid SQLite URL
+        with patch.dict(os.environ, {"DATABASE_URL": "sqlite+aiosqlite:///./turkiye_sinav.db"}, clear=True):
             settings = Settings()
             assert settings.database_url == "sqlite+aiosqlite:///./turkiye_sinav.db"
 
@@ -68,7 +69,7 @@ class TestSettingsDefaults:
         """Test default Redis URL"""
         from core.config import Settings
 
-        with patch.dict(os.environ, {}, clear=True):
+        with patch.dict(os.environ, {"DATABASE_URL": "sqlite+aiosqlite:///./test.db"}, clear=True):
             settings = Settings()
             assert settings.redis_url == "redis://localhost:6379/0"
 
@@ -76,7 +77,7 @@ class TestSettingsDefaults:
         """Test default Elasticsearch URL"""
         from core.config import Settings
 
-        with patch.dict(os.environ, {}, clear=True):
+        with patch.dict(os.environ, {"DATABASE_URL": "sqlite+aiosqlite:///./test.db"}, clear=True):
             settings = Settings()
             assert settings.elasticsearch_url == "http://localhost:9200"
 
@@ -109,7 +110,7 @@ class TestSettingsEnvironmentVariables:
             os.environ,
             {
                 "ENVIRONMENT": "production",
-                "DATABASE_URL": "postgresql+asyncpg://produser:StrongP@ss123!Prod@prodhost:5432/proddb",
+                "DATABASE_URL": "postgresql+asyncpg://produser:StrongP@ss123!Prod@prodhost:5434/proddb",
                 "SECRET_KEY": "xF4XmfFRyJpbHC0DwzdT2rozSyRlkjyXcD4NWwWhaf4U2aWD9JHeeYCZ1DhSi3K2",
                 "JWT_SECRET_KEY": "ZcXF6-2MU-cuMZQzMX4xL0MxPcbIsB4Yj37HylQNNaMM5d8xB_PgBvp8MILttUaL",
                 "ALLOWED_ORIGINS": "https://example.com,https://app.example.com",
@@ -225,7 +226,7 @@ class TestSettingsCORS:
         """Test default allowed origins"""
         from core.config import Settings
 
-        with patch.dict(os.environ, {}, clear=True):
+        with patch.dict(os.environ, {"DATABASE_URL": "sqlite+aiosqlite:///./test.db"}, clear=True):
             settings = Settings()
             assert "http://localhost:3000" in settings.allowed_origins
             assert "http://localhost:5173" in settings.allowed_origins
@@ -279,7 +280,7 @@ class TestSettingsMonitoring:
         """Test monitoring enabled by default"""
         from core.config import Settings
 
-        with patch.dict(os.environ, {}, clear=True):
+        with patch.dict(os.environ, {"DATABASE_URL": "sqlite+aiosqlite:///./test.db"}, clear=True):
             settings = Settings()
             assert settings.enable_monitoring is True
 
@@ -295,7 +296,7 @@ class TestSettingsMonitoring:
         """Test default metrics port"""
         from core.config import Settings
 
-        with patch.dict(os.environ, {}, clear=True):
+        with patch.dict(os.environ, {"DATABASE_URL": "sqlite+aiosqlite:///./test.db"}, clear=True):
             settings = Settings()
             assert settings.metrics_port == 8001
 
@@ -334,7 +335,7 @@ class TestSettingsSecurity:
         """Test default secret key"""
         from core.config import Settings
 
-        with patch.dict(os.environ, {}, clear=True):
+        with patch.dict(os.environ, {"DATABASE_URL": "sqlite+aiosqlite:///./test.db"}, clear=True):
             settings = Settings()
             assert settings.secret_key == "your-secret-key-change-in-production"
 
@@ -349,7 +350,7 @@ class TestSettingsSecurity:
         """Test default token expiration"""
         from core.config import Settings
 
-        with patch.dict(os.environ, {}, clear=True):
+        with patch.dict(os.environ, {"DATABASE_URL": "sqlite+aiosqlite:///./test.db"}, clear=True):
             settings = Settings()
             assert settings.access_token_expire_minutes == 30
 
@@ -361,7 +362,7 @@ class TestSettingsExternalAPIs:
         """Test OpenAI API key is None by default"""
         from core.config import Settings
 
-        with patch.dict(os.environ, {}, clear=True):
+        with patch.dict(os.environ, {"DATABASE_URL": "sqlite+aiosqlite:///./test.db"}, clear=True):
             settings = Settings()
             assert settings.openai_api_key is None
 
@@ -377,7 +378,7 @@ class TestSettingsExternalAPIs:
         """Test YouTube API key is None by default"""
         from core.config import Settings
 
-        with patch.dict(os.environ, {}, clear=True):
+        with patch.dict(os.environ, {"DATABASE_URL": "sqlite+aiosqlite:///./test.db"}, clear=True):
             settings = Settings()
             assert settings.youtube_api_key is None
 

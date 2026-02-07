@@ -4,7 +4,7 @@ Target: 75%+ coverage for base agent functionality
 """
 import pytest
 import asyncio
-from unittest.mock import AsyncMock, MagicMock, patch, call
+from unittest.mock import AsyncMock, MagicMock, patch
 from datetime import datetime
 from agents.base_agent import (
     BaseAgent,

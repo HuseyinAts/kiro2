@@ -1,6 +1,4 @@
 """Simple tests for SinavMotoruServisi without complex imports"""
-import pytest
-from unittest.mock import MagicMock
 
 from models import SinavTipi
 

@@ -4,12 +4,16 @@ Target: 0% → 40%+ coverage for api/fast_learning_api.py (93 lines)
 Focus: API endpoints, error handling, response formatting, service integration
 """
 
+import pytest
+
+# Module-level skip: fast_learning_api modülü arşivlendi
+pytest.skip("fast_learning_api module archived - see backend/api/learning_path.py", allow_module_level=True)
+
 import asyncio
 import os
 import sys
 from unittest.mock import AsyncMock, Mock, patch
 
-import pytest
 from fastapi import HTTPException
 
 # Add parent directory to path

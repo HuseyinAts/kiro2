@@ -9,7 +9,6 @@ Run: locust -f backend/tests/load/load_test_video_api.py --users 100 --spawn-rat
 
 import random
 import time
-from typing import Dict, List
 from locust import HttpUser, task, between, events
 
 
@@ -333,8 +332,8 @@ def on_test_start(environment, **kwargs):
     print("VIDEO API LOAD TEST BAŞLIYOR")
     print("=" * 70)
     print(f"Target Host: {environment.host}")
-    print(f"Test Scenario: Video Recommendations API")
-    print(f"Requirement: 11.3 - 100 concurrent user load test")
+    print("Test Scenario: Video Recommendations API")
+    print("Requirement: 11.3 - 100 concurrent user load test")
     print("=" * 70 + "\n")
 
 
@@ -393,7 +392,7 @@ def check_video_api_performance(environment, **kwargs):
     print("-" * 70)
 
     # Requirement 11.3: 100 concurrent user load test
-    print(f"✓ Requirement 11.3: 100 concurrent user load test - COMPLETED")
+    print("✓ Requirement 11.3: 100 concurrent user load test - COMPLETED")
 
     # Requirement 2.1: P95 response time < 3000ms
     if p95_response_time <= 3000:
@@ -470,7 +469,6 @@ if __name__ == "__main__":
         locust -f backend/tests/load/load_test_video_api.py --users 100 --spawn-rate 10 --host http://localhost:8000
     """
     import os
-    import sys
 
     # Locust'u programmatik olarak çalıştır
     os.system(

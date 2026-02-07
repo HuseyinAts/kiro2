@@ -6,8 +6,7 @@ Kritik: TYT/AYT/YDT formatlari, Net hesaplama, Oturum yonetimi
 """
 
 import pytest
-import asyncio
-from datetime import datetime, timedelta
+from datetime import timedelta
 from unittest.mock import Mock, patch, AsyncMock
 
 from services.sinav_motoru_service import SinavMotoruServisi

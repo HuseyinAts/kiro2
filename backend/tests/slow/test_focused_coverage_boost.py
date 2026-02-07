@@ -1,12 +1,17 @@
 import pytest
 
+# Skip: Bu dosya archived agent modüllerini import ediyor (study_buddy_agent, learning_path_agent)
+# Bu modüller artık backend/agents/_archive/ altında ve aktif değil
+pytest.skip(
+    "Archived agent modülleri (study_buddy_agent, learning_path_agent) kullanıyor - skip",
+    allow_module_level=True
+)
+
 """
 Focused tests to specifically boost coverage of modules that exist
 Target: Exercise actual module code to reach 50%+ coverage
 """
-import pytest
-import asyncio
-from unittest.mock import patch, MagicMock, AsyncMock
+from unittest.mock import patch, MagicMock
 
 
 class TestCoreConfigIntegration:

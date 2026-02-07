@@ -3,7 +3,6 @@ Advanced Database Fixtures
 Transaction rollback, async support, test data isolation
 """
 
-import asyncio
 from typing import AsyncGenerator, Generator
 
 import pytest

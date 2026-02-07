@@ -3,7 +3,7 @@ Tests for LLM Cache System
 """
 
 import pytest
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import AsyncMock
 from datetime import datetime
 
 from core.llm_cache import (

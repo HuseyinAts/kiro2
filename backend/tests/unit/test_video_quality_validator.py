@@ -481,7 +481,7 @@ class TestVideoQualityValidator:
         async def slow_validate(video_id):
             import asyncio
 
-            await asyncio.sleep(10)  # Çok uzun süre
+            await asyncio.sleep(2)  # Timeout simulation (reduced from 10s)
             return VideoAccessibilityResult(True, True, "public", None)
 
         with patch.object(

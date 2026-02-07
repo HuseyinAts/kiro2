@@ -3,8 +3,7 @@ Fast unit tests for DDoS protection system
 Tests: Rate limiting key generation, basic protection logic
 Coverage target: 30-50% of core.ddos_protection
 """
-import pytest
-from unittest.mock import Mock, MagicMock
+from unittest.mock import Mock
 
 
 class TestRateLimitKeyGeneration:

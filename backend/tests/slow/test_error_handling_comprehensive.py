@@ -14,8 +14,11 @@ import pytest
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 # Import modules to test
-from agents.learning_path_agent import LearningPathAgent
-from agents.study_buddy_agent import StudyBuddyAgent
+try:
+    from agents.learning_path_agent import LearningPathAgent
+    from agents.study_buddy_agent import StudyBuddyAgent
+except ImportError:
+    pytest.skip("study_buddy_agent module not available (archived)", allow_module_level=True)
 from core.llm_service import llm_service
 from core.rag_service import rag_service
 from integrations.khan_academy_service import khan_academy_service
@@ -257,8 +260,8 @@ class TestConcurrencyErrors:
                 timeout=0.5,
             )
         except asyncio.TimeoutError:
-            # Should handle timeout gracefully
-            assert True
+            # Timeout was raised as expected - this is the expected behavior
+            pass  # Test passes - timeout handling works correctly
         else:
             # If no timeout, operations completed somehow
             assert results is not None
@@ -295,8 +298,8 @@ class TestMemoryErrors:
             assert result is not None
 
         except MemoryError:
-            # Should handle memory errors gracefully
-            assert True
+            # MemoryError was raised as expected - this is acceptable behavior
+            pass  # Test passes - memory error was handled gracefully
 
     @pytest.mark.asyncio
     async def test_circular_reference_detection(self):
@@ -416,7 +419,7 @@ class TestRecoveryStrategies:
         for attempt in range(max_retries):
             try:
                 return await func()
-            except Exception as e:
+            except Exception:
                 if attempt == max_retries - 1:
                     raise
                 await asyncio.sleep(2**attempt * 0.1)  # Exponential backoff

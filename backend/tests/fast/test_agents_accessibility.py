@@ -1,15 +1,22 @@
 """
 Tests for Accessibility Agent
 Zero coverage -> Target: 70%+
+Requires running Ollama instance.
 """
 
 import pytest
-from agents.accessibility_agent import (
-    AccessibilityAgent,
-    AccessibilityLevel,
-    ContentType,
-    IssueType,
-)
+
+pytestmark = pytest.mark.integration
+
+try:
+    from agents.accessibility_agent import (
+        AccessibilityAgent,
+        AccessibilityLevel,
+        ContentType,
+        IssueType,
+    )
+except ImportError:
+    pytest.skip("accessibility_agent module not available (archived)", allow_module_level=True)
 
 
 @pytest.fixture

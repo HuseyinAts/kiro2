@@ -8,9 +8,6 @@ import numpy as np
 from services.irt_psychometric_analysis import (
     IRTPsychometricAnalysis,
     IRTParameters,
-    CalibrationResult,
-    ICCAnalysis,
-    TIFAnalysis,
 )
 
 

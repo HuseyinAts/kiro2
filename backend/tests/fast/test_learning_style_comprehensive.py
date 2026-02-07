@@ -11,7 +11,7 @@ Tests:
 """
 
 import pytest
-from datetime import datetime, timedelta
+from datetime import datetime, timezone
 from typing import Dict, List
 
 
@@ -38,7 +38,7 @@ class LearningStyleProfile:
             "naturalistic": 0.0,
         }
         self.dominant_style = None
-        self.last_updated = datetime.utcnow()
+        self.last_updated = datetime.now(timezone.utc)
 
 
 class LearningStyleDetector:
@@ -103,7 +103,7 @@ class LearningStyleDetector:
                 profile.vark_scores[key] = profile.vark_scores[key] / total
 
         profile.dominant_style = max(profile.vark_scores, key=profile.vark_scores.get)
-        profile.last_updated = datetime.utcnow()
+        profile.last_updated = datetime.now(timezone.utc)
 
         self.profiles[student_id] = profile
         return profile
@@ -339,13 +339,13 @@ class TestQuizPerformanceUpdate:
 
     def test_profile_timestamp_updated(self, detector):
         """Test profile timestamp is updated"""
-        before = datetime.utcnow()
+        before = datetime.now(timezone.utc)
 
         profile = detector.update_from_quiz_performance(
             "student_time", ["text_question"], [0.8]
         )
 
-        after = datetime.utcnow()
+        after = datetime.now(timezone.utc)
 
         assert before <= profile.last_updated <= after
 

@@ -3,8 +3,6 @@ Fast unit tests for advanced cache system
 Tests: Cache strategies, CacheEntry dataclass
 Coverage target: 40-60% of core.advanced_cache
 """
-import pytest
-from dataclasses import asdict
 
 
 class TestCacheStrategy:

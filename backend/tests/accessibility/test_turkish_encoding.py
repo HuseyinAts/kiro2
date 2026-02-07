@@ -11,8 +11,7 @@ Requirements: 7.4, 9.1
 import os
 import sys
 import pytest
-from typing import Dict, List, Any, Tuple
-from unittest.mock import Mock, patch, AsyncMock
+from typing import Dict, Any
 import json
 import re
 
@@ -155,30 +154,34 @@ class TurkishEncodingValidator:
         }
 
         try:
-            # JSON serialize/deserialize testi
+            # JSON serialize/deserialize testi (round-trip)
             json_str = json.dumps(response_data, ensure_ascii=False)
             parsed_data = json.loads(json_str)
 
             # Türkçe karakterleri kontrol et
-            def check_turkish_chars(obj, path=""):
-                if isinstance(obj, dict):
-                    for key, value in obj.items():
-                        check_turkish_chars(value, f"{path}.{key}" if path else key)
-                elif isinstance(obj, list):
-                    for i, item in enumerate(obj):
-                        check_turkish_chars(item, f"{path}[{i}]")
-                elif isinstance(obj, str):
+            def check_turkish_chars(original, parsed, path=""):
+                if isinstance(original, dict):
+                    for key, value in original.items():
+                        new_path = f"{path}.{key}" if path else key
+                        if key in parsed:
+                            check_turkish_chars(value, parsed[key], new_path)
+                elif isinstance(original, list):
+                    for i, item in enumerate(original):
+                        new_path = f"{path}[{i}]"
+                        if i < len(parsed):
+                            check_turkish_chars(item, parsed[i], new_path)
+                elif isinstance(original, str):
                     for char in self.turkish_chars["all"]:
-                        if char in obj:
+                        if char in original:
                             result["tested_fields"].append(path)
-                            # Karakterin doğru encode edildiğini kontrol et
-                            if char not in parsed_data.get(path.split(".")[-1], ""):
+                            # Round-trip sonrası karakter hala mevcut mu?
+                            if char not in parsed:
                                 result["issues"].append(
                                     f"'{char}' karakteri {path} alanında kayboldu"
                                 )
                                 return
 
-            check_turkish_chars(response_data)
+            check_turkish_chars(response_data, parsed_data)
 
             if not result["issues"]:
                 result["passed"] = True
@@ -205,7 +208,7 @@ class TurkishEncodingValidator:
         has_turkish = any(char in url for char in self.turkish_chars["all"])
 
         if has_turkish:
-            # URL encode edilmiş mi kontrol et
+            # Raw Türkçe karakter var - encode edilmiş mi kontrol et
             if "%" in url:
                 result["passed"] = True
             else:
@@ -213,8 +216,13 @@ class TurkishEncodingValidator:
                 result["recommendations"].append(
                     "URL'lerdeki Türkçe karakterleri percent-encode edin"
                 )
+        elif "%" in url:
+            # Türkçe karakter yok ama percent-encoding var
+            # Bu properly encoded bir URL demek
+            result["passed"] = True
         else:
-            result["passed"] = True  # Türkçe karakter yoksa test geçer
+            result["skipped"] = True
+            result["skip_reason"] = "URL'de Türkçe karakter yok - test uygulanamaz"
 
         self.test_results.append(result)
         return result
@@ -308,7 +316,6 @@ class TurkishEncodingValidator:
 
         try:
             # Console'a yazdırma simülasyonu
-            import sys
             import io
 
             # UTF-8 destekli StringIO buffer
@@ -339,12 +346,14 @@ class TurkishEncodingValidator:
     def generate_encoding_report(self) -> Dict[str, Any]:
         """Encoding doğrulama raporu oluştur"""
         total_tests = len(self.test_results)
-        passed_tests = sum(1 for r in self.test_results if r["passed"])
+        passed_tests = sum(1 for r in self.test_results if r.get("passed", False))
+        skipped_tests = sum(1 for r in self.test_results if r.get("skipped", False))
 
         return {
             "total_tests": total_tests,
             "passed": passed_tests,
-            "failed": total_tests - passed_tests,
+            "skipped": skipped_tests,
+            "failed": total_tests - passed_tests - skipped_tests,
             "encoding_compliance_percentage": (passed_tests / total_tests * 100)
             if total_tests > 0
             else 0,
@@ -366,11 +375,11 @@ def sample_turkish_content():
     """Türkçe içerik örneği"""
     return """
     Türkiye Üniversite Sınavları Hazırlık Platformu
-    
+
     Çalışkan öğrenciler için özel olarak tasarlanmış bu platform,
     YKS (TYT/AYT/YDT) sınavlarına hazırlık sürecinde öğrencilere
     kapsamlı destek sağlar.
-    
+
     Özellikler:
     - Ğ, ı, ş gibi Türkçe karakterler tam destek
     - İstanbul, Ankara, İzmir gibi şehirlerde kullanılabilir
@@ -416,10 +425,10 @@ def sample_api_response():
 
 @pytest.fixture
 def sample_db_config():
-    """Veritabanı konfigürasyonu"""
+    """Veritabanı konfigürasyonu (KIRO2 Standard Port: 5434)"""
     return {
         "host": "localhost",
-        "port": 5432,
+        "port": 5434,
         "database": "turkiye_sinav",
         "charset": "UTF8",
         "encoding": "UTF-8",
@@ -437,7 +446,7 @@ async def test_utf8_encoding_basic(encoding_validator, sample_turkish_content):
     """
     result = encoding_validator.test_utf8_encoding(sample_turkish_content)
 
-    assert result["passed"] == True, "UTF-8 encoding başarılı olmalı"
+    assert result["passed"], "UTF-8 encoding başarılı olmalı"
     assert len(result["tested_chars"]) > 0, "Türkçe karakterler test edilmeli"
 
     # Tüm Türkçe karakterlerin test edildiğini kontrol et
@@ -454,7 +463,7 @@ async def test_html_meta_charset_present(encoding_validator, sample_html_with_tu
     """
     result = encoding_validator.test_html_meta_charset(sample_html_with_turkish)
 
-    assert result["passed"] == True, "HTML meta charset=UTF-8 olmalı"
+    assert result["passed"], "HTML meta charset=UTF-8 olmalı"
     assert '<meta charset="UTF-8">' in sample_html_with_turkish
 
 
@@ -466,7 +475,7 @@ async def test_database_utf8_encoding(encoding_validator, sample_db_config):
     """
     result = encoding_validator.test_database_encoding(sample_db_config)
 
-    assert result["passed"] == True, "Veritabanı UTF-8 charset kullanmalı"
+    assert result["passed"], "Veritabanı UTF-8 charset kullanmalı"
 
 
 @pytest.mark.asyncio
@@ -477,7 +486,7 @@ async def test_api_response_turkish_chars(encoding_validator, sample_api_respons
     """
     result = encoding_validator.test_api_response_encoding(sample_api_response)
 
-    assert result["passed"] == True, "API response'da Türkçe karakterler korunmalı"
+    assert result["passed"], "API response'da Türkçe karakterler korunmalı"
     assert len(result["tested_fields"]) > 0
 
 
@@ -490,12 +499,12 @@ async def test_url_encoding_turkish_chars(encoding_validator):
     # Türkçe karakter içeren URL
     url_with_turkish = "https://example.com/search?q=çalışma"
     result_unencoded = encoding_validator.test_url_encoding(url_with_turkish)
-    assert result_unencoded["passed"] == False
+    assert not result_unencoded["passed"]
 
     # Encode edilmiş URL
     url_encoded = "https://example.com/search?q=%C3%A7al%C4%B1%C5%9Fma"
     result_encoded = encoding_validator.test_url_encoding(url_encoded)
-    assert result_encoded["passed"] == True
+    assert result_encoded["passed"]
 
 
 @pytest.mark.asyncio
@@ -506,11 +515,11 @@ async def test_file_system_encoding(encoding_validator):
     """
     # ASCII dosya adı
     result_ascii = encoding_validator.test_file_system_encoding("test_file.txt")
-    assert result_ascii["passed"] == True
+    assert result_ascii["passed"]
 
     # Türkçe karakter içeren dosya adı
     result_turkish = encoding_validator.test_file_system_encoding("çalışma_dosyası.txt")
-    assert result_turkish["passed"] == True
+    assert result_turkish["passed"]
 
 
 @pytest.mark.asyncio
@@ -527,7 +536,7 @@ async def test_form_data_encoding(encoding_validator):
 
     result = encoding_validator.test_form_data_encoding(form_data)
 
-    assert result["passed"] == True, "Form data'da Türkçe karakterler korunmalı"
+    assert result["passed"], "Form data'da Türkçe karakterler korunmalı"
     assert len(result["tested_fields"]) > 0
 
 
@@ -541,7 +550,7 @@ async def test_console_output_encoding(encoding_validator):
 
     result = encoding_validator.test_console_output_encoding(turkish_text)
 
-    assert result["passed"] == True, "Console output'ta Türkçe karakterler korunmalı"
+    assert result["passed"], "Console output'ta Türkçe karakterler korunmalı"
 
 
 @pytest.mark.asyncio
@@ -579,7 +588,7 @@ async def test_all_turkish_characters(encoding_validator):
 
     result = encoding_validator.test_utf8_encoding(all_chars_text)
 
-    assert result["passed"] == True
+    assert result["passed"]
 
     # Tüm Türkçe karakterlerin test edildiğini kontrol et
     expected_chars = ["ç", "ğ", "ı", "ö", "ş", "ü", "Ç", "Ğ", "İ", "Ö", "Ş", "Ü"]
@@ -622,7 +631,7 @@ async def test_generate_full_encoding_report(
     # En az %95 uyumluluk bekliyoruz
     assert report["encoding_compliance_percentage"] >= 95.0
 
-    print(f"\n=== Türkçe Karakter Encoding Raporu ===")
+    print("\n=== Türkçe Karakter Encoding Raporu ===")
     print(f"Toplam Test: {report['total_tests']}")
     print(f"Başarılı: {report['passed']}")
     print(f"Başarısız: {report['failed']}")

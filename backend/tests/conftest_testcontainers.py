@@ -33,25 +33,6 @@ def db_engine(postgres_container):
     # Import all models to register them with Base
     from models.database import (
         Base,
-        User,
-        StudentProfile,
-        TeacherProfile,
-        ParentProfile,
-        ExamSession,
-        Question,
-        ExamQuestion,
-        StudentAnswer,
-        LearningAnalytics,
-        EducationalContent,
-        ClassRoom,
-        SystemConfiguration,
-        AuditLog,
-        FSRSCard,
-        FSRSReview,
-        FSRSSchedule,
-        FSRSStudentProfile,
-        FSRSStudySession,
-        FSRSSubjectStats,
     )
 
     # Create all tables

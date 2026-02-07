@@ -7,7 +7,6 @@ import pytest
 from services.turkish_content_filter import (
     TurkishContentFilter,
     TurkishValidationResult,
-    TRUSTED_TURKISH_CHANNELS,
 )
 
 

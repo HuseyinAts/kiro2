@@ -3,7 +3,6 @@ Fast unit tests for automated question generator
 Tests: Class initialization, basic configuration
 Coverage target: +10-15% for core.automated_question_generator
 """
-import pytest
 
 
 class TestAutomatedQuestionGenerator:

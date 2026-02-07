@@ -5,12 +5,12 @@ Task 72.1: Video yükleme testi
 
 import pytest
 from io import BytesIO
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import AsyncMock, MagicMock
 
 from fastapi import UploadFile
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from models.video_solution import VideoFormat, VideoProcessingStatus
+from models.video_solution import VideoFormat
 from services.video_solution_service import VideoValidator, VideoConfig
 
 

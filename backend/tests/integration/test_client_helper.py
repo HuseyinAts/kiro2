@@ -89,6 +89,3 @@ class CompatibleTestClient:
 def create_test_client(app: FastAPI) -> CompatibleTestClient:
     """Create a test client that works with current httpx version"""
     return CompatibleTestClient(app)
-
-    def test_basic_assertion(self):
-        assert True  # Basic test coverage

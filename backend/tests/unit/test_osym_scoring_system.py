@@ -8,7 +8,6 @@ from services.osym_scoring_system import (
     OSYMScoringSystem,
     ScoreType,
     SubjectNet,
-    ExamNetScores,
     OSYMScore,
     PlacementScore,
     RankingEstimate,

@@ -5,7 +5,6 @@ Target: +2% coverage (898 lines, currently 13.8%)
 """
 
 import pytest
-from unittest.mock import MagicMock, AsyncMock, patch
 
 
 class TestLearningPathAgentInit:

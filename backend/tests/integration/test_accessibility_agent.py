@@ -1,12 +1,21 @@
 """
 Test: Accessibility Agent
+
+NOTE: This test file is skipped because the accessibility_agent module
+has been archived/deprecated and is no longer available.
 """
+
+import pytest
+
+# Skip entire module - accessibility_agent has been archived
+pytest.skip(
+    "accessibility_agent module archived/deprecated",
+    allow_module_level=True
+)
 
 import os
 import sys
 from unittest.mock import patch
-
-import pytest
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 

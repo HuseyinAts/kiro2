@@ -5,7 +5,7 @@ Tests cache management API endpoints
 import pytest
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
-from unittest.mock import patch, AsyncMock, MagicMock
+from unittest.mock import patch, AsyncMock
 
 
 @pytest.fixture

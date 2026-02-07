@@ -3,9 +3,8 @@ Sınav Motoru Servisi - Kritik Fonksiyonlar Test Suite
 Coverage Hedefi: %85+
 """
 import pytest
-from unittest.mock import Mock, AsyncMock, patch, MagicMock
 from datetime import datetime, timedelta
-from models import SinavTipi, SinavDurumu, SinavOturumu, SinavSorusu
+from models import SinavDurumu
 
 
 class TestSinavKonfigurasyonu:

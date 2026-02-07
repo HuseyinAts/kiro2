@@ -15,11 +15,9 @@ Tests AI-powered question generation:
 - Subject-specific questions
 """
 
-import json
 import pytest
 from datetime import datetime, timedelta
-from typing import Dict, List, Any
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import AsyncMock, MagicMock
 from uuid import uuid4
 
 from services.question_generation_service import QuestionGenerationService
@@ -1509,11 +1507,13 @@ class TestErrorHandling:
                 ),
                 generation_method="test",
             )
-            # If we get here with empty text, that's still valid for the model
-            assert True
+            # If creation succeeds, verify the question object is valid
+            assert question is not None
+            assert question.id is not None
+            assert question.subject == SubjectType.MATEMATIK
         except Exception as e:
             # Validation error is expected for truly invalid data
-            assert "validation" in str(e).lower() or True
+            assert "validation" in str(e).lower() or isinstance(e, (ValueError, TypeError))
 
 
 # ==================== MOCK DATA TESTS (20+ TESTS) ====================

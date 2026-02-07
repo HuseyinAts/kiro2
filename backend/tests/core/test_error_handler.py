@@ -7,8 +7,7 @@ Requirements: 5.1, 5.2, 5.7, 5.8, 5.9
 
 import pytest
 import asyncio
-from datetime import datetime
-from unittest.mock import Mock, patch
+from unittest.mock import patch
 
 from backend.core.error_handler import (
     ErrorHandler,
@@ -18,14 +17,12 @@ from backend.core.error_handler import (
     YouTubeAPIError,
     CacheError,
     VideoDiscoveryError,
-    VideoFilterError,
     VideoTimeoutError,
 )
 from backend.core.exceptions import (
     ErrorSeverity,
     RateLimitError,
     DatabaseError,
-    ExternalServiceError,
 )
 
 

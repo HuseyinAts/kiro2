@@ -9,12 +9,12 @@ import uuid
 from datetime import datetime, timedelta
 from typing import Any, Dict, List
 
-from models.exam import ExamType
-from models.user import UserRole
+from models.enums_db import ExamType, UserRole
 
 
 class TestDataFactory:
     """Test verileri oluşturmak için factory sınıfı"""
+    __test__ = False
 
     @staticmethod
     def create_user(
@@ -42,37 +42,42 @@ class TestDataFactory:
     @staticmethod
     def create_student(**kwargs) -> Dict[str, Any]:
         """Test öğrencisi oluştur"""
-        return TestDataFactory.create_user(
+        defaults = dict(
             role=UserRole.STUDENT,
             username="test_student",
             email="student@example.com",
             firstName="Test",
             lastName="Student",
-            **kwargs,
         )
+        defaults.update(kwargs)
+        return TestDataFactory.create_user(**defaults)
 
     @staticmethod
     def create_teacher(**kwargs) -> Dict[str, Any]:
         """Test öğretmeni oluştur"""
-        return TestDataFactory.create_user(
+        defaults = dict(
             role=UserRole.TEACHER,
             username="test_teacher",
             email="teacher@example.com",
             firstName="Test",
             lastName="Teacher",
-            **kwargs,
+        )
+        defaults.update(kwargs)
+        return TestDataFactory.create_user(**defaults
         )
 
     @staticmethod
     def create_admin(**kwargs) -> Dict[str, Any]:
         """Test admin oluştur"""
-        return TestDataFactory.create_user(
+        defaults = dict(
             role=UserRole.ADMIN,
             username="test_admin",
             email="admin@example.com",
             firstName="Test",
             lastName="Admin",
-            **kwargs,
+        )
+        defaults.update(kwargs)
+        return TestDataFactory.create_user(**defaults
         )
 
     @staticmethod
@@ -97,24 +102,16 @@ class TestDataFactory:
     @staticmethod
     def create_tyt_exam(**kwargs) -> Dict[str, Any]:
         """TYT sınavı oluştur"""
-        return TestDataFactory.create_exam(
-            exam_type=ExamType.TYT,
-            subject="Matematik",
-            duration=165,
-            questionCount=40,
-            **kwargs,
-        )
+        defaults = dict(exam_type=ExamType.TYT, subject="Matematik", duration=165, questionCount=40)
+        defaults.update(kwargs)
+        return TestDataFactory.create_exam(**defaults)
 
     @staticmethod
     def create_ayt_exam(**kwargs) -> Dict[str, Any]:
         """AYT sınavı oluştur"""
-        return TestDataFactory.create_exam(
-            exam_type=ExamType.AYT,
-            subject="Matematik",
-            duration=210,
-            questionCount=80,
-            **kwargs,
-        )
+        defaults = dict(exam_type=ExamType.AYT, subject="Matematik", duration=210, questionCount=80)
+        defaults.update(kwargs)
+        return TestDataFactory.create_exam(**defaults)
 
     @staticmethod
     def create_question(
@@ -138,19 +135,20 @@ class TestDataFactory:
     @staticmethod
     def create_math_question(**kwargs) -> Dict[str, Any]:
         """Matematik sorusu oluştur"""
-        return TestDataFactory.create_question(
+        defaults = dict(
             text="x + 2 = 5 ise x kaçtır?",
             options=["1", "2", "3", "4"],
             correctAnswer=2,
             subject="Matematik",
             explanation="x + 2 = 5 denkleminde x = 3 olur.",
-            **kwargs,
         )
+        defaults.update(kwargs)
+        return TestDataFactory.create_question(**defaults)
 
     @staticmethod
     def create_turkish_question(**kwargs) -> Dict[str, Any]:
         """Türkçe sorusu oluştur"""
-        return TestDataFactory.create_question(
+        defaults = dict(
             text="Aşağıdaki cümlelerden hangisi kurallı yazılmıştır?",
             options=[
                 "Kitabı masanın üstüne koydum.",
@@ -161,8 +159,9 @@ class TestDataFactory:
             correctAnswer=0,
             subject="Türkçe",
             explanation="Doğru yazım 'masanın üstüne koydum' şeklindedir.",
-            **kwargs,
         )
+        defaults.update(kwargs)
+        return TestDataFactory.create_question(**defaults)
 
     @staticmethod
     def create_exam_session(

@@ -1,4 +1,3 @@
-from unittest.mock import Mock, patch, AsyncMock
 import pytest
 
 """
@@ -14,7 +13,6 @@ from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
 from typing import Any, Dict, List, Optional
 
-import pytest
 import pytest_asyncio
 from core.auth_middleware import AuthUser, PermissionManager, UserRole
 from core.structured_logging import LogCategory, get_logger
@@ -997,4 +995,6 @@ if __name__ == "__main__":
     print(f"Exam start request: {exam_start_fixture.request.path}")
 
     def test_basic_assertion(self):
-        assert True  # Basic test coverage
+        # Verify fixtures module is working
+        assert fixtures is not None
+        assert callable(fixtures.create_exam_start_request_fixture)

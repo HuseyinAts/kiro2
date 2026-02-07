@@ -6,8 +6,7 @@ Tests for Redis-based distributed rate limiting system.
 """
 import pytest
 import time
-from unittest.mock import Mock, AsyncMock, patch, MagicMock
-from datetime import datetime, timedelta
+from unittest.mock import Mock, AsyncMock, patch
 
 from core.advanced_rate_limiter import (
     AdvancedRateLimiter,
@@ -142,7 +141,7 @@ class TestAdvancedRateLimiter:
     @pytest.mark.asyncio
     async def test_connect(self):
         """Test Redis connection"""
-        with patch("core.advanced_rate_limiter.redis.from_url") as mock_from_url:
+        with patch("core.advanced_rate_limiter.redis.from_url", new_callable=AsyncMock) as mock_from_url:
             mock_redis = AsyncMock()
             mock_from_url.return_value = mock_redis
 
@@ -298,15 +297,15 @@ class TestAdvancedRateLimiter:
     @pytest.mark.asyncio
     async def test_sliding_window_algorithm(self, rate_limiter, mock_redis):
         """Test sliding window algorithm behavior"""
-        pipeline_mock = AsyncMock()
+        # Create a pipeline mock to capture calls
+        pipeline_instance = AsyncMock()
+        pipeline_instance.execute = AsyncMock(return_value=[None, 5, None, None])
+        pipeline_instance.zremrangebyscore = Mock()
+        pipeline_instance.zcard = Mock()
+        pipeline_instance.zadd = Mock()
+        pipeline_instance.expire = Mock()
 
-        # Simulate pipeline calls
-        def pipeline_behavior():
-            pipe = AsyncMock()
-            pipe.execute = AsyncMock(return_value=[None, 5, None, None])
-            return pipe
-
-        mock_redis.pipeline.side_effect = pipeline_behavior
+        mock_redis.pipeline.return_value = pipeline_instance
 
         await rate_limiter.check_rate_limit(
             identifier="user-123",
@@ -314,8 +313,7 @@ class TestAdvancedRateLimiter:
             tier=UserTier.FREE
         )
 
-        # Verify Redis commands were called
-        pipeline_instance = mock_redis.pipeline()
+        # Verify Redis commands were called on the pipeline
         assert pipeline_instance.zremrangebyscore.called
         assert pipeline_instance.zcard.called
         assert pipeline_instance.zadd.called

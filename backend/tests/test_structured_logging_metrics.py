@@ -7,7 +7,6 @@ import pytest
 import time
 from backend.core.structured_logger import (
     get_logger,
-    setup_structlog,
     log_api_request,
     log_api_response,
     log_error_with_context,

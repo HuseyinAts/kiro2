@@ -4,12 +4,10 @@ Tests all validation API routes and request/response models
 """
 
 import pytest
-from datetime import datetime
-from typing import Dict, Any
+from datetime import datetime, timezone
 from unittest.mock import Mock, patch, AsyncMock
 
 from fastapi import status
-from fastapi.testclient import TestClient
 
 from api.validation import (
     router,
@@ -89,9 +87,9 @@ def mock_validation_request():
         submitter_name="Ahmet Öğretmen",
         status=ValidationStatus.PENDING,
         required_expert_roles=[ExpertRole.SUBJECT_EXPERT],
-        assigned_experts=[{"expert_id": "exp_1", "expert_role": "subject_expert"}],
+        assigned_experts=["exp_1"],  # List[str] - just expert IDs
         feedbacks=[],
-        submitted_at=datetime.utcnow(),
+        submitted_at=datetime.now(timezone.utc),
         priority=5,
         grade_level="9",
         subject="Matematik",
@@ -120,7 +118,7 @@ def mock_compliance_report():
         overall_compliance=ComplianceLevel.FULLY_COMPLIANT,
         overall_score=89.5,
         recommendations=["Consider adding more examples"],
-        generated_at=datetime.utcnow(),
+        generated_at=datetime.now(timezone.utc),
     )
 
 
@@ -348,10 +346,10 @@ class TestGetStatusEndpoint:
                     criteria_scores={},
                     comment="Good",
                     suggestions=[],
-                    created_at=datetime.utcnow(),
+                    created_at=datetime.now(timezone.utc),
                 )
             ],
-            submitted_at=datetime.utcnow(),
+            submitted_at=datetime.now(timezone.utc),
             priority=5,
         )
 
@@ -470,11 +468,12 @@ class TestRegisterExpertEndpoint:
         """Test successful expert registration"""
         mock_validation_system.register_expert = AsyncMock(return_value=True)
 
-        from api.validation import register_expert
+        from api.validation import register_expert, ExpertRegistrationRequest
 
-        response = await register_expert(
+        request = ExpertRegistrationRequest(
             expert_id="expert_new", expert_roles=["subject_expert", "quality_assurance"]
         )
+        response = await register_expert(request=request)
 
         assert response["success"] is True
         assert response["expert_id"] == "expert_new"
@@ -483,11 +482,14 @@ class TestRegisterExpertEndpoint:
     @pytest.mark.asyncio
     async def test_register_expert_invalid_role(self):
         """Test registration with invalid role"""
-        from api.validation import register_expert
+        from api.validation import register_expert, ExpertRegistrationRequest
         from fastapi import HTTPException
 
+        request = ExpertRegistrationRequest(
+            expert_id="expert_new", expert_roles=["invalid_role"]
+        )
         with pytest.raises(HTTPException) as exc_info:
-            await register_expert(expert_id="expert_new", expert_roles=["invalid_role"])
+            await register_expert(request=request)
 
         assert exc_info.value.status_code == status.HTTP_400_BAD_REQUEST
 
@@ -496,10 +498,11 @@ class TestRegisterExpertEndpoint:
         """Test registration with multiple valid roles"""
         mock_validation_system.register_expert = AsyncMock(return_value=True)
 
-        from api.validation import register_expert
+        from api.validation import register_expert, ExpertRegistrationRequest
 
         roles = ["subject_expert", "curriculum_expert", "quality_assurance"]
-        response = await register_expert(expert_id="expert_multi", expert_roles=roles)
+        request = ExpertRegistrationRequest(expert_id="expert_multi", expert_roles=roles)
+        response = await register_expert(request=request)
 
         assert response["success"] is True
         assert len(response["roles"]) == 3
@@ -553,7 +556,7 @@ class TestGetPendingRequestsEndpoint:
                 required_expert_roles=[ExpertRole.SUBJECT_EXPERT],
                 assigned_experts=[],
                 feedbacks=[],
-                submitted_at=datetime.utcnow(),
+                submitted_at=datetime.now(timezone.utc),
                 priority=5 + i,
                 subject="Math",
                 topic=f"Topic {i}",

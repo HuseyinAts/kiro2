@@ -4,8 +4,8 @@ Tests core functionality without requiring full database setup
 """
 
 import pytest
-from datetime import datetime
-from unittest.mock import Mock, AsyncMock, patch
+from datetime import datetime, timezone
+from unittest.mock import Mock, AsyncMock
 from uuid import uuid4
 
 from models.video_cache_model import VideoCache
@@ -54,9 +54,9 @@ def sample_video():
         like_count=500,
         comment_count=50,
         video_metadata={"test": True},
-        created_at=datetime.utcnow(),
-        last_updated=datetime.utcnow(),
-        last_accessed=datetime.utcnow(),
+        created_at=datetime.now(timezone.utc),
+        last_updated=datetime.now(timezone.utc),
+        last_accessed=datetime.now(timezone.utc),
         access_count=10,
         cache_ttl=3600,
     )
@@ -103,7 +103,7 @@ class TestVideoCacheModel:
         # Set last_updated to past
         from datetime import timedelta
 
-        sample_video.last_updated = datetime.utcnow() - timedelta(hours=2)
+        sample_video.last_updated = datetime.now(timezone.utc) - timedelta(hours=2)
         sample_video.cache_ttl = 3600  # 1 hour
 
         # Should be expired

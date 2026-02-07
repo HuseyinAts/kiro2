@@ -5,26 +5,18 @@ NO DATABASE - Pure function testing with extensive parametrization
 Target: 200+ test cases
 """
 
-import json
-import locale
 import os
-import re
 from datetime import datetime, timedelta
-from typing import Any
 from unittest.mock import MagicMock, patch
 
 import pytest
-from fastapi import FastAPI, status
+from fastapi import status
 
 # ==================== IMPORT ALL MODULES TO TEST ====================
 from core.cors_config import (
     AdvancedCORSManager,
     CORSConfig,
-    SecureCORSMiddleware,
-    create_cors_manager,
     detect_environment,
-    get_cors_manager,
-    setup_cors,
 )
 from core.encoding import (
     ensure_utf8_encoding,
@@ -33,8 +25,6 @@ from core.encoding import (
     normalize_turkish_text,
     safe_json_decode,
     safe_json_encode,
-    safe_turkish_print,
-    setup_turkish_encoding,
     turkish_safe_decode,
     turkish_safe_encode,
     validate_turkish_text,
@@ -45,16 +35,13 @@ from core.exceptions import (
     BusinessLogicError,
     ConcurrencyError,
     ConfigurationError,
-    ContentError,
     DatabaseError,
     EnhancedServiceError,
     ErrorChain,
     ErrorFactory,
     ErrorSeverity,
-    ExamError,
     ExternalServiceError,
     IntegrationError,
-    LearningError,
     MaintenanceError,
     NotFoundError,
     QuotaExceededError,
@@ -62,28 +49,17 @@ from core.exceptions import (
     SecurityError,
     ServiceError,
     TimeoutError,
-    UserError,
     ValidationError,
 )
 from core.response_models import (
     APIResponse,
-    CreateResponse,
-    DeleteResponse,
-    EmptySuccessResponse,
     ErrorDetail,
-    ErrorResponse,
     ErrorType,
-    HealthCheckResponse,
-    ListResponse,
-    MessageResponse,
-    PaginatedListResponse,
     PaginatedResponse,
     PaginationMeta,
     ResponseBuilder,
     ResponseMeta,
     ResponseStatus,
-    SuccessResponse,
-    UpdateResponse,
     ValidationErrorDetail,
     ValidationErrorResponse,
     error_response,
@@ -1248,7 +1224,7 @@ class TestPerformance:
 
         start = time.perf_counter()
         for _ in range(1000):
-            exc = ValidationError("test", field="test_field")
+            _ = ValidationError("test", field="test_field")
         duration_ms = (time.perf_counter() - start) * 1000
 
         # Should be very fast (< 100ms for 1000 creations)
@@ -1260,7 +1236,7 @@ class TestPerformance:
 
         start = time.perf_counter()
         for _ in range(1000):
-            response = (
+            _ = (
                 ResponseBuilder().success("Test").with_data({"test": "data"}).build()
             )
         duration_ms = (time.perf_counter() - start) * 1000
@@ -1277,7 +1253,7 @@ class TestPerformance:
         start = time.perf_counter()
         for _ in range(1000):
             encoded = turkish_safe_encode(test_text)
-            decoded = turkish_safe_decode(encoded)
+            _ = turkish_safe_decode(encoded)
         duration_ms = (time.perf_counter() - start) * 1000
 
         # Should be very fast

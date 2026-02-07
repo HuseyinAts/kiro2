@@ -13,9 +13,6 @@ import pytest
 import asyncio
 import time
 import statistics
-from typing import List, Dict, Any
-from datetime import datetime
-import json
 import psutil
 import os
 
@@ -71,7 +68,7 @@ class TestVideoAPIPerformance:
         assert p95 < 3.0, f"P95 response time {p95:.2f}s exceeds target of 3s"
         assert avg < 2.0, f"Average response time {avg:.2f}s exceeds target of 2s"
 
-        print(f"\n=== Response Time Benchmark ===")
+        print("\n=== Response Time Benchmark ===")
         print(f"Iterations: {test_iterations}")
         print(f"Average: {avg:.3f}s")
         print(f"P50 (Median): {p50:.3f}s")
@@ -111,7 +108,7 @@ class TestVideoAPIPerformance:
             cache_hit_rate >= 80.0
         ), f"Cache hit rate {cache_hit_rate:.1f}% below target of 80%"
 
-        print(f"\n=== Cache Hit Rate Benchmark ===")
+        print("\n=== Cache Hit Rate Benchmark ===")
         print(f"Total Requests: {total_requests}")
         print(f"Cache Hits: {cache_hits}")
         print(f"Cache Misses: {cache_misses}")
@@ -150,7 +147,7 @@ class TestVideoAPIPerformance:
             p95_query_time < 0.2
         ), f"P95 query time {p95_query_time:.3f}s exceeds target of 0.2s"
 
-        print(f"\n=== Database Query Benchmark ===")
+        print("\n=== Database Query Benchmark ===")
         print(f"Queries: {len(query_times)}")
         print(f"Average: {avg_query_time:.3f}s")
         print(f"P95: {p95_query_time:.3f}s")
@@ -190,7 +187,7 @@ class TestVideoAPIPerformance:
             memory_growth < 50
         ), f"Memory growth {memory_growth:.1f}MB exceeds threshold of 50MB"
 
-        print(f"\n=== Memory Usage Benchmark ===")
+        print("\n=== Memory Usage Benchmark ===")
         print(f"Samples: {len(memory_samples)}")
         print(f"Average: {avg_memory:.1f}MB")
         print(f"Min: {min_memory:.1f}MB")
@@ -223,7 +220,7 @@ class TestVideoAPIPerformance:
         # Assertions
         assert speedup >= 2.5, f"Parallel speedup {speedup:.1f}x below target of 2.5x"
 
-        print(f"\n=== Parallel Processing Benchmark ===")
+        print("\n=== Parallel Processing Benchmark ===")
         print(f"Goals: {num_goals}")
         print(f"Sequential Time: {sequential_time:.2f}s")
         print(f"Parallel Time: {parallel_time:.2f}s")
@@ -251,7 +248,7 @@ class TestPerformanceOptimizations:
         assert len(warmed_cache) == len(popular_subjects)
         assert all(subject in warmed_cache for subject in popular_subjects)
 
-        print(f"\n=== Cache Warming Test ===")
+        print("\n=== Cache Warming Test ===")
         print(f"Warmed Subjects: {len(warmed_cache)}")
         print(f"Subjects: {list(warmed_cache.keys())}")
 
@@ -282,7 +279,7 @@ class TestPerformanceOptimizations:
             max_connections <= pool_size
         ), f"Max connections {max_connections} exceeded pool size {pool_size}"
 
-        print(f"\n=== Connection Pooling Test ===")
+        print("\n=== Connection Pooling Test ===")
         print(f"Pool Size: {pool_size}")
         print(f"Max Concurrent: {max_connections}")
         print(
@@ -307,7 +304,7 @@ class TestPerformanceOptimizations:
             indexed_time < non_indexed_time / 5
         ), "Index should provide at least 5x improvement"
 
-        print(f"\n=== Query Optimization Test ===")
+        print("\n=== Query Optimization Test ===")
         print(f"Non-indexed Query: {non_indexed_time:.3f}s")
         print(f"Indexed Query: {indexed_time:.3f}s")
         print(f"Improvement: {improvement:.1f}%")

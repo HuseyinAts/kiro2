@@ -15,9 +15,8 @@ Tests ÖSYM exam scoring formulas:
 
 import pytest
 import statistics
-from datetime import datetime, timedelta
-from unittest.mock import AsyncMock, MagicMock, patch
-from dataclasses import asdict
+from datetime import datetime
+from unittest.mock import AsyncMock, MagicMock
 
 from services.exam_performance_service import (
     ExamPerformanceService,
@@ -26,9 +25,8 @@ from services.exam_performance_service import (
     SubjectWeakness,
     StudyRecommendation,
     PerformanceComparison,
-    DetailedPerformanceAnalysis,
 )
-from models.database import ExamType, QuestionDifficulty, SubjectArea
+from models.database import ExamType, QuestionDifficulty
 
 
 # ==================== FIXTURES ====================

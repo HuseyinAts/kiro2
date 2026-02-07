@@ -9,10 +9,8 @@ from datetime import datetime, timedelta
 from services.item_selection_optimizer import (
     ItemSelectionOptimizer,
     ContentConstraint,
-    ExposureRecord,
     SpacedRepetitionSchedule,
 )
-from services.irt_psychometric_analysis import IRTParameters
 
 
 @pytest.fixture
@@ -301,15 +299,17 @@ class TestExposureControl:
 
     def test_disable_overexposed_items(self, optimizer, sample_questions):
         """REQ-49.60: Overexposed items devre dışı bırakma"""
-        # q1'i aşırı maruz bırak
+        # q1'i aşırı maruz bırak - her test sonrası test_count ile çağır
+        # Her çağrı için test_count=1 kullan, böylece rate = exposures/total_tests olur
         for _ in range(30):
-            optimizer.track_item_exposure("q1", test_count=100)
+            optimizer.track_item_exposure("q1", test_count=1)
 
         result = optimizer.disable_overexposed_items(
-            sample_questions, max_exposure_rate=0.2
+            sample_questions, max_exposure_rate=0.2  # %20 max
         )
 
-        # q1 filtrelenmeli
+        # q1'in exposure rate'i 30/30 = 1.0 (100%) olmalı, 0.2'den büyük
+        # Bu yüzden filtrelenmeli
         result_ids = [q["id"] for q in result]
         assert "q1" not in result_ids
         assert len(result) < len(sample_questions)

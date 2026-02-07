@@ -6,19 +6,15 @@ Tests query performance with and without indexes
 import asyncio
 import time
 import random
-from typing import List, Dict, Any
-from datetime import datetime
 
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sessionmaker
-from sqlalchemy import text
 
-from models.video_cache_model import VideoCache
 from repositories.video_cache_repository import OptimizedVideoRepository
 
 
-# Test configuration
+# Test configuration (Port 5434 - KIRO2 Standard)
 DATABASE_URL = (
-    "postgresql+asyncpg://postgres:postgres@localhost:5432/turkiye_sinav_test"
+    "postgresql+asyncpg://postgres:postgres@localhost:5434/turkiye_sinav_test"
 )
 NUM_TEST_VIDEOS = 10000  # Number of test videos to insert
 NUM_QUERIES = 100  # Number of queries to run for benchmarking
@@ -160,7 +156,7 @@ class VideoCacheBenchmark:
         p95 = sorted(query_times)[int(len(query_times) * 0.95)]
         p99 = sorted(query_times)[int(len(query_times) * 0.99)]
 
-        print(f"\n📈 Optimized Query Performance:")
+        print("\n📈 Optimized Query Performance:")
         print(f"  Average: {avg_time:.2f}ms")
         print(f"  Min: {min_time:.2f}ms")
         print(f"  Max: {max_time:.2f}ms")
@@ -217,7 +213,7 @@ class VideoCacheBenchmark:
         avg_time = sum(query_times) / len(query_times)
         p95 = sorted(query_times)[int(len(query_times) * 0.95)]
 
-        print(f"\n📈 Flexible Query Performance:")
+        print("\n📈 Flexible Query Performance:")
         print(f"  Average: {avg_time:.2f}ms")
         print(f"  P95: {p95:.2f}ms")
 
@@ -253,7 +249,7 @@ class VideoCacheBenchmark:
         avg_time = sum(query_times) / len(query_times)
         p95 = sorted(query_times)[int(len(query_times) * 0.95)]
 
-        print(f"\n📈 Subject Query Performance:")
+        print("\n📈 Subject Query Performance:")
         print(f"  Average: {avg_time:.2f}ms")
         print(f"  P95: {p95:.2f}ms")
 
@@ -268,7 +264,7 @@ class VideoCacheBenchmark:
         - Expired entries cleanup
         - Cache statistics
         """
-        print(f"\n🚀 Benchmarking cache operations...")
+        print("\n🚀 Benchmarking cache operations...")
 
         async with self.session_maker() as session:
             repository = OptimizedVideoRepository(session)
@@ -328,20 +324,20 @@ class VideoCacheBenchmark:
             print("=" * 60)
             print(f"\n✅ Test Data: {NUM_TEST_VIDEOS} videos")
             print(f"✅ Queries per test: {NUM_QUERIES}")
-            print(f"\n📊 Query Performance:")
-            print(f"  Optimized Query (composite index):")
+            print("\n📊 Query Performance:")
+            print("  Optimized Query (composite index):")
             print(f"    - Average: {optimized_results['avg']:.2f}ms")
             print(f"    - P95: {optimized_results['p95']:.2f}ms")
             print(f"    - P99: {optimized_results['p99']:.2f}ms")
-            print(f"  Flexible Query (difficulty tolerance):")
+            print("  Flexible Query (difficulty tolerance):")
             print(f"    - Average: {flexible_results['avg']:.2f}ms")
             print(f"    - P95: {flexible_results['p95']:.2f}ms")
-            print(f"  Subject Query:")
+            print("  Subject Query:")
             print(f"    - Average: {subject_results['avg']:.2f}ms")
             print(f"    - P95: {subject_results['p95']:.2f}ms")
 
             # Performance assessment
-            print(f"\n🎯 Performance Assessment:")
+            print("\n🎯 Performance Assessment:")
             if optimized_results["p95"] < 10:
                 print(
                     f"  ✅ EXCELLENT: P95 < 10ms (actual: {optimized_results['p95']:.2f}ms)"
@@ -359,10 +355,10 @@ class VideoCacheBenchmark:
                     f"  ❌ NEEDS OPTIMIZATION: P95 > 100ms (actual: {optimized_results['p95']:.2f}ms)"
                 )
 
-            print(f"\n💡 Expected Performance:")
-            print(f"  - Without indexes: ~100ms per query")
-            print(f"  - With composite index: ~5-10ms per query")
-            print(f"  - Performance improvement: 10-20x faster")
+            print("\n💡 Expected Performance:")
+            print("  - Without indexes: ~100ms per query")
+            print("  - With composite index: ~5-10ms per query")
+            print("  - Performance improvement: 10-20x faster")
 
         finally:
             await self.teardown()

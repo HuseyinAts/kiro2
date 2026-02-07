@@ -75,7 +75,7 @@ class Tier2CachingUser(HttpUser):
     def test_performance_trend_7_days(self):
         """Test performance trend - 7 days (fastest)"""
         with self.client.get(
-            f"/api/v1/student-dashboard/performans-trendi?gun_sayisi=7",
+            "/api/v1/student-dashboard/performans-trendi?gun_sayisi=7",
             name="/performans-trendi [7 days]",
             catch_response=True,
         ) as response:
@@ -88,7 +88,7 @@ class Tier2CachingUser(HttpUser):
     def test_performance_trend_30_days(self):
         """Test performance trend - 30 days (default)"""
         with self.client.get(
-            f"/api/v1/student-dashboard/performans-trendi?gun_sayisi=30",
+            "/api/v1/student-dashboard/performans-trendi?gun_sayisi=30",
             name="/performans-trendi [30 days]",
             catch_response=True,
         ) as response:
@@ -101,7 +101,7 @@ class Tier2CachingUser(HttpUser):
     def test_performance_trend_90_days(self):
         """Test performance trend - 90 days (slower)"""
         with self.client.get(
-            f"/api/v1/student-dashboard/performans-trendi?gun_sayisi=90",
+            "/api/v1/student-dashboard/performans-trendi?gun_sayisi=90",
             name="/performans-trendi [90 days]",
             catch_response=True,
         ) as response:
@@ -114,7 +114,7 @@ class Tier2CachingUser(HttpUser):
     def test_performance_trend_365_days(self):
         """Test performance trend - 365 days (slowest - expects biggest improvement)"""
         with self.client.get(
-            f"/api/v1/student-dashboard/performans-trendi?gun_sayisi=365",
+            "/api/v1/student-dashboard/performans-trendi?gun_sayisi=365",
             name="/performans-trendi [365 days]",
             catch_response=True,
         ) as response:
@@ -137,7 +137,7 @@ class Tier2CachingUser(HttpUser):
                     if json_data.get("success"):
                         response.success()
                     else:
-                        response.failure(f"API returned success=false")
+                        response.failure("API returned success=false")
                 except:
                     response.failure("Invalid JSON response")
             else:

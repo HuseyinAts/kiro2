@@ -3,7 +3,6 @@ Fast unit tests for revolutionary features service
 Tests: Dataclasses, Profile models
 Coverage target: 40-60% of services.revolutionary_features_service
 """
-import pytest
 from dataclasses import asdict
 
 

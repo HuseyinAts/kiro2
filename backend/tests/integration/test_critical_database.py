@@ -163,8 +163,8 @@ class TestCriticalDatabase:
 
         # Valid URLs
         assert validate_database_url("sqlite+aiosqlite:///./turkiye_sinav.db")
-        assert validate_database_url("postgresql://user:pass@localhost:5432/db")
-        assert validate_database_url("postgresql+asyncpg://user:pass@localhost:5432/db")
+        assert validate_database_url("postgresql://user:pass@localhost:5434/db")
+        assert validate_database_url("postgresql+asyncpg://user:pass@localhost:5434/db")
 
         # Invalid URLs
         assert not validate_database_url("mysql://user:pass@localhost:3306/db")
@@ -273,5 +273,6 @@ class TestCriticalDatabase:
         unsafe_query = unsafe_query_builder(malicious_input)
         assert "DROP TABLE" in unsafe_query  # This is why it's unsafe!
 
-        # The test passes to show we understand the difference
-        assert True
+        # Verify we understand the difference between safe and unsafe queries
+        assert safe_query != unsafe_query
+        assert len(params) == 1

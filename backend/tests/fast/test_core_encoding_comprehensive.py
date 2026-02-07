@@ -2,11 +2,7 @@
 Comprehensive tests for core/encoding.py
 Tests Turkish character encoding and UTF-8 support
 """
-import pytest
-import json
-import locale
-from unittest.mock import patch, MagicMock
-import sys
+from unittest.mock import patch
 import os
 
 

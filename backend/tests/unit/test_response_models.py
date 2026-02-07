@@ -25,8 +25,7 @@ Features:
 
 import json
 from datetime import datetime, timedelta
-from typing import Any, Dict, List
-from uuid import uuid4
+from typing import Any, List
 
 import pytest
 from pydantic import ValidationError
@@ -34,80 +33,52 @@ from pydantic import ValidationError
 # Core response models
 from core.response_models import (
     APIResponse,
-    CreateResponse,
-    DeleteResponse,
-    EmptySuccessResponse,
     ErrorDetail,
-    ErrorResponse,
     ErrorType,
-    HealthCheckResponse,
-    ListResponse,
-    MessageResponse,
-    PaginatedListResponse,
     PaginatedResponse,
     PaginationMeta,
     ResponseBuilder,
     ResponseMeta,
     ResponseStatus,
-    SuccessResponse,
-    UpdateResponse,
     ValidationErrorDetail,
-    ValidationErrorResponse,
     error_response,
     get_status_code,
     paginated_response,
     success_response,
     turkish_error_response,
     turkish_success_response,
-    validation_error_response,
 )
 
 # User models
 from models.user import (
     Kullanici,
     KullaniciBase,
-    KullaniciGiris,
     KullaniciOlustur,
     OgrenciProfili,
-    OgretmenProfili,
-    TokenYaniti,
-    VeliProfili,
 )
 
 # Exam models
 from models.exam import (
-    KonuPerformansi,
-    PerformansRaporu,
-    SinavCevabi,
     SinavOturumu,
-    SinavSonucu,
     SinavSorusu,
 )
 
 # Content models
 from models.content_models import (
     BulkContentImport,
-    ContentFilter,
     ContentInteraction,
     ContentSearchRequest,
-    ContentStats,
     ContentType,
     InteractionType,
     MakaleIcerik,
-    QuizIcerik,
     VideoIcerik,
 )
 
 # Learning style models
 from models.learning_style import (
-    BehavioralData,
-    ContentRecommendation,
-    FelderDimension,
     FelderProfile,
     HybridLearningProfile,
     LearningStyleConfidence,
-    LearningStyleUpdate,
-    QuestionnaireResponse,
     VARKDimension,
     VARKProfile,
 )
@@ -118,12 +89,8 @@ from models.question_generation import (
     DifficultyLevel,
     GeneratedQuestion,
     OSYMQuestionFormat,
-    QuestionBankStatus,
-    QuestionGenerationReport,
     QuestionGenerationRequest,
-    QuestionTemplate,
     QuestionType,
-    QuestionValidationResult,
 )
 
 # Dashboard models
@@ -131,15 +98,11 @@ from models.dashboard import (
     Bildirim,
     DashboardIstatistikleri,
     Hedef,
-    PerformansVerisi,
-    ProfilGuncelleme,
-    SinavSonucu as DashboardSinavSonucu,
 )
 
 # Enums
 from models.enums import (
     KullaniciRolu,
-    OgrenmeStili,
     SinavDurumu,
     SinavTipi,
     ZorlukSeviyesi,
@@ -1219,7 +1182,7 @@ class TestGeneratedQuestion:
     )
     def test_difficulty_levels(self, difficulty: DifficultyLevel):
         """Test difficulty levels"""
-        from models.curriculum import SubjectType, ExamType
+        from models.curriculum import SubjectType
 
         osym_format = OSYMQuestionFormat(
             question_number=1,

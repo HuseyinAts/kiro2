@@ -1,4 +1,3 @@
-from unittest.mock import Mock, patch, AsyncMock
 import pytest
 
 """
@@ -9,7 +8,6 @@ import os
 import tempfile
 from pathlib import Path
 
-import pytest
 
 
 @pytest.mark.unit
@@ -72,7 +70,8 @@ def test_serial_execution():
         import time
 
         time.sleep(0.1)
-        assert True
+        # Verify sleep completed without error
+        assert temp_file.exists()
     finally:
         # Clean up marker file
         if temp_file.exists():

@@ -5,10 +5,13 @@ System monitoring ve metrics testleri
 """
 
 import pytest
+
+# Module-level skip: monitoring_api modülü arşivlendi
+pytest.skip("monitoring_api module archived - see backend/api/monitoring.py", allow_module_level=True)
+
 import asyncio
 from unittest.mock import Mock, patch, AsyncMock
 from datetime import datetime, timedelta
-from typing import Dict, List, Optional
 import json
 
 # Test edilecek modülleri import et

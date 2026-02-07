@@ -1,4 +1,3 @@
-from unittest.mock import Mock, patch, AsyncMock
 
 """
 ZPD Maarif Service Test Modülü

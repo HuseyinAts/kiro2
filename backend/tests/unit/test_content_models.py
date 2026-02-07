@@ -7,7 +7,7 @@ Target: Pure data model testing with no mocks
 """
 
 import pytest
-from datetime import datetime, timedelta
+from datetime import datetime
 from pydantic import ValidationError
 from uuid import UUID
 

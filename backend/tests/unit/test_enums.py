@@ -181,11 +181,10 @@ class TestKullaniciRolu:
         assert KullaniciRolu.OGRENCI.value == "ogrenci"
         assert KullaniciRolu.OGRETMEN.value == "ogretmen"
         assert KullaniciRolu.VELI.value == "veli"
-        assert KullaniciRolu.ADMIN.value == "admin"
-        assert KullaniciRolu.SUPER_ADMIN.value == "super_admin"
+        assert KullaniciRolu.ADMIN.value == "admin"  # lowercase
 
     def test_kullanici_rolu_count(self):
-        """Test all 5 roles exist"""
+        """Test all 5 roles exist (SUPER_ADMIN eklendi)"""
         roles = list(KullaniciRolu)
         assert len(roles) == 5
 
@@ -195,8 +194,7 @@ class TestKullaniciRolu:
             (KullaniciRolu.OGRENCI, "ogrenci"),
             (KullaniciRolu.OGRETMEN, "ogretmen"),
             (KullaniciRolu.VELI, "veli"),
-            (KullaniciRolu.ADMIN, "admin"),
-            (KullaniciRolu.SUPER_ADMIN, "super_admin"),
+            (KullaniciRolu.ADMIN, "admin"),  # lowercase
         ],
     )
     def test_kullanici_rolu_parametrized(self, role, value):
@@ -210,16 +208,15 @@ class TestKullaniciRolu:
             KullaniciRolu.OGRETMEN,
             KullaniciRolu.VELI,
             KullaniciRolu.ADMIN,
-            KullaniciRolu.SUPER_ADMIN,
         ]
-        assert len(roles) == 5
-        assert KullaniciRolu.SUPER_ADMIN in roles
+        assert len(roles) == 4
+        assert KullaniciRolu.ADMIN in roles
 
     def test_kullanici_rolu_from_string(self):
         """Test creating role from string"""
         assert KullaniciRolu("ogrenci") == KullaniciRolu.OGRENCI
-        assert KullaniciRolu("admin") == KullaniciRolu.ADMIN
-        assert KullaniciRolu("super_admin") == KullaniciRolu.SUPER_ADMIN
+        assert KullaniciRolu("admin") == KullaniciRolu.ADMIN  # lowercase
+        assert KullaniciRolu("ogretmen") == KullaniciRolu.OGRETMEN
 
 
 class TestSinavDurumu:

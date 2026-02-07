@@ -5,7 +5,6 @@ Task 9 implementation verification
 
 import pytest
 import asyncio
-from datetime import datetime
 from backend.core.error_handler import (
     ErrorHandler,
     VideoAPIError,
@@ -14,14 +13,12 @@ from backend.core.error_handler import (
     VideoTimeoutError,
     VideoDiscoveryError,
     ErrorCategory,
-    ErrorClassification,
 )
 from backend.core.circuit_breaker import (
     CircuitBreaker,
     CircuitBreakerConfig,
     CircuitState,
     CircuitBreakerOpenError,
-    CircuitBreakerHalfOpenError,
     circuit_breaker_manager,
 )
 from backend.core.exceptions import ErrorSeverity

@@ -8,7 +8,6 @@ Task 22: Load Testing - Verification
 """
 
 import sys
-import os
 from pathlib import Path
 
 # Add backend to path

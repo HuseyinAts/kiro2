@@ -2,8 +2,6 @@
 Real integration tests for message queue system
 Tests actual code paths without mocks to improve coverage
 """
-import pytest
-import asyncio
 from datetime import datetime, UTC
 from core.message_queue_system import (
     QueueMessage,

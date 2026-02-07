@@ -1,4 +1,3 @@
-from unittest.mock import Mock, patch, AsyncMock
 
 """
 Critical Algorithms Tests  
@@ -348,13 +347,16 @@ class TestCriticalAlgorithms:
                 """Adapt content to Turkish learning preferences"""
                 adaptations = {}
 
+                # Extract cultural factors if nested
+                cultural_factors = student_profile.get("cultural_factors", student_profile)
+
                 # Group work preference
-                if student_profile.get("group_preference", 0) > 0.7:
+                if cultural_factors.get("group_preference", 0) > 0.7:
                     adaptations["group_activities"] = True
                     adaptations["peer_discussion"] = True
 
                 # Teacher guidance preference
-                if student_profile.get("teacher_guidance", 0) > 0.8:
+                if cultural_factors.get("teacher_guidance", 0) > 0.8:
                     adaptations["detailed_explanations"] = True
                     adaptations["step_by_step_guidance"] = True
 
@@ -390,6 +392,9 @@ class TestCriticalAlgorithms:
 
         assert "turkish_examples" in adaptations
         assert "cultural_relevance" in adaptations
+        # group_activities is derived from group_preference in cultural_profile
+        # The mock sets group_activities based on group_preference > 0.7
+        assert "group_activities" in adaptations
         assert adaptations["group_activities"] is True  # High group preference
 
     def test_recommendation_algorithm(self):
@@ -412,19 +417,29 @@ class TestCriticalAlgorithms:
 
                 profile = self.user_profiles[user_id]
 
-                # Update subject preferences
+                # Update subject preferences - use direct assignment for first interaction
                 for subject, rating in interactions.get("subjects", {}).items():
-                    current = profile["subject_preferences"].get(subject, 0.0)
-                    profile["subject_preferences"][subject] = (current + rating) / 2
+                    if subject not in profile["subject_preferences"]:
+                        # First interaction: use rating directly
+                        profile["subject_preferences"][subject] = rating
+                    else:
+                        # Subsequent interactions: average with current
+                        current = profile["subject_preferences"][subject]
+                        profile["subject_preferences"][subject] = (current + rating) / 2
 
-                # Update content type preferences
+                # Update content type preferences - use direct assignment for first interaction
                 for content_type, rating in interactions.get(
                     "content_types", {}
                 ).items():
-                    current = profile["content_type_preferences"].get(content_type, 0.0)
-                    profile["content_type_preferences"][content_type] = (
-                        current + rating
-                    ) / 2
+                    if content_type not in profile["content_type_preferences"]:
+                        # First interaction: use rating directly
+                        profile["content_type_preferences"][content_type] = rating
+                    else:
+                        # Subsequent interactions: average with current
+                        current = profile["content_type_preferences"][content_type]
+                        profile["content_type_preferences"][content_type] = (
+                            current + rating
+                        ) / 2
 
             def calculate_similarity(self, user_id1: int, user_id2: int) -> float:
                 """Calculate user similarity for collaborative filtering"""

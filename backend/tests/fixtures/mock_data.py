@@ -1,9 +1,7 @@
 """
 Mock data and fixtures for testing
 """
-import json
-from datetime import datetime, timedelta
-from typing import Any, Dict, List
+from datetime import datetime
 from unittest.mock import AsyncMock, MagicMock
 
 
@@ -133,7 +131,6 @@ class MockEnvironment:
 
 def create_mock_settings():
     """Create mock settings object"""
-    from unittest.mock import MagicMock
 
     settings = MagicMock()
     settings.database_url = "sqlite+aiosqlite:///:memory:"

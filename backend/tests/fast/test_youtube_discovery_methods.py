@@ -5,7 +5,6 @@ Target: +2% coverage (499 lines, currently 16.8%)
 """
 
 import pytest
-from unittest.mock import MagicMock, AsyncMock, patch
 
 
 class TestYouTubeDiscoveryInit:

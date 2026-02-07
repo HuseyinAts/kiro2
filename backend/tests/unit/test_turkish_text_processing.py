@@ -11,7 +11,6 @@ Coverage:
 Total tests: ~300
 """
 
-import asyncio
 import pytest
 from algorithms.turkish_text_simplifier import (
     TurkishTextSimplifier,
@@ -21,14 +20,11 @@ from algorithms.turkish_text_simplifier import (
 from algorithms.turkish_bionic_reading import (
     TurkishBionicReading,
     BionicReadingResult,
-    ZemberekMorphologyAnalyzer,
     TurkishMorphologyAnalysis,
 )
 from algorithms.three_level_turkish_simplification import (
     ThreeLevelTurkishSimplification,
     SimplificationResult as ThreeLevelResult,
-    LexicalReplacement,
-    SyntacticPattern,
 )
 
 

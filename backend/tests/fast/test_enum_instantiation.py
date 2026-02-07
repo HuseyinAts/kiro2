@@ -1,14 +1,20 @@
 """
-Enum Instantiation Tests
-Testing all enum values to increase coverage
-Target: +3% coverage
+Enum Instantiation Tests - PARTIALLY CLEANED
+
+Some enum tests check actual values which is somewhat useful, but most tests with
+pytest.skip or trivial assertions have been removed.
+
+Real enum tests should validate enum values, transitions, and business logic.
 """
+
+# File partially cleaned on 2026-01-28
+# Removed 1 fake test: test_create_fsrs_models (only pytest.skip, no logic)
 
 import pytest
 
 
 class TestEnumValues:
-    """Test enum value access"""
+    """Test enum value access - Kept as these verify actual enum values"""
 
     def test_sinav_tipi_all_values(self):
         """Access all SinavTipi enum values"""
@@ -87,7 +93,7 @@ class TestEnumValues:
 
 
 class TestModelCreation:
-    """Test basic model creation"""
+    """Test basic model creation - Kept as these test actual instantiation"""
 
     def test_create_kullanici_model(self):
         """Create Kullanici model instance"""
@@ -98,7 +104,7 @@ class TestModelCreation:
             user = KullaniciOlustur(
                 email="test@test.com",
                 ad_soyad="Test User",
-                sifre="password",
+                sifre="KiRo2$ecureP@ss789",  # Unique, strong password
                 rol=KullaniciRolu.OGRENCI,
             )
             assert user.email == "test@test.com"
@@ -116,13 +122,9 @@ class TestModelCreation:
         except (ImportError, AttributeError):
             pytest.skip("SinavOlustur not available")
 
-    def test_create_fsrs_models(self):
-        """Create FSRS model instances"""
-        pytest.skip("FSRS models require complex setup")
-
 
 class TestContentModelsInstantiation:
-    """Test content model instantiation"""
+    """Test content model instantiation - Kept as these test actual creation"""
 
     def test_video_content_creation(self):
         """Create VideoContent instance"""

@@ -11,9 +11,7 @@ Requirements: 9.1-9.5, 7.4
 import os
 import sys
 import pytest
-from typing import Dict, List, Any
-from unittest.mock import Mock, patch, AsyncMock
-import json
+from typing import Dict, Any
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -193,7 +191,8 @@ class WCAGComplianceChecker:
                     "Metin ve arka plan renkleri arasındaki kontrastı artırın"
                 )
         else:
-            result["passed"] = True  # Context yoksa varsayılan olarak geçer
+            result["skipped"] = True
+            result["skip_reason"] = "Kontrast context sağlanmadı - test uygulanamaz"
         return result
 
     def _check_keyboard_access(self, content: str, result: Dict) -> Dict:
@@ -271,12 +270,14 @@ class WCAGComplianceChecker:
     def generate_compliance_report(self) -> Dict[str, Any]:
         """Uyumluluk raporu oluştur"""
         total_tests = len(self.test_results)
-        passed_tests = sum(1 for r in self.test_results if r["passed"])
+        passed_tests = sum(1 for r in self.test_results if r.get("passed", False))
+        skipped_tests = sum(1 for r in self.test_results if r.get("skipped", False))
 
         return {
             "total_guidelines_tested": total_tests,
             "passed": passed_tests,
-            "failed": total_tests - passed_tests,
+            "skipped": skipped_tests,
+            "failed": total_tests - passed_tests - skipped_tests,
             "compliance_percentage": (passed_tests / total_tests * 100)
             if total_tests > 0
             else 0,
@@ -307,7 +308,7 @@ def sample_exam_html():
             <div class="exam-timer" role="timer" aria-live="polite">
                 <span>Kalan Süre: <span id="timer">165:00</span></span>
             </div>
-            
+
             <form id="exam-form">
                 <div class="question" role="group" aria-labelledby="q1-text">
                     <h2 id="q1-text">Soru 1</h2>
@@ -323,7 +324,7 @@ def sample_exam_html():
                         </label>
                     </div>
                 </div>
-                
+
                 <button type="submit" tabindex="0">Sınavı Bitir</button>
             </form>
         </main>
@@ -350,10 +351,10 @@ def sample_dashboard_html():
                 <li><a href="/progress">İlerleme</a></li>
             </ul>
         </nav>
-        
+
         <main id="main-content" role="main">
             <h1>Hoş Geldin, Öğrenci</h1>
-            
+
             <section aria-labelledby="stats-heading">
                 <h2 id="stats-heading">İstatistikler</h2>
                 <div class="stat-card">
@@ -361,7 +362,7 @@ def sample_dashboard_html():
                     <p>Tamamlanan Sınavlar: <strong>15</strong></p>
                 </div>
             </section>
-            
+
             <section aria-labelledby="recent-heading">
                 <h2 id="recent-heading">Son Aktiviteler</h2>
                 <ul role="list">
@@ -387,7 +388,7 @@ async def test_wcag_1_1_1_non_text_content(wcag_checker, sample_exam_html):
     result = wcag_checker.check_guideline("1.1.1", sample_exam_html)
 
     assert result["guideline_id"] == "1.1.1"
-    assert result["passed"] == True, "Tüm görseller alt text içermeli"
+    assert result["passed"], "Tüm görseller alt text içermeli"
     assert len(result["issues"]) == 0
 
 
@@ -400,12 +401,12 @@ async def test_wcag_1_4_3_contrast_minimum(wcag_checker):
     # İyi kontrast (siyah metin, beyaz arka plan)
     context_good = {"colors": {"foreground": "#000000", "background": "#FFFFFF"}}
     result_good = wcag_checker.check_guideline("1.4.3", "", context_good)
-    assert result_good["passed"] == True
+    assert result_good["passed"]
 
     # Kötü kontrast (açık gri metin, beyaz arka plan)
     context_bad = {"colors": {"foreground": "#CCCCCC", "background": "#FFFFFF"}}
     result_bad = wcag_checker.check_guideline("1.4.3", "", context_bad)
-    assert result_bad["passed"] == False
+    assert not result_bad["passed"]
     assert len(result_bad["issues"]) > 0
 
 
@@ -418,12 +419,12 @@ async def test_wcag_2_1_1_keyboard_access(wcag_checker):
     # İyi örnek: button elementi
     good_html = '<button onclick="submit()">Gönder</button>'
     result_good = wcag_checker.check_guideline("2.1.1", good_html)
-    assert result_good["passed"] == True
+    assert result_good["passed"]
 
     # Kötü örnek: tabindex olmayan div
     bad_html = '<div onclick="submit()">Gönder</div>'
     result_bad = wcag_checker.check_guideline("2.1.1", bad_html)
-    assert result_bad["passed"] == False
+    assert not result_bad["passed"]
 
 
 @pytest.mark.asyncio
@@ -444,7 +445,7 @@ async def test_wcag_3_1_1_language_of_page(wcag_checker, sample_exam_html):
     """
     result = wcag_checker.check_guideline("3.1.1", sample_exam_html)
 
-    assert result["passed"] == True
+    assert result["passed"]
     assert 'lang="tr"' in sample_exam_html
 
 
@@ -456,7 +457,7 @@ async def test_wcag_4_1_2_name_role_value(wcag_checker, sample_exam_html):
     """
     result = wcag_checker.check_guideline("4.1.2", sample_exam_html)
 
-    assert result["passed"] == True
+    assert result["passed"]
     # Form elementlerinin label'ları var
     assert "<label>" in sample_exam_html or "aria-label" in sample_exam_html
 
@@ -486,7 +487,8 @@ async def test_wcag_semantic_html_structure(wcag_checker, sample_dashboard_html)
 
     # Başlık hiyerarşisi doğru olmalı
     assert "<h1>" in sample_dashboard_html
-    assert "<h2>" in sample_dashboard_html
+    # Note: h2 may have attributes like id, so check for opening tag pattern
+    assert "<h2" in sample_dashboard_html and ">" in sample_dashboard_html
 
 
 @pytest.mark.asyncio
@@ -569,7 +571,7 @@ async def test_generate_full_compliance_report(
     # En az %80 uyumluluk bekliyoruz
     assert report["compliance_percentage"] >= 80.0
 
-    print(f"\n=== WCAG 2.1 Level AA Uyumluluk Raporu ===")
+    print("\n=== WCAG 2.1 Level AA Uyumluluk Raporu ===")
     print(f"Test Edilen Kılavuz Sayısı: {report['total_guidelines_tested']}")
     print(f"Başarılı: {report['passed']}")
     print(f"Başarısız: {report['failed']}")

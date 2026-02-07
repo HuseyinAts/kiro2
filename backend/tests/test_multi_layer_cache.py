@@ -6,13 +6,11 @@ Task 7 - Requirements: 6.1, 6.2, 6.3, 6.5, 6.7, 6.10
 import pytest
 import asyncio
 import time
-from unittest.mock import AsyncMock, MagicMock, patch
 
 from core.multi_layer_cache import (
     MultiLayerCache,
     CacheEntry,
     CacheMetrics,
-    CacheLayer,
     get_multi_layer_cache,
 )
 

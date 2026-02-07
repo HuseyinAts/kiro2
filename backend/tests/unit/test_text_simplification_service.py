@@ -6,7 +6,6 @@ Task 80: Text Simplification for Dyslexia Support
 import pytest
 from core.text_simplification_service import (
     TextSimplificationService,
-    ComplexWord,
     SimplificationResult,
 )
 

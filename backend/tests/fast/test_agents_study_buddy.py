@@ -1,15 +1,35 @@
 """
 Tests for Study Buddy Agent
 Zero coverage -> Target: 70%+
+Requires running Ollama instance.
 """
 
+import urllib.request
+
 import pytest
-from datetime import datetime
-from agents.study_buddy_agent import (
-    StudyBuddyAgent,
-    DifficultyLevel,
-    QuestionType,
+
+pytestmark = [pytest.mark.integration, pytest.mark.slow]
+
+
+def _ollama_running() -> bool:
+    """Check if Ollama service is reachable."""
+    try:
+        urllib.request.urlopen("http://localhost:11434/api/tags", timeout=2)
+        return True
+    except Exception:
+        return False
+
+
+if not _ollama_running():
+    pytest.skip("Ollama service not running", allow_module_level=True)
+
+study_buddy = pytest.importorskip(
+    "agents.study_buddy_agent",
+    reason="Requires Ollama for LLM service"
 )
+StudyBuddyAgent = study_buddy.StudyBuddyAgent
+DifficultyLevel = study_buddy.DifficultyLevel
+QuestionType = study_buddy.QuestionType
 
 
 @pytest.fixture

@@ -5,10 +5,12 @@ Coverage hedefi: %80+
 """
 
 import pytest
+
+# Module-level skip: enhanced_study_buddy_agent modülü arşivlendi
+pytest.skip("enhanced_study_buddy_agent module archived", allow_module_level=True)
+
 import asyncio
-from unittest.mock import Mock, patch, AsyncMock
-from datetime import datetime
-from typing import Dict, List, Optional
+from unittest.mock import patch, AsyncMock
 
 # Test edilecek modülleri import et
 try:

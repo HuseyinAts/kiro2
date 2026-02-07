@@ -6,8 +6,6 @@ Kritik: Net = Dogru - (Yanlis/4), Konu analizi, Sinav tamamlama
 """
 
 import pytest
-import asyncio
-from datetime import datetime, timedelta
 from unittest.mock import Mock, patch, AsyncMock
 
 from services.sinav_motoru_service import SinavMotoruServisi

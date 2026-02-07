@@ -2,7 +2,7 @@
 Mock decorators for consistent API mocking
 """
 import functools
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import AsyncMock, patch
 from .mock_data import MockServices, MockResponses, MockEnvironment
 
 

@@ -13,15 +13,9 @@ Hedeflenen Modüller:
 - api/revolutionary_features.py (127 lines, 0% coverage)
 """
 import pytest
-import asyncio
-from unittest.mock import patch, MagicMock, AsyncMock
 from datetime import datetime, timedelta
-from fastapi.testclient import TestClient
-from fastapi import FastAPI
-import json
 import uuid
 import random
-import hashlib
 
 
 class TestMegaAnalyticsAPI:

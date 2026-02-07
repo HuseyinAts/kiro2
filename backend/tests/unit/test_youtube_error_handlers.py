@@ -5,7 +5,7 @@ Teknofest 2025 - Eğitim Eylemci Projesi
 
 import asyncio
 import pytest
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import AsyncMock
 
 from services.youtube_error_handlers import (
     YouTubeAPIErrorHandler,
@@ -180,7 +180,7 @@ class TestTimeoutHandler:
         """Timeout durumu testi"""
 
         async def slow_operation():
-            await asyncio.sleep(5)
+            await asyncio.sleep(2)  # Reduced from 5s
             return "success"
 
         result = await timeout_handler.with_timeout(
@@ -213,7 +213,7 @@ class TestTimeoutHandler:
         """Timeout ve retry max retries testi"""
 
         async def always_timeout():
-            await asyncio.sleep(5)
+            await asyncio.sleep(2)  # Reduced from 5s
             return "success"
 
         with pytest.raises(asyncio.TimeoutError):

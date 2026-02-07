@@ -7,19 +7,16 @@ Requirements: 5.18, 4.11
 
 import pytest
 import asyncio
-from datetime import datetime, timedelta
-from unittest.mock import Mock, AsyncMock, patch
+from datetime import datetime
 
 from backend.core.circuit_breaker import (
     CircuitBreaker,
     CircuitBreakerConfig,
     CircuitBreakerStats,
     CircuitState,
-    CircuitBreakerError,
     CircuitBreakerOpenError,
     CircuitBreakerHalfOpenError,
     CircuitBreakerManager,
-    circuit_breaker_manager,
 )
 
 

@@ -1,4 +1,3 @@
-from unittest.mock import Mock, patch, AsyncMock
 import pytest
 
 """
@@ -6,7 +5,6 @@ Comprehensive Integration Tests for Revolutionary Features
 Tests all 7 revolutionary features working together in realistic scenarios
 """
 
-import pytest
 
 # Revolutionary Features Imports
 from algorithms.hybrid_learning_style_detector import HybridLearningStyleDetector
@@ -37,4 +35,6 @@ class TestRevolutionaryFeaturesIntegration:
         b
 
     def test_basic_assertion(self):
-        assert True  # Basic test coverage
+        # Verify revolutionary features are available
+        assert TurkishOptimizedFSRS is not None
+        assert TurkishZPDMaarifSystem is not None

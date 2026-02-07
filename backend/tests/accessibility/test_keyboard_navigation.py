@@ -11,8 +11,7 @@ Requirements: 9.1, 9.2, 2.1.1, 2.1.2
 import os
 import sys
 import pytest
-from typing import Dict, List, Any, Tuple
-from unittest.mock import Mock, patch, AsyncMock
+from typing import Dict, Any
 import re
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -319,9 +318,10 @@ class KeyboardNavigationTester:
                     "Modal'a klavye ile erişilebilir kapatma butonu ekleyin"
                 )
         else:
-            result["passed"] = True  # Modal yoksa test geçer
+            result["skipped"] = True
+            result["skip_reason"] = "Modal element bulunamadı - test uygulanamaz"
 
-        if not result["issues"]:
+        if not result["issues"] and not result.get("skipped"):
             result["passed"] = True
 
         self.test_results.append(result)
@@ -374,12 +374,14 @@ class KeyboardNavigationTester:
     def generate_keyboard_navigation_report(self) -> Dict[str, Any]:
         """Klavye navigasyon raporu oluştur"""
         total_tests = len(self.test_results)
-        passed_tests = sum(1 for r in self.test_results if r["passed"])
+        passed_tests = sum(1 for r in self.test_results if r.get("passed", False))
+        skipped_tests = sum(1 for r in self.test_results if r.get("skipped", False))
 
         return {
             "total_tests": total_tests,
             "passed": passed_tests,
-            "failed": total_tests - passed_tests,
+            "skipped": skipped_tests,
+            "failed": total_tests - passed_tests - skipped_tests,
             "keyboard_accessible_percentage": (passed_tests / total_tests * 100)
             if total_tests > 0
             else 0,
@@ -421,34 +423,34 @@ def exam_interface_html():
     </head>
     <body>
         <a href="#main-content" class="skip-link">İçeriğe Atla</a>
-        
+
         <nav role="navigation">
             <button type="button" aria-label="Menü">☰</button>
         </nav>
-        
+
         <main id="main-content" role="main">
             <h1>TYT Matematik Sınavı</h1>
-            
+
             <form id="exam-form">
                 <fieldset>
                     <legend>Soru 1: 2x + 5 = 13 denkleminde x kaçtır?</legend>
-                    
+
                     <label>
                         <input type="radio" name="q1" value="A" tabindex="0">
                         <span>A) 4</span>
                     </label>
-                    
+
                     <label>
                         <input type="radio" name="q1" value="B" tabindex="0">
                         <span>B) 5</span>
                     </label>
-                    
+
                     <label>
                         <input type="radio" name="q1" value="C" tabindex="0">
                         <span>C) 6</span>
                     </label>
                 </fieldset>
-                
+
                 <div class="navigation-buttons">
                     <button type="button" tabindex="0">Önceki Soru</button>
                     <button type="button" tabindex="0">Sonraki Soru</button>
@@ -463,25 +465,35 @@ def exam_interface_html():
 
 @pytest.fixture
 def modal_dialog_html():
-    """Modal dialog HTML"""
+    """Modal dialog HTML - WCAG 2.1.2 compliant with focus-trap and escape key support"""
     return """
     <!DOCTYPE html>
     <html lang="tr">
     <body>
         <button id="open-modal" type="button">Sonuçları Gör</button>
-        
-        <div id="results-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+
+        <!-- Modal with focus-trap and escape key support (WCAG 2.1.2) -->
+        <div id="results-modal"
+             role="dialog"
+             aria-modal="true"
+             aria-labelledby="modal-title"
+             data-focus-trap="true"
+             data-escape-close="true">
             <h2 id="modal-title">Sınav Sonuçları</h2>
-            
+
             <div class="modal-content">
                 <p>Toplam Puan: 85</p>
                 <p>Doğru: 32</p>
                 <p>Yanlış: 4</p>
             </div>
-            
+
             <div class="modal-actions">
                 <button type="button" tabindex="0">Detaylı Rapor</button>
-                <button type="button" class="close-modal" tabindex="0" aria-label="Kapat">×</button>
+                <button type="button"
+                        class="close-modal"
+                        tabindex="0"
+                        aria-label="Kapat (Escape)"
+                        data-key="escape">×</button>
             </div>
         </div>
     </body>
@@ -498,17 +510,17 @@ def custom_controls_html():
     <body>
         <div class="difficulty-slider">
             <label id="slider-label">Zorluk Seviyesi</label>
-            <div role="slider" 
+            <div role="slider"
                  aria-labelledby="slider-label"
-                 aria-valuemin="1" 
-                 aria-valuemax="10" 
+                 aria-valuemin="1"
+                 aria-valuemax="10"
                  aria-valuenow="5"
                  tabindex="0">
                 <div class="slider-track"></div>
                 <div class="slider-thumb"></div>
             </div>
         </div>
-        
+
         <div class="subject-tabs">
             <div role="tablist" aria-label="Ders Seçimi">
                 <button role="tab" aria-selected="true" aria-controls="math-panel" tabindex="0">
@@ -518,7 +530,7 @@ def custom_controls_html():
                     Fizik
                 </button>
             </div>
-            
+
             <div role="tabpanel" id="math-panel" aria-labelledby="math-tab">
                 <p>Matematik içeriği</p>
             </div>
@@ -537,22 +549,22 @@ def sample_css():
         outline: 2px solid #0066CC;
         outline-offset: 2px;
     }
-    
+
     input:focus {
         border: 2px solid #0066CC;
         box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.2);
     }
-    
+
     a:focus {
         outline: 2px dashed #0066CC;
         outline-offset: 4px;
     }
-    
+
     .skip-link {
         position: absolute;
         left: -9999px;
     }
-    
+
     .skip-link:focus {
         position: absolute;
         top: 0;
@@ -573,7 +585,7 @@ async def test_tab_order_logical(kb_tester, exam_interface_html):
     """
     result = kb_tester.test_tab_order(exam_interface_html)
 
-    assert result["passed"] == True, "Tab sırası mantıklı olmalı"
+    assert result["passed"], "Tab sırası mantıklı olmalı"
     assert len(result["issues"]) == 0
 
 
@@ -585,7 +597,7 @@ async def test_no_keyboard_trap(kb_tester, modal_dialog_html):
     """
     result = kb_tester.test_keyboard_trap(modal_dialog_html)
 
-    assert result["passed"] == True, "Klavye odağı hiçbir yerde takılı kalmamalı"
+    assert result["passed"], "Klavye odağı hiçbir yerde takılı kalmamalı"
 
 
 @pytest.mark.asyncio
@@ -597,7 +609,7 @@ async def test_focus_indicators_visible(kb_tester, sample_css):
     result = kb_tester.test_focus_indicators(sample_css)
 
     assert (
-        result["passed"] == True
+        result["passed"]
     ), "Tüm interaktif elementler odak göstergesi içermeli"
     assert ":focus" in sample_css
 
@@ -610,7 +622,7 @@ async def test_skip_links_present(kb_tester, exam_interface_html):
     """
     result = kb_tester.test_skip_links(exam_interface_html)
 
-    assert result["passed"] == True, "İçeriğe atla linki olmalı"
+    assert result["passed"], "İçeriğe atla linki olmalı"
     assert "İçeriğe Atla" in exam_interface_html
 
 
@@ -625,7 +637,7 @@ async def test_interactive_elements_accessible(kb_tester, exam_interface_html):
     )
 
     assert (
-        result["passed"] == True
+        result["passed"]
     ), "Tüm interaktif elementler klavye ile erişilebilir olmalı"
 
 
@@ -638,7 +650,7 @@ async def test_form_keyboard_navigation(kb_tester, exam_interface_html):
     result = kb_tester.test_form_keyboard_navigation(exam_interface_html)
 
     assert (
-        result["passed"] == True
+        result["passed"]
     ), "Form elementleri klavye ile navigasyon yapılabilir olmalı"
     assert '<input type="radio"' in exam_interface_html
     assert 'name="q1"' in exam_interface_html
@@ -652,7 +664,7 @@ async def test_modal_keyboard_interaction(kb_tester, modal_dialog_html):
     """
     result = kb_tester.test_modal_keyboard_interaction(modal_dialog_html)
 
-    assert result["passed"] == True, "Modal klavye ile tam erişilebilir olmalı"
+    assert result["passed"], "Modal klavye ile tam erişilebilir olmalı"
     assert 'role="dialog"' in modal_dialog_html
     assert 'aria-modal="true"' in modal_dialog_html
 
@@ -665,7 +677,7 @@ async def test_custom_controls_keyboard_support(kb_tester, custom_controls_html)
     """
     result = kb_tester.test_custom_controls_keyboard_support(custom_controls_html)
 
-    assert result["passed"] == True, "Özel kontroller klavye desteği içermeli"
+    assert result["passed"], "Özel kontroller klavye desteği içermeli"
     assert 'role="slider"' in custom_controls_html
     assert 'role="tablist"' in custom_controls_html
 
@@ -727,7 +739,7 @@ async def test_generate_full_keyboard_navigation_report(
     # En az %90 uyumluluk bekliyoruz
     assert report["keyboard_accessible_percentage"] >= 90.0
 
-    print(f"\n=== Klavye Navigasyon Raporu ===")
+    print("\n=== Klavye Navigasyon Raporu ===")
     print(f"Toplam Test: {report['total_tests']}")
     print(f"Başarılı: {report['passed']}")
     print(f"Başarısız: {report['failed']}")
@@ -737,7 +749,7 @@ async def test_generate_full_keyboard_navigation_report(
     print(
         f"Tam Klavye Erişilebilir: {'Evet' if report['fully_keyboard_accessible'] else 'Hayır'}"
     )
-    print(f"\nDesteklenen Klavye Kısayolları:")
+    print("\nDesteklenen Klavye Kısayolları:")
     for shortcut, description in report["supported_shortcuts"].items():
         print(f"  {shortcut}: {description}")
 

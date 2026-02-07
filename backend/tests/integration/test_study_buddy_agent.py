@@ -1,13 +1,22 @@
 """
 Test: Study Buddy Agent
+
+NOTE: This test file is skipped because the study_buddy_agent module
+has been archived/deprecated and is no longer available.
 """
+
+import pytest
+
+# Skip entire module - study_buddy_agent has been archived
+pytest.skip(
+    "study_buddy_agent module archived/deprecated",
+    allow_module_level=True
+)
 
 import asyncio
 import os
 import sys
 from unittest.mock import AsyncMock, patch
-
-import pytest
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 

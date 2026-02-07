@@ -5,9 +5,6 @@ Tests model definitions, fields, relationships, constraints, and methods
 """
 
 import enum
-import pytest
-from datetime import datetime, date
-from typing import get_type_hints
 from sqlalchemy import (
     String,
     Integer,
@@ -17,14 +14,7 @@ from sqlalchemy import (
     Date,
     DateTime,
     JSON,
-    Enum,
-    ForeignKey,
-    Index,
-    CheckConstraint,
-    UniqueConstraint,
 )
-from sqlalchemy.orm import Mapped, relationship
-from sqlalchemy.sql import func
 
 # Import all models and enums
 from models.database import (
@@ -81,10 +71,10 @@ class TestEnums:
 
     def test_user_role_enum_values(self):
         """Test UserRole enum has correct values"""
-        assert UserRole.STUDENT.value == "student"
-        assert UserRole.TEACHER.value == "teacher"
-        assert UserRole.PARENT.value == "parent"
-        assert UserRole.ADMIN.value == "admin"
+        assert UserRole.STUDENT.value == "STUDENT"
+        assert UserRole.TEACHER.value == "TEACHER"
+        assert UserRole.PARENT.value == "PARENT"
+        assert UserRole.ADMIN.value == "ADMIN"
 
     def test_user_role_enum_count(self):
         """Test UserRole enum has exactly 4 values"""

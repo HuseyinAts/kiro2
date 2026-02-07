@@ -15,10 +15,10 @@ Test Coverage:
 """
 
 import pytest
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 import jwt as pyjwt
 
-from core.jwt_auth import JWTManager, UserRole, TokenType, TokenPayload
+from core.jwt_auth import JWTManager, UserRole, TokenType
 from core.config import get_settings
 from fastapi import HTTPException
 
@@ -126,13 +126,13 @@ class TestJWTTokenValidation:
     def test_verify_expired_token_fails(self):
         """Test that expired token verification fails"""
         # Create token with past expiration
-        expire = datetime.utcnow() - timedelta(hours=1)
+        expire = datetime.now(timezone.utc) - timedelta(hours=1)
         payload = {
             "sub": "student_001",
             "email": "student@test.com",
             "role": UserRole.STUDENT.value,
             "exp": expire,
-            "iat": datetime.utcnow() - timedelta(hours=2),
+            "iat": datetime.now(timezone.utc) - timedelta(hours=2),
             "type": TokenType.ACCESS.value,
             "jti": "test_jti",
         }
@@ -183,8 +183,8 @@ class TestJWTTokenValidation:
             "sub": "student_001",
             "email": "student@test.com",
             "role": "invalid_role",  # Invalid
-            "exp": datetime.utcnow() + timedelta(hours=1),
-            "iat": datetime.utcnow(),
+            "exp": datetime.now(timezone.utc) + timedelta(hours=1),
+            "iat": datetime.now(timezone.utc),
             "type": TokenType.ACCESS.value,
             "jti": "test_jti",
         }
@@ -518,8 +518,8 @@ class TestSecurityEdgeCases:
             "sub": "student_001",
             "email": "student@test.com",
             "role": UserRole.STUDENT.value,
-            "exp": datetime.utcnow() + timedelta(hours=1),
-            "iat": datetime.utcnow(),
+            "exp": datetime.now(timezone.utc) + timedelta(hours=1),
+            "iat": datetime.now(timezone.utc),
             "type": TokenType.ACCESS.value,
         }
 
@@ -538,8 +538,8 @@ class TestSecurityEdgeCases:
             "sub": "student_001",
             "email": "student@test.com",
             "role": UserRole.STUDENT.value,
-            "exp": datetime.utcnow() + timedelta(hours=1),
-            "iat": datetime.utcnow(),
+            "exp": datetime.now(timezone.utc) + timedelta(hours=1),
+            "iat": datetime.now(timezone.utc),
             "type": TokenType.ACCESS.value,
             "jti": "test_jti",
         }
@@ -561,8 +561,8 @@ class TestSecurityEdgeCases:
         payload = {
             "email": "student@test.com",
             "role": UserRole.STUDENT.value,
-            "exp": datetime.utcnow() + timedelta(hours=1),
-            "iat": datetime.utcnow(),
+            "exp": datetime.now(timezone.utc) + timedelta(hours=1),
+            "iat": datetime.now(timezone.utc),
             "type": TokenType.ACCESS.value,
         }
 

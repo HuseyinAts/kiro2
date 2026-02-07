@@ -4,7 +4,7 @@ Task 61.2: Formative Test
 """
 
 import pytest
-from services.formative_test import FormativeTest, LearningProgress, ImmediateFeedback
+from services.formative_test import FormativeTest, ImmediateFeedback
 
 
 class TestFormativeTest:

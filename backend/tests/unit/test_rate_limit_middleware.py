@@ -6,11 +6,8 @@ Tests for FastAPI rate limiting middleware.
 """
 import pytest
 from unittest.mock import Mock, AsyncMock, patch
-from datetime import datetime
 
 from fastapi import Request, Response
-from fastapi.responses import JSONResponse
-from starlette.datastructures import Headers
 
 from core.rate_limit_middleware import RateLimitMiddleware, get_rate_limit_status
 from core.advanced_rate_limiter import UserTier, AdvancedRateLimiter

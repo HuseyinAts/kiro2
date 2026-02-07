@@ -1,4 +1,3 @@
-from unittest.mock import Mock, patch, AsyncMock
 
 """
 Critical Security Tests
@@ -6,7 +5,7 @@ Güvenlik açıkları ve kimlik doğrulama testleri
 """
 import hashlib
 import secrets
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 import jwt
 
@@ -56,12 +55,12 @@ class TestCriticalSecurity:
             if expires_delta is None:
                 expires_delta = timedelta(minutes=30)
 
-            expire = datetime.utcnow() + expires_delta
+            expire = datetime.now(timezone.utc) + expires_delta
             payload = {
                 "user_id": user_id,
                 "username": username,
                 "exp": expire,
-                "iat": datetime.utcnow(),
+                "iat": datetime.now(timezone.utc),
             }
 
             return jwt.encode(payload, secret_key, algorithm=algorithm)
@@ -195,8 +194,8 @@ class TestCriticalSecurity:
         class SecureSession:
             def __init__(self):
                 self.session_id = secrets.token_urlsafe(32)
-                self.created_at = datetime.utcnow()
-                self.last_accessed = datetime.utcnow()
+                self.created_at = datetime.now(timezone.utc)
+                self.last_accessed = datetime.now(timezone.utc)
                 self.user_id = None
                 self.is_active = True
 
@@ -205,11 +204,11 @@ class TestCriticalSecurity:
                     return True
 
                 timeout = timedelta(minutes=timeout_minutes)
-                return datetime.utcnow() - self.last_accessed > timeout
+                return datetime.now(timezone.utc) - self.last_accessed > timeout
 
             def refresh(self):
                 if not self.is_expired():
-                    self.last_accessed = datetime.utcnow()
+                    self.last_accessed = datetime.now(timezone.utc)
                     return True
                 return False
 

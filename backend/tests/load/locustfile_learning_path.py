@@ -32,11 +32,9 @@ Usage:
 
 import logging
 import random
-import time
-from typing import Dict, List, Any
+from typing import Dict, Any
 
 from locust import HttpUser, task, between, events
-from locust.runners import MasterRunner
 
 logger = logging.getLogger(__name__)
 
@@ -108,7 +106,7 @@ def generate_student_profile() -> Dict[str, Any]:
         "learning_style": random.choice(LEARNING_STYLES),
         "knowledge_level": random.choice(["beginner", "intermediate", "advanced"]),
         "interests": random.sample(SUBJECTS, k=random.randint(2, 4)),
-        "goals": [f"YKS başarısı", f"Derste başarılı olmak"],
+        "goals": ["YKS başarısı", "Derste başarılı olmak"],
         "available_time": random.choice([60, 90, 120, 180]),
     }
 
@@ -261,7 +259,7 @@ class LearningPathUser(HttpUser):
                                 f"Empty search results for {request_data['subject']}"
                             )
                     else:
-                        response.failure(f"API returned success=false")
+                        response.failure("API returned success=false")
                 except Exception as e:
                     response.failure(f"Failed to parse response: {e}")
             else:

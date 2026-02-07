@@ -4,9 +4,8 @@ Mesaj Kuyruğu Sistemi için basit testler (aioredis dependency'si olmadan)
 """
 
 import pytest
-import json
 from datetime import datetime, timedelta
-from unittest.mock import Mock, patch, AsyncMock
+from unittest.mock import Mock
 
 # Mock aioredis before importing the module
 import sys
