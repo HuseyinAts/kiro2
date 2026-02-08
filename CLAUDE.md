@@ -14,20 +14,22 @@ KIRO2 is a Turkish EdTech platform for YKS/TYT/AYT university entrance exam prep
 - ✅ **PostgreSQL 15** (port 5434) - Production ready
   - **PgBouncer:** Not yet configured (planned for 100K+ concurrent users)
 - ✅ **Redis 7** (port 6379) - Session & cache layer
-- ✅ **36,967 YKS questions loaded** (Target: 50K by March 2026)
-  - 📊 **Success Story:** Matching rate improved from 0.11% → 48.8% (36,967/75,745)
-  - High confidence: 47.4% (17,519 questions) → **99.5% after Phase 4** (36,767)
-  - Medium confidence: 52.6% (19,448 questions) → **0.5% after Phase 4** (200)
-  - Low confidence: 0% (0 questions)
-- ✅ **308 source books** processed from 426 total
-- ✅ **eslesmis_sorucevap.jsonl** format in production
-- ✅ **Phase 4 v2.0 output**: `d-dataset/processed/eslesmis_sorucevap_v2.0.jsonl`
+- ✅ **31,801 YKS questions in production** (v2.2, Target: 45K by March 2026)
+  - 📊 **Pipeline:** 75,745 OCR → 36,713 matched (v2.1) → 31,801 clean (v2.2)
+  - v2.2: 28,248 clean + 653 rescued + 2,900 flagged = 31,801
+  - 4,912 silindi: hallucination (2,035), letter-only (1,330), generic (884), duplicate (635), twin (480)
+  - 3,546 soru re-OCR ile kurtarılabilir (tahmini 1,521-2,511)
+- ✅ **308 source books** processed from 426 total, **118 remaining**
+- ✅ **eslesmis_sorucevap.jsonl** format in production (v2.2)
+- ✅ **Quality pipeline**: validate_sample.py v2 (13 checks) + pipeline_v2_2.py (4-tier)
 
 ### 🎯 Next Priorities
 1. ~~Low-confidence question refinement pipeline~~ ✅ **DONE** (+19,248 questions improved)
-2. **Manual validation**: Sample-based QA on v2.0 high-confidence questions (before production promotion)
-3. **Remaining 118 books**: Process for additional 13K+ questions
-4. **Performance optimization**: API <2s, vector search <100ms
+2. ~~Manual validation + v2.2 cleanup~~ ✅ **DONE** (4,912 silindi, 653 kurtarıldı, 31,801 production)
+3. **P0: OCR pipeline fix** — hallucination prevention + letter-only fix (118 yeni kitap için)
+4. **P0: 118 yeni kitap işleme** — 10,599-11,312 yeni soru hedefi
+5. **P1: Re-OCR recovery** — 1,521-2,511 soru kurtarma (silinen 3,546'dan)
+6. **Performance optimization**: API <2s, vector search <100ms
 
 ### Orchestrator Architecture ✅
 - ✅ **orchestrator/** v2.5.0 (LangGraph 1.0.5) - **ACTIVE**
@@ -43,29 +45,38 @@ KIRO2 is a Turkish EdTech platform for YKS/TYT/AYT university entrance exam prep
   - Answer key extraction: 88,711 answers identified
   - Matching pipeline: 36,967 successful pairs (48.8% match rate)
 - ✅ **Phase 4 COMPLETED**: Quality enhancement
-  - Result: **99.5% high-confidence** (36,767/36,967) - up from 47.4%
-  - Method: 8-rule confidence re-evaluation (Turkish NLP normalization, match type boost, quality score)
-  - +19,248 questions improved from medium to high confidence
-  - **Output**: `d-dataset/processed/eslesmis_sorucevap_v2.0.jsonl` (31MB, versioned)
-  - **Report**: `d-dataset/processed/phase4_report.md`
-  - **Production update**: Pending manual QA validation (see release workflow below)
+  - v2.0: 99.5% high-confidence (36,767/36,967) - up from 47.4%
+  - v2.1: 36,713 questions (254 unusable removed)
+  - **v2.2: 31,801 questions (CURRENT PRODUCTION)**
+    - 4,912 deleted (hallucination 2,035, letter-only 1,330, generic 884, duplicate 635, twin 480)
+    - 653 rescued (twin option removal)
+    - 2,900 flagged (warnings only)
+    - 28,248 clean
+  - **Pipeline**: `pipeline_v2_2.py` (4-tier) + `validate_sample.py` v2 (13 checks)
+  - **Reports**: `v2.2_quality_report.md`, `book_analysis_report.md`
 
-**Release Workflow (Phase 4 → Production):**
+**Release Workflow (v2.2 Pipeline → Production):**
 ```bash
-# Step 1: Phase 4 generates versioned output
-# Output: d-dataset/processed/eslesmis_sorucevap_v2.0.jsonl
+# Step 1: Run v2.2 pipeline (13 quality checks, 4-tier assignment)
+python d-dataset/processed/pipeline_v2_2.py --input d-dataset/eslesmis_sorucevap.jsonl
 
-# Step 2: Manual QA - sample validation (100-200 random questions)
-python scripts/validate_sample.py d-dataset/processed/eslesmis_sorucevap_v2.0.jsonl
+# Step 2: Cross-validate output (must be 100% PASS)
+python scripts/validate_sample.py d-dataset/processed/eslesmis_sorucevap_v2.2.jsonl --all
 
-# Step 3: If QA passes (>95% accuracy), promote to production
-cp d-dataset/processed/eslesmis_sorucevap_v2.0.jsonl d-dataset/eslesmis_sorucevap.jsonl
+# Step 3: Backup current production
+cp d-dataset/eslesmis_sorucevap.jsonl d-dataset/backups/eslesmis_sorucevap_vX.X_backup.jsonl
 
-# Step 4: Backup old version (safety)
-mv d-dataset/eslesmis_sorucevap.jsonl d-dataset/backups/eslesmis_sorucevap_v1.0_backup.jsonl
+# Step 4: Promote to production
+cp d-dataset/processed/eslesmis_sorucevap_v2.2.jsonl d-dataset/eslesmis_sorucevap.jsonl
 
-# ⚠️ NEVER skip manual QA step before production update
+# ⚠️ NEVER skip cross-validation step before production update
 ```
+
+**Version History:**
+- v1.0: 22,440 questions (initial)
+- v2.0: 36,967 questions (Phase 4 confidence improvement)
+- v2.1: 36,713 questions (254 unusable removed)
+- v2.2: 31,801 questions (4,912 deep quality filtered, 653 rescued) ← CURRENT
 
 ## 🛠️ Tech Stack
 
@@ -410,8 +421,8 @@ E) {secenek_e}
 | Vector Search | <100ms | ~300ms | 🟡 HNSW migration ready (004) |
 | DB Queries | <50ms | ~150ms | 🟡 GIN+composite indexes ready (004) |
 | Frontend Load | <2s | ~3s | 🟡 Needs optimization |
-| **Total Matched Questions** | **50K by March** | **36,967** | 🟢 On track (74%) |
-| **High Confidence Rate** | **>90%** | **99.5%** | 🟢 Phase 4 Complete |
+| **Total Clean Questions** | **45K by March** | **31,801** | 🟡 v2.2 (71%), +118 books needed |
+| **Quality Rate (v2.2)** | **>95%** | **100%** | 🟢 0 critical in output |
 
 ## 🚀 Common Tasks
 
@@ -566,11 +577,14 @@ Configure in: Repository Settings → Secrets and variables → Actions
 - [x] GitHub Secrets documentation
 
 ### March
-- [ ] Target: **50,000+ total questions matched** (currently 36,967)
+- [ ] Target: **45,000+ total clean questions** (currently 31,801)
+  - [ ] P0: OCR pipeline fix (hallucination + letter-only)
+  - [ ] P0: Process 118 remaining books (+10,599-11,312)
+  - [ ] P1: Re-OCR recovery (+1,521-2,511)
 - [x] ~~Achieve **90%+ high-confidence match rate**~~ Done: 99.5%
+- [x] ~~Manual QA + v2.2 quality pipeline~~ Done: 31,801 clean (100% pass)
 - [ ] Performance optimization: deploy indexes, benchmark <2s API
 - [ ] Launch MVP for beta testing
-- [ ] Manual QA on Phase 4 v2.0 output → promote to production
 
 ## 📚 Lessons Learned (Agent Knowledge Base)
 
