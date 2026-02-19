@@ -193,6 +193,7 @@ jobs:
           source .venv/bin/activate
           cd backend && uv pip install -r requirements.txt
           uv pip install pytest pytest-cov pytest-asyncio pytest-xdist httpx
+          uv pip install pyyaml pillow tqdm numpy
 
       - name: Create test .env file
         run: |
@@ -226,6 +227,12 @@ jobs:
             --junit-xml=pytest-report.xml \
             -v \
             -x
+
+      - name: Run D-Dataset Unit Tests
+        run: |
+          source .venv/bin/activate
+          cd d-dataset/scripts
+          python -m unittest test_preprocess_and_normalization.py test_priority_loader.py -v
 
       - name: Upload test results
         if: always()

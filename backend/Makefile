@@ -2,7 +2,7 @@
 # Performance-optimized test commands with automated coverage reporting
 # Sprint 8: Code Quality & Standardization
 
-.PHONY: test test-fast test-slow test-parallel test-coverage benchmark clean coverage-report coverage-dashboard coverage-install-hooks format lint type-check security quality pre-commit install ci
+.PHONY: test test-fast test-slow test-parallel test-all-parallel test-coverage benchmark clean coverage-report coverage-dashboard coverage-install-hooks format lint type-check security quality pre-commit install ci
 
 # Default test command - fast tests only
 test:
@@ -23,6 +23,11 @@ test-slow:
 test-parallel:
 	@echo "Running fast tests in parallel..."
 	python -m pytest tests/fast/ -n 2 --dist worksteal -v
+
+# Parallel execution - full test suite
+test-all-parallel:
+	@echo "Running all tests in parallel..."
+	HYPOTHESIS_DISABLE_HEALTH_CHECKS=1 pytest -n auto -x --tb=short -q
 
 # Fast tests with coverage
 test-coverage:
@@ -105,9 +110,10 @@ help:
 	@echo ""
 	@echo "=== TESTING ==="
 	@echo "  test                    - Run fast core tests (default)"
-	@echo "  test-fast              - Minimal output fast tests" 
+	@echo "  test-fast              - Minimal output fast tests"
 	@echo "  test-slow              - Run comprehensive slow tests"
-	@echo "  test-parallel          - Run tests in parallel"
+	@echo "  test-parallel          - Run fast tests in parallel"
+	@echo "  test-all-parallel      - Run ALL tests in parallel"
 	@echo "  test-coverage          - Fast tests with coverage report"
 	@echo "  test-integration       - Run integration tests"
 	@echo "  test-coverage-enhanced - Enhanced coverage with automation"

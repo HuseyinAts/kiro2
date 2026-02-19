@@ -2,6 +2,8 @@
 Smoke Tests for main.py - FastAPI Application
 Testing basic app initialization and endpoint availability
 """
+import os
+
 import pytest
 from unittest.mock import Mock, AsyncMock, patch, MagicMock
 from fastapi.testclient import TestClient
@@ -68,6 +70,19 @@ class TestMainApplicationSmoke:
 
     def test_health_endpoint_responds(self, mock_all_startup_services):
         """Test that /health endpoint responds"""
+        # Elasticsearch preflight check - skip if not available
+        try:
+            import httpx
+        except ModuleNotFoundError:
+            pytest.skip("httpx not installed")
+
+        es_url = os.environ.get("ELASTICSEARCH_URL", "http://localhost:9200")
+        try:
+            with httpx.Client(timeout=2.0) as client:
+                client.get(f"{es_url}/_cluster/health", timeout=2.0)
+        except Exception:
+            pytest.skip("Elasticsearch not available")
+
         with patch('core.application.db_manager', mock_all_startup_services['db_manager']):
             with patch('core.application.settings', mock_all_startup_services['settings']):
                 with patch('core.application.setup_routers', mock_all_startup_services['setup_routers']):

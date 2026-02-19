@@ -28,14 +28,24 @@ except ImportError:
 
 # ==================== YAPILANDIRMA ====================
 
-# Model dosyası
-MODEL_PATH = r"C:\Users\husey\kiro2\models\yolo11_best.pt"
-
-# Kitap görselleri klasörü
-SCREENSHOTS_DIR = r"C:\Users\husey\kiro2\veriseti\zkitap\screenshots"
-
-# Çıktı klasörü
-OUTPUT_DIR = r"C:\Users\husey\d-dataset\output\detections"
+# Model/dataset yolları (env override)
+ROOT_DIR = Path(__file__).resolve().parent
+MODEL_PATH = Path(os.getenv("KIRO2_YOLO_MODEL_PATH", str(ROOT_DIR / "models" / "yolo11_best.pt")))
+SCREENSHOTS_DIR = Path(
+    os.getenv("KIRO2_SCREENSHOTS_DIR", str(ROOT_DIR / "veriseti" / "zkitap" / "screenshots"))
+)
+ALLOWLIST_FILE = Path(
+    os.getenv(
+        "KIRO2_SCREENSHOTS_ALLOWLIST",
+        str(ROOT_DIR / "veriseti" / "zkitap" / "screenshots_allowlist.txt"),
+    )
+)
+OUTPUT_DIR = Path(
+    os.getenv(
+        "KIRO2_YOLO_DETECTIONS_OUTPUT_DIR",
+        str(Path.home() / "d-dataset" / "output" / "detections"),
+    )
+)
 
 # Minimum güven eşiği
 CONFIDENCE_THRESHOLD = 0.25
@@ -94,10 +104,28 @@ def load_model(model_path: str, device: str):
 def get_all_books(screenshots_dir: str):
     """Tüm kitap klasörlerini listele"""
     books = []
+    allowlist_path = ALLOWLIST_FILE
+    if not allowlist_path.exists():
+        raise FileNotFoundError(
+            f"Allowlist bulunamadı (fail-closed): {allowlist_path}"
+        )
+
+    allowlist = {
+        line.strip()
+        for line in allowlist_path.read_text(encoding="utf-8").splitlines()
+        if line.strip()
+    }
+    if not allowlist:
+        raise RuntimeError(
+            f"Allowlist boş (fail-closed): {allowlist_path}"
+        )
+    print(f"🔒 Allowlist aktif: {len(allowlist)} klasör")
     
     for item in os.listdir(screenshots_dir):
         item_path = os.path.join(screenshots_dir, item)
         if os.path.isdir(item_path):
+            if item not in allowlist:
+                continue
             # PNG dosyası sayısını kontrol et
             png_files = [f for f in os.listdir(item_path) if f.lower().endswith('.png')]
             if png_files:

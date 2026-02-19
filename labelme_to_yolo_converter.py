@@ -144,7 +144,9 @@ class LabelMeToYOLO:
         self,
         annotation_sources: List[Path],
         output_base_dir: Path,
-        train_ratio: float = 0.8
+        train_ratio: float = 0.8,
+        screenshots_allowlist: Path | None = None,
+        screenshots_source_dir: Path | None = None,
     ):
         """
         Tüm dataset'i çevir ve train/val split yap
@@ -165,9 +167,43 @@ class LabelMeToYOLO:
 
         # Tüm JSON dosyalarını topla
         all_json_files = []
+        allowlist = None
+        if screenshots_allowlist is not None:
+            if not screenshots_allowlist.exists():
+                raise FileNotFoundError(
+                    f"Allowlist bulunamadı (fail-closed): {screenshots_allowlist}"
+                )
+            allowlist = {
+                line.strip()
+                for line in screenshots_allowlist.read_text(encoding="utf-8").splitlines()
+                if line.strip()
+            }
+            if not allowlist:
+                raise RuntimeError(
+                    f"Allowlist boş (fail-closed): {screenshots_allowlist}"
+                )
+            print(f"🔒 Screenshots allowlist aktif: {len(allowlist)} klasör")
+            if screenshots_source_dir is None:
+                raise ValueError(
+                    "screenshots_allowlist verildiyse screenshots_source_dir da verilmelidir "
+                    "(fail-closed)"
+                )
+            if not screenshots_source_dir.exists():
+                raise FileNotFoundError(
+                    f"screenshots_source_dir bulunamadı: {screenshots_source_dir}"
+                )
+            screenshots_source_dir = screenshots_source_dir.resolve()
+
         for source_dir in annotation_sources:
-            json_files = list(source_dir.rglob('*.json'))
-            all_json_files.extend(json_files)
+            resolved_source = source_dir.resolve()
+            # screenshots kaynağında yalnız allowlist klasörlerinden JSON topla
+            if allowlist is not None and screenshots_source_dir is not None and resolved_source == screenshots_source_dir:
+                for d in source_dir.iterdir():
+                    if not d.is_dir() or d.name not in allowlist:
+                        continue
+                    all_json_files.extend(d.glob("*.json"))
+            else:
+                all_json_files.extend(source_dir.rglob("*.json"))
 
         print(f"📊 Toplam {len(all_json_files)} JSON dosyası bulundu")
 
@@ -235,15 +271,18 @@ def main():
     converter = LabelMeToYOLO(class_names)
 
     # Annotation kaynaklarını tanımla
-    base_path = Path(r'C:\Users\husey\kiro2\veriseti')
+    project_root = Path(__file__).resolve().parent
+    base_path = project_root / 'veriseti'
+    screenshots_source = base_path / 'zkitap' / 'screenshots'
 
     annotation_sources = [
         base_path / 'annotation' / 'images',
-        base_path / 'zkitap' / 'screenshots'
+        screenshots_source
     ]
 
     # Output klasörü
-    output_dir = Path(r'C:\Users\husey\kiro2\yolo_dataset')
+    output_dir = project_root / 'yolo_dataset'
+    screenshots_allowlist = project_root / 'veriseti' / 'zkitap' / 'screenshots_allowlist.txt'
 
     print("🚀 KIRO2 - LabelMe → YOLO Converter")
     print("=" * 60)
@@ -258,7 +297,9 @@ def main():
     converter.convert_dataset(
         annotation_sources=annotation_sources,
         output_base_dir=output_dir,
-        train_ratio=0.8
+        train_ratio=0.8,
+        screenshots_allowlist=screenshots_allowlist,
+        screenshots_source_dir=screenshots_source,
     )
 
     print("\n✅ Conversion tamamlandı!")

@@ -218,6 +218,18 @@ on:
 3. Performance, Compliance (after deps)
 4. Final Gate Summary
 
+## Session Summary Automation
+
+Her oturum sonunda ayni formatta summary dosyasi olusturmak icin:
+
+```bash
+python3 docs/quality-gates/create_session_summary.py --slug screenshots-gate
+```
+
+Bu komut su dosyalari kullanir:
+- Template: `docs/quality-gates/session-summary-template.md`
+- Output: `docs/quality-gates/<slug>-session-summary-YYYY-MM-DD.md`
+
 ## Reports
 
 ### Console Report

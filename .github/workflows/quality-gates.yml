@@ -126,6 +126,12 @@ jobs:
         cd backend
         pip install -r requirements.txt || pip install pytest pytest-cov pytest-asyncio
         pip install pytest-cov
+        pip install pyyaml pillow tqdm numpy
+
+    - name: Run D-Dataset Unit Tests
+      run: |
+        cd d-dataset/scripts
+        python -m unittest test_preprocess_and_normalization.py test_priority_loader.py -v
 
     - name: Run tests with coverage
       id: coverage
@@ -268,67 +274,35 @@ jobs:
       id: circular
       run: |
         cd backend
-        # Simple circular import detection
-        python3 << 'EOF'
+        CIRCULAR=$(python3 << 'PYEOF'
         import ast
-        import os
-        from collections import defaultdict
+        import pathlib
 
-        imports = defaultdict(set)
+        imports = {}
+        for f in pathlib.Path(".").rglob("*.py"):
+            if "__pycache__" in f.parts:
+                continue
+            module = str(f.with_suffix("")).replace("/", ".").replace("\\\\", ".").lstrip(".")
+            imports[module] = set()
+            try:
+                tree = ast.parse(f.read_text(encoding="utf-8"))
+                for node in ast.walk(tree):
+                    if isinstance(node, ast.Import):
+                        for alias in node.names:
+                            imports[module].add(alias.name.split(".")[0])
+                    elif isinstance(node, ast.ImportFrom) and node.module:
+                        imports[module].add(node.module.split(".")[0])
+            except (SyntaxError, UnicodeDecodeError):
+                pass
 
-        for root, dirs, files in os.walk('.'):
-            dirs[:] = [d for d in dirs if not d.startswith('.') and d != '__pycache__']
-            for f in files:
-                if f.endswith('.py'):
-                    path = os.path.join(root, f)
-                    try:
-                        with open(path) as file:
-                            tree = ast.parse(file.read())
-                        module = path.replace('/', '.').replace('.py', '').lstrip('.')
-                        for node in ast.walk(tree):
-                            if isinstance(node, ast.Import):
-                                for alias in node.names:
-                                    imports[module].add(alias.name.split('.')[0])
-                            elif isinstance(node, ast.ImportFrom) and node.module:
-                                imports[module].add(node.module.split('.')[0])
-                    except (SyntaxError, UnicodeDecodeError): pass
-
-        # Simple cycle detection
         cycles = 0
         for a, deps in imports.items():
             for b in deps:
-                if b in imports and a.split('.')[0] in imports[b]:
+                if b in imports and a.split(".")[0] in imports[b]:
                     cycles += 1
-
-        print(f"CIRCULAR_COUNT={cycles // 2}")  # Divide by 2 (bidirectional)
-        EOF
-
-        CIRCULAR=$(python3 << 'PYEOF'
-import ast, pathlib
-
-imports = {}
-for f in pathlib.Path('backend').rglob('*.py'):
-    module = str(f.with_suffix('')).replace('/', '.').replace('\\\\', '.')
-    imports[module] = set()
-    try:
-        tree = ast.parse(f.read_text(encoding='utf-8'))
-        for node in ast.walk(tree):
-            if isinstance(node, ast.Import):
-                for alias in node.names:
-                    imports[module].add(alias.name.split('.')[0])
-            elif isinstance(node, ast.ImportFrom) and node.module:
-                imports[module].add(node.module.split('.')[0])
-    except (SyntaxError, UnicodeDecodeError): pass
-
-cycles = 0
-for a, deps in imports.items():
-    for b in deps:
-        if b in imports and a.split('.')[0] in imports[b]:
-            cycles += 1
-
-print(cycles // 2)
-PYEOF
-) || echo "0"
+        print(cycles // 2)
+        PYEOF
+        ) || echo "0"
         echo "circular_count=$CIRCULAR" >> $GITHUB_OUTPUT
 
     - name: Calculate gate score

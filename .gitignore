@@ -152,6 +152,10 @@ CLAUDE.local.md
 
 # Windows specific
 desktop.ini
+d-dataset/scripts/desktop.ini
+d-dataset/scripts/**/desktop.ini
+d-dataset/scripts/nul
+d-dataset/scripts/*.bak*
 
 # Temp sync directories
 .tmp.*/
@@ -173,6 +177,13 @@ annotation/
 archive/
 yolo_dataset/
 veriseti/
+!veriseti/
+veriseti/*
+!veriseti/zkitap/
+veriseti/zkitap/*
+!veriseti/zkitap/build_screenshots_gate.py
+!veriseti/zkitap/quarantine_metadata_files.py
+!veriseti/zkitap/screenshots_allowlist.txt
 qwen_extended_vocab/
 zemberek/
 models/
