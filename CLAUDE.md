@@ -78,6 +78,21 @@ cp d-dataset/processed/eslesmis_sorucevap_v2.2.jsonl d-dataset/eslesmis_soruceva
 - v2.1: 36,713 questions (254 unusable removed)
 - v2.2: 31,801 questions (4,912 deep quality filtered, 653 rescued) ← CURRENT
 
+### Quality Improvement Pipeline (d-dataset/scripts/)
+```bash
+# REQ-1: Zero-DB cross-validation (ignore unreliable DB answers)
+python cross_validate_answers.py --zero-db --analyze --simulate
+
+# REQ-2: Confidence calibration (Platt scaling + per-subject)
+python confidence_calibration.py --output d-dataset/processed/calibration/
+
+# REQ-3: Image quality audit + enhancement
+python image_quality_audit.py --math-geo-only
+
+# Orchestrator (runs all 3 in sequence)
+python quality_improvement_pipeline.py --pilot --dry-run
+```
+
 ## 🛠️ Tech Stack
 
 | Layer | Technology | Version |
@@ -147,6 +162,11 @@ kiro2/
 - `venv/**` - Virtual environment
 - `.git/**` - Git internals
 - `kiro2-orchestrator/**` - Deprecated code
+
+### ⚠️ NOT GIT-TRACKED (Persist on Disk Only)
+- `d-dataset/scripts/**` - Pipeline scripts (manual backup needed)
+- `d-dataset/processed/**` - Pipeline outputs (manual backup needed)
+- These files are in `.gitignore` — changes survive across sessions but NOT across machines
 
 **CRITICAL: Secrets & Environment**
 - ❌ NEVER commit `.env*` files
@@ -476,6 +496,12 @@ npm test -- --coverage
 # View HTML report
 # Open: frontend/coverage/lcov-report/index.html
 ```
+
+## 🖥️ Windows Shell Notes
+
+- Use `python` not `python3` (python3 doesn't exist on this Windows env)
+- Path separators: `str(Path(...))` returns backslashes on Windows; use `.replace("\\", "/")` when needed for string operations
+- Bash env vars: `VAR=value python script.py` works in Git Bash but not cmd/PowerShell
 
 ## 🔧 Environment Variables
 

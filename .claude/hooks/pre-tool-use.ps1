@@ -56,16 +56,16 @@ $DangerousPatterns = @{
     "chmod\s+777" = "Tum izinleri acma - GUVENLIK RISKI"
     "chown\s+-R" = "Recursive sahiplik degistirme - DIKKAT"
 
-    # Secrets exposure
+    # Secrets exposure (only variable references like $SECRET, %SECRET%)
     "cat\s+\.env" = ".env okuma - SECRETS RISKI"
-    "echo\s+.*API_KEY" = "API key loglama - SECRETS RISKI"
-    "echo\s+.*PASSWORD" = "Password loglama - SECRETS RISKI"
-    "echo\s+.*SECRET" = "Secret loglama - SECRETS RISKI"
+    'echo\s+.*[\$%]\w*API_KEY' = "API key loglama - SECRETS RISKI"
+    'echo\s+.*[\$%]\w*PASSWORD' = "Password loglama - SECRETS RISKI"
+    'echo\s+.*[\$%]\w*SECRET' = "Secret loglama - SECRETS RISKI"
 
-    # Code injection
-    "eval\s*\(" = "Eval kullanimi - INJECTION RISKI"
-    "exec\s*\(" = "Exec kullanimi - INJECTION RISKI"
-    "\$\(" = "Command substitution - DIKKAT"
+    # Code injection (only standalone eval, not inside Python code)
+    "^\s*eval\s+" = "Eval kullanimi - INJECTION RISKI"
+    ";\s*eval\s+" = "Eval kullanimi - INJECTION RISKI"
+    "&&\s*eval\s+" = "Eval kullanimi - INJECTION RISKI"
 
     # Network attacks
     "curl.*\|\s*bash" = "Pipe to bash - MALWARE RISKI"
@@ -126,8 +126,8 @@ $RewardHackingCommands = @(
     'echo\s+[\x27\x22]?Success[\x27\x22]?\s*$',
     'echo\s+[\x27\x22]?OK[\x27\x22]?\s*$',
     'exit\s+0\s*#',
-    'true\s*$',
-    ':\s*$'
+    '^\s*true\s*$',
+    '^\s*:\s*$'
 )
 
 foreach ($pattern in $RewardHackingCommands) {

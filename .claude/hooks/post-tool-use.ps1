@@ -33,7 +33,20 @@ $ErrorMessages = @()
 if ($FilePath -match "\.py$") {
     Write-Info "Python dosya degisikligi tespit edildi: $FilePath"
 
-    # Run ruff only on the changed file
+    # Auto-format first (non-blocking)
+    Write-Info "Ruff format + auto-fix calistiriliyor..."
+    $fmtResult = & ruff format "$FilePath" 2>&1
+    $fmtExitCode = $LASTEXITCODE
+    if ($fmtExitCode -eq 0) {
+        Write-Success "Ruff format applied"
+    } else {
+        Write-Warning "Ruff format failed (syntax error?): $fmtResult"
+    }
+
+    # Auto-fix lint issues first, then report remaining
+    & ruff check "$FilePath" --select=E,F,W --ignore=E501 --fix 2>&1 | Out-Null
+
+    # Run ruff to report remaining unfixable issues
     Write-Info "Ruff linter calistiriliyor (sadece degisen dosya)..."
     $ruffResult = & ruff check "$FilePath" --select=E,F,W --ignore=E501 2>&1
     $ruffExitCode = $LASTEXITCODE
@@ -69,16 +82,16 @@ if ($FilePath -match "\.(ts|tsx|js|jsx)$") {
 Write-Info "Reward hacking pattern kontrolu..."
 
 $RewardHackingPatterns = @(
-    "ASSERT_TRUE\s*\(\s*true\s*\)",
-    "ASSERT_TRUE\s*\(\s*True\s*\)",
-    "assert\s+True\s*$",
-    "assert\s+true\s*$",
-    "echo\s+['\"]?Success['\"]?\s*$",
-    "print\s*\(\s*['\"]Success['\"]\s*\)",
-    "# TODO: implement",
-    "# FIXME: fake",
-    "pass\s*#\s*placeholder",
-    "return\s+None\s*#\s*stub"
+    'ASSERT_TRUE\s*\(\s*true\s*\)',
+    'ASSERT_TRUE\s*\(\s*True\s*\)',
+    'assert\s+True\s*$',
+    'assert\s+true\s*$',
+    'echo\s+[\x27\x22]?Success[\x27\x22]?\s*$',
+    'print\s*\(\s*[\x27\x22]?Success[\x27\x22]?\s*\)',
+    '# TODO: implement',
+    '# FIXME: fake',
+    'pass\s*#\s*placeholder',
+    'return\s+None\s*#\s*stub'
 )
 
 if ($FilePath -and (Test-Path $FilePath)) {

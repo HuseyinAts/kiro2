@@ -43,7 +43,19 @@
       "Bash(redis-cli:*)",
       "Bash(tee:*)",
       "Bash(*/.venv/Scripts/python.exe:*)",
-      "Bash(*/.venv/Scripts/pip.exe:*)"
+      "Bash(*/.venv/Scripts/pip.exe:*)",
+      "Bash(done)",
+      "Bash(py.backend.all_sequential:*)",
+      "Bash(HYPOTHESIS_PROFILE=property_fast python -m pytest:*)",
+      "Bash(HYPOTHESIS_PROFILE=property_fast python:*)",
+      "Bash(HYPOTHESIS_PROFILE=property_strict python -m pytest:*)",
+      "Bash(echo:*)",
+      "Bash(while read:*)",
+      "Bash(do echo \"$line\")",
+      "Skill(deep-research)",
+      "Bash(VISION_WORKERS=15 python:*)",
+      "Bash(pkill:*)",
+      "Bash(sysctl -n hw.ncpu)"
     ],
     "additionalDirectories": [
       "c:\\Users\\husey\\kiro2"
@@ -55,7 +67,6 @@
     "gemini-mcp",
     "gemini-reasoning-mcp",
     "zemberek-mcp",
-    "chromadb-mcp",
     "claude-md-improvement"
   ],
   "hooks": {

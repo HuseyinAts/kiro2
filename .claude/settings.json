@@ -27,7 +27,13 @@
       "Bash(DELETE FROM:*)",
       "Bash(TRUNCATE:*)",
       "Read(.env*)",
-      "Edit(.env*)"
+      "Edit(.env*)",
+      "Edit(d-dataset/ocr_output/**)",
+      "Edit(d-dataset/answer_keys/**)",
+      "Edit(d-dataset/eslesmis_sorucevap.jsonl)",
+      "Write(d-dataset/ocr_output/**)",
+      "Write(d-dataset/answer_keys/**)",
+      "Write(d-dataset/eslesmis_sorucevap.jsonl)"
     ]
   },
   "hooks": {

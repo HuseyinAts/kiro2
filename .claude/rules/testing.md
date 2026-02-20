@@ -470,3 +470,34 @@ transport = ASGITransport(app=app)
 async with AsyncClient(transport=transport, base_url="http://test") as client:
     response = await client.get("/api/health")
 ```
+
+### 21. Windows Path Replace Hatasi (Session 48)
+`str(Path(...))` Windows'ta backslash dondurur. `prompt.replace(old, new)` sessizce basarisiz olur.
+
+```python
+# YANLIS - build_prompt() forward slash, Path() backslash dondurur
+prompt = prompt.replace(str(screenshot), str(enhanced_path))  # Sessizce BASARISIZ!
+
+# DOGRU - Her iki formati da normalize et
+old_path = str(screenshot).replace("\\", "/")
+new_path = str(enhanced_path).replace("\\", "/")
+prompt = prompt.replace(str(screenshot), str(enhanced_path))
+prompt = prompt.replace(old_path, new_path)
+```
+
+### 22. Empirical > Platt Scaling (Session 48)
+Platt scaling sonuclari hesaplayip hemen empirical ile uzerine yazmak israf.
+Empirical means (bucket ortalamalari) >10 ornekte Platt'ten daha guvenilir.
+
+```python
+# YANLIS - Once Platt hesapla, sonra uzerine yaz
+overrides["opus_high"] = platt_calibrated(0.95)
+if high_mask.sum() > 10:
+    overrides["opus_high"] = float(labels[high_mask].mean())  # Platt hesabi bosa gitti
+
+# DOGRU - Empirical-first, Platt sadece fallback
+if high_mask.sum() > 10:
+    overrides["opus_high"] = float(labels[high_mask].mean())
+else:
+    overrides["opus_high"] = platt_calibrated(0.95)  # Fallback
+```
