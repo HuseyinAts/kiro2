@@ -55,7 +55,11 @@
       "Skill(deep-research)",
       "Bash(VISION_WORKERS=15 python:*)",
       "Bash(pkill:*)",
-      "Bash(sysctl -n hw.ncpu)"
+      "Bash(sysctl -n hw.ncpu)",
+      "Bash(powershell.exe -NoProfile -ExecutionPolicy Bypass -File \"C:\\\\Users\\\\husey\\\\.claude\\\\switch-claude-provider.ps1\":*)",
+      "Bash(GEMINI_API_KEY=* python:*)",
+      "Bash(MINIMAX_API_KEY=* python:*)",
+      "Bash($env:VISION_WORKERS=* python:*)"
     ],
     "additionalDirectories": [
       "c:\\Users\\husey\\kiro2"
@@ -64,9 +68,8 @@
   "enableAllProjectMcpServers": true,
   "enabledMcpjsonServers": [
     "kiro2-orchestrator",
-    "gemini-mcp",
-    "gemini-reasoning-mcp",
     "zemberek-mcp",
+    "chromadb-mcp",
     "claude-md-improvement"
   ],
   "hooks": {
