@@ -1,29 +1,24 @@
 # PreToolUse Security Hook - Daisy Stanton Reward Hacking Prevention
 # EXIT CODE 2: BLOCKS operation | EXIT CODE 0: ALLOW
-# Reads command from env var CLAUDE_BASH_COMMAND (set by Claude Code)
-
-param(
-    [Parameter(Mandatory=$false, Position=0)]
-    [string]$Cmd = "",
-    [Parameter(ValueFromRemainingArguments=$true)]
-    [string[]]$Rest
-)
+# Input: JSON via stdin from Claude Code (tool_input.command)
 
 $ErrorActionPreference = "SilentlyContinue"
 
-# Primary: env var (no shell parsing issues)
-$Command = $env:CLAUDE_BASH_COMMAND
-
-# Fallback: command-line args (legacy)
-if ([string]::IsNullOrWhiteSpace($Command)) {
-    if ($Rest) { $Cmd = ($Cmd, ($Rest -join " ")) -join " " }
-    $Command = $Cmd
-}
-
-# Use prefixed names to avoid shadowing built-in cmdlets
-function Out-Ok { param([string]$M) Write-Host "[OK] $M" -ForegroundColor Green }
-function Out-Warn { param([string]$M) Write-Host "[WARN] $M" -ForegroundColor Yellow }
-function Out-Block { param([string]$M) Write-Host "[BLOCK] $M" -ForegroundColor Red }
+# Read hook input from stdin JSON (non-blocking, 500ms timeout)
+$Command = ""
+try {
+    $stream = [Console]::OpenStandardInput()
+    $buffer = New-Object byte[] 65536
+    $asyncResult = $stream.BeginRead($buffer, 0, $buffer.Length, $null, $null)
+    if ($asyncResult.AsyncWaitHandle.WaitOne(500)) {
+        $bytesRead = $stream.EndRead($asyncResult)
+        if ($bytesRead -gt 0) {
+            $json = [System.Text.Encoding]::UTF8.GetString($buffer, 0, $bytesRead)
+            $hookInput = $json | ConvertFrom-Json
+            $Command = $hookInput.tool_input.command
+        }
+    }
+} catch {}
 
 try {
     if ([string]::IsNullOrWhiteSpace($Command)) { exit 0 }
@@ -66,7 +61,7 @@ try {
         }
     }
 
-    # === 2. PROTECTED PATHS (skip Program Files — legit tools live there) ===
+    # === 2. PROTECTED PATHS ===
     if (-not $IsBlocked) {
         $ProtectedPaths = @(
             "C:\\Windows\\System32",
@@ -101,22 +96,19 @@ try {
     )
     foreach ($rp in $RewardHackPatterns) {
         if ($Command -match $rp) {
-            Out-Warn "Reward hacking pattern: $rp"
+            Write-Host "[WARN] Reward hacking pattern: $rp" -ForegroundColor Yellow
         }
     }
 
     # === VERDICT ===
     if ($IsBlocked) {
-        Out-Block "BLOCKED: $BlockReason"
-        Write-Host "  Command: $Command" -ForegroundColor Red
+        [Console]::Error.WriteLine("BLOCKED: $BlockReason")
         exit 2
     }
 
-    # Silent pass — no output for normal commands
     exit 0
 
 } catch {
-    # Hook failure must not block work — fail open with warning
-    Out-Warn "Hook exception: $($_.Exception.Message)"
+    Write-Host "[WARN] Hook exception: $($_.Exception.Message)" -ForegroundColor Yellow
     exit 0
 }

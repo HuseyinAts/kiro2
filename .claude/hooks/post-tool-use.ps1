@@ -1,22 +1,29 @@
 # PostToolUse Hook - Verification Feedback Loop (Silent Mode)
 # Successful checks produce zero output. Errors/warnings print and exit 2.
-# Reads file path from env var CLAUDE_FILE_PATH (set by Claude Code)
-
-param(
-    [Parameter(Mandatory=$false)]
-    [string]$ToolName = "",
-    [Parameter(Mandatory=$false)]
-    [string]$FilePath = ""
-)
+# Input: JSON via stdin from Claude Code (tool_input.file_path)
 
 $ErrorActionPreference = "Continue"
 $ProjectRoot = (Get-Item $PSScriptRoot).Parent.Parent.FullName
 
-# Primary: env vars (no shell parsing issues)
-if (-not $FilePath) { $FilePath = $env:CLAUDE_FILE_PATH }
-if (-not $ToolName) { $ToolName = $env:CLAUDE_TOOL_USE_TOOL_NAME }
+# Read hook input from stdin JSON (non-blocking, 500ms timeout)
+$ToolName = ""
+$FilePath = ""
+try {
+    $stream = [Console]::OpenStandardInput()
+    $buffer = New-Object byte[] 65536
+    $asyncResult = $stream.BeginRead($buffer, 0, $buffer.Length, $null, $null)
+    if ($asyncResult.AsyncWaitHandle.WaitOne(500)) {
+        $bytesRead = $stream.EndRead($asyncResult)
+        if ($bytesRead -gt 0) {
+            $json = [System.Text.Encoding]::UTF8.GetString($buffer, 0, $bytesRead)
+            $hookInput = $json | ConvertFrom-Json
+            $ToolName = $hookInput.tool_name
+            $FilePath = $hookInput.tool_input.file_path
+        }
+    }
+} catch {}
 
-# If still no file path, nothing to check — exit clean
+# If no file path, nothing to check — exit clean
 if (-not $FilePath) { exit 0 }
 
 $HasErrors = $false
@@ -48,7 +55,7 @@ if ($FilePath -match "\.py$" -and (Test-Path $FilePath)) {
     }
 }
 
-# 2. REWARD HACKING DETECTION
+# 2. REWARD HACKING DETECTION (skip .claude/ infra files to avoid self-match)
 $RewardHackingPatterns = @(
     'ASSERT_TRUE\s*\(\s*true\s*\)',
     'ASSERT_TRUE\s*\(\s*True\s*\)',
@@ -62,7 +69,8 @@ $RewardHackingPatterns = @(
     'return\s+None\s*#\s*stub'
 )
 
-if ($FilePath -and (Test-Path $FilePath)) {
+$isInfraFile = $FilePath -match '[\\/]\.claude[\\/]'
+if (-not $isInfraFile -and $FilePath -and (Test-Path $FilePath)) {
     $FileContent = Get-Content $FilePath -Raw -ErrorAction SilentlyContinue
 
     foreach ($pattern in $RewardHackingPatterns) {
@@ -91,12 +99,11 @@ if ($FilePath -match "test.*\.py$" -or $FilePath -match "\.test\.(ts|tsx)$") {
     }
 }
 
-# 4. FINAL VERDICT - only output on failure
+# 4. FINAL VERDICT - errors go to stderr (fed back to Claude)
 if ($HasErrors) {
-    Write-Host "" -ForegroundColor Red
-    Write-Host "[FAIL] VERIFICATION FAILED" -ForegroundColor Red
+    [Console]::Error.WriteLine("[FAIL] VERIFICATION FAILED")
     foreach ($err in $ErrorMessages) {
-        Write-Host "  - $err" -ForegroundColor Red
+        [Console]::Error.WriteLine("  - $err")
     }
     exit 2
 }
