@@ -31,13 +31,7 @@ $ErrorMessages = @()
 
 # 1. PYTHON FILE VERIFICATION (ruff + mypy) - Only for .py files that exist
 if ($FilePath -match "\.py$" -and (Test-Path $FilePath)) {
-    # Auto-format (silent)
-    & ruff format "$FilePath" 2>&1 | Out-Null
-
-    # Auto-fix lint issues (silent)
-    & ruff check "$FilePath" --select=E,F,W --ignore=E501 --fix 2>&1 | Out-Null
-
-    # Report remaining unfixable issues
+    # Report lint issues (no auto-fix — avoid silent file mutation)
     $ruffResult = & ruff check "$FilePath" --select=E,F,W --ignore=E501 2>&1
     $ruffExitCode = $LASTEXITCODE
 

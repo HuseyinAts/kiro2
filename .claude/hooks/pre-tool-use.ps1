@@ -33,10 +33,10 @@ try {
         @{ P = 'rm\s+-rf\s+\.';                    R = "Current dir silme" }
         @{ P = 'rmdir\s+/s\s+/q';                  R = "Win recursive silme" }
         @{ P = 'del\s+/s\s+/q';                    R = "Win recursive silme" }
-        @{ P = 'DROP\s+TABLE';                      R = "Tablo silme" }
-        @{ P = 'DROP\s+DATABASE';                   R = "DB silme" }
-        @{ P = 'TRUNCATE\s+TABLE';                  R = "Tablo bosaltma" }
-        @{ P = 'DELETE\s+FROM\s+\w+\s*$';           R = "WHERE olmadan DELETE" }
+        @{ P = '(?i)DROP\s+TABLE';                  R = "Tablo silme" }
+        @{ P = '(?i)DROP\s+DATABASE';               R = "DB silme" }
+        @{ P = '(?i)TRUNCATE\s+TABLE';              R = "Tablo bosaltma" }
+        @{ P = '(?i)DELETE\s+FROM\s+\w+\s*;?\s*$';  R = "WHERE olmadan DELETE" }
         @{ P = 'git\s+push\s+.*--force\s+origin\s+(main|master)'; R = "Force push main" }
         @{ P = 'git\s+reset\s+--hard\s+HEAD~';     R = "Hard reset" }
         @{ P = 'git\s+clean\s+-fd';                 R = "Git clean force" }
