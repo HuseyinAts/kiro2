@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 """
 SessionStart Hook - Claude Code 2026
 Oturum başladığında çalışır.
@@ -15,8 +15,12 @@ from __future__ import annotations
 import json
 import os
 import sys
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
+
+# Windows cp1254 emoji crash fix
+if sys.stdout.encoding and sys.stdout.encoding.lower().startswith("cp"):
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 
 
 def get_session_id() -> str:
@@ -37,7 +41,7 @@ def save_session_info(session_id: str) -> None:
 
     session_info = {
         "session_id": session_id,
-        "started_at": datetime.utcnow().isoformat() + "Z",
+        "started_at": datetime.now(timezone.utc).isoformat(),
         "working_dir": os.getcwd(),
         "task_list_id": os.environ.get("CLAUDE_CODE_TASK_LIST_ID", "kiro2-master"),
     }

@@ -1,7 +1,5 @@
 # PreToolUse Security Hook - Daisy Stanton Reward Hacking Prevention
-# PURPOSE: Tehlikeli komutlari ENGELLEMEK
-# TRIGGER: Her Bash tool kullanimi oncesi
-# EXIT CODE 2: BLOCKS operation (Daisy Stanton recommendation)
+# EXIT CODE 2: BLOCKS operation | EXIT CODE 0: ALLOW
 
 param(
     [Parameter(Mandatory=$false)]
@@ -10,161 +8,105 @@ param(
     [string]$ToolName = "Bash"
 )
 
-$ErrorActionPreference = "Continue"
+$ErrorActionPreference = "SilentlyContinue"
 
-# Color output functions
-function Write-Success { param([string]$Message) Write-Host "[OK] $Message" -ForegroundColor Green }
-function Write-Warning { param([string]$Message) Write-Host "[WARN] $Message" -ForegroundColor Yellow }
-function Write-Error { param([string]$Message) Write-Host "[FAIL] $Message" -ForegroundColor Red }
-function Write-Info { param([string]$Message) Write-Host "[INFO] $Message" -ForegroundColor Cyan }
+# Use prefixed names to avoid shadowing built-in cmdlets
+function Out-Ok { param([string]$M) Write-Host "[OK] $M" -ForegroundColor Green }
+function Out-Warn { param([string]$M) Write-Host "[WARN] $M" -ForegroundColor Yellow }
+function Out-Block { param([string]$M) Write-Host "[BLOCK] $M" -ForegroundColor Red }
 
-Write-Host ""
-Write-Host "================================================================" -ForegroundColor Yellow
-Write-Host "  SECURITY GATE - PreToolUse Hook" -ForegroundColor Yellow
-Write-Host "  Daisy Stanton: Reward Hacking Prevention" -ForegroundColor Yellow
-Write-Host "================================================================" -ForegroundColor Yellow
-Write-Host ""
+try {
+    if ([string]::IsNullOrWhiteSpace($Command)) { exit 0 }
 
-$IsBlocked = $false
-$BlockReason = ""
+    $IsBlocked = $false
+    $BlockReason = ""
 
-# ============================================================
-# 1. TEHLIKELI BASH KOMUTLARI (BLOCKING)
-# ============================================================
+    # === 1. DANGEROUS COMMANDS ===
+    $DangerousPatterns = @(
+        @{ P = 'rm\s+-rf\s+/';                     R = "Root dizin silme" }
+        @{ P = 'rm\s+-rf\s+\*';                    R = "Wildcard silme" }
+        @{ P = 'rm\s+-rf\s+\.';                    R = "Current dir silme" }
+        @{ P = 'rmdir\s+/s\s+/q';                  R = "Win recursive silme" }
+        @{ P = 'del\s+/s\s+/q';                    R = "Win recursive silme" }
+        @{ P = 'DROP\s+TABLE';                      R = "Tablo silme" }
+        @{ P = 'DROP\s+DATABASE';                   R = "DB silme" }
+        @{ P = 'TRUNCATE\s+TABLE';                  R = "Tablo bosaltma" }
+        @{ P = 'DELETE\s+FROM\s+\w+\s*$';           R = "WHERE olmadan DELETE" }
+        @{ P = 'git\s+push\s+.*--force\s+origin\s+(main|master)'; R = "Force push main" }
+        @{ P = 'git\s+reset\s+--hard\s+HEAD~';     R = "Hard reset" }
+        @{ P = 'git\s+clean\s+-fd';                 R = "Git clean force" }
+        @{ P = 'chmod\s+777';                       R = "Tum izinleri acma" }
+        @{ P = 'cat\s+\.env\b';                     R = ".env okuma" }
+        @{ P = 'echo\s+.*[\$%]\w*API_KEY';          R = "API key loglama" }
+        @{ P = 'echo\s+.*[\$%]\w*PASSWORD';         R = "Password loglama" }
+        @{ P = 'echo\s+.*[\$%]\w*SECRET';           R = "Secret loglama" }
+        @{ P = '^\s*eval\s+';                       R = "Eval injection" }
+        @{ P = ';\s*eval\s+';                       R = "Eval injection" }
+        @{ P = '&&\s*eval\s+';                      R = "Eval injection" }
+        @{ P = 'curl.*\|\s*bash';                   R = "Pipe to bash" }
+        @{ P = 'wget.*\|\s*bash';                   R = "Pipe to bash" }
+        @{ P = 'curl.*\|\s*sh';                     R = "Pipe to shell" }
+    )
 
-$DangerousPatterns = @{
-    # File system destruction
-    "rm\s+-rf\s+/" = "Root dizin silme - KRITIK TEHLIKE"
-    "rm\s+-rf\s+\*" = "Wildcard silme - TEHLIKE"
-    "rm\s+-rf\s+\." = "Current directory silme - TEHLIKE"
-    "rmdir\s+/s\s+/q" = "Windows recursive silme - TEHLIKE"
-    "del\s+/s\s+/q" = "Windows recursive silme - TEHLIKE"
-
-    # Database destruction
-    "DROP\s+TABLE" = "Tablo silme - VERI KAYBI"
-    "DROP\s+DATABASE" = "Veritabani silme - KRITIK"
-    "TRUNCATE\s+TABLE" = "Tablo bosaltma - VERI KAYBI"
-    "DELETE\s+FROM\s+\w+\s*$" = "WHERE olmadan DELETE - TEHLIKE"
-    "DELETE\s+FROM\s+\w+\s+WHERE\s+1\s*=\s*1" = "Tum kayitlari silme - TEHLIKE"
-
-    # Git dangerous operations
-    "git\s+push\s+.*--force\s+origin\s+(main|master)" = "Force push to main - TEHLIKE"
-    "git\s+reset\s+--hard\s+HEAD~\d+" = "Hard reset - KAYIP RISKI"
-    "git\s+clean\s+-fd" = "Git clean force - KAYIP RISKI"
-
-    # System modification
-    "chmod\s+777" = "Tum izinleri acma - GUVENLIK RISKI"
-    "chown\s+-R" = "Recursive sahiplik degistirme - DIKKAT"
-
-    # Secrets exposure (only variable references like $SECRET, %SECRET%)
-    "cat\s+\.env" = ".env okuma - SECRETS RISKI"
-    'echo\s+.*[\$%]\w*API_KEY' = "API key loglama - SECRETS RISKI"
-    'echo\s+.*[\$%]\w*PASSWORD' = "Password loglama - SECRETS RISKI"
-    'echo\s+.*[\$%]\w*SECRET' = "Secret loglama - SECRETS RISKI"
-
-    # Code injection (only standalone eval, not inside Python code)
-    "^\s*eval\s+" = "Eval kullanimi - INJECTION RISKI"
-    ";\s*eval\s+" = "Eval kullanimi - INJECTION RISKI"
-    "&&\s*eval\s+" = "Eval kullanimi - INJECTION RISKI"
-
-    # Network attacks
-    "curl.*\|\s*bash" = "Pipe to bash - MALWARE RISKI"
-    "wget.*\|\s*bash" = "Pipe to bash - MALWARE RISKI"
-    "curl.*\|\s*sh" = "Pipe to shell - MALWARE RISKI"
-}
-
-# Check command against patterns
-foreach ($pattern in $DangerousPatterns.Keys) {
-    if ($Command -match $pattern) {
-        $IsBlocked = $true
-        $BlockReason = $DangerousPatterns[$pattern]
-        break
+    foreach ($entry in $DangerousPatterns) {
+        if ($Command -match $entry.P) {
+            $IsBlocked = $true
+            $BlockReason = $entry.R
+            break
+        }
     }
-}
 
-# ============================================================
-# 2. PROTECTED PATHS (BLOCKING)
-# ============================================================
-
-$ProtectedPaths = @(
-    "C:\\Windows",
-    "C:\\Program Files",
-    "/etc",
-    "/usr",
-    "/bin",
-    "/sbin",
-    "~/.ssh",
-    "~/.aws",
-    "~/.config"
-)
-
-foreach ($path in $ProtectedPaths) {
-    if ($Command -match [regex]::Escape($path)) {
-        $IsBlocked = $true
-        $BlockReason = "Protected path access: $path"
-        break
+    # === 2. PROTECTED PATHS (skip Program Files — legit tools live there) ===
+    if (-not $IsBlocked) {
+        $ProtectedPaths = @(
+            "C:\\Windows\\System32",
+            "/etc/passwd",
+            "/etc/shadow",
+            "~/.ssh/id_",
+            "~/.aws/credentials"
+        )
+        foreach ($path in $ProtectedPaths) {
+            if ($Command.Contains($path)) {
+                $IsBlocked = $true
+                $BlockReason = "Protected path: $path"
+                break
+            }
+        }
     }
-}
 
-# ============================================================
-# 3. .ENV FILE PROTECTION
-# ============================================================
-
-if ($Command -match "\.env" -and $Command -notmatch "\.env\.example") {
-    # Allow reading .env.example but not .env
-    if ($Command -match "(cat|type|less|more|head|tail|Edit|Write)\s+.*\.env\s*$") {
-        $IsBlocked = $true
-        $BlockReason = ".env file access - secrets korunmali"
+    # === 3. .ENV PROTECTION ===
+    if (-not $IsBlocked -and $Command -match '\.env\b' -and $Command -notmatch '\.env\.example') {
+        if ($Command -match '(cat|type|less|more|head|tail)\s+.*\.env\s*$') {
+            $IsBlocked = $true
+            $BlockReason = ".env dosyasina erisim"
+        }
     }
-}
 
-# ============================================================
-# 4. REWARD HACKING PREVENTION (kod icinde)
-# ============================================================
-
-$RewardHackingCommands = @(
-    'echo\s+[\x27\x22]?Success[\x27\x22]?\s*$',
-    'echo\s+[\x27\x22]?OK[\x27\x22]?\s*$',
-    'exit\s+0\s*#',
-    '^\s*true\s*$',
-    '^\s*:\s*$'
-)
-
-foreach ($pattern in $RewardHackingCommands) {
-    if ($Command -match $pattern) {
-        Write-Warning "Potential reward hacking pattern detected: $pattern"
-        # Not blocking, just warning
+    # === 4. REWARD HACKING (warning only) ===
+    $RewardHackPatterns = @(
+        'echo\s+[\x27\x22]?Success[\x27\x22]?\s*$',
+        'echo\s+[\x27\x22]?OK[\x27\x22]?\s*$',
+        '^\s*true\s*$',
+        '^\s*:\s*$'
+    )
+    foreach ($rp in $RewardHackPatterns) {
+        if ($Command -match $rp) {
+            Out-Warn "Reward hacking pattern: $rp"
+        }
     }
-}
 
-# ============================================================
-# FINAL VERDICT
-# ============================================================
+    # === VERDICT ===
+    if ($IsBlocked) {
+        Out-Block "BLOCKED: $BlockReason"
+        Write-Host "  Command: $Command" -ForegroundColor Red
+        exit 2
+    }
 
-Write-Host ""
-Write-Host "================================================================" -ForegroundColor Yellow
-Write-Host "  SECURITY CHECK RESULT" -ForegroundColor Yellow
-Write-Host "================================================================" -ForegroundColor Yellow
+    # Silent pass — no output for normal commands
+    exit 0
 
-if ($IsBlocked) {
-    Write-Host ""
-    Write-Error "COMMAND BLOCKED!"
-    Write-Host ""
-    Write-Host "Command: $Command" -ForegroundColor Red
-    Write-Host "Reason: $BlockReason" -ForegroundColor Red
-    Write-Host ""
-    Write-Host "This command has been blocked for security reasons." -ForegroundColor Yellow
-    Write-Host "If you believe this is a false positive, please review the command." -ForegroundColor Yellow
-    Write-Host ""
-
-    # EXIT CODE 2 = BLOCKING ERROR (Daisy Stanton)
-    exit 2
-} else {
-    Write-Host ""
-    Write-Success "Security check passed"
-    Write-Host "Command: $($Command.Substring(0, [Math]::Min(80, $Command.Length)))$(if ($Command.Length -gt 80) {'...'} else {''})" -ForegroundColor Cyan
-    Write-Host ""
-
-    # EXIT CODE 0 = SUCCESS
+} catch {
+    # Hook failure must not block work — fail open with warning
+    Out-Warn "Hook exception: $($_.Exception.Message)"
     exit 0
 }

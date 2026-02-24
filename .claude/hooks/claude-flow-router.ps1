@@ -30,27 +30,8 @@ try {
 
         # Only show routing info for non-trivial routes
         if ($PrimaryAgent -ne "general-purpose" -and $PrimaryAgent) {
-            Write-Host ""
-            Write-Host "============================================================" -ForegroundColor Cyan
-            Write-Host "[CLAUDE FLOW] Akilli Yonlendirme Aktif" -ForegroundColor Yellow
-            Write-Host "============================================================" -ForegroundColor Cyan
-            Write-Host ""
-            Write-Host "[>] Ana Agent: $PrimaryAgent" -ForegroundColor Green
-            Write-Host "[>] Guven: $([math]::Round($Confidence * 100))%" -ForegroundColor White
-            Write-Host "[>] Sebep: $Reasoning" -ForegroundColor White
-
-            if ($SecondaryAgents -and $SecondaryAgents -ne "") {
-                Write-Host "[>] Yardimci: $SecondaryAgents" -ForegroundColor Magenta
-            }
-
-            Write-Host ""
-            Write-Host "============================================================" -ForegroundColor Cyan
-            Write-Host ""
-            Write-Host "Claude, bu gorevi $PrimaryAgent agent ile ele almali." -ForegroundColor Yellow
-            Write-Host "   Task tool kullanarak: subagent_type=$PrimaryAgent" -ForegroundColor Gray
-            Write-Host ""
-            Write-Host "============================================================" -ForegroundColor Cyan
-            Write-Host ""
+            $pct = [math]::Round($Confidence * 100)
+            Write-Host "[ROUTE] $PrimaryAgent ($pct%) - $Reasoning" -ForegroundColor Cyan
         }
     }
 } catch {

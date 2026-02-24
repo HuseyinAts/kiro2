@@ -69,7 +69,6 @@
   "enabledMcpjsonServers": [
     "kiro2-orchestrator",
     "zemberek-mcp",
-    "chromadb-mcp",
     "claude-md-improvement"
   ],
   "hooks": {

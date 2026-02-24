@@ -79,13 +79,13 @@
         ]
       }
     ],
-    "Stop": [
+    "SessionStart": [
       {
         "matcher": "",
         "hooks": [
           {
             "type": "command",
-            "command": "powershell -ExecutionPolicy Bypass -File C:/Users/husey/kiro2/.claude/hooks/stop.ps1"
+            "command": "python C:/Users/husey/kiro2/.claude/hooks/session-init.py"
           }
         ]
       }
