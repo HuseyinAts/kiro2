@@ -54,7 +54,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "powershell -ExecutionPolicy Bypass -File C:/Users/husey/kiro2/.claude/hooks/post-tool-use.ps1 -ToolName Edit -FilePath $CLAUDE_FILE_PATH"
+            "command": "powershell -ExecutionPolicy Bypass -File C:/Users/husey/kiro2/.claude/hooks/post-tool-use.ps1"
           }
         ]
       },
@@ -63,7 +63,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "powershell -ExecutionPolicy Bypass -File C:/Users/husey/kiro2/.claude/hooks/post-tool-use.ps1 -ToolName Write -FilePath $CLAUDE_FILE_PATH"
+            "command": "powershell -ExecutionPolicy Bypass -File C:/Users/husey/kiro2/.claude/hooks/post-tool-use.ps1"
           }
         ]
       }
@@ -74,7 +74,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "powershell -ExecutionPolicy Bypass -File C:/Users/husey/kiro2/.claude/hooks/pre-tool-use.ps1 -Command $CLAUDE_BASH_COMMAND"
+            "command": "powershell -ExecutionPolicy Bypass -File C:/Users/husey/kiro2/.claude/hooks/pre-tool-use.ps1"
           }
         ]
       }

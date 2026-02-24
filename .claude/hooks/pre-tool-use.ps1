@@ -1,14 +1,24 @@
 # PreToolUse Security Hook - Daisy Stanton Reward Hacking Prevention
 # EXIT CODE 2: BLOCKS operation | EXIT CODE 0: ALLOW
+# Reads command from env var CLAUDE_BASH_COMMAND (set by Claude Code)
 
 param(
-    [Parameter(Mandatory=$false)]
-    [string]$Command = "",
-    [Parameter(Mandatory=$false)]
-    [string]$ToolName = "Bash"
+    [Parameter(Mandatory=$false, Position=0)]
+    [string]$Cmd = "",
+    [Parameter(ValueFromRemainingArguments=$true)]
+    [string[]]$Rest
 )
 
 $ErrorActionPreference = "SilentlyContinue"
+
+# Primary: env var (no shell parsing issues)
+$Command = $env:CLAUDE_BASH_COMMAND
+
+# Fallback: command-line args (legacy)
+if ([string]::IsNullOrWhiteSpace($Command)) {
+    if ($Rest) { $Cmd = ($Cmd, ($Rest -join " ")) -join " " }
+    $Command = $Cmd
+}
 
 # Use prefixed names to avoid shadowing built-in cmdlets
 function Out-Ok { param([string]$M) Write-Host "[OK] $M" -ForegroundColor Green }

@@ -1,5 +1,6 @@
 # PostToolUse Hook - Verification Feedback Loop (Silent Mode)
 # Successful checks produce zero output. Errors/warnings print and exit 2.
+# Reads file path from env var CLAUDE_FILE_PATH (set by Claude Code)
 
 param(
     [Parameter(Mandatory=$false)]
@@ -10,6 +11,13 @@ param(
 
 $ErrorActionPreference = "Continue"
 $ProjectRoot = (Get-Item $PSScriptRoot).Parent.Parent.FullName
+
+# Primary: env vars (no shell parsing issues)
+if (-not $FilePath) { $FilePath = $env:CLAUDE_FILE_PATH }
+if (-not $ToolName) { $ToolName = $env:CLAUDE_TOOL_USE_TOOL_NAME }
+
+# If still no file path, nothing to check — exit clean
+if (-not $FilePath) { exit 0 }
 
 $HasErrors = $false
 $ErrorMessages = @()
