@@ -594,7 +594,21 @@ _llm_service: LLMService | None = None
 def _get_llm_service() -> LLMService:
     global _llm_service
     if _llm_service is None:
-        _llm_service = LLMService()
+        backend = os.getenv("LLM_BACKEND", "ollama")
+        if backend == "litellm":
+            try:
+                from core.litellm.client import LiteLLMClient
+                _llm_service = LiteLLMClient()  # type: ignore[assignment]
+            except Exception as e:
+                logger.critical(
+                    f"LiteLLMClient init failed: {e}. "
+                    "LLM_BACKEND=litellm was requested but client could not start. "
+                    "Falling back to Ollama — this is likely NOT what you want in production."
+                )
+                _llm_service = LLMService()
+                _llm_service._litellm_fallback = True  # type: ignore[attr-defined]
+        else:
+            _llm_service = LLMService()
     return _llm_service
 
 

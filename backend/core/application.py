@@ -68,6 +68,16 @@ async def app_lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     logger.info("🛑 KIRO2 Backend Shutting Down...")
     await shutdown_agents()
     logger.info("✅ AI agents shut down")
+
+    # Close LLM client if it was initialized
+    try:
+        from core.llm_service import _llm_service
+        if _llm_service is not None and hasattr(_llm_service, "close"):
+            await _llm_service.close()
+            logger.info("✅ LLM client closed")
+    except Exception as e:
+        logger.debug(f"LLM client close: {e}")
+
     await db_manager.close()
     logger.info("✅ Database closed")
     logger.info("✅ KIRO2 Backend Shut Down Successfully!")

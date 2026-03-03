@@ -130,6 +130,9 @@ scipy>=1.11.0
 pandas>=2.0.0
 sentence-transformers>=2.2.0
 
+# Retry logic
+tenacity>=8.2.0
+
 # LangChain
 langchain>=0.2.0
 langchain-community>=0.2.0
