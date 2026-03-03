@@ -26,17 +26,6 @@
         "REDIS_PORT": "6379"
       }
     },
-    "chromadb-mcp": {
-      "command": "python",
-      "args": [
-        "backend/mcp_servers/chromadb_mcp.py"
-      ],
-      "cwd": "C:\\Users\\husey\\kiro2",
-      "env": {
-        "PYTHONPATH": "C:\\Users\\husey\\kiro2\\backend",
-        "CHROMA_PERSIST_DIR": "C:\\Users\\husey\\kiro2\\backend\\vector_db"
-      }
-    },
     "claude-md-improvement": {
       "command": "python",
       "args": [

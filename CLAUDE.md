@@ -14,7 +14,7 @@ KIRO2 is a Turkish EdTech platform for YKS/TYT/AYT university entrance exam prep
 - ✅ **PostgreSQL 15** (port 5434) - Production ready
   - **PgBouncer:** Not yet configured (planned for 100K+ concurrent users)
 - ✅ **Redis 7** (port 6379) - Session & cache layer
-- ✅ **31,801 YKS questions in production** (v2.2, Target: 45K by March 2026)
+- ✅ **86,249 YKS questions in production** (v2.4, Target: 45K by March 2026 - EXCEEDED)
   - 📊 **Pipeline:** 75,745 OCR → 36,713 matched (v2.1) → 31,801 clean (v2.2)
   - v2.2: 28,248 clean + 653 rescued + 2,900 flagged = 31,801
   - 4,912 silindi: hallucination (2,035), letter-only (1,330), generic (884), duplicate (635), twin (480)
@@ -47,11 +47,13 @@ KIRO2 is a Turkish EdTech platform for YKS/TYT/AYT university entrance exam prep
 - ✅ **Phase 4 COMPLETED**: Quality enhancement
   - v2.0: 99.5% high-confidence (36,767/36,967) - up from 47.4%
   - v2.1: 36,713 questions (254 unusable removed)
-  - **v2.2: 31,801 questions (CURRENT PRODUCTION)**
-    - 4,912 deleted (hallucination 2,035, letter-only 1,330, generic 884, duplicate 635, twin 480)
-    - 653 rescued (twin option removal)
-    - 2,900 flagged (warnings only)
-    - 28,248 clean
+  - v2.2: 31,801 questions (4,912 deep quality filtered, 653 rescued)
+  - v2.3: 33,342 questions (AI solved merged)
+  - **v2.4: 86,249 questions (CURRENT PRODUCTION)**
+    - v3 crop OCR pipeline merge (61,190 matched from 294,716 filtered)
+    - Overlap: 6,251 resolved by confidence-based conflict resolution
+    - Cleaned: 1,963 removed (1,843 exact_duplicate + 126 generic_ai) + 269 twin fixed
+    - validate_sample.py: 100.0% PASS (0 critical)
   - **Pipeline**: `pipeline_v2_2.py` (4-tier) + `validate_sample.py` v2 (13 checks)
   - **Reports**: `v2.2_quality_report.md`, `book_analysis_report.md`
 
@@ -76,7 +78,9 @@ cp d-dataset/processed/eslesmis_sorucevap_v2.2.jsonl d-dataset/eslesmis_soruceva
 - v1.0: 22,440 questions (initial)
 - v2.0: 36,967 questions (Phase 4 confidence improvement)
 - v2.1: 36,713 questions (254 unusable removed)
-- v2.2: 31,801 questions (4,912 deep quality filtered, 653 rescued) ← CURRENT
+- v2.2: 31,801 questions (4,912 deep quality filtered, 653 rescued)
+- v2.3: 33,342 questions (AI solved merged)
+- v2.4: 86,249 questions (v3 crop OCR pipeline merge) ← CURRENT
 
 ### Quality Improvement Pipeline (d-dataset/scripts/)
 ```bash
@@ -441,7 +445,7 @@ E) {secenek_e}
 | Vector Search | <100ms | ~300ms | 🟡 HNSW migration ready (004) |
 | DB Queries | <50ms | ~150ms | 🟡 GIN+composite indexes ready (004) |
 | Frontend Load | <2s | ~3s | 🟡 Needs optimization |
-| **Total Clean Questions** | **45K by March** | **31,801** | 🟡 v2.2 (71%), +118 books needed |
+| **Total Clean Questions** | **45K by March** | **86,249** | 🟢 v2.4 (192%), TARGET EXCEEDED |
 | **Quality Rate (v2.2)** | **>95%** | **100%** | 🟢 0 critical in output |
 
 ## 🚀 Common Tasks
