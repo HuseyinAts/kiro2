@@ -2,27 +2,39 @@
 """
 P4-A: Bayes-Optimal Cross-Validation Pipeline.
 
-Merges up to 3 answer sources for each question using Bayesian posterior:
-1. Original answer (from production JSONL -- jsonl_v11 or ai_solve)
-2. Rematch answer (from corrected qnum + test-aware DB matching)
-3. Claude Opus Vision AI answer (with confidence score)
+Merges up to 7 AI answer sources per question using Bayesian posterior:
+1. opus_v2    - Claude Opus vision solve (high accuracy, 0.18/s)
+2. sonnet     - Claude Sonnet vision solve (fast, lower accuracy)
+3. gemini     - Gemini 2.5 Flash vision solve (free tier)
+4. gemini_mg  - Gemini math/geo specific solve
+5. qwen_text  - Qwen3 text-based solve (high throughput)
+6. qwen_vision - Qwen3 vision solve (grouped screenshots)
+7. qwen_crop  - Qwen3.5 crop-based solve (DashScope API)
 
-BAYESIAN APPROACH (Session 39 Research):
-Instead of hardcoded tier rules, we compute:
+Plus original sources from production JSONL (jsonl_v11, ai_solved, db_v7, rematch).
+
+BAYESIAN APPROACH (Session 39-40 Research):
   P(correct=k | all observations) = P(k) * prod P(src_i | correct=k)
 
-Using calibrated source accuracies from inter-source agreement analysis:
+Using calibrated source accuracies:
 
   Source                   | Accuracy | Evidence
   -------------------------|----------|---------------------------
   Opus high conf (>=0.9)   | 85%      | High confidence validation
   Opus med conf, non-C     | 70%      | C-bias analysis
   Opus med conf, C answer  | 35%      | C-bias zone (39% C rate)
-  Opus low conf (<0.7)     | 25%      | Near random (20.7% match)
+  Opus low conf (<0.7)     | 25%      | Near random
+  Sonnet high (>=0.9)      | 80%      | Slightly below Opus
+  Sonnet med (0.7-0.9)     | 60%      | C-bias not separated
+  Sonnet low (<0.7)        | 25%      | Near random
+  Gemini high (>=0.8)      | 77%      | Free tier, good coverage
+  Gemini med (0.5-0.8)     | 55%      | Moderate confidence
+  Gemini low (<0.5)        | 25%      | Near random
   ai_solved (curated)      | 85%      | Chi-sq 7.1, validated
   jsonl_v11 (original)     | 73%      | 60.7% AI agreement
   db_v7 (DB match)         | 39%      | 35.8% high-conf AI match
   rematch (qnum corrected) | 25%      | 19.1% AI match (HARMFUL)
+  tier1_5 (low quality)    | 17.2%   | Below random (20%)
 
 KEY RESULTS:
 - Opus high conf -> 85% posterior probability of correctness
@@ -34,6 +46,12 @@ Usage:
     python cross_validate_answers.py --analyze          # Stats only, no output
     python cross_validate_answers.py --incremental      # OK with partial AI results
     python cross_validate_answers.py --simulate         # Show hybrid improvement
+    python cross_validate_answers.py --zero-db          # Set db_v7 accuracy to 0
+    python cross_validate_answers.py --calibrated       # Use calibrated accuracies
+    python cross_validate_answers.py --pilot-math-geo   # Filter to math/geo only
+    python cross_validate_answers.py --input FILE       # Custom input JSONL
+    python cross_validate_answers.py --output FILE      # Custom output JSONL
+    python cross_validate_answers.py --dry-run          # Analyze without writing
 """
 import functools
 import json
@@ -44,9 +62,34 @@ from collections import Counter
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
+# Fast JSON I/O: 2-3x speedup with orjson, stdlib fallback
+# Turkish normalize: proper I/ı mapping for case-insensitive comparison
+try:
+    from script_common import fast_json_loads, fast_json_dump_str, normalize_tr as _normalize_tr
+except ImportError:
+    fast_json_loads = json.loads
+    fast_json_dump_str = lambda obj: json.dumps(obj, ensure_ascii=False)  # noqa: E731
+    _normalize_tr = None
+
 
 BASE_DIR = Path(__file__).parent.parent
 VALID_ANSWERS = set("ABCDE")
+
+# Page penalty floor: when AI sees a full page with multiple questions,
+# accuracy is divided by page_q_count. Without a floor, page_q_count=5
+# gives accuracy=0.17 (below random=0.20), making the source harmful.
+_PAGE_PENALTY_FLOOR = 0.21
+
+# Valid MCQ candidate answers (tuple for immutability + iteration)
+CANDIDATES = ("A", "B", "C", "D", "E")
+
+# Tiers considered unreliable for standalone use — questions with only these sources
+# get flagged as needs_ai_solve. See L3 in optimization plan.
+_UNRELIABLE_TIERS = frozenset({"db_v7", "rematch", "other", "tier1_5"})
+
+# When posteriors are near-uniform (max - min < threshold), keep original answer.
+# Prevents alphabetical bias from max() tie-breaking when all sources are uninformative.
+_TIE_BREAK_THRESHOLD = 0.02
 
 # Calibrated accuracy values from Bayesian inter-source agreement analysis
 # P(source answer is correct | observed answer, confidence tier)
@@ -72,7 +115,7 @@ ACCURACY = {
     "rematch":     0.25,  # Corrected qnum rematch (near random)
     "other":       0.40,  # Unknown source
     # Contaminated tiers (measured via pilot — BELOW random baseline)
-    "tier1_5":     0.20,  # page_inline_unique: 17.2% pilot accuracy (< 20% random)
+    "tier1_5":     0.172, # page_inline_unique: 17.2% pilot accuracy (< 20% random)
     "tier1":       0.85,  # page_inline exact: reliable (placeholder until human GT)
     "tier5_qindex": 0.60, # question_index fallback to page_inline (YOLO order, less reliable)
     # Qwen text-solve — group-aware accuracy weights (Step 1 pilot calibration)
@@ -126,12 +169,19 @@ def load_jsonl(path: Path) -> Dict[Tuple[str, int, int], Dict]:
     questions = {}
     if not path.exists():
         return questions
+    dup_count = 0
     with open(path, encoding="utf-8") as f:
         for line in f:
-            if not line.strip():
+            stripped = line.strip()
+            if not stripped:
                 continue
-            q = json.loads(line.strip())
-            questions[make_key(q)] = q
+            q = fast_json_loads(stripped)
+            key = make_key(q)
+            if key in questions:
+                dup_count += 1
+            questions[key] = q
+    if dup_count > 0:
+        print(f"  WARNING: {dup_count} duplicate keys in {path.name} (last entry kept)")
     return questions
 
 
@@ -142,11 +192,12 @@ def load_vision_results(path: Path) -> Dict[Tuple[str, int, int], Dict]:
         return results
     with open(path, encoding="utf-8") as f:
         for line in f:
-            if not line.strip():
+            stripped = line.strip()
+            if not stripped:
                 continue
             try:
-                r = json.loads(line.strip())
-            except json.JSONDecodeError:
+                r = fast_json_loads(stripped)
+            except (json.JSONDecodeError, ValueError):
                 continue
             if not isinstance(r, dict):
                 continue
@@ -185,7 +236,11 @@ def classify_sonnet(confidence: float, answer: str) -> str:
 
 @functools.lru_cache(maxsize=512)
 def classify_gemini(confidence: float, answer: str) -> str:
-    """Classify Gemini observation into accuracy tier."""
+    """Classify Gemini observation into accuracy tier.
+
+    Note: `answer` parameter is accepted for API consistency with classify_opus/classify_sonnet
+    (which use it for C-bias detection) but is not used here — Gemini does not exhibit C-bias.
+    """
     if confidence >= 0.9:
         return "gemini_high"
     elif confidence >= 0.7:
@@ -216,7 +271,10 @@ def classify_original(source: str) -> str:
         return "tier5_qindex"  # q_index fallback, less reliable than exact match
     if "page_inline_unique" in source or "tier1_5" in source:
         return "tier1_5"  # 17.2% pilot accuracy — BELOW random baseline
-    if "page_inline" in source or "tier1" in source:
+    # Guard: "tier1" must be a prefix, not a substring — prevents false matches
+    # from hypothetical sources like "sometier1x". Existing "tier1_page_inline" and
+    # "tier1b_position_page_inline" both start with "tier1".
+    if "page_inline" in source or source.startswith("tier1"):
         return "tier1"  # page_inline exact + position (tier1, tier1b): reliable
     if "db" in source or "match" in source:
         return "db_v7"
@@ -262,6 +320,28 @@ def classify_qwen_vision(confidence: float) -> str:
     return "qwen_vision_low"
 
 
+# Source → classifier dispatcher (replaces if/elif chain in score_answer)
+# Key: source name from AI observation. Value: callable(conf, answer) → tier string.
+_SOURCE_CLASSIFIERS = {
+    "sonnet": lambda c, a: classify_sonnet(c, a),
+    "opus_v2": lambda c, a: classify_opus(c, a),
+    "opus_v1": lambda c, a: classify_opus(c, a),
+    "opus": lambda c, a: classify_opus(c, a),
+    "gemini": lambda c, a: classify_gemini(c, a),
+    "gemini_mg": lambda c, a: classify_gemini(c, a),
+    "qwen_vision": lambda c, _: classify_qwen_vision(c),
+    "qwen_crop": lambda c, _: classify_qwen_vision(c),
+}
+
+# Source → label mapping for method description string
+_SOURCE_LABELS = {
+    "sonnet": "sonnet",
+    "opus_v2": "opus", "opus_v1": "opus", "opus": "opus",
+    "gemini": "gemini", "gemini_mg": "gemini",
+    "qwen_vision": "qwen_vision", "qwen_crop": "qwen_crop",
+}
+
+
 # Observed answer bias from pipeline v3 output (eslesmis_sorucevap_v3.jsonl, March 2026)
 # Measured from 61,190 matched questions (Tier 1 + 1B + 1.5). Chi-sq 1526.42, A=26.3%.
 # Used to construct anti-bias prior: P(k) proportional to 1/GT_BIAS[k]
@@ -275,10 +355,12 @@ GT_BIAS: Dict[str, float] = {
     "E": 0.244,
 }
 
-# Anti-bias prior: inversely proportional to sqrt(observed bias), normalized to sum=1
+# Anti-bias prior: inversely proportional to sqrt(observed bias), normalized to sum=1.
 # Full inverse (1/bias) is too aggressive — B=12.7% gets 2x the prior of A=26.3%,
 # causing B to dominate at 54%. sqrt dampening keeps correction proportional
 # without over-compensating: B prior = 1.44x A prior (vs 2.07x with full inverse).
+# Rationale from Session 40 Bayesian Research: sqrt is the geometric mean between
+# uniform (no correction) and full inverse (max correction).
 _inv = {k: 1.0 / math.sqrt(v) for k, v in GT_BIAS.items()}
 _inv_sum = sum(_inv.values())
 ANTI_BIAS_PRIOR: Dict[str, float] = {k: v / _inv_sum for k, v in _inv.items()}
@@ -304,8 +386,6 @@ def bayesian_posterior(
 
     Uses log-space arithmetic for numerical stability.
     """
-    candidates = list("ABCDE")
-
     # Check if any answer has 2+ strong sources agreeing (evidence-supported)
     # If no strong agreement, anti-bias prior would dominate → use uniform instead
     # Only count sources with accuracy >= 0.50 (opus_high, sonnet_high, ai_solved, jsonl_v11, etc.)
@@ -323,7 +403,7 @@ def bayesian_posterior(
 
     log_posts = {}
 
-    for k in candidates:
+    for k in CANDIDATES:
         prior = ANTI_BIAS_PRIOR[k] if effective_anti_bias else 0.2
         lp = math.log(prior)
         for _, answer, accuracy in sources:
@@ -337,7 +417,7 @@ def bayesian_posterior(
     max_lp = max(log_posts.values())
     total = sum(math.exp(v - max_lp) for v in log_posts.values())
 
-    return {k: math.exp(log_posts[k] - max_lp) / total for k in candidates}
+    return {k: math.exp(log_posts[k] - max_lp) / total for k in CANDIDATES}
 
 
 def score_answer(
@@ -386,7 +466,7 @@ def score_answer(
         sources.append((tier, orig, acc[tier]))
         labels.append("orig")
 
-    # Rematch answer
+    # Rematch answer — no sub-tier: rematch pipeline does not produce confidence scores
     if rem in VALID_ANSWERS:
         sources.append(("rematch", rem, acc["rematch"]))
         labels.append("rematch")
@@ -397,40 +477,34 @@ def score_answer(
         if ans not in VALID_ANSWERS:
             continue
 
-        conf = obs.get("confidence", 0.0)
+        conf = round(obs.get("confidence", 0.0), 2)
         src = obs.get("source", "")
         solve_type = obs.get("solve_type", "vision")
         solve_group = obs.get("solve_group", "")
         page_q_count = obs.get("page_q_count", 1)
         qnum = obs.get("qnum", 1)
 
-        # Classify based on source and solve type
+        # Classify based on source and solve type (dispatcher dict)
         if solve_type == "text":
             tier = classify_qwen_text(conf, solve_group)
             label = "qwen_text"
-        elif src == "qwen_vision":
-            tier = classify_qwen_vision(conf)
-            label = "qwen_vision"
-        elif src == "sonnet":
-            tier = classify_sonnet(conf, ans)
-            label = "sonnet"
-        elif src in ("opus_v2", "opus_v1", "opus"):
-            tier = classify_opus(conf, ans)
-            label = "opus"
-        elif src in ("gemini", "gemini_mg"):
-            tier = classify_gemini(conf, ans)
-            label = "gemini"
         else:
-            tier = classify_opus(conf, ans)
-            label = src or "ai"
+            classifier = _SOURCE_CLASSIFIERS.get(src)
+            if classifier:
+                tier = classifier(conf, ans)
+                label = _SOURCE_LABELS.get(src, src)
+            else:
+                # Unknown source — classify as "other" tier, use source name as label
+                tier = "other"
+                label = src or "ai"
 
         accuracy = acc.get(tier, acc.get("other", 0.40))
 
         # Page-aware penalty: ONLY for full-page vision solve (AI sees entire page).
         # Crop-based sources (qwen_vision) show single questions — no penalty needed.
-        is_full_page = solve_type == "vision" and src not in ("qwen_vision",)
+        is_full_page = solve_type == "vision" and src not in ("qwen_vision", "qwen_crop")
         if is_full_page and page_q_count > 1:
-            accuracy *= (1.0 / page_q_count)
+            accuracy = max(accuracy / page_q_count, _PAGE_PENALTY_FLOOR)
 
         sources.append((tier, ans, accuracy))
         labels.append(label)
@@ -447,7 +521,7 @@ def score_answer(
     # This prevents alphabetical bias from max() tie-breaking when all sources
     # are uninformative (e.g., zero-db mode for DB-only questions).
     vals = list(posteriors.values())
-    if max(vals) - min(vals) < 0.02 and orig in VALID_ANSWERS:
+    if max(vals) - min(vals) < _TIE_BREAK_THRESHOLD and orig in VALID_ANSWERS:
         best = orig
         confidence = posteriors[orig]
 
@@ -455,21 +529,18 @@ def score_answer(
     agreeing = [lbl for lbl, (_, ans, _) in zip(labels, sources) if ans == best]
     n_agree = len(agreeing)
     n_total = len(sources)
-    primary = agreeing[0] if agreeing else labels[0]
+    primary = agreeing[0] if agreeing else "prior"
     method = f"bayes_{n_agree}of{n_total}_{primary}"
 
     return best, round(confidence, 4), method
 
 
-def cross_validate(
+def _score_all(
     production: Dict[Tuple, Dict],
     ai_results: Dict[Tuple, List[Dict]],
-    analyze_only: bool = False,
-    simulate: bool = False,
-    output_path: Optional[Path] = None,
     accuracy_dict: Optional[Dict[str, float]] = None,
-) -> Dict[str, Any]:
-    """Cross-validate all questions with Bayes-optimal multi-model ensemble."""
+) -> Tuple[List[Dict], Counter, Counter, Counter, Counter, Counter, Counter, float, int]:
+    """Score all questions and collect statistics (pure computation, no I/O)."""
     stats = Counter()
     method_stats = Counter()
     confidence_buckets = Counter()
@@ -477,17 +548,13 @@ def cross_validate(
     change_details = Counter()
     tier_counts = Counter()
     conf_sum = 0.0
+    has_answer_count = 0
     results: List[Dict] = []
 
     for key, q in production.items():
         original = q.get("answer", "")
-        # Prefer match_tier (matching method) over answer_source (DB origin) for
-        # accuracy classification. match_tier distinguishes tier5_qindex (less reliable)
-        # from tier1 (exact match), while answer_source is always "page_inline".
         original_source = q.get("match_tier") or q.get("answer_source", "")
         rematch = q.get("db_rematch_answer")
-
-        # Get ALL AI observations for this question (multi-model list)
         ai_observations = ai_results.get(key, [])
 
         best_answer, confidence, method = score_answer(
@@ -498,15 +565,15 @@ def cross_validate(
 
         stats["total"] += 1
         method_stats[method] += 1
-        conf_sum += confidence
 
         if best_answer:
+            conf_sum += confidence
+            has_answer_count += 1
             answer_dist[best_answer] += 1
             stats["has_answer"] += 1
         else:
             stats["no_answer"] += 1
 
-        # Confidence tiers for reporting
         if confidence >= 0.90:
             tier_counts["very_high"] += 1
         elif confidence >= 0.70:
@@ -530,7 +597,6 @@ def cross_validate(
         if ai_observations:
             stats["has_ai"] += 1
 
-        # Extract summary fields from observations for output
         ai_sources = [obs["source"] for obs in ai_observations]
         ai_count = len(ai_observations)
 
@@ -553,7 +619,7 @@ def cross_validate(
         # REQ-1: Flag questions that only have DB source (no AI validation)
         has_ai = ai_count > 0
         orig_tier = classify_original(original_source)
-        is_db_only = orig_tier in ("db_v7", "rematch", "other") and not has_ai
+        is_db_only = orig_tier in _UNRELIABLE_TIERS and not has_ai
         if is_db_only:
             result["needs_ai_solve"] = True
             result["needs_ai_solve_reason"] = "only_db_source"
@@ -561,7 +627,22 @@ def cross_validate(
 
         results.append(result)
 
-    # --- REPORT ---
+    return (results, stats, method_stats, confidence_buckets,
+            answer_dist, change_details, tier_counts, conf_sum, has_answer_count)
+
+
+def _print_report(
+    results: List[Dict],
+    stats: Counter,
+    method_stats: Counter,
+    confidence_buckets: Counter,
+    answer_dist: Counter,
+    change_details: Counter,
+    tier_counts: Counter,
+    avg_conf: float,
+    simulate: bool = False,
+) -> float:
+    """Print cross-validation report. Returns chi_sq value."""
     total = stats["total"]
     print("\n" + "=" * 72)
     print("  BAYES-OPTIMAL CROSS-VALIDATION RESULTS")
@@ -574,11 +655,8 @@ def cross_validate(
     print(f"  Unchanged:             {stats['unchanged']:>8,} ({stats['unchanged']/total*100:.1f}%)")
     print(f"  Needs AI solve:        {stats['needs_ai_solve']:>8,} ({stats['needs_ai_solve']/total*100:.1f}%)")
 
-    # Estimated accuracy (weighted average of posteriors)
-    avg_conf = conf_sum / total if total else 0
     print(f"\n  ESTIMATED ACCURACY (mean Bayesian posterior): {avg_conf:.1%}")
 
-    # Bayesian confidence tiers
     print("\n  BAYESIAN POSTERIOR CONFIDENCE TIERS:")
     for tier_name, label in [
         ("very_high", "VERY HIGH (>=0.90)"),
@@ -591,20 +669,17 @@ def cross_validate(
         bar = "#" * max(1, int(c / total * 100))
         print(f"    {label:22s}: {c:>6,} ({c/total*100:5.1f}%) {bar}")
 
-    # Method distribution (top 20)
     print("\n  SCORING METHODS (Bayesian source combinations):")
     for method, count in method_stats.most_common(20):
         bar = "#" * max(1, int(count / total * 200))
         print(f"    {method:40s} {count:>6,} ({count/total*100:5.1f}%) {bar}")
 
-    # Posterior confidence distribution
     print("\n  POSTERIOR DISTRIBUTION (binned):")
     for bucket in sorted(confidence_buckets.keys()):
         count = confidence_buckets[bucket]
         bar = "#" * max(1, int(count / total * 200))
         print(f"    {bucket:.1f}: {count:>6,} ({count/total*100:5.1f}%) {bar}")
 
-    # Answer distribution + chi-square
     print("\n  FINAL ANSWER DISTRIBUTION:")
     total_answers = sum(answer_dist.get(k, 0) for k in "ABCDE")
     exp = total_answers / 5 if total_answers else 1
@@ -618,22 +693,17 @@ def cross_validate(
     status = "PASS (uniform)" if chi_sq < 9.49 else "FAIL (biased!)"
     print(f"    Chi-sq: {chi_sq:.2f} (threshold 9.49) -> {status}")
 
-    # Calibration table
     print("\n  CALIBRATED SOURCE ACCURACIES (Bayesian research):")
     for src, acc in sorted(ACCURACY.items(), key=lambda x: -x[1]):
         bar = "#" * int(acc * 40)
         print(f"    {src:15s}: {acc:4.0%} {bar}")
 
-    # Simulation: hybrid improvement metric
     if simulate or stats["has_ai"] > 0:
         ai_questions = [r for r in results if r.get("ai_count", 0) > 0]
         if ai_questions:
-            # Use original_answer (pre-crossval) as ground truth, NOT "answer" which
-            # gets overwritten by best_answer — that would be circular evaluation
             def get_original(r):
                 return (r.get("original_answer") or "").upper()
 
-            # How often does Bayes agree with original?
             agree_orig = sum(
                 1 for r in ai_questions
                 if r["best_answer"].upper() == get_original(r)
@@ -648,20 +718,45 @@ def cross_validate(
                 multi_changed = sum(1 for r in multi_src if r["best_answer"].upper() != get_original(r))
                 print(f"    Multi-source (2+):     {len(multi_src):,} questions, {multi_changed} changed")
 
-    # Top changes
     if stats["changed"] > 0:
         print("\n  TOP ANSWER CHANGES (original -> new):")
         for change, count in change_details.most_common(15):
             print(f"    {change}: {count}")
 
     print("\n" + "=" * 72)
+    return chi_sq
+
+
+def cross_validate(
+    production: Dict[Tuple, Dict],
+    ai_results: Dict[Tuple, List[Dict]],
+    analyze_only: bool = False,
+    simulate: bool = False,
+    output_path: Optional[Path] = None,
+    accuracy_dict: Optional[Dict[str, float]] = None,
+) -> Dict[str, Any]:
+    """Cross-validate all questions with Bayes-optimal multi-model ensemble.
+
+    Facade: delegates to _score_all() (computation) and _print_report() (output).
+    """
+    (results, stats, method_stats, confidence_buckets,
+     answer_dist, change_details, tier_counts, conf_sum, has_answer_count) = _score_all(
+        production, ai_results, accuracy_dict
+    )
+
+    avg_conf = conf_sum / has_answer_count if has_answer_count else 0
+
+    chi_sq = _print_report(
+        results, stats, method_stats, confidence_buckets,
+        answer_dist, change_details, tier_counts, avg_conf, simulate
+    )
 
     # Write output
     if not analyze_only and output_path:
         output_path.parent.mkdir(parents=True, exist_ok=True)
         with open(output_path, "w", encoding="utf-8") as f:
             for r in results:
-                f.write(json.dumps(r, ensure_ascii=False) + "\n")
+                f.write(fast_json_dump_str(r) + "\n")
         print(f"  Output: {output_path}")
         print(f"  Records: {len(results):,}")
 
@@ -671,7 +766,7 @@ def cross_validate(
         "chi_sq": chi_sq,
         "tier_counts": dict(tier_counts),
         "avg_confidence": avg_conf,
-        "total": total,
+        "total": stats["total"],
         "changed": stats["changed"],
         "results": results,
     }
@@ -700,13 +795,28 @@ def filter_math_geo(production: Dict[tuple, Dict]) -> Dict[tuple, Dict]:
     """Filter production questions to Math/Geo subjects only (pilot mode).
 
     Uses Turkish keywords in book_name for subject detection.
+    Turkish lowercase via normalize_tr (I→ı, İ→i) when available.
     """
     filtered = {}
     for key, q in production.items():
-        book = normalize_book(q.get("book_name") or "").lower()
+        book_raw = normalize_book(q.get("book_name") or "")
+        book = _normalize_tr(book_raw) if _normalize_tr else normalize_book(book_raw).lower()
         if any(kw in book for kw in MATH_GEO_KEYWORDS):
             filtered[key] = q
     return filtered
+
+
+# AI source registry: (name, relative_path, solve_type)
+# To add a new source: append one tuple here — no other code changes needed.
+SOURCE_REGISTRY = [
+    ("opus_v2", "vision_solve_opus_v2/vision_results.jsonl", "vision"),
+    ("sonnet", "vision_solve_sonnet/vision_results.jsonl", "vision"),
+    ("gemini", "vision_solve_gemini/vision_results.jsonl", "vision"),
+    ("gemini_mg", "vision_solve_gemini_mathgeo/vision_results.jsonl", "vision"),
+    ("qwen_text", "text_solve_qwen/text_results.jsonl", "text"),
+    ("qwen_vision", "vision_solve_grouped/vision_results.jsonl", "vision"),
+    ("qwen_crop", "vision_solve_crop/vision_results.jsonl", "vision"),
+]
 
 
 def load_all_vision_results() -> Dict[Tuple[str, int, int], List[Dict]]:
@@ -723,11 +833,14 @@ def load_all_vision_results() -> Dict[Tuple[str, int, int], List[Dict]]:
     base_dir = BASE_DIR / "processed"
 
     sources = [
-        # Only Opus v2 + Qwen (user decision: ignore sonnet, gemini, opus_v1)
-        ("opus_v2", base_dir / "vision_solve_opus_v2" / "vision_results.jsonl", "vision"),
-        ("qwen_text", base_dir / "text_solve_qwen" / "text_results.jsonl", "text"),
-        ("qwen_vision", base_dir / "vision_solve_grouped" / "vision_results.jsonl", "vision"),
+        (name, base_dir / rel_path, solve_type)
+        for name, rel_path, solve_type in SOURCE_REGISTRY
     ]
+
+    # Safety check: no duplicate source names in registry
+    source_names = [name for name, _, _ in sources]
+    if len(source_names) != len(set(source_names)):
+        print("  WARNING: Duplicate source names in registry!")
 
     results: Dict[Tuple[str, int, int], List[Dict]] = {}
 
@@ -751,6 +864,7 @@ def load_all_vision_results() -> Dict[Tuple[str, int, int], List[Dict]]:
                 count += 1
         print(f"  [{name}] {count:,} valid observations")
 
+    print(f"  Total unique questions with AI: {len(results):,}")
     return results
 
 
@@ -766,7 +880,7 @@ def write_needs_ai_solve(results: List[Dict], output_dir: Path) -> int:
     output_path.parent.mkdir(parents=True, exist_ok=True)
     with open(output_path, "w", encoding="utf-8") as f:
         for r in needs_solve:
-            f.write(json.dumps(r, ensure_ascii=False) + "\n")
+            f.write(fast_json_dump_str(r) + "\n")
     print(f"  Needs AI solve: {len(needs_solve):,} -> {output_path}")
     return len(needs_solve)
 
@@ -778,6 +892,9 @@ def main():
     qi_output_dir = BASE_DIR / "processed" / "quality_improvement"
     calibration_path = qi_output_dir / "req2_accuracy_calibrated.json"
 
+    # CLI parsing: manual sys.argv instead of argparse for simplicity.
+    # Limitation: no flag validation — unknown flags are silently ignored.
+    # If this grows beyond ~10 flags, consider migrating to argparse.
     analyze_only = "--analyze" in sys.argv or "--analyze-only" in sys.argv
     incremental = "--incremental" in sys.argv
     simulate = "--simulate" in sys.argv
