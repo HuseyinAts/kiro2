@@ -585,6 +585,8 @@ class JWTManager:
                 refresh_token,
                 self.secret_key,
                 algorithms=[self.algorithm],
+                # verify_exp=False: we store the token even if expired,
+                # so rotation records are complete for audit/revocation
                 options={"verify_exp": False},
             )
         except Exception:

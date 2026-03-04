@@ -50,9 +50,17 @@ LOGIN_RATE_LIMIT = 10  # max attempts per IP per window
 LOGIN_RATE_WINDOW = 60  # seconds
 
 
+def _get_client_ip(request: Request) -> str:
+    """Extract client IP, respecting X-Forwarded-For behind reverse proxy."""
+    forwarded = request.headers.get("x-forwarded-for")
+    if forwarded:
+        return forwarded.split(",")[0].strip()
+    return request.client.host if request.client else "unknown"
+
+
 def _check_login_rate_limit(request: Request) -> None:
-    """Raise 429 if IP exceeds login rate limit."""
-    client_ip = request.client.host if request.client else "unknown"
+    """Raise 429 if IP exceeds failed login rate limit."""
+    client_ip = _get_client_ip(request)
     now = time.time()
     # Clean old entries
     _login_attempts[client_ip] = [
@@ -66,7 +74,12 @@ def _check_login_rate_limit(request: Request) -> None:
                 f"{LOGIN_RATE_WINDOW} saniye sonra tekrar deneyin."
             ),
         )
-    _login_attempts[client_ip].append(now)
+
+
+def _record_failed_login(request: Request) -> None:
+    """Record a failed login attempt for rate limiting."""
+    client_ip = _get_client_ip(request)
+    _login_attempts[client_ip].append(time.time())
 
 # Password hashing using bcrypt
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -207,7 +220,8 @@ async def database_authenticate(
         "STUDENT": "ogrenci",
         "TEACHER": "ogretmen",
         "PARENT": "veli",
-        "ADMIN": "admin"
+        "ADMIN": "admin",
+        "SUPER_ADMIN": "super_admin",
     }
     frontend_role = role_mapping.get(db_user.role.value, "ogrenci")
 
@@ -524,6 +538,7 @@ async def kullanici_giris(
         # Use database-backed authentication instead of in-memory service
         return await database_authenticate(giris_data, db)
     except ValueError as e:
+        _record_failed_login(request)
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=str(e))
 
 
@@ -603,6 +618,7 @@ async def secure_login(
             "user": token_yaniti["user"]
         }
     except ValueError as e:
+        _record_failed_login(request)
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=str(e))
 
 
@@ -799,7 +815,8 @@ async def get_current_user(
         "STUDENT": "ogrenci",
         "TEACHER": "ogretmen",
         "PARENT": "veli",
-        "ADMIN": "admin"
+        "ADMIN": "admin",
+        "SUPER_ADMIN": "super_admin",
     }
     frontend_role = role_mapping.get(mevcut_kullanici.rol.value, "ogrenci")
 
@@ -912,6 +929,12 @@ async def validate_token(
     """
     try:
         token = credentials.credentials
+
+        # Check JWT blacklist first
+        jwt_mgr = get_jwt_manager()
+        if await jwt_mgr.is_blacklisted_async(token):
+            return {"valid": False}
+
         # Try to get user from token - if successful, token is valid
         kullanici = await kullanici_servisi.token_dogrula(token)
 
@@ -1154,8 +1177,11 @@ async def update_profile(
         soyad = name_parts[1] if len(name_parts) > 1 else ""
 
         # Map role
-        role_mapping = {"STUDENT": "ogrenci", "TEACHER": "ogretmen",
-                        "PARENT": "veli", "ADMIN": "admin"}
+        role_mapping = {
+            "STUDENT": "ogrenci", "TEACHER": "ogretmen",
+            "PARENT": "veli", "ADMIN": "admin",
+            "SUPER_ADMIN": "super_admin",
+        }
         rol = role_mapping.get(db_user.role.value, "ogrenci")
 
         return {
@@ -1360,7 +1386,7 @@ async def refresh_token(
     credentials: HTTPAuthorizationCredentials | None = Depends(
         HTTPBearer(auto_error=False)
     ),
-    request: Request = None,
+    request: Request | None = None,
     db: AsyncSession = Depends(get_db),
 ) -> dict[str, Any]:
     """
@@ -1462,9 +1488,9 @@ async def refresh_token(
             else None
         )
         if sync_db is None:
-            logger.warning(
-                "refresh_token: sync DB unavailable; "
-                "token rotation will not persist to database"
+            raise HTTPException(
+                status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+                detail="Token yenileme servisi geçici olarak kullanılamıyor",
             )
 
         new_tokens = await jwt_manager.refresh_access_token(
@@ -1534,9 +1560,9 @@ async def logout_all_devices(
             else None
         )
         if sync_db is None:
-            logger.warning(
-                "logout_all: sync DB unavailable; "
-                "token revocation will not persist"
+            raise HTTPException(
+                status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+                detail="Çıkış servisi geçici olarak kullanılamıyor",
             )
 
         jwt_manager.revoke_all_user_tokens(sync_db, mevcut_kullanici.kullanici_id)
@@ -1593,9 +1619,9 @@ async def revoke_device(
             else None
         )
         if sync_db is None:
-            logger.warning(
-                "revoke_device: sync DB unavailable; "
-                "token revocation will not persist"
+            raise HTTPException(
+                status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+                detail="Cihaz iptal servisi geçici olarak kullanılamıyor",
             )
 
         jwt_manager.revoke_device_tokens(

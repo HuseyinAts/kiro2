@@ -1202,6 +1202,7 @@ class TestIntegrationScenarios:
             # If sanitization is too strict, just verify it doesn't crash
             assert request_data is not None
 
+    @pytest.mark.asyncio
     async def test_jwt_full_authentication_flow(self):
         """Test complete JWT authentication flow"""
         with patch("core.jwt_auth.get_settings") as mock_settings:

@@ -13,7 +13,7 @@ RUN npm ci
 # Copy application code
 COPY . .
 
-# Build the application
+# Build the application (vite only; run tsc separately in CI)
 RUN npm run build:fast
 
 # Production stage
