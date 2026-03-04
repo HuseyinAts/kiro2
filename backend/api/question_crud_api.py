@@ -934,3 +934,146 @@ async def list_source_books(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Kitap listeleme sirasinda bir hata olustu",
         )
+
+
+# ──────────────────────────────────────────────────────────────
+# Semantic Search (pgvector + nomic-embed-text via Ollama)
+# ──────────────────────────────────────────────────────────────
+
+
+class SemanticSearchRequest(BaseModel):
+    """Anlamsal soru arama istegi"""
+
+    query: str = Field(..., min_length=3, max_length=1000, description="Arama metni")
+    top_k: int = Field(10, ge=1, le=50, description="Sonuc sayisi")
+    exam_type: Optional[str] = Field(None, description="Sinav turu filtresi")
+    subject_area: Optional[str] = Field(None, description="Konu filtresi")
+    min_similarity: float = Field(0.3, ge=0.0, le=1.0, description="Minimum benzerlik skoru")
+    show_answers: bool = Field(False, description="Cevaplari goster")
+
+
+@router.post("/semantic-search", summary="Anlamsal soru arama (pgvector)")
+async def semantic_search(
+    request: SemanticSearchRequest,
+    db: AsyncSession = Depends(get_db_session),
+):
+    """
+    Anlamsal (semantic) soru arama.
+
+    Ollama nomic-embed-text ile query embedding olusturur,
+    pgvector HNSW index ile en benzer sorulari bulur.
+    """
+    import json
+    import urllib.request
+
+    try:
+        # 1. Generate query embedding via Ollama
+        ollama_url = "http://localhost:11434/api/embed"
+        # nomic-embed-text: prefix with "search_query: " for queries
+        prefixed = f"search_query: {request.query}"
+        data = json.dumps({"model": "nomic-embed-text", "input": prefixed}).encode()
+        req = urllib.request.Request(
+            ollama_url, data=data, headers={"Content-Type": "application/json"}
+        )
+
+        try:
+            resp = urllib.request.urlopen(req, timeout=10)
+            result = json.loads(resp.read())
+        except Exception as embed_err:
+            logger.error(f"Ollama embedding error: {embed_err}")
+            raise HTTPException(
+                status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+                detail="Embedding servisi kullanilamiyor",
+            )
+
+        if "error" in result:
+            raise HTTPException(
+                status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+                detail="Embedding modeli kullanilamiyor",
+            )
+
+        query_embedding = result["embeddings"][0]
+        vec_str = "[" + ",".join(str(x) for x in query_embedding) + "]"
+
+        # 2. Build similarity query with filters
+        from sqlalchemy import text as sa_text
+
+        filters = []
+        params: Dict[str, Any] = {"emb": vec_str, "min_sim": request.min_similarity}
+
+        if request.exam_type:
+            filters.append("q.exam_type = :exam_type")
+            params["exam_type"] = request.exam_type
+        if request.subject_area:
+            filters.append("q.subject_area = :subject_area")
+            params["subject_area"] = request.subject_area
+
+        where_clause = " AND ".join(["q.embedding IS NOT NULL"] + filters)
+        params["top_k"] = request.top_k
+
+        sql = sa_text(f"""
+            SELECT q.id, q.question_text, q.question_image_url,
+                   q.exam_type, q.subject_area, q.source_book,
+                   q.difficulty_level, q.bloom_level, q.bloom_category,
+                   q.quality_score, q.word_count,
+                   q.option_a, q.option_b, q.option_c, q.option_d, q.option_e,
+                   q.correct_answer,
+                   1 - (q.embedding <=> :emb::vector) as similarity
+            FROM question_bank q
+            WHERE {where_clause}
+              AND 1 - (q.embedding <=> :emb::vector) >= :min_sim
+            ORDER BY q.embedding <=> :emb::vector
+            LIMIT :top_k
+        """)
+
+        result_rows = await db.execute(sql, params)
+        rows = result_rows.fetchall()
+
+        # 3. Format response
+        questions = []
+        for r in rows:
+            item: Dict[str, Any] = {
+                "id": str(r.id),
+                "question_text": r.question_text,
+                "question_image_url": r.question_image_url,
+                "exam_type": r.exam_type,
+                "subject_area": r.subject_area,
+                "source_book": r.source_book,
+                "difficulty": r.difficulty_level,
+                "bloom_level": r.bloom_level,
+                "bloom_category": r.bloom_category,
+                "quality_score": r.quality_score,
+                "word_count": r.word_count,
+                "similarity": round(float(r.similarity), 4),
+            }
+            if request.show_answers:
+                item["options"] = {
+                    "A": r.option_a, "B": r.option_b, "C": r.option_c,
+                    "D": r.option_d, "E": r.option_e,
+                }
+                item["correct_answer"] = r.correct_answer
+            questions.append(item)
+
+        return JSONResponse(
+            status_code=status.HTTP_200_OK,
+            content={
+                "success": True,
+                "data": {
+                    "questions": questions,
+                    "total_results": len(questions),
+                    "query": request.query,
+                    "model": "nomic-embed-text",
+                    "embedding_dim": 768,
+                },
+                "message": f"{len(questions)} benzer soru bulundu",
+            },
+        )
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Semantic search error: {str(e)}", exc_info=True)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Anlamsal arama sirasinda bir hata olustu",
+        )

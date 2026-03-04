@@ -342,3 +342,59 @@ class TestClassifyBloom:
         ]:
             _, cat = classify_bloom(text, subj)
             assert cat in valid, f"{text}: got invalid category '{cat}'"
+
+
+class TestSemanticSearchRequest:
+    """Validate SemanticSearchRequest Pydantic model."""
+
+    def test_valid_request(self):
+        from api.question_crud_api import SemanticSearchRequest
+
+        req = SemanticSearchRequest(query="mitoz bölünme", top_k=5)
+        assert req.query == "mitoz bölünme"
+        assert req.top_k == 5
+        assert req.min_similarity == 0.3
+        assert req.show_answers is False
+
+    def test_query_too_short(self):
+        from api.question_crud_api import SemanticSearchRequest
+        from pydantic import ValidationError
+
+        with pytest.raises(ValidationError):
+            SemanticSearchRequest(query="ab")
+
+    def test_top_k_bounds(self):
+        from api.question_crud_api import SemanticSearchRequest
+        from pydantic import ValidationError
+
+        with pytest.raises(ValidationError):
+            SemanticSearchRequest(query="test query", top_k=0)
+        with pytest.raises(ValidationError):
+            SemanticSearchRequest(query="test query", top_k=51)
+
+    def test_filters(self):
+        from api.question_crud_api import SemanticSearchRequest
+
+        req = SemanticSearchRequest(
+            query="Newton yasaları",
+            exam_type="TYT",
+            subject_area="FIZIK",
+            min_similarity=0.5,
+            show_answers=True,
+        )
+        assert req.exam_type == "TYT"
+        assert req.subject_area == "FIZIK"
+        assert req.min_similarity == 0.5
+        assert req.show_answers is True
+
+
+class TestGenerateEmbeddingsScript:
+    """Test embedding generation utilities."""
+
+    def test_get_db_engine(self):
+        from scripts.generate_embeddings import get_db_engine
+
+        engine = get_db_engine()
+        assert engine is not None
+        # Engine should be created (may be SQLite in test env, PG in production)
+        assert engine.url is not None
