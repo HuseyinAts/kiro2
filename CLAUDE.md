@@ -8,20 +8,20 @@ KIRO2 is a Turkish EdTech platform for YKS/TYT/AYT university entrance exam prep
 
 **Project Root:** `C:\Users\husey\kiro2`
 
-## 📊 Current Status (February 2026)
+## 📊 Current Status (March 2026)
 
 ### Database & Content ✅
 - ✅ **PostgreSQL 15** (port 5434) - Production ready
   - **PgBouncer:** Not yet configured (planned for 100K+ concurrent users)
 - ✅ **Redis 7** (port 6379) - Session & cache layer
-- ✅ **86,249 YKS questions in production** (v2.4, Target: 45K by March 2026 - EXCEEDED)
-  - 📊 **Pipeline:** 75,745 OCR → 36,713 matched (v2.1) → 31,801 clean (v2.2)
-  - v2.2: 28,248 clean + 653 rescued + 2,900 flagged = 31,801
-  - 4,912 silindi: hallucination (2,035), letter-only (1,330), generic (884), duplicate (635), twin (480)
-  - 3,546 soru re-OCR ile kurtarılabilir (tahmini 1,521-2,511)
-- ✅ **308 source books** processed from 426 total, **118 remaining**
-- ✅ **eslesmis_sorucevap.jsonl** format in production (v2.2)
-- ✅ **Quality pipeline**: validate_sample.py v2 (13 checks) + pipeline_v2_2.py (4-tier)
+- ✅ **76,554 YKS questions in production** (v3.3, Target: 45K by March 2026 - EXCEEDED)
+  - 📊 **Pipeline:** 75,745 OCR → 86,249 matched (v2.4) → 76,554 clean (v3.3)
+  - v3.3: db_v7=0, rematch=0, LOW confidence=0, 100% validation PASS
+  - Answer DB: **answers_v8.db** (answers table removed — 39% accuracy was unusable)
+  - 9,695 unreliable questions removed from v2.4 (db_v7, rematch, empty source, LOW conf)
+- ✅ **401 source books** in production, **118 remaining** (unprocessed)
+- ✅ **eslesmis_sorucevap.jsonl** format in production (v3.3)
+- ✅ **Quality pipeline**: validate_sample.py v2 (13 checks) + cross_validate_answers.py (Bayesian)
 
 ### 🎯 Next Priorities
 1. ~~Low-confidence question refinement pipeline~~ ✅ **DONE** (+19,248 questions improved)
@@ -49,13 +49,12 @@ KIRO2 is a Turkish EdTech platform for YKS/TYT/AYT university entrance exam prep
   - v2.1: 36,713 questions (254 unusable removed)
   - v2.2: 31,801 questions (4,912 deep quality filtered, 653 rescued)
   - v2.3: 33,342 questions (AI solved merged)
-  - **v2.4: 86,249 questions (CURRENT PRODUCTION)**
-    - v3 crop OCR pipeline merge (61,190 matched from 294,716 filtered)
-    - Overlap: 6,251 resolved by confidence-based conflict resolution
-    - Cleaned: 1,963 removed (1,843 exact_duplicate + 126 generic_ai) + 269 twin fixed
+  - v2.4: 86,249 questions (v3 crop OCR pipeline merge)
+  - **v3.3: 76,554 questions (CURRENT PRODUCTION)**
+    - v2.4→v3.3: DB redesign (v8), db_v7/rematch/LOW conf cleanup
+    - 9,695 unreliable removed, 0 db_v7, 0 rematch, 0 LOW conf
     - validate_sample.py: 100.0% PASS (0 critical)
-  - **Pipeline**: `pipeline_v2_2.py` (4-tier) + `validate_sample.py` v2 (13 checks)
-  - **Reports**: `v2.2_quality_report.md`, `book_analysis_report.md`
+  - **Pipeline**: `cross_validate_answers.py` (Bayesian) + `validate_sample.py` v2 (13 checks)
 
 **Release Workflow (v2.2 Pipeline → Production):**
 ```bash
@@ -80,21 +79,21 @@ cp d-dataset/processed/eslesmis_sorucevap_v2.2.jsonl d-dataset/eslesmis_soruceva
 - v2.1: 36,713 questions (254 unusable removed)
 - v2.2: 31,801 questions (4,912 deep quality filtered, 653 rescued)
 - v2.3: 33,342 questions (AI solved merged)
-- v2.4: 86,249 questions (v3 crop OCR pipeline merge) ← CURRENT
+- v2.4: 86,249 questions (v3 crop OCR pipeline merge)
+- v3.0-v3.1: 80,208 questions (DB v8 redesign, empty source cleanup)
+- v3.3: 76,554 questions (db_v7/rematch/LOW conf cleanup) ← CURRENT
 
-### Quality Improvement Pipeline (d-dataset/scripts/)
+### Quality Pipeline (d-dataset/scripts/)
 ```bash
-# REQ-1: Zero-DB cross-validation (ignore unreliable DB answers)
-python cross_validate_answers.py --zero-db --analyze --simulate
+# Cross-validation (Bayesian posterior scoring)
+python cross_validate_answers.py --analyze --simulate
 
-# REQ-2: Confidence calibration (Platt scaling + per-subject)
-python confidence_calibration.py --output d-dataset/processed/calibration/
+# Validate production (must be 100% PASS)
+cd C:\Users\husey\kiro2
+python scripts/validate_sample.py d-dataset/eslesmis_sorucevap.jsonl --all
 
-# REQ-3: Image quality audit + enhancement
-python image_quality_audit.py --math-geo-only
-
-# Orchestrator (runs all 3 in sequence)
-python quality_improvement_pipeline.py --pilot --dry-run
+# DB v8 creation (from v7 page_inline + extraction data)
+python create_answers_v8.py --validate
 ```
 
 ## 🛠️ Tech Stack
@@ -445,7 +444,7 @@ E) {secenek_e}
 | Vector Search | <100ms | ~300ms | 🟡 HNSW migration ready (004) |
 | DB Queries | <50ms | ~150ms | 🟡 GIN+composite indexes ready (004) |
 | Frontend Load | <2s | ~3s | 🟡 Needs optimization |
-| **Total Clean Questions** | **45K by March** | **86,249** | 🟢 v2.4 (192%), TARGET EXCEEDED |
+| **Total Clean Questions** | **45K by March** | **76,554** | 🟢 v3.3 (170%), TARGET EXCEEDED |
 | **Quality Rate (v2.2)** | **>95%** | **100%** | 🟢 0 critical in output |
 
 ## 🚀 Common Tasks

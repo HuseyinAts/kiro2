@@ -111,7 +111,7 @@ ACCURACY = {
     # Legacy sources
     "ai_solved":   0.85,  # Previously AI-verified answers (curated)
     "jsonl_v11":   0.73,  # Original OCR-matched answers
-    "db_v7":       0.39,  # DB rematch (known quality issues beyond qnum)
+    "db_v7":       0.25,  # DB rematch — downgraded: answers table ~39% accuracy, now mostly replaced
     "rematch":     0.25,  # Corrected qnum rematch (near random)
     "other":       0.40,  # Unknown source
     # Contaminated tiers (measured via pilot — BELOW random baseline)
@@ -258,6 +258,11 @@ def classify_original(source: str) -> str:
         return "other"
     if "ai_solve" in source or "claude" in source.lower():
         return "ai_solved"
+    # v3.0 replacement sources (from replace_db_v7_sources.py)
+    if source == "page_inline_upgrade":
+        return "tier1"  # page_inline exact match, same accuracy as tier1
+    if source == "ai_upgrade":
+        return "ai_solved"  # AI cross-validated answer, same tier as ai_solved
     if source == "jsonl_v11":
         return "jsonl_v11"
     # v3 match tiers from match_crop_answers.py output
