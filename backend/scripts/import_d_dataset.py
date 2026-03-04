@@ -180,7 +180,7 @@ def build_row(entry: dict, subject: str, exam_type: str) -> dict:
         "bloom_category": "understand",
         "difficulty_level": "MEDIUM",
         # IRT 4PL parameters (NOT NULL, uncalibrated defaults)
-        "irt_based_difficulty": 0.0,
+        "irt_based_difficulty": "medium",
         "student_success_rate": 0.0,
         "difficulty_update_count": 0,
         "irt_discrimination": 1.0,
