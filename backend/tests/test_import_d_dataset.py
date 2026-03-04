@@ -1,4 +1,4 @@
-"""Tests for d-dataset import classification logic."""
+"""Tests for d-dataset import classification logic and morphology metrics."""
 import json
 import pytest
 import sys
@@ -12,6 +12,12 @@ from scripts.import_d_dataset import (
     generate_topic_id,
     build_row,
     DEFAULT_TOPICS,
+)
+from scripts.update_morphology import (
+    tokenize_turkish,
+    count_sentences,
+    calc_readability,
+    compute_metrics,
 )
 
 
@@ -160,3 +166,179 @@ class TestBuildRow:
         }
         row = build_row(entry, "TURKCE", "TYT")
         assert row["option_e"] is None
+
+
+# =============================================================================
+# Morphology Metrics Tests
+# =============================================================================
+
+
+class TestTokenizeTurkish:
+    def test_basic(self):
+        assert tokenize_turkish("Merhaba dünya") == ["Merhaba", "dünya"]
+
+    def test_with_punctuation(self):
+        tokens = tokenize_turkish("A) seçenek, B) seçenek.")
+        assert "A" in tokens
+        assert "seçenek" in tokens
+
+    def test_empty(self):
+        assert tokenize_turkish("") == []
+
+    def test_turkish_chars(self):
+        tokens = tokenize_turkish("çığ öşüğ İstanbul")
+        assert len(tokens) == 3
+
+    def test_math_question(self):
+        tokens = tokenize_turkish("x + y = 10 ise x kaçtır?")
+        assert "x" in tokens
+        assert "kaçtır" in tokens
+
+
+class TestCountSentences:
+    def test_single(self):
+        assert count_sentences("Merhaba dünya.") == 1
+
+    def test_multiple(self):
+        assert count_sentences("Soru nedir? Cevap budur. Tamam!") == 3
+
+    def test_empty(self):
+        assert count_sentences("") == 0
+
+
+class TestCalcReadability:
+    def test_short_easy(self):
+        # Short sentences, short words = easy
+        score = calc_readability(5, 1, 3.0)
+        assert score > 50
+
+    def test_zero_words(self):
+        assert calc_readability(0, 0, 0.0) == 50.0
+
+
+class TestComputeMetrics:
+    def test_basic_turkish(self):
+        m = compute_metrics("Bu bir matematik sorusudur. Cevap A seçeneğidir.")
+        assert m["word_count"] > 0
+        assert m["unique_word_count"] > 0
+        assert m["average_word_length"] > 0
+        assert 0 <= m["readability_score"] <= 100
+        assert 0 <= m["morphology_complexity"] <= 1
+
+    def test_empty_text(self):
+        m = compute_metrics("")
+        assert m["word_count"] == 0
+        assert m["readability_score"] == 50.0
+        assert m["morphology_complexity"] == 0.0
+
+    def test_real_question(self):
+        text = (
+            "Bir dik prizmanın tabanı bir dikdörtgendir. "
+            "Prizmanın yüksekliği 5 cm ve tabanın uzun kenarı 4 cm'dir."
+        )
+        m = compute_metrics(text)
+        assert m["word_count"] >= 10
+        assert m["unique_word_count"] >= 8
+        assert m["average_word_length"] > 3.0
+
+
+# =============================================================================
+# Build Row Defaults Tests
+# =============================================================================
+
+
+class TestBuildRowDefaults:
+    """Test that build_row provides correct defaults for NOT NULL columns."""
+
+    def _make_entry(self):
+        return {
+            "book_name": "Test Book",
+            "page_number": 1,
+            "question_number": 1,
+            "text": "Soru metni",
+            "options": {"A": "a", "B": "b", "C": "c", "D": "d"},
+            "answer": "B",
+        }
+
+    def test_irt_defaults(self):
+        row = build_row(self._make_entry(), "MATEMATIK", "TYT")
+        assert row["irt_discrimination"] == 1.0
+        assert row["irt_difficulty"] == 0.0
+        assert row["irt_guessing"] == 0.2
+        assert row["irt_upper_asymptote"] == 1.0
+        assert row["is_calibrated"] is False
+
+    def test_bloom_defaults(self):
+        row = build_row(self._make_entry(), "FIZIK", "AYT")
+        assert row["bloom_level"] == 2
+        assert row["bloom_category"] == "understand"
+
+    def test_difficulty_default(self):
+        row = build_row(self._make_entry(), "KIMYA", "TYT")
+        assert row["difficulty_level"] == "MEDIUM"
+
+    def test_irt_based_difficulty_is_string(self):
+        row = build_row(self._make_entry(), "TURKCE", "TYT")
+        assert row["irt_based_difficulty"] == "medium"
+        assert isinstance(row["irt_based_difficulty"], str)
+
+    def test_statistics_zero(self):
+        row = build_row(self._make_entry(), "TARIH", "TYT")
+        assert row["times_asked"] == 0
+        assert row["times_correct"] == 0
+        assert row["average_response_time"] == 0.0
+
+
+# =============================================================================
+# Bloom Taxonomy Classifier Tests
+# =============================================================================
+
+from scripts.update_bloom_taxonomy import classify_bloom
+
+
+class TestClassifyBloom:
+    def test_apply_math_calculation(self):
+        level, cat = classify_bloom("x + 3 = 7 ise x kaçtır?", "MATEMATIK")
+        assert level == 3
+        assert cat == "apply"
+
+    def test_evaluate_which_is_wrong(self):
+        level, cat = classify_bloom(
+            "Aşağıdakilerden hangisi yanlıştır?", "TURKCE"
+        )
+        assert level == 5
+        assert cat == "evaluate"
+
+    def test_analyze_graph_based(self):
+        level, cat = classify_bloom(
+            "Verilen grafiğe göre aşağıdakilerden hangisi doğrudur?", "FIZIK"
+        )
+        assert level >= 4  # analyze or evaluate
+
+    def test_remember_history(self):
+        level, cat = classify_bloom(
+            "İstanbul'un fethi hangi yılda gerçekleşmiştir?", "TARIH"
+        )
+        assert level == 1
+        assert cat == "remember"
+
+    def test_empty_text_uses_subject_default(self):
+        level, _ = classify_bloom("", "MATEMATIK")
+        assert level == 3  # Math default is apply
+
+    def test_math_with_numbers_at_least_apply(self):
+        level, _ = classify_bloom("5 ile 3 toplandığında sonuç nedir?", "MATEMATIK")
+        assert level >= 3
+
+    def test_all_levels_have_valid_category(self):
+        valid = {"remember", "understand", "apply", "analyze", "evaluate", "create"}
+        for text, subj in [
+            ("tanımı nedir?", "TARIH"),
+            ("ne anlama gelir?", "TURKCE"),
+            ("hesaplayınız", "MATEMATIK"),
+            ("karşılaştırınız", "FIZIK"),
+            ("hangisi yanlıştır?", "BIYOLOJI"),
+            ("tasarlayınız", "GENEL"),
+        ]:
+            _, cat = classify_bloom(text, subj)
+            assert cat in valid, f"{text}: got invalid category '{cat}'"
