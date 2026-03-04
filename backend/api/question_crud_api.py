@@ -1025,11 +1025,11 @@ async def semantic_search(
                    q.quality_score, q.word_count,
                    q.option_a, q.option_b, q.option_c, q.option_d, q.option_e,
                    q.correct_answer,
-                   1 - (q.embedding <=> :emb::vector) as similarity
+                   1 - (q.embedding <=> CAST(:emb AS vector)) as similarity
             FROM question_bank q
             WHERE {where_clause}
-              AND 1 - (q.embedding <=> :emb::vector) >= :min_sim
-            ORDER BY q.embedding <=> :emb::vector
+              AND 1 - (q.embedding <=> CAST(:emb AS vector)) >= :min_sim
+            ORDER BY q.embedding <=> CAST(:emb AS vector)
             LIMIT :top_k
         """)
 
