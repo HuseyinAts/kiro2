@@ -33,8 +33,9 @@ import { initMathJax, typesetMath } from '@/config/mathjax.config';
 interface SearchQuestion {
   id: string;
   question_text: string;
-  options: Record<string, string | null>;
-  correct_answer: string;
+  question_image_url: string | null;
+  options?: Record<string, string | null>;
+  correct_answer?: string;
   exam_type: string;
   subject_area: string;
   source_book: string | null;
@@ -74,12 +75,12 @@ const BLOOM_COLORS: Record<number, string> = {
 };
 
 const BLOOM_LABELS: Record<number, string> = {
-  1: 'Hatirla',
+  1: 'Hat\u0131rla',
   2: 'Anla',
   3: 'Uygula',
   4: 'Analiz',
-  5: 'Degerlendir',
-  6: 'Olustur',
+  5: 'De\u011ferlendir',
+  6: 'Olu\u015ftur',
 };
 
 // Difficulty badge renkleri
@@ -136,6 +137,7 @@ export const QuestionBank: React.FC = () => {
 
   // Filters
   const [searchQuery, setSearchQuery] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
   const [examTypeFilter, setExamTypeFilter] = useState<string>('all');
   const [subjectFilter, setSubjectFilter] = useState<string>('all');
   const [difficultyFilter, setDifficultyFilter] = useState<string>('all');
@@ -144,6 +146,15 @@ export const QuestionBank: React.FC = () => {
   // Pagination (server-side)
   const [currentPage, setCurrentPage] = useState(1);
   const questionsPerPage = 20;
+
+  // Debounce search input (300ms)
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(searchQuery);
+      setCurrentPage(1);
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
 
   // Book list for filter
   const [books, setBooks] = useState<{ source_book: string; question_count: number }[]>([]);
@@ -181,9 +192,10 @@ export const QuestionBank: React.FC = () => {
       const body: Record<string, unknown> = {
         limit: questionsPerPage,
         offset: (currentPage - 1) * questionsPerPage,
+        show_answers: true,
       };
 
-      if (searchQuery) body.search_query = searchQuery;
+      if (debouncedSearch) body.search_query = debouncedSearch;
       if (examTypeFilter !== 'all') body.exam_type = examTypeFilter;
       if (subjectFilter !== 'all') body.subject_area = subjectFilter;
       if (sourceBookFilter !== 'all') body.source_book = sourceBookFilter;
@@ -214,7 +226,7 @@ export const QuestionBank: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  }, [currentPage, searchQuery, examTypeFilter, subjectFilter, difficultyFilter, sourceBookFilter, questionsPerPage]);
+  }, [currentPage, debouncedSearch, examTypeFilter, subjectFilter, difficultyFilter, sourceBookFilter, questionsPerPage]);
 
   useEffect(() => {
     fetchQuestions();
@@ -236,16 +248,11 @@ export const QuestionBank: React.FC = () => {
   // Reset filters
   const resetFilters = () => {
     setSearchQuery('');
+    setDebouncedSearch('');
     setExamTypeFilter('all');
     setSubjectFilter('all');
     setDifficultyFilter('all');
     setSourceBookFilter('all');
-    setCurrentPage(1);
-  };
-
-  // Search with debounce (reset page on filter change)
-  const handleSearchChange = (value: string) => {
-    setSearchQuery(value);
     setCurrentPage(1);
   };
 
@@ -295,7 +302,7 @@ export const QuestionBank: React.FC = () => {
               <Input
                 placeholder="Soru metni ara..."
                 value={searchQuery}
-                onChange={(e) => handleSearchChange(e.target.value)}
+                onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full"
               />
             </div>
@@ -438,6 +445,13 @@ export const QuestionBank: React.FC = () => {
                       <p className="text-gray-900 font-medium mb-4 whitespace-pre-line">
                         {question.question_text}
                       </p>
+                      {question.question_image_url && (
+                        <img
+                          src={question.question_image_url}
+                          alt="Soru gorseli"
+                          className="max-w-full h-auto rounded-lg mb-4"
+                        />
+                      )}
                     </div>
                   </div>
 

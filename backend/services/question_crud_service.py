@@ -662,7 +662,9 @@ class QuestionCRUDService:
 
             # Full-text search (PostgreSQL için)
             if search_query:
-                search_pattern = f"%{search_query}%"
+                # Escape LIKE wildcards to prevent pattern injection
+                escaped = search_query.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_")
+                search_pattern = f"%{escaped}%"
                 stmt = stmt.where(
                     or_(
                         QuestionBankItem.question_text.ilike(search_pattern),

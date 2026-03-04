@@ -78,7 +78,7 @@ class QuestionUpdateRequest(BaseModel):
 class QuestionSearchRequest(BaseModel):
     """Soru arama isteği"""
 
-    search_query: Optional[str] = Field(None, description="Arama sorgusu")
+    search_query: Optional[str] = Field(None, max_length=500, description="Arama sorgusu")
     exam_type: Optional[str] = Field(None, description="Sınav türü filtresi")
     subject_area: Optional[str] = Field(None, description="Konu filtresi")
     source_book: Optional[str] = Field(None, description="Kaynak kitap filtresi")
@@ -93,6 +93,9 @@ class QuestionSearchRequest(BaseModel):
         None, ge=-4.0, le=4.0, description="Max IRT zorluk [-4.0, 4.0]"
     )
     osym_compliant: Optional[bool] = Field(None, description="ÖSYM uyumlu mu")
+    show_answers: bool = Field(
+        False, description="Cevaplari goster (admin/review icin)"
+    )
     facets: Optional[List[str]] = Field(
         None, description="Facet alanları (exam_type, subject_area, difficulty)"
     )
@@ -541,41 +544,43 @@ async def search_questions(
             offset=request.offset,
         )
 
-        # Response formatına dönüştür
+        # Response formatina donustur
+        # TODO: Production icin auth zorunlu yapilmali (get_current_user)
         questions_data = []
         for q in result["questions"]:
-            questions_data.append(
-                {
-                    "id": q.id,
-                    "question_text": q.question_text,
-                    "question_image_url": q.question_image_url,
-                    "options": {
-                        "A": q.option_a,
-                        "B": q.option_b,
-                        "C": q.option_c,
-                        "D": q.option_d,
-                        "E": q.option_e,
-                    },
-                    "correct_answer": q.correct_answer,
-                    "exam_type": q.exam_type,
-                    "subject_area": q.subject_area,
-                    "source_book": q.source_book,
-                    "topic": q.primary_topic_id,
-                    "difficulty": q.difficulty_level.value,
-                    "bloom_level": q.bloom_level,
-                    "bloom_category": q.bloom_category,
-                    "irt_difficulty": q.irt_difficulty,
-                    "quality_score": q.quality_score,
-                    "word_count": q.word_count,
-                    "times_asked": q.times_asked,
-                    "success_rate": (
-                        q.times_correct / max(1, q.times_asked)
-                        if q.times_asked > 0
-                        else 0
-                    ),
-                    "created_at": q.created_at.isoformat(),
+            item: Dict[str, Any] = {
+                "id": q.id,
+                "question_text": q.question_text,
+                "question_image_url": q.question_image_url,
+                "exam_type": q.exam_type,
+                "subject_area": q.subject_area,
+                "source_book": q.source_book,
+                "topic": q.primary_topic_id,
+                "difficulty": q.difficulty_level.value,
+                "bloom_level": q.bloom_level,
+                "bloom_category": q.bloom_category,
+                "irt_difficulty": q.irt_difficulty,
+                "quality_score": q.quality_score,
+                "word_count": q.word_count,
+                "times_asked": q.times_asked,
+                "success_rate": (
+                    q.times_correct / max(1, q.times_asked)
+                    if q.times_asked > 0
+                    else 0
+                ),
+                "created_at": q.created_at.isoformat(),
+            }
+            # Cevaplar sadece show_answers=true ile gosterilir
+            if request.show_answers:
+                item["options"] = {
+                    "A": q.option_a,
+                    "B": q.option_b,
+                    "C": q.option_c,
+                    "D": q.option_d,
+                    "E": q.option_e,
                 }
-            )
+                item["correct_answer"] = q.correct_answer
+            questions_data.append(item)
 
         return JSONResponse(
             status_code=status.HTTP_200_OK,
@@ -595,10 +600,10 @@ async def search_questions(
         )
 
     except Exception as e:
-        logger.error(f"Arama hatası: {str(e)}")
+        logger.error(f"Arama hatasi: {str(e)}", exc_info=True)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Arama hatası: {str(e)}",
+            detail="Arama sirasinda bir hata olustu",
         )
 
 
@@ -927,5 +932,5 @@ async def list_source_books(
         logger.error(f"Kitap listeleme hatası: {str(e)}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Kitap listeleme hatası: {str(e)}",
+            detail="Kitap listeleme sirasinda bir hata olustu",
         )

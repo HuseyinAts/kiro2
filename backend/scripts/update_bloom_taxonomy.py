@@ -21,7 +21,6 @@ Usage:
 import argparse
 import os
 import re
-import sys
 import unicodedata
 from pathlib import Path
 from time import time
@@ -200,50 +199,55 @@ def main() -> None:
         print("\n[DRY RUN] No changes made.")
         return
 
-    # Batch update
+    # Batch update — fetch all IDs upfront to avoid infinite loop
+    # (some rows may classify back to L2=understand, so WHERE clause won't shrink)
     t0 = time()
     updated = 0
     distribution = {i: 0 for i in range(1, 7)}
 
     with engine.connect() as conn:
-        # Fetch all at once (they all have default bloom)
-        offset = 0
-        while True:
+        all_ids = conn.execute(text(
+            "SELECT id FROM question_bank "
+            "WHERE bloom_level = 2 AND bloom_category = 'understand' "
+            "ORDER BY id"
+        )).fetchall()
+        id_list = [r[0] for r in all_ids]
+
+    for batch_start in range(0, len(id_list), args.batch_size):
+        batch_ids = id_list[batch_start:batch_start + args.batch_size]
+
+        with engine.connect() as conn:
             rows = conn.execute(text(
                 "SELECT id, question_text, subject_area FROM question_bank "
-                "WHERE bloom_level = 2 AND bloom_category = 'understand' "
-                "ORDER BY id LIMIT :limit"
-            ), {"limit": args.batch_size}).fetchall()
+                "WHERE id = ANY(:ids)"
+            ), {"ids": batch_ids}).fetchall()
 
-            if not rows:
-                break
+        updates = []
+        for r in rows:
+            level, category = classify_bloom(r[1], r[2])
+            distribution[level] += 1
+            updates.append({
+                "qid": r[0],
+                "bl": level,
+                "bc": category,
+            })
 
-            updates = []
-            for r in rows:
-                level, category = classify_bloom(r[1], r[2])
-                distribution[level] += 1
-                updates.append({
-                    "qid": r[0],
-                    "bl": level,
-                    "bc": category,
-                })
+        with engine.begin() as tx:
+            for u in updates:
+                tx.execute(text(
+                    "UPDATE question_bank SET "
+                    "bloom_level = :bl, bloom_category = :bc "
+                    "WHERE id = :qid"
+                ), u)
 
-            with engine.begin() as tx:
-                for u in updates:
-                    tx.execute(text(
-                        "UPDATE question_bank SET "
-                        "bloom_level = :bl, bloom_category = :bc "
-                        "WHERE id = :qid"
-                    ), u)
-
-            updated += len(rows)
-            pct = min(100.0, updated / total * 100)
-            print(f"  [{pct:5.1f}%] {updated:,}/{total:,}")
+        updated += len(rows)
+        pct = min(100.0, updated / total * 100)
+        print(f"  [{pct:5.1f}%] {updated:,}/{total:,}")
 
     t_total = time() - t0
     print(f"\n{'=' * 60}")
     print(f"Updated: {updated:,} questions in {t_total:.1f}s")
-    print(f"\nBloom Distribution:")
+    print("\nBloom Distribution:")
     for level in range(1, 7):
         name = BLOOM_LEVELS[level]
         count = distribution[level]
