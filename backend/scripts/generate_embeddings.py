@@ -13,6 +13,7 @@ Usage:
 import argparse
 import json
 import os
+import unicodedata
 import urllib.request
 from pathlib import Path
 from time import time
@@ -106,43 +107,57 @@ def main() -> None:
         print(f"Estimated time: ~{est_min:.0f} minutes at ~{rate:.0f} texts/sec")
         return
 
-    # Fetch all IDs without embeddings upfront
+    # Fetch all IDs without embeddings upfront (parameterized LIMIT)
     with engine.connect() as conn:
-        limit_clause = f"LIMIT {to_process}" if args.limit > 0 else ""
-        all_rows = conn.execute(text(
-            f"SELECT id, question_text FROM question_bank "
-            f"WHERE embedding IS NULL ORDER BY id {limit_clause}"
-        )).fetchall()
+        if args.limit > 0:
+            all_rows = conn.execute(text(
+                "SELECT id, question_text FROM question_bank "
+                "WHERE embedding IS NULL ORDER BY id LIMIT :lim"
+            ), {"lim": to_process}).fetchall()
+        else:
+            all_rows = conn.execute(text(
+                "SELECT id, question_text FROM question_bank "
+                "WHERE embedding IS NULL ORDER BY id"
+            )).fetchall()
 
     print(f"\nProcessing {len(all_rows):,} questions...")
     t0 = time()
     processed = 0
     errors = 0
+    skipped = 0
 
     for batch_start in range(0, len(all_rows), args.batch_size):
         batch = all_rows[batch_start:batch_start + args.batch_size]
-        ids = [r[0] for r in batch]
-        # Use question_text, fallback to empty string
-        texts = [r[1] or "" for r in batch]
+
+        # Filter out empty/null texts (I6: avoid meaningless embeddings)
+        valid = [(r[0], r[1]) for r in batch if r[1] and r[1].strip()]
+        skipped += len(batch) - len(valid)
+        if not valid:
+            continue
+
+        ids = [v[0] for v in valid]
+        # NFC normalize Turkish text before embedding (I4)
+        texts = [unicodedata.normalize("NFC", v[1])[:2000] for v in valid]
 
         # Prefix with "search_document: " for nomic-embed-text
-        # (recommended by model authors for document embedding)
-        prefixed_texts = [f"search_document: {t[:2000]}" for t in texts]
+        prefixed_texts = [f"search_document: {t}" for t in texts]
 
         try:
             embeddings = generate_embeddings_batch(prefixed_texts, args.ollama_url, args.model)
         except Exception as e:
             print(f"\n  ERROR at batch {batch_start}: {e}")
-            errors += len(batch)
+            errors += len(valid)
             continue
 
-        # Write embeddings to DB
+        # Bulk write embeddings to DB (executemany for efficiency)
+        params = [
+            {"emb": "[" + ",".join(str(x) for x in emb) + "]", "qid": qid}
+            for qid, emb in zip(ids, embeddings)
+        ]
         with engine.begin() as tx:
-            for qid, emb in zip(ids, embeddings):
-                vec_str = "[" + ",".join(str(x) for x in emb) + "]"
-                tx.execute(text(
-                    "UPDATE question_bank SET embedding = :emb WHERE id = :qid"
-                ), {"emb": vec_str, "qid": qid})
+            tx.execute(text(
+                "UPDATE question_bank SET embedding = :emb WHERE id = :qid"
+            ), params)
 
         processed += len(batch)
         elapsed = time() - t0
@@ -162,6 +177,8 @@ def main() -> None:
     print(f"Rate: {processed/t_total:.1f} questions/sec")
     if errors:
         print(f"Errors: {errors:,}")
+    if skipped:
+        print(f"Skipped (empty text): {skipped:,}")
 
     # Final stats
     with engine.connect() as conn:

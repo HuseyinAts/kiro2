@@ -6,8 +6,11 @@ REQ-13.1: Makale/Soru içerik yönetimi
 """
 
 import logging
+import os
+import unicodedata
 from typing import Any, Dict, List, Optional
 
+import httpx
 from fastapi import (
     APIRouter,
     Depends,
@@ -19,11 +22,14 @@ from fastapi import (
 )
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
+from sqlalchemy import text as sa_text
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.database import get_db_session
 from core.dependencies import get_current_user
 from services.question_crud_service import QuestionCRUDService
+
+OLLAMA_URL = os.getenv("OLLAMA_URL", "http://localhost:11434")
 
 logger = logging.getLogger(__name__)
 
@@ -963,22 +969,24 @@ async def semantic_search(
     Ollama nomic-embed-text ile query embedding olusturur,
     pgvector HNSW index ile en benzer sorulari bulur.
     """
-    import json
-    import urllib.request
-
     try:
-        # 1. Generate query embedding via Ollama
-        ollama_url = "http://localhost:11434/api/embed"
-        # nomic-embed-text: prefix with "search_query: " for queries
-        prefixed = f"search_query: {request.query}"
-        data = json.dumps({"model": "nomic-embed-text", "input": prefixed}).encode()
-        req = urllib.request.Request(
-            ollama_url, data=data, headers={"Content-Type": "application/json"}
-        )
+        # 1. NFC normalize Turkish text before embedding
+        query_text = unicodedata.normalize("NFC", request.query)
 
+        # 2. Generate query embedding via Ollama (async, non-blocking)
+        prefixed = f"search_query: {query_text}"
         try:
-            resp = urllib.request.urlopen(req, timeout=10)
-            result = json.loads(resp.read())
+            async with httpx.AsyncClient(timeout=10.0) as client:
+                resp = await client.post(
+                    f"{OLLAMA_URL}/api/embed",
+                    json={"model": "nomic-embed-text", "input": prefixed},
+                )
+                result = resp.json()
+        except httpx.TimeoutException:
+            raise HTTPException(
+                status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+                detail="Embedding servisi zaman asimina ugradi",
+            )
         except Exception as embed_err:
             logger.error(f"Ollama embedding error: {embed_err}")
             raise HTTPException(
@@ -995,8 +1003,7 @@ async def semantic_search(
         query_embedding = result["embeddings"][0]
         vec_str = "[" + ",".join(str(x) for x in query_embedding) + "]"
 
-        # 2. Build similarity query with filters
-        from sqlalchemy import text as sa_text
+        # 3. Build similarity query with filters
 
         filters = []
         params: Dict[str, Any] = {"emb": vec_str, "min_sim": request.min_similarity}
