@@ -33,7 +33,7 @@ export const QuestionBankPage: React.FC = () => {
             </div>
             <div className="flex items-center gap-3">
               <span className="px-3 py-1.5 bg-blue-100 text-blue-800 rounded-lg text-sm font-medium">
-                141 Soru
+                77,336 Soru
               </span>
             </div>
           </div>
