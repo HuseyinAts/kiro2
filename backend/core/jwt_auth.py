@@ -86,6 +86,7 @@ class JWTManager:
         user_id: str,
         email: str,
         role: UserRole,
+        username: str = None,
         permissions: list[str] = None,
         device_id: str = None,
     ) -> str:
@@ -97,6 +98,7 @@ class JWTManager:
 
         payload = {
             "sub": user_id,
+            "username": username or email.split("@")[0],
             "email": email,
             "role": role.value,
             "exp": expire,
@@ -750,7 +752,7 @@ async def require_admin(
         HTTPException: 403 if user is not admin
     """
     admin_roles = [UserRole.ADMIN, UserRole.SUPER_ADMIN]
-    
+
     if current_user.role not in admin_roles:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,

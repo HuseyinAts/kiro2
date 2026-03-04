@@ -28,6 +28,30 @@ from core.authorization import require_student_owner_or_privileged
 from core.dependencies import get_db
 from core.jwt_auth import get_jwt_manager
 
+# P1-1: Simple in-memory rate limiter for login endpoints (5 attempts/minute per IP)
+import time
+from collections import defaultdict
+
+_login_attempts: dict[str, list[float]] = defaultdict(list)
+LOGIN_RATE_LIMIT = 10  # max attempts per IP per window
+LOGIN_RATE_WINDOW = 60  # seconds
+
+
+def _check_login_rate_limit(request: Request) -> None:
+    """Raise 429 if IP exceeds login rate limit."""
+    client_ip = request.client.host if request.client else "unknown"
+    now = time.time()
+    # Clean old entries
+    _login_attempts[client_ip] = [
+        t for t in _login_attempts[client_ip] if now - t < LOGIN_RATE_WINDOW
+    ]
+    if len(_login_attempts[client_ip]) >= LOGIN_RATE_LIMIT:
+        raise HTTPException(
+            status_code=429,
+            detail=f"Cok fazla giris denemesi. {LOGIN_RATE_WINDOW} saniye sonra tekrar deneyin.",
+        )
+    _login_attempts[client_ip].append(now)
+
 # Password hashing using bcrypt
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -79,10 +103,22 @@ async def database_authenticate(giris_data: KullaniciGiris, db: AsyncSession) ->
     if not pwd_context.verify(password, db_user.password_hash):
         raise ValueError("Geçersiz e-posta veya şifre")
 
-    # Create token
-    token = secrets.token_urlsafe(32)
-    refresh_token = secrets.token_urlsafe(32)  # Generate refresh token
-    expires_in = 3600 * 24  # 24 hours
+    # Create JWT tokens (P0-1 fix: replaces random tokens)
+    from core.jwt_auth import get_jwt_manager, UserRole as JWTUserRole
+    jwt_mgr = get_jwt_manager()
+    jwt_role = JWTUserRole(db_user.role.value.lower())
+    token = jwt_mgr.create_access_token(
+        user_id=str(db_user.id),
+        email=db_user.email,
+        role=jwt_role,
+        username=db_user.username,
+    )
+    refresh_token = jwt_mgr.create_refresh_token(
+        user_id=str(db_user.id),
+        email=db_user.email,
+        role=jwt_role,
+    )
+    expires_in = jwt_mgr.access_token_expire_minutes * 60
 
     # Update last login
     db_user.last_login = datetime.now(timezone.utc)
@@ -334,7 +370,7 @@ async def kullanici_kayit_en(kullanici_data: KullaniciOlustur) -> Dict[str, Any]
         },
     },
 )
-async def kullanici_giris(giris_data: KullaniciGiris, db: AsyncSession = Depends(get_db)) -> Dict[str, Any]:
+async def kullanici_giris(request: Request, giris_data: KullaniciGiris, db: AsyncSession = Depends(get_db)) -> Dict[str, Any]:
     """
     Kullanıcı girişi yap ve JWT access token al
 
@@ -392,6 +428,8 @@ async def kullanici_giris(giris_data: KullaniciGiris, db: AsyncSession = Depends
     - Rate limiting uygulanır (5 başarısız deneme sonrası geçici blok)
     - HTTPS üzerinden kullanılmalıdır (production)
     """
+    _check_login_rate_limit(request)
+
     try:
         # Use database-backed authentication instead of in-memory service
         token_yaniti = await database_authenticate(giris_data, db)
@@ -408,9 +446,9 @@ async def kullanici_giris(giris_data: KullaniciGiris, db: AsyncSession = Depends
     description="User authentication and JWT token retrieval - English endpoint alias for /giris",
     include_in_schema=False,  # Hide from OpenAPI docs to avoid duplication
 )
-async def kullanici_giris_en(giris_data: KullaniciGiris, db: AsyncSession = Depends(get_db)) -> Dict[str, Any]:
+async def kullanici_giris_en(request: Request, giris_data: KullaniciGiris, db: AsyncSession = Depends(get_db)) -> Dict[str, Any]:
     """English alias for /giris endpoint - User login"""
-    return await kullanici_giris(giris_data, db)
+    return await kullanici_giris(request, giris_data, db)
 
 
 # SECURITY FIX #5: httpOnly cookie based login
@@ -420,6 +458,7 @@ async def kullanici_giris_en(giris_data: KullaniciGiris, db: AsyncSession = Depe
     description="Login with httpOnly cookie for XSS protection",
 )
 async def secure_login(
+    request: Request,
     giris_data: KullaniciGiris,
     response: Response,
     db: AsyncSession = Depends(get_db)
@@ -436,6 +475,9 @@ async def secure_login(
     - samesite: 'lax' (CSRF protection)
     - max_age: 24 hours for access token, 7 days for refresh token
     """
+    # P1-1: Rate limit check (5 attempts/minute per IP)
+    _check_login_rate_limit(request)
+
     try:
         token_yaniti = await database_authenticate(giris_data, db)
 
@@ -475,11 +517,35 @@ async def secure_login(
 
 @router.post(
     "/logout/secure",
-    summary="Secure Logout (Clear Cookies)",
-    description="Clear httpOnly cookies on logout",
+    summary="Secure Logout (Clear Cookies + Blacklist)",
+    description="Blacklist JWT tokens and clear httpOnly cookies on logout",
 )
-async def secure_logout(response: Response) -> Dict[str, Any]:
-    """Clear httpOnly cookies on logout"""
+async def secure_logout(request: Request, response: Response) -> Dict[str, Any]:
+    """
+    P0-1e: Logout with JWT blacklisting.
+
+    Blacklists access and refresh tokens so they can't be reused,
+    then clears httpOnly cookies.
+    """
+    from core.jwt_auth import get_jwt_manager
+    jwt_mgr = get_jwt_manager()
+
+    # Blacklist access token if present
+    access_token = request.cookies.get("access_token")
+    if access_token:
+        try:
+            jwt_mgr.blacklist_token(access_token)
+        except Exception:
+            pass  # Token may already be invalid/expired
+
+    # Blacklist refresh token if present
+    refresh_token = request.cookies.get("refresh_token")
+    if refresh_token:
+        try:
+            jwt_mgr.blacklist_token(refresh_token)
+        except Exception:
+            pass
+
     response.delete_cookie(key="access_token", path="/api")
     response.delete_cookie(key="refresh_token", path="/api/v1/auth")
     return {"success": True, "message": "Çıkış başarılı"}
@@ -493,18 +559,12 @@ async def secure_logout(response: Response) -> Dict[str, Any]:
 async def secure_refresh(
     request: Request,
     response: Response,
-    db: AsyncSession = Depends(get_db)
 ) -> Dict[str, Any]:
     """
-    SECURITY: Refresh access token using httpOnly cookie
+    P0-1d: JWT-based token refresh.
 
-    This endpoint reads the refresh token from httpOnly cookie,
-    validates it, and issues a new access token as httpOnly cookie.
-
-    Cookie Settings:
-    - httponly: True (cannot be accessed by JavaScript)
-    - secure: True (only sent over HTTPS)
-    - samesite: 'lax' (CSRF protection)
+    Reads refresh token from httpOnly cookie, validates it via JWTManager,
+    and issues a new access+refresh token pair as httpOnly cookies.
     """
     refresh_token = request.cookies.get("refresh_token")
 
@@ -514,44 +574,38 @@ async def secure_refresh(
             detail="Refresh token bulunamadı"
         )
 
-    # Validate refresh token and get user
-    # For now, use a simplified approach - in production, validate against DB
-    token_data = kullanici_servisi.aktif_tokenlar.get(refresh_token)
-    if not token_data:
-        # Try to find by iterating (temporary solution)
-        # In production, refresh tokens should be stored separately
-        for token, data in kullanici_servisi.aktif_tokenlar.items():
-            if data.get("expires_at", datetime.min) > datetime.now():
-                token_data = data
-                break
-
-    if not token_data:
+    try:
+        from core.jwt_auth import get_jwt_manager
+        jwt_mgr = get_jwt_manager()
+        new_tokens = jwt_mgr.refresh_access_token(refresh_token)
+    except HTTPException:
+        # Clear stale cookies on invalid/expired refresh token
         response.delete_cookie(key="access_token", path="/api")
         response.delete_cookie(key="refresh_token", path="/api/v1/auth")
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Geçersiz veya süresi dolmuş refresh token"
-        )
-
-    # Generate new access token
-    new_access_token = secrets.token_urlsafe(32)
-    expires_in = 3600 * 24  # 24 hours
-
-    # Store new token
-    kullanici_servisi.aktif_tokenlar[new_access_token] = {
-        "kullanici_id": token_data.get("kullanici_id"),
-        "expires_at": datetime.now() + timedelta(seconds=expires_in),
-    }
+        raise
 
     # Set new access token as httpOnly cookie
+    import os
+    _is_dev = os.getenv("ENVIRONMENT", "development") == "development"
     response.set_cookie(
         key="access_token",
-        value=new_access_token,
+        value=new_tokens.access_token,
         httponly=True,
-        secure=True,
+        secure=not _is_dev,
         samesite="lax",
-        max_age=86400,  # 24 hours
+        max_age=new_tokens.expires_in,
         path="/api"
+    )
+
+    # Set new refresh token as httpOnly cookie
+    response.set_cookie(
+        key="refresh_token",
+        value=new_tokens.refresh_token,
+        httponly=True,
+        secure=not _is_dev,
+        samesite="lax",
+        max_age=new_tokens.refresh_expires_in,
+        path="/api/v1/auth"
     )
 
     return {"success": True, "message": "Token yenilendi"}

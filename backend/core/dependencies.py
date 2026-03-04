@@ -11,7 +11,7 @@ from enum import Enum
 from typing import Any
 
 import jwt
-from fastapi import Depends, HTTPException, status
+from fastapi import Depends, HTTPException, Request, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from pydantic import BaseModel, Field, field_validator
 
@@ -110,18 +110,28 @@ class AuthenticatedUser(BaseModel):
 # Authentication Dependencies
 # ============================================================================
 async def get_current_user(
-    credentials: HTTPAuthorizationCredentials = Depends(security),
+    request: Request = None,
+    credentials: HTTPAuthorizationCredentials = Depends(HTTPBearer(auto_error=False)),
 ) -> AuthenticatedUser:
     """
     JWT token'dan mevcut kullanıcıyı al.
 
     Returns type-safe AuthenticatedUser model.
+    Supports both Bearer header and httpOnly cookie authentication.
 
     SECURITY FIX #1: Real database lookup instead of mock data
     SECURITY FIX #2: Specific exception handling (no bare except)
     SECURITY FIX #3: Pydantic validation for type safety
+    P0-1c: Also reads JWT from httpOnly cookie for frontend auth
     """
-    if credentials is None:
+    # Try Bearer header first, then httpOnly cookie
+    token = None
+    if credentials and credentials.credentials:
+        token = credentials.credentials
+    elif request:
+        token = request.cookies.get("access_token")
+
+    if not token:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Authentication required",
@@ -129,7 +139,15 @@ async def get_current_user(
         )
 
     try:
-        token = credentials.credentials
+        # P0-1e: Check blacklist before decoding
+        from core.jwt_auth import get_jwt_manager
+        jwt_mgr = get_jwt_manager()
+        if jwt_mgr._is_blacklisted(token):
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Token has been revoked",
+                headers={"WWW-Authenticate": "Bearer"},
+            )
 
         # JWT token'ı decode et
         payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])

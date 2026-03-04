@@ -5,6 +5,7 @@ Task 71: Soru Bankası CRUD Operasyonları
 REQ-13.1: Makale/Soru içerik yönetimi
 """
 
+import html
 import logging
 import os
 import unicodedata
@@ -1082,7 +1083,7 @@ async def semantic_search(
                 "data": {
                     "questions": questions,
                     "total_results": len(questions),
-                    "query": request.query,
+                    "query": html.escape(request.query),
                     "model": "nomic-embed-text",
                     "embedding_dim": 768,
                 },
