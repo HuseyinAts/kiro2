@@ -53,7 +53,11 @@ def generate_embeddings_batch(texts: list[str], ollama_url: str, model: str) -> 
     if "error" in result:
         raise RuntimeError(f"Ollama error: {result['error']}")
 
-    return result["embeddings"]
+    embeddings = result.get("embeddings")
+    if not embeddings or not isinstance(embeddings, list):
+        raise RuntimeError(f"Ollama returned invalid response: missing 'embeddings' key")
+
+    return embeddings
 
 
 def main() -> None:
@@ -159,9 +163,9 @@ def main() -> None:
                 "UPDATE question_bank SET embedding = :emb WHERE id = :qid"
             ), params)
 
-        processed += len(batch)
+        processed += len(valid)
         elapsed = time() - t0
-        rate = processed / elapsed
+        rate = processed / max(elapsed, 0.001)
         remaining = (len(all_rows) - processed) / max(rate, 0.1)
         pct = processed / len(all_rows) * 100
 
@@ -174,7 +178,8 @@ def main() -> None:
     t_total = time() - t0
     print(f"\n\n{'=' * 60}")
     print(f"Completed: {processed:,} embeddings in {t_total/60:.1f} minutes")
-    print(f"Rate: {processed/t_total:.1f} questions/sec")
+    if processed > 0 and t_total > 0:
+        print(f"Rate: {processed/t_total:.1f} questions/sec")
     if errors:
         print(f"Errors: {errors:,}")
     if skipped:

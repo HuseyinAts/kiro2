@@ -952,7 +952,7 @@ class SemanticSearchRequest(BaseModel):
 
     query: str = Field(..., min_length=3, max_length=1000, description="Arama metni")
     top_k: int = Field(10, ge=1, le=50, description="Sonuc sayisi")
-    exam_type: Optional[str] = Field(None, description="Sinav turu filtresi")
+    exam_type: Optional[str] = Field(None, pattern="^(TYT|AYT|YDT)$", description="Sinav turu filtresi")
     subject_area: Optional[str] = Field(None, description="Konu filtresi")
     min_similarity: float = Field(0.3, ge=0.0, le=1.0, description="Minimum benzerlik skoru")
     show_answers: bool = Field(False, description="Cevaplari goster")
@@ -962,6 +962,7 @@ class SemanticSearchRequest(BaseModel):
 async def semantic_search(
     request: SemanticSearchRequest,
     db: AsyncSession = Depends(get_db_session),
+    current_user: Dict = Depends(get_current_user),
 ):
     """
     Anlamsal (semantic) soru arama.
@@ -981,11 +982,18 @@ async def semantic_search(
                     f"{OLLAMA_URL}/api/embed",
                     json={"model": "nomic-embed-text", "input": prefixed},
                 )
+                resp.raise_for_status()
                 result = resp.json()
         except httpx.TimeoutException:
             raise HTTPException(
                 status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
                 detail="Embedding servisi zaman asimina ugradi",
+            )
+        except httpx.HTTPStatusError as status_err:
+            logger.error(f"Ollama HTTP error: {status_err.response.status_code}")
+            raise HTTPException(
+                status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+                detail="Embedding servisi hata dondu",
             )
         except Exception as embed_err:
             logger.error(f"Ollama embedding error: {embed_err}")
@@ -1000,7 +1008,13 @@ async def semantic_search(
                 detail="Embedding modeli kullanilamiyor",
             )
 
-        query_embedding = result["embeddings"][0]
+        embeddings = result.get("embeddings")
+        if not embeddings or not isinstance(embeddings, list) or len(embeddings) == 0:
+            raise HTTPException(
+                status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+                detail="Embedding modeli gecersiz yanit dondu",
+            )
+        query_embedding = embeddings[0]
         vec_str = "[" + ",".join(str(x) for x in query_embedding) + "]"
 
         # 3. Build similarity query with filters
