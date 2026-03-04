@@ -81,6 +81,7 @@ class QuestionSearchRequest(BaseModel):
     search_query: Optional[str] = Field(None, description="Arama sorgusu")
     exam_type: Optional[str] = Field(None, description="Sınav türü filtresi")
     subject_area: Optional[str] = Field(None, description="Konu filtresi")
+    source_book: Optional[str] = Field(None, description="Kaynak kitap filtresi")
     difficulty: Optional[str] = Field(None, description="Zorluk filtresi")
     grade_level: Optional[int] = Field(None, description="Sınıf seviyesi")
     min_quality: Optional[float] = Field(None, description="Minimum kalite skoru")
@@ -512,6 +513,8 @@ async def search_questions(
             filters["exam_type"] = request.exam_type
         if request.subject_area:
             filters["subject_area"] = request.subject_area
+        if request.source_book:
+            filters["source_book"] = request.source_book
         if request.difficulty:
             filters["difficulty"] = request.difficulty
         if request.grade_level:
@@ -796,8 +799,121 @@ async def health_check():
                     "Advanced Filters",
                     "Faceted Search",
                     "Elasticsearch Integration",
+                    "Random Sampling",
+                    "Source Book Filtering",
                 ],
             },
             "message": "Question CRUD API çalışıyor",
         },
     )
+
+
+# ========================================================================
+# A3: Random Question Sampling
+# ========================================================================
+
+
+@router.get("/random", status_code=status.HTTP_200_OK)
+async def get_random_questions(
+    count: int = Query(10, ge=1, le=50, description="Soru sayısı"),
+    subject_area: Optional[str] = Query(None, description="Konu filtresi"),
+    exam_type: Optional[str] = Query(None, description="Sınav türü (TYT/AYT/YDT)"),
+    service: QuestionCRUDService = Depends(get_question_service),
+):
+    """
+    Rastgele soru seçimi (adaptif öğrenme için)
+
+    - subject_area ve exam_type ile filtrelenebilir
+    - Her çağrıda farklı sorular döner
+    """
+    try:
+        questions = await service.get_random_questions(
+            count=count,
+            subject_area=subject_area,
+            exam_type=exam_type,
+        )
+
+        questions_data = []
+        for q in questions:
+            questions_data.append(
+                {
+                    "id": q.id,
+                    "question_text": q.question_text,
+                    "options": {
+                        "A": q.option_a,
+                        "B": q.option_b,
+                        "C": q.option_c,
+                        "D": q.option_d,
+                        "E": q.option_e,
+                    },
+                    "correct_answer": q.correct_answer,
+                    "exam_type": q.exam_type,
+                    "subject_area": q.subject_area,
+                    "difficulty": q.difficulty_level.value,
+                    "quality_score": q.quality_score,
+                    "source_book": q.source_book,
+                }
+            )
+
+        return JSONResponse(
+            status_code=status.HTTP_200_OK,
+            content={
+                "success": True,
+                "data": {
+                    "questions": questions_data,
+                    "count": len(questions_data),
+                    "filters": {
+                        "subject_area": subject_area,
+                        "exam_type": exam_type,
+                    },
+                },
+                "message": f"{len(questions_data)} rastgele soru seçildi",
+            },
+        )
+
+    except Exception as e:
+        logger.error(f"Rastgele soru hatası: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Rastgele soru hatası: {str(e)}",
+        )
+
+
+# ========================================================================
+# A4: Source Book Listing & Filtering
+# ========================================================================
+
+
+@router.get("/books", status_code=status.HTTP_200_OK)
+async def list_source_books(
+    subject_area: Optional[str] = Query(None, description="Konu filtresi"),
+    exam_type: Optional[str] = Query(None, description="Sınav türü filtresi"),
+    service: QuestionCRUDService = Depends(get_question_service),
+):
+    """
+    Kaynak kitap listesi (soru sayılarıyla birlikte)
+    """
+    try:
+        books = await service.list_source_books(
+            subject_area=subject_area,
+            exam_type=exam_type,
+        )
+
+        return JSONResponse(
+            status_code=status.HTTP_200_OK,
+            content={
+                "success": True,
+                "data": {
+                    "books": books,
+                    "total_books": len(books),
+                },
+                "message": f"{len(books)} kaynak kitap bulundu",
+            },
+        )
+
+    except Exception as e:
+        logger.error(f"Kitap listeleme hatası: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Kitap listeleme hatası: {str(e)}",
+        )

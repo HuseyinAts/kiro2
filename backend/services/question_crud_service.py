@@ -731,6 +731,11 @@ class QuestionCRUDService:
                         == filters["osym_compliant"]
                     )
 
+                if "source_book" in filters:
+                    stmt = stmt.where(
+                        QuestionBankItem.source_book == filters["source_book"]
+                    )
+
             # Sayfalama
             count_stmt = stmt
             stmt = stmt.limit(limit).offset(offset)
@@ -1091,3 +1096,73 @@ class QuestionCRUDService:
         except Exception as e:
             logger.error(f"İstatistik hatası: {str(e)}")
             return {}
+
+    # ================================================================
+    # Random Sampling & Source Book Queries
+    # ================================================================
+
+    async def get_random_questions(
+        self,
+        count: int = 10,
+        subject_area: Optional[str] = None,
+        exam_type: Optional[str] = None,
+    ) -> List[QuestionBankItem]:
+        """Rastgele soru seçimi (adaptif öğrenme için)."""
+        from sqlalchemy import func
+
+        stmt = select(QuestionBankItem).where(QuestionBankItem.is_active == True)
+
+        if subject_area:
+            stmt = stmt.where(QuestionBankItem.subject_area == subject_area)
+        if exam_type:
+            stmt = stmt.where(QuestionBankItem.exam_type == exam_type)
+
+        stmt = stmt.order_by(func.random()).limit(count)
+
+        result = await self.db.execute(stmt)
+        return list(result.scalars().all())
+
+    async def list_source_books(
+        self,
+        subject_area: Optional[str] = None,
+        exam_type: Optional[str] = None,
+    ) -> List[Dict[str, Any]]:
+        """Kaynak kitap listesi (soru sayılarıyla birlikte)."""
+        from sqlalchemy import func
+
+        stmt = (
+            select(
+                QuestionBankItem.source_book,
+                QuestionBankItem.subject_area,
+                QuestionBankItem.exam_type,
+                func.count(QuestionBankItem.id).label("question_count"),
+            )
+            .where(
+                QuestionBankItem.is_active == True,
+                QuestionBankItem.source_book.isnot(None),
+            )
+            .group_by(
+                QuestionBankItem.source_book,
+                QuestionBankItem.subject_area,
+                QuestionBankItem.exam_type,
+            )
+            .order_by(func.count(QuestionBankItem.id).desc())
+        )
+
+        if subject_area:
+            stmt = stmt.where(QuestionBankItem.subject_area == subject_area)
+        if exam_type:
+            stmt = stmt.where(QuestionBankItem.exam_type == exam_type)
+
+        result = await self.db.execute(stmt)
+        rows = result.fetchall()
+
+        return [
+            {
+                "book_name": row[0],
+                "subject_area": row[1],
+                "exam_type": row[2],
+                "question_count": row[3],
+            }
+            for row in rows
+        ]
