@@ -11,7 +11,8 @@ Merges up to 7 AI answer sources per question using Bayesian posterior:
 6. qwen_vision - Qwen3 vision solve (grouped screenshots)
 7. qwen_crop  - Qwen3.5 crop-based solve (DashScope API)
 
-Plus original sources from production JSONL (jsonl_v11, ai_solved, db_v7, rematch).
+Plus original sources from production JSONL (jsonl_v11, ai_solved).
+NOTE (v3.3): db_v7 and rematch sources have been removed from production (0 questions).
 
 BAYESIAN APPROACH (Session 39-40 Research):
   P(correct=k | all observations) = P(k) * prod P(src_i | correct=k)
@@ -32,8 +33,8 @@ Using calibrated source accuracies:
   Gemini low (<0.5)        | 25%      | Near random
   ai_solved (curated)      | 85%      | Chi-sq 7.1, validated
   jsonl_v11 (original)     | 73%      | 60.7% AI agreement
-  db_v7 (DB match)         | 39%      | 35.8% high-conf AI match
-  rematch (qnum corrected) | 25%      | 19.1% AI match (HARMFUL)
+  db_v7 (DB match)         | 25%      | DEPRECATED: answers table removed in v8, 0 questions in v3.3
+  rematch (qnum corrected) | 25%      | DEPRECATED: 0 questions in v3.3
   tier1_5 (low quality)    | 17.2%   | Below random (20%)
 
 KEY RESULTS:
@@ -111,8 +112,8 @@ ACCURACY = {
     # Legacy sources
     "ai_solved":   0.85,  # Previously AI-verified answers (curated)
     "jsonl_v11":   0.73,  # Original OCR-matched answers
-    "db_v7":       0.25,  # DB rematch — downgraded: answers table ~39% accuracy, now mostly replaced
-    "rematch":     0.25,  # Corrected qnum rematch (near random)
+    "db_v7":       0.25,  # DEPRECATED: answers table removed in v8, 0 questions in v3.3
+    "rematch":     0.25,  # DEPRECATED: 0 questions in v3.3
     "other":       0.40,  # Unknown source
     # Contaminated tiers (measured via pilot — BELOW random baseline)
     "tier1_5":     0.172, # page_inline_unique: 17.2% pilot accuracy (< 20% random)
