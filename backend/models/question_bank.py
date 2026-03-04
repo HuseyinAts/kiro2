@@ -400,6 +400,13 @@ class QuestionBankItem(Base):
     )  # pending, approved, rejected
 
     # ========================================================================
+    # Pipeline Source Tracking (d-dataset import)
+    # ========================================================================
+    source_book: Mapped[Optional[str]] = mapped_column(String(300))
+    source_page: Mapped[Optional[int]] = mapped_column(Integer)
+    pipeline_metadata: Mapped[Optional[dict]] = mapped_column(JSON)
+
+    # ========================================================================
     # Sistem Alanları
     # ========================================================================
     created_by: Mapped[Optional[str]] = mapped_column(
