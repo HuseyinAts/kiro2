@@ -14,22 +14,24 @@ KIRO2 is a Turkish EdTech platform for YKS/TYT/AYT university entrance exam prep
 - ✅ **PostgreSQL 15** (port 5434) - Production ready
   - **PgBouncer:** Not yet configured (planned for 100K+ concurrent users)
 - ✅ **Redis 7** (port 6379) - Session & cache layer
-- ✅ **76,554 YKS questions in production** (v3.3, Target: 45K by March 2026 - EXCEEDED)
-  - 📊 **Pipeline:** 75,745 OCR → 86,249 matched (v2.4) → 76,554 clean (v3.3)
-  - v3.3: db_v7=0, rematch=0, LOW confidence=0, 100% validation PASS
+- ✅ **77,336 YKS questions in production** (v3.5+, Target: 45K by March 2026 - EXCEEDED 172%)
+  - 📊 **Pipeline:** 75,745 OCR → 86,249 matched (v2.4) → 77,336 clean (v3.5+)
+  - v3.5+: db_v7=0, rematch=0, LOW confidence=0, 100% validation PASS
   - Answer DB: **answers_v8.db** (answers table removed — 39% accuracy was unusable)
   - 9,695 unreliable questions removed from v2.4 (db_v7, rematch, empty source, LOW conf)
-- ✅ **401 source books** in production, **118 remaining** (unprocessed)
-- ✅ **eslesmis_sorucevap.jsonl** format in production (v3.3)
+- ✅ **405 source books** in production, ~~118 remaining~~ **DONE** (98 processed, 19 unviable)
+  - 19 unviable: 3 corrupt screenshots, 8 no questions detected, 4 too few (<7), 3 non-question content, 1 false detection
+- ✅ **eslesmis_sorucevap.jsonl** format in production (v3.5+)
 - ✅ **Quality pipeline**: validate_sample.py v2 (13 checks) + cross_validate_answers.py (Bayesian)
 
 ### 🎯 Next Priorities
 1. ~~Low-confidence question refinement pipeline~~ ✅ **DONE** (+19,248 questions improved)
 2. ~~Manual validation + v2.2 cleanup~~ ✅ **DONE** (4,912 silindi, 653 kurtarıldı, 31,801 production)
-3. **P0: OCR pipeline fix** — hallucination prevention + letter-only fix (118 yeni kitap için)
-4. **P0: 118 yeni kitap işleme** — 10,599-11,312 yeni soru hedefi
+3. ~~OCR pipeline fix~~ ✅ **DONE** (hallucination prevention + letter-only fix applied)
+4. ~~118 yeni kitap işleme~~ ✅ **DONE** (98/117 processed, 19 unviable — corrupt/empty/non-question)
 5. **P1: Re-OCR recovery** — 1,521-2,511 soru kurtarma (silinen 3,546'dan)
-6. **Performance optimization**: API <2s, vector search <100ms
+6. **P0: Performance optimization**: API <2s, vector search <100ms ✅ (21ms avg)
+7. **P0: Git push** — HTTPS HTTP 500 (5.5GB), SSH gerekli
 
 ### Orchestrator Architecture ✅
 - ✅ **orchestrator/** v2.5.0 (LangGraph 1.0.5) - **ACTIVE**
@@ -50,10 +52,11 @@ KIRO2 is a Turkish EdTech platform for YKS/TYT/AYT university entrance exam prep
   - v2.2: 31,801 questions (4,912 deep quality filtered, 653 rescued)
   - v2.3: 33,342 questions (AI solved merged)
   - v2.4: 86,249 questions (v3 crop OCR pipeline merge)
-  - **v3.3: 76,554 questions (CURRENT PRODUCTION)**
-    - v2.4→v3.3: DB redesign (v8), db_v7/rematch/LOW conf cleanup
-    - 9,695 unreliable removed, 0 db_v7, 0 rematch, 0 LOW conf
-    - validate_sample.py: 100.0% PASS (0 critical)
+  - v3.3: 76,554 questions (db_v7/rematch/LOW conf cleanup)
+  - **v3.5+: 77,336 questions (CURRENT PRODUCTION)**
+    - v3.5: +809 new book crop solve, v3.5+: +919 tier5 crop solve
+    - 405 books, 0 db_v7, 0 rematch, 0 LOW conf
+    - validate_sample.py: 100.0% PASS
   - **Pipeline**: `cross_validate_answers.py` (Bayesian) + `validate_sample.py` v2 (13 checks)
 
 **Release Workflow (v2.2 Pipeline → Production):**
@@ -81,7 +84,8 @@ cp d-dataset/processed/eslesmis_sorucevap_v2.2.jsonl d-dataset/eslesmis_soruceva
 - v2.3: 33,342 questions (AI solved merged)
 - v2.4: 86,249 questions (v3 crop OCR pipeline merge)
 - v3.0-v3.1: 80,208 questions (DB v8 redesign, empty source cleanup)
-- v3.3: 76,554 questions (db_v7/rematch/LOW conf cleanup) ← CURRENT
+- v3.3: 76,554 questions (db_v7/rematch/LOW conf cleanup)
+- v3.5+: 77,336 questions (+809 new book + 919 tier5 crop solve) ← CURRENT
 
 ### Quality Pipeline (d-dataset/scripts/)
 ```bash
@@ -441,10 +445,10 @@ E) {secenek_e}
 | Metric | Target | Current | Status |
 |--------|--------|---------|--------|
 | API Response Time | <2s | ~2-3s | 🟡 Middleware ready, needs benchmarking |
-| Vector Search | <100ms | ~300ms | 🟡 HNSW migration ready (004) |
+| Vector Search | <100ms | **21ms** | 🟢 pgvector HNSW deployed |
 | DB Queries | <50ms | ~150ms | 🟡 GIN+composite indexes ready (004) |
 | Frontend Load | <2s | ~3s | 🟡 Needs optimization |
-| **Total Clean Questions** | **45K by March** | **76,554** | 🟢 v3.3 (170%), TARGET EXCEEDED |
+| **Total Clean Questions** | **45K by March** | **77,336** | 🟢 v3.5+ (172%), TARGET EXCEEDED |
 | **Quality Rate (v2.2)** | **>95%** | **100%** | 🟢 0 critical in output |
 
 ## 🚀 Common Tasks
@@ -606,13 +610,15 @@ Configure in: Repository Settings → Secrets and variables → Actions
 - [x] GitHub Secrets documentation
 
 ### March
-- [ ] Target: **45,000+ total clean questions** (currently 31,801)
-  - [ ] P0: OCR pipeline fix (hallucination + letter-only)
-  - [ ] P0: Process 118 remaining books (+10,599-11,312)
-  - [ ] P1: Re-OCR recovery (+1,521-2,511)
+- [x] ~~Target: **45,000+ total clean questions**~~ Done: **77,336** (172% of target)
+  - [x] ~~OCR pipeline fix (hallucination + letter-only)~~ Done
+  - [x] ~~Process 118 remaining books~~ Done: 98/117 processed, 19 unviable
+  - [ ] P1: Re-OCR recovery (+1,521-2,511 potential)
 - [x] ~~Achieve **90%+ high-confidence match rate**~~ Done: 99.5%
 - [x] ~~Manual QA + v2.2 quality pipeline~~ Done: 31,801 clean (100% pass)
-- [ ] Performance optimization: deploy indexes, benchmark <2s API
+- [x] ~~Vector search <100ms~~ Done: **21ms avg** (pgvector HNSW)
+- [ ] Performance optimization: API <2s benchmark
+- [ ] Git push fix (SSH setup for 5.5GB repo)
 - [ ] Launch MVP for beta testing
 
 ## 📚 Lessons Learned (Agent Knowledge Base)

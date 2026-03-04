@@ -52,6 +52,14 @@ async def app_lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     await db_manager.initialize()
     logger.info("✅ Database initialized")
 
+    # Connect JWT blacklist to Redis (graceful degradation if unavailable)
+    try:
+        from core.jwt_auth import get_jwt_manager
+        jwt_mgr = get_jwt_manager()
+        await jwt_mgr.connect_redis()
+    except Exception as e:
+        logger.warning(f"JWT Redis blacklist init failed (using in-memory fallback): {e}")
+
     # Initialize AI agents
     try:
         initialize_agents()

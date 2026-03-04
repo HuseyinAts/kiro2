@@ -2,16 +2,26 @@
 Kimlik doğrulama API endpoint'leri (Task 48.4: Enhanced with Refresh Token)
 SECURITY FIX: Authorization checks added to prevent IDOR attacks
 """
+import logging
+import secrets
+import time
+from collections import defaultdict
+from datetime import UTC, datetime, timedelta
+from typing import Any
+
+import jwt as pyjwt
 from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
 from passlib.context import CryptContext
-from datetime import datetime, timedelta, timezone
-from typing import Any, Dict, Optional
 from pydantic import BaseModel
-import secrets
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
 
+from core.authorization import require_student_owner_or_privileged
+from core.config import settings as app_settings
+from core.dependencies import JWT_ALGORITHM, JWT_SECRET, get_db
+from core.jwt_auth import UserRole as JWTUserRole
+from core.jwt_auth import get_jwt_manager
 from models import (
     Kullanici,
     KullaniciGiris,
@@ -24,13 +34,16 @@ from models import (
 )
 from models.database import User as DBUser
 from services.user_service import kullanici_servisi
-from core.authorization import require_student_owner_or_privileged
-from core.dependencies import get_db
-from core.jwt_auth import get_jwt_manager
+
+# Cookie path constants (must match between set and delete)
+ACCESS_TOKEN_COOKIE_PATH = "/api"  # noqa: S105
+REFRESH_TOKEN_COOKIE_PATH = "/api/v1/auth"  # noqa: S105
+
+# Computed once at module import
+_IS_DEV = app_settings.environment == "development"
+logger = logging.getLogger(__name__)
 
 # P1-1: Simple in-memory rate limiter for login endpoints (5 attempts/minute per IP)
-import time
-from collections import defaultdict
 
 _login_attempts: dict[str, list[float]] = defaultdict(list)
 LOGIN_RATE_LIMIT = 10  # max attempts per IP per window
@@ -48,7 +61,10 @@ def _check_login_rate_limit(request: Request) -> None:
     if len(_login_attempts[client_ip]) >= LOGIN_RATE_LIMIT:
         raise HTTPException(
             status_code=429,
-            detail=f"Cok fazla giris denemesi. {LOGIN_RATE_WINDOW} saniye sonra tekrar deneyin.",
+            detail=(
+                "Cok fazla giris denemesi. "
+                f"{LOGIN_RATE_WINDOW} saniye sonra tekrar deneyin."
+            ),
         )
     _login_attempts[client_ip].append(now)
 
@@ -61,26 +77,88 @@ security = HTTPBearer()
 
 class RefreshTokenRequest(BaseModel):
     """Refresh token request model - accepts refreshToken in body"""
-    refreshToken: Optional[str] = None
+    refreshToken: str | None = None  # noqa: N815 (frontend contract)
 
 
 async def mevcut_kullanici_getir(
-    credentials: HTTPAuthorizationCredentials = Depends(security),
+    request: Request,
+    credentials: HTTPAuthorizationCredentials = Depends(HTTPBearer(auto_error=False)),
 ) -> Kullanici:
-    """Mevcut kullanıcıyı token'dan getir"""
-    token = credentials.credentials
-    kullanici = await kullanici_servisi.token_dogrula(token)
+    """Mevcut kullanıcıyı token'dan getir (Bearer header veya httpOnly cookie).
 
+    Supports both JWT tokens (from database_authenticate) and legacy in-memory tokens.
+    """
+    # Try Bearer header first, then httpOnly cookie (P0-1c)
+    token = None
+    if credentials and credentials.credentials:
+        token = credentials.credentials
+    elif request:
+        token = request.cookies.get("access_token")
+
+    if not token:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Geçersiz veya süresi dolmuş token",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+
+    # Check blacklist (Redis-backed)
+    jwt_mgr = get_jwt_manager()
+    if await jwt_mgr.is_blacklisted_async(token):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Token iptal edilmiş",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+
+    # Try JWT decode first (primary auth path after P0-1 fix)
+
+    try:
+        payload = pyjwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
+
+        # Map JWT role to KullaniciRolu
+        jwt_role = payload.get("role", "student")
+        role_map = {
+            "student": KullaniciRolu.OGRENCI,
+            "teacher": KullaniciRolu.OGRETMEN,
+            "admin": KullaniciRolu.ADMIN,
+            "parent": KullaniciRolu.VELI,
+            "super_admin": KullaniciRolu.SUPER_ADMIN,
+        }
+        rol = role_map.get(jwt_role, KullaniciRolu.OGRENCI)
+
+        return Kullanici(
+            id=payload.get("sub", ""),
+            email=payload.get("email", ""),
+            ad_soyad=payload.get("username", payload.get("email", "").split("@")[0]),
+            telefon=None,
+            aktif=True,
+            rol=rol,
+        )
+    except pyjwt.ExpiredSignatureError:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Token süresi dolmuş",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    except pyjwt.InvalidTokenError:
+        pass  # Not a valid JWT — fall through to legacy token check
+
+    # Fallback: try legacy in-memory token validation
+    kullanici = await kullanici_servisi.token_dogrula(token)
     if not kullanici:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Geçersiz veya süresi dolmuş token",
+            headers={"WWW-Authenticate": "Bearer"},
         )
 
     return kullanici
 
 
-async def database_authenticate(giris_data: KullaniciGiris, db: AsyncSession) -> Dict[str, Any]:
+async def database_authenticate(
+    giris_data: KullaniciGiris, db: AsyncSession,
+) -> dict[str, Any]:
     """
     Database-backed authentication function
     Queries the database User table instead of in-memory storage
@@ -104,7 +182,6 @@ async def database_authenticate(giris_data: KullaniciGiris, db: AsyncSession) ->
         raise ValueError("Geçersiz e-posta veya şifre")
 
     # Create JWT tokens (P0-1 fix: replaces random tokens)
-    from core.jwt_auth import get_jwt_manager, UserRole as JWTUserRole
     jwt_mgr = get_jwt_manager()
     jwt_role = JWTUserRole(db_user.role.value.lower())
     token = jwt_mgr.create_access_token(
@@ -121,7 +198,7 @@ async def database_authenticate(giris_data: KullaniciGiris, db: AsyncSession) ->
     expires_in = jwt_mgr.access_token_expire_minutes * 60
 
     # Update last login
-    db_user.last_login = datetime.now(timezone.utc)
+    db_user.last_login = datetime.now(UTC)
     await db.flush()  # Flush changes to db
     await db.commit()  # Commit transaction
 
@@ -149,7 +226,7 @@ async def database_authenticate(giris_data: KullaniciGiris, db: AsyncSession) ->
     # Store token in in-memory service for backward compatibility with token validation
     kullanici_servisi.aktif_tokenlar[token] = {
         "kullanici_id": db_user.id,
-        "expires_at": datetime.now() + timedelta(seconds=expires_in),
+        "expires_at": datetime.now(UTC) + timedelta(seconds=expires_in),
     }
     kullanici_servisi.kullanicilar[db_user.id] = kullanici
 
@@ -165,8 +242,14 @@ async def database_authenticate(giris_data: KullaniciGiris, db: AsyncSession) ->
             "soyad": db_user.last_name,
             "rol": frontend_role,
             "aktif": db_user.is_active,
-            "olusturma_tarihi": db_user.created_at.isoformat() if db_user.created_at else None,
-            "son_giris": db_user.last_login.isoformat() if db_user.last_login else None,
+            "olusturma_tarihi": (
+                db_user.created_at.isoformat()
+                if db_user.created_at else None
+            ),
+            "son_giris": (
+                db_user.last_login.isoformat()
+                if db_user.last_login else None
+            ),
             "telefon": db_user.phone or "",
             "profil_resmi": None,  # TODO: Add profile image support
         },
@@ -196,7 +279,10 @@ async def database_authenticate(giris_data: KullaniciGiris, db: AsyncSession) ->
             },
         },
         400: {
-            "description": "Geçersiz istek - E-posta zaten kayıtlı veya doğrulama hatası",
+            "description": (
+                "Geçersiz istek - E-posta zaten kayıtlı"
+                " veya doğrulama hatası"
+            ),
             "content": {
                 "application/json": {
                     "examples": {
@@ -232,7 +318,7 @@ async def database_authenticate(giris_data: KullaniciGiris, db: AsyncSession) ->
         },
     },
 )
-async def kullanici_kayit(kullanici_data: KullaniciOlustur) -> Dict[str, Any]:
+async def kullanici_kayit(kullanici_data: KullaniciOlustur) -> dict[str, Any]:
     """
     Yeni kullanıcı kaydı oluştur
 
@@ -285,7 +371,7 @@ async def kullanici_kayit(kullanici_data: KullaniciOlustur) -> Dict[str, Any]:
     - **422**: Geçersiz e-posta formatı veya eksik zorunlu alanlar
     """
     try:
-        kullanici = await kullanici_servisi.kullanici_olustur(kullanici_data)
+        await kullanici_servisi.kullanici_olustur(kullanici_data)
         # Return frontend-compatible format {success, message}
         return {
             "success": True,
@@ -303,8 +389,8 @@ async def kullanici_kayit(kullanici_data: KullaniciOlustur) -> Dict[str, Any]:
     status_code=status.HTTP_201_CREATED,
     include_in_schema=False,  # Hide from OpenAPI docs to avoid duplication
 )
-async def kullanici_kayit_en(kullanici_data: KullaniciOlustur) -> Dict[str, Any]:
-    """English alias for /kayit endpoint - User registration - returns {success, message}"""
+async def kullanici_kayit_en(kullanici_data: KullaniciOlustur) -> dict[str, Any]:
+    """English alias for /kayit - registration."""
     return await kullanici_kayit(kullanici_data)
 
 
@@ -370,7 +456,11 @@ async def kullanici_kayit_en(kullanici_data: KullaniciOlustur) -> Dict[str, Any]
         },
     },
 )
-async def kullanici_giris(request: Request, giris_data: KullaniciGiris, db: AsyncSession = Depends(get_db)) -> Dict[str, Any]:
+async def kullanici_giris(
+    request: Request,
+    giris_data: KullaniciGiris,
+    db: AsyncSession = Depends(get_db),
+) -> dict[str, Any]:
     """
     Kullanıcı girişi yap ve JWT access token al
 
@@ -432,8 +522,7 @@ async def kullanici_giris(request: Request, giris_data: KullaniciGiris, db: Asyn
 
     try:
         # Use database-backed authentication instead of in-memory service
-        token_yaniti = await database_authenticate(giris_data, db)
-        return token_yaniti
+        return await database_authenticate(giris_data, db)
     except ValueError as e:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=str(e))
 
@@ -443,10 +532,14 @@ async def kullanici_giris(request: Request, giris_data: KullaniciGiris, db: Asyn
     "/login",
     response_model=TokenYaniti,
     summary="User Login (English alias)",
-    description="User authentication and JWT token retrieval - English endpoint alias for /giris",
-    include_in_schema=False,  # Hide from OpenAPI docs to avoid duplication
+    description="User authentication and JWT token retrieval",
+    include_in_schema=False,
 )
-async def kullanici_giris_en(request: Request, giris_data: KullaniciGiris, db: AsyncSession = Depends(get_db)) -> Dict[str, Any]:
+async def kullanici_giris_en(
+    request: Request,
+    giris_data: KullaniciGiris,
+    db: AsyncSession = Depends(get_db),
+) -> dict[str, Any]:
     """English alias for /giris endpoint - User login"""
     return await kullanici_giris(request, giris_data, db)
 
@@ -462,7 +555,7 @@ async def secure_login(
     giris_data: KullaniciGiris,
     response: Response,
     db: AsyncSession = Depends(get_db)
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """
     SECURITY FIX #5: Secure login endpoint with httpOnly cookies
 
@@ -482,16 +575,14 @@ async def secure_login(
         token_yaniti = await database_authenticate(giris_data, db)
 
         # Set access token as httpOnly cookie
-        import os
-        _is_dev = os.getenv("ENVIRONMENT", "development") == "development"
         response.set_cookie(
             key="access_token",
             value=token_yaniti["token"],
             httponly=True,
-            secure=not _is_dev,  # HTTP in dev, HTTPS in prod
+            secure=not _IS_DEV,  # HTTP in dev, HTTPS in prod
             samesite="lax",
             max_age=86400,  # 24 hours
-            path="/api"
+            path=ACCESS_TOKEN_COOKIE_PATH,
         )
 
         # Set refresh token as httpOnly cookie
@@ -499,10 +590,10 @@ async def secure_login(
             key="refresh_token",
             value=token_yaniti["refreshToken"],
             httponly=True,
-            secure=not _is_dev,
+            secure=not _IS_DEV,
             samesite="lax",
             max_age=604800,  # 7 days
-            path="/api/v1/auth"
+            path=REFRESH_TOKEN_COOKIE_PATH,
         )
 
         # Return user info without tokens in body
@@ -520,34 +611,27 @@ async def secure_login(
     summary="Secure Logout (Clear Cookies + Blacklist)",
     description="Blacklist JWT tokens and clear httpOnly cookies on logout",
 )
-async def secure_logout(request: Request, response: Response) -> Dict[str, Any]:
+async def secure_logout(request: Request, response: Response) -> dict[str, Any]:
     """
     P0-1e: Logout with JWT blacklisting.
 
     Blacklists access and refresh tokens so they can't be reused,
     then clears httpOnly cookies.
     """
-    from core.jwt_auth import get_jwt_manager
     jwt_mgr = get_jwt_manager()
 
-    # Blacklist access token if present
+    # Blacklist access token if present (Redis-backed with in-memory fallback)
     access_token = request.cookies.get("access_token")
     if access_token:
-        try:
-            jwt_mgr.blacklist_token(access_token)
-        except Exception:
-            pass  # Token may already be invalid/expired
+        await jwt_mgr.blacklist_token_async(access_token)
 
     # Blacklist refresh token if present
     refresh_token = request.cookies.get("refresh_token")
     if refresh_token:
-        try:
-            jwt_mgr.blacklist_token(refresh_token)
-        except Exception:
-            pass
+        await jwt_mgr.blacklist_token_async(refresh_token)
 
-    response.delete_cookie(key="access_token", path="/api")
-    response.delete_cookie(key="refresh_token", path="/api/v1/auth")
+    response.delete_cookie(key="access_token", path=ACCESS_TOKEN_COOKIE_PATH)
+    response.delete_cookie(key="refresh_token", path=REFRESH_TOKEN_COOKIE_PATH)
     return {"success": True, "message": "Çıkış başarılı"}
 
 
@@ -559,7 +643,7 @@ async def secure_logout(request: Request, response: Response) -> Dict[str, Any]:
 async def secure_refresh(
     request: Request,
     response: Response,
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """
     P0-1d: JWT-based token refresh.
 
@@ -575,26 +659,23 @@ async def secure_refresh(
         )
 
     try:
-        from core.jwt_auth import get_jwt_manager
         jwt_mgr = get_jwt_manager()
-        new_tokens = jwt_mgr.refresh_access_token(refresh_token)
+        new_tokens = await jwt_mgr.refresh_access_token(refresh_token)
     except HTTPException:
         # Clear stale cookies on invalid/expired refresh token
-        response.delete_cookie(key="access_token", path="/api")
-        response.delete_cookie(key="refresh_token", path="/api/v1/auth")
+        response.delete_cookie(key="access_token", path=ACCESS_TOKEN_COOKIE_PATH)
+        response.delete_cookie(key="refresh_token", path=REFRESH_TOKEN_COOKIE_PATH)
         raise
 
     # Set new access token as httpOnly cookie
-    import os
-    _is_dev = os.getenv("ENVIRONMENT", "development") == "development"
     response.set_cookie(
         key="access_token",
         value=new_tokens.access_token,
         httponly=True,
-        secure=not _is_dev,
+        secure=not _IS_DEV,
         samesite="lax",
         max_age=new_tokens.expires_in,
-        path="/api"
+        path=ACCESS_TOKEN_COOKIE_PATH,
     )
 
     # Set new refresh token as httpOnly cookie
@@ -602,10 +683,10 @@ async def secure_refresh(
         key="refresh_token",
         value=new_tokens.refresh_token,
         httponly=True,
-        secure=not _is_dev,
+        secure=not _IS_DEV,
         samesite="lax",
         max_age=new_tokens.refresh_expires_in,
-        path="/api/v1/auth"
+        path=REFRESH_TOKEN_COOKIE_PATH,
     )
 
     return {"success": True, "message": "Token yenilendi"}
@@ -635,7 +716,10 @@ async def secure_refresh(
             },
         },
         401: {
-            "description": "Kimlik doğrulama hatası - Geçersiz veya süresi dolmuş token",
+            "description": (
+                "Kimlik doğrulama hatası"
+                " - Geçersiz veya süresi dolmuş token"
+            ),
             "content": {
                 "application/json": {
                     "example": {"detail": "Geçersiz veya süresi dolmuş token"}
@@ -699,7 +783,7 @@ async def kullanici_profil(
 @router.get("/me", summary="Get Current User (English alias)", include_in_schema=False)
 async def get_current_user(
     mevcut_kullanici: Kullanici = Depends(mevcut_kullanici_getir),
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """
     Get current user profile - English alias for /profil
     Returns user data wrapped in {user: ...} format for frontend compatibility
@@ -727,8 +811,14 @@ async def get_current_user(
             "soyad": soyad,
             "rol": frontend_role,
             "aktif": mevcut_kullanici.aktif,
-            "olusturma_tarihi": mevcut_kullanici.olusturma_tarihi.isoformat() if mevcut_kullanici.olusturma_tarihi else None,
-            "son_giris": mevcut_kullanici.son_giris.isoformat() if mevcut_kullanici.son_giris else None,
+            "olusturma_tarihi": (
+                mevcut_kullanici.olusturma_tarihi.isoformat()
+                if mevcut_kullanici.olusturma_tarihi else None
+            ),
+            "son_giris": (
+                mevcut_kullanici.son_giris.isoformat()
+                if mevcut_kullanici.son_giris else None
+            ),
             "telefon": mevcut_kullanici.telefon or "",
             "profil_resmi": None,  # TODO: Add profile image support
         }
@@ -768,7 +858,7 @@ async def get_current_user(
 )
 async def kullanici_cikis(
     credentials: HTTPAuthorizationCredentials = Depends(security),
-) -> Dict[str, str]:
+) -> dict[str, str]:
     """
     Kullanici cikisi yap ve token'i gecersiz kil
 
@@ -785,20 +875,21 @@ async def kullanici_cikis(
     - Ayni token ile yeni istek yapilamaz
     """
     token = credentials.credentials
-    basarili = await kullanici_servisi.kullanici_cikis(token)
 
-    if basarili:
-        return {"message": "Başarıyla çıkış yapıldı"}
-    else:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST, detail="Geçersiz token"
-        )
+    # Blacklist token in Redis (P0-1e: Redis-backed with in-memory fallback)
+    jwt_mgr = get_jwt_manager()
+    await jwt_mgr.blacklist_token_async(token)
+
+    # Also call legacy service for backward compatibility
+    await kullanici_servisi.kullanici_cikis(token)
+
+    return {"message": "Başarıyla çıkış yapıldı"}
 
 
 @router.post("/logout", summary="User Logout (English alias)", include_in_schema=False)
 async def user_logout(
     credentials: HTTPAuthorizationCredentials = Depends(security),
-) -> Dict[str, str]:
+) -> dict[str, str]:
     """
     User logout - English alias for /cikis
     Invalidates the authentication token
@@ -809,7 +900,7 @@ async def user_logout(
 @router.post("/validate", summary="Validate Token", include_in_schema=False)
 async def validate_token(
     credentials: HTTPAuthorizationCredentials = Depends(security),
-) -> Dict[str, bool]:
+) -> dict[str, bool]:
     """
     Validate authentication token
     Frontend endpoint - checks if the provided token is valid
@@ -826,8 +917,7 @@ async def validate_token(
 
         if kullanici and kullanici.aktif:
             return {"valid": True}
-        else:
-            return {"valid": False}
+        return {"valid": False}
     except Exception:
         # Any error means token is invalid
         return {"valid": False}
@@ -835,8 +925,8 @@ async def validate_token(
 
 class ChangePasswordRequest(BaseModel):
     """Change password request model"""
-    currentPassword: str
-    newPassword: str
+    currentPassword: str  # noqa: N815 (frontend contract)
+    newPassword: str  # noqa: N815 (frontend contract)
 
 
 @router.post("/change-password", summary="Change Password", include_in_schema=False)
@@ -844,7 +934,7 @@ async def change_password(
     request_data: ChangePasswordRequest,
     mevcut_kullanici: Kullanici = Depends(mevcut_kullanici_getir),
     db: AsyncSession = Depends(get_db),
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """
     Change user password
     Frontend endpoint - requires current password and new password
@@ -875,13 +965,13 @@ async def change_password(
 
         # Hash and update new password
         db_user.password_hash = pwd_context.hash(request_data.newPassword)
-        db_user.updated_at = datetime.now(timezone.utc)
+        db_user.updated_at = datetime.now(UTC)
         await db.commit()
 
         return {"success": True, "message": "Şifre başarıyla değiştirildi"}
     except Exception as e:
         await db.rollback()
-        return {"success": False, "message": f"Şifre değiştirme başarısız: {str(e)}"}
+        return {"success": False, "message": f"Şifre değiştirme başarısız: {e!s}"}
 
 
 class ForgotPasswordRequest(BaseModel):
@@ -891,14 +981,14 @@ class ForgotPasswordRequest(BaseModel):
 
 # In-memory store for password reset tokens (15 minute TTL)
 # Production should use Redis or database table
-_password_reset_tokens: Dict[str, Dict[str, Any]] = {}
+_password_reset_tokens: dict[str, dict[str, Any]] = {}
 
 
 @router.post("/forgot-password", summary="Forgot Password", include_in_schema=False)
 async def forgot_password(
     request_data: ForgotPasswordRequest,
     db: AsyncSession = Depends(get_db),
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """
     Request password reset
     Frontend endpoint - sends password reset email
@@ -925,7 +1015,7 @@ async def forgot_password(
 
         # Generate secure reset token (valid for 15 minutes)
         reset_token = secrets.token_urlsafe(32)
-        expires_at = datetime.now(timezone.utc) + timedelta(minutes=15)
+        expires_at = datetime.now(UTC) + timedelta(minutes=15)
 
         # Store token (in production, use Redis with TTL or database)
         _password_reset_tokens[reset_token] = {
@@ -935,7 +1025,7 @@ async def forgot_password(
         }
 
         # Clean up expired tokens
-        current_time = datetime.now(timezone.utc)
+        current_time = datetime.now(UTC)
         expired = [k for k, v in _password_reset_tokens.items()
                    if v["expires_at"] < current_time]
         for k in expired:
@@ -947,20 +1037,20 @@ async def forgot_password(
 
         return {"success": True, "message": success_message}
     except Exception as e:
-        return {"success": False, "message": f"Şifre sıfırlama başarısız: {str(e)}"}
+        return {"success": False, "message": f"Şifre sıfırlama başarısız: {e!s}"}
 
 
 class ResetPasswordRequest(BaseModel):
     """Reset password request model"""
     token: str
-    newPassword: str
+    newPassword: str  # noqa: N815 (frontend contract)
 
 
 @router.post("/reset-password", summary="Reset Password", include_in_schema=False)
 async def reset_password(
     request_data: ResetPasswordRequest,
     db: AsyncSession = Depends(get_db),
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """
     Reset password with token
     Frontend endpoint - resets password using reset token
@@ -978,7 +1068,7 @@ async def reset_password(
             return {"success": False, "message": "Geçersiz veya süresi dolmuş token"}
 
         # Check token expiration
-        if token_data["expires_at"] < datetime.now(timezone.utc):
+        if token_data["expires_at"] < datetime.now(UTC):
             del _password_reset_tokens[request_data.token]
             return {"success": False, "message": "Token süresi dolmuş"}
 
@@ -997,7 +1087,7 @@ async def reset_password(
 
         # Hash and update password
         db_user.password_hash = pwd_context.hash(request_data.newPassword)
-        db_user.updated_at = datetime.now(timezone.utc)
+        db_user.updated_at = datetime.now(UTC)
         await db.commit()
 
         # Invalidate used token
@@ -1006,15 +1096,15 @@ async def reset_password(
         return {"success": True, "message": "Şifre başarıyla sıfırlandı"}
     except Exception as e:
         await db.rollback()
-        return {"success": False, "message": f"Şifre sıfırlama başarısız: {str(e)}"}
+        return {"success": False, "message": f"Şifre sıfırlama başarısız: {e!s}"}
 
 
 @router.put("/profile", summary="Update Profile", include_in_schema=False)
 async def update_profile(
-    user_data: Dict[str, Any],
+    user_data: dict[str, Any],
     mevcut_kullanici: Kullanici = Depends(mevcut_kullanici_getir),
     db: AsyncSession = Depends(get_db),
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """
     Update user profile
     Frontend endpoint - updates user information
@@ -1053,7 +1143,7 @@ async def update_profile(
                     updated = True
 
         if updated:
-            db_user.updated_at = datetime.now(timezone.utc)
+            db_user.updated_at = datetime.now(UTC)
             await db.commit()
             await db.refresh(db_user)
 
@@ -1077,8 +1167,14 @@ async def update_profile(
                 "soyad": soyad,
                 "rol": rol,
                 "aktif": db_user.is_active,
-                "olusturma_tarihi": db_user.created_at.isoformat() if db_user.created_at else None,
-                "son_giris": db_user.last_login.isoformat() if db_user.last_login else None,
+                "olusturma_tarihi": (
+                    db_user.created_at.isoformat()
+                    if db_user.created_at else None
+                ),
+                "son_giris": (
+                    db_user.last_login.isoformat()
+                    if db_user.last_login else None
+                ),
                 "telefon": getattr(db_user, "phone", "") or "",
                 "profil_resmi": None,
             }
@@ -1092,7 +1188,10 @@ async def update_profile(
     "/ogrenci-profil",
     response_model=OgrenciProfili,
     summary="Ogrenci Profili Olustur",
-    description="Yeni ogrenci profili olusturma - hedef sinav, konu tercihleri ve ogrenme stili",
+    description=(
+        "Yeni ogrenci profili olusturma"
+        " - hedef sinav, konu tercihleri ve ogrenme stili"
+    ),
     responses={
         200: {"description": "Ogrenci profili basariyla olusturuldu"},
         400: {"description": "Gecersiz profil verisi"},
@@ -1112,8 +1211,7 @@ async def ogrenci_profil_olustur(
         # Kullanıcı ID'yi otomatik ata
         profil_data.kullanici_id = mevcut_kullanici.kullanici_id
 
-        profil = await kullanici_servisi.ogrenci_profili_olustur(profil_data)
-        return profil
+        return await kullanici_servisi.ogrenci_profili_olustur(profil_data)
     except ValueError as e:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
 
@@ -1126,7 +1224,12 @@ async def ogrenci_profil_olustur(
     responses={
         200: {"description": "Ogrenci profil bilgileri"},
         401: {"description": "Yetkilendirme hatasi"},
-        403: {"description": "Erisim engellendi - sadece kendi profilinizi gorebilirsiniz"},
+        403: {
+            "description": (
+                "Erisim engellendi"
+                " - sadece kendi profilinizi gorebilirsiniz"
+            ),
+        },
         404: {"description": "Ogrenci profili bulunamadi"},
     },
 )
@@ -1136,7 +1239,8 @@ async def ogrenci_profil_getir(
     """
     Ogrenci profil bilgilerini getir
 
-    SECURITY: Sadece kendi profilinizi veya yetkiniz varsa baska profilleri gorebilirsiniz.
+    SECURITY: Sadece kendi profilinizi veya yetkiniz varsa
+    baska profilleri gorebilirsiniz.
     """
     profil = await kullanici_servisi.ogrenci_profili_getir(ogrenci_id)
 
@@ -1175,8 +1279,7 @@ async def ogretmen_profil_olustur(
         # Kullanıcı ID'yi otomatik ata
         profil_data.kullanici_id = mevcut_kullanici.kullanici_id
 
-        profil = await kullanici_servisi.ogretmen_profili_olustur(profil_data)
-        return profil
+        return await kullanici_servisi.ogretmen_profili_olustur(profil_data)
     except ValueError as e:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
 
@@ -1205,8 +1308,7 @@ async def veli_profil_olustur(
         # Kullanıcı ID'yi otomatik ata
         profil_data.kullanici_id = mevcut_kullanici.kullanici_id
 
-        profil = await kullanici_servisi.veli_profili_olustur(profil_data)
-        return profil
+        return await kullanici_servisi.veli_profili_olustur(profil_data)
     except ValueError as e:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
 
@@ -1254,14 +1356,17 @@ async def veli_profil_olustur(
     },
 )
 async def refresh_token(
-    request_body: Optional[RefreshTokenRequest] = None,
-    credentials: Optional[HTTPAuthorizationCredentials] = Depends(HTTPBearer(auto_error=False)),
+    request_body: RefreshTokenRequest | None = None,
+    credentials: HTTPAuthorizationCredentials | None = Depends(
+        HTTPBearer(auto_error=False)
+    ),
     request: Request = None,
     db: AsyncSession = Depends(get_db),
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """
     Refresh token kullanarak yeni access token al (Task 48.4)
-    Frontend compatibility: Accepts token in body {refreshToken: string} or Authorization header
+    Frontend compatibility: Accepts token in body
+    {refreshToken: string} or Authorization header
 
     Bu endpoint, süresi dolmak üzere olan veya dolmuş access token'ı
     yenilemek için kullanılır. Refresh token ile yeni bir access token
@@ -1327,7 +1432,8 @@ async def refresh_token(
     Tipik strateji: Token'ın %75'i geçtiğinde yenile (45 dakika sonra)
     """
     try:
-        # Extract token from body or header (frontend sends in body, backward compat uses header)
+        # Extract token from body or header
+        # (frontend sends in body, backward compat uses header)
         refresh_token_str = None
         if request_body and request_body.refreshToken:
             refresh_token_str = request_body.refreshToken
@@ -1337,7 +1443,11 @@ async def refresh_token(
         if not refresh_token_str:
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Refresh token bulunamadı. Lütfen Authorization header veya request body kullanın.",
+                detail=(
+                    "Refresh token bulunamadı."
+                    " Lütfen Authorization header"
+                    " veya request body kullanın."
+                ),
             )
 
         jwt_manager = get_jwt_manager()
@@ -1351,8 +1461,13 @@ async def refresh_token(
             if hasattr(db.bind, "sync_engine")
             else None
         )
+        if sync_db is None:
+            logger.warning(
+                "refresh_token: sync DB unavailable; "
+                "token rotation will not persist to database"
+            )
 
-        new_tokens = jwt_manager.refresh_access_token(
+        new_tokens = await jwt_manager.refresh_access_token(
             refresh_token_str, db=sync_db, request=request
         )
 
@@ -1363,20 +1478,20 @@ async def refresh_token(
         # while keeping backward compatibility fields
         return {
             "success": True,
-            "token": new_tokens.get("access_token"),
-            "refreshToken": new_tokens.get("refresh_token"),
+            "token": new_tokens.access_token,
+            "refreshToken": new_tokens.refresh_token,
             # Backward compatibility
-            "access_token": new_tokens.get("access_token"),
-            "refresh_token": new_tokens.get("refresh_token"),
-            "token_type": new_tokens.get("token_type", "bearer"),
-            "expires_in": new_tokens.get("expires_in", 3600),
+            "access_token": new_tokens.access_token,
+            "refresh_token": new_tokens.refresh_token,
+            "token_type": new_tokens.token_type,
+            "expires_in": new_tokens.expires_in,
         }
     except HTTPException:
         raise
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail=f"Refresh token başarısız: {str(e)}",
+            detail=f"Refresh token başarısız: {e!s}",
         )
 
 
@@ -1400,7 +1515,7 @@ async def refresh_token(
 async def logout_all_devices(
     mevcut_kullanici: Kullanici = Depends(mevcut_kullanici_getir),
     db: AsyncSession = Depends(get_db),
-) -> Dict[str, str]:
+) -> dict[str, str]:
     """
     Tum cihazlardan cikis yap
 
@@ -1418,6 +1533,11 @@ async def logout_all_devices(
             if hasattr(db.bind, "sync_engine")
             else None
         )
+        if sync_db is None:
+            logger.warning(
+                "logout_all: sync DB unavailable; "
+                "token revocation will not persist"
+            )
 
         jwt_manager.revoke_all_user_tokens(sync_db, mevcut_kullanici.kullanici_id)
 
@@ -1428,7 +1548,7 @@ async def logout_all_devices(
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Logout başarısız: {str(e)}",
+            detail=f"Logout başarısız: {e!s}",
         )
 
 
@@ -1453,7 +1573,7 @@ async def revoke_device(
     device_id: str,
     mevcut_kullanici: Kullanici = Depends(mevcut_kullanici_getir),
     db: AsyncSession = Depends(get_db),
-) -> Dict[str, str]:
+) -> dict[str, str]:
     """
     Belirli bir cihazdaki oturumu sonlandir
 
@@ -1472,6 +1592,11 @@ async def revoke_device(
             if hasattr(db.bind, "sync_engine")
             else None
         )
+        if sync_db is None:
+            logger.warning(
+                "revoke_device: sync DB unavailable; "
+                "token revocation will not persist"
+            )
 
         jwt_manager.revoke_device_tokens(
             sync_db, mevcut_kullanici.kullanici_id, device_id
@@ -1484,5 +1609,5 @@ async def revoke_device(
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Device revoke başarısız: {str(e)}",
+            detail=f"Device revoke başarısız: {e!s}",
         )

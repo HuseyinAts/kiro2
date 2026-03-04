@@ -6,7 +6,6 @@ SECURITY: Type-safe authentication with Pydantic models
 """
 
 import logging
-from datetime import datetime
 from enum import Enum
 from typing import Any
 
@@ -139,10 +138,10 @@ async def get_current_user(
         )
 
     try:
-        # P0-1e: Check blacklist before decoding
+        # P0-1e: Check blacklist before decoding (Redis-backed with in-memory fallback)
         from core.jwt_auth import get_jwt_manager
         jwt_mgr = get_jwt_manager()
-        if jwt_mgr._is_blacklisted(token):
+        if await jwt_mgr.is_blacklisted_async(token):
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="Token has been revoked",

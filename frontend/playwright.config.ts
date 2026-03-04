@@ -26,7 +26,7 @@ export default defineConfig({
   // Shared settings for all tests
   use: {
     // Base URL for tests
-    baseURL: process.env.VITE_APP_URL || 'http://localhost:3002',
+    baseURL: process.env.VITE_APP_URL || 'http://localhost:3001',
 
     // Collect trace on failure
     trace: 'on-first-retry',
@@ -74,7 +74,7 @@ export default defineConfig({
   // to avoid timeout errors during test development
   webServer: process.env.SKIP_WEBSERVER ? undefined : {
     command: 'npm run dev',
-    url: 'http://localhost:3002',
+    url: 'http://localhost:3001',
     reuseExistingServer: !process.env.CI,
     timeout: 120 * 1000,
     // Ignore HTTPS errors for local development

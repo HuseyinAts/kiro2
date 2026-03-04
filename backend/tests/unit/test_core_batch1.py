@@ -1202,7 +1202,7 @@ class TestIntegrationScenarios:
             # If sanitization is too strict, just verify it doesn't crash
             assert request_data is not None
 
-    def test_jwt_full_authentication_flow(self):
+    async def test_jwt_full_authentication_flow(self):
         """Test complete JWT authentication flow"""
         with patch("core.jwt_auth.get_settings") as mock_settings:
             mock_settings.return_value = Mock(
@@ -1225,7 +1225,7 @@ class TestIntegrationScenarios:
             assert payload.sub == "user123"
 
             # 3. Refresh tokens
-            new_tokens = manager.refresh_access_token(tokens.refresh_token)
+            new_tokens = await manager.refresh_access_token(tokens.refresh_token)
             assert new_tokens.access_token != tokens.access_token
 
 

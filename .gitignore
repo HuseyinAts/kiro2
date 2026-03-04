@@ -17,6 +17,7 @@ env/
 .env.test
 *.env.backup
 .env.*
+!.env.mvp.example
 
 # Node.js
 node_modules/

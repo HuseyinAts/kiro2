@@ -1,21 +1,26 @@
 """
-JWT Authentication System (Task 48.4: Enhanced with Database Refresh Tokens)
-Production-ready JWT implementation with refresh tokens, blacklisting, and security features
+JWT Authentication System (Task 48.4: Enhanced with Database
+Refresh Tokens). Production-ready JWT with refresh tokens,
+blacklisting, and security features.
+
+Blacklist: Redis-backed with in-memory fallback.
 """
 import hashlib
+import logging
 import secrets
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from enum import Enum
-from typing import Optional
 
 import jwt
-from fastapi import HTTPException, Request, status
-from fastapi.security import HTTPBearer
+from fastapi import Depends, HTTPException, Request, status
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from passlib.context import CryptContext
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
 from core.config import get_settings
+
+logger = logging.getLogger(__name__)
 
 
 class TokenType(str, Enum):
@@ -23,7 +28,7 @@ class TokenType(str, Enum):
 
     ACCESS = "access"
     REFRESH = "refresh"
-    RESET_PASSWORD = "reset_password"
+    RESET_PASSWORD = "reset_password"  # noqa: S105
     EMAIL_VERIFICATION = "email_verification"
 
 
@@ -56,13 +61,18 @@ class JWTTokens(BaseModel):
 
     access_token: str
     refresh_token: str
-    token_type: str = "bearer"
+    token_type: str = "bearer"  # noqa: S105
     expires_in: int
     refresh_expires_in: int
 
 
 class JWTManager:
     """JWT token yönetimi ve güvenlik"""
+
+    # Redis key prefix for blacklisted tokens
+    BLACKLIST_PREFIX = "jwt:blacklist:"
+    # Max in-memory blacklist entries to prevent unbounded memory growth
+    MAX_MEMORY_BLACKLIST = 10_000
 
     def __init__(self):
         self.settings = get_settings()
@@ -75,8 +85,13 @@ class JWTManager:
         self.access_token_expire_minutes = self.settings.jwt_access_token_expire_minutes
         self.refresh_token_expire_days = self.settings.jwt_refresh_token_expire_days
 
-        # Token blacklist (production'da Redis kullanılmalı)
+        # In-memory fallback blacklist (used when Redis is unavailable)
+        # Bounded to MAX_MEMORY_BLACKLIST entries; cleared when full.
         self.blacklisted_tokens: set = set()
+
+        # Redis client (initialized lazily via connect_redis)
+        self._redis = None
+        self._redis_available = False
 
         # Device tracking (brute force koruması için)
         self.device_attempts: dict[str, dict] = {}
@@ -86,15 +101,17 @@ class JWTManager:
         user_id: str,
         email: str,
         role: UserRole,
-        username: str = None,
-        permissions: list[str] = None,
-        device_id: str = None,
+        username: str | None = None,
+        permissions: list[str] | None = None,
+        device_id: str | None = None,
     ) -> str:
         """Access token oluştur"""
         if permissions is None:
             permissions = self._get_default_permissions(role)
 
-        expire = datetime.now(timezone.utc) + timedelta(minutes=self.access_token_expire_minutes)
+        expire = datetime.now(UTC) + timedelta(
+            minutes=self.access_token_expire_minutes
+        )
 
         payload = {
             "sub": user_id,
@@ -102,7 +119,7 @@ class JWTManager:
             "email": email,
             "role": role.value,
             "exp": expire,
-            "iat": datetime.now(timezone.utc),
+            "iat": datetime.now(UTC),
             "type": TokenType.ACCESS.value,
             "jti": secrets.token_urlsafe(32),
             "device_id": device_id,
@@ -112,17 +129,19 @@ class JWTManager:
         return jwt.encode(payload, self.secret_key, algorithm=self.algorithm)
 
     def create_refresh_token(
-        self, user_id: str, email: str, role: UserRole, device_id: str = None
+        self, user_id: str, email: str, role: UserRole, device_id: str | None = None
     ) -> str:
         """Refresh token oluştur"""
-        expire = datetime.now(timezone.utc) + timedelta(days=self.refresh_token_expire_days)
+        expire = datetime.now(UTC) + timedelta(
+            days=self.refresh_token_expire_days
+        )
 
         payload = {
             "sub": user_id,
             "email": email,
             "role": role.value,
             "exp": expire,
-            "iat": datetime.now(timezone.utc),
+            "iat": datetime.now(UTC),
             "type": TokenType.REFRESH.value,
             "jti": secrets.token_urlsafe(32),
             "device_id": device_id,
@@ -135,8 +154,8 @@ class JWTManager:
         user_id: str,
         email: str,
         role: UserRole,
-        permissions: list[str] = None,
-        device_id: str = None,
+        permissions: list[str] | None = None,
+        device_id: str | None = None,
     ) -> JWTTokens:
         """Access ve refresh token çifti oluştur"""
         access_token = self.create_access_token(
@@ -152,9 +171,13 @@ class JWTManager:
         )
 
     def verify_token(self, token: str, token_type: TokenType = None) -> TokenPayload:
-        """Token doğrula ve payload döndür"""
+        """Token doğrula ve payload döndür.
+
+        Note: Uses sync in-memory blacklist only. For Redis-backed check,
+        use is_blacklisted_async() in async endpoints (see core/dependencies.py).
+        """
         try:
-            # Token blacklist kontrolü
+            # Token blacklist kontrolü (in-memory only; async path checks Redis)
             if self._is_blacklisted(token):
                 raise HTTPException(
                     status_code=status.HTTP_401_UNAUTHORIZED,
@@ -191,8 +214,8 @@ class JWTManager:
                 sub=payload["sub"],
                 email=payload["email"],
                 role=UserRole(role),
-                exp=datetime.fromtimestamp(payload["exp"]),
-                iat=datetime.fromtimestamp(payload["iat"]),
+                exp=datetime.fromtimestamp(payload["exp"], tz=UTC),
+                iat=datetime.fromtimestamp(payload["iat"], tz=UTC),
                 type=TokenType(payload["type"]),
                 jti=payload.get("jti", ""),
                 device_id=payload.get("device_id"),
@@ -213,7 +236,7 @@ class JWTManager:
                 detail=f"Token validation failed: {e!s}",
             )
 
-    def refresh_access_token(
+    async def refresh_access_token(
         self, refresh_token: str, db: Session = None, request: Request = None
     ) -> JWTTokens:
         """
@@ -240,7 +263,7 @@ class JWTManager:
                 .filter(
                     RefreshToken.jti == payload.jti,
                     RefreshToken.token_hash == token_hash,
-                    RefreshToken.revoked == False,
+                    RefreshToken.revoked.is_(False),
                 )
                 .first()
             )
@@ -252,19 +275,19 @@ class JWTManager:
                 )
 
             # Token expiration kontrolü
-            if db_token.expires_at < datetime.now(timezone.utc):
+            if db_token.expires_at < datetime.now(UTC):
                 raise HTTPException(
                     status_code=status.HTTP_401_UNAUTHORIZED,
                     detail="Refresh token has expired",
                 )
 
             # Usage tracking
-            db_token.last_used_at = datetime.now(timezone.utc)
+            db_token.last_used_at = datetime.now(UTC)
             db_token.usage_count += 1
 
             # Revoke eski token (rotation policy)
             db_token.revoked = True
-            db_token.revoked_at = datetime.now(timezone.utc)
+            db_token.revoked_at = datetime.now(UTC)
             db_token.revoke_reason = "rotated"
 
         # Yeni token çifti oluştur
@@ -286,8 +309,8 @@ class JWTManager:
                 request,
             )
 
-        # Eski refresh token'ı blacklist'e ekle (in-memory fallback)
-        self.blacklist_token(refresh_token)
+        # Eski refresh token'ı Redis + in-memory blacklist'e ekle
+        await self.blacklist_token_async(refresh_token)
 
         # Database değişikliklerini commit et
         if db:
@@ -295,36 +318,144 @@ class JWTManager:
 
         return new_tokens
 
-    def blacklist_token(self, token: str):
-        """Token'ı blacklist'e ekle"""
+    async def connect_redis(self):
+        """Connect to Redis for blacklist persistence. Called during app startup."""
         try:
-            payload = jwt.decode(token, self.secret_key, algorithms=[self.algorithm])
-            jti = payload.get("jti")
-            if jti:
-                self.blacklisted_tokens.add(jti)
-        except (jwt.DecodeError, jwt.InvalidTokenError, jwt.ExpiredSignatureError):
-            # Token decode edilemese bile güvenlik için ekle
-            token_hash = hashlib.sha256(token.encode()).hexdigest()
-            self.blacklisted_tokens.add(token_hash)
+            from redis import asyncio as aioredis
+            redis_url = self.settings.redis_url
+            self._redis = await aioredis.from_url(
+                redis_url,
+                encoding="utf-8",
+                decode_responses=True,
+                socket_connect_timeout=3,
+                socket_timeout=2,
+                retry_on_timeout=True,
+            )
+            await self._redis.ping()
+            self._redis_available = True
+            logger.info("JWT blacklist connected to Redis")
+        except Exception as e:
+            logger.warning(
+                "JWT blacklist Redis unavailable, "
+                f"using in-memory fallback: {e}"
+            )
+            self._redis_available = False
 
-    def _is_blacklisted(self, token: str) -> bool:
-        """Token blacklist kontrolü"""
+    def _get_blacklist_key(self, identifier: str) -> str:
+        """Build Redis key for a blacklisted token identifier."""
+        return f"{self.BLACKLIST_PREFIX}{identifier}"
+
+    def _extract_jti_and_ttl(self, token: str) -> tuple[str | None, int]:
+        """Extract JTI and remaining TTL (seconds) from a token.
+
+        Returns (jti_or_hash, ttl_seconds). TTL defaults to 24h if unreadable.
+
+        NOTE: verify_exp=False is intentional — we need to extract JTI from
+        expired tokens for blacklisting (logout of expired-but-not-yet-purged tokens).
+        This method is ONLY used for blacklist key extraction, never for authentication.
+        """
         try:
             payload = jwt.decode(
                 token,
                 self.secret_key,
                 algorithms=[self.algorithm],
-                options={"verify_exp": False},
+                options={"verify_exp": False},  # Intentional: see docstring
             )
             jti = payload.get("jti")
-            if jti and jti in self.blacklisted_tokens:
-                return True
-        except (jwt.DecodeError, jwt.InvalidTokenError):
-            pass
+            # Calculate remaining TTL from token expiry
+            exp = payload.get("exp")
+            if exp:
+                remaining = int(exp - datetime.now(UTC).timestamp())
+                ttl = max(remaining, 60)  # minimum 60s to handle clock skew
+            else:
+                ttl = 86400  # 24h default
+            return jti, ttl
+        except (jwt.DecodeError, jwt.InvalidTokenError, jwt.ExpiredSignatureError):
+            # Can't decode: use token hash, default 24h TTL
+            token_hash = hashlib.sha256(token.encode()).hexdigest()
+            return token_hash, 86400
 
-        # Fallback: token hash kontrolü
-        token_hash = hashlib.sha256(token.encode()).hexdigest()
-        return token_hash in self.blacklisted_tokens
+    def _enforce_memory_limit(self):
+        """Clear in-memory blacklist if it exceeds MAX_MEMORY_BLACKLIST."""
+        if len(self.blacklisted_tokens) >= self.MAX_MEMORY_BLACKLIST:
+            logger.warning(
+                "In-memory blacklist reached "
+                f"{len(self.blacklisted_tokens)} entries, clearing"
+            )
+            self.blacklisted_tokens.clear()
+
+    def blacklist_token(self, token: str):
+        """Synchronous blacklist — adds to in-memory set.
+
+        For Redis persistence, use blacklist_token_async() instead.
+        """
+        identifier, _ = self._extract_jti_and_ttl(token)
+        if identifier:
+            self._enforce_memory_limit()
+            self.blacklisted_tokens.add(identifier)
+
+    async def blacklist_token_async(self, token: str):
+        """Blacklist a token in Redis (with in-memory fallback).
+
+        Uses SETEX so tokens auto-expire from blacklist when they would
+        have expired naturally — no manual cleanup needed.
+        """
+        identifier, ttl = self._extract_jti_and_ttl(token)
+        if not identifier:
+            return
+
+        # Always add to in-memory (immediate effect for current process)
+        self._enforce_memory_limit()
+        self.blacklisted_tokens.add(identifier)
+
+        # Persist to Redis if available
+        if self._redis_available and self._redis:
+            try:
+                key = self._get_blacklist_key(identifier)
+                await self._redis.setex(key, ttl, "1")
+            except Exception as e:
+                logger.warning(
+                    "Redis blacklist write failed "
+                    f"(in-memory still active): {e}"
+                )
+
+    def _is_blacklisted(self, token: str) -> bool:
+        """Synchronous blacklist check — in-memory only.
+
+        For Redis-backed check, use is_blacklisted_async().
+        """
+        identifier, _ = self._extract_jti_and_ttl(token)
+        return bool(identifier and identifier in self.blacklisted_tokens)
+
+    async def is_blacklisted_async(self, token: str) -> bool:
+        """Check if token is blacklisted (Redis + in-memory fallback).
+
+        Checks in-memory first (fast path), then Redis for cross-process persistence.
+        """
+        identifier, _ = self._extract_jti_and_ttl(token)
+        if not identifier:
+            return False
+
+        # Fast path: in-memory check
+        if identifier in self.blacklisted_tokens:
+            return True
+
+        # Redis check for cross-process/restart persistence
+        if self._redis_available and self._redis:
+            try:
+                key = self._get_blacklist_key(identifier)
+                result = await self._redis.exists(key)
+                if result:
+                    # Sync to in-memory for faster subsequent checks
+                    self.blacklisted_tokens.add(identifier)
+                    return True
+            except Exception as e:
+                logger.warning(
+                    "Redis blacklist read failed "
+                    f"(using in-memory only): {e}"
+                )
+
+        return False
 
     def _get_default_permissions(self, role: UserRole) -> list[str]:
         """Role'e göre default permission'ları döndür"""
@@ -378,7 +509,7 @@ class JWTManager:
         self, identifier: str, max_attempts: int = 5, window_minutes: int = 15
     ) -> bool:
         """Rate limiting kontrolü"""
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
 
         if identifier not in self.device_attempts:
             self.device_attempts[identifier] = {"attempts": 1, "window_start": now}
@@ -400,13 +531,13 @@ class JWTManager:
 
     def create_password_reset_token(self, user_id: str, email: str) -> str:
         """Şifre sıfırlama token'ı oluştur"""
-        expire = datetime.now(timezone.utc) + timedelta(hours=1)  # 1 saat geçerli
+        expire = datetime.now(UTC) + timedelta(hours=1)  # 1 saat geçerli
 
         payload = {
             "sub": user_id,
             "email": email,
             "exp": expire,
-            "iat": datetime.now(timezone.utc),
+            "iat": datetime.now(UTC),
             "type": TokenType.RESET_PASSWORD.value,
             "jti": secrets.token_urlsafe(32),
         }
@@ -415,13 +546,13 @@ class JWTManager:
 
     def create_email_verification_token(self, user_id: str, email: str) -> str:
         """Email doğrulama token'ı oluştur"""
-        expire = datetime.now(timezone.utc) + timedelta(hours=24)  # 24 saat geçerli
+        expire = datetime.now(UTC) + timedelta(hours=24)  # 24 saat geçerli
 
         payload = {
             "sub": user_id,
             "email": email,
             "exp": expire,
-            "iat": datetime.now(timezone.utc),
+            "iat": datetime.now(UTC),
             "type": TokenType.EMAIL_VERIFICATION.value,
             "jti": secrets.token_urlsafe(32),
         }
@@ -433,7 +564,7 @@ class JWTManager:
         db: Session,
         refresh_token: str,
         user_id: str,
-        device_id: Optional[str],
+        device_id: str | None,
         request: Request,
     ):
         """
@@ -485,14 +616,14 @@ class JWTManager:
             device_type=device_type,
             ip_address=ip_address,
             user_agent=user_agent[:500] if user_agent else None,
-            expires_at=datetime.fromtimestamp(payload.get("exp", 0)),
+            expires_at=datetime.fromtimestamp(payload.get("exp", 0), tz=UTC),
             revoked=False,
         )
 
         db.add(db_token)
 
     def revoke_refresh_token(
-        self, db: Session, refresh_token: str = None, jti: str = None
+        self, db: Session, refresh_token: str | None = None, jti: str | None = None
     ):
         """
         Refresh token'ı revoke et (Task 48.4)
@@ -518,7 +649,7 @@ class JWTManager:
 
         if db_token and not db_token.revoked:
             db_token.revoked = True
-            db_token.revoked_at = datetime.now(timezone.utc)
+            db_token.revoked_at = datetime.now(UTC)
             db_token.revoke_reason = "manual_revoke"
             db.commit()
 
@@ -534,11 +665,12 @@ class JWTManager:
         from models.database import RefreshToken
 
         db.query(RefreshToken).filter(
-            RefreshToken.user_id == user_id, RefreshToken.revoked == False
+            RefreshToken.user_id == user_id,
+            RefreshToken.revoked.is_(False),
         ).update(
             {
                 "revoked": True,
-                "revoked_at": datetime.now(timezone.utc),
+                "revoked_at": datetime.now(UTC),
                 "revoke_reason": "logout_all_devices",
             }
         )
@@ -558,11 +690,11 @@ class JWTManager:
         db.query(RefreshToken).filter(
             RefreshToken.user_id == user_id,
             RefreshToken.device_id == device_id,
-            RefreshToken.revoked == False,
+            RefreshToken.revoked.is_(False),
         ).update(
             {
                 "revoked": True,
-                "revoked_at": datetime.now(timezone.utc),
+                "revoked_at": datetime.now(UTC),
                 "revoke_reason": "device_revoke",
             }
         )
@@ -579,7 +711,7 @@ class JWTManager:
         from models.database import RefreshToken
 
         # 30 gün önce expire olmuş token'ları sil
-        cutoff_date = datetime.now(timezone.utc) - timedelta(days=30)
+        cutoff_date = datetime.now(UTC) - timedelta(days=30)
 
         db.query(RefreshToken).filter(RefreshToken.expires_at < cutoff_date).delete()
         db.commit()
@@ -594,11 +726,6 @@ def get_jwt_manager() -> JWTManager:
     return jwt_manager
 
 
-# FastAPI Dependencies
-from fastapi import Depends
-from fastapi.security import HTTPAuthorizationCredentials
-
-
 async def get_current_user(
     credentials: HTTPAuthorizationCredentials = Depends(HTTPBearer(auto_error=True)),
     jwt_mgr: JWTManager = Depends(get_jwt_manager),
@@ -606,10 +733,13 @@ async def get_current_user(
     """
     FastAPI dependency to get current authenticated user from JWT token
 
-    Usage:
+    Usage::
+
         @app.get("/protected")
-        async def protected_route(current_user: TokenPayload = Depends(get_current_user)):
-            return {"user_id": current_user.sub, "email": current_user.email}
+        async def protected_route(
+            current_user: TokenPayload = Depends(get_current_user),
+        ):
+            return {"user_id": current_user.sub}
 
     Args:
         credentials: HTTP Bearer token from request header
@@ -629,9 +759,8 @@ async def get_current_user(
         )
 
     token = credentials.credentials
-    payload = jwt_mgr.verify_token(token, TokenType.ACCESS)
+    return jwt_mgr.verify_token(token, TokenType.ACCESS)
 
-    return payload
 
 
 async def get_current_active_user(
@@ -686,7 +815,10 @@ async def require_role(
     if current_user.role not in required_roles:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail=f"Insufficient permissions. Required roles: {[r.value for r in required_roles]}",
+            detail=(
+                "Insufficient permissions. Required roles: "
+                f"{[r.value for r in required_roles]}"
+            ),
         )
 
     return current_user
