@@ -1,0 +1,52 @@
+version: '3.8'
+
+# KIRO2 MVP Beta Launch - Docker Compose
+# Uses host PostgreSQL (port 5434) and Redis (port 6379)
+# Start: docker-compose -f docker-compose.mvp.yml up --build
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.minimal
+    container_name: kiro2-backend
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://postgres:changeme_strong_password_here@host.docker.internal:5434/kiro2
+      - REDIS_URL=redis://host.docker.internal:6379/0
+      - ENVIRONMENT=development
+      - DEBUG=true
+      - JWT_SECRET_KEY=dev-jwt-secret
+      - JWT_ALGORITHM=HS256
+      - SECRET_KEY=dev-secret-key
+      - ENCRYPTION_KEY=dev-encryption-key-minimum-32-characters-required
+      - ALLOWED_ORIGINS=http://localhost:3000,http://localhost:3001,http://localhost:5173
+      - PYTHONUNBUFFERED=1
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      start-period: 60s
+      retries: 3
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: kiro2-frontend
+    ports:
+      - "3000:3000"
+    environment:
+      - VITE_API_URL=http://localhost:8000
+    depends_on:
+      backend:
+        condition: service_healthy
+    restart: unless-stopped
+
+networks:
+  default:
+    driver: bridge

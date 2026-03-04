@@ -105,7 +105,7 @@ async def database_authenticate(giris_data: KullaniciGiris, db: AsyncSession) ->
         ad_soyad=f"{db_user.first_name} {db_user.last_name}",
         telefon=db_user.phone or "",
         aktif=db_user.is_active,
-        rol=KullaniciRolu(db_user.role.value),
+        rol=KullaniciRolu(frontend_role),
         olusturma_tarihi=db_user.created_at,
         son_giris=db_user.last_login,
     )
@@ -440,11 +440,13 @@ async def secure_login(
         token_yaniti = await database_authenticate(giris_data, db)
 
         # Set access token as httpOnly cookie
+        import os
+        _is_dev = os.getenv("ENVIRONMENT", "development") == "development"
         response.set_cookie(
             key="access_token",
             value=token_yaniti["token"],
             httponly=True,
-            secure=True,  # Only HTTPS in production
+            secure=not _is_dev,  # HTTP in dev, HTTPS in prod
             samesite="lax",
             max_age=86400,  # 24 hours
             path="/api"
@@ -455,7 +457,7 @@ async def secure_login(
             key="refresh_token",
             value=token_yaniti["refreshToken"],
             httponly=True,
-            secure=True,
+            secure=not _is_dev,
             samesite="lax",
             max_age=604800,  # 7 days
             path="/api/v1/auth"
