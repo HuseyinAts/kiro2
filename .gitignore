@@ -223,3 +223,12 @@ frontend/backstop_data/ci_report/
 # Session state (auto-generated, personal)
 .claude/SESSION_STATE.md
 .claude/session_state.json
+
+# Large binaries — never commit (wheelhouse, models, coverage reports)
+wheelhouse/
+wheelhouse_linux/
+backend/coverage*.json
+backend/cov_*.json
+*.safetensors
+kiro2_import.csv
+*.pdf
