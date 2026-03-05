@@ -27,7 +27,7 @@ dependencies = [
     "pydantic-settings==2.1.0",
     
     # Database
-    "asyncpg==0.29.0",
+    "asyncpg==0.31.0",
     "psycopg[binary]>=3.1.0",  # Python 3.13 uyumlu
     "sqlalchemy[asyncio]>=2.0.36",  # Python 3.13 uyumlu
     "alembic==1.13.1",
