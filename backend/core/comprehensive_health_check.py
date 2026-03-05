@@ -219,9 +219,9 @@ class HealthChecker:
         start_time = time.time()
 
         try:
-            from core.database import get_async_session
+            from core.database import get_db_session_context
 
-            async with get_async_session() as session:
+            async with get_db_session_context() as session:
                 return await self._check_database(session)
 
         except Exception as e:
@@ -510,10 +510,10 @@ async def kubernetes_startup_probe() -> bool:
           failureThreshold: 30
     """
     try:
-        from core.database import get_async_session
+        from core.database import get_db_session_context
 
         # Check if critical services are up
-        async with get_async_session() as session:
+        async with get_db_session_context() as session:
             await session.execute(text("SELECT 1"))
             return True
     except Exception as e:
