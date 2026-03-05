@@ -1,49 +1,70 @@
 ---
-allowed-tools: Read, Grep, Glob, Bash(git diff:*)
-description: Son kod değişikliklerini incele
+allowed-tools: Read, Grep, Glob, Bash(git diff:*), Bash(ruff:*), Bash(pytest:*)
+description: Son kod degisikliklerini incele
 ---
 
 ## Context
 - Recent changes: !`git diff HEAD~3 --stat`
 
 ## Task
-Kod değişikliklerini incele ve geri bildirim ver.
+Kod degisikliklerini incele ve geri bildirim ver.
 
-## İnceleme Kriterleri
+## KRITIK: Sonsuz Dongu Onleme
 
-### 1. Güvenlik
-- SQL injection riski
-- XSS açıkları
-- Hardcoded credentials
-- JWT/auth bypass
+**ONCE lint ve test calistir.** Geciyorsa "kod calismiyor" deme.
+
+```bash
+cd backend && ruff check . --select=E,F,W --ignore=E501 2>&1 | head -20
+cd backend && python -m pytest tests/unit/ -x --tb=short -q 2>&1 | tail -10
+```
+
+**SADECE kanitlanabilir sorunlari raporla:**
+- CRITICAL = lint fail, test fail, kesin runtime crash (AttributeError/TypeError)
+- WARNING = spesifik senaryo ile tetiklenen sorun
+- ONERI = iyilestirme (opsiyonel)
+
+**RAPORLAMA:**
+- Teorik/varsayimsal sorunlari
+- Onceki review'da duzeltilmis seyleri
+- Degistirilmemis satirlardaki sorunlari
+- Docstring/type hint eksikligi (degismeyen kodda)
+
+## Inceleme Kriterleri
+
+### 1. Guvenlik (kanit zorunlu)
+- SQL injection: raw f-string query GOSTER
+- Hardcoded credentials: satir numarasi GOSTER
+- JWT bypass: exploit senaryosu GOSTER
 
 ### 2. Performans
-- N+1 query problemi
-- Memory leak
-- Gereksiz re-render (React)
-- Cache kullanımı
+- N+1 query (sorgu ornegi goster)
+- Memory leak (nesne referansi goster)
 
-### 3. Kod Kalitesi
-- Type hints (Python)
-- TypeScript strict mode
-- DRY prensibi
-- SOLID principles
+### 3. Kod Kalitesi (sadece degisen satirlar)
+- Type hints
+- DRY ihlali
 
-### 4. KIRO2 Özel Kurallar
-- ❌ `useAuth.ts` → ✅ `authStore.ts`
-- ❌ Mock data → ✅ Gerçek API
-- ✅ Türkçe için UTF-8
-- ✅ Docstring (Google style)
+### 4. KIRO2 Ozel
+- authStore.ts kullan (useAuth.ts DEGIL)
+- UTF-8 + NFC Turkce normalization
+- DB port: 5434
 
-## Çıktı Formatı
+## Cikti Formati
 
 ```markdown
-### 🔴 KRİTİK (Merge öncesi düzelt)
-- [dosya:satır] Sorun açıklaması
+### Lint: PASS/FAIL
+### Test: PASS/FAIL
 
-### 🟡 UYARI (Düzeltilmeli)
-- [dosya:satır] Sorun açıklaması
+### CRITICAL (merge engeli)
+- [dosya:satir] Sorun + KANIT
 
-### 🟢 ÖNERİ (İyileştirme)
-- [dosya:satır] Öneri
+### WARNING
+- [dosya:satir] Sorun + senaryo
+
+### ONERI
+- [dosya:satir] Iyilestirme
+
+### SONUC: Commit edilebilir mi? EVET/HAYIR
 ```
+
+0 critical + 0 warning = "Kod temiz, commit edilebilir." Yapay bulgu URETME.
