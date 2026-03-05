@@ -6,6 +6,7 @@ import logging
 import secrets
 import time
 from collections import defaultdict
+from contextlib import contextmanager
 from datetime import UTC, datetime, timedelta
 from typing import Any
 
@@ -50,12 +51,18 @@ LOGIN_RATE_LIMIT = 10  # max attempts per IP per window
 LOGIN_RATE_WINDOW = 60  # seconds
 
 
+# Only trust X-Forwarded-For from these IPs (reverse proxy / load balancer)
+_TRUSTED_PROXIES = {"127.0.0.1", "::1", "172.17.0.1"}  # localhost + Docker default
+
+
 def _get_client_ip(request: Request) -> str:
-    """Extract client IP, respecting X-Forwarded-For behind reverse proxy."""
-    forwarded = request.headers.get("x-forwarded-for")
-    if forwarded:
-        return forwarded.split(",")[0].strip()
-    return request.client.host if request.client else "unknown"
+    """Extract client IP, respecting X-Forwarded-For only from trusted proxies."""
+    client_host = request.client.host if request.client else "unknown"
+    if client_host in _TRUSTED_PROXIES:
+        forwarded = request.headers.get("x-forwarded-for")
+        if forwarded:
+            return forwarded.split(",")[0].strip()
+    return client_host
 
 
 def _check_login_rate_limit(request: Request) -> None:
@@ -81,8 +88,50 @@ def _record_failed_login(request: Request) -> None:
     client_ip = _get_client_ip(request)
     _login_attempts[client_ip].append(time.time())
 
+@contextmanager
+def _sync_session(db: AsyncSession):
+    """Create a sync session from async session for JWT DB operations.
+
+    Raises HTTPException 503 if sync engine is unavailable.
+    """
+    from sqlalchemy.orm import Session as SyncSession
+
+    if not hasattr(db.bind, "sync_engine"):
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="Veritabanı servisi geçici olarak kullanılamıyor",
+        )
+    session = SyncSession(bind=db.bind.sync_engine)
+    try:
+        yield session
+    except Exception:
+        session.rollback()
+        raise
+    finally:
+        session.close()
+
+
 # Password hashing using bcrypt
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
+# Minimum password length + complexity (consistent across register/change/reset)
+_MIN_PASSWORD_LENGTH = 8
+
+
+def _validate_password(password: str) -> str | None:
+    """Return error message if password is too weak, else None."""
+    if len(password) < _MIN_PASSWORD_LENGTH:
+        return f"Şifre en az {_MIN_PASSWORD_LENGTH} karakter olmalı"
+    if not any(c.isupper() for c in password):
+        return "Şifre en az bir büyük harf içermelidir"
+    if not any(c.islower() for c in password):
+        return "Şifre en az bir küçük harf içermelidir"
+    if not any(c.isdigit() for c in password):
+        return "Şifre en az bir rakam içermelidir"
+    if not any(c in "!@#$%^&*()_+-=[]{}|;:,.<>?" for c in password):
+        return "Şifre en az bir özel karakter içermelidir"
+    return None
+
 
 router = APIRouter(prefix="/api/v1/auth", tags=["Kimlik Doğrulama"])
 security = HTTPBearer()
@@ -210,10 +259,24 @@ async def database_authenticate(
     )
     expires_in = jwt_mgr.access_token_expire_minutes * 60
 
+    # Save refresh token to DB for rotation/revocation support
+    if hasattr(db.bind, "sync_engine"):
+        from sqlalchemy.orm import Session as SyncSession
+
+        sync_db = SyncSession(bind=db.bind.sync_engine)
+        try:
+            jwt_mgr._save_refresh_token_to_db(
+                sync_db, refresh_token, str(db_user.id), None, None,
+            )
+            sync_db.commit()
+        except Exception:
+            logger.warning("Failed to persist refresh token to DB")
+        finally:
+            sync_db.close()
+
     # Update last login
     db_user.last_login = datetime.now(UTC)
-    await db.flush()  # Flush changes to db
-    await db.commit()  # Commit transaction
+    await db.commit()
 
     # Map backend role to frontend role format
     role_mapping = {
@@ -930,19 +993,24 @@ async def validate_token(
     try:
         token = credentials.credentials
 
-        # Check JWT blacklist first
+        # Check JWT blacklist first (Redis-backed)
         jwt_mgr = get_jwt_manager()
         if await jwt_mgr.is_blacklisted_async(token):
             return {"valid": False}
 
-        # Try to get user from token - if successful, token is valid
-        kullanici = await kullanici_servisi.token_dogrula(token)
-
-        if kullanici and kullanici.aktif:
+        # Try JWT decode (primary auth path)
+        try:
+            pyjwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
             return {"valid": True}
-        return {"valid": False}
+        except pyjwt.ExpiredSignatureError:
+            return {"valid": False}
+        except pyjwt.InvalidTokenError:
+            pass  # Not a JWT — fall through to legacy check
+
+        # Legacy fallback: in-memory token validation
+        kullanici = await kullanici_servisi.token_dogrula(token)
+        return {"valid": bool(kullanici and kullanici.aktif)}
     except Exception:
-        # Any error means token is invalid
         return {"valid": False}
 
 
@@ -950,6 +1018,11 @@ class ChangePasswordRequest(BaseModel):
     """Change password request model"""
     currentPassword: str  # noqa: N815 (frontend contract)
     newPassword: str  # noqa: N815 (frontend contract)
+
+
+class RevokeDeviceRequest(BaseModel):
+    """Revoke device request model"""
+    device_id: str
 
 
 @router.post("/change-password", summary="Change Password", include_in_schema=False)
@@ -982,9 +1055,10 @@ async def change_password(
         if not pwd_context.verify(request_data.currentPassword, db_user.password_hash):
             return {"success": False, "message": "Mevcut şifre yanlış"}
 
-        # Validate new password (minimum 8 characters)
-        if len(request_data.newPassword) < 8:
-            return {"success": False, "message": "Yeni şifre en az 8 karakter olmalı"}
+        # Validate new password (same policy as registration)
+        pw_error = _validate_password(request_data.newPassword)
+        if pw_error:
+            return {"success": False, "message": pw_error}
 
         # Hash and update new password
         db_user.password_hash = pwd_context.hash(request_data.newPassword)
@@ -1009,6 +1083,7 @@ _password_reset_tokens: dict[str, dict[str, Any]] = {}
 
 @router.post("/forgot-password", summary="Forgot Password", include_in_schema=False)
 async def forgot_password(
+    request: Request,
     request_data: ForgotPasswordRequest,
     db: AsyncSession = Depends(get_db),
 ) -> dict[str, Any]:
@@ -1022,6 +1097,8 @@ async def forgot_password(
         "message": string
     }
     """
+    _check_login_rate_limit(request)
+
     try:
         # Check if user exists
         result = await db.execute(
@@ -1095,9 +1172,10 @@ async def reset_password(
             del _password_reset_tokens[request_data.token]
             return {"success": False, "message": "Token süresi dolmuş"}
 
-        # Validate new password
-        if len(request_data.newPassword) < 8:
-            return {"success": False, "message": "Şifre en az 8 karakter olmalı"}
+        # Validate new password (same policy as registration)
+        pw_error = _validate_password(request_data.newPassword)
+        if pw_error:
+            return {"success": False, "message": pw_error}
 
         # Get user and update password
         result = await db.execute(
@@ -1386,7 +1464,7 @@ async def refresh_token(
     credentials: HTTPAuthorizationCredentials | None = Depends(
         HTTPBearer(auto_error=False)
     ),
-    request: Request | None = None,
+    request: Request = None,
     db: AsyncSession = Depends(get_db),
 ) -> dict[str, Any]:
     """
@@ -1478,27 +1556,10 @@ async def refresh_token(
 
         jwt_manager = get_jwt_manager()
 
-        # AsyncSession'ı synchronous session'a dönüştür (geçici çözüm)
-        # Production'da async implementation kullanılmalı
-        from sqlalchemy.orm import Session
-
-        sync_db = (
-            Session(bind=db.bind.sync_engine)
-            if hasattr(db.bind, "sync_engine")
-            else None
-        )
-        if sync_db is None:
-            raise HTTPException(
-                status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-                detail="Token yenileme servisi geçici olarak kullanılamıyor",
+        with _sync_session(db) as sync_db:
+            new_tokens = await jwt_manager.refresh_access_token(
+                refresh_token_str, db=sync_db, request=request
             )
-
-        new_tokens = await jwt_manager.refresh_access_token(
-            refresh_token_str, db=sync_db, request=request
-        )
-
-        if sync_db:
-            sync_db.close()
 
         # Return frontend-compatible format {success, token, refreshToken}
         # while keeping backward compatibility fields
@@ -1551,26 +1612,12 @@ async def logout_all_devices(
     try:
         jwt_manager = get_jwt_manager()
 
-        # AsyncSession'ı synchronous session'a dönüştür
-        from sqlalchemy.orm import Session
-
-        sync_db = (
-            Session(bind=db.bind.sync_engine)
-            if hasattr(db.bind, "sync_engine")
-            else None
-        )
-        if sync_db is None:
-            raise HTTPException(
-                status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-                detail="Çıkış servisi geçici olarak kullanılamıyor",
-            )
-
-        jwt_manager.revoke_all_user_tokens(sync_db, mevcut_kullanici.kullanici_id)
-
-        if sync_db:
-            sync_db.close()
+        with _sync_session(db) as sync_db:
+            jwt_manager.revoke_all_user_tokens(sync_db, mevcut_kullanici.kullanici_id)
 
         return {"message": "Tüm cihazlardan başarıyla çıkış yapıldı"}
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -1596,42 +1643,27 @@ async def logout_all_devices(
     },
 )
 async def revoke_device(
-    device_id: str,
+    request_data: RevokeDeviceRequest,
     mevcut_kullanici: Kullanici = Depends(mevcut_kullanici_getir),
     db: AsyncSession = Depends(get_db),
 ) -> dict[str, str]:
     """
     Belirli bir cihazdaki oturumu sonlandir
 
-    - **device_id**: Iptal edilecek cihaz ID'si
-
     Kayip veya calinan cihazlarda guvenlik icin kullanilir.
     """
+    device_id = request_data.device_id
     try:
         jwt_manager = get_jwt_manager()
 
-        # AsyncSession'ı synchronous session'a dönüştür
-        from sqlalchemy.orm import Session
-
-        sync_db = (
-            Session(bind=db.bind.sync_engine)
-            if hasattr(db.bind, "sync_engine")
-            else None
-        )
-        if sync_db is None:
-            raise HTTPException(
-                status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-                detail="Cihaz iptal servisi geçici olarak kullanılamıyor",
+        with _sync_session(db) as sync_db:
+            jwt_manager.revoke_device_tokens(
+                sync_db, mevcut_kullanici.kullanici_id, device_id
             )
 
-        jwt_manager.revoke_device_tokens(
-            sync_db, mevcut_kullanici.kullanici_id, device_id
-        )
-
-        if sync_db:
-            sync_db.close()
-
         return {"message": f"Cihaz {device_id} token'ları iptal edildi"}
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,

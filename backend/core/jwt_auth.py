@@ -8,6 +8,7 @@ Blacklist: Redis-backed with in-memory fallback.
 import hashlib
 import logging
 import secrets
+import time
 from datetime import UTC, datetime, timedelta
 from enum import Enum
 
@@ -85,9 +86,9 @@ class JWTManager:
         self.access_token_expire_minutes = self.settings.jwt_access_token_expire_minutes
         self.refresh_token_expire_days = self.settings.jwt_refresh_token_expire_days
 
-        # In-memory fallback blacklist (used when Redis is unavailable)
-        # Bounded to MAX_MEMORY_BLACKLIST entries; cleared when full.
-        self.blacklisted_tokens: set = set()
+        # In-memory fallback blacklist: {identifier: added_timestamp}
+        # Bounded to MAX_MEMORY_BLACKLIST; evicts oldest entries when full.
+        self.blacklisted_tokens: dict[str, float] = {}
 
         # Redis client (initialized lazily via connect_redis)
         self._redis = None
@@ -376,23 +377,36 @@ class JWTManager:
             return token_hash, 86400
 
     def _enforce_memory_limit(self):
-        """Clear in-memory blacklist if it exceeds MAX_MEMORY_BLACKLIST."""
+        """Evict oldest blacklist entries when limit reached."""
+        if len(self.blacklisted_tokens) < self.MAX_MEMORY_BLACKLIST:
+            return
+        # First pass: remove entries older than 24h (expired tokens)
+        cutoff = time.time() - 86400
+        expired = [k for k, ts in self.blacklisted_tokens.items() if ts < cutoff]
+        for k in expired:
+            del self.blacklisted_tokens[k]
+        # If still over limit, evict oldest 20%
         if len(self.blacklisted_tokens) >= self.MAX_MEMORY_BLACKLIST:
-            logger.warning(
-                "In-memory blacklist reached "
-                f"{len(self.blacklisted_tokens)} entries, clearing"
+            evict_count = self.MAX_MEMORY_BLACKLIST // 5
+            sorted_keys = sorted(
+                self.blacklisted_tokens, key=self.blacklisted_tokens.get,
             )
-            self.blacklisted_tokens.clear()
+            for k in sorted_keys[:evict_count]:
+                del self.blacklisted_tokens[k]
+            logger.warning(
+                f"Blacklist evicted {evict_count} oldest entries "
+                f"({len(self.blacklisted_tokens)} remaining)"
+            )
 
     def blacklist_token(self, token: str):
-        """Synchronous blacklist — adds to in-memory set.
+        """Synchronous blacklist — adds to in-memory dict.
 
         For Redis persistence, use blacklist_token_async() instead.
         """
         identifier, _ = self._extract_jti_and_ttl(token)
         if identifier:
             self._enforce_memory_limit()
-            self.blacklisted_tokens.add(identifier)
+            self.blacklisted_tokens[identifier] = time.time()
 
     async def blacklist_token_async(self, token: str):
         """Blacklist a token in Redis (with in-memory fallback).
@@ -406,7 +420,7 @@ class JWTManager:
 
         # Always add to in-memory (immediate effect for current process)
         self._enforce_memory_limit()
-        self.blacklisted_tokens.add(identifier)
+        self.blacklisted_tokens[identifier] = time.time()
 
         # Persist to Redis if available
         if self._redis_available and self._redis:
@@ -447,7 +461,7 @@ class JWTManager:
                 result = await self._redis.exists(key)
                 if result:
                     # Sync to in-memory for faster subsequent checks
-                    self.blacklisted_tokens.add(identifier)
+                    self.blacklisted_tokens[identifier] = time.time()
                     return True
             except Exception as e:
                 logger.warning(
@@ -505,11 +519,27 @@ class JWTManager:
         """Şifre doğrula"""
         return self.pwd_context.verify(plain_password, hashed_password)
 
+    def _cleanup_stale_device_attempts(self, max_age_minutes: int = 120) -> None:
+        """Remove device_attempts entries older than max_age_minutes."""
+        if len(self.device_attempts) < 100:
+            return  # Skip cleanup for small dicts
+        now = datetime.now(UTC)
+        cutoff = timedelta(minutes=max_age_minutes)
+        stale = [
+            k for k, v in self.device_attempts.items()
+            if now - v["window_start"] > cutoff
+        ]
+        for k in stale:
+            del self.device_attempts[k]
+
     def check_rate_limit(
         self, identifier: str, max_attempts: int = 5, window_minutes: int = 15
     ) -> bool:
         """Rate limiting kontrolü"""
         now = datetime.now(UTC)
+
+        # Periodic cleanup of stale entries
+        self._cleanup_stale_device_attempts()
 
         if identifier not in self.device_attempts:
             self.device_attempts[identifier] = {"attempts": 1, "window_start": now}
@@ -761,6 +791,15 @@ async def get_current_user(
         )
 
     token = credentials.credentials
+
+    # Check Redis-backed blacklist (cross-process revocation)
+    if await jwt_mgr.is_blacklisted_async(token):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Token has been revoked",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+
     return jwt_mgr.verify_token(token, TokenType.ACCESS)
 
 
