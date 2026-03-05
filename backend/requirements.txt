@@ -72,7 +72,7 @@ numpy>=1.26.0
 scikit-learn>=1.4.0
 
 # Math
-sympy==1.12
+sympy==1.14.0
 matplotlib>=3.8.2
 plotly==5.18.0
 
