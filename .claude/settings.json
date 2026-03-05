@@ -22,11 +22,28 @@
       "WebSearch"
     ],
     "deny": [
-      "Bash(rm -rf:*)",
-      "Bash(DROP:*)",
+      "Bash(rm -rf /:*)",
+      "Bash(rm -rf *:*)",
+      "Bash(rm -rf .:*)",
+      "Bash(rmdir /s /q:*)",
+      "Bash(del /s /q:*)",
+      "Bash(DROP TABLE:*)",
+      "Bash(DROP DATABASE:*)",
+      "Bash(TRUNCATE TABLE:*)",
       "Bash(DELETE FROM:*)",
-      "Bash(TRUNCATE:*)",
+      "Bash(git push --force:*)",
+      "Bash(git push -f:*)",
+      "Bash(git push --force-with-lease --force:*)",
+      "Bash(git reset --hard:*)",
+      "Bash(git clean -fd:*)",
+      "Bash(git clean -f:*)",
+      "Bash(chmod 777:*)",
+      "Bash(cat .env:*)",
+      "Bash(source .env:*)",
+      "Bash(. .env:*)",
+      "Bash(eval :*)",
       "Read(.env*)",
+      "Write(.env*)",
       "Edit(.env*)",
       "Edit(d-dataset/ocr_output/**)",
       "Edit(d-dataset/answer_keys/**)",
@@ -37,44 +54,13 @@
     ]
   },
   "hooks": {
-    "PreCompact": [
-      {
-        "matcher": "",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "powershell -ExecutionPolicy Bypass -File C:/Users/husey/kiro2/.claude/hooks/pre-compact.ps1"
-          }
-        ]
-      }
-    ],
-    "PostToolUse": [
-      {
-        "matcher": "Edit",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "powershell -ExecutionPolicy Bypass -File C:/Users/husey/kiro2/.claude/hooks/post-tool-use.ps1"
-          }
-        ]
-      },
-      {
-        "matcher": "Write",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "powershell -ExecutionPolicy Bypass -File C:/Users/husey/kiro2/.claude/hooks/post-tool-use.ps1"
-          }
-        ]
-      }
-    ],
     "PreToolUse": [
       {
-        "matcher": "Bash",
+        "matcher": "Write|Edit",
         "hooks": [
           {
             "type": "command",
-            "command": "powershell -ExecutionPolicy Bypass -File C:/Users/husey/kiro2/.claude/hooks/pre-tool-use.ps1"
+            "command": "python .claude/hooks/pre-tool-use.py"
           }
         ]
       }
@@ -85,7 +71,29 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python C:/Users/husey/kiro2/.claude/hooks/session-init.py"
+            "command": "python .claude/hooks/session-init.py"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python .claude/hooks/session-save.py"
+          }
+        ]
+      }
+    ],
+    "PreCompact": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python .claude/hooks/session-save.py"
           }
         ]
       }
@@ -95,11 +103,10 @@
     "warningThreshold": 60,
     "clearThreshold": 70,
     "progressFile": "progress.md",
-    "autoCompact": false
+    "autoCompact": true
   },
   "env": {
-    "CLAUDE_CODE_TASK_LIST_ID": "kiro2-master",
-    "CLAUDE_CODE_DISABLE_AUTO_COMPACT": "1"
+    "CLAUDE_CODE_TASK_LIST_ID": "kiro2-master"
   },
   "excludePatterns": [
     "node_modules",
