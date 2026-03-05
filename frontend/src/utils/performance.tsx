@@ -4,8 +4,7 @@
  */
 
 import * as React from 'react';
-import {  lazy, Suspense, ComponentType, ReactNode  } from 'react';
-import * as React from 'react';
+import {  lazy, Suspense, ComponentType, ReactNode, useState, useCallback  } from 'react';
 import { Route } from 'react-router-dom';
 
 // Performance monitoring

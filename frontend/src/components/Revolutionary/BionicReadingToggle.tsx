@@ -113,7 +113,7 @@ const BionicReadingToggle: React.FC<BionicReadingToggleProps> = ({
   };
 
   // Ayarlar değişikliği
-  const handleSettingsChange = async (newSettings: typeof settings) => {
+  const handleSettingsChange = async (newSettings: typeof _settings) => {
     await updateSettings(newSettings);
 
     if (enabled && inputText.trim()) {

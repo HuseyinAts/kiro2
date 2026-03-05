@@ -13,8 +13,8 @@ RUN npm ci
 # Copy application code
 COPY . .
 
-# Build the application (vite only; tsc has type errors, run separately in CI)
-RUN npm run build:fast
+# Build the application (tsc + vite)
+RUN npm run build
 
 # Production stage
 FROM node:18-alpine AS production
