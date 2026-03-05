@@ -11,7 +11,7 @@ testcontainers[postgres]==4.0.1
 testcontainers[redis]==4.0.1
 
 # Database drivers
-psycopg2-binary==2.9.9
+psycopg2-binary==2.9.11
 redis==5.0.1
 
 # Additional testing tools
