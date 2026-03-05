@@ -4,6 +4,7 @@ RELIABILITY FIX: Monitor Redis persistence and data integrity
 """
 
 import asyncio
+import os
 from dataclasses import dataclass
 from datetime import datetime
 from typing import Dict, Optional
@@ -54,8 +55,8 @@ class RedisMonitor:
     - Automatic alerts
     """
 
-    def __init__(self, redis_url: str = "redis://localhost:6379"):
-        self.redis_url = redis_url
+    def __init__(self, redis_url: str | None = None):
+        self.redis_url = redis_url or os.getenv("REDIS_URL", "redis://localhost:6379/0")
         self.redis_client: Optional[aioredis.Redis] = None
 
     async def connect(self):

@@ -5,6 +5,7 @@ RELIABILITY FIX: Production-ready health checks with Kubernetes support
 """
 
 import asyncio
+import os
 import time
 from datetime import datetime, timezone
 from typing import Any, Dict
@@ -326,7 +327,8 @@ async def check_redis_health() -> Dict[str, Any]:
     try:
         import redis.asyncio as redis
 
-        client = redis.from_url("redis://localhost:6379", decode_responses=True)
+        redis_url = os.getenv("REDIS_URL", "redis://localhost:6379/0")
+        client = redis.from_url(redis_url, decode_responses=True)
         await client.ping()
         await client.close()
 
