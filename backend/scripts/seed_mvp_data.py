@@ -32,10 +32,15 @@ DATABASE_URL = os.getenv(
 # Convert async URL to sync: remove +asyncpg
 SYNC_URL = DATABASE_URL.replace("+asyncpg", "").replace("postgresql://", "")
 # Parse: user:pass@host:port/dbname
-auth_host, dbname = SYNC_URL.rsplit("/", 1)
-userpass, hostport = auth_host.rsplit("@", 1)
-db_user, db_pass = userpass.split(":", 1)
-db_host, db_port = hostport.split(":", 1)
+try:
+    auth_host, dbname = SYNC_URL.rsplit("/", 1)
+    userpass, hostport = auth_host.rsplit("@", 1)
+    db_user, db_pass = userpass.split(":", 1)
+    db_host, db_port = hostport.split(":", 1)
+except ValueError:
+    print(f"ERROR: Cannot parse DATABASE_URL: {DATABASE_URL}")
+    print("Expected format: postgresql+asyncpg://user:pass@host:port/dbname")
+    sys.exit(1)
 
 # MVP Test Users
 MVP_USERS = [
@@ -98,13 +103,18 @@ ON CONFLICT (email) DO NOTHING
 
 def main():
     print(f"Connecting to PostgreSQL: {db_host}:{db_port}/{dbname}")
-    conn = psycopg2.connect(
-        host=db_host,
-        port=int(db_port),
-        dbname=dbname,
-        user=db_user,
-        password=db_pass,
-    )
+    try:
+        conn = psycopg2.connect(
+            host=db_host,
+            port=int(db_port),
+            dbname=dbname,
+            user=db_user,
+            password=db_pass,
+        )
+    except psycopg2.OperationalError as e:
+        print(f"ERROR: DB connection failed: {e}")
+        print("Check DATABASE_URL in .env.mvp")
+        sys.exit(1)
     conn.autocommit = False
     cur = conn.cursor()
 

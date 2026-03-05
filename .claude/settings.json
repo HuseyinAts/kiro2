@@ -62,7 +62,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python .claude/hooks/pre-tool-use.py"
+            "command": "python C:/Users/husey/kiro2/.claude/hooks/pre-tool-use.py"
           }
         ]
       }
@@ -73,7 +73,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python .claude/hooks/session-init.py"
+            "command": "python C:/Users/husey/kiro2/.claude/hooks/session-init.py"
           }
         ]
       }
@@ -84,7 +84,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python .claude/hooks/session-save.py"
+            "command": "python C:/Users/husey/kiro2/.claude/hooks/session-save.py"
           }
         ]
       }
@@ -95,7 +95,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python .claude/hooks/session-save.py"
+            "command": "python C:/Users/husey/kiro2/.claude/hooks/session-save.py"
           }
         ]
       }

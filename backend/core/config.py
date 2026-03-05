@@ -166,7 +166,7 @@ class Settings:
 
         # CORS ayarları
         origins_str = os.getenv(
-            "ALLOWED_ORIGINS", "http://localhost:3000,http://localhost:5173"
+            "ALLOWED_ORIGINS", "http://localhost:3000,http://localhost:3001,http://localhost:5173"
         )
         self.allowed_origins = [origin.strip() for origin in origins_str.split(",")]
 

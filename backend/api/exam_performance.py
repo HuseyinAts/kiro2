@@ -9,6 +9,7 @@ Bu modül sınav performans analizi için API endpoint'lerini sağlar:
 - Ulusal ortalamalarla karşılaştırma
 """
 
+import os
 from typing import Any, Dict, List, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
@@ -29,7 +30,7 @@ logger = get_logger("exam_performance_api")
 # L1: Memory (50 entries), L2: Redis, TTL: 30 minutes
 # Performance improvement: 2000ms → 50ms (40x faster on cache hit)
 performance_cache = MultiLayerCache(
-    redis_url="redis://localhost:6379/0",
+    redis_url=os.getenv("REDIS_URL", "redis://localhost:6379/0"),
     l1_max_size=50,  # Lower limit for frequently changing data
     default_ttl=1800,  # 30 minutes (performance data changes frequently)
     namespace="exam_performance",

@@ -2,6 +2,7 @@
 Öğrenci Dashboard API endpoint'leri
 SPRINT 2: Multi-layer cache integration (L1 Memory + L2 Redis)
 """
+import os
 from typing import List, Optional
 import hashlib
 import json
@@ -29,7 +30,7 @@ logger = get_logger("student_dashboard_api")
 # L1: Memory (30 entries), L2: Redis, TTL: 5-10 minutes
 # Performance improvement: ~1500ms → 10-50ms (15-150x faster on cache hit)
 dashboard_cache = MultiLayerCache(
-    redis_url="redis://localhost:6379/0",
+    redis_url=os.getenv("REDIS_URL", "redis://localhost:6379/0"),
     l1_max_size=30,  # Dashboard data is highly personalized, smaller L1
     default_ttl=600,  # 10 minutes default
     namespace="student_dashboard",

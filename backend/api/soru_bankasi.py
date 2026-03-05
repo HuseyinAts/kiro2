@@ -3,6 +3,7 @@ Soru Bankası API Endpoint'leri
 Türkiye Üniversite Sınavları Hazırlık Platformu
 """
 import logging
+import os
 from typing import Any, Dict, List, Optional
 import hashlib
 import json
@@ -24,7 +25,7 @@ router = APIRouter(tags=["Soru Bankası"])
 # Initialize multi-layer cache for question bank
 # L1: Memory (100 entries), L2: Redis, TTL: 1 hour
 question_cache = MultiLayerCache(
-    redis_url="redis://localhost:6379/0",
+    redis_url=os.getenv("REDIS_URL", "redis://localhost:6379/0"),
     l1_max_size=100,
     default_ttl=3600,
     namespace="soru_bankasi",
