@@ -1,5 +1,17 @@
 # KIRO2 Project Instructions
 
+## Communication Rules
+
+1. **Direct Answer First**: Kullanıcı evet/hayır veya kısa cevap gerektiren soru sorduğunda ÖNCE 1 cümle ile cevapla, SONRA analiz/keşif yap. Dosya keşfi cevaptan ÖNCE yapılmaz.
+2. **Plan Iteration Limit**: Plan oluştururken maksimum 2 iterasyon. 2. iterasyonda hâlâ netleşmediyse kullanıcıya sun ve yön sor. Onaysız auto-pivot yapma.
+3. **Windows Environment**: Bu bir Windows 11 + NTFS ortamı. Linux/Mac komutları önerme. NTFS dosya tarama yavaştır — batch işlemlerde bunu hesaba kat. `python3` yok, `python` kullan.
+
+## Git Operations
+
+- **Push fail (>2GB pack)**: 1) `git-lfs` ile büyük dosyaları track et, 2) `.gitignore` güncelle, 3) BFG Repo-Cleaner ile history temizle. Push'u tekrar tekrar deneme.
+- **Pre-commit**: 50MB+ dosya commit'e girmeye çalışırsa engelle.
+- **LFS tracked patterns**: `*.jsonl` (>50MB), `*.bin`, `*.pt`, `*.db` (>50MB)
+
 ## 🎯 Project Overview
 
 KIRO2 is a Turkish EdTech platform for YKS/TYT/AYT university entrance exam preparation.

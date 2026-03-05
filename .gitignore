@@ -83,9 +83,9 @@ backups/*.rdb
 backups/*.aof
 *.backup
 
-# Vector DB
-vector_db/chroma/
-vector_db/*.index
+# Vector DB (binary data, regenerated at runtime)
+**/vector_db/
+**/test_vector_db/
 
 # Uploads
 uploads/*
@@ -219,3 +219,7 @@ files/
 frontend/backstop_data/bitmaps_test/
 frontend/backstop_data/html_report/
 frontend/backstop_data/ci_report/
+
+# Session state (auto-generated, personal)
+.claude/SESSION_STATE.md
+.claude/session_state.json

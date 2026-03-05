@@ -23,11 +23,12 @@ class JoinBattleRequest(BaseModel):
 
 @router.post("/teams/create")
 async def create_team(request: CreateTeamRequest, user_id: int):
+    """Yeni bir takım oluşturur ve kullanıcıyı takım lideri olarak atar."""
     from ..services.team_challenges import TeamChallengeManager
-    
+
     manager = TeamChallengeManager()
     team = manager.create_team(request.team_name, user_id)
-    
+
     return {
         "team_id": team.team_id,
         "team_name": team.team_name,
@@ -38,15 +39,16 @@ async def create_team(request: CreateTeamRequest, user_id: int):
 
 @router.post("/battles/create")
 async def create_quiz_battle(request: CreateBattleRequest, host_id: int):
+    """Yeni bir quiz savaşı odası oluşturur. Oda kodu ile diğer kullanıcılar katılabilir."""
     from ..services.team_challenges import TeamChallengeManager
-    
+
     manager = TeamChallengeManager()
     battle = manager.create_quiz_battle(
         host_id=host_id,
         topic=request.topic,
         max_participants=request.max_participants
     )
-    
+
     return {
         "battle_id": battle.battle_id,
         "room_code": battle.room_code,
@@ -57,25 +59,26 @@ async def create_quiz_battle(request: CreateBattleRequest, host_id: int):
 
 @router.post("/battles/join")
 async def join_quiz_battle(request: JoinBattleRequest, user_id: int):
+    """Oda kodu ile mevcut bir quiz savaşına katılır."""
     from ..services.team_challenges import TeamChallengeManager
-    
+
     manager = TeamChallengeManager()
-    
+
     # Find battle by room code
     battle = None
     for b in manager.battles.values():
         if b.room_code == request.room_code:
             battle = b
             break
-    
+
     if not battle:
         raise HTTPException(status_code=404, detail="Battle not found")
-    
+
     success = battle.add_participant(user_id)
-    
+
     if not success:
         raise HTTPException(status_code=400, detail="Battle is full or already joined")
-    
+
     return {
         "battle_id": battle.battle_id,
         "participants": battle.participants,
@@ -85,14 +88,15 @@ async def join_quiz_battle(request: JoinBattleRequest, user_id: int):
 
 @router.get("/battles/{battle_id}/leaderboard")
 async def get_battle_leaderboard(battle_id: str):
+    """Belirli bir quiz savaşının skor tablosunu döndürür."""
     from ..services.team_challenges import TeamChallengeManager
-    
+
     manager = TeamChallengeManager()
     battle = manager.battles.get(battle_id)
-    
+
     if not battle:
         raise HTTPException(status_code=404, detail="Battle not found")
-    
+
     return {
         "battle_id": battle_id,
         "leaderboard": battle.get_leaderboard()
@@ -101,11 +105,12 @@ async def get_battle_leaderboard(battle_id: str):
 
 @router.get("/teams/leaderboard")
 async def get_team_leaderboard(limit: int = 10):
+    """Tüm takımların genel sıralamasını puan ve kazanılan yarışma sayısına göre döndürür."""
     from ..services.team_challenges import TeamChallengeManager
-    
+
     manager = TeamChallengeManager()
     teams = manager.get_team_leaderboard(limit)
-    
+
     return {
         "leaderboard": [
             {
@@ -123,11 +128,11 @@ async def get_team_leaderboard(limit: int = 10):
 @router.websocket("/ws/battle/{battle_id}")
 async def websocket_battle(websocket: WebSocket, battle_id: str):
     await websocket.accept()
-    
+
     try:
         while True:
             data = await websocket.receive_json()
-            
+
             # Handle real-time battle events
             if data["type"] == "submit_answer":
                 # Process answer submission
@@ -137,7 +142,7 @@ async def websocket_battle(websocket: WebSocket, battle_id: str):
                     "points": 100
                 }
                 await websocket.send_json(response)
-            
+
             elif data["type"] == "get_scores":
                 # Send current scores
                 response = {
@@ -145,7 +150,7 @@ async def websocket_battle(websocket: WebSocket, battle_id: str):
                     "scores": {}
                 }
                 await websocket.send_json(response)
-    
+
     except Exception as e:
         print(f"WebSocket error: {e}")
     finally:
