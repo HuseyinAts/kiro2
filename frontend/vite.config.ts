@@ -88,7 +88,7 @@ export default defineConfig({
         pure_funcs: process.env.NODE_ENV === 'production' ? ['console.log', 'console.info'] : [],
       },
       mangle: {
-        safari10: true,
+        safari10: false,
       },
     },
     rollupOptions: {
@@ -100,6 +100,10 @@ export default defineConfig({
             // React ecosystem
             if (id.includes('react') || id.includes('react-dom') || id.includes('react-router')) {
               return 'react-vendor';
+            }
+            // MUI + Emotion (large, rarely changes)
+            if (id.includes('@mui') || id.includes('@emotion')) {
+              return 'mui-vendor';
             }
             // All other node_modules
             return 'vendor';

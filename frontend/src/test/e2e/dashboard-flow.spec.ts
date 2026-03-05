@@ -8,8 +8,8 @@ import { test, expect } from '@playwright/test';
 // Helper to login before dashboard tests
 async function loginAsStudent(page: any) {
   await page.goto('/login');
-  await page.getByLabel(/e-posta/i).fill('test@kiro2.com');
-  await page.getByLabel(/şifre/i).fill('Test123!');
+  await page.getByLabel(/e-posta/i).fill(process.env.E2E_TEST_EMAIL ?? 'ogrenci@kiro2.com');
+  await page.getByLabel(/şifre/i).fill(process.env.E2E_TEST_PASSWORD ?? '');
   await page.getByRole('button', { name: /giriş yap/i }).click();
   await expect(page).toHaveURL(/dashboard|ana-sayfa/i, { timeout: 15000 });
 }

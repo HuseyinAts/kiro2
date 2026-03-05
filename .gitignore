@@ -231,3 +231,7 @@ backend/coverage*.json
 backend/cov_*.json
 kiro2_import.csv
 *.pdf
+
+# Playwright test results
+frontend/test-results/
+frontend/playwright-report/
