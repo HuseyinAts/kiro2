@@ -94,22 +94,7 @@ export default defineConfig({
     rollupOptions: {
       output: {
         // Simplified chunk strategy - only vendor separation, let Vite handle app code
-        manualChunks: (id) => {
-          // Only separate vendor code, let Vite automatically code-split app code
-          if (id.includes('node_modules')) {
-            // React ecosystem
-            if (id.includes('react') || id.includes('react-dom') || id.includes('react-router')) {
-              return 'react-vendor';
-            }
-            // MUI + Emotion (large, rarely changes)
-            if (id.includes('@mui') || id.includes('@emotion')) {
-              return 'mui-vendor';
-            }
-            // All other node_modules
-            return 'vendor';
-          }
-          // Don't specify chunks for app code - let Vite handle lazy loading automatically
-        },
+        manualChunks: undefined,
         // Chunk dosya isimlendirme
         chunkFileNames: 'js/[name]-[hash].js',
         entryFileNames: 'js/[name]-[hash].js',

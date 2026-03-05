@@ -680,97 +680,6 @@ async def elasticsearch_search(
 # ========================================================================
 
 
-@router.get("/{question_id}", status_code=status.HTTP_200_OK)
-async def get_question(
-    question_id: str,
-    include_relations: bool = Query(False, description="İlişkileri dahil et"),
-    service: QuestionCRUDService = Depends(get_question_service),
-):
-    """
-    Soru detaylarını getir
-    """
-    try:
-        question = await service.get_question_by_id(
-            question_id=question_id, include_relations=include_relations
-        )
-
-        if not question:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND, detail="Soru bulunamadı"
-            )
-
-        question_data = {
-            "id": question.id,
-            "question_text": question.question_text,
-            "question_html": question.question_html,
-            "question_latex": question.question_latex,
-            "question_image_url": question.question_image_url,
-            "options": {
-                "A": question.option_a,
-                "B": question.option_b,
-                "C": question.option_c,
-                "D": question.option_d,
-                "E": question.option_e,
-            },
-            "correct_answer": question.correct_answer,
-            "explanation": question.explanation,
-            "explanation_video_url": question.explanation_video_url,
-            "alternative_solutions": question.alternative_solutions,
-            "exam_type": question.exam_type,
-            "subject_area": question.subject_area,
-            "grade_level": question.grade_level,
-            "difficulty": question.difficulty_level.value,
-            "bloom_level": question.bloom_level,
-            "bloom_category": question.bloom_category,
-            "irt_parameters": {
-                "difficulty": question.irt_difficulty,
-                "discrimination": question.irt_discrimination,
-                "guessing": question.irt_guessing,
-                "upper_asymptote": question.irt_upper_asymptote,
-            },
-            "morphology_complexity": question.morphology_complexity,
-            "readability_score": question.readability_score,
-            "statistics": {
-                "times_asked": question.times_asked,
-                "times_correct": question.times_correct,
-                "times_wrong": question.times_wrong,
-                "times_skipped": question.times_skipped,
-                "success_rate": (
-                    question.times_correct / max(1, question.times_asked)
-                    if question.times_asked > 0
-                    else 0
-                ),
-                "average_response_time": question.average_response_time,
-            },
-            "quality": {
-                "score": question.quality_score,
-                "review_status": question.quality_review_status,
-                "osym_compliant": question.osym_format_compliant,
-            },
-            "created_at": question.created_at.isoformat(),
-            "updated_at": question.updated_at.isoformat(),
-            "is_active": question.is_active,
-            "is_public": question.is_public,
-        }
-
-        return JSONResponse(
-            status_code=status.HTTP_200_OK,
-            content={
-                "success": True,
-                "data": question_data,
-                "message": "Soru detayları başarıyla getirildi",
-            },
-        )
-
-    except HTTPException:
-        raise
-    except Exception as e:
-        logger.error(f"Soru getirme hatası: {str(e)}")
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Soru getirme hatası: {str(e)}",
-        )
-
 
 @router.get("/statistics/overview", status_code=status.HTTP_200_OK)
 async def get_statistics(
@@ -1098,4 +1007,96 @@ async def semantic_search(
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Anlamsal arama sirasinda bir hata olustu",
+        )
+
+
+@router.get("/{question_id}", status_code=status.HTTP_200_OK)
+async def get_question(
+    question_id: str,
+    include_relations: bool = Query(False, description="İlişkileri dahil et"),
+    service: QuestionCRUDService = Depends(get_question_service),
+):
+    """
+    Soru detaylarını getir
+    """
+    try:
+        question = await service.get_question_by_id(
+            question_id=question_id, include_relations=include_relations
+        )
+
+        if not question:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND, detail="Soru bulunamadı"
+            )
+
+        question_data = {
+            "id": question.id,
+            "question_text": question.question_text,
+            "question_html": question.question_html,
+            "question_latex": question.question_latex,
+            "question_image_url": question.question_image_url,
+            "options": {
+                "A": question.option_a,
+                "B": question.option_b,
+                "C": question.option_c,
+                "D": question.option_d,
+                "E": question.option_e,
+            },
+            "correct_answer": question.correct_answer,
+            "explanation": question.explanation,
+            "explanation_video_url": question.explanation_video_url,
+            "alternative_solutions": question.alternative_solutions,
+            "exam_type": question.exam_type,
+            "subject_area": question.subject_area,
+            "grade_level": question.grade_level,
+            "difficulty": question.difficulty_level.value,
+            "bloom_level": question.bloom_level,
+            "bloom_category": question.bloom_category,
+            "irt_parameters": {
+                "difficulty": question.irt_difficulty,
+                "discrimination": question.irt_discrimination,
+                "guessing": question.irt_guessing,
+                "upper_asymptote": question.irt_upper_asymptote,
+            },
+            "morphology_complexity": question.morphology_complexity,
+            "readability_score": question.readability_score,
+            "statistics": {
+                "times_asked": question.times_asked,
+                "times_correct": question.times_correct,
+                "times_wrong": question.times_wrong,
+                "times_skipped": question.times_skipped,
+                "success_rate": (
+                    question.times_correct / max(1, question.times_asked)
+                    if question.times_asked > 0
+                    else 0
+                ),
+                "average_response_time": question.average_response_time,
+            },
+            "quality": {
+                "score": question.quality_score,
+                "review_status": question.quality_review_status,
+                "osym_compliant": question.osym_format_compliant,
+            },
+            "created_at": question.created_at.isoformat(),
+            "updated_at": question.updated_at.isoformat(),
+            "is_active": question.is_active,
+            "is_public": question.is_public,
+        }
+
+        return JSONResponse(
+            status_code=status.HTTP_200_OK,
+            content={
+                "success": True,
+                "data": question_data,
+                "message": "Soru detayları başarıyla getirildi",
+            },
+        )
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Soru getirme hatası: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Soru getirme hatası: {str(e)}",
         )
