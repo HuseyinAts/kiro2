@@ -33,6 +33,8 @@
       "Bash(DELETE FROM:*)",
       "Bash(git push --force:*)",
       "Bash(git push -f:*)",
+      "Bash(git push origin --force:*)",
+      "Bash(git push origin -f:*)",
       "Bash(git push --force-with-lease --force:*)",
       "Bash(git reset --hard:*)",
       "Bash(git clean -fd:*)",
@@ -42,9 +44,9 @@
       "Bash(source .env:*)",
       "Bash(. .env:*)",
       "Bash(eval :*)",
-      "Read(.env*)",
-      "Write(.env*)",
-      "Edit(.env*)",
+      "Read(**/.env*)",
+      "Write(**/.env*)",
+      "Edit(**/.env*)",
       "Edit(d-dataset/ocr_output/**)",
       "Edit(d-dataset/answer_keys/**)",
       "Edit(d-dataset/eslesmis_sorucevap.jsonl)",
@@ -111,8 +113,8 @@
   "excludePatterns": [
     "node_modules",
     "node_modules/**",
-    ".venv",
-    ".venv/**",
+    ".venv*",
+    ".venv*/**",
     "venv",
     "venv/**",
     "__pycache__",
@@ -154,7 +156,8 @@
     "tmp",
     "temp",
     ".temp",
-    ".tmp"
+    ".tmp",
+    "**/desktop.ini"
   ],
   "model": "opus"
 }

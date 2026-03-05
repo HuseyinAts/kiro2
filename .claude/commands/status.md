@@ -1,60 +1,66 @@
 ---
-allowed-tools: Bash, Read, Glob
+allowed-tools: Bash, Read, Glob, Grep
 description: Sistem ve servis sağlık kontrolü
 ---
 
 ## Task
-KIRO2 sisteminin sağlık durumunu kontrol et.
+KIRO2 sisteminin tam durum raporunu oluştur. Tüm kontrolleri PARALEL çalıştır, sonucu tek tablo formatında sun.
 
-## Kontroller
+## Kontroller (hepsini paralel çalıştır)
 
-### 1. Backend Servisleri
+### 1. Servisler
 ```bash
-# FastAPI health check
-curl -s http://localhost:8000/health || echo "Backend DOWN"
+# Backend
+curl -s -o /dev/null -w "%{http_code}" http://localhost:8000/health 2>/dev/null || echo "DOWN"
 
-# Redis bağlantısı
-redis-cli ping || echo "Redis DOWN"
+# Frontend
+curl -s -o /dev/null -w "%{http_code}" http://localhost:3000 2>/dev/null || echo "DOWN"
 
-# PostgreSQL bağlantısı (dev'de SQLite)
-cd backend && python -c "from app.core.database import engine; print('DB OK')" || echo "DB DOWN"
+# Docker containers
+docker ps --format "{{.Names}}: {{.Status}}" 2>/dev/null | head -10
 ```
 
-### 2. Frontend
+### 2. Git
 ```bash
-# Next.js dev server
-curl -s http://localhost:3000 > /dev/null && echo "Frontend OK" || echo "Frontend DOWN"
-```
-
-### 3. Git Durumu
-```bash
-git status --short
+cd C:/Users/husey/kiro2
+git branch --show-current
 git log -1 --oneline
+git status --short | head -15
+git diff --stat HEAD 2>/dev/null | tail -3
 ```
 
-### 4. Test Durumu
+### 3. Production Data
 ```bash
-# Son test sonuçları
-cd backend && pytest --collect-only -q 2>/dev/null | tail -5
+# Soru sayısı (production JSONL)
+wc -l < C:/Users/husey/kiro2/d-dataset/eslesmis_sorucevap.jsonl 2>/dev/null || echo "N/A"
 ```
 
-### 5. Disk/Memory
+### 4. Test (sadece toplama, çalıştırma)
 ```bash
-# Windows
-wmic logicaldisk get size,freespace,caption 2>/dev/null || df -h 2>/dev/null
+cd C:/Users/husey/kiro2/backend && python -m pytest tests/unit/ --co -q 2>&1 | tail -1
+```
+
+### 5. Commit Bekleyen Değişiklikler
+```bash
+cd C:/Users/husey/kiro2
+git diff --cached --stat 2>/dev/null | tail -3
+git status --short -- "*.py" | wc -l
 ```
 
 ## Çıktı Formatı
 
-```
-╔════════════════════════════════════╗
-║        KIRO2 DURUM RAPORU          ║
-╠════════════════════════════════════╣
-║ Backend API    : ✅ OK / ❌ DOWN   ║
-║ Frontend       : ✅ OK / ❌ DOWN   ║
-║ PostgreSQL/SQLite: ✅ OK / ❌ DOWN ║
-║ Redis          : ✅ OK / ❌ DOWN   ║
-║ Git Branch     : [branch-name]     ║
-║ Son Commit     : [commit-msg]      ║
-╚════════════════════════════════════╝
-```
+Markdown tablo, kısa ve öz:
+
+| Alan | Durum |
+|------|-------|
+| Backend | UP/DOWN (HTTP code) |
+| Frontend | UP/DOWN (HTTP code) |
+| Docker | container listesi |
+| Branch | branch adı |
+| Son Commit | hash + mesaj |
+| Production | X soru |
+| Unit Tests | X collected |
+| Uncommitted | X dosya |
+| Kritik | varsa listele |
+
+KISA TUT. Açıklama yapma, sadece veriyi göster.

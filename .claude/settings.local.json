@@ -9,7 +9,6 @@
       "Bash(xargs:*)",
       "Bash(find:*)",
       "Bash(sort:*)",
-      "Bash(powershell -ExecutionPolicy Bypass -File .claude/hooks/claude-flow-router.ps1:*)",
       "Bash(powershell:*)",
       "WebSearch",
       "Bash(findstr:*)",
@@ -71,17 +70,5 @@
     "zemberek-mcp",
     "claude-md-improvement"
   ],
-  "hooks": {
-    "UserPromptSubmit": [
-      {
-        "matcher": "",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "powershell -ExecutionPolicy Bypass -File .claude/hooks/claude-flow-router.ps1 -UserMessage \"$PROMPT\""
-          }
-        ]
-      }
-    ]
-  }
+  "hooks": {}
 }

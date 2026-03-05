@@ -34,6 +34,9 @@ REWARD_HACKING_PATTERNS: list[tuple[str, str]] = [
     (r"^\s*assert\s+true\s*$", "assert true"),
     (r"ASSERT_TRUE\s*\(\s*[Tt]rue\s*\)", "ASSERT_TRUE(true)"),
     (r"expect\s*\(\s*true\s*\)\s*\.\s*toBe\s*\(\s*true\s*\)", "expect(true).toBe(true)"),
+    # Trivial numeric assertions (no legitimate use)
+    (r"^\s*assert\s+1\s*==\s*1\s*$", "assert 1 == 1"),
+    (r"expect\s*\(\s*1\s*\)\s*\.\s*toBe\s*\(\s*1\s*\)", "expect(1).toBe(1)"),
     # Fake success signals
     (r"""print\s*\(\s*['"]Success['"]\s*\)""", "print('Success')"),
     # Stub markers
