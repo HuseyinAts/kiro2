@@ -4,7 +4,7 @@
 # ============================================================================
 # STAGE 1: Python Dependencies Builder
 # ============================================================================
-FROM python:3.11-slim as builder
+FROM python:3.14-slim as builder
 
 WORKDIR /build
 
@@ -29,7 +29,7 @@ RUN pip install --no-cache-dir --upgrade pip && \
 # ============================================================================
 # STAGE 2: Production Runtime
 # ============================================================================
-FROM python:3.11-slim
+FROM python:3.14-slim
 
 LABEL maintainer="KIRO Platform Team"
 LABEL description="KIRO - AI-Powered Educational Platform (Question Bank v2.0)"
