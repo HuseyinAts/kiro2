@@ -10,6 +10,7 @@ Bu modül ÖSYM formatında TYT/AYT/YDT sınavlarını yönetir:
 """
 
 import asyncio
+import copy
 import uuid
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
@@ -260,8 +261,8 @@ class OSYMExamEngine:
         try:
             session_id = str(uuid.uuid4())
 
-            # Sınav konfigürasyonunu al
-            exam_config = self.exam_configs[exam_type]
+            # Sınav konfigürasyonunu al (deepcopy — shared config'i korumak icin)
+            exam_config = copy.deepcopy(self.exam_configs[exam_type])
 
             # AYT için alan türüne göre konfigürasyon seç - REQ-1.2, REQ-3.1
             if (
@@ -335,6 +336,24 @@ class OSYMExamEngine:
                             for subj, cnt in exam_config.subject_distribution.items()
                         }
                     exam_config.total_questions = total
+                if "subject" in custom_config:
+                    # Tek ders sınavı: sadece seçilen dersten soru al
+                    subject_key = str(custom_config["subject"]).upper()
+                    SUBJECT_MAP = {
+                        "MATEMATIK": "MATEMATIK", "GEOMETRI": "GEOMETRI",
+                        "TURKCE": "TURKCE", "TÜRKÇE": "TURKCE",
+                        "FEN BILIMLERI": "FEN", "FEN": "FEN",
+                        "FIZIK": "FIZIK", "KIMYA": "KIMYA", "BIYOLOJI": "BIYOLOJI",
+                        "SOSYAL BILIMLER": "SOSYAL", "SOSYAL": "SOSYAL",
+                        "TARIH": "TARIH", "COGRAFYA": "COGRAFYA",
+                        "EDEBIYAT": "EDEBIYAT", "INGILIZCE": "INGILIZCE",
+                    }
+                    mapped = SUBJECT_MAP.get(subject_key, subject_key)
+                    q_count = custom_config.get(
+                        "question_count", exam_config.total_questions
+                    )
+                    exam_config.subject_distribution = {mapped: q_count}
+                    exam_config.total_questions = q_count
                 if "subject_distribution" in custom_config:
                     exam_config.subject_distribution.update(
                         custom_config["subject_distribution"]
@@ -352,7 +371,7 @@ class OSYMExamEngine:
             # Sınav oturumu oluştur
             session_data = ExamSessionData(
                 session_id=session_id,
-                student_id=student_id,
+                student_id=str(student_id),
                 exam_config=exam_config,
                 status=ExamStatus.NOT_STARTED,
                 questions=[q.id for q in questions],
@@ -362,7 +381,7 @@ class OSYMExamEngine:
             async with get_db_session_context() as db_session:
                 db_exam_session = ExamSession(
                     id=session_id,
-                    student_id=student_id,
+                    student_id=str(student_id),
                     exam_type=exam_type,
                     exam_name=f"{exam_type.value.upper()} Denemesi",
                     total_questions=exam_config.total_questions,
@@ -532,9 +551,9 @@ class OSYMExamEngine:
             if session_data.status != ExamStatus.IN_PROGRESS:
                 return False
 
-            # Cevabı kaydet
+            # Cevabı kaydet (normalize: uppercase + strip)
             if selected_answer:
-                session_data.answers[question_id] = selected_answer
+                session_data.answers[question_id] = selected_answer.strip().upper()
             elif question_id in session_data.answers:
                 del session_data.answers[question_id]
 
@@ -965,11 +984,11 @@ class OSYMExamEngine:
 
                     stats = subject_stats[subject]
                     stats["total"] += 1
-                    stats["total_difficulty"] += question.irt_difficulty
+                    stats["total_difficulty"] += question.irt_difficulty or 0.0
 
                     if answer and answer.selected_answer:
                         # Cevap verilmiş
-                        if answer.selected_answer == question.correct_answer:
+                        if (answer.selected_answer or "").strip().upper() == (question.correct_answer or "").strip().upper():
                             stats["correct"] += 1
                         else:
                             stats["wrong"] += 1
@@ -1098,7 +1117,12 @@ class OSYMExamEngine:
                     )
                     correct_answer = result.scalar_one_or_none()
 
-                    if correct_answer == student_answer:
+                    if (
+                        correct_answer
+                        and student_answer
+                        and correct_answer.strip().upper()
+                        == student_answer.strip().upper()
+                    ):
                         correct_answers += 1
                     else:
                         wrong_answers += 1

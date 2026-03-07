@@ -79,40 +79,39 @@ export const ModernExamResultsPage: React.FC = () => {
 
   const fetchExamResults = async () => {
     try {
-      const response = await fetch(`/api/v1/exams/${sinavId}/results`, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+      const performanceRes = await fetch(`/api/v1/osym-exam/${sinavId}/performance`, {
+        credentials: 'include',
       });
-      if (!response.ok) {throw new Error();}
-      const data = await response.json();
-      setResult(data);
-    } catch {
-      // Mock data
+      if (!performanceRes.ok) {throw new Error('Performans verisi alınamadı');}
+      const perfData = await performanceRes.json();
+
+      const subjectRes = await fetch(`/api/v1/osym-exam/${sinavId}/subject-performance`, {
+        credentials: 'include',
+      });
+      const subjectData = subjectRes.ok ? await subjectRes.json() : [];
+
       setResult({
         sinav_id: sinavId!,
         exam_type: 'TYT',
-        subject: 'Matematik',
-        question_count: 40,
-        correct_count: 32,
-        wrong_count: 5,
-        empty_count: 3,
-        score: 85,
-        duration: 65,
-        completed_at: '2025-11-21T10:30:00',
-        questions: Array.from({ length: 40 }, (_, i) => ({
-          question_id: `q${i + 1}`,
-          question_text: `Soru ${i + 1}`,
-          user_answer: i < 32 ? 'A' : i < 37 ? 'B' : null,
-          correct_answer: 'A',
-          is_correct: i < 32,
-          time_spent: Math.floor(Math.random() * 120) + 30,
+        subject: '',
+        question_count: perfData.total_questions,
+        correct_count: perfData.correct_answers,
+        wrong_count: perfData.wrong_answers,
+        empty_count: perfData.empty_answers,
+        score: perfData.raw_score,
+        duration: 0,
+        completed_at: new Date().toISOString(),
+        questions: [],
+        subject_breakdown: subjectData.map((s: any) => ({
+          subject: s.subject,
+          correct: s.correct_answers,
+          wrong: s.wrong_answers,
+          empty: s.empty_answers,
+          total: s.total_questions,
         })),
-        subject_breakdown: [
-          { subject: 'Sayılar', correct: 8, wrong: 1, empty: 1, total: 10 },
-          { subject: 'Geometri', correct: 7, wrong: 2, empty: 1, total: 10 },
-          { subject: 'Cebir', correct: 10, wrong: 0, empty: 0, total: 10 },
-          { subject: 'Olasılık', correct: 7, wrong: 2, empty: 1, total: 10 },
-        ],
       });
+    } catch {
+      setResult(null);
     } finally {
       setLoading(false);
     }

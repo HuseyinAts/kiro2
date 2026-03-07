@@ -22,9 +22,11 @@ export enum ExamStatus {
 }
 
 export enum QuestionDifficulty {
+  VERY_EASY = 'VERY_EASY',
   EASY = 'EASY',
   MEDIUM = 'MEDIUM',
-  HARD = 'HARD'
+  HARD = 'HARD',
+  VERY_HARD = 'VERY_HARD'
 }
 
 // Legacy aliases for compatibility
@@ -427,7 +429,7 @@ class ExamService {
    */
   async getExamResult(sessionId: string): Promise<PerformanceResponse> {
     try {
-      const response = await apiClient.get(`/api/v1/osym-exam/${sessionId}/result`);
+      const response = await apiClient.get(`/api/v1/osym-exam/${sessionId}/performance`);
       return response.data;
     } catch (error) {
       console.error('Sınav sonucu getirme hatası:', error);

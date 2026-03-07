@@ -233,7 +233,7 @@ class SubjectPerformanceResponse(BaseModel):
     "/create", response_model=ExamSessionResponse, summary="ÖSYM Sınavı Oluştur"
 )
 async def create_exam(
-    request: CreateExamRequest, current_user: Dict[str, Any] = Depends(get_current_user)
+    request: CreateExamRequest, current_user = Depends(get_current_user)
 ) -> ExamSessionResponse:
     """
     Yeni ÖSYM formatında sınav oturumu oluştur
@@ -248,7 +248,7 @@ async def create_exam(
     """
     try:
         session_id = await osym_exam_engine.create_exam_session(
-            student_id=current_user["user_id"],
+            student_id=current_user.id,
             exam_type=request.exam_type,
             custom_config=request.custom_config,
         )
@@ -265,7 +265,7 @@ async def create_exam(
             "ÖSYM sınavı oluşturuldu",
             extra_data={
                 "session_id": session_id,
-                "student_id": current_user["user_id"],
+                "student_id": current_user.id,
                 "exam_type": request.exam_type.value,
             },
         )
@@ -286,7 +286,7 @@ async def create_exam(
         logger.error(
             f"Sınav oluşturma hatası: {e}",
             extra_data={
-                "student_id": current_user["user_id"],
+                "student_id": current_user.id,
                 "exam_type": request.exam_type.value,
             },
         )
@@ -295,7 +295,7 @@ async def create_exam(
         logger.error(
             f"Beklenmeyen sınav oluşturma hatası: {e}",
             extra_data={
-                "student_id": current_user["user_id"],
+                "student_id": current_user.id,
                 "exam_type": request.exam_type.value,
             },
         )
@@ -311,7 +311,7 @@ async def create_exam(
     summary="ÖSYM Sınavını Başlat",
 )
 async def start_exam(
-    session_id: str, current_user: Dict[str, Any] = Depends(get_current_user)
+    session_id: str, current_user = Depends(get_current_user)
 ) -> ExamSessionResponse:
     """
     ÖSYM sınavını başlat ve zaman sayacını çalıştır
@@ -329,7 +329,7 @@ async def start_exam(
             )
 
         # Kullanıcı kontrolü
-        if session_data.student_id != current_user["user_id"]:
+        if str(session_data.student_id) != str(current_user.id):
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail="Bu sınava erişim yetkiniz yok",
@@ -342,7 +342,7 @@ async def start_exam(
             "ÖSYM sınavı başlatıldı",
             extra_data={
                 "session_id": session_id,
-                "student_id": current_user["user_id"],
+                "student_id": current_user.id,
                 "exam_type": updated_session.exam_config.exam_type.value,
             },
         )
@@ -364,7 +364,7 @@ async def start_exam(
             f"Sınav başlatma hatası: {e}",
             extra_data={
                 "session_id": session_id,
-                "student_id": current_user["user_id"],
+                "student_id": current_user.id,
             },
         )
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
@@ -373,7 +373,7 @@ async def start_exam(
             f"Beklenmeyen sınav başlatma hatası: {e}",
             extra_data={
                 "session_id": session_id,
-                "student_id": current_user["user_id"],
+                "student_id": current_user.id,
             },
         )
         raise HTTPException(
@@ -388,7 +388,7 @@ async def start_exam(
     summary="Mevcut Soruyu Getir",
 )
 async def get_current_question(
-    session_id: str, current_user: Dict[str, Any] = Depends(get_current_user)
+    session_id: str, current_user = Depends(get_current_user)
 ) -> QuestionResponse:
     """
     Sınavdaki mevcut soruyu getir
@@ -406,7 +406,7 @@ async def get_current_question(
             )
 
         # Kullanıcı kontrolü
-        if session_data.student_id != current_user["user_id"]:
+        if str(session_data.student_id) != str(current_user.id):
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail="Bu sınava erişim yetkiniz yok",
@@ -429,9 +429,9 @@ async def get_current_question(
             option_c=question.option_c,
             option_d=question.option_d,
             option_e=question.option_e,
-            subject_area=question.subject_area.value,
-            topic=question.topic,
-            difficulty=question.difficulty.value,
+            subject_area=question.subject_area,
+            topic=question.subject_area,
+            difficulty=question.difficulty_level.value if question.difficulty_level else "medium",
             question_order=session_data.current_question_index + 1,
         )
 
@@ -442,7 +442,7 @@ async def get_current_question(
             f"Mevcut soru getirme hatası: {e}",
             extra_data={
                 "session_id": session_id,
-                "student_id": current_user["user_id"],
+                "student_id": current_user.id,
             },
         )
         raise HTTPException(
@@ -455,7 +455,7 @@ async def get_current_question(
 async def save_answer(
     session_id: str,
     request: SaveAnswerRequest,
-    current_user: Dict[str, Any] = Depends(get_current_user),
+    current_user = Depends(get_current_user),
 ) -> Dict[str, Any]:
     """
     Soru cevabını kaydet (otomatik kaydetme ile)
@@ -473,7 +473,7 @@ async def save_answer(
             )
 
         # Kullanıcı kontrolü
-        if session_data.student_id != current_user["user_id"]:
+        if str(session_data.student_id) != str(current_user.id):
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail="Bu sınava erişim yetkiniz yok",
@@ -526,7 +526,7 @@ async def save_answer(
 async def navigate_to_question(
     session_id: str,
     request: NavigateQuestionRequest,
-    current_user: Dict[str, Any] = Depends(get_current_user),
+    current_user = Depends(get_current_user),
 ) -> QuestionResponse:
     """
     Belirli bir soruya git (soru navigasyonu)
@@ -544,7 +544,7 @@ async def navigate_to_question(
             )
 
         # Kullanıcı kontrolü
-        if session_data.student_id != current_user["user_id"]:
+        if str(session_data.student_id) != str(current_user.id):
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail="Bu sınava erişim yetkiniz yok",
@@ -570,9 +570,9 @@ async def navigate_to_question(
             option_c=question.option_c,
             option_d=question.option_d,
             option_e=question.option_e,
-            subject_area=question.subject_area.value,
-            topic=question.topic,
-            difficulty=question.difficulty.value,
+            subject_area=question.subject_area,
+            topic=question.subject_area,
+            difficulty=question.difficulty_level.value if question.difficulty_level else "medium",
             question_order=request.question_index + 1,
         )
 
@@ -596,7 +596,7 @@ async def navigate_to_question(
 async def flag_question(
     session_id: str,
     request: FlagQuestionRequest,
-    current_user: Dict[str, Any] = Depends(get_current_user),
+    current_user = Depends(get_current_user),
 ) -> Dict[str, Any]:
     """
     Soruyu işaretle veya işareti kaldır
@@ -614,7 +614,7 @@ async def flag_question(
             )
 
         # Kullanıcı kontrolü
-        if session_data.student_id != current_user["user_id"]:
+        if str(session_data.student_id) != str(current_user.id):
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail="Bu sınava erişim yetkiniz yok",
@@ -654,7 +654,7 @@ async def flag_question(
 
 @router.get("/{session_id}/remaining-time", summary="Kalan Süre")
 async def get_remaining_time(
-    session_id: str, current_user: Dict[str, Any] = Depends(get_current_user)
+    session_id: str, current_user = Depends(get_current_user)
 ) -> Dict[str, Any]:
     """
     Sınavın kalan süresini getir
@@ -672,7 +672,7 @@ async def get_remaining_time(
             )
 
         # Kullanıcı kontrolü
-        if session_data.student_id != current_user["user_id"]:
+        if str(session_data.student_id) != str(current_user.id):
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail="Bu sınava erişim yetkiniz yok",
@@ -728,7 +728,7 @@ async def get_remaining_time(
     summary="Sınavı Tamamla",
 )
 async def complete_exam(
-    session_id: str, current_user: Dict[str, Any] = Depends(get_current_user)
+    session_id: str, current_user = Depends(get_current_user)
 ) -> PerformanceResponse:
     """
     Sınavı manuel olarak tamamla ve performans analizi yap
@@ -747,7 +747,7 @@ async def complete_exam(
             )
 
         # Kullanıcı kontrolü
-        if session_data.student_id != current_user["user_id"]:
+        if str(session_data.student_id) != str(current_user.id):
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail="Bu sınava erişim yetkiniz yok",
@@ -762,7 +762,7 @@ async def complete_exam(
             "ÖSYM sınavı tamamlandı",
             extra_data={
                 "session_id": session_id,
-                "student_id": current_user["user_id"],
+                "student_id": current_user.id,
                 "net_score": performance_metrics.net_score,
                 "raw_score": performance_metrics.raw_score,
             },
@@ -803,7 +803,7 @@ async def complete_exam(
     summary="Sınav Oturum Bilgileri",
 )
 async def get_session_info(
-    session_id: str, current_user: Dict[str, Any] = Depends(get_current_user)
+    session_id: str, current_user = Depends(get_current_user)
 ) -> ExamSessionResponse:
     """
     Sınav oturum bilgilerini getir
@@ -820,7 +820,7 @@ async def get_session_info(
             )
 
         # Kullanıcı kontrolü
-        if session_data.student_id != current_user["user_id"]:
+        if str(session_data.student_id) != str(current_user.id):
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail="Bu sınava erişim yetkiniz yok",
@@ -856,7 +856,7 @@ async def get_session_info(
     summary="Performans Analizi",
 )
 async def get_performance_analysis(
-    session_id: str, current_user: Dict[str, Any] = Depends(get_current_user)
+    session_id: str, current_user = Depends(get_current_user)
 ) -> PerformanceResponse:
     """
     Sınav performans analizini getir (tamamlanmış sınavlar için)
@@ -873,7 +873,7 @@ async def get_performance_analysis(
             )
 
         # Kullanıcı kontrolü
-        if session_data.student_id != current_user["user_id"]:
+        if str(session_data.student_id) != str(current_user.id):
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail="Bu sınava erişim yetkiniz yok",
@@ -920,7 +920,7 @@ async def get_performance_analysis(
     summary="Konu Bazlı Performans",
 )
 async def get_subject_performance(
-    session_id: str, current_user: Dict[str, Any] = Depends(get_current_user)
+    session_id: str, current_user = Depends(get_current_user)
 ) -> List[SubjectPerformanceResponse]:
     """
     Konu bazlı performans analizini getir
@@ -937,7 +937,7 @@ async def get_subject_performance(
             )
 
         # Kullanıcı kontrolü
-        if session_data.student_id != current_user["user_id"]:
+        if str(session_data.student_id) != str(current_user.id):
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail="Bu sınava erişim yetkiniz yok",
@@ -979,7 +979,7 @@ async def get_subject_performance(
     "/my-exams", response_model=List[ExamSessionResponse], summary="Benim Sınavlarım"
 )
 async def get_my_exams(
-    current_user: Dict[str, Any] = Depends(get_current_user),
+    current_user = Depends(get_current_user),
     limit: int = 20,
     offset: int = 0,
 ) -> List[ExamSessionResponse]:
@@ -995,7 +995,7 @@ async def get_my_exams(
         user_sessions = []
 
         for session_data in osym_exam_engine.active_sessions.values():
-            if session_data.student_id == current_user["user_id"]:
+            if session_data.student_id == current_user.id:
                 user_sessions.append(
                     ExamSessionResponse(
                         session_id=session_data.session_id,
@@ -1020,7 +1020,7 @@ async def get_my_exams(
     except Exception as e:
         logger.error(
             f"Kullanıcı sınavları getirme hatası: {e}",
-            extra_data={"student_id": current_user["user_id"]},
+            extra_data={"student_id": current_user.id},
         )
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -1066,7 +1066,7 @@ async def get_exam_configs() -> Dict[str, Any]:
 
 @router.delete("/{session_id}", summary="Sınavı İptal Et")
 async def cancel_exam(
-    session_id: str, current_user: Dict[str, Any] = Depends(get_current_user)
+    session_id: str, current_user = Depends(get_current_user)
 ) -> Dict[str, Any]:
     """
     Sınavı iptal et (sadece başlatılmamış sınavlar için)
@@ -1083,7 +1083,7 @@ async def cancel_exam(
             )
 
         # Kullanıcı kontrolü
-        if session_data.student_id != current_user["user_id"]:
+        if str(session_data.student_id) != str(current_user.id):
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail="Bu sınava erişim yetkiniz yok",
@@ -1109,7 +1109,7 @@ async def cancel_exam(
             "ÖSYM sınavı iptal edildi",
             extra_data={
                 "session_id": session_id,
-                "student_id": current_user["user_id"],
+                "student_id": current_user.id,
             },
         )
 
@@ -1180,7 +1180,7 @@ class CompletionStatsResponse(BaseModel):
     summary="Cevaplanmamış Soruları Getir",
 )
 async def get_unanswered_questions(
-    session_id: str, current_user: Dict[str, Any] = Depends(get_current_user)
+    session_id: str, current_user = Depends(get_current_user)
 ) -> UnansweredQuestionsResponse:
     """
     Cevaplanmamış soruların listesini getir - REQ-1.6
@@ -1200,7 +1200,7 @@ async def get_unanswered_questions(
             )
 
         # Kullanıcı kontrolü
-        if session_data.student_id != current_user["user_id"]:
+        if str(session_data.student_id) != str(current_user.id):
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail="Bu sınava erişim yetkiniz yok",
@@ -1244,7 +1244,7 @@ async def get_unanswered_questions(
     summary="Tamamlanma İstatistikleri",
 )
 async def get_completion_stats(
-    session_id: str, current_user: Dict[str, Any] = Depends(get_current_user)
+    session_id: str, current_user = Depends(get_current_user)
 ) -> CompletionStatsResponse:
     """
     Sınav tamamlanma istatistiklerini getir - REQ-1.6
@@ -1265,7 +1265,7 @@ async def get_completion_stats(
             )
 
         # Kullanıcı kontrolü
-        if session_data.student_id != current_user["user_id"]:
+        if str(session_data.student_id) != str(current_user.id):
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail="Bu sınava erişim yetkiniz yok",
