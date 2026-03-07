@@ -27,7 +27,7 @@ from sqlalchemy import text as sa_text
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.database import get_db_session
-from core.dependencies import get_current_user
+from core.dependencies import AuthenticatedUser, get_current_user
 from services.question_crud_service import QuestionCRUDService
 
 OLLAMA_URL = os.getenv("OLLAMA_URL", "http://localhost:11434")
@@ -131,7 +131,7 @@ async def get_question_service(
 async def create_question(
     request: QuestionCreateRequest,
     image: Optional[UploadFile] = File(None),
-    current_user: Dict = Depends(get_current_user),
+    current_user: AuthenticatedUser = Depends(get_current_user),
     service: QuestionCRUDService = Depends(get_question_service),
 ):
     """
@@ -153,7 +153,7 @@ async def create_question(
         # Soru oluştur
         question = await service.create_question(
             question_data=request.dict(),
-            created_by=current_user.get("user_id", "unknown"),
+            created_by=current_user.id,
             image_file=image_file,
             image_filename=image_filename,
         )
@@ -186,7 +186,7 @@ async def create_question(
 @router.post("/bulk-create", status_code=status.HTTP_201_CREATED)
 async def bulk_create_questions(
     questions: List[QuestionCreateRequest],
-    current_user: Dict = Depends(get_current_user),
+    current_user: AuthenticatedUser = Depends(get_current_user),
     service: QuestionCRUDService = Depends(get_question_service),
 ):
     """
@@ -199,7 +199,7 @@ async def bulk_create_questions(
 
         result = await service.bulk_create_questions(
             questions_data=questions_data,
-            created_by=current_user.get("user_id", "unknown"),
+            created_by=current_user.id,
         )
 
         return JSONResponse(
@@ -229,7 +229,7 @@ async def update_question(
     question_id: str,
     request: QuestionUpdateRequest,
     create_version: bool = Query(True, description="Versiyon oluştur"),
-    current_user: Dict = Depends(get_current_user),
+    current_user: AuthenticatedUser = Depends(get_current_user),
     service: QuestionCRUDService = Depends(get_question_service),
 ):
     """
@@ -252,7 +252,7 @@ async def update_question(
         question = await service.update_question(
             question_id=question_id,
             update_data=update_data,
-            updated_by=current_user.get("user_id", "unknown"),
+            updated_by=current_user.id,
             create_version=create_version,
         )
 
@@ -328,7 +328,7 @@ async def get_question_history(
 async def delete_question(
     question_id: str,
     permanent: bool = Query(False, description="Kalıcı silme"),
-    current_user: Dict = Depends(get_current_user),
+    current_user: AuthenticatedUser = Depends(get_current_user),
     service: QuestionCRUDService = Depends(get_question_service),
 ):
     """
@@ -340,7 +340,7 @@ async def delete_question(
     try:
         success = await service.delete_question(
             question_id=question_id,
-            deleted_by=current_user.get("user_id", "unknown"),
+            deleted_by=current_user.id,
             permanent=permanent,
         )
 
@@ -377,7 +377,7 @@ async def delete_question(
 @router.post("/{question_id}/archive", status_code=status.HTTP_200_OK)
 async def archive_question(
     question_id: str,
-    current_user: Dict = Depends(get_current_user),
+    current_user: AuthenticatedUser = Depends(get_current_user),
     service: QuestionCRUDService = Depends(get_question_service),
 ):
     """
@@ -388,7 +388,7 @@ async def archive_question(
     try:
         success = await service.archive_question(
             question_id=question_id,
-            archived_by=current_user.get("user_id", "unknown"),
+            archived_by=current_user.id,
         )
 
         if not success:
@@ -418,7 +418,7 @@ async def archive_question(
 @router.post("/{question_id}/restore", status_code=status.HTTP_200_OK)
 async def restore_question(
     question_id: str,
-    current_user: Dict = Depends(get_current_user),
+    current_user: AuthenticatedUser = Depends(get_current_user),
     service: QuestionCRUDService = Depends(get_question_service),
 ):
     """
@@ -429,7 +429,7 @@ async def restore_question(
     try:
         success = await service.restore_question(
             question_id=question_id,
-            restored_by=current_user.get("user_id", "unknown"),
+            restored_by=current_user.id,
         )
 
         if not success:
@@ -872,7 +872,7 @@ class SemanticSearchRequest(BaseModel):
 async def semantic_search(
     request: SemanticSearchRequest,
     db: AsyncSession = Depends(get_db_session),
-    current_user: Dict = Depends(get_current_user),
+    current_user: AuthenticatedUser = Depends(get_current_user),
 ):
     """
     Anlamsal (semantic) soru arama.
@@ -939,7 +939,7 @@ async def semantic_search(
             filters.append("q.subject_area = :subject_area")
             params["subject_area"] = request.subject_area
 
-        where_clause = " AND ".join(["q.embedding IS NOT NULL"] + filters)
+        where_clause = " AND ".join(["q.embedding IS NOT NULL", "q.is_active = true"] + filters)
         params["top_k"] = request.top_k
 
         sql = sa_text(f"""

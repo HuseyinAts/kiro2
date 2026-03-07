@@ -80,7 +80,7 @@ from models.learning_path_models import (
     Quiz,
     QuizQuestion,
 )
-from models.content_db import Question
+from models.question_bank import QuestionBankItem as Question
 
 # Rate limiting
 try:
@@ -1029,7 +1029,7 @@ async def submit_quiz(
             question_ids = [a.question_id for a in submission.answers]
             if question_ids:
                 questions_result = await db.execute(
-                    select(Question).filter(Question.id.in_(question_ids))
+                    select(Question).filter(Question.id.in_(question_ids), Question.is_active == True)  # noqa: E712
                 )
                 for question in questions_result.scalars().all():
                     correct_answers[question.id] = question.correct_answer

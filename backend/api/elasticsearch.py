@@ -11,7 +11,7 @@ from fastapi import APIRouter, Depends, HTTPException, Path, Query
 from pydantic import BaseModel, Field
 
 try:
-    from core.dependencies import get_current_user
+    from core.dependencies import AuthenticatedUser, get_current_user
     from core.auth_dependencies import require_role
     from services.elasticsearch_service import (
         ElasticsearchService,
@@ -19,7 +19,7 @@ try:
     )
 except ImportError:
     # Import the canonical get_current_user function from core.dependencies
-    from core.dependencies import get_current_user
+    from core.dependencies import AuthenticatedUser, get_current_user
     from core.auth_dependencies import require_role
     from services.elasticsearch_service import (
         ElasticsearchService,
@@ -94,7 +94,7 @@ class HealthResponse(BaseModel):
 @router.post("/questions/search", response_model=SearchResponse)
 async def search_questions(
     request: QuestionSearchRequest,
-    current_user: Dict[str, Any] = Depends(get_current_user),
+    current_user: AuthenticatedUser = Depends(get_current_user),
     es_service: ElasticsearchService = Depends(get_elasticsearch_service),
 ):
     """
@@ -128,7 +128,7 @@ async def search_questions(
         # Analytics log
         await es_service.analytics_service.log_event(
             event_type="question_search",
-            user_id=str(current_user["user_id"]),
+            user_id=str(current_user.id),
             data={
                 "query": request.query,
                 "subject": request.subject,
@@ -162,7 +162,7 @@ async def search_questions(
 async def get_similar_questions(
     question_id: str = Path(..., description="Soru ID"),
     size: int = Query(default=5, ge=1, le=20, description="Sonuç sayısı"),
-    current_user: Dict[str, Any] = Depends(get_current_user),
+    current_user: AuthenticatedUser = Depends(get_current_user),
     es_service: ElasticsearchService = Depends(get_elasticsearch_service),
 ):
     """
@@ -178,7 +178,7 @@ async def get_similar_questions(
         # Analytics log
         await es_service.analytics_service.log_event(
             event_type="similar_questions_search",
-            user_id=str(current_user["user_id"]),
+            user_id=str(current_user.id),
             data={"question_id": question_id, "results_count": search_result.total},
         )
 
@@ -203,7 +203,7 @@ async def get_similar_questions(
 @router.post("/content/search", response_model=SearchResponse)
 async def search_content(
     request: ContentSearchRequest,
-    current_user: Dict[str, Any] = Depends(get_current_user),
+    current_user: AuthenticatedUser = Depends(get_current_user),
     es_service: ElasticsearchService = Depends(get_elasticsearch_service),
 ):
     """
@@ -227,7 +227,7 @@ async def search_content(
         # Analytics log
         await es_service.analytics_service.log_event(
             event_type="content_search",
-            user_id=str(current_user["user_id"]),
+            user_id=str(current_user.id),
             data={
                 "query": request.query,
                 "content_type": request.content_type,
@@ -262,7 +262,7 @@ async def search_content(
 async def get_user_analytics(
     user_id: str = Path(..., description="Kullanıcı ID"),
     days: int = Query(default=30, ge=1, le=365, description="Gün sayısı"),
-    current_user: Dict[str, Any] = Depends(get_current_user),
+    current_user: AuthenticatedUser = Depends(get_current_user),
     es_service: ElasticsearchService = Depends(get_elasticsearch_service),
 ):
     """
@@ -272,7 +272,7 @@ async def get_user_analytics(
     """
     try:
         # Yetki kontrolü (sadece kendi verilerini veya admin)
-        if str(current_user["user_id"]) != user_id and current_user["role"] != "admin":
+        if str(current_user.id) != user_id and current_user.role.value != "admin":
             raise HTTPException(
                 status_code=403, detail="Bu verilere erişim yetkiniz yok"
             )
@@ -305,7 +305,7 @@ async def get_user_analytics(
 # Admin endpoint'leri
 @router.post("/admin/reindex/questions")
 async def reindex_questions(
-    current_user: Dict[str, Any] = Depends(get_current_user),
+    current_user: AuthenticatedUser = Depends(get_current_user),
     es_service: ElasticsearchService = Depends(get_elasticsearch_service),
     _: None = Depends(require_role("ADMIN")),
 ):
@@ -322,16 +322,16 @@ async def reindex_questions(
 
         # Database'den tüm soruları çek ve indeksle
         try:
-            from core.database import get_async_session
+            from core.database import get_db_session_context
             from sqlalchemy import select
             from models.osym_question import OSYMQuestion
-            from models.database import Question
+            from models.question_bank import QuestionBankItem as Question
 
             indexed_count = 0
             errors = []
 
             # Get database session
-            async for db_session in get_async_session():
+            async with get_db_session_context() as db_session:
                 # Index OSYM questions
                 try:
                     result = await db_session.execute(select(OSYMQuestion))
@@ -384,7 +384,9 @@ async def reindex_questions(
 
                 # Index regular questions
                 try:
-                    result = await db_session.execute(select(Question))
+                    result = await db_session.execute(
+                        select(Question).where(Question.is_active == True)  # noqa: E712
+                    )
                     regular_questions = result.scalars().all()
 
                     for question in regular_questions:
@@ -415,8 +417,6 @@ async def reindex_questions(
                     logger.error(f"Error indexing regular questions: {e}")
                     errors.append(f"Regular questions error: {str(e)}")
 
-                break  # Exit after first session
-
         except Exception as e:
             logger.error(f"Database indexing error: {e}")
             errors.append(f"Database error: {str(e)}")
@@ -440,7 +440,7 @@ async def reindex_questions(
 
 @router.get("/admin/indices/stats", response_model=Dict[str, IndexStatsResponse])
 async def get_indices_stats(
-    current_user: Dict[str, Any] = Depends(get_current_user),
+    current_user: AuthenticatedUser = Depends(get_current_user),
     es_service: ElasticsearchService = Depends(get_elasticsearch_service),
     _: None = Depends(require_role("ADMIN")),
 ):

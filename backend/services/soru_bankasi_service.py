@@ -14,7 +14,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from core.cache import cache_manager
 from core.database import db_manager
 from models import SinavTipi
-from models.database import ExamType, Question, QuestionDifficulty, SubjectArea
+from models.database import ExamType, QuestionDifficulty, SubjectArea
+from models.question_bank import QuestionBankItem as Question
 from services.irt_analysis_service import IRTAnalysisService
 
 
@@ -220,7 +221,10 @@ class SoruBankasiServisi:
 
         async with db_manager.get_session() as session:
             try:
-                stmt = select(Question).where(Question.id == soru_id)
+                stmt = select(Question).where(
+                    Question.id == soru_id,
+                    Question.is_active == True,
+                )
                 result = await session.execute(stmt)
                 soru = result.scalar_one_or_none()
 
@@ -599,7 +603,10 @@ class SoruBankasiServisi:
         async with db_manager.get_session() as session:
             try:
                 # Mevcut soruyu getir
-                stmt = select(Question).where(Question.id == soru_id)
+                stmt = select(Question).where(
+                    Question.id == soru_id,
+                    Question.is_active == True,
+                )
                 result = await session.execute(stmt)
                 soru = result.scalar_one_or_none()
 
@@ -653,7 +660,10 @@ class SoruBankasiServisi:
         async with db_manager.get_session() as session:
             try:
                 # Mevcut soruyu getir
-                stmt = select(Question).where(Question.id == soru_id)
+                stmt = select(Question).where(
+                    Question.id == soru_id,
+                    Question.is_active == True,
+                )
                 result = await session.execute(stmt)
                 soru = result.scalar_one_or_none()
 
@@ -1054,7 +1064,10 @@ class SoruBankasiServisi:
         """
         async with db_manager.get_session() as session:
             try:
-                stmt = select(Question).where(Question.id == soru_id)
+                stmt = select(Question).where(
+                    Question.id == soru_id,
+                    Question.is_active == True,
+                )
                 result = await session.execute(stmt)
                 soru = result.scalar_one_or_none()
 
@@ -1096,7 +1109,10 @@ class SoruBankasiServisi:
         """
         async with db_manager.get_session() as session:
             try:
-                stmt = select(Question).where(Question.id == soru_id)
+                stmt = select(Question).where(
+                    Question.id == soru_id,
+                    Question.is_active == True,
+                )
                 result = await session.execute(stmt)
                 soru = result.scalar_one_or_none()
 

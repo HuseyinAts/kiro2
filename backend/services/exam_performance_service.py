@@ -17,7 +17,7 @@ from typing import Any, Dict, List, Optional
 from sqlalchemy import and_, desc, func, select
 from sqlalchemy.orm import selectinload
 
-from core.database import get_async_session
+from core.database import get_db_session_context
 from core.structured_logger import get_logger
 from models.database import (
     ExamSession,
@@ -171,7 +171,7 @@ class ExamPerformanceService:
             DetailedPerformanceAnalysis: Detaylı performans analizi
         """
         try:
-            async with get_async_session() as db_session:
+            async with get_db_session_context() as db_session:
                 # Sınav oturumu bilgilerini getir
                 exam_result = await db_session.execute(
                     select(ExamSession)

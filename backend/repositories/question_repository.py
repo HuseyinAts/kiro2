@@ -16,11 +16,11 @@ from models.database import (
     ExamQuestion,
     ExamSession,
     ExamType,
-    Question,
     QuestionDifficulty,
     StudentAnswer,
     SubjectArea,
 )
+from models.question_bank import QuestionBankItem as Question
 
 from .base import BaseRepository
 
@@ -348,7 +348,9 @@ class StudentAnswerRepository(BaseRepository[StudentAnswer]):
 
             # Get question to check correct answer
             question_result = await self.session.execute(
-                select(Question).where(Question.id == question_id)
+                select(Question).where(
+                    and_(Question.id == question_id, Question.is_active == True)
+                )
             )
             question = question_result.scalar_one()
 

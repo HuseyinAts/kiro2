@@ -464,10 +464,10 @@ async def optimize_system(
         ):
             # Database optimizasyonu
             try:
-                from core.database import get_async_session
+                from core.database import get_db_session_context
                 from core.database_optimizer import create_performance_indexes
 
-                async with get_async_session() as session:
+                async with get_db_session_context() as session:
                     await create_performance_indexes(session)
                 optimizations_applied.append("database_indexes")
             except Exception as e:
@@ -514,9 +514,9 @@ async def performance_health_check():
 
         # Database sağlık kontrolü
         try:
-            from core.database import get_async_session
+            from core.database import get_db_session_context
 
-            async with get_async_session() as session:
+            async with get_db_session_context() as session:
                 await session.execute("SELECT 1")
             health_status["database"] = "healthy"
         except Exception:

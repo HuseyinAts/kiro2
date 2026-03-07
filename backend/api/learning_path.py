@@ -82,7 +82,7 @@ from models.learning_path_models import (
     QuizQuestion,
     TopicProgress,
 )
-from models.content_db import Question
+from models.question_bank import QuestionBankItem as Question
 
 logger = logging.getLogger(__name__)
 
@@ -1071,7 +1071,7 @@ async def submit_quiz(
         quiz_questions = (
             db.query(QuizQuestion, Question)
             .join(Question, QuizQuestion.question_id == Question.id)
-            .filter(QuizQuestion.quiz_id == quiz_id)
+            .filter(QuizQuestion.quiz_id == quiz_id, Question.is_active == True)  # noqa: E712
             .order_by(QuizQuestion.order_number)
             .all()
         )

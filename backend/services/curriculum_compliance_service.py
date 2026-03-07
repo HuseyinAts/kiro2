@@ -436,7 +436,7 @@ class CurriculumComplianceService:
                 }
 
             # Import Question model locally to avoid circular imports
-            from models.content_db import Question
+            from models.question_bank import QuestionBankItem as Question
 
             stmt = select(
                 func.count(Question.id).label("total"),

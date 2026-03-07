@@ -501,3 +501,75 @@ if high_mask.sum() > 10:
 else:
     overrides["opus_high"] = platt_calibrated(0.95)  # Fallback
 ```
+
+### 23. Dual Table Trap — Yanlis Model Import (Session 78)
+Ayni entity icin iki farkli model/tablo varsa, HANGI tablonun production
+verisi icerdigini DOGRULA. Session 78'de 15+ dosya bos `questions` tablosunu
+sorguluyordu, 77,336 soruluk `question_bank` tablosu yerine.
+
+```python
+# YANLIS - Legacy model (bos tablo)
+from models.database import Question  # questions tablosu = 0 satir!
+result = db.query(Question).all()     # Sessizce bos liste doner
+
+# DOGRU - Production model
+from models.question_bank import QuestionBankItem as Question  # 77,336 soru
+result = db.query(Question).filter(Question.is_active == True).all()
+```
+
+**Kontrol kurali:** Yeni endpoint/service yazarken:
+1. Model'in hangi tabloya map ettigini kontrol et
+2. O tabloda veri oldugunu dogrula (`SELECT COUNT(*) FROM table_name`)
+3. `is_active` filtresi eklemeyi unutma
+
+### 24. Devre Disi Birakma Sonrasi is_active Audit (Session 78)
+`is_active = FALSE` ile kayit devre disi birakildiginda, o tabloyu
+sorgulayan TUM noktalari taramak ZORUNLU. Session 78'de 22 sorgunun
+14'unde (%64) `is_active` filtresi eksikti.
+
+```python
+# YANLIS - is_active kontrolu olmadan sorgu
+result = db.query(Question).filter(Question.id == question_id).first()
+# Devre disi cop soru donebilir!
+
+# DOGRU - Her sorguda is_active kontrolu
+result = db.query(Question).filter(
+    Question.id == question_id,
+    Question.is_active == True
+).first()
+```
+
+### 25. async generator vs context manager Karistirma (Session 78)
+`get_async_session()` FastAPI Depends icin async GENERATOR.
+`get_db_session_context()` manuel kullanim icin async CONTEXT MANAGER.
+14 dosyada `async with get_async_session()` kullanilmis — bu YANLIS.
+
+```python
+# YANLIS - Generator'u context manager gibi kullanma
+async with get_async_session() as session:  # TypeError!
+    await session.execute(...)
+
+# DOGRU (FastAPI Depends icin)
+async def my_endpoint(db: AsyncSession = Depends(get_db)):
+    await db.execute(...)
+
+# DOGRU (manuel kullanim icin)
+async with get_db_session_context() as session:
+    await session.execute(...)
+```
+
+### 26. Case Convention Tutarliligi (Session 78)
+Ayni field icin farkli tablolarda farkli case convention varsa
+(ornegin enum lowercase vs DB UPPERCASE), her sorgu noktasinda
+dogru donusumu uygulamak ZORUNLU.
+
+```python
+# question_bank tablosu: UPPERCASE ("TYT", "MATEMATIK")
+# ExamType enum: lowercase ("tyt", "ayt")
+
+# YANLIS - Enum degerini direkt kullanma
+Question.exam_type == exam_config.exam_type  # "tyt" != "TYT"
+
+# DOGRU - Donusum uygula
+Question.exam_type == exam_config.exam_type.value.upper()  # "TYT" == "TYT"
+```

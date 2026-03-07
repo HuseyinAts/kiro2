@@ -11,14 +11,14 @@ Bu modül sınav cevap takibi için API endpoint'lerini sağlar:
 REQ-1.6: Sınav arayüzü gereksinimleri
 """
 
-from typing import Any, Dict, List
+from typing import List
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import HTTPBearer
 from pydantic import BaseModel, Field
 
-from core.database import get_async_session
-from core.dependencies import get_current_user
+from core.database import get_db_session_context
+from core.dependencies import AuthenticatedUser, get_current_user
 from core.structured_logger import get_logger
 from services.exam_answer_tracking_service import (
     create_answer_tracking_service,
@@ -92,7 +92,7 @@ class CompletionStatsResponse(BaseModel):
     summary="Sınav Tamamlanma İstatistikleri",
 )
 async def get_completion_statistics(
-    exam_session_id: str, current_user: Dict[str, Any] = Depends(get_current_user)
+    exam_session_id: str, current_user: AuthenticatedUser = Depends(get_current_user)
 ):
     """
     Sınav tamamlanma istatistiklerini getir
@@ -108,7 +108,7 @@ async def get_completion_statistics(
     REQ-1.6: Tamamlanma yüzdesi hesaplama
     """
     try:
-        async with get_async_session() as db_session:
+        async with get_db_session_context() as db_session:
             service = await create_answer_tracking_service(db_session)
 
             stats = await service.get_completion_stats(exam_session_id)
@@ -117,7 +117,7 @@ async def get_completion_statistics(
                 "Tamamlanma istatistikleri sunuldu",
                 extra_data={
                     "exam_session_id": exam_session_id,
-                    "user_id": current_user["user_id"],
+                    "user_id": current_user.id,
                     "completion_percentage": stats.completion_percentage,
                 },
             )
@@ -137,7 +137,7 @@ async def get_completion_statistics(
             f"Tamamlanma istatistikleri hatası: {e}",
             extra_data={
                 "exam_session_id": exam_session_id,
-                "user_id": current_user["user_id"],
+                "user_id": current_user.id,
             },
         )
         raise HTTPException(
@@ -152,7 +152,7 @@ async def get_completion_statistics(
     summary="Tüm Cevap Durumları",
 )
 async def get_all_answer_statuses(
-    exam_session_id: str, current_user: Dict[str, Any] = Depends(get_current_user)
+    exam_session_id: str, current_user: AuthenticatedUser = Depends(get_current_user)
 ):
     """
     Sınavdaki tüm soruların cevap durumlarını getir
@@ -166,7 +166,7 @@ async def get_all_answer_statuses(
     REQ-1.6: Cevap durumu takibi
     """
     try:
-        async with get_async_session() as db_session:
+        async with get_db_session_context() as db_session:
             service = await create_answer_tracking_service(db_session)
 
             statuses = await service.get_all_answer_statuses(exam_session_id)
@@ -187,7 +187,7 @@ async def get_all_answer_statuses(
                 "Cevap durumları sunuldu",
                 extra_data={
                     "exam_session_id": exam_session_id,
-                    "user_id": current_user["user_id"],
+                    "user_id": current_user.id,
                     "total_questions": len(response),
                 },
             )
@@ -199,7 +199,7 @@ async def get_all_answer_statuses(
             f"Cevap durumları hatası: {e}",
             extra_data={
                 "exam_session_id": exam_session_id,
-                "user_id": current_user["user_id"],
+                "user_id": current_user.id,
             },
         )
         raise HTTPException(
@@ -214,7 +214,7 @@ async def get_all_answer_statuses(
     summary="Cevaplanmayan Soru Sıraları",
 )
 async def get_unanswered_questions(
-    exam_session_id: str, current_user: Dict[str, Any] = Depends(get_current_user)
+    exam_session_id: str, current_user: AuthenticatedUser = Depends(get_current_user)
 ):
     """
     Cevaplanmayan soruların sıra numaralarını getir
@@ -224,7 +224,7 @@ async def get_unanswered_questions(
     REQ-1.6: Cevaplanmayan soru takibi
     """
     try:
-        async with get_async_session() as db_session:
+        async with get_db_session_context() as db_session:
             service = await create_answer_tracking_service(db_session)
 
             stats = await service.get_completion_stats(exam_session_id)
@@ -233,7 +233,7 @@ async def get_unanswered_questions(
                 "Cevaplanmayan sorular sunuldu",
                 extra_data={
                     "exam_session_id": exam_session_id,
-                    "user_id": current_user["user_id"],
+                    "user_id": current_user.id,
                     "unanswered_count": len(stats.unanswered_question_orders),
                 },
             )
@@ -245,7 +245,7 @@ async def get_unanswered_questions(
             f"Cevaplanmayan sorular hatası: {e}",
             extra_data={
                 "exam_session_id": exam_session_id,
-                "user_id": current_user["user_id"],
+                "user_id": current_user.id,
             },
         )
         raise HTTPException(
@@ -260,7 +260,7 @@ async def get_unanswered_questions(
     summary="Boş Bırakılan Soru Sıraları",
 )
 async def get_empty_answers(
-    exam_session_id: str, current_user: Dict[str, Any] = Depends(get_current_user)
+    exam_session_id: str, current_user: AuthenticatedUser = Depends(get_current_user)
 ):
     """
     Boş bırakılan soruların sıra numaralarını getir
@@ -270,7 +270,7 @@ async def get_empty_answers(
     REQ-1.6: Boş cevap takibi
     """
     try:
-        async with get_async_session() as db_session:
+        async with get_db_session_context() as db_session:
             service = await create_answer_tracking_service(db_session)
 
             statuses = await service.get_all_answer_statuses(exam_session_id)
@@ -286,7 +286,7 @@ async def get_empty_answers(
                 "Boş cevaplar sunuldu",
                 extra_data={
                     "exam_session_id": exam_session_id,
-                    "user_id": current_user["user_id"],
+                    "user_id": current_user.id,
                     "empty_count": len(empty_orders),
                 },
             )
@@ -298,7 +298,7 @@ async def get_empty_answers(
             f"Boş cevaplar hatası: {e}",
             extra_data={
                 "exam_session_id": exam_session_id,
-                "user_id": current_user["user_id"],
+                "user_id": current_user.id,
             },
         )
         raise HTTPException(
@@ -315,7 +315,7 @@ async def get_empty_answers(
 async def mark_answer_as_empty(
     exam_session_id: str,
     question_id: str,
-    current_user: Dict[str, Any] = Depends(get_current_user),
+    current_user: AuthenticatedUser = Depends(get_current_user),
 ):
     """
     Bir cevabı boş olarak işaretle
@@ -325,7 +325,7 @@ async def mark_answer_as_empty(
     REQ-1.6: Boş cevap işaretleme
     """
     try:
-        async with get_async_session() as db_session:
+        async with get_db_session_context() as db_session:
             service = await create_answer_tracking_service(db_session)
 
             success = await service.mark_answer_as_empty(
@@ -343,7 +343,7 @@ async def mark_answer_as_empty(
                 extra_data={
                     "exam_session_id": exam_session_id,
                     "question_id": question_id,
-                    "user_id": current_user["user_id"],
+                    "user_id": current_user.id,
                 },
             )
 
@@ -357,7 +357,7 @@ async def mark_answer_as_empty(
             extra_data={
                 "exam_session_id": exam_session_id,
                 "question_id": question_id,
-                "user_id": current_user["user_id"],
+                "user_id": current_user.id,
             },
         )
         raise HTTPException(

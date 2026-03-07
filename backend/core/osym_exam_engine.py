@@ -491,7 +491,7 @@ class OSYMExamEngine:
 
             async with get_db_session_context() as db_session:
                 result = await db_session.execute(
-                    select(Question).where(Question.id == question_id)
+                    select(Question).where(Question.id == question_id, Question.is_active == True)  # noqa: E712
                 )
                 question = result.scalar_one_or_none()
 

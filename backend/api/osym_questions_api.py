@@ -43,27 +43,27 @@ async def get_osym_statistics():
         try:
             # Total questions (removed ÖSYM filter to show all questions)
             total = await conn.fetchval(
-                "SELECT COUNT(*) FROM questions"
+                "SELECT COUNT(*) FROM question_bank WHERE is_active = TRUE"
             )
 
             # By exam type
             by_exam_type = await conn.fetch(
-                "SELECT exam_type, COUNT(*) as count FROM questions WHERE exam_type IS NOT NULL GROUP BY exam_type"
+                "SELECT exam_type, COUNT(*) as count FROM question_bank WHERE exam_type IS NOT NULL AND is_active = TRUE GROUP BY exam_type"
             )
 
             # By subject
             by_subject = await conn.fetch(
-                "SELECT subject, COUNT(*) as count FROM questions WHERE subject IS NOT NULL GROUP BY subject ORDER BY count DESC"
+                "SELECT subject_area, COUNT(*) as count FROM question_bank WHERE subject_area IS NOT NULL AND is_active = TRUE GROUP BY subject_area ORDER BY count DESC"
             )
 
             # By year
             by_year = await conn.fetch(
-                "SELECT year, COUNT(*) as count FROM questions WHERE year IS NOT NULL GROUP BY year ORDER BY year DESC"
+                "SELECT osym_year, COUNT(*) as count FROM question_bank WHERE osym_year IS NOT NULL AND is_active = TRUE GROUP BY osym_year ORDER BY osym_year DESC"
             )
 
-            # With answers (correct_option is the column name in schema)
+            # With answers
             with_answers = await conn.fetchval(
-                "SELECT COUNT(*) FROM questions WHERE correct_option IS NOT NULL"
+                "SELECT COUNT(*) FROM question_bank WHERE correct_answer IS NOT NULL AND is_active = TRUE"
             )
 
             return {
@@ -75,9 +75,9 @@ async def get_osym_statistics():
                     "by_exam_type": {
                         row["exam_type"]: row["count"] for row in by_exam_type
                     },
-                    "by_subject": {row["subject"]: row["count"] for row in by_subject},
+                    "by_subject": {row["subject_area"]: row["count"] for row in by_subject},
                     "by_year": {
-                        row["year"]: row["count"] for row in by_year if row["year"]
+                        row["osym_year"]: row["count"] for row in by_year if row["osym_year"]
                     },
                     "quality_score": 10.0,
                     "source": "OSYM Official",
@@ -103,10 +103,10 @@ async def get_available_subjects(exam_type: Optional[str] = Query(None)):
             if exam_type:
                 rows = await conn.fetch(
                     """
-                    SELECT subject, COUNT(*) as count
-                    FROM questions
-                    WHERE exam_type = $1 AND subject IS NOT NULL
-                    GROUP BY subject
+                    SELECT subject_area, COUNT(*) as count
+                    FROM question_bank
+                    WHERE exam_type = $1 AND subject_area IS NOT NULL AND is_active = TRUE
+                    GROUP BY subject_area
                     ORDER BY count DESC
                     """,
                     exam_type.upper(),
@@ -114,16 +114,16 @@ async def get_available_subjects(exam_type: Optional[str] = Query(None)):
             else:
                 rows = await conn.fetch(
                     """
-                    SELECT subject, COUNT(*) as count
-                    FROM questions
-                    WHERE subject IS NOT NULL
-                    GROUP BY subject
+                    SELECT subject_area, COUNT(*) as count
+                    FROM question_bank
+                    WHERE subject_area IS NOT NULL AND is_active = TRUE
+                    GROUP BY subject_area
                     ORDER BY count DESC
                     """
                 )
 
             subjects = [
-                {"subject": row["subject"], "question_count": row["count"]}
+                {"subject": row["subject_area"], "question_count": row["count"]}
                 for row in rows
             ]
 
@@ -157,8 +157,8 @@ async def get_random_questions(
             param_counter = 1
 
             if subject:
-                conditions.append(f"subject = ${param_counter}")
-                params.append(subject)
+                conditions.append(f"subject_area = ${param_counter}")
+                params.append(subject.upper())
                 param_counter += 1
 
             if exam_type:
@@ -167,18 +167,19 @@ async def get_random_questions(
                 param_counter += 1
 
             if difficulty:
-                conditions.append(f"CAST(difficulty AS NUMERIC) = ${param_counter}")
-                params.append(float(difficulty))
+                conditions.append(f"difficulty_level = ${param_counter}")
+                params.append(difficulty)
                 param_counter += 1
 
             where_clause = " AND ".join(conditions)
 
-            # Get all matching questions (using correct column names)
+            # Get all matching questions
             query = f"""
-                SELECT id, subject, topic, difficulty, exam_type,
-                       stem, options, correct_option, year
-                FROM questions
-                WHERE {where_clause}
+                SELECT id, subject_area, difficulty_level, exam_type,
+                       question_text, option_a, option_b, option_c, option_d, option_e,
+                       correct_answer, osym_year, quality_score
+                FROM question_bank
+                WHERE {where_clause} AND is_active = TRUE
             """
 
             rows = await conn.fetch(query, *params)
@@ -198,18 +199,21 @@ async def get_random_questions(
             # Format response
             questions = []
             for row in selected:
+                options = {}
+                for key in ["a", "b", "c", "d", "e"]:
+                    val = row.get(f"option_{key}")
+                    if val:
+                        options[key.upper()] = val
+
                 q = {
-                    "question_id": str(row["question_id"]),
-                    "subject": row["subject"],
-                    "topic": row["topic"],
-                    "difficulty": row["difficulty"],
+                    "question_id": str(row["id"]),
+                    "subject": row["subject_area"],
+                    "difficulty": row["difficulty_level"],
                     "exam_type": row["exam_type"],
-                    "stem": row["stem"],
-                    "options": json.loads(row["options"])
-                    if isinstance(row["options"], str)
-                    else row["options"],
-                    "year": row["year"],
-                    "quality_score": 10.0,
+                    "stem": row["question_text"],
+                    "options": options,
+                    "year": row["osym_year"],
+                    "quality_score": float(row["quality_score"]) if row["quality_score"] else 10.0,
                 }
 
                 if with_answers:
@@ -250,17 +254,17 @@ async def generate_practice_exam(
 
             if exam_type.upper() == "TYT":
                 sections = [
-                    {"subject": "Turkce", "count": 40},
-                    {"subject": "Matematik", "count": 40},
-                    {"subject": "Fen Bilimleri", "count": 20},
-                    {"subject": "Sosyal Bilimler", "count": 20},
+                    {"subject": "TURKCE", "count": 40},
+                    {"subject": "MATEMATIK", "count": 40},
+                    {"subject": "FEN", "count": 20},
+                    {"subject": "SOSYAL", "count": 20},
                 ]
             else:
                 sections = [
-                    {"subject": "Matematik", "count": 40},
-                    {"subject": "Fizik", "count": 14},
-                    {"subject": "Kimya", "count": 13},
-                    {"subject": "Biyoloji", "count": 13},
+                    {"subject": "MATEMATIK", "count": 40},
+                    {"subject": "FIZIK", "count": 14},
+                    {"subject": "KIMYA", "count": 13},
+                    {"subject": "BIYOLOJI", "count": 13},
                 ]
 
             total_questions = 0
@@ -270,9 +274,10 @@ async def generate_practice_exam(
                 if year:
                     rows = await conn.fetch(
                         """
-                        SELECT question_id, stem, options, difficulty, year
-                        FROM questions
-                        WHERE source = 'ÖSYM' AND exam_type = $1 AND subject = $2 AND year = $3
+                        SELECT id, question_text, option_a, option_b, option_c, option_d, option_e,
+                               difficulty_level, osym_year
+                        FROM question_bank
+                        WHERE exam_type = $1 AND subject_area = $2 AND osym_year = $3 AND is_active = TRUE
                         """,
                         exam_type.upper(),
                         section["subject"],
@@ -281,9 +286,10 @@ async def generate_practice_exam(
                 else:
                     rows = await conn.fetch(
                         """
-                        SELECT question_id, stem, options, difficulty, year
-                        FROM questions
-                        WHERE source = 'ÖSYM' AND exam_type = $1 AND subject = $2
+                        SELECT id, question_text, option_a, option_b, option_c, option_d, option_e,
+                               difficulty_level, osym_year
+                        FROM question_bank
+                        WHERE exam_type = $1 AND subject_area = $2 AND is_active = TRUE
                         """,
                         exam_type.upper(),
                         section["subject"],
@@ -299,13 +305,15 @@ async def generate_practice_exam(
                     "actual_count": len(selected),
                     "questions": [
                         {
-                            "question_id": str(row["question_id"]),
-                            "stem": row["stem"],
-                            "options": json.loads(row["options"])
-                            if isinstance(row["options"], str)
-                            else row["options"],
-                            "difficulty": row["difficulty"],
-                            "year": row["year"],
+                            "question_id": str(row["id"]),
+                            "stem": row["question_text"],
+                            "options": {
+                                k.upper(): row[f"option_{k}"]
+                                for k in ["a", "b", "c", "d", "e"]
+                                if row.get(f"option_{k}")
+                            },
+                            "difficulty": row["difficulty_level"],
+                            "year": row["osym_year"],
                         }
                         for row in selected
                     ],
@@ -345,13 +353,13 @@ async def get_questions(
 
         try:
             # Build query
-            conditions = ["source = 'ÖSYM'"]
+            conditions = ["1=1"]
             params = []
             param_counter = 1
 
             if subject:
-                conditions.append(f"subject = ${param_counter}")
-                params.append(subject)
+                conditions.append(f"subject_area = ${param_counter}")
+                params.append(subject.upper())
                 param_counter += 1
 
             if exam_type:
@@ -360,22 +368,23 @@ async def get_questions(
                 param_counter += 1
 
             if year:
-                conditions.append(f"year = ${param_counter}")
+                conditions.append(f"osym_year = ${param_counter}")
                 params.append(year)
                 param_counter += 1
 
             if difficulty:
-                conditions.append(f"difficulty = ${param_counter}")
+                conditions.append(f"difficulty_level = ${param_counter}")
                 params.append(difficulty)
                 param_counter += 1
 
             where_clause = " AND ".join(conditions)
 
             query = f"""
-                SELECT question_id, subject, topic, difficulty, exam_type,
-                       stem, options, correct_answer, year, quality_score
-                FROM questions
-                WHERE {where_clause}
+                SELECT id, subject_area, difficulty_level, exam_type,
+                       question_text, option_a, option_b, option_c, option_d, option_e,
+                       correct_answer, osym_year, quality_score
+                FROM question_bank
+                WHERE {where_clause} AND is_active = TRUE
                 LIMIT ${param_counter} OFFSET ${param_counter + 1}
             """
 
@@ -385,19 +394,22 @@ async def get_questions(
 
             questions = []
             for row in rows:
+                options = {}
+                for key in ["a", "b", "c", "d", "e"]:
+                    val = row.get(f"option_{key}")
+                    if val:
+                        options[key.upper()] = val
+
                 questions.append(
                     {
-                        "question_id": str(row["question_id"]),
-                        "subject": row["subject"],
-                        "topic": row["topic"],
-                        "difficulty": row["difficulty"],
+                        "question_id": str(row["id"]),
+                        "subject": row["subject_area"],
+                        "difficulty": row["difficulty_level"],
                         "exam_type": row["exam_type"],
-                        "stem": row["stem"],
-                        "options": json.loads(row["options"])
-                        if isinstance(row["options"], str)
-                        else row["options"],
+                        "stem": row["question_text"],
+                        "options": options,
                         "correct_answer": row["correct_answer"],
-                        "year": row["year"],
+                        "year": row["osym_year"],
                         "quality_score": float(row["quality_score"])
                         if row["quality_score"]
                         else 10.0,

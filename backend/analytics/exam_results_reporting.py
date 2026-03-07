@@ -511,7 +511,8 @@ class ExamResultsReportGenerator:
         """
         try:
             # Try to get real difficulty data from database
-            from models import ExamQuestion, Question
+            from models import ExamQuestion
+            from models.question_bank import QuestionBankItem as Question
 
             exam_session_id = subject_data.get('exam_session_id')
             db = subject_data.get('db_session')
@@ -1352,7 +1353,8 @@ class ExamResultsReportGenerator:
                             best_exam_id = exam.id
 
                     # Extract unique subjects from best exam's questions
-                    from models import Question, ExamQuestion
+                    from models import ExamQuestion
+                    from models.question_bank import QuestionBankItem as Question
                     best_exam_subjects_query = db.query(Question.subject_area).join(
                         ExamQuestion, ExamQuestion.question_id == Question.id
                     ).filter(
@@ -1397,7 +1399,8 @@ class ExamResultsReportGenerator:
                 else:
                     # No previous exams - this is first exam
                     # Extract unique subjects from current exam's questions
-                    from models import Question, ExamQuestion
+                    from models import ExamQuestion
+                    from models.question_bank import QuestionBankItem as Question
                     current_exam_subjects_query = db.query(Question.subject_area).join(
                         ExamQuestion, ExamQuestion.question_id == Question.id
                     ).filter(
