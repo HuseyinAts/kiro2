@@ -18,16 +18,15 @@ from typing import Any
 
 from sqlalchemy import and_, func, select, update
 
-from core.database import get_async_session
+from core.database import get_db_session_context
 from core.structured_logger import get_logger
 from models.database import (
     ExamQuestion,
     ExamSession,
     ExamType,
-    Question,
     StudentAnswer,
-    SubjectArea,
 )
+from models.question_bank import QuestionBankItem as Question
 
 logger = get_logger("osym_exam_engine")
 
@@ -324,6 +323,18 @@ class OSYMExamEngine:
             if custom_config:
                 if "duration_minutes" in custom_config:
                     exam_config.duration_minutes = custom_config["duration_minutes"]
+                if "time_limit" in custom_config:
+                    exam_config.duration_minutes = custom_config["time_limit"]
+                if "question_count" in custom_config:
+                    total = custom_config["question_count"]
+                    # Soru dağılımını oransal olarak yeniden hesapla
+                    old_total = sum(exam_config.subject_distribution.values())
+                    if old_total > 0:
+                        exam_config.subject_distribution = {
+                            subj: max(1, round(cnt * total / old_total))
+                            for subj, cnt in exam_config.subject_distribution.items()
+                        }
+                    exam_config.total_questions = total
                 if "subject_distribution" in custom_config:
                     exam_config.subject_distribution.update(
                         custom_config["subject_distribution"]
@@ -348,7 +359,7 @@ class OSYMExamEngine:
             )
 
             # Veritabanına kaydet
-            async with get_async_session() as db_session:
+            async with get_db_session_context() as db_session:
                 db_exam_session = ExamSession(
                     id=session_id,
                     student_id=student_id,
@@ -418,7 +429,7 @@ class OSYMExamEngine:
             session_data.started_at = datetime.now()
 
             # Veritabanını güncelle
-            async with get_async_session() as db_session:
+            async with get_db_session_context() as db_session:
                 await db_session.execute(
                     update(ExamSession)
                     .where(ExamSession.id == session_id)
@@ -478,7 +489,7 @@ class OSYMExamEngine:
 
             question_id = session_data.questions[session_data.current_question_index]
 
-            async with get_async_session() as db_session:
+            async with get_db_session_context() as db_session:
                 result = await db_session.execute(
                     select(Question).where(Question.id == question_id)
                 )
@@ -532,7 +543,7 @@ class OSYMExamEngine:
                 session_data.time_spent_per_question[question_id] = response_time
 
             # Veritabanına kaydet
-            async with get_async_session() as db_session:
+            async with get_db_session_context() as db_session:
                 # Mevcut cevabı kontrol et
                 existing_answer = await db_session.execute(
                     select(StudentAnswer).where(
@@ -739,7 +750,7 @@ class OSYMExamEngine:
             session_data.performance_metrics = performance_metrics
 
             # Veritabanını güncelle
-            async with get_async_session() as db_session:
+            async with get_db_session_context() as db_session:
                 await db_session.execute(
                     update(ExamSession)
                     .where(ExamSession.id == session_id)
@@ -920,10 +931,9 @@ class OSYMExamEngine:
             if session_id not in self.active_sessions:
                 return []
 
-            session_data = self.active_sessions[session_id]
             subject_stats = {}
 
-            async with get_async_session() as db_session:
+            async with get_db_session_context() as db_session:
                 # Sınav sorularını ve cevapları getir
                 result = await db_session.execute(
                     select(Question, StudentAnswer)
@@ -940,7 +950,8 @@ class OSYMExamEngine:
                 )
 
                 for question, answer in result:
-                    subject = question.subject_area.value
+                    # QuestionBankItem.subject_area is String, not Enum
+                    subject = question.subject_area.lower() if isinstance(question.subject_area, str) else question.subject_area.value
 
                     if subject not in subject_stats:
                         subject_stats[subject] = {
@@ -1019,36 +1030,45 @@ class OSYMExamEngine:
         Returns:
             List[Question]: Seçilen sorular
         """
-        try:
-            selected_questions = []
+        selected_questions = []
 
-            async with get_async_session() as db_session:
-                for subject, count in exam_config.subject_distribution.items():
-                    # Konuya göre soruları getir
-                    result = await db_session.execute(
-                        select(Question)
-                        .where(
-                            and_(
-                                Question.exam_type == exam_config.exam_type,
-                                Question.subject_area == SubjectArea(subject.lower()),
-                                Question.is_active == True,
-                            )
+        async with get_db_session_context() as db_session:
+            for subject, count in exam_config.subject_distribution.items():
+                # Konuya göre soruları getir (kalite filtreleri dahil)
+                result = await db_session.execute(
+                    select(Question)
+                    .where(
+                        and_(
+                            # QuestionBankItem stores UPPERCASE ("TYT"),
+                            # exam_config.exam_type is ExamType enum ("tyt")
+                            # subject_distribution keys are UPPERCASE ("MATEMATIK")
+                            Question.exam_type == exam_config.exam_type.value.upper(),
+                            Question.subject_area == subject,
+                            Question.is_active == True,  # noqa: E712
+                            # Minimum metin uzunluğu (çöp soru filtresi)
+                            Question.question_text.isnot(None),
+                            func.length(Question.question_text) >= 20,
+                            # Boş seçenek kontrolü (A-D dolu olmalı)
+                            Question.option_a.isnot(None),
+                            func.length(Question.option_a) > 0,
+                            Question.option_b.isnot(None),
+                            func.length(Question.option_b) > 0,
+                            Question.option_c.isnot(None),
+                            func.length(Question.option_c) > 0,
+                            Question.option_d.isnot(None),
+                            func.length(Question.option_d) > 0,
+                            # Tüm şıklar aynı olmamalı
+                            Question.option_a != Question.option_b,
                         )
-                        .order_by(func.random())
-                        .limit(count)
                     )
+                    .order_by(func.random())
+                    .limit(count)
+                )
 
-                    questions = result.scalars().all()
-                    selected_questions.extend(questions)
+                questions = result.scalars().all()
+                selected_questions.extend(questions)
 
-            return selected_questions
-
-        except Exception as e:
-            logger.error(
-                f"Soru seçimi hatası: {e}",
-                extra_data={"exam_type": exam_config.exam_type.value},
-            )
-            return []
+        return selected_questions
 
     async def _analyze_performance(
         self, session_data: ExamSessionData
@@ -1068,7 +1088,7 @@ class OSYMExamEngine:
             correct_answers = 0
             wrong_answers = 0
 
-            async with get_async_session() as db_session:
+            async with get_db_session_context() as db_session:
                 # Doğru cevapları kontrol et
                 for question_id, student_answer in session_data.answers.items():
                     result = await db_session.execute(
@@ -1215,7 +1235,7 @@ class OSYMExamEngine:
             session_data = self.active_sessions[session_id]
 
             # Veritabanını güncelle
-            async with get_async_session() as db_session:
+            async with get_db_session_context() as db_session:
                 await db_session.execute(
                     update(ExamSession)
                     .where(ExamSession.id == session_id)
