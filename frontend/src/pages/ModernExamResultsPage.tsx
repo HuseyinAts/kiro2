@@ -47,6 +47,7 @@ interface ExamResult {
   empty_count: number
   score: number
   duration: number
+  duration_limit: number
   completed_at: string
   questions: Array<{
     question_id: string
@@ -85,22 +86,33 @@ export const ModernExamResultsPage: React.FC = () => {
       if (!performanceRes.ok) {throw new Error('Performans verisi alınamadı');}
       const perfData = await performanceRes.json();
 
-      const subjectRes = await fetch(`/api/v1/osym-exam/${sinavId}/subject-performance`, {
-        credentials: 'include',
-      });
+      const [subjectRes, sessionRes] = await Promise.all([
+        fetch(`/api/v1/osym-exam/${sinavId}/subject-performance`, { credentials: 'include' }),
+        fetch(`/api/v1/osym-exam/${sinavId}/session`, { credentials: 'include' }),
+      ]);
       const subjectData = subjectRes.ok ? await subjectRes.json() : [];
+      const sessionData = sessionRes.ok ? await sessionRes.json() : null;
+
+      // Gerçek geçen süreyi hesapla (dakika)
+      let durationMinutes = 0;
+      if (sessionData?.started_at && sessionData?.completed_at) {
+        const start = new Date(sessionData.started_at).getTime();
+        const end = new Date(sessionData.completed_at).getTime();
+        durationMinutes = Math.round((end - start) / 60000);
+      }
 
       setResult({
         sinav_id: sinavId!,
-        exam_type: 'TYT',
+        exam_type: (sessionData?.exam_type || 'tyt').toUpperCase(),
         subject: '',
         question_count: perfData.total_questions,
         correct_count: perfData.correct_answers,
         wrong_count: perfData.wrong_answers,
         empty_count: perfData.empty_answers,
         score: perfData.raw_score,
-        duration: 0,
-        completed_at: new Date().toISOString(),
+        duration: durationMinutes,
+        duration_limit: sessionData?.duration_minutes || 0,
+        completed_at: sessionData?.completed_at || new Date().toISOString(),
         questions: [],
         subject_breakdown: subjectData.map((s: any) => ({
           subject: s.subject,
@@ -316,7 +328,7 @@ export const ModernExamResultsPage: React.FC = () => {
               </Box>
               <Typography variant="h4" fontWeight={700}>{result.duration}<Typography variant="caption">dk</Typography></Typography>
               <Typography variant="caption" color="text.secondary">
-                {(result as any).time_limit || result.duration} dakika limit
+                {result.duration_limit || result.duration} dakika limit
               </Typography>
             </GlassCard>
           </motion.div>
