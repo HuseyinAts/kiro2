@@ -19,6 +19,7 @@ import {
 } from '@mui/icons-material';
 import {
   Box,
+  Container,
   Typography,
   Button,
   RadioGroup,
@@ -70,6 +71,8 @@ interface ExamState {
   remainingTime: number
   answers: Record<string, string>
   flaggedQuestions: Set<string>
+  answeredIndices: Set<number>
+  flaggedIndices: Set<number>
 }
 
 export const ModernOSYMExamInterface: React.FC<ModernOSYMExamInterfaceProps> = ({
@@ -88,6 +91,8 @@ export const ModernOSYMExamInterface: React.FC<ModernOSYMExamInterfaceProps> = (
     remainingTime: 0,
     answers: {},
     flaggedQuestions: new Set(),
+    answeredIndices: new Set(),
+    flaggedIndices: new Set(),
   });
 
   const [loading, setLoading] = useState(true);
@@ -226,13 +231,18 @@ export const ModernOSYMExamInterface: React.FC<ModernOSYMExamInterfaceProps> = (
     try {
       await examService.submitAnswer(sessionId, questionId, answer);
 
-      setExamState((prev) => ({
-        ...prev,
-        answers: {
-          ...prev.answers,
-          [questionId]: answer,
-        },
-      }));
+      setExamState((prev) => {
+        const newAnswered = new Set(prev.answeredIndices);
+        newAnswered.add(currentQuestionIndex);
+        return {
+          ...prev,
+          answers: {
+            ...prev.answers,
+            [questionId]: answer,
+          },
+          answeredIndices: newAnswered,
+        };
+      });
 
       setSaveStatus('saved');
       setTimeout(() => setSaveStatus(null), 2000);
@@ -247,19 +257,22 @@ export const ModernOSYMExamInterface: React.FC<ModernOSYMExamInterfaceProps> = (
 
     const questionId = examState.currentQuestion.question_id || examState.currentQuestion.id;
     const newFlagged = new Set(examState.flaggedQuestions);
+    const newFlaggedIndices = new Set(examState.flaggedIndices);
 
     if (newFlagged.has(questionId)) {
       newFlagged.delete(questionId);
+      newFlaggedIndices.delete(currentQuestionIndex);
     } else {
       newFlagged.add(questionId);
+      newFlaggedIndices.add(currentQuestionIndex);
     }
 
-    setExamState((prev) => ({ ...prev, flaggedQuestions: newFlagged }));
+    setExamState((prev) => ({ ...prev, flaggedQuestions: newFlagged, flaggedIndices: newFlaggedIndices }));
   };
 
   const handleNavigateQuestion = async (index: number) => {
     try {
-      const questionData = await examService.getQuestion(sessionId, index + 1);
+      const questionData = await examService.getQuestion(sessionId, index);
       setExamState((prev) => ({ ...prev, currentQuestion: questionData }));
       setCurrentQuestionIndex(index);
     } catch (error) {
@@ -613,9 +626,8 @@ export const ModernOSYMExamInterface: React.FC<ModernOSYMExamInterfaceProps> = (
         <DialogContent>
           <Grid container spacing={1}>
             {Array.from({ length: examState.session?.total_questions || 0 }).map((_, index) => {
-              const questionId = `q${index + 1}`;
-              const answered = examState.answers[questionId];
-              const flagged = examState.flaggedQuestions.has(questionId);
+              const answered = examState.answeredIndices.has(index);
+              const flagged = examState.flaggedIndices.has(index);
 
               return (
                 <Grid item xs={2} key={index}>
@@ -709,12 +721,5 @@ export const ModernOSYMExamInterface: React.FC<ModernOSYMExamInterfaceProps> = (
     </Box>
   );
 };
-
-// Missing Container import fix
-const Container = ({ children, maxWidth, sx }: any) => (
-  <Box sx={{ maxWidth: maxWidth === 'xl' ? 1536 : 1200, mx: 'auto', px: 2, ...sx }}>
-    {children}
-  </Box>
-);
 
 export default ModernOSYMExamInterface;

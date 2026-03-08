@@ -24,7 +24,7 @@ import { examService, ExamType, ExamStatus, ExamSessionResponse } from '../servi
 import modernColors from '../theme/modern-colors';
 
 export const ExamPage: React.FC = () => {
-  const { sessionId } = useParams<{ sessionId?: string }>();
+  const { sinavId: sessionId } = useParams<{ sinavId?: string }>();
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
 
@@ -67,6 +67,9 @@ export const ExamPage: React.FC = () => {
             setCurrentView('results');
           } else if (sessionData.status === ExamStatus.IN_PROGRESS) {
             setCurrentView('exam');
+          } else if (sessionData.status === ExamStatus.NOT_STARTED) {
+            // Session oluşturulmuş ama başlatılmamış — checklist göster
+            setCurrentView('start');
           } else {
             setCurrentView('start');
           }
@@ -190,6 +193,7 @@ export const ExamPage: React.FC = () => {
           >
             <ModernExamStart
               examType={examType}
+              sessionId={sessionId}
               onStart={handleExamStart}
               onCancel={handleExamExit}
             />
