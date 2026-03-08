@@ -294,7 +294,7 @@ class SoruBankasiServisi:
                 # Zorluk filtresi (difficulty: easy, medium, hard)
                 if zorluk_seviyesi:
                     zorluk_lower = zorluk_seviyesi.lower()
-                    stmt = stmt.where(Question.difficulty == zorluk_lower)
+                    stmt = stmt.where(Question.difficulty_level == zorluk_lower)
 
                 # Sıralama ve limit
                 stmt = (
@@ -491,7 +491,7 @@ class SoruBankasiServisi:
 
                 for item in soru_bilgi_listesi:
                     soru = item["soru"]
-                    konu = soru.subject_area.value
+                    konu = str(soru.subject_area)
 
                     # Konu dağılımını kontrol et
                     if konu not in konu_sayaclari:
@@ -759,9 +759,9 @@ class SoruBankasiServisi:
 
                 # Zorluk dağılımı
                 zorluk_stmt = (
-                    select(Question.difficulty, func.count(Question.id))
+                    select(Question.difficulty_level, func.count(Question.id))
                     .where(Question.is_active == True)
-                    .group_by(Question.difficulty)
+                    .group_by(Question.difficulty_level)
                 )
                 zorluk_result = await session.execute(zorluk_stmt)
                 zorluk_dagilimi = {
@@ -846,9 +846,9 @@ class SoruBankasiServisi:
         """Zorluk dağılımının dengesini hesapla (0-100 arası)"""
         try:
             zorluk_stmt = (
-                select(Question.difficulty, func.count(Question.id))
+                select(Question.difficulty_level, func.count(Question.id))
                 .where(Question.is_active == True)
-                .group_by(Question.difficulty)
+                .group_by(Question.difficulty_level)
             )
             zorluk_result = await session.execute(zorluk_stmt)
             zorluk_counts = dict(zorluk_result.all())

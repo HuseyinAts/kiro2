@@ -443,7 +443,7 @@ class CurriculumComplianceService:
                 func.count(
                     func.nullif(Question.is_active == True, False)  # noqa: E712
                 ).label("active_count"),
-            ).where(Question.topic == topic_id)
+            ).where(Question.primary_topic_id == topic_id)
 
             result = await self.session.execute(stmt)
             row = result.one_or_none()

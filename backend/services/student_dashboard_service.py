@@ -24,8 +24,8 @@ from models import (
     WeeklyProgress,
     StudentGoal,
     Notification,
-    Question,
 )
+from models.question_bank import QuestionBankItem as Question
 from models.video_analytics import VideoWatchSession
 
 # Pydantic models (API responses)
@@ -200,7 +200,7 @@ class OgrenciDashboardServisi:
         """
         # Query student answers joined with questions to get topic-wise performance
         topic_stats = db.query(
-            Question.topic,
+            Question.primary_topic_id,
             func.count(StudentAnswer.id).label('total'),
             func.sum(func.cast(StudentAnswer.is_correct, Integer)).label('correct')
         ).join(
@@ -208,16 +208,16 @@ class OgrenciDashboardServisi:
         ).filter(
             StudentAnswer.exam_session_id == exam_session_id
         ).group_by(
-            Question.topic
+            Question.primary_topic_id
         ).all()
 
         # Calculate percentage correct per topic
         topic_performance = {}
         for topic_stat in topic_stats:
-            if topic_stat.topic and topic_stat.total > 0:
+            if topic_stat.primary_topic_id and topic_stat.total > 0:
                 correct_count = topic_stat.correct or 0
                 percentage = (correct_count / topic_stat.total) * 100
-                topic_performance[topic_stat.topic] = round(percentage, 1)
+                topic_performance[topic_stat.primary_topic_id] = round(percentage, 1)
 
         return topic_performance
 

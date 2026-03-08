@@ -405,7 +405,7 @@ class TestOsymExamQuestionEndpoints:
             mock_question.option_d = "D"
             mock_question.option_e = None
             mock_question.subject_area = "TURKCE"
-            mock_question.topic = "Anlam Bilgisi"
+            mock_question.primary_topic_id = "topic-anlam-bilgisi"
             mock_question.difficulty_level = Mock()
             mock_question.difficulty_level.value = "MEDIUM"
 
@@ -498,9 +498,10 @@ class TestOsymExamQuestionEndpoints:
             mock_question.option_c = "C"
             mock_question.option_d = "D"
             mock_question.option_e = None
-            mock_question.subject_area.value = "TURKCE"
-            mock_question.topic = "Test"
-            mock_question.difficulty.value = "MEDIUM"
+            mock_question.subject_area = "TURKCE"
+            mock_question.primary_topic_id = "topic-123"
+            mock_question.difficulty_level = Mock()
+            mock_question.difficulty_level.value = "MEDIUM"
 
             mock_engine.get_session_data = AsyncMock(return_value=mock_session)
             mock_engine.navigate_to_question = AsyncMock(return_value=mock_question)
@@ -2567,9 +2568,10 @@ class TestOsymExamAPIEdgeCases:
             mock_question.option_c = "C"
             mock_question.option_d = "D"
             mock_question.option_e = None
-            mock_question.subject_area.value = "TURKCE"
-            mock_question.topic = "Test"
-            mock_question.difficulty.value = "EASY"
+            mock_question.subject_area = "TURKCE"
+            mock_question.primary_topic_id = "topic-123"
+            mock_question.difficulty_level = Mock()
+            mock_question.difficulty_level.value = "EASY"
 
             mock_engine.get_session_data = AsyncMock(return_value=mock_session)
             mock_engine.navigate_to_question = AsyncMock(return_value=mock_question)
@@ -2597,9 +2599,10 @@ class TestOsymExamAPIEdgeCases:
             mock_question.option_c = "C"
             mock_question.option_d = "D"
             mock_question.option_e = "E"
-            mock_question.subject_area.value = "MATEMATIK"
-            mock_question.topic = "Test"
-            mock_question.difficulty.value = "HARD"
+            mock_question.subject_area = "MATEMATIK"
+            mock_question.primary_topic_id = "topic-123"
+            mock_question.difficulty_level = Mock()
+            mock_question.difficulty_level.value = "HARD"
 
             mock_engine.get_session_data = AsyncMock(return_value=mock_session)
             mock_engine.navigate_to_question = AsyncMock(return_value=mock_question)
@@ -5273,9 +5276,10 @@ class TestOSYMExamExtendedScenarios:
                 mock_question.option_c = "C"
                 mock_question.option_d = "D"
                 mock_question.option_e = None
-                mock_question.subject_area.value = "TURKCE"
-                mock_question.topic = "Test"
-                mock_question.difficulty.value = "MEDIUM"
+                mock_question.subject_area = "TURKCE"
+                mock_question.primary_topic_id = "topic-123"
+                mock_question.difficulty_level = Mock()
+                mock_question.difficulty_level.value = "MEDIUM"
 
                 mock_engine.get_session_data = AsyncMock(return_value=mock_session)
                 mock_engine.navigate_to_question = AsyncMock(return_value=mock_question)
