@@ -175,6 +175,13 @@ const navigationItems: NavigationItem[] = [
     gradient: modernColors.gradients.fire,
   },
   {
+    label: 'Sınavlar',
+    path: '/exam/start',
+    icon: <Assessment />,
+    roles: ['admin'],
+    gradient: modernColors.gradients.purple,
+  },
+  {
     label: 'Kullanıcılar',
     path: '/admin/users',
     icon: <People />,

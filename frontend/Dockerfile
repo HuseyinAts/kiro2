@@ -14,6 +14,9 @@ RUN npm ci
 COPY . .
 
 # Build the application (tsc + vite)
+# Override production API URL for Docker (nginx proxies /api/ to backend)
+ENV VITE_API_URL=""
+ENV VITE_WS_URL=""
 RUN npm run build
 
 # Production stage - nginx for static files + API proxy

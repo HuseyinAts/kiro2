@@ -88,19 +88,28 @@ export const ModernExamStartPage: React.FC = () => {
     setError(null);
 
     try {
-      const response = await fetch('/api/v1/exams/create', {
+      const response = await fetch('/api/v1/osym-exam/create', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
-        },
-        body: JSON.stringify(config),
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({
+          exam_type: config.exam_type.toLowerCase(),
+          custom_config: {
+            subject: config.subject,
+            difficulty: config.difficulty,
+            question_count: config.question_count,
+            time_limit: config.time_limit,
+          },
+        }),
       });
 
-      if (!response.ok) {throw new Error('Sınav oluşturulamadı');}
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.detail || 'Sınav oluşturulamadı');
+      }
 
       const data = await response.json();
-      navigate(`/exam/${data.sinav_id}`);
+      navigate(`/exam/${data.session_id}`);
     } catch (err: any) {
       setError(err.message || 'Bir hata oluştu');
     } finally {

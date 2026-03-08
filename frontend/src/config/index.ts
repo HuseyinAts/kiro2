@@ -12,10 +12,10 @@ export const config = {
   api: {
     baseURL: isTestEnv
       ? 'http://localhost:8000'
-      : import.meta.env.VITE_API_URL || 'http://localhost:8000',
+      : import.meta.env.VITE_API_URL ?? '',
     wsURL: isTestEnv
       ? 'ws://localhost:8000'
-      : import.meta.env.VITE_WS_URL || 'ws://localhost:8000',
+      : import.meta.env.VITE_WS_URL ?? '',
     timeout: isTestEnv
       ? 5000 // Shorter timeout for tests
       : parseInt(import.meta.env.VITE_API_TIMEOUT || '30000'),

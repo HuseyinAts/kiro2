@@ -171,7 +171,7 @@ function AppContent() {
               <Route
                 path="/exam/start"
                 element={
-                  <ProtectedRoute requiredRoles={['ogrenci']}>
+                  <ProtectedRoute requiredRoles={['ogrenci', 'admin']}>
                     <ExamStartPage />
                   </ProtectedRoute>
                 }
@@ -179,7 +179,7 @@ function AppContent() {
               <Route
                 path="/exam/history"
                 element={
-                  <ProtectedRoute requiredRoles={['ogrenci']}>
+                  <ProtectedRoute requiredRoles={['ogrenci', 'admin']}>
                     <ExamHistoryPage />
                   </ProtectedRoute>
                 }
@@ -187,7 +187,7 @@ function AppContent() {
               <Route
                 path="/exam/:sinavId"
                 element={
-                  <ProtectedRoute requiredRoles={['ogrenci']}>
+                  <ProtectedRoute requiredRoles={['ogrenci', 'admin']}>
                     <ExamPage />
                   </ProtectedRoute>
                 }
@@ -195,7 +195,7 @@ function AppContent() {
               <Route
                 path="/exam/:sinavId/results"
                 element={
-                  <ProtectedRoute requiredRoles={['ogrenci']}>
+                  <ProtectedRoute requiredRoles={['ogrenci', 'admin']}>
                     <ExamResultsPage />
                   </ProtectedRoute>
                 }
