@@ -122,8 +122,9 @@ class TestOsymExamCreateEndpoint:
 
     @pytest.fixture
     def mock_user(self):
-        """Mock authenticated user"""
-        return {"user_id": "test-user-123", "role": "student"}
+        """Mock authenticated user (sinav.py uses current_user.id)"""
+        from types import SimpleNamespace
+        return SimpleNamespace(id="test-user-123", role="student")
 
     def test_create_exam_endpoint_exists(self):
         """Create exam endpoint exists"""
@@ -288,7 +289,8 @@ class TestOsymExamStartEndpoint:
 
     @pytest.fixture
     def mock_user(self):
-        return {"user_id": "test-user-123", "role": "student"}
+        from types import SimpleNamespace
+        return SimpleNamespace(id="test-user-123", role="student")
 
     def test_start_exam_endpoint_exists(self):
         """Start exam endpoint exists"""
@@ -380,7 +382,8 @@ class TestOsymExamQuestionEndpoints:
 
     @pytest.fixture
     def mock_user(self):
-        return {"user_id": "test-user-123", "role": "student"}
+        from types import SimpleNamespace
+        return SimpleNamespace(id="test-user-123", role="student")
 
     @pytest.mark.asyncio
     async def test_get_current_question_success(self, mock_user):
@@ -401,9 +404,10 @@ class TestOsymExamQuestionEndpoints:
             mock_question.option_c = "C"
             mock_question.option_d = "D"
             mock_question.option_e = None
-            mock_question.subject_area.value = "TURKCE"
+            mock_question.subject_area = "TURKCE"
             mock_question.topic = "Anlam Bilgisi"
-            mock_question.difficulty.value = "MEDIUM"
+            mock_question.difficulty_level = Mock()
+            mock_question.difficulty_level.value = "MEDIUM"
 
             mock_engine.get_session_data = AsyncMock(return_value=mock_session)
             mock_engine.get_current_question = AsyncMock(return_value=mock_question)
@@ -549,7 +553,8 @@ class TestOsymExamTimeManagement:
 
     @pytest.fixture
     def mock_user(self):
-        return {"user_id": "test-user-123", "role": "student"}
+        from types import SimpleNamespace
+        return SimpleNamespace(id="test-user-123", role="student")
 
     @pytest.mark.asyncio
     async def test_get_remaining_time_success(self, mock_user):
@@ -616,7 +621,8 @@ class TestOsymExamCompletionEndpoint:
 
     @pytest.fixture
     def mock_user(self):
-        return {"user_id": "test-user-123", "role": "student"}
+        from types import SimpleNamespace
+        return SimpleNamespace(id="test-user-123", role="student")
 
     @pytest.mark.asyncio
     async def test_complete_exam_success(self, mock_user):
@@ -673,7 +679,8 @@ class TestOsymExamPerformanceEndpoints:
 
     @pytest.fixture
     def mock_user(self):
-        return {"user_id": "test-user-123", "role": "student"}
+        from types import SimpleNamespace
+        return SimpleNamespace(id="test-user-123", role="student")
 
     @pytest.mark.asyncio
     async def test_get_performance_analysis_success(self, mock_user):
@@ -757,7 +764,8 @@ class TestOsymExamListEndpoints:
 
     @pytest.fixture
     def mock_user(self):
-        return {"user_id": "test-user-123", "role": "student"}
+        from types import SimpleNamespace
+        return SimpleNamespace(id="test-user-123", role="student")
 
     @pytest.mark.asyncio
     async def test_get_my_exams_success(self, mock_user):
@@ -840,7 +848,8 @@ class TestOsymExamCancelEndpoint:
 
     @pytest.fixture
     def mock_user(self):
-        return {"user_id": "test-user-123", "role": "student"}
+        from types import SimpleNamespace
+        return SimpleNamespace(id="test-user-123", role="student")
 
     @pytest.mark.asyncio
     async def test_cancel_exam_success(self, mock_user):
@@ -2473,7 +2482,8 @@ class TestOsymExamAPIEdgeCases:
 
     @pytest.fixture
     def mock_user(self):
-        return {"user_id": "test-user", "role": "student"}
+        from types import SimpleNamespace
+        return SimpleNamespace(id="test-user", role="student")
 
     @pytest.mark.asyncio
     async def test_create_exam_ydt_type(self, mock_user):
@@ -3519,7 +3529,8 @@ class TestOsymExamComprehensive:
 
     @pytest.fixture
     def mock_user(self):
-        return {"user_id": "test-user", "role": "student"}
+        from types import SimpleNamespace
+        return SimpleNamespace(id="test-user", role="student")
 
     @pytest.mark.asyncio
     async def test_session_info_endpoint(self, mock_user):
@@ -4241,7 +4252,8 @@ class TestAllAPIsErrorHandling:
         from models.database import ExamType
 
         request = CreateExamRequest(exam_type=ExamType.TYT)
-        mock_user = {"user_id": "test-user", "role": "student"}
+        from types import SimpleNamespace
+        mock_user = SimpleNamespace(id="test-user", role="student")
 
         with patch("api.sinav.osym_exam_engine") as mock_engine:
             mock_engine.create_exam_session = AsyncMock(
@@ -4897,7 +4909,8 @@ class TestAPIPerformanceScenarios:
         from models.database import ExamType
 
         request = CreateExamRequest(exam_type=ExamType.TYT)
-        mock_user = {"user_id": "test-user", "role": "student"}
+        from types import SimpleNamespace
+        mock_user = SimpleNamespace(id="test-user", role="student")
 
         with patch("api.sinav.osym_exam_engine") as mock_engine:
             mock_session = Mock()
@@ -5135,7 +5148,8 @@ class TestAPIPerformanceScenarios:
         """Fixture setup is fast"""
         start = datetime.now()
         for _ in range(100):
-            mock_user = {"user_id": "test", "role": "student"}
+            from types import SimpleNamespace
+            mock_user = SimpleNamespace(id="test", role="student")
         duration = (datetime.now() - start).total_seconds()
         assert duration < 0.1
 
@@ -5149,7 +5163,8 @@ class TestOSYMExamExtendedScenarios:
 
     @pytest.fixture
     def mock_user(self):
-        return {"user_id": "test-user", "role": "student"}
+        from types import SimpleNamespace
+        return SimpleNamespace(id="test-user", role="student")
 
     @pytest.mark.asyncio
     async def test_create_exam_tyt_specific_config(self, mock_user):

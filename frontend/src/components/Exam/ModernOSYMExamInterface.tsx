@@ -317,7 +317,7 @@ export const ModernOSYMExamInterface: React.FC<ModernOSYMExamInterfaceProps> = (
 
   const handleMidExamExit = () => {
     // Cevaplar auto-save ile zaten kaydedilmiş, dashboard'a dön
-    onExit();
+    _onExit?.();
   };
 
   const formatTime = (seconds: number): string => {
