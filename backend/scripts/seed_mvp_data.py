@@ -80,6 +80,15 @@ MVP_USERS = [
         "last_name": "Admin",
         "role": "ADMIN",
     },
+    {
+        "id": str(uuid.uuid5(uuid.NAMESPACE_DNS, "mvp-veli@kiro2.com")),
+        "email": "veli@kiro2.com",
+        "username": "veli_mvp",
+        "password": "Kiro2Beta2026@x",
+        "first_name": "Demo",
+        "last_name": "Veli",
+        "role": "PARENT",
+    },
 ]
 
 INSERT_SQL = """
@@ -98,6 +107,21 @@ VALUES (
     FALSE, FALSE
 )
 ON CONFLICT (email) DO NOTHING
+"""
+
+
+PROFILE_INSERT_SQL = """
+INSERT INTO student_profiles (
+    id, user_id, grade_level, veli_onay,
+    current_level, total_study_hours,
+    total_questions_solved, correct_answers,
+    irt_ability, hedef_sinav
+)
+VALUES (
+    %(id)s, %(id)s, 12, TRUE,
+    0.5, 0, 0, 0, 0.0, 'TYT'
+)
+ON CONFLICT (id) DO NOTHING
 """
 
 
@@ -144,7 +168,13 @@ def main():
                 "role": user["role"],
             },
         )
-        print(f"  CREATE: {user['email']} ({user['role']})")
+
+        # Create student profile for STUDENT users
+        if user["role"] == "STUDENT":
+            cur.execute(PROFILE_INSERT_SQL, {"id": user["id"]})
+            print(f"  CREATE: {user['email']} ({user['role']}) + student_profile")
+        else:
+            print(f"  CREATE: {user['email']} ({user['role']})")
         created += 1
 
     conn.commit()

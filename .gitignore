@@ -259,3 +259,13 @@ CLAUDE.session*.md
 
 # tmpclaude temp directories
 tmpclaude-*/
+
+# === SENSITIVE / SEPARATE FEATURES ===
+openwebui-litellm/
+backend/cookies*.txt
+backend/core/litellm/
+backend/api/litellm_chat.py
+d-
+
+# Temp coverage reports
+backend/coverage_*_report_*.txt

@@ -18,6 +18,9 @@ ROUTER_MAPPING = {
     # Health & Monitoring
     "api.health": ("health", "api.health"),
 
+    # Telemetry (frontend web-vitals + error report stubs)
+    "api.telemetry": ("health", "api.telemetry"),
+
     # Authentication & Security
     "api.auth": ("auth", "api.auth"),
     "api.enhanced_auth_api": ("auth", "api.enhanced_auth_api"),
