@@ -396,14 +396,14 @@ async def reindex_questions(
                                 {
                                     "question_id": question.id,
                                     "stem": question.question_text,
-                                    "options": question.options,
+                                    "options": {"A": question.option_a, "B": question.option_b, "C": question.option_c, "D": question.option_d, "E": question.option_e},
                                     "correct_answer": question.correct_answer,
                                     "explanation": question.explanation or "",
-                                    "subject": question.subject,
-                                    "topic": question.topic,
-                                    "difficulty_level": question.difficulty.value
-                                    if hasattr(question.difficulty, "value")
-                                    else str(question.difficulty),
+                                    "subject": question.subject_area,
+                                    "topic": question.primary_topic_id,
+                                    "difficulty_level": question.difficulty_level.value
+                                    if question.difficulty_level
+                                    else "MEDIUM",
                                     "keywords": [],
                                 }
                             )

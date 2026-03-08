@@ -11,7 +11,7 @@ from typing import Any, Dict, List
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException
 from fastapi.responses import FileResponse
 
-from core.dependencies import get_current_user
+from core.dependencies import get_current_user, AuthenticatedUser
 from models import SinavSonucu, SinavTipi
 from services.irt_morfoloji_service import IRTMorfolojiService
 from services.learning_style_service import LearningStyleService
@@ -32,7 +32,7 @@ pdf_generator = PDFReportGenerator()
 
 @router.get("/exam/{sinav_id}/advanced")
 async def get_advanced_exam_report(
-    sinav_id: str, current_user: dict = Depends(get_current_user)
+    sinav_id: str, current_user: AuthenticatedUser = Depends(get_current_user)
 ) -> Dict[str, Any]:
     """
     Gelişmiş sınav raporu getir
@@ -40,7 +40,7 @@ async def get_advanced_exam_report(
     """
     try:
         logger.info(
-            f"Gelişmiş sınav raporu istendi - Sınav: {sinav_id}, Kullanıcı: {current_user.get('user_id')}"
+            f"Gelişmiş sınav raporu istendi - Sınav: {sinav_id}, Kullanıcı: {current_user.id}"
         )
 
         # Temel sınav sonucunu al
@@ -51,8 +51,8 @@ async def get_advanced_exam_report(
         # Paralel olarak gelişmiş analizleri yap
         tasks = [
             _get_irt_morfoloji_analizi(sinav_id, temel_sonuc),
-            _get_zpd_analizi(current_user["user_id"], temel_sonuc),
-            _get_hibrit_ogrenme_stili_analizi(current_user["user_id"], temel_sonuc),
+            _get_zpd_analizi(current_user.id, temel_sonuc),
+            _get_hibrit_ogrenme_stili_analizi(current_user.id, temel_sonuc),
             _get_osym_ets_karsilastirmasi(sinav_id, temel_sonuc),
         ]
 
@@ -76,7 +76,7 @@ async def get_advanced_exam_report(
         # Kapsamlı rapor oluştur
         gelismis_rapor = {
             "sinav_id": sinav_id,
-            "ogrenci_id": current_user["user_id"],
+            "ogrenci_id": current_user.id,
             "rapor_tarihi": datetime.now().isoformat(),
             "temel_sonuc": _serialize_temel_sonuc(temel_sonuc),
             "irt_morfoloji_analizi": irt_analizi,
@@ -84,17 +84,17 @@ async def get_advanced_exam_report(
             "hibrit_ogrenme_stili_analizi": ogrenme_stili_analizi,
             "osym_ets_karsilastirmasi": osym_ets_karsilastirma,
             "kisisellestirilmis_oneriler": await _generate_personalized_recommendations(
-                current_user["user_id"],
+                current_user.id,
                 temel_sonuc,
                 irt_analizi,
                 zpd_analizi,
                 ogrenme_stili_analizi,
             ),
             "performans_trendi": await _get_performance_trend(
-                current_user["user_id"], temel_sonuc.sinav_tipi
+                current_user.id, temel_sonuc.sinav_tipi
             ),
             "gelisim_onerileri": await _generate_development_suggestions(
-                current_user["user_id"], temel_sonuc, irt_analizi, zpd_analizi
+                current_user.id, temel_sonuc, irt_analizi, zpd_analizi
             ),
         }
 
@@ -108,7 +108,7 @@ async def get_advanced_exam_report(
 
 @router.get("/exam/{sinav_id}/irt-analysis")
 async def get_irt_morfoloji_analysis(
-    sinav_id: str, current_user: dict = Depends(get_current_user)
+    sinav_id: str, current_user: AuthenticatedUser = Depends(get_current_user)
 ) -> Dict[str, Any]:
     """
     IRT + Morfoloji analizi detayları
@@ -133,7 +133,7 @@ async def get_irt_morfoloji_analysis(
 
 @router.get("/exam/{sinav_id}/zpd-recommendations")
 async def get_zpd_recommendations(
-    sinav_id: str, current_user: dict = Depends(get_current_user)
+    sinav_id: str, current_user: AuthenticatedUser = Depends(get_current_user)
 ) -> Dict[str, Any]:
     """
     ZPD tabanlı kişiselleştirilmiş öneriler
@@ -143,11 +143,11 @@ async def get_zpd_recommendations(
         if not temel_sonuc:
             raise HTTPException(status_code=404, detail="Sınav sonucu bulunamadı")
 
-        zpd_analizi = await _get_zpd_analizi(current_user["user_id"], temel_sonuc)
+        zpd_analizi = await _get_zpd_analizi(current_user.id, temel_sonuc)
 
         return {
             "sinav_id": sinav_id,
-            "ogrenci_id": current_user["user_id"],
+            "ogrenci_id": current_user.id,
             "analiz_tarihi": datetime.now().isoformat(),
             "zpd_analizi": zpd_analizi,
         }
@@ -159,7 +159,7 @@ async def get_zpd_recommendations(
 
 @router.get("/exam/{sinav_id}/learning-style-analysis")
 async def get_learning_style_analysis(
-    sinav_id: str, current_user: dict = Depends(get_current_user)
+    sinav_id: str, current_user: AuthenticatedUser = Depends(get_current_user)
 ) -> Dict[str, Any]:
     """
     Hibrit öğrenme stili bazlı performans analizi
@@ -170,12 +170,12 @@ async def get_learning_style_analysis(
             raise HTTPException(status_code=404, detail="Sınav sonucu bulunamadı")
 
         ogrenme_stili_analizi = await _get_hibrit_ogrenme_stili_analizi(
-            current_user["user_id"], temel_sonuc
+            current_user.id, temel_sonuc
         )
 
         return {
             "sinav_id": sinav_id,
-            "ogrenci_id": current_user["user_id"],
+            "ogrenci_id": current_user.id,
             "analiz_tarihi": datetime.now().isoformat(),
             "hibrit_ogrenme_stili_analizi": ogrenme_stili_analizi,
         }
@@ -191,7 +191,7 @@ async def get_learning_style_analysis(
 
 @router.get("/exam/{sinav_id}/osym-ets-comparison")
 async def get_osym_ets_comparison(
-    sinav_id: str, current_user: dict = Depends(get_current_user)
+    sinav_id: str, current_user: AuthenticatedUser = Depends(get_current_user)
 ) -> Dict[str, Any]:
     """
     ÖSYM/ETS standartları ile karşılaştırma raporu
@@ -220,7 +220,7 @@ async def get_osym_ets_comparison(
 async def generate_pdf_report(
     sinav_id: str,
     background_tasks: BackgroundTasks,
-    current_user: dict = Depends(get_current_user),
+    current_user: AuthenticatedUser = Depends(get_current_user),
 ) -> Dict[str, str]:
     """
     PDF rapor oluştur ve indirme linki döndür
@@ -252,7 +252,7 @@ async def generate_pdf_report(
 @router.get("/download/{filename}")
 async def download_pdf_report(
     filename: str,
-    current_user: dict = Depends(get_current_user)
+    current_user: AuthenticatedUser = Depends(get_current_user)
 ) -> FileResponse:
     """
     PDF raporu indir

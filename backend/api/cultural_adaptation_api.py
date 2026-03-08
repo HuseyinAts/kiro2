@@ -12,7 +12,7 @@ from typing import Any, Dict, Optional
 from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel, Field
 
-from core.dependencies import get_current_user
+from core.dependencies import AuthenticatedUser, get_current_user
 from services.cultural_adaptation_service import CulturalAdaptationService
 
 logger = logging.getLogger(__name__)
@@ -69,7 +69,7 @@ class CulturalAdaptationResponse(BaseModel):
 async def get_student_cultural_adaptation(
     student_id: str,
     force_refresh: bool = Query(False, description="Cache'i yoksay ve yeniden hesapla"),
-    current_user: Dict = Depends(get_current_user),
+    current_user: AuthenticatedUser = Depends(get_current_user),
 ):
     """
     Öğrenci için kültürel adaptasyon bilgilerini getir
@@ -84,8 +84,8 @@ async def get_student_cultural_adaptation(
     try:
         # Yetkilendirme kontrolü
         if (
-            current_user["role"] not in ["admin", "teacher"]
-            and current_user["id"] != student_id
+            current_user.role.value not in ["admin", "teacher"]
+            and current_user.id != student_id
         ):
             raise HTTPException(
                 status_code=403,
@@ -120,7 +120,7 @@ async def get_student_cultural_adaptation(
 async def update_student_behavioral_data(
     student_id: str,
     behavioral_update: BehavioralUpdateRequest,
-    current_user: Dict = Depends(get_current_user),
+    current_user: AuthenticatedUser = Depends(get_current_user),
 ):
     """
     Öğrenci davranış verilerini güncelle ve adaptasyonu yenile
@@ -133,8 +133,8 @@ async def update_student_behavioral_data(
     try:
         # Yetkilendirme kontrolü
         if (
-            current_user["role"] not in ["admin", "teacher"]
-            and current_user["id"] != student_id
+            current_user.role.value not in ["admin", "teacher"]
+            and current_user.id != student_id
         ):
             raise HTTPException(
                 status_code=403,
@@ -179,7 +179,7 @@ async def get_current_cultural_period(
     date: Optional[str] = Query(
         None, description="Kontrol edilecek tarih (YYYY-MM-DD formatında)"
     ),
-    current_user: Dict = Depends(get_current_user),
+    current_user: AuthenticatedUser = Depends(get_current_user),
 ):
     """
     Mevcut kültürel dönem bilgilerini getir
@@ -218,7 +218,7 @@ async def get_current_cultural_period(
 
 @router.get("/regional-culture/{region}", response_model=CulturalAdaptationResponse)
 async def get_regional_culture_info(
-    region: str, current_user: Dict = Depends(get_current_user)
+    region: str, current_user: AuthenticatedUser = Depends(get_current_user)
 ):
     """
     Bölgesel kültür bilgilerini getir
@@ -251,7 +251,7 @@ async def get_regional_culture_info(
 
 @router.get("/adaptation-summary", response_model=CulturalAdaptationResponse)
 async def get_cultural_adaptation_summary(
-    current_user: Dict = Depends(get_current_user),
+    current_user: AuthenticatedUser = Depends(get_current_user),
 ):
     """
     Kültürel adaptasyon sistemi özeti
@@ -330,7 +330,7 @@ async def get_cultural_adaptation_summary(
 
 @router.post("/test-adaptation", response_model=CulturalAdaptationResponse)
 async def test_cultural_adaptation(
-    test_data: Dict[str, Any], current_user: Dict = Depends(get_current_user)
+    test_data: Dict[str, Any], current_user: AuthenticatedUser = Depends(get_current_user)
 ):
     """
     Kültürel adaptasyon testi (sadece admin kullanıcılar için)
@@ -340,7 +340,7 @@ async def test_cultural_adaptation(
     """
     try:
         # Sadece admin kullanıcılar test edebilir
-        if current_user["role"] != "admin":
+        if current_user.role.value != "admin":
             raise HTTPException(
                 status_code=403,
                 detail="Bu endpoint sadece admin kullanıcılar tarafından kullanılabilir",

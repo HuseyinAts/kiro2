@@ -10,7 +10,7 @@ from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException
 from pydantic import BaseModel, Field
 
 from algorithms.irt_morfoloji_service import IRTParameters, irt_morfoloji_service
-from core.dependencies import get_current_user
+from core.dependencies import get_current_user, AuthenticatedUser
 
 logger = logging.getLogger(__name__)
 
@@ -54,7 +54,7 @@ class DifficultyRecommendationRequest(BaseModel):
 @router.post("/analyze-question")
 async def analyze_question(
     request: QuestionAnalysisRequest,
-    current_user: Dict[str, Any] = Depends(get_current_user),
+    current_user: AuthenticatedUser = Depends(get_current_user),
 ) -> Dict[str, Any]:
     """
     Tek soru IRT + Morfoloji analizi
@@ -109,7 +109,7 @@ async def analyze_question(
 async def batch_analyze_questions(
     request: BatchAnalysisRequest,
     background_tasks: BackgroundTasks,
-    current_user: Dict[str, Any] = Depends(get_current_user),
+    current_user: AuthenticatedUser = Depends(get_current_user),
 ) -> Dict[str, Any]:
     """
     Toplu soru analizi
@@ -121,13 +121,13 @@ async def batch_analyze_questions(
 
         # Arka planda işlem başlat
         background_tasks.add_task(
-            _process_batch_analysis, request.questions, current_user["user_id"]
+            _process_batch_analysis, request.questions, current_user.id
         )
 
         return {
             "success": True,
             "data": {
-                "batch_id": f"batch_{current_user['user_id']}_{len(request.questions)}",
+                "batch_id": f"batch_{current_user.id}_{len(request.questions)}",
                 "question_count": len(request.questions),
                 "status": "processing",
             },
@@ -144,7 +144,7 @@ async def batch_analyze_questions(
 @router.post("/morphology-insights")
 async def get_morphology_insights(
     request: MorphologyInsightsRequest,
-    current_user: Dict[str, Any] = Depends(get_current_user),
+    current_user: AuthenticatedUser = Depends(get_current_user),
 ) -> Dict[str, Any]:
     """
     Metin morfoloji içgörüleri
@@ -170,7 +170,7 @@ async def get_morphology_insights(
 @router.post("/difficulty-recommendation")
 async def get_difficulty_recommendation(
     request: DifficultyRecommendationRequest,
-    current_user: Dict[str, Any] = Depends(get_current_user),
+    current_user: AuthenticatedUser = Depends(get_current_user),
 ) -> Dict[str, Any]:
     """
     Zorluk seviyesi önerisi
@@ -214,7 +214,7 @@ async def calculate_irt_probability(
     discrimination: float,
     guessing: float = 0.20,
     morphology_adjustment: bool = True,
-    current_user: Dict[str, Any] = Depends(get_current_user),
+    current_user: AuthenticatedUser = Depends(get_current_user),
 ) -> Dict[str, Any]:
     """
     IRT olasılık hesaplama
@@ -256,7 +256,7 @@ async def calculate_irt_probability(
 
 @router.get("/service-stats")
 async def get_service_stats(
-    current_user: Dict[str, Any] = Depends(get_current_user)
+    current_user: AuthenticatedUser = Depends(get_current_user),
 ) -> Dict[str, Any]:
     """
     Servis istatistikleri
@@ -355,7 +355,7 @@ class OSYMETSComparisonRequest(BaseModel):
 @router.post("/quick-assessment")
 async def quick_assessment(
     request: QuickAssessmentRequest,
-    current_user: Dict[str, Any] = Depends(get_current_user),
+    current_user: AuthenticatedUser = Depends(get_current_user),
 ) -> Dict[str, Any]:
     """
     Soru için hızlı ön değerlendirme
@@ -389,7 +389,7 @@ async def quick_assessment(
 @router.post("/recommend-questions")
 async def recommend_questions_for_student(
     request: StudentQuestionRecommendationRequest,
-    current_user: Dict[str, Any] = Depends(get_current_user),
+    current_user: AuthenticatedUser = Depends(get_current_user),
 ) -> Dict[str, Any]:
     """
     Öğrenci profiline uygun soru önerisi
@@ -429,7 +429,7 @@ async def recommend_questions_for_student(
 async def bulk_quality_analysis(
     request: QualityAnalysisRequest,
     background_tasks: BackgroundTasks,
-    current_user: Dict[str, Any] = Depends(get_current_user),
+    current_user: AuthenticatedUser = Depends(get_current_user),
 ) -> Dict[str, Any]:
     """
     Toplu soru kalite analizi
@@ -461,7 +461,7 @@ async def bulk_quality_analysis(
 @router.post("/osym-ets-comparison")
 async def osym_ets_comparison(
     request: OSYMETSComparisonRequest,
-    current_user: Dict[str, Any] = Depends(get_current_user),
+    current_user: AuthenticatedUser = Depends(get_current_user),
 ) -> Dict[str, Any]:
     """
     ÖSYM ve ETS standartları ile karşılaştırma
@@ -492,7 +492,7 @@ async def osym_ets_comparison(
 
 @router.get("/full-analysis/{question_id}")
 async def get_full_question_analysis(
-    question_id: str, current_user: Dict[str, Any] = Depends(get_current_user)
+    question_id: str, current_user: AuthenticatedUser = Depends(get_current_user)
 ) -> Dict[str, Any]:
     """
     Tam kapsamlı soru analizi

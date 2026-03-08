@@ -351,10 +351,6 @@ class QuestionBatchService:
             Question.is_active == True,  # noqa: E712
         )
 
-        if include_options:
-            from sqlalchemy.orm import selectinload
-            query = query.options(selectinload(Question.options))
-
         result = await self.session.execute(query)
         questions = result.scalars().all()
 
@@ -362,13 +358,13 @@ class QuestionBatchService:
         return [
             {
                 "id": str(q.id),
-                "content": q.content,
-                "subject": q.subject,
-                "difficulty": q.difficulty,
-                "options": [
-                    {"id": str(o.id), "text": o.text, "is_correct": o.is_correct}
-                    for o in (q.options or [])
-                ] if include_options else None,
+                "content": q.question_text,
+                "subject": q.subject_area,
+                "difficulty": q.difficulty_level.value if q.difficulty_level else "MEDIUM",
+                "options": {
+                    "A": q.option_a, "B": q.option_b, "C": q.option_c,
+                    "D": q.option_d, "E": q.option_e,
+                } if include_options else None,
             }
             for q in questions
         ]

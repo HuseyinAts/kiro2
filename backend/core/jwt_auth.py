@@ -328,9 +328,9 @@ class JWTManager:
                 redis_url,
                 encoding="utf-8",
                 decode_responses=True,
-                socket_connect_timeout=3,
-                socket_timeout=2,
-                retry_on_timeout=True,
+                socket_connect_timeout=1,
+                socket_timeout=1,
+                retry_on_timeout=False,
             )
             await self._redis.ping()
             self._redis_available = True
@@ -429,9 +429,10 @@ class JWTManager:
                 await self._redis.setex(key, ttl, "1")
             except Exception as e:
                 logger.warning(
-                    "Redis blacklist write failed "
+                    "Redis blacklist write failed, disabling Redis "
                     f"(in-memory still active): {e}"
                 )
+                self._redis_available = False
 
     def _is_blacklisted(self, token: str) -> bool:
         """Synchronous blacklist check — in-memory only.
@@ -465,9 +466,10 @@ class JWTManager:
                     return True
             except Exception as e:
                 logger.warning(
-                    "Redis blacklist read failed "
+                    "Redis blacklist read failed, disabling Redis "
                     f"(using in-memory only): {e}"
                 )
+                self._redis_available = False
 
         return False
 

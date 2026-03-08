@@ -15,7 +15,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import HTTPBearer
 from pydantic import BaseModel, Field
 
-from core.dependencies import get_current_user
+from core.dependencies import get_current_user, AuthenticatedUser
 from core.osym_exam_engine import ExamStatus, osym_exam_engine
 from core.structured_logger import get_logger
 from models.database import ExamType
@@ -233,7 +233,7 @@ class SubjectPerformanceResponse(BaseModel):
     "/my-exams", response_model=List[ExamSessionResponse], summary="Benim Sınavlarım"
 )
 async def get_my_exams(
-    current_user = Depends(get_current_user),
+    current_user: AuthenticatedUser = Depends(get_current_user),
     limit: int = 20,
     offset: int = 0,
 ) -> List[ExamSessionResponse]:
@@ -280,7 +280,7 @@ async def get_my_exams(
 
 @router.get("/exam-configs", summary="Sınav Konfigürasyonları")
 async def get_exam_configs(
-    current_user = Depends(get_current_user),
+    current_user: AuthenticatedUser = Depends(get_current_user),
 ) -> Dict[str, Any]:
     """
     ÖSYM sınav konfigürasyonlarını getir
@@ -320,7 +320,7 @@ async def get_exam_configs(
     "/create", response_model=ExamSessionResponse, summary="ÖSYM Sınavı Oluştur"
 )
 async def create_exam(
-    request: CreateExamRequest, current_user = Depends(get_current_user)
+    request: CreateExamRequest, current_user: AuthenticatedUser = Depends(get_current_user)
 ) -> ExamSessionResponse:
     """
     Yeni ÖSYM formatında sınav oturumu oluştur
@@ -398,7 +398,7 @@ async def create_exam(
     summary="ÖSYM Sınavını Başlat",
 )
 async def start_exam(
-    session_id: str, current_user = Depends(get_current_user)
+    session_id: str, current_user: AuthenticatedUser = Depends(get_current_user)
 ) -> ExamSessionResponse:
     """
     ÖSYM sınavını başlat ve zaman sayacını çalıştır
@@ -475,7 +475,7 @@ async def start_exam(
     summary="Mevcut Soruyu Getir",
 )
 async def get_current_question(
-    session_id: str, current_user = Depends(get_current_user)
+    session_id: str, current_user: AuthenticatedUser = Depends(get_current_user)
 ) -> QuestionResponse:
     """
     Sınavdaki mevcut soruyu getir
@@ -542,7 +542,7 @@ async def get_current_question(
 async def save_answer(
     session_id: str,
     request: SaveAnswerRequest,
-    current_user = Depends(get_current_user),
+    current_user: AuthenticatedUser = Depends(get_current_user),
 ) -> Dict[str, Any]:
     """
     Soru cevabını kaydet (otomatik kaydetme ile)
@@ -613,7 +613,7 @@ async def save_answer(
 async def navigate_to_question(
     session_id: str,
     request: NavigateQuestionRequest,
-    current_user = Depends(get_current_user),
+    current_user: AuthenticatedUser = Depends(get_current_user),
 ) -> QuestionResponse:
     """
     Belirli bir soruya git (soru navigasyonu)
@@ -683,7 +683,7 @@ async def navigate_to_question(
 async def flag_question(
     session_id: str,
     request: FlagQuestionRequest,
-    current_user = Depends(get_current_user),
+    current_user: AuthenticatedUser = Depends(get_current_user),
 ) -> Dict[str, Any]:
     """
     Soruyu işaretle veya işareti kaldır
@@ -741,7 +741,7 @@ async def flag_question(
 
 @router.get("/{session_id}/remaining-time", summary="Kalan Süre")
 async def get_remaining_time(
-    session_id: str, current_user = Depends(get_current_user)
+    session_id: str, current_user: AuthenticatedUser = Depends(get_current_user)
 ) -> Dict[str, Any]:
     """
     Sınavın kalan süresini getir
@@ -815,7 +815,7 @@ async def get_remaining_time(
     summary="Sınavı Tamamla",
 )
 async def complete_exam(
-    session_id: str, current_user = Depends(get_current_user)
+    session_id: str, current_user: AuthenticatedUser = Depends(get_current_user)
 ) -> PerformanceResponse:
     """
     Sınavı manuel olarak tamamla ve performans analizi yap
@@ -890,7 +890,7 @@ async def complete_exam(
     summary="Sınav Oturum Bilgileri",
 )
 async def get_session_info(
-    session_id: str, current_user = Depends(get_current_user)
+    session_id: str, current_user: AuthenticatedUser = Depends(get_current_user)
 ) -> ExamSessionResponse:
     """
     Sınav oturum bilgilerini getir
@@ -943,7 +943,7 @@ async def get_session_info(
     summary="Performans Analizi",
 )
 async def get_performance_analysis(
-    session_id: str, current_user = Depends(get_current_user)
+    session_id: str, current_user: AuthenticatedUser = Depends(get_current_user)
 ) -> PerformanceResponse:
     """
     Sınav performans analizini getir (tamamlanmış sınavlar için)
@@ -1007,7 +1007,7 @@ async def get_performance_analysis(
     summary="Konu Bazlı Performans",
 )
 async def get_subject_performance(
-    session_id: str, current_user = Depends(get_current_user)
+    session_id: str, current_user: AuthenticatedUser = Depends(get_current_user)
 ) -> List[SubjectPerformanceResponse]:
     """
     Konu bazlı performans analizini getir
@@ -1064,7 +1064,7 @@ async def get_subject_performance(
 
 @router.delete("/{session_id}", summary="Sınavı İptal Et")
 async def cancel_exam(
-    session_id: str, current_user = Depends(get_current_user)
+    session_id: str, current_user: AuthenticatedUser = Depends(get_current_user)
 ) -> Dict[str, Any]:
     """
     Sınavı iptal et (sadece başlatılmamış sınavlar için)
@@ -1178,7 +1178,7 @@ class CompletionStatsResponse(BaseModel):
     summary="Cevaplanmamış Soruları Getir",
 )
 async def get_unanswered_questions(
-    session_id: str, current_user = Depends(get_current_user)
+    session_id: str, current_user: AuthenticatedUser = Depends(get_current_user)
 ) -> UnansweredQuestionsResponse:
     """
     Cevaplanmamış soruların listesini getir - REQ-1.6
@@ -1242,7 +1242,7 @@ async def get_unanswered_questions(
     summary="Tamamlanma İstatistikleri",
 )
 async def get_completion_stats(
-    session_id: str, current_user = Depends(get_current_user)
+    session_id: str, current_user: AuthenticatedUser = Depends(get_current_user)
 ) -> CompletionStatsResponse:
     """
     Sınav tamamlanma istatistiklerini getir - REQ-1.6

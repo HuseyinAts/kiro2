@@ -7,7 +7,7 @@ Feature flag ve configuration bilgilerini expose eden API endpoint'leri.
 from fastapi import APIRouter, Depends, HTTPException
 from typing import Dict, Any
 
-from core.dependencies import get_current_user
+from core.dependencies import get_current_user, AuthenticatedUser
 from pydantic import BaseModel
 
 from core.feature_flags import (
@@ -51,7 +51,7 @@ class UserConfigResponse(BaseModel):
 
 @router.get("/summary", response_model=ConfigSummaryResponse)
 async def get_config_summary(
-    current_user: dict = Depends(get_current_user)
+    current_user: AuthenticatedUser = Depends(get_current_user)
 ):
     """
     Sistem konfigürasyon özetini al
@@ -71,7 +71,7 @@ async def get_config_summary(
 
 @router.get("/features", response_model=list[FeatureFlagResponse])
 async def get_all_features(
-    current_user: dict = Depends(get_current_user)
+    current_user: AuthenticatedUser = Depends(get_current_user)
 ):
     """
     Tüm feature flag'leri listele

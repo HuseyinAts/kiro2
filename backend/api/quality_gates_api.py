@@ -39,6 +39,7 @@ from api.schemas.quality_gates import (
     RunPipelineRequest,
 )
 from core.auth_dependencies import get_current_user
+from core.dependencies import AuthenticatedUser
 from core.structured_logger import get_logger
 
 logger = get_logger(__name__)
@@ -85,7 +86,7 @@ def _convert_severity(severity_value: str) -> GateSeverityEnum:
 async def run_quality_gates(
     request: RunPipelineRequest,
     background_tasks: BackgroundTasks,
-    current_user: dict = Depends(get_current_user),
+    current_user: AuthenticatedUser = Depends(get_current_user),
 ) -> PipelineResultResponse:
     """
     Run quality gates pipeline.
@@ -95,7 +96,7 @@ async def run_quality_gates(
     """
     logger.info(
         "quality_gates_run_requested",
-        user=current_user.get("email", "unknown"),
+        user=current_user.email or "unknown",
         gates=request.gates,
         parallel=request.parallel,
     )
@@ -203,7 +204,7 @@ async def run_quality_gates(
             parallel_execution_used=result.parallel_execution_used,
             commit_hash=result.commit_hash,
             branch=result.branch,
-            triggered_by=current_user.get("email"),
+            triggered_by=current_user.email,
             started_at=result.started_at,
             completed_at=result.completed_at,
             passed=result.passed,
@@ -239,7 +240,7 @@ async def run_quality_gates(
 
 @router.get("/status", response_model=PipelineStatusResponse)
 async def get_pipeline_status(
-    current_user: dict = Depends(get_current_user),
+    current_user: AuthenticatedUser = Depends(get_current_user),
 ) -> PipelineStatusResponse:
     """
     Get pipeline status and gate configurations.
@@ -302,7 +303,7 @@ async def get_pipeline_status(
 @router.get("/results/{run_id}", response_model=PipelineResultResponse)
 async def get_run_results(
     run_id: str,
-    current_user: dict = Depends(get_current_user),
+    current_user: AuthenticatedUser = Depends(get_current_user),
 ) -> PipelineResultResponse:
     """
     Get results for a specific pipeline run.
@@ -323,7 +324,7 @@ async def get_run_results(
 async def get_run_history(
     page: int = Query(1, ge=1),
     page_size: int = Query(20, ge=1, le=100),
-    current_user: dict = Depends(get_current_user),
+    current_user: AuthenticatedUser = Depends(get_current_user),
 ) -> PipelineHistoryResponse:
     """
     Get pipeline run history.
@@ -368,7 +369,7 @@ async def get_run_history(
 @router.post("/override", response_model=OverrideResponse)
 async def request_override(
     request: OverrideRequestSchema,
-    current_user: dict = Depends(get_current_user),
+    current_user: AuthenticatedUser = Depends(get_current_user),
 ) -> OverrideResponse:
     """
     Request override for a failed gate.
@@ -378,7 +379,7 @@ async def request_override(
     """
     logger.info(
         "override_requested",
-        user=current_user.get("email"),
+        user=current_user.email,
         gate=request.gate_name,
         reason=request.reason[:50],  # Log first 50 chars
     )
@@ -392,7 +393,7 @@ async def request_override(
         "override_id": override_id,
         "gate_name": request.gate_name,
         "reason": request.reason,
-        "requestor": current_user.get("email", "unknown"),
+        "requestor": current_user.email or "unknown",
         "ticket_id": request.ticket_id,
         "status": "pending",
         "expires_at": expires_at,
@@ -407,7 +408,7 @@ async def request_override(
 @router.get("/overrides", response_model=list[OverrideResponse])
 async def list_overrides(
     status_filter: Optional[str] = Query(None, description="Filter by status"),
-    current_user: dict = Depends(get_current_user),
+    current_user: AuthenticatedUser = Depends(get_current_user),
 ) -> list[OverrideResponse]:
     """
     List override requests.
@@ -426,7 +427,7 @@ async def list_overrides(
 async def approve_override(
     override_id: str,
     request: ApproveOverrideRequest,
-    current_user: dict = Depends(get_current_user),
+    current_user: AuthenticatedUser = Depends(get_current_user),
 ) -> dict[str, Any]:
     """
     Approve or deny an override request.
@@ -440,7 +441,7 @@ async def approve_override(
         )
 
     # Check if user has admin role
-    user_role = current_user.get("role", "student")
+    user_role = current_user.role.value
     if user_role not in ["admin", "teacher"]:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
@@ -449,21 +450,21 @@ async def approve_override(
 
     override = _override_requests[override_id]
     override["status"] = "approved"
-    override["approver"] = current_user.get("email")
+    override["approver"] = current_user.email
     override["approved_at"] = datetime.now(timezone.utc)
     override["comments"] = request.comments
 
     logger.info(
         "override_approved",
         override_id=override_id,
-        approver=current_user.get("email"),
+        approver=current_user.email,
         gate=override["gate_name"],
     )
 
     return {
         "override_id": override_id,
         "approved": True,
-        "approver": current_user.get("email"),
+        "approver": current_user.email,
         "approved_at": override["approved_at"].isoformat(),
         "comments": request.comments,
     }
@@ -472,7 +473,7 @@ async def approve_override(
 @router.delete("/overrides/{override_id}")
 async def delete_override(
     override_id: str,
-    current_user: dict = Depends(get_current_user),
+    current_user: AuthenticatedUser = Depends(get_current_user),
 ) -> dict[str, str]:
     """
     Delete/cancel an override request.
@@ -486,8 +487,8 @@ async def delete_override(
         )
 
     override = _override_requests[override_id]
-    user_email = current_user.get("email")
-    user_role = current_user.get("role", "student")
+    user_email = current_user.email
+    user_role = current_user.role.value
 
     # Check permissions
     if override["requestor"] != user_email and user_role != "admin":
