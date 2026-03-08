@@ -82,9 +82,9 @@ def collect_feedback_hourly(self) -> Dict[str, Any]:
 async def _collect_feedback_async() -> Dict[str, Any]:
     """Async implementation of feedback collection."""
     from backend.services.feedback_service import FeedbackService
-    from backend.core.database import get_async_session
+    from backend.core.database import get_db_session_context
 
-    async with get_async_session() as session:
+    async with get_db_session_context() as session:
         service = FeedbackService()
 
         # Get feedback from last hour
@@ -162,12 +162,12 @@ def detect_patterns_daily(self) -> Dict[str, Any]:
 async def _detect_patterns_async() -> Dict[str, Any]:
     """Async implementation of pattern detection."""
     from backend.services.pattern_service import PatternDetectionService
-    from backend.core.database import get_async_session
+    from backend.core.database import get_db_session_context
     import time
 
     start_time = time.time()
 
-    async with get_async_session() as session:
+    async with get_db_session_context() as session:
         service = PatternDetectionService(db=session)
 
         # Detect error patterns (REQ-2.1)
@@ -267,9 +267,9 @@ def monitor_performance(self) -> Dict[str, Any]:
 async def _monitor_performance_async() -> Dict[str, Any]:
     """Async implementation of performance monitoring."""
     from backend.services.performance_monitor_service import PerformanceMonitorService
-    from backend.core.database import get_async_session
+    from backend.core.database import get_db_session_context
 
-    async with get_async_session() as session:
+    async with get_db_session_context() as session:
         service = PerformanceMonitorService(db=session)
 
         # Get current metrics
@@ -348,9 +348,9 @@ def detect_anomalies(self) -> Dict[str, Any]:
 async def _detect_anomalies_async() -> Dict[str, Any]:
     """Async implementation of anomaly detection."""
     from backend.services.performance_monitor_service import PerformanceMonitorService
-    from backend.core.database import get_async_session
+    from backend.core.database import get_db_session_context
 
-    async with get_async_session() as session:
+    async with get_db_session_context() as session:
         service = PerformanceMonitorService(db=session)
 
         # Detect anomalies (Z-score > 3)
@@ -409,9 +409,9 @@ def check_rule_evolution(self) -> Dict[str, Any]:
 async def _check_rule_evolution_async() -> Dict[str, Any]:
     """Async implementation of rule evolution check."""
     from backend.services.rule_evolution_service import RuleEvolutionService
-    from backend.core.database import get_async_session
+    from backend.core.database import get_db_session_context
 
-    async with get_async_session() as session:
+    async with get_db_session_context() as session:
         service = RuleEvolutionService(db=session)
 
         # Find low-performing rules

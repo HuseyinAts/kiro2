@@ -2,6 +2,7 @@
 Soru bankası yönetimi servisi
 Gelişmiş IRT parametreli soru seçimi ve database entegrasyonu ile
 """
+import logging
 import math
 import random
 from datetime import datetime
@@ -17,6 +18,8 @@ from models import SinavTipi
 from models.database import ExamType, QuestionDifficulty, SubjectArea
 from models.question_bank import QuestionBankItem as Question
 from services.irt_analysis_service import IRTAnalysisService
+
+logger = logging.getLogger(__name__)
 
 
 class SoruBankasiServisi:
@@ -216,7 +219,7 @@ class SoruBankasiServisi:
         cache_key = f"soru:{soru_id}"
         cached_soru = await cache_manager.get(cache_key)
         if cached_soru:
-            print(f"Soru cache hit: {soru_id}")
+            logger.debug(f"Soru cache hit: {soru_id}")
             return cached_soru
 
         async with db_manager.get_session() as session:
@@ -234,7 +237,7 @@ class SoruBankasiServisi:
 
                 return soru
             except Exception as e:
-                print(f"Soru getirme hatası: {str(e)}")
+                logger.error(f"Soru getirme hatası: {e}")
                 return None
 
     async def sorular_listele(
@@ -313,7 +316,7 @@ class SoruBankasiServisi:
                 return questions
 
             except Exception as e:
-                print(f"Soru listeleme hatası: {str(e)}")
+                logger.error(f"Soru listeleme hatası: {e}")
                 return []
 
     async def rastgele_sorular_sec(
@@ -341,20 +344,20 @@ class SoruBankasiServisi:
                 # Konu dağılımı belirtilmemişse - küçük veri setleri için basit seçim
                 if not konu_dagilimi:
                     # Önce sınav tipindeki tüm soruları getir
-                    print(
-                        f"[DEBUG] Konu dağılımı yok, tüm sorular getiriliyor: sinav_tipi={sinav_tipi}"
+                    logger.debug(
+                        f"Konu dağılımı yok, tüm sorular getiriliyor: sinav_tipi={sinav_tipi}"
                     )
                     tum_sorular = await self.sorular_listele(
                         sinav_tipi=sinav_tipi, limit=soru_sayisi * 3
                     )
-                    print(f"[DEBUG] Toplam bulunan: {len(tum_sorular)} soru")
+                    logger.debug(f"Toplam bulunan: {len(tum_sorular)} soru")
 
                     # Yeterli soru varsa rastgele seç, yoksa tümünü döndür
                     if len(tum_sorular) >= soru_sayisi:
                         return random.sample(tum_sorular, soru_sayisi)
                     else:
-                        print(
-                            f"[DEBUG] İstenen: {soru_sayisi}, Mevcut: {len(tum_sorular)} - Tümü döndürülüyor"
+                        logger.debug(
+                            f"İstenen: {soru_sayisi}, Mevcut: {len(tum_sorular)} - Tümü döndürülüyor"
                         )
                         return tum_sorular
 
@@ -397,7 +400,7 @@ class SoruBankasiServisi:
                 result = await session.execute(stmt)
                 tum_sorular = result.scalars().all()
 
-                print(f"[DEBUG] FIX N+1: Tek sorguda {len(tum_sorular)} soru getirildi")
+                logger.debug(f"FIX N+1: Tek sorguda {len(tum_sorular)} soru getirildi")
 
                 # Soruları konulara göre grupla (memory'de)
                 konu_gruplari: Dict[str, List[Question]] = {}
@@ -413,8 +416,8 @@ class SoruBankasiServisi:
                     subject_key = konu_map.get(konu, konu.lower())
                     konu_sorulari = konu_gruplari.get(subject_key, [])
 
-                    print(
-                        f"[DEBUG] Konu: {konu} ({subject_key}), İstenen: {sayi}, Mevcut: {len(konu_sorulari)}"
+                    logger.debug(
+                        f"Konu: {konu} ({subject_key}), İstenen: {sayi}, Mevcut: {len(konu_sorulari)}"
                     )
 
                     if len(konu_sorulari) >= sayi:
@@ -424,14 +427,14 @@ class SoruBankasiServisi:
                     else:
                         # Yeterli soru yoksa mevcut tümünü al
                         secilen_sorular.extend(konu_sorulari)
-                        print(
-                            f"Uyarı: {konu} konusunda yeterli soru yok. İstenen: {sayi}, Mevcut: {len(konu_sorulari)}"
+                        logger.warning(
+                            f"{konu} konusunda yeterli soru yok. İstenen: {sayi}, Mevcut: {len(konu_sorulari)}"
                         )
 
                 return secilen_sorular
 
             except Exception as e:
-                print(f"Rastgele soru seçimi hatası: {str(e)}")
+                logger.error(f"Rastgele soru seçimi hatası: {e}")
                 return []
 
     async def irt_parametreli_soru_sec(
@@ -522,7 +525,7 @@ class SoruBankasiServisi:
                 return secilen_sorular
 
             except Exception as e:
-                print(f"IRT parametreli soru seçimi hatası: {str(e)}")
+                logger.error(f"IRT parametreli soru seçimi hatası: {e}")
                 # Fallback: Normal rastgele seçim
                 return await self.rastgele_sorular_sec(sinav_tipi, soru_sayisi)
 
@@ -560,7 +563,7 @@ class SoruBankasiServisi:
             return max(0.0, bilgi)
 
         except Exception as e:
-            print(f"Bilgi fonksiyonu hesaplama hatası: {str(e)}")
+            logger.error(f"Bilgi fonksiyonu hesaplama hatası: {e}")
             return 0.0
 
     async def _hesapla_dogru_cevap_olasiligi(
@@ -584,7 +587,7 @@ class SoruBankasiServisi:
             return max(tahmin, min(1.0, olaslik))
 
         except Exception as e:
-            print(f"Olasılık hesaplama hatası: {str(e)}")
+            logger.error(f"Olasılık hesaplama hatası: {e}")
             return 0.5
 
     async def soru_guncelle(
@@ -644,7 +647,7 @@ class SoruBankasiServisi:
 
             except Exception as e:
                 await session.rollback()
-                print(f"Soru güncelleme hatası: {str(e)}")
+                logger.error(f"Soru güncelleme hatası: {e}")
                 return None
 
     async def soru_sil(self, soru_id: str) -> bool:
@@ -679,7 +682,7 @@ class SoruBankasiServisi:
 
             except Exception as e:
                 await session.rollback()
-                print(f"Soru silme hatası: {str(e)}")
+                logger.error(f"Soru silme hatası: {e}")
                 return False
 
     async def konu_listesi_getir(self, sinav_tipi: Optional[str] = None) -> List[str]:
@@ -715,7 +718,7 @@ class SoruBankasiServisi:
                 return sorted([subject.value for subject in subject_areas])
 
             except Exception as e:
-                print(f"Konu listesi getirme hatası: {str(e)}")
+                logger.error(f"Konu listesi getirme hatası: {e}")
                 return []
 
     async def istatistikler_getir(self) -> Dict:
@@ -809,7 +812,7 @@ class SoruBankasiServisi:
                 }
 
             except Exception as e:
-                print(f"İstatistik hesaplama hatası: {str(e)}")
+                logger.error(f"İstatistik hesaplama hatası: {e}")
                 return {
                     "toplam_soru_sayisi": 0,
                     "sinav_tipi_dagilimi": {},
@@ -959,7 +962,7 @@ class SoruBankasiServisi:
                 return result.scalars().all()
 
             except Exception as e:
-                print(f"Zorluk filtrele hatası: {str(e)}")
+                logger.error(f"Zorluk filtrele hatası: {e}")
                 return []
 
     async def toplu_soru_ekle(self, sorular_listesi: List[Dict]) -> Dict[str, int]:
@@ -1094,7 +1097,7 @@ class SoruBankasiServisi:
 
             except Exception as e:
                 await session.rollback()
-                print(f"Performans güncelleme hatası: {str(e)}")
+                logger.error(f"Performans güncelleme hatası: {e}")
                 return False
 
     async def irt_parametrelerini_yeniden_hesapla(self, soru_id: str) -> bool:
@@ -1146,7 +1149,7 @@ class SoruBankasiServisi:
 
             except Exception as e:
                 await session.rollback()
-                print(f"IRT parametresi güncelleme hatası: {str(e)}")
+                logger.error(f"IRT parametresi güncelleme hatası: {e}")
                 return False
 
 

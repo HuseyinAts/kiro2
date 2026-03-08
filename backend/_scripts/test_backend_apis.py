@@ -431,9 +431,9 @@ class TestDatabaseIntegration:
     async def test_database_connection(self):
         """Test database connection is available"""
         try:
-            from core.database import get_async_session
+            from core.database import get_db_session_context
 
-            async with get_async_session() as session:
+            async with get_db_session_context() as session:
                 # Simple query to test connection
                 result = await session.execute("SELECT 1")
                 assert result is not None

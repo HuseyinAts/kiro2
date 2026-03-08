@@ -574,6 +574,9 @@ class OSYMExamEngine:
                 )
                 existing = existing_answer.scalar_one_or_none()
 
+                # Normalize answer for DB consistency (uppercase + strip)
+                normalized_answer = selected_answer.strip().upper() if selected_answer else selected_answer
+
                 if existing:
                     # Mevcut cevabı güncelle
                     await db_session.execute(
@@ -585,7 +588,7 @@ class OSYMExamEngine:
                             )
                         )
                         .values(
-                            selected_answer=selected_answer,
+                            selected_answer=normalized_answer,
                             response_time_seconds=response_time or 0.0,
                             answered_at=datetime.now(),
                         )
@@ -595,7 +598,7 @@ class OSYMExamEngine:
                     student_answer = StudentAnswer(
                         exam_session_id=session_id,
                         question_id=question_id,
-                        selected_answer=selected_answer,
+                        selected_answer=normalized_answer,
                         response_time_seconds=response_time or 0.0,
                     )
                     db_session.add(student_answer)

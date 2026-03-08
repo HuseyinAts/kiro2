@@ -401,7 +401,7 @@ export const ModernExamResultsPage: React.FC = () => {
             </TableHead>
             <TableBody>
               {result.subject_breakdown.map((item, index) => {
-                const success = ((item.correct / item.total) * 100).toFixed(0);
+                const success = item.total > 0 ? ((item.correct / item.total) * 100).toFixed(0) : '0';
                 return (
                   <TableRow key={index}>
                     <TableCell>{item.subject}</TableCell>

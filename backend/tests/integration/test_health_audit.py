@@ -14,7 +14,7 @@ from typing import Any
 import pytest
 from httpx import AsyncClient
 
-from core.database import get_async_session
+from core.database import get_db_session_context
 from core.osym_exam_engine import osym_exam_engine
 from integrations.youtube_service import YouTubeService
 
@@ -479,7 +479,7 @@ class TestDatabase:
         """PostgreSQL bağlantı kontrolü"""
         start_time = time.time()
         try:
-            async with get_async_session() as session:
+            async with get_db_session_context() as session:
                 # Basit bir sorgu çalıştır
                 result = await session.execute("SELECT 1")
                 response_time = (time.time() - start_time) * 1000

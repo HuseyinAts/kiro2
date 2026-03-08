@@ -517,7 +517,7 @@ async def get_current_question(
             option_d=question.option_d,
             option_e=question.option_e,
             subject_area=question.subject_area,
-            topic=question.subject_area,
+            topic=question.primary_topic_id or question.subject_area,
             difficulty=question.difficulty_level.value if question.difficulty_level else "medium",
             question_order=session_data.current_question_index + 1,
         )
@@ -658,7 +658,7 @@ async def navigate_to_question(
             option_d=question.option_d,
             option_e=question.option_e,
             subject_area=question.subject_area,
-            topic=question.subject_area,
+            topic=question.primary_topic_id or question.subject_area,
             difficulty=question.difficulty_level.value if question.difficulty_level else "medium",
             question_order=request.question_index + 1,
         )

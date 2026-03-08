@@ -168,12 +168,13 @@ class OgrenciDashboardServisi:
         # Order by most recent first, with pagination
         exams = query.order_by(ExamSession.completed_at.desc()).offset(offset).limit(limit).all()
 
+        # Batch topic performance for ALL exams in single query (N+1 fix)
+        exam_ids = [exam.id for exam in exams]
+        all_topic_perf = self._calculate_topic_performance_batch(exam_ids, db)
+
         # Convert to SinavSonucu format
         sinavlar = []
         for exam in exams:
-            # Get topic performance (TODO: implement when question-topic mapping added)
-            konu_performanslari = self._calculate_topic_performance(exam.id, db)
-
             sinavlar.append(
                 SinavSonucu(
                     sinav_id=exam.id,
@@ -185,41 +186,48 @@ class OgrenciDashboardServisi:
                     yanlis_sayisi=exam.total_wrong,
                     bos_sayisi=exam.total_empty,
                     sure=exam.duration_minutes,
-                    konu_performanslari=konu_performanslari,
+                    konu_performanslari=all_topic_perf.get(exam.id, {}),
                 )
             )
 
         # Return real data (empty list if no exams - NOT fake data)
         return sinavlar
 
-    def _calculate_topic_performance(self, exam_session_id: str, db: Session) -> Dict[str, float]:
+    def _calculate_topic_performance_batch(
+        self, exam_session_ids: List[str], db: Session
+    ) -> Dict[str, Dict[str, float]]:
         """
-        Calculate topic-wise performance from student_answers
+        Batch calculate topic performance for multiple exam sessions in ONE query.
 
-        Returns: Dictionary mapping topic names to percentage correct (0-100)
+        Returns: {exam_session_id: {topic_id: percentage, ...}, ...}
         """
-        # Query student answers joined with questions to get topic-wise performance
+        if not exam_session_ids:
+            return {}
+
         topic_stats = db.query(
+            StudentAnswer.exam_session_id,
             Question.primary_topic_id,
             func.count(StudentAnswer.id).label('total'),
             func.sum(func.cast(StudentAnswer.is_correct, Integer)).label('correct')
         ).join(
-            StudentAnswer, StudentAnswer.question_id == Question.id
+            Question, StudentAnswer.question_id == Question.id
         ).filter(
-            StudentAnswer.exam_session_id == exam_session_id
+            StudentAnswer.exam_session_id.in_(exam_session_ids)
         ).group_by(
+            StudentAnswer.exam_session_id,
             Question.primary_topic_id
         ).all()
 
-        # Calculate percentage correct per topic
-        topic_performance = {}
-        for topic_stat in topic_stats:
-            if topic_stat.primary_topic_id and topic_stat.total > 0:
-                correct_count = topic_stat.correct or 0
-                percentage = (correct_count / topic_stat.total) * 100
-                topic_performance[topic_stat.primary_topic_id] = round(percentage, 1)
+        result: Dict[str, Dict[str, float]] = {}
+        for stat in topic_stats:
+            if stat.primary_topic_id and stat.total > 0:
+                if stat.exam_session_id not in result:
+                    result[stat.exam_session_id] = {}
+                correct_count = stat.correct or 0
+                percentage = (correct_count / stat.total) * 100
+                result[stat.exam_session_id][stat.primary_topic_id] = round(percentage, 1)
 
-        return topic_performance
+        return result
 
     def _calculate_subject_performance(self, kullanici_id: str, db: Session, min_questions: int = 10) -> Dict[str, float]:
         """

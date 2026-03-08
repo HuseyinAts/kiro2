@@ -462,8 +462,8 @@ class TestPlatformComprehensive:
     async def test_database_connection(self):
         """Test database connection"""
         try:
-            from core.database import get_async_session
-            async with get_async_session() as session:
+            from core.database import get_db_session_context
+            async with get_db_session_context() as session:
                 assert session is not None
         except Exception:
             # Mock database connection
