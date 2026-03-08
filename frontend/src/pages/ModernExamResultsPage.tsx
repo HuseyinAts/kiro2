@@ -177,8 +177,12 @@ export const ModernExamResultsPage: React.FC = () => {
     return 'Daha fazla çalışmanız gerekiyor. Pes etmeyin, başarısız olabilirsiniz!';
   };
 
-  const successRate = ((result.correct_count / result.question_count) * 100).toFixed(1);
-  const avgTimePerQuestion = (result.duration / result.question_count).toFixed(1);
+  const successRate = result.question_count > 0
+    ? ((result.correct_count / result.question_count) * 100).toFixed(1)
+    : '0.0';
+  const avgTimePerQuestion = result.question_count > 0
+    ? (result.duration / result.question_count).toFixed(1)
+    : '0.0';
 
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>

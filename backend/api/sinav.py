@@ -229,6 +229,93 @@ class SubjectPerformanceResponse(BaseModel):
     }
 
 
+@router.get(
+    "/my-exams", response_model=List[ExamSessionResponse], summary="Benim Sınavlarım"
+)
+async def get_my_exams(
+    current_user = Depends(get_current_user),
+    limit: int = 20,
+    offset: int = 0,
+) -> List[ExamSessionResponse]:
+    """
+    Kullanıcının tüm sınavlarını listele
+
+    - Sayfalama desteği
+    - Sınav durumu filtreleme
+    - Tarih sıralama
+    """
+    try:
+        user_sessions = []
+
+        for session_data in osym_exam_engine.active_sessions.values():
+            if session_data.student_id == current_user.id:
+                user_sessions.append(
+                    ExamSessionResponse(
+                        session_id=session_data.session_id,
+                        student_id=session_data.student_id,
+                        exam_type=session_data.exam_config.exam_type.value,
+                        status=session_data.status.value,
+                        total_questions=session_data.exam_config.total_questions,
+                        duration_minutes=session_data.exam_config.duration_minutes,
+                        current_question_index=session_data.current_question_index,
+                        started_at=session_data.started_at,
+                        completed_at=session_data.completed_at,
+                    )
+                )
+
+        start_index = offset
+        end_index = offset + limit
+        return user_sessions[start_index:end_index]
+
+    except Exception as e:
+        logger.error(
+            f"Kullanıcı sınavları getirme hatası: {e}",
+            extra_data={"student_id": current_user.id},
+        )
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Sınavlar getirilirken beklenmeyen bir hata oluştu",
+        )
+
+
+@router.get("/exam-configs", summary="Sınav Konfigürasyonları")
+async def get_exam_configs(
+    current_user = Depends(get_current_user),
+) -> Dict[str, Any]:
+    """
+    ÖSYM sınav konfigürasyonlarını getir
+
+    - TYT/AYT/YDT format bilgileri
+    - Soru sayıları ve süre bilgileri
+    - Konu dağılımları
+    """
+    try:
+        configs = {}
+
+        for exam_type, config in osym_exam_engine.exam_configs.items():
+            configs[exam_type.value] = {
+                "exam_type": config.exam_type.value,
+                "total_questions": config.total_questions,
+                "duration_minutes": config.duration_minutes,
+                "subject_distribution": config.subject_distribution,
+                "auto_save_interval": config.auto_save_interval,
+                "warning_time_minutes": config.warning_time_minutes,
+            }
+
+        return {
+            "success": True,
+            "exam_configs": configs,
+            "message": "ÖSYM sınav konfigürasyonları",
+        }
+
+    except Exception as e:
+        logger.error(f"Sınav konfigürasyonları getirme hatası: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Sınav konfigürasyonları getirilirken beklenmeyen bir hata oluştu",
+        )
+
+
 @router.post(
     "/create", response_model=ExamSessionResponse, summary="ÖSYM Sınavı Oluştur"
 )
@@ -972,95 +1059,6 @@ async def get_subject_performance(
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Konu performans analizi getirilirken beklenmeyen bir hata oluştu",
-        )
-
-
-@router.get(
-    "/my-exams", response_model=List[ExamSessionResponse], summary="Benim Sınavlarım"
-)
-async def get_my_exams(
-    current_user = Depends(get_current_user),
-    limit: int = 20,
-    offset: int = 0,
-) -> List[ExamSessionResponse]:
-    """
-    Kullanıcının tüm sınavlarını listele
-
-    - Sayfalama desteği
-    - Sınav durumu filtreleme
-    - Tarih sıralama
-    """
-    try:
-        # Kullanıcının aktif oturumlarını getir
-        user_sessions = []
-
-        for session_data in osym_exam_engine.active_sessions.values():
-            if session_data.student_id == current_user.id:
-                user_sessions.append(
-                    ExamSessionResponse(
-                        session_id=session_data.session_id,
-                        student_id=session_data.student_id,
-                        exam_type=session_data.exam_config.exam_type.value,
-                        status=session_data.status.value,
-                        total_questions=session_data.exam_config.total_questions,
-                        duration_minutes=session_data.exam_config.duration_minutes,
-                        current_question_index=session_data.current_question_index,
-                        started_at=session_data.started_at,
-                        completed_at=session_data.completed_at,
-                    )
-                )
-
-        # Sayfalama uygula
-        start_index = offset
-        end_index = offset + limit
-        paginated_sessions = user_sessions[start_index:end_index]
-
-        return paginated_sessions
-
-    except Exception as e:
-        logger.error(
-            f"Kullanıcı sınavları getirme hatası: {e}",
-            extra_data={"student_id": current_user.id},
-        )
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Sınavlar getirilirken beklenmeyen bir hata oluştu",
-        )
-
-
-@router.get("/exam-configs", summary="Sınav Konfigürasyonları")
-async def get_exam_configs() -> Dict[str, Any]:
-    """
-    ÖSYM sınav konfigürasyonlarını getir
-
-    - TYT/AYT/YDT format bilgileri
-    - Soru sayıları ve süre bilgileri
-    - Konu dağılımları
-    """
-    try:
-        configs = {}
-
-        for exam_type, config in osym_exam_engine.exam_configs.items():
-            configs[exam_type.value] = {
-                "exam_type": config.exam_type.value,
-                "total_questions": config.total_questions,
-                "duration_minutes": config.duration_minutes,
-                "subject_distribution": config.subject_distribution,
-                "auto_save_interval": config.auto_save_interval,
-                "warning_time_minutes": config.warning_time_minutes,
-            }
-
-        return {
-            "success": True,
-            "exam_configs": configs,
-            "message": "ÖSYM sınav konfigürasyonları",
-        }
-
-    except Exception as e:
-        logger.error(f"Sınav konfigürasyonları getirme hatası: {e}")
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Sınav konfigürasyonları getirilirken beklenmeyen bir hata oluştu",
         )
 
 

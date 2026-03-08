@@ -150,28 +150,38 @@ export const ModernOSYMExamInterface: React.FC<ModernOSYMExamInterfaceProps> = (
    * Update remaining time
    */
   useEffect(() => {
-    let interval: NodeJS.Timeout | null = null;
+    let countdownInterval: NodeJS.Timeout | null = null;
+    let syncInterval: NodeJS.Timeout | null = null;
 
     if (examState.session?.status === ExamStatus.IN_PROGRESS) {
-      interval = setInterval(async () => {
+      // Local countdown: her saniye 1 azalt (API çağrısı YOK)
+      countdownInterval = setInterval(() => {
+        setExamState((prev) => {
+          const newTime = Math.max(0, prev.remainingTime - 1);
+          if (newTime <= 300 && !showTimeWarning) {
+            setShowTimeWarning(true);
+          }
+          return { ...prev, remainingTime: newTime };
+        });
+      }, 1000);
+
+      // Server sync: her 30 saniyede bir doğrula
+      syncInterval = setInterval(async () => {
         try {
           const timeData = await examService.getRemainingTime(sessionId);
           setExamState((prev) => ({
             ...prev,
             remainingTime: timeData.remaining_seconds,
           }));
-
-          if (timeData.warning && !showTimeWarning) {
-            setShowTimeWarning(true);
-          }
         } catch (error) {
-          console.error('Time update error:', error);
+          console.error('Time sync error:', error);
         }
-      }, 1000);
+      }, 30000);
     }
 
     return () => {
-      if (interval) {clearInterval(interval);}
+      if (countdownInterval) {clearInterval(countdownInterval);}
+      if (syncInterval) {clearInterval(syncInterval);}
     };
   }, [examState.session?.status, sessionId, showTimeWarning]);
 
@@ -303,6 +313,11 @@ export const ModernOSYMExamInterface: React.FC<ModernOSYMExamInterfaceProps> = (
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+  const handleMidExamExit = () => {
+    // Cevaplar auto-save ile zaten kaydedilmiş, dashboard'a dön
+    onExit();
   };
 
   const formatTime = (seconds: number): string => {
@@ -699,10 +714,16 @@ export const ModernOSYMExamInterface: React.FC<ModernOSYMExamInterfaceProps> = (
           <ModernButton
             variant="gradient"
             gradient={modernColors.gradients.error}
-            onClick={handleSubmitExam}
+            onClick={
+              currentQuestionIndex === (examState.session?.total_questions || 1) - 1
+                ? handleSubmitExam
+                : handleMidExamExit
+            }
             loading={isSubmitting}
           >
-            Çık ve Kaydet
+            {currentQuestionIndex === (examState.session?.total_questions || 1) - 1
+              ? 'Sınavı Tamamla'
+              : 'Çık ve Kaydet'}
           </ModernButton>
         </DialogActions>
       </Dialog>

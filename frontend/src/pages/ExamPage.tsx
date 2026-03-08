@@ -64,7 +64,8 @@ export const ExamPage: React.FC = () => {
 
           // Sınav durumuna göre view belirle
           if (sessionData.status === ExamStatus.COMPLETED) {
-            setCurrentView('results');
+            navigate(`/exam/${sessionId}/results`, { replace: true });
+            return;
           } else if (sessionData.status === ExamStatus.IN_PROGRESS) {
             setCurrentView('exam');
           } else if (sessionData.status === ExamStatus.NOT_STARTED) {

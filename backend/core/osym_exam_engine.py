@@ -1108,14 +1108,22 @@ class OSYMExamEngine:
             wrong_answers = 0
 
             async with get_db_session_context() as db_session:
-                # Doğru cevapları kontrol et
-                for question_id, student_answer in session_data.answers.items():
+                # Doğru cevapları tek sorguda getir (N+1 yerine batch)
+                question_ids = list(session_data.answers.keys())
+                if question_ids:
                     result = await db_session.execute(
-                        select(Question.correct_answer).where(
-                            Question.id == question_id
+                        select(Question.id, Question.correct_answer).where(
+                            Question.id.in_(question_ids)
                         )
                     )
-                    correct_answer = result.scalar_one_or_none()
+                    correct_answers_map = {
+                        str(row.id): row.correct_answer for row in result
+                    }
+                else:
+                    correct_answers_map = {}
+
+                for question_id, student_answer in session_data.answers.items():
+                    correct_answer = correct_answers_map.get(question_id)
 
                     if (
                         correct_answer
