@@ -71,6 +71,7 @@ class OSYMExamConfig:
     warning_time_minutes: int = 15  # son 15 dakika uyarısı
     ayt_field_type: AYTFieldType | None = None  # AYT için alan türü
     ydt_language: YDTLanguage | None = None  # YDT için dil seçimi - REQ-1.3
+    difficulty: str | None = None  # "kolay", "orta", "zor", "cok_zor"
 
 
 @dataclass
@@ -138,16 +139,31 @@ class OSYMExamEngine:
         self.auto_save_tasks: dict[str, asyncio.Task] = {}
 
         # ÖSYM sınav konfigürasyonları
+        # subject_distribution keys MUST match question_bank.subject_area (UPPERCASE)
+        # DB aktif soru dağılımı (Mart 2026):
+        #   TYT: MATEMATIK 11593, TURKCE 10885, GEOMETRI 8709, FIZIK 4139,
+        #        KIMYA 3520, BIYOLOJI 1520, TARIH 1593, SOSYAL 1188, COGRAFYA 396
+        #   AYT: MATEMATIK 6845, EDEBIYAT 3707, KIMYA 2525, FIZIK 2399,
+        #        BIYOLOJI 998, GEOMETRI 785, TARIH 783
         self.exam_configs = {
             ExamType.TYT: OSYMExamConfig(
                 exam_type=ExamType.TYT,
                 total_questions=120,
                 duration_minutes=165,
                 subject_distribution={
+                    # Türkçe (40 soru)
                     "TURKCE": 40,
-                    "MATEMATIK": 40,
-                    "FEN": 20,
-                    "SOSYAL": 20,
+                    # Matematik (40 soru = 26 mat + 14 geo)
+                    "MATEMATIK": 26,
+                    "GEOMETRI": 14,
+                    # Fen Bilimleri (20 soru = fizik + kimya + biyoloji)
+                    "FIZIK": 7,
+                    "KIMYA": 7,
+                    "BIYOLOJI": 6,
+                    # Sosyal Bilimler (20 soru = tarih + coğrafya + sosyal)
+                    "TARIH": 10,
+                    "COGRAFYA": 3,
+                    "SOSYAL": 7,
                 },
             ),
             ExamType.AYT: OSYMExamConfig(
@@ -156,18 +172,16 @@ class OSYMExamEngine:
                 duration_minutes=210,  # REQ-1.2: AYT 210 dakika (3.5 saat)
                 subject_distribution={
                     # Sayısal Alan (80 soru)
-                    "MATEMATIK": 40,
+                    "MATEMATIK": 30,
+                    "GEOMETRI": 10,
                     "FIZIK": 14,
                     "KIMYA": 13,
                     "BIYOLOJI": 13,
                     # Sözel Alan (80 soru)
-                    "EDEBIYAT": 24,
-                    "TARIH_1": 10,  # Tarih-1
-                    "COGRAFYA_1": 6,  # Coğrafya-1
-                    "TARIH_2": 11,  # Tarih-2
-                    "COGRAFYA_2": 11,  # Coğrafya-2
-                    "FELSEFE": 12,
-                    "DIN": 6,
+                    # NOT: DB'de FELSEFE/DIN/INGILIZCE yok, COGRAFYA az (AYT'de 0)
+                    # TARIH_1+TARIH_2 → TARIH, redistribution yapıldı
+                    "EDEBIYAT": 38,
+                    "TARIH": 42,
                 },
                 ayt_field_type=AYTFieldType.ESIT_AGIRLIK,  # Varsayılan: Eşit Ağırlık
             ),
@@ -175,6 +189,8 @@ class OSYMExamEngine:
                 exam_type=ExamType.YDT,
                 total_questions=80,  # REQ-1.3: YDT 80 soru
                 duration_minutes=120,  # REQ-1.3: YDT 120 dakika (2 saat)
+                # YDT devre dışı: DB'de INGILIZCE sorusu yok
+                # Sınav başlatıldığında _select_questions 0 soru döner
                 subject_distribution={"INGILIZCE": 80},  # Varsayılan: İngilizce
             ),
         }
@@ -195,41 +211,39 @@ class OSYMExamEngine:
 
         # AYT alan bazlı konfigürasyonlar - REQ-1.2, REQ-3.1
         # ÖSYM Resmi AYT Formatı: 160 soru (Sayısal 80 + Sözel 80)
+        # AYT alan bazlı konfigürasyonlar - REQ-1.2, REQ-3.1
+        # Keys MUST match question_bank.subject_area (UPPERCASE)
+        # DB'de AYT: MATEMATIK 6845, EDEBIYAT 3707, KIMYA 2525, FIZIK 2399,
+        #            BIYOLOJI 998, GEOMETRI 785, TARIH 783
+        # NOT: FELSEFE, DIN, COGRAFYA AYT'de yok → redistribution yapıldı
         self.ayt_field_configs = {
             AYTFieldType.SAYISAL: {
                 # Sayısal bölüm (80 soru)
-                "MATEMATIK": 40,
+                "MATEMATIK": 30,
+                "GEOMETRI": 10,
                 "FIZIK": 14,
                 "KIMYA": 13,
                 "BIYOLOJI": 13,
-                # Sözel'den sadece Edebiyat (24 soru)
+                # Sözel'den sadece Edebiyat
                 "EDEBIYAT": 24,
             },  # Toplam: 104 soru
             AYTFieldType.SOZEL: {
-                # Sözel bölüm (80 soru)
-                "EDEBIYAT": 24,
-                "TARIH_1": 10,
-                "COGRAFYA_1": 6,
-                "TARIH_2": 11,
-                "COGRAFYA_2": 11,
-                "FELSEFE": 12,
-                "DIN": 6,
-                # Sayısal'dan sadece Matematik (40 soru)
-                "MATEMATIK": 40,
+                # Sözel bölüm (80 soru) — FELSEFE/DIN yok, redistribution
+                "EDEBIYAT": 38,
+                "TARIH": 42,
+                # Sayısal'dan Matematik (40 soru)
+                "MATEMATIK": 30,
+                "GEOMETRI": 10,
             },  # Toplam: 120 soru
             AYTFieldType.ESIT_AGIRLIK: {
-                # Tüm sorular (160 soru)
-                "MATEMATIK": 40,
+                # Tüm sorular (160 soru) — matches exam_configs[AYT]
+                "MATEMATIK": 30,
+                "GEOMETRI": 10,
                 "FIZIK": 14,
                 "KIMYA": 13,
                 "BIYOLOJI": 13,
-                "EDEBIYAT": 24,
-                "TARIH_1": 10,
-                "COGRAFYA_1": 6,
-                "TARIH_2": 11,
-                "COGRAFYA_2": 11,
-                "FELSEFE": 12,
-                "DIN": 6,
+                "EDEBIYAT": 38,
+                "TARIH": 42,
             },  # Toplam: 160 soru
             AYTFieldType.DIL: {
                 # Sadece Edebiyat (24 soru)
@@ -358,6 +372,13 @@ class OSYMExamEngine:
                     exam_config.subject_distribution.update(
                         custom_config["subject_distribution"]
                     )
+                if "difficulty" in custom_config:
+                    difficulty_val = str(custom_config["difficulty"]).lower()
+                    valid_difficulties = {"kolay", "orta", "zor", "cok_zor"}
+                    if difficulty_val in valid_difficulties:
+                        exam_config.difficulty = difficulty_val
+                    else:
+                        logger.warning(f"Gecersiz zorluk seviyesi: {difficulty_val}")
 
             # Soruları seç
             questions = await self._select_questions(exam_config)
@@ -783,6 +804,7 @@ class OSYMExamEngine:
                         total_wrong=performance_metrics.wrong_answers,
                         total_empty=performance_metrics.empty_answers,
                         raw_score=performance_metrics.raw_score,
+                        scaled_score=performance_metrics.raw_score,
                         estimated_ability=performance_metrics.estimated_ability,
                     )
                 )
@@ -1042,6 +1064,15 @@ class OSYMExamEngine:
             )
             return []
 
+    # Frontend zorluk → DB difficulty_level mapping
+    # Her seviye 2 DB seviyesini kapsar (yeterli soru havuzu için)
+    DIFFICULTY_MAP: dict[str, list[str]] = {
+        "kolay": ["VERY_EASY", "EASY"],
+        "orta": ["EASY", "MEDIUM"],
+        "zor": ["MEDIUM", "HARD"],
+        "cok_zor": ["HARD", "VERY_HARD"],
+    }
+
     async def _select_questions(self, exam_config: OSYMExamConfig) -> list[Question]:
         """
         Sınav için soruları seç
@@ -1053,42 +1084,73 @@ class OSYMExamEngine:
             List[Question]: Seçilen sorular
         """
         selected_questions = []
+        difficulty_levels = None
+        if exam_config.difficulty:
+            difficulty_levels = self.DIFFICULTY_MAP.get(exam_config.difficulty)
 
         async with get_db_session_context() as db_session:
             for subject, count in exam_config.subject_distribution.items():
-                # Konuya göre soruları getir (kalite filtreleri dahil)
+                # Base quality filters
+                base_filters = [
+                    Question.exam_type == exam_config.exam_type.value.upper(),
+                    Question.subject_area == subject,
+                    Question.is_active == True,  # noqa: E712
+                    Question.question_text.isnot(None),
+                    func.length(Question.question_text) >= 20,
+                    Question.option_a.isnot(None),
+                    func.length(Question.option_a) > 0,
+                    Question.option_b.isnot(None),
+                    func.length(Question.option_b) > 0,
+                    Question.option_c.isnot(None),
+                    func.length(Question.option_c) > 0,
+                    Question.option_d.isnot(None),
+                    func.length(Question.option_d) > 0,
+                    Question.option_a != Question.option_b,
+                ]
+
+                # Difficulty filter (if specified)
+                if difficulty_levels:
+                    filters = base_filters + [
+                        Question.difficulty_level.in_(difficulty_levels),
+                    ]
+                else:
+                    filters = base_filters
+
                 result = await db_session.execute(
                     select(Question)
-                    .where(
-                        and_(
-                            # QuestionBankItem stores UPPERCASE ("TYT"),
-                            # exam_config.exam_type is ExamType enum ("tyt")
-                            # subject_distribution keys are UPPERCASE ("MATEMATIK")
-                            Question.exam_type == exam_config.exam_type.value.upper(),
-                            Question.subject_area == subject,
-                            Question.is_active == True,  # noqa: E712
-                            # Minimum metin uzunluğu (çöp soru filtresi)
-                            Question.question_text.isnot(None),
-                            func.length(Question.question_text) >= 20,
-                            # Boş seçenek kontrolü (A-D dolu olmalı)
-                            Question.option_a.isnot(None),
-                            func.length(Question.option_a) > 0,
-                            Question.option_b.isnot(None),
-                            func.length(Question.option_b) > 0,
-                            Question.option_c.isnot(None),
-                            func.length(Question.option_c) > 0,
-                            Question.option_d.isnot(None),
-                            func.length(Question.option_d) > 0,
-                            # Tüm şıklar aynı olmamalı
-                            Question.option_a != Question.option_b,
-                        )
-                    )
+                    .where(and_(*filters))
                     .order_by(func.random())
                     .limit(count)
                 )
 
                 questions = result.scalars().all()
+
+                # Fallback: zorluk filtresiyle yetersiz soru varsa filtresiz tekrar dene
+                if len(questions) < count and difficulty_levels:
+                    logger.warning(
+                        f"Zorluk filtresi ile yetersiz soru: {subject} "
+                        f"({len(questions)}/{count}), filtre kaldırılıyor"
+                    )
+                    fallback_result = await db_session.execute(
+                        select(Question)
+                        .where(and_(*base_filters))
+                        .order_by(func.random())
+                        .limit(count)
+                    )
+                    questions = fallback_result.scalars().all()
+
+                if len(questions) < count:
+                    logger.warning(
+                        f"Yetersiz soru: {subject} için {count} istendi, {len(questions)} bulundu "
+                        f"(exam_type={exam_config.exam_type.value})"
+                    )
                 selected_questions.extend(questions)
+
+        if len(selected_questions) < exam_config.total_questions:
+            logger.warning(
+                f"Toplam soru eksik: {exam_config.total_questions} istendi, "
+                f"{len(selected_questions)} seçildi (exam_type={exam_config.exam_type.value})"
+            )
 
         return selected_questions
 

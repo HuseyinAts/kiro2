@@ -35,6 +35,7 @@ import { GlassCard } from '@/components/ui/GlassCard';
 import { ModernButton } from '@/components/ui/ModernButton';
 import { useAuthStore } from '@/store/authStore';
 import modernColors from '@/theme/modern-colors';
+import { apiRequest } from '@/utils/apiHelpers';
 
 // Types matching backend DashboardIstatistikleri
 interface DashboardStats {
@@ -87,22 +88,17 @@ export const ModernStudentDashboard: React.FC = () => {
     const fetchDashboardData = async () => {
       setLoading(true);
       try {
-        const [statsRes, examsRes] = await Promise.all([
-          fetch('/api/v1/student-dashboard/istatistikler', { credentials: 'include' }),
-          fetch('/api/v1/student-dashboard/sinav-gecmisi?limit=3', { credentials: 'include' }),
+        const [statsData, examsData] = await Promise.all([
+          apiRequest<DashboardStats>('/api/v1/student-dashboard/istatistikler'),
+          apiRequest<RecentExam[]>('/api/v1/student-dashboard/sinav-gecmisi?limit=3'),
         ]);
 
-        if (statsRes.ok) {
-          const statsData = await statsRes.json();
-          setStats(statsData);
-        }
-
-        if (examsRes.ok) {
-          const examsData = await examsRes.json();
-          setRecentExams(Array.isArray(examsData) ? examsData : []);
-        }
-      } catch {
-        // Silently handle - dashboard shows defaults for new students
+        setStats(statsData);
+        setRecentExams(Array.isArray(examsData) ? examsData : []);
+      } catch (error) {
+        // 401 → apiRequest redirects to /login
+        // Other errors → show defaults for new students
+        console.error('Dashboard veri yükleme hatası:', error);
       } finally {
         setLoading(false);
       }

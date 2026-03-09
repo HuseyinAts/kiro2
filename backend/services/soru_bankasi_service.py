@@ -272,26 +272,27 @@ class SoruBankasiServisi:
                 # Base query - questions tablosundan (Question modeli)
                 stmt = select(Question).where((Question.is_active == True) | (Question.is_active == None))
 
-                # Sınav tipi filtresi (lowercase enum değerleri: tyt, ayt, ydt, deneme)
+                # Sınav tipi filtresi — DB UPPERCASE: "TYT", "AYT"
                 if sinav_tipi:
-                    sinav_lower = sinav_tipi.lower()
-                    stmt = stmt.where(Question.exam_type == sinav_lower)
+                    stmt = stmt.where(Question.exam_type == sinav_tipi.upper())
 
-                # Konu filtresi (subject_area: matematik, turkce, fizik, vb.)
+                # Konu filtresi — DB UPPERCASE: "MATEMATIK", "TURKCE", "FIZIK" vb.
                 if konu:
                     konu_lower = konu.lower()
-                    # Türkçe konu adlarını subject_area enum değerlerine çevir
+                    # Türkçe konu adlarını DB subject_area değerlerine çevir (UPPERCASE)
                     konu_map = {
-                        "matematik": "matematik", "mat": "matematik",
-                        "türkçe": "turkce", "turkce": "turkce",
-                        "fizik": "fizik", "fiz": "fizik",
-                        "kimya": "kimya", "kim": "kimya",
-                        "biyoloji": "biyoloji", "bio": "biyoloji",
-                        "fen": "fen",
-                        "sosyal": "sosyal", "tarih": "sosyal", "coğrafya": "sosyal",
-                        "ingilizce": "ingilizce", "ing": "ingilizce",
+                        "matematik": "MATEMATIK", "mat": "MATEMATIK",
+                        "türkçe": "TURKCE", "turkce": "TURKCE",
+                        "fizik": "FIZIK", "fiz": "FIZIK",
+                        "kimya": "KIMYA", "kim": "KIMYA",
+                        "biyoloji": "BIYOLOJI", "bio": "BIYOLOJI",
+                        "geometri": "GEOMETRI", "geo": "GEOMETRI",
+                        "fen": "FEN",
+                        "sosyal": "SOSYAL", "tarih": "TARIH", "coğrafya": "COGRAFYA",
+                        "edebiyat": "EDEBIYAT",
+                        "ingilizce": "INGILIZCE", "ing": "INGILIZCE",
                     }
-                    subject = konu_map.get(konu_lower, konu_lower)
+                    subject = konu_map.get(konu_lower, konu.upper())
                     stmt = stmt.where(Question.subject_area == subject)
 
                 # Zorluk filtresi (difficulty: easy, medium, hard)
@@ -362,34 +363,36 @@ class SoruBankasiServisi:
                         return tum_sorular
 
                 # FIX N+1: Konu dağılımı varsa - tek sorguda tüm konuların sorularını getir
-                # Türkçe konu adlarını subject_area enum değerlerine çevir
+                # Türkçe konu adlarını DB subject_area değerlerine çevir (UPPERCASE)
                 konu_map = {
-                    "Matematik": "matematik", "Mat": "matematik",
-                    "Türkçe": "turkce", "Turkce": "turkce",
-                    "Fizik": "fizik", "Fiz": "fizik",
-                    "Kimya": "kimya", "Kim": "kimya",
-                    "Biyoloji": "biyoloji", "Bio": "biyoloji",
-                    "Fen": "fen", "Fen Bilimleri": "fen",
-                    "Sosyal": "sosyal", "Sosyal Bilimler": "sosyal",
-                    "İngilizce": "ingilizce", "Ing": "ingilizce",
+                    "Matematik": "MATEMATIK", "Mat": "MATEMATIK",
+                    "Türkçe": "TURKCE", "Turkce": "TURKCE",
+                    "Fizik": "FIZIK", "Fiz": "FIZIK",
+                    "Kimya": "KIMYA", "Kim": "KIMYA",
+                    "Biyoloji": "BIYOLOJI", "Bio": "BIYOLOJI",
+                    "Geometri": "GEOMETRI", "Geo": "GEOMETRI",
+                    "Fen": "FEN", "Fen Bilimleri": "FEN",
+                    "Sosyal": "SOSYAL", "Sosyal Bilimler": "SOSYAL",
+                    "Tarih": "TARIH", "Edebiyat": "EDEBIYAT",
+                    "İngilizce": "INGILIZCE", "Ing": "INGILIZCE",
                 }
 
                 # Toplam ihtiyaç duyulan soru sayısını hesapla
                 toplam_ihtiyac = sum(sayi * 3 for sayi in konu_dagilimi.values())
 
-                # Konu listesini hazırla (subject_area enum formatında)
+                # Konu listesini hazırla (DB UPPERCASE formatında)
                 konu_listesi = [
-                    konu_map.get(konu, konu.lower())
+                    konu_map.get(konu, konu.upper())
                     for konu in konu_dagilimi.keys()
                 ]
 
                 # FIX N+1: Tek sorguda tüm konuların sorularını getir
-                sinav_lower = sinav_tipi.lower() if sinav_tipi else None
+                sinav_upper = sinav_tipi.upper() if sinav_tipi else None
                 stmt = select(Question).where(
                     (Question.is_active == True) | (Question.is_active == None)
                 )
-                if sinav_lower:
-                    stmt = stmt.where(Question.exam_type == sinav_lower)
+                if sinav_upper:
+                    stmt = stmt.where(Question.exam_type == sinav_upper)
 
                 # Konu filtresi - IN clause ile tek sorgu
                 if konu_listesi:
@@ -413,7 +416,7 @@ class SoruBankasiServisi:
                 # Her konu için istenen sayıda soru seç
                 secilen_sorular = []
                 for konu, sayi in konu_dagilimi.items():
-                    subject_key = konu_map.get(konu, konu.lower())
+                    subject_key = konu_map.get(konu, konu.upper())
                     konu_sorulari = konu_gruplari.get(subject_key, [])
 
                     logger.debug(

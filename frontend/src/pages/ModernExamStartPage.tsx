@@ -35,6 +35,7 @@ import { useNavigate } from 'react-router-dom';
 import { GlassCard } from '../components/ui/GlassCard';
 import { ModernButton } from '../components/ui/ModernButton';
 import { modernColors } from '../theme/modern-colors';
+import { apiRequest } from '../utils/apiHelpers';
 
 interface ExamConfig {
   exam_type: string
@@ -60,15 +61,11 @@ export const ModernExamStartPage: React.FC = () => {
   const examTypes = [
     { value: 'TYT', label: 'TYT - Temel Yeterlilik Testi', icon: '📚' },
     { value: 'AYT', label: 'AYT - Alan Yeterlilik Testi', icon: '🎓' },
-    { value: 'YDT', label: 'YDT - Yabancı Dil Testi', icon: '🌍' },
-    { value: 'KPSS', label: 'KPSS - Kamu Personeli Sınavı', icon: '🏛️' },
   ];
 
-  const subjects = {
-    TYT: ['Matematik', 'Türkçe', 'Fen Bilimleri', 'Sosyal Bilimler'],
-    AYT: ['Matematik', 'Fizik', 'Kimya', 'Biyoloji', 'Tarih', 'Coğrafya', 'Edebiyat'],
-    YDT: ['İngilizce', 'Almanca', 'Fransızca'],
-    KPSS: ['Genel Yetenek', 'Genel Kültür', 'Eğitim Bilimleri'],
+  const subjects: Record<string, string[]> = {
+    TYT: ['Matematik', 'Geometri', 'Türkçe', 'Fizik', 'Kimya', 'Biyoloji', 'Tarih', 'Sosyal'],
+    AYT: ['Matematik', 'Geometri', 'Fizik', 'Kimya', 'Biyoloji', 'Edebiyat', 'Tarih'],
   };
 
   const difficulties = [
@@ -88,10 +85,8 @@ export const ModernExamStartPage: React.FC = () => {
     setError(null);
 
     try {
-      const response = await fetch('/api/v1/osym-exam/create', {
+      const data = await apiRequest<{ session_id: string }>('/api/v1/osym-exam/create', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
         body: JSON.stringify({
           exam_type: config.exam_type.toLowerCase(),
           custom_config: {
@@ -103,12 +98,6 @@ export const ModernExamStartPage: React.FC = () => {
         }),
       });
 
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.detail || 'Sınav oluşturulamadı');
-      }
-
-      const data = await response.json();
       navigate(`/exam/${data.session_id}`);
     } catch (err: any) {
       setError(err.message || 'Bir hata oluştu');

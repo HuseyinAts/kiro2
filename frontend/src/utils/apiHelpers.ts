@@ -444,6 +444,15 @@ export async function apiRequest<T = any>(
     });
 
     if (!response.ok) {
+      // Handle 401 — session expired, redirect to login
+      // Skip redirect if already on /login to prevent infinite reload loop
+      if (response.status === 401) {
+        if (window.location.pathname !== '/login') {
+          window.location.href = '/login';
+        }
+        throw new Error('Oturum süresi doldu');
+      }
+
       const errorData = await response.json().catch(() => ({ message: 'Request failed' }));
 
       // Handle 422 validation errors from FastAPI

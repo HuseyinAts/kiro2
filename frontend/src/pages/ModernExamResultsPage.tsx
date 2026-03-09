@@ -36,6 +36,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { GlassCard } from '../components/ui/GlassCard';
 import { ModernButton } from '../components/ui/ModernButton';
 import { modernColors } from '../theme/modern-colors';
+import { apiRequest } from '../utils/apiHelpers';
 
 interface ExamResult {
   sinav_id: string
@@ -80,18 +81,18 @@ export const ModernExamResultsPage: React.FC = () => {
 
   const fetchExamResults = async () => {
     try {
-      const performanceRes = await fetch(`/api/v1/osym-exam/${sinavId}/performance`, {
-        credentials: 'include',
-      });
-      if (!performanceRes.ok) {throw new Error('Performans verisi alınamadı');}
-      const perfData = await performanceRes.json();
+      const perfData = await apiRequest(`/api/v1/osym-exam/${sinavId}/performance`);
 
-      const [subjectRes, sessionRes] = await Promise.all([
-        fetch(`/api/v1/osym-exam/${sinavId}/subject-performance`, { credentials: 'include' }),
-        fetch(`/api/v1/osym-exam/${sinavId}/session`, { credentials: 'include' }),
-      ]);
-      const subjectData = subjectRes.ok ? await subjectRes.json() : [];
-      const sessionData = sessionRes.ok ? await sessionRes.json() : null;
+      let subjectData: any[] = [];
+      let sessionData: any = null;
+      try {
+        [subjectData, sessionData] = await Promise.all([
+          apiRequest(`/api/v1/osym-exam/${sinavId}/subject-performance`),
+          apiRequest(`/api/v1/osym-exam/${sinavId}/session`),
+        ]);
+      } catch {
+        // subject/session data optional — performance is primary
+      }
 
       // Gerçek geçen süreyi hesapla (dakika)
       let durationMinutes = 0;

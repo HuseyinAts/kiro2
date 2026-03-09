@@ -72,8 +72,10 @@ class ApiClient {
             return this.client(originalRequest);
           } catch (refreshError) {
             // Refresh failed - redirect to login
-            // Server has already cleared cookies via /logout/secure if needed
-            window.location.href = '/login';
+            // Skip redirect if already on /login to prevent infinite reload loop
+            if (window.location.pathname !== '/login') {
+              window.location.href = '/login';
+            }
             return Promise.reject(refreshError);
           }
         }
