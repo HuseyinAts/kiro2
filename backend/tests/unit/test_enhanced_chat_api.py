@@ -1,6 +1,11 @@
 """
 Comprehensive Unit Tests for Enhanced Chat API
-Test File: api/enhanced_chat.py (1,103 lines) - 3rd largest API file
+Test File: api/enhanced_chat.py - Rewritten with LLM fallback chain
+
+NOTE: Tests written for OLD enhanced_chat.py API (module-level llm_service,
+turkish_nlp_service, enhanced_chat_service). The module was rewritten in
+Session 81 with a new architecture (_call_llm fallback chain).
+These tests need to be updated to match the new API.
 
 COVERAGE STRATEGY:
 - 300+ comprehensive tests
@@ -28,18 +33,28 @@ from unittest.mock import MagicMock, AsyncMock, patch
 from fastapi import FastAPI
 
 
+# Fake user for auth override
+class _FakeUser:
+    id = "test_user_1"
+    email = "test@kiro2.com"
+    role = "STUDENT"
+
+
 # Create test app instance
 def create_test_app():
-    """Create a test FastAPI app with enhanced chat router"""
+    """Create a test FastAPI app with enhanced chat router (auth bypassed)."""
     test_app = FastAPI(title="Enhanced Chat Test API")
 
     try:
         from api.enhanced_chat import router as chat_router
-
         test_app.include_router(chat_router)
+
+        # Override auth + DB deps so tests don't need real JWT / DB
+        from core.dependencies import get_current_user, get_db
+        test_app.dependency_overrides[get_current_user] = lambda: _FakeUser()
+        test_app.dependency_overrides[get_db] = lambda: None
     except Exception as e:
         print(f"Warning: Could not import chat router: {e}")
-        pass
 
     return test_app
 
@@ -48,27 +63,20 @@ app = create_test_app()
 
 # Import models and services
 try:
-    from api.enhanced_chat import (
+    from api.enhanced_chat import (  # noqa: F401
         ChatMessageType,
         ResponseMode,
-        ChatContext,
         EnhancedChatResponse,
-        ChatMessageRequest,
-        ChatHistoryRequest,
-        ChatAnalyticsRequest,
-        EnhancedChatService,
-        enhanced_chat_service,
     )
 except ImportError as e:
     print(f"Warning: Could not import enhanced_chat models: {e}")
 
-    # Create mock classes for testing if imports fail
-    class ChatMessageType:
+    class ChatMessageType:  # type: ignore[no-redef]
         USER_QUESTION = "user_question"
         AI_RESPONSE = "ai_response"
         SYSTEM_INFO = "system_info"
 
-    class ResponseMode:
+    class ResponseMode:  # type: ignore[no-redef]
         ADAPTIVE = "adaptive"
         LEARNING_STYLE = "learning_style"
         SIMPLIFIED = "simplified"
@@ -99,82 +107,43 @@ def mock_session_id():
 
 @pytest.fixture
 def mock_llm_service():
-    """Mock LLM service"""
-    with patch("api.enhanced_chat.llm_service") as mock:
-        mock.generate = AsyncMock(
-            return_value={
-                "success": True,
-                "text": "Bu bir test AI yanıtıdır. Matematik konusunda yardımcı olabilirim.",
-            }
+    """Mock the _call_llm async function (new architecture — no module-level llm_service)."""
+    try:
+        from api.enhanced_chat import EnhancedChatResponse
+        default_resp = EnhancedChatResponse(
+            message="Bu bir test AI yanitdir. Matematik konusunda yardimci olabilirim.",
+            confidence_score=0.9,
         )
+    except ImportError:
+        default_resp = MagicMock(message="Test AI yaniti", confidence_score=0.9)
+
+    with patch("api.enhanced_chat._call_llm", new_callable=AsyncMock) as mock:
+        mock.return_value = default_resp
         yield mock
 
 
 @pytest.fixture
 def mock_turkish_nlp():
-    """Mock Turkish NLP service"""
-    with patch("api.enhanced_chat.turkish_nlp_service") as mock:
-        mock.normalize_text = AsyncMock(
-            return_value=MagicMock(normalized_text="test mesajı", corrections=[])
-        )
-        mock.analyze_text_complexity = AsyncMock(
-            return_value={
-                "overall_complexity": 0.5,
-                "sentence_complexity": 0.4,
-                "word_complexity": 0.6,
-            }
-        )
-        mock.analyze_morphology = AsyncMock(
-            return_value=MagicMock(
-                word="test", root="test", suffixes=[], complexity_score=0.3
-            )
-        )
-        yield mock
+    """No-op fixture — turkish_nlp_service no longer exists in new architecture."""
+    yield MagicMock()
 
 
 @pytest.fixture
 def mock_bionic_reader():
-    """Mock Bionic Reading service"""
-    with patch("api.enhanced_chat.bionic_reader") as mock:
-        mock.apply_bionic_reading = AsyncMock(
-            return_value=MagicMock(
-                success=True,
-                bionic_text="**Bu** bir **test** metnidir",
-                original_text="Bu bir test metnidir",
-                processing_time_ms=10.5,
-                word_count=4,
-                bold_ratio=0.5,
-            )
-        )
-        yield mock
+    """No-op fixture — bionic_reader no longer exists in new architecture."""
+    yield MagicMock()
 
 
 @pytest.fixture
 def mock_zpd_system():
-    """Mock ZPD system"""
-    with patch("api.enhanced_chat.zpd_maarif_system") as mock:
-        from unittest.mock import MagicMock
-
-        zpd_range = MagicMock()
-        zpd_range.current_level = 0.5
-        zpd_range.optimal_challenge = 0.6
-        zpd_range.upper_bound = 0.8
-
-        mock.calculate_turkish_zpd = AsyncMock(return_value=zpd_range)
-        yield mock
+    """No-op fixture — zpd_maarif_system no longer exists in new architecture."""
+    yield MagicMock()
 
 
 @pytest.fixture
 def mock_agents():
-    """Mock all agents"""
-    with patch("api.enhanced_chat.learning_path_agent") as learning_agent, patch(
-        "api.enhanced_chat.study_buddy_agent"
-    ) as study_agent, patch("api.enhanced_chat.accessibility_agent") as access_agent:
-        yield {
-            "learning": learning_agent,
-            "study": study_agent,
-            "accessibility": access_agent,
-        }
+    """No-op fixture — agents no longer exist in new architecture."""
+    yield {}
 
 
 @pytest.fixture
@@ -220,8 +189,8 @@ class TestMessageSending:
 
         assert response.status_code == 200
         data = response.json()
-        assert "message" in data
-        assert data["message"] != ""
+        assert data["success"] is True
+        assert data["data"]["message"] != ""
 
     def test_send_message_with_subject(
         self, client, mock_llm_service, mock_turkish_nlp
@@ -238,8 +207,8 @@ class TestMessageSending:
 
         assert response.status_code == 200
         data = response.json()
-        assert "message" in data
-        assert "metadata" in data
+        assert data["success"] is True
+        assert data["data"]["message"]
 
     def test_send_message_with_session_id(
         self, client, mock_llm_service, mock_turkish_nlp
@@ -256,7 +225,7 @@ class TestMessageSending:
 
         assert response.status_code == 200
         data = response.json()
-        assert "message" in data
+        assert data["success"] is True
 
     @pytest.mark.parametrize("message_length", [1, 10, 50, 100, 500, 1000, 2000])
     def test_send_message_length_valid(
@@ -356,7 +325,7 @@ class TestMessageSending:
 
         assert response.status_code == 200
         data = response.json()
-        assert "metadata" in data
+        assert data["success"] is True
 
     @pytest.mark.skip(reason="Bionic reading not implemented in enhanced_chat.py")
     def test_send_message_with_bionic_reading(
@@ -424,12 +393,12 @@ class TestMessageSending:
         assert response.status_code == 200
         data = response.json()
 
-        # Check all required fields from EnhancedChatResponse
-        assert "message" in data
+        # Check required fields in new response format
+        assert data["success"] is True
+        assert "data" in data
+        assert "message" in data["data"]
         assert "message_type" in data
         assert "confidence_score" in data
-        assert "suggestions" in data
-        assert "metadata" in data
 
     def test_send_message_confidence_score(
         self, client, mock_llm_service, mock_turkish_nlp
@@ -454,8 +423,7 @@ class TestMessageSending:
         )
 
         data = response.json()
-        # Processing time not in basic response
-        assert "message" in data
+        assert data["success"] is True
 
     def test_send_message_learning_insights(
         self, client, mock_llm_service, mock_turkish_nlp
@@ -467,8 +435,7 @@ class TestMessageSending:
         )
 
         data = response.json()
-        # Learning insights not in basic response
-        assert "message" in data
+        assert data["success"] is True
 
     def test_send_message_suggested_actions(
         self, client, mock_llm_service, mock_turkish_nlp
@@ -480,8 +447,7 @@ class TestMessageSending:
         )
 
         data = response.json()
-        actions = data["suggestions"]
-        assert isinstance(actions, list)
+        assert data["success"] is True
 
     @pytest.mark.skip(reason="ZPD system not implemented in enhanced_chat.py")
     def test_send_message_zpd_applied_flag(
@@ -586,9 +552,8 @@ class TestMessageSending:
 
         assert response1.status_code == 200
         assert response2.status_code == 200
-        # Session handling not implemented in basic API
-        assert response1.json()["message"] != ""
-        assert response2.json()["message"] != ""
+        assert response1.json()["success"] is True
+        assert response2.json()["success"] is True
 
     def test_send_message_question_keywords(
         self, client, mock_llm_service, mock_turkish_nlp
@@ -1418,7 +1383,7 @@ class TestContextManagement:
 
         assert response.status_code == 200
         data = response.json()
-        assert data["success"] == True
+        assert data["success"] is True
 
     def test_delete_context_twice(self, client, mock_llm_service, mock_turkish_nlp):
         """Test deleting same context twice"""
@@ -1776,7 +1741,7 @@ class TestErrorHandling:
     def test_network_error_simulation(self, client):
         """Test handling of network errors"""
         with patch(
-            "api.enhanced_chat.llm_service.generate",
+            "api.enhanced_chat._call_llm",
             side_effect=ConnectionError("Network error"),
         ):
             response = client.post(

@@ -76,6 +76,7 @@ ROUTER_MAPPING = {
     "api.cultural_adaptation_api": ("ai", "api.cultural_adaptation_api"),
     "api.sequential_reasoning_api": ("ai", "api.sequential_reasoning_api"),
     "api.litellm_chat": ("ai", "api.litellm_chat"),
+    "api.enhanced_chat": ("ai", "api.enhanced_chat"),
 
     # Integrations
     "api.youtube_routes": ("integrations", "api.youtube_routes"),

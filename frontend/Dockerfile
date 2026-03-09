@@ -17,6 +17,9 @@ COPY . .
 # Override production API URL for Docker (nginx proxies /api/ to backend)
 ENV VITE_API_URL=""
 ENV VITE_WS_URL=""
+# Show demo login buttons (Öğrenci/Öğretmen/Veli/Admin) when build arg is set
+ARG VITE_SHOW_DEMO=false
+ENV VITE_SHOW_DEMO=${VITE_SHOW_DEMO}
 RUN npm run build
 
 # Production stage - nginx for static files + API proxy

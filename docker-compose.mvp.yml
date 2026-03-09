@@ -32,17 +32,17 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
+      args:
+        VITE_SHOW_DEMO: "true"
     container_name: kiro2-frontend
     ports:
       - "3000:3000"
-    environment:
-      - VITE_API_URL=http://localhost:8000
     depends_on:
       backend:
         condition: service_healthy
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3000', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})"]
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:3000"]
       interval: 30s
       timeout: 5s
       start_period: 10s

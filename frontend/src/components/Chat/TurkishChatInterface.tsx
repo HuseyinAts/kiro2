@@ -1,26 +1,54 @@
-import {
-  Send,
-  Mic,
-  MicOff,
-  Settings,
-  History,
-  Trash2,
-  AlertCircle,
-  Wifi,
-  WifiOff,
-  Bot,
-  User,
-  Lightbulb,
-  BookOpen,
-  Target,
-  Zap,
-} from 'lucide-react';
-import * as React from 'react';
-import {  useState, useRef, useEffect, useCallback, useMemo  } from 'react';
+/**
+ * Turkish Chat Interface - MUI + Glassmorphism Design
+ * Proje tasarim sistemiyle uyumlu modern chat arayuzu
+ */
 
-import { useTurkishLanguageCorrection } from '../../hooks/useTurkishLanguageCorrection';
-import { useWebSocket } from '../../hooks/useWebSocket';
-import chatService, { ChatMessage } from '../../services/chatService';
+import {
+  Send as SendIcon,
+  SmartToy as BotIcon,
+  Person as PersonIcon,
+  Warning as WarningIcon,
+  MenuBook as MenuBookIcon,
+  Quiz as QuizIcon,
+  Lightbulb as LightbulbIcon,
+  Summarize as SummarizeIcon,
+  DeleteOutline as DeleteIcon,
+  Add as AddIcon,
+  History as HistoryIcon,
+  AttachFile as AttachFileIcon,
+  Close as CloseIcon,
+  Image as ImageIcon,
+  PictureAsPdf as PdfIcon,
+  InsertDriveFile as FileIcon,
+} from '@mui/icons-material';
+import {
+  Box,
+  Typography,
+  TextField,
+  IconButton,
+  Avatar,
+  Chip,
+  Paper,
+  CircularProgress,
+  Menu,
+  MenuItem,
+  ListItemText,
+  ListItemIcon,
+  Divider,
+  Tooltip,
+} from '@mui/material';
+import { motion, AnimatePresence } from 'framer-motion';
+import * as React from 'react';
+import { useState, useRef, useEffect, useCallback, useMemo } from 'react';
+import ReactMarkdown from 'react-markdown';
+import remarkMath from 'remark-math';
+import rehypeKatex from 'rehype-katex';
+import 'katex/dist/katex.min.css';
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { oneLight } from 'react-syntax-highlighter/dist/esm/styles/prism';
+
+import { modernColors } from '../../theme/modern-colors';
+import chatService, { ChatMessage, ChatSessionInfo } from '../../services/chatService';
 
 interface TurkishChatInterfaceProps {
   studentId: string;
@@ -31,591 +59,742 @@ interface TurkishChatInterfaceProps {
   className?: string;
 }
 
-interface ChatSettings {
-  enableVoice: boolean;
-  enableBionicReading: boolean;
-  enableLanguageCorrection: boolean;
-  responseMode: 'simple' | 'detailed' | 'adaptive';
-  fontSize: 'small' | 'medium' | 'large';
-  theme: 'light' | 'dark';
-}
-
-interface LanguageCorrection {
-  original: string;
-  corrected: string;
-  suggestions: string[];
-  confidence: number;
-}
-
-// Speech-to-text conversion helper
-async function convertSpeechToText(audioBlob: Blob): Promise<string> {
-  try {
-    // Create FormData to send audio file
-    const formData = new FormData();
-    formData.append('audio', audioBlob, 'recording.wav');
-    formData.append('language', 'tr-TR'); // Turkish language
-
-    // Send to backend speech-to-text endpoint
-    const response = await fetch('/api/v1/speech-to-text', {
-      method: 'POST',
-      body: formData,
-      signal: AbortSignal.timeout(30000), // 30 second timeout
-    });
-
-    if (!response.ok) {
-      throw new Error(`STT service error: ${response.status}`);
-    }
-
-    const data = await response.json();
-
-    // Return transcription text
-    return data.transcription || data.text || '';
-  } catch (error) {
-    console.error('Speech-to-text conversion failed:', error);
-    throw error;
-  }
-}
+// Quick action definitions
+const QUICK_ACTIONS = [
+  { text: 'Konu acikla', icon: <MenuBookIcon sx={{ fontSize: 16 }} />, prompt: 'Bu konuyu detayli olarak aciklar misin?' },
+  { text: 'Soru sor', icon: <QuizIcon sx={{ fontSize: 16 }} />, prompt: 'Bu konu hakkinda bana soru sorabilir misin?' },
+  { text: 'Ornek ver', icon: <LightbulbIcon sx={{ fontSize: 16 }} />, prompt: 'Bu konuya ornek verebilir misin?' },
+  { text: 'Ozet cikar', icon: <SummarizeIcon sx={{ fontSize: 16 }} />, prompt: 'Bu konunun ozetini cikarabilir misin?' },
+];
 
 export const TurkishChatInterface: React.FC<TurkishChatInterfaceProps> = ({
-  studentId,
+  studentId: _studentId,
   sessionId,
   subject = 'genel',
   onMessageSent,
   onAgentResponse,
-  className = '',
 }) => {
-  // State management
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [isRecording, setIsRecording] = useState(false);
-  const [showSettings, setShowSettings] = useState(false);
-  const [showHistory, setShowHistory] = useState(false);
-  const [, setLanguageCorrections] = useState<LanguageCorrection[]>([]);
-
-  // Settings state
-  const [settings] = useState<ChatSettings>({
-    enableVoice: false,
-    enableBionicReading: false,
-    enableLanguageCorrection: true,
-    responseMode: 'adaptive',
-    fontSize: 'medium',
-    theme: 'light',
-  });
-
-  // Refs
+  const [teachingMode, setTeachingMode] = useState<'direct' | 'socratic'>('direct');
+  const [attachment, setAttachment] = useState<File | null>(null);
+  const [attachmentPreview, setAttachmentPreview] = useState<string | null>(null);
+  const [sessions, setSessions] = useState<ChatSessionInfo[]>([]);
+  const [sessionMenuAnchor, setSessionMenuAnchor] = useState<null | HTMLElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const inputRef = useRef<HTMLTextAreaElement>(null);
-  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
 
-  // Custom hooks
-  const {
-    isConnected,
-    sendMessage: sendWebSocketMessage,
-    lastMessage,
-  } = useWebSocket(studentId, sessionId);
-
-  const {
-    checkText,
-    suggestions,
-    isChecking,
-  } = useTurkishLanguageCorrection();
-
-  // Load messages on component mount
+  // Load messages on mount — try DB first, fallback to localStorage
   useEffect(() => {
-    const loadMessages = async () => {
-      try {
-        const storedMessages = chatService.loadMessagesFromLocalStorage();
-        setMessages(storedMessages);
-
-        if (sessionId) {
-          const sessionMessages = await chatService.loadSession(sessionId);
-          setMessages(sessionMessages);
+    const load = async () => {
+      // Try restoring from DB if we have a session_id
+      const savedId = sessionId || localStorage.getItem('chatSessionId');
+      if (savedId) {
+        const dbMessages = await chatService.loadSessionFromDB(savedId);
+        if (dbMessages.length > 0) {
+          setMessages(dbMessages);
+          return;
         }
-      } catch (error) {
-        console.error('Mesajlar yüklenirken hata:', error);
       }
+      // Fallback to localStorage
+      const stored = chatService.loadMessagesFromLocalStorage();
+      setMessages(stored);
     };
-
-    loadMessages();
+    load();
   }, [sessionId]);
 
-  // Handle WebSocket messages
-  useEffect(() => {
-    if (lastMessage) {
-      setMessages(prev => [...prev, lastMessage]);
-      setIsLoading(false);
-      onAgentResponse?.(lastMessage);
-    }
-  }, [lastMessage, onAgentResponse]);
+  // Load session list
+  const refreshSessions = useCallback(async () => {
+    const list = await chatService.listSessions();
+    setSessions(list);
+  }, []);
 
-  // Auto-scroll to bottom
+  const handleNewChat = useCallback(() => {
+    chatService.startNewSession();
+    setMessages([]);
+    setSessionMenuAnchor(null);
+  }, []);
+
+  const handleLoadSession = useCallback(async (sid: string) => {
+    setSessionMenuAnchor(null);
+    const dbMessages = await chatService.loadSessionFromDB(sid);
+    setMessages(dbMessages);
+  }, []);
+
+  // Auto-scroll
   useEffect(() => {
-    const timeoutId = setTimeout(() => {
+    const t = setTimeout(() => {
       messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     }, 100);
-
-    return () => clearTimeout(timeoutId);
+    return () => clearTimeout(t);
   }, [messages]);
 
-  // Language correction effect
-  useEffect(() => {
-    if (settings.enableLanguageCorrection && input.trim().length > 10) {
-      const timeoutId = setTimeout(() => {
-        checkText(input);
-      }, 1000);
-
-      return () => clearTimeout(timeoutId);
+  // Submit handler
+  const handleSubmit = useCallback(async (e?: React.FormEvent) => {
+    e?.preventDefault();
+    // If attachment present, use attachment handler instead
+    if (attachment) {
+      await handleSubmitWithAttachment();
+      return;
     }
-  }, [input, settings.enableLanguageCorrection, checkText]);
+    if (!input.trim() || isLoading) return;
 
-  // Handle message submission
-  const handleSubmit = useCallback(async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (!input.trim() || isLoading) {return;}
-
-    const messageText = input.trim();
+    const text = input.trim();
     setInput('');
     setIsLoading(true);
 
+    const userMsg: ChatMessage = {
+      id: `user-${Date.now()}`,
+      role: 'user',
+      content: text,
+      timestamp: new Date().toISOString(),
+    };
+    setMessages(prev => [...prev, userMsg]);
+    onMessageSent?.(text);
+
+    // Create a placeholder bot message for streaming
+    const botMsgId = `bot-${Date.now()}`;
+    const botPlaceholder: ChatMessage = {
+      id: botMsgId,
+      role: 'agent',
+      content: '',
+      agent: 'turkish_nlp',
+      timestamp: new Date().toISOString(),
+    };
+    setMessages(prev => [...prev, botPlaceholder]);
+
     try {
-      // Add user message immediately
-      const userMessage: ChatMessage = {
-        id: `user-${Date.now()}`,
-        role: 'user',
-        content: messageText,
-        timestamp: new Date().toISOString(),
-      };
-
-      setMessages(prev => [...prev, userMessage]);
-      onMessageSent?.(messageText);
-
-      // Send via WebSocket if connected, otherwise use HTTP
-      if (isConnected) {
-        sendWebSocketMessage('turkish_nlp', messageText);
-      } else {
-        const response = await chatService.sendMessage('turkish_nlp', messageText);
-        setMessages(prev => [...prev, response]);
-        setIsLoading(false);
-        onAgentResponse?.(response);
-      }
-
-    } catch (error) {
-      console.error('Mesaj gönderilirken hata:', error);
-      setIsLoading(false);
-
-      // Add error message
-      const errorMessage: ChatMessage = {
-        id: `error-${Date.now()}`,
-        role: 'system',
-        content: 'Üzgünüm, mesajınızı işleyemedim. Lütfen tekrar deneyin.',
-        timestamp: new Date().toISOString(),
-      };
-      setMessages(prev => [...prev, errorMessage]);
-    }
-  }, [input, isLoading, isConnected, sendWebSocketMessage, onMessageSent, onAgentResponse]);
-
-  // Voice recording handlers
-  const startRecording = useCallback(async () => {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      const mediaRecorder = new MediaRecorder(stream);
-      mediaRecorderRef.current = mediaRecorder;
-
-      const audioChunks: Blob[] = [];
-
-      mediaRecorder.ondataavailable = (event) => {
-        audioChunks.push(event.data);
-      };
-
-      mediaRecorder.onstop = async () => {
-        const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
-
-        try {
-          // Send audio to speech-to-text service
-          const transcription = await convertSpeechToText(audioBlob);
-
-          if (transcription) {
-            // Set the transcribed text as input
-            setInput(transcription);
-
-            // Optionally auto-send the message
-            if (settings.enableVoice) {
-              // Create a synthetic submit event
-              handleSubmit({ preventDefault: () => {} } as React.FormEvent);
-            }
-          }
-        } catch (error) {
-          console.error('Ses-metin dönüştürme hatası:', error);
-          // Show error message to user
-          const errorMsg: ChatMessage = {
-            id: `error-${Date.now()}`,
-            role: 'system',
-            content: 'Ses kaydı metne dönüştürülemedi. Lütfen tekrar deneyin.',
-            timestamp: new Date().toISOString(),
-          };
-          setMessages(prev => [...prev, errorMsg]);
-        }
-      };
-
-      mediaRecorder.start();
-      setIsRecording(true);
-    } catch (error) {
-      console.error('Ses kaydı başlatılamadı:', error);
-    }
-  }, []);
-
-  const stopRecording = useCallback(() => {
-    if (mediaRecorderRef.current && isRecording) {
-      mediaRecorderRef.current.stop();
-      mediaRecorderRef.current.stream.getTracks().forEach(track => track.stop());
-      setIsRecording(false);
-    }
-  }, [isRecording]);
-
-  // Quick action buttons
-  const quickActions = useMemo(() => [
-    {
-      text: 'Konu açıkla',
-      icon: <BookOpen className="w-4 h-4" />,
-      prompt: 'Bu konuyu detaylı olarak açıklar mısın?',
-    },
-    {
-      text: 'Soru sor',
-      icon: <Target className="w-4 h-4" />,
-      prompt: 'Bu konu hakkında bana soru sorabilir misin?',
-    },
-    {
-      text: 'Örnek ver',
-      icon: <Lightbulb className="w-4 h-4" />,
-      prompt: 'Bu konuya örnek verebilir misin?',
-    },
-    {
-      text: 'Özet çıkar',
-      icon: <Zap className="w-4 h-4" />,
-      prompt: 'Bu konunun özetini çıkarabilir misin?',
-    },
-  ], []);
-
-  // Clear chat history
-  const clearHistory = useCallback(async () => {
-    try {
-      await chatService.clearAllSessions();
-      setMessages([]);
-    } catch (error) {
-      console.error('Geçmiş temizlenirken hata:', error);
-    }
-  }, []);
-
-  // Apply language correction
-  const applyCorrection = useCallback((correction: LanguageCorrection) => {
-    setInput(correction.corrected);
-    setLanguageCorrections(prev => prev.filter(c => c.original !== correction.original));
-  }, []);
-
-  // Format message content with Bionic Reading if enabled
-  const formatMessageContent = useCallback((content: string) => {
-    if (settings.enableBionicReading) {
-      // Simple Bionic Reading implementation for Turkish
-      return content.split(' ').map((word, index) => {
-        if (word.length > 3) {
-          const boldLength = Math.ceil(word.length * 0.4);
-          return (
-            <span key={index}>
-              <strong>{word.slice(0, boldLength)}</strong>
-              {word.slice(boldLength)}
-              {' '}
-            </span>
-          );
-        }
-        return <span key={index}>{word} </span>;
+      await chatService.sendMessageStreaming(text, (accumulated) => {
+        // Update the bot message content as tokens arrive
+        setMessages(prev =>
+          prev.map(msg => msg.id === botMsgId ? { ...msg, content: accumulated } : msg),
+        );
+      }, { subject, teachingMode });
+      // Get final message for callback
+      setMessages(prev => {
+        const final = prev.find(m => m.id === botMsgId);
+        if (final) onAgentResponse?.(final);
+        return prev;
       });
+    } catch (error) {
+      console.error('Mesaj gonderilemedi:', error);
+      // Replace placeholder with error
+      setMessages(prev =>
+        prev.map(msg => msg.id === botMsgId ? {
+          ...msg,
+          role: 'system' as const,
+          content: 'Mesajinizi isleyemedim. Lutfen tekrar deneyin.',
+        } : msg),
+      );
+    } finally {
+      setIsLoading(false);
     }
+  }, [input, isLoading, onMessageSent, onAgentResponse]);
 
-    return content.split('\n').map((line, i) => (
-      <span key={i}>
-        {line}
-        {i < content.split('\n').length - 1 && <br />}
-      </span>
-    ));
-  }, [settings.enableBionicReading]);
+  const clearHistory = useCallback(async () => {
+    await chatService.clearAllSessions().catch(console.error);
+    setMessages([]);
+  }, []);
+
+  // --- Attachment handlers ---
+  const handleFileSelect = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.size > 10 * 1024 * 1024) {
+      alert('Dosya boyutu 10MB\'yi asamaz.');
+      return;
+    }
+    setAttachment(file);
+    // Generate preview for images
+    if (file.type.startsWith('image/')) {
+      const reader = new FileReader();
+      reader.onload = (ev) => setAttachmentPreview(ev.target?.result as string);
+      reader.readAsDataURL(file);
+    } else {
+      setAttachmentPreview(null);
+    }
+    // Reset file input
+    if (fileInputRef.current) fileInputRef.current.value = '';
+  }, []);
+
+  const clearAttachment = useCallback(() => {
+    setAttachment(null);
+    setAttachmentPreview(null);
+  }, []);
+
+  const handleSubmitWithAttachment = useCallback(async () => {
+    if (!attachment || isLoading) return;
+    const text = input.trim();
+    setInput('');
+    setIsLoading(true);
+
+    // Show user message with attachment info
+    const userMsg: ChatMessage = {
+      id: `user-${Date.now()}`,
+      role: 'user',
+      content: `${attachment.type.startsWith('image/') ? '🖼️' : '📄'} ${attachment.name}${text ? `\n${text}` : ''}`,
+      timestamp: new Date().toISOString(),
+    };
+    setMessages(prev => [...prev, userMsg]);
+    clearAttachment();
+
+    // Bot placeholder
+    const botMsgId = `bot-${Date.now()}`;
+    setMessages(prev => [...prev, {
+      id: botMsgId, role: 'agent', content: 'Dosya analiz ediliyor...', agent: 'turkish_nlp', timestamp: new Date().toISOString(),
+    }]);
+
+    try {
+      const result = await chatService.sendMessageWithAttachment({
+        file: attachment,
+        message: text,
+        subject,
+        teachingMode,
+      });
+      setMessages(prev =>
+        prev.map(msg => msg.id === botMsgId ? { ...msg, content: result.message } : msg),
+      );
+    } catch (error: any) {
+      setMessages(prev =>
+        prev.map(msg => msg.id === botMsgId ? {
+          ...msg, role: 'system' as const, content: `Hata: ${error.message || 'Dosya islenemedi.'}`,
+        } : msg),
+      );
+    } finally {
+      setIsLoading(false);
+    }
+  }, [attachment, input, isLoading, subject, teachingMode, clearAttachment]);
+
+  const quickActions = useMemo(() => QUICK_ACTIONS, []);
 
   return (
-    <div className={`flex flex-col h-full bg-white rounded-lg shadow-lg ${className}`}>
+    <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden' }}>
       {/* Header */}
-      <div className="flex items-center justify-between p-4 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-indigo-50">
-        <div className="flex items-center space-x-3">
-          <div className="p-2 bg-blue-100 rounded-full">
-            <Bot className="w-6 h-6 text-blue-600" />
-          </div>
-          <div>
-            <h2 className="font-semibold text-gray-800">Türkçe AI Asistan</h2>
-            <p className="text-sm text-gray-600">
-              {subject} • {isConnected ? 'Bağlı' : 'Bağlantı kesildi'}
-            </p>
-          </div>
-        </div>
-
-        <div className="flex items-center space-x-2">
-          {/* Connection status */}
-          <div className="flex items-center space-x-1">
-            {isConnected ? (
-              <Wifi className="w-4 h-4 text-green-500" />
-            ) : (
-              <WifiOff className="w-4 h-4 text-red-500" />
-            )}
-          </div>
-
-          {/* Settings button */}
-          <button
-            onClick={() => setShowSettings(!showSettings)}
-            className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-full transition-colors"
+      <Box
+        sx={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          px: 3,
+          py: 2,
+          borderBottom: '1px solid',
+          borderColor: 'divider',
+          background: `linear-gradient(135deg, ${modernColors.primary[50]}, ${modernColors.secondary[50]})`,
+        }}
+      >
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+          <Avatar
+            sx={{
+              width: 40,
+              height: 40,
+              background: modernColors.gradients.purple,
+            }}
           >
-            <Settings className="w-5 h-5" />
-          </button>
+            <BotIcon sx={{ fontSize: 24 }} />
+          </Avatar>
+          <Box>
+            <Typography variant="subtitle1" fontWeight={600}>
+              AI Egitim Asistani
+            </Typography>
+            <Typography variant="caption" color="text.secondary">
+              {subject} konusunda yardimci
+            </Typography>
+          </Box>
+        </Box>
 
-          {/* History button */}
-          <button
-            onClick={() => setShowHistory(!showHistory)}
-            className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-full transition-colors"
-          >
-            <History className="w-5 h-5" />
-          </button>
-
-          {/* Clear history button */}
-          <button
-            onClick={clearHistory}
-            className="p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-full transition-colors"
-          >
-            <Trash2 className="w-5 h-5" />
-          </button>
-        </div>
-      </div>
-
-      {/* Language corrections */}
-      {settings.enableLanguageCorrection && suggestions.length > 0 && (
-        <div className="p-3 bg-yellow-50 border-b border-yellow-200">
-          <div className="flex items-start space-x-2">
-            <AlertCircle className="w-4 h-4 text-yellow-600 mt-0.5" />
-            <div className="flex-1">
-              <p className="text-sm text-yellow-800 font-medium">Dil düzeltme önerileri:</p>
-              <div className="mt-1 space-y-1">
-                {suggestions.map((suggestion, index) => (
-                  <button
-                    key={index}
-                    onClick={() => applyCorrection(suggestion)}
-                    className="text-xs bg-yellow-100 hover:bg-yellow-200 text-yellow-800 px-2 py-1 rounded transition-colors"
-                  >
-                    {suggestion.corrected}
-                  </button>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Messages */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-4">
-        {messages.length === 0 ? (
-          <div className="text-center text-gray-500 mt-8">
-            <div className="text-6xl mb-4">💬</div>
-            <p className="text-lg font-medium">Merhaba! Size nasıl yardımcı olabilirim?</p>
-            <p className="text-sm mt-2">Türkçe sorularınızı sorabilir, konuları açıklamamı isteyebilirsiniz.</p>
-
-            {/* Quick actions for empty state */}
-            <div className="mt-6 grid grid-cols-2 gap-3 max-w-md mx-auto">
-              {quickActions.map((action, index) => (
-                <button
-                  key={index}
-                  onClick={() => setInput(action.prompt)}
-                  className="flex items-center space-x-2 p-3 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors text-left"
-                >
-                  {action.icon}
-                  <span className="text-sm font-medium">{action.text}</span>
-                </button>
-              ))}
-            </div>
-          </div>
-        ) : (
-          messages.map((message, index) => (
-            <MessageBubble
-              key={`${message.id}-${index}`}
-              message={message}
-              formatContent={formatMessageContent}
-              settings={settings}
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+          <Tooltip title={teachingMode === 'socratic'
+            ? 'Sokratik: Cevap vermez, soru sorarak ogretir'
+            : 'Dogrudan: Cevabi aciklayarak verir'}>
+            <Chip
+              label={teachingMode === 'socratic' ? 'Sokratik' : 'Dogrudan'}
+              onClick={() => setTeachingMode(prev => prev === 'direct' ? 'socratic' : 'direct')}
+              color={teachingMode === 'socratic' ? 'secondary' : 'default'}
+              variant={teachingMode === 'socratic' ? 'filled' : 'outlined'}
+              size="small"
+              sx={{ mr: 1 }}
             />
-          ))
+          </Tooltip>
+          <Tooltip title="Yeni Sohbet">
+            <IconButton size="small" onClick={handleNewChat} sx={{ color: 'text.secondary' }}>
+              <AddIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title="Gecmis Sohbetler">
+            <IconButton
+              size="small"
+              onClick={(e) => { setSessionMenuAnchor(e.currentTarget); refreshSessions(); }}
+              sx={{ color: 'text.secondary' }}
+            >
+              <HistoryIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title="Sohbeti Temizle">
+            <IconButton size="small" onClick={clearHistory} sx={{ color: 'text.secondary', '&:hover': { color: 'error.main' } }}>
+              <DeleteIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
+
+          {/* Session history dropdown */}
+          <Menu
+            anchorEl={sessionMenuAnchor}
+            open={Boolean(sessionMenuAnchor)}
+            onClose={() => setSessionMenuAnchor(null)}
+            PaperProps={{
+              sx: { maxHeight: 320, width: 280, borderRadius: 2 },
+            }}
+          >
+            <MenuItem onClick={handleNewChat}>
+              <ListItemIcon><AddIcon fontSize="small" /></ListItemIcon>
+              <ListItemText primary="Yeni Sohbet" />
+            </MenuItem>
+            <Divider />
+            {sessions.length === 0 ? (
+              <MenuItem disabled>
+                <ListItemText primary="Gecmis sohbet yok" secondary="Mesaj gonderin, otomatik kaydedilir" />
+              </MenuItem>
+            ) : (
+              sessions.map((s) => (
+                <MenuItem
+                  key={s.id}
+                  onClick={() => handleLoadSession(s.id)}
+                  selected={chatService.getSessionId() === s.id}
+                >
+                  <ListItemText
+                    primary={s.title || 'Sohbet'}
+                    secondary={`${s.message_count} mesaj`}
+                    primaryTypographyProps={{ noWrap: true, fontSize: '0.875rem' }}
+                    secondaryTypographyProps={{ fontSize: '0.75rem' }}
+                  />
+                </MenuItem>
+              ))
+            )}
+          </Menu>
+        </Box>
+      </Box>
+
+      {/* Messages Area */}
+      <Box
+        sx={{
+          flex: 1,
+          overflow: 'auto',
+          px: 3,
+          py: 2,
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 2,
+        }}
+      >
+        {messages.length === 0 ? (
+          <EmptyState quickActions={quickActions} onAction={setInput} />
+        ) : (
+          <AnimatePresence initial={false}>
+            {messages.map((msg, i) => (
+              <motion.div
+                key={`${msg.id}-${i}`}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.2 }}
+              >
+                <MessageBubble message={msg} />
+              </motion.div>
+            ))}
+          </AnimatePresence>
         )}
 
+        {/* Loading indicator */}
         {isLoading && (
-          <div className="flex justify-start">
-            <div className="bg-gray-100 rounded-lg px-4 py-3 max-w-xs">
-              <div className="flex items-center space-x-2">
-                <div className="flex space-x-1">
-                  <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
-                  <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
-                  <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
-                </div>
-                <span className="text-xs text-gray-500">Yazıyor...</span>
-              </div>
-            </div>
-          </div>
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, pl: 6 }}>
+              <Paper
+                elevation={0}
+                sx={{
+                  px: 2.5,
+                  py: 1.5,
+                  borderRadius: '16px',
+                  background: 'rgba(255,255,255,0.9)',
+                  backdropFilter: 'blur(10px)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 1,
+                }}
+              >
+                <CircularProgress size={16} thickness={5} />
+                <Typography variant="caption" color="text.secondary">
+                  Yaziyor...
+                </Typography>
+              </Paper>
+            </Box>
+          </motion.div>
         )}
 
         <div ref={messagesEndRef} />
-      </div>
+      </Box>
 
-      {/* Input area */}
-      <form onSubmit={handleSubmit} className="border-t border-gray-200 p-4 bg-gray-50">
+      {/* Input Area */}
+      <Box
+        component="form"
+        onSubmit={handleSubmit}
+        sx={{
+          px: 3,
+          py: 2,
+          borderTop: '1px solid',
+          borderColor: 'divider',
+          background: 'rgba(255,255,255,0.7)',
+          backdropFilter: 'blur(10px)',
+        }}
+      >
         {/* Quick actions */}
-        <div className="mb-3 flex flex-wrap gap-2">
-          {quickActions.map((action, index) => (
-            <button
-              key={index}
-              type="button"
+        <Box sx={{ display: 'flex', gap: 1, mb: 1.5, flexWrap: 'wrap' }}>
+          {quickActions.map((action, i) => (
+            <Chip
+              key={i}
+              icon={action.icon}
+              label={action.text}
+              size="small"
+              variant="outlined"
               onClick={() => setInput(action.prompt)}
-              className="flex items-center space-x-1 text-xs px-3 py-1.5 bg-white hover:bg-gray-100 border border-gray-200 rounded-full transition-colors"
-            >
-              {action.icon}
-              <span>{action.text}</span>
-            </button>
-          ))}
-        </div>
-
-        <div className="flex items-end space-x-3">
-          {/* Text input */}
-          <div className="flex-1 relative">
-            <textarea
-              ref={inputRef}
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              placeholder="Mesajınızı Türkçe yazın..."
-              disabled={isLoading}
-              rows={1}
-              className="w-full px-4 py-3 pr-12 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50 resize-none"
-              style={{ minHeight: '48px', maxHeight: '120px' }}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' && !e.shiftKey) {
-                  e.preventDefault();
-                  handleSubmit(e);
-                }
+              sx={{
+                borderRadius: '20px',
+                borderColor: modernColors.primary[200],
+                '&:hover': {
+                  background: modernColors.primary[50],
+                  borderColor: modernColors.primary[400],
+                },
               }}
             />
+          ))}
+        </Box>
 
-            {/* Language checking indicator */}
-            {isChecking && (
-              <div className="absolute right-3 top-3">
-                <div className="w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
-              </div>
-            )}
-          </div>
+        {/* Hidden file input */}
+        <input
+          ref={fileInputRef}
+          type="file"
+          hidden
+          accept="image/*,.pdf,.txt,.doc,.docx"
+          onChange={handleFileSelect}
+        />
 
-          {/* Voice recording button */}
-          {settings.enableVoice && (
-            <button
-              type="button"
-              onClick={isRecording ? stopRecording : startRecording}
-              className={`p-3 rounded-lg transition-colors ${
-                isRecording
-                  ? 'bg-red-500 text-white hover:bg-red-600'
-                  : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
-              }`}
-            >
-              {isRecording ? <MicOff className="w-5 h-5" /> : <Mic className="w-5 h-5" />}
-            </button>
-          )}
-
-          {/* Send button */}
-          <button
-            type="submit"
-            disabled={!input.trim() || isLoading}
-            className="p-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+        {/* Attachment preview */}
+        {attachment && (
+          <Box
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 1,
+              px: 2,
+              py: 1,
+              mb: 1,
+              borderRadius: '12px',
+              background: modernColors.primary[50],
+              border: `1px solid ${modernColors.primary[200]}`,
+            }}
           >
-            <Send className="w-5 h-5" />
-          </button>
-        </div>
+            {attachment.type.startsWith('image/') ? (
+              <>
+                {attachmentPreview && (
+                  <Box
+                    component="img"
+                    src={attachmentPreview}
+                    alt="preview"
+                    sx={{ width: 40, height: 40, borderRadius: '8px', objectFit: 'cover' }}
+                  />
+                )}
+                <ImageIcon sx={{ fontSize: 18, color: modernColors.primary[600] }} />
+              </>
+            ) : attachment.type === 'application/pdf' ? (
+              <PdfIcon sx={{ fontSize: 18, color: '#e53935' }} />
+            ) : (
+              <FileIcon sx={{ fontSize: 18, color: modernColors.primary[600] }} />
+            )}
+            <Typography variant="body2" sx={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+              {attachment.name}
+            </Typography>
+            <IconButton size="small" onClick={clearAttachment}>
+              <CloseIcon sx={{ fontSize: 16 }} />
+            </IconButton>
+          </Box>
+        )}
 
-        {/* Input hints */}
-        <div className="mt-2 text-xs text-gray-500">
-          <span>Enter ile gönder • Shift+Enter ile yeni satır</span>
-          {settings.enableLanguageCorrection && (
-            <span className="ml-2">• Dil düzeltme aktif</span>
-          )}
-        </div>
-      </form>
-    </div>
+        {/* Input + Send */}
+        <Box sx={{ display: 'flex', gap: 1.5, alignItems: 'flex-end' }}>
+          <Tooltip title="Dosya ekle (resim, PDF, metin)">
+            <IconButton
+              onClick={() => fileInputRef.current?.click()}
+              disabled={isLoading}
+              sx={{
+                width: 40,
+                height: 40,
+                flexShrink: 0,
+                color: attachment ? modernColors.primary[600] : 'text.secondary',
+              }}
+            >
+              <AttachFileIcon />
+            </IconButton>
+          </Tooltip>
+          <TextField
+            multiline
+            maxRows={4}
+            fullWidth
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            placeholder="Mesajinizi yazin..."
+            disabled={isLoading}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                handleSubmit();
+              }
+            }}
+            sx={{
+              '& .MuiOutlinedInput-root': {
+                borderRadius: '16px',
+                background: 'rgba(255,255,255,0.95)',
+                '&.Mui-focused': {
+                  boxShadow: `0 0 0 2px ${modernColors.primary[200]}`,
+                },
+              },
+            }}
+          />
+          <IconButton
+            type="submit"
+            disabled={!(input.trim() || attachment) || isLoading}
+            sx={{
+              width: 48,
+              height: 48,
+              background: modernColors.gradients.primary,
+              color: 'white',
+              flexShrink: 0,
+              '&:hover': { opacity: 0.9, background: modernColors.gradients.primary },
+              '&.Mui-disabled': { background: 'action.disabledBackground', color: 'action.disabled' },
+            }}
+          >
+            <SendIcon />
+          </IconButton>
+        </Box>
+
+        <Typography variant="caption" color="text.secondary" sx={{ mt: 1, display: 'block' }}>
+          Enter ile gonder &bull; Shift+Enter ile yeni satir
+        </Typography>
+      </Box>
+    </Box>
   );
 };
 
-// Message bubble component
-interface MessageBubbleProps {
-  message: ChatMessage;
-  formatContent: (content: string) => React.ReactNode;
-  settings: ChatSettings;
+// --- Empty State ---
+interface EmptyStateProps {
+  quickActions: typeof QUICK_ACTIONS;
+  onAction: (prompt: string) => void;
 }
 
-const MessageBubble: React.FC<MessageBubbleProps> = React.memo(({
-  message,
-  formatContent,
-  settings,
-}) => {
+const EmptyState: React.FC<EmptyStateProps> = ({ quickActions, onAction }) => (
+  <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', flex: 1, py: 4 }}>
+    <motion.div initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ duration: 0.4 }}>
+      <Box
+        sx={{
+          width: 80,
+          height: 80,
+          borderRadius: '24px',
+          background: modernColors.gradients.purple,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          mb: 3,
+          boxShadow: '0 8px 32px rgba(168, 85, 247, 0.3)',
+        }}
+      >
+        <BotIcon sx={{ fontSize: 48, color: 'white' }} />
+      </Box>
+    </motion.div>
+
+    <Typography variant="h6" fontWeight={600} sx={{ mb: 1 }}>
+      Merhaba! Size nasil yardimci olabilirim?
+    </Typography>
+    <Typography variant="body2" color="text.secondary" sx={{ mb: 4, textAlign: 'center', maxWidth: 400 }}>
+      TYT/AYT konularinda sorularinizi sorabilir, konu aciklamasi isteyebilirsiniz.
+    </Typography>
+
+    <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 1.5, maxWidth: 360, width: '100%' }}>
+      {quickActions.map((action, i) => (
+        <motion.div
+          key={i}
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 + i * 0.05 }}
+        >
+          <Paper
+            elevation={0}
+            onClick={() => onAction(action.prompt)}
+            sx={{
+              p: 2,
+              borderRadius: '12px',
+              cursor: 'pointer',
+              border: '1px solid',
+              borderColor: 'divider',
+              background: 'rgba(255,255,255,0.8)',
+              backdropFilter: 'blur(8px)',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 1,
+              transition: 'all 0.2s',
+              '&:hover': {
+                borderColor: modernColors.primary[300],
+                background: modernColors.primary[50],
+                transform: 'translateY(-2px)',
+                boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
+              },
+            }}
+          >
+            {action.icon}
+            <Typography variant="body2" fontWeight={500}>{action.text}</Typography>
+          </Paper>
+        </motion.div>
+      ))}
+    </Box>
+  </Box>
+);
+
+// --- Message Bubble ---
+interface MessageBubbleProps {
+  message: ChatMessage;
+}
+
+const MessageBubble: React.FC<MessageBubbleProps> = React.memo(({ message }) => {
   const isUser = message.role === 'user';
   const isSystem = message.role === 'system';
 
-  return (
-    <div className={`flex ${isUser ? 'justify-end' : 'justify-start'}`}>
-      <div className={`flex items-start space-x-3 max-w-2xl ${isUser ? 'flex-row-reverse space-x-reverse' : ''}`}>
-        {/* Avatar */}
-        <div className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center ${
-          isUser
-            ? 'bg-blue-500'
-            : isSystem
-              ? 'bg-gray-400'
-              : 'bg-green-500'
-        }`}>
-          {isUser ? (
-            <User className="w-4 h-4 text-white" />
-          ) : isSystem ? (
-            <AlertCircle className="w-4 h-4 text-white" />
-          ) : (
-            <Bot className="w-4 h-4 text-white" />
-          )}
-        </div>
+  const avatarBg = isUser
+    ? modernColors.gradients.primary
+    : isSystem
+      ? modernColors.warning[400]
+      : modernColors.gradients.purple;
 
-        {/* Message content */}
-        <div className={`rounded-lg px-4 py-3 ${
-          isUser
-            ? 'bg-blue-500 text-white'
-            : isSystem
-              ? 'bg-gray-100 text-gray-700 border border-gray-200'
-              : 'bg-gray-100 text-gray-800'
-        }`}>
+  const avatarIcon = isUser
+    ? <PersonIcon sx={{ fontSize: 18 }} />
+    : isSystem
+      ? <WarningIcon sx={{ fontSize: 18 }} />
+      : <BotIcon sx={{ fontSize: 18 }} />;
+
+  return (
+    <Box sx={{ display: 'flex', justifyContent: isUser ? 'flex-end' : 'flex-start' }}>
+      <Box
+        sx={{
+          display: 'flex',
+          alignItems: 'flex-start',
+          gap: 1.5,
+          maxWidth: '75%',
+          flexDirection: isUser ? 'row-reverse' : 'row',
+        }}
+      >
+        <Avatar sx={{ width: 36, height: 36, background: avatarBg, flexShrink: 0 }}>
+          {avatarIcon}
+        </Avatar>
+
+        <Paper
+          elevation={0}
+          sx={{
+            px: 2.5,
+            py: 1.5,
+            borderRadius: isUser ? '16px 16px 4px 16px' : '16px 16px 16px 4px',
+            background: isUser
+              ? modernColors.gradients.primary
+              : isSystem
+                ? `${modernColors.warning[50]}`
+                : 'rgba(255,255,255,0.9)',
+            color: isUser ? 'white' : 'text.primary',
+            backdropFilter: !isUser ? 'blur(10px)' : undefined,
+            border: !isUser && !isSystem ? '1px solid' : undefined,
+            borderColor: !isUser && !isSystem ? 'divider' : undefined,
+          }}
+        >
           {/* Agent label */}
           {!isUser && !isSystem && message.agent && (
-            <div className="text-xs opacity-75 mb-1 font-medium">
-              🤖 {message.agent === 'turkish_nlp' ? 'Türkçe AI Asistan' : message.agent}
-            </div>
+            <Typography variant="caption" sx={{ opacity: 0.7, fontWeight: 600, display: 'block', mb: 0.5 }}>
+              AI Asistan
+            </Typography>
           )}
 
-          {/* Message text */}
-          <div className={`whitespace-pre-wrap ${settings.fontSize === 'small' ? 'text-sm' : settings.fontSize === 'large' ? 'text-lg' : 'text-base'}`}>
-            {formatContent(message.content)}
-          </div>
+          {/* Content */}
+          {isUser ? (
+            <Typography variant="body2" sx={{ whiteSpace: 'pre-wrap', lineHeight: 1.6 }}>
+              {message.content}
+            </Typography>
+          ) : (
+            <Box
+              sx={{
+                fontSize: '0.875rem',
+                lineHeight: 1.7,
+                '& p': { m: 0, mb: 1 },
+                '& p:last-child': { mb: 0 },
+                '& ul, & ol': { pl: 2.5, my: 0.5 },
+                '& li': { mb: 0.25 },
+                '& h3, & h4': { fontSize: '0.95rem', fontWeight: 600, mt: 1.5, mb: 0.5 },
+                '& strong': { fontWeight: 600 },
+                '& code': {
+                  bgcolor: isSystem ? 'rgba(0,0,0,0.06)' : 'grey.100',
+                  px: 0.5,
+                  borderRadius: 0.5,
+                  fontSize: '0.85em',
+                  fontFamily: 'monospace',
+                },
+                '& pre': {
+                  bgcolor: isSystem ? 'rgba(0,0,0,0.06)' : 'grey.100',
+                  p: 1.5,
+                  borderRadius: 1,
+                  overflow: 'auto',
+                  '& code': { bgcolor: 'transparent', p: 0 },
+                },
+                '& blockquote': {
+                  borderLeft: '3px solid',
+                  borderColor: 'divider',
+                  pl: 1.5,
+                  ml: 0,
+                  fontStyle: 'italic',
+                  opacity: 0.85,
+                },
+              }}
+            >
+              <ReactMarkdown
+                remarkPlugins={[remarkMath]}
+                rehypePlugins={[rehypeKatex]}
+                components={{
+                  code({ inline, className, children, ...props }: any) {
+                    const match = /language-(\w+)/.exec(className || '');
+                    return !inline && match ? (
+                      <SyntaxHighlighter style={oneLight} language={match[1]} PreTag="div" {...props}>
+                        {String(children).replace(/\n$/, '')}
+                      </SyntaxHighlighter>
+                    ) : (
+                      <code className={className} {...props}>{children}</code>
+                    );
+                  },
+                }}
+              >
+                {message.content}
+              </ReactMarkdown>
+            </Box>
+          )}
 
           {/* Timestamp */}
-          <div className={`text-xs mt-2 opacity-75 ${
-            isUser ? 'text-blue-100' : 'text-gray-500'
-          }`}>
+          <Typography
+            variant="caption"
+            sx={{
+              display: 'block',
+              mt: 1,
+              opacity: 0.6,
+              color: isUser ? 'rgba(255,255,255,0.8)' : 'text.secondary',
+              textAlign: isUser ? 'right' : 'left',
+            }}
+          >
             {new Date(message.timestamp).toLocaleTimeString('tr-TR', {
               hour: '2-digit',
               minute: '2-digit',
             })}
-          </div>
-        </div>
-      </div>
-    </div>
+          </Typography>
+        </Paper>
+      </Box>
+    </Box>
   );
 });
 
