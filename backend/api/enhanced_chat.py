@@ -29,14 +29,17 @@ def _get_auth_dependency():
         from core.dependencies import get_current_user
         return Depends(get_current_user)
     except ImportError:
-        logger.warning("Auth module not available — enhanced-chat unauthenticated (dev mode)")
-    except Exception as e:
-        logger.error(f"Auth module failed: {e}")
+        _is_dev = os.getenv("ENVIRONMENT", "development") == "development"
+        if _is_dev:
+            logger.warning("Auth module not available — enhanced-chat unauthenticated (dev mode)")
 
-    async def _noop_auth() -> None:
-        return None
+            async def _noop_auth() -> None:
+                return None
 
-    return Depends(_noop_auth)
+            return Depends(_noop_auth)
+        raise RuntimeError(
+            "Auth module required in production — core.dependencies.get_current_user not found"
+        )
 
 
 _auth_dep = _get_auth_dependency()
@@ -61,6 +64,32 @@ _db_dep = _get_db_dependency()
 # ---------------------------------------------------------------------------
 # DB helpers (raw SQL — chat tables use VARCHAR ids, not UUID)
 # ---------------------------------------------------------------------------
+_chat_tables_verified = False
+
+
+async def _verify_chat_tables(db: AsyncSession) -> bool:
+    """Check chat tables exist on first call. Logs error once if missing."""
+    global _chat_tables_verified
+    if _chat_tables_verified:
+        return True
+    try:
+        await db.execute(text("SELECT 1 FROM chat_sessions LIMIT 0"))
+        await db.execute(text("SELECT 1 FROM chat_messages LIMIT 0"))
+        _chat_tables_verified = True
+        return True
+    except Exception:
+        logger.error(
+            "Chat tables (chat_sessions, chat_messages) not found! "
+            "Run: python backend/_scripts/create_chat_tables.py"
+        )
+        # Rollback the failed transaction so the connection is usable
+        try:
+            await db.rollback()
+        except Exception:
+            pass
+        return False
+
+
 async def _get_or_create_session(
     db: AsyncSession, user_id: str, session_id: Optional[str], subject: str,
 ) -> str:
@@ -351,7 +380,7 @@ async def send_message(
 
     # Persist to DB if available
     session_id = request.session_id
-    if db is not None:
+    if db is not None and await _verify_chat_tables(db):
         try:
             user_id = getattr(current_user, "id", "anonymous") if current_user else "anonymous"
             session_id = await _get_or_create_session(
@@ -435,7 +464,7 @@ async def stream_message(
     # Resolve session before streaming starts
     session_id = request.session_id
     user_id = "anonymous"
-    if db is not None and current_user is not None:
+    if db is not None and current_user is not None and await _verify_chat_tables(db):
         try:
             user_id = str(getattr(current_user, "id", "anonymous"))
             session_id = await _get_or_create_session(
@@ -800,7 +829,7 @@ async def message_with_attachment(
 
     # --- Persist to DB ---
     resp_session_id = session_id
-    if db is not None:
+    if db is not None and await _verify_chat_tables(db):
         try:
             user_id = str(getattr(current_user, "id", "anonymous")) if current_user else "anonymous"
             resp_session_id = await _get_or_create_session(
