@@ -75,7 +75,7 @@ const ProfilePage = lazy(() => import('./pages/ProfilePage'));
 const SettingsPage = lazy(() => import('./pages/SettingsPage'));
 const RBACTestPage = lazy(() => import('./pages/RBACTestPage'));
 const AccessibilityDemoPage = lazy(() => import('./pages/AccessibilityDemoPage'));
-const LearningPathPage = lazy(() => import('./pages/LearningPathPageRefactored'));
+const LearningPathPage = lazy(() => import('./pages/ModernLearningPathPage'));
 // Optimize edilmiş QueryClient
 const queryClient = createOptimizedQueryClient();
 

@@ -3,8 +3,8 @@
  * Kişiselleştirilmiş öğrenme yolu ve kaynaklar
  */
 
-import { Timeline, VideoLibrary, Assessment, Refresh, AutoAwesome } from '@mui/icons-material';
-import { Container, Box, Tabs, Tab, Typography } from '@mui/material';
+import { Timeline, VideoLibrary, Assessment, Refresh, AutoAwesome, Shuffle, Science } from '@mui/icons-material';
+import { Container, Box, Tabs, Tab, Typography, Alert, Chip } from '@mui/material';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useEffect, useCallback, useMemo } from 'react';
 
@@ -17,6 +17,10 @@ import { PathNodeData } from '../components/LearningPath/PathNode';
 import { GlassCard } from '../components/ui/GlassCard';
 import { ModernButton } from '../components/ui/ModernButton';
 import { ModernLoader } from '../components/ui/ModernLoader';
+import { QuizInterface } from '../components/Quiz/QuizInterface';
+import type { Question } from '../components/Quiz/QuizInterface';
+import { mapApiToQuizQuestion } from '../utils/questionMappers';
+import { ReviewQueuePanel } from '../components/LearningPath/ReviewQueuePanel';
 import { useLearningPath } from '../hooks/useLearningPath';
 import { useLearningPathVideos } from '../hooks/useLearningPathVideos';
 
@@ -67,6 +71,9 @@ export function ModernLearningPathPage() {
     setCurrentNode,
     submitQuizResult,
     skipQuiz,
+    markNodeComplete,
+    updateProgress,
+    studentId,
   } = useLearningPath();
 
   const {
@@ -82,6 +89,9 @@ export function ModernLearningPathPage() {
   const [tabValue, setTabValue] = useState(0);
   const [showNodeDetails, setShowNodeDetails] = useState(false);
   const [selectedNode, setSelectedNode] = useState<PathNodeData | null>(null);
+  const [interleavedQuestions, setInterleavedQuestions] = useState<Question[] | null>(null);
+  const [nodeQuizQuestions, setNodeQuizQuestions] = useState<Question[] | null>(null);
+  const [activeQuizNode, setActiveQuizNode] = useState<PathNodeData | null>(null);
 
   // ========================================
   // Effects
@@ -134,6 +144,81 @@ export function ModernLearningPathPage() {
   const handleCloseDetails = useCallback(() => {
     setShowNodeDetails(false);
   }, []);
+
+  /**
+   * Handle start quiz from NodeDetailsPanel
+   * Fetches questions via exit-quiz endpoint and renders QuizInterface
+   */
+  const handleStartQuiz = useCallback(async (node: PathNodeData) => {
+    const subject = node.title.split(' ')[0];
+    try {
+      const res = await fetch(
+        `/api/learning-path/exit-quiz/${encodeURIComponent(subject)}?count=${node.quiz?.question_count || 5}`,
+        { credentials: 'include' },
+      );
+      const data = await res.json();
+      if (data.success && data.questions?.length > 0) {
+        setNodeQuizQuestions(data.questions.map(mapApiToQuizQuestion));
+        setActiveQuizNode(node);
+        setShowNodeDetails(false);
+      }
+    } catch (err) {
+      console.error('Quiz soruları yüklenemedi:', err);
+    }
+  }, []);
+
+  /**
+   * Handle quiz completion — register wrong answers to FSRS + update node progress
+   */
+  const handleQuizComplete = useCallback(async (results: { score: number; totalScore: number; percentage: number; answers: Record<string, any>; correctCount: number; incorrectCount: number }) => {
+    // 1. Find wrong answer question IDs
+    const questions = nodeQuizQuestions || [];
+    const wrongIds = questions
+      .filter(q => {
+        const userAnswer = results.answers[q.id];
+        return userAnswer !== q.correctAnswer;
+      })
+      .map(q => q.id);
+
+    // 2. Register wrong answers to FSRS
+    if (wrongIds.length > 0) {
+      try {
+        await fetch('/api/learning-path/register-wrong-answers', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({ question_ids: wrongIds }),
+        });
+      } catch (err) {
+        console.error('FSRS kaydi basarisiz:', err);
+      }
+    }
+
+    // 3. Update node progress
+    if (activeQuizNode) {
+      const passed = results.percentage >= (activeQuizNode.quiz?.passing_score || 60);
+      if (passed) {
+        await markNodeComplete(activeQuizNode.id);
+      } else {
+        await updateProgress({ nodeId: activeQuizNode.id, progress: results.percentage });
+      }
+    }
+
+    // 4. Award gamification points
+    if (studentId) {
+      const points = results.correctCount * 10 + (results.percentage >= (activeQuizNode?.quiz?.passing_score || 60) ? 50 : 0);
+      if (points > 0) {
+        fetch(`/api/v1/gamification/points/award?user_id=${encodeURIComponent(studentId)}&points=${points}&reason=quiz_complete`, {
+          method: 'POST',
+          credentials: 'include',
+        }).catch(err => console.error('Gamification puan hatası:', err));
+      }
+    }
+
+    // 5. Close quiz
+    setNodeQuizQuestions(null);
+    setActiveQuizNode(null);
+  }, [nodeQuizQuestions, activeQuizNode, markNodeComplete, updateProgress, studentId]);
 
   // ========================================
   // Memoized values
@@ -316,7 +401,7 @@ export function ModernLearningPathPage() {
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                   <AutoAwesome sx={{ fontSize: 20 }} />
                   <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                    Öğrenme Stiliniz: {
+                    İçerik Tercihiniz: {
                       {
                         visual: 'Görsel Öğrenen',
                         auditory: 'İşitsel Öğrenen',
@@ -377,10 +462,110 @@ export function ModernLearningPathPage() {
                   exit={{ opacity: 0, x: 20 }}
                   transition={{ duration: 0.3 }}
                 >
+                  {/* FSRS Tekrar Paneli — due kartlar varsa göster */}
+                  {!nodeQuizQuestions && !interleavedQuestions && (
+                    <ReviewQueuePanel />
+                  )}
+
+                  {/* Node Quiz — node'dan başlatılan quiz */}
+                  {nodeQuizQuestions && activeQuizNode && (
+                    <Box sx={{ mb: 3 }}>
+                      <QuizInterface
+                        config={{
+                          title: `${activeQuizNode.title} Quiz`,
+                          description: `${activeQuizNode.title} konusunu test et`,
+                          questions: nodeQuizQuestions,
+                          passingScore: activeQuizNode.quiz?.passing_score || 60,
+                          immediateFeedback: true,
+                          showCorrectAnswers: true,
+                        }}
+                        onSubmit={handleQuizComplete}
+                        onExit={() => { setNodeQuizQuestions(null); setActiveQuizNode(null); }}
+                      />
+                    </Box>
+                  )}
+
+                  {/* Karışık Pratik QuizInterface — sorular yüklendiğinde göster */}
+                  {interleavedQuestions && (
+                    <Box sx={{ mb: 3 }}>
+                      <QuizInterface
+                        config={{
+                          title: 'Karışık Pratik',
+                          description: 'Farklı konulardan karışık sorularla çalış',
+                          questions: interleavedQuestions,
+                          passingScore: 60,
+                          immediateFeedback: true,
+                          showCorrectAnswers: true,
+                        }}
+                        onSubmit={async (results) => {
+                          const wrongIds = interleavedQuestions
+                            .filter(q => results.answers[q.id] !== q.correctAnswer)
+                            .map(q => q.id);
+                          if (wrongIds.length > 0) {
+                            try {
+                              await fetch('/api/learning-path/register-wrong-answers', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                credentials: 'include',
+                                body: JSON.stringify({ question_ids: wrongIds }),
+                              });
+                            } catch (err) {
+                              console.error('FSRS kaydi basarisiz:', err);
+                            }
+                          }
+                        }}
+                        onExit={() => setInterleavedQuestions(null)}
+                      />
+                    </Box>
+                  )}
+
+                  {/* Karışık Pratik Kartı — Interleaving d=1.21 */}
+                  {hasPath && !interleavedQuestions && (
+                    <Alert
+                      severity="info"
+                      icon={<Shuffle />}
+                      sx={{ mb: 3, borderRadius: 2 }}
+                      action={
+                        <ModernButton
+                          variant="glass"
+                          icon={<Science />}
+                          onClick={async () => {
+                            const subjects = [...new Set(pathNodes.map(n => n.title.split(' ')[0]))].slice(0, 5);
+                            try {
+                              const res = await fetch(`/api/learning-path/interleaved-practice?subjects=${subjects.join(',')}&count=10`, { credentials: 'include' });
+                              const data = await res.json();
+                              if (data.success && data.questions?.length > 0) {
+                                setInterleavedQuestions(data.questions.map(mapApiToQuizQuestion));
+                              }
+                            } catch (err) {
+                              console.error('Karışık pratik yüklenemedi:', err);
+                            }
+                          }}
+                        >
+                          Karışık Pratik
+                        </ModernButton>
+                      }
+                    >
+                      <Box>
+                        <Typography variant="subtitle2" fontWeight={700}>
+                          Karışık Pratik Modu
+                        </Typography>
+                        <Typography variant="body2">
+                          Farklı konulardan karışık sorularla çalış. Araştırmalar bu yöntemin %74 daha iyi sonuç verdiğini gösteriyor.
+                        </Typography>
+                        <Box sx={{ display: 'flex', gap: 0.5, mt: 1, flexWrap: 'wrap' }}>
+                          {[...new Set(pathNodes.map(n => n.title.split(' ')[0]))].slice(0, 5).map(topic => (
+                            <Chip key={topic} label={topic} size="small" variant="outlined" />
+                          ))}
+                        </Box>
+                      </Box>
+                    </Alert>
+                  )}
+
                   {/* Node Details Panel (conditional) */}
                   {showNodeDetails && selectedNode && (
                     <Box sx={{ mb: 3 }}>
-                      <NodeDetailsPanel node={selectedNode} onClose={handleCloseDetails} />
+                      <NodeDetailsPanel node={selectedNode} onClose={handleCloseDetails} onStartQuiz={handleStartQuiz} />
                     </Box>
                   )}
 

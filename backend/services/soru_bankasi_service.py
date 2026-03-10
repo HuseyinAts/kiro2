@@ -21,6 +21,20 @@ from services.irt_analysis_service import IRTAnalysisService
 
 logger = logging.getLogger(__name__)
 
+# Türkçe → UPPERCASE konu dönüşüm haritası (DRY: tek tanım)
+_KONU_MAP: Dict[str, str] = {
+    "Matematik": "MATEMATIK", "Mat": "MATEMATIK",
+    "Türkçe": "TURKCE", "Turkce": "TURKCE",
+    "Fizik": "FIZIK", "Fiz": "FIZIK",
+    "Kimya": "KIMYA", "Kim": "KIMYA",
+    "Biyoloji": "BIYOLOJI", "Bio": "BIYOLOJI",
+    "Geometri": "GEOMETRI", "Geo": "GEOMETRI",
+    "Fen": "FEN", "Fen Bilimleri": "FEN",
+    "Sosyal": "SOSYAL", "Sosyal Bilimler": "SOSYAL",
+    "Tarih": "TARIH", "Edebiyat": "EDEBIYAT",
+    "İngilizce": "INGILIZCE", "Ing": "INGILIZCE",
+}
+
 
 class SoruBankasiServisi:
     """
@@ -438,6 +452,166 @@ class SoruBankasiServisi:
 
             except Exception as e:
                 logger.error(f"Rastgele soru seçimi hatası: {e}")
+                return []
+
+    async def get_interleaved_questions(
+        self,
+        subjects: List[str],
+        count: int = 10,
+        difficulty_levels: Optional[List[str]] = None,
+        exam_type: str = "TYT",
+    ) -> List[Question]:
+        """
+        Interleaved practice: Birden fazla konudan karışık sırada soru seç.
+
+        Bilimsel dayanak: Rohrer et al. RCT — interleaving d=1.21.
+        Her konudan eşit sayıda soru, rastgele sırada döndürülür.
+
+        Args:
+            subjects: Konu listesi (Türkçe veya UPPERCASE — her ikisi de kabul edilir)
+            count: Toplam soru sayısı
+            difficulty_levels: Zorluk filtresi listesi (ZPD bandından), None ise tümü
+            exam_type: Sınav tipi ("TYT", "AYT")
+
+        Returns:
+            Karışık sırada sorular
+        """
+        if not subjects:
+            logger.debug("get_interleaved_questions: subjects listesi boş, boş liste döndürülüyor")
+            return []
+
+        cache_key = (
+            f"interleaved:{exam_type}:{','.join(sorted(subjects))}"
+            f":{count}:{','.join(sorted(difficulty_levels or []))}"
+        )
+        cached = await cache_manager.get(cache_key)
+        if cached is not None:
+            logger.debug(f"get_interleaved_questions: cache hit — {cache_key}")
+            return cached
+
+        subjects_upper = [_KONU_MAP.get(s, s.upper()) for s in subjects]
+        exam_type_upper = exam_type.upper()
+        pool_size = count * 3
+
+        async with db_manager.get_session() as session:
+            try:
+                stmt = select(Question).where(
+                    Question.is_active == True,
+                    Question.subject_area.in_(subjects_upper),
+                    Question.exam_type == exam_type_upper,
+                )
+                if difficulty_levels:
+                    stmt = stmt.where(Question.difficulty_level.in_(difficulty_levels))
+
+                stmt = stmt.order_by(func.random()).limit(pool_size)
+
+                result = await session.execute(stmt)
+                pool: List[Question] = list(result.scalars().all())
+
+                logger.debug(
+                    f"get_interleaved_questions: havuzdan {len(pool)} soru çekildi "
+                    f"(konular={subjects_upper}, exam_type={exam_type_upper})"
+                )
+
+                # Konulara göre bellek içinde grupla
+                groups: Dict[str, List[Question]] = {s: [] for s in subjects_upper}
+                for q in pool:
+                    key = q.subject_area if q.subject_area else ""
+                    if key in groups:
+                        groups[key].append(q)
+
+                # Her konudan eşit sayıda seç
+                per_subject = count // len(subjects_upper)
+                remainder = count % len(subjects_upper)
+
+                selected: List[Question] = []
+                for subj in subjects_upper:
+                    bucket = groups.get(subj, [])
+                    take = per_subject
+                    if bucket:
+                        selected.extend(bucket[:take])
+                    else:
+                        logger.warning(
+                            f"get_interleaved_questions: '{subj}' konusunda soru bulunamadı"
+                        )
+
+                # Kalan kontenjanı havuzdan tamamla (konudan bağımsız)
+                if remainder > 0:
+                    used_ids = {q.id for q in selected}
+                    extras = [q for q in pool if q.id not in used_ids]
+                    selected.extend(extras[:remainder])
+
+                random.shuffle(selected)
+                result_list = selected[:count]
+
+                await cache_manager.set(cache_key, result_list, ttl=60)
+                logger.debug(
+                    f"get_interleaved_questions: {len(result_list)} soru döndürülüyor, cache yazıldı"
+                )
+                return result_list
+
+            except Exception as e:
+                logger.error(f"get_interleaved_questions hatası: {e}")
+                return []
+
+    async def get_exit_quiz_questions(
+        self,
+        subject: str,
+        count: int = 5,
+        difficulty_levels: Optional[List[str]] = None,
+        exam_type: str = "TYT",
+    ) -> List[Question]:
+        """
+        Çıkış testi: Tamamlanan konudan retrieval practice soruları.
+
+        Bilimsel dayanak: Retrieval practice d=0.5-1.24.
+
+        Args:
+            subject: Konu adı (Türkçe veya UPPERCASE)
+            count: Soru sayısı
+            difficulty_levels: Zorluk filtresi listesi, None ise tümü
+            exam_type: Sınav tipi ("TYT", "AYT")
+
+        Returns:
+            Rastgele sırada sorular
+        """
+        cache_key = (
+            f"exit_quiz:{exam_type}:{subject}"
+            f":{count}:{','.join(sorted(difficulty_levels or []))}"
+        )
+        cached = await cache_manager.get(cache_key)
+        if cached is not None:
+            logger.debug(f"get_exit_quiz_questions: cache hit — {cache_key}")
+            return cached
+
+        subject_upper = _KONU_MAP.get(subject, subject.upper())
+        exam_type_upper = exam_type.upper()
+
+        async with db_manager.get_session() as session:
+            try:
+                stmt = select(Question).where(
+                    Question.is_active == True,
+                    Question.subject_area == subject_upper,
+                    Question.exam_type == exam_type_upper,
+                )
+                if difficulty_levels:
+                    stmt = stmt.where(Question.difficulty_level.in_(difficulty_levels))
+
+                stmt = stmt.order_by(func.random()).limit(count)
+
+                result = await session.execute(stmt)
+                questions: List[Question] = list(result.scalars().all())
+
+                logger.debug(
+                    f"get_exit_quiz_questions: {len(questions)} soru döndürülüyor "
+                    f"(konu={subject_upper}, exam_type={exam_type_upper})"
+                )
+
+                await cache_manager.set(cache_key, questions, ttl=60)
+                return questions
+
+            except Exception as e:
+                logger.error(f"get_exit_quiz_questions hatası: {e}")
                 return []
 
     async def irt_parametreli_soru_sec(

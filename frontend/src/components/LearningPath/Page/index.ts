@@ -2,23 +2,8 @@
  * Learning Path Page Components Barrel Export
  *
  * Central export for all learning path page components
+ * Deprecated components moved to ./_deprecated/
  */
-
-// State Components
-export { PathLoadingState } from './PathLoadingState';
-export { PathErrorState } from './PathErrorState';
-export type { PathErrorStateProps } from './PathErrorState';
-
-// Skeleton Components (for lazy loading)
-export { PathLoadingSkeleton } from './PathLoadingSkeleton';
-export { TabLoadingSkeleton } from './TabLoadingSkeleton';
-
-// Header Components
-export { LearningPathHeader } from './LearningPathHeader';
-export type { LearningPathHeaderProps } from './LearningPathHeader';
-
-export { LearningStyleBadge } from './LearningStyleBadge';
-export type { LearningStyleBadgeProps } from './LearningStyleBadge';
 
 // Detail Components
 export { NodeDetailsPanel } from './NodeDetailsPanel';

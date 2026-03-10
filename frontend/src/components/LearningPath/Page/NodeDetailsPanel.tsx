@@ -22,6 +22,7 @@ import { PathNodeData } from '../PathNode';
 export interface NodeDetailsPanelProps {
   node: PathNodeData
   onClose: () => void
+  onStartQuiz?: (node: PathNodeData) => void
 }
 
 /**
@@ -32,6 +33,7 @@ export interface NodeDetailsPanelProps {
 export const NodeDetailsPanel: React.FC<NodeDetailsPanelProps> = ({
   node,
   onClose,
+  onStartQuiz,
 }) => {
   return (
     <Paper elevation={3} sx={{ p: 3, mb: 3, position: 'relative' }}>
@@ -143,7 +145,7 @@ export const NodeDetailsPanel: React.FC<NodeDetailsPanelProps> = ({
           <Typography variant="body2" fontWeight="bold" gutterBottom>
             📝 Quiz Bilgisi
           </Typography>
-          <Box className="flex gap-4">
+          <Box className="flex gap-4 mb-1">
             <Typography variant="body2">
               <strong>Soru Sayısı:</strong> {node.quiz.question_count}
             </Typography>
@@ -151,6 +153,17 @@ export const NodeDetailsPanel: React.FC<NodeDetailsPanelProps> = ({
               <strong>Geçme Notu:</strong> {node.quiz.passing_score}%
             </Typography>
           </Box>
+          {onStartQuiz && node.status !== 'completed' && (
+            <Button
+              variant="contained"
+              color="primary"
+              size="small"
+              onClick={() => onStartQuiz(node)}
+              sx={{ mt: 1 }}
+            >
+              Quiz Başlat
+            </Button>
+          )}
         </Alert>
       )}
 

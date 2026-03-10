@@ -66,15 +66,15 @@ from core.learning_path_circuit_breakers import (
     ai_agent_fallback_handler,
 )
 from core.circuit_breaker import CircuitBreakerOpenError, CircuitBreakerHalfOpenError
+from core.dependencies import get_current_user, get_db, AuthenticatedUser
 from core.learning_path_auth import (
-    get_current_user_from_token,
     verify_student_access,
     get_current_user_optional,
 )
 
 # Database imports (Mock Data Cleanup - Phase 5)
-from sqlalchemy.orm import Session
-from core.database import get_db
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
 from models.learning_path_models import (
     LearningPathStudentProfile,  # Renamed model to avoid conflict with models.database.StudentProfile
     TopicCompletion,
@@ -218,7 +218,8 @@ class PathAdaptation(BaseModel):
 @router.post("/create-profile")
 async def create_student_profile(
     profile: StudentProfileCreate,
-    db: Session = Depends(get_db)
+    db: AsyncSession = Depends(get_db),
+    current_user: AuthenticatedUser = Depends(get_current_user),
 ):
     """
     Öğrenci profili oluştur
@@ -243,7 +244,7 @@ async def create_student_profile(
         # Create real database record
         new_profile = LearningPathStudentProfile(
             student_id=student_id,
-            user_id=None,  # Can be linked to User later if needed
+            user_id=str(current_user.id),
             name=profile.name,
             grade=str(profile.grade),
             exam_target=exam_target,
@@ -256,8 +257,8 @@ async def create_student_profile(
         )
 
         db.add(new_profile)
-        db.commit()
-        db.refresh(new_profile)
+        await db.commit()
+        await db.refresh(new_profile)
 
         logger.info(f"Student profile created successfully: {student_id}")
 
@@ -282,10 +283,43 @@ async def create_student_profile(
         raise HTTPException(status_code=500, detail=str(e))
 
 
+@router.get("/my-profile")
+async def get_my_profile(
+    db: AsyncSession = Depends(get_db),
+    current_user: AuthenticatedUser = Depends(get_current_user),
+):
+    """
+    Get the authenticated user's learning path profile.
+    Returns student_id for use in other endpoints.
+    """
+    result = await db.execute(
+        select(LearningPathStudentProfile).where(
+            LearningPathStudentProfile.user_id == str(current_user.id)
+        )
+    )
+    profile = result.scalar_one_or_none()
+
+    if not profile:
+        raise HTTPException(status_code=404, detail="Profil bulunamadı")
+
+    return {
+        "success": True,
+        "student_id": profile.student_id,
+        "profile": {
+            "name": profile.name,
+            "grade": int(profile.grade) if profile.grade else None,
+            "learning_style": profile.learning_style,
+            "knowledge_level": profile.knowledge_level,
+            "exam_target": profile.exam_target,
+        },
+    }
+
+
 @router.post("/assess-knowledge")
 async def assess_knowledge(
     assessment: KnowledgeAssessment,
-    db: Session = Depends(get_db)
+    db: AsyncSession = Depends(get_db),
+    current_user: AuthenticatedUser = Depends(get_current_user),
 ):
     """
     Bilgi seviyesi değerlendirmesi
@@ -304,18 +338,19 @@ async def assess_knowledge(
         )
 
         # Get student profile
-        profile = db.query(LearningPathStudentProfile).filter(
-            LearningPathStudentProfile.student_id == assessment.student_id
-        ).first()
+        result = await db.execute(
+            select(LearningPathStudentProfile).where(
+                LearningPathStudentProfile.student_id == assessment.student_id
+            )
+        )
+        profile = result.scalar_one_or_none()
 
         if not profile:
             raise HTTPException(status_code=404, detail=f"Student profile not found: {assessment.student_id}")
 
-        # Get quiz history for this subject to calculate real performance
-        quiz_results = db.query(QuizSubmission).filter(
-            QuizSubmission.student_id == assessment.student_id,
-            QuizSubmission.quiz_id.like(f"%{assessment.subject}%")  # Match subject in quiz_id
-        ).all()
+        # NOTE: QuizSubmission is a Pydantic model, not ORM — this query is a no-op placeholder.
+        # TODO: Replace with proper ORM model when quiz submission table exists.
+        quiz_results = []
 
         # Calculate average score from quizzes
         if quiz_results and len(quiz_results) > 0:
@@ -369,7 +404,7 @@ async def assess_knowledge(
         # Update student profile with assessed knowledge level
         profile.knowledge_level = knowledge_level
         profile.updated_at = datetime.now()
-        db.commit()
+        await db.commit()
 
         logger.info(f"Knowledge assessed: {knowledge_level} (score: {score}) for student {assessment.student_id}")
 
@@ -399,7 +434,7 @@ if get_learning_path_agent is not None:
         request: LearningPathCreateRequest,
         agent: LearningPathAgent = Depends(get_learning_path_agent),
         http_request: Request = None,
-        current_user=Depends(get_current_user_from_token),  # 🔒 AUTH ADDED
+        current_user=Depends(get_current_user),  # 🔒 AUTH ADDED
     ):
         return await _create_learning_path_impl(request, agent, http_request, current_user)
 else:
@@ -407,7 +442,7 @@ else:
     async def create_learning_path(
         request: LearningPathCreateRequest,
         http_request: Request = None,
-        current_user=Depends(get_current_user_from_token),
+        current_user=Depends(get_current_user),
     ):
         raise HTTPException(status_code=503, detail="Learning path agent not available")
 
@@ -864,8 +899,8 @@ async def adapt_learning_path(adaptation: PathAdaptation):
 @router.get("/completion/{student_id}")
 async def get_completion_status(
     student_id: str,
-    db: Session = Depends(get_db),
-    current_user=Depends(get_current_user_from_token)  # 🔒 AUTH ADDED
+    db: AsyncSession = Depends(get_db),
+    current_user=Depends(get_current_user)  # 🔒 AUTH ADDED
 ):
     """
     Get student's topic completion status
@@ -902,9 +937,12 @@ async def get_completion_status(
         async def fetch_completion():
             """Fetch completion status from database - REFACTORED"""
             # Query real completion data from topic_completions table
-            completion_records = db.query(TopicCompletion).filter(
-                TopicCompletion.student_id == student_id
-            ).all()
+            result = await db.execute(
+                select(TopicCompletion).where(
+                    TopicCompletion.student_id == student_id
+                )
+            )
+            completion_records = result.scalars().all()
 
             # Build completion dictionary
             # Format: "MODULE_ID-TOPIC_ID": boolean
@@ -941,8 +979,8 @@ async def get_completion_status(
 async def update_completion_status(
     student_id: str,
     completion_update: CompletionUpdate,
-    current_user=Depends(get_current_user_from_token),  # 🔒 AUTH ADDED
-    db: Session = Depends(get_db),  # P0 FIX: Database session
+    current_user=Depends(get_current_user),  # 🔒 AUTH ADDED
+    db: AsyncSession = Depends(get_db),  # P0 FIX: Database session
 ):
     """
     Update student's topic completion status
@@ -968,14 +1006,13 @@ async def update_completion_status(
         # P0 FIX: Upsert completions to database
         updated_count = 0
         for node_id, is_completed in completion_update.completions.items():
-            existing = (
-                db.query(TopicCompletion)
-                .filter(
+            result = await db.execute(
+                select(TopicCompletion).where(
                     TopicCompletion.student_id == student_id,
                     TopicCompletion.node_id == node_id
                 )
-                .first()
             )
+            existing = result.scalar_one_or_none()
 
             if existing:
                 existing.completed = is_completed
@@ -992,7 +1029,7 @@ async def update_completion_status(
 
             updated_count += 1
 
-        db.commit()
+        await db.commit()
         logger.info(
             f"Persisted {updated_count} completion statuses for student {student_id}"
         )
@@ -1033,8 +1070,8 @@ async def update_completion_status(
 async def submit_quiz(
     quiz_id: str,
     submission: QuizSubmission,
-    current_user=Depends(get_current_user_from_token),  # 🔒 AUTH ADDED
-    db: Session = Depends(get_db),  # FIX: Add database session dependency
+    current_user=Depends(get_current_user),  # 🔒 AUTH ADDED
+    db: AsyncSession = Depends(get_db),  # FIX: Add database session dependency
 ):
     """
     Submit quiz answers and get results
@@ -1060,7 +1097,8 @@ async def submit_quiz(
             )
 
         # P0 FIX: Query quiz and questions from database (instead of mock data)
-        quiz = db.query(Quiz).filter(Quiz.id == quiz_id).first()
+        result = await db.execute(select(Quiz).where(Quiz.id == quiz_id))
+        quiz = result.scalar_one_or_none()
         if not quiz:
             raise HTTPException(
                 status_code=404,
@@ -1068,13 +1106,14 @@ async def submit_quiz(
             )
 
         # Get quiz questions with their associated Question records
-        quiz_questions = (
-            db.query(QuizQuestion, Question)
+        stmt = (
+            select(QuizQuestion, Question)
             .join(Question, QuizQuestion.question_id == Question.id)
-            .filter(QuizQuestion.quiz_id == quiz_id, Question.is_active == True)  # noqa: E712
+            .where(QuizQuestion.quiz_id == quiz_id, Question.is_active == True)  # noqa: E712
             .order_by(QuizQuestion.order_number)
-            .all()
         )
+        result = await db.execute(stmt)
+        quiz_questions = result.all()
 
         if not quiz_questions:
             raise HTTPException(
@@ -1184,8 +1223,8 @@ async def update_progress(
     student_id: str,
     node_id: str,
     progress_update: ProgressUpdate,
-    current_user=Depends(get_current_user_from_token),  # 🔒 AUTH ADDED
-    db: Session = Depends(get_db),  # P0 FIX: Database session
+    current_user=Depends(get_current_user),  # 🔒 AUTH ADDED
+    db: AsyncSession = Depends(get_db),  # P0 FIX: Database session
 ):
     """
     Update student's progress on a specific topic/node
@@ -1219,14 +1258,13 @@ async def update_progress(
             )
 
         # P0 FIX: Upsert progress to database
-        existing_progress = (
-            db.query(TopicProgress)
-            .filter(
+        result = await db.execute(
+            select(TopicProgress).where(
                 TopicProgress.student_id == student_id,
                 TopicProgress.node_id == node_id
             )
-            .first()
         )
+        existing_progress = result.scalar_one_or_none()
 
         is_completed = progress_update.completed or (progress_update.progress == 100)
 
@@ -1251,7 +1289,7 @@ async def update_progress(
             db.add(new_progress)
             logger.info(f"Created new progress record for {student_id}/{node_id}")
 
-        db.commit()
+        await db.commit()
 
         # Invalidate completion cache
         cache = _get_cache()
@@ -1284,9 +1322,215 @@ async def update_progress(
         raise
     except Exception as e:
         logger.error(f"Error updating progress: {e}")
-        db.rollback()
+        await db.rollback()
         raise HTTPException(
             status_code=500, detail=f"Failed to update progress: {str(e)}"
+        )
+
+
+def _serialize_question(q: Question) -> dict:
+    """Soru nesnesini JSON-serializable dict'e çevir."""
+    return {
+        "id": str(q.id),
+        "question_text": q.question_text,
+        "options": {
+            "A": q.option_a,
+            "B": q.option_b,
+            "C": q.option_c,
+            "D": q.option_d,
+            "E": getattr(q, "option_e", None),
+        },
+        "correct_answer": q.correct_answer,
+        "explanation": q.explanation,
+        "explanation_video_url": getattr(q, "explanation_video_url", None),
+        "difficulty_level": q.difficulty_level,
+        "subject_area": q.subject_area,
+    }
+
+
+@router.get("/exit-quiz/{subject}")
+async def get_exit_quiz(
+    subject: str,
+    count: int = 5,
+    exam_type: str = "TYT",
+    current_user: AuthenticatedUser = Depends(get_current_user),
+):
+    """
+    Çıkış testi: Tamamlanan konudan retrieval practice soruları döndür.
+    Bilimsel dayanak: Retrieval practice d=0.5-1.24 (Frontiers 2025).
+    """
+    try:
+        from services.soru_bankasi_service import SoruBankasiServisi
+
+        soru_servisi = SoruBankasiServisi()
+        questions = await soru_servisi.get_exit_quiz_questions(
+            subject, count, exam_type=exam_type
+        )
+        return {
+            "success": True,
+            "questions": [_serialize_question(q) for q in questions],
+            "count": len(questions),
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error fetching exit quiz questions: {e}")
+        raise HTTPException(
+            status_code=500, detail=f"Failed to fetch exit quiz questions: {str(e)}"
+        )
+
+
+@router.get("/interleaved-practice")
+async def get_interleaved_practice(
+    subjects: str,
+    count: int = 10,
+    exam_type: str = "TYT",
+    current_user: AuthenticatedUser = Depends(get_current_user),
+):
+    """
+    Karışık pratik: Birden fazla konudan interleaved soru seti.
+    Bilimsel dayanak: Interleaving d=1.21 (Rohrer et al. RCT).
+
+    subjects: Comma-separated konu listesi, örn. "MATEMATIK,FIZIK,KIMYA"
+    """
+    try:
+        subject_list = [s.strip() for s in subjects.split(",") if s.strip()]
+        if not subject_list:
+            raise HTTPException(
+                status_code=400,
+                detail="En az bir konu belirtilmelidir (subjects parametresi boş olamaz)",
+            )
+
+        from services.soru_bankasi_service import SoruBankasiServisi
+
+        soru_servisi = SoruBankasiServisi()
+        questions = await soru_servisi.get_interleaved_questions(
+            subject_list, count, exam_type=exam_type
+        )
+        return {
+            "success": True,
+            "questions": [_serialize_question(q) for q in questions],
+            "count": len(questions),
+            "subjects": subject_list,
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error fetching interleaved practice questions: {e}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to fetch interleaved practice questions: {str(e)}",
+        )
+
+
+@router.get("/review-queue")
+async def get_review_queue(
+    limit: int = 20,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """
+    Tekrar kuyruğu: FSRS'e göre vadesi gelen soruları döndür.
+    Yanlış cevaplanan sorular 24-48h sonra tekrar gelir.
+    student_id current_user'dan türetilir (IDOR koruması).
+    Bilimsel dayanak: FSRS-6 SM-2'ye karşı %99.6 üstün (Expertium 2024).
+    """
+    try:
+        from services.question_review_adapter import QuestionReviewAdapter
+
+        student_id = str(current_user.id)
+        adapter = QuestionReviewAdapter()
+        due_questions = await adapter.get_due_questions(student_id, limit=limit, db=db)
+        return {
+            "success": True,
+            "questions": due_questions,
+            "count": len(due_questions),
+            "student_id": student_id,
+        }
+    except Exception as e:
+        logger.error(f"Error fetching review queue: {e}")
+        raise HTTPException(
+            status_code=500, detail=f"Failed to fetch review queue: {str(e)}"
+        )
+
+
+class SubmitReviewRequest(BaseModel):
+    card_id: str = Field(..., description="FSRS kart ID")
+    grade: int = Field(..., ge=1, le=4, description="1=AGAIN, 2=HARD, 3=GOOD, 4=EASY")
+
+
+@router.post("/submit-review")
+async def submit_review(
+    request: SubmitReviewRequest,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """
+    Tekrar sonucunu kaydet ve FSRS parametrelerini güncelle.
+    Grade: 1=AGAIN (6h), 2=HARD (1d), 3=GOOD (2.5d), 4=EASY (7d).
+    """
+    try:
+        from services.question_review_adapter import QuestionReviewAdapter
+
+        student_id = str(current_user.id)
+        adapter = QuestionReviewAdapter()
+        card = await adapter.submit_review(request.card_id, request.grade, db, student_id=student_id)
+        if not card:
+            raise HTTPException(status_code=404, detail="Kart bulunamadı veya geçersiz grade")
+
+        await db.commit()
+        return {
+            "success": True,
+            "card_id": card.id,
+            "next_due": card.due_date.isoformat() if card.due_date else None,
+            "state": card.state,
+            "stability": card.stability,
+            "difficulty": card.difficulty,
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error submitting review: {e}")
+        await db.rollback()
+        raise HTTPException(
+            status_code=500, detail=f"Failed to submit review: {str(e)}"
+        )
+
+
+class RegisterWrongAnswersRequest(BaseModel):
+    question_ids: List[str] = Field(..., min_length=1)
+
+
+@router.post("/register-wrong-answers")
+async def register_wrong_answers(
+    request: RegisterWrongAnswersRequest,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """
+    Quiz sonunda yanlış cevaplanan soruları FSRS tekrar kuyruğuna ekle.
+    24h sonra review-queue'da görünürler.
+    student_id current_user'dan türetilir (IDOR koruması).
+    """
+    try:
+        from services.question_review_adapter import QuestionReviewAdapter
+
+        student_id = str(current_user.id)
+        adapter = QuestionReviewAdapter()
+        created = await adapter.register_wrong_answers(
+            student_id, request.question_ids, db
+        )
+        await db.commit()
+        return {
+            "success": True,
+            "created": created,
+            "total_submitted": len(request.question_ids),
+        }
+    except Exception as e:
+        logger.error(f"Error registering wrong answers: {e}")
+        await db.rollback()
+        raise HTTPException(
+            status_code=500, detail=f"Failed to register wrong answers: {str(e)}"
         )
 
 

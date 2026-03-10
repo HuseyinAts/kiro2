@@ -300,6 +300,11 @@ export function LearningStyleQuiz({ onComplete, onSkip }: LearningStyleQuizProps
             </Typography>
           </Box>
 
+          {/* Disclaimer */}
+          <Typography variant="caption" color="text.secondary" sx={{ display: 'block', textAlign: 'center', mb: 2, fontStyle: 'italic' }}>
+            Bu profil içerik sunumunu kişiselleştirmek için kullanılır — öğrenme kapasitesini ölçmez.
+          </Typography>
+
           {/* Continue Button */}
           <Button
             variant="contained"
@@ -334,10 +339,10 @@ export function LearningStyleQuiz({ onComplete, onSkip }: LearningStyleQuizProps
     >
       <CardContent sx={{ p: 4 }}>
         <Typography variant="h5" gutterBottom fontWeight={600} textAlign="center">
-          Öğrenme Stilinizi Keşfedin
+          İçerik Tercihlerinizi Belirleyin
         </Typography>
         <Typography variant="body2" color="text.secondary" textAlign="center" sx={{ mb: 3 }}>
-          Size en uygun öğrenme yolunu oluşturmak için birkaç soru cevaplayın
+          Size en uygun içerik formatını seçmek için birkaç soru cevaplayın
         </Typography>
 
         <Box sx={{ mb: 3 }}>

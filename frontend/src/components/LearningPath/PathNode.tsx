@@ -1,7 +1,7 @@
 import {
   CheckCircle,
   RadioButtonUnchecked,
-  Lock,
+  WarningAmber,
   Star,
   Timer,
   School,
@@ -9,6 +9,7 @@ import {
 import { Tooltip, Chip, LinearProgress } from '@mui/material';
 import clsx from 'clsx';
 import { motion } from 'framer-motion';
+import { MasteryBadge } from './MasteryBadge';
 
 export interface PathNodeData {
   id: string
@@ -20,6 +21,7 @@ export interface PathNodeData {
   estimatedTime: string
   difficulty: 'beginner' | 'intermediate' | 'advanced'
   points?: number
+  mastery?: number
   prerequisites?: string[]
   resources?: number
   position: { x: number; y: number }
@@ -50,7 +52,7 @@ export function PathNode({
       case 'current':
         return <RadioButtonUnchecked className="text-blue-500 animate-pulse" />;
       case 'locked':
-        return <Lock className="text-gray-400" />;
+        return <WarningAmber className="text-amber-500" />;
       default:
         return <RadioButtonUnchecked className="text-gray-300" />;
     }
@@ -126,6 +128,11 @@ export function PathNode({
           <div className="p-2">
             <h4 className="font-semibold mb-1">{node.title}</h4>
             <p className="text-sm mb-2">{node.description}</p>
+            {node.status === 'locked' && (
+              <p className="text-xs text-amber-300 mb-1">
+                ⚠️ Bu konu seviyenin üstünde — önce önerilen konuları tamamlamanızı öneriyoruz.
+              </p>
+            )}
             <div className="flex items-center gap-2 text-xs">
               <Timer fontSize="small" />
               <span>{node.estimatedTime}</span>
@@ -148,7 +155,7 @@ export function PathNode({
             'transition-all duration-300 p-4',
             node.status === 'completed' && 'border-green-500 bg-green-50',
             node.status === 'current' && 'border-blue-500 bg-blue-50 animate-pulse',
-            node.status === 'locked' && 'border-gray-300 bg-gray-50 opacity-60',
+            node.status === 'locked' && 'border-amber-300 bg-amber-50/50 opacity-80',
             node.status === 'available' && 'border-gray-300 hover:border-blue-400',
             isHighlighted && 'ring-4 ring-blue-200 ring-offset-2',
           )}
@@ -173,7 +180,7 @@ export function PathNode({
             <div className="flex-1">
               <h3 className={clsx(
                 'font-semibold text-sm mb-1',
-                node.status === 'locked' ? 'text-gray-400' : 'text-gray-800',
+                node.status === 'locked' ? 'text-amber-700' : 'text-gray-800',
               )}>
                 {node.title}
               </h3>
@@ -192,6 +199,13 @@ export function PathNode({
                       className="mb-2"
                       sx={{ height: 4, borderRadius: 2 }}
                     />
+                  )}
+
+                  {/* Mastery Badge */}
+                  {node.mastery != null && node.mastery > 0 && (
+                    <div className="mb-2">
+                      <MasteryBadge mastery={node.mastery} compact />
+                    </div>
                   )}
 
                   {/* Tags */}
