@@ -124,18 +124,118 @@ class LearningPathAgent:
             self.zpd_system = None
             logger.warning("TurkishZPDMaarifSystem not available")
 
+    async def _get_exam_history(self, student_id: str) -> Dict[str, Any]:
+        """
+        Sınav geçmişinden bilgi seviyesi ve zayıf/güçlü konuları hesapla.
+
+        Returns:
+            {
+                "has_data": bool,
+                "overall_accuracy": float (0-1),
+                "knowledge_level": str,  # beginner/elementary/intermediate/advanced/expert
+                "subject_stats": {subject: {"correct": int, "total": int, "accuracy": float}},
+                "weak_topics": [str],
+                "strong_topics": [str],
+            }
+        """
+        try:
+            from core.database import get_db_session_context
+            from sqlalchemy import select, func as sa_func, Integer
+            from models.exam_db import ExamSession, StudentAnswer
+
+            async with get_db_session_context() as session:
+                # Get completed exam sessions for this student
+                result = await session.execute(
+                    select(ExamSession).where(
+                        ExamSession.student_id == student_id,
+                        ExamSession.status == "completed",
+                    )
+                )
+                exams = result.scalars().all()
+
+                if not exams:
+                    return {"has_data": False}
+
+                # Calculate overall accuracy
+                total_correct = sum(e.total_correct for e in exams)
+                total_questions = sum(e.total_questions for e in exams)
+                overall_accuracy = total_correct / total_questions if total_questions > 0 else 0
+
+                # Determine knowledge level from accuracy
+                if overall_accuracy >= 0.90:
+                    level = "expert"
+                elif overall_accuracy >= 0.70:
+                    level = "advanced"
+                elif overall_accuracy >= 0.50:
+                    level = "intermediate"
+                elif overall_accuracy >= 0.30:
+                    level = "elementary"
+                else:
+                    level = "beginner"
+
+                # Get per-question results with topic info
+                from models.question_bank import QuestionBankItem
+                answer_result = await session.execute(
+                    select(
+                        QuestionBankItem.subject_area,
+                        sa_func.count().label("total"),
+                        sa_func.sum(
+                            sa_func.cast(StudentAnswer.is_correct, Integer)
+                        ).label("correct"),
+                    )
+                    .join(
+                        StudentAnswer,
+                        StudentAnswer.question_id == QuestionBankItem.id,
+                    )
+                    .join(
+                        ExamSession,
+                        ExamSession.id == StudentAnswer.exam_session_id,
+                    )
+                    .where(
+                        ExamSession.student_id == student_id,
+                        ExamSession.status == "completed",
+                        StudentAnswer.is_correct.isnot(None),
+                    )
+                    .group_by(QuestionBankItem.subject_area)
+                )
+                rows = answer_result.all()
+
+                subject_stats = {}
+                weak_topics = []
+                strong_topics = []
+                for row in rows:
+                    subj = row.subject_area or "Genel"
+                    correct = int(row.correct or 0)
+                    total = int(row.total or 0)
+                    acc = correct / total if total > 0 else 0
+                    subject_stats[subj] = {"correct": correct, "total": total, "accuracy": round(acc, 2)}
+                    if acc < 0.50:
+                        weak_topics.append(f"{subj} (%{int(acc*100)})")
+                    elif acc >= 0.70:
+                        strong_topics.append(f"{subj} (%{int(acc*100)})")
+
+                return {
+                    "has_data": True,
+                    "overall_accuracy": round(overall_accuracy, 2),
+                    "knowledge_level": level,
+                    "subject_stats": subject_stats,
+                    "weak_topics": weak_topics,
+                    "strong_topics": strong_topics,
+                    "exam_count": len(exams),
+                    "total_questions": total_questions,
+                }
+
+        except Exception as e:
+            logger.warning(f"Could not load exam history for {student_id}: {e}")
+            return {"has_data": False}
+
     async def analyze_student(
         self, student_id: str, initial_data: Dict[str, Any]
     ) -> StudentProfile:
         """
-        Öğrenci analizi yap ve profil oluştur
-
-        Args:
-            student_id: Öğrenci ID
-            initial_data: İlk veri (anket, test sonuçları, vs.)
-
-        Returns:
-            Öğrenci profili
+        Öğrenci analizi yap ve profil oluştur.
+        Sınav geçmişi varsa gerçek veriden bilgi seviyesi hesaplar,
+        yoksa LLM tahmini kullanır.
         """
         # Input validation
         if not student_id or not isinstance(student_id, str):
@@ -145,34 +245,53 @@ class LearningPathAgent:
             raise ValueError("initial_data must be a non-empty dictionary")
 
         try:
-            # LLM ile öğrenci analizi
-            analysis_prompt = f"""
-            Öğrenci verisini analiz et ve profil oluştur:
-            
-            Veri: {json.dumps(initial_data, ensure_ascii=False)}
-            
-            Şunları belirle:
-            1. Öğrenme stili (görsel/işitsel/okuma/kinestetik/karma)
-            2. Bilgi seviyesi (başlangıç/temel/orta/ileri/uzman)
-            3. İlgi alanları
-            4. Öğrenme hedefi özeti
-            
-            JSON formatında yanıtla:
-            {{
-                "learning_style": "...",
-                "knowledge_level": "...",
-                "interests": [...],
-                "goal_summary": "..."
-            }}
-            """
+            # 1. Sınav geçmişinden gerçek bilgi seviyesi hesapla
+            exam_history = await self._get_exam_history(student_id)
 
-            result = await llm_service.generate(prompt=analysis_prompt, temperature=0.3)
+            if exam_history.get("has_data"):
+                # Gerçek veriden analiz — LLM tahmininden çok daha güvenilir
+                logger.info(
+                    f"Using real exam data for {student_id}: "
+                    f"accuracy={exam_history['overall_accuracy']}, "
+                    f"level={exam_history['knowledge_level']}, "
+                    f"exams={exam_history.get('exam_count', 0)}"
+                )
+                analysis = {
+                    "learning_style": initial_data.get("learning_style", "mixed"),
+                    "knowledge_level": exam_history["knowledge_level"],
+                    "interests": list(exam_history.get("subject_stats", {}).keys()),
+                    "goal_summary": initial_data.get("goal", "YKS hazırlık"),
+                    "exam_history": exam_history,
+                }
+            else:
+                # Sınav verisi yok — LLM tahmini kullan (fallback)
+                analysis_prompt = f"""
+                Öğrenci verisini analiz et ve profil oluştur:
 
-            if result["success"]:
+                Veri: {json.dumps(initial_data, ensure_ascii=False)}
+
+                Şunları belirle:
+                1. Öğrenme stili (görsel/işitsel/okuma/kinestetik/karma)
+                2. Bilgi seviyesi (başlangıç/temel/orta/ileri/uzman)
+                3. İlgi alanları
+                4. Öğrenme hedefi özeti
+
+                JSON formatında yanıtla:
+                {{
+                    "learning_style": "...",
+                    "knowledge_level": "...",
+                    "interests": [...],
+                    "goal_summary": "..."
+                }}
+                """
+
+                result = await llm_service.generate(prompt=analysis_prompt, temperature=0.3, max_tokens=300)
+
                 try:
-                    analysis = json.loads(result["text"])
-                except (json.JSONDecodeError, TypeError) as e:
-                    # JSON parse edilemezse default değerler
+                    analysis = json.loads(result) if isinstance(result, str) else result
+                    if not isinstance(analysis, dict) or "learning_style" not in analysis:
+                        raise ValueError("Missing expected keys in analysis")
+                except (json.JSONDecodeError, TypeError, ValueError) as e:
                     logger.debug(f"JSON parsing failed for student analysis: {e}")
                     analysis = {
                         "learning_style": "mixed",
@@ -180,13 +299,23 @@ class LearningPathAgent:
                         "interests": [],
                         "goal_summary": initial_data.get("goal", "Genel öğrenme"),
                     }
-            else:
-                analysis = {
-                    "learning_style": "mixed",
-                    "knowledge_level": "beginner",
-                    "interests": [],
-                    "goal_summary": initial_data.get("goal", "Genel öğrenme"),
-                }
+
+            # Normalize Turkish LLM outputs to enum values
+            _style_map = {"karma": "mixed", "görsel": "visual", "işitsel": "auditory", "okuma": "reading", "uygulama": "kinesthetic"}
+            _level_map = {"başlangıç": "beginner", "temel": "elementary", "orta": "intermediate", "ileri": "advanced", "uzman": "expert"}
+            raw_style = analysis.get("learning_style", "mixed").lower()
+            raw_level = analysis.get("knowledge_level", "beginner").lower()
+            style_val = _style_map.get(raw_style, raw_style)
+            level_val = _level_map.get(raw_level, raw_level)
+
+            try:
+                learning_style = LearningStyle(style_val)
+            except ValueError:
+                learning_style = LearningStyle.MIXED
+            try:
+                knowledge_level = KnowledgeLevel(level_val)
+            except ValueError:
+                knowledge_level = KnowledgeLevel.BEGINNER
 
             # Profil oluştur
             profile = StudentProfile(
@@ -195,9 +324,9 @@ class LearningPathAgent:
                 grade=initial_data.get("grade", ""),
                 exam_target=initial_data.get("exam_target", ""),
                 learning_goal=initial_data.get("goal", ""),
-                learning_style=LearningStyle(analysis["learning_style"]),
-                knowledge_level=KnowledgeLevel(analysis["knowledge_level"]),
-                interests=analysis["interests"],
+                learning_style=learning_style,
+                knowledge_level=knowledge_level,
+                interests=analysis.get("interests", []),
                 available_time=initial_data.get(
                     "available_time", 60
                 ),  # Default: 60 dakika/gün
@@ -205,13 +334,14 @@ class LearningPathAgent:
                     "analysis": analysis,
                     "initial_data": initial_data,
                     "created_at": datetime.now().isoformat(),
+                    "data_source": "exam_history" if exam_history.get("has_data") else "llm_estimate",
                 },
             )
 
             # Cache'e kaydet
             self.profiles[student_id] = profile
 
-            logger.info(f"Student profile created: {student_id}")
+            logger.info(f"Student profile created: {student_id} (source: {'exam_history' if exam_history.get('has_data') else 'llm_estimate'})")
             return profile
 
         except Exception as e:
@@ -1203,19 +1333,79 @@ class LearningPathAgent:
             logger.error(f"Resource search error: {str(e)}")
             raise
 
+    async def _assign_questions_to_phases(
+        self, phases: List[Dict], subject: str, knowledge_level: str
+    ) -> List[Dict]:
+        """
+        Her faz için soru bankasından gerçek sorular ata.
+        ZPD seviyesine göre optimal zorluk aralığında filtreler.
+        """
+        try:
+            from core.database import get_db_session_context
+            from sqlalchemy import select, func as sa_func
+            from models.question_bank import QuestionBankItem
+
+            # ZPD → difficulty mapping
+            _zpd_difficulty = {
+                "beginner": ["VERY_EASY", "EASY"],
+                "elementary": ["EASY", "MEDIUM"],
+                "intermediate": ["MEDIUM", "HARD"],
+                "advanced": ["HARD", "VERY_HARD"],
+                "expert": ["VERY_HARD"],
+            }
+            target_difficulties = _zpd_difficulty.get(knowledge_level, ["MEDIUM"])
+
+            async with get_db_session_context() as session:
+                for phase in phases:
+                    # Query question_bank for matching questions
+                    # Note: primary_topic_id is UUID — LLM topic names can't match directly.
+                    # Filter by subject + ZPD difficulty only.
+                    query = (
+                        select(QuestionBankItem.id, QuestionBankItem.difficulty_level)
+                        .where(
+                            QuestionBankItem.is_active == True,
+                            QuestionBankItem.subject_area == subject.upper(),
+                        )
+                    )
+
+                    # Filter by difficulty based on ZPD
+                    if target_difficulties:
+                        query = query.where(
+                            QuestionBankItem.difficulty_level.in_(target_difficulties)
+                        )
+
+                    # Limit and randomize
+                    query = query.order_by(sa_func.random()).limit(10)
+
+                    result = await session.execute(query)
+                    questions = result.all()
+
+                    # Attach question IDs to phase
+                    phase["quiz"] = {
+                        "question_ids": [str(q.id) for q in questions],
+                        "question_count": len(questions),
+                        "passing_score": 60,
+                        "difficulty_range": target_difficulties,
+                    }
+
+                    logger.info(
+                        f"Phase '{phase.get('title', '?')}': {len(questions)} questions assigned "
+                        f"(difficulty: {target_difficulties})"
+                    )
+
+        except Exception as e:
+            logger.warning(f"Could not assign questions to phases: {e}")
+            # Don't fail — phases work without questions too
+
+        return phases
+
     async def create_learning_path(
         self, student_id: str, goal: str, duration_weeks: int = 4
     ) -> LearningPath:
         """
-        Kişiselleştirilmiş öğrenme yolu oluştur
-
-        Args:
-            student_id: Öğrenci ID
-            goal: Öğrenme hedefi
-            duration_weeks: Süre (hafta)
-
-        Returns:
-            Öğrenme yolu
+        Kişiselleştirilmiş öğrenme yolu oluştur.
+        Sınav geçmişi varsa zayıf konulara öncelik verir.
+        Soru bankasından ZPD-uyumlu sorular atar.
         """
         # Input validation
         if not student_id or not isinstance(student_id, str):
@@ -1231,25 +1421,42 @@ class LearningPathAgent:
             # Öğrenci profilini al
             profile = self.profiles.get(student_id)
             if not profile:
-                # Profil yoksa basit bir profil oluştur
                 profile = await self.analyze_student(student_id, {"goal": goal})
+
+            # Sınav geçmişini al (Faz 2 — gerçek veri ile LLM prompt zenginleştirme)
+            exam_history = profile.metadata.get("analysis", {}).get("exam_history", {})
+            exam_context = ""
+            if exam_history.get("has_data"):
+                weak = ", ".join(exam_history.get("weak_topics", [])) or "Belirlenemedi"
+                strong = ", ".join(exam_history.get("strong_topics", [])) or "Belirlenemedi"
+                exam_context = f"""
+
+            ÖĞRENCİNİN SINAV GEÇMİŞİ (gerçek veri):
+            - Genel doğru oranı: %{int(exam_history['overall_accuracy'] * 100)}
+            - Zayıf konular: {weak}
+            - Güçlü konular: {strong}
+            - Toplam sınav: {exam_history.get('exam_count', 0)}
+
+            ZAYIF konulara öncelik veren bir plan oluştur.
+            Güçlü konuları pekiştirme olarak dahil et."""
 
             # LLM ile öğrenme planı oluştur
             planning_prompt = f"""
             Öğrenci için öğrenme planı oluştur:
-            
+
             Hedef: {goal}
             Seviye: {profile.knowledge_level.value}
             Öğrenme Stili: {profile.learning_style.value}
             Süre: {duration_weeks} hafta
             Günlük Çalışma Süresi: {profile.available_time} dakika
-            
+            {exam_context}
+
             Aşamalı bir öğrenme planı oluştur. Her aşama için:
             1. Konu başlığı
             2. Hedefler
             3. Önerilen süre
             4. Önkoşullar
-            
+
             JSON formatında yanıtla:
             {{
                 "phases": [
@@ -1266,53 +1473,38 @@ class LearningPathAgent:
             }}
             """
 
-            result = await llm_service.generate(prompt=planning_prompt, temperature=0.5)
+            result = await llm_service.generate(prompt=planning_prompt, temperature=0.5, max_tokens=800)
 
-            if result["success"]:
-                try:
-                    plan = json.loads(result["text"])
-                except (json.JSONDecodeError, TypeError) as e:
-                    # Default plan
-                    logger.debug(f"JSON parsing failed for learning plan: {e}")
-                    plan = {
-                        "phases": [
-                            {
-                                "phase_number": 1,
-                                "title": "Temel Kavramlar",
-                                "objectives": ["Temel kavramları öğrenme"],
-                                "duration_days": 7,
-                                "prerequisites": [],
-                                "topics": [goal],
-                            }
-                        ],
-                        "reasoning": "Standart öğrenme planı",
-                    }
-            else:
+            try:
+                plan = json.loads(result) if isinstance(result, str) else result
+                if not isinstance(plan, dict) or "phases" not in plan:
+                    raise ValueError("Missing 'phases' in plan")
+            except (json.JSONDecodeError, TypeError, ValueError) as e:
+                logger.debug(f"JSON parsing failed for learning plan: {e}")
                 plan = {
                     "phases": [
                         {
                             "phase_number": 1,
-                            "title": goal,
-                            "objectives": [goal],
-                            "duration_days": duration_weeks * 7,
+                            "title": "Temel Kavramlar",
+                            "objectives": ["Temel kavramları öğrenme"],
+                            "duration_days": 7,
                             "prerequisites": [],
                             "topics": [goal],
                         }
                     ],
-                    "reasoning": "Otomatik plan",
+                    "reasoning": "Standart öğrenme planı",
                 }
 
-            # Her aşama için kaynak ara
+            # Faz 3+4: Soru bankasından ZPD-uyumlu sorular ata
+            phases = await self._assign_questions_to_phases(
+                plan["phases"],
+                subject=goal,
+                knowledge_level=profile.knowledge_level.value,
+            )
+
+            # Kaynak arama devre dışı — external API'ler (YouTube/Khan/OER)
+            # çalışmıyor (403/timeout), 12+ çağrı × timeout = 338s blokluyor.
             all_resources = []
-            for phase in plan["phases"]:
-                for topic in phase.get("topics", [goal]):
-                    resources = await self.search_resources(
-                        topic=topic,
-                        learning_style=profile.learning_style,
-                        level=profile.knowledge_level,
-                        limit=5,
-                    )
-                    all_resources.extend(resources)
 
             # Öğrenme yolu oluştur
             path_id = f"path_{student_id}_{datetime.now().timestamp()}"
@@ -1321,16 +1513,22 @@ class LearningPathAgent:
                 student_profile=profile,
                 resources=all_resources,
                 total_time=sum([r.estimated_time for r in all_resources]),
-                phases=plan["phases"],
+                phases=phases,
                 created_at=datetime.now(),
                 reasoning=plan["reasoning"],
-                metadata={"goal": goal, "duration_weeks": duration_weeks, "plan": plan},
+                metadata={
+                    "goal": goal,
+                    "duration_weeks": duration_weeks,
+                    "plan": plan,
+                    "exam_data_used": exam_history.get("has_data", False),
+                    "questions_assigned": any(p.get("quiz") for p in phases),
+                },
             )
 
             # Cache'e kaydet
             self.learning_paths[path_id] = learning_path
 
-            logger.info(f"Learning path created: {path_id}")
+            logger.info(f"Learning path created: {path_id} (exam_data={exam_history.get('has_data', False)})")
             return learning_path
 
         except Exception as e:

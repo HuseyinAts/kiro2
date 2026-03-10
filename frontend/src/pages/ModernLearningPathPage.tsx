@@ -10,6 +10,7 @@ import { useState, useEffect, useCallback, useMemo } from 'react';
 
 // Custom hooks
 import { VideoResponse } from '../api';
+import { LearningStyleQuiz } from '../components/LearningPath/LearningStyleQuiz';
 import { ModernLearningPathVisualizer } from '../components/LearningPath/ModernLearningPathVisualizer';
 import { NodeDetailsPanel } from '../components/LearningPath/Page/NodeDetailsPanel';
 import { PathNodeData } from '../components/LearningPath/PathNode';
@@ -19,11 +20,7 @@ import { ModernLoader } from '../components/ui/ModernLoader';
 import { useLearningPath } from '../hooks/useLearningPath';
 import { useLearningPathVideos } from '../hooks/useLearningPathVideos';
 
-// Modern components
-import learningPathService from '../services/learningPathService';
 import modernColors from '../theme/modern-colors';
-
-// Services
 
 // Types
 import { generateConnections } from '../utils/learningPathHelpers';
@@ -65,20 +62,18 @@ export function ModernLearningPathPage() {
     currentNodeId,
     loading,
     error,
+    needsQuiz,
     reload,
     setCurrentNode,
+    submitQuizResult,
+    skipQuiz,
   } = useLearningPath();
 
   const {
     videos,
-    videoLoadingState: _videoLoadingState,
-    loadingSubjects: _loadingSubjects,
     videosLoading,
     loadVideosForPath,
     loadVideosForNode,
-    retryLoad: _retryLoad,
-    showFallback: _showFallback,
-    cancelLoad: _cancelLoad,
   } = useLearningPathVideos();
 
   // ========================================
@@ -97,10 +92,9 @@ export function ModernLearningPathPage() {
    */
   useEffect(() => {
     if (pathNodes.length > 0 && learningStyle) {
-      const path = learningPathService.getCurrentPath();
-      if (path) {
-        loadVideosForPath(path, learningStyle);
-      }
+      // Build a minimal path object from nodes for video loading
+      const path = { modules: [{ title: pathNodes[0]?.title || 'matematik' }] };
+      loadVideosForPath(path, learningStyle);
     }
   }, [pathNodes, learningStyle, loadVideosForPath]);
 
@@ -149,7 +143,7 @@ export function ModernLearningPathPage() {
    * Check if path exists
    */
   const hasPath = useMemo(
-    () => learningPathService.getCurrentPath() !== null,
+    () => pathNodes.length > 0,
     [pathNodes.length],
   );
 
@@ -188,6 +182,29 @@ export function ModernLearningPathPage() {
         }}
       >
         <ModernLoader message="Öğrenme yolunuz yükleniyor..." size="large" />
+      </Box>
+    );
+  }
+
+  // Quiz state — show VARK questionnaire before creating path
+  if (needsQuiz) {
+    return (
+      <Box
+        sx={{
+          minHeight: '100vh',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          background: modernColors.gradients.mesh,
+          p: 2,
+        }}
+      >
+        <Container maxWidth="sm">
+          <LearningStyleQuiz
+            onComplete={submitQuizResult}
+            onSkip={skipQuiz}
+          />
+        </Container>
       </Box>
     );
   }
