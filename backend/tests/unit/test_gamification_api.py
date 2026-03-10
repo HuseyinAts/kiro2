@@ -73,6 +73,15 @@ def _make_leaderboard_manager(nearby=None, rank_info=None, stats=None):
     return mgr
 
 
+def _make_test_user(user_id="user-001"):
+    """Return a mock AuthenticatedUser for endpoint tests."""
+    from core.dependencies import AuthenticatedUser, UserRole
+    return AuthenticatedUser(
+        id=user_id, username="test_user",
+        role=UserRole("student"), email="test@test.com",
+    )
+
+
 # ---------------------------------------------------------------------------
 # Helper function unit tests
 # ---------------------------------------------------------------------------
@@ -172,7 +181,7 @@ class TestGetPointsSummary:
 
         cached_data = {"success": True, "data": {"total_points": 42}}
         with patch("api.gamification_api.get_cache", return_value=_make_cache_hit(cached_data)):
-            result = await get_points_summary(user_id="user-001")
+            result = await get_points_summary(current_user=_make_test_user("user-001"))
 
         assert result == cached_data
 
@@ -182,7 +191,7 @@ class TestGetPointsSummary:
         _user_points["user-compute"] = 200
 
         with patch("api.gamification_api.get_cache", return_value=_make_cache_miss()):
-            result = await get_points_summary(user_id="user-compute")
+            result = await get_points_summary(current_user=_make_test_user("user-compute"))
 
         assert result["success"] is True
         assert result["data"]["total_points"] == 200
@@ -192,7 +201,7 @@ class TestGetPointsSummary:
         from api.gamification_api import get_points_summary
 
         with patch("api.gamification_api.get_cache", return_value=_make_cache_miss()):
-            result = await get_points_summary(user_id="brand-new-user-xyz")
+            result = await get_points_summary(current_user=_make_test_user("brand-new-user-xyz"))
 
         assert result["data"]["total_points"] == 0
         assert result["data"]["daily_points"] == 0
@@ -202,7 +211,7 @@ class TestGetPointsSummary:
         from api.gamification_api import get_points_summary
 
         with patch("api.gamification_api.get_cache", return_value=_make_cache_miss()):
-            result = await get_points_summary(user_id="some-user")
+            result = await get_points_summary(current_user=_make_test_user("some-user"))
 
         assert "message" in result
         assert "data" in result
@@ -215,7 +224,7 @@ class TestGetPointHistory:
     async def test_returns_empty_for_new_user(self):
         from api.gamification_api import get_point_history
 
-        result = await get_point_history(user_id="no-history-user", days=30, limit=None)
+        result = await get_point_history(current_user=_make_test_user("no-history-user"), days=30, limit=None)
 
         assert result["success"] is True
         assert result["data"]["total_count"] == 0
@@ -224,7 +233,7 @@ class TestGetPointHistory:
     async def test_period_days_reflected_in_response(self):
         from api.gamification_api import get_point_history
 
-        result = await get_point_history(user_id="any", days=7, limit=None)
+        result = await get_point_history(current_user=_make_test_user("any"), days=7, limit=None)
 
         assert result["data"]["period_days"] == 7
 
@@ -238,7 +247,7 @@ class TestGetPointHistory:
                 {"user_id": "limit-user", "points": 10, "timestamp": now}
             )
 
-        result = await get_point_history(user_id="limit-user", days=365, limit=2)
+        result = await get_point_history(current_user=_make_test_user("limit-user"), days=365, limit=2)
 
         # Clean up injected data
         _point_transactions[:] = [
@@ -258,7 +267,7 @@ class TestAwardPoints:
         uid = "award-test-user"
         _user_points[uid] = 0
 
-        result = await award_points(user_id=uid, points=50, reason="quiz_completion")
+        result = await award_points(current_user=_make_test_user(uid), points=50, reason="quiz_completion")
 
         assert result["success"] is True
         assert result["data"]["new_total"] == 50
@@ -270,7 +279,7 @@ class TestAwardPoints:
         uid = "cumulative-user"
         _user_points[uid] = 100
 
-        result = await award_points(user_id=uid, points=25, reason="streak_bonus")
+        result = await award_points(current_user=_make_test_user(uid), points=25, reason="streak_bonus")
 
         assert result["data"]["new_total"] == 125
         del _user_points[uid]
@@ -281,7 +290,7 @@ class TestAwardPoints:
         uid = "txn-check-user"
         before = len(_point_transactions)
 
-        await award_points(user_id=uid, points=10, reason="test_reason")
+        await award_points(current_user=_make_test_user(uid), points=10, reason="test_reason")
 
         assert len(_point_transactions) > before
         last = _point_transactions[-1]
@@ -292,7 +301,7 @@ class TestAwardPoints:
     async def test_transaction_has_required_fields(self):
         from api.gamification_api import award_points
 
-        result = await award_points(user_id="field-test", points=5, reason="reason")
+        result = await award_points(current_user=_make_test_user("field-test"), points=5, reason="reason")
 
         txn = result["data"]["transaction"]
         for field in ("id", "user_id", "points", "reason", "timestamp"):
@@ -306,7 +315,7 @@ class TestGetLevelInfo:
     async def test_new_user_at_level_one(self):
         from api.gamification_api import get_level_info
 
-        result = await get_level_info(user_id="fresh-level-user-abc")
+        result = await get_level_info(current_user=_make_test_user("fresh-level-user-abc"))
 
         assert result["success"] is True
         assert result["data"]["current_level"] == 1
@@ -318,7 +327,7 @@ class TestGetLevelInfo:
         uid = "progress-pct-user"
         _user_points[uid] = 75
 
-        result = await get_level_info(user_id=uid)
+        result = await get_level_info(current_user=_make_test_user(uid))
 
         pct = result["data"]["progress_percentage"]
         assert 0.0 <= pct <= 100.0
@@ -327,14 +336,14 @@ class TestGetLevelInfo:
     async def test_xp_for_next_level_is_positive(self):
         from api.gamification_api import get_level_info
 
-        result = await get_level_info(user_id="any-level-user")
+        result = await get_level_info(current_user=_make_test_user("any-level-user"))
 
         assert result["data"]["xp_for_next_level"] > 0
 
     async def test_response_has_all_level_fields(self):
         from api.gamification_api import get_level_info
 
-        result = await get_level_info(user_id="fields-check")
+        result = await get_level_info(current_user=_make_test_user("fields-check"))
 
         for key in ("current_level", "total_xp", "xp_for_next_level", "progress_percentage"):
             assert key in result["data"]
@@ -347,7 +356,7 @@ class TestGetLevelProgress:
     async def test_new_user_progress_response(self):
         from api.gamification_api import get_level_progress
 
-        result = await get_level_progress(user_id="new-progress-user")
+        result = await get_level_progress(current_user=_make_test_user("new-progress-user"))
 
         assert result["success"] is True
         data = result["data"]
@@ -361,7 +370,7 @@ class TestGetLevelProgress:
         uid = "progress-level-user"
         _user_points[uid] = 300
 
-        result = await get_level_progress(user_id=uid)
+        result = await get_level_progress(current_user=_make_test_user(uid))
 
         assert result["data"]["xp_in_current_level"] >= 0
         del _user_points[uid]
@@ -369,7 +378,7 @@ class TestGetLevelProgress:
     async def test_progress_percentage_non_negative(self):
         from api.gamification_api import get_level_progress
 
-        result = await get_level_progress(user_id="any-progress")
+        result = await get_level_progress(current_user=_make_test_user("any-progress"))
 
         assert result["data"]["progress_percentage"] >= 0
 
@@ -381,7 +390,7 @@ class TestGetAllBadges:
     async def test_returns_all_badges_without_filter(self):
         from api.gamification_api import get_all_badges, get_badge_definitions
 
-        result = await get_all_badges(user_id="badge-user", category=None)
+        result = await get_all_badges(current_user=_make_test_user("badge-user"), category=None)
 
         assert result["success"] is True
         assert result["data"]["total_count"] == len(get_badge_definitions())
@@ -389,15 +398,15 @@ class TestGetAllBadges:
     async def test_category_filter_reduces_count(self):
         from api.gamification_api import get_all_badges
 
-        result_all = await get_all_badges(user_id="filter-user", category=None)
-        result_study = await get_all_badges(user_id="filter-user", category="study")
+        result_all = await get_all_badges(current_user=_make_test_user("filter-user"), category=None)
+        result_study = await get_all_badges(current_user=_make_test_user("filter-user"), category="study")
 
         assert result_study["data"]["total_count"] < result_all["data"]["total_count"]
 
     async def test_category_filter_only_returns_matching(self):
         from api.gamification_api import get_all_badges
 
-        result = await get_all_badges(user_id="cat-check", category="exam")
+        result = await get_all_badges(current_user=_make_test_user("cat-check"), category="exam")
 
         for badge in result["data"]["badges"]:
             assert badge["category"] == "exam"
@@ -405,7 +414,7 @@ class TestGetAllBadges:
     async def test_new_user_has_zero_earned_badges(self):
         from api.gamification_api import get_all_badges
 
-        result = await get_all_badges(user_id="zero-earned-user-xyz", category=None)
+        result = await get_all_badges(current_user=_make_test_user("zero-earned-user-xyz"), category=None)
 
         assert result["data"]["earned_count"] == 0
         for badge in result["data"]["badges"]:
@@ -414,7 +423,7 @@ class TestGetAllBadges:
     async def test_badge_info_has_required_fields(self):
         from api.gamification_api import get_all_badges
 
-        result = await get_all_badges(user_id="fields-user", category=None)
+        result = await get_all_badges(current_user=_make_test_user("fields-user"), category=None)
 
         for badge in result["data"]["badges"]:
             for key in ("badge_id", "name", "description", "category", "rarity", "icon", "earned"):
@@ -428,7 +437,7 @@ class TestGetEarnedBadges:
     async def test_new_user_returns_empty_earned_list(self):
         from api.gamification_api import get_earned_badges
 
-        result = await get_earned_badges(user_id="no-earned-xyz")
+        result = await get_earned_badges(current_user=_make_test_user("no-earned-xyz"))
 
         assert result["success"] is True
         assert result["data"]["count"] == 0
@@ -440,7 +449,7 @@ class TestGetEarnedBadges:
         uid = "has-badges-user"
         _user_badges[uid] = ["consistent_7", "night_owl"]
 
-        result = await get_earned_badges(user_id=uid)
+        result = await get_earned_badges(current_user=_make_test_user(uid))
 
         assert result["data"]["count"] == 2
         del _user_badges[uid]
@@ -451,7 +460,7 @@ class TestGetEarnedBadges:
         uid = "earned-true-user"
         _user_badges[uid] = ["consistent_7"]
 
-        result = await get_earned_badges(user_id=uid)
+        result = await get_earned_badges(current_user=_make_test_user(uid))
 
         for badge in result["data"]["badges"]:
             assert badge["earned"] is True
@@ -465,7 +474,7 @@ class TestGetBadgeCategories:
     async def test_returns_all_expected_categories(self):
         from api.gamification_api import get_badge_categories
 
-        result = await get_badge_categories(user_id="cat-stats-user")
+        result = await get_badge_categories(current_user=_make_test_user("cat-stats-user"))
 
         assert result["success"] is True
         cats = result["data"]["categories"]
@@ -475,7 +484,7 @@ class TestGetBadgeCategories:
     async def test_completion_percentage_between_zero_and_hundred(self):
         from api.gamification_api import get_badge_categories
 
-        result = await get_badge_categories(user_id="pct-user")
+        result = await get_badge_categories(current_user=_make_test_user("pct-user"))
 
         for cat, stats in result["data"]["categories"].items():
             pct = stats["completion_percentage"]
@@ -487,7 +496,7 @@ class TestGetBadgeCategories:
         uid = "earned-vs-total"
         _user_badges[uid] = ["consistent_7", "consistent_30", "night_owl"]
 
-        result = await get_badge_categories(user_id=uid)
+        result = await get_badge_categories(current_user=_make_test_user(uid))
 
         for cat, stats in result["data"]["categories"].items():
             assert stats["earned"] <= stats["total"]
@@ -503,7 +512,7 @@ class TestGetLeaderboard:
 
         cached = {"success": True, "data": {"period": "weekly", "entries": []}}
         with patch("api.gamification_api.get_cache", return_value=_make_cache_hit(cached)):
-            result = await get_leaderboard(period="weekly", limit=10, user_id=None)
+            result = await get_leaderboard(current_user=_make_test_user("cache-user"), period="weekly", limit=10)
 
         assert result == cached
 
@@ -515,7 +524,7 @@ class TestGetLeaderboard:
         _user_points.clear()
 
         with patch("api.gamification_api.get_cache", return_value=_make_cache_miss()):
-            result = await get_leaderboard(period="alltime", limit=100, user_id=None)
+            result = await get_leaderboard(current_user=_make_test_user("empty-pool-user"), period="alltime", limit=100)
 
         _user_points.update(saved)
 
@@ -526,7 +535,7 @@ class TestGetLeaderboard:
         from api.gamification_api import get_leaderboard
 
         with patch("api.gamification_api.get_cache", return_value=_make_cache_miss()):
-            result = await get_leaderboard(period="monthly", limit=5, user_id=None)
+            result = await get_leaderboard(current_user=_make_test_user("period-user"), period="monthly", limit=5)
 
         assert result["data"]["period"] == "monthly"
 
@@ -537,7 +546,7 @@ class TestGetLeaderboard:
         _user_points[uid] = 999
 
         with patch("api.gamification_api.get_cache", return_value=_make_cache_miss()):
-            result = await get_leaderboard(period="alltime", limit=100, user_id=uid)
+            result = await get_leaderboard(period="alltime", limit=100, current_user=_make_test_user(uid))
 
         # user_rank should be an int (not None) because user is in pool
         assert result["data"]["user_rank"] is not None
@@ -548,7 +557,7 @@ class TestGetLeaderboard:
 
         with patch("api.gamification_api.get_cache", return_value=_make_cache_miss()):
             result = await get_leaderboard(
-                period="alltime", limit=100, user_id="totally-unknown-user-zzz"
+                period="alltime", limit=100, current_user=_make_test_user("totally-unknown-user-zzz")
             )
 
         assert result["data"]["user_rank"] is None
@@ -562,7 +571,7 @@ class TestGetUserAchievements:
         from api.gamification_api import get_user_achievements
 
         db = _make_db_session(achievements=[])
-        result = await get_user_achievements(user_id="a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11", db=db)
+        result = await get_user_achievements(current_user=_make_test_user("a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11"), db=db)
 
         assert result["success"] is True
         assert result["data"]["total_count"] == 0
@@ -582,7 +591,7 @@ class TestGetUserAchievements:
         db = _make_db_session(achievements=achievements)
 
         result = await get_user_achievements(
-            user_id="a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11", db=db
+            current_user=_make_test_user("a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11"), db=db
         )
 
         assert result["data"]["completed_count"] == 2
@@ -594,7 +603,7 @@ class TestGetUserAchievements:
 
         db = _make_db_session(achievements=[])
         result = await get_user_achievements(
-            user_id="a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11", db=db
+            current_user=_make_test_user("a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11"), db=db
         )
 
         assert "achievements" in result["data"]
@@ -615,7 +624,7 @@ class TestGetCompletedAchievements:
 
         db = _make_db_session(achievements=[_ach(), _ach()])
         result = await get_completed_achievements(
-            user_id="a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11", db=db
+            current_user=_make_test_user("a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11"), db=db
         )
 
         assert result["success"] is True
@@ -626,7 +635,7 @@ class TestGetCompletedAchievements:
 
         db = _make_db_session(achievements=[])
         result = await get_completed_achievements(
-            user_id="a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11", db=db
+            current_user=_make_test_user("a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11"), db=db
         )
 
         assert result["data"]["count"] == 0
@@ -648,7 +657,7 @@ class TestGetNearbyUsers:
 
         with patch("api.gamification_api.get_leaderboard_manager", return_value=mgr):
             result = await get_nearby_users_in_leaderboard(
-                user_id="a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11",
+                current_user=_make_test_user("a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11"),
                 leaderboard_type="global",
                 range_size=5,
                 db=db,
@@ -669,7 +678,7 @@ class TestGetNearbyUsers:
 
         with patch("api.gamification_api.get_leaderboard_manager", return_value=mgr):
             await get_nearby_users_in_leaderboard(
-                user_id=uid,
+                current_user=_make_test_user(uid),
                 leaderboard_type="weekly",
                 range_size=3,
                 db=db,
@@ -699,7 +708,7 @@ class TestGetUserLeaderboardRank:
 
         with patch("api.gamification_api.get_leaderboard_manager", return_value=mgr):
             result = await get_user_leaderboard_rank(
-                user_id="a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11",
+                current_user=_make_test_user("a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11"),
                 leaderboard_type="global",
                 db=db,
                 redis=redis,
@@ -717,7 +726,7 @@ class TestGetUserLeaderboardRank:
 
         with patch("api.gamification_api.get_leaderboard_manager", return_value=mgr):
             result = await get_user_leaderboard_rank(
-                user_id="a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11",
+                current_user=_make_test_user("a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11"),
                 leaderboard_type="global",
                 db=db,
                 redis=redis,
@@ -742,6 +751,7 @@ class TestGetLeaderboardStatistics:
 
         with patch("api.gamification_api.get_leaderboard_manager", return_value=mgr):
             result = await get_leaderboard_statistics(
+                current_user=_make_test_user("stats-user"),
                 leaderboard_type="global",
                 db=db,
                 redis=redis,
@@ -759,6 +769,7 @@ class TestGetLeaderboardStatistics:
 
         with patch("api.gamification_api.get_leaderboard_manager", return_value=mgr):
             await get_leaderboard_statistics(
+                current_user=_make_test_user("stats-user"),
                 leaderboard_type="weekly",
                 db=db,
                 redis=redis,

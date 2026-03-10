@@ -208,7 +208,7 @@ export function ModernLearningPathPage() {
     if (studentId) {
       const points = results.correctCount * 10 + (results.percentage >= (activeQuizNode?.quiz?.passing_score || 60) ? 50 : 0);
       if (points > 0) {
-        fetch(`/api/v1/gamification/points/award?user_id=${encodeURIComponent(studentId)}&points=${points}&reason=quiz_complete`, {
+        fetch(`/api/v1/gamification/points/award?points=${points}&reason=quiz_complete`, {
           method: 'POST',
           credentials: 'include',
         }).catch(err => console.error('Gamification puan hatası:', err));
