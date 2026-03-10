@@ -1338,49 +1338,52 @@ class LearningPathAgent:
     ) -> List[Dict]:
         """
         Her faz için soru bankasından gerçek sorular ata.
-        ZPD seviyesine göre optimal zorluk aralığında filtreler.
+        ZPD seviyesine göre optimal zorluk + faz bazlı artan zorluk.
+        İlk fazlar kolay, son fazlar zor (progressive difficulty).
         """
         try:
             from core.database import get_db_session_context
             from sqlalchemy import select, func as sa_func
             from models.question_bank import QuestionBankItem
 
-            # ZPD → difficulty mapping
-            _zpd_difficulty = {
-                "beginner": ["VERY_EASY", "EASY"],
-                "elementary": ["EASY", "MEDIUM"],
-                "intermediate": ["MEDIUM", "HARD"],
-                "advanced": ["HARD", "VERY_HARD"],
-                "expert": ["VERY_HARD"],
+            # Ordered difficulty levels for progressive ramping
+            ALL_DIFFICULTIES = ["VERY_EASY", "EASY", "MEDIUM", "HARD", "VERY_HARD"]
+
+            # Base ZPD index from knowledge level
+            _zpd_base = {
+                "beginner": 0,     # starts at VERY_EASY
+                "elementary": 1,   # starts at EASY
+                "intermediate": 2, # starts at MEDIUM
+                "advanced": 3,     # starts at HARD
+                "expert": 4,       # starts at VERY_HARD
             }
-            target_difficulties = _zpd_difficulty.get(knowledge_level, ["MEDIUM"])
+            base_idx = _zpd_base.get(knowledge_level, 2)
+
+            total_phases = len(phases)
 
             async with get_db_session_context() as session:
-                for phase in phases:
-                    # Query question_bank for matching questions
-                    # Note: primary_topic_id is UUID — LLM topic names can't match directly.
-                    # Filter by subject + ZPD difficulty only.
+                for i, phase in enumerate(phases):
+                    # Progressive difficulty: shift up by phase position
+                    # e.g. beginner with 4 phases: phase0=VERY_EASY/EASY, phase1=EASY/MEDIUM, ...
+                    phase_shift = int((i / max(total_phases - 1, 1)) * 2) if total_phases > 1 else 0
+                    low = min(base_idx + phase_shift, len(ALL_DIFFICULTIES) - 1)
+                    high = min(low + 1, len(ALL_DIFFICULTIES) - 1)
+                    target_difficulties = list(set([ALL_DIFFICULTIES[low], ALL_DIFFICULTIES[high]]))
+
                     query = (
                         select(QuestionBankItem.id, QuestionBankItem.difficulty_level)
                         .where(
                             QuestionBankItem.is_active == True,
                             QuestionBankItem.subject_area == subject.upper(),
+                            QuestionBankItem.difficulty_level.in_(target_difficulties),
                         )
+                        .order_by(sa_func.random())
+                        .limit(10)
                     )
-
-                    # Filter by difficulty based on ZPD
-                    if target_difficulties:
-                        query = query.where(
-                            QuestionBankItem.difficulty_level.in_(target_difficulties)
-                        )
-
-                    # Limit and randomize
-                    query = query.order_by(sa_func.random()).limit(10)
 
                     result = await session.execute(query)
                     questions = result.all()
 
-                    # Attach question IDs to phase
                     phase["quiz"] = {
                         "question_ids": [str(q.id) for q in questions],
                         "question_count": len(questions),
@@ -1389,13 +1392,12 @@ class LearningPathAgent:
                     }
 
                     logger.info(
-                        f"Phase '{phase.get('title', '?')}': {len(questions)} questions assigned "
-                        f"(difficulty: {target_difficulties})"
+                        f"Phase {i+1}/{total_phases} '{phase.get('title', '?')}': "
+                        f"{len(questions)} questions (difficulty: {target_difficulties})"
                     )
 
         except Exception as e:
             logger.warning(f"Could not assign questions to phases: {e}")
-            # Don't fail — phases work without questions too
 
         return phases
 

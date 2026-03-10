@@ -316,7 +316,15 @@ export function ModernLearningPathPage() {
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                   <AutoAwesome sx={{ fontSize: 20 }} />
                   <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                    Öğrenme Stiliniz: {learningStyle}
+                    Öğrenme Stiliniz: {
+                      {
+                        visual: 'Görsel Öğrenen',
+                        auditory: 'İşitsel Öğrenen',
+                        reading: 'Okuma-Yazma Öğrenen',
+                        kinesthetic: 'Uygulamalı Öğrenen',
+                        mixed: 'Karma Öğrenen',
+                      }[learningStyle] || learningStyle
+                    }
                   </Typography>
                 </Box>
               </GlassCard>
