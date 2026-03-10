@@ -12,6 +12,7 @@ Requires:
 
 import argparse
 import json
+import os
 import statistics
 import sys
 import time
@@ -22,8 +23,8 @@ import httpx
 
 DEFAULT_BASE_URL = "http://localhost:8000"
 DEFAULT_ROUNDS = 5
-LOGIN_EMAIL = "test@kiro2.com"
-LOGIN_PASSWORD = "Kiro2Beta2026@x"
+LOGIN_EMAIL = os.environ.get("BENCHMARK_EMAIL", "test@kiro2.com")
+LOGIN_PASSWORD = os.environ.get("BENCHMARK_PASSWORD", "Kiro2Beta2026@x")
 
 
 ENDPOINTS = [

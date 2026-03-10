@@ -12,8 +12,11 @@ import logging
 from typing import Optional
 from fastapi import HTTPException, Depends, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.jwt_auth import JWTManager, TokenType, UserRole, get_jwt_manager
+from models.learning_path_models import LearningPathStudentProfile
 
 logger = logging.getLogger(__name__)
 
@@ -56,15 +59,22 @@ async def get_current_user_from_token(
         )
 
 
-def verify_student_access(
-    student_id: str, current_user, allow_privileged: bool = True
+async def verify_student_access(
+    student_id: str,
+    current_user,
+    db: AsyncSession,
+    allow_privileged: bool = True,
 ) -> bool:
     """
-    Verify that current user can access student data
+    Verify that current user can access student data.
+
+    For students: checks DB ownership (user_id matches in learning_path_student_profiles).
+    For teachers/admins: allows access to any student.
 
     Args:
-        student_id: Target student ID
+        student_id: Target student ID (STU_xxx format)
         current_user: Current user token payload
+        db: Async database session
         allow_privileged: If True, teachers and admins can access any student
 
     Returns:
@@ -84,14 +94,26 @@ def verify_student_access(
         )
         return True
 
-    # Student ownership: current_user.id is auth UUID, student_id is STU_xxx format.
-    # These formats can never match directly. Ownership is enforced structurally:
-    # /my-profile returns only the logged-in user's own student_id,
-    # so the frontend can only request its own data.
-    # For student role, log the access and allow.
-    user_id = getattr(current_user, "id", None) or getattr(current_user, "sub", None)
+    # Student ownership: verify via DB that user_id owns this student_id
+    user_id = getattr(current_user, 'id', None) or getattr(current_user, 'sub', None)
+
+    result = await db.execute(
+        select(LearningPathStudentProfile.student_id).where(
+            LearningPathStudentProfile.user_id == str(user_id),
+            LearningPathStudentProfile.student_id == student_id,
+        )
+    )
+    if not result.scalar_one_or_none():
+        logger.warning(
+            f"IDOR blocked: user={user_id} attempted access to student={student_id}"
+        )
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Bu öğrenci verisine erişim yetkiniz yok",
+        )
+
     logger.info(
-        f"Student access: user={user_id} role={current_user.role} student={student_id}"
+        f"Student access verified: user={user_id} owns student={student_id}"
     )
     return True
 
@@ -196,7 +218,7 @@ def require_role(*allowed_roles: UserRole):
     async def role_checker(current_user=Depends(get_current_user_from_token)) -> bool:
         if current_user.role not in allowed_roles:
             logger.warning(
-                f"Role denied: User {getattr(current_user, "id", getattr(current_user, "sub", "?"))} has role '{current_user.role.value}', "
+                f"Role denied: User {getattr(current_user, 'id', getattr(current_user, 'sub', '?'))} has role '{current_user.role.value}', "
                 f"required: {[r.value for r in allowed_roles]}"
             )
             raise HTTPException(

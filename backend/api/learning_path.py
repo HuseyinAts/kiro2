@@ -435,14 +435,16 @@ if get_learning_path_agent is not None:
         agent: LearningPathAgent = Depends(get_learning_path_agent),
         http_request: Request = None,
         current_user=Depends(get_current_user),  # 🔒 AUTH ADDED
+        db: AsyncSession = Depends(get_db),
     ):
-        return await _create_learning_path_impl(request, agent, http_request, current_user)
+        return await _create_learning_path_impl(request, agent, http_request, current_user, db)
 else:
     @router.post("/create-path")
     async def create_learning_path(
         request: LearningPathCreateRequest,
         http_request: Request = None,
         current_user=Depends(get_current_user),
+        db: AsyncSession = Depends(get_db),
     ):
         raise HTTPException(status_code=503, detail="Learning path agent not available")
 
@@ -452,6 +454,7 @@ async def _create_learning_path_impl(
     agent,
     http_request: Request = None,
     current_user=None,
+    db: AsyncSession = None,
 ):
     """
     Kişiselleştirilmiş öğrenme yolu oluştur
@@ -483,7 +486,7 @@ async def _create_learning_path_impl(
 
     try:
         # 🔒 Verify ownership: students can only create their own paths
-        verify_student_access(request.student_id, current_user, allow_privileged=True)
+        await verify_student_access(request.student_id, current_user, db)
 
         logger.info(
             f"Creating AI-powered learning path for student {request.student_id}, subject: {request.subject}"
@@ -919,7 +922,7 @@ async def get_completion_status(
     """
     try:
         # 🔒 Verify ownership: students can only view their own completion status
-        verify_student_access(student_id, current_user, allow_privileged=True)
+        await verify_student_access(student_id, current_user, db)
 
         logger.info(f"Getting completion status for student {student_id}")
 
@@ -992,7 +995,7 @@ async def update_completion_status(
     """
     try:
         # 🔒 Verify ownership: students can only update their own completion status
-        verify_student_access(student_id, current_user, allow_privileged=True)
+        await verify_student_access(student_id, current_user, db)
 
         logger.info(f"Updating completion status for student {student_id}")
 
@@ -1081,9 +1084,7 @@ async def submit_quiz(
     """
     try:
         # 🔒 Verify ownership: students can only submit their own quizzes
-        verify_student_access(
-            submission.student_id, current_user, allow_privileged=True
-        )
+        await verify_student_access(submission.student_id, current_user, db)
 
         logger.info(
             f"Processing quiz submission for quiz {quiz_id} from student {submission.student_id}"
@@ -1234,7 +1235,7 @@ async def update_progress(
     """
     try:
         # 🔒 Verify ownership: students can only update their own progress
-        verify_student_access(student_id, current_user, allow_privileged=True)
+        await verify_student_access(student_id, current_user, db)
 
         logger.info(f"Updating progress for student {student_id}, node {node_id}")
 

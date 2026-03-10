@@ -1,6 +1,14 @@
 # MVP Environment Setup
 
-## Quick Start
+## One-Click Launch (Recommended)
+
+```bash
+./launch-mvp.sh
+```
+
+This automates everything below: env setup, secret generation, migrations, seeding, Docker build, and health verification. See `./launch-mvp.sh --help` for flags.
+
+## Manual Setup
 
 ```bash
 cp .env.mvp.example .env.mvp
