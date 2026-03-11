@@ -248,12 +248,13 @@ replacements = {
     'ENCRYPTION_KEY': os.environ['ENCRYPTION_KEY'],
 }
 for key, value in replacements.items():
-    content = re.sub(
-        rf'^({re.escape(key)}=)(.*)$',
-        rf'\g<1>{value}',
-        content,
-        flags=re.MULTILINE
-    )
+    # Use str.replace per-line to avoid regex special chars in value
+    prefix = key + '='
+    lines = content.split('\n')
+    for i, line in enumerate(lines):
+        if line.startswith(prefix):
+            lines[i] = prefix + value
+    content = '\n'.join(lines)
 db_pass = os.environ['DB_PASS']
 content = content.replace('YOUR_DB_PASSWORD', db_pass)
 content = content.replace('changeme_strong_password_here', db_pass)

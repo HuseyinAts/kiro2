@@ -437,7 +437,7 @@ if get_learning_path_agent is not None:
         current_user=Depends(get_current_user),  # 🔒 AUTH ADDED
         db: AsyncSession = Depends(get_db),
     ):
-        return await _create_learning_path_impl(request, agent, http_request, current_user, db)
+        return await _create_learning_path_impl(request, agent, http_request, current_user, db=db)
 else:
     @router.post("/create-path")
     async def create_learning_path(
@@ -454,7 +454,8 @@ async def _create_learning_path_impl(
     agent,
     http_request: Request = None,
     current_user=None,
-    db: AsyncSession = None,
+    *,
+    db: AsyncSession,
 ):
     """
     Kişiselleştirilmiş öğrenme yolu oluştur
