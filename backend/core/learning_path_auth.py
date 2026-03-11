@@ -16,6 +16,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.jwt_auth import JWTManager, TokenType, UserRole, get_jwt_manager
+from core.dependencies import get_db
 from models.learning_path_models import LearningPathStudentProfile
 
 logger = logging.getLogger(__name__)
@@ -140,13 +141,14 @@ class RequireStudentOwnership:
         """
         self.student_id_param = student_id_param
 
-    def __call__(
+    async def __call__(
         self,
-        student_id: str,  # This will be injected from request
+        student_id: str,
         current_user=Depends(get_current_user_from_token),
+        db: AsyncSession = Depends(get_db),
     ) -> bool:
         """Verify ownership"""
-        return verify_student_access(student_id, current_user, allow_privileged=True)
+        return await verify_student_access(student_id, current_user, db)
 
 
 def require_permission(required_permission: str):
