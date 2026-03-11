@@ -23,8 +23,13 @@ import httpx
 
 DEFAULT_BASE_URL = "http://localhost:8000"
 DEFAULT_ROUNDS = 5
-LOGIN_EMAIL = os.environ.get("BENCHMARK_EMAIL", "test@kiro2.com")
-LOGIN_PASSWORD = os.environ.get("BENCHMARK_PASSWORD", "Kiro2Beta2026@x")
+LOGIN_EMAIL = os.environ.get("BENCHMARK_EMAIL")
+LOGIN_PASSWORD = os.environ.get("BENCHMARK_PASSWORD")
+
+if not LOGIN_EMAIL or not LOGIN_PASSWORD:
+    print("Error: BENCHMARK_EMAIL and BENCHMARK_PASSWORD env vars required")
+    print("  Usage: BENCHMARK_EMAIL=x BENCHMARK_PASSWORD=y python scripts/benchmark_api.py")
+    sys.exit(1)
 
 
 ENDPOINTS = [

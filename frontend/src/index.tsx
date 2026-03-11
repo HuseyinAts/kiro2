@@ -6,7 +6,7 @@ import { Toaster } from 'react-hot-toast';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import { BrowserRouter } from 'react-router-dom';
 
-import { App } from './app';
+import { App } from './App';
 import './styles.css';
 
 // React Query Client

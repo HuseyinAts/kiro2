@@ -383,16 +383,23 @@ fi
 step 7 "Smoke Test & Summary"
 CURRENT_PHASE="smoke test"
 
-# Attempt login
-LOGIN_OK=false
-LOGIN_RESPONSE=$(curl -sf -X POST http://localhost:8000/api/v1/auth/login \
-    -H "Content-Type: application/json" \
-    -d '{"email":"test@kiro2.com","password":"Kiro2Beta2026@x"}' 2>/dev/null) && LOGIN_OK=true
+# Read smoke test credentials from .env.mvp
+SMOKE_EMAIL=$(grep "^SMOKE_TEST_EMAIL=" "$ENV_FILE" 2>/dev/null | cut -d'=' -f2-)
+SMOKE_PASS=$(grep "^SMOKE_TEST_PASSWORD=" "$ENV_FILE" 2>/dev/null | cut -d'=' -f2-)
 
-if [ "$LOGIN_OK" = true ]; then
-    success "Login smoke test passed"
+LOGIN_OK=false
+if [ -n "$SMOKE_EMAIL" ] && [ -n "$SMOKE_PASS" ]; then
+    LOGIN_RESPONSE=$(curl -sf -X POST http://localhost:8000/api/v1/auth/login \
+        -H "Content-Type: application/json" \
+        -d "{\"email\":\"$SMOKE_EMAIL\",\"password\":\"$SMOKE_PASS\"}" 2>/dev/null) && LOGIN_OK=true
+
+    if [ "$LOGIN_OK" = true ]; then
+        success "Login smoke test passed"
+    else
+        warn "Login smoke test failed (auth may need debugging)"
+    fi
 else
-    warn "Login smoke test failed (auth may need debugging)"
+    warn "Smoke test skipped (SMOKE_TEST_EMAIL/PASSWORD not in $ENV_FILE)"
 fi
 
 # ── Summary ──────────────────────────────────────────────────────────
