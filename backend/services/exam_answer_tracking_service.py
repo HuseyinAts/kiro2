@@ -461,6 +461,114 @@ class ExamAnswerTrackingService:
             return False
 
 
+    async def update_error_type(
+        self,
+        exam_session_id: str,
+        question_id: str,
+        error_type: str,
+        student_id: str,
+    ) -> bool:
+        """
+        Öğrencinin yanlış cevabına hata tipi ata (F8 Error Taxonomy)
+
+        Args:
+            exam_session_id: Sınav oturum ID'si
+            question_id: Soru ID'si
+            error_type: Hata tipi (concept, procedural, careless, knowledge_gap)
+            student_id: Kimlik doğrulama için öğrenci ID'si
+
+        Returns:
+            Başarılı ise True
+
+        Hata tipleri:
+        - concept: Kavram hatası — konuyu yanlış anladım
+        - procedural: İşlem hatası — doğru düşündüm ama uygulama yanlış
+        - careless: Dikkatsizlik — biliyordum ama dikkat etmedim
+        - knowledge_gap: Bilgi eksikliği — bu konuyu hiç bilmiyordum
+        """
+        valid_types = {"concept", "procedural", "careless", "knowledge_gap"}
+        if error_type not in valid_types:
+            logger.warning(
+                f"Geçersiz hata tipi: {error_type}",
+                extra_data={"valid_types": list(valid_types)},
+            )
+            return False
+
+        try:
+            # Ownership check: verify student owns this exam session
+            exam_result = await self.db_session.execute(
+                select(ExamSession).where(
+                    and_(
+                        ExamSession.id == exam_session_id,
+                        ExamSession.student_id == student_id,
+                    )
+                )
+            )
+            exam_session = exam_result.scalar_one_or_none()
+            if not exam_session:
+                logger.warning(
+                    "Sınav oturumu bulunamadı veya erişim reddedildi",
+                    extra_data={
+                        "exam_session_id": exam_session_id,
+                        "student_id": student_id,
+                    },
+                )
+                return False
+
+            # Find the student answer
+            result = await self.db_session.execute(
+                select(StudentAnswer).where(
+                    and_(
+                        StudentAnswer.exam_session_id == exam_session_id,
+                        StudentAnswer.question_id == question_id,
+                    )
+                )
+            )
+            answer = result.scalar_one_or_none()
+
+            if not answer:
+                logger.warning(
+                    "Cevap bulunamadı",
+                    extra_data={
+                        "exam_session_id": exam_session_id,
+                        "question_id": question_id,
+                    },
+                )
+                return False
+
+            # Only allow error_type on wrong answers (is_correct == False)
+            if answer.is_correct is True:
+                logger.warning(
+                    "Doğru cevaba hata tipi atanamaz",
+                    extra_data={"question_id": question_id},
+                )
+                return False
+
+            answer.error_type = error_type
+            await self.db_session.commit()
+
+            logger.info(
+                "Hata tipi atandı",
+                extra_data={
+                    "exam_session_id": exam_session_id,
+                    "question_id": question_id,
+                    "error_type": error_type,
+                },
+            )
+            return True
+
+        except Exception as e:
+            logger.error(
+                f"Hata tipi atama hatası: {e}",
+                extra_data={
+                    "exam_session_id": exam_session_id,
+                    "question_id": question_id,
+                },
+            )
+            await self.db_session.rollback()
+            return False
+
+
 async def create_answer_tracking_service(
     db_session: AsyncSession,
 ) -> ExamAnswerTrackingService:

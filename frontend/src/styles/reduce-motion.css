@@ -1,0 +1,38 @@
+/**
+ * F16: Global animation reduction — opt-in class applied by AnimationControl
+ *
+ * .reduced-motion  → user explicitly requested via AnimationControl toggle
+ *                    (also set by useReducedMotion hook / settingsStore)
+ *
+ * Note: accessibility.css already defines .reduced-motion rules.
+ * This file adds the .reduce-motion alias for the F16 spec, and the
+ * system-preference guard class used by external consumers.
+ *
+ * Both class names converge on the same effect so either works.
+ */
+
+/* F16: explicit opt-in via AnimationControl (alias for accessibility.css .reduced-motion) */
+.reduce-motion *,
+.reduce-motion *::before,
+.reduce-motion *::after {
+  animation-duration: 0.001ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.001ms !important;
+  scroll-behavior: auto !important;
+}
+
+/**
+ * System preference guard — wrap a subtree in .respect-system-motion
+ * to opt that subtree into honoring the OS setting independently of
+ * the user's explicit toggle.
+ */
+@media (prefers-reduced-motion: reduce) {
+  .respect-system-motion *,
+  .respect-system-motion *::before,
+  .respect-system-motion *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}

@@ -956,3 +956,107 @@ async def get_leaderboard_statistics(
             status_code=500,
             detail=f"Liderlik tablosu istatistikleri alınamadı: {str(e)}",
         )
+
+
+# ============================================================================
+# F14: Segmented Leaderboard — Peer Group + Improvement Tracking
+# ============================================================================
+
+
+@router.get("/leaderboard/peer-group", response_model=Dict[str, Any])
+async def get_peer_group_leaderboard(
+    current_user: AuthenticatedUser = Depends(get_current_user),
+    limit: int = Query(20, ge=1, le=100, description="Kaç kişi gösterilecek"),
+    period: str = Query("weekly", description="Zaman dilimi (weekly, monthly)"),
+):
+    """
+    Benzer seviye öğrenciler arasında sıralama.
+
+    IRT ability yakınlığına göre gruplar (±0.5 logit).
+    Mutlak puan yerine haftalık gelişim (delta) gösterir.
+    """
+    try:
+        user_id = str(current_user.id)
+        # Phase 1: demo peer group based on in-memory points
+        user_points = _user_points.get(user_id, 0)
+
+        # Find peers within ±20% score range (placeholder for IRT ±0.5 logit)
+        tolerance = max(50, int(user_points * 0.2))
+        peers = [
+            (uid, pts)
+            for uid, pts in _user_points.items()
+            if abs(pts - user_points) <= tolerance
+        ]
+        peers.sort(key=lambda x: x[1], reverse=True)
+
+        entries = []
+        for rank, (uid, pts) in enumerate(peers[:limit], 1):
+            entries.append({
+                "user_id": uid,
+                "points": pts,
+                "rank": rank,
+                "is_current_user": uid == user_id,
+                "improvement": 0,  # placeholder — will use weekly delta
+            })
+
+        return {
+            "success": True,
+            "data": {
+                "entries": entries,
+                "total_peers": len(peers),
+                "user_rank": next(
+                    (e["rank"] for e in entries if e["is_current_user"]),
+                    None,
+                ),
+                "period": period,
+            },
+        }
+
+    except Exception as e:
+        logger.error(f"Peer group leaderboard hatası: {str(e)}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Peer group leaderboard alınamadı: {str(e)}",
+        )
+
+
+@router.get("/leaderboard/improvement", response_model=Dict[str, Any])
+async def get_improvement_leaderboard(
+    current_user: AuthenticatedUser = Depends(get_current_user),
+    limit: int = Query(10, ge=1, le=50, description="Top N gelişim"),
+):
+    """
+    Bu haftanın en çok gelişen öğrencileri.
+
+    Mutlak puan yerine delta (bu hafta - geçen hafta) ile sıralama.
+    """
+    try:
+        # Phase 1: placeholder — points are static, delta = 0
+        # Phase 2: weekly snapshots → real delta calculation
+        entries = []
+        for rank, (uid, pts) in enumerate(
+            sorted(_user_points.items(), key=lambda x: x[1], reverse=True)[:limit],
+            1,
+        ):
+            entries.append({
+                "user_id": uid,
+                "current_points": pts,
+                "previous_points": pts,  # placeholder
+                "improvement": 0,
+                "rank": rank,
+            })
+
+        return {
+            "success": True,
+            "data": {
+                "entries": entries,
+                "period": "weekly",
+            },
+        }
+
+    except Exception as e:
+        logger.error(f"Improvement leaderboard hatası: {str(e)}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Improvement leaderboard alınamadı: {str(e)}",
+        )

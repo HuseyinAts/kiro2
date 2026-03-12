@@ -5,6 +5,7 @@ import { QueryClientProvider } from 'react-query';
 import { BrowserRouter as Router, Navigate, Route, Routes } from 'react-router-dom';
 
 import { PageTransition } from './components/Animations/PageTransition';
+import { useAccessibilityStyles } from './hooks/useAccessibilityStyles';
 import { ProtectedRoute } from './components/Auth/ProtectedRoute';
 import ErrorBoundary from './components/Common/ErrorBoundary';
 import { PageSkeleton } from './components/Common/PageSkeleton';
@@ -76,11 +77,18 @@ const SettingsPage = lazy(() => import('./pages/SettingsPage'));
 const RBACTestPage = lazy(() => import('./pages/RBACTestPage'));
 const AccessibilityDemoPage = lazy(() => import('./pages/AccessibilityDemoPage'));
 const LearningPathPage = lazy(() => import('./pages/ModernLearningPathPage'));
+
+// Pages - New Features (F3, F5)
+const PhotoAskPage = lazy(() => import('./pages/PhotoAskPage'));
+const PlacementAssessmentPage = lazy(() => import('./pages/PlacementAssessmentPage'));
 // Optimize edilmiş QueryClient
 const queryClient = createOptimizedQueryClient();
 
 // Performance optimized App component
 function AppContent() {
+  // Sync accessibility prefs (fontSize, lineHeight, highContrast) to CSS vars
+  useAccessibilityStyles();
+
   useEffect(() => {
     // Performance tracking'i başlat
     initializePerformanceTracking();
@@ -205,6 +213,22 @@ function AppContent() {
                 element={
                   <ProtectedRoute requiredRoles={['ogrenci']}>
                     <ExamHistoryPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/photo-ask"
+                element={
+                  <ProtectedRoute requiredRoles={['ogrenci']}>
+                    <PhotoAskPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/assessment"
+                element={
+                  <ProtectedRoute requiredRoles={['ogrenci']}>
+                    <PlacementAssessmentPage />
                   </ProtectedRoute>
                 }
               />

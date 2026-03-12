@@ -1,17 +1,27 @@
 {
-  "name": "Türkiye Üniversite Sınavları Hazırlık Platformu",
-  "short_name": "KIRO2 Eğitim",
-  "description": "YKS (TYT/AYT/YDT) sınavlarına hazırlık için AI destekli eğitim platformu",
+  "name": "KIRO2 - YKS Hazırlık",
+  "short_name": "KIRO2",
+  "description": "Yapay Zeka Destekli YKS Hazırlık Platformu",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#ffffff",
-  "theme_color": "#1976d2",
+  "background_color": "#1a1a2e",
+  "theme_color": "#6C63FF",
   "orientation": "portrait-primary",
   "scope": "/",
   "lang": "tr",
   "dir": "ltr",
   "categories": ["education", "productivity"],
   "icons": [
+    {
+      "src": "/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
     {
       "src": "/images/icon-72x72.png",
       "sizes": "72x72",

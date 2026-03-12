@@ -1501,6 +1501,8 @@ async def submit_review(
 
 class RegisterWrongAnswersRequest(BaseModel):
     question_ids: List[str] = Field(..., min_length=1)
+    # F8: Optional error type classifications from ErrorTypeSelector
+    error_types: Optional[Dict[str, str]] = None
 
 
 @router.post("/register-wrong-answers")
@@ -1520,7 +1522,8 @@ async def register_wrong_answers(
         student_id = str(current_user.id)
         adapter = QuestionReviewAdapter()
         created = await adapter.register_wrong_answers(
-            student_id, request.question_ids, db
+            student_id, request.question_ids, db,
+            error_types=request.error_types,
         )
         await db.commit()
         return {

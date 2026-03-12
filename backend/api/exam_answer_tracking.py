@@ -28,6 +28,32 @@ router = APIRouter(prefix="/api/v1/exam-answer-tracking", tags=["Sınav Cevap Ta
 security = HTTPBearer()
 logger = get_logger("exam_answer_tracking_api")
 
+VALID_ERROR_TYPES = {"concept", "procedural", "careless", "knowledge_gap"}
+
+
+# Pydantic Request/Response Models
+class ErrorTypeRequest(BaseModel):
+    """Hata tipi atama isteği"""
+
+    error_type: str = Field(
+        ...,
+        description="Hata tipi: concept, procedural, careless, knowledge_gap",
+    )
+
+    model_config = {
+        "json_schema_extra": {
+            "example": {"error_type": "concept"}
+        }
+    }
+
+
+class ErrorTypeResponse(BaseModel):
+    """Hata tipi atama yanıtı"""
+
+    success: bool
+    message: str
+    error_type: str | None = None
+
 
 # Pydantic Response Models
 class AnswerStatusResponse(BaseModel):
@@ -363,4 +389,84 @@ async def mark_answer_as_empty(
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Cevap boş olarak işaretlenirken hata oluştu",
+        )
+
+
+@router.patch(
+    "/{exam_session_id}/answers/{question_id}/error-type",
+    response_model=ErrorTypeResponse,
+    summary="Yanlış Cevaba Hata Tipi Ata (F8)",
+)
+async def update_error_type(
+    exam_session_id: str,
+    question_id: str,
+    request: ErrorTypeRequest,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+):
+    """
+    Yanlış cevaba hata tipi ata (F8 Error Taxonomy)
+
+    Hata tipleri:
+    - **concept**: Kavram hatası — konuyu yanlış anladım
+    - **procedural**: İşlem hatası — doğru düşündüm ama uygulama yanlış
+    - **careless**: Dikkatsizlik — biliyordum ama dikkat etmedim
+    - **knowledge_gap**: Bilgi eksikliği — bu konuyu hiç bilmiyordum
+
+    Bu veri F6 (koçluk), F11 (DINA tanı), F15 (hata kümeleme) için temel oluşturur.
+    """
+    if request.error_type not in VALID_ERROR_TYPES:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail=f"Geçersiz hata tipi: {request.error_type}. "
+            f"Geçerli tipler: {', '.join(sorted(VALID_ERROR_TYPES))}",
+        )
+
+    try:
+        async with get_db_session_context() as db_session:
+            service = await create_answer_tracking_service(db_session)
+
+            success = await service.update_error_type(
+                exam_session_id=exam_session_id,
+                question_id=question_id,
+                error_type=request.error_type,
+                student_id=current_user.id,
+            )
+
+            if not success:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="Hata tipi atanamadı. Cevap bulunamadı, "
+                    "erişim reddedildi veya cevap doğru.",
+                )
+
+            logger.info(
+                "Hata tipi atandı",
+                extra_data={
+                    "exam_session_id": exam_session_id,
+                    "question_id": question_id,
+                    "error_type": request.error_type,
+                    "user_id": current_user.id,
+                },
+            )
+
+            return ErrorTypeResponse(
+                success=True,
+                message="Hata tipi başarıyla atandı",
+                error_type=request.error_type,
+            )
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(
+            f"Hata tipi atama hatası: {e}",
+            extra_data={
+                "exam_session_id": exam_session_id,
+                "question_id": question_id,
+                "user_id": current_user.id,
+            },
+        )
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Hata tipi atanırken hata oluştu",
         )

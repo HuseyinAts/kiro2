@@ -7,6 +7,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import * as React from 'react';
 import { useLocation } from 'react-router-dom';
 
+import { useSettingsStore } from '../../store/settingsStore';
+
 export interface PageTransitionProps {
   children: React.ReactNode
   /** Transition variant */
@@ -44,7 +46,12 @@ export const PageTransition: React.FC<PageTransitionProps> = ({
   duration = 0.3,
 }) => {
   const location = useLocation();
+  const reduceMotion = useSettingsStore((s) => s.accessibility.reduceMotion);
   const variants = transitionVariants[variant];
+
+  if (reduceMotion) {
+    return <div style={{ width: '100%', minHeight: '100vh' }}>{children}</div>;
+  }
 
   return (
     <AnimatePresence mode="wait">
@@ -100,6 +107,12 @@ export const StaggerContainer: React.FC<{
   staggerDelay?: number
   className?: string
 }> = ({ children, staggerDelay = 0.1, className }) => {
+  const reduceMotion = useSettingsStore((s) => s.accessibility.reduceMotion);
+
+  if (reduceMotion) {
+    return <div className={className}>{children}</div>;
+  }
+
   return (
     <motion.div
       className={className}

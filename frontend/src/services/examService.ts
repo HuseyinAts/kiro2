@@ -676,6 +676,26 @@ class ExamService {
       return [];
     }
   }
+
+  // ─── F8: Error Taxonomy ─────────────────────────────────────
+
+  /**
+   * Yanlış cevaba hata tipi ata (F8 Error Taxonomy)
+   * @param examSessionId Sınav oturum ID'si
+   * @param questionId Soru ID'si
+   * @param errorType concept | procedural | careless | knowledge_gap
+   */
+  async updateErrorType(
+    examSessionId: string,
+    questionId: string,
+    errorType: string,
+  ): Promise<{ success: boolean; message: string; error_type?: string }> {
+    const response = await apiClient.patch(
+      `/api/v1/exam-answer-tracking/${examSessionId}/answers/${questionId}/error-type`,
+      { error_type: errorType },
+    );
+    return response.data;
+  }
 }
 
 // WebSocket message type for real-time exam updates

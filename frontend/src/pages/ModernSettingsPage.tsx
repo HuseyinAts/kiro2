@@ -17,6 +17,11 @@ import {
   Public,
   Speed,
   Cloud,
+  AnimationOutlined,
+  Accessibility as AccessibilityIcon,
+  FormatSize as FontSizeIcon,
+  FormatLineSpacing as LineSpacingIcon,
+  Contrast as ContrastIcon,
 } from '@mui/icons-material';
 import {
   Container,
@@ -28,18 +33,29 @@ import {
   Divider,
   Alert,
   Chip,
+  Slider,
 } from '@mui/material';
 import { motion } from 'framer-motion';
 import { useState } from 'react';
 
 import { RoleBasedComponent } from '../components/Common/RoleBasedComponent';
+import { useReducedMotion } from '../hooks/useReducedMotion';
 import { GlassCard } from '../components/ui/GlassCard';
 import { ModernButton } from '../components/ui/ModernButton';
+import { useSettingsStore } from '../store/settingsStore';
 import modernColors from '../theme/modern-colors';
 import { useAuthStore } from '@/store/authStore';
 
 export function ModernSettingsPage() {
   const { user: _user } = useAuthStore();
+  const reduceMotion = useReducedMotion();
+  const toggleReduceMotion = useSettingsStore((s) => s.toggleReduceMotion);
+  const fontSize = useSettingsStore((s) => s.accessibility.fontSize);
+  const setFontSize = useSettingsStore((s) => s.setFontSize);
+  const lineHeight = useSettingsStore((s) => s.accessibility.lineHeight);
+  const setLineHeight = useSettingsStore((s) => s.setLineHeight);
+  const highContrast = useSettingsStore((s) => s.accessibility.highContrast);
+  const toggleHighContrast = useSettingsStore((s) => s.toggleHighContrast);
 
   const [settings, setSettings] = useState({
     // Genel Ayarlar
@@ -341,6 +357,32 @@ export function ModernSettingsPage() {
                         onChange={handleSettingChange('autoSave')}
                       />
                     </Box>
+
+                    <Divider />
+
+                    <Box
+                      sx={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                      }}
+                    >
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                        <AnimationOutlined fontSize="small" color="action" />
+                        <Box>
+                          <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                            Animasyonları Azalt
+                          </Typography>
+                          <Typography variant="caption" color="text.secondary">
+                            Sayfa geçişlerini ve efektleri kapat
+                          </Typography>
+                        </Box>
+                      </Box>
+                      <Switch
+                        checked={reduceMotion}
+                        onChange={toggleReduceMotion}
+                      />
+                    </Box>
                   </Box>
                 </GlassCard>
               </motion.div>
@@ -616,6 +658,116 @@ export function ModernSettingsPage() {
                         </Box>
                       }
                     />
+                  </Box>
+                </GlassCard>
+              </motion.div>
+            </Grid>
+
+            {/* Erişilebilirlik Ayarları */}
+            <Grid item xs={12} md={6}>
+              <motion.div variants={itemVariants}>
+                <GlassCard
+                  glassIntensity="medium"
+                  elevated
+                  gradient={modernColors.gradients.success}
+                >
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 3 }}>
+                    <AccessibilityIcon />
+                    <Typography variant="h6" sx={{ fontWeight: 700 }}>
+                      Erişilebilirlik
+                    </Typography>
+                  </Box>
+
+                  <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5 }}>
+                    {/* Yazı Boyutu */}
+                    <Box>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 1 }}>
+                        <FontSizeIcon fontSize="small" color="action" />
+                        <Box sx={{ flex: 1 }}>
+                          <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                            Yazı Boyutu
+                          </Typography>
+                          <Typography variant="caption" color="text.secondary">
+                            {fontSize}px
+                          </Typography>
+                        </Box>
+                      </Box>
+                      <Box sx={{ px: 1 }}>
+                        <Slider
+                          value={fontSize}
+                          onChange={(_e, val) => setFontSize(val as number)}
+                          min={12}
+                          max={24}
+                          step={1}
+                          marks={[
+                            { value: 12, label: '12' },
+                            { value: 16, label: '16' },
+                            { value: 20, label: '20' },
+                            { value: 24, label: '24' },
+                          ]}
+                          size="small"
+                        />
+                      </Box>
+                    </Box>
+
+                    <Divider />
+
+                    {/* Satır Aralığı */}
+                    <Box>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 1 }}>
+                        <LineSpacingIcon fontSize="small" color="action" />
+                        <Box sx={{ flex: 1 }}>
+                          <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                            Satır Aralığı
+                          </Typography>
+                          <Typography variant="caption" color="text.secondary">
+                            {lineHeight.toFixed(1)}x
+                          </Typography>
+                        </Box>
+                      </Box>
+                      <Box sx={{ px: 1 }}>
+                        <Slider
+                          value={lineHeight}
+                          onChange={(_e, val) => setLineHeight(val as number)}
+                          min={1.0}
+                          max={2.0}
+                          step={0.1}
+                          marks={[
+                            { value: 1.0, label: '1.0' },
+                            { value: 1.5, label: '1.5' },
+                            { value: 2.0, label: '2.0' },
+                          ]}
+                          size="small"
+                        />
+                      </Box>
+                    </Box>
+
+                    <Divider />
+
+                    {/* Yüksek Kontrast */}
+                    <Box
+                      sx={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                      }}
+                    >
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                        <ContrastIcon fontSize="small" color="action" />
+                        <Box>
+                          <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                            Yüksek Kontrast
+                          </Typography>
+                          <Typography variant="caption" color="text.secondary">
+                            Metin ve arka plan kontrastını artır
+                          </Typography>
+                        </Box>
+                      </Box>
+                      <Switch
+                        checked={highContrast}
+                        onChange={toggleHighContrast}
+                      />
+                    </Box>
                   </Box>
                 </GlassCard>
               </motion.div>

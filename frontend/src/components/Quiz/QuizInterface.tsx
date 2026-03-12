@@ -39,6 +39,9 @@ import { useState, useEffect } from 'react';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 
+import { ErrorTypeSelector, type ErrorType } from './ErrorTypeSelector';
+import { MnemonicHint } from './MnemonicHint';
+
 export interface Question {
   id: string
   type: 'multiple-choice' | 'multiple-select' | 'code' | 'text' | 'true-false'
@@ -72,6 +75,8 @@ interface QuizInterfaceProps {
   config: QuizConfig
   onSubmit?: (results: QuizResults) => void
   onExit?: () => void
+  /** F8: Called when student classifies a wrong answer's error type */
+  onErrorTypeSelect?: (questionId: string, errorType: ErrorType) => void
   className?: string
 }
 
@@ -89,6 +94,7 @@ export function QuizInterface({
   config,
   onSubmit,
   onExit,
+  onErrorTypeSelect,
   className,
 }: QuizInterfaceProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -620,6 +626,17 @@ export function QuizInterface({
                     </div>
                   )}
                 </Alert>
+
+                {/* F8: Error Type Selector — shown after wrong answer */}
+                {!feedbackCorrect && onErrorTypeSelect && (
+                  <ErrorTypeSelector
+                    questionId={currentQuestion.id}
+                    onSelect={onErrorTypeSelect}
+                  />
+                )}
+
+                {/* F19: Mnemonic Hint — memory aid for the concept */}
+                <MnemonicHint questionId={currentQuestion.id} compact />
               </motion.div>
             )}
 
@@ -641,6 +658,8 @@ export function QuizInterface({
                     <strong>Açıklama:</strong> {currentQuestion.explanation}
                   </div>
                 )}
+                {/* F19: Mnemonic Hint in review mode */}
+                <MnemonicHint questionId={currentQuestion.id} />
               </Alert>
             )}
           </motion.div>

@@ -44,6 +44,7 @@ class QuestionReviewAdapter:
         student_id: str,
         question_id: str,
         db: AsyncSession,
+        error_type: Optional[str] = None,
     ) -> Optional[DBFSRSCard]:
         """
         Yanlış cevaplanan soruyu FSRS tekrar kartına dönüştür.
@@ -96,7 +97,10 @@ class QuestionReviewAdapter:
             state="new",
             due_date=now + timedelta(hours=24),
             last_review=None,
-            cultural_factors={_QB_ID_KEY: str(question_id)},
+            cultural_factors={
+                _QB_ID_KEY: str(question_id),
+                **({"error_type": error_type} if error_type else {}),
+            },
         )
 
         db.add(card)
@@ -277,16 +281,25 @@ class QuestionReviewAdapter:
         student_id: str,
         question_ids: List[str],
         db: AsyncSession,
+        error_types: Optional[dict[str, str]] = None,
     ) -> int:
         """
         Toplu yanlış cevap kaydı — quiz sonunda çağrılır.
 
+        Args:
+            error_types: Optional {question_id: error_type} mapping from F8 ErrorTypeSelector.
+                         Valid types: concept, procedural, careless, knowledge_gap.
+
         Returns:
             Oluşturulan kart sayısı
         """
+        valid_error_types = {"concept", "procedural", "careless", "knowledge_gap"}
         created = 0
         for qid in question_ids:
-            card = await self.create_review_card(student_id, qid, db)
+            et = (error_types or {}).get(qid)
+            if et and et not in valid_error_types:
+                et = None  # Reject invalid types silently
+            card = await self.create_review_card(student_id, qid, db, error_type=et)
             if card:
                 created += 1
 

@@ -298,6 +298,9 @@ class QuestionBankItem(Base):
         JSON
     )  # Alternatif çözüm yolları
 
+    # Hafıza ipucu (F19 Mnemonic Hints)
+    mnemonic_hint: Mapped[Optional[str]] = mapped_column(Text)
+
     # ========================================================================
     # TASK 70.2: Konu Etiketleme
     # ========================================================================

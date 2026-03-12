@@ -20,6 +20,10 @@ import {
   Image as ImageIcon,
   PictureAsPdf as PdfIcon,
   InsertDriveFile as FileIcon,
+  Functions as FormulasIcon,
+  Route as StepsIcon,
+  EmojiEvents as StrategyIcon,
+  ErrorOutline as MistakeIcon,
 } from '@mui/icons-material';
 import {
   Box,
@@ -59,12 +63,22 @@ interface TurkishChatInterfaceProps {
   className?: string;
 }
 
-// Quick action definitions
+// Quick action definitions (F20: "Ne Soracağımı Bilmiyorum" conversation starters)
 const QUICK_ACTIONS = [
   { text: 'Konu acikla', icon: <MenuBookIcon sx={{ fontSize: 16 }} />, prompt: 'Bu konuyu detayli olarak aciklar misin?' },
   { text: 'Soru sor', icon: <QuizIcon sx={{ fontSize: 16 }} />, prompt: 'Bu konu hakkinda bana soru sorabilir misin?' },
   { text: 'Ornek ver', icon: <LightbulbIcon sx={{ fontSize: 16 }} />, prompt: 'Bu konuya ornek verebilir misin?' },
   { text: 'Ozet cikar', icon: <SummarizeIcon sx={{ fontSize: 16 }} />, prompt: 'Bu konunun ozetini cikarabilir misin?' },
+];
+
+// Extended starters shown only in empty state — helps students who don't know what to ask
+const CONVERSATION_STARTERS = [
+  { text: 'Yaygın yanılgılar', icon: <MistakeIcon sx={{ fontSize: 16 }} />, prompt: 'Bu konudaki en yaygın 3 yanılgı nedir? Öğrenciler genelde neyi yanlış anlıyor?' },
+  { text: 'Basitçe anlat', icon: <LightbulbIcon sx={{ fontSize: 16 }} />, prompt: 'Bu konuyu en basit şekilde, günlük hayattan örneklerle anlat.' },
+  { text: 'Pratik soru sor', icon: <QuizIcon sx={{ fontSize: 16 }} />, prompt: 'Bana bu konudan bir pratik soru sor, sonra çözümünü adım adım kontrol edelim.' },
+  { text: 'Formül hatırlatıcı', icon: <FormulasIcon sx={{ fontSize: 16 }} />, prompt: 'Bu konudaki tüm önemli formülleri ve ne zaman kullanılacaklarını listele.' },
+  { text: 'Adım adım çözüm', icon: <StepsIcon sx={{ fontSize: 16 }} />, prompt: 'Tipik bir YKS sorusunu adım adım çözelim. Her adımda neden o işlemi yaptığımızı açıkla.' },
+  { text: 'Sınav stratejisi', icon: <StrategyIcon sx={{ fontSize: 16 }} />, prompt: 'Bu konu sınavda nasıl çıkıyor? Hangi soru tiplerini beklemeliyim ve nasıl yaklaşmalıyım?' },
 ];
 
 export const TurkishChatInterface: React.FC<TurkishChatInterfaceProps> = ({
@@ -611,11 +625,12 @@ const EmptyState: React.FC<EmptyStateProps> = ({ quickActions, onAction }) => (
     <Typography variant="h6" fontWeight={600} sx={{ mb: 1 }}>
       Merhaba! Size nasil yardimci olabilirim?
     </Typography>
-    <Typography variant="body2" color="text.secondary" sx={{ mb: 4, textAlign: 'center', maxWidth: 400 }}>
+    <Typography variant="body2" color="text.secondary" sx={{ mb: 3, textAlign: 'center', maxWidth: 400 }}>
       TYT/AYT konularinda sorularinizi sorabilir, konu aciklamasi isteyebilirsiniz.
     </Typography>
 
-    <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 1.5, maxWidth: 360, width: '100%' }}>
+    {/* Quick actions — general */}
+    <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 1.5, maxWidth: 420, width: '100%' }}>
       {quickActions.map((action, i) => (
         <motion.div
           key={i}
@@ -649,6 +664,38 @@ const EmptyState: React.FC<EmptyStateProps> = ({ quickActions, onAction }) => (
             {action.icon}
             <Typography variant="body2" fontWeight={500}>{action.text}</Typography>
           </Paper>
+        </motion.div>
+      ))}
+    </Box>
+
+    {/* F20: "Ne soracağımı bilmiyorum" conversation starters */}
+    <Typography variant="caption" color="text.secondary" sx={{ mt: 3, mb: 1.5, fontWeight: 600 }}>
+      Ne soracağını bilmiyor musun? Bunları dene:
+    </Typography>
+    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, maxWidth: 420, justifyContent: 'center' }}>
+      {CONVERSATION_STARTERS.map((starter, i) => (
+        <motion.div
+          key={`starter-${i}`}
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.3 + i * 0.05 }}
+        >
+          <Chip
+            icon={starter.icon}
+            label={starter.text}
+            size="small"
+            variant="outlined"
+            onClick={() => onAction(starter.prompt)}
+            sx={{
+              borderRadius: '20px',
+              borderColor: modernColors.primary[200],
+              fontWeight: 500,
+              '&:hover': {
+                background: modernColors.primary[50],
+                borderColor: modernColors.primary[400],
+              },
+            }}
+          />
         </motion.div>
       ))}
     </Box>

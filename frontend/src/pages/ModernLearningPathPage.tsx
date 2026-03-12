@@ -6,7 +6,7 @@
 import { Timeline, VideoLibrary, Assessment, Refresh, AutoAwesome, Shuffle, Science } from '@mui/icons-material';
 import { Container, Box, Tabs, Tab, Typography, Alert, Chip } from '@mui/material';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 
 // Custom hooks
 import { VideoResponse } from '../api';
@@ -19,8 +19,11 @@ import { ModernButton } from '../components/ui/ModernButton';
 import { ModernLoader } from '../components/ui/ModernLoader';
 import { QuizInterface } from '../components/Quiz/QuizInterface';
 import type { Question } from '../components/Quiz/QuizInterface';
+import type { ErrorType } from '../components/Quiz/ErrorTypeSelector';
 import { mapApiToQuizQuestion } from '../utils/questionMappers';
 import { ReviewQueuePanel } from '../components/LearningPath/ReviewQueuePanel';
+import { ErrorClusterCard } from '../components/Quiz/ErrorClusterCard';
+import { ProductiveFailureFlow } from '../components/LearningPath/ProductiveFailureFlow';
 import { useLearningPath } from '../hooks/useLearningPath';
 import { useLearningPathVideos } from '../hooks/useLearningPathVideos';
 
@@ -93,6 +96,15 @@ export function ModernLearningPathPage() {
   const [nodeQuizQuestions, setNodeQuizQuestions] = useState<Question[] | null>(null);
   const [activeQuizNode, setActiveQuizNode] = useState<PathNodeData | null>(null);
 
+  // F8: Collect error type selections during quiz (ref to avoid re-renders)
+  const errorTypesRef = useRef<Record<string, ErrorType>>({});
+
+  // F9: Productive failure pretest state
+  const [pretestNode, setPretestNode] = useState<PathNodeData | null>(null);
+
+  // F15: Last completed quiz subject for error cluster card
+  const [lastQuizSubject, setLastQuizSubject] = useState<string | null>(null);
+
   // ========================================
   // Effects
   // ========================================
@@ -147,9 +159,17 @@ export function ModernLearningPathPage() {
 
   /**
    * Handle start quiz from NodeDetailsPanel
-   * Fetches questions via exit-quiz endpoint and renders QuizInterface
+   * F9: If node is new (available), show Productive Failure pretest first.
+   * Otherwise, fetch quiz questions directly.
    */
   const handleStartQuiz = useCallback(async (node: PathNodeData) => {
+    // F9: Productive Failure — show pretest before new topic
+    if (node.status === 'available' && !pretestNode) {
+      setPretestNode(node);
+      setShowNodeDetails(false);
+      return;
+    }
+
     const subject = node.title.split(' ')[0];
     try {
       const res = await fetch(
@@ -161,6 +181,7 @@ export function ModernLearningPathPage() {
         setNodeQuizQuestions(data.questions.map(mapApiToQuizQuestion));
         setActiveQuizNode(node);
         setShowNodeDetails(false);
+        setLastQuizSubject(subject);
       }
     } catch (err) {
       console.error('Quiz soruları yüklenemedi:', err);
@@ -180,14 +201,17 @@ export function ModernLearningPathPage() {
       })
       .map(q => q.id);
 
-    // 2. Register wrong answers to FSRS
+    // 2. Register wrong answers to FSRS (with F8 error types if available)
     if (wrongIds.length > 0) {
       try {
+        const errorTypes = Object.keys(errorTypesRef.current).length > 0
+          ? errorTypesRef.current
+          : undefined;
         await fetch('/api/learning-path/register-wrong-answers', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           credentials: 'include',
-          body: JSON.stringify({ question_ids: wrongIds }),
+          body: JSON.stringify({ question_ids: wrongIds, error_types: errorTypes }),
         });
       } catch (err) {
         console.error('FSRS kaydi basarisiz:', err);
@@ -215,10 +239,19 @@ export function ModernLearningPathPage() {
       }
     }
 
-    // 5. Close quiz
+    // 5. Close quiz + reset error types
+    errorTypesRef.current = {};
     setNodeQuizQuestions(null);
     setActiveQuizNode(null);
   }, [nodeQuizQuestions, activeQuizNode, markNodeComplete, updateProgress, studentId]);
+
+  /**
+   * F8: Handle error type selection during immediate feedback.
+   * Stores selections in ref; sent with register-wrong-answers on quiz completion.
+   */
+  const handleErrorTypeSelect = useCallback((questionId: string, errorType: ErrorType) => {
+    errorTypesRef.current[questionId] = errorType;
+  }, []);
 
   // ========================================
   // Memoized values
@@ -463,8 +496,40 @@ export function ModernLearningPathPage() {
                   transition={{ duration: 0.3 }}
                 >
                   {/* FSRS Tekrar Paneli — due kartlar varsa göster */}
-                  {!nodeQuizQuestions && !interleavedQuestions && (
+                  {!nodeQuizQuestions && !interleavedQuestions && !pretestNode && (
                     <ReviewQueuePanel />
+                  )}
+
+                  {/* F9: Productive Failure Pretest */}
+                  {pretestNode && (
+                    <Box sx={{ mb: 3 }}>
+                      <ProductiveFailureFlow
+                        topic={pretestNode.title}
+                        onComplete={() => {
+                          // After pretest, start the actual quiz directly (skip pretest check)
+                          const node = { ...pretestNode, status: 'current' as const };
+                          setPretestNode(null);
+                          handleStartQuiz(node);
+                        }}
+                        onSkip={() => {
+                          const node = { ...pretestNode, status: 'current' as const };
+                          setPretestNode(null);
+                          handleStartQuiz(node);
+                        }}
+                      />
+                    </Box>
+                  )}
+
+                  {/* F15: Error Cluster Recommendations — after quiz completion */}
+                  {lastQuizSubject && !nodeQuizQuestions && !interleavedQuestions && !pretestNode && (
+                    <ErrorClusterCard
+                      subject={lastQuizSubject}
+                      onNavigateToTopic={(topic) => {
+                        // Find the node with this topic and navigate to it
+                        const targetNode = pathNodes.find(n => n.title.toLowerCase().includes(topic.toLowerCase()));
+                        if (targetNode) handleNodeClick(targetNode);
+                      }}
+                    />
                   )}
 
                   {/* Node Quiz — node'dan başlatılan quiz */}
@@ -481,6 +546,7 @@ export function ModernLearningPathPage() {
                         }}
                         onSubmit={handleQuizComplete}
                         onExit={() => { setNodeQuizQuestions(null); setActiveQuizNode(null); }}
+                        onErrorTypeSelect={handleErrorTypeSelect}
                       />
                     </Box>
                   )}
@@ -503,18 +569,23 @@ export function ModernLearningPathPage() {
                             .map(q => q.id);
                           if (wrongIds.length > 0) {
                             try {
+                              const errorTypes = Object.keys(errorTypesRef.current).length > 0
+                                ? errorTypesRef.current
+                                : undefined;
                               await fetch('/api/learning-path/register-wrong-answers', {
                                 method: 'POST',
                                 headers: { 'Content-Type': 'application/json' },
                                 credentials: 'include',
-                                body: JSON.stringify({ question_ids: wrongIds }),
+                                body: JSON.stringify({ question_ids: wrongIds, error_types: errorTypes }),
                               });
                             } catch (err) {
                               console.error('FSRS kaydi basarisiz:', err);
                             }
                           }
+                          errorTypesRef.current = {};
                         }}
-                        onExit={() => setInterleavedQuestions(null)}
+                        onExit={() => { errorTypesRef.current = {}; setInterleavedQuestions(null); }}
+                        onErrorTypeSelect={handleErrorTypeSelect}
                       />
                     </Box>
                   )}

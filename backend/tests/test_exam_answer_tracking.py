@@ -29,9 +29,12 @@ from services.exam_answer_tracking_service import (
 
 
 
+import os
+
+_db_url = os.environ.get("DATABASE_URL", "")
 pytestmark = pytest.mark.skipif(
-    True,
-    reason="ExamAnswerTracking model errors, 9 errors",
+    not _db_url,
+    reason="DATABASE_URL not set — requires PostgreSQL for integration tests",
 )
 
 
@@ -467,3 +470,158 @@ async def test_empty_vs_unanswered_distinction(
     assert (
         stats.answered_questions + stats.empty_answers + stats.unanswered_questions
     ) == stats.total_questions
+
+
+# ─── F8: Error Taxonomy Tests ───────────────────────────────────────────
+
+
+@pytest.mark.asyncio
+async def test_update_error_type_valid(
+    db_session: AsyncSession, test_exam_session, test_exam_questions, test_student
+):
+    """
+    Test: Yanlış cevaba geçerli hata tipi atanabilir
+
+    F8: Error Taxonomy — concept, procedural, careless, knowledge_gap
+    """
+    question_id = test_exam_questions[0].question_id
+
+    # Yanlış cevap oluştur (is_correct=False)
+    answer = StudentAnswer(
+        exam_session_id=test_exam_session.id,
+        question_id=question_id,
+        selected_answer="B",
+        is_correct=False,
+        response_time_seconds=30.0,
+    )
+    db_session.add(answer)
+    await db_session.commit()
+
+    service = await create_answer_tracking_service(db_session)
+
+    # Her geçerli hata tipini test et
+    for error_type in ("concept", "procedural", "careless", "knowledge_gap"):
+        success = await service.update_error_type(
+            exam_session_id=test_exam_session.id,
+            question_id=question_id,
+            error_type=error_type,
+            student_id=test_student.id,
+        )
+        assert success is True, f"error_type '{error_type}' atanamadı"
+
+    # Son atanan tipi doğrula
+    await db_session.refresh(answer)
+    assert answer.error_type == "knowledge_gap"
+
+
+@pytest.mark.asyncio
+async def test_update_error_type_invalid(
+    db_session: AsyncSession, test_exam_session, test_exam_questions, test_student
+):
+    """
+    Test: Geçersiz hata tipi reddedilir
+
+    F8: Sadece 4 geçerli tip kabul edilir
+    """
+    question_id = test_exam_questions[0].question_id
+
+    # Yanlış cevap oluştur
+    answer = StudentAnswer(
+        exam_session_id=test_exam_session.id,
+        question_id=question_id,
+        selected_answer="C",
+        is_correct=False,
+        response_time_seconds=20.0,
+    )
+    db_session.add(answer)
+    await db_session.commit()
+
+    service = await create_answer_tracking_service(db_session)
+
+    # Geçersiz tipler reddedilmeli
+    for invalid_type in ("typo", "lazy", "unknown", "", "CONCEPT"):
+        success = await service.update_error_type(
+            exam_session_id=test_exam_session.id,
+            question_id=question_id,
+            error_type=invalid_type,
+            student_id=test_student.id,
+        )
+        assert success is False, f"Geçersiz tip '{invalid_type}' kabul edildi!"
+
+    # error_type hâlâ None olmalı
+    await db_session.refresh(answer)
+    assert answer.error_type is None
+
+
+@pytest.mark.asyncio
+async def test_update_error_type_unauthorized(
+    db_session: AsyncSession, test_exam_session, test_exam_questions
+):
+    """
+    Test: Başka öğrencinin cevabına hata tipi atanamaz (IDOR koruması)
+
+    F8 + Session 84-85: Ownership verification pattern
+    """
+    question_id = test_exam_questions[0].question_id
+
+    # Yanlış cevap oluştur
+    answer = StudentAnswer(
+        exam_session_id=test_exam_session.id,
+        question_id=question_id,
+        selected_answer="D",
+        is_correct=False,
+        response_time_seconds=15.0,
+    )
+    db_session.add(answer)
+    await db_session.commit()
+
+    service = await create_answer_tracking_service(db_session)
+
+    # Farklı student_id ile deneme — reddedilmeli
+    success = await service.update_error_type(
+        exam_session_id=test_exam_session.id,
+        question_id=question_id,
+        error_type="concept",
+        student_id="nonexistent-student-id",
+    )
+    assert success is False
+
+    # error_type değişmemiş olmalı
+    await db_session.refresh(answer)
+    assert answer.error_type is None
+
+
+@pytest.mark.asyncio
+async def test_update_error_type_correct_answer_rejected(
+    db_session: AsyncSession, test_exam_session, test_exam_questions, test_student
+):
+    """
+    Test: Doğru cevaba hata tipi atanamaz
+
+    F8: Sadece yanlış cevaplara hata tipi atanabilir
+    """
+    question_id = test_exam_questions[0].question_id
+
+    # Doğru cevap oluştur (is_correct=True)
+    answer = StudentAnswer(
+        exam_session_id=test_exam_session.id,
+        question_id=question_id,
+        selected_answer="A",
+        is_correct=True,
+        response_time_seconds=25.0,
+    )
+    db_session.add(answer)
+    await db_session.commit()
+
+    service = await create_answer_tracking_service(db_session)
+
+    success = await service.update_error_type(
+        exam_session_id=test_exam_session.id,
+        question_id=question_id,
+        error_type="careless",
+        student_id=test_student.id,
+    )
+    assert success is False
+
+    await db_session.refresh(answer)
+    assert answer.error_type is None
