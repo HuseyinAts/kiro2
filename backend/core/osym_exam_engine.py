@@ -17,7 +17,7 @@ from datetime import datetime, timedelta
 from enum import Enum
 from typing import Any
 
-from sqlalchemy import and_, func, select, update
+from sqlalchemy import and_, or_, func, select, update
 
 from core.database import get_db_session_context
 from core.structured_logger import get_logger
@@ -1096,7 +1096,7 @@ class OSYMExamEngine:
                     Question.subject_area == subject,
                     Question.is_active == True,  # noqa: E712
                     Question.question_text.isnot(None),
-                    func.length(Question.question_text) >= 20,
+                    func.length(Question.question_text) >= 50,
                     Question.option_a.isnot(None),
                     func.length(Question.option_a) > 0,
                     Question.option_b.isnot(None),
@@ -1106,6 +1106,45 @@ class OSYMExamEngine:
                     Question.option_d.isnot(None),
                     func.length(Question.option_d) > 0,
                     Question.option_a != Question.option_b,
+                    # P1-3: Seçenek minimum uzunluğu
+                    func.length(Question.option_a) >= 2,
+                    func.length(Question.option_b) >= 2,
+                    func.length(Question.option_c) >= 2,
+                    func.length(Question.option_d) >= 2,
+                    # P0-2: Passage kontrolü — kısa metin + passage referansı = paragraf eksik
+                    # Her iki form: diacritics'siz (OCR) ve Türkçe karakterli
+                    or_(
+                        and_(
+                            ~func.lower(Question.question_text).contains("parcaya gore"),
+                            ~func.lower(Question.question_text).contains("parçaya göre"),
+                        ),
+                        func.length(Question.question_text) >= 300,
+                    ),
+                    or_(
+                        and_(
+                            ~func.lower(Question.question_text).contains("metne gore"),
+                            ~func.lower(Question.question_text).contains("metne göre"),
+                        ),
+                        func.length(Question.question_text) >= 300,
+                    ),
+                    or_(
+                        and_(
+                            ~func.lower(Question.question_text).contains("bu parcada"),
+                            ~func.lower(Question.question_text).contains("bu parçada"),
+                        ),
+                        func.length(Question.question_text) >= 300,
+                    ),
+                    # P0-3: Geometri/Fizik görsel bağımlılık filtresi
+                    or_(
+                        ~Question.subject_area.in_(["GEOMETRI", "FIZIK"]),
+                        Question.question_image_url.isnot(None),
+                        func.length(Question.question_text) >= 500,
+                    ),
+                    # P2-3: Reddedilen sorular hariç
+                    or_(
+                        Question.quality_review_status.is_(None),
+                        Question.quality_review_status != "rejected",
+                    ),
                 ]
 
                 # Difficulty filter (if specified)
@@ -1115,6 +1154,18 @@ class OSYMExamEngine:
                     ]
                 else:
                     filters = base_filters
+
+                # P1-1: Matematik dışı derslerde LaTeX formül içeren soruları hariç tut
+                # Verified: 0 hits for x^2/2x+ in social subjects (77,336 questions checked)
+                # $\frac/$\sqrt: LaTeX delimiter — safe filter
+                # x^2, 2x +: No delimiter — theoretical false positive risk, 0 actual hits
+                if subject in ("TURKCE", "EDEBIYAT", "TARIH", "COGRAFYA", "SOSYAL"):
+                    filters.extend([
+                        ~Question.question_text.contains("$\\frac"),
+                        ~Question.question_text.contains("$\\sqrt"),
+                        ~Question.question_text.contains("x^2"),
+                        ~Question.question_text.contains("2x +"),
+                    ])
 
                 result = await db_session.execute(
                     select(Question)

@@ -56,6 +56,8 @@ import {
 } from '../../services/examService';
 import { GlassCard } from '@/components/ui/GlassCard';
 import { ModernButton } from '@/components/ui/ModernButton';
+import { MathText } from '@/components/ui/MathText';
+import { QuestionImage } from '@/components/ui/ImageZoomModal';
 import { ModernLoader } from '@/components/ui/ModernLoader';
 import modernColors from '@/theme/modern-colors';
 
@@ -534,10 +536,35 @@ export const ModernOSYMExamInterface: React.FC<ModernOSYMExamInterfaceProps> = (
                   </Tooltip>
                 </Box>
 
-                {/* Question Text */}
-                <Typography variant="h6" sx={{ mb: 3, lineHeight: 1.8 }}>
-                  {currentQuestion.content || currentQuestion.question_text}
-                </Typography>
+                {/* Question Text + Image — side-by-side on desktop */}
+                <Box sx={{
+                  display: { xs: 'block', md: currentQuestion.question_image_url ? 'flex' : 'block' },
+                  gap: 3,
+                  mb: 3,
+                }}>
+                  <Box sx={{ flex: currentQuestion.question_image_url ? { md: '1 1 55%' } : undefined, minWidth: 0 }}>
+                    <Typography variant="h6" component="div" sx={{ lineHeight: 1.8 }}>
+                      <MathText>{currentQuestion.content || currentQuestion.question_text}</MathText>
+                    </Typography>
+                  </Box>
+
+                  {currentQuestion.question_image_url && (
+                    <Box sx={{
+                      flex: { md: '0 0 40%' },
+                      position: { md: 'sticky' },
+                      top: { md: 80 },
+                      alignSelf: 'flex-start',
+                      mt: { xs: 2, md: 0 },
+                    }}>
+                      <QuestionImage
+                        src={currentQuestion.question_image_url}
+                        alt={currentQuestion.image_alt_text || undefined}
+                        width={currentQuestion.image_width}
+                        height={currentQuestion.image_height}
+                      />
+                    </Box>
+                  )}
+                </Box>
 
                 {/* Options */}
                 <RadioGroup value={currentAnswer || ''} onChange={(e) => handleAnswerChange(e.target.value)}>
@@ -551,7 +578,7 @@ export const ModernOSYMExamInterface: React.FC<ModernOSYMExamInterfaceProps> = (
                       <FormControlLabel
                         value={option.option_letter}
                         control={<Radio />}
-                        label={`${option.option_letter}) ${option.text}`}
+                        label={<span>{option.option_letter}) <MathText inline>{option.text}</MathText></span>}
                         sx={{
                           p: 2,
                           mb: 1,

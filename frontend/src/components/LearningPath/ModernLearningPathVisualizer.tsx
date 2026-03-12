@@ -12,6 +12,7 @@ import {
   ViewModule,
   PlayArrow,
   CheckCircle,
+  RadioButtonUnchecked,
   Lock,
   Stars,
   Schedule,
@@ -29,6 +30,7 @@ import {
   Typography,
   LinearProgress,
   Grid,
+  Alert,
 } from '@mui/material';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useRef } from 'react';
@@ -677,10 +679,29 @@ export function ModernLearningPathVisualizer({
                     <Typography variant="subtitle2" sx={{ fontWeight: 700, mb: 1 }}>
                       Önkoşullar:
                     </Typography>
-                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-                      {selectedNode.prerequisites.map((req, i) => (
-                        <Chip key={i} label={req} size="small" />
-                      ))}
+                    {selectedNode.status === 'locked' && (
+                      <Alert severity="warning" sx={{ mb: 1.5, borderRadius: 2 }}>
+                        Bu konuya başlamak için önce aşağıdakileri tamamlayın:
+                      </Alert>
+                    )}
+                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+                      {selectedNode.prerequisites.map((reqId, i) => {
+                        const prereqNode = nodes.find(n => n.id === reqId || n.title === reqId);
+                        const isComplete = prereqNode?.status === 'completed';
+                        return (
+                          <Chip
+                            key={i}
+                            label={prereqNode?.title || reqId}
+                            size="small"
+                            color={isComplete ? 'success' : 'default'}
+                            variant={isComplete ? 'filled' : 'outlined'}
+                            icon={isComplete
+                              ? <CheckCircle sx={{ fontSize: 16 }} />
+                              : <RadioButtonUnchecked sx={{ fontSize: 16 }} />
+                            }
+                          />
+                        );
+                      })}
                     </Box>
                   </Box>
                 )}
