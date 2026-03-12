@@ -1,0 +1,71 @@
+{
+  "timestamp": "2026-03-10T19:54:34.959972+00:00",
+  "base_url": "http://localhost:8000",
+  "rounds": 5,
+  "results": [
+    {
+      "name": "Health Check",
+      "path": "/health",
+      "method": "GET",
+      "rounds": 5,
+      "errors": 0,
+      "min_ms": 9113.6,
+      "avg_ms": 9129.9,
+      "max_ms": 9145.0,
+      "p95_ms": 9145.0,
+      "pass": false
+    },
+    {
+      "name": "Questions (limit=20)",
+      "path": "/sorular?limit=20",
+      "method": "GET",
+      "rounds": 5,
+      "errors": 0,
+      "min_ms": 2.5,
+      "avg_ms": 2.7,
+      "max_ms": 2.8,
+      "p95_ms": 2.8,
+      "pass": true
+    },
+    {
+      "name": "Dashboard Stats",
+      "path": "/api/v1/student-dashboard/istatistikler",
+      "method": "GET",
+      "rounds": 5,
+      "errors": 0,
+      "min_ms": 2.7,
+      "avg_ms": 3.2,
+      "max_ms": 3.8,
+      "p95_ms": 3.8,
+      "pass": true
+    },
+    {
+      "name": "Gamification Points",
+      "path": "/api/v1/gamification/points",
+      "method": "GET",
+      "rounds": 5,
+      "errors": 0,
+      "min_ms": 2.1,
+      "avg_ms": 2.4,
+      "max_ms": 2.8,
+      "p95_ms": 2.8,
+      "pass": true
+    },
+    {
+      "name": "Leaderboard",
+      "path": "/api/v1/gamification/leaderboard?period=alltime&limit=10",
+      "method": "GET",
+      "rounds": 5,
+      "errors": 0,
+      "min_ms": 2.1,
+      "avg_ms": 2.5,
+      "max_ms": 3.1,
+      "p95_ms": 3.1,
+      "pass": true
+    }
+  ],
+  "summary": {
+    "passed": 4,
+    "total": 5
+  }
+}
