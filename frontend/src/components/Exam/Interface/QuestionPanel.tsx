@@ -8,6 +8,8 @@ import { Box, Typography, Paper, Chip } from '@mui/material';
 import { motion } from 'framer-motion';
 import * as React from 'react';
 
+import { MathText } from '@/components/ui/MathText';
+
 export interface QuestionPanelProps {
   questionNumber: number;
   totalQuestions: number;
@@ -51,13 +53,13 @@ export const QuestionPanel: React.FC<QuestionPanelProps> = ({
         </Box>
         <Typography
           variant="body1"
+          component="div"
           sx={{
-            whiteSpace: 'pre-wrap',
             lineHeight: 1.8,
             fontSize: '1.1rem',
           }}
         >
-          {questionText}
+          <MathText>{questionText}</MathText>
         </Typography>
       </Paper>
     </motion.div>

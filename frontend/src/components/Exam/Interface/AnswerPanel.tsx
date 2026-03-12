@@ -14,6 +14,8 @@ import {
 import { motion } from 'framer-motion';
 import * as React from 'react';
 
+import { MathText } from '@/components/ui/MathText';
+
 export interface AnswerOption {
   key: string;
   text: string;
@@ -81,8 +83,8 @@ export const AnswerPanel: React.FC<AnswerPanelProps> = ({
                 value={option.key}
                 control={<Radio disabled={disabled} />}
                 label={
-                  <Typography variant="body1">
-                    <strong>{option.key})</strong> {option.text}
+                  <Typography variant="body1" component="div">
+                    <strong>{option.key})</strong> <MathText inline>{option.text}</MathText>
                   </Typography>
                 }
                 sx={{ width: '100%', m: 0 }}

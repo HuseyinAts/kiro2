@@ -35,7 +35,7 @@ import os
 import time
 import threading
 from typing import List, Optional, Dict, Any
-from datetime import datetime
+from datetime import datetime, date
 from functools import lru_cache
 
 from fastapi import APIRouter, HTTPException, Depends, Request
@@ -81,7 +81,9 @@ from models.learning_path_models import (
     Quiz,
     QuizQuestion,
     TopicProgress,
+    StudySession,
 )
+from models.learning_path_models import QuizSubmission as QuizSubmissionORM
 from models.question_bank import QuestionBankItem as Question
 
 logger = logging.getLogger(__name__)
@@ -297,7 +299,9 @@ async def get_my_profile(
             LearningPathStudentProfile.user_id == str(current_user.id)
         )
     )
-    profile = result.scalar_one_or_none()
+    # NOTE: scalars().first() instead of scalar_one_or_none() because
+    # 2 duplicate profiles exist in DB. TODO: add UNIQUE constraint on user_id
+    profile = result.scalars().first()
 
     if not profile:
         raise HTTPException(status_code=404, detail="Profil bulunamadı")
@@ -1534,6 +1538,285 @@ async def register_wrong_answers(
         raise HTTPException(
             status_code=500, detail=f"Failed to register wrong answers: {str(e)}"
         )
+
+
+# ========================================
+# B1: Study Session endpoints
+# ========================================
+
+
+class StudySessionStartResponse(BaseModel):
+    session_id: str
+    started_at: str
+
+
+@router.post("/study-session/start")
+async def start_study_session(
+    current_user: AuthenticatedUser = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """Yeni çalışma oturumu başlat."""
+    # Resolve student_id from user_id (they may differ)
+    profile_result = await db.execute(
+        select(LearningPathStudentProfile.student_id).where(
+            LearningPathStudentProfile.user_id == str(current_user.id)
+        )
+    )
+    student_id = profile_result.scalar_one_or_none()
+    if not student_id:
+        raise HTTPException(status_code=404, detail="Öğrenci profili bulunamadı")
+
+    # Check for already-active session (no ended_at)
+    result = await db.execute(
+        select(StudySession)
+        .where(StudySession.student_id == student_id, StudySession.ended_at.is_(None))
+        .order_by(StudySession.started_at.desc())
+        .limit(1)
+    )
+    active = result.scalar_one_or_none()
+    if active:
+        # Return existing active session instead of creating duplicate
+        return StudySessionStartResponse(
+            session_id=active.id,
+            started_at=active.started_at.isoformat(),
+        )
+
+    session = StudySession(student_id=student_id)
+    db.add(session)
+    await db.commit()
+    await db.refresh(session)
+
+    return StudySessionStartResponse(
+        session_id=session.id,
+        started_at=session.started_at.isoformat(),
+    )
+
+
+class StudySessionEndRequest(BaseModel):
+    session_id: str
+    topics_studied: List[str] = Field(default_factory=list)
+    questions_answered: int = 0
+    correct_count: int = 0
+
+
+class StudySessionEndResponse(BaseModel):
+    duration_minutes: int
+    topics_studied: List[str]
+    questions_answered: int
+    correct_count: int
+    daily_streak: int
+    best_streak: int
+
+
+@router.post("/study-session/end")
+async def end_study_session(
+    request: StudySessionEndRequest,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """Çalışma oturumunu bitir — süre, streak ve profil güncelle."""
+    # Resolve student_id from user_id
+    profile_lookup = await db.execute(
+        select(LearningPathStudentProfile.student_id).where(
+            LearningPathStudentProfile.user_id == str(current_user.id)
+        )
+    )
+    student_id = profile_lookup.scalar_one_or_none()
+    if not student_id:
+        raise HTTPException(status_code=404, detail="Öğrenci profili bulunamadı")
+
+    # Find the session
+    result = await db.execute(
+        select(StudySession).where(
+            StudySession.id == request.session_id,
+            StudySession.student_id == student_id,
+        )
+    )
+    session = result.scalar_one_or_none()
+    if not session:
+        raise HTTPException(status_code=404, detail="Oturum bulunamadı")
+    if session.ended_at:
+        raise HTTPException(status_code=400, detail="Oturum zaten sonlandırılmış")
+
+    # End the session
+    now = datetime.now()
+    session.ended_at = now
+    session.duration_minutes = max(1, int((now - session.started_at).total_seconds() / 60))
+    session.topics_studied = request.topics_studied
+    session.questions_answered = request.questions_answered
+    session.correct_count = request.correct_count
+
+    # Update student profile
+    profile_result = await db.execute(
+        select(LearningPathStudentProfile).where(
+            LearningPathStudentProfile.student_id == student_id
+        )
+    )
+    profile = profile_result.scalar_one_or_none()
+    if not profile:
+        raise HTTPException(status_code=404, detail="Öğrenci profili bulunamadı")
+
+    daily_streak = 0
+    best_streak = 0
+
+    if profile:
+        # Update total study time
+        profile.total_study_time_minutes = (profile.total_study_time_minutes or 0) + session.duration_minutes
+        profile.last_activity_at = now
+
+        # B2: Update daily streak
+        today = date.today()
+        last_date = profile.last_study_date
+
+        if last_date is None or (today - last_date).days > 1:
+            # First time or streak broken
+            profile.daily_streak = 1
+        elif last_date == today:
+            # Already studied today — no change
+            pass
+        elif (today - last_date).days == 1:
+            # Consecutive day
+            profile.daily_streak = (profile.daily_streak or 0) + 1
+
+        profile.last_study_date = today
+        if (profile.daily_streak or 0) > (profile.best_streak or 0):
+            profile.best_streak = profile.daily_streak
+
+        daily_streak = profile.daily_streak or 0
+        best_streak = profile.best_streak or 0
+
+    await db.commit()
+
+    return StudySessionEndResponse(
+        duration_minutes=session.duration_minutes,
+        topics_studied=session.topics_studied or [],
+        questions_answered=session.questions_answered or 0,
+        correct_count=session.correct_count or 0,
+        daily_streak=daily_streak,
+        best_streak=best_streak,
+    )
+
+
+# ========================================
+# B2: Streak endpoint
+# ========================================
+
+
+@router.get("/streak")
+async def get_streak(
+    current_user: AuthenticatedUser = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """Öğrencinin günlük çalışma serisini getir."""
+    result = await db.execute(
+        select(LearningPathStudentProfile).where(
+            LearningPathStudentProfile.user_id == str(current_user.id)
+        )
+    )
+    profile = result.scalars().first()
+    if not profile:
+        return {"daily_streak": 0, "best_streak": 0, "last_study_date": None}
+
+    # Check if streak is still valid (read-only — no DB write in GET)
+    today = date.today()
+    last_date = profile.last_study_date
+    current_streak = profile.daily_streak or 0
+
+    if last_date and (today - last_date).days > 1:
+        # Streak broken — return 0 but don't write (will be reset on next session end)
+        current_streak = 0
+
+    return {
+        "daily_streak": current_streak,
+        "best_streak": profile.best_streak or 0,
+        "last_study_date": profile.last_study_date.isoformat() if profile.last_study_date else None,
+    }
+
+
+# ========================================
+# B3: Weakness detection
+# ========================================
+
+
+@router.get("/weakness-report")
+async def get_weakness_report(
+    current_user: AuthenticatedUser = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """
+    Konu bazlı zayıf nokta analizi.
+    quiz_submissions'dan konu bazlı ortalama skor hesaplar.
+    %60 altı konuları 'zayıf' olarak işaretler.
+    """
+    # Resolve student_id from user_id
+    profile_result = await db.execute(
+        select(LearningPathStudentProfile.student_id).where(
+            LearningPathStudentProfile.user_id == str(current_user.id)
+        )
+    )
+    student_id = profile_result.scalar_one_or_none()
+    if not student_id:
+        return {"weaknesses": [], "total_quizzes": 0}
+
+    # Fetch all quiz submissions for this student
+    result = await db.execute(
+        select(QuizSubmissionORM)
+        .where(QuizSubmissionORM.student_id == student_id)
+        .order_by(QuizSubmissionORM.submitted_at.desc())
+        .limit(500)
+    )
+    submissions = result.scalars().all()
+
+    if not submissions:
+        return {"weaknesses": [], "total_quizzes": 0}
+
+    # Group by quiz_id (topic) and calculate averages
+    topic_stats: Dict[str, Dict[str, Any]] = {}
+    for sub in submissions:
+        topic = sub.quiz_id
+        if topic not in topic_stats:
+            topic_stats[topic] = {
+                "scores": [],
+                "attempts": 0,
+                "last_score": None,
+            }
+        topic_stats[topic]["scores"].append(sub.score)
+        topic_stats[topic]["attempts"] += 1
+        if topic_stats[topic]["last_score"] is None:
+            topic_stats[topic]["last_score"] = sub.score
+
+    # Build weakness list
+    weaknesses = []
+    for topic, stats in topic_stats.items():
+        scores = stats["scores"]
+        avg_score = sum(scores) / len(scores)
+
+        # Trend: compare last score vs average
+        trend = "stable"
+        if len(scores) >= 2:
+            recent_avg = sum(scores[:3]) / min(3, len(scores))
+            if recent_avg > avg_score + 5:
+                trend = "improving"
+            elif recent_avg < avg_score - 5:
+                trend = "declining"
+
+        weaknesses.append({
+            "topic": topic,
+            "avg_score": round(avg_score, 1),
+            "attempts": stats["attempts"],
+            "last_score": stats["last_score"],
+            "trend": trend,
+            "is_weak": avg_score < 60,
+        })
+
+    # Sort: weak first, then by avg_score ascending
+    weaknesses.sort(key=lambda w: (not w["is_weak"], w["avg_score"]))
+
+    return {
+        "weaknesses": weaknesses,
+        "total_quizzes": len(submissions),
+        "weak_count": sum(1 for w in weaknesses if w["is_weak"]),
+    }
 
 
 @router.get("/health")

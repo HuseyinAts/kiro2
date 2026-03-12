@@ -139,6 +139,9 @@ class QuestionResponse(BaseModel):
     id: str
     question_text: str
     question_image_url: Optional[str]
+    image_alt_text: Optional[str] = None
+    image_width: Optional[int] = None
+    image_height: Optional[int] = None
     option_a: str
     option_b: str
     option_c: str
@@ -511,6 +514,9 @@ async def get_current_question(
             id=question.id,
             question_text=question.question_text,
             question_image_url=question.question_image_url,
+            image_alt_text=question.image_ocr_text[:200] if question.image_ocr_text else None,
+            image_width=question.image_width,
+            image_height=question.image_height,
             option_a=question.option_a,
             option_b=question.option_b,
             option_c=question.option_c,
@@ -652,6 +658,9 @@ async def navigate_to_question(
             id=question.id,
             question_text=question.question_text,
             question_image_url=question.question_image_url,
+            image_alt_text=question.image_ocr_text[:200] if question.image_ocr_text else None,
+            image_width=question.image_width,
+            image_height=question.image_height,
             option_a=question.option_a,
             option_b=question.option_b,
             option_c=question.option_c,

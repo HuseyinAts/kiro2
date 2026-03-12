@@ -15,7 +15,7 @@ import { useState, useEffect, useCallback } from 'react';
 
 import { createStudentProfile, createLearningPath, detectLearningStyle, submitQuestionnaire } from '../api';
 import { PathNodeData } from '../components/LearningPath/PathNode';
-import { QuizResult } from '../components/LearningPath/LearningStyleQuiz';
+import type { OnboardingResult } from '../components/LearningPath/OnboardingWizard';
 import { useAuthStore } from '../store/authStore';
 import { apiRequest } from '../utils/apiHelpers';
 import { convertPathToNodes } from '../utils/learningPathHelpers';
@@ -26,21 +26,37 @@ export interface ProgressUpdate {
   completed?: boolean
 }
 
+export interface StudySessionInfo {
+  sessionId: string | null
+  startedAt: Date | null
+  isActive: boolean
+}
+
+export interface StreakInfo {
+  dailyStreak: number
+  bestStreak: number
+  lastStudyDate: string | null
+}
+
 export interface UseLearningPathReturn {
   pathNodes: PathNodeData[]
   learningStyle: string
   currentNodeId: string
   loading: boolean
   error: string | null
-  needsQuiz: boolean
+  needsOnboarding: boolean
   studentId: string | null
+  studySession: StudySessionInfo
+  streak: StreakInfo
   loadPath: () => Promise<void>
   reload: () => void
   setCurrentNode: (nodeId: string) => void
   updateProgress: (update: ProgressUpdate) => Promise<boolean>
   markNodeComplete: (nodeId: string) => Promise<boolean>
-  submitQuizResult: (result: QuizResult) => Promise<void>
-  skipQuiz: () => void
+  submitOnboardingResult: (result: OnboardingResult) => Promise<void>
+  skipOnboarding: () => void
+  startSession: () => Promise<void>
+  endSession: (topics?: string[], questionsAnswered?: number, correctCount?: number) => Promise<void>
 }
 
 export const useLearningPath = (): UseLearningPathReturn => {
@@ -49,8 +65,18 @@ export const useLearningPath = (): UseLearningPathReturn => {
   const [pathNodes, setPathNodes] = useState<PathNodeData[]>([]);
   const [learningStyle, setLearningStyle] = useState<string>('');
   const [currentNodeId, setCurrentNodeId] = useState<string>('');
-  const [needsQuiz, setNeedsQuiz] = useState(false);
+  const [needsOnboarding, setNeedsOnboarding] = useState(false);
   const [studentId, setStudentId] = useState<string | null>(null);
+
+  // B1: Study session
+  const [studySession, setStudySession] = useState<StudySessionInfo>({
+    sessionId: null, startedAt: null, isActive: false,
+  });
+
+  // B2: Streak
+  const [streak, setStreak] = useState<StreakInfo>({
+    dailyStreak: 0, bestStreak: 0, lastStudyDate: null,
+  });
 
   const user = useAuthStore(state => state.user);
   const isAuthenticated = useAuthStore(state => state.isAuthenticated);
@@ -114,13 +140,19 @@ export const useLearningPath = (): UseLearningPathReturn => {
   }, [user]);
 
   /** Create learning path and load nodes */
-  const createAndLoadPath = useCallback(async (sid: string) => {
+  const createAndLoadPath = useCallback(async (
+    sid: string,
+    subject = 'matematik',
+    durationWeeks = 4,
+    difficultyLevel?: string,
+  ) => {
     let path = null;
     try {
       const pathResponse = await createLearningPath({
         student_id: sid,
-        subject: 'matematik',
-        duration_weeks: 4,
+        subject,
+        duration_weeks: durationWeeks,
+        difficulty_level: difficultyLevel,
       });
       if (pathResponse.success) {
         path = pathResponse.learning_path;
@@ -166,7 +198,7 @@ export const useLearningPath = (): UseLearningPathReturn => {
       const quizDone = await checkQuizCompleted(sid);
       if (!quizDone) {
         // Show quiz UI — don't create path yet
-        setNeedsQuiz(true);
+        setNeedsOnboarding(true);
         setLoading(false);
         return;
       }
@@ -182,44 +214,64 @@ export const useLearningPath = (): UseLearningPathReturn => {
     }
   }, [isAuthenticated, user, ensureProfile, checkQuizCompleted, createAndLoadPath]);
 
-  /** Submit quiz result → send to backend → create path */
-  const submitQuizResult = useCallback(async (result: QuizResult) => {
+  /** Submit onboarding result → update profile → send VARK → create path with real params */
+  const submitOnboardingResult = useCallback(async (result: OnboardingResult) => {
     if (!studentId) return;
 
     try {
       setLoading(true);
       setError(null);
 
-      // 1. Send questionnaire responses to backend
-      await submitQuestionnaire(studentId, {
-        questionnaire_type: 'VARK',
-        responses: result.responses,
-        completion_time: result.completion_time,
-      });
-
-      // 2. Detect learning style with fresh data
-      const styleResponse = await detectLearningStyle(studentId, true);
-      if (styleResponse.success) {
-        setLearningStyle(styleResponse.data?.hybrid_code || result.dominant_style);
-      } else {
-        setLearningStyle(result.dominant_style);
+      // 1. Update student profile with real data from wizard
+      try {
+        await createStudentProfile({
+          name: user?.ad || 'Öğrenci',
+          grade: 12,
+          subjects: result.subjects,
+          goals: [`${result.examType} hazırlık`],
+          learning_style: result.learningPreference,
+          available_time: result.availableTime,
+        });
+      } catch {
+        // Profile may already exist — continue
       }
 
-      // 3. Quiz done — create path
-      setNeedsQuiz(false);
-      await createAndLoadPath(studentId);
+      // 2. Send VARK questionnaire responses
+      await submitQuestionnaire(studentId, {
+        questionnaire_type: 'VARK',
+        responses: result.varkResponses,
+        completion_time: result.completionTime,
+      });
+
+      // 3. Detect learning style with fresh data
+      const styleResponse = await detectLearningStyle(studentId, true);
+      if (styleResponse.success) {
+        setLearningStyle(styleResponse.data?.hybrid_code || result.learningPreference);
+      } else {
+        setLearningStyle(result.learningPreference);
+      }
+
+      // 4. Create path with REAL parameters from wizard
+      setNeedsOnboarding(false);
+      const durationWeeks = Math.ceil(result.durationMonths * 4.3);
+      await createAndLoadPath(
+        studentId,
+        result.subjects[0] || 'matematik',
+        durationWeeks,
+        result.knowledgeLevel,
+      );
 
     } catch (err: any) {
-      console.error('Error submitting quiz:', err);
-      setError(err.message || 'Anket sonuçları gönderilemedi');
+      console.error('Error submitting onboarding:', err);
+      setError(err.message || 'Onboarding sonuçları gönderilemedi');
     } finally {
       setLoading(false);
     }
-  }, [studentId, createAndLoadPath]);
+  }, [studentId, user, createAndLoadPath]);
 
-  /** Skip quiz — use default style */
-  const skipQuiz = useCallback(() => {
-    setNeedsQuiz(false);
+  /** Skip onboarding — use default style */
+  const skipOnboarding = useCallback(() => {
+    setNeedsOnboarding(false);
     setLearningStyle('mixed');
     if (studentId) {
       setLoading(true);
@@ -299,10 +351,78 @@ export const useLearningPath = (): UseLearningPathReturn => {
     return updateProgress({ nodeId, completed: true, progress: 100 });
   }, [updateProgress]);
 
+  // B1: Start study session
+  const startSession = useCallback(async () => {
+    try {
+      const data = await apiRequest<{ session_id: string; started_at: string }>(
+        '/api/learning-path/study-session/start',
+        { method: 'POST' },
+      );
+      setStudySession({
+        sessionId: data.session_id,
+        startedAt: new Date(data.started_at),
+        isActive: true,
+      });
+    } catch (err) {
+      console.error('Oturum başlatılamadı:', err);
+    }
+  }, []);
+
+  // B1: End study session
+  const endSession = useCallback(async (
+    topics: string[] = [],
+    questionsAnswered = 0,
+    correctCount = 0,
+  ) => {
+    if (!studySession.sessionId) return;
+    try {
+      const data = await apiRequest<{
+        duration_minutes: number;
+        daily_streak: number;
+        best_streak: number;
+      }>('/api/learning-path/study-session/end', {
+        method: 'POST',
+        body: JSON.stringify({
+          session_id: studySession.sessionId,
+          topics_studied: topics,
+          questions_answered: questionsAnswered,
+          correct_count: correctCount,
+        }),
+      });
+      setStudySession({ sessionId: null, startedAt: null, isActive: false });
+      setStreak(prev => ({
+        ...prev,
+        dailyStreak: data.daily_streak,
+        bestStreak: data.best_streak,
+      }));
+    } catch (err) {
+      console.error('Oturum sonlandırılamadı:', err);
+    }
+  }, [studySession.sessionId]);
+
+  // B2: Load streak on mount
+  const loadStreak = useCallback(async () => {
+    try {
+      const data = await apiRequest<{
+        daily_streak: number;
+        best_streak: number;
+        last_study_date: string | null;
+      }>('/api/learning-path/streak');
+      setStreak({
+        dailyStreak: data.daily_streak,
+        bestStreak: data.best_streak,
+        lastStudyDate: data.last_study_date,
+      });
+    } catch {
+      // Not critical
+    }
+  }, []);
+
   /** Auto-load on mount */
   useEffect(() => {
     loadPath();
-  }, [loadPath]);
+    loadStreak();
+  }, [loadPath, loadStreak]);
 
   return {
     pathNodes,
@@ -310,15 +430,19 @@ export const useLearningPath = (): UseLearningPathReturn => {
     currentNodeId,
     loading,
     error,
-    needsQuiz,
+    needsOnboarding,
     studentId,
+    studySession,
+    streak,
     loadPath,
     reload,
     setCurrentNode,
     updateProgress,
     markNodeComplete,
-    submitQuizResult,
-    skipQuiz,
+    submitOnboardingResult,
+    skipOnboarding,
+    startSession,
+    endSession,
   };
 };
 

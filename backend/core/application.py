@@ -4,9 +4,12 @@ KIRO2 Application Factory
 FastAPI application factory pattern.
 """
 
+import os
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.openapi.utils import get_openapi
+from fastapi.staticfiles import StaticFiles
 from contextlib import asynccontextmanager
 from typing import AsyncGenerator, Dict, Any
 import logging
@@ -210,6 +213,11 @@ def create_app() -> FastAPI:
 
     # Setup routers
     setup_routers(app)
+
+    # Mount crop images as static files
+    crop_dir = os.environ.get("CROP_IMAGE_DIR", "d-dataset/output/crops")
+    if os.path.isdir(crop_dir):
+        app.mount("/static/crops", StaticFiles(directory=crop_dir), name="crops")
 
     # Custom OpenAPI schema with security schemes
     def custom_openapi() -> Dict[str, Any]:

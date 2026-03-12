@@ -30,6 +30,9 @@ httpx>=0.25.2
 # Logging
 structlog>=23.1.0
 
+# Metrics (needed by learning_path, youtube_routes via core/metrics_collector)
+prometheus_client>=0.19.0
+
 # Basic utilities
 numpy>=1.24.3
 psutil>=5.9.0

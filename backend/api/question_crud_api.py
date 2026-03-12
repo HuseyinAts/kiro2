@@ -559,6 +559,9 @@ async def search_questions(
                 "id": q.id,
                 "question_text": q.question_text,
                 "question_image_url": q.question_image_url,
+                "image_alt_text": q.image_ocr_text[:200] if q.image_ocr_text else None,
+                "image_width": q.image_width,
+                "image_height": q.image_height,
                 "exam_type": q.exam_type,
                 "subject_area": q.subject_area,
                 "source_book": q.source_book,
@@ -944,6 +947,7 @@ async def semantic_search(
 
         sql = sa_text(f"""
             SELECT q.id, q.question_text, q.question_image_url,
+                   q.image_ocr_text, q.image_width, q.image_height,
                    q.exam_type, q.subject_area, q.source_book,
                    q.difficulty_level, q.bloom_level, q.bloom_category,
                    q.quality_score, q.word_count,
@@ -967,6 +971,9 @@ async def semantic_search(
                 "id": str(r.id),
                 "question_text": r.question_text,
                 "question_image_url": r.question_image_url,
+                "image_alt_text": r.image_ocr_text[:200] if r.image_ocr_text else None,
+                "image_width": r.image_width,
+                "image_height": r.image_height,
                 "exam_type": r.exam_type,
                 "subject_area": r.subject_area,
                 "source_book": r.source_book,

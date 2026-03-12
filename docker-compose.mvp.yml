@@ -20,6 +20,9 @@ services:
       - "host.docker.internal:host-gateway"
     volumes:
       - backend-logs:/app/logs
+      - ./d-dataset/output/crops:/app/static/crops:ro
+    environment:
+      - CROP_IMAGE_DIR=/app/static/crops
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
