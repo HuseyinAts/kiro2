@@ -14,7 +14,7 @@ Bu degisiklik /api/v1/osym (osym_questions_api.py) ile cakismayi onler.
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, Field
 
-from core.dependencies import get_current_user
+from core.dependencies import get_current_user, AuthenticatedUser
 from typing import List, Optional
 import uuid
 import time
@@ -59,7 +59,7 @@ class BatchGenerationRequest(BaseModel):
 @router.post("/generate-question")
 async def generate_question(
     request: QuestionGenerationRequest,
-    current_user: dict = Depends(get_current_user)
+    current_user: AuthenticatedUser = Depends(get_current_user)
 ):
     """
     Generate OSYM question with AI
@@ -156,7 +156,7 @@ async def generate_question(
 @router.post("/validate-question")
 async def validate_question(
     request: QuestionValidationRequest,
-    current_user: dict = Depends(get_current_user)
+    current_user: AuthenticatedUser = Depends(get_current_user)
 ):
     """
     Validate an OSYM question
@@ -195,7 +195,7 @@ async def validate_question(
 @router.post("/batch-generate")
 async def batch_generate(
     request: BatchGenerationRequest,
-    current_user: dict = Depends(get_current_user)
+    current_user: AuthenticatedUser = Depends(get_current_user)
 ):
     """
     Generate multiple OSYM questions in batch

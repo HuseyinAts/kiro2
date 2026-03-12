@@ -348,9 +348,9 @@ class TestQueryOptimizerIntegration:
     @pytest.mark.asyncio
     async def test_real_student_loading(self):
         """Test loading real student data"""
-        from core.database import get_async_session
+        from core.database import get_db_session_context
 
-        async with get_async_session() as session:
+        async with get_db_session_context() as session:
             optimizer = QueryOptimizer(session)
 
             students = await optimizer.load_students_with_data(
@@ -369,9 +369,9 @@ class TestQueryOptimizerIntegration:
     @pytest.mark.asyncio
     async def test_real_aggregation_query(self):
         """Test real aggregation query"""
-        from core.database import get_async_session
+        from core.database import get_db_session_context
 
-        async with get_async_session() as session:
+        async with get_db_session_context() as session:
             optimizer = QueryOptimizer(session)
 
             stats = await optimizer.get_students_with_exam_stats(min_exam_count=1)

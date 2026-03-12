@@ -22,7 +22,7 @@ from pydantic import BaseModel, EmailStr, Field
 from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from core.dependencies import get_db, get_current_user
+from core.dependencies import get_db, get_current_user, AuthenticatedUser
 from core.oauth2_service import (
     OAuth2Exception,
     get_oauth2_service,
@@ -612,7 +612,7 @@ async def verify_magic_link(
     description="Kullanicinin kayitli cihazlarini listeler",
 )
 async def list_devices(
-    current_user: dict[str, Any] = Depends(get_current_user),
+    current_user: AuthenticatedUser = Depends(get_current_user),
 ):
     """
     Kullanicinin kayitli cihazlarini listeler.
@@ -648,7 +648,7 @@ async def list_devices(
 
         logger.info(
             "devices_listed",
-            user_id=current_user.get("user_id"),
+            user_id=current_user.id,
             device_count=len(mock_devices),
         )
 
@@ -661,7 +661,7 @@ async def list_devices(
     except Exception as e:
         logger.error(
             "devices_list_error",
-            user_id=current_user.get("user_id"),
+            user_id=current_user.id,
             error=str(e),
         )
         raise HTTPException(
@@ -677,7 +677,7 @@ async def list_devices(
 )
 async def remove_device(
     device_id: str,
-    current_user: dict[str, Any] = Depends(get_current_user),
+    current_user: AuthenticatedUser = Depends(get_current_user),
 ):
     """
     Belirtilen cihazi kullanici hesabindan kaldirir.
@@ -695,7 +695,7 @@ async def remove_device(
         # TODO: Gercek cihaz silme islemi
         logger.info(
             "device_removed",
-            user_id=current_user.get("user_id"),
+            user_id=current_user.id,
             device_id=device_id,
         )
 
@@ -708,7 +708,7 @@ async def remove_device(
     except Exception as e:
         logger.error(
             "device_remove_error",
-            user_id=current_user.get("user_id"),
+            user_id=current_user.id,
             device_id=device_id,
             error=str(e),
         )
@@ -727,7 +727,7 @@ async def remove_device(
 async def get_login_history(
     limit: int = Query(20, ge=1, le=100, description="Kayit sayisi"),
     offset: int = Query(0, ge=0, description="Baslangic indeksi"),
-    current_user: dict[str, Any] = Depends(get_current_user),
+    current_user: AuthenticatedUser = Depends(get_current_user),
 ):
     """
     Kullanicinin giris gecmisini getirir.
@@ -763,7 +763,7 @@ async def get_login_history(
 
         logger.info(
             "login_history_retrieved",
-            user_id=current_user.get("user_id"),
+            user_id=current_user.id,
             count=len(mock_history),
         )
 
@@ -776,7 +776,7 @@ async def get_login_history(
     except Exception as e:
         logger.error(
             "login_history_error",
-            user_id=current_user.get("user_id"),
+            user_id=current_user.id,
             error=str(e),
         )
         raise HTTPException(
@@ -793,7 +793,7 @@ async def get_login_history(
 )
 async def lock_account(
     request: AccountLockRequest,
-    current_user: dict[str, Any] = Depends(get_current_user),
+    current_user: AuthenticatedUser = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
     """
@@ -815,7 +815,7 @@ async def lock_account(
         AccountLockResponse: Kilitleme sonucu
     """
     try:
-        user_id = current_user.get("user_id")
+        user_id = current_user.id
 
         # Hesabi kilitle
         stmt = (
@@ -851,7 +851,7 @@ async def lock_account(
     except Exception as e:
         logger.error(
             "account_lock_error",
-            user_id=current_user.get("user_id"),
+            user_id=current_user.id,
             error=str(e),
         )
         raise HTTPException(
@@ -1099,7 +1099,7 @@ async def complete_mfa_recovery(
     description="Kullanicinin aktif oturumlarini listeler",
 )
 async def list_sessions(
-    current_user: dict[str, Any] = Depends(get_current_user),
+    current_user: AuthenticatedUser = Depends(get_current_user),
 ):
     """
     Kullanicinin aktif oturumlarini listeler.
@@ -1133,7 +1133,7 @@ async def list_sessions(
 
         logger.info(
             "sessions_listed",
-            user_id=current_user.get("user_id"),
+            user_id=current_user.id,
             session_count=len(mock_sessions),
         )
 
@@ -1146,7 +1146,7 @@ async def list_sessions(
     except Exception as e:
         logger.error(
             "sessions_list_error",
-            user_id=current_user.get("user_id"),
+            user_id=current_user.id,
             error=str(e),
         )
         raise HTTPException(
@@ -1163,7 +1163,7 @@ async def list_sessions(
 )
 async def revoke_session(
     session_id: str,
-    current_user: dict[str, Any] = Depends(get_current_user),
+    current_user: AuthenticatedUser = Depends(get_current_user),
 ):
     """
     Belirtilen oturumu sonlandirir.
@@ -1186,7 +1186,7 @@ async def revoke_session(
 
         logger.info(
             "session_revoked",
-            user_id=current_user.get("user_id"),
+            user_id=current_user.id,
             session_id=session_id,
         )
 
@@ -1198,7 +1198,7 @@ async def revoke_session(
     except Exception as e:
         logger.error(
             "session_revoke_error",
-            user_id=current_user.get("user_id"),
+            user_id=current_user.id,
             session_id=session_id,
             error=str(e),
         )

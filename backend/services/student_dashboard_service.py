@@ -24,8 +24,8 @@ from models import (
     WeeklyProgress,
     StudentGoal,
     Notification,
-    Question,
 )
+from models.question_bank import QuestionBankItem as Question
 from models.video_analytics import VideoWatchSession
 
 # Pydantic models (API responses)
@@ -113,15 +113,18 @@ class OgrenciDashboardServisi:
         haftalik_ilerleme = (week_progress.total_time_seconds // 60) if week_progress else 0
         gunluk_seri = week_progress.streak_days if week_progress else 0
 
-        # Get completed lessons (videos) count
-        video_count_query = select(func.count(VideoWatchSession.id)).where(
-            and_(
-                VideoWatchSession.user_id == kullanici_id,
-                VideoWatchSession.is_completed == True
+        # Get completed lessons (videos) count — table may not exist yet
+        try:
+            video_count_query = select(func.count(VideoWatchSession.id)).where(
+                and_(
+                    VideoWatchSession.user_id == kullanici_id,
+                    VideoWatchSession.is_completed == True
+                )
             )
-        )
-        video_result = await execute_query(video_count_query)
-        tamamlanan_dersler = video_result.scalar() if hasattr(video_result, 'scalar') else video_result.scalar_one()
+            video_result = await execute_query(video_count_query)
+            tamamlanan_dersler = video_result.scalar() if hasattr(video_result, 'scalar') else video_result.scalar_one()
+        except Exception:
+            tamamlanan_dersler = 0
 
         # Return real data with intelligent defaults
         return DashboardIstatistikleri(
@@ -155,25 +158,31 @@ class OgrenciDashboardServisi:
         - Fallback: Empty list for new users (NOT fake exams)
         """
 
-        # Build query
-        query = db.query(ExamSession).filter(
+        # Build async query
+        conditions = [
             ExamSession.student_id == kullanici_id,
-            ExamSession.status == 'completed'
-        )
-
-        # Filter by exam type if specified
+            ExamSession.status == 'completed',
+        ]
         if sinav_tipi:
-            query = query.filter(ExamSession.exam_type == sinav_tipi)
+            conditions.append(ExamSession.exam_type == sinav_tipi)
 
-        # Order by most recent first, with pagination
-        exams = query.order_by(ExamSession.completed_at.desc()).offset(offset).limit(limit).all()
+        stmt = (
+            select(ExamSession)
+            .where(and_(*conditions))
+            .order_by(ExamSession.completed_at.desc())
+            .offset(offset)
+            .limit(limit)
+        )
+        result = await db.execute(stmt)
+        exams = result.scalars().all()
+
+        # Batch topic performance for ALL exams in single query (N+1 fix)
+        exam_ids = [exam.id for exam in exams]
+        all_topic_perf = await self._calculate_topic_performance_batch(exam_ids, db)
 
         # Convert to SinavSonucu format
         sinavlar = []
         for exam in exams:
-            # Get topic performance (TODO: implement when question-topic mapping added)
-            konu_performanslari = self._calculate_topic_performance(exam.id, db)
-
             sinavlar.append(
                 SinavSonucu(
                     sinav_id=exam.id,
@@ -185,64 +194,72 @@ class OgrenciDashboardServisi:
                     yanlis_sayisi=exam.total_wrong,
                     bos_sayisi=exam.total_empty,
                     sure=exam.duration_minutes,
-                    konu_performanslari=konu_performanslari,
+                    konu_performanslari=all_topic_perf.get(exam.id, {}),
                 )
             )
 
         # Return real data (empty list if no exams - NOT fake data)
         return sinavlar
 
-    def _calculate_topic_performance(self, exam_session_id: str, db: Session) -> Dict[str, float]:
+    async def _calculate_topic_performance_batch(
+        self, exam_session_ids: List[str], db: Session
+    ) -> Dict[str, Dict[str, float]]:
         """
-        Calculate topic-wise performance from student_answers
+        Batch calculate topic performance for multiple exam sessions in ONE query.
 
-        Returns: Dictionary mapping topic names to percentage correct (0-100)
+        Returns: {exam_session_id: {topic_id: percentage, ...}, ...}
         """
-        # Query student answers joined with questions to get topic-wise performance
-        topic_stats = db.query(
-            Question.topic,
-            func.count(StudentAnswer.id).label('total'),
-            func.sum(func.cast(StudentAnswer.is_correct, Integer)).label('correct')
-        ).join(
-            StudentAnswer, StudentAnswer.question_id == Question.id
-        ).filter(
-            StudentAnswer.exam_session_id == exam_session_id
-        ).group_by(
-            Question.topic
-        ).all()
+        if not exam_session_ids:
+            return {}
 
-        # Calculate percentage correct per topic
-        topic_performance = {}
-        for topic_stat in topic_stats:
-            if topic_stat.topic and topic_stat.total > 0:
-                correct_count = topic_stat.correct or 0
-                percentage = (correct_count / topic_stat.total) * 100
-                topic_performance[topic_stat.topic] = round(percentage, 1)
+        stmt = (
+            select(
+                StudentAnswer.exam_session_id,
+                Question.primary_topic_id,
+                func.count(StudentAnswer.id).label('total'),
+                func.sum(func.cast(StudentAnswer.is_correct, Integer)).label('correct'),
+            )
+            .join(Question, StudentAnswer.question_id == Question.id)
+            .where(StudentAnswer.exam_session_id.in_(exam_session_ids))
+            .group_by(StudentAnswer.exam_session_id, Question.primary_topic_id)
+        )
+        topic_result = await db.execute(stmt)
+        topic_stats = topic_result.all()
 
-        return topic_performance
+        result: Dict[str, Dict[str, float]] = {}
+        for stat in topic_stats:
+            if stat.primary_topic_id and stat.total > 0:
+                if stat.exam_session_id not in result:
+                    result[stat.exam_session_id] = {}
+                correct_count = stat.correct or 0
+                percentage = (correct_count / stat.total) * 100
+                result[stat.exam_session_id][stat.primary_topic_id] = round(percentage, 1)
 
-    def _calculate_subject_performance(self, kullanici_id: str, db: Session, min_questions: int = 10) -> Dict[str, float]:
+        return result
+
+    async def _calculate_subject_performance(self, kullanici_id: str, db, min_questions: int = 10) -> Dict[str, float]:
         """
         Calculate overall subject performance across all exams
 
         Returns: Dictionary mapping subject areas to percentage correct (0-100)
         Only includes subjects with at least min_questions answered
         """
-        # Query all student answers joined with questions to get subject-wise performance
-        subject_stats = db.query(
-            Question.subject_area,
-            func.count(StudentAnswer.id).label('total'),
-            func.sum(func.cast(StudentAnswer.is_correct, Integer)).label('correct')
-        ).join(
-            StudentAnswer, StudentAnswer.question_id == Question.id
-        ).join(
-            ExamSession, StudentAnswer.exam_session_id == ExamSession.id
-        ).filter(
-            ExamSession.student_id == kullanici_id,
-            ExamSession.status == 'completed'
-        ).group_by(
-            Question.subject_area
-        ).all()
+        stmt = (
+            select(
+                Question.subject_area,
+                func.count(StudentAnswer.id).label('total'),
+                func.sum(func.cast(StudentAnswer.is_correct, Integer)).label('correct'),
+            )
+            .join(StudentAnswer, StudentAnswer.question_id == Question.id)
+            .join(ExamSession, StudentAnswer.exam_session_id == ExamSession.id)
+            .where(
+                ExamSession.student_id == kullanici_id,
+                ExamSession.status == 'completed',
+            )
+            .group_by(Question.subject_area)
+        )
+        result = await db.execute(stmt)
+        subject_stats = result.all()
 
         # Calculate percentage correct per subject
         subject_performance = {}
@@ -250,14 +267,13 @@ class OgrenciDashboardServisi:
             if subject_stat.total >= min_questions:
                 correct_count = subject_stat.correct or 0
                 percentage = (correct_count / subject_stat.total) * 100
-                # Store as string representation of enum value
                 subject_name = subject_stat.subject_area.value if hasattr(subject_stat.subject_area, 'value') else str(subject_stat.subject_area)
                 subject_performance[subject_name] = round(percentage, 1)
 
         return subject_performance
 
     async def performans_trendi_getir(
-        self, kullanici_id: str, db: Session, gun_sayisi: int = 30
+        self, kullanici_id: str, db, gun_sayisi: int = 30
     ) -> List[PerformansVerisi]:
         """
         Öğrencinin performans trendini getir
@@ -272,34 +288,55 @@ class OgrenciDashboardServisi:
         start_date = end_date - timedelta(days=gun_sayisi)
 
         # Query exam_sessions grouped by date
-        daily_exams = db.query(
-            func.date(ExamSession.completed_at).label('date'),
-            func.count(ExamSession.id).label('exam_count'),
-            func.avg(ExamSession.scaled_score).label('avg_score')
-        ).filter(
-            ExamSession.student_id == kullanici_id,
-            ExamSession.completed_at >= start_date,
-            ExamSession.status == 'completed'
-        ).group_by(func.date(ExamSession.completed_at)).all()
+        exam_stmt = (
+            select(
+                func.date(ExamSession.completed_at).label('date'),
+                func.count(ExamSession.id).label('exam_count'),
+                func.avg(ExamSession.scaled_score).label('avg_score'),
+            )
+            .where(
+                ExamSession.student_id == kullanici_id,
+                ExamSession.completed_at >= start_date,
+                ExamSession.status == 'completed',
+            )
+            .group_by(func.date(ExamSession.completed_at))
+        )
+        exam_result = await db.execute(exam_stmt)
+        daily_exams = exam_result.all()
 
-        # Query completed lessons (videos) grouped by date
-        daily_lessons = db.query(
-            func.date(VideoWatchSession.completed_at).label('date'),
-            func.count(VideoWatchSession.id).label('lesson_count')
-        ).filter(
-            VideoWatchSession.user_id == kullanici_id,
-            VideoWatchSession.completed_at >= start_date,
-            VideoWatchSession.is_completed == True
-        ).group_by(func.date(VideoWatchSession.completed_at)).all()
+        # Query completed lessons (videos) grouped by date — table may not exist
+        try:
+            lesson_stmt = (
+                select(
+                    func.date(VideoWatchSession.completed_at).label('date'),
+                    func.count(VideoWatchSession.id).label('lesson_count'),
+                )
+                .where(
+                    VideoWatchSession.user_id == kullanici_id,
+                    VideoWatchSession.completed_at >= start_date,
+                    VideoWatchSession.is_completed == True,
+                )
+                .group_by(func.date(VideoWatchSession.completed_at))
+            )
+            lesson_result = await db.execute(lesson_stmt)
+            daily_lessons = lesson_result.all()
 
-        # Query daily study time from video watch sessions
-        daily_study_time = db.query(
-            func.date(VideoWatchSession.started_at).label('date'),
-            func.sum(VideoWatchSession.watch_duration).label('total_seconds')
-        ).filter(
-            VideoWatchSession.user_id == kullanici_id,
-            VideoWatchSession.started_at >= start_date
-        ).group_by(func.date(VideoWatchSession.started_at)).all()
+            study_stmt = (
+                select(
+                    func.date(VideoWatchSession.started_at).label('date'),
+                    func.sum(VideoWatchSession.watch_duration).label('total_seconds'),
+                )
+                .where(
+                    VideoWatchSession.user_id == kullanici_id,
+                    VideoWatchSession.started_at >= start_date,
+                )
+                .group_by(func.date(VideoWatchSession.started_at))
+            )
+            study_result = await db.execute(study_stmt)
+            daily_study_time = study_result.all()
+        except Exception:
+            daily_lessons = []
+            daily_study_time = []
 
         # Convert to dicts for fast lookup
         exam_dict = {str(e.date): e for e in daily_exams}
@@ -329,7 +366,7 @@ class OgrenciDashboardServisi:
         return performans_verisi
 
     async def hedefler_getir(
-        self, kullanici_id: str, db: Session, aktif_sadece: bool = False
+        self, kullanici_id: str, db, aktif_sadece: bool = False
     ) -> List[Hedef]:
         """
         Öğrencinin hedeflerini getir
@@ -339,15 +376,13 @@ class OgrenciDashboardServisi:
         - Fallback: Empty list for new users (can show onboarding)
         """
 
-        # Build query
-        query = db.query(StudentGoal).filter(StudentGoal.user_id == kullanici_id)
-
-        # Filter by active status if requested
+        conditions = [StudentGoal.user_id == kullanici_id]
         if aktif_sadece:
-            query = query.filter(StudentGoal.status == 'aktif')
+            conditions.append(StudentGoal.status == 'aktif')
 
-        # Get goals ordered by creation date
-        goals = query.order_by(StudentGoal.created_at.desc()).all()
+        stmt = select(StudentGoal).where(and_(*conditions)).order_by(StudentGoal.created_at.desc())
+        result = await db.execute(stmt)
+        goals = result.scalars().all()
 
         # Convert to Hedef format
         hedefler = []
@@ -369,7 +404,7 @@ class OgrenciDashboardServisi:
 
         return hedefler
 
-    async def hedef_olustur(self, kullanici_id: str, db: Session, hedef_data: Hedef) -> Hedef:
+    async def hedef_olustur(self, kullanici_id: str, db, hedef_data: Hedef) -> Hedef:
         """
         Yeni hedef oluştur
 
@@ -391,8 +426,8 @@ class OgrenciDashboardServisi:
         )
 
         db.add(new_goal)
-        db.commit()
-        db.refresh(new_goal)
+        await db.commit()
+        await db.refresh(new_goal)
 
         # Return as Hedef
         hedef_data.hedef_id = new_goal.id
@@ -401,7 +436,7 @@ class OgrenciDashboardServisi:
         return hedef_data
 
     async def hedef_guncelle(
-        self, kullanici_id: str, hedef_id: str, db: Session, hedef_data: Hedef
+        self, kullanici_id: str, hedef_id: str, db, hedef_data: Hedef
     ) -> Hedef:
         """
         Mevcut hedefi güncelle
@@ -409,11 +444,12 @@ class OgrenciDashboardServisi:
         REFACTORED: Updates student_goals table
         """
 
-        # Find existing goal
-        goal = db.query(StudentGoal).filter(
+        stmt = select(StudentGoal).where(
             StudentGoal.id == hedef_id,
-            StudentGoal.user_id == kullanici_id
-        ).first()
+            StudentGoal.user_id == kullanici_id,
+        )
+        result = await db.execute(stmt)
+        goal = result.scalars().first()
 
         if not goal:
             raise ValueError(f"Goal {hedef_id} not found for user {kullanici_id}")
@@ -426,34 +462,36 @@ class OgrenciDashboardServisi:
         goal.status = hedef_data.durum
         goal.updated_at = datetime.now(timezone.utc)
 
-        db.commit()
-        db.refresh(goal)
+        await db.commit()
+        await db.refresh(goal)
 
         hedef_data.hedef_id = hedef_id
         return hedef_data
 
-    async def hedef_sil(self, kullanici_id: str, hedef_id: str, db: Session) -> bool:
+    async def hedef_sil(self, kullanici_id: str, hedef_id: str, db) -> bool:
         """
         Hedefi sil
 
         REFACTORED: Deletes from student_goals table
         """
 
-        goal = db.query(StudentGoal).filter(
+        stmt = select(StudentGoal).where(
             StudentGoal.id == hedef_id,
-            StudentGoal.user_id == kullanici_id
-        ).first()
+            StudentGoal.user_id == kullanici_id,
+        )
+        result = await db.execute(stmt)
+        goal = result.scalars().first()
 
         if not goal:
             return False
 
-        db.delete(goal)
-        db.commit()
+        await db.delete(goal)
+        await db.commit()
 
         return True
 
     async def bildirimler_getir(
-        self, kullanici_id: str, db: Session, okunmamis_sadece: bool = False, limit: int = 50
+        self, kullanici_id: str, db, okunmamis_sadece: bool = False, limit: int = 50
     ) -> List[Bildirim]:
         """
         Öğrencinin bildirimlerini getir
@@ -463,15 +501,18 @@ class OgrenciDashboardServisi:
         - Fallback: Empty list for new users
         """
 
-        # Build query
-        query = db.query(Notification).filter(Notification.user_id == kullanici_id)
-
-        # Filter by unread if requested
+        conditions = [Notification.user_id == kullanici_id]
         if okunmamis_sadece:
-            query = query.filter(Notification.is_read == False)
+            conditions.append(Notification.is_read == False)
 
-        # Get notifications ordered by date, limited
-        notifications = query.order_by(Notification.created_at.desc()).limit(limit).all()
+        stmt = (
+            select(Notification)
+            .where(and_(*conditions))
+            .order_by(Notification.created_at.desc())
+            .limit(limit)
+        )
+        result = await db.execute(stmt)
+        notifications = result.scalars().all()
 
         # Convert to Bildirim format
         bildirimler = []
@@ -491,7 +532,7 @@ class OgrenciDashboardServisi:
         return bildirimler
 
     async def bildirim_okundu_isaretle(
-        self, kullanici_id: str, bildirim_id: str, db: Session
+        self, kullanici_id: str, bildirim_id: str, db
     ) -> bool:
         """
         Bildirimi okundu olarak işaretle
@@ -499,21 +540,23 @@ class OgrenciDashboardServisi:
         REFACTORED: Updates notifications table
         """
 
-        notif = db.query(Notification).filter(
+        stmt = select(Notification).where(
             Notification.id == bildirim_id,
-            Notification.user_id == kullanici_id
-        ).first()
+            Notification.user_id == kullanici_id,
+        )
+        result = await db.execute(stmt)
+        notif = result.scalars().first()
 
         if not notif:
             return False
 
         notif.is_read = True
-        db.commit()
+        await db.commit()
 
         return True
 
     async def ogrenci_profili_getir(
-        self, kullanici_id: str, db: Session
+        self, kullanici_id: str, db
     ) -> Optional[OgrenciProfili]:
         """
         Öğrenci profil bilgilerini getir
@@ -523,20 +566,19 @@ class OgrenciDashboardServisi:
         - Fallback: None for users without profile (they can create one)
         """
 
-        # Get student profile
-        profile = db.query(StudentProfile).filter(
-            StudentProfile.user_id == kullanici_id
-        ).first()
+        stmt = select(StudentProfile).where(StudentProfile.user_id == kullanici_id)
+        result = await db.execute(stmt)
+        profile = result.scalars().first()
 
         if not profile:
-            # No profile exists - return None (frontend can show profile creation form)
             return None
 
-        # Get user data for additional info
-        user = db.query(User).filter(User.id == kullanici_id).first()
+        user_stmt = select(User).where(User.id == kullanici_id)
+        user_result = await db.execute(user_stmt)
+        user = user_result.scalars().first()
 
         # Calculate subject performance to determine strong/weak areas
-        subject_performance = self._calculate_subject_performance(kullanici_id, db, min_questions=10)
+        subject_performance = await self._calculate_subject_performance(kullanici_id, db, min_questions=10)
 
         # Determine strong areas (>= 70%) and weak areas (<= 50%)
         guclu_alanlar = [subject for subject, perf in subject_performance.items() if perf >= 70.0]
@@ -559,7 +601,7 @@ class OgrenciDashboardServisi:
         )
 
     async def profil_guncelle(
-        self, kullanici_id: str, db: Session, profil_data: ProfilGuncelleme
+        self, kullanici_id: str, db, profil_data: ProfilGuncelleme
     ) -> OgrenciProfili:
         """
         Öğrenci profil bilgilerini güncelle
@@ -567,10 +609,9 @@ class OgrenciDashboardServisi:
         REFACTORED: Updates student_profiles table
         """
 
-        # Get existing profile
-        profile = db.query(StudentProfile).filter(
-            StudentProfile.user_id == kullanici_id
-        ).first()
+        stmt = select(StudentProfile).where(StudentProfile.user_id == kullanici_id)
+        result = await db.execute(stmt)
+        profile = result.scalars().first()
 
         if not profile:
             raise ValueError("Öğrenci profili bulunamadı")
@@ -583,7 +624,7 @@ class OgrenciDashboardServisi:
             profile.school_name = profil_data.okul_adi
 
         if profil_data.hedef_universiteler is not None and profil_data.hedef_universiteler:
-            profile.target_university = profil_data.hedef_universiteler[0]  # Store first one
+            profile.target_university = profil_data.hedef_universiteler[0]
 
         if profil_data.gunluk_calisma_hedefi is not None:
             profile.study_hours_per_day = profil_data.gunluk_calisma_hedefi
@@ -591,13 +632,13 @@ class OgrenciDashboardServisi:
         # Update timestamp
         profile.updated_at = datetime.now(timezone.utc)
 
-        db.commit()
-        db.refresh(profile)
+        await db.commit()
+        await db.refresh(profile)
 
         # Return updated profile
         return await self.ogrenci_profili_getir(kullanici_id, db)
 
-    async def dashboard_ozeti_getir(self, kullanici_id: str, db: Session) -> Dict[str, Any]:
+    async def dashboard_ozeti_getir(self, kullanici_id: str, db) -> Dict[str, Any]:
         """
         Dashboard özet bilgilerini getir
 

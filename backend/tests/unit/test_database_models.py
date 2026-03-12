@@ -724,13 +724,13 @@ class TestQuestionModel:
         """Test Question has is_active field"""
         assert hasattr(Question, "is_active")
 
-    def test_question_has_exam_questions_relationship(self):
-        """Test Question has exam_questions relationship"""
-        assert hasattr(Question, "exam_questions")
+    def test_question_exam_questions_relationship_moved(self):
+        """Exam relationships moved from Question to QuestionBankItem"""
+        assert not hasattr(Question, "exam_questions")
 
-    def test_question_has_student_answers_relationship(self):
-        """Test Question has student_answers relationship"""
-        assert hasattr(Question, "student_answers")
+    def test_question_student_answers_relationship_moved(self):
+        """Exam relationships moved from Question to QuestionBankItem"""
+        assert not hasattr(Question, "student_answers")
 
     def test_question_text_column_type(self):
         """Test Question.question_text column type is Text"""

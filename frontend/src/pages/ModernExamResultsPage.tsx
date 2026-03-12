@@ -36,6 +36,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { GlassCard } from '../components/ui/GlassCard';
 import { ModernButton } from '../components/ui/ModernButton';
 import { modernColors } from '../theme/modern-colors';
+import { apiRequest } from '../utils/apiHelpers';
 
 interface ExamResult {
   sinav_id: string
@@ -47,6 +48,7 @@ interface ExamResult {
   empty_count: number
   score: number
   duration: number
+  duration_limit: number
   completed_at: string
   questions: Array<{
     question_id: string
@@ -79,40 +81,50 @@ export const ModernExamResultsPage: React.FC = () => {
 
   const fetchExamResults = async () => {
     try {
-      const response = await fetch(`/api/v1/exams/${sinavId}/results`, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
-      });
-      if (!response.ok) {throw new Error();}
-      const data = await response.json();
-      setResult(data);
-    } catch {
-      // Mock data
+      const perfData = await apiRequest(`/api/v1/osym-exam/${sinavId}/performance`);
+
+      let subjectData: any[] = [];
+      let sessionData: any = null;
+      try {
+        [subjectData, sessionData] = await Promise.all([
+          apiRequest(`/api/v1/osym-exam/${sinavId}/subject-performance`),
+          apiRequest(`/api/v1/osym-exam/${sinavId}/session`),
+        ]);
+      } catch {
+        // subject/session data optional — performance is primary
+      }
+
+      // Gerçek geçen süreyi hesapla (dakika)
+      let durationMinutes = 0;
+      if (sessionData?.started_at && sessionData?.completed_at) {
+        const start = new Date(sessionData.started_at).getTime();
+        const end = new Date(sessionData.completed_at).getTime();
+        durationMinutes = Math.round((end - start) / 60000);
+      }
+
       setResult({
         sinav_id: sinavId!,
-        exam_type: 'TYT',
-        subject: 'Matematik',
-        question_count: 40,
-        correct_count: 32,
-        wrong_count: 5,
-        empty_count: 3,
-        score: 85,
-        duration: 65,
-        completed_at: '2025-11-21T10:30:00',
-        questions: Array.from({ length: 40 }, (_, i) => ({
-          question_id: `q${i + 1}`,
-          question_text: `Soru ${i + 1}`,
-          user_answer: i < 32 ? 'A' : i < 37 ? 'B' : null,
-          correct_answer: 'A',
-          is_correct: i < 32,
-          time_spent: Math.floor(Math.random() * 120) + 30,
+        exam_type: (sessionData?.exam_type || 'tyt').toUpperCase(),
+        subject: '',
+        question_count: perfData.total_questions,
+        correct_count: perfData.correct_answers,
+        wrong_count: perfData.wrong_answers,
+        empty_count: perfData.empty_answers,
+        score: perfData.raw_score,
+        duration: durationMinutes,
+        duration_limit: sessionData?.duration_minutes || 0,
+        completed_at: sessionData?.completed_at || new Date().toISOString(),
+        questions: [],
+        subject_breakdown: subjectData.map((s: any) => ({
+          subject: s.subject,
+          correct: s.correct_answers,
+          wrong: s.wrong_answers,
+          empty: s.empty_answers,
+          total: s.total_questions,
         })),
-        subject_breakdown: [
-          { subject: 'Sayılar', correct: 8, wrong: 1, empty: 1, total: 10 },
-          { subject: 'Geometri', correct: 7, wrong: 2, empty: 1, total: 10 },
-          { subject: 'Cebir', correct: 10, wrong: 0, empty: 0, total: 10 },
-          { subject: 'Olasılık', correct: 7, wrong: 2, empty: 1, total: 10 },
-        ],
       });
+    } catch {
+      setResult(null);
     } finally {
       setLoading(false);
     }
@@ -166,8 +178,12 @@ export const ModernExamResultsPage: React.FC = () => {
     return 'Daha fazla çalışmanız gerekiyor. Pes etmeyin, başarısız olabilirsiniz!';
   };
 
-  const successRate = ((result.correct_count / result.question_count) * 100).toFixed(1);
-  const avgTimePerQuestion = (result.duration / result.question_count).toFixed(1);
+  const successRate = result.question_count > 0
+    ? ((result.correct_count / result.question_count) * 100).toFixed(1)
+    : '0.0';
+  const avgTimePerQuestion = result.question_count > 0
+    ? (result.duration / result.question_count).toFixed(1)
+    : '0.0';
 
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
@@ -317,7 +333,7 @@ export const ModernExamResultsPage: React.FC = () => {
               </Box>
               <Typography variant="h4" fontWeight={700}>{result.duration}<Typography variant="caption">dk</Typography></Typography>
               <Typography variant="caption" color="text.secondary">
-                {(result as any).time_limit || result.duration} dakika limit
+                {result.duration_limit || result.duration} dakika limit
               </Typography>
             </GlassCard>
           </motion.div>
@@ -386,7 +402,7 @@ export const ModernExamResultsPage: React.FC = () => {
             </TableHead>
             <TableBody>
               {result.subject_breakdown.map((item, index) => {
-                const success = ((item.correct / item.total) * 100).toFixed(0);
+                const success = item.total > 0 ? ((item.correct / item.total) * 100).toFixed(0) : '0';
                 return (
                   <TableRow key={index}>
                     <TableCell>{item.subject}</TableCell>

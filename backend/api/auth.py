@@ -204,18 +204,11 @@ async def mevcut_kullanici_getir(
             headers={"WWW-Authenticate": "Bearer"},
         )
     except pyjwt.InvalidTokenError:
-        pass  # Not a valid JWT — fall through to legacy token check
-
-    # Fallback: try legacy in-memory token validation
-    kullanici = await kullanici_servisi.token_dogrula(token)
-    if not kullanici:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Geçersiz veya süresi dolmuş token",
             headers={"WWW-Authenticate": "Bearer"},
         )
-
-    return kullanici
 
 
 async def database_authenticate(
@@ -299,13 +292,6 @@ async def database_authenticate(
         olusturma_tarihi=db_user.created_at,
         son_giris=db_user.last_login,
     )
-
-    # Store token in in-memory service for backward compatibility with token validation
-    kullanici_servisi.aktif_tokenlar[token] = {
-        "kullanici_id": db_user.id,
-        "expires_at": datetime.now(UTC) + timedelta(seconds=expires_in),
-    }
-    kullanici_servisi.kullanicilar[db_user.id] = kullanici
 
     # Return frontend-compatible response format
     return {
@@ -960,8 +946,7 @@ async def kullanici_cikis(
     jwt_mgr = get_jwt_manager()
     await jwt_mgr.blacklist_token_async(token)
 
-    # Also call legacy service for backward compatibility
-    await kullanici_servisi.kullanici_cikis(token)
+
 
     return {"message": "Başarıyla çıkış yapıldı"}
 
@@ -1005,11 +990,7 @@ async def validate_token(
         except pyjwt.ExpiredSignatureError:
             return {"valid": False}
         except pyjwt.InvalidTokenError:
-            pass  # Not a JWT — fall through to legacy check
-
-        # Legacy fallback: in-memory token validation
-        kullanici = await kullanici_servisi.token_dogrula(token)
-        return {"valid": bool(kullanici and kullanici.aktif)}
+            return {"valid": False}
     except Exception:
         return {"valid": False}
 

@@ -36,12 +36,18 @@ class AuthenticationMethod(Enum):
     OAUTH2 = "oauth2"
 
 
-class UserRole(Enum):
-    """User roles in Turkish exam system"""
+class UserRole(str, Enum):
+    """User roles in Turkish exam system.
+
+    Uses (str, Enum) so UserRole.STUDENT == "student" works correctly.
+    Includes all roles from core.dependencies + middleware-specific roles.
+    """
 
     STUDENT = "student"
     TEACHER = "teacher"
+    PARENT = "parent"
     ADMIN = "admin"
+    SUPER_ADMIN = "super_admin"
     MODERATOR = "moderator"
     SYSTEM = "system"
     GUEST = "guest"

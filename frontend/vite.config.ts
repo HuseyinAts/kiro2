@@ -88,24 +88,13 @@ export default defineConfig({
         pure_funcs: process.env.NODE_ENV === 'production' ? ['console.log', 'console.info'] : [],
       },
       mangle: {
-        safari10: true,
+        safari10: false,
       },
     },
     rollupOptions: {
       output: {
         // Simplified chunk strategy - only vendor separation, let Vite handle app code
-        manualChunks: (id) => {
-          // Only separate vendor code, let Vite automatically code-split app code
-          if (id.includes('node_modules')) {
-            // React ecosystem
-            if (id.includes('react') || id.includes('react-dom') || id.includes('react-router')) {
-              return 'react-vendor';
-            }
-            // All other node_modules
-            return 'vendor';
-          }
-          // Don't specify chunks for app code - let Vite handle lazy loading automatically
-        },
+        manualChunks: undefined,
         // Chunk dosya isimlendirme
         chunkFileNames: 'js/[name]-[hash].js',
         entryFileNames: 'js/[name]-[hash].js',
@@ -163,8 +152,12 @@ export default defineConfig({
         target: 'http://localhost:8000',
         changeOrigin: true,
         secure: false,
-        timeout: 30000,
-        proxyTimeout: 30000,
+        timeout: 120000,
+        proxyTimeout: 120000,
+      },
+      '/static': {
+        target: 'http://localhost:8000',
+        changeOrigin: true,
       }
     },
     // File watching optimizasyonu

@@ -9,7 +9,7 @@ from typing import Any, Dict, Optional
 
 from fastapi import APIRouter, Depends, HTTPException
 
-from core.dependencies import get_current_admin_user
+from core.dependencies import get_current_admin_user, AuthenticatedUser
 
 logger = logging.getLogger(__name__)
 
@@ -22,7 +22,7 @@ router = APIRouter(
 
 @router.get("/metrics", response_model=Dict[str, Any])
 async def get_performance_metrics(
-    current_user: Dict[str, Any] = Depends(get_current_admin_user)
+    current_user: AuthenticatedUser = Depends(get_current_admin_user)
 ):
     """
     Genel performans metriklerini al
@@ -87,7 +87,7 @@ async def get_performance_metrics(
 
 @router.get("/system-status", response_model=Dict[str, Any])
 async def get_system_status(
-    current_user: Dict[str, Any] = Depends(get_current_admin_user)
+    current_user: AuthenticatedUser = Depends(get_current_admin_user)
 ):
     """
     Sistem durumu ve kaynak kullanımı
@@ -138,7 +138,7 @@ async def get_system_status(
 
 @router.get("/cache-stats", response_model=Dict[str, Any])
 async def get_cache_statistics(
-    current_user: Dict[str, Any] = Depends(get_current_admin_user)
+    current_user: AuthenticatedUser = Depends(get_current_admin_user)
 ):
     """
     Cache istatistikleri ve hit/miss oranları
@@ -185,7 +185,7 @@ async def get_cache_statistics(
 
 @router.get("/database-performance", response_model=Dict[str, Any])
 async def get_database_performance(
-    current_user: Dict[str, Any] = Depends(get_current_admin_user)
+    current_user: AuthenticatedUser = Depends(get_current_admin_user)
 ):
     """
     Database performans metrikleri
@@ -245,7 +245,7 @@ async def get_database_performance(
 
 @router.get("/revolutionary-features-performance", response_model=Dict[str, Any])
 async def get_revolutionary_features_performance(
-    current_user: Dict[str, Any] = Depends(get_current_admin_user)
+    current_user: AuthenticatedUser = Depends(get_current_admin_user)
 ):
     """
     Devrimsel özelliklerin performans metrikleri
@@ -272,7 +272,7 @@ async def get_revolutionary_features_performance(
 @router.post("/clear-cache", response_model=Dict[str, Any])
 async def clear_cache(
     cache_type: Optional[str] = None,
-    current_user: Dict[str, Any] = Depends(get_current_admin_user),
+    current_user: AuthenticatedUser = Depends(get_current_admin_user),
 ):
     """
     Cache'i temizle
@@ -336,7 +336,7 @@ async def clear_cache(
 
 @router.get("/api-response-times", response_model=Dict[str, Any])
 async def get_api_response_times(
-    current_user: Dict[str, Any] = Depends(get_current_admin_user)
+    current_user: AuthenticatedUser = Depends(get_current_admin_user)
 ):
     """
     API endpoint'lerinin response time'ları
@@ -416,7 +416,7 @@ async def get_api_response_times(
 @router.post("/optimize", response_model=Dict[str, Any])
 async def optimize_system(
     optimization_type: Optional[str] = None,
-    current_user: Dict[str, Any] = Depends(get_current_admin_user),
+    current_user: AuthenticatedUser = Depends(get_current_admin_user),
 ):
     """
     Sistem optimizasyonu çalıştır
@@ -464,10 +464,10 @@ async def optimize_system(
         ):
             # Database optimizasyonu
             try:
-                from core.database import get_async_session
+                from core.database import get_db_session_context
                 from core.database_optimizer import create_performance_indexes
 
-                async with get_async_session() as session:
+                async with get_db_session_context() as session:
                     await create_performance_indexes(session)
                 optimizations_applied.append("database_indexes")
             except Exception as e:
@@ -514,9 +514,9 @@ async def performance_health_check():
 
         # Database sağlık kontrolü
         try:
-            from core.database import get_async_session
+            from core.database import get_db_session_context
 
-            async with get_async_session() as session:
+            async with get_db_session_context() as session:
                 await session.execute("SELECT 1")
             health_status["database"] = "healthy"
         except Exception:

@@ -12,7 +12,7 @@ from pydantic import BaseModel, Field, field_validator
 
 from core.bionic_reading_service import BionicReadingService
 from core.cache import CacheService
-from core.dependencies import get_cache_service, get_current_user
+from core.dependencies import get_cache_service, get_current_user, AuthenticatedUser
 
 logger = logging.getLogger(__name__)
 
@@ -85,7 +85,7 @@ async def get_bionic_reading_service(
 @router.post("/process")
 async def process_text(
     request: BionicReadingRequest,
-    current_user: Dict[str, Any] = Depends(get_current_user),
+    current_user: AuthenticatedUser = Depends(get_current_user),
     bionic_service: BionicReadingService = Depends(get_bionic_reading_service),
 ) -> Dict[str, Any]:
     """
@@ -97,12 +97,12 @@ async def process_text(
 
     try:
         logger.info(
-            f"Bionic Reading isteği - Kullanıcı: {current_user.get('id')}, Metin uzunluğu: {len(request.text)}"
+            f"Bionic Reading isteği - Kullanıcı: {current_user.id}, Metin uzunluğu: {len(request.text)}"
         )
 
         result = await bionic_service.process_text(
             text=request.text,
-            user_id=current_user.get("id"),
+            user_id=current_user.id,
             use_cache=request.use_cache,
         )
 
@@ -127,7 +127,7 @@ async def process_text(
 @router.post("/process-multiple")
 async def process_multiple_texts(
     request: MultipleBionicReadingRequest,
-    current_user: Dict[str, Any] = Depends(get_current_user),
+    current_user: AuthenticatedUser = Depends(get_current_user),
     bionic_service: BionicReadingService = Depends(get_bionic_reading_service),
 ) -> Dict[str, Any]:
     """
@@ -139,12 +139,12 @@ async def process_multiple_texts(
 
     try:
         logger.info(
-            f"Çoklu Bionic Reading isteği - Kullanıcı: {current_user.get('id')}, Metin sayısı: {len(request.texts)}"
+            f"Çoklu Bionic Reading isteği - Kullanıcı: {current_user.id}, Metin sayısı: {len(request.texts)}"
         )
 
         result = await bionic_service.process_multiple_texts(
             texts=request.texts,
-            user_id=current_user.get("id"),
+            user_id=current_user.id,
             use_cache=request.use_cache,
         )
 
@@ -160,7 +160,7 @@ async def process_multiple_texts(
 
 @router.get("/preferences")
 async def get_user_preferences(
-    current_user: Dict[str, Any] = Depends(get_current_user),
+    current_user: AuthenticatedUser = Depends(get_current_user),
     bionic_service: BionicReadingService = Depends(get_bionic_reading_service),
 ) -> Dict[str, Any]:
     """
@@ -170,7 +170,7 @@ async def get_user_preferences(
     """
 
     try:
-        user_id = current_user.get("id")
+        user_id = current_user.id
         if not user_id:
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
@@ -199,7 +199,7 @@ async def get_user_preferences(
 @router.put("/preferences")
 async def update_user_preferences(
     request: UserPreferencesRequest,
-    current_user: Dict[str, Any] = Depends(get_current_user),
+    current_user: AuthenticatedUser = Depends(get_current_user),
     bionic_service: BionicReadingService = Depends(get_bionic_reading_service),
 ) -> Dict[str, Any]:
     """
@@ -209,7 +209,7 @@ async def update_user_preferences(
     """
 
     try:
-        user_id = current_user.get("id")
+        user_id = current_user.id
         if not user_id:
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
@@ -250,7 +250,7 @@ async def update_user_preferences(
 
 @router.get("/stats")
 async def get_service_stats(
-    current_user: Dict[str, Any] = Depends(get_current_user),
+    current_user: AuthenticatedUser = Depends(get_current_user),
     bionic_service: BionicReadingService = Depends(get_bionic_reading_service),
 ) -> Dict[str, Any]:
     """
@@ -262,7 +262,7 @@ async def get_service_stats(
 
     try:
         # Admin kontrolü
-        if current_user.get("role") != "admin":
+        if current_user.role.value != "admin":
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail="Bu işlem için admin yetkisi gerekli",
@@ -283,7 +283,7 @@ async def get_service_stats(
 
 @router.delete("/cache")
 async def clear_cache(
-    current_user: Dict[str, Any] = Depends(get_current_user),
+    current_user: AuthenticatedUser = Depends(get_current_user),
     bionic_service: BionicReadingService = Depends(get_bionic_reading_service),
     clear_all: bool = False,
 ) -> Dict[str, Any]:
@@ -294,8 +294,8 @@ async def clear_cache(
     """
 
     try:
-        user_id = current_user.get("id")
-        user_role = current_user.get("role")
+        user_id = current_user.id
+        user_role = current_user.role.value
 
         if clear_all and user_role != "admin":
             raise HTTPException(

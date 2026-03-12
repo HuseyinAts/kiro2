@@ -1,390 +1,406 @@
 """
-Knowledge Graph Service - Question Relationship & Taxonomy Management
-INNOVATION: Neo4j-based semantic relationships for adaptive learning
+Knowledge Graph Service — F4 Granüler Bilgi Haritası
+
+Ön koşul DAG'ı, öğrenci hakimiyet katmanı ve konu önerileri.
+Basit Bayesian güncelleme: doğru → mastery += 0.1*(1-mastery),
+yanlış → mastery -= 0.1*mastery.
 """
-from typing import List, Dict, Optional
-from dataclasses import dataclass
-import networkx as nx
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from core.structured_logger import get_logger
+
+if TYPE_CHECKING:
+    pass
+
+logger = get_logger("knowledge_graph_service")
+
+# ---------------------------------------------------------------------------
+# Sabit ön koşul yapısı — DB tablosu oluşturulana kadar fallback olarak kullanılır
+# ---------------------------------------------------------------------------
+
+def _kp(
+    kp_id: str,
+    name: str,
+    prereqs: list[str],
+    dr: list[float],
+) -> dict:
+    """Bilgi noktası tanım yardımcısı (satır uzunluğunu azaltır)."""
+    return {"id": kp_id, "name": name, "prerequisites": prereqs, "difficulty_range": dr}
 
 
-@dataclass
-class QuestionNode:
-    """Question node in knowledge graph"""
+_PREREQUISITE_DAG: dict[str, list[dict]] = {
+    "matematik": [
+        _kp("sayilar", "Sayılar", [], [0.0, 0.4]),
+        _kp("kumeler", "Kümeler", ["sayilar"], [0.2, 0.5]),
+        _kp("fonksiyonlar", "Fonksiyonlar", ["kumeler", "sayilar"], [0.4, 0.7]),
+        _kp("limit", "Limit", ["fonksiyonlar"], [0.5, 0.8]),
+        _kp("turev", "Türev", ["limit"], [0.6, 0.9]),
+        _kp("integral", "İntegral", ["turev"], [0.7, 1.0]),
+        _kp("olasilik", "Olasılık", ["sayilar"], [0.3, 0.6]),
+        _kp("geometri_temel", "Temel Geometri", [], [0.1, 0.4]),
+        _kp("ucgenler", "Üçgenler", ["geometri_temel"], [0.3, 0.6]),
+        _kp("donguler", "Dörtgenler ve Çevre", ["ucgenler"], [0.4, 0.7]),
+    ],
+    "fizik": [
+        _kp("vektorler", "Vektörler", [], [0.2, 0.5]),
+        _kp("hareket", "Hareket", ["vektorler"], [0.3, 0.6]),
+        _kp("kuvvet", "Kuvvet ve Newton Yasaları", ["hareket"], [0.4, 0.7]),
+        _kp("enerji", "Enerji ve İş", ["kuvvet"], [0.5, 0.8]),
+        _kp("elektrostatik", "Elektrostatik", ["vektorler"], [0.5, 0.8]),
+        _kp("elektrik_akimi", "Elektrik Akımı", ["elektrostatik"], [0.6, 0.9]),
+    ],
+    "kimya": [
+        _kp("atom_yapisi", "Atom Yapısı", [], [0.1, 0.4]),
+        _kp("periyodik_tablo", "Periyodik Tablo", ["atom_yapisi"], [0.2, 0.5]),
+        _kp("kimyasal_bag", "Kimyasal Bağlar", ["periyodik_tablo"], [0.4, 0.7]),
+        _kp("mol", "Mol Kavramı", ["atom_yapisi"], [0.3, 0.6]),
+        _kp(
+            "tepkimeler",
+            "Kimyasal Tepkimeler",
+            ["mol", "kimyasal_bag"],
+            [0.5, 0.8],
+        ),
+    ],
+    "turkce": [
+        _kp("ses_bilgisi", "Ses Bilgisi", [], [0.1, 0.3]),
+        _kp("kelime_anlami", "Kelime Anlamı", ["ses_bilgisi"], [0.2, 0.5]),
+        _kp("cumle_bilgisi", "Cümle Bilgisi", ["kelime_anlami"], [0.3, 0.6]),
+        _kp("paragraf", "Paragraf ve Metin", ["cumle_bilgisi"], [0.4, 0.7]),
+        _kp("anlatim_bicimleri", "Anlatım Biçimleri", ["paragraf"], [0.5, 0.8]),
+    ],
+}
 
-    id: str
-    konu: str
-    kazanim: str
-    bloom_level: str
-    irt_difficulty: float
-    cognitive_skills: List[str]
+
+def _build_edges(nodes: list[dict]) -> list[dict]:
+    """Düğüm listesinden kenar listesi türetir."""
+    edges: list[dict] = []
+    for node in nodes:
+        for prereq_id in node.get("prerequisites", []):
+            edges.append({"from": prereq_id, "to": node["id"]})
+    return edges
 
 
-@dataclass
-class TopicNode:
-    """Topic node with hierarchical structure"""
-
-    name: str
-    parent: Optional[str]
-    difficulty_level: float
-    prerequisite_topics: List[str]
+# ---------------------------------------------------------------------------
+# Servis fonksiyonları
+# ---------------------------------------------------------------------------
 
 
-class KnowledgeGraphService:
+async def build_prerequisite_dag(*, db: AsyncSession, subject: str) -> dict:
+    """Bir derse ait ön koşul DAG'ını döndürür.
+
+    Önce DB'den KnowledgePoint tablosunu okumaya çalışır;
+    tablo yoksa statik sabit yapıyı kullanır.
+
+    Args:
+        db: Veritabanı oturumu.
+        subject: Ders adı (küçük harf, örn. 'matematik').
+
+    Returns:
+        {nodes: [{id, name, prerequisites, difficulty_range}], edges: [{from, to}]}
     """
-    RESEARCH-BASED: Knowledge graph for question relationships
-    Benefits:
-    - Smart question recommendation (+35% student engagement)
-    - Prerequisite detection (reduces student frustration)
-    - Gap analysis (personalized learning paths)
-    """
+    subject_key = subject.lower().strip()
 
-    def __init__(self):
-        # Using NetworkX for graph operations (can migrate to Neo4j later)
-        self.graph = nx.DiGraph()
+    try:
+        from sqlalchemy import select
 
-        # Taxonomy hierarchy: sinav_tipi -> ders -> unite -> konu -> kazanim
-        self.taxonomy_hierarchy = {
-            "TYT": {
-                "Matematik": {
-                    "Temel Matematik": ["Sayılar", "Kümeler", "Fonksiyonlar"],
-                    "Geometri": ["Üçgenler", "Dörtgenler", "Çember"],
-                    "Analiz": ["Türev", "İntegral", "Limit"],
-                },
-                "Türkçe": {
-                    "Dil Bilgisi": ["Cümle", "Sözcük", "Anlam"],
-                    "Edebiyat": ["Nazım", "Nesir", "Edebi Akımlar"],
-                },
-                "Fizik": {
-                    "Mekanik": ["Hareket", "Kuvvet", "Enerji"],
-                    "Elektrik": ["Elektrostatik", "Akım", "Manyetizma"],
-                },
-            },
-            "AYT": {
-                "Matematik": {
-                    "İleri Analiz": ["Türev Uygulamaları", "İntegral Uygulamaları"],
-                    "Olasılık": ["Permütasyon", "Kombinasyon", "Olasılık"],
+        from models.knowledge_graph import KnowledgePoint  # lazy import
+
+        result = await db.execute(
+            select(KnowledgePoint).where(KnowledgePoint.subject == subject_key)
+        )
+        rows = result.scalars().all()
+
+        if rows:
+            nodes = [
+                {
+                    "id": str(r.id),
+                    "name": r.name,
+                    "prerequisites": r.prerequisite_ids or [],
+                    "difficulty_range": r.difficulty_range or [0.0, 1.0],
                 }
-            },
-        }
-
-        # Build initial taxonomy graph
-        self._build_taxonomy_graph()
-
-    def _build_taxonomy_graph(self):
-        """Build hierarchical taxonomy structure"""
-        for sinav_tipi, dersler in self.taxonomy_hierarchy.items():
-            self.graph.add_node(sinav_tipi, type="sinav_tipi")
-
-            for ders, uniteler in dersler.items():
-                self.graph.add_node(f"{sinav_tipi}:{ders}", type="ders")
-                self.graph.add_edge(
-                    sinav_tipi, f"{sinav_tipi}:{ders}", relation="contains"
-                )
-
-                for unite, konular in uniteler.items():
-                    unite_id = f"{sinav_tipi}:{ders}:{unite}"
-                    self.graph.add_node(unite_id, type="unite")
-                    self.graph.add_edge(
-                        f"{sinav_tipi}:{ders}", unite_id, relation="contains"
-                    )
-
-                    for konu in konular:
-                        konu_id = f"{unite_id}:{konu}"
-                        self.graph.add_node(konu_id, type="konu")
-                        self.graph.add_edge(unite_id, konu_id, relation="contains")
-
-    def add_question_node(self, question: QuestionNode):
-        """Add question to knowledge graph with relationships"""
-        # Add question node
-        self.graph.add_node(
-            question.id,
-            type="question",
-            konu=question.konu,
-            kazanim=question.kazanim,
-            bloom_level=question.bloom_level,
-            irt_difficulty=question.irt_difficulty,
-            cognitive_skills=question.cognitive_skills,
-        )
-
-        # Link to taxonomy
-        konu_path = self._find_konu_path(question.konu)
-        if konu_path:
-            self.graph.add_edge(question.id, konu_path, relation="tests")
-
-        # Find similar difficulty questions
-        similar_questions = self._find_similar_difficulty_questions(
-            question.irt_difficulty, question.konu, tolerance=0.15
-        )
-
-        for similar_id in similar_questions[:5]:  # Top 5 similar
-            self.graph.add_edge(
-                question.id,
-                similar_id,
-                relation="difficulty_similar",
-                weight=1.0
-                - abs(
-                    question.irt_difficulty
-                    - self.graph.nodes[similar_id]["irt_difficulty"]
-                ),
+                for r in rows
+            ]
+            logger.info(
+                "DAG loaded from DB",
+                extra_data={"subject": subject_key, "node_count": len(nodes)},
             )
+            return {"nodes": nodes, "edges": _build_edges(nodes)}
 
-    def _find_konu_path(self, konu_name: str) -> Optional[str]:
-        """Find full path to a topic in taxonomy"""
-        for node, data in self.graph.nodes(data=True):
-            if data.get("type") == "konu" and konu_name in node:
-                return node
-        return None
-
-    def _find_similar_difficulty_questions(
-        self, target_difficulty: float, konu: str, tolerance: float = 0.15
-    ) -> List[str]:
-        """Find questions with similar IRT difficulty"""
-        similar = []
-        for node, data in self.graph.nodes(data=True):
-            if data.get("type") == "question" and data.get("konu") == konu:
-                diff = data.get("irt_difficulty", 0.5)
-                if abs(diff - target_difficulty) <= tolerance:
-                    similar.append(node)
-        return similar
-
-    def add_prerequisite_relationship(self, topic_a: str, prerequisite_topic: str):
-        """Define prerequisite relationships between topics"""
-        path_a = self._find_konu_path(topic_a)
-        path_prereq = self._find_konu_path(prerequisite_topic)
-
-        if path_a and path_prereq:
-            self.graph.add_edge(path_a, path_prereq, relation="prerequisite_of")
-
-    def get_recommended_questions(
-        self, student_id: str, current_question_id: str, limit: int = 10
-    ) -> List[Dict]:
-        """
-        INNOVATION: Smart question recommendation
-        Based on: current question, difficulty, prerequisites, gaps
-        """
-        recommendations = []
-        current = self.graph.nodes.get(current_question_id)
-
-        if not current:
-            return []
-
-        # Strategy 1: Same topic, gradually increasing difficulty
-        same_topic_questions = self._get_questions_by_topic(
-            current["konu"],
-            min_difficulty=current["irt_difficulty"],
-            max_difficulty=current["irt_difficulty"] + 0.2,
+    except Exception as exc:
+        logger.debug(
+            "DAG DB fallback",
+            extra_data={"subject": subject_key, "error": str(exc)},
         )
-        recommendations.extend(same_topic_questions[:3])
 
-        # Strategy 2: Prerequisites (if student struggling)
-        if self._is_student_struggling(student_id, current["konu"]):
-            prereq_questions = self._get_prerequisite_questions(current["konu"])
-            recommendations.extend(prereq_questions[:3])
+    # Statik fallback
+    nodes = _PREREQUISITE_DAG.get(subject_key, [])
+    return {"nodes": nodes, "edges": _build_edges(nodes)}
 
-        # Strategy 3: Related topics (enrichment)
-        related_questions = self._get_related_topic_questions(
-            current["konu"], difficulty=current["irt_difficulty"]
+
+async def get_student_knowledge_state(
+    *, db: AsyncSession, student_id: str, subject: str
+) -> list[dict]:
+    """Öğrencinin bilgi noktaları başına hakimiyet düzeyini döndürür.
+
+    Bir öğrenci için KB yoksa tüm düğümler 'locked' ya da 'available'
+    durumunda, mastery_level=0 ile döner.
+
+    Args:
+        db: Veritabanı oturumu.
+        student_id: Öğrenci kimliği.
+        subject: Ders adı.
+
+    Returns:
+        [{knowledge_point_id, name, mastery_level: 0-1, confidence,
+          last_assessed, status: locked|available|mastered}]
+    """
+    subject_key = subject.lower().strip()
+
+    # DAG'dan tüm düğümleri al (DB veya statik)
+    dag = await build_prerequisite_dag(db=db, subject=subject_key)
+    nodes = dag["nodes"]
+
+    # Hakimiyet verilerini DB'den al
+    mastery_map: dict[str, dict] = {}
+    try:
+        from sqlalchemy import and_, select
+
+        from models.knowledge_graph import StudentKnowledgeState  # lazy import
+
+        result = await db.execute(
+            select(StudentKnowledgeState).where(
+                and_(
+                    StudentKnowledgeState.student_id == student_id,
+                    StudentKnowledgeState.subject == subject_key,
+                )
+            )
         )
-        recommendations.extend(related_questions[:4])
+        rows = result.scalars().all()
+        for r in rows:
+            mastery_map[r.knowledge_point_id] = {
+                "mastery_level": float(r.mastery_level),
+                "confidence": float(r.confidence or 0.5),
+                "last_assessed": (
+                    r.last_assessed.isoformat() if r.last_assessed else None
+                ),
+            }
 
-        return recommendations[:limit]
+    except Exception as exc:
+        logger.debug(
+            "Knowledge state DB fallback",
+            extra_data={"student_id": student_id, "error": str(exc)},
+        )
 
-    def _get_questions_by_topic(
-        self, konu: str, min_difficulty: float = 0.0, max_difficulty: float = 1.0
-    ) -> List[Dict]:
-        """Get questions filtered by topic and difficulty range"""
-        questions = []
-        for node, data in self.graph.nodes(data=True):
-            if (
-                data.get("type") == "question"
-                and data.get("konu") == konu
-                and min_difficulty <= data.get("irt_difficulty", 0.5) <= max_difficulty
-            ):
-                questions.append(
-                    {
-                        "id": node,
-                        "konu": data["konu"],
-                        "difficulty": data["irt_difficulty"],
-                        "bloom_level": data["bloom_level"],
-                    }
-                )
+    # Hangi düğümlerin kilidinin açık olduğunu belirle
+    unlocked: set[str] = set()
+    for node in nodes:
+        prereqs = node.get("prerequisites", [])
+        if not prereqs:
+            unlocked.add(node["id"])
+        elif all(
+            mastery_map.get(p, {}).get("mastery_level", 0) >= 0.6 for p in prereqs
+        ):
+            unlocked.add(node["id"])
 
-        # Sort by difficulty
-        questions.sort(key=lambda x: x["difficulty"])
-        return questions
+    states: list[dict] = []
+    for node in nodes:
+        kp_id = node["id"]
+        data = mastery_map.get(kp_id, {})
+        mastery = data.get("mastery_level", 0.0)
 
-    def _is_student_struggling(self, student_id: str, konu: str) -> bool:
-        """
-        Check if student is struggling with a topic
-        (Would query student_responses table in real implementation)
-        """
-        # Placeholder: Check if correct_rate < 50% for this topic
-        # In real implementation: SELECT correct_rate FROM student_topic_stats
-        return False  # Mock
+        if mastery >= 0.8:
+            status = "mastered"
+        elif kp_id in unlocked:
+            status = "available"
+        else:
+            status = "locked"
 
-    def _get_prerequisite_questions(self, konu: str) -> List[Dict]:
-        """Get questions from prerequisite topics"""
-        questions = []
-        konu_path = self._find_konu_path(konu)
+        states.append(
+            {
+                "knowledge_point_id": kp_id,
+                "name": node["name"],
+                "mastery_level": mastery,
+                "confidence": data.get("confidence", 0.5),
+                "last_assessed": data.get("last_assessed"),
+                "status": status,
+            }
+        )
 
-        if not konu_path:
-            return []
-
-        # Find prerequisite topics
-        for neighbor in self.graph.neighbors(konu_path):
-            edge_data = self.graph.get_edge_data(konu_path, neighbor)
-            if edge_data and edge_data.get("relation") == "prerequisite_of":
-                prereq_konu = neighbor.split(":")[-1]
-                questions.extend(self._get_questions_by_topic(prereq_konu))
-
-        return questions
-
-    def _get_related_topic_questions(self, konu: str, difficulty: float) -> List[Dict]:
-        """Get questions from related topics (same unit)"""
-        questions = []
-        konu_path = self._find_konu_path(konu)
-
-        if not konu_path:
-            return []
-
-        # Find sibling topics (same parent)
-        parent = list(self.graph.predecessors(konu_path))
-        if parent:
-            siblings = list(self.graph.successors(parent[0]))
-            for sibling in siblings:
-                if sibling != konu_path:
-                    sibling_konu = sibling.split(":")[-1]
-                    questions.extend(
-                        self._get_questions_by_topic(
-                            sibling_konu,
-                            min_difficulty=max(0, difficulty - 0.1),
-                            max_difficulty=min(1.0, difficulty + 0.1),
-                        )
-                    )
-
-        return questions
-
-    def analyze_student_gaps(self, student_id: str) -> Dict[str, any]:
-        """
-        INNOVATION: Gap analysis using knowledge graph
-        Identifies weak topics and suggests learning path
-        """
-        # Mock implementation (real version queries database)
-        weak_topics = []
-        strong_topics = []
-
-        # Analyze performance across taxonomy
-        # In real implementation: Query student_responses + aggregate by topic
-
-        return {
-            "weak_topics": weak_topics,
-            "strong_topics": strong_topics,
-            "recommended_learning_path": self._generate_learning_path(weak_topics),
-            "estimated_improvement_time": "2-3 weeks",
-        }
-
-    def _generate_learning_path(self, weak_topics: List[str]) -> List[Dict]:
-        """Generate optimal learning path using graph traversal"""
-        path = []
-
-        # Topological sort considering prerequisites
-        for topic in weak_topics:
-            topic_path = self._find_konu_path(topic)
-            if topic_path:
-                # Get prerequisites first
-                prereqs = self._get_all_prerequisites(topic_path)
-                path.extend(prereqs)
-                path.append(
-                    {
-                        "topic": topic,
-                        "estimated_questions": 20,
-                        "estimated_time": "3-4 hours",
-                    }
-                )
-
-        return path
-
-    def _get_all_prerequisites(self, topic_path: str) -> List[Dict]:
-        """Get all prerequisites recursively"""
-        prereqs = []
-        visited = set()
-
-        def dfs(current_path):
-            if current_path in visited:
-                return
-            visited.add(current_path)
-
-            for neighbor in self.graph.neighbors(current_path):
-                edge_data = self.graph.get_edge_data(current_path, neighbor)
-                if edge_data and edge_data.get("relation") == "prerequisite_of":
-                    dfs(neighbor)
-                    prereqs.append(
-                        {
-                            "topic": neighbor.split(":")[-1],
-                            "estimated_questions": 15,
-                            "estimated_time": "2-3 hours",
-                        }
-                    )
-
-        dfs(topic_path)
-        return prereqs
-
-    def export_graph_stats(self) -> Dict:
-        """Export knowledge graph statistics"""
-        question_nodes = [
-            n for n, d in self.graph.nodes(data=True) if d.get("type") == "question"
-        ]
-
-        return {
-            "total_nodes": self.graph.number_of_nodes(),
-            "total_edges": self.graph.number_of_edges(),
-            "question_count": len(question_nodes),
-            "topic_count": len(
-                [n for n, d in self.graph.nodes(data=True) if d.get("type") == "konu"]
-            ),
-            "average_question_relationships": (
-                self.graph.number_of_edges() / len(question_nodes)
-                if question_nodes
-                else 0
-            ),
-            "graph_density": nx.density(self.graph),
-        }
+    return states
 
 
-# ============================================================================
-# EXAMPLE USAGE
-# ============================================================================
+async def suggest_next_topics(
+    *, db: AsyncSession, student_id: str, subject: str, limit: int = 5
+) -> list[dict]:
+    """Kilidini açık, düşük hakimiyetli bilgi noktalarını önerir.
 
+    'available' durumundaki ve mastery_level < 0.8 olan noktaları
+    mastery artan sırada döndürür (en zayıf önce).
 
-def example_usage():
-    """Example: Building and querying knowledge graph"""
-    kg = KnowledgeGraphService()
+    Args:
+        db: Veritabanı oturumu.
+        student_id: Öğrenci kimliği.
+        subject: Ders adı.
+        limit: Maksimum öneri sayısı.
 
-    # Add sample question
-    q1 = QuestionNode(
-        id="q-001",
-        konu="Türev",
-        kazanim="M.11.3.1.1",
-        bloom_level="apply",
-        irt_difficulty=0.6,
-        cognitive_skills=["problem_solving", "mathematical_reasoning"],
-    )
-    kg.add_question_node(q1)
-
-    # Define prerequisite: Limit is prerequisite of Türev
-    kg.add_prerequisite_relationship("Türev", "Limit")
-
-    # Get recommendations
-    recommendations = kg.get_recommended_questions(
-        student_id="student-123", current_question_id="q-001", limit=10
+    Returns:
+        [{knowledge_point_id, name, mastery_level, reason}]
+    """
+    states = await get_student_knowledge_state(
+        db=db, student_id=student_id, subject=subject
     )
 
-    print(f"Recommended questions: {recommendations}")
+    candidates = [
+        s for s in states
+        if s["status"] == "available" and s["mastery_level"] < 0.8
+    ]
+    # En düşük hakimiyet önce
+    candidates.sort(key=lambda s: s["mastery_level"])
 
-    # Get statistics
-    stats = kg.export_graph_stats()
-    print(f"Graph stats: {stats}")
+    suggestions: list[dict] = []
+    for c in candidates[:limit]:
+        mastery = c["mastery_level"]
+        if mastery == 0.0:
+            reason = "Henüz çalışılmamış konu — başlangıç için iyi bir seçim."
+        elif mastery < 0.4:
+            reason = (
+                f"Hakimiyet düşük (%{mastery * 100:.0f})."
+                " Temel alıştırmalara odaklan."
+            )
+        else:
+            reason = f"Hakimiyet orta (%{mastery * 100:.0f}). Pratik yaparak pekiştir."
+
+        suggestions.append(
+            {
+                "knowledge_point_id": c["knowledge_point_id"],
+                "name": c["name"],
+                "mastery_level": c["mastery_level"],
+                "reason": reason,
+            }
+        )
+
+    logger.info(
+        "Next topic suggestions generated",
+        extra_data={
+            "student_id": student_id,
+            "subject": subject,
+            "count": len(suggestions),
+        },
+    )
+
+    return suggestions
 
 
-if __name__ == "__main__":
-    example_usage()
+async def update_knowledge_state(
+    *, db: AsyncSession, student_id: str, knowledge_point_id: str, is_correct: bool
+) -> dict:
+    """Soruya verilen cevap sonrası hakimiyet düzeyini günceller.
+
+    Bayesian güncelleme:
+      doğru → mastery += 0.1 * (1 - mastery)
+      yanlış → mastery -= 0.1 * mastery
+
+    Args:
+        db: Veritabanı oturumu.
+        student_id: Öğrenci kimliği.
+        knowledge_point_id: Bilgi noktası kimliği.
+        is_correct: Cevap doğru mu?
+
+    Returns:
+        {knowledge_point_id, student_id, old_mastery, new_mastery, delta, is_correct}
+    """
+    try:
+        from datetime import datetime, timezone
+
+        from sqlalchemy import and_, select
+
+        from models.knowledge_graph import StudentKnowledgeState  # lazy import
+
+        result = await db.execute(
+            select(StudentKnowledgeState).where(
+                and_(
+                    StudentKnowledgeState.student_id == student_id,
+                    StudentKnowledgeState.knowledge_point_id == knowledge_point_id,
+                )
+            )
+        )
+        state = result.scalars().first()
+
+        if state:
+            old_mastery = float(state.mastery_level)
+        else:
+            # Konu için kısa subject bilgisi — prefix çıkar
+            subject = (
+                knowledge_point_id.split("_")[0]
+                if "_" in knowledge_point_id
+                else "unknown"
+            )
+            state = StudentKnowledgeState(
+                student_id=student_id,
+                knowledge_point_id=knowledge_point_id,
+                subject=subject,
+                mastery_level=0.0,
+                confidence=0.5,
+            )
+            old_mastery = 0.0
+            db.add(state)
+
+        # Bayesian güncelleme
+        if is_correct:
+            delta = 0.1 * (1.0 - old_mastery)
+        else:
+            delta = -0.1 * old_mastery
+
+        new_mastery = max(0.0, min(1.0, old_mastery + delta))
+        state.mastery_level = new_mastery
+        state.last_assessed = datetime.now(timezone.utc)
+
+        # Güven artışı: cevap verilince biraz daha emin olunur
+        old_confidence = float(state.confidence or 0.5)
+        state.confidence = min(1.0, old_confidence + 0.05)
+
+        db.add(state)
+        await db.commit()
+        await db.refresh(state)
+
+        logger.info(
+            "Knowledge state updated",
+            extra_data={
+                "student_id": student_id,
+                "kp_id": knowledge_point_id,
+                "old_mastery": round(old_mastery, 3),
+                "new_mastery": round(new_mastery, 3),
+                "is_correct": is_correct,
+            },
+        )
+
+        return {
+            "knowledge_point_id": knowledge_point_id,
+            "student_id": student_id,
+            "old_mastery": round(old_mastery, 3),
+            "new_mastery": round(new_mastery, 3),
+            "delta": round(delta, 3),
+            "is_correct": is_correct,
+        }
+
+    except Exception as exc:
+        logger.warning(
+            "Knowledge state update fallback",
+            extra_data={
+                "student_id": student_id,
+                "kp_id": knowledge_point_id,
+                "error": str(exc),
+            },
+        )
+        return {
+            "knowledge_point_id": knowledge_point_id,
+            "student_id": student_id,
+            "old_mastery": 0.0,
+            "new_mastery": 0.1 if is_correct else 0.0,
+            "delta": 0.1 if is_correct else 0.0,
+            "is_correct": is_correct,
+        }

@@ -22,9 +22,11 @@ export enum ExamStatus {
 }
 
 export enum QuestionDifficulty {
+  VERY_EASY = 'VERY_EASY',
   EASY = 'EASY',
   MEDIUM = 'MEDIUM',
-  HARD = 'HARD'
+  HARD = 'HARD',
+  VERY_HARD = 'VERY_HARD'
 }
 
 // Legacy aliases for compatibility
@@ -84,6 +86,9 @@ export interface QuestionResponse {
   question_text: string
   content?: string  // Alias for question_text (compatibility)
   question_image_url?: string
+  image_alt_text?: string
+  image_width?: number
+  image_height?: number
   option_a: string
   option_b: string
   option_c: string
@@ -427,7 +432,7 @@ class ExamService {
    */
   async getExamResult(sessionId: string): Promise<PerformanceResponse> {
     try {
-      const response = await apiClient.get(`/api/v1/osym-exam/${sessionId}/result`);
+      const response = await apiClient.get(`/api/v1/osym-exam/${sessionId}/performance`);
       return response.data;
     } catch (error) {
       console.error('Sınav sonucu getirme hatası:', error);
@@ -673,6 +678,26 @@ class ExamService {
       console.error('Sınav sonuçları getirme hatası:', error);
       return [];
     }
+  }
+
+  // ─── F8: Error Taxonomy ─────────────────────────────────────
+
+  /**
+   * Yanlış cevaba hata tipi ata (F8 Error Taxonomy)
+   * @param examSessionId Sınav oturum ID'si
+   * @param questionId Soru ID'si
+   * @param errorType concept | procedural | careless | knowledge_gap
+   */
+  async updateErrorType(
+    examSessionId: string,
+    questionId: string,
+    errorType: string,
+  ): Promise<{ success: boolean; message: string; error_type?: string }> {
+    const response = await apiClient.patch(
+      `/api/v1/exam-answer-tracking/${examSessionId}/answers/${questionId}/error-type`,
+      { error_type: errorType },
+    );
+    return response.data;
   }
 }
 

@@ -80,7 +80,7 @@ from models.learning_path_models import (
     Quiz,
     QuizQuestion,
 )
-from models.content_db import Question
+from models.question_bank import QuestionBankItem as Question
 
 # Rate limiting
 try:
@@ -476,6 +476,7 @@ async def create_learning_path(
     path_request: LearningPathCreateRequest,
     facade: LearningPathFacade = Depends(_get_facade),
     current_user=Depends(get_current_user_from_token),
+    db: AsyncSession = Depends(get_db),
 ) -> Dict[str, Any]:
     """
     Kişiselleştirilmiş öğrenme yolu oluştur
@@ -493,7 +494,7 @@ async def create_learning_path(
 
     try:
         # Verify ownership
-        verify_student_access(path_request.student_id, current_user, allow_privileged=True)
+        await verify_student_access(path_request.student_id, current_user, db)
 
         logger.info(
             f"Creating learning path for student {path_request.student_id}, "
@@ -748,6 +749,7 @@ async def adapt_learning_path(
     adaptation: PathAdaptation,
     facade: LearningPathFacade = Depends(_get_facade),
     current_user=Depends(get_current_user_from_token),  # FIX: Auth added!
+    db: AsyncSession = Depends(get_db),
 ) -> Dict[str, Any]:
     """
     Öğrenme yolunu performansa göre uyarla
@@ -759,9 +761,7 @@ async def adapt_learning_path(
     """
     try:
         # FIX: Verify ownership
-        verify_student_access(
-            adaptation.student_id, current_user, allow_privileged=True
-        )
+        await verify_student_access(adaptation.student_id, current_user, db)
 
         logger.info(
             f"Adapting learning path {adaptation.path_id} for "
@@ -831,7 +831,7 @@ async def get_completion_status(
     Uses multi-layer cache (L1+L2) for performance.
     """
     try:
-        verify_student_access(student_id, current_user, allow_privileged=True)
+        await verify_student_access(student_id, current_user, db)
 
         logger.info(f"Getting completion status for student {student_id}")
 
@@ -899,7 +899,7 @@ async def update_completion_status(
     Invalidates cache after update.
     """
     try:
-        verify_student_access(student_id, current_user, allow_privileged=True)
+        await verify_student_access(student_id, current_user, db)
 
         logger.info(f"Updating completion status for student {student_id}")
 
@@ -983,9 +983,7 @@ async def submit_quiz(
     FIX: Uses database instead of mock data for quiz answers.
     """
     try:
-        verify_student_access(
-            submission.student_id, current_user, allow_privileged=True
-        )
+        await verify_student_access(submission.student_id, current_user, db)
 
         logger.info(
             f"Processing quiz submission for quiz {quiz_id} "
@@ -1029,7 +1027,7 @@ async def submit_quiz(
             question_ids = [a.question_id for a in submission.answers]
             if question_ids:
                 questions_result = await db.execute(
-                    select(Question).filter(Question.id.in_(question_ids))
+                    select(Question).filter(Question.id.in_(question_ids), Question.is_active == True)  # noqa: E712
                 )
                 for question in questions_result.scalars().all():
                     correct_answers[question.id] = question.correct_answer
@@ -1162,7 +1160,7 @@ async def update_progress(
     Saves to database.
     """
     try:
-        verify_student_access(student_id, current_user, allow_privileged=True)
+        await verify_student_access(student_id, current_user, db)
 
         logger.info(f"Updating progress for student {student_id}, node {node_id}")
 

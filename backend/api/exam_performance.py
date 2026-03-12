@@ -9,13 +9,14 @@ Bu modül sınav performans analizi için API endpoint'lerini sağlar:
 - Ulusal ortalamalarla karşılaştırma
 """
 
+import os
 from typing import Any, Dict, List, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from fastapi.security import HTTPBearer
 from pydantic import BaseModel, Field
 
-from core.dependencies import get_current_user
+from core.dependencies import get_current_user, AuthenticatedUser
 from core.structured_logger import get_logger
 from core.multi_layer_cache import MultiLayerCache
 from models.database import ExamType
@@ -29,7 +30,7 @@ logger = get_logger("exam_performance_api")
 # L1: Memory (50 entries), L2: Redis, TTL: 30 minutes
 # Performance improvement: 2000ms → 50ms (40x faster on cache hit)
 performance_cache = MultiLayerCache(
-    redis_url="redis://localhost:6379/0",
+    redis_url=os.getenv("REDIS_URL", "redis://localhost:6379/0"),
     l1_max_size=50,  # Lower limit for frequently changing data
     default_ttl=1800,  # 30 minutes (performance data changes frequently)
     namespace="exam_performance",
@@ -257,7 +258,7 @@ async def get_detailed_performance_analysis(
     include_comparisons: bool = Query(
         True, description="Karşılaştırma verilerini dahil et"
     ),
-    current_user: Dict[str, Any] = Depends(get_current_user),
+    current_user: AuthenticatedUser = Depends(get_current_user),
 ):
     """
     Sınav için detaylı performans analizi getir
@@ -383,7 +384,7 @@ async def get_detailed_performance_analysis(
             "Detaylı performans analizi sunuldu",
             extra_data={
                 "exam_session_id": exam_session_id,
-                "student_id": current_user["user_id"],
+                "student_id": current_user.id,
                 "weakness_count": len(weaknesses_response),
                 "recommendation_count": len(recommendations_response),
             },
@@ -408,7 +409,7 @@ async def get_detailed_performance_analysis(
             f"Performans analizi hatası: {e}",
             extra_data={
                 "exam_session_id": exam_session_id,
-                "student_id": current_user["user_id"],
+                "student_id": current_user.id,
             },
         )
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
@@ -417,7 +418,7 @@ async def get_detailed_performance_analysis(
             f"Beklenmeyen performans analizi hatası: {e}",
             extra_data={
                 "exam_session_id": exam_session_id,
-                "student_id": current_user["user_id"],
+                "student_id": current_user.id,
             },
         )
         raise HTTPException(
@@ -432,7 +433,7 @@ async def get_detailed_performance_analysis(
     summary="Konu Bazlı Zayıflık Analizi",
 )
 async def get_subject_weaknesses(
-    exam_session_id: str, current_user: Dict[str, Any] = Depends(get_current_user)
+    exam_session_id: str, current_user: AuthenticatedUser = Depends(get_current_user)
 ):
     """
     Sınav için konu bazlı zayıflık analizi getir
@@ -469,7 +470,7 @@ async def get_subject_weaknesses(
             "Zayıflık analizi sunuldu",
             extra_data={
                 "exam_session_id": exam_session_id,
-                "student_id": current_user["user_id"],
+                "student_id": current_user.id,
                 "weakness_count": len(weaknesses_response),
             },
         )
@@ -495,7 +496,7 @@ async def get_subject_weaknesses(
     summary="Kişiselleştirilmiş Çalışma Önerileri",
 )
 async def get_study_recommendations(
-    exam_session_id: str, current_user: Dict[str, Any] = Depends(get_current_user)
+    exam_session_id: str, current_user: AuthenticatedUser = Depends(get_current_user)
 ):
     """
     Sınav performansına göre kişiselleştirilmiş çalışma önerileri getir
@@ -529,7 +530,7 @@ async def get_study_recommendations(
             "Çalışma önerileri sunuldu",
             extra_data={
                 "exam_session_id": exam_session_id,
-                "student_id": current_user["user_id"],
+                "student_id": current_user.id,
                 "recommendation_count": len(recommendations_response),
             },
         )
@@ -555,7 +556,7 @@ async def get_study_recommendations(
     summary="Performans Karşılaştırması",
 )
 async def get_performance_comparison(
-    exam_session_id: str, current_user: Dict[str, Any] = Depends(get_current_user)
+    exam_session_id: str, current_user: AuthenticatedUser = Depends(get_current_user)
 ):
     """
     Öğrenci performansını ulusal ortalamalarla karşılaştır
@@ -588,7 +589,7 @@ async def get_performance_comparison(
             "Performans karşılaştırması sunuldu",
             extra_data={
                 "exam_session_id": exam_session_id,
-                "student_id": current_user["user_id"],
+                "student_id": current_user.id,
                 "percentile": comparison_response.percentile,
             },
         )
@@ -616,7 +617,7 @@ async def get_performance_comparison(
 async def get_student_improvement_trends(
     student_id: str,
     exam_type: ExamType = Query(..., description="Sınav türü"),
-    current_user: Dict[str, Any] = Depends(get_current_user),
+    current_user: AuthenticatedUser = Depends(get_current_user),
 ):
     """
     Öğrencinin belirli sınav türündeki gelişim trendini analiz et
@@ -628,7 +629,7 @@ async def get_student_improvement_trends(
     """
     try:
         # Kullanıcı yetki kontrolü (sadece kendi verilerini görebilir)
-        if current_user["user_id"] != student_id and current_user["role"] != "admin":
+        if current_user.id != student_id and current_user.role.value != "admin":
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail="Bu öğrencinin verilerine erişim yetkiniz yok",
@@ -637,10 +638,10 @@ async def get_student_improvement_trends(
         # Son sınavı bul ve trend analizi yap
         from sqlalchemy import and_, desc, select
 
-        from core.database import get_async_session
+        from core.database import get_db_session_context
         from models.database import ExamSession
 
-        async with get_async_session() as db_session:
+        async with get_db_session_context() as db_session:
             # Son tamamlanan sınavı bul
             last_exam_result = await db_session.execute(
                 select(ExamSession)

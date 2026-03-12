@@ -17,9 +17,10 @@ from typing import Dict, List, Optional
 
 from sqlalchemy import and_, func, select
 
-from core.database import get_async_session
+from core.database import get_db_session_context
 from core.structured_logger import get_logger
-from models.database import ExamType, Question, SubjectArea
+from models.enums_db import ExamType
+from models.question_bank import QuestionBankItem as Question
 
 logger = get_logger("tyt_exam_service")
 
@@ -244,7 +245,7 @@ class TYTExamService:
                 return False
 
             # Veritabanından sınav bilgilerini kontrol et
-            async with get_async_session() as db_session:
+            async with get_db_session_context() as db_session:
                 from models.database import ExamSession
 
                 result = await db_session.execute(
@@ -303,19 +304,16 @@ class TYTExamService:
         try:
             selected_questions = []
 
-            async with get_async_session() as db_session:
+            async with get_db_session_context() as db_session:
                 for subject_str, count in self.config.subject_distribution.items():
-                    # Konu alanını belirle
-                    subject_area = SubjectArea(subject_str)
-
-                    # Soruları getir
+                    # Soruları getir (question_bank UPPERCASE değerler saklar)
                     result = await db_session.execute(
                         select(Question)
                         .where(
                             and_(
-                                Question.exam_type == ExamType.TYT,
-                                Question.subject_area == subject_area,
-                                Question.is_active == True,
+                                Question.exam_type == ExamType.TYT.value.upper(),
+                                Question.subject_area == subject_str.upper(),
+                                Question.is_active.is_(True),
                             )
                         )
                         .order_by(func.random())
@@ -349,7 +347,7 @@ class TYTExamService:
                             [
                                 q
                                 for q in selected_questions
-                                if q.subject_area.value == subject
+                                if q.subject_area == subject.upper()
                             ]
                         )
                         for subject in self.config.subject_distribution.keys()

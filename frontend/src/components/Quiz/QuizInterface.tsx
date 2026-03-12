@@ -39,6 +39,9 @@ import { useState, useEffect } from 'react';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 
+import { ErrorTypeSelector, type ErrorType } from './ErrorTypeSelector';
+import { MnemonicHint } from './MnemonicHint';
+
 export interface Question {
   id: string
   type: 'multiple-choice' | 'multiple-select' | 'code' | 'text' | 'true-false'
@@ -64,12 +67,16 @@ export interface QuizConfig {
   allowReview?: boolean
   showCorrectAnswers?: boolean
   adaptiveDifficulty?: boolean
+  /** Pratik modu: Her cevaptan sonra anında doğru/yanlış + açıklama göster (d=1.29) */
+  immediateFeedback?: boolean
 }
 
 interface QuizInterfaceProps {
   config: QuizConfig
   onSubmit?: (results: QuizResults) => void
   onExit?: () => void
+  /** F8: Called when student classifies a wrong answer's error type */
+  onErrorTypeSelect?: (questionId: string, errorType: ErrorType) => void
   className?: string
 }
 
@@ -87,6 +94,7 @@ export function QuizInterface({
   config,
   onSubmit,
   onExit,
+  onErrorTypeSelect,
   className,
 }: QuizInterfaceProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -100,6 +108,9 @@ export function QuizInterface({
   const [_showExplanation, _setShowExplanation] = useState(false);
   const [reviewMode, setReviewMode] = useState(false);
   const [startTime] = useState(Date.now());
+  // Immediate feedback state — shows correct/wrong after answering (d=1.29)
+  const [feedbackVisible, setFeedbackVisible] = useState(false);
+  const [feedbackCorrect, setFeedbackCorrect] = useState(false);
 
   const currentQuestion = config.questions[currentIndex];
   const isLastQuestion = currentIndex === config.questions.length - 1;
@@ -133,6 +144,17 @@ export function QuizInterface({
       ...prev,
       [currentQuestion.id]: value,
     }));
+    // Immediate feedback: show correct/wrong right after answering
+    if (config.immediateFeedback) {
+      const isCorrect = currentQuestion.type === 'multiple-select'
+        ? Array.isArray(currentQuestion.correctAnswer) &&
+          Array.isArray(value) &&
+          currentQuestion.correctAnswer.length === value.length &&
+          (currentQuestion.correctAnswer as string[]).every(a => value.includes(a))
+        : value === currentQuestion.correctAnswer;
+      setFeedbackCorrect(isCorrect);
+      setFeedbackVisible(true);
+    }
   };
 
   const handleMultiSelectChange = (option: string) => {
@@ -148,6 +170,7 @@ export function QuizInterface({
       setCurrentIndex(prev => prev + 1);
       setShowHint(false);
       setCurrentHintIndex(0);
+      setFeedbackVisible(false);
     }
   };
 
@@ -156,6 +179,7 @@ export function QuizInterface({
       setCurrentIndex(prev => prev - 1);
       setShowHint(false);
       setCurrentHintIndex(0);
+      setFeedbackVisible(false);
     }
   };
 
@@ -578,6 +602,44 @@ export function QuizInterface({
               </div>
             )}
 
+            {/* Immediate Feedback — Pratik modu (d=1.29) */}
+            {config.immediateFeedback && feedbackVisible && (
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3 }}
+              >
+                <Alert
+                  severity={feedbackCorrect ? 'success' : 'error'}
+                  className="mt-4"
+                  sx={{ borderRadius: 2 }}
+                >
+                  <div className="mb-1">
+                    <strong>{feedbackCorrect ? 'Doğru!' : 'Yanlış'}</strong>
+                    {!feedbackCorrect && currentQuestion.correctAnswer && (
+                      <span> — Doğru cevap: <strong>{currentQuestion.correctAnswer}</strong></span>
+                    )}
+                  </div>
+                  {currentQuestion.explanation && (
+                    <div className="text-sm mt-1">
+                      {currentQuestion.explanation}
+                    </div>
+                  )}
+                </Alert>
+
+                {/* F8: Error Type Selector — shown after wrong answer */}
+                {!feedbackCorrect && onErrorTypeSelect && (
+                  <ErrorTypeSelector
+                    questionId={currentQuestion.id}
+                    onSelect={onErrorTypeSelect}
+                  />
+                )}
+
+                {/* F19: Mnemonic Hint — memory aid for the concept */}
+                <MnemonicHint questionId={currentQuestion.id} compact />
+              </motion.div>
+            )}
+
             {/* Review Mode - Show Explanation */}
             {reviewMode && config.showCorrectAnswers && (
               <Alert
@@ -596,6 +658,8 @@ export function QuizInterface({
                     <strong>Açıklama:</strong> {currentQuestion.explanation}
                   </div>
                 )}
+                {/* F19: Mnemonic Hint in review mode */}
+                <MnemonicHint questionId={currentQuestion.id} />
               </Alert>
             )}
           </motion.div>

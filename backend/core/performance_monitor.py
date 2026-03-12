@@ -184,6 +184,7 @@ class PerformanceMonitoringMiddleware(BaseHTTPMiddleware):
         start_time = time.time()
 
         # Process request
+        response = None
         try:
             response = await call_next(request)
             status_code = response.status_code
@@ -206,7 +207,8 @@ class PerformanceMonitoringMiddleware(BaseHTTPMiddleware):
             )
 
             # Add performance headers
-            response.headers["X-Response-Time"] = f"{duration:.3f}s"
+            if response is not None:
+                response.headers["X-Response-Time"] = f"{duration:.3f}s"
 
         return response
 

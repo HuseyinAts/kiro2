@@ -13,15 +13,23 @@ import {
   Divider,
   Chip,
   Alert,
+  CircularProgress,
 } from '@mui/material';
+import { VideoLibrary, OpenInNew, SmartToy, Science } from '@mui/icons-material';
 import * as React from 'react';
 
+import type { VideoResponse } from '../../../api';
 import { formatDifficulty } from '../../../utils/learningPathHelpers';
 import { PathNodeData } from '../PathNode';
+import { NodeChatPanel } from '../NodeChatPanel';
 
 export interface NodeDetailsPanelProps {
   node: PathNodeData
   onClose: () => void
+  onStartQuiz?: (node: PathNodeData) => void
+  onStartProductiveFailure?: (node: PathNodeData) => void
+  resources?: VideoResponse[]
+  resourcesLoading?: boolean
 }
 
 /**
@@ -32,7 +40,13 @@ export interface NodeDetailsPanelProps {
 export const NodeDetailsPanel: React.FC<NodeDetailsPanelProps> = ({
   node,
   onClose,
+  onStartQuiz,
+  onStartProductiveFailure,
+  resources = [],
+  resourcesLoading = false,
 }) => {
+  const [showChat, setShowChat] = React.useState(false);
+
   return (
     <Paper elevation={3} sx={{ p: 3, mb: 3, position: 'relative' }}>
       <Button
@@ -143,7 +157,7 @@ export const NodeDetailsPanel: React.FC<NodeDetailsPanelProps> = ({
           <Typography variant="body2" fontWeight="bold" gutterBottom>
             📝 Quiz Bilgisi
           </Typography>
-          <Box className="flex gap-4">
+          <Box className="flex gap-4 mb-1">
             <Typography variant="body2">
               <strong>Soru Sayısı:</strong> {node.quiz.question_count}
             </Typography>
@@ -151,8 +165,126 @@ export const NodeDetailsPanel: React.FC<NodeDetailsPanelProps> = ({
               <strong>Geçme Notu:</strong> {node.quiz.passing_score}%
             </Typography>
           </Box>
+          {node.status !== 'completed' && (
+            <Box sx={{ display: 'flex', gap: 1, mt: 1 }}>
+              {onStartQuiz && (
+                <Button
+                  variant="contained"
+                  color="primary"
+                  size="small"
+                  onClick={() => onStartQuiz(node)}
+                >
+                  Quiz Başlat
+                </Button>
+              )}
+              {onStartProductiveFailure && (
+                <Button
+                  variant="outlined"
+                  color="secondary"
+                  size="small"
+                  startIcon={<Science sx={{ fontSize: 16 }} />}
+                  onClick={() => onStartProductiveFailure(node)}
+                >
+                  Önce Dene
+                </Button>
+              )}
+            </Box>
+          )}
         </Alert>
       )}
+
+      {/* Inline Resources */}
+      {(resourcesLoading || resources.length > 0) && (
+        <Box sx={{ mb: 2 }}>
+          <Divider sx={{ my: 2 }} />
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1.5 }}>
+            <VideoLibrary sx={{ color: '#3b82f6', fontSize: 20 }} />
+            <Typography variant="subtitle2" fontWeight={700}>
+              Önerilen Kaynaklar
+            </Typography>
+          </Box>
+          {resourcesLoading ? (
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, py: 2 }}>
+              <CircularProgress size={20} />
+              <Typography variant="body2" color="text.secondary">Kaynaklar yükleniyor...</Typography>
+            </Box>
+          ) : (
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+              {resources.slice(0, 5).map((resource, idx) => (
+                <Box
+                  key={resource.video_id || idx}
+                  component="a"
+                  href={resource.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 1.5,
+                    p: 1.5,
+                    borderRadius: 1.5,
+                    backgroundColor: 'grey.50',
+                    textDecoration: 'none',
+                    color: 'inherit',
+                    transition: 'background-color 0.2s',
+                    '&:hover': { backgroundColor: 'grey.100' },
+                  }}
+                >
+                  {resource.thumbnail ? (
+                    <Box
+                      component="img"
+                      src={resource.thumbnail}
+                      alt=""
+                      sx={{ width: 64, height: 36, borderRadius: 1, objectFit: 'cover', flexShrink: 0 }}
+                    />
+                  ) : (
+                    <VideoLibrary sx={{ color: '#ef4444', fontSize: 24, flexShrink: 0 }} />
+                  )}
+                  <Box sx={{ flex: 1, minWidth: 0 }}>
+                    <Typography variant="body2" fontWeight={600} noWrap>
+                      {resource.title}
+                    </Typography>
+                    <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
+                      <Typography variant="caption" color="text.secondary">
+                        {resource.channel}
+                      </Typography>
+                      {resource.duration && (
+                        <Typography variant="caption" color="text.secondary">
+                          · {resource.duration}
+                        </Typography>
+                      )}
+                      {resource.scores?.final_score != null && (
+                        <Chip
+                          label={`${Math.round(resource.scores.final_score * 100)}%`}
+                          size="small"
+                          sx={{ height: 18, fontSize: 10, fontWeight: 700 }}
+                        />
+                      )}
+                    </Box>
+                  </Box>
+                  <OpenInNew sx={{ fontSize: 16, color: 'text.secondary', flexShrink: 0 }} />
+                </Box>
+              ))}
+            </Box>
+          )}
+        </Box>
+      )}
+
+      {/* AI Chat */}
+      <Divider sx={{ my: 2 }} />
+      <Box sx={{ mb: 2 }}>
+        <Button
+          size="small"
+          startIcon={<SmartToy />}
+          onClick={() => setShowChat(prev => !prev)}
+          sx={{ fontWeight: 600, textTransform: 'none', mb: showChat ? 1.5 : 0 }}
+        >
+          {showChat ? 'AI Sohbeti Kapat' : 'AI\'ya Sor'}
+        </Button>
+        {showChat && (
+          <NodeChatPanel nodeTitle={node.title} nodeDescription={node.description} />
+        )}
+      </Box>
 
       <Box className="flex gap-2">
         {node.status === 'completed' && (

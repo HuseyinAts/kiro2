@@ -22,6 +22,7 @@ from unittest.mock import MagicMock, AsyncMock, patch
 from datetime import datetime, timedelta
 from uuid import uuid4
 from fastapi import FastAPI
+from core.dependencies import AuthenticatedUser
 
 
 # Create test app instance
@@ -32,12 +33,12 @@ def create_test_app():
     # Override auth dependency for testing
     async def mock_auth_dependency():
         """Mock auth that always returns a valid student user"""
-        return {
-            "user_id": "student123",
-            "email": "test@example.com",
-            "username": "testuser",
-            "role": "student",
-        }
+        return AuthenticatedUser(
+            id="student123",
+            username="testuser",
+            role="student",
+            email="test@example.com",
+        )
 
     try:
         from api.sinav import router as sinav_router
@@ -77,12 +78,12 @@ def client():
 @pytest.fixture
 def mock_current_user():
     """Mock authenticated user"""
-    return {
-        "user_id": "student123",
-        "email": "test@example.com",
-        "username": "testuser",
-        "role": "student",
-    }
+    return AuthenticatedUser(
+        id="student123",
+        username="testuser",
+        role="student",
+        email="test@example.com",
+    )
 
 
 @pytest.fixture

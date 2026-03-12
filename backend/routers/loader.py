@@ -18,6 +18,9 @@ ROUTER_MAPPING = {
     # Health & Monitoring
     "api.health": ("health", "api.health"),
 
+    # Telemetry (frontend web-vitals + error report stubs)
+    "api.telemetry": ("health", "api.telemetry"),
+
     # Authentication & Security
     "api.auth": ("auth", "api.auth"),
     "api.enhanced_auth_api": ("auth", "api.enhanced_auth_api"),
@@ -73,6 +76,7 @@ ROUTER_MAPPING = {
     "api.cultural_adaptation_api": ("ai", "api.cultural_adaptation_api"),
     "api.sequential_reasoning_api": ("ai", "api.sequential_reasoning_api"),
     "api.litellm_chat": ("ai", "api.litellm_chat"),
+    "api.enhanced_chat": ("ai", "api.enhanced_chat"),
 
     # Integrations
     "api.youtube_routes": ("integrations", "api.youtube_routes"),
@@ -160,6 +164,31 @@ ROUTER_MAPPING = {
 
     # Diary Plugin (claude-diary-plugin Spec)
     "api.diary_api": ("learning", "api.diary_api"),
+
+    # Faz 2: Study Planner, Leagues, Coaching (Mega Feature Plan)
+    "api.study_planner_api": ("learning", "api.study_planner_api"),
+    "api.league_api": ("integrations", "api.league_api"),
+    "api.coaching_api": ("learning", "api.coaching_api"),
+
+    # Faz 3: Duel, Photo Ask, Placement Assessment (Mega Feature Plan)
+    "api.duel_api": ("integrations", "api.duel_api"),
+    "api.photo_ask_api": ("content", "api.photo_ask_api"),
+    "api.placement_assessment_api": ("exam", "api.placement_assessment_api"),
+
+    # Faz 4: Knowledge Map
+    "api.knowledge_graph_api": ("learning", "api.knowledge_graph_api"),
+
+    # F13: Mastery Confidence Indicator
+    "api.mastery_confidence_api": ("learning", "api.mastery_confidence_api"),
+
+    # Faz 4-5: DINA, Productive Failure, Error Clusters, Mnemonics
+    "api.dina_api": ("learning", "api.dina_api"),
+    "api.productive_failure_api": ("learning", "api.productive_failure_api"),
+    "api.error_cluster_api": ("analytics", "api.error_cluster_api"),
+    "api.mnemonic_api": ("content", "api.mnemonic_api"),
+
+    # Faz 6: PWA Offline Sync
+    "api.offline_sync_api": ("learning", "api.offline_sync_api"),
 }
 
 class RouterLoader:

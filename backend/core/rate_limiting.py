@@ -617,6 +617,46 @@ def get_default_rate_limit_rules() -> list[RateLimitRule]:
             limit=10000,  # 10000 request per hour for logged in users
             window=3600,
         ),
+        # F1 Matchmaking — strict limit to prevent queue abuse
+        RateLimitRule(
+            scope=RateLimitScope.USER,
+            strategy=RateLimitStrategy.SLIDING_WINDOW,
+            limit=5,  # 5 requests per minute
+            window=60,
+            endpoints=["/api/v1/duel/matchmake"],
+        ),
+        # F3 Photo Upload — token bucket with burst allowance
+        RateLimitRule(
+            scope=RateLimitScope.USER,
+            strategy=RateLimitStrategy.TOKEN_BUCKET,
+            limit=10,  # 10 requests per minute
+            window=60,
+            burst_limit=15,
+            endpoints=["/api/v1/photo-ask/upload"],
+        ),
+        # F6 Signal Recording — high frequency coaching signals
+        RateLimitRule(
+            scope=RateLimitScope.USER,
+            strategy=RateLimitStrategy.FIXED_WINDOW,
+            limit=60,  # 60 requests per minute
+            window=60,
+            endpoints=["/api/v1/coaching/signals"],
+        ),
+        # General new feature endpoints
+        RateLimitRule(
+            scope=RateLimitScope.USER,
+            strategy=RateLimitStrategy.FIXED_WINDOW,
+            limit=100,  # 100 requests per minute
+            window=60,
+            endpoints=[
+                "/api/v1/duel/",
+                "/api/v1/leagues/",
+                "/api/v1/study-plan/",
+                "/api/v1/coaching/",
+                "/api/v1/knowledge-map/",
+                "/api/v1/assessment/",
+            ],
+        ),
     ]
 
 

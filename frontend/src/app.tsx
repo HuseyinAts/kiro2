@@ -5,6 +5,7 @@ import { QueryClientProvider } from 'react-query';
 import { BrowserRouter as Router, Navigate, Route, Routes } from 'react-router-dom';
 
 import { PageTransition } from './components/Animations/PageTransition';
+import { useAccessibilityStyles } from './hooks/useAccessibilityStyles';
 import { ProtectedRoute } from './components/Auth/ProtectedRoute';
 import ErrorBoundary from './components/Common/ErrorBoundary';
 import { PageSkeleton } from './components/Common/PageSkeleton';
@@ -16,6 +17,7 @@ import { Modern404Page } from './pages/Modern404Page';
 import { ModernErrorPage } from './pages/ModernErrorPage';
 import { RegisterPage } from './pages/RegisterPage';
 import { UnauthorizedPage } from './pages/UnauthorizedPage';
+import { ParentDashboard } from './pages/ParentDashboard';
 import './styles/touch-optimized.css';
 import { modernLightTheme as lightTheme } from './theme/modern-theme';
 import {
@@ -75,12 +77,19 @@ const ProfilePage = lazy(() => import('./pages/ProfilePage'));
 const SettingsPage = lazy(() => import('./pages/SettingsPage'));
 const RBACTestPage = lazy(() => import('./pages/RBACTestPage'));
 const AccessibilityDemoPage = lazy(() => import('./pages/AccessibilityDemoPage'));
-const LearningPathPage = lazy(() => import('./pages/LearningPathPageRefactored'));
+const LearningPathPage = lazy(() => import('./pages/ModernLearningPathPage'));
+
+// Pages - New Features (F3, F5)
+const PhotoAskPage = lazy(() => import('./pages/PhotoAskPage'));
+const PlacementAssessmentPage = lazy(() => import('./pages/PlacementAssessmentPage'));
 // Optimize edilmiş QueryClient
 const queryClient = createOptimizedQueryClient();
 
 // Performance optimized App component
 function AppContent() {
+  // Sync accessibility prefs (fontSize, lineHeight, highContrast) to CSS vars
+  useAccessibilityStyles();
+
   useEffect(() => {
     // Performance tracking'i başlat
     initializePerformanceTracking();
@@ -149,6 +158,11 @@ function AppContent() {
               <Route path="/unauthorized" element={<UnauthorizedPage />} />
               <Route path="/404" element={<Modern404Page />} />
               <Route path="/error" element={<ModernErrorPage />} />
+              <Route path="/veli-takip" element={
+                <ProtectedRoute requiredRoles={['veli']}>
+                  <ParentDashboard />
+                </ProtectedRoute>
+              } />
 
               {/* Student Routes */}
               <Route
@@ -171,7 +185,7 @@ function AppContent() {
               <Route
                 path="/exam/start"
                 element={
-                  <ProtectedRoute requiredRoles={['ogrenci']}>
+                  <ProtectedRoute requiredRoles={['ogrenci', 'admin']}>
                     <ExamStartPage />
                   </ProtectedRoute>
                 }
@@ -179,7 +193,7 @@ function AppContent() {
               <Route
                 path="/exam/history"
                 element={
-                  <ProtectedRoute requiredRoles={['ogrenci']}>
+                  <ProtectedRoute requiredRoles={['ogrenci', 'admin']}>
                     <ExamHistoryPage />
                   </ProtectedRoute>
                 }
@@ -187,7 +201,7 @@ function AppContent() {
               <Route
                 path="/exam/:sinavId"
                 element={
-                  <ProtectedRoute requiredRoles={['ogrenci']}>
+                  <ProtectedRoute requiredRoles={['ogrenci', 'admin']}>
                     <ExamPage />
                   </ProtectedRoute>
                 }
@@ -195,7 +209,7 @@ function AppContent() {
               <Route
                 path="/exam/:sinavId/results"
                 element={
-                  <ProtectedRoute requiredRoles={['ogrenci']}>
+                  <ProtectedRoute requiredRoles={['ogrenci', 'admin']}>
                     <ExamResultsPage />
                   </ProtectedRoute>
                 }
@@ -205,6 +219,22 @@ function AppContent() {
                 element={
                   <ProtectedRoute requiredRoles={['ogrenci']}>
                     <ExamHistoryPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/photo-ask"
+                element={
+                  <ProtectedRoute requiredRoles={['ogrenci']}>
+                    <PhotoAskPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/assessment"
+                element={
+                  <ProtectedRoute requiredRoles={['ogrenci']}>
+                    <PlacementAssessmentPage />
                   </ProtectedRoute>
                 }
               />

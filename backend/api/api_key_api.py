@@ -12,7 +12,7 @@ from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.api_key_manager import APIKeyScope, get_api_key_manager
-from core.dependencies import get_db, get_current_user
+from core.dependencies import get_db, get_current_user, AuthenticatedUser
 from core.structured_logger import get_logger
 from models.database import APIKey
 
@@ -53,7 +53,7 @@ async def create_api_key(
     request_body: APIKeyCreateRequest,
     request: Request,
     db: AsyncSession = Depends(get_db),
-    current_user: dict = Depends(get_current_user),
+    current_user: AuthenticatedUser = Depends(get_current_user),
 ):
     """
     Create new API key (Task 48.6)
@@ -71,7 +71,7 @@ async def create_api_key(
         )
 
         # Get user_id from authenticated user
-        user_id = current_user.get("user_id") or current_user.get("id")
+        user_id = current_user.id
 
         manager = get_api_key_manager(sync_db)
         scopes = [APIKeyScope(s) for s in request_body.scopes]
@@ -100,7 +100,7 @@ async def create_api_key(
 @router.get("/list", response_model=List[APIKeyResponse], summary="List API Keys")
 async def list_api_keys(
     db: AsyncSession = Depends(get_db),
-    current_user: dict = Depends(get_current_user),
+    current_user: AuthenticatedUser = Depends(get_current_user),
 ):
     """
     List all API keys for current user (Task 48.6)
@@ -116,7 +116,7 @@ async def list_api_keys(
         )
 
         # Get user_id from authenticated user
-        user_id = current_user.get("user_id") or current_user.get("id")
+        user_id = current_user.id
 
         keys = sync_db.query(APIKey).filter(APIKey.user_id == user_id).all()
 
@@ -150,7 +150,7 @@ async def revoke_api_key(
     key_id: str,
     reason: str = Query("manual_revoke", description="Revocation reason"),
     db: AsyncSession = Depends(get_db),
-    current_user: dict = Depends(get_current_user),
+    current_user: AuthenticatedUser = Depends(get_current_user),
 ):
     """
     Revoke API key (Task 48.6)
@@ -183,7 +183,7 @@ async def rotate_api_key(
     key_id: str,
     request: Request,
     db: AsyncSession = Depends(get_db),
-    current_user: dict = Depends(get_current_user),
+    current_user: AuthenticatedUser = Depends(get_current_user),
 ):
     """
     Rotate API key (generates new, revokes old) (Task 48.6)

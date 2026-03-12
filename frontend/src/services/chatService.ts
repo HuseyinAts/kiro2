@@ -7,6 +7,9 @@ import {
 
 // Enhanced chat API endpoints
 const ENHANCED_CHAT_API = '/api/enhanced-chat';
+const STREAM_ENDPOINT = '/api/v1/enhanced-chat/stream';
+const SESSIONS_ENDPOINT = '/api/v1/enhanced-chat/sessions';
+const ATTACHMENT_ENDPOINT = '/api/v1/enhanced-chat/message-with-attachment';
 
 export interface ChatMessage {
   id: string;
@@ -14,6 +17,15 @@ export interface ChatMessage {
   content: string;
   agent?: string;
   timestamp: string;
+}
+
+export interface ChatSessionInfo {
+  id: string;
+  title: string;
+  subject: string;
+  message_count: number;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface ChatSession {
@@ -29,6 +41,19 @@ class ChatService {
   private wsConnection: any = null;
   private messageListeners: Set<(message: ChatMessage) => void> = new Set();
   private connectionListeners: Set<(status: boolean) => void> = new Set();
+
+  getSessionId(): string | null {
+    return this.sessionId;
+  }
+
+  setSessionId(id: string | null) {
+    this.sessionId = id;
+    if (id) {
+      localStorage.setItem('chatSessionId', id);
+    } else {
+      localStorage.removeItem('chatSessionId');
+    }
+  }
 
   initSession() {
     if (!this.sessionId) {
@@ -61,11 +86,203 @@ class ChatService {
 
       this.addMessage(chatMessage);
 
+      // Update session_id if backend returned one
+      if (response.session_id) {
+        this.setSessionId(response.session_id);
+      }
+
       return chatMessage;
     } catch (error) {
       console.error('Error sending message:', error);
       throw error;
     }
+  }
+
+  /**
+   * Send message with SSE streaming — tokens arrive in real-time.
+   */
+  async sendMessageStreaming(
+    message: string,
+    onToken: (accumulated: string) => void,
+    options?: { subject?: string; teachingMode?: string },
+  ): Promise<ChatMessage> {
+    this.initSession();
+
+    let accumulated = '';
+
+    const response = await fetch(STREAM_ENDPOINT, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({
+        student_id: 'current',
+        message,
+        session_id: this.sessionId,
+        subject: options?.subject || '',
+        teaching_mode: options?.teachingMode || 'direct',
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`Stream error: ${response.status}`);
+    }
+
+    const reader = response.body?.getReader();
+    if (!reader) throw new Error('No response body');
+
+    const decoder = new TextDecoder();
+    let buffer = '';
+
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+
+      buffer += decoder.decode(value, { stream: true });
+      const lines = buffer.split('\n');
+      buffer = lines.pop() || '';
+
+      for (const line of lines) {
+        if (!line.startsWith('data: ')) continue;
+        const payload = line.slice(6).trim();
+        if (payload === '[DONE]') break;
+        try {
+          const parsed = JSON.parse(payload);
+          // Capture session_id from first SSE event (backend sends it)
+          if (parsed.session_id && !parsed.content) {
+            this.setSessionId(parsed.session_id);
+            continue;
+          }
+          if (parsed.content) {
+            accumulated += parsed.content;
+            onToken(accumulated);
+          }
+        } catch {
+          // skip malformed SSE line
+        }
+      }
+    }
+
+    const chatMessage: ChatMessage = {
+      id: this.generateMessageId(),
+      role: 'agent',
+      content: accumulated,
+      agent: 'turkish_nlp',
+      timestamp: new Date().toISOString(),
+    };
+
+    // Don't re-add to local state — handleSubmit manages state directly
+    // Just persist to localStorage as backup
+    this.addMessage({
+      id: this.generateMessageId(),
+      role: 'user',
+      content: message,
+      timestamp: new Date().toISOString(),
+    });
+    this.addMessage(chatMessage);
+
+    return chatMessage;
+  }
+
+  /**
+   * Send message with file or URL attachment.
+   */
+  async sendMessageWithAttachment(
+    options: {
+      file?: File;
+      url?: string;
+      message?: string;
+      subject?: string;
+      teachingMode?: string;
+    },
+  ): Promise<{ message: string; attachmentType: string; sessionId?: string }> {
+    this.initSession();
+
+    const formData = new FormData();
+    if (options.file) formData.append('file', options.file);
+    if (options.url) formData.append('url', options.url);
+    formData.append('message', options.message || '');
+    formData.append('subject', options.subject || '');
+    formData.append('session_id', this.sessionId || '');
+    formData.append('teaching_mode', options.teachingMode || 'direct');
+
+    const response = await fetch(ATTACHMENT_ENDPOINT, {
+      method: 'POST',
+      credentials: 'include',
+      body: formData,
+    });
+
+    if (!response.ok) {
+      throw new Error(`Attachment error: ${response.status}`);
+    }
+
+    const result = await response.json();
+    if (!result.success) {
+      throw new Error(result.error || 'Dosya isleme hatasi');
+    }
+
+    if (result.session_id) {
+      this.setSessionId(result.session_id);
+    }
+
+    return {
+      message: result.data.message,
+      attachmentType: result.data.attachment_type,
+      sessionId: result.session_id,
+    };
+  }
+
+  /**
+   * List user's chat sessions from DB.
+   */
+  async listSessions(): Promise<ChatSessionInfo[]> {
+    try {
+      const response = await fetch(SESSIONS_ENDPOINT, {
+        credentials: 'include',
+      });
+      if (!response.ok) return [];
+      const result = await response.json();
+      return result.sessions || [];
+    } catch {
+      return [];
+    }
+  }
+
+  /**
+   * Load a session's messages from DB.
+   */
+  async loadSessionFromDB(sessionId: string): Promise<ChatMessage[]> {
+    try {
+      const response = await fetch(`${SESSIONS_ENDPOINT}/${sessionId}/messages`, {
+        credentials: 'include',
+      });
+      if (!response.ok) return [];
+      const result = await response.json();
+      const messages: ChatMessage[] = (result.messages || []).map((msg: any) => ({
+        id: msg.id || this.generateMessageId(),
+        role: msg.role,
+        content: msg.content,
+        agent: msg.agent,
+        timestamp: msg.timestamp,
+      }));
+      this.sessionId = sessionId;
+      this.messages = messages;
+      localStorage.setItem('chatSessionId', sessionId);
+      this.saveMessagesToLocalStorage();
+      return messages;
+    } catch (error) {
+      console.error('loadSessionFromDB error:', error);
+      return [];
+    }
+  }
+
+  /**
+   * Start a new chat session (clear current state).
+   */
+  startNewSession() {
+    this.sessionId = null;
+    this.messages = [];
+    localStorage.removeItem('chatSessionId');
+    localStorage.removeItem('chatMessages');
   }
 
   async sendEnhancedMessage(
@@ -106,6 +323,11 @@ class ChatService {
         throw new Error(result.message || 'Enhanced chat request failed');
       }
 
+      // Update session_id from backend
+      if (result.session_id || result.data?.session_id) {
+        this.setSessionId(result.session_id || result.data.session_id);
+      }
+
       const chatMessage: ChatMessage = {
         id: result.data.response_id,
         role: 'agent',
@@ -114,7 +336,6 @@ class ChatService {
         timestamp: new Date().toISOString(),
       };
 
-      // Add user message
       this.addMessage({
         id: this.generateMessageId(),
         role: 'user',
@@ -122,7 +343,6 @@ class ChatService {
         timestamp: new Date().toISOString(),
       });
 
-      // Add agent response
       this.addMessage(chatMessage);
 
       return chatMessage;
@@ -188,7 +408,7 @@ class ChatService {
         return result.data.bionic_text;
       }
 
-      return text; // Fallback to original text
+      return text;
     } catch (error) {
       console.error('Bionic reading error:', error);
       return text;

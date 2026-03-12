@@ -27,7 +27,7 @@ from sqlalchemy import text as sa_text
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.database import get_db_session
-from core.dependencies import get_current_user
+from core.dependencies import AuthenticatedUser, get_current_user
 from services.question_crud_service import QuestionCRUDService
 
 OLLAMA_URL = os.getenv("OLLAMA_URL", "http://localhost:11434")
@@ -131,7 +131,7 @@ async def get_question_service(
 async def create_question(
     request: QuestionCreateRequest,
     image: Optional[UploadFile] = File(None),
-    current_user: Dict = Depends(get_current_user),
+    current_user: AuthenticatedUser = Depends(get_current_user),
     service: QuestionCRUDService = Depends(get_question_service),
 ):
     """
@@ -153,7 +153,7 @@ async def create_question(
         # Soru oluştur
         question = await service.create_question(
             question_data=request.dict(),
-            created_by=current_user.get("user_id", "unknown"),
+            created_by=current_user.id,
             image_file=image_file,
             image_filename=image_filename,
         )
@@ -186,7 +186,7 @@ async def create_question(
 @router.post("/bulk-create", status_code=status.HTTP_201_CREATED)
 async def bulk_create_questions(
     questions: List[QuestionCreateRequest],
-    current_user: Dict = Depends(get_current_user),
+    current_user: AuthenticatedUser = Depends(get_current_user),
     service: QuestionCRUDService = Depends(get_question_service),
 ):
     """
@@ -199,7 +199,7 @@ async def bulk_create_questions(
 
         result = await service.bulk_create_questions(
             questions_data=questions_data,
-            created_by=current_user.get("user_id", "unknown"),
+            created_by=current_user.id,
         )
 
         return JSONResponse(
@@ -229,7 +229,7 @@ async def update_question(
     question_id: str,
     request: QuestionUpdateRequest,
     create_version: bool = Query(True, description="Versiyon oluştur"),
-    current_user: Dict = Depends(get_current_user),
+    current_user: AuthenticatedUser = Depends(get_current_user),
     service: QuestionCRUDService = Depends(get_question_service),
 ):
     """
@@ -252,7 +252,7 @@ async def update_question(
         question = await service.update_question(
             question_id=question_id,
             update_data=update_data,
-            updated_by=current_user.get("user_id", "unknown"),
+            updated_by=current_user.id,
             create_version=create_version,
         )
 
@@ -328,7 +328,7 @@ async def get_question_history(
 async def delete_question(
     question_id: str,
     permanent: bool = Query(False, description="Kalıcı silme"),
-    current_user: Dict = Depends(get_current_user),
+    current_user: AuthenticatedUser = Depends(get_current_user),
     service: QuestionCRUDService = Depends(get_question_service),
 ):
     """
@@ -340,7 +340,7 @@ async def delete_question(
     try:
         success = await service.delete_question(
             question_id=question_id,
-            deleted_by=current_user.get("user_id", "unknown"),
+            deleted_by=current_user.id,
             permanent=permanent,
         )
 
@@ -377,7 +377,7 @@ async def delete_question(
 @router.post("/{question_id}/archive", status_code=status.HTTP_200_OK)
 async def archive_question(
     question_id: str,
-    current_user: Dict = Depends(get_current_user),
+    current_user: AuthenticatedUser = Depends(get_current_user),
     service: QuestionCRUDService = Depends(get_question_service),
 ):
     """
@@ -388,7 +388,7 @@ async def archive_question(
     try:
         success = await service.archive_question(
             question_id=question_id,
-            archived_by=current_user.get("user_id", "unknown"),
+            archived_by=current_user.id,
         )
 
         if not success:
@@ -418,7 +418,7 @@ async def archive_question(
 @router.post("/{question_id}/restore", status_code=status.HTTP_200_OK)
 async def restore_question(
     question_id: str,
-    current_user: Dict = Depends(get_current_user),
+    current_user: AuthenticatedUser = Depends(get_current_user),
     service: QuestionCRUDService = Depends(get_question_service),
 ):
     """
@@ -429,7 +429,7 @@ async def restore_question(
     try:
         success = await service.restore_question(
             question_id=question_id,
-            restored_by=current_user.get("user_id", "unknown"),
+            restored_by=current_user.id,
         )
 
         if not success:
@@ -559,6 +559,9 @@ async def search_questions(
                 "id": q.id,
                 "question_text": q.question_text,
                 "question_image_url": q.question_image_url,
+                "image_alt_text": q.image_ocr_text[:200] if q.image_ocr_text else None,
+                "image_width": q.image_width,
+                "image_height": q.image_height,
                 "exam_type": q.exam_type,
                 "subject_area": q.subject_area,
                 "source_book": q.source_book,
@@ -679,97 +682,6 @@ async def elasticsearch_search(
 # Yardımcı Endpoint'ler
 # ========================================================================
 
-
-@router.get("/{question_id}", status_code=status.HTTP_200_OK)
-async def get_question(
-    question_id: str,
-    include_relations: bool = Query(False, description="İlişkileri dahil et"),
-    service: QuestionCRUDService = Depends(get_question_service),
-):
-    """
-    Soru detaylarını getir
-    """
-    try:
-        question = await service.get_question_by_id(
-            question_id=question_id, include_relations=include_relations
-        )
-
-        if not question:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND, detail="Soru bulunamadı"
-            )
-
-        question_data = {
-            "id": question.id,
-            "question_text": question.question_text,
-            "question_html": question.question_html,
-            "question_latex": question.question_latex,
-            "question_image_url": question.question_image_url,
-            "options": {
-                "A": question.option_a,
-                "B": question.option_b,
-                "C": question.option_c,
-                "D": question.option_d,
-                "E": question.option_e,
-            },
-            "correct_answer": question.correct_answer,
-            "explanation": question.explanation,
-            "explanation_video_url": question.explanation_video_url,
-            "alternative_solutions": question.alternative_solutions,
-            "exam_type": question.exam_type,
-            "subject_area": question.subject_area,
-            "grade_level": question.grade_level,
-            "difficulty": question.difficulty_level.value,
-            "bloom_level": question.bloom_level,
-            "bloom_category": question.bloom_category,
-            "irt_parameters": {
-                "difficulty": question.irt_difficulty,
-                "discrimination": question.irt_discrimination,
-                "guessing": question.irt_guessing,
-                "upper_asymptote": question.irt_upper_asymptote,
-            },
-            "morphology_complexity": question.morphology_complexity,
-            "readability_score": question.readability_score,
-            "statistics": {
-                "times_asked": question.times_asked,
-                "times_correct": question.times_correct,
-                "times_wrong": question.times_wrong,
-                "times_skipped": question.times_skipped,
-                "success_rate": (
-                    question.times_correct / max(1, question.times_asked)
-                    if question.times_asked > 0
-                    else 0
-                ),
-                "average_response_time": question.average_response_time,
-            },
-            "quality": {
-                "score": question.quality_score,
-                "review_status": question.quality_review_status,
-                "osym_compliant": question.osym_format_compliant,
-            },
-            "created_at": question.created_at.isoformat(),
-            "updated_at": question.updated_at.isoformat(),
-            "is_active": question.is_active,
-            "is_public": question.is_public,
-        }
-
-        return JSONResponse(
-            status_code=status.HTTP_200_OK,
-            content={
-                "success": True,
-                "data": question_data,
-                "message": "Soru detayları başarıyla getirildi",
-            },
-        )
-
-    except HTTPException:
-        raise
-    except Exception as e:
-        logger.error(f"Soru getirme hatası: {str(e)}")
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Soru getirme hatası: {str(e)}",
-        )
 
 
 @router.get("/statistics/overview", status_code=status.HTTP_200_OK)
@@ -963,7 +875,7 @@ class SemanticSearchRequest(BaseModel):
 async def semantic_search(
     request: SemanticSearchRequest,
     db: AsyncSession = Depends(get_db_session),
-    current_user: Dict = Depends(get_current_user),
+    current_user: AuthenticatedUser = Depends(get_current_user),
 ):
     """
     Anlamsal (semantic) soru arama.
@@ -1030,11 +942,12 @@ async def semantic_search(
             filters.append("q.subject_area = :subject_area")
             params["subject_area"] = request.subject_area
 
-        where_clause = " AND ".join(["q.embedding IS NOT NULL"] + filters)
+        where_clause = " AND ".join(["q.embedding IS NOT NULL", "q.is_active = true"] + filters)
         params["top_k"] = request.top_k
 
         sql = sa_text(f"""
             SELECT q.id, q.question_text, q.question_image_url,
+                   q.image_ocr_text, q.image_width, q.image_height,
                    q.exam_type, q.subject_area, q.source_book,
                    q.difficulty_level, q.bloom_level, q.bloom_category,
                    q.quality_score, q.word_count,
@@ -1058,6 +971,9 @@ async def semantic_search(
                 "id": str(r.id),
                 "question_text": r.question_text,
                 "question_image_url": r.question_image_url,
+                "image_alt_text": r.image_ocr_text[:200] if r.image_ocr_text else None,
+                "image_width": r.image_width,
+                "image_height": r.image_height,
                 "exam_type": r.exam_type,
                 "subject_area": r.subject_area,
                 "source_book": r.source_book,
@@ -1098,4 +1014,96 @@ async def semantic_search(
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Anlamsal arama sirasinda bir hata olustu",
+        )
+
+
+@router.get("/{question_id}", status_code=status.HTTP_200_OK)
+async def get_question(
+    question_id: str,
+    include_relations: bool = Query(False, description="İlişkileri dahil et"),
+    service: QuestionCRUDService = Depends(get_question_service),
+):
+    """
+    Soru detaylarını getir
+    """
+    try:
+        question = await service.get_question_by_id(
+            question_id=question_id, include_relations=include_relations
+        )
+
+        if not question:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND, detail="Soru bulunamadı"
+            )
+
+        question_data = {
+            "id": question.id,
+            "question_text": question.question_text,
+            "question_html": question.question_html,
+            "question_latex": question.question_latex,
+            "question_image_url": question.question_image_url,
+            "options": {
+                "A": question.option_a,
+                "B": question.option_b,
+                "C": question.option_c,
+                "D": question.option_d,
+                "E": question.option_e,
+            },
+            "correct_answer": question.correct_answer,
+            "explanation": question.explanation,
+            "explanation_video_url": question.explanation_video_url,
+            "alternative_solutions": question.alternative_solutions,
+            "exam_type": question.exam_type,
+            "subject_area": question.subject_area,
+            "grade_level": question.grade_level,
+            "difficulty": question.difficulty_level.value,
+            "bloom_level": question.bloom_level,
+            "bloom_category": question.bloom_category,
+            "irt_parameters": {
+                "difficulty": question.irt_difficulty,
+                "discrimination": question.irt_discrimination,
+                "guessing": question.irt_guessing,
+                "upper_asymptote": question.irt_upper_asymptote,
+            },
+            "morphology_complexity": question.morphology_complexity,
+            "readability_score": question.readability_score,
+            "statistics": {
+                "times_asked": question.times_asked,
+                "times_correct": question.times_correct,
+                "times_wrong": question.times_wrong,
+                "times_skipped": question.times_skipped,
+                "success_rate": (
+                    question.times_correct / max(1, question.times_asked)
+                    if question.times_asked > 0
+                    else 0
+                ),
+                "average_response_time": question.average_response_time,
+            },
+            "quality": {
+                "score": question.quality_score,
+                "review_status": question.quality_review_status,
+                "osym_compliant": question.osym_format_compliant,
+            },
+            "created_at": question.created_at.isoformat(),
+            "updated_at": question.updated_at.isoformat(),
+            "is_active": question.is_active,
+            "is_public": question.is_public,
+        }
+
+        return JSONResponse(
+            status_code=status.HTTP_200_OK,
+            content={
+                "success": True,
+                "data": question_data,
+                "message": "Soru detayları başarıyla getirildi",
+            },
+        )
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Soru getirme hatası: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Soru getirme hatası: {str(e)}",
         )

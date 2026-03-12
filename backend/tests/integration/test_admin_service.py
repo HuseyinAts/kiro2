@@ -285,7 +285,7 @@ class TestAdminService:
         mock_soru.id = "soru-123"
         mock_soru.question_text = "Test sorusu"
         mock_soru.exam_type.value = "TYT"
-        mock_soru.subject_area.value = "Matematik"
+        mock_soru.subject_area = "MATEMATIK"
         mock_soru.created_at.isoformat.return_value = "2024-01-01T00:00:00"
 
         mock_soru_servisi.soru_ekle.return_value = mock_soru

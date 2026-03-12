@@ -47,7 +47,8 @@
       "Bash(powershell.exe -NoProfile -ExecutionPolicy Bypass -File \"C:\\\\Users\\\\husey\\\\.claude\\\\switch-claude-provider.ps1\":*)",
       "Bash(GEMINI_API_KEY=* python:*)",
       "Bash(MINIMAX_API_KEY=* python:*)",
-      "Bash($env:VISION_WORKERS=* python:*)"
+      "Bash($env:VISION_WORKERS=* python:*)",
+      "Skill(review)"
     ],
     "additionalDirectories": [
       "c:\\Users\\husey\\kiro2"
@@ -59,5 +60,8 @@
     "zemberek-mcp",
     "claude-md-improvement"
   ],
-  "hooks": {}
+  "hooks": {},
+  "remote": {
+    "defaultEnvironmentId": "env_01HHhyrr3woDQp6QPfRdz56u"
+  }
 }

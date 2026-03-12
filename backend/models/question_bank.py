@@ -278,6 +278,9 @@ class QuestionBankItem(Base):
         Text
     )  # LaTeX formatında matematik
     question_image_url: Mapped[Optional[str]] = mapped_column(String(500))
+    image_ocr_text: Mapped[Optional[str]] = mapped_column(Text)
+    image_width: Mapped[Optional[int]] = mapped_column(Integer)
+    image_height: Mapped[Optional[int]] = mapped_column(Integer)
     question_audio_url: Mapped[Optional[str]] = mapped_column(String(500))
 
     # Seçenekler
@@ -297,6 +300,9 @@ class QuestionBankItem(Base):
     alternative_solutions: Mapped[Optional[dict]] = mapped_column(
         JSON
     )  # Alternatif çözüm yolları
+
+    # Hafıza ipucu (F19 Mnemonic Hints)
+    mnemonic_hint: Mapped[Optional[str]] = mapped_column(Text)
 
     # ========================================================================
     # TASK 70.2: Konu Etiketleme

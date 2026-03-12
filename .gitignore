@@ -188,6 +188,7 @@ veriseti/zkitap/*
 qwen_extended_vocab/
 zemberek/
 models/
+!backend/models/
 
 # Training data (large)
 ai_training_data/
@@ -231,3 +232,41 @@ backend/coverage*.json
 backend/cov_*.json
 kiro2_import.csv
 *.pdf
+
+# Playwright test results
+frontend/test-results/
+frontend/playwright-report/
+
+# === Project Cleanup ===
+
+# Tool/IDE state directories
+.kiro/
+.agent/
+.playwright-mcp/
+
+# OCR virtual environments (large, regenerable)
+.venv_ocr/
+.venv_ocr_gpu/
+
+# Root-level one-off scripts (not part of codebase)
+/*.py
+!setup.py
+
+# Root-level temp outputs
+/*.txt
+
+# Session-specific notes
+CLAUDE.session*.md
+
+# tmpclaude temp directories
+tmpclaude-*/
+
+# === SENSITIVE / SEPARATE FEATURES ===
+openwebui-litellm/
+backend/cookies*.txt
+backend/core/litellm/
+backend/api/litellm_chat.py
+d-
+
+# Temp coverage reports
+backend/coverage_*_report_*.txt

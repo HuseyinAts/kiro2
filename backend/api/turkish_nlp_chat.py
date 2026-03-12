@@ -10,7 +10,7 @@ from typing import Any, Dict, Optional
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException
 from pydantic import BaseModel, Field
 
-from core.dependencies import get_current_user
+from core.dependencies import get_current_user, AuthenticatedUser
 
 try:
     from core.turkish_nlp_chat_system import turkish_nlp_chat_system
@@ -90,7 +90,7 @@ class ContextManagementRequest(BaseModel):
 async def send_chat_message(
     request: ChatMessageRequest,
     background_tasks: BackgroundTasks,
-    current_user: Optional[Dict] = Depends(get_current_user),
+    current_user: AuthenticatedUser = Depends(get_current_user),
 ):
     """
     Türkçe NLP Chat sistemine mesaj gönder
@@ -166,7 +166,7 @@ async def get_conversation_history(
     student_id: str,
     session_id: Optional[str] = None,
     limit: int = 20,
-    current_user: Optional[Dict] = Depends(get_current_user),
+    current_user: AuthenticatedUser = Depends(get_current_user),
 ):
     """
     Öğrencinin konuşma geçmişini al
@@ -214,7 +214,7 @@ async def get_conversation_history(
 @router.post("/bionic-reading", response_model=BionicReadingResponse)
 async def apply_bionic_reading(
     request: BionicReadingRequest,
-    current_user: Optional[Dict] = Depends(get_current_user),
+    current_user: AuthenticatedUser = Depends(get_current_user),
 ):
     """
     Metne Türkçe Bionic Reading uygula
@@ -257,7 +257,7 @@ async def apply_bionic_reading(
 @router.post("/context/manage")
 async def manage_conversation_context(
     request: ContextManagementRequest,
-    current_user: Optional[Dict] = Depends(get_current_user),
+    current_user: AuthenticatedUser = Depends(get_current_user),
 ):
     """
     Konuşma bağlamını yönet
@@ -355,7 +355,7 @@ async def health_check():
 @router.post("/step-by-step-solution")
 async def generate_step_by_step_solution(
     request: ChatMessageRequest,
-    current_user: Optional[Dict] = Depends(get_current_user),
+    current_user: AuthenticatedUser = Depends(get_current_user),
 ):
     """
     Adım adım çözüm üret

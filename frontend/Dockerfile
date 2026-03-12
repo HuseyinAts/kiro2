@@ -1,5 +1,5 @@
 # Multi-stage build for optimized production image
-FROM node:18-alpine AS builder
+FROM node:20-alpine AS builder
 
 # Set working directory
 WORKDIR /app
@@ -13,38 +13,33 @@ RUN npm ci
 # Copy application code
 COPY . .
 
-# Build the application (vite only; run tsc separately in CI)
-RUN npm run build:fast
+# Build the application (tsc + vite)
+# Override production API URL for Docker (nginx proxies /api/ to backend)
+ENV VITE_API_URL=""
+ENV VITE_WS_URL=""
+# Show demo login buttons (Öğrenci/Öğretmen/Veli/Admin) when build arg is set
+ARG VITE_SHOW_DEMO=false
+ENV VITE_SHOW_DEMO=${VITE_SHOW_DEMO}
+RUN npm run build
 
-# Production stage
-FROM node:18-alpine AS production
+# Production stage - nginx for static files + API proxy
+FROM nginx:alpine AS production
 
-# Install serve for static file serving
-RUN npm install -g serve
+# Install curl for health checks (not included in nginx:alpine)
+RUN apk add --no-cache curl
 
-# Set working directory
-WORKDIR /app
+# Copy built files
+COPY --from=builder /app/dist /usr/share/nginx/html
 
-# Copy built files from builder stage
-COPY --from=builder /app/dist ./dist
-COPY --from=builder /app/package.json ./
-
-# Create a non-root user
-RUN addgroup -g 1001 -S nodejs && \
-    adduser -S nodejs -u 1001
-
-# Change ownership of the app directory
-RUN chown -R nodejs:nodejs /app
-
-# Switch to non-root user
-USER nodejs
+# Copy nginx config
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 # Expose port
 EXPOSE 3000
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-  CMD node -e "require('http').get('http://localhost:3000', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})"
+  CMD curl -sf http://localhost:3000/healthz || exit 1
 
-# Start the application
-CMD ["serve", "-s", "dist", "-l", "3000"]
+# Start nginx
+CMD ["nginx", "-g", "daemon off;"]

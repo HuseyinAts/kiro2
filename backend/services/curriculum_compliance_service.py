@@ -436,14 +436,14 @@ class CurriculumComplianceService:
                 }
 
             # Import Question model locally to avoid circular imports
-            from models.content_db import Question
+            from models.question_bank import QuestionBankItem as Question
 
             stmt = select(
                 func.count(Question.id).label("total"),
                 func.count(
                     func.nullif(Question.is_active == True, False)  # noqa: E712
                 ).label("active_count"),
-            ).where(Question.topic == topic_id)
+            ).where(Question.primary_topic_id == topic_id)
 
             result = await self.session.execute(stmt)
             row = result.one_or_none()

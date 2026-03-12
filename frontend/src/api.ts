@@ -6,7 +6,7 @@ import type {
   GoalUpdateData,
   StreamMetadata,
 } from './types/index';
-import { withRetry, fetchWithErrorHandling, ApiCache, RateLimiter } from './utils/apiHelpers';
+import { withRetry, fetchWithErrorHandling, ApiCache, RateLimiter, apiRequest } from './utils/apiHelpers';
 
 const API_BASE_URL = appConfig.api.baseURL;
 const apiCache = new ApiCache(30000); // 30 second cache
@@ -83,7 +83,7 @@ export async function clearSessions() {
   return response.json();
 }
 
-// Learning Path API Endpoints
+// Learning Path API Endpoints — httpOnly cookie auth via apiRequest
 export async function createStudentProfile(profileData: {
   name: string;
   grade: number;
@@ -92,19 +92,10 @@ export async function createStudentProfile(profileData: {
   learning_style?: string;
   available_time?: number;
 }) {
-  const response = await fetch(`${API_BASE_URL}/api/learning-path/create-profile`, {
+  return apiRequest('/api/learning-path/create-profile', {
     method: 'POST',
-    headers: getHeaders({ 'Content-Type': 'application/json' }),
     body: JSON.stringify(profileData),
-    signal: AbortSignal.timeout(appConfig.api.timeout),
   });
-
-  if (!response.ok) {
-    const error = await response.text();
-    throw new Error(error || 'Failed to create student profile');
-  }
-
-  return response.json();
 }
 
 export async function assessKnowledge(assessmentData: {
@@ -112,53 +103,30 @@ export async function assessKnowledge(assessmentData: {
   subject: string;
   questions?: string[];
 }) {
-  const response = await fetch(`${API_BASE_URL}/api/learning-path/assess-knowledge`, {
+  return apiRequest('/api/learning-path/assess-knowledge', {
     method: 'POST',
-    headers: getHeaders({ 'Content-Type': 'application/json' }),
     body: JSON.stringify(assessmentData),
-    signal: AbortSignal.timeout(appConfig.api.timeout),
   });
-
-  if (!response.ok) {
-    const error = await response.text();
-    throw new Error(error || 'Failed to assess knowledge');
-  }
-
-  return response.json();
 }
 
 export async function createLearningPath(pathData: {
-  student_id: string;        // ✅ FIXED: Flat structure (was nested student_profile)
-  subject: string;           // ✅ FIXED: Was "topic", now "subject"
+  student_id: string;
+  subject: string;
   duration_weeks?: number;
   difficulty_level?: string;
 }) {
-  const response = await fetch(`${API_BASE_URL}/api/learning-path/create-path`, {
+  return apiRequest('/api/learning-path/create-path', {
     method: 'POST',
-    headers: getHeaders({ 'Content-Type': 'application/json' }),
     body: JSON.stringify(pathData),
-    signal: AbortSignal.timeout(appConfig.api.timeout),
   });
-
-  if (!response.ok) {
-    const error = await response.text();
-    throw new Error(error || 'Failed to create learning path');
-  }
-
-  return response.json();
 }
 
-/**
- * Search for learning resources
- * ✅ BUG FIX #3: Proper API contract with backend schema
- * Backend expects: {subject, topic?, difficulty?, max_results?, student_profile?}
- */
 export async function searchResources(searchData: {
-  subject: string;  // ← "subject" required (was "topic")
+  subject: string;
   topic?: string;
-  difficulty?: string;  // ← "kolay" | "orta" | "zor"
+  difficulty?: string;
   max_results?: number;
-  student_profile?: {  // ← Nested student profile
+  student_profile?: {
     student_id?: string;
     learning_style?: string;
     grade?: number;
@@ -167,38 +135,20 @@ export async function searchResources(searchData: {
     preferences?: Record<string, any>;
   };
 }) {
-  const response = await fetch(`${API_BASE_URL}/api/learning-path/search-resources`, {
+  return apiRequest('/api/learning-path/search-resources', {
     method: 'POST',
-    headers: getHeaders({ 'Content-Type': 'application/json' }),
     body: JSON.stringify(searchData),
-    signal: AbortSignal.timeout(appConfig.api.timeout),
   });
-
-  if (!response.ok) {
-    const error = await response.text();
-    throw new Error(error || 'Failed to search resources');
-  }
-
-  return response.json();
 }
 
 export async function adaptLearningPath(adaptData: {
   path_id: string;
   progress_data: ProgressData;
 }) {
-  const response = await fetch(`${API_BASE_URL}/api/learning-path/adapt-path`, {
+  return apiRequest('/api/learning-path/adapt-path', {
     method: 'POST',
-    headers: getHeaders({ 'Content-Type': 'application/json' }),
     body: JSON.stringify(adaptData),
-    signal: AbortSignal.timeout(appConfig.api.timeout),
   });
-
-  if (!response.ok) {
-    const error = await response.text();
-    throw new Error(error || 'Failed to adapt learning path');
-  }
-
-  return response.json();
 }
 
 // RAG API Endpoints
@@ -483,17 +433,7 @@ export async function getMetrics() {
 
 // Learning Style API Endpoints - VARK + Felder-Silverman Hibrit Sistem
 export async function detectLearningStyle(studentId: string, forceRecalculation: boolean = false) {
-  const response = await fetch(`${API_BASE_URL}/api/v1/learning-style/detect/${studentId}?force_recalculation=${forceRecalculation}`, {
-    headers: getHeaders(),
-    signal: AbortSignal.timeout(appConfig.api.timeout),
-  });
-
-  if (!response.ok) {
-    const error = await response.text();
-    throw new Error(error || 'Failed to detect learning style');
-  }
-
-  return response.json();
+  return apiRequest(`/api/v1/learning-style/detect/${studentId}?force_recalculation=${forceRecalculation}`);
 }
 
 export async function getContentRecommendations(studentId: string, subjectArea: string = 'matematik', difficultyLevel: string = 'orta', forceRefresh: boolean = false) {
@@ -551,8 +491,9 @@ export async function submitQuestionnaire(studentId: string, questionnaireData: 
     headers: getHeaders({
       'Content-Type': 'application/json',
     }),
-    body: JSON.stringify(questionnaireData),
+    body: JSON.stringify({ student_id: studentId, ...questionnaireData }),
     signal: AbortSignal.timeout(appConfig.api.timeout),
+    credentials: 'include',
   });
 
   if (!response.ok) {
@@ -1373,102 +1314,48 @@ export async function searchLearningResources(request: {
     code: string;
   };
 }> {
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), appConfig.api.timeout);
+  const data = await apiRequest<any>('/api/learning-path/search-resources', {
+    method: 'POST',
+    body: JSON.stringify({
+      subject: request.subject,
+      topic: request.topic,
+      difficulty: request.difficulty || 'orta',
+      resource_type: request.resource_type || 'video',
+      max_results: request.max_results || 10,
+      student_profile: request.student_profile,
+    }),
+  });
 
-  try {
-    const response = await fetch(`${API_BASE_URL}/api/learning-path/search-resources`, {
-      method: 'POST',
-      headers: getHeaders({
-        'Content-Type': 'application/json',
-      }),
-      body: JSON.stringify({
-        subject: request.subject,
-        topic: request.topic,
-        difficulty: request.difficulty || 'orta',
-        resource_type: request.resource_type || 'video',
-        max_results: request.max_results || 10,
-        student_profile: request.student_profile,
-      }),
-      signal: controller.signal,
-    });
-
-    clearTimeout(timeoutId);
-
-    if (!response.ok) {
-      const error = await response.text();
-      throw new Error(error || 'Kaynak araması başarısız oldu');
-    }
-
-    const data = await response.json();
-
-    // Backend'den gelen resource formatını VideoResponse formatına dönüştür
-    interface BackendResource {
-      resource_id: string;
-      title: string;
-      channel_name?: string;
-      channel_id?: string;
-      duration?: string;
-      view_count?: number;
-      upload_date?: string;
-      thumbnail?: string;
-      scores?: { quality_score?: number };
-      difficulty?: string;
-      url?: string;
-      is_accessible?: boolean;
-      is_embeddable?: boolean;
-      is_turkish?: boolean;
-      description?: string;
-      duration_minutes?: number;
-      like_count?: number;
-      tags?: string[];
-      caption_available?: boolean;
-      definition?: string;
-    }
-    if (data.success && data.resources) {
-      data.resources = data.resources.map((resource: BackendResource) => ({
-        video_id: resource.resource_id,
-        title: resource.title,
-        channel: resource.channel_name,
-        channel_id: resource.channel_id,
-        duration: resource.duration,
-        view_count: resource.view_count,
-        upload_date: resource.upload_date,
-        thumbnail: resource.thumbnail,
-        quality_score: resource.scores?.quality_score || 0,
-        subject: request.subject,
-        difficulty: resource.difficulty,
-        exam_type: 'TYT',
-        url: resource.url,
-
-        // Enhanced scores
-        scores: resource.scores,
-
-        // Validation flags
-        is_accessible: resource.is_accessible,
-        is_embeddable: resource.is_embeddable,
-        is_turkish: resource.is_turkish,
-
-        // Additional metadata
-        description: resource.description,
-        duration_minutes: resource.duration_minutes,
-        like_count: resource.like_count,
-        tags: resource.tags,
-        caption_available: resource.caption_available,
-        definition: resource.definition,
-      }));
-    }
-
-    return data;
-  } catch (error: unknown) {
-    clearTimeout(timeoutId);
-
-    if (error instanceof Error && error.name === 'AbortError') {
-      throw new Error('İstek zaman aşımına uğradı. Lütfen tekrar deneyin.');
-    }
-
-    throw error;
+  // Backend resource format → VideoResponse format transform
+  if (data.success && data.resources) {
+    data.resources = data.resources.map((resource: any) => ({
+      video_id: resource.resource_id,
+      title: resource.title,
+      channel: resource.channel_name,
+      channel_id: resource.channel_id,
+      duration: resource.duration,
+      view_count: resource.view_count,
+      upload_date: resource.upload_date,
+      thumbnail: resource.thumbnail,
+      quality_score: resource.scores?.quality_score || 0,
+      subject: request.subject,
+      difficulty: resource.difficulty,
+      exam_type: 'TYT',
+      url: resource.url,
+      scores: resource.scores,
+      is_accessible: resource.is_accessible,
+      is_embeddable: resource.is_embeddable,
+      is_turkish: resource.is_turkish,
+      description: resource.description,
+      duration_minutes: resource.duration_minutes,
+      like_count: resource.like_count,
+      tags: resource.tags,
+      caption_available: resource.caption_available,
+      definition: resource.definition,
+    }));
   }
+
+  return data;
 }
 
 /**

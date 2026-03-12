@@ -44,7 +44,7 @@ async def transactional_session(
             # Auto-commits on success, auto-rolls back on exception
 
     Example with existing session:
-        async with get_async_session() as session:
+        async with get_db_session_context() as session:
             async with transactional_session(session, auto_commit=False) as tx_session:
                 # Manual transaction control
                 user = User(name="Test")

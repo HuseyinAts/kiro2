@@ -17,15 +17,15 @@ from typing import Any, Dict, List, Optional
 from sqlalchemy import and_, desc, func, select
 from sqlalchemy.orm import selectinload
 
-from core.database import get_async_session
+from core.database import get_db_session_context
 from core.structured_logger import get_logger
 from models.database import (
     ExamSession,
     ExamType,
-    Question,
-    QuestionDifficulty,
     StudentAnswer,
 )
+from models.question_bank import QuestionBankItem as Question
+from models.question_bank import QuestionDifficultyLevel
 
 logger = get_logger("exam_performance_service")
 
@@ -75,7 +75,7 @@ class StudyRecommendation:
     recommended_study_hours: int
     recommended_resources: List[Dict[str, Any]]
     practice_question_count: int
-    difficulty_focus: QuestionDifficulty
+    difficulty_focus: QuestionDifficultyLevel
     explanation: str
 
 
@@ -140,19 +140,19 @@ class ExamPerformanceService:
             WeaknessLevel.CRITICAL: {
                 "study_hours": 15,
                 "practice_questions": 200,
-                "difficulty_focus": QuestionDifficulty.EASY,
+                "difficulty_focus": QuestionDifficultyLevel.EASY,
                 "explanation": "Bu konuda temel kavramları güçlendirmeniz gerekiyor. Kolay sorularla başlayıp kademeli olarak zorluk artırın.",
             },
             WeaknessLevel.MODERATE: {
                 "study_hours": 10,
                 "practice_questions": 150,
-                "difficulty_focus": QuestionDifficulty.MEDIUM,
+                "difficulty_focus": QuestionDifficultyLevel.MEDIUM,
                 "explanation": "Orta seviye sorularla pratik yaparak konuyu pekiştirin.",
             },
             WeaknessLevel.MINOR: {
                 "study_hours": 6,
                 "practice_questions": 100,
-                "difficulty_focus": QuestionDifficulty.MEDIUM,
+                "difficulty_focus": QuestionDifficultyLevel.MEDIUM,
                 "explanation": "Zor sorularla kendinizi test edin ve hız kazanmaya odaklanın.",
             },
         }
@@ -171,7 +171,7 @@ class ExamPerformanceService:
             DetailedPerformanceAnalysis: Detaylı performans analizi
         """
         try:
-            async with get_async_session() as db_session:
+            async with get_db_session_context() as db_session:
                 # Sınav oturumu bilgilerini getir
                 exam_result = await db_session.execute(
                     select(ExamSession)
@@ -320,7 +320,7 @@ class ExamPerformanceService:
         subject_stats_result = await db_session.execute(
             select(
                 Question.subject_area,
-                Question.topic,
+                Question.primary_topic_id,
                 func.count(Question.id).label("total_questions"),
                 func.sum(
                     func.case(
@@ -352,30 +352,32 @@ class ExamPerformanceService:
             .select_from(Question)
             .join(StudentAnswer, Question.id == StudentAnswer.question_id)
             .where(StudentAnswer.exam_session_id == exam_session.id)
-            .group_by(Question.subject_area, Question.topic)
+            .where(Question.is_active == True)
+            .group_by(Question.subject_area, Question.primary_topic_id)
         )
 
         # FIX N+1: Fetch all difficulty distributions in one query
         all_difficulties_result = await db_session.execute(
             select(
                 Question.subject_area,
-                Question.topic,
-                Question.difficulty,
+                Question.primary_topic_id,
+                Question.difficulty_level,
                 func.count(Question.id).label("count"),
             )
             .select_from(Question)
             .join(StudentAnswer, Question.id == StudentAnswer.question_id)
             .where(StudentAnswer.exam_session_id == exam_session.id)
-            .group_by(Question.subject_area, Question.topic, Question.difficulty)
+            .where(Question.is_active == True)
+            .group_by(Question.subject_area, Question.primary_topic_id, Question.difficulty_level)
         )
 
         # Create lookup dictionary: (subject_area, topic) -> {difficulty: count}
         difficulty_lookup = {}
         for diff_row in all_difficulties_result:
-            key = (diff_row.subject_area, diff_row.topic)
+            key = (diff_row.subject_area, diff_row.primary_topic_id)
             if key not in difficulty_lookup:
                 difficulty_lookup[key] = {}
-            difficulty_lookup[key][diff_row.difficulty.value] = diff_row.count
+            difficulty_lookup[key][diff_row.difficulty_level.value] = diff_row.count
 
         subject_performances = []
 
@@ -389,13 +391,13 @@ class ExamPerformanceService:
             net_score = correct - (wrong / 4)
 
             # FIX N+1: Use pre-fetched difficulty distribution
-            key = (row.subject_area, row.topic)
+            key = (row.subject_area, row.primary_topic_id)
             difficulty_distribution = difficulty_lookup.get(key, {})
 
             subject_performances.append(
                 {
-                    "subject": row.subject_area.value,
-                    "topic": row.topic,
+                    "subject": row.subject_area,
+                    "topic": row.primary_topic_id,
                     "total_questions": total,
                     "correct_answers": correct,
                     "wrong_answers": wrong,
@@ -653,12 +655,13 @@ class ExamPerformanceService:
             .select_from(Question)
             .join(StudentAnswer, Question.id == StudentAnswer.question_id)
             .where(StudentAnswer.exam_session_id == exam_session.id)
+            .where(Question.is_active == True)
             .group_by(Question.subject_area)
         )
 
         time_by_subject = {}
         for row in time_by_subject_result:
-            time_by_subject[row.subject_area.value] = {
+            time_by_subject[row.subject_area] = {
                 "average_time": round(row.avg_time or 0, 2),
                 "question_count": row.question_count,
             }

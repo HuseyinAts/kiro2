@@ -90,12 +90,15 @@ export const ModernLoginPage: React.FC = () => {
     }
   };
 
+  // Demo buttons only visible in dev/staging (never in production bundle)
+  const showDemoButtons = import.meta.env.DEV || import.meta.env.VITE_SHOW_DEMO === 'true';
+
   const handleDemoLogin = async (role: UserRole) => {
     const demoCredentials = {
-      ogrenci: { email: 'ogrenci@demo.com', password: 'demo123' },
-      ogretmen: { email: 'ogretmen@demo.com', password: 'demo123' },
-      veli: { email: 'veli@demo.com', password: 'demo123' },
-      admin: { email: 'admin@demo.com', password: 'demo123' },
+      ogrenci: { email: 'ogrenci@kiro2.com', password: 'Kiro2Beta2026@x' },
+      ogretmen: { email: 'ogretmen@kiro2.com', password: 'Kiro2Beta2026@x' },
+      veli: { email: 'veli@kiro2.com', password: 'Kiro2Beta2026@x' },
+      admin: { email: 'admin@kiro2.com', password: 'Kiro2Beta2026@x' },
     };
 
     setFormData(demoCredentials[role]);
@@ -352,37 +355,41 @@ export const ModernLoginPage: React.FC = () => {
               </Typography>
             </Divider>
 
-            {/* Demo Login Buttons */}
-            <Typography
-              variant="body2"
-              align="center"
-              color="text.secondary"
-              sx={{ mb: 2, fontWeight: 600 }}
-            >
-              Demo Hesapları ile Dene:
-            </Typography>
+            {/* Demo Login Buttons — only in dev/staging */}
+            {showDemoButtons && (
+              <>
+                <Typography
+                  variant="body2"
+                  align="center"
+                  color="text.secondary"
+                  sx={{ mb: 2, fontWeight: 600 }}
+                >
+                  Demo Hesapları ile Dene:
+                </Typography>
 
-            <Grid container spacing={1.5}>
-              {[
-                { role: 'ogrenci' as UserRole, label: 'Öğrenci', icon: <Person />, gradient: modernColors.gradients.ocean },
-                { role: 'ogretmen' as UserRole, label: 'Öğretmen', icon: <SchoolOutlined />, gradient: modernColors.gradients.forest },
-                { role: 'veli' as UserRole, label: 'Veli', icon: <SupervisorAccount />, gradient: modernColors.gradients.aurora },
-                { role: 'admin' as UserRole, label: 'Admin', icon: <AdminPanelSettings />, gradient: modernColors.gradients.fire },
-              ].map((demo) => (
-                <Grid item xs={6} key={demo.role}>
-                  <ModernButton
-                    variant="glass"
-                    fullWidth
-                    size="small"
-                    onClick={() => handleDemoLogin(demo.role)}
-                    disabled={isLoading}
-                    startIcon={demo.icon}
-                  >
-                    {demo.label}
-                  </ModernButton>
+                <Grid container spacing={1.5}>
+                  {[
+                    { role: 'ogrenci' as UserRole, label: 'Öğrenci', icon: <Person />, gradient: modernColors.gradients.ocean },
+                    { role: 'ogretmen' as UserRole, label: 'Öğretmen', icon: <SchoolOutlined />, gradient: modernColors.gradients.forest },
+                    { role: 'veli' as UserRole, label: 'Veli', icon: <SupervisorAccount />, gradient: modernColors.gradients.aurora },
+                    { role: 'admin' as UserRole, label: 'Admin', icon: <AdminPanelSettings />, gradient: modernColors.gradients.fire },
+                  ].map((demo) => (
+                    <Grid item xs={6} key={demo.role}>
+                      <ModernButton
+                        variant="glass"
+                        fullWidth
+                        size="small"
+                        onClick={() => handleDemoLogin(demo.role)}
+                        disabled={isLoading}
+                        startIcon={demo.icon}
+                      >
+                        {demo.label}
+                      </ModernButton>
+                    </Grid>
+                  ))}
                 </Grid>
-              ))}
-            </Grid>
+              </>
+            )}
 
             {/* Register Link */}
             <Box sx={{ textAlign: 'center', mt: 3, pt: 3, borderTop: `1px solid ${modernColors.divider.light}` }}>

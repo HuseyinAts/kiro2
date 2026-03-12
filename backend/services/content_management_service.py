@@ -11,13 +11,8 @@ from sqlalchemy import and_, func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.database import get_db_session
-from models.database import (
-    EducationalContent,
-    ExamType,
-    Question,
-    QuestionDifficulty,
-    SubjectArea,
-)
+from models.database import EducationalContent, QuestionDifficulty, SubjectArea
+from models.question_bank import QuestionBankItem as Question, QuestionDifficultyLevel, TopicHierarchy
 from services.soru_bankasi_service import SoruBankasiServisi
 
 
@@ -37,29 +32,29 @@ class ContentManagementService:
 
         # Enum dönüştürme haritaları
         self.exam_type_map = {
-            "TYT": ExamType.TYT,
-            "AYT": ExamType.AYT,
-            "YDT": ExamType.YDT,
+            "TYT": "TYT",
+            "AYT": "AYT",
+            "YDT": "YDT",
         }
 
         self.difficulty_map = {
-            "easy": QuestionDifficulty.EASY,
-            "medium": QuestionDifficulty.MEDIUM,
-            "hard": QuestionDifficulty.HARD,
-            "kolay": QuestionDifficulty.EASY,
-            "orta": QuestionDifficulty.MEDIUM,
-            "zor": QuestionDifficulty.HARD,
+            "easy": QuestionDifficultyLevel.EASY,
+            "medium": QuestionDifficultyLevel.MEDIUM,
+            "hard": QuestionDifficultyLevel.HARD,
+            "kolay": QuestionDifficultyLevel.EASY,
+            "orta": QuestionDifficultyLevel.MEDIUM,
+            "zor": QuestionDifficultyLevel.HARD,
         }
 
         self.subject_map = {
-            "Matematik": SubjectArea.MATEMATIK,
-            "Türkçe": SubjectArea.TURKCE,
-            "Fen": SubjectArea.FEN,
-            "Sosyal": SubjectArea.SOSYAL,
-            "Fizik": SubjectArea.FIZIK,
-            "Kimya": SubjectArea.KIMYA,
-            "Biyoloji": SubjectArea.BIYOLOJI,
-            "İngilizce": SubjectArea.INGILIZCE,
+            "Matematik": "MATEMATIK",
+            "Türkçe": "TURKCE",
+            "Fen": "FEN",
+            "Sosyal": "SOSYAL",
+            "Fizik": "FIZIK",
+            "Kimya": "KIMYA",
+            "Biyoloji": "BIYOLOJI",
+            "İngilizce": "INGILIZCE",
         }
 
     # ==================== SORU BANKASI CRUD İŞLEMLERİ ====================
@@ -99,8 +94,8 @@ class ContentManagementService:
                 # Zorluk seviyesi filtresi
                 if zorluk_seviyesi and zorluk_seviyesi in self.difficulty_map:
                     difficulty = self.difficulty_map[zorluk_seviyesi]
-                    stmt = stmt.where(Question.difficulty == difficulty)
-                    count_stmt = count_stmt.where(Question.difficulty == difficulty)
+                    stmt = stmt.where(Question.difficulty_level == difficulty)
+                    count_stmt = count_stmt.where(Question.difficulty_level == difficulty)
 
                 # Onay durumu filtresi (şimdilik is_active ile simüle ediyoruz)
                 if onay_durumu:
@@ -135,10 +130,10 @@ class ContentManagementService:
                         "soru_metni": soru.question_text[:200] + "..."
                         if len(soru.question_text) > 200
                         else soru.question_text,
-                        "sinav_tipi": soru.exam_type.value,
-                        "konu": soru.subject_area.value,
-                        "alt_konu": soru.subtopic,
-                        "zorluk_seviyesi": soru.difficulty.value,
+                        "sinav_tipi": str(soru.exam_type),
+                        "konu": str(soru.subject_area),
+                        "alt_konu": None,
+                        "zorluk_seviyesi": soru.difficulty_level.value if soru.difficulty_level else "medium",
                         "irt_zorluk": soru.irt_difficulty,
                         "istatistikler": {
                             "sorulma_sayisi": soru.times_asked,
@@ -653,11 +648,9 @@ class ContentManagementService:
         """
         try:
             kategoriler = {
-                "sinav_tipleri": [exam_type.value for exam_type in ExamType],
-                "konular": [subject.value for subject in SubjectArea],
-                "zorluk_seviyeleri": [
-                    difficulty.value for difficulty in QuestionDifficulty
-                ],
+                "sinav_tipleri": ["TYT", "AYT", "YDT"],
+                "konular": list(self.subject_map.values()),
+                "zorluk_seviyeleri": ["very_easy", "easy", "medium", "hard", "very_hard"],
                 "icerik_turleri": ["video", "article", "interactive", "quiz", "pdf"],
                 "platformlar": ["youtube", "khan_academy", "eba_tv", "custom"],
                 "sinif_seviyeleri": [9, 10, 11, 12],
@@ -767,7 +760,11 @@ class ContentManagementService:
                     or_(
                         Question.question_text.ilike(f"%{arama_terimi}%"),
                         Question.explanation.ilike(f"%{arama_terimi}%"),
-                        Question.topic.ilike(f"%{arama_terimi}%"),
+                        Question.primary_topic_id.in_(
+                            select(TopicHierarchy.id).where(
+                                TopicHierarchy.name.ilike(f"%{arama_terimi}%")
+                            )
+                        ),
                     ),
                 )
             )
@@ -778,7 +775,11 @@ class ContentManagementService:
                     or_(
                         Question.question_text.ilike(f"%{arama_terimi}%"),
                         Question.explanation.ilike(f"%{arama_terimi}%"),
-                        Question.topic.ilike(f"%{arama_terimi}%"),
+                        Question.primary_topic_id.in_(
+                            select(TopicHierarchy.id).where(
+                                TopicHierarchy.name.ilike(f"%{arama_terimi}%")
+                            )
+                        ),
                     ),
                 )
             )
@@ -792,8 +793,8 @@ class ContentManagementService:
             # Zorluk seviyesi filtresi
             if zorluk_seviyesi and zorluk_seviyesi in self.difficulty_map:
                 difficulty = self.difficulty_map[zorluk_seviyesi]
-                stmt = stmt.where(Question.difficulty == difficulty)
-                count_stmt = count_stmt.where(Question.difficulty == difficulty)
+                stmt = stmt.where(Question.difficulty_level == difficulty)
+                count_stmt = count_stmt.where(Question.difficulty_level == difficulty)
 
             # Toplam sayı
             total_result = await session.execute(count_stmt)
@@ -822,9 +823,9 @@ class ContentManagementService:
                     "aciklama": soru.explanation[:200] + "..."
                     if soru.explanation and len(soru.explanation) > 200
                     else soru.explanation,
-                    "konu": soru.subject_area.value,
-                    "zorluk_seviyesi": soru.difficulty.value,
-                    "sinav_tipi": soru.exam_type.value,
+                    "konu": str(soru.subject_area),
+                    "zorluk_seviyesi": soru.difficulty_level.value if soru.difficulty_level else "medium",
+                    "sinav_tipi": str(soru.exam_type),
                     "olusturma_tarihi": soru.created_at.isoformat(),
                 }
                 sonuclar.append(sonuc)
@@ -942,14 +943,14 @@ class ContentManagementService:
                 sinav_stmt = select(Question.exam_type).distinct()
                 sinav_result = await session.execute(sinav_stmt)
                 sinav_tipleri = [
-                    exam_type.value for exam_type in sinav_result.scalars().all()
+                    str(et) for et in sinav_result.scalars().all()
                 ]
 
                 # Mevcut zorluk seviyelerini getir
-                zorluk_stmt = select(Question.difficulty).distinct()
+                zorluk_stmt = select(Question.difficulty_level).distinct()
                 zorluk_result = await session.execute(zorluk_stmt)
                 zorluk_seviyeleri = [
-                    difficulty.value for difficulty in zorluk_result.scalars().all()
+                    d.value if d else "medium" for d in zorluk_result.scalars().all()
                 ]
 
                 # Mevcut platformları getir
@@ -998,7 +999,7 @@ class ContentManagementService:
                 )
                 sinav_dagilim_result = await session.execute(sinav_dagilim_stmt)
                 sinav_dagilimi = {
-                    exam_type.value: count
+                    str(exam_type): count
                     for exam_type, count in sinav_dagilim_result.all()
                 }
 

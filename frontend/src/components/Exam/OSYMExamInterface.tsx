@@ -80,6 +80,8 @@ import QuestionGraph from '../QuestionGraph';
 import QuestionMapDiagram from '../QuestionMapDiagram';
 import QuestionTable from '../QuestionTable';
 
+import { MathText } from '@/components/ui/MathText';
+import { QuestionImage } from '@/components/ui/ImageZoomModal';
 import ExamTimer from './ExamTimer';
 import FlaggedQuestionsPanel from './FlaggedQuestionsPanel';
 
@@ -782,8 +784,9 @@ export const OSYMExamInterface: React.FC<OSYMExamInterfaceProps> = ({
                       lineHeight: { xs: 1.5, sm: 1.6 },
                       wordBreak: 'break-word',
                     }}
+                    component="div"
                   >
-                    {examState.currentQuestion.question_text}
+                    <MathText>{examState.currentQuestion.question_text}</MathText>
                   </Typography>
 
                   <IconButton
@@ -821,17 +824,12 @@ export const OSYMExamInterface: React.FC<OSYMExamInterfaceProps> = ({
                 )}
 
                 {examState.currentQuestion.question_image_url && (
-                  <Box sx={{ mb: 2, textAlign: 'center' }}>
-                    <img
-                      src={examState.currentQuestion.question_image_url}
-                      alt="Soru görseli"
-                      style={{
-                        maxWidth: '100%',
-                        height: 'auto',
-                        borderRadius: theme.shape.borderRadius,
-                      }}
-                    />
-                  </Box>
+                  <QuestionImage
+                    src={examState.currentQuestion.question_image_url}
+                    alt={examState.currentQuestion.image_alt_text || undefined}
+                    width={examState.currentQuestion.image_width}
+                    height={examState.currentQuestion.image_height}
+                  />
                 )}
               </Box>
 
@@ -854,7 +852,7 @@ export const OSYMExamInterface: React.FC<OSYMExamInterfaceProps> = ({
                         key={index}
                         value={optionLabel}
                         control={<Radio />}
-                        label={`${optionLabel}) ${option}`}
+                        label={<span>{optionLabel}) <MathText inline>{String(option)}</MathText></span>}
                         sx={{
                           mb: { xs: 1.5, sm: 1 },
                           p: { xs: 1.5, sm: 2 },

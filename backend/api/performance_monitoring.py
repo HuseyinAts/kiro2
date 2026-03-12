@@ -16,7 +16,7 @@ from typing import Any, Dict, Optional
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
 
-from core.dependencies import get_current_user
+from core.dependencies import get_current_user, AuthenticatedUser
 
 logger = logging.getLogger(__name__)
 
@@ -86,7 +86,7 @@ class PerformanceMetrics(BaseModel):
 
 @router.get("/metrics", response_model=PerformanceMetrics)
 async def get_comprehensive_metrics(
-    current_user: Dict[str, Any] = Depends(get_current_user)
+    current_user: AuthenticatedUser = Depends(get_current_user)
 ):
     """
     Get comprehensive performance metrics
@@ -151,7 +151,7 @@ async def get_comprehensive_metrics(
 
 
 @router.get("/llm-pool", response_model=LLMPoolMetrics)
-async def get_llm_pool_stats(current_user: Dict[str, Any] = Depends(get_current_user)):
+async def get_llm_pool_stats(current_user: AuthenticatedUser = Depends(get_current_user)):
     """
     Get LLM connection pool statistics
 
@@ -179,7 +179,7 @@ async def get_llm_pool_stats(current_user: Dict[str, Any] = Depends(get_current_
 
 @router.get("/vector-store", response_model=VectorStoreMetrics)
 async def get_vector_store_stats(
-    current_user: Dict[str, Any] = Depends(get_current_user)
+    current_user: AuthenticatedUser = Depends(get_current_user)
 ):
     """
     Get vector store optimization statistics
@@ -207,7 +207,7 @@ async def get_vector_store_stats(
 
 
 @router.get("/cache", response_model=CacheMetrics)
-async def get_cache_stats(current_user: Dict[str, Any] = Depends(get_current_user)):
+async def get_cache_stats(current_user: AuthenticatedUser = Depends(get_current_user)):
     """
     Get multi-layer cache statistics
 
@@ -237,7 +237,7 @@ async def get_cache_stats(current_user: Dict[str, Any] = Depends(get_current_use
 
 @router.delete("/cache/clear/{tag}")
 async def clear_cache_by_tag(
-    tag: str, current_user: Dict[str, Any] = Depends(get_current_user)
+    tag: str, current_user: AuthenticatedUser = Depends(get_current_user)
 ):
     """
     Clear cache entries by tag
@@ -267,7 +267,7 @@ async def clear_cache_by_tag(
 
 @router.get("/rag-pipeline", response_model=RAGPipelineMetrics)
 async def get_rag_pipeline_stats(
-    current_user: Dict[str, Any] = Depends(get_current_user)
+    current_user: AuthenticatedUser = Depends(get_current_user)
 ):
     """
     Get RAG pipeline performance statistics

@@ -3,6 +3,7 @@ Soru Bankası API Endpoint'leri
 Türkiye Üniversite Sınavları Hazırlık Platformu
 """
 import logging
+import os
 from typing import Any, Dict, List, Optional
 import hashlib
 import json
@@ -14,9 +15,8 @@ from fastapi.responses import JSONResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.database import get_db_session
-from core.dependencies import get_current_user
+from core.dependencies import get_current_user, AuthenticatedUser
 from core.multi_layer_cache import MultiLayerCache
-from models.user import Kullanici
 from services.soru_bankasi_service import soru_bankasi_servisi
 
 router = APIRouter(tags=["Soru Bankası"])
@@ -24,7 +24,7 @@ router = APIRouter(tags=["Soru Bankası"])
 # Initialize multi-layer cache for question bank
 # L1: Memory (100 entries), L2: Redis, TTL: 1 hour
 question_cache = MultiLayerCache(
-    redis_url="redis://localhost:6379/0",
+    redis_url=os.getenv("REDIS_URL", "redis://localhost:6379/0"),
     l1_max_size=100,
     default_ttl=3600,
     namespace="soru_bankasi",
@@ -109,11 +109,11 @@ async def sorular_listele(
                     },
                     "correct_answer": soru.correct_answer,
                     "explanation": soru.explanation,
-                    "exam_type": soru.exam_type.value if hasattr(soru.exam_type, 'value') else str(soru.exam_type),
-                    "subject_area": soru.subject_area.value if hasattr(soru.subject_area, 'value') else str(soru.subject_area),
-                    "topic": soru.topic,
-                    "subtopic": soru.subtopic,
-                    "difficulty": soru.difficulty.value if hasattr(soru.difficulty, 'value') else str(soru.difficulty),
+                    "exam_type": str(soru.exam_type),
+                    "subject_area": str(soru.subject_area),
+                    "topic": soru.primary_topic_id,
+                    "subtopic": None,
+                    "difficulty": soru.difficulty_level.value if soru.difficulty_level else "MEDIUM",
                     "irt_parameters": {
                         "difficulty": soru.irt_difficulty,
                         "discrimination": soru.irt_discrimination,
@@ -183,11 +183,11 @@ async def soru_detay(soru_id: str, db: AsyncSession = Depends(get_db_session)):
             },
             "correct_answer": soru.correct_answer,
             "explanation": soru.explanation,
-            "exam_type": soru.exam_type.value,
-            "subject_area": soru.subject_area.value,
-            "topic": soru.topic,
-            "subtopic": soru.subtopic,
-            "difficulty": soru.difficulty.value,
+            "exam_type": str(soru.exam_type),
+            "subject_area": str(soru.subject_area),
+            "topic": soru.primary_topic_id,
+            "subtopic": None,
+            "difficulty": soru.difficulty_level.value if soru.difficulty_level else "MEDIUM",
             "irt_parameters": {
                 "difficulty": soru.irt_difficulty,
                 "discrimination": soru.irt_discrimination,
@@ -349,7 +349,7 @@ async def irt_parametreli_sorular_sec(
     hedef_bilgi: float = Query(
         1.0, ge=0.1, le=5.0, description="Hedef bilgi fonksiyonu değeri"
     ),
-    current_user: Kullanici = Depends(get_current_user),
+    current_user: AuthenticatedUser = Depends(get_current_user),
     db: AsyncSession = Depends(get_db_session),
 ):
     """
@@ -391,9 +391,9 @@ async def irt_parametreli_sorular_sec(
                     "D": soru.option_d,
                     "E": soru.option_e,
                 },
-                "subject_area": soru.subject_area.value,
-                "topic": soru.topic,
-                "difficulty": soru.difficulty.value,
+                "subject_area": str(soru.subject_area),
+                "topic": soru.primary_topic_id,
+                "difficulty": soru.difficulty_level.value if soru.difficulty_level else "MEDIUM",
                 "irt_parameters": {
                     "difficulty": soru.irt_difficulty,
                     "discrimination": soru.irt_discrimination,
@@ -497,7 +497,7 @@ async def soru_performans_guncelle(
     soru_id: str,
     dogru_cevap: bool,
     cevap_suresi: float = Query(..., ge=0.1, description="Cevaplama süresi (saniye)"),
-    current_user: Kullanici = Depends(get_current_user),
+    current_user: AuthenticatedUser = Depends(get_current_user),
     db: AsyncSession = Depends(get_db_session),
 ):
     """
@@ -548,7 +548,7 @@ async def zorluk_seviyesi_filtrele(
     ),
     sinav_tipi: str = Query(..., description="Sınav türü"),
     tolerans: float = Query(1.0, ge=0.1, le=2.0, description="Zorluk toleransı"),
-    current_user: Kullanici = Depends(get_current_user),
+    current_user: AuthenticatedUser = Depends(get_current_user),
     db: AsyncSession = Depends(get_db_session),
 ):
     """
@@ -569,9 +569,9 @@ async def zorluk_seviyesi_filtrele(
             soru_dict = {
                 "id": soru.id,
                 "question_text": soru.question_text,
-                "subject_area": soru.subject_area.value,
-                "topic": soru.topic,
-                "difficulty": soru.difficulty.value,
+                "subject_area": str(soru.subject_area),
+                "topic": soru.primary_topic_id,
+                "difficulty": soru.difficulty_level.value if soru.difficulty_level else "MEDIUM",
                 "irt_difficulty": soru.irt_difficulty,
                 "irt_discrimination": soru.irt_discrimination,
                 "difficulty_match": abs(soru.irt_difficulty - ogrenci_yetenek),
@@ -646,7 +646,7 @@ class TopluSoruEkleRequest(BaseModel):
 @router.post("/soru-ekle", response_model=Dict[str, Any])
 async def soru_ekle(
     request: SoruEkleRequest,
-    current_user: Kullanici = Depends(get_current_user),
+    current_user: AuthenticatedUser = Depends(get_current_user),
     db: AsyncSession = Depends(get_db_session),
 ):
     """
@@ -665,7 +665,7 @@ async def soru_ekle(
             "konu": request.konu,
             "alt_konu": request.alt_konu,
             "zorluk_seviyesi": request.zorluk_seviyesi,
-            "created_by": current_user.get("user_id", "system"),
+            "created_by": current_user.id,
         }
 
         yeni_soru = await soru_bankasi_servisi.soru_ekle(soru_data)
@@ -680,9 +680,9 @@ async def soru_ekle(
                 "data": {
                     "id": yeni_soru.id,
                     "question_text": yeni_soru.question_text,
-                    "exam_type": yeni_soru.exam_type.value,
-                    "subject_area": yeni_soru.subject_area.value,
-                    "difficulty": yeni_soru.difficulty.value,
+                    "exam_type": str(yeni_soru.exam_type),
+                    "subject_area": str(yeni_soru.subject_area),
+                    "difficulty": yeni_soru.difficulty_level.value if yeni_soru.difficulty_level else "MEDIUM",
                     "irt_parameters": {
                         "difficulty": yeni_soru.irt_difficulty,
                         "discrimination": yeni_soru.irt_discrimination,
@@ -706,7 +706,7 @@ async def soru_ekle(
 async def soru_guncelle(
     soru_id: str,
     request: SoruGuncelleRequest,
-    current_user: Kullanici = Depends(get_current_user),
+    current_user: AuthenticatedUser = Depends(get_current_user),
     db: AsyncSession = Depends(get_db_session),
 ):
     """
@@ -774,7 +774,7 @@ async def soru_guncelle(
 @router.delete("/soru-sil/{soru_id}", response_model=Dict[str, Any])
 async def soru_sil(
     soru_id: str,
-    current_user: Kullanici = Depends(get_current_user),
+    current_user: AuthenticatedUser = Depends(get_current_user),
     db: AsyncSession = Depends(get_db_session),
 ):
     """
@@ -811,7 +811,7 @@ async def soru_sil(
 @router.post("/toplu-soru-ekle", response_model=Dict[str, Any])
 async def toplu_soru_ekle(
     request: TopluSoruEkleRequest,
-    current_user: Kullanici = Depends(get_current_user),
+    current_user: AuthenticatedUser = Depends(get_current_user),
     db: AsyncSession = Depends(get_db_session),
 ):
     """
@@ -822,7 +822,7 @@ async def toplu_soru_ekle(
     try:
         # Her soruda created_by ekle
         for soru in request.sorular:
-            soru["created_by"] = current_user.get("user_id", "system")
+            soru["created_by"] = current_user.id
 
         sonuc = await soru_bankasi_servisi.toplu_soru_ekle(request.sorular)
 
@@ -850,7 +850,7 @@ async def toplu_soru_ekle(
 )
 async def irt_parametreleri_yeniden_hesapla(
     soru_id: str,
-    current_user: Kullanici = Depends(get_current_user),
+    current_user: AuthenticatedUser = Depends(get_current_user),
     db: AsyncSession = Depends(get_db_session),
 ):
     """

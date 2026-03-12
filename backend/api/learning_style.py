@@ -5,8 +5,12 @@ VARK + Felder-Silverman Hibrit Öğrenme Stili API Endpoints
 import logging
 from typing import Any, Dict
 
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException, Query
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
 
+from core.dependencies import get_db
+from models.learning_path_models import LearningPathStudentProfile
 from models.learning_style import BehavioralData, QuestionnaireResponse
 from services.learning_style_service import LearningStyleService
 
@@ -164,10 +168,12 @@ async def update_behavioral_data(student_id: str, behavioral_data: BehavioralDat
 
 @router.post("/questionnaire/{student_id}", response_model=Dict[str, Any])
 async def submit_questionnaire(
-    student_id: str, questionnaire_response: QuestionnaireResponse
+    student_id: str,
+    questionnaire_response: QuestionnaireResponse,
+    db: AsyncSession = Depends(get_db),
 ):
     """
-    Öğrenme stili anketi yanıtlarını kaydet
+    Öğrenme stili anketi yanıtlarını kaydet — cache + DB persist
     """
     try:
         logger.info(
@@ -177,7 +183,7 @@ async def submit_questionnaire(
         # Student ID'yi set et
         questionnaire_response.student_id = student_id
 
-        # Anket yanıtını cache'e kaydet (gerçek implementasyonda database'e kaydedilecek)
+        # Anket yanıtını cache'e kaydet
         if student_id not in learning_style_service.questionnaire_cache:
             learning_style_service.questionnaire_cache[student_id] = []
 
@@ -189,12 +195,34 @@ async def submit_questionnaire(
         if student_id in learning_style_service.profiles_cache:
             del learning_style_service.profiles_cache[student_id]
 
+        # DB'ye persist et — VARK skorlarını hesapla ve profil güncelle
+        vark_scores = _calculate_vark_scores(questionnaire_response)
+        dominant_style = max(vark_scores, key=vark_scores.get) if vark_scores else "mixed"
+
+        result = await db.execute(
+            select(LearningPathStudentProfile).where(
+                LearningPathStudentProfile.student_id == student_id
+            )
+        )
+        profile = result.scalar_one_or_none()
+
+        if profile:
+            profile.learning_style = dominant_style
+            profile.vark_visual_score = vark_scores.get("visual", 0.0)
+            profile.vark_auditory_score = vark_scores.get("auditory", 0.0)
+            profile.vark_reading_score = vark_scores.get("reading", 0.0)
+            profile.vark_kinesthetic_score = vark_scores.get("kinesthetic", 0.0)
+            await db.commit()
+            logger.info(f"VARK skorları DB'ye kaydedildi: {student_id} → {dominant_style}")
+
         return {
             "success": True,
             "data": {
                 "questionnaire_type": questionnaire_response.questionnaire_type,
                 "completion_time": questionnaire_response.completion_time,
                 "responses_count": len(questionnaire_response.responses),
+                "learning_style": dominant_style,
+                "vark_scores": vark_scores,
             },
             "message": "Anket yanıtları kaydedildi",
         }
@@ -202,6 +230,36 @@ async def submit_questionnaire(
     except Exception as e:
         logger.error(f"Anket kaydetme hatası: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Anket kaydedilemedi: {str(e)}")
+
+
+def _calculate_vark_scores(response: QuestionnaireResponse) -> Dict[str, float]:
+    """VARK anket yanıtlarından 0-1 arası skorlar hesapla.
+
+    Frontend format: {question_id: style_key} — e.g. {"q1": "visual", "q2": "auditory"}
+    """
+    counts = {"visual": 0, "auditory": 0, "reading": 0, "kinesthetic": 0}
+    total = 0
+
+    responses = response.responses
+    if isinstance(responses, dict):
+        # Dict format: {question_id: style} — iterate values
+        for answer in responses.values():
+            style = str(answer).lower() if answer else ""
+            if style in counts:
+                counts[style] += 1
+                total += 1
+    elif isinstance(responses, list):
+        # List format: [{answer: style}] — legacy/alternative
+        for r in responses:
+            style = r.get("answer", "").lower() if isinstance(r, dict) else str(r).lower()
+            if style in counts:
+                counts[style] += 1
+                total += 1
+
+    if total == 0:
+        return {"visual": 0.25, "auditory": 0.25, "reading": 0.25, "kinesthetic": 0.25}
+
+    return {k: round(v / total, 3) for k, v in counts.items()}
 
 
 @router.get("/explanation/{student_id}", response_model=Dict[str, Any])

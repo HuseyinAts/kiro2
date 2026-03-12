@@ -470,9 +470,9 @@ class AdminService:
                     "soru_metni": soru.question_text[:200] + "..."
                     if len(soru.question_text) > 200
                     else soru.question_text,
-                    "sinav_tipi": soru.exam_type.value,
-                    "konu": soru.subject_area.value,
-                    "zorluk": soru.difficulty.value,
+                    "sinav_tipi": str(soru.exam_type),
+                    "konu": str(soru.subject_area),
+                    "zorluk": soru.difficulty_level.value if soru.difficulty_level else "MEDIUM",
                     "olusturma_tarihi": soru.created_at.isoformat(),
                     "aktif": soru.is_active,
                 }
@@ -500,16 +500,16 @@ class AdminService:
                 "soru_ekle",
                 hedef_id=soru.id,
                 detaylar={
-                    "sinav_tipi": soru.exam_type.value,
-                    "konu": soru.subject_area.value,
+                    "sinav_tipi": str(soru.exam_type),
+                    "konu": str(soru.subject_area),
                 },
             )
 
             return {
                 "id": soru.id,
                 "soru_metni": soru.question_text,
-                "sinav_tipi": soru.exam_type.value,
-                "konu": soru.subject_area.value,
+                "sinav_tipi": str(soru.exam_type),
+                "konu": str(soru.subject_area),
                 "olusturma_tarihi": soru.created_at.isoformat(),
             }
 

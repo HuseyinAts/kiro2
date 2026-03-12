@@ -1,20 +1,24 @@
 /**
  * Authentication Provider Component
- * Note: With Zustand, this is now just a passthrough component
- * Kept for backward compatibility with existing code
+ * Initializes auth state on app mount by validating httpOnly cookie session.
  */
 
 import * as React from 'react';
-import {  ReactNode  } from 'react';
+import { ReactNode, useEffect } from 'react';
+
+import { useAuthStore } from '../store/authStore';
 
 interface AuthProviderProps {
   children: ReactNode;
 }
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
-  // With Zustand authStore, we don't need a context provider
-  // The store is globally accessible via useAuthStore()
-  // This component now just passes through children
+  const initializeAuth = useAuthStore((state) => state.initializeAuth);
+
+  useEffect(() => {
+    initializeAuth();
+  }, [initializeAuth]);
+
   return <>{children}</>;
 };
 

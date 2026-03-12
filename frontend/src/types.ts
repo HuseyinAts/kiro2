@@ -175,8 +175,6 @@ export interface LoginRequest {
 export interface LoginResponse {
   success: boolean
   user: User
-  token: string
-  refreshToken: string
   message?: string
 }
 

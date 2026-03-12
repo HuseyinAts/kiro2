@@ -1,6 +1,7 @@
 /**
  * Modern Student Dashboard
  * Beautiful, functional dashboard with glassmorphism and modern design
+ * REFACTORED: Real API data instead of mock data
  */
 
 import {
@@ -13,16 +14,17 @@ import {
   MenuBook,
   ArrowForward,
   LocalFireDepartment,
-  CheckCircle,
+  HourglassEmpty,
 } from '@mui/icons-material';
 import {
   Container,
   Grid,
   Typography,
   Box,
-  LinearProgress,
   Avatar,
   Chip,
+  CircularProgress,
+  Skeleton,
 } from '@mui/material';
 import { motion } from 'framer-motion';
 import * as React from 'react';
@@ -33,20 +35,77 @@ import { GlassCard } from '@/components/ui/GlassCard';
 import { ModernButton } from '@/components/ui/ModernButton';
 import { useAuthStore } from '@/store/authStore';
 import modernColors from '@/theme/modern-colors';
+import { apiRequest } from '@/utils/apiHelpers';
+
+// Types matching backend DashboardIstatistikleri
+interface DashboardStats {
+  tamamlanan_dersler: number;
+  toplam_dersler: number;
+  tamamlanan_sinavlar: number;
+  ortalama_puan: number;
+  toplam_calisma_suresi: number;
+  haftalik_ilerleme: number;
+  gunluk_seri: number;
+  toplam_puan: number;
+  seviye: number;
+  deneyim: number;
+}
+
+interface RecentExam {
+  sinav_id: string;
+  sinav_adi: string;
+  sinav_tipi: string;
+  tarih: string;
+  puan: number;
+  dogru_sayisi: number;
+  yanlis_sayisi: number;
+  bos_sayisi: number;
+  sure: number;
+}
+
+const DEFAULT_STATS: DashboardStats = {
+  tamamlanan_dersler: 0,
+  toplam_dersler: 0,
+  tamamlanan_sinavlar: 0,
+  ortalama_puan: 0,
+  toplam_calisma_suresi: 0,
+  haftalik_ilerleme: 0,
+  gunluk_seri: 0,
+  toplam_puan: 0,
+  seviye: 1,
+  deneyim: 0,
+};
 
 export const ModernStudentDashboard: React.FC = () => {
   const { user } = useAuthStore();
   const navigate = useNavigate();
 
-  // Mock data - gerçek API'den gelecek
-  const stats = {
-    totalStudyTime: 1250, // minutes
-    completedLessons: 45,
-    averageScore: 78.5,
-    currentStreak: 7,
-    rank: 234,
-    totalStudents: 10000,
-  };
+  const [stats, setStats] = React.useState<DashboardStats>(DEFAULT_STATS);
+  const [recentExams, setRecentExams] = React.useState<RecentExam[]>([]);
+  const [loading, setLoading] = React.useState(true);
+
+  React.useEffect(() => {
+    const fetchDashboardData = async () => {
+      setLoading(true);
+      try {
+        const [statsData, examsData] = await Promise.all([
+          apiRequest<DashboardStats>('/api/v1/student-dashboard/istatistikler'),
+          apiRequest<RecentExam[]>('/api/v1/student-dashboard/sinav-gecmisi?limit=3'),
+        ]);
+
+        setStats(statsData);
+        setRecentExams(Array.isArray(examsData) ? examsData : []);
+      } catch (error) {
+        // 401 → apiRequest redirects to /login
+        // Other errors → show defaults for new students
+        console.error('Dashboard veri yükleme hatası:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDashboardData();
+  }, []);
 
   const quickActions = [
     {
@@ -75,18 +134,16 @@ export const ModernStudentDashboard: React.FC = () => {
     },
   ];
 
-  const recentActivities = [
-    { id: 1, title: 'Matematik - Türev', score: 85, date: '2 saat önce', type: 'exam' },
-    { id: 2, title: 'Fizik - Newton Kanunları', score: 92, date: '1 gün önce', type: 'lesson' },
-    { id: 3, title: 'Kimya - Periyodik Tablo', score: 78, date: '2 gün önce', type: 'exam' },
-  ];
-
-  const subjects = [
-    { name: 'Matematik', progress: 75, color: modernColors.subject.matematik.main },
-    { name: 'Fizik', progress: 60, color: modernColors.subject.fizik.main },
-    { name: 'Kimya', progress: 85, color: modernColors.subject.kimya.main },
-    { name: 'Biyoloji', progress: 70, color: modernColors.subject.biyoloji.main },
-  ];
+  // Format relative time from ISO date string
+  const formatRelativeTime = (dateStr: string): string => {
+    const diff = Date.now() - new Date(dateStr).getTime();
+    const minutes = Math.floor(diff / 60000);
+    if (minutes < 60) return `${minutes} dk önce`;
+    const hours = Math.floor(minutes / 60);
+    if (hours < 24) return `${hours} saat önce`;
+    const days = Math.floor(hours / 24);
+    return `${days} gün önce`;
+  };
 
   return (
     <Box
@@ -158,7 +215,7 @@ export const ModernStudentDashboard: React.FC = () => {
                     textShadow: '0 2px 10px rgba(0,0,0,0.2)',
                   }}
                 >
-                  Hoş geldin, {user?.ad}! 👋
+                  Hos geldin, {user?.ad}!
                 </Typography>
                 <Typography
                   variant="body1"
@@ -167,7 +224,9 @@ export const ModernStudentDashboard: React.FC = () => {
                     mt: 0.5,
                   }}
                 >
-                  Bugün harika şeyler öğrenmeye hazır mısın?
+                  {stats.tamamlanan_sinavlar > 0
+                    ? `${stats.tamamlanan_sinavlar} sinav tamamladin, ortalama %${stats.ortalama_puan.toFixed(0)}`
+                    : 'Bugün harika seyler ogrenmeye hazir misin?'}
                 </Typography>
               </Box>
             </Box>
@@ -179,7 +238,7 @@ export const ModernStudentDashboard: React.FC = () => {
             >
               <Box
                 role="status"
-                aria-label={`${stats.currentStreak} günlük çalışma serisi`}
+                aria-label={`${stats.gunluk_seri} gunluk calisma serisi`}
                 sx={{
                   background: 'rgba(255,255,255,0.2)',
                   backdropFilter: 'blur(10px)',
@@ -193,10 +252,10 @@ export const ModernStudentDashboard: React.FC = () => {
                 <LocalFireDepartment sx={{ fontSize: 32, color: '#FF6B35' }} />
                 <Box>
                   <Typography variant="h4" sx={{ fontWeight: 800, color: 'white' }}>
-                    {stats.currentStreak}
+                    {loading ? <Skeleton width={30} /> : stats.gunluk_seri}
                   </Typography>
                   <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.9)' }}>
-                    Günlük Seri
+                    Gunluk Seri
                   </Typography>
                 </Box>
               </Box>
@@ -218,7 +277,7 @@ export const ModernStudentDashboard: React.FC = () => {
                   hoverable
                 >
                   <Typography variant="h4" sx={{ fontWeight: 800, mb: 0.5 }}>
-                    {stats.completedLessons}
+                    {loading ? <Skeleton width={40} /> : stats.tamamlanan_dersler}
                   </Typography>
                   <Typography variant="body2" color="text.secondary">
                     Tamamlanan Ders
@@ -235,10 +294,10 @@ export const ModernStudentDashboard: React.FC = () => {
                   hoverable
                 >
                   <Typography variant="h4" sx={{ fontWeight: 800, mb: 0.5 }}>
-                    {stats.averageScore}%
+                    {loading ? <Skeleton width={40} /> : `${stats.ortalama_puan.toFixed(0)}%`}
                   </Typography>
                   <Typography variant="body2" color="text.secondary">
-                    Ortalama Başarı
+                    Ortalama Basari
                   </Typography>
                 </GlassCard>
               </StaggerItem>
@@ -252,10 +311,10 @@ export const ModernStudentDashboard: React.FC = () => {
                   hoverable
                 >
                   <Typography variant="h4" sx={{ fontWeight: 800, mb: 0.5 }}>
-                    #{stats.rank}
+                    {loading ? <Skeleton width={40} /> : stats.tamamlanan_sinavlar}
                   </Typography>
                   <Typography variant="body2" color="text.secondary">
-                    Sıralama
+                    Tamamlanan Sinav
                   </Typography>
                 </GlassCard>
               </StaggerItem>
@@ -269,10 +328,10 @@ export const ModernStudentDashboard: React.FC = () => {
                   hoverable
                 >
                   <Typography variant="h4" sx={{ fontWeight: 800, mb: 0.5 }}>
-                    {Math.floor(stats.totalStudyTime / 60)}sa
+                    {loading ? <Skeleton width={40} /> : `${Math.floor(stats.toplam_calisma_suresi / 60)}sa`}
                   </Typography>
                   <Typography variant="body2" color="text.secondary">
-                    Toplam Çalışma
+                    Toplam Calisma
                   </Typography>
                 </GlassCard>
               </StaggerItem>
@@ -282,8 +341,8 @@ export const ModernStudentDashboard: React.FC = () => {
           {/* Quick Actions */}
           <StaggerItem>
             <GlassCard
-              title="Hızlı Erişim"
-              subtitle="Sık kullandığın özelliklere hızlıca git"
+              title="Hizli Erisim"
+              subtitle="Sik kullandigin ozelliklere hizlica git"
               gradient={modernColors.gradients.primary}
               elevated
             >
@@ -337,121 +396,104 @@ export const ModernStudentDashboard: React.FC = () => {
             </GlassCard>
           </StaggerItem>
 
-          {/* Progress Section */}
+          {/* Recent Activity */}
           <Grid container spacing={3} sx={{ mt: 2 }}>
-            {/* Subject Progress */}
-            <Grid item xs={12} md={6}>
+            <Grid item xs={12}>
               <StaggerItem>
                 <GlassCard
-                  title="Ders İlerlemen"
-                  subtitle="Her ders için ilerleme durumun"
-                  gradient={modernColors.gradients.forest}
-                  elevated
-                >
-                  <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-                    {subjects.map((subject, index) => (
-                      <Box key={index}>
-                        <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
-                          <Typography variant="body2" fontWeight={600}>
-                            {subject.name}
-                          </Typography>
-                          <Typography variant="body2" color="text.secondary">
-                            %{subject.progress}
-                          </Typography>
-                        </Box>
-                        <LinearProgress
-                          variant="determinate"
-                          value={subject.progress}
-                          sx={{
-                            height: 8,
-                            borderRadius: 8,
-                            backgroundColor: modernColors.glass.black.light,
-                            '& .MuiLinearProgress-bar': {
-                              borderRadius: 8,
-                              background: `linear-gradient(90deg, ${subject.color} 0%, ${subject.color}dd 100%)`,
-                            },
-                          }}
-                        />
-                      </Box>
-                    ))}
-                  </Box>
-                </GlassCard>
-              </StaggerItem>
-            </Grid>
-
-            {/* Recent Activity */}
-            <Grid item xs={12} md={6}>
-              <StaggerItem>
-                <GlassCard
-                  title="Son Aktiviteler"
-                  subtitle="Son yaptığın çalışmalar"
+                  title="Son Sinavlar"
+                  subtitle="Son yaptigin sinavlar"
                   gradient={modernColors.gradients.sunset}
                   elevated
                 >
-                  <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                    {recentActivities.map((activity) => (
-                      <Box
-                        key={activity.id}
-                        sx={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'space-between',
-                          p: 2,
-                          background: modernColors.glass.white.light,
-                          borderRadius: '12px',
-                          transition: 'all 0.2s',
-                          '&:hover': {
-                            background: modernColors.glass.white.medium,
-                            transform: 'translateX(4px)',
-                          },
-                        }}
+                  {loading ? (
+                    <Box sx={{ display: 'flex', justifyContent: 'center', py: 4 }}>
+                      <CircularProgress />
+                    </Box>
+                  ) : recentExams.length === 0 ? (
+                    <Box sx={{ textAlign: 'center', py: 4 }}>
+                      <HourglassEmpty sx={{ fontSize: 48, color: 'text.disabled', mb: 1 }} />
+                      <Typography variant="body1" color="text.secondary">
+                        Henuz sinav yapmadiniz
+                      </Typography>
+                      <ModernButton
+                        variant="glass"
+                        onClick={() => navigate('/exam/start')}
+                        sx={{ mt: 2 }}
                       >
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                        Ilk Sinavina Basla
+                      </ModernButton>
+                    </Box>
+                  ) : (
+                    <>
+                      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                        {recentExams.map((exam) => (
                           <Box
+                            key={exam.sinav_id}
+                            onClick={() => navigate(`/exam/${exam.sinav_id}/results`)}
                             sx={{
-                              width: 40,
-                              height: 40,
-                              borderRadius: '8px',
-                              background: modernColors.gradients.primary,
                               display: 'flex',
                               alignItems: 'center',
-                              justifyContent: 'center',
-                              color: 'white',
+                              justifyContent: 'space-between',
+                              p: 2,
+                              background: modernColors.glass.white.light,
+                              borderRadius: '12px',
+                              cursor: 'pointer',
+                              transition: 'all 0.2s',
+                              '&:hover': {
+                                background: modernColors.glass.white.medium,
+                                transform: 'translateX(4px)',
+                              },
                             }}
                           >
-                            {activity.type === 'exam' ? <Assessment /> : <CheckCircle />}
+                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                              <Box
+                                sx={{
+                                  width: 40,
+                                  height: 40,
+                                  borderRadius: '8px',
+                                  background: modernColors.gradients.primary,
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  justifyContent: 'center',
+                                  color: 'white',
+                                }}
+                              >
+                                <Assessment />
+                              </Box>
+                              <Box>
+                                <Typography variant="body2" fontWeight={600}>
+                                  {exam.sinav_adi || `${exam.sinav_tipi} Sinavi`}
+                                </Typography>
+                                <Typography variant="caption" color="text.secondary">
+                                  {formatRelativeTime(exam.tarih)} | D:{exam.dogru_sayisi} Y:{exam.yanlis_sayisi} B:{exam.bos_sayisi}
+                                </Typography>
+                              </Box>
+                            </Box>
+                            <Chip
+                              label={`%${exam.puan.toFixed(0)}`}
+                              size="small"
+                              sx={{
+                                background: exam.puan >= 70 ? modernColors.gradients.success : modernColors.gradients.warning,
+                                color: 'white',
+                                fontWeight: 700,
+                              }}
+                            />
                           </Box>
-                          <Box>
-                            <Typography variant="body2" fontWeight={600}>
-                              {activity.title}
-                            </Typography>
-                            <Typography variant="caption" color="text.secondary">
-                              {activity.date}
-                            </Typography>
-                          </Box>
-                        </Box>
-                        <Chip
-                          label={`%${activity.score}`}
-                          size="small"
-                          sx={{
-                            background: modernColors.gradients.success,
-                            color: 'white',
-                            fontWeight: 700,
-                          }}
-                        />
+                        ))}
                       </Box>
-                    ))}
-                  </Box>
 
-                  <ModernButton
-                    variant="glass"
-                    fullWidth
-                    endIcon={<ArrowForward />}
-                    onClick={() => navigate('/exam/history')}
-                    sx={{ mt: 2 }}
-                  >
-                    Tümünü Gör
-                  </ModernButton>
+                      <ModernButton
+                        variant="glass"
+                        fullWidth
+                        endIcon={<ArrowForward />}
+                        onClick={() => navigate('/exam/history')}
+                        sx={{ mt: 2 }}
+                      >
+                        Tumunu Gor
+                      </ModernButton>
+                    </>
+                  )}
                 </GlassCard>
               </StaggerItem>
             </Grid>

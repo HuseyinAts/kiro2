@@ -32,10 +32,15 @@ DATABASE_URL = os.getenv(
 # Convert async URL to sync: remove +asyncpg
 SYNC_URL = DATABASE_URL.replace("+asyncpg", "").replace("postgresql://", "")
 # Parse: user:pass@host:port/dbname
-auth_host, dbname = SYNC_URL.rsplit("/", 1)
-userpass, hostport = auth_host.rsplit("@", 1)
-db_user, db_pass = userpass.split(":", 1)
-db_host, db_port = hostport.split(":", 1)
+try:
+    auth_host, dbname = SYNC_URL.rsplit("/", 1)
+    userpass, hostport = auth_host.rsplit("@", 1)
+    db_user, db_pass = userpass.split(":", 1)
+    db_host, db_port = hostport.split(":", 1)
+except ValueError:
+    print(f"ERROR: Cannot parse DATABASE_URL: {DATABASE_URL}")
+    print("Expected format: postgresql+asyncpg://user:pass@host:port/dbname")
+    sys.exit(1)
 
 # MVP Test Users
 MVP_USERS = [
@@ -75,6 +80,15 @@ MVP_USERS = [
         "last_name": "Admin",
         "role": "ADMIN",
     },
+    {
+        "id": str(uuid.uuid5(uuid.NAMESPACE_DNS, "mvp-veli@kiro2.com")),
+        "email": "veli@kiro2.com",
+        "username": "veli_mvp",
+        "password": "Kiro2Beta2026@x",
+        "first_name": "Demo",
+        "last_name": "Veli",
+        "role": "PARENT",
+    },
 ]
 
 INSERT_SQL = """
@@ -96,15 +110,35 @@ ON CONFLICT (email) DO NOTHING
 """
 
 
+PROFILE_INSERT_SQL = """
+INSERT INTO student_profiles (
+    id, user_id, grade_level, veli_onay,
+    current_level, total_study_hours,
+    total_questions_solved, correct_answers,
+    irt_ability, hedef_sinav
+)
+VALUES (
+    %(id)s, %(id)s, 12, TRUE,
+    0.5, 0, 0, 0, 0.0, 'TYT'
+)
+ON CONFLICT (id) DO NOTHING
+"""
+
+
 def main():
     print(f"Connecting to PostgreSQL: {db_host}:{db_port}/{dbname}")
-    conn = psycopg2.connect(
-        host=db_host,
-        port=int(db_port),
-        dbname=dbname,
-        user=db_user,
-        password=db_pass,
-    )
+    try:
+        conn = psycopg2.connect(
+            host=db_host,
+            port=int(db_port),
+            dbname=dbname,
+            user=db_user,
+            password=db_pass,
+        )
+    except psycopg2.OperationalError as e:
+        print(f"ERROR: DB connection failed: {e}")
+        print("Check DATABASE_URL in .env.mvp")
+        sys.exit(1)
     conn.autocommit = False
     cur = conn.cursor()
 
@@ -134,7 +168,13 @@ def main():
                 "role": user["role"],
             },
         )
-        print(f"  CREATE: {user['email']} ({user['role']})")
+
+        # Create student profile for STUDENT users
+        if user["role"] == "STUDENT":
+            cur.execute(PROFILE_INSERT_SQL, {"id": user["id"]})
+            print(f"  CREATE: {user['email']} ({user['role']}) + student_profile")
+        else:
+            print(f"  CREATE: {user['email']} ({user['role']})")
         created += 1
 
     conn.commit()

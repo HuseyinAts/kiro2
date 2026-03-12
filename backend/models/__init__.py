@@ -129,6 +129,23 @@ from .user import (
 Question = Question  # Already imported from database
 Student = StudentProfile  # Alias for StudentProfile
 
+# Faz 2: Study Planner, Leagues, Coaching models
+from .study_planner import StudyPlan, WeeklyGoal
+from .league import LeagueMembership, LeagueHistory
+from .coaching import CoachingEvent, StudentEngagementSignal
+
+# Faz 3: Duel models
+from .duel import DuelMatch, DuelRating, DuelSession
+
+# Faz 4: DINA Cognitive Diagnostic models
+from .dina import DINAParameter, NanoSkill, QMatrix, StudentNanoSkillMastery
+
+# Faz 5: Error Cluster models
+from .error_cluster import ErrorCluster, PeerRecommendation
+
+# Faz 4 (Knowledge Graph): Knowledge Points, Question mappings, Student mastery
+from .knowledge_graph import KnowledgePoint, QuestionKnowledgeMapping, StudentKnowledgeState
+
 # Convenience alias pointing to canonical model
 CanonicalStudentProfile = LearningPathStudentProfile
 
@@ -220,6 +237,29 @@ __all__ = [
     "KullaniciRolu",
     "RaporTipi",
     "KarsilastirmaGrubu",
+    # Faz 2: Study Planner, Leagues, Coaching
+    "StudyPlan",
+    "WeeklyGoal",
+    "LeagueMembership",
+    "LeagueHistory",
+    "CoachingEvent",
+    "StudentEngagementSignal",
+    # Faz 3: Duel
+    "DuelSession",
+    "DuelMatch",
+    "DuelRating",
+    # Faz 4: DINA
+    "NanoSkill",
+    "QMatrix",
+    "DINAParameter",
+    "StudentNanoSkillMastery",
+    # Faz 5: Error Clusters
+    "ErrorCluster",
+    "PeerRecommendation",
+    # Faz 4 (Knowledge Graph)
+    "KnowledgePoint",
+    "QuestionKnowledgeMapping",
+    "StudentKnowledgeState",
     # Aliases for backward compatibility
     "Student",
     "CanonicalStudentProfile",  # Alias for LearningPathStudentProfile

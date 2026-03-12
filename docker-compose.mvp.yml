@@ -18,6 +18,11 @@ services:
       - .env.mvp
     extra_hosts:
       - "host.docker.internal:host-gateway"
+    volumes:
+      - backend-logs:/app/logs
+      - ./d-dataset/output/crops:/app/static/crops:ro
+    environment:
+      - CROP_IMAGE_DIR=/app/static/crops
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
@@ -30,21 +35,24 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
+      args:
+        VITE_SHOW_DEMO: "true"
     container_name: kiro2-frontend
     ports:
       - "3000:3000"
-    environment:
-      - VITE_API_URL=http://localhost:8000
     depends_on:
       backend:
         condition: service_healthy
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3000', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})"]
+      test: ["CMD", "curl", "-sf", "http://localhost:3000/healthz"]
       interval: 30s
       timeout: 5s
       start_period: 10s
       retries: 3
+
+volumes:
+  backend-logs:
 
 networks:
   default:

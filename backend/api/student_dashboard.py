@@ -2,13 +2,16 @@
 Öğrenci Dashboard API endpoint'leri
 SPRINT 2: Multi-layer cache integration (L1 Memory + L2 Redis)
 """
+import os
 from typing import List, Optional
 import hashlib
 import json
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from api.auth import mevcut_kullanici_getir
+from core.dependencies import get_db
 from core.multi_layer_cache import MultiLayerCache
 from core.structured_logger import get_logger
 from models.dashboard import (
@@ -29,7 +32,7 @@ logger = get_logger("student_dashboard_api")
 # L1: Memory (30 entries), L2: Redis, TTL: 5-10 minutes
 # Performance improvement: ~1500ms → 10-50ms (15-150x faster on cache hit)
 dashboard_cache = MultiLayerCache(
-    redis_url="redis://localhost:6379/0",
+    redis_url=os.getenv("REDIS_URL", "redis://localhost:6379/0"),
     l1_max_size=30,  # Dashboard data is highly personalized, smaller L1
     default_ttl=600,  # 10 minutes default
     namespace="student_dashboard",
@@ -43,6 +46,7 @@ dashboard_cache = MultiLayerCache(
 )
 async def dashboard_istatistikleri_getir(
     mevcut_kullanici: Kullanici = Depends(mevcut_kullanici_getir),
+    db: AsyncSession = Depends(get_db),
 ):
     """
     Öğrenci dashboard ana sayfası için istatistikleri getir
@@ -67,7 +71,7 @@ async def dashboard_istatistikleri_getir(
         async def fetch_stats():
             """Fetch statistics from service"""
             return await ogrenci_dashboard_servisi.dashboard_istatistikleri_getir(
-                mevcut_kullanici.kullanici_id
+                mevcut_kullanici.kullanici_id, db
             )
 
         istatistikler = await dashboard_cache.get_or_compute(
@@ -91,6 +95,7 @@ async def sinav_gecmisi_getir(
     offset: int = Query(0, ge=0, description="Sayfalama offset'i"),
     sinav_tipi: Optional[str] = Query(None, description="Sınav türü filtresi"),
     mevcut_kullanici: Kullanici = Depends(mevcut_kullanici_getir),
+    db: AsyncSession = Depends(get_db),
 ):
     """
     Öğrencinin sınav geçmişini getir
@@ -122,6 +127,7 @@ async def sinav_gecmisi_getir(
             """Fetch exam history from service"""
             return await ogrenci_dashboard_servisi.sinav_gecmisi_getir(
                 kullanici_id=mevcut_kullanici.kullanici_id,
+                db=db,
                 limit=limit,
                 offset=offset,
                 sinav_tipi=sinav_tipi,
@@ -149,6 +155,7 @@ async def sinav_gecmisi_getir(
 async def performans_trendi_getir(
     gun_sayisi: int = Query(30, ge=7, le=365, description="Kaç günlük veri"),
     mevcut_kullanici: Kullanici = Depends(mevcut_kullanici_getir),
+    db: AsyncSession = Depends(get_db),
 ):
     """
     Öğrencinin performans trendini getir
@@ -172,7 +179,7 @@ async def performans_trendi_getir(
         async def fetch_trend():
             """Fetch performance trend from service"""
             return await ogrenci_dashboard_servisi.performans_trendi_getir(
-                kullanici_id=mevcut_kullanici.kullanici_id, gun_sayisi=gun_sayisi
+                kullanici_id=mevcut_kullanici.kullanici_id, db=db, gun_sayisi=gun_sayisi
             )
 
         performans_verisi = await dashboard_cache.get_or_compute(
@@ -193,6 +200,7 @@ async def performans_trendi_getir(
 async def hedefler_getir(
     aktif_sadece: bool = Query(False, description="Sadece aktif hedefleri getir"),
     mevcut_kullanici: Kullanici = Depends(mevcut_kullanici_getir),
+    db: AsyncSession = Depends(get_db),
 ):
     """
     Öğrencinin hedeflerini getir
@@ -203,7 +211,7 @@ async def hedefler_getir(
     """
     try:
         hedefler = await ogrenci_dashboard_servisi.hedefler_getir(
-            kullanici_id=mevcut_kullanici.kullanici_id, aktif_sadece=aktif_sadece
+            kullanici_id=mevcut_kullanici.kullanici_id, db=db, aktif_sadece=aktif_sadece
         )
         return hedefler
     except Exception as e:
@@ -215,7 +223,9 @@ async def hedefler_getir(
 
 @router.post("/hedef-olustur", response_model=Hedef, summary="Yeni Hedef Oluştur")
 async def hedef_olustur(
-    hedef_data: Hedef, mevcut_kullanici: Kullanici = Depends(mevcut_kullanici_getir)
+    hedef_data: Hedef,
+    mevcut_kullanici: Kullanici = Depends(mevcut_kullanici_getir),
+    db: AsyncSession = Depends(get_db),
 ):
     """
     Yeni öğrenci hedefi oluştur
@@ -226,7 +236,7 @@ async def hedef_olustur(
     """
     try:
         yeni_hedef = await ogrenci_dashboard_servisi.hedef_olustur(
-            kullanici_id=mevcut_kullanici.kullanici_id, hedef_data=hedef_data
+            kullanici_id=mevcut_kullanici.kullanici_id, db=db, hedef_data=hedef_data
         )
         return yeni_hedef
     except ValueError as e:
@@ -245,6 +255,7 @@ async def hedef_guncelle(
     hedef_id: str,
     hedef_data: Hedef,
     mevcut_kullanici: Kullanici = Depends(mevcut_kullanici_getir),
+    db: AsyncSession = Depends(get_db),
 ):
     """
     Mevcut hedefi güncelle
@@ -253,6 +264,7 @@ async def hedef_guncelle(
         guncellenen_hedef = await ogrenci_dashboard_servisi.hedef_guncelle(
             kullanici_id=mevcut_kullanici.kullanici_id,
             hedef_id=hedef_id,
+            db=db,
             hedef_data=hedef_data,
         )
         return guncellenen_hedef
@@ -267,14 +279,16 @@ async def hedef_guncelle(
 
 @router.delete("/hedef-sil/{hedef_id}", summary="Hedef Sil")
 async def hedef_sil(
-    hedef_id: str, mevcut_kullanici: Kullanici = Depends(mevcut_kullanici_getir)
+    hedef_id: str,
+    mevcut_kullanici: Kullanici = Depends(mevcut_kullanici_getir),
+    db: AsyncSession = Depends(get_db),
 ):
     """
     Hedefi sil veya iptal et
     """
     try:
         basarili = await ogrenci_dashboard_servisi.hedef_sil(
-            kullanici_id=mevcut_kullanici.kullanici_id, hedef_id=hedef_id
+            kullanici_id=mevcut_kullanici.kullanici_id, hedef_id=hedef_id, db=db
         )
         if basarili:
             return {"message": "Hedef başarıyla silindi"}
@@ -298,6 +312,7 @@ async def bildirimler_getir(
     ),
     limit: int = Query(50, ge=1, le=100, description="Sonuç sayısı limiti"),
     mevcut_kullanici: Kullanici = Depends(mevcut_kullanici_getir),
+    db: AsyncSession = Depends(get_db),
 ):
     """
     Öğrencinin bildirimlerini getir
@@ -329,6 +344,7 @@ async def bildirimler_getir(
             """Fetch notifications from service"""
             return await ogrenci_dashboard_servisi.bildirimler_getir(
                 kullanici_id=mevcut_kullanici.kullanici_id,
+                db=db,
                 okunmamis_sadece=okunmamis_sadece,
                 limit=limit,
             )
@@ -351,14 +367,16 @@ async def bildirimler_getir(
     "/bildirim-okundu/{bildirim_id}", summary="Bildirimi Okundu Olarak İşaretle"
 )
 async def bildirim_okundu_isaretle(
-    bildirim_id: str, mevcut_kullanici: Kullanici = Depends(mevcut_kullanici_getir)
+    bildirim_id: str,
+    mevcut_kullanici: Kullanici = Depends(mevcut_kullanici_getir),
+    db: AsyncSession = Depends(get_db),
 ):
     """
     Bildirimi okundu olarak işaretle
     """
     try:
         basarili = await ogrenci_dashboard_servisi.bildirim_okundu_isaretle(
-            kullanici_id=mevcut_kullanici.kullanici_id, bildirim_id=bildirim_id
+            kullanici_id=mevcut_kullanici.kullanici_id, bildirim_id=bildirim_id, db=db
         )
         if basarili:
             return {"message": "Bildirim okundu olarak işaretlendi"}
@@ -376,6 +394,7 @@ async def bildirim_okundu_isaretle(
 @router.get("/profil", response_model=OgrenciProfili, summary="Öğrenci Profili")
 async def ogrenci_profili_getir(
     mevcut_kullanici: Kullanici = Depends(mevcut_kullanici_getir),
+    db: AsyncSession = Depends(get_db),
 ):
     """
     Öğrencinin profil bilgilerini getir
@@ -396,7 +415,7 @@ async def ogrenci_profili_getir(
         async def fetch_profile():
             """Fetch profile from service"""
             profil = await ogrenci_dashboard_servisi.ogrenci_profili_getir(
-                mevcut_kullanici.kullanici_id
+                mevcut_kullanici.kullanici_id, db
             )
             if not profil:
                 raise HTTPException(
@@ -427,6 +446,7 @@ async def ogrenci_profili_getir(
 async def profil_guncelle(
     profil_data: ProfilGuncelleme,
     mevcut_kullanici: Kullanici = Depends(mevcut_kullanici_getir),
+    db: AsyncSession = Depends(get_db),
 ):
     """
     Öğrenci profil bilgilerini güncelle
@@ -439,7 +459,7 @@ async def profil_guncelle(
     """
     try:
         guncellenen_profil = await ogrenci_dashboard_servisi.profil_guncelle(
-            kullanici_id=mevcut_kullanici.kullanici_id, profil_data=profil_data
+            kullanici_id=mevcut_kullanici.kullanici_id, db=db, profil_data=profil_data
         )
 
         # SPRINT 2: Invalidate profile cache after update
@@ -461,6 +481,7 @@ async def profil_guncelle(
 @router.get("/ozet", summary="Dashboard Özeti")
 async def dashboard_ozeti(
     mevcut_kullanici: Kullanici = Depends(mevcut_kullanici_getir),
+    db: AsyncSession = Depends(get_db),
 ):
     """
     Dashboard için özet bilgileri getir
@@ -486,7 +507,7 @@ async def dashboard_ozeti(
         async def fetch_summary():
             """Fetch dashboard summary from service"""
             return await ogrenci_dashboard_servisi.dashboard_ozeti_getir(
-                mevcut_kullanici.kullanici_id
+                mevcut_kullanici.kullanici_id, db
             )
 
         ozet = await dashboard_cache.get_or_compute(

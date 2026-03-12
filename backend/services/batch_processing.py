@@ -337,7 +337,7 @@ class QuestionBatchService:
             Soru listesi
         """
         from sqlalchemy import select
-        from models.database import Question
+        from models.question_bank import QuestionBankItem as Question
 
         if not question_ids:
             return []
@@ -345,12 +345,11 @@ class QuestionBatchService:
         # Convert to string IDs
         str_ids = [str(qid) for qid in question_ids]
 
-        # Batch query
-        query = select(Question).where(Question.id.in_(str_ids))
-
-        if include_options:
-            from sqlalchemy.orm import selectinload
-            query = query.options(selectinload(Question.options))
+        # Batch query - only active questions
+        query = select(Question).where(
+            Question.id.in_(str_ids),
+            Question.is_active == True,  # noqa: E712
+        )
 
         result = await self.session.execute(query)
         questions = result.scalars().all()
@@ -359,13 +358,13 @@ class QuestionBatchService:
         return [
             {
                 "id": str(q.id),
-                "content": q.content,
-                "subject": q.subject,
-                "difficulty": q.difficulty,
-                "options": [
-                    {"id": str(o.id), "text": o.text, "is_correct": o.is_correct}
-                    for o in (q.options or [])
-                ] if include_options else None,
+                "content": q.question_text,
+                "subject": q.subject_area,
+                "difficulty": q.difficulty_level.value if q.difficulty_level else "MEDIUM",
+                "options": {
+                    "A": q.option_a, "B": q.option_b, "C": q.option_c,
+                    "D": q.option_d, "E": q.option_e,
+                } if include_options else None,
             }
             for q in questions
         ]
@@ -384,7 +383,7 @@ class QuestionBatchService:
             Guncellenen soru sayisi
         """
         from sqlalchemy import update
-        from models.database import Question
+        from models.question_bank import QuestionBankItem as Question
 
         updated_count = 0
 
@@ -447,14 +446,18 @@ class ExamBatchService:
             Gonderim sonucu
         """
         from sqlalchemy import select
-        from models.database import ExamAnswer, Question
+        from models.database import ExamAnswer
+        from models.question_bank import QuestionBankItem as Question
 
         if not answers:
             return {"submitted": 0, "correct": 0}
 
-        # Sorularin dogru cevaplarini al
+        # Sorularin dogru cevaplarini al - only active questions
         question_ids = [a["question_id"] for a in answers]
-        query = select(Question).where(Question.id.in_(question_ids))
+        query = select(Question).where(
+            Question.id.in_(question_ids),
+            Question.is_active == True,  # noqa: E712
+        )
         result = await self.session.execute(query)
         questions = {str(q.id): q for q in result.scalars().all()}
 

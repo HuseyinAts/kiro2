@@ -64,7 +64,7 @@ services:
     image: grafana/grafana:latest
     container_name: teknofest-grafana
     ports:
-      - "3000:3000"
+      - "3100:3000"
     volumes:
       - ./backend/config/grafana_datasources.yml:/etc/grafana/provisioning/datasources/datasources.yml
       - ./backend/config/grafana_dashboard.json:/etc/grafana/provisioning/dashboards/database_dashboard.json
@@ -74,7 +74,7 @@ services:
       - GF_SECURITY_ADMIN_USER=${GRAFANA_ADMIN_USER:-admin}
       - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD:-admin}
       - GF_USERS_ALLOW_SIGN_UP=false
-      - GF_SERVER_ROOT_URL=http://localhost:3000
+      - GF_SERVER_ROOT_URL=http://localhost:3100
       - GF_INSTALL_PLUGINS=grafana-piechart-panel
     networks:
       - monitoring

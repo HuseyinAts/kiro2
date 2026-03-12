@@ -10,24 +10,24 @@ Bu modül ÖSYM formatında TYT/AYT/YDT sınavlarını yönetir:
 """
 
 import asyncio
+import copy
 import uuid
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from enum import Enum
 from typing import Any
 
-from sqlalchemy import and_, func, select, update
+from sqlalchemy import and_, or_, func, select, update
 
-from core.database import get_async_session
+from core.database import get_db_session_context
 from core.structured_logger import get_logger
 from models.database import (
     ExamQuestion,
     ExamSession,
     ExamType,
-    Question,
     StudentAnswer,
-    SubjectArea,
 )
+from models.question_bank import QuestionBankItem as Question
 
 logger = get_logger("osym_exam_engine")
 
@@ -71,6 +71,7 @@ class OSYMExamConfig:
     warning_time_minutes: int = 15  # son 15 dakika uyarısı
     ayt_field_type: AYTFieldType | None = None  # AYT için alan türü
     ydt_language: YDTLanguage | None = None  # YDT için dil seçimi - REQ-1.3
+    difficulty: str | None = None  # "kolay", "orta", "zor", "cok_zor"
 
 
 @dataclass
@@ -138,16 +139,31 @@ class OSYMExamEngine:
         self.auto_save_tasks: dict[str, asyncio.Task] = {}
 
         # ÖSYM sınav konfigürasyonları
+        # subject_distribution keys MUST match question_bank.subject_area (UPPERCASE)
+        # DB aktif soru dağılımı (Mart 2026):
+        #   TYT: MATEMATIK 11593, TURKCE 10885, GEOMETRI 8709, FIZIK 4139,
+        #        KIMYA 3520, BIYOLOJI 1520, TARIH 1593, SOSYAL 1188, COGRAFYA 396
+        #   AYT: MATEMATIK 6845, EDEBIYAT 3707, KIMYA 2525, FIZIK 2399,
+        #        BIYOLOJI 998, GEOMETRI 785, TARIH 783
         self.exam_configs = {
             ExamType.TYT: OSYMExamConfig(
                 exam_type=ExamType.TYT,
                 total_questions=120,
                 duration_minutes=165,
                 subject_distribution={
+                    # Türkçe (40 soru)
                     "TURKCE": 40,
-                    "MATEMATIK": 40,
-                    "FEN": 20,
-                    "SOSYAL": 20,
+                    # Matematik (40 soru = 26 mat + 14 geo)
+                    "MATEMATIK": 26,
+                    "GEOMETRI": 14,
+                    # Fen Bilimleri (20 soru = fizik + kimya + biyoloji)
+                    "FIZIK": 7,
+                    "KIMYA": 7,
+                    "BIYOLOJI": 6,
+                    # Sosyal Bilimler (20 soru = tarih + coğrafya + sosyal)
+                    "TARIH": 10,
+                    "COGRAFYA": 3,
+                    "SOSYAL": 7,
                 },
             ),
             ExamType.AYT: OSYMExamConfig(
@@ -156,18 +172,16 @@ class OSYMExamEngine:
                 duration_minutes=210,  # REQ-1.2: AYT 210 dakika (3.5 saat)
                 subject_distribution={
                     # Sayısal Alan (80 soru)
-                    "MATEMATIK": 40,
+                    "MATEMATIK": 30,
+                    "GEOMETRI": 10,
                     "FIZIK": 14,
                     "KIMYA": 13,
                     "BIYOLOJI": 13,
                     # Sözel Alan (80 soru)
-                    "EDEBIYAT": 24,
-                    "TARIH_1": 10,  # Tarih-1
-                    "COGRAFYA_1": 6,  # Coğrafya-1
-                    "TARIH_2": 11,  # Tarih-2
-                    "COGRAFYA_2": 11,  # Coğrafya-2
-                    "FELSEFE": 12,
-                    "DIN": 6,
+                    # NOT: DB'de FELSEFE/DIN/INGILIZCE yok, COGRAFYA az (AYT'de 0)
+                    # TARIH_1+TARIH_2 → TARIH, redistribution yapıldı
+                    "EDEBIYAT": 38,
+                    "TARIH": 42,
                 },
                 ayt_field_type=AYTFieldType.ESIT_AGIRLIK,  # Varsayılan: Eşit Ağırlık
             ),
@@ -175,6 +189,8 @@ class OSYMExamEngine:
                 exam_type=ExamType.YDT,
                 total_questions=80,  # REQ-1.3: YDT 80 soru
                 duration_minutes=120,  # REQ-1.3: YDT 120 dakika (2 saat)
+                # YDT devre dışı: DB'de INGILIZCE sorusu yok
+                # Sınav başlatıldığında _select_questions 0 soru döner
                 subject_distribution={"INGILIZCE": 80},  # Varsayılan: İngilizce
             ),
         }
@@ -195,41 +211,39 @@ class OSYMExamEngine:
 
         # AYT alan bazlı konfigürasyonlar - REQ-1.2, REQ-3.1
         # ÖSYM Resmi AYT Formatı: 160 soru (Sayısal 80 + Sözel 80)
+        # AYT alan bazlı konfigürasyonlar - REQ-1.2, REQ-3.1
+        # Keys MUST match question_bank.subject_area (UPPERCASE)
+        # DB'de AYT: MATEMATIK 6845, EDEBIYAT 3707, KIMYA 2525, FIZIK 2399,
+        #            BIYOLOJI 998, GEOMETRI 785, TARIH 783
+        # NOT: FELSEFE, DIN, COGRAFYA AYT'de yok → redistribution yapıldı
         self.ayt_field_configs = {
             AYTFieldType.SAYISAL: {
                 # Sayısal bölüm (80 soru)
-                "MATEMATIK": 40,
+                "MATEMATIK": 30,
+                "GEOMETRI": 10,
                 "FIZIK": 14,
                 "KIMYA": 13,
                 "BIYOLOJI": 13,
-                # Sözel'den sadece Edebiyat (24 soru)
+                # Sözel'den sadece Edebiyat
                 "EDEBIYAT": 24,
             },  # Toplam: 104 soru
             AYTFieldType.SOZEL: {
-                # Sözel bölüm (80 soru)
-                "EDEBIYAT": 24,
-                "TARIH_1": 10,
-                "COGRAFYA_1": 6,
-                "TARIH_2": 11,
-                "COGRAFYA_2": 11,
-                "FELSEFE": 12,
-                "DIN": 6,
-                # Sayısal'dan sadece Matematik (40 soru)
-                "MATEMATIK": 40,
+                # Sözel bölüm (80 soru) — FELSEFE/DIN yok, redistribution
+                "EDEBIYAT": 38,
+                "TARIH": 42,
+                # Sayısal'dan Matematik (40 soru)
+                "MATEMATIK": 30,
+                "GEOMETRI": 10,
             },  # Toplam: 120 soru
             AYTFieldType.ESIT_AGIRLIK: {
-                # Tüm sorular (160 soru)
-                "MATEMATIK": 40,
+                # Tüm sorular (160 soru) — matches exam_configs[AYT]
+                "MATEMATIK": 30,
+                "GEOMETRI": 10,
                 "FIZIK": 14,
                 "KIMYA": 13,
                 "BIYOLOJI": 13,
-                "EDEBIYAT": 24,
-                "TARIH_1": 10,
-                "COGRAFYA_1": 6,
-                "TARIH_2": 11,
-                "COGRAFYA_2": 11,
-                "FELSEFE": 12,
-                "DIN": 6,
+                "EDEBIYAT": 38,
+                "TARIH": 42,
             },  # Toplam: 160 soru
             AYTFieldType.DIL: {
                 # Sadece Edebiyat (24 soru)
@@ -261,8 +275,8 @@ class OSYMExamEngine:
         try:
             session_id = str(uuid.uuid4())
 
-            # Sınav konfigürasyonunu al
-            exam_config = self.exam_configs[exam_type]
+            # Sınav konfigürasyonunu al (deepcopy — shared config'i korumak icin)
+            exam_config = copy.deepcopy(self.exam_configs[exam_type])
 
             # AYT için alan türüne göre konfigürasyon seç - REQ-1.2, REQ-3.1
             if (
@@ -324,10 +338,47 @@ class OSYMExamEngine:
             if custom_config:
                 if "duration_minutes" in custom_config:
                     exam_config.duration_minutes = custom_config["duration_minutes"]
+                if "time_limit" in custom_config:
+                    exam_config.duration_minutes = custom_config["time_limit"]
+                if "question_count" in custom_config:
+                    total = custom_config["question_count"]
+                    # Soru dağılımını oransal olarak yeniden hesapla
+                    old_total = sum(exam_config.subject_distribution.values())
+                    if old_total > 0:
+                        exam_config.subject_distribution = {
+                            subj: max(1, round(cnt * total / old_total))
+                            for subj, cnt in exam_config.subject_distribution.items()
+                        }
+                    exam_config.total_questions = total
+                if "subject" in custom_config:
+                    # Tek ders sınavı: sadece seçilen dersten soru al
+                    subject_key = str(custom_config["subject"]).upper()
+                    SUBJECT_MAP = {
+                        "MATEMATIK": "MATEMATIK", "GEOMETRI": "GEOMETRI",
+                        "TURKCE": "TURKCE", "TÜRKÇE": "TURKCE",
+                        "FEN BILIMLERI": "FEN", "FEN": "FEN",
+                        "FIZIK": "FIZIK", "KIMYA": "KIMYA", "BIYOLOJI": "BIYOLOJI",
+                        "SOSYAL BILIMLER": "SOSYAL", "SOSYAL": "SOSYAL",
+                        "TARIH": "TARIH", "COGRAFYA": "COGRAFYA",
+                        "EDEBIYAT": "EDEBIYAT", "INGILIZCE": "INGILIZCE",
+                    }
+                    mapped = SUBJECT_MAP.get(subject_key, subject_key)
+                    q_count = custom_config.get(
+                        "question_count", exam_config.total_questions
+                    )
+                    exam_config.subject_distribution = {mapped: q_count}
+                    exam_config.total_questions = q_count
                 if "subject_distribution" in custom_config:
                     exam_config.subject_distribution.update(
                         custom_config["subject_distribution"]
                     )
+                if "difficulty" in custom_config:
+                    difficulty_val = str(custom_config["difficulty"]).lower()
+                    valid_difficulties = {"kolay", "orta", "zor", "cok_zor"}
+                    if difficulty_val in valid_difficulties:
+                        exam_config.difficulty = difficulty_val
+                    else:
+                        logger.warning(f"Gecersiz zorluk seviyesi: {difficulty_val}")
 
             # Soruları seç
             questions = await self._select_questions(exam_config)
@@ -341,17 +392,17 @@ class OSYMExamEngine:
             # Sınav oturumu oluştur
             session_data = ExamSessionData(
                 session_id=session_id,
-                student_id=student_id,
+                student_id=str(student_id),
                 exam_config=exam_config,
                 status=ExamStatus.NOT_STARTED,
                 questions=[q.id for q in questions],
             )
 
             # Veritabanına kaydet
-            async with get_async_session() as db_session:
+            async with get_db_session_context() as db_session:
                 db_exam_session = ExamSession(
                     id=session_id,
-                    student_id=student_id,
+                    student_id=str(student_id),
                     exam_type=exam_type,
                     exam_name=f"{exam_type.value.upper()} Denemesi",
                     total_questions=exam_config.total_questions,
@@ -418,7 +469,7 @@ class OSYMExamEngine:
             session_data.started_at = datetime.now()
 
             # Veritabanını güncelle
-            async with get_async_session() as db_session:
+            async with get_db_session_context() as db_session:
                 await db_session.execute(
                     update(ExamSession)
                     .where(ExamSession.id == session_id)
@@ -478,9 +529,9 @@ class OSYMExamEngine:
 
             question_id = session_data.questions[session_data.current_question_index]
 
-            async with get_async_session() as db_session:
+            async with get_db_session_context() as db_session:
                 result = await db_session.execute(
-                    select(Question).where(Question.id == question_id)
+                    select(Question).where(Question.id == question_id, Question.is_active == True)  # noqa: E712
                 )
                 question = result.scalar_one_or_none()
 
@@ -521,9 +572,9 @@ class OSYMExamEngine:
             if session_data.status != ExamStatus.IN_PROGRESS:
                 return False
 
-            # Cevabı kaydet
+            # Cevabı kaydet (normalize: uppercase + strip)
             if selected_answer:
-                session_data.answers[question_id] = selected_answer
+                session_data.answers[question_id] = selected_answer.strip().upper()
             elif question_id in session_data.answers:
                 del session_data.answers[question_id]
 
@@ -532,7 +583,7 @@ class OSYMExamEngine:
                 session_data.time_spent_per_question[question_id] = response_time
 
             # Veritabanına kaydet
-            async with get_async_session() as db_session:
+            async with get_db_session_context() as db_session:
                 # Mevcut cevabı kontrol et
                 existing_answer = await db_session.execute(
                     select(StudentAnswer).where(
@@ -543,6 +594,9 @@ class OSYMExamEngine:
                     )
                 )
                 existing = existing_answer.scalar_one_or_none()
+
+                # Normalize answer for DB consistency (uppercase + strip)
+                normalized_answer = selected_answer.strip().upper() if selected_answer else selected_answer
 
                 if existing:
                     # Mevcut cevabı güncelle
@@ -555,7 +609,7 @@ class OSYMExamEngine:
                             )
                         )
                         .values(
-                            selected_answer=selected_answer,
+                            selected_answer=normalized_answer,
                             response_time_seconds=response_time or 0.0,
                             answered_at=datetime.now(),
                         )
@@ -565,7 +619,7 @@ class OSYMExamEngine:
                     student_answer = StudentAnswer(
                         exam_session_id=session_id,
                         question_id=question_id,
-                        selected_answer=selected_answer,
+                        selected_answer=normalized_answer,
                         response_time_seconds=response_time or 0.0,
                     )
                     db_session.add(student_answer)
@@ -739,7 +793,7 @@ class OSYMExamEngine:
             session_data.performance_metrics = performance_metrics
 
             # Veritabanını güncelle
-            async with get_async_session() as db_session:
+            async with get_db_session_context() as db_session:
                 await db_session.execute(
                     update(ExamSession)
                     .where(ExamSession.id == session_id)
@@ -750,6 +804,7 @@ class OSYMExamEngine:
                         total_wrong=performance_metrics.wrong_answers,
                         total_empty=performance_metrics.empty_answers,
                         raw_score=performance_metrics.raw_score,
+                        scaled_score=performance_metrics.raw_score,
                         estimated_ability=performance_metrics.estimated_ability,
                     )
                 )
@@ -920,10 +975,9 @@ class OSYMExamEngine:
             if session_id not in self.active_sessions:
                 return []
 
-            session_data = self.active_sessions[session_id]
             subject_stats = {}
 
-            async with get_async_session() as db_session:
+            async with get_db_session_context() as db_session:
                 # Sınav sorularını ve cevapları getir
                 result = await db_session.execute(
                     select(Question, StudentAnswer)
@@ -940,7 +994,8 @@ class OSYMExamEngine:
                 )
 
                 for question, answer in result:
-                    subject = question.subject_area.value
+                    # QuestionBankItem.subject_area is String, not Enum
+                    subject = question.subject_area.lower() if isinstance(question.subject_area, str) else question.subject_area.value
 
                     if subject not in subject_stats:
                         subject_stats[subject] = {
@@ -954,11 +1009,11 @@ class OSYMExamEngine:
 
                     stats = subject_stats[subject]
                     stats["total"] += 1
-                    stats["total_difficulty"] += question.irt_difficulty
+                    stats["total_difficulty"] += question.irt_difficulty or 0.0
 
                     if answer and answer.selected_answer:
                         # Cevap verilmiş
-                        if answer.selected_answer == question.correct_answer:
+                        if (answer.selected_answer or "").strip().upper() == (question.correct_answer or "").strip().upper():
                             stats["correct"] += 1
                         else:
                             stats["wrong"] += 1
@@ -1009,6 +1064,15 @@ class OSYMExamEngine:
             )
             return []
 
+    # Frontend zorluk → DB difficulty_level mapping
+    # Her seviye 2 DB seviyesini kapsar (yeterli soru havuzu için)
+    DIFFICULTY_MAP: dict[str, list[str]] = {
+        "kolay": ["VERY_EASY", "EASY"],
+        "orta": ["EASY", "MEDIUM"],
+        "zor": ["MEDIUM", "HARD"],
+        "cok_zor": ["HARD", "VERY_HARD"],
+    }
+
     async def _select_questions(self, exam_config: OSYMExamConfig) -> list[Question]:
         """
         Sınav için soruları seç
@@ -1019,36 +1083,127 @@ class OSYMExamEngine:
         Returns:
             List[Question]: Seçilen sorular
         """
-        try:
-            selected_questions = []
+        selected_questions = []
+        difficulty_levels = None
+        if exam_config.difficulty:
+            difficulty_levels = self.DIFFICULTY_MAP.get(exam_config.difficulty)
 
-            async with get_async_session() as db_session:
-                for subject, count in exam_config.subject_distribution.items():
-                    # Konuya göre soruları getir
-                    result = await db_session.execute(
+        async with get_db_session_context() as db_session:
+            for subject, count in exam_config.subject_distribution.items():
+                # Base quality filters
+                base_filters = [
+                    Question.exam_type == exam_config.exam_type.value.upper(),
+                    Question.subject_area == subject,
+                    Question.is_active == True,  # noqa: E712
+                    Question.question_text.isnot(None),
+                    func.length(Question.question_text) >= 50,
+                    Question.option_a.isnot(None),
+                    func.length(Question.option_a) > 0,
+                    Question.option_b.isnot(None),
+                    func.length(Question.option_b) > 0,
+                    Question.option_c.isnot(None),
+                    func.length(Question.option_c) > 0,
+                    Question.option_d.isnot(None),
+                    func.length(Question.option_d) > 0,
+                    Question.option_a != Question.option_b,
+                    # P1-3: Seçenek minimum uzunluğu
+                    func.length(Question.option_a) >= 2,
+                    func.length(Question.option_b) >= 2,
+                    func.length(Question.option_c) >= 2,
+                    func.length(Question.option_d) >= 2,
+                    # P0-2: Passage kontrolü — kısa metin + passage referansı = paragraf eksik
+                    # Her iki form: diacritics'siz (OCR) ve Türkçe karakterli
+                    or_(
+                        and_(
+                            ~func.lower(Question.question_text).contains("parcaya gore"),
+                            ~func.lower(Question.question_text).contains("parçaya göre"),
+                        ),
+                        func.length(Question.question_text) >= 300,
+                    ),
+                    or_(
+                        and_(
+                            ~func.lower(Question.question_text).contains("metne gore"),
+                            ~func.lower(Question.question_text).contains("metne göre"),
+                        ),
+                        func.length(Question.question_text) >= 300,
+                    ),
+                    or_(
+                        and_(
+                            ~func.lower(Question.question_text).contains("bu parcada"),
+                            ~func.lower(Question.question_text).contains("bu parçada"),
+                        ),
+                        func.length(Question.question_text) >= 300,
+                    ),
+                    # P0-3: Geometri/Fizik görsel bağımlılık filtresi
+                    or_(
+                        ~Question.subject_area.in_(["GEOMETRI", "FIZIK"]),
+                        Question.question_image_url.isnot(None),
+                        func.length(Question.question_text) >= 500,
+                    ),
+                    # P2-3: Reddedilen sorular hariç
+                    or_(
+                        Question.quality_review_status.is_(None),
+                        Question.quality_review_status != "rejected",
+                    ),
+                ]
+
+                # Difficulty filter (if specified)
+                if difficulty_levels:
+                    filters = base_filters + [
+                        Question.difficulty_level.in_(difficulty_levels),
+                    ]
+                else:
+                    filters = base_filters
+
+                # P1-1: Matematik dışı derslerde LaTeX formül içeren soruları hariç tut
+                # Verified: 0 hits for x^2/2x+ in social subjects (77,336 questions checked)
+                # $\frac/$\sqrt: LaTeX delimiter — safe filter
+                # x^2, 2x +: No delimiter — theoretical false positive risk, 0 actual hits
+                if subject in ("TURKCE", "EDEBIYAT", "TARIH", "COGRAFYA", "SOSYAL"):
+                    filters.extend([
+                        ~Question.question_text.contains("$\\frac"),
+                        ~Question.question_text.contains("$\\sqrt"),
+                        ~Question.question_text.contains("x^2"),
+                        ~Question.question_text.contains("2x +"),
+                    ])
+
+                result = await db_session.execute(
+                    select(Question)
+                    .where(and_(*filters))
+                    .order_by(func.random())
+                    .limit(count)
+                )
+
+                questions = result.scalars().all()
+
+                # Fallback: zorluk filtresiyle yetersiz soru varsa filtresiz tekrar dene
+                if len(questions) < count and difficulty_levels:
+                    logger.warning(
+                        f"Zorluk filtresi ile yetersiz soru: {subject} "
+                        f"({len(questions)}/{count}), filtre kaldırılıyor"
+                    )
+                    fallback_result = await db_session.execute(
                         select(Question)
-                        .where(
-                            and_(
-                                Question.exam_type == exam_config.exam_type,
-                                Question.subject_area == SubjectArea(subject.lower()),
-                                Question.is_active == True,
-                            )
-                        )
+                        .where(and_(*base_filters))
                         .order_by(func.random())
                         .limit(count)
                     )
+                    questions = fallback_result.scalars().all()
 
-                    questions = result.scalars().all()
-                    selected_questions.extend(questions)
+                if len(questions) < count:
+                    logger.warning(
+                        f"Yetersiz soru: {subject} için {count} istendi, {len(questions)} bulundu "
+                        f"(exam_type={exam_config.exam_type.value})"
+                    )
+                selected_questions.extend(questions)
 
-            return selected_questions
-
-        except Exception as e:
-            logger.error(
-                f"Soru seçimi hatası: {e}",
-                extra_data={"exam_type": exam_config.exam_type.value},
+        if len(selected_questions) < exam_config.total_questions:
+            logger.warning(
+                f"Toplam soru eksik: {exam_config.total_questions} istendi, "
+                f"{len(selected_questions)} seçildi (exam_type={exam_config.exam_type.value})"
             )
-            return []
+
+        return selected_questions
 
     async def _analyze_performance(
         self, session_data: ExamSessionData
@@ -1068,17 +1223,30 @@ class OSYMExamEngine:
             correct_answers = 0
             wrong_answers = 0
 
-            async with get_async_session() as db_session:
-                # Doğru cevapları kontrol et
-                for question_id, student_answer in session_data.answers.items():
+            async with get_db_session_context() as db_session:
+                # Doğru cevapları tek sorguda getir (N+1 yerine batch)
+                question_ids = list(session_data.answers.keys())
+                if question_ids:
                     result = await db_session.execute(
-                        select(Question.correct_answer).where(
-                            Question.id == question_id
+                        select(Question.id, Question.correct_answer).where(
+                            Question.id.in_(question_ids)
                         )
                     )
-                    correct_answer = result.scalar_one_or_none()
+                    correct_answers_map = {
+                        str(row.id): row.correct_answer for row in result
+                    }
+                else:
+                    correct_answers_map = {}
 
-                    if correct_answer == student_answer:
+                for question_id, student_answer in session_data.answers.items():
+                    correct_answer = correct_answers_map.get(question_id)
+
+                    if (
+                        correct_answer
+                        and student_answer
+                        and correct_answer.strip().upper()
+                        == student_answer.strip().upper()
+                    ):
                         correct_answers += 1
                     else:
                         wrong_answers += 1
@@ -1215,7 +1383,7 @@ class OSYMExamEngine:
             session_data = self.active_sessions[session_id]
 
             # Veritabanını güncelle
-            async with get_async_session() as db_session:
+            async with get_db_session_context() as db_session:
                 await db_session.execute(
                     update(ExamSession)
                     .where(ExamSession.id == session_id)

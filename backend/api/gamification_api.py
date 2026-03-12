@@ -28,6 +28,7 @@ from sqlalchemy.orm import Session
 from redis import Redis
 
 from core.database import get_db, get_redis_client
+from core.dependencies import get_current_user, AuthenticatedUser
 from core.redis_cache import get_cache
 from core.gamification.leaderboard_manager import (
     get_leaderboard_manager,
@@ -125,7 +126,7 @@ _user_badges = {}  # user_id -> List[badge_id]
 
 
 @router.get("/points", response_model=Dict[str, Any])
-async def get_points_summary(user_id: str = Query(..., description="Kullanıcı ID")):
+async def get_points_summary(current_user: AuthenticatedUser = Depends(get_current_user)):
     """
     Kullanıcının puan özetini getir
 
@@ -135,6 +136,7 @@ async def get_points_summary(user_id: str = Query(..., description="Kullanıcı 
         - weekly_points: Bu hafta kazanılan puan
     """
     try:
+        user_id = str(current_user.id)
         # Redis cache kontrol
         cache = get_cache()
         cache_key = f"gamification_points:{user_id}"
@@ -194,7 +196,7 @@ async def get_points_summary(user_id: str = Query(..., description="Kullanıcı 
 
 @router.get("/points/history", response_model=Dict[str, Any])
 async def get_point_history(
-    user_id: str = Query(..., description="Kullanıcı ID"),
+    current_user: AuthenticatedUser = Depends(get_current_user),
     days: int = Query(30, ge=1, le=365, description="Kaç günlük geçmiş"),
     limit: Optional[int] = Query(
         None, ge=1, le=1000, description="Maksimum kayıt sayısı"
@@ -204,11 +206,11 @@ async def get_point_history(
     Kullanıcının puan geçmişini getir
 
     Args:
-        user_id: Kullanıcı ID
         days: Kaç günlük geçmiş (default: 30)
         limit: Maksimum kayıt sayısı
     """
     try:
+        user_id = str(current_user.id)
         logger.info(f"Puan geçmişi API çağrısı - Kullanıcı: {user_id}, Gün: {days}")
 
         cutoff_date = datetime.now(timezone.utc) - timedelta(days=days)
@@ -244,19 +246,19 @@ async def get_point_history(
 
 @router.post("/points/award", response_model=Dict[str, Any])
 async def award_points(
-    user_id: str = Query(..., description="Kullanıcı ID"),
+    current_user: AuthenticatedUser = Depends(get_current_user),
     points: int = Query(..., ge=1, le=1000, description="Verilecek puan miktarı"),
     reason: str = Query(..., description="Puan verme nedeni"),
 ):
     """
-    Kullanıcıya puan ver (Internal use)
+    Kullanıcıya puan ver (authenticated user kendine puan verir)
 
     Args:
-        user_id: Kullanıcı ID
         points: Verilecek puan miktarı
         reason: Puan verme nedeni
     """
     try:
+        user_id = str(current_user.id)
         logger.info(
             f"Puan verme API çağrısı - Kullanıcı: {user_id}, Puan: {points}, Neden: {reason}"
         )
@@ -294,7 +296,7 @@ async def award_points(
 
 
 @router.get("/level", response_model=Dict[str, Any])
-async def get_level_info(user_id: str = Query(..., description="Kullanıcı ID")):
+async def get_level_info(current_user: AuthenticatedUser = Depends(get_current_user)):
     """
     Kullanıcının seviye bilgilerini getir
 
@@ -305,6 +307,7 @@ async def get_level_info(user_id: str = Query(..., description="Kullanıcı ID")
         - progress_percentage: İlerleme yüzdesi
     """
     try:
+        user_id = str(current_user.id)
         logger.info(f"Seviye bilgisi API çağrısı - Kullanıcı: {user_id}")
 
         # Demo data - Gerçek implementasyonda ExperienceManager kullanılacak
@@ -337,11 +340,12 @@ async def get_level_info(user_id: str = Query(..., description="Kullanıcı ID")
 
 
 @router.get("/level/progress", response_model=Dict[str, Any])
-async def get_level_progress(user_id: str = Query(..., description="Kullanıcı ID")):
+async def get_level_progress(current_user: AuthenticatedUser = Depends(get_current_user)):
     """
     Sonraki seviyeye ilerleme detaylarını getir
     """
     try:
+        user_id = str(current_user.id)
         logger.info(f"Seviye ilerlemesi API çağrısı - Kullanıcı: {user_id}")
 
         total_xp = _user_points.get(user_id, 0)
@@ -379,17 +383,17 @@ async def get_level_progress(user_id: str = Query(..., description="Kullanıcı 
 
 @router.get("/badges", response_model=Dict[str, Any])
 async def get_all_badges(
-    user_id: str = Query(..., description="Kullanıcı ID"),
+    current_user: AuthenticatedUser = Depends(get_current_user),
     category: Optional[str] = Query(None, description="Kategori filtresi"),
 ):
     """
     Tüm rozetleri getir (kazanılan + kazanılmayan)
 
     Args:
-        user_id: Kullanıcı ID
         category: Kategori filtresi (study, exam, social, special, milestone)
     """
     try:
+        user_id = str(current_user.id)
         logger.info(
             f"Tüm rozetler API çağrısı - Kullanıcı: {user_id}, Kategori: {category}"
         )
@@ -441,11 +445,12 @@ async def get_all_badges(
 
 
 @router.get("/badges/earned", response_model=Dict[str, Any])
-async def get_earned_badges(user_id: str = Query(..., description="Kullanıcı ID")):
+async def get_earned_badges(current_user: AuthenticatedUser = Depends(get_current_user)):
     """
     Sadece kazanılan rozetleri getir
     """
     try:
+        user_id = str(current_user.id)
         logger.info(f"Kazanılan rozetler API çağrısı - Kullanıcı: {user_id}")
 
         earned_badge_ids = _user_badges.get(user_id, [])
@@ -480,11 +485,12 @@ async def get_earned_badges(user_id: str = Query(..., description="Kullanıcı I
 
 
 @router.get("/badges/categories", response_model=Dict[str, Any])
-async def get_badge_categories(user_id: str = Query(..., description="Kullanıcı ID")):
+async def get_badge_categories(current_user: AuthenticatedUser = Depends(get_current_user)):
     """
     Kategori bazlı rozet istatistikleri
     """
     try:
+        user_id = str(current_user.id)
         logger.info(f"Rozet kategorileri API çağrısı - Kullanıcı: {user_id}")
 
         all_badges = get_badge_definitions()
@@ -528,13 +534,11 @@ async def get_badge_categories(user_id: str = Query(..., description="Kullanıc�
 
 @router.get("/leaderboard", response_model=Dict[str, Any])
 async def get_leaderboard(
+    current_user: AuthenticatedUser = Depends(get_current_user),
     period: str = Query(
         "alltime", description="Zaman dilimi (weekly, monthly, alltime)"
     ),
     limit: int = Query(100, ge=1, le=1000, description="Kaç kişi gösterilecek"),
-    user_id: Optional[str] = Query(
-        None, description="Kullanıcının kendi sıralaması için"
-    ),
 ):
     """
     Liderlik tablosunu getir
@@ -542,9 +546,9 @@ async def get_leaderboard(
     Args:
         period: Zaman dilimi (weekly, monthly, alltime)
         limit: Kaç kişi gösterilecek
-        user_id: Kullanıcının kendi sıralaması için
     """
     try:
+        user_id = str(current_user.id)
         # Redis cache kontrol
         cache = get_cache()
         cache_key = f"leaderboard:{period}:{limit}"
@@ -734,7 +738,8 @@ def get_badge_definitions() -> List[Dict[str, Any]]:
 
 @router.get("/achievements", response_model=Dict[str, Any])
 async def get_user_achievements(
-    user_id: str = Query(..., description="Kullanıcı ID"), db: Session = Depends(get_db)
+    current_user: AuthenticatedUser = Depends(get_current_user),
+    db: Session = Depends(get_db),
 ):
     """
     Kullanıcının tüm başarılarını getir (P2.2)
@@ -745,6 +750,7 @@ async def get_user_achievements(
         - in_progress_count: Devam eden başarı sayısı
     """
     try:
+        user_id = str(current_user.id)
         logger.info(f"Başarılar API çağrısı - Kullanıcı: {user_id}")
 
         # Kullanıcının başarılarını getir
@@ -779,12 +785,14 @@ async def get_user_achievements(
 
 @router.get("/achievements/completed", response_model=Dict[str, Any])
 async def get_completed_achievements(
-    user_id: str = Query(..., description="Kullanıcı ID"), db: Session = Depends(get_db)
+    current_user: AuthenticatedUser = Depends(get_current_user),
+    db: Session = Depends(get_db),
 ):
     """
     Sadece tamamlanmış başarıları getir (P2.2)
     """
     try:
+        user_id = str(current_user.id)
         logger.info(f"Tamamlanmış başarılar API çağrısı - Kullanıcı: {user_id}")
 
         completed = (
@@ -815,7 +823,7 @@ async def get_completed_achievements(
 
 @router.get("/leaderboard/nearby", response_model=Dict[str, Any])
 async def get_nearby_users_in_leaderboard(
-    user_id: str = Query(..., description="Kullanıcı ID"),
+    current_user: AuthenticatedUser = Depends(get_current_user),
     leaderboard_type: str = Query(
         LeaderboardType.GLOBAL, description="Liderlik tablosu türü"
     ),
@@ -829,11 +837,11 @@ async def get_nearby_users_in_leaderboard(
     Liderlik tablosunda kullanıcının yakınındaki kullanıcıları getir (P2.2)
 
     Args:
-        user_id: Kullanıcı ID
         leaderboard_type: Liderlik tablosu türü (global:xp, weekly:xp, etc.)
         range_size: Her iki yöndeki kullanıcı sayısı
     """
     try:
+        user_id = str(current_user.id)
         logger.info(
             f"Yakındaki kullanıcılar API çağrısı - Kullanıcı: {user_id}, Tür: {leaderboard_type}"
         )
@@ -862,7 +870,7 @@ async def get_nearby_users_in_leaderboard(
 
 @router.get("/leaderboard/rank", response_model=Dict[str, Any])
 async def get_user_leaderboard_rank(
-    user_id: str = Query(..., description="Kullanıcı ID"),
+    current_user: AuthenticatedUser = Depends(get_current_user),
     leaderboard_type: str = Query(
         LeaderboardType.GLOBAL, description="Liderlik tablosu türü"
     ),
@@ -879,6 +887,7 @@ async def get_user_leaderboard_rank(
         - percentile: Yüzdelik dilim
     """
     try:
+        user_id = str(current_user.id)
         logger.info(
             f"Kullanıcı sıralaması API çağrısı - Kullanıcı: {user_id}, Tür: {leaderboard_type}"
         )
@@ -911,6 +920,7 @@ async def get_user_leaderboard_rank(
 
 @router.get("/leaderboard/stats", response_model=Dict[str, Any])
 async def get_leaderboard_statistics(
+    current_user: AuthenticatedUser = Depends(get_current_user),
     leaderboard_type: str = Query(
         LeaderboardType.GLOBAL, description="Liderlik tablosu türü"
     ),
@@ -945,4 +955,108 @@ async def get_leaderboard_statistics(
         raise HTTPException(
             status_code=500,
             detail=f"Liderlik tablosu istatistikleri alınamadı: {str(e)}",
+        )
+
+
+# ============================================================================
+# F14: Segmented Leaderboard — Peer Group + Improvement Tracking
+# ============================================================================
+
+
+@router.get("/leaderboard/peer-group", response_model=Dict[str, Any])
+async def get_peer_group_leaderboard(
+    current_user: AuthenticatedUser = Depends(get_current_user),
+    limit: int = Query(20, ge=1, le=100, description="Kaç kişi gösterilecek"),
+    period: str = Query("weekly", description="Zaman dilimi (weekly, monthly)"),
+):
+    """
+    Benzer seviye öğrenciler arasında sıralama.
+
+    IRT ability yakınlığına göre gruplar (±0.5 logit).
+    Mutlak puan yerine haftalık gelişim (delta) gösterir.
+    """
+    try:
+        user_id = str(current_user.id)
+        # Phase 1: demo peer group based on in-memory points
+        user_points = _user_points.get(user_id, 0)
+
+        # Find peers within ±20% score range (placeholder for IRT ±0.5 logit)
+        tolerance = max(50, int(user_points * 0.2))
+        peers = [
+            (uid, pts)
+            for uid, pts in _user_points.items()
+            if abs(pts - user_points) <= tolerance
+        ]
+        peers.sort(key=lambda x: x[1], reverse=True)
+
+        entries = []
+        for rank, (uid, pts) in enumerate(peers[:limit], 1):
+            entries.append({
+                "user_id": uid,
+                "points": pts,
+                "rank": rank,
+                "is_current_user": uid == user_id,
+                "improvement": 0,  # placeholder — will use weekly delta
+            })
+
+        return {
+            "success": True,
+            "data": {
+                "entries": entries,
+                "total_peers": len(peers),
+                "user_rank": next(
+                    (e["rank"] for e in entries if e["is_current_user"]),
+                    None,
+                ),
+                "period": period,
+            },
+        }
+
+    except Exception as e:
+        logger.error(f"Peer group leaderboard hatası: {str(e)}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Peer group leaderboard alınamadı: {str(e)}",
+        )
+
+
+@router.get("/leaderboard/improvement", response_model=Dict[str, Any])
+async def get_improvement_leaderboard(
+    current_user: AuthenticatedUser = Depends(get_current_user),
+    limit: int = Query(10, ge=1, le=50, description="Top N gelişim"),
+):
+    """
+    Bu haftanın en çok gelişen öğrencileri.
+
+    Mutlak puan yerine delta (bu hafta - geçen hafta) ile sıralama.
+    """
+    try:
+        # Phase 1: placeholder — points are static, delta = 0
+        # Phase 2: weekly snapshots → real delta calculation
+        entries = []
+        for rank, (uid, pts) in enumerate(
+            sorted(_user_points.items(), key=lambda x: x[1], reverse=True)[:limit],
+            1,
+        ):
+            entries.append({
+                "user_id": uid,
+                "current_points": pts,
+                "previous_points": pts,  # placeholder
+                "improvement": 0,
+                "rank": rank,
+            })
+
+        return {
+            "success": True,
+            "data": {
+                "entries": entries,
+                "period": "weekly",
+            },
+        }
+
+    except Exception as e:
+        logger.error(f"Improvement leaderboard hatası: {str(e)}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Improvement leaderboard alınamadı: {str(e)}",
         )

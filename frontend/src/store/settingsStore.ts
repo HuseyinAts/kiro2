@@ -118,6 +118,7 @@ interface SettingsActions {
   toggleHighContrast: () => void
   toggleReduceMotion: () => void
   setFontSize: (size: number) => void
+  setLineHeight: (height: number) => void
   setColorBlindMode: (mode: AccessibilitySettings['colorBlindMode']) => void
 
   // Display actions
@@ -301,6 +302,16 @@ export const useSettingsStore = create<SettingsStore>()(
             accessibility: {
               ...state.accessibility,
               fontSize: clampedSize,
+            },
+          }));
+        },
+
+        setLineHeight: (height: number) => {
+          const clamped = Math.max(1.0, Math.min(2.0, height));
+          set((state) => ({
+            accessibility: {
+              ...state.accessibility,
+              lineHeight: clamped,
             },
           }));
         },

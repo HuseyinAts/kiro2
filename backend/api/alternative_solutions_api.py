@@ -7,7 +7,7 @@ REQ-13.1: Makale/Soru içerik yönetimi - Alternatif çözüm yolları
 """
 
 import logging
-from typing import Dict, List, Optional
+from typing import List, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from fastapi.responses import JSONResponse
@@ -15,7 +15,7 @@ from pydantic import BaseModel, Field
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.database import get_db_session
-from core.dependencies import get_current_user
+from core.dependencies import get_current_user, AuthenticatedUser
 from services.alternative_solutions_service import AlternativeSolutionsService
 
 logger = logging.getLogger(__name__)
@@ -89,7 +89,7 @@ async def get_solutions_service(
 async def add_alternative_solution(
     question_id: str,
     solution: AlternativeSolutionCreate,
-    current_user: Dict = Depends(get_current_user),
+    current_user: AuthenticatedUser = Depends(get_current_user),
     service: AlternativeSolutionsService = Depends(get_solutions_service),
 ):
     """Soruya alternatif çözüm ekle"""
@@ -97,7 +97,7 @@ async def add_alternative_solution(
         result = await service.add_solution(
             question_id=question_id,
             solution_data=solution.dict(),
-            created_by=current_user.get("user_id", "unknown"),
+            created_by=current_user.id,
         )
 
         if not result["success"]:
@@ -330,7 +330,7 @@ async def vote_solution(
     question_id: str,
     solution_id: str,
     vote: SolutionVote,
-    current_user: Dict = Depends(get_current_user),
+    current_user: AuthenticatedUser = Depends(get_current_user),
     service: AlternativeSolutionsService = Depends(get_solutions_service),
 ):
     """
@@ -340,7 +340,7 @@ async def vote_solution(
         result = await service.vote_solution(
             question_id=question_id,
             solution_id=solution_id,
-            user_id=current_user.get("user_id", "unknown"),
+            user_id=current_user.id,
             vote_type=vote.vote_type,
             comment=vote.comment,
         )
@@ -380,7 +380,7 @@ async def vote_solution(
 async def remove_vote(
     question_id: str,
     solution_id: str,
-    current_user: Dict = Depends(get_current_user),
+    current_user: AuthenticatedUser = Depends(get_current_user),
     service: AlternativeSolutionsService = Depends(get_solutions_service),
 ):
     """
@@ -390,7 +390,7 @@ async def remove_vote(
         result = await service.remove_vote(
             question_id=question_id,
             solution_id=solution_id,
-            user_id=current_user.get("user_id", "unknown"),
+            user_id=current_user.id,
         )
 
         if not result["success"]:

@@ -52,12 +52,14 @@ import modernColors from '@/theme/modern-colors';
 
 interface ModernExamStartProps {
   examType: ExamType
+  sessionId?: string
   onStart: (sessionId: string) => void
   onCancel?: () => void
 }
 
 export const ModernExamStart: React.FC<ModernExamStartProps> = ({
   examType,
+  sessionId,
   onStart,
   onCancel,
 }) => {
@@ -145,7 +147,7 @@ export const ModernExamStart: React.FC<ModernExamStartProps> = ({
     try {
       // İnternet kontrolü
       try {
-        const response = await fetch('/api/v1/health', { method: 'HEAD' });
+        const response = await fetch('/health');
         checks.internet = response.ok;
       } catch {
         checks.internet = false;
@@ -187,14 +189,20 @@ export const ModernExamStart: React.FC<ModernExamStartProps> = ({
       setLoading(true);
       setError(null);
 
-      const session = await examService.createExam({
-        exam_type: examType,
-        custom_config: examInfo.difficulty_distribution ? {
-          difficulty_distribution: examInfo.difficulty_distribution,
-        } : undefined,
-      });
-
-      onStart(session.session_id);
+      if (sessionId) {
+        // Mevcut session'ı başlat (ModernExamStartPage zaten oluşturmuş)
+        await examService.startExam(sessionId);
+        onStart(sessionId);
+      } else {
+        // Fallback: session yoksa yeni oluştur
+        const session = await examService.createExam({
+          exam_type: examType,
+          custom_config: examInfo.difficulty_distribution ? {
+            difficulty_distribution: examInfo.difficulty_distribution,
+          } : undefined,
+        });
+        onStart(session.session_id);
+      }
     } catch (err: any) {
       setError(err.message || 'Sınav başlatılamadı');
     } finally {

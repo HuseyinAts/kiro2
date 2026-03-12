@@ -78,10 +78,10 @@ async def get_encryption_status(admin: User = Depends(require_admin)):
     # Track in database - get last rotation timestamp
     last_rotation = None
     try:
-        from core.database import get_async_session
+        from core.database import get_db_session_context
         from sqlalchemy import text
 
-        async for session in get_async_session():
+        async with get_db_session_context() as session:
             # Try to get last rotation from a simple key-value settings table
             # First ensure the settings table exists
             try:
@@ -112,7 +112,6 @@ async def get_encryption_status(admin: User = Depends(require_admin)):
                     last_rotation = datetime.fromisoformat(row[0])
                 except Exception:
                     pass
-            break
     except Exception as e:
         # If database tracking fails, continue without it
         import logging
@@ -181,10 +180,10 @@ async def rotate_encryption_key(
         # Track rotation in database
         rotation_timestamp = datetime.now(timezone.utc)
         try:
-            from core.database import get_async_session
+            from core.database import get_db_session_context
             from sqlalchemy import text
 
-            async for session in get_async_session():
+            async with get_db_session_context() as session:
                 # Ensure settings table exists
                 try:
                     await session.execute(
@@ -216,7 +215,6 @@ async def rotate_encryption_key(
                     {"timestamp": rotation_timestamp.isoformat()},
                 )
                 await session.commit()
-                break
         except Exception as e:
             import logging
 

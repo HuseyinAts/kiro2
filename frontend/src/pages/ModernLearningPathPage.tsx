@@ -3,27 +3,31 @@
  * Kişiselleştirilmiş öğrenme yolu ve kaynaklar
  */
 
-import { Timeline, VideoLibrary, Assessment, Refresh, AutoAwesome } from '@mui/icons-material';
-import { Container, Box, Tabs, Tab, Typography } from '@mui/material';
+import { Timeline, VideoLibrary, Assessment, Refresh, AutoAwesome, Shuffle, Science } from '@mui/icons-material';
+import { Container, Box, Tabs, Tab, Typography, Alert, Chip } from '@mui/material';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 
 // Custom hooks
 import { VideoResponse } from '../api';
+import { LearningStyleQuiz } from '../components/LearningPath/LearningStyleQuiz';
 import { ModernLearningPathVisualizer } from '../components/LearningPath/ModernLearningPathVisualizer';
 import { NodeDetailsPanel } from '../components/LearningPath/Page/NodeDetailsPanel';
 import { PathNodeData } from '../components/LearningPath/PathNode';
 import { GlassCard } from '../components/ui/GlassCard';
 import { ModernButton } from '../components/ui/ModernButton';
 import { ModernLoader } from '../components/ui/ModernLoader';
+import { QuizInterface } from '../components/Quiz/QuizInterface';
+import type { Question } from '../components/Quiz/QuizInterface';
+import type { ErrorType } from '../components/Quiz/ErrorTypeSelector';
+import { mapApiToQuizQuestion } from '../utils/questionMappers';
+import { ReviewQueuePanel } from '../components/LearningPath/ReviewQueuePanel';
+import { ErrorClusterCard } from '../components/Quiz/ErrorClusterCard';
+import { ProductiveFailureFlow } from '../components/LearningPath/ProductiveFailureFlow';
 import { useLearningPath } from '../hooks/useLearningPath';
 import { useLearningPathVideos } from '../hooks/useLearningPathVideos';
 
-// Modern components
-import learningPathService from '../services/learningPathService';
 import modernColors from '../theme/modern-colors';
-
-// Services
 
 // Types
 import { generateConnections } from '../utils/learningPathHelpers';
@@ -65,20 +69,21 @@ export function ModernLearningPathPage() {
     currentNodeId,
     loading,
     error,
+    needsQuiz,
     reload,
     setCurrentNode,
+    submitQuizResult,
+    skipQuiz,
+    markNodeComplete,
+    updateProgress,
+    studentId,
   } = useLearningPath();
 
   const {
     videos,
-    videoLoadingState: _videoLoadingState,
-    loadingSubjects: _loadingSubjects,
     videosLoading,
     loadVideosForPath,
     loadVideosForNode,
-    retryLoad: _retryLoad,
-    showFallback: _showFallback,
-    cancelLoad: _cancelLoad,
   } = useLearningPathVideos();
 
   // ========================================
@@ -87,6 +92,18 @@ export function ModernLearningPathPage() {
   const [tabValue, setTabValue] = useState(0);
   const [showNodeDetails, setShowNodeDetails] = useState(false);
   const [selectedNode, setSelectedNode] = useState<PathNodeData | null>(null);
+  const [interleavedQuestions, setInterleavedQuestions] = useState<Question[] | null>(null);
+  const [nodeQuizQuestions, setNodeQuizQuestions] = useState<Question[] | null>(null);
+  const [activeQuizNode, setActiveQuizNode] = useState<PathNodeData | null>(null);
+
+  // F8: Collect error type selections during quiz (ref to avoid re-renders)
+  const errorTypesRef = useRef<Record<string, ErrorType>>({});
+
+  // F9: Productive failure pretest state
+  const [pretestNode, setPretestNode] = useState<PathNodeData | null>(null);
+
+  // F15: Last completed quiz subject for error cluster card
+  const [lastQuizSubject, setLastQuizSubject] = useState<string | null>(null);
 
   // ========================================
   // Effects
@@ -97,10 +114,9 @@ export function ModernLearningPathPage() {
    */
   useEffect(() => {
     if (pathNodes.length > 0 && learningStyle) {
-      const path = learningPathService.getCurrentPath();
-      if (path) {
-        loadVideosForPath(path, learningStyle);
-      }
+      // Build a minimal path object from nodes for video loading
+      const path = { modules: [{ title: pathNodes[0]?.title || 'matematik' }] };
+      loadVideosForPath(path, learningStyle);
     }
   }, [pathNodes, learningStyle, loadVideosForPath]);
 
@@ -141,6 +157,102 @@ export function ModernLearningPathPage() {
     setShowNodeDetails(false);
   }, []);
 
+  /**
+   * Handle start quiz from NodeDetailsPanel
+   * F9: If node is new (available), show Productive Failure pretest first.
+   * Otherwise, fetch quiz questions directly.
+   */
+  const handleStartQuiz = useCallback(async (node: PathNodeData) => {
+    // F9: Productive Failure — show pretest before new topic
+    if (node.status === 'available' && !pretestNode) {
+      setPretestNode(node);
+      setShowNodeDetails(false);
+      return;
+    }
+
+    const subject = node.title.split(' ')[0];
+    try {
+      const res = await fetch(
+        `/api/learning-path/exit-quiz/${encodeURIComponent(subject)}?count=${node.quiz?.question_count || 5}`,
+        { credentials: 'include' },
+      );
+      const data = await res.json();
+      if (data.success && data.questions?.length > 0) {
+        setNodeQuizQuestions(data.questions.map(mapApiToQuizQuestion));
+        setActiveQuizNode(node);
+        setShowNodeDetails(false);
+        setLastQuizSubject(subject);
+      }
+    } catch (err) {
+      console.error('Quiz soruları yüklenemedi:', err);
+    }
+  }, []);
+
+  /**
+   * Handle quiz completion — register wrong answers to FSRS + update node progress
+   */
+  const handleQuizComplete = useCallback(async (results: { score: number; totalScore: number; percentage: number; answers: Record<string, any>; correctCount: number; incorrectCount: number }) => {
+    // 1. Find wrong answer question IDs
+    const questions = nodeQuizQuestions || [];
+    const wrongIds = questions
+      .filter(q => {
+        const userAnswer = results.answers[q.id];
+        return userAnswer !== q.correctAnswer;
+      })
+      .map(q => q.id);
+
+    // 2. Register wrong answers to FSRS (with F8 error types if available)
+    if (wrongIds.length > 0) {
+      try {
+        const errorTypes = Object.keys(errorTypesRef.current).length > 0
+          ? errorTypesRef.current
+          : undefined;
+        await fetch('/api/learning-path/register-wrong-answers', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({ question_ids: wrongIds, error_types: errorTypes }),
+        });
+      } catch (err) {
+        console.error('FSRS kaydi basarisiz:', err);
+      }
+    }
+
+    // 3. Update node progress
+    if (activeQuizNode) {
+      const passed = results.percentage >= (activeQuizNode.quiz?.passing_score || 60);
+      if (passed) {
+        await markNodeComplete(activeQuizNode.id);
+      } else {
+        await updateProgress({ nodeId: activeQuizNode.id, progress: results.percentage });
+      }
+    }
+
+    // 4. Award gamification points
+    if (studentId) {
+      const points = results.correctCount * 10 + (results.percentage >= (activeQuizNode?.quiz?.passing_score || 60) ? 50 : 0);
+      if (points > 0) {
+        fetch(`/api/v1/gamification/points/award?points=${points}&reason=quiz_complete`, {
+          method: 'POST',
+          credentials: 'include',
+        }).catch(err => console.error('Gamification puan hatası:', err));
+      }
+    }
+
+    // 5. Close quiz + reset error types
+    errorTypesRef.current = {};
+    setNodeQuizQuestions(null);
+    setActiveQuizNode(null);
+  }, [nodeQuizQuestions, activeQuizNode, markNodeComplete, updateProgress, studentId]);
+
+  /**
+   * F8: Handle error type selection during immediate feedback.
+   * Stores selections in ref; sent with register-wrong-answers on quiz completion.
+   */
+  const handleErrorTypeSelect = useCallback((questionId: string, errorType: ErrorType) => {
+    errorTypesRef.current[questionId] = errorType;
+  }, []);
+
   // ========================================
   // Memoized values
   // ========================================
@@ -149,7 +261,7 @@ export function ModernLearningPathPage() {
    * Check if path exists
    */
   const hasPath = useMemo(
-    () => learningPathService.getCurrentPath() !== null,
+    () => pathNodes.length > 0,
     [pathNodes.length],
   );
 
@@ -188,6 +300,29 @@ export function ModernLearningPathPage() {
         }}
       >
         <ModernLoader message="Öğrenme yolunuz yükleniyor..." size="large" />
+      </Box>
+    );
+  }
+
+  // Quiz state — show VARK questionnaire before creating path
+  if (needsQuiz) {
+    return (
+      <Box
+        sx={{
+          minHeight: '100vh',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          background: modernColors.gradients.mesh,
+          p: 2,
+        }}
+      >
+        <Container maxWidth="sm">
+          <LearningStyleQuiz
+            onComplete={submitQuizResult}
+            onSkip={skipQuiz}
+          />
+        </Container>
       </Box>
     );
   }
@@ -299,7 +434,15 @@ export function ModernLearningPathPage() {
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                   <AutoAwesome sx={{ fontSize: 20 }} />
                   <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                    Öğrenme Stiliniz: {learningStyle}
+                    İçerik Tercihiniz: {
+                      {
+                        visual: 'Görsel Öğrenen',
+                        auditory: 'İşitsel Öğrenen',
+                        reading: 'Okuma-Yazma Öğrenen',
+                        kinesthetic: 'Uygulamalı Öğrenen',
+                        mixed: 'Karma Öğrenen',
+                      }[learningStyle] || learningStyle
+                    }
                   </Typography>
                 </Box>
               </GlassCard>
@@ -352,10 +495,148 @@ export function ModernLearningPathPage() {
                   exit={{ opacity: 0, x: 20 }}
                   transition={{ duration: 0.3 }}
                 >
+                  {/* FSRS Tekrar Paneli — due kartlar varsa göster */}
+                  {!nodeQuizQuestions && !interleavedQuestions && !pretestNode && (
+                    <ReviewQueuePanel />
+                  )}
+
+                  {/* F9: Productive Failure Pretest */}
+                  {pretestNode && (
+                    <Box sx={{ mb: 3 }}>
+                      <ProductiveFailureFlow
+                        topic={pretestNode.title}
+                        onComplete={() => {
+                          // After pretest, start the actual quiz directly (skip pretest check)
+                          const node = { ...pretestNode, status: 'current' as const };
+                          setPretestNode(null);
+                          handleStartQuiz(node);
+                        }}
+                        onSkip={() => {
+                          const node = { ...pretestNode, status: 'current' as const };
+                          setPretestNode(null);
+                          handleStartQuiz(node);
+                        }}
+                      />
+                    </Box>
+                  )}
+
+                  {/* F15: Error Cluster Recommendations — after quiz completion */}
+                  {lastQuizSubject && !nodeQuizQuestions && !interleavedQuestions && !pretestNode && (
+                    <ErrorClusterCard
+                      subject={lastQuizSubject}
+                      onNavigateToTopic={(topic) => {
+                        // Find the node with this topic and navigate to it
+                        const targetNode = pathNodes.find(n => n.title.toLowerCase().includes(topic.toLowerCase()));
+                        if (targetNode) handleNodeClick(targetNode);
+                      }}
+                    />
+                  )}
+
+                  {/* Node Quiz — node'dan başlatılan quiz */}
+                  {nodeQuizQuestions && activeQuizNode && (
+                    <Box sx={{ mb: 3 }}>
+                      <QuizInterface
+                        config={{
+                          title: `${activeQuizNode.title} Quiz`,
+                          description: `${activeQuizNode.title} konusunu test et`,
+                          questions: nodeQuizQuestions,
+                          passingScore: activeQuizNode.quiz?.passing_score || 60,
+                          immediateFeedback: true,
+                          showCorrectAnswers: true,
+                        }}
+                        onSubmit={handleQuizComplete}
+                        onExit={() => { setNodeQuizQuestions(null); setActiveQuizNode(null); }}
+                        onErrorTypeSelect={handleErrorTypeSelect}
+                      />
+                    </Box>
+                  )}
+
+                  {/* Karışık Pratik QuizInterface — sorular yüklendiğinde göster */}
+                  {interleavedQuestions && (
+                    <Box sx={{ mb: 3 }}>
+                      <QuizInterface
+                        config={{
+                          title: 'Karışık Pratik',
+                          description: 'Farklı konulardan karışık sorularla çalış',
+                          questions: interleavedQuestions,
+                          passingScore: 60,
+                          immediateFeedback: true,
+                          showCorrectAnswers: true,
+                        }}
+                        onSubmit={async (results) => {
+                          const wrongIds = interleavedQuestions
+                            .filter(q => results.answers[q.id] !== q.correctAnswer)
+                            .map(q => q.id);
+                          if (wrongIds.length > 0) {
+                            try {
+                              const errorTypes = Object.keys(errorTypesRef.current).length > 0
+                                ? errorTypesRef.current
+                                : undefined;
+                              await fetch('/api/learning-path/register-wrong-answers', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                credentials: 'include',
+                                body: JSON.stringify({ question_ids: wrongIds, error_types: errorTypes }),
+                              });
+                            } catch (err) {
+                              console.error('FSRS kaydi basarisiz:', err);
+                            }
+                          }
+                          errorTypesRef.current = {};
+                        }}
+                        onExit={() => { errorTypesRef.current = {}; setInterleavedQuestions(null); }}
+                        onErrorTypeSelect={handleErrorTypeSelect}
+                      />
+                    </Box>
+                  )}
+
+                  {/* Karışık Pratik Kartı — Interleaving d=1.21 */}
+                  {hasPath && !interleavedQuestions && (
+                    <Alert
+                      severity="info"
+                      icon={<Shuffle />}
+                      sx={{ mb: 3, borderRadius: 2 }}
+                      action={
+                        <ModernButton
+                          variant="glass"
+                          icon={<Science />}
+                          onClick={async () => {
+                            const subjects = [...new Set(pathNodes.map(n => n.title.split(' ')[0]))].slice(0, 5);
+                            try {
+                              const res = await fetch(`/api/learning-path/interleaved-practice?subjects=${subjects.join(',')}&count=10`, { credentials: 'include' });
+                              const data = await res.json();
+                              if (data.success && data.questions?.length > 0) {
+                                setInterleavedQuestions(data.questions.map(mapApiToQuizQuestion));
+                              }
+                            } catch (err) {
+                              console.error('Karışık pratik yüklenemedi:', err);
+                            }
+                          }}
+                        >
+                          Karışık Pratik
+                        </ModernButton>
+                      }
+                    >
+                      <Box>
+                        <Typography variant="subtitle2" fontWeight={700}>
+                          Karışık Pratik Modu
+                        </Typography>
+                        <Typography variant="body2">
+                          Farklı konulardan karışık sorularla çalış. Araştırmalar bu yöntemin %74 daha iyi sonuç verdiğini gösteriyor.
+                        </Typography>
+                        <Box sx={{ display: 'flex', gap: 0.5, mt: 1, flexWrap: 'wrap' }}>
+                          {[...new Set(pathNodes.map(n => n.title.split(' ')[0]))].slice(0, 5).map(topic => (
+                            <Chip key={topic} label={topic} size="small" variant="outlined" />
+                          ))}
+                        </Box>
+                      </Box>
+                    </Alert>
+                  )}
+
                   {/* Node Details Panel (conditional) */}
                   {showNodeDetails && selectedNode && (
                     <Box sx={{ mb: 3 }}>
-                      <NodeDetailsPanel node={selectedNode} onClose={handleCloseDetails} />
+                      <NodeDetailsPanel node={selectedNode} onClose={handleCloseDetails} onStartQuiz={handleStartQuiz} />
                     </Box>
                   )}
 

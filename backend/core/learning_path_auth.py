@@ -12,8 +12,12 @@ import logging
 from typing import Optional
 from fastapi import HTTPException, Depends, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.jwt_auth import JWTManager, TokenType, UserRole, get_jwt_manager
+from core.dependencies import get_db
+from models.learning_path_models import LearningPathStudentProfile
 
 logger = logging.getLogger(__name__)
 
@@ -56,15 +60,22 @@ async def get_current_user_from_token(
         )
 
 
-def verify_student_access(
-    student_id: str, current_user, allow_privileged: bool = True
+async def verify_student_access(
+    student_id: str,
+    current_user,
+    db: AsyncSession,
+    allow_privileged: bool = True,
 ) -> bool:
     """
-    Verify that current user can access student data
+    Verify that current user can access student data.
+
+    For students: checks DB ownership (user_id matches in learning_path_student_profiles).
+    For teachers/admins: allows access to any student.
 
     Args:
-        student_id: Target student ID
+        student_id: Target student ID (STU_xxx format)
         current_user: Current user token payload
+        db: Async database session
         allow_privileged: If True, teachers and admins can access any student
 
     Returns:
@@ -84,21 +95,27 @@ def verify_student_access(
         )
         return True
 
-    # Students can only access their own data
-    if current_user.sub != student_id:
+    # Student ownership: verify via DB that user_id owns this student_id
+    user_id = getattr(current_user, 'id', None) or getattr(current_user, 'sub', None)
+
+    result = await db.execute(
+        select(LearningPathStudentProfile.student_id).where(
+            LearningPathStudentProfile.user_id == str(user_id),
+            LearningPathStudentProfile.student_id == student_id,
+        )
+    )
+    if not result.scalar_one_or_none():
         logger.warning(
-            f"Access denied: User {current_user.sub} ({current_user.role.value}) "
-            f"attempted to access student {student_id}"
+            f"IDOR blocked: user={user_id} attempted access to student={student_id}"
         )
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail={
-                "error": "access_denied",
-                "message": "Sadece kendi öğrenme yolunuza erişebilirsiniz",
-                "message_en": "You can only access your own learning path",
-            },
+            detail="Bu öğrenci verisine erişim yetkiniz yok",
         )
 
+    logger.info(
+        f"Student access verified: user={user_id} owns student={student_id}"
+    )
     return True
 
 
@@ -124,13 +141,14 @@ class RequireStudentOwnership:
         """
         self.student_id_param = student_id_param
 
-    def __call__(
+    async def __call__(
         self,
-        student_id: str,  # This will be injected from request
+        student_id: str,
         current_user=Depends(get_current_user_from_token),
+        db: AsyncSession = Depends(get_db),
     ) -> bool:
         """Verify ownership"""
-        return verify_student_access(student_id, current_user, allow_privileged=True)
+        return await verify_student_access(student_id, current_user, db)
 
 
 def require_permission(required_permission: str):
@@ -162,7 +180,7 @@ def require_permission(required_permission: str):
 
         if required_permission not in current_user.permissions:
             logger.warning(
-                f"Permission denied: User {current_user.sub} lacks '{required_permission}' permission"
+                f"Permission denied: User {getattr(current_user, 'id', getattr(current_user, 'sub', '?'))} lacks '{required_permission}' permission"
             )
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
@@ -202,7 +220,7 @@ def require_role(*allowed_roles: UserRole):
     async def role_checker(current_user=Depends(get_current_user_from_token)) -> bool:
         if current_user.role not in allowed_roles:
             logger.warning(
-                f"Role denied: User {current_user.sub} has role '{current_user.role.value}', "
+                f"Role denied: User {getattr(current_user, 'id', getattr(current_user, 'sub', '?'))} has role '{current_user.role.value}', "
                 f"required: {[r.value for r in allowed_roles]}"
             )
             raise HTTPException(

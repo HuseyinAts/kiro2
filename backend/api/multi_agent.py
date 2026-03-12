@@ -25,7 +25,7 @@ from fastapi import (
 from pydantic import BaseModel, Field
 
 from algorithms.multi_agent_blackboard import EventType, Priority, get_blackboard
-from core.dependencies import get_current_user
+from core.dependencies import get_current_user, AuthenticatedUser
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -118,7 +118,7 @@ def _get_event_types(event_type_strings: List[str]) -> List[EventType]:
 
 
 @router.post("/write", response_model=BlackboardResponse)
-async def write_data(request: WriteDataRequest, current_user=Depends(get_current_user)):
+async def write_data(request: WriteDataRequest, current_user: AuthenticatedUser = Depends(get_current_user)):
     """
     Blackboard'a veri yaz
 
@@ -157,7 +157,7 @@ async def write_data(request: WriteDataRequest, current_user=Depends(get_current
 
 
 @router.get("/read/{key}", response_model=BlackboardResponse)
-async def read_data(key: str, current_user=Depends(get_current_user)):
+async def read_data(key: str, current_user: AuthenticatedUser = Depends(get_current_user)):
     """
     Blackboard'dan veri oku
 
@@ -188,7 +188,7 @@ async def read_data(key: str, current_user=Depends(get_current_user)):
 
 
 @router.delete("/delete/{key}", response_model=BlackboardResponse)
-async def delete_data(key: str, current_user=Depends(get_current_user)):
+async def delete_data(key: str, current_user: AuthenticatedUser = Depends(get_current_user)):
     """
     Blackboard'dan veri sil
 
@@ -222,7 +222,7 @@ async def delete_data(key: str, current_user=Depends(get_current_user)):
 
 @router.post("/subscribe", response_model=BlackboardResponse)
 async def subscribe_agent(
-    request: SubscriptionRequest, current_user=Depends(get_current_user)
+    request: SubscriptionRequest, current_user: AuthenticatedUser = Depends(get_current_user)
 ):
     """
     Agent'ı blackboard olaylarına abone et
@@ -268,7 +268,7 @@ async def subscribe_agent(
 
 @router.post("/coordination/request", response_model=BlackboardResponse)
 async def request_coordination(
-    request: CoordinationRequest, current_user=Depends(get_current_user)
+    request: CoordinationRequest, current_user: AuthenticatedUser = Depends(get_current_user)
 ):
     """
     Agent koordinasyonu talep et
@@ -302,7 +302,7 @@ async def request_coordination(
 
 @router.post("/coordination/respond", response_model=BlackboardResponse)
 async def respond_coordination(
-    response: CoordinationResponse, current_user=Depends(get_current_user)
+    response: CoordinationResponse, current_user: AuthenticatedUser = Depends(get_current_user)
 ):
     """
     Koordinasyon talebine yanıt ver
@@ -339,7 +339,7 @@ async def respond_coordination(
 
 
 @router.get("/metrics", response_model=BlackboardResponse)
-async def get_metrics(current_user=Depends(get_current_user)):
+async def get_metrics(current_user: AuthenticatedUser = Depends(get_current_user)):
     """
     Blackboard performans metriklerini al
 
@@ -359,7 +359,7 @@ async def get_metrics(current_user=Depends(get_current_user)):
 
 
 @router.get("/agents/status", response_model=BlackboardResponse)
-async def get_agent_status(current_user=Depends(get_current_user)):
+async def get_agent_status(current_user: AuthenticatedUser = Depends(get_current_user)):
     """
     Agent durumlarını al
 
@@ -383,7 +383,7 @@ async def get_event_history(
     limit: int = Query(100, description="Maksimum olay sayısı"),
     event_type: Optional[str] = Query(None, description="Olay tipi filtresi"),
     agent_name: Optional[str] = Query(None, description="Agent adı filtresi"),
-    current_user=Depends(get_current_user),
+    current_user: AuthenticatedUser = Depends(get_current_user),
 ):
     """
     Olay geçmişini al

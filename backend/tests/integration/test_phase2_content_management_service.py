@@ -133,9 +133,10 @@ class TestSoruBankasiListele:
                     mock_question.id = "question123"
                     mock_question.question_text = "Test soru metni"
                     mock_question.exam_type.value = "TYT"
-                    mock_question.subject_area.value = "Matematik"
+                    mock_question.subject_area = "MATEMATIK"
                     mock_question.subtopic = "Fonksiyonlar"
-                    mock_question.difficulty.value = "orta"
+                    mock_question.difficulty_level = Mock()
+                    mock_question.difficulty_level.value = "MEDIUM"
                     mock_question.irt_difficulty = 0.5
                     mock_question.times_asked = 100
                     mock_question.times_correct = 75
@@ -292,9 +293,10 @@ class TestSoruBankasiListele:
                         "Bu çok uzun bir soru metnidir. " * 20
                     )  # > 200 chars
                     mock_question.exam_type.value = "TYT"
-                    mock_question.subject_area.value = "Matematik"
+                    mock_question.subject_area = "MATEMATIK"
                     mock_question.subtopic = "Test"
-                    mock_question.difficulty.value = "orta"
+                    mock_question.difficulty_level = Mock()
+                    mock_question.difficulty_level.value = "MEDIUM"
                     mock_question.irt_difficulty = 0.5
                     mock_question.times_asked = 10
                     mock_question.times_correct = 5
@@ -707,9 +709,10 @@ class TestStatisticsCalculation:
                     mock_question.id = "question123"
                     mock_question.question_text = "Test soru"
                     mock_question.exam_type.value = "TYT"
-                    mock_question.subject_area.value = "Matematik"
+                    mock_question.subject_area = "MATEMATIK"
                     mock_question.subtopic = "Test"
-                    mock_question.difficulty.value = "orta"
+                    mock_question.difficulty_level = Mock()
+                    mock_question.difficulty_level.value = "MEDIUM"
                     mock_question.irt_difficulty = 0.5
                     mock_question.times_asked = 0  # Zero attempts
                     mock_question.times_correct = 0
@@ -761,9 +764,10 @@ class TestStatisticsCalculation:
                     mock_question.id = "question123"
                     mock_question.question_text = "Test soru"
                     mock_question.exam_type.value = "TYT"
-                    mock_question.subject_area.value = "Matematik"
+                    mock_question.subject_area = "MATEMATIK"
                     mock_question.subtopic = "Test"
-                    mock_question.difficulty.value = "orta"
+                    mock_question.difficulty_level = Mock()
+                    mock_question.difficulty_level.value = "MEDIUM"
                     mock_question.irt_difficulty = 0.5
                     mock_question.times_asked = 100
                     mock_question.times_correct = 85

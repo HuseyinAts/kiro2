@@ -89,7 +89,7 @@ export const ExamStart: React.FC<ExamStartProps> = ({ examType, onStart, onCance
 
     try {
       // İnternet bağlantısı kontrolü
-      const response = await fetch('/api/v1/health', { method: 'HEAD' });
+      const response = await fetch('/health');
       checks.internet = response.ok;
 
       // Tarayıcı uyumluluğu
