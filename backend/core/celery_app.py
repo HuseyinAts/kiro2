@@ -28,6 +28,7 @@ celery_app = Celery(
         "tasks.video_tasks",
         "tasks.bulk_tasks",
         "tasks.claude_md_improvement_tasks",
+        "tasks.mega_feature_tasks",
     ],
 )
 
@@ -46,6 +47,7 @@ celery_app.conf.update(
         "tasks.video_tasks.*": {"queue": "videos"},
         "tasks.bulk_tasks.*": {"queue": "bulk"},
         "tasks.claude_md_improvement_tasks.*": {"queue": "claude_md"},
+        "tasks.mega_feature_tasks.*": {"queue": "features"},
     },
     # Task queues with priorities
     task_queues=(
@@ -64,6 +66,9 @@ celery_app.conf.update(
         Queue(
             "bulk", Exchange("bulk"), routing_key="bulk", priority=1
         ),  # Lowest priority
+        Queue(
+            "features", Exchange("features"), routing_key="feature", priority=5
+        ),  # Medium priority (F2/F6/F15 periodic tasks)
     ),
     # Task execution limits
     task_time_limit=600,  # 10 minutes hard limit
@@ -128,6 +133,21 @@ celery_app.conf.update(
         "claude-md-check-rule-evolution-weekly": {
             "task": "tasks.claude_md_improvement_tasks.check_rule_evolution",
             "schedule": crontab(hour=3, minute=0, day_of_week=1),  # Monday 03:00
+        },
+        # F2: League weekly reset (every Monday at midnight)
+        "league-weekly-reset": {
+            "task": "tasks.mega_feature_tasks.process_weekly_league_reset",
+            "schedule": crontab(hour=0, minute=0, day_of_week=1),  # Monday 00:00
+        },
+        # F6: Daily coaching suggestions (every day at 6 AM)
+        "daily-coaching-suggestions": {
+            "task": "tasks.mega_feature_tasks.generate_daily_coaching_suggestions",
+            "schedule": crontab(hour=6, minute=0),  # Daily 06:00
+        },
+        # F15: Weekly error clustering (every Sunday at 23:00)
+        "weekly-error-clustering": {
+            "task": "tasks.mega_feature_tasks.run_weekly_error_clustering",
+            "schedule": crontab(hour=23, minute=0, day_of_week=0),  # Sunday 23:00
         },
     },
 )
