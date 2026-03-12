@@ -259,6 +259,22 @@ async def duel_stream(
     current_user: AuthenticatedUser = Depends(get_current_user),
 ):
     """SSE stream for real-time duel events (opponent answers, round results)."""
+    # IDOR check — verify the user is a participant in this duel
+    from services.duel_service import get_duel_session_players
+
+    try:
+        async with get_db_session_context() as db:
+            players = await get_duel_session_players(db=db, session_id=session_id)
+        if current_user.id not in players:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Bu düello oturumuna erişim yetkiniz yok",
+            )
+    except HTTPException:
+        raise
+    except Exception:
+        # If session not found, let the stream return empty
+        pass
 
     async def event_generator():
         from core.database import get_redis_client
@@ -270,6 +286,7 @@ async def duel_stream(
 
         pubsub = redis.pubsub()
         await pubsub.subscribe(f"duel:events:{session_id}")
+        last_heartbeat = asyncio.get_event_loop().time()
 
         try:
             # Send initial connection event
@@ -284,13 +301,19 @@ async def duel_stream(
                     if isinstance(data, bytes):
                         data = data.decode("utf-8")
                     yield f"data: {data}\n\n"
+                    last_heartbeat = asyncio.get_event_loop().time()
 
                     # Stop stream on finished event
                     parsed = json.loads(data)
                     if parsed.get("type") == "finished":
                         break
 
-                # Heartbeat every ~30s to keep connection alive
+                # Heartbeat every 30s to keep connection alive
+                now = asyncio.get_event_loop().time()
+                if now - last_heartbeat >= 30:
+                    yield ": heartbeat\n\n"
+                    last_heartbeat = now
+
                 await asyncio.sleep(0.5)
 
         finally:

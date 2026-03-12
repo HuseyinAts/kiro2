@@ -338,3 +338,22 @@ async def get_duel_history(*, db: AsyncSession, student_id: str, limit: int = 20
         }
         for s in sessions
     ]
+
+
+async def get_duel_session_players(
+    *, db: AsyncSession, session_id: str
+) -> list[str]:
+    """Return player IDs for a duel session (for IDOR checks).
+
+    Returns:
+        List of [player1_id, player2_id]. Empty list if session not found.
+    """
+    result = await db.execute(
+        select(DuelSession.player1_id, DuelSession.player2_id).where(
+            DuelSession.id == session_id
+        )
+    )
+    row = result.first()
+    if not row:
+        return []
+    return [pid for pid in (row[0], row[1]) if pid is not None]
