@@ -11,7 +11,7 @@
  * 4. Load path nodes + completion status
  */
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 
 import { createStudentProfile, createLearningPath, detectLearningStyle, submitQuestionnaire } from '../api';
 import { PathNodeData } from '../components/LearningPath/PathNode';
@@ -50,6 +50,7 @@ export const useLearningPath = (): UseLearningPathReturn => {
   const [learningStyle, setLearningStyle] = useState<string>('');
   const [currentNodeId, setCurrentNodeId] = useState<string>('');
   const [needsQuiz, setNeedsQuiz] = useState(false);
+  const quizSubmittedRef = useRef(false);
   const [studentId, setStudentId] = useState<string | null>(null);
 
   const user = useAuthStore(state => state.user);
@@ -128,7 +129,7 @@ export const useLearningPath = (): UseLearningPathReturn => {
     } catch (err: any) {
       console.warn('Could not create/load learning path:', err);
       setError(err.message || 'Öğrenme yolu oluşturulamadı');
-      return;
+      // Don't return — path stays null but we won't go back to quiz
     }
 
     // Load completion status
@@ -162,13 +163,15 @@ export const useLearningPath = (): UseLearningPathReturn => {
       const sid = await ensureProfile();
       setStudentId(sid);
 
-      // 2. Check if VARK questionnaire completed
-      const quizDone = await checkQuizCompleted(sid);
-      if (!quizDone) {
-        // Show quiz UI — don't create path yet
-        setNeedsQuiz(true);
-        setLoading(false);
-        return;
+      // 2. Check if VARK questionnaire completed (skip if just submitted in this session)
+      if (!quizSubmittedRef.current) {
+        const quizDone = await checkQuizCompleted(sid);
+        if (!quizDone) {
+          // Show quiz UI — don't create path yet
+          setNeedsQuiz(true);
+          setLoading(false);
+          return;
+        }
       }
 
       // 3. Create/load learning path with real style
@@ -211,6 +214,7 @@ export const useLearningPath = (): UseLearningPathReturn => {
       }
 
       // 3. Quiz done — create path (ALWAYS runs even if detect fails)
+      quizSubmittedRef.current = true;
       setNeedsQuiz(false);
       await createAndLoadPath(studentId);
 

@@ -474,44 +474,77 @@ else:
         """Fallback: return a template learning path when AI agent is not available."""
         logger.warning("Learning path agent not available — returning template path")
         await verify_student_access(request.student_id, current_user, db)
+        return _build_template_path(request.student_id, request.subject, request.duration_weeks)
 
-        subject = request.subject or "matematik"
-        weeks = request.duration_weeks or 4
 
-        # Generate a basic template path structure
-        template_nodes = []
-        topics = {
-            "matematik": ["Sayılar ve İşlemler", "Cebir", "Fonksiyonlar", "Geometri", "Olasılık ve İstatistik", "Limit ve Türev"],
-            "fizik": ["Kuvvet ve Hareket", "Enerji", "Elektrik", "Dalgalar", "Optik", "Modern Fizik"],
-            "kimya": ["Atom ve Periyodik Tablo", "Kimyasal Bağlar", "Reaksiyon Hızı", "Denge", "Asit-Baz", "Organik Kimya"],
+def _build_template_path(student_id: str, subject: str | None, duration_weeks: int | None) -> dict:
+    """Build a static template learning path when AI agent is unavailable.
+
+    Returns modules[].topics[] structure expected by frontend's convertPathToNodes().
+    """
+    subject = subject or "matematik"
+    weeks = duration_weeks or 4
+    module_topics = {
+        "matematik": [
+            ("Temel Kavramlar", ["Sayılar ve İşlemler", "Bölünebilme Kuralları", "Faktöriyel ve Kombinasyon"]),
+            ("Cebir", ["Denklemler", "Eşitsizlikler", "Polinomlar"]),
+            ("Fonksiyonlar", ["Fonksiyon Kavramı", "Grafik Yorumlama", "Ters Fonksiyon"]),
+            ("Geometri", ["Üçgenler", "Çokgenler", "Daire ve Çember"]),
+        ],
+        "fizik": [
+            ("Kuvvet ve Hareket", ["Newton Kanunları", "Sürtünme", "Dairesel Hareket"]),
+            ("Enerji", ["İş ve Enerji", "Enerji Korunumu", "Güç"]),
+            ("Elektrik", ["Coulomb Yasası", "Devre Elemanları", "Kirchhoff Kuralları"]),
+        ],
+        "kimya": [
+            ("Atom ve Periyodik Tablo", ["Atom Modelleri", "Elektron Dizilimi", "Periyodik Özellikler"]),
+            ("Kimyasal Bağlar", ["İyonik Bağ", "Kovalent Bağ", "Metalik Bağ"]),
+            ("Reaksiyon Hızı", ["Hız İfadesi", "Hızı Etkileyen Faktörler", "Kataliz"]),
+        ],
+    }
+    selected = module_topics.get(subject, module_topics["matematik"])[:weeks]
+
+    modules = []
+    for mod_idx, (mod_title, topics) in enumerate(selected, start=1):
+        module = {
+            "module_id": f"MOD{mod_idx}",
+            "title": mod_title,
+            "order": mod_idx,
+            "estimated_duration": "7 gün",
+            "prerequisite": f"MOD{mod_idx - 1}" if mod_idx > 1 else None,
+            "topics": [
+                {
+                    "topic_id": f"TOP{t_idx}",
+                    "name": topic_name,
+                    "duration_minutes": 60,
+                    "resources": [],
+                    "quiz": {"quiz_id": f"QZ{t_idx}", "question_count": 10, "passing_score": 70},
+                }
+                for t_idx, topic_name in enumerate(topics, start=1)
+            ],
         }
-        topic_list = topics.get(subject, topics["matematik"])
+        modules.append(module)
 
-        for i, topic in enumerate(topic_list[:weeks * 2]):
-            template_nodes.append({
-                "id": f"node_{i+1}",
-                "title": topic,
-                "description": f"{topic} konusu çalışması",
-                "week": (i // 2) + 1,
-                "order": i + 1,
-                "estimated_hours": 3,
-                "resources": [],
-                "prerequisites": [f"node_{i}"] if i > 0 else [],
-            })
-
-        return {
-            "success": True,
-            "learning_path": {
-                "path_id": f"path_{request.student_id}_{subject}",
-                "student_id": request.student_id,
-                "subject": subject,
-                "duration_weeks": weeks,
-                "nodes": template_nodes,
-                "created_at": datetime.utcnow().isoformat(),
-                "status": "template",
+    return {
+        "success": True,
+        "learning_path": {
+            "path_id": f"path_{student_id}_{subject}",
+            "student_id": student_id,
+            "subject": subject,
+            "duration_weeks": weeks,
+            "modules": modules,
+            "progress": {
+                "completed_modules": 0,
+                "total_modules": len(modules),
+                "completed_topics": 0,
+                "total_topics": sum(len(m["topics"]) for m in modules),
+                "overall_progress": 0,
             },
-            "message": f"{subject.capitalize()} için {weeks} haftalık öğrenme yolu oluşturuldu (şablon)",
-        }
+            "created_at": datetime.utcnow().isoformat(),
+            "status": "template",
+        },
+        "message": f"{subject.capitalize()} için {weeks} haftalık öğrenme yolu oluşturuldu (şablon)",
+    }
 
 
 async def _create_learning_path_impl(
@@ -573,6 +606,10 @@ async def _create_learning_path_impl(
             return await ai_agent_fallback_handler(
                 cb_error, request.student_id, request.subject
             )
+        except Exception as agent_error:
+            # Agent failed (HTTP 404, timeout, etc.) — return template path
+            logger.warning(f"AI agent failed, returning template path: {agent_error}")
+            return _build_template_path(request.student_id, request.subject, request.duration_weeks)
 
         success = True
 
