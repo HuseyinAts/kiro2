@@ -14,6 +14,7 @@ from sqlalchemy import (
     DateTime,
     Float,
     ForeignKey,
+    Index,
     Integer,
     String,
     Text,
@@ -65,6 +66,9 @@ class QMatrix(Base):
     __table_args__ = (
         UniqueConstraint(
             "question_id", "nano_skill_id", name="uq_qmatrix_question_skill"
+        ),
+        Index(
+            "idx_qmatrix_pair", "question_id", "nano_skill_id", unique=True
         ),
     )
 

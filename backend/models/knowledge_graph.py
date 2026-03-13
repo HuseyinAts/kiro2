@@ -14,6 +14,7 @@ from sqlalchemy import (
     DateTime,
     Float,
     ForeignKey,
+    Integer,
     JSON,
     String,
     Text,
@@ -33,13 +34,14 @@ class KnowledgePoint(Base):
     id: Mapped[str] = mapped_column(
         String, primary_key=True, default=lambda: str(uuid.uuid4())
     )
-    name: Mapped[str] = mapped_column(String(300), nullable=False)
+    topic_id: Mapped[Optional[str]] = mapped_column(String, nullable=True, index=True)
+    code: Mapped[str] = mapped_column(String(50), nullable=False, unique=True, index=True)
+    name_tr: Mapped[str] = mapped_column(String(200), nullable=False)
+    name: Mapped[Optional[str]] = mapped_column(String(300), nullable=True)
     subject: Mapped[str] = mapped_column(String(50), nullable=False, index=True)
     description: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
-    # On kosul bilgi noktasi ID'leri listesi
-    prerequisite_ids: Mapped[Optional[list]] = mapped_column(JSON, nullable=True)
-    # [min, max] zorluk araligi
-    difficulty_range: Mapped[Optional[list]] = mapped_column(JSON, nullable=True)
+    prerequisite_ids: Mapped[Optional[list]] = mapped_column(JSON, nullable=True, default=list)
+    difficulty_range: Mapped[Optional[list]] = mapped_column(JSON, nullable=True, default=lambda: [0.0, 1.0])
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now()
@@ -49,7 +51,7 @@ class KnowledgePoint(Base):
     )
 
     def __repr__(self) -> str:
-        return f"<KnowledgePoint id={self.id} name={self.name} subject={self.subject}>"
+        return f"<KnowledgePoint id={self.id} code={self.code} subject={self.subject}>"
 
 
 class QuestionKnowledgeMapping(Base):
@@ -67,15 +69,15 @@ class QuestionKnowledgeMapping(Base):
         nullable=False,
         index=True,
     )
-    # Sorunun bu bilgi noktasini olcme agirligi (0-1)
     weight: Mapped[float] = mapped_column(Float, default=1.0)
+    is_primary: Mapped[bool] = mapped_column(Boolean, default=True)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now()
     )
 
     __table_args__ = (
         UniqueConstraint(
-            "question_id", "knowledge_point_id", name="uq_question_knowledge_point"
+            "question_id", "knowledge_point_id", name="uq_question_knowledge_mapping"
         ),
     )
 
@@ -103,6 +105,7 @@ class StudentKnowledgeState(Base):
     subject: Mapped[str] = mapped_column(String(50), nullable=False)
     mastery_level: Mapped[float] = mapped_column(Float, default=0.0)
     confidence: Mapped[Optional[float]] = mapped_column(Float, default=0.5)
+    response_count: Mapped[int] = mapped_column(Integer, default=0)
     last_assessed: Mapped[Optional[datetime]] = mapped_column(
         DateTime(timezone=True), nullable=True
     )
