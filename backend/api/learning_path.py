@@ -863,13 +863,20 @@ async def _search_resources_impl(
 
 
 @router.post("/adapt-path")
-async def adapt_learning_path(adaptation: PathAdaptation):
+async def adapt_learning_path(
+    adaptation: PathAdaptation,
+    current_user: AuthenticatedUser = Depends(get_current_user),  # 🔒 AUTH
+    db: AsyncSession = Depends(get_db),
+):
     """
     Öğrenme yolunu performansa göre uyarla
 
     Öğrencinin performans verilerine göre öğrenme yolunu dinamik olarak günceller.
     """
     try:
+        # 🔒 Verify ownership: students can only adapt their own paths
+        await verify_student_access(adaptation.student_id, current_user, db)
+
         logger.info(
             f"Adapting learning path {adaptation.path_id} for "
             f"student {adaptation.student_id}"
@@ -927,6 +934,8 @@ async def adapt_learning_path(adaptation: PathAdaptation):
             ),
         }
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Error adapting learning path: {e}")
         raise HTTPException(status_code=500, detail=str(e))

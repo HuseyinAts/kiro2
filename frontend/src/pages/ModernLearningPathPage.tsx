@@ -77,6 +77,10 @@ export function ModernLearningPathPage() {
     markNodeComplete,
     updateProgress,
     studentId,
+    startSession,
+    endSession,
+    streak,
+    studySession,
   } = useLearningPath();
 
   const {
@@ -182,11 +186,13 @@ export function ModernLearningPathPage() {
         setActiveQuizNode(node);
         setShowNodeDetails(false);
         setLastQuizSubject(subject);
+        // Start study session (non-blocking — quiz proceeds even if session fails)
+        try { await startSession(); } catch (e) { console.warn('Session başlatılamadı:', e); }
       }
     } catch (err) {
       console.error('Quiz soruları yüklenemedi:', err);
     }
-  }, []);
+  }, [startSession]);
 
   /**
    * Handle quiz completion — register wrong answers to FSRS + update node progress
@@ -239,11 +245,18 @@ export function ModernLearningPathPage() {
       }
     }
 
-    // 5. Close quiz + reset error types
+    // 5. End study session (non-blocking — streak updated server-side)
+    if (studySession?.isActive) {
+      const topic = activeQuizNode?.title || 'quiz';
+      endSession([topic], questions.length, results.correctCount)
+        .catch(err => console.warn('Session bitirilemedi:', err));
+    }
+
+    // 6. Close quiz + reset error types
     errorTypesRef.current = {};
     setNodeQuizQuestions(null);
     setActiveQuizNode(null);
-  }, [nodeQuizQuestions, activeQuizNode, markNodeComplete, updateProgress, studentId]);
+  }, [nodeQuizQuestions, activeQuizNode, markNodeComplete, updateProgress, studentId, endSession, studySession]);
 
   /**
    * F8: Handle error type selection during immediate feedback.
@@ -414,13 +427,24 @@ export function ModernLearningPathPage() {
                   </Typography>
                 </Box>
               </Box>
-              <ModernButton
-                variant="glass"
-                icon={<Refresh />}
-                onClick={reload}
-              >
-                Yenile
-              </ModernButton>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                {streak && streak.dailyStreak > 0 && (
+                  <Chip
+                    icon={<span role="img" aria-label="fire">🔥</span>}
+                    label={`${streak.dailyStreak} gün seri`}
+                    color="warning"
+                    variant="outlined"
+                    size="small"
+                  />
+                )}
+                <ModernButton
+                  variant="glass"
+                  icon={<Refresh />}
+                  onClick={reload}
+                >
+                  Yenile
+                </ModernButton>
+              </Box>
             </Box>
 
             {/* Learning Style Badge */}
