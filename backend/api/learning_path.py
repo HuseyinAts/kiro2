@@ -471,7 +471,47 @@ else:
         current_user=Depends(get_current_user),
         db: AsyncSession = Depends(get_db),
     ):
-        raise HTTPException(status_code=503, detail="Learning path agent not available")
+        """Fallback: return a template learning path when AI agent is not available."""
+        logger.warning("Learning path agent not available — returning template path")
+        await verify_student_access(request.student_id, current_user, db)
+
+        subject = request.subject or "matematik"
+        weeks = request.duration_weeks or 4
+
+        # Generate a basic template path structure
+        template_nodes = []
+        topics = {
+            "matematik": ["Sayılar ve İşlemler", "Cebir", "Fonksiyonlar", "Geometri", "Olasılık ve İstatistik", "Limit ve Türev"],
+            "fizik": ["Kuvvet ve Hareket", "Enerji", "Elektrik", "Dalgalar", "Optik", "Modern Fizik"],
+            "kimya": ["Atom ve Periyodik Tablo", "Kimyasal Bağlar", "Reaksiyon Hızı", "Denge", "Asit-Baz", "Organik Kimya"],
+        }
+        topic_list = topics.get(subject, topics["matematik"])
+
+        for i, topic in enumerate(topic_list[:weeks * 2]):
+            template_nodes.append({
+                "id": f"node_{i+1}",
+                "title": topic,
+                "description": f"{topic} konusu çalışması",
+                "week": (i // 2) + 1,
+                "order": i + 1,
+                "estimated_hours": 3,
+                "resources": [],
+                "prerequisites": [f"node_{i}"] if i > 0 else [],
+            })
+
+        return {
+            "success": True,
+            "learning_path": {
+                "path_id": f"path_{request.student_id}_{subject}",
+                "student_id": request.student_id,
+                "subject": subject,
+                "duration_weeks": weeks,
+                "nodes": template_nodes,
+                "created_at": datetime.utcnow().isoformat(),
+                "status": "template",
+            },
+            "message": f"{subject.capitalize()} için {weeks} haftalık öğrenme yolu oluşturuldu (şablon)",
+        }
 
 
 async def _create_learning_path_impl(
