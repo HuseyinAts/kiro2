@@ -197,15 +197,20 @@ export const useLearningPath = (): UseLearningPathReturn => {
         completion_time: result.completion_time,
       });
 
-      // 2. Detect learning style with fresh data
-      const styleResponse = await detectLearningStyle(studentId, true);
-      if (styleResponse.success) {
-        setLearningStyle(styleResponse.data?.hybrid_code || result.dominant_style);
-      } else {
+      // 2. Detect learning style with fresh data (non-blocking — must not prevent path creation)
+      try {
+        const styleResponse = await detectLearningStyle(studentId, true);
+        if (styleResponse.success) {
+          setLearningStyle(styleResponse.data?.hybrid_code || result.dominant_style);
+        } else {
+          setLearningStyle(result.dominant_style);
+        }
+      } catch (detectErr) {
+        console.warn('Learning style detection failed, using quiz result:', detectErr);
         setLearningStyle(result.dominant_style);
       }
 
-      // 3. Quiz done — create path
+      // 3. Quiz done — create path (ALWAYS runs even if detect fails)
       setNeedsQuiz(false);
       await createAndLoadPath(studentId);
 
@@ -299,10 +304,14 @@ export const useLearningPath = (): UseLearningPathReturn => {
     return updateProgress({ nodeId, completed: true, progress: 100 });
   }, [updateProgress]);
 
-  /** Auto-load on mount */
+  /** Auto-load on mount and auth changes (NOT on internal callback ref changes) */
   useEffect(() => {
     loadPath();
-  }, [loadPath]);
+    // Dependencies: auth state only — prevents re-triggering after quiz submission
+    // when createAndLoadPath/loadPath refs change due to state updates.
+    // Manual reload available via reload() button.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isAuthenticated, user?.id]);
 
   return {
     pathNodes,

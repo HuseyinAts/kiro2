@@ -1,0 +1,17 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "backend",
+      "runtimeExecutable": "cmd",
+      "runtimeArgs": ["/c", "cd backend && python -m uvicorn main:app --host 0.0.0.0 --port 8000 --reload"],
+      "port": 8000
+    },
+    {
+      "name": "frontend",
+      "runtimeExecutable": "cmd",
+      "runtimeArgs": ["/c", "cd frontend && node node_modules/vite/bin/vite.js --host --port 3005"],
+      "port": 3005
+    }
+  ]
+}

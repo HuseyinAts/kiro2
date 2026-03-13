@@ -312,10 +312,11 @@ async def clear_cache(
             try:
                 from services.learning_style_service import learning_style_service
 
-                learning_style_service.profiles_cache.clear()
-                learning_style_service.behavioral_data_cache.clear()
-                learning_style_service.questionnaire_cache.clear()
-                learning_style_service.recommendations_cache.clear()
+                # Safe clear — attributes may not exist after DB-only refactor
+                for cache_name in ('profiles_cache', 'behavioral_data_cache', 'questionnaire_cache', 'recommendations_cache'):
+                    cache = getattr(learning_style_service, cache_name, None)
+                    if cache is not None:
+                        cache.clear()
                 cleared_caches.append("learning_style")
             except Exception as e:
                 logger.error(f"Learning style cache temizleme hatası: {str(e)}")

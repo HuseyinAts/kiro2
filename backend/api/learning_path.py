@@ -232,6 +232,31 @@ async def create_student_profile(
     - Data persists across restarts
     """
     try:
+        # Check for existing profile — return it instead of creating duplicate
+        existing = await db.execute(
+            select(LearningPathStudentProfile).where(
+                LearningPathStudentProfile.user_id == str(current_user.id)
+            )
+        )
+        existing_profile = existing.scalars().first()
+        if existing_profile:
+            logger.info(f"Returning existing profile for user {current_user.id}: {existing_profile.student_id}")
+            return {
+                "success": True,
+                "student_id": existing_profile.student_id,
+                "profile": {
+                    "name": existing_profile.name,
+                    "grade": int(existing_profile.grade) if existing_profile.grade else None,
+                    "subjects": existing_profile.interests,
+                    "goals": existing_profile.goals,
+                    "learning_style": existing_profile.learning_style,
+                    "available_time": existing_profile.available_time,
+                    "exam_target": existing_profile.exam_target,
+                    "created_at": existing_profile.created_at.isoformat() if existing_profile.created_at else None,
+                },
+                "message": "Mevcut profil döndürüldü",
+            }
+
         logger.info(f"Creating student profile: {profile.name}, grade {profile.grade}")
 
         # Generate unique student ID
@@ -297,7 +322,7 @@ async def get_my_profile(
             LearningPathStudentProfile.user_id == str(current_user.id)
         )
     )
-    profile = result.scalar_one_or_none()
+    profile = result.scalars().first()  # .first() instead of scalar_one_or_none() — handles duplicates gracefully
 
     if not profile:
         raise HTTPException(status_code=404, detail="Profil bulunamadı")
