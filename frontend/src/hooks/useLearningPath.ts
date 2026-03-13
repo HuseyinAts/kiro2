@@ -255,7 +255,12 @@ export const useLearningPath = (): UseLearningPathReturn => {
       return false;
     }
 
-    const sid = studentId || String(user.id);
+    if (!studentId) {
+      console.error('Student profile not loaded yet — cannot update progress');
+      return false;
+    }
+
+    const sid = studentId;
 
     try {
       await apiRequest(`/api/learning-path/progress/${sid}/${nodeId}`, {
