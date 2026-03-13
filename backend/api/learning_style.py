@@ -10,6 +10,8 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.dependencies import get_db
+from core.jwt_auth import UserRole
+from core.learning_path_auth import get_current_user_from_token, verify_student_access
 from models.learning_path_models import LearningPathStudentProfile
 from models.learning_style import BehavioralData, QuestionnaireResponse
 from services.learning_style_service import LearningStyleService
@@ -22,53 +24,102 @@ router = APIRouter(prefix="/api/v1/learning-style", tags=["Öğrenme Stili"])
 # Service instance
 learning_style_service = LearningStyleService()
 
+_PRIVILEGED_ROLES = {UserRole.TEACHER, UserRole.ADMIN, UserRole.SUPER_ADMIN}
+
+
+async def _verify_student_or_self(student_id: str, current_user, db: AsyncSession):
+    """Verify access: allow own user_id, privileged roles, or DB-backed ownership."""
+    user_id = str(getattr(current_user, 'id', None) or getattr(current_user, 'sub', None))
+    user_role = getattr(current_user, 'role', None)
+
+    # Privileged roles can access any student
+    if user_role in _PRIVILEGED_ROLES:
+        return
+
+    # Student accessing their own data (user_id == student_id)
+    if student_id == user_id:
+        return
+
+    # Fallback: DB-backed ownership check (learning_path_student_profiles)
+    await verify_student_access(student_id, current_user, db)
+
 
 @router.get("/detect/{student_id}", response_model=Dict[str, Any])
 async def detect_learning_style(
     student_id: str,
     force_recalculation: bool = Query(False, description="Zorla yeniden hesaplama"),
+    current_user=Depends(get_current_user_from_token),
+    db: AsyncSession = Depends(get_db),
 ):
     """
-    Öğrenci için hibrit öğrenme stili tespit et
-    64 farklı profil kombinasyonundan birini döndürür
+    Öğrenci için hibrit öğrenme stili tespit et.
+    DB'den LearningPathStudentProfile'ı sorgular ve VARK verisi varsa döndürür.
     """
     try:
+        # 🔒 Verify ownership (teachers/admins can access any student)
+        await _verify_student_or_self(student_id, current_user, db)
+
         logger.info(f"Öğrenme stili tespiti API çağrısı - Öğrenci: {student_id}")
 
-        profile = await learning_style_service.detect_learning_style(
-            student_id=student_id, force_recalculation=force_recalculation
+        # Query student profile directly from DB
+        result = await db.execute(
+            select(LearningPathStudentProfile).where(
+                LearningPathStudentProfile.student_id == student_id
+            )
         )
+        profile = result.scalar_one_or_none()
 
+        if profile and profile.vark_visual_score is not None:
+            # Has VARK data from questionnaire
+            vark_scores = {
+                "visual": float(profile.vark_visual_score or 0),
+                "auditory": float(profile.vark_auditory_score or 0),
+                "reading": float(profile.vark_reading_score or 0),
+                "kinesthetic": float(profile.vark_kinesthetic_score or 0),
+            }
+            dominant = max(vark_scores, key=vark_scores.get)  # type: ignore[arg-type]
+
+            # Determine confidence: real quiz data → high confidence
+            has_real_data = any(v > 0.3 for v in vark_scores.values())
+            confidence_score = 0.8 if has_real_data else 0.3
+            data_points = 10 if has_real_data else 0
+
+            return {
+                "success": True,
+                "data": {
+                    "student_id": student_id,
+                    "hybrid_code": profile.learning_style or dominant,
+                    "vark_profile": {
+                        **vark_scores,
+                        "dominant": dominant,
+                    },
+                    "confidence": {"score": confidence_score},
+                    "data_points_used": data_points,
+                },
+                "message": f"Öğrenme stili tespit edildi: {profile.learning_style or dominant}",
+            }
+
+        # No profile or no VARK data yet → return defaults (low confidence)
         return {
             "success": True,
             "data": {
-                "student_id": profile.student_id,
-                "hybrid_code": profile.hybrid_code,
+                "student_id": student_id,
+                "hybrid_code": "mixed",
                 "vark_profile": {
-                    "visual": profile.vark_profile.visual,
-                    "auditory": profile.vark_profile.auditory,
-                    "reading": profile.vark_profile.reading,
-                    "kinesthetic": profile.vark_profile.kinesthetic,
-                    "dominant": profile.vark_profile.dominant_vark.value,
+                    "visual": 0.25,
+                    "auditory": 0.25,
+                    "reading": 0.25,
+                    "kinesthetic": 0.25,
+                    "dominant": "mixed",
                 },
-                "felder_profile": {
-                    "active_reflective": profile.felder_profile.active_reflective,
-                    "sensing_intuitive": profile.felder_profile.sensing_intuitive,
-                    "visual_verbal": profile.felder_profile.visual_verbal,
-                    "sequential_global": profile.felder_profile.sequential_global,
-                    "preferences": profile.felder_profile.learning_preferences,
-                },
-                "confidence": {
-                    "score": profile.confidence_score,
-                    "level": profile.confidence_level.value,
-                },
-                "data_points_used": profile.data_points_used,
-                "detection_date": profile.detection_date.isoformat(),
-                "last_updated": profile.last_updated.isoformat(),
+                "confidence": {"score": 0.3},
+                "data_points_used": 0,
             },
-            "message": f"Hibrit öğrenme stili tespit edildi: {profile.hybrid_code}",
+            "message": "Varsayılan öğrenme profili (veri yetersiz)",
         }
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Öğrenme stili tespiti hatası: {str(e)}")
         raise HTTPException(
@@ -82,11 +133,14 @@ async def get_content_recommendations(
     subject_area: str = Query("matematik", description="Konu alanı"),
     difficulty_level: str = Query("orta", description="Zorluk seviyesi"),
     force_refresh: bool = Query(False, description="Öneri yenileme"),
+    current_user=Depends(get_current_user_from_token),
+    db: AsyncSession = Depends(get_db),
 ):
     """
     Hibrit profile göre kişiselleştirilmiş içerik önerileri
     """
     try:
+        await _verify_student_or_self(student_id, current_user, db)
         logger.info(
             f"İçerik önerisi API çağrısı - Öğrenci: {student_id}, Konu: {subject_area}"
         )
@@ -119,6 +173,8 @@ async def get_content_recommendations(
             "message": f"{len(recommendation.recommended_content_types)} içerik türü önerildi",
         }
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"İçerik önerisi hatası: {str(e)}")
         raise HTTPException(
@@ -127,11 +183,17 @@ async def get_content_recommendations(
 
 
 @router.post("/behavioral-data/{student_id}", response_model=Dict[str, Any])
-async def update_behavioral_data(student_id: str, behavioral_data: BehavioralData):
+async def update_behavioral_data(
+    student_id: str,
+    behavioral_data: BehavioralData,
+    current_user=Depends(get_current_user_from_token),
+    db: AsyncSession = Depends(get_db),
+):
     """
     Yeni davranışsal veri ile öğrenme stilini güncelle
     """
     try:
+        await _verify_student_or_self(student_id, current_user, db)
         logger.info(f"Davranışsal veri güncelleme API çağrısı - Öğrenci: {student_id}")
 
         # Student ID'yi data'ya set et
@@ -159,6 +221,8 @@ async def update_behavioral_data(student_id: str, behavioral_data: BehavioralDat
                 "message": "Davranışsal veri kaydedildi, profil değişikliği yok",
             }
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Davranışsal veri güncelleme hatası: {str(e)}")
         raise HTTPException(
@@ -170,12 +234,14 @@ async def update_behavioral_data(student_id: str, behavioral_data: BehavioralDat
 async def submit_questionnaire(
     student_id: str,
     questionnaire_response: QuestionnaireResponse,
+    current_user=Depends(get_current_user_from_token),
     db: AsyncSession = Depends(get_db),
 ):
     """
     Öğrenme stili anketi yanıtlarını kaydet — cache + DB persist
     """
     try:
+        await _verify_student_or_self(student_id, current_user, db)
         logger.info(
             f"Anket yanıtı API çağrısı - Öğrenci: {student_id}, Tür: {questionnaire_response.questionnaire_type}"
         )
@@ -227,6 +293,8 @@ async def submit_questionnaire(
             "message": "Anket yanıtları kaydedildi",
         }
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Anket kaydetme hatası: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Anket kaydedilemedi: {str(e)}")
@@ -263,11 +331,16 @@ def _calculate_vark_scores(response: QuestionnaireResponse) -> Dict[str, float]:
 
 
 @router.get("/explanation/{student_id}", response_model=Dict[str, Any])
-async def get_learning_style_explanation(student_id: str):
+async def get_learning_style_explanation(
+    student_id: str,
+    current_user=Depends(get_current_user_from_token),
+    db: AsyncSession = Depends(get_db),
+):
     """
     Öğrenci için öğrenme stili açıklaması
     """
     try:
+        await _verify_student_or_self(student_id, current_user, db)
         logger.info(f"Öğrenme stili açıklaması API çağrısı - Öğrenci: {student_id}")
 
         explanation = await learning_style_service.get_learning_style_explanation(
@@ -280,6 +353,8 @@ async def get_learning_style_explanation(student_id: str):
             "message": "Öğrenme stili açıklaması hazırlandı",
         }
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Açıklama hatası: {str(e)}")
         raise HTTPException(
@@ -337,11 +412,16 @@ async def get_learning_style_statistics():
 
 
 @router.get("/export/{student_id}", response_model=Dict[str, Any])
-async def export_learning_profile(student_id: str):
+async def export_learning_profile(
+    student_id: str,
+    current_user=Depends(get_current_user_from_token),
+    db: AsyncSession = Depends(get_db),
+):
     """
     Öğrenci öğrenme profilini dışa aktar
     """
     try:
+        await _verify_student_or_self(student_id, current_user, db)
         logger.info(f"Profil dışa aktarma API çağrısı - Öğrenci: {student_id}")
 
         export_data = await learning_style_service.export_learning_profile(student_id)
@@ -352,6 +432,8 @@ async def export_learning_profile(student_id: str):
             "message": "Öğrenme profili dışa aktarıldı",
         }
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Dışa aktarma hatası: {str(e)}")
         raise HTTPException(
@@ -394,12 +476,16 @@ async def get_content_explanation(hybrid_code: str, content_type: str):
 
 @router.post("/update-recommendations/{student_id}", response_model=Dict[str, Any])
 async def update_recommendations_based_on_performance(
-    student_id: str, performance_data: Dict[str, float]
+    student_id: str,
+    performance_data: Dict[str, float],
+    current_user=Depends(get_current_user_from_token),
+    db: AsyncSession = Depends(get_db),
 ):
     """
     Performans verilerine göre önerileri güncelle
     """
     try:
+        await _verify_student_or_self(student_id, current_user, db)
         logger.info(
             f"Performans tabanlı öneri güncelleme API çağrısı - Öğrenci: {student_id}"
         )
@@ -432,6 +518,8 @@ async def update_recommendations_based_on_performance(
             "message": "Öneriler performans verilerine göre güncellendi",
         }
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Performans tabanlı güncelleme hatası: {str(e)}")
         raise HTTPException(

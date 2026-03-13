@@ -275,6 +275,52 @@ export const useLearningPath = (): UseLearningPathReturn => {
     }
   }, [studentId, user, createAndLoadPath]);
 
+  /** Submit VARK quiz result (from LearningStyleQuiz component) */
+  const submitQuizResultDirect = useCallback(async (result: any) => {
+    if (!studentId) return;
+
+    try {
+      setLoading(true);
+      setError(null);
+
+      // Map QuizResult fields → backend API format
+      const dominantStyle = result.dominant_style || result.learningPreference || 'mixed';
+      const responses = result.responses || result.varkResponses || {};
+      const completionTime = result.completion_time || result.completionTime || 0;
+
+      // 1. Send VARK questionnaire responses to backend
+      try {
+        await submitQuestionnaire(studentId, {
+          questionnaire_type: 'VARK',
+          responses,
+          completion_time: completionTime,
+        });
+      } catch (err) {
+        console.warn('VARK questionnaire submit failed, continuing with local style:', err);
+      }
+
+      // 2. Set learning style from quiz result directly (don't rely on backend detection)
+      setLearningStyle(dominantStyle);
+
+      // 3. Create path with style from quiz
+      setNeedsOnboarding(false);
+      await createAndLoadPath(studentId, 'matematik', 4);
+
+    } catch (err: any) {
+      console.error('Error submitting quiz result:', err);
+      // Even if backend call fails, still proceed with path creation
+      setNeedsOnboarding(false);
+      setLearningStyle(result.dominant_style || 'mixed');
+      try {
+        await createAndLoadPath(studentId, 'matematik', 4);
+      } catch {
+        setError('Öğrenme yolu oluşturulamadı');
+      }
+    } finally {
+      setLoading(false);
+    }
+  }, [studentId, createAndLoadPath]);
+
   /** Skip onboarding — use default style */
   const skipOnboarding = useCallback(() => {
     setNeedsOnboarding(false);
@@ -447,7 +493,7 @@ export const useLearningPath = (): UseLearningPathReturn => {
     updateProgress,
     markNodeComplete,
     submitOnboardingResult,
-    submitQuizResult: submitOnboardingResult,
+    submitQuizResult: submitQuizResultDirect,
     skipOnboarding,
     skipQuiz: skipOnboarding,
     startSession,

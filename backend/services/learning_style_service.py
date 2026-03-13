@@ -42,6 +42,12 @@ class LearningStyleService:
             "sequential_global",
         ]
 
+        # In-memory caches (used by API layer for quick lookups)
+        self.profiles_cache: Dict[str, Any] = {}
+        self.questionnaire_cache: Dict[str, list] = {}
+        self.behavioral_data_cache: Dict[str, list] = {}
+        self.recommendations_cache: Dict[str, Any] = {}
+
     async def detect_learning_style(
         self,
         student_id: str,
