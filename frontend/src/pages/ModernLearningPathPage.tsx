@@ -96,6 +96,11 @@ export function ModernLearningPathPage() {
   const [nodeQuizQuestions, setNodeQuizQuestions] = useState<Question[] | null>(null);
   const [activeQuizNode, setActiveQuizNode] = useState<PathNodeData | null>(null);
 
+  // Quiz loading/error states
+  const [quizLoading, setQuizLoading] = useState(false);
+  const [quizError, setQuizError] = useState<string | null>(null);
+  const [interleavedLoading, setInterleavedLoading] = useState(false);
+
   // F8: Collect error type selections during quiz (ref to avoid re-renders)
   const errorTypesRef = useRef<Record<string, ErrorType>>({});
 
@@ -189,6 +194,8 @@ export function ModernLearningPathPage() {
     }
 
     const subject = extractSubject(node.title);
+    setQuizLoading(true);
+    setQuizError(null);
     try {
       const res = await fetch(
         `/api/learning-path/exit-quiz/${encodeURIComponent(subject)}?count=${node.quiz?.question_count || 5}`,
@@ -200,9 +207,14 @@ export function ModernLearningPathPage() {
         setActiveQuizNode(node);
         setShowNodeDetails(false);
         setLastQuizSubject(subject);
+      } else {
+        setQuizError('Bu konu için soru bulunamadı.');
       }
     } catch (err) {
       console.error('Quiz soruları yüklenemedi:', err);
+      setQuizError('Quiz soruları yüklenemedi. Lütfen tekrar deneyin.');
+    } finally {
+      setQuizLoading(false);
     }
   }, [pretestNode, extractSubject]);
 
@@ -303,6 +315,55 @@ export function ModernLearningPathPage() {
     errorTypesRef.current[questionId] = errorType;
   }, []);
 
+  /**
+   * Quiz exit with confirmation
+   */
+  const handleQuizExit = useCallback(() => {
+    if (window.confirm('Quiz\'den çıkmak istediğinize emin misiniz? İlerlemeniz kaydedilmeyecek.')) {
+      errorTypesRef.current = {};
+      setNodeQuizQuestions(null);
+      setActiveQuizNode(null);
+    }
+  }, []);
+
+  const handleInterleavedExit = useCallback(() => {
+    if (window.confirm('Quiz\'den çıkmak istediğinize emin misiniz? İlerlemeniz kaydedilmeyecek.')) {
+      errorTypesRef.current = {};
+      setInterleavedQuestions(null);
+    }
+  }, []);
+
+  /**
+   * Start interleaved practice with loading state
+   */
+  const handleStartInterleaved = useCallback(async () => {
+    const subjects = [...new Set(pathNodes.map(n => extractSubject(n.title)))].slice(0, 5);
+    setInterleavedLoading(true);
+    setQuizError(null);
+    try {
+      const res = await fetch(`/api/learning-path/interleaved-practice?subjects=${subjects.join(',')}&count=10`, { credentials: 'include' });
+      const data = await res.json();
+      if (data.success && data.questions?.length > 0) {
+        setInterleavedQuestions(data.questions.map(mapApiToQuizQuestion));
+      } else {
+        setQuizError('Karışık pratik soruları bulunamadı.');
+      }
+    } catch (err) {
+      console.error('Karışık pratik yüklenemedi:', err);
+      setQuizError('Karışık pratik yüklenemedi. Lütfen tekrar deneyin.');
+    } finally {
+      setInterleavedLoading(false);
+    }
+  }, [pathNodes, extractSubject]);
+
+  /**
+   * Tab change with quiz guard
+   */
+  const handleTabChange = useCallback((_: unknown, newValue: number) => {
+    if (nodeQuizQuestions || interleavedQuestions) return;
+    setTabValue(newValue);
+  }, [nodeQuizQuestions, interleavedQuestions]);
+
   // ========================================
   // Memoized values
   // ========================================
@@ -313,6 +374,11 @@ export function ModernLearningPathPage() {
   const hasPath = useMemo(
     () => pathNodes.length > 0,
     [pathNodes.length],
+  );
+
+  const pathConnections = useMemo(
+    () => generateConnections(pathNodes),
+    [pathNodes],
   );
 
   /**
@@ -509,7 +575,7 @@ export function ModernLearningPathPage() {
           <GlassCard glassIntensity="medium" elevated>
             <Tabs
               value={tabValue}
-              onChange={(_, newValue) => setTabValue(newValue)}
+              onChange={handleTabChange}
               variant="fullWidth"
               sx={{
                 borderBottom: 1,
@@ -550,6 +616,20 @@ export function ModernLearningPathPage() {
                     <ReviewQueuePanel />
                   )}
 
+                  {/* Quiz/Interleaved error message */}
+                  {quizError && (
+                    <Alert severity="error" onClose={() => setQuizError(null)} sx={{ mb: 2 }}>
+                      {quizError}
+                    </Alert>
+                  )}
+
+                  {/* Quiz loading indicator */}
+                  {quizLoading && (
+                    <Box sx={{ display: 'flex', justifyContent: 'center', py: 3 }}>
+                      <ModernLoader message="Quiz soruları yükleniyor..." />
+                    </Box>
+                  )}
+
                   {/* F9: Productive Failure Pretest */}
                   {pretestNode && (
                     <Box sx={{ mb: 3 }}>
@@ -576,7 +656,7 @@ export function ModernLearningPathPage() {
                       subject={lastQuizSubject}
                       onNavigateToTopic={(topic) => {
                         // Find the node with this topic and navigate to it
-                        const targetNode = pathNodes.find(n => n.title.toLowerCase().includes(topic.toLowerCase()));
+                        const targetNode = pathNodes.find(n => extractSubject(n.title) === extractSubject(topic));
                         if (targetNode) handleNodeClick(targetNode);
                       }}
                     />
@@ -595,7 +675,7 @@ export function ModernLearningPathPage() {
                           showCorrectAnswers: true,
                         }}
                         onSubmit={handleQuizComplete}
-                        onExit={() => { errorTypesRef.current = {}; setNodeQuizQuestions(null); setActiveQuizNode(null); }}
+                        onExit={handleQuizExit}
                         onErrorTypeSelect={handleErrorTypeSelect}
                       />
                     </Box>
@@ -634,7 +714,7 @@ export function ModernLearningPathPage() {
                           }
                           errorTypesRef.current = {};
                         }}
-                        onExit={() => { errorTypesRef.current = {}; setInterleavedQuestions(null); }}
+                        onExit={handleInterleavedExit}
                         onErrorTypeSelect={handleErrorTypeSelect}
                       />
                     </Box>
@@ -650,20 +730,10 @@ export function ModernLearningPathPage() {
                         <ModernButton
                           variant="glass"
                           icon={<Science />}
-                          onClick={async () => {
-                            const subjects = [...new Set(pathNodes.map(n => extractSubject(n.title)))].slice(0, 5);
-                            try {
-                              const res = await fetch(`/api/learning-path/interleaved-practice?subjects=${subjects.join(',')}&count=10`, { credentials: 'include' });
-                              const data = await res.json();
-                              if (data.success && data.questions?.length > 0) {
-                                setInterleavedQuestions(data.questions.map(mapApiToQuizQuestion));
-                              }
-                            } catch (err) {
-                              console.error('Karışık pratik yüklenemedi:', err);
-                            }
-                          }}
+                          onClick={handleStartInterleaved}
+                          disabled={interleavedLoading}
                         >
-                          Karışık Pratik
+                          {interleavedLoading ? 'Yükleniyor...' : 'Karışık Pratik'}
                         </ModernButton>
                       }
                     >
@@ -686,7 +756,7 @@ export function ModernLearningPathPage() {
                   {/* Node Details Panel (conditional) */}
                   {showNodeDetails && selectedNode && (
                     <Box sx={{ mb: 3 }}>
-                      <NodeDetailsPanel node={selectedNode} onClose={handleCloseDetails} onStartQuiz={handleStartQuiz} />
+                      <NodeDetailsPanel node={selectedNode} onClose={handleCloseDetails} onStartQuiz={handleStartQuiz} quizLoading={quizLoading} />
                     </Box>
                   )}
 
@@ -694,7 +764,7 @@ export function ModernLearningPathPage() {
                   {pathNodes.length > 0 ? (
                     <ModernLearningPathVisualizer
                       nodes={pathNodes}
-                      connections={generateConnections(pathNodes)}
+                      connections={pathConnections}
                       currentNodeId={currentNodeId}
                       onNodeClick={handleNodeClick}
                       viewMode="tree"

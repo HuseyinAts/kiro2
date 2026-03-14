@@ -10,6 +10,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.dependencies import get_db
+from core.learning_path_auth import get_current_user_from_token, verify_student_access
 from models.learning_path_models import LearningPathStudentProfile
 from models.learning_style import BehavioralData, QuestionnaireResponse
 from services.learning_style_service import LearningStyleService
@@ -28,12 +29,14 @@ async def detect_learning_style(
     student_id: str,
     force_recalculation: bool = Query(False, description="Zorla yeniden hesaplama"),
     db: AsyncSession = Depends(get_db),
+    current_user=Depends(get_current_user_from_token),
 ):
     """
     Öğrenci için hibrit öğrenme stili tespit et
     64 farklı profil kombinasyonundan birini döndürür
     """
     try:
+        await verify_student_access(student_id, current_user, db)
         logger.info(f"Öğrenme stili tespiti API çağrısı - Öğrenci: {student_id}")
 
         # Try DB-based detection first (refactored service)
@@ -97,11 +100,14 @@ async def get_content_recommendations(
     subject_area: str = Query("matematik", description="Konu alanı"),
     difficulty_level: str = Query("orta", description="Zorluk seviyesi"),
     force_refresh: bool = Query(False, description="Öneri yenileme"),
+    db: AsyncSession = Depends(get_db),
+    current_user=Depends(get_current_user_from_token),
 ):
     """
     Hibrit profile göre kişiselleştirilmiş içerik önerileri
     """
     try:
+        await verify_student_access(student_id, current_user, db)
         logger.info(
             f"İçerik önerisi API çağrısı - Öğrenci: {student_id}, Konu: {subject_area}"
         )
@@ -142,11 +148,17 @@ async def get_content_recommendations(
 
 
 @router.post("/behavioral-data/{student_id}", response_model=Dict[str, Any])
-async def update_behavioral_data(student_id: str, behavioral_data: BehavioralData):
+async def update_behavioral_data(
+    student_id: str,
+    behavioral_data: BehavioralData,
+    db: AsyncSession = Depends(get_db),
+    current_user=Depends(get_current_user_from_token),
+):
     """
     Yeni davranışsal veri ile öğrenme stilini güncelle
     """
     try:
+        await verify_student_access(student_id, current_user, db)
         logger.info(f"Davranışsal veri güncelleme API çağrısı - Öğrenci: {student_id}")
 
         # Student ID'yi data'ya set et
@@ -186,11 +198,13 @@ async def submit_questionnaire(
     student_id: str,
     questionnaire_response: QuestionnaireResponse,
     db: AsyncSession = Depends(get_db),
+    current_user=Depends(get_current_user_from_token),
 ):
     """
     Öğrenme stili anketi yanıtlarını kaydet — cache + DB persist
     """
     try:
+        await verify_student_access(student_id, current_user, db)
         logger.info(
             f"Anket yanıtı API çağrısı - Öğrenci: {student_id}, Tür: {questionnaire_response.questionnaire_type}"
         )
@@ -267,11 +281,16 @@ def _calculate_vark_scores(response: QuestionnaireResponse) -> Dict[str, float]:
 
 
 @router.get("/explanation/{student_id}", response_model=Dict[str, Any])
-async def get_learning_style_explanation(student_id: str):
+async def get_learning_style_explanation(
+    student_id: str,
+    db: AsyncSession = Depends(get_db),
+    current_user=Depends(get_current_user_from_token),
+):
     """
     Öğrenci için öğrenme stili açıklaması
     """
     try:
+        await verify_student_access(student_id, current_user, db)
         logger.info(f"Öğrenme stili açıklaması API çağrısı - Öğrenci: {student_id}")
 
         explanation = await learning_style_service.get_learning_style_explanation(
@@ -341,11 +360,16 @@ async def get_learning_style_statistics():
 
 
 @router.get("/export/{student_id}", response_model=Dict[str, Any])
-async def export_learning_profile(student_id: str):
+async def export_learning_profile(
+    student_id: str,
+    db: AsyncSession = Depends(get_db),
+    current_user=Depends(get_current_user_from_token),
+):
     """
     Öğrenci öğrenme profilini dışa aktar
     """
     try:
+        await verify_student_access(student_id, current_user, db)
         logger.info(f"Profil dışa aktarma API çağrısı - Öğrenci: {student_id}")
 
         export_data = await learning_style_service.export_learning_profile(student_id)
@@ -398,12 +422,16 @@ async def get_content_explanation(hybrid_code: str, content_type: str):
 
 @router.post("/update-recommendations/{student_id}", response_model=Dict[str, Any])
 async def update_recommendations_based_on_performance(
-    student_id: str, performance_data: Dict[str, float]
+    student_id: str,
+    performance_data: Dict[str, float],
+    db: AsyncSession = Depends(get_db),
+    current_user=Depends(get_current_user_from_token),
 ):
     """
     Performans verilerine göre önerileri güncelle
     """
     try:
+        await verify_student_access(student_id, current_user, db)
         logger.info(
             f"Performans tabanlı öneri güncelleme API çağrısı - Öğrenci: {student_id}"
         )

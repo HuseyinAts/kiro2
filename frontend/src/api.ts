@@ -440,6 +440,7 @@ export async function getContentRecommendations(studentId: string, subjectArea: 
   const response = await fetch(`${API_BASE_URL}/api/v1/learning-style/recommendations/${studentId}?subject_area=${subjectArea}&difficulty_level=${difficultyLevel}&force_refresh=${forceRefresh}`, {
     headers: getHeaders(),
     signal: AbortSignal.timeout(appConfig.api.timeout),
+    credentials: 'include',
   });
 
   if (!response.ok) {
@@ -471,6 +472,7 @@ export async function updateBehavioralData(studentId: string, behavioralData: {
     }),
     body: JSON.stringify(behavioralData),
     signal: AbortSignal.timeout(appConfig.api.timeout),
+    credentials: 'include',
   });
 
   if (!response.ok) {
@@ -508,6 +510,7 @@ export async function getLearningStyleExplanation(studentId: string) {
   const response = await fetch(`${API_BASE_URL}/api/v1/learning-style/explanation/${studentId}`, {
     headers: getHeaders(),
     signal: AbortSignal.timeout(appConfig.api.timeout),
+    credentials: 'include',
   });
 
   if (!response.ok) {
@@ -550,6 +553,7 @@ export async function exportLearningProfile(studentId: string) {
   const response = await fetch(`${API_BASE_URL}/api/v1/learning-style/export/${studentId}`, {
     headers: getHeaders(),
     signal: AbortSignal.timeout(appConfig.api.timeout),
+    credentials: 'include',
   });
 
   if (!response.ok) {
@@ -568,6 +572,7 @@ export async function updateRecommendationsBasedOnPerformance(studentId: string,
     }),
     body: JSON.stringify(performanceData),
     signal: AbortSignal.timeout(appConfig.api.timeout),
+    credentials: 'include',
   });
 
   if (!response.ok) {

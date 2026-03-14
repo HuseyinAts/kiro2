@@ -88,25 +88,40 @@ export const convertPathToNodes = (
 ): PathNodeData[] => {
   const nodes: PathNodeData[] = [];
   let yPosition = 0;
+  let foundFirstIncomplete = false;
 
   path.modules?.forEach((module: any, moduleIndex: number) => {
     module.topics?.forEach((topic: any, topicIndex: number) => {
       const nodeId = `${module.module_id}-${topic.topic_id}`;
-      const isFirst = moduleIndex === 0 && topicIndex === 0;
       const isCompleted = completionStatus[nodeId] || false;
+
+      let status: 'completed' | 'current' | 'available';
+      if (isCompleted) {
+        status = 'completed';
+      } else if (!foundFirstIncomplete) {
+        status = 'current';
+        foundFirstIncomplete = true;
+      } else {
+        status = 'available';
+      }
 
       nodes.push({
         id: nodeId,
-        title: topic.name,
-        description: `${module.title} - ${topic.name}`,
+        title: topic?.name || `Konu ${topicIndex + 1}`,
+        description: `${module?.title || 'Modül'} - ${topic?.name || 'Konu'}`,
         type: 'lesson',
-        status: isCompleted ? 'completed' : isFirst ? 'current' : 'available',
-        progress: isCompleted ? 100 : isFirst ? 30 : 0,
-        estimatedTime: `${topic.duration_minutes} dakika`,
-        difficulty: 'intermediate',
+        status,
+        progress: isCompleted ? 100 : status === 'current' ? 30 : 0,
+        estimatedTime: `${topic?.duration_minutes || 30} dakika`,
+        difficulty: topic?.difficulty || topic?.difficulty_level || 'intermediate',
         points: 100,
         prerequisites: topicIndex > 0 ? [`${module.module_id}-TOP${topicIndex}`] : [],
-        resources: topic.resources?.length || 0,
+        resources: topic?.resources?.length || 0,
+        quiz: topic?.quiz ? {
+          quiz_id: topic.quiz.quiz_id || `QZ_${nodeId}`,
+          question_count: topic.quiz.question_count || 5,
+          passing_score: topic.quiz.passing_score || 60,
+        } : undefined,
         position: { x: 100 + moduleIndex * 300, y: 100 + yPosition },
       });
 

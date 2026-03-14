@@ -5,7 +5,7 @@
  * Tıklanınca QuizInterface ile soru çözme akışı başlatır.
  */
 
-import { Alert, Box, Button, Chip, CircularProgress, Paper, Typography } from '@mui/material';
+import { Alert, Box, Button, Chip, CircularProgress, LinearProgress, Paper, Typography } from '@mui/material';
 import { Replay, Quiz } from '@mui/icons-material';
 import { useState, useEffect, useCallback } from 'react';
 
@@ -34,11 +34,15 @@ interface ReviewQueuePanelProps {
   onClose?: () => void;
 }
 
+const hasQuestion = (c: ReviewCard): c is ReviewCard & { question: NonNullable<ReviewCard['question']> } =>
+  c.question != null;
+
 export function ReviewQueuePanel({ onClose }: ReviewQueuePanelProps) {
   const [cards, setCards] = useState<ReviewCard[]>([]);
   const [loading, setLoading] = useState(true);
   const [reviewQuestions, setReviewQuestions] = useState<Question[] | null>(null);
   const [activeCardIds, setActiveCardIds] = useState<string[]>([]);
+  const [submitProgress, setSubmitProgress] = useState(0);
 
   const loadQueue = useCallback(async () => {
     setLoading(true);
@@ -62,22 +66,23 @@ export function ReviewQueuePanel({ onClose }: ReviewQueuePanelProps) {
   }, [loadQueue]);
 
   const handleStartReview = useCallback(() => {
-    const withQuestions = cards.filter(c => c.question);
+    const withQuestions = cards.filter(hasQuestion);
     if (withQuestions.length === 0) return;
 
     setActiveCardIds(withQuestions.map(c => c.card_id));
     setReviewQuestions(
-      withQuestions.map(c => mapApiToQuizQuestion(c.question!)),
+      withQuestions.map(c => mapApiToQuizQuestion(c.question)),
     );
   }, [cards]);
 
   const handleReviewComplete = useCallback(async (results: { answers: Record<string, any> }) => {
-    // Submit each card's grade to FSRS
     const mappedQuestions = reviewQuestions || [];
-    for (let i = 0; i < activeCardIds.length; i++) {
-      const cardId = activeCardIds[i];
+    let completed = 0;
+    setSubmitProgress(1); // Show progress bar
+
+    const promises = activeCardIds.map(async (cardId, i) => {
       const mappedQ = mappedQuestions[i];
-      if (!mappedQ) continue;
+      if (!mappedQ) return;
 
       const userAnswer = results.answers[mappedQ.id];
       const isCorrect = userAnswer === mappedQ.correctAnswer;
@@ -95,7 +100,12 @@ export function ReviewQueuePanel({ onClose }: ReviewQueuePanelProps) {
       } catch (err) {
         console.error(`Review submit basarisiz (${cardId}):`, err);
       }
-    }
+      completed++;
+      setSubmitProgress(Math.round((completed / activeCardIds.length) * 100));
+    });
+
+    await Promise.allSettled(promises);
+    setSubmitProgress(0);
 
     // Reload queue
     setReviewQuestions(null);
@@ -114,23 +124,34 @@ export function ReviewQueuePanel({ onClose }: ReviewQueuePanelProps) {
   // Review quiz active
   if (reviewQuestions) {
     return (
-      <QuizInterface
-        config={{
-          title: 'Tekrar Zamanı',
-          description: `${reviewQuestions.length} soru tekrar bekliyor`,
-          questions: reviewQuestions,
-          passingScore: 0,
-          immediateFeedback: true,
-          showCorrectAnswers: true,
-        }}
-        onSubmit={handleReviewComplete}
-        onExit={() => { setReviewQuestions(null); setActiveCardIds([]); }}
-      />
+      <Box>
+        {submitProgress > 0 && (
+          <LinearProgress variant="determinate" value={submitProgress} sx={{ mb: 1 }} />
+        )}
+        <QuizInterface
+          config={{
+            title: 'Tekrar Zamanı',
+            description: `${reviewQuestions.length} soru tekrar bekliyor`,
+            questions: reviewQuestions,
+            passingScore: 0,
+            immediateFeedback: true,
+            showCorrectAnswers: true,
+          }}
+          onSubmit={handleReviewComplete}
+          onExit={() => { setReviewQuestions(null); setActiveCardIds([]); }}
+        />
+      </Box>
     );
   }
 
   if (cards.length === 0) {
-    return null; // No due cards — don't show panel
+    return (
+      <Alert severity="success" variant="outlined" sx={{ mb: 3 }}>
+        <Typography variant="body2">
+          Tüm tekrarlar tamamlandı! Şu an tekrar bekleyen soru yok.
+        </Typography>
+      </Alert>
+    );
   }
 
   return (

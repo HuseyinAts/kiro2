@@ -18,6 +18,7 @@ import { extractSubject, extractTopic } from '../utils/learningPathHelpers';
 
 // Video cache - prevents duplicate API calls
 const videoCache = new Map<string, { videos: VideoResponse[]; timestamp: number }>();
+const VIDEO_CACHE_TTL = 5 * 60 * 1000; // 5 minutes
 
 export interface UseLearningPathVideosReturn {
   videos: VideoResponse[]
@@ -36,14 +37,19 @@ export const useLearningPathVideos = (): UseLearningPathVideosReturn => {
   /** Load videos for entire learning path */
   const loadVideosForPath = useCallback(async (path: any, learningStyle: string) => {
     try {
-      setVideosLoading(true);
-      setVideosError(null);
-
       const modules = path?.modules || [];
       if (modules.length === 0) return;
 
-      // Use first module's subject for initial video load
       const subject = extractSubject(modules[0]?.title || 'matematik');
+      const cacheKey = `path_${subject}_${learningStyle}`;
+      const cached = videoCache.get(cacheKey);
+      if (cached && Date.now() - cached.timestamp < VIDEO_CACHE_TTL) {
+        setVideos(cached.videos);
+        return;
+      }
+
+      setVideosLoading(true);
+      setVideosError(null);
 
       const result = await searchLearningResources({
         subject,
@@ -56,6 +62,7 @@ export const useLearningPathVideos = (): UseLearningPathVideosReturn => {
       });
 
       if (result.success && result.resources) {
+        videoCache.set(cacheKey, { videos: result.resources, timestamp: Date.now() });
         setVideos(result.resources);
       }
     } catch (err: any) {
@@ -75,12 +82,19 @@ export const useLearningPathVideos = (): UseLearningPathVideosReturn => {
     learningStyle: string,
   ) => {
     try {
-      setVideosLoading(true);
-      setVideosError(null);
-
       const subject = extractSubject(nodeDescription);
       const topic = extractTopic(nodeTitle);
       const difficultyTurkish = difficultyToTurkish(nodeDifficulty as any);
+
+      const cacheKey = `${subject}_${topic || 'all'}_${difficultyTurkish}`;
+      const cached = videoCache.get(cacheKey);
+      if (cached && Date.now() - cached.timestamp < VIDEO_CACHE_TTL) {
+        setVideos(cached.videos);
+        return;
+      }
+
+      setVideosLoading(true);
+      setVideosError(null);
 
       const result = await searchLearningResources({
         subject,
@@ -94,12 +108,12 @@ export const useLearningPathVideos = (): UseLearningPathVideosReturn => {
       });
 
       if (result.success && result.resources) {
-        // Sort by score
         const sorted = result.resources.sort((a, b) => {
           const scoreA = a.scores?.final_score || 0;
           const scoreB = b.scores?.final_score || 0;
           return scoreB - scoreA;
         });
+        videoCache.set(cacheKey, { videos: sorted, timestamp: Date.now() });
         setVideos(sorted);
       } else if (result.error) {
         setVideosError(result.error.message);
