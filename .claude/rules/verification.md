@@ -80,11 +80,32 @@ Her gorev tamamlanmadan once bu listeyi kontrol et:
 - [ ] Reward hacking pattern yok mu?
 - [ ] Guvenlik kontrolleri gecti mi?
 - [ ] Coverage dusmus mu?
+- [ ] Dogru tablo mu? (`question_bank` = 77K production, `questions` = BOS legacy)
+- [ ] `is_active == True` filtresi var mi? (soru sorgularinda ZORUNLU)
+- [ ] Infra calisiyor mu? (ONCE health check, SONRA koda bak — detay asagida)
+- [ ] En basit cozum mu? (Daha basit alternatif varsa ONU sec — YAGNI)
+
+## INFRA-FIRST HATA AYIKLAMA (Infrastructure Check First)
+
+Endpoint/servis hatasi goruldugunde ONCE altyapiyi kontrol et:
+
+1. Docker servisleri: `docker ps --format "table {{.Names}}\t{{.Status}}"`
+2. PostgreSQL (port 5434 — native Windows): `pg_isready -p 5434`
+   - Docker ise: `docker exec kiro2_postgres pg_isready`
+3. Redis: `redis-cli ping` veya `docker exec kiro2_redis redis-cli ping`
+4. Backend health: `curl -s http://localhost:8000/api/v1/health`
+
+Kural: 503/500 donuyorsa %75 ihtimalle altyapi sorunu.
+ONCE altyapi kontrolu yap, SONRA koda bak.
 
 ## ADIM ADIM ILERLEME KURALI (Incremental Progress)
 
 > "Buyuk degisiklikler yerine kucuk, test edilebilir adimlar tercih et"
 > - JWT DRY Refactoring Dersi (Subat 2026)
+
+### TDD Kurali (Red-Green-Verify)
+Bug fix icin: ONCE fail eden testi bul/yaz → FIX yap → Test PASS mi? → Evet: commit. Hayir: geri al.
+Fix ONCESI fail eden test YOKSA, once testi yaz.
 
 ### Degisiklik Stratejisi
 

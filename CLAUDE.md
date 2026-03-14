@@ -5,6 +5,7 @@
 - **Session resume**: Önceki session'dan devam ederken, codebase'i sıfırdan explore ETME. Bildiğin context'i hemen belirt ve sonraki adımları öner. Gereksiz keşif yapmadan önce SOR.
 - **State persistence**: Session sonunda `.claude/sessions/latest.md`'ye state yaz (yapılanlar, bekleyenler, engelleyiciler, dokunulan dosyalar, sonraki adımlar). 50 satırı geçmesin.
 - **Plan time-boxing**: Plan modunda 2-3 dk keşiften sonra kullanıcıya check-in yap. Açık onay almadan 3 turdan fazla plan taslağı yapma.
+- **Context validation**: Session resume sonrasi, hook'tan gelen state'i CLAUDE.md/MEMORY.md ile karsilastir. Tutarsizlik varsa (branch, soru sayisi, son commit) kullaniciya bildir.
 
 ## Communication Rules
 
@@ -244,6 +245,14 @@ npm test -- --coverage    # Tests + coverage
 
 # ❌ FAIL = DO NOT COMMIT
 ```
+
+### 5. Basit Cozum Prensibi (KISS/YAGNI)
+**Her zaman en basit calisan cozumu sec.**
+
+- Yeni abstraction SADECE 3+ yerde tekrar ediliyorsa olustur
+- Yeni dosya SADECE mevcut dosya 500+ satir veya sorumluluk farkliysa olustur
+- Yeni hook/skill SADECE mevcut olanlar yetersiz kaliyorsa olustur
+- Over-engineering sinyalleri: "ileride lazim olur", "esneklik icin", "genel amacli"
 
 ## 🔀 Agent Routing Rules
 
