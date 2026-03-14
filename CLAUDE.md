@@ -1,15 +1,23 @@
 # KIRO2 Project Instructions
 
+## Session Management
+
+- **Session resume**: Önceki session'dan devam ederken, codebase'i sıfırdan explore ETME. Bildiğin context'i hemen belirt ve sonraki adımları öner. Gereksiz keşif yapmadan önce SOR.
+- **State persistence**: Session sonunda `.claude/sessions/latest.md`'ye state yaz (yapılanlar, bekleyenler, engelleyiciler, dokunulan dosyalar, sonraki adımlar). 50 satırı geçmesin.
+- **Plan time-boxing**: Plan modunda 2-3 dk keşiften sonra kullanıcıya check-in yap. Açık onay almadan 3 turdan fazla plan taslağı yapma.
+
 ## Communication Rules
 
 1. **Direct Answer First**: Kullanıcı evet/hayır veya kısa cevap gerektiren soru sorduğunda ÖNCE 1 cümle ile cevapla, SONRA analiz/keşif yap. Dosya keşfi cevaptan ÖNCE yapılmaz.
 2. **Plan Iteration Limit**: Plan oluştururken maksimum 2 iterasyon. 2. iterasyonda hâlâ netleşmediyse kullanıcıya sun ve yön sor. Onaysız auto-pivot yapma.
 3. **Windows Environment**: Bu bir Windows 11 + NTFS ortamı. Linux/Mac komutları önerme. NTFS dosya tarama yavaştır — batch işlemlerde bunu hesaba kat. `python3` yok, `python` kullan.
+4. **Direct questions**: Direkt soru sorulduğunda (hangi model?, X yapıldı mı?) ÖNCE direkt cevap ver, SONRA gerekirse doğrula/keşfet. Asla dosya keşfiyle başlama.
 
 ## Git Operations
 
 - **Push fail (>2GB pack)**: 1) `git-lfs` ile büyük dosyaları track et, 2) `.gitignore` güncelle, 3) BFG Repo-Cleaner ile history temizle. Push'u tekrar tekrar deneme.
 - **Pre-commit**: 50MB+ dosya commit'e girmeye çalışırsa engelle.
+- **Pre-push file check**: Push öncesi `find . -size +100M -not -path './.git/*'` ile büyük dosyaları kontrol et. >100MB varsa git-lfs veya .gitignore öner.
 - **LFS tracked patterns**: `*.jsonl` (>50MB), `*.bin`, `*.pt`, `*.db` (>50MB)
 
 ## 🎯 Project Overview

@@ -65,6 +65,15 @@
             "command": "python C:/Users/husey/kiro2/.claude/hooks/pre-tool-use.py"
           }
         ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python C:/Users/husey/kiro2/.claude/hooks/pre-commit-check.py"
+          }
+        ]
       }
     ],
     "SessionStart": [
