@@ -20,7 +20,7 @@ ENV VITE_WS_URL=""
 # Show demo login buttons (Öğrenci/Öğretmen/Veli/Admin) when build arg is set
 ARG VITE_SHOW_DEMO=false
 ENV VITE_SHOW_DEMO=${VITE_SHOW_DEMO}
-RUN npm run build
+RUN npm run build:fast
 
 # Production stage - nginx for static files + API proxy
 FROM nginx:alpine AS production
