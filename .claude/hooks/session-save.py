@@ -14,6 +14,7 @@ from __future__ import annotations
 
 import json
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -168,9 +169,49 @@ def get_production_state() -> dict:
     return {"question_count": _fast_line_count(jsonl_path) if jsonl_path.exists() else 0}
 
 
+def get_coverage_state() -> dict:
+    """Read last coverage report via tail+regex (no full JSON parse — file is 1.3M+ lines)."""
+    path = PROJECT_ROOT / "backend" / "coverage.json"
+    if not path.exists():
+        return {"available": False}
+    try:
+        size = path.stat().st_size
+        with open(path, "rb") as f:
+            f.seek(max(0, size - 1024))
+            tail = f.read().decode("utf-8", errors="replace")
+        match = re.search(r'"percent_covered_display":\s*"([^"]+)"', tail)
+        if match:
+            mtime = datetime.fromtimestamp(path.stat().st_mtime, tz=timezone.utc)
+            return {
+                "available": True,
+                "percent": match.group(1),
+                "report_date": mtime.strftime("%Y-%m-%d %H:%M"),
+            }
+    except Exception:
+        pass
+    return {"available": False}
+
+
+def get_migration_state() -> dict:
+    """Count alembic migration files (no subprocess — just glob)."""
+    versions_dir = PROJECT_ROOT / "backend" / "alembic" / "versions"
+    if not versions_dir.exists():
+        return {"count": 0, "latest": "N/A"}
+    try:
+        migrations = sorted(
+            [f for f in versions_dir.glob("*.py") if not f.name.startswith("__")],
+            key=lambda p: p.name, reverse=True,
+        )
+        latest = migrations[0].stem if migrations else "N/A"
+        return {"count": len(migrations), "latest": latest}
+    except Exception:
+        return {"count": 0, "latest": "N/A"}
+
+
 # === Output ===
 
-def build_state_md(git: dict, services: dict, tasks: dict, production: dict) -> str:
+def build_state_md(git: dict, services: dict, tasks: dict, production: dict,
+                   coverage: dict | None = None, migrations: dict | None = None) -> str:
     """Build SESSION_STATE.md content."""
     now = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
     lines = [
@@ -181,6 +222,8 @@ def build_state_md(git: dict, services: dict, tasks: dict, production: dict) -> 
         f"- **Last commit:** {git['last_commits'][0] if git['last_commits'] else 'N/A'}",
         f"- **Uncommitted:** {git['uncommitted_count']} files ({git['uncommitted_py']} .py)",
         f"- **Production:** {production['question_count']:,} questions",
+        f"- **Coverage:** {coverage['percent']}% ({coverage['report_date']})" if coverage and coverage.get('available') else "- **Coverage:** No report found",
+        f"- **Migrations:** {migrations['count']} files, latest: {migrations['latest']}" if migrations else "- **Migrations:** N/A",
         f"- **Backend:** {services['backend']}",
         f"- **Frontend:** {services['frontend']}",
         "",
@@ -274,9 +317,11 @@ def main() -> int:
         services = get_services_state()
         tasks = get_tasks_state()
         production = get_production_state()
+        coverage = get_coverage_state()
+        migrations = get_migration_state()
 
         # Atomic writes
-        md_content = build_state_md(git, services, tasks, production)
+        md_content = build_state_md(git, services, tasks, production, coverage, migrations)
         atomic_write(STATE_FILE, md_content)
 
         state_json = {
@@ -285,6 +330,8 @@ def main() -> int:
             "services": services,
             "tasks": tasks,
             "production": production,
+            "coverage": coverage,
+            "migrations": migrations,
         }
         atomic_write(STATE_JSON, json.dumps(state_json, indent=2, ensure_ascii=False))
 

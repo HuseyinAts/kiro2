@@ -96,6 +96,47 @@ EXIT CODE: 2 (BLOCKING)
 ================================================================
 ```
 
+## Remediation Hints (Yaygin Hata Cozumleri)
+
+Hata tespit edildiginde sadece raporlama YETMEZ. Pattern'e gore fix onerisi sun:
+
+### Import Errors
+| Hata | Olasi Neden | Fix | Referans |
+|------|-------------|-----|----------|
+| `ModuleNotFoundError` | Paket eksik veya yanlis path | `pip install X` veya relative import | - |
+| `ImportError: cannot import name` | Circular veya silinmis sinif | Import sirasini degistir veya lazy import | - |
+| `from models.X import Y` fail | Absolute vs relative import | `from .X import Y` kullan | Ders #6 |
+
+### Type / Async Errors
+| Hata | Olasi Neden | Fix | Referans |
+|------|-------------|-----|----------|
+| `object is not callable` | async fonksiyon await edilmedi | `await func()` ekle | - |
+| `AttributeError: .value` | Enum vs plain string | Field tipini kontrol et | Ders #26 |
+| `async with get_async_session()` | Generator vs context manager | `get_db_session_context()` kullan | Ders #25 |
+
+### DB Issues
+| Hata | Olasi Neden | Fix | Referans |
+|------|-------------|-----|----------|
+| Sorgu bos donuyor | Dual Table Trap: `Question` = BOS | `QuestionBankItem` kullan | Ders #23 |
+| Devre disi kayit | `is_active` filtresi eksik | `.filter(is_active == True)` ekle | Ders #24 |
+| Enum eslesmesi basarisiz | UPPERCASE vs lowercase | `.upper()` donusumu ekle | Ders #26 |
+
+### Test Failures
+| Hata | Olasi Neden | Fix | Referans |
+|------|-------------|-----|----------|
+| `fixture not found` | Conftest scope sorunu | Hibrit: merkezi fonksiyon + lokal fixture | Ders #1-2 |
+| `httpx.AsyncClient(app=...)` | httpx 0.27+ deprecated | `ASGITransport(app=app)` kullan | Ders #20 |
+| Health endpoint 503 | Test ortaminda Redis/DB yok | conftest mock fixture ekle | Ders #14 |
+
+Fix onerisi formati:
+```
+[FAIL] {kategori}: {hata_mesaji}
+  Dosya: {dosya}:{satir}
+  Neden: {aciklama}
+  Fix: {onerilen_duzeltme}
+  Ref: testing.md Ders #{numara}
+```
+
 ## Daisy Stanton Exit Code Kurallari
 
 - **Exit 0**: Basari - islem devam edebilir
