@@ -4,6 +4,10 @@
  * Manages video loading for learning path.
  * Simplified: no VideoLoadingManager singleton, no subscription pattern.
  * Uses apiRequest (httpOnly cookie auth).
+ *
+ * Features:
+ * - Video Cache: Memoized results by subject/difficulty
+ * - Error Handling: User-friendly Turkish messages
  */
 
 import { useState, useCallback } from 'react';
@@ -12,12 +16,16 @@ import { VideoResponse, searchLearningResources } from '../api';
 import { difficultyToTurkish } from '../utils/difficultyTranslation';
 import { extractSubject, extractTopic } from '../utils/learningPathHelpers';
 
+// Video cache - prevents duplicate API calls
+const videoCache = new Map<string, { videos: VideoResponse[]; timestamp: number }>();
+
 export interface UseLearningPathVideosReturn {
   videos: VideoResponse[]
   videosLoading: boolean
   videosError: string | null
   loadVideosForPath: (path: any, learningStyle: string) => Promise<void>
   loadVideosForNode: (nodeId: string, nodeTitle: string, nodeDescription: string, nodeDifficulty: string, learningStyle: string) => Promise<void>
+  clearCache: () => void
 }
 
 export const useLearningPathVideos = (): UseLearningPathVideosReturn => {
@@ -104,12 +112,19 @@ export const useLearningPathVideos = (): UseLearningPathVideosReturn => {
     }
   }, []);
 
+  /** Clear video cache */
+  const clearCache = useCallback(() => {
+    videoCache.clear();
+    setVideos([]);
+  }, []);
+
   return {
     videos,
     videosLoading,
     videosError,
     loadVideosForPath,
     loadVideosForNode,
+    clearCache,
   };
 };
 

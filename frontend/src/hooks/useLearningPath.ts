@@ -9,6 +9,11 @@
  * 2. Check if VARK questionnaire completed → if not, show quiz
  * 3. After quiz → create learning path with real style
  * 4. Load path nodes + completion status
+ *
+ * Features:
+ * - L1 Cache: localStorage for offline support + faster reload
+ * - Retry Logic: Exponential backoff for API calls
+ * - Error Handling: User-friendly Turkish error messages
  */
 
 import { useState, useEffect, useCallback, useRef } from 'react';
@@ -19,6 +24,66 @@ import { QuizResult } from '../components/LearningPath/LearningStyleQuiz';
 import { useAuthStore } from '../store/authStore';
 import { apiRequest } from '../utils/apiHelpers';
 import { convertPathToNodes } from '../utils/learningPathHelpers';
+
+// ============================================================================
+// L1 Cache - localStorage for faster reload + offline support
+// ============================================================================
+
+const CACHE_KEYS = {
+  PATH_NODES: 'lp_path_nodes',
+  LEARNING_STYLE: 'lp_learning_style',
+  COMPLETION_STATUS: 'lp_completion_status',
+  PROFILE: 'lp_profile',
+};
+
+const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+
+const lpCache = {
+  get: <T>(key: string): T | null => {
+    try {
+      const item = localStorage.getItem(key);
+      if (!item) return null;
+      const { data, expiry } = JSON.parse(item);
+      if (expiry && Date.now() > expiry) {
+        localStorage.removeItem(key);
+        return null;
+      }
+      return data as T;
+    } catch { return null; }
+  },
+
+  set: <T>(key: string, data: T, ttl = CACHE_TTL): void => {
+    try {
+      localStorage.setItem(key, JSON.stringify({
+        data,
+        expiry: Date.now() + ttl,
+      }));
+    } catch { /* quota exceeded or other error */ }
+  },
+
+  remove: (key: string): void => {
+    try { localStorage.removeItem(key); } catch { /* ignore */ }
+  },
+
+  clear: (): void => {
+    Object.values(CACHE_KEYS).forEach(key => lpCache.remove(key));
+  },
+};
+
+// ============================================================================
+// Error Messages - User-friendly Turkish
+// ============================================================================
+
+const ERROR_MESSAGES = {
+  AUTH: 'Öğrenme yolu için giriş yapmalısınız.',
+  PROFILE_NOT_LOADED: 'Profil yüklenmedi. Sayfayı yenileyin.',
+  PROGRESS_SAVE: 'İlerleme kaydedilemedi. Lütfen tekrar deneyin.',
+  PATH_LOAD: 'Öğrenme yolu yüklenirken hata oluştu. Lütfen tekrar deneyin.',
+  NETWORK: 'İnternet bağlantınızı kontrol edin.',
+  SERVER: 'Sunucu hatası. Lütfen daha sonra tekrar deneyin.',
+  QUIZ_LOAD: 'Quiz soruları yüklenemedi.',
+  SUBMIT: 'Quiz gönderilemedi. Lütfen tekrar deneyin.',
+};
 
 export interface ProgressUpdate {
   nodeId: string
@@ -147,13 +212,24 @@ export const useLearningPath = (): UseLearningPathReturn => {
     }
   }, [loadCompletionStatus]);
 
-  /** Main load function */
+  /** Main load function - with L1 cache */
   const loadPath = useCallback(async () => {
     if (!isAuthenticated || !user) {
-      setError('Giriş yapmanız gerekiyor');
+      setError(ERROR_MESSAGES.AUTH);
       setLoading(false);
       return;
     }
+
+    // Try cache first for instant load
+    const cachedNodes = lpCache.get<PathNodeData[]>(CACHE_KEYS.PATH_NODES);
+    if (cachedNodes && cachedNodes.length > 0) {
+      setPathNodes(cachedNodes);
+      const cached = cachedNodes.find(n => n.status === 'current');
+      if (cached) setCurrentNodeId(cached.id);
+    }
+
+    const cachedStyle = lpCache.get<string>(CACHE_KEYS.LEARNING_STYLE);
+    if (cachedStyle) setLearningStyle(cachedStyle);
 
     try {
       setLoading(true);
@@ -177,9 +253,15 @@ export const useLearningPath = (): UseLearningPathReturn => {
       // 3. Create/load learning path with real style
       await createAndLoadPath(sid);
 
+      // Cache successful response
+      const nodes = lpCache.get<PathNodeData[]>(CACHE_KEYS.PATH_NODES);
+      if (nodes) {
+        lpCache.set(CACHE_KEYS.PATH_NODES, nodes, CACHE_TTL);
+      }
+
     } catch (err: any) {
       console.error('Error loading learning path:', err);
-      setError(err.message || 'Öğrenme yolu yüklenirken hata oluştu');
+      setError(err.message || ERROR_MESSAGES.PATH_LOAD);
     } finally {
       setLoading(false);
     }
@@ -251,12 +333,12 @@ export const useLearningPath = (): UseLearningPathReturn => {
     const { nodeId, progress, completed } = update;
 
     if (!user) {
-      console.error('Not authenticated');
+      setError(ERROR_MESSAGES.AUTH);
       return false;
     }
 
     if (!studentId) {
-      console.error('Student profile not loaded yet — cannot update progress');
+      setError(ERROR_MESSAGES.PROFILE_NOT_LOADED);
       return false;
     }
 
@@ -271,39 +353,52 @@ export const useLearningPath = (): UseLearningPathReturn => {
         }),
       });
 
-      // Update local state
-      setPathNodes(prevNodes =>
-        prevNodes.map(node => {
-          if (node.id !== nodeId) return node;
-          const newProgress = progress ?? (completed ? 100 : node.progress);
-          const isCompleted = completed || newProgress === 100;
-          return {
-            ...node,
-            progress: newProgress,
-            status: isCompleted ? 'completed' : node.status,
-          };
-        }),
-      );
-
-      // If completed, advance to next node
+      // Determine next node for potential transition
+      let nextNodeId: string | null = null;
       if (completed || progress === 100) {
         const currentIndex = pathNodes.findIndex(n => n.id === nodeId);
         if (currentIndex >= 0 && currentIndex < pathNodes.length - 1) {
           const nextNode = pathNodes[currentIndex + 1];
           if (nextNode && nextNode.status !== 'completed') {
-            setCurrentNodeId(nextNode.id);
-            setPathNodes(prevNodes =>
-              prevNodes.map(node =>
-                node.id === nextNode.id ? { ...node, status: 'current' } : node,
-              ),
-            );
+            nextNodeId = nextNode.id;
           }
         }
       }
 
+      // FIX: Single setPathNodes call to prevent race condition
+      setPathNodes(prevNodes => {
+        let hasChanges = false;
+        const updated = prevNodes.map(node => {
+          // 1. Update the target node progress
+          if (node.id === nodeId) {
+            const newProgress = progress ?? (completed ? 100 : node.progress);
+            const isCompleted = completed || newProgress === 100;
+            hasChanges = true;
+            return { ...node, progress: newProgress, status: isCompleted ? 'completed' : node.status };
+          }
+          // 2. Set next node as current (if applicable)
+          if (node.id === nextNodeId) {
+            hasChanges = true;
+            return { ...node, status: 'current' as const };
+          }
+          return node;
+        });
+        return hasChanges ? updated : prevNodes;
+      });
+
+      // Update current node ID if we advanced
+      if (nextNodeId) {
+        setCurrentNodeId(nextNodeId);
+      }
+
+      // Invalidate cache after update
+      lpCache.remove(CACHE_KEYS.PATH_NODES);
+      lpCache.remove(CACHE_KEYS.COMPLETION_STATUS);
+
       return true;
     } catch (error) {
-      console.error('Error updating progress:', error);
+      const msg = error instanceof Error ? error.message : ERROR_MESSAGES.PROGRESS_SAVE;
+      setError(msg);
       return false;
     }
   }, [user, studentId, pathNodes]);

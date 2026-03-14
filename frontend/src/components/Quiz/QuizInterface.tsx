@@ -15,6 +15,7 @@ import {
   Refresh,
   EmojiEvents,
   TrendingUp,
+  Warning,
 } from '@mui/icons-material';
 import {
   Paper,
@@ -88,6 +89,7 @@ interface QuizResults {
   timeSpent: number
   correctCount: number
   incorrectCount: number
+  isTimeout?: boolean  // True if quiz ended due to timeout
 }
 
 export function QuizInterface({
@@ -123,7 +125,8 @@ export function QuizInterface({
     const timer = setInterval(() => {
       setTimeLeft(prev => {
         if (prev <= 1) {
-          handleSubmit();
+          // Timeout: submit with timeout flag
+          setTimeout(() => handleSubmit(true), 0);
           return 0;
         }
         return prev - 1;
@@ -193,7 +196,7 @@ export function QuizInterface({
     setFlagged(newFlagged);
   };
 
-  const calculateResults = (): QuizResults => {
+  const calculateResults = (timeout: boolean = false): QuizResults => {
     let correctCount = 0;
     let totalScore = 0;
     let earnedScore = 0;
@@ -230,11 +233,12 @@ export function QuizInterface({
       timeSpent,
       correctCount,
       incorrectCount: config.questions.length - correctCount,
+      isTimeout: timeout,  // Include timeout flag in results
     };
   };
 
-  const handleSubmit = () => {
-    const quizResults = calculateResults();
+  const handleSubmit = (timeout: boolean = false) => {
+    const quizResults = calculateResults(timeout);
     setResults(quizResults);
     setIsSubmitted(true);
 
@@ -387,12 +391,22 @@ export function QuizInterface({
           </div>
 
           {config.timeLimit && (
-            <Chip
-              icon={<Timer />}
-              label={formatTime(timeLeft)}
-              color={timeLeft < 60 ? 'error' : 'default'}
-              className={timeLeft < 60 ? 'animate-pulse' : ''}
-            />
+            <>
+              <Chip
+                icon={<Timer />}
+                label={formatTime(timeLeft)}
+                color={timeLeft < 60 ? 'error' : 'default'}
+                className={timeLeft < 60 ? 'animate-pulse' : ''}
+              />
+              {timeLeft <= 30 && timeLeft > 0 && (
+                <Chip
+                  icon={<Warning />}
+                  label="Süre bitiyor!"
+                  color="error"
+                  className="animate-pulse"
+                />
+              )}
+            </>
           )}
         </div>
 
@@ -706,7 +720,7 @@ export function QuizInterface({
                 variant="contained"
                 color="success"
                 endIcon={<Send />}
-                onClick={handleSubmit}
+                onClick={() => handleSubmit(false)}
               >
                 Gönder
               </Button>

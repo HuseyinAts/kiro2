@@ -209,7 +209,30 @@ export function ModernLearningPathPage() {
   /**
    * Handle quiz completion — register wrong answers to FSRS + update node progress
    */
-  const handleQuizComplete = useCallback(async (results: { score: number; totalScore: number; percentage: number; answers: Record<string, any>; correctCount: number; incorrectCount: number }) => {
+  const handleQuizComplete = useCallback(async (results: { score: number; totalScore: number; percentage: number; answers: Record<string, any>; correctCount: number; incorrectCount: number; isTimeout?: boolean }) => {
+    // Helper: Retry fetch with exponential backoff
+    const fetchWithRetry = async (url: string, options: RequestInit, retries = 3): Promise<Response> => {
+      for (let i = 0; i < retries; i++) {
+        try {
+          const res = await fetch(url, options);
+          if (res.ok) return res;
+          // Server error - retry
+          if (res.status >= 500) {
+            await new Promise(r => setTimeout(r, 1000 * (i + 1))); // 1s, 2s, 3s
+            continue;
+          }
+          return res; // Client error - don't retry
+        } catch (err) {
+          if (i < retries - 1) {
+            await new Promise(r => setTimeout(r, 1000 * (i + 1)));
+            continue;
+          }
+          throw err;
+        }
+      }
+      throw new Error('Max retries exceeded');
+    };
+
     // 1. Find wrong answer question IDs
     const questions = nodeQuizQuestions || [];
     const wrongIds = questions
@@ -219,20 +242,20 @@ export function ModernLearningPathPage() {
       })
       .map(q => q.id);
 
-    // 2. Register wrong answers to FSRS (with F8 error types if available)
+    // 2. Register wrong answers to FSRS (with F8 error types if available) - with retry
     if (wrongIds.length > 0) {
       try {
         const errorTypes = Object.keys(errorTypesRef.current).length > 0
           ? errorTypesRef.current
           : undefined;
-        await fetch('/api/learning-path/register-wrong-answers', {
+        await fetchWithRetry('/api/learning-path/register-wrong-answers', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           credentials: 'include',
-          body: JSON.stringify({ question_ids: wrongIds, error_types: errorTypes }),
+          body: JSON.stringify({ question_ids: wrongIds, error_types: errorTypes, is_timeout: results.isTimeout }),
         });
       } catch (err) {
-        console.error('FSRS kaydi basarisiz:', err);
+        console.error('FSRS kaydi basarisiz (retry dahil):', err);
       }
     }
 
@@ -246,18 +269,27 @@ export function ModernLearningPathPage() {
       }
     }
 
-    // 4. Award gamification points
+    // 4. Award gamification points - with retry
     if (studentId) {
       const points = results.correctCount * 10 + (results.percentage >= (activeQuizNode?.quiz?.passing_score || 60) ? 50 : 0);
       if (points > 0) {
-        fetch(`/api/v1/gamification/points/award?points=${points}&reason=quiz_complete`, {
-          method: 'POST',
-          credentials: 'include',
-        }).catch(err => console.error('Gamification puan hatası:', err));
+        try {
+          await fetchWithRetry(`/api/v1/gamification/points/award?points=${points}&reason=quiz_complete`, {
+            method: 'POST',
+            credentials: 'include',
+          });
+        } catch (err) {
+          console.error('Gamification puan hatası (retry dahil):', err);
+        }
       }
     }
 
-    // 5. Close quiz + reset error types
+    // 5. Show timeout warning if applicable
+    if (results.isTimeout) {
+      console.warn('Quiz süre dolduğu için sonlandırıldı');
+    }
+
+    // 6. Close quiz + reset error types
     errorTypesRef.current = {};
     setNodeQuizQuestions(null);
     setActiveQuizNode(null);
