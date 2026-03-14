@@ -179,6 +179,8 @@ class Settings:
 
         # External API keys - centralized for all LLM/API consumers
         self.openai_api_key = os.getenv("OPENAI_API_KEY")
+        self.openai_base_url = os.getenv("OPENAI_BASE_URL", "http://localhost:4000/v1")
+        self.llm_model = os.getenv("LLM_MODEL", "minimax-m2.5")
         self.anthropic_api_key = os.getenv("ANTHROPIC_API_KEY")
         self.google_api_key = os.getenv("GOOGLE_API_KEY")
         self.qwen_api_key = os.getenv("QWEN_API_KEY")

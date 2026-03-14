@@ -12,6 +12,8 @@ from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.database import get_db
+from api.auth import mevcut_kullanici_getir
+from models.user import Kullanici
 from services.ai_chat_service import AIChatService
 from services.ocr_service import OCRService
 from models.ai_chat import MessageRole, SessionStatus, SubjectType
@@ -48,31 +50,61 @@ class MessageRatingRequest(BaseModel):
 
 
 # ============================================================
+# Yardımcı: session al + ownership doğrula
+# ============================================================
+
+
+async def get_owned_session(
+    session_id: UUID,
+    mevcut_kullanici: Kullanici,
+    service: AIChatService,
+):
+    """
+    Session'ı çeker; yoksa 404, başka kullanıcıya aitse 403 fırlatır.
+    """
+    session = await service.get_session(session_id)
+    if not session:
+        raise HTTPException(status_code=404, detail="Session not found")
+
+    current_user_uuid = UUID(mevcut_kullanici.kullanici_id)
+    if session.user_id != current_user_uuid:
+        raise HTTPException(status_code=403, detail="Bu session'a erişim yetkiniz yok")
+
+    return session
+
+
+# ============================================================
 # Session Endpoints
 # ============================================================
 
 
 @router.post("/sessions")
 async def create_session(
-    request: SessionCreateRequest, user_id: UUID, db: AsyncSession = Depends(get_db)
+    request: SessionCreateRequest,
+    mevcut_kullanici: Kullanici = Depends(mevcut_kullanici_getir),
+    db: AsyncSession = Depends(get_db),
 ):
     """Create a new chat session"""
+    user_uuid = UUID(mevcut_kullanici.kullanici_id)
     service = AIChatService(db)
     session = await service.create_session(
-        user_id=user_id, title=request.title, subject_type=request.subject_type
+        user_id=user_uuid,
+        title=request.title,
+        subject_type=request.subject_type,
     )
     return {"session_id": session.id, "title": session.title}
 
 
 @router.get("/sessions")
 async def get_user_sessions(
-    user_id: UUID,
     status: Optional[SessionStatus] = None,
+    mevcut_kullanici: Kullanici = Depends(mevcut_kullanici_getir),
     db: AsyncSession = Depends(get_db),
 ):
     """Get user's chat sessions"""
+    user_uuid = UUID(mevcut_kullanici.kullanici_id)
     service = AIChatService(db)
-    sessions = await service.get_user_sessions(user_id, status)
+    sessions = await service.get_user_sessions(user_uuid, status)
     return [
         {
             "id": s.id,
@@ -86,12 +118,14 @@ async def get_user_sessions(
 
 
 @router.get("/sessions/{session_id}")
-async def get_session(session_id: UUID, db: AsyncSession = Depends(get_db)):
+async def get_session(
+    session_id: UUID,
+    mevcut_kullanici: Kullanici = Depends(mevcut_kullanici_getir),
+    db: AsyncSession = Depends(get_db),
+):
     """Get session details"""
     service = AIChatService(db)
-    session = await service.get_session(session_id)
-    if not session:
-        raise HTTPException(status_code=404, detail="Session not found")
+    session = await get_owned_session(session_id, mevcut_kullanici, service)
     return {
         "id": session.id,
         "title": session.title,
@@ -108,13 +142,19 @@ async def get_session(session_id: UUID, db: AsyncSession = Depends(get_db)):
 
 @router.post("/sessions/{session_id}/messages")
 async def send_message(
-    session_id: UUID, request: MessageRequest, db: AsyncSession = Depends(get_db)
+    session_id: UUID,
+    request: MessageRequest,
+    mevcut_kullanici: Kullanici = Depends(mevcut_kullanici_getir),
+    db: AsyncSession = Depends(get_db),
 ):
     """Send a message and get AI response"""
     service = AIChatService(db)
 
+    # Ownership kontrolü
+    await get_owned_session(session_id, mevcut_kullanici, service)
+
     # Add user message
-    user_msg = await service.add_message(
+    await service.add_message(
         session_id=session_id,
         role=MessageRole.USER,
         content=request.content,
@@ -153,9 +193,17 @@ async def send_message(
 
 
 @router.get("/sessions/{session_id}/messages")
-async def get_messages(session_id: UUID, db: AsyncSession = Depends(get_db)):
+async def get_messages(
+    session_id: UUID,
+    mevcut_kullanici: Kullanici = Depends(mevcut_kullanici_getir),
+    db: AsyncSession = Depends(get_db),
+):
     """Get messages for a session"""
     service = AIChatService(db)
+
+    # Ownership kontrolü
+    await get_owned_session(session_id, mevcut_kullanici, service)
+
     messages = await service.get_messages(session_id)
     return [
         {
@@ -177,12 +225,18 @@ async def get_messages(session_id: UUID, db: AsyncSession = Depends(get_db)):
 @router.post("/sessions/{session_id}/upload")
 async def upload_image(
     session_id: UUID,
-    user_id: UUID,
     file: UploadFile = File(...),
+    mevcut_kullanici: Kullanici = Depends(mevcut_kullanici_getir),
     db: AsyncSession = Depends(get_db),
 ):
     """Upload image for OCR processing"""
     from pathlib import Path
+
+    user_uuid = UUID(mevcut_kullanici.kullanici_id)
+    chat_service = AIChatService(db)
+
+    # Ownership kontrolü
+    await get_owned_session(session_id, mevcut_kullanici, chat_service)
 
     # Save file
     upload_dir = Path("uploads/chat_images")
@@ -194,10 +248,9 @@ async def upload_image(
         f.write(content)
 
     # Create image record
-    chat_service = AIChatService(db)
     image = await chat_service.create_image_upload(
         session_id=session_id,
-        user_id=user_id,
+        user_id=user_uuid,
         filename=file.filename,
         file_path=str(file_path),
         file_size=len(content),
@@ -235,8 +288,12 @@ async def upload_image(
 
 
 @router.get("/statistics")
-async def get_statistics(user_id: UUID, db: AsyncSession = Depends(get_db)):
+async def get_statistics(
+    mevcut_kullanici: Kullanici = Depends(mevcut_kullanici_getir),
+    db: AsyncSession = Depends(get_db),
+):
     """Get chat statistics"""
+    user_uuid = UUID(mevcut_kullanici.kullanici_id)
     service = AIChatService(db)
-    stats = await service.get_chat_statistics(user_id)
+    stats = await service.get_chat_statistics(user_uuid)
     return stats
