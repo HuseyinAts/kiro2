@@ -154,6 +154,10 @@ export default defineConfig({
         secure: false,
         timeout: 120000,
         proxyTimeout: 120000,
+      },
+      '/static': {
+        target: 'http://localhost:8000',
+        changeOrigin: true,
       }
     },
     // File watching optimizasyonu

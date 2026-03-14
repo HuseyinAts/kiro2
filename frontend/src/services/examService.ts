@@ -86,6 +86,9 @@ export interface QuestionResponse {
   question_text: string
   content?: string  // Alias for question_text (compatibility)
   question_image_url?: string
+  image_alt_text?: string
+  image_width?: number
+  image_height?: number
   option_a: string
   option_b: string
   option_c: string

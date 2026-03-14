@@ -281,6 +281,12 @@ async def process_weekly_reset(*, db: AsyncSession) -> dict:
                 else:
                     unchanged += 1
 
+                # Persist tier change and reset XP for next week
+                m.league_tier = new_tier
+                m.weekly_xp = 0
+                m.week_start = _current_week_start()
+                db.add(m)
+
                 history = LeagueHistory(
                     student_id=m.student_id,
                     week_start=last_week,

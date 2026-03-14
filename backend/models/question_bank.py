@@ -278,6 +278,9 @@ class QuestionBankItem(Base):
         Text
     )  # LaTeX formatında matematik
     question_image_url: Mapped[Optional[str]] = mapped_column(String(500))
+    image_ocr_text: Mapped[Optional[str]] = mapped_column(Text)
+    image_width: Mapped[Optional[int]] = mapped_column(Integer)
+    image_height: Mapped[Optional[int]] = mapped_column(Integer)
     question_audio_url: Mapped[Optional[str]] = mapped_column(String(500))
 
     # Seçenekler

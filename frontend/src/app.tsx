@@ -17,6 +17,7 @@ import { Modern404Page } from './pages/Modern404Page';
 import { ModernErrorPage } from './pages/ModernErrorPage';
 import { RegisterPage } from './pages/RegisterPage';
 import { UnauthorizedPage } from './pages/UnauthorizedPage';
+import { ParentDashboard } from './pages/ParentDashboard';
 import './styles/touch-optimized.css';
 import { modernLightTheme as lightTheme } from './theme/modern-theme';
 import {
@@ -157,6 +158,11 @@ function AppContent() {
               <Route path="/unauthorized" element={<UnauthorizedPage />} />
               <Route path="/404" element={<Modern404Page />} />
               <Route path="/error" element={<ModernErrorPage />} />
+              <Route path="/veli-takip" element={
+                <ProtectedRoute requiredRoles={['veli']}>
+                  <ParentDashboard />
+                </ProtectedRoute>
+              } />
 
               {/* Student Routes */}
               <Route

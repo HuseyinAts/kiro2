@@ -28,12 +28,16 @@ import {
 } from '@/components/ui/select';
 import config from '@/config';
 import { initMathJax, typesetMath } from '@/config/mathjax.config';
+import { QuestionImage } from '@/components/ui/ImageZoomModal';
 
 // API Response tipi (question_bank şeması)
 interface SearchQuestion {
   id: string;
   question_text: string;
   question_image_url: string | null;
+  image_alt_text?: string | null;
+  image_width?: number | null;
+  image_height?: number | null;
   options?: Record<string, string | null>;
   correct_answer?: string;
   exam_type: string;
@@ -446,10 +450,11 @@ export const QuestionBank: React.FC = () => {
                         {question.question_text}
                       </p>
                       {question.question_image_url && (
-                        <img
+                        <QuestionImage
                           src={question.question_image_url}
-                          alt="Soru gorseli"
-                          className="max-w-full h-auto rounded-lg mb-4"
+                          alt={question.image_alt_text || undefined}
+                          width={question.image_width || undefined}
+                          height={question.image_height || undefined}
                         />
                       )}
                     </div>

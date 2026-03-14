@@ -188,6 +188,7 @@ veriseti/zkitap/*
 qwen_extended_vocab/
 zemberek/
 models/
+!backend/models/
 
 # Training data (large)
 ai_training_data/

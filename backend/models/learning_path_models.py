@@ -12,6 +12,7 @@ SQLAlchemy models for Learning Path system
 
 from datetime import datetime
 from typing import Any
+from uuid import uuid4
 from sqlalchemy import (
     Column,
     String,
@@ -117,6 +118,11 @@ class LearningPathStudentProfile(Base):
     average_quiz_score = Column(Float, nullable=True)  # 0-100
     total_study_time_minutes = Column(Integer, default=0)
     last_activity_at = Column(DateTime, nullable=True)
+
+    # B2: Daily streak tracking
+    daily_streak = Column(Integer, default=0)
+    best_streak = Column(Integer, default=0)
+    last_study_date = Column(Date, nullable=True)
 
     # Metadata
     metadata_json = Column(JSON, nullable=False, default=dict)
@@ -504,4 +510,37 @@ class FallbackVideo(Base):
         Index("idx_fallback_subject_topic", "subject", "topic"),
         Index("idx_fallback_is_example", "is_example"),
         Index("idx_fallback_final_score", "final_score"),
+    )
+
+
+class StudySession(Base):
+    """
+    B1: Çalışma oturumu takibi.
+    Öğrenci çalışma başlat/bitir ile süre kaydeder.
+    Bitişte total_study_time_minutes ve daily_streak güncellenir.
+    """
+
+    __tablename__ = "study_sessions"
+
+    id = Column(String(36), primary_key=True, default=lambda: str(uuid4()))
+    student_id = Column(
+        String(100),
+        ForeignKey("learning_path_student_profiles.student_id"),
+        nullable=False,
+        index=True,
+    )
+
+    # Timing
+    started_at = Column(DateTime, nullable=False, default=datetime.now)
+    ended_at = Column(DateTime, nullable=True)
+    duration_minutes = Column(Integer, nullable=True)
+
+    # Activity during session
+    topics_studied = Column(JSON, default=list)
+    questions_answered = Column(Integer, default=0)
+    correct_count = Column(Integer, default=0)
+
+    # Indexes
+    __table_args__ = (
+        Index("idx_session_student_started", "student_id", "started_at"),
     )

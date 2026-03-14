@@ -20,8 +20,50 @@ if TYPE_CHECKING:
 router = APIRouter(prefix="/api/v1/assessment", tags=["Yerleştirme Sınavı"])
 logger = get_logger("placement_assessment_api")
 
-# In-memory session store (production: Redis)
-_active_sessions: dict[str, PlacementAssessment] = {}
+# Session store — Redis-backed for multi-worker compatibility
+_SESSION_TTL = 3600  # 1 hour
+
+
+async def _store_session(session_id: str, assessment: "PlacementAssessment") -> None:
+    """Persist assessment state to Redis (pickle serialization)."""
+    import pickle
+
+    try:
+        from core.database import get_redis_client
+
+        redis = await get_redis_client()
+        if redis:
+            data = pickle.dumps(assessment)
+            await redis.set(f"assessment:{session_id}", data, ex=_SESSION_TTL)
+            return
+    except Exception as exc:
+        logger.warning(f"Redis store failed, using fallback: {exc}")
+
+    # Fallback to in-memory (single worker only)
+    _fallback_sessions[session_id] = assessment
+
+
+async def _load_session(session_id: str) -> "PlacementAssessment | None":
+    """Load assessment state from Redis."""
+    import pickle
+
+    try:
+        from core.database import get_redis_client
+
+        redis = await get_redis_client()
+        if redis:
+            data = await redis.get(f"assessment:{session_id}")
+            if data:
+                return pickle.loads(data)  # noqa: S301
+            return None
+    except Exception as exc:
+        logger.warning(f"Redis load failed, using fallback: {exc}")
+
+    return _fallback_sessions.get(session_id)
+
+
+# Fallback for when Redis is unavailable (dev/test)
+_fallback_sessions: dict[str, "PlacementAssessment"] = {}
 
 
 # ---------------------------------------------------------------------------
@@ -103,9 +145,9 @@ async def start_assessment(
             detail=result["error"],
         )
 
-    # Store assessment state
+    # Store assessment state in Redis
     assessment = result.pop("_assessment")
-    _active_sessions[result["session_id"]] = assessment
+    await _store_session(result["session_id"], assessment)
 
     return StartAssessmentResponse(**result)
 
@@ -120,7 +162,7 @@ async def submit_answer(
     current_user: AuthenticatedUser = Depends(get_current_user),
 ):
     """Submit answer, update ability estimate, get next question (or result)."""
-    assessment = _active_sessions.get(request.session_id)
+    assessment = await _load_session(request.session_id)
     if not assessment:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -149,6 +191,9 @@ async def submit_answer(
             pass
 
     is_complete = assessment.is_complete or next_item is None
+
+    # Persist updated state back to Redis
+    await _store_session(request.session_id, assessment)
 
     return NextQuestionResponse(
         session_id=request.session_id,
@@ -180,7 +225,7 @@ async def get_result(
     """Get the knowledge state map after assessment completion."""
     from services.placement_assessment_service import get_knowledge_state
 
-    assessment = _active_sessions.get(session_id)
+    assessment = await _load_session(session_id)
     if not assessment:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
