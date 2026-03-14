@@ -162,6 +162,24 @@ export function ModernLearningPathPage() {
    * F9: If node is new (available), show Productive Failure pretest first.
    * Otherwise, fetch quiz questions directly.
    */
+
+  // Subject extraction: match known YKS subjects from node title
+  const SUBJECT_KEYWORDS: Record<string, string> = {
+    'matematik': 'matematik', 'fizik': 'fizik', 'kimya': 'kimya',
+    'biyoloji': 'biyoloji', 'türkçe': 'turkce', 'tarih': 'tarih',
+    'geometri': 'geometri', 'coğrafya': 'cografya', 'edebiyat': 'edebiyat',
+    'felsefe': 'felsefe',
+  };
+
+  const extractSubject = useCallback((title: string): string => {
+    const words = title.toLowerCase().split(/\s+/);
+    for (const word of words) {
+      if (SUBJECT_KEYWORDS[word]) return SUBJECT_KEYWORDS[word];
+    }
+    // Fallback: first word (original behavior)
+    return words[0] || 'matematik';
+  }, []);
+
   const handleStartQuiz = useCallback(async (node: PathNodeData) => {
     // F9: Productive Failure — show pretest before new topic
     if (node.status === 'available' && !pretestNode) {
@@ -170,7 +188,7 @@ export function ModernLearningPathPage() {
       return;
     }
 
-    const subject = node.title.split(' ')[0];
+    const subject = extractSubject(node.title);
     try {
       const res = await fetch(
         `/api/learning-path/exit-quiz/${encodeURIComponent(subject)}?count=${node.quiz?.question_count || 5}`,
@@ -186,7 +204,7 @@ export function ModernLearningPathPage() {
     } catch (err) {
       console.error('Quiz soruları yüklenemedi:', err);
     }
-  }, []);
+  }, [pretestNode, extractSubject]);
 
   /**
    * Handle quiz completion — register wrong answers to FSRS + update node progress
@@ -545,7 +563,7 @@ export function ModernLearningPathPage() {
                           showCorrectAnswers: true,
                         }}
                         onSubmit={handleQuizComplete}
-                        onExit={() => { setNodeQuizQuestions(null); setActiveQuizNode(null); }}
+                        onExit={() => { errorTypesRef.current = {}; setNodeQuizQuestions(null); setActiveQuizNode(null); }}
                         onErrorTypeSelect={handleErrorTypeSelect}
                       />
                     </Box>
@@ -601,7 +619,7 @@ export function ModernLearningPathPage() {
                           variant="glass"
                           icon={<Science />}
                           onClick={async () => {
-                            const subjects = [...new Set(pathNodes.map(n => n.title.split(' ')[0]))].slice(0, 5);
+                            const subjects = [...new Set(pathNodes.map(n => extractSubject(n.title)))].slice(0, 5);
                             try {
                               const res = await fetch(`/api/learning-path/interleaved-practice?subjects=${subjects.join(',')}&count=10`, { credentials: 'include' });
                               const data = await res.json();

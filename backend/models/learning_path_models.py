@@ -439,7 +439,7 @@ class QuizQuestion(Base):
     )
     question_id = Column(
         String,
-        ForeignKey("questions.id", ondelete="CASCADE"),
+        ForeignKey("question_bank.id", ondelete="CASCADE"),
         nullable=False,
         index=True
     )

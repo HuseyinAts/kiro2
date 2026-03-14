@@ -304,6 +304,7 @@ async def create_student_profile(
         }
 
     except Exception as e:
+        await db.rollback()
         logger.error(f"Error creating student profile: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -933,13 +934,20 @@ async def _search_resources_impl(
 
 
 @router.post("/adapt-path")
-async def adapt_learning_path(adaptation: PathAdaptation):
+async def adapt_learning_path(
+    adaptation: PathAdaptation,
+    db: AsyncSession = Depends(get_db),
+    current_user: AuthenticatedUser = Depends(get_current_user),
+):
     """
     Öğrenme yolunu performansa göre uyarla
 
     Öğrencinin performans verilerine göre öğrenme yolunu dinamik olarak günceller.
     """
     try:
+        # 🔒 Verify ownership: students can only adapt their own paths
+        await verify_student_access(adaptation.student_id, current_user, db)
+
         logger.info(
             f"Adapting learning path {adaptation.path_id} for "
             f"student {adaptation.student_id}"
@@ -1201,7 +1209,7 @@ async def submit_quiz(
             )
 
         # P0 FIX: Query quiz and questions from database (instead of mock data)
-        result = await db.execute(select(Quiz).where(Quiz.id == quiz_id))
+        result = await db.execute(select(Quiz).where(Quiz.id == quiz_id, Quiz.is_active == True))  # noqa: E712
         quiz = result.scalar_one_or_none()
         if not quiz:
             raise HTTPException(
@@ -1639,6 +1647,183 @@ async def register_wrong_answers(
         raise HTTPException(
             status_code=500, detail=f"Failed to register wrong answers: {str(e)}"
         )
+
+
+@router.get("/weakness-report")
+async def get_weakness_report(
+    db: AsyncSession = Depends(get_db),
+    current_user: AuthenticatedUser = Depends(get_current_user),
+):
+    """
+    Öğrencinin zayıf konularını raporla.
+
+    TopicProgress ve QuizSubmission tablolarından düşük skorlu konuları tespit eder.
+    Frontend: ParentDashboard, ProactiveCoachWidget, ProgressDashboard, AdaptiveFeedbackPanel
+    """
+    try:
+        student_id = str(current_user.id)
+
+        # Get student's topic progress records
+        result = await db.execute(
+            select(TopicProgress).where(TopicProgress.student_id == student_id)
+        )
+        progress_records = result.scalars().all()
+
+        # Build weakness items from progress data
+        weaknesses = []
+        for record in progress_records:
+            avg_score = record.progress or 0
+            is_weak = avg_score < 60
+            if avg_score >= 80:
+                trend = "improving"
+            elif avg_score >= 40:
+                trend = "stable"
+            else:
+                trend = "declining"
+
+            weaknesses.append({
+                "topic": record.node_id,
+                "avg_score": avg_score,
+                "attempts": 1,
+                "trend": trend,
+                "is_weak": is_weak,
+            })
+
+        return {"weaknesses": weaknesses}
+
+    except Exception as e:
+        logger.error(f"Error fetching weakness report: {e}")
+        return {"weaknesses": []}
+
+
+@router.get("/streak")
+async def get_daily_streak(
+    db: AsyncSession = Depends(get_db),
+    current_user: AuthenticatedUser = Depends(get_current_user),
+):
+    """
+    Öğrencinin ardışık aktif gün sayısını döndür.
+
+    TopicCompletion tablosundan ardışık günleri hesaplar.
+    Frontend: ParentDashboard
+    """
+    try:
+        student_id = str(current_user.id)
+
+        # Get student profile to find LP student_id
+        profile_result = await db.execute(
+            select(LearningPathStudentProfile).where(
+                LearningPathStudentProfile.user_id == student_id
+            )
+        )
+        profile = profile_result.scalars().first()
+
+        if not profile:
+            return {"daily_streak": 0}
+
+        # Get completion dates
+        result = await db.execute(
+            select(TopicCompletion).where(
+                TopicCompletion.student_id == profile.student_id,
+                TopicCompletion.completed == True,  # noqa: E712
+            )
+        )
+        completions = result.scalars().all()
+
+        if not completions:
+            return {"daily_streak": 0}
+
+        # Calculate streak from completion dates
+        dates = sorted(set(
+            c.completion_date.date() for c in completions
+            if c.completion_date
+        ), reverse=True)
+
+        if not dates:
+            return {"daily_streak": 0}
+
+        streak = 1
+        today = datetime.now().date()
+
+        # Check if most recent activity is today or yesterday
+        if (today - dates[0]).days > 1:
+            return {"daily_streak": 0}
+
+        for i in range(1, len(dates)):
+            if (dates[i - 1] - dates[i]).days == 1:
+                streak += 1
+            else:
+                break
+
+        return {"daily_streak": streak}
+
+    except Exception as e:
+        logger.error(f"Error calculating streak: {e}")
+        return {"daily_streak": 0}
+
+
+# Fallback videos data (same as V2)
+_FALLBACK_VIDEOS_V1: Dict[str, list] = {
+    "matematik": [
+        {"resource_id": "fallback_mat_001", "title": "TYT Matematik - Temel Kavramlar", "url": "https://www.youtube.com/watch?v=TYT_MATEMATIK_TEMEL", "platform": "youtube", "channel": "TonguçAkademi", "duration_minutes": 45, "difficulty": "orta", "quality_score": 0.85},
+        {"resource_id": "fallback_mat_002", "title": "AYT Matematik - Problem Çözme Teknikleri", "url": "https://www.youtube.com/watch?v=AYT_MATEMATIK_PROBLEM", "platform": "youtube", "channel": "Matematik Kafası", "duration_minutes": 60, "difficulty": "zor", "quality_score": 0.82},
+    ],
+    "fizik": [
+        {"resource_id": "fallback_fiz_001", "title": "TYT Fizik - Kuvvet ve Hareket", "url": "https://www.youtube.com/watch?v=TYT_FIZIK_KUVVET", "platform": "youtube", "channel": "TonguçAkademi", "duration_minutes": 40, "difficulty": "orta", "quality_score": 0.84},
+    ],
+    "kimya": [
+        {"resource_id": "fallback_kim_001", "title": "TYT Kimya - Atom ve Periyodik Sistem", "url": "https://www.youtube.com/watch?v=TYT_KIMYA_ATOM", "platform": "youtube", "channel": "TonguçAkademi", "duration_minutes": 35, "difficulty": "orta", "quality_score": 0.83},
+    ],
+    "biyoloji": [
+        {"resource_id": "fallback_bio_001", "title": "TYT Biyoloji - Hücre Yapısı", "url": "https://www.youtube.com/watch?v=TYT_BIYOLOJI_HUCRE", "platform": "youtube", "channel": "Biyoloji Adası", "duration_minutes": 45, "difficulty": "orta", "quality_score": 0.83},
+    ],
+}
+
+
+@router.get("/fallback-videos/{subject}")
+async def get_fallback_videos(
+    subject: str,
+    limit: int = 10,
+):
+    """
+    Fallback videos for a subject when main search fails.
+
+    Returns pre-curated quality videos for Turkish YKS exam preparation.
+    """
+    try:
+        limit = max(1, min(50, limit))
+        subject_normalized = subject.lower().replace("ı", "i").strip()
+
+        videos = _FALLBACK_VIDEOS_V1.get(subject_normalized, [])
+
+        # Partial match fallback
+        if not videos:
+            for key in _FALLBACK_VIDEOS_V1:
+                if subject_normalized in key or key in subject_normalized:
+                    videos = _FALLBACK_VIDEOS_V1[key]
+                    break
+
+        if not videos:
+            return {
+                "success": False,
+                "videos": [],
+                "total": 0,
+                "subject": subject,
+                "message": f"'{subject}' dersi için örnek video bulunamadı",
+            }
+
+        videos = videos[:limit]
+        return {
+            "success": True,
+            "videos": videos,
+            "total": len(videos),
+            "subject": subject,
+            "message": f"{len(videos)} örnek video bulundu",
+        }
+
+    except Exception as e:
+        logger.error(f"Error fetching fallback videos: {e}")
+        return {"success": False, "videos": [], "total": 0, "subject": subject, "message": "Hata oluştu"}
 
 
 @router.get("/health")
