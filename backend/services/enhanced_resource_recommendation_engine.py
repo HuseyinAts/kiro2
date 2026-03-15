@@ -89,9 +89,15 @@ class RateLimiter:
 
         Bu metod çağrıldığında, rate limit aşılmışsa
         yeterli süre geçene kadar bekler.
+
+        FIX: Lock sleep sırasında tutulmuyor - bu performans için kritik
+        FIX: time.monotonic() kullanarak system clock değişikliklerinden etkilenmemesi sağlandı
         """
+        wait_time = 0.0
+
+        # 1. Lock içinde wait_time hesapla
         async with self._lock:
-            now = time.time()
+            now = time.monotonic()
 
             # 1 saniyeden eski istekleri temizle
             self.request_times = [t for t in self.request_times if now - t < 1.0]
@@ -100,17 +106,18 @@ class RateLimiter:
             if len(self.request_times) >= self.max_requests:
                 # En eski isteğin üzerinden 1 saniye geçmesini bekle
                 wait_time = 1.0 - (now - self.request_times[0])
-                if wait_time > 0:
-                    logger.debug(f"Rate limit reached, waiting {wait_time:.2f}s")
-                    await asyncio.sleep(wait_time)
-                    # Bekleme sonrası tekrar temizle
-                    now = time.time()
-                    self.request_times = [
-                        t for t in self.request_times if now - t < 1.0
-                    ]
 
-            # Yeni isteği kaydet
-            self.request_times.append(now)
+        # 2. Lock DIŞINDA bekle - diğer istekler bloklanmasın
+        if wait_time > 0:
+            logger.debug(f"Rate limit reached, waiting {wait_time:.2f}s")
+            await asyncio.sleep(wait_time)
+
+        # 3. Lock içinde isteği kaydet
+        async with self._lock:
+            now = time.monotonic()
+            # Tekrar temizle (bekleme sırasında eskimiş olabilir)
+            self.request_times = [t for t in self.request_times if now - t < 1.0]
+            self.request_times.append(time.monotonic())
 
     def get_stats(self) -> Dict[str, Any]:
         """
@@ -119,7 +126,7 @@ class RateLimiter:
         Returns:
             İstatistik dictionary'si
         """
-        now = time.time()
+        now = time.monotonic()
         recent_requests = [t for t in self.request_times if now - t < 1.0]
 
         return {
@@ -191,10 +198,10 @@ class EnhancedResourceRecommendationEngine:
         # Monitoring
         self.monitor = get_video_recommendation_monitor()
 
-        # Threshold değerleri
-        self.min_turkish_score = 0.7
-        self.min_relevance_score = 0.6
-        self.min_quality_score = 0.3
+        # Threshold değerleri (Demo için düşürüldü - Türkçe video bulunabilirliği için)
+        self.min_turkish_score = 0.2
+        self.min_relevance_score = 0.4  # Demo için düşürüldü
+        self.min_quality_score = 0.2
 
         # Skorlama ağırlıkları
         self.weights = {
@@ -220,10 +227,10 @@ class EnhancedResourceRecommendationEngine:
         Pipeline:
         1. Cache kontrolü (TTL: 1 saat)
         2. YouTube'dan aday videolar al (max_results * 3)
-        3. Türkçe filtresi uygula (min score: 0.7)
-        4. Konu uygunluğu skorla (min score: 0.6)
+        3. Türkçe filtresi uygula (min score: 0.2)
+        4. Konu uygunluğu skorla (min score: 0.4)
         5. Erişilebilirlik doğrula (paralel)
-        6. Kalite skorla
+        6. Kalite skorla (min score: 0.2)
         7. Final skorlama ve sıralama
         8. Cache'e kaydet ve döndür
 
@@ -248,7 +255,7 @@ class EnhancedResourceRecommendationEngine:
 
             # 1. Cache kontrolü
             cache_key = self._generate_cache_key(
-                subject, topic, difficulty, max_results
+                subject, topic, difficulty, max_results, student_profile
             )
             cached_videos = await self.cache_manager.get(cache_key)
 
@@ -798,8 +805,8 @@ class EnhancedResourceRecommendationEngine:
                 logger.debug("Auditory learner bonus: +0.05")
 
             # Reading/Writing learners (prefer captions)
-            if has_captions and learning_style_upper.startswith("V"):
-                # V often indicates verbal/reading preference in VARK
+            # FIX: R in VARK = Reading/Writing, not V (Visual)
+            if has_captions and "R" in learning_style_upper:
                 learning_style_bonus += 0.10
                 logger.debug(
                     f"Reading learner bonus: +0.10 (has_captions={has_captions})"
@@ -933,7 +940,8 @@ class EnhancedResourceRecommendationEngine:
         return recommended_videos
 
     def _generate_cache_key(
-        self, subject: str, topic: Optional[str], difficulty: str, max_results: int
+        self, subject: str, topic: Optional[str], difficulty: str, max_results: int,
+        student_profile: Optional[Dict[str, Any]] = None
     ) -> str:
         """
         Cache key oluştur
@@ -943,12 +951,17 @@ class EnhancedResourceRecommendationEngine:
             topic: Konu
             difficulty: Zorluk
             max_results: Maksimum sonuç
+            student_profile: Öğrenci profili (learning_style cache için)
 
         Returns:
             Cache key
         """
         topic_str = topic or "none"
-        return f"video_recommendations:{subject}:{topic_str}:{difficulty}:{max_results}"
+        # FIX: student_profile'ı cache key'e ekle (learning_style önemli)
+        learning_style = ""
+        if student_profile and isinstance(student_profile, dict):
+            learning_style = student_profile.get("learning_style", "") or ""
+        return f"video_recommendations:{subject}:{topic_str}:{difficulty}:{max_results}:{learning_style}"
 
     def _recommended_video_to_dict(self, video: RecommendedVideo) -> Dict[str, Any]:
         """

@@ -30,6 +30,7 @@ class VideoAccessibilityResult:
     is_embeddable: bool
     privacy_status: str  # public, private, unlisted
     error_reason: Optional[str]
+    has_captions: bool = False  # Altyazı desteği
 
 
 class VideoQualityValidator:
@@ -52,8 +53,10 @@ class VideoQualityValidator:
         self.timeout_handler = TimeoutHandler(default_timeout=10)
 
         # Güvenilir eğitim kanalları
+        # FIX: Tüm varyantları ekle (turkish_content_filter ile tutarlılık)
         self.trusted_channels = {
             "TonguçAkademi",
+            "Tonguç Akademi",  # Alias
             "Khan Academy Türkçe",
             "KAMP Online",
             "Hocalara Geldik",
@@ -63,6 +66,7 @@ class VideoQualityValidator:
             "Matematik Öğretmeni",
             "Fizik Öğretmeni",
             "Kimya Öğretmeni",
+            "Biyoloji Öğretmeni",  # Eksikti
         }
 
     async def _get_session(self) -> aiohttp.ClientSession:
@@ -91,13 +95,13 @@ class VideoQualityValidator:
         try:
             if not self.api_key:
                 logger.warning(
-                    f"YouTube API key not found, assuming video {video_id} is accessible"
+                    f"YouTube API key not found, cannot verify video {video_id}"
                 )
                 return VideoAccessibilityResult(
-                    is_accessible=True,
-                    is_embeddable=True,
-                    privacy_status="public",
-                    error_reason=None,
+                    is_accessible=False,
+                    is_embeddable=False,
+                    privacy_status="unknown",
+                    error_reason="YouTube API key not configured",
                 )
 
             # YouTube API'den video bilgilerini al

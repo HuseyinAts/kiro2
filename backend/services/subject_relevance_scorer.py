@@ -6,10 +6,31 @@ Teknofest 2025 - Eğitim Eylemci Projesi
 
 import logging
 import os
+import unicodedata
 from dataclasses import dataclass
 from typing import List, Optional, Dict, Any
 
 logger = logging.getLogger(__name__)
+
+
+def normalize_tr(text: str) -> str:
+    """
+    Türkçe metin normalizasyonu.
+
+    Python'un .lower() Türkçe İ/I karakterini doğru işlemez:
+    - "İstanbul" → "i̇stanbul" (nokta kalıyor!)
+    - "Isparta" → "isparta" (noktalı i yerine noktasız)
+
+    Bu fonksiyon doğru Türkçe normalizasyonu yapar.
+    """
+    if not text:
+        return text
+    # NFC normalization (önceki adım)
+    text = unicodedata.normalize("NFC", text)
+    # Türkçe-specific lowercase: İ→i, I→ı
+    text = text.replace("İ", "i").replace("I", "ı")
+    # Standart lowercase
+    return text.lower()
 
 
 @dataclass
@@ -331,11 +352,12 @@ class SubjectRelevanceScorer:
         try:
             # Tüm metni birleştir
             video_text = f"{video_title} {video_description} {' '.join(video_tags)}"
-            video_text_lower = video_text.lower()
+            # FIX: Türkçe normalizasyonu kullan
+            video_text_lower = normalize_tr(video_text)
 
-            # Ders normalizasyonu
-            target_subject = target_subject.lower().strip()
-            target_topic = target_topic.lower().strip() if target_topic else None
+            # Ders normalizasyonu - FIX: Türkçe normalizasyonu kullan
+            target_subject = normalize_tr(target_subject).strip()
+            target_topic = normalize_tr(target_topic).strip() if target_topic else None
 
             # 1. Anahtar kelime örtüşme skoru (40%)
             keyword_score = self._calculate_keyword_overlap(
@@ -592,7 +614,7 @@ class SubjectRelevanceScorer:
         Returns:
             Dict: Ders anahtar kelimeleri
         """
-        return self.subject_keywords.get(subject.lower(), {})
+        return self.subject_keywords.get(normalize_tr(subject), {})
 
     def get_topic_keywords(self, subject: str, topic: str) -> List[str]:
         """
@@ -605,8 +627,8 @@ class SubjectRelevanceScorer:
         Returns:
             List[str]: Konu anahtar kelimeleri
         """
-        subject_data = self.subject_keywords.get(subject.lower(), {})
-        return subject_data.get("topics", {}).get(topic.lower(), [])
+        subject_data = self.subject_keywords.get(normalize_tr(subject), {})
+        return subject_data.get("topics", {}).get(normalize_tr(topic), [])
 
     def get_all_subjects(self) -> List[str]:
         """
@@ -627,7 +649,7 @@ class SubjectRelevanceScorer:
         Returns:
             List[str]: Konu listesi
         """
-        subject_data = self.subject_keywords.get(subject.lower(), {})
+        subject_data = self.subject_keywords.get(normalize_tr(subject), {})
         return list(subject_data.get("topics", {}).keys())
 
 
