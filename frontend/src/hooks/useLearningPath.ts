@@ -68,6 +68,9 @@ const lpCache = {
 
   clear: (): void => {
     Object.values(CACHE_KEYS).forEach(key => lpCache.remove(key));
+    // Also clear subject-specific cache keys
+    const subjects = ['matematik', 'fizik', 'kimya', 'biyoloji', 'turkce', 'tarih', 'geometri', 'cografya', 'edebiyat'];
+    subjects.forEach(s => lpCache.remove(`${CACHE_KEYS.PATH_NODES}_${s}`));
   },
 };
 
@@ -98,8 +101,11 @@ export interface UseLearningPathReturn {
   currentNodeId: string
   loading: boolean
   error: string | null
+  setError: (error: string | null) => void
   needsQuiz: boolean
   studentId: string | null
+  selectedSubject: string
+  changeSubject: (subject: string) => Promise<void>
   loadPath: () => Promise<void>
   reload: () => void
   setCurrentNode: (nodeId: string) => void
@@ -118,6 +124,7 @@ export const useLearningPath = (): UseLearningPathReturn => {
   const [needsQuiz, setNeedsQuiz] = useState(false);
   const quizSubmittedRef = useRef(false);
   const [studentId, setStudentId] = useState<string | null>(null);
+  const [selectedSubject, setSelectedSubject] = useState<string>('matematik');
 
   const user = useAuthStore(state => state.user);
   const isAuthenticated = useAuthStore(state => state.isAuthenticated);
@@ -189,12 +196,13 @@ export const useLearningPath = (): UseLearningPathReturn => {
   }, [user]);
 
   /** Create learning path and load nodes */
-  const createAndLoadPath = useCallback(async (sid: string) => {
+  const createAndLoadPath = useCallback(async (sid: string, subject?: string) => {
+    const subjectToUse = subject || selectedSubject;
     let path = null;
     try {
       const pathResponse = await createLearningPath({
         student_id: sid,
-        subject: 'matematik',
+        subject: subjectToUse,
         duration_weeks: 4,
       });
       if (pathResponse.success) {
@@ -213,13 +221,15 @@ export const useLearningPath = (): UseLearningPathReturn => {
     if (path) {
       const nodes = convertPathToNodes(path, completionStatus);
       setPathNodes(nodes);
+      // Cache with subject-specific key
+      lpCache.set(`${CACHE_KEYS.PATH_NODES}_${subjectToUse}`, nodes, CACHE_TTL);
 
       const current = nodes.find(n => n.status === 'current');
       if (current) {
         setCurrentNodeId(current.id);
       }
     }
-  }, [loadCompletionStatus]);
+  }, [loadCompletionStatus, selectedSubject]);
 
   /** Main load function - with L1 cache */
   const loadPath = useCallback(async () => {
@@ -229,8 +239,8 @@ export const useLearningPath = (): UseLearningPathReturn => {
       return;
     }
 
-    // Try cache first for instant load
-    const cachedNodes = lpCache.get<PathNodeData[]>(CACHE_KEYS.PATH_NODES);
+    // Try cache first for instant load (subject-specific)
+    const cachedNodes = lpCache.get<PathNodeData[]>(`${CACHE_KEYS.PATH_NODES}_${selectedSubject}`);
     if (cachedNodes && cachedNodes.length > 0) {
       setPathNodes(cachedNodes);
       const cached = cachedNodes.find(n => n.status === 'current');
@@ -261,12 +271,6 @@ export const useLearningPath = (): UseLearningPathReturn => {
 
       // 3. Create/load learning path with real style
       await createAndLoadPath(sid);
-
-      // Cache successful response
-      const nodes = lpCache.get<PathNodeData[]>(CACHE_KEYS.PATH_NODES);
-      if (nodes) {
-        lpCache.set(CACHE_KEYS.PATH_NODES, nodes, CACHE_TTL);
-      }
 
     } catch (err: any) {
       console.error('Error loading learning path:', err);
@@ -329,6 +333,22 @@ export const useLearningPath = (): UseLearningPathReturn => {
     }
   }, [studentId, createAndLoadPath]);
 
+  /** Change subject — reload path for new subject */
+  const changeSubject = useCallback(async (newSubject: string) => {
+    setSelectedSubject(newSubject);
+    if (studentId) {
+      setLoading(true);
+      setError(null);
+      try {
+        await createAndLoadPath(studentId, newSubject);
+      } catch (err: any) {
+        setError(err.message || ERROR_MESSAGES.PATH_LOAD);
+      } finally {
+        setLoading(false);
+      }
+    }
+  }, [studentId, createAndLoadPath]);
+
   /** Reload path data */
   const reload = useCallback(() => {
     loadPath();
@@ -359,7 +379,9 @@ export const useLearningPath = (): UseLearningPathReturn => {
       await apiRequest(`/api/learning-path/progress/${sid}/${nodeId}`, {
         method: 'PUT',
         body: JSON.stringify({
-          progress: progress ?? (completed ? 100 : undefined),
+          student_id: sid,
+          node_id: nodeId,
+          progress: progress ?? (completed ? 100 : 0),
           completed: completed ?? false,
         }),
       });
@@ -402,8 +424,8 @@ export const useLearningPath = (): UseLearningPathReturn => {
         setCurrentNodeId(nextNodeId);
       }
 
-      // Invalidate cache after update
-      lpCache.remove(CACHE_KEYS.PATH_NODES);
+      // Invalidate cache after update (subject-specific key)
+      lpCache.remove(`${CACHE_KEYS.PATH_NODES}_${selectedSubject}`);
       lpCache.remove(CACHE_KEYS.COMPLETION_STATUS);
 
       return true;
@@ -412,7 +434,7 @@ export const useLearningPath = (): UseLearningPathReturn => {
       setError(msg);
       return false;
     }
-  }, [user, studentId, pathNodes]);
+  }, [user, studentId, pathNodes, selectedSubject]);
 
   /** Mark a node as complete */
   const markNodeComplete = useCallback(async (nodeId: string): Promise<boolean> => {
@@ -434,8 +456,11 @@ export const useLearningPath = (): UseLearningPathReturn => {
     currentNodeId,
     loading,
     error,
+    setError,
     needsQuiz,
     studentId,
+    selectedSubject,
+    changeSubject,
     loadPath,
     reload,
     setCurrentNode,

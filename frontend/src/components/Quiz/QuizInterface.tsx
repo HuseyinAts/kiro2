@@ -447,39 +447,44 @@ export function QuizInterface({
             exit={{ opacity: 0, x: -50 }}
             transition={{ duration: 0.3 }}
           >
-            {/* Question */}
+            {/* Question Card - Improved styling */}
             <div className="mb-6">
-              <div className="flex justify-between items-start mb-4">
-                <h3 className="text-lg font-semibold flex-1">
-                  {currentQuestion.question}
-                </h3>
+              <Paper
+                elevation={2}
+                className="p-6 mb-4 rounded-xl bg-white shadow-sm border border-gray-100"
+              >
+                <div className="flex justify-between items-start mb-4">
+                  <h3 className="text-xl font-semibold flex-1 break-words text-gray-800 leading-relaxed">
+                    {currentQuestion.question}
+                  </h3>
 
-                <IconButton onClick={toggleFlag} size="small">
-                  {flagged.has(currentQuestion.id) ? (
-                    <Bookmark color="warning" />
-                  ) : (
-                    <BookmarkBorder />
-                  )}
-                </IconButton>
-              </div>
+                  <IconButton onClick={toggleFlag} size="small" className="ml-2">
+                    {flagged.has(currentQuestion.id) ? (
+                      <Bookmark color="warning" />
+                    ) : (
+                      <BookmarkBorder />
+                    )}
+                  </IconButton>
+                </div>
 
-              {currentQuestion.description && (
-                <p className="text-gray-600 mb-4">
-                  {currentQuestion.description}
-                </p>
-              )}
+                {currentQuestion.description && (
+                  <p className="text-gray-600 mb-4 text-base">
+                    {currentQuestion.description}
+                  </p>
+                )}
 
-              {currentQuestion.code && (
-                <Paper variant="outlined" className="p-4 mb-4 bg-gray-900 rounded-lg">
-                  <SyntaxHighlighter
-                    language="javascript"
-                    style={vscDarkPlus}
-                    showLineNumbers
-                  >
-                    {currentQuestion.code}
-                  </SyntaxHighlighter>
-                </Paper>
-              )}
+                {currentQuestion.code && (
+                  <Paper variant="outlined" className="p-6 mb-6 bg-gray-900 rounded-xl">
+                    <SyntaxHighlighter
+                      language="javascript"
+                      style={vscDarkPlus}
+                      showLineNumbers
+                    >
+                      {currentQuestion.code}
+                    </SyntaxHighlighter>
+                  </Paper>
+                )}
+              </Paper>
             </div>
 
             {/* Answer Options */}
@@ -493,14 +498,15 @@ export function QuizInterface({
                     <FormControlLabel
                       key={index}
                       value={option}
-                      control={<Radio />}
-                      label={option}
+                      control={<Radio className="mt-1" />}
+                      label={<span className="text-base text-gray-700">{option}</span>}
                       className={clsx(
-                        'mb-2 p-2 rounded-lg border transition-all',
+                        'mb-4 p-5 min-h-[70px] rounded-xl border-2 transition-all break-words w-full cursor-pointer',
                         answers[currentQuestion.id] === option
-                          ? 'border-blue-500 bg-blue-50'
-                          : 'border-gray-200 hover:bg-gray-50',
+                          ? 'border-blue-500 bg-blue-50 shadow-md'
+                          : 'border-gray-200 hover:bg-gray-50 hover:shadow-md hover:border-blue-300',
                       )}
+                      sx={{ alignItems: 'flex-start', ml: 0 }}
                     />
                   ))}
                 </RadioGroup>

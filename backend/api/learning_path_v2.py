@@ -1574,23 +1574,34 @@ async def get_exit_quiz(
     subject: str,
     count: int = 5,
     exam_type: str = "TYT",
+    topic: Optional[str] = None,
     current_user: AuthenticatedUser = Depends(get_current_user),
 ):
     """
     Cikis testi: Tamamlanan konudan retrieval practice sorulari dondur.
     Bilimsel dayanak: Retrieval practice d=0.5-1.24 (Frontiers 2025).
+
+    Args:
+        subject: Ders adı (örn: "matematik", "fizik")
+        count: Soru sayısı (varsayılan: 5)
+        exam_type: Sınav tipi (varsayılan: "TYT")
+        topic: Konu adı (opsiyonel, örn: "Türev", "Fonksiyonlar")
     """
     try:
         from services.soru_bankasi_service import SoruBankasiServisi
 
         soru_servisi = SoruBankasiServisi()
         questions = await soru_servisi.get_exit_quiz_questions(
-            subject, count, exam_type=exam_type
+            subject=subject,
+            count=count,
+            exam_type=exam_type,
+            topic=topic,
         )
         return {
             "success": True,
             "questions": [_serialize_question(q) for q in questions],
             "count": len(questions),
+            "topic": topic,
         }
     except HTTPException:
         raise

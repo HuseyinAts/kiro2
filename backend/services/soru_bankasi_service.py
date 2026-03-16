@@ -5,10 +5,11 @@ Gelişmiş IRT parametreli soru seçimi ve database entegrasyonu ile
 import logging
 import math
 import random
+import unicodedata
 from datetime import datetime
 from typing import Dict, List, Optional, Tuple
 
-from sqlalchemy import and_, func, select
+from sqlalchemy import and_, func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 # PERFORMANCE: Redis cache integration
@@ -23,17 +24,43 @@ logger = logging.getLogger(__name__)
 
 # Türkçe → UPPERCASE konu dönüşüm haritası (DRY: tek tanım)
 _KONU_MAP: Dict[str, str] = {
-    "Matematik": "MATEMATIK", "Mat": "MATEMATIK",
-    "Türkçe": "TURKCE", "Turkce": "TURKCE",
-    "Fizik": "FIZIK", "Fiz": "FIZIK",
-    "Kimya": "KIMYA", "Kim": "KIMYA",
-    "Biyoloji": "BIYOLOJI", "Bio": "BIYOLOJI",
-    "Geometri": "GEOMETRI", "Geo": "GEOMETRI",
-    "Fen": "FEN", "Fen Bilimleri": "FEN",
-    "Sosyal": "SOSYAL", "Sosyal Bilimler": "SOSYAL",
-    "Tarih": "TARIH", "Edebiyat": "EDEBIYAT",
-    "İngilizce": "INGILIZCE", "Ing": "INGILIZCE",
+    "Matematik": "MATEMATIK", "matematik": "MATEMATIK", "Mat": "MATEMATIK",
+    "Türkçe": "TURKCE", "turkce": "TURKCE", "Turkce": "TURKCE",
+    "Fizik": "FIZIK", "fizik": "FIZIK", "Fiz": "FIZIK",
+    "Kimya": "KIMYA", "kimya": "KIMYA", "Kim": "KIMYA",
+    "Biyoloji": "BIYOLOJI", "biyoloji": "BIYOLOJI", "Bio": "BIYOLOJI",
+    "Geometri": "GEOMETRI", "geometri": "GEOMETRI", "Geo": "GEOMETRI",
+    "Fen": "FEN", "fen": "FEN", "Fen Bilimleri": "FEN",
+    "Sosyal": "SOSYAL", "sosyal": "SOSYAL", "Sosyal Bilimler": "SOSYAL",
+    "Tarih": "TARIH", "tarih": "TARIH",
+    "Edebiyat": "EDEBIYAT", "edebiyat": "EDEBIYAT",
+    "Coğrafya": "COGRAFYA", "cografya": "COGRAFYA", "Cografya": "COGRAFYA",
+    "İngilizce": "INGILIZCE", "ingilizce": "INGILIZCE", "Ing": "INGILIZCE",
 }
+
+
+def _normalize_topic(topic: str) -> str:
+    """
+    Türkçe konu adını normalize eder.
+
+    - NFC unicode normalization (karakter birleşimlerini korur)
+    - Türkçe lowercase: İ→i, I→ı
+    - NOT: ASCII'ye dönüştürme - Türkçe karakterleri koru!
+    """
+    if not topic:
+        return ""
+
+    # NFC normalize (Türkçe karakterler için)
+    text = unicodedata.normalize("NFC", topic)
+
+    # Türkçe lowercase mapping (İ→i, I→ı)
+    text = text.replace("İ", "i").replace("I", "ı")
+    text = text.lower()
+
+    # NOT: ASCII conversion - keep Turkish chars!
+    # The DB has Turkish chars, so we need to match them
+
+    return text
 
 
 class SoruBankasiServisi:
@@ -560,6 +587,7 @@ class SoruBankasiServisi:
         count: int = 5,
         difficulty_levels: Optional[List[str]] = None,
         exam_type: str = "TYT",
+        topic: Optional[str] = None,
     ) -> List[Question]:
         """
         Çıkış testi: Tamamlanan konudan retrieval practice soruları.
@@ -567,16 +595,17 @@ class SoruBankasiServisi:
         Bilimsel dayanak: Retrieval practice d=0.5-1.24.
 
         Args:
-            subject: Konu adı (Türkçe veya UPPERCASE)
+            subject: Ders adı (Türkçe veya UPPERCASE) - örn: "matematik"
             count: Soru sayısı
             difficulty_levels: Zorluk filtresi listesi, None ise tümü
             exam_type: Sınav tipi ("TYT", "AYT")
+            topic: Konu adı (opsiyonel) - örn: "Türev", "Fonksiyonlar"
 
         Returns:
             Rastgele sırada sorular
         """
         cache_key = (
-            f"exit_quiz:{exam_type}:{subject}"
+            f"exit_quiz:{exam_type}:{subject}:{topic or 'none'}"
             f":{count}:{','.join(sorted(difficulty_levels or []))}"
         )
         cached = await cache_manager.get(cache_key)
@@ -584,16 +613,51 @@ class SoruBankasiServisi:
             logger.debug(f"get_exit_quiz_questions: cache hit — {cache_key}")
             return cached
 
-        subject_upper = _KONU_MAP.get(subject, subject.upper())
+        # Fallback iyileştirme: bilinmeyen konu gelirse ders bazlı fallback
+        if subject in _KONU_MAP:
+            subject_upper = _KONU_MAP[subject]
+        else:
+            subject_lower = subject.lower()
+            if subject_lower in _KONU_MAP:
+                subject_upper = _KONU_MAP[subject_lower]
+            else:
+                subject_upper = "MATEMATIK"
+                logger.warning(f"Bilinmeyen konu: {subject}, default MATEMATIK")
+
         exam_type_upper = exam_type.upper()
 
         async with db_manager.get_session() as session:
             try:
+                # Önce topic filtresi ile dene
+                use_topic_filter = bool(topic)
+
+                # Topic normalization (Türkçe karakter desteği)
+                normalized_topic = _normalize_topic(topic) if topic else None
+
                 stmt = select(Question).where(
                     Question.is_active == True,
                     Question.subject_area == subject_upper,
                     Question.exam_type == exam_type_upper,
                 )
+
+                # Konu bazlı metin eşleştirme (normalize edilmiş)
+                if normalized_topic:
+                    # İki pattern dene: normalize edilmiş ve ASCII fallback
+                    topic_pattern = f"%{normalized_topic}%"
+                    ascii_topic = normalized_topic.replace('ü','u').replace('ş','s').replace('ğ','g').replace('ö','o').replace('ç','c')
+                    ascii_pattern = f"%{ascii_topic}%"
+
+                    # Her iki pattern'i de dene
+                    conditions = [
+                        Question.question_text.ilike(topic_pattern),
+                        Question.question_html.ilike(topic_pattern),
+                        Question.question_text.ilike(ascii_pattern),
+                        Question.question_html.ilike(ascii_pattern),
+                    ]
+
+                    stmt = stmt.where(or_(*conditions))
+                    logger.debug(f"Konu filtresi uygulanıyor: {topic} -> {normalized_topic}")
+
                 if difficulty_levels:
                     stmt = stmt.where(Question.difficulty_level.in_(difficulty_levels))
 
@@ -602,9 +666,27 @@ class SoruBankasiServisi:
                 result = await session.execute(stmt)
                 questions: List[Question] = list(result.scalars().all())
 
+                # Fallback: Topic bulunamazsa, topic filtresiz tekrar dene
+                if use_topic_filter and len(questions) == 0 and normalized_topic:
+                    logger.warning(f"Konu '{topic}' için soru bulunamadı, fallback: sadece ders filtresi")
+
+                    stmt_fallback = select(Question).where(
+                        Question.is_active == True,
+                        Question.subject_area == subject_upper,
+                        Question.exam_type == exam_type_upper,
+                    )
+                    if difficulty_levels:
+                        stmt_fallback = stmt_fallback.where(Question.difficulty_level.in_(difficulty_levels))
+
+                    stmt_fallback = stmt_fallback.order_by(func.random()).limit(count)
+                    result_fallback = await session.execute(stmt_fallback)
+                    questions = list(result_fallback.scalars().all())
+
+                    logger.info(f"Fallback: {len(questions)} soru (ders={subject_upper}, konu yok)")
+
                 logger.debug(
                     f"get_exit_quiz_questions: {len(questions)} soru döndürülüyor "
-                    f"(konu={subject_upper}, exam_type={exam_type_upper})"
+                    f"(ders={subject_upper}, konu={topic or 'none'}, exam_type={exam_type_upper})"
                 )
 
                 await cache_manager.set(cache_key, questions, ttl=60)

@@ -4,7 +4,7 @@
  */
 
 import { Timeline, VideoLibrary, Assessment, Refresh, AutoAwesome, Shuffle, Science } from '@mui/icons-material';
-import { Container, Box, Tabs, Tab, Typography, Alert, Chip } from '@mui/material';
+import { Container, Box, Tabs, Tab, Typography, Alert, Chip, ToggleButton, ToggleButtonGroup } from '@mui/material';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 
@@ -77,6 +77,9 @@ export function ModernLearningPathPage() {
     markNodeComplete,
     updateProgress,
     studentId,
+    selectedSubject,
+    changeSubject,
+    setError,
   } = useLearningPath();
 
   const {
@@ -119,11 +122,10 @@ export function ModernLearningPathPage() {
    */
   useEffect(() => {
     if (pathNodes.length > 0 && learningStyle) {
-      // Build a minimal path object from nodes for video loading
-      const path = { modules: [{ title: pathNodes[0]?.title || 'matematik' }] };
-      loadVideosForPath(path, learningStyle);
+      const path = { modules: [{ title: selectedSubject }] };
+      loadVideosForPath(path, learningStyle, selectedSubject);
     }
-  }, [pathNodes, learningStyle, loadVideosForPath]);
+  }, [pathNodes, learningStyle, selectedSubject, loadVideosForPath]);
 
   // ========================================
   // Event handlers
@@ -193,15 +195,30 @@ export function ModernLearningPathPage() {
       return;
     }
 
-    const subject = extractSubject(node.title);
+    // Her zaman selectedSubject kullan (ders bazlı doğru filtreleme)
+    const subject = selectedSubject;
+
+    // Konu bilgisini node.title'dan çıkar (örn: "Matematik - Türev" -> "Türev")
+    const topic = node.title.includes(' - ')
+      ? node.title.split(' - ')[1].trim()
+      : null;
+
     setQuizLoading(true);
     setQuizError(null);
     try {
-      const res = await fetch(
-        `/api/learning-path/exit-quiz/${encodeURIComponent(subject)}?count=${node.quiz?.question_count || 5}`,
-        { credentials: 'include' },
-      );
+      // Konu parametresini API'ye gönder
+      const topicParam = topic ? `&topic=${encodeURIComponent(topic)}` : '';
+      const url = `/api/learning-path/exit-quiz/${encodeURIComponent(subject)}?count=${node.quiz?.question_count || 5}${topicParam}`;
+      console.log('[Quiz Debug] URL:', url, 'subject:', subject, 'topic:', topic);
+
+      const res = await fetch(url, { credentials: 'include' });
       const data = await res.json();
+
+      console.log('[Quiz Debug] Soru sayısı:', data.questions?.length, 'Topic:', data.topic);
+      if (data.questions?.length > 0) {
+        console.log('[Quiz Debug] İlk soru subject_area:', data.questions[0]?.subject_area);
+      }
+
       if (data.success && data.questions?.length > 0) {
         setNodeQuizQuestions(data.questions.map(mapApiToQuizQuestion));
         setActiveQuizNode(node);
@@ -216,7 +233,7 @@ export function ModernLearningPathPage() {
     } finally {
       setQuizLoading(false);
     }
-  }, [pretestNode, extractSubject]);
+  }, [pretestNode, selectedSubject]);
 
   /**
    * Handle quiz completion — register wrong answers to FSRS + update node progress
@@ -352,7 +369,9 @@ export function ModernLearningPathPage() {
    * Start interleaved practice with loading state
    */
   const handleStartInterleaved = useCallback(async () => {
-    const subjects = [...new Set(pathNodes.map(n => extractSubject(n.title)))].slice(0, 5);
+    // Use selectedSubject as primary; extractSubject from node titles as additional variety
+    const topicSubjects = [...new Set(pathNodes.map(n => extractSubject(n.title)))];
+    const subjects = [selectedSubject, ...topicSubjects.filter(s => s !== selectedSubject)].slice(0, 5);
     setInterleavedLoading(true);
     setQuizError(null);
     try {
@@ -369,7 +388,7 @@ export function ModernLearningPathPage() {
     } finally {
       setInterleavedLoading(false);
     }
-  }, [pathNodes, extractSubject]);
+  }, [pathNodes, extractSubject, selectedSubject]);
 
   /**
    * Tab change with quiz guard
@@ -458,7 +477,7 @@ export function ModernLearningPathPage() {
     );
   }
 
-  // Error state
+  // Error state — show subject selector so user can switch to a different subject
   if (error) {
     return (
       <Box
@@ -472,6 +491,39 @@ export function ModernLearningPathPage() {
         }}
       >
         <Container maxWidth="sm">
+          <Box sx={{ mb: 2, overflowX: 'auto', pb: 1, display: 'flex', justifyContent: 'center' }}>
+            <ToggleButtonGroup
+              value={selectedSubject}
+              exclusive
+              onChange={(_e, val) => { if (val) changeSubject(val); }}
+              size="small"
+              sx={{
+                '& .MuiToggleButton-root': {
+                  textTransform: 'none', fontWeight: 600,
+                  borderRadius: '20px !important', px: 1.5, py: 0.5,
+                  border: '1px solid rgba(59,130,246,0.3)',
+                  '&.Mui-selected': {
+                    background: modernColors.gradients.primary,
+                    color: '#fff', borderColor: 'transparent',
+                  },
+                },
+              }}
+            >
+              {[
+                { value: 'matematik', label: 'Mat' },
+                { value: 'fizik', label: 'Fiz' },
+                { value: 'kimya', label: 'Kim' },
+                { value: 'biyoloji', label: 'Bio' },
+                { value: 'turkce', label: 'Tur' },
+                { value: 'tarih', label: 'Tar' },
+                { value: 'geometri', label: 'Geo' },
+                { value: 'cografya', label: 'Cog' },
+                { value: 'edebiyat', label: 'Ede' },
+              ].map(s => (
+                <ToggleButton key={s.value} value={s.value}>{s.label}</ToggleButton>
+              ))}
+            </ToggleButtonGroup>
+          </Box>
           <GlassCard glassIntensity="medium" elevated>
             <Box sx={{ textAlign: 'center' }}>
               <Typography variant="h5" sx={{ fontWeight: 700, mb: 2, color: 'error.main' }}>
@@ -578,6 +630,48 @@ export function ModernLearningPathPage() {
                 </Box>
               </GlassCard>
             )}
+
+            {/* Subject Selector — disabled during active quiz to prevent state corruption */}
+            <Box sx={{ mt: 2, overflowX: 'auto', pb: 1 }}>
+              <ToggleButtonGroup
+                value={selectedSubject}
+                exclusive
+                onChange={(_e, val) => { if (val) changeSubject(val); }}
+                size="small"
+                disabled={!!(nodeQuizQuestions || interleavedQuestions || pretestNode)}
+                sx={{
+                  flexWrap: 'nowrap',
+                  '& .MuiToggleButton-root': {
+                    textTransform: 'none',
+                    fontWeight: 600,
+                    borderRadius: '20px !important',
+                    px: 2,
+                    py: 0.5,
+                    border: '1px solid rgba(59,130,246,0.3)',
+                    '&.Mui-selected': {
+                      background: modernColors.gradients.primary,
+                      color: '#fff',
+                      borderColor: 'transparent',
+                      '&:hover': { background: modernColors.gradients.primary, opacity: 0.9 },
+                    },
+                  },
+                }}
+              >
+                {[
+                  { value: 'matematik', label: 'Matematik' },
+                  { value: 'fizik', label: 'Fizik' },
+                  { value: 'kimya', label: 'Kimya' },
+                  { value: 'biyoloji', label: 'Biyoloji' },
+                  { value: 'turkce', label: 'Turkce' },
+                  { value: 'tarih', label: 'Tarih' },
+                  { value: 'geometri', label: 'Geometri' },
+                  { value: 'cografya', label: 'Cografya' },
+                  { value: 'edebiyat', label: 'Edebiyat' },
+                ].map(s => (
+                  <ToggleButton key={s.value} value={s.value}>{s.label}</ToggleButton>
+                ))}
+              </ToggleButtonGroup>
+            </Box>
           </Box>
         </motion.div>
 
