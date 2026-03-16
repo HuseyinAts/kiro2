@@ -1035,8 +1035,9 @@ async def submit_quiz(
             )
 
         # Query quiz configuration from database
+        # Note: is_active column not in DB yet - removed filter
         result = await db.execute(
-            select(Quiz).filter(Quiz.id == quiz_id, Quiz.is_active == True)  # noqa: E712
+            select(Quiz).filter(Quiz.id == quiz_id)
         )
         quiz = result.scalars().first()
 
@@ -1050,7 +1051,7 @@ async def submit_quiz(
             quiz_questions_result = await db.execute(
                 select(QuizQuestion, Question)
                 .join(Question, QuizQuestion.question_id == Question.id)
-                .filter(QuizQuestion.quiz_id == quiz_id, Question.is_active == True)  # noqa: E712
+                .filter(QuizQuestion.quiz_id == quiz_id)  # is_active not in DB
                 .order_by(QuizQuestion.order_number)
             )
             for quiz_question, question in quiz_questions_result.all():
@@ -1065,7 +1066,7 @@ async def submit_quiz(
             question_ids = [a.question_id for a in submission.answers]
             if question_ids:
                 questions_result = await db.execute(
-                    select(Question).filter(Question.id.in_(question_ids), Question.is_active == True)  # noqa: E712
+                    select(Question).filter(Question.id.in_(question_ids))  # is_active not in DB
                 )
                 for question in questions_result.scalars().all():
                     correct_answers[question.id] = question.correct_answer
@@ -1221,11 +1222,11 @@ async def update_progress(
             )
 
         # Update or create progress record - ASYNC FIX
+        # Note: is_active column not in DB yet - removed filter
         result = await db.execute(
             select(TopicProgress).filter(
                 TopicProgress.student_id == student_id,
-                TopicProgress.node_id == node_id,
-                TopicProgress.is_active == True  # noqa: E712
+                TopicProgress.node_id == node_id
             )
         )
         existing = result.scalars().first()
@@ -1246,11 +1247,11 @@ async def update_progress(
             db.add(new_record)
 
         # Also update completion status in TopicCompletion - ASYNC FIX
+        # Note: is_active column not in DB yet - removed filter
         result = await db.execute(
             select(TopicCompletion).filter(
                 TopicCompletion.student_id == student_id,
-                TopicCompletion.node_id == node_id,
-                TopicCompletion.is_active == True  # noqa: E712
+                TopicCompletion.node_id == node_id
             )
         )
         completion_existing = result.scalars().first()

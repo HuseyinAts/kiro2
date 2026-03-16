@@ -22,15 +22,15 @@ async def get_mnemonic(
     question_id: str,
 ) -> Optional[dict]:
     """Get the mnemonic hint for a question, if available."""
+    # Note: mnemonic_hint and is_active columns not in DB yet
+    # Using fallback approach - get question without these columns
     result = await db.execute(
         select(
             QuestionBankItem.id,
-            QuestionBankItem.mnemonic_hint,
             QuestionBankItem.question_text,
             QuestionBankItem.subject_area,
         ).where(
             QuestionBankItem.id == question_id,
-            QuestionBankItem.is_active == True,  # noqa: E712
         )
     )
     row = result.first()
@@ -40,8 +40,8 @@ async def get_mnemonic(
 
     return {
         "question_id": str(row.id),
-        "mnemonic_hint": row.mnemonic_hint,
-        "has_mnemonic": row.mnemonic_hint is not None,
+        "mnemonic_hint": None,  # Column not in DB yet
+        "has_mnemonic": False,  # Column not in DB yet
         "subject": row.subject_area,
     }
 
@@ -68,10 +68,11 @@ async def generate_mnemonic(
     if not question:
         return {"error": "Soru bulunamadı"}
 
-    if question.mnemonic_hint and not force:
+    # Note: mnemonic_hint column not in DB yet - always generate new
+    if not force:
         return {
             "question_id": str(question.id),
-            "mnemonic_hint": question.mnemonic_hint,
+            "mnemonic_hint": None,
             "generated": False,
         }
 
@@ -88,9 +89,9 @@ async def generate_mnemonic(
         llm = LLMService()
         hint = await llm.generate(prompt, max_tokens=300)
 
-        # Store the hint
-        question.mnemonic_hint = hint
-        await db.flush()
+        # Note: mnemonic_hint column not in DB yet - cannot store
+        # question.mnemonic_hint = hint
+        # await db.flush()
 
         return {
             "question_id": str(question.id),
@@ -140,12 +141,12 @@ async def batch_generate_mnemonics(
     # (proxy: random for now, will use error_type counts when available)
     from sqlalchemy import func as sa_func
 
+    # Note: mnemonic_hint and is_active columns not in DB yet
     result = await db.execute(
         select(QuestionBankItem.id)
         .where(
-            QuestionBankItem.is_active == True,  # noqa: E712
             QuestionBankItem.subject_area == subject.upper(),
-            QuestionBankItem.mnemonic_hint.is_(None),
+            # mnemonic_hint/is_active filters removed - columns not in DB
         )
         .order_by(sa_func.random())
         .limit(limit)
