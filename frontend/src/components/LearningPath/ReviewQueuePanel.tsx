@@ -40,12 +40,14 @@ const hasQuestion = (c: ReviewCard): c is ReviewCard & { question: NonNullable<R
 export function ReviewQueuePanel({ onClose }: ReviewQueuePanelProps) {
   const [cards, setCards] = useState<ReviewCard[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [reviewQuestions, setReviewQuestions] = useState<Question[] | null>(null);
   const [activeCardIds, setActiveCardIds] = useState<string[]>([]);
   const [submitProgress, setSubmitProgress] = useState(0);
 
   const loadQueue = useCallback(async () => {
     setLoading(true);
+    setError(null);
     try {
       const res = await fetch('/api/learning-path/review-queue?limit=20', {
         credentials: 'include',
@@ -55,6 +57,8 @@ export function ReviewQueuePanel({ onClose }: ReviewQueuePanelProps) {
         setCards(data.due_questions);
       }
     } catch (err) {
+      const msg = err instanceof Error ? err.message : 'Tekrar listesi yüklenemedi';
+      setError(msg);
       console.error('Review queue yüklenemedi:', err);
     } finally {
       setLoading(false);
@@ -118,6 +122,14 @@ export function ReviewQueuePanel({ onClose }: ReviewQueuePanelProps) {
       <Box sx={{ display: 'flex', justifyContent: 'center', py: 4 }}>
         <CircularProgress size={32} />
       </Box>
+    );
+  }
+
+  if (error) {
+    return (
+      <Alert severity="error" sx={{ mb: 2 }}>
+        {error}
+      </Alert>
     );
   }
 

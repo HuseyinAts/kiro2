@@ -5,12 +5,14 @@ VARK + Felder-Silverman, ZPD + Maarif, IRT + Morfoloji API'leri
 
 import logging
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, Field
+from sqlalchemy.ext.asyncio import AsyncSession
 
-from core.dependencies import get_current_user
+from core.dependencies import get_current_user, get_db
+from core.learning_path_auth import verify_student_access
 from services.revolutionary_features_service import revolutionary_features_service
 
 logger = logging.getLogger(__name__)
@@ -57,7 +59,7 @@ class BehavioralDataRequest(BaseModel):
 class QuestionnaireRequest(BaseModel):
     """Anket isteği"""
 
-    responses: List[str] = Field(..., description="Anket yanıtları")
+    responses: list[str] = Field(..., description="Anket yanıtları")
 
 
 class ZPDCalculationRequest(BaseModel):
@@ -70,7 +72,7 @@ class ZPDCalculationRequest(BaseModel):
         ..., description="Davranışsal veriler"
     )
     content_description: str = Field(default="", description="İçerik açıklaması")
-    family_survey: Optional[Dict[str, Any]] = Field(None, description="Aile anketi")
+    family_survey: dict[str, Any] | None = Field(None, description="Aile anketi")
 
 
 class RecommendationRequest(BaseModel):
@@ -84,7 +86,7 @@ class RecommendationRequest(BaseModel):
     )
     learning_objective: str = Field(..., description="Öğrenme hedefi")
     content_description: str = Field(default="", description="İçerik açıklaması")
-    family_survey: Optional[Dict[str, Any]] = Field(None, description="Aile anketi")
+    family_survey: dict[str, Any] | None = Field(None, description="Aile anketi")
 
 
 class CulturalContextRequest(BaseModel):
@@ -110,7 +112,7 @@ class ApiResponse(BaseModel):
 async def detect_learning_style(
     student_id: str,
     behavioral_data: BehavioralDataRequest,
-    questionnaire: Optional[QuestionnaireRequest] = None,
+    questionnaire: QuestionnaireRequest | None = None,
     force_recalculation: bool = False,
     current_user=Depends(get_current_user),
 ):
@@ -125,6 +127,39 @@ async def detect_learning_style(
             student_id=student_id,
             behavioral_data=behavioral_data.dict(),
             questionnaire_responses=questionnaire_responses,
+            force_recalculation=force_recalculation,
+        )
+
+        return ApiResponse(
+            success=True,
+            data=profile.__dict__,
+            message="Hibrit öğrenme stili başarıyla tespit edildi",
+        )
+
+    except Exception as e:
+        logger.error(f"Öğrenme stili tespit hatası: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/learning-style/detect/{student_id}", response_model=ApiResponse)
+async def detect_learning_style_get(
+    student_id: str,
+    force_recalculation: bool = False,
+    current_user=Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """
+    Hibrit öğrenme stili tespiti (GET versiyonu - frontend çağrısı için)
+    """
+    try:
+        # IDOR koruması
+        await verify_student_access(student_id, current_user, db)
+
+        # Boş behavioral data ile çağır
+        profile = await revolutionary_features_service.detect_hybrid_learning_style(
+            student_id=student_id,
+            behavioral_data={"session_count": 0, "video_count": 0, "quiz_count": 0},
+            questionnaire_responses=None,
             force_recalculation=force_recalculation,
         )
 
@@ -289,13 +324,18 @@ async def calculate_maarif_alignment(
 
 @router.get("/zpd-maarif/revolutionary/demo/{student_id}", response_model=ApiResponse)
 async def get_revolutionary_demo(
-    student_id: str, current_user=Depends(get_current_user)
+    student_id: str,
+    current_user=Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
 ):
     """
     Devrimsel özellikler demo
     Tüm sistemlerin entegre çalışması
     """
     try:
+        # IDOR koruması
+        await verify_student_access(student_id, current_user, db)
+
         # Demo davranışsal veri
         demo_behavioral_data = {
             "group_study_sessions": 15,

@@ -12,3 +12,7 @@ export * from './useExamQueries';
 
 // Dashboard queries
 export * from './useDashboardQueries';
+
+// Learning Path queries
+export * from './useLearningPathQueries';
+export * from './useLearningPathMutations';

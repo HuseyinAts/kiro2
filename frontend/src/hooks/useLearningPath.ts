@@ -34,6 +34,7 @@ const CACHE_KEYS = {
   LEARNING_STYLE: 'lp_learning_style',
   COMPLETION_STATUS: 'lp_completion_status',
   PROFILE: 'lp_profile',
+  QUIZ_COMPLETED: 'lp_quiz_completed', // VARK quiz completed flag
 };
 
 const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
@@ -136,6 +137,12 @@ export const useLearningPath = (): UseLearningPathReturn => {
 
   /** Check if student has real VARK data (not just defaults) */
   const checkQuizCompleted = useCallback(async (sid: string): Promise<boolean> => {
+    // First check localStorage for session persistence
+    const quizCompletedLocal = lpCache.get<boolean>(CACHE_KEYS.QUIZ_COMPLETED);
+    if (quizCompletedLocal) {
+      return true;
+    }
+
     try {
       const styleResponse = await detectLearningStyle(sid);
       if (styleResponse.success && styleResponse.data) {
@@ -146,6 +153,8 @@ export const useLearningPath = (): UseLearningPathReturn => {
         // Default profiles have confidence=0.3 and data_points=0
         if (confidence > 0.4 && dataPoints > 3) {
           setLearningStyle(styleResponse.data.hybrid_code || styleResponse.data.vark_profile?.dominant || 'mixed');
+          // Cache in localStorage for session persistence
+          lpCache.set(CACHE_KEYS.QUIZ_COMPLETED, true, CACHE_TTL);
           return true;
         }
       }
@@ -297,6 +306,8 @@ export const useLearningPath = (): UseLearningPathReturn => {
 
       // 3. Quiz done — create path (ALWAYS runs even if detect fails)
       quizSubmittedRef.current = true;
+      // Persist in localStorage to prevent re-show on page refresh
+      lpCache.set(CACHE_KEYS.QUIZ_COMPLETED, true, CACHE_TTL);
       setNeedsQuiz(false);
       await createAndLoadPath(studentId);
 

@@ -408,6 +408,10 @@ class TestOsymExamQuestionEndpoints:
             mock_question.primary_topic_id = "topic-anlam-bilgisi"
             mock_question.difficulty_level = Mock()
             mock_question.difficulty_level.value = "MEDIUM"
+            mock_question.image_ocr_text = "Test OCR metni"
+            mock_question.video_solution_url = None
+            mock_question.image_width = None
+            mock_question.image_height = None
 
             mock_engine.get_session_data = AsyncMock(return_value=mock_session)
             mock_engine.get_current_question = AsyncMock(return_value=mock_question)
@@ -502,6 +506,10 @@ class TestOsymExamQuestionEndpoints:
             mock_question.primary_topic_id = "topic-123"
             mock_question.difficulty_level = Mock()
             mock_question.difficulty_level.value = "MEDIUM"
+            mock_question.image_ocr_text = "Test OCR metni"
+            mock_question.video_solution_url = None
+            mock_question.image_width = None
+            mock_question.image_height = None
 
             mock_engine.get_session_data = AsyncMock(return_value=mock_session)
             mock_engine.navigate_to_question = AsyncMock(return_value=mock_question)

@@ -9,8 +9,8 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from core.dependencies import get_db
-from core.learning_path_auth import get_current_user_from_token, verify_student_access
+from core.dependencies import get_db, get_current_user, AuthenticatedUser
+from core.learning_path_auth import verify_student_access
 from models.learning_path_models import LearningPathStudentProfile
 from models.learning_style import BehavioralData, QuestionnaireResponse
 from services.learning_style_service import LearningStyleService
@@ -29,7 +29,7 @@ async def detect_learning_style(
     student_id: str,
     force_recalculation: bool = Query(False, description="Zorla yeniden hesaplama"),
     db: AsyncSession = Depends(get_db),
-    current_user=Depends(get_current_user_from_token),
+    current_user: AuthenticatedUser = Depends(get_current_user),
 ):
     """
     Öğrenci için hibrit öğrenme stili tespit et
@@ -101,7 +101,7 @@ async def get_content_recommendations(
     difficulty_level: str = Query("orta", description="Zorluk seviyesi"),
     force_refresh: bool = Query(False, description="Öneri yenileme"),
     db: AsyncSession = Depends(get_db),
-    current_user=Depends(get_current_user_from_token),
+    current_user: AuthenticatedUser = Depends(get_current_user),
 ):
     """
     Hibrit profile göre kişiselleştirilmiş içerik önerileri
@@ -152,7 +152,7 @@ async def update_behavioral_data(
     student_id: str,
     behavioral_data: BehavioralData,
     db: AsyncSession = Depends(get_db),
-    current_user=Depends(get_current_user_from_token),
+    current_user: AuthenticatedUser = Depends(get_current_user),
 ):
     """
     Yeni davranışsal veri ile öğrenme stilini güncelle
@@ -198,7 +198,7 @@ async def submit_questionnaire(
     student_id: str,
     questionnaire_response: QuestionnaireResponse,
     db: AsyncSession = Depends(get_db),
-    current_user=Depends(get_current_user_from_token),
+    current_user: AuthenticatedUser = Depends(get_current_user),
 ):
     """
     Öğrenme stili anketi yanıtlarını kaydet — cache + DB persist
@@ -284,7 +284,7 @@ def _calculate_vark_scores(response: QuestionnaireResponse) -> Dict[str, float]:
 async def get_learning_style_explanation(
     student_id: str,
     db: AsyncSession = Depends(get_db),
-    current_user=Depends(get_current_user_from_token),
+    current_user: AuthenticatedUser = Depends(get_current_user),
 ):
     """
     Öğrenci için öğrenme stili açıklaması
@@ -363,7 +363,7 @@ async def get_learning_style_statistics():
 async def export_learning_profile(
     student_id: str,
     db: AsyncSession = Depends(get_db),
-    current_user=Depends(get_current_user_from_token),
+    current_user: AuthenticatedUser = Depends(get_current_user),
 ):
     """
     Öğrenci öğrenme profilini dışa aktar
@@ -425,7 +425,7 @@ async def update_recommendations_based_on_performance(
     student_id: str,
     performance_data: Dict[str, float],
     db: AsyncSession = Depends(get_db),
-    current_user=Depends(get_current_user_from_token),
+    current_user: AuthenticatedUser = Depends(get_current_user),
 ):
     """
     Performans verilerine göre önerileri güncelle

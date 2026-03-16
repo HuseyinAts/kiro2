@@ -963,12 +963,12 @@ async def user_logout(
 
 
 @router.post("/validate", summary="Validate Token", include_in_schema=False)
-async def validate_token(
-    credentials: HTTPAuthorizationCredentials = Depends(security),
-) -> dict[str, bool]:
+async def validate_token(request: Request) -> dict[str, bool]:
     """
     Validate authentication token
     Frontend endpoint - checks if the provided token is valid
+
+    Supports both Bearer token and httpOnly cookie authentication.
 
     Returns:
     {
@@ -976,7 +976,20 @@ async def validate_token(
     }
     """
     try:
-        token = credentials.credentials
+        # Support both Bearer token and cookie (like mevcut_kullanici_getir)
+        token = None
+
+        # Try Authorization header first
+        auth_header = request.headers.get("Authorization")
+        if auth_header and auth_header.startswith("Bearer "):
+            token = auth_header[7:]  # Remove "Bearer " prefix
+
+        # Fallback to cookie
+        if not token:
+            token = request.cookies.get("access_token")
+
+        if not token:
+            return {"valid": False}
 
         # Check JWT blacklist first (Redis-backed)
         jwt_mgr = get_jwt_manager()

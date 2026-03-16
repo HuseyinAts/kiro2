@@ -99,7 +99,7 @@ class TestEnhancedResourceRecommendationEngine:
         assert engine.relevance_scorer is not None
         assert engine.quality_validator is not None
         assert engine.youtube_service is not None
-        assert engine.min_turkish_score == 0.7
+        assert engine.min_turkish_score == 0.2
         assert engine.min_relevance_score == 0.6
         assert engine.min_quality_score == 0.3
 

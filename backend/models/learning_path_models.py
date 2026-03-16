@@ -287,6 +287,9 @@ class TopicCompletion(Base):
     completed = Column(Boolean, nullable=False, default=False)
     completion_date = Column(DateTime, nullable=True)
 
+    # Soft delete
+    is_active = Column(Boolean, nullable=False, default=True, index=True)
+
     # Metadata
     created_at = Column(DateTime, nullable=False, default=datetime.now)
     updated_at = Column(
@@ -321,6 +324,9 @@ class TopicProgress(Base):
     progress = Column(Integer, nullable=False, default=0)  # 0-100
     time_spent = Column(Integer, nullable=False, default=0)  # Minutes
     completed = Column(Boolean, nullable=False, default=False)
+
+    # Soft delete
+    is_active = Column(Boolean, nullable=False, default=True, index=True)
 
     # Metadata
     created_at = Column(DateTime, nullable=False, default=datetime.now)

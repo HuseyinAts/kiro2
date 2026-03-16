@@ -809,7 +809,7 @@ export function ModernLearningPathPage() {
                         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                           {videos.map((video, index) => (
                             <motion.div
-                              key={(video as any).id || video.video_id || index}
+                              key={video.video_id || index}
                               initial={{ opacity: 0, y: 20 }}
                               animate={{ opacity: 1, y: 0 }}
                               transition={{ duration: 0.3, delay: index * 0.05 }}

@@ -12,7 +12,7 @@ export const config = {
   api: {
     baseURL: isTestEnv
       ? 'http://localhost:8000'
-      : import.meta.env.VITE_API_URL ?? '',
+      : import.meta.env.VITE_API_URL ?? 'http://localhost:8000',
     wsURL: isTestEnv
       ? 'ws://localhost:8000'
       : import.meta.env.VITE_WS_URL ?? '',

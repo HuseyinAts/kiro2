@@ -23,9 +23,9 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   const {  isAuthenticated, user, loading, hasPermission, isAuthorized  } = useAuthStore();
   const location = useLocation();
 
-  // Show loading spinner only when auth state is unknown
-  // If user is already authenticated from persisted state, render immediately
-  if (loading && !isAuthenticated) {
+  // Show loading spinner while initializeAuth is in progress.
+  // Do NOT trust persisted isAuthenticated — cookie may have expired.
+  if (loading) {
     return (
       <Box
         display="flex"

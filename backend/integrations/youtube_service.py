@@ -102,6 +102,10 @@ class YouTubeService:
             Video listesi
         """
         try:
+            # DEBUG: Log api_key status
+            import os
+            actual_key = os.getenv("YOUTUBE_API_KEY", "NOT_FOUND")
+            logger.info(f"YouTube API Key status: present={bool(self.api_key)}, env_var={actual_key[:10] if actual_key else 'NONE'}...")
             if not self.api_key:
                 logger.warning("YouTube API key not found, using fallback")
                 return await self._fallback_search(query, max_results)
@@ -125,10 +129,13 @@ class YouTubeService:
                 params["videoCategoryId"] = "27"  # Education category
 
             # API çağrısı yap
+            logger.info(f"YouTube API call: params={params}")
             search_results = await self._make_api_request("search", params)
+            logger.info(f"YouTube API response: has_results={bool(search_results)}, has_items={'items' in (search_results or {})}")
+            logger.info(f"YouTube API response keys: {list(search_results.keys()) if search_results else 'None'}")
 
             if not search_results or "items" not in search_results:
-                logger.warning("No search results from YouTube API")
+                logger.warning("No search results from YouTube API - using fallback")
                 return await self._fallback_search(query, max_results)
 
             # Video ID'lerini topla
@@ -311,11 +318,22 @@ class YouTubeService:
                 or "tr"
             )
 
-            # Educational score calculation
-            educational_score = self._calculate_educational_score(item)
+            # Educational score calculation - safe fallback
+            try:
+                educational_score = self._calculate_educational_score(item)
+            except (AttributeError, TypeError):
+                # Fallback if item is a dict and function expects YouTubeVideo
+                educational_score = 0.5
+
+            # Safe video_id extraction
+            video_id = ""
+            if isinstance(item, dict):
+                video_id = item.get("id", {}).get("videoId", "") if isinstance(item.get("id"), dict) else str(item.get("id", ""))
+            elif isinstance(item, str):
+                video_id = item
 
             return YouTubeVideo(
-                video_id=item["id"],
+                video_id=video_id,
                 title=snippet.get("title", ""),
                 description=snippet.get("description", ""),
                 channel_name=snippet.get("channelTitle", ""),
@@ -332,7 +350,8 @@ class YouTubeService:
             )
 
         except Exception as e:
-            logger.error(f"Error parsing video data: {str(e)}")
+            import traceback
+            logger.error(f"Error parsing video data: {str(e)}\nStack: {traceback.format_exc(limit=5)}")
             return None
 
     def _calculate_educational_score(self, video_item: Dict[str, Any]) -> float:

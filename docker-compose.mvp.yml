@@ -23,6 +23,7 @@ services:
       - ./d-dataset/output/crops:/app/static/crops:ro
     environment:
       - CROP_IMAGE_DIR=/app/static/crops
+      # YOUTUBE_API_KEY loaded from .env.mvp
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
