@@ -13,19 +13,20 @@ SQLAlchemy models for Learning Path system
 from datetime import datetime
 from typing import Any
 from uuid import uuid4
+
 from sqlalchemy import (
-    Column,
-    String,
-    Integer,
-    Float,
-    Boolean,
-    DateTime,
-    Date,
-    Text,
     JSON,
+    Boolean,
+    CheckConstraint,
+    Column,
+    Date,
+    DateTime,
+    Float,
     ForeignKey,
     Index,
-    CheckConstraint,
+    Integer,
+    String,
+    Text,
 )
 from sqlalchemy.orm import relationship
 
@@ -186,7 +187,7 @@ class LearningPathStudentProfile(Base):
                 updated_at=legacy_profile.updated_at,
             )
         # Handle StudentLearningProfile (from student_learning_profile.py)
-        elif hasattr(legacy_profile, 'vark_visual') and hasattr(legacy_profile, 'student_id'):
+        if hasattr(legacy_profile, 'vark_visual') and hasattr(legacy_profile, 'student_id'):
             return cls(
                 student_id=legacy_profile.id,
                 user_id=legacy_profile.student_id,
@@ -287,9 +288,6 @@ class TopicCompletion(Base):
     completed = Column(Boolean, nullable=False, default=False)
     completion_date = Column(DateTime, nullable=True)
 
-    # Soft delete
-    is_active = Column(Boolean, nullable=False, default=True, index=True)
-
     # Metadata
     created_at = Column(DateTime, nullable=False, default=datetime.now)
     updated_at = Column(
@@ -324,9 +322,6 @@ class TopicProgress(Base):
     progress = Column(Integer, nullable=False, default=0)  # 0-100
     time_spent = Column(Integer, nullable=False, default=0)  # Minutes
     completed = Column(Boolean, nullable=False, default=False)
-
-    # Soft delete
-    is_active = Column(Boolean, nullable=False, default=True, index=True)
 
     # Metadata
     created_at = Column(DateTime, nullable=False, default=datetime.now)

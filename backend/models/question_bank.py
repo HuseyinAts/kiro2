@@ -12,7 +12,7 @@ Task 70: Soru Veritabanı Tasarımı
 import enum
 import uuid
 from datetime import datetime
-from typing import List, Optional
+from typing import Optional
 
 from sqlalchemy import (
     JSON,
@@ -32,7 +32,6 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.sql import func
 
 from .base import Base
-
 
 # ============================================================================
 # TASK 70.3: 5-Level Difficulty Scale
@@ -70,7 +69,7 @@ class TopicHierarchy(Base):
     level: Mapped[int] = mapped_column(
         Integer, nullable=False
     )  # 1: Ana konu, 2: Alt konu, 3: Detay konu
-    parent_id: Mapped[Optional[str]] = mapped_column(
+    parent_id: Mapped[str | None] = mapped_column(
         String, ForeignKey("topic_hierarchy.id", ondelete="CASCADE")
     )
 
@@ -79,12 +78,12 @@ class TopicHierarchy(Base):
         String(50), unique=True, nullable=False
     )  # MAT.GEO.UCG.PIS
     name_tr: Mapped[str] = mapped_column(String(200), nullable=False)
-    name_en: Mapped[Optional[str]] = mapped_column(String(200))
-    description: Mapped[Optional[str]] = mapped_column(Text)
+    name_en: Mapped[str | None] = mapped_column(String(200))
+    description: Mapped[str | None] = mapped_column(Text)
 
     # MEB müfredat uyumu
-    meb_code: Mapped[Optional[str]] = mapped_column(String(100))
-    meb_kazanim: Mapped[Optional[dict]] = mapped_column(JSON)  # MEB kazanım kodları
+    meb_code: Mapped[str | None] = mapped_column(String(100))
+    meb_kazanim: Mapped[dict | None] = mapped_column(JSON)  # MEB kazanım kodları
 
     # ÖSYM uyumu
     osym_relevance: Mapped[float] = mapped_column(
@@ -111,10 +110,10 @@ class TopicHierarchy(Base):
     parent: Mapped[Optional["TopicHierarchy"]] = relationship(
         "TopicHierarchy", remote_side=[id], back_populates="children"
     )
-    children: Mapped[List["TopicHierarchy"]] = relationship(
+    children: Mapped[list["TopicHierarchy"]] = relationship(
         "TopicHierarchy", back_populates="parent"
     )
-    questions: Mapped[List["QuestionBankItem"]] = relationship(
+    questions: Mapped[list["QuestionBankItem"]] = relationship(
         "QuestionBankItem", back_populates="primary_topic"
     )
 
@@ -148,7 +147,7 @@ class QuestionTag(Base):
     tag_category: Mapped[str] = mapped_column(
         String(50), nullable=False
     )  # skill, concept, difficulty, format
-    description: Mapped[Optional[str]] = mapped_column(Text)
+    description: Mapped[str | None] = mapped_column(Text)
 
     # İstatistikler
     usage_count: Mapped[int] = mapped_column(Integer, default=0)
@@ -159,7 +158,7 @@ class QuestionTag(Base):
     )
 
     # İlişkiler
-    question_associations: Mapped[List["QuestionTagAssociation"]] = relationship(
+    question_associations: Mapped[list["QuestionTagAssociation"]] = relationship(
         "QuestionTagAssociation", back_populates="tag"
     )
 
@@ -202,10 +201,10 @@ class IRTCalibrationHistory(Base):
     )  # Kaç öğrenci yanıtı kullanıldı
 
     # Eski IRT parametreleri
-    old_discrimination: Mapped[Optional[float]] = mapped_column(Float)  # a parametresi
-    old_difficulty: Mapped[Optional[float]] = mapped_column(Float)  # b parametresi
-    old_guessing: Mapped[Optional[float]] = mapped_column(Float)  # c parametresi
-    old_upper_asymptote: Mapped[Optional[float]] = mapped_column(Float)  # d parametresi
+    old_discrimination: Mapped[float | None] = mapped_column(Float)  # a parametresi
+    old_difficulty: Mapped[float | None] = mapped_column(Float)  # b parametresi
+    old_guessing: Mapped[float | None] = mapped_column(Float)  # c parametresi
+    old_upper_asymptote: Mapped[float | None] = mapped_column(Float)  # d parametresi
 
     # Yeni IRT parametreleri
     new_discrimination: Mapped[float] = mapped_column(Float, nullable=False)
@@ -273,36 +272,33 @@ class QuestionBankItem(Base):
     # Soru İçeriği
     # ========================================================================
     question_text: Mapped[str] = mapped_column(Text, nullable=False)
-    question_html: Mapped[Optional[str]] = mapped_column(Text)  # HTML formatında soru
-    question_latex: Mapped[Optional[str]] = mapped_column(
+    question_html: Mapped[str | None] = mapped_column(Text)  # HTML formatında soru
+    question_latex: Mapped[str | None] = mapped_column(
         Text
     )  # LaTeX formatında matematik
-    question_image_url: Mapped[Optional[str]] = mapped_column(String(500))
-    image_ocr_text: Mapped[Optional[str]] = mapped_column(Text)
-    image_width: Mapped[Optional[int]] = mapped_column(Integer)
-    image_height: Mapped[Optional[int]] = mapped_column(Integer)
-    question_audio_url: Mapped[Optional[str]] = mapped_column(String(500))
+    question_image_url: Mapped[str | None] = mapped_column(String(500))
+    image_ocr_text: Mapped[str | None] = mapped_column(Text)
+    image_width: Mapped[int | None] = mapped_column(Integer)
+    image_height: Mapped[int | None] = mapped_column(Integer)
+    question_audio_url: Mapped[str | None] = mapped_column(String(500))
 
     # Seçenekler
     option_a: Mapped[str] = mapped_column(Text, nullable=False)
     option_b: Mapped[str] = mapped_column(Text, nullable=False)
     option_c: Mapped[str] = mapped_column(Text, nullable=False)
     option_d: Mapped[str] = mapped_column(Text, nullable=False)
-    option_e: Mapped[Optional[str]] = mapped_column(Text)
+    option_e: Mapped[str | None] = mapped_column(Text)
 
     correct_answer: Mapped[str] = mapped_column(
         String(1), nullable=False
     )  # A, B, C, D, E
 
     # Açıklamalar
-    explanation: Mapped[Optional[str]] = mapped_column(Text)
-    explanation_video_url: Mapped[Optional[str]] = mapped_column(String(500))
-    alternative_solutions: Mapped[Optional[dict]] = mapped_column(
+    explanation: Mapped[str | None] = mapped_column(Text)
+    explanation_video_url: Mapped[str | None] = mapped_column(String(500))
+    alternative_solutions: Mapped[dict | None] = mapped_column(
         JSON
     )  # Alternatif çözüm yolları
-
-    # Hafıza ipucu (F19 Mnemonic Hints)
-    mnemonic_hint: Mapped[Optional[str]] = mapped_column(Text)
 
     # ========================================================================
     # TASK 70.2: Konu Etiketleme
@@ -310,7 +306,7 @@ class QuestionBankItem(Base):
     primary_topic_id: Mapped[str] = mapped_column(
         String, ForeignKey("topic_hierarchy.id"), nullable=False
     )
-    secondary_topics: Mapped[Optional[dict]] = mapped_column(
+    secondary_topics: Mapped[dict | None] = mapped_column(
         JSON
     )  # İkincil konular listesi
 
@@ -332,7 +328,7 @@ class QuestionBankItem(Base):
 
     # Dinamik zorluk güncellemesi için metrikler
     student_success_rate: Mapped[float] = mapped_column(Float, default=0.0)  # 0-1 arası
-    last_difficulty_update: Mapped[Optional[datetime]] = mapped_column(
+    last_difficulty_update: Mapped[datetime | None] = mapped_column(
         DateTime(timezone=True)
     )
     difficulty_update_count: Mapped[int] = mapped_column(Integer, default=0)
@@ -355,7 +351,7 @@ class QuestionBankItem(Base):
     # IRT kalibrasyon durumu
     is_calibrated: Mapped[bool] = mapped_column(Boolean, default=False)
     calibration_sample_size: Mapped[int] = mapped_column(Integer, default=0)
-    last_calibration_date: Mapped[Optional[datetime]] = mapped_column(
+    last_calibration_date: Mapped[datetime | None] = mapped_column(
         DateTime(timezone=True)
     )
     calibration_quality_score: Mapped[float] = mapped_column(
@@ -384,7 +380,7 @@ class QuestionBankItem(Base):
 
     # Exposure control (soru maruziyeti kontrolü)
     exposure_rate: Mapped[float] = mapped_column(Float, default=0.0)
-    last_used_date: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True))
+    last_used_date: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
 
     # ========================================================================
     # Metadata ve Sınıflandırma
@@ -395,7 +391,7 @@ class QuestionBankItem(Base):
 
     # ÖSYM uyumu
     osym_format_compliant: Mapped[bool] = mapped_column(Boolean, default=True)
-    osym_year: Mapped[Optional[int]] = mapped_column(
+    osym_year: Mapped[int | None] = mapped_column(
         Integer
     )  # Hangi yılın ÖSYM sorusuna benziyor
 
@@ -408,17 +404,17 @@ class QuestionBankItem(Base):
     # ========================================================================
     # Pipeline Source Tracking (d-dataset import)
     # ========================================================================
-    source_book: Mapped[Optional[str]] = mapped_column(String(300))
-    source_page: Mapped[Optional[int]] = mapped_column(Integer)
-    pipeline_metadata: Mapped[Optional[dict]] = mapped_column(JSON)
+    source_book: Mapped[str | None] = mapped_column(String(300))
+    source_page: Mapped[int | None] = mapped_column(Integer)
+    pipeline_metadata: Mapped[dict | None] = mapped_column(JSON)
 
     # ========================================================================
     # Sistem Alanları
     # ========================================================================
-    created_by: Mapped[Optional[str]] = mapped_column(
+    created_by: Mapped[str | None] = mapped_column(
         String, ForeignKey("users.id", ondelete="CASCADE")
     )
-    reviewed_by: Mapped[Optional[str]] = mapped_column(
+    reviewed_by: Mapped[str | None] = mapped_column(
         String, ForeignKey("users.id", ondelete="CASCADE")
     )
 
@@ -438,13 +434,13 @@ class QuestionBankItem(Base):
     primary_topic: Mapped["TopicHierarchy"] = relationship(
         "TopicHierarchy", back_populates="questions"
     )
-    tag_associations: Mapped[List["QuestionTagAssociation"]] = relationship(
+    tag_associations: Mapped[list["QuestionTagAssociation"]] = relationship(
         "QuestionTagAssociation", back_populates="question"
     )
-    calibration_history: Mapped[List["IRTCalibrationHistory"]] = relationship(
+    calibration_history: Mapped[list["IRTCalibrationHistory"]] = relationship(
         "IRTCalibrationHistory", back_populates="question"
     )
-    performance_analytics: Mapped[List["QuestionPerformanceAnalytics"]] = relationship(
+    performance_analytics: Mapped[list["QuestionPerformanceAnalytics"]] = relationship(
         "QuestionPerformanceAnalytics", back_populates="question"
     )
 
@@ -627,14 +623,13 @@ def calculate_irt_based_difficulty(irt_difficulty: float) -> str:
     """
     if irt_difficulty < -1.5:
         return "very_easy"
-    elif irt_difficulty < -0.5:
+    if irt_difficulty < -0.5:
         return "easy"
-    elif irt_difficulty < 0.5:
+    if irt_difficulty < 0.5:
         return "medium"
-    elif irt_difficulty < 1.5:
+    if irt_difficulty < 1.5:
         return "hard"
-    else:
-        return "very_hard"
+    return "very_hard"
 
 
 def should_update_difficulty(
