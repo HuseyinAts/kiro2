@@ -5,10 +5,10 @@ Pretest-before-instruction cycle: students attempt problems first to activate
 prior knowledge, then instruction follows. Growth is measured pre vs post.
 """
 
-from typing import Any
+from typing import Any, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, status
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 
 from core.database import get_db_session_context
 from core.dependencies import AuthenticatedUser, get_current_user
@@ -24,9 +24,30 @@ logger = get_logger("productive_failure_api")
 
 
 class PretestStartRequest(BaseModel):
-    topic_id: str = Field(..., min_length=1, description="Konu ID'si")
-    subject: str = Field(..., min_length=1, description="Ders (ör. MATEMATIK)")
-    count: int = Field(default=3, ge=1, le=10, description="Pretest soru sayısı")
+    """Pretest başlatma isteği - backward compatible"""
+    model_config = ConfigDict(populate_by_name=True)
+
+    # Yeni format
+    topic_id: Optional[str] = Field(None, min_length=1, description="Konu ID'si")
+    subject: Optional[str] = Field(None, min_length=1, description="Ders (ör. MATEMATIK)")
+    count: Optional[int] = Field(3, ge=1, le=10, description="Pretest soru sayısı")
+
+    # Eski frontend formatı (backward compatibility)
+    topic: Optional[str] = Field(None, alias="topic")  # eski: { topic: "..." }
+    question_count: Optional[int] = Field(3, alias="question_count")  # eski: { question_count: 3 }
+
+    def __init__(self, **data):
+        # Backward compatibility: eski formatı yeni formata çevir
+        if "topic" in data and data["topic"] and not data.get("topic_id"):
+            data["topic_id"] = data["topic"]
+        if "question_count" in data and data["question_count"] and not data.get("count"):
+            data["count"] = data["question_count"]
+        super().__init__(**data)
+
+    # Validation - en az topic_id veya topic olmalı
+    def model_post_init(self, __context):
+        if not self.topic_id and not self.topic:
+            raise ValueError("topic_id veya topic belirtilmelidir")
 
 
 class PretestStartResponse(BaseModel):
