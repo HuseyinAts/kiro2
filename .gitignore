@@ -270,3 +270,6 @@ d-
 
 # Temp coverage reports
 backend/coverage_*_report_*.txt
+
+# Hook temp files
+.claude/hooks/.typecheck_*
