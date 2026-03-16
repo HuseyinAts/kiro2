@@ -6,6 +6,8 @@ BEFORE learning, then learns, then takes post-test to measure growth.
 
 from __future__ import annotations
 
+from typing import Optional
+
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -14,19 +16,47 @@ from models.question_bank import QuestionBankItem
 
 logger = get_logger("productive_failure_service")
 
+# Topic prefix to subject mapping (e.g., "MAT.GEO.1" -> "MAT" -> "MATEMATIK")
+_TOPIC_PREFIX_MAP = {
+    "MAT": "MATEMATIK",
+    "FIZ": "FIZIK",
+    "KIM": "KIMYA",
+    "BIO": "BIYOLOJI",
+    "TUR": "TURKCE",
+    "TAR": "TARIH",
+    "COG": "COGRAFYA",
+    "GEO": "GEOMETRI",
+    "EDE": "EDEBIYAT",
+    "FEL": "FELSEFE",
+}
+
 
 async def get_pretest_questions(
     *,
     db: AsyncSession,
     topic_id: str,
-    subject: str,
+    subject: Optional[str] = None,
     count: int = 3,
 ) -> list[dict]:
     """Select pretest questions for an upcoming topic.
 
     Picks medium-difficulty questions so the student gets a fair
     preview of what they'll learn, even if they fail.
+
+    Args:
+        db: Database session
+        topic_id: Primary topic ID (e.g., "MAT.GEO.1")
+        subject: Subject area (e.g., "MATEMATIK"). If None, uses topic_id prefix.
+        count: Number of questions to return
     """
+    # Extract subject from topic_id if not provided (e.g., "MAT.GEO.1" -> "MATEMATIK")
+    if not subject and topic_id:
+        # Try to extract subject from topic_id prefix (e.g., "MAT.GEO.1" -> "MAT")
+        topic_prefix = topic_id.split(".")[0] if "." in topic_id else topic_id[:3]
+        subject = _TOPIC_PREFIX_MAP.get(topic_prefix.upper(), "MATEMATIK")  # fallback
+
+    subject_upper = subject.upper() if subject else "MATEMATIK"
+
     result = await db.execute(
         select(
             QuestionBankItem.id,
@@ -41,7 +71,7 @@ async def get_pretest_questions(
         )
         .where(
             QuestionBankItem.is_active == True,  # noqa: E712
-            QuestionBankItem.subject_area == subject.upper(),
+            QuestionBankItem.subject_area == subject_upper,
             QuestionBankItem.primary_topic_id == topic_id,
         )
         .order_by(func.random())
