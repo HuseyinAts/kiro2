@@ -224,6 +224,7 @@ frontend/backstop_data/ci_report/
 # Session state (auto-generated, personal)
 .claude/SESSION_STATE.md
 .claude/session_state.json
+.claude/settings.local.json
 
 # Large binaries — never commit (wheelhouse, coverage reports)
 wheelhouse/
