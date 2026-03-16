@@ -94,11 +94,12 @@ export const ModernLoginPage: React.FC = () => {
   const showDemoButtons = import.meta.env.DEV || import.meta.env.VITE_SHOW_DEMO === 'true';
 
   const handleDemoLogin = async (role: UserRole) => {
+    const demoPassword = import.meta.env.VITE_DEMO_PASSWORD || '';
     const demoCredentials = {
-      ogrenci: { email: 'ogrenci@kiro2.com', password: 'Kiro2Beta2026@x' },
-      ogretmen: { email: 'ogretmen@kiro2.com', password: 'Kiro2Beta2026@x' },
-      veli: { email: 'veli@kiro2.com', password: 'Kiro2Beta2026@x' },
-      admin: { email: 'admin@kiro2.com', password: 'Kiro2Beta2026@x' },
+      ogrenci: { email: 'ogrenci@kiro2.com', password: demoPassword },
+      ogretmen: { email: 'ogretmen@kiro2.com', password: demoPassword },
+      veli: { email: 'veli@kiro2.com', password: demoPassword },
+      admin: { email: 'admin@kiro2.com', password: demoPassword },
     };
 
     setFormData(demoCredentials[role]);

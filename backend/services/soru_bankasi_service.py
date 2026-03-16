@@ -2,12 +2,12 @@
 Soru bankası yönetimi servisi
 Gelişmiş IRT parametreli soru seçimi ve database entegrasyonu ile
 """
+
 import logging
 import math
 import random
 import unicodedata
 from datetime import datetime
-from typing import Dict, List, Optional, Tuple
 
 from sqlalchemy import and_, func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -17,25 +17,57 @@ from core.cache import cache_manager
 from core.database import db_manager
 from models import SinavTipi
 from models.database import ExamType, QuestionDifficulty, SubjectArea
-from models.question_bank import QuestionBankItem as Question, TopicHierarchy
+from models.question_bank import QuestionBankItem as Question
+from models.question_bank import TopicHierarchy
 from services.irt_analysis_service import IRTAnalysisService
 
 logger = logging.getLogger(__name__)
 
 # Türkçe → UPPERCASE konu dönüşüm haritası (DRY: tek tanım)
-_KONU_MAP: Dict[str, str] = {
-    "Matematik": "MATEMATIK", "matematik": "MATEMATIK", "Mat": "MATEMATIK",
-    "Türkçe": "TURKCE", "turkce": "TURKCE", "Turkce": "TURKCE",
-    "Fizik": "FIZIK", "fizik": "FIZIK", "Fiz": "FIZIK",
-    "Kimya": "KIMYA", "kimya": "KIMYA", "Kim": "KIMYA",
-    "Biyoloji": "BIYOLOJI", "biyoloji": "BIYOLOJI", "Bio": "BIYOLOJI",
-    "Geometri": "GEOMETRI", "geometri": "GEOMETRI", "Geo": "GEOMETRI",
-    "Fen": "FEN", "fen": "FEN", "Fen Bilimleri": "FEN",
-    "Sosyal": "SOSYAL", "sosyal": "SOSYAL", "Sosyal Bilimler": "SOSYAL",
-    "Tarih": "TARIH", "tarih": "TARIH",
-    "Edebiyat": "EDEBIYAT", "edebiyat": "EDEBIYAT",
-    "Coğrafya": "COGRAFYA", "cografya": "COGRAFYA", "Cografya": "COGRAFYA",
-    "İngilizce": "INGILIZCE", "ingilizce": "INGILIZCE", "Ing": "INGILIZCE",
+_KONU_MAP: dict[str, str] = {
+    "Matematik": "MATEMATIK",
+    "matematik": "MATEMATIK",
+    "Mat": "MATEMATIK",
+    "mat": "MATEMATIK",
+    "Türkçe": "TURKCE",
+    "turkce": "TURKCE",
+    "Turkce": "TURKCE",
+    "Fizik": "FIZIK",
+    "fizik": "FIZIK",
+    "Fiz": "FIZIK",
+    "fiz": "FIZIK",
+    "Kimya": "KIMYA",
+    "kimya": "KIMYA",
+    "Kim": "KIMYA",
+    "kim": "KIMYA",
+    "Biyoloji": "BIYOLOJI",
+    "biyoloji": "BIYOLOJI",
+    "Bio": "BIYOLOJI",
+    "bio": "BIYOLOJI",
+    "Geometri": "GEOMETRI",
+    "geometri": "GEOMETRI",
+    "Geo": "GEOMETRI",
+    "geo": "GEOMETRI",
+    "Fen": "FEN",
+    "fen": "FEN",
+    "Fen Bilimleri": "FEN",
+    "fen bilimleri": "FEN",
+    "Sosyal": "SOSYAL",
+    "sosyal": "SOSYAL",
+    "Sosyal Bilimler": "SOSYAL",
+    "sosyal bilimler": "SOSYAL",
+    "Tarih": "TARIH",
+    "tarih": "TARIH",
+    "Coğrafya": "COGRAFYA",
+    "coğrafya": "COGRAFYA",
+    "cografya": "COGRAFYA",
+    "Cografya": "COGRAFYA",
+    "Edebiyat": "EDEBIYAT",
+    "edebiyat": "EDEBIYAT",
+    "İngilizce": "INGILIZCE",
+    "ingilizce": "INGILIZCE",
+    "Ing": "INGILIZCE",
+    "ing": "INGILIZCE",
 }
 
 
@@ -93,7 +125,7 @@ class SoruBankasiServisi:
 
     async def _enum_donusturucu(
         self, exam_type: str, difficulty: str, subject: str
-    ) -> Tuple[ExamType, QuestionDifficulty, SubjectArea]:
+    ) -> tuple[ExamType, QuestionDifficulty, SubjectArea]:
         """Enum dönüştürücü yardımcı fonksiyonu"""
         # ExamType dönüştürme
         exam_type_map = {"TYT": ExamType.TYT, "AYT": ExamType.AYT, "YDT": ExamType.YDT}
@@ -123,7 +155,7 @@ class SoruBankasiServisi:
             subject_map.get(subject, SubjectArea.MATEMATIK),
         )
 
-    async def soru_ekle(self, soru_data: Dict) -> Question:
+    async def soru_ekle(self, soru_data: dict) -> Question:
         """
         Yeni soru ekle - Database entegrasyonu ile
 
@@ -184,11 +216,11 @@ class SoruBankasiServisi:
 
             except Exception as e:
                 await session.rollback()
-                raise Exception(f"Soru eklenirken hata oluştu: {str(e)}")
+                raise Exception(f"Soru eklenirken hata oluştu: {e!s}")
 
     async def _hesapla_irt_parametreleri(
         self, zorluk: str, konu: str
-    ) -> Dict[str, float]:
+    ) -> dict[str, float]:
         """IRT parametrelerini hesapla"""
         # Zorluk seviyesine göre IRT difficulty parametresi
         zorluk_map = {"easy": -1.0, "medium": 0.0, "hard": 1.0}
@@ -254,7 +286,7 @@ class SoruBankasiServisi:
         hece_sayisi = sum(1 for harf in kelime if harf in sesli_harfler)
         return max(1, hece_sayisi)  # En az 1 hece
 
-    async def soru_getir(self, soru_id: str) -> Optional[Question]:
+    async def soru_getir(self, soru_id: str) -> Question | None:
         """Soru ID ile soru getir - Database'den (with cache)"""
         # PERFORMANCE: Check cache first
         cache_key = f"soru:{soru_id}"
@@ -283,12 +315,12 @@ class SoruBankasiServisi:
 
     async def sorular_listele(
         self,
-        sinav_tipi: Optional[str] = None,
-        konu: Optional[str] = None,
-        zorluk_seviyesi: Optional[str] = None,
+        sinav_tipi: str | None = None,
+        konu: str | None = None,
+        zorluk_seviyesi: str | None = None,
         limit: int = 100,
         offset: int = 0,
-    ) -> List[Question]:
+    ) -> list[Question]:
         """
         Filtrelere göre soru listesi getir - Database'den (questions tablosu)
 
@@ -303,7 +335,9 @@ class SoruBankasiServisi:
             List[Question]: Filtrelenmiş soru listesi
         """
         # PERFORMANCE: Cache question listings (5 min TTL)
-        cache_key = f"sorular_liste:{sinav_tipi}:{konu}:{zorluk_seviyesi}:{limit}:{offset}"
+        cache_key = (
+            f"sorular_liste:{sinav_tipi}:{konu}:{zorluk_seviyesi}:{limit}:{offset}"
+        )
         cached = await cache_manager.get(cache_key)
         if cached is not None:
             return cached
@@ -311,7 +345,9 @@ class SoruBankasiServisi:
         async with db_manager.get_session() as session:
             try:
                 # Base query - questions tablosundan (Question modeli)
-                stmt = select(Question).where((Question.is_active == True) | (Question.is_active == None))
+                stmt = select(Question).where(
+                    (Question.is_active == True) | (Question.is_active == None)
+                )
 
                 # Sınav tipi filtresi — DB UPPERCASE: "TYT", "AYT"
                 if sinav_tipi:
@@ -319,21 +355,9 @@ class SoruBankasiServisi:
 
                 # Konu filtresi — DB UPPERCASE: "MATEMATIK", "TURKCE", "FIZIK" vb.
                 if konu:
-                    konu_lower = konu.lower()
-                    # Türkçe konu adlarını DB subject_area değerlerine çevir (UPPERCASE)
-                    konu_map = {
-                        "matematik": "MATEMATIK", "mat": "MATEMATIK",
-                        "türkçe": "TURKCE", "turkce": "TURKCE",
-                        "fizik": "FIZIK", "fiz": "FIZIK",
-                        "kimya": "KIMYA", "kim": "KIMYA",
-                        "biyoloji": "BIYOLOJI", "bio": "BIYOLOJI",
-                        "geometri": "GEOMETRI", "geo": "GEOMETRI",
-                        "fen": "FEN",
-                        "sosyal": "SOSYAL", "tarih": "TARIH", "coğrafya": "COGRAFYA",
-                        "edebiyat": "EDEBIYAT",
-                        "ingilizce": "INGILIZCE", "ing": "INGILIZCE",
-                    }
-                    subject = konu_map.get(konu_lower, konu.upper())
+                    subject = _KONU_MAP.get(
+                        konu, _KONU_MAP.get(konu.lower(), konu.upper())
+                    )
                     stmt = stmt.where(Question.subject_area == subject)
 
                 # Zorluk filtresi (difficulty: easy, medium, hard)
@@ -365,8 +389,8 @@ class SoruBankasiServisi:
         self,
         sinav_tipi: str,
         soru_sayisi: int,
-        konu_dagilimi: Optional[Dict[str, int]] = None,
-    ) -> List[Question]:
+        konu_dagilimi: dict[str, int] | None = None,
+    ) -> list[Question]:
         """
         Rastgele soru seçimi yap - Gelişmiş algoritma ile
 
@@ -397,34 +421,18 @@ class SoruBankasiServisi:
                     # Yeterli soru varsa rastgele seç, yoksa tümünü döndür
                     if len(tum_sorular) >= soru_sayisi:
                         return random.sample(tum_sorular, soru_sayisi)
-                    else:
-                        logger.debug(
-                            f"İstenen: {soru_sayisi}, Mevcut: {len(tum_sorular)} - Tümü döndürülüyor"
-                        )
-                        return tum_sorular
+                    logger.debug(
+                        f"İstenen: {soru_sayisi}, Mevcut: {len(tum_sorular)} - Tümü döndürülüyor"
+                    )
+                    return tum_sorular
 
                 # FIX N+1: Konu dağılımı varsa - tek sorguda tüm konuların sorularını getir
-                # Türkçe konu adlarını DB subject_area değerlerine çevir (UPPERCASE)
-                konu_map = {
-                    "Matematik": "MATEMATIK", "Mat": "MATEMATIK",
-                    "Türkçe": "TURKCE", "Turkce": "TURKCE",
-                    "Fizik": "FIZIK", "Fiz": "FIZIK",
-                    "Kimya": "KIMYA", "Kim": "KIMYA",
-                    "Biyoloji": "BIYOLOJI", "Bio": "BIYOLOJI",
-                    "Geometri": "GEOMETRI", "Geo": "GEOMETRI",
-                    "Fen": "FEN", "Fen Bilimleri": "FEN",
-                    "Sosyal": "SOSYAL", "Sosyal Bilimler": "SOSYAL",
-                    "Tarih": "TARIH", "Edebiyat": "EDEBIYAT",
-                    "İngilizce": "INGILIZCE", "Ing": "INGILIZCE",
-                }
-
                 # Toplam ihtiyaç duyulan soru sayısını hesapla
                 toplam_ihtiyac = sum(sayi * 3 for sayi in konu_dagilimi.values())
 
                 # Konu listesini hazırla (DB UPPERCASE formatında)
                 konu_listesi = [
-                    konu_map.get(konu, konu.upper())
-                    for konu in konu_dagilimi.keys()
+                    _KONU_MAP.get(konu, konu.upper()) for konu in konu_dagilimi
                 ]
 
                 # FIX N+1: Tek sorguda tüm konuların sorularını getir
@@ -447,7 +455,7 @@ class SoruBankasiServisi:
                 logger.debug(f"FIX N+1: Tek sorguda {len(tum_sorular)} soru getirildi")
 
                 # Soruları konulara göre grupla (memory'de)
-                konu_gruplari: Dict[str, List[Question]] = {}
+                konu_gruplari: dict[str, list[Question]] = {}
                 for soru in tum_sorular:
                     subject = soru.subject_area if soru.subject_area else "diger"
                     if subject not in konu_gruplari:
@@ -483,11 +491,11 @@ class SoruBankasiServisi:
 
     async def get_interleaved_questions(
         self,
-        subjects: List[str],
+        subjects: list[str],
         count: int = 10,
-        difficulty_levels: Optional[List[str]] = None,
+        difficulty_levels: list[str] | None = None,
         exam_type: str = "TYT",
-    ) -> List[Question]:
+    ) -> list[Question]:
         """
         Interleaved practice: Birden fazla konudan karışık sırada soru seç.
 
@@ -504,7 +512,9 @@ class SoruBankasiServisi:
             Karışık sırada sorular
         """
         if not subjects:
-            logger.debug("get_interleaved_questions: subjects listesi boş, boş liste döndürülüyor")
+            logger.debug(
+                "get_interleaved_questions: subjects listesi boş, boş liste döndürülüyor"
+            )
             return []
 
         cache_key = (
@@ -533,7 +543,7 @@ class SoruBankasiServisi:
                 stmt = stmt.order_by(func.random()).limit(pool_size)
 
                 result = await session.execute(stmt)
-                pool: List[Question] = list(result.scalars().all())
+                pool: list[Question] = list(result.scalars().all())
 
                 logger.debug(
                     f"get_interleaved_questions: havuzdan {len(pool)} soru çekildi "
@@ -541,7 +551,7 @@ class SoruBankasiServisi:
                 )
 
                 # Konulara göre bellek içinde grupla
-                groups: Dict[str, List[Question]] = {s: [] for s in subjects_upper}
+                groups: dict[str, list[Question]] = {s: [] for s in subjects_upper}
                 for q in pool:
                     key = q.subject_area if q.subject_area else ""
                     if key in groups:
@@ -551,7 +561,7 @@ class SoruBankasiServisi:
                 per_subject = count // len(subjects_upper)
                 remainder = count % len(subjects_upper)
 
-                selected: List[Question] = []
+                selected: list[Question] = []
                 for subj in subjects_upper:
                     bucket = groups.get(subj, [])
                     take = per_subject
@@ -585,10 +595,10 @@ class SoruBankasiServisi:
         self,
         subject: str,
         count: int = 5,
-        difficulty_levels: Optional[List[str]] = None,
+        difficulty_levels: list[str] | None = None,
         exam_type: str = "TYT",
-        topic: Optional[str] = None,
-    ) -> List[Question]:
+        topic: str | None = None,
+    ) -> list[Question]:
         """
         Çıkış testi: Tamamlanan konudan retrieval practice soruları.
 
@@ -644,30 +654,45 @@ class SoruBankasiServisi:
                 if normalized_topic:
                     # Önce topic_hierarchy'de konuyu bul
                     topic_name = normalized_topic.title()  # "türev" -> "Türev"
-                    
+
                     # ASCII fallback
-                    ascii_topic = normalized_topic.replace('ü','u').replace('ş','s').replace('ğ','g').replace('ö','o').replace('ç','c').title()
-                    
+                    ascii_topic = (
+                        normalized_topic.replace("ü", "u")
+                        .replace("ş", "s")
+                        .replace("ğ", "g")
+                        .replace("ö", "o")
+                        .replace("ç", "c")
+                        .title()
+                    )
+
                     # Konu ID'sini bul
-                    topic_stmt = select(TopicHierarchy.id).where(
-                        TopicHierarchy.is_active == True,
-                        or_(
-                            TopicHierarchy.name_tr.ilike(f"%{topic_name}%"),
-                            TopicHierarchy.name_tr.ilike(f"%{normalized_topic}%"),
-                            TopicHierarchy.name_tr.ilike(f"%{ascii_topic}%"),
+                    topic_stmt = (
+                        select(TopicHierarchy.id)
+                        .where(
+                            TopicHierarchy.is_active == True,
+                            or_(
+                                TopicHierarchy.name_tr.ilike(f"%{topic_name}%"),
+                                TopicHierarchy.name_tr.ilike(f"%{normalized_topic}%"),
+                                TopicHierarchy.name_tr.ilike(f"%{ascii_topic}%"),
+                            ),
                         )
-                    ).limit(1)
-                    
+                        .limit(1)
+                    )
+
                     topic_result = await session.execute(topic_stmt)
                     topic_id = topic_result.scalar_one_or_none()
-                    
+
                     if topic_id:
                         # Konu bulundu, primary_topic_id ile filtrele
                         stmt = stmt.where(Question.primary_topic_id == topic_id)
-                        logger.debug(f"Konu filtresi uygulanıyor: {topic} -> topic_id={topic_id}")
+                        logger.debug(
+                            f"Konu filtresi uygulanıyor: {topic} -> topic_id={topic_id}"
+                        )
                     else:
                         # Konu bulunamadı, eski yöntemle dene (geriye dönük uyumluluk)
-                        logger.warning(f"Konu '{topic}' topic_hierarchy'de bulunamadı, metin araması deneniyor")
+                        logger.warning(
+                            f"Konu '{topic}' topic_hierarchy'de bulunamadı, metin araması deneniyor"
+                        )
                         topic_pattern = f"%{normalized_topic}%"
                         conditions = [
                             Question.question_text.ilike(topic_pattern),
@@ -681,11 +706,13 @@ class SoruBankasiServisi:
                 stmt = stmt.order_by(func.random()).limit(count)
 
                 result = await session.execute(stmt)
-                questions: List[Question] = list(result.scalars().all())
+                questions: list[Question] = list(result.scalars().all())
 
                 # Fallback: Topic bulunamazsa, topic filtresiz tekrar dene
                 if use_topic_filter and len(questions) == 0 and normalized_topic:
-                    logger.warning(f"Konu '{topic}' için soru bulunamadı, fallback: sadece ders filtresi")
+                    logger.warning(
+                        f"Konu '{topic}' için soru bulunamadı, fallback: sadece ders filtresi"
+                    )
 
                     stmt_fallback = select(Question).where(
                         Question.is_active == True,
@@ -693,13 +720,17 @@ class SoruBankasiServisi:
                         Question.exam_type == exam_type_upper,
                     )
                     if difficulty_levels:
-                        stmt_fallback = stmt_fallback.where(Question.difficulty_level.in_(difficulty_levels))
+                        stmt_fallback = stmt_fallback.where(
+                            Question.difficulty_level.in_(difficulty_levels)
+                        )
 
                     stmt_fallback = stmt_fallback.order_by(func.random()).limit(count)
                     result_fallback = await session.execute(stmt_fallback)
                     questions = list(result_fallback.scalars().all())
 
-                    logger.info(f"Fallback: {len(questions)} soru (ders={subject_upper}, konu yok)")
+                    logger.info(
+                        f"Fallback: {len(questions)} soru (ders={subject_upper}, konu yok)"
+                    )
 
                 logger.debug(
                     f"get_exit_quiz_questions: {len(questions)} soru döndürülüyor "
@@ -719,7 +750,7 @@ class SoruBankasiServisi:
         sinav_tipi: str,
         soru_sayisi: int,
         hedef_bilgi: float = 1.0,
-    ) -> List[Question]:
+    ) -> list[Question]:
         """
         IRT parametreli soru seçimi - Adaptif algoritma
 
@@ -732,78 +763,78 @@ class SoruBankasiServisi:
         Returns:
             List[Question]: IRT'ye göre optimize edilmiş sorular
         """
-        async with db_manager.get_session() as session:
-            try:
-                # Tüm uygun soruları getir
-                tum_sorular = await self.sorular_listele(
-                    sinav_tipi=sinav_tipi, limit=1000  # Geniş havuz
+        try:
+            # Tüm uygun soruları getir
+            tum_sorular = await self.sorular_listele(
+                sinav_tipi=sinav_tipi,
+                limit=1000,  # Geniş havuz
+            )
+
+            if not tum_sorular:
+                return []
+
+            # Her soru için bilgi fonksiyonu hesapla
+            soru_bilgi_listesi = []
+
+            for soru in tum_sorular:
+                bilgi_degeri = await self._hesapla_bilgi_fonksiyonu(
+                    ogrenci_yetenek,
+                    soru.irt_difficulty,
+                    soru.irt_discrimination,
+                    soru.irt_guessing,
                 )
 
-                if not tum_sorular:
-                    return []
+                soru_bilgi_listesi.append(
+                    {
+                        "soru": soru,
+                        "bilgi_degeri": bilgi_degeri,
+                        "zorluk_farki": abs(soru.irt_difficulty - ogrenci_yetenek),
+                    }
+                )
 
-                # Her soru için bilgi fonksiyonu hesapla
-                soru_bilgi_listesi = []
+            # Bilgi değerine göre sırala (yüksekten düşüğe)
+            soru_bilgi_listesi.sort(key=lambda x: x["bilgi_degeri"], reverse=True)
 
-                for soru in tum_sorular:
-                    bilgi_degeri = await self._hesapla_bilgi_fonksiyonu(
-                        ogrenci_yetenek,
-                        soru.irt_difficulty,
-                        soru.irt_discrimination,
-                        soru.irt_guessing,
-                    )
+            # En iyi soruları seç
+            secilen_sorular = []
+            konu_sayaclari: dict[str, int] = {}
 
-                    soru_bilgi_listesi.append(
-                        {
-                            "soru": soru,
-                            "bilgi_degeri": bilgi_degeri,
-                            "zorluk_farki": abs(soru.irt_difficulty - ogrenci_yetenek),
-                        }
-                    )
+            for item in soru_bilgi_listesi:
+                soru = item["soru"]
+                konu = str(soru.subject_area)
 
-                # Bilgi değerine göre sırala (yüksekten düşüğe)
-                soru_bilgi_listesi.sort(key=lambda x: x["bilgi_degeri"], reverse=True)
+                # Konu dağılımını kontrol et
+                if konu not in konu_sayaclari:
+                    konu_sayaclari[konu] = 0
 
-                # En iyi soruları seç
-                secilen_sorular = []
-                konu_sayaclari = {}
+                # Konu başına maksimum soru sınırı
+                max_konu_soru = max(
+                    1, soru_sayisi // 4
+                )  # Her konudan en az 1, en fazla 1/4
 
+                if (
+                    konu_sayaclari[konu] < max_konu_soru
+                    and len(secilen_sorular) < soru_sayisi
+                ):
+                    secilen_sorular.append(soru)
+                    konu_sayaclari[konu] += 1
+
+            # Eksik kalan soruları tamamla
+            while len(secilen_sorular) < soru_sayisi and len(soru_bilgi_listesi) > len(
+                secilen_sorular
+            ):
                 for item in soru_bilgi_listesi:
-                    soru = item["soru"]
-                    konu = str(soru.subject_area)
+                    if item["soru"] not in secilen_sorular:
+                        secilen_sorular.append(item["soru"])
+                        if len(secilen_sorular) >= soru_sayisi:
+                            break
 
-                    # Konu dağılımını kontrol et
-                    if konu not in konu_sayaclari:
-                        konu_sayaclari[konu] = 0
+            return secilen_sorular
 
-                    # Konu başına maksimum soru sınırı
-                    max_konu_soru = max(
-                        1, soru_sayisi // 4
-                    )  # Her konudan en az 1, en fazla 1/4
-
-                    if (
-                        konu_sayaclari[konu] < max_konu_soru
-                        and len(secilen_sorular) < soru_sayisi
-                    ):
-                        secilen_sorular.append(soru)
-                        konu_sayaclari[konu] += 1
-
-                # Eksik kalan soruları tamamla
-                while len(secilen_sorular) < soru_sayisi and len(
-                    soru_bilgi_listesi
-                ) > len(secilen_sorular):
-                    for item in soru_bilgi_listesi:
-                        if item["soru"] not in secilen_sorular:
-                            secilen_sorular.append(item["soru"])
-                            if len(secilen_sorular) >= soru_sayisi:
-                                break
-
-                return secilen_sorular
-
-            except Exception as e:
-                logger.error(f"IRT parametreli soru seçimi hatası: {e}")
-                # Fallback: Normal rastgele seçim
-                return await self.rastgele_sorular_sec(sinav_tipi, soru_sayisi)
+        except Exception as e:
+            logger.error(f"IRT parametreli soru seçimi hatası: {e}")
+            # Fallback: Normal rastgele seçim
+            return await self.rastgele_sorular_sec(sinav_tipi, soru_sayisi)
 
     async def _hesapla_bilgi_fonksiyonu(
         self, yetenek: float, zorluk: float, ayiricilik: float, tahmin: float
@@ -856,7 +887,7 @@ class SoruBankasiServisi:
             # Overflow kontrolü
             if exponent > 700:
                 return tahmin
-            elif exponent < -700:
+            if exponent < -700:
                 return 1.0
 
             olaslik = tahmin + (1 - tahmin) * (1 / (1 + math.exp(exponent)))
@@ -867,8 +898,8 @@ class SoruBankasiServisi:
             return 0.5
 
     async def soru_guncelle(
-        self, soru_id: str, guncelleme_verisi: Dict
-    ) -> Optional[Question]:
+        self, soru_id: str, guncelleme_verisi: dict
+    ) -> Question | None:
         """
         Soru güncelle - Database'de
 
@@ -961,7 +992,7 @@ class SoruBankasiServisi:
                 logger.error(f"Soru silme hatası: {e}")
                 return False
 
-    async def konu_listesi_getir(self, sinav_tipi: Optional[str] = None) -> List[str]:
+    async def konu_listesi_getir(self, sinav_tipi: str | None = None) -> list[str]:
         """
         Mevcut konuları listele - Database'den
 
@@ -997,7 +1028,7 @@ class SoruBankasiServisi:
                 logger.error(f"Konu listesi getirme hatası: {e}")
                 return []
 
-    async def istatistikler_getir(self) -> Dict:
+    async def istatistikler_getir(self) -> dict:
         """
         Soru bankası istatistikleri - Database'den
 
@@ -1200,7 +1231,7 @@ class SoruBankasiServisi:
 
     async def zorluk_seviyesi_filtrele(
         self, ogrenci_yetenek: float, sinav_tipi: str, tolerans: float = 1.0
-    ) -> List[Question]:
+    ) -> list[Question]:
         """
         Öğrenci yetenek seviyesine göre uygun zorlukta sorular filtrele
 
@@ -1241,7 +1272,7 @@ class SoruBankasiServisi:
                 logger.error(f"Zorluk filtrele hatası: {e}")
                 return []
 
-    async def toplu_soru_ekle(self, sorular_listesi: List[Dict]) -> Dict[str, int]:
+    async def toplu_soru_ekle(self, sorular_listesi: list[dict]) -> dict[str, int]:
         """
         Toplu soru ekleme işlemi - Batch insert ile N+1 query fix
 
@@ -1306,7 +1337,7 @@ class SoruBankasiServisi:
 
                 except Exception as e:
                     basarisiz += 1
-                    hatalar.append(f"Soru {i+1}: {str(e)}")
+                    hatalar.append(f"Soru {i + 1}: {e!s}")
 
             # Batch insert - single commit for all questions
             if questions_to_add:
@@ -1318,7 +1349,7 @@ class SoruBankasiServisi:
                     # Rollback durumunda tüm sorular başarısız sayılır
                     basarisiz = len(sorular_listesi)
                     basarili = 0
-                    hatalar.append(f"Batch insert hatası: {str(e)}")
+                    hatalar.append(f"Batch insert hatası: {e!s}")
 
         return {
             "basarili": basarili,
