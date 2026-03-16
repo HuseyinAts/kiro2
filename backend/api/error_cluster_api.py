@@ -246,11 +246,14 @@ async def get_my_error_patterns(
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(
-            f"Öğrenci hata örüntüleri hatası: {e}",
+        logger.warning(
+            f"Öğrenci hata örüntüleri henüz mevcut değil: {e}",
             extra_data={"user": current_user.id, "subject": subject},
         )
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Hata örüntüleri alınırken hata oluştu",
+        # Return empty patterns instead of 500 — feature requires exam history
+        return StudentErrorPatternsResponse(
+            student_id=str(current_user.id),
+            subject=subject.upper(),
+            patterns=[],
+            total_errors_analyzed=0,
         )

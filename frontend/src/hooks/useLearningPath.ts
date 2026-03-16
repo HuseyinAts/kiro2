@@ -379,8 +379,6 @@ export const useLearningPath = (): UseLearningPathReturn => {
       await apiRequest(`/api/learning-path/progress/${sid}/${nodeId}`, {
         method: 'PUT',
         body: JSON.stringify({
-          student_id: sid,
-          node_id: nodeId,
           progress: progress ?? (completed ? 100 : 0),
           completed: completed ?? false,
         }),

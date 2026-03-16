@@ -647,8 +647,11 @@ class SoruBankasiServisi:
                 stmt = select(Question).where(
                     Question.is_active == True,
                     Question.subject_area == subject_upper,
-                    Question.exam_type == exam_type_upper,
                 )
+
+                # Topic varsa exam_type filtresi uygulanmaz (Türev=AYT, Çarpan=TYT olabilir)
+                if not topic:
+                    stmt = stmt.where(Question.exam_type == exam_type_upper)
 
                 # Konu bazlı filtre: topic_hierarchy tablosundan ID bul
                 if normalized_topic:
@@ -689,16 +692,26 @@ class SoruBankasiServisi:
                             f"Konu filtresi uygulanıyor: {topic} -> topic_id={topic_id}"
                         )
                     else:
-                        # Konu bulunamadı, eski yöntemle dene (geriye dönük uyumluluk)
+                        # Konu bulunamadı — anahtar kelime bazlı metin araması
                         logger.warning(
-                            f"Konu '{topic}' topic_hierarchy'de bulunamadı, metin araması deneniyor"
+                            f"Konu '{topic}' topic_hierarchy'de bulunamadı, anahtar kelime araması deneniyor"
                         )
-                        topic_pattern = f"%{normalized_topic}%"
-                        conditions = [
-                            Question.question_text.ilike(topic_pattern),
-                            Question.question_html.ilike(topic_pattern),
+                        # Konu adını kelimelere böl ve her birini ara
+                        # "Çarpanlara Ayırma" → ["çarpan", "ayır"]
+                        keywords = [
+                            w
+                            for w in normalized_topic.split()
+                            if len(w) >= 3  # Çok kısa kelimeleri atla
                         ]
-                        stmt = stmt.where(or_(*conditions))
+                        if keywords:
+                            conditions = []
+                            for kw in keywords:
+                                # Kök bazlı arama: kelimenin ilk 4+ harfini kullan
+                                stem = kw[: max(4, len(kw) - 2)]
+                                pattern = f"%{stem}%"
+                                conditions.append(Question.question_text.ilike(pattern))
+                            # En az bir kelime eşleşmesi yeterli
+                            stmt = stmt.where(or_(*conditions))
 
                 if difficulty_levels:
                     stmt = stmt.where(Question.difficulty_level.in_(difficulty_levels))

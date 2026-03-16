@@ -32,14 +32,14 @@ API Layer (this file)
 import logging
 import time
 from datetime import datetime
-from typing import List, Optional, Dict, Any
+from typing import Any
 
-from fastapi import APIRouter, HTTPException, Depends, Request
+from fastapi import APIRouter, Depends, HTTPException, Request
 from pydantic import BaseModel, Field
 
 # New facade import
 try:
-    from agents.learning_path.facade import get_learning_path_facade, LearningPathFacade
+    from agents.learning_path.facade import LearningPathFacade, get_learning_path_facade
 except (ImportError, TypeError):
     get_learning_path_facade = None
     LearningPathFacade = None
@@ -55,29 +55,32 @@ except (ImportError, TypeError):
     PerformanceMetrics = None
 
 # Keep existing imports for compatibility
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
+
 from api.schemas.learning_path_schemas import LearningPathCreateRequest
-from core.metrics_collector import get_metrics_collector
-from core.multi_layer_cache import MultiLayerCache
+from core.circuit_breaker import CircuitBreakerHalfOpenError, CircuitBreakerOpenError
+from core.dependencies import AuthenticatedUser, get_current_user, get_db
+from core.learning_path_auth import (
+    get_current_user_optional,
+    verify_student_access,
+)
 from core.learning_path_circuit_breakers import (
+    ai_agent_fallback_handler,
     get_ai_agent_circuit_breaker,
     get_resource_search_circuit_breaker,
-    ai_agent_fallback_handler,
 )
-from core.circuit_breaker import CircuitBreakerOpenError, CircuitBreakerHalfOpenError
-from core.learning_path_auth import (
-    verify_student_access,
-    get_current_user_optional,
-)
-from core.dependencies import get_db, get_current_user, AuthenticatedUser
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
+from core.metrics_collector import get_metrics_collector
+from core.multi_layer_cache import MultiLayerCache
 from models.learning_path_models import (
     LearningPathStudentProfile,
-    TopicCompletion,
-    TopicProgress,
-    QuizSubmission as QuizSubmissionModel,
     Quiz,
     QuizQuestion,
+    TopicCompletion,
+    TopicProgress,
+)
+from models.learning_path_models import (
+    QuizSubmission as QuizSubmissionModel,
 )
 from models.question_bank import QuestionBankItem as Question
 
@@ -85,6 +88,7 @@ from models.question_bank import QuestionBankItem as Question
 try:
     from slowapi import Limiter
     from slowapi.util import get_remote_address
+
     RATE_LIMITING_ENABLED = True
 except ImportError:
     RATE_LIMITING_ENABLED = False
@@ -133,10 +137,12 @@ def rate_limit(limit_key: str):
         async def endpoint(...):
             ...
     """
+
     def decorator(func):
         if limiter is not None and limit_key in RATE_LIMITS:
             return limiter.limit(RATE_LIMITS[limit_key])(func)
         return func
+
     return decorator
 
 
@@ -144,6 +150,7 @@ def rate_limit(limit_key: str):
 def get_learning_path_cache() -> MultiLayerCache:
     """Get cache instance from facade."""
     from agents.learning_path.config import get_learning_path_config
+
     config = get_learning_path_config()
     return MultiLayerCache(
         redis_url=config.CACHE_REDIS_URL,
@@ -154,7 +161,7 @@ def get_learning_path_cache() -> MultiLayerCache:
 
 
 # Global cache instance (lazy initialization)
-_cache_instance: Optional[MultiLayerCache] = None
+_cache_instance: MultiLayerCache | None = None
 
 
 def _get_cache() -> MultiLayerCache:
@@ -162,6 +169,7 @@ def _get_cache() -> MultiLayerCache:
     global _cache_instance
     if _cache_instance is None:
         import threading
+
         with threading.Lock():
             if _cache_instance is None:
                 _cache_instance = get_learning_path_cache()
@@ -172,97 +180,108 @@ def _get_cache() -> MultiLayerCache:
 # Request/Response Models
 # ============================================================================
 
+
 class StudentProfileCreate(BaseModel):
     """Student profile creation request."""
+
     name: str = Field(..., description="Öğrenci adı")
     grade: int = Field(..., ge=9, le=12, description="Sınıf seviyesi (9-12)")
-    subjects: List[str] = Field(..., description="İlgili dersler")
-    goals: List[str] = Field(..., description="Hedefler")
-    learning_style: Optional[str] = Field(None, description="Öğrenme stili")
-    available_time: Optional[int] = Field(
+    subjects: list[str] = Field(..., description="İlgili dersler")
+    goals: list[str] = Field(..., description="Hedefler")
+    learning_style: str | None = Field(None, description="Öğrenme stili")
+    available_time: int | None = Field(
         None, description="Günlük çalışma süresi (dakika)"
     )
 
 
 class KnowledgeAssessment(BaseModel):
     """Knowledge assessment request."""
+
     student_id: str = Field(..., description="Öğrenci ID")
     subject: str = Field(..., description="Ders")
-    questions: Optional[List[str]] = Field(None, description="Değerlendirme soruları")
+    questions: list[str] | None = Field(None, description="Değerlendirme soruları")
 
 
 class LearningPathCreate(BaseModel):
     """Learning path creation request."""
+
     student_id: str = Field(..., description="Öğrenci ID")
     subject: str = Field(..., description="Ders")
-    target_date: Optional[str] = Field(None, description="Hedef tarih")
-    difficulty_level: Optional[str] = Field("medium", description="Zorluk seviyesi")
+    target_date: str | None = Field(None, description="Hedef tarih")
+    difficulty_level: str | None = Field("medium", description="Zorluk seviyesi")
 
 
 class QuizAnswer(BaseModel):
     """Single quiz answer."""
+
     question_id: str = Field(..., description="Soru ID")
     answer: str = Field(..., description="Öğrenci cevabı")
-    time_spent: Optional[int] = Field(None, description="Soruda geçen süre (saniye)")
+    time_spent: int | None = Field(None, description="Soruda geçen süre (saniye)")
 
 
 class QuizSubmission(BaseModel):
     """Quiz submission request."""
-    student_id: str = Field(..., description="Öğrenci ID")
-    quiz_id: str = Field(..., description="Quiz ID")
-    answers: List[QuizAnswer] = Field(..., description="Quiz cevapları")
+
+    student_id: str | None = Field(
+        None, description="Öğrenci ID (opsiyonel, current_user'dan türetilir)"
+    )
+    quiz_id: str | None = Field(None, description="Quiz ID (opsiyonel, URL'den alınır)")
+    answers: list[QuizAnswer] = Field(..., description="Quiz cevapları")
 
 
 class ProgressUpdate(BaseModel):
     """Progress update request."""
-    student_id: str = Field(..., description="Öğrenci ID")
-    node_id: str = Field(..., description="Node/Topic ID")
+
     progress: int = Field(..., ge=0, le=100, description="İlerleme yüzdesi (0-100)")
-    time_spent: Optional[int] = Field(None, description="Harcanan süre (dakika)")
+    time_spent: int | None = Field(None, description="Harcanan süre (dakika)")
     completed: bool = Field(False, description="Tamamlandı mı?")
 
 
 class CompletionUpdate(BaseModel):
     """Completion status update request."""
+
     student_id: str = Field(..., description="Öğrenci ID")
-    completions: Dict[str, bool] = Field(..., description="Topic tamamlanma durumları")
+    completions: dict[str, bool] = Field(..., description="Topic tamamlanma durumları")
 
 
 class ResourceSearch(BaseModel):
     """Resource search request."""
+
     subject: str = Field(..., description="Ders (matematik, fizik, kimya, vb.)")
-    topic: Optional[str] = Field(None, description="Konu (türev, hareket, atom, vb.)")
-    difficulty: Optional[str] = Field(
+    topic: str | None = Field(None, description="Konu (türev, hareket, atom, vb.)")
+    difficulty: str | None = Field(
         "orta", description="Zorluk seviyesi (kolay, orta, zor)"
     )
-    resource_type: Optional[str] = Field(
+    resource_type: str | None = Field(
         None, description="Kaynak tipi (video, article, etc.)"
     )
-    max_results: Optional[int] = Field(
+    max_results: int | None = Field(
         10, ge=1, le=50, description="Maksimum sonuç sayısı"
     )
-    student_profile: Optional[Dict[str, Any]] = Field(
+    student_profile: dict[str, Any] | None = Field(
         None, description="Öğrenci profili (opsiyonel)"
     )
 
 
 class PathAdaptation(BaseModel):
     """Path adaptation request."""
+
     student_id: str = Field(..., description="Öğrenci ID")
     path_id: str = Field(..., description="Öğrenme yolu ID")
-    performance_data: Dict[str, Any] = Field(..., description="Performans verileri")
+    performance_data: dict[str, Any] = Field(..., description="Performans verileri")
 
 
 # ============================================================================
 # Helper Functions
 # ============================================================================
 
+
 def _get_facade() -> LearningPathFacade:
     """Get facade instance via dependency injection."""
     if get_learning_path_facade is None:
         raise HTTPException(
             status_code=503,
-            detail="Learning Path facade not available. Please ensure cachetools is installed: pip install cachetools"
+            detail="Learning Path facade not available. Please ensure cachetools is installed: pip install cachetools",
         )
     return get_learning_path_facade()
 
@@ -284,6 +303,7 @@ def _map_difficulty_to_knowledge_level(difficulty: str) -> KnowledgeLevel:
 # API Endpoints
 # ============================================================================
 
+
 @router.post("/create-profile")
 @rate_limit("create_profile")
 async def create_student_profile(
@@ -291,7 +311,7 @@ async def create_student_profile(
     profile: StudentProfileCreate,
     db: AsyncSession = Depends(get_db),
     current_user: AuthenticatedUser = Depends(get_current_user),
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """
     Öğrenci profili oluştur
 
@@ -307,19 +327,25 @@ async def create_student_profile(
         )
         existing_profile = existing.scalars().first()
         if existing_profile:
-            logger.info(f"Returning existing profile for user {current_user.id}: {existing_profile.student_id}")
+            logger.info(
+                f"Returning existing profile for user {current_user.id}: {existing_profile.student_id}"
+            )
             return {
                 "success": True,
                 "student_id": existing_profile.student_id,
                 "profile": {
                     "name": existing_profile.name,
-                    "grade": int(existing_profile.grade) if existing_profile.grade else None,
+                    "grade": int(existing_profile.grade)
+                    if existing_profile.grade
+                    else None,
                     "subjects": existing_profile.interests,
                     "goals": existing_profile.goals,
                     "learning_style": existing_profile.learning_style,
                     "available_time": existing_profile.available_time,
                     "exam_target": existing_profile.exam_target,
-                    "created_at": existing_profile.created_at.isoformat() if existing_profile.created_at else None,
+                    "created_at": existing_profile.created_at.isoformat()
+                    if existing_profile.created_at
+                    else None,
                 },
                 "message": "Mevcut profil döndürüldü",
             }
@@ -328,6 +354,7 @@ async def create_student_profile(
 
         # Generate unique student ID
         import uuid
+
         student_id = f"STU_{uuid.uuid4().hex[:12]}"
 
         # Determine exam target based on grade
@@ -345,7 +372,7 @@ async def create_student_profile(
             interests=profile.subjects,
             goals=profile.goals,
             available_time=profile.available_time or 60,
-            metadata_json={"created_via": "learning_path_api_v2"}
+            metadata_json={"created_via": "learning_path_api_v2"},
         )
 
         db.add(new_profile)
@@ -382,7 +409,7 @@ async def assess_knowledge(
     request: Request,
     assessment: KnowledgeAssessment,
     db: AsyncSession = Depends(get_db),
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """
     Bilgi seviyesi değerlendirmesi
 
@@ -405,14 +432,14 @@ async def assess_knowledge(
         if not profile:
             raise HTTPException(
                 status_code=404,
-                detail=f"Student profile not found: {assessment.student_id}"
+                detail=f"Student profile not found: {assessment.student_id}",
             )
 
         # Get quiz history - ASYNC FIX + SQL injection prevention
         result = await db.execute(
             select(QuizSubmissionModel).filter(
                 QuizSubmissionModel.student_id == assessment.student_id,
-                QuizSubmissionModel.quiz_id.startswith(assessment.subject)
+                QuizSubmissionModel.quiz_id.startswith(assessment.subject),
             )
         )
         quiz_results = result.scalars().all()
@@ -463,7 +490,7 @@ async def assess_knowledge(
             weaknesses = ["Daha fazla değerlendirme gerekiyor"]
             recommendations = [
                 "Quiz'lere katılarak bilgi seviyenizi ölçün",
-                "Düzenli pratik yapın"
+                "Düzenli pratik yapın",
             ]
 
         # Update profile
@@ -507,7 +534,7 @@ async def create_learning_path(
     facade: LearningPathFacade = Depends(_get_facade),
     current_user: AuthenticatedUser = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """
     Kişiselleştirilmiş öğrenme yolu oluştur
 
@@ -559,7 +586,7 @@ async def create_learning_path(
                 "title": node.topic,
                 "order": idx,
                 "estimated_duration": f"{node.estimated_time} dakika",
-                "prerequisite": f"MOD{idx-1}" if idx > 1 else None,
+                "prerequisite": f"MOD{idx - 1}" if idx > 1 else None,
                 "topics": [
                     {
                         "topic_id": node.node_id,
@@ -586,6 +613,7 @@ async def create_learning_path(
 
         # Generate path_id from student_id + subject + timestamp
         import uuid
+
         path_id = f"LP_{path_request.student_id[:8]}_{int(time.time())}_{uuid.uuid4().hex[:4]}"
 
         learning_path = {
@@ -612,7 +640,7 @@ async def create_learning_path(
         metrics.record_learning_path_creation(
             subject=path_request.subject,
             duration_seconds=duration_seconds,
-            success=True
+            success=True,
         )
 
         logger.info(
@@ -630,7 +658,7 @@ async def create_learning_path(
         metrics.record_learning_path_creation(
             subject=path_request.subject,
             duration_seconds=duration_seconds,
-            success=False
+            success=False,
         )
         metrics.record_learning_path_api_request(
             endpoint="/create-path", method="POST", status_code=500
@@ -647,7 +675,7 @@ async def search_resources(
     search: ResourceSearch,
     facade: LearningPathFacade = Depends(_get_facade),
     current_user=Depends(get_current_user_optional),
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """
     Eğitim kaynaklarını ara
 
@@ -682,22 +710,24 @@ async def search_resources(
             # Convert to API response format
             response_resources = []
             for resource in resources:
-                response_resources.append({
-                    "resource_id": resource.id,
-                    "type": resource.resource_type,
-                    "title": resource.title,
-                    "description": resource.description or "",
-                    "url": resource.url,
-                    "thumbnail": getattr(resource, "thumbnail_url", None),
-                    "duration_minutes": resource.duration,
-                    "difficulty": resource.difficulty,
-                    "platform": resource.platform,
-                    "is_accessible": True,
-                    "scores": {
-                        "relevance_score": 0.8,
-                        "quality_score": 0.75,
-                    },
-                })
+                response_resources.append(
+                    {
+                        "resource_id": resource.id,
+                        "type": resource.resource_type,
+                        "title": resource.title,
+                        "description": resource.description or "",
+                        "url": resource.url,
+                        "thumbnail": getattr(resource, "thumbnail_url", None),
+                        "duration_minutes": resource.duration,
+                        "difficulty": resource.difficulty,
+                        "platform": resource.platform,
+                        "is_accessible": True,
+                        "scores": {
+                            "relevance_score": 0.8,
+                            "quality_score": 0.75,
+                        },
+                    }
+                )
 
             response = {
                 "success": True,
@@ -739,7 +769,7 @@ async def search_resources(
 
         except Exception as engine_error:
             logger.error(
-                f"Resource discovery error: {str(engine_error)}",
+                f"Resource discovery error: {engine_error!s}",
                 exc_info=True,
             )
 
@@ -769,7 +799,7 @@ async def search_resources(
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Unexpected error in search_resources: {str(e)}", exc_info=True)
+        logger.error(f"Unexpected error in search_resources: {e!s}", exc_info=True)
         raise HTTPException(
             status_code=500,
             detail="Kaynak araması sırasında bir hata oluştu.",
@@ -784,7 +814,7 @@ async def adapt_learning_path(
     facade: LearningPathFacade = Depends(_get_facade),
     current_user: AuthenticatedUser = Depends(get_current_user),  # FIX: Auth added!
     db: AsyncSession = Depends(get_db),
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """
     Öğrenme yolunu performansa göre uyarla
 
@@ -857,7 +887,7 @@ async def get_completion_status(
     student_id: str,
     db: AsyncSession = Depends(get_db),
     current_user: AuthenticatedUser = Depends(get_current_user),
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """
     Get student's topic completion status
 
@@ -882,7 +912,7 @@ async def get_completion_status(
                 select(TopicCompletion).filter(
                     TopicCompletion.student_id == student_id,
                     # is_active column not in DB yet - commented out
-                    # TopicCompletion.is_active == True  # noqa: E712
+                    # TopicCompletion.is_active == True
                 )
             )
             completion_records = result.scalars().all()
@@ -900,7 +930,7 @@ async def get_completion_status(
         completion_data = await cache.get_or_compute(
             key=cache_key,
             compute_fn=fetch_completion,
-            ttl=300  # 5 minutes
+            ttl=300,  # 5 minutes
         )
 
         return {
@@ -927,7 +957,7 @@ async def update_completion_status(
     completion_update: CompletionUpdate,
     db: AsyncSession = Depends(get_db),
     current_user: AuthenticatedUser = Depends(get_current_user),
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """
     Update student's topic completion status
 
@@ -952,7 +982,7 @@ async def update_completion_status(
                     TopicCompletion.student_id == student_id,
                     TopicCompletion.node_id == node_id,
                     # is_active column not in DB yet - commented out
-                    # TopicCompletion.is_active == True  # noqa: E712
+                    # TopicCompletion.is_active == True
                 )
             )
             existing = result.scalars().first()
@@ -1001,8 +1031,7 @@ async def update_completion_status(
         await db.rollback()
         logger.error(f"Error updating completion status: {e}")
         raise HTTPException(
-            status_code=500,
-            detail=f"Failed to update completion status: {str(e)}"
+            status_code=500, detail=f"Failed to update completion status: {e!s}"
         )
 
 
@@ -1014,35 +1043,28 @@ async def submit_quiz(
     submission: QuizSubmission,
     db: AsyncSession = Depends(get_db),
     current_user: AuthenticatedUser = Depends(get_current_user),
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """
     Submit quiz answers and get results
 
     FIX: Uses database instead of mock data for quiz answers.
     """
     try:
-        await verify_student_access(submission.student_id, current_user, db)
+        # student_id: current_user'dan türet (IDOR koruması)
+        student_id = submission.student_id or str(current_user.id)
+        await verify_student_access(student_id, current_user, db)
 
         logger.info(
-            f"Processing quiz submission for quiz {quiz_id} "
-            f"from student {submission.student_id}"
+            f"Processing quiz submission for quiz {quiz_id} from student {student_id}"
         )
-
-        if submission.quiz_id != quiz_id:
-            raise HTTPException(
-                status_code=400,
-                detail="Quiz ID mismatch",
-            )
 
         # Query quiz configuration from database
         # Note: is_active column not in DB yet - removed filter
-        result = await db.execute(
-            select(Quiz).filter(Quiz.id == quiz_id)
-        )
+        result = await db.execute(select(Quiz).filter(Quiz.id == quiz_id))
         quiz = result.scalars().first()
 
         # Build correct_answers map from database
-        correct_answers: Dict[str, str] = {}
+        correct_answers: dict[str, str] = {}
         passing_score = 70.0  # Default
 
         if quiz:
@@ -1066,7 +1088,9 @@ async def submit_quiz(
             question_ids = [a.question_id for a in submission.answers]
             if question_ids:
                 questions_result = await db.execute(
-                    select(Question).filter(Question.id.in_(question_ids))  # is_active not in DB
+                    select(Question).filter(
+                        Question.id.in_(question_ids)
+                    )  # is_active not in DB
                 )
                 for question in questions_result.scalars().all():
                     correct_answers[question.id] = question.correct_answer
@@ -1091,13 +1115,15 @@ async def submit_quiz(
             if is_correct:
                 correct_count += 1
 
-            question_results.append({
-                "question_id": answer.question_id,
-                "student_answer": answer.answer,
-                "correct_answer": correct_answer or "N/A",
-                "is_correct": is_correct,
-                "time_spent": answer.time_spent,
-            })
+            question_results.append(
+                {
+                    "question_id": answer.question_id,
+                    "student_answer": answer.answer,
+                    "correct_answer": correct_answer or "N/A",
+                    "is_correct": is_correct,
+                    "time_spent": answer.time_spent,
+                }
+            )
 
         # Calculate total questions from quiz or submission
         if correct_answers:
@@ -1112,7 +1138,7 @@ async def submit_quiz(
 
         # Save submission to database
         quiz_submission_record = QuizSubmissionModel(
-            student_id=submission.student_id,
+            student_id=student_id,
             quiz_id=quiz_id,
             question_count=total_questions,
             passing_score=passing_score,
@@ -1139,8 +1165,16 @@ async def submit_quiz(
         subject = "genel"
         quiz_id_lower = quiz_id.lower()
         known_subjects = [
-            "matematik", "turkce", "fizik", "kimya", "biyoloji",
-            "tarih", "cografya", "geometri", "edebiyat", "ingilizce"
+            "matematik",
+            "turkce",
+            "fizik",
+            "kimya",
+            "biyoloji",
+            "tarih",
+            "cografya",
+            "geometri",
+            "edebiyat",
+            "ingilizce",
         ]
         for known_subject in known_subjects:
             if known_subject in quiz_id_lower:
@@ -1155,7 +1189,7 @@ async def submit_quiz(
         return {
             "success": True,
             "quiz_id": quiz_id,
-            "student_id": submission.student_id,
+            "student_id": student_id,
             "score": round(score, 2),
             "correct_count": correct_count,
             "total_questions": total_questions,
@@ -1177,8 +1211,7 @@ async def submit_quiz(
         await db.rollback()
         logger.error(f"Error processing quiz submission: {e}")
         raise HTTPException(
-            status_code=500,
-            detail=f"Failed to process quiz submission: {str(e)}"
+            status_code=500, detail=f"Failed to process quiz submission: {e!s}"
         )
 
 
@@ -1191,7 +1224,7 @@ async def update_progress(
     progress_update: ProgressUpdate,
     db: AsyncSession = Depends(get_db),
     current_user: AuthenticatedUser = Depends(get_current_user),
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """
     Update student's progress on a specific topic/node
 
@@ -1203,30 +1236,16 @@ async def update_progress(
 
         logger.info(f"Updating progress for student {student_id}, node {node_id}")
 
-        if progress_update.student_id != student_id:
-            raise HTTPException(
-                status_code=400,
-                detail="Student ID mismatch",
-            )
-
-        if progress_update.node_id != node_id:
-            raise HTTPException(
-                status_code=400,
-                detail="Node ID mismatch",
-            )
-
         if not 0 <= progress_update.progress <= 100:
             raise HTTPException(
-                status_code=400,
-                detail="Progress must be between 0 and 100"
+                status_code=400, detail="Progress must be between 0 and 100"
             )
 
         # Update or create progress record - ASYNC FIX
         # Note: is_active column not in DB yet - removed filter
         result = await db.execute(
             select(TopicProgress).filter(
-                TopicProgress.student_id == student_id,
-                TopicProgress.node_id == node_id
+                TopicProgress.student_id == student_id, TopicProgress.node_id == node_id
             )
         )
         existing = result.scalars().first()
@@ -1251,7 +1270,7 @@ async def update_progress(
         result = await db.execute(
             select(TopicCompletion).filter(
                 TopicCompletion.student_id == student_id,
-                TopicCompletion.node_id == node_id
+                TopicCompletion.node_id == node_id,
             )
         )
         completion_existing = result.scalars().first()
@@ -1297,10 +1316,7 @@ async def update_progress(
     except Exception as e:
         await db.rollback()
         logger.error(f"Error updating progress: {e}")
-        raise HTTPException(
-            status_code=500,
-            detail=f"Failed to update progress: {str(e)}"
-        )
+        raise HTTPException(status_code=500, detail=f"Failed to update progress: {e!s}")
 
 
 # ============================================================================
@@ -1308,7 +1324,7 @@ async def update_progress(
 # ============================================================================
 
 # Curated fallback videos by subject (static list for when search fails)
-_FALLBACK_VIDEOS: Dict[str, List[Dict[str, Any]]] = {
+_FALLBACK_VIDEOS: dict[str, list[dict[str, Any]]] = {
     "matematik": [
         {
             "resource_id": "fallback_mat_001",
@@ -1408,7 +1424,7 @@ async def get_fallback_videos(
     request: Request,
     subject: str,
     limit: int = 10,
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """
     Fallback videos for a subject when main search fails.
 
@@ -1499,7 +1515,7 @@ async def get_fallback_videos(
 
 @router.get("/health")
 @rate_limit("health")
-async def health_check(request: Request) -> Dict[str, Any]:
+async def health_check(request: Request) -> dict[str, Any]:
     """Learning Path API health check"""
     return {
         "status": "healthy",
@@ -1574,7 +1590,7 @@ async def get_exit_quiz(
     subject: str,
     count: int = 5,
     exam_type: str = "TYT",
-    topic: Optional[str] = None,
+    topic: str | None = None,
     current_user: AuthenticatedUser = Depends(get_current_user),
 ):
     """
@@ -1608,7 +1624,7 @@ async def get_exit_quiz(
     except Exception as e:
         logger.error(f"Error fetching exit quiz questions: {e}")
         raise HTTPException(
-            status_code=500, detail=f"Failed to fetch exit quiz questions: {str(e)}"
+            status_code=500, detail=f"Failed to fetch exit quiz questions: {e!s}"
         )
 
 
@@ -1652,7 +1668,7 @@ async def get_interleaved_practice(
         logger.error(f"Error fetching interleaved practice questions: {e}")
         raise HTTPException(
             status_code=500,
-            detail=f"Failed to fetch interleaved practice questions: {str(e)}",
+            detail=f"Failed to fetch interleaved practice questions: {e!s}",
         )
 
 
@@ -1684,7 +1700,7 @@ async def get_review_queue(
     except Exception as e:
         logger.error(f"Error fetching review queue: {e}")
         raise HTTPException(
-            status_code=500, detail=f"Failed to fetch review queue: {str(e)}"
+            status_code=500, detail=f"Failed to fetch review queue: {e!s}"
         )
 
 
@@ -1709,9 +1725,13 @@ async def submit_review(
 
         student_id = str(current_user.id)
         adapter = QuestionReviewAdapter()
-        card = await adapter.submit_review(request.card_id, request.grade, db, student_id=student_id)
+        card = await adapter.submit_review(
+            request.card_id, request.grade, db, student_id=student_id
+        )
         if not card:
-            raise HTTPException(status_code=404, detail="Kart bulunamadi veya gecersiz grade")
+            raise HTTPException(
+                status_code=404, detail="Kart bulunamadi veya gecersiz grade"
+            )
 
         await db.commit()
         return {
@@ -1727,14 +1747,12 @@ async def submit_review(
     except Exception as e:
         logger.error(f"Error submitting review: {e}")
         await db.rollback()
-        raise HTTPException(
-            status_code=500, detail=f"Failed to submit review: {str(e)}"
-        )
+        raise HTTPException(status_code=500, detail=f"Failed to submit review: {e!s}")
 
 
 class RegisterWrongAnswersRequest(BaseModel):
-    question_ids: List[str] = Field(..., min_length=1)
-    error_types: Optional[Dict[str, str]] = None
+    question_ids: list[str] = Field(..., min_length=1)
+    error_types: dict[str, str] | None = None
 
 
 @router.post("/register-wrong-answers")
@@ -1755,7 +1773,9 @@ async def register_wrong_answers(
         student_id = str(current_user.id)
         adapter = QuestionReviewAdapter()
         created = await adapter.register_wrong_answers(
-            student_id, request.question_ids, db,
+            student_id,
+            request.question_ids,
+            db,
             error_types=request.error_types,
         )
         await db.commit()
@@ -1768,7 +1788,7 @@ async def register_wrong_answers(
         logger.error(f"Error registering wrong answers: {e}")
         await db.rollback()
         raise HTTPException(
-            status_code=500, detail=f"Failed to register wrong answers: {str(e)}"
+            status_code=500, detail=f"Failed to register wrong answers: {e!s}"
         )
 
 
@@ -1800,13 +1820,15 @@ async def get_weakness_report(
             else:
                 trend = "declining"
 
-            weaknesses.append({
-                "topic": record.node_id,
-                "avg_score": avg_score,
-                "attempts": 1,
-                "trend": trend,
-                "is_weak": avg_score < 60,
-            })
+            weaknesses.append(
+                {
+                    "topic": record.node_id,
+                    "avg_score": avg_score,
+                    "attempts": 1,
+                    "trend": trend,
+                    "is_weak": avg_score < 60,
+                }
+            )
 
         return {"weaknesses": weaknesses}
 
@@ -1849,15 +1871,16 @@ async def get_daily_streak(
         if not completions:
             return {"daily_streak": 0}
 
-        dates = sorted(set(
-            c.completion_date.date() for c in completions
-            if c.completion_date
-        ), reverse=True)
+        dates = sorted(
+            set(c.completion_date.date() for c in completions if c.completion_date),
+            reverse=True,
+        )
 
         if not dates:
             return {"daily_streak": 0}
 
         from datetime import timedelta
+
         streak = 1
         for i in range(1, len(dates)):
             if dates[i - 1] - dates[i] == timedelta(days=1):

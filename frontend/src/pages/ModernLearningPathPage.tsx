@@ -550,7 +550,7 @@ export function ModernLearningPathPage() {
     <Box
       sx={{
         minHeight: '100vh',
-        background: modernColors.gradients.mesh,
+        background: `linear-gradient(180deg, ${modernColors.primary[50]} 0%, ${modernColors.background.default} 40%, #fff 100%)`,
         py: 4,
       }}
     >
@@ -582,15 +582,12 @@ export function ModernLearningPathPage() {
                     variant="h3"
                     sx={{
                       fontWeight: 900,
-                      background: modernColors.gradients.primary,
-                      backgroundClip: 'text',
-                      WebkitBackgroundClip: 'text',
-                      WebkitTextFillColor: 'transparent',
+                      color: modernColors.text.dark,
                     }}
                   >
                     Öğrenme Yolunuz
                   </Typography>
-                  <Typography variant="body1" color="text.secondary">
+                  <Typography variant="body1" sx={{ color: modernColors.text.secondary }}>
                     Kişiselleştirilmiş öğrenme yolunuz ve size özel kaynaklar
                   </Typography>
                 </Box>
