@@ -198,10 +198,8 @@ export function ModernLearningPathPage() {
     // Her zaman selectedSubject kullan (ders bazlı doğru filtreleme)
     const subject = selectedSubject;
 
-    // Konu bilgisini node.title'dan çıkar (örn: "Matematik - Türev" -> "Türev")
-    const topic = node.title.includes(' - ')
-      ? node.title.split(' - ')[1].trim()
-      : null;
+    // node.title doğrudan konu adı (örn: "Türev") - split gerekmez
+    const topic = node.title || null;
 
     setQuizLoading(true);
     setQuizError(null);
