@@ -222,6 +222,13 @@ export function ModernLearningPathPage() {
    * Handle quiz completion — register wrong answers to FSRS + update node progress
    */
   const handleQuizComplete = useCallback(async (results: { score: number; totalScore: number; percentage: number; answers: Record<string, any>; correctCount: number; incorrectCount: number; isTimeout?: boolean }) => {
+    // Guard: Ensure studentId is available
+    if (!studentId) {
+      console.error('Quiz complete failed: studentId is null');
+      setError('Profil bulunamadi. Lutfen sayfayi yenileyin.');
+      return;
+    }
+
     // Helper: Retry fetch with exponential backoff
     const fetchWithRetry = async (url: string, options: RequestInit, retries = 3): Promise<Response> => {
       for (let i = 0; i < retries; i++) {
@@ -260,24 +267,32 @@ export function ModernLearningPathPage() {
         const errorTypes = Object.keys(errorTypesRef.current).length > 0
           ? errorTypesRef.current
           : undefined;
-        await fetchWithRetry('/api/learning-path/register-wrong-answers', {
+        const response = await fetchWithRetry('/api/learning-path/register-wrong-answers', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           credentials: 'include',
           body: JSON.stringify({ question_ids: wrongIds, error_types: errorTypes, is_timeout: results.isTimeout }),
         });
-      } catch (err) {
+        const data = await response.json().catch(() => ({}));
+        console.log('FSRS kayit basarili:', data);
+      } catch (err: any) {
         console.error('FSRS kaydi basarisiz (retry dahil):', err);
+        // Don't block quiz completion for FSRS errors - continue
       }
     }
 
     // 3. Update node progress
     if (activeQuizNode) {
       const passed = results.percentage >= (activeQuizNode.quiz?.passing_score || 60);
-      if (passed) {
-        await markNodeComplete(activeQuizNode.id);
-      } else {
-        await updateProgress({ nodeId: activeQuizNode.id, progress: results.percentage });
+      try {
+        if (passed) {
+          await markNodeComplete(activeQuizNode.id);
+        } else {
+          await updateProgress({ nodeId: activeQuizNode.id, progress: results.percentage });
+        }
+      } catch (err: any) {
+        console.error('Node progress guncelleme hatasi:', err);
+        setError(err.message || 'Node progress guncellenemedi');
       }
     }
 
