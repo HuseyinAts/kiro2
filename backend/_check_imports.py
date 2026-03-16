@@ -15,7 +15,6 @@ sys.path.insert(0, ".")
 # List of routers to check
 routers = [
     "api.berturk_api",
-    "api.learning_path",
     "api.learning_path_v2",
     "api.rag",
     "api.turkish_nlp_chat",

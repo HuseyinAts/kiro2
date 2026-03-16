@@ -41,7 +41,7 @@ ROUTER_MAPPING = {
 
     # Learning & Education
     "api.learning_style": ("learning", "api.learning_style"),
-    "api.learning_path": ("learning", "api.learning_path"),
+    "api.learning_path_v2": ("learning", "api.learning_path_v2"),
     "api.zpd_maarif": ("learning", "api.zpd_maarif"),
     "api.irt_morfoloji": ("learning", "api.irt_morfoloji"),
     "api.fsrs": ("learning", "api.fsrs"),

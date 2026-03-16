@@ -65,11 +65,10 @@ from core.learning_path_circuit_breakers import (
 )
 from core.circuit_breaker import CircuitBreakerOpenError, CircuitBreakerHalfOpenError
 from core.learning_path_auth import (
-    get_current_user_from_token,
     verify_student_access,
     get_current_user_optional,
 )
-from core.dependencies import get_db
+from core.dependencies import get_db, get_current_user, AuthenticatedUser
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from models.learning_path_models import (
@@ -101,7 +100,7 @@ ai_agent_circuit_breaker = get_ai_agent_circuit_breaker()
 resource_search_circuit_breaker = get_resource_search_circuit_breaker()
 
 # Router setup
-router = APIRouter(prefix="/api/v2/learning-path", tags=["Learning Path v2"])
+router = APIRouter(prefix="/api/learning-path", tags=["Learning Path"])
 
 # Rate limiter setup
 if RATE_LIMITING_ENABLED:
@@ -286,7 +285,7 @@ async def create_student_profile(
     request: Request,
     profile: StudentProfileCreate,
     db: AsyncSession = Depends(get_db),
-    current_user=Depends(get_current_user_from_token),
+    current_user: AuthenticatedUser = Depends(get_current_user),
 ) -> Dict[str, Any]:
     """
     Öğrenci profili oluştur
@@ -501,7 +500,7 @@ async def create_learning_path(
     request: Request,
     path_request: LearningPathCreateRequest,
     facade: LearningPathFacade = Depends(_get_facade),
-    current_user=Depends(get_current_user_from_token),
+    current_user: AuthenticatedUser = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> Dict[str, Any]:
     """
@@ -774,7 +773,7 @@ async def adapt_learning_path(
     request: Request,
     adaptation: PathAdaptation,
     facade: LearningPathFacade = Depends(_get_facade),
-    current_user=Depends(get_current_user_from_token),  # FIX: Auth added!
+    current_user: AuthenticatedUser = Depends(get_current_user),  # FIX: Auth added!
     db: AsyncSession = Depends(get_db),
 ) -> Dict[str, Any]:
     """
@@ -848,7 +847,7 @@ async def get_completion_status(
     request: Request,
     student_id: str,
     db: AsyncSession = Depends(get_db),
-    current_user=Depends(get_current_user_from_token),
+    current_user: AuthenticatedUser = Depends(get_current_user),
 ) -> Dict[str, Any]:
     """
     Get student's topic completion status
@@ -872,7 +871,8 @@ async def get_completion_status(
             """Fetch completion status from database - ASYNC FIX."""
             result = await db.execute(
                 select(TopicCompletion).filter(
-                    TopicCompletion.student_id == student_id
+                    TopicCompletion.student_id == student_id,
+                    TopicCompletion.is_active == True  # noqa: E712
                 )
             )
             completion_records = result.scalars().all()
@@ -916,7 +916,7 @@ async def update_completion_status(
     student_id: str,
     completion_update: CompletionUpdate,
     db: AsyncSession = Depends(get_db),
-    current_user=Depends(get_current_user_from_token),
+    current_user: AuthenticatedUser = Depends(get_current_user),
 ) -> Dict[str, Any]:
     """
     Update student's topic completion status
@@ -940,7 +940,8 @@ async def update_completion_status(
             result = await db.execute(
                 select(TopicCompletion).filter(
                     TopicCompletion.student_id == student_id,
-                    TopicCompletion.node_id == node_id
+                    TopicCompletion.node_id == node_id,
+                    TopicCompletion.is_active == True  # noqa: E712
                 )
             )
             existing = result.scalars().first()
@@ -1001,7 +1002,7 @@ async def submit_quiz(
     quiz_id: str,
     submission: QuizSubmission,
     db: AsyncSession = Depends(get_db),
-    current_user=Depends(get_current_user_from_token),
+    current_user: AuthenticatedUser = Depends(get_current_user),
 ) -> Dict[str, Any]:
     """
     Submit quiz answers and get results
@@ -1038,7 +1039,7 @@ async def submit_quiz(
             quiz_questions_result = await db.execute(
                 select(QuizQuestion, Question)
                 .join(Question, QuizQuestion.question_id == Question.id)
-                .filter(QuizQuestion.quiz_id == quiz_id)
+                .filter(QuizQuestion.quiz_id == quiz_id, Question.is_active == True)  # noqa: E712
                 .order_by(QuizQuestion.order_number)
             )
             for quiz_question, question in quiz_questions_result.all():
@@ -1177,7 +1178,7 @@ async def update_progress(
     node_id: str,
     progress_update: ProgressUpdate,
     db: AsyncSession = Depends(get_db),
-    current_user=Depends(get_current_user_from_token),
+    current_user: AuthenticatedUser = Depends(get_current_user),
 ) -> Dict[str, Any]:
     """
     Update student's progress on a specific topic/node
@@ -1212,7 +1213,8 @@ async def update_progress(
         result = await db.execute(
             select(TopicProgress).filter(
                 TopicProgress.student_id == student_id,
-                TopicProgress.node_id == node_id
+                TopicProgress.node_id == node_id,
+                TopicProgress.is_active == True  # noqa: E712
             )
         )
         existing = result.scalars().first()
@@ -1236,7 +1238,8 @@ async def update_progress(
         result = await db.execute(
             select(TopicCompletion).filter(
                 TopicCompletion.student_id == student_id,
-                TopicCompletion.node_id == node_id
+                TopicCompletion.node_id == node_id,
+                TopicCompletion.is_active == True  # noqa: E712
             )
         )
         completion_existing = result.scalars().first()
@@ -1485,11 +1488,362 @@ async def get_fallback_videos(
 @router.get("/health")
 @rate_limit("health")
 async def health_check(request: Request) -> Dict[str, Any]:
-    """Learning Path API v2 health check"""
+    """Learning Path API health check"""
     return {
         "status": "healthy",
-        "service": "learning-path-api-v2",
-        "version": "2.0",
+        "service": "learning-path-api",
+        "version": "3.0",
         "facade": "LearningPathFacade",
         "timestamp": datetime.now().isoformat(),
     }
+
+
+# ============================================================================
+# Ported from v1: Profile, Quiz, Review, Gamification endpoints
+# ============================================================================
+
+
+@router.get("/my-profile")
+@rate_limit("my_profile")
+async def get_my_profile(
+    db: AsyncSession = Depends(get_db),
+    current_user: AuthenticatedUser = Depends(get_current_user),
+):
+    """
+    Get the authenticated user's learning path profile.
+    Returns student_id for use in other endpoints.
+    """
+    result = await db.execute(
+        select(LearningPathStudentProfile).where(
+            LearningPathStudentProfile.user_id == str(current_user.id)
+        )
+    )
+    profile = result.scalars().first()
+
+    if not profile:
+        raise HTTPException(status_code=404, detail="Profil bulunamadi")
+
+    return {
+        "success": True,
+        "student_id": profile.student_id,
+        "profile": {
+            "name": profile.name,
+            "grade": int(profile.grade) if profile.grade else None,
+            "learning_style": profile.learning_style,
+            "knowledge_level": profile.knowledge_level,
+            "exam_target": profile.exam_target,
+        },
+    }
+
+
+def _serialize_question(q: Question) -> dict:
+    """Soru nesnesini JSON-serializable dict'e cevir."""
+    return {
+        "id": str(q.id),
+        "question_text": q.question_text,
+        "options": {
+            "A": q.option_a,
+            "B": q.option_b,
+            "C": q.option_c,
+            "D": q.option_d,
+            "E": getattr(q, "option_e", None),
+        },
+        "correct_answer": q.correct_answer,
+        "explanation": q.explanation,
+        "explanation_video_url": getattr(q, "explanation_video_url", None),
+        "difficulty_level": q.difficulty_level,
+        "subject_area": q.subject_area,
+    }
+
+
+@router.get("/exit-quiz/{subject}")
+@rate_limit("exit_quiz")
+async def get_exit_quiz(
+    subject: str,
+    count: int = 5,
+    exam_type: str = "TYT",
+    current_user: AuthenticatedUser = Depends(get_current_user),
+):
+    """
+    Cikis testi: Tamamlanan konudan retrieval practice sorulari dondur.
+    Bilimsel dayanak: Retrieval practice d=0.5-1.24 (Frontiers 2025).
+    """
+    try:
+        from services.soru_bankasi_service import SoruBankasiServisi
+
+        soru_servisi = SoruBankasiServisi()
+        questions = await soru_servisi.get_exit_quiz_questions(
+            subject, count, exam_type=exam_type
+        )
+        return {
+            "success": True,
+            "questions": [_serialize_question(q) for q in questions],
+            "count": len(questions),
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error fetching exit quiz questions: {e}")
+        raise HTTPException(
+            status_code=500, detail=f"Failed to fetch exit quiz questions: {str(e)}"
+        )
+
+
+@router.get("/interleaved-practice")
+@rate_limit("interleaved_practice")
+async def get_interleaved_practice(
+    subjects: str,
+    count: int = 10,
+    exam_type: str = "TYT",
+    current_user: AuthenticatedUser = Depends(get_current_user),
+):
+    """
+    Karisik pratik: Birden fazla konudan interleaved soru seti.
+    Bilimsel dayanak: Interleaving d=1.21 (Rohrer et al. RCT).
+
+    subjects: Comma-separated konu listesi, orn. "MATEMATIK,FIZIK,KIMYA"
+    """
+    try:
+        subject_list = [s.strip() for s in subjects.split(",") if s.strip()]
+        if not subject_list:
+            raise HTTPException(
+                status_code=400,
+                detail="En az bir konu belirtilmelidir (subjects parametresi bos olamaz)",
+            )
+
+        from services.soru_bankasi_service import SoruBankasiServisi
+
+        soru_servisi = SoruBankasiServisi()
+        questions = await soru_servisi.get_interleaved_questions(
+            subject_list, count, exam_type=exam_type
+        )
+        return {
+            "success": True,
+            "questions": [_serialize_question(q) for q in questions],
+            "count": len(questions),
+            "subjects": subject_list,
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error fetching interleaved practice questions: {e}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to fetch interleaved practice questions: {str(e)}",
+        )
+
+
+@router.get("/review-queue")
+@rate_limit("review_queue")
+async def get_review_queue(
+    limit: int = 20,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """
+    Tekrar kuyrugu: FSRS'e gore vadesi gelen sorulari dondur.
+    Yanlis cevaplanan sorular 24-48h sonra tekrar gelir.
+    student_id current_user'dan turetilir (IDOR korumasi).
+    Bilimsel dayanak: FSRS-6 SM-2'ye karsi %99.6 ustun (Expertium 2024).
+    """
+    try:
+        from services.question_review_adapter import QuestionReviewAdapter
+
+        student_id = str(current_user.id)
+        adapter = QuestionReviewAdapter()
+        due_questions = await adapter.get_due_questions(student_id, limit=limit, db=db)
+        return {
+            "success": True,
+            "questions": due_questions,
+            "count": len(due_questions),
+            "student_id": student_id,
+        }
+    except Exception as e:
+        logger.error(f"Error fetching review queue: {e}")
+        raise HTTPException(
+            status_code=500, detail=f"Failed to fetch review queue: {str(e)}"
+        )
+
+
+class SubmitReviewRequest(BaseModel):
+    card_id: str = Field(..., description="FSRS kart ID")
+    grade: int = Field(..., ge=1, le=4, description="1=AGAIN, 2=HARD, 3=GOOD, 4=EASY")
+
+
+@router.post("/submit-review")
+@rate_limit("submit_review")
+async def submit_review(
+    request: SubmitReviewRequest,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """
+    Tekrar sonucunu kaydet ve FSRS parametrelerini guncelle.
+    Grade: 1=AGAIN (6h), 2=HARD (1d), 3=GOOD (2.5d), 4=EASY (7d).
+    """
+    try:
+        from services.question_review_adapter import QuestionReviewAdapter
+
+        student_id = str(current_user.id)
+        adapter = QuestionReviewAdapter()
+        card = await adapter.submit_review(request.card_id, request.grade, db, student_id=student_id)
+        if not card:
+            raise HTTPException(status_code=404, detail="Kart bulunamadi veya gecersiz grade")
+
+        await db.commit()
+        return {
+            "success": True,
+            "card_id": card.id,
+            "next_due": card.due_date.isoformat() if card.due_date else None,
+            "state": card.state,
+            "stability": card.stability,
+            "difficulty": card.difficulty,
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error submitting review: {e}")
+        await db.rollback()
+        raise HTTPException(
+            status_code=500, detail=f"Failed to submit review: {str(e)}"
+        )
+
+
+class RegisterWrongAnswersRequest(BaseModel):
+    question_ids: List[str] = Field(..., min_length=1)
+    error_types: Optional[Dict[str, str]] = None
+
+
+@router.post("/register-wrong-answers")
+@rate_limit("register_wrong_answers")
+async def register_wrong_answers(
+    request: RegisterWrongAnswersRequest,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """
+    Quiz sonunda yanlis cevaplanan sorulari FSRS tekrar kuyruguna ekle.
+    24h sonra review-queue'da gorunurler.
+    student_id current_user'dan turetilir (IDOR korumasi).
+    """
+    try:
+        from services.question_review_adapter import QuestionReviewAdapter
+
+        student_id = str(current_user.id)
+        adapter = QuestionReviewAdapter()
+        created = await adapter.register_wrong_answers(
+            student_id, request.question_ids, db,
+            error_types=request.error_types,
+        )
+        await db.commit()
+        return {
+            "success": True,
+            "created": created,
+            "total_submitted": len(request.question_ids),
+        }
+    except Exception as e:
+        logger.error(f"Error registering wrong answers: {e}")
+        await db.rollback()
+        raise HTTPException(
+            status_code=500, detail=f"Failed to register wrong answers: {str(e)}"
+        )
+
+
+@router.get("/weakness-report")
+@rate_limit("weakness_report")
+async def get_weakness_report(
+    db: AsyncSession = Depends(get_db),
+    current_user: AuthenticatedUser = Depends(get_current_user),
+):
+    """
+    Ogrencinin zayif konularini raporla.
+    TopicProgress tablosundan dusuk skorlu konulari tespit eder.
+    """
+    try:
+        student_id = str(current_user.id)
+
+        result = await db.execute(
+            select(TopicProgress).where(TopicProgress.student_id == student_id)
+        )
+        progress_records = result.scalars().all()
+
+        weaknesses = []
+        for record in progress_records:
+            avg_score = record.progress or 0
+            if avg_score >= 80:
+                trend = "improving"
+            elif avg_score >= 40:
+                trend = "stable"
+            else:
+                trend = "declining"
+
+            weaknesses.append({
+                "topic": record.node_id,
+                "avg_score": avg_score,
+                "attempts": 1,
+                "trend": trend,
+                "is_weak": avg_score < 60,
+            })
+
+        return {"weaknesses": weaknesses}
+
+    except Exception as e:
+        logger.error(f"Error fetching weakness report: {e}")
+        return {"weaknesses": []}
+
+
+@router.get("/streak")
+@rate_limit("streak")
+async def get_daily_streak(
+    db: AsyncSession = Depends(get_db),
+    current_user: AuthenticatedUser = Depends(get_current_user),
+):
+    """
+    Ogrencinin ardisik aktif gun sayisini dondur.
+    TopicCompletion tablosundan ardisik gunleri hesaplar.
+    """
+    try:
+        student_id = str(current_user.id)
+
+        profile_result = await db.execute(
+            select(LearningPathStudentProfile).where(
+                LearningPathStudentProfile.user_id == student_id
+            )
+        )
+        profile = profile_result.scalars().first()
+
+        if not profile:
+            return {"daily_streak": 0}
+
+        result = await db.execute(
+            select(TopicCompletion).where(
+                TopicCompletion.student_id == profile.student_id,
+                TopicCompletion.completed == True,  # noqa: E712
+            )
+        )
+        completions = result.scalars().all()
+
+        if not completions:
+            return {"daily_streak": 0}
+
+        dates = sorted(set(
+            c.completion_date.date() for c in completions
+            if c.completion_date
+        ), reverse=True)
+
+        if not dates:
+            return {"daily_streak": 0}
+
+        from datetime import timedelta
+        streak = 1
+        for i in range(1, len(dates)):
+            if dates[i - 1] - dates[i] == timedelta(days=1):
+                streak += 1
+            else:
+                break
+
+        return {"daily_streak": streak}
+
+    except Exception as e:
+        logger.error(f"Error calculating daily streak: {e}")
+        return {"daily_streak": 0}

@@ -101,6 +101,15 @@ class RouterRegistry:
             RouterConfig(
                 "api.analytics", "router", "Advanced Analytics", "features", 31, True, "v1"
             ),
+            # Learning Path router
+            RouterConfig(
+                "api.learning_path_v2",
+                "router",
+                "Learning Path v2",
+                "features",
+                30,
+                True,
+            ),
             RouterConfig(
                 "api.learning_style",
                 "router",
