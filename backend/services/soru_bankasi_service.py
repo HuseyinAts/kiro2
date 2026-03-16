@@ -17,7 +17,7 @@ from core.cache import cache_manager
 from core.database import db_manager
 from models import SinavTipi
 from models.database import ExamType, QuestionDifficulty, SubjectArea
-from models.question_bank import QuestionBankItem as Question
+from models.question_bank import QuestionBankItem as Question, TopicHierarchy
 from services.irt_analysis_service import IRTAnalysisService
 
 logger = logging.getLogger(__name__)
@@ -640,23 +640,40 @@ class SoruBankasiServisi:
                     Question.exam_type == exam_type_upper,
                 )
 
-                # Konu bazlı metin eşleştirme (normalize edilmiş)
+                # Konu bazlı filtre: topic_hierarchy tablosundan ID bul
                 if normalized_topic:
-                    # İki pattern dene: normalize edilmiş ve ASCII fallback
-                    topic_pattern = f"%{normalized_topic}%"
-                    ascii_topic = normalized_topic.replace('ü','u').replace('ş','s').replace('ğ','g').replace('ö','o').replace('ç','c')
-                    ascii_pattern = f"%{ascii_topic}%"
-
-                    # Her iki pattern'i de dene
-                    conditions = [
-                        Question.question_text.ilike(topic_pattern),
-                        Question.question_html.ilike(topic_pattern),
-                        Question.question_text.ilike(ascii_pattern),
-                        Question.question_html.ilike(ascii_pattern),
-                    ]
-
-                    stmt = stmt.where(or_(*conditions))
-                    logger.debug(f"Konu filtresi uygulanıyor: {topic} -> {normalized_topic}")
+                    # Önce topic_hierarchy'de konuyu bul
+                    topic_name = normalized_topic.title()  # "türev" -> "Türev"
+                    
+                    # ASCII fallback
+                    ascii_topic = normalized_topic.replace('ü','u').replace('ş','s').replace('ğ','g').replace('ö','o').replace('ç','c').title()
+                    
+                    # Konu ID'sini bul
+                    topic_stmt = select(TopicHierarchy.id).where(
+                        TopicHierarchy.is_active == True,
+                        or_(
+                            TopicHierarchy.name_tr.ilike(f"%{topic_name}%"),
+                            TopicHierarchy.name_tr.ilike(f"%{normalized_topic}%"),
+                            TopicHierarchy.name_tr.ilike(f"%{ascii_topic}%"),
+                        )
+                    ).limit(1)
+                    
+                    topic_result = await session.execute(topic_stmt)
+                    topic_id = topic_result.scalar_one_or_none()
+                    
+                    if topic_id:
+                        # Konu bulundu, primary_topic_id ile filtrele
+                        stmt = stmt.where(Question.primary_topic_id == topic_id)
+                        logger.debug(f"Konu filtresi uygulanıyor: {topic} -> topic_id={topic_id}")
+                    else:
+                        # Konu bulunamadı, eski yöntemle dene (geriye dönük uyumluluk)
+                        logger.warning(f"Konu '{topic}' topic_hierarchy'de bulunamadı, metin araması deneniyor")
+                        topic_pattern = f"%{normalized_topic}%"
+                        conditions = [
+                            Question.question_text.ilike(topic_pattern),
+                            Question.question_html.ilike(topic_pattern),
+                        ]
+                        stmt = stmt.where(or_(*conditions))
 
                 if difficulty_levels:
                     stmt = stmt.where(Question.difficulty_level.in_(difficulty_levels))

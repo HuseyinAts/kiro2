@@ -53,7 +53,7 @@ export const ModernLoginPage: React.FC = () => {
 
   const getDefaultDashboard = (role: UserRole): string => {
     const dashboards = {
-      ogrenci: '/dashboard',
+      ogrenci: '/learning-path',
       ogretmen: '/teacher/dashboard',
       veli: '/parent/dashboard',
       admin: '/admin/dashboard',
