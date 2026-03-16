@@ -259,6 +259,11 @@ class PathAdaptation(BaseModel):
 
 def _get_facade() -> LearningPathFacade:
     """Get facade instance via dependency injection."""
+    if get_learning_path_facade is None:
+        raise HTTPException(
+            status_code=503,
+            detail="Learning Path facade not available. Please ensure cachetools is installed: pip install cachetools"
+        )
     return get_learning_path_facade()
 
 
