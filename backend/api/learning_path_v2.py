@@ -584,8 +584,12 @@ async def create_learning_path(
             }
             modules.append(module)
 
+        # Generate path_id from student_id + subject + timestamp
+        import uuid
+        path_id = f"LP_{path_request.student_id[:8]}_{int(time.time())}_{uuid.uuid4().hex[:4]}"
+
         learning_path = {
-            "path_id": result.path_id,
+            "path_id": path_id,
             "student_id": path_request.student_id,
             "subject": path_request.subject,
             "difficulty_level": path_request.difficulty_level,
@@ -598,8 +602,8 @@ async def create_learning_path(
                 "total_topics": len(modules),
                 "overall_progress": 0,
             },
-            "total_time": result.total_duration,
-            "created_at": result.created_at.isoformat(),
+            "total_time": result.total_duration_minutes,
+            "created_at": datetime.now().isoformat(),
             "ai_generated": True,
         }
 
@@ -877,7 +881,8 @@ async def get_completion_status(
             result = await db.execute(
                 select(TopicCompletion).filter(
                     TopicCompletion.student_id == student_id,
-                    TopicCompletion.is_active == True  # noqa: E712
+                    # is_active column not in DB yet - commented out
+                    # TopicCompletion.is_active == True  # noqa: E712
                 )
             )
             completion_records = result.scalars().all()
@@ -946,7 +951,8 @@ async def update_completion_status(
                 select(TopicCompletion).filter(
                     TopicCompletion.student_id == student_id,
                     TopicCompletion.node_id == node_id,
-                    TopicCompletion.is_active == True  # noqa: E712
+                    # is_active column not in DB yet - commented out
+                    # TopicCompletion.is_active == True  # noqa: E712
                 )
             )
             existing = result.scalars().first()
