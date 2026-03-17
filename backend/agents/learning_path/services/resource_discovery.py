@@ -190,25 +190,46 @@ class ResourceDiscoveryService:
             except Exception as e:
                 logger.warning(f"Failed to initialize YouTube strategy: {e}")
 
+        # Invidious strategy (free YouTube alternative — no API key needed)
+        try:
+            from ..strategies.invidious_strategy import (
+                InvidiousSearchStrategy,
+            )
+
+            strategies.append(InvidiousSearchStrategy())
+            logger.debug("Initialized Invidious strategy (YouTube fallback)")
+        except Exception as e:
+            logger.warning(f"Failed to initialize Invidious strategy: {e}")
+
         # Khan Academy strategy
+        # NOTE: Khan REST API is deprecated (moved to internal GraphQL).
+        # This strategy gracefully returns [] if the endpoint is dead.
         try:
             from ..strategies.khan_strategy import (
                 KhanSearchStrategy,
             )
 
             strategies.append(KhanSearchStrategy())
-            logger.debug("Initialized Khan Academy strategy")
+            logger.debug(
+                "Initialized Khan Academy strategy "
+                "(REST API deprecated — may return empty results)"
+            )
         except Exception as e:
             logger.warning(f"Failed to initialize Khan Academy strategy: {e}")
 
         # OER Commons strategy
+        # NOTE: OER API requires authentication token.
+        # Without token, requests will fail silently.
         try:
             from ..strategies.oer_strategy import (
                 OERSearchStrategy,
             )
 
             strategies.append(OERSearchStrategy())
-            logger.debug("Initialized OER Commons strategy")
+            logger.debug(
+                "Initialized OER Commons strategy "
+                "(requires API token — set OER_API_TOKEN env var)"
+            )
         except Exception as e:
             logger.warning(f"Failed to initialize OER strategy: {e}")
 
@@ -322,7 +343,9 @@ class ResourceDiscoveryService:
     async def _search_with_strategy(
         self, strategy: ResourceSearchStrategy, request: DiscoveryRequest
     ) -> list[LearningResource]:
-        """Execute search with a single strategy.
+        """Execute search with a single strategy and one retry.
+
+        On transient failure, waits 2s and retries once before giving up.
 
         Args:
             strategy: Search strategy to use
@@ -331,12 +354,22 @@ class ResourceDiscoveryService:
         Returns:
             List of resources from this strategy
         """
-        return await strategy.search(
-            query=request.query,
-            subject=request.subject,
-            difficulty_range=request.difficulty_range,
-            limit=request.limit,
-        )
+        last_error: Exception | None = None
+        for attempt in range(2):  # 1 initial + 1 retry
+            try:
+                return await strategy.search(
+                    query=request.query,
+                    subject=request.subject,
+                    difficulty_range=request.difficulty_range,
+                    limit=request.limit,
+                )
+            except Exception as e:
+                last_error = e
+                if attempt == 0:
+                    platform = strategy.get_platform_name()
+                    logger.debug(f"Strategy {platform} failed, retrying in 2s: {e}")
+                    await asyncio.sleep(2)
+        raise last_error  # type: ignore[misc]
 
     def _filter_strategies(
         self, request: DiscoveryRequest
