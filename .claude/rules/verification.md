@@ -84,6 +84,7 @@ Her gorev tamamlanmadan once bu listeyi kontrol et:
 - [ ] `is_active == True` filtresi var mi? (soru sorgularinda ZORUNLU)
 - [ ] Infra calisiyor mu? (ONCE health check, SONRA koda bak — detay asagida)
 - [ ] En basit cozum mu? (Daha basit alternatif varsa ONU sec — YAGNI)
+- [ ] Root Cause Analysis tablosu yazildi mi? (debugging-first.md gate)
 
 ## INFRA-FIRST HATA AYIKLAMA (Infrastructure Check First)
 

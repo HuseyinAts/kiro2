@@ -22,13 +22,8 @@
 
 ## Debugging Protocol
 
-Bug fix baslamadan ONCE bu 3 kontrol ZORUNLU:
-
-1. **Hangi endpoint?** `curl -s http://localhost:8000/api/v1/ENDPOINT` — gercek hata ne?
-2. **Hangi tablo dolu?** `question_bank` = 77K production, `questions` = BOS legacy
-3. **Altyapi calisiyor mu?** 503/500 → %75 altyapi sorunu (detay: verification.md INFRA-FIRST)
-
-Bu 3 kontrol yapilmadan fix onerme. Sessiz basarisizlik kontrolu: 200 donup bos data mi?
+Bug fix baslamadan ONCE `Root Cause Analysis` tablosunu kullaniciya GOSTER.
+Bu tablo olmadan Edit/Write YAPMA. Format ve detay: `.claude/rules/debugging-first.md`
 
 ## Git Operations
 

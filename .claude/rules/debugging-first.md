@@ -1,45 +1,26 @@
 ---
 name: debugging-first
-description: Bug fix oncesi ZORUNLU kok neden dogrulama protokolu
+description: Bug fix oncesi ZORUNLU root cause gate
 trigger: always
-priority: high
+priority: critical
 ---
 
-# Debugging-First Protocol
+# Bug Fix Gate
 
-> 46 wrong_approach friction event (77 session'da). #1 zaman kaybi.
+Bug, hata, fix, 503, 500, error, bozuk, calismıyor gibi bir istek geldiginde:
+Edit veya Write CAGIRMADAN ONCE asagidaki blogu kullaniciya GOSTER.
 
-## BUG FIX BASLAMADAN ONCE 3 KONTROL
+**Root Cause Analysis:**
+| Soru | Cevap |
+|------|-------|
+| Hata ne? | [curl/pytest/log ciktisi — tahmin degil, gercek output] |
+| Root cause? | [dosya:satir — neden bozuk] |
+| Dogru tablo mu? | [question_bank=77K prod / questions=BOS legacy] |
+| Altyapi OK mu? | [pg_isready -p 5434, redis-cli ping, curl /health] |
+| Fix scope? | [dosya listesi, max 3 dosya] |
 
-### 1. Endpoint Dogrulama
-- Hangi endpoint hata donuyor? `curl` ile dogrula
-- Error response'u oku — gercek hata mesaji ne?
-- Sessiz basarisizlik var mi? (200 donup bos data)
-
-### 2. Veri Kaynak Dogrulama
-- Sorgulanan tablo DOLU mu? (`SELECT COUNT(*) FROM table_name`)
-- `question_bank` = 77K production, `questions` = BOS legacy
-- `is_active = TRUE` filtresi var mi?
-
-### 3. Altyapi Kontrolu
-503/500 → %75 altyapi sorunu.
-Komutlar icin bkz: verification.md > INFRA-FIRST bolumu.
-
-## FIX STRATEJISI
-
-YANLIS: Hemen koda dal, tahminle fix yaz
-DOGRU:
-1. Hatayi reproduce et (curl/test)
-2. Root cause'u dogrula (log/trace/debug)
-3. Tek dosyada minimal fix
-4. Test ile dogrula
-
-## TEKRARLAYAN HATALAR
-
-Bu pattern'lerden birini gordugunde UYARI ver:
-- Bos tablo sorgulama (questions vs question_bank)
-- Yanlis endpoint fix etme (path collision, route siralama)
-- Silent exception handler maskeleme (bare except, pass)
-- Mock uyumsuzlugu (eski mock, yeni API)
-- Pydantic dict-style access (obj["field"] yerine obj.field)
-- get_async_session context manager olarak kullanma (generator!)
+Kurallar:
+- 503/500 → ONCE altyapi kontrol et (%75 infra sorunu)
+- 200 + bos data → yanlis tablo veya is_active filtresi eksik
+- Fix ONCESI fail eden test bul. Yoksa ONCE test yaz, SONRA fix.
+- 3+ dosya → plan mode'a gec
