@@ -19,44 +19,82 @@ import { extractSubject, extractTopic } from '../utils/learningPathHelpers';
 // Video cache - prevents duplicate API calls
 const videoCache = new Map<string, { videos: VideoResponse[]; timestamp: number }>();
 const VIDEO_CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+const VIDEO_CACHE_MAX_SIZE = 50;
 
-// Fallback video type — minimal fields for when external API is unavailable
-interface FallbackVideo {
-  video_id: string;
-  title: string;
-  description: string;
-  url: string;
-  platform: string;
+/** Evict oldest entry when cache exceeds max size */
+function setCacheEntry(key: string, videos: VideoResponse[]) {
+  if (videoCache.size >= VIDEO_CACHE_MAX_SIZE) {
+    let oldestKey = '';
+    let oldestTime = Infinity;
+    for (const [k, v] of videoCache) {
+      if (v.timestamp < oldestTime) {
+        oldestTime = v.timestamp;
+        oldestKey = k;
+      }
+    }
+    if (oldestKey) videoCache.delete(oldestKey);
+  }
+  videoCache.set(key, { videos, timestamp: Date.now() });
 }
 
-const FALLBACK_VIDEOS: Record<string, FallbackVideo[]> = {
+/** Create a properly typed fallback video entry */
+function makeFallback(
+  id: string, title: string, channel: string, url: string,
+  subject: string, exam_type: string = 'TYT', duration: string = 'PT15M',
+): VideoResponse {
+  return {
+    video_id: id, title, channel, channel_id: '', duration,
+    view_count: 0, upload_date: '', thumbnail: '', quality_score: 0,
+    subject, difficulty: 'orta', exam_type, url,
+    is_turkish: true, description: title,
+  };
+}
+
+const FALLBACK_VIDEOS: Record<string, VideoResponse[]> = {
   matematik: [
-    { video_id: 'mat-temel', title: 'TYT Matematik - Temel Kavramlar', description: 'Hocalara Geldik', url: 'https://www.youtube.com/watch?v=dDxWSnOd5PY', platform: 'youtube' },
-    { video_id: 'mat-turev', title: 'AYT Matematik - Turev ve Uygulamalari', description: 'Tonguc Akademi', url: 'https://www.youtube.com/watch?v=0T0z8d0_aY4', platform: 'youtube' },
+    makeFallback('mat-temel', 'TYT Matematik - Temel Kavramlar', 'Hocalara Geldik', 'https://www.youtube.com/watch?v=dDxWSnOd5PY', 'matematik'),
+    makeFallback('mat-turev', 'AYT Matematik - Turev ve Uygulamalari', 'Tonguc Akademi', 'https://www.youtube.com/watch?v=0T0z8d0_aY4', 'matematik', 'AYT'),
+    makeFallback('mat-problem', 'TYT Matematik - Problem Cozme Teknikleri', 'Matematik Kafasi', 'https://www.youtube.com/watch?v=3qM9GNb5k7A', 'matematik'),
   ],
   fizik: [
-    { video_id: 'fiz-mek', title: 'TYT Fizik - Mekanik', description: 'Hocalara Geldik', url: 'https://www.youtube.com/watch?v=ZM6n5qFsMSo', platform: 'youtube' },
+    makeFallback('fiz-mek', 'TYT Fizik - Mekanik', 'Hocalara Geldik', 'https://www.youtube.com/watch?v=ZM6n5qFsMSo', 'fizik'),
+    makeFallback('fiz-elektrik', 'TYT Fizik - Elektrik ve Manyetizma', 'Tonguc Akademi', 'https://www.youtube.com/watch?v=mPwBMY5GnKo', 'fizik'),
+    makeFallback('fiz-dalga', 'AYT Fizik - Dalga Mekani\u011fi', 'Hocalara Geldik', 'https://www.youtube.com/watch?v=vy1U6sDjcIY', 'fizik', 'AYT'),
   ],
   kimya: [
-    { video_id: 'kim-atom', title: 'TYT Kimya - Atom ve Periyodik Tablo', description: 'Tonguc Akademi', url: 'https://www.youtube.com/watch?v=d0tU18uTMko', platform: 'youtube' },
+    makeFallback('kim-atom', 'TYT Kimya - Atom ve Periyodik Tablo', 'Tonguc Akademi', 'https://www.youtube.com/watch?v=d0tU18uTMko', 'kimya'),
+    makeFallback('kim-baglar', 'TYT Kimya - Kimyasal Baglar', 'Hocalara Geldik', 'https://www.youtube.com/watch?v=B5cVz0hCFIg', 'kimya'),
+    makeFallback('kim-organik', 'AYT Kimya - Organik Kimya', 'Tonguc Akademi', 'https://www.youtube.com/watch?v=QkJT3u0bFnU', 'kimya', 'AYT'),
   ],
   biyoloji: [
-    { video_id: 'bio-hucre', title: 'TYT Biyoloji - Hucre', description: 'Hocalara Geldik', url: 'https://www.youtube.com/watch?v=AEOF2gCLaGo', platform: 'youtube' },
+    makeFallback('bio-hucre', 'TYT Biyoloji - Hucre', 'Hocalara Geldik', 'https://www.youtube.com/watch?v=AEOF2gCLaGo', 'biyoloji'),
+    makeFallback('bio-kalitim', 'AYT Biyoloji - Kalitim', 'Tonguc Akademi', 'https://www.youtube.com/watch?v=dF2GDSchmGE', 'biyoloji', 'AYT'),
+    makeFallback('bio-ekoloji', 'TYT Biyoloji - Ekoloji', 'Hocalara Geldik', 'https://www.youtube.com/watch?v=8HYzpBqr7Vs', 'biyoloji'),
   ],
   turkce: [
-    { video_id: 'tur-anlatim', title: 'TYT Turkce - Anlatim Bozukluklari', description: 'Tonguc Akademi', url: 'https://www.youtube.com/watch?v=SXkvGzmexBg', platform: 'youtube' },
+    makeFallback('tur-anlatim', 'TYT Turkce - Anlatim Bozukluklari', 'Tonguc Akademi', 'https://www.youtube.com/watch?v=SXkvGzmexBg', 'turkce'),
+    makeFallback('tur-paragraf', 'TYT Turkce - Paragraf Sorulari', 'Hocalara Geldik', 'https://www.youtube.com/watch?v=xM4vbsFL2kA', 'turkce'),
+    makeFallback('tur-dil', 'TYT Turkce - Dil Bilgisi Konu Anlatimi', 'Tonguc Akademi', 'https://www.youtube.com/watch?v=yP6BOqbCmFQ', 'turkce'),
   ],
   tarih: [
-    { video_id: 'tar-ilk', title: 'TYT Tarih - Ilk Uygarliklar', description: 'Hocalara Geldik', url: 'https://www.youtube.com/watch?v=j5b0wJKZ9Kk', platform: 'youtube' },
+    makeFallback('tar-ilk', 'TYT Tarih - Ilk Uygarliklar', 'Hocalara Geldik', 'https://www.youtube.com/watch?v=j5b0wJKZ9Kk', 'tarih'),
+    makeFallback('tar-osmanli', 'TYT Tarih - Osmanli Devleti', 'Tonguc Akademi', 'https://www.youtube.com/watch?v=rENgXbC6tDY', 'tarih'),
+    makeFallback('tar-cumhuriyet', 'TYT Tarih - Cumhuriyet Donemi', 'Hocalara Geldik', 'https://www.youtube.com/watch?v=3cYmV8Pq7WI', 'tarih'),
   ],
   geometri: [
-    { video_id: 'geo-ucgen', title: 'TYT Geometri - Ucgenler', description: 'Tonguc Akademi', url: 'https://www.youtube.com/watch?v=bJF3OB2c_k8', platform: 'youtube' },
+    makeFallback('geo-ucgen', 'TYT Geometri - Ucgenler', 'Tonguc Akademi', 'https://www.youtube.com/watch?v=bJF3OB2c_k8', 'geometri'),
+    makeFallback('geo-daire', 'TYT Geometri - Daire ve Cember', 'Hocalara Geldik', 'https://www.youtube.com/watch?v=YW_6FGNPHM4', 'geometri'),
+    makeFallback('geo-katicicisim', 'AYT Geometri - Kati Cisimler', 'Tonguc Akademi', 'https://www.youtube.com/watch?v=S8UqkJXj6VE', 'geometri', 'AYT'),
   ],
   cografya: [
-    { video_id: 'cog-iklim', title: 'TYT Cografya - Iklim ve Bitki Ortusu', description: 'Hocalara Geldik', url: 'https://www.youtube.com/watch?v=K2V0zGVP7sI', platform: 'youtube' },
+    makeFallback('cog-iklim', 'TYT Cografya - Iklim ve Bitki Ortusu', 'Hocalara Geldik', 'https://www.youtube.com/watch?v=K2V0zGVP7sI', 'cografya'),
+    makeFallback('cog-turkiye', 'TYT Cografya - Turkiye Fiziki Cografyasi', 'Tonguc Akademi', 'https://www.youtube.com/watch?v=d4TrIE5gDws', 'cografya'),
+    makeFallback('cog-nufus', 'TYT Cografya - Nufus ve Yerlesme', 'Hocalara Geldik', 'https://www.youtube.com/watch?v=Ht0V8UCLtN4', 'cografya'),
   ],
   edebiyat: [
-    { video_id: 'ede-donem', title: 'AYT Edebiyat - Donem Ozellikleri', description: 'Tonguc Akademi', url: 'https://www.youtube.com/watch?v=Ckr8E3BBQOA', platform: 'youtube' },
+    makeFallback('ede-donem', 'AYT Edebiyat - Donem Ozellikleri', 'Tonguc Akademi', 'https://www.youtube.com/watch?v=Ckr8E3BBQOA', 'edebiyat', 'AYT'),
+    makeFallback('ede-siir', 'AYT Edebiyat - Siir Bilgisi', 'Hocalara Geldik', 'https://www.youtube.com/watch?v=z6f4HjF4zYE', 'edebiyat', 'AYT'),
+    makeFallback('ede-roman', 'AYT Edebiyat - Roman Turleri', 'Tonguc Akademi', 'https://www.youtube.com/watch?v=fVGpkX8K6Vk', 'edebiyat', 'AYT'),
   ],
 };
 
@@ -100,19 +138,19 @@ export const useLearningPathVideos = (): UseLearningPathVideosReturn => {
       });
 
       if (result.success && result.resources && result.resources.length > 0) {
-        videoCache.set(cacheKey, { videos: result.resources, timestamp: Date.now() });
+        setCacheEntry(cacheKey, result.resources);
         setVideos(result.resources);
       } else {
         // Use fallback videos when API returns empty
-        const fallback = (FALLBACK_VIDEOS[resolvedSubject] || FALLBACK_VIDEOS['matematik']) as unknown as VideoResponse[];
-        videoCache.set(cacheKey, { videos: fallback, timestamp: Date.now() });
+        const fallback = FALLBACK_VIDEOS[resolvedSubject] || FALLBACK_VIDEOS['matematik'];
+        setCacheEntry(cacheKey, fallback);
         setVideos(fallback);
       }
     } catch (err: any) {
       console.error('Error loading videos, using fallback:', err);
       // Use fallback on error too
       const resolvedSubject = subject || 'matematik';
-      const fallback = (FALLBACK_VIDEOS[resolvedSubject] || FALLBACK_VIDEOS['matematik']) as unknown as VideoResponse[];
+      const fallback = FALLBACK_VIDEOS[resolvedSubject] || FALLBACK_VIDEOS['matematik'];
       setVideos(fallback);
     } finally {
       setVideosLoading(false);
@@ -159,13 +197,13 @@ export const useLearningPathVideos = (): UseLearningPathVideosReturn => {
           const scoreB = b.scores?.final_score || 0;
           return scoreB - scoreA;
         });
-        videoCache.set(cacheKey, { videos: sorted, timestamp: Date.now() });
+        setCacheEntry(cacheKey, sorted);
         setVideos(sorted);
       } else {
         // Use fallback videos when API returns empty or error
         const fallbackKey = subject in FALLBACK_VIDEOS ? subject : 'matematik';
-        const fallback = (FALLBACK_VIDEOS[fallbackKey] || FALLBACK_VIDEOS['matematik']) as unknown as VideoResponse[];
-        videoCache.set(cacheKey, { videos: fallback, timestamp: Date.now() });
+        const fallback = FALLBACK_VIDEOS[fallbackKey] || FALLBACK_VIDEOS['matematik'];
+        setCacheEntry(cacheKey, fallback);
         setVideos(fallback);
         if (result.error) {
           setVideosError(result.error.message);

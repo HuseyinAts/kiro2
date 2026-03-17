@@ -45,6 +45,9 @@ export const PathVideoResourcesTab: React.FC<PathVideoResourcesTabProps> = ({
   onCancelVideoLoad,
   onVideoPlay,
 }) => {
+  // Only show analytics when videos have real scores (not fallback)
+  const hasRealScores = videos.some(v => v.scores && v.scores.final_score > 0);
+
   return (
     <Box sx={{ px: 2 }}>
       {/* Header */}
@@ -72,8 +75,8 @@ export const PathVideoResourcesTab: React.FC<PathVideoResourcesTabProps> = ({
         Öğrenme stilinize ve seviyenize uygun, kaliteli eğitim videoları
       </Typography>
 
-      {/* Video Analytics Card */}
-      {videos.length > 0 && videoLoadingState.status === 'success' && (
+      {/* Video Analytics Card — only when real scores exist */}
+      {videos.length > 0 && videoLoadingState.status === 'success' && hasRealScores && (
         <Card
           elevation={2}
           sx={{
@@ -215,10 +218,26 @@ export const PathVideoResourcesTab: React.FC<PathVideoResourcesTabProps> = ({
         <VideoResourceGrid videos={videos} loading={false} error={undefined} onVideoPlay={onVideoPlay} />
       )}
 
-      {/* Show fallback message if no videos after success */}
+      {/* Show actionable guidance if no videos after success */}
       {videoLoadingState.status === 'success' && videos.length === 0 && (
         <Alert severity="info" sx={{ mt: 3 }}>
-          Şu anda size özel video bulunamadı. Lütfen daha sonra tekrar deneyin.
+          <Typography variant="body1" fontWeight="bold" gutterBottom>
+            Şu anda size özel video bulunamadı
+          </Typography>
+          <Typography variant="body2" component="ul" sx={{ pl: 2, mb: 1 }}>
+            <li>Farklı bir konu veya ders seçin</li>
+            <li>Sayfayı yenileyerek tekrar deneyin</li>
+            <li>Öğrenme yolunuzda farklı bir düğüm seçin</li>
+          </Typography>
+          <Button
+            variant="outlined"
+            size="small"
+            startIcon={<Refresh />}
+            onClick={onRetryVideos}
+            sx={{ mt: 1 }}
+          >
+            Tekrar Dene
+          </Button>
         </Alert>
       )}
     </Box>

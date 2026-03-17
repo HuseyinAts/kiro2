@@ -31,6 +31,7 @@ API Layer (this file)
 
 import logging
 import time
+import unicodedata
 from datetime import datetime
 from typing import Any
 
@@ -284,6 +285,53 @@ def _get_facade() -> LearningPathFacade:
             detail="Learning Path facade not available. Please ensure cachetools is installed: pip install cachetools",
         )
     return get_learning_path_facade()
+
+
+def _normalize_turkish(text: str) -> str:
+    """NFC normalize + Turkish lowercase."""
+    text = unicodedata.normalize("NFC", text)
+    return text.replace("İ", "i").replace("I", "ı").lower().strip()
+
+
+def _compute_relevance(resource: Any, search: Any) -> float:
+    """Compute relevance score from resource metadata vs search query."""
+    score = 0.0
+    query = f"{search.subject} {search.topic or ''}".strip().lower()
+    title_lower = resource.title.lower()
+    if query in title_lower:
+        score += 0.5
+    elif any(w in title_lower for w in query.split() if len(w) > 2):
+        score += 0.3
+    if resource.description and query in resource.description.lower():
+        score += 0.2
+    if resource.language == "tr":
+        score += 0.2
+    return min(score, 1.0)
+
+
+def _compute_final_score(
+    resource: Any, search: Any, learning_style: str | None = None
+) -> float:
+    """Weighted final score: relevance 40% + quality 30% + turkish 30%."""
+    relevance = _compute_relevance(resource, search)
+    quality = (resource.rating or 3.0) / 5.0
+    turkish = 1.0 if resource.language == "tr" else 0.3
+    score = relevance * 0.4 + quality * 0.3 + turkish * 0.3
+
+    # VARK learning style bonus for matching resource types
+    if learning_style and resource.resource_type:
+        rt = resource.resource_type.lower()
+        style_match = {
+            "visual": ["video", "infographic", "diagram"],
+            "auditory": ["video", "podcast", "audio", "lecture"],
+            "reading": ["article", "book", "text"],
+            "kinesthetic": ["quiz", "practice", "interactive", "exercise"],
+        }
+        preferred = style_match.get(learning_style, [])
+        if any(p in rt for p in preferred):
+            score = min(score + 0.1, 1.0)
+
+    return score
 
 
 def _map_difficulty_to_knowledge_level(difficulty: str) -> KnowledgeLevel:
@@ -699,6 +747,11 @@ async def search_resources(
                 status_code=400, detail="Ders (subject) alanı zorunludur"
             )
 
+        # Extract learning_style from student_profile (VARK personalization)
+        learning_style = None
+        if search.student_profile:
+            learning_style = search.student_profile.get("learning_style")
+
         # Use facade to search resources
         try:
             resources = await facade.search_resources(
@@ -707,24 +760,51 @@ async def search_resources(
                 limit=search.max_results or 10,
             )
 
-            # Convert to API response format
+            # Convert LearningResource → API response format
+            # Field mapping: LearningResource → VideoResponse (frontend)
             response_resources = []
             for resource in resources:
+                metadata = resource.metadata or {}
+                diff_val = (
+                    resource.difficulty_level.value
+                    if hasattr(resource.difficulty_level, "value")
+                    else str(resource.difficulty_level)
+                )
                 response_resources.append(
                     {
-                        "resource_id": resource.id,
+                        "resource_id": resource.resource_id,
+                        "video_id": resource.resource_id,
                         "type": resource.resource_type,
                         "title": resource.title,
                         "description": resource.description or "",
                         "url": resource.url,
-                        "thumbnail": getattr(resource, "thumbnail_url", None),
-                        "duration_minutes": resource.duration,
-                        "difficulty": resource.difficulty,
-                        "platform": resource.platform,
+                        "thumbnail": metadata.get("thumbnail", ""),
+                        "duration_minutes": resource.estimated_time,
+                        "duration": metadata.get(
+                            "duration_iso", f"PT{resource.estimated_time}M"
+                        ),
+                        "difficulty": diff_val,
+                        "platform": resource.source,
+                        "channel": metadata.get("channel", resource.source),
+                        "channel_id": metadata.get("channel_id", ""),
+                        "view_count": int(metadata.get("view_count", 0)),
+                        "upload_date": metadata.get("published_at", ""),
+                        "subject": search.subject,
+                        "exam_type": metadata.get("exam_type", "TYT"),
+                        "quality_score": (resource.rating or 3.0) / 5.0,
                         "is_accessible": True,
+                        "is_turkish": resource.language == "tr",
+                        "definition": metadata.get("definition", "sd"),
+                        "caption_available": metadata.get("caption_available", False),
                         "scores": {
-                            "relevance_score": 0.8,
-                            "quality_score": 0.75,
+                            "relevance_score": _compute_relevance(resource, search),
+                            "quality_score": (resource.rating or 3.0) / 5.0,
+                            "turkish_score": (
+                                1.0 if resource.language == "tr" else 0.3
+                            ),
+                            "final_score": _compute_final_score(
+                                resource, search, learning_style
+                            ),
                         },
                     }
                 )
@@ -1446,7 +1526,7 @@ async def get_fallback_videos(
         limit = max(1, min(50, limit))
 
         # Normalize subject name (Turkish case handling)
-        subject_normalized = subject.lower().replace("ı", "i").strip()
+        subject_normalized = _normalize_turkish(subject)
 
         # Check cache first
         cache = _get_cache()
