@@ -5,18 +5,19 @@ videos for personalized learning paths, with specific support for Turkish conten
 
 Teknofest 2025 - Eğitim Eylemci Projesi
 """
+
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Optional
-
 import logging
+from typing import TYPE_CHECKING, Any
+
 import aiohttp
 
-from agents.learning_path.strategies.resource_search import ResourceSearchStrategy
 from agents.learning_path.config import get_learning_path_config
+from agents.learning_path.strategies.resource_search import ResourceSearchStrategy
 
 if TYPE_CHECKING:
-    from agents.learning_path.models import LearningResource, KnowledgeLevel
+    from agents.learning_path.models import KnowledgeLevel, LearningResource
 
 logger = logging.getLogger(__name__)
 
@@ -34,7 +35,7 @@ class YouTubeSearchStrategy(ResourceSearchStrategy):
         config: Learning path configuration
     """
 
-    def __init__(self, api_key: Optional[str] = None) -> None:
+    def __init__(self, api_key: str | None = None) -> None:
         """Initialize YouTube search strategy.
 
         Args:
@@ -48,11 +49,7 @@ class YouTubeSearchStrategy(ResourceSearchStrategy):
         if not self.api_key:
             logger.warning("YouTube API key not configured. Search will fail.")
 
-    async def search(
-        self,
-        query: str,
-        **filters: Any
-    ) -> list[LearningResource]:
+    async def search(self, query: str, **filters: Any) -> list[LearningResource]:
         """Search YouTube for educational videos.
 
         Args:
@@ -117,7 +114,7 @@ class YouTubeSearchStrategy(ResourceSearchStrategy):
         """
         return "youtube"
 
-    def normalize_result(self, raw_result: dict[str, Any]) -> Optional[LearningResource]:
+    def normalize_result(self, raw_result: dict[str, Any]) -> LearningResource | None:
         """Convert YouTube API response to LearningResource.
 
         Args:
@@ -129,7 +126,9 @@ class YouTubeSearchStrategy(ResourceSearchStrategy):
         """
         try:
             from agents.learning_path.models import LearningResource
-            from agents.learning_path.utils.duration_parser import parse_iso8601_duration
+            from agents.learning_path.utils.duration_parser import (
+                parse_iso8601_duration,
+            )
 
             snippet = raw_result.get("snippet", {})
             content_details = raw_result.get("contentDetails", {})
@@ -176,16 +175,20 @@ class YouTubeSearchStrategy(ResourceSearchStrategy):
                     "channel_id": snippet.get("channelId", ""),
                     "thumbnail": thumbnail_url,
                     "published_at": snippet.get("publishedAt", ""),
-                    "view_count": raw_result.get("statistics", {}).get("viewCount", "0"),
-                    "like_count": raw_result.get("statistics", {}).get("likeCount", "0"),
+                    "view_count": int(
+                        raw_result.get("statistics", {}).get("viewCount", 0) or 0
+                    ),
+                    "like_count": int(
+                        raw_result.get("statistics", {}).get("likeCount", 0) or 0
+                    ),
                     "definition": content_details.get("definition", "sd"),
-                }
+                },
             )
         except Exception as e:
             logger.warning(f"Failed to normalize YouTube result: {e}")
             return None
 
-    def _build_search_query(self, query: str, subject: Optional[str]) -> str:
+    def _build_search_query(self, query: str, subject: str | None) -> str:
         """Build optimized Turkish educational search query.
 
         Args:
@@ -201,7 +204,9 @@ class YouTubeSearchStrategy(ResourceSearchStrategy):
         parts.append("konu anlatımı")  # Turkish: topic explanation
         return " ".join(parts)
 
-    async def _search_videos(self, query: str, limit: int, language: str = "tr") -> list[str]:
+    async def _search_videos(
+        self, query: str, limit: int, language: str = "tr"
+    ) -> list[str]:
         """Search for video IDs using YouTube search endpoint.
 
         Args:
@@ -225,24 +230,26 @@ class YouTubeSearchStrategy(ResourceSearchStrategy):
                 "safeSearch": "strict",
             }
 
-            async with aiohttp.ClientSession() as session:
-                async with session.get(
+            async with (
+                aiohttp.ClientSession() as session,
+                session.get(
                     f"{self.base_url}/search",
                     params=params,
-                    timeout=aiohttp.ClientTimeout(total=self.config.SEARCH_TIMEOUT)
-                ) as resp:
-                    if resp.status == 403:
-                        logger.error("YouTube API quota exceeded")
-                        return []
+                    timeout=aiohttp.ClientTimeout(total=self.config.SEARCH_TIMEOUT),
+                ) as resp,
+            ):
+                if resp.status == 403:
+                    logger.error("YouTube API quota exceeded")
+                    return []
 
-                    if resp.status != 200:
-                        logger.warning(f"YouTube search failed with status {resp.status}")
-                        return []
+                if resp.status != 200:
+                    logger.warning(f"YouTube search failed with status {resp.status}")
+                    return []
 
-                    data = await resp.json()
-                    items = data.get("items", [])
+                data = await resp.json()
+                items = data.get("items", [])
 
-                    return [item["id"]["videoId"] for item in items if "id" in item]
+                return [item["id"]["videoId"] for item in items if "id" in item]
 
         except aiohttp.ClientError as e:
             logger.warning(f"YouTube search network error: {e}")
@@ -276,10 +283,12 @@ class YouTubeSearchStrategy(ResourceSearchStrategy):
                 async with session.get(
                     f"{self.base_url}/videos",
                     params=params,
-                    timeout=aiohttp.ClientTimeout(total=self.config.SEARCH_TIMEOUT)
+                    timeout=aiohttp.ClientTimeout(total=self.config.SEARCH_TIMEOUT),
                 ) as resp:
                     if resp.status != 200:
-                        logger.warning(f"YouTube video details failed with status {resp.status}")
+                        logger.warning(
+                            f"YouTube video details failed with status {resp.status}"
+                        )
                         return []
 
                     data = await resp.json()
@@ -310,22 +319,42 @@ class YouTubeSearchStrategy(ResourceSearchStrategy):
 
         # Turkish difficulty indicators
         beginner_keywords = [
-            "temel", "başlangıç", "giriş", "kolay", "basit",
-            "ilkokul", "ortaokul", "5. sınıf", "6. sınıf", "7. sınıf", "8. sınıf"
+            "temel",
+            "başlangıç",
+            "giriş",
+            "kolay",
+            "basit",
+            "ilkokul",
+            "ortaokul",
+            "5. sınıf",
+            "6. sınıf",
+            "7. sınıf",
+            "8. sınıf",
         ]
 
         advanced_keywords = [
-            "ileri", "zor", "detaylı", "kapsamlı", "profesyonel",
-            "üniversite", "yüksek lisans", "yks", "ayt", "matematik analiz"
+            "ileri",
+            "zor",
+            "detaylı",
+            "kapsamlı",
+            "profesyonel",
+            "üniversite",
+            "yüksek lisans",
+            "yks",
+            "ayt",
+            "matematik analiz",
         ]
 
         intermediate_keywords = [
-            "lise", "9. sınıf", "10. sınıf", "11. sınıf", "12. sınıf", "tyt"
+            "lise",
+            "9. sınıf",
+            "10. sınıf",
+            "11. sınıf",
+            "12. sınıf",
+            "tyt",
         ]
 
-        elementary_keywords = [
-            "8. sınıf", "ortaokul son", "lgs"
-        ]
+        elementary_keywords = ["8. sınıf", "ortaokul son", "lgs"]
 
         # Count keyword occurrences
         beginner_count = sum(1 for kw in beginner_keywords if kw in text)
@@ -336,11 +365,11 @@ class YouTubeSearchStrategy(ResourceSearchStrategy):
         # Determine difficulty level
         if beginner_count > max(elementary_count, advanced_count, intermediate_count):
             return KnowledgeLevel.BEGINNER
-        elif elementary_count > max(beginner_count, advanced_count, intermediate_count):
+        if elementary_count > max(beginner_count, advanced_count, intermediate_count):
             return KnowledgeLevel.ELEMENTARY
-        elif advanced_count > max(beginner_count, elementary_count, intermediate_count):
+        if advanced_count > max(beginner_count, elementary_count, intermediate_count):
             return KnowledgeLevel.ADVANCED
-        elif intermediate_count > 0:
+        if intermediate_count > 0:
             return KnowledgeLevel.INTERMEDIATE
 
         return KnowledgeLevel.INTERMEDIATE  # Default: intermediate

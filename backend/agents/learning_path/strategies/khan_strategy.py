@@ -3,15 +3,16 @@
 This module provides integration with Khan Academy API to find educational
 videos, exercises, and articles for personalized learning paths.
 """
+
 from __future__ import annotations
 
-from typing import Any, Optional
-
 import logging
+from typing import Any
+
 import aiohttp
 
+from ..models import KnowledgeLevel, LearningResource
 from .resource_search import ResourceSearchStrategy
-from ..models import LearningResource, KnowledgeLevel
 
 logger = logging.getLogger(__name__)
 
@@ -27,7 +28,7 @@ class KhanSearchStrategy(ResourceSearchStrategy):
     async def search(
         self,
         query: str,
-        subject: Optional[str] = None,
+        subject: str | None = None,
         difficulty_range: tuple[float, float] = (-4.0, 4.0),
         limit: int = 10,
     ) -> list[LearningResource]:
@@ -74,7 +75,7 @@ class KhanSearchStrategy(ResourceSearchStrategy):
         """
         return "khan_academy"
 
-    def normalize_result(self, raw_result: dict[str, Any]) -> Optional[LearningResource]:
+    def normalize_result(self, raw_result: dict[str, Any]) -> LearningResource | None:
         """Convert Khan Academy API response to LearningResource.
 
         Args:
@@ -105,9 +106,7 @@ class KhanSearchStrategy(ResourceSearchStrategy):
 
             return LearningResource(
                 resource_id=f"khan-{slug}",
-                title=raw_result.get(
-                    "title", raw_result.get("translated_title", "")
-                ),
+                title=raw_result.get("title", raw_result.get("translated_title", "")),
                 description=raw_result.get(
                     "description", raw_result.get("translated_description", "")
                 )[:500],
@@ -152,7 +151,7 @@ class KhanSearchStrategy(ResourceSearchStrategy):
         return mapping.get(kind, "video")
 
     async def _search_turkish(
-        self, query: str, subject: Optional[str], limit: int
+        self, query: str, subject: str | None, limit: int
     ) -> list[LearningResource]:
         """Search Turkish Khan Academy.
 
@@ -169,7 +168,7 @@ class KhanSearchStrategy(ResourceSearchStrategy):
         )
 
     async def _search_english(
-        self, query: str, subject: Optional[str], limit: int
+        self, query: str, subject: str | None, limit: int
     ) -> list[LearningResource]:
         """Search English Khan Academy.
 
@@ -189,7 +188,7 @@ class KhanSearchStrategy(ResourceSearchStrategy):
         self,
         base_url: str,
         query: str,
-        subject: Optional[str],
+        subject: str | None,
         limit: int,
         is_turkish: bool,
     ) -> list[LearningResource]:
@@ -216,24 +215,28 @@ class KhanSearchStrategy(ResourceSearchStrategy):
                 "limit": limit,
             }
 
-            async with aiohttp.ClientSession() as session:
-                async with session.get(
-                    f"{base_url}/search", params=params
-                ) as resp:
-                    if resp.status != 200:
-                        return []
+            async with (
+                aiohttp.ClientSession() as session,
+                session.get(
+                    f"{base_url}/search",
+                    params=params,
+                    timeout=aiohttp.ClientTimeout(total=15),
+                ) as resp,
+            ):
+                if resp.status != 200:
+                    return []
 
-                    data = await resp.json()
-                    items = data if isinstance(data, list) else data.get("items", [])
+                data = await resp.json()
+                items = data if isinstance(data, list) else data.get("items", [])
 
-                    resources = []
-                    for item in items:
-                        item["is_turkish"] = is_turkish
-                        resource = self.normalize_result(item)
-                        if resource:
-                            resources.append(resource)
+                resources = []
+                for item in items:
+                    item["is_turkish"] = is_turkish
+                    resource = self.normalize_result(item)
+                    if resource:
+                        resources.append(resource)
 
-                    return resources
+                return resources
         except Exception as e:
             logger.warning(f"Khan search failed ({base_url}): {e}")
             return []
@@ -254,7 +257,9 @@ class KhanSearchStrategy(ResourceSearchStrategy):
         slug = result.get("slug", result.get("id", ""))
         is_turkish = result.get("is_turkish", False)
         base = (
-            "https://tr.khanacademy.org" if is_turkish else "https://www.khanacademy.org"
+            "https://tr.khanacademy.org"
+            if is_turkish
+            else "https://www.khanacademy.org"
         )
 
         kind = result.get("kind", "video").lower()
@@ -279,7 +284,7 @@ class KhanSearchStrategy(ResourceSearchStrategy):
         prereqs = result.get("prerequisites", [])
         if len(prereqs) > 3:
             return 1.5  # Advanced
-        elif len(prereqs) > 1:
+        if len(prereqs) > 1:
             return 0.0  # Intermediate
         return -1.0  # Beginner
 
@@ -322,14 +327,13 @@ class KhanSearchStrategy(ResourceSearchStrategy):
         """
         if difficulty < -2.0:
             return KnowledgeLevel.BEGINNER
-        elif difficulty < -0.5:
+        if difficulty < -0.5:
             return KnowledgeLevel.ELEMENTARY
-        elif difficulty < 0.5:
+        if difficulty < 0.5:
             return KnowledgeLevel.INTERMEDIATE
-        elif difficulty < 2.0:
+        if difficulty < 2.0:
             return KnowledgeLevel.ADVANCED
-        else:
-            return KnowledgeLevel.EXPERT
+        return KnowledgeLevel.EXPERT
 
     def _is_in_difficulty_range(
         self, resource: LearningResource, range_tuple: tuple[float, float]
@@ -344,5 +348,9 @@ class KhanSearchStrategy(ResourceSearchStrategy):
             True if resource is within difficulty range.
         """
         # Get numeric difficulty from metadata
-        numeric_difficulty = resource.metadata.get("difficulty_numeric", 0.0) if resource.metadata else 0.0
+        numeric_difficulty = (
+            resource.metadata.get("difficulty_numeric", 0.0)
+            if resource.metadata
+            else 0.0
+        )
         return range_tuple[0] <= numeric_difficulty <= range_tuple[1]

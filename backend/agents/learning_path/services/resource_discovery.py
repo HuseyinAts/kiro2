@@ -16,13 +16,16 @@ Features:
 
 from __future__ import annotations
 
-import logging
 import asyncio
+import logging
+import time
+import unicodedata
+from collections import OrderedDict
 from dataclasses import dataclass, field
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from ..models import LearningResource, KnowledgeLevel
+    from ..models import KnowledgeLevel, LearningResource
     from ..strategies.resource_search import (
         ResourceSearchStrategy,
     )
@@ -49,9 +52,9 @@ class DiscoveryRequest:
     """
 
     query: str
-    subject: Optional[str] = None
+    subject: str | None = None
     difficulty_range: tuple[float, float] = (-4.0, 4.0)
-    target_level: Optional[KnowledgeLevel] = None
+    target_level: KnowledgeLevel | None = None
     limit: int = 20
     preferred_platforms: list[str] = field(default_factory=list)
     include_videos: bool = True
@@ -129,8 +132,8 @@ class ResourceDiscoveryService:
 
     def __init__(
         self,
-        strategies: Optional[list[ResourceSearchStrategy]] = None,
-        youtube_api_key: Optional[str] = None,
+        strategies: list[ResourceSearchStrategy] | None = None,
+        youtube_api_key: str | None = None,
     ) -> None:
         """Initialize ResourceDiscoveryService.
 
@@ -147,20 +150,22 @@ class ResourceDiscoveryService:
         else:
             self.strategies = self._initialize_default_strategies(youtube_api_key)
 
-        # Strategy priority (lower = higher priority)
-        self.strategy_priority = {
-            "youtube": 1,
-            "khan_academy": 2,
-            "rag": 3,
-            "oer_commons": 4,
-        }
+        # Strategy priority from each strategy's get_priority()
+        self.strategy_priority: dict[str, int] = {}
+        for s in self.strategies:
+            self.strategy_priority[s.get_platform_name()] = s.get_priority()
+
+        # Discovery result cache (LRU + TTL)
+        self._cache: OrderedDict[str, tuple[float, DiscoveryResult]] = OrderedDict()
+        self._cache_max_size: int = self.config.MAX_SEARCH_RESULTS_CACHE
+        self._cache_ttl: int = self.config.RESOURCE_CACHE_TTL
 
         logger.info(
             f"ResourceDiscoveryService initialized with {len(self.strategies)} strategies"
         )
 
     def _initialize_default_strategies(
-        self, youtube_api_key: Optional[str] = None
+        self, youtube_api_key: str | None = None
     ) -> list[ResourceSearchStrategy]:
         """Initialize default search strategies.
 
@@ -236,6 +241,16 @@ class ResourceDiscoveryService:
         """
         logger.info(f"Discovering resources for query: {request.query}")
 
+        # Check cache
+        cache_key = self._cache_key(request)
+        if cache_key in self._cache:
+            ts, cached_result = self._cache[cache_key]
+            if time.time() - ts < self._cache_ttl:
+                self._cache.move_to_end(cache_key)
+                logger.debug(f"Cache hit for: {cache_key}")
+                return cached_result
+            del self._cache[cache_key]
+
         # Filter strategies by platform preference
         active_strategies = self._filter_strategies(request)
 
@@ -255,8 +270,12 @@ class ResourceDiscoveryService:
             sources_searched.append(platform)
             tasks.append(self._search_with_strategy(strategy, request))
 
-        # Wait for all searches to complete
-        results = await asyncio.gather(*tasks, return_exceptions=True)
+        # Wait for all searches with per-strategy timeout
+        timeout = self.config.SEARCH_TIMEOUT
+        results = await asyncio.gather(
+            *[asyncio.wait_for(t, timeout=timeout) for t in tasks],
+            return_exceptions=True,
+        )
 
         # Process results
         for strategy, result in zip(active_strategies, results):
@@ -286,12 +305,19 @@ class ResourceDiscoveryService:
             f"Discovery complete: {len(final_resources)} resources from {len(sources_searched)} sources"
         )
 
-        return DiscoveryResult(
+        result = DiscoveryResult(
             resources=final_resources,
             total_found=len(unique_resources),
             sources_searched=sources_searched,
             errors=errors,
         )
+
+        # Store in cache (LRU eviction)
+        self._cache[cache_key] = (time.time(), result)
+        if len(self._cache) > self._cache_max_size:
+            self._cache.popitem(last=False)
+
+        return result
 
     async def _search_with_strategy(
         self, strategy: ResourceSearchStrategy, request: DiscoveryRequest
@@ -339,9 +365,7 @@ class ResourceDiscoveryService:
             if s.get_platform_name() in request.preferred_platforms
         ]
 
-    def _deduplicate(
-        self, resources: list[LearningResource]
-    ) -> list[LearningResource]:
+    def _deduplicate(self, resources: list[LearningResource]) -> list[LearningResource]:
         """Remove duplicate resources based on URL and title similarity.
 
         Args:
@@ -355,14 +379,16 @@ class ResourceDiscoveryService:
         unique: list[LearningResource] = []
 
         for resource in resources:
-            # Check URL
-            url = resource.url
+            # Check URL (NFC normalized for Turkish content)
+            url = unicodedata.normalize("NFC", resource.url) if resource.url else ""
             if url and url in seen_urls:
                 continue
 
-            # Check title similarity (normalized)
+            # Check title similarity (NFC normalized + lowercase)
             title = resource.title
-            title_normalized = title.lower().strip()
+            title_normalized = (
+                unicodedata.normalize("NFC", title).lower().strip() if title else ""
+            )
             if title_normalized and title_normalized in seen_titles:
                 continue
 
@@ -397,19 +423,19 @@ class ResourceDiscoveryService:
             """Calculate relevance score for a resource."""
             score = 0.0
 
-            # Platform priority (higher for lower priority number)
-            platform = resource.source
-            priority = self.strategy_priority.get(platform.lower(), 5)
-            score += (5 - priority) * 10
+            # Platform priority (max 15pt)
+            # get_priority(): youtube=-1, rag=-1, khan=0, oer=0
+            priority = self.strategy_priority.get(resource.source.lower(), 0)
+            score += min(15, max(0, 10 - priority * 5))
 
-            # Difficulty match (if target level provided)
+            # Difficulty match (max 20pt)
             if request.target_level:
                 resource_diff = self._level_to_difficulty(resource.difficulty_level)
                 target_diff = self._level_to_difficulty(request.target_level)
                 diff_distance = abs(resource_diff - target_diff)
-                score += max(0, 20 - diff_distance * 5)  # Up to 20 points
+                score += max(0, 20 - diff_distance * 5)
 
-            # Duration preference (shorter is better for videos)
+            # Duration preference (max 10pt)
             duration = resource.estimated_time
             if duration > 0:
                 if duration <= 15:
@@ -417,12 +443,26 @@ class ResourceDiscoveryService:
                 elif duration <= 30:
                     score += 5
 
-            # Quality indicators
+            # Quality indicators (max 10pt)
             if resource.rating and resource.rating >= 4.0:
                 score += 10
 
-            # Language match (prefer Turkish for Turkish queries)
+            # Language match (5pt)
             if resource.language == "tr":
+                score += 5
+
+            # Popularity bonus (max 15pt)
+            view_count = 0
+            if resource.metadata:
+                try:
+                    view_count = int(resource.metadata.get("view_count", 0))
+                except (ValueError, TypeError):
+                    pass
+            if view_count >= 1_000_000:
+                score += 15
+            elif view_count >= 100_000:
+                score += 10
+            elif view_count >= 10_000:
                 score += 5
 
             return score
@@ -448,6 +488,13 @@ class ResourceDiscoveryService:
             KnowledgeLevel.EXPERT: 3.0,
         }
         return mapping.get(level, 0.0)
+
+    def _cache_key(self, request: DiscoveryRequest) -> str:
+        """Generate cache key from request."""
+        return (
+            f"{request.query}|{request.subject}|{request.difficulty_range}"
+            f"|{request.limit}|{sorted(request.preferred_platforms)}"
+        )
 
     async def find_similar(
         self, resource: LearningResource, limit: int = 5
