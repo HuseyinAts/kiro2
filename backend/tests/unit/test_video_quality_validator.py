@@ -3,11 +3,13 @@ Video Quality Validator Unit Tests
 Video erişilebilirliği ve kalitesini doğrulayan servisi test eder
 """
 
-import pytest
 from unittest.mock import AsyncMock, MagicMock, patch
+
+import pytest
+
 from services.video_quality_validator import (
-    VideoQualityValidator,
     VideoAccessibilityResult,
+    VideoQualityValidator,
 )
 
 
@@ -110,10 +112,11 @@ class TestVideoQualityValidator:
 
         result = await validator_service.validate_video_accessibility("test_video")
 
-        # API key yoksa varsayılan olarak erişilebilir kabul edilir
-        assert result.is_accessible is True
-        assert result.is_embeddable is True
-        assert result.privacy_status == "public"
+        # API key yoksa doğrulama yapılamaz, güvenli tarafta kal
+        assert result.is_accessible is False
+        assert result.is_embeddable is False
+        assert result.privacy_status == "unknown"
+        assert result.error_reason == "YouTube API key not configured"
 
     # ==================== Erişilemeyen Video Testleri ====================
 
@@ -504,12 +507,11 @@ class TestVideoQualityValidator:
         async def mock_validate(video_id):
             if video_id == "accessible":
                 return VideoAccessibilityResult(True, True, "public", None)
-            elif video_id == "inaccessible":
+            if video_id == "inaccessible":
                 return VideoAccessibilityResult(
                     False, False, "private", "Private video"
                 )
-            else:
-                raise Exception("API Error")
+            raise Exception("API Error")
 
         with patch.object(
             validator_service, "validate_video_accessibility", side_effect=mock_validate

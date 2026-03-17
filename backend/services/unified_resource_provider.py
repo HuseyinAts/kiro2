@@ -192,8 +192,6 @@ class YouTubeResourceProvider(ResourceProviderBase):
             search_parts.append(topic)
         search_parts.append("ders anlatımı")  # Educational focus
 
-        full_query = " ".join(search_parts)
-
         # For now, return mock data - integrate with actual service
         resources = []
         for i in range(min(limit, 5)):

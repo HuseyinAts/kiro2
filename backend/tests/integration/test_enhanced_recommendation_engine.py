@@ -4,17 +4,18 @@ Tests the full pipeline: fetch → filter → score → sort
 Teknofest 2025 - Eğitim Eylemci Projesi
 """
 
-import pytest
 from datetime import datetime
 from unittest.mock import patch
 
+import pytest
+
+from backend.integrations.youtube_service import YouTubeVideo
 from services.enhanced_resource_recommendation_engine import (
     EnhancedResourceRecommendationEngine,
     RecommendedVideo,
 )
-from backend.integrations.youtube_service import YouTubeVideo
-from services.turkish_content_filter import TurkishValidationResult
 from services.subject_relevance_scorer import RelevanceScore
+from services.turkish_content_filter import TurkishValidationResult
 from services.video_quality_validator import VideoAccessibilityResult
 
 
@@ -112,15 +113,20 @@ def mock_youtube_videos():
 
 @pytest.fixture
 def engine():
-    """Enhanced recommendation engine instance"""
-    return EnhancedResourceRecommendationEngine()
+    """Enhanced recommendation engine instance — cache disabled for test isolation"""
+    eng = EnhancedResourceRecommendationEngine()
+    eng.cache_manager.enabled = False
+    return eng
 
 
 @pytest.mark.asyncio
 class TestEnhancedRecommendationEngine:
     """Enhanced Resource Recommendation Engine integration testleri"""
 
-    @pytest.mark.skipif(True, reason="VideoAccessibilityResult.has_captions removed, pipeline filters all videos")
+    @pytest.mark.skipif(
+        True,
+        reason="VideoAccessibilityResult.has_captions removed, pipeline filters all videos",
+    )
     async def test_full_pipeline_success(self, engine, mock_youtube_videos):
         """Test: Full pipeline başarılı çalışıyor"""
         # Mock YouTube service
@@ -172,10 +178,9 @@ class TestEnhancedRecommendationEngine:
                 view_count = metadata.get("view_count", 0)
                 if view_count > 20000:
                     return 0.8
-                elif view_count > 10000:
+                if view_count > 10000:
                     return 0.6
-                else:
-                    return 0.3
+                return 0.3
 
             engine.quality_validator.calculate_quality_score = mock_quality_score
 
@@ -186,25 +191,25 @@ class TestEnhancedRecommendationEngine:
 
             # Assertions
             assert len(results) > 0, "En az bir video önerilmeli"
-            assert all(
-                isinstance(v, RecommendedVideo) for v in results
-            ), "Tüm sonuçlar RecommendedVideo olmalı"
+            assert all(isinstance(v, RecommendedVideo) for v in results), (
+                "Tüm sonuçlar RecommendedVideo olmalı"
+            )
             assert all(v.is_turkish for v in results), "Tüm videolar Türkçe olmalı"
-            assert all(
-                v.is_accessible for v in results
-            ), "Tüm videolar erişilebilir olmalı"
-            assert all(
-                v.turkish_score >= 0.7 for v in results
-            ), "Türkçe skoru >= 0.7 olmalı"
-            assert all(
-                v.relevance_score >= 0.6 for v in results
-            ), "Uygunluk skoru >= 0.6 olmalı"
+            assert all(v.is_accessible for v in results), (
+                "Tüm videolar erişilebilir olmalı"
+            )
+            assert all(v.turkish_score >= 0.7 for v in results), (
+                "Türkçe skoru >= 0.7 olmalı"
+            )
+            assert all(v.relevance_score >= 0.6 for v in results), (
+                "Uygunluk skoru >= 0.6 olmalı"
+            )
 
             # Sıralama kontrolü
             scores = [v.final_score for v in results]
-            assert scores == sorted(
-                scores, reverse=True
-            ), "Videolar skora göre sıralı olmalı"
+            assert scores == sorted(scores, reverse=True), (
+                "Videolar skora göre sıralı olmalı"
+            )
 
     async def test_turkish_filter_integration(self, engine, mock_youtube_videos):
         """Test: Türkçe filtreleme entegrasyonu"""
@@ -248,9 +253,9 @@ class TestEnhancedRecommendationEngine:
 
             # Assertions
             assert all(v.is_turkish for v in results), "Tüm videolar Türkçe olmalı"
-            assert all(
-                v.turkish_score >= engine.min_turkish_score for v in results
-            ), f"Türkçe skoru >= {engine.min_turkish_score} olmalı"
+            assert all(v.turkish_score >= engine.min_turkish_score for v in results), (
+                f"Türkçe skoru >= {engine.min_turkish_score} olmalı"
+            )
 
             # İngilizce video filtrelenmeli
             video_ids = [v.video_id for v in results]
@@ -316,9 +321,9 @@ class TestEnhancedRecommendationEngine:
                 avg_limit_score = sum(v.relevance_score for v in limit_videos) / len(
                     limit_videos
                 )
-                assert (
-                    avg_turev_score > avg_limit_score
-                ), "Türev videoları daha yüksek uygunluk skoru almalı"
+                assert avg_turev_score > avg_limit_score, (
+                    "Türev videoları daha yüksek uygunluk skoru almalı"
+                )
 
     async def test_accessibility_integration(self, engine, mock_youtube_videos):
         """Test: Erişilebilirlik entegrasyonu"""
@@ -380,12 +385,12 @@ class TestEnhancedRecommendationEngine:
             )
 
             # Assertions
-            assert all(
-                v.is_accessible for v in results
-            ), "Tüm videolar erişilebilir olmalı"
-            assert all(
-                v.is_embeddable for v in results
-            ), "Tüm videolar gömülebilir olmalı"
+            assert all(v.is_accessible for v in results), (
+                "Tüm videolar erişilebilir olmalı"
+            )
+            assert all(v.is_embeddable for v in results), (
+                "Tüm videolar gömülebilir olmalı"
+            )
 
             # Erişilemeyen video filtrelenmeli
             video_ids = [v.video_id for v in results]
@@ -439,9 +444,9 @@ class TestEnhancedRecommendationEngine:
             )
 
             # Assertions
-            assert all(
-                v.quality_score >= engine.min_quality_score for v in results
-            ), f"Kalite skoru >= {engine.min_quality_score} olmalı"
+            assert all(v.quality_score >= engine.min_quality_score for v in results), (
+                f"Kalite skoru >= {engine.min_quality_score} olmalı"
+            )
 
             # Yüksek izlenme sayısı olan videolar daha yüksek kalite skoru almalı
             if len(results) >= 2:
@@ -455,11 +460,14 @@ class TestEnhancedRecommendationEngine:
                     avg_low_quality = sum(
                         v.quality_score for v in low_view_videos
                     ) / len(low_view_videos)
-                    assert (
-                        avg_high_quality > avg_low_quality
-                    ), "Yüksek izlenme sayısı daha yüksek kalite skoru vermeli"
+                    assert avg_high_quality > avg_low_quality, (
+                        "Yüksek izlenme sayısı daha yüksek kalite skoru vermeli"
+                    )
 
-    @pytest.mark.skipif(True, reason="VideoAccessibilityResult.has_captions removed, pipeline filters all videos")
+    @pytest.mark.skipif(
+        True,
+        reason="VideoAccessibilityResult.has_captions removed, pipeline filters all videos",
+    )
     async def test_final_score_calculation(self, engine, mock_youtube_videos):
         """Test: Final skor hesaplama"""
         with patch.object(
@@ -521,9 +529,9 @@ class TestEnhancedRecommendationEngine:
                     + engine.weights["accessibility"]
                 )
 
-                assert (
-                    abs(video.final_score - expected_score) < 0.01
-                ), f"Final skor doğru hesaplanmalı: {video.final_score} vs {expected_score}"
+                assert abs(video.final_score - expected_score) < 0.01, (
+                    f"Final skor doğru hesaplanmalı: {video.final_score} vs {expected_score}"
+                )
 
                 # Final skor 0-1 arasında olmalı
                 assert 0.0 <= video.final_score <= 1.0, "Final skor 0-1 arasında olmalı"

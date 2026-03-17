@@ -73,6 +73,7 @@ from core.learning_path_circuit_breakers import (
 )
 from core.metrics_collector import get_metrics_collector
 from core.multi_layer_cache import MultiLayerCache
+from core.youtube_channels import is_trusted_channel
 from models.learning_path_models import (
     LearningPathStudentProfile,
     Quiz,
@@ -326,13 +327,8 @@ def _compute_relevance(resource: Any, search: Any) -> float:
     if isinstance(metadata, dict):
         channel = metadata.get("channel", "")
         if channel:
-            try:
-                from core.youtube_channels import is_trusted_channel
-
-                if is_trusted_channel(channel):
-                    score += 0.1
-            except ImportError:
-                pass
+            if is_trusted_channel(channel):
+                score += 0.1
 
     return min(score, 1.0)
 

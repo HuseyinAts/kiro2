@@ -90,8 +90,8 @@ class SemanticYouTubeSearch:
                     self.model = SentenceTransformer(model_name, token=False)
                     self.model_name = model_name
 
-                    # Test encoding
-                    test_embedding = self.model.encode(["test sentence"])
+                    # Test encoding (validates model works, result not needed)
+                    self.model.encode(["test sentence"])
 
                     # Konu embeddings'lerini hesapla
                     await self._precompute_subject_embeddings()

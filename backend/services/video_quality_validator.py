@@ -12,6 +12,7 @@ from typing import Any
 
 import aiohttp
 
+from core.youtube_channels import get_channel_names, is_trusted_channel
 from services.youtube_error_handlers import (
     InvalidAPIKeyError,
     QuotaExceededError,
@@ -53,8 +54,6 @@ class VideoQualityValidator:
         self.timeout_handler = TimeoutHandler(default_timeout=10)
 
         # Güvenilir eğitim kanalları — from canonical source
-        from core.youtube_channels import get_channel_names
-
         self.trusted_channels = get_channel_names()
 
     async def _get_session(self) -> aiohttp.ClientSession:
@@ -112,7 +111,6 @@ class VideoQualityValidator:
 
             item = video_data["items"][0]
             status = item.get("status", {})
-            content_details = item.get("contentDetails", {})
 
             # Erişilebilirlik kontrolü
             upload_status = status.get("uploadStatus", "")
@@ -396,7 +394,6 @@ class VideoQualityValidator:
 
     def _is_trusted_channel(self, channel_name: str) -> bool:
         """Güvenilir kanal kontrolü — delegates to canonical source."""
-        from core.youtube_channels import is_trusted_channel
 
         return is_trusted_channel(channel_name)
 

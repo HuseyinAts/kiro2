@@ -255,14 +255,13 @@ class TurkishContentFilter:
             "introduction",
         ]
 
-        # langdetect'i lazy import et
-        self._langdetect_available = False
-        try:
-            import langdetect
+        # langdetect kullanılabilirlik kontrolü (modülü yüklemeden)
+        import importlib.util
 
-            self._langdetect_available = True
+        self._langdetect_available = importlib.util.find_spec("langdetect") is not None
+        if self._langdetect_available:
             logger.info("langdetect kütüphanesi yüklendi")
-        except ImportError:
+        else:
             logger.warning(
                 "langdetect kütüphanesi bulunamadı, temel analiz kullanılacak"
             )
