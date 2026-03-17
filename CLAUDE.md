@@ -51,6 +51,8 @@ KIRO2 is a Turkish EdTech platform for YKS/TYT/AYT university entrance exam prep
 | Frontend Hooks | `frontend/src/hooks/` | Custom hooks (useLearningPath vb.) |
 | State | `frontend/src/store/` | Zustand (authStore, NOT stores/) |
 | Auth | `backend/core/dependencies.py` | Cookie (frontend) + Bearer (API) dual auth |
+| YouTube | `backend/services/youtube/` | Multi-platform search (12+ modules) |
+| Channel Registry | `backend/core/youtube_channels.py` | 17 kanal, 27 alias (canonical) |
 
 ## 📊 Current Status (March 2026)
 
@@ -69,67 +71,35 @@ KIRO2 is a Turkish EdTech platform for YKS/TYT/AYT university entrance exam prep
 - ✅ **Quality pipeline**: validate_sample.py v2 (13 checks) + cross_validate_answers.py (Bayesian)
 
 ### 🎯 Next Priorities
-1. ~~Low-confidence question refinement pipeline~~ ✅ **DONE** (+19,248 questions improved)
-2. ~~Manual validation + v2.2 cleanup~~ ✅ **DONE** (4,912 silindi, 653 kurtarıldı, 31,801 production)
-3. ~~OCR pipeline fix~~ ✅ **DONE** (hallucination prevention + letter-only fix applied)
-4. ~~118 yeni kitap işleme~~ ✅ **DONE** (98/117 processed, 19 unviable — corrupt/empty/non-question)
-5. **P1: Re-OCR recovery** — 1,521-2,511 soru kurtarma (silinen 3,546'dan)
-6. **P0: Performance optimization**: API <2s, vector search <100ms ✅ (21ms avg)
-7. **P0: Git push** — HTTPS HTTP 500 (5.5GB), SSH gerekli
+1. **P0: MVP beta launch** — Docker stack ready, E2E verified 7/7
+2. **P0: Test coverage** — backend ~18% → hedef 80%
+3. **P1: Re-OCR recovery** — 1,521-2,511 soru kurtarma (silinen 3,546'dan)
 
 ### Orchestrator Architecture ✅
 - ✅ **orchestrator/** v2.5.0 (LangGraph 1.0.5) - **ACTIVE**
   - 24 modules (graph.py, routing.py, policy_engine.py, etc.)
   - 45 policies
   - 20 active agents
-- ❌ **kiro2-orchestrator/** - **DEPRECATED** (safe to delete, legacy code)
 - ✅ **YKS Module**: `.claude/plugins/installed/kiro2-yks/`
+
+### YouTube/Multi-Platform Search ✅
+- ✅ **backend/services/youtube/** — Modular search pipeline (12+ modules)
+  - `core/youtube_channels.py` — Canonical channel registry (17 kanal, 27 alias)
+  - Score formula: relevance 35% + quality 25% + popularity 15% + turkish 25%
+  - Difficulty differentiation in cache keys
+- ✅ **Question Images**: 58,523/77,336 (%75.7) `question_image_url` populated
+  - StaticFiles: `/static/crops` mount + docker volume `:ro`
 
 ### d-dataset Pipeline Status
 - ✅ **Phase 1-3 COMPLETED**
   - OCR processing: 75,745 questions extracted
   - Answer key extraction: 88,711 answers identified
   - Matching pipeline: 36,967 successful pairs (48.8% match rate)
-- ✅ **Phase 4 COMPLETED**: Quality enhancement
-  - v2.0: 99.5% high-confidence (36,767/36,967) - up from 47.4%
-  - v2.1: 36,713 questions (254 unusable removed)
-  - v2.2: 31,801 questions (4,912 deep quality filtered, 653 rescued)
-  - v2.3: 33,342 questions (AI solved merged)
-  - v2.4: 86,249 questions (v3 crop OCR pipeline merge)
-  - v3.3: 76,554 questions (db_v7/rematch/LOW conf cleanup)
-  - **v3.5+: 77,336 questions (CURRENT PRODUCTION)**
-    - v3.5: +809 new book crop solve, v3.5+: +919 tier5 crop solve
-    - 405 books, 0 db_v7, 0 rematch, 0 LOW conf
-    - validate_sample.py: 100.0% PASS
+- ✅ **Phase 4 COMPLETED**: v2.0→v3.5+ quality pipeline (99.5% high-confidence)
+  - **v3.5+: 77,336 questions (CURRENT PRODUCTION)** — 405 books, 0 db_v7, 0 rematch, 0 LOW conf, 100% PASS
   - **Pipeline**: `cross_validate_answers.py` (Bayesian) + `validate_sample.py` v2 (13 checks)
 
-**Release Workflow (v2.2 Pipeline → Production):**
-```bash
-# Step 1: Run v2.2 pipeline (13 quality checks, 4-tier assignment)
-python d-dataset/processed/pipeline_v2_2.py --input d-dataset/eslesmis_sorucevap.jsonl
-
-# Step 2: Cross-validate output (must be 100% PASS)
-python scripts/validate_sample.py d-dataset/processed/eslesmis_sorucevap_v2.2.jsonl --all
-
-# Step 3: Backup current production
-cp d-dataset/eslesmis_sorucevap.jsonl d-dataset/backups/eslesmis_sorucevap_vX.X_backup.jsonl
-
-# Step 4: Promote to production
-cp d-dataset/processed/eslesmis_sorucevap_v2.2.jsonl d-dataset/eslesmis_sorucevap.jsonl
-
-# ⚠️ NEVER skip cross-validation step before production update
-```
-
-**Version History:**
-- v1.0: 22,440 questions (initial)
-- v2.0: 36,967 questions (Phase 4 confidence improvement)
-- v2.1: 36,713 questions (254 unusable removed)
-- v2.2: 31,801 questions (4,912 deep quality filtered, 653 rescued)
-- v2.3: 33,342 questions (AI solved merged)
-- v2.4: 86,249 questions (v3 crop OCR pipeline merge)
-- v3.0-v3.1: 80,208 questions (DB v8 redesign, empty source cleanup)
-- v3.3: 76,554 questions (db_v7/rematch/LOW conf cleanup)
-- v3.5+: 77,336 questions (+809 new book + 919 tier5 crop solve) ← CURRENT
+**Release Workflow:** See `d-dataset/CLAUDE.md` for pipeline promotion steps.
 
 ### Quality Pipeline (d-dataset/scripts/)
 ```bash
@@ -180,7 +150,6 @@ kiro2/
 │   │   └── store/         # State management
 │   └── tests/
 ├── orchestrator/          # ✅ ACTIVE - v2.5.0 (LangGraph)
-├── kiro2-orchestrator/    # ❌ DEPRECATED - safe to delete
 ├── d-dataset/             # C:\Users\husey\kiro2\d-dataset
 │   ├── ocr_output/        # 75,745 extracted questions (READ-ONLY)
 │   ├── answer_keys/       # 88,711 answer entries (READ-ONLY)
@@ -212,7 +181,6 @@ kiro2/
 - `node_modules/**` - Dependencies
 - `venv/**` - Virtual environment
 - `.git/**` - Git internals
-- `kiro2-orchestrator/**` - Deprecated code
 
 ### ⚠️ NOT GIT-TRACKED (Persist on Disk Only)
 - `d-dataset/scripts/**` - Pipeline scripts (manual backup needed)
@@ -243,8 +211,7 @@ rg "pattern" C:\Users\husey\kiro2\backend C:\Users\husey\kiro2\frontend
 ```
 
 ### 2. Directory Navigation
-- Always use **orchestrator/** (active v2.5.0)
-- Avoid **kiro2-orchestrator/** (deprecated legacy)
+- Always use **orchestrator/** (active v2.5.0, NOT the deleted kiro2-orchestrator/)
 
 ### 3. Turkish Text Encoding
 **All Turkish text MUST be UTF-8 + NFC normalized (non-negotiable)**
@@ -449,10 +416,11 @@ E) {secenek_e}
 ```
 
 ### Embeddings
-- Use Qwen3-8B for Turkish text embeddings
-- Vector dimension: 4096
+- Use **nomic-embed-text** for semantic search (prefix: `search_document:` / `search_query:`)
+- Vector dimension: **768**
 - Similarity: cosine
-- Store in pgvector
+- Store in pgvector (HNSW index, 21ms avg)
+- Qwen3-8B for Turkish text generation (not embeddings)
 
 ## 🔒 Security Requirements
 
@@ -476,8 +444,8 @@ E) {secenek_e}
 
 ## 📈 Quality Metrics
 
-### Current Status (as of 7 Feb 2026)
-- Backend test results: **10,082 passed, 0 failures, 4,065 skipped**
+### Current Status (as of 17 Mar 2026)
+- Backend test results: **~1,223 passed, 169 skipped, 1 fail** (unrelated auth legacy test)
   - Backend line coverage (api+core+services+models+algorithms): **~18%** (109K lines, massive codebase)
   - Run: `cd backend && pytest --cov=api --cov=core --cov=services --cov=models --cov=algorithms --cov-report=term`
 - Orchestrator test results: **71 passed, 0 failures**
@@ -496,10 +464,11 @@ E) {secenek_e}
 
 | Metric | Target | Current | Status |
 |--------|--------|---------|--------|
-| API Response Time | <2s | ~2-3s | 🟡 Middleware ready, needs benchmarking |
+| API Response Time | <2s | **<4ms p95** | 🟢 All business endpoints benchmarked |
 | Vector Search | <100ms | **21ms** | 🟢 pgvector HNSW deployed |
 | DB Queries | <50ms | ~150ms | 🟡 GIN+composite indexes ready (004) |
 | Frontend Load | <2s | ~3s | 🟡 Needs optimization |
+| Health Check | <1s | ~9s | 🟡 ES/Redis timeout (infra, not API) |
 | **Total Clean Questions** | **45K by March** | **77,336** | 🟢 v3.5+ (172%), TARGET EXCEEDED |
 | **Quality Rate (v2.2)** | **>95%** | **100%** | 🟢 0 critical in output |
 
@@ -601,27 +570,9 @@ style: Code style (formatting, etc.)
 
 ## ⚠️ Known Issues
 
-### Current Challenges
-1. **API Response Time**: Currently ~2-3s for complex queries
-   - **Root cause**: Vector search on 36K+ questions
-   - **Solution**: Query caching added to soru_bankasi_service + GIN indexes in migration 004
-   - **Status**: Infrastructure ready, needs deployment + benchmarking
-
-2. **Vector Search Performance**: pgvector queries ~300ms
-   - **Root cause**: Large embedding dataset without HNSW indexing
-   - **Solution**: HNSW index in migration 004 (m=16, ef_construction=200)
-   - **Status**: Migration ready, needs `alembic upgrade head`
-
-3. **Turkish Tokenization Edge Cases**
-   - **Issue**: Some compound words not handled correctly
-   - **Solution**: Enhance Zemberek integration, add custom rules
-
-4. ~~**Low Confidence Matches (52.6%)**~~ **RESOLVED**
-   - ~~Root cause: OCR errors, answer key format variations~~
-   - **Result**: Phase 4 pipeline improved to 99.5% high-confidence (Feb 2026)
+- **Turkish Tokenization**: Some compound words not handled correctly (Zemberek enhancement needed)
 
 ### Technical Debt
-- [x] ~~Migrate from kiro2-orchestrator/ to orchestrator/~~ (deleted Feb 2026)
 - [ ] Implement comprehensive test coverage (>80%) - currently ~18% backend
 - [ ] Add performance monitoring dashboards
 - [ ] Document all API endpoints in OpenAPI spec
@@ -648,6 +599,10 @@ Configure in: Repository Settings → Secrets and variables → Actions
 - nginx:alpine'de `wget` yok — healthcheck icin `curl` kullan
 - `manualChunks: undefined` — Vite auto code-split en guvenli
 - Frontend: nginx port 3000, API proxy `/api/*` -> backend:8000
+- Frontend healthcheck: `/healthz` nginx-local endpoint (curl-based)
+- Node 20+ required: Vite 7 needs Node 20.19+
+- Vite dev server port: 3001 (vite.config.ts override, varsayilan 5173 DEGIL)
+- Question images: docker volume `/static/crops:ro` mount
 
 ## 📞 Contact & Resources
 
@@ -658,66 +613,12 @@ Configure in: Repository Settings → Secrets and variables → Actions
   - API docs: http://localhost:8000/docs (when running)
   - Project guides: See uploaded documents
 
-## 🎯 Q1 2026 Roadmap
+## 📚 Lessons Learned
 
-### February
-- [x] Complete Phase 1-3 of d-dataset pipeline (36,967 matches)
-- [x] Measure and document test coverage (backend ~18%, 10,082 tests passing)
-- [x] Implement Phase 4: Low-confidence improvement pipeline (99.5% high-confidence)
-- [x] Clean up deprecated kiro2-orchestrator/ directory (deleted)
-- [x] Performance optimization: indexes, caching, middleware (migration 004 ready)
-- [x] GitHub Secrets documentation
-
-### March
-- [x] ~~Target: **45,000+ total clean questions**~~ Done: **77,336** (172% of target)
-  - [x] ~~OCR pipeline fix (hallucination + letter-only)~~ Done
-  - [x] ~~Process 118 remaining books~~ Done: 98/117 processed, 19 unviable
-  - [ ] P1: Re-OCR recovery (+1,521-2,511 potential)
-- [x] ~~Achieve **90%+ high-confidence match rate**~~ Done: 99.5%
-- [x] ~~Manual QA + v2.2 quality pipeline~~ Done: 31,801 clean (100% pass)
-- [x] ~~Vector search <100ms~~ Done: **21ms avg** (pgvector HNSW)
-- [ ] Performance optimization: API <2s benchmark
-- [ ] Git push fix (SSH setup for 5.5GB repo)
-- [ ] Launch MVP for beta testing
-
-## 📚 Lessons Learned (Agent Knowledge Base)
-
-### Dogrulanmis Dersler (Verified, February 2026)
-
-| # | Ders | Kategori | Uygulama |
-|---|------|----------|----------|
-| 1 | **Hibrit Yaklasim** | DRY/Refactoring | Merkezi fonksiyon + lokal fixture kombinasyonu en guvenli |
-| 2 | **Adim Adim Ilerleme** | Process | 1 degisiklik -> 1 test -> basarili? devam : geri al |
-| 3 | **Scope Analizi** | Test | Buyuk degisiklik oncesi bagimlilik ve context'i anla |
-| 4 | **Geri Alma Stratejisi** | Safety | Her adimda recovery noktasi olustur |
-| 5 | **Test Sonrasi Dogrulama** | Verification | Her kod degisikliginden sonra `pytest -x` ZORUNLU |
-
-### Anti-Pattern'ler (Yapma!)
-
-| Pattern | Neden Yanlis | Dogru Yaklasim |
-|---------|--------------|----------------|
-| Fixture'i tamamen kaldirmak | Context kaybi, test fail | Hibrit: import + lokal fixture |
-| Buyuk degisiklik tek seferde | Geri almasi zor | Kucuk adimlar, her biri test edilebilir |
-| Test calismadan commit | Hatalar prod'a gider | Her degisiklik sonrasi pytest |
-| Scope anlamadan refactor | Beklenmeyen hatalar | Once analiz, sonra degisiklik |
-
-### Agent'lara Entegre Edildi
-
-- `.claude/rules/testing.md` - Ogrenilen dersler bolumu
-- `.claude/rules/verification.md` - Adim adim ilerleme kurali
-- `.claude/agents/verification-agent.md` - Dogrulanmis dersler tablosu
-- `.claude/agents/kfc/spec-impl.md` - Anti-pattern'ler ve dersler
-
-### Kaynak
-
-Bu dersler JWT DRY Refactoring (Subat 2026) deneyiminden cikarilmistir:
-- 9 dosyada kod tekrari tespit edildi
-- Ilk yaklasim (tamamen merkezi) 32 test fail'e neden oldu
-- Hibrit yaklasim ile 55 test pass elde edildi
-- Boris Cherny verification feedback loop uygulandi
+See `.claude/rules/testing.md` (26 lessons) and `.claude/rules/verification.md` for detailed patterns and anti-patterns.
 
 ---
 
-**Last Updated:** February 7, 2026
-**Document Version:** 3.2
-**Critical Fixes Applied:** Turkish normalization, Vite env, routing default, metric clarity, Lessons Learned section, Phase 4 results, performance indexes, GitHub Secrets, cleanup
+**Last Updated:** March 17, 2026
+**Document Version:** 3.4
+**Changes:** v3.4 — CLAUDE.md audit: removed 100+ lines of completed roadmap, resolved issues, duplicated lessons, stale references. All actionable content preserved.
