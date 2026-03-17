@@ -111,6 +111,8 @@ class VideoMetadata:
             exam_type=exam_type or ExamType(data.get("exam_type", "TYT")),
             language=data.get("language", "tr"),
             relevance_keywords=data.get("relevance_keywords", []),
+            turkish_content_score=data.get("turkish_content_score"),
+            content_relevance_score=data.get("content_relevance_score"),
         )
 
 

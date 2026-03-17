@@ -209,7 +209,11 @@ class VideoResponse(BaseModel):
     )  # Req 15.15
 
     @field_validator(
-        "quality_score", "language_score", "relevance_score", "difficulty_match"
+        "quality_score",
+        "language_score",
+        "relevance_score",
+        "difficulty_match",
+        mode="before",
     )
     @classmethod
     def validate_score_range(cls, v):

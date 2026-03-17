@@ -171,6 +171,8 @@ def get_channel_ids() -> dict[str, float]:
 
 def _normalize_subject(s: str) -> str:
     """ASCII-safe subject normalization for matching."""
+    # Türkçe büyük harf dönüşümü ÖNCE (.lower() I→i yapıyor, ı olmalı)
+    s = s.replace("İ", "i").replace("I", "ı")
     return (
         s.lower()
         .strip()
