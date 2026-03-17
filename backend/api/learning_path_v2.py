@@ -296,29 +296,88 @@ def _normalize_turkish(text: str) -> str:
 def _compute_relevance(resource: Any, search: Any) -> float:
     """Compute relevance score from resource metadata vs search query."""
     score = 0.0
-    query = f"{search.subject} {search.topic or ''}".strip().lower()
-    title_lower = resource.title.lower()
-    if query in title_lower:
-        score += 0.5
-    elif any(w in title_lower for w in query.split() if len(w) > 2):
-        score += 0.3
-    if resource.description and query in resource.description.lower():
+    subject = _normalize_turkish(search.subject)
+    topic = _normalize_turkish(search.topic or "")
+    title_lower = _normalize_turkish(resource.title)
+    desc_lower = (
+        _normalize_turkish(resource.description) if resource.description else ""
+    )
+
+    # Subject match in title (+0.2)
+    if subject and subject in title_lower:
         score += 0.2
+
+    # Topic match in title (+0.3) — most important signal
+    if topic and len(topic) > 2 and topic in title_lower:
+        score += 0.3
+    elif topic and any(w in title_lower for w in topic.split() if len(w) > 2):
+        score += 0.15
+
+    # Topic match in description (+0.1)
+    if topic and desc_lower and topic in desc_lower:
+        score += 0.1
+
+    # Turkish language (+0.2)
     if resource.language == "tr":
         score += 0.2
+
+    # Trusted channel bonus (+0.1)
+    metadata = getattr(resource, "metadata", None)
+    if isinstance(metadata, dict):
+        channel = metadata.get("channel", "")
+        if channel:
+            try:
+                from core.youtube_channels import is_trusted_channel
+
+                if is_trusted_channel(channel):
+                    score += 0.1
+            except ImportError:
+                pass
+
     return min(score, 1.0)
 
 
 def _compute_final_score(
     resource: Any, search: Any, learning_style: str | None = None
 ) -> float:
-    """Weighted final score: relevance 40% + quality 30% + turkish 30%."""
+    """Weighted final score: relevance 35% + quality 25% + popularity 15% + turkish 25%."""
     relevance = _compute_relevance(resource, search)
-    quality = (resource.rating or 3.0) / 5.0
-    turkish = 1.0 if resource.language == "tr" else 0.3
-    score = relevance * 0.4 + quality * 0.3 + turkish * 0.3
 
-    # VARK learning style bonus for matching resource types
+    # Quality: use rating if available, else derive from view/like ratio
+    metadata = getattr(resource, "metadata", None) or {}
+    if resource.rating and resource.rating > 0:
+        quality = resource.rating / 5.0
+    else:
+        # Synthetic quality from view+like counts
+        view_count = int(metadata.get("view_count", 0) or 0)
+        like_count = int(metadata.get("like_count", 0) or 0)
+        if view_count > 0 and like_count > 0:
+            like_ratio = min(like_count / view_count, 0.1) / 0.1  # 10% = perfect
+            quality = 0.5 + like_ratio * 0.5  # 0.5-1.0 range
+        elif view_count > 100_000:
+            quality = 0.7
+        elif view_count > 10_000:
+            quality = 0.6
+        else:
+            quality = 0.5
+
+    # Popularity: normalized view count signal
+    view_count = int(metadata.get("view_count", 0) or 0)
+    if view_count >= 1_000_000:
+        popularity = 1.0
+    elif view_count >= 100_000:
+        popularity = 0.7
+    elif view_count >= 10_000:
+        popularity = 0.4
+    elif view_count >= 1_000:
+        popularity = 0.2
+    else:
+        popularity = 0.1
+
+    turkish = 1.0 if resource.language == "tr" else 0.3
+    score = relevance * 0.35 + quality * 0.25 + popularity * 0.15 + turkish * 0.25
+
+    # VARK learning style bonus
     if learning_style and resource.resource_type:
         rt = resource.resource_type.lower()
         style_match = {
@@ -329,9 +388,14 @@ def _compute_final_score(
         }
         preferred = style_match.get(learning_style, [])
         if any(p in rt for p in preferred):
-            score = min(score + 0.1, 1.0)
+            score = min(score + 0.05, 1.0)
 
-    return score
+    # Discovery pipeline ranking bonus (stronger signal)
+    if isinstance(metadata, dict):
+        rank_pos = metadata.get("discovery_rank", 50)
+        score += max(0.0, 0.05 - rank_pos * 0.005)
+
+    return min(score, 1.0)
 
 
 def _map_difficulty_to_knowledge_level(difficulty: str) -> KnowledgeLevel:
@@ -757,6 +821,7 @@ async def search_resources(
             resources = await facade.search_resources(
                 query=f"{search.subject} {search.topic or ''}".strip(),
                 subject=search.subject,
+                difficulty=search.difficulty,
                 limit=search.max_results or 10,
             )
 

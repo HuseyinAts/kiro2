@@ -8,13 +8,13 @@ import asyncio
 import logging
 import os
 from dataclasses import dataclass
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 import aiohttp
 
 from services.youtube_error_handlers import (
-    QuotaExceededError,
     InvalidAPIKeyError,
+    QuotaExceededError,
     RateLimitError,
     TimeoutHandler,
 )
@@ -29,7 +29,7 @@ class VideoAccessibilityResult:
     is_accessible: bool
     is_embeddable: bool
     privacy_status: str  # public, private, unlisted
-    error_reason: Optional[str]
+    error_reason: str | None
     has_captions: bool = False  # Altyazı desteği
 
 
@@ -45,29 +45,17 @@ class VideoQualityValidator:
         """VideoQualityValidator'ı başlat"""
         self.api_key = os.getenv("YOUTUBE_API_KEY", "")
         self.base_url = "https://www.googleapis.com/youtube/v3"
-        self.session: Optional[aiohttp.ClientSession] = None
+        self.session: aiohttp.ClientSession | None = None
         self.rate_limit_delay = 0.1  # 100ms delay between requests
         self.max_retries = 3
 
         # Timeout handler
         self.timeout_handler = TimeoutHandler(default_timeout=10)
 
-        # Güvenilir eğitim kanalları
-        # FIX: Tüm varyantları ekle (turkish_content_filter ile tutarlılık)
-        self.trusted_channels = {
-            "TonguçAkademi",
-            "Tonguç Akademi",  # Alias
-            "Khan Academy Türkçe",
-            "KAMP Online",
-            "Hocalara Geldik",
-            "MEB Uzaktan Eğitim",
-            "BTK Akademi",
-            "Evrim Ağacı",
-            "Matematik Öğretmeni",
-            "Fizik Öğretmeni",
-            "Kimya Öğretmeni",
-            "Biyoloji Öğretmeni",  # Eksikti
-        }
+        # Güvenilir eğitim kanalları — from canonical source
+        from core.youtube_channels import get_channel_names
+
+        self.trusted_channels = get_channel_names()
 
     async def _get_session(self) -> aiohttp.ClientSession:
         """Get or create aiohttp session"""
@@ -159,7 +147,7 @@ class VideoQualityValidator:
             return result
 
         except Exception as e:
-            logger.error(f"Video accessibility check error for {video_id}: {str(e)}")
+            logger.error(f"Video accessibility check error for {video_id}: {e!s}")
             return VideoAccessibilityResult(
                 is_accessible=False,
                 is_embeddable=False,
@@ -167,7 +155,7 @@ class VideoQualityValidator:
                 error_reason=str(e),
             )
 
-    async def calculate_quality_score(self, video_metadata: Dict[str, Any]) -> float:
+    async def calculate_quality_score(self, video_metadata: dict[str, Any]) -> float:
         """
         Video kalite skoru hesaplar
 
@@ -252,13 +240,13 @@ class VideoQualityValidator:
             return final_score
 
         except Exception as e:
-            logger.error(f"Quality score calculation error: {str(e)}")
+            logger.error(f"Quality score calculation error: {e!s}")
             # Return 0.0 for invalid metadata, not 0.5
             return 0.0
 
     async def batch_validate_videos(
-        self, video_ids: List[str], timeout_seconds: int = 5
-    ) -> Dict[str, VideoAccessibilityResult]:
+        self, video_ids: list[str], timeout_seconds: int = 5
+    ) -> dict[str, VideoAccessibilityResult]:
         """
         Toplu video doğrulama (paralel)
 
@@ -288,7 +276,7 @@ class VideoQualityValidator:
                     asyncio.gather(*tasks, return_exceptions=True),
                     timeout=timeout_seconds,
                 )
-            except asyncio.TimeoutError:
+            except TimeoutError:
                 logger.warning(f"Batch validation timed out after {timeout_seconds}s")
                 # Timeout durumunda kısmi sonuçlar döndür
                 results = [
@@ -305,7 +293,7 @@ class VideoQualityValidator:
             result_dict = {}
             for video_id, result in zip(video_ids, results):
                 if isinstance(result, Exception):
-                    logger.error(f"Error validating video {video_id}: {str(result)}")
+                    logger.error(f"Error validating video {video_id}: {result!s}")
                     result_dict[video_id] = VideoAccessibilityResult(
                         is_accessible=False,
                         is_embeddable=False,
@@ -325,12 +313,12 @@ class VideoQualityValidator:
             return result_dict
 
         except Exception as e:
-            logger.error(f"Batch validation error: {str(e)}")
+            logger.error(f"Batch validation error: {e!s}")
             return {}
 
     async def _make_api_request(
-        self, endpoint: str, params: Dict[str, Any], retry_count: int = 0
-    ) -> Optional[Dict[str, Any]]:
+        self, endpoint: str, params: dict[str, Any], retry_count: int = 0
+    ) -> dict[str, Any] | None:
         """
         YouTube API'ye istek gönder
 
@@ -354,7 +342,7 @@ class VideoQualityValidator:
             ) as response:
                 if response.status == 200:
                     return await response.json()
-                elif response.status == 403:
+                if response.status == 403:
                     # Quota exceeded or API key invalid
                     error_data = await response.json()
                     error_reason = (
@@ -366,16 +354,15 @@ class VideoQualityValidator:
                     if error_reason == "quotaExceeded":
                         logger.error("YouTube API quota exceeded")
                         raise QuotaExceededError("YouTube API quota exceeded")
-                    elif error_reason == "keyInvalid":
+                    if error_reason == "keyInvalid":
                         logger.error("Invalid YouTube API key")
                         raise InvalidAPIKeyError("Invalid YouTube API key")
-                    else:
-                        logger.error(f"YouTube API error 403: {error_reason}")
-                        raise Exception(f"YouTube API access denied: {error_reason}")
-                elif response.status == 404:
+                    logger.error(f"YouTube API error 403: {error_reason}")
+                    raise Exception(f"YouTube API access denied: {error_reason}")
+                if response.status == 404:
                     logger.warning("Resource not found (404)")
                     return None
-                elif response.status == 429:
+                if response.status == 429:
                     # Rate limit exceeded
                     if retry_count < self.max_retries:
                         wait_time = (2**retry_count) * self.rate_limit_delay
@@ -386,58 +373,32 @@ class VideoQualityValidator:
                         return await self._make_api_request(
                             endpoint, params, retry_count + 1
                         )
-                    else:
-                        raise RateLimitError("Rate limit exceeded, max retries reached")
-                else:
-                    logger.error(
-                        f"YouTube API error {response.status}: {await response.text()}"
-                    )
-                    return None
+                    raise RateLimitError("Rate limit exceeded, max retries reached")
+                logger.error(
+                    f"YouTube API error {response.status}: {await response.text()}"
+                )
+                return None
 
-        except asyncio.TimeoutError:
+        except TimeoutError:
             logger.error(f"API request timeout for {endpoint}")
             if retry_count < self.max_retries:
                 return await self._make_api_request(endpoint, params, retry_count + 1)
             return None
         except aiohttp.ClientError as e:
-            logger.error(f"Network error calling YouTube API: {str(e)}")
+            logger.error(f"Network error calling YouTube API: {e!s}")
             if retry_count < self.max_retries:
                 await asyncio.sleep(1)
                 return await self._make_api_request(endpoint, params, retry_count + 1)
             return None
         except Exception as e:
-            logger.error(f"Error calling YouTube API: {str(e)}")
+            logger.error(f"Error calling YouTube API: {e!s}")
             return None
 
     def _is_trusted_channel(self, channel_name: str) -> bool:
-        """
-        Güvenilir kanal kontrolü
+        """Güvenilir kanal kontrolü — delegates to canonical source."""
+        from core.youtube_channels import is_trusted_channel
 
-        Args:
-            channel_name: Kanal adı
-
-        Returns:
-            bool: Güvenilir kanal ise True
-        """
-        if not channel_name:
-            return False
-
-        # Tam eşleşme
-        if channel_name in self.trusted_channels:
-            return True
-
-        # Case-insensitive ve kısmi eşleşme
-        channel_lower = channel_name.lower().strip()
-        for trusted in self.trusted_channels:
-            trusted_lower = trusted.lower()
-            # Tam eşleşme (case-insensitive)
-            if trusted_lower == channel_lower:
-                return True
-            # Kısmi eşleşme - kanal adı güvenilir kanalı içeriyor veya tam tersi
-            if trusted_lower in channel_lower or channel_lower in trusted_lower:
-                return True
-
-        return False
+        return is_trusted_channel(channel_name)
 
     def _parse_duration_to_minutes(self, duration: str) -> int:
         """
@@ -481,7 +442,7 @@ class VideoQualityValidator:
             return int(total_minutes)
 
         except Exception as e:
-            logger.error(f"Error parsing duration {duration}: {str(e)}")
+            logger.error(f"Error parsing duration {duration}: {e!s}")
             return 15  # Default 15 minutes
 
 

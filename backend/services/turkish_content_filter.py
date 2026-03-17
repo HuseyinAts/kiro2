@@ -6,7 +6,9 @@ Teknofest 2025 - Eğitim Eylemci Projesi
 
 import logging
 from dataclasses import dataclass
-from typing import List, Optional, Dict, Any
+from typing import Any
+
+from core.youtube_channels import TRUSTED_TURKISH_CHANNELS as _CANONICAL_CHANNELS
 
 logger = logging.getLogger(__name__)
 
@@ -18,7 +20,7 @@ class TurkishValidationResult:
     is_turkish: bool
     confidence_score: float  # 0.0-1.0
     detected_language: str
-    turkish_indicators: List[str]
+    turkish_indicators: list[str]
 
 
 @dataclass
@@ -31,35 +33,18 @@ class FilterResult:
     difficulty_match: float  # 0-1
     overall_score: float  # 0-1
     passed: bool
-    failure_reasons: List[str] = None
+    failure_reasons: list[str] = None
 
     def __post_init__(self):
         if self.failure_reasons is None:
             self.failure_reasons = []
 
 
-# Güvenilir Türkçe eğitim kanalları
-TRUSTED_TURKISH_CHANNELS = {
-    "TonguçAkademi": {
-        "weight": 1.0,
-        "subjects": ["matematik", "fizik", "kimya", "biyoloji"],
-    },
-    "Tonguç Akademi": {
-        "weight": 1.0,
-        "subjects": ["matematik", "fizik", "kimya", "biyoloji"],
-    },
-    "Khan Academy Türkçe": {"weight": 1.0, "subjects": ["matematik", "fizik"]},
-    "KAMP Online": {"weight": 0.95, "subjects": ["matematik", "fizik", "kimya"]},
-    "Hocalara Geldik": {"weight": 0.9, "subjects": ["matematik", "fizik"]},
-    "MEB Uzaktan Eğitim": {"weight": 0.85, "subjects": "all"},
-    "EBA": {"weight": 0.95, "subjects": "all"},
-    "BTK Akademi": {"weight": 0.9, "subjects": ["bilgisayar", "teknoloji"]},
-    "Evrim Ağacı": {"weight": 0.85, "subjects": ["biyoloji", "fen"]},
-    "Matematik Öğretmeni": {"weight": 0.9, "subjects": ["matematik"]},
-    "Fizik Öğretmeni": {"weight": 0.92, "subjects": ["fizik"]},
-    "Kimya Öğretmeni": {"weight": 0.9, "subjects": ["kimya"]},
-    "Biyoloji Öğretmeni": {"weight": 0.9, "subjects": ["biyoloji"]},
-    "Türkçe Öğretmeni": {"weight": 0.9, "subjects": ["türkçe", "edebiyat"]},
+# Güvenilir Türkçe eğitim kanalları — derived from canonical source
+# (core.youtube_channels is the single source of truth)
+TRUSTED_TURKISH_CHANNELS: dict[str, dict] = {
+    name: {"weight": data["weight"], "subjects": data.get("subjects") or "all"}
+    for name, data in _CANONICAL_CHANNELS.items()
 }
 
 # MEB Müfredatı Konu Taxonomy
@@ -330,7 +315,7 @@ class TurkishContentFilter:
             return result
 
         except Exception as e:
-            logger.error(f"Turkish validation error: {str(e)}")
+            logger.error(f"Turkish validation error: {e!s}")
             # Hata durumunda güvenli tarafta kal
             return TurkishValidationResult(
                 is_turkish=False,
@@ -412,7 +397,7 @@ class TurkishContentFilter:
                 else:
                     logger.debug(f"Language detection: {detected_lang} (no bonus)")
             except Exception as e:
-                logger.debug(f"Language detection failed: {str(e)}")
+                logger.debug(f"Language detection failed: {e!s}")
 
         # Skoru 0-1 arasında sınırla
         final_score = max(0.0, min(score, 1.0))
@@ -440,12 +425,12 @@ class TurkishContentFilter:
         channel_lower = channel_name.lower().strip()
 
         # Önce tam eşleşme dene
-        for trusted_channel in TRUSTED_TURKISH_CHANNELS.keys():
+        for trusted_channel in TRUSTED_TURKISH_CHANNELS:
             if trusted_channel.lower() == channel_lower:
                 return True
 
         # Kısmi eşleşme kontrolü
-        for trusted_channel in TRUSTED_TURKISH_CHANNELS.keys():
+        for trusted_channel in TRUSTED_TURKISH_CHANNELS:
             trusted_lower = trusted_channel.lower()
             if trusted_lower in channel_lower or channel_lower in trusted_lower:
                 return True
@@ -473,7 +458,7 @@ class TurkishContentFilter:
                 detected = langdetect.detect(text)
                 return detected
             except Exception as e:
-                logger.debug(f"Language detection error: {str(e)}")
+                logger.debug(f"Language detection error: {e!s}")
 
         # Fallback: Basit Türkçe karakter analizi
         turkish_char_count = sum(1 for char in self.turkish_chars if char in text)
@@ -482,7 +467,7 @@ class TurkishContentFilter:
 
         return "unknown"
 
-    def _find_turkish_indicators(self, text: str, channel_name: str) -> List[str]:
+    def _find_turkish_indicators(self, text: str, channel_name: str) -> list[str]:
         """
         Türkçe göstergeleri bul
 
@@ -517,7 +502,7 @@ class TurkishContentFilter:
 
         return indicators
 
-    def get_channel_info(self, channel_name: str) -> Optional[dict]:
+    def get_channel_info(self, channel_name: str) -> dict | None:
         """
         Kanal bilgilerini al
 
@@ -540,12 +525,12 @@ class TurkishContentFilter:
 
     async def filter_videos(
         self,
-        videos: List[Any],
+        videos: list[Any],
         min_relevance: float = 0.7,
         target_difficulty: str = "orta",
         language: str = "tr",
-        subject: Optional[str] = None,
-    ) -> List[Any]:
+        subject: str | None = None,
+    ) -> list[Any]:
         """
         Videoları filtrele ve skorla
 
@@ -587,7 +572,7 @@ class TurkishContentFilter:
             return passed_videos
 
         except Exception as e:
-            logger.error(f"Video filtering error: {str(e)}")
+            logger.error(f"Video filtering error: {e!s}")
             # Hata durumunda orijinal listeyi döndür
             return videos
 
@@ -597,7 +582,7 @@ class TurkishContentFilter:
         min_relevance: float,
         target_difficulty: str,
         language: str,
-        subject: Optional[str],
+        subject: str | None,
     ) -> FilterResult:
         """
         Tek bir videoyu değerlendir
@@ -677,7 +662,7 @@ class TurkishContentFilter:
             )
 
         except Exception as e:
-            logger.error(f"Video evaluation error: {str(e)}")
+            logger.error(f"Video evaluation error: {e!s}")
             # Hata durumunda videoyu geçir
             return FilterResult(
                 video=video,
@@ -686,7 +671,7 @@ class TurkishContentFilter:
                 difficulty_match=0.0,
                 overall_score=0.0,
                 passed=False,
-                failure_reasons=[f"Evaluation error: {str(e)}"],
+                failure_reasons=[f"Evaluation error: {e!s}"],
             )
 
     def _detect_language_score(
@@ -775,7 +760,7 @@ class TurkishContentFilter:
         title: str,
         description: str,
         video_subject: str,
-        target_subject: Optional[str],
+        target_subject: str | None,
     ) -> float:
         """
         Konu alakası hesapla
@@ -872,10 +857,9 @@ class TurkishContentFilter:
 
         if diff == 0:
             return 1.0  # Exact match
-        elif diff == 1:
+        if diff == 1:
             return 0.7  # Close match (±1 level tolerance)
-        else:
-            return 0.3  # Poor match
+        return 0.3  # Poor match
 
     def _get_video_attr(self, video: Any, attr: str, default: Any = None) -> Any:
         """
@@ -891,8 +875,7 @@ class TurkishContentFilter:
         """
         if isinstance(video, dict):
             return video.get(attr, default)
-        else:
-            return getattr(video, attr, default)
+        return getattr(video, attr, default)
 
     def _get_video_score(self, video: Any) -> float:
         """
@@ -906,7 +889,7 @@ class TurkishContentFilter:
         """
         return self._get_video_attr(video, "quality_score", 0.0)
 
-    def get_subject_taxonomy(self, subject: str) -> Optional[Dict[str, Any]]:
+    def get_subject_taxonomy(self, subject: str) -> dict[str, Any] | None:
         """
         Konu taxonomy'sini al
 
@@ -918,7 +901,7 @@ class TurkishContentFilter:
         """
         return SUBJECT_TAXONOMY.get(subject.lower())
 
-    def get_all_subjects(self) -> List[str]:
+    def get_all_subjects(self) -> list[str]:
         """
         Tüm desteklenen konuları al
 

@@ -8,7 +8,6 @@ import os
 import pickle
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Dict, List, Optional
 
 import aiohttp
 import numpy as np
@@ -68,20 +67,14 @@ class SemanticYouTubeSearch:
         # YouTube API setup
         self.api_key = os.getenv("YOUTUBE_API_KEY")
         self.base_url = "https://www.googleapis.com/youtube/v3"
-        self.session: Optional[aiohttp.ClientSession] = None
+        self.session: aiohttp.ClientSession | None = None
 
-        # Türkçe eğitim kanalları
+        # Türkçe eğitim kanalları — from canonical source
+        from core.youtube_channels import TRUSTED_TURKISH_CHANNELS
+
         self.trusted_channels = {
-            "TonguçAkademi": {
-                "weight": 1.2,
-                "subjects": ["matematik", "fizik", "kimya"],
-            },
-            "Khan Academy Türkçe": {"weight": 1.1, "subjects": ["matematik", "fizik"]},
-            "KAMP Online": {
-                "weight": 1.15,
-                "subjects": ["matematik", "fizik", "kimya"],
-            },
-            "MEB Uzaktan Eğitim": {"weight": 1.0, "subjects": "all"},
+            name: {"weight": data["weight"], "subjects": data.get("subjects") or "all"}
+            for name, data in TRUSTED_TURKISH_CHANNELS.items()
         }
 
     async def initialize_model(self):
@@ -94,7 +87,7 @@ class SemanticYouTubeSearch:
                     # HuggingFace Hub auth bypass
 
                     # Direct model loading without auth
-                    self.model = SentenceTransformer(model_name, use_auth_token=False)
+                    self.model = SentenceTransformer(model_name, token=False)
                     self.model_name = model_name
 
                     # Test encoding
@@ -110,7 +103,7 @@ class SemanticYouTubeSearch:
                     return  # Success - exit loop
 
                 except Exception as e:
-                    logger.warning(f"Model {model_name} yüklenemedi: {str(e)}")
+                    logger.warning(f"Model {model_name} yüklenemedi: {e!s}")
                     self.model = None
                     continue
 
@@ -162,7 +155,7 @@ class SemanticYouTubeSearch:
                     f"Embedding cache yüklendi: {len(self.embeddings_cache)} item"
                 )
         except Exception as e:
-            logger.warning(f"Cache yüklenemedi: {str(e)}")
+            logger.warning(f"Cache yüklenemedi: {e!s}")
             self.embeddings_cache = {}
 
     async def _save_cache(self):
@@ -171,7 +164,7 @@ class SemanticYouTubeSearch:
             with open(self.cache_file, "wb") as f:
                 pickle.dump(self.embeddings_cache, f)
         except Exception as e:
-            logger.warning(f"Cache kaydedilemedi: {str(e)}")
+            logger.warning(f"Cache kaydedilemedi: {e!s}")
 
     async def _initialize_fallback_embeddings(self):
         """Fallback embedding sistemi - offline TF-IDF based"""
@@ -229,7 +222,7 @@ class SemanticYouTubeSearch:
             logger.info("Fallback TF-IDF embedding sistemi hazır")
 
         except Exception as e:
-            logger.error(f"Fallback embedding hatası: {str(e)}")
+            logger.error(f"Fallback embedding hatası: {e!s}")
 
     def _get_text_embedding(self, text: str) -> np.ndarray:
         """Text'in embedding'ini hesapla (cache + fallback)"""
@@ -258,7 +251,7 @@ class SemanticYouTubeSearch:
             return embedding
 
         except Exception as e:
-            logger.warning(f"Embedding hesaplama hatası: {str(e)}")
+            logger.warning(f"Embedding hesaplama hatası: {e!s}")
             # Final fallback
             words = text.lower().split()[:10]
             return np.array(
@@ -297,7 +290,7 @@ class SemanticYouTubeSearch:
             return float(max(0.0, min(similarity, 1.0)))
 
         except Exception as e:
-            logger.warning(f"Similarity hesaplama hatası: {str(e)}")
+            logger.warning(f"Similarity hesaplama hatası: {e!s}")
             return 0.3  # Default moderate similarity
 
     def _calculate_subject_relevance(self, video_text: str, subject: str) -> float:
@@ -349,8 +342,8 @@ class SemanticYouTubeSearch:
         exam_type: str = "TYT",
         difficulty: str = "orta",
         max_results: int = 10,
-        query_text: Optional[str] = None,
-    ) -> List[SemanticVideoMatch]:
+        query_text: str | None = None,
+    ) -> list[SemanticVideoMatch]:
         """Semantic similarity ile video arama"""
 
         # Model başlatma
@@ -445,7 +438,7 @@ class SemanticYouTubeSearch:
                     semantic_matches.append(match)
 
                 except Exception as e:
-                    logger.error(f"Video scoring hatası: {str(e)}")
+                    logger.error(f"Video scoring hatası: {e!s}")
                     continue
 
             # Combined score'a göre sırala
@@ -461,12 +454,12 @@ class SemanticYouTubeSearch:
             return semantic_matches[:max_results]
 
         except Exception as e:
-            logger.error(f"Semantic arama hatası: {str(e)}")
+            logger.error(f"Semantic arama hatası: {e!s}")
             return []
 
     async def _fetch_youtube_videos(
         self, subject: str, exam_type: str, max_results: int
-    ) -> List[Dict]:
+    ) -> list[dict]:
         """YouTube API'den video verilerini al"""
         # Bu kısım mevcut real_youtube_api'den adaptasyonu olacak
         # Şimdilik mock data dönüyoruz
@@ -504,7 +497,7 @@ class SemanticYouTubeSearch:
         text_lower = f"{text} {channel}".lower()
         return any(term in text_lower for term in music_terms)
 
-    def _calculate_quality_score(self, video_data: Dict) -> float:
+    def _calculate_quality_score(self, video_data: dict) -> float:
         """Video kalite skoru"""
         view_count = video_data.get("view_count", 0)
 

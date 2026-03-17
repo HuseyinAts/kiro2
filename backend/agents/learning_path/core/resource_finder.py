@@ -18,12 +18,15 @@ Responsibilities:
 - Match difficulty to student level
 """
 
+import hashlib
 import logging
-from typing import Dict, Any, List, Optional
+from typing import Any
 
 from cachetools import TTLCache
 
-from ..models import LearningResource, KnowledgeLevel, LearningStyle
+from services.subject_relevance_scorer import normalize_tr
+
+from ..models import KnowledgeLevel, LearningResource, LearningStyle
 from ..utils.duration_parser import parse_iso8601_duration
 
 logger = logging.getLogger(__name__)
@@ -72,12 +75,12 @@ class ResourceFinder:
     async def search_resources(
         self,
         topic: str,
-        subjects: Optional[List[str]] = None,
-        difficulty: Optional[KnowledgeLevel] = None,
-        learning_style: Optional[LearningStyle] = None,
+        subjects: list[str] | None = None,
+        difficulty: KnowledgeLevel | None = None,
+        learning_style: LearningStyle | None = None,
         count: int = 10,
         language: str = "tr",
-    ) -> List[LearningResource]:
+    ) -> list[LearningResource]:
         """
         Search for learning resources across multiple platforms
 
@@ -180,12 +183,12 @@ class ResourceFinder:
             return result
 
         except Exception as e:
-            logger.error(f"Search resources error: {str(e)}")
+            logger.error(f"Search resources error: {e!s}")
             raise
 
     async def search_by_topic(
         self, topic: str, count: int = 5
-    ) -> List[LearningResource]:
+    ) -> list[LearningResource]:
         """
         Simple topic search without filters
 
@@ -200,7 +203,7 @@ class ResourceFinder:
 
     async def search_by_difficulty(
         self, topic: str, difficulty: KnowledgeLevel, count: int = 10
-    ) -> List[LearningResource]:
+    ) -> list[LearningResource]:
         """
         Search resources filtered by difficulty level
 
@@ -216,7 +219,7 @@ class ResourceFinder:
 
     async def search_by_style(
         self, topic: str, learning_style: LearningStyle, count: int = 10
-    ) -> List[LearningResource]:
+    ) -> list[LearningResource]:
         """
         Search resources filtered by learning style
 
@@ -233,8 +236,8 @@ class ResourceFinder:
         )
 
     def get_style_recommendations(
-        self, resources: List[LearningResource], learning_style: LearningStyle
-    ) -> List[Dict[str, Any]]:
+        self, resources: list[LearningResource], learning_style: LearningStyle
+    ) -> list[dict[str, Any]]:
         """
         Get recommendations based on learning style
 
@@ -269,7 +272,7 @@ class ResourceFinder:
 
     async def _search_youtube(
         self, query: str, language: str, max_results: int
-    ) -> List[LearningResource]:
+    ) -> list[LearningResource]:
         """Search YouTube for videos"""
         try:
             videos = await self.youtube.search(
@@ -303,12 +306,12 @@ class ResourceFinder:
             return resources
 
         except Exception as e:
-            logger.error(f"YouTube search error: {str(e)}")
+            logger.error(f"YouTube search error: {e!s}")
             return []
 
     async def _search_khan_academy(
-        self, topic: str, subjects: Optional[List[str]]
-    ) -> List[LearningResource]:
+        self, topic: str, subjects: list[str] | None
+    ) -> list[LearningResource]:
         """Search Khan Academy for resources"""
         try:
             results = await self.khan.search(query=topic, subjects=subjects)
@@ -337,12 +340,12 @@ class ResourceFinder:
             return resources
 
         except Exception as e:
-            logger.error(f"Khan Academy search error: {str(e)}")
+            logger.error(f"Khan Academy search error: {e!s}")
             return []
 
     async def _search_oer(
-        self, topic: str, subjects: Optional[List[str]]
-    ) -> List[LearningResource]:
+        self, topic: str, subjects: list[str] | None
+    ) -> list[LearningResource]:
         """Search Open Educational Resources"""
         try:
             results = await self.oer.search(query=topic, subjects=subjects)
@@ -369,16 +372,16 @@ class ResourceFinder:
             return resources
 
         except Exception as e:
-            logger.error(f"OER search error: {str(e)}")
+            logger.error(f"OER search error: {e!s}")
             return []
 
     async def _search_rag(
         self,
         query: str,
-        subject: Optional[str] = None,
-        difficulty_range: Optional[tuple] = None,
+        subject: str | None = None,
+        difficulty_range: tuple | None = None,
         count: int = 10,
-    ) -> List[LearningResource]:
+    ) -> list[LearningResource]:
         """
         Search using RAG service for semantic matching.
 
@@ -397,7 +400,7 @@ class ResourceFinder:
                 return []
 
             # Build search kwargs based on what the RAG service supports
-            search_kwargs: Dict[str, Any] = {
+            search_kwargs: dict[str, Any] = {
                 "query": query,
                 "limit": count,
             }
@@ -426,7 +429,7 @@ class ResourceFinder:
                 return []
 
         except Exception as e:
-            logger.error(f"RAG search error: {str(e)}")
+            logger.error(f"RAG search error: {e!s}")
             return []
 
     def _get_difficulty_range(self, difficulty: KnowledgeLevel) -> tuple:
@@ -453,8 +456,8 @@ class ResourceFinder:
     # Filtering methods
 
     def _filter_by_difficulty(
-        self, resources: List[LearningResource], target_difficulty: KnowledgeLevel
-    ) -> List[LearningResource]:
+        self, resources: list[LearningResource], target_difficulty: KnowledgeLevel
+    ) -> list[LearningResource]:
         """Filter resources by difficulty level with tolerance"""
         # Allow resources one level above or below
         difficulty_order = [
@@ -480,8 +483,8 @@ class ResourceFinder:
         return filtered
 
     def _filter_by_style(
-        self, resources: List[LearningResource], learning_style: LearningStyle
-    ) -> List[LearningResource]:
+        self, resources: list[LearningResource], learning_style: LearningStyle
+    ) -> list[LearningResource]:
         """Filter resources by learning style preference"""
         if learning_style == LearningStyle.MIXED:
             return resources  # Mixed learners can use any type
@@ -499,10 +502,10 @@ class ResourceFinder:
 
     async def _rank_resources(
         self,
-        resources: List[LearningResource],
+        resources: list[LearningResource],
         query: str,
-        learning_style: Optional[LearningStyle] = None,
-    ) -> List[LearningResource]:
+        learning_style: LearningStyle | None = None,
+    ) -> list[LearningResource]:
         """Rank resources by relevance and quality"""
         if not resources:
             return []
@@ -521,7 +524,7 @@ class ResourceFinder:
                 )
                 return ranked
             except Exception as e:
-                logger.warning(f"Ranker failed, using simple ranking: {str(e)}")
+                logger.warning(f"Ranker failed, using simple ranking: {e!s}")
 
         # Simple ranking fallback
         scored_resources = []
@@ -538,17 +541,18 @@ class ResourceFinder:
         self,
         resource: LearningResource,
         query: str,
-        learning_style: Optional[LearningStyle],
+        learning_style: LearningStyle | None,
     ) -> float:
         """Calculate simple relevance score"""
         score = 0.0
 
-        # Title relevance (40%)
-        if query.lower() in resource.title.lower():
+        # Title relevance (40%) — Turkish casefold for İ/I
+
+        if normalize_tr(query) in normalize_tr(resource.title):
             score += 0.4
 
         # Description relevance (20%)
-        if query.lower() in resource.description.lower():
+        if normalize_tr(query) in normalize_tr(resource.description):
             score += 0.2
 
         # Learning style match (20%)
@@ -605,18 +609,17 @@ class ResourceFinder:
         """Get human-readable description of match score"""
         if score >= 0.8:
             return "Mükemmel uyum"
-        elif score >= 0.6:
+        if score >= 0.6:
             return "İyi uyum"
-        elif score >= 0.4:
+        if score >= 0.4:
             return "Orta uyum"
-        else:
-            return "Düşük uyum"
+        return "Düşük uyum"
 
-    def _parse_youtube_duration(self, duration: Optional[str]) -> int:
+    def _parse_youtube_duration(self, duration: str | None) -> int:
         """Parse YouTube duration string to minutes using ISO 8601 parser"""
         return parse_iso8601_duration(duration, default=10)
 
-    def _parse_khan_difficulty(self, difficulty: Optional[str]) -> KnowledgeLevel:
+    def _parse_khan_difficulty(self, difficulty: str | None) -> KnowledgeLevel:
         """Parse Khan Academy difficulty to KnowledgeLevel"""
         difficulty_mapping = {
             "beginner": KnowledgeLevel.BEGINNER,
@@ -634,12 +637,13 @@ class ResourceFinder:
     def _generate_cache_key(
         self,
         topic: str,
-        subjects: Optional[List[str]],
-        difficulty: Optional[KnowledgeLevel],
-        learning_style: Optional[LearningStyle],
+        subjects: list[str] | None,
+        difficulty: KnowledgeLevel | None,
+        learning_style: LearningStyle | None,
         language: str,
     ) -> str:
-        """Generate cache key for search results"""
+        """Generate cache key using hash to avoid collision."""
+
         key_parts = [
             topic,
             str(subjects or []),
@@ -647,4 +651,5 @@ class ResourceFinder:
             learning_style.value if learning_style else "none",
             language,
         ]
-        return "|".join(key_parts)
+        digest = hashlib.md5("\x00".join(key_parts).encode()).hexdigest()
+        return f"rf:{digest}"

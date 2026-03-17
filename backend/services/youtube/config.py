@@ -6,12 +6,10 @@ Static configuration data for YouTube video discovery.
 Extracted from youtube_discovery.py
 """
 
-from typing import Dict, List
-
 from .types import ExamType
 
 # Genişletilmiş video veritabanı - daha çok çeşitlilik için
-QUICK_RECOMMENDATIONS: Dict[tuple, List[Dict]] = {
+QUICK_RECOMMENDATIONS: dict[tuple, list[dict]] = {
     ("matematik", "orta", "TYT"): [
         {
             "video_id": "qsf8ERnJHho",
@@ -317,39 +315,38 @@ QUICK_RECOMMENDATIONS: Dict[tuple, List[Dict]] = {
 }
 
 
-# Güvenilir Türk eğitim kanalları
-TRUSTED_CHANNELS: Dict[str, List[Dict]] = {
-    "matematik": [
-        {"name": "Matematik Öğretmeni", "id": "UCxxxxxx", "quality": 9.2},
-        {
-            "name": "TonguçAkademi",
-            "id": "UC5Bu5lNaUYBYG-ZW-bMeXWA",
-            "quality": 8.8,
-        },
-        {"name": "KAMP Online", "id": "UCyyyyyy", "quality": 8.5},
-        {"name": "Matematikciler", "id": "UCzzzzzz", "quality": 8.3},
-    ],
-    "fizik": [
-        {"name": "Fizik Öğretmeni", "id": "UCaaaaaa", "quality": 9.0},
-        {
-            "name": "TonguçAkademi",
-            "id": "UC5Bu5lNaUYBYG-ZW-bMeXWA",
-            "quality": 8.8,
-        },
-    ],
-    "türkçe": [
-        {"name": "Türkçe Öğretmeni", "id": "UCbbbbbbb", "quality": 9.1},
-        {"name": "Hocawebde", "id": "UCcccccc", "quality": 8.7},
-    ],
-    "sosyal": [
-        {"name": "TRT EBA TV", "id": "UCddddddd", "quality": 8.9},
-        {"name": "Tarih Öğretmeni", "id": "UCeeeeeee", "quality": 8.4},
-    ],
-}
+# Güvenilir Türk eğitim kanalları — derived from canonical source
+# (core.youtube_channels is the single source of truth)
+def _build_trusted_channels() -> dict[str, list[dict]]:
+    from core.youtube_channels import get_channels_for_subject
+
+    result: dict[str, list[dict]] = {}
+    for subject in [
+        "matematik",
+        "fizik",
+        "kimya",
+        "biyoloji",
+        "türkçe",
+        "tarih",
+        "coğrafya",
+    ]:
+        channels = get_channels_for_subject(subject)
+        result[subject] = [
+            {
+                "name": ch["name"],
+                "id": ch.get("channel_id", ""),
+                "quality": ch["quality_score"],
+            }
+            for ch in channels
+        ]
+    return result
+
+
+TRUSTED_CHANNELS: dict[str, list[dict]] = _build_trusted_channels()
 
 
 # Arama query şablonları
-SEARCH_TEMPLATES: Dict[ExamType, List[str]] = {
+SEARCH_TEMPLATES: dict[ExamType, list[str]] = {
     ExamType.TYT: [
         "{subject} TYT {difficulty} konu anlatımı 2025",
         "TYT {subject} {difficulty} ders {year}",
@@ -366,7 +363,7 @@ SEARCH_TEMPLATES: Dict[ExamType, List[str]] = {
 
 
 # Konu anahtar kelimeleri
-SUBJECT_KEYWORDS: Dict[str, List[str]] = {
+SUBJECT_KEYWORDS: dict[str, list[str]] = {
     "matematik": [
         "matematik",
         "geometri",
@@ -461,7 +458,7 @@ SUBJECT_KEYWORDS: Dict[str, List[str]] = {
 
 __all__ = [
     "QUICK_RECOMMENDATIONS",
-    "TRUSTED_CHANNELS",
     "SEARCH_TEMPLATES",
     "SUBJECT_KEYWORDS",
+    "TRUSTED_CHANNELS",
 ]

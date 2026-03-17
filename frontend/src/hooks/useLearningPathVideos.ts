@@ -132,7 +132,7 @@ export const useLearningPathVideos = (): UseLearningPathVideosReturn => {
         difficulty: 'orta',
         max_results: 10,
         student_profile: {
-          learning_style: learningStyle || 'visual',
+          learning_style: learningStyle || 'mixed',
           grade: 12,
         },
       });

@@ -7,7 +7,6 @@ import logging
 import random
 from dataclasses import dataclass
 from datetime import datetime, timedelta
-from typing import Dict, List, Optional
 
 import aiohttp
 
@@ -40,53 +39,20 @@ class AdvancedYouTubeSearch:
     """Gelişmiş YouTube Türkçe eğitim video arama sistemi"""
 
     def __init__(self):
-        self.session: Optional[aiohttp.ClientSession] = None
+        self.session: aiohttp.ClientSession | None = None
 
-        # Türkçe eğitim kanalları (güvenilir ve kaliteli) - MÜZİK HARİÇ
+        # Türkçe eğitim kanalları — from canonical source (MÜZİK HARİÇ)
+        from core.youtube_channels import TRUSTED_TURKISH_CHANNELS
+
         self.trusted_turkish_channels = {
-            "TonguçAkademi": {
-                "channel_id": "UCQaEgq0uA7wHQlUkE3o8L4w",
-                "subjects": ["matematik", "fizik", "kimya", "biyoloji"],
-                "quality_score": 9.5,
+            name: {
+                "channel_id": data.get("channel_id", ""),
+                "subjects": data.get("subjects")
+                or ["matematik", "fizik", "kimya", "biyoloji", "türkçe", "tarih"],
+                "quality_score": data["quality_score"],
                 "blocked_subjects": ["müzik", "sanat"],
-            },
-            "Matematik Öğretmeni": {
-                "channel_id": "UC_matematik_teacher",
-                "subjects": ["matematik"],
-                "quality_score": 9.0,
-                "blocked_subjects": ["müzik", "sanat"],
-            },
-            "KAMP Online": {
-                "channel_id": "UCkamp_online",
-                "subjects": ["matematik", "fizik", "kimya"],
-                "quality_score": 8.8,
-                "blocked_subjects": ["müzik", "sanat"],
-            },
-            "Fizik Öğretmeni": {
-                "channel_id": "UC_fizik_teacher",
-                "subjects": ["fizik"],
-                "quality_score": 9.2,
-                "blocked_subjects": ["müzik", "sanat"],
-            },
-            "Khan Academy Türkçe": {
-                "channel_id": "UCzeM1QxMZG7LCILPl8GIzLA",
-                "subjects": ["matematik", "fizik"],
-                "quality_score": 8.5,
-                "blocked_subjects": ["müzik", "sanat"],
-            },
-            "MEB Uzaktan Eğitim": {
-                "channel_id": "UC_meb_uzaktan",
-                "subjects": [
-                    "matematik",
-                    "fizik",
-                    "kimya",
-                    "biyoloji",
-                    "türkçe",
-                    "tarih",
-                ],
-                "quality_score": 8.0,
-                "blocked_subjects": ["müzik"],
-            },
+            }
+            for name, data in TRUSTED_TURKISH_CHANNELS.items()
         }
 
         # Gerçek ve kaliteli video örnekleri
@@ -248,7 +214,7 @@ class AdvancedYouTubeSearch:
         """Async context manager exit - ensures session cleanup"""
         await self.close()
 
-    def _calculate_video_quality_score(self, video_data: Dict) -> float:
+    def _calculate_video_quality_score(self, video_data: dict) -> float:
         """Video kalite skorunu hesapla"""
         score = 5.0  # Base score
 
@@ -366,7 +332,7 @@ class AdvancedYouTubeSearch:
         exam_type: str = "TYT",
         difficulty: str = "orta",
         max_results: int = 10,
-    ) -> List[TurkishEducationVideo]:
+    ) -> list[TurkishEducationVideo]:
         """Seçilmiş kaliteli videolardan ara"""
 
         key = (subject.lower(), exam_type.upper(), difficulty.lower())
@@ -422,7 +388,7 @@ class AdvancedYouTubeSearch:
         difficulty: str = "orta",
         max_results: int = 10,
         language_filter: str = "tr",
-    ) -> List[TurkishEducationVideo]:
+    ) -> list[TurkishEducationVideo]:
         """Gelişmiş filtrelerle video ara - MÜZİK ENGELLENDİ"""
 
         # Müzik içerik kontrolü - EN ÜST SEVİYE ENGEL
@@ -464,7 +430,7 @@ class AdvancedYouTubeSearch:
 
     async def _generate_mock_turkish_videos(
         self, subject: str, exam_type: str, difficulty: str, max_results: int
-    ) -> List[TurkishEducationVideo]:
+    ) -> list[TurkishEducationVideo]:
         """Daha iyi mock Türkçe videolar oluştur"""
 
         # Türkçe konu başlıkları

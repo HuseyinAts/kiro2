@@ -9,7 +9,7 @@ import logging
 import os
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 import aiohttp
 
@@ -28,11 +28,11 @@ class YouTubeVideo:
     channel_name: str
     channel_id: str
     thumbnail_url: str
-    duration: Optional[str]
-    view_count: Optional[int]
-    like_count: Optional[int]
+    duration: str | None
+    view_count: int | None
+    like_count: int | None
     published_at: datetime
-    tags: List[str]
+    tags: list[str]
     language: str
     caption_available: bool
     educational_score: float  # 0-1 arası eğitim değeri skoru
@@ -49,23 +49,22 @@ class YouTubeService:
         self.rate_limit_delay = 0.1  # 100ms delay between requests
         self.max_retries = 3
 
-    def _load_educational_channels(self) -> Dict[str, float]:
-        """Eğitim kanalları ve güvenilirlik skorları"""
-        return {
-            # Türkçe eğitim kanalları
-            "UCY0pGqP5L7s7d9HuXndvazA": 1.0,  # Khan Academy Türkçe
-            "UCzKPRFPpDrqQmz7G8OmRH5Q": 0.9,  # BTK Akademi
-            "UC_xsc5nsdVkHscvA0SWxBAw": 0.9,  # Evrim Ağacı
-            "UCWzx1P6f2EYls1__9RM3qZw": 0.8,  # Barış Özcan
-            "UC2sUP5sX8jXwkfBfRt9qgjg": 0.8,  # TonguçAkademi
-            "UCnzWmJVXiLDREXMO5aZgqJA": 0.8,  # Hocalara Geldik
-            # İngilizce eğitim kanalları
-            "UC8butISFwT-Wl7EV0hUK0BQ": 1.0,  # Khan Academy
-            "UCEWpbFLzoYGPfuWUMFPSaoA": 0.9,  # CrashCourse
-            "UCsooa4yRKGN_zEE8iknghZA": 0.9,  # TED-Ed
-            "UC7IcJI8PUf5Z3zKxnZvTBog": 0.8,  # School of Life
-            "UC6nSFiPRc5g8DyT3MB0u": 0.8,  # MinutePhysics
-        }
+    def _load_educational_channels(self) -> dict[str, float]:
+        """Eğitim kanalları ve güvenilirlik skorları — from canonical source"""
+        from core.youtube_channels import get_channel_ids
+
+        channels = get_channel_ids()  # Turkish channels from canonical registry
+        # Add English education channels (not in canonical Turkish registry)
+        channels.update(
+            {
+                "UC8butISFwT-Wl7EV0hUK0BQ": 1.0,  # Khan Academy
+                "UCEWpbFLzoYGPfuWUMFPSaoA": 0.9,  # CrashCourse
+                "UCsooa4yRKGN_zEE8iknghZA": 0.9,  # TED-Ed
+                "UC7IcJI8PUf5Z3zKxnZvTBog": 0.8,  # School of Life
+                "UC6nSFiPRc5g8DyT3MB0u": 0.8,  # MinutePhysics
+            }
+        )
+        return channels
 
     async def _get_session(self) -> aiohttp.ClientSession:
         """Get or create aiohttp session"""
@@ -81,12 +80,12 @@ class YouTubeService:
     async def search_educational_videos(
         self,
         query: str,
-        subject: Optional[str] = None,
-        grade_level: Optional[str] = None,
+        subject: str | None = None,
+        grade_level: str | None = None,
         language: str = "tr",
         max_results: int = 20,
         order: str = "relevance",
-    ) -> List[YouTubeVideo]:
+    ) -> list[YouTubeVideo]:
         """
         Eğitim videoları ara (Gerçek YouTube API)
 
@@ -104,8 +103,11 @@ class YouTubeService:
         try:
             # DEBUG: Log api_key status
             import os
+
             actual_key = os.getenv("YOUTUBE_API_KEY", "NOT_FOUND")
-            logger.info(f"YouTube API Key status: present={bool(self.api_key)}, env_var={actual_key[:10] if actual_key else 'NONE'}...")
+            logger.info(
+                f"YouTube API Key status: present={bool(self.api_key)}, env_var={actual_key[:10] if actual_key else 'NONE'}..."
+            )
             if not self.api_key:
                 logger.warning("YouTube API key not found, using fallback")
                 return await self._fallback_search(query, max_results)
@@ -131,8 +133,12 @@ class YouTubeService:
             # API çağrısı yap
             logger.info(f"YouTube API call: params={params}")
             search_results = await self._make_api_request("search", params)
-            logger.info(f"YouTube API response: has_results={bool(search_results)}, has_items={'items' in (search_results or {})}")
-            logger.info(f"YouTube API response keys: {list(search_results.keys()) if search_results else 'None'}")
+            logger.info(
+                f"YouTube API response: has_results={bool(search_results)}, has_items={'items' in (search_results or {})}"
+            )
+            logger.info(
+                f"YouTube API response keys: {list(search_results.keys()) if search_results else 'None'}"
+            )
 
             if not search_results or "items" not in search_results:
                 logger.warning("No search results from YouTube API - using fallback")
@@ -162,12 +168,12 @@ class YouTubeService:
             return videos
 
         except Exception as e:
-            logger.error(f"YouTube search error: {str(e)}")
+            logger.error(f"YouTube search error: {e!s}")
             return await self._fallback_search(query, max_results)
 
     async def _make_api_request(
-        self, endpoint: str, params: Dict[str, Any], retry_count: int = 0
-    ) -> Optional[Dict[str, Any]]:
+        self, endpoint: str, params: dict[str, Any], retry_count: int = 0
+    ) -> dict[str, Any] | None:
         """
         YouTube API'ye istek gönder
 
@@ -189,7 +195,7 @@ class YouTubeService:
             async with session.get(url, params=params) as response:
                 if response.status == 200:
                     return await response.json()
-                elif response.status == 403:
+                if response.status == 403:
                     # Quota exceeded or API key invalid
                     error_data = await response.json()
                     error_reason = (
@@ -201,13 +207,12 @@ class YouTubeService:
                     if error_reason == "quotaExceeded":
                         logger.error("YouTube API quota exceeded")
                         raise Exception("YouTube API quota exceeded")
-                    elif error_reason == "keyInvalid":
+                    if error_reason == "keyInvalid":
                         logger.error("Invalid YouTube API key")
                         raise Exception("Invalid YouTube API key")
-                    else:
-                        logger.error(f"YouTube API error 403: {error_reason}")
-                        raise Exception(f"YouTube API access denied: {error_reason}")
-                elif response.status == 429:
+                    logger.error(f"YouTube API error 403: {error_reason}")
+                    raise Exception(f"YouTube API access denied: {error_reason}")
+                if response.status == 429:
                     # Rate limit exceeded
                     if retry_count < self.max_retries:
                         wait_time = (2**retry_count) * self.rate_limit_delay
@@ -218,25 +223,23 @@ class YouTubeService:
                         return await self._make_api_request(
                             endpoint, params, retry_count + 1
                         )
-                    else:
-                        raise Exception("Rate limit exceeded, max retries reached")
-                else:
-                    logger.error(
-                        f"YouTube API error {response.status}: {await response.text()}"
-                    )
-                    return None
+                    raise Exception("Rate limit exceeded, max retries reached")
+                logger.error(
+                    f"YouTube API error {response.status}: {await response.text()}"
+                )
+                return None
 
         except aiohttp.ClientError as e:
-            logger.error(f"Network error calling YouTube API: {str(e)}")
+            logger.error(f"Network error calling YouTube API: {e!s}")
             if retry_count < self.max_retries:
                 await asyncio.sleep(1)
                 return await self._make_api_request(endpoint, params, retry_count + 1)
             return None
         except Exception as e:
-            logger.error(f"Error calling YouTube API: {str(e)}")
+            logger.error(f"Error calling YouTube API: {e!s}")
             return None
 
-    async def _get_video_details(self, video_ids: List[str]) -> List[YouTubeVideo]:
+    async def _get_video_details(self, video_ids: list[str]) -> list[YouTubeVideo]:
         """
         Video detaylarını al
 
@@ -272,10 +275,10 @@ class YouTubeService:
             return videos
 
         except Exception as e:
-            logger.error(f"Error getting video details: {str(e)}")
+            logger.error(f"Error getting video details: {e!s}")
             return []
 
-    def _parse_video_data(self, item: Dict[str, Any]) -> Optional[YouTubeVideo]:
+    def _parse_video_data(self, item: dict[str, Any]) -> YouTubeVideo | None:
         """
         YouTube API yanıtından video objesi oluştur
 
@@ -328,7 +331,11 @@ class YouTubeService:
             # Safe video_id extraction
             video_id = ""
             if isinstance(item, dict):
-                video_id = item.get("id", {}).get("videoId", "") if isinstance(item.get("id"), dict) else str(item.get("id", ""))
+                video_id = (
+                    item.get("id", {}).get("videoId", "")
+                    if isinstance(item.get("id"), dict)
+                    else str(item.get("id", ""))
+                )
             elif isinstance(item, str):
                 video_id = item
 
@@ -351,10 +358,13 @@ class YouTubeService:
 
         except Exception as e:
             import traceback
-            logger.error(f"Error parsing video data: {str(e)}\nStack: {traceback.format_exc(limit=5)}")
+
+            logger.error(
+                f"Error parsing video data: {e!s}\nStack: {traceback.format_exc(limit=5)}"
+            )
             return None
 
-    def _calculate_educational_score(self, video_item: Dict[str, Any]) -> float:
+    def _calculate_educational_score(self, video_item: dict[str, Any]) -> float:
         """
         Video için eğitim değeri skoru hesapla
 
@@ -453,7 +463,7 @@ class YouTubeService:
             return min(score, 1.0)
 
         except Exception as e:
-            logger.error(f"Error calculating educational score: {str(e)}")
+            logger.error(f"Error calculating educational score: {e!s}")
             return 0.5
 
     def _parse_duration_to_minutes(self, duration: str) -> int:
@@ -498,10 +508,10 @@ class YouTubeService:
             return int(total_minutes)
 
         except Exception as e:
-            logger.error(f"Error parsing duration {duration}: {str(e)}")
+            logger.error(f"Error parsing duration {duration}: {e!s}")
             return 15  # Default 15 minutes
 
-    async def extract_video_metadata(self, video_id: str) -> Dict[str, Any]:
+    async def extract_video_metadata(self, video_id: str) -> dict[str, Any]:
         """
         Video için detaylı metadata çıkar
 
@@ -583,10 +593,10 @@ class YouTubeService:
             return metadata
 
         except Exception as e:
-            logger.error(f"Error extracting video metadata for {video_id}: {str(e)}")
+            logger.error(f"Error extracting video metadata for {video_id}: {e!s}")
             return {}
 
-    def _extract_accessibility_features(self, video_item: Dict[str, Any]) -> List[str]:
+    def _extract_accessibility_features(self, video_item: dict[str, Any]) -> list[str]:
         """Video erişilebilirlik özelliklerini çıkar"""
         features = []
 
@@ -609,7 +619,7 @@ class YouTubeService:
 
         return features
 
-    def _extract_quality_indicators(self, video_item: Dict[str, Any]) -> Dict[str, Any]:
+    def _extract_quality_indicators(self, video_item: dict[str, Any]) -> dict[str, Any]:
         """Video kalite göstergelerini çıkar"""
         snippet = video_item.get("snippet", {})
         statistics = video_item.get("statistics", {})
@@ -633,7 +643,7 @@ class YouTubeService:
 
         return indicators
 
-    def _estimate_difficulty_level(self, video_item: Dict[str, Any]) -> str:
+    def _estimate_difficulty_level(self, video_item: dict[str, Any]) -> str:
         """Video zorluk seviyesini tahmin et"""
         snippet = video_item.get("snippet", {})
         title = snippet.get("title", "").lower()
@@ -670,12 +680,11 @@ class YouTubeService:
 
         if beginner_count > advanced_count:
             return "beginner"
-        elif advanced_count > beginner_count:
+        if advanced_count > beginner_count:
             return "advanced"
-        else:
-            return "intermediate"
+        return "intermediate"
 
-    def _classify_content_type(self, video_item: Dict[str, Any]) -> str:
+    def _classify_content_type(self, video_item: dict[str, Any]) -> str:
         """Video içerik türünü sınıflandır"""
         snippet = video_item.get("snippet", {})
         title = snippet.get("title", "").lower()
@@ -687,28 +696,27 @@ class YouTubeService:
             for keyword in ["ders", "lesson", "lecture", "anlatım"]
         ):
             return "lecture"
-        elif any(
+        if any(
             keyword in title or keyword in description
             for keyword in ["tutorial", "nasıl", "how to", "adım"]
         ):
             return "tutorial"
-        elif any(
+        if any(
             keyword in title or keyword in description
             for keyword in ["soru", "çözüm", "problem", "solution"]
         ):
             return "problem_solving"
-        elif any(
+        if any(
             keyword in title or keyword in description
             for keyword in ["deney", "experiment", "pratik", "practice"]
         ):
             return "practical"
-        elif any(
+        if any(
             keyword in title or keyword in description
             for keyword in ["özet", "summary", "review", "tekrar"]
         ):
             return "review"
-        else:
-            return "general_educational"
+        return "general_educational"
 
     def _is_recent_upload(self, published_at: str) -> bool:
         """Video son 2 yılda yüklenmiş mi?"""
@@ -724,32 +732,9 @@ class YouTubeService:
         except Exception:
             return False
 
-            video = YouTubeVideo(
-                video_id=item["id"],
-                title=snippet.get("title", ""),
-                description=snippet.get("description", ""),
-                channel_name=snippet.get("channelTitle", ""),
-                channel_id=snippet.get("channelId", ""),
-                thumbnail_url=thumbnail_url,
-                duration=content_details.get("duration"),
-                view_count=int(statistics.get("viewCount", 0)),
-                like_count=int(statistics.get("likeCount", 0)),
-                published_at=published_at,
-                tags=tags,
-                language=language,
-                caption_available=caption_available,
-                educational_score=0.0,  # Will be calculated later
-            )
-
-            return video
-
-        except Exception as e:
-            logger.error(f"Error parsing video data: {str(e)}")
-            return None
-
     async def _fallback_search(
         self, query: str, max_results: int
-    ) -> List[YouTubeVideo]:
+    ) -> list[YouTubeVideo]:
         """
         API olmadığında fallback arama
 
@@ -817,7 +802,7 @@ class YouTubeService:
         return fallback_videos[:max_results]
 
     def _build_search_query(
-        self, query: str, subject: Optional[str], grade_level: Optional[str]
+        self, query: str, subject: str | None, grade_level: str | None
     ) -> str:
         """Arama sorgusunu oluştur"""
         parts = [query]
@@ -842,7 +827,7 @@ class YouTubeService:
 
         return " ".join(parts)
 
-    async def _simulate_api_call(self, params: Dict[str, Any]) -> List[YouTubeVideo]:
+    async def _simulate_api_call(self, params: dict[str, Any]) -> list[YouTubeVideo]:
         """API çağrısını simüle et (gerçek uygulamada YouTube API kullanılacak)"""
         # Örnek videolar
         sample_videos = [
@@ -961,7 +946,7 @@ class YouTubeService:
             "deneme": 0.7,
             "açıklama": 0.6,
             "rehber": 0.6,
-            "tutorial": 0.6,
+            "eğitim videosu": 0.6,
             "nasıl": 0.5,
             # İngilizce eğitim kelimeleri
             "education": 1.0,
@@ -1120,7 +1105,7 @@ class YouTubeService:
             logger.debug(f"Duration parsing failed: {e}")
             return 15  # Default 15 dakika
 
-    async def get_video_details_by_id(self, video_id: str) -> Optional[YouTubeVideo]:
+    async def get_video_details_by_id(self, video_id: str) -> YouTubeVideo | None:
         """
         Video ID'ye göre video detaylarını getir
 
@@ -1151,12 +1136,12 @@ class YouTubeService:
             return None
 
         except Exception as e:
-            logger.error(f"Get video details error: {str(e)}")
+            logger.error(f"Get video details error: {e!s}")
             return None
 
     async def get_video_captions(
         self, video_id: str, language: str = "tr"
-    ) -> Optional[str]:
+    ) -> str | None:
         """
         Video altyazılarını getir
 
@@ -1205,12 +1190,12 @@ class YouTubeService:
             return None
 
         except Exception as e:
-            logger.error(f"Get video captions error: {str(e)}")
+            logger.error(f"Get video captions error: {e!s}")
             return None
 
     async def search_by_channel(
-        self, channel_id: str, query: Optional[str] = None, max_results: int = 20
-    ) -> List[YouTubeVideo]:
+        self, channel_id: str, query: str | None = None, max_results: int = 20
+    ) -> list[YouTubeVideo]:
         """
         Belirli bir kanalda arama yap
 
@@ -1263,12 +1248,12 @@ class YouTubeService:
             return videos
 
         except Exception as e:
-            logger.error(f"Search by channel error: {str(e)}")
+            logger.error(f"Search by channel error: {e!s}")
             return []
 
     async def get_channel_videos(
         self, channel_id: str, max_results: int = 50
-    ) -> List[YouTubeVideo]:
+    ) -> list[YouTubeVideo]:
         """
         Kanal videolarını getir
 
@@ -1292,12 +1277,12 @@ class YouTubeService:
             )
 
         except Exception as e:
-            logger.error(f"Get channel videos error: {str(e)}")
+            logger.error(f"Get channel videos error: {e!s}")
             return []
 
     async def get_playlists(
-        self, channel_id: Optional[str] = None, query: Optional[str] = None
-    ) -> List[Dict[str, Any]]:
+        self, channel_id: str | None = None, query: str | None = None
+    ) -> list[dict[str, Any]]:
         """
         Oynatma listelerini getir
 
@@ -1336,7 +1321,7 @@ class YouTubeService:
             return playlists
 
         except Exception as e:
-            logger.error(f"Get playlists error: {str(e)}")
+            logger.error(f"Get playlists error: {e!s}")
             return []
 
     def format_duration(self, duration: str) -> str:
@@ -1370,8 +1355,7 @@ class YouTubeService:
 
             if hours > 0:
                 return f"{hours}:{minutes:02d}:{seconds:02d}"
-            else:
-                return f"{minutes}:{seconds:02d}"
+            return f"{minutes}:{seconds:02d}"
 
         except (ValueError, IndexError, AttributeError) as e:
             logger.debug(f"Duration formatting failed: {e}")
@@ -1379,7 +1363,7 @@ class YouTubeService:
 
     async def get_trending_educational(
         self, region: str = "TR", category: str = "Education"
-    ) -> List[YouTubeVideo]:
+    ) -> list[YouTubeVideo]:
         """
         Trend olan eğitim videolarını getir
 
@@ -1402,7 +1386,7 @@ class YouTubeService:
             return await self._simulate_api_call(params)
 
         except Exception as e:
-            logger.error(f"Get trending error: {str(e)}")
+            logger.error(f"Get trending error: {e!s}")
             return []
 
 

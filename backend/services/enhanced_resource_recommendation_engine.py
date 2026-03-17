@@ -3,6 +3,10 @@ Enhanced Resource Recommendation Engine
 Tüm filtreleri ve skorlayıcıları entegre ederek kaliteli video önerileri oluşturur
 Teknofest 2025 - Eğitim Eylemci Projesi
 
+DEPRECATED: No API consumers. The active pipeline uses
+learning_path_v2.py -> facade.py -> resource_discovery.py.
+Tests reference this module; do NOT delete without migrating tests first.
+
 RECOMMENDATION SERVICE HIERARCHY (2025-01-24):
 Bu proje 4 oneri servisi iceriyor:
 
@@ -36,30 +40,30 @@ import asyncio
 import logging
 import time
 from dataclasses import dataclass
-from typing import Any, Dict, List, Optional
+from typing import Any
 
+from core.cache import cache_manager
 from integrations.youtube_service import YouTubeService, YouTubeVideo
-from services.turkish_content_filter import (
-    TurkishContentFilter,
-)
 from services.subject_relevance_scorer import (
     SubjectRelevanceScorer,
 )
+from services.turkish_content_filter import (
+    TurkishContentFilter,
+)
 from services.video_quality_validator import (
-    VideoQualityValidator,
     VideoAccessibilityResult,
+    VideoQualityValidator,
 )
-from services.youtube_error_handlers import (
-    YouTubeAPIErrorHandler,
-    ValidationErrorHandler,
-    TimeoutHandler,
-    QuotaExceededError,
-    InvalidAPIKeyError,
-    RateLimitError,
-)
-from core.cache import cache_manager
 from services.video_recommendation_monitoring import (
     get_video_recommendation_monitor,
+)
+from services.youtube_error_handlers import (
+    InvalidAPIKeyError,
+    QuotaExceededError,
+    RateLimitError,
+    TimeoutHandler,
+    ValidationErrorHandler,
+    YouTubeAPIErrorHandler,
 )
 
 logger = logging.getLogger(__name__)
@@ -80,7 +84,7 @@ class RateLimiter:
             max_requests_per_second: Saniyede maksimum istek sayısı
         """
         self.max_requests = max_requests_per_second
-        self.request_times: List[float] = []
+        self.request_times: list[float] = []
         self._lock = asyncio.Lock()
 
     async def acquire(self):
@@ -117,9 +121,9 @@ class RateLimiter:
             now = time.monotonic()
             # Tekrar temizle (bekleme sırasında eskimiş olabilir)
             self.request_times = [t for t in self.request_times if now - t < 1.0]
-            self.request_times.append(time.monotonic())
+            self.request_times.append(now)
 
-    def get_stats(self) -> Dict[str, Any]:
+    def get_stats(self) -> dict[str, Any]:
         """
         Rate limiter istatistiklerini al
 
@@ -165,7 +169,7 @@ class RecommendedVideo:
     is_turkish: bool
 
     # Metadata
-    tags: List[str]
+    tags: list[str]
     caption_available: bool
     definition: str  # 'hd' or 'sd'
 
@@ -216,11 +220,11 @@ class EnhancedResourceRecommendationEngine:
     async def get_recommended_videos(
         self,
         subject: str,
-        topic: Optional[str] = None,
+        topic: str | None = None,
         difficulty: str = "orta",
         max_results: int = 10,
-        student_profile: Optional[Dict] = None,
-    ) -> List[RecommendedVideo]:
+        student_profile: dict | None = None,
+    ) -> list[RecommendedVideo]:
         """
         Filtrelenmiş ve skorlanmış video önerileri döner
 
@@ -317,7 +321,7 @@ class EnhancedResourceRecommendationEngine:
 
             except (QuotaExceededError, InvalidAPIKeyError, RateLimitError) as e:
                 # YouTube API hatası - fallback kullan
-                logger.error(f"YouTube API error: {str(e)}")
+                logger.error(f"YouTube API error: {e!s}")
 
                 # Monitoring: YouTube API hatası
                 self.monitor.log_youtube_api_call(success=False)
@@ -352,13 +356,12 @@ class EnhancedResourceRecommendationEngine:
                     )
 
                     return result_videos
-                else:
-                    logger.warning("No fallback videos available")
-                    # Monitoring: Request bitişi (başarısız)
-                    self.monitor.log_request_end(
-                        request_start_time, success=False, cache_hit=False
-                    )
-                    return []
+                logger.warning("No fallback videos available")
+                # Monitoring: Request bitişi (başarısız)
+                self.monitor.log_request_end(
+                    request_start_time, success=False, cache_hit=False
+                )
+                return []
 
             # 2-6. Pipeline: Filter → Score → Validate
             recommended_videos = await self._process_video_pipeline(
@@ -393,7 +396,7 @@ class EnhancedResourceRecommendationEngine:
             return top_videos
 
         except Exception as e:
-            logger.error(f"Error getting recommended videos: {str(e)}")
+            logger.error(f"Error getting recommended videos: {e!s}")
 
             # Monitoring: Hata
             self.monitor.log_error(
@@ -411,11 +414,11 @@ class EnhancedResourceRecommendationEngine:
 
     async def _process_video_pipeline(
         self,
-        candidate_videos: List[YouTubeVideo],
+        candidate_videos: list[YouTubeVideo],
         subject: str,
-        topic: Optional[str],
-        student_profile: Optional[Dict] = None,
-    ) -> List[RecommendedVideo]:
+        topic: str | None,
+        student_profile: dict | None = None,
+    ) -> list[RecommendedVideo]:
         """
         Video işleme pipeline'ı (paralel işleme ile optimize edilmiş)
 
@@ -430,13 +433,15 @@ class EnhancedResourceRecommendationEngine:
         """
         recommended_videos = []
 
-        # Paralel işleme için tasks (asyncio.gather ile)
-        tasks = []
-        for video in candidate_videos:
-            # Rate limiting uygula
+        # Rate-limited parallel processing: acquire token inside each task
+        # so tokens are consumed just-in-time, not all upfront.
+        async def _rate_limited_process(video):
             await self.rate_limiter.acquire()
-            task = self._process_single_video(video, subject, topic, student_profile)
-            tasks.append(task)
+            return await self._process_single_video(
+                video, subject, topic, student_profile
+            )
+
+        tasks = [_rate_limited_process(v) for v in candidate_videos]
 
         # Tüm videoları paralel işle
         logger.info(f"Processing {len(tasks)} videos in parallel...")
@@ -447,7 +452,7 @@ class EnhancedResourceRecommendationEngine:
             if isinstance(result, RecommendedVideo):
                 recommended_videos.append(result)
             elif isinstance(result, Exception):
-                logger.error(f"Error processing video: {str(result)}")
+                logger.error(f"Error processing video: {result!s}")
 
         # Final skora göre sırala
         recommended_videos.sort(key=lambda v: v.final_score, reverse=True)
@@ -464,9 +469,9 @@ class EnhancedResourceRecommendationEngine:
         self,
         video: YouTubeVideo,
         subject: str,
-        topic: Optional[str],
-        student_profile: Optional[Dict] = None,
-    ) -> Optional[RecommendedVideo]:
+        topic: str | None,
+        student_profile: dict | None = None,
+    ) -> RecommendedVideo | None:
         """
         Tek bir videoyu işle
 
@@ -664,7 +669,13 @@ class EnhancedResourceRecommendationEngine:
                 student_profile.get("learning_style") if student_profile else None
             )
             has_captions = accessibility_result.has_captions
-            has_visual_content = True  # Assume all videos have visual content
+            # Duration-based heuristic: videos longer than 1 minute likely have visual content
+            duration_minutes = (
+                self.quality_validator._parse_duration_to_minutes(video.duration)
+                if video.duration
+                else 0
+            )
+            has_visual_content = duration_minutes > 1
 
             final_score = self._calculate_final_score(
                 turkish_result.confidence_score,
@@ -726,7 +737,7 @@ class EnhancedResourceRecommendationEngine:
             return recommended_video
 
         except Exception as e:
-            logger.error(f"Error processing video '{video.title[:50]}...': {str(e)}")
+            logger.error(f"Error processing video '{video.title[:50]}...': {e!s}")
 
             # Monitoring: Hata
             self.monitor.log_error(
@@ -743,7 +754,7 @@ class EnhancedResourceRecommendationEngine:
         relevance_score: float,
         quality_score: float,
         accessibility_ok: bool,
-        learning_style: Optional[str] = None,
+        learning_style: str | None = None,
         has_captions: bool = False,
         has_visual_content: bool = True,
     ) -> float:
@@ -789,28 +800,28 @@ class EnhancedResourceRecommendationEngine:
         learning_style_bonus = 0.0
 
         if learning_style:
-            learning_style_upper = learning_style.upper()
+            # Use dominant style (first character) to avoid substring false positives.
+            # e.g. "VARK" contains all letters — checking "A" in "VARK" is always True.
+            dominant = (
+                learning_style.strip().upper()[0] if learning_style.strip() else ""
+            )
 
-            # Visual learners (V-AS, V-ASVS, etc.)
-            if "V" in learning_style_upper and has_visual_content:
+            if dominant == "V" and has_visual_content:
                 learning_style_bonus += 0.10
                 logger.debug(
                     f"Visual learner bonus: +0.10 (has_visual_content={has_visual_content})"
                 )
-
-            # Auditory learners (A-VS, V-AS, etc.)
-            if "A" in learning_style_upper:
-                # Assume all videos have audio, give small bonus
+            elif dominant == "A":
                 learning_style_bonus += 0.05
                 logger.debug("Auditory learner bonus: +0.05")
-
-            # Reading/Writing learners (prefer captions)
-            # FIX: R in VARK = Reading/Writing, not V (Visual)
-            if has_captions and "R" in learning_style_upper:
+            elif dominant == "R" and has_captions:
                 learning_style_bonus += 0.10
                 logger.debug(
                     f"Reading learner bonus: +0.10 (has_captions={has_captions})"
                 )
+            elif dominant == "K":
+                learning_style_bonus += 0.05
+                logger.debug("Kinesthetic learner bonus: +0.05")
 
         final_score += learning_style_bonus
 
@@ -818,7 +829,7 @@ class EnhancedResourceRecommendationEngine:
 
     def _extract_video_metadata(
         self, video: YouTubeVideo, accessibility_result: VideoAccessibilityResult
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Video metadata'sını çıkar
 
@@ -853,7 +864,7 @@ class EnhancedResourceRecommendationEngine:
         }
 
     def _build_search_query(
-        self, subject: str, topic: Optional[str], difficulty: str
+        self, subject: str, topic: str | None, difficulty: str
     ) -> str:
         """
         Arama sorgusunu oluştur
@@ -891,8 +902,8 @@ class EnhancedResourceRecommendationEngine:
         return " ".join(parts)
 
     def _convert_fallback_videos(
-        self, fallback_videos: List[Dict[str, Any]]
-    ) -> List[RecommendedVideo]:
+        self, fallback_videos: list[dict[str, Any]]
+    ) -> list[RecommendedVideo]:
         """
         Fallback videoları RecommendedVideo formatına çevir
 
@@ -919,11 +930,11 @@ class EnhancedResourceRecommendationEngine:
                     like_count=video_data.get("like_count", 0),
                     upload_date=video_data.get("upload_date", ""),
                     url=video_data.get("url", ""),
-                    # Scores - fallback videoları için varsayılan skorlar
-                    turkish_score=0.9,
-                    relevance_score=0.8,
-                    quality_score=0.7,
-                    final_score=0.8,
+                    # Scores - fallback: lower than real scored videos
+                    turkish_score=0.5,
+                    relevance_score=0.4,
+                    quality_score=0.3,
+                    final_score=0.4,
                     # Validation
                     is_accessible=True,
                     is_embeddable=True,
@@ -935,13 +946,17 @@ class EnhancedResourceRecommendationEngine:
                 )
                 recommended_videos.append(recommended_video)
             except Exception as e:
-                logger.error(f"Error converting fallback video: {str(e)}")
+                logger.error(f"Error converting fallback video: {e!s}")
 
         return recommended_videos
 
     def _generate_cache_key(
-        self, subject: str, topic: Optional[str], difficulty: str, max_results: int,
-        student_profile: Optional[Dict[str, Any]] = None
+        self,
+        subject: str,
+        topic: str | None,
+        difficulty: str,
+        max_results: int,
+        student_profile: dict[str, Any] | None = None,
     ) -> str:
         """
         Cache key oluştur
@@ -963,7 +978,7 @@ class EnhancedResourceRecommendationEngine:
             learning_style = student_profile.get("learning_style", "") or ""
         return f"video_recommendations:{subject}:{topic_str}:{difficulty}:{max_results}:{learning_style}"
 
-    def _recommended_video_to_dict(self, video: RecommendedVideo) -> Dict[str, Any]:
+    def _recommended_video_to_dict(self, video: RecommendedVideo) -> dict[str, Any]:
         """
         RecommendedVideo'yu dict'e çevir (JSON serializable)
 
@@ -998,7 +1013,7 @@ class EnhancedResourceRecommendationEngine:
             "definition": video.definition,
         }
 
-    def _dict_to_recommended_video(self, data: Dict[str, Any]) -> RecommendedVideo:
+    def _dict_to_recommended_video(self, data: dict[str, Any]) -> RecommendedVideo:
         """
         Dict'i RecommendedVideo'ya çevir
 
@@ -1033,7 +1048,7 @@ class EnhancedResourceRecommendationEngine:
             definition=data["definition"],
         )
 
-    def get_validation_stats(self) -> Dict[str, int]:
+    def get_validation_stats(self) -> dict[str, int]:
         """
         Validation istatistiklerini al
 
@@ -1042,7 +1057,7 @@ class EnhancedResourceRecommendationEngine:
         """
         return self.validation_error_handler.get_failure_stats()
 
-    def get_performance_stats(self) -> Dict[str, Any]:
+    def get_performance_stats(self) -> dict[str, Any]:
         """
         Performance istatistiklerini al
 
@@ -1055,7 +1070,7 @@ class EnhancedResourceRecommendationEngine:
             "validation_stats": self.get_validation_stats(),
         }
 
-    def get_monitoring_stats(self) -> Dict[str, Any]:
+    def get_monitoring_stats(self) -> dict[str, Any]:
         """
         Monitoring istatistiklerini al
 
@@ -1074,7 +1089,7 @@ class EnhancedResourceRecommendationEngine:
             await self.cache_manager.invalidate_pattern("video_recommendations:*")
             logger.info("Video recommendation cache cleared")
         except Exception as e:
-            logger.error(f"Error clearing cache: {str(e)}")
+            logger.error(f"Error clearing cache: {e!s}")
 
     async def close(self):
         """Kaynakları temizle"""
@@ -1083,7 +1098,7 @@ class EnhancedResourceRecommendationEngine:
             await self.quality_validator.close_session()
             logger.info("Enhanced Resource Recommendation Engine closed")
         except Exception as e:
-            logger.error(f"Error closing engine: {str(e)}")
+            logger.error(f"Error closing engine: {e!s}")
 
 
 # Global instance

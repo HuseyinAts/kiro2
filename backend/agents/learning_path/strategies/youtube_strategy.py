@@ -74,11 +74,12 @@ class YouTubeSearchStrategy(ResourceSearchStrategy):
 
             # Extract filters
             subject = filters.get("subject")
+            difficulty = filters.get("difficulty")
             limit = filters.get("limit", 10)
             language = filters.get("language", "tr")
 
             # Build optimized search query
-            search_query = self._build_search_query(query, subject)
+            search_query = self._build_search_query(query, subject, difficulty)
 
             # Reuse one aiohttp session for both API calls (30-50% latency reduction)
             async with aiohttp.ClientSession() as session:
@@ -192,20 +193,36 @@ class YouTubeSearchStrategy(ResourceSearchStrategy):
             logger.warning(f"Failed to normalize YouTube result: {e}")
             return None
 
-    def _build_search_query(self, query: str, subject: str | None) -> str:
+    def _build_search_query(
+        self, query: str, subject: str | None, difficulty: str | None = None
+    ) -> str:
         """Build optimized Turkish educational search query.
 
         Args:
             query: Base search query.
             subject: Optional subject filter.
+            difficulty: Optional difficulty level (başlangıç/orta/ileri).
 
         Returns:
             Optimized search query string.
         """
         parts = [query]
-        if subject:
+        # Avoid duplicating subject if already in query
+        if subject and subject.lower() not in query.lower():
             parts.append(subject)
-        parts.append("konu anlatımı")  # Turkish: topic explanation
+
+        # Add difficulty-appropriate Turkish terms
+        if difficulty:
+            diff_terms = {
+                "başlangıç": "temel giriş seviye",
+                "kolay": "temel giriş seviye",
+                "orta": "konu anlatımı",
+                "zor": "ileri seviye detaylı",
+                "ileri": "ileri seviye detaylı çözüm",
+            }
+            parts.append(diff_terms.get(difficulty.lower(), "konu anlatımı"))
+        else:
+            parts.append("konu anlatımı")
         return " ".join(parts)
 
     async def _search_videos(

@@ -6,16 +6,17 @@ resources (documents, videos, interactive content) for personalized learning pat
 OER Commons (https://www.oercommons.org/) provides open educational resources
 with various licenses (CC-BY, CC-BY-SA, Public Domain).
 """
+
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Optional
-
 import logging
+from typing import TYPE_CHECKING, Any
+
 import aiohttp
 
-from agents.learning_path.strategies.resource_search import ResourceSearchStrategy
-from agents.learning_path.models import LearningResource, KnowledgeLevel
 from agents.learning_path.config import get_learning_path_config
+from agents.learning_path.models import KnowledgeLevel, LearningResource
+from agents.learning_path.strategies.resource_search import ResourceSearchStrategy
 
 if TYPE_CHECKING:
     pass
@@ -34,9 +35,10 @@ class OERSearchStrategy(ResourceSearchStrategy):
     async def search(
         self,
         query: str,
-        subject: Optional[str] = None,
+        subject: str | None = None,
         difficulty_range: tuple[float, float] = (-4.0, 4.0),
         limit: int = 10,
+        **_kwargs: Any,
     ) -> list[LearningResource]:
         """Search OER Commons for educational resources.
 
@@ -60,7 +62,9 @@ class OERSearchStrategy(ResourceSearchStrategy):
             resources = []
             for result in results:
                 resource = self.normalize_result(result)
-                if resource and self._is_in_difficulty_range(resource, difficulty_range):
+                if resource and self._is_in_difficulty_range(
+                    resource, difficulty_range
+                ):
                     resources.append(resource)
 
             return resources[:limit]
@@ -77,7 +81,7 @@ class OERSearchStrategy(ResourceSearchStrategy):
         """
         return "oer_commons"
 
-    def normalize_result(self, raw_result: dict[str, Any]) -> Optional[LearningResource]:
+    def normalize_result(self, raw_result: dict[str, Any]) -> LearningResource | None:
         """Convert OER Commons API response to LearningResource.
 
         Args:
@@ -107,7 +111,9 @@ class OERSearchStrategy(ResourceSearchStrategy):
             return LearningResource(
                 resource_id=f"oer-{resource_id}",
                 title=raw_result.get("title", "")[:200],
-                description=raw_result.get("abstract", raw_result.get("description", ""))[:500],
+                description=raw_result.get(
+                    "abstract", raw_result.get("description", "")
+                )[:500],
                 url=raw_result.get("url", raw_result.get("link", "")),
                 source="oer_commons",
                 resource_type=resource_type,
@@ -155,7 +161,7 @@ class OERSearchStrategy(ResourceSearchStrategy):
     async def _search_oer(
         self,
         query: str,
-        subject: Optional[str],
+        subject: str | None,
         limit: int,
     ) -> list[dict[str, Any]]:
         """Execute search against OER Commons API.
@@ -194,18 +200,20 @@ class OERSearchStrategy(ResourceSearchStrategy):
             # Prefer open licenses
             params["license"] = "cc-by,cc-by-sa,public-domain"
 
-            async with aiohttp.ClientSession() as session:
-                async with session.get(
+            async with (
+                aiohttp.ClientSession() as session,
+                session.get(
                     f"{self.base_url}/search",
                     params=params,
                     timeout=aiohttp.ClientTimeout(total=self.config.SEARCH_TIMEOUT),
-                ) as resp:
-                    if resp.status != 200:
-                        logger.warning(f"OER API returned status {resp.status}")
-                        return []
+                ) as resp,
+            ):
+                if resp.status != 200:
+                    logger.warning(f"OER API returned status {resp.status}")
+                    return []
 
-                    data = await resp.json()
-                    return data.get("results", data.get("items", []))
+                data = await resp.json()
+                return data.get("results", data.get("items", []))
 
         except aiohttp.ClientError as e:
             logger.warning(f"OER API request failed: {e}")
@@ -311,14 +319,13 @@ class OERSearchStrategy(ResourceSearchStrategy):
         """
         if difficulty < -2.0:
             return KnowledgeLevel.BEGINNER
-        elif difficulty < -0.5:
+        if difficulty < -0.5:
             return KnowledgeLevel.ELEMENTARY
-        elif difficulty < 1.0:
+        if difficulty < 1.0:
             return KnowledgeLevel.INTERMEDIATE
-        elif difficulty < 2.5:
+        if difficulty < 2.5:
             return KnowledgeLevel.ADVANCED
-        else:
-            return KnowledgeLevel.EXPERT
+        return KnowledgeLevel.EXPERT
 
     def _extract_topics(self, result: dict[str, Any]) -> list[str]:
         """Extract topics from OER metadata.
@@ -345,7 +352,7 @@ class OERSearchStrategy(ResourceSearchStrategy):
 
         return [t for t in topics if t][:5]
 
-    def _extract_rating(self, result: dict[str, Any]) -> Optional[float]:
+    def _extract_rating(self, result: dict[str, Any]) -> float | None:
         """Extract rating from OER metadata.
 
         Args:
@@ -379,5 +386,7 @@ class OERSearchStrategy(ResourceSearchStrategy):
             True if resource is within difficulty range.
         """
         # Get IRT difficulty from metadata
-        irt_difficulty = resource.metadata.get("difficulty_irt", 0.0) if resource.metadata else 0.0
+        irt_difficulty = (
+            resource.metadata.get("difficulty_irt", 0.0) if resource.metadata else 0.0
+        )
         return range_tuple[0] <= irt_difficulty <= range_tuple[1]

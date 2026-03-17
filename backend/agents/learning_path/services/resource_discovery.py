@@ -17,6 +17,7 @@ Features:
 from __future__ import annotations
 
 import asyncio
+import hashlib
 import logging
 import time
 import unicodedata
@@ -33,6 +34,15 @@ if TYPE_CHECKING:
 from ..config import get_learning_path_config
 
 logger = logging.getLogger(__name__)
+
+
+def _normalize_turkish(text: str) -> str:
+    """NFC normalize + Turkish lowercase (İ→i, I→ı)."""
+    if not text:
+        return text
+    text = unicodedata.normalize("NFC", text)
+    text = text.replace("İ", "i").replace("I", "ı")
+    return text.lower()
 
 
 @dataclass
@@ -53,6 +63,7 @@ class DiscoveryRequest:
 
     query: str
     subject: str | None = None
+    difficulty: str | None = None  # Human-readable: başlangıç/orta/ileri
     difficulty_range: tuple[float, float] = (-4.0, 4.0)
     target_level: KnowledgeLevel | None = None
     limit: int = 20
@@ -313,14 +324,18 @@ class ResourceDiscoveryService:
                     f"Strategy {platform} returned unexpected type: {type(result)}"
                 )
 
-        # Deduplicate
-        unique_resources = self._deduplicate(all_resources)
+        # Rank first, then deduplicate — keeps highest-scored duplicate
+        ranked_resources = self._rank_resources(all_resources, request)
+        unique_resources = self._deduplicate(ranked_resources)
 
-        # Rank resources
-        ranked_resources = self._rank_resources(unique_resources, request)
+        # Embed discovery rank into metadata for downstream scoring
+        for i, resource in enumerate(unique_resources):
+            if resource.metadata is None:
+                resource.metadata = {}
+            resource.metadata["discovery_rank"] = i
 
         # Limit results
-        final_resources = ranked_resources[: request.limit]
+        final_resources = unique_resources[: request.limit]
 
         logger.info(
             f"Discovery complete: {len(final_resources)} resources from {len(sources_searched)} sources"
@@ -357,12 +372,14 @@ class ResourceDiscoveryService:
         last_error: Exception | None = None
         for attempt in range(2):  # 1 initial + 1 retry
             try:
-                return await strategy.search(
-                    query=request.query,
-                    subject=request.subject,
-                    difficulty_range=request.difficulty_range,
-                    limit=request.limit,
-                )
+                kwargs: dict = {
+                    "subject": request.subject,
+                    "difficulty_range": request.difficulty_range,
+                    "limit": request.limit,
+                }
+                if request.difficulty:
+                    kwargs["difficulty"] = request.difficulty
+                return await strategy.search(request.query, **kwargs)
             except Exception as e:
                 last_error = e
                 if attempt == 0:
@@ -410,11 +427,9 @@ class ResourceDiscoveryService:
             if url and url in seen_urls:
                 continue
 
-            # Check title similarity (NFC normalized + lowercase)
+            # Check title similarity (Turkish casefold — İ→i, I→ı)
             title = resource.title
-            title_normalized = (
-                unicodedata.normalize("NFC", title).lower().strip() if title else ""
-            )
+            title_normalized = _normalize_turkish(title).strip() if title else ""
             if title_normalized and title_normalized in seen_titles:
                 continue
 
@@ -450,7 +465,7 @@ class ResourceDiscoveryService:
             score = 0.0
 
             # Platform priority (max 15pt)
-            # get_priority(): youtube=-1, rag=-1, khan=0, oer=0
+            # get_priority(): YouTube/RAG(-1)=15pt, Khan/OER(0)=10pt, Invidious(1)=5pt.
             priority = self.strategy_priority.get(resource.source.lower(), 0)
             score += min(15, max(0, 10 - priority * 5))
 
@@ -516,12 +531,19 @@ class ResourceDiscoveryService:
         return mapping.get(level, 0.0)
 
     def _cache_key(self, request: DiscoveryRequest) -> str:
-        """Generate cache key from request."""
-        return (
-            f"{request.query}|{request.subject}|{request.difficulty_range}"
-            f"|{request.target_level}|{request.limit}"
-            f"|{sorted(request.preferred_platforms)}"
+        """Generate cache key from request using hash to avoid separator collision."""
+
+        key_parts = (
+            request.query,
+            request.subject or "",
+            request.difficulty or "",
+            str(request.difficulty_range),
+            str(request.target_level),
+            str(request.limit),
+            str(sorted(request.preferred_platforms)),
         )
+        digest = hashlib.md5("\x00".join(key_parts).encode()).hexdigest()
+        return f"rd:{digest}"
 
     async def find_similar(
         self, resource: LearningResource, limit: int = 5

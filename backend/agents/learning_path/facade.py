@@ -22,47 +22,28 @@ Teknofest 2025 - Eğitim Eylemci Projesi
 
 from __future__ import annotations
 
-from dataclasses import dataclass
-from typing import TYPE_CHECKING, Any, Dict, List, Optional
 import logging
+from dataclasses import dataclass
+from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
-    from .services.path_generation import (
-        PathGenerationService,
-    )
-    from .services.resource_discovery import (
-        ResourceDiscoveryService,
-    )
-    from .services.path_adaptation import (
-        PathAdaptationService,
-    )
     from .integrations.chat_integration import (
         ChatIntegrationService,
     )
     from .integrations.form_integration import (
         FormIntegrationService,
     )
+    from .services.path_adaptation import (
+        PathAdaptationService,
+    )
+    from .services.path_generation import (
+        PathGenerationService,
+    )
+    from .services.resource_discovery import (
+        ResourceDiscoveryService,
+    )
 
-from .models import (
-    LearningPath,
-    LearningResource,
-    StudentProfile,
-    KnowledgeLevel,
-    LearningStyle,
-)
 from .config import get_learning_path_config
-from .services.path_generation import (
-    PathGenerationRequest,
-    PathGenerationResult,
-)
-from .services.resource_discovery import (
-    DiscoveryRequest,
-)
-from .services.path_adaptation import (
-    AdaptationRequest,
-    AdaptationResult,
-    PerformanceMetrics,
-)
 from .integrations.chat_integration import (
     ChatMessage,
     ChatResponse,
@@ -72,6 +53,25 @@ from .integrations.form_integration import (
     FormSubmission,
     FormSubmissionResult,
 )
+from .models import (
+    KnowledgeLevel,
+    LearningPath,
+    LearningResource,
+    LearningStyle,
+    StudentProfile,
+)
+from .services.path_adaptation import (
+    AdaptationRequest,
+    AdaptationResult,
+    PerformanceMetrics,
+)
+from .services.path_generation import (
+    PathGenerationRequest,
+    PathGenerationResult,
+)
+from .services.resource_discovery import (
+    DiscoveryRequest,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -79,6 +79,7 @@ logger = logging.getLogger(__name__)
 @dataclass
 class FacadeConfig:
     """Configuration for the facade."""
+
     enable_caching: bool = True
     cache_ttl_seconds: int = 300
     max_resources_per_search: int = 20
@@ -108,12 +109,12 @@ class LearningPathFacade:
 
     def __init__(
         self,
-        path_generation: Optional[PathGenerationService] = None,
-        resource_discovery: Optional[ResourceDiscoveryService] = None,
-        path_adaptation: Optional[PathAdaptationService] = None,
-        chat_integration: Optional[ChatIntegrationService] = None,
-        form_integration: Optional[FormIntegrationService] = None,
-        config: Optional[FacadeConfig] = None,
+        path_generation: PathGenerationService | None = None,
+        resource_discovery: ResourceDiscoveryService | None = None,
+        path_adaptation: PathAdaptationService | None = None,
+        chat_integration: ChatIntegrationService | None = None,
+        form_integration: FormIntegrationService | None = None,
+        config: FacadeConfig | None = None,
     ):
         """
         Initialize the facade with optional service dependencies.
@@ -137,8 +138,8 @@ class LearningPathFacade:
         self._form_integration = form_integration
 
         # In-memory cache for active paths (could be Redis in production)
-        self._paths_cache: Dict[str, LearningPath] = {}
-        self._profiles_cache: Dict[str, StudentProfile] = {}
+        self._paths_cache: dict[str, LearningPath] = {}
+        self._profiles_cache: dict[str, StudentProfile] = {}
 
         logger.info("LearningPathFacade initialized")
 
@@ -151,6 +152,7 @@ class LearningPathFacade:
         """Get or create PathGenerationService."""
         if self._path_generation is None:
             from .services.path_generation import PathGenerationService
+
             self._path_generation = PathGenerationService(
                 resource_finder=self.resource_discovery
             )
@@ -161,6 +163,7 @@ class LearningPathFacade:
         """Get or create ResourceDiscoveryService."""
         if self._resource_discovery is None:
             from .services.resource_discovery import ResourceDiscoveryService
+
             self._resource_discovery = ResourceDiscoveryService()
         return self._resource_discovery
 
@@ -169,6 +172,7 @@ class LearningPathFacade:
         """Get or create PathAdaptationService."""
         if self._path_adaptation is None:
             from .services.path_adaptation import PathAdaptationService
+
             self._path_adaptation = PathAdaptationService(
                 resource_discovery=self.resource_discovery
             )
@@ -179,6 +183,7 @@ class LearningPathFacade:
         """Get or create ChatIntegrationService."""
         if self._chat_integration is None:
             from .integrations.chat_integration import ChatIntegrationService
+
             self._chat_integration = ChatIntegrationService(
                 resource_finder=self.resource_discovery
             )
@@ -189,6 +194,7 @@ class LearningPathFacade:
         """Get or create FormIntegrationService."""
         if self._form_integration is None:
             from .integrations.form_integration import FormIntegrationService
+
             self._form_integration = FormIntegrationService()
         return self._form_integration
 
@@ -200,7 +206,7 @@ class LearningPathFacade:
         self,
         student_id: str,
         subject: str,
-        topics: Optional[List[str]] = None,
+        topics: list[str] | None = None,
         target_level: KnowledgeLevel = KnowledgeLevel.INTERMEDIATE,
         max_duration_hours: int = 20,
     ) -> PathGenerationResult:
@@ -240,10 +246,7 @@ class LearningPathFacade:
 
         return result
 
-    async def get_student_path(
-        self,
-        student_id: str
-    ) -> Optional[LearningPath]:
+    async def get_student_path(self, student_id: str) -> LearningPath | None:
         """
         Get the current learning path for a student.
 
@@ -263,7 +266,7 @@ class LearningPathFacade:
     async def adapt_student_path(
         self,
         student_id: str,
-        performance: List[PerformanceMetrics],
+        performance: list[PerformanceMetrics],
     ) -> AdaptationResult:
         """
         Adapt a student's learning path based on performance.
@@ -281,8 +284,7 @@ class LearningPathFacade:
         path = await self.get_student_path(student_id)
         if not path:
             return AdaptationResult(
-                success=False,
-                message="No active path found for student"
+                success=False, message="No active path found for student"
             )
 
         # Get profile
@@ -311,17 +313,19 @@ class LearningPathFacade:
     async def search_resources(
         self,
         query: str,
-        subject: Optional[str] = None,
-        difficulty_range: Optional[tuple] = None,
+        subject: str | None = None,
+        difficulty: str | None = None,
+        difficulty_range: tuple | None = None,
         limit: int = 10,
-        platforms: Optional[List[str]] = None,
-    ) -> List[LearningResource]:
+        platforms: list[str] | None = None,
+    ) -> list[LearningResource]:
         """
         Search for learning resources across all platforms.
 
         Args:
             query: Search query
             subject: Optional subject filter
+            difficulty: Human-readable difficulty (başlangıç/orta/ileri)
             difficulty_range: IRT difficulty range (min, max)
             limit: Maximum results
             platforms: Optional list of platforms to search
@@ -334,6 +338,7 @@ class LearningPathFacade:
         request = DiscoveryRequest(
             query=query,
             subject=subject,
+            difficulty=difficulty,
             difficulty_range=difficulty_range or self.config.default_difficulty_range,
             limit=min(limit, self.config.max_resources_per_search),
             preferred_platforms=platforms or [],
@@ -346,7 +351,7 @@ class LearningPathFacade:
         self,
         resource: LearningResource,
         limit: int = 5,
-    ) -> List[LearningResource]:
+    ) -> list[LearningResource]:
         """
         Find resources similar to a given resource.
 
@@ -367,7 +372,7 @@ class LearningPathFacade:
         self,
         student_id: str,
         message: str,
-        session_id: Optional[str] = None,
+        session_id: str | None = None,
     ) -> ChatResponse:
         """
         Process a chat message from a student.
@@ -419,7 +424,7 @@ class LearningPathFacade:
     async def submit_profile_form(
         self,
         student_id: str,
-        form_data: Dict[str, Any],
+        form_data: dict[str, Any],
     ) -> FormSubmissionResult:
         """
         Submit a profile creation form.
@@ -448,7 +453,7 @@ class LearningPathFacade:
     async def submit_learning_style_form(
         self,
         student_id: str,
-        form_data: Dict[str, Any],
+        form_data: dict[str, Any],
     ) -> FormSubmissionResult:
         """
         Submit a learning style questionnaire.
@@ -475,7 +480,7 @@ class LearningPathFacade:
     async def get_progress(
         self,
         student_id: str,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Get progress summary for a student.
 
@@ -553,7 +558,7 @@ class LearningPathFacade:
             grade="12",
             exam_target="YKS-TYT",
             learning_goal="",
-            learning_style=LearningStyle.VISUAL,
+            learning_style=LearningStyle.MIXED,
             knowledge_level=KnowledgeLevel.INTERMEDIATE,
             interests=[],
             available_time=240,  # 4 hours in minutes
@@ -568,7 +573,7 @@ class LearningPathFacade:
         self._profiles_cache.clear()
         logger.info("Facade cache cleared")
 
-    def get_stats(self) -> Dict[str, Any]:
+    def get_stats(self) -> dict[str, Any]:
         """Get facade statistics."""
         return {
             "cached_paths": len(self._paths_cache),
@@ -579,12 +584,12 @@ class LearningPathFacade:
                 "path_adaptation": self._path_adaptation is not None,
                 "chat_integration": self._chat_integration is not None,
                 "form_integration": self._form_integration is not None,
-            }
+            },
         }
 
 
 # Convenience function for getting a facade instance
-_facade_instance: Optional[LearningPathFacade] = None
+_facade_instance: LearningPathFacade | None = None
 
 
 def get_learning_path_facade() -> LearningPathFacade:

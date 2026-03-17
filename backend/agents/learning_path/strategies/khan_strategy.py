@@ -31,6 +31,7 @@ class KhanSearchStrategy(ResourceSearchStrategy):
         subject: str | None = None,
         difficulty_range: tuple[float, float] = (-4.0, 4.0),
         limit: int = 10,
+        **_kwargs: Any,
     ) -> list[LearningResource]:
         """Search Khan Academy for educational content.
 

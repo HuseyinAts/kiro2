@@ -2,6 +2,10 @@
 Unified Resource Provider
 FAZ 3.1: Content Management Refactoring
 Combines YouTube, EBA TV, Khan Academy and custom resources into a single interface
+
+DEPRECATED: No API consumers. The active pipeline uses
+learning_path_v2.py -> facade.py -> resource_discovery.py.
+Safe to delete in a future cleanup PR.
 """
 
 import asyncio
@@ -10,13 +14,14 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
-from typing import Any, Optional
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
 
 class ResourcePlatform(Enum):
     """Supported resource platforms"""
+
     YOUTUBE = "youtube"
     EBA_TV = "eba_tv"
     KHAN_ACADEMY = "khan_academy"
@@ -25,6 +30,7 @@ class ResourcePlatform(Enum):
 
 class ResourceType(Enum):
     """Types of educational resources"""
+
     VIDEO = "video"
     ARTICLE = "article"
     INTERACTIVE = "interactive"
@@ -35,15 +41,17 @@ class ResourceType(Enum):
 
 class ContentQuality(Enum):
     """Content quality levels"""
+
     EXCELLENT = "excellent"  # 4.5+ rating
-    GOOD = "good"           # 3.5-4.5 rating
-    AVERAGE = "average"     # 2.5-3.5 rating
-    POOR = "poor"           # Below 2.5
+    GOOD = "good"  # 3.5-4.5 rating
+    AVERAGE = "average"  # 2.5-3.5 rating
+    POOR = "poor"  # Below 2.5
 
 
 @dataclass
 class UnifiedResource:
     """Unified resource representation across all platforms"""
+
     id: str
     title: str
     platform: ResourcePlatform
@@ -51,12 +59,12 @@ class UnifiedResource:
     url: str
     subject: str
     topic: str
-    subtopic: Optional[str] = None
+    subtopic: str | None = None
     grade_level: int = 12
     difficulty: str = "medium"
-    duration_seconds: Optional[int] = None
-    thumbnail_url: Optional[str] = None
-    description: Optional[str] = None
+    duration_seconds: int | None = None
+    thumbnail_url: str | None = None
+    description: str | None = None
     quality_score: float = 0.0
     quality_level: ContentQuality = ContentQuality.AVERAGE
     language: str = "tr"
@@ -119,34 +127,30 @@ class ResourceProviderBase(ABC):
     async def search(
         self,
         query: str,
-        subject: Optional[str] = None,
-        topic: Optional[str] = None,
-        grade_level: Optional[int] = None,
+        subject: str | None = None,
+        topic: str | None = None,
+        grade_level: int | None = None,
         limit: int = 10,
     ) -> list[UnifiedResource]:
         """Search for resources"""
-        pass
 
     @abstractmethod
-    async def get_by_id(self, resource_id: str) -> Optional[UnifiedResource]:
+    async def get_by_id(self, resource_id: str) -> UnifiedResource | None:
         """Get resource by ID"""
-        pass
 
     @abstractmethod
     async def get_recommendations(
         self,
         user_id: int,
         subject: str,
-        topic: Optional[str] = None,
+        topic: str | None = None,
         limit: int = 5,
     ) -> list[UnifiedResource]:
         """Get personalized recommendations"""
-        pass
 
     @abstractmethod
     async def health_check(self) -> dict[str, Any]:
         """Check provider health"""
-        pass
 
 
 class YouTubeResourceProvider(ResourceProviderBase):
@@ -160,6 +164,7 @@ class YouTubeResourceProvider(ResourceProviderBase):
         # Import actual services when available
         try:
             from services.youtube_discovery import get_youtube_discovery
+
             self._youtube = await get_youtube_discovery()
             self._connected = True
             logger.info("[YouTube Provider] Connected")
@@ -170,9 +175,9 @@ class YouTubeResourceProvider(ResourceProviderBase):
     async def search(
         self,
         query: str,
-        subject: Optional[str] = None,
-        topic: Optional[str] = None,
-        grade_level: Optional[int] = None,
+        subject: str | None = None,
+        topic: str | None = None,
+        grade_level: int | None = None,
         limit: int = 10,
     ) -> list[UnifiedResource]:
         """Search YouTube for educational content"""
@@ -194,7 +199,7 @@ class YouTubeResourceProvider(ResourceProviderBase):
         for i in range(min(limit, 5)):
             resource = UnifiedResource(
                 id=f"yt_{i}_{hash(query) % 10000}",
-                title=f"{query} - {subject or 'Genel'} Ders Anlatımı #{i+1}",
+                title=f"{query} - {subject or 'Genel'} Ders Anlatımı #{i + 1}",
                 platform=ResourcePlatform.YOUTUBE,
                 resource_type=ResourceType.VIDEO,
                 url=f"https://youtube.com/watch?v=example{i}",
@@ -211,7 +216,7 @@ class YouTubeResourceProvider(ResourceProviderBase):
 
         return resources
 
-    async def get_by_id(self, resource_id: str) -> Optional[UnifiedResource]:
+    async def get_by_id(self, resource_id: str) -> UnifiedResource | None:
         """Get YouTube video by ID"""
         if not resource_id.startswith("yt_"):
             return None
@@ -230,7 +235,7 @@ class YouTubeResourceProvider(ResourceProviderBase):
         self,
         user_id: int,
         subject: str,
-        topic: Optional[str] = None,
+        topic: str | None = None,
         limit: int = 5,
     ) -> list[UnifiedResource]:
         """Get personalized YouTube recommendations"""
@@ -262,6 +267,7 @@ class EBATVResourceProvider(ResourceProviderBase):
         """Initialize EBA TV connection"""
         try:
             from services.eba_tv_client import get_eba_client
+
             self._eba = await get_eba_client()
             self._connected = True
             logger.info("[EBA TV Provider] Connected")
@@ -272,9 +278,9 @@ class EBATVResourceProvider(ResourceProviderBase):
     async def search(
         self,
         query: str,
-        subject: Optional[str] = None,
-        topic: Optional[str] = None,
-        grade_level: Optional[int] = None,
+        subject: str | None = None,
+        topic: str | None = None,
+        grade_level: int | None = None,
         limit: int = 10,
     ) -> list[UnifiedResource]:
         """Search EBA TV for content"""
@@ -304,7 +310,7 @@ class EBATVResourceProvider(ResourceProviderBase):
 
         return resources
 
-    async def get_by_id(self, resource_id: str) -> Optional[UnifiedResource]:
+    async def get_by_id(self, resource_id: str) -> UnifiedResource | None:
         """Get EBA TV video by ID"""
         if not resource_id.startswith("eba_"):
             return None
@@ -325,7 +331,7 @@ class EBATVResourceProvider(ResourceProviderBase):
         self,
         user_id: int,
         subject: str,
-        topic: Optional[str] = None,
+        topic: str | None = None,
         limit: int = 5,
     ) -> list[UnifiedResource]:
         """Get personalized EBA TV recommendations"""
@@ -356,6 +362,7 @@ class KhanAcademyResourceProvider(ResourceProviderBase):
         """Initialize Khan Academy connection"""
         try:
             from services.khan_academy_client import get_khan_client
+
             self._khan = await get_khan_client()
             self._connected = True
             logger.info("[Khan Academy Provider] Connected")
@@ -366,9 +373,9 @@ class KhanAcademyResourceProvider(ResourceProviderBase):
     async def search(
         self,
         query: str,
-        subject: Optional[str] = None,
-        topic: Optional[str] = None,
-        grade_level: Optional[int] = None,
+        subject: str | None = None,
+        topic: str | None = None,
+        grade_level: int | None = None,
         limit: int = 10,
     ) -> list[UnifiedResource]:
         """Search Khan Academy for content"""
@@ -381,7 +388,9 @@ class KhanAcademyResourceProvider(ResourceProviderBase):
                 id=f"khan_{i}_{hash(query) % 10000}",
                 title=f"{topic or query} | Khan Academy Türkçe",
                 platform=ResourcePlatform.KHAN_ACADEMY,
-                resource_type=ResourceType.VIDEO if i % 2 == 0 else ResourceType.EXERCISE,
+                resource_type=ResourceType.VIDEO
+                if i % 2 == 0
+                else ResourceType.EXERCISE,
                 url=f"https://tr.khanacademy.org/content/{i}",
                 subject=subject or "Matematik",
                 topic=topic or query,
@@ -398,7 +407,7 @@ class KhanAcademyResourceProvider(ResourceProviderBase):
 
         return resources
 
-    async def get_by_id(self, resource_id: str) -> Optional[UnifiedResource]:
+    async def get_by_id(self, resource_id: str) -> UnifiedResource | None:
         """Get Khan Academy content by ID"""
         if not resource_id.startswith("khan_"):
             return None
@@ -418,7 +427,7 @@ class KhanAcademyResourceProvider(ResourceProviderBase):
         self,
         user_id: int,
         subject: str,
-        topic: Optional[str] = None,
+        topic: str | None = None,
         limit: int = 5,
     ) -> list[UnifiedResource]:
         """Get personalized Khan Academy recommendations"""
@@ -473,12 +482,12 @@ class UnifiedResourceService:
     async def search(
         self,
         query: str,
-        platforms: Optional[list[ResourcePlatform]] = None,
-        subject: Optional[str] = None,
-        topic: Optional[str] = None,
-        grade_level: Optional[int] = None,
-        resource_type: Optional[ResourceType] = None,
-        min_quality: Optional[ContentQuality] = None,
+        platforms: list[ResourcePlatform] | None = None,
+        subject: str | None = None,
+        topic: str | None = None,
+        grade_level: int | None = None,
+        resource_type: ResourceType | None = None,
+        min_quality: ContentQuality | None = None,
         limit: int = 20,
     ) -> list[UnifiedResource]:
         """
@@ -532,8 +541,7 @@ class UnifiedResourceService:
         # Filter by resource type
         if resource_type:
             all_resources = [
-                r for r in all_resources
-                if r.resource_type == resource_type
+                r for r in all_resources if r.resource_type == resource_type
             ]
 
         # Filter by minimum quality
@@ -546,7 +554,8 @@ class UnifiedResourceService:
             ]
             min_index = quality_order.index(min_quality)
             all_resources = [
-                r for r in all_resources
+                r
+                for r in all_resources
                 if quality_order.index(r.quality_level) >= min_index
             ]
 
@@ -558,7 +567,7 @@ class UnifiedResourceService:
     async def get_resource(
         self,
         resource_id: str,
-    ) -> Optional[UnifiedResource]:
+    ) -> UnifiedResource | None:
         """
         Get a resource by ID from any platform
 
@@ -590,8 +599,8 @@ class UnifiedResourceService:
         self,
         user_id: int,
         subject: str,
-        topic: Optional[str] = None,
-        platforms: Optional[list[ResourcePlatform]] = None,
+        topic: str | None = None,
+        platforms: list[ResourcePlatform] | None = None,
         limit: int = 10,
     ) -> list[UnifiedResource]:
         """
@@ -641,8 +650,8 @@ class UnifiedResourceService:
     async def get_by_subject(
         self,
         subject: str,
-        topic: Optional[str] = None,
-        grade_level: Optional[int] = None,
+        topic: str | None = None,
+        grade_level: int | None = None,
         limit: int = 20,
     ) -> dict[str, list[UnifiedResource]]:
         """
@@ -689,10 +698,7 @@ class UnifiedResourceService:
             health_results[platform.value] = await provider.health_check()
 
         # Overall status
-        all_healthy = all(
-            h.get("status") == "healthy"
-            for h in health_results.values()
-        )
+        all_healthy = all(h.get("status") == "healthy" for h in health_results.values())
 
         return {
             "overall_status": "healthy" if all_healthy else "degraded",
@@ -709,9 +715,7 @@ class UnifiedResourceService:
         """
         return {
             "providers_count": len(self.providers),
-            "active_providers": [
-                p.value for p in self.providers.keys()
-            ],
+            "active_providers": [p.value for p in self.providers.keys()],
             "supported_types": [t.value for t in ResourceType],
             "quality_levels": [q.value for q in ContentQuality],
             "initialized": self._initialized,
@@ -719,7 +723,7 @@ class UnifiedResourceService:
 
 
 # Global service instance
-_unified_resource_service: Optional[UnifiedResourceService] = None
+_unified_resource_service: UnifiedResourceService | None = None
 
 
 async def get_unified_resource_service() -> UnifiedResourceService:

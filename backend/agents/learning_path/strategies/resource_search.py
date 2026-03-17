@@ -23,10 +23,10 @@ Usage:
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from typing import TYPE_CHECKING, Any, Dict, List
+from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
-    from backend.agents.learning_path.models import LearningResource
+    from agents.learning_path.models import LearningResource
 
 
 class ResourceSearchStrategy(ABC):
@@ -45,11 +45,7 @@ class ResourceSearchStrategy(ABC):
     """
 
     @abstractmethod
-    async def search(
-        self,
-        query: str,
-        **filters: Any
-    ) -> List[LearningResource]:
+    async def search(self, query: str, **filters: Any) -> list[LearningResource]:
         """
         Search for learning resources on the platform.
 
@@ -83,7 +79,6 @@ class ResourceSearchStrategy(ABC):
             >>> len(resources)
             10
         """
-        pass
 
     @abstractmethod
     def get_platform_name(self) -> str:
@@ -98,10 +93,9 @@ class ResourceSearchStrategy(ABC):
             >>> strategy.get_platform_name()
             'YouTube'
         """
-        pass
 
     @abstractmethod
-    def normalize_result(self, raw_result: Dict[str, Any]) -> LearningResource:
+    def normalize_result(self, raw_result: dict[str, Any]) -> LearningResource:
         """
         Normalize a platform-specific result to LearningResource format.
 
@@ -135,7 +129,6 @@ class ResourceSearchStrategy(ABC):
             >>> resource.estimated_time
             15
         """
-        pass
 
     def get_priority(self) -> int:
         """
@@ -181,10 +174,8 @@ class ResourceSearchStrategy(ABC):
             raise ValueError("Search query too short (minimum 2 characters)")
 
     def apply_common_filters(
-        self,
-        results: List[LearningResource],
-        **filters: Any
-    ) -> List[LearningResource]:
+        self, results: list[LearningResource], **filters: Any
+    ) -> list[LearningResource]:
         """
         Apply common filters to search results.
 
@@ -223,8 +214,7 @@ class ResourceSearchStrategy(ABC):
         if "rating_min" in filters:
             rating_min = filters["rating_min"]
             filtered = [
-                r for r in filtered
-                if r.rating is not None and r.rating >= rating_min
+                r for r in filtered if r.rating is not None and r.rating >= rating_min
             ]
 
         # Duration filters
@@ -236,16 +226,19 @@ class ResourceSearchStrategy(ABC):
             duration_max = filters["duration_max"]
             filtered = [r for r in filtered if r.estimated_time <= duration_max]
 
-        # Difficulty filter
-        if "difficulty" in filters:
-            from backend.agents.learning_path.models import KnowledgeLevel
-            difficulty = filters["difficulty"]
+        # Difficulty filter (KnowledgeLevel enum values only, not human-readable)
+        if "difficulty_level" in filters:
+            from agents.learning_path.models import KnowledgeLevel
+
+            difficulty = filters["difficulty_level"]
             if isinstance(difficulty, str):
-                difficulty_level = KnowledgeLevel(difficulty)
-                filtered = [
-                    r for r in filtered
-                    if r.difficulty_level == difficulty_level
-                ]
+                try:
+                    difficulty_level = KnowledgeLevel(difficulty)
+                    filtered = [
+                        r for r in filtered if r.difficulty_level == difficulty_level
+                    ]
+                except ValueError:
+                    pass  # Unknown difficulty level, skip filtering
 
         # Max results limit
         if "max_results" in filters:
