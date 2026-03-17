@@ -6,6 +6,12 @@
 - **State persistence**: Session sonunda `.claude/sessions/latest.md`'ye state yaz (yapılanlar, bekleyenler, engelleyiciler, dokunulan dosyalar, sonraki adımlar). 50 satırı geçmesin.
 - **Plan time-boxing**: Plan modunda 2-3 dk keşiften sonra kullanıcıya check-in yap. Açık onay almadan 3 turdan fazla plan taslağı yapma.
 - **Context validation**: Session resume sonrasi, hook'tan gelen state'i CLAUDE.md/MEMORY.md ile karsilastir. Tutarsizlik varsa (branch, soru sayisi, son commit) kullaniciya bildir.
+- **Session handoff**: 'save/new session' denildiginde:
+  1. `.claude/sessions/latest.md` guncelle
+  2. MEMORY.md session index guncelle
+  3. Pending changes commit et
+  4. Handoff prompt sun
+  NOT: Yeni session acmak MUMKUN DEGIL — sadece prompt metni ver
 
 ## Communication Rules
 
@@ -13,6 +19,16 @@
 2. **Plan Iteration Limit**: Plan oluştururken maksimum 2 iterasyon. 2. iterasyonda hâlâ netleşmediyse kullanıcıya sun ve yön sor. Onaysız auto-pivot yapma.
 3. **Windows Environment**: Bu bir Windows 11 + NTFS ortamı. Linux/Mac komutları önerme. NTFS dosya tarama yavaştır — batch işlemlerde bunu hesaba kat. `python3` yok, `python` kullan.
 4. **Direct questions**: Direkt soru sorulduğunda (hangi model?, X yapıldı mı?) ÖNCE direkt cevap ver, SONRA gerekirse doğrula/keşfet. Asla dosya keşfiyle başlama.
+
+## Debugging Protocol
+
+Bug fix baslamadan ONCE bu 3 kontrol ZORUNLU:
+
+1. **Hangi endpoint?** `curl -s http://localhost:8000/api/v1/ENDPOINT` — gercek hata ne?
+2. **Hangi tablo dolu?** `question_bank` = 77K production, `questions` = BOS legacy
+3. **Altyapi calisiyor mu?** 503/500 → %75 altyapi sorunu (detay: verification.md INFRA-FIRST)
+
+Bu 3 kontrol yapilmadan fix onerme. Sessiz basarisizlik kontrolu: 200 donup bos data mi?
 
 ## Git Operations
 
@@ -28,6 +44,18 @@ KIRO2 is a Turkish EdTech platform for YKS/TYT/AYT university entrance exam prep
 **Mission:** Deliver personalized, AI-powered exam preparation using Turkish NLP and adaptive learning.
 
 **Project Root:** `C:\Users\husey\kiro2`
+
+### Architecture Quick Reference
+
+| Katman | Yol | Notlar |
+|--------|-----|--------|
+| API Routers | `backend/api/` | FastAPI, 41+ endpoint |
+| Services | `backend/services/` | Is mantigi |
+| Models | `backend/models/` | SQLAlchemy — `question_bank` = prod, `questions` = BOS |
+| Frontend Pages | `frontend/src/pages/` | React 18 + TypeScript |
+| Frontend Hooks | `frontend/src/hooks/` | Custom hooks (useLearningPath vb.) |
+| State | `frontend/src/store/` | Zustand (authStore, NOT stores/) |
+| Auth | `backend/core/dependencies.py` | Cookie (frontend) + Bearer (API) dual auth |
 
 ## 📊 Current Status (March 2026)
 
@@ -618,6 +646,13 @@ Configure in: Repository Settings → Secrets and variables → Actions
 | `PROD_KUBE_CONFIG` | Production | Kubernetes production deployment (deploy.yml) |
 | `STAGING_TEST_PASSWORD` | Staging | Staging smoke test user password (deploy.yml) |
 | `SNYK_TOKEN` | Optional | Security vulnerability scanning (security.yml) |
+
+## Docker / Deployment
+
+- Linux case-sensitive: Import casing dosya adiyla birebir eslesmeli (App.tsx != app.tsx)
+- nginx:alpine'de `wget` yok — healthcheck icin `curl` kullan
+- `manualChunks: undefined` — Vite auto code-split en guvenli
+- Frontend: nginx port 3000, API proxy `/api/*` -> backend:8000
 
 ## 📞 Contact & Resources
 

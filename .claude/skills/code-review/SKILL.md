@@ -14,6 +14,19 @@ Bu skill, belirtilen dosya veya PR'ı kapsamlı olarak inceler.
 
 ## İnceleme Protokolü
 
+### 0. On Kontroller (Insights-Based)
+
+Bu kontroller 77 session analizi sonucu eklendi — en sik yapilan hatalar:
+
+| Kontrol | Aciklama | Oncelik |
+|---------|----------|---------|
+| Dogru Tablo | `question_bank` (77K) mi yoksa bos `questions` tablosu mu sorgulaniyor? | P0 |
+| Root Cause | Endpoint gercekten bu dosyada mi? Route collision/siralama kontrol et | P0 |
+| Pydantic Access | Dict-style `obj["field"]` yerine `obj.field` attribute access mi? | P1 |
+| is_active Filter | Soru sorgulari `is_active == True` filtresi iceriyor mu? | P1 |
+| Case Convention | question_bank UPPERCASE ("TYT") vs enum lowercase ("tyt") uyumu | P1 |
+| get_async_session | Context manager mi generator mi? Dogru pattern kullaniliyor mu? | P1 |
+
 ### 1. Güvenlik Kontrolü (OWASP Top 10)
 
 | Kontrol | Açıklama | Öncelik |

@@ -15,6 +15,7 @@ from __future__ import annotations
 
 import json
 import os
+import subprocess
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
@@ -91,14 +92,39 @@ def save_session_info(session_id: str) -> None:
 
 
 def check_environment() -> list[str]:
-    """Check recommended environment variables."""
+    """Check environment variables AND infrastructure health."""
     warnings = []
+
+    # API keys
     for var, desc in {
         "ANTHROPIC_API_KEY": "API erisimi icin gerekli",
         "GOOGLE_API_KEY": "Gemini MCP icin gerekli",
     }.items():
         if not os.environ.get(var):
             warnings.append(f"{var} tanimli degil: {desc}")
+
+    # Infrastructure checks (fast, max 3s total)
+    # PostgreSQL (port 5434) — 1s timeout
+    try:
+        result = subprocess.run(
+            ["pg_isready", "-p", "5434", "-t", "1"],
+            capture_output=True, timeout=2
+        )
+        if result.returncode != 0:
+            warnings.append("PostgreSQL (5434) erisilemez")
+    except (FileNotFoundError, subprocess.TimeoutExpired, OSError):
+        pass  # pg_isready not installed or timeout
+
+    # Backend health — 1s timeout
+    try:
+        import urllib.request
+        req = urllib.request.Request("http://localhost:8000/api/v1/health", method="GET")
+        with urllib.request.urlopen(req, timeout=1) as resp:
+            if resp.status != 200:
+                warnings.append(f"Backend health: HTTP {resp.status}")
+    except Exception:
+        warnings.append("Backend (8000) erisilemez")
+
     return warnings
 
 
