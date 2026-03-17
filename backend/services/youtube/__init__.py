@@ -21,6 +21,7 @@ Kullanim:
 """
 
 from .cache_manager import CacheManagerMixin
+from .database import YouTubeCacheDB
 from .discovery import YouTubeDiscovery, get_youtube_discovery
 from .models import (
     DIFFICULTY_ALIASES,
@@ -30,7 +31,10 @@ from .models import (
     SubjectType,
     VideoMetadata,
 )
+from .nlp import TurkishContentFilter
+from .quality import QualityScorer
 from .quality_scorer import QualityScorerMixin
+from .search import YouTubeSearchService
 from .search_engine import SearchEngineMixin
 from .turkish_filter import TurkishFilterMixin
 
@@ -46,7 +50,12 @@ __all__ = [
     # Aliases for backward compat
     "SUBJECT_ALIASES",
     "DIFFICULTY_ALIASES",
-    # Mixins (for testing/extension)
+    # Standalone services (preferred for new code)
+    "YouTubeSearchService",
+    "QualityScorer",
+    "TurkishContentFilter",
+    "YouTubeCacheDB",
+    # Mixins (deprecated, for backward compat)
     "SearchEngineMixin",
     "QualityScorerMixin",
     "TurkishFilterMixin",

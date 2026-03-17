@@ -428,9 +428,12 @@ class TurkishContentFilter:
             if trusted_channel.lower() == channel_lower:
                 return True
 
-        # Kısmi eşleşme kontrolü
+        # Kısmi eşleşme kontrolü — short strings (<4 chars) require exact match
         for trusted_channel in TRUSTED_TURKISH_CHANNELS:
             trusted_lower = trusted_channel.lower()
+            shorter = min(len(trusted_lower), len(channel_lower))
+            if shorter < 4:
+                continue
             if trusted_lower in channel_lower or channel_lower in trusted_lower:
                 return True
 
@@ -840,6 +843,7 @@ class TurkishContentFilter:
         """
         difficulty_map = {
             "başlangıç": 1,
+            "baslangic": 1,
             "kolay": 1,
             "temel": 1,
             "orta": 2,
@@ -847,6 +851,7 @@ class TurkishContentFilter:
             "zor": 3,
             "ileri": 3,
             "advanced": 3,
+            "sinava_ozel": 3,
         }
 
         video_level = difficulty_map.get(video_difficulty.lower(), 2)

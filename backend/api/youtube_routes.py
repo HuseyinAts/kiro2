@@ -6,7 +6,7 @@ import asyncio
 import logging
 import time
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from fastapi import (
     APIRouter,
@@ -14,8 +14,10 @@ from fastapi import (
     Depends,
     HTTPException,
     Request,
-    Response as FastAPIResponse,
     status,
+)
+from fastapi import (
+    Response as FastAPIResponse,
 )
 from pydantic import BaseModel, Field, field_validator
 
@@ -44,7 +46,7 @@ except (ImportError, TypeError):
     get_semantic_youtube_search = None
 
 try:
-    from services.youtube_discovery import (
+    from services.youtube import (
         DifficultyLevel,
         ExamType,
         SubjectType,
@@ -78,15 +80,16 @@ except (ImportError, TypeError):
 
 try:
     from services.youtube_rate_limiter import (
-        get_youtube_rate_limiter,
         YouTubeRateLimiter,
+        get_youtube_rate_limiter,
     )
 except (ImportError, TypeError):
     get_youtube_rate_limiter = None
     YouTubeRateLimiter = None
-from core.metrics_collector import get_metrics_collector
-from core.ddos_protection import limiter  # Task 12: Use global limiter
 from slowapi.errors import RateLimitExceeded
+
+from core.ddos_protection import limiter  # Task 12: Use global limiter
+from core.metrics_collector import get_metrics_collector
 
 # from core.elasticsearch_logger import get_elasticsearch_logger, LogLevel, LogCategory
 
@@ -122,9 +125,11 @@ async def youtube_rate_limit_exceeded_handler(request: Request, exc: RateLimitEx
         },
     )
 
-    return HTTPException(
+    from fastapi.responses import JSONResponse
+
+    return JSONResponse(
         status_code=status.HTTP_429_TOO_MANY_REQUESTS,
-        detail=error_response,
+        content=error_response,
         headers={
             "Retry-After": str(retry_after),
             "X-RateLimit-Limit": "10",
@@ -143,14 +148,14 @@ class VideoSearchRequest(BaseModel):
     exam_type: str
     max_results: int = 20
     search_mode: str = "semantic"  # "semantic", "keyword", "hybrid"
-    custom_query: Optional[str] = None
+    custom_query: str | None = None
 
 
 class StudentProfileRequest(BaseModel):
-    goals: List[str]
-    currentLevel: Dict[str, int]
+    goals: list[str]
+    currentLevel: dict[str, int]
     learningStyle: str
-    preferences: Dict[str, Any] = {}
+    preferences: dict[str, Any] = {}
 
 
 class VideoResponse(BaseModel):
@@ -193,13 +198,13 @@ class VideoResponse(BaseModel):
     url: str
 
     # Task 18: Yeni alanlar - Türkçe içerik filtreleme skorları
-    language_score: Optional[float] = Field(
+    language_score: float | None = Field(
         None, ge=0.0, le=1.0, description="Türkçe dil skoru (0-1)"
     )  # Req 13.20
-    relevance_score: Optional[float] = Field(
+    relevance_score: float | None = Field(
         None, ge=0.0, le=1.0, description="Konu alakalılık skoru (0-1)"
     )  # Req 14.8
-    difficulty_match: Optional[float] = Field(
+    difficulty_match: float | None = Field(
         None, ge=0.0, le=1.0, description="Zorluk seviyesi uyum skoru (0-1)"
     )  # Req 15.15
 
@@ -208,9 +213,11 @@ class VideoResponse(BaseModel):
     )
     @classmethod
     def validate_score_range(cls, v):
-        """Skorların 0-1 aralığında olduğunu doğrula"""
-        if v is not None and (v < 0.0 or v > 1.0):
-            raise ValueError("Skor değeri 0.0 ile 1.0 arasında olmalıdır")
+        """Skorları 0-1 aralığına normalize et (0-10 ölçeği otomatik dönüştürülür)"""
+        if v is not None:
+            if v > 1.0:
+                v = min(v / 10.0, 1.0)
+            v = max(v, 0.0)
         return v
 
     @field_validator("view_count")
@@ -268,10 +275,10 @@ class RecommendationResponse(BaseModel):
     """
 
     subject_exam: str = Field(..., min_length=1, description="Konu ve sınav tipi")
-    videos: List[VideoResponse] = Field(..., description="Video listesi")
+    videos: list[VideoResponse] = Field(..., description="Video listesi")
     total_count: int = Field(..., ge=0, description="Toplam video sayısı")
-    cache_hit: Optional[bool] = Field(False, description="Cache'den mi geldi?")
-    response_time_ms: Optional[int] = Field(0, ge=0, description="Yanıt süresi (ms)")
+    cache_hit: bool | None = Field(False, description="Cache'den mi geldi?")
+    response_time_ms: int | None = Field(0, ge=0, description="Yanıt süresi (ms)")
 
     @field_validator("total_count")
     @classmethod
@@ -327,8 +334,8 @@ class SearchStatsResponse(BaseModel):
     total_cached_videos: int
     cache_hit_rate: float
     last_update: datetime
-    supported_subjects: List[str]
-    supported_exam_types: List[str]
+    supported_subjects: list[str]
+    supported_exam_types: list[str]
 
 
 class ComponentHealthResponse(BaseModel):
@@ -337,17 +344,17 @@ class ComponentHealthResponse(BaseModel):
     name: str
     status: str
     response_time_ms: float
-    error_message: Optional[str] = None
-    last_check: Optional[str] = None
-    details: Dict[str, Any] = {}
+    error_message: str | None = None
+    last_check: str | None = None
+    details: dict[str, Any] = {}
 
 
 class SystemHealthResponse(BaseModel):
     """Sistem sağlık durumu response modeli"""
 
     overall_status: str
-    components: List[ComponentHealthResponse]
-    metrics: Dict[str, Any]
+    components: list[ComponentHealthResponse]
+    metrics: dict[str, Any]
     timestamp: str
 
 
@@ -397,7 +404,7 @@ async def get_health_service() -> HealthCheckService:
     return get_health_check_service()
 
 
-@router.post("/search", response_model=List[VideoResponse])
+@router.post("/search", response_model=list[VideoResponse])
 @limiter.limit("10/minute")  # Task 12: 10 req/min per IP
 async def search_videos(
     request_obj: Request,
@@ -570,9 +577,9 @@ async def search_videos(
         return response_videos
 
     except Exception as e:
-        logger.error(f"YouTube arama hatası: {str(e)}")
+        logger.error(f"YouTube arama hatası: {e!s}")
         raise HTTPException(
-            status_code=500, detail=f"YouTube arama sırasında hata: {str(e)}"
+            status_code=500, detail=f"YouTube arama sırasında hata: {e!s}"
         )
 
 
@@ -592,7 +599,7 @@ async def recommendations_preflight():
     )
 
 
-@router.post("/recommendations", response_model=List[RecommendationResponse])
+@router.post("/recommendations", response_model=list[RecommendationResponse])
 @limiter.limit("10/minute")  # Task 12: 10 req/min per IP
 async def get_personalized_recommendations(
     request_obj: Request,
@@ -767,9 +774,9 @@ async def get_personalized_recommendations(
         )
         response.headers["X-YouTube-Quota-Used"] = str(updated_quota_info.used_quota)
         response.headers["X-YouTube-Quota-Limit"] = str(updated_quota_info.daily_limit)
-        response.headers[
-            "X-YouTube-Quota-Reset"
-        ] = updated_quota_info.reset_time.isoformat()
+        response.headers["X-YouTube-Quota-Reset"] = (
+            updated_quota_info.reset_time.isoformat()
+        )
         response.headers["X-Cache-Hit"] = str(cache_hit).lower()
 
         # 11. Structured logging - Request end (success)
@@ -859,12 +866,11 @@ async def get_search_stats(
     YouTube arama sistemi istatistikleri
     """
     try:
+        import sqlite3
+
         # Cache istatistiklerini al
-        with discovery._db_path.open() as f:
-            import sqlite3
-
-            conn = sqlite3.connect(discovery.db_path)
-
+        conn = sqlite3.connect(discovery.db_path)
+        try:
             # Total cached videos
             cursor = conn.execute("SELECT COUNT(*) FROM video_cache")
             total_cached = cursor.fetchone()[0]
@@ -877,7 +883,7 @@ async def get_search_stats(
                 if last_update_str
                 else datetime.now()
             )
-
+        finally:
             conn.close()
 
         # Cache hit rate hesapla (basit implementation)
@@ -1002,9 +1008,9 @@ async def health_check(
         return response
 
     except Exception as e:
-        logger.error(f"Health check hatası: {str(e)}")
+        logger.error(f"Health check hatası: {e!s}")
         raise HTTPException(
-            status_code=500, detail=f"Sağlık kontrolü yapılamadı: {str(e)}"
+            status_code=500, detail=f"Sağlık kontrolü yapılamadı: {e!s}"
         )
 
 
@@ -1072,8 +1078,8 @@ async def get_prometheus_metrics():
         return Response(content=metrics_data, media_type=content_type)
 
     except Exception as e:
-        logger.error(f"Prometheus metrics hatası: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"Metrics alınamadı: {str(e)}")
+        logger.error(f"Prometheus metrics hatası: {e!s}")
+        raise HTTPException(status_code=500, detail=f"Metrics alınamadı: {e!s}")
 
 
 @router.get("/metrics/snapshot", response_model=MetricsSnapshotResponse)
@@ -1118,9 +1124,9 @@ async def get_metrics_snapshot():
         return response
 
     except Exception as e:
-        logger.error(f"Metrics snapshot hatası: {str(e)}")
+        logger.error(f"Metrics snapshot hatası: {e!s}")
         raise HTTPException(
-            status_code=500, detail=f"Metrics snapshot alınamadı: {str(e)}"
+            status_code=500, detail=f"Metrics snapshot alınamadı: {e!s}"
         )
 
 

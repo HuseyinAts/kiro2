@@ -6,7 +6,6 @@ TYT/AYT video kesifleri icin veri modelleri.
 
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import List, Optional
 
 
 class SubjectType(Enum):
@@ -61,7 +60,9 @@ class VideoMetadata:
     difficulty: DifficultyLevel
     exam_type: ExamType
     language: str = "tr"
-    relevance_keywords: List[str] = field(default_factory=list)
+    relevance_keywords: list[str] = field(default_factory=list)
+    turkish_content_score: float | None = None
+    content_relevance_score: float | None = None
 
     def to_dict(self) -> dict:
         """Video metadata'yi dict'e cevir"""
@@ -81,15 +82,17 @@ class VideoMetadata:
             "exam_type": self.exam_type.value,
             "language": self.language,
             "relevance_keywords": self.relevance_keywords,
+            "turkish_content_score": self.turkish_content_score,
+            "content_relevance_score": self.content_relevance_score,
         }
 
     @classmethod
     def from_dict(
         cls,
         data: dict,
-        subject: Optional[SubjectType] = None,
-        difficulty: Optional[DifficultyLevel] = None,
-        exam_type: Optional[ExamType] = None,
+        subject: SubjectType | None = None,
+        difficulty: DifficultyLevel | None = None,
+        exam_type: ExamType | None = None,
     ) -> "VideoMetadata":
         """Dict'ten VideoMetadata olustur"""
         return cls(

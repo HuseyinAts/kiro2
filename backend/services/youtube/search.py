@@ -9,15 +9,14 @@ Extracted from youtube_discovery.py
 import hashlib
 import json
 import logging
-from typing import Dict, List, Optional
 
 import aiohttp
 from bs4 import BeautifulSoup
 
 from .config import SEARCH_TEMPLATES
 from .database import YouTubeCacheDB
+from .models import DifficultyLevel, ExamType, SubjectType, VideoMetadata
 from .quality import QualityScorer
-from .types import DifficultyLevel, ExamType, SubjectType, VideoMetadata
 
 logger = logging.getLogger(__name__)
 
@@ -28,7 +27,7 @@ class YouTubeSearchService:
     def __init__(self, cache_db: YouTubeCacheDB, quality_scorer: QualityScorer):
         self.cache_db = cache_db
         self.quality_scorer = quality_scorer
-        self.session: Optional[aiohttp.ClientSession] = None
+        self.session: aiohttp.ClientSession | None = None
         self._mock_data_returned = False
 
     async def start_session(self) -> None:
@@ -53,7 +52,7 @@ class YouTubeSearchService:
         difficulty: DifficultyLevel,
         exam_type: ExamType,
         year: int = 2025,
-    ) -> List[str]:
+    ) -> list[str]:
         """Akıllı arama sorguları oluştur"""
         templates = SEARCH_TEMPLATES.get(exam_type, [])
         queries = []
@@ -82,7 +81,7 @@ class YouTubeSearchService:
         difficulty: DifficultyLevel,
         exam_type: ExamType,
         max_results: int = 10,
-    ) -> List[VideoMetadata]:
+    ) -> list[VideoMetadata]:
         """Concurrent YouTube arama ve işleme"""
         try:
             results = await self.search_youtube_direct(query, max_results)
@@ -124,7 +123,7 @@ class YouTubeSearchService:
 
     async def search_youtube_direct(
         self, query: str, max_results: int = 20
-    ) -> List[Dict]:
+    ) -> list[dict]:
         """YouTube'da doğrudan arama (API olmadan)"""
         # Session lazy loading kaldırıldı - direkt mock veri döndür
         if not self._mock_data_returned:
@@ -178,7 +177,7 @@ class YouTubeSearchService:
             logger.error(f"YouTube arama hatası: {e}")
             return []
 
-    def _extract_video_data(self, youtube_data: Dict) -> List[Dict]:
+    def _extract_video_data(self, youtube_data: dict) -> list[dict]:
         """YouTube JSON verisinden video bilgilerini çıkar"""
         videos = []
 

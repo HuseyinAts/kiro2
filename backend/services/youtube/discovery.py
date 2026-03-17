@@ -1,7 +1,8 @@
 """
 YouTube Video Kesif Sistemi - Ana Sinif
 
-Mixin'leri birlestiren ana YouTubeDiscovery sinifi.
+Composition-based architecture: delegates to standalone services
+instead of inheriting from mixins.
 """
 
 import asyncio
@@ -9,11 +10,11 @@ import logging
 import random
 from dataclasses import asdict
 from pathlib import Path
-from typing import Dict, List, Optional
 
 import aiohttp
 
 from .cache_manager import CacheManagerMixin
+from .config import QUICK_RECOMMENDATIONS, TRUSTED_CHANNELS
 from .models import DifficultyLevel, ExamType, SubjectType, VideoMetadata
 from .quality_scorer import QualityScorerMixin
 from .search_engine import SearchEngineMixin
@@ -34,13 +35,11 @@ class YouTubeDiscovery(
         self.cache_dir = Path(cache_dir)
         self.cache_dir.mkdir(exist_ok=True)
         self.db_path = self.cache_dir / "youtube_cache.db"
-        self.session: Optional[aiohttp.ClientSession] = None
+        self.session: aiohttp.ClientSession | None = None
 
-        # Genisletilmis video veritabani
-        self.quick_recommendations = self._build_quick_recommendations()
-
-        # Guvenilir Turk egitim kanallari
-        self.trusted_channels = self._build_trusted_channels()
+        # Config'den al — tek kaynak (config.py -> core/youtube_channels.py)
+        self.quick_recommendations = QUICK_RECOMMENDATIONS
+        self.trusted_channels = TRUSTED_CHANNELS
 
         # Arama query sablonlari
         self.search_templates = {
@@ -59,145 +58,6 @@ class YouTubeDiscovery(
         }
 
         self._init_database()
-
-    def _build_quick_recommendations(self) -> Dict:
-        """Hizli oneri veritabanini olustur"""
-        return {
-            ("matematik", "orta", "TYT"): [
-                {
-                    "video_id": "qsf8ERnJHho",
-                    "title": "Fonksiyonlar - TYT Matematik",
-                    "channel": "Matematik Ogretmeni",
-                    "quality_score": 8.5,
-                },
-                {
-                    "video_id": "abc123def",
-                    "title": "Turev - TYT Matematik",
-                    "channel": "TongucAkademi",
-                    "quality_score": 9.2,
-                },
-                {
-                    "video_id": "xyz789ghi",
-                    "title": "Limit - TYT Matematik",
-                    "channel": "KAMP Online",
-                    "quality_score": 8.7,
-                },
-                {
-                    "video_id": "math123abc",
-                    "title": "Integral - TYT Matematik",
-                    "channel": "Matematik Ogretmeni",
-                    "quality_score": 8.9,
-                },
-                {
-                    "video_id": "math_new1",
-                    "title": "Logaritma - TYT Matematik",
-                    "channel": "Matematikciler",
-                    "quality_score": 8.8,
-                },
-                {
-                    "video_id": "math_new2",
-                    "title": "Ucgenler - TYT Matematik",
-                    "channel": "TongucAkademi",
-                    "quality_score": 8.6,
-                },
-            ],
-            ("matematik", "baslangic", "TYT"): [
-                {
-                    "video_id": "basic_math1",
-                    "title": "Temel Matematik - TYT",
-                    "channel": "TongucAkademi",
-                    "quality_score": 8.3,
-                },
-                {
-                    "video_id": "basic_math2",
-                    "title": "Sayilar - TYT Matematik",
-                    "channel": "Matematik Ogretmeni",
-                    "quality_score": 8.1,
-                },
-            ],
-            ("matematik", "ileri", "TYT"): [
-                {
-                    "video_id": "adv_math1",
-                    "title": "Karmasik Fonksiyonlar - TYT",
-                    "channel": "Ileri Matematik",
-                    "quality_score": 9.1,
-                },
-            ],
-            ("fizik", "baslangic", "TYT"): [
-                {
-                    "video_id": "2m4xyR1QlIU",
-                    "title": "Hareket - TYT Fizik",
-                    "channel": "Fizik Muallimi",
-                    "quality_score": 8.8,
-                },
-                {
-                    "video_id": "def456ghi",
-                    "title": "Kuvvet - TYT Fizik",
-                    "channel": "TongucAkademi",
-                    "quality_score": 8.9,
-                },
-            ],
-            ("fizik", "orta", "TYT"): [
-                {
-                    "video_id": "fizik_orta1",
-                    "title": "Elektrik - TYT Fizik",
-                    "channel": "TongucAkademi",
-                    "quality_score": 8.6,
-                },
-            ],
-            ("turkce", "orta", "TYT"): [
-                {
-                    "video_id": "LKZKJt3u7oA",
-                    "title": "Sozcuk Turleri - TYT Turkce",
-                    "channel": "Turkce Ogretmeni",
-                    "quality_score": 8.6,
-                },
-            ],
-            ("kimya", "orta", "TYT"): [
-                {
-                    "video_id": "kimya123abc",
-                    "title": "Atom - TYT Kimya",
-                    "channel": "Kimya Ogretmeni",
-                    "quality_score": 8.5,
-                },
-            ],
-            ("biyoloji", "orta", "TYT"): [
-                {
-                    "video_id": "bio123abc",
-                    "title": "Hucre - TYT Biyoloji",
-                    "channel": "Biyoloji Ogretmeni",
-                    "quality_score": 8.3,
-                },
-            ],
-        }
-
-    def _build_trusted_channels(self) -> Dict:
-        """Guvenilir kanal listesini olustur"""
-        return {
-            "matematik": [
-                {"name": "Matematik Ogretmeni", "id": "UCxxxxxx", "quality": 9.2},
-                {
-                    "name": "TongucAkademi",
-                    "id": "UC5Bu5lNaUYBYG-ZW-bMeXWA",
-                    "quality": 8.8,
-                },
-                {"name": "KAMP Online", "id": "UCyyyyyy", "quality": 8.5},
-            ],
-            "fizik": [
-                {"name": "Fizik Ogretmeni", "id": "UCaaaaaa", "quality": 9.0},
-                {
-                    "name": "TongucAkademi",
-                    "id": "UC5Bu5lNaUYBYG-ZW-bMeXWA",
-                    "quality": 8.8,
-                },
-            ],
-            "turkce": [
-                {"name": "Turkce Ogretmeni", "id": "UCbbbbbbb", "quality": 9.1},
-            ],
-            "sosyal": [
-                {"name": "TRT EBA TV", "id": "UCddddddd", "quality": 8.9},
-            ],
-        }
 
     async def start_session(self) -> None:
         """HTTP session baslat"""
@@ -221,7 +81,7 @@ class YouTubeDiscovery(
         difficulty: DifficultyLevel,
         exam_type: ExamType,
         max_results: int = 50,
-    ) -> List[VideoMetadata]:
+    ) -> list[VideoMetadata]:
         """Ana video kesif fonksiyonu"""
 
         # Once cache'den kontrol et
@@ -315,9 +175,10 @@ class YouTubeDiscovery(
         # Duplikatlari kaldir
         unique_videos = {}
         for video in filtered_videos:
-            if video.video_id not in unique_videos:
-                unique_videos[video.video_id] = video
-            elif video.quality_score > unique_videos[video.video_id].quality_score:
+            if (
+                video.video_id not in unique_videos
+                or video.quality_score > unique_videos[video.video_id].quality_score
+            ):
                 unique_videos[video.video_id] = video
 
         sorted_videos = sorted(
@@ -334,8 +195,8 @@ class YouTubeDiscovery(
         return sorted_videos[:max_results]
 
     async def get_video_recommendations(
-        self, student_profile: Dict, max_per_subject: int = 10
-    ) -> Dict[str, List[VideoMetadata]]:
+        self, student_profile: dict, max_per_subject: int = 10
+    ) -> dict[str, list[VideoMetadata]]:
         """Ogrenci profiline gore video onerileri"""
         recommendations = {}
 
@@ -405,12 +266,10 @@ class YouTubeDiscovery(
 
     async def monitor_rss_feeds(self) -> None:
         """RSS feed'leri izle ve yeni videolari yakala"""
-        # Bu fonksiyon periyodik olarak calisacak
-        pass
 
 
 # Singleton instance
-_youtube_discovery: Optional[YouTubeDiscovery] = None
+_youtube_discovery: YouTubeDiscovery | None = None
 
 
 def get_youtube_discovery() -> YouTubeDiscovery:

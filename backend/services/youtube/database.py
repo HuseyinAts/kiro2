@@ -11,9 +11,8 @@ import logging
 import sqlite3
 from datetime import datetime, timedelta
 from pathlib import Path
-from typing import Dict, List, Optional
 
-from .types import DifficultyLevel, ExamType, SubjectType, VideoMetadata
+from .models import DifficultyLevel, ExamType, SubjectType, VideoMetadata
 
 logger = logging.getLogger(__name__)
 
@@ -83,7 +82,7 @@ class YouTubeCacheDB:
         difficulty: DifficultyLevel,
         exam_type: ExamType,
         max_age_hours: int = 24,
-    ) -> List[VideoMetadata]:
+    ) -> list[VideoMetadata]:
         """Cache'den video listesi al"""
         cutoff_time = datetime.now() - timedelta(hours=max_age_hours)
 
@@ -147,7 +146,7 @@ class YouTubeCacheDB:
 
     def get_cached_search(
         self, query_hash: str, max_age_hours: int = 6
-    ) -> Optional[List[Dict]]:
+    ) -> list[dict] | None:
         """Arama sonucunu cache'den al"""
         cutoff_time = datetime.now() - timedelta(hours=max_age_hours)
 
@@ -166,7 +165,7 @@ class YouTubeCacheDB:
             return None
 
     def cache_search_result(
-        self, query_hash: str, query: str, results: List[Dict]
+        self, query_hash: str, query: str, results: list[dict]
     ) -> None:
         """Arama sonucunu cache'e kaydet"""
         with sqlite3.connect(self.db_path) as conn:

@@ -1,12 +1,13 @@
 """
 YouTube Video Kalite Puanlama Mixin
 
-Video kalite skorlarini hesaplayan metodlar.
+DEPRECATED: Use quality.py QualityScorer for standalone usage.
+This mixin is kept for backward compatibility with YouTubeDiscovery.
 """
 
 import json
 import logging
-from typing import TYPE_CHECKING, Dict
+from typing import TYPE_CHECKING
 
 import aiohttp
 
@@ -22,11 +23,11 @@ class QualityScorerMixin:
     """Video kalite puanlama mixin'i"""
 
     # Type hints for mixin attributes
-    trusted_channels: Dict[str, list]
+    trusted_channels: dict[str, list]
 
     def _calculate_quality_score_fast(
         self: "YouTubeDiscovery",
-        video_data: Dict,
+        video_data: dict,
         subject: SubjectType,
         exam_type: ExamType,
     ) -> float:
@@ -57,7 +58,7 @@ class QualityScorerMixin:
 
     def _calculate_quality_score(
         self: "YouTubeDiscovery",
-        video_data: Dict,
+        video_data: dict,
         subject: SubjectType,
         exam_type: ExamType,
     ) -> float:
@@ -172,12 +173,12 @@ class QualityScorerMixin:
             # Ideal sure 10-45 dakika arasi
             if 600 <= total_seconds <= 2700:  # 10-45 dakika
                 return 10.0
-            elif 300 <= total_seconds <= 3600:  # 5-60 dakika
+            if 300 <= total_seconds <= 3600:  # 5-60 dakika
                 return 8.0
-            elif total_seconds <= 300:  # Cok kisa
+            if total_seconds <= 300:  # Cok kisa
                 return 6.0
-            else:  # Cok uzun
-                return 7.0
+            # Cok uzun
+            return 7.0
 
         except ValueError:
             return 5.0
@@ -190,16 +191,15 @@ class QualityScorerMixin:
         # Guncellik puani - yil bazli degerlendirme
         if "2025" in upload_date or "2024" in upload_date:
             return 10.0
-        elif "2023" in upload_date:
+        if "2023" in upload_date:
             return 8.0
-        elif "2022" in upload_date:
+        if "2022" in upload_date:
             return 6.0
-        else:
-            return 4.0
+        return 4.0
 
     async def _calculate_dynamic_quality_score(
         self: "YouTubeDiscovery",
-        video_data: Dict,
+        video_data: dict,
         subject: SubjectType,
         difficulty: DifficultyLevel,
         exam_type: ExamType,
@@ -250,16 +250,19 @@ class QualityScorerMixin:
 
     async def _analyze_video_with_llm(
         self: "YouTubeDiscovery",
-        video_data: Dict,
+        video_data: dict,
         subject: SubjectType,
         difficulty: DifficultyLevel,
         exam_type: ExamType,
-    ) -> Dict:
+    ) -> dict:
         """LLM ile video icerigi analizi"""
         try:
+            import os
+
             # Hugging Face endpoint URL
-            hf_endpoint = (
-                "https://cf781mfqobm2ynkk.us-east-1.aws.endpoints.huggingface.cloud"
+            hf_endpoint = os.environ.get(
+                "HF_INFERENCE_ENDPOINT",
+                "https://cf781mfqobm2ynkk.us-east-1.aws.endpoints.huggingface.cloud",
             )
 
             # Video basligi ve aciklamasi

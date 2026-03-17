@@ -57,7 +57,7 @@ class AdvancedYouTubeSearch:
 
         # Gerçek ve kaliteli video örnekleri
         self.curated_videos = {
-            ("matematik", "TYT", "başlangıç"): [
+            ("matematik", "TYT", "baslangic"): [
                 {
                     "video_id": "VuwKz2TVVKA",
                     "title": "TYT Matematik - Temel Kavramlar ve Sayı Kümeleri",
@@ -124,7 +124,7 @@ class AdvancedYouTubeSearch:
                     "language_score": 10.0,
                 },
             ],
-            ("fizik", "TYT", "başlangıç"): [
+            ("fizik", "TYT", "baslangic"): [
                 {
                     "video_id": "kJQP7kiw5Fk",
                     "title": "TYT Fizik - Hareket Konusu Temel Kavramlar",
@@ -164,7 +164,7 @@ class AdvancedYouTubeSearch:
                     "language_score": 10.0,
                 }
             ],
-            ("kimya", "TYT", "başlangıç"): [
+            ("kimya", "TYT", "baslangic"): [
                 {
                     "video_id": "BvV6rq9V7xQ",
                     "title": "TYT Kimya - Atom Yapısı ve Periyodik Sistem",
@@ -175,7 +175,7 @@ class AdvancedYouTubeSearch:
                     "language_score": 10.0,
                 }
             ],
-            ("türkçe", "TYT", "orta"): [
+            ("turkce", "TYT", "orta"): [
                 {
                     "video_id": "YQHsXMglC9A",
                     "title": "TYT Türkçe - Anlam Bilgisi ve Sözcük Türleri",

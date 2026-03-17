@@ -28,11 +28,12 @@ export function VideoResourceGrid({ videos, loading, error, onVideoPlay }: Video
 
     // Duration filter
     if (duration !== 'all') {
-      const durationMatch = video.duration.match(/PT(?:(\d+)H)?(?:(\d+)M)?/);
+      const durationMatch = video.duration.match(/PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/);
       if (durationMatch) {
         const hours = durationMatch[1] ? parseInt(durationMatch[1]) : 0;
         const minutes = durationMatch[2] ? parseInt(durationMatch[2]) : 0;
-        const totalMinutes = hours * 60 + minutes;
+        const seconds = durationMatch[3] ? parseInt(durationMatch[3]) : 0;
+        const totalMinutes = hours * 60 + minutes + seconds / 60;
 
         if (duration === 'short' && totalMinutes >= 10) {return false;}
         if (duration === 'medium' && (totalMinutes < 10 || totalMinutes > 30)) {return false;}
@@ -53,9 +54,9 @@ export function VideoResourceGrid({ videos, loading, error, onVideoPlay }: Video
         return scoreB - scoreA;
       }
       case 'relevance': {
-        // Konu uygunluğuna göre sırala
-        const relevanceA = a.scores?.relevance_score ?? 0;
-        const relevanceB = b.scores?.relevance_score ?? 0;
+        // Konu uygunluğuna göre sırala (fallback: quality_score)
+        const relevanceA = a.scores?.relevance_score ?? a.quality_score ?? 0;
+        const relevanceB = b.scores?.relevance_score ?? b.quality_score ?? 0;
         return relevanceB - relevanceA;
       }
       case 'turkish': {

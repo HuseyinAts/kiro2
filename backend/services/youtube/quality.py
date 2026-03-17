@@ -7,11 +7,10 @@ Extracted from youtube_discovery.py
 """
 
 import logging
-from datetime import datetime
-from typing import Any, Dict
+from typing import Any
 
 from .config import TRUSTED_CHANNELS
-from .types import DifficultyLevel, ExamType, SubjectType
+from .models import DifficultyLevel, ExamType, SubjectType
 
 logger = logging.getLogger(__name__)
 
@@ -20,7 +19,7 @@ class QualityScorer:
     """Video quality scoring service."""
 
     def calculate_quality_score_fast(
-        self, video_data: Dict, subject: SubjectType, exam_type: ExamType
+        self, video_data: dict, subject: SubjectType, exam_type: ExamType
     ) -> float:
         """Hızlı kalite puanı hesaplama (performance optimized)"""
         score = 5.0  # Base score
@@ -48,13 +47,15 @@ class QualityScorer:
         return min(score, 10.0)
 
     def calculate_quality_score(
-        self, video_data: Dict, subject: SubjectType, exam_type: ExamType
+        self, video_data: dict, subject: SubjectType, exam_type: ExamType
     ) -> float:
         """Video kalite puanı hesapla"""
         score = 0.0
 
         # Kanal güvenilirliği (40% ağırlık)
-        channel_score = self._get_channel_quality(video_data.get("channel", ""), subject)
+        channel_score = self._get_channel_quality(
+            video_data.get("channel", ""), subject
+        )
         score += channel_score * 0.4
 
         # Başlık relevansı (25% ağırlık)
@@ -80,12 +81,12 @@ class QualityScorer:
 
     async def calculate_dynamic_quality_score(
         self,
-        video_data: Dict,
+        video_data: dict,
         subject: SubjectType,
         difficulty: DifficultyLevel,
         exam_type: ExamType,
         student_level: int = 5,
-        llm_analysis: Dict[str, Any] = None,
+        llm_analysis: dict[str, Any] = None,
     ) -> float:
         """Öğrenci seviyesine göre dinamik kalite puanı hesaplama"""
 
@@ -211,12 +212,12 @@ class QualityScorer:
             # İdeal süre 10-45 dakika arası
             if 600 <= total_seconds <= 2700:  # 10-45 dakika
                 return 10.0
-            elif 300 <= total_seconds <= 3600:  # 5-60 dakika
+            if 300 <= total_seconds <= 3600:  # 5-60 dakika
                 return 8.0
-            elif total_seconds <= 300:  # Çok kısa
+            if total_seconds <= 300:  # Çok kısa
                 return 6.0
-            else:  # Çok uzun
-                return 7.0
+            # Çok uzun
+            return 7.0
 
         except ValueError:
             return 5.0
@@ -229,12 +230,11 @@ class QualityScorer:
         # Güncellik puanı
         if "2025" in upload_date or "2024" in upload_date:
             return 10.0
-        elif "2023" in upload_date:
+        if "2023" in upload_date:
             return 8.0
-        elif "2022" in upload_date:
+        if "2022" in upload_date:
             return 6.0
-        else:
-            return 4.0
+        return 4.0
 
 
 # Singleton instance

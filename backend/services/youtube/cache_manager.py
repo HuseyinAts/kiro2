@@ -1,7 +1,8 @@
 """
 YouTube Cache Manager Mixin
 
-SQLite tabanli video ve arama cache yonetimi.
+DEPRECATED: Use database.py YouTubeCacheDB for standalone usage.
+This mixin is kept for backward compatibility with YouTubeDiscovery.
 """
 
 import json
@@ -9,7 +10,7 @@ import logging
 import sqlite3
 from datetime import datetime, timedelta
 from pathlib import Path
-from typing import TYPE_CHECKING, Dict, List, Optional
+from typing import TYPE_CHECKING
 
 from .models import DifficultyLevel, ExamType, SubjectType, VideoMetadata
 
@@ -82,7 +83,7 @@ class CacheManagerMixin:
         difficulty: DifficultyLevel,
         exam_type: ExamType,
         max_age_hours: int = 24,
-    ) -> List[VideoMetadata]:
+    ) -> list[VideoMetadata]:
         """Cache'den video listesi al"""
         cutoff_time = datetime.now() - timedelta(hours=max_age_hours)
 
@@ -146,7 +147,7 @@ class CacheManagerMixin:
 
     def _get_cached_search(
         self: "YouTubeDiscovery", query_hash: str, max_age_hours: int = 6
-    ) -> Optional[List[Dict]]:
+    ) -> list[dict] | None:
         """Arama sonucunu cache'den al"""
         cutoff_time = datetime.now() - timedelta(hours=max_age_hours)
 
@@ -165,7 +166,7 @@ class CacheManagerMixin:
             return None
 
     def _cache_search_result(
-        self: "YouTubeDiscovery", query_hash: str, query: str, results: List[Dict]
+        self: "YouTubeDiscovery", query_hash: str, query: str, results: list[dict]
     ) -> None:
         """Arama sonucunu cache'e kaydet"""
         with sqlite3.connect(self.db_path) as conn:
@@ -177,9 +178,7 @@ class CacheManagerMixin:
                 (query_hash, query, json.dumps(results)),
             )
 
-    def clear_expired_cache(
-        self: "YouTubeDiscovery", max_age_hours: int = 72
-    ) -> int:
+    def clear_expired_cache(self: "YouTubeDiscovery", max_age_hours: int = 72) -> int:
         """Suresi dolmus cache kayitlarini temizle"""
         cutoff_time = datetime.now() - timedelta(hours=max_age_hours)
 
@@ -200,18 +199,16 @@ class CacheManagerMixin:
             logger.info(f"Expired cache cleared: {total_deleted} records")
             return total_deleted
 
-    def get_cache_stats(self: "YouTubeDiscovery") -> Dict:
+    def get_cache_stats(self: "YouTubeDiscovery") -> dict:
         """Cache istatistiklerini al"""
         with sqlite3.connect(self.db_path) as conn:
-            video_count = conn.execute(
-                "SELECT COUNT(*) FROM video_cache"
-            ).fetchone()[0]
-            search_count = conn.execute(
-                "SELECT COUNT(*) FROM search_cache"
-            ).fetchone()[0]
-            channel_count = conn.execute(
-                "SELECT COUNT(*) FROM channel_rss"
-            ).fetchone()[0]
+            video_count = conn.execute("SELECT COUNT(*) FROM video_cache").fetchone()[0]
+            search_count = conn.execute("SELECT COUNT(*) FROM search_cache").fetchone()[
+                0
+            ]
+            channel_count = conn.execute("SELECT COUNT(*) FROM channel_rss").fetchone()[
+                0
+            ]
 
             return {
                 "video_cache_count": video_count,

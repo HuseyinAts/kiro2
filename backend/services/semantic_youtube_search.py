@@ -121,17 +121,17 @@ class SemanticYouTubeSearch:
             "matematik": "matematik temel kavramlar sayılar fonksiyonlar türev integral limit geometri",
             "fizik": "fizik hareket kuvvet enerji elektrik manyetizma dalga ışık mekanik",
             "kimya": "kimya atom molekül periyodik sistem reaksiyon asit baz organik",
-            "türkçe": "türkçe dil bilgisi anlam sözcük metin okuma yazma edebiyat",
+            "turkce": "türkçe dil bilgisi anlam sözcük metin okuma yazma edebiyat",
             "biyoloji": "biyoloji hücre genetik evrim ekoloji anatomi fizyoloji",
             "tarih": "tarih osmanlı cumhuriyet savaş devrim reform medeniyet",
         }
 
         # Zorluk seviyesi tanımları
         difficulty_definitions = {
-            "başlangıç": "temel kolay başlangıç giriş basit anlaşılır",
+            "baslangic": "temel kolay başlangıç giriş basit anlaşılır",
             "orta": "orta seviye normal standart tipik",
             "ileri": "ileri zor karmaşık detaylı derin analiz",
-            "sınava özel": "sınav tyt ayt ydt örnek soru test çözüm",
+            "sinava_ozel": "sınav tyt ayt ydt örnek soru test çözüm",
         }
 
         # Embeddings hesapla
@@ -325,10 +325,10 @@ class SemanticYouTubeSearch:
         else:
             # Fallback: Simple matching
             difficulty_words = {
-                "başlangıç": ["temel", "kolay", "başlangıç", "basit"],
+                "baslangic": ["temel", "kolay", "başlangıç", "basit"],
                 "orta": ["orta", "normal", "tipik"],
                 "ileri": ["ileri", "zor", "karmaşık", "detaylı"],
-                "sınava özel": ["sınav", "test", "örnek"],
+                "sinava_ozel": ["sınav", "test", "örnek"],
             }
             words = difficulty_words.get(difficulty, [])
             video_words = video_text.lower()

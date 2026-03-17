@@ -1,12 +1,13 @@
 """
 Turkce Icerik Filtreleme Mixin
 
-Turkce video iceriklerini tespit ve filtreleme.
+DEPRECATED: Use nlp.py TurkishContentFilter for standalone usage.
+This mixin is kept for backward compatibility with YouTubeDiscovery.
 """
 
 import logging
 import re
-from typing import TYPE_CHECKING, Dict, List
+from typing import TYPE_CHECKING
 
 from .models import DifficultyLevel, SubjectType
 
@@ -16,8 +17,8 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 
-# Turkce karakterler
-TURKISH_CHARS = set("cgiosuCGIOSU")
+# Turkce karakterler (Unicode diacritics — not ASCII equivalents)
+TURKISH_CHARS = set("çğıöşüÇĞİÖŞÜ")
 
 # Turkce egitim terimleri
 TURKISH_EDUCATION_WORDS = {
@@ -257,8 +258,8 @@ class TurkishFilterMixin:
         return score >= 3
 
     def _filter_turkish_content(
-        self: "YouTubeDiscovery", videos: List[Dict]
-    ) -> List[Dict]:
+        self: "YouTubeDiscovery", videos: list[dict]
+    ) -> list[dict]:
         """Turkce icerik filtreleme"""
         filtered_videos = []
 
@@ -283,10 +284,10 @@ class TurkishFilterMixin:
 
     def _advanced_content_filtering(
         self: "YouTubeDiscovery",
-        videos: List[Dict],
+        videos: list[dict],
         subject: SubjectType,
         difficulty: DifficultyLevel,
-    ) -> List[Dict]:
+    ) -> list[dict]:
         """Gelismis icerik filtreleme"""
 
         # Once Turkce filtresi uygula

@@ -6,7 +6,7 @@ Static configuration data for YouTube video discovery.
 Extracted from youtube_discovery.py
 """
 
-from .types import ExamType
+from .models import ExamType
 
 # Genişletilmiş video veritabanı - daha çok çeşitlilik için
 QUICK_RECOMMENDATIONS: dict[tuple, list[dict]] = {
@@ -60,7 +60,7 @@ QUICK_RECOMMENDATIONS: dict[tuple, list[dict]] = {
             "quality_score": 8.3,
         },
     ],
-    ("matematik", "başlangıç", "TYT"): [
+    ("matematik", "baslangic", "TYT"): [
         {
             "video_id": "basic_math1",
             "title": "Temel Matematik - TYT",
@@ -112,7 +112,7 @@ QUICK_RECOMMENDATIONS: dict[tuple, list[dict]] = {
             "quality_score": 8.9,
         },
     ],
-    ("fizik", "başlangıç", "TYT"): [
+    ("fizik", "baslangic", "TYT"): [
         {
             "video_id": "2m4xyR1QlIU",
             "title": "Hareket - TYT Fizik",
@@ -184,7 +184,7 @@ QUICK_RECOMMENDATIONS: dict[tuple, list[dict]] = {
             "quality_score": 9.0,
         },
     ],
-    ("türkçe", "orta", "TYT"): [
+    ("turkce", "orta", "TYT"): [
         {
             "video_id": "LKZKJt3u7oA",
             "title": "Sözcük Türleri - TYT Türkçe",
@@ -210,7 +210,7 @@ QUICK_RECOMMENDATIONS: dict[tuple, list[dict]] = {
             "quality_score": 8.3,
         },
     ],
-    ("türkçe", "başlangıç", "TYT"): [
+    ("turkce", "baslangic", "TYT"): [
         {
             "video_id": "turkce_basic1",
             "title": "Temel Türkçe - TYT",
@@ -230,7 +230,7 @@ QUICK_RECOMMENDATIONS: dict[tuple, list[dict]] = {
             "quality_score": 7.9,
         },
     ],
-    ("türkçe", "ileri", "TYT"): [
+    ("turkce", "ileri", "TYT"): [
         {
             "video_id": "turkce_ileri1",
             "title": "Metin Analizi - TYT",
@@ -264,7 +264,7 @@ QUICK_RECOMMENDATIONS: dict[tuple, list[dict]] = {
             "quality_score": 8.6,
         },
     ],
-    ("kimya", "başlangıç", "TYT"): [
+    ("kimya", "baslangic", "TYT"): [
         {
             "video_id": "kimya_basic1",
             "title": "Temel Kimya - TYT",
@@ -298,7 +298,7 @@ QUICK_RECOMMENDATIONS: dict[tuple, list[dict]] = {
             "quality_score": 8.4,
         },
     ],
-    ("biyoloji", "başlangıç", "TYT"): [
+    ("biyoloji", "baslangic", "TYT"): [
         {
             "video_id": "bio_basic1",
             "title": "Canlıların Özellikleri - TYT",
@@ -326,9 +326,9 @@ def _build_trusted_channels() -> dict[str, list[dict]]:
         "fizik",
         "kimya",
         "biyoloji",
-        "türkçe",
+        "turkce",
         "tarih",
-        "coğrafya",
+        "cografya",
     ]:
         channels = get_channels_for_subject(subject)
         result[subject] = [
@@ -400,7 +400,7 @@ SUBJECT_KEYWORDS: dict[str, list[str]] = {
         "ekosistem",
         "evrim",
     ],
-    "türkçe": [
+    "turkce": [
         "türkçe",
         "dil",
         "gramer",
@@ -427,7 +427,7 @@ SUBJECT_KEYWORDS: dict[str, list[str]] = {
         "medeniyet",
         "kültür",
     ],
-    "coğrafya": [
+    "cografya": [
         "coğrafya",
         "harita",
         "iklim",

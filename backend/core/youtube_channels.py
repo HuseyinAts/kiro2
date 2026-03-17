@@ -169,13 +169,29 @@ def get_channel_ids() -> dict[str, float]:
     return result
 
 
+def _normalize_subject(s: str) -> str:
+    """ASCII-safe subject normalization for matching."""
+    return (
+        s.lower()
+        .strip()
+        .replace("ü", "u")
+        .replace("ö", "o")
+        .replace("ç", "c")
+        .replace("ş", "s")
+        .replace("ğ", "g")
+        .replace("ı", "i")
+    )
+
+
 def get_channels_for_subject(subject: str) -> list[dict]:
-    """Channels that cover a specific subject."""
-    subject_lower = subject.lower()
+    """Channels that cover a specific subject (ASCII-normalized matching)."""
+    norm_subject = _normalize_subject(subject)
     result: list[dict] = []
     for name, data in TRUSTED_TURKISH_CHANNELS.items():
         subjects = data.get("subjects")
-        if subjects is None or subject_lower in subjects:
+        if subjects is None or any(
+            _normalize_subject(s) == norm_subject for s in subjects
+        ):
             result.append({"name": name, **data})
     return result
 
@@ -186,15 +202,22 @@ def get_canonical_name(channel_name: str) -> str | None:
 
 
 def is_trusted_channel(channel_name: str) -> bool:
-    """Check if a channel name (or alias) is trusted (case-insensitive, partial match)."""
+    """Check if a channel name (or alias) is trusted (case-insensitive, partial match).
+
+    Short names (<4 chars) require exact match to avoid false positives
+    (e.g. "eba" matching inside "algebra").
+    """
     if not channel_name:
         return False
     lower = channel_name.lower().strip()
     # Exact match (case-insensitive)
     if lower in _name_to_canonical:
         return True
-    # Partial match
+    # Partial match — skip very short strings to avoid false positives
     for known in _name_to_canonical:
+        shorter = min(len(known), len(lower))
+        if shorter < 4:
+            continue
         if known in lower or lower in known:
             return True
     return False

@@ -8,11 +8,9 @@ Extracted from youtube_discovery.py
 
 import logging
 import re
-import unicodedata
-from typing import Dict, List
 
 from .config import SUBJECT_KEYWORDS
-from .types import DifficultyLevel, SubjectType
+from .models import DifficultyLevel, SubjectType
 
 logger = logging.getLogger(__name__)
 
@@ -165,7 +163,7 @@ class TurkishContentFilter:
 
         return score >= 3
 
-    def filter_turkish_content(self, videos: List[Dict]) -> List[Dict]:
+    def filter_turkish_content(self, videos: list[dict]) -> list[dict]:
         """Türkçe içerik filtreleme"""
         filtered_videos = []
 
@@ -189,8 +187,8 @@ class TurkishContentFilter:
         return filtered_videos
 
     def advanced_content_filtering(
-        self, videos: List[Dict], subject: SubjectType, difficulty: DifficultyLevel
-    ) -> List[Dict]:
+        self, videos: list[dict], subject: SubjectType, difficulty: DifficultyLevel
+    ) -> list[dict]:
         """Gelişmiş içerik filtreleme"""
 
         # Önce Türkçe filtresi uygula

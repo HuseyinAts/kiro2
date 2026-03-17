@@ -6,7 +6,6 @@ Türkçe Eğitim Videoları için Özelleştirilmiş
 import logging
 import os
 from dataclasses import dataclass
-from typing import Dict, List, Optional
 
 import aiohttp
 
@@ -38,16 +37,15 @@ class RealYouTubeAPI:
     def __init__(self):
         self.api_key = os.getenv("YOUTUBE_API_KEY")
         self.base_url = "https://www.googleapis.com/youtube/v3"
-        self.session: Optional[aiohttp.ClientSession] = None
+        self.session: aiohttp.ClientSession | None = None
 
-        # Türkçe eğitim kanalları ID'leri
+        # Türkçe eğitim kanalları ID'leri — from canonical source
+        from core.youtube_channels import TRUSTED_TURKISH_CHANNELS
+
         self.trusted_channel_ids = {
-            "TonguçAkademi": "UCQaEgq0uA7wHQlUkE3o8L4w",
-            "KAMP Online": "UCkamp_online",
-            "Khan Academy Türkçe": "UCzeM1QxMZG7LCILPl8GIzLA",
-            "MEB Uzaktan Eğitim": "UC_meb_uzaktan",
-            "Fizik Öğretmeni": "UC_fizik_teacher",
-            "Matematik Öğretmeni": "UC_matematik_teacher",
+            name: data.get("channel_id", "")
+            for name, data in TRUSTED_TURKISH_CHANNELS.items()
+            if data.get("channel_id")
         }
 
         # Türkçe eğitim anahtar kelimeleri
@@ -112,8 +110,6 @@ class RealYouTubeAPI:
 
     def _build_search_query(self, subject: str, exam_type: str, difficulty: str) -> str:
         """Türkçe eğitim odaklı arama sorgusu oluştur"""
-        base_keywords = self.turkish_edu_keywords.get(subject.lower(), [subject])
-
         # Ana sorgu
         query_parts = [f"{exam_type} {subject}", "konu anlatımı", "türkçe"]
 
@@ -135,7 +131,7 @@ class RealYouTubeAPI:
         exam_type: str = "TYT",
         difficulty: str = "orta",
         max_results: int = 10,
-    ) -> List[YouTubeVideoResult]:
+    ) -> list[YouTubeVideoResult]:
         """YouTube API ile video arama"""
 
         if not self.api_key or self.api_key == "test-youtube-api-key":
@@ -190,10 +186,10 @@ class RealYouTubeAPI:
                 return filtered_videos[:max_results]
 
         except Exception as e:
-            logger.error(f"YouTube API araması başarısız: {str(e)}")
+            logger.error(f"YouTube API araması başarısız: {e!s}")
             return []
 
-    async def _get_video_details(self, video_ids: List[str]) -> List[Dict]:
+    async def _get_video_details(self, video_ids: list[str]) -> list[dict]:
         """Video detaylarını al"""
         try:
             session = await self.get_session()
@@ -215,12 +211,12 @@ class RealYouTubeAPI:
                 return data.get("items", [])
 
         except Exception as e:
-            logger.error(f"Video detayları hatası: {str(e)}")
+            logger.error(f"Video detayları hatası: {e!s}")
             return []
 
     def _filter_turkish_education_videos(
-        self, videos: List[Dict], subject: str, exam_type: str, difficulty: str
-    ) -> List[YouTubeVideoResult]:
+        self, videos: list[dict], subject: str, exam_type: str, difficulty: str
+    ) -> list[YouTubeVideoResult]:
         """Türkçe eğitim videolarını filtrele ve skorla"""
 
         results = []
@@ -301,7 +297,7 @@ class RealYouTubeAPI:
                 results.append(result)
 
             except Exception as e:
-                logger.error(f"Video işleme hatası: {str(e)}")
+                logger.error(f"Video işleme hatası: {e!s}")
                 continue
 
         # Skorlara göre sırala
@@ -393,7 +389,7 @@ class RealYouTubeAPI:
 
         return min(score, 10.0)
 
-    def _calculate_quality_score(self, stats: Dict, title: str, channel: str) -> float:
+    def _calculate_quality_score(self, stats: dict, title: str, channel: str) -> float:
         """Video kalite skoru"""
         score = 5.0
 

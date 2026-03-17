@@ -172,18 +172,14 @@ export class VideoLoadingManager {
       // Make API call
       // VideoLoadingManager: Starting API call
 
-      // Get auth token
-      const token = localStorage.getItem('access_token');
       const headers: Record<string, string> = {
         'Content-Type': 'application/json',
       };
-      if (token) {
-        headers['Authorization'] = `Bearer ${token}`;
-      }
 
       const response = await fetch(`${this.apiBaseUrl}/api/learning-path/search-resources`, {
         method: 'POST',
         headers,
+        credentials: 'include',
         body: JSON.stringify({
           subject,
           topic: primaryGoal,

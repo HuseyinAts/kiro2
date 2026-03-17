@@ -33,16 +33,15 @@ import hashlib
 import json
 import time
 from dataclasses import dataclass
-from typing import Dict, List, Optional
 
+from core.multi_layer_cache import MultiLayerCache
+from core.structured_logger import get_logger
 from services.advanced_youtube_search import (
     AdvancedYouTubeSearch,
     TurkishEducationVideo,
 )
 from services.semantic_youtube_search import SemanticYouTubeSearch
 from services.turkish_content_filter import TurkishContentFilter
-from core.multi_layer_cache import MultiLayerCache
-from core.structured_logger import get_logger
 
 logger = get_logger(__name__)
 
@@ -51,10 +50,10 @@ logger = get_logger(__name__)
 class StudentProfile:
     """Öğrenci profili - video önerileri için"""
 
-    goals: List[str]
-    currentLevel: Dict[str, int]
+    goals: list[str]
+    currentLevel: dict[str, int]
     learningStyle: str
-    preferences: Dict = None
+    preferences: dict = None
 
     def __post_init__(self):
         if self.preferences is None:
@@ -66,7 +65,7 @@ class VideoRecommendation:
     """Video öneri sonucu"""
 
     subject_exam: str
-    videos: List[TurkishEducationVideo]
+    videos: list[TurkishEducationVideo]
     total_count: int
     cache_hit: bool
     response_time_ms: int
@@ -116,7 +115,7 @@ class VideoRecommendationService:
 
     async def get_recommendations(
         self, student_profile: StudentProfile, request_id: str
-    ) -> List[VideoRecommendation]:
+    ) -> list[VideoRecommendation]:
         """
         Öğrenci profiline göre video önerileri al
 
@@ -199,14 +198,14 @@ class VideoRecommendationService:
 
         except Exception as e:
             logger.error(
-                f"[{request_id}] Error getting recommendations: {str(e)}", exc_info=True
+                f"[{request_id}] Error getting recommendations: {e!s}", exc_info=True
             )
             # Return empty recommendations on error
             return []
 
     async def _discover_videos(
         self, profile: StudentProfile, request_id: str
-    ) -> List[VideoRecommendation]:
+    ) -> list[VideoRecommendation]:
         """
         Paralel video discovery ve filtreleme
 
@@ -243,7 +242,7 @@ class VideoRecommendationService:
         for i, result in enumerate(results):
             if isinstance(result, Exception):
                 logger.error(
-                    f"[{request_id}] Error processing goal '{goals_to_process[i]}': {str(result)}"
+                    f"[{request_id}] Error processing goal '{goals_to_process[i]}': {result!s}"
                 )
             else:
                 recommendations.append(result)
@@ -302,13 +301,13 @@ class VideoRecommendationService:
             # Handle errors
             if isinstance(advanced_videos, Exception):
                 logger.warning(
-                    f"[{request_id}] Advanced search failed: {str(advanced_videos)}"
+                    f"[{request_id}] Advanced search failed: {advanced_videos!s}"
                 )
                 advanced_videos = []
 
             if isinstance(semantic_results, Exception):
                 logger.warning(
-                    f"[{request_id}] Semantic search failed: {str(semantic_results)}"
+                    f"[{request_id}] Semantic search failed: {semantic_results!s}"
                 )
                 semantic_results = []
 
@@ -342,7 +341,7 @@ class VideoRecommendationService:
 
         except Exception as e:
             logger.error(
-                f"[{request_id}] Error in _search_for_goal: {str(e)}", exc_info=True
+                f"[{request_id}] Error in _search_for_goal: {e!s}", exc_info=True
             )
             # Return empty recommendation
             return VideoRecommendation(
@@ -393,9 +392,9 @@ class VideoRecommendationService:
             "fizik": ["fizik", "physics", "mekanik", "elektrik"],
             "kimya": ["kimya", "chemistry", "organik", "inorganik"],
             "biyoloji": ["biyoloji", "biology", "genetik", "hücre"],
-            "türkçe": ["türkçe", "turkish", "edebiyat", "dil bilgisi"],
+            "turkce": ["türkçe", "turkish", "edebiyat", "dil bilgisi"],
             "tarih": ["tarih", "history", "osmanlı", "cumhuriyet"],
-            "coğrafya": ["coğrafya", "geography", "harita"],
+            "cografya": ["coğrafya", "geography", "harita"],
         }
 
         # Keyword matching
@@ -427,7 +426,7 @@ class VideoRecommendationService:
         # Default: TYT
         return "TYT"
 
-    def _determine_difficulty(self, subject: str, current_level: Dict[str, int]) -> str:
+    def _determine_difficulty(self, subject: str, current_level: dict[str, int]) -> str:
         """
         Zorluk seviyesi belirle
 
@@ -441,19 +440,18 @@ class VideoRecommendationService:
         # Konuya göre seviye al (default: 50)
         level = current_level.get(subject, 50)
 
-        # Seviye -> zorluk mapping
+        # Seviye -> zorluk mapping (ASCII — matches DifficultyLevel enum values)
         if level < 30:
-            return "başlangıç"
-        elif level < 70:
+            return "baslangic"
+        if level < 70:
             return "orta"
-        else:
-            return "ileri"
+        return "ileri"
 
     def _merge_videos(
         self,
-        advanced_videos: List[TurkishEducationVideo],
-        semantic_videos: List[TurkishEducationVideo],
-    ) -> List[TurkishEducationVideo]:
+        advanced_videos: list[TurkishEducationVideo],
+        semantic_videos: list[TurkishEducationVideo],
+    ) -> list[TurkishEducationVideo]:
         """
         İki video listesini merge et ve deduplicate yap
 
@@ -483,8 +481,8 @@ class VideoRecommendationService:
         return merged
 
     def _convert_semantic_to_turkish_videos(
-        self, semantic_results: List, subject: str, difficulty: str, exam_type: str
-    ) -> List[TurkishEducationVideo]:
+        self, semantic_results: list, subject: str, difficulty: str, exam_type: str
+    ) -> list[TurkishEducationVideo]:
         """
         Semantic search sonuçlarını TurkishEducationVideo'ya çevir
 
@@ -522,14 +520,14 @@ class VideoRecommendationService:
                 )
                 converted.append(video)
             except Exception as e:
-                logger.warning(f"Error converting semantic result: {str(e)}")
+                logger.warning(f"Error converting semantic result: {e!s}")
                 continue
 
         return converted
 
     async def _filter_turkish_content(
-        self, videos: List[TurkishEducationVideo], request_id: str
-    ) -> List[TurkishEducationVideo]:
+        self, videos: list[TurkishEducationVideo], request_id: str
+    ) -> list[TurkishEducationVideo]:
         """
         Türkçe içerik filtreleme
 
@@ -560,14 +558,14 @@ class VideoRecommendationService:
                     )
 
             except Exception as e:
-                logger.warning(f"[{request_id}] Error filtering video: {str(e)}")
+                logger.warning(f"[{request_id}] Error filtering video: {e!s}")
                 # Hata durumunda videoyu dahil et (safe side)
                 filtered.append(video)
 
         return filtered
 
     def _serialize_recommendations(
-        self, recommendations: List[VideoRecommendation]
+        self, recommendations: list[VideoRecommendation]
     ) -> dict:
         """
         Recommendations'ı cache için serialize et
@@ -611,7 +609,7 @@ class VideoRecommendationService:
             ]
         }
 
-    def _deserialize_recommendations(self, data: dict) -> List[VideoRecommendation]:
+    def _deserialize_recommendations(self, data: dict) -> list[VideoRecommendation]:
         """
         Cache'den gelen data'yı deserialize et
 
@@ -694,7 +692,7 @@ class VideoRecommendationService:
 
 
 # Global instance (will be initialized in main.py)
-_video_recommendation_service: Optional[VideoRecommendationService] = None
+_video_recommendation_service: VideoRecommendationService | None = None
 
 
 async def get_video_recommendation_service() -> VideoRecommendationService:
@@ -708,14 +706,17 @@ async def get_video_recommendation_service() -> VideoRecommendationService:
 
     if _video_recommendation_service is None:
         # Lazy initialization
+        import os
+
         from core.multi_layer_cache import get_multi_layer_cache
         from services.advanced_youtube_search import advanced_youtube_search
         from services.semantic_youtube_search import semantic_youtube_search
         from services.turkish_content_filter import turkish_content_filter
 
         # Get multi-layer cache instance
+        redis_url = os.environ.get("REDIS_URL", "redis://localhost:6379/0")
         cache = await get_multi_layer_cache(
-            redis_url="redis://localhost:6379/0", namespace="video_cache"
+            redis_url=redis_url, namespace="video_cache"
         )
 
         _video_recommendation_service = VideoRecommendationService(

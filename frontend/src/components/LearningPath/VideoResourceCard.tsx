@@ -197,14 +197,14 @@ export function VideoResourceCard({ video, onPlay }: VideoResourceCardProps) {
                 Toplam Skor:
               </Typography>
               <Rating
-                value={video.scores.final_score * 5}
+                value={Math.min(video.scores.final_score * 5, 5)}
                 precision={0.1}
                 size="small"
                 readOnly
                 icon={<Star fontSize="inherit" />}
               />
               <Typography variant="caption" fontWeight="bold" color="primary">
-                ({(video.scores.final_score * 5).toFixed(1)}/5)
+                ({Math.min(video.scores.final_score * 5, 5).toFixed(1)}/5)
               </Typography>
             </Box>
           </Box>

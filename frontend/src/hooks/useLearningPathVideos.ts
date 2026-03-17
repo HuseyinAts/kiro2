@@ -145,6 +145,7 @@ export const useLearningPathVideos = (): UseLearningPathVideosReturn => {
         const fallback = FALLBACK_VIDEOS[resolvedSubject] || FALLBACK_VIDEOS['matematik'];
         setCacheEntry(cacheKey, fallback);
         setVideos(fallback);
+        setVideosError('Önbellekteki öneriler gösteriliyor. Canlı sonuçlar şu an mevcut değil.');
       }
     } catch (err: any) {
       console.error('Error loading videos, using fallback:', err);
@@ -152,6 +153,7 @@ export const useLearningPathVideos = (): UseLearningPathVideosReturn => {
       const resolvedSubject = subject || 'matematik';
       const fallback = FALLBACK_VIDEOS[resolvedSubject] || FALLBACK_VIDEOS['matematik'];
       setVideos(fallback);
+      setVideosError('Bağlantı hatası — önbellekteki öneriler gösteriliyor.');
     } finally {
       setVideosLoading(false);
     }
