@@ -330,20 +330,13 @@ class ResourceDiscoveryService:
 
         Returns:
             List of resources from this strategy
-
-        Raises:
-            Exception: Any exception from the strategy
         """
-        try:
-            return await strategy.search(
-                query=request.query,
-                subject=request.subject,
-                difficulty_range=request.difficulty_range,
-                limit=request.limit,
-            )
-        except Exception as e:
-            logger.warning(f"Strategy search failed: {e}")
-            raise
+        return await strategy.search(
+            query=request.query,
+            subject=request.subject,
+            difficulty_range=request.difficulty_range,
+            limit=request.limit,
+        )
 
     def _filter_strategies(
         self, request: DiscoveryRequest
@@ -493,7 +486,8 @@ class ResourceDiscoveryService:
         """Generate cache key from request."""
         return (
             f"{request.query}|{request.subject}|{request.difficulty_range}"
-            f"|{request.limit}|{sorted(request.preferred_platforms)}"
+            f"|{request.target_level}|{request.limit}"
+            f"|{sorted(request.preferred_platforms)}"
         )
 
     async def find_similar(
@@ -538,7 +532,10 @@ class ResourceDiscoveryService:
             strategy: Search strategy to add
         """
         self.strategies.append(strategy)
-        logger.info(f"Added strategy: {strategy.get_platform_name()}")
+        platform = strategy.get_platform_name()
+        self.strategy_priority[platform] = strategy.get_priority()
+        self._cache.clear()
+        logger.info(f"Added strategy: {platform}")
 
     def remove_strategy(self, platform: str) -> bool:
         """Remove a strategy by platform name.
@@ -552,6 +549,8 @@ class ResourceDiscoveryService:
         for i, strategy in enumerate(self.strategies):
             if strategy.get_platform_name() == platform:
                 self.strategies.pop(i)
+                self.strategy_priority.pop(platform, None)
+                self._cache.clear()
                 logger.info(f"Removed strategy: {platform}")
                 return True
         return False
