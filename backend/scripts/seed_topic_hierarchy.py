@@ -12,6 +12,7 @@ Idempotent: safe to run multiple times (ON CONFLICT DO NOTHING + already-updated
 """
 
 import argparse
+import os
 import re
 import sys
 import unicodedata
@@ -20,10 +21,10 @@ import uuid
 import psycopg2
 
 DB_CONFIG = {
-    "host": "localhost",
-    "port": 5434,
-    "dbname": "kiro2",
-    "user": "postgres",
+    "host": os.environ.get("DB_HOST", "localhost"),
+    "port": int(os.environ.get("DB_PORT", "5434")),
+    "dbname": os.environ.get("DB_NAME", "kiro2"),
+    "user": os.environ.get("DB_USER", "postgres"),
 }
 
 # Matematik parent
@@ -112,8 +113,17 @@ PHASE2_SUBTOPICS = [
 # Each key is a subtopic code, value is list of regex patterns
 # A question matches a code if ANY of its patterns match
 REGEX_PATTERNS: dict[str, list[str]] = {
-    "MAT.TRG": [r"sin\b", r"cos\b", r"tan\b", r"cosec", r"cotan", r"trigonometr"],
-    "MAT.FON": [r"f\s*\(", r"g\s*\(", r"h\s*\(", r"fonksiyon"],
+    "MAT.TRG": [
+        r"\bsin\b",
+        r"\bcos\b",
+        r"\btan\b",
+        r"cosec",
+        r"cotan",
+        r"trigonometr",
+        r"tanjant",
+        r"arctan",
+    ],
+    "MAT.FON": [r"f\s*\(", r"g\s*\(", r"h\s*\(\s*[a-zıüöşçğ0-9]", r"fonksiyon"],
     "MAT.POL": [r"polinom", r"dereceli\s+ifade"],
     "MAT.LOG": [r"\blog\b", r"\bln\b", r"logaritma"],
     "MAT.LMT": [r"\blim\b", r"limit"],
@@ -139,7 +149,7 @@ REGEX_PATTERNS: dict[str, list[str]] = {
         r"yüzde",
         r"kâr",
         r"zarar",
-        r"hız\w*.*mesafe",
+        r"hız.*?mesafe",
         r"faiz",
     ],
     "MAT.EST": [r"eşitsizli[kğ]"],
@@ -148,12 +158,14 @@ REGEX_PATTERNS: dict[str, list[str]] = {
     "MAT.USL": [r"üslü", r"köklü", r"karekök", r"√"],
     "MAT.IST": [
         r"istatistik",
-        r"ortalama",
+        r"aritmetik\s+ortalama",
+        r"ortalama\w*\s+(not|puan|ya[şs]|boy|kilo|s[ıi]cakl[ıi]k|skor|de[gğ]er|a[gğ][ıi]rl[ıi]k)",
         r"medyan",
         r"standart\s+sapma",
         r"varyans",
         r"histogram",
         r"çeyrekler\s+açıklığı",
+        r"frekans\s+tablo",
     ],
     "MAT.CRP": [r"çarpanlar\w*\s*a[yı]", r"çarpanlar"],
     "MAT.GEO": [
@@ -340,15 +352,8 @@ def update_by_regex(
     updated = 0
     ambiguous = 0
     for qid, question_text in rows:
-        text_norm = normalize_tr(question_text)
-        matched_codes: set[str] = set()
-        for code, patterns in _COMPILED_PATTERNS.items():
-            for pat in patterns:
-                if pat.search(text_norm):
-                    matched_codes.add(code)
-                    break
-        if len(matched_codes) == 1:
-            code = matched_codes.pop()
+        code = match_single_regex(question_text)
+        if code is not None:
             if code in subtopic_ids:
                 if dry_run:
                     updated += 1
@@ -358,8 +363,16 @@ def update_by_regex(
                         (subtopic_ids[code], qid),
                     )
                     updated += cur.rowcount
-        elif len(matched_codes) > 1:
-            ambiguous += 1
+        else:
+            # Distinguish ambiguous (multi-match) from no match
+            text_norm = normalize_tr(question_text)
+            match_count = sum(
+                1
+                for _, patterns in _COMPILED_PATTERNS.items()
+                if any(pat.search(text_norm) for pat in patterns)
+            )
+            if match_count > 1:
+                ambiguous += 1
     return updated, ambiguous
 
 
@@ -542,6 +555,121 @@ def run_phase2(cur, conn, dry_run: bool):
         update_total_questions(cur, conn)
 
 
+def run_fix_fp(cur, conn, dry_run: bool):
+    """Fix false positives: re-verify regex-matched questions with updated patterns.
+
+    Steps:
+    1. Find all level-2 questions that were assigned by regex (not by book keyword)
+    2. Re-run match_single_regex with updated patterns
+    3. If no longer matches or matches different code → reset to level-1
+    4. Re-run Phase 2 regex on newly-reset questions
+    """
+    subtopic_ids = get_subtopic_ids(cur)
+
+    # Get all level-2 Matematik questions (including source_book for verification)
+    cur.execute(
+        """
+        SELECT qb.id, qb.question_text, qb.primary_topic_id, th.code,
+               COALESCE(qb.source_book, '')
+        FROM question_bank qb
+        JOIN topic_hierarchy th ON th.id = qb.primary_topic_id
+        WHERE qb.is_active = true
+          AND qb.subject_area = 'MATEMATIK'
+          AND th.level = 2
+          AND th.parent_id = %s
+          AND qb.question_text IS NOT NULL
+          AND qb.question_text != ''
+        """,
+        (MATEMATIK_PARENT_ID,),
+    )
+    rows = cur.fetchall()
+    print(f"\nLevel-2 Matematik questions to verify: {len(rows)}")
+
+    reset_count = 0
+    mismatch_count = 0
+    ok_count = 0
+    book_ok_count = 0
+    reset_by_code: dict[str, int] = {}
+
+    for qid, question_text, current_topic_id, current_code, source_book in rows:
+        new_code = match_single_regex(question_text)
+        if new_code == current_code:
+            ok_count += 1
+        elif new_code is None:
+            # No regex match → check text keyword AND book keyword
+            text_code = match_single_keyword(question_text, TEXT_KEYWORD_MAP)
+            if text_code == current_code:
+                ok_count += 1
+                continue
+            book_code = (
+                match_single_keyword(source_book, BOOK_KEYWORD_MAP)
+                if source_book
+                else None
+            )
+            if book_code == current_code:
+                book_ok_count += 1
+                continue
+            # Neither regex, text keyword, nor book keyword confirms → reset
+            reset_count += 1
+            reset_by_code[current_code] = reset_by_code.get(current_code, 0) + 1
+            if not dry_run:
+                cur.execute(
+                    "UPDATE question_bank SET primary_topic_id = %s WHERE id = %s",
+                    (MATEMATIK_PARENT_ID, qid),
+                )
+        elif new_code != current_code:
+            # Matches a DIFFERENT code now → check book/text first
+            text_code = match_single_keyword(question_text, TEXT_KEYWORD_MAP)
+            book_code = (
+                match_single_keyword(source_book, BOOK_KEYWORD_MAP)
+                if source_book
+                else None
+            )
+            if text_code == current_code or book_code == current_code:
+                ok_count += 1  # Book/text confirms current assignment
+            else:
+                mismatch_count += 1
+                reset_by_code[current_code] = reset_by_code.get(current_code, 0) + 1
+                if not dry_run:
+                    cur.execute(
+                        "UPDATE question_bank SET primary_topic_id = %s WHERE id = %s",
+                        (MATEMATIK_PARENT_ID, qid),
+                    )
+
+    if not dry_run:
+        conn.commit()
+
+    total_reset = reset_count + mismatch_count
+    print(f"\n{'=' * 50}")
+    print(f"Fix-FP Verify {'(DRY-RUN)' if dry_run else ''}:")
+    print(f"  OK (regex/text confirmed): {ok_count}")
+    print(f"  OK (book keyword confirmed): {book_ok_count}")
+    print(f"  Reset (no match): {reset_count}")
+    print(f"  Reset (code changed): {mismatch_count}")
+    print(f"  Total reset to level-1: {total_reset}")
+    if reset_by_code:
+        print("\n  Resets by original code:")
+        for code, cnt in sorted(reset_by_code.items(), key=lambda x: -x[1]):
+            print(f"    {code}: {cnt}")
+
+    # Re-run regex on reset questions
+    if total_reset > 0:
+        print(
+            f"\n{'[DRY-RUN] ' if dry_run else ''}Re-running regex on {total_reset} reset questions..."
+        )
+        re_matched, re_ambiguous = update_by_regex(cur, subtopic_ids, dry_run)
+        print(f"  -> {re_matched} re-matched")
+        print(f"  -> {re_ambiguous} ambiguous (skipped)")
+        if not dry_run:
+            conn.commit()
+    else:
+        print("\nNo false positives found.")
+
+    if not dry_run:
+        show_distribution(cur)
+        update_total_questions(cur, conn)
+
+
 def main():
     parser = argparse.ArgumentParser(description="Seed topic_hierarchy subtopics")
     group = parser.add_mutually_exclusive_group(required=True)
@@ -549,6 +677,11 @@ def main():
     group.add_argument("--apply", action="store_true", help="Apply changes to DB")
     parser.add_argument(
         "--phase2", action="store_true", help="Run Phase 2 regex matching"
+    )
+    parser.add_argument(
+        "--fix-fp",
+        action="store_true",
+        help="Fix false positives: re-verify and re-categorize with updated patterns",
     )
     args = parser.parse_args()
 
@@ -569,7 +702,9 @@ def main():
             sys.exit(1)
         print(f"Parent: {parent[1]} (id={parent[0]})")
 
-        if args.phase2:
+        if args.fix_fp:
+            run_fix_fp(cur, conn, dry_run)
+        elif args.phase2:
             run_phase2(cur, conn, dry_run)
         else:
             run_phase1(cur, conn, dry_run)
