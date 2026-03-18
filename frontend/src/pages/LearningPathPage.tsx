@@ -1,3 +1,11 @@
+/**
+ * LEGACY/FROZEN SURFACE
+ *
+ * Active route now uses `ModernLearningPathPage` and hook-based video loading.
+ * Keep this page only for compatibility while remaining dependencies are migrated.
+ * Do not add new product work here unless the active modern surface is updated first.
+ */
+
 import {
   Timeline,
   VideoLibrary,

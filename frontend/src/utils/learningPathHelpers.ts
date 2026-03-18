@@ -6,6 +6,7 @@
  */
 
 import { PathNodeData } from '../components/LearningPath/PathNode';
+import { turkishLowerCase } from './turkishUtils';
 
 /**
  * Extract subject from module/topic title
@@ -14,12 +15,16 @@ import { PathNodeData } from '../components/LearningPath/PathNode';
  * @returns Subject name (matematik, fizik, etc.)
  */
 export const extractSubject = (title: string): string => {
-  const lowerTitle = title.toLowerCase();
+  const lowerTitle = turkishLowerCase(title.normalize('NFC'));
   if (lowerTitle.includes('matematik')) {return 'matematik';}
   if (lowerTitle.includes('fizik')) {return 'fizik';}
   if (lowerTitle.includes('kimya')) {return 'kimya';}
   if (lowerTitle.includes('biyoloji')) {return 'biyoloji';}
-  if (lowerTitle.includes('türkçe')) {return 'türkçe';}
+  if (lowerTitle.includes('turkce') || lowerTitle.includes('türkçe')) {return 'turkce';}
+  if (lowerTitle.includes('geometri')) {return 'geometri';}
+  if (lowerTitle.includes('tarih')) {return 'tarih';}
+  if (lowerTitle.includes('cografya') || lowerTitle.includes('coğrafya')) {return 'cografya';}
+  if (lowerTitle.includes('edebiyat')) {return 'edebiyat';}
   return 'matematik'; // default
 };
 
@@ -30,7 +35,7 @@ export const extractSubject = (title: string): string => {
  * @returns Topic keyword or undefined
  */
 export const extractTopic = (topicName: string): string | undefined => {
-  const lowerTopic = topicName.toLowerCase();
+  const lowerTopic = turkishLowerCase(topicName.normalize('NFC'));
 
   // Matematik konuları
   if (lowerTopic.includes('türev')) {return 'türev';}

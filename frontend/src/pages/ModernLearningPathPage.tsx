@@ -31,6 +31,7 @@ import modernColors from '../theme/modern-colors';
 
 // Types
 import { generateConnections } from '../utils/learningPathHelpers';
+import { turkishLowerCase } from '../utils/turkishUtils';
 
 // Lazy-loaded tab content components
 
@@ -179,7 +180,7 @@ export function ModernLearningPathPage() {
   };
 
   const extractSubject = useCallback((title: string): string => {
-    const words = title.toLowerCase().split(/\s+/);
+    const words = turkishLowerCase(title.normalize('NFC')).split(/\s+/);
     for (const word of words) {
       if (SUBJECT_KEYWORDS[word]) return SUBJECT_KEYWORDS[word];
     }
@@ -300,10 +301,12 @@ export function ModernLearningPathPage() {
     if (activeQuizNode) {
       const passed = results.percentage >= (activeQuizNode.quiz?.passing_score || 60);
       try {
-        if (passed) {
-          await markNodeComplete(activeQuizNode.id);
-        } else {
-          await updateProgress({ nodeId: activeQuizNode.id, progress: results.percentage });
+        const result = passed
+          ? await markNodeComplete(activeQuizNode.id)
+          : await updateProgress({ nodeId: activeQuizNode.id, progress: results.percentage });
+
+        if (result?.allCompleted) {
+          window.alert('Tebrikler! Bu konudaki tum adimlari tamamladiniz!');
         }
       } catch (err: any) {
         console.error('Node progress guncelleme hatasi:', err);
@@ -331,10 +334,8 @@ export function ModernLearningPathPage() {
       console.warn('Quiz süre dolduğu için sonlandırıldı');
     }
 
-    // 6. Close quiz + reset error types
+    // 6. Reset error types (quiz UI closes when user clicks exit in results screen)
     errorTypesRef.current = {};
-    setNodeQuizQuestions(null);
-    setActiveQuizNode(null);
   }, [nodeQuizQuestions, activeQuizNode, markNodeComplete, updateProgress, studentId]);
 
   /**
@@ -348,16 +349,16 @@ export function ModernLearningPathPage() {
   /**
    * Quiz exit with confirmation
    */
-  const handleQuizExit = useCallback(() => {
-    if (window.confirm('Quiz\'den çıkmak istediğinize emin misiniz? İlerlemeniz kaydedilmeyecek.')) {
+  const handleQuizExit = useCallback((submitted?: boolean) => {
+    if (submitted || window.confirm('Quiz\'den çıkmak istediğinize emin misiniz? İlerlemeniz kaydedilmeyecek.')) {
       errorTypesRef.current = {};
       setNodeQuizQuestions(null);
       setActiveQuizNode(null);
     }
   }, []);
 
-  const handleInterleavedExit = useCallback(() => {
-    if (window.confirm('Quiz\'den çıkmak istediğinize emin misiniz? İlerlemeniz kaydedilmeyecek.')) {
+  const handleInterleavedExit = useCallback((submitted?: boolean) => {
+    if (submitted || window.confirm('Quiz\'den çıkmak istediğinize emin misiniz? İlerlemeniz kaydedilmeyecek.')) {
       errorTypesRef.current = {};
       setInterleavedQuestions(null);
     }
@@ -814,6 +815,20 @@ export function ModernLearningPathPage() {
                               });
                             } catch (err) {
                               console.error('FSRS kaydi basarisiz:', err);
+                            }
+                          }
+                          // Award gamification points
+                          if (studentId) {
+                            const points = results.correctCount * 10 + (results.percentage >= 60 ? 50 : 0);
+                            if (points > 0) {
+                              try {
+                                await fetch(`/api/v1/gamification/points/award?points=${points}&reason=interleaved_practice`, {
+                                  method: 'POST',
+                                  credentials: 'include',
+                                });
+                              } catch (err) {
+                                console.error('Gamification puan hatasi:', err);
+                              }
                             }
                           }
                           errorTypesRef.current = {};

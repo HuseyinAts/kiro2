@@ -124,6 +124,9 @@ class SemanticYouTubeSearch:
             "turkce": "türkçe dil bilgisi anlam sözcük metin okuma yazma edebiyat",
             "biyoloji": "biyoloji hücre genetik evrim ekoloji anatomi fizyoloji",
             "tarih": "tarih osmanlı cumhuriyet savaş devrim reform medeniyet",
+            "geometri": "geometri açı üçgen dörtgen çember daire alan hacim",
+            "cografya": "coğrafya harita iklim nüfus yerleşme bölge deprem",
+            "edebiyat": "edebiyat şiir roman hikaye divan halk tanzimat",
         }
 
         # Zorluk seviyesi tanımları
@@ -149,7 +152,7 @@ class SemanticYouTubeSearch:
         """Embedding cache'ini yükle"""
         try:
             if self.cache_file.exists():
-                with open(self.cache_file, "rb") as f:
+                with self.cache_file.open("rb") as f:
                     self.embeddings_cache = pickle.load(f)
                 logger.info(
                     f"Embedding cache yüklendi: {len(self.embeddings_cache)} item"
@@ -161,7 +164,7 @@ class SemanticYouTubeSearch:
     async def _save_cache(self):
         """Embedding cache'ini kaydet"""
         try:
-            with open(self.cache_file, "wb") as f:
+            with self.cache_file.open("wb") as f:
                 pickle.dump(self.embeddings_cache, f)
         except Exception as e:
             logger.warning(f"Cache kaydedilemedi: {e!s}")
@@ -349,6 +352,12 @@ class SemanticYouTubeSearch:
         # Model başlatma
         await self.initialize_model()
 
+        # Turkish normalization (defense-in-depth)
+        import unicodedata
+
+        subject = unicodedata.normalize("NFC", subject)
+        subject = subject.replace("İ", "i").replace("I", "ı").lower()
+
         # Query oluştur
         if not query_text:
             query_text = f"{exam_type} {subject} {difficulty} konu anlatımı ders"
@@ -464,7 +473,7 @@ class SemanticYouTubeSearch:
         # Bu kısım mevcut real_youtube_api'den adaptasyonu olacak
         # Şimdilik mock data dönüyoruz
 
-        mock_videos = [
+        return [
             {
                 "video_id": "VuwKz2TVVKA",
                 "title": f"{exam_type} {subject.title()} - Temel Kavramlar ve Uygulamalar",
@@ -488,8 +497,6 @@ class SemanticYouTubeSearch:
                 "upload_date": "2024-09-10",
             },
         ]
-
-        return mock_videos
 
     def _is_music_content(self, text: str, channel: str) -> bool:
         """Müzik içeriği kontrolü"""

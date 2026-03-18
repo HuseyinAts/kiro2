@@ -75,7 +75,8 @@ export interface QuizConfig {
 interface QuizInterfaceProps {
   config: QuizConfig
   onSubmit?: (results: QuizResults) => void
-  onExit?: () => void
+  onExit?: (submitted?: boolean) => void
+  onRetry?: () => void
   /** F8: Called when student classifies a wrong answer's error type */
   onErrorTypeSelect?: (questionId: string, errorType: ErrorType) => void
   className?: string
@@ -96,6 +97,7 @@ export function QuizInterface({
   config,
   onSubmit,
   onExit,
+  onRetry,
   onErrorTypeSelect,
   className,
 }: QuizInterfaceProps) {
@@ -364,13 +366,27 @@ export function QuizInterface({
             )}
             <Button
               variant="contained"
-              onClick={() => window.location.reload()}
+              onClick={() => {
+                if (onRetry) {
+                  onRetry();
+                } else {
+                  setIsSubmitted(false);
+                  setResults(null);
+                  setCurrentIndex(0);
+                  setAnswers({});
+                  setFlagged(new Set());
+                  setReviewMode(false);
+                  setFeedbackVisible(false);
+                  setTimeLeft(config.timeLimit || 0);
+                }
+              }}
               startIcon={<Refresh />}
             >
               Tekrar Dene
             </Button>
             <Button
-              onClick={onExit}
+              variant="contained"
+              onClick={() => onExit?.(true)}
             >
               Çıkış
             </Button>
@@ -742,7 +758,7 @@ export function QuizInterface({
           ) : (
             <Button
               variant="contained"
-              onClick={() => onExit?.()}
+              onClick={() => onExit?.(isSubmitted)}
             >
               Çıkış
             </Button>

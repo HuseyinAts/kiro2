@@ -150,6 +150,18 @@ class VideoSearchRequest(BaseModel):
     search_mode: str = "semantic"  # "semantic", "keyword", "hybrid"
     custom_query: str | None = None
 
+    @field_validator("subject", mode="before")
+    @classmethod
+    def normalize_subject(cls, v: str) -> str:
+        """Turkish NFC + lowercase normalization for subject matching."""
+        import unicodedata
+
+        if not v:
+            return v
+        v = unicodedata.normalize("NFC", v)
+        v = v.replace("İ", "i").replace("I", "ı")
+        return v.lower()
+
 
 class StudentProfileRequest(BaseModel):
     goals: list[str]
@@ -383,9 +395,8 @@ class MetricsSnapshotResponse(BaseModel):
 # Dependency injection - ULTRA FAST VERSION
 async def get_discovery_service() -> YouTubeDiscovery:
     """YouTube discovery service'i al - session başlatma"""
-    discovery = get_youtube_discovery()
     # Session başlatma komple kaldırıldı - instant return
-    return discovery
+    return get_youtube_discovery()
 
 
 async def get_advanced_discovery_service() -> AdvancedYouTubeSearch:
@@ -893,15 +904,13 @@ async def get_search_stats(
         # Cache hit rate hesapla (basit implementation)
         cache_hit_rate = 0.85  # Placeholder
 
-        stats = SearchStatsResponse(
+        return SearchStatsResponse(
             total_cached_videos=total_cached,
             cache_hit_rate=cache_hit_rate,
             last_update=last_update,
             supported_subjects=[subject.value for subject in SubjectType],
             supported_exam_types=[exam.value for exam in ExamType],
         )
-
-        return stats
 
     except Exception as e:
         logger.error(f"Stats alma hatası: {e}")

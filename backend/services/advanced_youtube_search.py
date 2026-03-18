@@ -186,6 +186,106 @@ class AdvancedYouTubeSearch:
                     "language_score": 10.0,
                 }
             ],
+            ("biyoloji", "TYT", "baslangic"): [
+                {
+                    "video_id": "bBio1YT001",
+                    "title": "TYT Biyoloji - Hücre Yapısı ve Organeller",
+                    "channel": "TonguçAkademi",
+                    "duration": "24:15",
+                    "quality_score": 9.0,
+                    "education_relevance": 9.2,
+                    "language_score": 10.0,
+                },
+                {
+                    "video_id": "bBio2YT002",
+                    "title": "TYT Biyoloji - Canlıların Sınıflandırılması",
+                    "channel": "KAMP Online",
+                    "duration": "20:30",
+                    "quality_score": 8.8,
+                    "education_relevance": 9.0,
+                    "language_score": 10.0,
+                },
+            ],
+            ("tarih", "TYT", "baslangic"): [
+                {
+                    "video_id": "tTar1YT001",
+                    "title": "TYT Tarih - İlk Uygarlıklar ve Temel Kavramlar",
+                    "channel": "TonguçAkademi",
+                    "duration": "26:40",
+                    "quality_score": 9.1,
+                    "education_relevance": 9.3,
+                    "language_score": 10.0,
+                },
+                {
+                    "video_id": "tTar2YT002",
+                    "title": "TYT Tarih - Osmanlı Devleti Kuruluş Dönemi",
+                    "channel": "KAMP Online",
+                    "duration": "28:15",
+                    "quality_score": 8.9,
+                    "education_relevance": 9.1,
+                    "language_score": 10.0,
+                },
+            ],
+            ("geometri", "TYT", "baslangic"): [
+                {
+                    "video_id": "gGeo1YT001",
+                    "title": "TYT Geometri - Temel Kavramlar ve Açılar",
+                    "channel": "Matematik Öğretmeni",
+                    "duration": "22:50",
+                    "quality_score": 9.2,
+                    "education_relevance": 9.4,
+                    "language_score": 10.0,
+                },
+                {
+                    "video_id": "gGeo2YT002",
+                    "title": "TYT Geometri - Üçgenler ve Özellikleri",
+                    "channel": "TonguçAkademi",
+                    "duration": "25:10",
+                    "quality_score": 9.0,
+                    "education_relevance": 9.2,
+                    "language_score": 10.0,
+                },
+            ],
+            ("cografya", "TYT", "baslangic"): [
+                {
+                    "video_id": "cCog1YT001",
+                    "title": "TYT Coğrafya - Harita Bilgisi ve Koordinat Sistemi",
+                    "channel": "TonguçAkademi",
+                    "duration": "23:20",
+                    "quality_score": 8.9,
+                    "education_relevance": 9.1,
+                    "language_score": 10.0,
+                },
+                {
+                    "video_id": "cCog2YT002",
+                    "title": "TYT Coğrafya - İklim Bilgisi Temel Kavramlar",
+                    "channel": "KAMP Online",
+                    "duration": "21:45",
+                    "quality_score": 8.8,
+                    "education_relevance": 9.0,
+                    "language_score": 10.0,
+                },
+            ],
+            ("edebiyat", "TYT", "baslangic"): [
+                {
+                    "video_id": "eEde1YT001",
+                    "title": "TYT Edebiyat - Güzel Sanatlar ve Edebiyat İlişkisi",
+                    "channel": "TonguçAkademi",
+                    "duration": "19:55",
+                    "quality_score": 9.0,
+                    "education_relevance": 9.2,
+                    "language_score": 10.0,
+                },
+                {
+                    "video_id": "eEde2YT002",
+                    "title": "TYT Edebiyat - Şiir Bilgisi ve Nazım Biçimleri",
+                    "channel": "KAMP Online",
+                    "duration": "24:30",
+                    "quality_score": 8.8,
+                    "education_relevance": 9.0,
+                    "language_score": 10.0,
+                },
+            ],
         }
 
     async def get_session(self) -> aiohttp.ClientSession:
@@ -248,7 +348,7 @@ class AdvancedYouTubeSearch:
                 score += 0.5
 
         # Channel güvenilirlik skoru
-        if any(trusted in channel for trusted in self.trusted_turkish_channels.keys()):
+        if any(trusted in channel for trusted in self.trusted_turkish_channels):
             score += 2.0
 
         # Description analizi
@@ -344,7 +444,7 @@ class AdvancedYouTubeSearch:
         else:
             # Fallback: benzer konularda ara
             fallback_key = None
-            for k in self.curated_videos.keys():
+            for k in self.curated_videos:
                 if k[0] == subject.lower() and k[1] == exam_type.upper():
                     fallback_key = k
                     break
@@ -356,7 +456,7 @@ class AdvancedYouTubeSearch:
                 video_list = self.curated_videos.get(("matematik", "TYT", "orta"), [])
 
         # Video metadata'larını oluştur
-        for i, video_data in enumerate(video_list[:max_results]):
+        for _i, video_data in enumerate(video_list[:max_results]):
             video = TurkishEducationVideo(
                 video_id=video_data["video_id"],
                 title=video_data["title"],
@@ -422,11 +522,9 @@ class AdvancedYouTubeSearch:
             return filtered_videos
 
         # Fallback: Mock data with better Turkish content
-        mock_videos = await self._generate_mock_turkish_videos(
+        return await self._generate_mock_turkish_videos(
             subject, exam_type, difficulty, max_results
         )
-
-        return mock_videos
 
     async def _generate_mock_turkish_videos(
         self, subject: str, exam_type: str, difficulty: str, max_results: int
@@ -464,6 +562,66 @@ class AdvancedYouTubeSearch:
                 "Elektrokimya",
                 "Çözeltiler ve Derişim",
                 "Gazlar ve Basınç",
+            ],
+            "biyoloji": [
+                "Hücre Yapısı ve Organeller",
+                "Canlıların Sınıflandırılması",
+                "Enerji Dönüşümleri ve Fotosentez",
+                "Hücre Bölünmesi Mitoz ve Mayoz",
+                "Kalıtım ve Genetik",
+                "Evrim ve Doğal Seçilim",
+                "Ekosistem ve Biyoçeşitlilik",
+                "Sinir Sistemi ve Duyu Organları",
+            ],
+            "turkce": [
+                "Sözcükte Anlam Bilgisi",
+                "Cümlede Anlam ve Yorumlama",
+                "Paragrafta Ana Düşünce",
+                "Ses Bilgisi ve Yazım Kuralları",
+                "Sözcük Türleri ve Fiiller",
+                "Cümle Türleri ve Analizi",
+                "Anlatım Bozuklukları",
+                "Noktalama İşaretleri",
+            ],
+            "tarih": [
+                "İlk Uygarlıklar ve Temel Kavramlar",
+                "İslam Tarihi ve Türk-İslam Devletleri",
+                "Osmanlı Kuruluş ve Yükseliş Dönemi",
+                "Osmanlı Duraklama ve Gerileme",
+                "Kurtuluş Savaşı ve Milli Mücadele",
+                "Atatürk İlkeleri ve İnkılapları",
+                "Çağdaş Türk ve Dünya Tarihi",
+                "I. ve II. Dünya Savaşları",
+            ],
+            "geometri": [
+                "Temel Kavramlar ve Doğruda Açılar",
+                "Üçgenler ve Özellikleri",
+                "Üçgende Benzerlik ve Alan",
+                "Dörtgenler ve Çokgenler",
+                "Çember ve Daire Problemleri",
+                "Katı Cisimler ve Hacim",
+                "Analitik Geometri Temelleri",
+                "Koordinat Düzleminde Doğrular",
+            ],
+            "cografya": [
+                "Harita Bilgisi ve Koordinat Sistemi",
+                "İklim Bilgisi ve Sıcaklık Dağılışı",
+                "İç Kuvvetler ve Yer Şekilleri",
+                "Dış Kuvvetler ve Aşınma",
+                "Nüfus ve Yerleşme Coğrafyası",
+                "Türkiye Fiziki Coğrafyası",
+                "Türkiye Beşeri ve Ekonomik Coğrafya",
+                "Bölgeler ve Bölgesel Kalkınma",
+            ],
+            "edebiyat": [
+                "Güzel Sanatlar ve Edebiyat İlişkisi",
+                "Şiir Bilgisi ve Nazım Biçimleri",
+                "İslamiyet Öncesi Türk Edebiyatı",
+                "Divan Edebiyatı Özellikleri",
+                "Halk Edebiyatı ve Türleri",
+                "Tanzimat Dönemi Edebiyatı",
+                "Milli Edebiyat Dönemi",
+                "Cumhuriyet Dönemi Türk Edebiyatı",
             ],
         }
 

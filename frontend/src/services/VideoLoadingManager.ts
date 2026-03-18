@@ -1,6 +1,11 @@
 /**
  * VideoLoadingManager - Merkezi video yükleme state management
  *
+ * LEGACY/FROZEN SURFACE:
+ * Active learning-path route now uses `useLearningPathVideos`.
+ * Keep this service only for compatibility with older pages/tests during migration.
+ * Do not add new product behavior here before the modern surface.
+ *
  * Bu servis, Learning Path sayfasında video yükleme işlemlerini yönetir.
  * State management, retry logic, timeout handling ve error handling sağlar.
  *

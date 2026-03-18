@@ -109,8 +109,8 @@ export interface UseLearningPathReturn {
   loadPath: () => Promise<void>
   reload: () => void
   setCurrentNode: (nodeId: string) => void
-  updateProgress: (update: ProgressUpdate) => Promise<boolean>
-  markNodeComplete: (nodeId: string) => Promise<boolean>
+  updateProgress: (update: ProgressUpdate) => Promise<{ success: boolean; allCompleted: boolean }>
+  markNodeComplete: (nodeId: string) => Promise<{ success: boolean; allCompleted: boolean }>
   submitQuizResult: (result: QuizResult) => Promise<void>
   skipQuiz: () => void
 }
@@ -360,17 +360,17 @@ export const useLearningPath = (): UseLearningPathReturn => {
   }, []);
 
   /** Update progress for a node — syncs with backend */
-  const updateProgress = useCallback(async (update: ProgressUpdate): Promise<boolean> => {
+  const updateProgress = useCallback(async (update: ProgressUpdate): Promise<{ success: boolean; allCompleted: boolean }> => {
     const { nodeId, progress, completed } = update;
 
     if (!user) {
       setError(ERROR_MESSAGES.AUTH);
-      return false;
+      return { success: false, allCompleted: false };
     }
 
     if (!studentId) {
       setError(ERROR_MESSAGES.PROFILE_NOT_LOADED);
-      return false;
+      return { success: false, allCompleted: false };
     }
 
     const sid = studentId;
@@ -426,16 +426,20 @@ export const useLearningPath = (): UseLearningPathReturn => {
       lpCache.remove(`${CACHE_KEYS.PATH_NODES}_${selectedSubject}`);
       lpCache.remove(CACHE_KEYS.COMPLETION_STATUS);
 
-      return true;
+      // Check if all nodes are now completed
+      const allCompleted = (completed || progress === 100) && !nextNodeId &&
+        pathNodes.every(n => n.id === nodeId || n.status === 'completed');
+
+      return { success: true, allCompleted };
     } catch (error) {
       const msg = error instanceof Error ? error.message : ERROR_MESSAGES.PROGRESS_SAVE;
       setError(msg);
-      return false;
+      return { success: false, allCompleted: false };
     }
   }, [user, studentId, pathNodes, selectedSubject]);
 
   /** Mark a node as complete */
-  const markNodeComplete = useCallback(async (nodeId: string): Promise<boolean> => {
+  const markNodeComplete = useCallback(async (nodeId: string) => {
     return updateProgress({ nodeId, completed: true, progress: 100 });
   }, [updateProgress]);
 
