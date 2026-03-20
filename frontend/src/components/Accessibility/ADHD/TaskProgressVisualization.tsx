@@ -72,7 +72,7 @@ export const TaskProgressVisualization: React.FC<TaskProgressVisualizationProps>
       setLoading(true);
       setError(null);
 
-      const response = await fetch(`/api/adhd-task-management/tasks/${taskId}/progress`, {
+      const response = await fetch(`/api/v1/adhd-task-management/tasks/${taskId}/progress`, {
         headers: {
           'Content-Type': 'application/json',
         },

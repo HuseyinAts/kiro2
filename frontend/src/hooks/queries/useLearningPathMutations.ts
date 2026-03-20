@@ -32,7 +32,7 @@ export const useUpdateProgress = () => {
       completed?: boolean;
     }): Promise<UpdateProgressResponse> => {
       const response = await apiRequest<UpdateProgressResponse>(
-        `/api/learning-path/progress/${studentId}/${nodeId}`,
+        `/api/v1/learning-path/progress/${studentId}/${nodeId}`,
         {
           method: 'PUT',
           body: JSON.stringify({
@@ -74,7 +74,7 @@ export const useMarkNodeComplete = () => {
       nodeId: string;
     }) => {
       const response = await apiRequest<UpdateProgressResponse>(
-        `/api/learning-path/progress/${studentId}/${nodeId}`,
+        `/api/v1/learning-path/progress/${studentId}/${nodeId}`,
         {
           method: 'PUT',
           body: JSON.stringify({
@@ -113,7 +113,7 @@ export const useSubmitQuizResult = () => {
       score: number;
     }) => {
       const response = await apiRequest<{ success: boolean }>(
-        `/api/learning-path/quiz/${quizId}/submit`,
+        `/api/v1/learning-path/quiz/${quizId}/submit`,
         {
           method: 'POST',
           body: JSON.stringify({

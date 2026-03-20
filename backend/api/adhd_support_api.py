@@ -23,7 +23,7 @@ from core.database import get_db
 from core.dependencies import get_current_user
 from models.database import User
 
-router = APIRouter(prefix="/api/adhd-support", tags=["ADHD Support"])
+router = APIRouter(prefix="/api/v1/adhd-support", tags=["ADHD Support"])
 
 
 # ============================================================================

@@ -64,7 +64,7 @@ describe('FocusMode Component', () => {
       });
 
       expect(global.fetch).toHaveBeenCalledWith(
-        '/api/adhd-support/focus-mode/task/task1',
+        '/api/v1/adhd-support/focus-mode/task/task1',
         expect.objectContaining({
           headers: expect.objectContaining({
             'Authorization': 'Bearer mock-token'
@@ -153,7 +153,7 @@ describe('FocusMode Component', () => {
 
       await waitFor(() => {
         expect(global.fetch).toHaveBeenCalledWith(
-          '/api/adhd-support/focus-mode/activate',
+          '/api/v1/adhd-support/focus-mode/activate',
           expect.objectContaining({
             method: 'POST',
             headers: expect.objectContaining({
@@ -347,7 +347,7 @@ describe('FocusMode Component', () => {
 
       await waitFor(() => {
         expect(global.fetch).toHaveBeenCalledWith(
-          '/api/adhd-support/focus-mode/deactivate',
+          '/api/v1/adhd-support/focus-mode/deactivate',
           expect.objectContaining({
             method: 'POST'
           })

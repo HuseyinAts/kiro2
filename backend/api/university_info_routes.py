@@ -16,7 +16,7 @@ from services.university_info_service import UniversityInfoService
 from models.university_info import CampusType, AccommodationType, ScholarshipType
 
 
-router = APIRouter(prefix="/api/university-info", tags=["University Information"])
+router = APIRouter(prefix="/api/v1/university-info", tags=["University Information"])
 
 
 # ============================================================

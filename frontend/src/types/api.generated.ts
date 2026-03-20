@@ -2263,7 +2263,7 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    "/api/batch/generate": {
+    "/api/v1/batch/generate": {
         parameters: {
             query?: never;
             header?: never;
@@ -2285,7 +2285,7 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    [path: `/api/batch/status/${string}`]: {
+    [path: `/api/v1/batch/status/${string}`]: {
         parameters: {
             query?: never;
             header?: never;
@@ -2305,7 +2305,7 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    [path: `/api/batch/results/${string}`]: {
+    [path: `/api/v1/batch/results/${string}`]: {
         parameters: {
             query?: never;
             header?: never;
@@ -2325,7 +2325,7 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    [path: `/api/batch/cancel/${string}`]: {
+    [path: `/api/v1/batch/cancel/${string}`]: {
         parameters: {
             query?: never;
             header?: never;
@@ -2345,7 +2345,7 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    "/api/batch/queue/stats": {
+    "/api/v1/batch/queue/stats": {
         parameters: {
             query?: never;
             header?: never;
@@ -2365,7 +2365,7 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    "/api/pdf/upload": {
+    "/api/v1/pdf/upload": {
         parameters: {
             query?: never;
             header?: never;
@@ -2378,7 +2378,7 @@ export type paths = {
          * Upload Pdf
          * @description Upload PDF for processing
          *
-         *     Endpoint: POST /api/pdf/upload
+         *     Endpoint: POST /api/v1/pdf/upload
          *
          *     Args:
          *         file: PDF file (max 50MB)
@@ -2392,7 +2392,7 @@ export type paths = {
          *         Upload response with job_id
          *
          *     Example:
-         *         curl -X POST http://localhost:8000/api/pdf/upload           -F "file=@osym_2024_tyt.pdf"           -F "enable_ocr=true"
+         *         curl -X POST http://localhost:8000/api/v1/pdf/upload           -F "file=@osym_2024_tyt.pdf"           -F "enable_ocr=true"
          */
         post: operations["upload_pdf_api_pdf_upload_post"];
         delete?: never;
@@ -2401,7 +2401,7 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    [path: `/api/pdf/status/${string}`]: {
+    [path: `/api/v1/pdf/status/${string}`]: {
         parameters: {
             query?: never;
             header?: never;
@@ -2412,7 +2412,7 @@ export type paths = {
          * Get Processing Status
          * @description Get PDF processing status
          *
-         *     Endpoint: GET /api/pdf/status/{job_id}
+         *     Endpoint: GET /api/v1/pdf/status/{job_id}
          *
          *     Args:
          *         job_id: Processing job ID
@@ -2421,7 +2421,7 @@ export type paths = {
          *         Processing status
          *
          *     Example:
-         *         curl http://localhost:8000/api/pdf/status/abc123
+         *         curl http://localhost:8000/api/v1/pdf/status/abc123
          */
         get: operations["get_processing_status_api_pdf_status__job_id__get"];
         put?: never;
@@ -2432,7 +2432,7 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    [path: `/api/pdf/results/${string}`]: {
+    [path: `/api/v1/pdf/results/${string}`]: {
         parameters: {
             query?: never;
             header?: never;
@@ -2443,7 +2443,7 @@ export type paths = {
          * Get Processing Results
          * @description Get PDF processing results
          *
-         *     Endpoint: GET /api/pdf/results/{job_id}
+         *     Endpoint: GET /api/v1/pdf/results/{job_id}
          *
          *     Args:
          *         job_id: Processing job ID
@@ -2452,7 +2452,7 @@ export type paths = {
          *         Processing results with extracted questions
          *
          *     Example:
-         *         curl http://localhost:8000/api/pdf/results/abc123
+         *         curl http://localhost:8000/api/v1/pdf/results/abc123
          */
         get: operations["get_processing_results_api_pdf_results__job_id__get"];
         put?: never;
@@ -2463,7 +2463,7 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    [path: `/api/pdf/cancel/${string}`]: {
+    [path: `/api/v1/pdf/cancel/${string}`]: {
         parameters: {
             query?: never;
             header?: never;
@@ -2477,7 +2477,7 @@ export type paths = {
          * Cancel Processing
          * @description Cancel PDF processing job
          *
-         *     Endpoint: DELETE /api/pdf/cancel/{job_id}
+         *     Endpoint: DELETE /api/v1/pdf/cancel/{job_id}
          *
          *     Args:
          *         job_id: Processing job ID
@@ -2486,7 +2486,7 @@ export type paths = {
          *         Cancellation confirmation
          *
          *     Example:
-         *         curl -X DELETE http://localhost:8000/api/pdf/cancel/abc123
+         *         curl -X DELETE http://localhost:8000/api/v1/pdf/cancel/abc123
          */
         delete: operations["cancel_processing_api_pdf_cancel__job_id__delete"];
         options?: never;
@@ -2494,7 +2494,7 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    "/api/pdf/jobs": {
+    "/api/v1/pdf/jobs": {
         parameters: {
             query?: never;
             header?: never;
@@ -2505,7 +2505,7 @@ export type paths = {
          * List Processing Jobs
          * @description List all PDF processing jobs
          *
-         *     Endpoint: GET /api/pdf/jobs
+         *     Endpoint: GET /api/v1/pdf/jobs
          *
          *     Args:
          *         status: Filter by status (queued/processing/completed/failed)
@@ -2515,7 +2515,7 @@ export type paths = {
          *         List of processing jobs
          *
          *     Example:
-         *         curl http://localhost:8000/api/pdf/jobs?status=completed&limit=10
+         *         curl http://localhost:8000/api/v1/pdf/jobs?status=completed&limit=10
          */
         get: operations["list_processing_jobs_api_pdf_jobs_get"];
         put?: never;
@@ -2526,7 +2526,7 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    "/api/pdf/health": {
+    "/api/v1/pdf/health": {
         parameters: {
             query?: never;
             header?: never;
@@ -2537,7 +2537,7 @@ export type paths = {
          * Pdf Api Health
          * @description PDF API health check
          *
-         *     Endpoint: GET /api/pdf/health
+         *     Endpoint: GET /api/v1/pdf/health
          *
          *     Returns:
          *         Health status and statistics
@@ -4179,7 +4179,7 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    "/api/adhd-support/tasks/create": {
+    "/api/v1/adhd-support/tasks/create": {
         parameters: {
             query?: never;
             header?: never;
@@ -4203,7 +4203,7 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    "/api/adhd-support/tasks/list": {
+    "/api/v1/adhd-support/tasks/list": {
         parameters: {
             query?: never;
             header?: never;
@@ -4226,7 +4226,7 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    [path: `/api/adhd-support/tasks/${string}`]: {
+    [path: `/api/v1/adhd-support/tasks/${string}`]: {
         parameters: {
             query?: never;
             header?: never;
@@ -4260,7 +4260,7 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    [path: `/api/adhd-support/tasks/${string}/subtasks`]: {
+    [path: `/api/v1/adhd-support/tasks/${string}/subtasks`]: {
         parameters: {
             query?: never;
             header?: never;
@@ -4283,7 +4283,7 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    [path: `/api/adhd-support/tasks/${string}/recommend-priority`]: {
+    [path: `/api/v1/adhd-support/tasks/${string}/recommend-priority`]: {
         parameters: {
             query?: never;
             header?: never;
@@ -4306,7 +4306,7 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    "/api/adhd-support/tasks/colors/scheme": {
+    "/api/v1/adhd-support/tasks/colors/scheme": {
         parameters: {
             query?: never;
             header?: never;
@@ -4331,7 +4331,7 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    "/api/adhd-support/tasks/stats/summary": {
+    "/api/v1/adhd-support/tasks/stats/summary": {
         parameters: {
             query?: never;
             header?: never;
@@ -4354,7 +4354,7 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    "/api/adhd-support/tasks/health": {
+    "/api/v1/adhd-support/tasks/health": {
         parameters: {
             query?: never;
             header?: never;
@@ -5240,7 +5240,7 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    "/api/osym/generate-question": {
+    "/api/v1/osym/generate-question": {
         parameters: {
             query?: never;
             header?: never;
@@ -6818,7 +6818,7 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    [path: `/api/adhd-support/focus-mode/task/${string}`]: {
+    [path: `/api/v1/adhd-support/focus-mode/task/${string}`]: {
         parameters: {
             query?: never;
             header?: never;
@@ -6841,7 +6841,7 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    "/api/adhd-support/focus-mode/activate": {
+    "/api/v1/adhd-support/focus-mode/activate": {
         parameters: {
             query?: never;
             header?: never;
@@ -6869,7 +6869,7 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    "/api/adhd-support/focus-mode/deactivate": {
+    "/api/v1/adhd-support/focus-mode/deactivate": {
         parameters: {
             query?: never;
             header?: never;
@@ -6892,7 +6892,7 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    "/api/adhd-support/focus-mode/stats": {
+    "/api/v1/adhd-support/focus-mode/stats": {
         parameters: {
             query?: never;
             header?: never;
@@ -6916,7 +6916,7 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    "/api/adhd-support/focus-mode/sessions": {
+    "/api/v1/adhd-support/focus-mode/sessions": {
         parameters: {
             query?: never;
             header?: never;
@@ -6940,7 +6940,7 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    "/api/adhd-support/focus-mode/health": {
+    "/api/v1/adhd-support/focus-mode/health": {
         parameters: {
             query?: never;
             header?: never;
@@ -7870,7 +7870,7 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    "/api/adhd-support/pomodoro/start": {
+    "/api/v1/adhd-support/pomodoro/start": {
         parameters: {
             query?: never;
             header?: never;
@@ -7901,7 +7901,7 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    "/api/adhd-support/pomodoro/current": {
+    "/api/v1/adhd-support/pomodoro/current": {
         parameters: {
             query?: never;
             header?: never;
@@ -7924,7 +7924,7 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    [path: `/api/adhd-support/pomodoro/${string}`]: {
+    [path: `/api/v1/adhd-support/pomodoro/${string}`]: {
         parameters: {
             query?: never;
             header?: never;
@@ -7953,7 +7953,7 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    "/api/adhd-support/pomodoro/settings": {
+    "/api/v1/adhd-support/pomodoro/settings": {
         parameters: {
             query?: never;
             header?: never;
@@ -7990,7 +7990,7 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    "/api/adhd-support/pomodoro/history": {
+    "/api/v1/adhd-support/pomodoro/history": {
         parameters: {
             query?: never;
             header?: never;
@@ -8019,7 +8019,7 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    [path: `/api/adhd-support/timer/visual/${string}`]: {
+    [path: `/api/v1/adhd-support/timer/visual/${string}`]: {
         parameters: {
             query?: never;
             header?: never;
@@ -8052,7 +8052,7 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    "/api/adhd-support/inactivity/detect": {
+    "/api/v1/adhd-support/inactivity/detect": {
         parameters: {
             query?: never;
             header?: never;
@@ -8085,7 +8085,7 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    "/api/adhd-support/inactivity/alerts": {
+    "/api/v1/adhd-support/inactivity/alerts": {
         parameters: {
             query?: never;
             header?: never;
@@ -8113,7 +8113,7 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    "/api/adhd-support/focus-exercises": {
+    "/api/v1/adhd-support/focus-exercises": {
         parameters: {
             query?: never;
             header?: never;
@@ -8143,7 +8143,7 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    [path: `/api/adhd-support/focus-exercises/${string}/start`]: {
+    [path: `/api/v1/adhd-support/focus-exercises/${string}/start`]: {
         parameters: {
             query?: never;
             header?: never;
@@ -8171,7 +8171,7 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    [path: `/api/adhd-support/focus-exercises/progress/${string}/complete`]: {
+    [path: `/api/v1/adhd-support/focus-exercises/progress/${string}/complete`]: {
         parameters: {
             query?: never;
             header?: never;
@@ -8202,7 +8202,7 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    "/api/adhd-support/focus-exercises/progress": {
+    "/api/v1/adhd-support/focus-exercises/progress": {
         parameters: {
             query?: never;
             header?: never;
@@ -8230,7 +8230,7 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    "/api/adhd-support/stats/daily": {
+    "/api/v1/adhd-support/stats/daily": {
         parameters: {
             query?: never;
             header?: never;
@@ -8253,7 +8253,7 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    "/api/adhd-support/recommendations": {
+    "/api/v1/adhd-support/recommendations": {
         parameters: {
             query?: never;
             header?: never;
@@ -8441,7 +8441,7 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    "/api/youtube/test": {
+    "/api/v1/youtube/test": {
         parameters: {
             query?: never;
             header?: never;
@@ -8461,7 +8461,7 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    "/api/youtube/recommendations": {
+    "/api/v1/youtube/recommendations": {
         parameters: {
             query?: never;
             header?: never;
@@ -8730,7 +8730,7 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    "/api/video-analytics/sessions/start": {
+    "/api/v1/video-analytics/sessions/start": {
         parameters: {
             query?: never;
             header?: never;
@@ -8752,7 +8752,7 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    [path: `/api/video-analytics/sessions/${string}/progress`]: {
+    [path: `/api/v1/video-analytics/sessions/${string}/progress`]: {
         parameters: {
             query?: never;
             header?: never;
@@ -8774,7 +8774,7 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    [path: `/api/video-analytics/sessions/${string}/pause`]: {
+    [path: `/api/v1/video-analytics/sessions/${string}/pause`]: {
         parameters: {
             query?: never;
             header?: never;
@@ -8794,7 +8794,7 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    [path: `/api/video-analytics/sessions/${string}/seek`]: {
+    [path: `/api/v1/video-analytics/sessions/${string}/seek`]: {
         parameters: {
             query?: never;
             header?: never;
@@ -8814,7 +8814,7 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    [path: `/api/video-analytics/sessions/${string}/end`]: {
+    [path: `/api/v1/video-analytics/sessions/${string}/end`]: {
         parameters: {
             query?: never;
             header?: never;
@@ -8834,7 +8834,7 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    [path: `/api/video-analytics/videos/${string}/engagement`]: {
+    [path: `/api/v1/video-analytics/videos/${string}/engagement`]: {
         parameters: {
             query?: never;
             header?: never;
@@ -8856,7 +8856,7 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    "/api/video-analytics/milestones": {
+    "/api/v1/video-analytics/milestones": {
         parameters: {
             query?: never;
             header?: never;
@@ -8878,7 +8878,7 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    "/api/video-analytics/notes": {
+    "/api/v1/video-analytics/notes": {
         parameters: {
             query?: never;
             header?: never;
@@ -8906,7 +8906,7 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    [path: `/api/video-analytics/notes/${string}`]: {
+    [path: `/api/v1/video-analytics/notes/${string}`]: {
         parameters: {
             query?: never;
             header?: never;
@@ -8930,7 +8930,7 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    "/api/video-analytics/notes/search": {
+    "/api/v1/video-analytics/notes/search": {
         parameters: {
             query?: never;
             header?: never;
@@ -8952,7 +8952,7 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    "/api/video-analytics/bookmarks": {
+    "/api/v1/video-analytics/bookmarks": {
         parameters: {
             query?: never;
             header?: never;
@@ -8980,7 +8980,7 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    [path: `/api/video-analytics/bookmarks/${string}`]: {
+    [path: `/api/v1/video-analytics/bookmarks/${string}`]: {
         parameters: {
             query?: never;
             header?: never;
@@ -9004,7 +9004,7 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    [path: `/api/video-analytics/bookmarks/${string}/share`]: {
+    [path: `/api/v1/video-analytics/bookmarks/${string}/share`]: {
         parameters: {
             query?: never;
             header?: never;
@@ -9024,7 +9024,7 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    "/api/video-analytics/summary/daily": {
+    "/api/v1/video-analytics/summary/daily": {
         parameters: {
             query?: never;
             header?: never;
@@ -9044,7 +9044,7 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    "/api/university-advisory/universities": {
+    "/api/v1/university-advisory/universities": {
         parameters: {
             query?: never;
             header?: never;
@@ -9066,7 +9066,7 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    [path: `/api/university-advisory/universities/${string}`]: {
+    [path: `/api/v1/university-advisory/universities/${string}`]: {
         parameters: {
             query?: never;
             header?: never;
@@ -9086,7 +9086,7 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    "/api/university-advisory/cities": {
+    "/api/v1/university-advisory/cities": {
         parameters: {
             query?: never;
             header?: never;
@@ -9106,7 +9106,7 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    "/api/university-advisory/departments": {
+    "/api/v1/university-advisory/departments": {
         parameters: {
             query?: never;
             header?: never;
@@ -9128,7 +9128,7 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    [path: `/api/university-advisory/departments/${string}`]: {
+    [path: `/api/v1/university-advisory/departments/${string}`]: {
         parameters: {
             query?: never;
             header?: never;
@@ -9148,7 +9148,7 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    "/api/university-advisory/programs": {
+    "/api/v1/university-advisory/programs": {
         parameters: {
             query?: never;
             header?: never;
@@ -9170,7 +9170,7 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    [path: `/api/university-advisory/programs/${string}`]: {
+    [path: `/api/v1/university-advisory/programs/${string}`]: {
         parameters: {
             query?: never;
             header?: never;
@@ -9190,7 +9190,7 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    "/api/university-advisory/statistics/base-scores": {
+    "/api/v1/university-advisory/statistics/base-scores": {
         parameters: {
             query?: never;
             header?: never;
@@ -9212,7 +9212,7 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    "/api/university-advisory/statistics/quotas": {
+    "/api/v1/university-advisory/statistics/quotas": {
         parameters: {
             query?: never;
             header?: never;
@@ -9234,7 +9234,7 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    [path: `/api/university-advisory/programs/${string}/history`]: {
+    [path: `/api/v1/university-advisory/programs/${string}/history`]: {
         parameters: {
             query?: never;
             header?: never;
@@ -9256,7 +9256,7 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    [path: `/api/university-advisory/programs/${string}/prediction`]: {
+    [path: `/api/v1/university-advisory/programs/${string}/prediction`]: {
         parameters: {
             query?: never;
             header?: never;
@@ -9278,7 +9278,7 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    "/api/university-advisory/competitive-programs": {
+    "/api/v1/university-advisory/competitive-programs": {
         parameters: {
             query?: never;
             header?: never;
@@ -9300,7 +9300,7 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    "/api/university-advisory/recommendations": {
+    "/api/v1/university-advisory/recommendations": {
         parameters: {
             query?: never;
             header?: never;
@@ -9322,7 +9322,7 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    "/api/university-advisory/preferences": {
+    "/api/v1/university-advisory/preferences": {
         parameters: {
             query?: never;
             header?: never;
@@ -9346,7 +9346,7 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    "/api/preference-simulation/calculate-score": {
+    "/api/v1/preference-simulation/calculate-score": {
         parameters: {
             query?: never;
             header?: never;
@@ -9368,7 +9368,7 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    "/api/preference-simulation/calculate-bonus": {
+    "/api/v1/preference-simulation/calculate-bonus": {
         parameters: {
             query?: never;
             header?: never;
@@ -9390,7 +9390,7 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    "/api/preference-simulation/predict-placement": {
+    "/api/v1/preference-simulation/predict-placement": {
         parameters: {
             query?: never;
             header?: never;
@@ -9412,7 +9412,7 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    [path: `/api/preference-simulation/placement-analysis/${string}`]: {
+    [path: `/api/v1/preference-simulation/placement-analysis/${string}`]: {
         parameters: {
             query?: never;
             header?: never;
@@ -9434,7 +9434,7 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    "/api/preference-simulation/recommend-departments": {
+    "/api/v1/preference-simulation/recommend-departments": {
         parameters: {
             query?: never;
             header?: never;
@@ -9456,7 +9456,7 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    "/api/preference-simulation/predict-rank": {
+    "/api/v1/preference-simulation/predict-rank": {
         parameters: {
             query?: never;
             header?: never;
@@ -9478,7 +9478,7 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    "/api/preference-simulation/rank-analysis": {
+    "/api/v1/preference-simulation/rank-analysis": {
         parameters: {
             query?: never;
             header?: never;
@@ -9500,7 +9500,7 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    "/api/preference-simulation/simulate-preferences": {
+    "/api/v1/preference-simulation/simulate-preferences": {
         parameters: {
             query?: never;
             header?: never;
@@ -9522,7 +9522,7 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    "/api/preference-simulation/batch-predictions": {
+    "/api/v1/preference-simulation/batch-predictions": {
         parameters: {
             query?: never;
             header?: never;
@@ -9544,7 +9544,7 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    "/api/preference-simulation/score-coefficients": {
+    "/api/v1/preference-simulation/score-coefficients": {
         parameters: {
             query?: never;
             header?: never;
@@ -9566,7 +9566,7 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    "/api/preference-simulation/risk-levels": {
+    "/api/v1/preference-simulation/risk-levels": {
         parameters: {
             query?: never;
             header?: never;
@@ -9588,7 +9588,7 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    [path: `/api/department-info/curriculum/${string}`]: {
+    [path: `/api/v1/department-info/curriculum/${string}`]: {
         parameters: {
             query?: never;
             header?: never;
@@ -9610,7 +9610,7 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    "/api/department-info/curriculum": {
+    "/api/v1/department-info/curriculum": {
         parameters: {
             query?: never;
             header?: never;
@@ -9632,7 +9632,7 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    [path: `/api/department-info/curriculum/${string}/specializations`]: {
+    [path: `/api/v1/department-info/curriculum/${string}/specializations`]: {
         parameters: {
             query?: never;
             header?: never;
@@ -9654,7 +9654,7 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    [path: `/api/department-info/careers/${string}`]: {
+    [path: `/api/v1/department-info/careers/${string}`]: {
         parameters: {
             query?: never;
             header?: never;
@@ -9676,7 +9676,7 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    "/api/department-info/careers": {
+    "/api/v1/department-info/careers": {
         parameters: {
             query?: never;
             header?: never;
@@ -9698,7 +9698,7 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    [path: `/api/department-info/careers/${string}/statistics`]: {
+    [path: `/api/v1/department-info/careers/${string}/statistics`]: {
         parameters: {
             query?: never;
             header?: never;
@@ -9720,7 +9720,7 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    [path: `/api/department-info/salaries/${string}`]: {
+    [path: `/api/v1/department-info/salaries/${string}`]: {
         parameters: {
             query?: never;
             header?: never;
@@ -9742,7 +9742,7 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    [path: `/api/department-info/salaries/${string}/progression`]: {
+    [path: `/api/v1/department-info/salaries/${string}/progression`]: {
         parameters: {
             query?: never;
             header?: never;
@@ -9764,7 +9764,7 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    [path: `/api/department-info/salaries/${string}/regional`]: {
+    [path: `/api/v1/department-info/salaries/${string}/regional`]: {
         parameters: {
             query?: never;
             header?: never;
@@ -9786,7 +9786,7 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    [path: `/api/department-info/sectors/${string}`]: {
+    [path: `/api/v1/department-info/sectors/${string}`]: {
         parameters: {
             query?: never;
             header?: never;
@@ -9808,7 +9808,7 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    [path: `/api/department-info/sectors/department/${string}`]: {
+    [path: `/api/v1/department-info/sectors/department/${string}`]: {
         parameters: {
             query?: never;
             header?: never;
@@ -9830,7 +9830,7 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    [path: `/api/department-info/sectors/department/${string}/trends`]: {
+    [path: `/api/v1/department-info/sectors/department/${string}/trends`]: {
         parameters: {
             query?: never;
             header?: never;
@@ -9852,7 +9852,7 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    [path: `/api/department-info/statistics/${string}`]: {
+    [path: `/api/v1/department-info/statistics/${string}`]: {
         parameters: {
             query?: never;
             header?: never;
@@ -9874,7 +9874,7 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    [path: `/api/department-info/statistics/${string}/generate`]: {
+    [path: `/api/v1/department-info/statistics/${string}/generate`]: {
         parameters: {
             query?: never;
             header?: never;
@@ -9896,7 +9896,7 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    [path: `/api/department-info/comprehensive/${string}`]: {
+    [path: `/api/v1/department-info/comprehensive/${string}`]: {
         parameters: {
             query?: never;
             header?: never;
@@ -9919,7 +9919,7 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    [path: `/api/university-info/campus/${string}`]: {
+    [path: `/api/v1/university-info/campus/${string}`]: {
         parameters: {
             query?: never;
             header?: never;
@@ -9941,7 +9941,7 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    "/api/university-info/campus": {
+    "/api/v1/university-info/campus": {
         parameters: {
             query?: never;
             header?: never;
@@ -9961,7 +9961,7 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    [path: `/api/university-info/campus/${string}/facilities`]: {
+    [path: `/api/v1/university-info/campus/${string}/facilities`]: {
         parameters: {
             query?: never;
             header?: never;
@@ -9983,7 +9983,7 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    [path: `/api/university-info/living-cost/${string}`]: {
+    [path: `/api/v1/university-info/living-cost/${string}`]: {
         parameters: {
             query?: never;
             header?: never;
@@ -10005,7 +10005,7 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    "/api/university-info/living-cost": {
+    "/api/v1/university-info/living-cost": {
         parameters: {
             query?: never;
             header?: never;
@@ -10025,7 +10025,7 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    "/api/university-info/living-cost/compare/cities": {
+    "/api/v1/university-info/living-cost/compare/cities": {
         parameters: {
             query?: never;
             header?: never;
@@ -10047,7 +10047,7 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    [path: `/api/university-info/living-cost/${string}/student-budget`]: {
+    [path: `/api/v1/university-info/living-cost/${string}/student-budget`]: {
         parameters: {
             query?: never;
             header?: never;
@@ -10069,7 +10069,7 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    "/api/university-info/dormitories": {
+    "/api/v1/university-info/dormitories": {
         parameters: {
             query?: never;
             header?: never;
@@ -10095,7 +10095,7 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    [path: `/api/university-info/dormitories/${string}`]: {
+    [path: `/api/v1/university-info/dormitories/${string}`]: {
         parameters: {
             query?: never;
             header?: never;
@@ -10115,7 +10115,7 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    "/api/university-info/dormitories/statistics/summary": {
+    "/api/v1/university-info/dormitories/statistics/summary": {
         parameters: {
             query?: never;
             header?: never;
@@ -10137,7 +10137,7 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    "/api/university-info/scholarships": {
+    "/api/v1/university-info/scholarships": {
         parameters: {
             query?: never;
             header?: never;
@@ -10163,7 +10163,7 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    [path: `/api/university-info/scholarships/${string}`]: {
+    [path: `/api/v1/university-info/scholarships/${string}`]: {
         parameters: {
             query?: never;
             header?: never;
@@ -10183,7 +10183,7 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    [path: `/api/university-info/scholarships/eligible/${string}`]: {
+    [path: `/api/v1/university-info/scholarships/eligible/${string}`]: {
         parameters: {
             query?: never;
             header?: never;
@@ -10205,7 +10205,7 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    [path: `/api/university-info/scholarships/statistics/${string}`]: {
+    [path: `/api/v1/university-info/scholarships/statistics/${string}`]: {
         parameters: {
             query?: never;
             header?: never;
@@ -10227,7 +10227,7 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    [path: `/api/university-info/comprehensive/${string}`]: {
+    [path: `/api/v1/university-info/comprehensive/${string}`]: {
         parameters: {
             query?: never;
             header?: never;
@@ -10249,7 +10249,7 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    [path: `/api/university-info/statistics/${string}`]: {
+    [path: `/api/v1/university-info/statistics/${string}`]: {
         parameters: {
             query?: never;
             header?: never;
@@ -10269,7 +10269,7 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    [path: `/api/university-info/statistics/${string}/generate`]: {
+    [path: `/api/v1/university-info/statistics/${string}/generate`]: {
         parameters: {
             query?: never;
             header?: never;
@@ -10289,7 +10289,7 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    "/api/reviews/": {
+    "/api/v1/reviews/": {
         parameters: {
             query?: never;
             header?: never;
@@ -10317,7 +10317,7 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    [path: `/api/reviews/${string}`]: {
+    [path: `/api/v1/reviews/${string}`]: {
         parameters: {
             query?: never;
             header?: never;
@@ -10343,7 +10343,7 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    [path: `/api/reviews/${string}/ratings`]: {
+    [path: `/api/v1/reviews/${string}/ratings`]: {
         parameters: {
             query?: never;
             header?: never;
@@ -10369,7 +10369,7 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    [path: `/api/reviews/${string}/vote`]: {
+    [path: `/api/v1/reviews/${string}/vote`]: {
         parameters: {
             query?: never;
             header?: never;
@@ -10391,7 +10391,7 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    [path: `/api/reviews/${string}/report`]: {
+    [path: `/api/v1/reviews/${string}/report`]: {
         parameters: {
             query?: never;
             header?: never;
@@ -10413,7 +10413,7 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    [path: `/api/reviews/${string}/moderate`]: {
+    [path: `/api/v1/reviews/${string}/moderate`]: {
         parameters: {
             query?: never;
             header?: never;
@@ -10435,7 +10435,7 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    "/api/reviews/moderation/queue": {
+    "/api/v1/reviews/moderation/queue": {
         parameters: {
             query?: never;
             header?: never;
@@ -10457,7 +10457,7 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    [path: `/api/reviews/statistics/${string}`]: {
+    [path: `/api/v1/reviews/statistics/${string}`]: {
         parameters: {
             query?: never;
             header?: never;
@@ -10479,7 +10479,7 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    [path: `/api/reviews/statistics/${string}/generate`]: {
+    [path: `/api/v1/reviews/statistics/${string}/generate`]: {
         parameters: {
             query?: never;
             header?: never;
@@ -10501,7 +10501,7 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    [path: `/api/reviews/university/${string}/summary`]: {
+    [path: `/api/v1/reviews/university/${string}/summary`]: {
         parameters: {
             query?: never;
             header?: never;
@@ -10523,7 +10523,7 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    [path: `/api/reviews/department/${string}/summary`]: {
+    [path: `/api/v1/reviews/department/${string}/summary`]: {
         parameters: {
             query?: never;
             header?: never;
@@ -10545,7 +10545,7 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    "/api/chat/sessions": {
+    "/api/v1/chat/sessions": {
         parameters: {
             query?: never;
             header?: never;
@@ -10569,7 +10569,7 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    [path: `/api/chat/sessions/${string}`]: {
+    [path: `/api/v1/chat/sessions/${string}`]: {
         parameters: {
             query?: never;
             header?: never;
@@ -10589,7 +10589,7 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    [path: `/api/chat/sessions/${string}/messages`]: {
+    [path: `/api/v1/chat/sessions/${string}/messages`]: {
         parameters: {
             query?: never;
             header?: never;
@@ -10613,7 +10613,7 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    [path: `/api/chat/sessions/${string}/upload`]: {
+    [path: `/api/v1/chat/sessions/${string}/upload`]: {
         parameters: {
             query?: never;
             header?: never;
@@ -10633,7 +10633,7 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    "/api/chat/statistics": {
+    "/api/v1/chat/statistics": {
         parameters: {
             query?: never;
             header?: never;
@@ -10653,7 +10653,7 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    "/api/teachers/register": {
+    "/api/v1/teachers/register": {
         parameters: {
             query?: never;
             header?: never;
@@ -10675,7 +10675,7 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    [path: `/api/teachers/profile/${string}`]: {
+    [path: `/api/v1/teachers/profile/${string}`]: {
         parameters: {
             query?: never;
             header?: never;
@@ -10699,7 +10699,7 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    "/api/teachers/my-profile": {
+    "/api/v1/teachers/my-profile": {
         parameters: {
             query?: never;
             header?: never;
@@ -10719,7 +10719,7 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    [path: `/api/teachers/verify/${string}`]: {
+    [path: `/api/v1/teachers/verify/${string}`]: {
         parameters: {
             query?: never;
             header?: never;
@@ -10739,7 +10739,7 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    "/api/teachers/search": {
+    "/api/v1/teachers/search": {
         parameters: {
             query?: never;
             header?: never;
@@ -10759,7 +10759,7 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    [path: `/api/teachers/${string}/expertise`]: {
+    [path: `/api/v1/teachers/${string}/expertise`]: {
         parameters: {
             query?: never;
             header?: never;
@@ -10783,7 +10783,7 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    [path: `/api/teachers/expertise/${string}`]: {
+    [path: `/api/v1/teachers/expertise/${string}`]: {
         parameters: {
             query?: never;
             header?: never;
@@ -10803,7 +10803,7 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    [path: `/api/teachers/${string}/certifications`]: {
+    [path: `/api/v1/teachers/${string}/certifications`]: {
         parameters: {
             query?: never;
             header?: never;
@@ -10827,7 +10827,7 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    [path: `/api/teachers/certifications/${string}/verify`]: {
+    [path: `/api/v1/teachers/certifications/${string}/verify`]: {
         parameters: {
             query?: never;
             header?: never;
@@ -10847,7 +10847,7 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    [path: `/api/teachers/${string}/availability`]: {
+    [path: `/api/v1/teachers/${string}/availability`]: {
         parameters: {
             query?: never;
             header?: never;
@@ -10871,7 +10871,7 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    [path: `/api/teachers/availability/${string}`]: {
+    [path: `/api/v1/teachers/availability/${string}`]: {
         parameters: {
             query?: never;
             header?: never;
@@ -10895,7 +10895,7 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    [path: `/api/teachers/availability/${string}/block`]: {
+    [path: `/api/v1/teachers/availability/${string}/block`]: {
         parameters: {
             query?: never;
             header?: never;
@@ -10915,7 +10915,7 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    "/api/teachers/appointments": {
+    "/api/v1/teachers/appointments": {
         parameters: {
             query?: never;
             header?: never;
@@ -10935,7 +10935,7 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    [path: `/api/teachers/appointments/${string}/confirm`]: {
+    [path: `/api/v1/teachers/appointments/${string}/confirm`]: {
         parameters: {
             query?: never;
             header?: never;
@@ -10955,7 +10955,7 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    [path: `/api/teachers/appointments/${string}/cancel`]: {
+    [path: `/api/v1/teachers/appointments/${string}/cancel`]: {
         parameters: {
             query?: never;
             header?: never;
@@ -10975,7 +10975,7 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    [path: `/api/teachers/appointments/${string}/complete`]: {
+    [path: `/api/v1/teachers/appointments/${string}/complete`]: {
         parameters: {
             query?: never;
             header?: never;
@@ -10995,7 +10995,7 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    [path: `/api/teachers/${string}/appointments`]: {
+    [path: `/api/v1/teachers/${string}/appointments`]: {
         parameters: {
             query?: never;
             header?: never;
@@ -11015,7 +11015,7 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    "/api/teachers/my-appointments": {
+    "/api/v1/teachers/my-appointments": {
         parameters: {
             query?: never;
             header?: never;
@@ -11035,7 +11035,7 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    [path: `/api/teachers/${string}/reviews`]: {
+    [path: `/api/v1/teachers/${string}/reviews`]: {
         parameters: {
             query?: never;
             header?: never;
@@ -11079,7 +11079,7 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    [path: `/api/live-sessions/${string}`]: {
+    [path: `/api/v1/live-sessions/${string}`]: {
         parameters: {
             query?: never;
             header?: never;
@@ -11099,7 +11099,7 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    [path: `/api/live-sessions/${string}/start`]: {
+    [path: `/api/v1/live-sessions/${string}/start`]: {
         parameters: {
             query?: never;
             header?: never;
@@ -11119,7 +11119,7 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    [path: `/api/live-sessions/${string}/end`]: {
+    [path: `/api/v1/live-sessions/${string}/end`]: {
         parameters: {
             query?: never;
             header?: never;
@@ -11139,7 +11139,7 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    [path: `/api/live-sessions/${string}/join`]: {
+    [path: `/api/v1/live-sessions/${string}/join`]: {
         parameters: {
             query?: never;
             header?: never;
@@ -11159,7 +11159,7 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    [path: `/api/live-sessions/${string}/leave`]: {
+    [path: `/api/v1/live-sessions/${string}/leave`]: {
         parameters: {
             query?: never;
             header?: never;
@@ -11179,7 +11179,7 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    [path: `/api/live-sessions/${string}/screen-share/start`]: {
+    [path: `/api/v1/live-sessions/${string}/screen-share/start`]: {
         parameters: {
             query?: never;
             header?: never;
@@ -11199,7 +11199,7 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    [path: `/api/live-sessions/screen-share/${string}/stop`]: {
+    [path: `/api/v1/live-sessions/screen-share/${string}/stop`]: {
         parameters: {
             query?: never;
             header?: never;
@@ -11219,7 +11219,7 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    [path: `/api/live-sessions/${string}/whiteboard`]: {
+    [path: `/api/v1/live-sessions/${string}/whiteboard`]: {
         parameters: {
             query?: never;
             header?: never;
@@ -11239,7 +11239,7 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    [path: `/api/live-sessions/whiteboard/${string}`]: {
+    [path: `/api/v1/live-sessions/whiteboard/${string}`]: {
         parameters: {
             query?: never;
             header?: never;
@@ -11259,7 +11259,7 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    [path: `/api/live-sessions/whiteboard/${string}/stroke`]: {
+    [path: `/api/v1/live-sessions/whiteboard/${string}/stroke`]: {
         parameters: {
             query?: never;
             header?: never;
@@ -11279,7 +11279,7 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    [path: `/api/live-sessions/whiteboard/${string}/equation`]: {
+    [path: `/api/v1/live-sessions/whiteboard/${string}/equation`]: {
         parameters: {
             query?: never;
             header?: never;
@@ -11299,7 +11299,7 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    [path: `/api/live-sessions/whiteboard/${string}/page/${number}`]: {
+    [path: `/api/v1/live-sessions/whiteboard/${string}/page/${number}`]: {
         parameters: {
             query?: never;
             header?: never;
@@ -11319,7 +11319,7 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    [path: `/api/live-sessions/whiteboard/${string}/page`]: {
+    [path: `/api/v1/live-sessions/whiteboard/${string}/page`]: {
         parameters: {
             query?: never;
             header?: never;
@@ -11339,7 +11339,7 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    [path: `/api/live-sessions/whiteboard/stroke/${string}`]: {
+    [path: `/api/v1/live-sessions/whiteboard/stroke/${string}`]: {
         parameters: {
             query?: never;
             header?: never;
@@ -11359,7 +11359,7 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    [path: `/api/live-sessions/${string}/recording/start`]: {
+    [path: `/api/v1/live-sessions/${string}/recording/start`]: {
         parameters: {
             query?: never;
             header?: never;
@@ -11379,7 +11379,7 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    [path: `/api/live-sessions/recording/${string}/stop`]: {
+    [path: `/api/v1/live-sessions/recording/${string}/stop`]: {
         parameters: {
             query?: never;
             header?: never;
@@ -11399,7 +11399,7 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    [path: `/api/live-sessions/${string}/recordings`]: {
+    [path: `/api/v1/live-sessions/${string}/recordings`]: {
         parameters: {
             query?: never;
             header?: never;
@@ -11419,7 +11419,7 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    [path: `/api/live-sessions/${string}/chat`]: {
+    [path: `/api/v1/live-sessions/${string}/chat`]: {
         parameters: {
             query?: never;
             header?: never;
@@ -11443,7 +11443,7 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    "/api/live-sessions/my-sessions": {
+    "/api/v1/live-sessions/my-sessions": {
         parameters: {
             query?: never;
             header?: never;
@@ -13663,7 +13663,7 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
-    "/api/chat": {
+    "/api/v1/chat": {
         parameters: {
             query?: never;
             header?: never;

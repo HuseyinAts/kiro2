@@ -64,7 +64,7 @@ const DigitalTangram: React.FC<DigitalTangramProps> = ({ onPuzzleComplete }) => 
 
   const loadPuzzles = async () => {
     try {
-      const response = await axios.get('/api/manipulatives/tangram/puzzles');
+      const response = await axios.get('/api/v1/manipulatives/tangram/puzzles');
       if (response.data.success) {
         setPuzzles(response.data.data);
         if (response.data.data.length > 0) {
@@ -243,7 +243,7 @@ const DigitalTangram: React.FC<DigitalTangramProps> = ({ onPuzzleComplete }) => 
     try {
       const duration = Math.floor((Date.now() - startTime) / 1000);
 
-      await axios.post('/api/manipulatives/tangram/puzzle', {
+      await axios.post('/api/v1/manipulatives/tangram/puzzle', {
         user_id: 0, // Backend'de current_user'dan alınacak
         puzzle_id: selectedPuzzle.id,
         pieces_used: pieces.map(p => ({

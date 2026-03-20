@@ -103,7 +103,7 @@ export const UniversityInfo: React.FC<UniversityInfoProps> = ({
 
     try {
       const response = await fetch(
-        `${API_BASE}/api/university-info/comprehensive/${universityId}?year=${year}`,
+        `${API_BASE}/api/v1/university-info/comprehensive/${universityId}?year=${year}`,
       );
 
       if (!response.ok) {

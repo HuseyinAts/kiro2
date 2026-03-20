@@ -28,7 +28,7 @@ except (ImportError, TypeError):
 
 logger = logging.getLogger(__name__)
 
-router = APIRouter(prefix="/api/vision", tags=["Vision AI"])
+router = APIRouter(prefix="/api/v1/vision", tags=["Vision AI"])
 
 
 # ============================================================

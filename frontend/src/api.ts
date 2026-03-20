@@ -92,7 +92,7 @@ export async function createStudentProfile(profileData: {
   learning_style?: string;
   available_time?: number;
 }) {
-  return apiRequest('/api/learning-path/create-profile', {
+  return apiRequest('/api/v1/learning-path/create-profile', {
     method: 'POST',
     body: JSON.stringify(profileData),
   });
@@ -103,7 +103,7 @@ export async function assessKnowledge(assessmentData: {
   subject: string;
   questions?: string[];
 }) {
-  return apiRequest('/api/learning-path/assess-knowledge', {
+  return apiRequest('/api/v1/learning-path/assess-knowledge', {
     method: 'POST',
     body: JSON.stringify(assessmentData),
   });
@@ -115,7 +115,7 @@ export async function createLearningPath(pathData: {
   duration_weeks?: number;
   difficulty_level?: string;
 }) {
-  return apiRequest('/api/learning-path/create-path', {
+  return apiRequest('/api/v1/learning-path/create-path', {
     method: 'POST',
     body: JSON.stringify(pathData),
   });
@@ -135,7 +135,7 @@ export async function searchResources(searchData: {
     preferences?: Record<string, any>;
   };
 }) {
-  return apiRequest('/api/learning-path/search-resources', {
+  return apiRequest('/api/v1/learning-path/search-resources', {
     method: 'POST',
     body: JSON.stringify(searchData),
   });
@@ -145,7 +145,7 @@ export async function adaptLearningPath(adaptData: {
   path_id: string;
   progress_data: ProgressData;
 }) {
-  return apiRequest('/api/learning-path/adapt-path', {
+  return apiRequest('/api/v1/learning-path/adapt-path', {
     method: 'POST',
     body: JSON.stringify(adaptData),
   });
@@ -1245,7 +1245,7 @@ export interface VideoResponse {
  * Search educational videos with semantic/hybrid search
  */
 export async function searchYouTubeVideos(request: VideoSearchRequest): Promise<VideoResponse[]> {
-  const response = await fetch(`${API_BASE_URL}/api/youtube/search`, {
+  const response = await fetch(`${API_BASE_URL}/api/v1/youtube/search`, {
     method: 'POST',
     headers: getHeaders({ 'Content-Type': 'application/json' }),
     body: JSON.stringify({
@@ -1276,7 +1276,7 @@ export async function getPersonalizedVideoRecommendations(studentProfile: {
   learningStyle: string;
   preferences?: Record<string, any>;
 }) {
-  const response = await fetch(`${API_BASE_URL}/api/youtube/recommendations`, {
+  const response = await fetch(`${API_BASE_URL}/api/v1/youtube/recommendations`, {
     method: 'POST',
     headers: getHeaders({ 'Content-Type': 'application/json' }),
     body: JSON.stringify(studentProfile),
@@ -1319,7 +1319,7 @@ export async function searchLearningResources(request: {
     code: string;
   };
 }> {
-  const data = await apiRequest<any>('/api/learning-path/search-resources', {
+  const data = await apiRequest<any>('/api/v1/learning-path/search-resources', {
     method: 'POST',
     body: JSON.stringify({
       subject: request.subject,
@@ -1367,7 +1367,7 @@ export async function searchLearningResources(request: {
  * Get YouTube search statistics
  */
 export async function getYouTubeSearchStats() {
-  const response = await fetch(`${API_BASE_URL}/api/youtube/stats`, {
+  const response = await fetch(`${API_BASE_URL}/api/v1/youtube/stats`, {
     headers: getHeaders(),
     signal: AbortSignal.timeout(appConfig.api.timeout),
   });
@@ -1384,7 +1384,7 @@ export async function getYouTubeSearchStats() {
  * Get supported subjects, difficulties, and exam types
  */
 export async function getYouTubeSupportedOptions() {
-  const response = await fetch(`${API_BASE_URL}/api/youtube/subjects`, {
+  const response = await fetch(`${API_BASE_URL}/api/v1/youtube/subjects`, {
     headers: getHeaders(),
     signal: AbortSignal.timeout(appConfig.api.timeout),
   });

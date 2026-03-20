@@ -107,7 +107,7 @@ export const BatchQueueMonitor: React.FC = () => {
 
   const fetchBatchJobs = async () => {
     try {
-      const response = await fetch('/api/batch/queue/active');
+      const response = await fetch('/api/v1/batch/queue/active');
       if (!response.ok) {throw new Error('Failed to fetch batch jobs');}
       const data = await response.json();
       setBatchJobs(data);
@@ -118,7 +118,7 @@ export const BatchQueueMonitor: React.FC = () => {
 
   const fetchPDFJobs = async () => {
     try {
-      const response = await fetch('/api/pdf/jobs?limit=20');
+      const response = await fetch('/api/v1/pdf/jobs?limit=20');
       if (!response.ok) {throw new Error('Failed to fetch PDF jobs');}
       const data = await response.json();
       setPDFJobs(data);
@@ -129,7 +129,7 @@ export const BatchQueueMonitor: React.FC = () => {
 
   const fetchQueueStats = async () => {
     try {
-      const response = await fetch('/api/batch/queue/stats');
+      const response = await fetch('/api/v1/batch/queue/stats');
       if (!response.ok) {throw new Error('Failed to fetch queue stats');}
       const data = await response.json();
       setQueueStats(data);
@@ -158,8 +158,8 @@ export const BatchQueueMonitor: React.FC = () => {
   const cancelJob = async (taskId: string, type: 'batch' | 'pdf') => {
     try {
       const endpoint = type === 'batch'
-        ? `/api/batch/cancel/${taskId}`
-        : `/api/pdf/cancel/${taskId}`;
+        ? `/api/v1/batch/cancel/${taskId}`
+        : `/api/v1/pdf/cancel/${taskId}`;
 
       const response = await fetch(endpoint, { method: 'DELETE' });
       if (!response.ok) {throw new Error('Failed to cancel job');}

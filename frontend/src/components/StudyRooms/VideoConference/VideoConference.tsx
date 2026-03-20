@@ -190,7 +190,7 @@ const VideoConference: React.FC<VideoConferenceProps> = ({
         }
 
         // Notify server
-        await axios.post(`/api/study-rooms/${roomId}/video/join`, {
+        await axios.post(`/api/v1/study-rooms/${roomId}/video/join`, {
           user_id: currentUserId,
           name: currentUserName,
         });
@@ -333,10 +333,10 @@ const VideoConference: React.FC<VideoConferenceProps> = ({
   const handleToggleRecording = useCallback(async () => {
     try {
       if (!isRecording) {
-        await axios.post(`/api/study-rooms/${roomId}/video/start-recording`);
+        await axios.post(`/api/v1/study-rooms/${roomId}/video/start-recording`);
         setIsRecording(true);
       } else {
-        await axios.post(`/api/study-rooms/${roomId}/video/stop-recording`);
+        await axios.post(`/api/v1/study-rooms/${roomId}/video/stop-recording`);
         setIsRecording(false);
       }
     } catch (error) {
@@ -346,7 +346,7 @@ const VideoConference: React.FC<VideoConferenceProps> = ({
 
   const handleLeave = useCallback(async () => {
     try {
-      await axios.post(`/api/study-rooms/${roomId}/video/leave`);
+      await axios.post(`/api/v1/study-rooms/${roomId}/video/leave`);
     } catch (error) {
       console.error('Error leaving conference:', error);
     }

@@ -94,7 +94,7 @@ from core.metrics_collector import get_metrics_collector
 # from core.elasticsearch_logger import get_elasticsearch_logger, LogLevel, LogCategory
 
 logger = logging.getLogger(__name__)
-router = APIRouter(prefix="/api/youtube", tags=["YouTube Discovery"])
+router = APIRouter(prefix="/api/v1/youtube", tags=["YouTube Discovery"])
 
 
 # Custom rate limit exceeded handler for YouTube endpoints (Task 12 - Requirement 7.6)

@@ -114,7 +114,7 @@ describe('Video Loading Flow E2E Tests', () => {
       
       // Setup successful API response
       addHandler(
-        http.post('/api/youtube/recommendations', () => {
+        http.post('/api/v1/youtube/recommendations', () => {
           return HttpResponse.json({
             success: true,
             data: mockVideoRecommendations,
@@ -163,7 +163,7 @@ describe('Video Loading Flow E2E Tests', () => {
       }))
 
       addHandler(
-        http.post('/api/youtube/recommendations', () => {
+        http.post('/api/v1/youtube/recommendations', () => {
           return HttpResponse.json({
             success: true,
             data: cachedRecommendations,
@@ -190,7 +190,7 @@ describe('Video Loading Flow E2E Tests', () => {
       const user = userEvent.setup()
       
       addHandler(
-        http.post('/api/youtube/recommendations', () => {
+        http.post('/api/v1/youtube/recommendations', () => {
           return HttpResponse.json({
             success: true,
             data: mockVideoRecommendations
@@ -219,7 +219,7 @@ describe('Video Loading Flow E2E Tests', () => {
       
       // Setup delayed response (simulating timeout)
       addHandler(
-        http.post('/api/youtube/recommendations', async () => {
+        http.post('/api/v1/youtube/recommendations', async () => {
           await new Promise(resolve => setTimeout(resolve, 25000)) // 25s delay
           return HttpResponse.json({
             success: true,
@@ -252,7 +252,7 @@ describe('Video Loading Flow E2E Tests', () => {
       
       // Setup network error
       addHandler(
-        http.post('/api/youtube/recommendations', () => {
+        http.post('/api/v1/youtube/recommendations', () => {
           return HttpResponse.error()
         })
       )
@@ -273,7 +273,7 @@ describe('Video Loading Flow E2E Tests', () => {
       const user = userEvent.setup()
       
       addHandler(
-        http.post('/api/youtube/recommendations', () => {
+        http.post('/api/v1/youtube/recommendations', () => {
           return new HttpResponse(null, { status: 500 })
         })
       )
@@ -297,7 +297,7 @@ describe('Video Loading Flow E2E Tests', () => {
       let attemptCount = 0
       
       addHandler(
-        http.post('/api/youtube/recommendations', () => {
+        http.post('/api/v1/youtube/recommendations', () => {
           attemptCount++
           if (attemptCount === 1) {
             return HttpResponse.error()
@@ -338,7 +338,7 @@ describe('Video Loading Flow E2E Tests', () => {
       let attemptCount = 0
       
       addHandler(
-        http.post('/api/youtube/recommendations', () => {
+        http.post('/api/v1/youtube/recommendations', () => {
           attemptCount++
           return HttpResponse.error()
         })
@@ -367,7 +367,7 @@ describe('Video Loading Flow E2E Tests', () => {
       const user = userEvent.setup()
       
       addHandler(
-        http.post('/api/youtube/recommendations', async () => {
+        http.post('/api/v1/youtube/recommendations', async () => {
           await new Promise(resolve => setTimeout(resolve, 2000))
           return HttpResponse.json({
             success: true,
@@ -394,7 +394,7 @@ describe('Video Loading Flow E2E Tests', () => {
       const user = userEvent.setup()
       
       addHandler(
-        http.post('/api/youtube/recommendations', async () => {
+        http.post('/api/v1/youtube/recommendations', async () => {
           await new Promise(resolve => setTimeout(resolve, 2000))
           return HttpResponse.json({
             success: true,
@@ -422,7 +422,7 @@ describe('Video Loading Flow E2E Tests', () => {
       let callCount = 0
       
       addHandler(
-        http.post('/api/youtube/recommendations', () => {
+        http.post('/api/v1/youtube/recommendations', () => {
           callCount++
           return HttpResponse.json({
             success: true,
@@ -449,7 +449,7 @@ describe('Video Loading Flow E2E Tests', () => {
       const user = userEvent.setup()
       
       addHandler(
-        http.post('/api/youtube/recommendations', () => {
+        http.post('/api/v1/youtube/recommendations', () => {
           return HttpResponse.json({
             success: true,
             data: mockVideoRecommendations
@@ -474,7 +474,7 @@ describe('Video Loading Flow E2E Tests', () => {
       const user = userEvent.setup()
       
       addHandler(
-        http.post('/api/youtube/recommendations', () => {
+        http.post('/api/v1/youtube/recommendations', () => {
           return HttpResponse.json({
             success: true,
             data: mockVideoRecommendations
@@ -530,7 +530,7 @@ describe('Video Loading Flow E2E Tests', () => {
       const user = userEvent.setup()
       
       addHandler(
-        http.post('/api/youtube/recommendations', () => {
+        http.post('/api/v1/youtube/recommendations', () => {
           return HttpResponse.json({
             success: true,
             data: mockVideoRecommendations
@@ -556,7 +556,7 @@ describe('Video Loading Flow E2E Tests', () => {
       const user = userEvent.setup()
       
       addHandler(
-        http.post('/api/youtube/recommendations', () => {
+        http.post('/api/v1/youtube/recommendations', () => {
           return HttpResponse.json({
             success: true,
             data: mockVideoRecommendations
@@ -584,7 +584,7 @@ describe('Video Loading Flow E2E Tests', () => {
       const startTime = Date.now()
       
       addHandler(
-        http.post('/api/youtube/recommendations', () => {
+        http.post('/api/v1/youtube/recommendations', () => {
           return HttpResponse.json({
             success: true,
             data: mockVideoRecommendations
@@ -611,7 +611,7 @@ describe('Video Loading Flow E2E Tests', () => {
       const user = userEvent.setup()
       
       addHandler(
-        http.post('/api/youtube/recommendations', () => {
+        http.post('/api/v1/youtube/recommendations', () => {
           return HttpResponse.json({
             success: true,
             data: mockVideoRecommendations

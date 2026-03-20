@@ -16,7 +16,7 @@ from services.department_info_service import DepartmentInfoService
 from models.department_info import ExperienceLevel, IndustryType
 
 
-router = APIRouter(prefix="/api/department-info", tags=["Department Information"])
+router = APIRouter(prefix="/api/v1/department-info", tags=["Department Information"])
 
 
 # ============================================================

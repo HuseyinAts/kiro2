@@ -6,7 +6,7 @@ import {
 } from '../api';
 
 // Enhanced chat API endpoints
-const ENHANCED_CHAT_API = '/api/enhanced-chat';
+const ENHANCED_CHAT_API = '/api/v1/enhanced-chat';
 const STREAM_ENDPOINT = '/api/v1/enhanced-chat/stream';
 const SESSIONS_ENDPOINT = '/api/v1/enhanced-chat/sessions';
 const ATTACHMENT_ENDPOINT = '/api/v1/enhanced-chat/message-with-attachment';

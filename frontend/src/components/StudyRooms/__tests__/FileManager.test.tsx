@@ -137,7 +137,7 @@ describe('FileManager Component', () => {
 
       await waitFor(() => {
         expect(mockedAxios.post).toHaveBeenCalledWith(
-          '/api/study-rooms/room1/files/upload',
+          '/api/v1/study-rooms/room1/files/upload',
           expect.any(FormData),
           expect.objectContaining({
             headers: { 'Content-Type': 'multipart/form-data' },
@@ -250,7 +250,7 @@ describe('FileManager Component', () => {
 
       await waitFor(() => {
         expect(mockedAxios.post).toHaveBeenCalledWith(
-          '/api/study-rooms/room1/files/file1/download'
+          '/api/v1/study-rooms/room1/files/file1/download'
         );
         expect(window.open).toHaveBeenCalledWith('http://example.com/file1.pdf', '_blank');
       });
@@ -287,7 +287,7 @@ describe('FileManager Component', () => {
 
       await waitFor(() => {
         expect(mockedAxios.delete).toHaveBeenCalledWith(
-          '/api/study-rooms/room1/files/file1'
+          '/api/v1/study-rooms/room1/files/file1'
         );
       });
     });

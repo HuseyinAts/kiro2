@@ -254,7 +254,7 @@ describe('VideoErrorHandler', () => {
       const error = new Error('Test error');
       const context: ErrorContext = {
         requestId: 'req_123',
-        endpoint: '/api/youtube/recommendations',
+        endpoint: '/api/v1/youtube/recommendations',
         retryCount: 1,
       };
 

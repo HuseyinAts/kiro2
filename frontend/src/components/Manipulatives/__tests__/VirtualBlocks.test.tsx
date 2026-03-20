@@ -269,7 +269,7 @@ describe('VirtualBlocks Component', () => {
 
       await waitFor(() => {
         expect(mockedAxios.post).toHaveBeenCalledWith(
-          '/api/manipulatives/virtual-blocks/operation',
+          '/api/v1/manipulatives/virtual-blocks/operation',
           expect.objectContaining({
             operation_type: 'add',
             blocks_used: expect.any(Number),

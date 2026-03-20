@@ -72,7 +72,7 @@ test.describe('Registration Flow', () => {
 
   test('should register student successfully', async ({ page }) => {
     const apiMocker = new ApiMocker(page);
-    await apiMocker.mockSuccess('/api/auth/register', mockData.registrationSuccess);
+    await apiMocker.mockSuccess('/api/v1/auth/register', mockData.registrationSuccess);
 
     // Fill registration form as student
     await page.getByRole('radio', { name: /öğrenci|ogrenci/i }).check();
@@ -88,7 +88,7 @@ test.describe('Registration Flow', () => {
 
   test('should register teacher with additional fields', async ({ page }) => {
     const apiMocker = new ApiMocker(page);
-    await apiMocker.mockSuccess('/api/auth/register', mockData.registrationSuccess);
+    await apiMocker.mockSuccess('/api/v1/auth/register', mockData.registrationSuccess);
 
     // Select teacher role
     await page.getByRole('radio', { name: /öğretmen|ogretmen/i }).check();
@@ -117,7 +117,7 @@ test.describe('Registration Flow', () => {
 
   test('should show error for duplicate email', async ({ page }) => {
     const apiMocker = new ApiMocker(page);
-    await apiMocker.mockError('/api/auth/register', 409, 'Bu e-posta adresi zaten kullanılıyor');
+    await apiMocker.mockError('/api/v1/auth/register', 409, 'Bu e-posta adresi zaten kullanılıyor');
 
     // Fill form
     await page.getByLabel(/ad.*soyad|name/i).fill('Test User');

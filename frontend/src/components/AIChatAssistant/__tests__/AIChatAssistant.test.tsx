@@ -97,7 +97,7 @@ describe('AIChatAssistant - Session Loading', () => {
     render(<AIChatAssistant userId="user-123" />);
     await waitFor(() => {
       expect(global.fetch).toHaveBeenCalledWith(
-        expect.stringContaining('/api/chat/sessions?user_id=user-123')
+        expect.stringContaining('/api/v1/chat/sessions?user_id=user-123')
       );
     });
   });
@@ -199,7 +199,7 @@ describe('AIChatAssistant - New Session', () => {
 
     await waitFor(() => {
       expect(global.fetch).toHaveBeenCalledWith(
-        expect.stringContaining('/api/chat/sessions'),
+        expect.stringContaining('/api/v1/chat/sessions'),
         expect.objectContaining({ method: 'POST' })
       );
     });

@@ -42,7 +42,7 @@ except ImportError as e:
             return func
         return decorator
 
-router = APIRouter(prefix="/api/tracing-demo", tags=["Distributed Tracing Demo"])
+router = APIRouter(prefix="/api/v1/tracing-demo", tags=["Distributed Tracing Demo"])
 
 
 class ExamSessionRequest(BaseModel):

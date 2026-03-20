@@ -59,8 +59,8 @@ export function ParentDashboard() {
       try {
         // Fetch from multiple endpoints in parallel
         const [weaknessRes, streakRes] = await Promise.allSettled([
-          apiRequest<{ weaknesses: WeaknessItem[] }>('/api/learning-path/weakness-report'),
-          apiRequest<{ daily_streak: number }>('/api/learning-path/streak'),
+          apiRequest<{ weaknesses: WeaknessItem[] }>('/api/v1/learning-path/weakness-report'),
+          apiRequest<{ daily_streak: number }>('/api/v1/learning-path/streak'),
         ]);
 
         const weaknesses = weaknessRes.status === 'fulfilled'

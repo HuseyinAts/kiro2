@@ -27,7 +27,7 @@ from models.database import User
 
 logger = get_logger(__name__)
 
-router = APIRouter(prefix="/api/zemberek", tags=["Zemberek NLP"])
+router = APIRouter(prefix="/api/v1/zemberek", tags=["Zemberek NLP"])
 
 
 # ==================== REQUEST/RESPONSE MODELS ====================

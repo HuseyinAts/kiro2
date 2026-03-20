@@ -15,7 +15,7 @@ from services.university_advisory_service import UniversityAdvisoryService
 from models.university import UniversityType, ProgramType, ScoreType
 
 
-router = APIRouter(prefix="/api/university-advisory", tags=["university-advisory"])
+router = APIRouter(prefix="/api/v1/university-advisory", tags=["university-advisory"])
 
 
 # ============================================================

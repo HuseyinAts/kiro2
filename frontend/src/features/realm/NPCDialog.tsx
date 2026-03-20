@@ -2,7 +2,7 @@
  * NPCDialog — Bilge Alp NPC streaming dialog
  * FAZ-5: Alem Haritasi + NPC Sistemi
  *
- * Streams NPC responses from /api/bilge-alp/chat (SSE)
+ * Streams NPC responses from /api/v1/bilge-alp/chat (SSE)
  */
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 
@@ -105,7 +105,7 @@ export const NPCDialog: React.FC<NPCDialogProps> = ({
       abortRef.current = ctrl;
 
       try {
-        const res = await fetch('/api/bilge-alp/chat', {
+        const res = await fetch('/api/v1/bilge-alp/chat', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           credentials: 'include',

@@ -22,7 +22,7 @@ from services.hybrid_question_generator import HybridQuestionGenerator
 
 logger = get_logger(__name__)
 
-router = APIRouter(prefix="/api/questions/hybrid", tags=["Hybrid Question Generation"])
+router = APIRouter(prefix="/api/v1/questions/hybrid", tags=["Hybrid Question Generation"])
 
 
 # ==================== REQUEST/RESPONSE MODELS ====================

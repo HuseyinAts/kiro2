@@ -48,7 +48,7 @@ except (ImportError, Exception) as e:
     get_ocr_service = None
     get_question_detector = None
 
-router = APIRouter(prefix="/api/ocr", tags=["OCR"])
+router = APIRouter(prefix="/api/v1/ocr", tags=["OCR"])
 
 
 # ============================================================

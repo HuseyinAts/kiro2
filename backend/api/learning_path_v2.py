@@ -106,7 +106,7 @@ ai_agent_circuit_breaker = get_ai_agent_circuit_breaker()
 resource_search_circuit_breaker = get_resource_search_circuit_breaker()
 
 # Router setup
-router = APIRouter(prefix="/api/learning-path", tags=["Learning Path"])
+router = APIRouter(prefix="/api/v1/learning-path", tags=["Learning Path"])
 
 # Rate limiter setup
 if RATE_LIMITING_ENABLED:

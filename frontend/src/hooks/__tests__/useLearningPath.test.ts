@@ -168,7 +168,7 @@ describe('useLearningPath', () => {
 
       await waitFor(() => {
         expect(mockFetch).toHaveBeenCalledWith(
-          expect.stringContaining('/api/learning-path/completion/'),
+          expect.stringContaining('/api/v1/learning-path/completion/'),
           expect.objectContaining({
             headers: expect.objectContaining({
               Authorization: 'Bearer mock-token',

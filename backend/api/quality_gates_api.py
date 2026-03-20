@@ -44,7 +44,7 @@ from core.structured_logger import get_logger
 
 logger = get_logger(__name__)
 
-router = APIRouter(prefix="/api/quality-gates", tags=["quality-gates"])
+router = APIRouter(prefix="/api/v1/quality-gates", tags=["quality-gates"])
 
 # In-memory storage for results (will be replaced with database)
 _pipeline_results: dict[str, dict[str, Any]] = {}

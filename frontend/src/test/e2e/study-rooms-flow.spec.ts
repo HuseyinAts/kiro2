@@ -18,7 +18,7 @@ import {
 test.describe('Study Room List', () => {
   test.beforeEach(async ({ page }) => {
     const apiMocker = new ApiMocker(page);
-    await apiMocker.mockSuccess('/api/study-rooms*', mockData.studyRooms);
+    await apiMocker.mockSuccess('/api/v1/study-rooms*', mockData.studyRooms);
     await loginAsStudent(page);
   });
 
@@ -109,7 +109,7 @@ test.describe('Study Room List', () => {
 test.describe('Room Tabs', () => {
   test.beforeEach(async ({ page }) => {
     const apiMocker = new ApiMocker(page);
-    await apiMocker.mockSuccess('/api/study-rooms*', mockData.studyRooms);
+    await apiMocker.mockSuccess('/api/v1/study-rooms*', mockData.studyRooms);
     await loginAsStudent(page);
   });
 
@@ -156,8 +156,8 @@ test.describe('Room Tabs', () => {
 test.describe('Room Creation', () => {
   test.beforeEach(async ({ page }) => {
     const apiMocker = new ApiMocker(page);
-    await apiMocker.mockSuccess('/api/study-rooms*', mockData.studyRooms);
-    await apiMocker.mockSuccess('/api/study-rooms', { success: true, room_id: 'new-room-123' });
+    await apiMocker.mockSuccess('/api/v1/study-rooms*', mockData.studyRooms);
+    await apiMocker.mockSuccess('/api/v1/study-rooms', { success: true, room_id: 'new-room-123' });
     await loginAsStudent(page);
   });
 
@@ -264,8 +264,8 @@ test.describe('Room Creation', () => {
 test.describe('Joining Rooms', () => {
   test.beforeEach(async ({ page }) => {
     const apiMocker = new ApiMocker(page);
-    await apiMocker.mockSuccess('/api/study-rooms*', mockData.studyRooms);
-    await apiMocker.mockSuccess('/api/study-rooms/*/join', { success: true });
+    await apiMocker.mockSuccess('/api/v1/study-rooms*', mockData.studyRooms);
+    await apiMocker.mockSuccess('/api/v1/study-rooms/*/join', { success: true });
     await loginAsStudent(page);
   });
 
@@ -287,7 +287,7 @@ test.describe('Joining Rooms', () => {
 
   test('should prompt password for protected room', async ({ page }) => {
     const apiMocker = new ApiMocker(page);
-    await apiMocker.mockSuccess('/api/study-rooms*', {
+    await apiMocker.mockSuccess('/api/v1/study-rooms*', {
       rooms: [
         { room_id: '1', name: 'Şifreli Oda', visibility: 'password', member_count: 3, max_members: 10 }
       ]
@@ -308,12 +308,12 @@ test.describe('Joining Rooms', () => {
 
   test('should join with correct password', async ({ page }) => {
     const apiMocker = new ApiMocker(page);
-    await apiMocker.mockSuccess('/api/study-rooms*', {
+    await apiMocker.mockSuccess('/api/v1/study-rooms*', {
       rooms: [
         { room_id: '1', name: 'Şifreli Oda', visibility: 'password', member_count: 3, max_members: 10 }
       ]
     });
-    await apiMocker.mockSuccess('/api/study-rooms/1/join', { success: true });
+    await apiMocker.mockSuccess('/api/v1/study-rooms/1/join', { success: true });
 
     await page.goto('/study-rooms');
 
@@ -336,12 +336,12 @@ test.describe('Joining Rooms', () => {
 
   test('should show error for full room', async ({ page }) => {
     const apiMocker = new ApiMocker(page);
-    await apiMocker.mockSuccess('/api/study-rooms*', {
+    await apiMocker.mockSuccess('/api/v1/study-rooms*', {
       rooms: [
         { room_id: '1', name: 'Dolu Oda', visibility: 'public', member_count: 10, max_members: 10 }
       ]
     });
-    await apiMocker.mockError('/api/study-rooms/1/join', 400, 'Oda dolu');
+    await apiMocker.mockError('/api/v1/study-rooms/1/join', 400, 'Oda dolu');
 
     await page.goto('/study-rooms');
 
@@ -360,8 +360,8 @@ test.describe('Joining Rooms', () => {
 test.describe('Room Features', () => {
   test.beforeEach(async ({ page }) => {
     const apiMocker = new ApiMocker(page);
-    await apiMocker.mockSuccess('/api/study-rooms*', mockData.studyRooms);
-    await apiMocker.mockSuccess('/api/study-rooms/1/messages', {
+    await apiMocker.mockSuccess('/api/v1/study-rooms*', mockData.studyRooms);
+    await apiMocker.mockSuccess('/api/v1/study-rooms/1/messages', {
       messages: [
         { id: '1', user: 'Ahmet', content: 'Merhaba!', timestamp: '2024-01-15T10:00:00Z' },
         { id: '2', user: 'Fatma', content: 'Selam!', timestamp: '2024-01-15T10:01:00Z' }
@@ -392,7 +392,7 @@ test.describe('Room Features', () => {
 
   test('should send chat message', async ({ page }) => {
     const apiMocker = new ApiMocker(page);
-    await apiMocker.mockSuccess('/api/study-rooms/1/messages', { success: true });
+    await apiMocker.mockSuccess('/api/v1/study-rooms/1/messages', { success: true });
 
     await page.goto('/study-rooms/1');
 
@@ -431,7 +431,7 @@ test.describe('Room Features', () => {
 test.describe('Study Rooms Responsiveness', () => {
   test.beforeEach(async ({ page }) => {
     const apiMocker = new ApiMocker(page);
-    await apiMocker.mockSuccess('/api/study-rooms*', mockData.studyRooms);
+    await apiMocker.mockSuccess('/api/v1/study-rooms*', mockData.studyRooms);
     await loginAsStudent(page);
   });
 
@@ -460,7 +460,7 @@ test.describe('Study Rooms Responsiveness', () => {
 test.describe('Study Rooms Accessibility', () => {
   test.beforeEach(async ({ page }) => {
     const apiMocker = new ApiMocker(page);
-    await apiMocker.mockSuccess('/api/study-rooms*', mockData.studyRooms);
+    await apiMocker.mockSuccess('/api/v1/study-rooms*', mockData.studyRooms);
     await loginAsStudent(page);
   });
 
@@ -507,7 +507,7 @@ test.describe('Study Rooms Error Handling', () => {
 
   test('should handle API error gracefully', async ({ page }) => {
     const apiMocker = new ApiMocker(page);
-    await apiMocker.mockError('/api/study-rooms*', 500, 'Sunucu hatası');
+    await apiMocker.mockError('/api/v1/study-rooms*', 500, 'Sunucu hatası');
 
     await page.goto('/study-rooms');
 
@@ -522,7 +522,7 @@ test.describe('Study Rooms Error Handling', () => {
 
   test('should handle network failure', async ({ page }) => {
     const apiMocker = new ApiMocker(page);
-    await apiMocker.mockNetworkFailure('/api/study-rooms*');
+    await apiMocker.mockNetworkFailure('/api/v1/study-rooms*');
 
     await page.goto('/study-rooms');
 
@@ -535,8 +535,8 @@ test.describe('Study Rooms Error Handling', () => {
 
   test('should handle room creation error', async ({ page }) => {
     const apiMocker = new ApiMocker(page);
-    await apiMocker.mockSuccess('/api/study-rooms*', mockData.studyRooms);
-    await apiMocker.mockError('/api/study-rooms', 400, 'Oda adı zaten kullanılıyor');
+    await apiMocker.mockSuccess('/api/v1/study-rooms*', mockData.studyRooms);
+    await apiMocker.mockError('/api/v1/study-rooms', 400, 'Oda adı zaten kullanılıyor');
 
     await page.goto('/study-rooms');
 
@@ -550,7 +550,7 @@ test.describe('Study Rooms Error Handling', () => {
 
   test('should show empty state when no rooms', async ({ page }) => {
     const apiMocker = new ApiMocker(page);
-    await apiMocker.mockSuccess('/api/study-rooms*', { rooms: [], total: 0 });
+    await apiMocker.mockSuccess('/api/v1/study-rooms*', { rooms: [], total: 0 });
 
     await page.goto('/study-rooms');
 
@@ -565,7 +565,7 @@ test.describe('Study Rooms Error Handling', () => {
 test.describe('Study Rooms Performance', () => {
   test.beforeEach(async ({ page }) => {
     const apiMocker = new ApiMocker(page);
-    await apiMocker.mockSuccess('/api/study-rooms*', mockData.studyRooms);
+    await apiMocker.mockSuccess('/api/v1/study-rooms*', mockData.studyRooms);
     await loginAsStudent(page);
   });
 

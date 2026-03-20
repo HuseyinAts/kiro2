@@ -126,21 +126,21 @@ describe('StudyRoomList Component', () => {
       render(<StudyRoomList onRoomSelect={mockOnRoomSelect} />);
 
       await waitFor(() => {
-        expect(mockedAxios.get).toHaveBeenCalledWith('/api/study-rooms');
+        expect(mockedAxios.get).toHaveBeenCalledWith('/api/v1/study-rooms');
       });
 
       // Click "My Rooms" tab
       fireEvent.click(screen.getByText('Benim Odalarım'));
 
       await waitFor(() => {
-        expect(mockedAxios.get).toHaveBeenCalledWith('/api/study-rooms/my-rooms');
+        expect(mockedAxios.get).toHaveBeenCalledWith('/api/v1/study-rooms/my-rooms');
       });
 
       // Click "Joined Rooms" tab
       fireEvent.click(screen.getByText('Katıldığım Odalar'));
 
       await waitFor(() => {
-        expect(mockedAxios.get).toHaveBeenCalledWith('/api/study-rooms/joined');
+        expect(mockedAxios.get).toHaveBeenCalledWith('/api/v1/study-rooms/joined');
       });
     });
   });
@@ -271,7 +271,7 @@ describe('StudyRoomList Component', () => {
       fireEvent.click(screen.getByRole('button', { name: 'Oluştur' }));
 
       await waitFor(() => {
-        expect(mockedAxios.post).toHaveBeenCalledWith('/api/study-rooms', expect.objectContaining({
+        expect(mockedAxios.post).toHaveBeenCalledWith('/api/v1/study-rooms', expect.objectContaining({
           name: 'Test Odası',
           description: 'Test açıklaması',
         }));
@@ -321,7 +321,7 @@ describe('StudyRoomList Component', () => {
       });
 
       await waitFor(() => {
-        expect(mockedAxios.post).toHaveBeenCalledWith('/api/study-rooms/1/join');
+        expect(mockedAxios.post).toHaveBeenCalledWith('/api/v1/study-rooms/1/join');
         expect(mockOnRoomSelect).toHaveBeenCalledWith('1');
       });
     });
@@ -343,7 +343,7 @@ describe('StudyRoomList Component', () => {
 
       await waitFor(() => {
         expect(window.prompt).toHaveBeenCalled();
-        expect(mockedAxios.post).toHaveBeenCalledWith('/api/study-rooms/3/join', {
+        expect(mockedAxios.post).toHaveBeenCalledWith('/api/v1/study-rooms/3/join', {
           password: 'test-password',
         });
       });

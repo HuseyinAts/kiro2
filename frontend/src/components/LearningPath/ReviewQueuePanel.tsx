@@ -1,7 +1,7 @@
 /**
  * ReviewQueuePanel — FSRS due kart listesi
  *
- * GET /api/learning-path/review-queue ile tekrar zamanı gelen soruları gösterir.
+ * GET /api/v1/learning-path/review-queue ile tekrar zamanı gelen soruları gösterir.
  * Tıklanınca QuizInterface ile soru çözme akışı başlatır.
  */
 
@@ -49,7 +49,7 @@ export function ReviewQueuePanel({ onClose }: ReviewQueuePanelProps) {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch('/api/learning-path/review-queue?limit=20', {
+      const res = await fetch('/api/v1/learning-path/review-queue?limit=20', {
         credentials: 'include',
       });
       const data = await res.json();
@@ -92,7 +92,7 @@ export function ReviewQueuePanel({ onClose }: ReviewQueuePanelProps) {
       const isCorrect = userAnswer === mappedQ.correctAnswer;
 
       try {
-        await fetch('/api/learning-path/submit-review', {
+        await fetch('/api/v1/learning-path/submit-review', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           credentials: 'include',

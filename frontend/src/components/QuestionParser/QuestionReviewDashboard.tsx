@@ -76,7 +76,7 @@ const QuestionReviewDashboard: React.FC = () => {
   const loadQuestions = async () => {
     setLoading(true);
     try {
-      const response = await axios.get('/api/parsed-questions', { params: filter });
+      const response = await axios.get('/api/v1/parsed-questions', { params: filter });
       setQuestions(response.data);
     } catch (error) {
       console.error('Failed to load questions:', error);
@@ -86,7 +86,7 @@ const QuestionReviewDashboard: React.FC = () => {
 
   const loadStats = async () => {
     try {
-      const response = await axios.get('/api/parsed-questions/stats');
+      const response = await axios.get('/api/v1/parsed-questions/stats');
       setStats(response.data);
     } catch (error) {
       console.error('Failed to load stats:', error);
@@ -95,7 +95,7 @@ const QuestionReviewDashboard: React.FC = () => {
 
   const handleVerify = async (id: number) => {
     try {
-      await axios.patch(`/api/parsed-questions/${id}/verify`);
+      await axios.patch(`/api/v1/parsed-questions/${id}/verify`);
       await loadQuestions();
       await loadStats();
     } catch (error) {
@@ -112,7 +112,7 @@ const QuestionReviewDashboard: React.FC = () => {
     if (!selectedQuestion) {return;}
 
     try {
-      await axios.patch(`/api/parsed-questions/${selectedQuestion.id}`, selectedQuestion);
+      await axios.patch(`/api/v1/parsed-questions/${selectedQuestion.id}`, selectedQuestion);
       setEditDialogOpen(false);
       await loadQuestions();
     } catch (error) {

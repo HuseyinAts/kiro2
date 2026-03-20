@@ -71,7 +71,7 @@ export function ProgressDashboard({ pathNodes }: ProgressDashboardProps) {
   // B3: Weakness data
   const [weaknesses, setWeaknesses] = useState<WeaknessItem[]>([]);
   useEffect(() => {
-    apiRequest<{ weaknesses: WeaknessItem[] }>('/api/learning-path/weakness-report')
+    apiRequest<{ weaknesses: WeaknessItem[] }>('/api/v1/learning-path/weakness-report')
       .then(data => setWeaknesses(data.weaknesses || []))
       .catch(() => {});
   }, []);

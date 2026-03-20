@@ -30,7 +30,7 @@ export interface VideoBookmarksProps {
   includePublic?: boolean;
 }
 
-const API_BASE = '/api/video-analytics';
+const API_BASE = '/api/v1/video-analytics';
 
 export const VideoBookmarks: React.FC<VideoBookmarksProps> = ({
   userId,

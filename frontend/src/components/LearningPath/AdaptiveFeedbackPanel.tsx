@@ -58,7 +58,7 @@ export function AdaptiveFeedbackPanel({
   const [adapted, setAdapted] = useState(false);
 
   useEffect(() => {
-    apiRequest<{ weaknesses: WeaknessItem[] }>('/api/learning-path/weakness-report')
+    apiRequest<{ weaknesses: WeaknessItem[] }>('/api/v1/learning-path/weakness-report')
       .then(data => setWeaknesses((data.weaknesses || []).filter(w => w.is_weak)))
       .catch(() => {});
   }, []);

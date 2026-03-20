@@ -655,7 +655,7 @@ describe('InteractiveGeometry Component - Save Usage', () => {
 
     await waitFor(() => {
       expect(mockedAxios.post).toHaveBeenCalledWith(
-        '/api/manipulatives/geometry/tool-usage',
+        '/api/v1/manipulatives/geometry/tool-usage',
         expect.objectContaining({
           tool_type: 'line',
           shapes_created: expect.arrayContaining([
@@ -778,7 +778,7 @@ describe('InteractiveGeometry Component - Save Usage', () => {
 
     await waitFor(() => {
       expect(mockedAxios.post).toHaveBeenCalledWith(
-        '/api/manipulatives/geometry/tool-usage',
+        '/api/v1/manipulatives/geometry/tool-usage',
         expect.objectContaining({
           measurements: expect.arrayContaining([
             expect.objectContaining({ type: 'length' })

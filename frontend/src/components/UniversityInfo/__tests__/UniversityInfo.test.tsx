@@ -183,7 +183,7 @@ describe('UniversityInfo - Data Loading', () => {
 
     await waitFor(() => {
       expect(global.fetch).toHaveBeenCalledWith(
-        expect.stringContaining('/api/university-info/comprehensive/test-uni-1')
+        expect.stringContaining('/api/v1/university-info/comprehensive/test-uni-1')
       );
     });
   });

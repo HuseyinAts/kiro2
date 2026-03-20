@@ -12,7 +12,7 @@ from core.database import get_db
 from core.auth_dependencies import get_current_user
 from models.database import User
 
-router = APIRouter(prefix="/api/manipulatives", tags=["manipulatives"])
+router = APIRouter(prefix="/api/v1/manipulatives", tags=["manipulatives"])
 
 
 # Pydantic Models

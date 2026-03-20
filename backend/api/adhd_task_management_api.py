@@ -24,7 +24,7 @@ from core.database import get_db
 from core.dependencies import get_current_user
 from models.database import User
 
-router = APIRouter(prefix="/api/adhd-support/tasks", tags=["ADHD Task Management"])
+router = APIRouter(prefix="/api/v1/adhd-support/tasks", tags=["ADHD Task Management"])
 
 
 # ============================================================================

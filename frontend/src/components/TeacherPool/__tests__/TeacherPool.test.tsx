@@ -147,7 +147,7 @@ describe('TeacherPool - Teacher Search', () => {
     render(<TeacherPool userId="student-123" />);
     await waitFor(() => {
       expect(global.fetch).toHaveBeenCalledWith(
-        expect.stringContaining('/api/teachers/search')
+        expect.stringContaining('/api/v1/teachers/search')
       );
     });
   });
@@ -306,7 +306,7 @@ describe('TeacherPool - Teacher Profile', () => {
 
     await waitFor(() => {
       expect(global.fetch).toHaveBeenCalledWith(
-        expect.stringContaining('/api/teachers/profile/teacher-1')
+        expect.stringContaining('/api/v1/teachers/profile/teacher-1')
       );
     });
   });

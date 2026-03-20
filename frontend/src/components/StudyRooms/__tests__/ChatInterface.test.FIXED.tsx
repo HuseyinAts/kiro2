@@ -98,7 +98,7 @@ describe('ChatInterface Component', () => {
       render(<ChatInterface {...mockProps} />);
 
       await waitFor(() => {
-        expect(mockedAxios.get).toHaveBeenCalledWith('/api/study-rooms/room1/messages');
+        expect(mockedAxios.get).toHaveBeenCalledWith('/api/v1/study-rooms/room1/messages');
         const message1 = screen.getAllByText('Merhaba! Denklem konusunda yardım edebilir misiniz?')[0];
         const message2 = screen.getAllByText('Elbette! Hangi denklem?')[0];
         expect(message1).toBeInTheDocument();
@@ -192,7 +192,7 @@ describe('ChatInterface Component', () => {
 
       await waitFor(() => {
         expect(mockedAxios.post).toHaveBeenCalledWith(
-          '/api/study-rooms/room1/messages',
+          '/api/v1/study-rooms/room1/messages',
           expect.objectContaining({
             content: 'Test mesajı',
             message_type: 'text',

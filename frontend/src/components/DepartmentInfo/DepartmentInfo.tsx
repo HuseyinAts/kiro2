@@ -109,7 +109,7 @@ export const DepartmentInfo: React.FC<DepartmentInfoProps> = ({
 
     try {
       const response = await fetch(
-        `${API_BASE}/api/department-info/comprehensive/${departmentId}?year=${year}`,
+        `${API_BASE}/api/v1/department-info/comprehensive/${departmentId}?year=${year}`,
       );
 
       if (!response.ok) {

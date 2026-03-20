@@ -286,7 +286,7 @@ const InteractiveGeometry: React.FC<InteractiveGeometryProps> = ({ onToolUsage }
     try {
       const duration = Math.floor((Date.now() - startTime) / 1000);
 
-      await axios.post('/api/manipulatives/geometry/tool-usage', {
+      await axios.post('/api/v1/manipulatives/geometry/tool-usage', {
         user_id: 0, // Backend'de current_user'dan alınacak
         tool_type: selectedTool,
         shapes_created: shapes.map(s => ({ type: s.type, points: s.points.length })),

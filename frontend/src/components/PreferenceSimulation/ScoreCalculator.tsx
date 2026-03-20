@@ -8,7 +8,7 @@ import * as React from 'react';
 import {  useState  } from 'react';
 import './ScoreCalculator.css';
 
-const API_BASE = '/api/preference-simulation';
+const API_BASE = '/api/v1/preference-simulation';
 
 export const ScoreCalculator: React.FC = () => {
   const [scoreType, setScoreType] = useState<string>('SAY');

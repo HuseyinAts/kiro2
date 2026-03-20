@@ -64,7 +64,7 @@ const VisualTimer: React.FC<VisualTimerProps> = ({
   // Fetch timer data
   const fetchTimerData = async () => {
     try {
-      const response = await fetch(`/api/adhd-support/timer/visual/${sessionId}`, {
+      const response = await fetch(`/api/v1/adhd-support/timer/visual/${sessionId}`, {
         credentials: 'include',
       });
 

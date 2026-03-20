@@ -22,7 +22,7 @@ from models.teacher_pool import (
     AppointmentType,
 )
 
-router = APIRouter(prefix="/api/teachers", tags=["teachers"])
+router = APIRouter(prefix="/api/v1/teachers", tags=["teachers"])
 
 
 # ============================================================

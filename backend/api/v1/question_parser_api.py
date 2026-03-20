@@ -19,7 +19,7 @@ except ImportError as e:
     logger = logging.getLogger(__name__)
     logger.warning(f"YKSQuestionPipeline not available: {e}")
 
-router = APIRouter(prefix="/question-parser", tags=["question-parser"])
+router = APIRouter(prefix="/api/v1/question-parser", tags=["question-parser"])
 
 # Global pipeline instance
 pipeline = None

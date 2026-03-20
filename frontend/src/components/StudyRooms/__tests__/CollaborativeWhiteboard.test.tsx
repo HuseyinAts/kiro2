@@ -204,7 +204,7 @@ describe('CollaborativeWhiteboard Component - Canvas Initialization', () => {
 
     await waitFor(() => {
       expect(mockedAxios.get).toHaveBeenCalledWith(
-        '/api/study-rooms/room1/whiteboard/state'
+        '/api/v1/study-rooms/room1/whiteboard/state'
       );
     });
   });
@@ -337,7 +337,7 @@ describe('CollaborativeWhiteboard Component - Drawing', () => {
 
     await waitFor(() => {
       expect(mockedAxios.post).toHaveBeenCalledWith(
-        '/api/study-rooms/room1/whiteboard/stroke',
+        '/api/v1/study-rooms/room1/whiteboard/stroke',
         expect.objectContaining({
           tool: 'pen',
           color: '#000000',
@@ -360,7 +360,7 @@ describe('CollaborativeWhiteboard Component - Drawing', () => {
 
     await waitFor(() => {
       expect(mockedAxios.post).toHaveBeenCalledWith(
-        '/api/study-rooms/room1/whiteboard/stroke',
+        '/api/v1/study-rooms/room1/whiteboard/stroke',
         expect.objectContaining({
           tool: 'highlighter',
           opacity: 0.5,
@@ -409,7 +409,7 @@ describe('CollaborativeWhiteboard Component - Shapes', () => {
 
     await waitFor(() => {
       expect(mockedAxios.post).toHaveBeenCalledWith(
-        '/api/study-rooms/room1/whiteboard/shape',
+        '/api/v1/study-rooms/room1/whiteboard/shape',
         expect.objectContaining({
           type: 'rectangle',
         })
@@ -430,7 +430,7 @@ describe('CollaborativeWhiteboard Component - Shapes', () => {
 
     await waitFor(() => {
       expect(mockedAxios.post).toHaveBeenCalledWith(
-        '/api/study-rooms/room1/whiteboard/shape',
+        '/api/v1/study-rooms/room1/whiteboard/shape',
         expect.objectContaining({
           type: 'circle',
         })
@@ -451,7 +451,7 @@ describe('CollaborativeWhiteboard Component - Shapes', () => {
 
     await waitFor(() => {
       expect(mockedAxios.post).toHaveBeenCalledWith(
-        '/api/study-rooms/room1/whiteboard/shape',
+        '/api/v1/study-rooms/room1/whiteboard/shape',
         expect.objectContaining({
           type: 'line',
         })
@@ -492,7 +492,7 @@ describe('CollaborativeWhiteboard Component - Text and Equations', () => {
 
     await waitFor(() => {
       expect(mockedAxios.post).toHaveBeenCalledWith(
-        '/api/study-rooms/room1/whiteboard/text',
+        '/api/v1/study-rooms/room1/whiteboard/text',
         expect.objectContaining({
           content: 'Hello World',
         })
@@ -542,7 +542,7 @@ describe('CollaborativeWhiteboard Component - Text and Equations', () => {
 
     await waitFor(() => {
       expect(mockedAxios.post).toHaveBeenCalledWith(
-        '/api/study-rooms/room1/whiteboard/equation',
+        '/api/v1/study-rooms/room1/whiteboard/equation',
         expect.objectContaining({
           latex: 'x^2 + y^2 = r^2',
         })
@@ -682,7 +682,7 @@ describe('CollaborativeWhiteboard Component - Undo and Clear', () => {
     await waitFor(() => {
       expect(global.confirm).toHaveBeenCalled();
       expect(mockedAxios.post).toHaveBeenCalledWith(
-        '/api/study-rooms/room1/whiteboard/clear'
+        '/api/v1/study-rooms/room1/whiteboard/clear'
       );
     });
   });
@@ -705,7 +705,7 @@ describe('CollaborativeWhiteboard Component - Undo and Clear', () => {
 
     // Clear API should not be called
     expect(mockedAxios.post).not.toHaveBeenCalledWith(
-      '/api/study-rooms/room1/whiteboard/clear'
+      '/api/v1/study-rooms/room1/whiteboard/clear'
     );
   });
 });

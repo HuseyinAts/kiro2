@@ -15,7 +15,7 @@ from services.preference_simulation_service import PreferenceSimulationService
 from models.university import ScoreType
 
 
-router = APIRouter(prefix="/api/preference-simulation", tags=["preference-simulation"])
+router = APIRouter(prefix="/api/v1/preference-simulation", tags=["preference-simulation"])
 
 
 # ============================================================

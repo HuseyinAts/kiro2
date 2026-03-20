@@ -40,7 +40,7 @@ const GeoGebraEmbed: React.FC<GeoGebraEmbedProps> = ({
 
   const loadApplets = async () => {
     try {
-      const response = await axios.get('/api/manipulatives/geogebra/applets');
+      const response = await axios.get('/api/v1/manipulatives/geogebra/applets');
       if (response.data.success) {
         setApplets(response.data.data);
         const defaultApplet = response.data.data.find((a: GeoGebraApplet) => a.id === appletId);
@@ -68,7 +68,7 @@ const GeoGebraEmbed: React.FC<GeoGebraEmbedProps> = ({
     try {
       const duration = Math.floor((Date.now() - startTime) / 1000);
 
-      await axios.post('/api/manipulatives/geogebra/activity', {
+      await axios.post('/api/v1/manipulatives/geogebra/activity', {
         user_id: 0, // Backend'de current_user'dan alınacak
         applet_id: selectedApplet.id,
         activity_type: selectedApplet.type,

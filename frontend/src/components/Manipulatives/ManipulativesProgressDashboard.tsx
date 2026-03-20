@@ -75,7 +75,7 @@ const ManipulativesProgressDashboard: React.FC<ManipulativesProgressDashboardPro
 
   const loadProgressData = async () => {
     try {
-      const response = await axios.get('/api/manipulatives/progress/dashboard');
+      const response = await axios.get('/api/v1/manipulatives/progress/dashboard');
       if (response.data.success) {
         setProgressData(response.data.data);
       }
@@ -88,7 +88,7 @@ const ManipulativesProgressDashboard: React.FC<ManipulativesProgressDashboardPro
 
   const loadBadges = async () => {
     try {
-      const response = await axios.get('/api/manipulatives/badges');
+      const response = await axios.get('/api/v1/manipulatives/badges');
       if (response.data.success) {
         setBadges(response.data.data);
       }

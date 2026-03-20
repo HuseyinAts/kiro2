@@ -150,7 +150,7 @@ export const TeacherPool: React.FC<TeacherPoolProps> = ({
       if (searchFilters.maxHourlyRate > 0) {params.append('max_hourly_rate', searchFilters.maxHourlyRate.toString());}
       if (searchFilters.onlineOnly) {params.append('online_only', 'true');}
 
-      const response = await fetch(`${API_BASE}/api/teachers/search?${params.toString()}`);
+      const response = await fetch(`${API_BASE}/api/v1/teachers/search?${params.toString()}`);
       if (!response.ok) {throw new Error('Failed to search teachers');}
 
       const data = await response.json();
@@ -167,14 +167,14 @@ export const TeacherPool: React.FC<TeacherPoolProps> = ({
     setError(null);
 
     try {
-      const response = await fetch(`${API_BASE}/api/teachers/profile/${teacherId}`);
+      const response = await fetch(`${API_BASE}/api/v1/teachers/profile/${teacherId}`);
       if (!response.ok) {throw new Error('Failed to fetch teacher profile');}
 
       const teacher = await response.json();
       setSelectedTeacher(teacher);
 
       // Fetch availability
-      const availResponse = await fetch(`${API_BASE}/api/teachers/${teacherId}/availability`);
+      const availResponse = await fetch(`${API_BASE}/api/v1/teachers/${teacherId}/availability`);
       if (availResponse.ok) {
         const availData = await availResponse.json();
         setAvailability(availData.availability);
@@ -193,7 +193,7 @@ export const TeacherPool: React.FC<TeacherPoolProps> = ({
     setError(null);
 
     try {
-      const response = await fetch(`${API_BASE}/api/teachers/my-appointments?student_id=${userId}`);
+      const response = await fetch(`${API_BASE}/api/v1/teachers/my-appointments?student_id=${userId}`);
       if (!response.ok) {throw new Error('Failed to fetch appointments');}
 
       const data = await response.json();
@@ -219,7 +219,7 @@ export const TeacherPool: React.FC<TeacherPoolProps> = ({
       const endHour = parseInt(hours) + 1;
       const endTime = `${endHour.toString().padStart(2, '0')}:${minutes}:00`;
 
-      const response = await fetch(`${API_BASE}/api/teachers/appointments?student_id=${userId}`, {
+      const response = await fetch(`${API_BASE}/api/v1/teachers/appointments?student_id=${userId}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -264,7 +264,7 @@ export const TeacherPool: React.FC<TeacherPoolProps> = ({
 
     try {
       const response = await fetch(
-        `${API_BASE}/api/teachers/appointments/${appointmentId}/cancel?cancelled_by=${userId}`,
+        `${API_BASE}/api/v1/teachers/appointments/${appointmentId}/cancel?cancelled_by=${userId}`,
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },

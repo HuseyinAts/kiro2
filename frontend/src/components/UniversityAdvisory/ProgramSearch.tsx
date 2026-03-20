@@ -30,7 +30,7 @@ export interface ProgramSearchProps {
   onSelectProgram?: (program: Program) => void;
 }
 
-const API_BASE = '/api/university-advisory';
+const API_BASE = '/api/v1/university-advisory';
 
 export const ProgramSearch: React.FC<ProgramSearchProps> = ({
   onSelectProgram,

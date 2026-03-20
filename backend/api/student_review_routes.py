@@ -16,7 +16,7 @@ from services.student_review_service import StudentReviewService
 from models.student_review import ReviewType, ReviewStatus, ReportReason, RatingCategory
 
 
-router = APIRouter(prefix="/api/reviews", tags=["Student Reviews"])
+router = APIRouter(prefix="/api/v1/reviews", tags=["Student Reviews"])
 
 
 # ============================================================

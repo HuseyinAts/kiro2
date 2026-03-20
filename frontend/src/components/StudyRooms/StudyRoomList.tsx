@@ -116,11 +116,11 @@ const StudyRoomList: React.FC<StudyRoomListProps> = ({ onRoomSelect }) => {
   const fetchRooms = async () => {
     setLoading(true);
     try {
-      let url = '/api/study-rooms';
+      let url = '/api/v1/study-rooms';
       if (tabValue === 1) {
-        url = '/api/study-rooms/my-rooms'; // Rooms I created
+        url = '/api/v1/study-rooms/my-rooms'; // Rooms I created
       } else if (tabValue === 2) {
-        url = '/api/study-rooms/joined'; // Rooms I'm a member of
+        url = '/api/v1/study-rooms/joined'; // Rooms I'm a member of
       }
 
       const response = await axios.get(url);
@@ -160,7 +160,7 @@ const StudyRoomList: React.FC<StudyRoomListProps> = ({ onRoomSelect }) => {
 
   const handleCreateRoom = async () => {
     try {
-      const response = await axios.post('/api/study-rooms', newRoom);
+      const response = await axios.post('/api/v1/study-rooms', newRoom);
       setRooms([response.data, ...rooms]);
       setCreateDialogOpen(false);
       setNewRoom({
@@ -182,9 +182,9 @@ const StudyRoomList: React.FC<StudyRoomListProps> = ({ onRoomSelect }) => {
       if (visibility === 'password') {
         const password = prompt('Bu oda şifre korumalı. Lütfen şifreyi girin:');
         if (!password) {return;}
-        await axios.post(`/api/study-rooms/${roomId}/join`, { password });
+        await axios.post(`/api/v1/study-rooms/${roomId}/join`, { password });
       } else {
-        await axios.post(`/api/study-rooms/${roomId}/join`);
+        await axios.post(`/api/v1/study-rooms/${roomId}/join`);
       }
       onRoomSelect(roomId);
     } catch (error) {

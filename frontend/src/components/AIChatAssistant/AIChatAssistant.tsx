@@ -131,7 +131,7 @@ export const AIChatAssistant: React.FC<AIChatAssistantProps> = ({
 
   const fetchSessions = async () => {
     try {
-      const response = await fetch(`${API_BASE}/api/chat/sessions?user_id=${userId}&limit=50`);
+      const response = await fetch(`${API_BASE}/api/v1/chat/sessions?user_id=${userId}&limit=50`);
       if (!response.ok) {throw new Error('Failed to fetch sessions');}
       const data = await response.json();
       setSessions(data);
@@ -149,7 +149,7 @@ export const AIChatAssistant: React.FC<AIChatAssistantProps> = ({
   const fetchMessages = async (sessionId: string) => {
     setLoading(true);
     try {
-      const response = await fetch(`${API_BASE}/api/chat/sessions/${sessionId}/messages`);
+      const response = await fetch(`${API_BASE}/api/v1/chat/sessions/${sessionId}/messages`);
       if (!response.ok) {throw new Error('Failed to fetch messages');}
       const data = await response.json();
       setMessages(data);
@@ -169,7 +169,7 @@ export const AIChatAssistant: React.FC<AIChatAssistantProps> = ({
     }
 
     try {
-      const response = await fetch(`${API_BASE}/api/chat/sessions?user_id=${userId}`, {
+      const response = await fetch(`${API_BASE}/api/v1/chat/sessions?user_id=${userId}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -228,7 +228,7 @@ export const AIChatAssistant: React.FC<AIChatAssistantProps> = ({
       formData.append('file', selectedImage);
 
       const response = await fetch(
-        `${API_BASE}/api/chat/sessions/${currentSession.id}/upload?user_id=${userId}`,
+        `${API_BASE}/api/v1/chat/sessions/${currentSession.id}/upload?user_id=${userId}`,
         {
           method: 'POST',
           body: formData,
@@ -275,7 +275,7 @@ export const AIChatAssistant: React.FC<AIChatAssistantProps> = ({
       }
 
       const response = await fetch(
-        `${API_BASE}/api/chat/sessions/${currentSession.id}/messages?user_id=${userId}`,
+        `${API_BASE}/api/v1/chat/sessions/${currentSession.id}/messages?user_id=${userId}`,
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -307,7 +307,7 @@ export const AIChatAssistant: React.FC<AIChatAssistantProps> = ({
 
     try {
       const response = await fetch(
-        `${API_BASE}/api/chat/messages/${messageId}/rate?user_id=${userId}`,
+        `${API_BASE}/api/v1/chat/messages/${messageId}/rate?user_id=${userId}`,
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },

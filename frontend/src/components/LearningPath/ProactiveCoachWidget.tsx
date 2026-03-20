@@ -134,7 +134,7 @@ export function ProactiveCoachWidget({
   // Fetch weakness data + coaching suggestions + burnout check on mount
   useEffect(() => {
     // Weakness report (best-effort — ignore 404/500)
-    apiRequest<{ weaknesses: WeaknessItem[] }>('/api/learning-path/weakness-report')
+    apiRequest<{ weaknesses: WeaknessItem[] }>('/api/v1/learning-path/weakness-report')
       .then(data => setWeakTopics((data.weaknesses || []).filter(w => w.is_weak)))
       .catch(() => {});
 

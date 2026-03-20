@@ -21,7 +21,7 @@ from pydantic import BaseModel
 logger = logging.getLogger(__name__)
 
 router = APIRouter(
-    prefix="/yolo",
+    prefix="/api/v1/yolo",
     tags=["YOLO Question Detection"],
     responses={404: {"description": "Not found"}}
 )

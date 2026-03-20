@@ -86,8 +86,8 @@ export const TokenOptimizationDashboard: React.FC = () => {
     setLoading(true);
     try {
       const [statsRes, projRes] = await Promise.all([
-        fetch(`/api/monitoring/token-stats?days=${timeRange}`),
-        fetch('/api/monitoring/token-projection'),
+        fetch(`/api/v1/monitoring/token-stats?days=${timeRange}`),
+        fetch('/api/v1/monitoring/token-projection'),
       ]);
 
       const statsData = await statsRes.json();
@@ -112,7 +112,7 @@ export const TokenOptimizationDashboard: React.FC = () => {
 
   const exportCSV = async () => {
     try {
-      const response = await fetch(`/api/monitoring/export-csv?days=${timeRange}`);
+      const response = await fetch(`/api/v1/monitoring/export-csv?days=${timeRange}`);
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');

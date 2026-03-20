@@ -125,7 +125,7 @@ describe('ProgramSearch - Data Loading', () => {
 
     await waitFor(() => {
       expect(global.fetch).toHaveBeenCalledWith(
-        expect.stringContaining('/api/university-advisory/cities')
+        expect.stringContaining('/api/v1/university-advisory/cities')
       );
     });
   });
@@ -139,7 +139,7 @@ describe('ProgramSearch - Data Loading', () => {
 
     await waitFor(() => {
       expect(global.fetch).toHaveBeenCalledWith(
-        expect.stringContaining('/api/university-advisory/programs')
+        expect.stringContaining('/api/v1/university-advisory/programs')
       );
     });
   });
@@ -296,7 +296,7 @@ describe('ProgramSearch - Search Button', () => {
 
     await waitFor(() => {
       expect(global.fetch).toHaveBeenCalledWith(
-        expect.stringContaining('/api/university-advisory/programs')
+        expect.stringContaining('/api/v1/university-advisory/programs')
       );
     });
   });

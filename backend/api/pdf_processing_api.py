@@ -19,7 +19,7 @@ from core.celery_app import celery_app
 logger = logging.getLogger(__name__)
 
 router = APIRouter(
-    prefix="/api/pdf",
+    prefix="/api/v1/pdf",
     tags=["PDF Processing"]
 )
 

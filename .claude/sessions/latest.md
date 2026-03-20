@@ -1,32 +1,34 @@
-## Session Handoff — 2026-03-18 (Session 101)
+## Session Handoff — 2026-03-20 (Session 104-106)
 **Branch:** master
-**Son commit:** `50b3c4d` feat: YouTube fallback + learning path updateProgress
+**Son commit:** `d33d7a1` fix: add 4 permanent guards for recurring issues
 
-### Yapilanlar
-- Session 100 recap verildi (EdTech raporu + 10 uncommitted dosya durumu)
-- 10 M dosya commit edildi: YouTube fallback, updateProgress type fix, Turkish NFC, VideoLoadingManager legacy
-- Gamification mevcut durum raporu hazırlandı (Türkçe, kapsamlı, doğrulanmış):
-  - 20 rozet (ajan 50+ demişti — düzeltildi), 16 endpoint (ajan 25+ demişti — düzeltildi)
-  - XP formülü: BASE_XP=100 × 1.5^(level-1) geometrik seri
-  - Kritik bulgu: tüm backend production-ready, tüm frontend bileşenler kodlanmış ama HİÇBİRİ sayfalara entegre edilmemiş
-- Rapor iki konuma kaydedildi:
-  - `.claude/plans/majestic-munching-giraffe.md`
-  - `docs/research/gamification-mevcut-durum-raporu-2026.md`
+### Yapilanlar (14 commit, 116 dosya, +12,539/-1,612)
+- Master Plan v2.0 (FAZ-1→FAZ-10) + post-review 4 bug fix + SQLAlchemy 74/74 conflict fix
+- Frontend auth migration: 31 dosya localStorage→credentials:'include'
+- Backend model consolidation + FK type fixes (16 dosya)
+- Health check optimization: 9s → 12ms (ES/Redis timeout guard)
+- Frontend cleanup: 44 orphan → _deprecated/, 3 stub component activated
+- Exam checklist bug: session question count/duration pass-through
+- SW stale cache fix: NetworkFirst navigation, precache-only JS/CSS
+- Code review fixes: SW reload guard, cache scope, section UX
+- 4 permanent guards: case-duplicate, model import, deprecation, rules doc
+- Docker E2E verified: backend+frontend healthy, login OK, all endpoints 200
 
 ### Bekleyen
-- Gamification entegrasyonu (P0): ExperienceManager + BadgeManager + LeaderboardManager quiz akışına bağlanmalı
-- Frontend gamification bileşenleri sayfalara import edilmeli (PointsDisplay, LevelDisplay vb.)
-- Test coverage artırma (backend ~18% → hedef 80%)
-- MVP beta launch (Docker stack hazır, E2E 7/7 PASS)
+- Test coverage (backend ~18% → 80%)
+- Re-OCR recovery (+1,521-2,511 soru)
+- Router prefix standardizasyonu (FAZ 6, opsiyonel)
 
 ### Engelleyiciler
 - Yok
 
-### Dokunulan Dosyalar
-- `docs/research/gamification-mevcut-durum-raporu-2026.md` (YENİ)
-- `.claude/plans/majestic-munching-giraffe.md` (YENİ)
+### Dokunulan Dosyalar (kritik)
+- backend/core/comprehensive_health_check.py, backend/models/gamification.py
+- frontend/src/App.tsx, sw.ts, ModernExamStart.tsx, ExamPage.tsx
+- .claude/hooks/pre-commit-check.py, pre-tool-use.py
+- .claude/rules/deprecation-guard.md
 
 ### Sonraki Adimlar
-1. Gamification P0 fix: `backend/core/gamification/` manager'larını quiz akışına bağla (ModernLearningPathPage.tsx)
-2. Frontend: GamificationDashboard veya PointsDisplay'i header/sayfaya import et
-3. PointGainAnimation'ı QuizInterface.tsx'e ekle (görsel geri bildirim)
+1. Test coverage sprint (backend services → 80%)
+2. Re-OCR recovery pipeline
+3. Router prefix standardizasyonu (ayri PR)

@@ -136,7 +136,7 @@ describe('GeoGebraEmbed Component - Data Fetching', () => {
     render(<GeoGebraEmbed />);
 
     await waitFor(() => {
-      expect(mockedAxios.get).toHaveBeenCalledWith('/api/manipulatives/geogebra/applets');
+      expect(mockedAxios.get).toHaveBeenCalledWith('/api/v1/manipulatives/geogebra/applets');
     });
   });
 
@@ -383,7 +383,7 @@ describe('GeoGebraEmbed Component - Save', () => {
 
     await waitFor(() => {
       expect(mockedAxios.post).toHaveBeenCalledWith(
-        '/api/manipulatives/geogebra/activity',
+        '/api/v1/manipulatives/geogebra/activity',
         expect.objectContaining({
           applet_id: 'geometry-basic',
           activity_type: 'geometry',
@@ -482,7 +482,7 @@ describe('GeoGebraEmbed Component - Complete', () => {
 
     await waitFor(() => {
       expect(mockedAxios.post).toHaveBeenCalledWith(
-        '/api/manipulatives/geogebra/activity',
+        '/api/v1/manipulatives/geogebra/activity',
         expect.objectContaining({
           applet_id: 'algebra-functions',
           activity_type: 'algebra',
@@ -733,7 +733,7 @@ describe('GeoGebraEmbed Component - Edge Cases', () => {
 
     await waitFor(() => {
       expect(mockedAxios.post).toHaveBeenCalledWith(
-        '/api/manipulatives/geogebra/activity',
+        '/api/v1/manipulatives/geogebra/activity',
         expect.objectContaining({
           duration_seconds: 125,
         })

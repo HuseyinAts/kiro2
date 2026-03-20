@@ -22,7 +22,7 @@ from models.live_session import (
     ScreenShareType,
 )
 
-router = APIRouter(prefix="/api/live-sessions", tags=["live-sessions"])
+router = APIRouter(prefix="/api/v1/live-sessions", tags=["live-sessions"])
 
 
 # ============================================================

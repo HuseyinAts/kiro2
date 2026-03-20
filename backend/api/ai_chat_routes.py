@@ -19,7 +19,7 @@ from services.ocr_service import OCRService
 from models.ai_chat import MessageRole, SessionStatus, SubjectType
 
 
-router = APIRouter(prefix="/api/chat", tags=["AI Chat"])
+router = APIRouter(prefix="/api/v1/chat", tags=["AI Chat"])
 
 
 # ============================================================

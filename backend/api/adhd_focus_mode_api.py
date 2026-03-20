@@ -28,7 +28,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 router = APIRouter(
-    prefix="/api/adhd-support/focus-mode", tags=["ADHD Support - Focus Mode"]
+    prefix="/api/v1/adhd-support/focus-mode", tags=["ADHD Support - Focus Mode"]
 )
 
 

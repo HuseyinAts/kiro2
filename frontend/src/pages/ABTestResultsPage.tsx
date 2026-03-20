@@ -102,7 +102,7 @@ export const ABTestResultsPage: React.FC = () => {
   const fetchResults = async () => {
     setLoading(true);
     try {
-      const response = await fetch(`/api/monitoring/ab-test-results?provider=${provider}&days=${timeRange}`);
+      const response = await fetch(`/api/v1/monitoring/ab-test-results?provider=${provider}&days=${timeRange}`);
       const data = await response.json();
       setResults(data);
       setLastUpdated(new Date());

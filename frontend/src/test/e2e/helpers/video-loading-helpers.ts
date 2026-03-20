@@ -113,7 +113,7 @@ export class VideoLoadingMocks {
    * Mock successful video loading
    */
   async mockSuccess(delay: number = 1000) {
-    await this.page.route(`${this.apiBaseUrl}/api/youtube/recommendations`, async (route: Route) => {
+    await this.page.route(`${this.apiBaseUrl}/api/v1/youtube/recommendations`, async (route: Route) => {
       await new Promise(resolve => setTimeout(resolve, delay));
       await route.fulfill({
         status: 200,
@@ -127,7 +127,7 @@ export class VideoLoadingMocks {
    * Mock cached video response
    */
   async mockCached() {
-    await this.page.route(`${this.apiBaseUrl}/api/youtube/recommendations`, async (route: Route) => {
+    await this.page.route(`${this.apiBaseUrl}/api/v1/youtube/recommendations`, async (route: Route) => {
       await route.fulfill({
         status: 200,
         contentType: 'application/json',
@@ -140,7 +140,7 @@ export class VideoLoadingMocks {
    * Mock timeout (slow response)
    */
   async mockTimeout(delay: number = 25000) {
-    await this.page.route(`${this.apiBaseUrl}/api/youtube/recommendations`, async (route: Route) => {
+    await this.page.route(`${this.apiBaseUrl}/api/v1/youtube/recommendations`, async (route: Route) => {
       await new Promise(resolve => setTimeout(resolve, delay));
       await route.fulfill({
         status: 200,
@@ -154,7 +154,7 @@ export class VideoLoadingMocks {
    * Mock server error (500)
    */
   async mockServerError() {
-    await this.page.route(`${this.apiBaseUrl}/api/youtube/recommendations`, async (route: Route) => {
+    await this.page.route(`${this.apiBaseUrl}/api/v1/youtube/recommendations`, async (route: Route) => {
       await route.fulfill({
         status: 500,
         contentType: 'application/json',
@@ -170,7 +170,7 @@ export class VideoLoadingMocks {
    * Mock network error
    */
   async mockNetworkError() {
-    await this.page.route(`${this.apiBaseUrl}/api/youtube/recommendations`, async (route: Route) => {
+    await this.page.route(`${this.apiBaseUrl}/api/v1/youtube/recommendations`, async (route: Route) => {
       await route.abort('failed');
     });
   }
@@ -179,7 +179,7 @@ export class VideoLoadingMocks {
    * Mock rate limit error (429)
    */
   async mockRateLimitError() {
-    await this.page.route(`${this.apiBaseUrl}/api/youtube/recommendations`, async (route: Route) => {
+    await this.page.route(`${this.apiBaseUrl}/api/v1/youtube/recommendations`, async (route: Route) => {
       await route.fulfill({
         status: 429,
         contentType: 'application/json',
@@ -198,7 +198,7 @@ export class VideoLoadingMocks {
   async mockProgressiveSuccess(failCount: number = 1) {
     let requestCount = 0;
     
-    await this.page.route(`${this.apiBaseUrl}/api/youtube/recommendations`, async (route: Route) => {
+    await this.page.route(`${this.apiBaseUrl}/api/v1/youtube/recommendations`, async (route: Route) => {
       requestCount++;
       
       if (requestCount <= failCount) {
@@ -217,7 +217,7 @@ export class VideoLoadingMocks {
    * Mock empty results
    */
   async mockEmptyResults() {
-    await this.page.route(`${this.apiBaseUrl}/api/youtube/recommendations`, async (route: Route) => {
+    await this.page.route(`${this.apiBaseUrl}/api/v1/youtube/recommendations`, async (route: Route) => {
       await route.fulfill({
         status: 200,
         contentType: 'application/json',
@@ -230,7 +230,7 @@ export class VideoLoadingMocks {
    * Clear all mocks
    */
   async clearMocks() {
-    await this.page.unroute(`${this.apiBaseUrl}/api/youtube/recommendations`);
+    await this.page.unroute(`${this.apiBaseUrl}/api/v1/youtube/recommendations`);
   }
 }
 

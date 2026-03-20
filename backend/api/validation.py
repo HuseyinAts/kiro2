@@ -18,7 +18,7 @@ from core.structured_logger import get_logger
 
 logger = get_logger(__name__)
 
-router = APIRouter(prefix="/validation", tags=["validation"])
+router = APIRouter(prefix="/api/v1/validation", tags=["validation"])
 
 
 # ==================== REQUEST/RESPONSE MODELS ====================

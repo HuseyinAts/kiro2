@@ -71,7 +71,7 @@ const FocusMode: React.FC<FocusModeProps> = ({
 
     setIsLoading(true);
     try {
-      const response = await fetch(`/api/adhd-support/focus-mode/task/${taskId}`, {
+      const response = await fetch(`/api/v1/adhd-support/focus-mode/task/${taskId}`, {
         credentials: 'include',
       });
 
@@ -113,7 +113,7 @@ const FocusMode: React.FC<FocusModeProps> = ({
       setIsActive(true);
 
       // Send activation event to backend
-      await fetch('/api/adhd-support/focus-mode/activate', {
+      await fetch('/api/v1/adhd-support/focus-mode/activate', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -149,7 +149,7 @@ const FocusMode: React.FC<FocusModeProps> = ({
       setIsActive(false);
 
       // Send deactivation event to backend
-      await fetch('/api/adhd-support/focus-mode/deactivate', {
+      await fetch('/api/v1/adhd-support/focus-mode/deactivate', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

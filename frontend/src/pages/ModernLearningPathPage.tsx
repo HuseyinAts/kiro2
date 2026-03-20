@@ -213,7 +213,7 @@ export function ModernLearningPathPage() {
     try {
       // Konu parametresini API'ye gönder
       const topicParam = topic ? `&topic=${encodeURIComponent(topic)}` : '';
-      const url = `/api/learning-path/exit-quiz/${encodeURIComponent(subject)}?count=${node.quiz?.question_count || 5}${topicParam}`;
+      const url = `/api/v1/learning-path/exit-quiz/${encodeURIComponent(subject)}?count=${node.quiz?.question_count || 5}${topicParam}`;
       console.log('[Quiz Debug] URL:', url, 'subject:', subject, 'topic:', topic);
 
       const res = await fetch(url, { credentials: 'include' });
@@ -289,7 +289,7 @@ export function ModernLearningPathPage() {
         const errorTypes = Object.keys(errorTypesRef.current).length > 0
           ? errorTypesRef.current
           : undefined;
-        const response = await fetchWithRetry('/api/learning-path/register-wrong-answers', {
+        const response = await fetchWithRetry('/api/v1/learning-path/register-wrong-answers', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           credentials: 'include',
@@ -380,7 +380,7 @@ export function ModernLearningPathPage() {
     setInterleavedLoading(true);
     setQuizError(null);
     try {
-      const res = await fetch(`/api/learning-path/interleaved-practice?subjects=${subjects.join(',')}&count=10`, { credentials: 'include' });
+      const res = await fetch(`/api/v1/learning-path/interleaved-practice?subjects=${subjects.join(',')}&count=10`, { credentials: 'include' });
       const data = await res.json();
       if (data.success && data.questions?.length > 0) {
         setInterleavedQuestions(data.questions.map(mapApiToQuizQuestion));
@@ -813,7 +813,7 @@ export function ModernLearningPathPage() {
                               const errorTypes = Object.keys(errorTypesRef.current).length > 0
                                 ? errorTypesRef.current
                                 : undefined;
-                              await fetch('/api/learning-path/register-wrong-answers', {
+                              await fetch('/api/v1/learning-path/register-wrong-answers', {
                                 method: 'POST',
                                 headers: { 'Content-Type': 'application/json' },
                                 credentials: 'include',

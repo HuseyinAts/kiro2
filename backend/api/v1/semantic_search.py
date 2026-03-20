@@ -46,7 +46,7 @@ except (ImportError, TypeError):
     get_embedding_service = None
     logger.warning("embedding_service not available")
 
-router = APIRouter(prefix="/search", tags=["Semantic Search"])
+router = APIRouter(prefix="/api/v1/search", tags=["Semantic Search"])
 
 
 # ============================================================================

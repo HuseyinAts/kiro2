@@ -28,7 +28,7 @@ export interface VideoNotesProps {
   onSeekToTimestamp?: (timestamp: number) => void;
 }
 
-const API_BASE = '/api/video-analytics';
+const API_BASE = '/api/v1/video-analytics';
 
 export const VideoNotes: React.FC<VideoNotesProps> = ({
   userId,

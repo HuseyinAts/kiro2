@@ -113,7 +113,7 @@ export const StudentReviews: React.FC<StudentReviewsProps> = ({
         params.append('verified_only', 'true');
       }
 
-      const response = await fetch(`${API_BASE}/api/reviews?${params}`);
+      const response = await fetch(`${API_BASE}/api/v1/reviews?${params}`);
 
       if (!response.ok) {
         throw new Error('Failed to fetch reviews');
@@ -139,7 +139,7 @@ export const StudentReviews: React.FC<StudentReviewsProps> = ({
       }
 
       const response = await fetch(
-        `${API_BASE}/api/reviews/statistics/${reviewType}?${params}`,
+        `${API_BASE}/api/v1/reviews/statistics/${reviewType}?${params}`,
       );
 
       if (response.ok) {
@@ -178,7 +178,7 @@ export const StudentReviews: React.FC<StudentReviewsProps> = ({
       }
 
       const response = await fetch(
-        `${API_BASE}/api/reviews?user_id=${userId}`,
+        `${API_BASE}/api/v1/reviews?user_id=${userId}`,
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -217,7 +217,7 @@ export const StudentReviews: React.FC<StudentReviewsProps> = ({
 
     try {
       const response = await fetch(
-        `${API_BASE}/api/reviews/${reviewId}/vote?user_id=${userId}`,
+        `${API_BASE}/api/v1/reviews/${reviewId}/vote?user_id=${userId}`,
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -247,7 +247,7 @@ export const StudentReviews: React.FC<StudentReviewsProps> = ({
 
     try {
       const response = await fetch(
-        `${API_BASE}/api/reviews/${reviewId}/report?reporter_id=${userId}`,
+        `${API_BASE}/api/v1/reviews/${reviewId}/report?reporter_id=${userId}`,
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },

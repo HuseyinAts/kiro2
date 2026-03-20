@@ -128,7 +128,7 @@ describe('VideoPlayerWithAnalytics - Session Management', () => {
 
     await waitFor(() => {
       expect(mockFetch).toHaveBeenCalledWith(
-        expect.stringContaining('/api/video-analytics/sessions/start'),
+        expect.stringContaining('/api/v1/video-analytics/sessions/start'),
         expect.objectContaining({
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },

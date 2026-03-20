@@ -132,7 +132,7 @@ describe('VideoAnalyticsDashboard - Data Loading', () => {
 
     await waitFor(() => {
       expect(global.fetch).toHaveBeenCalledWith(
-        expect.stringContaining('/api/video-analytics/summary/daily'),
+        expect.stringContaining('/api/v1/video-analytics/summary/daily'),
       );
     });
   });

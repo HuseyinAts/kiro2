@@ -160,7 +160,7 @@ const VirtualBlocks: React.FC<VirtualBlocksProps> = ({ onOperationComplete }) =>
         return acc;
       }, [] as Array<{ type: string; count: number }>);
 
-      await axios.post('/api/manipulatives/virtual-blocks/operation', {
+      await axios.post('/api/v1/manipulatives/virtual-blocks/operation', {
         operation_type: selectedOperation,
         blocks_used: blocksUsed,
         result,

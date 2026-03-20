@@ -138,7 +138,7 @@ export const useWhiteboardSync = ({
   const fetchState = useCallback(async (): Promise<WhiteboardState | null> => {
     try {
       const response = await axios.get<WhiteboardState>(
-        `/api/study-rooms/${roomId}/whiteboard/state`,
+        `/api/v1/study-rooms/${roomId}/whiteboard/state`,
       );
       onStateChange(response.data);
       return response.data;
@@ -152,7 +152,7 @@ export const useWhiteboardSync = ({
   const sendStroke = useCallback(
     async (stroke: Stroke): Promise<void> => {
       try {
-        await axios.post(`/api/study-rooms/${roomId}/whiteboard/stroke`, stroke);
+        await axios.post(`/api/v1/study-rooms/${roomId}/whiteboard/stroke`, stroke);
         sendMessage({ type: 'stroke-added', stroke });
       } catch (error) {
         console.error('Error sending stroke:', error);
@@ -165,7 +165,7 @@ export const useWhiteboardSync = ({
   const sendShape = useCallback(
     async (shape: Shape): Promise<void> => {
       try {
-        await axios.post(`/api/study-rooms/${roomId}/whiteboard/shape`, shape);
+        await axios.post(`/api/v1/study-rooms/${roomId}/whiteboard/shape`, shape);
         sendMessage({ type: 'shape-added', shape });
       } catch (error) {
         console.error('Error sending shape:', error);
@@ -178,7 +178,7 @@ export const useWhiteboardSync = ({
   const sendText = useCallback(
     async (text: TextElement): Promise<void> => {
       try {
-        await axios.post(`/api/study-rooms/${roomId}/whiteboard/text`, text);
+        await axios.post(`/api/v1/study-rooms/${roomId}/whiteboard/text`, text);
         sendMessage({ type: 'text-added', text });
       } catch (error) {
         console.error('Error sending text:', error);
@@ -191,7 +191,7 @@ export const useWhiteboardSync = ({
   const sendEquation = useCallback(
     async (equation: EquationElement): Promise<void> => {
       try {
-        await axios.post(`/api/study-rooms/${roomId}/whiteboard/equation`, equation);
+        await axios.post(`/api/v1/study-rooms/${roomId}/whiteboard/equation`, equation);
         sendMessage({ type: 'equation-added', equation });
       } catch (error) {
         console.error('Error sending equation:', error);
@@ -203,7 +203,7 @@ export const useWhiteboardSync = ({
   // Send clear command to server and broadcast
   const sendClear = useCallback(async (): Promise<void> => {
     try {
-      await axios.post(`/api/study-rooms/${roomId}/whiteboard/clear`);
+      await axios.post(`/api/v1/study-rooms/${roomId}/whiteboard/clear`);
       sendMessage({ type: 'clear' });
     } catch (error) {
       console.error('Error clearing whiteboard:', error);

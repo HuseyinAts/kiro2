@@ -414,7 +414,7 @@ describe('ErrorBoundary', () => {
 
       await waitFor(() => {
         expect(global.fetch).toHaveBeenCalledWith(
-          '/api/errors/report',
+          '/api/v1/errors/report',
           expect.objectContaining({
             method: 'POST',
             headers: { 'Content-Type': 'application/json' }

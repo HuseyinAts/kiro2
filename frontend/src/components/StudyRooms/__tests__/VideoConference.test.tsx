@@ -213,7 +213,7 @@ describe('VideoConference Component - Media Initialization', () => {
 
     await waitFor(() => {
       expect(mockedAxios.post).toHaveBeenCalledWith(
-        '/api/study-rooms/room1/video/join',
+        '/api/v1/study-rooms/room1/video/join',
         {
           user_id: 'user1',
           name: 'Test User',
@@ -436,7 +436,7 @@ describe('VideoConference Component - Recording', () => {
 
     await waitFor(() => {
       expect(mockedAxios.post).toHaveBeenCalledWith(
-        '/api/study-rooms/room1/video/start-recording'
+        '/api/v1/study-rooms/room1/video/start-recording'
       );
     });
   });
@@ -450,7 +450,7 @@ describe('VideoConference Component - Recording', () => {
     fireEvent.click(recordButton);
     await waitFor(() => {
       expect(mockedAxios.post).toHaveBeenCalledWith(
-        '/api/study-rooms/room1/video/start-recording'
+        '/api/v1/study-rooms/room1/video/start-recording'
       );
     });
 
@@ -458,7 +458,7 @@ describe('VideoConference Component - Recording', () => {
     fireEvent.click(recordButton);
     await waitFor(() => {
       expect(mockedAxios.post).toHaveBeenCalledWith(
-        '/api/study-rooms/room1/video/stop-recording'
+        '/api/v1/study-rooms/room1/video/stop-recording'
       );
     });
   });
@@ -734,7 +734,7 @@ describe('VideoConference Component - Leave Conference', () => {
 
     await waitFor(() => {
       expect(mockedAxios.post).toHaveBeenCalledWith(
-        '/api/study-rooms/room1/video/leave'
+        '/api/v1/study-rooms/room1/video/leave'
       );
       expect(mockProps.onLeave).toHaveBeenCalled();
     });

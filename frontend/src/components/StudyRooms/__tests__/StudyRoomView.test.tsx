@@ -204,7 +204,7 @@ describe('StudyRoomView Component - Data Fetching', () => {
     render(<StudyRoomView {...mockProps} />);
 
     await waitFor(() => {
-      expect(mockedAxios.get).toHaveBeenCalledWith('/api/study-rooms/room1');
+      expect(mockedAxios.get).toHaveBeenCalledWith('/api/v1/study-rooms/room1');
     });
   });
 
@@ -212,7 +212,7 @@ describe('StudyRoomView Component - Data Fetching', () => {
     render(<StudyRoomView {...mockProps} />);
 
     await waitFor(() => {
-      expect(mockedAxios.get).toHaveBeenCalledWith('/api/study-rooms/room1/members');
+      expect(mockedAxios.get).toHaveBeenCalledWith('/api/v1/study-rooms/room1/members');
     });
   });
 
@@ -433,7 +433,7 @@ describe('StudyRoomView Component - Room Menu', () => {
 
     await waitFor(() => {
       expect(global.confirm).toHaveBeenCalled();
-      expect(mockedAxios.post).toHaveBeenCalledWith('/api/study-rooms/room1/leave');
+      expect(mockedAxios.post).toHaveBeenCalledWith('/api/v1/study-rooms/room1/leave');
       expect(mockProps.onBack).toHaveBeenCalled();
     });
   });
@@ -499,7 +499,7 @@ describe('StudyRoomView Component - Room Menu', () => {
 
     await waitFor(() => {
       expect(global.confirm).toHaveBeenCalled();
-      expect(mockedAxios.post).toHaveBeenCalledWith('/api/study-rooms/room1/archive');
+      expect(mockedAxios.post).toHaveBeenCalledWith('/api/v1/study-rooms/room1/archive');
       expect(mockProps.onBack).toHaveBeenCalled();
     });
   });
@@ -538,7 +538,7 @@ describe('StudyRoomView Component - Room Menu', () => {
 
     await waitFor(() => {
       expect(global.confirm).toHaveBeenCalled();
-      expect(mockedAxios.delete).toHaveBeenCalledWith('/api/study-rooms/room1');
+      expect(mockedAxios.delete).toHaveBeenCalledWith('/api/v1/study-rooms/room1');
       expect(mockProps.onBack).toHaveBeenCalled();
     });
   });

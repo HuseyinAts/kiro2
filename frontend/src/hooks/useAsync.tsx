@@ -219,7 +219,7 @@ export function useAsync<T, Args extends unknown[] = []>(
  *
  * @example
  * const { data, isLoading, error, refetch } = useFetch<User>(
- *   '/api/users/123',
+ *   '/api/v1/users/123',
  *   { method: 'GET' }
  * );
  */
@@ -260,7 +260,7 @@ export function useFetch<T>(
  *
  * @example
  * const { mutate, isLoading, error } = useMutation(
- *   (data) => fetch('/api/users', {
+ *   (data) => fetch('/api/v1/users', {
  *     method: 'POST',
  *     body: JSON.stringify(data)
  *   })
@@ -438,7 +438,7 @@ export function useThrottle<T extends (...args: unknown[]) => unknown>(
  *
  * const fetchUsers = async () => {
  *   await api.execute(async () => {
- *     const response = await fetch('/api/users');
+ *     const response = await fetch('/api/v1/users');
  *     return response.json();
  *   });
  * };

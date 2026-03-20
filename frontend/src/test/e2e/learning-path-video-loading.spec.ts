@@ -38,7 +38,7 @@ async function waitForVideoLoadingState(page: Page, state: 'loading' | 'success'
 test.describe('Learning Path Video Loading - Success Flow', () => {
   test.beforeEach(async ({ page }) => {
     // Mock successful API response
-    await page.route(`${API_BASE_URL}/api/youtube/recommendations`, async (route) => {
+    await page.route(`${API_BASE_URL}/api/v1/youtube/recommendations`, async (route) => {
       await route.fulfill({
         status: 200,
         contentType: 'application/json',
@@ -144,7 +144,7 @@ test.describe('Learning Path Video Loading - Success Flow', () => {
 
   test('should show cache hit indicator when videos are cached', async ({ page }) => {
     // Mock cached response
-    await page.route(`${API_BASE_URL}/api/youtube/recommendations`, async (route) => {
+    await page.route(`${API_BASE_URL}/api/v1/youtube/recommendations`, async (route) => {
       await route.fulfill({
         status: 200,
         contentType: 'application/json',
@@ -171,7 +171,7 @@ test.describe('Learning Path Video Loading - Success Flow', () => {
 test.describe('Learning Path Video Loading - Error Handling', () => {
   test('should handle timeout error gracefully', async ({ page }) => {
     // Mock slow API response (timeout)
-    await page.route(`${API_BASE_URL}/api/youtube/recommendations`, async (route) => {
+    await page.route(`${API_BASE_URL}/api/v1/youtube/recommendations`, async (route) => {
       await new Promise(resolve => setTimeout(resolve, 25000)); // 25s delay
       await route.fulfill({ status: 200, body: '{}' });
     });
@@ -193,7 +193,7 @@ test.describe('Learning Path Video Loading - Error Handling', () => {
   });
 
   test('should handle 500 server error', async ({ page }) => {
-    await page.route(`${API_BASE_URL}/api/youtube/recommendations`, async (route) => {
+    await page.route(`${API_BASE_URL}/api/v1/youtube/recommendations`, async (route) => {
       await route.fulfill({
         status: 500,
         contentType: 'application/json',
@@ -214,7 +214,7 @@ test.describe('Learning Path Video Loading - Error Handling', () => {
   });
 
   test('should handle network error', async ({ page }) => {
-    await page.route(`${API_BASE_URL}/api/youtube/recommendations`, async (route) => {
+    await page.route(`${API_BASE_URL}/api/v1/youtube/recommendations`, async (route) => {
       await route.abort('failed');
     });
     
@@ -228,7 +228,7 @@ test.describe('Learning Path Video Loading - Error Handling', () => {
   });
 
   test('should handle CORS error', async ({ page }) => {
-    await page.route(`${API_BASE_URL}/api/youtube/recommendations`, async (route) => {
+    await page.route(`${API_BASE_URL}/api/v1/youtube/recommendations`, async (route) => {
       await route.fulfill({
         status: 0,
         body: ''
@@ -249,7 +249,7 @@ test.describe('Learning Path Video Loading - Retry Logic', () => {
   test('should retry automatically on first failure', async ({ page }) => {
     let requestCount = 0;
     
-    await page.route(`${API_BASE_URL}/api/youtube/recommendations`, async (route) => {
+    await page.route(`${API_BASE_URL}/api/v1/youtube/recommendations`, async (route) => {
       requestCount++;
       
       if (requestCount === 1) {
@@ -284,7 +284,7 @@ test.describe('Learning Path Video Loading - Retry Logic', () => {
   test('should allow manual retry after error', async ({ page }) => {
     let requestCount = 0;
     
-    await page.route(`${API_BASE_URL}/api/youtube/recommendations`, async (route) => {
+    await page.route(`${API_BASE_URL}/api/v1/youtube/recommendations`, async (route) => {
       requestCount++;
       
       if (requestCount <= 2) {
@@ -326,7 +326,7 @@ test.describe('Learning Path Video Loading - Retry Logic', () => {
     const retryTimes: number[] = [];
     let requestCount = 0;
     
-    await page.route(`${API_BASE_URL}/api/youtube/recommendations`, async (route) => {
+    await page.route(`${API_BASE_URL}/api/v1/youtube/recommendations`, async (route) => {
       requestCount++;
       retryTimes.push(Date.now());
       
@@ -355,7 +355,7 @@ test.describe('Learning Path Video Loading - Retry Logic', () => {
   test('should show retry count to user', async ({ page }) => {
     let requestCount = 0;
     
-    await page.route(`${API_BASE_URL}/api/youtube/recommendations`, async (route) => {
+    await page.route(`${API_BASE_URL}/api/v1/youtube/recommendations`, async (route) => {
       requestCount++;
       if (requestCount <= 2) {
         await route.abort('failed');
@@ -379,7 +379,7 @@ test.describe('Learning Path Video Loading - Retry Logic', () => {
 test.describe('Learning Path Video Loading - User Interactions', () => {
   test('should allow canceling video load', async ({ page }) => {
     // Mock slow response
-    await page.route(`${API_BASE_URL}/api/youtube/recommendations`, async (route) => {
+    await page.route(`${API_BASE_URL}/api/v1/youtube/recommendations`, async (route) => {
       await new Promise(resolve => setTimeout(resolve, 10000));
       await route.fulfill({ status: 200, body: '{}' });
     });
@@ -414,7 +414,7 @@ test.describe('Learning Path Video Loading - User Interactions', () => {
   });
 
   test('should show fallback videos on demand', async ({ page }) => {
-    await page.route(`${API_BASE_URL}/api/youtube/recommendations`, async (route) => {
+    await page.route(`${API_BASE_URL}/api/v1/youtube/recommendations`, async (route) => {
       await route.abort('failed');
     });
     

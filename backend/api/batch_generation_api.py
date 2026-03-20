@@ -13,7 +13,7 @@ from tasks.question_generation_tasks import (
 )
 from services.batch_question_generator import BatchQuestionGenerator
 
-router = APIRouter(prefix="/api/batch", tags=["batch-generation"])
+router = APIRouter(prefix="/api/v1/batch", tags=["batch-generation"])
 
 
 # Request/Response Models

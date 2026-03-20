@@ -28,7 +28,7 @@ interface WatchSession {
   startedAt: string;
 }
 
-const API_BASE = '/api/video-analytics';
+const API_BASE = '/api/v1/video-analytics';
 const PROGRESS_UPDATE_INTERVAL = 10000; // 10 seconds
 
 export const VideoPlayerWithAnalytics: React.FC<VideoPlayerProps> = ({

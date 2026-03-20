@@ -125,14 +125,14 @@ describe('ManipulativesProgressDashboard - Data Loading', () => {
   it('fetches progress data on mount', async () => {
     render(<ManipulativesProgressDashboard />);
     await waitFor(() => {
-      expect(mockedAxios.get).toHaveBeenCalledWith('/api/manipulatives/progress/dashboard');
+      expect(mockedAxios.get).toHaveBeenCalledWith('/api/v1/manipulatives/progress/dashboard');
     });
   });
 
   it('fetches badges on mount', async () => {
     render(<ManipulativesProgressDashboard />);
     await waitFor(() => {
-      expect(mockedAxios.get).toHaveBeenCalledWith('/api/manipulatives/badges');
+      expect(mockedAxios.get).toHaveBeenCalledWith('/api/v1/manipulatives/badges');
     });
   });
 

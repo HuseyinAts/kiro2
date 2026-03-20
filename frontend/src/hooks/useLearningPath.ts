@@ -133,7 +133,7 @@ export const useLearningPath = (): UseLearningPathReturn => {
   const loadCompletionStatus = useCallback(async (sid: string): Promise<Record<string, boolean>> => {
     try {
       const data = await apiRequest<{ data: Record<string, boolean> }>(
-        `/api/learning-path/completion/${sid}`,
+        `/api/v1/learning-path/completion/${sid}`,
       );
       return data.data || {};
     } catch {
@@ -175,7 +175,7 @@ export const useLearningPath = (): UseLearningPathReturn => {
   const ensureProfile = useCallback(async (): Promise<string> => {
     try {
       const myProfile = await apiRequest<{ student_id: string }>(
-        '/api/learning-path/my-profile',
+        '/api/v1/learning-path/my-profile',
       );
       return myProfile.student_id;
     } catch (profileErr: any) {
@@ -376,7 +376,7 @@ export const useLearningPath = (): UseLearningPathReturn => {
     const sid = studentId;
 
     try {
-      await apiRequest(`/api/learning-path/progress/${sid}/${nodeId}`, {
+      await apiRequest(`/api/v1/learning-path/progress/${sid}/${nodeId}`, {
         method: 'PUT',
         body: JSON.stringify({
           progress: progress ?? (completed ? 100 : 0),

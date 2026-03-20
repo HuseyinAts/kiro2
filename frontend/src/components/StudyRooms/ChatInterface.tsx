@@ -112,7 +112,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
 
   const fetchMessages = async () => {
     try {
-      const response = await axios.get(`/api/study-rooms/${roomId}/messages`);
+      const response = await axios.get(`/api/v1/study-rooms/${roomId}/messages`);
       setMessages(response.data);
     } catch (error) {
       console.error('Error fetching messages:', error);
@@ -158,7 +158,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
       };
 
       // Send via HTTP for reliability
-      await axios.post(`/api/study-rooms/${roomId}/messages`, messageData);
+      await axios.post(`/api/v1/study-rooms/${roomId}/messages`, messageData);
 
       // Also send via WebSocket for real-time update
       if (wsConnection && wsConnection.readyState === WebSocket.OPEN) {
@@ -181,7 +181,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
       formData.append('file', file);
       formData.append('room_id', roomId);
 
-      const response = await axios.post(`/api/study-rooms/${roomId}/upload`, formData, {
+      const response = await axios.post(`/api/v1/study-rooms/${roomId}/upload`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
@@ -195,7 +195,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
         file_size: file.size,
       };
 
-      await axios.post(`/api/study-rooms/${roomId}/messages`, messageData);
+      await axios.post(`/api/v1/study-rooms/${roomId}/messages`, messageData);
 
       if (fileInputRef.current) {
         fileInputRef.current.value = '';
@@ -207,7 +207,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
 
   const handleReaction = async (messageId: string, emoji: string) => {
     try {
-      await axios.post(`/api/study-rooms/${roomId}/messages/${messageId}/reaction`, {
+      await axios.post(`/api/v1/study-rooms/${roomId}/messages/${messageId}/reaction`, {
         emoji,
       });
 
@@ -247,7 +247,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
 
   const handleDeleteMessage = async (messageId: string) => {
     try {
-      await axios.delete(`/api/study-rooms/${roomId}/messages/${messageId}`);
+      await axios.delete(`/api/v1/study-rooms/${roomId}/messages/${messageId}`);
       setMessages((prev) => prev.filter((msg) => msg.id !== messageId));
       setAnchorEl(null);
     } catch (error) {

@@ -100,7 +100,7 @@ const StudyRoomView: React.FC<StudyRoomViewProps> = ({
 
   const fetchRoomDetails = async () => {
     try {
-      const response = await axios.get(`/api/study-rooms/${roomId}`);
+      const response = await axios.get(`/api/v1/study-rooms/${roomId}`);
       setRoom(response.data);
     } catch (error) {
       console.error('Error fetching room details:', error);
@@ -109,7 +109,7 @@ const StudyRoomView: React.FC<StudyRoomViewProps> = ({
 
   const fetchMembers = async () => {
     try {
-      const response = await axios.get(`/api/study-rooms/${roomId}/members`);
+      const response = await axios.get(`/api/v1/study-rooms/${roomId}/members`);
       setMembers(response.data);
     } catch (error) {
       console.error('Error fetching members:', error);
@@ -120,7 +120,7 @@ const StudyRoomView: React.FC<StudyRoomViewProps> = ({
     if (!window.confirm('Odadan ayrılmak istediğinizden emin misiniz?')) {return;}
 
     try {
-      await axios.post(`/api/study-rooms/${roomId}/leave`);
+      await axios.post(`/api/v1/study-rooms/${roomId}/leave`);
       onBack();
     } catch (error) {
       console.error('Error leaving room:', error);
@@ -131,7 +131,7 @@ const StudyRoomView: React.FC<StudyRoomViewProps> = ({
     if (!window.confirm('Bu odayı arşivlemek istediğinizden emin misiniz?')) {return;}
 
     try {
-      await axios.post(`/api/study-rooms/${roomId}/archive`);
+      await axios.post(`/api/v1/study-rooms/${roomId}/archive`);
       onBack();
     } catch (error) {
       console.error('Error archiving room:', error);
@@ -143,7 +143,7 @@ const StudyRoomView: React.FC<StudyRoomViewProps> = ({
       {return;}
 
     try {
-      await axios.delete(`/api/study-rooms/${roomId}`);
+      await axios.delete(`/api/v1/study-rooms/${roomId}`);
       onBack();
     } catch (error) {
       console.error('Error deleting room:', error);

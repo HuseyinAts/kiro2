@@ -62,7 +62,7 @@ export const useStudentProfile = (studentId: string | null) => {
   return useQuery({
     queryKey: learningPathKeys.profile(studentId || ''),
     queryFn: async (): Promise<StudentProfile> => {
-      const response = await apiRequest<StudentProfile>('/api/learning-path/my-profile');
+      const response = await apiRequest<StudentProfile>('/api/v1/learning-path/my-profile');
       return response;
     },
     enabled: !!studentId,
@@ -101,7 +101,7 @@ export const usePathNodes = (studentId: string | null) => {
 
       const [pathResponse, completionResponse] = await Promise.all([
         createLearningPath({ student_id: studentId, subject: 'matematik' }) as unknown as Promise<LearningPath>,
-        apiRequest<CompletionStatus>(`/api/learning-path/completion/${studentId}`),
+        apiRequest<CompletionStatus>(`/api/v1/learning-path/completion/${studentId}`),
       ]);
 
       const nodes = convertPathToNodes(pathResponse);
@@ -127,7 +127,7 @@ export const useCompletionStatus = (studentId: string | null) => {
     queryKey: learningPathKeys.completion(studentId || ''),
     queryFn: async (): Promise<Record<string, boolean>> => {
       if (!studentId) return {};
-      const response = await apiRequest<CompletionStatus>(`/api/learning-path/completion/${studentId}`);
+      const response = await apiRequest<CompletionStatus>(`/api/v1/learning-path/completion/${studentId}`);
       return response.data || {};
     },
     enabled: !!studentId,
@@ -145,7 +145,7 @@ export const useLearningStyle = (studentId: string | null) => {
     queryFn: async (): Promise<string> => {
       if (!studentId) return 'mixed';
       const response = await apiRequest<{ data: { hybrid_code?: string; vark_profile?: { dominant: string } } }>(
-        `/api/learning-path/learning-style/${studentId}`,
+        `/api/v1/learning-path/learning-style/${studentId}`,
       );
       return response.data?.hybrid_code || response.data?.vark_profile?.dominant || 'mixed';
     },

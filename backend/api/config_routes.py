@@ -17,7 +17,7 @@ from core.feature_flags import (
 from core.config_utils import get_config_for_user
 
 
-router = APIRouter(prefix="/api/config", tags=["configuration"])
+router = APIRouter(prefix="/api/v1/config", tags=["configuration"])
 
 
 class FeatureFlagResponse(BaseModel):

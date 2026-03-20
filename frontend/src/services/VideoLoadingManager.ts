@@ -181,7 +181,7 @@ export class VideoLoadingManager {
         'Content-Type': 'application/json',
       };
 
-      const response = await fetch(`${this.apiBaseUrl}/api/learning-path/search-resources`, {
+      const response = await fetch(`${this.apiBaseUrl}/api/v1/learning-path/search-resources`, {
         method: 'POST',
         headers,
         credentials: 'include',

@@ -21,7 +21,7 @@ from sentry_sdk import capture_exception, capture_message, add_breadcrumb, set_u
 
 from core.sentry_middleware import track_business_operation, capture_categorized_error
 
-router = APIRouter(prefix="/api/sentry-demo", tags=["Sentry Error Tracking Demo"])
+router = APIRouter(prefix="/api/v1/sentry-demo", tags=["Sentry Error Tracking Demo"])
 
 
 # ==================== MODELS ====================

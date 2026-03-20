@@ -183,7 +183,7 @@ export function OnboardingWizard({ studentId: _studentId, onComplete, onSkip }: 
     try {
       const subject = selectedSubjects[0] || 'matematik';
       const res = await fetch(
-        `/api/learning-path/exit-quiz/${encodeURIComponent(subject)}?count=10`,
+        `/api/v1/learning-path/exit-quiz/${encodeURIComponent(subject)}?count=10`,
         { credentials: 'include' },
       );
       const data = await res.json();

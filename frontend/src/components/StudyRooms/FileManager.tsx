@@ -123,7 +123,7 @@ const FileManager: React.FC<FileManagerProps> = ({ roomId, currentUserId }) => {
   const fetchFiles = async () => {
     setLoading(true);
     try {
-      const response = await axios.get(`/api/study-rooms/${roomId}/files`);
+      const response = await axios.get(`/api/v1/study-rooms/${roomId}/files`);
       setFiles(response.data);
     } catch (error) {
       console.error('Error fetching files:', error);
@@ -164,7 +164,7 @@ const FileManager: React.FC<FileManagerProps> = ({ roomId, currentUserId }) => {
       formData.append('file', file);
       formData.append('room_id', roomId);
 
-      const response = await axios.post(`/api/study-rooms/${roomId}/files/upload`, formData, {
+      const response = await axios.post(`/api/v1/study-rooms/${roomId}/files/upload`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
@@ -193,7 +193,7 @@ const FileManager: React.FC<FileManagerProps> = ({ roomId, currentUserId }) => {
   const handleFileDownload = async (file: RoomFile) => {
     try {
       // Update download count
-      await axios.post(`/api/study-rooms/${roomId}/files/${file.id}/download`);
+      await axios.post(`/api/v1/study-rooms/${roomId}/files/${file.id}/download`);
 
       // Trigger download
       window.open(file.file_url, '_blank');
@@ -213,7 +213,7 @@ const FileManager: React.FC<FileManagerProps> = ({ roomId, currentUserId }) => {
     if (!window.confirm('Bu dosyayı silmek istediğinizden emin misiniz?')) {return;}
 
     try {
-      await axios.delete(`/api/study-rooms/${roomId}/files/${fileId}`);
+      await axios.delete(`/api/v1/study-rooms/${roomId}/files/${fileId}`);
       setFiles((prev) => prev.filter((f) => f.id !== fileId));
       setAnchorEl(null);
     } catch (error) {
@@ -224,7 +224,7 @@ const FileManager: React.FC<FileManagerProps> = ({ roomId, currentUserId }) => {
 
   const handleShowVersions = async (file: RoomFile) => {
     try {
-      const response = await axios.get(`/api/study-rooms/${roomId}/files/${file.id}/versions`);
+      const response = await axios.get(`/api/v1/study-rooms/${roomId}/files/${file.id}/versions`);
       setSelectedFile({ ...file, versions: response.data });
       setVersionsDialogOpen(true);
     } catch (error) {

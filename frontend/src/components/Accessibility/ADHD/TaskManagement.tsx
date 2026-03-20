@@ -145,7 +145,7 @@ export const TaskManagement: React.FC = () => {
       if (categoryFilter !== 'all') {params.append('category_filter', categoryFilter);}
       if (quadrantFilter !== 'all') {params.append('quadrant_filter', quadrantFilter);}
 
-      const response = await fetch(`/api/adhd-support/tasks/list?${params}`, {
+      const response = await fetch(`/api/v1/adhd-support/tasks/list?${params}`, {
         credentials: 'include',
       });
 
@@ -162,7 +162,7 @@ export const TaskManagement: React.FC = () => {
 
   const fetchColorScheme = async () => {
     try {
-      const response = await fetch('/api/adhd-support/tasks/colors/scheme');
+      const response = await fetch('/api/v1/adhd-support/tasks/colors/scheme');
       if (!response.ok) {throw new Error('Renk şeması yüklenemedi');}
       const data = await response.json();
       setColorScheme(data);
@@ -173,7 +173,7 @@ export const TaskManagement: React.FC = () => {
 
   const fetchStats = async () => {
     try {
-      const response = await fetch('/api/adhd-support/tasks/stats/summary', {
+      const response = await fetch('/api/v1/adhd-support/tasks/stats/summary', {
         credentials: 'include',
       });
       if (!response.ok) {throw new Error('İstatistikler yüklenemedi');}
@@ -186,7 +186,7 @@ export const TaskManagement: React.FC = () => {
 
   const createTask = async () => {
     try {
-      const response = await fetch('/api/adhd-support/tasks/create', {
+      const response = await fetch('/api/v1/adhd-support/tasks/create', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -219,7 +219,7 @@ export const TaskManagement: React.FC = () => {
 
   const updateTaskStatus = async (taskId: string, newStatus: TaskStatus) => {
     try {
-      const response = await fetch(`/api/adhd-support/tasks/${taskId}`, {
+      const response = await fetch(`/api/v1/adhd-support/tasks/${taskId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -241,7 +241,7 @@ export const TaskManagement: React.FC = () => {
     if (!confirm('Bu görevi silmek istediğinizden emin misiniz?')) {return;}
 
     try {
-      const response = await fetch(`/api/adhd-support/tasks/${taskId}`, {
+      const response = await fetch(`/api/v1/adhd-support/tasks/${taskId}`, {
         method: 'DELETE',
         credentials: 'include',
       });

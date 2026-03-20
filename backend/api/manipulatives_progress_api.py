@@ -17,7 +17,7 @@ from models.database import (
 )
 from models.user_badge import UserBadge
 
-router = APIRouter(prefix="/api/manipulatives/progress", tags=["manipulatives-progress"])
+router = APIRouter(prefix="/api/v1/manipulatives/progress", tags=["manipulatives-progress"])
 
 
 # Pydantic Models

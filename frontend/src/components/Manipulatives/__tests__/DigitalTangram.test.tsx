@@ -102,7 +102,7 @@ describe('DigitalTangram - Puzzle Loading', () => {
   it('fetches puzzles on mount', async () => {
     render(<DigitalTangram />);
     await waitFor(() => {
-      expect(mockedAxios.get).toHaveBeenCalledWith('/api/manipulatives/tangram/puzzles');
+      expect(mockedAxios.get).toHaveBeenCalledWith('/api/v1/manipulatives/tangram/puzzles');
     });
   });
 
@@ -188,7 +188,7 @@ describe('DigitalTangram - Puzzle Control', () => {
 
     await waitFor(() => {
       expect(mockedAxios.post).toHaveBeenCalledWith(
-        '/api/manipulatives/tangram/puzzle',
+        '/api/v1/manipulatives/tangram/puzzle',
         expect.objectContaining({
           completed: false,
         })
