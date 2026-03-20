@@ -91,8 +91,8 @@ export function ModernSettingsPage() {
 
   const handleExportData = async () => {
     try {
-      const response = await fetch('/api/v1/user/export-data', {
-        method: 'POST',
+      const response = await fetch('/api/v1/users/export-data', {
+        method: 'GET',
         headers: {
           'Content-Type': 'application/json',
         },
@@ -162,7 +162,7 @@ export function ModernSettingsPage() {
     }
 
     try {
-      const response = await fetch('/api/v1/user/delete-account', {
+      const response = await fetch('/api/v1/users/delete-account', {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
