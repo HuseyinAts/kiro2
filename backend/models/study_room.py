@@ -4,26 +4,29 @@ Task 109: Group Study Rooms Models
 Database models for study rooms, members, chat, and file sharing.
 """
 
-from sqlalchemy import (
-    Column,
-    String,
-    Integer,
-    Float,
-    Boolean,
-    Text,
-    DateTime,
-    ForeignKey,
-    Enum as SQLEnum,
-    ARRAY,
-)
-from sqlalchemy.dialects.postgresql import UUID as PGUUID, JSONB
-from sqlalchemy.orm import relationship
 from datetime import datetime
-from uuid import uuid4
 from enum import Enum
+from uuid import uuid4
+
+from sqlalchemy import (
+    ARRAY,
+    Boolean,
+    Column,
+    DateTime,
+    Float,
+    ForeignKey,
+    Integer,
+    String,
+    Text,
+)
+from sqlalchemy import (
+    Enum as SQLEnum,
+)
+from sqlalchemy.dialects.postgresql import JSONB
+from sqlalchemy.dialects.postgresql import UUID as PGUUID
+from sqlalchemy.orm import relationship
 
 from .database import Base
-
 
 # ============================================================
 # Enumerations
@@ -458,6 +461,7 @@ class StudySession(Base):
     """
 
     __tablename__ = "study_sessions"
+    __table_args__ = {"extend_existing": True}
 
     id = Column(PGUUID(as_uuid=True), primary_key=True, default=uuid4)
     room_id = Column(PGUUID(as_uuid=True), ForeignKey("study_rooms.id"), nullable=False)

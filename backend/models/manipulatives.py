@@ -2,19 +2,22 @@
 Manipulatives database models
 REQ-51.101-51.105: Progress tracking, badges, achievements
 """
+
+from datetime import datetime
+
 from sqlalchemy import (
+    JSON,
+    Boolean,
     Column,
+    DateTime,
+    Float,
+    ForeignKey,
     Integer,
     String,
-    Float,
-    Boolean,
-    DateTime,
-    ForeignKey,
-    JSON,
     Text,
 )
 from sqlalchemy.orm import relationship
-from datetime import datetime
+
 from .base import Base
 
 
@@ -22,6 +25,7 @@ class ManipulativeProgress(Base):
     """Manipulative usage progress tracking"""
 
     __tablename__ = "manipulative_progress"
+    __table_args__ = {"extend_existing": True}
 
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False, index=True)
@@ -53,6 +57,7 @@ class ManipulativeActivity(Base):
     """Individual manipulative activity log"""
 
     __tablename__ = "manipulative_activities"
+    __table_args__ = {"extend_existing": True}
 
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False, index=True)
@@ -78,6 +83,7 @@ class UserBadge(Base):
     """User earned badges"""
 
     __tablename__ = "user_badges"
+    __table_args__ = {"extend_existing": True}
 
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False, index=True)
@@ -106,6 +112,7 @@ class WeeklyProgress(Base):
     """Weekly progress tracking"""
 
     __tablename__ = "weekly_progress"
+    __table_args__ = {"extend_existing": True}
 
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False, index=True)

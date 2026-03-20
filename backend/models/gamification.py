@@ -199,7 +199,10 @@ class UserBadge(Base):
     badge_id = Column(Integer, ForeignKey("badges.id"), nullable=False)
     earned_at = Column(DateTime(timezone=True), server_default=func.now())
 
-    __table_args__ = (UniqueConstraint("user_id", "badge_id"),)
+    __table_args__ = (
+        UniqueConstraint("user_id", "badge_id"),
+        {"extend_existing": True},
+    )
 
 
 # ---------------------------------------------------------------------------
