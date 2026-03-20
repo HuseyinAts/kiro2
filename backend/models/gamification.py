@@ -202,6 +202,9 @@ class UserBadge(Base):
     earned_at = Column(DateTime(timezone=True), server_default=func.now())
     auto_awarded = Column(Boolean, default=True)
 
+    # Relationships
+    user = relationship("User", back_populates="badges")
+
     __table_args__ = (
         UniqueConstraint("user_id", "badge_id"),
         {"extend_existing": True},
