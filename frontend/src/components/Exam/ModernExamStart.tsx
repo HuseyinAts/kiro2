@@ -85,6 +85,7 @@ export const ModernExamStart: React.FC<ModernExamStartProps> = ({
   const examDescription = examService.getExamTypeDescription(examType);
   const effectiveQuestionCount = sessionQuestionCount ?? examInfo.total_questions;
   const effectiveDuration = sessionDuration ?? examInfo.duration_minutes;
+  const isCustomExam = sessionQuestionCount != null;
 
   // Exam type configurations
   const examTypes = {
@@ -367,52 +368,56 @@ export const ModernExamStart: React.FC<ModernExamStartProps> = ({
                     </Box>
                   </Grid>
 
-                  <Grid item xs={12} sm={4}>
-                    <Box
-                      sx={{
-                        p: 2,
-                        background: modernColors.glass.white.light,
-                        borderRadius: '12px',
-                        textAlign: 'center',
-                      }}
-                    >
-                      <School sx={{ fontSize: 32, color: 'success.main', mb: 1 }} />
-                      <Typography variant="h5" fontWeight={800}>
-                        {currentExam.sections.length}
-                      </Typography>
-                      <Typography variant="body2" color="text.secondary">
-                        Bölüm
-                      </Typography>
-                    </Box>
-                  </Grid>
-                </Grid>
-
-                {/* Sections */}
-                <Box sx={{ mt: 3 }}>
-                  <Typography variant="h6" fontWeight={700} gutterBottom>
-                    Sınav Bölümleri
-                  </Typography>
-                  <List>
-                    {currentExam.sections.map((section, index) => (
-                      <ListItem
-                        key={index}
+                  {!isCustomExam && (
+                    <Grid item xs={12} sm={4}>
+                      <Box
                         sx={{
+                          p: 2,
                           background: modernColors.glass.white.light,
-                          borderRadius: '8px',
-                          mb: 1,
+                          borderRadius: '12px',
+                          textAlign: 'center',
                         }}
                       >
-                        <ListItemIcon>
-                          <CheckCircle sx={{ color: 'success.main' }} />
-                        </ListItemIcon>
-                        <ListItemText
-                          primary={section.name}
-                          secondary={`${section.count} soru`}
-                        />
-                      </ListItem>
-                    ))}
-                  </List>
-                </Box>
+                        <School sx={{ fontSize: 32, color: 'success.main', mb: 1 }} />
+                        <Typography variant="h5" fontWeight={800}>
+                          {currentExam.sections.length}
+                        </Typography>
+                        <Typography variant="body2" color="text.secondary">
+                          Bölüm
+                        </Typography>
+                      </Box>
+                    </Grid>
+                  )}
+                </Grid>
+
+                {/* Sections — custom exam'de statik bölüm dağılımı gösterilmez */}
+                {!isCustomExam && (
+                  <Box sx={{ mt: 3 }}>
+                    <Typography variant="h6" fontWeight={700} gutterBottom>
+                      Sınav Bölümleri
+                    </Typography>
+                    <List>
+                      {currentExam.sections.map((section, index) => (
+                        <ListItem
+                          key={index}
+                          sx={{
+                            background: modernColors.glass.white.light,
+                            borderRadius: '8px',
+                            mb: 1,
+                          }}
+                        >
+                          <ListItemIcon>
+                            <CheckCircle sx={{ color: 'success.main' }} />
+                          </ListItemIcon>
+                          <ListItemText
+                            primary={section.name}
+                            secondary={`${section.count} soru`}
+                          />
+                        </ListItem>
+                      ))}
+                    </List>
+                  </Box>
+                )}
               </GlassCard>
             </Grid>
 

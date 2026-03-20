@@ -180,11 +180,11 @@ self.addEventListener('activate', (event) => {
         await self.registration.navigationPreload.enable();
       }
 
-      // Clean up old caches
+      // Clean up old offline caches only (Workbox caches are managed by Workbox)
       const cacheNames = await caches.keys();
       await Promise.all(
         cacheNames
-          .filter(name => name !== CACHE_NAME)
+          .filter(name => name.startsWith('offline-') && name !== CACHE_NAME)
           .map(name => caches.delete(name)),
       );
     })(),

@@ -117,6 +117,10 @@ function AppContent() {
               if (newWorker) {
                 newWorker.addEventListener('statechange', () => {
                   if (newWorker.state === 'activated' && navigator.serviceWorker.controller) {
+                    // Sonsuz döngü koruması: 10s içinde tekrar reload engelle
+                    const lastReload = sessionStorage.getItem('sw-reload-ts');
+                    if (lastReload && Date.now() - Number(lastReload) < 10000) return;
+                    sessionStorage.setItem('sw-reload-ts', String(Date.now()));
                     window.location.reload();
                   }
                 });
