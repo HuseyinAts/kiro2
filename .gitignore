@@ -274,3 +274,21 @@ backend/coverage_*_report_*.txt
 
 # Hook temp files
 .claude/hooks/.typecheck_*
+
+# Debug/temp output
+backend/debug_out/
+backend/scripts/benchmark_results.json
+backend/core/*.bak_*
+backend/_scripts/
+frontend/cookies.txt
+
+# Screenshots (non-code, keep only frontend assets)
+docs/research/page*_preview.png
+learning-path-current.png
+mvp-review-*.png
+
+# Worktrees
+.claude/worktrees/
+
+# Dataset working files
+veriseti/
