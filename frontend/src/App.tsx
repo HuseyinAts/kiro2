@@ -85,6 +85,9 @@ const PlacementAssessmentPage = lazy(() => import('./pages/PlacementAssessmentPa
 
 // FAZ-5: Realm Map
 const RealmPage = lazy(() => import('./pages/RealmPage'));
+
+// Labs: Revolutionary Features (experimental)
+const RevolutionaryDashboard = lazy(() => import('./components/Revolutionary/RevolutionaryDashboard'));
 // Optimize edilmiş QueryClient
 const queryClient = createOptimizedQueryClient();
 
@@ -436,6 +439,16 @@ function AppContent() {
                 element={
                   <ProtectedRoute requiredRoles={['admin']}>
                     <ABTestResultsPage />
+                  </ProtectedRoute>
+                }
+              />
+
+              {/* Labs: Experimental Features */}
+              <Route
+                path="/admin/labs"
+                element={
+                  <ProtectedRoute requiredRoles={['admin']}>
+                    <RevolutionaryDashboard studentId="demo" />
                   </ProtectedRoute>
                 }
               />

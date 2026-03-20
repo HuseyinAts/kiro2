@@ -39,6 +39,16 @@ SOZEL_SUBJECTS: frozenset[str] = frozenset(
     {"turkce", "tarih", "edebiyat", "felsefe", "din"}
 )
 
+# SubjectArea enum'unda olmayan slug'lari gecerli bir degere esle
+_SUBJECT_AREA_MAP: dict[str, str] = {
+    "tarih": "sosyal",
+    "edebiyat": "turkce",
+    "felsefe": "sosyal",
+    "din": "sosyal",
+    "cografya": "sosyal",
+    "geometri": "matematik",
+}
+
 
 def get_params(subject_slug: str) -> dict[str, float]:
     """Konuya gore BKT parametrelerini dondur."""
@@ -236,7 +246,7 @@ class BKTService:
         except Exception as e:
             logger.warning("BKT DB yazma hatasi: %s", e)
 
-        # --- 2. IRT theta tahmini (basit EAP) ---
+        # --- 2. IRT theta tahmini (BKT-linked) ---
         theta_after = 0.0
         theta_se = 1.0
         try:
@@ -246,22 +256,80 @@ class BKTService:
                 theta_after, theta_se = IRTService3PL.eap_theta(
                     answered_questions, responses
                 )
+            else:
+                # BKT -> IRT bridge: p_L'den theta tureti (fallback)
+                # p_L [0,1] -> theta [-4,4] lineer donusum
+                clamped = max(0.05, min(0.95, new_p_L))
+                theta_after = (clamped - 0.5) * 8.0  # 0.05->-3.6, 0.5->0, 0.95->3.6
+                theta_se = max(
+                    0.3, 1.0 - new_p_L
+                )  # daha yuksek mastery = daha dusuk SE
         except Exception as e:
             logger.debug("IRT theta guncelleme atildi: %s", e)
 
-        # --- 3. FSRS karti guncelle ---
+        # --- 3. FSRS karti guncelle (state persistent) ---
         fsrs_next_review = None
         try:
+            from sqlalchemy import select as sa_select
+
+            from models.fsrs_models import FSRSCard
             from services.fsrs_v6_service import FSRSService
 
+            # Mevcut FSRS karti oku (student_id + topic_id)
+            fsrs_stmt = sa_select(FSRSCard).where(
+                FSRSCard.student_id == student_id,
+                FSRSCard.topic == topic_id,
+            )
+            fsrs_row = await db.execute(fsrs_stmt)
+            fsrs_card = fsrs_row.scalar_one_or_none()
+
+            # Mevcut state'i al veya default
+            prev_stability = fsrs_card.stability if fsrs_card else None
+            prev_difficulty = fsrs_card.difficulty if fsrs_card else None
+            prev_due = fsrs_card.due_date if fsrs_card else None
+            prev_reps = fsrs_card.reps if fsrs_card else 0
+
             fsrs_result = FSRSService.review_card(
-                stability=None,
-                difficulty=None,
-                due_date=None,
+                stability=prev_stability,
+                difficulty=prev_difficulty,
+                due_date=prev_due,
                 rating_int=rating,
-                reps=0,
+                reps=prev_reps,
             )
             fsrs_next_review = fsrs_result.get("due_date")
+
+            # State'i DB'ye yaz
+            if fsrs_card is None:
+                fsrs_card = FSRSCard(
+                    student_id=student_id,
+                    front_text=f"Topic: {topic_id}",
+                    back_text=f"BKT p_L: {new_p_L:.3f}",
+                    subject_area=_SUBJECT_AREA_MAP.get(
+                        subject_slug.lower(), subject_slug.lower()
+                    )
+                    if subject_slug
+                    else "matematik",
+                    topic=topic_id,
+                    stability=fsrs_result.get("stability", 0.0),
+                    difficulty=fsrs_result.get("difficulty", 0.0),
+                    reps=fsrs_result.get("reps", 1),
+                    lapses=fsrs_result.get("lapses", 0),
+                    state=fsrs_result.get("state", "new"),
+                    due_date=fsrs_next_review or datetime.now(UTC),
+                    last_review=datetime.now(UTC),
+                )
+                db.add(fsrs_card)
+            else:
+                fsrs_card.stability = fsrs_result.get("stability", fsrs_card.stability)
+                fsrs_card.difficulty = fsrs_result.get(
+                    "difficulty", fsrs_card.difficulty
+                )
+                fsrs_card.reps = fsrs_result.get("reps", fsrs_card.reps)
+                fsrs_card.lapses = fsrs_result.get("lapses", fsrs_card.lapses)
+                fsrs_card.state = fsrs_result.get("state", fsrs_card.state)
+                fsrs_card.due_date = fsrs_next_review or fsrs_card.due_date
+                fsrs_card.last_review = datetime.now(UTC)
+            await db.flush()
         except Exception as e:
             logger.debug("FSRS guncelleme atildi: %s", e)
 
