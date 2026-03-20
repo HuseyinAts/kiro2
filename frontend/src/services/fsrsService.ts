@@ -118,8 +118,8 @@ class FSRSService {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
         },
+        credentials: 'include',
         body: JSON.stringify({
           student_id: studentId,
           ...request,
@@ -158,8 +158,8 @@ class FSRSService {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
         },
+        credentials: 'include',
         body: JSON.stringify({
           student_id: studentId,
           grade: request.grade,
@@ -199,9 +199,7 @@ class FSRSService {
         `${this.baseUrl}/cards/due?student_id=${studentId}&limit=${limit}`,
         {
           method: 'GET',
-          headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`,
-          },
+          credentials: 'include',
         },
       );
 
@@ -236,9 +234,7 @@ class FSRSService {
         `${this.baseUrl}/recommendations?student_id=${studentId}`,
         {
           method: 'GET',
-          headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`,
-          },
+          credentials: 'include',
         },
       );
 
@@ -273,9 +269,7 @@ class FSRSService {
         `${this.baseUrl}/statistics?student_id=${studentId}`,
         {
           method: 'GET',
-          headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`,
-          },
+          credentials: 'include',
         },
       );
 
@@ -311,8 +305,8 @@ class FSRSService {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
         },
+        credentials: 'include',
         body: JSON.stringify({
           student_id: studentId,
           session_type: sessionType,
@@ -346,9 +340,7 @@ class FSRSService {
     try {
       const response = await fetch(`${this.baseUrl}/sessions/${sessionId}/end`, {
         method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
-        },
+        credentials: 'include',
       });
 
       if (!response.ok) {
@@ -384,8 +376,8 @@ class FSRSService {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
         },
+        credentials: 'include',
         body: JSON.stringify({
           student_id: studentId,
           grade: grade,

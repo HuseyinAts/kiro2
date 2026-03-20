@@ -66,8 +66,8 @@ export function ModernTeacherClassesPage() {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
         },
+        credentials: 'include',
       });
 
       if (!response.ok) {
@@ -101,8 +101,8 @@ export function ModernTeacherClassesPage() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
         },
+        credentials: 'include',
         body: JSON.stringify(newClass),
       });
 

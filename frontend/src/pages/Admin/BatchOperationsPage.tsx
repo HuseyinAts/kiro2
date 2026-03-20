@@ -112,10 +112,9 @@ export function BatchOperationsPage() {
   const loadQueueStats = async () => {
     try {
       const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
-      const token = localStorage.getItem('token');
 
       const response = await fetch(`${API_URL}/api/batch/queue/stats`, {
-        headers: { 'Authorization': `Bearer ${token}` },
+        credentials: 'include',
       });
 
       if (response.ok) {
@@ -133,7 +132,6 @@ export function BatchOperationsPage() {
       setError(null);
 
       const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
-      const token = localStorage.getItem('token');
 
       const requestBody: BatchRequest = {
         batch_size: batchSize,
@@ -150,9 +148,9 @@ export function BatchOperationsPage() {
       const response = await fetch(`${API_URL}/api/batch/generate`, {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
+        credentials: 'include',
         body: JSON.stringify(requestBody),
       });
 
@@ -175,10 +173,9 @@ export function BatchOperationsPage() {
   const checkJobStatus = async (taskId: string) => {
     try {
       const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
-      const token = localStorage.getItem('token');
 
       const response = await fetch(`${API_URL}/api/batch/status/${taskId}`, {
-        headers: { 'Authorization': `Bearer ${token}` },
+        credentials: 'include',
       });
 
       if (response.ok) {
@@ -199,11 +196,10 @@ export function BatchOperationsPage() {
 
     try {
       const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
-      const token = localStorage.getItem('token');
 
       const response = await fetch(`${API_URL}/api/batch/cancel/${taskId}`, {
         method: 'DELETE',
-        headers: { 'Authorization': `Bearer ${token}` },
+        credentials: 'include',
       });
 
       if (response.ok) {

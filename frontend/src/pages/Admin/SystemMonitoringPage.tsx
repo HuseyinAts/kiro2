@@ -114,24 +114,23 @@ export function SystemMonitoringPage() {
       setError(null);
 
       const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
-      const token = localStorage.getItem('token');
 
       // Load all monitoring data in parallel
       const [healthRes, apiPerfRes, dbPerfRes, sysPerfRes, bottlenecksRes] = await Promise.allSettled([
         fetch(`${API_URL}/api/v1/monitoring/health`, {
-          headers: { 'Authorization': `Bearer ${token}` },
+          credentials: 'include',
         }),
         fetch(`${API_URL}/api/v1/monitoring/performance/api?hours=1`, {
-          headers: { 'Authorization': `Bearer ${token}` },
+          credentials: 'include',
         }),
         fetch(`${API_URL}/api/v1/monitoring/performance/database?hours=1`, {
-          headers: { 'Authorization': `Bearer ${token}` },
+          credentials: 'include',
         }),
         fetch(`${API_URL}/api/v1/monitoring/performance/system?hours=1`, {
-          headers: { 'Authorization': `Bearer ${token}` },
+          credentials: 'include',
         }),
         fetch(`${API_URL}/api/v1/monitoring/bottlenecks`, {
-          headers: { 'Authorization': `Bearer ${token}` },
+          credentials: 'include',
         }),
       ]);
 
@@ -171,12 +170,11 @@ export function SystemMonitoringPage() {
   const handleToggleMonitoring = async (start: boolean) => {
     try {
       const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
-      const token = localStorage.getItem('token');
 
       const endpoint = start ? 'start' : 'stop';
       const response = await fetch(`${API_URL}/api/v1/monitoring/monitoring/${endpoint}`, {
         method: 'POST',
-        headers: { 'Authorization': `Bearer ${token}` },
+        credentials: 'include',
       });
 
       if (response.ok) {

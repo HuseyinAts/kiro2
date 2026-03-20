@@ -75,9 +75,7 @@ class CulturalAdaptationService {
         `${this.baseUrl}/student/${studentId}?${params}`,
         {
           method: 'GET',
-          headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`,
-          },
+          credentials: 'include',
         },
       );
 
@@ -113,8 +111,8 @@ class CulturalAdaptationService {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
         },
+        credentials: 'include',
         body: JSON.stringify(behavioralUpdate),
       });
 
@@ -150,8 +148,8 @@ class CulturalAdaptationService {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
         },
+        credentials: 'include',
         body: JSON.stringify({
           student_id: studentId,
           behavioral_data: behavioralData,
@@ -190,8 +188,8 @@ class CulturalAdaptationService {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
         },
+        credentials: 'include',
         body: JSON.stringify({
           cultural_factors: culturalFactors,
         }),
@@ -224,9 +222,7 @@ class CulturalAdaptationService {
     try {
       const response = await fetch(`${this.baseUrl}/current-period`, {
         method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
-        },
+        credentials: 'include',
       });
 
       if (!response.ok) {
@@ -256,9 +252,7 @@ class CulturalAdaptationService {
     try {
       const response = await fetch(`${this.baseUrl}/regional-culture/${region}`, {
         method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
-        },
+        credentials: 'include',
       });
 
       if (!response.ok) {
@@ -298,9 +292,7 @@ class CulturalAdaptationService {
         `${this.baseUrl}/student/${studentId}/recommendations?${params}`,
         {
           method: 'GET',
-          headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`,
-          },
+          credentials: 'include',
         },
       );
 
@@ -336,9 +328,7 @@ class CulturalAdaptationService {
         `${this.baseUrl}/student/${studentId}/history?limit=${limit}`,
         {
           method: 'GET',
-          headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`,
-          },
+          credentials: 'include',
         },
       );
 

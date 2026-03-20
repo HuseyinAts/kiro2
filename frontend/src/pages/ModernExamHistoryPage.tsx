@@ -59,8 +59,8 @@ export const ModernExamHistoryPage: React.FC = () => {
 
   const fetchExamHistory = async () => {
     try {
-      const response = await fetch('/api/v1/exams/history', {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+      const response = await fetch('/api/v1/osym-exam/my-exams', {
+        credentials: 'include',
       });
       if (!response.ok) {throw new Error();}
       const data = await response.json();

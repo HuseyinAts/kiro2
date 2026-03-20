@@ -114,9 +114,9 @@ export const ContentManagement: React.FC = () => {
 
       const response = await fetch('/api/v1/admin/content/questions', {
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
           'Content-Type': 'application/json',
         },
+        credentials: 'include',
       });
 
       if (!response.ok) {
@@ -164,9 +164,9 @@ export const ContentManagement: React.FC = () => {
 
       const response = await fetch('/api/v1/admin/content/educational', {
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
           'Content-Type': 'application/json',
         },
+        credentials: 'include',
       });
 
       if (!response.ok) {
@@ -215,9 +215,9 @@ export const ContentManagement: React.FC = () => {
       const response = await fetch('/api/v1/admin/content/questions', {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
           'Content-Type': 'application/json',
         },
+        credentials: 'include',
         body: JSON.stringify(questionForm),
       });
 
@@ -245,9 +245,9 @@ export const ContentManagement: React.FC = () => {
       const response = await fetch('/api/v1/admin/content/educational', {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
           'Content-Type': 'application/json',
         },
+        credentials: 'include',
         body: JSON.stringify(contentForm),
       });
 
@@ -274,9 +274,7 @@ export const ContentManagement: React.FC = () => {
     try {
       const response = await fetch(`/api/v1/admin/content/questions/${questionId}/approve`, {
         method: 'PUT',
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
-        },
+        credentials: 'include',
       });
 
       if (!response.ok) {
@@ -294,9 +292,7 @@ export const ContentManagement: React.FC = () => {
     try {
       const response = await fetch(`/api/v1/admin/content/questions/${questionId}/reject`, {
         method: 'PUT',
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
-        },
+        credentials: 'include',
       });
 
       if (!response.ok) {

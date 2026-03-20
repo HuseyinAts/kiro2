@@ -51,9 +51,7 @@ export const useBionicReading = (options: UseBionicReadingOptions = {}) => {
 
     try {
       const response = await fetch('/api/v1/bionic-reading/preferences', {
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
-        },
+        credentials: 'include',
       });
 
       if (response.ok) {
@@ -95,8 +93,8 @@ export const useBionicReading = (options: UseBionicReadingOptions = {}) => {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
         },
+        credentials: 'include',
         body: JSON.stringify(preferences),
       });
     } catch (error) {
@@ -127,8 +125,8 @@ export const useBionicReading = (options: UseBionicReadingOptions = {}) => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
         },
+        credentials: 'include',
         body: JSON.stringify({
           text: text,
           use_cache: true,

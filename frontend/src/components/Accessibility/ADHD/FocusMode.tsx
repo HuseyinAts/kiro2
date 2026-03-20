@@ -72,9 +72,7 @@ const FocusMode: React.FC<FocusModeProps> = ({
     setIsLoading(true);
     try {
       const response = await fetch(`/api/adhd-support/focus-mode/task/${taskId}`, {
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
-        },
+        credentials: 'include',
       });
 
       if (!response.ok) {
@@ -119,8 +117,8 @@ const FocusMode: React.FC<FocusModeProps> = ({
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
         },
+        credentials: 'include',
         body: JSON.stringify({
           task_id: taskId,
           settings,
@@ -155,8 +153,8 @@ const FocusMode: React.FC<FocusModeProps> = ({
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
         },
+        credentials: 'include',
         body: JSON.stringify({
           task_id: taskId,
           elapsed_seconds: elapsedSeconds,

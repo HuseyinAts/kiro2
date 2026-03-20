@@ -74,9 +74,9 @@ export const TaskProgressVisualization: React.FC<TaskProgressVisualizationProps>
 
       const response = await fetch(`/api/adhd-task-management/tasks/${taskId}/progress`, {
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
           'Content-Type': 'application/json',
         },
+        credentials: 'include',
       });
 
       if (!response.ok) {

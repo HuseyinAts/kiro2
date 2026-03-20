@@ -95,8 +95,8 @@ export function ModernSettingsPage() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
         },
+        credentials: 'include',
       });
 
       if (!response.ok) {
@@ -125,12 +125,12 @@ export function ModernSettingsPage() {
       localStorage.removeItem('api_cache');
       sessionStorage.clear();
 
-      const response = await fetch('/api/v1/user/clear-cache', {
+      const response = await fetch('/api/v1/performance/clear-cache', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
         },
+        credentials: 'include',
       });
 
       if (!response.ok) {
@@ -166,8 +166,8 @@ export function ModernSettingsPage() {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
         },
+        credentials: 'include',
       });
 
       if (!response.ok) {

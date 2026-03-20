@@ -60,13 +60,12 @@ const TeacherNotifications: React.FC = () => {
   const fetchNotifications = async () => {
     try {
       setLoading(true);
-      const token = localStorage.getItem('token');
 
       const response = await fetch('/api/v1/ogretmen/bildirimler?limit=50', {
         headers: {
-          'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
+        credentials: 'include',
       });
 
       if (!response.ok) {
@@ -95,14 +94,13 @@ const TeacherNotifications: React.FC = () => {
     try {
       setSendingNotification(true);
       setError(null);
-      const token = localStorage.getItem('token');
 
       const response = await fetch('/api/v1/ogretmen/bildirim', {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
+        credentials: 'include',
         body: JSON.stringify(newNotification),
       });
 
@@ -134,14 +132,12 @@ const TeacherNotifications: React.FC = () => {
 
   const markAsRead = async (notificationId: string) => {
     try {
-      const token = localStorage.getItem('token');
-
       const response = await fetch(`/api/v1/ogretmen/bildirim/${notificationId}/okundu`, {
         method: 'PUT',
         headers: {
-          'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
+        credentials: 'include',
       });
 
       if (response.ok) {

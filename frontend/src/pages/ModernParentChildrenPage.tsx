@@ -58,8 +58,8 @@ export function ModernParentChildrenPage() {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
         },
+        credentials: 'include',
       });
 
       if (!response.ok) {
@@ -97,12 +97,12 @@ export function ModernParentChildrenPage() {
 
   const loadWeeklyReports = async (childId: string) => {
     try {
-      const response = await fetch(`/api/v1/parent/children/${childId}/weekly-reports`, {
+      const response = await fetch(`/api/v1/parent/children/${childId}/weekly-report`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
         },
+        credentials: 'include',
       });
 
       if (!response.ok) {

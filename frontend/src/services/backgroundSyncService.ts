@@ -186,8 +186,8 @@ class BackgroundSyncService {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${this.getAuthToken()}`,
           },
+          credentials: 'include',
           body: JSON.stringify({
             sessionId: session.id,
             questions: session.questions.map((q: any) => q.id),
@@ -237,8 +237,8 @@ class BackgroundSyncService {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${this.getAuthToken()}`,
           },
+          credentials: 'include',
           body: JSON.stringify({
             noteId: note.id,
             title: note.title,
@@ -286,8 +286,8 @@ class BackgroundSyncService {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${this.getAuthToken()}`,
           },
+          credentials: 'include',
           body: JSON.stringify({
             userId: progress.userId,
             subject: progress.subject,
@@ -354,13 +354,7 @@ class BackgroundSyncService {
     }
   }
 
-  /**
-   * Auth token'ı al
-   */
-  private getAuthToken(): string {
-    // localStorage'dan token al
-    return localStorage.getItem('auth-token') || '';
-  }
+  // Auth is handled via httpOnly cookies (credentials: 'include')
 
   /**
    * Senkronizasyon durumunu al

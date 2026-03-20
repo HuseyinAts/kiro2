@@ -177,13 +177,12 @@ const StudentList: React.FC = () => {
   const fetchStudentList = async () => {
     try {
       setLoading(true);
-      const token = localStorage.getItem('token');
 
       const response = await fetch(`/api/v1/ogretmen/ogrenciler?sayfa=${currentPage}&limit=20`, {
         headers: {
-          'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
+        credentials: 'include',
       });
 
       if (!response.ok) {
@@ -206,13 +205,11 @@ const StudentList: React.FC = () => {
   // Memoized callback to prevent unnecessary re-renders of StudentListItem
   const viewStudentDetails = useCallback(async (studentId: string) => {
     try {
-      const token = localStorage.getItem('token');
-
       const response = await fetch(`/api/v1/ogretmen/ogrenci/${studentId}/performans`, {
         headers: {
-          'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
+        credentials: 'include',
       });
 
       if (!response.ok) {

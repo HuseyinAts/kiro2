@@ -36,8 +36,8 @@ class RevolutionaryFeaturesService {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
         },
+        credentials: 'include',
       });
 
       if (!response.ok) {
@@ -104,8 +104,8 @@ class RevolutionaryFeaturesService {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
         },
+        credentials: 'include',
       });
 
       if (!response.ok) {
@@ -176,8 +176,8 @@ class RevolutionaryFeaturesService {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
         },
+        credentials: 'include',
         body: JSON.stringify({
           text: text,
           use_cache: true,
@@ -230,9 +230,7 @@ class RevolutionaryFeaturesService {
   async getBionicReadingPreferences(_studentId: string): Promise<any> {
     try {
       const response = await fetch(`${this.baseUrl}/bionic-reading/preferences`, {
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
-        },
+        credentials: 'include',
       });
 
       if (!response.ok) {
@@ -268,8 +266,8 @@ class RevolutionaryFeaturesService {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
         },
+        credentials: 'include',
         body: JSON.stringify(preferences),
       });
 
@@ -295,8 +293,8 @@ class RevolutionaryFeaturesService {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
         },
+        credentials: 'include',
         body: JSON.stringify({
           texts: texts,
           use_cache: true,
@@ -673,8 +671,8 @@ class RevolutionaryFeaturesService {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
         },
+        credentials: 'include',
       });
 
       if (!response.ok) {
@@ -727,8 +725,8 @@ class RevolutionaryFeaturesService {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
         },
+        credentials: 'include',
         body: JSON.stringify(settings),
       });
 
@@ -802,9 +800,7 @@ class RevolutionaryFeaturesService {
       if (params?.examType) {queryParams.append('exam_type', params.examType);}
 
       const response = await fetch(`${this.baseUrl}/irt/statistics?${queryParams}`, {
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
-        },
+        credentials: 'include',
       });
 
       if (!response.ok) {
@@ -842,9 +838,7 @@ class RevolutionaryFeaturesService {
         : `${this.baseUrl}/quality/report`;
 
       const response = await fetch(url, {
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
-        },
+        credentials: 'include',
       });
 
       if (!response.ok) {
@@ -881,9 +875,7 @@ class RevolutionaryFeaturesService {
   async quickQuestionEvaluation(questionId: string): Promise<QuickQuestionEvaluation> {
     try {
       const response = await fetch(`${this.baseUrl}/questions/${questionId}/quick-evaluation`, {
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
-        },
+        credentials: 'include',
       });
 
       if (!response.ok) {

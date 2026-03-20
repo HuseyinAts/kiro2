@@ -109,7 +109,6 @@ export function BionicReadingPage() {
   const [showStatsDialog, setShowStatsDialog] = useState(false);
 
   const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
-  const token = localStorage.getItem('token');
   const userRole = localStorage.getItem('role');
 
   // Sample texts for demo
@@ -128,7 +127,7 @@ export function BionicReadingPage() {
       setPreferencesLoading(true);
 
       const response = await fetch(`${API_URL}/api/v1/bionic-reading/preferences`, {
-        headers: { 'Authorization': `Bearer ${token}` },
+        credentials: 'include',
       });
 
       if (response.ok) {
@@ -157,9 +156,9 @@ export function BionicReadingPage() {
       const response = await fetch(`${API_URL}/api/v1/bionic-reading/process`, {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
+        credentials: 'include',
         body: JSON.stringify({
           text: inputText,
           use_cache: true,
@@ -190,9 +189,9 @@ export function BionicReadingPage() {
       const response = await fetch(`${API_URL}/api/v1/bionic-reading/preferences`, {
         method: 'PUT',
         headers: {
-          'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
+        credentials: 'include',
         body: JSON.stringify(preferences),
       });
 
@@ -219,7 +218,7 @@ export function BionicReadingPage() {
       setLoading(true);
 
       const response = await fetch(`${API_URL}/api/v1/bionic-reading/stats`, {
-        headers: { 'Authorization': `Bearer ${token}` },
+        credentials: 'include',
       });
 
       if (response.ok) {

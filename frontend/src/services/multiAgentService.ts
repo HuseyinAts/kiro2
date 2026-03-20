@@ -81,8 +81,8 @@ class MultiAgentService {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
         },
+        credentials: 'include',
         body: JSON.stringify(request),
       });
 
@@ -113,9 +113,7 @@ class MultiAgentService {
     try {
       const response = await fetch(`${this.baseUrl}/read/${encodeURIComponent(key)}`, {
         method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
-        },
+        credentials: 'include',
       });
 
       if (!response.ok) {
@@ -145,9 +143,7 @@ class MultiAgentService {
     try {
       const response = await fetch(`${this.baseUrl}/delete/${encodeURIComponent(key)}`, {
         method: 'DELETE',
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
-        },
+        credentials: 'include',
       });
 
       if (!response.ok) {
@@ -179,8 +175,8 @@ class MultiAgentService {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
         },
+        credentials: 'include',
         body: JSON.stringify(request),
       });
 
@@ -213,8 +209,8 @@ class MultiAgentService {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
         },
+        credentials: 'include',
         body: JSON.stringify(response),
       });
 
@@ -245,9 +241,7 @@ class MultiAgentService {
     try {
       const response = await fetch(`${this.baseUrl}/metrics`, {
         method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
-        },
+        credentials: 'include',
       });
 
       if (!response.ok) {
@@ -277,9 +271,7 @@ class MultiAgentService {
     try {
       const response = await fetch(`${this.baseUrl}/agents/status`, {
         method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
-        },
+        credentials: 'include',
       });
 
       if (!response.ok) {
@@ -325,9 +317,7 @@ class MultiAgentService {
 
       const response = await fetch(`${this.baseUrl}/events/history?${params}`, {
         method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
-        },
+        credentials: 'include',
       });
 
       if (!response.ok) {

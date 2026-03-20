@@ -112,19 +112,14 @@ export function CacheManagementPage() {
       setError(null);
 
       const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
-      const token = localStorage.getItem('token');
 
       // Load stats and health in parallel
       const [statsRes, healthRes] = await Promise.allSettled([
         fetch(`${API_URL}/api/v1/cache/stats`, {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-          },
+          credentials: 'include',
         }),
         fetch(`${API_URL}/api/v1/cache/health`, {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-          },
+          credentials: 'include',
         }),
       ]);
 
@@ -151,14 +146,13 @@ export function CacheManagementPage() {
 
     try {
       const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
-      const token = localStorage.getItem('token');
 
       const response = await fetch(`${API_URL}/api/v1/cache/invalidate/pattern`, {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
+        credentials: 'include',
         body: JSON.stringify({ pattern: invalidatePattern }),
       });
 
@@ -181,13 +175,10 @@ export function CacheManagementPage() {
 
     try {
       const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
-      const token = localStorage.getItem('token');
 
       const response = await fetch(`${API_URL}/api/v1/cache/exam`, {
         method: 'DELETE',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
+        credentials: 'include',
       });
 
       if (response.ok) {

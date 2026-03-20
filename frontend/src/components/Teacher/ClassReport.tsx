@@ -82,13 +82,12 @@ const ClassReport: React.FC = () => {
   const fetchSavedReports = async () => {
     try {
       setReportsLoading(true);
-      const token = localStorage.getItem('token');
 
       const response = await fetch('/api/v1/ogretmen/raporlar?limit=10', {
         headers: {
-          'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
+        credentials: 'include',
       });
 
       if (!response.ok) {
@@ -110,14 +109,13 @@ const ClassReport: React.FC = () => {
     try {
       setLoading(true);
       setError(null);
-      const token = localStorage.getItem('token');
 
       const response = await fetch('/api/v1/ogretmen/rapor/sinif', {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
+        credentials: 'include',
         body: JSON.stringify(reportParams),
       });
 
@@ -142,13 +140,12 @@ const ClassReport: React.FC = () => {
   const loadSavedReport = async (reportId: string) => {
     try {
       setLoading(true);
-      const token = localStorage.getItem('token');
 
       const response = await fetch(`/api/v1/ogretmen/rapor/${reportId}`, {
         headers: {
-          'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
+        credentials: 'include',
       });
 
       if (!response.ok) {

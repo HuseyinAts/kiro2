@@ -144,11 +144,12 @@ interface NotificationData {
 }
 
 class TeacherService {
-  private getAuthHeaders(): HeadersInit {
-    const token = localStorage.getItem('token');
+  private getRequestInit(): RequestInit {
     return {
-      'Authorization': `Bearer ${token}`,
-      'Content-Type': 'application/json',
+      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json',
+      },
     };
   }
 
@@ -173,7 +174,7 @@ class TeacherService {
   async getDashboardData(): Promise<DashboardData> {
     const response = await fetch(`${API_BASE_URL}/dashboard`, {
       method: 'GET',
-      headers: this.getAuthHeaders(),
+      ...this.getRequestInit(),
     });
 
     return this.handleResponse<DashboardData>(response);
@@ -185,7 +186,7 @@ class TeacherService {
   async getStudentList(page: number = 1, limit: number = 20): Promise<StudentListData> {
     const response = await fetch(`${API_BASE_URL}/ogrenciler?sayfa=${page}&limit=${limit}`, {
       method: 'GET',
-      headers: this.getAuthHeaders(),
+      ...this.getRequestInit(),
     });
 
     return this.handleResponse<StudentListData>(response);
@@ -197,7 +198,7 @@ class TeacherService {
   async getStudentDetailPerformance(studentId: string): Promise<StudentDetailPerformance> {
     const response = await fetch(`${API_BASE_URL}/ogrenci/${studentId}/performans`, {
       method: 'GET',
-      headers: this.getAuthHeaders(),
+      ...this.getRequestInit(),
     });
 
     return this.handleResponse<StudentDetailPerformance>(response);
@@ -209,7 +210,7 @@ class TeacherService {
   async createClassReport(params: ReportParams): Promise<ClassReport> {
     const response = await fetch(`${API_BASE_URL}/rapor/sinif`, {
       method: 'POST',
-      headers: this.getAuthHeaders(),
+      ...this.getRequestInit(),
       body: JSON.stringify(params),
     });
 
@@ -222,7 +223,7 @@ class TeacherService {
   async getSavedReports(limit: number = 10): Promise<{ raporlar: ClassReport[]; toplam_rapor: number }> {
     const response = await fetch(`${API_BASE_URL}/raporlar?limit=${limit}`, {
       method: 'GET',
-      headers: this.getAuthHeaders(),
+      ...this.getRequestInit(),
     });
 
     return this.handleResponse<{ raporlar: ClassReport[]; toplam_rapor: number }>(response);
@@ -234,7 +235,7 @@ class TeacherService {
   async getReportDetail(reportId: string): Promise<ClassReport> {
     const response = await fetch(`${API_BASE_URL}/rapor/${reportId}`, {
       method: 'GET',
-      headers: this.getAuthHeaders(),
+      ...this.getRequestInit(),
     });
 
     return this.handleResponse<ClassReport>(response);
@@ -246,7 +247,7 @@ class TeacherService {
   async sendNotification(notification: NewNotification): Promise<void> {
     const response = await fetch(`${API_BASE_URL}/bildirim`, {
       method: 'POST',
-      headers: this.getAuthHeaders(),
+      ...this.getRequestInit(),
       body: JSON.stringify(notification),
     });
 
@@ -259,7 +260,7 @@ class TeacherService {
   async getNotifications(limit: number = 20): Promise<NotificationData> {
     const response = await fetch(`${API_BASE_URL}/bildirimler?limit=${limit}`, {
       method: 'GET',
-      headers: this.getAuthHeaders(),
+      ...this.getRequestInit(),
     });
 
     return this.handleResponse<NotificationData>(response);
@@ -294,7 +295,7 @@ class TeacherService {
   }> {
     const response = await fetch(`${API_BASE_URL}/istatistikler?gun_sayisi=${days}`, {
       method: 'GET',
-      headers: this.getAuthHeaders(),
+      ...this.getRequestInit(),
     });
 
     return this.handleResponse<{

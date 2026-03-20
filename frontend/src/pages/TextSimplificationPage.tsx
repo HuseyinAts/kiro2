@@ -121,7 +121,6 @@ export function TextSimplificationPage() {
   const [fleschResult, setFleschResult] = useState<FleschResult | null>(null);
 
   const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8001';
-  const token = localStorage.getItem('token');
 
   // Sample texts for demo
   const sampleTexts = {
@@ -143,9 +142,9 @@ export function TextSimplificationPage() {
       const response = await fetch(`${API_URL}/api/v1/text-simplification/detect-complex-words`, {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
+        credentials: 'include',
         body: JSON.stringify({
           text: inputText,
           complexity_threshold: complexityThreshold,
@@ -179,9 +178,9 @@ export function TextSimplificationPage() {
       const response = await fetch(`${API_URL}/api/v1/text-simplification/simplify`, {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
+        credentials: 'include',
         body: JSON.stringify({
           text: inputText,
           complexity_threshold: complexityThreshold,
@@ -219,9 +218,9 @@ export function TextSimplificationPage() {
       const response = await fetch(`${API_URL}/api/v1/text-simplification/flesch-score`, {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
+        credentials: 'include',
         body: JSON.stringify({
           text: inputText,
         }),

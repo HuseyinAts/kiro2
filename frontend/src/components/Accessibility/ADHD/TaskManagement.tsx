@@ -146,9 +146,7 @@ export const TaskManagement: React.FC = () => {
       if (quadrantFilter !== 'all') {params.append('quadrant_filter', quadrantFilter);}
 
       const response = await fetch(`/api/adhd-support/tasks/list?${params}`, {
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
-        },
+        credentials: 'include',
       });
 
       if (!response.ok) {throw new Error('Görevler yüklenemedi');}
@@ -176,9 +174,7 @@ export const TaskManagement: React.FC = () => {
   const fetchStats = async () => {
     try {
       const response = await fetch('/api/adhd-support/tasks/stats/summary', {
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
-        },
+        credentials: 'include',
       });
       if (!response.ok) {throw new Error('İstatistikler yüklenemedi');}
       const data = await response.json();
@@ -194,8 +190,8 @@ export const TaskManagement: React.FC = () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
         },
+        credentials: 'include',
         body: JSON.stringify(newTask),
       });
 
@@ -227,8 +223,8 @@ export const TaskManagement: React.FC = () => {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
         },
+        credentials: 'include',
         body: JSON.stringify({ status: newStatus }),
       });
 
@@ -247,9 +243,7 @@ export const TaskManagement: React.FC = () => {
     try {
       const response = await fetch(`/api/adhd-support/tasks/${taskId}`, {
         method: 'DELETE',
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
-        },
+        credentials: 'include',
       });
 
       if (!response.ok) {throw new Error('Görev silinemedi');}

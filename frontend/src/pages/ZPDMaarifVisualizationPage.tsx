@@ -141,7 +141,6 @@ export function ZPDMaarifVisualizationPage() {
   const [showMaarifDialog, setShowMaarifDialog] = useState(false);
 
   const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8001';
-  const token = localStorage.getItem('token');
 
   useEffect(() => {
     loadProfiles();
@@ -153,10 +152,10 @@ export function ZPDMaarifVisualizationPage() {
 
       const [culturalRes, maarifRes] = await Promise.allSettled([
         fetch(`${API_URL}/api/v1/zpd-maarif/profil/kulturel/${studentId}`, {
-          headers: { 'Authorization': `Bearer ${token}` },
+          credentials: 'include',
         }),
         fetch(`${API_URL}/api/v1/zpd-maarif/profil/maarif/${studentId}`, {
-          headers: { 'Authorization': `Bearer ${token}` },
+          credentials: 'include',
         }),
       ]);
 
@@ -189,9 +188,9 @@ export function ZPDMaarifVisualizationPage() {
       const response = await fetch(`${API_URL}/api/v1/zpd-maarif/hesapla`, {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
+        credentials: 'include',
         body: JSON.stringify({
           ogrenci_id: studentId,
           konu: subject,

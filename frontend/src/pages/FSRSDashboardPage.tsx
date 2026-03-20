@@ -107,17 +107,16 @@ export function FSRSDashboardPage() {
       setError(null);
 
       const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
-      const token = localStorage.getItem('token');
 
       const [recsRes, statsRes, cardsRes] = await Promise.allSettled([
         fetch(`${API_URL}/api/v1/fsrs/recommendations`, {
-          headers: { 'Authorization': `Bearer ${token}` },
+          credentials: 'include',
         }),
         fetch(`${API_URL}/api/v1/fsrs/statistics`, {
-          headers: { 'Authorization': `Bearer ${token}` },
+          credentials: 'include',
         }),
         fetch(`${API_URL}/api/v1/fsrs/flashcards/due`, {
-          headers: { 'Authorization': `Bearer ${token}` },
+          credentials: 'include',
         }),
       ]);
 
@@ -150,11 +149,10 @@ export function FSRSDashboardPage() {
   const startStudySession = async () => {
     try {
       const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
-      const token = localStorage.getItem('token');
 
       const response = await fetch(`${API_URL}/api/v1/fsrs/study-sessions/start`, {
         method: 'POST',
-        headers: { 'Authorization': `Bearer ${token}` },
+        credentials: 'include',
       });
 
       if (response.ok) {
@@ -173,11 +171,10 @@ export function FSRSDashboardPage() {
 
     try {
       const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
-      const token = localStorage.getItem('token');
 
       const response = await fetch(`${API_URL}/api/v1/fsrs/study-sessions/${sessionId}/end`, {
         method: 'POST',
-        headers: { 'Authorization': `Bearer ${token}` },
+        credentials: 'include',
       });
 
       if (response.ok) {
@@ -195,14 +192,13 @@ export function FSRSDashboardPage() {
 
     try {
       const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
-      const token = localStorage.getItem('token');
 
       const response = await fetch(`${API_URL}/api/v1/fsrs/flashcards/${currentCard.id}/review`, {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
+        credentials: 'include',
         body: JSON.stringify({
           grade: grade,
           response_time_ms: 5000,
@@ -231,14 +227,13 @@ export function FSRSDashboardPage() {
   const handleCreateCard = async () => {
     try {
       const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
-      const token = localStorage.getItem('token');
 
       const response = await fetch(`${API_URL}/api/v1/fsrs/flashcards`, {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
+        credentials: 'include',
         body: JSON.stringify({
           subject: newCardSubject,
           topic: newCardTopic,

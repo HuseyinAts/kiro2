@@ -217,9 +217,7 @@ export function LearningPathPage() {
       if (studentId) {
         const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
         const response = await fetch(`${API_URL}/api/learning-path/completion/${studentId}`, {
-          headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`,
-          },
+          credentials: 'include',
         });
         if (response.ok) {
           const data = await response.json();

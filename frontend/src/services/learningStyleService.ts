@@ -12,34 +12,21 @@ import config from '../config';
 // Base URL
 const BASE_URL = config.api.baseURL;
 
-// Axios instance
+// Axios instance — httpOnly cookie auth (no localStorage token)
 const api: AxiosInstance = axios.create({
   baseURL: BASE_URL,
   timeout: 10000,
+  withCredentials: true,
   headers: {
     'Content-Type': 'application/json',
   },
 });
-
-// Request interceptor - token ekleme
-api.interceptors.request.use(
-  (config) => {
-    const token = localStorage.getItem('access_token');
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
-  },
-  (error) => Promise.reject(error),
-);
 
 // Response interceptor - hata yönetimi
 api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      // Token expired - redirect to login
-      localStorage.removeItem('access_token');
       window.location.href = '/login';
     }
     return Promise.reject(error);

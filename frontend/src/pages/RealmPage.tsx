@@ -50,7 +50,7 @@ export const RealmPage: React.FC = () => {
   useEffect(() => {
     const load = async () => {
       try {
-        const res = await fetch(`${API_BASE}/gamification/profile`, { credentials: 'include' });
+        const res = await fetch('/api/v1/gamification/profile', { credentials: 'include' });
         if (!res.ok) return;
         const data = await res.json();
         setGamification({
