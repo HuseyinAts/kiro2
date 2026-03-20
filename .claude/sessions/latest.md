@@ -1,34 +1,33 @@
-## Session Handoff — 2026-03-20 (Session 104-106)
+## Session Handoff — 2026-03-20 (Session 107)
 **Branch:** master
-**Son commit:** `d33d7a1` fix: add 4 permanent guards for recurring issues
+**Son commit:** `7e660ed` fix: review fixes — zemberep typo, telemetry migration, analytics redirect
 
-### Yapilanlar (14 commit, 116 dosya, +12,539/-1,612)
-- Master Plan v2.0 (FAZ-1→FAZ-10) + post-review 4 bug fix + SQLAlchemy 74/74 conflict fix
-- Frontend auth migration: 31 dosya localStorage→credentials:'include'
-- Backend model consolidation + FK type fixes (16 dosya)
-- Health check optimization: 9s → 12ms (ES/Redis timeout guard)
-- Frontend cleanup: 44 orphan → _deprecated/, 3 stub component activated
-- Exam checklist bug: session question count/duration pass-through
-- SW stale cache fix: NetworkFirst navigation, precache-only JS/CSS
-- Code review fixes: SW reload guard, cache scope, section UX
-- 4 permanent guards: case-duplicate, model import, deprecation, rules doc
-- Docker E2E verified: backend+frontend healthy, login OK, all endpoints 200
+### Yapilanlar (2 commit, 114 dosya)
+- Router prefix standardizasyonu (FAZ 6): 33 backend router `/api/xxx` -> `/api/v1/xxx`
+- 75 frontend dosya URL guncelleme (371 replacement)
+- VersionRedirectMiddleware: 32 kural, 307 redirect (backward compat)
+- 4 prefix-less route standardize: /search, /validation, /yolo, /question-parser
+- api.generated.ts + telemetry.py path definitions guncellendi
+- Code review: 3 bug bulundu ve duzeltildi (zemberep typo, telemetry 404, webVitals path)
 
 ### Bekleyen
-- Test coverage (backend ~18% → 80%)
+- Docker rebuild + E2E test (router prefix degisikligi sonrasi)
+- Test coverage (backend ~18% -> 80%)
 - Re-OCR recovery (+1,521-2,511 soru)
-- Router prefix standardizasyonu (FAZ 6, opsiyonel)
+- VersionRedirectMiddleware kaldirilmasi (client'lar migrate ettikten sonra)
 
 ### Engelleyiciler
 - Yok
 
 ### Dokunulan Dosyalar (kritik)
-- backend/core/comprehensive_health_check.py, backend/models/gamification.py
-- frontend/src/App.tsx, sw.ts, ModernExamStart.tsx, ExamPage.tsx
-- .claude/hooks/pre-commit-check.py, pre-tool-use.py
-- .claude/rules/deprecation-guard.md
+- backend/core/middleware/version_redirect.py (YENI — 32 redirect rule)
+- backend/core/application.py (middleware #5 eklendi)
+- backend/api/telemetry.py (prefix "/api" -> "/api/v1")
+- 33 backend/api/*.py (prefix degisikligi)
+- 75 frontend/src/**/*.{ts,tsx} (URL degisikligi)
+- frontend/src/utils/webVitals.ts (analytics URL fix)
 
 ### Sonraki Adimlar
-1. Test coverage sprint (backend services → 80%)
-2. Re-OCR recovery pipeline
-3. Router prefix standardizasyonu (ayri PR)
+1. Docker rebuild + E2E test (login, dashboard, learning-path, exam, chat)
+2. Test coverage sprint (backend services -> 80%)
+3. Re-OCR recovery pipeline
