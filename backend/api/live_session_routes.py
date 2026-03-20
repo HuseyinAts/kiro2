@@ -161,7 +161,6 @@ async def start_session(
     db: AsyncSession = Depends(get_db),
 ):
     """Start session"""
-    user_id = UUID(current_user.user_id)  # noqa: F841
     service = VideoConferenceService(db)
     session = await service.start_session(session_id)
 
@@ -178,7 +177,6 @@ async def end_session(
     db: AsyncSession = Depends(get_db),
 ):
     """End session"""
-    user_id = UUID(current_user.user_id)  # noqa: F841
     service = VideoConferenceService(db)
     session = await service.end_session(session_id)
 

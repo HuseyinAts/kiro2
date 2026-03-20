@@ -98,7 +98,10 @@ const StudentDashboard: React.FC = () => {
       setError(null);
 
       const studentId = user?.id;
-      if (!studentId) return;
+      if (!studentId) {
+        setLoading(false);
+        return;
+      }
 
       // Paralel veri yükleme
       const [profileData, statsData, recsData] = await Promise.all([

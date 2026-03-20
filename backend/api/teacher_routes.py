@@ -447,7 +447,6 @@ async def delete_expertise(
     db: AsyncSession = Depends(get_db),
 ):
     """Delete expertise"""
-    user_id = UUID(current_user.user_id)  # noqa: F841
     service = TeacherService(db)
     success = await service.delete_expertise(expertise_id)
 
@@ -627,7 +626,6 @@ async def update_availability_slot(
     db: AsyncSession = Depends(get_db),
 ):
     """Update availability slot"""
-    user_id = UUID(current_user.user_id)  # noqa: F841
     service = TeacherService(db)
 
     slot = await service.update_availability_slot(
@@ -647,7 +645,6 @@ async def delete_availability_slot(
     db: AsyncSession = Depends(get_db),
 ):
     """Delete availability slot"""
-    user_id = UUID(current_user.user_id)  # noqa: F841
     service = TeacherService(db)
     success = await service.delete_availability_slot(slot_id)
 
@@ -664,7 +661,6 @@ async def block_time_slot(
     db: AsyncSession = Depends(get_db),
 ):
     """Block a time slot (make unavailable)"""
-    user_id = UUID(current_user.user_id)  # noqa: F841
     service = TeacherService(db)
     slot = await service.block_time_slot(slot_id)
 
@@ -766,7 +762,6 @@ async def complete_appointment(
     db: AsyncSession = Depends(get_db),
 ):
     """Mark appointment as completed (teacher)"""
-    user_id = UUID(current_user.user_id)  # noqa: F841
     service = TeacherService(db)
 
     appointment = await service.complete_appointment(
