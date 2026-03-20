@@ -4,20 +4,22 @@ Task 53: ÖSYM Soru Veri Toplama ve Analiz
 Requirements: REQ-48.1-48.16
 """
 
+from datetime import datetime
+
 from sqlalchemy import (
-    Column,
-    String,
-    Integer,
-    Float,
     JSON,
-    DateTime,
     Boolean,
-    Text,
+    Column,
+    DateTime,
+    Float,
     ForeignKey,
     Index,
+    Integer,
+    String,
+    Text,
 )
 from sqlalchemy.orm import relationship
-from datetime import datetime
+
 from .base import Base
 
 
@@ -83,7 +85,7 @@ class OSYMQuestion(Base):
 
     # Durum ve Onay
     status = Column(String(20), default="pending")  # pending, approved, rejected
-    reviewed_by = Column(Integer, ForeignKey("users.id"))  # Uzman reviewer
+    reviewed_by = Column(String, ForeignKey("users.id"))  # Uzman reviewer
     review_notes = Column(Text)  # İnceleme notları
 
     # Timestamps
@@ -146,7 +148,7 @@ class StudentQuestionResponse(Base):
     __tablename__ = "student_question_responses"
 
     id = Column(Integer, primary_key=True, index=True)
-    student_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    student_id = Column(String, ForeignKey("users.id"), nullable=False)
     question_id = Column(
         String(16), ForeignKey("osym_questions.question_id"), nullable=False
     )
@@ -228,7 +230,9 @@ class QuestionGenerationBatch(Base):
     generation_method = Column(String(50), nullable=False)
 
     # Status Tracking
-    status = Column(String(20), default='pending', index=True)  # pending, processing, completed, failed
+    status = Column(
+        String(20), default="pending", index=True
+    )  # pending, processing, completed, failed
     progress = Column(Float, default=0.0)
     completed_count = Column(Integer, default=0)
     failed_count = Column(Integer, default=0)
@@ -243,9 +247,7 @@ class QuestionGenerationBatch(Base):
     completed_at = Column(DateTime)
 
     # Indexes
-    __table_args__ = (
-        Index("idx_batch_status", "status", "created_at"),
-    )
+    __table_args__ = (Index("idx_batch_status", "status", "created_at"),)
 
     def __repr__(self):
         return f"<QuestionGenerationBatch(task_id={self.task_id}, status={self.status}, progress={self.progress})>"

@@ -15,7 +15,7 @@ import logging
 from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
 
-from sqlalchemy import text, event
+from sqlalchemy import event, text
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.asyncio import (
     AsyncEngine,
@@ -24,7 +24,7 @@ from sqlalchemy.ext.asyncio import (
     create_async_engine,
 )
 from sqlalchemy.orm import declarative_base
-from sqlalchemy.pool import NullPool, AsyncAdaptedQueuePool
+from sqlalchemy.pool import AsyncAdaptedQueuePool, NullPool
 
 from .config import settings
 
@@ -63,6 +63,7 @@ async def get_async_session() -> AsyncGenerator[AsyncSession, None]:
     # TESTING MODE: Return mock session
     if os.environ.get("TESTING") == "true" and db_manager.async_session_maker is None:
         from unittest.mock import AsyncMock
+
         mock_session = AsyncMock(spec=AsyncSession)
         mock_session.commit = AsyncMock()
         mock_session.rollback = AsyncMock()
@@ -111,6 +112,7 @@ class DatabaseManager:
 
         # TESTING MODE: Skip initialization if TESTING=true (smoke tests)
         import os
+
         if os.environ.get("TESTING") == "true":
             logger.info("⚠️  TESTING mode: Skipping database initialization")
             self._initialized = True
@@ -121,12 +123,16 @@ class DatabaseManager:
             database_url = settings.database_url
             if "postgresql://" in database_url:
                 # Replace psycopg2 with asyncpg driver
-                database_url = database_url.replace("postgresql://", "postgresql+asyncpg://")
+                database_url = database_url.replace(
+                    "postgresql://", "postgresql+asyncpg://"
+                )
                 logger.info("Using asyncpg driver for PostgreSQL")
             elif "postgresql+psycopg2://" in database_url:
-                database_url = database_url.replace("postgresql+psycopg2://", "postgresql+asyncpg://")
+                database_url = database_url.replace(
+                    "postgresql+psycopg2://", "postgresql+asyncpg://"
+                )
                 logger.info("Replaced psycopg2 with asyncpg driver")
-            
+
             # Engine oluştur
             connect_args = {}
             if "postgresql" in database_url:
@@ -149,8 +155,12 @@ class DatabaseManager:
             if "postgresql" in database_url:
                 # PERFORMANCE OPTIMIZED: Pool settings for high concurrency (100K+ users)
                 # FIX: Updated defaults to match config.py - pool_size=50, max_overflow=100
-                pool_size = getattr(settings, 'db_pool_size', 50)  # Use config or default (50)
-                max_overflow = getattr(settings, 'db_max_overflow', 100)  # Use config or default (100)
+                pool_size = getattr(
+                    settings, "db_pool_size", 50
+                )  # Use config or default (50)
+                max_overflow = getattr(
+                    settings, "db_max_overflow", 100
+                )  # Use config or default (100)
 
                 engine_args.update(
                     {
@@ -171,13 +181,13 @@ class DatabaseManager:
                 engine_args["poolclass"] = NullPool
 
             self.engine = create_async_engine(database_url, **engine_args)
-            
+
             # Add connection event listeners for monitoring
             @event.listens_for(self.engine.sync_engine, "connect")
             def receive_connect(dbapi_conn, connection_record):
                 """Log new connections"""
                 logger.debug("New database connection established")
-            
+
             @event.listens_for(self.engine.sync_engine, "close")
             def receive_close(dbapi_conn, connection_record):
                 """Log connection closures"""
@@ -229,9 +239,11 @@ class DatabaseManager:
 
         # TESTING MODE: Return mock session if no session maker
         import os
+
         if os.environ.get("TESTING") == "true" and self.async_session_maker is None:
             # Create a minimal mock session for testing
             from unittest.mock import AsyncMock
+
             mock_session = AsyncMock(spec=AsyncSession)
             mock_session.commit = AsyncMock()
             mock_session.rollback = AsyncMock()
@@ -295,10 +307,16 @@ class DatabaseManager:
                     return {
                         "status": "healthy",
                         "healthy": True,
-                        "pool_size": getattr(self.engine.pool, 'size', lambda: 'N/A')(),
-                        "checked_out": getattr(self.engine.pool, 'checkedout', lambda: 'N/A')(),
-                        "overflow": getattr(self.engine.pool, 'overflow', lambda: 'N/A')(),
-                        "checked_in": getattr(self.engine.pool, 'checkedin', lambda: 'N/A')(),
+                        "pool_size": getattr(self.engine.pool, "size", lambda: "N/A")(),
+                        "checked_out": getattr(
+                            self.engine.pool, "checkedout", lambda: "N/A"
+                        )(),
+                        "overflow": getattr(
+                            self.engine.pool, "overflow", lambda: "N/A"
+                        )(),
+                        "checked_in": getattr(
+                            self.engine.pool, "checkedin", lambda: "N/A"
+                        )(),
                     }
                 return {"status": "unhealthy", "healthy": False}
 
@@ -380,8 +398,28 @@ async def get_db_session_context():
 
 # Sync version for compatibility
 def get_db():
-    """Sync compatibility function"""
-    return db_manager
+    """Sync compatibility function — yields a sync Session.
+
+    Uses the async engine's underlying sync_engine to create a real
+    sqlalchemy.orm.Session for legacy code that needs db.query().
+    """
+    from sqlalchemy.orm import sessionmaker
+
+    if db_manager.engine is None:
+        raise RuntimeError(
+            "Database not initialized — call db_manager.initialize() first"
+        )
+    sync_engine = db_manager.engine.sync_engine
+    SyncSession = sessionmaker(bind=sync_engine, expire_on_commit=False)
+    session = SyncSession()
+    try:
+        yield session
+        session.commit()
+    except Exception:
+        session.rollback()
+        raise
+    finally:
+        session.close()
 
 
 # Redis client dependency for FastAPI

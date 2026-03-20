@@ -1,110 +1,121 @@
-# KIRO2 QA Agent (Codex)
+# AGENTS.md
 
-## ROLE
-You are **“KIRO2 QA Agent”** for a complex Turkish EdTech monorepo.
+This file provides guidance to WARP (warp.dev) when working with code in this repository.
 
-Stack:
-- Backend: FastAPI (Python)
-- Frontend: React + Vite (TypeScript)
-- Orchestrator: LangGraph
-- Platform: WSL2 + VS Code Remote
-
-Your responsibility is **quality, safety, and regression prevention**, not feature development.
-
----
-
-## PRIMARY GOALS
-- Prevent regressions
-- Enforce existing quality gates
-- Propose **minimal, safe fixes**
-- Produce **verifiable evidence** (commands + results)
-
----
-
-## HARD RULES (NON-NEGOTIABLE)
-
-### Search Rules
-- ❌ NEVER run `ripgrep (rg)` on repository root
-- ✅ Allowed search paths only:
-  - `backend/app`
-  - `backend/tests`
-  - `frontend/src`
-  - `frontend/tests`
-  - `orchestrator`
-  - `docs`
-
-### Write Rules
-- ❌ NEVER modify read-only paths:
+## Scope and critical constraints
+- This is a large monorepo with three active engineering surfaces: `backend/`, `frontend/`, and `orchestrator/`.
+- Do not run repository-wide text search from the repo root on this project size. Scope searches to specific directories (for example `backend/`, `frontend/`, `orchestrator/`, `docs/`).
+- Treat these paths as read-only unless explicitly directed by the repository owner:
   - `d-dataset/ocr_output/**`
   - `d-dataset/answer_keys/**`
   - `d-dataset/eslesmis_sorucevap.jsonl`
   - `backend/alembic/versions/*.py`
-  - `backend/app/core/config.py`
-  - `.env*`
-  - `node_modules/**`
-  - `venv/**`
-  - `.git/**`
-  - `kiro2-orchestrator/**` (deprecated)
+  - `backend/core/config.py`
+  - `.env*`, `.git/**`, `node_modules/**`, `venv/**`
+- Use `orchestrator/` (active). Do not use any deprecated `kiro2-orchestrator/` path.
 
-- ❌ NEVER introduce refactors unless explicitly requested
-- ❌ NEVER change architecture or schemas silently
-- ✅ Prefer smallest diff possible
+## Platform notes from project rules
+- Primary local environment is Windows + PowerShell. Prefer Windows-safe commands and use `python` (not `python3`).
+- Frontend dev server is configured for port `3001` in `frontend/vite.config.ts`.
+- Backend default API port is `8000`.
+- PostgreSQL default local port in this repo is `5434`.
 
----
+## Common development commands
+All commands below are verified from repository scripts/config.
 
-## TURKISH TEXT RULES (CRITICAL)
+### Preferred one-command workflow (PowerShell, repo root)
+```powershell
+.\scripts\dev.ps1 help
+.\scripts\dev.ps1 backend
+.\scripts\dev.ps1 frontend
+.\scripts\dev.ps1 lint
+.\scripts\dev.ps1 mypy
+.\scripts\dev.ps1 test
+.\scripts\dev.ps1 test-fast
+.\scripts\dev.ps1 test-cov
+.\scripts\dev.ps1 check
+```
 
-All Turkish text handling MUST follow this order:
+### Backend (from repo root unless noted)
+```powershell
+# run API
+.\scripts\dev.ps1 backend
 
-1. Unicode normalization: **NFC**
-2. Turkish casing:
-   - `İ → i`
-   - `I → ı`
-3. Then standard lowercase
+# lint / format / type-check
+ruff check backend/
+ruff format backend/
+mypy backend/ --config-file pyproject.toml
 
-❌ Never use naive `.lower()` directly on Turkish text.
+# tests
+cd backend; pytest -v --tb=short
+cd backend; pytest -m "not slow" --tb=short -x
+cd backend; pytest --cov=. --cov-report=term-missing --cov-report=html
 
----
+# run a single backend test
+cd backend; pytest tests\path\to\test_file.py::TestClass::test_name -v
+```
 
-## WORKFLOW (ALWAYS)
+### Frontend
+```powershell
+cd frontend; npm install
+cd frontend; npm run dev
+cd frontend; npm run build
+cd frontend; npm run lint
+cd frontend; npm run type-check
+cd frontend; npm test
+cd frontend; npm run test:coverage
 
-1. Identify **risk surface**
-   - Which modules/files are affected
-2. Produce a **QA plan**
-3. Suggest **minimal safe diffs**
-4. List **exact commands** to run (copy/paste ready)
-5. Report status:
-   - PASS / FAIL
-   - Evidence
-   - NEXT ACTIONS
+# run a single frontend test file / test case
+cd frontend; npm test -- src\components\MyComponent.test.tsx
+cd frontend; npx vitest run src\components\MyComponent.test.tsx -t "test name"
+```
 
----
+### Orchestrator
+```powershell
+cd orchestrator; pytest tests\ -v
+python orchestrator\test_complete_system.py
+```
 
-## OUTPUT FORMAT (STRICT)
+### Docker stacks (repo root)
+```powershell
+docker compose -f docker-compose.dev.yml up -d
+docker compose -f docker-compose.dev.yml down
+```
 
-### Summary
-Short description of QA focus and risk level.
+## Big-picture architecture (what matters first)
+### 1) Backend request lifecycle
+- Entry point is `backend/main.py`, which creates `app` via `core.application.create_app()`.
+- Application assembly lives in `backend/core/application.py`:
+  - lifespan startup/shutdown (DB init/close, agent lifecycle)
+  - middleware stack (timing, CORS, cache headers, gzip)
+  - optional rate limiting (`slowapi`)
+  - OpenAPI customization
+- Routers are dynamically imported and registered by `backend/routers/loader.py` from `api.*` modules through a central mapping. To understand endpoint availability, inspect router mapping and imported modules rather than assuming static includes.
 
-### Findings
-Bullet list of detected risks, failures, or warnings.
+### 2) Auth and dependency model
+- `backend/core/dependencies.py` is the central auth/dependency layer.
+- Auth supports both Bearer token and httpOnly cookie flows (`get_current_user` checks header first, then cookie).
+- Role checks are dependency-driven (`student/teacher/admin` guards), so API authorization behavior is typically enforced through FastAPI dependency wiring.
 
-### QA Plan
-Step-by-step plan (backend / frontend / orchestrator).
+### 3) Frontend composition model
+- Entry: `frontend/src/main.tsx` → renders `App` from `frontend/src/app.tsx`.
+- `app.tsx` is the composition root: Theme, QueryClient, AuthProvider, Router, protected routes, error boundary, and major lazy-loaded route/page modules.
+- Route access is role-based through `ProtectedRoute` and role strings used in UI state (`ogrenci`, `ogretmen`, `veli`, `admin`).
+- State architecture:
+  - Client/server fetch state: React Query.
+  - Global client state: Zustand stores in `frontend/src/store/` (`authStore`, `examStore`, `uiStore`, `settingsStore`, `notificationStore`).
+  - `authStore` is cookie-session oriented (no localStorage token persistence).
 
-### Commands (copy/paste)
-Exact shell commands in correct order.
+### 4) Orchestrator subsystem
+- `orchestrator/core/graph.py` defines a LangGraph state machine: plan → route → implement → quality_check → review/fix loop → report.
+- `orchestrator/core/routing.py` contains policy-based task analysis/routing by risk, domain keywords, and task type.
+- `orchestrator/core/state.py` enforces run-scoped state, quality-gate tracking, no-progress detection, and diff/iteration limits.
+- Treat this as a separate execution/control plane, not just utility scripts.
 
-### Evidence Checklist
-- [ ] Tests executed
-- [ ] Linting passed
-- [ ] Type checks passed
-- [ ] Coverage measured
-- [ ] No read-only paths touched
+## Turkish text handling rule (project-critical)
+When normalizing Turkish text for matching/comparison, preserve this order:
+1. Unicode normalize to NFC
+2. Turkish-specific mapping: `İ→i`, `I→ı`
+3. Then lowercase
 
----
-
-## DEFAULT BEHAVIOR
-If uncertain:
-- Do **not** guess
-- Ask for clarification
-- Default to **safety over speed**
+Do not apply naive lowercase first for Turkish-sensitive paths.

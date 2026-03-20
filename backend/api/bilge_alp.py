@@ -226,7 +226,7 @@ async def bilge_alp_chat(
     request: Request,
     current_user: AuthenticatedUser = Depends(get_current_user),
 ) -> StreamingResponse:
-    """SSE streaming NPC chat."""
+    """SSE streaming NPC chat. BKT score fetched from DB (not client)."""
     logger.debug("NPC chat: user=%s", current_user.id)
     try:
         body = await request.json()
@@ -234,10 +234,31 @@ async def bilge_alp_chat(
         body = {}
 
     realm_slug = str(body.get("realm_slug", "matematik"))
-    bkt_score = float(body.get("bkt_score", 0.0))
     quest_step = int(body.get("quest_step", 0))
     user_message = str(body.get("message", "Merhaba")).strip()[:500]
     history: list[dict[str, str]] = body.get("history", [])
+
+    # Fetch BKT score from DB instead of trusting client
+    bkt_score = 0.0
+    try:
+        from sqlalchemy import func as sa_func
+        from sqlalchemy import select
+
+        from core.database import get_db_session_context
+        from models.gamification import BKTState
+
+        async with get_db_session_context() as db:
+            result = await db.execute(
+                select(sa_func.avg(BKTState.p_learn)).where(
+                    BKTState.student_id == str(current_user.id),
+                    BKTState.topic_id.like(f"{realm_slug}%"),
+                )
+            )
+            avg_mastery = result.scalar()
+            if avg_mastery is not None:
+                bkt_score = float(avg_mastery)
+    except Exception as e:
+        logger.warning("BKT score fetch failed, using default 0.0: %s", e)
 
     # Sanitize history
     clean_history = [
@@ -250,7 +271,7 @@ async def bilge_alp_chat(
 
     async def event_generator():
         try:
-            async for token in _stream_llm_response(
+            async for token in _stream_llm_response(  # type: ignore[misc]
                 system_prompt, clean_history, user_message
             ):
                 if token:

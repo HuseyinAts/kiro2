@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Models Package
 Tüm model sınıflarını export et
@@ -14,98 +13,91 @@ DEPRECATED MODELS (will be removed in v3.0.0):
 # Base import (avoid circular import)
 from .base import Base
 
-# Canonical Learning Path Models
-from .learning_path_models import (
-    LearningPathStudentProfile,  # Canonical student profile
-    LearningPath,
-    TopicCompletion,
-    TopicProgress,
-    QuizSubmission,
-    FallbackVideo,
+# Content models
+from .content_models import (
+    BulkContentImport,
+    ContentFilter,
+    ContentInteraction,
+    ContentSearchRequest,
+    ContentStats,
+    ContentType,
+    InteractionType,
+    MakaleIcerik,
+    QuizIcerik,
+    VideoIcerik,
 )
 
 # SQLAlchemy ORM models
 from .database import (
-    # Enums
-    UserRole,
-    ExamType,
-    QuestionDifficulty,
-    LearningStyle,
-    SubjectArea,
-    # User models
-    User,
-    StudentProfile,
-    TeacherProfile,
-    ParentProfile,
-    # Question and Exam models
-    Question,
-    ExamSession,
-    ExamQuestion,
-    StudentAnswer,
-    # Analytics models
-    LearningAnalytics,
-    WeeklyProgress,  # Added for dashboard service
+    AuditLog,
+    # Class management models
+    ClassRoom,
     # Content models
     EducationalContent,
     EgitimIcerigi,
-    # Class management models
-    ClassRoom,
-    # System models
-    SystemConfiguration,
-    AuditLog,
+    ExamQuestion,
+    ExamSession,
+    ExamType,
     # FSRS models
     FSRSCard,
-    FSRSSchedule,
     FSRSReview,
+    FSRSSchedule,
     FSRSStudentProfile,
     FSRSStudySession,
     FSRSSubjectStats,
+    # Analytics models
+    LearningAnalytics,
+    LearningStyle,
+    ParentProfile,
+    # Question and Exam models
+    Question,
+    QuestionDifficulty,
+    StudentAnswer,
+    StudentProfile,
+    SubjectArea,
+    # System models
+    SystemConfiguration,
+    TeacherProfile,
+    # User models
+    User,
+    # Enums
+    UserRole,
+    WeeklyProgress,  # Added for dashboard service
 )
 
 # Enums
 from .enums import (
+    IcerikTipi,
+    KarsilastirmaGrubu,
+    KullaniciRolu,
+    OgrenmeStili,
+    RaporTipi,
     SinavDurumu,
     SinavTipi,
     TurkishExamType,
     ZorlukSeviyesi,
-    OgrenmeStili,
-    IcerikTipi,
-    KullaniciRolu,
-    RaporTipi,
-    KarsilastirmaGrubu,
 )
 
 # Exam models
 from .exam import (
-    SinavSorusu,
-    SinavOturumu,
-    SinavCevabi,
     KonuPerformansi,
-    SinavSonucu,
     PerformansRaporu,
+    SinavCevabi,
+    SinavOturumu,
+    SinavSonucu,
+    SinavSorusu,
 )
 
-# Content models
-from .content_models import (
-    MakaleIcerik,
-    VideoIcerik,
-    QuizIcerik,
-    ContentType,
-    ContentStats,
-    ContentInteraction,
-    InteractionType,
-    ContentFilter,
-    ContentSearchRequest,
-    BulkContentImport,
+# Canonical Learning Path Models
+from .learning_path_models import (
+    FallbackVideo,
+    LearningPath,
+    LearningPathStudentProfile,  # Canonical student profile
+    QuizSubmission,
+    TopicCompletion,
+    TopicProgress,
 )
-
-# Dashboard models (Mock Data Cleanup - Phase 2)
-from .student_goal import StudentGoal
 from .notification import Notification
-
-# Learning Style models (Mock Data Cleanup - Phase 4)
-# DEPRECATED: Use LearningPathStudentProfile instead
-from .student_learning_profile import StudentLearningProfile
 
 # Migration utilities
 from .profile_migration import (
@@ -114,15 +106,22 @@ from .profile_migration import (
     validate_canonical_profile,
 )
 
+# Dashboard models (Mock Data Cleanup - Phase 2)
+from .student_goal import StudentGoal
+
+# Learning Style models (Mock Data Cleanup - Phase 4)
+# DEPRECATED: Use LearningPathStudentProfile instead
+from .student_learning_profile import StudentLearningProfile
+
 # Pydantic models
 from .user import (
     Kullanici,
-    KullaniciOlustur,
     KullaniciGiris,
+    KullaniciOlustur,
     OgrenciProfili,
     OgretmenProfili,
-    VeliProfili,
     TokenYaniti,
+    VeliProfili,
 )
 
 # Backward compatibility aliases - for tests expecting these names
@@ -130,21 +129,45 @@ Question = Question  # Already imported from database
 Student = StudentProfile  # Alias for StudentProfile
 
 # Faz 2: Study Planner, Leagues, Coaching models
-from .study_planner import StudyPlan, WeeklyGoal
-from .league import LeagueMembership, LeagueHistory
 from .coaching import CoachingEvent, StudentEngagementSignal
-
-# Faz 3: Duel models
-from .duel import DuelMatch, DuelRating, DuelSession
 
 # Faz 4: DINA Cognitive Diagnostic models
 from .dina import DINAParameter, NanoSkill, QMatrix, StudentNanoSkillMastery
 
+# Faz 3: Duel models
+from .duel import DuelMatch, DuelRating, DuelSession
+
 # Faz 5: Error Cluster models
 from .error_cluster import ErrorCluster, PeerRecommendation
 
+# Gamification models (Master Plan v2.0)
+from .gamification import (
+    Badge,
+    BKTState,
+    Duel,
+    Oba,
+    ObaUye,
+    ParentChild,
+    Realm,
+    RealmProgress,
+    Streak,
+    StudentAbility,
+    UserBadge,
+    XPTransaction,
+)
+from .gamification_db import (
+    ManipulativeActivity,
+    ManipulativeProgress,
+)
+
 # Faz 4 (Knowledge Graph): Knowledge Points, Question mappings, Student mastery
-from .knowledge_graph import KnowledgePoint, QuestionKnowledgeMapping, StudentKnowledgeState
+from .knowledge_graph import (
+    KnowledgePoint,
+    QuestionKnowledgeMapping,
+    StudentKnowledgeState,
+)
+from .league import LeagueHistory, LeagueMembership
+from .study_planner import StudyPlan, WeeklyGoal
 
 # Convenience alias pointing to canonical model
 CanonicalStudentProfile = LearningPathStudentProfile
@@ -260,6 +283,21 @@ __all__ = [
     "KnowledgePoint",
     "QuestionKnowledgeMapping",
     "StudentKnowledgeState",
+    # Gamification (Master Plan v2.0)
+    "BKTState",
+    "Realm",
+    "RealmProgress",
+    "Streak",
+    "XPTransaction",
+    "Oba",
+    "ObaUye",
+    "Badge",
+    "UserBadge",
+    "Duel",
+    "ParentChild",
+    "StudentAbility",
+    "ManipulativeActivity",
+    "ManipulativeProgress",
     # Aliases for backward compatibility
     "Student",
     "CanonicalStudentProfile",  # Alias for LearningPathStudentProfile

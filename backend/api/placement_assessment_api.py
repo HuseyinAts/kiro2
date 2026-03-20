@@ -5,7 +5,7 @@ Placement Assessment API — F5 Adaptive Assessment Endpoints
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel, Field
@@ -24,7 +24,7 @@ logger = get_logger("placement_assessment_api")
 _SESSION_TTL = 3600  # 1 hour
 
 
-async def _store_session(session_id: str, assessment: "PlacementAssessment") -> None:
+async def _store_session(session_id: str, assessment: PlacementAssessment) -> None:
     """Persist assessment state to Redis (pickle serialization)."""
     import pickle
 
@@ -43,7 +43,7 @@ async def _store_session(session_id: str, assessment: "PlacementAssessment") -> 
     _fallback_sessions[session_id] = assessment
 
 
-async def _load_session(session_id: str) -> "PlacementAssessment | None":
+async def _load_session(session_id: str) -> PlacementAssessment | None:
     """Load assessment state from Redis."""
     import pickle
 
@@ -63,16 +63,18 @@ async def _load_session(session_id: str) -> "PlacementAssessment | None":
 
 
 # Fallback for when Redis is unavailable (dev/test)
-_fallback_sessions: dict[str, "PlacementAssessment"] = {}
+_fallback_sessions: dict[str, PlacementAssessment] = {}
 
 
 # ---------------------------------------------------------------------------
 # Models
 # ---------------------------------------------------------------------------
 
+
 class StartAssessmentRequest(BaseModel):
-    subjects: Optional[list[str]] = Field(
-        None, description="Konu filtreleri (ör. ['MATEMATIK','FIZIK']). Boş = tüm konular."
+    subjects: list[str] | None = Field(
+        None,
+        description="Konu filtreleri (ör. ['MATEMATIK','FIZIK']). Boş = tüm konular.",
     )
 
 
@@ -98,9 +100,9 @@ class NextQuestionResponse(BaseModel):
     session_id: str
     current_question: int
     total_questions: int
-    question_id: Optional[str] = None
-    subject: Optional[str] = None
-    difficulty: Optional[float] = None
+    question_id: str | None = None
+    subject: str | None = None
+    difficulty: float | None = None
     theta_estimate: float
     theta_se: float
     confidence_level: str
@@ -117,6 +119,7 @@ class AssessmentResultResponse(BaseModel):
 # ---------------------------------------------------------------------------
 # Endpoints
 # ---------------------------------------------------------------------------
+
 
 @router.post(
     "/start",
@@ -240,6 +243,29 @@ async def get_result(
 
     knowledge = get_knowledge_state(assessment)
 
+    # Persist assessment results: StudentAbility + BKTState init (best-effort)
+    try:
+        from services.learning_event_service import LearningEventService
+
+        subjects_data = {}
+        for subj_name, subj_info in knowledge.get("subjects", {}).items():
+            if isinstance(subj_info, dict) and "theta" in subj_info:
+                subjects_data[subj_name] = {
+                    "theta": subj_info["theta"],
+                    "se": subj_info.get("se", 1.0),
+                }
+
+        if subjects_data:
+            async with get_db_session_context() as db:
+                event_report = await LearningEventService.on_assessment_completed(
+                    student_id=str(current_user.id),
+                    subjects=subjects_data,
+                    db=db,
+                )
+                logger.info("Assessment event report: %s", event_report)
+    except Exception as event_err:
+        logger.warning("Assessment event processing skipped: %s", event_err)
+
     return AssessmentResultResponse(
         session_id=session_id,
         overall=knowledge["overall"],
@@ -250,6 +276,7 @@ async def get_result(
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
+
 
 async def _check_correctness(question_id: str, answer: str) -> bool:
     """Server-side answer check against question_bank."""

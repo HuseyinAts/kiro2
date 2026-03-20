@@ -1,44 +1,38 @@
 """
-Gamification API - Oyunlaştırma ve Motivasyon Sistemi
-P2.2: Enhanced with real database integration
-
-Bu API, öğrencilerin puan kazanma, seviye atlama, rozet toplama ve
-liderlik tablosunda yarışma özelliklerini sağlar.
+Gamification API - Oyunlastirma ve Motivasyon Sistemi
+DB-backed: XPTransaction, Streak, Badge tablolari uzerinden calisir.
 
 Endpoints:
 - Puan Sistemi: /api/v1/gamification/points/*
 - Seviye Sistemi: /api/v1/gamification/level/*
 - Rozet Sistemi: /api/v1/gamification/badges/*
 - Liderlik Tablosu: /api/v1/gamification/leaderboard/*
-
-P2.2 Enhancements:
-- Database integration (PostgreSQL + Redis)
-- ExperienceManager, BadgeManager, LeaderboardManager integration
-- User achievement tracking
+- Basarilar: /api/v1/gamification/achievements/*
 """
 
 import logging
-from typing import Any, Dict, List, Optional
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime
+from typing import Any
 from uuid import UUID
 
-from fastapi import APIRouter, HTTPException, Query, Depends
+from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel, Field
-from sqlalchemy.orm import Session
 from redis import Redis
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import Session
 
-from core.database import get_db, get_redis_client
-from core.dependencies import get_current_user, AuthenticatedUser
-from core.redis_cache import get_cache
+from core.database import get_db, get_db_session, get_redis_client
+from core.dependencies import AuthenticatedUser, get_current_user
 from core.gamification.leaderboard_manager import (
-    get_leaderboard_manager,
     LeaderboardType,
+    get_leaderboard_manager,
 )
+from core.redis_cache import get_cache
 from models.user_achievement import UserAchievement
+from services.learning_event_service import GamificationDBService
 
 logger = logging.getLogger(__name__)
 
-# Router oluştur
 router = APIRouter(prefix="/api/v1/gamification", tags=["Gamification"])
 
 
@@ -47,187 +41,106 @@ router = APIRouter(prefix="/api/v1/gamification", tags=["Gamification"])
 # ============================================================================
 
 
-class PointTransaction(BaseModel):
-    """Puan işlem kaydı"""
-
-    id: str
-    user_id: str
-    points: int
-    reason: str
-    metadata: Optional[Dict[str, Any]] = None
-    timestamp: datetime
-
-
 class PointSummary(BaseModel):
-    """Puan özet bilgileri"""
-
     total_points: int = Field(..., description="Toplam puan")
-    daily_points: int = Field(..., description="Bugün kazanılan puan")
-    weekly_points: int = Field(..., description="Bu hafta kazanılan puan")
-    last_updated: datetime = Field(..., description="Son güncelleme zamanı")
+    daily_points: int = Field(..., description="Bugun kazanilan puan")
+    weekly_points: int = Field(..., description="Bu hafta kazanilan puan")
+    last_updated: datetime = Field(..., description="Son guncelleme zamani")
 
 
 class LevelInfo(BaseModel):
-    """Seviye bilgileri"""
-
     current_level: int = Field(..., description="Mevcut seviye")
     total_xp: int = Field(..., description="Toplam XP")
-    xp_for_next_level: int = Field(..., description="Sonraki seviye için gereken XP")
-    progress_percentage: float = Field(..., description="İlerleme yüzdesi")
+    xp_for_next_level: int = Field(..., description="Sonraki seviye icin gereken XP")
+    progress_percentage: float = Field(..., description="Ilerleme yuzdesi")
 
 
 class BadgeInfo(BaseModel):
-    """Rozet bilgileri"""
-
     badge_id: str
     name: str
     description: str
-    category: str  # study, exam, social, special, milestone
-    rarity: str  # common, rare, legendary
+    category: str
+    rarity: str
     icon: str
     earned: bool
-    earned_at: Optional[datetime] = None
+    earned_at: datetime | None = None
 
 
 class LeaderboardEntry(BaseModel):
-    """Liderlik tablosu girdisi"""
-
     rank: int
     user_id: str
     username: str
-    avatar: Optional[str] = None
+    avatar: str | None = None
     points: int
     level: int
 
 
 class LeaderboardResponse(BaseModel):
-    """Liderlik tablosu yanıtı"""
-
-    period: str  # weekly, monthly, alltime
-    entries: List[LeaderboardEntry]
-    user_rank: Optional[int] = None
+    period: str
+    entries: list[LeaderboardEntry]
+    user_rank: int | None = None
     total_users: int
 
 
 # ============================================================================
-# Temporary In-Memory Storage (Demo amaçlı)
-# ============================================================================
-
-# Gerçek implementasyonda bu veriler database ve Redis'ten gelecek
-_user_points = {}  # user_id -> total_points
-_point_transactions = []  # List of transactions
-_user_levels = {}  # user_id -> level_info
-_user_badges = {}  # user_id -> List[badge_id]
-
-
-# ============================================================================
-# Puan Sistemi Endpoints
+# Puan Sistemi Endpoints (DB-backed)
 # ============================================================================
 
 
-@router.get("/points", response_model=Dict[str, Any])
-async def get_points_summary(current_user: AuthenticatedUser = Depends(get_current_user)):
-    """
-    Kullanıcının puan özetini getir
-
-    Returns:
-        - total_points: Toplam puan
-        - daily_points: Bugün kazanılan puan
-        - weekly_points: Bu hafta kazanılan puan
-    """
+@router.get("/points", response_model=dict[str, Any])
+async def get_points_summary(
+    current_user: AuthenticatedUser = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db_session),
+):
+    """Kullanicinin puan ozetini getir (DB-backed)."""
     try:
         user_id = str(current_user.id)
-        # Redis cache kontrol
         cache = get_cache()
         cache_key = f"gamification_points:{user_id}"
 
-        # Cache'den dene
         cached_result = cache.get(cache_key)
         if cached_result:
-            logger.info(f"[CACHE HIT] {cache_key}")
             return cached_result
 
-        logger.info(f"[CACHE MISS] {cache_key}")
-        logger.info(f"Puan özeti API çağrısı - Kullanıcı: {user_id}")
-
-        # Demo data
-        total_points = _user_points.get(user_id, 0)
-
-        # Bugün ve bu hafta kazanılan puanları hesapla
-        now = datetime.now(timezone.utc)
-        today_start = now.replace(hour=0, minute=0, second=0, microsecond=0)
-        week_start = now - timedelta(days=7)
-
-        daily_points = sum(
-            t["points"]
-            for t in _point_transactions
-            if t["user_id"] == user_id and t["timestamp"] >= today_start
-        )
-
-        weekly_points = sum(
-            t["points"]
-            for t in _point_transactions
-            if t["user_id"] == user_id and t["timestamp"] >= week_start
+        summary_data = await GamificationDBService.get_points_summary(
+            student_id=user_id, db=db
         )
 
         summary = PointSummary(
-            total_points=total_points,
-            daily_points=daily_points,
-            weekly_points=weekly_points,
-            last_updated=now,
+            total_points=summary_data["total_points"],
+            daily_points=summary_data["daily_points"],
+            weekly_points=summary_data["weekly_points"],
+            last_updated=datetime.now(UTC),
         )
 
         result = {
             "success": True,
-            "data": summary.model_dump(mode="json"),  # JSON-safe serialization
-            "message": "Puan özeti başarıyla getirildi",
+            "data": summary.model_dump(mode="json"),
+            "message": "Puan ozeti basariyla getirildi",
         }
 
-        # Sonucu cache'le (5 dakika TTL)
         cache.set(cache_key, result, ttl=300)
-        logger.info(f"[CACHE SET] {cache_key} (TTL: 300s)")
-
         return result
 
     except Exception as e:
-        logger.error(f"Puan özeti hatası: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"Puan özeti alınamadı: {str(e)}")
+        logger.error(f"Puan ozeti hatasi: {e!s}")
+        raise HTTPException(status_code=500, detail=f"Puan ozeti alinamadi: {e!s}")
 
 
-@router.get("/points/history", response_model=Dict[str, Any])
+@router.get("/points/history", response_model=dict[str, Any])
 async def get_point_history(
     current_user: AuthenticatedUser = Depends(get_current_user),
-    days: int = Query(30, ge=1, le=365, description="Kaç günlük geçmiş"),
-    limit: Optional[int] = Query(
-        None, ge=1, le=1000, description="Maksimum kayıt sayısı"
-    ),
+    db: AsyncSession = Depends(get_db_session),
+    days: int = Query(30, ge=1, le=365, description="Kac gunluk gecmis"),
+    limit: int | None = Query(None, ge=1, le=1000, description="Maksimum kayit sayisi"),
 ):
-    """
-    Kullanıcının puan geçmişini getir
-
-    Args:
-        days: Kaç günlük geçmiş (default: 30)
-        limit: Maksimum kayıt sayısı
-    """
+    """Kullanicinin puan gecmisini getir (DB-backed)."""
     try:
         user_id = str(current_user.id)
-        logger.info(f"Puan geçmişi API çağrısı - Kullanıcı: {user_id}, Gün: {days}")
 
-        cutoff_date = datetime.now(timezone.utc) - timedelta(days=days)
-
-        # Kullanıcının işlemlerini filtrele
-        transactions = [
-            t
-            for t in _point_transactions
-            if t["user_id"] == user_id and t["timestamp"] >= cutoff_date
-        ]
-
-        # Tarihe göre sırala (en yeni önce)
-        transactions.sort(key=lambda x: x["timestamp"], reverse=True)
-
-        # Limit uygula
-        if limit:
-            transactions = transactions[:limit]
+        transactions = await GamificationDBService.get_point_history(
+            student_id=user_id, days=days, limit=limit, db=db
+        )
 
         return {
             "success": True,
@@ -236,123 +149,114 @@ async def get_point_history(
                 "total_count": len(transactions),
                 "period_days": days,
             },
-            "message": f"Son {days} günlük puan geçmişi getirildi",
+            "message": f"Son {days} gunluk puan gecmisi getirildi",
         }
 
     except Exception as e:
-        logger.error(f"Puan geçmişi hatası: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"Puan geçmişi alınamadı: {str(e)}")
+        logger.error(f"Puan gecmisi hatasi: {e!s}")
+        raise HTTPException(status_code=500, detail=f"Puan gecmisi alinamadi: {e!s}")
 
 
-@router.post("/points/award", response_model=Dict[str, Any])
+@router.post("/points/award", response_model=dict[str, Any])
 async def award_points(
     current_user: AuthenticatedUser = Depends(get_current_user),
-    points: int = Query(..., ge=1, le=1000, description="Verilecek puan miktarı"),
+    db: AsyncSession = Depends(get_db_session),
+    points: int = Query(..., ge=1, le=1000, description="Verilecek puan miktari"),
     reason: str = Query(..., description="Puan verme nedeni"),
 ):
-    """
-    Kullanıcıya puan ver (authenticated user kendine puan verir)
-
-    Args:
-        points: Verilecek puan miktarı
-        reason: Puan verme nedeni
-    """
+    """Kullaniciya puan ver (DB-backed)."""
     try:
         user_id = str(current_user.id)
-        logger.info(
-            f"Puan verme API çağrısı - Kullanıcı: {user_id}, Puan: {points}, Neden: {reason}"
+
+        new_total = await GamificationDBService.award_xp(
+            student_id=user_id,
+            amount=points,
+            source=reason,
+            db=db,
         )
+        await db.commit()
 
-        # Toplam puanı güncelle
-        current_points = _user_points.get(user_id, 0)
-        new_points = current_points + points
-        _user_points[user_id] = new_points
-
-        # Transaction kaydet
-        transaction = {
-            "id": f"txn_{len(_point_transactions) + 1}",
-            "user_id": user_id,
-            "points": points,
-            "reason": reason,
-            "metadata": None,
-            "timestamp": datetime.now(timezone.utc),
-        }
-        _point_transactions.append(transaction)
+        # Invalidate points cache
+        cache = get_cache()
+        cache.delete(f"gamification_points:{user_id}")
 
         return {
             "success": True,
-            "data": {"transaction": transaction, "new_total": new_points},
-            "message": f"{points} puan başarıyla verildi",
+            "data": {
+                "transaction": {
+                    "user_id": user_id,
+                    "points": points,
+                    "reason": reason,
+                    "timestamp": datetime.now(UTC).isoformat(),
+                },
+                "new_total": new_total,
+            },
+            "message": f"{points} puan basariyla verildi",
         }
 
     except Exception as e:
-        logger.error(f"Puan verme hatası: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"Puan verilemedi: {str(e)}")
+        logger.error(f"Puan verme hatasi: {e!s}")
+        raise HTTPException(status_code=500, detail=f"Puan verilemedi: {e!s}")
 
 
 # ============================================================================
-# Seviye Sistemi Endpoints
+# Seviye Sistemi Endpoints (DB-backed)
 # ============================================================================
 
 
-@router.get("/level", response_model=Dict[str, Any])
-async def get_level_info(current_user: AuthenticatedUser = Depends(get_current_user)):
-    """
-    Kullanıcının seviye bilgilerini getir
-
-    Returns:
-        - current_level: Mevcut seviye
-        - total_xp: Toplam XP
-        - xp_for_next_level: Sonraki seviye için gereken XP
-        - progress_percentage: İlerleme yüzdesi
-    """
+@router.get("/level", response_model=dict[str, Any])
+async def get_level_info(
+    current_user: AuthenticatedUser = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db_session),
+):
+    """Kullanicinin seviye bilgilerini getir (DB-backed)."""
     try:
         user_id = str(current_user.id)
-        logger.info(f"Seviye bilgisi API çağrısı - Kullanıcı: {user_id}")
 
-        # Demo data - Gerçek implementasyonda ExperienceManager kullanılacak
-        total_xp = _user_points.get(user_id, 0)  # XP = Points for demo
+        summary = await GamificationDBService.get_points_summary(
+            student_id=user_id, db=db
+        )
+        total_xp = summary["total_points"]
         current_level = calculate_level(total_xp)
         xp_for_next = xp_for_level(current_level + 1) - xp_for_level(current_level)
-        xp_in_current_level = total_xp - xp_for_level(current_level)
-        progress_percentage = (
-            (xp_in_current_level / xp_for_next) * 100 if xp_for_next > 0 else 0
-        )
+        xp_in_current = total_xp - xp_for_level(current_level)
+        progress_pct = (xp_in_current / xp_for_next) * 100 if xp_for_next > 0 else 0
 
         level_info = LevelInfo(
             current_level=current_level,
             total_xp=total_xp,
             xp_for_next_level=xp_for_next,
-            progress_percentage=round(progress_percentage, 2),
+            progress_percentage=round(progress_pct, 2),
         )
 
         return {
             "success": True,
             "data": level_info.model_dump(),
-            "message": "Seviye bilgisi başarıyla getirildi",
+            "message": "Seviye bilgisi basariyla getirildi",
         }
 
     except Exception as e:
-        logger.error(f"Seviye bilgisi hatası: {str(e)}")
-        raise HTTPException(
-            status_code=500, detail=f"Seviye bilgisi alınamadı: {str(e)}"
-        )
+        logger.error(f"Seviye bilgisi hatasi: {e!s}")
+        raise HTTPException(status_code=500, detail=f"Seviye bilgisi alinamadi: {e!s}")
 
 
-@router.get("/level/progress", response_model=Dict[str, Any])
-async def get_level_progress(current_user: AuthenticatedUser = Depends(get_current_user)):
-    """
-    Sonraki seviyeye ilerleme detaylarını getir
-    """
+@router.get("/level/progress", response_model=dict[str, Any])
+async def get_level_progress(
+    current_user: AuthenticatedUser = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db_session),
+):
+    """Sonraki seviyeye ilerleme detaylarini getir."""
     try:
         user_id = str(current_user.id)
-        logger.info(f"Seviye ilerlemesi API çağrısı - Kullanıcı: {user_id}")
 
-        total_xp = _user_points.get(user_id, 0)
+        summary = await GamificationDBService.get_points_summary(
+            student_id=user_id, db=db
+        )
+        total_xp = summary["total_points"]
         current_level = calculate_level(total_xp)
         current_level_xp = xp_for_level(current_level)
         next_level_xp = xp_for_level(current_level + 1)
-        xp_in_current_level = total_xp - current_level_xp
+        xp_in_current = total_xp - current_level_xp
         xp_needed = next_level_xp - current_level_xp
 
         return {
@@ -360,19 +264,19 @@ async def get_level_progress(current_user: AuthenticatedUser = Depends(get_curre
             "data": {
                 "current_level": current_level,
                 "total_xp": total_xp,
-                "xp_in_current_level": xp_in_current_level,
+                "xp_in_current_level": xp_in_current,
                 "xp_needed_for_next": xp_needed,
-                "progress_percentage": round((xp_in_current_level / xp_needed) * 100, 2)
+                "progress_percentage": round((xp_in_current / xp_needed) * 100, 2)
                 if xp_needed > 0
                 else 0,
             },
-            "message": "Seviye ilerlemesi başarıyla getirildi",
+            "message": "Seviye ilerlemesi basariyla getirildi",
         }
 
     except Exception as e:
-        logger.error(f"Seviye ilerlemesi hatası: {str(e)}")
+        logger.error(f"Seviye ilerlemesi hatasi: {e!s}")
         raise HTTPException(
-            status_code=500, detail=f"Seviye ilerlemesi alınamadı: {str(e)}"
+            status_code=500, detail=f"Seviye ilerlemesi alinamadi: {e!s}"
         )
 
 
@@ -381,34 +285,30 @@ async def get_level_progress(current_user: AuthenticatedUser = Depends(get_curre
 # ============================================================================
 
 
-@router.get("/badges", response_model=Dict[str, Any])
+@router.get("/badges", response_model=dict[str, Any])
 async def get_all_badges(
     current_user: AuthenticatedUser = Depends(get_current_user),
-    category: Optional[str] = Query(None, description="Kategori filtresi"),
+    db: AsyncSession = Depends(get_db_session),
+    category: str | None = Query(None, description="Kategori filtresi"),
 ):
-    """
-    Tüm rozetleri getir (kazanılan + kazanılmayan)
-
-    Args:
-        category: Kategori filtresi (study, exam, social, special, milestone)
-    """
+    """Tum rozetleri getir (kazanilan + kazanilmayan)."""
     try:
         user_id = str(current_user.id)
-        logger.info(
-            f"Tüm rozetler API çağrısı - Kullanıcı: {user_id}, Kategori: {category}"
-        )
 
-        # Demo badge definitions
         all_badges = get_badge_definitions()
-
-        # Kategori filtresi uygula
         if category:
             all_badges = [b for b in all_badges if b["category"] == category]
 
-        # Kullanıcının kazandığı rozetler
-        earned_badge_ids = _user_badges.get(user_id, [])
+        # Check earned badges from DB
+        from sqlalchemy import select
 
-        # Badge bilgilerini hazırla
+        from models.gamification import UserBadge as GamUserBadge
+
+        result = await db.execute(
+            select(GamUserBadge.badge_id).where(GamUserBadge.user_id == user_id)
+        )
+        earned_badge_db_ids = {row[0] for row in result.fetchall()}
+
         badges = []
         for badge_def in all_badges:
             badge_info = BadgeInfo(
@@ -418,8 +318,8 @@ async def get_all_badges(
                 category=badge_def["category"],
                 rarity=badge_def["rarity"],
                 icon=badge_def["icon"],
-                earned=badge_def["id"] in earned_badge_ids,
-                earned_at=None,  # Gerçek implementasyonda timestamp olacak
+                earned=badge_def["id"] in [str(bid) for bid in earned_badge_db_ids],
+                earned_at=None,
             )
             badges.append(badge_info.model_dump())
 
@@ -428,85 +328,96 @@ async def get_all_badges(
             "data": {
                 "badges": badges,
                 "total_count": len(badges),
-                "earned_count": len(earned_badge_ids),
+                "earned_count": sum(1 for b in badges if b["earned"]),
             },
-            "message": "Rozetler başarıyla getirildi",
+            "message": "Rozetler basariyla getirildi",
         }
 
     except Exception as e:
-        import traceback
-
-        error_trace = traceback.format_exc()
-        logger.error(f"Rozetler getirme hatası: {str(e)}\nTraceback: {error_trace}")
-        raise HTTPException(
-            status_code=500,
-            detail=f"Rozetler getirilemedi: {str(e)}\nTrace: {error_trace}",
-        )
+        logger.error(f"Rozetler getirme hatasi: {e!s}")
+        raise HTTPException(status_code=500, detail=f"Rozetler getirilemedi: {e!s}")
 
 
-@router.get("/badges/earned", response_model=Dict[str, Any])
-async def get_earned_badges(current_user: AuthenticatedUser = Depends(get_current_user)):
-    """
-    Sadece kazanılan rozetleri getir
-    """
+@router.get("/badges/earned", response_model=dict[str, Any])
+async def get_earned_badges(
+    current_user: AuthenticatedUser = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db_session),
+):
+    """Sadece kazanilan rozetleri getir."""
     try:
         user_id = str(current_user.id)
-        logger.info(f"Kazanılan rozetler API çağrısı - Kullanıcı: {user_id}")
 
-        earned_badge_ids = _user_badges.get(user_id, [])
+        from sqlalchemy import select
+
+        from models.gamification import UserBadge as GamUserBadge
+
+        result = await db.execute(
+            select(GamUserBadge).where(GamUserBadge.user_id == user_id)
+        )
+        earned_rows = result.scalars().all()
+
         all_badges = get_badge_definitions()
+        badge_map = {b["id"]: b for b in all_badges}
 
         earned_badges = []
-        for badge_def in all_badges:
-            if badge_def["id"] in earned_badge_ids:
-                badge_info = BadgeInfo(
-                    badge_id=badge_def["id"],
-                    name=badge_def["name"],
-                    description=badge_def["description"],
-                    category=badge_def["category"],
-                    rarity=badge_def["rarity"],
-                    icon=badge_def["icon"],
-                    earned=True,
-                    earned_at=datetime.now(timezone.utc),  # Demo
+        for ub in earned_rows:
+            badge_def = badge_map.get(str(ub.badge_id))
+            if badge_def:
+                earned_badges.append(
+                    BadgeInfo(
+                        badge_id=badge_def["id"],
+                        name=badge_def["name"],
+                        description=badge_def["description"],
+                        category=badge_def["category"],
+                        rarity=badge_def["rarity"],
+                        icon=badge_def["icon"],
+                        earned=True,
+                        earned_at=ub.earned_at,
+                    ).model_dump()
                 )
-                earned_badges.append(badge_info.model_dump())
 
         return {
             "success": True,
             "data": {"badges": earned_badges, "count": len(earned_badges)},
-            "message": "Kazanılan rozetler başarıyla getirildi",
+            "message": "Kazanilan rozetler basariyla getirildi",
         }
 
     except Exception as e:
-        logger.error(f"Kazanılan rozetler hatası: {str(e)}")
+        logger.error(f"Kazanilan rozetler hatasi: {e!s}")
         raise HTTPException(
-            status_code=500, detail=f"Kazanılan rozetler getirilemedi: {str(e)}"
+            status_code=500, detail=f"Kazanilan rozetler getirilemedi: {e!s}"
         )
 
 
-@router.get("/badges/categories", response_model=Dict[str, Any])
-async def get_badge_categories(current_user: AuthenticatedUser = Depends(get_current_user)):
-    """
-    Kategori bazlı rozet istatistikleri
-    """
+@router.get("/badges/categories", response_model=dict[str, Any])
+async def get_badge_categories(
+    current_user: AuthenticatedUser = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db_session),
+):
+    """Kategori bazli rozet istatistikleri."""
     try:
         user_id = str(current_user.id)
-        logger.info(f"Rozet kategorileri API çağrısı - Kullanıcı: {user_id}")
 
         all_badges = get_badge_definitions()
-        earned_badge_ids = _user_badges.get(user_id, [])
 
-        # Kategori bazlı istatistikler
-        categories = {}
+        from sqlalchemy import select
+
+        from models.gamification import UserBadge as GamUserBadge
+
+        result = await db.execute(
+            select(GamUserBadge.badge_id).where(GamUserBadge.user_id == user_id)
+        )
+        earned_ids = {str(row[0]) for row in result.fetchall()}
+
+        categories: dict[str, dict[str, Any]] = {}
         for badge in all_badges:
             cat = badge["category"]
             if cat not in categories:
                 categories[cat] = {"total": 0, "earned": 0}
             categories[cat]["total"] += 1
-            if badge["id"] in earned_badge_ids:
+            if badge["id"] in earned_ids:
                 categories[cat]["earned"] += 1
 
-        # Tamamlanma yüzdelerini hesapla
         for cat in categories:
             total = categories[cat]["total"]
             earned = categories[cat]["earned"]
@@ -517,13 +428,13 @@ async def get_badge_categories(current_user: AuthenticatedUser = Depends(get_cur
         return {
             "success": True,
             "data": {"categories": categories},
-            "message": "Kategori istatistikleri başarıyla getirildi",
+            "message": "Kategori istatistikleri basariyla getirildi",
         }
 
     except Exception as e:
-        logger.error(f"Kategori istatistikleri hatası: {str(e)}")
+        logger.error(f"Kategori istatistikleri hatasi: {e!s}")
         raise HTTPException(
-            status_code=500, detail=f"Kategori istatistikleri alınamadı: {str(e)}"
+            status_code=500, detail=f"Kategori istatistikleri alinamadi: {e!s}"
         )
 
 
@@ -532,88 +443,126 @@ async def get_badge_categories(current_user: AuthenticatedUser = Depends(get_cur
 # ============================================================================
 
 
-@router.get("/leaderboard", response_model=Dict[str, Any])
+@router.get("/leaderboard", response_model=dict[str, Any])
 async def get_leaderboard(
     current_user: AuthenticatedUser = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db_session),
     period: str = Query(
         "alltime", description="Zaman dilimi (weekly, monthly, alltime)"
     ),
-    limit: int = Query(100, ge=1, le=1000, description="Kaç kişi gösterilecek"),
+    limit: int = Query(100, ge=1, le=1000, description="Kac kisi gosterilecek"),
 ):
-    """
-    Liderlik tablosunu getir
-
-    Args:
-        period: Zaman dilimi (weekly, monthly, alltime)
-        limit: Kaç kişi gösterilecek
-    """
+    """Liderlik tablosunu getir (DB-backed)."""
     try:
         user_id = str(current_user.id)
-        # Redis cache kontrol
         cache = get_cache()
         cache_key = f"leaderboard:{period}:{limit}"
 
-        # Cache'den dene
         cached_result = cache.get(cache_key)
         if cached_result:
-            logger.info(f"[CACHE HIT] {cache_key}")
             return cached_result
 
-        logger.info(f"[CACHE MISS] {cache_key}")
-        logger.info(f"Liderlik tablosu API çağrısı - Period: {period}, Limit: {limit}")
+        # Query top users by total_xp
+        from sqlalchemy import select
 
-        # Demo data - Gerçek implementasyonda Redis Sorted Sets kullanılacak
-        # Tüm kullanıcıları puana göre sırala
-        sorted_users = sorted(_user_points.items(), key=lambda x: x[1], reverse=True)
+        from models.database import User
 
-        # İlk N kullanıcıyı al
-        top_users = sorted_users[:limit]
+        stmt = (
+            select(User.id, User.email, User.total_xp)
+            .where(User.total_xp > 0)
+            .order_by(User.total_xp.desc())
+            .limit(limit)
+        )
+        result = await db.execute(stmt)
+        rows = result.fetchall()
 
-        # Leaderboard entries oluştur
         entries = []
-        for rank, (uid, points) in enumerate(top_users, 1):
-            level = calculate_level(points)
-            entry = LeaderboardEntry(
-                rank=rank,
-                user_id=uid,
-                username=f"User_{uid[:8]}",  # Demo
-                avatar=None,
-                points=points,
-                level=level,
-            )
-            entries.append(entry)
-
-        # Kullanıcının kendi sıralaması
         user_rank = None
-        if user_id:
-            for rank, (uid, _) in enumerate(sorted_users, 1):
-                if uid == user_id:
-                    user_rank = rank
-                    break
+        for rank, row in enumerate(rows, 1):
+            uid = str(row[0])
+            xp = row[2] or 0
+            level = calculate_level(xp)
+            entries.append(
+                LeaderboardEntry(
+                    rank=rank,
+                    user_id=uid,
+                    username=row[1].split("@")[0] if row[1] else f"User_{uid[:8]}",
+                    avatar=None,
+                    points=xp,
+                    level=level,
+                ).model_dump()
+            )
+            if uid == user_id:
+                user_rank = rank
 
-        response = LeaderboardResponse(
+        response_data = LeaderboardResponse(
             period=period,
-            entries=entries,
+            entries=[LeaderboardEntry(**e) for e in entries],
             user_rank=user_rank,
-            total_users=len(_user_points),
+            total_users=len(rows),
         )
 
-        result = {
+        result_dict = {
             "success": True,
-            "data": response.model_dump(),
-            "message": "Liderlik tablosu başarıyla getirildi",
+            "data": response_data.model_dump(),
+            "message": "Liderlik tablosu basariyla getirildi",
         }
 
-        # Sonucu cache'le (1 dakika TTL - leaderboard sık değişir)
-        cache.set(cache_key, result, ttl=60)
-        logger.info(f"[CACHE SET] {cache_key} (TTL: 60s)")
-
-        return result
+        cache.set(cache_key, result_dict, ttl=60)
+        return result_dict
 
     except Exception as e:
-        logger.error(f"Liderlik tablosu hatası: {str(e)}")
+        logger.error(f"Liderlik tablosu hatasi: {e!s}")
         raise HTTPException(
-            status_code=500, detail=f"Liderlik tablosu alınamadı: {str(e)}"
+            status_code=500, detail=f"Liderlik tablosu alinamadi: {e!s}"
+        )
+
+
+# ============================================================================
+# Gamification Profile Endpoint (NEW)
+# ============================================================================
+
+
+@router.get("/profile", response_model=dict[str, Any])
+async def get_gamification_profile(
+    current_user: AuthenticatedUser = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db_session),
+):
+    """Kullanicinin tam gamification profilini getir (XP + Level + Streak)."""
+    try:
+        user_id = str(current_user.id)
+
+        summary = await GamificationDBService.get_points_summary(
+            student_id=user_id, db=db
+        )
+        streak = await GamificationDBService.get_streak(student_id=user_id, db=db)
+
+        total_xp = summary["total_points"]
+        current_level = calculate_level(total_xp)
+        xp_for_next = xp_for_level(current_level + 1) - xp_for_level(current_level)
+        xp_in_current = total_xp - xp_for_level(current_level)
+
+        return {
+            "success": True,
+            "data": {
+                "user_id": user_id,
+                "total_xp": total_xp,
+                "daily_xp": summary["daily_points"],
+                "weekly_xp": summary["weekly_points"],
+                "current_level": current_level,
+                "xp_for_next_level": xp_for_next,
+                "level_progress_pct": round((xp_in_current / xp_for_next) * 100, 2)
+                if xp_for_next > 0
+                else 0,
+                "streak": streak,
+            },
+            "message": "Gamification profili basariyla getirildi",
+        }
+
+    except Exception as e:
+        logger.error(f"Gamification profil hatasi: {e!s}")
+        raise HTTPException(
+            status_code=500, detail=f"Gamification profili alinamadi: {e!s}"
         )
 
 
@@ -623,10 +572,7 @@ async def get_leaderboard(
 
 
 def calculate_level(total_xp: int) -> int:
-    """
-    Toplam XP'den seviye hesapla
-    Formula: Level * 100 * 1.5^Level
-    """
+    """Toplam XP'den seviye hesapla. Formula: Level * 100 * 1.5^Level"""
     level = 1
     while xp_for_level(level) <= total_xp:
         level += 1
@@ -634,88 +580,83 @@ def calculate_level(total_xp: int) -> int:
 
 
 def xp_for_level(level: int) -> int:
-    """Belirli bir seviyeye ulaşmak için gereken toplam XP"""
+    """Belirli bir seviyeye ulasmak icin gereken toplam XP."""
     if level == 1:
         return 0
-    return sum(int(l * 100 * (1.5**l)) for l in range(1, level))
+    return sum(int(lv * 100 * (1.5**lv)) for lv in range(1, level))
 
 
-def get_badge_definitions() -> List[Dict[str, Any]]:
-    """Rozet tanımlarını getir (Demo)"""
+def get_badge_definitions() -> list[dict[str, Any]]:
+    """Rozet tanimlari."""
     return [
-        # Çalışma Rozetleri
         {
             "id": "consistent_7",
-            "name": "Kararlı Öğrenci",
-            "description": "7 gün üst üste çalış",
+            "name": "Kararli Ogrenci",
+            "description": "7 gun ust uste calis",
             "category": "study",
             "rarity": "common",
             "icon": "badge_fire",
         },
         {
             "id": "consistent_30",
-            "name": "Azimli Öğrenci",
-            "description": "30 gün üst üste çalış",
+            "name": "Azimli Ogrenci",
+            "description": "30 gun ust uste calis",
             "category": "study",
             "rarity": "rare",
             "icon": "badge_muscle",
         },
         {
             "id": "consistent_100",
-            "name": "Efsane Öğrenci",
-            "description": "100 gün üst üste çalış",
+            "name": "Efsane Ogrenci",
+            "description": "100 gun ust uste calis",
             "category": "study",
             "rarity": "legendary",
             "icon": "badge_crown",
         },
-        # Sınav Rozetleri
         {
             "id": "first_exam_80",
-            "name": "Parlak Başlangıç",
-            "description": "İlk denemede %80 üzeri al",
+            "name": "Parlak Baslangic",
+            "description": "Ilk denemede %80 uzeri al",
             "category": "exam",
             "rarity": "common",
             "icon": "badge_star",
         },
         {
             "id": "perfect_score",
-            "name": "Mükemmeliyetçi",
+            "name": "Mukemmeliyetci",
             "description": "Tam puan al",
             "category": "exam",
             "rarity": "rare",
             "icon": "badge_100",
         },
-        # Sosyal Rozetler
         {
             "id": "top_10",
-            "name": "Yıldız Öğrenci",
+            "name": "Yildiz Ogrenci",
             "description": "Liderlik tablosunda ilk 10'a gir",
             "category": "social",
             "rarity": "rare",
             "icon": "badge_sparkle",
         },
-        # Özel Rozetler
         {
             "id": "night_owl",
-            "name": "Gece Kuşu",
-            "description": "Gece 00:00-06:00 arası çalış",
+            "name": "Gece Kusu",
+            "description": "Gece 00:00-06:00 arasi calis",
             "category": "special",
             "rarity": "common",
             "icon": "badge_owl",
         },
         {
             "id": "early_bird",
-            "name": "Erken Kuş",
-            "description": "Sabah 05:00-07:00 arası çalış",
+            "name": "Erken Kus",
+            "description": "Sabah 05:00-07:00 arasi calis",
             "category": "special",
             "rarity": "common",
             "icon": "badge_bird",
         },
-        # Milestone Rozetleri
         {
             "id": "level_10",
-            "name": "Seviye 10 Ustası",
-            "description": "10. seviyeye ulaş",
+            "name": "Seviye 10 Ustasi",
+            "description": "10. seviyeye ulas",
             "category": "milestone",
             "rarity": "common",
             "icon": "badge_trophy",
@@ -723,7 +664,7 @@ def get_badge_definitions() -> List[Dict[str, Any]]:
         {
             "id": "level_50",
             "name": "Seviye 50 Efsanesi",
-            "description": "50. seviyeye ulaş",
+            "description": "50. seviyeye ulas",
             "category": "milestone",
             "rarity": "legendary",
             "icon": "badge_crown_gold",
@@ -732,37 +673,29 @@ def get_badge_definitions() -> List[Dict[str, Any]]:
 
 
 # ============================================================================
-# P2.2: New Achievement Endpoints
+# P2.2: Achievement Endpoints (existing DB-backed)
 # ============================================================================
 
 
-@router.get("/achievements", response_model=Dict[str, Any])
+@router.get("/achievements", response_model=dict[str, Any])
 async def get_user_achievements(
     current_user: AuthenticatedUser = Depends(get_current_user),
-    db: Session = Depends(get_db),
+    db: AsyncSession = Depends(get_db_session),
 ):
-    """
-    Kullanıcının tüm başarılarını getir (P2.2)
-
-    Returns:
-        - achievements: Tüm başarılar (tamamlanmış + devam eden)
-        - completed_count: Tamamlanmış başarı sayısı
-        - in_progress_count: Devam eden başarı sayısı
-    """
+    """Kullanicinin tum basarilarini getir (P2.2)."""
     try:
-        user_id = str(current_user.id)
-        logger.info(f"Başarılar API çağrısı - Kullanıcı: {user_id}")
+        from sqlalchemy import select as sa_select
 
-        # Kullanıcının başarılarını getir
-        achievements = (
-            db.query(UserAchievement)
-            .filter(UserAchievement.user_id == UUID(user_id))
+        user_id = str(current_user.id)
+        result = await db.execute(
+            sa_select(UserAchievement)
+            .where(UserAchievement.user_id == UUID(user_id))
             .order_by(
                 UserAchievement.is_completed.desc(),
                 UserAchievement.progress_percentage.desc(),
             )
-            .all()
         )
+        achievements = result.scalars().all()
 
         completed_count = sum(1 for a in achievements if a.is_completed)
         in_progress_count = len(achievements) - completed_count
@@ -775,35 +708,32 @@ async def get_user_achievements(
                 "in_progress_count": in_progress_count,
                 "total_count": len(achievements),
             },
-            "message": "Başarılar başarıyla getirildi",
+            "message": "Basarilar basariyla getirildi",
         }
-
     except Exception as e:
-        logger.error(f"Başarılar getirme hatası: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"Başarılar getirilemedi: {str(e)}")
+        logger.error(f"Basarilar getirme hatasi: {e!s}")
+        raise HTTPException(status_code=500, detail=f"Basarilar getirilemedi: {e!s}")
 
 
-@router.get("/achievements/completed", response_model=Dict[str, Any])
+@router.get("/achievements/completed", response_model=dict[str, Any])
 async def get_completed_achievements(
     current_user: AuthenticatedUser = Depends(get_current_user),
-    db: Session = Depends(get_db),
+    db: AsyncSession = Depends(get_db_session),
 ):
-    """
-    Sadece tamamlanmış başarıları getir (P2.2)
-    """
+    """Sadece tamamlanmis basarilari getir (P2.2)."""
     try:
-        user_id = str(current_user.id)
-        logger.info(f"Tamamlanmış başarılar API çağrısı - Kullanıcı: {user_id}")
+        from sqlalchemy import select as sa_select
 
-        completed = (
-            db.query(UserAchievement)
-            .filter(
+        user_id = str(current_user.id)
+        result = await db.execute(
+            sa_select(UserAchievement)
+            .where(
                 UserAchievement.user_id == UUID(user_id),
-                UserAchievement.is_completed == True,
+                UserAchievement.is_completed == True,  # noqa: E712
             )
             .order_by(UserAchievement.completed_at.desc())
-            .all()
         )
+        completed = result.scalars().all()
 
         return {
             "success": True,
@@ -811,193 +741,154 @@ async def get_completed_achievements(
                 "achievements": [a.to_dict() for a in completed],
                 "count": len(completed),
             },
-            "message": "Tamamlanmış başarılar başarıyla getirildi",
+            "message": "Tamamlanmis basarilar basariyla getirildi",
         }
-
     except Exception as e:
-        logger.error(f"Tamamlanmış başarılar hatası: {str(e)}")
+        logger.error(f"Tamamlanmis basarilar hatasi: {e!s}")
         raise HTTPException(
-            status_code=500, detail=f"Tamamlanmış başarılar getirilemedi: {str(e)}"
+            status_code=500, detail=f"Tamamlanmis basarilar getirilemedi: {e!s}"
         )
 
 
-@router.get("/leaderboard/nearby", response_model=Dict[str, Any])
+@router.get("/leaderboard/nearby", response_model=dict[str, Any])
 async def get_nearby_users_in_leaderboard(
     current_user: AuthenticatedUser = Depends(get_current_user),
     leaderboard_type: str = Query(
-        LeaderboardType.GLOBAL, description="Liderlik tablosu türü"
+        LeaderboardType.GLOBAL, description="Liderlik tablosu turu"
     ),
     range_size: int = Query(
-        5, ge=1, le=20, description="Her iki yöndeki kullanıcı sayısı"
+        5, ge=1, le=20, description="Her iki yondeki kullanici sayisi"
     ),
     db: Session = Depends(get_db),
     redis: Redis = Depends(get_redis_client),
 ):
-    """
-    Liderlik tablosunda kullanıcının yakınındaki kullanıcıları getir (P2.2)
-
-    Args:
-        leaderboard_type: Liderlik tablosu türü (global:xp, weekly:xp, etc.)
-        range_size: Her iki yöndeki kullanıcı sayısı
-    """
+    """Liderlik tablosunda kullanicinin yakinindaki kullanicilari getir (P2.2)."""
     try:
         user_id = str(current_user.id)
-        logger.info(
-            f"Yakındaki kullanıcılar API çağrısı - Kullanıcı: {user_id}, Tür: {leaderboard_type}"
-        )
-
         leaderboard_manager = get_leaderboard_manager(db, redis)
-
         result = leaderboard_manager.get_nearby_users(
             user_id=UUID(user_id),
             leaderboard_type=leaderboard_type,
             range_size=range_size,
             with_details=True,
         )
-
         return {
             "success": True,
             "data": result,
-            "message": "Yakındaki kullanıcılar başarıyla getirildi",
+            "message": "Yakindaki kullanicilar basariyla getirildi",
         }
-
     except Exception as e:
-        logger.error(f"Yakındaki kullanıcılar hatası: {str(e)}")
+        logger.error(f"Yakindaki kullanicilar hatasi: {e!s}")
         raise HTTPException(
-            status_code=500, detail=f"Yakındaki kullanıcılar getirilemedi: {str(e)}"
+            status_code=500, detail=f"Yakindaki kullanicilar getirilemedi: {e!s}"
         )
 
 
-@router.get("/leaderboard/rank", response_model=Dict[str, Any])
+@router.get("/leaderboard/rank", response_model=dict[str, Any])
 async def get_user_leaderboard_rank(
     current_user: AuthenticatedUser = Depends(get_current_user),
     leaderboard_type: str = Query(
-        LeaderboardType.GLOBAL, description="Liderlik tablosu türü"
+        LeaderboardType.GLOBAL, description="Liderlik tablosu turu"
     ),
     db: Session = Depends(get_db),
     redis: Redis = Depends(get_redis_client),
 ):
-    """
-    Kullanıcının liderlik tablosundaki sıralamasını getir (P2.2)
-
-    Returns:
-        - rank: Sıralama
-        - score: Skor
-        - total_users: Toplam kullanıcı sayısı
-        - percentile: Yüzdelik dilim
-    """
+    """Kullanicinin liderlik tablosundaki siralamasini getir (P2.2)."""
     try:
         user_id = str(current_user.id)
-        logger.info(
-            f"Kullanıcı sıralaması API çağrısı - Kullanıcı: {user_id}, Tür: {leaderboard_type}"
-        )
-
         leaderboard_manager = get_leaderboard_manager(db, redis)
-
         rank_info = leaderboard_manager.get_user_rank(
             user_id=UUID(user_id), leaderboard_type=leaderboard_type
         )
-
         if not rank_info:
             return {
                 "success": False,
                 "data": None,
-                "message": "Kullanıcı liderlik tablosunda bulunamadı",
+                "message": "Kullanici liderlik tablosunda bulunamadi",
             }
-
         return {
             "success": True,
             "data": rank_info,
-            "message": "Kullanıcı sıralaması başarıyla getirildi",
+            "message": "Kullanici siralamasi basariyla getirildi",
         }
-
     except Exception as e:
-        logger.error(f"Kullanıcı sıralaması hatası: {str(e)}")
+        logger.error(f"Kullanici siralamasi hatasi: {e!s}")
         raise HTTPException(
-            status_code=500, detail=f"Kullanıcı sıralaması getirilemedi: {str(e)}"
+            status_code=500, detail=f"Kullanici siralamasi getirilemedi: {e!s}"
         )
 
 
-@router.get("/leaderboard/stats", response_model=Dict[str, Any])
+@router.get("/leaderboard/stats", response_model=dict[str, Any])
 async def get_leaderboard_statistics(
     current_user: AuthenticatedUser = Depends(get_current_user),
     leaderboard_type: str = Query(
-        LeaderboardType.GLOBAL, description="Liderlik tablosu türü"
+        LeaderboardType.GLOBAL, description="Liderlik tablosu turu"
     ),
     db: Session = Depends(get_db),
     redis: Redis = Depends(get_redis_client),
 ):
-    """
-    Liderlik tablosu istatistiklerini getir (P2.2)
-
-    Returns:
-        - total_users: Toplam kullanıcı sayısı
-        - top_score: En yüksek skor
-        - avg_score: Ortalama skor
-    """
+    """Liderlik tablosu istatistiklerini getir (P2.2)."""
     try:
-        logger.info(
-            f"Liderlik tablosu istatistikleri API çağrısı - Tür: {leaderboard_type}"
-        )
-
         leaderboard_manager = get_leaderboard_manager(db, redis)
-
         stats = leaderboard_manager.get_leaderboard_stats(leaderboard_type)
-
         return {
             "success": True,
             "data": stats,
-            "message": "Liderlik tablosu istatistikleri başarıyla getirildi",
+            "message": "Liderlik tablosu istatistikleri basariyla getirildi",
         }
-
     except Exception as e:
-        logger.error(f"Liderlik tablosu istatistikleri hatası: {str(e)}")
+        logger.error(f"Liderlik tablosu istatistikleri hatasi: {e!s}")
         raise HTTPException(
-            status_code=500,
-            detail=f"Liderlik tablosu istatistikleri alınamadı: {str(e)}",
+            status_code=500, detail=f"Liderlik tablosu istatistikleri alinamadi: {e!s}"
         )
 
 
 # ============================================================================
-# F14: Segmented Leaderboard — Peer Group + Improvement Tracking
+# F14: Segmented Leaderboard
 # ============================================================================
 
 
-@router.get("/leaderboard/peer-group", response_model=Dict[str, Any])
+@router.get("/leaderboard/peer-group", response_model=dict[str, Any])
 async def get_peer_group_leaderboard(
     current_user: AuthenticatedUser = Depends(get_current_user),
-    limit: int = Query(20, ge=1, le=100, description="Kaç kişi gösterilecek"),
+    db: AsyncSession = Depends(get_db_session),
+    limit: int = Query(20, ge=1, le=100, description="Kac kisi gosterilecek"),
     period: str = Query("weekly", description="Zaman dilimi (weekly, monthly)"),
 ):
-    """
-    Benzer seviye öğrenciler arasında sıralama.
-
-    IRT ability yakınlığına göre gruplar (±0.5 logit).
-    Mutlak puan yerine haftalık gelişim (delta) gösterir.
-    """
+    """Benzer seviye ogrenciler arasinda siralama (DB-backed)."""
     try:
         user_id = str(current_user.id)
-        # Phase 1: demo peer group based on in-memory points
-        user_points = _user_points.get(user_id, 0)
+        from sqlalchemy import select
 
-        # Find peers within ±20% score range (placeholder for IRT ±0.5 logit)
-        tolerance = max(50, int(user_points * 0.2))
-        peers = [
-            (uid, pts)
-            for uid, pts in _user_points.items()
-            if abs(pts - user_points) <= tolerance
-        ]
-        peers.sort(key=lambda x: x[1], reverse=True)
+        from models.database import User
+
+        # Get user's XP
+        user_result = await db.execute(select(User.total_xp).where(User.id == user_id))
+        user_row = user_result.first()
+        user_xp = user_row[0] if user_row else 0
+
+        # Find peers within +/- 20% range
+        tolerance = max(50, int(user_xp * 0.2))
+        stmt = (
+            select(User.id, User.total_xp)
+            .where(User.total_xp.between(user_xp - tolerance, user_xp + tolerance))
+            .order_by(User.total_xp.desc())
+            .limit(limit)
+        )
+        result = await db.execute(stmt)
+        peers = result.fetchall()
 
         entries = []
-        for rank, (uid, pts) in enumerate(peers[:limit], 1):
-            entries.append({
-                "user_id": uid,
-                "points": pts,
-                "rank": rank,
-                "is_current_user": uid == user_id,
-                "improvement": 0,  # placeholder — will use weekly delta
-            })
+        for rank, (uid, xp) in enumerate(peers, 1):
+            entries.append(
+                {
+                    "user_id": str(uid),
+                    "points": xp or 0,
+                    "rank": rank,
+                    "is_current_user": str(uid) == user_id,
+                    "improvement": 0,
+                }
+            )
 
         return {
             "success": True,
@@ -1005,58 +896,57 @@ async def get_peer_group_leaderboard(
                 "entries": entries,
                 "total_peers": len(peers),
                 "user_rank": next(
-                    (e["rank"] for e in entries if e["is_current_user"]),
-                    None,
+                    (e["rank"] for e in entries if e["is_current_user"]), None
                 ),
                 "period": period,
             },
         }
-
     except Exception as e:
-        logger.error(f"Peer group leaderboard hatası: {str(e)}")
+        logger.error(f"Peer group leaderboard hatasi: {e!s}")
         raise HTTPException(
-            status_code=500,
-            detail=f"Peer group leaderboard alınamadı: {str(e)}",
+            status_code=500, detail=f"Peer group leaderboard alinamadi: {e!s}"
         )
 
 
-@router.get("/leaderboard/improvement", response_model=Dict[str, Any])
+@router.get("/leaderboard/improvement", response_model=dict[str, Any])
 async def get_improvement_leaderboard(
     current_user: AuthenticatedUser = Depends(get_current_user),
-    limit: int = Query(10, ge=1, le=50, description="Top N gelişim"),
+    db: AsyncSession = Depends(get_db_session),
+    limit: int = Query(10, ge=1, le=50, description="Top N gelisim"),
 ):
-    """
-    Bu haftanın en çok gelişen öğrencileri.
-
-    Mutlak puan yerine delta (bu hafta - geçen hafta) ile sıralama.
-    """
+    """Bu haftanin en cok gelisen ogrencileri (DB-backed)."""
     try:
-        # Phase 1: placeholder — points are static, delta = 0
-        # Phase 2: weekly snapshots → real delta calculation
+        from sqlalchemy import select
+
+        from models.database import User
+
+        stmt = (
+            select(User.id, User.total_xp)
+            .where(User.total_xp > 0)
+            .order_by(User.total_xp.desc())
+            .limit(limit)
+        )
+        result = await db.execute(stmt)
+        rows = result.fetchall()
+
         entries = []
-        for rank, (uid, pts) in enumerate(
-            sorted(_user_points.items(), key=lambda x: x[1], reverse=True)[:limit],
-            1,
-        ):
-            entries.append({
-                "user_id": uid,
-                "current_points": pts,
-                "previous_points": pts,  # placeholder
-                "improvement": 0,
-                "rank": rank,
-            })
+        for rank, (uid, xp) in enumerate(rows, 1):
+            entries.append(
+                {
+                    "user_id": str(uid),
+                    "current_points": xp or 0,
+                    "previous_points": xp or 0,
+                    "improvement": 0,
+                    "rank": rank,
+                }
+            )
 
         return {
             "success": True,
-            "data": {
-                "entries": entries,
-                "period": "weekly",
-            },
+            "data": {"entries": entries, "period": "weekly"},
         }
-
     except Exception as e:
-        logger.error(f"Improvement leaderboard hatası: {str(e)}")
+        logger.error(f"Improvement leaderboard hatasi: {e!s}")
         raise HTTPException(
-            status_code=500,
-            detail=f"Improvement leaderboard alınamadı: {str(e)}",
+            status_code=500, detail=f"Improvement leaderboard alinamadi: {e!s}"
         )

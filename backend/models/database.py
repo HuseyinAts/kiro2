@@ -17,45 +17,54 @@ Modeller domain dosyalarına ayrıştırıldı (2026-01-10):
 """
 
 # Re-export Base
+# Re-export Analytics models
+from .analytics_db import LearningAnalytics
 from .base import Base
-
-# Re-export Enums
-from .enums_db import (
-    UserRole,
-    ExamType,
-    QuestionDifficulty,
-    LearningStyle,
-    SubjectArea,
-    EBAContentCategory,
-    EBAGradeLevel,
-    EBAVideoQuality,
-)
-
-# Re-export User models
-from .user_models import (
-    User,
-    StudentProfile,
-    TeacherProfile,
-    ParentProfile,
-)
 
 # Re-export Content models
 from .content_db import (
-    Question,
+    ClassRoom,
     EducationalContent,
     EgitimIcerigi,  # Legacy alias
-    ClassRoom,
+    Question,
+)
+
+# Re-export Curriculum models
+from .curriculum_db import (
+    CurriculumAlignmentDB,
+    CurriculumUpdateRequestDB,
+    LearningOutcomeDB,
+    MEBCurriculumStandardDB,
+    OSYMStandardDB,
+)
+
+# Re-export EBA models
+from .eba_models import (
+    EBAContentAnalytics,
+    EBAContentCollection,
+    EBAVideo,
+    EBAVideoRecommendation,
+    EBAVideoUsage,
+)
+
+# Re-export Enums
+from .enums_db import (
+    EBAContentCategory,
+    EBAGradeLevel,
+    EBAVideoQuality,
+    ExamType,
+    LearningStyle,
+    QuestionDifficulty,
+    SubjectArea,
+    UserRole,
 )
 
 # Re-export Exam models
 from .exam_db import (
-    ExamSession,
     ExamQuestion,
+    ExamSession,
     StudentAnswer,
 )
-
-# Re-export Analytics models
-from .analytics_db import LearningAnalytics
 
 # Re-export FSRS models
 from .fsrs_models import (
@@ -67,62 +76,51 @@ from .fsrs_models import (
     FSRSSubjectStats,
 )
 
-# Re-export EBA models
-from .eba_models import (
-    EBAVideo,
-    EBAVideoUsage,
-    EBAVideoRecommendation,
-    EBAContentCollection,
-    EBAContentAnalytics,
-)
-
 # Re-export Gamification/Manipulatives models
 from .gamification_db import (
-    ManipulativeProgress,
     ManipulativeActivity,
+    ManipulativeProgress,
     WeeklyProgress,
 )
-
-# Re-export System models
-from .system_models import (
-    RefreshToken,
-    APIKey,
-    SystemConfiguration,
-    AuditLog,
-    Session,
-)
-
-# Re-export Report models
-from .reports_models import (
-    StudentGoal,
-    Notification,
-    ParentReport,
-    ParentApproval,
-    StudentGrade,
-    ClassReport,
-)
-
-# Import gamification models for User relationships
-from .user_badge import UserBadge  # noqa: F401
-from .user_achievement import UserAchievement  # noqa: F401
-from .point_transaction import PointTransaction  # noqa: F401
+from .notification import Notification
+from .point_transaction import PointTransaction
 
 # Re-export Quality Gates models
 from .quality_gates_db import (
-    QualityGatesRun,
     GateResultRecord,
     OverrideAuditLog,
+    QualityGatesRun,
+)
+from .reports_models import (
+    ClassReport,
+    ParentApproval,
+    ParentReport,
+    StudentGrade,
 )
 
-# Re-export Curriculum models
-from .curriculum_db import (
-    MEBCurriculumStandardDB,
-    OSYMStandardDB,
-    LearningOutcomeDB,
-    CurriculumAlignmentDB,
-    CurriculumUpdateRequestDB,
-)
+# Re-export Report models (StudentGoal, Notification moved to canonical files)
+from .student_goal import StudentGoal
 
+# Re-export System models
+from .system_models import (
+    APIKey,
+    AuditLog,
+    RefreshToken,
+    Session,
+    SystemConfiguration,
+)
+from .user_achievement import UserAchievement
+
+# Import gamification models for User relationships
+from .user_badge import UserBadge
+
+# Re-export User models
+from .user_models import (
+    ParentProfile,
+    StudentProfile,
+    TeacherProfile,
+    User,
+)
 
 __all__ = [
     # Base

@@ -7,12 +7,15 @@ Part of Mock Data Cleanup - Phase 4
 
 import logging
 import uuid
-from datetime import datetime, timezone
-from typing import Any, Dict, List, Optional
-from sqlalchemy.orm import Session
+from datetime import UTC, datetime
+from typing import Any
+
+from sqlalchemy import func as sa_func
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.cache import cache_manager
-from models import StudentLearningProfile, LearningAnalytics, ExamSession
+from models import ExamSession, LearningAnalytics, StudentLearningProfile
 
 logger = logging.getLogger(__name__)
 
@@ -26,7 +29,7 @@ class LearningStyleService:
     - Removed self.student_profiles in-memory dictionary
     - All data now persisted in student_learning_profiles table
     - Real behavioral analysis replaces hardcoded scores
-    - Dependency injection: db: Session parameter
+    - Dependency injection: db: AsyncSession parameter
     """
 
     def __init__(self):
@@ -45,10 +48,10 @@ class LearningStyleService:
     async def detect_learning_style(
         self,
         student_id: str,
-        db: Session,
-        behavioral_data: Dict[str, Any],
-        questionnaire_responses: Optional[List[str]] = None,
-    ) -> Dict[str, Any]:
+        db: AsyncSession,
+        behavioral_data: dict[str, Any],
+        questionnaire_responses: list[str] | None = None,
+    ) -> dict[str, Any]:
         """
         Hibrit öğrenme stilini tespit et
 
@@ -68,9 +71,12 @@ class LearningStyleService:
             logger.info(f"Cache miss: {student_id} - analyzing behavioral data")
 
             # Check if profile exists in database
-            existing_profile = db.query(StudentLearningProfile).filter(
-                StudentLearningProfile.student_id == student_id
-            ).first()
+            result = await db.execute(
+                select(StudentLearningProfile).where(
+                    StudentLearningProfile.student_id == student_id
+                )
+            )
+            existing_profile = result.scalar_one_or_none()
 
             # If profile exists and is recent (< 30 days), return it
             if existing_profile and not existing_profile.needs_update:
@@ -79,13 +85,19 @@ class LearningStyleService:
                 return profile_dict
 
             # Calculate VARK profile from behavioral data
-            vark_profile = await self._calculate_vark_profile(student_id, db, behavioral_data)
+            vark_profile = await self._calculate_vark_profile(
+                student_id, db, behavioral_data
+            )
 
             # Calculate Felder-Silverman profile from behavioral data
-            felder_profile = await self._calculate_felder_profile(student_id, db, behavioral_data)
+            felder_profile = await self._calculate_felder_profile(
+                student_id, db, behavioral_data
+            )
 
             # Calculate confidence score based on data availability
-            confidence_score = self._calculate_confidence(behavioral_data, questionnaire_responses)
+            confidence_score = self._calculate_confidence(
+                behavioral_data, questionnaire_responses
+            )
 
             # Generate hybrid code
             hibrit_kod = self._generate_hibrit_code(vark_profile, felder_profile)
@@ -104,21 +116,29 @@ class LearningStyleService:
                 existing_profile.vark_auditory = vark_profile["auditory"]
                 existing_profile.vark_reading = vark_profile["reading"]
                 existing_profile.vark_kinesthetic = vark_profile["kinesthetic"]
-                existing_profile.felder_active_reflective = felder_profile["active_reflective"]
-                existing_profile.felder_sensing_intuitive = felder_profile["sensing_intuitive"]
+                existing_profile.felder_active_reflective = felder_profile[
+                    "active_reflective"
+                ]
+                existing_profile.felder_sensing_intuitive = felder_profile[
+                    "sensing_intuitive"
+                ]
                 existing_profile.felder_visual_verbal = felder_profile["visual_verbal"]
-                existing_profile.felder_sequential_global = felder_profile["sequential_global"]
+                existing_profile.felder_sequential_global = felder_profile[
+                    "sequential_global"
+                ]
                 existing_profile.hybrid_code = hibrit_kod
                 existing_profile.dominant_vark_style = dominant_vark
                 existing_profile.dominant_felder_dimension = dominant_felder
                 existing_profile.confidence_score = confidence_score
                 existing_profile.profile_description = profile_description
                 existing_profile.behavioral_data_snapshot = str(behavioral_data)
-                existing_profile.questionnaire_responses = str(questionnaire_responses) if questionnaire_responses else None
-                existing_profile.updated_at = datetime.now(timezone.utc)
+                existing_profile.questionnaire_responses = (
+                    str(questionnaire_responses) if questionnaire_responses else None
+                )
+                existing_profile.updated_at = datetime.now(UTC)
 
-                db.commit()
-                db.refresh(existing_profile)
+                await db.commit()
+                await db.refresh(existing_profile)
                 profile = existing_profile
             else:
                 # Create new profile
@@ -139,12 +159,14 @@ class LearningStyleService:
                     confidence_score=confidence_score,
                     profile_description=profile_description,
                     behavioral_data_snapshot=str(behavioral_data),
-                    questionnaire_responses=str(questionnaire_responses) if questionnaire_responses else None,
+                    questionnaire_responses=str(questionnaire_responses)
+                    if questionnaire_responses
+                    else None,
                 )
 
                 db.add(new_profile)
-                db.commit()
-                db.refresh(new_profile)
+                await db.commit()
+                await db.refresh(new_profile)
                 profile = new_profile
 
             # Convert to dict for response
@@ -152,19 +174,21 @@ class LearningStyleService:
 
             # Cache'e kaydet (1 saat TTL)
             await cache_manager.set(cache_key, hibrit_profil, ttl=3600)
-            logger.info(f"Profile saved to database: {student_id} -> {hibrit_kod} (confidence: {confidence_score:.2f})")
+            logger.info(
+                f"Profile saved to database: {student_id} -> {hibrit_kod} (confidence: {confidence_score:.2f})"
+            )
 
             return hibrit_profil
 
         except Exception as e:
             logger.error(
-                f"Öğrenme stili tespit hatası - Öğrenci: {student_id}, Hata: {str(e)}"
+                f"Öğrenme stili tespit hatası - Öğrenci: {student_id}, Hata: {e!s}"
             )
             raise
 
     async def _calculate_vark_profile(
-        self, student_id: str, db: Session, behavioral_data: Dict[str, Any]
-    ) -> Dict[str, float]:
+        self, student_id: str, db: AsyncSession, behavioral_data: dict[str, Any]
+    ) -> dict[str, float]:
         """
         Calculate VARK profile from real behavioral data
 
@@ -175,9 +199,10 @@ class LearningStyleService:
         - Kinesthetic: Interactive exercises, hands-on activities
         """
         # Get learning analytics data
-        analytics = db.query(LearningAnalytics).filter(
-            LearningAnalytics.student_id == student_id
-        ).all()
+        result = await db.execute(
+            select(LearningAnalytics).where(LearningAnalytics.student_id == student_id)
+        )
+        analytics = result.scalars().all()
 
         # Initialize scores
         vark_scores = {
@@ -220,7 +245,9 @@ class LearningStyleService:
             vark_scores["visual"] = min(1.0, (video_time / total_content_time) * 1.5)
             vark_scores["auditory"] = min(1.0, (audio_time / total_content_time) * 1.5)
             vark_scores["reading"] = min(1.0, (reading_time / total_content_time) * 1.5)
-            vark_scores["kinesthetic"] = min(1.0, (interactive_time / total_content_time) * 1.5)
+            vark_scores["kinesthetic"] = min(
+                1.0, (interactive_time / total_content_time) * 1.5
+            )
         else:
             # No specific content data - use question performance patterns
             # Students who solve more problems tend to be kinesthetic
@@ -245,8 +272,8 @@ class LearningStyleService:
         return vark_scores
 
     async def _calculate_felder_profile(
-        self, student_id: str, db: Session, behavioral_data: Dict[str, Any]
-    ) -> Dict[str, float]:
+        self, student_id: str, db: AsyncSession, behavioral_data: dict[str, Any]
+    ) -> dict[str, float]:
         """
         Calculate Felder-Silverman profile from behavioral data
 
@@ -257,9 +284,10 @@ class LearningStyleService:
         - Sequential/Global: Linear vs holistic learning path
         """
         # Get exam sessions for performance patterns
-        exam_sessions = db.query(ExamSession).filter(
-            ExamSession.student_id == student_id
-        ).all()
+        result = await db.execute(
+            select(ExamSession).where(ExamSession.student_id == student_id)
+        )
+        exam_sessions = result.scalars().all()
 
         # Initialize scores (-1 to +1 range)
         felder_scores = {
@@ -281,7 +309,9 @@ class LearningStyleService:
 
         # Active/Reflective (-1=reflective, +1=active)
         if group_study_time + solo_study_time > 0:
-            ratio = (group_study_time - solo_study_time) / (group_study_time + solo_study_time)
+            ratio = (group_study_time - solo_study_time) / (
+                group_study_time + solo_study_time
+            )
             felder_scores["active_reflective"] = max(-1.0, min(1.0, ratio))
         else:
             # Default: slightly reflective (students tend to study alone for exams)
@@ -294,16 +324,22 @@ class LearningStyleService:
         if len(exam_sessions) > 3:
             scores = [e.scaled_score for e in exam_sessions if e.scaled_score]
             if scores:
-                variance = sum((x - sum(scores) / len(scores)) ** 2 for x in scores) / len(scores)
+                variance = sum(
+                    (x - sum(scores) / len(scores)) ** 2 for x in scores
+                ) / len(scores)
                 # Low variance -> sensing (consistent, methodical)
                 # High variance -> intuitive (creative, varied approach)
-                felder_scores["sensing_intuitive"] = max(-1.0, min(1.0, 0.5 - variance / 100))
+                felder_scores["sensing_intuitive"] = max(
+                    -1.0, min(1.0, 0.5 - variance / 100)
+                )
         else:
             felder_scores["sensing_intuitive"] = 0.0
 
         # Visual/Verbal (-1=verbal, +1=visual)
         if visual_content_time + text_content_time > 0:
-            ratio = (visual_content_time - text_content_time) / (visual_content_time + text_content_time)
+            ratio = (visual_content_time - text_content_time) / (
+                visual_content_time + text_content_time
+            )
             felder_scores["visual_verbal"] = max(-1.0, min(1.0, ratio))
         else:
             # Default: slightly visual (modern students prefer visual content)
@@ -326,7 +362,7 @@ class LearningStyleService:
         return felder_scores
 
     def _calculate_confidence(
-        self, behavioral_data: Dict[str, Any], questionnaire_responses: Optional[List[str]]
+        self, behavioral_data: dict[str, Any], questionnaire_responses: list[str] | None
     ) -> float:
         """
         Calculate confidence score based on data availability
@@ -348,12 +384,18 @@ class LearningStyleService:
             "solo_study_minutes",
         ]
 
-        available_data = sum(1 for key in data_points if behavioral_data.get(key, 0) > 0)
-        confidence += (available_data / len(data_points)) * 0.6  # Up to 0.6 from behavioral data
+        available_data = sum(
+            1 for key in data_points if behavioral_data.get(key, 0) > 0
+        )
+        confidence += (
+            available_data / len(data_points)
+        ) * 0.6  # Up to 0.6 from behavioral data
 
         # Boost from questionnaire responses
         if questionnaire_responses and len(questionnaire_responses) > 0:
-            confidence += min(0.3, len(questionnaire_responses) * 0.05)  # Up to 0.3 from survey
+            confidence += min(
+                0.3, len(questionnaire_responses) * 0.05
+            )  # Up to 0.3 from survey
 
         # Minimum baseline confidence
         confidence = max(0.3, confidence)  # At least 0.3 (low but valid)
@@ -361,7 +403,7 @@ class LearningStyleService:
 
         return round(confidence, 2)
 
-    def _profile_to_dict(self, profile: StudentLearningProfile) -> Dict[str, Any]:
+    def _profile_to_dict(self, profile: StudentLearningProfile) -> dict[str, Any]:
         """Convert StudentLearningProfile ORM model to dictionary"""
         return {
             "student_id": profile.student_id,
@@ -376,8 +418,8 @@ class LearningStyleService:
         }
 
     async def get_learning_recommendations(
-        self, student_id: str, db: Session, subject: str = "genel"
-    ) -> List[Dict[str, Any]]:
+        self, student_id: str, db: AsyncSession, subject: str = "genel"
+    ) -> list[dict[str, Any]]:
         """
         Öğrenme stiline göre öneriler oluştur
 
@@ -385,16 +427,22 @@ class LearningStyleService:
         """
         try:
             # Get profile from database
-            profile_model = db.query(StudentLearningProfile).filter(
-                StudentLearningProfile.student_id == student_id
-            ).first()
+            result = await db.execute(
+                select(StudentLearningProfile).where(
+                    StudentLearningProfile.student_id == student_id
+                )
+            )
+            profile_model = result.scalar_one_or_none()
 
             if not profile_model:
                 # No profile yet - detect it first
-                profile_dict = await self.detect_learning_style(student_id, db, {})
-                profile_model = db.query(StudentLearningProfile).filter(
-                    StudentLearningProfile.student_id == student_id
-                ).first()
+                await self.detect_learning_style(student_id, db, {})
+                result = await db.execute(
+                    select(StudentLearningProfile).where(
+                        StudentLearningProfile.student_id == student_id
+                    )
+                )
+                profile_model = result.scalar_one_or_none()
 
             if not profile_model:
                 return []
@@ -459,12 +507,12 @@ class LearningStyleService:
 
         except Exception as e:
             logger.error(
-                f"Öğrenme önerileri hatası - Öğrenci: {student_id}, Hata: {str(e)}"
+                f"Öğrenme önerileri hatası - Öğrenci: {student_id}, Hata: {e!s}"
             )
             raise
 
     def _generate_hibrit_code(
-        self, vark_profile: Dict[str, float], felder_profile: Dict[str, float]
+        self, vark_profile: dict[str, float], felder_profile: dict[str, float]
     ) -> str:
         """
         Hibrit kod oluştur (64 kombinasyondan biri)
@@ -522,29 +570,35 @@ class LearningStyleService:
         return f"Hibrit öğrenme profili {hibrit_kod}: Bu profil, VARK ve Felder-Silverman modellerinin birleşiminden oluşur."
 
     async def get_student_profile(
-        self, student_id: str, db: Session
-    ) -> Optional[Dict[str, Any]]:
+        self, student_id: str, db: AsyncSession
+    ) -> dict[str, Any] | None:
         """
         Öğrenci profilini getir
 
         REFACTORED: Queries database instead of in-memory dict
         """
-        profile = db.query(StudentLearningProfile).filter(
-            StudentLearningProfile.student_id == student_id
-        ).first()
+        result = await db.execute(
+            select(StudentLearningProfile).where(
+                StudentLearningProfile.student_id == student_id
+            )
+        )
+        profile = result.scalar_one_or_none()
 
         if not profile:
             return None
 
         return self._profile_to_dict(profile)
 
-    async def get_service_stats(self, db: Session) -> Dict[str, Any]:
+    async def get_service_stats(self, db: AsyncSession) -> dict[str, Any]:
         """
         Servis istatistikleri
 
         REFACTORED: Queries database for real stats
         """
-        total_profiles = db.query(StudentLearningProfile).count()
+        result = await db.execute(
+            select(sa_func.count()).select_from(StudentLearningProfile)
+        )
+        total_profiles = result.scalar() or 0
 
         return {
             "toplam_profil_sayisi": total_profiles,
@@ -553,7 +607,7 @@ class LearningStyleService:
             "toplam_kombinasyon": 64,
         }
 
-    async def get_all_hybrid_codes(self) -> List[Dict[str, Any]]:
+    async def get_all_hybrid_codes(self) -> list[dict[str, Any]]:
         """
         Tüm 64 hibrit kod ve açıklamalarını döndür (CACHED - 1 saat, static data)
         """
@@ -631,7 +685,7 @@ class LearningStyleService:
         logger.info(f"Toplam {len(hybrid_codes)} hibrit kod döndürüldü ve cache'lendi")
         return hybrid_codes
 
-    async def get_learning_style_statistics(self, db: Session) -> Dict[str, Any]:
+    async def get_learning_style_statistics(self, db: AsyncSession) -> dict[str, Any]:
         """
         Öğrenme stili istatistikleri (CACHED - 5 dakika)
 
@@ -647,11 +701,12 @@ class LearningStyleService:
         logger.info("Cache miss: statistics - calculating from database...")
 
         # Get all profiles from database
-        all_profiles = db.query(StudentLearningProfile).all()
+        result = await db.execute(select(StudentLearningProfile))
+        all_profiles = result.scalars().all()
 
         # Calculate distributions
-        vark_distribution = {dim: 0 for dim in self.vark_dimensions}
-        felder_distribution = {dim: 0 for dim in self.felder_dimensions}
+        vark_distribution = dict.fromkeys(self.vark_dimensions, 0)
+        felder_distribution = dict.fromkeys(self.felder_dimensions, 0)
         hybrid_code_distribution = {}
 
         for profile in all_profiles:

@@ -162,8 +162,8 @@ class BKTService:
     @classmethod
     async def record_answer(
         cls,
-        student_id: int,
-        topic_id: int,
+        student_id: str,
+        topic_id: str,
         subject_slug: str,
         correct: bool,
         rating: int,

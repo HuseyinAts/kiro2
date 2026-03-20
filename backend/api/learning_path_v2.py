@@ -1206,6 +1206,7 @@ async def submit_quiz(
 
         # Build correct_answers map from database
         correct_answers: dict[str, str] = {}
+        q_meta: dict[str, dict] = {}
         passing_score = 70.0  # Default
 
         if quiz:
@@ -1219,6 +1220,10 @@ async def submit_quiz(
             )
             for quiz_question, question in quiz_questions_result.all():
                 correct_answers[question.id] = question.correct_answer
+                q_meta[question.id] = {
+                    "topic_id": question.primary_topic_id,
+                    "subject": (question.subject_area or "MATEMATIK").lower(),
+                }
 
             logger.info(
                 f"Quiz {quiz_id} found with {len(correct_answers)} questions, "
@@ -1235,6 +1240,10 @@ async def submit_quiz(
                 )
                 for question in questions_result.scalars().all():
                     correct_answers[question.id] = question.correct_answer
+                    q_meta[question.id] = {
+                        "topic_id": question.primary_topic_id,
+                        "subject": (question.subject_area or "MATEMATIK").lower(),
+                    }
 
             logger.info(
                 f"Quiz {quiz_id} not in database, using direct question lookup. "
@@ -1299,6 +1308,24 @@ async def submit_quiz(
         )
         db.add(quiz_submission_record)
         await db.commit()
+
+        # Central event service: BKT + XP + Streak (best-effort per subsystem)
+        try:
+            from services.learning_event_service import LearningEventService
+
+            event_report = await LearningEventService.on_quiz_completed(
+                student_id=student_id,
+                question_results=question_results,
+                q_meta=q_meta,
+                score=score,
+                passed=passed,
+                db=db,
+            )
+            logger.info("Quiz event report: %s", event_report)
+        except Exception as event_err:
+            logger.warning(
+                "Quiz event processing skipped (non-critical): %s", event_err
+            )
 
         logger.info(f"Quiz {quiz_id} results - Score: {score:.1f}%, Passed: {passed}")
 

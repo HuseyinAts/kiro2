@@ -8,14 +8,15 @@ Bu modül ÖSYM formatında TYT/AYT/YDT sınavları için API endpoint'lerini sa
 - Performans analizi ve raporlama
 - Otomatik kaydetme ve oturum yönetimi
 """
+
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import HTTPBearer
 from pydantic import BaseModel, Field
 
-from core.dependencies import get_current_user, AuthenticatedUser
+from core.dependencies import AuthenticatedUser, get_current_user
 from core.osym_exam_engine import ExamStatus, osym_exam_engine
 from core.structured_logger import get_logger
 from models.database import ExamType
@@ -33,7 +34,7 @@ class CreateExamRequest(BaseModel):
     """Sınav oluşturma isteği"""
 
     exam_type: ExamType = Field(..., description="Sınav türü (TYT/AYT/YDT)")
-    custom_config: Optional[Dict[str, Any]] = Field(
+    custom_config: dict[str, Any] | None = Field(
         None, description="Özel sınav konfigürasyonları"
     )
 
@@ -59,12 +60,10 @@ class SaveAnswerRequest(BaseModel):
     """Cevap kaydetme isteği"""
 
     question_id: str = Field(..., description="Soru ID")
-    selected_answer: Optional[str] = Field(
+    selected_answer: str | None = Field(
         None, description="Seçilen cevap (A, B, C, D, E)"
     )
-    response_time: Optional[float] = Field(
-        None, description="Cevaplama süresi (saniye)"
-    )
+    response_time: float | None = Field(None, description="Cevaplama süresi (saniye)")
 
     model_config = {
         "json_schema_extra": {
@@ -98,9 +97,7 @@ class NavigateQuestionRequest(BaseModel):
 
     question_index: int = Field(..., description="Hedef soru indeksi (0-based)", ge=0)
 
-    model_config = {
-        "json_schema_extra": {"example": {"question_index": 15}}
-    }
+    model_config = {"json_schema_extra": {"example": {"question_index": 15}}}
 
 
 class ExamSessionResponse(BaseModel):
@@ -113,8 +110,8 @@ class ExamSessionResponse(BaseModel):
     total_questions: int
     duration_minutes: int
     current_question_index: int
-    started_at: Optional[datetime]
-    completed_at: Optional[datetime]
+    started_at: datetime | None
+    completed_at: datetime | None
 
     model_config = {
         "json_schema_extra": {
@@ -138,15 +135,15 @@ class QuestionResponse(BaseModel):
 
     id: str
     question_text: str
-    question_image_url: Optional[str]
-    image_alt_text: Optional[str] = None
-    image_width: Optional[int] = None
-    image_height: Optional[int] = None
+    question_image_url: str | None
+    image_alt_text: str | None = None
+    image_width: int | None = None
+    image_height: int | None = None
     option_a: str
     option_b: str
     option_c: str
     option_d: str
-    option_e: Optional[str]
+    option_e: str | None
     subject_area: str
     topic: str
     difficulty: str
@@ -182,7 +179,7 @@ class PerformanceResponse(BaseModel):
     empty_answers: int
     net_score: float
     raw_score: float
-    percentile: Optional[float]
+    percentile: float | None
     estimated_ability: float
     confidence_level: float
 
@@ -233,13 +230,13 @@ class SubjectPerformanceResponse(BaseModel):
 
 
 @router.get(
-    "/my-exams", response_model=List[ExamSessionResponse], summary="Benim Sınavlarım"
+    "/my-exams", response_model=list[ExamSessionResponse], summary="Benim Sınavlarım"
 )
 async def get_my_exams(
     current_user: AuthenticatedUser = Depends(get_current_user),
     limit: int = 20,
     offset: int = 0,
-) -> List[ExamSessionResponse]:
+) -> list[ExamSessionResponse]:
     """
     Kullanıcının tüm sınavlarını listele
 
@@ -284,7 +281,7 @@ async def get_my_exams(
 @router.get("/exam-configs", summary="Sınav Konfigürasyonları")
 async def get_exam_configs(
     current_user: AuthenticatedUser = Depends(get_current_user),
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """
     ÖSYM sınav konfigürasyonlarını getir
 
@@ -323,7 +320,8 @@ async def get_exam_configs(
     "/create", response_model=ExamSessionResponse, summary="ÖSYM Sınavı Oluştur"
 )
 async def create_exam(
-    request: CreateExamRequest, current_user: AuthenticatedUser = Depends(get_current_user)
+    request: CreateExamRequest,
+    current_user: AuthenticatedUser = Depends(get_current_user),
 ) -> ExamSessionResponse:
     """
     Yeni ÖSYM formatında sınav oturumu oluştur
@@ -514,7 +512,9 @@ async def get_current_question(
             id=question.id,
             question_text=question.question_text,
             question_image_url=question.question_image_url,
-            image_alt_text=question.image_ocr_text[:200] if question.image_ocr_text else None,
+            image_alt_text=question.image_ocr_text[:200]
+            if question.image_ocr_text
+            else None,
             image_width=question.image_width,
             image_height=question.image_height,
             option_a=question.option_a,
@@ -524,7 +524,9 @@ async def get_current_question(
             option_e=question.option_e,
             subject_area=question.subject_area,
             topic=question.primary_topic_id or question.subject_area,
-            difficulty=question.difficulty_level.value if question.difficulty_level else "medium",
+            difficulty=question.difficulty_level.value
+            if question.difficulty_level
+            else "medium",
             question_order=session_data.current_question_index + 1,
         )
 
@@ -549,7 +551,7 @@ async def save_answer(
     session_id: str,
     request: SaveAnswerRequest,
     current_user: AuthenticatedUser = Depends(get_current_user),
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """
     Soru cevabını kaydet (otomatik kaydetme ile)
 
@@ -658,7 +660,9 @@ async def navigate_to_question(
             id=question.id,
             question_text=question.question_text,
             question_image_url=question.question_image_url,
-            image_alt_text=question.image_ocr_text[:200] if question.image_ocr_text else None,
+            image_alt_text=question.image_ocr_text[:200]
+            if question.image_ocr_text
+            else None,
             image_width=question.image_width,
             image_height=question.image_height,
             option_a=question.option_a,
@@ -668,7 +672,9 @@ async def navigate_to_question(
             option_e=question.option_e,
             subject_area=question.subject_area,
             topic=question.primary_topic_id or question.subject_area,
-            difficulty=question.difficulty_level.value if question.difficulty_level else "medium",
+            difficulty=question.difficulty_level.value
+            if question.difficulty_level
+            else "medium",
             question_order=request.question_index + 1,
         )
 
@@ -693,7 +699,7 @@ async def flag_question(
     session_id: str,
     request: FlagQuestionRequest,
     current_user: AuthenticatedUser = Depends(get_current_user),
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """
     Soruyu işaretle veya işareti kaldır
 
@@ -751,7 +757,7 @@ async def flag_question(
 @router.get("/{session_id}/remaining-time", summary="Kalan Süre")
 async def get_remaining_time(
     session_id: str, current_user: AuthenticatedUser = Depends(get_current_user)
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """
     Sınavın kalan süresini getir
 
@@ -863,6 +869,26 @@ async def complete_exam(
                 "raw_score": performance_metrics.raw_score,
             },
         )
+
+        # Trigger event service: XP + Streak (best-effort)
+        try:
+            from core.database import get_db_session_context
+            from services.learning_event_service import LearningEventService
+
+            async with get_db_session_context() as db:
+                event_report = await LearningEventService.on_exam_completed(
+                    student_id=str(current_user.id),
+                    correct_answers=performance_metrics.correct_answers,
+                    total_questions=performance_metrics.total_questions,
+                    net_score=performance_metrics.net_score,
+                    db=db,
+                )
+                logger.info(
+                    "Exam event report",
+                    extra_data={"report": str(event_report)},
+                )
+        except Exception as event_err:
+            logger.warning("Exam event processing skipped: %s", event_err)
 
         return PerformanceResponse(
             total_questions=performance_metrics.total_questions,
@@ -1012,12 +1038,12 @@ async def get_performance_analysis(
 
 @router.get(
     "/{session_id}/subject-performance",
-    response_model=List[SubjectPerformanceResponse],
+    response_model=list[SubjectPerformanceResponse],
     summary="Konu Bazlı Performans",
 )
 async def get_subject_performance(
     session_id: str, current_user: AuthenticatedUser = Depends(get_current_user)
-) -> List[SubjectPerformanceResponse]:
+) -> list[SubjectPerformanceResponse]:
     """
     Konu bazlı performans analizini getir
 
@@ -1074,7 +1100,7 @@ async def get_subject_performance(
 @router.delete("/{session_id}", summary="Sınavı İptal Et")
 async def cancel_exam(
     session_id: str, current_user: AuthenticatedUser = Depends(get_current_user)
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """
     Sınavı iptal et (sadece başlatılmamış sınavlar için)
 
@@ -1143,7 +1169,7 @@ class UnansweredQuestionsResponse(BaseModel):
     """Cevaplanmamış sorular yanıtı"""
 
     session_id: str
-    unanswered_question_ids: List[str]
+    unanswered_question_ids: list[str]
     unanswered_count: int
     total_questions: int
 

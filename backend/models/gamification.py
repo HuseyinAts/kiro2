@@ -38,8 +38,10 @@ class BKTState(Base):
 
     __tablename__ = "bkt_states"
 
-    student_id = Column(Integer, ForeignKey("users.id"), primary_key=True)
-    topic_id = Column(Integer, ForeignKey("topic_hierarchy.id"), primary_key=True)
+    student_id = Column(String, ForeignKey("users.id"), primary_key=True)
+    topic_id = Column(
+        String, primary_key=True
+    )  # FK kaldırıldı (primary_topic_id String)
     p_learn = Column(Float(precision=5, asdecimal=False), default=0.05)
     p_transit = Column(Float(precision=5, asdecimal=False), default=0.10)
     p_guess = Column(Float(precision=5, asdecimal=False), default=0.20)
@@ -83,7 +85,7 @@ class RealmProgress(Base):
     __tablename__ = "realm_progress"
 
     id = Column(Integer, primary_key=True)
-    student_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    student_id = Column(String, ForeignKey("users.id"), nullable=False)
     realm_id = Column(Integer, ForeignKey("realms.id"), nullable=False)
     bkt_score = Column(Float(precision=5, asdecimal=False), default=0.0)
     quest_stop = Column(Integer, default=0)
@@ -106,7 +108,7 @@ class Streak(Base):
 
     __tablename__ = "streaks"
 
-    user_id = Column(Integer, ForeignKey("users.id"), unique=True, primary_key=True)
+    user_id = Column(String, ForeignKey("users.id"), unique=True, primary_key=True)
     current_streak = Column(Integer, default=0)
     largest_streak = Column(Integer, default=0)
     freeze_count = Column(Integer, default=2)
@@ -125,11 +127,11 @@ class XPTransaction(Base):
     __tablename__ = "xp_transactions"
 
     id = Column(Integer, primary_key=True)
-    student_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    student_id = Column(String, ForeignKey("users.id"), nullable=False)
     amount = Column(Integer, nullable=False)
     # kaynak: 'soru'|'3d'|'alim'|'duel'|'streak'|'realm'
     source = Column(String(20), nullable=False)
-    topic_id = Column(Integer, nullable=True)
+    topic_id = Column(String, nullable=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
 
@@ -160,7 +162,7 @@ class ObaUye(Base):
 
     id = Column(Integer, primary_key=True)
     oba_id = Column(Integer, ForeignKey("obalar.id"), nullable=False)
-    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    user_id = Column(String, ForeignKey("users.id"), nullable=False)
     role = Column(String(10), default="toycu")  # toycu|noker|bey
     joined_at = Column(DateTime(timezone=True), server_default=func.now())
 
@@ -195,14 +197,24 @@ class UserBadge(Base):
     __tablename__ = "user_badges"
 
     id = Column(Integer, primary_key=True)
-    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    user_id = Column(String, ForeignKey("users.id"), nullable=False)
     badge_id = Column(Integer, ForeignKey("badges.id"), nullable=False)
     earned_at = Column(DateTime(timezone=True), server_default=func.now())
+    auto_awarded = Column(Boolean, default=True)
 
     __table_args__ = (
         UniqueConstraint("user_id", "badge_id"),
         {"extend_existing": True},
     )
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "user_id": self.user_id,
+            "badge_id": self.badge_id,
+            "earned_at": self.earned_at.isoformat() if self.earned_at else None,
+            "auto_awarded": self.auto_awarded,
+        }
 
 
 # ---------------------------------------------------------------------------
@@ -216,9 +228,9 @@ class Duel(Base):
     __tablename__ = "duels"
 
     id = Column(Integer, primary_key=True)
-    player1_id = Column(Integer, ForeignKey("users.id"), nullable=False)
-    player2_id = Column(Integer, ForeignKey("users.id"), nullable=False)
-    topic_id = Column(Integer, ForeignKey("topic_hierarchy.id"), nullable=False)
+    player1_id = Column(String, ForeignKey("users.id"), nullable=False)
+    player2_id = Column(String, ForeignKey("users.id"), nullable=False)
+    topic_id = Column(String, ForeignKey("topic_hierarchy.id"), nullable=False)
     # durum: pending|active|completed
     status = Column(String(20), default="pending")
     winner_id = Column(Integer, nullable=True)
@@ -240,8 +252,8 @@ class ParentChild(Base):
     __tablename__ = "parent_child"
 
     id = Column(Integer, primary_key=True)
-    parent_id = Column(Integer, ForeignKey("users.id"), nullable=False)
-    child_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    parent_id = Column(String, ForeignKey("users.id"), nullable=False)
+    child_id = Column(String, ForeignKey("users.id"), nullable=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
     __table_args__ = (UniqueConstraint("parent_id", "child_id"),)
@@ -257,7 +269,7 @@ class StudentAbility(Base):
 
     __tablename__ = "student_abilities"
 
-    student_id = Column(Integer, ForeignKey("users.id"), primary_key=True)
+    student_id = Column(String, ForeignKey("users.id"), primary_key=True)
     subject_id = Column(Integer, primary_key=True)
     theta = Column(Float(precision=6, asdecimal=False), default=0.0)
     theta_se = Column(Float(precision=6, asdecimal=False), default=1.0)
