@@ -126,15 +126,8 @@ registerRoute(
   }),
 );
 
-// Cache strategy for JavaScript and CSS
-registerRoute(
-  ({ request }) =>
-    request.destination === 'script' ||
-    request.destination === 'style',
-  new StaleWhileRevalidate({
-    cacheName: 'static-resources',
-  }),
-);
+// JS/CSS hashed assets are handled by precacheAndRoute above.
+// DO NOT cache scripts/styles with StaleWhileRevalidate — causes stale chunk errors after deploys.
 
 // Background sync for form submissions
 const bgSyncPlugin = new BackgroundSyncPlugin('form-sync-queue', {
@@ -151,9 +144,9 @@ registerRoute(
   }),
 );
 
-// Navigation route (SPA support)
+// Navigation route (SPA support) — NetworkFirst ensures fresh index.html with correct chunk hashes
 const navigationRoute = new NavigationRoute(
-  new StaleWhileRevalidate({
+  new NetworkFirst({
     cacheName: 'navigation-cache',
   }),
 );

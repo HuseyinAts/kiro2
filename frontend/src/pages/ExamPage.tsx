@@ -195,6 +195,8 @@ export const ExamPage: React.FC = () => {
             <ModernExamStart
               examType={examType}
               sessionId={sessionId}
+              sessionQuestionCount={_session?.total_questions}
+              sessionDuration={_session?.duration_minutes}
               onStart={handleExamStart}
               onCancel={handleExamExit}
             />

@@ -110,6 +110,18 @@ function AppContent() {
         navigator.serviceWorker.register('/sw.js')
           .then((registration) => {
             console.warn('SW registered: ', registration);
+
+            // Yeni SW aktif olduğunda sayfayı otomatik yenile (stale cache önleme)
+            registration.addEventListener('updatefound', () => {
+              const newWorker = registration.installing;
+              if (newWorker) {
+                newWorker.addEventListener('statechange', () => {
+                  if (newWorker.state === 'activated' && navigator.serviceWorker.controller) {
+                    window.location.reload();
+                  }
+                });
+              }
+            });
           })
           .catch((registrationError) => {
             console.error('SW registration failed: ', registrationError);

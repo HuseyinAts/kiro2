@@ -53,6 +53,10 @@ import modernColors from '@/theme/modern-colors';
 interface ModernExamStartProps {
   examType: ExamType
   sessionId?: string
+  /** Session'dan gelen gerçek soru sayısı (kullanıcının seçtiği) */
+  sessionQuestionCount?: number
+  /** Session'dan gelen gerçek süre (dakika) */
+  sessionDuration?: number
   onStart: (sessionId: string) => void
   onCancel?: () => void
 }
@@ -60,6 +64,8 @@ interface ModernExamStartProps {
 export const ModernExamStart: React.FC<ModernExamStartProps> = ({
   examType,
   sessionId,
+  sessionQuestionCount,
+  sessionDuration,
   onStart,
   onCancel,
 }) => {
@@ -74,9 +80,11 @@ export const ModernExamStart: React.FC<ModernExamStartProps> = ({
   const [systemCheckPassed, setSystemCheckPassed] = useState(false);
   const [checkingSystem, setCheckingSystem] = useState(false);
 
-  // Sınav bilgileri
+  // Sınav bilgileri — session varsa kullanıcının seçtiği değerleri kullan
   const examInfo = examService.getExamDuration(examType);
   const examDescription = examService.getExamTypeDescription(examType);
+  const effectiveQuestionCount = sessionQuestionCount ?? examInfo.total_questions;
+  const effectiveDuration = sessionDuration ?? examInfo.duration_minutes;
 
   // Exam type configurations
   const examTypes = {
@@ -84,8 +92,8 @@ export const ModernExamStart: React.FC<ModernExamStartProps> = ({
       name: 'TYT (Temel Yeterlilik Testi)',
       icon: <School sx={{ fontSize: 48 }} />,
       gradient: modernColors.gradients.primary,
-      questionCount: examInfo.total_questions,
-      duration: `${examInfo.duration_minutes} dakika`,
+      questionCount: effectiveQuestionCount,
+      duration: `${effectiveDuration} dakika`,
       sections: [
         { name: 'Türkçe', count: 40 },
         { name: 'Matematik', count: 40 },
@@ -97,8 +105,8 @@ export const ModernExamStart: React.FC<ModernExamStartProps> = ({
       name: 'AYT (Alan Yeterlilik Testi)',
       icon: <MenuBook sx={{ fontSize: 48 }} />,
       gradient: modernColors.gradients.forest,
-      questionCount: examInfo.total_questions,
-      duration: `${examInfo.duration_minutes} dakika`,
+      questionCount: effectiveQuestionCount,
+      duration: `${effectiveDuration} dakika`,
       sections: [
         { name: 'Matematik', count: 40 },
         { name: 'Fen Bilimleri', count: 40 },
@@ -108,16 +116,16 @@ export const ModernExamStart: React.FC<ModernExamStartProps> = ({
       name: 'YDT (Yabancı Dil Testi)',
       icon: <Psychology sx={{ fontSize: 48 }} />,
       gradient: modernColors.gradients.ocean,
-      questionCount: examInfo.total_questions,
-      duration: `${examInfo.duration_minutes} dakika`,
+      questionCount: effectiveQuestionCount,
+      duration: `${effectiveDuration} dakika`,
       sections: [{ name: 'Yabancı Dil', count: 80 }],
     },
     [ExamType.LGS]: {
       name: 'LGS (Liselere Geçiş Sınavı)',
       icon: <Speed sx={{ fontSize: 48 }} />,
       gradient: modernColors.gradients.sunset,
-      questionCount: examInfo.total_questions,
-      duration: `${examInfo.duration_minutes} dakika`,
+      questionCount: effectiveQuestionCount,
+      duration: `${effectiveDuration} dakika`,
       sections: [
         { name: 'Türkçe', count: 20 },
         { name: 'Matematik', count: 20 },
