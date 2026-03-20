@@ -164,6 +164,16 @@ def main() -> int:
             file=sys.stderr,
         )
 
+    # --- Deprecation Guard reminder (non-blocking) ---
+    # Warn when moving files to _deprecated/ — check imports first
+    if "_deprecated" in normalized_path:
+        print(
+            "[Deprecation Guard] _deprecated/ hedefli islem tespit edildi. "
+            "Tasimadan ONCE: grep -r 'from.*<dosya_adi>' ile TUM import "
+            "referanslarini tara. Import chain kirilmasi 3+ Docker rebuild'e mal olur.",
+            file=sys.stderr,
+        )
+
     return 0
 
 

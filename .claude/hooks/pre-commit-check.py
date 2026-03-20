@@ -87,6 +87,74 @@ def check_untracked_large_files(command: str) -> list[str]:
     return warnings
 
 
+def check_case_duplicates() -> list[str]:
+    """Check staged files for case-only duplicates (e.g., App.tsx vs app.tsx).
+
+    Windows NTFS is case-insensitive but Git/Linux are case-sensitive.
+    This causes Docker build failures repeatedly (3+ sessions).
+    """
+    warnings = []
+    try:
+        result = subprocess.run(
+            ["git", "ls-files"],
+            capture_output=True, text=True, timeout=10,
+            cwd=os.environ.get("GIT_WORK_TREE", None),
+        )
+        if result.returncode != 0:
+            return []
+
+        files = [f.strip() for f in result.stdout.strip().split("\n") if f.strip()]
+        # Group by lowercase path
+        seen: dict[str, list[str]] = {}
+        for f in files:
+            key = f.lower()
+            seen.setdefault(key, []).append(f)
+
+        for key, paths in seen.items():
+            if len(paths) > 1:
+                warnings.append(
+                    f"Case duplicate: {' vs '.join(paths)} — will break Docker/Linux builds"
+                )
+    except (subprocess.TimeoutExpired, FileNotFoundError, OSError):
+        pass
+    return warnings
+
+
+def check_model_imports() -> list[str]:
+    """Check if backend models import cleanly (SQLAlchemy MetaData conflicts).
+
+    Catches: duplicate table definitions, missing back_populates relationships,
+    circular imports. Runs only when backend/models/ files are staged.
+    """
+    warnings = []
+    try:
+        # Check if any model files are staged
+        result = subprocess.run(
+            ["git", "diff", "--cached", "--name-only"],
+            capture_output=True, text=True, timeout=5,
+        )
+        if result.returncode != 0:
+            return []
+
+        staged = result.stdout.strip().split("\n")
+        model_files = [f for f in staged if f.startswith("backend/models/") and f.endswith(".py")]
+        if not model_files:
+            return []
+
+        # Try importing all models — catches MetaData conflicts & relationship errors
+        check_result = subprocess.run(
+            ["python", "-c", "from models import *; print('OK')"],
+            capture_output=True, text=True, timeout=15,
+            cwd=os.path.join(os.path.dirname(os.path.dirname(__file__)), "..", "backend"),
+        )
+        if check_result.returncode != 0:
+            err = check_result.stderr.strip()[-200:] if check_result.stderr else "unknown error"
+            warnings.append(f"Model import failed: {err}")
+    except (subprocess.TimeoutExpired, FileNotFoundError, OSError):
+        pass
+    return warnings
+
+
 def main() -> int:
     try:
         hook_input = json.load(sys.stdin)
@@ -109,13 +177,15 @@ def main() -> int:
     # Check already staged files (for git commit)
     if command.strip().startswith("git commit"):
         errors.extend(check_staged_files())
+        errors.extend(check_case_duplicates())
+        errors.extend(check_model_imports())
 
     if errors:
         result = {
             "hookSpecificOutput": {
                 "hookEventName": "PreToolUse",
                 "permissionDecision": "deny",
-                "permissionDecisionReason": f"Large file(s) detected: {'; '.join(errors)}",
+                "permissionDecisionReason": f"Pre-commit check failed: {'; '.join(errors)}",
             }
         }
         json.dump(result, sys.stdout)
