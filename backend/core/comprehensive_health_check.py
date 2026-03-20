@@ -7,9 +7,9 @@ import asyncio
 import shutil
 import time
 from dataclasses import dataclass
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -36,9 +36,9 @@ class ComponentHealth:
     status: HealthStatus
     healthy: bool
     response_time_ms: float
-    message: Optional[str] = None
-    details: Optional[Dict[str, Any]] = None
-    error: Optional[str] = None
+    message: str | None = None
+    details: dict[str, Any] | None = None
+    error: str | None = None
 
 
 @dataclass
@@ -48,8 +48,8 @@ class SystemHealth:
     status: HealthStatus
     timestamp: str
     response_time_ms: float
-    components: List[ComponentHealth]
-    summary: Dict[str, int]
+    components: list[ComponentHealth]
+    summary: dict[str, int]
     readiness: bool  # Kubernetes readiness
     liveness: bool  # Kubernetes liveness
 
@@ -84,13 +84,17 @@ class HealthChecker:
         start_time = time.time()
         components = []
 
-        # Run health checks in parallel
+        # Run health checks in parallel with per-check timeout (3s max)
+        check_timeout = 3.0
         tasks = [
-            self._check_database(session)
-            if session
-            else self._check_database_standalone(),
-            self._check_redis(),
-            self._check_elasticsearch(),
+            asyncio.wait_for(
+                self._check_database(session)
+                if session
+                else self._check_database_standalone(),
+                timeout=check_timeout,
+            ),
+            asyncio.wait_for(self._check_redis(), timeout=check_timeout),
+            asyncio.wait_for(self._check_elasticsearch(), timeout=check_timeout),
             self._check_disk_space(),
             self._check_memory(),
         ]
@@ -98,13 +102,25 @@ class HealthChecker:
         results = await asyncio.gather(*tasks, return_exceptions=True)
 
         # Process results
-        for result in results:
-            if isinstance(result, Exception):
+        check_names = ["database", "redis", "elasticsearch", "disk_space", "memory"]
+        for i, result in enumerate(results):
+            name = check_names[i] if i < len(check_names) else "unknown"
+            if isinstance(result, asyncio.TimeoutError):
                 components.append(
                     ComponentHealth(
-                        name="unknown",
+                        name=name,
+                        status=HealthStatus.UNKNOWN,
+                        healthy=name not in self.critical_services,
+                        response_time_ms=check_timeout * 1000,
+                        message=f"{name} check timed out ({check_timeout}s)",
+                    )
+                )
+            elif isinstance(result, Exception):
+                components.append(
+                    ComponentHealth(
+                        name=name,
                         status=HealthStatus.UNHEALTHY,
-                        healthy=False,
+                        healthy=name not in self.critical_services,
                         response_time_ms=0,
                         error=str(result),
                     )
@@ -144,7 +160,7 @@ class HealthChecker:
 
         return SystemHealth(
             status=overall_status,
-            timestamp=datetime.now(timezone.utc).isoformat(),
+            timestamp=datetime.now(UTC).isoformat(),
             response_time_ms=round(total_time, 2),
             components=components,
             summary=summary,
@@ -189,7 +205,6 @@ class HealthChecker:
                 pool_stats["tables"] = table_count
             except Exception as e:
                 logger.debug(f"Could not get table count: {e}")
-                pass
 
             duration_ms = (time.time() - start_time) * 1000
 
@@ -254,15 +269,14 @@ class HealthChecker:
                     message="Redis operational",
                     details=health.metrics,
                 )
-            else:
-                return ComponentHealth(
-                    name="redis",
-                    status=HealthStatus.DEGRADED,
-                    healthy=True,  # Non-critical
-                    response_time_ms=round(duration_ms, 2),
-                    message=f"Redis issues: {', '.join(health.issues)}",
-                    details=health.metrics,
-                )
+            return ComponentHealth(
+                name="redis",
+                status=HealthStatus.DEGRADED,
+                healthy=True,  # Non-critical
+                response_time_ms=round(duration_ms, 2),
+                message=f"Redis issues: {', '.join(health.issues)}",
+                details=health.metrics,
+            )
 
         except ImportError:
             return ComponentHealth(
@@ -289,9 +303,15 @@ class HealthChecker:
         try:
             from elasticsearch import AsyncElasticsearch
 
-            es = AsyncElasticsearch(["http://localhost:9200"])
-            health = await es.cluster.health()
-            await es.close()
+            es = AsyncElasticsearch(
+                ["http://localhost:9200"],
+                request_timeout=2,
+                retry_on_timeout=False,
+            )
+            try:
+                health = await es.cluster.health()
+            finally:
+                await es.close()
 
             duration_ms = (time.time() - start_time) * 1000
             cluster_status = health.get("status", "unknown")
@@ -315,13 +335,22 @@ class HealthChecker:
                 },
             )
 
-        except (ImportError, ConnectionRefusedError):
+        except ImportError:
             return ComponentHealth(
                 name="elasticsearch",
                 status=HealthStatus.UNKNOWN,
                 healthy=True,  # Non-critical
                 response_time_ms=0,
                 message="Elasticsearch not configured",
+            )
+        except (ConnectionRefusedError, ConnectionError, OSError):
+            duration_ms = (time.time() - start_time) * 1000
+            return ComponentHealth(
+                name="elasticsearch",
+                status=HealthStatus.UNKNOWN,
+                healthy=True,  # Non-critical
+                response_time_ms=round(duration_ms, 2),
+                message="Elasticsearch unavailable",
             )
         except Exception as e:
             duration_ms = (time.time() - start_time) * 1000
