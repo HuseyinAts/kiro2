@@ -9,7 +9,7 @@ import html
 import logging
 import os
 import unicodedata
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 import httpx
 from fastapi import (
@@ -46,64 +46,64 @@ class QuestionCreateRequest(BaseModel):
     """Soru oluşturma isteği"""
 
     soru_metni: str = Field(..., description="Soru metni (plain text)")
-    soru_html: Optional[str] = Field(None, description="Soru HTML (rich text)")
-    soru_latex: Optional[str] = Field(None, description="LaTeX matematik formülü")
-    secenekler: List[str] = Field(
+    soru_html: str | None = Field(None, description="Soru HTML (rich text)")
+    soru_latex: str | None = Field(None, description="LaTeX matematik formülü")
+    secenekler: list[str] = Field(
         ..., min_items=4, max_items=5, description="Seçenekler (A, B, C, D, E)"
     )
     dogru_cevap: str = Field(..., description="Doğru cevap (A, B, C, D, E)")
-    cozum_aciklamasi: Optional[str] = Field(None, description="Çözüm açıklaması")
-    cozum_video_url: Optional[str] = Field(None, description="Çözüm video URL")
-    alternatif_cozumler: Optional[Dict[str, Any]] = Field(
+    cozum_aciklamasi: str | None = Field(None, description="Çözüm açıklaması")
+    cozum_video_url: str | None = Field(None, description="Çözüm video URL")
+    alternatif_cozumler: dict[str, Any] | None = Field(
         None, description="Alternatif çözüm yolları"
     )
     sinav_tipi: str = Field("TYT", description="Sınav türü (TYT, AYT, YDT)")
     konu: str = Field(..., description="Ana konu")
-    alt_konu: Optional[str] = Field(None, description="Alt konu")
+    alt_konu: str | None = Field(None, description="Alt konu")
     zorluk_seviyesi: str = Field(
         "orta", description="Zorluk seviyesi (kolay, orta, zor)"
     )
     sinif_seviyesi: int = Field(12, ge=9, le=12, description="Sınıf seviyesi")
     bloom_seviyesi: int = Field(1, ge=1, le=6, description="Bloom taksonomisi seviyesi")
-    etiketler: Optional[List[str]] = Field(None, description="Soru etiketleri")
+    etiketler: list[str] | None = Field(None, description="Soru etiketleri")
     genel_erisim: bool = Field(False, description="Genel erişime açık mı")
 
 
 class QuestionUpdateRequest(BaseModel):
     """Soru güncelleme isteği"""
 
-    soru_metni: Optional[str] = None
-    soru_html: Optional[str] = None
-    soru_latex: Optional[str] = None
-    secenekler: Optional[List[str]] = None
-    dogru_cevap: Optional[str] = None
-    cozum_aciklamasi: Optional[str] = None
-    zorluk_seviyesi: Optional[str] = None
-    etiketler: Optional[List[str]] = None
+    soru_metni: str | None = None
+    soru_html: str | None = None
+    soru_latex: str | None = None
+    secenekler: list[str] | None = None
+    dogru_cevap: str | None = None
+    cozum_aciklamasi: str | None = None
+    zorluk_seviyesi: str | None = None
+    etiketler: list[str] | None = None
 
 
 class QuestionSearchRequest(BaseModel):
     """Soru arama isteği"""
 
-    search_query: Optional[str] = Field(None, max_length=500, description="Arama sorgusu")
-    exam_type: Optional[str] = Field(None, description="Sınav türü filtresi")
-    subject_area: Optional[str] = Field(None, description="Konu filtresi")
-    source_book: Optional[str] = Field(None, description="Kaynak kitap filtresi")
-    difficulty: Optional[str] = Field(None, description="Zorluk filtresi")
-    grade_level: Optional[int] = Field(None, description="Sınıf seviyesi")
-    min_quality: Optional[float] = Field(None, description="Minimum kalite skoru")
+    search_query: str | None = Field(None, max_length=500, description="Arama sorgusu")
+    exam_type: str | None = Field(None, description="Sınav türü filtresi")
+    subject_area: str | None = Field(None, description="Konu filtresi")
+    source_book: str | None = Field(None, description="Kaynak kitap filtresi")
+    difficulty: str | None = Field(None, description="Zorluk filtresi")
+    grade_level: int | None = Field(None, description="Sınıf seviyesi")
+    min_quality: float | None = Field(None, description="Minimum kalite skoru")
     # IRT difficulty constraints from CLAUDE.md: [-4.0, 4.0]
-    irt_difficulty_min: Optional[float] = Field(
+    irt_difficulty_min: float | None = Field(
         None, ge=-4.0, le=4.0, description="Min IRT zorluk [-4.0, 4.0]"
     )
-    irt_difficulty_max: Optional[float] = Field(
+    irt_difficulty_max: float | None = Field(
         None, ge=-4.0, le=4.0, description="Max IRT zorluk [-4.0, 4.0]"
     )
-    osym_compliant: Optional[bool] = Field(None, description="ÖSYM uyumlu mu")
+    osym_compliant: bool | None = Field(None, description="ÖSYM uyumlu mu")
     show_answers: bool = Field(
         False, description="Cevaplari goster (admin/review icin)"
     )
-    facets: Optional[List[str]] = Field(
+    facets: list[str] | None = Field(
         None, description="Facet alanları (exam_type, subject_area, difficulty)"
     )
     limit: int = Field(100, ge=1, le=500)
@@ -130,7 +130,7 @@ async def get_question_service(
 @router.post("/create", status_code=status.HTTP_201_CREATED)
 async def create_question(
     request: QuestionCreateRequest,
-    image: Optional[UploadFile] = File(None),
+    image: UploadFile | None = File(None),
     current_user: AuthenticatedUser = Depends(get_current_user),
     service: QuestionCRUDService = Depends(get_question_service),
 ):
@@ -176,16 +176,16 @@ async def create_question(
         )
 
     except Exception as e:
-        logger.error(f"Soru oluşturma hatası: {str(e)}")
+        logger.error(f"Soru oluşturma hatası: {e!s}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Soru oluşturma hatası: {str(e)}",
+            detail=f"Soru oluşturma hatası: {e!s}",
         )
 
 
 @router.post("/bulk-create", status_code=status.HTTP_201_CREATED)
 async def bulk_create_questions(
-    questions: List[QuestionCreateRequest],
+    questions: list[QuestionCreateRequest],
     current_user: AuthenticatedUser = Depends(get_current_user),
     service: QuestionCRUDService = Depends(get_question_service),
 ):
@@ -212,10 +212,10 @@ async def bulk_create_questions(
         )
 
     except Exception as e:
-        logger.error(f"Toplu oluşturma hatası: {str(e)}")
+        logger.error(f"Toplu oluşturma hatası: {e!s}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Toplu oluşturma hatası: {str(e)}",
+            detail=f"Toplu oluşturma hatası: {e!s}",
         )
 
 
@@ -278,10 +278,10 @@ async def update_question(
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Soru güncelleme hatası: {str(e)}")
+        logger.error(f"Soru güncelleme hatası: {e!s}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Soru güncelleme hatası: {str(e)}",
+            detail=f"Soru güncelleme hatası: {e!s}",
         )
 
 
@@ -312,10 +312,10 @@ async def get_question_history(
         )
 
     except Exception as e:
-        logger.error(f"Geçmiş getirme hatası: {str(e)}")
+        logger.error(f"Geçmiş getirme hatası: {e!s}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Geçmiş getirme hatası: {str(e)}",
+            detail=f"Geçmiş getirme hatası: {e!s}",
         )
 
 
@@ -367,10 +367,10 @@ async def delete_question(
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Soru silme hatası: {str(e)}")
+        logger.error(f"Soru silme hatası: {e!s}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Soru silme hatası: {str(e)}",
+            detail=f"Soru silme hatası: {e!s}",
         )
 
 
@@ -408,10 +408,10 @@ async def archive_question(
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Arşivleme hatası: {str(e)}")
+        logger.error(f"Arşivleme hatası: {e!s}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Arşivleme hatası: {str(e)}",
+            detail=f"Arşivleme hatası: {e!s}",
         )
 
 
@@ -449,10 +449,10 @@ async def restore_question(
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Geri yükleme hatası: {str(e)}")
+        logger.error(f"Geri yükleme hatası: {e!s}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Geri yükleme hatası: {str(e)}",
+            detail=f"Geri yükleme hatası: {e!s}",
         )
 
 
@@ -492,10 +492,10 @@ async def get_archived_questions(
         )
 
     except Exception as e:
-        logger.error(f"Arşiv listeleme hatası: {str(e)}")
+        logger.error(f"Arşiv listeleme hatası: {e!s}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Arşiv listeleme hatası: {str(e)}",
+            detail=f"Arşiv listeleme hatası: {e!s}",
         )
 
 
@@ -555,7 +555,7 @@ async def search_questions(
         # TODO: Production icin auth zorunlu yapilmali (get_current_user)
         questions_data = []
         for q in result["questions"]:
-            item: Dict[str, Any] = {
+            item: dict[str, Any] = {
                 "id": q.id,
                 "question_text": q.question_text,
                 "question_image_url": q.question_image_url,
@@ -574,9 +574,7 @@ async def search_questions(
                 "word_count": q.word_count,
                 "times_asked": q.times_asked,
                 "success_rate": (
-                    q.times_correct / max(1, q.times_asked)
-                    if q.times_asked > 0
-                    else 0
+                    q.times_correct / max(1, q.times_asked) if q.times_asked > 0 else 0
                 ),
                 "created_at": q.created_at.isoformat(),
             }
@@ -610,7 +608,7 @@ async def search_questions(
         )
 
     except Exception as e:
-        logger.error(f"Arama hatasi: {str(e)}", exc_info=True)
+        logger.error(f"Arama hatasi: {e!s}", exc_info=True)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Arama sirasinda bir hata olustu",
@@ -620,9 +618,9 @@ async def search_questions(
 @router.get("/search/elasticsearch", status_code=status.HTTP_200_OK)
 async def elasticsearch_search(
     query: str = Query(..., description="Arama sorgusu"),
-    exam_type: Optional[str] = Query(None, description="Sınav türü"),
-    subject: Optional[str] = Query(None, description="Konu"),
-    difficulty: Optional[str] = Query(None, description="Zorluk"),
+    exam_type: str | None = Query(None, description="Sınav türü"),
+    subject: str | None = Query(None, description="Konu"),
+    difficulty: str | None = Query(None, description="Zorluk"),
     limit: int = Query(100, ge=1, le=500),
     service: QuestionCRUDService = Depends(get_question_service),
 ):
@@ -671,17 +669,16 @@ async def elasticsearch_search(
         )
 
     except Exception as e:
-        logger.error(f"Elasticsearch arama hatası: {str(e)}")
+        logger.error(f"Elasticsearch arama hatası: {e!s}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Elasticsearch arama hatası: {str(e)}",
+            detail=f"Elasticsearch arama hatası: {e!s}",
         )
 
 
 # ========================================================================
 # Yardımcı Endpoint'ler
 # ========================================================================
-
 
 
 @router.get("/statistics/overview", status_code=status.HTTP_200_OK)
@@ -704,10 +701,10 @@ async def get_statistics(
         )
 
     except Exception as e:
-        logger.error(f"İstatistik hatası: {str(e)}")
+        logger.error(f"İstatistik hatası: {e!s}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"İstatistik hatası: {str(e)}",
+            detail=f"İstatistik hatası: {e!s}",
         )
 
 
@@ -752,8 +749,8 @@ async def health_check():
 @router.get("/random", status_code=status.HTTP_200_OK)
 async def get_random_questions(
     count: int = Query(10, ge=1, le=50, description="Soru sayısı"),
-    subject_area: Optional[str] = Query(None, description="Konu filtresi"),
-    exam_type: Optional[str] = Query(None, description="Sınav türü (TYT/AYT/YDT)"),
+    subject_area: str | None = Query(None, description="Konu filtresi"),
+    exam_type: str | None = Query(None, description="Sınav türü (TYT/AYT/YDT)"),
     service: QuestionCRUDService = Depends(get_question_service),
 ):
     """
@@ -808,10 +805,10 @@ async def get_random_questions(
         )
 
     except Exception as e:
-        logger.error(f"Rastgele soru hatası: {str(e)}")
+        logger.error(f"Rastgele soru hatası: {e!s}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Rastgele soru hatası: {str(e)}",
+            detail=f"Rastgele soru hatası: {e!s}",
         )
 
 
@@ -822,8 +819,8 @@ async def get_random_questions(
 
 @router.get("/books", status_code=status.HTTP_200_OK)
 async def list_source_books(
-    subject_area: Optional[str] = Query(None, description="Konu filtresi"),
-    exam_type: Optional[str] = Query(None, description="Sınav türü filtresi"),
+    subject_area: str | None = Query(None, description="Konu filtresi"),
+    exam_type: str | None = Query(None, description="Sınav türü filtresi"),
     service: QuestionCRUDService = Depends(get_question_service),
 ):
     """
@@ -848,7 +845,7 @@ async def list_source_books(
         )
 
     except Exception as e:
-        logger.error(f"Kitap listeleme hatası: {str(e)}")
+        logger.error(f"Kitap listeleme hatası: {e!s}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Kitap listeleme sirasinda bir hata olustu",
@@ -865,9 +862,13 @@ class SemanticSearchRequest(BaseModel):
 
     query: str = Field(..., min_length=3, max_length=1000, description="Arama metni")
     top_k: int = Field(10, ge=1, le=50, description="Sonuc sayisi")
-    exam_type: Optional[str] = Field(None, pattern="^(TYT|AYT|YDT)$", description="Sinav turu filtresi")
-    subject_area: Optional[str] = Field(None, description="Konu filtresi")
-    min_similarity: float = Field(0.3, ge=0.0, le=1.0, description="Minimum benzerlik skoru")
+    exam_type: str | None = Field(
+        None, pattern="^(TYT|AYT|YDT)$", description="Sinav turu filtresi"
+    )
+    subject_area: str | None = Field(None, description="Konu filtresi")
+    min_similarity: float = Field(
+        0.3, ge=0.0, le=1.0, description="Minimum benzerlik skoru"
+    )
     show_answers: bool = Field(False, description="Cevaplari goster")
 
 
@@ -933,7 +934,7 @@ async def semantic_search(
         # 3. Build similarity query with filters
 
         filters = []
-        params: Dict[str, Any] = {"emb": vec_str, "min_sim": request.min_similarity}
+        params: dict[str, Any] = {"emb": vec_str, "min_sim": request.min_similarity}
 
         if request.exam_type:
             filters.append("q.exam_type = :exam_type")
@@ -942,7 +943,9 @@ async def semantic_search(
             filters.append("q.subject_area = :subject_area")
             params["subject_area"] = request.subject_area
 
-        where_clause = " AND ".join(["q.embedding IS NOT NULL", "q.is_active = true"] + filters)
+        where_clause = " AND ".join(
+            ["q.embedding IS NOT NULL", "q.is_active = true"] + filters
+        )
         params["top_k"] = request.top_k
 
         sql = sa_text(f"""
@@ -967,7 +970,7 @@ async def semantic_search(
         # 3. Format response
         questions = []
         for r in rows:
-            item: Dict[str, Any] = {
+            item: dict[str, Any] = {
                 "id": str(r.id),
                 "question_text": r.question_text,
                 "question_image_url": r.question_image_url,
@@ -986,8 +989,11 @@ async def semantic_search(
             }
             if request.show_answers:
                 item["options"] = {
-                    "A": r.option_a, "B": r.option_b, "C": r.option_c,
-                    "D": r.option_d, "E": r.option_e,
+                    "A": r.option_a,
+                    "B": r.option_b,
+                    "C": r.option_c,
+                    "D": r.option_d,
+                    "E": r.option_e,
                 }
                 item["correct_answer"] = r.correct_answer
             questions.append(item)
@@ -1010,11 +1016,33 @@ async def semantic_search(
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Semantic search error: {str(e)}", exc_info=True)
+        logger.error(f"Semantic search error: {e!s}", exc_info=True)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Anlamsal arama sirasinda bir hata olustu",
         )
+
+
+@router.get("/download")
+async def download_questions(
+    subject: str | None = Query(None, description="Filter by subject"),
+    current_user: AuthenticatedUser = Depends(get_current_user),
+) -> JSONResponse:
+    """Download questions for offline use — stub endpoint.
+    Frontend: offlineStorageService.ts
+    """
+    return JSONResponse(
+        status_code=status.HTTP_200_OK,
+        content={
+            "success": True,
+            "data": {
+                "questions": [],
+                "total": 0,
+                "message": "Offline indirme henüz uygulanmadı",
+            },
+            "message": "Questions download stub — not yet implemented",
+        },
+    )
 
 
 @router.get("/{question_id}", status_code=status.HTTP_200_OK)
@@ -1102,8 +1130,8 @@ async def get_question(
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Soru getirme hatası: {str(e)}")
+        logger.error(f"Soru getirme hatası: {e!s}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Soru getirme hatası: {str(e)}",
+            detail=f"Soru getirme hatası: {e!s}",
         )

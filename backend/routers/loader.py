@@ -176,6 +176,7 @@ ROUTER_MAPPING = {
     "api.mnemonic_api": ("content", "api.mnemonic_api"),
     # Faz 6: PWA Offline Sync
     "api.offline_sync_api": ("learning", "api.offline_sync_api"),
+    "api.pwa_sync_api": ("learning", "api.pwa_sync_api"),
 }
 
 

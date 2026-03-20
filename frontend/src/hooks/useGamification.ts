@@ -12,6 +12,7 @@ import axios from 'axios';
 import { useState, useEffect, useCallback } from 'react';
 
 const API_BASE = '/api/v1/gamification';
+const api = axios.create({ withCredentials: true });
 
 // ============================================================================
 // Types
@@ -83,7 +84,7 @@ export function usePoints() {
   const fetchPoints = useCallback(async () => {
     try {
       setLoading(true);
-      const response = await axios.get(`${API_BASE}/points`);
+      const response = await api.get(`${API_BASE}/points`);
       setPoints(response.data.total_points);
       setError(null);
     } catch (err: unknown) {
@@ -96,7 +97,7 @@ export function usePoints() {
   const awardPoints = useCallback(async (amount: number, reason: string, metadata?: Record<string, unknown>) => {
     try {
       setLoading(true);
-      const response = await axios.post(`${API_BASE}/points/award`, {
+      const response = await api.post(`${API_BASE}/points/award`, {
         points: amount,
         reason,
         metadata,
@@ -115,7 +116,7 @@ export function usePoints() {
   const getHistory = useCallback(async (limit = 50) => {
     try {
       setLoading(true);
-      const response = await axios.get(`${API_BASE}/points/history`, {
+      const response = await api.get(`${API_BASE}/points/history`, {
         params: { limit },
       });
       setError(null);
@@ -154,7 +155,7 @@ export function useLevel() {
   const fetchLevelProgress = useCallback(async () => {
     try {
       setLoading(true);
-      const response = await axios.get(`${API_BASE}/level/progress`);
+      const response = await api.get(`${API_BASE}/level/progress`);
       setLevelProgress(response.data);
       setError(null);
     } catch (err: unknown) {
@@ -166,7 +167,7 @@ export function useLevel() {
 
   const getLevelLeaderboard = useCallback(async (limit = 100) => {
     try {
-      const response = await axios.get(`${API_BASE}/level/leaderboard`, {
+      const response = await api.get(`${API_BASE}/level/leaderboard`, {
         params: { limit },
       });
       return response.data as LeaderboardEntry[];
@@ -178,7 +179,7 @@ export function useLevel() {
 
   const getMilestones = useCallback(async () => {
     try {
-      const response = await axios.get(`${API_BASE}/level/milestones`);
+      const response = await api.get(`${API_BASE}/level/milestones`);
       return response.data as number[];
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : String(err));
@@ -213,7 +214,7 @@ export function useBadges() {
 
   const fetchAllBadges = useCallback(async () => {
     try {
-      const response = await axios.get(`${API_BASE}/badges`);
+      const response = await api.get(`${API_BASE}/badges`);
       setAllBadges(response.data);
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : String(err));
@@ -223,7 +224,7 @@ export function useBadges() {
   const fetchEarnedBadges = useCallback(async () => {
     try {
       setLoading(true);
-      const response = await axios.get(`${API_BASE}/badges/earned`);
+      const response = await api.get(`${API_BASE}/badges/earned`);
       setEarnedBadges(response.data);
       setError(null);
     } catch (err: unknown) {
@@ -235,7 +236,7 @@ export function useBadges() {
 
   const fetchBadgeProgress = useCallback(async () => {
     try {
-      const response = await axios.get(`${API_BASE}/badges/progress`);
+      const response = await api.get(`${API_BASE}/badges/progress`);
       setBadgeProgress(response.data);
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : String(err));
@@ -245,7 +246,7 @@ export function useBadges() {
   const awardBadge = useCallback(async (badgeId: string) => {
     try {
       setLoading(true);
-      const response = await axios.post(`${API_BASE}/badges/${badgeId}/award`);
+      const response = await api.post(`${API_BASE}/badges/${badgeId}/award`);
       await fetchEarnedBadges(); // Refresh earned badges
       setError(null);
       return response.data;
@@ -287,7 +288,7 @@ export function useLeaderboard(type: 'global' | 'weekly' | 'monthly' = 'global')
     try {
       setLoading(true);
       const endpoint = `${API_BASE}/leaderboard/${type}`;
-      const response = await axios.get(endpoint, {
+      const response = await api.get(endpoint, {
         params: { limit, offset },
       });
       setLeaderboard(response.data);
@@ -301,7 +302,7 @@ export function useLeaderboard(type: 'global' | 'weekly' | 'monthly' = 'global')
 
   const getNearbyUsers = useCallback(async (rangeSize = 5) => {
     try {
-      const response = await axios.get(`${API_BASE}/leaderboard/nearby`, {
+      const response = await api.get(`${API_BASE}/leaderboard/nearby`, {
         params: { range_size: rangeSize },
       });
       return response.data;
@@ -314,7 +315,7 @@ export function useLeaderboard(type: 'global' | 'weekly' | 'monthly' = 'global')
   const syncLeaderboard = useCallback(async () => {
     try {
       setLoading(true);
-      await axios.post(`${API_BASE}/leaderboard/sync`);
+      await api.post(`${API_BASE}/leaderboard/sync`);
       await fetchLeaderboard();
       setError(null);
     } catch (err: unknown) {
@@ -351,7 +352,7 @@ export function useGamificationStats() {
   const fetchStats = useCallback(async () => {
     try {
       setLoading(true);
-      const response = await axios.get(`${API_BASE}/stats`);
+      const response = await api.get(`${API_BASE}/stats`);
       setStats(response.data);
       setError(null);
     } catch (err: unknown) {

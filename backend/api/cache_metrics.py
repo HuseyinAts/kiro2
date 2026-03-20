@@ -10,11 +10,12 @@ Provides:
 - Cache invalidation triggers
 """
 
-from typing import Any, Dict, List
+from typing import Any
 
-from fastapi import APIRouter, HTTPException, Query, status
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 from fastapi.responses import JSONResponse
 
+from core.dependencies import get_current_admin_user
 from core.multi_layer_cache import get_cache_instance
 from core.structured_logger import get_logger
 
@@ -22,9 +23,9 @@ router = APIRouter(prefix="/api/v1/cache-metrics", tags=["Cache Monitoring"])
 logger = get_logger("cache_metrics_api")
 
 
-@router.get("/metrics", response_model=Dict[str, Any])
+@router.get("/metrics", response_model=dict[str, Any])
 async def get_cache_metrics(
-    namespace: str = Query(None, description="Filter by cache namespace")
+    namespace: str = Query(None, description="Filter by cache namespace"),
 ):
     """
     Get real-time cache performance metrics
@@ -106,12 +107,12 @@ async def get_cache_metrics(
         logger.error("cache_metrics_error", error=str(e))
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to retrieve cache metrics: {str(e)}",
+            detail=f"Failed to retrieve cache metrics: {e!s}",
         )
 
 
 @router.post("/invalidate/{pattern}")
-async def invalidate_cache_pattern(pattern: str):
+async def invalidate_cache_pattern(pattern: str, _=Depends(get_current_admin_user)):
     """
     Invalidate cache entries matching pattern
 
@@ -156,12 +157,12 @@ async def invalidate_cache_pattern(pattern: str):
         logger.error("cache_invalidation_error", pattern=pattern, error=str(e))
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Cache invalidation failed: {str(e)}",
+            detail=f"Cache invalidation failed: {e!s}",
         )
 
 
 @router.post("/clear-all")
-async def clear_all_caches():
+async def clear_all_caches(_=Depends(get_current_admin_user)):
     """
     Clear all cache entries (L1 + L2)
 
@@ -202,7 +203,7 @@ async def clear_all_caches():
         logger.error("cache_clear_error", error=str(e))
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Cache clear failed: {str(e)}",
+            detail=f"Cache clear failed: {e!s}",
         )
 
 
@@ -247,7 +248,9 @@ async def cache_health_check():
         overall_healthy = l1_healthy  # System works with L1 only
 
         return JSONResponse(
-            status_code=status.HTTP_200_OK if overall_healthy else status.HTTP_503_SERVICE_UNAVAILABLE,
+            status_code=status.HTTP_200_OK
+            if overall_healthy
+            else status.HTTP_503_SERVICE_UNAVAILABLE,
             content={
                 "healthy": overall_healthy,
                 "l1_status": "healthy" if l1_healthy else "unhealthy",
@@ -275,7 +278,9 @@ async def cache_health_check():
         )
 
 
-def _generate_recommendations(metrics: Dict[str, Any], l1_stats: Dict[str, Any]) -> List[str]:
+def _generate_recommendations(
+    metrics: dict[str, Any], l1_stats: dict[str, Any]
+) -> list[str]:
     """Generate performance recommendations based on metrics"""
     recommendations = []
 
@@ -299,7 +304,9 @@ def _generate_recommendations(metrics: Dict[str, Any], l1_stats: Dict[str, Any])
             "✅ Good hit rate (50-70%). Fine-tune TTL values for further improvement."
         )
     else:
-        recommendations.append("🎉 Excellent hit rate (>70%). Cache is performing optimally!")
+        recommendations.append(
+            "🎉 Excellent hit rate (>70%). Cache is performing optimally!"
+        )
 
     # Check L1 utilization
     l1_size = metrics.get("l1_size", 0)

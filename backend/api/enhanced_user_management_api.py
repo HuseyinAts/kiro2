@@ -6,11 +6,11 @@ SPRINT 3 UPDATE: Email operations now use Celery background tasks
 """
 
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any
+
+from pydantic import BaseModel
 
 from core.dependencies import get_current_user
-# SPRINT 3: Celery task imports
-from tasks.email_tasks import send_welcome_email
 from core.error_context import (
     SpanKind,
     add_database_query_to_context,
@@ -40,7 +40,10 @@ from core.response_models import (
 )
 from models.database import User
 from models.user import UserCreate
-from pydantic import BaseModel
+
+# SPRINT 3: Celery task imports
+from tasks.email_tasks import send_welcome_email
+
 
 # UserResponse placeholder
 class UserResponse(BaseModel):
@@ -52,8 +55,10 @@ class UserResponse(BaseModel):
     role: str
     is_active: bool
 
-from services.user_service import KullaniciServisi as UserService
+
 from fastapi import APIRouter, Depends, Query, Request, status
+
+from services.user_service import KullaniciServisi as UserService
 
 router = APIRouter(prefix="/api/v1/users", tags=["Enhanced User Management"])
 
@@ -112,7 +117,7 @@ async def require_admin(current_user: User = Depends(get_current_user)) -> User:
 
 @router.get(
     "",
-    response_model=PaginatedResponse[List[UserResponse]],
+    response_model=PaginatedResponse[list[UserResponse]],
     status_code=status.HTTP_200_OK,
     summary="Kullanıcı Listesi (Gelişmiş Hata Yönetimi)",
     description="Enhanced user listing with comprehensive error handling",
@@ -123,10 +128,10 @@ async def list_users_enhanced(
     request: Request,
     page: int = Query(1, ge=1, description="Sayfa numarası"),
     page_size: int = Query(20, ge=1, le=100, description="Sayfa boyutu"),
-    search: Optional[str] = Query(None, description="Arama terimi"),
-    role_filter: Optional[str] = Query(None, description="Rol filtresi"),
+    search: str | None = Query(None, description="Arama terimi"),
+    role_filter: str | None = Query(None, description="Rol filtresi"),
     current_user: User = Depends(require_admin),
-) -> PaginatedResponse[List[UserResponse]]:
+) -> PaginatedResponse[list[UserResponse]]:
     """
     Enhanced user listing with comprehensive error handling
 
@@ -373,7 +378,7 @@ async def create_user_enhanced(
                     # Fire-and-forget: doesn't block API response
                     task = send_welcome_email.delay(
                         user_email=new_user.email,
-                        user_name=f"{new_user.ad} {new_user.soyad}"
+                        user_name=f"{new_user.ad} {new_user.soyad}",
                     )
                     email_span.set_tag("email.task_id", task.id)
                     email_span.set_tag("email.queued", True)
@@ -611,14 +616,14 @@ async def get_user_detail_enhanced(
 
 @router.get(
     "/monitoring/health",
-    response_model=SuccessResponse[Dict[str, Any]],
+    response_model=SuccessResponse[dict[str, Any]],
     status_code=status.HTTP_200_OK,
     summary="Error Monitoring Health Check",
     description="Get error monitoring and system health status",
 )
 async def get_error_monitoring_health(
     request: Request, current_user: User = Depends(require_admin)
-) -> SuccessResponse[Dict[str, Any]]:
+) -> SuccessResponse[dict[str, Any]]:
     """Get error monitoring and system health status"""
 
     from core.error_monitoring import get_health_status
@@ -630,3 +635,39 @@ async def get_error_monitoring_health(
         custom_message="Sistem sağlık durumu başarıyla getirildi",
         request_id=getattr(request.state, "request_id", None),
     )
+
+
+@router.get("/export-data")
+async def export_user_data(
+    current_user: User = Depends(get_current_user),
+) -> dict[str, Any]:
+    """Export user data — stub endpoint.
+    Frontend: ModernSettingsPage.tsx
+    """
+    return {
+        "success": True,
+        "data": {
+            "user_id": str(current_user.id),
+            "export_status": "pending",
+            "message": "Veri dışa aktarma henüz uygulanmadı",
+        },
+        "message": "Export data stub — not yet implemented",
+    }
+
+
+@router.delete("/delete-account")
+async def delete_user_account(
+    current_user: User = Depends(get_current_user),
+) -> dict[str, Any]:
+    """Delete user account — stub endpoint.
+    Frontend: ModernSettingsPage.tsx
+    """
+    return {
+        "success": True,
+        "data": {
+            "user_id": str(current_user.id),
+            "deletion_status": "pending",
+            "message": "Hesap silme henüz uygulanmadı",
+        },
+        "message": "Delete account stub — not yet implemented",
+    }

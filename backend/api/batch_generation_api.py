@@ -3,29 +3,33 @@ Batch Question Generation API
 REST endpoints for batch question generation
 """
 
-from fastapi import APIRouter, HTTPException
-from pydantic import BaseModel, Field
-from typing import Optional, List, Dict, Any
-from celery.result import AsyncResult
+from typing import Any
 
-from tasks.question_generation_tasks import (
-    generate_question_batch
-)
+from celery.result import AsyncResult
+from fastapi import APIRouter, Depends, HTTPException
+from pydantic import BaseModel, Field
+
+from core.dependencies import get_current_admin_user
 from services.batch_question_generator import BatchQuestionGenerator
+from tasks.question_generation_tasks import generate_question_batch
 
 router = APIRouter(prefix="/api/v1/batch", tags=["batch-generation"])
 
 
 # Request/Response Models
 class BatchGenerationRequest(BaseModel):
-    batch_size: int = Field(..., ge=50, le=500, description="Number of questions (50-500)")
+    batch_size: int = Field(
+        ..., ge=50, le=500, description="Number of questions (50-500)"
+    )
     exam_type: str = Field(..., description="TYT/AYT/YDT")
     subject: str = Field(..., description="Subject area")
-    topics: Optional[List[str]] = Field(None, description="Specific topics")
+    topics: list[str] | None = Field(None, description="Specific topics")
     difficulty_min: float = Field(0.3, ge=0.0, le=1.0)
     difficulty_max: float = Field(0.7, ge=0.0, le=1.0)
-    bloom_levels: Optional[List[int]] = Field(None, description="Bloom levels 1-6")
-    generation_method: str = Field("ensemble", description="ensemble/openai/claude/qwen")
+    bloom_levels: list[int] | None = Field(None, description="Bloom levels 1-6")
+    generation_method: str = Field(
+        "ensemble", description="ensemble/openai/claude/qwen"
+    )
     priority: str = Field("normal", description="urgent/normal/low")
 
 
@@ -36,7 +40,7 @@ class BatchStatusResponse(BaseModel):
     total: int
     percent: float
     status: str
-    result: Optional[Dict[str, Any]] = None
+    result: dict[str, Any] | None = None
 
 
 class BatchResultResponse(BaseModel):
@@ -47,13 +51,15 @@ class BatchResultResponse(BaseModel):
     failed: int
     success_rate: float
     avg_quality_score: float
-    question_ids: List[int]
-    errors: List[str]
+    question_ids: list[int]
+    errors: list[str]
 
 
 # Endpoints
-@router.post("/generate", response_model=Dict[str, Any])
-async def start_batch_generation(request: BatchGenerationRequest) -> Dict[str, Any]:
+@router.post("/generate", response_model=dict[str, Any])
+async def start_batch_generation(
+    request: BatchGenerationRequest, _=Depends(get_current_admin_user)
+) -> dict[str, Any]:
     """Start batch question generation.
 
     Args:
@@ -73,42 +79,39 @@ async def start_batch_generation(request: BatchGenerationRequest) -> Dict[str, A
         # Estimate time
         batch_gen = BatchQuestionGenerator()
         estimated_time = batch_gen.estimate_generation_time(
-            request.batch_size,
-            request.generation_method
+            request.batch_size, request.generation_method
         )
 
         # Start Celery task
         task = generate_question_batch.apply_async(
             kwargs={
-                'batch_size': request.batch_size,
-                'exam_type': request.exam_type,
-                'subject': request.subject,
-                'topics': request.topics,
-                'difficulty_range': (request.difficulty_min, request.difficulty_max),
-                'bloom_levels': request.bloom_levels,
-                'generation_method': request.generation_method,
-                'priority': request.priority
+                "batch_size": request.batch_size,
+                "exam_type": request.exam_type,
+                "subject": request.subject,
+                "topics": request.topics,
+                "difficulty_range": (request.difficulty_min, request.difficulty_max),
+                "bloom_levels": request.bloom_levels,
+                "generation_method": request.generation_method,
+                "priority": request.priority,
             },
-            priority={
-                'urgent': 9,
-                'normal': 5,
-                'low': 3
-            }.get(request.priority, 5)
+            priority={"urgent": 9, "normal": 5, "low": 3}.get(request.priority, 5),
         )
 
         return {
             "task_id": task.id,
             "status": "QUEUED",
             "estimated_time_seconds": estimated_time,
-            "message": f"Batch generation started: {request.batch_size} questions"
+            "message": f"Batch generation started: {request.batch_size} questions",
         }
 
     except Exception as e:
-        raise HTTPException(500, f"Failed to start batch generation: {str(e)}")
+        raise HTTPException(500, f"Failed to start batch generation: {e!s}")
 
 
 @router.get("/status/{task_id}", response_model=BatchStatusResponse)
-async def get_batch_status(task_id: str) -> Dict[str, Any]:
+async def get_batch_status(
+    task_id: str, _=Depends(get_current_admin_user)
+) -> dict[str, Any]:
     """Get batch generation task status."""
     try:
         result = AsyncResult(task_id)
@@ -119,79 +122,85 @@ async def get_batch_status(task_id: str) -> Dict[str, Any]:
             "current": 0,
             "total": 0,
             "percent": 0.0,
-            "status": "Unknown"
+            "status": "Unknown",
         }
 
-        if result.state == 'PENDING':
+        if result.state == "PENDING":
             response["status"] = "Task is waiting to start"
-        elif result.state == 'PROGRESS':
+        elif result.state == "PROGRESS":
             info = result.info
-            response["current"] = info.get('current', 0)
-            response["total"] = info.get('total', 0)
-            response["percent"] = (response["current"] / response["total"] * 100) if response["total"] > 0 else 0
-            response["status"] = info.get('status', 'Processing...')
-        elif result.state == 'SUCCESS':
+            response["current"] = info.get("current", 0)
+            response["total"] = info.get("total", 0)
+            response["percent"] = (
+                (response["current"] / response["total"] * 100)
+                if response["total"] > 0
+                else 0
+            )
+            response["status"] = info.get("status", "Processing...")
+        elif result.state == "SUCCESS":
             response["current"] = response["total"] = 100
             response["percent"] = 100.0
             response["status"] = "Completed"
             response["result"] = result.result
-        elif result.state == 'FAILURE':
-            response["status"] = f"Failed: {str(result.info)}"
+        elif result.state == "FAILURE":
+            response["status"] = f"Failed: {result.info!s}"
 
         return response
 
     except Exception as e:
-        raise HTTPException(500, f"Failed to get task status: {str(e)}")
+        raise HTTPException(500, f"Failed to get task status: {e!s}")
 
 
 @router.get("/results/{task_id}", response_model=BatchResultResponse)
-async def get_batch_results(task_id: str) -> BatchResultResponse:
+async def get_batch_results(
+    task_id: str, _=Depends(get_current_admin_user)
+) -> BatchResultResponse:
     """Get batch generation results."""
     try:
         result = AsyncResult(task_id)
 
-        if result.state != 'SUCCESS':
-            raise HTTPException(400, f"Task not completed. Current state: {result.state}")
+        if result.state != "SUCCESS":
+            raise HTTPException(
+                400, f"Task not completed. Current state: {result.state}"
+            )
 
         data = result.result
 
         return BatchResultResponse(
-            success=data.get('success', False),
+            success=data.get("success", False),
             batch_id=task_id,
-            total=data['results']['total'],
-            successful=data['results']['successful'],
-            failed=data['results']['failed'],
-            success_rate=data['results']['success_rate'],
-            avg_quality_score=data['results']['avg_quality_score'],
-            question_ids=data['results']['question_ids'],
-            errors=data['results'].get('errors', [])
+            total=data["results"]["total"],
+            successful=data["results"]["successful"],
+            failed=data["results"]["failed"],
+            success_rate=data["results"]["success_rate"],
+            avg_quality_score=data["results"]["avg_quality_score"],
+            question_ids=data["results"]["question_ids"],
+            errors=data["results"].get("errors", []),
         )
 
     except HTTPException:
         raise
     except Exception as e:
-        raise HTTPException(500, f"Failed to get results: {str(e)}")
+        raise HTTPException(500, f"Failed to get results: {e!s}")
 
 
 @router.delete("/cancel/{task_id}")
-async def cancel_batch_generation(task_id: str) -> Dict[str, Any]:
+async def cancel_batch_generation(
+    task_id: str, _=Depends(get_current_admin_user)
+) -> dict[str, Any]:
     """Cancel running batch generation."""
     try:
         result = AsyncResult(task_id)
         result.revoke(terminate=True)
 
-        return {
-            "success": True,
-            "task_id": task_id,
-            "message": "Task cancelled"
-        }
+        return {"success": True, "task_id": task_id, "message": "Task cancelled"}
 
     except Exception as e:
-        raise HTTPException(500, f"Failed to cancel task: {str(e)}")
+        raise HTTPException(500, f"Failed to cancel task: {e!s}")
 
 
 @router.get("/queue/stats")
-async def get_queue_stats() -> Dict[str, Any]:
+async def get_queue_stats(_=Depends(get_current_admin_user)) -> dict[str, Any]:
     """Get queue statistics."""
     try:
         from core.celery_app import celery_app
@@ -214,8 +223,8 @@ async def get_queue_stats() -> Dict[str, Any]:
             "reserved_tasks": reserved_count,
             "total_pending": active_count + scheduled_count + reserved_count,
             "workers": len(active.keys()),
-            "queues": ["default", "bulk", "emails", "reports"]
+            "queues": ["default", "bulk", "emails", "reports"],
         }
 
     except Exception as e:
-        raise HTTPException(500, f"Failed to get queue stats: {str(e)}")
+        raise HTTPException(500, f"Failed to get queue stats: {e!s}")

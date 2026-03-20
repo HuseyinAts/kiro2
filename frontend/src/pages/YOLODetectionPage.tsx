@@ -63,7 +63,7 @@ const YOLODetectionPage: React.FC = () => {
       const formData = new FormData();
       formData.append('file', selectedFile);
 
-      const response = await fetch('http://localhost:8000/api/yolo/detect', {
+      const response = await fetch('/api/v1/yolo/detect', {
         method: 'POST',
         body: formData,
       });

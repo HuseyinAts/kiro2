@@ -163,6 +163,7 @@ export async function addDocument(documentData: {
     }),
     body: JSON.stringify(documentData),
     signal: AbortSignal.timeout(appConfig.api.timeout),
+    credentials: 'include',
   });
 
   if (!response.ok) {
@@ -185,6 +186,7 @@ export async function addEducationalContent(contentData: {
     }),
     body: JSON.stringify(contentData),
     signal: AbortSignal.timeout(appConfig.api.timeout),
+    credentials: 'include',
   });
 
   if (!response.ok) {
@@ -208,6 +210,7 @@ export async function searchDocuments(searchData: {
     }),
     body: JSON.stringify(searchData),
     signal: AbortSignal.timeout(appConfig.api.timeout),
+    credentials: 'include',
   });
 
   if (!response.ok) {
@@ -233,6 +236,7 @@ export async function searchEducationalContent(searchData: {
     }),
     body: JSON.stringify(searchData),
     signal: AbortSignal.timeout(appConfig.api.timeout),
+    credentials: 'include',
   });
 
   if (!response.ok) {
@@ -255,6 +259,7 @@ export async function queryWithContext(queryData: {
     }),
     body: JSON.stringify(queryData),
     signal: AbortSignal.timeout(appConfig.api.timeout),
+    credentials: 'include',
   });
 
   if (!response.ok) {
@@ -270,6 +275,7 @@ export async function clearRAGDatabase() {
     method: 'DELETE',
     headers: getHeaders(),
     signal: AbortSignal.timeout(appConfig.api.timeout),
+    credentials: 'include',
   });
 
   if (!response.ok) {
@@ -291,6 +297,7 @@ export async function hybridSearch(searchData: {
     headers: getHeaders({ 'Content-Type': 'application/json' }),
     body: JSON.stringify(searchData),
     signal: AbortSignal.timeout(appConfig.api.timeout),
+    credentials: 'include',
   });
 
   if (!response.ok) {
@@ -311,6 +318,7 @@ export async function multiQuerySearch(searchData: {
     headers: getHeaders({ 'Content-Type': 'application/json' }),
     body: JSON.stringify(searchData),
     signal: AbortSignal.timeout(appConfig.api.timeout),
+    credentials: 'include',
   });
 
   if (!response.ok) {
@@ -330,6 +338,7 @@ export async function indexDocument(documentData: {
     headers: getHeaders({ 'Content-Type': 'application/json' }),
     body: JSON.stringify(documentData),
     signal: AbortSignal.timeout(appConfig.api.timeout),
+    credentials: 'include',
   });
 
   if (!response.ok) {
@@ -352,6 +361,7 @@ export async function indexFile(file: File, metadata?: DocumentMetadata) {
     headers: getHeaders(),
     body: formData,
     signal: AbortSignal.timeout(appConfig.api.timeout),
+    credentials: 'include',
   });
 
   if (!response.ok) {
@@ -366,6 +376,7 @@ export async function getRAGStats() {
   const response = await fetch(`${API_BASE_URL}/api/v1/rag/stats`, {
     headers: getHeaders(),
     signal: AbortSignal.timeout(appConfig.api.timeout),
+    credentials: 'include',
   });
 
   if (!response.ok) {
@@ -379,6 +390,7 @@ export async function getRAGStats() {
 export async function getRAGHealth() {
   const response = await fetch(`${API_BASE_URL}/api/v1/rag/health`, {
     signal: AbortSignal.timeout(appConfig.api.timeout),
+    credentials: 'include',
   });
 
   if (!response.ok) {
