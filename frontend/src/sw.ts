@@ -253,7 +253,7 @@ async function syncUserProgress() {
   const progressData = await getStoredProgressData();
   if (progressData.length > 0) {
     try {
-      await fetch('/api/sync/progress', {
+      await fetch('/api/v1/sync/progress', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

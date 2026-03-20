@@ -462,6 +462,42 @@ async def create_user_enhanced(
             raise enhanced_error
 
 
+@router.get("/export-data")
+async def export_user_data(
+    current_user: User = Depends(get_current_user),
+) -> dict[str, Any]:
+    """Export user data — stub endpoint.
+    Frontend: ModernSettingsPage.tsx
+    """
+    return {
+        "success": True,
+        "data": {
+            "user_id": str(current_user.id),
+            "export_status": "pending",
+            "message": "Veri dışa aktarma henüz uygulanmadı",
+        },
+        "message": "Export data stub — not yet implemented",
+    }
+
+
+@router.delete("/delete-account")
+async def delete_user_account(
+    current_user: User = Depends(get_current_user),
+) -> dict[str, Any]:
+    """Delete user account — stub endpoint.
+    Frontend: ModernSettingsPage.tsx
+    """
+    return {
+        "success": True,
+        "data": {
+            "user_id": str(current_user.id),
+            "deletion_status": "pending",
+            "message": "Hesap silme henüz uygulanmadı",
+        },
+        "message": "Delete account stub — not yet implemented",
+    }
+
+
 @router.get(
     "/{user_id}",
     response_model=SuccessResponse[UserResponse],
@@ -635,39 +671,3 @@ async def get_error_monitoring_health(
         custom_message="Sistem sağlık durumu başarıyla getirildi",
         request_id=getattr(request.state, "request_id", None),
     )
-
-
-@router.get("/export-data")
-async def export_user_data(
-    current_user: User = Depends(get_current_user),
-) -> dict[str, Any]:
-    """Export user data — stub endpoint.
-    Frontend: ModernSettingsPage.tsx
-    """
-    return {
-        "success": True,
-        "data": {
-            "user_id": str(current_user.id),
-            "export_status": "pending",
-            "message": "Veri dışa aktarma henüz uygulanmadı",
-        },
-        "message": "Export data stub — not yet implemented",
-    }
-
-
-@router.delete("/delete-account")
-async def delete_user_account(
-    current_user: User = Depends(get_current_user),
-) -> dict[str, Any]:
-    """Delete user account — stub endpoint.
-    Frontend: ModernSettingsPage.tsx
-    """
-    return {
-        "success": True,
-        "data": {
-            "user_id": str(current_user.id),
-            "deletion_status": "pending",
-            "message": "Hesap silme henüz uygulanmadı",
-        },
-        "message": "Delete account stub — not yet implemented",
-    }
