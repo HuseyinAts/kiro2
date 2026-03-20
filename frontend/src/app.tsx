@@ -82,6 +82,9 @@ const LearningPathPage = lazy(() => import('./pages/ModernLearningPathPage'));
 // Pages - New Features (F3, F5)
 const PhotoAskPage = lazy(() => import('./pages/PhotoAskPage'));
 const PlacementAssessmentPage = lazy(() => import('./pages/PlacementAssessmentPage'));
+
+// FAZ-5: Realm Map
+const RealmPage = lazy(() => import('./pages/RealmPage'));
 // Optimize edilmiş QueryClient
 const queryClient = createOptimizedQueryClient();
 
@@ -455,6 +458,16 @@ function AppContent() {
               <Route
                 path="/accessibility-demo"
                 element={<AccessibilityDemoPage />}
+              />
+
+              {/* FAZ-5: Realm Map */}
+              <Route
+                path="/realms"
+                element={
+                  <ProtectedRoute requiredRoles={['ogrenci', 'admin']}>
+                    <RealmPage />
+                  </ProtectedRoute>
+                }
               />
 
               {/* Default redirects */}

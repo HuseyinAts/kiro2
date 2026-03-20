@@ -5,9 +5,10 @@ Router'ları dinamik olarak yükleyen ve kaydeden sistem.
 Updated: 2026-01-10 - Dosya adları düzeltildi
 """
 
-from fastapi import FastAPI
-import logging
 import importlib
+import logging
+
+from fastapi import FastAPI
 
 from routers import router_registry
 
@@ -17,10 +18,8 @@ logger = logging.getLogger(__name__)
 ROUTER_MAPPING = {
     # Health & Monitoring
     "api.health": ("health", "api.health"),
-
     # Telemetry (frontend web-vitals + error report stubs)
     "api.telemetry": ("health", "api.telemetry"),
-
     # Authentication & Security
     "api.auth": ("auth", "api.auth"),
     "api.enhanced_auth_api": ("auth", "api.enhanced_auth_api"),
@@ -33,12 +32,10 @@ ROUTER_MAPPING = {
     "api.audit_logs_api": ("security", "api.audit_logs_api"),
     "api.encryption_management": ("security", "api.encryption_management"),
     "api.api_key_api": ("security", "api.api_key_api"),
-
     # Exam & Assessment
     "api.sinav": ("exam", "api.sinav"),
     "api.exam_performance": ("exam", "api.exam_performance"),
     "api.exam_answer_tracking": ("exam", "api.exam_answer_tracking"),
-
     # Learning & Education
     "api.learning_style": ("learning", "api.learning_style"),
     "api.learning_path_v2": ("learning", "api.learning_path_v2"),
@@ -46,7 +43,6 @@ ROUTER_MAPPING = {
     "api.irt_morfoloji": ("learning", "api.irt_morfoloji"),
     "api.fsrs": ("learning", "api.fsrs"),
     "api.curriculum_compliance": ("learning", "api.curriculum_compliance"),
-
     # Content & Questions
     "api.soru_bankasi": ("content", "api.soru_bankasi"),
     "api.question_crud_api": ("content", "api.question_crud_api"),
@@ -61,8 +57,10 @@ ROUTER_MAPPING = {
     "api.pdf_processing_api": ("content", "api.pdf_processing_api"),
     "api.batch_generation_api": ("content", "api.batch_generation_api"),
     "api.wave2b_quality_routes": ("content", "api.wave2b_quality_routes"),
-    "api.difficulty_classification_api": ("content", "api.difficulty_classification_api"),
-
+    "api.difficulty_classification_api": (
+        "content",
+        "api.difficulty_classification_api",
+    ),
     # AI & NLP Services
     "api.v1.expert_agents_api": ("ai", "api.v1.expert_agents_api"),
     "api.agents": ("ai", "api.agents"),
@@ -77,14 +75,14 @@ ROUTER_MAPPING = {
     "api.sequential_reasoning_api": ("ai", "api.sequential_reasoning_api"),
     "api.litellm_chat": ("ai", "api.litellm_chat"),
     "api.enhanced_chat": ("ai", "api.enhanced_chat"),
-
     # Integrations
     "api.youtube_routes": ("integrations", "api.youtube_routes"),
     "api.khan_routes": ("integrations", "api.khan_routes"),
     "api.eba_routes": ("integrations", "api.eba_routes"),
     "api.ebatv": ("integrations", "api.ebatv"),
     "api.gamification_api": ("integrations", "api.gamification_api"),
-
+    "api.realms": ("integrations", "api.realms"),
+    "api.bilge_alp": ("ai", "api.bilge_alp"),
     # Admin & Management
     "api.admin": ("admin", "api.admin"),
     "api.teacher_routes": ("admin", "api.teacher_routes"),
@@ -98,10 +96,8 @@ ROUTER_MAPPING = {
     "api.celery_tasks_api": ("admin", "api.celery_tasks_api"),
     "api.config_routes": ("admin", "api.config_routes"),
     "api.enhanced_user_management_api": ("admin", "api.enhanced_user_management_api"),
-
     # Quality Gates & DevOps
     "api.quality_gates_api": ("devops", "api.quality_gates_api"),
-
     # Analytics & Monitoring
     "api.analytics": ("analytics", "api.analytics"),
     "api.monitoring": ("analytics", "api.monitoring"),
@@ -112,7 +108,6 @@ ROUTER_MAPPING = {
     "api.tracing_example": ("analytics", "api.tracing_example"),
     "api.sentry_demo": ("analytics", "api.sentry_demo"),
     "api.video_analytics_routes": ("analytics", "api.video_analytics_routes"),
-
     # Accessibility
     "api.adhd_task_management_api": ("accessibility", "api.adhd_task_management_api"),
     "api.adhd_focus_mode_api": ("accessibility", "api.adhd_focus_mode_api"),
@@ -126,17 +121,21 @@ ROUTER_MAPPING = {
     "api.video_solution": ("accessibility", "api.video_solution"),
     "api.alternative_solutions_api": ("accessibility", "api.alternative_solutions_api"),
     "api.manipulatives_api": ("accessibility", "api.manipulatives_api"),
-    "api.manipulatives_progress_api": ("accessibility", "api.manipulatives_progress_api"),
+    "api.manipulatives_progress_api": (
+        "accessibility",
+        "api.manipulatives_progress_api",
+    ),
     "api.visual_supports_api": ("accessibility", "api.visual_supports_api"),
     "api.multisensory_learning_api": ("accessibility", "api.multisensory_learning_api"),
-
     # University & Career
     "api.university_advisory_routes": ("university", "api.university_advisory_routes"),
-    "api.preference_simulation_routes": ("university", "api.preference_simulation_routes"),
+    "api.preference_simulation_routes": (
+        "university",
+        "api.preference_simulation_routes",
+    ),
     "api.department_info_routes": ("university", "api.department_info_routes"),
     "api.university_info_routes": ("university", "api.university_info_routes"),
     "api.student_review_routes": ("university", "api.student_review_routes"),
-
     # Other Features
     "api.live_session_routes": ("learning", "api.live_session_routes"),
     "api.team_challenges_api": ("integrations", "api.team_challenges_api"),
@@ -146,50 +145,39 @@ ROUTER_MAPPING = {
     "api.vision_api": ("ai", "api.vision_api"),
     "api.ferpa_coppa_compliance_api": ("security", "api.ferpa_coppa_compliance_api"),
     "api.validation": ("admin", "api.validation"),
-
     # Batch & Optimization (API Response Time Optimization)
     "api.v1.batch": ("optimization", "api.v1.batch"),
-
     # Semantic Search (ChromaDB Entegrasyon - Spec)
     "api.v1.semantic_search": ("search", "api.v1.semantic_search"),
-
     # Clustering (ChromaDB Entegrasyon - Spec REQ-6)
     "api.clustering_api": ("search", "api.clustering_api"),
-
     # Content Recommendation (ChromaDB Entegrasyon - Spec REQ-4)
     "api.v1.content_recommendation": ("search", "api.v1.content_recommendation"),
-
     # Duplicate Detection (ChromaDB Entegrasyon - Spec REQ-5)
     "api.v1.duplicate_detection": ("search", "api.v1.duplicate_detection"),
-
     # Diary Plugin (claude-diary-plugin Spec)
     "api.diary_api": ("learning", "api.diary_api"),
-
     # Faz 2: Study Planner, Leagues, Coaching (Mega Feature Plan)
     "api.study_planner_api": ("learning", "api.study_planner_api"),
     "api.league_api": ("integrations", "api.league_api"),
     "api.coaching_api": ("learning", "api.coaching_api"),
-
     # Faz 3: Duel, Photo Ask, Placement Assessment (Mega Feature Plan)
     "api.duel_api": ("integrations", "api.duel_api"),
     "api.photo_ask_api": ("content", "api.photo_ask_api"),
     "api.placement_assessment_api": ("exam", "api.placement_assessment_api"),
-
     # Faz 4: Knowledge Map
     "api.knowledge_graph_api": ("learning", "api.knowledge_graph_api"),
-
     # F13: Mastery Confidence Indicator
     "api.mastery_confidence_api": ("learning", "api.mastery_confidence_api"),
-
     # Faz 4-5: DINA, Productive Failure, Error Clusters, Mnemonics
     "api.dina_api": ("learning", "api.dina_api"),
     "api.productive_failure_api": ("learning", "api.productive_failure_api"),
     "api.error_cluster_api": ("analytics", "api.error_cluster_api"),
     "api.mnemonic_api": ("content", "api.mnemonic_api"),
-
     # Faz 6: PWA Offline Sync
     "api.offline_sync_api": ("learning", "api.offline_sync_api"),
 }
+
 
 class RouterLoader:
     """Dynamic router loader."""
@@ -229,12 +217,14 @@ class RouterLoader:
         """Tek bir router'ı yükle."""
         try:
             module = importlib.import_module(module_path)
-            if hasattr(module, 'router'):
+            if hasattr(module, "router"):
                 router = module.router
-                name = module_path.split('.')[-1]
+                name = module_path.split(".")[-1]
 
                 # Prefix'i belirle - boş string ise default kullan
-                prefix = getattr(router, 'prefix', None) or f"/api/{name.replace('_', '-')}"
+                prefix = (
+                    getattr(router, "prefix", None) or f"/api/{name.replace('_', '-')}"
+                )
 
                 router_registry.register(category, name, router, prefix)
                 self.loaded_count += 1
@@ -262,6 +252,7 @@ class RouterLoader:
                 logger.debug(f"Registered router {name} with prefix: {router.prefix}")
             except Exception as e:
                 logger.error(f"Failed to register {name} to app: {e}")
+
 
 def setup_routers(app: FastAPI):
     """Router'ları kur (public API)."""

@@ -13,30 +13,72 @@ export default defineConfig({
     }),
     VitePWA({
       registerType: 'autoUpdate',
+      includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'masked-icon.svg'],
       workbox: {
-        globPatterns: ['**/*.{js,css,html,ico,png,svg}'],
+        globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
         globIgnores: ['**/stats.html', '**/node_modules/**'],
-        maximumFileSizeToCacheInBytes: 10 * 1024 * 1024 // 10MB limit
+        maximumFileSizeToCacheInBytes: 10 * 1024 * 1024, // 10MB limit
+        // Cache API responses for offline use
+        runtimeCaching: [
+          {
+            urlPattern: /^\/api\/realms\//,
+            handler: 'NetworkFirst',
+            options: {
+              cacheName: 'kiro2-realms-cache',
+              expiration: { maxAgeSeconds: 60 * 60 * 24 }, // 24h
+            },
+          },
+          {
+            urlPattern: /^\/api\/gamification\//,
+            handler: 'NetworkFirst',
+            options: {
+              cacheName: 'kiro2-gamification-cache',
+              expiration: { maxAgeSeconds: 60 * 30 }, // 30m
+            },
+          },
+          {
+            urlPattern: /^\/static\/crops\//,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'kiro2-question-images',
+              expiration: { maxEntries: 500, maxAgeSeconds: 60 * 60 * 24 * 7 }, // 7d
+            },
+          },
+        ],
       },
       manifest: {
-        name: 'KIRO2 Eğitim',
+        name: 'KIRO2 YKS Hazırlık',
         short_name: 'KIRO2',
-        description: 'Eğitim platformu',
-        theme_color: '#1976d2',
-        background_color: '#ffffff',
+        description: 'Yapay zeka destekli YKS/TYT/AYT hazırlık platformu',
+        theme_color: '#667EEA',
+        background_color: '#0F172A',
         display: 'standalone',
-        start_url: '/',
+        orientation: 'portrait-primary',
+        start_url: '/dashboard',
+        scope: '/',
+        lang: 'tr',
+        categories: ['education'],
         icons: [
+          { src: '/icon-192x192.png', sizes: '192x192', type: 'image/png' },
+          { src: '/icon-512x512.png', sizes: '512x512', type: 'image/png' },
+          { src: '/icon-512x512.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' },
+        ],
+        shortcuts: [
           {
-            src: '/icon-192x192.png',
-            sizes: '192x192',
-            type: 'image/png'
-          }
-        ]
+            name: 'Sınav Başlat',
+            url: '/exam/start',
+            description: 'Hızlıca sınav başlat',
+          },
+          {
+            name: 'Alemler',
+            url: '/realms',
+            description: 'Konu alemlerini keşfet',
+          },
+        ],
       },
       devOptions: {
-        enabled: false
-      }
+        enabled: false,
+      },
     }),
     // Bundle analyzer (only in build mode)
     visualizer({
