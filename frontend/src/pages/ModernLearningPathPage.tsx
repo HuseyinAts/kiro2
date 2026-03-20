@@ -3,8 +3,8 @@
  * Kişiselleştirilmiş öğrenme yolu ve kaynaklar
  */
 
-import { Timeline, VideoLibrary, Assessment, Refresh, AutoAwesome, Shuffle, Science } from '@mui/icons-material';
-import { Container, Box, Tabs, Tab, Typography, Alert, Chip, ToggleButton, ToggleButtonGroup } from '@mui/material';
+import { Timeline, VideoLibrary, Assessment, Refresh, AutoAwesome, Shuffle, Science, SportsEsports } from '@mui/icons-material';
+import { Container, Box, Tabs, Tab, Typography, Alert, Chip, ToggleButton, ToggleButtonGroup, Dialog, DialogContent, IconButton } from '@mui/material';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 
@@ -24,6 +24,9 @@ import { mapApiToQuizQuestion } from '../utils/questionMappers';
 import { ReviewQueuePanel } from '../components/LearningPath/ReviewQueuePanel';
 import { ErrorClusterCard } from '../components/Quiz/ErrorClusterCard';
 import { ProductiveFailureFlow } from '../components/LearningPath/ProductiveFailureFlow';
+import { LeaguePanel } from '../components/LearningPath/LeaguePanel';
+import { StudyPlannerWidget } from '../components/LearningPath/StudyPlannerWidget';
+import { DuelMode } from '../components/LearningPath/DuelMode';
 import { useLearningPath } from '../hooks/useLearningPath';
 import { useLearningPathVideos } from '../hooks/useLearningPathVideos';
 
@@ -113,6 +116,9 @@ export function ModernLearningPathPage() {
 
   // F15: Last completed quiz subject for error cluster card
   const [lastQuizSubject, setLastQuizSubject] = useState<string | null>(null);
+
+  // F16: Duel mode dialog
+  const [showDuel, setShowDuel] = useState(false);
 
   // ========================================
   // Effects
@@ -1064,12 +1070,45 @@ export function ModernLearningPathPage() {
                       </Box>
                     )}
                   </GlassCard>
+
+                  {/* League + Study Planner + Duel */}
+                  <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }, gap: 3, mt: 3 }}>
+                    <LeaguePanel compact={false} />
+                    <StudyPlannerWidget pathNodes={pathNodes} />
+                  </Box>
+
+                  <Box sx={{ mt: 3, textAlign: 'center' }}>
+                    <ModernButton
+                      variant="solid"
+                      icon={<SportsEsports />}
+                      onClick={() => setShowDuel(true)}
+                      sx={{ background: modernColors.gradients.sunset, px: 4 }}
+                    >
+                      Düello Başlat
+                    </ModernButton>
+                  </Box>
                 </motion.div>
               </AnimatePresence>
             </TabPanel>
           </GlassCard>
         </motion.div>
       </Container>
+
+      {/* Duel Mode Dialog */}
+      <Dialog
+        open={showDuel}
+        onClose={() => setShowDuel(false)}
+        maxWidth="md"
+        fullWidth
+        PaperProps={{ sx: { borderRadius: 3, minHeight: '60vh' } }}
+      >
+        <Box sx={{ display: 'flex', justifyContent: 'flex-end', p: 1 }}>
+          <IconButton onClick={() => setShowDuel(false)} size="small">✕</IconButton>
+        </Box>
+        <DialogContent>
+          <DuelMode subject={turkishLowerCase(selectedSubject) === 'matematik' ? 'MATEMATIK' : selectedSubject.toUpperCase()} />
+        </DialogContent>
+      </Dialog>
     </Box>
   );
 }
