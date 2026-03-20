@@ -347,7 +347,7 @@ export const RealmPage: React.FC = () => {
           realmSlug={selectedRealm.slug}
           realmName={selectedRealm.name}
           npcName={selectedRealm.npc_name}
-          npcTitle={(selectedRealm as RealmData & { npc_title?: string }).npc_title}
+          npcTitle={selectedRealm.npc_title}
           bktScore={selectedRealm.progress?.bkt_score ?? 0}
           questStep={selectedRealm.progress?.quest_stop ?? 0}
           onClose={() => setShowNPC(false)}

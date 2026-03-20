@@ -10,6 +10,7 @@ export interface RealmData {
   name: string;
   era: string;
   npc_name: string;
+  npc_title?: string;
   color_primary: string;
   color_secondary: string;
   order_index: number;

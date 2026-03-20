@@ -25,7 +25,7 @@ from core.dependencies import AuthenticatedUser, get_current_user
 
 logger = logging.getLogger(__name__)
 
-router = APIRouter(prefix="/realms", tags=["realms"])
+router = APIRouter(prefix="/api/realms", tags=["realms"])
 
 
 # ---------------------------------------------------------------------------
