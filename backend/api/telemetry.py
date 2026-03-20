@@ -5,12 +5,13 @@ Frontend'in web-vitals ve error report isteklerini kabul eder.
 Henuz backend'de islenmiyor — 404 console hatalarini onlemek icin stub.
 """
 
-from fastapi import APIRouter, Request
 import logging
+
+from fastapi import APIRouter, Request
 
 logger = logging.getLogger(__name__)
 
-router = APIRouter(prefix="/api", tags=["telemetry"])
+router = APIRouter(prefix="/api/v1", tags=["telemetry"])
 
 
 @router.post("/analytics/web-vitals", status_code=204)

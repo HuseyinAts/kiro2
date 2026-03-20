@@ -49,7 +49,7 @@ const sendToAnalytics = (metric: VitalsMetric): void => {
   if (process.env.NODE_ENV === 'production') {
     try {
       navigator.sendBeacon(
-        '/api/analytics/web-vitals',
+        '/api/v1/analytics/web-vitals',
         JSON.stringify({
           name: metric.name,
           value: metric.value,
