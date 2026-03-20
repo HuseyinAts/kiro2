@@ -30,7 +30,9 @@ import {
   Alert,
 } from '@mui/material';
 import * as React from 'react';
-import {  useEffect, useState  } from 'react';
+import { useEffect, useState } from 'react';
+
+import { useAuthStore } from '../../store/authStore';
 
 // API servisleri
 import { examService } from '../../services/examService';
@@ -76,6 +78,8 @@ interface Recommendation {
 }
 
 const StudentDashboard: React.FC = () => {
+  const { user } = useAuthStore();
+
   // State
   const [loading, setLoading] = useState(true);
   const [profile, setProfile] = useState<StudentProfile | null>(null);
@@ -93,8 +97,8 @@ const StudentDashboard: React.FC = () => {
       setLoading(true);
       setError(null);
 
-      // Öğrenci ID'sini session'dan al (gerçek uygulamada)
-      const studentId = localStorage.getItem('student_id') || 'demo_student_123';
+      const studentId = user?.id;
+      if (!studentId) return;
 
       // Paralel veri yükleme
       const [profileData, statsData, recsData] = await Promise.all([

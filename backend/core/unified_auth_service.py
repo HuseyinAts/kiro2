@@ -6,12 +6,13 @@ Consolidates JWT, RBAC, 2FA, and session management
 
 import hashlib
 import logging
+import os
 import secrets
 import uuid
 from dataclasses import dataclass, field
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from enum import Enum
-from typing import Any, Optional, Literal
+from typing import Any, Literal
 
 import jwt
 from passlib.context import CryptContext
@@ -21,8 +22,10 @@ logger = logging.getLogger(__name__)
 
 # ==================== ENUMS ====================
 
+
 class UserRole(str, Enum):
     """User roles in the system"""
+
     STUDENT = "student"
     TEACHER = "teacher"
     PARENT = "parent"
@@ -32,6 +35,7 @@ class UserRole(str, Enum):
 
 class TokenType(str, Enum):
     """JWT token types"""
+
     ACCESS = "access"
     REFRESH = "refresh"
     RESET_PASSWORD = "reset_password"
@@ -41,6 +45,7 @@ class TokenType(str, Enum):
 
 class Permission(str, Enum):
     """System permissions"""
+
     # User management
     USER_CREATE = "user:create"
     USER_READ = "user:read"
@@ -84,6 +89,7 @@ class Permission(str, Enum):
 
 class AuthEvent(str, Enum):
     """Authentication events for audit logging"""
+
     LOGIN_SUCCESS = "login_success"
     LOGIN_FAILED = "login_failed"
     LOGOUT = "logout"
@@ -102,9 +108,11 @@ class AuthEvent(str, Enum):
 
 # ==================== DATA CLASSES ====================
 
+
 @dataclass
 class TokenPayload:
     """JWT token payload"""
+
     sub: str  # user_id
     email: str
     role: UserRole
@@ -113,13 +121,14 @@ class TokenPayload:
     type: TokenType
     jti: str  # JWT ID
     permissions: list[str] = field(default_factory=list)
-    device_id: Optional[str] = None
-    session_id: Optional[str] = None
+    device_id: str | None = None
+    session_id: str | None = None
 
 
 @dataclass
 class TokenPair:
     """Access and refresh token pair"""
+
     access_token: str
     refresh_token: str
     token_type: str = "bearer"
@@ -130,6 +139,7 @@ class TokenPair:
 @dataclass
 class UserSession:
     """User session information"""
+
     session_id: str
     user_id: int
     device_id: str
@@ -144,8 +154,9 @@ class UserSession:
 @dataclass
 class AuthAuditLog:
     """Authentication audit log entry"""
+
     id: str
-    user_id: Optional[int]
+    user_id: int | None
     event: AuthEvent
     ip_address: str
     user_agent: str
@@ -157,9 +168,10 @@ class AuthAuditLog:
 @dataclass
 class RateLimitInfo:
     """Rate limiting information"""
+
     attempts: int
     first_attempt: datetime
-    locked_until: Optional[datetime] = None
+    locked_until: datetime | None = None
 
 
 @dataclass
@@ -176,6 +188,7 @@ class SessionContext:
         created_at: Bağlam oluşturulma zamanı
         fingerprint: IP + User-Agent hash'i
     """
+
     ip_address: str
     user_agent: str
     created_at: datetime
@@ -198,15 +211,16 @@ class HijackingResult:
         original_user_agent: Orijinal User-Agent
         current_user_agent: Mevcut User-Agent
     """
+
     is_hijacked: bool
-    reason: Optional[str] = None
+    reason: str | None = None
     severity: Literal["low", "medium", "high", "critical"] = "low"
     ip_changed: bool = False
     user_agent_changed: bool = False
-    original_ip: Optional[str] = None
-    current_ip: Optional[str] = None
-    original_user_agent: Optional[str] = None
-    current_user_agent: Optional[str] = None
+    original_ip: str | None = None
+    current_ip: str | None = None
+    original_user_agent: str | None = None
+    current_user_agent: str | None = None
 
 
 # ==================== ROLE PERMISSIONS ====================
@@ -284,6 +298,7 @@ ROLE_PERMISSIONS: dict[UserRole, list[Permission]] = {
 
 # ==================== UNIFIED AUTH SERVICE ====================
 
+
 class UnifiedAuthService:
     """
     Unified Authentication and Authorization Service
@@ -299,7 +314,7 @@ class UnifiedAuthService:
     """
 
     # Configuration
-    SECRET_KEY = "kiro2-super-secret-key-change-in-production"
+    SECRET_KEY = os.getenv("JWT_SECRET", "kiro2-super-secret-key-change-in-production")
     ALGORITHM = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES = 15
     REFRESH_TOKEN_EXPIRE_DAYS = 7
@@ -315,7 +330,9 @@ class UnifiedAuthService:
         self._sessions: dict[str, UserSession] = {}
         self._audit_logs: list[AuthAuditLog] = []
         self._2fa_secrets: dict[int, str] = {}
-        self._session_contexts: dict[str, SessionContext] = {}  # Session hijacking prevention
+        self._session_contexts: dict[
+            str, SessionContext
+        ] = {}  # Session hijacking prevention
 
     # ==================== PASSWORD MANAGEMENT ====================
 
@@ -338,15 +355,15 @@ class UnifiedAuthService:
         user_id: int,
         email: str,
         role: UserRole,
-        permissions: Optional[list[str]] = None,
-        device_id: Optional[str] = None,
-        session_id: Optional[str] = None,
+        permissions: list[str] | None = None,
+        device_id: str | None = None,
+        session_id: str | None = None,
     ) -> str:
         """Create an access token"""
         if permissions is None:
             permissions = [p.value for p in ROLE_PERMISSIONS.get(role, [])]
 
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
         expire = now + timedelta(minutes=self.ACCESS_TOKEN_EXPIRE_MINUTES)
         jti = str(uuid.uuid4())
 
@@ -370,11 +387,11 @@ class UnifiedAuthService:
         user_id: int,
         email: str,
         role: UserRole,
-        device_id: Optional[str] = None,
-        session_id: Optional[str] = None,
+        device_id: str | None = None,
+        session_id: str | None = None,
     ) -> str:
         """Create a refresh token"""
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
         expire = now + timedelta(days=self.REFRESH_TOKEN_EXPIRE_DAYS)
         jti = str(uuid.uuid4())
 
@@ -397,8 +414,8 @@ class UnifiedAuthService:
         user_id: int,
         email: str,
         role: UserRole,
-        permissions: Optional[list[str]] = None,
-        device_id: Optional[str] = None,
+        permissions: list[str] | None = None,
+        device_id: str | None = None,
     ) -> TokenPair:
         """Create both access and refresh tokens"""
         session_id = str(uuid.uuid4())
@@ -445,8 +462,8 @@ class UnifiedAuthService:
                 sub=payload["sub"],
                 email=payload["email"],
                 role=UserRole(payload["role"]),
-                exp=datetime.fromtimestamp(payload["exp"], tz=timezone.utc),
-                iat=datetime.fromtimestamp(payload["iat"], tz=timezone.utc),
+                exp=datetime.fromtimestamp(payload["exp"], tz=UTC),
+                iat=datetime.fromtimestamp(payload["iat"], tz=UTC),
                 type=TokenType(payload["type"]),
                 jti=payload["jti"],
                 permissions=payload.get("permissions", []),
@@ -476,7 +493,7 @@ class UnifiedAuthService:
             pass
         return False
 
-    def refresh_tokens(self, refresh_token: str) -> Optional[TokenPair]:
+    def refresh_tokens(self, refresh_token: str) -> TokenPair | None:
         """Refresh tokens using a refresh token"""
         try:
             payload = self.decode_token(refresh_token)
@@ -508,7 +525,7 @@ class UnifiedAuthService:
         self,
         user_role: UserRole,
         permission: Permission,
-        user_permissions: Optional[list[str]] = None,
+        user_permissions: list[str] | None = None,
     ) -> bool:
         """Check if a role or user has a specific permission"""
         # Super admin has all permissions
@@ -530,7 +547,7 @@ class UnifiedAuthService:
         resource_type: str,
         resource_id: str,
         action: str,
-        resource_owner_id: Optional[int] = None,
+        resource_owner_id: int | None = None,
     ) -> bool:
         """Check if user can access a specific resource"""
         permission_str = f"{resource_type}:{action}"
@@ -554,14 +571,14 @@ class UnifiedAuthService:
 
     # ==================== RATE LIMITING ====================
 
-    def check_rate_limit(self, identifier: str) -> tuple[bool, Optional[int]]:
+    def check_rate_limit(self, identifier: str) -> tuple[bool, int | None]:
         """
         Check if rate limit is exceeded
 
         Returns:
             (allowed, retry_after_seconds)
         """
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
 
         if identifier not in self._rate_limits:
             self._rate_limits[identifier] = RateLimitInfo(
@@ -606,10 +623,10 @@ class UnifiedAuthService:
         user_id: int,
         ip_address: str,
         user_agent: str,
-        device_id: Optional[str] = None,
+        device_id: str | None = None,
     ) -> UserSession:
         """Create a new user session"""
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
         session = UserSession(
             session_id=str(uuid.uuid4()),
             user_id=user_id,
@@ -623,11 +640,11 @@ class UnifiedAuthService:
         self._sessions[session.session_id] = session
         return session
 
-    def get_session(self, session_id: str) -> Optional[UserSession]:
+    def get_session(self, session_id: str) -> UserSession | None:
         """Get session by ID"""
         session = self._sessions.get(session_id)
         if session and session.is_active:
-            now = datetime.now(timezone.utc)
+            now = datetime.now(UTC)
             if now > session.expires_at:
                 session.is_active = False
                 return None
@@ -638,7 +655,7 @@ class UnifiedAuthService:
         """Update last activity timestamp"""
         session = self._sessions.get(session_id)
         if session and session.is_active:
-            session.last_activity = datetime.now(timezone.utc)
+            session.last_activity = datetime.now(UTC)
 
     def end_session(self, session_id: str) -> bool:
         """End a session"""
@@ -651,8 +668,7 @@ class UnifiedAuthService:
     def get_user_sessions(self, user_id: int) -> list[UserSession]:
         """Get all active sessions for a user"""
         return [
-            s for s in self._sessions.values()
-            if s.user_id == user_id and s.is_active
+            s for s in self._sessions.values() if s.user_id == user_id and s.is_active
         ]
 
     def end_all_user_sessions(self, user_id: int) -> int:
@@ -707,7 +723,7 @@ class UnifiedAuthService:
             ...     user_agent="Mozilla/5.0..."
             ... )
         """
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
         fingerprint = self._generate_context_fingerprint(ip, user_agent)
 
         context = SessionContext(
@@ -756,9 +772,7 @@ class UnifiedAuthService:
         context = self._session_contexts.get(session_id)
 
         if not context:
-            logger.warning(
-                f"Session context not found | Session: {session_id[:8]}..."
-            )
+            logger.warning(f"Session context not found | Session: {session_id[:8]}...")
             return False
 
         current_fingerprint = self._generate_context_fingerprint(ip, user_agent)
@@ -898,7 +912,7 @@ class UnifiedAuthService:
             return True
         return False
 
-    def get_session_context(self, session_id: str) -> Optional[SessionContext]:
+    def get_session_context(self, session_id: str) -> SessionContext | None:
         """
         Oturum baglam bilgilerini getirir.
 
@@ -915,11 +929,11 @@ class UnifiedAuthService:
     def log_auth_event(
         self,
         event: AuthEvent,
-        user_id: Optional[int],
+        user_id: int | None,
         ip_address: str,
         user_agent: str,
         success: bool = True,
-        details: Optional[dict[str, Any]] = None,
+        details: dict[str, Any] | None = None,
     ) -> AuthAuditLog:
         """Log an authentication event"""
         log = AuthAuditLog(
@@ -928,7 +942,7 @@ class UnifiedAuthService:
             event=event,
             ip_address=ip_address,
             user_agent=user_agent,
-            timestamp=datetime.now(timezone.utc),
+            timestamp=datetime.now(UTC),
             success=success,
             details=details or {},
         )
@@ -949,8 +963,8 @@ class UnifiedAuthService:
 
     def get_recent_auth_events(
         self,
-        user_id: Optional[int] = None,
-        event_type: Optional[AuthEvent] = None,
+        user_id: int | None = None,
+        event_type: AuthEvent | None = None,
         limit: int = 100,
     ) -> list[AuthAuditLog]:
         """Get recent authentication events"""
@@ -986,6 +1000,7 @@ class UnifiedAuthService:
         # Simplified verification (use pyotp in production)
         # This generates a time-based code for demo purposes
         import time
+
         counter = int(time.time()) // 30
         expected = hashlib.sha1(f"{secret}{counter}".encode()).hexdigest()[:6]
 
@@ -1044,7 +1059,7 @@ class UnifiedAuthService:
 
     def get_auth_stats(self) -> dict[str, Any]:
         """Get authentication statistics"""
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
         last_hour = now - timedelta(hours=1)
         last_day = now - timedelta(days=1)
 
@@ -1055,25 +1070,24 @@ class UnifiedAuthService:
             "active_sessions": sum(1 for s in self._sessions.values() if s.is_active),
             "blacklisted_tokens": len(self._blacklisted_tokens),
             "rate_limited_ips": sum(
-                1 for r in self._rate_limits.values()
+                1
+                for r in self._rate_limits.values()
                 if r.locked_until and r.locked_until > now
             ),
             "users_with_2fa": len(self._2fa_secrets),
             "events_last_hour": len(recent_logs),
             "events_last_day": len(daily_logs),
             "failed_logins_last_hour": sum(
-                1 for l in recent_logs
-                if l.event == AuthEvent.LOGIN_FAILED
+                1 for l in recent_logs if l.event == AuthEvent.LOGIN_FAILED
             ),
             "successful_logins_last_hour": sum(
-                1 for l in recent_logs
-                if l.event == AuthEvent.LOGIN_SUCCESS
+                1 for l in recent_logs if l.event == AuthEvent.LOGIN_SUCCESS
             ),
         }
 
 
 # Global service instance
-_auth_service: Optional[UnifiedAuthService] = None
+_auth_service: UnifiedAuthService | None = None
 
 
 def get_auth_service() -> UnifiedAuthService:

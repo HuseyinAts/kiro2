@@ -2,14 +2,18 @@
 Admin Panel Servis Katmanı
 Kullanıcı yönetimi, dashboard istatistikleri ve içerik yönetimi servisleri
 """
+
+import logging
 import uuid
 from datetime import datetime, timedelta
 from functools import wraps
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from models import Kullanici, KullaniciOlustur, KullaniciRolu
 from services.soru_bankasi_service import soru_bankasi_servisi
 from services.user_service import kullanici_servisi
+
+logger = logging.getLogger(__name__)
 
 
 class AdminAuthorizationError(Exception):
@@ -91,7 +95,7 @@ class AdminService:
             return kullanici.rol in self.admin_rolleri
 
         except Exception as e:
-            print(f"Admin yetki kontrolü hatası: {str(e)}")
+            logger.error("Admin yetki kontrolü hatası: %s", e)
             return False
 
     async def _super_admin_yetkisi_kontrol(self, kullanici_id_veya_obje) -> bool:
@@ -114,7 +118,7 @@ class AdminService:
             return kullanici.rol in self.super_admin_rolleri
 
         except Exception as e:
-            print(f"Süper admin yetki kontrolü hatası: {str(e)}")
+            logger.error("Süper admin yetki kontrolü hatası: %s", e)
             return False
 
     async def kullanici_yetki_kontrol(
@@ -144,15 +148,15 @@ class AdminService:
             return kullanici_seviye >= gerekli_seviye
 
         except Exception as e:
-            print(f"Kullanıcı yetki kontrolü hatası: {str(e)}")
+            logger.error("Kullanıcı yetki kontrolü hatası: %s", e)
             return False
 
     async def admin_aktivite_kaydet(
         self,
         admin_id: str,
         aktivite_tipi: str,
-        hedef_id: Optional[str] = None,
-        detaylar: Optional[Dict[str, Any]] = None,
+        hedef_id: str | None = None,
+        detaylar: dict[str, Any] | None = None,
     ) -> bool:
         """
         Admin aktivitelerini kaydet (audit log)
@@ -168,11 +172,11 @@ class AdminService:
             }
 
             # Gerçek implementasyonda database'e kaydedilecek
-            print(f"Admin aktivite kaydedildi: {aktivite}")
+            logger.debug("Admin aktivite kaydedildi: %s", aktivite)
             return True
 
         except Exception as e:
-            print(f"Admin aktivite kaydetme hatası: {str(e)}")
+            logger.error("Admin aktivite kaydetme hatası: %s", e)
             return False
 
     # ==================== KULLANICI YÖNETİMİ ====================
@@ -180,12 +184,12 @@ class AdminService:
     @admin_required
     async def kullanicilari_listele(
         self,
-        rol: Optional[KullaniciRolu] = None,
-        aktif: Optional[bool] = None,
+        rol: KullaniciRolu | None = None,
+        aktif: bool | None = None,
         sayfa: int = 1,
         sayfa_boyutu: int = 20,
-        current_user: Optional[str] = None,
-    ) -> List[Kullanici]:
+        current_user: str | None = None,
+    ) -> list[Kullanici]:
         """
         Tüm kullanıcıları listele
         """
@@ -217,12 +221,12 @@ class AdminService:
         except AdminAuthorizationError:
             raise
         except Exception as e:
-            print(f"Kullanıcı listeleme hatası: {str(e)}")
+            logger.error("Kullanıcı listeleme hatası: %s", e)
             return []
 
     @admin_required
     async def kullanici_olustur(
-        self, kullanici_data: KullaniciOlustur, current_user: Optional[str] = None
+        self, kullanici_data: KullaniciOlustur, current_user: str | None = None
     ) -> Kullanici:
         """
         Yeni kullanıcı oluştur
@@ -251,28 +255,28 @@ class AdminService:
         except AdminAuthorizationError:
             raise
         except Exception as e:
-            raise ValueError(f"Kullanıcı oluşturma hatası: {str(e)}")
+            raise ValueError(f"Kullanıcı oluşturma hatası: {e!s}")
 
     @admin_required
     async def kullanici_getir(
-        self, kullanici_id: str, current_user: Optional[str] = None
-    ) -> Optional[Kullanici]:
+        self, kullanici_id: str, current_user: str | None = None
+    ) -> Kullanici | None:
         """
         Kullanıcı ID ile kullanıcı getir
         """
         try:
             return await kullanici_servisi.kullanici_getir(kullanici_id)
         except Exception as e:
-            print(f"Kullanıcı getirme hatası: {str(e)}")
+            logger.error("Kullanıcı getirme hatası: %s", e)
             return None
 
     @admin_required
     async def kullanici_guncelle(
         self,
         kullanici_id: str,
-        kullanici_data: Dict[str, Any],
-        current_user: Optional[str] = None,
-    ) -> Optional[Kullanici]:
+        kullanici_data: dict[str, Any],
+        current_user: str | None = None,
+    ) -> Kullanici | None:
         """
         Kullanıcı bilgilerini güncelle
         """
@@ -314,11 +318,11 @@ class AdminService:
         except AdminAuthorizationError:
             raise
         except Exception as e:
-            raise ValueError(f"Kullanıcı güncelleme hatası: {str(e)}")
+            raise ValueError(f"Kullanıcı güncelleme hatası: {e!s}")
 
     @super_admin_required
     async def kullanici_sil(
-        self, kullanici_id: str, current_user: Optional[str] = None
+        self, kullanici_id: str, current_user: str | None = None
     ) -> bool:
         """
         Kullanıcıyı sil (Sadece süper admin)
@@ -354,15 +358,15 @@ class AdminService:
         except AdminAuthorizationError:
             raise
         except Exception as e:
-            print(f"Kullanıcı silme hatası: {str(e)}")
+            logger.error("Kullanıcı silme hatası: %s", e)
             return False
 
     # ==================== DASHBOARD İSTATİSTİKLERİ ====================
 
     @admin_required
     async def dashboard_istatistikleri_getir(
-        self, current_user: Optional[str] = None
-    ) -> Dict[str, Any]:
+        self, current_user: str | None = None
+    ) -> dict[str, Any]:
         """
         Admin dashboard için genel sistem istatistikleri
         """
@@ -396,7 +400,7 @@ class AdminService:
             return istatistikler
 
         except Exception as e:
-            print(f"Dashboard istatistikleri hatası: {str(e)}")
+            logger.error("Dashboard istatistikleri hatası: %s", e)
             return {}
 
     async def _toplam_soru_sayisi(self) -> int:
@@ -409,7 +413,7 @@ class AdminService:
         except Exception:
             return 0
 
-    async def _son_aktiviteler_getir(self) -> List[Dict[str, Any]]:
+    async def _son_aktiviteler_getir(self) -> list[dict[str, Any]]:
         """
         Son aktiviteleri getir
         """
@@ -443,13 +447,13 @@ class AdminService:
     @admin_required
     async def soru_bankasi_listesi(
         self,
-        konu: Optional[str] = None,
-        zorluk: Optional[str] = None,
-        sinav_tipi: Optional[str] = None,
+        konu: str | None = None,
+        zorluk: str | None = None,
+        sinav_tipi: str | None = None,
         sayfa: int = 1,
         sayfa_boyutu: int = 20,
-        current_user: Optional[str] = None,
-    ) -> List[Dict[str, Any]]:
+        current_user: str | None = None,
+    ) -> list[dict[str, Any]]:
         """
         Soru bankası listesi
         """
@@ -472,7 +476,9 @@ class AdminService:
                     else soru.question_text,
                     "sinav_tipi": str(soru.exam_type),
                     "konu": str(soru.subject_area),
-                    "zorluk": soru.difficulty_level.value if soru.difficulty_level else "MEDIUM",
+                    "zorluk": soru.difficulty_level.value
+                    if soru.difficulty_level
+                    else "MEDIUM",
                     "olusturma_tarihi": soru.created_at.isoformat(),
                     "aktif": soru.is_active,
                 }
@@ -481,13 +487,13 @@ class AdminService:
             return soru_listesi
 
         except Exception as e:
-            print(f"Soru bankası listesi hatası: {str(e)}")
+            logger.error("Soru bankası listesi hatası: %s", e)
             return []
 
     @admin_required
     async def soru_ekle(
-        self, soru_data: Dict[str, Any], current_user: Optional[str] = None
-    ) -> Dict[str, Any]:
+        self, soru_data: dict[str, Any], current_user: str | None = None
+    ) -> dict[str, Any]:
         """
         Soru bankasına yeni soru ekle
         """
@@ -516,15 +522,15 @@ class AdminService:
         except AdminAuthorizationError:
             raise
         except Exception as e:
-            raise ValueError(f"Soru ekleme hatası: {str(e)}")
+            raise ValueError(f"Soru ekleme hatası: {e!s}")
 
     @admin_required
     async def soru_guncelle(
         self,
         soru_id: str,
-        soru_data: Dict[str, Any],
-        current_user: Optional[str] = None,
-    ) -> Optional[Dict[str, Any]]:
+        soru_data: dict[str, Any],
+        current_user: str | None = None,
+    ) -> dict[str, Any] | None:
         """
         Mevcut soruyu güncelle
         """
@@ -551,10 +557,10 @@ class AdminService:
         except AdminAuthorizationError:
             raise
         except Exception as e:
-            raise ValueError(f"Soru güncelleme hatası: {str(e)}")
+            raise ValueError(f"Soru güncelleme hatası: {e!s}")
 
     @admin_required
-    async def soru_sil(self, soru_id: str, current_user: Optional[str] = None) -> bool:
+    async def soru_sil(self, soru_id: str, current_user: str | None = None) -> bool:
         """
         Soruyu sil
         """
@@ -572,19 +578,19 @@ class AdminService:
         except AdminAuthorizationError:
             raise
         except Exception as e:
-            print(f"Soru silme hatası: {str(e)}")
+            logger.error("Soru silme hatası: %s", e)
             return False
 
     @admin_required
     async def egitim_materyalleri_listesi(
         self,
-        tur: Optional[str] = None,
-        konu: Optional[str] = None,
-        onay_durumu: Optional[str] = None,
+        tur: str | None = None,
+        konu: str | None = None,
+        onay_durumu: str | None = None,
         sayfa: int = 1,
         sayfa_boyutu: int = 20,
-        current_user: Optional[str] = None,
-    ) -> List[Dict[str, Any]]:
+        current_user: str | None = None,
+    ) -> list[dict[str, Any]]:
         """
         Eğitim materyalleri listesi
         """
@@ -595,8 +601,8 @@ class AdminService:
             for i in range(sayfa_boyutu):
                 materyal = {
                     "id": str(uuid.uuid4()),
-                    "baslik": f"Eğitim Materyali {i+1}",
-                    "aciklama": f"Bu bir örnek eğitim materyalidir - {i+1}",
+                    "baslik": f"Eğitim Materyali {i + 1}",
+                    "aciklama": f"Bu bir örnek eğitim materyalidir - {i + 1}",
                     "tur": tur or "video",
                     "konu": konu or "Matematik",
                     "onay_durumu": onay_durumu or "onaylandi",
@@ -609,13 +615,13 @@ class AdminService:
             return materyaller
 
         except Exception as e:
-            print(f"Eğitim materyalleri listesi hatası: {str(e)}")
+            logger.error("Eğitim materyalleri listesi hatası: %s", e)
             return []
 
     @admin_required
     async def egitim_materyali_ekle(
-        self, materyal_data: Dict[str, Any], current_user: Optional[str] = None
-    ) -> Dict[str, Any]:
+        self, materyal_data: dict[str, Any], current_user: str | None = None
+    ) -> dict[str, Any]:
         """
         Yeni eğitim materyali ekle
         """
@@ -645,15 +651,15 @@ class AdminService:
         except AdminAuthorizationError:
             raise
         except Exception as e:
-            raise ValueError(f"Eğitim materyali ekleme hatası: {str(e)}")
+            raise ValueError(f"Eğitim materyali ekleme hatası: {e!s}")
 
     @admin_required
     async def egitim_materyali_guncelle(
         self,
         materyal_id: str,
-        materyal_data: Dict[str, Any],
-        current_user: Optional[str] = None,
-    ) -> Optional[Dict[str, Any]]:
+        materyal_data: dict[str, Any],
+        current_user: str | None = None,
+    ) -> dict[str, Any] | None:
         """
         Eğitim materyalini güncelle
         """
@@ -668,11 +674,11 @@ class AdminService:
             return materyal
 
         except Exception as e:
-            raise ValueError(f"Eğitim materyali güncelleme hatası: {str(e)}")
+            raise ValueError(f"Eğitim materyali güncelleme hatası: {e!s}")
 
     @admin_required
     async def egitim_materyali_sil(
-        self, materyal_id: str, current_user: Optional[str] = None
+        self, materyal_id: str, current_user: str | None = None
     ) -> bool:
         """
         Eğitim materyalini sil
@@ -681,16 +687,16 @@ class AdminService:
             # Mock implementasyon
             return True
         except Exception as e:
-            print(f"Eğitim materyali silme hatası: {str(e)}")
+            logger.error("Eğitim materyali silme hatası: %s", e)
             return False
 
     @admin_required
     async def egitim_materyali_onay_durumu_guncelle(
         self,
         materyal_id: str,
-        onay_data: Dict[str, Any],
-        current_user: Optional[str] = None,
-    ) -> Optional[Dict[str, Any]]:
+        onay_data: dict[str, Any],
+        current_user: str | None = None,
+    ) -> dict[str, Any] | None:
         """
         Eğitim materyali onay durumunu güncelle
         """
@@ -705,14 +711,14 @@ class AdminService:
             return materyal
 
         except Exception as e:
-            raise ValueError(f"Onay durumu güncelleme hatası: {str(e)}")
+            raise ValueError(f"Onay durumu güncelleme hatası: {e!s}")
 
     # ==================== TOPLU İŞLEMLER ====================
 
     @admin_required
     async def toplu_soru_yukle(
-        self, sorular_data: List[Dict[str, Any]], current_user: Optional[str] = None
-    ) -> Dict[str, Any]:
+        self, sorular_data: list[dict[str, Any]], current_user: str | None = None
+    ) -> dict[str, Any]:
         """
         Toplu soru yükleme
         """
@@ -755,17 +761,17 @@ class AdminService:
         except AdminAuthorizationError:
             raise
         except Exception as e:
-            raise Exception(f"Toplu soru yükleme hatası: {str(e)}")
+            raise Exception(f"Toplu soru yükleme hatası: {e!s}")
 
     @admin_required
     async def icerik_ara(
         self,
         arama_terimi: str,
-        tur: Optional[str] = None,
+        tur: str | None = None,
         sayfa: int = 1,
         sayfa_boyutu: int = 20,
-        current_user: Optional[str] = None,
-    ) -> Dict[str, Any]:
+        current_user: str | None = None,
+    ) -> dict[str, Any]:
         """
         İçerik arama
         """
@@ -777,7 +783,7 @@ class AdminService:
                 sonuc = {
                     "id": str(uuid.uuid4()),
                     "tip": tur or ("soru" if i % 2 == 0 else "egitim_materyali"),
-                    "baslik": f"'{arama_terimi}' ile ilgili içerik {i+1}",
+                    "baslik": f"'{arama_terimi}' ile ilgili içerik {i + 1}",
                     "aciklama": f"Bu içerik '{arama_terimi}' arama terimiyle eşleşiyor",
                     "relevans_skoru": 0.9 - (i * 0.1),
                 }
@@ -790,7 +796,7 @@ class AdminService:
             }
 
         except Exception as e:
-            print(f"İçerik arama hatası: {str(e)}")
+            logger.error("İçerik arama hatası: %s", e)
             return {"sonuclar": [], "toplam_sonuc": 0, "arama_terimi": arama_terimi}
 
 

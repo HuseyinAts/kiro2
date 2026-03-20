@@ -4,10 +4,11 @@ Proactive Coaching Service — F6 Proaktif AI Koçluk
 Öğrencinin hata örüntülerini, FSRS birikimini ve oturum sıklığını analiz ederek
 1-3 adet eyleme yönelik koçluk önerisi üretir.
 """
+
 from __future__ import annotations
 
 import uuid
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from typing import TYPE_CHECKING
 
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -20,12 +21,12 @@ if TYPE_CHECKING:
 logger = get_logger("proactive_coaching_service")
 
 # Burnout eşikleri
-BURNOUT_MIN_SESSIONS = 3          # Bu kadar veriden önce karar verme
-BURNOUT_MIN_DURATION_SEC = 600    # 10 dakikanın altı → düşük bağlılık sinyali
-BURNOUT_IDLE_DAYS = 3             # Son 3 günde oturum yoksa uyarı ver
+BURNOUT_MIN_SESSIONS = 3  # Bu kadar veriden önce karar verme
+BURNOUT_MIN_DURATION_SEC = 600  # 10 dakikanın altı → düşük bağlılık sinyali
+BURNOUT_IDLE_DAYS = 3  # Son 3 günde oturum yoksa uyarı ver
 
 # Hata yüzdesi eşiği
-WEAKNESS_ERROR_THRESHOLD = 0.40   # %40 üzeri hata → zayıf konu uyarısı
+WEAKNESS_ERROR_THRESHOLD = 0.40  # %40 üzeri hata → zayıf konu uyarısı
 
 # Öneri türleri
 SUGGESTION_TYPES = {
@@ -53,48 +54,54 @@ async def generate_suggestions(*, db: AsyncSession, student_id: str) -> list[dic
         if burnout.get("is_at_risk"):
             signals = burnout.get("signals", [])
             signal_desc = signals[0] if signals else "düşük çalışma süresi"
-            suggestions.append({
-                "id": str(uuid.uuid4()),
-                "type": "burnout_warning",
-                "title": SUGGESTION_TYPES["burnout_warning"],
-                "message": (
-                    f"Son günlerde çalışma süren azalıyor ({signal_desc}). "
-                    "Kısa bir mola vermen performansını artırabilir."
-                ),
-                "priority": 1,
-                "action_url": "/dashboard/wellness",
-            })
+            suggestions.append(
+                {
+                    "id": str(uuid.uuid4()),
+                    "type": "burnout_warning",
+                    "title": SUGGESTION_TYPES["burnout_warning"],
+                    "message": (
+                        f"Son günlerde çalışma süren azalıyor ({signal_desc}). "
+                        "Kısa bir mola vermen performansını artırabilir."
+                    ),
+                    "priority": 1,
+                    "action_url": "/dashboard/wellness",
+                }
+            )
 
         # 2. Zayıf konu analizi (son 7 günün StudentAnswer kayıtları)
         weakness = await _analyze_weakness_patterns(db=db, student_id=student_id)
         if weakness:
-            suggestions.append({
-                "id": str(uuid.uuid4()),
-                "type": "weakness_alert",
-                "title": SUGGESTION_TYPES["weakness_alert"],
-                "message": (
-                    f"{weakness['topic']} konusunda son 7 günde "
-                    f"%{weakness['error_rate']:.0f} hata oranı tespit edildi. "
-                    "Bu konuya odaklanmanı öneririz."
-                ),
-                "priority": 2,
-                "action_url": f"/learning-path?topic={weakness['topic_id']}",
-            })
+            suggestions.append(
+                {
+                    "id": str(uuid.uuid4()),
+                    "type": "weakness_alert",
+                    "title": SUGGESTION_TYPES["weakness_alert"],
+                    "message": (
+                        f"{weakness['topic']} konusunda son 7 günde "
+                        f"%{weakness['error_rate']:.0f} hata oranı tespit edildi. "
+                        "Bu konuya odaklanmanı öneririz."
+                    ),
+                    "priority": 2,
+                    "action_url": f"/learning-path?topic={weakness['topic_id']}",
+                }
+            )
 
         # 3. FSRS birikmiş kart kontrolü
         fsrs_due = await _count_fsrs_due(db=db, student_id=student_id)
         if fsrs_due > 5:
-            suggestions.append({
-                "id": str(uuid.uuid4()),
-                "type": "topic_recommendation",
-                "title": SUGGESTION_TYPES["topic_recommendation"],
-                "message": (
-                    f"Tekrar edilmeyi bekleyen {fsrs_due} kart var. "
-                    "Uzun süreli hafıza için bugün tekrar yapmayı unutma!"
-                ),
-                "priority": 3,
-                "action_url": "/review-queue",
-            })
+            suggestions.append(
+                {
+                    "id": str(uuid.uuid4()),
+                    "type": "topic_recommendation",
+                    "title": SUGGESTION_TYPES["topic_recommendation"],
+                    "message": (
+                        f"Tekrar edilmeyi bekleyen {fsrs_due} kart var. "
+                        "Uzun süreli hafıza için bugün tekrar yapmayı unutma!"
+                    ),
+                    "priority": 3,
+                    "action_url": "/review-queue",
+                }
+            )
 
     except Exception as exc:
         logger.warning(
@@ -108,8 +115,7 @@ async def generate_suggestions(*, db: AsyncSession, student_id: str) -> list[dic
                 "type": "streak_encouragement",
                 "title": SUGGESTION_TYPES["streak_encouragement"],
                 "message": (
-                    "Çalışmaya devam et! "
-                    "Her gün biraz çalışmak büyük fark yaratır."
+                    "Çalışmaya devam et! Her gün biraz çalışmak büyük fark yaratır."
                 ),
                 "priority": 3,
                 "action_url": "/dashboard",
@@ -133,11 +139,12 @@ async def detect_burnout_signals(*, db: AsyncSession, student_id: str) -> dict:
     signals: list[str] = []
 
     try:
-        from sqlalchemy import and_, func as sa_func, select
+        from sqlalchemy import and_, select
+        from sqlalchemy import func as sa_func
 
         from models.coaching import StudentEngagementSignal  # lazy import
 
-        week_ago = datetime.now(timezone.utc) - timedelta(days=7)
+        week_ago = datetime.now(UTC) - timedelta(days=7)
 
         # Son 7 günün oturum süresi ortalaması
         result = await db.execute(
@@ -161,7 +168,7 @@ async def detect_burnout_signals(*, db: AsyncSession, student_id: str) -> dict:
                 signals.append(f"ortalama oturum süresi {avg_min} dk (hedef: 10+ dk)")
 
         # Son 3 günde oturum var mı?
-        three_days_ago = datetime.now(timezone.utc) - timedelta(days=BURNOUT_IDLE_DAYS)
+        three_days_ago = datetime.now(UTC) - timedelta(days=BURNOUT_IDLE_DAYS)
         recent_result = await db.execute(
             select(sa_func.count()).where(
                 and_(
@@ -244,7 +251,7 @@ async def record_engagement_signal(
             "student_id": student_id,
             "signal_type": signal_type,
             "value": value,
-            "recorded_at": datetime.now(timezone.utc).isoformat(),
+            "recorded_at": datetime.now(UTC).isoformat(),
         }
 
 
@@ -272,16 +279,16 @@ async def record_suggestion_interaction(
         }
 
     try:
-        from models.coaching import CoachingEvent  # lazy import
-
         from sqlalchemy import select
+
+        from models.coaching import CoachingEvent  # lazy import
 
         result = await db.execute(
             select(CoachingEvent).where(CoachingEvent.id == suggestion_id)
         )
         event = result.scalar_one_or_none()
 
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
         if event:
             if action == "clicked":
                 event.clicked_at = now
@@ -319,7 +326,7 @@ async def record_suggestion_interaction(
             "suggestion_id": suggestion_id,
             "student_id": student_id,
             "action": action,
-            "recorded_at": datetime.now(timezone.utc).isoformat(),
+            "recorded_at": datetime.now(UTC).isoformat(),
             "success": False,
             "error": str(exc),
         }
@@ -329,24 +336,26 @@ async def record_suggestion_interaction(
 # İç yardımcılar
 # ---------------------------------------------------------------------------
 
+
 async def _analyze_weakness_patterns(
     *, db: AsyncSession, student_id: str
 ) -> dict | None:
     """Son 7 günün StudentAnswer kayıtlarından en zayıf konuyu bulur."""
     try:
-        from sqlalchemy import and_, case, func as sa_func, select
+        from sqlalchemy import and_, case, select
+        from sqlalchemy import func as sa_func
 
-        from models.student_answer import StudentAnswer  # lazy import
+        from models.exam_db import StudentAnswer  # lazy import
 
-        week_ago = datetime.now(timezone.utc) - timedelta(days=7)
+        week_ago = datetime.now(UTC) - timedelta(days=7)
 
         result = await db.execute(
             select(
                 StudentAnswer.topic_id,
                 sa_func.count().label("total"),
-                sa_func.sum(
-                    case((~StudentAnswer.is_correct, 1), else_=0)
-                ).label("errors"),
+                sa_func.sum(case((~StudentAnswer.is_correct, 1), else_=0)).label(
+                    "errors"
+                ),
             )
             .where(
                 and_(
@@ -393,16 +402,18 @@ async def _count_fsrs_due(*, db: AsyncSession, student_id: str) -> int:
 
         from models.fsrs import FSRSCard  # lazy import
 
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
 
         result = await db.execute(
-            select(FSRSCard).where(
+            select(FSRSCard)
+            .where(
                 and_(
                     FSRSCard.student_id == student_id,
                     FSRSCard.next_review_at <= now,
                     FSRSCard.is_active == True,  # noqa: E712
                 )
-            ).limit(50)  # 50 üzerini saymaya gerek yok
+            )
+            .limit(50)  # 50 üzerini saymaya gerek yok
         )
         return len(result.scalars().all())
 

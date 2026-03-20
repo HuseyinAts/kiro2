@@ -4,16 +4,16 @@ Task 101: University Advisory API Routes
 REST API endpoints for university search, base scores, and recommendations
 """
 
-from fastapi import APIRouter, Depends, HTTPException, Query
-from sqlalchemy.ext.asyncio import AsyncSession
-from typing import List, Optional
 from uuid import UUID
+
+from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.database import get_db
+from core.dependencies import AuthenticatedUser, get_current_user
+from models.university import ProgramType, ScoreType, UniversityType
 from services.university_advisory_service import UniversityAdvisoryService
-from models.university import UniversityType, ProgramType, ScoreType
-
 
 router = APIRouter(prefix="/api/v1/university-advisory", tags=["university-advisory"])
 
@@ -26,14 +26,14 @@ router = APIRouter(prefix="/api/v1/university-advisory", tags=["university-advis
 class UniversityResponse(BaseModel):
     id: str
     name: str
-    short_name: Optional[str]
+    short_name: str | None
     university_type: str
     city: str
-    district: Optional[str]
-    website: Optional[str]
-    established_year: Optional[int]
-    world_ranking: Optional[int]
-    turkey_ranking: Optional[int]
+    district: str | None
+    website: str | None
+    established_year: int | None
+    world_ranking: int | None
+    turkey_ranking: int | None
 
 
 class DepartmentResponse(BaseModel):
@@ -42,9 +42,9 @@ class DepartmentResponse(BaseModel):
     degree_type: str
     education_language: str
     education_duration: int
-    career_opportunities: List[str]
-    average_salary: Optional[int]
-    employment_rate: Optional[float]
+    career_opportunities: list[str]
+    average_salary: int | None
+    employment_rate: float | None
 
 
 class ProgramResponse(BaseModel):
@@ -55,14 +55,14 @@ class ProgramResponse(BaseModel):
     city: str
     year: int
     score_type: str
-    base_score: Optional[float]
-    top_score: Optional[float]
-    median_score: Optional[float]
-    total_quota: Optional[int]
-    filled_quota: Optional[int]
-    acceptance_rate: Optional[float]
+    base_score: float | None
+    top_score: float | None
+    median_score: float | None
+    total_quota: int | None
+    filled_quota: int | None
+    acceptance_rate: float | None
     scholarship: bool
-    tuition_fee: Optional[int]
+    tuition_fee: int | None
 
 
 class RecommendationResponse(BaseModel):
@@ -73,14 +73,14 @@ class RecommendationResponse(BaseModel):
 
 
 class UserPreferencesRequest(BaseModel):
-    preferred_cities: Optional[List[str]] = []
-    preferred_university_types: Optional[List[str]] = []
-    preferred_score_types: Optional[List[str]] = []
-    yks_score: Optional[float] = None
-    score_type: Optional[str] = None
-    career_interests: Optional[List[str]] = []
-    target_departments: Optional[List[str]] = []
-    max_tuition_fee: Optional[int] = None
+    preferred_cities: list[str] | None = []
+    preferred_university_types: list[str] | None = []
+    preferred_score_types: list[str] | None = []
+    yks_score: float | None = None
+    score_type: str | None = None
+    career_interests: list[str] | None = []
+    target_departments: list[str] | None = []
+    max_tuition_fee: int | None = None
     needs_scholarship: bool = False
 
 
@@ -89,11 +89,11 @@ class UserPreferencesRequest(BaseModel):
 # ============================================================
 
 
-@router.get("/universities", response_model=List[UniversityResponse])
+@router.get("/universities", response_model=list[UniversityResponse])
 async def search_universities(
-    query: Optional[str] = Query(None, description="Search in university name"),
-    city: Optional[str] = Query(None, description="Filter by city"),
-    university_type: Optional[str] = Query(
+    query: str | None = Query(None, description="Search in university name"),
+    city: str | None = Query(None, description="Filter by city"),
+    university_type: str | None = Query(
         None, description="Filter by type (devlet/vakif)"
     ),
     limit: int = Query(100, ge=1, le=500),
@@ -153,7 +153,7 @@ async def get_university(university_id: UUID, db: AsyncSession = Depends(get_db)
     )
 
 
-@router.get("/cities", response_model=List[str])
+@router.get("/cities", response_model=list[str])
 async def get_cities(db: AsyncSession = Depends(get_db)):
     """Get all cities with universities"""
     service = UniversityAdvisoryService(db)
@@ -165,10 +165,10 @@ async def get_cities(db: AsyncSession = Depends(get_db)):
 # ============================================================
 
 
-@router.get("/departments", response_model=List[DepartmentResponse])
+@router.get("/departments", response_model=list[DepartmentResponse])
 async def search_departments(
-    query: Optional[str] = Query(None, description="Search in department name"),
-    degree_type: Optional[str] = Query(None, description="Filter by degree type"),
+    query: str | None = Query(None, description="Search in department name"),
+    degree_type: str | None = Query(None, description="Filter by degree type"),
     limit: int = Query(100, ge=1, le=500),
     offset: int = Query(0, ge=0),
     db: AsyncSession = Depends(get_db),
@@ -225,19 +225,19 @@ async def get_department(department_id: UUID, db: AsyncSession = Depends(get_db)
 # ============================================================
 
 
-@router.get("/programs", response_model=List[ProgramResponse])
+@router.get("/programs", response_model=list[ProgramResponse])
 async def search_programs(
     year: int = Query(2024, description="Academic year"),
-    score_type: Optional[str] = Query(None, description="Score type (SAY/EA/SOZ/DIL)"),
-    min_score: Optional[float] = Query(None, description="Minimum base score"),
-    max_score: Optional[float] = Query(None, description="Maximum base score"),
-    city: Optional[str] = Query(None, description="University city"),
-    university_type: Optional[str] = Query(
+    score_type: str | None = Query(None, description="Score type (SAY/EA/SOZ/DIL)"),
+    min_score: float | None = Query(None, description="Minimum base score"),
+    max_score: float | None = Query(None, description="Maximum base score"),
+    city: str | None = Query(None, description="University city"),
+    university_type: str | None = Query(
         None, description="University type (devlet/vakif)"
     ),
-    department_name: Optional[str] = Query(None, description="Department name filter"),
-    program_type: Optional[str] = Query(None, description="Program type"),
-    has_scholarship: Optional[bool] = Query(None, description="Has scholarship"),
+    department_name: str | None = Query(None, description="Department name filter"),
+    program_type: str | None = Query(None, description="Program type"),
+    has_scholarship: bool | None = Query(None, description="Has scholarship"),
     limit: int = Query(100, ge=1, le=500),
     offset: int = Query(0, ge=0),
     order_by: str = Query("base_score", description="Sort field"),
@@ -347,7 +347,7 @@ async def get_base_score_statistics(
 @router.get("/statistics/quotas")
 async def get_quota_statistics(
     year: int = Query(2024),
-    score_type: Optional[str] = Query(None, description="Score type (SAY/EA/SOZ/DIL)"),
+    score_type: str | None = Query(None, description="Score type (SAY/EA/SOZ/DIL)"),
     db: AsyncSession = Depends(get_db),
 ):
     """
@@ -448,13 +448,13 @@ async def get_competitive_programs(
 # ============================================================
 
 
-@router.get("/recommendations", response_model=List[RecommendationResponse])
+@router.get("/recommendations", response_model=list[RecommendationResponse])
 async def get_recommendations(
-    user_id: UUID = Query(...),
     student_score: float = Query(..., description="Student's YKS score"),
     score_type: str = Query(..., description="Score type (SAY/EA/SOZ/DIL)"),
     year: int = Query(2024),
     limit: int = Query(50, ge=1, le=100),
+    current_user: AuthenticatedUser = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
     """
@@ -462,6 +462,7 @@ async def get_recommendations(
 
     Returns programs matched to student score and preferences
     """
+    user_id = UUID(current_user.user_id)
     service = UniversityAdvisoryService(db)
     score_type_enum = ScoreType(score_type)
 
@@ -511,11 +512,12 @@ async def get_recommendations(
 
 @router.post("/preferences")
 async def save_preferences(
-    user_id: UUID = Query(...),
-    preferences: UserPreferencesRequest = ...,
+    preferences: UserPreferencesRequest,
+    current_user: AuthenticatedUser = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
     """Save or update user preferences"""
+    user_id = UUID(current_user.user_id)
     service = UniversityAdvisoryService(db)
 
     saved_pref = await service.save_user_preferences(
@@ -534,9 +536,11 @@ async def save_preferences(
 
 @router.get("/preferences")
 async def get_preferences(
-    user_id: UUID = Query(...), db: AsyncSession = Depends(get_db)
+    current_user: AuthenticatedUser = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
 ):
     """Get user preferences"""
+    user_id = UUID(current_user.user_id)
     service = UniversityAdvisoryService(db)
     preferences = await service.get_user_preferences(user_id)
 

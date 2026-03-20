@@ -24,7 +24,7 @@ from typing import Any
 
 from cachetools import TTLCache
 
-from services.subject_relevance_scorer import normalize_tr
+from core.turkish_nlp_utils import normalize_tr
 
 from ..models import KnowledgeLevel, LearningResource, LearningStyle
 from ..utils.duration_parser import parse_iso8601_duration

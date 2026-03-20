@@ -10,26 +10,28 @@ Türkçe doğal dil işleme için Zemberek-NLP entegrasyonu
 """
 
 import re
-from typing import Any, List, Optional, Tuple
+from typing import Any
 
 from pydantic import BaseModel
 
 
 class MorphologicalAnalysis(BaseModel):
     """Morfolojik analiz sonucu"""
+
     word: str
     root: str
     pos: str  # Part of speech
-    suffixes: List[str]
+    suffixes: list[str]
     is_valid: bool
-    alternatives: List[str]
+    alternatives: list[str]
 
 
 class SpellCheckResult(BaseModel):
     """Yazım kontrolü sonucu"""
+
     word: str
     is_correct: bool
-    suggestions: List[str]
+    suggestions: list[str]
 
 
 class ZemberekClient:
@@ -79,7 +81,7 @@ class ZemberekClient:
         "değerleri": "değer",
     }
 
-    def __init__(self, mcp_client: Optional[Any] = None):
+    def __init__(self, mcp_client: Any | None = None):
         """
         Zemberek client başlat
 
@@ -117,10 +119,10 @@ class ZemberekClient:
             pos="unknown",
             suffixes=[],
             is_valid=is_valid,
-            alternatives=[]
+            alternatives=[],
         )
 
-    async def check_spelling(self, text: str) -> List[SpellCheckResult]:
+    async def check_spelling(self, text: str) -> list[SpellCheckResult]:
         """
         Yazım kontrolü
 
@@ -135,22 +137,22 @@ class ZemberekClient:
 
         for word in words:
             # Noktalama işaretlerini temizle
-            clean_word = re.sub(r'[^\w]', '', word)
+            clean_word = re.sub(r"[^\w]", "", word)
             if not clean_word:
                 continue
 
             is_correct, suggestions = self._check_word(clean_word)
 
             if not is_correct:
-                results.append(SpellCheckResult(
-                    word=clean_word,
-                    is_correct=False,
-                    suggestions=suggestions
-                ))
+                results.append(
+                    SpellCheckResult(
+                        word=clean_word, is_correct=False, suggestions=suggestions
+                    )
+                )
 
         return results
 
-    async def validate_turkish_text(self, text: str) -> Tuple[bool, List[str], float]:
+    async def validate_turkish_text(self, text: str) -> tuple[bool, list[str], float]:
         """
         Türkçe metin doğrulama
 
@@ -166,7 +168,7 @@ class ZemberekClient:
         total_count = 0
 
         for word in words:
-            clean_word = re.sub(r'[^\w]', '', word)
+            clean_word = re.sub(r"[^\w]", "", word)
             if not clean_word:
                 continue
 
@@ -199,20 +201,20 @@ class ZemberekClient:
         Returns:
             str: Normalleştirilmiş metin
         """
-        # I/İ düzeltmesi
-        normalized = text.replace("I", "ı").replace("İ", "I")
+        # I/İ düzeltmesi — DOĞRU: İ→i, I→ı (büyük I'ya MAP ETME!)
+        normalized = text.replace("İ", "i").replace("I", "ı")
 
         # Küçük i büyütme
         # Turkish uppercase: i → İ, ı → I
         result = []
         for i, char in enumerate(normalized):
-            if char == 'i' and i == 0:
+            if char == "i" and i == 0:
                 # Cümle başı
-                result.append('İ')
+                result.append("İ")
             else:
                 result.append(char)
 
-        return ''.join(result)
+        return "".join(result)
 
     def _find_root(self, word: str) -> str:
         """Basit kök bulma (fallback)"""
@@ -223,19 +225,37 @@ class ZemberekClient:
             return self.WORD_ROOTS[word_lower]
 
         # Basit ek kaldırma
-        suffixes = ["lar", "ler", "dır", "dir", "ını", "ini", "nın", "nin",
-                    "dan", "den", "da", "de", "ın", "in", "a", "e", "ı", "i"]
+        suffixes = [
+            "lar",
+            "ler",
+            "dır",
+            "dir",
+            "ını",
+            "ini",
+            "nın",
+            "nin",
+            "dan",
+            "den",
+            "da",
+            "de",
+            "ın",
+            "in",
+            "a",
+            "e",
+            "ı",
+            "i",
+        ]
 
         for suffix in suffixes:
             if word_lower.endswith(suffix) and len(word_lower) > len(suffix) + 2:
-                return word_lower[:-len(suffix)]
+                return word_lower[: -len(suffix)]
 
         return word_lower
 
     def _is_valid_turkish(self, word: str) -> bool:
         """Türkçe karakter kontrolü"""
         # Sadece harfler
-        letters_only = re.sub(r'[^\w]', '', word)
+        letters_only = re.sub(r"[^\w]", "", word)
         if not letters_only:
             return True
 
@@ -246,7 +266,7 @@ class ZemberekClient:
 
         return True
 
-    def _check_word(self, word: str) -> Tuple[bool, List[str]]:
+    def _check_word(self, word: str) -> tuple[bool, list[str]]:
         """Basit yazım kontrolü (fallback)"""
         word_lower = word.lower()
 
@@ -265,7 +285,7 @@ class ZemberekClient:
 
         return True, []
 
-    async def get_word_suggestions(self, word: str, limit: int = 5) -> List[str]:
+    async def get_word_suggestions(self, word: str, limit: int = 5) -> list[str]:
         """
         Kelime önerileri
 
@@ -301,13 +321,13 @@ class ZemberekClient:
         """
         result = []
         for char in text:
-            if char == 'i':
-                result.append('İ')
-            elif char == 'ı':
-                result.append('I')
+            if char == "i":
+                result.append("İ")
+            elif char == "ı":
+                result.append("I")
             else:
                 result.append(char.upper())
-        return ''.join(result)
+        return "".join(result)
 
     def turkish_lower(self, text: str) -> str:
         """
@@ -324,10 +344,10 @@ class ZemberekClient:
         """
         result = []
         for char in text:
-            if char == 'I':
-                result.append('ı')
-            elif char == 'İ':
-                result.append('i')
+            if char == "I":
+                result.append("ı")
+            elif char == "İ":
+                result.append("i")
             else:
                 result.append(char.lower())
-        return ''.join(result)
+        return "".join(result)

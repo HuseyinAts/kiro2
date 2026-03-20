@@ -4,23 +4,25 @@ Task 108: Live Q&A Sessions API Routes
 API endpoints for video conferences, screen sharing, whiteboard, and recording.
 """
 
-from fastapi import APIRouter, Depends, HTTPException, Query
-from sqlalchemy.ext.asyncio import AsyncSession
-from pydantic import BaseModel
-from typing import Optional, List, Dict, Any
 from datetime import datetime
+from typing import Any
 from uuid import UUID
 
+from fastapi import APIRouter, Depends, HTTPException
+from pydantic import BaseModel
+from sqlalchemy.ext.asyncio import AsyncSession
+
 from core.database import get_db
-from services.video_conference_service import VideoConferenceService
-from services.whiteboard_service import WhiteboardService
+from core.dependencies import AuthenticatedUser, get_current_user
 from models.live_session import (
+    PlatformType,
+    ScreenShareType,
     SessionStatus,
     SessionType,
-    PlatformType,
     WhiteboardToolType,
-    ScreenShareType,
 )
+from services.video_conference_service import VideoConferenceService
+from services.whiteboard_service import WhiteboardService
 
 router = APIRouter(prefix="/api/v1/live-sessions", tags=["live-sessions"])
 
@@ -37,23 +39,23 @@ class SessionCreateRequest(BaseModel):
     scheduled_end: datetime
     session_type: SessionType
     platform: PlatformType = PlatformType.ZOOM
-    subject: Optional[str] = None
-    topics: Optional[List[str]] = None
+    subject: str | None = None
+    topics: list[str] | None = None
     max_participants: int = 50
     auto_record: bool = False
     require_password: bool = True
-    teacher_id: Optional[UUID] = None
+    teacher_id: UUID | None = None
 
 
 class ScreenShareRequest(BaseModel):
     share_type: ScreenShareType
-    window_title: Optional[str] = None
-    application_name: Optional[str] = None
+    window_title: str | None = None
+    application_name: str | None = None
 
 
 class ChatMessageRequest(BaseModel):
     message: str
-    recipient_id: Optional[UUID] = None
+    recipient_id: UUID | None = None
 
 
 class WhiteboardCreateRequest(BaseModel):
@@ -65,10 +67,10 @@ class WhiteboardCreateRequest(BaseModel):
 class StrokeRequest(BaseModel):
     tool_type: WhiteboardToolType
     page_number: int
-    path_data: Optional[List[Dict[str, float]]] = None
-    shape_type: Optional[str] = None
-    shape_data: Optional[Dict[str, Any]] = None
-    text_content: Optional[str] = None
+    path_data: list[dict[str, float]] | None = None
+    shape_type: str | None = None
+    shape_data: dict[str, Any] | None = None
+    text_content: str | None = None
     color: str = "#000000"
     width: float = 2.0
     opacity: float = 1.0
@@ -93,10 +95,11 @@ class EquationRequest(BaseModel):
 @router.post("")
 async def create_session(
     request: SessionCreateRequest,
-    host_id: UUID = Query(...),
+    current_user: AuthenticatedUser = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
     """Create new live session with video conference integration"""
+    host_id = UUID(current_user.user_id)
     service = VideoConferenceService(db)
 
     session = await service.create_session(
@@ -153,9 +156,12 @@ async def get_session(session_id: UUID, db: AsyncSession = Depends(get_db)):
 
 @router.post("/{session_id}/start")
 async def start_session(
-    session_id: UUID, user_id: UUID = Query(...), db: AsyncSession = Depends(get_db)
+    session_id: UUID,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
 ):
     """Start session"""
+    user_id = UUID(current_user.user_id)  # noqa: F841
     service = VideoConferenceService(db)
     session = await service.start_session(session_id)
 
@@ -167,9 +173,12 @@ async def start_session(
 
 @router.post("/{session_id}/end")
 async def end_session(
-    session_id: UUID, user_id: UUID = Query(...), db: AsyncSession = Depends(get_db)
+    session_id: UUID,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
 ):
     """End session"""
+    user_id = UUID(current_user.user_id)  # noqa: F841
     service = VideoConferenceService(db)
     session = await service.end_session(session_id)
 
@@ -181,9 +190,12 @@ async def end_session(
 
 @router.post("/{session_id}/join")
 async def join_session(
-    session_id: UUID, user_id: UUID = Query(...), db: AsyncSession = Depends(get_db)
+    session_id: UUID,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
 ):
     """Join session as participant"""
+    user_id = UUID(current_user.user_id)
     service = VideoConferenceService(db)
     participant = await service.join_session(session_id, user_id)
 
@@ -192,11 +204,14 @@ async def join_session(
 
 @router.post("/{session_id}/leave")
 async def leave_session(
-    session_id: UUID, user_id: UUID = Query(...), db: AsyncSession = Depends(get_db)
+    session_id: UUID,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
 ):
     """Leave session"""
+    user_id = UUID(current_user.user_id)
     service = VideoConferenceService(db)
-    participant = await service.leave_session(session_id, user_id)
+    await service.leave_session(session_id, user_id)
 
     return {"message": "Left session"}
 
@@ -210,10 +225,11 @@ async def leave_session(
 async def start_screen_share(
     session_id: UUID,
     request: ScreenShareRequest,
-    user_id: UUID = Query(...),
+    current_user: AuthenticatedUser = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
     """Start screen sharing"""
+    user_id = UUID(current_user.user_id)
     service = VideoConferenceService(db)
 
     screen_share = await service.start_screen_share(
@@ -290,10 +306,11 @@ async def get_whiteboard(whiteboard_id: UUID, db: AsyncSession = Depends(get_db)
 async def add_stroke(
     whiteboard_id: UUID,
     request: StrokeRequest,
-    user_id: UUID = Query(...),
+    current_user: AuthenticatedUser = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
     """Add drawing stroke to whiteboard"""
+    user_id = UUID(current_user.user_id)
     service = WhiteboardService(db)
 
     stroke = await service.add_stroke(
@@ -319,10 +336,11 @@ async def add_stroke(
 async def add_equation(
     whiteboard_id: UUID,
     request: EquationRequest,
-    user_id: UUID = Query(...),
+    current_user: AuthenticatedUser = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
     """Add math equation to whiteboard"""
+    user_id = UUID(current_user.user_id)
     service = WhiteboardService(db)
 
     equation = await service.add_equation(
@@ -388,7 +406,7 @@ async def delete_stroke(stroke_id: UUID, db: AsyncSession = Depends(get_db)):
 
 @router.post("/{session_id}/recording/start")
 async def start_recording(
-    session_id: UUID, title: Optional[str] = None, db: AsyncSession = Depends(get_db)
+    session_id: UUID, title: str | None = None, db: AsyncSession = Depends(get_db)
 ):
     """Start session recording"""
     service = VideoConferenceService(db)
@@ -441,10 +459,11 @@ async def get_session_recordings(session_id: UUID, db: AsyncSession = Depends(ge
 async def send_chat_message(
     session_id: UUID,
     request: ChatMessageRequest,
-    user_id: UUID = Query(...),
+    current_user: AuthenticatedUser = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
     """Send chat message"""
+    user_id = UUID(current_user.user_id)
     service = VideoConferenceService(db)
 
     message = await service.send_chat_message(
@@ -486,12 +505,13 @@ async def get_session_chat(
 
 @router.get("/my-sessions")
 async def get_my_sessions(
-    user_id: UUID = Query(...),
-    status: Optional[SessionStatus] = None,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+    status: SessionStatus | None = None,
     upcoming_only: bool = False,
     db: AsyncSession = Depends(get_db),
 ):
     """Get user's sessions"""
+    user_id = UUID(current_user.user_id)
     service = VideoConferenceService(db)
     sessions = await service.get_user_sessions(user_id, status, upcoming_only)
 

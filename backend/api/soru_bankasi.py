@@ -2,11 +2,12 @@
 Soru Bankası API Endpoint'leri
 Türkiye Üniversite Sınavları Hazırlık Platformu
 """
-import logging
-import os
-from typing import Any, Dict, List, Optional
+
 import hashlib
 import json
+import logging
+import os
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -15,7 +16,7 @@ from fastapi.responses import JSONResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.database import get_db_session
-from core.dependencies import get_current_user, AuthenticatedUser
+from core.dependencies import AuthenticatedUser, get_current_user
 from core.multi_layer_cache import MultiLayerCache
 from services.soru_bankasi_service import soru_bankasi_servisi
 
@@ -40,15 +41,16 @@ async def invalidate_question_cache():
         logger.warning(f"Cache temizleme hatası: {e}")
 
 
-@router.get("/sorular", response_model=List[Dict[str, Any]])
+@router.get("/sorular", response_model=list[dict[str, Any]])
 async def sorular_listele(
-    sinav_tipi: Optional[str] = Query(None, description="Sınav türü (TYT, AYT, YDT)"),
-    konu: Optional[str] = Query(None, description="Konu filtresi"),
-    zorluk_seviyesi: Optional[str] = Query(
+    sinav_tipi: str | None = Query(None, description="Sınav türü (TYT, AYT, YDT)"),
+    konu: str | None = Query(None, description="Konu filtresi"),
+    zorluk_seviyesi: str | None = Query(
         None, description="Zorluk seviyesi (easy, medium, hard)"
     ),
     limit: int = Query(100, ge=1, le=500, description="Maksimum soru sayısı"),
     offset: int = Query(0, ge=0, description="Başlangıç offset'i"),
+    current_user: AuthenticatedUser = Depends(get_current_user),
     db: AsyncSession = Depends(get_db_session),
 ):
     """
@@ -113,7 +115,9 @@ async def sorular_listele(
                     "subject_area": str(soru.subject_area),
                     "topic": soru.primary_topic_id,
                     "subtopic": None,
-                    "difficulty": soru.difficulty_level.value if soru.difficulty_level else "MEDIUM",
+                    "difficulty": soru.difficulty_level.value
+                    if soru.difficulty_level
+                    else "MEDIUM",
                     "irt_parameters": {
                         "difficulty": soru.irt_difficulty,
                         "discrimination": soru.irt_discrimination,
@@ -127,7 +131,9 @@ async def sorular_listele(
                         "success_rate": soru.times_correct / max(1, soru.times_asked),
                         "average_response_time": soru.average_response_time,
                     },
-                    "created_at": soru.created_at.isoformat() if soru.created_at else None,
+                    "created_at": soru.created_at.isoformat()
+                    if soru.created_at
+                    else None,
                     "is_active": soru.is_active,
                 }
                 soru_listesi.append(soru_dict)
@@ -135,7 +141,9 @@ async def sorular_listele(
 
         # Get or compute with cache
         soru_listesi = await question_cache.get_or_compute(
-            key=cache_key, compute_fn=fetch_questions, ttl=3600  # 1 hour
+            key=cache_key,
+            compute_fn=fetch_questions,
+            ttl=3600,  # 1 hour
         )
 
         return JSONResponse(
@@ -151,11 +159,11 @@ async def sorular_listele(
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Sorular listelenirken hata oluştu: {str(e)}",
+            detail=f"Sorular listelenirken hata oluştu: {e!s}",
         )
 
 
-@router.get("/soru/{soru_id}", response_model=Dict[str, Any])
+@router.get("/soru/{soru_id}", response_model=dict[str, Any])
 async def soru_detay(soru_id: str, db: AsyncSession = Depends(get_db_session)):
     """
     Belirli bir sorunun detaylarını getir
@@ -187,7 +195,9 @@ async def soru_detay(soru_id: str, db: AsyncSession = Depends(get_db_session)):
             "subject_area": str(soru.subject_area),
             "topic": soru.primary_topic_id,
             "subtopic": None,
-            "difficulty": soru.difficulty_level.value if soru.difficulty_level else "MEDIUM",
+            "difficulty": soru.difficulty_level.value
+            if soru.difficulty_level
+            else "MEDIUM",
             "irt_parameters": {
                 "difficulty": soru.irt_difficulty,
                 "discrimination": soru.irt_discrimination,
@@ -220,17 +230,15 @@ async def soru_detay(soru_id: str, db: AsyncSession = Depends(get_db_session)):
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Soru detayları getirilirken hata oluştu: {str(e)}",
+            detail=f"Soru detayları getirilirken hata oluştu: {e!s}",
         )
 
 
-@router.get("/rastgele-sorular", response_model=Dict[str, Any])
+@router.get("/rastgele-sorular", response_model=dict[str, Any])
 async def rastgele_sorular_sec(
     sinav_tipi: str = Query(..., description="Sınav türü (TYT, AYT, YDT)"),
     soru_sayisi: int = Query(..., ge=1, le=200, description="Seçilecek soru sayısı"),
-    konu_dagilimi: Optional[str] = Query(
-        None, description="Konu dağılımı (JSON string)"
-    ),
+    konu_dagilimi: str | None = Query(None, description="Konu dağılımı (JSON string)"),
     db: AsyncSession = Depends(get_db_session),
 ):
     """
@@ -240,8 +248,9 @@ async def rastgele_sorular_sec(
     - **soru_sayisi**: Seçilecek soru sayısı
     - **konu_dagilimi**: Konu bazlı dağılım (opsiyonel, JSON string)
     """
-    from core.redis_cache import get_cache
     import hashlib
+
+    from core.redis_cache import get_cache
 
     try:
         # Sınav türü validasyonu
@@ -335,11 +344,11 @@ async def rastgele_sorular_sec(
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Rastgele soru seçimi sırasında hata oluştu: {str(e)}",
+            detail=f"Rastgele soru seçimi sırasında hata oluştu: {e!s}",
         )
 
 
-@router.post("/irt-parametreli-sorular", response_model=Dict[str, Any])
+@router.post("/irt-parametreli-sorular", response_model=dict[str, Any])
 async def irt_parametreli_sorular_sec(
     ogrenci_yetenek: float = Query(
         ..., ge=-3.0, le=3.0, description="Öğrenci yetenek parametresi"
@@ -393,7 +402,9 @@ async def irt_parametreli_sorular_sec(
                 },
                 "subject_area": str(soru.subject_area),
                 "topic": soru.primary_topic_id,
-                "difficulty": soru.difficulty_level.value if soru.difficulty_level else "MEDIUM",
+                "difficulty": soru.difficulty_level.value
+                if soru.difficulty_level
+                else "MEDIUM",
                 "irt_parameters": {
                     "difficulty": soru.irt_difficulty,
                     "discrimination": soru.irt_discrimination,
@@ -434,13 +445,13 @@ async def irt_parametreli_sorular_sec(
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"IRT parametreli soru seçimi sırasında hata oluştu: {str(e)}",
+            detail=f"IRT parametreli soru seçimi sırasında hata oluştu: {e!s}",
         )
 
 
-@router.get("/konular", response_model=List[str])
+@router.get("/konular", response_model=list[str])
 async def konu_listesi_getir(
-    sinav_tipi: Optional[str] = Query(None, description="Sınav türü filtresi"),
+    sinav_tipi: str | None = Query(None, description="Sınav türü filtresi"),
     db: AsyncSession = Depends(get_db_session),
 ):
     """
@@ -464,11 +475,11 @@ async def konu_listesi_getir(
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Konu listesi getirilirken hata oluştu: {str(e)}",
+            detail=f"Konu listesi getirilirken hata oluştu: {e!s}",
         )
 
 
-@router.get("/istatistikler", response_model=Dict[str, Any])
+@router.get("/istatistikler", response_model=dict[str, Any])
 async def soru_bankasi_istatistikleri(db: AsyncSession = Depends(get_db_session)):
     """
     Soru bankası istatistiklerini getir
@@ -488,11 +499,11 @@ async def soru_bankasi_istatistikleri(db: AsyncSession = Depends(get_db_session)
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"İstatistikler getirilirken hata oluştu: {str(e)}",
+            detail=f"İstatistikler getirilirken hata oluştu: {e!s}",
         )
 
 
-@router.post("/soru-performans-guncelle", response_model=Dict[str, Any])
+@router.post("/soru-performans-guncelle", response_model=dict[str, Any])
 async def soru_performans_guncelle(
     soru_id: str,
     dogru_cevap: bool,
@@ -537,11 +548,11 @@ async def soru_performans_guncelle(
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Performans güncellemesi sırasında hata oluştu: {str(e)}",
+            detail=f"Performans güncellemesi sırasında hata oluştu: {e!s}",
         )
 
 
-@router.get("/zorluk-filtrele", response_model=Dict[str, Any])
+@router.get("/zorluk-filtrele", response_model=dict[str, Any])
 async def zorluk_seviyesi_filtrele(
     ogrenci_yetenek: float = Query(
         ..., ge=-3.0, le=3.0, description="Öğrenci yetenek seviyesi"
@@ -571,7 +582,9 @@ async def zorluk_seviyesi_filtrele(
                 "question_text": soru.question_text,
                 "subject_area": str(soru.subject_area),
                 "topic": soru.primary_topic_id,
-                "difficulty": soru.difficulty_level.value if soru.difficulty_level else "MEDIUM",
+                "difficulty": soru.difficulty_level.value
+                if soru.difficulty_level
+                else "MEDIUM",
                 "irt_difficulty": soru.irt_difficulty,
                 "irt_discrimination": soru.irt_discrimination,
                 "difficulty_match": abs(soru.irt_difficulty - ogrenci_yetenek),
@@ -602,7 +615,7 @@ async def zorluk_seviyesi_filtrele(
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Zorluk filtreleme sırasında hata oluştu: {str(e)}",
+            detail=f"Zorluk filtreleme sırasında hata oluştu: {e!s}",
         )
 
 
@@ -615,35 +628,35 @@ class SoruEkleRequest(BaseModel):
     """Soru ekleme isteği"""
 
     soru_metni: str = Field(..., description="Soru metni")
-    secenekler: List[str] = Field(
+    secenekler: list[str] = Field(
         ..., min_items=4, max_items=5, description="Seçenekler listesi"
     )
     dogru_cevap: str = Field(..., description="Doğru cevap (A, B, C, D veya E)")
-    cozum_aciklamasi: Optional[str] = Field(None, description="Çözüm açıklaması")
+    cozum_aciklamasi: str | None = Field(None, description="Çözüm açıklaması")
     sinav_tipi: str = Field("TYT", description="Sınav tipi")
     konu: str = Field(..., description="Konu")
-    alt_konu: Optional[str] = Field(None, description="Alt konu")
+    alt_konu: str | None = Field(None, description="Alt konu")
     zorluk_seviyesi: str = Field("orta", description="Zorluk seviyesi")
-    created_by: Optional[str] = Field(None, description="Oluşturan kullanıcı")
+    created_by: str | None = Field(None, description="Oluşturan kullanıcı")
 
 
 class SoruGuncelleRequest(BaseModel):
     """Soru güncelleme isteği"""
 
-    soru_metni: Optional[str] = None
-    secenekler: Optional[List[str]] = None
-    dogru_cevap: Optional[str] = None
-    cozum_aciklamasi: Optional[str] = None
-    zorluk_seviyesi: Optional[str] = None
+    soru_metni: str | None = None
+    secenekler: list[str] | None = None
+    dogru_cevap: str | None = None
+    cozum_aciklamasi: str | None = None
+    zorluk_seviyesi: str | None = None
 
 
 class TopluSoruEkleRequest(BaseModel):
     """Toplu soru ekleme isteği"""
 
-    sorular: List[Dict[str, Any]] = Field(..., description="Soru listesi")
+    sorular: list[dict[str, Any]] = Field(..., description="Soru listesi")
 
 
-@router.post("/soru-ekle", response_model=Dict[str, Any])
+@router.post("/soru-ekle", response_model=dict[str, Any])
 async def soru_ekle(
     request: SoruEkleRequest,
     current_user: AuthenticatedUser = Depends(get_current_user),
@@ -682,7 +695,9 @@ async def soru_ekle(
                     "question_text": yeni_soru.question_text,
                     "exam_type": str(yeni_soru.exam_type),
                     "subject_area": str(yeni_soru.subject_area),
-                    "difficulty": yeni_soru.difficulty_level.value if yeni_soru.difficulty_level else "MEDIUM",
+                    "difficulty": yeni_soru.difficulty_level.value
+                    if yeni_soru.difficulty_level
+                    else "MEDIUM",
                     "irt_parameters": {
                         "difficulty": yeni_soru.irt_difficulty,
                         "discrimination": yeni_soru.irt_discrimination,
@@ -698,11 +713,11 @@ async def soru_ekle(
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Soru eklenirken hata oluştu: {str(e)}",
+            detail=f"Soru eklenirken hata oluştu: {e!s}",
         )
 
 
-@router.put("/soru-guncelle/{soru_id}", response_model=Dict[str, Any])
+@router.put("/soru-guncelle/{soru_id}", response_model=dict[str, Any])
 async def soru_guncelle(
     soru_id: str,
     request: SoruGuncelleRequest,
@@ -767,11 +782,11 @@ async def soru_guncelle(
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Soru güncellenirken hata oluştu: {str(e)}",
+            detail=f"Soru güncellenirken hata oluştu: {e!s}",
         )
 
 
-@router.delete("/soru-sil/{soru_id}", response_model=Dict[str, Any])
+@router.delete("/soru-sil/{soru_id}", response_model=dict[str, Any])
 async def soru_sil(
     soru_id: str,
     current_user: AuthenticatedUser = Depends(get_current_user),
@@ -804,11 +819,11 @@ async def soru_sil(
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Soru silinirken hata oluştu: {str(e)}",
+            detail=f"Soru silinirken hata oluştu: {e!s}",
         )
 
 
-@router.post("/toplu-soru-ekle", response_model=Dict[str, Any])
+@router.post("/toplu-soru-ekle", response_model=dict[str, Any])
 async def toplu_soru_ekle(
     request: TopluSoruEkleRequest,
     current_user: AuthenticatedUser = Depends(get_current_user),
@@ -841,12 +856,12 @@ async def toplu_soru_ekle(
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Toplu soru ekleme sırasında hata oluştu: {str(e)}",
+            detail=f"Toplu soru ekleme sırasında hata oluştu: {e!s}",
         )
 
 
 @router.post(
-    "/irt-parametreleri-yeniden-hesapla/{soru_id}", response_model=Dict[str, Any]
+    "/irt-parametreleri-yeniden-hesapla/{soru_id}", response_model=dict[str, Any]
 )
 async def irt_parametreleri_yeniden_hesapla(
     soru_id: str,
@@ -895,12 +910,12 @@ async def irt_parametreleri_yeniden_hesapla(
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"IRT parametreleri yeniden hesaplanırken hata oluştu: {str(e)}",
+            detail=f"IRT parametreleri yeniden hesaplanırken hata oluştu: {e!s}",
         )
 
 
 @router.get("/health")
-async def health_check() -> Dict[str, Any]:
+async def health_check() -> dict[str, Any]:
     """
     Soru Bankası API sağlık kontrolü
     """

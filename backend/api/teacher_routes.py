@@ -4,23 +4,24 @@ Task 107: Teacher Pool API Routes
 API endpoints for teacher registration, profile, availability, and appointments.
 """
 
-from fastapi import APIRouter, Depends, HTTPException, Query
-from sqlalchemy.ext.asyncio import AsyncSession
-from pydantic import BaseModel, Field
-from typing import Optional, List
 from datetime import date, time
 from uuid import UUID
 
+from fastapi import APIRouter, Depends, HTTPException, Query
+from pydantic import BaseModel, Field
+from sqlalchemy.ext.asyncio import AsyncSession
+
 from core.database import get_db
-from services.teacher_service import TeacherService
+from core.dependencies import AuthenticatedUser, get_current_user
 from models.teacher_pool import (
-    SubjectExpertise,
-    CertificationType,
-    DayOfWeek,
-    TimeSlotStatus,
     AppointmentStatus,
     AppointmentType,
+    CertificationType,
+    DayOfWeek,
+    SubjectExpertise,
+    TimeSlotStatus,
 )
+from services.teacher_service import TeacherService
 
 router = APIRouter(prefix="/api/v1/teachers", tags=["teachers"])
 
@@ -45,34 +46,34 @@ class TeacherRegistrationRequest(BaseModel):
     department: str
     graduation_year: int
     hourly_rate: float
-    application_notes: Optional[str] = None
+    application_notes: str | None = None
 
 
 class TeacherProfileUpdate(BaseModel):
-    title: Optional[str] = None
-    bio: Optional[str] = None
-    phone: Optional[str] = None
-    city: Optional[str] = None
-    district: Optional[str] = None
-    hourly_rate: Optional[float] = None
-    is_accepting_students: Optional[bool] = None
-    online_teaching: Optional[bool] = None
-    in_person_teaching: Optional[bool] = None
+    title: str | None = None
+    bio: str | None = None
+    phone: str | None = None
+    city: str | None = None
+    district: str | None = None
+    hourly_rate: float | None = None
+    is_accepting_students: bool | None = None
+    online_teaching: bool | None = None
+    in_person_teaching: bool | None = None
 
 
 class TeacherVerificationRequest(BaseModel):
     approved: bool
-    rejection_reason: Optional[str] = None
+    rejection_reason: str | None = None
 
 
 # Task 107.2: Expertise
 class ExpertiseRequest(BaseModel):
     subject: SubjectExpertise
-    grade_levels: List[str]
+    grade_levels: list[str]
     proficiency_level: str
     years_teaching_subject: int
-    specializations: Optional[List[str]] = None
-    exam_types: Optional[List[str]] = None
+    specializations: list[str] | None = None
+    exam_types: list[str] | None = None
 
 
 class CertificationRequest(BaseModel):
@@ -80,15 +81,15 @@ class CertificationRequest(BaseModel):
     title: str
     issuing_organization: str
     issue_date: date
-    expiry_date: Optional[date] = None
-    credential_id: Optional[str] = None
-    document_url: Optional[str] = None
-    description: Optional[str] = None
+    expiry_date: date | None = None
+    credential_id: str | None = None
+    document_url: str | None = None
+    description: str | None = None
 
 
 class CertificationVerificationRequest(BaseModel):
     approved: bool
-    rejection_reason: Optional[str] = None
+    rejection_reason: str | None = None
 
 
 # Task 107.3: Availability
@@ -96,18 +97,18 @@ class AvailabilitySlotRequest(BaseModel):
     day_of_week: DayOfWeek
     start_time: time
     end_time: time
-    specific_date: Optional[date] = None
-    valid_from: Optional[date] = None
-    valid_until: Optional[date] = None
+    specific_date: date | None = None
+    valid_from: date | None = None
+    valid_until: date | None = None
     max_students: int = 1
     is_recurring: bool = True
 
 
 class AvailabilitySlotUpdate(BaseModel):
-    start_time: Optional[time] = None
-    end_time: Optional[time] = None
-    max_students: Optional[int] = None
-    status: Optional[TimeSlotStatus] = None
+    start_time: time | None = None
+    end_time: time | None = None
+    max_students: int | None = None
+    status: TimeSlotStatus | None = None
 
 
 # Task 107.4: Appointments
@@ -119,12 +120,12 @@ class AppointmentRequest(BaseModel):
     appointment_type: AppointmentType
     subject: SubjectExpertise
     topic: str
-    description: Optional[str] = None
-    availability_slot_id: Optional[UUID] = None
+    description: str | None = None
+    availability_slot_id: UUID | None = None
 
 
 class AppointmentConfirmRequest(BaseModel):
-    meeting_url: Optional[str] = None
+    meeting_url: str | None = None
 
 
 class AppointmentCancelRequest(BaseModel):
@@ -132,18 +133,18 @@ class AppointmentCancelRequest(BaseModel):
 
 
 class AppointmentCompleteRequest(BaseModel):
-    session_summary: Optional[str] = None
-    homework_assigned: Optional[str] = None
+    session_summary: str | None = None
+    homework_assigned: str | None = None
 
 
 class ReviewRequest(BaseModel):
     overall_rating: int = Field(..., ge=1, le=5)
     title: str
     content: str
-    teaching_quality: Optional[int] = Field(None, ge=1, le=5)
-    communication: Optional[int] = Field(None, ge=1, le=5)
-    punctuality: Optional[int] = Field(None, ge=1, le=5)
-    helpfulness: Optional[int] = Field(None, ge=1, le=5)
+    teaching_quality: int | None = Field(None, ge=1, le=5)
+    communication: int | None = Field(None, ge=1, le=5)
+    punctuality: int | None = Field(None, ge=1, le=5)
+    helpfulness: int | None = Field(None, ge=1, le=5)
 
 
 # ============================================================
@@ -154,7 +155,7 @@ class ReviewRequest(BaseModel):
 @router.post("/register")
 async def register_teacher(
     request: TeacherRegistrationRequest,
-    user_id: UUID = Query(...),
+    current_user: AuthenticatedUser = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
     """
@@ -162,6 +163,7 @@ async def register_teacher(
 
     Creates a teacher profile with PENDING status awaiting verification.
     """
+    user_id = UUID(current_user.user_id)
     service = TeacherService(db)
 
     # Check if user already has a teacher profile
@@ -258,9 +260,11 @@ async def get_teacher_profile(teacher_id: UUID, db: AsyncSession = Depends(get_d
 
 @router.get("/my-profile")
 async def get_my_teacher_profile(
-    user_id: UUID = Query(...), db: AsyncSession = Depends(get_db)
+    current_user: AuthenticatedUser = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
 ):
     """Get current user's teacher profile"""
+    user_id = UUID(current_user.user_id)
     service = TeacherService(db)
     teacher = await service.get_teacher_by_user_id(user_id)
 
@@ -274,10 +278,11 @@ async def get_my_teacher_profile(
 async def update_teacher_profile(
     teacher_id: UUID,
     request: TeacherProfileUpdate,
-    user_id: UUID = Query(...),
+    current_user: AuthenticatedUser = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
     """Update teacher profile"""
+    user_id = UUID(current_user.user_id)
     service = TeacherService(db)
 
     # Verify ownership
@@ -328,12 +333,12 @@ async def verify_teacher(
 
 @router.get("/search")
 async def search_teachers(
-    subject: Optional[SubjectExpertise] = None,
-    grade_level: Optional[str] = None,
-    min_rating: Optional[float] = None,
-    city: Optional[str] = None,
+    subject: SubjectExpertise | None = None,
+    grade_level: str | None = None,
+    min_rating: float | None = None,
+    city: str | None = None,
     online_only: bool = False,
-    max_hourly_rate: Optional[float] = None,
+    max_hourly_rate: float | None = None,
     limit: int = 20,
     offset: int = 0,
     db: AsyncSession = Depends(get_db),
@@ -384,10 +389,11 @@ async def search_teachers(
 async def add_expertise(
     teacher_id: UUID,
     request: ExpertiseRequest,
-    user_id: UUID = Query(...),
+    current_user: AuthenticatedUser = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
     """Add subject expertise for teacher"""
+    user_id = UUID(current_user.user_id)
     service = TeacherService(db)
 
     # Verify ownership
@@ -436,9 +442,12 @@ async def get_teacher_expertise(teacher_id: UUID, db: AsyncSession = Depends(get
 
 @router.delete("/expertise/{expertise_id}")
 async def delete_expertise(
-    expertise_id: UUID, user_id: UUID = Query(...), db: AsyncSession = Depends(get_db)
+    expertise_id: UUID,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
 ):
     """Delete expertise"""
+    user_id = UUID(current_user.user_id)  # noqa: F841
     service = TeacherService(db)
     success = await service.delete_expertise(expertise_id)
 
@@ -457,10 +466,11 @@ async def delete_expertise(
 async def add_certification(
     teacher_id: UUID,
     request: CertificationRequest,
-    user_id: UUID = Query(...),
+    current_user: AuthenticatedUser = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
     """Add certification for teacher"""
+    user_id = UUID(current_user.user_id)
     service = TeacherService(db)
 
     # Verify ownership
@@ -551,10 +561,11 @@ async def verify_certification(
 async def add_availability_slot(
     teacher_id: UUID,
     request: AvailabilitySlotRequest,
-    user_id: UUID = Query(...),
+    current_user: AuthenticatedUser = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
     """Add availability time slot"""
+    user_id = UUID(current_user.user_id)
     service = TeacherService(db)
 
     # Verify ownership
@@ -580,8 +591,8 @@ async def add_availability_slot(
 @router.get("/{teacher_id}/availability")
 async def get_teacher_availability(
     teacher_id: UUID,
-    start_date: Optional[date] = None,
-    end_date: Optional[date] = None,
+    start_date: date | None = None,
+    end_date: date | None = None,
     db: AsyncSession = Depends(get_db),
 ):
     """Get teacher's availability slots"""
@@ -612,10 +623,11 @@ async def get_teacher_availability(
 async def update_availability_slot(
     slot_id: UUID,
     request: AvailabilitySlotUpdate,
-    user_id: UUID = Query(...),
+    current_user: AuthenticatedUser = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
     """Update availability slot"""
+    user_id = UUID(current_user.user_id)  # noqa: F841
     service = TeacherService(db)
 
     slot = await service.update_availability_slot(
@@ -630,9 +642,12 @@ async def update_availability_slot(
 
 @router.delete("/availability/{slot_id}")
 async def delete_availability_slot(
-    slot_id: UUID, user_id: UUID = Query(...), db: AsyncSession = Depends(get_db)
+    slot_id: UUID,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
 ):
     """Delete availability slot"""
+    user_id = UUID(current_user.user_id)  # noqa: F841
     service = TeacherService(db)
     success = await service.delete_availability_slot(slot_id)
 
@@ -644,9 +659,12 @@ async def delete_availability_slot(
 
 @router.post("/availability/{slot_id}/block")
 async def block_time_slot(
-    slot_id: UUID, user_id: UUID = Query(...), db: AsyncSession = Depends(get_db)
+    slot_id: UUID,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
 ):
     """Block a time slot (make unavailable)"""
+    user_id = UUID(current_user.user_id)  # noqa: F841
     service = TeacherService(db)
     slot = await service.block_time_slot(slot_id)
 
@@ -664,10 +682,11 @@ async def block_time_slot(
 @router.post("/appointments")
 async def create_appointment(
     request: AppointmentRequest,
-    student_id: UUID = Query(...),
+    current_user: AuthenticatedUser = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
     """Create new appointment (student books teacher)"""
+    student_id = UUID(current_user.user_id)
     service = TeacherService(db)
 
     appointment = await service.create_appointment(
@@ -743,10 +762,11 @@ async def cancel_appointment(
 async def complete_appointment(
     appointment_id: UUID,
     request: AppointmentCompleteRequest,
-    user_id: UUID = Query(...),
+    current_user: AuthenticatedUser = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
     """Mark appointment as completed (teacher)"""
+    user_id = UUID(current_user.user_id)  # noqa: F841
     service = TeacherService(db)
 
     appointment = await service.complete_appointment(
@@ -764,9 +784,9 @@ async def complete_appointment(
 @router.get("/{teacher_id}/appointments")
 async def get_teacher_appointments(
     teacher_id: UUID,
-    status: Optional[AppointmentStatus] = None,
-    start_date: Optional[date] = None,
-    end_date: Optional[date] = None,
+    status: AppointmentStatus | None = None,
+    start_date: date | None = None,
+    end_date: date | None = None,
     db: AsyncSession = Depends(get_db),
 ):
     """Get teacher's appointments"""
@@ -798,11 +818,12 @@ async def get_teacher_appointments(
 
 @router.get("/my-appointments")
 async def get_my_appointments(
-    student_id: UUID = Query(...),
-    status: Optional[AppointmentStatus] = None,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+    status: AppointmentStatus | None = None,
     db: AsyncSession = Depends(get_db),
 ):
     """Get student's appointments"""
+    student_id = UUID(current_user.user_id)
     service = TeacherService(db)
     appointments = await service.get_student_appointments(
         student_id=student_id, status=status
@@ -838,11 +859,12 @@ async def get_my_appointments(
 async def add_review(
     teacher_id: UUID,
     request: ReviewRequest,
-    student_id: UUID = Query(...),
+    current_user: AuthenticatedUser = Depends(get_current_user),
     appointment_id: UUID = Query(...),
     db: AsyncSession = Depends(get_db),
 ):
     """Add review for teacher"""
+    student_id = UUID(current_user.user_id)
     service = TeacherService(db)
 
     review = await service.add_review(

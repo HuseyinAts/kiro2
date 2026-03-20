@@ -1,7 +1,11 @@
 # Team Challenges API Endpoints
 
+import logging
+
 from fastapi import APIRouter, HTTPException, WebSocket
 from pydantic import BaseModel
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/api/v1/challenges", tags=["Team Challenges"])
 
@@ -33,7 +37,7 @@ async def create_team(request: CreateTeamRequest, user_id: int):
         "team_id": team.team_id,
         "team_name": team.team_name,
         "leader_id": team.leader_id,
-        "join_code": team.team_id
+        "join_code": team.team_id,
     }
 
 
@@ -44,16 +48,14 @@ async def create_quiz_battle(request: CreateBattleRequest, host_id: int):
 
     manager = TeamChallengeManager()
     battle = manager.create_quiz_battle(
-        host_id=host_id,
-        topic=request.topic,
-        max_participants=request.max_participants
+        host_id=host_id, topic=request.topic, max_participants=request.max_participants
     )
 
     return {
         "battle_id": battle.battle_id,
         "room_code": battle.room_code,
         "topic": battle.topic,
-        "max_participants": battle.max_participants
+        "max_participants": battle.max_participants,
     }
 
 
@@ -82,7 +84,7 @@ async def join_quiz_battle(request: JoinBattleRequest, user_id: int):
     return {
         "battle_id": battle.battle_id,
         "participants": battle.participants,
-        "status": "joined"
+        "status": "joined",
     }
 
 
@@ -97,10 +99,7 @@ async def get_battle_leaderboard(battle_id: str):
     if not battle:
         raise HTTPException(status_code=404, detail="Battle not found")
 
-    return {
-        "battle_id": battle_id,
-        "leaderboard": battle.get_leaderboard()
-    }
+    return {"battle_id": battle_id, "leaderboard": battle.get_leaderboard()}
 
 
 @router.get("/teams/leaderboard")
@@ -118,7 +117,7 @@ async def get_team_leaderboard(limit: int = 10):
                 "team_id": team.team_id,
                 "team_name": team.team_name,
                 "total_points": team.total_points,
-                "challenges_won": team.challenges_won
+                "challenges_won": team.challenges_won,
             }
             for idx, team in enumerate(teams)
         ]
@@ -136,22 +135,15 @@ async def websocket_battle(websocket: WebSocket, battle_id: str):
             # Handle real-time battle events
             if data["type"] == "submit_answer":
                 # Process answer submission
-                response = {
-                    "type": "answer_result",
-                    "correct": True,
-                    "points": 100
-                }
+                response = {"type": "answer_result", "correct": True, "points": 100}
                 await websocket.send_json(response)
 
             elif data["type"] == "get_scores":
                 # Send current scores
-                response = {
-                    "type": "scores_update",
-                    "scores": {}
-                }
+                response = {"type": "scores_update", "scores": {}}
                 await websocket.send_json(response)
 
     except Exception as e:
-        print(f"WebSocket error: {e}")
+        logger.error("WebSocket error: %s", e)
     finally:
         await websocket.close()

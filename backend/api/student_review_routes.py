@@ -4,7 +4,7 @@ Task 105: Student Review API Routes
 REST API for review submission, display, moderation, and filtering
 """
 
-from typing import List, Optional, Dict, Any
+from typing import Any
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, Query
@@ -12,9 +12,9 @@ from pydantic import BaseModel, ConfigDict, Field
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.database import get_db
+from core.dependencies import AuthenticatedUser, get_current_user
+from models.student_review import RatingCategory, ReportReason, ReviewStatus, ReviewType
 from services.student_review_service import StudentReviewService
-from models.student_review import ReviewType, ReviewStatus, ReportReason, RatingCategory
-
 
 router = APIRouter(prefix="/api/v1/reviews", tags=["Student Reviews"])
 
@@ -31,21 +31,21 @@ class ReviewCreateRequest(BaseModel):
     title: str = Field(..., min_length=10, max_length=255)
     content: str = Field(..., min_length=50)
     overall_rating: float = Field(..., ge=1.0, le=5.0)
-    university_id: Optional[UUID] = None
-    department_id: Optional[UUID] = None
-    dormitory_id: Optional[UUID] = None
-    pros: Optional[List[str]] = None
-    cons: Optional[List[str]] = None
-    tags: Optional[List[str]] = None
-    student_year: Optional[int] = None
-    enrollment_year: Optional[int] = None
+    university_id: UUID | None = None
+    department_id: UUID | None = None
+    dormitory_id: UUID | None = None
+    pros: list[str] | None = None
+    cons: list[str] | None = None
+    tags: list[str] | None = None
+    student_year: int | None = None
+    enrollment_year: int | None = None
     is_current_student: bool = True
 
 
 class ReviewRatingsRequest(BaseModel):
     """Request model for multi-criteria ratings"""
 
-    ratings: Dict[RatingCategory, float]
+    ratings: dict[RatingCategory, float]
 
 
 class ReviewVoteRequest(BaseModel):
@@ -58,14 +58,14 @@ class ReviewReportRequest(BaseModel):
     """Request model for reporting a review"""
 
     reason: ReportReason
-    description: Optional[str] = None
+    description: str | None = None
 
 
 class ReviewModerationRequest(BaseModel):
     """Request model for moderating a review"""
 
     new_status: ReviewStatus
-    notes: Optional[str] = None
+    notes: str | None = None
 
 
 class ReviewResponse(BaseModel):
@@ -77,8 +77,8 @@ class ReviewResponse(BaseModel):
     title: str
     content: str
     overall_rating: float
-    university_id: Optional[UUID]
-    department_id: Optional[UUID]
+    university_id: UUID | None
+    department_id: UUID | None
     status: str
     is_verified: bool
     helpful_count: int
@@ -94,14 +94,14 @@ class ReviewStatisticsResponse(BaseModel):
 
     total_reviews: int
     verified_reviews: int
-    average_rating: Optional[float]
+    average_rating: float | None
     rating_1_count: int
     rating_2_count: int
     rating_3_count: int
     rating_4_count: int
     rating_5_count: int
-    category_averages: Optional[Dict[str, float]]
-    top_tags: Optional[List[str]]
+    category_averages: dict[str, float] | None
+    top_tags: list[str] | None
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -114,9 +114,7 @@ class ReviewStatisticsResponse(BaseModel):
 @router.post("/", response_model=ReviewResponse)
 async def create_review(
     request: ReviewCreateRequest,
-    user_id: UUID = Query(
-        ..., description="User ID (would come from auth in production)"
-    ),
+    current_user: AuthenticatedUser = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
     """
@@ -124,6 +122,7 @@ async def create_review(
 
     Automatically runs spam detection and quality checks
     """
+    user_id = UUID(current_user.user_id)
     service = StudentReviewService(db)
 
     review = await service.create_review(
@@ -161,14 +160,12 @@ async def create_review(
     )
 
 
-@router.get("/", response_model=List[ReviewResponse])
+@router.get("/", response_model=list[ReviewResponse])
 async def get_reviews(
-    review_type: Optional[ReviewType] = Query(
-        None, description="Filter by review type"
-    ),
-    university_id: Optional[UUID] = Query(None, description="Filter by university"),
-    department_id: Optional[UUID] = Query(None, description="Filter by department"),
-    min_rating: Optional[float] = Query(
+    review_type: ReviewType | None = Query(None, description="Filter by review type"),
+    university_id: UUID | None = Query(None, description="Filter by university"),
+    department_id: UUID | None = Query(None, description="Filter by department"),
+    min_rating: float | None = Query(
         None, ge=1.0, le=5.0, description="Minimum rating"
     ),
     verified_only: bool = Query(False, description="Show only verified reviews"),
@@ -250,13 +247,14 @@ async def get_review_by_id(review_id: UUID, db: AsyncSession = Depends(get_db)):
 @router.delete("/{review_id}")
 async def delete_review(
     review_id: UUID,
-    user_id: UUID = Query(..., description="User ID (for auth check)"),
+    current_user: AuthenticatedUser = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
     """Delete a review (user must own the review)"""
+    user_id = UUID(current_user.user_id)
     service = StudentReviewService(db)
 
-    # Check ownership (simplified - would use proper auth in production)
+    # Check ownership
     review = await service.get_review_by_id(review_id)
     if not review:
         raise HTTPException(status_code=404, detail="Review not found")
@@ -319,7 +317,7 @@ async def get_review_ratings(review_id: UUID, db: AsyncSession = Depends(get_db)
 async def vote_review(
     review_id: UUID,
     request: ReviewVoteRequest,
-    user_id: UUID = Query(..., description="User ID"),
+    current_user: AuthenticatedUser = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
     """
@@ -327,6 +325,7 @@ async def vote_review(
 
     Users can change their vote
     """
+    user_id = UUID(current_user.user_id)
     service = StudentReviewService(db)
 
     vote = await service.vote_review(review_id, user_id, request.is_helpful)
@@ -394,7 +393,7 @@ async def moderate_review(
     }
 
 
-@router.get("/moderation/queue", response_model=List[ReviewResponse])
+@router.get("/moderation/queue", response_model=list[ReviewResponse])
 async def get_moderation_queue(
     status: str = Query(
         "pending", description="Queue status: pending, in_review, completed"
@@ -440,8 +439,8 @@ async def get_moderation_queue(
 @router.get("/statistics/{review_type}", response_model=ReviewStatisticsResponse)
 async def get_review_statistics(
     review_type: ReviewType,
-    university_id: Optional[UUID] = Query(None, description="Filter by university"),
-    department_id: Optional[UUID] = Query(None, description="Filter by department"),
+    university_id: UUID | None = Query(None, description="Filter by university"),
+    department_id: UUID | None = Query(None, description="Filter by department"),
     db: AsyncSession = Depends(get_db),
 ):
     """
@@ -491,8 +490,8 @@ async def get_review_statistics(
 )
 async def generate_review_statistics(
     review_type: ReviewType,
-    university_id: Optional[UUID] = Query(None, description="Filter by university"),
-    department_id: Optional[UUID] = Query(None, description="Filter by department"),
+    university_id: UUID | None = Query(None, description="Filter by university"),
+    department_id: UUID | None = Query(None, description="Filter by department"),
     db: AsyncSession = Depends(get_db),
 ):
     """

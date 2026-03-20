@@ -425,7 +425,7 @@ E) {secenek_e}
 ## 🔒 Security Requirements
 
 ### Authentication
-- JWT tokens with 24h expiry
+- JWT access tokens with 15min expiry (unified_auth_service.py ACCESS_TOKEN_EXPIRE_MINUTES)
 - Refresh tokens with 7d expiry
 - Rate limiting: 100 req/min per user
   - **SSE endpoints exempt** from rate limiting (long-lived connections)
@@ -617,8 +617,17 @@ Configure in: Repository Settings → Secrets and variables → Actions
 
 See `.claude/rules/testing.md` (26 lessons) and `.claude/rules/verification.md` for detailed patterns and anti-patterns.
 
+## 🧠 Brainstorming
+
+- Stratejik karar (mimari, özellik, strateji): `/brainstorm`
+- Plan sorgulama: `/challenge`
+- Kod kalitesi: `/analyze`
+- Raporlar: `docs/brainstorms/` — commit'le
+- Küçük iş (<3 adım): brainstorm KULLANMA — overhead değmez
+- Subagent'lara dosya içeriği değil dosya YOLU ver
+
 ---
 
-**Last Updated:** March 17, 2026
-**Document Version:** 3.4
-**Changes:** v3.4 — CLAUDE.md audit: removed 100+ lines of completed roadmap, resolved issues, duplicated lessons, stale references. All actionable content preserved.
+**Last Updated:** March 20, 2026
+**Document Version:** 3.5
+**Changes:** v3.5 — Paralel brainstorming sistemi eklendi: /brainstorm, /challenge, /analyze komutları. docs/brainstorms/ dizini oluşturuldu.

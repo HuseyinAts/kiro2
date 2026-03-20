@@ -6,31 +6,12 @@ Teknofest 2025 - Eğitim Eylemci Projesi
 
 import logging
 import os
-import unicodedata
 from dataclasses import dataclass
-from typing import List, Optional, Dict, Any
+from typing import Any
+
+from core.turkish_nlp_utils import normalize_tr
 
 logger = logging.getLogger(__name__)
-
-
-def normalize_tr(text: str) -> str:
-    """
-    Türkçe metin normalizasyonu.
-
-    Python'un .lower() Türkçe İ/I karakterini doğru işlemez:
-    - "İstanbul" → "i̇stanbul" (nokta kalıyor!)
-    - "Isparta" → "isparta" (noktalı i yerine noktasız)
-
-    Bu fonksiyon doğru Türkçe normalizasyonu yapar.
-    """
-    if not text:
-        return text
-    # NFC normalization (önceki adım)
-    text = unicodedata.normalize("NFC", text)
-    # Türkçe-specific lowercase: İ→i, I→ı
-    text = text.replace("İ", "i").replace("I", "ı")
-    # Standart lowercase
-    return text.lower()
 
 
 @dataclass
@@ -326,15 +307,15 @@ class SubjectRelevanceScorer:
                 "sentence-transformers kütüphanesi bulunamadı, semantik analiz devre dışı"
             )
         except Exception as e:
-            logger.warning(f"Sentence transformers yüklenemedi: {str(e)}")
+            logger.warning(f"Sentence transformers yüklenemedi: {e!s}")
 
     async def calculate_relevance_score(
         self,
         video_title: str,
         video_description: str,
-        video_tags: List[str],
+        video_tags: list[str],
         target_subject: str,
-        target_topic: Optional[str] = None,
+        target_topic: str | None = None,
     ) -> RelevanceScore:
         """
         Video'nun konu ile uygunluk skorunu hesaplar
@@ -405,7 +386,7 @@ class SubjectRelevanceScorer:
             return result
 
         except Exception as e:
-            logger.error(f"Relevance scoring error: {str(e)}")
+            logger.error(f"Relevance scoring error: {e!s}")
             # Hata durumunda düşük skor döndür
             return RelevanceScore(
                 overall_score=0.0,
@@ -416,7 +397,7 @@ class SubjectRelevanceScorer:
             )
 
     def _calculate_keyword_overlap(
-        self, video_text: str, subject: str, topic: Optional[str]
+        self, video_text: str, subject: str, topic: str | None
     ) -> float:
         """
         Anahtar kelime örtüşme oranını hesaplar
@@ -516,7 +497,7 @@ class SubjectRelevanceScorer:
         return min(score, 1.0)
 
     def _calculate_topic_match(
-        self, video_text: str, subject: str, topic: Optional[str]
+        self, video_text: str, subject: str, topic: str | None
     ) -> float:
         """
         Konu eşleşme skorunu hesaplar
@@ -557,7 +538,7 @@ class SubjectRelevanceScorer:
         return min(score, 1.0)
 
     async def _calculate_semantic_similarity(
-        self, video_text: str, subject: str, topic: Optional[str]
+        self, video_text: str, subject: str, topic: str | None
     ) -> float:
         """
         Embedding tabanlı semantik benzerlik hesaplar
@@ -601,10 +582,10 @@ class SubjectRelevanceScorer:
             return float(normalized_similarity)
 
         except Exception as e:
-            logger.error(f"Semantic similarity calculation error: {str(e)}")
+            logger.error(f"Semantic similarity calculation error: {e!s}")
             return 0.5
 
-    def get_subject_keywords(self, subject: str) -> Dict[str, Any]:
+    def get_subject_keywords(self, subject: str) -> dict[str, Any]:
         """
         Ders için anahtar kelimeleri al
 
@@ -616,7 +597,7 @@ class SubjectRelevanceScorer:
         """
         return self.subject_keywords.get(normalize_tr(subject), {})
 
-    def get_topic_keywords(self, subject: str, topic: str) -> List[str]:
+    def get_topic_keywords(self, subject: str, topic: str) -> list[str]:
         """
         Konu için anahtar kelimeleri al
 
@@ -630,7 +611,7 @@ class SubjectRelevanceScorer:
         subject_data = self.subject_keywords.get(normalize_tr(subject), {})
         return subject_data.get("topics", {}).get(normalize_tr(topic), [])
 
-    def get_all_subjects(self) -> List[str]:
+    def get_all_subjects(self) -> list[str]:
         """
         Tüm desteklenen dersleri al
 
@@ -639,7 +620,7 @@ class SubjectRelevanceScorer:
         """
         return list(self.subject_keywords.keys())
 
-    def get_topics_for_subject(self, subject: str) -> List[str]:
+    def get_topics_for_subject(self, subject: str) -> list[str]:
         """
         Ders için tüm konuları al
 

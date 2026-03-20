@@ -3,37 +3,41 @@
 Teknofest 2025 Eğitim Eylemci Platformu
 """
 
-from fastapi import APIRouter, HTTPException, Query, BackgroundTasks
-from typing import List, Optional, Dict, Any
+import logging
 from datetime import datetime
+from typing import Any
 from uuid import uuid4
 
+from fastapi import APIRouter, BackgroundTasks, HTTPException, Query
+
 from models.content_models import (
-    MakaleIcerik,
-    VideoIcerik,
-    QuizIcerik,
-    ContentType,
-    ContentStats,
-    ContentInteraction,
-    InteractionType,
-    ContentSearchRequest,
     BulkContentImport,
+    ContentInteraction,
+    ContentSearchRequest,
+    ContentStats,
+    ContentType,
+    InteractionType,
+    MakaleIcerik,
+    QuizIcerik,
+    VideoIcerik,
 )
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/api/v1/content", tags=["İçerik Yönetimi"])
 
 # Geçici veri deposu (production'da database kullanılacak)
-makale_store: Dict[str, MakaleIcerik] = {}
-video_store: Dict[str, VideoIcerik] = {}
-quiz_store: Dict[str, QuizIcerik] = {}
-interaction_store: List[ContentInteraction] = []
-stats_store: Dict[str, ContentStats] = {}
+makale_store: dict[str, MakaleIcerik] = {}
+video_store: dict[str, VideoIcerik] = {}
+quiz_store: dict[str, QuizIcerik] = {}
+interaction_store: list[ContentInteraction] = []
+stats_store: dict[str, ContentStats] = {}
 
 
 # ==================== MAKALE ENDPOINTLERİ ====================
 
 
-@router.post("/makale", response_model=Dict[str, Any])
+@router.post("/makale", response_model=dict[str, Any])
 async def create_makale(makale: MakaleIcerik):
     """
     Yeni makale oluştur
@@ -64,12 +68,10 @@ async def create_makale(makale: MakaleIcerik):
             "message": "Makale başarıyla oluşturuldu",
         }
     except Exception as e:
-        raise HTTPException(
-            status_code=400, detail=f"Makale oluşturma hatası: {str(e)}"
-        )
+        raise HTTPException(status_code=400, detail=f"Makale oluşturma hatası: {e!s}")
 
 
-@router.get("/makale/{makale_id}", response_model=Dict[str, Any])
+@router.get("/makale/{makale_id}", response_model=dict[str, Any])
 async def get_makale(makale_id: str):
     """
     Makale detayını getir ve görüntüleme sayısını artır
@@ -90,12 +92,12 @@ async def get_makale(makale_id: str):
     return {"success": True, "data": makale.dict()}
 
 
-@router.get("/makale", response_model=Dict[str, Any])
+@router.get("/makale", response_model=dict[str, Any])
 async def list_makaleler(
-    kategori: Optional[str] = None,
-    etiket: Optional[str] = None,
-    yazar: Optional[str] = None,
-    aktif: Optional[bool] = True,
+    kategori: str | None = None,
+    etiket: str | None = None,
+    yazar: str | None = None,
+    aktif: bool | None = True,
     skip: int = Query(0, ge=0, description="Atlanacak kayıt sayısı"),
     limit: int = Query(20, ge=1, le=100, description="Getirilecek kayıt sayısı"),
 ):
@@ -138,8 +140,8 @@ async def list_makaleler(
     }
 
 
-@router.put("/makale/{makale_id}", response_model=Dict[str, Any])
-async def update_makale(makale_id: str, update_data: Dict[str, Any]):
+@router.put("/makale/{makale_id}", response_model=dict[str, Any])
+async def update_makale(makale_id: str, update_data: dict[str, Any]):
     """
     Makale güncelle
     """
@@ -163,7 +165,7 @@ async def update_makale(makale_id: str, update_data: Dict[str, Any]):
     }
 
 
-@router.delete("/makale/{makale_id}", response_model=Dict[str, Any])
+@router.delete("/makale/{makale_id}", response_model=dict[str, Any])
 async def delete_makale(makale_id: str, soft_delete: bool = True):
     """
     Makale sil (varsayılan olarak soft delete)
@@ -179,14 +181,13 @@ async def delete_makale(makale_id: str, soft_delete: bool = True):
     else:
         # Hard delete
         del makale_store[makale_id]
-        if makale_id in stats_store:
-            del stats_store[makale_id]
+        stats_store.pop(makale_id, None)
         message = "Makale kalıcı olarak silindi"
 
     return {"success": True, "message": message}
 
 
-@router.post("/makale/{makale_id}/like", response_model=Dict[str, Any])
+@router.post("/makale/{makale_id}/like", response_model=dict[str, Any])
 async def like_makale(makale_id: str, user_id: str):
     """
     Makale beğen/beğenmekten vazgeç
@@ -223,7 +224,7 @@ async def like_makale(makale_id: str, user_id: str):
 # ==================== VIDEO ENDPOINTLERİ ====================
 
 
-@router.post("/video", response_model=Dict[str, Any])
+@router.post("/video", response_model=dict[str, Any])
 async def create_video(video: VideoIcerik, background_tasks: BackgroundTasks):
     """
     Yeni video oluştur
@@ -256,10 +257,10 @@ async def create_video(video: VideoIcerik, background_tasks: BackgroundTasks):
             "message": "Video başarıyla oluşturuldu",
         }
     except Exception as e:
-        raise HTTPException(status_code=400, detail=f"Video oluşturma hatası: {str(e)}")
+        raise HTTPException(status_code=400, detail=f"Video oluşturma hatası: {e!s}")
 
 
-@router.get("/video/{video_id}", response_model=Dict[str, Any])
+@router.get("/video/{video_id}", response_model=dict[str, Any])
 async def get_video(video_id: str):
     """
     Video detayını getir ve izlenme sayısını artır
@@ -280,14 +281,14 @@ async def get_video(video_id: str):
     return {"success": True, "data": video.dict()}
 
 
-@router.get("/video", response_model=Dict[str, Any])
+@router.get("/video", response_model=dict[str, Any])
 async def list_videolar(
-    kategori: Optional[str] = None,
-    platform: Optional[str] = None,
-    min_sure: Optional[int] = None,
-    max_sure: Optional[int] = None,
-    kalite: Optional[str] = None,
-    aktif: Optional[bool] = True,
+    kategori: str | None = None,
+    platform: str | None = None,
+    min_sure: int | None = None,
+    max_sure: int | None = None,
+    kalite: str | None = None,
+    aktif: bool | None = True,
     skip: int = Query(0, ge=0),
     limit: int = Query(20, ge=1, le=100),
 ):
@@ -337,7 +338,7 @@ async def list_videolar(
 # ==================== GENEL ENDPOINTLERİ ====================
 
 
-@router.post("/search", response_model=Dict[str, Any])
+@router.post("/search", response_model=dict[str, Any])
 async def search_content(search_request: ContentSearchRequest):
     """
     İçeriklerde gelişmiş arama yap
@@ -470,10 +471,10 @@ async def search_content(search_request: ContentSearchRequest):
     }
 
 
-@router.get("/recommendations/{user_id}", response_model=Dict[str, Any])
+@router.get("/recommendations/{user_id}", response_model=dict[str, Any])
 async def get_recommendations(
     user_id: str,
-    content_type: Optional[ContentType] = None,
+    content_type: ContentType | None = None,
     limit: int = Query(10, ge=1, le=50),
 ):
     """
@@ -588,10 +589,10 @@ async def get_recommendations(
     }
 
 
-@router.get("/trending", response_model=Dict[str, Any])
+@router.get("/trending", response_model=dict[str, Any])
 async def get_trending_content(
     period: str = Query("week", regex="^(day|week|month)$"),
-    content_type: Optional[ContentType] = None,
+    content_type: ContentType | None = None,
     limit: int = Query(20, ge=1, le=100),
 ):
     """
@@ -626,7 +627,7 @@ async def get_trending_content(
     return {"success": True, "data": trending, "period": period, "total": len(trending)}
 
 
-@router.get("/stats", response_model=Dict[str, Any])
+@router.get("/stats", response_model=dict[str, Any])
 async def get_content_stats():
     """
     İçerik istatistikleri (admin için)
@@ -668,7 +669,7 @@ async def get_content_stats():
     }
 
 
-@router.get("/health", response_model=Dict[str, Any])
+@router.get("/health", response_model=dict[str, Any])
 async def health_check():
     """
     İçerik API sağlık kontrolü
@@ -706,15 +707,15 @@ async def generate_video_thumbnail(video_id: str, video_url: str):
                 )
                 video.thumbnail_url = thumbnail_url
 
-        print(f"Thumbnail oluşturuldu: {video_id}")
+        logger.debug("Thumbnail oluşturuldu: %s", video_id)
 
 
 # ==================== BULK IMPORT ENDPOINTLERİ ====================
 
 
-@router.post("/bulk-import", response_model=Dict[str, Any])
+@router.post("/bulk-import", response_model=dict[str, Any])
 async def start_bulk_import(
-    file_data: Dict[str, Any], user_id: str, background_tasks: BackgroundTasks
+    file_data: dict[str, Any], user_id: str, background_tasks: BackgroundTasks
 ):
     """
     Toplu içerik yükleme başlat
@@ -738,12 +739,12 @@ async def start_bulk_import(
     }
 
 
-async def process_bulk_import(task_id: str, records: List[Dict[str, Any]]):
+async def process_bulk_import(task_id: str, records: list[dict[str, Any]]):
     """
     Toplu yükleme işleme (arka plan görevi)
     """
     # Gerçek uygulamada database'e kaydedilecek
-    print(f"Toplu yükleme işleniyor: {task_id}")
+    logger.info("Toplu yükleme işleniyor: %s", task_id)
 
     for i, record in enumerate(records):
         try:
@@ -756,9 +757,9 @@ async def process_bulk_import(task_id: str, records: List[Dict[str, Any]]):
                 video = VideoIcerik(**record)
                 video_store[video.id] = video
 
-            print(f"İşlendi: {i+1}/{len(records)}")
+            logger.debug("İşlendi: %d/%d", i + 1, len(records))
 
         except Exception as e:
-            print(f"Hata: {record} - {str(e)}")
+            logger.error("Hata: %s - %s", record, e)
 
-    print(f"Toplu yükleme tamamlandı: {task_id}")
+    logger.info("Toplu yükleme tamamlandı: %s", task_id)

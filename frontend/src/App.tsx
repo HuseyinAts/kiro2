@@ -88,6 +88,7 @@ const RealmPage = lazy(() => import('./pages/RealmPage'));
 
 // Labs: Revolutionary Features (experimental)
 const RevolutionaryDashboard = lazy(() => import('./components/Revolutionary/RevolutionaryDashboard'));
+const SystematicDebuggingPage = lazy(() => import('./pages/SystematicDebuggingPage'));
 // Optimize edilmiş QueryClient
 const queryClient = createOptimizedQueryClient();
 
@@ -449,6 +450,16 @@ function AppContent() {
                 element={
                   <ProtectedRoute requiredRoles={['admin']}>
                     <RevolutionaryDashboard studentId="demo" />
+                  </ProtectedRoute>
+                }
+              />
+
+              {/* Systematic Debugging Workstation */}
+              <Route
+                path="/admin/debug"
+                element={
+                  <ProtectedRoute requiredRoles={['admin']}>
+                    <SystematicDebuggingPage />
                   </ProtectedRoute>
                 }
               />

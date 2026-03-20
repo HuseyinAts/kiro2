@@ -4,16 +4,16 @@ Task 100: Video Analytics API Routes
 REST API endpoints for video watch tracking, notes, and bookmarks
 """
 
-from fastapi import APIRouter, Depends, HTTPException, Query
-from sqlalchemy.ext.asyncio import AsyncSession
-from typing import List, Optional
-from uuid import UUID
 from datetime import datetime
+from uuid import UUID
+
+from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel, Field
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.database import get_db
+from core.dependencies import AuthenticatedUser, get_current_user
 from services.video_analytics_service import VideoAnalyticsService
-
 
 router = APIRouter(prefix="/api/v1/video-analytics", tags=["video-analytics"])
 
@@ -46,16 +46,16 @@ class CreateNoteRequest(BaseModel):
     video_source: str
     content: str = Field(..., min_length=1)
     timestamp: int = Field(..., ge=0)
-    session_id: Optional[UUID] = None
+    session_id: UUID | None = None
     is_important: bool = False
-    tags: List[str] = []
-    video_caption: Optional[str] = None
+    tags: list[str] = []
+    video_caption: str | None = None
 
 
 class UpdateNoteRequest(BaseModel):
-    content: Optional[str] = None
-    is_important: Optional[bool] = None
-    tags: Optional[List[str]] = None
+    content: str | None = None
+    is_important: bool | None = None
+    tags: list[str] | None = None
 
 
 class CreateBookmarkRequest(BaseModel):
@@ -63,16 +63,16 @@ class CreateBookmarkRequest(BaseModel):
     video_source: str
     timestamp: int = Field(..., ge=0)
     title: str = Field(..., min_length=1, max_length=200)
-    description: Optional[str] = None
-    session_id: Optional[UUID] = None
+    description: str | None = None
+    session_id: UUID | None = None
     bookmark_type: str = "manual"
     is_public: bool = False
 
 
 class UpdateBookmarkRequest(BaseModel):
-    title: Optional[str] = Field(None, min_length=1, max_length=200)
-    description: Optional[str] = None
-    is_public: Optional[bool] = None
+    title: str | None = Field(None, min_length=1, max_length=200)
+    description: str | None = None
+    is_public: bool | None = None
 
 
 # ============================================================
@@ -83,7 +83,7 @@ class UpdateBookmarkRequest(BaseModel):
 @router.post("/sessions/start", response_model=dict)
 async def start_watch_session(
     request: StartSessionRequest,
-    user_id: UUID = Query(..., description="User ID"),
+    current_user: AuthenticatedUser = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
     """
@@ -91,6 +91,7 @@ async def start_watch_session(
 
     Creates a new session for tracking watch progress
     """
+    user_id = UUID(current_user.user_id)
     service = VideoAnalyticsService(db)
 
     session = await service.start_watch_session(
@@ -198,10 +199,10 @@ async def get_video_engagement(
 # ============================================================
 
 
-@router.get("/milestones", response_model=List[dict])
+@router.get("/milestones", response_model=list[dict])
 async def get_user_milestones(
-    user_id: UUID = Query(...),
-    video_id: Optional[str] = Query(None),
+    video_id: str | None = Query(None),
+    current_user: AuthenticatedUser = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
     """
@@ -209,6 +210,7 @@ async def get_user_milestones(
 
     Returns all milestones achieved by the user
     """
+    user_id = UUID(current_user.user_id)
     service = VideoAnalyticsService(db)
     milestones = await service.get_user_milestones(user_id, video_id)
 
@@ -233,7 +235,7 @@ async def get_user_milestones(
 @router.post("/notes", response_model=dict)
 async def create_note(
     request: CreateNoteRequest,
-    user_id: UUID = Query(...),
+    current_user: AuthenticatedUser = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
     """
@@ -241,6 +243,7 @@ async def create_note(
 
     Create a note at a specific video timestamp
     """
+    user_id = UUID(current_user.user_id)
     service = VideoAnalyticsService(db)
 
     note = await service.create_note(
@@ -298,11 +301,11 @@ async def delete_note(note_id: UUID, db: AsyncSession = Depends(get_db)):
     return {"status": "deleted"}
 
 
-@router.get("/notes", response_model=List[dict])
+@router.get("/notes", response_model=list[dict])
 async def get_video_notes(
-    user_id: UUID = Query(...),
     video_id: str = Query(...),
     video_source: str = Query(...),
+    current_user: AuthenticatedUser = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
     """
@@ -310,6 +313,7 @@ async def get_video_notes(
 
     Returns notes ordered by timestamp
     """
+    user_id = UUID(current_user.user_id)
     service = VideoAnalyticsService(db)
     notes = await service.get_video_notes(user_id, video_id, video_source)
 
@@ -329,12 +333,12 @@ async def get_video_notes(
     ]
 
 
-@router.get("/notes/search", response_model=List[dict])
+@router.get("/notes/search", response_model=list[dict])
 async def search_notes(
-    user_id: UUID = Query(...),
     query: str = Query(..., min_length=1),
-    video_id: Optional[str] = Query(None),
-    tags: Optional[List[str]] = Query(None),
+    video_id: str | None = Query(None),
+    tags: list[str] | None = Query(None),
+    current_user: AuthenticatedUser = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
     """
@@ -342,6 +346,7 @@ async def search_notes(
 
     Full-text search in note content
     """
+    user_id = UUID(current_user.user_id)
     service = VideoAnalyticsService(db)
     notes = await service.search_notes(user_id, query, video_id, tags)
 
@@ -368,7 +373,7 @@ async def search_notes(
 @router.post("/bookmarks", response_model=dict)
 async def create_bookmark(
     request: CreateBookmarkRequest,
-    user_id: UUID = Query(...),
+    current_user: AuthenticatedUser = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
     """
@@ -376,6 +381,7 @@ async def create_bookmark(
 
     Create a bookmark at a specific video timestamp
     """
+    user_id = UUID(current_user.user_id)
     service = VideoAnalyticsService(db)
 
     bookmark = await service.create_bookmark(
@@ -435,14 +441,14 @@ async def delete_bookmark(bookmark_id: UUID, db: AsyncSession = Depends(get_db))
     return {"status": "deleted"}
 
 
-@router.get("/bookmarks", response_model=List[dict])
+@router.get("/bookmarks", response_model=list[dict])
 async def get_video_bookmarks(
-    user_id: UUID = Query(...),
     video_id: str = Query(...),
     video_source: str = Query(...),
     include_public: bool = Query(
         False, description="Include public bookmarks from other users"
     ),
+    current_user: AuthenticatedUser = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
     """
@@ -450,6 +456,7 @@ async def get_video_bookmarks(
 
     Returns bookmarks ordered by timestamp
     """
+    user_id = UUID(current_user.user_id)
     service = VideoAnalyticsService(db)
     bookmarks = await service.get_video_bookmarks(
         user_id, video_id, video_source, include_public
@@ -487,11 +494,12 @@ async def share_bookmark(bookmark_id: UUID, db: AsyncSession = Depends(get_db)):
 
 @router.get("/summary/daily", response_model=dict)
 async def get_daily_summary(
-    user_id: UUID = Query(...),
     date: str = Query(..., description="Date in YYYY-MM-DD format"),
+    current_user: AuthenticatedUser = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
     """Get daily analytics summary"""
+    user_id = UUID(current_user.user_id)
     service = VideoAnalyticsService(db)
 
     try:

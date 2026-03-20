@@ -98,6 +98,109 @@ class TestZPDManager:
         assert type(low) is type(high)
 
 
+class TestBKTMathematicalCorrectness:
+    """
+    Bug #1 regression: bkt_service.py:170 döndürülen değer yanlışlıkla
+    `new_p_L * (1 - p_T)` ile çarpılıyor. Standart BKT `new_p_L` döndürmeli.
+    Bu çarpma ~0.875 üzerindeki mastery değerlerinde doğru cevabı
+    mastery'yi DÜŞÜRÜYOR.
+    """
+
+    def test_high_mastery_correct_answer_must_not_decrease(self):
+        """p_learn=0.90'da doğru cevap mastery'yi düşürmemeli."""
+        from services.bkt_service import BKTService
+
+        result = BKTService.update(0.90, correct=True)
+        assert result >= 0.90, (
+            f"BKT bug: p_learn=0.90 + doğru cevap → {result} (düştü!). "
+            "Standart BKT transfer sonrası azaltma yapmamalı."
+        )
+
+    def test_mastery_convergence_10_correct_answers(self):
+        """10 ardışık doğru cevap mastery'yi monoton artırmalı."""
+        from services.bkt_service import BKTService
+
+        p = 0.50
+        for i in range(10):
+            p_new = BKTService.update(p, correct=True)
+            assert p_new >= p, f"Cevap {i + 1}: p_learn={p:.4f} → {p_new:.4f} (düştü!)"
+            p = p_new
+
+    def test_update_formula_known_value(self):
+        """
+        Standart BKT formülü doğrulama.
+        p_learn=0.5, correct=True, p_T=0.10, p_G=0.20, p_S=0.10
+        posterior = 0.5*0.9 / (0.5*0.9 + 0.5*0.2) = 0.45/0.55 = 0.8182
+        new_p_L   = 0.8182 + 0.1818 * 0.10 = 0.8364
+        Beklenen  ≈ 0.836 (buglu kod: 0.836*0.90 = 0.752 döndürür)
+        """
+        from services.bkt_service import BKTService
+
+        result = BKTService.update(0.5, correct=True, p_T=0.10, p_G=0.20, p_S=0.10)
+        assert result >= 0.83, (
+            f"Formül hatası: beklenen ≥0.83, alınan {result:.4f}. "
+            "new_p_L * (1-p_T) çarpması standart BKT'de yok."
+        )
+
+    def test_near_mastery_correct_answer_reaches_mastered_zone(self):
+        """p_learn=0.78 (mastery eşiği altı), 3 doğru cevapla 0.80'e ulaşmalı."""
+        from services.bkt_service import BKTService
+
+        p = 0.78
+        for _ in range(3):
+            p = BKTService.update(p, correct=True)
+        assert p >= 0.80, (
+            f"3 doğru cevap sonrası mastery ({p:.4f}) < 0.80 — "
+            "öğrenci hiç mastered olamıyor."
+        )
+
+
+class TestFSRSStateRestore:
+    """
+    Bug #2 regression: fsrs_v6_service.py Card state restore edilmiyor.
+    Tekrarlanmış kart her zaman State.New ile başlatılıyor.
+    """
+
+    def test_existing_card_stability_preserved(self):
+        """Mevcut kart stability değeri review sonrası sıfırlanmamalı."""
+        from services.fsrs_v6_service import FSRSService
+
+        # İlk review
+        r1 = FSRSService.review_card(
+            stability=None, difficulty=None, due_date=None, rating_int=3, reps=0
+        )
+        # İkinci review (kaydedilmiş stability ile)
+        r2 = FSRSService.review_card(
+            stability=r1["stability"],
+            difficulty=r1["difficulty"],
+            due_date=r1["due_date"],
+            rating_int=3,
+            reps=r1["reps"],
+        )
+        # Tekrarlanan Good cevap stability'yi artırmalı
+        assert r2["stability"] >= r1["stability"], (
+            f"2. Good cevap stability'yi düşürdü: {r1['stability']:.2f} → {r2['stability']:.2f}"
+        )
+
+    def test_repeated_card_state_not_new(self):
+        """reps>0 olan kart 'new' state döndürmemeli."""
+        from services.fsrs_v6_service import FSRSService
+
+        r1 = FSRSService.review_card(
+            stability=None, difficulty=None, due_date=None, rating_int=3, reps=0
+        )
+        r2 = FSRSService.review_card(
+            stability=r1["stability"],
+            difficulty=r1["difficulty"],
+            due_date=r1["due_date"],
+            rating_int=3,
+            reps=r1["reps"],
+        )
+        assert r2["state"] != "new", (
+            f"Tekrarlanan kart hâlâ 'new' state'de: {r2['state']}"
+        )
+
+
 class TestSubjectParams:
     """Ensure BKT params have valid numeric ranges."""
 

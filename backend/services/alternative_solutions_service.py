@@ -20,7 +20,7 @@ Bu ana dosya CRUD islemlerini ve mixin'leri icerir.
 import logging
 import uuid
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -29,8 +29,8 @@ from models.question_bank import QuestionBankItem
 
 # Refactored mixins
 from services.solutions import (
-    SolutionComparisonMixin,
     FastestSolutionMixin,
+    SolutionComparisonMixin,
     SolutionVotingMixin,
 )
 
@@ -57,9 +57,9 @@ class AlternativeSolutionsService(
     async def add_solution(
         self,
         question_id: str,
-        solution_data: Dict[str, Any],
+        solution_data: dict[str, Any],
         created_by: str,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Soruya alternatif çözüm ekle
 
@@ -73,7 +73,9 @@ class AlternativeSolutionsService(
         """
         try:
             # Soruyu getir
-            stmt = select(QuestionBankItem).where(QuestionBankItem.id == question_id)
+            stmt = select(QuestionBankItem).where(
+                QuestionBankItem.id == question_id, QuestionBankItem.is_active == True
+            )  # noqa: E712
             result = await self.db.execute(stmt)
             question = result.scalar_one_or_none()
 
@@ -133,16 +135,16 @@ class AlternativeSolutionsService(
 
         except Exception as e:
             await self.db.rollback()
-            logger.error(f"Çözüm ekleme hatası: {str(e)}")
+            logger.error(f"Çözüm ekleme hatası: {e!s}")
             raise
 
     async def get_solutions(
         self,
         question_id: str,
-        category: Optional[str] = None,
-        difficulty: Optional[str] = None,
+        category: str | None = None,
+        difficulty: str | None = None,
         sort_by: str = "difficulty",
-    ) -> Optional[List[Dict[str, Any]]]:
+    ) -> list[dict[str, Any]] | None:
         """
         Sorunun alternatif çözümlerini getir
 
@@ -157,7 +159,9 @@ class AlternativeSolutionsService(
         """
         try:
             # Soruyu getir
-            stmt = select(QuestionBankItem).where(QuestionBankItem.id == question_id)
+            stmt = select(QuestionBankItem).where(
+                QuestionBankItem.id == question_id, QuestionBankItem.is_active == True
+            )  # noqa: E712
             result = await self.db.execute(stmt)
             question = result.scalar_one_or_none()
 
@@ -185,12 +189,12 @@ class AlternativeSolutionsService(
             return solutions
 
         except Exception as e:
-            logger.error(f"Çözüm getirme hatası: {str(e)}")
+            logger.error(f"Çözüm getirme hatası: {e!s}")
             return []
 
     async def get_solution_by_id(
         self, question_id: str, solution_id: str
-    ) -> Optional[Dict[str, Any]]:
+    ) -> dict[str, Any] | None:
         """
         Belirli bir çözümü getir
 
@@ -214,14 +218,14 @@ class AlternativeSolutionsService(
             return None
 
         except Exception as e:
-            logger.error(f"Çözüm detay hatası: {str(e)}")
+            logger.error(f"Çözüm detay hatası: {e!s}")
             return None
 
     async def update_solution(
         self,
         question_id: str,
         solution_id: str,
-        update_data: Dict[str, Any],
+        update_data: dict[str, Any],
         updated_by: str,
     ) -> bool:
         """
@@ -238,7 +242,9 @@ class AlternativeSolutionsService(
         """
         try:
             # Soruyu getir
-            stmt = select(QuestionBankItem).where(QuestionBankItem.id == question_id)
+            stmt = select(QuestionBankItem).where(
+                QuestionBankItem.id == question_id, QuestionBankItem.is_active == True
+            )  # noqa: E712
             result = await self.db.execute(stmt)
             question = result.scalar_one_or_none()
 
@@ -277,7 +283,7 @@ class AlternativeSolutionsService(
 
         except Exception as e:
             await self.db.rollback()
-            logger.error(f"Çözüm güncelleme hatası: {str(e)}")
+            logger.error(f"Çözüm güncelleme hatası: {e!s}")
             return False
 
     async def delete_solution(
@@ -296,7 +302,9 @@ class AlternativeSolutionsService(
         """
         try:
             # Soruyu getir
-            stmt = select(QuestionBankItem).where(QuestionBankItem.id == question_id)
+            stmt = select(QuestionBankItem).where(
+                QuestionBankItem.id == question_id, QuestionBankItem.is_active == True
+            )  # noqa: E712
             result = await self.db.execute(stmt)
             question = result.scalar_one_or_none()
 
@@ -332,7 +340,7 @@ class AlternativeSolutionsService(
 
         except Exception as e:
             await self.db.rollback()
-            logger.error(f"Çözüm silme hatası: {str(e)}")
+            logger.error(f"Çözüm silme hatası: {e!s}")
             return False
 
     # ========================================================================
@@ -340,8 +348,8 @@ class AlternativeSolutionsService(
     # ========================================================================
 
     async def compare_solutions(
-        self, question_id: str, solution_ids: List[str]
-    ) -> Optional[Dict[str, Any]]:
+        self, question_id: str, solution_ids: list[str]
+    ) -> dict[str, Any] | None:
         """
         Birden fazla çözümü karşılaştır (TASK 73.2: Enhanced Comparison)
 
@@ -489,12 +497,12 @@ class AlternativeSolutionsService(
             return comparison
 
         except Exception as e:
-            logger.error(f"Karşılaştırma hatası: {str(e)}")
+            logger.error(f"Karşılaştırma hatası: {e!s}")
             return None
 
     def _build_side_by_side_comparison(
-        self, solutions: List[Dict[str, Any]]
-    ) -> Dict[str, Any]:
+        self, solutions: list[dict[str, Any]]
+    ) -> dict[str, Any]:
         """
         TASK 73.2.1: Yan yana karşılaştırma tablosu oluştur
 
@@ -558,8 +566,8 @@ class AlternativeSolutionsService(
         }
 
     def _build_step_by_step_breakdown(
-        self, solutions: List[Dict[str, Any]]
-    ) -> List[Dict[str, Any]]:
+        self, solutions: list[dict[str, Any]]
+    ) -> list[dict[str, Any]]:
         """
         TASK 73.2.2: Adım adım detaylı karşılaştırma
 
@@ -627,8 +635,8 @@ class AlternativeSolutionsService(
         return breakdown
 
     def _analyze_time_complexity(
-        self, solutions: List[Dict[str, Any]]
-    ) -> Dict[str, Any]:
+        self, solutions: list[dict[str, Any]]
+    ) -> dict[str, Any]:
         """
         TASK 73.2.3: Zaman karmaşıklığı analizi (Big O notation)
 
@@ -740,7 +748,7 @@ class AlternativeSolutionsService(
         # Varsayılan: doğrusal
         return "linear"
 
-    def _estimate_complexity(self, solution: Dict[str, Any]) -> Dict[str, Any]:
+    def _estimate_complexity(self, solution: dict[str, Any]) -> dict[str, Any]:
         """
         Çözümün zaman karmaşıklığını tahmin et
 
@@ -766,7 +774,7 @@ class AlternativeSolutionsService(
                 "worst_case": "O(1)",
                 "scalability": "Mükemmel - problem boyutundan bağımsız",
             }
-        elif category == "klasik":
+        if category == "klasik":
             # Klasik çözümler genellikle O(n)
             return {
                 "notation": "O(n)",
@@ -778,7 +786,7 @@ class AlternativeSolutionsService(
                 "worst_case": "O(n)",
                 "scalability": "İyi - problem boyutu ile doğrusal artar",
             }
-        elif category == "görsel":
+        if category == "görsel":
             # Görsel çözümler değişken
             return {
                 "notation": "O(n)",
@@ -790,7 +798,7 @@ class AlternativeSolutionsService(
                 "worst_case": "O(n)",
                 "scalability": "İyi - ancak bellek kullanımı artar",
             }
-        elif category == "mantıksal":
+        if category == "mantıksal":
             # Mantıksal çözümler genellikle verimli
             return {
                 "notation": "O(log n)",
@@ -802,32 +810,31 @@ class AlternativeSolutionsService(
                 "worst_case": "O(n)",
                 "scalability": "Çok iyi - problem boyutu ile yavaş artar",
             }
+        # Varsayılan: adım sayısına göre
+        if step_count <= 3:
+            notation = "O(1)"
+            scalability = "Mükemmel"
+        elif step_count <= 10:
+            notation = "O(n)"
+            scalability = "İyi"
         else:
-            # Varsayılan: adım sayısına göre
-            if step_count <= 3:
-                notation = "O(1)"
-                scalability = "Mükemmel"
-            elif step_count <= 10:
-                notation = "O(n)"
-                scalability = "İyi"
-            else:
-                notation = "O(n²)"
-                scalability = "Orta - büyük problemlerde yavaşlayabilir"
+            notation = "O(n²)"
+            scalability = "Orta - büyük problemlerde yavaşlayabilir"
 
-            return {
-                "notation": notation,
-                "space_notation": "O(1)",
-                "explanation": f"Tahmini karmaşıklık - {step_count} adım içerir",
-                "operations": step_count,
-                "best_case": notation,
-                "average_case": notation,
-                "worst_case": notation,
-                "scalability": scalability,
-            }
+        return {
+            "notation": notation,
+            "space_notation": "O(1)",
+            "explanation": f"Tahmini karmaşıklık - {step_count} adım içerir",
+            "operations": step_count,
+            "best_case": notation,
+            "average_case": notation,
+            "worst_case": notation,
+            "scalability": scalability,
+        }
 
     def _find_most_efficient_solution(
-        self, solutions: List[Dict[str, Any]], complexity_analysis: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, solutions: list[dict[str, Any]], complexity_analysis: dict[str, Any]
+    ) -> dict[str, Any]:
         """
         En verimli çözümü bul (zaman karmaşıklığı bazlı)
 
@@ -854,8 +861,8 @@ class AlternativeSolutionsService(
         }
 
     def _recommend_solution(
-        self, solutions: List[Dict[str, Any]], complexity_analysis: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, solutions: list[dict[str, Any]], complexity_analysis: dict[str, Any]
+    ) -> dict[str, Any]:
         """
         Çok kriterli çözüm önerisi
 
@@ -946,7 +953,7 @@ class AlternativeSolutionsService(
         }
 
     def _generate_recommendation_reason(
-        self, solution: Dict[str, Any], breakdown: Dict[str, float]
+        self, solution: dict[str, Any], breakdown: dict[str, float]
     ) -> str:
         """
         Öneri sebebini açıkla
@@ -977,7 +984,7 @@ class AlternativeSolutionsService(
 
         return "Bu çözüm " + ", ".join(reasons) + " özellikleriyle öne çıkıyor."
 
-    async def get_fastest_solution(self, question_id: str) -> Optional[Dict[str, Any]]:
+    async def get_fastest_solution(self, question_id: str) -> dict[str, Any] | None:
         """
         TASK 73.3: En hızlı çözüm önerisi
 
@@ -1053,12 +1060,12 @@ class AlternativeSolutionsService(
             return result
 
         except Exception as e:
-            logger.error(f"En hızlı çözüm hatası: {str(e)}")
+            logger.error(f"En hızlı çözüm hatası: {e!s}")
             return None
 
     def _estimate_solution_times(
-        self, solutions: List[Dict[str, Any]]
-    ) -> Dict[str, Dict[str, Any]]:
+        self, solutions: list[dict[str, Any]]
+    ) -> dict[str, dict[str, Any]]:
         """
         TASK 73.3.1: Çözüm süresi tahmini (detaylı)
 
@@ -1142,9 +1149,9 @@ class AlternativeSolutionsService(
 
     def _rank_by_efficiency(
         self,
-        solutions: List[Dict[str, Any]],
-        time_estimations: Dict[str, Dict[str, Any]],
-    ) -> List[Dict[str, Any]]:
+        solutions: list[dict[str, Any]],
+        time_estimations: dict[str, dict[str, Any]],
+    ) -> list[dict[str, Any]]:
         """
         TASK 73.3.2: Verimlilik sıralaması
 
@@ -1238,7 +1245,7 @@ class AlternativeSolutionsService(
 
         return ranked_solutions
 
-    def _identify_shortcuts(self, solutions: List[Dict[str, Any]]) -> Dict[str, Any]:
+    def _identify_shortcuts(self, solutions: list[dict[str, Any]]) -> dict[str, Any]:
         """
         TASK 73.3.3: Kısayol tespiti
 
@@ -1382,7 +1389,7 @@ class AlternativeSolutionsService(
 
         return shortcuts
 
-    def _calculate_confidence_level(self, solution: Dict[str, Any]) -> str:
+    def _calculate_confidence_level(self, solution: dict[str, Any]) -> str:
         """
         Süre tahmininin güven seviyesini hesapla
 
@@ -1398,10 +1405,9 @@ class AlternativeSolutionsService(
         # Kullanım ve oy sayısına göre güven
         if usage_count > 50 and votes_total > 10:
             return "yüksek"
-        elif usage_count > 10 and votes_total > 3:
+        if usage_count > 10 and votes_total > 3:
             return "orta"
-        else:
-            return "düşük"
+        return "düşük"
 
     def _get_efficiency_rating(self, score: float) -> str:
         """
@@ -1415,17 +1421,16 @@ class AlternativeSolutionsService(
         """
         if score >= 80:
             return "Mükemmel"
-        elif score >= 60:
+        if score >= 60:
             return "Çok İyi"
-        elif score >= 40:
+        if score >= 40:
             return "İyi"
-        elif score >= 20:
+        if score >= 20:
             return "Orta"
-        else:
-            return "Düşük"
+        return "Düşük"
 
     def _estimate_time_saved(
-        self, solution: Dict[str, Any], all_solutions: List[Dict[str, Any]]
+        self, solution: dict[str, Any], all_solutions: list[dict[str, Any]]
     ) -> int:
         """
         Bu çözümün diğerlerine göre kazandırdığı süreyi tahmin et
@@ -1449,7 +1454,7 @@ class AlternativeSolutionsService(
         return max(0, time_saved)
 
     def _estimate_steps_skipped(
-        self, solution: Dict[str, Any], all_solutions: List[Dict[str, Any]]
+        self, solution: dict[str, Any], all_solutions: list[dict[str, Any]]
     ) -> int:
         """
         Bu çözümün atladığı adım sayısını tahmin et
@@ -1473,8 +1478,8 @@ class AlternativeSolutionsService(
         return max(0, steps_skipped)
 
     def _generate_shortcut_recommendations(
-        self, shortcuts: Dict[str, Any]
-    ) -> List[str]:
+        self, shortcuts: dict[str, Any]
+    ) -> list[str]:
         """
         Kısayol kullanımı için öneriler oluştur
 
@@ -1512,8 +1517,8 @@ class AlternativeSolutionsService(
         return recommendations
 
     def _compare_with_other_solutions(
-        self, fastest: Dict[str, Any], all_solutions: List[Dict[str, Any]]
-    ) -> Dict[str, Any]:
+        self, fastest: dict[str, Any], all_solutions: list[dict[str, Any]]
+    ) -> dict[str, Any]:
         """
         En hızlı çözümü diğerleriyle karşılaştır
 
@@ -1567,7 +1572,7 @@ class AlternativeSolutionsService(
         }
 
     def _explain_why_fastest(
-        self, fastest: Dict[str, Any], all_solutions: List[Dict[str, Any]]
+        self, fastest: dict[str, Any], all_solutions: list[dict[str, Any]]
     ) -> str:
         """
         Neden en hızlı olduğunu açıkla
@@ -1607,8 +1612,8 @@ class AlternativeSolutionsService(
         return "Bu çözüm " + ", ".join(reasons) + " sayesinde en hızlı çözümdür."
 
     def _calculate_time_saved(
-        self, fastest: Dict[str, Any], all_solutions: List[Dict[str, Any]]
-    ) -> Dict[str, Any]:
+        self, fastest: dict[str, Any], all_solutions: list[dict[str, Any]]
+    ) -> dict[str, Any]:
         """
         Kazanılan süreyi hesapla
 
@@ -1652,7 +1657,7 @@ class AlternativeSolutionsService(
             else "Orta",
         }
 
-    def _determine_best_use_case(self, solution: Dict[str, Any]) -> List[str]:
+    def _determine_best_use_case(self, solution: dict[str, Any]) -> list[str]:
         """
         Bu çözümün en uygun olduğu durumları belirle
 
@@ -1691,7 +1696,7 @@ class AlternativeSolutionsService(
 
         return use_cases
 
-    def _generate_difficulty_warning(self, solution: Dict[str, Any]) -> Optional[str]:
+    def _generate_difficulty_warning(self, solution: dict[str, Any]) -> str | None:
         """
         Zorluk uyarısı oluştur
 
@@ -1733,8 +1738,8 @@ class AlternativeSolutionsService(
         solution_id: str,
         user_id: str,
         vote_type: str,
-        comment: Optional[str] = None,
-    ) -> Dict[str, Any]:
+        comment: str | None = None,
+    ) -> dict[str, Any]:
         """
         Çözüme oy ver
 
@@ -1750,7 +1755,9 @@ class AlternativeSolutionsService(
         """
         try:
             # Soruyu getir
-            stmt = select(QuestionBankItem).where(QuestionBankItem.id == question_id)
+            stmt = select(QuestionBankItem).where(
+                QuestionBankItem.id == question_id, QuestionBankItem.is_active == True
+            )  # noqa: E712
             result = await self.db.execute(stmt)
             question = result.scalar_one_or_none()
 
@@ -1814,10 +1821,10 @@ class AlternativeSolutionsService(
 
         except Exception as e:
             await self.db.rollback()
-            logger.error(f"Oylama hatası: {str(e)}")
+            logger.error(f"Oylama hatası: {e!s}")
             return {"success": False, "message": str(e)}
 
-    async def get_statistics(self, question_id: str) -> Optional[Dict[str, Any]]:
+    async def get_statistics(self, question_id: str) -> dict[str, Any] | None:
         """
         Çözüm istatistiklerini getir
 
@@ -1895,7 +1902,7 @@ class AlternativeSolutionsService(
             return stats
 
         except Exception as e:
-            logger.error(f"İstatistik hatası: {str(e)}")
+            logger.error(f"İstatistik hatası: {e!s}")
             return None
 
     # ========================================================================
@@ -1903,8 +1910,8 @@ class AlternativeSolutionsService(
     # ========================================================================
 
     def _sort_solutions(
-        self, solutions: List[Dict[str, Any]], sort_by: str
-    ) -> List[Dict[str, Any]]:
+        self, solutions: list[dict[str, Any]], sort_by: str
+    ) -> list[dict[str, Any]]:
         """
         Çözümleri sırala
 
@@ -1920,22 +1927,21 @@ class AlternativeSolutionsService(
                 solutions,
                 key=lambda x: self._get_difficulty_score(x.get("difficulty")),
             )
-        elif sort_by == "time":
+        if sort_by == "time":
             return sorted(
                 solutions, key=lambda x: x.get("estimated_time_seconds", float("inf"))
             )
-        elif sort_by == "votes":
+        if sort_by == "votes":
             return sorted(
                 solutions,
                 key=lambda x: x.get("votes", {}).get("total", 0),
                 reverse=True,
             )
-        elif sort_by == "created_at":
+        if sort_by == "created_at":
             return sorted(
                 solutions, key=lambda x: x.get("created_at", ""), reverse=True
             )
-        else:
-            return solutions
+        return solutions
 
     def _get_difficulty_score(self, difficulty: str) -> int:
         """
@@ -1970,7 +1976,7 @@ class AlternativeSolutionsService(
         question_id: str,
         sort_by: str = "votes",
         min_votes: int = 0,
-    ) -> Optional[List[Dict[str, Any]]]:
+    ) -> list[dict[str, Any]] | None:
         """
         TASK 73.4: Öğrenci tarafından gönderilen çözümleri getir
 
@@ -2032,12 +2038,12 @@ class AlternativeSolutionsService(
             return student_solutions
 
         except Exception as e:
-            logger.error(f"Öğrenci çözümleri getirme hatası: {str(e)}")
+            logger.error(f"Öğrenci çözümleri getirme hatası: {e!s}")
             return []
 
     async def get_solution_reviews(
         self, question_id: str, solution_id: str
-    ) -> Optional[Dict[str, Any]]:
+    ) -> dict[str, Any] | None:
         """
         TASK 73.4: Çözümün peer review'larını getir
 
@@ -2093,15 +2099,15 @@ class AlternativeSolutionsService(
             return reviews
 
         except Exception as e:
-            logger.error(f"Review getirme hatası: {str(e)}")
+            logger.error(f"Review getirme hatası: {e!s}")
             return None
 
     async def get_top_rated_solutions(
         self,
         question_id: str,
         limit: int = 5,
-        created_by_type: Optional[str] = None,
-    ) -> Optional[List[Dict[str, Any]]]:
+        created_by_type: str | None = None,
+    ) -> list[dict[str, Any]] | None:
         """
         TASK 73.4: En çok oy alan çözümleri getir
 
@@ -2147,12 +2153,12 @@ class AlternativeSolutionsService(
             return top_solutions
 
         except Exception as e:
-            logger.error(f"Top rated çözümler hatası: {str(e)}")
+            logger.error(f"Top rated çözümler hatası: {e!s}")
             return []
 
     async def remove_vote(
         self, question_id: str, solution_id: str, user_id: str
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         TASK 73.4: Verilen oyu geri çek
 
@@ -2166,7 +2172,9 @@ class AlternativeSolutionsService(
         """
         try:
             # Soruyu getir
-            stmt = select(QuestionBankItem).where(QuestionBankItem.id == question_id)
+            stmt = select(QuestionBankItem).where(
+                QuestionBankItem.id == question_id, QuestionBankItem.is_active == True
+            )  # noqa: E712
             result = await self.db.execute(stmt)
             question = result.scalar_one_or_none()
 
@@ -2231,14 +2239,14 @@ class AlternativeSolutionsService(
 
         except Exception as e:
             await self.db.rollback()
-            logger.error(f"Oy geri çekme hatası: {str(e)}")
+            logger.error(f"Oy geri çekme hatası: {e!s}")
             return {"success": False, "message": str(e)}
 
     # ========================================================================
     # Yardımcı Metodlar (TASK 73.4)
     # ========================================================================
 
-    def _get_peer_review_summary(self, solution: Dict[str, Any]) -> Dict[str, Any]:
+    def _get_peer_review_summary(self, solution: dict[str, Any]) -> dict[str, Any]:
         """
         Peer review özeti oluştur
 
@@ -2261,7 +2269,7 @@ class AlternativeSolutionsService(
             "comment_count": sum(1 for v in vote_history if v.get("comment")),
         }
 
-    def _calculate_approval_rate(self, votes: Dict[str, int]) -> float:
+    def _calculate_approval_rate(self, votes: dict[str, int]) -> float:
         """
         Onay oranını hesapla
 
@@ -2280,7 +2288,7 @@ class AlternativeSolutionsService(
 
         return round((upvotes / total) * 100, 1)
 
-    def _calculate_average_rating(self, votes: Dict[str, int]) -> float:
+    def _calculate_average_rating(self, votes: dict[str, int]) -> float:
         """
         Ortalama rating hesapla (5 üzerinden)
 
@@ -2295,8 +2303,8 @@ class AlternativeSolutionsService(
         return round((approval_rate / 100) * 5, 1)
 
     def _get_review_distribution(
-        self, vote_history: List[Dict[str, Any]]
-    ) -> Dict[str, int]:
+        self, vote_history: list[dict[str, Any]]
+    ) -> dict[str, int]:
         """
         Review dağılımını hesapla
 
@@ -2330,8 +2338,8 @@ class AlternativeSolutionsService(
         return distribution
 
     def _get_most_helpful_comments(
-        self, vote_history: List[Dict[str, Any]]
-    ) -> List[str]:
+        self, vote_history: list[dict[str, Any]]
+    ) -> list[str]:
         """
         En yararlı yorumları getir (upvote ile birlikte olanlar)
 

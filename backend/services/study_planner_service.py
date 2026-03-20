@@ -5,12 +5,13 @@ YKS tarihine kadar kalan haftalara konu dağılımı yapar.
 IRT ability tahmini zayıf konulara daha fazla süre atar.
 Monte Carlo simülasyonu ile tahmini net puan hesaplar.
 """
+
 from __future__ import annotations
 
 import math
 import random
 import uuid
-from datetime import date, datetime, timedelta, timezone
+from datetime import UTC, date, datetime, timedelta
 from typing import TYPE_CHECKING
 
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -36,7 +37,7 @@ YKS_SUBJECTS: list[dict] = [
 
 # Simülasyon parametreleri
 MONTE_CARLO_RUNS = 1000
-DEFAULT_ABILITY = 0.0   # IRT theta (standart normal)
+DEFAULT_ABILITY = 0.0  # IRT theta (standart normal)
 
 
 async def get_current_plan(*, db: AsyncSession, student_id: str) -> dict | None:
@@ -311,12 +312,14 @@ async def project_score(*, db: AsyncSession, student_id: str) -> dict:
         proj_correct = p * subject["question_count"]
         proj_wrong = (1 - p) * subject["question_count"]
         proj_net = max(0, proj_correct - proj_wrong * 0.25)
-        subject_projections.append({
-            "subject": subject["name"],
-            "projected_net": round(proj_net, 1),
-            "ability": round(ability, 2),
-            "p_correct": round(p, 2),
-        })
+        subject_projections.append(
+            {
+                "subject": subject["name"],
+                "projected_net": round(proj_net, 1),
+                "ability": round(ability, 2),
+                "p_correct": round(p, 2),
+            }
+        )
 
     return {
         "projected_net": round(median, 1),
@@ -369,7 +372,7 @@ async def get_weekly_report(*, db: AsyncSession, student_id: str) -> dict:
         )
 
         # Hafta içinde kalan gün sayısı (Pazartesi=0)
-        today = datetime.now(timezone.utc)
+        today = datetime.now(UTC)
         days_remaining = 6 - today.weekday()  # 0=Pazartesi, 6=Pazar
 
         # Günlük yetişmek için gereken soru sayısı
@@ -403,6 +406,7 @@ async def get_weekly_report(*, db: AsyncSession, student_id: str) -> dict:
 # İç yardımcılar
 # ---------------------------------------------------------------------------
 
+
 def _irt_probability(ability: float, difficulty: float = 0.0) -> float:
     """IRT 3PL başarı olasılığı (basitleştirilmiş: a=1.0, c=0.2)."""
     c = 0.20
@@ -416,7 +420,9 @@ async def _get_subject_abilities(
     try:
         from sqlalchemy import select
 
-        from models.learning_path import LearningPathStudentProfile  # lazy import
+        from models.learning_path_models import (
+            LearningPathStudentProfile,  # lazy import
+        )
 
         result = await db.execute(
             select(LearningPathStudentProfile).where(
@@ -552,7 +558,7 @@ def _mock_plan(*, student_id: str, yks_date: str, weekly_hours: int) -> dict:
         "weeks": [
             {
                 "week_number": w,
-                "topics": [s["id"] for s in YKS_SUBJECTS[: 4]],
+                "topics": [s["id"] for s in YKS_SUBJECTS[:4]],
                 "target_questions": weekly_target,
                 "completed_questions": 0,
                 "accuracy": None,
@@ -587,8 +593,7 @@ async def _calculate_progress_trend(*, db: AsyncSession, student_id: str) -> str
 
         current_week = _current_week_number(plan)
         recent_goals = [
-            g for g in plan.weekly_goals
-            if 1 <= g.week_number < current_week
+            g for g in plan.weekly_goals if 1 <= g.week_number < current_week
         ][-4:]  # Son 4 hafta
 
         if len(recent_goals) < 2:
@@ -607,7 +612,7 @@ async def _calculate_progress_trend(*, db: AsyncSession, student_id: str) -> str
 
         if second_half > first_half + 0.05:
             return "improving"
-        elif second_half < first_half - 0.05:
+        if second_half < first_half - 0.05:
             return "declining"
         return "stable"
 
