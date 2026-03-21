@@ -118,7 +118,9 @@ class FSRSService:
             card.difficulty = difficulty
         if due_date is not None:
             card.due = due_date
-        card.reps = reps
+        # step: learning adımı (0=yeni kart, 1=ilk adım tamamlandı, sonrası Review'a geçer)
+        # reps DB kolonunu step proxy olarak kullan — 2+ reps = Review state'e geçmiş kart
+        card.step = min(reps, 1)
 
         card, _ = SCHEDULER.review_card(card, rating)
 
@@ -127,8 +129,8 @@ class FSRSService:
             "difficulty": card.difficulty,
             "due_date": card.due,
             "state": card.state.name.lower(),
-            "reps": card.reps,
-            "lapses": card.lapses,
+            "reps": card.step,  # step = learning adım sayacı (reps proxy)
+            "lapses": 0,  # fsrs kütüphanesi lapses takip etmiyor
         }
 
     @staticmethod

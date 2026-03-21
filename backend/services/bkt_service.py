@@ -164,10 +164,10 @@ class BKTService:
             # Yanlis cevap
             posterior = p_learn * p_S / (p_learn * p_S + (1 - p_learn) * (1 - p_G))
 
-        # Transfer: yeni sey ogrendi mi?
+        # Transfer: yeni sey ogrendi mi? (standart BKT: posterior + (1-posterior)*p_T)
         new_p_L = posterior + (1 - posterior) * p_T
 
-        return round(min(new_p_L * (1 - p_T), 0.999), 4)
+        return round(min(new_p_L, 0.999), 4)
 
     @classmethod
     async def record_answer(
@@ -233,7 +233,11 @@ class BKTService:
                     student_id=student_id,
                     topic_id=topic_id,
                     p_learn=new_p_L,
-                    mastery_status="learning",
+                    attempt_count=1,
+                    last_attempt=datetime.now(UTC),
+                    mastery_status="mastered"
+                    if new_p_L >= ZPDManager.MASTERY
+                    else "learning",
                 )
                 db.add(bkt_state)
             else:
