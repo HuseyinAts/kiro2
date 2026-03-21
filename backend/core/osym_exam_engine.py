@@ -1447,6 +1447,19 @@ class OSYMExamEngine:
                 f"Otomatik kaydetme hatası: {e}", extra_data={"session_id": session_id}
             )
 
+    async def get_student_exams(self, student_id: str) -> list[ExamSessionData]:
+        """Get all exam sessions for a student (L1 dict + L2 Redis fallback)."""
+        sessions = [
+            s for s in self.active_sessions.values() if s.student_id == student_id
+        ]
+        if not sessions:
+            from core.exam_session_store import get_student_sessions
+
+            sessions = await get_student_sessions(student_id)
+            for s in sessions:
+                self.active_sessions[s.session_id] = s
+        return sessions
+
     async def _auto_complete_task(self, session_id: str):
         """
         Otomatik tamamlama task'ı

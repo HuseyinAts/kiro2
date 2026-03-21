@@ -38,17 +38,16 @@ from core.dependencies import get_db
 if TYPE_CHECKING:
     # Type hints only - avoid circular imports
     from services.ai_chat_service import AIChatService
-    from services.solutions import AlternativeSolutionsService  # Modular version
     from services.diary_service import DiaryService
     from services.exam_performance_service import ExamPerformanceService
     from services.learning_path_cache import LearningPathCacheService
     from services.question_bank_service import QuestionBankService
-    from services.sinav_motoru_service import SinavMotoruService
+    from services.solutions import AlternativeSolutionsService  # Modular version
     from services.student_dashboard_service import StudentDashboardService
     from services.teacher_service import TeacherService
     from services.user_service import UserService
-    from services.video_recommendation_service import VideoRecommendationService
     from services.veli_service import VeliService
+    from services.video_recommendation_service import VideoRecommendationService
 
 
 # ============================================================================
@@ -82,14 +81,9 @@ def get_veli_service(db: AsyncSession = Depends(get_db)) -> "VeliService":
 # ============================================================================
 
 
-def get_sinav_motoru_service(db: AsyncSession = Depends(get_db)) -> "SinavMotoruService":
-    """Get SinavMotoruService (Exam Engine) instance for dependency injection."""
-    from services.sinav_motoru_service import SinavMotoruService
-
-    return SinavMotoruService(db)
-
-
-def get_question_bank_service(db: AsyncSession = Depends(get_db)) -> "QuestionBankService":
+def get_question_bank_service(
+    db: AsyncSession = Depends(get_db),
+) -> "QuestionBankService":
     """Get QuestionBankService instance for dependency injection."""
     from services.question_bank_service import QuestionBankService
 
@@ -227,7 +221,6 @@ __all__ = [
     "get_teacher_service",
     "get_veli_service",
     # Exam services
-    "get_sinav_motoru_service",
     "get_question_bank_service",
     "get_exam_performance_service",
     # Learning services

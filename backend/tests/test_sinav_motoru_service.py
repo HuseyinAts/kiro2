@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Test - Sinav Motoru Service - OSYM Uyumlu Sinav Sistemi
 Coverage hedefi: %85+
@@ -6,11 +5,11 @@ Kritik: TYT/AYT/YDT formatlari, Net hesaplama, Oturum yonetimi
 """
 
 import pytest
-from datetime import timedelta
-from unittest.mock import Mock, patch, AsyncMock
 
-from services.sinav_motoru_service import SinavMotoruServisi
-from models import SinavTipi, SinavDurumu
+pytest.skip(
+    "sinav_motoru_service.py deleted — consolidated into osym_exam_engine",
+    allow_module_level=True,
+)
 
 
 class TestSinavOlusturma:
@@ -418,7 +417,6 @@ def test_sinav_motoru_summary():
     cd backend
     pytest tests/test_sinav_motoru_service.py -v --cov=services.sinav_motoru_service --cov-report=html
     """
-    pass
 
 
 if __name__ == "__main__":

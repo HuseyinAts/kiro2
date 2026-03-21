@@ -6,16 +6,16 @@ IRT, Morfoloji, ZPD ve Hibrit Öğrenme Stili analizleri
 import asyncio
 import logging
 from datetime import datetime
-from typing import Any, Dict, List
+from typing import Any
 
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException
 from fastapi.responses import FileResponse
 
-from core.dependencies import get_current_user, AuthenticatedUser
-from models import SinavSonucu, SinavTipi
+from core.dependencies import AuthenticatedUser, get_current_user
+from core.osym_exam_engine import osym_exam_engine
+from models import KonuPerformansi, SinavSonucu, SinavTipi
 from services.irt_morfoloji_service import IRTMorfolojiService
 from services.learning_style_service import LearningStyleService
-from services.sinav_motoru_service import sinav_motoru_servisi
 from services.zpd_maarif_service import ZPDMaarifService
 from utils.pdf_generator import PDFReportGenerator
 
@@ -30,10 +30,50 @@ learning_style_service = LearningStyleService()
 pdf_generator = PDFReportGenerator()
 
 
+async def _get_exam_result(sinav_id: str) -> SinavSonucu | None:
+    """Get exam result from osym_exam_engine, converted to SinavSonucu format."""
+    session = await osym_exam_engine.get_session_data(sinav_id)
+    if not session or not session.performance_metrics:
+        return None
+    metrics = session.performance_metrics
+    exam_type_map = {"tyt": SinavTipi.TYT, "ayt": SinavTipi.AYT, "ydt": SinavTipi.YDT}
+    sinav_tipi = exam_type_map.get(session.exam_config.exam_type.value, SinavTipi.TYT)
+    subject_perfs = await osym_exam_engine.get_subject_performance(sinav_id)
+    konu_performanslari = [
+        KonuPerformansi(
+            konu=sp.subject,
+            toplam_soru=sp.total_questions,
+            dogru_sayisi=sp.correct_answers,
+            yanlis_sayisi=sp.wrong_answers,
+            bos_sayisi=sp.empty_answers,
+            basari_yuzdesi=sp.success_rate,
+            ortalama_sure=sp.average_response_time,
+        )
+        for sp in subject_perfs
+    ]
+    zayif = [kp.konu for kp in konu_performanslari if kp.basari_yuzdesi < 50]
+    guclu = [kp.konu for kp in konu_performanslari if kp.basari_yuzdesi >= 70]
+    return SinavSonucu(
+        sonuc_id=sinav_id,
+        sinav_id=sinav_id,
+        ogrenci_id=session.student_id,
+        sinav_tipi=sinav_tipi,
+        toplam_soru=metrics.total_questions,
+        dogru_sayisi=metrics.correct_answers,
+        yanlis_sayisi=metrics.wrong_answers,
+        bos_sayisi=metrics.empty_answers,
+        net_sayisi=metrics.net_score,
+        ham_puan=metrics.raw_score,
+        konu_performanslari=konu_performanslari,
+        zayif_konular=zayif,
+        guclu_konular=guclu,
+    )
+
+
 @router.get("/exam/{sinav_id}/advanced")
 async def get_advanced_exam_report(
     sinav_id: str, current_user: AuthenticatedUser = Depends(get_current_user)
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """
     Gelişmiş sınav raporu getir
     IRT, Morfoloji, ZPD ve Hibrit Öğrenme Stili analizleri dahil
@@ -44,7 +84,7 @@ async def get_advanced_exam_report(
         )
 
         # Temel sınav sonucunu al
-        temel_sonuc = await sinav_motoru_servisi.sonuc_getir(sinav_id)
+        temel_sonuc = await _get_exam_result(sinav_id)
         if not temel_sonuc:
             raise HTTPException(status_code=404, detail="Sınav sonucu bulunamadı")
 
@@ -71,7 +111,7 @@ async def get_advanced_exam_report(
         # Hataları logla
         for i, result in enumerate(results):
             if isinstance(result, Exception):
-                logger.error(f"Gelişmiş analiz hatası {i}: {str(result)}")
+                logger.error(f"Gelişmiş analiz hatası {i}: {result!s}")
 
         # Kapsamlı rapor oluştur
         gelismis_rapor = {
@@ -102,19 +142,19 @@ async def get_advanced_exam_report(
         return gelismis_rapor
 
     except Exception as e:
-        logger.error(f"Gelişmiş rapor hatası - Sınav: {sinav_id}, Hata: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"Rapor oluşturma hatası: {str(e)}")
+        logger.error(f"Gelişmiş rapor hatası - Sınav: {sinav_id}, Hata: {e!s}")
+        raise HTTPException(status_code=500, detail=f"Rapor oluşturma hatası: {e!s}")
 
 
 @router.get("/exam/{sinav_id}/irt-analysis")
 async def get_irt_morfoloji_analysis(
     sinav_id: str, current_user: AuthenticatedUser = Depends(get_current_user)
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """
     IRT + Morfoloji analizi detayları
     """
     try:
-        temel_sonuc = await sinav_motoru_servisi.sonuc_getir(sinav_id)
+        temel_sonuc = await _get_exam_result(sinav_id)
         if not temel_sonuc:
             raise HTTPException(status_code=404, detail="Sınav sonucu bulunamadı")
 
@@ -127,19 +167,19 @@ async def get_irt_morfoloji_analysis(
         }
 
     except Exception as e:
-        logger.error(f"IRT analizi hatası - Sınav: {sinav_id}, Hata: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"IRT analizi hatası: {str(e)}")
+        logger.error(f"IRT analizi hatası - Sınav: {sinav_id}, Hata: {e!s}")
+        raise HTTPException(status_code=500, detail=f"IRT analizi hatası: {e!s}")
 
 
 @router.get("/exam/{sinav_id}/zpd-recommendations")
 async def get_zpd_recommendations(
     sinav_id: str, current_user: AuthenticatedUser = Depends(get_current_user)
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """
     ZPD tabanlı kişiselleştirilmiş öneriler
     """
     try:
-        temel_sonuc = await sinav_motoru_servisi.sonuc_getir(sinav_id)
+        temel_sonuc = await _get_exam_result(sinav_id)
         if not temel_sonuc:
             raise HTTPException(status_code=404, detail="Sınav sonucu bulunamadı")
 
@@ -153,19 +193,19 @@ async def get_zpd_recommendations(
         }
 
     except Exception as e:
-        logger.error(f"ZPD analizi hatası - Sınav: {sinav_id}, Hata: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"ZPD analizi hatası: {str(e)}")
+        logger.error(f"ZPD analizi hatası - Sınav: {sinav_id}, Hata: {e!s}")
+        raise HTTPException(status_code=500, detail=f"ZPD analizi hatası: {e!s}")
 
 
 @router.get("/exam/{sinav_id}/learning-style-analysis")
 async def get_learning_style_analysis(
     sinav_id: str, current_user: AuthenticatedUser = Depends(get_current_user)
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """
     Hibrit öğrenme stili bazlı performans analizi
     """
     try:
-        temel_sonuc = await sinav_motoru_servisi.sonuc_getir(sinav_id)
+        temel_sonuc = await _get_exam_result(sinav_id)
         if not temel_sonuc:
             raise HTTPException(status_code=404, detail="Sınav sonucu bulunamadı")
 
@@ -181,23 +221,21 @@ async def get_learning_style_analysis(
         }
 
     except Exception as e:
-        logger.error(
-            f"Öğrenme stili analizi hatası - Sınav: {sinav_id}, Hata: {str(e)}"
-        )
+        logger.error(f"Öğrenme stili analizi hatası - Sınav: {sinav_id}, Hata: {e!s}")
         raise HTTPException(
-            status_code=500, detail=f"Öğrenme stili analizi hatası: {str(e)}"
+            status_code=500, detail=f"Öğrenme stili analizi hatası: {e!s}"
         )
 
 
 @router.get("/exam/{sinav_id}/osym-ets-comparison")
 async def get_osym_ets_comparison(
     sinav_id: str, current_user: AuthenticatedUser = Depends(get_current_user)
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """
     ÖSYM/ETS standartları ile karşılaştırma raporu
     """
     try:
-        temel_sonuc = await sinav_motoru_servisi.sonuc_getir(sinav_id)
+        temel_sonuc = await _get_exam_result(sinav_id)
         if not temel_sonuc:
             raise HTTPException(status_code=404, detail="Sınav sonucu bulunamadı")
 
@@ -210,10 +248,8 @@ async def get_osym_ets_comparison(
         }
 
     except Exception as e:
-        logger.error(
-            f"ÖSYM/ETS karşılaştırma hatası - Sınav: {sinav_id}, Hata: {str(e)}"
-        )
-        raise HTTPException(status_code=500, detail=f"Karşılaştırma hatası: {str(e)}")
+        logger.error(f"ÖSYM/ETS karşılaştırma hatası - Sınav: {sinav_id}, Hata: {e!s}")
+        raise HTTPException(status_code=500, detail=f"Karşılaştırma hatası: {e!s}")
 
 
 @router.post("/exam/{sinav_id}/generate-pdf")
@@ -221,7 +257,7 @@ async def generate_pdf_report(
     sinav_id: str,
     background_tasks: BackgroundTasks,
     current_user: AuthenticatedUser = Depends(get_current_user),
-) -> Dict[str, str]:
+) -> dict[str, str]:
     """
     PDF rapor oluştur ve indirme linki döndür
     """
@@ -245,14 +281,13 @@ async def generate_pdf_report(
         }
 
     except Exception as e:
-        logger.error(f"PDF oluşturma hatası - Sınav: {sinav_id}, Hata: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"PDF oluşturma hatası: {str(e)}")
+        logger.error(f"PDF oluşturma hatası - Sınav: {sinav_id}, Hata: {e!s}")
+        raise HTTPException(status_code=500, detail=f"PDF oluşturma hatası: {e!s}")
 
 
 @router.get("/download/{filename}")
 async def download_pdf_report(
-    filename: str,
-    current_user: AuthenticatedUser = Depends(get_current_user)
+    filename: str, current_user: AuthenticatedUser = Depends(get_current_user)
 ) -> FileResponse:
     """
     PDF raporu indir
@@ -264,7 +299,7 @@ async def download_pdf_report(
         )
 
     except Exception as e:
-        logger.error(f"PDF indirme hatası - Dosya: {filename}, Hata: {str(e)}")
+        logger.error(f"PDF indirme hatası - Dosya: {filename}, Hata: {e!s}")
         raise HTTPException(status_code=404, detail="Dosya bulunamadı")
 
 
@@ -273,7 +308,7 @@ async def download_pdf_report(
 
 async def _get_irt_morfoloji_analizi(
     sinav_id: str, temel_sonuc: SinavSonucu
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """IRT + Morfoloji analizi yap"""
     try:
         # Sınav sorularını al ve analiz et
@@ -348,11 +383,11 @@ async def _get_irt_morfoloji_analizi(
         }
 
     except Exception as e:
-        logger.error(f"IRT morfoloji analizi hatası: {str(e)}")
+        logger.error(f"IRT morfoloji analizi hatası: {e!s}")
         return {"hata": str(e)}
 
 
-async def _get_zpd_analizi(ogrenci_id: str, temel_sonuc: SinavSonucu) -> Dict[str, Any]:
+async def _get_zpd_analizi(ogrenci_id: str, temel_sonuc: SinavSonucu) -> dict[str, Any]:
     """ZPD analizi yap"""
     try:
         # Mevcut seviyeyi hesapla
@@ -450,13 +485,13 @@ async def _get_zpd_analizi(ogrenci_id: str, temel_sonuc: SinavSonucu) -> Dict[st
         }
 
     except Exception as e:
-        logger.error(f"ZPD analizi hatası: {str(e)}")
+        logger.error(f"ZPD analizi hatası: {e!s}")
         return {"hata": str(e)}
 
 
 async def _get_hibrit_ogrenme_stili_analizi(
     ogrenci_id: str, temel_sonuc: SinavSonucu
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """Hibrit öğrenme stili analizi yap"""
     try:
         # Mock hibrit öğrenme stili profili
@@ -557,13 +592,13 @@ async def _get_hibrit_ogrenme_stili_analizi(
         }
 
     except Exception as e:
-        logger.error(f"Hibrit öğrenme stili analizi hatası: {str(e)}")
+        logger.error(f"Hibrit öğrenme stili analizi hatası: {e!s}")
         return {"hata": str(e)}
 
 
 async def _get_osym_ets_karsilastirmasi(
     sinav_id: str, temel_sonuc: SinavSonucu
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """ÖSYM/ETS standartları ile karşılaştırma yap"""
     try:
         # ÖSYM standartları
@@ -668,14 +703,14 @@ async def _get_osym_ets_karsilastirmasi(
         }
 
     except Exception as e:
-        logger.error(f"ÖSYM/ETS karşılaştırma hatası: {str(e)}")
+        logger.error(f"ÖSYM/ETS karşılaştırma hatası: {e!s}")
         return {"hata": str(e)}
 
 
 # Yardımcı fonksiyonlar
 
 
-def _serialize_temel_sonuc(sonuc: SinavSonucu) -> Dict[str, Any]:
+def _serialize_temel_sonuc(sonuc: SinavSonucu) -> dict[str, Any]:
     """Temel sonucu serialize et"""
     return {
         "sinav_id": sonuc.sinav_id,
@@ -702,18 +737,17 @@ def _serialize_temel_sonuc(sonuc: SinavSonucu) -> Dict[str, Any]:
     }
 
 
-def _get_onerilen_ogrenme_yontemi(konu: str, vark: Dict, felder: Dict) -> str:
+def _get_onerilen_ogrenme_yontemi(konu: str, vark: dict, felder: dict) -> str:
     """Konu ve öğrenme stiline göre önerilen yöntem"""
     if vark["visual"] > 0.7:
         return "görsel_materyaller"
-    elif vark["auditory"] > 0.7:
+    if vark["auditory"] > 0.7:
         return "sesli_anlatim"
-    elif vark["reading"] > 0.7:
+    if vark["reading"] > 0.7:
         return "metin_tabanli_calisma"
-    elif vark["kinesthetic"] > 0.7:
+    if vark["kinesthetic"] > 0.7:
         return "uygulamali_egzersizler"
-    else:
-        return "karma_yontem"
+    return "karma_yontem"
 
 
 def _get_hibrit_profil_aciklamasi(hibrit_kod: str) -> str:
@@ -723,7 +757,7 @@ def _get_hibrit_profil_aciklamasi(hibrit_kod: str) -> str:
 
 def _karsilastir_parametre(
     deger: float, minimum: float, ideal: float
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """Parametre karşılaştırması"""
     if deger >= ideal:
         durum = "ideal"
@@ -738,7 +772,7 @@ def _karsilastir_parametre(
     return {"durum": durum, "skor": skor, "deger": deger}
 
 
-def _karsilastir_zorluk(deger: float, aralik: tuple) -> Dict[str, Any]:
+def _karsilastir_zorluk(deger: float, aralik: tuple) -> dict[str, Any]:
     """Zorluk karşılaştırması"""
     min_z, max_z = aralik
 
@@ -755,7 +789,7 @@ def _karsilastir_zorluk(deger: float, aralik: tuple) -> Dict[str, Any]:
     return {"durum": durum, "skor": skor, "deger": deger}
 
 
-def _karsilastir_sans_faktoru(deger: float, maksimum: float) -> Dict[str, Any]:
+def _karsilastir_sans_faktoru(deger: float, maksimum: float) -> dict[str, Any]:
     """Şans faktörü karşılaştırması"""
     if deger <= maksimum:
         durum = "uygun"
@@ -770,7 +804,7 @@ def _karsilastir_sans_faktoru(deger: float, maksimum: float) -> Dict[str, Any]:
     return {"durum": durum, "skor": skor, "deger": deger}
 
 
-def _hesapla_genel_uyum_skoru(karsilastirma: Dict) -> float:
+def _hesapla_genel_uyum_skoru(karsilastirma: dict) -> float:
     """Genel uyum skorunu hesapla"""
     skorlar = [
         karsilastirma["ayirt_edicilik_durumu"]["skor"],
@@ -784,15 +818,14 @@ def _belirle_karsilastirma_sonucu(osym_skor: float, ets_skor: float) -> str:
     """Karşılaştırma sonucunu belirle"""
     if osym_skor >= 90 and ets_skor >= 90:
         return "Her iki standardı da aşıyor"
-    elif osym_skor >= 70 and ets_skor >= 70:
+    if osym_skor >= 70 and ets_skor >= 70:
         return "Her iki standarda da uygun"
-    elif osym_skor >= 70 or ets_skor >= 70:
+    if osym_skor >= 70 or ets_skor >= 70:
         return "Bir standarda uygun"
-    else:
-        return "Standartların altında"
+    return "Standartların altında"
 
 
-def _generate_improvement_suggestions(osym: Dict, _: Dict, params: Dict) -> List[str]:
+def _generate_improvement_suggestions(osym: dict, _: dict, params: dict) -> list[str]:
     """İyileştirme önerileri oluştur"""
     oneriler = []
 
@@ -817,10 +850,10 @@ def _generate_improvement_suggestions(osym: Dict, _: Dict, params: Dict) -> List
 async def _generate_personalized_recommendations(
     ogrenci_id: str,
     temel_sonuc: SinavSonucu,
-    irt_analizi: Dict,
-    zpd_analizi: Dict,
-    ogrenme_stili_analizi: Dict,
-) -> List[Dict[str, Any]]:
+    irt_analizi: dict,
+    zpd_analizi: dict,
+    ogrenme_stili_analizi: dict,
+) -> list[dict[str, Any]]:
     """Kişiselleştirilmiş öneriler oluştur"""
     oneriler = []
 
@@ -861,7 +894,7 @@ async def _generate_personalized_recommendations(
 
 async def _get_performance_trend(
     ogrenci_id: str, sinav_tipi: SinavTipi
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """Performans trendini getir"""
     # Mock trend verisi
     return {
@@ -875,8 +908,8 @@ async def _get_performance_trend(
 
 
 async def _generate_development_suggestions(
-    ogrenci_id: str, temel_sonuc: SinavSonucu, irt_analizi: Dict, zpd_analizi: Dict
-) -> List[str]:
+    ogrenci_id: str, temel_sonuc: SinavSonucu, irt_analizi: dict, zpd_analizi: dict
+) -> list[str]:
     """Gelişim önerileri oluştur"""
     oneriler = []
 

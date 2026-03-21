@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Test: Sinav Motoru - Net Hesaplama ve Tamamlama (PART 2)
 Hedef: %60-70 Coverage
@@ -6,10 +5,11 @@ Kritik: Net = Dogru - (Yanlis/4), Konu analizi, Sinav tamamlama
 """
 
 import pytest
-from unittest.mock import Mock, patch, AsyncMock
 
-from services.sinav_motoru_service import SinavMotoruServisi
-from models import SinavTipi, SinavDurumu
+pytest.skip(
+    "sinav_motoru_service.py deleted — consolidated into osym_exam_engine",
+    allow_module_level=True,
+)
 
 
 class TestSinavTamamlamaVeSonucHesaplama:
@@ -550,7 +550,6 @@ def test_sinav_motoru_part2_summary():
     cd backend
     pytest tests/test_sinav_motoru_service.py tests/test_sinav_motoru_part2.py -v --cov=services.sinav_motoru_service --cov-report=html
     """
-    pass
 
 
 if __name__ == "__main__":

@@ -1,18 +1,13 @@
 """
 Sınav motoru testleri
 """
-from datetime import datetime, timedelta
 
 import pytest
 
-pytestmark = pytest.mark.skipif(
-    True,
-    reason="SinavMotoruServisi requires real DB with loaded questions: coroutine.all() not awaited in AsyncMock, ValueError: Yeterli soru bulunamadi",
+pytest.skip(
+    "sinav_motoru_service.py deleted — consolidated into osym_exam_engine",
+    allow_module_level=True,
 )
-
-from models import SinavDurumu, SinavTipi, ZorlukSeviyesi
-from services.sinav_motoru_service import SinavMotoruServisi
-from services.soru_bankasi_service import SoruBankasiServisi
 
 
 @pytest.fixture

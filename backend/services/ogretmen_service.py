@@ -1,14 +1,17 @@
 """
 Öğretmen paneli servisi
 """
+
 import uuid
 from datetime import datetime, timedelta
-from typing import Any, Dict, List
+from typing import TYPE_CHECKING, Any
 
-from models import KullaniciRolu
+from models import KonuPerformansi, KullaniciRolu, SinavSonucu, SinavTipi
 
-from .sinav_motoru_service import sinav_motoru_servisi
 from .user_service import kullanici_servisi
+
+if TYPE_CHECKING:
+    from core.osym_exam_engine import ExamSessionData
 
 
 class OgretmenServisi:
@@ -16,16 +19,16 @@ class OgretmenServisi:
 
     def __init__(self):
         # In-memory veri saklama
-        self.sinif_ogrenci_iliskileri: Dict[
-            str, List[str]
+        self.sinif_ogrenci_iliskileri: dict[
+            str, list[str]
         ] = {}  # ogretmen_id -> ogrenci_id_listesi
-        self.ogrenci_notlari: Dict[str, Dict] = {}  # ogrenci_id -> notlar
-        self.sinif_raporlari: Dict[str, Dict] = {}  # rapor_id -> rapor_verisi
-        self.ogretmen_bildirimleri: Dict[
-            str, List[Dict]
+        self.ogrenci_notlari: dict[str, dict] = {}  # ogrenci_id -> notlar
+        self.sinif_raporlari: dict[str, dict] = {}  # rapor_id -> rapor_verisi
+        self.ogretmen_bildirimleri: dict[
+            str, list[dict]
         ] = {}  # ogretmen_id -> bildirimler
 
-    async def ogretmen_dashboard_verisi(self, ogretmen_id: str) -> Dict[str, Any]:
+    async def ogretmen_dashboard_verisi(self, ogretmen_id: str) -> dict[str, Any]:
         """Öğretmen dashboard için temel verileri getir"""
         try:
             # Öğretmen profilini getir
@@ -49,15 +52,14 @@ class OgretmenServisi:
                 sinav_sayisi = 0
 
                 for ogrenci in ogrenci_listesi:
-                    son_sinavlar = await sinav_motoru_servisi.ogrenci_sinavlari(
-                        ogrenci.ogrenci_id
-                    )
+                    son_sinavlar = await self._ogrenci_sinavlari(ogrenci.ogrenci_id)
                     if son_sinavlar:
                         # Son sınavın sonucunu al
-                        son_sinav = max(son_sinavlar, key=lambda x: x.olusturma_tarihi)
-                        sonuc = await sinav_motoru_servisi.sonuc_getir(
-                            son_sinav.sinav_id
+                        son_sinav = max(
+                            son_sinavlar,
+                            key=lambda x: x.started_at or datetime.min,
                         )
+                        sonuc = await self._sonuc_getir(son_sinav.session_id)
                         if sonuc:
                             toplam_net += sonuc.net_sayisi
                             sinav_sayisi += 1
@@ -81,9 +83,9 @@ class OgretmenServisi:
             }
 
         except Exception as e:
-            raise ValueError(f"Dashboard verisi alınamadı: {str(e)}")
+            raise ValueError(f"Dashboard verisi alınamadı: {e!s}")
 
-    async def ogrenci_listesi_getir(self, ogretmen_id: str) -> List[Dict[str, Any]]:
+    async def ogrenci_listesi_getir(self, ogretmen_id: str) -> list[dict[str, Any]]:
         """Öğretmenin sorumlu olduğu öğrenci listesini getir"""
         try:
             # Öğretmen-öğrenci ilişkilerini kontrol et
@@ -138,11 +140,11 @@ class OgretmenServisi:
             return ogrenci_listesi
 
         except Exception as e:
-            raise ValueError(f"Öğrenci listesi alınamadı: {str(e)}")
+            raise ValueError(f"Öğrenci listesi alınamadı: {e!s}")
 
     async def ogrenci_detay_performans(
         self, ogretmen_id: str, ogrenci_id: str
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Belirli bir öğrencinin detaylı performans analizi"""
         try:
             # Yetki kontrolü
@@ -158,7 +160,7 @@ class OgretmenServisi:
             )
 
             # Tüm sınavları getir
-            tum_sinavlar = await sinav_motoru_servisi.ogrenci_sinavlari(ogrenci_id)
+            tum_sinavlar = await self._ogrenci_sinavlari(ogrenci_id)
 
             # Sınav sonuçlarını analiz et
             sinav_sonuclari = []
@@ -166,13 +168,13 @@ class OgretmenServisi:
             net_trendi = []
 
             for sinav in tum_sinavlar:
-                sonuc = await sinav_motoru_servisi.sonuc_getir(sinav.sinav_id)
+                sonuc = await self._sonuc_getir(sinav.session_id)
                 if sonuc:
                     sinav_sonuclari.append(
                         {
-                            "sinav_id": sinav.sinav_id,
-                            "sinav_tipi": sinav.sinav_tipi.value,
-                            "tarih": sinav.olusturma_tarihi,
+                            "sinav_id": sinav.session_id,
+                            "sinav_tipi": sinav.exam_config.exam_type.value,
+                            "tarih": sinav.started_at or sinav.completed_at,
                             "net_sayisi": sonuc.net_sayisi,
                             "ham_puan": sonuc.ham_puan,
                             "dogru": sonuc.dogru_sayisi,
@@ -182,9 +184,10 @@ class OgretmenServisi:
                     )
 
                     # Net trendi için
+                    tarih = sinav.started_at or sinav.completed_at or datetime.now()
                     net_trendi.append(
                         {
-                            "tarih": sinav.olusturma_tarihi.strftime("%Y-%m-%d"),
+                            "tarih": tarih.strftime("%Y-%m-%d"),
                             "net": sonuc.net_sayisi,
                         }
                     )
@@ -198,12 +201,12 @@ class OgretmenServisi:
                                 "sinav_sayisi": 0,
                             }
 
-                        konu_performanslari[konu_perf.konu][
-                            "toplam_soru"
-                        ] += konu_perf.toplam_soru
-                        konu_performanslari[konu_perf.konu][
-                            "toplam_dogru"
-                        ] += konu_perf.dogru_sayisi
+                        konu_performanslari[konu_perf.konu]["toplam_soru"] += (
+                            konu_perf.toplam_soru
+                        )
+                        konu_performanslari[konu_perf.konu]["toplam_dogru"] += (
+                            konu_perf.dogru_sayisi
+                        )
                         konu_performanslari[konu_perf.konu]["sinav_sayisi"] += 1
 
             # Konu başarı yüzdelerini hesapla
@@ -263,11 +266,11 @@ class OgretmenServisi:
             }
 
         except Exception as e:
-            raise ValueError(f"Öğrenci performans verisi alınamadı: {str(e)}")
+            raise ValueError(f"Öğrenci performans verisi alınamadı: {e!s}")
 
     async def sinif_raporu_olustur(
-        self, ogretmen_id: str, rapor_parametreleri: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, ogretmen_id: str, rapor_parametreleri: dict[str, Any]
+    ) -> dict[str, Any]:
         """Sınıf geneli için rapor oluştur"""
         try:
             # Öğrenci listesini getir
@@ -305,17 +308,19 @@ class OgretmenServisi:
                 ogrenci_id = ogrenci["ogrenci_id"]
 
                 # Öğrencinin sınavlarını getir
-                ogrenci_sinavlari = await sinav_motoru_servisi.ogrenci_sinavlari(
-                    ogrenci_id
-                )
+                ogrenci_sinavlari = await self._ogrenci_sinavlari(ogrenci_id)
 
                 for sinav in ogrenci_sinavlari:
                     # Tarih ve tür filtresi
-                    if baslangic_tarihi <= sinav.olusturma_tarihi <= bitis_tarihi:
-                        if not sinav_tipi or sinav.sinav_tipi.value == sinav_tipi:
-                            sonuc = await sinav_motoru_servisi.sonuc_getir(
-                                sinav.sinav_id
-                            )
+                    sinav_tarihi = (
+                        sinav.started_at or sinav.completed_at or datetime.min
+                    )
+                    if baslangic_tarihi <= sinav_tarihi <= bitis_tarihi:
+                        if (
+                            not sinav_tipi
+                            or sinav.exam_config.exam_type.value == sinav_tipi
+                        ):
+                            sonuc = await self._sonuc_getir(sinav.session_id)
                             if sonuc:
                                 tum_netler.append(sonuc.net_sayisi)
 
@@ -390,10 +395,10 @@ class OgretmenServisi:
             return rapor_verisi
 
         except Exception as e:
-            raise ValueError(f"Sınıf raporu oluşturulamadı: {str(e)}")
+            raise ValueError(f"Sınıf raporu oluşturulamadı: {e!s}")
 
     async def bildirim_gonder(
-        self, ogretmen_id: str, bildirim_verisi: Dict[str, Any]
+        self, ogretmen_id: str, bildirim_verisi: dict[str, Any]
     ) -> bool:
         """Öğretmen bildirimi gönder"""
         try:
@@ -427,7 +432,7 @@ class OgretmenServisi:
 
     async def bildirimler_getir(
         self, ogretmen_id: str, limit: int = 20
-    ) -> List[Dict[str, Any]]:
+    ) -> list[dict[str, Any]]:
         """Öğretmen bildirimlerini getir"""
         bildirimler = self.ogretmen_bildirimleri.get(ogretmen_id, [])
 
@@ -467,10 +472,10 @@ class OgretmenServisi:
 
         self.sinif_ogrenci_iliskileri[ogretmen_id] = ogrenci_ids
 
-    async def _ogrenci_son_performans(self, ogrenci_id: str) -> Dict[str, Any]:
+    async def _ogrenci_son_performans(self, ogrenci_id: str) -> dict[str, Any]:
         """Öğrencinin son performans verilerini getir"""
         try:
-            sinavlar = await sinav_motoru_servisi.ogrenci_sinavlari(ogrenci_id)
+            sinavlar = await self._ogrenci_sinavlari(ogrenci_id)
 
             if not sinavlar:
                 return {
@@ -482,14 +487,16 @@ class OgretmenServisi:
 
             # Son 5 sınavın sonuçlarını al
             son_sinavlar = sorted(
-                sinavlar, key=lambda x: x.olusturma_tarihi, reverse=True
+                sinavlar,
+                key=lambda x: x.started_at or datetime.min,
+                reverse=True,
             )[:5]
 
             toplam_net = 0
             sinav_sayisi = 0
 
             for sinav in son_sinavlar:
-                sonuc = await sinav_motoru_servisi.sonuc_getir(sinav.sinav_id)
+                sonuc = await self._sonuc_getir(sinav.session_id)
                 if sonuc:
                     toplam_net += sonuc.net_sayisi
                     sinav_sayisi += 1
@@ -498,7 +505,7 @@ class OgretmenServisi:
 
             return {
                 "ortalama_net": round(ortalama_net, 2),
-                "son_sinav_tarihi": son_sinavlar[0].olusturma_tarihi
+                "son_sinav_tarihi": son_sinavlar[0].started_at
                 if son_sinavlar
                 else None,
                 "toplam_sinav": len(sinavlar),
@@ -513,6 +520,59 @@ class OgretmenServisi:
                 "gelisim_trendi": "veri_yok",
             }
 
+    async def _ogrenci_sinavlari(self, ogrenci_id: str) -> list["ExamSessionData"]:
+        """Get student exams from osym_exam_engine."""
+        from core.osym_exam_engine import osym_exam_engine
+
+        return await osym_exam_engine.get_student_exams(ogrenci_id)
+
+    async def _sonuc_getir(self, session_id: str) -> SinavSonucu | None:
+        """Get exam result from osym_exam_engine, converted to SinavSonucu."""
+        from core.osym_exam_engine import osym_exam_engine
+
+        session = await osym_exam_engine.get_session_data(session_id)
+        if not session or not session.performance_metrics:
+            return None
+        metrics = session.performance_metrics
+        exam_type_map = {
+            "tyt": SinavTipi.TYT,
+            "ayt": SinavTipi.AYT,
+            "ydt": SinavTipi.YDT,
+        }
+        sinav_tipi = exam_type_map.get(
+            session.exam_config.exam_type.value, SinavTipi.TYT
+        )
+        subject_perfs = await osym_exam_engine.get_subject_performance(session_id)
+        konu_performanslari = [
+            KonuPerformansi(
+                konu=sp.subject,
+                toplam_soru=sp.total_questions,
+                dogru_sayisi=sp.correct_answers,
+                yanlis_sayisi=sp.wrong_answers,
+                bos_sayisi=sp.empty_answers,
+                basari_yuzdesi=sp.success_rate,
+                ortalama_sure=sp.average_response_time,
+            )
+            for sp in subject_perfs
+        ]
+        zayif = [kp.konu for kp in konu_performanslari if kp.basari_yuzdesi < 50]
+        guclu = [kp.konu for kp in konu_performanslari if kp.basari_yuzdesi >= 70]
+        return SinavSonucu(
+            sonuc_id=session_id,
+            sinav_id=session_id,
+            ogrenci_id=session.student_id,
+            sinav_tipi=sinav_tipi,
+            toplam_soru=metrics.total_questions,
+            dogru_sayisi=metrics.correct_answers,
+            yanlis_sayisi=metrics.wrong_answers,
+            bos_sayisi=metrics.empty_answers,
+            net_sayisi=metrics.net_score,
+            ham_puan=metrics.raw_score,
+            konu_performanslari=konu_performanslari,
+            zayif_konular=zayif,
+            guclu_konular=guclu,
+        )
+
     async def _ogretmen_ogrenci_yetkisi_kontrol(
         self, ogretmen_id: str, ogrenci_id: str
     ) -> bool:
@@ -521,8 +581,8 @@ class OgretmenServisi:
         return ogrenci_id in ogrenci_ids
 
     async def _ogrenci_onerileri_olustur(
-        self, ogrenci_id: str, zayif_konular: List[str], guclu_konular: List[str]
-    ) -> List[str]:
+        self, ogrenci_id: str, zayif_konular: list[str], guclu_konular: list[str]
+    ) -> list[str]:
         """Öğrenci için öneriler oluştur"""
         oneriler = []
 
@@ -545,9 +605,9 @@ class OgretmenServisi:
 
     async def _sinif_onerileri_olustur(
         self,
-        konu_performanslari: Dict[str, float],
-        sinif_istatistikleri: Dict[str, Any],
-    ) -> List[str]:
+        konu_performanslari: dict[str, float],
+        sinif_istatistikleri: dict[str, Any],
+    ) -> list[str]:
         """Sınıf için öneriler oluştur"""
         oneriler = []
 

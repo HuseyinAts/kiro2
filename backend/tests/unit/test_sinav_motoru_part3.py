@@ -9,23 +9,21 @@ SKIP: Servis refactor edildi - _olustur_sorular metodu kaldırıldı.
 Testler soru_bankasi_servisi.rastgele_sorular_sec mock'layacak şekilde güncellenmeli.
 """
 
-import asyncio
 import pytest
 
-pytestmark = pytest.mark.skip(
-    reason="Servis refactor edildi - _olustur_sorular metodu kaldırıldı. "
-    "Testler güncellenmeli."
+pytest.skip(
+    "sinav_motoru_service.py deleted — consolidated into osym_exam_engine",
+    allow_module_level=True,
 )
 from datetime import timedelta
 from unittest.mock import patch
 
-from services.sinav_motoru_service import SinavMotoruServisi
 from models import (
     SinavDurumu,
-    SinavTipi,
     SinavSorusu,
+    SinavTipi,
 )
-
+from services.sinav_motoru_service import SinavMotoruServisi
 
 # ============================================
 # TEST FIXTURES
@@ -47,7 +45,7 @@ def ornek_tyt_sorulari():
     for i in range(40):
         sorular.append(
             SinavSorusu(
-                soru_id=f"turk_{i+1}", konu="Türkçe", zorluk=5.0, dogru_cevap="A"
+                soru_id=f"turk_{i + 1}", konu="Türkçe", zorluk=5.0, dogru_cevap="A"
             )
         )
 
@@ -55,7 +53,7 @@ def ornek_tyt_sorulari():
     for i in range(40):
         sorular.append(
             SinavSorusu(
-                soru_id=f"mat_{i+1}", konu="Matematik", zorluk=6.0, dogru_cevap="B"
+                soru_id=f"mat_{i + 1}", konu="Matematik", zorluk=6.0, dogru_cevap="B"
             )
         )
 
@@ -63,7 +61,10 @@ def ornek_tyt_sorulari():
     for i in range(20):
         sorular.append(
             SinavSorusu(
-                soru_id=f"fen_{i+1}", konu="Fen Bilimleri", zorluk=5.5, dogru_cevap="C"
+                soru_id=f"fen_{i + 1}",
+                konu="Fen Bilimleri",
+                zorluk=5.5,
+                dogru_cevap="C",
             )
         )
 
@@ -71,7 +72,7 @@ def ornek_tyt_sorulari():
     for i in range(20):
         sorular.append(
             SinavSorusu(
-                soru_id=f"sosyal_{i+1}",
+                soru_id=f"sosyal_{i + 1}",
                 konu="Sosyal Bilimler",
                 zorluk=5.5,
                 dogru_cevap="D",
@@ -171,19 +172,19 @@ class TestPrivateMetodlar:
 
             # İlk 30 Türkçe doğru
             for i in range(30):
-                oturum_obj.cevaplanan_sorular[f"turk_{i+1}"] = "A"
+                oturum_obj.cevaplanan_sorular[f"turk_{i + 1}"] = "A"
 
             # 10 Türkçe yanlış
             for i in range(30, 40):
-                oturum_obj.cevaplanan_sorular[f"turk_{i+1}"] = "B"  # Yanlış cevap
+                oturum_obj.cevaplanan_sorular[f"turk_{i + 1}"] = "B"  # Yanlış cevap
 
             # 20 Matematik doğru
             for i in range(20):
-                oturum_obj.cevaplanan_sorular[f"mat_{i+1}"] = "B"
+                oturum_obj.cevaplanan_sorular[f"mat_{i + 1}"] = "B"
 
             # 10 Matematik yanlış, 10 boş
             for i in range(20, 30):
-                oturum_obj.cevaplanan_sorular[f"mat_{i+1}"] = "A"  # Yanlış
+                oturum_obj.cevaplanan_sorular[f"mat_{i + 1}"] = "A"  # Yanlış
             # 10 boş (cevap eklenmedi)
 
             # Sonuçları hesapla
@@ -217,7 +218,7 @@ class TestPrivateMetodlar:
             # Tüm Türkçe sorularını doğru cevapla
             oturum_obj = sinav_servisi.aktif_oturumlar[oturum.sinav_id]
             for i in range(40):
-                oturum_obj.cevaplanan_sorular[f"turk_{i+1}"] = "A"
+                oturum_obj.cevaplanan_sorular[f"turk_{i + 1}"] = "A"
 
             # Sonuçları hesapla
             sonuc = await sinav_servisi._sonuclari_hesapla(oturum.sinav_id)
@@ -413,9 +414,9 @@ class TestIntegrationScenarios:
             # 3. Soruları cevapla
             for i in range(60):  # İlk 60 soruyu cevapla
                 if i < 40:  # Türkçe
-                    oturum_obj.cevaplanan_sorular[f"turk_{i+1}"] = "A"
+                    oturum_obj.cevaplanan_sorular[f"turk_{i + 1}"] = "A"
                 else:  # Matematik
-                    oturum_obj.cevaplanan_sorular[f"mat_{i-39}"] = "B"
+                    oturum_obj.cevaplanan_sorular[f"mat_{i - 39}"] = "B"
 
             # 4. Sınavı tamamla
             sonuc = await sinav_servisi.sinav_tamamla(oturum.sinav_id)
@@ -437,7 +438,7 @@ class TestIntegrationScenarios:
         for i in range(40):
             ayt_sorulari.append(
                 SinavSorusu(
-                    soru_id=f"mat_ayt_{i+1}",
+                    soru_id=f"mat_ayt_{i + 1}",
                     konu="Matematik",
                     zorluk=7.0,
                     dogru_cevap="A",
@@ -446,19 +447,19 @@ class TestIntegrationScenarios:
         for i in range(14):
             ayt_sorulari.append(
                 SinavSorusu(
-                    soru_id=f"fizik_{i+1}", konu="Fizik", zorluk=7.5, dogru_cevap="B"
+                    soru_id=f"fizik_{i + 1}", konu="Fizik", zorluk=7.5, dogru_cevap="B"
                 )
             )
         for i in range(13):
             ayt_sorulari.append(
                 SinavSorusu(
-                    soru_id=f"kimya_{i+1}", konu="Kimya", zorluk=7.5, dogru_cevap="C"
+                    soru_id=f"kimya_{i + 1}", konu="Kimya", zorluk=7.5, dogru_cevap="C"
                 )
             )
         for i in range(13):
             ayt_sorulari.append(
                 SinavSorusu(
-                    soru_id=f"biyoloji_{i+1}",
+                    soru_id=f"biyoloji_{i + 1}",
                     konu="Biyoloji",
                     zorluk=7.5,
                     dogru_cevap="D",
@@ -475,7 +476,7 @@ class TestIntegrationScenarios:
             # 30 soru cevapla
             oturum_obj = sinav_servisi.aktif_oturumlar[oturum.sinav_id]
             for i in range(30):
-                oturum_obj.cevaplanan_sorular[f"mat_ayt_{i+1}"] = "A"
+                oturum_obj.cevaplanan_sorular[f"mat_ayt_{i + 1}"] = "A"
 
             sonuc = await sinav_servisi.sinav_tamamla(oturum.sinav_id)
 
@@ -582,7 +583,6 @@ def test_part3_coverage_summary():
 
     Beklenen Coverage: %75-80
     """
-    pass
 
 
 if __name__ == "__main__":
