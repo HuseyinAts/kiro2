@@ -1023,13 +1023,12 @@ async def semantic_search(
         )
 
 
-@router.get("/download")
+@router.post("/download")
 async def download_questions(
-    subject: str | None = Query(None, description="Filter by subject"),
     current_user: AuthenticatedUser = Depends(get_current_user),
 ) -> JSONResponse:
     """Download questions for offline use — stub endpoint.
-    Frontend: offlineStorageService.ts
+    Frontend: offlineStorageService.ts (POST with JSON body: subject, count, difficulty)
     """
     return JSONResponse(
         status_code=status.HTTP_200_OK,

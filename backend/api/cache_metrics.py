@@ -26,6 +26,7 @@ logger = get_logger("cache_metrics_api")
 @router.get("/metrics", response_model=dict[str, Any])
 async def get_cache_metrics(
     namespace: str = Query(None, description="Filter by cache namespace"),
+    _=Depends(get_current_admin_user),
 ):
     """
     Get real-time cache performance metrics
