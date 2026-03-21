@@ -97,6 +97,7 @@ export const OSYMQuestionGeneratorPage: React.FC = () => {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(params),
+        credentials: 'include',
       });
 
       if (!response.ok) {

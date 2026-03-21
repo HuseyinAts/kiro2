@@ -66,6 +66,7 @@ const YOLODetectionPage: React.FC = () => {
       const response = await fetch('/api/v1/yolo/detect', {
         method: 'POST',
         body: formData,
+        credentials: 'include',
       });
 
       if (!response.ok) {
