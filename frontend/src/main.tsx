@@ -16,6 +16,27 @@ import './styles.css';
 // Global axios defaults — ensures all direct axios calls send cookies
 axios.defaults.withCredentials = true;
 
+// Global fetch override — auto-add credentials for same-origin API calls
+// Covers 100+ fetch() calls across the codebase without individual edits
+const _originalFetch = window.fetch;
+window.fetch = function (input: RequestInfo | URL, init?: RequestInit) {
+  const url =
+    typeof input === 'string'
+      ? input
+      : input instanceof Request
+        ? input.url
+        : input.toString();
+  // Only add credentials for same-origin requests (starts with /)
+  // Avoids CORS issues with external APIs (Khan, EBA, etc.)
+  if (url.startsWith('/') || url.startsWith(window.location.origin)) {
+    init = { ...init };
+    if (!init.credentials) {
+      init.credentials = 'include';
+    }
+  }
+  return _originalFetch.call(window, input, init);
+};
+
 // FAZ-8: Register offline sync handler
 registerOnlineSync();
 

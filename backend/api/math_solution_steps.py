@@ -6,10 +6,9 @@ Requirements: REQ-51.21-51.40 (Diskalkuli Desteği - Adım Adım Çözüm)
 import logging
 
 from fastapi import APIRouter, Depends, HTTPException
-
-from core.dependencies import AuthenticatedUser, get_current_user
 from pydantic import BaseModel, Field
 
+from core.dependencies import AuthenticatedUser, UserRole, get_current_user
 from services.math_solution_step_service import (
     DifficultyLevel,
     math_solution_step_service,
@@ -18,6 +17,21 @@ from services.math_solution_step_service import (
 logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/api/v1/math-solution-steps", tags=["Math Solution Steps"])
+
+
+def _verify_student_access(current_user: AuthenticatedUser, student_id: str) -> None:
+    """IDOR: student own data only, admin/teacher any."""
+    if current_user.role in (
+        UserRole.ADMIN,
+        UserRole.TEACHER,
+        UserRole.SUPER_ADMIN,
+    ):
+        return
+    if str(current_user.id) != student_id:
+        raise HTTPException(
+            status_code=403,
+            detail="Bu ogrenci verisine erisim yetkiniz yok",
+        )
 
 
 # Request/Response Models
@@ -341,6 +355,7 @@ async def get_hint_statistics(
 
     Requirements: REQ-51.35
     """
+    _verify_student_access(current_user, student_id)
     try:
         from services.hint_tracking_service import hint_tracking_service
 
@@ -391,6 +406,7 @@ async def get_hint_trends(
 
     Requirements: REQ-51.35
     """
+    _verify_student_access(current_user, student_id)
     try:
         from services.hint_tracking_service import hint_tracking_service
 
@@ -481,6 +497,7 @@ async def get_error_analysis(
 
     Requirements: REQ-51.40
     """
+    _verify_student_access(current_user, student_id)
     try:
         from services.error_detection_service import error_detection_service
 
