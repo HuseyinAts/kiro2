@@ -10,11 +10,12 @@ DEVRİMSEL ÖZELLİKLER:
 """
 
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any
 
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel, Field
 
+from core.dependencies import AuthenticatedUser, UserRole, get_current_user
 from models.zpd_maarif import (
     KulturelBaglamProfili,
     MaarifDegerleriProfili,
@@ -31,15 +32,25 @@ router = APIRouter(prefix="/api/v1/zpd-maarif", tags=["ZPD Maarif"])
 zpd_service = ZPDMaarifService()
 
 
+def _verify_student_access(current_user: AuthenticatedUser, ogrenci_id: str) -> None:
+    """IDOR: student own data only, admin/teacher any."""
+    if current_user.role in (UserRole.ADMIN, UserRole.TEACHER, UserRole.SUPER_ADMIN):
+        return
+    if str(current_user.id) != ogrenci_id:
+        raise HTTPException(
+            status_code=403, detail="Bu ogrenci verisine erisim yetkiniz yok"
+        )
+
+
 class ZPDHesaplamaRequest(BaseModel):
     """ZPD hesaplama isteği"""
 
     ogrenci_id: str
     konu: str
     mevcut_seviye: float = Field(ge=0.0, le=10.0)
-    kulturel_profil: Optional[KulturelBaglamProfili] = None
-    maarif_profili: Optional[MaarifDegerleriProfili] = None
-    parametreler: Optional[ZPDHesaplamaParametreleri] = None
+    kulturel_profil: KulturelBaglamProfili | None = None
+    maarif_profili: MaarifDegerleriProfili | None = None
+    parametreler: ZPDHesaplamaParametreleri | None = None
 
 
 class ZPDOptimizasyonRequest(BaseModel):
@@ -47,14 +58,14 @@ class ZPDOptimizasyonRequest(BaseModel):
 
     ogrenci_id: str
     konu: str
-    performans_verileri: List[Dict[str, Any]]
+    performans_verileri: list[dict[str, Any]]
 
 
 class ZPDResponse(BaseModel):
     """ZPD API yanıtı"""
 
     success: bool
-    data: Optional[Any] = None
+    data: Any | None = None
     message: str
     timestamp: datetime = Field(default_factory=datetime.now)
 
@@ -68,9 +79,9 @@ class RevolutionaryZPDRequest(BaseModel):
     student_id: str
     subject: str
     current_level: float = Field(ge=0.0, le=10.0)
-    behavioral_data: Dict[str, Any]
+    behavioral_data: dict[str, Any]
     content_description: str = ""
-    family_survey: Optional[Dict[str, Any]] = None
+    family_survey: dict[str, Any] | None = None
 
 
 class RevolutionaryRecommendationRequest(BaseModel):
@@ -79,10 +90,10 @@ class RevolutionaryRecommendationRequest(BaseModel):
     student_id: str
     subject: str
     current_level: float = Field(ge=0.0, le=10.0)
-    behavioral_data: Dict[str, Any]
+    behavioral_data: dict[str, Any]
     learning_objective: str
     content_description: str = ""
-    family_survey: Optional[Dict[str, Any]] = None
+    family_survey: dict[str, Any] | None = None
 
 
 class CulturalAdaptationRequest(BaseModel):
@@ -90,8 +101,8 @@ class CulturalAdaptationRequest(BaseModel):
 
     student_id: str
     current_difficulty: float = Field(ge=0.0, le=10.0)
-    student_performance: Dict[str, float]
-    behavioral_data: Dict[str, Any]
+    student_performance: dict[str, float]
+    behavioral_data: dict[str, Any]
 
 
 class MaarifAlignmentRequest(BaseModel):
@@ -105,18 +116,21 @@ class LearningBalanceRequest(BaseModel):
     """Öğrenme dengesi analizi isteği"""
 
     student_id: str
-    behavioral_data: Dict[str, Any]
+    behavioral_data: dict[str, Any]
 
 
 class CulturalPatternAnalysisRequest(BaseModel):
     """Kültürel kalıp analizi isteği"""
 
     student_id: str
-    learning_sessions: List[Dict[str, Any]]
+    learning_sessions: list[dict[str, Any]]
 
 
 @router.post("/hesapla", response_model=ZPDResponse)
-async def hesapla_zpd(request: ZPDHesaplamaRequest):
+async def hesapla_zpd(
+    request: ZPDHesaplamaRequest,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+):
     """
     Türk eğitim kültürüne uyarlanmış ZPD aralığı hesapla
 
@@ -145,17 +159,21 @@ async def hesapla_zpd(request: ZPDHesaplamaRequest):
         )
 
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"ZPD hesaplama hatası: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"ZPD hesaplama hatası: {e!s}")
 
 
 @router.post("/optimize", response_model=ZPDResponse)
-async def optimize_zpd(request: ZPDOptimizasyonRequest):
+async def optimize_zpd(
+    request: ZPDOptimizasyonRequest,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+):
     """
     Performans verilerine göre ZPD parametrelerini optimize et
 
     Bu endpoint geçmiş performans verilerini analiz ederek
     öğrenci için en uygun öğrenme stratejilerini önerir.
     """
+    _verify_student_access(current_user, request.ogrenci_id)
     try:
         optimizasyon_sonucu = await zpd_service.optimize_zpd_parametreleri(
             ogrenci_id=request.ogrenci_id,
@@ -170,14 +188,15 @@ async def optimize_zpd(request: ZPDOptimizasyonRequest):
         )
 
     except Exception as e:
-        raise HTTPException(
-            status_code=500, detail=f"ZPD optimizasyon hatası: {str(e)}"
-        )
+        raise HTTPException(status_code=500, detail=f"ZPD optimizasyon hatası: {e!s}")
 
 
 @router.get("/profil/kulturel/{ogrenci_id}", response_model=ZPDResponse)
-async def get_kulturel_profil(ogrenci_id: str):
+async def get_kulturel_profil(
+    ogrenci_id: str, current_user: AuthenticatedUser = Depends(get_current_user)
+):
     """Öğrencinin kültürel bağlam profilini getir"""
+    _verify_student_access(current_user, ogrenci_id)
     try:
         # Varsayılan profil oluştur (gerçek uygulamada veritabanından gelir)
         kulturel_profil = await zpd_service._olustur_varsayilan_kulturel_profil(
@@ -192,13 +211,16 @@ async def get_kulturel_profil(ogrenci_id: str):
 
     except Exception as e:
         raise HTTPException(
-            status_code=500, detail=f"Kültürel profil getirme hatası: {str(e)}"
+            status_code=500, detail=f"Kültürel profil getirme hatası: {e!s}"
         )
 
 
 @router.get("/profil/maarif/{ogrenci_id}", response_model=ZPDResponse)
-async def get_maarif_profili(ogrenci_id: str):
+async def get_maarif_profili(
+    ogrenci_id: str, current_user: AuthenticatedUser = Depends(get_current_user)
+):
     """Öğrencinin MEB Maarif değerleri profilini getir"""
+    _verify_student_access(current_user, ogrenci_id)
     try:
         # Varsayılan profil oluştur (gerçek uygulamada veritabanından gelir)
         maarif_profili = await zpd_service._olustur_varsayilan_maarif_profili(
@@ -213,13 +235,18 @@ async def get_maarif_profili(ogrenci_id: str):
 
     except Exception as e:
         raise HTTPException(
-            status_code=500, detail=f"MEB Maarif profili getirme hatası: {str(e)}"
+            status_code=500, detail=f"MEB Maarif profili getirme hatası: {e!s}"
         )
 
 
 @router.put("/profil/kulturel/{ogrenci_id}", response_model=ZPDResponse)
-async def update_kulturel_profil(ogrenci_id: str, profil: KulturelBaglamProfili):
+async def update_kulturel_profil(
+    ogrenci_id: str,
+    profil: KulturelBaglamProfili,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+):
     """Öğrencinin kültürel bağlam profilini güncelle"""
+    _verify_student_access(current_user, ogrenci_id)
     try:
         # Profil güncelleme (gerçek uygulamada veritabanına kaydedilir)
         profil.ogrenci_id = ogrenci_id
@@ -233,13 +260,18 @@ async def update_kulturel_profil(ogrenci_id: str, profil: KulturelBaglamProfili)
 
     except Exception as e:
         raise HTTPException(
-            status_code=500, detail=f"Kültürel profil güncelleme hatası: {str(e)}"
+            status_code=500, detail=f"Kültürel profil güncelleme hatası: {e!s}"
         )
 
 
 @router.put("/profil/maarif/{ogrenci_id}", response_model=ZPDResponse)
-async def update_maarif_profili(ogrenci_id: str, profil: MaarifDegerleriProfili):
+async def update_maarif_profili(
+    ogrenci_id: str,
+    profil: MaarifDegerleriProfili,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+):
     """Öğrencinin MEB Maarif değerleri profilini güncelle"""
+    _verify_student_access(current_user, ogrenci_id)
     try:
         # Profil güncelleme (gerçek uygulamada veritabanına kaydedilir)
         profil.ogrenci_id = ogrenci_id
@@ -253,7 +285,7 @@ async def update_maarif_profili(ogrenci_id: str, profil: MaarifDegerleriProfili)
 
     except Exception as e:
         raise HTTPException(
-            status_code=500, detail=f"MEB Maarif profili güncelleme hatası: {str(e)}"
+            status_code=500, detail=f"MEB Maarif profili güncelleme hatası: {e!s}"
         )
 
 
@@ -264,8 +296,10 @@ async def get_zorluk_seviyesi(
     hedef_zorluk: float = Query(
         ..., ge=0.0, le=10.0, description="Hedef zorluk seviyesi"
     ),
+    current_user: AuthenticatedUser = Depends(get_current_user),
 ):
     """Hedef zorluğun ZPD içindeki seviyesini belirle"""
+    _verify_student_access(current_user, ogrenci_id)
     try:
         # Mevcut ZPD'yi al
         mevcut_zpd = await zpd_service._get_mevcut_zpd(ogrenci_id, konu)
@@ -300,17 +334,19 @@ async def get_zorluk_seviyesi(
 
     except Exception as e:
         raise HTTPException(
-            status_code=500, detail=f"Zorluk seviyesi belirleme hatası: {str(e)}"
+            status_code=500, detail=f"Zorluk seviyesi belirleme hatası: {e!s}"
         )
 
 
 @router.get("/gecmis/{ogrenci_id}", response_model=ZPDResponse)
 async def get_zpd_gecmisi(
     ogrenci_id: str,
-    konu: Optional[str] = Query(None, description="Konu filtresi"),
+    konu: str | None = Query(None, description="Konu filtresi"),
     limit: int = Query(10, ge=1, le=50, description="Maksimum kayıt sayısı"),
+    current_user: AuthenticatedUser = Depends(get_current_user),
 ):
     """Öğrencinin ZPD hesaplama geçmişini getir"""
+    _verify_student_access(current_user, ogrenci_id)
     try:
         # Geçmiş verilerini getir
         tum_gecmis = zpd_service.hesaplama_gecmisi
@@ -346,14 +382,15 @@ async def get_zpd_gecmisi(
         )
 
     except Exception as e:
-        raise HTTPException(
-            status_code=500, detail=f"ZPD geçmiş getirme hatası: {str(e)}"
-        )
+        raise HTTPException(status_code=500, detail=f"ZPD geçmiş getirme hatası: {e!s}")
 
 
 @router.get("/istatistikler/{ogrenci_id}", response_model=ZPDResponse)
-async def get_zpd_istatistikleri(ogrenci_id: str):
+async def get_zpd_istatistikleri(
+    ogrenci_id: str, current_user: AuthenticatedUser = Depends(get_current_user)
+):
     """Öğrencinin ZPD istatistiklerini getir"""
+    _verify_student_access(current_user, ogrenci_id)
     try:
         # Geçmiş verilerini analiz et
         tum_gecmis = zpd_service.hesaplama_gecmisi
@@ -407,7 +444,7 @@ async def get_zpd_istatistikleri(ogrenci_id: str):
 
     except Exception as e:
         raise HTTPException(
-            status_code=500, detail=f"ZPD istatistik hesaplama hatası: {str(e)}"
+            status_code=500, detail=f"ZPD istatistik hesaplama hatası: {e!s}"
         )
 
 
@@ -427,7 +464,10 @@ async def _get_zorluk_seviyesi_onerisi(zorluk_seviyesi: ZPDSeviyesi) -> str:
 
 
 @router.post("/revolutionary/calculate", response_model=ZPDResponse)
-async def calculate_revolutionary_zpd(request: RevolutionaryZPDRequest):
+async def calculate_revolutionary_zpd(
+    request: RevolutionaryZPDRequest,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+):
     """
     [ROCKET] DEVRİMSEL: Türk kültürüne uyarlanmış ZPD hesaplama
 
@@ -482,13 +522,14 @@ async def calculate_revolutionary_zpd(request: RevolutionaryZPDRequest):
 
     except Exception as e:
         raise HTTPException(
-            status_code=500, detail=f"DEVRİMSEL ZPD hesaplama hatası: {str(e)}"
+            status_code=500, detail=f"DEVRİMSEL ZPD hesaplama hatası: {e!s}"
         )
 
 
 @router.post("/revolutionary/recommend", response_model=ZPDResponse)
 async def generate_revolutionary_recommendation(
     request: RevolutionaryRecommendationRequest,
+    current_user: AuthenticatedUser = Depends(get_current_user),
 ):
     """
     [ROCKET] DEVRİMSEL: ZPD tabanlı kişiselleştirilmiş öğrenme önerisi
@@ -527,12 +568,15 @@ async def generate_revolutionary_recommendation(
 
     except Exception as e:
         raise HTTPException(
-            status_code=500, detail=f"DEVRİMSEL öneri oluşturma hatası: {str(e)}"
+            status_code=500, detail=f"DEVRİMSEL öneri oluşturma hatası: {e!s}"
         )
 
 
 @router.post("/revolutionary/cultural-context", response_model=ZPDResponse)
-async def detect_cultural_context(request: LearningBalanceRequest):
+async def detect_cultural_context(
+    request: LearningBalanceRequest,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+):
     """
     [ROCKET] DEVRİMSEL: Türk öğrenci kültürel bağlam tespiti
 
@@ -563,12 +607,15 @@ async def detect_cultural_context(request: LearningBalanceRequest):
     except Exception as e:
         raise HTTPException(
             status_code=500,
-            detail=f"DEVRİMSEL kültürel bağlam tespiti hatası: {str(e)}",
+            detail=f"DEVRİMSEL kültürel bağlam tespiti hatası: {e!s}",
         )
 
 
 @router.post("/revolutionary/adapt-difficulty", response_model=ZPDResponse)
-async def adapt_difficulty_culturally(request: CulturalAdaptationRequest):
+async def adapt_difficulty_culturally(
+    request: CulturalAdaptationRequest,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+):
     """
     [ROCKET] DEVRİMSEL: Kültürel faktörlere göre zorluk adaptasyonu
 
@@ -598,12 +645,15 @@ async def adapt_difficulty_culturally(request: CulturalAdaptationRequest):
 
     except Exception as e:
         raise HTTPException(
-            status_code=500, detail=f"DEVRİMSEL zorluk adaptasyon hatası: {str(e)}"
+            status_code=500, detail=f"DEVRİMSEL zorluk adaptasyon hatası: {e!s}"
         )
 
 
 @router.post("/revolutionary/maarif-alignment", response_model=ZPDResponse)
-async def calculate_maarif_alignment(request: MaarifAlignmentRequest):
+async def calculate_maarif_alignment(
+    request: MaarifAlignmentRequest,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+):
     """
     [ROCKET] DEVRİMSEL: MEB Maarif değerleri uyum analizi
 
@@ -629,12 +679,15 @@ async def calculate_maarif_alignment(request: MaarifAlignmentRequest):
 
     except Exception as e:
         raise HTTPException(
-            status_code=500, detail=f"DEVRİMSEL Maarif uyum analizi hatası: {str(e)}"
+            status_code=500, detail=f"DEVRİMSEL Maarif uyum analizi hatası: {e!s}"
         )
 
 
 @router.post("/revolutionary/learning-balance", response_model=ZPDResponse)
-async def get_learning_balance(request: LearningBalanceRequest):
+async def get_learning_balance(
+    request: LearningBalanceRequest,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+):
     """
     [ROCKET] DEVRİMSEL: Grup vs bireysel öğrenme dengesi analizi
 
@@ -654,12 +707,15 @@ async def get_learning_balance(request: LearningBalanceRequest):
     except Exception as e:
         raise HTTPException(
             status_code=500,
-            detail=f"DEVRİMSEL öğrenme dengesi analizi hatası: {str(e)}",
+            detail=f"DEVRİMSEL öğrenme dengesi analizi hatası: {e!s}",
         )
 
 
 @router.post("/revolutionary/cultural-patterns", response_model=ZPDResponse)
-async def monitor_cultural_patterns(request: CulturalPatternAnalysisRequest):
+async def monitor_cultural_patterns(
+    request: CulturalPatternAnalysisRequest,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+):
     """
     [ROCKET] DEVRİMSEL: Kültürel öğrenme kalıpları analizi
 
@@ -678,17 +734,20 @@ async def monitor_cultural_patterns(request: CulturalPatternAnalysisRequest):
 
     except Exception as e:
         raise HTTPException(
-            status_code=500, detail=f"DEVRİMSEL kültürel kalıp analizi hatası: {str(e)}"
+            status_code=500, detail=f"DEVRİMSEL kültürel kalıp analizi hatası: {e!s}"
         )
 
 
 @router.get("/revolutionary/demo/{student_id}", response_model=ZPDResponse)
-async def revolutionary_demo(student_id: str):
+async def revolutionary_demo(
+    student_id: str, current_user: AuthenticatedUser = Depends(get_current_user)
+):
     """
     [ROCKET] DEVRİMSEL DEMO: Tüm devrimsel özelliklerin demo gösterimi
 
     Bu endpoint tüm devrimsel özellikleri örnek verilerle gösterir.
     """
+    _verify_student_access(current_user, student_id)
     try:
         # Örnek davranışsal veri
         sample_behavioral_data = {
@@ -786,4 +845,4 @@ async def revolutionary_demo(student_id: str):
         )
 
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"DEVRİMSEL demo hatası: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"DEVRİMSEL demo hatası: {e!s}")

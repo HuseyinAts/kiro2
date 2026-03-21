@@ -128,6 +128,15 @@ def setup_middleware(app: FastAPI) -> None:
         logger.warning(f"⚠️ Timing middleware not available: {e}")
 
     # 2. CORS Middleware
+    # SECURITY: Validate production origins are configured
+    localhost_only = all(
+        "localhost" in o or "127.0.0.1" in o for o in settings.allowed_origins
+    )
+    if localhost_only:
+        logger.warning(
+            "⚠️ CORS: Only localhost origins configured. "
+            "Set ALLOWED_ORIGINS env var for production (e.g. https://kiro2.com)"
+        )
     app.add_middleware(
         CORSMiddleware,
         allow_origins=settings.allowed_origins,
@@ -136,7 +145,7 @@ def setup_middleware(app: FastAPI) -> None:
         allow_headers=["*"],
         expose_headers=["X-Response-Time", "X-Cache-Status", "ETag"],
     )
-    logger.info("✅ CORS middleware added")
+    logger.info(f"✅ CORS middleware added (origins: {len(settings.allowed_origins)})")
 
     # 3. Cache Headers Middleware (ETag, If-None-Match)
     try:
