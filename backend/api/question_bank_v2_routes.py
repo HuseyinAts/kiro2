@@ -10,7 +10,8 @@ Endpoints:
 - POST /api/v2/hitl/tasks - Create expert review task
 - GET /api/v2/hitl/dashboard/{expert_id} - Expert dashboard
 """
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status
+from core.dependencies import AuthenticatedUser, UserRole, get_current_user
 from typing import Dict, Optional
 from pydantic import BaseModel, Field
 from uuid import uuid4
@@ -41,6 +42,17 @@ question_validator = QuestionValidator()
 kg_service = KnowledgeGraphService()
 plagiarism_service = PlagiarismDetectionService()
 hitl_service = HITLWorkflowService()
+
+
+def _verify_student_access(current_user: AuthenticatedUser, student_id: str) -> None:
+    """IDOR: student own data only, admin/teacher any."""
+    if current_user.role in (UserRole.ADMIN, UserRole.TEACHER, UserRole.SUPER_ADMIN):
+        return
+    if str(current_user.id) != student_id:
+        raise HTTPException(
+            status_code=403, detail="Bu ogrenci verisine erisim yetkiniz yok"
+        )
+
 
 # Mock item bank for CAT (in production: load from database)
 MOCK_ITEM_BANK = []
@@ -150,7 +162,10 @@ class HITLReviewSubmission(BaseModel):
 
 
 @router.post("/questions/generate", response_model=QuestionGenerationResponse)
-async def generate_question_full_pipeline(request: QuestionGenerationRequest):
+async def generate_question_full_pipeline(
+    request: QuestionGenerationRequest,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+):
     """
     Full question generation pipeline:
     1. AI Generation (GPT-5/Claude 4.5)
@@ -258,13 +273,17 @@ async def generate_question_full_pipeline(request: QuestionGenerationRequest):
 
 
 @router.post("/cat/start", response_model=CATStartResponse)
-async def start_cat_session(request: CATStartRequest):
+async def start_cat_session(
+    request: CATStartRequest,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+):
     """
     Start a new CAT (Computer Adaptive Testing) session
 
     Returns: Session ID and first question
     """
     try:
+        _verify_student_access(current_user, request.student_id)
         # In production: Load item bank from database for this topic
         # For now: Use mock data
         item_bank = [
@@ -306,7 +325,10 @@ async def start_cat_session(request: CATStartRequest):
 
 
 @router.post("/cat/submit", response_model=CATSubmitResponse)
-async def submit_cat_response(request: CATSubmitRequest):
+async def submit_cat_response(
+    request: CATSubmitRequest,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+):
     """
     Submit response to CAT question and get next question
 
@@ -352,7 +374,10 @@ async def submit_cat_response(request: CATSubmitRequest):
 
 
 @router.post("/knowledge-graph/recommendations")
-async def get_question_recommendations(request: KnowledgeGraphRecommendationRequest):
+async def get_question_recommendations(
+    request: KnowledgeGraphRecommendationRequest,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+):
     """
     Get smart question recommendations based on:
     - Current question topic
@@ -362,6 +387,7 @@ async def get_question_recommendations(request: KnowledgeGraphRecommendationRequ
     Returns: List of recommended questions
     """
     try:
+        _verify_student_access(current_user, request.student_id)
         recommendations = kg_service.get_recommended_questions(
             student_id=request.student_id,
             current_question_id=request.current_question_id,
@@ -378,7 +404,9 @@ async def get_question_recommendations(request: KnowledgeGraphRecommendationRequ
 
 
 @router.get("/knowledge-graph/stats")
-async def get_knowledge_graph_stats():
+async def get_knowledge_graph_stats(
+    current_user: AuthenticatedUser = Depends(get_current_user),
+):
     """Get knowledge graph statistics"""
     try:
         stats = kg_service.export_graph_stats()
@@ -391,9 +419,13 @@ async def get_knowledge_graph_stats():
 
 
 @router.get("/knowledge-graph/student/{student_id}/gaps")
-async def analyze_student_knowledge_gaps(student_id: str):
+async def analyze_student_knowledge_gaps(
+    student_id: str,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+):
     """Analyze student's knowledge gaps and generate learning path"""
     try:
+        _verify_student_access(current_user, student_id)
         gap_analysis = kg_service.analyze_student_gaps(student_id)
         return gap_analysis
     except Exception as e:
@@ -409,7 +441,10 @@ async def analyze_student_knowledge_gaps(student_id: str):
 
 
 @router.post("/hitl/tasks")
-async def create_review_task(request: HITLTaskRequest):
+async def create_review_task(
+    request: HITLTaskRequest,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+):
     """Create expert review task for a question"""
     try:
         eval_result = hitl_service.evaluate_question_for_review(
@@ -428,7 +463,11 @@ async def create_review_task(request: HITLTaskRequest):
 
 
 @router.post("/hitl/tasks/{task_id}/assign")
-async def assign_task_to_expert(task_id: str, expert_id: Optional[str] = None):
+async def assign_task_to_expert(
+    task_id: str,
+    expert_id: Optional[str] = None,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+):
     """Assign review task to an expert (auto-match if expert_id not provided)"""
     try:
         assignment = hitl_service.assign_task_to_expert(task_id, expert_id)
@@ -442,7 +481,11 @@ async def assign_task_to_expert(task_id: str, expert_id: Optional[str] = None):
 
 
 @router.post("/hitl/tasks/{task_id}/review")
-async def submit_expert_review(task_id: str, review: HITLReviewSubmission):
+async def submit_expert_review(
+    task_id: str,
+    review: HITLReviewSubmission,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+):
     """Submit expert review for a task"""
     try:
         # Convert to ReviewSubmission dataclass
@@ -467,9 +510,13 @@ async def submit_expert_review(task_id: str, review: HITLReviewSubmission):
 
 
 @router.get("/hitl/dashboard/{expert_id}")
-async def get_expert_dashboard(expert_id: str):
+async def get_expert_dashboard(
+    expert_id: str,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+):
     """Get expert's dashboard with tasks and statistics"""
     try:
+        _verify_student_access(current_user, expert_id)
         dashboard = hitl_service.get_expert_dashboard(expert_id)
         return dashboard
 
@@ -480,7 +527,10 @@ async def get_expert_dashboard(expert_id: str):
 
 
 @router.get("/hitl/leaderboard")
-async def get_expert_leaderboard(limit: int = 10):
+async def get_expert_leaderboard(
+    limit: int = 10,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+):
     """Get expert leaderboard"""
     try:
         leaderboard = hitl_service.get_leaderboard(limit)
