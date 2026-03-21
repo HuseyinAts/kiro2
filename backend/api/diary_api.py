@@ -263,6 +263,7 @@ async def create_summary(
 async def update_summary(
     entry_id: UUID,
     request: DiaryEntryUpdate,
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> DiaryEntryResponse:
     """
@@ -308,6 +309,7 @@ async def update_summary(
 @router.delete("/summary/{entry_id}", response_model=SuccessResponse)
 async def delete_summary(
     entry_id: UUID,
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> SuccessResponse:
     """
@@ -417,6 +419,7 @@ async def get_goal_statistics(
 @router.get("/goals/{goal_id}", response_model=GoalResponse)
 async def get_goal(
     goal_id: UUID,
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> GoalResponse:
     """
@@ -474,6 +477,7 @@ async def create_goal(
 @router.post("/goals/validate-smart")
 async def validate_smart_criteria(
     request: GoalCreate,
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
     """
@@ -493,6 +497,7 @@ async def validate_smart_criteria(
 async def update_goal(
     goal_id: UUID,
     request: GoalUpdate,
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> GoalResponse:
     """
@@ -518,6 +523,7 @@ async def update_goal(
 async def update_goal_progress(
     goal_id: UUID,
     request: GoalProgressUpdate,
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
     """
@@ -554,6 +560,7 @@ async def update_goal_progress(
 @router.get("/goals/{goal_id}/risk", response_model=GoalRiskResponse)
 async def get_goal_risk(
     goal_id: UUID,
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> GoalRiskResponse:
     """
@@ -580,6 +587,7 @@ async def adjust_goal(
     reason: str = Query(..., min_length=5, description="Ayarlama nedeni"),
     new_target_value: Optional[float] = Query(None, description="Yeni hedef degeri"),
     new_target_date: Optional[datetime] = Query(None, description="Yeni hedef tarihi"),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> GoalResponse:
     """
@@ -614,6 +622,7 @@ async def create_goal_retrospective(
     lessons_learned: List[str] = Query(default=[], description="Ogrenilen dersler"),
     success_factors: List[str] = Query(default=[], description="Basari faktorleri"),
     challenges_faced: List[str] = Query(default=[], description="Karsilasilan zorluklar"),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> GoalResponse:
     """
@@ -645,6 +654,7 @@ async def create_goal_retrospective(
 @router.delete("/goals/{goal_id}", response_model=SuccessResponse)
 async def delete_goal(
     goal_id: UUID,
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> SuccessResponse:
     """
@@ -774,6 +784,7 @@ async def analyze_entries_for_insights(
 @router.get("/insights/{insight_id}", response_model=InsightResponse)
 async def get_insight(
     insight_id: UUID,
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> InsightResponse:
     """
@@ -797,6 +808,7 @@ async def get_insight(
 @router.delete("/insights/{insight_id}", response_model=SuccessResponse)
 async def delete_insight(
     insight_id: UUID,
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> SuccessResponse:
     """
@@ -929,6 +941,7 @@ async def get_reflections(
 @router.get("/reflection/{reflection_id}", response_model=ReflectionResponse)
 async def get_reflection(
     reflection_id: UUID,
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> ReflectionResponse:
     """
@@ -1055,6 +1068,7 @@ async def record_review(
     entry_id: UUID,
     remembered: bool = Query(..., description="Hatirlandi mi?"),
     quality: int = Query(..., ge=1, le=5, description="Kalite (1-5)"),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> LearningReviewResponse:
     """
@@ -1127,6 +1141,7 @@ async def get_knowledge_gaps(
 @router.get("/learning/{entry_id}", response_model=LearningEntryResponse)
 async def get_learning_entry(
     entry_id: UUID,
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> LearningEntryResponse:
     """
@@ -1151,6 +1166,7 @@ async def get_learning_entry(
 async def link_concepts(
     entry_id: UUID,
     concepts: List[str] = Query(..., description="Ilgili kavramlar"),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> SuccessResponse:
     """
@@ -1474,6 +1490,7 @@ async def create_export(
 @router.get("/export/{export_id}/download")
 async def download_export(
     export_id: UUID,
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> StreamingResponse:
     """
