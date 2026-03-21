@@ -1448,17 +1448,20 @@ class OSYMExamEngine:
             )
 
     async def get_student_exams(self, student_id: str) -> list[ExamSessionData]:
-        """Get all exam sessions for a student (L1 dict + L2 Redis fallback)."""
-        sessions = [
-            s for s in self.active_sessions.values() if s.student_id == student_id
-        ]
-        if not sessions:
-            from core.exam_session_store import get_student_sessions
+        """Get all exam sessions for a student (L1 dict + L2 Redis merged, deduped)."""
+        from core.exam_session_store import get_student_sessions
 
-            sessions = await get_student_sessions(student_id)
-            for s in sessions:
+        l1 = {
+            s.session_id: s
+            for s in self.active_sessions.values()
+            if s.student_id == student_id
+        }
+        l2 = await get_student_sessions(student_id)
+        for s in l2:
+            if s.session_id not in l1:
+                l1[s.session_id] = s
                 self.active_sessions[s.session_id] = s
-        return sessions
+        return list(l1.values())
 
     async def _auto_complete_task(self, session_id: str):
         """
@@ -1497,3 +1500,48 @@ class OSYMExamEngine:
 
 # Global ÖSYM sınav motoru instance
 osym_exam_engine = OSYMExamEngine()
+
+
+async def session_to_sinav_sonucu(session_id: str):
+    """Convert an exam session to legacy SinavSonucu format.
+
+    Shared adapter used by advanced_reports and ogretmen_service.
+    """
+    from models import KonuPerformansi, SinavSonucu, SinavTipi
+
+    session = await osym_exam_engine.get_session_data(session_id)
+    if not session or not session.performance_metrics:
+        return None
+    metrics = session.performance_metrics
+    exam_type_map = {"tyt": SinavTipi.TYT, "ayt": SinavTipi.AYT, "ydt": SinavTipi.YDT}
+    sinav_tipi = exam_type_map.get(session.exam_config.exam_type.value, SinavTipi.TYT)
+    subject_perfs = await osym_exam_engine.get_subject_performance(session_id)
+    konu_performanslari = [
+        KonuPerformansi(
+            konu=sp.subject,
+            toplam_soru=sp.total_questions,
+            dogru_sayisi=sp.correct_answers,
+            yanlis_sayisi=sp.wrong_answers,
+            bos_sayisi=sp.empty_answers,
+            basari_yuzdesi=sp.success_rate,
+            ortalama_sure=sp.average_response_time,
+        )
+        for sp in subject_perfs
+    ]
+    zayif = [kp.konu for kp in konu_performanslari if kp.basari_yuzdesi < 50]
+    guclu = [kp.konu for kp in konu_performanslari if kp.basari_yuzdesi >= 70]
+    return SinavSonucu(
+        sonuc_id=session_id,
+        sinav_id=session_id,
+        ogrenci_id=session.student_id,
+        sinav_tipi=sinav_tipi,
+        toplam_soru=metrics.total_questions,
+        dogru_sayisi=metrics.correct_answers,
+        yanlis_sayisi=metrics.wrong_answers,
+        bos_sayisi=metrics.empty_answers,
+        net_sayisi=metrics.net_score,
+        ham_puan=metrics.raw_score,
+        konu_performanslari=konu_performanslari,
+        zayif_konular=zayif,
+        guclu_konular=guclu,
+    )

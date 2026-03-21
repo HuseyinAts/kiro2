@@ -12,8 +12,8 @@ from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException
 from fastapi.responses import FileResponse
 
 from core.dependencies import AuthenticatedUser, get_current_user
-from core.osym_exam_engine import osym_exam_engine
-from models import KonuPerformansi, SinavSonucu, SinavTipi
+from core.osym_exam_engine import session_to_sinav_sonucu
+from models import SinavSonucu, SinavTipi
 from services.irt_morfoloji_service import IRTMorfolojiService
 from services.learning_style_service import LearningStyleService
 from services.zpd_maarif_service import ZPDMaarifService
@@ -30,46 +30,6 @@ learning_style_service = LearningStyleService()
 pdf_generator = PDFReportGenerator()
 
 
-async def _get_exam_result(sinav_id: str) -> SinavSonucu | None:
-    """Get exam result from osym_exam_engine, converted to SinavSonucu format."""
-    session = await osym_exam_engine.get_session_data(sinav_id)
-    if not session or not session.performance_metrics:
-        return None
-    metrics = session.performance_metrics
-    exam_type_map = {"tyt": SinavTipi.TYT, "ayt": SinavTipi.AYT, "ydt": SinavTipi.YDT}
-    sinav_tipi = exam_type_map.get(session.exam_config.exam_type.value, SinavTipi.TYT)
-    subject_perfs = await osym_exam_engine.get_subject_performance(sinav_id)
-    konu_performanslari = [
-        KonuPerformansi(
-            konu=sp.subject,
-            toplam_soru=sp.total_questions,
-            dogru_sayisi=sp.correct_answers,
-            yanlis_sayisi=sp.wrong_answers,
-            bos_sayisi=sp.empty_answers,
-            basari_yuzdesi=sp.success_rate,
-            ortalama_sure=sp.average_response_time,
-        )
-        for sp in subject_perfs
-    ]
-    zayif = [kp.konu for kp in konu_performanslari if kp.basari_yuzdesi < 50]
-    guclu = [kp.konu for kp in konu_performanslari if kp.basari_yuzdesi >= 70]
-    return SinavSonucu(
-        sonuc_id=sinav_id,
-        sinav_id=sinav_id,
-        ogrenci_id=session.student_id,
-        sinav_tipi=sinav_tipi,
-        toplam_soru=metrics.total_questions,
-        dogru_sayisi=metrics.correct_answers,
-        yanlis_sayisi=metrics.wrong_answers,
-        bos_sayisi=metrics.empty_answers,
-        net_sayisi=metrics.net_score,
-        ham_puan=metrics.raw_score,
-        konu_performanslari=konu_performanslari,
-        zayif_konular=zayif,
-        guclu_konular=guclu,
-    )
-
-
 @router.get("/exam/{sinav_id}/advanced")
 async def get_advanced_exam_report(
     sinav_id: str, current_user: AuthenticatedUser = Depends(get_current_user)
@@ -84,7 +44,7 @@ async def get_advanced_exam_report(
         )
 
         # Temel sınav sonucunu al
-        temel_sonuc = await _get_exam_result(sinav_id)
+        temel_sonuc = await session_to_sinav_sonucu(sinav_id)
         if not temel_sonuc:
             raise HTTPException(status_code=404, detail="Sınav sonucu bulunamadı")
 
@@ -154,7 +114,7 @@ async def get_irt_morfoloji_analysis(
     IRT + Morfoloji analizi detayları
     """
     try:
-        temel_sonuc = await _get_exam_result(sinav_id)
+        temel_sonuc = await session_to_sinav_sonucu(sinav_id)
         if not temel_sonuc:
             raise HTTPException(status_code=404, detail="Sınav sonucu bulunamadı")
 
@@ -179,7 +139,7 @@ async def get_zpd_recommendations(
     ZPD tabanlı kişiselleştirilmiş öneriler
     """
     try:
-        temel_sonuc = await _get_exam_result(sinav_id)
+        temel_sonuc = await session_to_sinav_sonucu(sinav_id)
         if not temel_sonuc:
             raise HTTPException(status_code=404, detail="Sınav sonucu bulunamadı")
 
@@ -205,7 +165,7 @@ async def get_learning_style_analysis(
     Hibrit öğrenme stili bazlı performans analizi
     """
     try:
-        temel_sonuc = await _get_exam_result(sinav_id)
+        temel_sonuc = await session_to_sinav_sonucu(sinav_id)
         if not temel_sonuc:
             raise HTTPException(status_code=404, detail="Sınav sonucu bulunamadı")
 
@@ -235,7 +195,7 @@ async def get_osym_ets_comparison(
     ÖSYM/ETS standartları ile karşılaştırma raporu
     """
     try:
-        temel_sonuc = await _get_exam_result(sinav_id)
+        temel_sonuc = await session_to_sinav_sonucu(sinav_id)
         if not temel_sonuc:
             raise HTTPException(status_code=404, detail="Sınav sonucu bulunamadı")
 

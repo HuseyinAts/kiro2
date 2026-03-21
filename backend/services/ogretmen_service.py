@@ -6,7 +6,7 @@ import uuid
 from datetime import datetime, timedelta
 from typing import TYPE_CHECKING, Any
 
-from models import KonuPerformansi, KullaniciRolu, SinavSonucu, SinavTipi
+from models import KullaniciRolu
 
 from .user_service import kullanici_servisi
 
@@ -59,7 +59,7 @@ class OgretmenServisi:
                             son_sinavlar,
                             key=lambda x: x.started_at or datetime.min,
                         )
-                        sonuc = await self._sonuc_getir(son_sinav.session_id)
+                        sonuc = await self._sonuc_getir_shared(son_sinav.session_id)
                         if sonuc:
                             toplam_net += sonuc.net_sayisi
                             sinav_sayisi += 1
@@ -168,7 +168,7 @@ class OgretmenServisi:
             net_trendi = []
 
             for sinav in tum_sinavlar:
-                sonuc = await self._sonuc_getir(sinav.session_id)
+                sonuc = await self._sonuc_getir_shared(sinav.session_id)
                 if sonuc:
                     sinav_sonuclari.append(
                         {
@@ -320,7 +320,7 @@ class OgretmenServisi:
                             not sinav_tipi
                             or sinav.exam_config.exam_type.value == sinav_tipi
                         ):
-                            sonuc = await self._sonuc_getir(sinav.session_id)
+                            sonuc = await self._sonuc_getir_shared(sinav.session_id)
                             if sonuc:
                                 tum_netler.append(sonuc.net_sayisi)
 
@@ -496,7 +496,7 @@ class OgretmenServisi:
             sinav_sayisi = 0
 
             for sinav in son_sinavlar:
-                sonuc = await self._sonuc_getir(sinav.session_id)
+                sonuc = await self._sonuc_getir_shared(sinav.session_id)
                 if sonuc:
                     toplam_net += sonuc.net_sayisi
                     sinav_sayisi += 1
@@ -526,52 +526,11 @@ class OgretmenServisi:
 
         return await osym_exam_engine.get_student_exams(ogrenci_id)
 
-    async def _sonuc_getir(self, session_id: str) -> SinavSonucu | None:
-        """Get exam result from osym_exam_engine, converted to SinavSonucu."""
-        from core.osym_exam_engine import osym_exam_engine
+    async def _sonuc_getir_shared(self, session_id: str):
+        """Get exam result via shared adapter."""
+        from core.osym_exam_engine import session_to_sinav_sonucu
 
-        session = await osym_exam_engine.get_session_data(session_id)
-        if not session or not session.performance_metrics:
-            return None
-        metrics = session.performance_metrics
-        exam_type_map = {
-            "tyt": SinavTipi.TYT,
-            "ayt": SinavTipi.AYT,
-            "ydt": SinavTipi.YDT,
-        }
-        sinav_tipi = exam_type_map.get(
-            session.exam_config.exam_type.value, SinavTipi.TYT
-        )
-        subject_perfs = await osym_exam_engine.get_subject_performance(session_id)
-        konu_performanslari = [
-            KonuPerformansi(
-                konu=sp.subject,
-                toplam_soru=sp.total_questions,
-                dogru_sayisi=sp.correct_answers,
-                yanlis_sayisi=sp.wrong_answers,
-                bos_sayisi=sp.empty_answers,
-                basari_yuzdesi=sp.success_rate,
-                ortalama_sure=sp.average_response_time,
-            )
-            for sp in subject_perfs
-        ]
-        zayif = [kp.konu for kp in konu_performanslari if kp.basari_yuzdesi < 50]
-        guclu = [kp.konu for kp in konu_performanslari if kp.basari_yuzdesi >= 70]
-        return SinavSonucu(
-            sonuc_id=session_id,
-            sinav_id=session_id,
-            ogrenci_id=session.student_id,
-            sinav_tipi=sinav_tipi,
-            toplam_soru=metrics.total_questions,
-            dogru_sayisi=metrics.correct_answers,
-            yanlis_sayisi=metrics.wrong_answers,
-            bos_sayisi=metrics.empty_answers,
-            net_sayisi=metrics.net_score,
-            ham_puan=metrics.raw_score,
-            konu_performanslari=konu_performanslari,
-            zayif_konular=zayif,
-            guclu_konular=guclu,
-        )
+        return await session_to_sinav_sonucu(session_id)
 
     async def _ogretmen_ogrenci_yetkisi_kontrol(
         self, ogretmen_id: str, ogrenci_id: str
