@@ -5,64 +5,73 @@ Gunluk tutma ve reflection sistemi API endpoint'leri.
 Tum REQ-1 ile REQ-8 arasindaki endpoint'ler.
 """
 
+import io
 from datetime import date, datetime
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 from fastapi.responses import StreamingResponse
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
-import io
 
-from core.database import get_db
-from core.auth_dependencies import AuthenticationDependency
-from core.service_dependencies import get_diary_service
-from models.user import User
-from services.diary_service import DiaryService
-from services.goal_service import GoalService
-from services.insight_service import InsightService
-from services.reflection_service import ReflectionService
-from services.learning_journal_service import LearningJournalService
-from services.emotional_service import EmotionalService
-from services.peer_comparison_service import PeerComparisonService
-from services.export_service import ExportService
-from models.diary import GoalStatus, ExportFormat
 from api.schemas.diary import (
     # Diary schemas
     DiaryEntryCreate,
     DiaryEntryResponse,
     DiaryEntryUpdate,
+    # Emotional schemas
+    EmotionalStateCreate,
+    EmotionalStateResponse,
+    # Export schemas
+    ExportRequest,
+    ExportResponse,
+    # Goal schemas
+    GoalCreate,
+    GoalProgressUpdate,
+    GoalResponse,
+    GoalRiskResponse,
+    GoalUpdate,
     # Insight schemas
     InsightResponse,
-    # Reflection schemas
-    ReflectionCreate,
-    ReflectionResponse,
-    ReflectionPromptsResponse,
     # Learning schemas
     LearningEntryCreate,
     LearningEntryResponse,
     LearningReviewResponse,
-    # Emotional schemas
-    EmotionalStateCreate,
-    EmotionalStateResponse,
     MoodTrendResponse,
-    # Goal schemas
-    GoalCreate,
-    GoalResponse,
-    GoalUpdate,
-    GoalProgressUpdate,
-    GoalRiskResponse,
     # Peer comparison schemas
     PeerComparisonResponse,
-    # Export schemas
-    ExportRequest,
-    ExportResponse,
+    # Reflection schemas
+    ReflectionCreate,
+    ReflectionPromptsResponse,
+    ReflectionResponse,
     ShareLinkCreate,
     ShareLinkResponse,
     # Common schemas
     SuccessResponse,
 )
-
+from core.auth_dependencies import AuthenticationDependency
+from core.database import get_db
+from core.service_dependencies import get_diary_service
+from models.diary import (
+    DiaryEntry,
+    DiaryExport,
+    ExportFormat,
+    Goal,
+    GoalStatus,
+    Insight,
+    LearningEntry,
+    Reflection,
+)
+from models.user import User
+from services.diary_service import DiaryService
+from services.emotional_service import EmotionalService
+from services.export_service import ExportService
+from services.goal_service import GoalService
+from services.insight_service import InsightService
+from services.learning_journal_service import LearningJournalService
+from services.peer_comparison_service import PeerComparisonService
+from services.reflection_service import ReflectionService
 
 # Authentication dependency - kimlik dogrulama zorunlu
 get_current_user = AuthenticationDependency(required=True)
@@ -75,6 +84,26 @@ router = APIRouter(prefix="/api/v1/diary", tags=["Diary"])
 # =============================================================================
 
 
+async def _verify_ownership(
+    db: AsyncSession,
+    model_class,
+    entity_id: UUID,
+    current_user: User,
+    label: str = "Kayit",
+) -> None:
+    """IDOR: verify entity belongs to current user."""
+    query = select(model_class.user_id).where(model_class.id == entity_id)
+    result = await db.execute(query)
+    owner_id = result.scalar_one_or_none()
+    if owner_id is None:
+        raise HTTPException(status_code=404, detail=f"{label} bulunamadi")
+    if str(owner_id) != str(current_user.id):
+        raise HTTPException(
+            status_code=403,
+            detail="Bu veriye erisim yetkiniz yok",
+        )
+
+
 # =============================================================================
 # REQ-1: Daily Summary Endpoints
 # =============================================================================
@@ -84,7 +113,7 @@ router = APIRouter(prefix="/api/v1/diary", tags=["Diary"])
 async def get_today_summary(
     current_user: User = Depends(get_current_user),
     service: DiaryService = Depends(get_diary_service),
-) -> Optional[DiaryEntryResponse]:
+) -> DiaryEntryResponse | None:
     """
     Bugunun gunluk ozetini getir.
 
@@ -120,7 +149,7 @@ async def get_summary_by_date(
     entry_date: date = Query(..., description="Kayit tarihi (YYYY-MM-DD)"),
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
-) -> Optional[DiaryEntryResponse]:
+) -> DiaryEntryResponse | None:
     """
     Belirli bir tarihin gunluk ozetini getir.
 
@@ -155,14 +184,14 @@ async def get_summary_by_date(
     return None
 
 
-@router.get("/summaries", response_model=List[DiaryEntryResponse])
+@router.get("/summaries", response_model=list[DiaryEntryResponse])
 async def get_summaries(
-    start_date: Optional[date] = Query(None, description="Baslangic tarihi"),
-    end_date: Optional[date] = Query(None, description="Bitis tarihi"),
+    start_date: date | None = Query(None, description="Baslangic tarihi"),
+    end_date: date | None = Query(None, description="Bitis tarihi"),
     limit: int = Query(30, ge=1, le=100, description="Maksimum kayit sayisi"),
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
-) -> List[DiaryEntryResponse]:
+) -> list[DiaryEntryResponse]:
     """
     Gunluk ozetleri listele.
 
@@ -229,8 +258,7 @@ async def create_summary(
     existing = await service.get_summary(user_id, request.date)
     if existing:
         raise HTTPException(
-            status_code=400,
-            detail=f"{request.date} tarihi icin kayit zaten mevcut"
+            status_code=400, detail=f"{request.date} tarihi icin kayit zaten mevcut"
         )
 
     entry = await service.generate_summary(
@@ -276,6 +304,7 @@ async def update_summary(
     Returns:
         DiaryEntryResponse
     """
+    await _verify_ownership(db, DiaryEntry, entry_id, current_user, "Ozet")
     service = DiaryService(db)
     entry = await service.update_summary(
         entry_id=entry_id,
@@ -321,6 +350,7 @@ async def delete_summary(
     Returns:
         SuccessResponse
     """
+    await _verify_ownership(db, DiaryEntry, entry_id, current_user, "Ozet")
     service = DiaryService(db)
     deleted = await service.delete_summary(entry_id)
 
@@ -335,14 +365,14 @@ async def delete_summary(
 # =============================================================================
 
 
-@router.get("/goals", response_model=List[GoalResponse])
+@router.get("/goals", response_model=list[GoalResponse])
 async def get_goals(
-    status: Optional[GoalStatus] = Query(None, description="Durum filtresi"),
-    category: Optional[str] = Query(None, description="Kategori filtresi"),
+    status: GoalStatus | None = Query(None, description="Durum filtresi"),
+    category: str | None = Query(None, description="Kategori filtresi"),
     limit: int = Query(50, ge=1, le=100, description="Maksimum kayit sayisi"),
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
-) -> List[GoalResponse]:
+) -> list[GoalResponse]:
     """
     Hedefleri listele.
 
@@ -366,11 +396,11 @@ async def get_goals(
     return [_goal_to_response(g) for g in goals]
 
 
-@router.get("/goals/active", response_model=List[GoalResponse])
+@router.get("/goals/active", response_model=list[GoalResponse])
 async def get_active_goals(
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
-) -> List[GoalResponse]:
+) -> list[GoalResponse]:
     """
     Aktif hedefleri listele.
 
@@ -383,11 +413,11 @@ async def get_active_goals(
     return [_goal_to_response(g) for g in goals]
 
 
-@router.get("/goals/at-risk", response_model=List[GoalResponse])
+@router.get("/goals/at-risk", response_model=list[GoalResponse])
 async def get_at_risk_goals(
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
-) -> List[GoalResponse]:
+) -> list[GoalResponse]:
     """
     Risk altindaki hedefleri listele.
 
@@ -431,6 +461,7 @@ async def get_goal(
     Returns:
         GoalResponse
     """
+    await _verify_ownership(db, Goal, goal_id, current_user, "Hedef")
     service = GoalService(db)
     goal = await service.get_goal(goal_id)
 
@@ -467,7 +498,7 @@ async def create_goal(
                 "message": "SMART kriterleri karsilanmiyor",
                 "missing": smart_result["missing"],
                 "warnings": smart_result["warnings"],
-            }
+            },
         )
 
     goal = await service.create_goal(user_id, request)
@@ -510,6 +541,7 @@ async def update_goal(
     Returns:
         GoalResponse
     """
+    await _verify_ownership(db, Goal, goal_id, current_user, "Hedef")
     service = GoalService(db)
     goal = await service.update_goal(goal_id, request)
 
@@ -536,6 +568,7 @@ async def update_goal_progress(
     Returns:
         Dict - Guncelleme sonucu (milestone celebrations dahil)
     """
+    await _verify_ownership(db, Goal, goal_id, current_user, "Hedef")
     service = GoalService(db)
     result = await service.update_progress(goal_id, request)
 
@@ -572,6 +605,7 @@ async def get_goal_risk(
     Returns:
         GoalRiskResponse
     """
+    await _verify_ownership(db, Goal, goal_id, current_user, "Hedef")
     service = GoalService(db)
     goal = await service.get_goal(goal_id)
 
@@ -585,8 +619,8 @@ async def get_goal_risk(
 async def adjust_goal(
     goal_id: UUID,
     reason: str = Query(..., min_length=5, description="Ayarlama nedeni"),
-    new_target_value: Optional[float] = Query(None, description="Yeni hedef degeri"),
-    new_target_date: Optional[datetime] = Query(None, description="Yeni hedef tarihi"),
+    new_target_value: float | None = Query(None, description="Yeni hedef degeri"),
+    new_target_date: datetime | None = Query(None, description="Yeni hedef tarihi"),
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> GoalResponse:
@@ -602,6 +636,7 @@ async def adjust_goal(
     Returns:
         GoalResponse
     """
+    await _verify_ownership(db, Goal, goal_id, current_user, "Hedef")
     service = GoalService(db)
     goal = await service.adjust_goal(
         goal_id=goal_id,
@@ -619,9 +654,11 @@ async def adjust_goal(
 @router.post("/goals/{goal_id}/retrospective", response_model=GoalResponse)
 async def create_goal_retrospective(
     goal_id: UUID,
-    lessons_learned: List[str] = Query(default=[], description="Ogrenilen dersler"),
-    success_factors: List[str] = Query(default=[], description="Basari faktorleri"),
-    challenges_faced: List[str] = Query(default=[], description="Karsilasilan zorluklar"),
+    lessons_learned: list[str] = Query(default=[], description="Ogrenilen dersler"),
+    success_factors: list[str] = Query(default=[], description="Basari faktorleri"),
+    challenges_faced: list[str] = Query(
+        default=[], description="Karsilasilan zorluklar"
+    ),
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> GoalResponse:
@@ -637,6 +674,7 @@ async def create_goal_retrospective(
     Returns:
         GoalResponse
     """
+    await _verify_ownership(db, Goal, goal_id, current_user, "Hedef")
     service = GoalService(db)
     goal = await service.create_retrospective(
         goal_id=goal_id,
@@ -666,6 +704,7 @@ async def delete_goal(
     Returns:
         SuccessResponse
     """
+    await _verify_ownership(db, Goal, goal_id, current_user, "Hedef")
     service = GoalService(db)
     deleted = await service.delete_goal(goal_id)
 
@@ -685,13 +724,15 @@ def _goal_to_response(goal) -> GoalResponse:
     from api.schemas.diary import MilestoneResponse
 
     milestones = []
-    for m in (goal.milestones or []):
-        milestones.append(MilestoneResponse(
-            percentage=m.get("percentage", 0),
-            title=m.get("title", ""),
-            achieved=m.get("achieved", False),
-            achieved_at=m.get("achieved_at"),
-        ))
+    for m in goal.milestones or []:
+        milestones.append(
+            MilestoneResponse(
+                percentage=m.get("percentage", 0),
+                title=m.get("title", ""),
+                achieved=m.get("achieved", False),
+                achieved_at=m.get("achieved_at"),
+            )
+        )
 
     return GoalResponse(
         id=goal.id,
@@ -713,7 +754,7 @@ def _goal_to_response(goal) -> GoalResponse:
         completed_at=goal.completed_at,
         category=goal.category,
         priority=goal.priority,
-        days_remaining=goal.days_remaining if hasattr(goal, 'days_remaining') else 0,
+        days_remaining=goal.days_remaining if hasattr(goal, "days_remaining") else 0,
         created_at=goal.created_at,
         updated_at=goal.updated_at,
     )
@@ -724,14 +765,14 @@ def _goal_to_response(goal) -> GoalResponse:
 # =============================================================================
 
 
-@router.get("/insights", response_model=List[InsightResponse])
+@router.get("/insights", response_model=list[InsightResponse])
 async def get_insights(
-    category: Optional[str] = Query(None, description="Kategori filtresi"),
+    category: str | None = Query(None, description="Kategori filtresi"),
     min_confidence: float = Query(0.8, ge=0.0, le=1.0, description="Min guven skoru"),
     limit: int = Query(50, ge=1, le=100, description="Maksimum kayit sayisi"),
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
-) -> List[InsightResponse]:
+) -> list[InsightResponse]:
     """
     Kullanici insightlarini listele.
 
@@ -754,13 +795,13 @@ async def get_insights(
     return [_insight_to_response(i) for i in insights]
 
 
-@router.post("/insights/analyze", response_model=List[InsightResponse])
+@router.post("/insights/analyze", response_model=list[InsightResponse])
 async def analyze_entries_for_insights(
-    start_date: Optional[date] = Query(None, description="Baslangic tarihi"),
-    end_date: Optional[date] = Query(None, description="Bitis tarihi"),
+    start_date: date | None = Query(None, description="Baslangic tarihi"),
+    end_date: date | None = Query(None, description="Bitis tarihi"),
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
-) -> List[InsightResponse]:
+) -> list[InsightResponse]:
     """
     Gunluk kayitlarini analiz edip yeni insightlar olustur.
 
@@ -796,6 +837,7 @@ async def get_insight(
     Returns:
         InsightResponse
     """
+    await _verify_ownership(db, Insight, insight_id, current_user, "Insight")
     service = InsightService(db)
     insight = await service.get_insight(insight_id)
 
@@ -820,6 +862,7 @@ async def delete_insight(
     Returns:
         SuccessResponse
     """
+    await _verify_ownership(db, Insight, insight_id, current_user, "Insight")
     service = InsightService(db)
     deleted = await service.delete_insight(insight_id)
 
@@ -854,7 +897,7 @@ def _insight_to_response(insight) -> InsightResponse:
 
 @router.get("/reflection/prompts", response_model=ReflectionPromptsResponse)
 async def get_reflection_prompts(
-    diary_entry_id: Optional[UUID] = Query(None, description="Gunluk kaydi ID"),
+    diary_entry_id: UUID | None = Query(None, description="Gunluk kaydi ID"),
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> ReflectionPromptsResponse:
@@ -903,15 +946,15 @@ async def create_reflection(
     return _reflection_to_response(reflection)
 
 
-@router.get("/reflections", response_model=List[ReflectionResponse])
+@router.get("/reflections", response_model=list[ReflectionResponse])
 async def get_reflections(
-    start_date: Optional[date] = Query(None, description="Baslangic tarihi"),
-    end_date: Optional[date] = Query(None, description="Bitis tarihi"),
-    depth: Optional[str] = Query(None, description="Derinlik filtresi"),
+    start_date: date | None = Query(None, description="Baslangic tarihi"),
+    end_date: date | None = Query(None, description="Bitis tarihi"),
+    depth: str | None = Query(None, description="Derinlik filtresi"),
     limit: int = Query(30, ge=1, le=100, description="Maksimum kayit sayisi"),
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
-) -> List[ReflectionResponse]:
+) -> list[ReflectionResponse]:
     """
     Yansitmalari listele.
 
@@ -953,6 +996,7 @@ async def get_reflection(
     Returns:
         ReflectionResponse
     """
+    await _verify_ownership(db, Reflection, reflection_id, current_user, "Yansitma")
     service = ReflectionService(db)
     reflection = await service.get_reflection(reflection_id)
 
@@ -1009,14 +1053,14 @@ async def create_learning_entry(
     return _learning_to_response(entry)
 
 
-@router.get("/learning", response_model=List[LearningEntryResponse])
+@router.get("/learning", response_model=list[LearningEntryResponse])
 async def get_learning_entries(
-    domain: Optional[str] = Query(None, description="Alan filtresi"),
-    tags: Optional[List[str]] = Query(None, description="Etiket filtresi"),
+    domain: str | None = Query(None, description="Alan filtresi"),
+    tags: list[str] | None = Query(None, description="Etiket filtresi"),
     limit: int = Query(50, ge=1, le=100, description="Maksimum kayit sayisi"),
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
-) -> List[LearningEntryResponse]:
+) -> list[LearningEntryResponse]:
     """
     Ogrenme kayitlarini listele.
 
@@ -1041,12 +1085,12 @@ async def get_learning_entries(
     return [_learning_to_response(e) for e in entries]
 
 
-@router.get("/learning/review", response_model=List[LearningEntryResponse])
+@router.get("/learning/review", response_model=list[LearningEntryResponse])
 async def get_due_reviews(
     limit: int = Query(10, ge=1, le=50, description="Maksimum kayit sayisi"),
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
-) -> List[LearningEntryResponse]:
+) -> list[LearningEntryResponse]:
     """
     Tekrar edilmesi gereken ogrenme kayitlarini getir.
 
@@ -1082,6 +1126,7 @@ async def record_review(
     Returns:
         LearningReviewResponse
     """
+    await _verify_ownership(db, LearningEntry, entry_id, current_user, "Ogrenme kaydi")
     service = LearningJournalService(db)
 
     result = await service.record_review(
@@ -1106,7 +1151,7 @@ async def record_review(
 async def get_knowledge_graph(
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """
     Bilgi grafini getir.
 
@@ -1124,7 +1169,7 @@ async def get_knowledge_graph(
 async def get_knowledge_gaps(
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
-) -> List[Dict[str, Any]]:
+) -> list[dict[str, Any]]:
     """
     Bilgi bosluklerini tespit et.
 
@@ -1153,6 +1198,7 @@ async def get_learning_entry(
     Returns:
         LearningEntryResponse
     """
+    await _verify_ownership(db, LearningEntry, entry_id, current_user, "Ogrenme kaydi")
     service = LearningJournalService(db)
     entry = await service.get_entry(entry_id)
 
@@ -1165,7 +1211,7 @@ async def get_learning_entry(
 @router.post("/learning/{entry_id}/link")
 async def link_concepts(
     entry_id: UUID,
-    concepts: List[str] = Query(..., description="Ilgili kavramlar"),
+    concepts: list[str] = Query(..., description="Ilgili kavramlar"),
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> SuccessResponse:
@@ -1179,6 +1225,7 @@ async def link_concepts(
     Returns:
         SuccessResponse
     """
+    await _verify_ownership(db, LearningEntry, entry_id, current_user, "Ogrenme kaydi")
     service = LearningJournalService(db)
 
     result = await service.link_concepts(entry_id, concepts)
@@ -1238,14 +1285,14 @@ async def track_emotional_state(
     return _emotional_to_response(state)
 
 
-@router.get("/emotional", response_model=List[EmotionalStateResponse])
+@router.get("/emotional", response_model=list[EmotionalStateResponse])
 async def get_emotional_states(
-    start_date: Optional[date] = Query(None, description="Baslangic tarihi"),
-    end_date: Optional[date] = Query(None, description="Bitis tarihi"),
+    start_date: date | None = Query(None, description="Baslangic tarihi"),
+    end_date: date | None = Query(None, description="Bitis tarihi"),
     limit: int = Query(50, ge=1, le=100, description="Maksimum kayit sayisi"),
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
-) -> List[EmotionalStateResponse]:
+) -> list[EmotionalStateResponse]:
     """
     Duygusal durum kayitlarini listele.
 
@@ -1331,7 +1378,7 @@ async def get_frustration_alerts(
     threshold: float = Query(0.7, ge=0.5, le=1.0, description="Esik degeri"),
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
-) -> List[Dict[str, Any]]:
+) -> list[dict[str, Any]]:
     """
     Hayal kirikligi uyarilarini getir.
 
@@ -1409,12 +1456,12 @@ async def get_peer_comparison(
     )
 
 
-@router.get("/peer-comparison/history", response_model=List[PeerComparisonResponse])
+@router.get("/peer-comparison/history", response_model=list[PeerComparisonResponse])
 async def get_peer_comparison_history(
     limit: int = Query(10, ge=1, le=50, description="Maksimum kayit sayisi"),
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
-) -> List[PeerComparisonResponse]:
+) -> list[PeerComparisonResponse]:
     """
     Akran karsilastirma gecmisini getir.
 
@@ -1502,6 +1549,9 @@ async def download_export(
     Returns:
         StreamingResponse
     """
+    await _verify_ownership(
+        db, DiaryExport, export_id, current_user, "Export"
+    )
     service = ExportService(db)
 
     export_data = await service.get_export(export_id)
@@ -1587,7 +1637,9 @@ async def get_shared_export(
     result = await service.get_shared_export(share_token)
 
     if not result:
-        raise HTTPException(status_code=404, detail="Paylasim bulunamadi veya suresi dolmus")
+        raise HTTPException(
+            status_code=404, detail="Paylasim bulunamadi veya suresi dolmus"
+        )
 
     content = result["content"]
     export_data = result["export"]
@@ -1607,12 +1659,12 @@ async def get_shared_export(
     )
 
 
-@router.get("/exports", response_model=List[ExportResponse])
+@router.get("/exports", response_model=list[ExportResponse])
 async def get_exports(
     limit: int = Query(20, ge=1, le=50, description="Maksimum kayit sayisi"),
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
-) -> List[ExportResponse]:
+) -> list[ExportResponse]:
     """
     Export gecmisini listele.
 
@@ -1648,7 +1700,7 @@ async def create_encrypted_backup(
     password: str = Query(..., min_length=8, description="Sifreleme sifresi"),
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """
     Sifrelenmis yedek olustur.
 
