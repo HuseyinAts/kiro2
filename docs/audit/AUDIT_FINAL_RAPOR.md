@@ -3,7 +3,7 @@
 **Tarih:** 2026-03-21
 **Branch:** audit/fullstack-20260321
 **Onceki commit:** `c4b913e` (review fixes)
-**Son commit:** `7e3a41d` (5 HIGH fix tamamlandi)
+**Son commit:** `3e59780` (round 2 — 3 kalan fix tamamlandi)
 **Auditor:** Claude Opus 4.6 (otonom)
 
 ---
@@ -16,11 +16,11 @@ KIRO2 platformunda 5 fazli kapsamli audit yapildi. 1,108 backend endpoint, 326 f
 
 | Kategori | CRITICAL | HIGH | MEDIUM | LOW |
 |----------|----------|------|--------|-----|
-| Guvenlik | ~~2~~ 0 FIXED | ~~5~~ 1 (4 FIXED, 1 FALSE POS) | 18 | 25+ |
+| Guvenlik | ~~2~~ 0 FIXED | ~~5~~ 0 (4 FIXED, 1 FALSE POS) | ~~18~~ 16 (2 FIXED) | 25+ |
 | Entegrasyon | 0 | ~~1~~ 0 FIXED | 2 | 5 |
 | Veri Katmani | 0 | 0 | 1 | 2 |
 | Dead Code | 0 | 0 | 1 | 3 |
-| **TOPLAM** | **0** | **1** | **22** | **35+** |
+| **TOPLAM** | **0** | **0** | **20** | **35+** |
 
 ### Uygulanan Fixler
 
@@ -39,6 +39,9 @@ KIRO2 platformunda 5 fazli kapsamli audit yapildi. 1,108 backend endpoint, 326 f
 | **diary_api.py auth guard (17 endpoint)** | **HIGH** | backend/api/diary_api.py | `8561ab6` |
 | **question_bank_v2_routes.py auth (11 endpoint) + IDOR** | **HIGH** | backend/api/question_bank_v2_routes.py | `7e3a41d` |
 | **content_management.py FALSE POSITIVE** | ~~HIGH~~ | Zaten admin_yetki_kontrolu ile korunuyor | N/A |
+| **config_routes.py auth guard (5 endpoint) + IDOR** | **HIGH** | backend/api/config_routes.py | `20fcd39` |
+| **diary_api.py IDOR ownership (16 endpoint)** | **MEDIUM** | backend/api/diary_api.py | `52f1750` |
+| **axios.defaults.withCredentials global** | **MEDIUM** | frontend/src/main.tsx | `3e59780` |
 
 ---
 
@@ -64,8 +67,12 @@ KIRO2 platformunda 5 fazli kapsamli audit yapildi. 1,108 backend endpoint, 326 f
 - ~~`question_bank_v2_routes.py`~~ FIXED — 11 endpoint auth + IDOR helper (`7e3a41d`)
 - ~~CORS production origin~~ FIXED — production validation warning eklendi (`d733cbb`)
 
-**Bekleyen HIGH sorunlar:**
-- `config_routes.py` (7 acik sistem config endpoint)
+**Cozulen sorunlar (Round 2 — 2026-03-21):**
+- ~~`config_routes.py`~~ FIXED — 5 endpoint auth + 2 IDOR (`20fcd39`)
+- ~~diary IDOR ownership~~ FIXED — 16 endpoint ownership check (`52f1750`)
+- ~~axios withCredentials~~ FIXED — global defaults (`3e59780`)
+
+**Bekleyen HIGH sorunlar:** YOK
 
 **False positive duzeltmeleri:**
 - `berturk_api.py cache/clear` — aslinda auth'lu (Depends(get_current_user) + admin check)
@@ -109,6 +116,9 @@ KIRO2 platformunda 5 fazli kapsamli audit yapildi. 1,108 backend endpoint, 326 f
 | 3 | diary_api.py kalan 17 endpoint auth | ~~HIGH~~ | FIXED `8561ab6` |
 | 4 | CORS production validation | ~~HIGH~~ | FIXED `d733cbb` |
 | 5 | question_bank_v2_routes.py auth + IDOR | ~~HIGH~~ | FIXED `7e3a41d` |
+| 6 | config_routes.py auth + IDOR | ~~HIGH~~ | FIXED `20fcd39` |
+| 7 | diary IDOR ownership (16 endpoint) | ~~MEDIUM~~ | FIXED `52f1750` |
+| 8 | axios.defaults.withCredentials global | ~~MEDIUM~~ | FIXED `3e59780` |
 
 ### Planlanan (Sonraki Sprint)
 
