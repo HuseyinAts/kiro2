@@ -4,20 +4,36 @@ Configuration API Routes
 Feature flag ve configuration bilgilerini expose eden API endpoint'leri.
 """
 
-from fastapi import APIRouter, Depends, HTTPException
-from typing import Dict, Any
+from typing import Any
 
-from core.dependencies import get_current_user, AuthenticatedUser
+from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
 
+from core.config_utils import get_config_for_user
+from core.dependencies import AuthenticatedUser, UserRole, get_current_user
 from core.feature_flags import (
     FeatureFlag,
     get_feature_flag_manager,
 )
-from core.config_utils import get_config_for_user
-
 
 router = APIRouter(prefix="/api/v1/config", tags=["configuration"])
+
+
+def _verify_user_access(
+    current_user: AuthenticatedUser, user_id: str
+) -> None:
+    """IDOR: user own config only, admin/teacher any."""
+    if current_user.role in (
+        UserRole.ADMIN,
+        UserRole.TEACHER,
+        UserRole.SUPER_ADMIN,
+    ):
+        return
+    if str(current_user.id) != user_id:
+        raise HTTPException(
+            status_code=403,
+            detail="Bu kullanici verisine erisim yetkiniz yok",
+        )
 
 
 class FeatureFlagResponse(BaseModel):
@@ -34,8 +50,8 @@ class ConfigSummaryResponse(BaseModel):
     environment: str
     enabled_features: list
     disabled_features: list
-    quality_thresholds: Dict[str, Any]
-    performance_config: Dict[str, Any]
+    quality_thresholds: dict[str, Any]
+    performance_config: dict[str, Any]
     active_ab_tests: list
 
 
@@ -43,15 +59,15 @@ class UserConfigResponse(BaseModel):
     """User-specific configuration response"""
 
     user_id: str
-    quality_thresholds: Dict[str, Any]
-    performance_config: Dict[str, Any]
-    feature_flags: Dict[str, bool]
-    ab_test_variants: Dict[str, Any]
+    quality_thresholds: dict[str, Any]
+    performance_config: dict[str, Any]
+    feature_flags: dict[str, bool]
+    ab_test_variants: dict[str, Any]
 
 
 @router.get("/summary", response_model=ConfigSummaryResponse)
 async def get_config_summary(
-    current_user: AuthenticatedUser = Depends(get_current_user)
+    current_user: AuthenticatedUser = Depends(get_current_user),
 ):
     """
     Sistem konfigürasyon özetini al
@@ -70,9 +86,7 @@ async def get_config_summary(
 
 
 @router.get("/features", response_model=list[FeatureFlagResponse])
-async def get_all_features(
-    current_user: AuthenticatedUser = Depends(get_current_user)
-):
+async def get_all_features(current_user: AuthenticatedUser = Depends(get_current_user)):
     """
     Tüm feature flag'leri listele
 
@@ -116,7 +130,10 @@ async def get_all_features(
 
 
 @router.get("/features/{flag_name}")
-async def get_feature_status(flag_name: str):
+async def get_feature_status(
+    flag_name: str,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+):
     """
     Belirli bir feature flag'in durumunu al
 
@@ -139,7 +156,9 @@ async def get_feature_status(flag_name: str):
 
 
 @router.get("/quality-thresholds")
-async def get_quality_thresholds():
+async def get_quality_thresholds(
+    current_user: AuthenticatedUser = Depends(get_current_user),
+):
     """
     Quality threshold değerlerini al
 
@@ -153,7 +172,9 @@ async def get_quality_thresholds():
 
 
 @router.get("/performance")
-async def get_performance_config():
+async def get_performance_config(
+    current_user: AuthenticatedUser = Depends(get_current_user),
+):
     """
     Performance konfigürasyonunu al
 
@@ -167,7 +188,9 @@ async def get_performance_config():
 
 
 @router.get("/ab-tests")
-async def get_ab_tests():
+async def get_ab_tests(
+    current_user: AuthenticatedUser = Depends(get_current_user),
+):
     """
     Aktif A/B testleri listele
 
@@ -201,7 +224,10 @@ async def get_ab_tests():
 
 
 @router.get("/user/{user_id}", response_model=UserConfigResponse)
-async def get_user_config(user_id: str):
+async def get_user_config(
+    user_id: str,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+):
     """
     Kullanıcıya özel konfigürasyonu al (A/B test overrides dahil)
 
@@ -211,13 +237,18 @@ async def get_user_config(user_id: str):
     Returns:
         Kullanıcıya özel tam konfigürasyon
     """
+    _verify_user_access(current_user, user_id)
     config = get_config_for_user(user_id)
 
     return UserConfigResponse(user_id=user_id, **config)
 
 
 @router.get("/ab-tests/{test_id}/variant/{user_id}")
-async def get_user_ab_test_variant(test_id: str, user_id: str):
+async def get_user_ab_test_variant(
+    test_id: str,
+    user_id: str,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+):
     """
     Kullanıcının A/B test varyantını al
 
@@ -228,6 +259,7 @@ async def get_user_ab_test_variant(test_id: str, user_id: str):
     Returns:
         Kullanıcının atandığı variant
     """
+    _verify_user_access(current_user, user_id)
     manager = get_feature_flag_manager()
     variant = manager.get_ab_test_variant(test_id, user_id)
 
