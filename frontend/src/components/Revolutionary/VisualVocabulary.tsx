@@ -56,7 +56,7 @@ const VisualVocabulary: React.FC = () => {
   // REQ-50.82: Visual vocabulary builder
   const loadProgress = async () => {
     try {
-      const response = await fetch('/api/v1/visual-supports/vocabulary-cards/progress/user123');
+      const response = await fetch('/api/v1/visual-supports/vocabulary-cards/progress', { credentials: 'include' });
       if (response.ok) {
         const data = await response.json();
         setProgress(data);

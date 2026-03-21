@@ -9,16 +9,18 @@ API Endpoints:
 - Color Coding (Renk Kodlama)
 """
 
-from fastapi import APIRouter, HTTPException, Query
-from typing import List, Optional, Dict, Any
+from typing import Any
+
+from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel
 
+from core.dependencies import get_current_user
 from services.visual_supports_service import (
-    visual_supports_service,
-    MindMap,
-    Infographic,
-    VisualVocabularyCard,
     ColorCodingScheme,
+    Infographic,
+    MindMap,
+    VisualVocabularyCard,
+    visual_supports_service,
 )
 
 router = APIRouter(prefix="/api/v1/visual-supports", tags=["Visual Supports"])
@@ -36,17 +38,16 @@ class MindMapCreateRequest(BaseModel):
     subject: str
     topic: str
     content: str
-    user_id: Optional[str] = None
 
 
 class MindMapNodeUpdateRequest(BaseModel):
     """Kavram haritası düğüm güncelleme isteği"""
 
-    label: Optional[str] = None
-    description: Optional[str] = None
-    color: Optional[str] = None
-    x: Optional[float] = None
-    y: Optional[float] = None
+    label: str | None = None
+    description: str | None = None
+    color: str | None = None
+    x: float | None = None
+    y: float | None = None
 
 
 class InfographicCreateRequest(BaseModel):
@@ -56,8 +57,7 @@ class InfographicCreateRequest(BaseModel):
     subject: str
     topic: str
     template: str
-    data: List[Dict[str, Any]]
-    user_id: Optional[str] = None
+    data: list[dict[str, Any]]
 
 
 class VocabularyCardCreateRequest(BaseModel):
@@ -67,8 +67,8 @@ class VocabularyCardCreateRequest(BaseModel):
     definition: str
     image_url: str
     category: str
-    example_sentence: Optional[str] = None
-    synonyms: Optional[List[str]] = None
+    example_sentence: str | None = None
+    synonyms: list[str] | None = None
     difficulty_level: int = 1
 
 
@@ -77,8 +77,7 @@ class ColorSchemeCreateRequest(BaseModel):
 
     name: str
     description: str
-    categories: Dict[str, str]
-    user_id: Optional[str] = None
+    categories: dict[str, str]
 
 
 class ColorMappingUpdateRequest(BaseModel):
@@ -94,11 +93,12 @@ class ColorMappingUpdateRequest(BaseModel):
 
 
 @router.post("/mind-maps", response_model=MindMap)
-async def create_mind_map(request: MindMapCreateRequest):
+async def create_mind_map(
+    request: MindMapCreateRequest,
+    current_user=Depends(get_current_user),
+):
     """
     REQ-50.73: Kavram haritası oluştur
-
-    Mind map generation algoritması ile içerikten otomatik kavram haritası oluşturur.
     """
     try:
         mind_map = visual_supports_service.generate_mind_map(
@@ -106,22 +106,20 @@ async def create_mind_map(request: MindMapCreateRequest):
             subject=request.subject,
             topic=request.topic,
             content=request.content,
-            user_id=request.user_id,
+            user_id=str(current_user.id),
         )
         return mind_map
     except Exception as e:
-        raise HTTPException(
-            status_code=500, detail=f"Mind map creation failed: {str(e)}"
-        )
+        raise HTTPException(status_code=500, detail=f"Mind map creation failed: {e!s}")
 
 
 @router.get("/mind-maps/{mind_map_id}", response_model=MindMap)
-async def get_mind_map(mind_map_id: str):
+async def get_mind_map(
+    mind_map_id: str,
+    current_user=Depends(get_current_user),
+):
     """
     REQ-50.74: Kavram haritasını getir (interactive exploration)
-
-    Kavram haritasını tüm düğümleri ve ilişkileri ile birlikte getirir.
-    Frontend'de interaktif olarak keşfedilebilir.
     """
     mind_map = visual_supports_service.get_mind_map(mind_map_id)
     if not mind_map:
@@ -131,12 +129,12 @@ async def get_mind_map(mind_map_id: str):
 
 @router.get("/mind-maps/{mind_map_id}/export")
 async def export_mind_map(
-    mind_map_id: str, format: str = Query("json", regex="^(json|svg|png)$")
+    mind_map_id: str,
+    format: str = Query("json", regex="^(json|svg|png)$"),
+    current_user=Depends(get_current_user),
 ):
     """
     REQ-50.75: Kavram haritasını dışa aktar
-
-    Desteklenen formatlar: json, svg, png
     """
     result = visual_supports_service.export_mind_map(mind_map_id, format)
     if "error" in result:
@@ -146,13 +144,13 @@ async def export_mind_map(
 
 @router.patch("/mind-maps/{mind_map_id}/nodes/{node_id}")
 async def update_mind_map_node(
-    mind_map_id: str, node_id: str, request: MindMapNodeUpdateRequest
+    mind_map_id: str,
+    node_id: str,
+    request: MindMapNodeUpdateRequest,
+    current_user=Depends(get_current_user),
 ):
     """
     REQ-50.76: Kavram haritası düğümünü güncelle (drag-and-drop support)
-
-    Düğüm pozisyonu, rengi, etiketi vb. güncellenebilir.
-    Frontend'de drag-and-drop ile kullanılır.
     """
     updates = request.dict(exclude_unset=True)
     success = visual_supports_service.update_mind_map_node(
@@ -169,11 +167,12 @@ async def update_mind_map_node(
 
 
 @router.post("/infographics", response_model=Infographic)
-async def create_infographic(request: InfographicCreateRequest):
+async def create_infographic(
+    request: InfographicCreateRequest,
+    current_user=Depends(get_current_user),
+):
     """
     REQ-50.77: İnfografik oluştur (visual summary generation)
-
-    Verilen veri ve şablona göre otomatik infografik oluşturur.
     """
     try:
         infographic = visual_supports_service.generate_infographic(
@@ -182,21 +181,21 @@ async def create_infographic(request: InfographicCreateRequest):
             topic=request.topic,
             template=request.template,
             data=request.data,
-            user_id=request.user_id,
+            user_id=str(current_user.id),
         )
         return infographic
     except Exception as e:
         raise HTTPException(
-            status_code=500, detail=f"Infographic creation failed: {str(e)}"
+            status_code=500, detail=f"Infographic creation failed: {e!s}"
         )
 
 
 @router.get("/infographics/templates")
-async def get_infographic_templates():
+async def get_infographic_templates(
+    current_user=Depends(get_current_user),
+):
     """
     REQ-50.79: İnfografik şablonlarını getir (customizable templates)
-
-    Mevcut tüm infografik şablonlarını listeler.
     """
     templates = visual_supports_service.get_infographic_templates()
     return {"templates": templates}
@@ -204,12 +203,12 @@ async def get_infographic_templates():
 
 @router.get("/infographics/{infographic_id}/export")
 async def export_infographic(
-    infographic_id: str, format: str = Query("png", regex="^(json|svg|png|pdf)$")
+    infographic_id: str,
+    format: str = Query("png", regex="^(json|svg|png|pdf)$"),
+    current_user=Depends(get_current_user),
 ):
     """
-    REQ-50.80: İnfografiği dışa aktar (farklı format seçenekleri)
-
-    Desteklenen formatlar: json, svg, png, pdf
+    REQ-50.80: İnfografiği dışa aktar
     """
     result = visual_supports_service.export_infographic(infographic_id, format)
     if "error" in result:
@@ -223,11 +222,12 @@ async def export_infographic(
 
 
 @router.post("/vocabulary-cards", response_model=VisualVocabularyCard)
-async def create_vocabulary_card(request: VocabularyCardCreateRequest):
+async def create_vocabulary_card(
+    request: VocabularyCardCreateRequest,
+    current_user=Depends(get_current_user),
+):
     """
     REQ-50.81: Görsel kelime kartı oluştur (image-word associations)
-
-    Kelime, tanım, görsel ve kategori ile kelime kartı oluşturur.
     """
     try:
         card = visual_supports_service.create_vocabulary_card(
@@ -241,19 +241,18 @@ async def create_vocabulary_card(request: VocabularyCardCreateRequest):
         )
         return card
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Card creation failed: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Card creation failed: {e!s}")
 
 
-@router.get("/vocabulary-cards/search", response_model=List[VisualVocabularyCard])
+@router.get("/vocabulary-cards/search", response_model=list[VisualVocabularyCard])
 async def search_vocabulary_cards(
     query: str = Query(..., min_length=1),
-    category: Optional[str] = None,
-    difficulty_level: Optional[int] = Query(None, ge=1, le=5),
+    category: str | None = None,
+    difficulty_level: int | None = Query(None, ge=1, le=5),
+    current_user=Depends(get_current_user),
 ):
     """
     REQ-50.83: Resimli sözlükte arama yap (searchable image database)
-
-    Kelime veya tanımda arama yapar, kategori ve zorluk seviyesine göre filtreler.
     """
     cards = visual_supports_service.search_vocabulary_cards(
         query=query, category=category, difficulty_level=difficulty_level
@@ -261,14 +260,16 @@ async def search_vocabulary_cards(
     return cards
 
 
-@router.get("/vocabulary-cards/progress/{user_id}")
-async def get_vocabulary_progress(user_id: str):
+@router.get("/vocabulary-cards/progress")
+async def get_vocabulary_progress(
+    current_user=Depends(get_current_user),
+):
     """
     REQ-50.82: Kelime öğrenme ilerlemesini getir (visual vocabulary builder)
-
-    Kullanıcının kelime öğrenme ilerlemesini ve istatistiklerini döner.
     """
-    progress = visual_supports_service.get_vocabulary_builder_progress(user_id)
+    progress = visual_supports_service.get_vocabulary_builder_progress(
+        str(current_user.id)
+    )
     return progress
 
 
@@ -278,32 +279,34 @@ async def get_vocabulary_progress(user_id: str):
 
 
 @router.post("/color-schemes", response_model=ColorCodingScheme)
-async def create_color_scheme(request: ColorSchemeCreateRequest):
+async def create_color_scheme(
+    request: ColorSchemeCreateRequest,
+    current_user=Depends(get_current_user),
+):
     """
     REQ-50.85: Renk kodlama şeması oluştur (color-coded categories)
-
-    Özel renk şeması oluşturur.
     """
     try:
         scheme = visual_supports_service.create_color_scheme(
             name=request.name,
             description=request.description,
             categories=request.categories,
-            user_id=request.user_id,
+            user_id=str(current_user.id),
         )
         return scheme
     except Exception as e:
         raise HTTPException(
-            status_code=500, detail=f"Color scheme creation failed: {str(e)}"
+            status_code=500, detail=f"Color scheme creation failed: {e!s}"
         )
 
 
 @router.get("/color-schemes/{scheme_id}", response_model=ColorCodingScheme)
-async def get_color_scheme(scheme_id: str):
+async def get_color_scheme(
+    scheme_id: str,
+    current_user=Depends(get_current_user),
+):
     """
     REQ-50.86: Renk şemasını getir (consistent color scheme)
-
-    Belirtilen renk şemasını getirir.
     """
     scheme = visual_supports_service.get_color_scheme(scheme_id)
     if not scheme:
@@ -311,23 +314,25 @@ async def get_color_scheme(scheme_id: str):
     return scheme
 
 
-@router.get("/color-schemes", response_model=List[ColorCodingScheme])
-async def get_default_color_schemes():
+@router.get("/color-schemes", response_model=list[ColorCodingScheme])
+async def get_default_color_schemes(
+    current_user=Depends(get_current_user),
+):
     """
     REQ-50.86: Varsayılan renk şemalarını getir
-
-    Tüm varsayılan renk şemalarını listeler.
     """
     schemes = visual_supports_service.get_default_color_schemes()
     return schemes
 
 
 @router.patch("/color-schemes/{scheme_id}/mapping")
-async def update_color_mapping(scheme_id: str, request: ColorMappingUpdateRequest):
+async def update_color_mapping(
+    scheme_id: str,
+    request: ColorMappingUpdateRequest,
+    current_user=Depends(get_current_user),
+):
     """
     REQ-50.87: Renk eşleştirmesini özelleştir (customizable color mapping)
-
-    Belirli bir kategorinin rengini günceller.
     """
     success = visual_supports_service.customize_color_mapping(
         scheme_id=scheme_id, category=request.category, new_color=request.new_color
@@ -338,13 +343,16 @@ async def update_color_mapping(scheme_id: str, request: ColorMappingUpdateReques
 
 
 @router.post("/color-schemes/{scheme_id}/save-preferences")
-async def save_color_preferences(scheme_id: str, user_id: str = Query(...)):
+async def save_color_preferences(
+    scheme_id: str,
+    current_user=Depends(get_current_user),
+):
     """
     REQ-50.88: Kullanıcı renk tercihlerini kaydet
-
-    Kullanıcının seçtiği renk şemasını kaydeder.
     """
-    result = visual_supports_service.save_user_color_preferences(user_id, scheme_id)
+    result = visual_supports_service.save_user_color_preferences(
+        str(current_user.id), scheme_id
+    )
     if not result["success"]:
         raise HTTPException(
             status_code=404, detail=result.get("error", "Unknown error")

@@ -9,18 +9,16 @@ Updated: 2026-01-17
 - Added Mermaid visualization endpoint (REQ-6.2)
 """
 
-from typing import Optional, List
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel, ConfigDict, Field
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from core.database import get_db
 from core.auth_dependencies import authenticate_optional
-from services.sequential_reasoning_service import SequentialReasoningService
+from core.database import get_db
 from services.reasoning.visualization_service import get_visualization_service
-
+from services.sequential_reasoning_service import SequentialReasoningService
 
 router = APIRouter(prefix="/api/v1/reasoning", tags=["Sequential Reasoning"])
 
@@ -34,7 +32,7 @@ class SolveRequest(BaseModel):
     """Request to solve a problem"""
 
     problem: str = Field(..., min_length=5, description="Problem to solve")
-    provider: Optional[str] = Field(
+    provider: str | None = Field(
         None,
         description="LLM provider: gemini, openai, claude, qwen",
     )
@@ -53,15 +51,17 @@ class SolveRequest(BaseModel):
         description="Check and use reasoning cache",
     )
 
-    model_config = ConfigDict(json_schema_extra={
-        "example": {
-            "problem": "x^2 + 5x + 6 = 0 denklemini coz",
-            "provider": "gemini",
-            "use_ensemble": False,
-            "max_steps": 10,
-            "use_cache": True,
+    model_config = ConfigDict(
+        json_schema_extra={
+            "example": {
+                "problem": "x^2 + 5x + 6 = 0 denklemini coz",
+                "provider": "gemini",
+                "use_ensemble": False,
+                "max_steps": 10,
+                "use_cache": True,
+            }
         }
-    })
+    )
 
 
 class ReasoningStepResponse(BaseModel):
@@ -70,41 +70,41 @@ class ReasoningStepResponse(BaseModel):
     step_number: int
     step_type: str
     description: str
-    reasoning: Optional[str]
-    result: Optional[str]
+    reasoning: str | None
+    result: str | None
     confidence: float
 
 
 class SolveResponse(BaseModel):
     """Response from solve endpoint"""
 
-    session_id: Optional[str]
+    session_id: str | None
     problem: str
-    understanding: Optional[str]
-    steps: List[dict]
+    understanding: str | None
+    steps: list[dict]
     final_answer: str
-    verification: Optional[str]
+    verification: str | None
     confidence: float
-    provider: Optional[str]
-    model: Optional[str]
+    provider: str | None
+    model: str | None
     latency_ms: float
     from_cache: bool = False
-    ensemble_scores: Optional[dict]
+    ensemble_scores: dict | None
 
 
 class DecomposeRequest(BaseModel):
     """Request to decompose a problem"""
 
     problem: str = Field(..., min_length=5, description="Complex problem to decompose")
-    provider: Optional[str] = Field(None)
+    provider: str | None = Field(None)
 
 
 class DecomposeResponse(BaseModel):
     """Response from decompose endpoint"""
 
     main_problem: str
-    sub_problems: List[dict]
-    solving_order: List[int]
+    sub_problems: list[dict]
+    solving_order: list[int]
     total_steps: int
 
 
@@ -119,14 +119,14 @@ class CompareResponse(BaseModel):
 
     problem: str
     providers: dict
-    best_provider: Optional[str]
-    fastest_provider: Optional[str]
+    best_provider: str | None
+    fastest_provider: str | None
 
 
 class CacheInvalidateRequest(BaseModel):
     """Request to invalidate cache"""
 
-    problem: Optional[str] = Field(None, description="Specific problem to invalidate")
+    problem: str | None = Field(None, description="Specific problem to invalidate")
 
 
 class MermaidResponse(BaseModel):
@@ -135,9 +135,13 @@ class MermaidResponse(BaseModel):
     mermaid: str = Field(..., description="Mermaid diagram code")
     node_count: int = Field(..., description="Number of nodes")
     edge_count: int = Field(..., description="Number of edges")
-    critical_path: List[str] = Field(default_factory=list, description="Critical path node IDs")
+    critical_path: list[str] = Field(
+        default_factory=list, description="Critical path node IDs"
+    )
     has_branches: bool = Field(False, description="Whether tree has branches")
-    tree_data: Optional[dict] = Field(None, description="JSON tree data for interactive UI")
+    tree_data: dict | None = Field(
+        None, description="JSON tree data for interactive UI"
+    )
 
 
 # ============================================================================
@@ -238,9 +242,13 @@ async def get_session_steps(
 @router.get("/session/{session_id}/mermaid", response_model=MermaidResponse)
 async def get_session_mermaid(
     session_id: UUID,
-    orientation: str = Query("TD", regex="^(TD|LR)$", description="TD=top-down, LR=left-right"),
+    orientation: str = Query(
+        "TD", regex="^(TD|LR)$", description="TD=top-down, LR=left-right"
+    ),
     show_confidence: bool = Query(True, description="Show confidence values"),
-    include_tree_data: bool = Query(True, description="Include JSON tree for interactive UI"),
+    include_tree_data: bool = Query(
+        True, description="Include JSON tree for interactive UI"
+    ),
     db: AsyncSession = Depends(get_db),
 ):
     """
@@ -354,6 +362,7 @@ async def compare_providers(
 async def invalidate_cache(
     request: CacheInvalidateRequest,
     db: AsyncSession = Depends(get_db),
+    current_user=Depends(authenticate_optional),
 ):
     """
     Invalidate reasoning cache
