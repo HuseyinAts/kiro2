@@ -8,12 +8,11 @@ Strategy: TestClient-based HTTP flow testing with mocked services
 
 import asyncio
 import json
-from datetime import datetime, timedelta
+from datetime import UTC, datetime, timedelta
 from unittest.mock import AsyncMock, Mock, patch
 
 import pytest
 from fastapi import HTTPException
-
 
 # ==================== OSYM EXAM API TESTS ====================
 
@@ -124,6 +123,7 @@ class TestOsymExamCreateEndpoint:
     def mock_user(self):
         """Mock authenticated user (sinav.py uses current_user.id)"""
         from types import SimpleNamespace
+
         return SimpleNamespace(id="test-user-123", role="student")
 
     def test_create_exam_endpoint_exists(self):
@@ -290,6 +290,7 @@ class TestOsymExamStartEndpoint:
     @pytest.fixture
     def mock_user(self):
         from types import SimpleNamespace
+
         return SimpleNamespace(id="test-user-123", role="student")
 
     def test_start_exam_endpoint_exists(self):
@@ -353,9 +354,13 @@ class TestOsymExamStartEndpoint:
             with pytest.raises(HTTPException) as exc_info:
                 await start_exam("session-123", mock_user)
 
-            assert exc_info.value.status_code == 500  # API wraps permission error as 500
+            assert (
+                exc_info.value.status_code == 500
+            )  # API wraps permission error as 500
             # Check for error message (handle encoding variations)
-            assert "yok" in exc_info.value.detail or "beklenmeyen" in exc_info.value.detail
+            assert (
+                "yok" in exc_info.value.detail or "beklenmeyen" in exc_info.value.detail
+            )
 
     @pytest.mark.asyncio
     async def test_start_exam_value_error(self, mock_user):
@@ -383,6 +388,7 @@ class TestOsymExamQuestionEndpoints:
     @pytest.fixture
     def mock_user(self):
         from types import SimpleNamespace
+
         return SimpleNamespace(id="test-user-123", role="student")
 
     @pytest.mark.asyncio
@@ -563,6 +569,7 @@ class TestOsymExamTimeManagement:
     @pytest.fixture
     def mock_user(self):
         from types import SimpleNamespace
+
         return SimpleNamespace(id="test-user-123", role="student")
 
     @pytest.mark.asyncio
@@ -631,6 +638,7 @@ class TestOsymExamCompletionEndpoint:
     @pytest.fixture
     def mock_user(self):
         from types import SimpleNamespace
+
         return SimpleNamespace(id="test-user-123", role="student")
 
     @pytest.mark.asyncio
@@ -689,6 +697,7 @@ class TestOsymExamPerformanceEndpoints:
     @pytest.fixture
     def mock_user(self):
         from types import SimpleNamespace
+
         return SimpleNamespace(id="test-user-123", role="student")
 
     @pytest.mark.asyncio
@@ -774,6 +783,7 @@ class TestOsymExamListEndpoints:
     @pytest.fixture
     def mock_user(self):
         from types import SimpleNamespace
+
         return SimpleNamespace(id="test-user-123", role="student")
 
     @pytest.mark.asyncio
@@ -849,7 +859,9 @@ class TestOsymExamListEndpoints:
 
             assert response["success"] is True
             # API returns lowercase keys
-            assert "tyt" in response["exam_configs"] or "TYT" in response["exam_configs"]
+            assert (
+                "tyt" in response["exam_configs"] or "TYT" in response["exam_configs"]
+            )
 
 
 class TestOsymExamCancelEndpoint:
@@ -858,6 +870,7 @@ class TestOsymExamCancelEndpoint:
     @pytest.fixture
     def mock_user(self):
         from types import SimpleNamespace
+
         return SimpleNamespace(id="test-user-123", role="student")
 
     @pytest.mark.asyncio
@@ -1451,7 +1464,7 @@ class TestQuestionGenerationAPIImports:
         """Question generation router has correct prefix"""
         from api.hybrid_question_generation import router
 
-        assert router.prefix == "/api/questions/hybrid"
+        assert router.prefix == "/api/v1/questions/hybrid"
 
     def test_question_generation_models_import(self):
         """Import question generation Pydantic models"""
@@ -1513,7 +1526,9 @@ class TestGenerateQuestionsEndpoint:
         mock_session = Mock()
 
         # Mock at API level where it's imported
-        with patch("api.hybrid_question_generation.HybridQuestionGenerator") as MockGenerator:
+        with patch(
+            "api.hybrid_question_generation.HybridQuestionGenerator"
+        ) as MockGenerator:
             mock_generator = Mock()
             mock_question = {
                 "question_id": "q-1",
@@ -1528,7 +1543,9 @@ class TestGenerateQuestionsEndpoint:
                 "subject": "Matematik",
                 "topic": "Türev",
             }
-            mock_generator.generate_osym_quality_question = AsyncMock(return_value=mock_question)
+            mock_generator.generate_osym_quality_question = AsyncMock(
+                return_value=mock_question
+            )
             MockGenerator.return_value = mock_generator
 
             response = await generate_hybrid_question(request, mock_user, mock_session)
@@ -1554,7 +1571,9 @@ class TestGenerateQuestionsEndpoint:
         mock_session = Mock()
 
         # Mock at API level where it's imported
-        with patch("api.hybrid_question_generation.HybridQuestionGenerator") as MockGenerator:
+        with patch(
+            "api.hybrid_question_generation.HybridQuestionGenerator"
+        ) as MockGenerator:
             mock_generator = Mock()
             mock_question = {
                 "question_id": "q-1",
@@ -1569,7 +1588,9 @@ class TestGenerateQuestionsEndpoint:
                 "subject": "Fizik",
                 "topic": "Hareket",
             }
-            mock_generator.generate_osym_quality_question = AsyncMock(return_value=mock_question)
+            mock_generator.generate_osym_quality_question = AsyncMock(
+                return_value=mock_question
+            )
             MockGenerator.return_value = mock_generator
 
             response = await generate_hybrid_question(request, mock_user, mock_session)
@@ -1589,9 +1610,13 @@ class TestGenerateQuestionsEndpoint:
         mock_session = Mock()
 
         # Mock at API level where it's imported
-        with patch("api.hybrid_question_generation.HybridQuestionGenerator") as MockGenerator:
+        with patch(
+            "api.hybrid_question_generation.HybridQuestionGenerator"
+        ) as MockGenerator:
             mock_generator = Mock()
-            mock_generator.generate_osym_quality_question = AsyncMock(side_effect=Exception("Generation error"))
+            mock_generator.generate_osym_quality_question = AsyncMock(
+                side_effect=Exception("Generation error")
+            )
             MockGenerator.return_value = mock_generator
 
             with pytest.raises(HTTPException) as exc_info:
@@ -1620,13 +1645,15 @@ class TestBulkQuestionGenerationEndpoint:
         request = BulkHybridRequest(
             subject="Matematik",
             topics=["Türev", "Limit", "İntegral"],
-            count_per_topic=2  # Reduce to avoid timeout
+            count_per_topic=2,  # Reduce to avoid timeout
         )
 
         mock_session = Mock()
 
         # Mock at API level where it's imported
-        with patch("api.hybrid_question_generation.HybridQuestionGenerator") as MockGenerator:
+        with patch(
+            "api.hybrid_question_generation.HybridQuestionGenerator"
+        ) as MockGenerator:
             mock_generator = Mock()
             mock_question = {
                 "question_id": "q-1",
@@ -1637,10 +1664,14 @@ class TestBulkQuestionGenerationEndpoint:
                 "option_d": "D",
                 "correct_answer": "A",
             }
-            mock_generator.generate_osym_quality_question = AsyncMock(return_value=mock_question)
+            mock_generator.generate_osym_quality_question = AsyncMock(
+                return_value=mock_question
+            )
             MockGenerator.return_value = mock_generator
 
-            response = await generate_bulk_hybrid_questions(request, mock_user, mock_session)
+            response = await generate_bulk_hybrid_questions(
+                request, mock_user, mock_session
+            )
 
             assert response["success"] is True
             assert response["total_generated"] == 6  # 3 topics * 2 each
@@ -1653,12 +1684,16 @@ class TestBulkQuestionGenerationEndpoint:
             generate_bulk_hybrid_questions,
         )
 
-        request = BulkHybridRequest(subject="Matematik", topics=["Türev", "Limit"], count_per_topic=1)
+        request = BulkHybridRequest(
+            subject="Matematik", topics=["Türev", "Limit"], count_per_topic=1
+        )
 
         mock_session = Mock()
 
         # Mock at API level where it's imported
-        with patch("api.hybrid_question_generation.HybridQuestionGenerator") as MockGenerator:
+        with patch(
+            "api.hybrid_question_generation.HybridQuestionGenerator"
+        ) as MockGenerator:
             mock_generator = Mock()
             mock_question = {
                 "question_id": "q-1",
@@ -1669,10 +1704,14 @@ class TestBulkQuestionGenerationEndpoint:
                 "option_d": "D",
                 "correct_answer": "A",
             }
-            mock_generator.generate_osym_quality_question = AsyncMock(return_value=mock_question)
+            mock_generator.generate_osym_quality_question = AsyncMock(
+                return_value=mock_question
+            )
             MockGenerator.return_value = mock_generator
 
-            response = await generate_bulk_hybrid_questions(request, mock_user, mock_session)
+            response = await generate_bulk_hybrid_questions(
+                request, mock_user, mock_session
+            )
 
             # Should generate for both topics
             assert response["total_generated"] == 2
@@ -1717,12 +1756,10 @@ class TestQuestionValidationEndpoint:
     @pytest.mark.skip(reason="validate_question function not in hybrid API")
     async def test_validate_question_success(self, mock_user):
         """Validate question successfully - function removed from hybrid API"""
-        pass
 
     @pytest.mark.skip(reason="validate_question function not in hybrid API")
     async def test_validate_question_error(self, mock_user):
         """Validate question handles errors - function removed from hybrid API"""
-        pass
 
 
 class TestQuestionGenerationStatsEndpoint:
@@ -1791,7 +1828,9 @@ class TestAnalyticsAPIImports:
         )
 
 
-@pytest.mark.skip(reason="Analytics service değişti - Query object isoformat hatası. Test güncellenmeli.")
+@pytest.mark.skip(
+    reason="Analytics service değişti - Query object isoformat hatası. Test güncellenmeli."
+)
 class TestStudentAnalyticsEndpoint:
     """Analytics - Student Analytics Endpoint Tests"""
 
@@ -1881,7 +1920,9 @@ class TestStudentAnalyticsEndpoint:
                             assert response["success"] is True
 
 
-@pytest.mark.skip(reason="Analytics service değişti - Query object isoformat hatası. Test güncellenmeli.")
+@pytest.mark.skip(
+    reason="Analytics service değişti - Query object isoformat hatası. Test güncellenmeli."
+)
 class TestClassAnalyticsEndpoint:
     """Analytics - Class Analytics Endpoint Tests"""
 
@@ -1934,7 +1975,9 @@ class TestClassAnalyticsEndpoint:
                                 assert "data" in response
 
 
-@pytest.mark.skip(reason="Analytics service değişti - Query object date hatası. Test güncellenmeli.")
+@pytest.mark.skip(
+    reason="Analytics service değişti - Query object date hatası. Test güncellenmeli."
+)
 class TestAdminDashboardEndpoint:
     """Analytics - Admin Dashboard Endpoint Tests"""
 
@@ -2108,7 +2151,9 @@ class TestMonitoringAPIImports:
         assert "monitoring" in router.tags
 
 
-@pytest.mark.skip(reason="Mock path değişti - elasticsearch_service artık api.monitoring'de değil. Test güncellenmeli.")
+@pytest.mark.skip(
+    reason="Mock path değişti - elasticsearch_service artık api.monitoring'de değil. Test güncellenmeli."
+)
 class TestHealthCheckEndpoint:
     """Monitoring - Health Check Endpoint Tests"""
 
@@ -2387,13 +2432,11 @@ class TestLogAnalysisEndpoint:
     @pytest.mark.asyncio
     async def test_analyze_logs_success(self):
         """Analyze logs successfully"""
-        pass
 
     @pytest.mark.skip(reason="LogAnalyzer class doesn't exist in core.logging_config")
     @pytest.mark.asyncio
     async def test_analyze_logs_with_level_filter(self):
         """Analyze logs with log level filter"""
-        pass
 
 
 # ==================== ADDITIONAL COMPREHENSIVE TESTS ====================
@@ -2492,6 +2535,7 @@ class TestOsymExamAPIEdgeCases:
     @pytest.fixture
     def mock_user(self):
         from types import SimpleNamespace
+
         return SimpleNamespace(id="test-user", role="student")
 
     @pytest.mark.asyncio
@@ -2571,6 +2615,9 @@ class TestOsymExamAPIEdgeCases:
             mock_question.id = "q1"
             mock_question.question_text = "First question"
             mock_question.question_image_url = None
+            mock_question.image_ocr_text = None
+            mock_question.image_width = None
+            mock_question.image_height = None
             mock_question.option_a = "A"
             mock_question.option_b = "B"
             mock_question.option_c = "C"
@@ -2602,6 +2649,9 @@ class TestOsymExamAPIEdgeCases:
             mock_question.id = "q120"
             mock_question.question_text = "Last question"
             mock_question.question_image_url = None
+            mock_question.image_ocr_text = None
+            mock_question.image_width = None
+            mock_question.image_height = None
             mock_question.option_a = "A"
             mock_question.option_b = "B"
             mock_question.option_c = "C"
@@ -3064,7 +3114,9 @@ class TestQuestionGenerationEdgeCases:
         mock_session = Mock()
 
         # Mock at API level where it's imported
-        with patch("api.hybrid_question_generation.HybridQuestionGenerator") as MockGenerator:
+        with patch(
+            "api.hybrid_question_generation.HybridQuestionGenerator"
+        ) as MockGenerator:
             mock_generator = Mock()
             mock_question = {
                 "question_id": "q-1",
@@ -3076,7 +3128,9 @@ class TestQuestionGenerationEdgeCases:
                 "correct_answer": "A",
                 "difficulty_level": 1,
             }
-            mock_generator.generate_osym_quality_question = AsyncMock(return_value=mock_question)
+            mock_generator.generate_osym_quality_question = AsyncMock(
+                return_value=mock_question
+            )
             MockGenerator.return_value = mock_generator
 
             response = await generate_hybrid_question(request, mock_user, mock_session)
@@ -3098,7 +3152,9 @@ class TestQuestionGenerationEdgeCases:
         mock_session = Mock()
 
         # Mock at API level where it's imported
-        with patch("api.hybrid_question_generation.HybridQuestionGenerator") as MockGenerator:
+        with patch(
+            "api.hybrid_question_generation.HybridQuestionGenerator"
+        ) as MockGenerator:
             mock_generator = Mock()
             mock_question = {
                 "question_id": "q-1",
@@ -3110,7 +3166,9 @@ class TestQuestionGenerationEdgeCases:
                 "correct_answer": "A",
                 "difficulty_level": 5,
             }
-            mock_generator.generate_osym_quality_question = AsyncMock(return_value=mock_question)
+            mock_generator.generate_osym_quality_question = AsyncMock(
+                return_value=mock_question
+            )
             MockGenerator.return_value = mock_generator
 
             response = await generate_hybrid_question(request, mock_user, mock_session)
@@ -3130,7 +3188,9 @@ class TestQuestionGenerationEdgeCases:
         mock_session = Mock()
 
         # Mock at API level where it's imported
-        with patch("api.hybrid_question_generation.HybridQuestionGenerator") as MockGenerator:
+        with patch(
+            "api.hybrid_question_generation.HybridQuestionGenerator"
+        ) as MockGenerator:
             mock_generator = Mock()
             mock_question = {
                 "question_id": "q-1",
@@ -3141,7 +3201,9 @@ class TestQuestionGenerationEdgeCases:
                 "option_d": "D",
                 "correct_answer": "A",
             }
-            mock_generator.generate_osym_quality_question = AsyncMock(return_value=mock_question)
+            mock_generator.generate_osym_quality_question = AsyncMock(
+                return_value=mock_question
+            )
             MockGenerator.return_value = mock_generator
 
             response = await generate_hybrid_question(request, mock_user, mock_session)
@@ -3156,12 +3218,16 @@ class TestQuestionGenerationEdgeCases:
             generate_bulk_hybrid_questions,
         )
 
-        request = BulkHybridRequest(subject="Kimya", topics=["Bağlar"], count_per_topic=2)
+        request = BulkHybridRequest(
+            subject="Kimya", topics=["Bağlar"], count_per_topic=2
+        )
 
         mock_session = Mock()
 
         # Mock at API level where it's imported
-        with patch("api.hybrid_question_generation.HybridQuestionGenerator") as MockGenerator:
+        with patch(
+            "api.hybrid_question_generation.HybridQuestionGenerator"
+        ) as MockGenerator:
             mock_generator = Mock()
             mock_question = {
                 "question_id": "q-1",
@@ -3172,10 +3238,14 @@ class TestQuestionGenerationEdgeCases:
                 "option_d": "D",
                 "correct_answer": "A",
             }
-            mock_generator.generate_osym_quality_question = AsyncMock(return_value=mock_question)
+            mock_generator.generate_osym_quality_question = AsyncMock(
+                return_value=mock_question
+            )
             MockGenerator.return_value = mock_generator
 
-            response = await generate_bulk_hybrid_questions(request, mock_user, mock_session)
+            response = await generate_bulk_hybrid_questions(
+                request, mock_user, mock_session
+            )
 
             assert response["total_generated"] == 2
 
@@ -3196,7 +3266,9 @@ class TestQuestionGenerationEdgeCases:
         mock_session = Mock()
 
         # Mock at API level where it's imported
-        with patch("api.hybrid_question_generation.HybridQuestionGenerator") as MockGenerator:
+        with patch(
+            "api.hybrid_question_generation.HybridQuestionGenerator"
+        ) as MockGenerator:
             mock_generator = Mock()
             mock_question = {
                 "question_id": "q-1",
@@ -3207,10 +3279,14 @@ class TestQuestionGenerationEdgeCases:
                 "option_d": "D",
                 "correct_answer": "A",
             }
-            mock_generator.generate_osym_quality_question = AsyncMock(return_value=mock_question)
+            mock_generator.generate_osym_quality_question = AsyncMock(
+                return_value=mock_question
+            )
             MockGenerator.return_value = mock_generator
 
-            response = await generate_bulk_hybrid_questions(request, mock_user, mock_session)
+            response = await generate_bulk_hybrid_questions(
+                request, mock_user, mock_session
+            )
 
             assert response["total_generated"] == 10  # 5 topics * 2 each
 
@@ -3272,7 +3348,9 @@ class TestAnalyticsEdgeCases:
         )
         assert request.format == "pdf"
 
-    @pytest.mark.skip(reason="Query object isoformat hatası - analytics service değişti.")
+    @pytest.mark.skip(
+        reason="Query object isoformat hatası - analytics service değişti."
+    )
     @pytest.mark.asyncio
     async def test_get_student_analytics_detailed(self, mock_admin):
         """Get student analytics with detailed analysis"""
@@ -3313,7 +3391,9 @@ class TestAnalyticsEdgeCases:
 
                                 assert "detailed_analysis" in response["data"]
 
-    @pytest.mark.skip(reason="Query object isoformat hatası - analytics service değişti.")
+    @pytest.mark.skip(
+        reason="Query object isoformat hatası - analytics service değişti."
+    )
     @pytest.mark.asyncio
     async def test_get_class_analytics_without_students(self, mock_admin):
         """Get class analytics without student details"""
@@ -3353,7 +3433,9 @@ class TestAnalyticsEdgeCases:
 
                                 assert "student_details" not in response["data"]
 
-    @pytest.mark.skip(reason="API artık 500 dönüyor (hata sarmalama). Error handling değişti.")
+    @pytest.mark.skip(
+        reason="API artık 500 dönüyor (hata sarmalama). Error handling değişti."
+    )
     @pytest.mark.asyncio
     async def test_export_analytics_pdf_invalid_data_type(self, mock_admin):
         """Export with invalid data type"""
@@ -3366,7 +3448,9 @@ class TestAnalyticsEdgeCases:
 
         assert exc_info.value.status_code == 400
 
-    @pytest.mark.skip(reason="API artık 500 dönüyor (hata sarmalama). Error handling değişti.")
+    @pytest.mark.skip(
+        reason="API artık 500 dönüyor (hata sarmalama). Error handling değişti."
+    )
     @pytest.mark.asyncio
     async def test_export_analytics_pdf_missing_student_id(self, mock_admin):
         """Export student PDF without student_id"""
@@ -3379,7 +3463,9 @@ class TestAnalyticsEdgeCases:
 
         assert exc_info.value.status_code == 400
 
-    @pytest.mark.skip(reason="API artık 500 dönüyor (hata sarmalama). Error handling değişti.")
+    @pytest.mark.skip(
+        reason="API artık 500 dönüyor (hata sarmalama). Error handling değişti."
+    )
     @pytest.mark.asyncio
     async def test_export_analytics_excel_missing_class_id(self, mock_admin):
         """Export class Excel without class_id"""
@@ -3396,7 +3482,9 @@ class TestAnalyticsEdgeCases:
 class TestMonitoringEdgeCases:
     """Monitoring - Edge Cases and Validation Tests"""
 
-    @pytest.mark.skip(reason="Mock path değişti - elasticsearch_service artık api.monitoring'de değil. Test güncellenmeli.")
+    @pytest.mark.skip(
+        reason="Mock path değişti - elasticsearch_service artık api.monitoring'de değil. Test güncellenmeli."
+    )
     @pytest.mark.asyncio
     async def test_health_check_all_services_down(self):
         """Health check when all services are down"""
@@ -3541,6 +3629,7 @@ class TestOsymExamComprehensive:
     @pytest.fixture
     def mock_user(self):
         from types import SimpleNamespace
+
         return SimpleNamespace(id="test-user", role="student")
 
     @pytest.mark.asyncio
@@ -3692,56 +3781,56 @@ class TestOsymExamComprehensive:
         from api.sinav import CreateExamRequest
 
         # Pydantic v2: Use model_config instead of Config.schema_extra
-        assert hasattr(CreateExamRequest, 'model_config')
+        assert hasattr(CreateExamRequest, "model_config")
 
     def test_save_answer_request_schema_extra(self):
         """Test SaveAnswerRequest schema example"""
         from api.sinav import SaveAnswerRequest
 
         # Pydantic v2: Use model_config instead of Config.schema_extra
-        assert hasattr(SaveAnswerRequest, 'model_config')
+        assert hasattr(SaveAnswerRequest, "model_config")
 
     def test_flag_question_request_schema_extra(self):
         """Test FlagQuestionRequest schema example"""
         from api.sinav import FlagQuestionRequest
 
         # Pydantic v2: Use model_config instead of Config.schema_extra
-        assert hasattr(FlagQuestionRequest, 'model_config')
+        assert hasattr(FlagQuestionRequest, "model_config")
 
     def test_navigate_question_request_schema_extra(self):
         """Test NavigateQuestionRequest schema example"""
         from api.sinav import NavigateQuestionRequest
 
         # Pydantic v2: Use model_config instead of Config.schema_extra
-        assert hasattr(NavigateQuestionRequest, 'model_config')
+        assert hasattr(NavigateQuestionRequest, "model_config")
 
     def test_exam_session_response_schema_extra(self):
         """Test ExamSessionResponse schema example"""
         from api.sinav import ExamSessionResponse
 
         # Pydantic v2: Use model_config instead of Config.schema_extra
-        assert hasattr(ExamSessionResponse, 'model_config')
+        assert hasattr(ExamSessionResponse, "model_config")
 
     def test_question_response_schema_extra(self):
         """Test QuestionResponse schema example"""
         from api.sinav import QuestionResponse
 
         # Pydantic v2: Use model_config instead of Config.schema_extra
-        assert hasattr(QuestionResponse, 'model_config')
+        assert hasattr(QuestionResponse, "model_config")
 
     def test_performance_response_schema_extra(self):
         """Test PerformanceResponse schema example"""
         from api.sinav import PerformanceResponse
 
         # Pydantic v2: Use model_config instead of Config.schema_extra
-        assert hasattr(PerformanceResponse, 'model_config')
+        assert hasattr(PerformanceResponse, "model_config")
 
     def test_subject_performance_response_schema_extra(self):
         """Test SubjectPerformanceResponse schema example"""
         from api.sinav import SubjectPerformanceResponse
 
         # Pydantic v2: Use model_config instead of Config.schema_extra
-        assert hasattr(SubjectPerformanceResponse, 'model_config')
+        assert hasattr(SubjectPerformanceResponse, "model_config")
 
 
 class TestFSRSComprehensive:
@@ -3886,9 +3975,10 @@ class TestQuestionGenerationComprehensive:
     def test_generated_question_model_complete(self):
         """Test model with all fields"""
         # GeneratedQuestion model doesn't exist in hybrid API
-        pass
 
-    @pytest.mark.skip(reason="DB şema değişti - question_id column yok. Migration gerekli.")
+    @pytest.mark.skip(
+        reason="DB şema değişti - question_id column yok. Migration gerekli."
+    )
     @pytest.mark.asyncio
     async def test_generate_questions_multiple_subjects(self, mock_user):
         """Test generation for different subjects"""
@@ -3903,17 +3993,23 @@ class TestQuestionGenerationComprehensive:
         for subject in subjects:
             request = HybridQuestionRequest(subject=subject, topic="Genel")
 
-            with patch("services.hybrid_question_generator.HybridQuestionGenerator") as MockGenerator:
+            with patch(
+                "services.hybrid_question_generator.HybridQuestionGenerator"
+            ) as MockGenerator:
                 mock_generator = Mock()
                 mock_generator.generate_hybrid_question = AsyncMock(
                     return_value=[{"subject": subject} for _ in range(3)]
                 )
                 MockGenerator.return_value = mock_generator
 
-                response = await generate_hybrid_question(request, mock_user, mock_session)
+                response = await generate_hybrid_question(
+                    request, mock_user, mock_session
+                )
                 assert response.count == 3
 
-    @pytest.mark.skip(reason="Response format değişti - total_count yok. API güncellenmeli.")
+    @pytest.mark.skip(
+        reason="Response format değişti - total_count yok. API güncellenmeli."
+    )
     @pytest.mark.asyncio
     async def test_bulk_generation_difficulty_distribution(self, mock_user):
         """Test bulk generation with difficulty distribution"""
@@ -3930,14 +4026,18 @@ class TestQuestionGenerationComprehensive:
 
         mock_session = Mock()
 
-        with patch("services.hybrid_question_generator.HybridQuestionGenerator") as MockGenerator:
+        with patch(
+            "services.hybrid_question_generator.HybridQuestionGenerator"
+        ) as MockGenerator:
             mock_generator = Mock()
             mock_generator.generate_hybrid_question = AsyncMock(
                 return_value=[{"id": f"q-{i}"} for i in range(50)]
             )
             MockGenerator.return_value = mock_generator
 
-            response = await generate_bulk_hybrid_questions(request, mock_user, mock_session)
+            response = await generate_bulk_hybrid_questions(
+                request, mock_user, mock_session
+            )
 
             assert response["success"] is True
             assert response["total_count"] == 50
@@ -3945,7 +4045,6 @@ class TestQuestionGenerationComprehensive:
     @pytest.mark.skip(reason="validate_question function not in hybrid API")
     async def test_validate_question_with_all_fields(self, mock_user):
         """Test validation with complete question - function removed from hybrid API"""
-        pass
 
     @pytest.mark.asyncio
     async def test_get_templates_for_all_subjects(self, mock_user):
@@ -3969,7 +4068,9 @@ class TestAnalyticsComprehensive:
         mock_user.role = "admin"
         return mock_user
 
-    @pytest.mark.skip(reason="Query object isoformat hatası - analytics service değişti.")
+    @pytest.mark.skip(
+        reason="Query object isoformat hatası - analytics service değişti."
+    )
     @pytest.mark.asyncio
     async def test_student_analytics_default_date_range(self, mock_admin):
         """Test student analytics with default 30-day range"""
@@ -4110,7 +4211,9 @@ class TestAnalyticsComprehensive:
 class TestMonitoringComprehensive:
     """Monitoring - Additional Comprehensive Tests"""
 
-    @pytest.mark.skip(reason="Mock path değişti - elasticsearch_service artık api.monitoring'de değil. Test güncellenmeli.")
+    @pytest.mark.skip(
+        reason="Mock path değişti - elasticsearch_service artık api.monitoring'de değil. Test güncellenmeli."
+    )
     @pytest.mark.asyncio
     async def test_health_check_redis_only_down(self):
         """Test health check with only Redis down"""
@@ -4259,16 +4362,17 @@ class TestAllAPIsErrorHandling:
     @pytest.mark.asyncio
     async def test_osym_exam_network_timeout(self):
         """Test OSYM exam API network timeout handling"""
-        from api.sinav import create_exam, CreateExamRequest
+        from api.sinav import CreateExamRequest, create_exam
         from models.database import ExamType
 
         request = CreateExamRequest(exam_type=ExamType.TYT)
         from types import SimpleNamespace
+
         mock_user = SimpleNamespace(id="test-user", role="student")
 
         with patch("api.sinav.osym_exam_engine") as mock_engine:
             mock_engine.create_exam_session = AsyncMock(
-                side_effect=asyncio.TimeoutError("Network timeout")
+                side_effect=TimeoutError("Network timeout")
             )
 
             with pytest.raises(HTTPException):
@@ -4277,7 +4381,7 @@ class TestAllAPIsErrorHandling:
     @pytest.mark.asyncio
     async def test_fsrs_database_connection_error(self):
         """Test FSRS API database connection error"""
-        from api.fsrs import create_flashcard, CreateFlashcardRequest
+        from api.fsrs import CreateFlashcardRequest, create_flashcard
 
         request = CreateFlashcardRequest(
             subject="Test", topic="Test", content="Test", answer="Test"
@@ -4309,7 +4413,9 @@ class TestAllAPIsErrorHandling:
             with pytest.raises(HTTPException):
                 await get_student_analytics("student-123", current_user=mock_user)
 
-    @pytest.mark.skip(reason="Mock path değişti - elasticsearch_service artık api.monitoring'de değil. Test güncellenmeli.")
+    @pytest.mark.skip(
+        reason="Mock path değişti - elasticsearch_service artık api.monitoring'de değil. Test güncellenmeli."
+    )
     @pytest.mark.asyncio
     async def test_monitoring_redis_connection_error(self):
         """Test monitoring when Redis connection fails"""
@@ -4523,17 +4629,14 @@ class TestAPIInputValidation:
     @pytest.mark.skip(reason="GeneratedQuestion model not in hybrid API")
     def test_question_text_not_empty(self):
         """Question text cannot be empty"""
-        pass
 
     @pytest.mark.skip(reason="GeneratedQuestion model not in hybrid API")
     def test_question_options_count(self):
         """Question must have multiple options"""
-        pass
 
     @pytest.mark.skip(reason="GeneratedQuestion model not in hybrid API")
     def test_correct_answer_in_options(self):
         """Correct answer must be in options"""
-        pass
 
     def test_session_id_format(self):
         """Session ID has valid format"""
@@ -4649,7 +4752,9 @@ class TestAPIInputValidation:
 class TestAPIResponseFormats:
     """API Response Format Tests - 50 tests"""
 
-    @pytest.mark.skip(reason="Mock path değişti - cache_manager.ping artık doğru path değil. Test güncellenmeli.")
+    @pytest.mark.skip(
+        reason="Mock path değişti - cache_manager.ping artık doğru path değil. Test güncellenmeli."
+    )
     @pytest.mark.asyncio
     async def test_success_response_structure(self):
         """Success response has correct structure"""
@@ -4662,20 +4767,18 @@ class TestAPIResponseFormats:
             mock_session.execute = AsyncMock()
             mock_db.return_value = mock_session
 
-            with patch(
-                "core.cache.cache_manager.ping", AsyncMock(return_value=True)
-            ):
-                with patch(
+            with (
+                patch("core.cache.cache_manager.ping", AsyncMock(return_value=True)),
+                patch(
                     "api.monitoring.elasticsearch_service.ping",
                     AsyncMock(return_value=True),
-                ):
-                    with patch(
-                        "api.monitoring.performance_monitor.is_monitoring", True
-                    ):
-                        response = await health_check()
-                        assert "success" in response
-                        assert "data" in response
-                        assert "message" in response
+                ),
+                patch("api.monitoring.performance_monitor.is_monitoring", True),
+            ):
+                response = await health_check()
+                assert "success" in response
+                assert "data" in response
+                assert "message" in response
 
     def test_error_response_has_status_code(self):
         """Error response includes status code"""
@@ -4916,11 +5019,12 @@ class TestAPIPerformanceScenarios:
     @pytest.mark.asyncio
     async def test_create_exam_fast_response(self):
         """Create exam responds quickly"""
-        from api.sinav import create_exam, CreateExamRequest
+        from api.sinav import CreateExamRequest, create_exam
         from models.database import ExamType
 
         request = CreateExamRequest(exam_type=ExamType.TYT)
         from types import SimpleNamespace
+
         mock_user = SimpleNamespace(id="test-user", role="student")
 
         with patch("api.sinav.osym_exam_engine") as mock_engine:
@@ -4945,7 +5049,9 @@ class TestAPIPerformanceScenarios:
             assert duration < 1.0  # Should be very fast with mocks
             assert response.session_id == "session-123"
 
-    @pytest.mark.skip(reason="Mock path değişti - cache_manager.ping artık doğru path değil. Test güncellenmeli.")
+    @pytest.mark.skip(
+        reason="Mock path değişti - cache_manager.ping artık doğru path değil. Test güncellenmeli."
+    )
     @pytest.mark.asyncio
     async def test_health_check_fast_response(self):
         """Health check responds quickly"""
@@ -4958,22 +5064,20 @@ class TestAPIPerformanceScenarios:
             mock_session.execute = AsyncMock()
             mock_db.return_value = mock_session
 
-            with patch(
-                "core.cache.cache_manager.ping", AsyncMock(return_value=True)
-            ):
-                with patch(
+            with (
+                patch("core.cache.cache_manager.ping", AsyncMock(return_value=True)),
+                patch(
                     "api.monitoring.elasticsearch_service.ping",
                     AsyncMock(return_value=True),
-                ):
-                    with patch(
-                        "api.monitoring.performance_monitor.is_monitoring", True
-                    ):
-                        start = datetime.now()
-                        response = await health_check()
-                        duration = (datetime.now() - start).total_seconds()
+                ),
+                patch("api.monitoring.performance_monitor.is_monitoring", True),
+            ):
+                start = datetime.now()
+                response = await health_check()
+                duration = (datetime.now() - start).total_seconds()
 
-                        assert duration < 0.5
-                        assert response["success"] is True
+                assert duration < 0.5
+                assert response["success"] is True
 
     def test_model_serialization_performance(self):
         """Model serialization is fast"""
@@ -5160,6 +5264,7 @@ class TestAPIPerformanceScenarios:
         start = datetime.now()
         for _ in range(100):
             from types import SimpleNamespace
+
             mock_user = SimpleNamespace(id="test", role="student")
         duration = (datetime.now() - start).total_seconds()
         assert duration < 0.1
@@ -5175,12 +5280,13 @@ class TestOSYMExamExtendedScenarios:
     @pytest.fixture
     def mock_user(self):
         from types import SimpleNamespace
+
         return SimpleNamespace(id="test-user", role="student")
 
     @pytest.mark.asyncio
     async def test_create_exam_tyt_specific_config(self, mock_user):
         """Create TYT exam with specific configuration"""
-        from api.sinav import create_exam, CreateExamRequest
+        from api.sinav import CreateExamRequest, create_exam
         from models.database import ExamType
 
         custom_config = {
@@ -5211,7 +5317,7 @@ class TestOSYMExamExtendedScenarios:
     @pytest.mark.asyncio
     async def test_create_exam_ayt_specific_config(self, mock_user):
         """Create AYT exam with specific configuration"""
-        from api.sinav import create_exam, CreateExamRequest
+        from api.sinav import CreateExamRequest, create_exam
         from models.database import ExamType
 
         custom_config = {
@@ -5246,7 +5352,7 @@ class TestOSYMExamExtendedScenarios:
     @pytest.mark.asyncio
     async def test_save_answer_all_options(self, mock_user):
         """Test saving answers for all options A-E"""
-        from api.sinav import save_answer, SaveAnswerRequest
+        from api.sinav import SaveAnswerRequest, save_answer
 
         for option in ["A", "B", "C", "D", "E"]:
             request = SaveAnswerRequest(
@@ -5266,7 +5372,7 @@ class TestOSYMExamExtendedScenarios:
     @pytest.mark.asyncio
     async def test_navigate_through_all_questions(self, mock_user):
         """Test navigating through all 120 TYT questions"""
-        from api.sinav import navigate_to_question, NavigateQuestionRequest
+        from api.sinav import NavigateQuestionRequest, navigate_to_question
 
         for index in range(0, 120, 10):  # Test every 10th question
             request = NavigateQuestionRequest(question_index=index)
@@ -5279,6 +5385,9 @@ class TestOSYMExamExtendedScenarios:
                 mock_question.id = f"q{index}"
                 mock_question.question_text = f"Question {index}"
                 mock_question.question_image_url = None
+                mock_question.image_ocr_text = None
+                mock_question.image_width = None
+                mock_question.image_height = None
                 mock_question.option_a = "A"
                 mock_question.option_b = "B"
                 mock_question.option_c = "C"
@@ -5298,7 +5407,7 @@ class TestOSYMExamExtendedScenarios:
     @pytest.mark.asyncio
     async def test_flag_and_unflag_multiple_questions(self, mock_user):
         """Test flagging and unflagging multiple questions"""
-        from api.sinav import flag_question, FlagQuestionRequest
+        from api.sinav import FlagQuestionRequest, flag_question
 
         for i in range(5):
             # Flag
@@ -5467,7 +5576,6 @@ class TestAPIModelSchemaValidation:
     def test_generated_question_required(self):
         """requires fields"""
         # GeneratedQuestion model doesn't exist in hybrid API
-        pass
 
     def test_export_request_required(self):
         """ExportRequest requires format/data_type"""
@@ -5734,9 +5842,8 @@ class TestAPIModelSchemaValidation:
 
     def test_timezone_aware(self):
         """Timezone-aware datetime"""
-        from datetime import timezone
 
-        assert datetime.now(timezone.utc).tzinfo is not None
+        assert datetime.now(UTC).tzinfo is not None
 
     def test_timezone_naive(self):
         """Timezone-naive datetime"""

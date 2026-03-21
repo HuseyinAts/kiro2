@@ -8,13 +8,15 @@ os.environ["HF_HUB_OFFLINE"] = "1"
 os.environ["TRANSFORMERS_OFFLINE"] = "1"
 
 # Windows: Use SelectorEventLoop BEFORE any test collection
-if sys.platform == 'win32':
+if sys.platform == "win32":
     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 
 # CRITICAL: Set TESTING=true at MODULE LEVEL before ANY imports
 # This is the absolute earliest point - before pytest, before any test collection
 os.environ["TESTING"] = "true"
-os.environ["DATABASE_URL"] = os.getenv("TEST_DATABASE_URL", "sqlite+aiosqlite:///:memory:")
+os.environ["DATABASE_URL"] = os.getenv(
+    "TEST_DATABASE_URL", "sqlite+aiosqlite:///:memory:"
+)
 os.environ["REDIS_URL"] = os.getenv("TEST_REDIS_URL", "redis://localhost:6380/1")
 os.environ["JWT_SECRET_KEY"] = "test-secret-key-for-testing-only-32-chars"
 os.environ["SECRET_KEY"] = "test-secret-key-for-testing-only-32-chars"
@@ -97,8 +99,8 @@ def test_app():
     return app
 
 
-from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine, async_sessionmaker
 from sqlalchemy import create_engine
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
 # Test database URL - MUST be set via environment variable (security requirement)
 TEST_DATABASE_URL = os.getenv("TEST_DATABASE_URL")
@@ -123,12 +125,14 @@ async def test_async_engine():
     """Create async engine once per test session (PERFORMANCE FIX)"""
     # SQLite doesn't support pool_size/max_overflow - only use for PostgreSQL
     if "sqlite" in TEST_DATABASE_URL.lower():
-        engine = create_async_engine(
-            TEST_DATABASE_URL, echo=False
-        )
+        engine = create_async_engine(TEST_DATABASE_URL, echo=False)
     else:
         engine = create_async_engine(
-            TEST_DATABASE_URL, echo=False, pool_pre_ping=True, pool_size=5, max_overflow=10
+            TEST_DATABASE_URL,
+            echo=False,
+            pool_pre_ping=True,
+            pool_size=5,
+            max_overflow=10,
         )
     yield engine
     await engine.dispose()
@@ -143,10 +147,9 @@ async def async_db_session(test_async_engine):
     )
 
     # Session with transaction rollback
-    async with async_session_maker() as session:
-        async with session.begin():
-            yield session
-            await session.rollback()  # Test sonrasi rollback
+    async with async_session_maker() as session, session.begin():
+        yield session
+        await session.rollback()  # Test sonrasi rollback
 
 
 @pytest.fixture(scope="function")
@@ -235,6 +238,7 @@ except ImportError:
 # Phase 11: Serial orthogonal + Integration HIGH CONF / CONTROLLED + Unstratified burn-down
 # ============================================================================
 
+
 def pytest_collection_modifyitems(config, items):
     """Add property/infra/integration/unit/serial markers to tests based on path."""
     import pytest as _pytest
@@ -247,17 +251,81 @@ def pytest_collection_modifyitems(config, items):
     # HIGH CONF: /tests/integration/ path-only (most confident)
     integration_high_conf_path = "/tests/integration/"
     # CONTROLLED: api/routes/endpoints/http/clients - needs AND with name token
-    integration_controlled_paths = ["/tests/api/", "/tests/routes/", "/tests/endpoints/", "/tests/http/", "/tests/clients/"]
-    integration_filename_tokens = ["_integration", "integration_", "_client", "_endpoint", "_router", "_repo", "_repository", "client", "router", "endpoint", "route", "http", "request", "response", "db", "repo", "repository"]
+    integration_controlled_paths = [
+        "/tests/api/",
+        "/tests/routes/",
+        "/tests/endpoints/",
+        "/tests/http/",
+        "/tests/clients/",
+    ]
+    integration_filename_tokens = [
+        "_integration",
+        "integration_",
+        "_client",
+        "_endpoint",
+        "_router",
+        "_repo",
+        "_repository",
+        "client",
+        "router",
+        "endpoint",
+        "route",
+        "http",
+        "request",
+        "response",
+        "db",
+        "repo",
+        "repository",
+    ]
 
     # Phase 10/11: Serial high-confidence patterns (very conservative)
     # Only very obvious flaky/threading/timing patterns
-    serial_high_conf_tokens = ["concurrency", "concurrent", "thread", "threading", "lock", "timing", "rate_limit", "rate-limit", "global_state", "global-state", "shared_state", "race_condition", "deadlock"]
+    serial_high_conf_tokens = [
+        "concurrency",
+        "concurrent",
+        "thread",
+        "threading",
+        "lock",
+        "timing",
+        "rate_limit",
+        "rate-limit",
+        "global_state",
+        "global-state",
+        "shared_state",
+        "race_condition",
+        "deadlock",
+    ]
 
     # Phase 7/8/9/10/11: Unit patterns - high confidence with forbidden token check
-    unit_names = ["test_utils", "test_validators", "test_schemas", "test_pure_", "test_helpers", "test_constants", "test_validation", "test_helper", "test_schema"]
+    unit_names = [
+        "test_utils",
+        "test_validators",
+        "test_schemas",
+        "test_pure_",
+        "test_helpers",
+        "test_constants",
+        "test_validation",
+        "test_helper",
+        "test_schema",
+    ]
     # Forbidden tokens - if these appear, DO NOT assign to unit (external deps)
-    forbidden_unit_tokens = ["elasticsearch", "httpx", "requests", "redis", "sqlalchemy", "docker", "k8s", "boto", "s3", "openai", "anthropic", "chromadb", "qdrant", "postgres", "mysql"]
+    forbidden_unit_tokens = [
+        "elasticsearch",
+        "httpx",
+        "requests",
+        "redis",
+        "sqlalchemy",
+        "docker",
+        "k8s",
+        "boto",
+        "s3",
+        "openai",
+        "anthropic",
+        "chromadb",
+        "qdrant",
+        "postgres",
+        "mysql",
+    ]
     # Only apply to backend/tests/ directory
     tests_dir = "/tests/"
 
@@ -348,7 +416,10 @@ def pytest_collection_modifyitems(config, items):
 
         # Phase 11: Check serial FIRST - orthogonal, doesn't block other markers
         # Add serial marker but DON'T break the flow
-        has_serial_signal = any(token in normalized_path.lower() or token in nodeid.lower() for token in serial_high_conf_tokens)
+        has_serial_signal = any(
+            token in normalized_path.lower() or token in nodeid.lower()
+            for token in serial_high_conf_tokens
+        )
         if has_serial_signal:
             markers = getattr(item, "own_markers", []) or []
             has_serial = any(m.name == "serial" for m in markers)
@@ -370,7 +441,10 @@ def pytest_collection_modifyitems(config, items):
         in_tests_unit = "/tests/unit/" in normalized_path
 
         # Check forbidden tokens
-        has_forbidden = any(token in normalized_path.lower() or token in nodeid.lower() for token in forbidden_unit_tokens)
+        has_forbidden = any(
+            token in normalized_path.lower() or token in nodeid.lower()
+            for token in forbidden_unit_tokens
+        )
 
         if in_tests_unit:
             if not has_forbidden:
@@ -380,10 +454,8 @@ def pytest_collection_modifyitems(config, items):
                 if not has_unit:
                     item.add_marker(_pytest.mark.unit)
                 continue
-            else:
-                # tests/unit/ with forbidden tokens → re-route
-                # Go to re-routing logic below
-                pass
+            # tests/unit/ with forbidden tokens → re-route
+            # Go to re-routing logic below
         else:
             # Not in tests/unit/ - check unit_names pattern
             is_unit = any(
@@ -401,8 +473,21 @@ def pytest_collection_modifyitems(config, items):
         if has_forbidden:
             # Check infra signal (more specific than just devops path)
             # Expanded infra tokens for re-routing
-            infra_tokens = ["elasticsearch", "redis", "sqlalchemy", "docker", "k8s", "postgres", "mysql", "chromadb", "qdrant"]
-            has_infra_signal = any(token in normalized_path.lower() or token in nodeid.lower() for token in infra_tokens)
+            infra_tokens = [
+                "elasticsearch",
+                "redis",
+                "sqlalchemy",
+                "docker",
+                "k8s",
+                "postgres",
+                "mysql",
+                "chromadb",
+                "qdrant",
+            ]
+            has_infra_signal = any(
+                token in normalized_path.lower() or token in nodeid.lower()
+                for token in infra_tokens
+            )
 
             if has_infra_signal:
                 # Has infra signal - mark as infra
@@ -422,8 +507,13 @@ def pytest_collection_modifyitems(config, items):
                 continue
 
             # Level 2: CONTROLLED - api/routes/endpoints/http/clients - needs AND
-            matches_path = any(token in normalized_path for token in integration_controlled_paths)
-            matches_filename = any(token in normalized_path or token in nodeid for token in integration_filename_tokens)
+            matches_path = any(
+                token in normalized_path for token in integration_controlled_paths
+            )
+            matches_filename = any(
+                token in normalized_path or token in nodeid
+                for token in integration_filename_tokens
+            )
 
             # MUST have BOTH - AND logic (no OR!)
             is_integration = matches_path and matches_filename
@@ -448,8 +538,13 @@ def pytest_collection_modifyitems(config, items):
             continue
 
         # Level 2: CONTROLLED - api/routes/endpoints/http/clients - needs AND
-        matches_path = any(token in normalized_path for token in integration_controlled_paths)
-        matches_filename = any(token in normalized_path or token in nodeid for token in integration_filename_tokens)
+        matches_path = any(
+            token in normalized_path for token in integration_controlled_paths
+        )
+        matches_filename = any(
+            token in normalized_path or token in nodeid
+            for token in integration_filename_tokens
+        )
 
         # MUST have BOTH - AND logic (no OR!)
         is_integration = matches_path and matches_filename
@@ -465,13 +560,15 @@ def pytest_collection_modifyitems(config, items):
         if property_path in normalized_path:
             markers = getattr(item, "own_markers", []) or []
             has_property = any(m.name == "property" for m in markers)
-            if not has_unit:
+            if not has_property:
                 item.add_marker(_pytest.mark.property)
 
         # Phase 14: Routing directories - map unstratified tests to integration
         # Check if test is still unstratified after all above rules
         if not is_stratified(item):
-            matches_routing_dir = any(routing_dir in normalized_path for routing_dir in routing_dirs_p14)
+            matches_routing_dir = any(
+                routing_dir in normalized_path for routing_dir in routing_dirs_p14
+            )
             if matches_routing_dir:
                 markers = getattr(item, "own_markers", []) or []
                 has_integration = any(m.name == "integration" for m in markers)
@@ -481,7 +578,9 @@ def pytest_collection_modifyitems(config, items):
         # Phase 15: Additional high-confidence routing directories
         # slow/, smoke/, functional/ - these are clearly integration-level by domain
         if not is_stratified(item):
-            matches_routing_dir = any(routing_dir in normalized_path for routing_dir in routing_dirs_p15)
+            matches_routing_dir = any(
+                routing_dir in normalized_path for routing_dir in routing_dirs_p15
+            )
             if matches_routing_dir:
                 markers = getattr(item, "own_markers", []) or []
                 has_integration = any(m.name == "integration" for m in markers)
@@ -491,7 +590,9 @@ def pytest_collection_modifyitems(config, items):
         # Phase 16: Final high-confidence routing - infra (db, health) + integration
         if not is_stratified(item):
             # First check infra directories (db, health)
-            matches_infra = any(routing_dir in normalized_path for routing_dir in routing_infra_p16)
+            matches_infra = any(
+                routing_dir in normalized_path for routing_dir in routing_infra_p16
+            )
             if matches_infra:
                 markers = getattr(item, "own_markers", []) or []
                 has_infra = any(m.name == "infra" for m in markers)
@@ -499,7 +600,10 @@ def pytest_collection_modifyitems(config, items):
                     item.add_marker(_pytest.mark.infra)
             # Then check integration directories
             else:
-                matches_integration = any(routing_dir in normalized_path for routing_dir in routing_integration_p16)
+                matches_integration = any(
+                    routing_dir in normalized_path
+                    for routing_dir in routing_integration_p16
+                )
                 if matches_integration:
                     markers = getattr(item, "own_markers", []) or []
                     has_integration = any(m.name == "integration" for m in markers)

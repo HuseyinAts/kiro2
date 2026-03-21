@@ -187,7 +187,9 @@ class TestDatabaseManager:
         # Mock begin() to return an async context manager that raises
         mock_engine.begin = MagicMock()
         async_cm = AsyncMock()
-        async_cm.__aenter__ = AsyncMock(side_effect=SQLAlchemyError("Connection failed"))
+        async_cm.__aenter__ = AsyncMock(
+            side_effect=SQLAlchemyError("Connection failed")
+        )
         async_cm.__aexit__ = AsyncMock(return_value=None)
         mock_engine.begin.return_value = async_cm
 
@@ -260,6 +262,7 @@ class TestDatabaseManager:
             # Set initialized after initialize is called
             async def set_initialized():
                 manager._initialized = True
+
             mock_init.side_effect = set_initialized
 
             async with manager.get_session() as session:
@@ -588,9 +591,11 @@ class TestUtilityFunctions:
                 assert session == mock_session
 
     def test_get_db(self):
-        """Test get_db returns db_manager"""
+        """Test get_db returns a generator (sync session factory)"""
+        import types
+
         result = get_db()
-        assert isinstance(result, DatabaseManager)
+        assert isinstance(result, types.GeneratorType)
 
 
 class TestDatabaseManagerEdgeCases:

@@ -3,26 +3,26 @@ Fast tests for Validation API endpoints
 Tests all validation API routes and request/response models
 """
 
-import pytest
-from datetime import datetime, timezone
-from unittest.mock import Mock, patch, AsyncMock
+from datetime import UTC, datetime
+from unittest.mock import AsyncMock, Mock, patch
 
+import pytest
 from fastapi import status
 
 from api.validation import (
-    router,
     ContentSubmissionRequest,
     ExpertFeedbackSubmission,
     ValidationStatusResponse,
+    router,
 )
 from core.expert_content_validation import (
+    ComplianceLevel,
+    ContentComplianceReport,
     ContentType,
     ExpertRole,
-    ValidationStatus,
-    ValidationRequest,
     ValidationFeedback,
-    ContentComplianceReport,
-    ComplianceLevel,
+    ValidationRequest,
+    ValidationStatus,
 )
 
 
@@ -89,7 +89,7 @@ def mock_validation_request():
         required_expert_roles=[ExpertRole.SUBJECT_EXPERT],
         assigned_experts=["exp_1"],  # List[str] - just expert IDs
         feedbacks=[],
-        submitted_at=datetime.now(timezone.utc),
+        submitted_at=datetime.now(UTC),
         priority=5,
         grade_level="9",
         subject="Matematik",
@@ -118,7 +118,7 @@ def mock_compliance_report():
         overall_compliance=ComplianceLevel.FULLY_COMPLIANT,
         overall_score=89.5,
         recommendations=["Consider adding more examples"],
-        generated_at=datetime.now(timezone.utc),
+        generated_at=datetime.now(UTC),
     )
 
 
@@ -200,8 +200,9 @@ class TestSubmitContentEndpoint:
     @pytest.mark.asyncio
     async def test_submit_content_invalid_type(self, sample_submission_data):
         """Test submission with invalid content type"""
-        from api.validation import submit_content_for_validation
         from fastapi import HTTPException
+
+        from api.validation import submit_content_for_validation
 
         sample_submission_data["content_type"] = "invalid_type"
         request = ContentSubmissionRequest(**sample_submission_data)
@@ -216,8 +217,9 @@ class TestSubmitContentEndpoint:
         self, mock_validation_system, sample_submission_data
     ):
         """Test submission when system raises error"""
-        from api.validation import submit_content_for_validation
         from fastapi import HTTPException
+
+        from api.validation import submit_content_for_validation
 
         mock_validation_system.submit_content_for_validation = AsyncMock(
             side_effect=Exception("System error")
@@ -253,8 +255,9 @@ class TestSubmitFeedbackEndpoint:
     @pytest.mark.asyncio
     async def test_submit_feedback_invalid_role(self, sample_feedback_data):
         """Test feedback with invalid expert role"""
-        from api.validation import submit_expert_feedback
         from fastapi import HTTPException
+
+        from api.validation import submit_expert_feedback
 
         sample_feedback_data["expert_role"] = "invalid_role"
         feedback = ExpertFeedbackSubmission(**sample_feedback_data)
@@ -269,8 +272,9 @@ class TestSubmitFeedbackEndpoint:
         self, mock_validation_system, sample_feedback_data
     ):
         """Test feedback for non-existent request"""
-        from api.validation import submit_expert_feedback
         from fastapi import HTTPException
+
+        from api.validation import submit_expert_feedback
 
         mock_validation_system.submit_expert_feedback = AsyncMock(return_value=False)
 
@@ -305,8 +309,9 @@ class TestGetStatusEndpoint:
     @pytest.mark.asyncio
     async def test_get_status_not_found(self, mock_validation_system):
         """Test getting status for non-existent request"""
-        from api.validation import get_validation_status
         from fastapi import HTTPException
+
+        from api.validation import get_validation_status
 
         mock_validation_system.get_validation_request = Mock(return_value=None)
 
@@ -346,10 +351,10 @@ class TestGetStatusEndpoint:
                     criteria_scores={},
                     comment="Good",
                     suggestions=[],
-                    created_at=datetime.now(timezone.utc),
+                    created_at=datetime.now(UTC),
                 )
             ],
-            submitted_at=datetime.now(timezone.utc),
+            submitted_at=datetime.now(UTC),
             priority=5,
         )
 
@@ -385,8 +390,9 @@ class TestGetRequestEndpoint:
     @pytest.mark.asyncio
     async def test_get_request_not_found(self, mock_validation_system):
         """Test getting non-existent request"""
-        from api.validation import get_validation_request
         from fastapi import HTTPException
+
+        from api.validation import get_validation_request
 
         mock_validation_system.get_validation_request = Mock(return_value=None)
 
@@ -449,8 +455,9 @@ class TestGetComplianceReportEndpoint:
     @pytest.mark.asyncio
     async def test_get_compliance_report_not_found(self, mock_validation_system):
         """Test getting non-existent compliance report"""
-        from api.validation import get_compliance_report
         from fastapi import HTTPException
+
+        from api.validation import get_compliance_report
 
         mock_validation_system.get_compliance_report = Mock(return_value=None)
 
@@ -468,7 +475,7 @@ class TestRegisterExpertEndpoint:
         """Test successful expert registration"""
         mock_validation_system.register_expert = AsyncMock(return_value=True)
 
-        from api.validation import register_expert, ExpertRegistrationRequest
+        from api.validation import ExpertRegistrationRequest, register_expert
 
         request = ExpertRegistrationRequest(
             expert_id="expert_new", expert_roles=["subject_expert", "quality_assurance"]
@@ -482,8 +489,9 @@ class TestRegisterExpertEndpoint:
     @pytest.mark.asyncio
     async def test_register_expert_invalid_role(self):
         """Test registration with invalid role"""
-        from api.validation import register_expert, ExpertRegistrationRequest
         from fastapi import HTTPException
+
+        from api.validation import ExpertRegistrationRequest, register_expert
 
         request = ExpertRegistrationRequest(
             expert_id="expert_new", expert_roles=["invalid_role"]
@@ -498,10 +506,12 @@ class TestRegisterExpertEndpoint:
         """Test registration with multiple valid roles"""
         mock_validation_system.register_expert = AsyncMock(return_value=True)
 
-        from api.validation import register_expert, ExpertRegistrationRequest
+        from api.validation import ExpertRegistrationRequest, register_expert
 
         roles = ["subject_expert", "curriculum_expert", "quality_assurance"]
-        request = ExpertRegistrationRequest(expert_id="expert_multi", expert_roles=roles)
+        request = ExpertRegistrationRequest(
+            expert_id="expert_multi", expert_roles=roles
+        )
         response = await register_expert(request=request)
 
         assert response["success"] is True
@@ -556,7 +566,7 @@ class TestGetPendingRequestsEndpoint:
                 required_expert_roles=[ExpertRole.SUBJECT_EXPERT],
                 assigned_experts=[],
                 feedbacks=[],
-                submitted_at=datetime.now(timezone.utc),
+                submitted_at=datetime.now(UTC),
                 priority=5 + i,
                 subject="Math",
                 topic=f"Topic {i}",
@@ -591,8 +601,9 @@ class TestErrorHandling:
         self, mock_validation_system, sample_submission_data
     ):
         """Test that exceptions are properly logged"""
-        from api.validation import submit_content_for_validation
         from fastapi import HTTPException
+
+        from api.validation import submit_content_for_validation
 
         mock_validation_system.submit_content_for_validation = AsyncMock(
             side_effect=Exception("Database error")
@@ -608,8 +619,9 @@ class TestErrorHandling:
         self, mock_validation_system, sample_feedback_data
     ):
         """Test feedback submission error handling"""
-        from api.validation import submit_expert_feedback
         from fastapi import HTTPException
+
+        from api.validation import submit_expert_feedback
 
         mock_validation_system.submit_expert_feedback = AsyncMock(
             side_effect=ValueError("Invalid feedback data")
@@ -628,7 +640,7 @@ class TestRouterConfiguration:
 
     def test_router_prefix(self):
         """Test router has correct prefix"""
-        assert router.prefix == "/validation"
+        assert router.prefix == "/api/v1/validation"
 
     def test_router_tags(self):
         """Test router has correct tags"""

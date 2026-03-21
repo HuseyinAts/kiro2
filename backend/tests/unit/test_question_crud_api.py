@@ -33,12 +33,13 @@ from unittest.mock import AsyncMock, MagicMock, patch
 import pytest
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
-from core.dependencies import AuthenticatedUser
 
+from core.dependencies import AuthenticatedUser
 
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
+
 
 def _make_mock_question(
     qid: str = "q-uuid-001",
@@ -56,6 +57,9 @@ def _make_mock_question(
     q.question_html = "<p>2 + 2 = ?</p>"
     q.question_latex = None
     q.question_image_url = None
+    q.image_ocr_text = None
+    q.image_width = None
+    q.image_height = None
     q.option_a = "3"
     q.option_b = "4"
     q.option_c = "5"
@@ -97,22 +101,25 @@ def _make_mock_question(
 
 
 def _mock_current_user() -> AuthenticatedUser:
-    return AuthenticatedUser(id="user-001", username="user-001", role="teacher", email="test@example.com")
+    return AuthenticatedUser(
+        id="user-001", username="user-001", role="teacher", email="test@example.com"
+    )
 
 
 # ---------------------------------------------------------------------------
 # App setup with dependency overrides
 # ---------------------------------------------------------------------------
 
+
 def _create_app(mock_service: MagicMock, mock_db: MagicMock = None) -> FastAPI:
     """
     Build a minimal FastAPI app that includes the question_crud_api router
     with auth and DB dependencies overridden.
     """
-    from api.question_crud_api import router as q_router
-    from core.dependencies import get_current_user
-    from core.database import get_db_session
     from api.question_crud_api import get_question_service
+    from api.question_crud_api import router as q_router
+    from core.database import get_db_session
+    from core.dependencies import get_current_user
 
     app = FastAPI()
 
@@ -187,6 +194,7 @@ async def test_health_check_returns_200():
 @pytest.mark.asyncio
 async def test_health_check_body_structure():
     import json
+
     from api.question_crud_api import health_check
 
     response = await health_check()
@@ -284,9 +292,7 @@ def _make_search_result(questions):
 
 
 def test_search_questions_empty_result(mock_service):
-    mock_service.search_questions = AsyncMock(
-        return_value=_make_search_result([])
-    )
+    mock_service.search_questions = AsyncMock(return_value=_make_search_result([]))
     app = _create_app(mock_service)
     client = TestClient(app)
 
@@ -354,9 +360,7 @@ def test_search_questions_service_error_returns_500(mock_service):
     app = _create_app(mock_service)
     client = TestClient(app)
 
-    response = client.post(
-        "/api/v1/questions/search", json={"limit": 10, "offset": 0}
-    )
+    response = client.post("/api/v1/questions/search", json={"limit": 10, "offset": 0})
     assert response.status_code == 500
 
 
@@ -400,8 +404,8 @@ def test_elasticsearch_search_with_filters(mock_service):
 
 
 def test_elasticsearch_search_missing_query_returns_422():
-    from api.question_crud_api import router as q_router
     from api.question_crud_api import get_question_service
+    from api.question_crud_api import router as q_router
 
     app = FastAPI()
 
@@ -442,6 +446,7 @@ async def test_get_random_questions_includes_options_and_answer(
     mock_service, mock_question
 ):
     import json
+
     from api.question_crud_api import get_random_questions
 
     mock_service.get_random_questions = AsyncMock(return_value=[mock_question])
@@ -458,6 +463,7 @@ async def test_get_random_questions_includes_options_and_answer(
 @pytest.mark.asyncio
 async def test_get_random_questions_with_filters(mock_service):
     import json
+
     from api.question_crud_api import get_random_questions
 
     mock_service.get_random_questions = AsyncMock(return_value=[])
@@ -474,6 +480,7 @@ async def test_get_random_questions_with_filters(mock_service):
 @pytest.mark.asyncio
 async def test_get_random_questions_service_error_raises_500(mock_service):
     from fastapi import HTTPException
+
     from api.question_crud_api import get_random_questions
 
     mock_service.get_random_questions = AsyncMock(side_effect=Exception("DB error"))
@@ -493,6 +500,7 @@ async def test_get_random_questions_service_error_raises_500(mock_service):
 @pytest.mark.asyncio
 async def test_list_source_books_returns_list(mock_service):
     import json
+
     from api.question_crud_api import list_source_books
 
     mock_service.list_source_books = AsyncMock(
@@ -512,6 +520,7 @@ async def test_list_source_books_returns_list(mock_service):
 @pytest.mark.asyncio
 async def test_list_source_books_filters_forwarded(mock_service):
     import json
+
     from api.question_crud_api import list_source_books
 
     mock_service.list_source_books = AsyncMock(return_value=[])
@@ -528,13 +537,12 @@ async def test_list_source_books_filters_forwarded(mock_service):
 @pytest.mark.asyncio
 async def test_list_source_books_service_error_raises_500(mock_service):
     from fastapi import HTTPException
+
     from api.question_crud_api import list_source_books
 
     mock_service.list_source_books = AsyncMock(side_effect=Exception("db error"))
     with pytest.raises(HTTPException) as exc_info:
-        await list_source_books(
-            subject_area=None, exam_type=None, service=mock_service
-        )
+        await list_source_books(subject_area=None, exam_type=None, service=mock_service)
     assert exc_info.value.status_code == 500
 
 
@@ -550,7 +558,8 @@ async def test_create_question_happy_path(
     mock_service, mock_question, valid_create_payload
 ):
     import json
-    from api.question_crud_api import create_question, QuestionCreateRequest
+
+    from api.question_crud_api import QuestionCreateRequest, create_question
 
     mock_service.create_question = AsyncMock(return_value=mock_question)
     request = QuestionCreateRequest(**valid_create_payload)
@@ -572,7 +581,7 @@ async def test_create_question_happy_path(
 async def test_create_question_service_called_with_user_id(
     mock_service, mock_question, valid_create_payload
 ):
-    from api.question_crud_api import create_question, QuestionCreateRequest
+    from api.question_crud_api import QuestionCreateRequest, create_question
 
     mock_service.create_question = AsyncMock(return_value=mock_question)
     request = QuestionCreateRequest(**valid_create_payload)
@@ -591,6 +600,7 @@ async def test_create_question_service_called_with_user_id(
 def test_create_question_missing_required_fields_returns_422(mock_service):
     """Pydantic validation — missing secenekler, dogru_cevap, konu."""
     from pydantic import ValidationError
+
     from api.question_crud_api import QuestionCreateRequest
 
     with pytest.raises(ValidationError):
@@ -602,7 +612,8 @@ async def test_create_question_service_error_returns_500(
     mock_service, valid_create_payload
 ):
     from fastapi import HTTPException
-    from api.question_crud_api import create_question, QuestionCreateRequest
+
+    from api.question_crud_api import QuestionCreateRequest, create_question
 
     mock_service.create_question = AsyncMock(side_effect=Exception("DB yazma hatası"))
     request = QuestionCreateRequest(**valid_create_payload)
@@ -620,6 +631,7 @@ async def test_create_question_service_error_returns_500(
 def test_create_question_secenekler_too_short_raises_validation_error():
     """secenekler min_items=4 — three options should fail Pydantic validation."""
     from pydantic import ValidationError
+
     from api.question_crud_api import QuestionCreateRequest
 
     with pytest.raises(ValidationError):
@@ -670,15 +682,11 @@ def test_bulk_create_questions_partial_failure(mock_service, valid_create_payloa
 def test_bulk_create_questions_service_error_returns_500(
     mock_service, valid_create_payload
 ):
-    mock_service.bulk_create_questions = AsyncMock(
-        side_effect=Exception("toplu hata")
-    )
+    mock_service.bulk_create_questions = AsyncMock(side_effect=Exception("toplu hata"))
     app = _create_app(mock_service)
     client = TestClient(app)
 
-    response = client.post(
-        "/api/v1/questions/bulk-create", json=[valid_create_payload]
-    )
+    response = client.post("/api/v1/questions/bulk-create", json=[valid_create_payload])
     assert response.status_code == 500
 
 
@@ -749,8 +757,11 @@ def test_update_question_service_error_returns_500(mock_service, valid_update_pa
 def test_get_question_history_happy_path(mock_service):
     history = [
         {"version": 1, "changed_at": "2026-01-01T10:00:00", "changes": {}},
-        {"version": 2, "changed_at": "2026-01-02T10:00:00",
-         "changes": {"soru_metni": "new"}},
+        {
+            "version": 2,
+            "changed_at": "2026-01-02T10:00:00",
+            "changes": {"soru_metni": "new"},
+        },
     ]
     mock_service.get_question_history = AsyncMock(return_value=history)
     app = _create_app(mock_service)
@@ -974,10 +985,10 @@ def _make_mock_db_with_rows(rows=None):
 
 
 def _build_semantic_app(mock_db: MagicMock, mock_user: dict = None) -> FastAPI:
-    from api.question_crud_api import router as q_router
-    from core.dependencies import get_current_user
-    from core.database import get_db_session
     from api.question_crud_api import get_question_service
+    from api.question_crud_api import router as q_router
+    from core.database import get_db_session
+    from core.dependencies import get_current_user
 
     app = FastAPI()
     svc = AsyncMock()
@@ -1004,9 +1015,7 @@ def test_semantic_search_happy_path(mock_httpx_cls):
     # Setup Ollama mock
     mock_http_resp = MagicMock()
     mock_http_resp.raise_for_status = MagicMock()
-    mock_http_resp.json.return_value = {
-        "embeddings": [[0.1] * 768]
-    }
+    mock_http_resp.json.return_value = {"embeddings": [[0.1] * 768]}
     mock_client_instance = AsyncMock()
     mock_client_instance.post = AsyncMock(return_value=mock_http_resp)
     mock_client_instance.__aenter__ = AsyncMock(return_value=mock_client_instance)
@@ -1018,6 +1027,9 @@ def test_semantic_search_happy_path(mock_httpx_cls):
     row.id = "q-sem-001"
     row.question_text = "Türkiye'nin başkenti?"
     row.question_image_url = None
+    row.image_ocr_text = None
+    row.image_width = None
+    row.image_height = None
     row.exam_type = "TYT"
     row.subject_area = "COGRAFYA"
     row.source_book = "Coğrafya Kitabı"
@@ -1067,6 +1079,9 @@ def test_semantic_search_shows_answers_when_requested(mock_httpx_cls):
     row.id = "q-sem-002"
     row.question_text = "Soru?"
     row.question_image_url = None
+    row.image_ocr_text = None
+    row.image_width = None
+    row.image_height = None
     row.exam_type = "AYT"
     row.subject_area = "MATEMATIK"
     row.source_book = "Kitap"

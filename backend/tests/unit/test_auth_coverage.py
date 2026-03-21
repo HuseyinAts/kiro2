@@ -153,8 +153,9 @@ class TestSyncSession:
 
     def test_yields_sync_session_when_sync_engine_exists(self) -> None:
         """Happy path: _sync_session yields and closes correctly."""
-        import api.auth as auth_mod
         from unittest.mock import patch
+
+        import api.auth as auth_mod
 
         db = MagicMock()
         db.bind = MagicMock()
@@ -162,7 +163,11 @@ class TestSyncSession:
 
         fake_session = MagicMock()
 
-        with patch("api.auth.SyncSession" if False else "sqlalchemy.orm.Session", fake_session, create=True):
+        with patch(
+            "api.auth.SyncSession" if False else "sqlalchemy.orm.Session",
+            fake_session,
+            create=True,
+        ):
             # Just verify context manager enters and exits without error
             try:
                 with auth_mod._sync_session(db) as session:
@@ -280,11 +285,10 @@ class TestMevutKullaniciGetir:
         assert "dolmuş" in exc_info.value.detail
 
     @pytest.mark.asyncio
-    async def test_falls_back_to_legacy_token_for_invalid_jwt(self) -> None:
-        """Non-JWT token falls back to kullanici_servisi.token_dogrula."""
+    async def test_invalid_jwt_raises_401(self) -> None:
+        """Non-JWT token → 401 (legacy fallback removed)."""
         import api.auth as auth_mod
 
-        kullanici = _make_kullanici()
         credentials = MagicMock()
         credentials.credentials = "legacy-token-xyz"
         request = _make_mock_request()
@@ -292,16 +296,11 @@ class TestMevutKullaniciGetir:
         mock_jwt_mgr = AsyncMock()
         mock_jwt_mgr.is_blacklisted_async = AsyncMock(return_value=False)
 
-        mock_servisi = AsyncMock()
-        mock_servisi.token_dogrula = AsyncMock(return_value=kullanici)
-
         with patch.object(auth_mod, "get_jwt_manager", return_value=mock_jwt_mgr):
-            with patch.object(auth_mod, "kullanici_servisi", mock_servisi):
-                result = await auth_mod.mevcut_kullanici_getir(
-                    request, credentials=credentials
-                )
+            with pytest.raises(HTTPException) as exc_info:
+                await auth_mod.mevcut_kullanici_getir(request, credentials=credentials)
 
-        assert result.email == kullanici.email
+        assert exc_info.value.status_code == 401
 
     @pytest.mark.asyncio
     async def test_raises_401_when_legacy_token_invalid(self) -> None:
@@ -402,7 +401,9 @@ class TestMevutKullaniciGetir:
 class TestDatabaseAuthenticate:
     """Tests for database_authenticate (DB-backed auth function)."""
 
-    def _make_login_data(self, email: str = "test@example.com", password: str = "ValidPass1!") -> Any:
+    def _make_login_data(
+        self, email: str = "test@example.com", password: str = "ValidPass1!"
+    ) -> Any:
         from models.user import KullaniciGiris
 
         return KullaniciGiris(email=email, sifre=password)
@@ -580,7 +581,9 @@ class TestKullaniciKayit:
 class TestKullaniciGiris:
     """Tests for POST /giris and /login."""
 
-    def _make_login_data(self, email: str = "test@example.com", password: str = "Pass1!Ab") -> Any:
+    def _make_login_data(
+        self, email: str = "test@example.com", password: str = "Pass1!Ab"
+    ) -> Any:
         from models.user import KullaniciGiris
 
         return KullaniciGiris(email=email, sifre=password)
@@ -605,9 +608,13 @@ class TestKullaniciGiris:
             "user": {"id": "user-123", "email": "test@example.com"},
         }
 
-        with patch.object(auth_mod, "database_authenticate", AsyncMock(return_value=fake_result)):
-            with patch.object(auth_mod, "_check_login_rate_limit", return_value=None):
-                result = await auth_mod.kullanici_giris(request, giris_data, db)
+        with (
+            patch.object(
+                auth_mod, "database_authenticate", AsyncMock(return_value=fake_result)
+            ),
+            patch.object(auth_mod, "_check_login_rate_limit", return_value=None),
+        ):
+            result = await auth_mod.kullanici_giris(request, giris_data, db)
 
         assert result["success"] is True
 
@@ -620,13 +627,17 @@ class TestKullaniciGiris:
         giris_data = self._make_login_data(password="WrongPass1!")
         db = AsyncMock()
 
-        with patch.object(auth_mod, "database_authenticate", AsyncMock(
-            side_effect=ValueError("Geçersiz e-posta veya şifre")
-        )):
-            with patch.object(auth_mod, "_check_login_rate_limit", return_value=None):
-                with patch.object(auth_mod, "_record_failed_login", return_value=None):
-                    with pytest.raises(HTTPException) as exc_info:
-                        await auth_mod.kullanici_giris(request, giris_data, db)
+        with (
+            patch.object(
+                auth_mod,
+                "database_authenticate",
+                AsyncMock(side_effect=ValueError("Geçersiz e-posta veya şifre")),
+            ),
+            patch.object(auth_mod, "_check_login_rate_limit", return_value=None),
+        ):
+            with patch.object(auth_mod, "_record_failed_login", return_value=None):
+                with pytest.raises(HTTPException) as exc_info:
+                    await auth_mod.kullanici_giris(request, giris_data, db)
 
         assert exc_info.value.status_code == 401
 
@@ -640,14 +651,23 @@ class TestKullaniciGiris:
         db = AsyncMock()
 
         fake_result = {
-            "success": True, "token": "t", "refreshToken": "r",
-            "access_token": "t", "token_type": "bearer", "expires_in": 3600,
-            "kullanici": _make_kullanici(), "user": {},
+            "success": True,
+            "token": "t",
+            "refreshToken": "r",
+            "access_token": "t",
+            "token_type": "bearer",
+            "expires_in": 3600,
+            "kullanici": _make_kullanici(),
+            "user": {},
         }
 
-        with patch.object(auth_mod, "database_authenticate", AsyncMock(return_value=fake_result)):
-            with patch.object(auth_mod, "_check_login_rate_limit", return_value=None):
-                result = await auth_mod.kullanici_giris_en(request, giris_data, db)
+        with (
+            patch.object(
+                auth_mod, "database_authenticate", AsyncMock(return_value=fake_result)
+            ),
+            patch.object(auth_mod, "_check_login_rate_limit", return_value=None),
+        ):
+            result = await auth_mod.kullanici_giris_en(request, giris_data, db)
 
         assert result["success"] is True
 
@@ -665,13 +685,19 @@ class TestKullaniciGiris:
         def mock_record(req: Any) -> None:
             recorded.append(req)
 
-        with patch.object(auth_mod, "database_authenticate", AsyncMock(
-            side_effect=ValueError("bad creds")
-        )):
-            with patch.object(auth_mod, "_check_login_rate_limit", return_value=None):
-                with patch.object(auth_mod, "_record_failed_login", side_effect=mock_record):
-                    with pytest.raises(HTTPException):
-                        await auth_mod.kullanici_giris(request, giris_data, db)
+        with (
+            patch.object(
+                auth_mod,
+                "database_authenticate",
+                AsyncMock(side_effect=ValueError("bad creds")),
+            ),
+            patch.object(auth_mod, "_check_login_rate_limit", return_value=None),
+        ):
+            with patch.object(
+                auth_mod, "_record_failed_login", side_effect=mock_record
+            ):
+                with pytest.raises(HTTPException):
+                    await auth_mod.kullanici_giris(request, giris_data, db)
 
         assert len(recorded) == 1
 
@@ -705,14 +731,21 @@ class TestSecureLogin:
             "user": {"id": "user-123", "email": "test@example.com"},
         }
 
-        with patch.object(auth_mod, "database_authenticate", AsyncMock(return_value=fake_result)):
-            with patch.object(auth_mod, "_check_login_rate_limit", return_value=None):
-                result = await auth_mod.secure_login(request, giris_data, response, db)
+        with (
+            patch.object(
+                auth_mod, "database_authenticate", AsyncMock(return_value=fake_result)
+            ),
+            patch.object(auth_mod, "_check_login_rate_limit", return_value=None),
+        ):
+            result = await auth_mod.secure_login(request, giris_data, response, db)
 
         assert result["success"] is True
         assert result["user"] == fake_result["user"]
         response.set_cookie.assert_called()
-        call_keys = [c.kwargs.get("key", c.args[0] if c.args else "") for c in response.set_cookie.call_args_list]
+        call_keys = [
+            c.kwargs.get("key", c.args[0] if c.args else "")
+            for c in response.set_cookie.call_args_list
+        ]
         assert any("access_token" in k for k in call_keys)
 
     @pytest.mark.asyncio
@@ -725,13 +758,17 @@ class TestSecureLogin:
         db = AsyncMock()
         giris_data = self._make_login_data()
 
-        with patch.object(auth_mod, "database_authenticate", AsyncMock(
-            side_effect=ValueError("Geçersiz e-posta veya şifre")
-        )):
-            with patch.object(auth_mod, "_check_login_rate_limit", return_value=None):
-                with patch.object(auth_mod, "_record_failed_login", return_value=None):
-                    with pytest.raises(HTTPException) as exc_info:
-                        await auth_mod.secure_login(request, giris_data, response, db)
+        with (
+            patch.object(
+                auth_mod,
+                "database_authenticate",
+                AsyncMock(side_effect=ValueError("Geçersiz e-posta veya şifre")),
+            ),
+            patch.object(auth_mod, "_check_login_rate_limit", return_value=None),
+        ):
+            with patch.object(auth_mod, "_record_failed_login", return_value=None):
+                with pytest.raises(HTTPException) as exc_info:
+                    await auth_mod.secure_login(request, giris_data, response, db)
 
         assert exc_info.value.status_code == 401
 
@@ -749,10 +786,12 @@ class TestSecureLogout:
         """Tokens in cookies are blacklisted and cookies are deleted."""
         import api.auth as auth_mod
 
-        request = _make_mock_request(cookies={
-            "access_token": "acc-tok",
-            "refresh_token": "ref-tok",
-        })
+        request = _make_mock_request(
+            cookies={
+                "access_token": "acc-tok",
+                "refresh_token": "ref-tok",
+            }
+        )
         response = MagicMock()
 
         mock_jwt_mgr = AsyncMock()
@@ -933,28 +972,27 @@ class TestKullaniciCikis:
         """Logout blacklists the JWT and returns success message."""
         import api.auth as auth_mod
 
-        credentials = HTTPAuthorizationCredentials(scheme="Bearer", credentials="some-token")
+        credentials = HTTPAuthorizationCredentials(
+            scheme="Bearer", credentials="some-token"
+        )
 
         mock_jwt_mgr = AsyncMock()
         mock_jwt_mgr.blacklist_token_async = AsyncMock(return_value=None)
 
-        mock_servisi = AsyncMock()
-        mock_servisi.kullanici_cikis = AsyncMock(return_value=None)
-
         with patch.object(auth_mod, "get_jwt_manager", return_value=mock_jwt_mgr):
-            with patch.object(auth_mod, "kullanici_servisi", mock_servisi):
-                result = await auth_mod.kullanici_cikis(credentials=credentials)
+            result = await auth_mod.kullanici_cikis(credentials=credentials)
 
         assert "message" in result
         mock_jwt_mgr.blacklist_token_async.assert_awaited_once_with("some-token")
-        mock_servisi.kullanici_cikis.assert_awaited_once_with("some-token")
 
     @pytest.mark.asyncio
     async def test_logout_alias_calls_cikis(self) -> None:
         """/logout delegates to kullanici_cikis."""
         import api.auth as auth_mod
 
-        credentials = HTTPAuthorizationCredentials(scheme="Bearer", credentials="tok-xyz")
+        credentials = HTTPAuthorizationCredentials(
+            scheme="Bearer", credentials="tok-xyz"
+        )
 
         mock_jwt_mgr = AsyncMock()
         mock_jwt_mgr.blacklist_token_async = AsyncMock(return_value=None)
@@ -977,13 +1015,27 @@ class TestKullaniciCikis:
 class TestValidateToken:
     """Tests for POST /validate."""
 
+    def _make_request(
+        self, token: str | None = None, cookie_token: str | None = None
+    ) -> MagicMock:
+        """Build a mock Request with optional Bearer header and/or cookie."""
+        req = MagicMock()
+        headers = {}
+        if token:
+            headers["Authorization"] = f"Bearer {token}"
+        req.headers = headers
+        req.cookies = {}
+        if cookie_token:
+            req.cookies["access_token"] = cookie_token
+        return req
+
     @pytest.mark.asyncio
     async def test_valid_jwt_returns_true(self) -> None:
         """Non-blacklisted valid JWT → {valid: True}."""
         import api.auth as auth_mod
 
         token = _make_jwt()
-        credentials = HTTPAuthorizationCredentials(scheme="Bearer", credentials=token)
+        request = self._make_request(token=token)
 
         mock_jwt_mgr = AsyncMock()
         mock_jwt_mgr.is_blacklisted_async = AsyncMock(return_value=False)
@@ -991,7 +1043,7 @@ class TestValidateToken:
         with patch.object(auth_mod, "get_jwt_manager", return_value=mock_jwt_mgr):
             with patch.object(auth_mod, "JWT_SECRET", _TEST_SECRET):
                 with patch.object(auth_mod, "JWT_ALGORITHM", _TEST_ALGORITHM):
-                    result = await auth_mod.validate_token(credentials=credentials)
+                    result = await auth_mod.validate_token(request)
 
         assert result == {"valid": True}
 
@@ -1001,13 +1053,13 @@ class TestValidateToken:
         import api.auth as auth_mod
 
         token = _make_jwt()
-        credentials = HTTPAuthorizationCredentials(scheme="Bearer", credentials=token)
+        request = self._make_request(token=token)
 
         mock_jwt_mgr = AsyncMock()
         mock_jwt_mgr.is_blacklisted_async = AsyncMock(return_value=True)
 
         with patch.object(auth_mod, "get_jwt_manager", return_value=mock_jwt_mgr):
-            result = await auth_mod.validate_token(credentials=credentials)
+            result = await auth_mod.validate_token(request)
 
         assert result == {"valid": False}
 
@@ -1017,7 +1069,7 @@ class TestValidateToken:
         import api.auth as auth_mod
 
         token = _make_jwt(expired=True)
-        credentials = HTTPAuthorizationCredentials(scheme="Bearer", credentials=token)
+        request = self._make_request(token=token)
 
         mock_jwt_mgr = AsyncMock()
         mock_jwt_mgr.is_blacklisted_async = AsyncMock(return_value=False)
@@ -1025,45 +1077,34 @@ class TestValidateToken:
         with patch.object(auth_mod, "get_jwt_manager", return_value=mock_jwt_mgr):
             with patch.object(auth_mod, "JWT_SECRET", _TEST_SECRET):
                 with patch.object(auth_mod, "JWT_ALGORITHM", _TEST_ALGORITHM):
-                    result = await auth_mod.validate_token(credentials=credentials)
+                    result = await auth_mod.validate_token(request)
 
         assert result == {"valid": False}
 
     @pytest.mark.asyncio
-    async def test_legacy_token_returns_true_when_active(self) -> None:
-        """Non-JWT legacy token validated by servisi → {valid: True}."""
+    async def test_no_token_returns_false(self) -> None:
+        """No Authorization header or cookie → {valid: False}."""
         import api.auth as auth_mod
 
-        kullanici = _make_kullanici()
-        kullanici.aktif = True
-        credentials = HTTPAuthorizationCredentials(
-            scheme="Bearer", credentials="legacy-tok-abc"
-        )
+        request = self._make_request()
+        result = await auth_mod.validate_token(request)
 
-        mock_jwt_mgr = AsyncMock()
-        mock_jwt_mgr.is_blacklisted_async = AsyncMock(return_value=False)
-
-        mock_servisi = AsyncMock()
-        mock_servisi.token_dogrula = AsyncMock(return_value=kullanici)
-
-        with patch.object(auth_mod, "get_jwt_manager", return_value=mock_jwt_mgr):
-            with patch.object(auth_mod, "kullanici_servisi", mock_servisi):
-                result = await auth_mod.validate_token(credentials=credentials)
-
-        assert result == {"valid": True}
+        assert result == {"valid": False}
 
     @pytest.mark.asyncio
     async def test_exception_returns_false(self) -> None:
         """Unexpected exception → {valid: False} (never raises)."""
         import api.auth as auth_mod
 
-        credentials = HTTPAuthorizationCredentials(scheme="Bearer", credentials="tok")
+        request = self._make_request(token="tok")
 
         mock_jwt_mgr = AsyncMock()
-        mock_jwt_mgr.is_blacklisted_async = AsyncMock(side_effect=RuntimeError("redis down"))
+        mock_jwt_mgr.is_blacklisted_async = AsyncMock(
+            side_effect=RuntimeError("redis down")
+        )
 
         with patch.object(auth_mod, "get_jwt_manager", return_value=mock_jwt_mgr):
-            result = await auth_mod.validate_token(credentials=credentials)
+            result = await auth_mod.validate_token(request)
 
         assert result == {"valid": False}
 
@@ -1076,7 +1117,9 @@ class TestValidateToken:
 class TestChangePassword:
     """Tests for POST /change-password."""
 
-    def _make_change_req(self, current: str = "OldPass1!", new_pw: str = "NewPass1!") -> Any:
+    def _make_change_req(
+        self, current: str = "OldPass1!", new_pw: str = "NewPass1!"
+    ) -> Any:
         import api.auth as auth_mod
 
         return auth_mod.ChangePasswordRequest(
@@ -1255,8 +1298,9 @@ class TestResetPassword:
 
     def _setup_valid_token(self, user_id: str = "user-123") -> tuple[str, Any]:
         """Insert a valid reset token into _password_reset_tokens."""
-        import api.auth as auth_mod
         import secrets
+
+        import api.auth as auth_mod
 
         token = secrets.token_urlsafe(16)
         auth_mod._password_reset_tokens[token] = {
@@ -1273,19 +1317,24 @@ class TestResetPassword:
         """Unknown token → {success: False, message: 'Geçersiz...'}."""
         import api.auth as auth_mod
 
-        req = auth_mod.ResetPasswordRequest(token="bad-token-xyz", newPassword="SomePass1!")
+        req = auth_mod.ResetPasswordRequest(
+            token="bad-token-xyz", newPassword="SomePass1!"
+        )
         db = AsyncMock()
 
         result = await auth_mod.reset_password(req, db)
 
         assert result["success"] is False
-        assert "Geçersiz" in result["message"] or "geçersiz" in result["message"].lower()
+        assert (
+            "Geçersiz" in result["message"] or "geçersiz" in result["message"].lower()
+        )
 
     @pytest.mark.asyncio
     async def test_returns_failure_for_expired_token(self) -> None:
         """Expired token → {success: False, message: 'Token süresi dolmuş'}."""
-        import api.auth as auth_mod
         import secrets
+
+        import api.auth as auth_mod
 
         token = secrets.token_urlsafe(16)
         auth_mod._password_reset_tokens[token] = {
@@ -1305,8 +1354,9 @@ class TestResetPassword:
     @pytest.mark.asyncio
     async def test_returns_failure_for_weak_new_password(self) -> None:
         """Valid token but weak new password → {success: False}."""
-        import api.auth as auth_mod
         import secrets
+
+        import api.auth as auth_mod
 
         token = secrets.token_urlsafe(16)
         auth_mod._password_reset_tokens[token] = {
@@ -1720,7 +1770,9 @@ class TestRefreshTokenEndpoint:
         mock_jwt_mgr = MagicMock()
         mock_jwt_mgr.refresh_access_token = AsyncMock(return_value=new_tokens)
 
-        creds = HTTPAuthorizationCredentials(scheme="Bearer", credentials="header-refresh")
+        creds = HTTPAuthorizationCredentials(
+            scheme="Bearer", credentials="header-refresh"
+        )
 
         with patch.object(auth_mod, "get_jwt_manager", return_value=mock_jwt_mgr):
             with patch.object(auth_mod, "_sync_session") as mock_sync:
@@ -1743,7 +1795,9 @@ class TestRefreshTokenEndpoint:
         db = AsyncMock()
         mock_jwt_mgr = MagicMock()
         mock_jwt_mgr.refresh_access_token = AsyncMock(
-            side_effect=HTTPException(status_code=401, detail="Refresh token iptal edilmiş")
+            side_effect=HTTPException(
+                status_code=401, detail="Refresh token iptal edilmiş"
+            )
         )
 
         body = auth_mod.RefreshTokenRequest(refreshToken="revoked-token")

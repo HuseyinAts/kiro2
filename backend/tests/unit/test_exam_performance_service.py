@@ -13,21 +13,22 @@ Tests ÖSYM exam scoring formulas:
 - Statistical analysis
 """
 
-import pytest
 import statistics
 from datetime import datetime
 from unittest.mock import AsyncMock, MagicMock
 
+import pytest
+
+from models.database import ExamType
+from models.question_bank import QuestionDifficultyLevel as QuestionDifficulty
 from services.exam_performance_service import (
     ExamPerformanceService,
-    WeaknessLevel,
-    StudyPriority,
-    SubjectWeakness,
-    StudyRecommendation,
     PerformanceComparison,
+    StudyPriority,
+    StudyRecommendation,
+    SubjectWeakness,
+    WeaknessLevel,
 )
-from models.database import ExamType, QuestionDifficulty
-
 
 # ==================== FIXTURES ====================
 
@@ -1408,7 +1409,7 @@ class TestPerformanceRequirements:
 
         start = time.time()
 
-        for rate in range(0, 100):
+        for rate in range(100):
             if rate < 40:
                 level = WeaknessLevel.CRITICAL
             elif rate < 60:
