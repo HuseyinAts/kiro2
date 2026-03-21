@@ -11,17 +11,22 @@ Examples show:
 - Breadcrumbs for debugging
 - Performance monitoring
 """
-import random
+
 import asyncio
-from typing import Dict, Optional
+import random
 
 from fastapi import APIRouter, Depends, HTTPException, Query
+from pydantic import BaseModel
+from sentry_sdk import (
+    add_breadcrumb,
+    capture_exception,
+    capture_message,
+    set_tag,
+    set_user,
+)
 
 from core.dependencies import AuthenticatedUser, get_current_user
-from pydantic import BaseModel
-from sentry_sdk import capture_exception, capture_message, add_breadcrumb, set_user, set_tag
-
-from core.sentry_middleware import track_business_operation, capture_categorized_error
+from core.sentry_middleware import capture_categorized_error, track_business_operation
 
 router = APIRouter(prefix="/api/v1/sentry-demo", tags=["Sentry Error Tracking Demo"])
 
@@ -31,16 +36,17 @@ router = APIRouter(prefix="/api/v1/sentry-demo", tags=["Sentry Error Tracking De
 
 class ErrorTestRequest(BaseModel):
     """Error test request"""
+
     error_type: str = "generic"
     message: str = "Test error"
-    user_id: Optional[str] = None
+    user_id: str | None = None
 
 
 # ==================== AUTOMATIC ERROR CAPTURE ====================
 
 
 @router.get("/automatic-error")
-async def automatic_error_capture() -> Dict:
+async def automatic_error_capture() -> dict:
     """
     Automatic error capture example
 
@@ -49,9 +55,7 @@ async def automatic_error_capture() -> Dict:
     """
     # Add breadcrumb before error
     add_breadcrumb(
-        message="User triggered automatic error test",
-        category="test",
-        level="info"
+        message="User triggered automatic error test", category="test", level="info"
     )
 
     # Trigger error
@@ -59,7 +63,7 @@ async def automatic_error_capture() -> Dict:
 
 
 @router.get("/http-error/{status_code}")
-async def http_error_example(status_code: int) -> Dict:
+async def http_error_example(status_code: int) -> dict:
     """
     HTTP error capture example
 
@@ -68,17 +72,19 @@ async def http_error_example(status_code: int) -> Dict:
     add_breadcrumb(
         message=f"User requested HTTP error {status_code}",
         category="test",
-        level="info"
+        level="info",
     )
 
-    raise HTTPException(status_code=status_code, detail=f"HTTP {status_code} error for testing")
+    raise HTTPException(
+        status_code=status_code, detail=f"HTTP {status_code} error for testing"
+    )
 
 
 # ==================== MANUAL ERROR CAPTURE ====================
 
 
 @router.post("/manual-error")
-async def manual_error_capture(request: ErrorTestRequest) -> Dict:
+async def manual_error_capture(request: ErrorTestRequest) -> dict:
     """
     Manual error capture example
 
@@ -90,18 +96,17 @@ async def manual_error_capture(request: ErrorTestRequest) -> Dict:
             message="Starting manual error test",
             category="test",
             level="info",
-            data={"error_type": request.error_type}
+            data={"error_type": request.error_type},
         )
 
         # Create error based on type
         if request.error_type == "database":
             raise Exception("Database connection failed")
-        elif request.error_type == "network":
+        if request.error_type == "network":
             raise ConnectionError("Network timeout")
-        elif request.error_type == "validation":
+        if request.error_type == "validation":
             raise ValueError("Invalid input data")
-        else:
-            raise Exception(request.message)
+        raise Exception(request.message)
 
     except Exception as e:
         # Manually capture with context
@@ -111,12 +116,12 @@ async def manual_error_capture(request: ErrorTestRequest) -> Dict:
             "status": "error_captured",
             "error_type": type(e).__name__,
             "message": "Error has been reported to Sentry",
-            "sentry_dashboard": "Check your Sentry dashboard for details"
+            "sentry_dashboard": "Check your Sentry dashboard for details",
         }
 
 
 @router.post("/categorized-error")
-async def categorized_error_capture(request: ErrorTestRequest) -> Dict:
+async def categorized_error_capture(request: ErrorTestRequest) -> dict:
     """
     Categorized error capture example
 
@@ -125,9 +130,7 @@ async def categorized_error_capture(request: ErrorTestRequest) -> Dict:
     try:
         # Simulate operation with breadcrumbs
         add_breadcrumb(
-            message="Starting categorized error test",
-            category="test",
-            level="info"
+            message="Starting categorized error test", category="test", level="info"
         )
 
         # Create error
@@ -148,13 +151,13 @@ async def categorized_error_capture(request: ErrorTestRequest) -> Dict:
             e,
             user_id=request.user_id,
             operation="error_demo",
-            extra_info="This is a test error"
+            extra_info="This is a test error",
         )
 
         return {
             "status": "error_captured",
             "error_type": type(e).__name__,
-            "message": "Error categorized and reported to Sentry"
+            "message": "Error categorized and reported to Sentry",
         }
 
 
@@ -165,31 +168,23 @@ async def categorized_error_capture(request: ErrorTestRequest) -> Dict:
 async def user_context_error(
     user_id: str,
     current_user: AuthenticatedUser = Depends(get_current_user),
-) -> Dict:
+) -> dict:
     """
     Error with user context
 
     Demonstrates error tracking with user information.
     """
+    # IDOR: use authenticated user's ID
+    user_id = str(current_user.id)
     # Set user context
-    set_user({
-        "id": user_id,
-        "username": f"test_user_{user_id}",
-        "role": "student"
-    })
+    set_user({"id": user_id, "username": f"test_user_{user_id}", "role": "student"})
 
     # Add user activity breadcrumbs
     add_breadcrumb(
-        message="User navigated to dashboard",
-        category="navigation",
-        level="info"
+        message="User navigated to dashboard", category="navigation", level="info"
     )
 
-    add_breadcrumb(
-        message="User clicked on exam",
-        category="user_action",
-        level="info"
-    )
+    add_breadcrumb(message="User clicked on exam", category="user_action", level="info")
 
     # Trigger error
     raise Exception(f"Error occurred for user {user_id}")
@@ -199,7 +194,7 @@ async def user_context_error(
 
 
 @track_business_operation("exam_submission")
-async def process_exam_submission(exam_id: str, user_id: str) -> Dict:
+async def process_exam_submission(exam_id: str, user_id: str) -> dict:
     """
     Simulated exam submission with error tracking
 
@@ -210,44 +205,36 @@ async def process_exam_submission(exam_id: str, user_id: str) -> Dict:
         message="Validating exam data",
         category="business",
         level="info",
-        data={"exam_id": exam_id, "user_id": user_id}
+        data={"exam_id": exam_id, "user_id": user_id},
     )
 
     await asyncio.sleep(0.1)
 
-    add_breadcrumb(
-        message="Calculating exam score",
-        category="business",
-        level="info"
-    )
+    add_breadcrumb(message="Calculating exam score", category="business", level="info")
 
     await asyncio.sleep(0.1)
 
     # Simulate random error (20% chance)
     if random.random() < 0.2:
         add_breadcrumb(
-            message="Score calculation failed",
-            category="error",
-            level="error"
+            message="Score calculation failed", category="error", level="error"
         )
         raise ValueError("Score calculation failed: Invalid answer format")
 
     add_breadcrumb(
-        message="Exam submission completed",
-        category="business",
-        level="info"
+        message="Exam submission completed", category="business", level="info"
     )
 
     return {
         "exam_id": exam_id,
         "user_id": user_id,
         "status": "completed",
-        "score": random.randint(60, 100)
+        "score": random.randint(60, 100),
     }
 
 
 @router.post("/exam-submission/{exam_id}")
-async def submit_exam(exam_id: str, user_id: str = Query(...)) -> Dict:
+async def submit_exam(exam_id: str, user_id: str = Query(...)) -> dict:
     """
     Exam submission with business operation tracking
 
@@ -255,15 +242,12 @@ async def submit_exam(exam_id: str, user_id: str = Query(...)) -> Dict:
     """
     try:
         result = await process_exam_submission(exam_id, user_id)
-        return {
-            **result,
-            "message": "Check Sentry for business operation tracking"
-        }
+        return {**result, "message": "Check Sentry for business operation tracking"}
     except Exception as e:
         capture_exception(e)
         return {
             "status": "error",
-            "message": "Exam submission failed - error reported to Sentry"
+            "message": "Exam submission failed - error reported to Sentry",
         }
 
 
@@ -271,7 +255,7 @@ async def submit_exam(exam_id: str, user_id: str = Query(...)) -> Dict:
 
 
 @router.get("/breadcrumbs-demo")
-async def breadcrumbs_demo() -> Dict:
+async def breadcrumbs_demo() -> dict:
     """
     Breadcrumbs demonstration
 
@@ -282,16 +266,14 @@ async def breadcrumbs_demo() -> Dict:
         message="User logged in",
         category="auth",
         level="info",
-        data={"user_id": "user_123"}
+        data={"user_id": "user_123"},
     )
 
     await asyncio.sleep(0.05)
 
     # Step 2: User navigates
     add_breadcrumb(
-        message="User navigated to exam list",
-        category="navigation",
-        level="info"
+        message="User navigated to exam list", category="navigation", level="info"
     )
 
     await asyncio.sleep(0.05)
@@ -301,29 +283,23 @@ async def breadcrumbs_demo() -> Dict:
         message="User selected exam",
         category="user_action",
         level="info",
-        data={"exam_id": "tyt_2024"}
+        data={"exam_id": "tyt_2024"},
     )
 
     await asyncio.sleep(0.05)
 
     # Step 4: Load exam data
-    add_breadcrumb(
-        message="Loading exam data",
-        category="database",
-        level="info"
-    )
+    add_breadcrumb(message="Loading exam data", category="database", level="info")
 
     await asyncio.sleep(0.05)
 
     # Step 5: Error occurs
-    add_breadcrumb(
-        message="Exam data loading failed",
-        category="error",
-        level="error"
-    )
+    add_breadcrumb(message="Exam data loading failed", category="error", level="error")
 
     # Trigger error
-    raise Exception("Failed to load exam data - check breadcrumbs in Sentry for full context")
+    raise Exception(
+        "Failed to load exam data - check breadcrumbs in Sentry for full context"
+    )
 
 
 # ==================== CUSTOM MESSAGES ====================
@@ -332,8 +308,8 @@ async def breadcrumbs_demo() -> Dict:
 @router.post("/custom-message")
 async def custom_message(
     message: str = Query(...),
-    level: str = Query("info", regex="^(debug|info|warning|error|fatal)$")
-) -> Dict:
+    level: str = Query("info", regex="^(debug|info|warning|error|fatal)$"),
+) -> dict:
     """
     Custom message capture
 
@@ -349,7 +325,7 @@ async def custom_message(
         "status": "message_captured",
         "message": message,
         "level": level,
-        "sentry_dashboard": "Check Sentry dashboard for the message"
+        "sentry_dashboard": "Check Sentry dashboard for the message",
     }
 
 
@@ -357,7 +333,7 @@ async def custom_message(
 
 
 @router.get("/slow-operation")
-async def slow_operation() -> Dict:
+async def slow_operation() -> dict:
     """
     Slow operation for performance monitoring
 
@@ -365,24 +341,20 @@ async def slow_operation() -> Dict:
     """
     # Simulate slow operation
     add_breadcrumb(
-        message="Starting slow operation",
-        category="performance",
-        level="info"
+        message="Starting slow operation", category="performance", level="info"
     )
 
     # Multiple slow steps
     for i in range(5):
         add_breadcrumb(
-            message=f"Processing step {i + 1}/5",
-            category="performance",
-            level="info"
+            message=f"Processing step {i + 1}/5", category="performance", level="info"
         )
         await asyncio.sleep(0.5)
 
     return {
         "status": "completed",
         "duration": "~2.5 seconds",
-        "message": "Check Sentry Performance for transaction details"
+        "message": "Check Sentry Performance for transaction details",
     }
 
 
@@ -390,46 +362,34 @@ async def slow_operation() -> Dict:
 
 
 @router.get("/error-stats")
-async def error_statistics() -> Dict:
+async def error_statistics() -> dict:
     """
     Simulated endpoint with multiple error types
 
     Generates various errors for statistics demonstration.
     """
-    error_type = random.choice([
-        "database",
-        "network",
-        "validation",
-        "auth",
-        "success"
-    ])
+    error_type = random.choice(["database", "network", "validation", "auth", "success"])
 
     add_breadcrumb(
-        message=f"Simulating {error_type} scenario",
-        category="test",
-        level="info"
+        message=f"Simulating {error_type} scenario", category="test", level="info"
     )
 
     if error_type == "database":
         raise Exception("DatabaseError: Connection timeout")
-    elif error_type == "network":
+    if error_type == "network":
         raise ConnectionError("Network error: Unable to reach external service")
-    elif error_type == "validation":
+    if error_type == "validation":
         raise ValueError("Validation error: Invalid input format")
-    elif error_type == "auth":
+    if error_type == "auth":
         raise PermissionError("Authentication error: Invalid credentials")
-    else:
-        return {
-            "status": "success",
-            "message": "Operation completed successfully"
-        }
+    return {"status": "success", "message": "Operation completed successfully"}
 
 
 # ==================== INFO ENDPOINT ====================
 
 
 @router.get("/")
-async def sentry_demo_info() -> Dict:
+async def sentry_demo_info() -> dict:
     """
     Sentry Error Tracking Demo Information
 

@@ -9,24 +9,25 @@ Examples show:
 - Error tracking
 - Trace context propagation
 """
+
 import asyncio
-import random
 import logging
-from typing import Dict
+import random
 
 from fastapi import APIRouter, Depends, HTTPException, Query
+from pydantic import BaseModel
 
 from core.dependencies import AuthenticatedUser, get_current_user
-from pydantic import BaseModel
 
 logger = logging.getLogger(__name__)
 
 try:
+    from core.opentelemetry_config import trace_function
     from core.tracing_middleware import (
         get_business_span_manager,
         profile_function_performance,
     )
-    from core.opentelemetry_config import trace_function
+
     TRACING_AVAILABLE = True
 except ImportError as e:
     logger.warning(f"OpenTelemetry tracing not available: {e}")
@@ -37,12 +38,15 @@ except ImportError as e:
     def profile_function_performance(name):
         def decorator(func):
             return func
+
         return decorator
 
     def trace_function(**kwargs):
         def decorator(func):
             return func
+
         return decorator
+
 
 router = APIRouter(prefix="/api/v1/tracing-demo", tags=["Distributed Tracing Demo"])
 
@@ -68,7 +72,7 @@ class QuestionAnswerRequest(BaseModel):
 
 
 @router.get("/simple")
-async def simple_traced_request() -> Dict:
+async def simple_traced_request() -> dict:
     """
     Simple traced request - automatically traced by middleware
 
@@ -77,10 +81,7 @@ async def simple_traced_request() -> Dict:
     Find trace with span: GET /api/tracing-demo/simple
     """
     if not TRACING_AVAILABLE:
-        return {
-            "message": "Tracing not available",
-            "status": "degraded"
-        }
+        return {"message": "Tracing not available", "status": "degraded"}
 
     # Simulate some work
     await asyncio_sleep(0.1)
@@ -93,7 +94,7 @@ async def simple_traced_request() -> Dict:
 
 
 @router.get("/slow-request")
-async def slow_request_example() -> Dict:
+async def slow_request_example() -> dict:
     """
     Slow request example - will be marked as 'slow' in traces
 
@@ -120,7 +121,7 @@ async def slow_request_example() -> Dict:
 
 
 @router.post("/exam-session")
-async def start_exam_session(request: ExamSessionRequest) -> Dict:
+async def start_exam_session(request: ExamSessionRequest) -> dict:
     """
     Example: Tracing an exam session (business operation)
 
@@ -160,7 +161,7 @@ async def start_exam_session(request: ExamSessionRequest) -> Dict:
 
 
 @router.post("/question-answer")
-async def answer_question(request: QuestionAnswerRequest) -> Dict:
+async def answer_question(request: QuestionAnswerRequest) -> dict:
     """
     Example: Tracing question answering
 
@@ -197,7 +198,7 @@ async def calculate_irt(
     user_id: str,
     algorithm: str = Query("IRT"),
     current_user: AuthenticatedUser = Depends(get_current_user),
-) -> Dict:
+) -> dict:
     """
     Example: Tracing IRT calculation
 
@@ -206,6 +207,8 @@ async def calculate_irt(
     - algorithm.type: adaptive_learning
     - business.operation: ability_estimation
     """
+    # IDOR: use authenticated user's ID
+    user_id = str(current_user.id)
     span_manager = get_business_span_manager()
 
     with span_manager.trace_irt_calculation(user_id, algorithm):
@@ -237,7 +240,7 @@ async def ai_chat_example(
     user_id: str,
     model: str = Query("GPT-4"),
     current_user: AuthenticatedUser = Depends(get_current_user),
-) -> Dict:
+) -> dict:
     """
     Example: Tracing AI model requests
 
@@ -246,6 +249,8 @@ async def ai_chat_example(
     - ai.operation (chat, embedding, classification)
     - business.operation: ai_inference
     """
+    # IDOR: use authenticated user's ID
+    user_id = str(current_user.id)
     span_manager = get_business_span_manager()
 
     with span_manager.trace_ai_model_request(model, "chat"):
@@ -270,8 +275,10 @@ async def ai_chat_example(
 # ==================== DECORATOR-BASED TRACING ====================
 
 
-@trace_function(name="process_recommendation", attributes={"algorithm": "collaborative"})
-async def process_recommendation(user_id: str) -> Dict:
+@trace_function(
+    name="process_recommendation", attributes={"algorithm": "collaborative"}
+)
+async def process_recommendation(user_id: str) -> dict:
     """
     Internal function with decorator-based tracing
 
@@ -291,7 +298,7 @@ async def process_recommendation(user_id: str) -> Dict:
 async def get_recommendations(
     user_id: str,
     current_user: AuthenticatedUser = Depends(get_current_user),
-) -> Dict:
+) -> dict:
     """
     Example: Using @trace_function decorator
 
@@ -302,6 +309,8 @@ async def get_recommendations(
     1. HTTP Request (middleware)
     2. process_recommendation (decorator)
     """
+    # IDOR: use authenticated user's ID
+    user_id = str(current_user.id)
     result = await process_recommendation(user_id)
 
     return {
@@ -314,7 +323,7 @@ async def get_recommendations(
 
 
 @profile_function_performance("calculate_exam_statistics")
-async def calculate_statistics(exam_id: str) -> Dict:
+async def calculate_statistics(exam_id: str) -> dict:
     """
     Function with performance profiling
 
@@ -333,7 +342,7 @@ async def calculate_statistics(exam_id: str) -> Dict:
 
 
 @router.get("/exam-statistics/{exam_id}")
-async def exam_statistics(exam_id: str) -> Dict:
+async def exam_statistics(exam_id: str) -> dict:
     """
     Example: Performance profiling
 
@@ -352,7 +361,7 @@ async def exam_statistics(exam_id: str) -> Dict:
 
 
 @router.get("/error-example")
-async def error_example() -> Dict:
+async def error_example() -> dict:
     """
     Example: Error tracking in traces
 
@@ -373,7 +382,7 @@ async def error_example() -> Dict:
 # ==================== TRACE CONTEXT PROPAGATION ====================
 
 
-async def internal_service_call(trace_id: str) -> Dict:
+async def internal_service_call(trace_id: str) -> dict:
     """Simulate calling another service with trace context"""
     # In a real scenario, you would pass trace context to external services
     # via HTTP headers (W3C Trace Context format)
@@ -383,7 +392,7 @@ async def internal_service_call(trace_id: str) -> Dict:
 
 
 @router.get("/distributed-trace")
-async def distributed_trace_example() -> Dict:
+async def distributed_trace_example() -> dict:
     """
     Example: Distributed trace across services
 
@@ -426,7 +435,7 @@ async def asyncio_sleep(seconds: float):
 
 
 @router.get("/")
-async def tracing_info() -> Dict:
+async def tracing_info() -> dict:
     """
     Distributed Tracing Demo Information
 

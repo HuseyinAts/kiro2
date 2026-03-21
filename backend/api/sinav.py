@@ -247,8 +247,31 @@ async def get_my_exams(
     try:
         user_sessions = []
 
+        # L1: in-memory sessions
         for session_data in osym_exam_engine.active_sessions.values():
             if session_data.student_id == current_user.id:
+                user_sessions.append(
+                    ExamSessionResponse(
+                        session_id=session_data.session_id,
+                        student_id=session_data.student_id,
+                        exam_type=session_data.exam_config.exam_type.value,
+                        status=session_data.status.value,
+                        total_questions=session_data.exam_config.total_questions,
+                        duration_minutes=session_data.exam_config.duration_minutes,
+                        current_question_index=session_data.current_question_index,
+                        started_at=session_data.started_at,
+                        completed_at=session_data.completed_at,
+                    )
+                )
+
+        # L2: Redis fallback — recover sessions after restart
+        if not user_sessions:
+            from core.exam_session_store import get_student_sessions
+
+            redis_sessions = await get_student_sessions(str(current_user.id))
+            for session_data in redis_sessions:
+                # Populate L1 cache
+                osym_exam_engine.active_sessions[session_data.session_id] = session_data
                 user_sessions.append(
                     ExamSessionResponse(
                         session_id=session_data.session_id,

@@ -17,7 +17,7 @@ from datetime import datetime, timedelta
 from enum import Enum
 from typing import Any
 
-from sqlalchemy import and_, or_, func, select, update
+from sqlalchemy import and_, func, or_, select, update
 
 from core.database import get_db_session_context
 from core.structured_logger import get_logger
@@ -354,13 +354,21 @@ class OSYMExamEngine:
                     # Tek ders sınavı: sadece seçilen dersten soru al
                     subject_key = str(custom_config["subject"]).upper()
                     SUBJECT_MAP = {
-                        "MATEMATIK": "MATEMATIK", "GEOMETRI": "GEOMETRI",
-                        "TURKCE": "TURKCE", "TÜRKÇE": "TURKCE",
-                        "FEN BILIMLERI": "FEN", "FEN": "FEN",
-                        "FIZIK": "FIZIK", "KIMYA": "KIMYA", "BIYOLOJI": "BIYOLOJI",
-                        "SOSYAL BILIMLER": "SOSYAL", "SOSYAL": "SOSYAL",
-                        "TARIH": "TARIH", "COGRAFYA": "COGRAFYA",
-                        "EDEBIYAT": "EDEBIYAT", "INGILIZCE": "INGILIZCE",
+                        "MATEMATIK": "MATEMATIK",
+                        "GEOMETRI": "GEOMETRI",
+                        "TURKCE": "TURKCE",
+                        "TÜRKÇE": "TURKCE",
+                        "FEN BILIMLERI": "FEN",
+                        "FEN": "FEN",
+                        "FIZIK": "FIZIK",
+                        "KIMYA": "KIMYA",
+                        "BIYOLOJI": "BIYOLOJI",
+                        "SOSYAL BILIMLER": "SOSYAL",
+                        "SOSYAL": "SOSYAL",
+                        "TARIH": "TARIH",
+                        "COGRAFYA": "COGRAFYA",
+                        "EDEBIYAT": "EDEBIYAT",
+                        "INGILIZCE": "INGILIZCE",
                     }
                     mapped = SUBJECT_MAP.get(subject_key, subject_key)
                     q_count = custom_config.get(
@@ -426,6 +434,11 @@ class OSYMExamEngine:
             # Aktif oturumlara ekle
             self.active_sessions[session_id] = session_data
 
+            # Redis L2 persist (survives restart)
+            from core.exam_session_store import persist_session
+
+            await persist_session(session_data)
+
             logger.info(
                 "Sınav oturumu oluşturuldu",
                 extra_data={
@@ -480,6 +493,11 @@ class OSYMExamEngine:
                 )
                 await db_session.commit()
 
+            # Redis L2 persist
+            from core.exam_session_store import persist_session
+
+            await persist_session(session_data)
+
             # Otomatik kaydetme task'ını başlat
             self.auto_save_tasks[session_id] = asyncio.create_task(
                 self._auto_save_task(session_id)
@@ -531,7 +549,9 @@ class OSYMExamEngine:
 
             async with get_db_session_context() as db_session:
                 result = await db_session.execute(
-                    select(Question).where(Question.id == question_id, Question.is_active == True)  # noqa: E712
+                    select(Question).where(
+                        Question.id == question_id, Question.is_active == True
+                    )
                 )
                 question = result.scalar_one_or_none()
 
@@ -582,49 +602,42 @@ class OSYMExamEngine:
             if response_time:
                 session_data.time_spent_per_question[question_id] = response_time
 
-            # Veritabanına kaydet
+            # Veritabanına kaydet — UPSERT (SELECT+UPDATE/INSERT yerine tek islem)
             async with get_db_session_context() as db_session:
-                # Mevcut cevabı kontrol et
-                existing_answer = await db_session.execute(
-                    select(StudentAnswer).where(
-                        and_(
-                            StudentAnswer.exam_session_id == session_id,
-                            StudentAnswer.question_id == question_id,
-                        )
-                    )
-                )
-                existing = existing_answer.scalar_one_or_none()
-
                 # Normalize answer for DB consistency (uppercase + strip)
-                normalized_answer = selected_answer.strip().upper() if selected_answer else selected_answer
+                normalized_answer = (
+                    selected_answer.strip().upper()
+                    if selected_answer
+                    else selected_answer
+                )
 
-                if existing:
-                    # Mevcut cevabı güncelle
-                    await db_session.execute(
-                        update(StudentAnswer)
-                        .where(
-                            and_(
-                                StudentAnswer.exam_session_id == session_id,
-                                StudentAnswer.question_id == question_id,
-                            )
-                        )
-                        .values(
-                            selected_answer=normalized_answer,
-                            response_time_seconds=response_time or 0.0,
-                            answered_at=datetime.now(),
-                        )
-                    )
-                else:
-                    # Yeni cevap ekle
-                    student_answer = StudentAnswer(
-                        exam_session_id=session_id,
-                        question_id=question_id,
-                        selected_answer=normalized_answer,
-                        response_time_seconds=response_time or 0.0,
-                    )
-                    db_session.add(student_answer)
+                from sqlalchemy.dialects.postgresql import insert as pg_insert
 
+                stmt = pg_insert(StudentAnswer).values(
+                    id=str(uuid.uuid4()),
+                    exam_session_id=session_id,
+                    question_id=question_id,
+                    selected_answer=normalized_answer,
+                    response_time_seconds=response_time or 0.0,
+                )
+                stmt = stmt.on_conflict_do_update(
+                    constraint="uq_student_answer",
+                    set_={
+                        "selected_answer": normalized_answer,
+                        "response_time_seconds": response_time or 0.0,
+                        "answered_at": datetime.now(),
+                        "answer_changes": StudentAnswer.answer_changes + 1,
+                    },
+                )
+                await db_session.execute(stmt)
                 await db_session.commit()
+
+            # Redis L2 persist (periodic, not every answer for performance)
+            # Persist every 5th answer or when flagged
+            if len(session_data.answers) % 5 == 0:
+                from core.exam_session_store import persist_session
+
+                await persist_session(session_data)
 
             logger.debug(
                 "Cevap kaydedildi",
@@ -815,6 +828,11 @@ class OSYMExamEngine:
                 self.auto_save_tasks[session_id].cancel()
                 del self.auto_save_tasks[session_id]
 
+            # Redis L2 cleanup — completed exams no longer need session state
+            from core.exam_session_store import delete_session
+
+            await delete_session(session_id)
+
             logger.info(
                 "Sınav tamamlandı",
                 extra_data={
@@ -844,7 +862,19 @@ class OSYMExamEngine:
         Returns:
             Optional[ExamSessionData]: Sınav oturum verisi veya None
         """
-        return self.active_sessions.get(session_id)
+        # L1: in-memory dict
+        session = self.active_sessions.get(session_id)
+        if session:
+            return session
+
+        # L2: Redis fallback (restart recovery)
+        from core.exam_session_store import load_session
+
+        session = await load_session(session_id)
+        if session:
+            # Populate L1 cache
+            self.active_sessions[session_id] = session
+        return session
 
     async def get_unanswered_questions(self, session_id: str) -> list[str]:
         """
@@ -995,7 +1025,11 @@ class OSYMExamEngine:
 
                 for question, answer in result:
                     # QuestionBankItem.subject_area is String, not Enum
-                    subject = question.subject_area.lower() if isinstance(question.subject_area, str) else question.subject_area.value
+                    subject = (
+                        question.subject_area.lower()
+                        if isinstance(question.subject_area, str)
+                        else question.subject_area.value
+                    )
 
                     if subject not in subject_stats:
                         subject_stats[subject] = {
@@ -1013,7 +1047,9 @@ class OSYMExamEngine:
 
                     if answer and answer.selected_answer:
                         # Cevap verilmiş
-                        if (answer.selected_answer or "").strip().upper() == (question.correct_answer or "").strip().upper():
+                        if (answer.selected_answer or "").strip().upper() == (
+                            question.correct_answer or ""
+                        ).strip().upper():
                             stats["correct"] += 1
                         else:
                             stats["wrong"] += 1
@@ -1115,8 +1151,12 @@ class OSYMExamEngine:
                     # Her iki form: diacritics'siz (OCR) ve Türkçe karakterli
                     or_(
                         and_(
-                            ~func.lower(Question.question_text).contains("parcaya gore"),
-                            ~func.lower(Question.question_text).contains("parçaya göre"),
+                            ~func.lower(Question.question_text).contains(
+                                "parcaya gore"
+                            ),
+                            ~func.lower(Question.question_text).contains(
+                                "parçaya göre"
+                            ),
                         ),
                         func.length(Question.question_text) >= 300,
                     ),
@@ -1160,12 +1200,14 @@ class OSYMExamEngine:
                 # $\frac/$\sqrt: LaTeX delimiter — safe filter
                 # x^2, 2x +: No delimiter — theoretical false positive risk, 0 actual hits
                 if subject in ("TURKCE", "EDEBIYAT", "TARIH", "COGRAFYA", "SOSYAL"):
-                    filters.extend([
-                        ~Question.question_text.contains("$\\frac"),
-                        ~Question.question_text.contains("$\\sqrt"),
-                        ~Question.question_text.contains("x^2"),
-                        ~Question.question_text.contains("2x +"),
-                    ])
+                    filters.extend(
+                        [
+                            ~Question.question_text.contains("$\\frac"),
+                            ~Question.question_text.contains("$\\sqrt"),
+                            ~Question.question_text.contains("x^2"),
+                            ~Question.question_text.contains("2x +"),
+                        ]
+                    )
 
                 result = await db_session.execute(
                     select(Question)

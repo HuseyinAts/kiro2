@@ -10,7 +10,10 @@ from uuid import uuid4
 
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Query
 
-from core.dependencies import AuthenticatedUser, get_current_user
+from core.dependencies import (
+    AuthenticatedUser,
+    get_current_user,
+)
 from models.content_models import (
     BulkContentImport,
     ContentInteraction,
@@ -39,7 +42,10 @@ stats_store: dict[str, ContentStats] = {}
 
 
 @router.post("/makale", response_model=dict[str, Any])
-async def create_makale(makale: MakaleIcerik):
+async def create_makale(
+    makale: MakaleIcerik,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+):
     """
     Yeni makale oluştur
 
@@ -142,7 +148,11 @@ async def list_makaleler(
 
 
 @router.put("/makale/{makale_id}", response_model=dict[str, Any])
-async def update_makale(makale_id: str, update_data: dict[str, Any]):
+async def update_makale(
+    makale_id: str,
+    update_data: dict[str, Any],
+    current_user: AuthenticatedUser = Depends(get_current_user),
+):
     """
     Makale güncelle
     """
@@ -167,7 +177,11 @@ async def update_makale(makale_id: str, update_data: dict[str, Any]):
 
 
 @router.delete("/makale/{makale_id}", response_model=dict[str, Any])
-async def delete_makale(makale_id: str, soft_delete: bool = True):
+async def delete_makale(
+    makale_id: str,
+    soft_delete: bool = True,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+):
     """
     Makale sil (varsayılan olarak soft delete)
     """
@@ -229,7 +243,11 @@ async def like_makale(
 
 
 @router.post("/video", response_model=dict[str, Any])
-async def create_video(video: VideoIcerik, background_tasks: BackgroundTasks):
+async def create_video(
+    video: VideoIcerik,
+    background_tasks: BackgroundTasks,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+):
     """
     Yeni video oluştur
     """
@@ -480,10 +498,13 @@ async def get_recommendations(
     user_id: str,
     content_type: ContentType | None = None,
     limit: int = Query(10, ge=1, le=50),
+    current_user: AuthenticatedUser = Depends(get_current_user),
 ):
     """
     Kullanıcı için kişiselleştirilmiş öneriler
     """
+    # IDOR: use authenticated user's ID
+    user_id = str(current_user.id)
     # Basit öneri algoritması (gerçek uygulamada ML modeli kullanılacak)
     recommendations = []
 
@@ -719,13 +740,15 @@ async def generate_video_thumbnail(video_id: str, video_url: str):
 
 @router.post("/bulk-import", response_model=dict[str, Any])
 async def start_bulk_import(
-    file_data: dict[str, Any], user_id: str, background_tasks: BackgroundTasks
+    file_data: dict[str, Any],
+    background_tasks: BackgroundTasks,
+    current_user: AuthenticatedUser = Depends(get_current_user),
 ):
     """
     Toplu içerik yükleme başlat
     """
     bulk_import = BulkContentImport(
-        user_id=user_id,
+        user_id=str(current_user.id),
         file_name=file_data.get("file_name", "unknown.csv"),
         file_type=file_data.get("file_type", "csv"),
         total_records=len(file_data.get("records", [])),

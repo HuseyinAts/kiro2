@@ -10,15 +10,15 @@ Bu modül sınav performans analizi için API endpoint'lerini sağlar:
 """
 
 import os
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from fastapi.security import HTTPBearer
 from pydantic import BaseModel, Field
 
-from core.dependencies import get_current_user, AuthenticatedUser
-from core.structured_logger import get_logger
+from core.dependencies import AuthenticatedUser, get_current_user
 from core.multi_layer_cache import MultiLayerCache
+from core.structured_logger import get_logger
 from models.database import ExamType
 from services.exam_performance_service import exam_performance_service
 
@@ -55,7 +55,7 @@ class SubjectWeaknessResponse(BaseModel):
     average_response_time: float = Field(
         ..., description="Ortalama cevaplama süresi (saniye)"
     )
-    difficulty_distribution: Dict[str, int] = Field(..., description="Zorluk dağılımı")
+    difficulty_distribution: dict[str, int] = Field(..., description="Zorluk dağılımı")
     improvement_potential: float = Field(..., description="Gelişim potansiyeli (0-1)")
 
     model_config = {
@@ -84,7 +84,7 @@ class StudyRecommendationResponse(BaseModel):
     topic: str = Field(..., description="Konu başlığı")
     priority: str = Field(..., description="Öncelik seviyesi")
     recommended_study_hours: int = Field(..., description="Önerilen çalışma saati")
-    recommended_resources: List[Dict[str, Any]] = Field(
+    recommended_resources: list[dict[str, Any]] = Field(
         ..., description="Önerilen kaynaklar"
     )
     practice_question_count: int = Field(
@@ -120,11 +120,11 @@ class PerformanceComparisonResponse(BaseModel):
     """Performans karşılaştırması yanıtı"""
 
     student_score: float = Field(..., description="Öğrenci puanı")
-    class_average: Optional[float] = Field(None, description="Sınıf ortalaması")
-    school_average: Optional[float] = Field(None, description="Okul ortalaması")
+    class_average: float | None = Field(None, description="Sınıf ortalaması")
+    school_average: float | None = Field(None, description="Okul ortalaması")
     national_average: float = Field(..., description="Ulusal ortalama")
     percentile: float = Field(..., description="Yüzdelik dilim")
-    ranking_info: Dict[str, Any] = Field(..., description="Sıralama bilgileri")
+    ranking_info: dict[str, Any] = Field(..., description="Sıralama bilgileri")
 
     model_config = {
         "json_schema_extra": {
@@ -154,10 +154,10 @@ class TimeAnalysisResponse(BaseModel):
     average_time_per_question: float = Field(
         ..., description="Soru başına ortalama süre"
     )
-    time_by_subject: Dict[str, Dict[str, Any]] = Field(
+    time_by_subject: dict[str, dict[str, Any]] = Field(
         ..., description="Konu bazlı zaman analizi"
     )
-    speed_analysis: Dict[str, int] = Field(..., description="Hız analizi")
+    speed_analysis: dict[str, int] = Field(..., description="Hız analizi")
 
     model_config = {
         "json_schema_extra": {
@@ -182,7 +182,7 @@ class ImprovementTrendsResponse(BaseModel):
     trend: str = Field(..., description="Trend yönü")
     improvement_rate: float = Field(..., description="Gelişim oranı")
     consistency: float = Field(..., description="Tutarlılık (%)")
-    recent_scores: List[float] = Field(..., description="Son sınav puanları")
+    recent_scores: list[float] = Field(..., description="Son sınav puanları")
     score_variance: float = Field(..., description="Puan varyansı")
 
     model_config = {
@@ -202,9 +202,9 @@ class NextExamPredictionResponse(BaseModel):
     """Sonraki sınav tahmini yanıtı"""
 
     predicted_score: float = Field(..., description="Tahmin edilen puan")
-    confidence_interval: Dict[str, float] = Field(..., description="Güven aralığı")
+    confidence_interval: dict[str, float] = Field(..., description="Güven aralığı")
     target_score: float = Field(..., description="Hedef puan")
-    weeks_to_target: Optional[int] = Field(
+    weeks_to_target: int | None = Field(
         None, description="Hedefe ulaşma süresi (hafta)"
     )
     probability_of_improvement: float = Field(..., description="Gelişim olasılığı (%)")
@@ -228,15 +228,15 @@ class DetailedPerformanceAnalysisResponse(BaseModel):
     exam_session_id: str = Field(..., description="Sınav oturum ID'si")
     student_id: str = Field(..., description="Öğrenci ID'si")
     exam_type: str = Field(..., description="Sınav türü")
-    overall_performance: Dict[str, Any] = Field(..., description="Genel performans")
-    subject_performances: List[Dict[str, Any]] = Field(
+    overall_performance: dict[str, Any] = Field(..., description="Genel performans")
+    subject_performances: list[dict[str, Any]] = Field(
         ..., description="Konu performansları"
     )
-    weaknesses: List[SubjectWeaknessResponse] = Field(..., description="Zayıflıklar")
-    study_recommendations: List[StudyRecommendationResponse] = Field(
+    weaknesses: list[SubjectWeaknessResponse] = Field(..., description="Zayıflıklar")
+    study_recommendations: list[StudyRecommendationResponse] = Field(
         ..., description="Çalışma önerileri"
     )
-    performance_comparison: Optional[PerformanceComparisonResponse] = Field(
+    performance_comparison: PerformanceComparisonResponse | None = Field(
         None, description="Performans karşılaştırması"
     )
     time_analysis: TimeAnalysisResponse = Field(..., description="Zaman analizi")
@@ -290,14 +290,13 @@ async def get_detailed_performance_analysis(
         async def fetch_analysis():
             """Fetch analysis from service"""
             return await exam_performance_service.analyze_exam_performance(
-                exam_session_id=exam_session_id,
-                include_comparisons=include_comparisons
+                exam_session_id=exam_session_id, include_comparisons=include_comparisons
             )
 
         analysis = await performance_cache.get_or_compute(
             key=cache_key,
             compute_fn=fetch_analysis,
-            ttl=1800  # 30 minutes
+            ttl=1800,  # 30 minutes
         )
 
         # Zayıflıkları response modeline dönüştür
@@ -429,7 +428,7 @@ async def get_detailed_performance_analysis(
 
 @router.get(
     "/{exam_session_id}/weaknesses",
-    response_model=List[SubjectWeaknessResponse],
+    response_model=list[SubjectWeaknessResponse],
     summary="Konu Bazlı Zayıflık Analizi",
 )
 async def get_subject_weaknesses(
@@ -444,6 +443,12 @@ async def get_subject_weaknesses(
     - Gelişim potansiyeline göre sıralanmış
     """
     try:
+        # Cache: sınav tamamlandıktan sonra analiz değişmez
+        cache_key = f"weaknesses:{exam_session_id}"
+        cached = await performance_cache.get(cache_key)
+        if cached:
+            return cached
+
         analysis = await exam_performance_service.analyze_exam_performance(
             exam_session_id=exam_session_id, include_comparisons=False
         )
@@ -475,6 +480,9 @@ async def get_subject_weaknesses(
             },
         )
 
+        # Cache result — sınav tamamlandıktan sonra analiz değişmez
+        await performance_cache.set(cache_key, weaknesses_response, ttl=1800)
+
         return weaknesses_response
 
     except ValueError as e:
@@ -492,7 +500,7 @@ async def get_subject_weaknesses(
 
 @router.get(
     "/{exam_session_id}/study-recommendations",
-    response_model=List[StudyRecommendationResponse],
+    response_model=list[StudyRecommendationResponse],
     summary="Kişiselleştirilmiş Çalışma Önerileri",
 )
 async def get_study_recommendations(
@@ -507,6 +515,12 @@ async def get_study_recommendations(
     - Çalışma saati, soru sayısı ve kaynak önerileri
     """
     try:
+        # Cache: sınav tamamlandıktan sonra öneriler değişmez
+        cache_key = f"recommendations:{exam_session_id}"
+        cached = await performance_cache.get(cache_key)
+        if cached:
+            return cached
+
         analysis = await exam_performance_service.analyze_exam_performance(
             exam_session_id=exam_session_id, include_comparisons=False
         )
@@ -534,6 +548,9 @@ async def get_study_recommendations(
                 "recommendation_count": len(recommendations_response),
             },
         )
+
+        # Cache result
+        await performance_cache.set(cache_key, recommendations_response, ttl=1800)
 
         return recommendations_response
 

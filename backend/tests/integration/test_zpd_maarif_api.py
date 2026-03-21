@@ -2,12 +2,32 @@
 Zone of Proximal Development + MEB Maarif API Testleri
 ZPD Maarif sistemi API endpoint'leri için kapsamlı testler
 """
+
 from datetime import datetime
 
 import pytest
 from fastapi.testclient import TestClient
 
+from core.dependencies import AuthenticatedUser, UserRole, get_current_user
 from main import app
+
+
+def _override_get_current_user():
+    """Admin override for unrestricted access in tests."""
+    return AuthenticatedUser(
+        id="test_api_ogrenci_123",
+        username="test_admin",
+        role=UserRole("admin"),
+        email="admin@test.com",
+    )
+
+
+@pytest.fixture(autouse=True)
+def _override_auth():
+    app.dependency_overrides[get_current_user] = _override_get_current_user
+    yield
+    app.dependency_overrides.pop(get_current_user, None)
+
 
 client = TestClient(app)
 

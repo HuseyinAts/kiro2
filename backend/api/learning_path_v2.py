@@ -75,6 +75,7 @@ from core.metrics_collector import get_metrics_collector
 from core.multi_layer_cache import MultiLayerCache
 from core.youtube_channels import is_trusted_channel
 from models.learning_path_models import (
+    LearningPath,
     LearningPathStudentProfile,
     Quiz,
     QuizQuestion,
@@ -516,6 +517,7 @@ async def create_student_profile(
 async def assess_knowledge(
     request: Request,
     assessment: KnowledgeAssessment,
+    current_user: AuthenticatedUser = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> dict[str, Any]:
     """
@@ -525,6 +527,9 @@ async def assess_knowledge(
     Quiz geçmişinden gerçek performans hesaplar.
     """
     try:
+        # IDOR protection: verify ownership
+        await verify_student_access(assessment.student_id, current_user, db)
+
         logger.info(
             f"Assessing knowledge for student {assessment.student_id}, subject: {assessment.subject}"
         )
@@ -743,6 +748,27 @@ async def create_learning_path(
             "ai_generated": True,
         }
 
+        # Persist to DB so path survives page refresh
+        db_path = LearningPath(
+            path_id=path_id,
+            student_id=path_request.student_id,
+            subject=path_request.subject,
+            difficulty_level=path_request.difficulty_level or "intermediate",
+            target_date=datetime.fromisoformat(path_request.target_date)
+            if path_request.target_date
+            else None,
+            modules=modules,
+            ai_generated=True,
+            total_modules=len(modules),
+            completed_modules=0,
+            total_topics=len(modules),
+            completed_topics=0,
+            overall_progress=0.0,
+            total_time=result.total_duration_minutes or 0,
+        )
+        db.add(db_path)
+        await db.commit()
+
         # Record metrics
         duration_seconds = time.time() - start_time
         metrics.record_learning_path_creation(
@@ -752,7 +778,8 @@ async def create_learning_path(
         )
 
         logger.info(
-            f"Learning path created for {path_request.student_id} in {duration_seconds:.2f}s"
+            f"Learning path created and persisted ({path_id}) for "
+            f"{path_request.student_id} in {duration_seconds:.2f}s"
         )
 
         return {
@@ -761,6 +788,8 @@ async def create_learning_path(
             "message": "Öğrenme yolu başarıyla oluşturuldu",
         }
 
+    except HTTPException:
+        raise
     except Exception as e:
         duration_seconds = time.time() - start_time
         metrics.record_learning_path_creation(
