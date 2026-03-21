@@ -4,9 +4,10 @@ Requirements: REQ-51.21-51.40 (Diskalkuli Desteği - Adım Adım Çözüm)
 """
 
 import logging
-from typing import Optional
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, Depends, HTTPException
+
+from core.dependencies import AuthenticatedUser, get_current_user
 from pydantic import BaseModel, Field
 
 from services.math_solution_step_service import (
@@ -105,7 +106,7 @@ async def generate_solution(request: GenerateSolutionRequest):
     except Exception as e:
         logger.error(f"Solution generation error: {e}")
         raise HTTPException(
-            status_code=500, detail=f"Çözüm oluşturulurken hata oluştu: {str(e)}"
+            status_code=500, detail=f"Çözüm oluşturulurken hata oluştu: {e!s}"
         )
 
 
@@ -144,7 +145,7 @@ async def get_solution(problem_id: str):
     except Exception as e:
         logger.error(f"Get solution error: {e}")
         raise HTTPException(
-            status_code=500, detail=f"Çözüm getirilirken hata oluştu: {str(e)}"
+            status_code=500, detail=f"Çözüm getirilirken hata oluştu: {e!s}"
         )
 
 
@@ -182,12 +183,12 @@ async def get_step(problem_id: str, step_number: int):
     except Exception as e:
         logger.error(f"Get step error: {e}")
         raise HTTPException(
-            status_code=500, detail=f"Adım getirilirken hata oluştu: {str(e)}"
+            status_code=500, detail=f"Adım getirilirken hata oluştu: {e!s}"
         )
 
 
 @router.post("/hint")
-async def get_hint(request: GetHintRequest, student_id: Optional[str] = None):
+async def get_hint(request: GetHintRequest, student_id: str | None = None):
     """
     Belirli bir adım için ipucu getir
 
@@ -252,7 +253,7 @@ async def get_hint(request: GetHintRequest, student_id: Optional[str] = None):
     except Exception as e:
         logger.error(f"Get hint error: {e}")
         raise HTTPException(
-            status_code=500, detail=f"İpucu getirilirken hata oluştu: {str(e)}"
+            status_code=500, detail=f"İpucu getirilirken hata oluştu: {e!s}"
         )
 
 
@@ -298,7 +299,7 @@ async def get_navigation_info(problem_id: str):
         logger.error(f"Get navigation info error: {e}")
         raise HTTPException(
             status_code=500,
-            detail=f"Navigasyon bilgileri getirilirken hata oluştu: {str(e)}",
+            detail=f"Navigasyon bilgileri getirilirken hata oluştu: {e!s}",
         )
 
 
@@ -321,12 +322,15 @@ async def clear_cache():
     except Exception as e:
         logger.error(f"Clear cache error: {e}")
         raise HTTPException(
-            status_code=500, detail=f"Cache temizlenirken hata oluştu: {str(e)}"
+            status_code=500, detail=f"Cache temizlenirken hata oluştu: {e!s}"
         )
 
 
 @router.get("/hint-stats/{student_id}")
-async def get_hint_statistics(student_id: str):
+async def get_hint_statistics(
+    student_id: str,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+):
     """
     Öğrencinin ipucu kullanım istatistiklerini getir
 
@@ -367,12 +371,16 @@ async def get_hint_statistics(student_id: str):
     except Exception as e:
         logger.error(f"Get hint stats error: {e}")
         raise HTTPException(
-            status_code=500, detail=f"İstatistikler getirilirken hata oluştu: {str(e)}"
+            status_code=500, detail=f"İstatistikler getirilirken hata oluştu: {e!s}"
         )
 
 
 @router.get("/hint-trends/{student_id}")
-async def get_hint_trends(student_id: str, limit: int = 10):
+async def get_hint_trends(
+    student_id: str,
+    limit: int = 10,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+):
     """
     Öğrencinin ipucu kullanım trendlerini analiz et
 
@@ -395,7 +403,7 @@ async def get_hint_trends(student_id: str, limit: int = 10):
     except Exception as e:
         logger.error(f"Get hint trends error: {e}")
         raise HTTPException(
-            status_code=500, detail=f"Trend analizi yapılırken hata oluştu: {str(e)}"
+            status_code=500, detail=f"Trend analizi yapılırken hata oluştu: {e!s}"
         )
 
 
@@ -441,26 +449,28 @@ async def check_answer(request: CheckAnswerRequest):
                     "correct_answer": request.correct_answer,
                 },
             }
-        else:
-            return {
-                "success": True,
-                "is_correct": True,
-                "message": "Cevap doğru! 🎉",
-                "data": {
-                    "student_answer": request.student_answer,
-                    "correct_answer": request.correct_answer,
-                },
-            }
+        return {
+            "success": True,
+            "is_correct": True,
+            "message": "Cevap doğru! 🎉",
+            "data": {
+                "student_answer": request.student_answer,
+                "correct_answer": request.correct_answer,
+            },
+        }
 
     except Exception as e:
         logger.error(f"Check answer error: {e}")
         raise HTTPException(
-            status_code=500, detail=f"Cevap kontrol edilirken hata oluştu: {str(e)}"
+            status_code=500, detail=f"Cevap kontrol edilirken hata oluştu: {e!s}"
         )
 
 
 @router.get("/error-analysis/{student_id}")
-async def get_error_analysis(student_id: str):
+async def get_error_analysis(
+    student_id: str,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+):
     """
     Öğrencinin hata analizini getir
 
@@ -501,7 +511,7 @@ async def get_error_analysis(student_id: str):
     except Exception as e:
         logger.error(f"Get error analysis error: {e}")
         raise HTTPException(
-            status_code=500, detail=f"Hata analizi yapılırken hata oluştu: {str(e)}"
+            status_code=500, detail=f"Hata analizi yapılırken hata oluştu: {e!s}"
         )
 
 
@@ -532,6 +542,6 @@ async def health_check():
         logger.error(f"Health check error: {e}")
         return {
             "success": False,
-            "message": f"Sistem hatası: {str(e)}",
+            "message": f"Sistem hatası: {e!s}",
             "data": {"system_status": "unhealthy", "error": str(e)},
         }

@@ -14,7 +14,9 @@ import random
 import logging
 from typing import Dict
 
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException, Query
+
+from core.dependencies import AuthenticatedUser, get_current_user
 from pydantic import BaseModel
 
 logger = logging.getLogger(__name__)
@@ -191,7 +193,11 @@ async def answer_question(request: QuestionAnswerRequest) -> Dict:
 
 
 @router.get("/irt-calculation/{user_id}")
-async def calculate_irt(user_id: str, algorithm: str = Query("IRT")) -> Dict:
+async def calculate_irt(
+    user_id: str,
+    algorithm: str = Query("IRT"),
+    current_user: AuthenticatedUser = Depends(get_current_user),
+) -> Dict:
     """
     Example: Tracing IRT calculation
 
@@ -227,7 +233,11 @@ async def calculate_irt(user_id: str, algorithm: str = Query("IRT")) -> Dict:
 
 
 @router.get("/ai-chat/{user_id}")
-async def ai_chat_example(user_id: str, model: str = Query("GPT-4")) -> Dict:
+async def ai_chat_example(
+    user_id: str,
+    model: str = Query("GPT-4"),
+    current_user: AuthenticatedUser = Depends(get_current_user),
+) -> Dict:
     """
     Example: Tracing AI model requests
 
@@ -278,7 +288,10 @@ async def process_recommendation(user_id: str) -> Dict:
 
 
 @router.get("/recommendation/{user_id}")
-async def get_recommendations(user_id: str) -> Dict:
+async def get_recommendations(
+    user_id: str,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+) -> Dict:
     """
     Example: Using @trace_function decorator
 

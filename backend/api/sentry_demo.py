@@ -15,7 +15,9 @@ import random
 import asyncio
 from typing import Dict, Optional
 
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException, Query
+
+from core.dependencies import AuthenticatedUser, get_current_user
 from pydantic import BaseModel
 from sentry_sdk import capture_exception, capture_message, add_breadcrumb, set_user, set_tag
 
@@ -160,7 +162,10 @@ async def categorized_error_capture(request: ErrorTestRequest) -> Dict:
 
 
 @router.get("/user-context-error/{user_id}")
-async def user_context_error(user_id: str) -> Dict:
+async def user_context_error(
+    user_id: str,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+) -> Dict:
     """
     Error with user context
 

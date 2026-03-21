@@ -8,8 +8,9 @@ from datetime import datetime
 from typing import Any
 from uuid import uuid4
 
-from fastapi import APIRouter, BackgroundTasks, HTTPException, Query
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Query
 
+from core.dependencies import AuthenticatedUser, get_current_user
 from models.content_models import (
     BulkContentImport,
     ContentInteraction,
@@ -188,7 +189,10 @@ async def delete_makale(makale_id: str, soft_delete: bool = True):
 
 
 @router.post("/makale/{makale_id}/like", response_model=dict[str, Any])
-async def like_makale(makale_id: str, user_id: str):
+async def like_makale(
+    makale_id: str,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+):
     """
     Makale beğen/beğenmekten vazgeç
     """
@@ -199,7 +203,7 @@ async def like_makale(makale_id: str, user_id: str):
 
     # Etkileşim kaydı oluştur
     interaction = ContentInteraction(
-        user_id=user_id,
+        user_id=str(current_user.id),
         content_id=makale_id,
         content_type=ContentType.MAKALE,
         interaction_type=InteractionType.LIKE,
