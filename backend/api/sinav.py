@@ -64,6 +64,9 @@ class SaveAnswerRequest(BaseModel):
         None, description="Seçilen cevap (A, B, C, D, E)"
     )
     response_time: float | None = Field(None, description="Cevaplama süresi (saniye)")
+    rating: int | None = Field(
+        None, description="FSRS rating (1=Again, 2=Hard, 3=Good, 4=Easy)", ge=1, le=4
+    )
 
     model_config = {
         "json_schema_extra": {
@@ -619,10 +622,51 @@ async def save_answer(
             },
         )
 
+        # BKT/IRT/FSRS/ZPD pipeline — fire-and-forget (hata sinavi engellemez)
+        bkt_result = None
+        if request.selected_answer:
+            try:
+                from sqlalchemy import select
+
+                from core.database import get_db_session_context
+                from models.question_bank import QuestionBankItem as Question
+                from services.bkt_service import BKTService
+
+                async with get_db_session_context() as db:
+                    q = await db.execute(
+                        select(
+                            Question.correct_answer,
+                            Question.primary_topic_id,
+                            Question.subject_area,
+                        ).where(Question.id == request.question_id)
+                    )
+                    row = q.first()
+                    if row and row.primary_topic_id:
+                        correct = bool(
+                            row.correct_answer
+                            and request.selected_answer.strip().upper()
+                            == row.correct_answer.strip().upper()
+                        )
+                        rating = request.rating or (3 if correct else 1)
+                        subject_slug = (row.subject_area or "matematik").lower()
+
+                        bkt_result = await BKTService.record_answer(
+                            student_id=str(current_user.id),
+                            topic_id=str(row.primary_topic_id),
+                            subject_slug=subject_slug,
+                            correct=correct,
+                            rating=rating,
+                            db=db,
+                        )
+                        await db.commit()
+            except Exception as e:
+                logger.warning(f"BKT pipeline hatası (sınav devam eder): {e}")
+
         return {
             "success": True,
             "message": "Cevap başarıyla kaydedildi",
             "auto_saved": True,
+            "algorithm": bkt_result,
         }
 
     except HTTPException:
