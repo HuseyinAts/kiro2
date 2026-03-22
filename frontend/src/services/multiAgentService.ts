@@ -343,55 +343,10 @@ class MultiAgentService {
   /**
    * WebSocket bağlantısı kur
    */
-  connectWebSocket(clientId: string): Promise<void> {
-    return new Promise((resolve, reject) => {
-      try {
-        const wsUrl = `${API_BASE_URL.replace('http', 'ws')}/api/v1/multi-agent/ws/${clientId}`;
-        this.websocket = new WebSocket(wsUrl);
-
-        this.websocket.onopen = () => {
-          // Multi-Agent WebSocket connected
-          resolve();
-        };
-
-        this.websocket.onmessage = (event) => {
-          try {
-            const data = JSON.parse(event.data);
-
-            if (data.type === 'blackboard_event') {
-              const blackboardEvent: BlackboardEvent = data.event;
-
-              // Event listener'ları çağır
-              this.eventListeners.forEach((listener) => {
-                listener(blackboardEvent);
-              });
-            }
-          } catch (error) {
-            console.error('WebSocket message parse error:', error);
-          }
-        };
-
-        this.websocket.onerror = (error) => {
-          console.error('Multi-Agent WebSocket error:', error);
-          reject(error);
-        };
-
-        this.websocket.onclose = () => {
-          // Multi-Agent WebSocket disconnected
-          this.websocket = null;
-        };
-
-        // Ping/pong için heartbeat
-        setInterval(() => {
-          if (this.websocket?.readyState === WebSocket.OPEN) {
-            this.websocket.send(JSON.stringify({ type: 'ping' }));
-          }
-        }, 30000); // 30 saniyede bir ping
-
-      } catch (error) {
-        reject(error);
-      }
-    });
+  connectWebSocket(_clientId: string): Promise<void> {
+    // No-op: /api/v1/multi-agent/ws/* endpoint not implemented
+    // Caller (MultiAgentCoordination) falls back to polling
+    return Promise.reject(new Error('Multi-agent WebSocket endpoint not available'));
   }
 
   /**

@@ -206,20 +206,6 @@ export const ModernOSYMExamInterface: React.FC<ModernOSYMExamInterfaceProps> = (
     }
   };
 
-  const handleWebSocketMessage = (data: any) => {
-    switch (data.type) {
-      case 'time_update':
-        setExamState((prev) => ({ ...prev, remainingTime: data.remaining_time }));
-        break;
-      case 'time_warning':
-        setShowTimeWarning(true);
-        break;
-      case 'auto_submit':
-        handleSubmitExam();
-        break;
-    }
-  };
-
   const handleAnswerChange = async (answer: string) => {
     if (!examState.currentQuestion) {return;}
 

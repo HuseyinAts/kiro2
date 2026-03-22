@@ -239,31 +239,6 @@ export const OSYMExamInterface: React.FC<OSYMExamInterfaceProps> = ({
   };
 
   /**
-   * WebSocket mesajlarını işle
-   */
-  const handleWebSocketMessage = (data: any) => {
-    switch (data.type) {
-      case 'time_update':
-        setExamState(prev => ({
-          ...prev,
-          remainingTime: data.remaining_time,
-        }));
-        break;
-      case 'time_warning':
-        setShowTimeWarning(true);
-        break;
-      case 'auto_submit':
-        handleAutoSubmit();
-        break;
-      case 'connection':
-        console.log('WebSocket bağlantı durumu:', data.status);
-        break;
-      default:
-        console.log('Bilinmeyen WebSocket mesajı:', data);
-    }
-  };
-
-  /**
    * Timer güncellemelerini işle
    */
   const handleTimeUpdate = useCallback((remainingTime: number) => {

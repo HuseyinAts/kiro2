@@ -2,7 +2,6 @@ import {
   sendChatMessage,
   getSession,
   clearSessions,
-  createWebSocketConnection,
 } from '../api';
 
 // Enhanced chat API endpoints
@@ -451,69 +450,15 @@ class ChatService {
   }
 
   connectWebSocket() {
-    if (this.wsConnection) {
-      console.warn('WebSocket already connected');
-      return;
-    }
-
-    this.wsConnection = createWebSocketConnection({
-      onMessage: (data) => this.handleWebSocketMessage(data),
-      onError: (error) => this.handleWebSocketError(error),
-    });
-
-    if (this.wsConnection) {
-      this.notifyConnectionListeners(true);
-    }
+    // No-op: chat WebSocket endpoint not implemented
   }
 
   disconnectWebSocket() {
-    if (this.wsConnection) {
-      this.wsConnection.close();
-      this.wsConnection = null;
-      this.notifyConnectionListeners(false);
-    }
+    // No-op: no active connection
   }
 
   sendWebSocketMessage(agent: string, message: string) {
-    if (!this.wsConnection) {
-      console.error('WebSocket not connected');
-      throw new Error('WebSocket connection not established');
-    }
-
-    this.wsConnection.send({
-      agent,
-      message,
-      session_id: this.initSession(),
-    });
-
-    this.addMessage({
-      id: this.generateMessageId(),
-      role: 'user',
-      content: message,
-      timestamp: new Date().toISOString(),
-    });
-  }
-
-  private handleWebSocketMessage(data: any) {
-    if (data.type === 'response') {
-      const message: ChatMessage = {
-        id: this.generateMessageId(),
-        role: 'agent',
-        content: data.content,
-        agent: data.agent,
-        timestamp: data.timestamp,
-      };
-
-      this.addMessage(message);
-      this.notifyMessageListeners(message);
-    } else if (data.type === 'error') {
-      console.error('WebSocket error message:', data.content);
-    }
-  }
-
-  private handleWebSocketError(error: any) {
-    console.error('WebSocket connection error:', error);
-    this.notifyConnectionListeners(false);
+    console.warn('sendWebSocketMessage: WebSocket not available, message dropped', { agent, message });
   }
 
   onMessage(listener: (message: ChatMessage) => void) {
@@ -524,14 +469,6 @@ class ChatService {
   onConnectionChange(listener: (status: boolean) => void) {
     this.connectionListeners.add(listener);
     return () => this.connectionListeners.delete(listener);
-  }
-
-  private notifyMessageListeners(message: ChatMessage) {
-    this.messageListeners.forEach(listener => listener(message));
-  }
-
-  private notifyConnectionListeners(status: boolean) {
-    this.connectionListeners.forEach(listener => listener(status));
   }
 
   private addMessage(message: ChatMessage) {

@@ -560,65 +560,26 @@ class ExamService {
   // WebSocket methods (stub implementations)
   // ============================================
 
-  private ws: WebSocket | null = null;
-  private wsMessageHandler: ((message: WebSocketMessage) => void) | null = null;
-
   /**
    * WebSocket bağlantısı kur
    */
-  connectWebSocket(sessionId: string): void {
-    const wsUrl = `${window.location.protocol === 'https:' ? 'wss:' : 'ws:'}//${window.location.host}/ws/exam/${sessionId}`;
-
-    try {
-      this.ws = new WebSocket(wsUrl);
-
-      this.ws.onopen = () => {
-        // WebSocket connection established
-      };
-
-      this.ws.onmessage = (event) => {
-        try {
-          const message: WebSocketMessage = JSON.parse(event.data);
-          if (this.wsMessageHandler) {
-            this.wsMessageHandler(message);
-          }
-        } catch (error) {
-          console.error('WebSocket mesaj parse hatası:', error);
-        }
-      };
-
-      this.ws.onerror = (error) => {
-        console.error('WebSocket hatası:', error);
-      };
-
-      this.ws.onclose = () => {
-        // WebSocket connection closed
-      };
-    } catch (error) {
-      console.error('WebSocket bağlantı hatası:', error);
-    }
+  connectWebSocket(_sessionId: string): void {
+    // No-op: /ws/exam/* endpoint not implemented; exam uses polling
   }
 
   /**
    * WebSocket bağlantısını kapat
    */
   disconnectWebSocket(): void {
-    if (this.ws) {
-      this.ws.close();
-      this.ws = null;
-    }
-    this.wsMessageHandler = null;
+    // No-op: no active WebSocket connection
   }
 
   /**
    * WebSocket mesaj handler'ı ayarla
    * Returns unsubscribe function for cleanup
    */
-  onWebSocketMessage(handler: (message: WebSocketMessage) => void): () => void {
-    this.wsMessageHandler = handler;
-    return () => {
-      this.wsMessageHandler = null;
-    };
+  onWebSocketMessage(_handler: (message: WebSocketMessage) => void): () => void {
+    return () => { /* no-op: no WebSocket connection */ };
   }
 
   /**
