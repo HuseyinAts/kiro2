@@ -4,6 +4,9 @@ Extract best_answer metadata into explanation field for questions lacking explan
 
 Format: "Doğru cevap: {answer} (Güven: %{confidence}, Kaynak: {method})"
 
+Timeout fix: asyncpg single-session while loop timeout sorunu için
+psycopg2 + batch 1000 pattern'e dönüştürüldü (fix_explanation_language.py ile aynı yaklaşım).
+
 Usage:
   cd backend
   python scripts/extract_explanations.py --dry-run   # Preview
@@ -11,14 +14,17 @@ Usage:
 """
 
 import argparse
-import asyncio
 import sys
 
-from sqlalchemy import text
+import psycopg2
+import psycopg2.extras
 
 sys.path.insert(0, ".")
 
-METHOD_LABELS = {
+DB_DSN = "host=localhost port=5434 dbname=kiro2 user=postgres"
+BATCH_SIZE = 1000
+
+METHOD_LABELS: dict[str, str] = {
     "bayes_1of1_orig": "Kitap cevap anahtarı",
     "bayes_2of2_orig": "Kitap cevap anahtarı (çapraz doğrulanmış)",
     "bayes_3of4_orig": "Kitap cevap anahtarı (3/4 doğrulama)",
@@ -28,77 +34,110 @@ METHOD_LABELS = {
 }
 
 
-async def main(dry_run: bool = True):
-    from core.database import get_db_session_context
+def build_explanation(metadata: dict) -> str | None:
+    """pipeline_metadata'dan Türkçe açıklama üret."""
+    answer = metadata.get("best_answer")
+    if not answer:
+        return None
+    confidence_raw = metadata.get("best_confidence")
+    method_key = metadata.get("best_method", "")
+    method_label = METHOD_LABELS.get(method_key, method_key)
+    if confidence_raw is not None:
+        confidence = round(float(confidence_raw) * 100)
+        return f"Doğru cevap: {answer} (Güven: %{confidence}, Kaynak: {method_label})"
+    return f"Doğru cevap: {answer} (Kaynak: {method_label})"
 
-    preview = text("""
+
+def main(dry_run: bool = True) -> None:
+    print(f"{'[DRY-RUN] ' if dry_run else ''}P6 Explanation Extraction başlıyor...")
+
+    conn = psycopg2.connect(DB_DSN)
+    conn.autocommit = False
+    cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+
+    # Özet: method bazında dağılım
+    cur.execute("""
         SELECT
             pipeline_metadata->>'best_method' AS method,
             COUNT(*) AS cnt
         FROM question_bank
-        WHERE is_active = true
+        WHERE is_active = TRUE
           AND (explanation IS NULL OR explanation = '')
           AND pipeline_metadata->>'best_answer' IS NOT NULL
         GROUP BY 1
         ORDER BY 2 DESC
     """)
+    preview_rows = cur.fetchall()
+    print("Explanation eksik, best_answer mevcut:")
+    for row in preview_rows:
+        label = METHOD_LABELS.get(row["method"] or "", row["method"] or "unknown")
+        print(f"  {label:>45}: {row['cnt']:,}")
 
-    update_query = text("""
-        UPDATE question_bank
-        SET explanation = CONCAT(
-            'Doğru cevap: ', pipeline_metadata->>'best_answer',
-            ' (Güven: %', ROUND((pipeline_metadata->>'best_confidence')::numeric * 100),
-            ', Kaynak: ', pipeline_metadata->>'best_method', ')'
-        )
-        WHERE is_active = true
+    # Tüm hedef kayıtları çek
+    cur.execute("""
+        SELECT id, pipeline_metadata
+        FROM question_bank
+        WHERE is_active = TRUE
           AND (explanation IS NULL OR explanation = '')
           AND pipeline_metadata->>'best_answer' IS NOT NULL
-          AND id IN (
-            SELECT id FROM question_bank
-            WHERE is_active = true
-              AND (explanation IS NULL OR explanation = '')
-              AND pipeline_metadata->>'best_answer' IS NOT NULL
-            LIMIT 10000
-          )
+        ORDER BY id
     """)
+    rows = cur.fetchall()
+    total = len(rows)
+    print(f"\nTotal to update: {total:,}")
 
-    count_query = text("""
-        SELECT COUNT(*) FROM question_bank
-        WHERE is_active = true
-          AND (explanation IS NULL OR explanation = '')
-          AND pipeline_metadata->>'best_answer' IS NOT NULL
-    """)
-
-    async with get_db_session_context() as db:
-        result = await db.execute(preview)
-        rows = result.all()
-        print("Explanation missing, best_answer available:")
-        for row in rows:
-            label = METHOD_LABELS.get(row[0], row[0])
-            print(f"  {label:>45}: {row[1]:,}")
-
-        remaining_result = await db.execute(count_query)
-        total = remaining_result.scalar()
-        print(f"\nTotal to update: {total:,}")
-
+    if total == 0 or dry_run:
         if dry_run:
-            print("\n[DRY RUN] No changes made.")
-            return
+            print("\n[DRY RUN] Değişiklik uygulanmadı.")
+            for row in rows[:5]:
+                meta = row["pipeline_metadata"]
+                new_exp = build_explanation(meta) if meta else None
+                print(f"  id={row['id']} → {new_exp!r}")
+        cur.close()
+        conn.close()
+        return
 
-        updated_total = 0
-        while True:
-            remaining_result = await db.execute(count_query)
-            remaining = remaining_result.scalar()
-            if remaining == 0:
-                break
-            result = await db.execute(update_query)
-            await db.commit()
-            updated_total += result.rowcount
-            print(
-                f"  Batch: {result.rowcount:,} updated ({remaining - result.rowcount:,} remaining)"
+    updated = 0
+    skipped = 0
+    batch: list[tuple[str, str]] = []
+
+    for row in rows:
+        meta = row["pipeline_metadata"]
+        new_exp = build_explanation(meta) if meta else None
+        if new_exp is None:
+            skipped += 1
+            continue
+        batch.append((new_exp, row["id"]))
+
+        if len(batch) >= BATCH_SIZE:
+            psycopg2.extras.execute_batch(
+                cur,
+                "UPDATE question_bank SET explanation = %s WHERE id = %s",
+                batch,
             )
+            conn.commit()
+            updated += len(batch)
+            print(f"  Güncellendi: {updated:,} / {total:,}")
+            batch = []
 
-        print(f"\nTotal updated: {updated_total:,}")
+    if batch:
+        psycopg2.extras.execute_batch(
+            cur,
+            "UPDATE question_bank SET explanation = %s WHERE id = %s",
+            batch,
+        )
+        conn.commit()
+        updated += len(batch)
+
+    cur.close()
+    conn.close()
+
+    print(f"\nTamamlandı: {updated:,} güncellendi, {skipped} atlandı (metadata eksik).")
+    print("Doğrulama SQL:")
+    print(
+        "  SELECT COUNT(*) FROM question_bank "
+        "WHERE is_active=TRUE AND (explanation IS NULL OR explanation='');  -- 0 olmalı"
+    )
 
 
 if __name__ == "__main__":
@@ -107,4 +146,4 @@ if __name__ == "__main__":
     )
     parser.add_argument("--dry-run", action="store_true", help="Preview only")
     args = parser.parse_args()
-    asyncio.run(main(dry_run=args.dry_run))
+    main(dry_run=args.dry_run)
