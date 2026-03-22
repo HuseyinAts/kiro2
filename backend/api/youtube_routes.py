@@ -86,7 +86,12 @@ try:
 except (ImportError, TypeError):
     get_youtube_rate_limiter = None
     YouTubeRateLimiter = None
-from slowapi.errors import RateLimitExceeded
+
+try:
+    from slowapi.errors import RateLimitExceeded
+except ImportError:
+    # slowapi optional — rate limit handler devre disi kalir
+    RateLimitExceeded = Exception
 
 from core.ddos_protection import limiter  # Task 12: Use global limiter
 from core.metrics_collector import get_metrics_collector

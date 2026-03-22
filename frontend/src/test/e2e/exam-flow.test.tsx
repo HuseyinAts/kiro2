@@ -135,7 +135,7 @@ describe('Complete Exam Flow E2E Tests', () => {
 
     // Exam list
     addHandler(
-      http.get('/api/v1/exams', () => {
+      http.get('/api/v1/osym-exam/my-exams', () => {
         return HttpResponse.json({
           success: true,
           data: [mockExam],
@@ -144,17 +144,34 @@ describe('Complete Exam Flow E2E Tests', () => {
       })
     )
 
-    // Exam start
+    // Exam create
     addHandler(
-      http.post('/api/v1/exams/:examId/start', () => {
+      http.post('/api/v1/osym-exam/create', () => {
         return HttpResponse.json({
           success: true,
           data: {
-            sessionId: 'session-1',
-            examId: mockExam.id,
+            session_id: 'session-1',
+            exam_type: 'TYT',
+            status: 'not_started',
             questions: mockQuestions,
-            startTime: new Date().toISOString(),
-            duration: mockExam.duration
+            total_questions: mockQuestions.length,
+            duration_minutes: mockExam.duration
+          },
+          message: 'Sınav oluşturuldu'
+        })
+      })
+    )
+
+    // Exam start
+    addHandler(
+      http.post('/api/v1/osym-exam/:sessionId/start', () => {
+        return HttpResponse.json({
+          success: true,
+          data: {
+            session_id: 'session-1',
+            status: 'in_progress',
+            start_time: new Date().toISOString(),
+            duration_minutes: mockExam.duration
           },
           message: 'Sınav başlatıldı'
         })
@@ -163,33 +180,22 @@ describe('Complete Exam Flow E2E Tests', () => {
 
     // Answer submission
     addHandler(
-      http.post('/api/v1/exams/sessions/:sessionId/answer', () => {
+      http.post('/api/v1/osym-exam/:sessionId/save-answer', () => {
         return HttpResponse.json({
           success: true,
-          data: { saved: true },
-          message: 'Cevap kaydedildi'
+          message: 'Cevap kaydedildi',
+          auto_saved: true
         })
       })
     )
 
     // Exam completion
     addHandler(
-      http.post('/api/v1/exams/sessions/:sessionId/submit', () => {
+      http.post('/api/v1/osym-exam/:sessionId/complete', () => {
         return HttpResponse.json({
           success: true,
           data: mockExamResult,
           message: 'Sınav tamamlandı'
-        })
-      })
-    )
-
-    // Exam results
-    addHandler(
-      http.get('/api/v1/exams/results/:resultId', () => {
-        return HttpResponse.json({
-          success: true,
-          data: mockExamResult,
-          message: 'Sınav sonuçları alındı'
         })
       })
     )
@@ -310,7 +316,7 @@ describe('Complete Exam Flow E2E Tests', () => {
     const shortExam = { ...mockExam, duration: 1 } // 1 minute
     
     addHandler(
-      http.get('/api/v1/exams', () => {
+      http.get('/api/v1/osym-exam/my-exams', () => {
         return HttpResponse.json({
           success: true,
           data: [shortExam]
@@ -319,16 +325,15 @@ describe('Complete Exam Flow E2E Tests', () => {
     )
 
     addHandler(
-      http.post('/api/v1/exams/:examId/start', () => {
+      http.post('/api/v1/osym-exam/:sessionId/start', () => {
         return HttpResponse.json({
           success: true,
           data: {
-            sessionId: 'session-1',
-            examId: shortExam.id,
-            questions: mockQuestions,
-            startTime: new Date().toISOString(),
-            duration: 1,
-            remainingTime: 60 // 60 seconds
+            session_id: 'session-1',
+            status: 'in_progress',
+            start_time: new Date().toISOString(),
+            duration_minutes: 1,
+            remaining_seconds: 60
           }
         })
       })

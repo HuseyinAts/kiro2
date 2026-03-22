@@ -11,12 +11,14 @@ Bu modül ÖSYM formatında TYT/AYT/YDT sınavlarını yönetir:
 
 import asyncio
 import copy
+import random
 import uuid
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from enum import Enum
 from typing import Any
 
+from cachetools import TTLCache
 from sqlalchemy import and_, func, or_, select, update
 
 from core.database import get_db_session_context
@@ -137,6 +139,8 @@ class OSYMExamEngine:
     def __init__(self):
         self.active_sessions: dict[str, ExamSessionData] = {}
         self.auto_save_tasks: dict[str, asyncio.Task] = {}
+        # P2: Question ID pool cache — avoids ORDER BY RANDOM() (TTL 1 hour, max 200 keys)
+        self._question_pool_cache: TTLCache = TTLCache(maxsize=200, ttl=3600)
 
         # ÖSYM sınav konfigürasyonları
         # subject_distribution keys MUST match question_bank.subject_area (UPPERCASE)
@@ -1209,14 +1213,34 @@ class OSYMExamEngine:
                         ]
                     )
 
-                result = await db_session.execute(
-                    select(Question)
-                    .where(and_(*filters))
-                    .order_by(func.random())
-                    .limit(count)
+                # P2: Cached ID pool + random.sample (replaces ORDER BY RANDOM())
+                difficulty_key = (
+                    ",".join(difficulty_levels) if difficulty_levels else "all"
                 )
+                cache_key = f"{exam_config.exam_type.value}:{subject}:{difficulty_key}"
 
-                questions = result.scalars().all()
+                pool = self._question_pool_cache.get(cache_key)
+                if pool is None:
+                    id_result = await db_session.execute(
+                        select(Question.id).where(and_(*filters))
+                    )
+                    pool = [row[0] for row in id_result.all()]
+                    if pool:
+                        self._question_pool_cache[cache_key] = pool
+
+                if len(pool) >= count:
+                    sampled_ids = random.sample(pool, count)
+                    result = await db_session.execute(
+                        select(Question).where(Question.id.in_(sampled_ids))
+                    )
+                    questions = result.scalars().all()
+                elif pool:
+                    result = await db_session.execute(
+                        select(Question).where(Question.id.in_(pool))
+                    )
+                    questions = result.scalars().all()
+                else:
+                    questions = []
 
                 # Fallback: zorluk filtresiyle yetersiz soru varsa filtresiz tekrar dene
                 if len(questions) < count and difficulty_levels:
@@ -1224,13 +1248,27 @@ class OSYMExamEngine:
                         f"Zorluk filtresi ile yetersiz soru: {subject} "
                         f"({len(questions)}/{count}), filtre kaldırılıyor"
                     )
-                    fallback_result = await db_session.execute(
-                        select(Question)
-                        .where(and_(*base_filters))
-                        .order_by(func.random())
-                        .limit(count)
-                    )
-                    questions = fallback_result.scalars().all()
+                    fallback_key = f"{exam_config.exam_type.value}:{subject}:all"
+                    fallback_pool = self._question_pool_cache.get(fallback_key)
+                    if fallback_pool is None:
+                        fb_result = await db_session.execute(
+                            select(Question.id).where(and_(*base_filters))
+                        )
+                        fallback_pool = [row[0] for row in fb_result.all()]
+                        if fallback_pool:
+                            self._question_pool_cache[fallback_key] = fallback_pool
+
+                    if len(fallback_pool) >= count:
+                        sampled_ids = random.sample(fallback_pool, count)
+                        fb_q = await db_session.execute(
+                            select(Question).where(Question.id.in_(sampled_ids))
+                        )
+                        questions = fb_q.scalars().all()
+                    elif fallback_pool:
+                        fb_q = await db_session.execute(
+                            select(Question).where(Question.id.in_(fallback_pool))
+                        )
+                        questions = fb_q.scalars().all()
 
                 if len(questions) < count:
                     logger.warning(
@@ -1280,18 +1318,61 @@ class OSYMExamEngine:
                 else:
                     correct_answers_map = {}
 
+                # is_correct takibi: (question_id, bool) listesi
+                is_correct_results: list[tuple[str, bool]] = []
+
                 for question_id, student_answer in session_data.answers.items():
                     correct_answer = correct_answers_map.get(question_id)
-
-                    if (
+                    is_corr = bool(
                         correct_answer
                         and student_answer
                         and correct_answer.strip().upper()
                         == student_answer.strip().upper()
-                    ):
+                    )
+                    if is_corr:
                         correct_answers += 1
                     else:
                         wrong_answers += 1
+                    is_correct_results.append((question_id, is_corr))
+
+                # --- BUG FIX: is_correct geri yaz (student_answers tablosu) ---
+                if is_correct_results:
+                    for q_id, is_corr in is_correct_results:
+                        await db_session.execute(
+                            update(StudentAnswer)
+                            .where(
+                                and_(
+                                    StudentAnswer.exam_session_id
+                                    == session_data.session_id,
+                                    StudentAnswer.question_id == q_id,
+                                )
+                            )
+                            .values(is_correct=is_corr)
+                        )
+
+                    # --- BUG FIX: times_asked / times_correct batch update ---
+                    all_answered_ids = list(session_data.answers.keys())
+                    correct_ids = [q for q, ok in is_correct_results if ok]
+
+                    if all_answered_ids:
+                        await db_session.execute(
+                            update(Question)
+                            .where(Question.id.in_(all_answered_ids))
+                            .values(times_asked=Question.times_asked + 1)
+                        )
+                    if correct_ids:
+                        await db_session.execute(
+                            update(Question)
+                            .where(Question.id.in_(correct_ids))
+                            .values(times_correct=Question.times_correct + 1)
+                        )
+
+                    await db_session.commit()
+                    logger.info(
+                        f"is_correct + times_asked guncellendi: "
+                        f"{len(is_correct_results)} cevap, {len(correct_ids)} dogru",
+                        extra_data={"session_id": session_data.session_id},
+                    )
 
             empty_answers = total_questions - answered_questions
 

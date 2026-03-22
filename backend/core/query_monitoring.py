@@ -40,10 +40,23 @@ class QueryMonitor:
         self.total_duration = 0.0
         self.query_log = []
 
+    # Sorgular bu patterndeyse N+1 sayacina dahil edilmez
+    _HEALTH_QUERY_PATTERNS = (
+        "information_schema",
+        "SELECT 1",
+        "select 1",
+        "pg_stat",
+        "pg_database",
+    )
+
     def record_query(
         self, statement: str, duration: float, row_count: Optional[int] = None
     ):
         """Record a query execution"""
+        # Health-check ve sistem sorgularini N+1 sayacindan hariç tut
+        if any(p in statement for p in self._HEALTH_QUERY_PATTERNS):
+            return  # Sayaca katma, log'a yazma
+
         self.queries_executed += 1
         self.total_duration += duration
 

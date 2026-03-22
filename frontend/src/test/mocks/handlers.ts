@@ -137,8 +137,8 @@ export const handlers = [
     })
   }),
 
-  // Exam endpoints
-  http.get('/api/v1/exams', () => {
+  // Exam endpoints (matches backend: /api/v1/osym-exam/*)
+  http.get('/api/v1/osym-exam/my-exams', () => {
     return HttpResponse.json({
       success: true,
       data: [mockExam],
@@ -146,37 +146,52 @@ export const handlers = [
     })
   }),
 
-  http.get('/api/v1/exams/:id', ({ params }) => {
+  http.get('/api/v1/osym-exam/exam-configs', () => {
     return HttpResponse.json({
       success: true,
-      data: { ...mockExam, id: params.id },
-      message: 'Sınav detayları alındı'
+      data: { TYT: mockExam, AYT: mockExam },
+      message: 'Sınav konfigürasyonları alındı'
     })
   }),
 
-  http.post('/api/v1/exams/:id/start', ({ params }) => {
+  http.post('/api/v1/osym-exam/create', () => {
     return HttpResponse.json({
       success: true,
       data: {
-        sessionId: 'mock-session-id',
-        examId: params.id,
+        session_id: 'mock-session-id',
+        exam_type: 'TYT',
+        status: 'not_started',
         questions: mockQuestions,
-        startTime: new Date().toISOString(),
-        duration: 165
+        total_questions: mockQuestions.length,
+        duration_minutes: 165,
+        created_at: new Date().toISOString()
+      },
+      message: 'Sınav oluşturuldu'
+    })
+  }),
+
+  http.post('/api/v1/osym-exam/:sessionId/start', ({ params }) => {
+    return HttpResponse.json({
+      success: true,
+      data: {
+        session_id: params.sessionId,
+        status: 'in_progress',
+        start_time: new Date().toISOString(),
+        duration_minutes: 165
       },
       message: 'Sınav başlatıldı'
     })
   }),
 
-  http.post('/api/v1/exams/sessions/:sessionId/answer', () => {
+  http.post('/api/v1/osym-exam/:sessionId/save-answer', () => {
     return HttpResponse.json({
       success: true,
-      data: { saved: true },
-      message: 'Cevap kaydedildi'
+      message: 'Cevap kaydedildi',
+      auto_saved: true
     })
   }),
 
-  http.post('/api/v1/exams/sessions/:sessionId/submit', () => {
+  http.post('/api/v1/osym-exam/:sessionId/complete', () => {
     return HttpResponse.json({
       success: true,
       data: mockExamResults,
@@ -184,11 +199,19 @@ export const handlers = [
     })
   }),
 
-  http.get('/api/v1/exams/results/:id', ({ params }) => {
+  http.post('/api/v1/osym-exam/:sessionId/navigate', () => {
     return HttpResponse.json({
       success: true,
-      data: { ...mockExamResults, id: params.id },
-      message: 'Sınav sonuçları alındı'
+      data: mockQuestions[0],
+      message: 'Soruya gidildi'
+    })
+  }),
+
+  http.get('/api/v1/osym-exam/:sessionId/remaining-time', () => {
+    return HttpResponse.json({
+      success: true,
+      data: { remaining_seconds: 9900 },
+      message: 'Kalan süre alındı'
     })
   }),
 

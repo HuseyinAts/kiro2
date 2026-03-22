@@ -286,9 +286,23 @@ frontend/cookies.txt
 docs/research/page*_preview.png
 learning-path-current.png
 mvp-review-*.png
+mvp-launch-*.png
 
 # Worktrees
 .claude/worktrees/
+
+# Temp files
+__tmp_*
+
+# Root report files (session artifacts, not source code)
+/*_REPORT*.md
+/*_COMPLETE*.md
+/*_SUMMARY*.md
+/*_ANALYSIS*.md
+/*_PROGRESS*.md
+/*_IMPLEMENTATION*.md
+/*_PLAN*.md
+/*_TAMAMLANDI*.md
 
 # Dataset working files
 veriseti/
