@@ -84,8 +84,9 @@ export function ModernLearningPathVisualizer({
         const levels: Map<string, number> = new Map();
         const visited: Set<string> = new Set();
 
+        const MAX_DEPTH = 50;
         const calculateLevel = (nodeId: string, level: number = 0) => {
-          if (visited.has(nodeId)) {return;}
+          if (visited.has(nodeId) || level > MAX_DEPTH) {return;}
           visited.add(nodeId);
           levels.set(nodeId, Math.max(levels.get(nodeId) || 0, level));
 

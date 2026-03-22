@@ -24,7 +24,7 @@ cleanupOutdatedCaches();
 registerRoute(
   ({ url }) => url.pathname.startsWith('/api/'),
   new NetworkFirst({
-    cacheName: 'api-cache',
+    cacheName: 'api-cache-v2',
     plugins: [
       new ExpirationPlugin({
         maxEntries: 100,
@@ -39,7 +39,7 @@ registerRoute(
 registerRoute(
   ({ url }) => url.pathname.match(/\/api\/(profile|settings|preferences)/),
   new StaleWhileRevalidate({
-    cacheName: 'user-data-cache',
+    cacheName: 'user-data-cache-v2',
     plugins: [
       new ExpirationPlugin({
         maxEntries: 50,
@@ -53,7 +53,7 @@ registerRoute(
 registerRoute(
   ({ url }) => url.pathname.match(/\/api\/(exams|questions|results)/),
   new NetworkFirst({
-    cacheName: 'exam-content-cache',
+    cacheName: 'exam-content-cache-v2',
     plugins: [
       new ExpirationPlugin({
         maxEntries: 200,

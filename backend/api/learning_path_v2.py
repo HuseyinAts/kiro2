@@ -1244,7 +1244,10 @@ async def submit_quiz(
             quiz_questions_result = await db.execute(
                 select(QuizQuestion, Question)
                 .join(Question, QuizQuestion.question_id == Question.id)
-                .filter(QuizQuestion.quiz_id == quiz_id)  # is_active not in DB
+                .filter(
+                    QuizQuestion.quiz_id == quiz_id,
+                    Question.is_active == True,  # noqa: E712
+                )
                 .order_by(QuizQuestion.order_number)
             )
             for quiz_question, question in quiz_questions_result.all():
@@ -1264,8 +1267,9 @@ async def submit_quiz(
             if question_ids:
                 questions_result = await db.execute(
                     select(Question).filter(
-                        Question.id.in_(question_ids)
-                    )  # is_active not in DB
+                        Question.id.in_(question_ids),
+                        Question.is_active == True,  # noqa: E712
+                    )
                 )
                 for question in questions_result.scalars().all():
                     correct_answers[question.id] = question.correct_answer

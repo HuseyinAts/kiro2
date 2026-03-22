@@ -214,15 +214,8 @@ export function ModernLearningPathPage() {
       // Konu parametresini API'ye gönder
       const topicParam = topic ? `&topic=${encodeURIComponent(topic)}` : '';
       const url = `/api/v1/learning-path/exit-quiz/${encodeURIComponent(subject)}?count=${node.quiz?.question_count || 5}${topicParam}`;
-      console.log('[Quiz Debug] URL:', url, 'subject:', subject, 'topic:', topic);
-
       const res = await fetch(url, { credentials: 'include' });
       const data = await res.json();
-
-      console.log('[Quiz Debug] Soru sayısı:', data.questions?.length, 'Topic:', data.topic);
-      if (data.questions?.length > 0) {
-        console.log('[Quiz Debug] İlk soru subject_area:', data.questions[0]?.subject_area);
-      }
 
       if (data.success && data.questions?.length > 0) {
         setNodeQuizQuestions(data.questions.map(mapApiToQuizQuestion));

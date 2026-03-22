@@ -27,7 +27,8 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      window.location.href = '/login';
+      // setTimeout(0) allows pending promise chains to complete before redirect
+      setTimeout(() => { window.location.href = '/login'; }, 0);
     }
     return Promise.reject(error);
   },
