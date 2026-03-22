@@ -163,7 +163,7 @@ def main(dry_run: bool = True) -> None:
     print("Doğrulama SQL:")
     print(
         "  SELECT COUNT(*) FROM irt_calibration_history "
-        "WHERE calibration_method='bootstrap';  -- ~64,205 olmalı"
+        "WHERE calibration_method='bootstrap';  -- ~77,336 olmalı"
     )
 
 

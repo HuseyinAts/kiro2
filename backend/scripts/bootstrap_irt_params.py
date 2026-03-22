@@ -29,11 +29,11 @@ from sqlalchemy import text
 sys.path.insert(0, ".")
 
 PARAMS = {
-    "very_easy": {"a": 0.8, "b": -2.0, "c": 0.20},
-    "easy": {"a": 1.0, "b": -1.0, "c": 0.20},
-    "medium": {"a": 1.2, "b": 0.0, "c": 0.20},
-    "hard": {"a": 1.0, "b": 1.0, "c": 0.15},
-    "very_hard": {"a": 0.8, "b": 2.0, "c": 0.10},
+    "VERY_EASY": {"a": 0.8, "b": -2.0, "c": 0.20},
+    "EASY": {"a": 1.0, "b": -1.0, "c": 0.20},
+    "MEDIUM": {"a": 1.2, "b": 0.0, "c": 0.20},
+    "HARD": {"a": 1.0, "b": 1.0, "c": 0.15},
+    "VERY_HARD": {"a": 0.8, "b": 2.0, "c": 0.10},
 }
 
 
@@ -60,26 +60,26 @@ async def main(dry_run: bool = True, force: bool = False) -> None:
     update_query = text(f"""
         UPDATE question_bank
         SET
-            irt_discrimination = CASE difficulty_level
-                WHEN 'very_easy' THEN 0.8
-                WHEN 'easy'      THEN 1.0
-                WHEN 'medium'    THEN 1.2
-                WHEN 'hard'      THEN 1.0
-                WHEN 'very_hard' THEN 0.8
+            irt_discrimination = CASE difficulty_level::text
+                WHEN 'VERY_EASY' THEN 0.8
+                WHEN 'EASY'      THEN 1.0
+                WHEN 'MEDIUM'    THEN 1.2
+                WHEN 'HARD'      THEN 1.0
+                WHEN 'VERY_HARD' THEN 0.8
                 ELSE 1.0 END,
-            irt_difficulty = CASE difficulty_level
-                WHEN 'very_easy' THEN -2.0
-                WHEN 'easy'      THEN -1.0
-                WHEN 'medium'    THEN  0.0
-                WHEN 'hard'      THEN  1.0
-                WHEN 'very_hard' THEN  2.0
+            irt_difficulty = CASE difficulty_level::text
+                WHEN 'VERY_EASY' THEN -2.0
+                WHEN 'EASY'      THEN -1.0
+                WHEN 'MEDIUM'    THEN  0.0
+                WHEN 'HARD'      THEN  1.0
+                WHEN 'VERY_HARD' THEN  2.0
                 ELSE 0.0 END,
-            irt_guessing = CASE difficulty_level
-                WHEN 'very_easy' THEN 0.20
-                WHEN 'easy'      THEN 0.20
-                WHEN 'medium'    THEN 0.20
-                WHEN 'hard'      THEN 0.15
-                WHEN 'very_hard' THEN 0.10
+            irt_guessing = CASE difficulty_level::text
+                WHEN 'VERY_EASY' THEN 0.20
+                WHEN 'EASY'      THEN 0.20
+                WHEN 'MEDIUM'    THEN 0.20
+                WHEN 'HARD'      THEN 0.15
+                WHEN 'VERY_HARD' THEN 0.10
                 ELSE 0.20 END,
             irt_upper_asymptote = 1.0,
             is_calibrated = false,
