@@ -35,11 +35,11 @@ async def main(dry_run: bool = True):
             WHEN pipeline_metadata->>'confidence_level' = 'high' THEN 80
             WHEN pipeline_metadata->>'confidence_level' = 'medium' THEN 50
             WHEN pipeline_metadata->>'confidence_level' = 'low' THEN 20
-            ELSE 0
+            ELSE quality_score
         END
         WHERE quality_score = 0
           AND is_active = true
-          AND pipeline_metadata->>'confidence_level' IS NOT NULL
+          AND pipeline_metadata->>'confidence_level' IN ('very_high', 'high', 'medium', 'low')
     """)
 
     preview = text("""

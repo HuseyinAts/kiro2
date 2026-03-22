@@ -50,7 +50,7 @@ async def main(dry_run: bool = True, force: bool = False) -> None:
         SELECT
             difficulty_level,
             COUNT(*) AS cnt,
-            COUNT(NULLIF(is_calibrated, false)) AS already_calibrated
+            COUNT(CASE WHEN is_calibrated THEN 1 END) AS already_calibrated
         FROM question_bank
         {where_clause}
         GROUP BY difficulty_level
@@ -106,7 +106,7 @@ async def main(dry_run: bool = True, force: bool = False) -> None:
             param_str = (
                 f"a={params['a']}, b={params['b']:5.1f}, c={params['c']:.2f}"
                 if params
-                else "→ default (a=1.0, b=0.0, c=0.20)"
+                else "-> default (a=1.0, b=0.0, c=0.20)"
             )
             print(
                 f"  {level:>10}: {cnt:>6,} questions  ({param_str})"
