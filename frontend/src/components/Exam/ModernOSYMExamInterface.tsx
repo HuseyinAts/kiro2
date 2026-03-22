@@ -43,7 +43,7 @@ import {
 } from '@mui/material';
 import { motion, AnimatePresence } from 'framer-motion';
 import * as React from 'react';
-import {  useState, useEffect, useRef  } from 'react';
+import {  useState, useEffect  } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import useAutoSave from '../../hooks/useAutoSave';
@@ -106,9 +106,6 @@ export const ModernOSYMExamInterface: React.FC<ModernOSYMExamInterfaceProps> = (
   const [saveStatus, setSaveStatus] = useState<'saved' | 'saving' | 'error' | null>(null);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
 
-  // WebSocket ref
-  const wsRef = useRef<(() => void) | null>(null);
-
   // Auto-save
   const autoSave = useAutoSave({
     sessionId,
@@ -130,23 +127,11 @@ export const ModernOSYMExamInterface: React.FC<ModernOSYMExamInterfaceProps> = (
   useEffect(() => {
     loadExamData();
     return () => {
-      if (wsRef.current) {wsRef.current();}
-      examService.disconnectWebSocket();
       if (autoSave.getSaveStatus().pendingCount > 0) {
         autoSave.saveNow();
       }
     };
   }, [sessionId]);
-
-  /**
-   * WebSocket connection
-   */
-  useEffect(() => {
-    if (examState.session && examState.session.status === ExamStatus.IN_PROGRESS) {
-      examService.connectWebSocket(sessionId);
-      wsRef.current = examService.onWebSocketMessage(handleWebSocketMessage);
-    }
-  }, [examState.session, sessionId]);
 
   /**
    * Update remaining time

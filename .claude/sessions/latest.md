@@ -1,33 +1,64 @@
-## Session Handoff — 2026-03-20 (Session 107)
-**Branch:** master
-**Son commit:** `7e660ed` fix: review fixes — zemberep typo, telemetry migration, analytics redirect
+# KIRO2 Session State — 22 Mart 2026
 
-### Yapilanlar (2 commit, 114 dosya)
-- Router prefix standardizasyonu (FAZ 6): 33 backend router `/api/xxx` -> `/api/v1/xxx`
-- 75 frontend dosya URL guncelleme (371 replacement)
-- VersionRedirectMiddleware: 32 kural, 307 redirect (backward compat)
-- 4 prefix-less route standardize: /search, /validation, /yolo, /question-parser
-- api.generated.ts + telemetry.py path definitions guncellendi
-- Code review: 3 bug bulundu ve duzeltildi (zemberep typo, telemetry 404, webVitals path)
+## 🚨 İLK YAP — Container Rebuild (KRİTİK)
+```bash
+cd C:\Users\husey\kiro2
 
-### Bekleyen
-- Docker rebuild + E2E test (router prefix degisikligi sonrasi)
-- Test coverage (backend ~18% -> 80%)
-- Re-OCR recovery (+1,521-2,511 soru)
-- VersionRedirectMiddleware kaldirilmasi (client'lar migrate ettikten sonra)
+# 1. Uncommitted değişiklikleri commit et
+git add docker-compose.mvp.yml \
+        frontend/src/components/Exam/ModernOSYMExamInterface.tsx \
+        frontend/src/components/Exam/OSYMExamInterface.tsx \
+        frontend/src/components/StudyRooms/ChatInterface.tsx
+git commit -m "fix: Redis AOF + partial WebSocket cleanup"
 
-### Engelleyiciler
-- Yok
+# 2. Rebuild (BKT dahil 9 commit container'a yansımadı)
+docker-compose -f docker-compose.mvp.yml build --no-cache backend
+docker-compose -f docker-compose.mvp.yml up -d --force-recreate backend
+```
+Neden: Container image 04:36 UTC, BKT commit 04:40 UTC — BKT kodu container'da YOK.
 
-### Dokunulan Dosyalar (kritik)
-- backend/core/middleware/version_redirect.py (YENI — 32 redirect rule)
-- backend/core/application.py (middleware #5 eklendi)
-- backend/api/telemetry.py (prefix "/api" -> "/api/v1")
-- 33 backend/api/*.py (prefix degisikligi)
-- 75 frontend/src/**/*.{ts,tsx} (URL degisikligi)
-- frontend/src/utils/webVitals.ts (analytics URL fix)
+## Tamamlanan İşler (DB + local dosya — container'a henüz yansımadı)
 
-### Sonraki Adimlar
-1. Docker rebuild + E2E test (login, dashboard, learning-path, exam, chat)
-2. Test coverage sprint (backend services -> 80%)
-3. Re-OCR recovery pipeline
+### Commit `684c152` + `805a46f` — BKT (container'da YOK)
+- `backend/api/sinav.py` satır 625 — BKT/IRT/FSRS/ZPD pipeline
+- `backend/services/bkt_service.py` — record_answer() çağrısı
+
+### Commit `b97924c` — resilience + perf (container'da VAR)
+- ORDER BY RANDOM() → TTLCache, youtube_routes fix, N+1 exempt, +18 paket
+
+### Commit `fde9b6c` + 6 commit — pipeline (container'da YOK)
+- quality_score: 0 aktif soru kaldı (64K dolu)
+- explanation: 61,847 Türkçe ("Doğru cevap: X (%Y, Kaynak: Z)")
+- IRT bootstrap: 77,336 kayıt irt_calibration_history'de
+
+### Diğer
+- SECRET_KEY güçlü key (backend/.env satır 7)
+- Redis AOF: docker-compose.mvp.yml satır 13 + container aktif
+
+## Bekleyen Görevler
+
+### P_ACIL — WebSocket Dead Code (eksik temizleme)
+Commit edilmiş ama hâlâ aktif çağrı yapan 5 dosya:
+- `frontend/src/components/Revolutionary/MultiAgentCoordination.tsx` (satır 317)
+- `frontend/src/hooks/useApiIntegration.ts` (satır 68, 72)
+- `frontend/src/services/chatService.ts` (satır 453, 469)
+- `frontend/src/services/examService.ts` (satır 605)
+- `frontend/src/services/multiAgentService.ts` (satır 400)
+
+Çözüm: connectWebSocket() çağrılarını kaldır veya stub ile değiştir.
+
+### P7 — Test Coverage (%13 → hedef %80)
+- 558 test, tümü SQLite in-memory mock
+- USE_POSTGRES_TESTS=true ile gerçek DB testleri çalıştırılabilir
+- BKT/quality/explanation scriptleri için sıfır test
+
+### Minor
+- `setup_audit.ps1` untracked — git add + commit
+- explanation NULL: 2,358 aktif soru (pipeline_metadata olmayan, normal)
+
+## Teknik Referans
+- DB: localhost:5434, kiro2, user=postgres (trust auth)
+- psql: "/c/Program Files/PostgreSQL/18/bin/psql" -h localhost -p 5434 -U postgres -d kiro2 -w
+- Docker: backend:8000, frontend:3000, redis:6379, ollama:11434
+- Son commit: 869178e (22:34), image: 04:36 — 16 saatlik fark
+- Branch: master, origin'den 15 commit ilerde

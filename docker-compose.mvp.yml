@@ -1,12 +1,25 @@
 # KIRO2 MVP Beta Launch - Docker Compose
-# Uses host PostgreSQL (port 5434) and Redis (port 6379)
+# Uses host PostgreSQL (port 5434); Redis runs as container
 #
 # Setup:
 #   1. cp .env.mvp.example .env.mvp
-#   2. Edit .env.mvp with real values (secrets, DB password)
+#   2. Edit .env.mvp: set REDIS_URL=redis://redis:6379/0
 #   3. docker compose -f docker-compose.mvp.yml up --build
 
 services:
+  redis:
+    image: redis:7-alpine
+    container_name: kiro2-redis
+    command: redis-server --appendonly yes --save ""
+    volumes:
+      - redis-data:/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+
   backend:
     build:
       context: ./backend
@@ -18,6 +31,9 @@ services:
       - .env.mvp
     extra_hosts:
       - "host.docker.internal:host-gateway"
+    depends_on:
+      redis:
+        condition: service_healthy
     volumes:
       - backend-logs:/app/logs
       - ./d-dataset/output/crops:/app/static/crops:ro
@@ -54,6 +70,7 @@ services:
 
 volumes:
   backend-logs:
+  redis-data:
 
 networks:
   default:

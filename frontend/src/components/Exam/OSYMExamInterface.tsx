@@ -62,7 +62,7 @@ import {
 } from '@mui/material';
 import { motion, AnimatePresence } from 'framer-motion';
 import * as React from 'react';
-import {  useState, useEffect, useRef, useCallback  } from 'react';
+import {  useState, useEffect, useCallback  } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import useAutoSave from '../../hooks/useAutoSave';
@@ -126,9 +126,6 @@ export const OSYMExamInterface: React.FC<OSYMExamInterfaceProps> = ({
   const [saveStatus, setSaveStatus] = useState<'saved' | 'saving' | 'error' | null>(null);
   const [saveMessage, setSaveMessage] = useState('');
 
-  // WebSocket bağlantısı
-  const wsRef = useRef<(() => void) | null>(null);
-
   // Otomatik kaydetme
   const autoSave = useAutoSave({
     sessionId,
@@ -158,31 +155,12 @@ export const OSYMExamInterface: React.FC<OSYMExamInterfaceProps> = ({
   useEffect(() => {
     loadExamData();
     return () => {
-      // Cleanup
-      if (wsRef.current) {
-        wsRef.current();
-      }
-      examService.disconnectWebSocket();
-
       // Son kaydetme
       if (autoSave.getSaveStatus().pendingCount > 0) {
         autoSave.saveNow();
       }
     };
   }, [sessionId]);
-
-  /**
-   * WebSocket bağlantısını kur
-   */
-  useEffect(() => {
-    if (examState.session && examState.session.status === ExamStatus.IN_PROGRESS) {
-      examService.connectWebSocket(sessionId);
-
-      wsRef.current = examService.onWebSocketMessage((data) => {
-        handleWebSocketMessage(data);
-      });
-    }
-  }, [examState.session, sessionId]);
 
   /**
    * Kalan süreyi periyodik olarak güncelle

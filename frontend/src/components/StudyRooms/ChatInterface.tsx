@@ -140,10 +140,6 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
 
     ws.onclose = () => {
       console.log('WebSocket disconnected');
-      // Attempt to reconnect after 3 seconds
-      setTimeout(() => {
-        connectWebSocket();
-      }, 3000);
     };
   };
 
