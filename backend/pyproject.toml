@@ -198,6 +198,10 @@ exclude = [
 "conftest.py" = [
     "E402",    # Module level import not at top (common in conftest)
 ]
+"scripts/**/*.py" = [
+    "T201",    # print statements allowed in CLI scripts
+    "S608",    # SQL string build from internal boolean flags (no user input)
+]
 
 [tool.ruff.lint.isort]
 known-first-party = ["core", "models", "services", "api", "algorithms"]

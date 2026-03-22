@@ -1,11 +1,13 @@
 """
 P4: quality_score Pipeline
 Map pipeline_metadata->>'confidence_level' to quality_score for questions with score=0.
+Bkz. fix_explanation_language.py (P6) — explanation dil düzeltmesi için ayrı script.
 
 Mapping:
-  high   -> 80
-  medium -> 50
-  low    -> 20
+  very_high -> 90
+  high      -> 80
+  medium    -> 50
+  low       -> 20
   NULL   -> 0 (unchanged)
 
 Usage:
