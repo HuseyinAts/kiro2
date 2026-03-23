@@ -124,9 +124,9 @@ from .user import (
     VeliProfili,
 )
 
-# Backward compatibility aliases - for tests expecting these names
-Question = Question  # Already imported from database
-Student = StudentProfile  # Alias for StudentProfile
+# Backward compatibility aliases
+# DEPRECATED: Use StudentProfile directly
+Student = StudentProfile
 
 # Faz 2: Study Planner, Leagues, Coaching models
 from .coaching import CoachingEvent, StudentEngagementSignal
@@ -169,7 +169,7 @@ from .knowledge_graph import (
 from .league import LeagueHistory, LeagueMembership
 from .study_planner import StudyPlan, WeeklyGoal
 
-# Convenience alias pointing to canonical model
+# DEPRECATED: Use LearningPathStudentProfile directly
 CanonicalStudentProfile = LearningPathStudentProfile
 
 __all__ = [

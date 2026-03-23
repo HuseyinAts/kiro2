@@ -63,6 +63,10 @@ class VersionRedirectMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next):
         path = request.url.path
 
+        # Fast path: /api/v1/ trafigi icin 32 kural dongusunu atla
+        if path.startswith("/api/v1/"):
+            return await call_next(request)
+
         for old_prefix, new_prefix in LEGACY_PREFIXES:
             if path == old_prefix or path.startswith(old_prefix + "/"):
                 new_path = new_prefix + path[len(old_prefix) :]

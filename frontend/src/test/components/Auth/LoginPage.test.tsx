@@ -7,7 +7,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { render } from '../../utils/test-utils'
-import LoginPage from '../../../pages/LoginPage'
+import LoginPage from '../../../pages/ModernLoginPage'
 
 const { loginMock } = vi.hoisted(() => ({
   loginMock: vi.fn(),

@@ -48,5 +48,5 @@ PYTHONUNBUFFERED=1
 
 3. Start services:
    ```bash
-   docker compose -f docker-compose.mvp.yml up --build
+   docker compose up --build
    ```

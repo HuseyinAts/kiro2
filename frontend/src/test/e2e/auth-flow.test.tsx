@@ -9,7 +9,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { render } from '../utils/test-utils'
-import { LoginPage } from '../../pages/LoginPage'
+import { ModernLoginPage as LoginPage } from '../../pages/ModernLoginPage'
 import { server, addHandler } from '../mocks/server'
 import { http, HttpResponse } from 'msw'
 

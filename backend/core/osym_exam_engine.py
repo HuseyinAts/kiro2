@@ -1335,24 +1335,38 @@ class OSYMExamEngine:
                         wrong_answers += 1
                     is_correct_results.append((question_id, is_corr))
 
-                # --- BUG FIX: is_correct geri yaz (student_answers tablosu) ---
+                # --- is_correct bulk UPDATE (120 ayri → 2 toplu) ---
                 if is_correct_results:
-                    for q_id, is_corr in is_correct_results:
+                    correct_ids = [q for q, ok in is_correct_results if ok]
+                    wrong_ids = [q for q, ok in is_correct_results if not ok]
+                    all_answered_ids = list(session_data.answers.keys())
+
+                    if correct_ids:
                         await db_session.execute(
                             update(StudentAnswer)
                             .where(
                                 and_(
                                     StudentAnswer.exam_session_id
                                     == session_data.session_id,
-                                    StudentAnswer.question_id == q_id,
+                                    StudentAnswer.question_id.in_(correct_ids),
                                 )
                             )
-                            .values(is_correct=is_corr)
+                            .values(is_correct=True)
+                        )
+                    if wrong_ids:
+                        await db_session.execute(
+                            update(StudentAnswer)
+                            .where(
+                                and_(
+                                    StudentAnswer.exam_session_id
+                                    == session_data.session_id,
+                                    StudentAnswer.question_id.in_(wrong_ids),
+                                )
+                            )
+                            .values(is_correct=False)
                         )
 
-                    # --- BUG FIX: times_asked / times_correct batch update ---
-                    all_answered_ids = list(session_data.answers.keys())
-                    correct_ids = [q for q, ok in is_correct_results if ok]
+                    # --- times_asked / times_correct batch update ---
 
                     if all_answered_ids:
                         await db_session.execute(

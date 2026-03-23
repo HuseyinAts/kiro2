@@ -16,6 +16,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 logger = logging.getLogger(__name__)
 
+# Algoritma pipeline hata sayaclari (observability)
+_ALGO_ERRORS: dict[str, int] = {"bkt_read": 0, "bkt_write": 0, "irt": 0, "fsrs": 0}
+
 # ---------------------------------------------------------------------------
 # Konu parametreleri (KIRO2 YKS spesifik)
 # ---------------------------------------------------------------------------
@@ -211,7 +214,11 @@ class BKTService:
             )
             result = await db.execute(stmt)
             bkt_state = result.scalar_one_or_none()
-        except Exception:
+        except Exception as e:
+            _ALGO_ERRORS["bkt_read"] += 1
+            logger.error(
+                "BKT state okunamadi student=%s topic=%s: %s", student_id, topic_id, e
+            )
             bkt_state = None
 
         p_learn = bkt_state.p_learn if bkt_state else params.get("p_T", 0.10)
@@ -246,9 +253,11 @@ class BKTService:
                 bkt_state.last_attempt = datetime.now(UTC)
                 if new_p_L >= ZPDManager.MASTERY:
                     bkt_state.mastery_status = "mastered"
-            await db.flush()
         except Exception as e:
-            logger.warning("BKT DB yazma hatasi: %s", e)
+            _ALGO_ERRORS["bkt_write"] += 1
+            logger.error(
+                "BKT DB yazma hatasi student=%s topic=%s: %s", student_id, topic_id, e
+            )
 
         # --- 2. IRT theta tahmini (BKT-linked) ---
         theta_after = 0.0
@@ -269,7 +278,8 @@ class BKTService:
                     0.3, 1.0 - new_p_L
                 )  # daha yuksek mastery = daha dusuk SE
         except Exception as e:
-            logger.debug("IRT theta guncelleme atildi: %s", e)
+            _ALGO_ERRORS["irt"] += 1
+            logger.error("IRT theta basarisiz student=%s: %s", student_id, e)
 
         # --- 3. FSRS karti guncelle (state persistent) ---
         fsrs_next_review = None
@@ -333,9 +343,14 @@ class BKTService:
                 fsrs_card.state = fsrs_result.get("state", fsrs_card.state)
                 fsrs_card.due_date = fsrs_next_review or fsrs_card.due_date
                 fsrs_card.last_review = datetime.now(UTC)
-            await db.flush()
         except Exception as e:
-            logger.debug("FSRS guncelleme atildi: %s", e)
+            _ALGO_ERRORS["fsrs"] += 1
+            logger.error(
+                "FSRS guncelleme basarisiz student=%s topic=%s: %s",
+                student_id,
+                topic_id,
+                e,
+            )
 
         # --- 4. ZPD ---
         return {

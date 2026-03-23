@@ -12,10 +12,10 @@ import { PageSkeleton } from './components/Common/PageSkeleton';
 import { RoleBasedLayout } from './components/Layout/RoleBasedLayout';
 import { OfflineIndicator, PWAInstallButton } from './components/PWAStatus';
 import { AuthProvider } from './context/AuthProvider';
-import { LoginPage } from './pages/LoginPage';
+import { ModernLoginPage as LoginPage } from './pages/ModernLoginPage';
 import { Modern404Page } from './pages/Modern404Page';
 import { ModernErrorPage } from './pages/ModernErrorPage';
-import { RegisterPage } from './pages/RegisterPage';
+import { ModernRegisterPage as RegisterPage } from './pages/ModernRegisterPage';
 import { UnauthorizedPage } from './pages/UnauthorizedPage';
 import { ParentDashboard } from './pages/ParentDashboard';
 import './styles/touch-optimized.css';
@@ -34,30 +34,30 @@ import { initWebVitals, initWebVitalsFallback } from './utils/webVitals';
 // Reduces initial bundle size by ~40-50%
 
 // Pages - Student (lazy-loaded)
-const StudentDashboardPage = lazy(() => import('./pages/StudentDashboardPage'));
-const ChatPage = lazy(() => import('./pages/ChatPage'));
+const StudentDashboardPage = lazy(() => import('./pages/ModernStudentDashboard'));
+const ChatPage = lazy(() => import('./pages/ModernChatPage'));
 
 // Pages - Teacher (lazy-loaded)
-const TeacherDashboardPage = lazy(() => import('./pages/TeacherDashboardPage'));
-const TeacherClassesPage = lazy(() => import('./pages/TeacherClassesPage'));
-const TeacherStudentsPage = lazy(() => import('./pages/TeacherStudentsPage'));
-const TeacherExamsPage = lazy(() => import('./pages/TeacherExamsPage'));
-const TeacherAssignmentsPage = lazy(() => import('./pages/TeacherAssignmentsPage'));
-const TeacherReportsPage = lazy(() => import('./pages/TeacherReportsPage'));
-const TeacherContentPage = lazy(() => import('./pages/TeacherContentPage'));
+const TeacherDashboardPage = lazy(() => import('./pages/ModernTeacherDashboard'));
+const TeacherClassesPage = lazy(() => import('./pages/ModernTeacherClassesPage'));
+const TeacherStudentsPage = lazy(() => import('./pages/ModernTeacherStudentsPage'));
+const TeacherExamsPage = lazy(() => import('./pages/ModernTeacherExamsPage'));
+const TeacherAssignmentsPage = lazy(() => import('./pages/ModernTeacherAssignmentsPage'));
+const TeacherReportsPage = lazy(() => import('./pages/ModernTeacherReportsPage'));
+const TeacherContentPage = lazy(() => import('./pages/ModernTeacherContentPage'));
 
 // Pages - Parent (lazy-loaded)
-const ParentDashboardPage = lazy(() => import('./pages/ParentDashboardPage'));
-const ParentChildrenPage = lazy(() => import('./pages/ParentChildrenPage'));
-const ParentReportsPage = lazy(() => import('./pages/ParentReportsPage'));
-const ParentNotificationsPage = lazy(() => import('./pages/ParentNotificationsPage'));
+const ParentDashboardPage = lazy(() => import('./pages/ModernParentDashboard'));
+const ParentChildrenPage = lazy(() => import('./pages/ModernParentChildrenPage'));
+const ParentReportsPage = lazy(() => import('./pages/ModernParentReportsPage'));
+const ParentNotificationsPage = lazy(() => import('./pages/ModernParentNotificationsPage'));
 
 // Pages - Admin (lazy-loaded)
-const AdminDashboardPage = lazy(() => import('./pages/AdminDashboardPage'));
+const AdminDashboardPage = lazy(() => import('./pages/ModernAdminDashboard'));
 const AdminPanel = lazy(() => import('./components/Admin/AdminPanel'));
-const AdminUsersPage = lazy(() => import('./pages/AdminUsersPage'));
-const AdminContentPage = lazy(() => import('./pages/AdminContentPage'));
-const AdminSettingsPage = lazy(() => import('./pages/AdminSettingsPage'));
+const AdminUsersPage = lazy(() => import('./pages/ModernAdminUsersPage'));
+const AdminContentPage = lazy(() => import('./pages/ModernAdminContentPage'));
+const AdminSettingsPage = lazy(() => import('./pages/ModernAdminSettingsPage'));
 const OSYMQuestionGeneratorPage = lazy(() => import('./pages/OSYMQuestionGeneratorPage'));
 const TokenOptimizationDashboard = lazy(() => import('./pages/TokenOptimizationDashboard'));
 const ABTestResultsPage = lazy(() => import('./pages/ABTestResultsPage'));
@@ -67,14 +67,14 @@ const QuestionUploadPage = lazy(() => import('./pages/QuestionUploadPage'));
 const YOLODetectionPage = lazy(() => import('./pages/YOLODetectionPage'));
 
 // Pages - Exam (lazy-loaded)
-const ExamStartPage = lazy(() => import('./pages/ExamStartPage'));
+const ExamStartPage = lazy(() => import('./pages/ModernExamStartPage'));
 const ExamPage = lazy(() => import('./pages/ExamPage'));
-const ExamHistoryPage = lazy(() => import('./pages/ExamHistoryPage'));
-const ExamResultsPage = lazy(() => import('./pages/ExamResultsPage'));
+const ExamHistoryPage = lazy(() => import('./pages/ModernExamHistoryPage'));
+const ExamResultsPage = lazy(() => import('./pages/ModernExamResultsPage'));
 
 // Pages - Common (lazy-loaded)
-const ProfilePage = lazy(() => import('./pages/ProfilePage'));
-const SettingsPage = lazy(() => import('./pages/SettingsPage'));
+const ProfilePage = lazy(() => import('./pages/ModernProfilePage'));
+const SettingsPage = lazy(() => import('./pages/ModernSettingsPage'));
 const RBACTestPage = lazy(() => import('./pages/RBACTestPage'));
 const AccessibilityDemoPage = lazy(() => import('./pages/AccessibilityDemoPage'));
 const LearningPathPage = lazy(() => import('./pages/ModernLearningPathPage'));
