@@ -2,7 +2,7 @@
  * ErrorBoundary3D — Catches Three.js / WebGL errors gracefully
  * FAZ-6: 3D Simulasyon Modüller
  */
-import React, { Component, ErrorInfo, ReactNode } from 'react';
+import { Component, ErrorInfo, ReactNode } from 'react';
 
 interface Props {
   children: ReactNode;

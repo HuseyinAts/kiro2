@@ -469,8 +469,8 @@ class BackgroundSyncService {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${this.getAuthToken()}`,
         },
+        credentials: 'include',
         body: JSON.stringify(subscription),
       });
     } catch (error) {

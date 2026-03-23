@@ -6,7 +6,22 @@
  * Features: Ensemble voting, caching, verification
  */
 
-import { apiClient, ApiResponse } from './modernApiClient';
+import { apiClient } from './apiClient';
+
+interface ApiResponse<T> {
+  success: boolean;
+  data: T;
+  message?: string;
+}
+
+async function apiCall<T>(promise: Promise<any>): Promise<ApiResponse<T>> {
+  const res = await promise;
+  const body = res.data;
+  if (body && typeof body === 'object' && 'success' in body) {
+    return body as ApiResponse<T>;
+  }
+  return { success: true, data: body as T };
+}
 
 // Types
 export type LLMProvider = 'gemini' | 'openai' | 'claude' | 'qwen'
@@ -160,7 +175,7 @@ class ReasoningService {
    * Solve a problem with step-by-step reasoning
    */
   async solve(request: SolveRequest): Promise<ApiResponse<SolveResponse>> {
-    return apiClient.post<SolveResponse>(`${REASONING_API}/solve`, request);
+    return apiCall<SolveResponse>(apiClient.post(`${REASONING_API}/solve`, request));
   }
 
   /**
@@ -199,7 +214,7 @@ class ReasoningService {
    * Get a reasoning session by ID
    */
   async getSession(sessionId: string): Promise<ApiResponse<ReasoningSession>> {
-    return apiClient.get<ReasoningSession>(`${REASONING_API}/session/${sessionId}`);
+    return apiCall<ReasoningSession>(apiClient.get(`${REASONING_API}/session/${sessionId}`));
   }
 
   /**
@@ -209,7 +224,7 @@ class ReasoningService {
     session_id: string
     steps: ReasoningStep[]
   }>> {
-    return apiClient.get(`${REASONING_API}/session/${sessionId}/steps`);
+    return apiCall<{ session_id: string; steps: ReasoningStep[] }>(apiClient.get(`${REASONING_API}/session/${sessionId}/steps`));
   }
 
   /**
@@ -230,52 +245,52 @@ class ReasoningService {
       show_confidence: options?.showConfidence ?? true,
       include_tree_data: options?.includeTreeData ?? true,
     };
-    return apiClient.get<MermaidResponse>(
+    return apiCall<MermaidResponse>(apiClient.get(
       `${REASONING_API}/session/${sessionId}/mermaid`,
       { params },
-    );
+    ));
   }
 
   /**
    * Decompose a complex problem into sub-problems
    */
   async decompose(request: DecomposeRequest): Promise<ApiResponse<DecomposeResponse>> {
-    return apiClient.post<DecomposeResponse>(`${REASONING_API}/decompose`, request);
+    return apiCall<DecomposeResponse>(apiClient.post(`${REASONING_API}/decompose`, request));
   }
 
   /**
    * Compare all providers on the same problem
    */
   async compareProviders(problem: string): Promise<ApiResponse<CompareResponse>> {
-    return apiClient.post<CompareResponse>(`${REASONING_API}/compare`, { problem });
+    return apiCall<CompareResponse>(apiClient.post(`${REASONING_API}/compare`, { problem }));
   }
 
   /**
    * Invalidate cache for a specific problem or all expired entries
    */
   async invalidateCache(problem?: string): Promise<ApiResponse<{ invalidated_count: number }>> {
-    return apiClient.post(`${REASONING_API}/cache/invalidate`, { problem });
+    return apiCall<{ invalidated_count: number }>(apiClient.post(`${REASONING_API}/cache/invalidate`, { problem }));
   }
 
   /**
    * Get current user's recent reasoning sessions
    */
   async getMySessions(limit = 20): Promise<ApiResponse<{ sessions: ReasoningSession[] }>> {
-    return apiClient.get(`${REASONING_API}/my-sessions`, { params: { limit } });
+    return apiCall<{ sessions: ReasoningSession[] }>(apiClient.get(`${REASONING_API}/my-sessions`, { params: { limit } }));
   }
 
   /**
    * List available LLM providers
    */
   async getProviders(): Promise<ApiResponse<ProvidersListResponse>> {
-    return apiClient.get<ProvidersListResponse>(`${REASONING_API}/providers`, { cache: true });
+    return apiCall<ProvidersListResponse>(apiClient.get(`${REASONING_API}/providers`));
   }
 
   /**
    * Check reasoning service health
    */
   async healthCheck(): Promise<ApiResponse<{ status: string; service: string; version: string }>> {
-    return apiClient.get(`${REASONING_API}/health`);
+    return apiCall<{ status: string; service: string; version: string }>(apiClient.get(`${REASONING_API}/health`));
   }
 }
 

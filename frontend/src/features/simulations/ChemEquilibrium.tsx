@@ -19,13 +19,6 @@ interface Molecule {
   radius: number;
 }
 
-interface SimState {
-  temperature: number;  // 200-800 K
-  pressure: number;     // 0.5 - 3.0 atm
-  concA: number;        // 0 - 1
-  molecules: Molecule[];
-  kEq: number;          // equilibrium constant
-}
 
 const MOLECULE_COLORS: Record<string, string> = {
   A: '#3B82F6',
