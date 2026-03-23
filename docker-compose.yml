@@ -1,10 +1,10 @@
-# KIRO2 MVP Beta Launch - Docker Compose
+# KIRO2 Production Stack - Docker Compose
 # Uses host PostgreSQL (port 5434); Redis runs as container
 #
 # Setup:
 #   1. cp .env.mvp.example .env.mvp
 #   2. Edit .env.mvp: set REDIS_URL=redis://redis:6379/0
-#   3. docker compose -f docker-compose.mvp.yml up --build
+#   3. docker compose up --build
 
 services:
   redis:

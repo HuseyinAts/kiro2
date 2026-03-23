@@ -13,6 +13,9 @@ DEPRECATED MODELS (will be removed in v3.0.0):
 # Base import (avoid circular import)
 from .base import Base
 
+# Faz 2: Study Planner, Leagues, Coaching models
+from .coaching import CoachingEvent, StudentEngagementSignal
+
 # Content models
 from .content_models import (
     BulkContentImport,
@@ -65,6 +68,12 @@ from .database import (
     WeeklyProgress,  # Added for dashboard service
 )
 
+# Faz 4: DINA Cognitive Diagnostic models
+from .dina import DINAParameter, NanoSkill, QMatrix, StudentNanoSkillMastery
+
+# Faz 3: Duel models
+from .duel import DuelMatch, DuelRating, DuelSession
+
 # Enums
 from .enums import (
     IcerikTipi,
@@ -78,6 +87,9 @@ from .enums import (
     ZorlukSeviyesi,
 )
 
+# Faz 5: Error Cluster models
+from .error_cluster import ErrorCluster, PeerRecommendation
+
 # Exam models
 from .exam import (
     KonuPerformansi,
@@ -87,58 +99,6 @@ from .exam import (
     SinavSonucu,
     SinavSorusu,
 )
-
-# Canonical Learning Path Models
-from .learning_path_models import (
-    FallbackVideo,
-    LearningPath,
-    LearningPathStudentProfile,  # Canonical student profile
-    QuizSubmission,
-    TopicCompletion,
-    TopicProgress,
-)
-from .notification import Notification
-
-# Migration utilities
-from .profile_migration import (
-    ProfileMigrationService,
-    check_migration_status,
-    validate_canonical_profile,
-)
-
-# Dashboard models (Mock Data Cleanup - Phase 2)
-from .student_goal import StudentGoal
-
-# Learning Style models (Mock Data Cleanup - Phase 4)
-# DEPRECATED: Use LearningPathStudentProfile instead
-from .student_learning_profile import StudentLearningProfile
-
-# Pydantic models
-from .user import (
-    Kullanici,
-    KullaniciGiris,
-    KullaniciOlustur,
-    OgrenciProfili,
-    OgretmenProfili,
-    TokenYaniti,
-    VeliProfili,
-)
-
-# Backward compatibility aliases
-# DEPRECATED: Use StudentProfile directly
-Student = StudentProfile
-
-# Faz 2: Study Planner, Leagues, Coaching models
-from .coaching import CoachingEvent, StudentEngagementSignal
-
-# Faz 4: DINA Cognitive Diagnostic models
-from .dina import DINAParameter, NanoSkill, QMatrix, StudentNanoSkillMastery
-
-# Faz 3: Duel models
-from .duel import DuelMatch, DuelRating, DuelSession
-
-# Faz 5: Error Cluster models
-from .error_cluster import ErrorCluster, PeerRecommendation
 
 # Gamification models (Master Plan v2.0)
 from .gamification import (
@@ -167,8 +127,46 @@ from .knowledge_graph import (
     StudentKnowledgeState,
 )
 from .league import LeagueHistory, LeagueMembership
+
+# Canonical Learning Path Models
+from .learning_path_models import (
+    FallbackVideo,
+    LearningPath,
+    LearningPathStudentProfile,  # Canonical student profile
+    QuizSubmission,
+    TopicCompletion,
+    TopicProgress,
+)
+from .notification import Notification
+
+# Migration utilities
+from .profile_migration import (
+    ProfileMigrationService,
+    check_migration_status,
+    validate_canonical_profile,
+)
+
+# Dashboard models (Mock Data Cleanup - Phase 2)
+from .student_goal import StudentGoal
+
+# Learning Style models (Mock Data Cleanup - Phase 4)
+# DEPRECATED: Use LearningPathStudentProfile instead
+from .student_learning_profile import StudentLearningProfile
 from .study_planner import StudyPlan, WeeklyGoal
 
+# Pydantic models
+from .user import (
+    Kullanici,
+    KullaniciGiris,
+    KullaniciOlustur,
+    OgrenciProfili,
+    OgretmenProfili,
+    TokenYaniti,
+    VeliProfili,
+)
+
+# DEPRECATED: Use StudentProfile directly
+Student = StudentProfile
 # DEPRECATED: Use LearningPathStudentProfile directly
 CanonicalStudentProfile = LearningPathStudentProfile
 
