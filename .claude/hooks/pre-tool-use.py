@@ -148,19 +148,21 @@ def main() -> int:
         print(f"\nBLOCKED: {'; '.join(errors)}", file=sys.stderr)
         return 2
 
-    # --- Root Cause Gate reminder (non-blocking) ---
-    # Backend source files only (not tests, not config, not hooks)
+    # --- TDD Bug Fix Gate reminder (non-blocking) ---
+    # Source files only (not tests, not config, not hooks)
     normalized_path = file_path.replace("\\", "/")
-    is_backend_src = (
-        "backend/" in normalized_path
+    is_src_file = (
+        ("backend/" in normalized_path or "frontend/src/" in normalized_path)
         and not is_test_file(file_path)
         and "/alembic/" not in normalized_path
     )
-    if is_backend_src:
+    if is_src_file:
         print(
-            "[Root Cause Gate] Bug fix ise: Edit ONCESI "
-            "Root Cause Analysis tablosunu kullaniciya goster. "
-            "Detay: .claude/rules/debugging-first.md",
+            "[TDD Gate] Bug fix ise SIRASYLA: "
+            "1) Root Cause Analysis tablosu goster (debugging-first.md) "
+            "2) Fail eden test bul/yaz 3) Test FAIL dogrula "
+            "4) Fix yaz 5) Test PASS dogrula. "
+            "Bu adimlar ATLANAMAZ.",
             file=sys.stderr,
         )
 

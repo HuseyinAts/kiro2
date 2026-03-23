@@ -122,6 +122,15 @@
             "command": "python C:/Users/husey/kiro2/.claude/hooks/post-edit-typecheck.py"
           }
         ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python C:/Users/husey/kiro2/.claude/hooks/post-commit-checkpoint.py"
+          }
+        ]
       }
     ]
   },

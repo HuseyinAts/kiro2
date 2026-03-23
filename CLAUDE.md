@@ -25,6 +25,29 @@
 Bug fix baslamadan ONCE `Root Cause Analysis` tablosunu kullaniciya GOSTER.
 Bu tablo olmadan Edit/Write YAPMA. Format ve detay: `.claude/rules/debugging-first.md`
 
+### TDD Bug Fix (ZORUNLU)
+Bug/hata/fix iceren gorevlerde Edit/Write ONCESI:
+1. Root Cause Analysis tablosunu goster (debugging-first.md)
+2. Fail eden test bul veya yaz
+3. Testi calistir ve FAIL ettigini dogrula
+4. SONRA fix yaz
+5. Testi tekrar calistir ve PASS ettigini dogrula
+Bu adimlar ATLANAMAZ. Acil durumda kullanicidan onay al.
+
+### Progressive Checkpoint (ZORUNLU)
+Her commit SONRASI `.claude/sessions/latest.md` guncelle:
+- Son commit hash + mesaj
+- Yapilan isler (bu session'da)
+- Bekleyen isler
+- Test durumu (pass/fail/skip)
+Bu kural compaction/crash durumunda context kurtarma icin KRITIK.
+
+## Deep Audit Protocol
+5+ dosyayi etkileyen audit/review/tarama isteklerinde:
+1. `/deep-audit` skill'ini cagir
+2. Paralel agent kullan (tek-threaded tarama YASAK)
+3. Sonuclari docs/audits/ altina kaydet
+
 ## Git Operations
 
 - **Push fail (>2GB pack)**: 1) `git-lfs` ile büyük dosyaları track et, 2) `.gitignore` güncelle, 3) BFG Repo-Cleaner ile history temizle. Push'u tekrar tekrar deneme.
