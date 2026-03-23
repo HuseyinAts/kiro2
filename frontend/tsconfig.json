@@ -33,6 +33,7 @@
     "src/**/*.test.ts",
     "src/**/*.test.tsx",
     "src/**/*.example.tsx",
+    "src/**/_deprecated",
     "tests",
     "cypress"
   ],
