@@ -2,6 +2,7 @@
  * SocialHubPage -- /social
  * Ana sosyal merkez — tum sosyal ozelliklere erisim noktasi
  */
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Alert,
@@ -25,6 +26,7 @@ import {
   SportsKabaddi,
   Groups,
 } from '@mui/icons-material';
+import { socialSummary, SocialXPSummary } from '../services/socialService';
 
 interface FeatureCard {
   title: string;
@@ -88,6 +90,13 @@ const FEATURES: FeatureCard[] = [
 
 export default function SocialHubPage() {
   const navigate = useNavigate();
+  const [xp, setXp] = useState<SocialXPSummary | null>(null);
+
+  useEffect(() => {
+    socialSummary.getXP().then((res) => {
+      if (res.success) setXp(res.data);
+    }).catch(() => {});
+  }, []);
 
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
@@ -161,18 +170,28 @@ export default function SocialHubPage() {
         ))}
       </Grid>
 
-      {/* XP summary placeholder */}
+      {/* XP summary */}
       <Card sx={{ mt: 4, p: 3, bgcolor: 'grey.50', borderRadius: 2 }}>
-        <Typography variant="h6" fontWeight={600} gutterBottom>
-          Sosyal XP Ozeti
-        </Typography>
-        <Stack direction="row" spacing={4}>
+        <Stack direction="row" alignItems="center" spacing={2} sx={{ mb: 2 }}>
+          <Typography variant="h6" fontWeight={600}>
+            Sosyal XP Ozeti
+          </Typography>
+          {xp && (
+            <Chip
+              label={`Toplam: ${xp.total_xp} XP`}
+              color="primary"
+              size="small"
+              sx={{ fontWeight: 700 }}
+            />
+          )}
+        </Stack>
+        <Stack direction="row" spacing={4} flexWrap="wrap">
           <Box>
             <Typography variant="body2" color="text.secondary">
               Soru Meydani
             </Typography>
             <Typography variant="h5" fontWeight={700} color="primary">
-              --
+              {xp ? xp.forum_xp : '--'}
             </Typography>
           </Box>
           <Box>
@@ -180,7 +199,7 @@ export default function SocialHubPage() {
               Duello
             </Typography>
             <Typography variant="h5" fontWeight={700} color="warning.main">
-              --
+              {xp ? xp.duel_xp : '--'}
             </Typography>
           </Box>
           <Box>
@@ -188,7 +207,7 @@ export default function SocialHubPage() {
               Oba
             </Typography>
             <Typography variant="h5" fontWeight={700} color="success.main">
-              --
+              {xp ? xp.oba_xp : '--'}
             </Typography>
           </Box>
           <Box>
@@ -196,7 +215,7 @@ export default function SocialHubPage() {
               Pomodoro
             </Typography>
             <Typography variant="h5" fontWeight={700} color="error">
-              --
+              {xp ? xp.pomodoro_xp : '--'}
             </Typography>
           </Box>
           <Box>
@@ -204,7 +223,7 @@ export default function SocialHubPage() {
               Streak
             </Typography>
             <Typography variant="h5" fontWeight={700} color="warning.main">
-              --
+              {xp ? xp.streak_xp : '--'}
             </Typography>
           </Box>
           <Box>
@@ -212,7 +231,7 @@ export default function SocialHubPage() {
               Usta-Cirak
             </Typography>
             <Typography variant="h5" fontWeight={700} color="secondary">
-              --
+              {xp ? xp.mentor_xp : '--'}
             </Typography>
           </Box>
         </Stack>

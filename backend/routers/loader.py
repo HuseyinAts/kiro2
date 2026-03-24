@@ -150,6 +150,7 @@ ROUTER_MAPPING = {
     "api.usta_cirak_api": ("social", "api.usta_cirak_api"),
     "api.cozum_duellosu_api": ("social", "api.cozum_duellosu_api"),
     "api.oba_seferleri_api": ("social", "api.oba_seferleri_api"),
+    "api.social_summary_api": ("social", "api.social_summary_api"),
     "api.revolutionary_features": ("ai", "api.revolutionary_features"),
     "api.ocr_api": ("content", "api.ocr_api"),
     "api.yolo_detection_api": ("content", "api.yolo_detection_api"),

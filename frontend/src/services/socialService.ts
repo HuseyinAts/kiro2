@@ -1,9 +1,94 @@
 /**
  * Social Features API Service
- * F0-F6: Moderation, Soru Meydani, Pomodoro, Streak, Usta-Cirak
+ * F0-F6: Moderation, Soru Meydani, Cozum Duellosu, Oba Seferleri,
+ *        Pomodoro, Streak, Usta-Cirak
  */
 
 const BASE = '/api/v1';
+
+// ---------------------------------------------------------------------------
+// F0: Moderation & Parent Social Settings
+// ---------------------------------------------------------------------------
+
+export interface ContentFilterResult {
+  passed: boolean;
+  blocked_layer: string | null;
+  blocked_reason: string | null;
+}
+
+export interface ContentReport {
+  id: string;
+  reporter_id: string;
+  content_type: string;
+  content_id: string;
+  reason: string;
+  status: string;
+  created_at: string;
+}
+
+export const moderation = {
+  filterTest: (text: string) =>
+    request<{ success: boolean; data: ContentFilterResult }>(
+      `${BASE}/moderation/filter-test`,
+      { method: 'POST', body: JSON.stringify({ text }) }
+    ),
+
+  report: (data: { content_type: string; content_id: string; reason: string; details?: string }) =>
+    request<{ success: boolean; data: { report_id: string } }>(
+      `${BASE}/moderation/report`,
+      { method: 'POST', body: JSON.stringify(data) }
+    ),
+
+  getMyReports: (limit?: number) => {
+    const q = new URLSearchParams();
+    if (limit) q.set('limit', String(limit));
+    return request<{ success: boolean; data: ContentReport[] }>(
+      `${BASE}/moderation/my-reports?${q}`
+    );
+  },
+
+  block: (blockedUserId: string) =>
+    request<{ success: boolean }>(`${BASE}/moderation/block/${blockedUserId}`, {
+      method: 'POST',
+    }),
+
+  unblock: (blockedUserId: string) =>
+    request<{ success: boolean }>(`${BASE}/moderation/unblock/${blockedUserId}`, {
+      method: 'DELETE',
+    }),
+
+  getBlockedUsers: () =>
+    request<{ success: boolean; data: { user_id: string; blocked_at: string }[] }>(
+      `${BASE}/moderation/blocked-users`
+    ),
+};
+
+export interface ParentSocialSettings {
+  social_enabled: boolean;
+  allowed_features: string[];
+  daily_social_minutes: number;
+}
+
+export const parentSocial = {
+  getSettings: (childId: string) =>
+    request<{ success: boolean; data: ParentSocialSettings }>(
+      `${BASE}/parent-social/settings/${childId}`
+    ),
+
+  updateSettings: (childId: string, data: Partial<ParentSocialSettings>) =>
+    request<{ success: boolean }>(
+      `${BASE}/parent-social/settings/${childId}`,
+      { method: 'PUT', body: JSON.stringify(data) }
+    ),
+
+  getActivity: (childId: string, days?: number) => {
+    const q = new URLSearchParams();
+    if (days) q.set('days', String(days));
+    return request<{ success: boolean; data: { date: string; feature: string; minutes: number }[] }>(
+      `${BASE}/parent-social/activity/${childId}?${q}`
+    );
+  },
+};
 
 async function request<T>(url: string, options?: RequestInit): Promise<T> {
   const res = await fetch(url, {
@@ -304,6 +389,37 @@ export interface MentorPairInfo {
   session_count: number;
   my_role: 'mentor' | 'mentee';
 }
+
+// ---------------------------------------------------------------------------
+// Social XP Summary
+// ---------------------------------------------------------------------------
+
+export interface SocialXPSummary {
+  total_xp: number;
+  forum_xp: number;
+  duel_xp: number;
+  oba_xp: number;
+  pomodoro_xp: number;
+  streak_xp: number;
+  mentor_xp: number;
+  details: {
+    questions_asked: number;
+    solutions_given: number;
+    duel_wins: number;
+    oba_contributions: number;
+    pomodoro_rounds: number;
+    mentor_sessions: number;
+  };
+}
+
+export const socialSummary = {
+  getXP: () =>
+    request<{ success: boolean; data: SocialXPSummary }>(`${BASE}/social/summary`),
+};
+
+// ---------------------------------------------------------------------------
+// F6: Usta-Cirak
+// ---------------------------------------------------------------------------
 
 export const ustaCirak = {
   requestMatch: (data: { subject_area: string; role: 'mentor' | 'mentee' }) =>

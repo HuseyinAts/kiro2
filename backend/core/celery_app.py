@@ -9,10 +9,12 @@ Background task infrastructure for:
 - Bulk operations
 - Scheduled tasks
 """
+
 import os
+
 from celery import Celery
 from celery.schedules import crontab
-from kombu import Queue, Exchange
+from kombu import Exchange, Queue
 
 # Redis broker URL
 REDIS_URL = os.getenv("REDIS_URL", "redis://localhost:6379/0")
@@ -29,6 +31,8 @@ celery_app = Celery(
         "tasks.bulk_tasks",
         "tasks.claude_md_improvement_tasks",
         "tasks.mega_feature_tasks",
+        "tasks.social_tasks",
+        "app.tasks.calibration_task",  # IRT 3PL kalibrasyon
     ],
 )
 
@@ -149,6 +153,27 @@ celery_app.conf.update(
             "task": "tasks.mega_feature_tasks.run_weekly_error_clustering",
             "schedule": crontab(hour=23, minute=0, day_of_week=0),  # Sunday 23:00
         },
+        # IRT: Weekly calibration (every Sunday at 03:00)
+        "weekly-irt-calibration": {
+            "task": "kiro2.tasks.irt_calibration",
+            "schedule": crontab(hour=3, minute=0, day_of_week=0),  # Sunday 03:00
+            "kwargs": {"batch_size": 200},
+        },
+        # Social: Birlikte Streak break detection (daily at 00:05)
+        "social-birlikte-streak-check": {
+            "task": "tasks.social_tasks.check_birlikte_streaks",
+            "schedule": crontab(hour=0, minute=5),
+        },
+        # Social: Duel voting expiry (every 30 minutes)
+        "social-duel-voting-expiry": {
+            "task": "tasks.social_tasks.expire_duel_voting",
+            "schedule": 1800.0,  # 30 minutes
+        },
+        # Social: Oba challenge expiry (daily at 00:10)
+        "social-oba-challenge-expiry": {
+            "task": "tasks.social_tasks.expire_oba_challenges",
+            "schedule": crontab(hour=0, minute=10),
+        },
     },
 )
 
@@ -193,6 +218,19 @@ class BaseTask(celery_app.Task):
 
 # Set base task
 celery_app.Task = BaseTask
+
+# IRT kalibrasyon task'ını register et
+try:
+    from app.tasks.calibration_task import make_celery_task
+    from core.database import get_db_session_context
+
+    run_irt_calibration = make_celery_task(celery_app, get_db_session_context)
+except Exception as _e:
+    import logging
+
+    logging.getLogger(__name__).warning(
+        f"IRT calibration task register edilemedi: {_e}"
+    )
 
 # Export
 __all__ = ["celery_app"]

@@ -154,6 +154,13 @@ const navigationItems: NavigationItem[] = [
     roles: ['ogrenci'],
     gradient: modernColors.gradients.forest,
   },
+  {
+    label: 'Sosyal Merkez',
+    path: '/social',
+    icon: <People />,
+    roles: ['ogrenci'],
+    gradient: 'linear-gradient(135deg, #0891b2 0%, #06b6d4 100%)',
+  },
 
   // Teacher
   {
