@@ -141,6 +141,15 @@ ROUTER_MAPPING = {
     # Other Features
     "api.live_session_routes": ("learning", "api.live_session_routes"),
     "api.team_challenges_api": ("integrations", "api.team_challenges_api"),
+    # Social Features (F0-F6)
+    "api.moderation_api": ("social", "api.moderation_api"),
+    "api.parent_social_api": ("social", "api.parent_social_api"),
+    "api.soru_meydani_api": ("social", "api.soru_meydani_api"),
+    "api.pomodoro_api": ("social", "api.pomodoro_api"),
+    "api.birlikte_streak_api": ("social", "api.birlikte_streak_api"),
+    "api.usta_cirak_api": ("social", "api.usta_cirak_api"),
+    "api.cozum_duellosu_api": ("social", "api.cozum_duellosu_api"),
+    "api.oba_seferleri_api": ("social", "api.oba_seferleri_api"),
     "api.revolutionary_features": ("ai", "api.revolutionary_features"),
     "api.ocr_api": ("content", "api.ocr_api"),
     "api.yolo_detection_api": ("content", "api.yolo_detection_api"),

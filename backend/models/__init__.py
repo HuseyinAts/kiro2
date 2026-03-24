@@ -12,6 +12,7 @@ DEPRECATED MODELS (will be removed in v3.0.0):
 
 # Base import (avoid circular import)
 from .base import Base
+from .birlikte_streak import StreakDailyLog, StreakPair
 
 # Faz 2: Study Planner, Leagues, Coaching models
 from .coaching import CoachingEvent, StudentEngagementSignal
@@ -29,6 +30,7 @@ from .content_models import (
     QuizIcerik,
     VideoIcerik,
 )
+from .cozum_duellosu import SolutionDuel, SolutionDuelSubmission, SolutionDuelVote
 
 # SQLAlchemy ORM models
 from .database import (
@@ -138,6 +140,8 @@ from .learning_path_models import (
     TopicProgress,
 )
 from .notification import Notification
+from .oba_seferleri import ObaChallenge, ObaChallengeProgress
+from .pomodoro import PomodoroParticipant, PomodoroRoom
 
 # Migration utilities
 from .profile_migration import (
@@ -145,6 +149,18 @@ from .profile_migration import (
     check_migration_status,
     validate_canonical_profile,
 )
+
+# Social Safety (F0)
+from .social_safety import (
+    BlockedUser,
+    ContentReport,
+    MessageAuditLog,
+    ModerationAction,
+    ParentSocialSettings,
+)
+
+# Social Features (F1-F6)
+from .soru_meydani import ForumQuestion, ForumSolution, ForumVote
 
 # Dashboard models (Mock Data Cleanup - Phase 2)
 from .student_goal import StudentGoal
@@ -164,6 +180,7 @@ from .user import (
     TokenYaniti,
     VeliProfili,
 )
+from .usta_cirak import MentorFeedback, MentorPair, MentorSession
 
 # DEPRECATED: Use StudentProfile directly
 Student = StudentProfile
@@ -296,6 +313,29 @@ __all__ = [
     "StudentAbility",
     "ManipulativeActivity",
     "ManipulativeProgress",
+    # Social Safety (F0)
+    "ContentReport",
+    "ModerationAction",
+    "BlockedUser",
+    "ParentSocialSettings",
+    "MessageAuditLog",
+    # Social Features (F1-F6)
+    "ForumQuestion",
+    "ForumSolution",
+    "ForumVote",
+    "PomodoroRoom",
+    "PomodoroParticipant",
+    "StreakPair",
+    "StreakDailyLog",
+    "MentorPair",
+    "MentorSession",
+    "MentorFeedback",
+    # Social Features (F2, F3)
+    "SolutionDuel",
+    "SolutionDuelSubmission",
+    "SolutionDuelVote",
+    "ObaChallenge",
+    "ObaChallengeProgress",
     # Aliases for backward compatibility
     "Student",
     "CanonicalStudentProfile",  # Alias for LearningPathStudentProfile

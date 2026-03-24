@@ -100,10 +100,20 @@ const CalibrationStatusPage = lazy(() => import('./pages/CalibrationStatusPage')
 // Learning Path Daily + Map (ZPD+DAG+IRT+FSRS)
 const DailyPlanPage         = lazy(() => import('./pages/DailyPlanPage'));
 const LearningPathMapPage   = lazy(() => import('./pages/LearningPathMapPage'));
+// Veli Paneli (yeni)
+const ParentDashboardNew    = lazy(() => import('./pages/ParentDashboardNew'));
 // Oba (Guild) + Daily Quests + Boss Fight
 const ObaPage               = lazy(() => import('./pages/ObaPage'));
 const DailyQuestPage        = lazy(() => import('./pages/DailyQuestPage'));
 const BossFightPage         = lazy(() => import('./pages/BossFightPage'));
+// Social Features (F0-F6)
+const SocialHubPage         = lazy(() => import('./pages/SocialHubPage'));
+const SoruMeydaniPage       = lazy(() => import('./pages/SoruMeydaniPage'));
+const PomodoroPage          = lazy(() => import('./pages/PomodoroPage'));
+const BirlikteStreakPage    = lazy(() => import('./pages/BirlikteStreakPage'));
+const UstaCirakPage         = lazy(() => import('./pages/UstaCirakPage'));
+const CozumDuellosuPage     = lazy(() => import('./pages/CozumDuellosuPage'));
+const ObaSeferleriPage      = lazy(() => import('./pages/ObaSeferleriPage'));
 
 // Labs: Revolutionary Features (experimental)
 const RevolutionaryDashboard = lazy(() => import('./components/Revolutionary/RevolutionaryDashboard'));
@@ -337,6 +347,14 @@ function AppContent() {
                 }
               />
               <Route
+                path="/parent-new"
+                element={
+                  <ProtectedRoute requiredRoles={['veli', 'admin']}>
+                    <ParentDashboardNew />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
                 path="/oba"
                 element={
                   <ProtectedRoute requiredRoles={['ogrenci', 'admin']}>
@@ -357,6 +375,63 @@ function AppContent() {
                 element={
                   <ProtectedRoute requiredRoles={['ogrenci', 'admin']}>
                     <BossFightPage />
+                  </ProtectedRoute>
+                }
+              />
+              {/* Social Features (F0-F6) */}
+              <Route
+                path="/social"
+                element={
+                  <ProtectedRoute requiredRoles={['ogrenci', 'admin']}>
+                    <SocialHubPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/soru-meydani"
+                element={
+                  <ProtectedRoute requiredRoles={['ogrenci', 'admin']}>
+                    <SoruMeydaniPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/pomodoro"
+                element={
+                  <ProtectedRoute requiredRoles={['ogrenci', 'admin']}>
+                    <PomodoroPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/birlikte-streak"
+                element={
+                  <ProtectedRoute requiredRoles={['ogrenci', 'admin']}>
+                    <BirlikteStreakPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/usta-cirak"
+                element={
+                  <ProtectedRoute requiredRoles={['ogrenci', 'admin']}>
+                    <UstaCirakPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/cozum-duellosu"
+                element={
+                  <ProtectedRoute requiredRoles={['ogrenci', 'admin']}>
+                    <CozumDuellosuPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/oba-seferleri"
+                element={
+                  <ProtectedRoute requiredRoles={['ogrenci', 'admin']}>
+                    <ObaSeferleriPage />
                   </ProtectedRoute>
                 }
               />
