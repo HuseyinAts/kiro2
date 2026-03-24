@@ -15,6 +15,8 @@ import {
   ArrowForward,
   LocalFireDepartment,
   HourglassEmpty,
+  WorkspacePremium,
+  SportsEsports,
 } from '@mui/icons-material';
 import {
   Container,
@@ -25,9 +27,12 @@ import {
   Chip,
   CircularProgress,
   Skeleton,
+  LinearProgress,
+  Stack,
 } from '@mui/material';
 import { motion } from 'framer-motion';
 import * as React from 'react';
+import SubjectThetaCards from '@/components/Dashboard/SubjectThetaCards';
 import { useNavigate } from 'react-router-dom';
 
 import { StaggerContainer, StaggerItem } from '@/components/Animations/PageTransition';
@@ -63,6 +68,26 @@ interface RecentExam {
   sure: number;
 }
 
+interface GamificationProfile {
+  total_xp: number;
+  current_level: number;
+  xp_for_next_level: number;
+  streak: number;
+  streak_active_today: boolean;
+  total_badges: number;
+  leaderboard_rank: number | null;
+}
+
+const DEFAULT_GAMIFICATION: GamificationProfile = {
+  total_xp: 0,
+  current_level: 1,
+  xp_for_next_level: 500,
+  streak: 0,
+  streak_active_today: false,
+  total_badges: 0,
+  leaderboard_rank: null,
+};
+
 const DEFAULT_STATS: DashboardStats = {
   tamamlanan_dersler: 0,
   toplam_dersler: 0,
@@ -82,6 +107,7 @@ export const ModernStudentDashboard: React.FC = () => {
 
   const [stats, setStats] = React.useState<DashboardStats>(DEFAULT_STATS);
   const [recentExams, setRecentExams] = React.useState<RecentExam[]>([]);
+  const [gamification, setGamification] = React.useState<GamificationProfile>(DEFAULT_GAMIFICATION);
   const [loading, setLoading] = React.useState(true);
 
   React.useEffect(() => {
@@ -105,6 +131,14 @@ export const ModernStudentDashboard: React.FC = () => {
     };
 
     fetchDashboardData();
+
+    // Gamification profile (non-blocking)
+    apiRequest<{ success: boolean; data: Partial<GamificationProfile> }>('/api/v1/gamification/profile')
+      .then((res) => {
+        const d = res.data ?? res;
+        setGamification((prev) => ({ ...prev, ...d }));
+      })
+      .catch(() => {}); // optional — gamification not critical
   }, []);
 
   const quickActions = [
@@ -131,6 +165,48 @@ export const ModernStudentDashboard: React.FC = () => {
       icon: <MenuBook sx={{ fontSize: 32 }} />,
       gradient: modernColors.gradients.sunset,
       path: '/exam/history',
+    },
+    {
+      title: 'Adaptif Test',
+      icon: <TrendingUp sx={{ fontSize: 32 }} />,
+      gradient: modernColors.gradients.success,
+      path: '/cat',
+    },
+    {
+      title: 'Seviye Tespiti',
+      icon: <School sx={{ fontSize: 32 }} />,
+      gradient: modernColors.gradients.ocean,
+      path: '/assessment',
+    },
+    {
+      title: 'YKS Tahmini',
+      icon: <EmojiEvents sx={{ fontSize: 32 }} />,
+      gradient: modernColors.gradients.sunset,
+      path: '/estimate',
+    },
+    {
+      title: 'Tekrar Et (FSRS)',
+      icon: <HourglassEmpty sx={{ fontSize: 32 }} />,
+      gradient: modernColors.gradients.primary,
+      path: '/fsrs-review',
+    },
+    {
+      title: 'Lig Sıralaması',
+      icon: <LocalFireDepartment sx={{ fontSize: 32 }} />,
+      gradient: modernColors.gradients.warning,
+      path: '/league',
+    },
+    {
+      title: '1v1 Düello',
+      icon: <SportsEsports sx={{ fontSize: 32 }} />,
+      gradient: modernColors.gradients.ocean,
+      path: '/duel',
+    },
+    {
+      title: 'KIRO Destanı',
+      icon: <MenuBook sx={{ fontSize: 32 }} />,
+      gradient: 'linear-gradient(135deg, #1a1a2e 0%, #0f3460 100%)',
+      path: '/kiro-destan',
     },
   ];
 
@@ -264,8 +340,112 @@ export const ModernStudentDashboard: React.FC = () => {
         </Container>
       </Box>
 
+      {/* Gamification Bar */}
+      <Container maxWidth="xl" sx={{ mt: -6, position: 'relative', zIndex: 2, mb: 2 }}>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+        >
+          <Box
+            sx={{
+              background: 'rgba(255,255,255,0.85)',
+              backdropFilter: 'blur(16px)',
+              borderRadius: '16px',
+              border: '1px solid rgba(255,255,255,0.3)',
+              boxShadow: modernColors.shadow.md,
+              px: 3,
+              py: 2,
+            }}
+          >
+            <Stack
+              direction={{ xs: 'column', sm: 'row' }}
+              spacing={2}
+              alignItems={{ xs: 'stretch', sm: 'center' }}
+              justifyContent="space-between"
+            >
+              {/* XP + Level */}
+              <Stack direction="row" spacing={2} alignItems="center" flex={1}>
+                <Box
+                  sx={{
+                    width: 44, height: 44, borderRadius: '12px',
+                    background: modernColors.gradients.purple,
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    boxShadow: modernColors.shadow.sm,
+                  }}
+                >
+                  <Typography sx={{ color: 'white', fontWeight: 800, fontSize: 16 }}>
+                    {gamification.current_level}
+                  </Typography>
+                </Box>
+                <Box flex={1} minWidth={120}>
+                  <Stack direction="row" justifyContent="space-between" mb={0.5}>
+                    <Typography variant="caption" fontWeight={600} color="text.secondary">
+                      Seviye {gamification.current_level}
+                    </Typography>
+                    <Typography variant="caption" color="text.secondary">
+                      {gamification.total_xp.toLocaleString('tr-TR')} / {gamification.xp_for_next_level.toLocaleString('tr-TR')} XP
+                    </Typography>
+                  </Stack>
+                  <LinearProgress
+                    variant="determinate"
+                    value={Math.min(100, (gamification.total_xp / Math.max(1, gamification.xp_for_next_level)) * 100)}
+                    sx={{
+                      height: 8, borderRadius: 4,
+                      bgcolor: 'rgba(0,0,0,0.06)',
+                      '& .MuiLinearProgress-bar': {
+                        borderRadius: 4,
+                        background: modernColors.gradients.purple,
+                      },
+                    }}
+                  />
+                </Box>
+              </Stack>
+
+              {/* Streak */}
+              <Stack direction="row" spacing={0.5} alignItems="center">
+                <LocalFireDepartment sx={{
+                  fontSize: 24,
+                  color: gamification.streak_active_today ? '#FF6B35' : '#ccc',
+                }} />
+                <Typography variant="body2" fontWeight={700}>
+                  {gamification.streak}
+                </Typography>
+                <Typography variant="caption" color="text.secondary">
+                  gun seri
+                </Typography>
+              </Stack>
+
+              {/* Badges */}
+              <Stack direction="row" spacing={0.5} alignItems="center">
+                <WorkspacePremium sx={{ fontSize: 24, color: '#ffc107' }} />
+                <Typography variant="body2" fontWeight={700}>
+                  {gamification.total_badges}
+                </Typography>
+                <Typography variant="caption" color="text.secondary">
+                  rozet
+                </Typography>
+              </Stack>
+
+              {/* Rank */}
+              {gamification.leaderboard_rank && (
+                <Stack direction="row" spacing={0.5} alignItems="center">
+                  <EmojiEvents sx={{ fontSize: 24, color: '#4caf50' }} />
+                  <Typography variant="body2" fontWeight={700}>
+                    #{gamification.leaderboard_rank}
+                  </Typography>
+                  <Typography variant="caption" color="text.secondary">
+                    siralama
+                  </Typography>
+                </Stack>
+              )}
+            </Stack>
+          </Box>
+        </motion.div>
+      </Container>
+
       {/* Main Content */}
-      <Container maxWidth="xl" sx={{ mt: -4, position: 'relative', zIndex: 1 }}>
+      <Container maxWidth="xl" sx={{ mt: -2, position: 'relative', zIndex: 1 }}>
         <StaggerContainer>
           {/* Stats Cards */}
           <Grid container spacing={3} sx={{ mb: 4 }}>
@@ -499,6 +679,11 @@ export const ModernStudentDashboard: React.FC = () => {
             </Grid>
           </Grid>
         </StaggerContainer>
+
+        {/* Ders Seviyeleri */}
+        <Box mt={4}>
+          <SubjectThetaCards />
+        </Box>
       </Container>
     </Box>
   );

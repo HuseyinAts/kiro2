@@ -20,6 +20,10 @@ import {
   Person,
   Close,
   CameraAlt,
+  SportsEsports,
+  EmojiEvents,
+  Explore,
+  AutoStories,
 } from '@mui/icons-material';
 import {
   AppBar,
@@ -89,6 +93,34 @@ const navigationItems: NavigationItem[] = [
     icon: <Chat />,
     roles: ['ogrenci'],
     gradient: modernColors.gradients.ocean,
+  },
+  {
+    label: 'KIRO Destani',
+    path: '/kiro-destan',
+    icon: <AutoStories />,
+    roles: ['ogrenci'],
+    gradient: 'linear-gradient(135deg, #1a1a2e 0%, #0f3460 100%)',
+  },
+  {
+    label: 'Lig Siralamasi',
+    path: '/league',
+    icon: <EmojiEvents />,
+    roles: ['ogrenci'],
+    gradient: modernColors.gradients.warning,
+  },
+  {
+    label: 'Duello',
+    path: '/duel',
+    icon: <SportsEsports />,
+    roles: ['ogrenci'],
+    gradient: modernColors.gradients.fire,
+  },
+  {
+    label: 'Alemler Haritasi',
+    path: '/realms',
+    icon: <Explore />,
+    roles: ['ogrenci'],
+    gradient: modernColors.gradients.purple,
   },
 
   // Teacher
