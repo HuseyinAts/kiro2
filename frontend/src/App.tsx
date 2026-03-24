@@ -100,9 +100,10 @@ const CalibrationStatusPage = lazy(() => import('./pages/CalibrationStatusPage')
 // Learning Path Daily + Map (ZPD+DAG+IRT+FSRS)
 const DailyPlanPage         = lazy(() => import('./pages/DailyPlanPage'));
 const LearningPathMapPage   = lazy(() => import('./pages/LearningPathMapPage'));
-// Oba (Guild) + Daily Quests
+// Oba (Guild) + Daily Quests + Boss Fight
 const ObaPage               = lazy(() => import('./pages/ObaPage'));
 const DailyQuestPage        = lazy(() => import('./pages/DailyQuestPage'));
+const BossFightPage         = lazy(() => import('./pages/BossFightPage'));
 
 // Labs: Revolutionary Features (experimental)
 const RevolutionaryDashboard = lazy(() => import('./components/Revolutionary/RevolutionaryDashboard'));
@@ -348,6 +349,14 @@ function AppContent() {
                 element={
                   <ProtectedRoute requiredRoles={['ogrenci', 'admin']}>
                     <DailyQuestPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/boss-fight/:realmSlug"
+                element={
+                  <ProtectedRoute requiredRoles={['ogrenci', 'admin']}>
+                    <BossFightPage />
                   </ProtectedRoute>
                 }
               />

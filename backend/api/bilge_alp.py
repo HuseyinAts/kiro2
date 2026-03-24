@@ -290,3 +290,137 @@ async def bilge_alp_chat(
             "Connection": "keep-alive",
         },
     )
+
+
+# ---------------------------------------------------------------------------
+# Branching Dialog — NPC secim bazli diyalog
+# ---------------------------------------------------------------------------
+
+# Her realm+step icin NPC secenekleri
+NPC_DIALOG_BRANCHES: dict[str, dict[int, dict]] = {
+    "matematik": {
+        0: {
+            "npc_message": "Hosgeldin, genc matematikci! Sayilar diyarina katilmak istiyorsun. Sana nasil rehberlik edeyim?",
+            "choices": [
+                {
+                    "id": "basic",
+                    "text": "Temelden baslayalim",
+                    "effect": "Temel kavramlardan basla, cesaretlendir.",
+                },
+                {
+                    "id": "challenge",
+                    "text": "Beni zorlayacak sorular ver",
+                    "effect": "Zor sorularla basla, ustunluk test et.",
+                },
+                {
+                    "id": "explore",
+                    "text": "Bu alemin sirlari neler?",
+                    "effect": "Matematiksel guzelliklerden bahset, motivasyon ver.",
+                },
+            ],
+        },
+        3: {
+            "npc_message": "Buyuk ilerleme! Artik fonksiyonlarin dilini konusuyorsun. Simdi ne yapmak istersin?",
+            "choices": [
+                {
+                    "id": "practice",
+                    "text": "Pratik yapmak istiyorum",
+                    "effect": "Quiz moduna yonlendir.",
+                },
+                {
+                    "id": "theory",
+                    "text": "Teoriyi derinlestirelim",
+                    "effect": "Kavramsak derinlik, ispat ve baglantilar.",
+                },
+                {
+                    "id": "exam",
+                    "text": "Sinav stratejisi ogren",
+                    "effect": "YKS sinav taktikleri ve zaman yonetimi.",
+                },
+            ],
+        },
+    },
+    "fizik": {
+        0: {
+            "npc_message": "Ben Aristo, fizik diyarinin rehberiyim! Kuvvetler ve hareket dunyasina hosgeldin. Nereden baslamak istersin?",
+            "choices": [
+                {
+                    "id": "newton",
+                    "text": "Newton'un yasalarini ogren",
+                    "effect": "Temel mekanik, F=ma, momentum.",
+                },
+                {
+                    "id": "energy",
+                    "text": "Enerji nedir?",
+                    "effect": "Enerji korunumu, kinetik-potansiyel donusum.",
+                },
+                {
+                    "id": "daily",
+                    "text": "Gunluk hayatta fizik",
+                    "effect": "Gercek hayat ornekleri ile fizik kavramlari.",
+                },
+            ],
+        },
+    },
+}
+
+# Her realm icin varsayilan dialog (tanimlanmamis step'ler icin)
+DEFAULT_DIALOG = {
+    "npc_message": "Merhaba! Bu alemde sana rehberlik etmeye hazirim. Ne ogrenmek istersin?",
+    "choices": [
+        {
+            "id": "learn",
+            "text": "Konu anlatimi istiyorum",
+            "effect": "Konu anlatim modu.",
+        },
+        {
+            "id": "quiz",
+            "text": "Soru cozmek istiyorum",
+            "effect": "Soru cozme moduna gec.",
+        },
+        {
+            "id": "hint",
+            "text": "Ipucu ve strateji ver",
+            "effect": "Sinav stratejisi modu.",
+        },
+    ],
+}
+
+
+@router.post("/dialog-options")
+async def get_dialog_options(
+    request: Request,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+) -> dict:
+    """NPC branching dialog seceneklerini getir. Frontend secim butonu gosterir."""
+    try:
+        body = await request.json()
+    except Exception:
+        body = {}
+
+    realm_slug = str(body.get("realm_slug", "matematik"))
+    quest_step = int(body.get("quest_step", 0))
+    chosen_id = body.get("chosen_id")  # Onceki secim (None ise ilk diyalog)
+
+    realm_dialogs = NPC_DIALOG_BRANCHES.get(realm_slug, {})
+    dialog = realm_dialogs.get(quest_step, DEFAULT_DIALOG)
+
+    persona = NPC_PERSONAS.get(realm_slug, DEFAULT_PERSONA)
+
+    # Eger bir secim yapildiysa, secimin etkisini mesaja ekle
+    chosen_effect = None
+    if chosen_id:
+        for choice in dialog.get("choices", []):
+            if choice["id"] == chosen_id:
+                chosen_effect = choice["effect"]
+                break
+
+    return {
+        "npc_name": persona["name"],
+        "npc_title": persona["title"],
+        "realm_slug": realm_slug,
+        "quest_step": quest_step,
+        "message": dialog["npc_message"],
+        "choices": dialog.get("choices", []),
+        "chosen_effect": chosen_effect,
+    }

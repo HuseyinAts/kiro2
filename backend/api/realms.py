@@ -280,3 +280,421 @@ async def complete_quest(
         "badge_earned": badge_earned,
         "already_completed": False,
     }
+
+
+# ---------------------------------------------------------------------------
+# Quest Chain — multi-step progression per realm
+# ---------------------------------------------------------------------------
+
+# Her realm icin 5 adimli gorev zinciri
+QUEST_CHAINS: dict[str, list[dict[str, Any]]] = {
+    "matematik": [
+        {
+            "step": 1,
+            "title": "Sayi Sezgisi",
+            "desc": "5 temel islem sorusu coz",
+            "type": "quiz",
+            "target": 5,
+            "xp": 20,
+        },
+        {
+            "step": 2,
+            "title": "Denklem Avi",
+            "desc": "3 denklem sorusunu dogru cevapla",
+            "type": "quiz",
+            "target": 3,
+            "xp": 30,
+        },
+        {
+            "step": 3,
+            "title": "Fonksiyon Ustasi",
+            "desc": "Fonksiyon konusundan 5 soru",
+            "type": "quiz",
+            "target": 5,
+            "xp": 40,
+        },
+        {
+            "step": 4,
+            "title": "Limit Seferi",
+            "desc": "Limit sorularinda %80+ basari",
+            "type": "accuracy",
+            "target": 80,
+            "xp": 50,
+        },
+        {
+            "step": 5,
+            "title": "Matematik Efendisi",
+            "desc": "10 karisik soruda %70+ basari",
+            "type": "boss",
+            "target": 70,
+            "xp": 100,
+        },
+    ],
+    "fizik": [
+        {
+            "step": 1,
+            "title": "Kuvvet Kesfet",
+            "desc": "5 Newton sorusu coz",
+            "type": "quiz",
+            "target": 5,
+            "xp": 20,
+        },
+        {
+            "step": 2,
+            "title": "Enerji Donusumu",
+            "desc": "Enerji problemlerini coz",
+            "type": "quiz",
+            "target": 4,
+            "xp": 30,
+        },
+        {
+            "step": 3,
+            "title": "Dalga Yolculugu",
+            "desc": "Dalga mekanigindan 5 soru",
+            "type": "quiz",
+            "target": 5,
+            "xp": 40,
+        },
+        {
+            "step": 4,
+            "title": "Elektrik Ustasi",
+            "desc": "Elektrik konusunda %75+",
+            "type": "accuracy",
+            "target": 75,
+            "xp": 50,
+        },
+        {
+            "step": 5,
+            "title": "Fizik Efendisi",
+            "desc": "Boss meydan okumasi",
+            "type": "boss",
+            "target": 70,
+            "xp": 100,
+        },
+    ],
+    "kimya": [
+        {
+            "step": 1,
+            "title": "Atom Modeli",
+            "desc": "5 atom yapisi sorusu",
+            "type": "quiz",
+            "target": 5,
+            "xp": 20,
+        },
+        {
+            "step": 2,
+            "title": "Periyodik Kesfet",
+            "desc": "Element ozellikleri",
+            "type": "quiz",
+            "target": 4,
+            "xp": 30,
+        },
+        {
+            "step": 3,
+            "title": "Kimyasal Baglar",
+            "desc": "Bag turlerinden 5 soru",
+            "type": "quiz",
+            "target": 5,
+            "xp": 40,
+        },
+        {
+            "step": 4,
+            "title": "Reaksiyon Dengesi",
+            "desc": "%80+ basari",
+            "type": "accuracy",
+            "target": 80,
+            "xp": 50,
+        },
+        {
+            "step": 5,
+            "title": "Kimya Efendisi",
+            "desc": "Boss meydan okumasi",
+            "type": "boss",
+            "target": 70,
+            "xp": 100,
+        },
+    ],
+    "biyoloji": [
+        {
+            "step": 1,
+            "title": "Hucre Yapisi",
+            "desc": "5 hucre sorusu coz",
+            "type": "quiz",
+            "target": 5,
+            "xp": 20,
+        },
+        {
+            "step": 2,
+            "title": "DNA Sifresi",
+            "desc": "Genetik problemleri",
+            "type": "quiz",
+            "target": 4,
+            "xp": 30,
+        },
+        {
+            "step": 3,
+            "title": "Ekosistem",
+            "desc": "Ekoloji konusundan 5 soru",
+            "type": "quiz",
+            "target": 5,
+            "xp": 40,
+        },
+        {
+            "step": 4,
+            "title": "Evrim Yolculugu",
+            "desc": "%75+ basari",
+            "type": "accuracy",
+            "target": 75,
+            "xp": 50,
+        },
+        {
+            "step": 5,
+            "title": "Biyoloji Efendisi",
+            "desc": "Boss meydan okumasi",
+            "type": "boss",
+            "target": 70,
+            "xp": 100,
+        },
+    ],
+    "turkce": [
+        {
+            "step": 1,
+            "title": "Sozcuk Bilgisi",
+            "desc": "5 anlam sorusu",
+            "type": "quiz",
+            "target": 5,
+            "xp": 20,
+        },
+        {
+            "step": 2,
+            "title": "Cumle Yapisi",
+            "desc": "Cumle analizi",
+            "type": "quiz",
+            "target": 4,
+            "xp": 30,
+        },
+        {
+            "step": 3,
+            "title": "Paragraf Ustasi",
+            "desc": "5 paragraf sorusu",
+            "type": "quiz",
+            "target": 5,
+            "xp": 40,
+        },
+        {
+            "step": 4,
+            "title": "Anlam Derinligi",
+            "desc": "%80+ basari",
+            "type": "accuracy",
+            "target": 80,
+            "xp": 50,
+        },
+        {
+            "step": 5,
+            "title": "Turkce Efendisi",
+            "desc": "Boss meydan okumasi",
+            "type": "boss",
+            "target": 70,
+            "xp": 100,
+        },
+    ],
+    "tarih": [
+        {
+            "step": 1,
+            "title": "Ilk Caglar",
+            "desc": "5 tarih sorusu",
+            "type": "quiz",
+            "target": 5,
+            "xp": 20,
+        },
+        {
+            "step": 2,
+            "title": "Osmanli Donemi",
+            "desc": "Osmanli sorulari",
+            "type": "quiz",
+            "target": 4,
+            "xp": 30,
+        },
+        {
+            "step": 3,
+            "title": "Cumhuriyet",
+            "desc": "Inkilap tarihi",
+            "type": "quiz",
+            "target": 5,
+            "xp": 40,
+        },
+        {
+            "step": 4,
+            "title": "Kronoloji Ustasi",
+            "desc": "%75+ basari",
+            "type": "accuracy",
+            "target": 75,
+            "xp": 50,
+        },
+        {
+            "step": 5,
+            "title": "Tarih Efendisi",
+            "desc": "Boss meydan okumasi",
+            "type": "boss",
+            "target": 70,
+            "xp": 100,
+        },
+    ],
+}
+
+# Varsayilan chain (tanimlanmamis realm'ler icin)
+DEFAULT_CHAIN = [
+    {
+        "step": 1,
+        "title": "Kesfet",
+        "desc": "5 soru coz",
+        "type": "quiz",
+        "target": 5,
+        "xp": 20,
+    },
+    {
+        "step": 2,
+        "title": "Pekistir",
+        "desc": "4 soru daha",
+        "type": "quiz",
+        "target": 4,
+        "xp": 30,
+    },
+    {
+        "step": 3,
+        "title": "Derinles",
+        "desc": "5 zor soru",
+        "type": "quiz",
+        "target": 5,
+        "xp": 40,
+    },
+    {
+        "step": 4,
+        "title": "Uzmanlas",
+        "desc": "%75+ basari",
+        "type": "accuracy",
+        "target": 75,
+        "xp": 50,
+    },
+    {
+        "step": 5,
+        "title": "Efendi",
+        "desc": "Boss meydan okumasi",
+        "type": "boss",
+        "target": 70,
+        "xp": 100,
+    },
+]
+
+
+@router.get("/{slug}/quest-chain")
+async def get_quest_chain(
+    slug: str,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+    db: AsyncSession = Depends(get_async_db),
+) -> dict[str, Any]:
+    """Realm'in quest chain'ini ve ogrencinin ilerlemesini getir."""
+    realm = await _get_realm_or_404(slug, db)
+    progress = await _get_or_create_progress(current_user.id, realm.id, db)
+    await db.commit()
+
+    chain = QUEST_CHAINS.get(slug, DEFAULT_CHAIN)
+    current_step = progress.quest_stop or 0
+
+    steps = []
+    for q in chain:
+        step_status = "locked"
+        if q["step"] < current_step:
+            step_status = "completed"
+        elif q["step"] == current_step:
+            step_status = "active"
+        elif q["step"] == current_step + 1:
+            step_status = "available"
+
+        steps.append(
+            {
+                **q,
+                "status": step_status,
+            }
+        )
+
+    return {
+        "realm_slug": slug,
+        "realm_name": realm.name,
+        "current_step": current_step,
+        "total_steps": len(chain),
+        "completed": progress.completed_at is not None,
+        "steps": steps,
+    }
+
+
+@router.post("/{slug}/quest-chain/advance")
+async def advance_quest_chain(
+    slug: str,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+    db: AsyncSession = Depends(get_async_db),
+) -> dict[str, Any]:
+    """Quest chain'de bir adim ilerle. XP odul ver."""
+    realm = await _get_realm_or_404(slug, db)
+    progress = await _get_or_create_progress(current_user.id, realm.id, db)
+
+    if progress.completed_at is not None:
+        return {
+            "success": True,
+            "message": "Alem zaten tamamlandi.",
+            "already_completed": True,
+        }
+
+    chain = QUEST_CHAINS.get(slug, DEFAULT_CHAIN)
+    current_step = progress.quest_stop or 0
+    next_step = current_step + 1
+
+    if next_step > len(chain):
+        return {
+            "success": True,
+            "message": "Tum adimlar tamamlandi.",
+            "already_completed": True,
+        }
+
+    step_data = chain[next_step - 1]
+    xp_reward = step_data["xp"]
+
+    progress.quest_stop = next_step
+    progress.xp_earned = (progress.xp_earned or 0) + xp_reward
+
+    # XP transaction
+    from models.gamification import XPTransaction
+
+    xp_tx = XPTransaction(
+        student_id=current_user.id,
+        amount=xp_reward,
+        source="realm_quest",
+        topic_id=slug,
+    )
+    db.add(xp_tx)
+
+    # Son adim ise realm'i tamamla
+    is_final = next_step >= len(chain)
+    if is_final:
+        progress.completed_at = datetime.now(UTC)
+
+    from sqlalchemy import text
+
+    await db.execute(
+        text("UPDATE users SET total_xp = COALESCE(total_xp, 0) + :xp WHERE id = :uid"),
+        {"xp": xp_reward, "uid": current_user.id},
+    )
+
+    await db.commit()
+
+    return {
+        "success": True,
+        "realm_slug": slug,
+        "step_completed": next_step,
+        "step_title": step_data["title"],
+        "xp_earned": xp_reward,
+        "total_steps": len(chain),
+        "realm_completed": is_final,
+        "message": f"'{step_data['title']}' tamamlandi! +{xp_reward} XP"
+        + (" Alem fethedildi!" if is_final else ""),
+    }
