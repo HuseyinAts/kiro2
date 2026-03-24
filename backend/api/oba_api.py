@@ -296,7 +296,7 @@ async def get_oba_members(
 async def promote_member(
     oba_id: int,
     target_user_id: str,
-    new_role: str = Query(..., regex="^(toycu|noker|bey)$"),
+    new_role: str = Query(..., pattern="^(toycu|noker|bey)$"),
     current_user: AuthenticatedUser = Depends(get_current_user),
     db: AsyncSession = Depends(get_db_session),
 ):
