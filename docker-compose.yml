@@ -1,25 +1,14 @@
 # KIRO2 Production Stack - Docker Compose
-# Uses host PostgreSQL (port 5434); Redis runs as container
+# Uses host PostgreSQL (port 5434) and host Redis (port 6379)
 #
 # Setup:
 #   1. cp .env.mvp.example .env.mvp
-#   2. Edit .env.mvp: set REDIS_URL=redis://redis:6379/0
+#   2. Edit .env.mvp: set REDIS_URL=redis://host.docker.internal:6379/0
 #   3. docker compose up --build
+#
+# NOTE: Redis runs natively on host (port 6379). Docker Redis disabled to avoid port conflict.
 
 services:
-  redis:
-    image: redis:7-alpine
-    container_name: kiro2-redis
-    command: redis-server --appendonly yes --save ""
-    volumes:
-      - redis-data:/data
-    restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
-      interval: 10s
-      timeout: 3s
-      retries: 3
-
   backend:
     build:
       context: ./backend
@@ -31,15 +20,11 @@ services:
       - .env.mvp
     extra_hosts:
       - "host.docker.internal:host-gateway"
-    depends_on:
-      redis:
-        condition: service_healthy
     volumes:
       - backend-logs:/app/logs
       - ./d-dataset/output/crops:/app/static/crops:ro
     environment:
       - CROP_IMAGE_DIR=/app/static/crops
-      # YOUTUBE_API_KEY loaded from .env.mvp
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
@@ -70,7 +55,6 @@ services:
 
 volumes:
   backend-logs:
-  redis-data:
 
 networks:
   default:

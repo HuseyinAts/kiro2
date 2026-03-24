@@ -1,64 +1,42 @@
-# KIRO2 Session State — 22 Mart 2026
+# Session State — 2026-03-24 Social Features
 
-## 🚨 İLK YAP — Container Rebuild (KRİTİK)
-```bash
-cd C:\Users\husey\kiro2
+## Quick Resume
+- **Branch:** master
+- **Last commit:** 23f00b9 test: 77 social model + content filter tests
+- **Previous:** 936a58d feat: F0-F6 social features — full stack implementation
+- **Production:** 77,336 questions
+- **Tests:** 77 social PASS (49 model + 28 filter), 0 fail
 
-# 1. Uncommitted değişiklikleri commit et
-git add docker-compose.mvp.yml \
-        frontend/src/components/Exam/ModernOSYMExamInterface.tsx \
-        frontend/src/components/Exam/OSYMExamInterface.tsx \
-        frontend/src/components/StudyRooms/ChatInterface.tsx
-git commit -m "fix: Redis AOF + partial WebSocket cleanup"
+## Bu Session'da Yapilanlar
 
-# 2. Rebuild (BKT dahil 9 commit container'a yansımadı)
-docker-compose -f docker-compose.mvp.yml build --no-cache backend
-docker-compose -f docker-compose.mvp.yml up -d --force-recreate backend
-```
-Neden: Container image 04:36 UTC, BKT commit 04:40 UTC — BKT kodu container'da YOK.
+### F0-F6 Social Features (30 dosya, 6,622 satir)
+- **F0 Safety**: 5 model + 7 enum, moderation_api (10 ep), parent_social_api (6 ep), 7-layer content filter (28 test)
+- **F1 Soru Meydani**: 3 model, 7 endpoint, frontend page + service
+- **F2 Cozum Duellosu**: 3 model, 5 endpoint, frontend page + service
+- **F3 Oba Seferleri**: 2 model, 4 endpoint, frontend page + service
+- **F4 Pomodoro**: 2 model, 4 endpoint, frontend page + service
+- **F5 Birlikte Streak**: 2 model, 3 endpoint, frontend page + service
+- **F6 Usta-Cirak**: 3 model, 6 endpoint, frontend page + service
+- **SocialHubPage**: 6 feature card, XP ozeti
+- **App.tsx**: 8 yeni lazy route
+- **DB Migration**: 20 tablo basariyla olusturuldu (psql -p 5434)
+- **Tests**: 49 model test + 28 content filter = 77 PASS
+- **Security**: IDOR yok (tum endpoint'ler current_user.id), XSS yok
+- **Ruff**: 0 error, **TSC**: 0 error
 
-## Tamamlanan İşler (DB + local dosya — container'a henüz yansımadı)
+## Dokunulan Dosyalar
+- backend/models/: social_safety, soru_meydani, cozum_duellosu, oba_seferleri, pomodoro, birlikte_streak, usta_cirak, __init__
+- backend/api/: moderation_api, parent_social_api, soru_meydani_api, cozum_duellosu_api, oba_seferleri_api, pomodoro_api, birlikte_streak_api, usta_cirak_api
+- backend/services/social_content_filter.py
+- backend/routers/loader.py
+- backend/migrations/create_social_safety_tables.sql, create_social_features_tables.sql
+- backend/tests/test_social_content_filter.py, test_social_models.py
+- frontend/src/services/socialService.ts
+- frontend/src/pages/: SocialHubPage, SoruMeydaniPage, CozumDuellosuPage, ObaSeferleriPage, PomodoroPage, BirlikteStreakPage, UstaCirakPage
+- frontend/src/App.tsx
 
-### Commit `684c152` + `805a46f` — BKT (container'da YOK)
-- `backend/api/sinav.py` satır 625 — BKT/IRT/FSRS/ZPD pipeline
-- `backend/services/bkt_service.py` — record_answer() çağrısı
-
-### Commit `b97924c` — resilience + perf (container'da VAR)
-- ORDER BY RANDOM() → TTLCache, youtube_routes fix, N+1 exempt, +18 paket
-
-### Commit `fde9b6c` + 6 commit — pipeline (container'da YOK)
-- quality_score: 0 aktif soru kaldı (64K dolu)
-- explanation: 61,847 Türkçe ("Doğru cevap: X (%Y, Kaynak: Z)")
-- IRT bootstrap: 77,336 kayıt irt_calibration_history'de
-
-### Diğer
-- SECRET_KEY güçlü key (backend/.env satır 7)
-- Redis AOF: docker-compose.mvp.yml satır 13 + container aktif
-
-## Bekleyen Görevler
-
-### P_ACIL — WebSocket Dead Code (eksik temizleme)
-Commit edilmiş ama hâlâ aktif çağrı yapan 5 dosya:
-- `frontend/src/components/Revolutionary/MultiAgentCoordination.tsx` (satır 317)
-- `frontend/src/hooks/useApiIntegration.ts` (satır 68, 72)
-- `frontend/src/services/chatService.ts` (satır 453, 469)
-- `frontend/src/services/examService.ts` (satır 605)
-- `frontend/src/services/multiAgentService.ts` (satır 400)
-
-Çözüm: connectWebSocket() çağrılarını kaldır veya stub ile değiştir.
-
-### P7 — Test Coverage (%13 → hedef %80)
-- 558 test, tümü SQLite in-memory mock
-- USE_POSTGRES_TESTS=true ile gerçek DB testleri çalıştırılabilir
-- BKT/quality/explanation scriptleri için sıfır test
-
-### Minor
-- `setup_audit.ps1` untracked — git add + commit
-- explanation NULL: 2,358 aktif soru (pipeline_metadata olmayan, normal)
-
-## Teknik Referans
-- DB: localhost:5434, kiro2, user=postgres (trust auth)
-- psql: "/c/Program Files/PostgreSQL/18/bin/psql" -h localhost -p 5434 -U postgres -d kiro2 -w
-- Docker: backend:8000, frontend:3000, redis:6379, ollama:11434
-- Son commit: 869178e (22:34), image: 04:36 — 16 saatlik fark
-- Branch: master, origin'den 15 commit ilerde
+## Bekleyen
+1. Git push
+2. Test coverage artirma (backend ~18% → hedef 80%)
+3. MVP beta launch
+4. Re-OCR recovery (+1,521-2,511 soru)
