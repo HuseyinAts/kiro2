@@ -81,6 +81,13 @@ interface GamificationProfile {
   leaderboard_rank: number | null;
 }
 
+interface DailyQuestSummary {
+  completed_count: number;
+  total_count: number;
+  all_completed: boolean;
+  bonus_available: boolean;
+}
+
 const DEFAULT_GAMIFICATION: GamificationProfile = {
   total_xp: 0,
   current_level: 1,
@@ -111,6 +118,7 @@ export const ModernStudentDashboard: React.FC = () => {
   const [stats, setStats] = React.useState<DashboardStats>(DEFAULT_STATS);
   const [recentExams, setRecentExams] = React.useState<RecentExam[]>([]);
   const [gamification, setGamification] = React.useState<GamificationProfile>(DEFAULT_GAMIFICATION);
+  const [dailyQuests, setDailyQuests] = React.useState<DailyQuestSummary | null>(null);
   const [loading, setLoading] = React.useState(true);
 
   React.useEffect(() => {
@@ -141,7 +149,15 @@ export const ModernStudentDashboard: React.FC = () => {
         const d = res.data ?? res;
         setGamification((prev) => ({ ...prev, ...d }));
       })
-      .catch(() => {}); // optional — gamification not critical
+      .catch(() => {});
+
+    // Daily quests summary (non-blocking)
+    apiRequest<{ success: boolean; data: DailyQuestSummary }>('/api/v1/daily-quests/today')
+      .then((res) => {
+        const d = res.data ?? res;
+        if (d && typeof d === 'object' && 'completed_count' in d) setDailyQuests(d as DailyQuestSummary);
+      })
+      .catch(() => {});
   }, []);
 
   const quickActions = [
@@ -458,6 +474,51 @@ export const ModernStudentDashboard: React.FC = () => {
           </Box>
         </motion.div>
       </Container>
+
+      {/* Daily Quest Banner */}
+      {dailyQuests && (
+        <Container maxWidth="xl" sx={{ mt: 1, position: 'relative', zIndex: 1 }}>
+          <Box
+            onClick={() => navigate('/daily-quests')}
+            sx={{
+              background: dailyQuests.all_completed
+                ? 'linear-gradient(135deg, #10b981 0%, #059669 100%)'
+                : 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)',
+              borderRadius: '12px',
+              px: 3, py: 1.5,
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              color: '#fff',
+              '&:hover': { opacity: 0.9 },
+            }}
+          >
+            <Stack direction="row" spacing={1.5} alignItems="center">
+              <Typography fontWeight={700} fontSize={14}>
+                {dailyQuests.all_completed ? 'Tum Gorevler Tamam!' : 'Gunluk Gorevler'}
+              </Typography>
+              <Typography fontSize={13} sx={{ opacity: 0.85 }}>
+                {dailyQuests.completed_count}/{dailyQuests.total_count}
+              </Typography>
+              {dailyQuests.bonus_available && (
+                <Typography fontSize={12} sx={{ bgcolor: 'rgba(255,255,255,0.25)', px: 1, borderRadius: 2, fontWeight: 700 }}>
+                  Bonus Hazir!
+                </Typography>
+              )}
+            </Stack>
+            <LinearProgress
+              variant="determinate"
+              value={(dailyQuests.completed_count / dailyQuests.total_count) * 100}
+              sx={{
+                width: 120, height: 6, borderRadius: 3, ml: 2,
+                bgcolor: 'rgba(255,255,255,0.2)',
+                '& .MuiLinearProgress-bar': { bgcolor: '#fff', borderRadius: 3 },
+              }}
+            />
+          </Box>
+        </Container>
+      )}
 
       {/* Main Content */}
       <Container maxWidth="xl" sx={{ mt: -2, position: 'relative', zIndex: 1 }}>
