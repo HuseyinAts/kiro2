@@ -51,6 +51,7 @@ export default function BossFightPage() {
   const [correctCount, setCorrectCount] = useState(0);
   const [totalAnswered, setTotalAnswered] = useState(0);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const questAdvancedRef = useRef(false);
 
   // Fetch questions
   useEffect(() => {
@@ -110,13 +111,16 @@ export default function BossFightPage() {
     if (isCorrect) {
       setCorrectCount(c => c + 1);
       setBossHP(prev => {
-        const next = prev - 20;
+        const next = Math.max(prev - 20, 0);
         if (next <= 0) {
           setVictory(true);
-          // Report quest advancement
-          apiRequest(`/api/v1/realms/${realmSlug}/quest-chain/advance`, { method: 'POST' }).catch(() => {});
+          // Report quest advancement (once only)
+          if (!questAdvancedRef.current) {
+            questAdvancedRef.current = true;
+            apiRequest(`/api/v1/realms/${realmSlug}/quest-chain/advance`, { method: 'POST' }).catch(() => {});
+          }
         }
-        return Math.max(next, 0);
+        return next;
       });
     } else {
       setPlayerLives(prev => {

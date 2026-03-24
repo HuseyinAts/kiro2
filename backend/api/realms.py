@@ -22,6 +22,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.database import get_db_session as get_async_db
 from core.dependencies import AuthenticatedUser, get_current_user
+from services.learning_event_service import GamificationDBService
 
 logger = logging.getLogger(__name__)
 
@@ -656,20 +657,36 @@ async def advance_quest_chain(
             "already_completed": True,
         }
 
+    # Idempotency: Check if XP already granted for this step
+    from models.gamification import XPTransaction
+
+    existing_tx = await db.execute(
+        select(XPTransaction).where(
+            XPTransaction.student_id == str(current_user.id),
+            XPTransaction.source == "realm_quest",
+            XPTransaction.topic_id == f"{slug}_step{next_step}",
+        )
+    )
+    if existing_tx.scalar_one_or_none():
+        return {
+            "success": True,
+            "message": "Bu adim zaten tamamlandi.",
+            "already_completed": True,
+            "step_completed": next_step,
+        }
+
     step_data = chain[next_step - 1]
     xp_reward = step_data["xp"]
 
     progress.quest_stop = next_step
     progress.xp_earned = (progress.xp_earned or 0) + xp_reward
 
-    # XP transaction
-    from models.gamification import XPTransaction
-
+    # XP transaction with unique topic_id for idempotency
     xp_tx = XPTransaction(
-        student_id=current_user.id,
+        student_id=str(current_user.id),
         amount=xp_reward,
         source="realm_quest",
-        topic_id=slug,
+        topic_id=f"{slug}_step{next_step}",
     )
     db.add(xp_tx)
 
@@ -678,11 +695,12 @@ async def advance_quest_chain(
     if is_final:
         progress.completed_at = datetime.now(UTC)
 
-    from sqlalchemy import text
-
-    await db.execute(
-        text("UPDATE users SET total_xp = COALESCE(total_xp, 0) + :xp WHERE id = :uid"),
-        {"xp": xp_reward, "uid": current_user.id},
+    # Use GamificationDBService instead of raw SQL
+    await GamificationDBService.award_xp(
+        student_id=str(current_user.id),
+        amount=xp_reward,
+        source="realm_quest",
+        db=db,
     )
 
     await db.commit()

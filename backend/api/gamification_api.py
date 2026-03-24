@@ -562,9 +562,12 @@ async def get_gamification_profile(
         # leaderboard_rank: best-effort via Redis ZSET
         leaderboard_rank = None
         try:
+            import os
+
             import redis as sync_redis
 
-            r = sync_redis.Redis(host="localhost", port=6379, db=0, socket_timeout=1)
+            redis_url = os.environ.get("REDIS_URL", "redis://localhost:6379/0")
+            r = sync_redis.from_url(redis_url, socket_timeout=1)
             zkey = "leaderboard:global"
             rank = r.zrevrank(zkey, user_id)
             if rank is not None:

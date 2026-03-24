@@ -89,7 +89,7 @@ BONUS_XP = 25  # 3/3 tamamlaninca bonus
 
 
 async def _ensure_today_quests(user_id: str, db: AsyncSession) -> list[DailyQuest]:
-    """Bugun icin gorevler yoksa olustur, varsa dondur."""
+    """Bugun icin gorevler yoksa olustur, varsa dondur. Race-condition safe."""
     today = date.today()
 
     result = await db.execute(
@@ -107,23 +107,30 @@ async def _ensure_today_quests(user_id: str, db: AsyncSession) -> list[DailyQues
     bonus = random.choice(BONUS_POOL)
     quests_to_create.append(bonus)
 
-    created = []
-    for tmpl in quests_to_create:
-        q = DailyQuest(
-            quest_date=today,
-            student_id=user_id,
-            quest_type=tmpl["quest_type"],
-            title=tmpl["title"],
-            description=tmpl.get("description"),
-            target_value=tmpl["target_value"],
-            xp_reward=tmpl["xp_reward"],
-        )
-        db.add(q)
-        created.append(q)
+    # Use ON CONFLICT DO NOTHING to handle concurrent creation
+    from sqlalchemy.dialects.postgresql import insert as pg_insert
 
-    await db.flush()
+    for tmpl in quests_to_create:
+        stmt = (
+            pg_insert(DailyQuest)
+            .values(
+                quest_date=today,
+                student_id=user_id,
+                quest_type=tmpl["quest_type"],
+                title=tmpl["title"],
+                description=tmpl.get("description"),
+                target_value=tmpl["target_value"],
+                xp_reward=tmpl["xp_reward"],
+            )
+            .on_conflict_do_nothing(
+                index_elements=["quest_date", "student_id", "quest_type"]
+            )
+        )
+        await db.execute(stmt)
+
     await db.commit()
-    # Re-read to get IDs
+
+    # Re-read to get final state (ours or concurrent winner's)
     result2 = await db.execute(
         select(DailyQuest).where(
             DailyQuest.student_id == user_id,
@@ -182,7 +189,6 @@ async def get_today_quests(
 @router.post("/{quest_id}/progress", response_model=dict[str, Any])
 async def update_quest_progress(
     quest_id: int,
-    increment: int = 1,
     current_user: AuthenticatedUser = Depends(get_current_user),
     db: AsyncSession = Depends(get_db_session),
 ):
@@ -205,7 +211,7 @@ async def update_quest_progress(
             "message": "Gorev zaten tamamlandi.",
         }
 
-    quest.current_value = min(quest.current_value + increment, quest.target_value)
+    quest.current_value = min(quest.current_value + 1, quest.target_value)
 
     xp_awarded = 0
     if quest.current_value >= quest.target_value:
@@ -258,6 +264,11 @@ async def claim_daily_bonus(
     if any(q.bonus_claimed for q in quests):
         raise HTTPException(400, "Bonus zaten alindi.")
 
+    # Mark claimed FIRST (atomicity — prevents double-award on crash)
+    for q in quests:
+        q.bonus_claimed = True
+    await db.flush()
+
     # Bonus XP
     await GamificationDBService.award_xp(
         student_id=user_id,
@@ -265,9 +276,6 @@ async def claim_daily_bonus(
         source="daily_bonus",
         db=db,
     )
-
-    for q in quests:
-        q.bonus_claimed = True
 
     await db.commit()
 

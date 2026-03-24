@@ -65,39 +65,50 @@ async def list_obalar(
     limit: int = Query(20, ge=1, le=50),
     offset: int = Query(0, ge=0),
 ):
-    """Tum obalari listele."""
-    result = await db.execute(
-        select(Oba).order_by(Oba.xp_pool.desc()).offset(offset).limit(limit)
+    """Tum obalari listele (single query — no N+1)."""
+    user_id = str(current_user.id)
+
+    # Subquery: member count per oba
+    member_count_sq = (
+        select(ObaUye.oba_id, func.count().label("cnt"))
+        .group_by(ObaUye.oba_id)
+        .subquery()
     )
-    obalar = result.scalars().all()
+    # Subquery: my role per oba
+    my_role_sq = (
+        select(ObaUye.oba_id, ObaUye.role.label("my_role"))
+        .where(ObaUye.user_id == user_id)
+        .subquery()
+    )
 
-    # Her oba icin uye sayisi
-    items = []
-    for oba in obalar:
-        count_r = await db.execute(
-            select(func.count()).select_from(ObaUye).where(ObaUye.oba_id == oba.id)
+    stmt = (
+        select(
+            Oba,
+            func.coalesce(member_count_sq.c.cnt, 0).label("member_count"),
+            my_role_sq.c.my_role,
         )
-        member_count = count_r.scalar() or 0
+        .select_from(Oba)
+        .outerjoin(member_count_sq, Oba.id == member_count_sq.c.oba_id)
+        .outerjoin(my_role_sq, Oba.id == my_role_sq.c.oba_id)
+        .order_by(Oba.xp_pool.desc())
+        .offset(offset)
+        .limit(limit)
+    )
+    result = await db.execute(stmt)
+    rows = result.all()
 
-        # Kullanicinin rolu
-        my_r = await db.execute(
-            select(ObaUye.role).where(
-                ObaUye.oba_id == oba.id, ObaUye.user_id == str(current_user.id)
-            )
+    items = [
+        ObaOut(
+            id=oba.id,
+            name=oba.name,
+            description=oba.description,
+            xp_pool=oba.xp_pool or 0,
+            max_members=oba.max_members or 20,
+            member_count=member_count,
+            my_role=my_role,
         )
-        my_role = my_r.scalar_one_or_none()
-
-        items.append(
-            ObaOut(
-                id=oba.id,
-                name=oba.name,
-                description=oba.description,
-                xp_pool=oba.xp_pool or 0,
-                max_members=oba.max_members or 20,
-                member_count=member_count,
-                my_role=my_role,
-            )
-        )
+        for oba, member_count, my_role in rows
+    ]
 
     return {"success": True, "data": items}
 
@@ -303,13 +314,13 @@ async def promote_member(
     """Uye rolunu degistir (sadece bey yapabilir)."""
     user_id = str(current_user.id)
 
-    # Ben bey miyim?
+    # Caller must be bey of THIS oba (oba_id from path must match membership)
     my_r = await db.execute(
-        select(ObaUye).where(ObaUye.oba_id == oba_id, ObaUye.user_id == user_id)
+        select(ObaUye).where(ObaUye.user_id == user_id, ObaUye.role == "bey")
     )
     my_membership = my_r.scalar_one_or_none()
-    if not my_membership or my_membership.role != "bey":
-        raise HTTPException(403, "Sadece bey rol degistirebilir.")
+    if not my_membership or my_membership.oba_id != oba_id:
+        raise HTTPException(403, "Sadece kendi obanizin bey'i rol degistirebilir.")
 
     # Hedef uye
     target_r = await db.execute(
