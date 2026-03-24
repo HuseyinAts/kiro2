@@ -82,9 +82,27 @@ const LearningPathPage = lazy(() => import('./pages/ModernLearningPathPage'));
 // Pages - New Features (F3, F5)
 const PhotoAskPage = lazy(() => import('./pages/PhotoAskPage'));
 const PlacementAssessmentPage = lazy(() => import('./pages/PlacementAssessmentPage'));
+const CATPage = lazy(() => import('./pages/CATPage'));
 
 // FAZ-5: Realm Map
 const RealmPage = lazy(() => import('./pages/RealmPage'));
+
+// YKS Tahmin Sayfası
+const YKSEstimatePage = lazy(() => import('./pages/YKSEstimatePage'));
+
+// FSRS Tekrar Sayfası
+const FSRSReviewPage = lazy(() => import('./pages/FSRSReviewPage'));
+// Lig + Duel + KIRO Destanı + Kalibrasyon
+const LeaguePage            = lazy(() => import('./pages/LeaguePage'));
+const DuelPage              = lazy(() => import('./pages/DuelPage'));
+const KiroDestanPage        = lazy(() => import('./pages/KiroDestanPage'));
+const CalibrationStatusPage = lazy(() => import('./pages/CalibrationStatusPage'));
+// Learning Path Daily + Map (ZPD+DAG+IRT+FSRS)
+const DailyPlanPage         = lazy(() => import('./pages/DailyPlanPage'));
+const LearningPathMapPage   = lazy(() => import('./pages/LearningPathMapPage'));
+// Oba (Guild) + Daily Quests
+const ObaPage               = lazy(() => import('./pages/ObaPage'));
+const DailyQuestPage        = lazy(() => import('./pages/DailyQuestPage'));
 
 // Labs: Revolutionary Features (experimental)
 const RevolutionaryDashboard = lazy(() => import('./components/Revolutionary/RevolutionaryDashboard'));
@@ -258,6 +276,102 @@ function AppContent() {
                 element={
                   <ProtectedRoute requiredRoles={['ogrenci']}>
                     <PlacementAssessmentPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/cat"
+                element={
+                  <ProtectedRoute requiredRoles={['ogrenci']}>
+                    <CATPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/estimate"
+                element={
+                  <ProtectedRoute requiredRoles={['ogrenci', 'admin']}>
+                    <YKSEstimatePage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/fsrs-review"
+                element={
+                  <ProtectedRoute requiredRoles={['ogrenci', 'admin']}>
+                    <FSRSReviewPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/league"
+                element={
+                  <ProtectedRoute requiredRoles={['ogrenci', 'admin']}>
+                    <LeaguePage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/duel"
+                element={
+                  <ProtectedRoute requiredRoles={['ogrenci', 'admin']}>
+                    <DuelPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/daily-plan"
+                element={
+                  <ProtectedRoute requiredRoles={['ogrenci', 'admin']}>
+                    <DailyPlanPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/learning-path-map"
+                element={
+                  <ProtectedRoute requiredRoles={['ogrenci', 'admin']}>
+                    <LearningPathMapPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/oba"
+                element={
+                  <ProtectedRoute requiredRoles={['ogrenci', 'admin']}>
+                    <ObaPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/daily-quests"
+                element={
+                  <ProtectedRoute requiredRoles={['ogrenci', 'admin']}>
+                    <DailyQuestPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/kiro-destan"
+                element={
+                  <ProtectedRoute requiredRoles={['ogrenci', 'admin']}>
+                    <KiroDestanPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/admin/calibration"
+                element={
+                  <ProtectedRoute requiredRoles={['admin']}>
+                    <CalibrationStatusPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/leagues"
+                element={
+                  <ProtectedRoute requiredRoles={['ogrenci', 'admin']}>
+                    <LeaguePage />
                   </ProtectedRoute>
                 }
               />

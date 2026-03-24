@@ -24,6 +24,10 @@ import {
   EmojiEvents,
   Explore,
   AutoStories,
+  CalendarMonth,
+  Map,
+  Groups,
+  Assignment,
 } from '@mui/icons-material';
 import {
   AppBar,
@@ -121,6 +125,34 @@ const navigationItems: NavigationItem[] = [
     icon: <Explore />,
     roles: ['ogrenci'],
     gradient: modernColors.gradients.purple,
+  },
+  {
+    label: 'Gunluk Planim',
+    path: '/daily-plan',
+    icon: <CalendarMonth />,
+    roles: ['ogrenci'],
+    gradient: 'linear-gradient(135deg, #4338ca 0%, #6366f1 100%)',
+  },
+  {
+    label: 'Ogrenme Haritasi',
+    path: '/learning-path-map',
+    icon: <Map />,
+    roles: ['ogrenci'],
+    gradient: 'linear-gradient(135deg, #0f766e 0%, #10b981 100%)',
+  },
+  {
+    label: 'Obam',
+    path: '/oba',
+    icon: <Groups />,
+    roles: ['ogrenci'],
+    gradient: 'linear-gradient(135deg, #7c3aed 0%, #a855f7 100%)',
+  },
+  {
+    label: 'Gunluk Gorevler',
+    path: '/daily-quests',
+    icon: <Assignment />,
+    roles: ['ogrenci'],
+    gradient: modernColors.gradients.forest,
   },
 
   // Teacher

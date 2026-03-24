@@ -81,6 +81,8 @@ ROUTER_MAPPING = {
     "api.eba_routes": ("integrations", "api.eba_routes"),
     "api.ebatv": ("integrations", "api.ebatv"),
     "api.gamification_api": ("integrations", "api.gamification_api"),
+    "api.oba_api": ("integrations", "api.oba_api"),
+    "api.daily_quest_api": ("integrations", "api.daily_quest_api"),
     "api.realms": ("integrations", "api.realms"),
     "api.bilge_alp": ("ai", "api.bilge_alp"),
     # Admin & Management
@@ -177,6 +179,8 @@ ROUTER_MAPPING = {
     # Faz 6: PWA Offline Sync
     "api.offline_sync_api": ("learning", "api.offline_sync_api"),
     "api.pwa_sync_api": ("learning", "api.pwa_sync_api"),
+    # Learning Path Daily (ZPD+DAG+IRT+FSRS Orchestrator)
+    "app.api.learning_path_daily": ("learning", "app.api.learning_path_daily"),
 }
 
 

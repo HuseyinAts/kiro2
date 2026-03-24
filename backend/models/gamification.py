@@ -267,6 +267,29 @@ class ParentChild(Base):
 # ---------------------------------------------------------------------------
 
 
+class DailyQuest(Base):
+    """Gunluk gorev tanimlari (sistem tarafindan uretilir)."""
+
+    __tablename__ = "daily_quests"
+
+    id = Column(Integer, primary_key=True)
+    quest_date = Column(Date, nullable=False)
+    student_id = Column(String, ForeignKey("users.id"), nullable=False)
+    quest_type = Column(
+        String(30), nullable=False
+    )  # cat_session|fsrs_review|duel|streak_check|realm_quest
+    title = Column(String(200), nullable=False)
+    description = Column(String, nullable=True)
+    target_value = Column(Integer, default=1)  # kac kez yapmali
+    current_value = Column(Integer, default=0)  # kac kez yapildi
+    xp_reward = Column(Integer, default=10)
+    completed = Column(Boolean, default=False)
+    completed_at = Column(DateTime(timezone=True), nullable=True)
+    bonus_claimed = Column(Boolean, default=False)
+
+    __table_args__ = (UniqueConstraint("quest_date", "student_id", "quest_type"),)
+
+
 class StudentAbility(Base):
     """IRT theta tahmini per konu."""
 
