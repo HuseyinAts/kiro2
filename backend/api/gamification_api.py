@@ -528,8 +528,12 @@ async def get_gamification_profile(
     current_user: AuthenticatedUser = Depends(get_current_user),
     db: AsyncSession = Depends(get_db_session),
 ):
-    """Kullanicinin tam gamification profilini getir (XP + Level + Streak)."""
+    """Kullanicinin tam gamification profilini getir (XP + Level + Streak + Badges + Rank)."""
     try:
+        from sqlalchemy import func, select
+
+        from models.gamification import UserBadge
+
         user_id = str(current_user.id)
 
         summary = await GamificationDBService.get_points_summary(
@@ -541,6 +545,33 @@ async def get_gamification_profile(
         current_level = calculate_level(total_xp)
         xp_for_next = xp_for_level(current_level + 1) - xp_for_level(current_level)
         xp_in_current = total_xp - xp_for_level(current_level)
+
+        # streak_active_today: last_activity == today
+        last_activity = streak.get("last_activity")
+        today_str = datetime.now(UTC).date().isoformat()
+        streak_active_today = last_activity == today_str if last_activity else False
+
+        # total_badges: count UserBadge rows
+        badge_result = await db.execute(
+            select(func.count())
+            .select_from(UserBadge)
+            .where(UserBadge.user_id == user_id)
+        )
+        total_badges = badge_result.scalar() or 0
+
+        # leaderboard_rank: best-effort via Redis ZSET
+        leaderboard_rank = None
+        try:
+            import redis as sync_redis
+
+            r = sync_redis.Redis(host="localhost", port=6379, db=0, socket_timeout=1)
+            zkey = "leaderboard:global"
+            rank = r.zrevrank(zkey, user_id)
+            if rank is not None:
+                leaderboard_rank = rank + 1  # 0-indexed → 1-indexed
+            r.close()
+        except Exception:
+            pass  # non-critical — Redis down or no rank data
 
         return {
             "success": True,
@@ -555,6 +586,9 @@ async def get_gamification_profile(
                 if xp_for_next > 0
                 else 0,
                 "streak": streak,
+                "streak_active_today": streak_active_today,
+                "total_badges": total_badges,
+                "leaderboard_rank": leaderboard_rank,
             },
             "message": "Gamification profili basariyla getirildi",
         }

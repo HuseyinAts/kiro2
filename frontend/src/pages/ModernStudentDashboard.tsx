@@ -17,6 +17,9 @@ import {
   HourglassEmpty,
   WorkspacePremium,
   SportsEsports,
+  AutoStories,
+  CalendarMonth,
+  Map,
 } from '@mui/icons-material';
 import {
   Container,
@@ -204,9 +207,21 @@ export const ModernStudentDashboard: React.FC = () => {
     },
     {
       title: 'KIRO Destanı',
-      icon: <MenuBook sx={{ fontSize: 32 }} />,
+      icon: <AutoStories sx={{ fontSize: 32 }} />,
       gradient: 'linear-gradient(135deg, #1a1a2e 0%, #0f3460 100%)',
       path: '/kiro-destan',
+    },
+    {
+      title: 'Günlük Planım',
+      icon: <CalendarMonth sx={{ fontSize: 32 }} />,
+      gradient: 'linear-gradient(135deg, #4338ca 0%, #6366f1 100%)',
+      path: '/daily-plan',
+    },
+    {
+      title: 'Öğrenme Haritası',
+      icon: <Map sx={{ fontSize: 32 }} />,
+      gradient: 'linear-gradient(135deg, #0f766e 0%, #10b981 100%)',
+      path: '/learning-path-map',
     },
   ];
 
