@@ -28,11 +28,9 @@ from __future__ import annotations
 import math
 import random
 from dataclasses import dataclass
-from typing import List, Tuple
 
 import numpy as np
 from scipy import stats
-
 
 # ------------------------------------------------------------------
 # Sabitler
@@ -108,8 +106,8 @@ def fisher_information(theta: float | np.ndarray,
 # EAP Theta Güncelleme
 # ------------------------------------------------------------------
 
-def eap_update(responses: List[int],
-               item_params: List[ItemParams],
+def eap_update(responses: list[int],
+               item_params: list[ItemParams],
                prior_mean: float = PRIOR_MEAN,
                prior_sd: float = PRIOR_SD) -> IRTResult:
     """
@@ -181,7 +179,7 @@ def eap_update(responses: List[int],
 
 def select_next_question(
     theta: float,
-    candidates: List[ItemParams],
+    candidates: list[ItemParams],
     answered_ids: set[str],
     epsilon: float = 0.20,
     max_exposure_rate: float = 0.30,
@@ -252,7 +250,7 @@ def select_next_question(
 
 def should_terminate(se: float, n_items: int,
                      se_threshold: float = SE_STOP,
-                     max_items: int = MAX_ITEMS) -> Tuple[bool, str]:
+                     max_items: int = MAX_ITEMS) -> tuple[bool, str]:
     """
     CAT oturumu bitmeli mi?
 

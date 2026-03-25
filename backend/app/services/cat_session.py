@@ -48,31 +48,31 @@ from __future__ import annotations
 import json
 import uuid
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
-from typing import Any, Dict, List, Optional, Tuple
+from datetime import UTC, datetime
+from typing import Any
 
 import redis.asyncio as aioredis
 
 from app.services.irt_engine import (
-    ItemParams,
     IRTResult,
+    ItemParams,
     eap_update,
     select_next_question,
     should_terminate,
 )
 
-
 # ------------------------------------------------------------------
 # Session TTL
 # ------------------------------------------------------------------
 
-CAT_SESSION_TTL = 3600   # 1 saat (saniye)
-THETA_CACHE_TTL = 300    # 5 dakika
+CAT_SESSION_TTL = 3600  # 1 saat (saniye)
+THETA_CACHE_TTL = 300  # 5 dakika
 
 
 # ------------------------------------------------------------------
 # State dataclass
 # ------------------------------------------------------------------
+
 
 @dataclass
 class CATState:
@@ -80,23 +80,24 @@ class CATState:
     Bir CAT oturumunun tam durumu.
     Redis Hash'te JSON olarak saklanır.
     """
-    session_id:          str
-    user_id:             str
-    subject_id:          str
-    theta:               float         = 0.0
-    se:                  float         = 1.0
-    answered_ids:        List[str]     = field(default_factory=list)
-    responses:           List[int]     = field(default_factory=list)   # 0|1
-    item_params:         List[dict]    = field(default_factory=list)   # {a,b,c,question_id}
-    n_questions:         int           = 0
-    started_at:          str           = ""
-    state:               str           = "active"      # active|completed|abandoned
-    termination_reason:  str           = ""
-    warm_up_done:        bool          = False          # ilk 3 kolay soru bitti mi
+
+    session_id: str
+    user_id: str
+    subject_id: str
+    theta: float = 0.0
+    se: float = 1.0
+    answered_ids: list[str] = field(default_factory=list)
+    responses: list[int] = field(default_factory=list)  # 0|1
+    item_params: list[dict] = field(default_factory=list)  # {a,b,c,question_id}
+    n_questions: int = 0
+    started_at: str = ""
+    state: str = "active"  # active|completed|abandoned
+    termination_reason: str = ""
+    warm_up_done: bool = False  # ilk 3 kolay soru bitti mi
 
     # ------- Yardımcı metodlar -------
 
-    def get_item_params_objects(self) -> List[ItemParams]:
+    def get_item_params_objects(self) -> list[ItemParams]:
         return [
             ItemParams(
                 question_id=p["question_id"],
@@ -110,48 +111,49 @@ class CATState:
     def is_active(self) -> bool:
         return self.state == "active"
 
-    def to_redis_dict(self) -> Dict[str, str]:
+    def to_redis_dict(self) -> dict[str, str]:
         """Redis HSET için string değerleri."""
         return {
-            "session_id":         self.session_id,
-            "user_id":            self.user_id,
-            "subject_id":         self.subject_id,
-            "theta":              str(self.theta),
-            "se":                 str(self.se),
-            "answered_ids":       json.dumps(self.answered_ids),
-            "responses":          json.dumps(self.responses),
-            "item_params":        json.dumps(self.item_params),
-            "n_questions":        str(self.n_questions),
-            "started_at":         self.started_at,
-            "state":              self.state,
+            "session_id": self.session_id,
+            "user_id": self.user_id,
+            "subject_id": self.subject_id,
+            "theta": str(self.theta),
+            "se": str(self.se),
+            "answered_ids": json.dumps(self.answered_ids),
+            "responses": json.dumps(self.responses),
+            "item_params": json.dumps(self.item_params),
+            "n_questions": str(self.n_questions),
+            "started_at": self.started_at,
+            "state": self.state,
             "termination_reason": self.termination_reason,
-            "warm_up_done":       "1" if self.warm_up_done else "0",
+            "warm_up_done": "1" if self.warm_up_done else "0",
         }
 
     @classmethod
-    def from_redis_dict(cls, data: Dict[bytes, bytes]) -> "CATState":
+    def from_redis_dict(cls, data: dict[bytes, bytes]) -> CATState:
         """Redis HGETALL çıktısından CATState oluştur."""
         d = {k.decode(): v.decode() for k, v in data.items()}
         return cls(
-            session_id=         d["session_id"],
-            user_id=            d["user_id"],
-            subject_id=         d["subject_id"],
-            theta=              float(d.get("theta", 0.0)),
-            se=                 float(d.get("se", 1.0)),
-            answered_ids=       json.loads(d.get("answered_ids", "[]")),
-            responses=          json.loads(d.get("responses", "[]")),
-            item_params=        json.loads(d.get("item_params", "[]")),
-            n_questions=        int(d.get("n_questions", 0)),
-            started_at=         d.get("started_at", ""),
-            state=              d.get("state", "active"),
-            termination_reason= d.get("termination_reason", ""),
-            warm_up_done=       d.get("warm_up_done", "0") == "1",
+            session_id=d["session_id"],
+            user_id=d["user_id"],
+            subject_id=d["subject_id"],
+            theta=float(d.get("theta", 0.0)),
+            se=float(d.get("se", 1.0)),
+            answered_ids=json.loads(d.get("answered_ids", "[]")),
+            responses=json.loads(d.get("responses", "[]")),
+            item_params=json.loads(d.get("item_params", "[]")),
+            n_questions=int(d.get("n_questions", 0)),
+            started_at=d.get("started_at", ""),
+            state=d.get("state", "active"),
+            termination_reason=d.get("termination_reason", ""),
+            warm_up_done=d.get("warm_up_done", "0") == "1",
         )
 
 
 # ------------------------------------------------------------------
 # CATSessionService
 # ------------------------------------------------------------------
+
 
 class CATSessionService:
     """
@@ -174,7 +176,7 @@ class CATSessionService:
 
     # ---- Redis okuma/yazma ----
 
-    async def _read_state(self, session_id: str) -> Optional[CATState]:
+    async def _read_state(self, session_id: str) -> CATState | None:
         """Redis'ten CATState oku. Yoksa None."""
         data = await self.redis.hgetall(self._key(session_id))
         if not data:
@@ -196,7 +198,7 @@ class CATSessionService:
 
     async def _get_candidate_questions(
         self, subject_id: str, theta: float, warm_up: bool
-    ) -> List[ItemParams]:
+    ) -> list[ItemParams]:
         """
         Veritabanından uygun soruları çek.
 
@@ -206,7 +208,7 @@ class CATSessionService:
         Not: Bu sorgu sonucu kısa süreli önbelleğe alınabilir,
              ama 5K ölçeğinde her seferinde DB'ye gitmek de kabul edilebilir.
         """
-        from sqlalchemy import select, text
+        from sqlalchemy import text
         # Question model gerekmez — raw SQL kullanıyoruz
 
         if warm_up:
@@ -250,11 +252,15 @@ class CATSessionService:
                 LIMIT 100
             """)
 
-        params = {"subject_id": subject_id, "b_max": theta - 1.0} if warm_up else {
-            "subject_id": subject_id,
-            "b_min": theta - 1.5,
-            "b_max": theta + 1.5,
-        }
+        params = (
+            {"subject_id": subject_id, "b_max": theta - 1.0}
+            if warm_up
+            else {
+                "subject_id": subject_id,
+                "b_min": theta - 1.5,
+                "b_max": theta + 1.5,
+            }
+        )
 
         result = await self.db.execute(stmt, params)
         rows = result.fetchall()
@@ -269,7 +275,7 @@ class CATSessionService:
             for row in rows
         ]
 
-    async def _fetch_question_detail(self, question_id: str) -> Optional[Dict]:
+    async def _fetch_question_detail(self, question_id: str) -> dict | None:
         """Soru içeriğini DB'den çek."""
         from sqlalchemy import text
 
@@ -292,15 +298,15 @@ class CATSessionService:
         if not row:
             return None
         return {
-            "question_id":    row.id,
-            "stem":           row.stem,
-            "options":        row.options,
-            "topic_id":       row.topic_id,
-            "subject_id":     row.subject_id,
+            "question_id": row.id,
+            "stem": row.stem,
+            "options": row.options,
+            "topic_id": row.topic_id,
+            "subject_id": row.subject_id,
             "irt": {
-                "difficulty":      round(float(row.difficulty), 4),
-                "discrimination":  round(float(row.discrimination), 4),
-                "guessing":        round(float(row.guessing), 4),
+                "difficulty": round(float(row.difficulty), 4),
+                "discrimination": round(float(row.discrimination), 4),
+                "guessing": round(float(row.guessing), 4),
             },
         }
 
@@ -311,7 +317,7 @@ class CATSessionService:
         user_id: str,
         subject_id: str,
         placement_theta: float = 0.0,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Yeni CAT oturumu başlat.
 
@@ -332,13 +338,17 @@ class CATSessionService:
           }
         """
         session_id = str(uuid.uuid4())
-        now_iso = datetime.now(timezone.utc).isoformat()
+        now_iso = datetime.now(UTC).isoformat()
 
         # BUG-6 FIX: Önceki aktif oturumu Redis'ten temizle
         prev_key = f"cat:active:{user_id}:{subject_id}"
         prev_session_id = await self.redis.get(prev_key)
         if prev_session_id:
-            prev_id = prev_session_id.decode() if isinstance(prev_session_id, bytes) else prev_session_id
+            prev_id = (
+                prev_session_id.decode()
+                if isinstance(prev_session_id, bytes)
+                else prev_session_id
+            )
             prev_state = await self._read_state(prev_id)
             if prev_state and prev_state.is_active():
                 prev_state.state = "abandoned"
@@ -372,7 +382,7 @@ class CATSessionService:
             theta=state.theta,
             candidates=candidates,
             answered_ids=set(),
-            epsilon=0.0,   # ilk soruda exploration yok, en kolay olanı ver
+            epsilon=0.0,  # ilk soruda exploration yok, en kolay olanı ver
         )
 
         # BUG-7 FIX: first_item None kontrolü
@@ -386,13 +396,13 @@ class CATSessionService:
         await self.redis.setex(prev_key, CAT_SESSION_TTL, session_id)
 
         return {
-            "session_id":   session_id,
-            "question":     question_detail,
-            "theta":        state.theta,
-            "se":           state.se,
-            "n_questions":  0,
-            "phase":        "warm_up",
-            "is_complete":  False,
+            "session_id": session_id,
+            "question": question_detail,
+            "theta": state.theta,
+            "se": state.se,
+            "n_questions": 0,
+            "phase": "warm_up",
+            "is_complete": False,
         }
 
     async def submit_answer(
@@ -400,8 +410,8 @@ class CATSessionService:
         session_id: str,
         question_id: str,
         is_correct: bool,
-        response_ms: Optional[int] = None,
-    ) -> Dict[str, Any]:
+        response_ms: int | None = None,
+    ) -> dict[str, Any]:
         """
         Yanıtı işle ve bir sonraki soruyu getir.
 
@@ -444,19 +454,25 @@ class CATSessionService:
         # Soru parametrelerini item_params'a ekle (EAP için şart)
         q_detail = await self._fetch_question_detail(question_id)
         if q_detail:
-            state.item_params.append({
-                "question_id": question_id,
-                "a": q_detail["irt"]["discrimination"],
-                "b": q_detail["irt"]["difficulty"],
-                "c": q_detail["irt"]["guessing"],
-            })
+            state.item_params.append(
+                {
+                    "question_id": question_id,
+                    "a": q_detail["irt"]["discrimination"],
+                    "b": q_detail["irt"]["difficulty"],
+                    "c": q_detail["irt"]["guessing"],
+                }
+            )
         else:
             # Soru bulunamazsa varsayılan IRT parametreleri kullan
             # responses ile item_params eşit uzunlukta kalmalı
-            state.item_params.append({
-                "question_id": question_id,
-                "a": 1.0, "b": 0.0, "c": 0.25,
-            })
+            state.item_params.append(
+                {
+                    "question_id": question_id,
+                    "a": 1.0,
+                    "b": 0.0,
+                    "c": 0.25,
+                }
+            )
 
         # 3. EAP güncelle
         irt_result: IRTResult = eap_update(
@@ -464,7 +480,7 @@ class CATSessionService:
             item_params=state.get_item_params_objects(),
         )
         state.theta = irt_result.theta
-        state.se    = irt_result.se
+        state.se = irt_result.se
 
         # Warm-up tamamlandı mı? (ilk 3 soru)
         if state.n_questions >= 3:
@@ -475,7 +491,7 @@ class CATSessionService:
 
         if terminate:
             # 5a. Oturumu kapat
-            state.state              = "completed"
+            state.state = "completed"
             state.termination_reason = reason
             await self._write_state(state)
 
@@ -486,14 +502,14 @@ class CATSessionService:
             await self._update_theta_cache(state)
 
             return {
-                "is_complete":        True,
-                "theta":              state.theta,
-                "se":                 state.se,
-                "n_questions":        state.n_questions,
+                "is_complete": True,
+                "theta": state.theta,
+                "se": state.se,
+                "n_questions": state.n_questions,
                 "termination_reason": reason,
-                "next_question":      None,
-                "phase":              "completed",
-                "feedback":           {"is_correct": is_correct},
+                "next_question": None,
+                "phase": "completed",
+                "feedback": {"is_correct": is_correct},
             }
 
         # 5b. Sonraki soruyu seç
@@ -513,19 +529,19 @@ class CATSessionService:
 
         if next_item is None:
             # Havuz tükendi → oturumu bitir
-            state.state              = "completed"
+            state.state = "completed"
             state.termination_reason = "pool_exhausted"
             await self._write_state(state)
             await self._persist_session_to_db(state)
             return {
-                "is_complete":        True,
-                "theta":              state.theta,
-                "se":                 state.se,
-                "n_questions":        state.n_questions,
+                "is_complete": True,
+                "theta": state.theta,
+                "se": state.se,
+                "n_questions": state.n_questions,
                 "termination_reason": "pool_exhausted",
-                "next_question":      None,
-                "phase":              "completed",
-                "feedback":           {"is_correct": is_correct},
+                "next_question": None,
+                "phase": "completed",
+                "feedback": {"is_correct": is_correct},
             }
 
         next_question_detail = await self._fetch_question_detail(next_item.question_id)
@@ -534,17 +550,17 @@ class CATSessionService:
         await self._write_state(state)
 
         return {
-            "is_complete":        False,
-            "theta":              state.theta,
-            "se":                 state.se,
-            "n_questions":        state.n_questions,
+            "is_complete": False,
+            "theta": state.theta,
+            "se": state.se,
+            "n_questions": state.n_questions,
             "termination_reason": None,
-            "next_question":      next_question_detail,
-            "phase":              phase,
-            "feedback":           {"is_correct": is_correct},
+            "next_question": next_question_detail,
+            "phase": phase,
+            "feedback": {"is_correct": is_correct},
         }
 
-    async def get_session_state(self, session_id: str) -> Optional[CATState]:
+    async def get_session_state(self, session_id: str) -> CATState | None:
         """Mevcut oturum durumunu getir."""
         return await self._read_state(session_id)
 
@@ -552,7 +568,7 @@ class CATSessionService:
         """Oturumu iptal et."""
         state = await self._read_state(session_id)
         if state and state.is_active():
-            state.state              = "abandoned"
+            state.state = "abandoned"
             state.termination_reason = "user_abandoned"
             await self._write_state(state)
             await self._persist_session_to_db(state)
@@ -589,28 +605,30 @@ class CATSessionService:
                 state         = EXCLUDED.state
         """)
         from datetime import datetime
+
         started_dt = (
             datetime.fromisoformat(state.started_at)
             if isinstance(state.started_at, str) and state.started_at
             else datetime.utcnow()
         )
-        await self.db.execute(stmt, {
-            "session_id":         state.session_id,
-            "user_id":            state.user_id,
-            "subject_id":         state.subject_id,
-            "theta":              state.theta,
-            "se":                 state.se,
-            "n_questions":        state.n_questions,
-            "started_at":         started_dt,
-            "termination_reason": state.termination_reason,
-            "state":              state.state,
-        })
+        await self.db.execute(
+            stmt,
+            {
+                "session_id": state.session_id,
+                "user_id": state.user_id,
+                "subject_id": state.subject_id,
+                "theta": state.theta,
+                "se": state.se,
+                "n_questions": state.n_questions,
+                "started_at": started_dt,
+                "termination_reason": state.termination_reason,
+                "state": state.state,
+            },
+        )
 
         # Her yanıtı learning_events'e yaz
-        for i, (q_id, resp) in enumerate(
-            zip(state.answered_ids, state.responses)
-        ):
-            params_raw = state.item_params[i] if i < len(state.item_params) else {}
+        for i, (q_id, resp) in enumerate(zip(state.answered_ids, state.responses)):
+            _params_raw = state.item_params[i] if i < len(state.item_params) else {}
             event_stmt = text("""
                 INSERT INTO kiro2_learning_events (
                     occurred_at, user_id, question_id,
@@ -620,12 +638,15 @@ class CATSessionService:
                     'cat_answer', :is_correct, :session_id
                 )
             """)
-            await self.db.execute(event_stmt, {
-                "user_id":     state.user_id,
-                "question_id": q_id,
-                "is_correct":  bool(resp),
-                "session_id":  state.session_id,
-            })
+            await self.db.execute(
+                event_stmt,
+                {
+                    "user_id": state.user_id,
+                    "question_id": q_id,
+                    "is_correct": bool(resp),
+                    "session_id": state.session_id,
+                },
+            )
 
         # ── user_theta UPSERT ─────────────────────────────────────────
         # CAT biter bitmez IRT θ tahminini user_theta tablosuna yaz.
@@ -639,13 +660,16 @@ class CATSessionService:
                 response_count = user_theta.response_count + EXCLUDED.response_count,
                 last_updated   = NOW()
         """)
-        await self.db.execute(theta_stmt, {
-            "user_id":      state.user_id,
-            "subject_area": state.subject_id,
-            "theta":        state.theta,
-            "se":           state.se,
-            "n_questions":  state.n_questions,
-        })
+        await self.db.execute(
+            theta_stmt,
+            {
+                "user_id": state.user_id,
+                "subject_area": state.subject_id,
+                "theta": state.theta,
+                "se": state.se,
+                "n_questions": state.n_questions,
+            },
+        )
 
         await self.db.commit()
 
@@ -653,20 +677,26 @@ class CATSessionService:
         # learning_events yazıldıktan sonra toplu FSRS güncellemesi yap
         try:
             from app.services.fsrs_service import FSRSService
+
             fsrs_svc = FSRSService(self.db)
             reviews = [
                 {
-                    "user_id":     state.user_id,
+                    "user_id": state.user_id,
                     "question_id": q_id,
-                    "is_correct":  bool(resp),
+                    "is_correct": bool(resp),
                     "response_ms": None,
-                    "item_b": state.item_params[i].get("b") if i < len(state.item_params) else None,
+                    "item_b": state.item_params[i].get("b")
+                    if i < len(state.item_params)
+                    else None,
                 }
-                for i, (q_id, resp) in enumerate(zip(state.answered_ids, state.responses))
+                for i, (q_id, resp) in enumerate(
+                    zip(state.answered_ids, state.responses)
+                )
             ]
             await fsrs_svc.apply_batch_reviews(reviews)
         except Exception as exc:
             import logging
+
             logging.getLogger("kiro2.cat").warning(
                 f"FSRS batch update başarısız (non-critical): {exc}"
             )

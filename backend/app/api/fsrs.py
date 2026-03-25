@@ -10,14 +10,12 @@ Endpoint'ler:
 
 from __future__ import annotations
 
-from typing import List, Optional
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.core.deps import get_current_user, get_db, User
-from app.services.fsrs_service import FSRSService
+from app.core.deps import User, get_current_user, get_db
 from app.schemas.fsrs_schemas import (
     DueCountResponse,
     DueItemResponse,
@@ -25,21 +23,22 @@ from app.schemas.fsrs_schemas import (
     ReviewResponse,
     StatsResponse,
 )
+from app.services.fsrs_service import FSRSService
 
 router = APIRouter(prefix="/api/v1/fsrs", tags=["FSRS"])
 
 
 @router.get(
     "/due",
-    response_model=List[DueItemResponse],
+    response_model=list[DueItemResponse],
     summary="Vadesi gelen tekrar kartlarını getir",
 )
 async def get_due_items(
-    subject_id: Optional[UUID] = Query(None, description="Derse göre filtrele"),
+    subject_id: UUID | None = Query(None, description="Derse göre filtrele"),
     limit:      int            = Query(20,  ge=1, le=100),
     current_user: User         = Depends(get_current_user),
     db: AsyncSession           = Depends(get_db),
-) -> List[DueItemResponse]:
+) -> list[DueItemResponse]:
     svc = FSRSService(db)
     items = await svc.get_due_items(
         str(current_user.id),

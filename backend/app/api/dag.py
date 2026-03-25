@@ -10,13 +10,10 @@ Endpoint'ler:
 
 from __future__ import annotations
 
-from typing import List, Optional
-from uuid import UUID
-
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.core.deps import get_current_user, get_db, get_redis, User
+from app.core.deps import User, get_current_user, get_db, get_redis
 from app.services.dag_service import DAGService
 
 router = APIRouter(prefix="/api/v1/dag", tags=["DAG"])
@@ -91,7 +88,7 @@ async def get_next_topic(
     summary="Tüm konular (topological sırayla)",
 )
 async def list_topics(
-    subject_id: Optional[str] = Query(None),
+    subject_id: str | None = Query(None),
     svc:        DAGService    = Depends(get_dag_service),
 ):
     dag = await svc.get_dag()

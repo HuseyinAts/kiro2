@@ -16,13 +16,10 @@ Neden 3 endpoint, tek "soru ver" değil?
 
 from __future__ import annotations
 
-from uuid import UUID
-
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.core.deps import get_current_user, get_db, get_redis, User
-from app.services.cat_session import CATSessionService
+from app.core.deps import User, get_current_user, get_db, get_redis
 from app.schemas.cat_schemas import (
     FeedbackResponse,
     SessionStateResponse,
@@ -31,6 +28,7 @@ from app.schemas.cat_schemas import (
     SubmitAnswerRequest,
     SubmitAnswerResponse,
 )
+from app.services.cat_session import CATSessionService
 
 router = APIRouter(prefix="/api/v1/cat", tags=["CAT"])
 

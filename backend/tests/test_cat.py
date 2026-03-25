@@ -278,7 +278,7 @@ class TestCATState:
         assert restored.answered_ids == state.answered_ids
         assert restored.responses == state.responses
         assert len(restored.item_params) == 3
-        assert restored.warm_up_done == True
+        assert restored.warm_up_done is True
         assert restored.n_questions == 3
 
     def test_get_item_params_objects(self):

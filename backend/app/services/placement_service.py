@@ -31,12 +31,12 @@ from __future__ import annotations
 
 import uuid
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
-from typing import Any, Dict, List, Optional, Tuple
+from datetime import UTC, datetime
+from typing import Any
 
 # ─── Lise türüne göre prior ayarı ────────────────────────────────────────────
 
-SCHOOL_TYPE_PRIOR: Dict[str, Tuple[float, float]] = {
+SCHOOL_TYPE_PRIOR: dict[str, tuple[float, float]] = {
     "anadolu":    (-0.3, 1.0),
     "fen":        ( 0.5, 0.9),
     "ozel":       ( 0.3, 1.0),
@@ -73,16 +73,16 @@ class PlacementState:
     school_type:     str        = "default"
     theta:           float      = 0.0
     se:              float      = 1.0
-    answered_ids:    List[str]  = field(default_factory=list)
-    responses:       List[int]  = field(default_factory=list)
-    item_params:     List[dict] = field(default_factory=list)
+    answered_ids:    list[str]  = field(default_factory=list)
+    responses:       list[int]  = field(default_factory=list)
+    item_params:     list[dict] = field(default_factory=list)
     n_questions:     int        = 0
     b_min:           float      = -4.0   # bisection alt sınır
     b_max:           float      =  4.0   # bisection üst sınır
     is_complete:     bool       = False
     started_at:      str        = ""
 
-    def to_dict(self) -> Dict[str, str]:
+    def to_dict(self) -> dict[str, str]:
         import json
         return {
             "session_id":   self.session_id,
@@ -102,7 +102,7 @@ class PlacementState:
         }
 
     @classmethod
-    def from_dict(cls, d: Dict[bytes, bytes]) -> "PlacementState":
+    def from_dict(cls, d: dict[bytes, bytes]) -> PlacementState:
         import json
         s = {k.decode(): v.decode() for k, v in d.items()}
         return cls(
@@ -157,8 +157,8 @@ def _bisection_target_b(b_min: float, b_max: float) -> float:
 
 def select_placement_question(
     state: PlacementState,
-    candidates: List[Dict],   # {question_id, a, b, c}
-) -> Optional[Dict]:
+    candidates: list[dict],   # {question_id, a, b, c}
+) -> dict | None:
     """
     Placement için soru seç: bisection + maximum Fisher Information.
 
@@ -167,9 +167,9 @@ def select_placement_question(
     3. Bu pencerede en yüksek Fisher Information'lı soruyu döndür
     4. Pencerede soru yoksa pencereyi genişlet
     """
-    import sys
     # Dinamik path: servis dosyasının yanındaki irt_engine'i bul
     import os as _os
+    import sys
     _svc_dir = _os.path.dirname(_os.path.abspath(__file__))
     if _svc_dir not in sys.path:
         sys.path.insert(0, _svc_dir)
@@ -244,7 +244,7 @@ class PlacementTestService:
     def _key(self, sid: str) -> str:
         return f"{self.REDIS_PREFIX}:{sid}"
 
-    async def _read(self, sid: str) -> Optional[PlacementState]:
+    async def _read(self, sid: str) -> PlacementState | None:
         data = await self.redis.hgetall(self._key(sid))
         if not data:
             return None
@@ -256,7 +256,7 @@ class PlacementTestService:
         pipe.expire(self._key(state.session_id), self.TTL)
         await pipe.execute()
 
-    async def _get_candidates(self, subject_id: str, b_center: float) -> List[Dict]:
+    async def _get_candidates(self, subject_id: str, b_center: float) -> list[dict]:
         """Tüm güçlük seviyelerinden örnek sorular getir (placement için geniş havuz). v2-case-fix"""
         from sqlalchemy import text
         result = await self.db.execute(text("""
@@ -285,7 +285,7 @@ class PlacementTestService:
         user_id:     str,
         subject_id:  str,
         school_type: str = "default",
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Placement test başlat.
 
@@ -309,7 +309,7 @@ class PlacementTestService:
             school_type= school_type,
             theta=       prior_mean,
             se=          prior_sd,
-            started_at=  datetime.now(timezone.utc).isoformat(),
+            started_at=  datetime.now(UTC).isoformat(),
         )
 
         candidates = await self._get_candidates(subject_id, b_center=prior_mean)
@@ -349,7 +349,7 @@ class PlacementTestService:
         session_id:  str,
         question_id: str,
         is_correct:  bool,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Yanıtı işle:
           1. state oku
@@ -387,7 +387,8 @@ class PlacementTestService:
         update_bisection_bounds(state, is_correct)
 
         # EAP θ güncelle
-        import sys, os as _os4
+        import os as _os4
+        import sys
         _sd4 = _os4.path.dirname(_os4.path.abspath(__file__))
         if _sd4 not in sys.path: sys.path.insert(0, _sd4)
         from irt_engine import ItemParams, eap_update
@@ -475,5 +476,5 @@ class PlacementTestService:
             confidence=  confidence,
         )
 
-    async def get_state(self, session_id: str) -> Optional[PlacementState]:
+    async def get_state(self, session_id: str) -> PlacementState | None:
         return await self._read(session_id)

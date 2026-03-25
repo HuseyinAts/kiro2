@@ -33,62 +33,66 @@ from __future__ import annotations
 from collections import defaultdict, deque
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Dict, FrozenSet, List, Optional, Set, Tuple
-
 
 # ─── Sabitler ─────────────────────────────────────────────────────────────────
 
-MASTERY_CUTOFF_HARD = 0.70   # HARD önkoşul için min mastery oranı
-MASTERY_CUTOFF_SOFT = 0.40   # SOFT önkoşul için uyarı eşiği
-THETA_MASTERY_CUTOFF = 0.0   # P(θ > bu değer) = mastery olasılığı
+MASTERY_CUTOFF_HARD = 0.70  # HARD önkoşul için min mastery oranı
+MASTERY_CUTOFF_SOFT = 0.40  # SOFT önkoşul için uyarı eşiği
+THETA_MASTERY_CUTOFF = 0.0  # P(θ > bu değer) = mastery olasılığı
 
 
 # ─── Veri yapıları ────────────────────────────────────────────────────────────
 
+
 class PrereqType(str, Enum):
-    HARD = "hard"   # zorunlu önkoşul — bloklama
-    SOFT = "soft"   # önerilen önkoşul — uyarı
+    HARD = "hard"  # zorunlu önkoşul — bloklama
+    SOFT = "soft"  # önerilen önkoşul — uyarı
 
 
 @dataclass(frozen=True)
 class Prerequisite:
     """Bir bağımlılık kenarı: topic_id → prereq_id."""
-    topic_id:   str
-    prereq_id:  str
-    ptype:      PrereqType = PrereqType.HARD
-    strength:   float      = 1.0   # 0.0–1.0, 1.0 = tam bağımlı
+
+    topic_id: str
+    prereq_id: str
+    ptype: PrereqType = PrereqType.HARD
+    strength: float = 1.0  # 0.0–1.0, 1.0 = tam bağımlı
 
 
 @dataclass
 class TopicNode:
     """DAG'daki bir konu düğümü."""
-    topic_id:    str
-    name:        str
-    subject_id:  str
-    level:       int = 0   # topological order'daki derinlik (0 = temel)
-    prereqs:     List[Prerequisite] = field(default_factory=list)
+
+    topic_id: str
+    name: str
+    subject_id: str
+    level: int = 0  # topological order'daki derinlik (0 = temel)
+    prereqs: list[Prerequisite] = field(default_factory=list)
 
 
 @dataclass
 class MasteryCheck:
     """Bir konuya geçiş için mastery kontrol sonucu."""
-    topic_id:         str
-    can_proceed:      bool
-    blocking_prereqs: List[str]   # HARD önkoşul ID'leri — yeterli mastery yok
-    warning_prereqs:  List[str]   # SOFT önkoşul ID'leri — uyarı
-    mastery_scores:   Dict[str, float]   # prereq_id → mastery skoru
+
+    topic_id: str
+    can_proceed: bool
+    blocking_prereqs: list[str]  # HARD önkoşul ID'leri — yeterli mastery yok
+    warning_prereqs: list[str]  # SOFT önkoşul ID'leri — uyarı
+    mastery_scores: dict[str, float]  # prereq_id → mastery skoru
 
 
 @dataclass
 class LearningPath:
     """Önerilen öğrenme yolu."""
-    topic_id:      str
-    ordered_steps: List[str]   # konu ID'leri, öğrenme sırası
-    total_topics:  int
-    estimated_sessions: int   # tahmini oturum sayısı (kaba tahmin)
+
+    topic_id: str
+    ordered_steps: list[str]  # konu ID'leri, öğrenme sırası
+    total_topics: int
+    estimated_sessions: int  # tahmini oturum sayısı (kaba tahmin)
 
 
 # ─── DAG Engine ───────────────────────────────────────────────────────────────
+
 
 class PrerequisiteDAG:
     """
@@ -106,10 +110,10 @@ class PrerequisiteDAG:
     """
 
     def __init__(self) -> None:
-        self._nodes: Dict[str, TopicNode]   = {}
-        self._edges: List[Prerequisite]     = []
-        self._topo_order: List[str]         = []
-        self._built: bool                   = False
+        self._nodes: dict[str, TopicNode] = {}
+        self._edges: list[Prerequisite] = []
+        self._topo_order: list[str] = []
+        self._built: bool = False
 
     # ── Graf inşa ─────────────────────────────────────────────────
 
@@ -120,9 +124,13 @@ class PrerequisiteDAG:
         )
         self._built = False
 
-    def add_prereq(self, topic_id: str, prereq_id: str,
-                   ptype: PrereqType = PrereqType.HARD,
-                   strength: float = 1.0) -> None:
+    def add_prereq(
+        self,
+        topic_id: str,
+        prereq_id: str,
+        ptype: PrereqType = PrereqType.HARD,
+        strength: float = 1.0,
+    ) -> None:
         """
         Önkoşul kenarı ekle: prereq_id önce öğrenilmeli, sonra topic_id.
         topic_id → prereq_id yönünde kenar (topic prereq'a bağımlı).
@@ -132,21 +140,22 @@ class PrerequisiteDAG:
         if prereq_id not in self._nodes:
             raise ValueError(f"Önkoşul konu bulunamadı: {prereq_id}")
 
-        p = Prerequisite(topic_id=topic_id, prereq_id=prereq_id,
-                         ptype=ptype, strength=strength)
+        p = Prerequisite(
+            topic_id=topic_id, prereq_id=prereq_id, ptype=ptype, strength=strength
+        )
         self._edges.append(p)
         self._nodes[topic_id].prereqs.append(p)
         self._built = False
 
-    def build(self) -> Tuple[bool, List[str]]:
+    def build(self) -> tuple[bool, list[str]]:
         """
         Topological sort çalıştır (Kahn algoritması).
         Döndürür: (başarılı, hata_mesajları)
         Döngü varsa başarısız döner.
         """
         # In-degree hesapla
-        in_degree: Dict[str, int] = {nid: 0 for nid in self._nodes}
-        adj: Dict[str, List[str]] = defaultdict(list)
+        in_degree: dict[str, int] = dict.fromkeys(self._nodes, 0)
+        adj: dict[str, list[str]] = defaultdict(list)
 
         for edge in self._edges:
             # topic, prereq'a bağımlı → prereq'dan topic'e kenar
@@ -155,7 +164,7 @@ class PrerequisiteDAG:
 
         # Kahn: sıfır in-degree ile başla
         queue = deque([nid for nid, deg in in_degree.items() if deg == 0])
-        topo: List[str] = []
+        topo: list[str] = []
 
         while queue:
             node = queue.popleft()
@@ -176,7 +185,7 @@ class PrerequisiteDAG:
         # BUG-16 FIX: Level ataması topo sırası tamamen bittikten SONRA yapılır.
         # Kahn döngüsü içinde level okumak, henüz işlenmemiş prereq'lar için
         # yanlış level=0 dönebilir. Ayrı pass ile bu riski ortadan kaldırıyoruz.
-        topo_rank = {nid: i for i, nid in enumerate(topo)}
+        _topo_rank = {nid: i for i, nid in enumerate(topo)}
         for nid in topo:
             node_obj = self._nodes[nid]
             prereq_levels = [
@@ -194,7 +203,7 @@ class PrerequisiteDAG:
     def check_mastery(
         self,
         topic_id: str,
-        mastery_scores: Dict[str, float],   # topic_id → 0.0–1.0
+        mastery_scores: dict[str, float],  # topic_id → 0.0–1.0
         hard_cutoff: float = MASTERY_CUTOFF_HARD,
         soft_cutoff: float = MASTERY_CUTOFF_SOFT,
     ) -> MasteryCheck:
@@ -209,14 +218,18 @@ class PrerequisiteDAG:
           MasteryCheck(can_proceed, blocking_prereqs, warning_prereqs)
         """
         if topic_id not in self._nodes:
-            return MasteryCheck(topic_id=topic_id, can_proceed=True,
-                                blocking_prereqs=[], warning_prereqs=[],
-                                mastery_scores={})
+            return MasteryCheck(
+                topic_id=topic_id,
+                can_proceed=True,
+                blocking_prereqs=[],
+                warning_prereqs=[],
+                mastery_scores={},
+            )
 
         node = self._nodes[topic_id]
-        blocking: List[str] = []
-        warnings: List[str] = []
-        scores:   Dict[str, float] = {}
+        blocking: list[str] = []
+        warnings: list[str] = []
+        scores: dict[str, float] = {}
 
         for prereq in node.prereqs:
             pid = prereq.prereq_id
@@ -246,7 +259,7 @@ class PrerequisiteDAG:
     def get_learning_path(
         self,
         target_topic_id: str,
-        mastery_scores: Optional[Dict[str, float]] = None,
+        mastery_scores: dict[str, float] | None = None,
         skip_mastered: bool = True,
         mastery_threshold: float = MASTERY_CUTOFF_HARD,
     ) -> LearningPath:
@@ -267,15 +280,14 @@ class PrerequisiteDAG:
         mastery = mastery_scores or {}
 
         # DFS ile tüm gerekli konuları topla
-        required: Set[str] = set()
+        required: set[str] = set()
         self._collect_prerequisites(target_topic_id, required, set())
         required.add(target_topic_id)
 
         # Zaten ustalaşılanları filtrele
         if skip_mastered:
             required = {
-                tid for tid in required
-                if mastery.get(tid, 0.0) < mastery_threshold
+                tid for tid in required if mastery.get(tid, 0.0) < mastery_threshold
             }
 
         # Topological sırayla filtrele
@@ -294,12 +306,12 @@ class PrerequisiteDAG:
             estimated_sessions=est_sessions,
         )
 
-    def _collect_prerequisites(self, topic_id: str,
-                                collected: Set[str],
-                                visiting: Set[str]) -> None:
+    def _collect_prerequisites(
+        self, topic_id: str, collected: set[str], visiting: set[str]
+    ) -> None:
         """DFS ile tüm gerekli önkoşulları topla (döngü korumalı)."""
         if topic_id in visiting:
-            return   # döngü koruması
+            return  # döngü koruması
         visiting.add(topic_id)
 
         node = self._nodes.get(topic_id)
@@ -314,15 +326,15 @@ class PrerequisiteDAG:
 
     # ── Yardımcı ──────────────────────────────────────────────────
 
-    def get_topic(self, topic_id: str) -> Optional[TopicNode]:
+    def get_topic(self, topic_id: str) -> TopicNode | None:
         return self._nodes.get(topic_id)
 
-    def get_all_topics(self) -> List[TopicNode]:
+    def get_all_topics(self) -> list[TopicNode]:
         if self._built:
             return [self._nodes[tid] for tid in self._topo_order]
         return list(self._nodes.values())
 
-    def get_subject_topics(self, subject_id: str) -> List[TopicNode]:
+    def get_subject_topics(self, subject_id: str) -> list[TopicNode]:
         nodes = [n for n in self._nodes.values() if n.subject_id == subject_id]
         if self._built:
             order = {tid: i for i, tid in enumerate(self._topo_order)}
@@ -340,6 +352,7 @@ class PrerequisiteDAG:
 
 # ─── YKS Müfredatı DAG Fabrikası ─────────────────────────────────────────────
 
+
 def build_yks_dag() -> PrerequisiteDAG:
     """
     YKS (TYT + AYT) müfredatı için tam önkoşul grafiği.
@@ -354,165 +367,171 @@ def build_yks_dag() -> PrerequisiteDAG:
     # TYT MATEMATİK
     # ================================================================
     tyt_mat_topics = [
-        ("tyt-mat-sayilar",         "Sayılar ve İşlemler",       "tyt-matematik"),
-        ("tyt-mat-uslu",            "Üslü ve Köklü İfadeler",    "tyt-matematik"),
-        ("tyt-mat-carpanlarastirma","Çarpanlara Ayırma",         "tyt-matematik"),
-        ("tyt-mat-polinomlar",      "Polinomlar",                "tyt-matematik"),
-        ("tyt-mat-denklemler",      "Denklemler ve Eşitsizlikler","tyt-matematik"),
-        ("tyt-mat-oran",            "Oran-Orantı ve Problemler", "tyt-matematik"),
-        ("tyt-mat-kume",            "Kümeler",                   "tyt-matematik"),
-        ("tyt-mat-mantik",          "Mantık",                    "tyt-matematik"),
-        ("tyt-mat-fonksiyon",       "Fonksiyonlar",              "tyt-matematik"),
-        ("tyt-mat-istatistik",      "İstatistik ve Olasılık",    "tyt-matematik"),
-        ("tyt-mat-geometri-temel",  "Temel Geometri",            "tyt-matematik"),
-        ("tyt-mat-ucgenler",        "Üçgenler",                  "tyt-matematik"),
-        ("tyt-mat-dortgenler",      "Dörtgenler",                "tyt-matematik"),
-        ("tyt-mat-cember",          "Çember ve Daire",           "tyt-matematik"),
-        ("tyt-mat-katicisinler",    "Katı Cisimler",             "tyt-matematik"),
-        ("tyt-mat-permutasyon",     "Permütasyon ve Kombinasyon","tyt-matematik"),
+        ("tyt-mat-sayilar", "Sayılar ve İşlemler", "tyt-matematik"),
+        ("tyt-mat-uslu", "Üslü ve Köklü İfadeler", "tyt-matematik"),
+        ("tyt-mat-carpanlarastirma", "Çarpanlara Ayırma", "tyt-matematik"),
+        ("tyt-mat-polinomlar", "Polinomlar", "tyt-matematik"),
+        ("tyt-mat-denklemler", "Denklemler ve Eşitsizlikler", "tyt-matematik"),
+        ("tyt-mat-oran", "Oran-Orantı ve Problemler", "tyt-matematik"),
+        ("tyt-mat-kume", "Kümeler", "tyt-matematik"),
+        ("tyt-mat-mantik", "Mantık", "tyt-matematik"),
+        ("tyt-mat-fonksiyon", "Fonksiyonlar", "tyt-matematik"),
+        ("tyt-mat-istatistik", "İstatistik ve Olasılık", "tyt-matematik"),
+        ("tyt-mat-geometri-temel", "Temel Geometri", "tyt-matematik"),
+        ("tyt-mat-ucgenler", "Üçgenler", "tyt-matematik"),
+        ("tyt-mat-dortgenler", "Dörtgenler", "tyt-matematik"),
+        ("tyt-mat-cember", "Çember ve Daire", "tyt-matematik"),
+        ("tyt-mat-katicisinler", "Katı Cisimler", "tyt-matematik"),
+        ("tyt-mat-permutasyon", "Permütasyon ve Kombinasyon", "tyt-matematik"),
     ]
 
     tyt_mat_prereqs = [
         # (konu, önkoşul, tip)
-        ("tyt-mat-uslu",            "tyt-mat-sayilar",         PrereqType.HARD),
-        ("tyt-mat-carpanlarastirma","tyt-mat-uslu",            PrereqType.HARD),
-        ("tyt-mat-polinomlar",      "tyt-mat-carpanlarastirma",PrereqType.HARD),
-        ("tyt-mat-denklemler",      "tyt-mat-polinomlar",      PrereqType.HARD),
-        ("tyt-mat-oran",            "tyt-mat-denklemler",      PrereqType.SOFT),
-        ("tyt-mat-fonksiyon",       "tyt-mat-denklemler",      PrereqType.HARD),
-        ("tyt-mat-istatistik",      "tyt-mat-sayilar",         PrereqType.SOFT),
-        ("tyt-mat-permutasyon",     "tyt-mat-istatistik",      PrereqType.SOFT),
-        ("tyt-mat-ucgenler",        "tyt-mat-geometri-temel",  PrereqType.HARD),
-        ("tyt-mat-dortgenler",      "tyt-mat-ucgenler",        PrereqType.SOFT),
-        ("tyt-mat-cember",          "tyt-mat-ucgenler",        PrereqType.SOFT),
-        ("tyt-mat-katicisinler",    "tyt-mat-dortgenler",      PrereqType.SOFT),
+        ("tyt-mat-uslu", "tyt-mat-sayilar", PrereqType.HARD),
+        ("tyt-mat-carpanlarastirma", "tyt-mat-uslu", PrereqType.HARD),
+        ("tyt-mat-polinomlar", "tyt-mat-carpanlarastirma", PrereqType.HARD),
+        ("tyt-mat-denklemler", "tyt-mat-polinomlar", PrereqType.HARD),
+        ("tyt-mat-oran", "tyt-mat-denklemler", PrereqType.SOFT),
+        ("tyt-mat-fonksiyon", "tyt-mat-denklemler", PrereqType.HARD),
+        ("tyt-mat-istatistik", "tyt-mat-sayilar", PrereqType.SOFT),
+        ("tyt-mat-permutasyon", "tyt-mat-istatistik", PrereqType.SOFT),
+        ("tyt-mat-ucgenler", "tyt-mat-geometri-temel", PrereqType.HARD),
+        ("tyt-mat-dortgenler", "tyt-mat-ucgenler", PrereqType.SOFT),
+        ("tyt-mat-cember", "tyt-mat-ucgenler", PrereqType.SOFT),
+        ("tyt-mat-katicisinler", "tyt-mat-dortgenler", PrereqType.SOFT),
     ]
 
     # ================================================================
     # AYT MATEMATİK
     # ================================================================
     ayt_mat_topics = [
-        ("ayt-mat-sayi-teorisi",    "Sayı Teorisi",             "ayt-matematik"),
-        ("ayt-mat-trigonometri",    "Trigonometri",             "ayt-matematik"),
-        ("ayt-mat-analitik-geo",    "Analitik Geometri",        "ayt-matematik"),
-        ("ayt-mat-logaritma",       "Logaritma",                "ayt-matematik"),
-        ("ayt-mat-diziler",         "Diziler",                  "ayt-matematik"),
-        ("ayt-mat-limit",           "Limit ve Süreklilik",      "ayt-matematik"),
-        ("ayt-mat-turev",           "Türev",                    "ayt-matematik"),
-        ("ayt-mat-integral",        "İntegral",                 "ayt-matematik"),
-        ("ayt-mat-olasilik",        "Olasılık",                 "ayt-matematik"),
-        ("ayt-mat-matris",          "Matrisler",                "ayt-matematik"),
+        ("ayt-mat-sayi-teorisi", "Sayı Teorisi", "ayt-matematik"),
+        ("ayt-mat-trigonometri", "Trigonometri", "ayt-matematik"),
+        ("ayt-mat-analitik-geo", "Analitik Geometri", "ayt-matematik"),
+        ("ayt-mat-logaritma", "Logaritma", "ayt-matematik"),
+        ("ayt-mat-diziler", "Diziler", "ayt-matematik"),
+        ("ayt-mat-limit", "Limit ve Süreklilik", "ayt-matematik"),
+        ("ayt-mat-turev", "Türev", "ayt-matematik"),
+        ("ayt-mat-integral", "İntegral", "ayt-matematik"),
+        ("ayt-mat-olasilik", "Olasılık", "ayt-matematik"),
+        ("ayt-mat-matris", "Matrisler", "ayt-matematik"),
     ]
 
     ayt_mat_prereqs = [
-        ("ayt-mat-trigonometri",    "tyt-mat-geometri-temel",  PrereqType.HARD),
-        ("ayt-mat-trigonometri",    "tyt-mat-fonksiyon",       PrereqType.SOFT),
-        ("ayt-mat-analitik-geo",    "tyt-mat-geometri-temel",  PrereqType.HARD),
-        ("ayt-mat-analitik-geo",    "tyt-mat-denklemler",      PrereqType.HARD),
-        ("ayt-mat-logaritma",       "tyt-mat-uslu",            PrereqType.HARD),
-        ("ayt-mat-logaritma",       "tyt-mat-fonksiyon",       PrereqType.HARD),
-        ("ayt-mat-diziler",         "tyt-mat-fonksiyon",       PrereqType.SOFT),
-        ("ayt-mat-limit",           "tyt-mat-fonksiyon",       PrereqType.HARD),
-        ("ayt-mat-limit",           "ayt-mat-trigonometri",    PrereqType.SOFT),
-        ("ayt-mat-turev",           "ayt-mat-limit",           PrereqType.HARD),
-        ("ayt-mat-integral",        "ayt-mat-turev",           PrereqType.HARD),
-        ("ayt-mat-olasilik",        "tyt-mat-permutasyon",     PrereqType.HARD),
+        ("ayt-mat-trigonometri", "tyt-mat-geometri-temel", PrereqType.HARD),
+        ("ayt-mat-trigonometri", "tyt-mat-fonksiyon", PrereqType.SOFT),
+        ("ayt-mat-analitik-geo", "tyt-mat-geometri-temel", PrereqType.HARD),
+        ("ayt-mat-analitik-geo", "tyt-mat-denklemler", PrereqType.HARD),
+        ("ayt-mat-logaritma", "tyt-mat-uslu", PrereqType.HARD),
+        ("ayt-mat-logaritma", "tyt-mat-fonksiyon", PrereqType.HARD),
+        ("ayt-mat-diziler", "tyt-mat-fonksiyon", PrereqType.SOFT),
+        ("ayt-mat-limit", "tyt-mat-fonksiyon", PrereqType.HARD),
+        ("ayt-mat-limit", "ayt-mat-trigonometri", PrereqType.SOFT),
+        ("ayt-mat-turev", "ayt-mat-limit", PrereqType.HARD),
+        ("ayt-mat-integral", "ayt-mat-turev", PrereqType.HARD),
+        ("ayt-mat-olasilik", "tyt-mat-permutasyon", PrereqType.HARD),
     ]
 
     # ================================================================
     # TYT FİZİK
     # ================================================================
     tyt_fiz_topics = [
-        ("tyt-fiz-olcme",          "Ölçme ve Birimler",        "tyt-fizik"),
-        ("tyt-fiz-vektor",         "Vektörler",                "tyt-fizik"),
-        ("tyt-fiz-kuvvet",         "Kuvvet ve Hareket",        "tyt-fizik"),
-        ("tyt-fiz-enerji",         "İş-Enerji-Güç",           "tyt-fizik"),
-        ("tyt-fiz-momentum",       "Momentum ve İtme",         "tyt-fizik"),
-        ("tyt-fiz-dalgahareketi",  "Dalgalar",                 "tyt-fizik"),
-        ("tyt-fiz-optik",          "Optik",                    "tyt-fizik"),
-        ("tyt-fiz-elektrik",       "Elektrik",                 "tyt-fizik"),
-        ("tyt-fiz-manyetizma",     "Manyetizma",               "tyt-fizik"),
+        ("tyt-fiz-olcme", "Ölçme ve Birimler", "tyt-fizik"),
+        ("tyt-fiz-vektor", "Vektörler", "tyt-fizik"),
+        ("tyt-fiz-kuvvet", "Kuvvet ve Hareket", "tyt-fizik"),
+        ("tyt-fiz-enerji", "İş-Enerji-Güç", "tyt-fizik"),
+        ("tyt-fiz-momentum", "Momentum ve İtme", "tyt-fizik"),
+        ("tyt-fiz-dalgahareketi", "Dalgalar", "tyt-fizik"),
+        ("tyt-fiz-optik", "Optik", "tyt-fizik"),
+        ("tyt-fiz-elektrik", "Elektrik", "tyt-fizik"),
+        ("tyt-fiz-manyetizma", "Manyetizma", "tyt-fizik"),
     ]
 
     tyt_fiz_prereqs = [
-        ("tyt-fiz-kuvvet",         "tyt-fiz-vektor",          PrereqType.HARD),
-        ("tyt-fiz-enerji",         "tyt-fiz-kuvvet",          PrereqType.HARD),
-        ("tyt-fiz-momentum",       "tyt-fiz-kuvvet",          PrereqType.HARD),
-        ("tyt-fiz-manyetizma",     "tyt-fiz-elektrik",        PrereqType.HARD),
+        ("tyt-fiz-kuvvet", "tyt-fiz-vektor", PrereqType.HARD),
+        ("tyt-fiz-enerji", "tyt-fiz-kuvvet", PrereqType.HARD),
+        ("tyt-fiz-momentum", "tyt-fiz-kuvvet", PrereqType.HARD),
+        ("tyt-fiz-manyetizma", "tyt-fiz-elektrik", PrereqType.HARD),
     ]
 
     # ================================================================
     # TYT KİMYA
     # ================================================================
     tyt_kim_topics = [
-        ("tyt-kim-atomyapisi",     "Atomun Yapısı",            "tyt-kimya"),
-        ("tyt-kim-periyodik",      "Periyodik Tablo",          "tyt-kimya"),
-        ("tyt-kim-baglar",         "Kimyasal Bağlar",          "tyt-kimya"),
-        ("tyt-kim-reaksiyonlar",   "Kimyasal Tepkimeler",      "tyt-kimya"),
-        ("tyt-kim-asitbaz",        "Asit-Baz",                 "tyt-kimya"),
-        ("tyt-kim-cozeltiler",     "Çözeltiler",               "tyt-kimya"),
-        ("tyt-kim-mol",            "Mol Kavramı",              "tyt-kimya"),
+        ("tyt-kim-atomyapisi", "Atomun Yapısı", "tyt-kimya"),
+        ("tyt-kim-periyodik", "Periyodik Tablo", "tyt-kimya"),
+        ("tyt-kim-baglar", "Kimyasal Bağlar", "tyt-kimya"),
+        ("tyt-kim-reaksiyonlar", "Kimyasal Tepkimeler", "tyt-kimya"),
+        ("tyt-kim-asitbaz", "Asit-Baz", "tyt-kimya"),
+        ("tyt-kim-cozeltiler", "Çözeltiler", "tyt-kimya"),
+        ("tyt-kim-mol", "Mol Kavramı", "tyt-kimya"),
     ]
 
     tyt_kim_prereqs = [
-        ("tyt-kim-periyodik",      "tyt-kim-atomyapisi",      PrereqType.HARD),
-        ("tyt-kim-baglar",         "tyt-kim-periyodik",       PrereqType.HARD),
-        ("tyt-kim-reaksiyonlar",   "tyt-kim-baglar",          PrereqType.HARD),
-        ("tyt-kim-mol",            "tyt-kim-reaksiyonlar",    PrereqType.HARD),
-        ("tyt-kim-asitbaz",        "tyt-kim-cozeltiler",      PrereqType.SOFT),
+        ("tyt-kim-periyodik", "tyt-kim-atomyapisi", PrereqType.HARD),
+        ("tyt-kim-baglar", "tyt-kim-periyodik", PrereqType.HARD),
+        ("tyt-kim-reaksiyonlar", "tyt-kim-baglar", PrereqType.HARD),
+        ("tyt-kim-mol", "tyt-kim-reaksiyonlar", PrereqType.HARD),
+        ("tyt-kim-asitbaz", "tyt-kim-cozeltiler", PrereqType.SOFT),
     ]
 
     # ================================================================
     # TYT BİYOLOJİ
     # ================================================================
     tyt_bio_topics = [
-        ("tyt-bio-hucre",          "Hücre",                    "tyt-biyoloji"),
-        ("tyt-bio-dokular",        "Dokular",                  "tyt-biyoloji"),
-        ("tyt-bio-sindirim",       "Sindirim Sistemi",         "tyt-biyoloji"),
-        ("tyt-bio-dolas",          "Dolaşım Sistemi",          "tyt-biyoloji"),
-        ("tyt-bio-solunum",        "Solunum Sistemi",          "tyt-biyoloji"),
-        ("tyt-bio-ureyen",         "Üreme ve Gelişme",         "tyt-biyoloji"),
-        ("tyt-bio-kalitim",        "Kalıtım",                  "tyt-biyoloji"),
-        ("tyt-bio-ekosistem",      "Ekosistem",                "tyt-biyoloji"),
+        ("tyt-bio-hucre", "Hücre", "tyt-biyoloji"),
+        ("tyt-bio-dokular", "Dokular", "tyt-biyoloji"),
+        ("tyt-bio-sindirim", "Sindirim Sistemi", "tyt-biyoloji"),
+        ("tyt-bio-dolas", "Dolaşım Sistemi", "tyt-biyoloji"),
+        ("tyt-bio-solunum", "Solunum Sistemi", "tyt-biyoloji"),
+        ("tyt-bio-ureyen", "Üreme ve Gelişme", "tyt-biyoloji"),
+        ("tyt-bio-kalitim", "Kalıtım", "tyt-biyoloji"),
+        ("tyt-bio-ekosistem", "Ekosistem", "tyt-biyoloji"),
     ]
 
     tyt_bio_prereqs = [
-        ("tyt-bio-dokular",        "tyt-bio-hucre",           PrereqType.HARD),
-        ("tyt-bio-sindirim",       "tyt-bio-dokular",         PrereqType.SOFT),
-        ("tyt-bio-kalitim",        "tyt-bio-hucre",           PrereqType.HARD),
+        ("tyt-bio-dokular", "tyt-bio-hucre", PrereqType.HARD),
+        ("tyt-bio-sindirim", "tyt-bio-dokular", PrereqType.SOFT),
+        ("tyt-bio-kalitim", "tyt-bio-hucre", PrereqType.HARD),
     ]
 
     # ================================================================
     # TYT TÜRKÇe (büyük ölçüde bağımsız konular)
     # ================================================================
     tyt_turkce_topics = [
-        ("tyt-tr-sesbirgisi",      "Ses Bilgisi",              "tyt-turkce"),
-        ("tyt-tr-yazim",           "Yazım Kuralları",          "tyt-turkce"),
-        ("tyt-tr-noktalama",       "Noktalama İşaretleri",     "tyt-turkce"),
-        ("tyt-tr-sozkoku",         "Sözcükte Anlam",           "tyt-turkce"),
-        ("tyt-tr-cumlede",         "Cümlede Anlam",            "tyt-turkce"),
-        ("tyt-tr-paragraf",        "Paragraf",                 "tyt-turkce"),
-        ("tyt-tr-dilbilgisi",      "Dil Bilgisi",              "tyt-turkce"),
+        ("tyt-tr-sesbirgisi", "Ses Bilgisi", "tyt-turkce"),
+        ("tyt-tr-yazim", "Yazım Kuralları", "tyt-turkce"),
+        ("tyt-tr-noktalama", "Noktalama İşaretleri", "tyt-turkce"),
+        ("tyt-tr-sozkoku", "Sözcükte Anlam", "tyt-turkce"),
+        ("tyt-tr-cumlede", "Cümlede Anlam", "tyt-turkce"),
+        ("tyt-tr-paragraf", "Paragraf", "tyt-turkce"),
+        ("tyt-tr-dilbilgisi", "Dil Bilgisi", "tyt-turkce"),
     ]
 
     tyt_turkce_prereqs = [
         # Paragraf; anlam bilgisini gerektirir
-        ("tyt-tr-paragraf",        "tyt-tr-sozkoku",          PrereqType.SOFT),
-        ("tyt-tr-paragraf",        "tyt-tr-cumlede",          PrereqType.SOFT),
+        ("tyt-tr-paragraf", "tyt-tr-sozkoku", PrereqType.SOFT),
+        ("tyt-tr-paragraf", "tyt-tr-cumlede", PrereqType.SOFT),
     ]
 
     # ================================================================
     # Tüm konuları ve kenarları ekle
     # ================================================================
     all_topics = (
-        tyt_mat_topics + ayt_mat_topics +
-        tyt_fiz_topics + tyt_kim_topics +
-        tyt_bio_topics + tyt_turkce_topics
+        tyt_mat_topics
+        + ayt_mat_topics
+        + tyt_fiz_topics
+        + tyt_kim_topics
+        + tyt_bio_topics
+        + tyt_turkce_topics
     )
     all_prereqs = (
-        tyt_mat_prereqs + ayt_mat_prereqs +
-        tyt_fiz_prereqs + tyt_kim_prereqs +
-        tyt_bio_prereqs + tyt_turkce_prereqs
+        tyt_mat_prereqs
+        + ayt_mat_prereqs
+        + tyt_fiz_prereqs
+        + tyt_kim_prereqs
+        + tyt_bio_prereqs
+        + tyt_turkce_prereqs
     )
 
     for topic_id, name, subject_id in all_topics:
@@ -529,6 +548,7 @@ def build_yks_dag() -> PrerequisiteDAG:
 
 
 # ─── Mastery skoru hesaplayıcı (IRT tabanlı) ─────────────────────────────────
+
 
 def compute_mastery_from_theta(
     theta: float,

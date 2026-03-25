@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 KIRO2 — YKS Tahmini API
 =========================
@@ -11,13 +10,12 @@ Endpoint'ler:
 
 from __future__ import annotations
 
-from typing import Dict, Optional
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, Field
-from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import text
+from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.core.deps import get_current_user, get_db, User
+from app.core.deps import User, get_current_user, get_db
 from app.services.yks_estimator import (
     DersTheta,
     YKSEstimator,
@@ -29,7 +27,7 @@ router = APIRouter(prefix="/api/v1/estimate", tags=["YKS Tahmini"])
 async def _kullanici_thetalarini_cek(
     user_id: str,
     db: AsyncSession,
-) -> Dict[str, DersTheta]:
+) -> dict[str, DersTheta]:
     """
     Kullanıcının son CAT oturumlarından θ tahminlerini çek.
     subject_id → ders_kodu eşlemesi subjects tablosundan yapılır.
@@ -68,7 +66,7 @@ async def _kullanici_thetalarini_cek(
         "biyoloji":   "biyoloji",
     }
 
-    thetalar: Dict[str, DersTheta] = {}
+    thetalar: dict[str, DersTheta] = {}
     for row in result.fetchall():
         raw_kod = row.ders_kodu
         kod = SUBJECT_MAP.get(raw_kod, raw_kod.lower())  # bilinmeyenler lower()

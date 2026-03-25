@@ -9,12 +9,13 @@ Endpoint'ler:
 
 from __future__ import annotations
 
-from typing import Any, Dict, Optional
-from pydantic import BaseModel, Field
+from typing import Any
+
 from fastapi import APIRouter, Depends, HTTPException, status
+from pydantic import BaseModel, Field
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.core.deps import get_current_user, get_db, get_redis, User
+from app.core.deps import User, get_current_user, get_db, get_redis
 from app.services.placement_service import PlacementTestService, _theta_to_label
 
 router = APIRouter(prefix="/api/v1/placement", tags=["Placement Test"])
@@ -37,9 +38,9 @@ class AnswerPlacementRequest(BaseModel):
     Harf formatında question_id üzerinden correct_answer DB'den sorgulanır.
     """
     question_id:      str
-    answer:           Optional[str] = None   # "A" | "B" | "C" | "D"
-    is_correct:       Optional[bool] = None  # doğrudan boolean
-    response_time_ms: Optional[int] = None
+    answer:           str | None = None   # "A" | "B" | "C" | "D"
+    is_correct:       bool | None = None  # doğrudan boolean
+    response_time_ms: int | None = None
 
 
 # ── Dependency ───────────────────────────────────────────────────
@@ -69,7 +70,7 @@ async def start_placement(
     body:         StartPlacementRequest,
     current_user: User                 = Depends(get_current_user),
     svc:          PlacementTestService = Depends(get_service),
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     try:
         return await svc.start(
             user_id=    str(current_user.id),
@@ -89,7 +90,7 @@ async def answer_placement(
     body:         AnswerPlacementRequest,
     current_user: User                 = Depends(get_current_user),
     svc:          PlacementTestService = Depends(get_service),
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     state = await svc.get_state(session_id)
     if state is None:
         raise HTTPException(status_code=404, detail="Placement oturumu bulunamadi")
@@ -127,7 +128,7 @@ async def get_placement_state(
     session_id:   str,
     current_user: User                 = Depends(get_current_user),
     svc:          PlacementTestService = Depends(get_service),
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     state = await svc.get_state(session_id)
     if state is None:
         raise HTTPException(status_code=404, detail="Bulunamadi")

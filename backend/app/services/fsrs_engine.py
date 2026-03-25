@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 KIRO2 — FSRS v6 Engine
 =======================
@@ -30,8 +29,7 @@ from __future__ import annotations
 
 import math
 from dataclasses import dataclass, field
-from datetime import datetime, timedelta, timezone
-from typing import Optional
+from datetime import UTC, datetime, timedelta
 
 # ─── FSRS v6 sabit parametreleri (open-spaced-repetition/fsrs4anki'den) ───────
 # Bu ağırlıklar büyük ölçekli Anki verisiyle optimize edilmiştir.
@@ -74,9 +72,9 @@ class FSRSState:
     stability:     float   = 1.0    # S: hafıza ömrü (gün)
     difficulty:    float   = 5.0    # D: 1-10, 5=orta
     due_date:      datetime = field(
-        default_factory=lambda: datetime.now(timezone.utc)
+        default_factory=lambda: datetime.now(UTC)
     )
-    last_review:   Optional[datetime] = None
+    last_review:   datetime | None = None
     state:         int   = DURUM_YENİ
     reps:          int   = 0        # toplam tekrar sayısı
     lapses:        int   = 0        # unutulma sayısı
@@ -91,14 +89,14 @@ class FSRSState:
         """
         if self.last_review is None:
             return 1.0
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
         t = (now - self.last_review).total_seconds() / 86400.0
         return _retrievability(t, self.stability)
 
     @property
     def days_overdue(self) -> float:
         """Vadesi kaç gün geçmiş? Negatifse henüz vadesi gelmemiş."""
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
         delta = (now - self.due_date).total_seconds() / 86400.0
         return delta
 
@@ -231,7 +229,7 @@ def fsrs_update(state: FSRSState, puan: int,
     if puan not in (1, 2, 3, 4):
         raise ValueError(f"Puan 1-4 arasında olmalı, verilen: {puan}")
 
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
 
     # Geçen süreyi hesapla (gün)
     if state.last_review is not None:
@@ -320,9 +318,9 @@ def fsrs_update(state: FSRSState, puan: int,
 # ─── YKS puan → FSRS puan dönüşümü ──────────────────────────────────────────
 
 def answer_to_fsrs_rating(is_correct: bool,
-                           response_ms: Optional[int] = None,
-                           theta: Optional[float] = None,
-                           item_b: Optional[float] = None) -> int:
+                           response_ms: int | None = None,
+                           theta: float | None = None,
+                           item_b: float | None = None) -> int:
     """
     CAT yanıtını FSRS puanına çevir.
 
