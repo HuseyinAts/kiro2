@@ -304,5 +304,8 @@ __tmp_*
 /*_PLAN*.md
 /*_TAMAMLANDI*.md
 
+# Celery beat schedule
+celerybeat-schedule*
+
 # Dataset working files
 veriseti/
