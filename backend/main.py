@@ -5,73 +5,54 @@ Minimal main.py using application factory pattern.
 All routers are dynamically loaded from the routers module.
 """
 
-import logging
-import sys
-import os
 import io
+import logging
+import os
+import sys
 from pathlib import Path
 
-# UTF-8 encoding fix for Windows (skip during testing to preserve pytest capture)
-if sys.platform == 'win32' and os.environ.get('TESTING') != 'true':
-    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')
-    sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8', errors='replace')
+# UTF-8 encoding fix for Windows
+if sys.platform == "win32" and os.environ.get("TESTING") != "true":
+    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="replace")
+    sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding="utf-8", errors="replace")
 
 # Add backend directory to Python path
 backend_dir = Path(__file__).parent
 if str(backend_dir) not in sys.path:
     sys.path.insert(0, str(backend_dir))
 
-# Configure structured logging (JSON format for production)
-try:
-    from core.structured_logger import setup_structlog, get_logger
-    setup_structlog(level="INFO", json_logs=True)
-    logger = get_logger(__name__)
-    logger.info("structured_logging_enabled", format="json")
-except ImportError:
-    # Fallback to basic logging if structlog not available
-    logging.basicConfig(
-        level=logging.INFO,
-        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-        handlers=[
-            logging.StreamHandler(sys.stdout),
-            logging.FileHandler('kiro2_backend.log', encoding='utf-8')
-        ]
-    )
-    logger = logging.getLogger(__name__)
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    handlers=[
+        logging.StreamHandler(sys.stdout),
+        logging.FileHandler("kiro2_backend.log", encoding="utf-8"),
+    ],
+)
+logger = logging.getLogger(__name__)
 
-# Import application factory
 try:
     from core.application import create_app
-    logger.info("✅ Using modular application factory")
+
+    logger.info("Using modular application factory")
 except ImportError as e:
-    logger.error(f"❌ Could not import application factory: {e}")
-    logger.info("⚠️ Using fallback application configuration")
-    
-    # Fallback for compatibility
+    logger.warning(f"Falling back to minimal app: {e}")
+    from collections.abc import AsyncGenerator
+    from contextlib import asynccontextmanager
+
     from fastapi import FastAPI
     from fastapi.middleware.cors import CORSMiddleware
-    from contextlib import asynccontextmanager
-    from typing import AsyncGenerator
-    
+
     @asynccontextmanager
     async def app_lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
-        """Application lifespan management."""
-        logger.info("=" * 60)
-        logger.info("🚀 KIRO2 Backend Starting (Fallback Mode)...")
-        logger.info("=" * 60)
+        logger.info("KIRO2 Backend Starting (Fallback Mode)...")
         yield
-        logger.info("🛑 KIRO2 Backend Shutting Down...")
-    
+        logger.info("KIRO2 Backend Shutting Down...")
+
     def create_app() -> FastAPI:
-        """Fallback application factory."""
         app = FastAPI(
-            title="KIRO2 Educational Platform",
-            version="1.0.0",
-            description="AI-powered educational platform for Turkish students",
-            lifespan=app_lifespan
+            title="KIRO2 Educational Platform", version="1.0.0", lifespan=app_lifespan
         )
-        
-        # Basic CORS middleware
         app.add_middleware(
             CORSMiddleware,
             allow_origins=["http://localhost:3000", "http://localhost:3001"],
@@ -79,121 +60,60 @@ except ImportError as e:
             allow_methods=["*"],
             allow_headers=["*"],
         )
-        
-        # Basic endpoints
+
         @app.get("/")
         async def root():
-            """Root endpoint."""
-            return {
-                "app": "KIRO2 Educational Platform",
-                "version": "1.0.0",
-                "status": "online",
-                "mode": "fallback"
-            }
-        
+            return {"app": "KIRO2", "status": "online"}
+
         @app.get("/health")
         async def health():
-            """Health check endpoint."""
             return {"status": "healthy"}
-        
-        @app.get("/health/ready")
-        async def ready():
-            """Readiness check endpoint."""
-            return {"status": "ready"}
-        
-        @app.get("/health/live")
-        async def live():
-            """Liveness check endpoint."""
-            return {"status": "alive"}
-        
-        # Try to load routers if available
+
         try:
             from routers.loader import setup_routers
+
             setup_routers(app)
-            logger.info("✅ Routers loaded successfully")
+            logger.info("Routers loaded successfully")
         except ImportError as e:
-            logger.warning(f"⚠️ Could not load routers: {e}")
-            logger.info("Running in minimal mode with basic endpoints only")
-        
+            logger.warning(f"Could not load routers: {e}")
         return app
+
 
 # Create application instance
 app = create_app()
 
-# Add Performance Monitoring Middleware
+# ── KIRO2 CAT/FSRS/DAG/Placement/Estimator Router'lar ───────────────────────
 try:
-    from core.performance_monitor import (
-        PerformanceMonitoringMiddleware,
-        get_performance_metrics,
-        SystemMetrics
+    from app.api.cat import router as cat_router
+
+    app.include_router(cat_router)
+    from app.api.fsrs import router as fsrs_router
+
+    app.include_router(fsrs_router)
+    from app.api.dag import router as dag_router
+
+    app.include_router(dag_router)
+    from app.api.placement import router as placement_router
+
+    app.include_router(placement_router)
+    from app.api.estimator import router as estimator_router
+
+    app.include_router(estimator_router)
+    from app.api.calibration_api import router as calibration_router
+
+    app.include_router(calibration_router)
+    logger.info(
+        "KIRO2 CAT+FSRS+DAG+Placement+Estimator+Calibration routerlari yuklendi"
     )
-    app.add_middleware(PerformanceMonitoringMiddleware)
-    logger.info("✅ Performance monitoring middleware enabled")
-except ImportError as e:
-    logger.warning(f"⚠️ Performance monitoring not available: {e}")
+except Exception as e:
+    logger.warning(f"KIRO2 router yukleme hatasi (non-critical): {e}")
 
-# NOTE: on_event is deprecated, use lifespan instead
-# All startup/shutdown logic is handled in core/application.py lifespan
-# @app.on_event("startup")  # DEPRECATED - use lifespan
-# @app.on_event("shutdown")  # DEPRECATED - use lifespan
+# ────────────────────────────────────────────────────────────────────────────
 
-# Main entry point
 if __name__ == "__main__":
     import uvicorn
-    
-    # Get configuration
+
     host = os.getenv("HOST", "0.0.0.0")
     port = int(os.getenv("PORT", "8000"))
     reload = os.getenv("ENVIRONMENT", "development") == "development"
-    
-    logger.info("=" * 60)
-    logger.info("🚀 Starting KIRO2 Backend Server")
-    logger.info(f"  Host: {host}")
-    logger.info(f"  Port: {port}")
-    logger.info(f"  Reload: {reload}")
-    logger.info(f"  API Docs: http://localhost:{port}/docs")
-    logger.info("=" * 60)
-    
-    # Run server
-    import multiprocessing
-    import sys
-    workers = int(os.getenv("WEB_WORKERS", 1 if reload else (multiprocessing.cpu_count() * 2) + 1))
-    loop_type = "auto"
-    http_impl = "auto"
-    if sys.platform != "win32":
-        try:
-            import uvloop  # noqa: F401
-            loop_type = "uvloop"
-            http_impl = "httptools"
-        except ImportError:
-            pass
-    uvicorn.run(
-        "main:app",
-        host=host,
-        port=port,
-        reload=reload,
-        workers=1 if reload else workers,
-        loop=loop_type,
-        http=http_impl,
-        access_log=not reload,
-        log_config={
-            "version": 1,
-            "disable_existing_loggers": False,
-            "formatters": {
-                "default": {
-                    "format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-                },
-            },
-            "handlers": {
-                "default": {
-                    "formatter": "default",
-                    "class": "logging.StreamHandler",
-                    "stream": "ext://sys.stdout",
-                },
-            },
-            "root": {
-                "level": "INFO",
-                "handlers": ["default"],
-            },
-        }
-    )
+    uvicorn.run("main:app", host=host, port=port, reload=reload)

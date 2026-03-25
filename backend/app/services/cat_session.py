@@ -1,0 +1,681 @@
+"""
+KIRO2 — CAT Session Service
+============================
+Redis üzerinde stateful CAT oturum yönetimi.
+
+Neden Redis Hash?
+  - Tek atomic HGETALL ile tüm state okunur (~1ms)
+  - HSET ile tek alan güncellenebilir (partial update)
+  - TTL ile otomatik temizlik (1 saat)
+  - 500 eş zamanlı oturum × 2KB = sadece 1MB bellek
+
+Key yapısı:
+  cat:{session_id}  →  Hash
+    user_id          : str (UUID)
+    subject_id       : str (UUID)
+    theta            : str (float, 4 decimal)
+    se               : str (float, 4 decimal)
+    answered_ids     : str (JSON list of UUIDs)
+    responses        : str (JSON list of 0/1)
+    item_params      : str (JSON list of {a,b,c,question_id})
+    n_questions      : str (int)
+    started_at       : str (ISO datetime)
+    state            : str ("active"|"completed"|"abandoned")
+    termination_reason: str
+
+Akış:
+  start_session()
+    → Redis'e yeni state yaz
+    → İlk soruyu seç (prior θ=0, SE=1)
+    → Soruyu döndür
+
+  submit_answer(session_id, question_id, is_correct)
+    → Redis'ten state oku
+    → EAP ile θ güncelle
+    → Bitiş kontrolü yap
+    → Bitmiyorsa: sonraki soruyu seç
+    → Redis'e güncellenmiş state yaz
+    → Sonucu döndür
+
+  Neden "submit_answer DB'den geçmez"?
+    Tüm hesaplama Redis'ten okunan cache'de yapılır.
+    Sadece oturum bittiğinde toplu DB yazımı yapılır.
+    Bu 150ms → ~20ms latency iyileştirmesi sağlar.
+"""
+
+from __future__ import annotations
+
+import json
+import uuid
+from dataclasses import dataclass, field
+from datetime import datetime, timezone
+from typing import Any, Dict, List, Optional, Tuple
+
+import redis.asyncio as aioredis
+
+from app.services.irt_engine import (
+    ItemParams,
+    IRTResult,
+    eap_update,
+    select_next_question,
+    should_terminate,
+)
+
+
+# ------------------------------------------------------------------
+# Session TTL
+# ------------------------------------------------------------------
+
+CAT_SESSION_TTL = 3600   # 1 saat (saniye)
+THETA_CACHE_TTL = 300    # 5 dakika
+
+
+# ------------------------------------------------------------------
+# State dataclass
+# ------------------------------------------------------------------
+
+@dataclass
+class CATState:
+    """
+    Bir CAT oturumunun tam durumu.
+    Redis Hash'te JSON olarak saklanır.
+    """
+    session_id:          str
+    user_id:             str
+    subject_id:          str
+    theta:               float         = 0.0
+    se:                  float         = 1.0
+    answered_ids:        List[str]     = field(default_factory=list)
+    responses:           List[int]     = field(default_factory=list)   # 0|1
+    item_params:         List[dict]    = field(default_factory=list)   # {a,b,c,question_id}
+    n_questions:         int           = 0
+    started_at:          str           = ""
+    state:               str           = "active"      # active|completed|abandoned
+    termination_reason:  str           = ""
+    warm_up_done:        bool          = False          # ilk 3 kolay soru bitti mi
+
+    # ------- Yardımcı metodlar -------
+
+    def get_item_params_objects(self) -> List[ItemParams]:
+        return [
+            ItemParams(
+                question_id=p["question_id"],
+                a=p.get("a", 1.0),
+                b=p.get("b", 0.0),
+                c=p.get("c", 0.25),
+            )
+            for p in self.item_params
+        ]
+
+    def is_active(self) -> bool:
+        return self.state == "active"
+
+    def to_redis_dict(self) -> Dict[str, str]:
+        """Redis HSET için string değerleri."""
+        return {
+            "session_id":         self.session_id,
+            "user_id":            self.user_id,
+            "subject_id":         self.subject_id,
+            "theta":              str(self.theta),
+            "se":                 str(self.se),
+            "answered_ids":       json.dumps(self.answered_ids),
+            "responses":          json.dumps(self.responses),
+            "item_params":        json.dumps(self.item_params),
+            "n_questions":        str(self.n_questions),
+            "started_at":         self.started_at,
+            "state":              self.state,
+            "termination_reason": self.termination_reason,
+            "warm_up_done":       "1" if self.warm_up_done else "0",
+        }
+
+    @classmethod
+    def from_redis_dict(cls, data: Dict[bytes, bytes]) -> "CATState":
+        """Redis HGETALL çıktısından CATState oluştur."""
+        d = {k.decode(): v.decode() for k, v in data.items()}
+        return cls(
+            session_id=         d["session_id"],
+            user_id=            d["user_id"],
+            subject_id=         d["subject_id"],
+            theta=              float(d.get("theta", 0.0)),
+            se=                 float(d.get("se", 1.0)),
+            answered_ids=       json.loads(d.get("answered_ids", "[]")),
+            responses=          json.loads(d.get("responses", "[]")),
+            item_params=        json.loads(d.get("item_params", "[]")),
+            n_questions=        int(d.get("n_questions", 0)),
+            started_at=         d.get("started_at", ""),
+            state=              d.get("state", "active"),
+            termination_reason= d.get("termination_reason", ""),
+            warm_up_done=       d.get("warm_up_done", "0") == "1",
+        )
+
+
+# ------------------------------------------------------------------
+# CATSessionService
+# ------------------------------------------------------------------
+
+class CATSessionService:
+    """
+    CAT oturumlarını Redis üzerinde yöneten servis.
+
+    Kullanım:
+      service = CATSessionService(redis_client, db_session)
+      result  = await service.start_session(user_id, subject_id)
+      result  = await service.submit_answer(session_id, question_id, is_correct=True)
+    """
+
+    REDIS_PREFIX = "cat"
+
+    def __init__(self, redis: aioredis.Redis, db):
+        self.redis = redis
+        self.db = db
+
+    def _key(self, session_id: str) -> str:
+        return f"{self.REDIS_PREFIX}:{session_id}"
+
+    # ---- Redis okuma/yazma ----
+
+    async def _read_state(self, session_id: str) -> Optional[CATState]:
+        """Redis'ten CATState oku. Yoksa None."""
+        data = await self.redis.hgetall(self._key(session_id))
+        if not data:
+            return None
+        return CATState.from_redis_dict(data)
+
+    async def _write_state(self, state: CATState) -> None:
+        """CATState'i Redis'e yaz, TTL'yi yenile."""
+        key = self._key(state.session_id)
+        pipe = self.redis.pipeline()
+        pipe.hset(key, mapping=state.to_redis_dict())
+        pipe.expire(key, CAT_SESSION_TTL)
+        await pipe.execute()
+
+    async def _delete_state(self, session_id: str) -> None:
+        await self.redis.delete(self._key(session_id))
+
+    # ---- Soru havuzu ----
+
+    async def _get_candidate_questions(
+        self, subject_id: str, theta: float, warm_up: bool
+    ) -> List[ItemParams]:
+        """
+        Veritabanından uygun soruları çek.
+
+        warm_up=True ise: b < -0.5 olan kolay sorular (P>0.80)
+        Aksi halde: ZPD bölgesindeki sorular (b ≈ theta ± 1.5)
+
+        Not: Bu sorgu sonucu kısa süreli önbelleğe alınabilir,
+             ama 5K ölçeğinde her seferinde DB'ye gitmek de kabul edilebilir.
+        """
+        from sqlalchemy import select, text
+        # Question model gerekmez — raw SQL kullanıyoruz
+
+        if warm_up:
+            # [KALIBRASYON HAVUZU] Pilot sorulardan sec - daha fazla yanit biriksin
+            # Oncelik sirasi:
+            #   1. is_calib_pool=TRUE ve kolay (b < 0) → zorunlu ilk temas
+            #   2. is_calib_pool=TRUE tumu → havuz doluysa genisle
+            #   3. Normal kolay sorular (fallback)
+            stmt = text("""
+                SELECT id::text, irt_discrimination AS a, irt_difficulty AS b, irt_guessing AS c
+                FROM question_bank
+                WHERE LOWER(subject_area) = LOWER(:subject_id)
+                  AND is_active = TRUE
+                  AND (
+                      -- Once kalibrasyon havuzundaki orta zorluklar
+                      (is_calib_pool = TRUE AND irt_difficulty BETWEEN -1.0 AND 1.0)
+                      OR
+                      -- Sonra havuzdaki diger sorular
+                      (is_calib_pool = TRUE)
+                      OR
+                      -- Son care: kolay normal sorular
+                      (irt_difficulty < :b_max)
+                  )
+                ORDER BY
+                    CASE WHEN is_calib_pool = TRUE THEN 0 ELSE 1 END ASC,
+                    RANDOM()
+                LIMIT 30
+            """)
+        else:
+            # ZPD bolgesi: theta - 1.5 < b < theta + 1.5
+            # Kalibrasyon havuzundaki sorulari tercih et
+            stmt = text("""
+                SELECT id::text, irt_discrimination AS a, irt_difficulty AS b, irt_guessing AS c
+                FROM question_bank
+                WHERE LOWER(subject_area) = LOWER(:subject_id)
+                  AND irt_difficulty BETWEEN :b_min AND :b_max
+                  AND is_active = TRUE
+                ORDER BY
+                    CASE WHEN is_calib_pool = TRUE THEN 0 ELSE 1 END ASC,
+                    RANDOM()
+                LIMIT 100
+            """)
+
+        params = {"subject_id": subject_id, "b_max": theta - 1.0} if warm_up else {
+            "subject_id": subject_id,
+            "b_min": theta - 1.5,
+            "b_max": theta + 1.5,
+        }
+
+        result = await self.db.execute(stmt, params)
+        rows = result.fetchall()
+
+        return [
+            ItemParams(
+                question_id=str(row.id),
+                a=float(row.a),
+                b=float(row.b),
+                c=float(row.c),
+            )
+            for row in rows
+        ]
+
+    async def _fetch_question_detail(self, question_id: str) -> Optional[Dict]:
+        """Soru içeriğini DB'den çek."""
+        from sqlalchemy import text
+
+        stmt = text("""
+            SELECT id::text,
+                   question_text AS stem,
+                   json_build_object('A', option_a, 'B', option_b,
+                                     'C', option_c, 'D', option_d) AS options,
+                   correct_answer AS correct_option,
+                   irt_difficulty AS difficulty,
+                   irt_discrimination AS discrimination,
+                   irt_guessing AS guessing,
+                   primary_topic_id::text AS topic_id,
+                   subject_area AS subject_id
+            FROM question_bank
+            WHERE id = :qid AND is_active = TRUE
+        """)
+        result = await self.db.execute(stmt, {"qid": question_id})
+        row = result.fetchone()
+        if not row:
+            return None
+        return {
+            "question_id":    row.id,
+            "stem":           row.stem,
+            "options":        row.options,
+            "topic_id":       row.topic_id,
+            "subject_id":     row.subject_id,
+            "irt": {
+                "difficulty":      round(float(row.difficulty), 4),
+                "discrimination":  round(float(row.discrimination), 4),
+                "guessing":        round(float(row.guessing), 4),
+            },
+        }
+
+    # ---- Ana API ----
+
+    async def start_session(
+        self,
+        user_id: str,
+        subject_id: str,
+        placement_theta: float = 0.0,
+    ) -> Dict[str, Any]:
+        """
+        Yeni CAT oturumu başlat.
+
+        1. Önceki aktif oturumu iptal et (aynı kullanıcı + konu)
+        2. Yeni CATState oluştur
+        3. İlk soruyu seç (warm-up: kolay soru)
+        4. Redis'e yaz
+        5. Soru + session_id döndür
+
+        Döndürür:
+          {
+            session_id: str,
+            question:   {question_id, stem, options, ...},
+            theta:      float,
+            se:         float,
+            n_questions: 0,
+            phase:      "warm_up"
+          }
+        """
+        session_id = str(uuid.uuid4())
+        now_iso = datetime.now(timezone.utc).isoformat()
+
+        # BUG-6 FIX: Önceki aktif oturumu Redis'ten temizle
+        prev_key = f"cat:active:{user_id}:{subject_id}"
+        prev_session_id = await self.redis.get(prev_key)
+        if prev_session_id:
+            prev_id = prev_session_id.decode() if isinstance(prev_session_id, bytes) else prev_session_id
+            prev_state = await self._read_state(prev_id)
+            if prev_state and prev_state.is_active():
+                prev_state.state = "abandoned"
+                prev_state.termination_reason = "new_session_started"
+                await self._write_state(prev_state)
+
+        state = CATState(
+            session_id=session_id,
+            user_id=user_id,
+            subject_id=subject_id,
+            theta=placement_theta,
+            se=1.0,
+            started_at=now_iso,
+        )
+
+        # İlk soru: warm-up (kolay)
+        candidates = await self._get_candidate_questions(
+            subject_id, placement_theta, warm_up=True
+        )
+
+        if not candidates:
+            # Warm-up sorusu yoksa normal havuza geç
+            candidates = await self._get_candidate_questions(
+                subject_id, placement_theta, warm_up=False
+            )
+
+        if not candidates:
+            raise ValueError(f"Konu {subject_id} için soru bulunamadı")
+
+        first_item = select_next_question(
+            theta=state.theta,
+            candidates=candidates,
+            answered_ids=set(),
+            epsilon=0.0,   # ilk soruda exploration yok, en kolay olanı ver
+        )
+
+        # BUG-7 FIX: first_item None kontrolü
+        if first_item is None:
+            raise ValueError(f"Konu {subject_id} için uygun soru seçilemedi")
+
+        question_detail = await self._fetch_question_detail(first_item.question_id)
+
+        await self._write_state(state)
+        # Aktif oturum kaydını Redis'e yaz (önceki iptal için)
+        await self.redis.setex(prev_key, CAT_SESSION_TTL, session_id)
+
+        return {
+            "session_id":   session_id,
+            "question":     question_detail,
+            "theta":        state.theta,
+            "se":           state.se,
+            "n_questions":  0,
+            "phase":        "warm_up",
+            "is_complete":  False,
+        }
+
+    async def submit_answer(
+        self,
+        session_id: str,
+        question_id: str,
+        is_correct: bool,
+        response_ms: Optional[int] = None,
+    ) -> Dict[str, Any]:
+        """
+        Yanıtı işle ve bir sonraki soruyu getir.
+
+        TEMEL AKIŞ:
+          1. Redis'ten state oku                     (~1ms)
+          2. Yanıtı state'e ekle
+          3. EAP ile θ ve SE güncelle               (~5ms)
+          4. Bitiş kontrolü yap
+          5a. Bitmişse: DB'ye oturum yaz, state'i kapat
+          5b. Bitmemişse: sonraki soruyu seç        (~10ms)
+          6. State'i Redis'e geri yaz               (~1ms)
+          7. Sonucu döndür
+
+        Toplam: ~20ms (DB round-trip YOK, sadece Redis)
+
+        Döndürür:
+          {
+            is_complete:       bool,
+            theta:             float,
+            se:                float,
+            n_questions:       int,
+            termination_reason: str | None,
+            next_question:     dict | None,
+            phase:             str,
+            feedback:          dict   # doğru mu, açıklama
+          }
+        """
+        # 1. Redis'ten oku
+        state = await self._read_state(session_id)
+        if state is None:
+            raise ValueError(f"Oturum bulunamadı veya süresi dolmuş: {session_id}")
+        if not state.is_active():
+            raise ValueError(f"Oturum zaten tamamlanmış: {session_id} ({state.state})")
+
+        # 2. Yanıtı ekle
+        state.answered_ids.append(question_id)
+        state.responses.append(1 if is_correct else 0)
+        state.n_questions += 1
+
+        # Soru parametrelerini item_params'a ekle (EAP için şart)
+        q_detail = await self._fetch_question_detail(question_id)
+        if q_detail:
+            state.item_params.append({
+                "question_id": question_id,
+                "a": q_detail["irt"]["discrimination"],
+                "b": q_detail["irt"]["difficulty"],
+                "c": q_detail["irt"]["guessing"],
+            })
+        else:
+            # Soru bulunamazsa varsayılan IRT parametreleri kullan
+            # responses ile item_params eşit uzunlukta kalmalı
+            state.item_params.append({
+                "question_id": question_id,
+                "a": 1.0, "b": 0.0, "c": 0.25,
+            })
+
+        # 3. EAP güncelle
+        irt_result: IRTResult = eap_update(
+            responses=state.responses,
+            item_params=state.get_item_params_objects(),
+        )
+        state.theta = irt_result.theta
+        state.se    = irt_result.se
+
+        # Warm-up tamamlandı mı? (ilk 3 soru)
+        if state.n_questions >= 3:
+            state.warm_up_done = True
+
+        # 4. Bitiş kontrolü
+        terminate, reason = should_terminate(state.se, state.n_questions)
+
+        if terminate:
+            # 5a. Oturumu kapat
+            state.state              = "completed"
+            state.termination_reason = reason
+            await self._write_state(state)
+
+            # DB'ye toplu kayıt (async, non-blocking tercih edilir)
+            await self._persist_session_to_db(state)
+
+            # θ cache'ini güncelle
+            await self._update_theta_cache(state)
+
+            return {
+                "is_complete":        True,
+                "theta":              state.theta,
+                "se":                 state.se,
+                "n_questions":        state.n_questions,
+                "termination_reason": reason,
+                "next_question":      None,
+                "phase":              "completed",
+                "feedback":           {"is_correct": is_correct},
+            }
+
+        # 5b. Sonraki soruyu seç
+        phase = "warm_up" if not state.warm_up_done else "core"
+        candidates = await self._get_candidate_questions(
+            state.subject_id,
+            state.theta,
+            warm_up=(not state.warm_up_done),
+        )
+
+        next_item = select_next_question(
+            theta=state.theta,
+            candidates=candidates,
+            answered_ids=set(state.answered_ids),
+            epsilon=0.20,
+        )
+
+        if next_item is None:
+            # Havuz tükendi → oturumu bitir
+            state.state              = "completed"
+            state.termination_reason = "pool_exhausted"
+            await self._write_state(state)
+            await self._persist_session_to_db(state)
+            return {
+                "is_complete":        True,
+                "theta":              state.theta,
+                "se":                 state.se,
+                "n_questions":        state.n_questions,
+                "termination_reason": "pool_exhausted",
+                "next_question":      None,
+                "phase":              "completed",
+                "feedback":           {"is_correct": is_correct},
+            }
+
+        next_question_detail = await self._fetch_question_detail(next_item.question_id)
+
+        # 6. State'i Redis'e geri yaz
+        await self._write_state(state)
+
+        return {
+            "is_complete":        False,
+            "theta":              state.theta,
+            "se":                 state.se,
+            "n_questions":        state.n_questions,
+            "termination_reason": None,
+            "next_question":      next_question_detail,
+            "phase":              phase,
+            "feedback":           {"is_correct": is_correct},
+        }
+
+    async def get_session_state(self, session_id: str) -> Optional[CATState]:
+        """Mevcut oturum durumunu getir."""
+        return await self._read_state(session_id)
+
+    async def abandon_session(self, session_id: str) -> None:
+        """Oturumu iptal et."""
+        state = await self._read_state(session_id)
+        if state and state.is_active():
+            state.state              = "abandoned"
+            state.termination_reason = "user_abandoned"
+            await self._write_state(state)
+            await self._persist_session_to_db(state)
+
+    # ---- DB Kalıcılık ----
+
+    async def _persist_session_to_db(self, state: CATState) -> None:
+        """
+        Tamamlanan oturumu PostgreSQL'e yaz.
+
+        Bu fonksiyon sadece oturum bittiğinde çağrılır.
+        Her yanıtta DB yazımı yapmak yerine,
+        sadece son durumu toplu olarak kaydediyoruz.
+        """
+        from sqlalchemy import text
+
+        stmt = text("""
+            INSERT INTO kiro2_cat_sessions (
+                id, user_id, subject_id,
+                theta_final, se_final,
+                n_questions, started_at, completed_at,
+                termination_reason, state
+            ) VALUES (
+                :session_id, :user_id, :subject_id,
+                :theta, :se,
+                :n_questions, :started_at, NOW(),
+                :termination_reason, :state
+            )
+            ON CONFLICT (id) DO UPDATE SET
+                theta_final   = EXCLUDED.theta_final,
+                se_final      = EXCLUDED.se_final,
+                n_questions   = EXCLUDED.n_questions,
+                completed_at  = NOW(),
+                state         = EXCLUDED.state
+        """)
+        from datetime import datetime
+        started_dt = (
+            datetime.fromisoformat(state.started_at)
+            if isinstance(state.started_at, str) and state.started_at
+            else datetime.utcnow()
+        )
+        await self.db.execute(stmt, {
+            "session_id":         state.session_id,
+            "user_id":            state.user_id,
+            "subject_id":         state.subject_id,
+            "theta":              state.theta,
+            "se":                 state.se,
+            "n_questions":        state.n_questions,
+            "started_at":         started_dt,
+            "termination_reason": state.termination_reason,
+            "state":              state.state,
+        })
+
+        # Her yanıtı learning_events'e yaz
+        for i, (q_id, resp) in enumerate(
+            zip(state.answered_ids, state.responses)
+        ):
+            params_raw = state.item_params[i] if i < len(state.item_params) else {}
+            event_stmt = text("""
+                INSERT INTO kiro2_learning_events (
+                    occurred_at, user_id, question_id,
+                    event_type, is_correct, session_id
+                ) VALUES (
+                    NOW(), :user_id, :question_id,
+                    'cat_answer', :is_correct, :session_id
+                )
+            """)
+            await self.db.execute(event_stmt, {
+                "user_id":     state.user_id,
+                "question_id": q_id,
+                "is_correct":  bool(resp),
+                "session_id":  state.session_id,
+            })
+
+        # ── user_theta UPSERT ─────────────────────────────────────────
+        # CAT biter bitmez IRT θ tahminini user_theta tablosuna yaz.
+        # LearningPathOrchestrator bu tabloyu okur — eksik olursa ZPD hesaplanamaz.
+        theta_stmt = text("""
+            INSERT INTO user_theta (user_id, subject_area, theta_estimate, theta_se, response_count, last_updated)
+            VALUES (:user_id, :subject_area, :theta, :se, :n_questions, NOW())
+            ON CONFLICT (user_id, subject_area) DO UPDATE SET
+                theta_estimate = EXCLUDED.theta_estimate,
+                theta_se       = EXCLUDED.theta_se,
+                response_count = user_theta.response_count + EXCLUDED.response_count,
+                last_updated   = NOW()
+        """)
+        await self.db.execute(theta_stmt, {
+            "user_id":      state.user_id,
+            "subject_area": state.subject_id,
+            "theta":        state.theta,
+            "se":           state.se,
+            "n_questions":  state.n_questions,
+        })
+
+        await self.db.commit()
+
+        # BUG-12 FIX: FSRS user_item_fsrs tablosunu güncelle
+        # learning_events yazıldıktan sonra toplu FSRS güncellemesi yap
+        try:
+            from app.services.fsrs_service import FSRSService
+            fsrs_svc = FSRSService(self.db)
+            reviews = [
+                {
+                    "user_id":     state.user_id,
+                    "question_id": q_id,
+                    "is_correct":  bool(resp),
+                    "response_ms": None,
+                    "item_b": state.item_params[i].get("b") if i < len(state.item_params) else None,
+                }
+                for i, (q_id, resp) in enumerate(zip(state.answered_ids, state.responses))
+            ]
+            await fsrs_svc.apply_batch_reviews(reviews)
+        except Exception as exc:
+            import logging
+            logging.getLogger("kiro2.cat").warning(
+                f"FSRS batch update başarısız (non-critical): {exc}"
+            )
+
+    async def _update_theta_cache(self, state: CATState) -> None:
+        """Kullanıcının θ tahminini Redis'e cache'le."""
+        key = f"theta:{state.user_id}:{state.subject_id}"
+        await self.redis.setex(
+            key,
+            THETA_CACHE_TTL,
+            str(state.theta),
+        )

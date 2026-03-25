@@ -239,6 +239,12 @@ export const ModernStudentDashboard: React.FC = () => {
       gradient: 'linear-gradient(135deg, #0f766e 0%, #10b981 100%)',
       path: '/learning-path-map',
     },
+    {
+      title: 'Veli Paneli',
+      icon: <School sx={{ fontSize: 32 }} />,
+      gradient: 'linear-gradient(135deg, #92400e 0%, #d97706 100%)',
+      path: '/parent-new',
+    },
   ];
 
   // Format relative time from ISO date string

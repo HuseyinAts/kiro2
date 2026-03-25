@@ -1,385 +1,109 @@
 /**
- * PlacementAssessmentPage — F5: Neural Network Placement Assessment
- *
- * Adaptive 16-question assessment using Maximum Fisher Information selection
- * and Bayesian posterior ability estimation. Replaces the 10 fixed-question onboarding.
+ * PlacementAssessmentPage — /assessment route
+ * Yeni /api/v1/placement API ile çalışır
  */
-import { useState, useCallback } from 'react';
+import { useState } from 'react';
 import {
-  Box,
-  Button,
-  Card,
-  CardContent,
-  CircularProgress,
-  LinearProgress,
-  Typography,
-  Alert,
-  Chip,
-  Stack,
-  Paper,
-  Tooltip,
+  Container, Typography, Box, Grid, Card,
+  CardActionArea, Stack, Button, Alert, Chip,
 } from '@mui/material';
-import {
-  PlayArrow as StartIcon,
-  CheckCircle as CorrectIcon,
-  Cancel as WrongIcon,
-  Assessment as AssessmentIcon,
-  ArrowForward as NextIcon,
-} from '@mui/icons-material';
+import { ArrowBack } from '@mui/icons-material';
+import { useNavigate } from 'react-router-dom';
+import { PlacementWidget } from '../components/CAT/PlacementWidget';
 
-interface AssessmentQuestion {
-  question_id: string;
-  question_number: number;
-  total_questions: number;
-  question_text: string;
-  options: Record<string, string>;
-  subject: string;
-  topic: string;
-  difficulty: number;
-  ability_estimate: number;
-  confidence_interval: [number, number];
-}
+const SUBJECTS = [
+  { id: 'matematik', name: 'Matematik', emoji: '🔢' },
+  { id: 'turkce',    name: 'Türkçe',    emoji: '📖' },
+  { id: 'fizik',     name: 'Fizik',     emoji: '⚛️' },
+  { id: 'kimya',     name: 'Kimya',     emoji: '🧪' },
+  { id: 'biyoloji',  name: 'Biyoloji',  emoji: '🧬' },
+  { id: 'tarih',     name: 'Tarih',     emoji: '🏛️' },
+];
 
-interface AssessmentResult {
-  knowledge_state: Record<string, {
-    mastery: number;
-    confidence: string;
-    response_count: number;
-    topics: Record<string, number>;
-  }>;
-  overall_ability: number;
-  total_questions: number;
-  total_correct: number;
-}
-
-type PageState = 'intro' | 'assessment' | 'answering' | 'feedback' | 'loading-next' | 'result';
+const SCHOOL_TYPES = [
+  { id: 'default', label: 'Standart' },
+  { id: 'fen',     label: 'Fen Lisesi' },
+  { id: 'anadolu', label: 'Anadolu Lisesi' },
+  { id: 'meslek',  label: 'Meslek Lisesi' },
+];
 
 export default function PlacementAssessmentPage() {
-  const [state, setState] = useState<PageState>('intro');
-  const [sessionId, setSessionId] = useState<string | null>(null);
-  const [currentQuestion, setCurrentQuestion] = useState<AssessmentQuestion | null>(null);
-  const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
-  const [lastCorrect, setLastCorrect] = useState<boolean | null>(null);
-  const [result, setResult] = useState<AssessmentResult | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  const [answers, setAnswers] = useState<Array<{ correct: boolean }>>([]);
+  const navigate = useNavigate();
+  const [selectedSubject, setSelectedSubject] = useState<typeof SUBJECTS[0] | null>(null);
+  const [schoolType, setSchoolType] = useState('default');
+  const [results, setResults] = useState<Record<string, { level_label: string; theta: number }>>({});
 
-  const handleStart = useCallback(async () => {
-    setState('assessment');
-    setError(null);
-    try {
-      const res = await fetch('/api/v1/assessment/start', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify({ subject: 'general' }),
-      });
-      if (!res.ok) throw new Error('Değerlendirme başlatılamadı');
-      const data = await res.json();
-      setSessionId(data.session_id);
-      setCurrentQuestion(data.first_question);
-      setState('answering');
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Hata oluştu');
-      setState('intro');
-    }
-  }, []);
-
-  const handleAnswer = useCallback(async (answer: string) => {
-    if (!sessionId || !currentQuestion) return;
-
-    setSelectedAnswer(answer);
-    setState('feedback');
-
-    try {
-      const res = await fetch('/api/v1/assessment/answer', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify({
-          session_id: sessionId,
-          question_id: currentQuestion.question_id,
-          answer,
-        }),
-      });
-      if (!res.ok) throw new Error('Cevap gönderilemedi');
-      const data = await res.json();
-
-      const isCorrect = data.is_correct;
-      setLastCorrect(isCorrect);
-      setAnswers(prev => [...prev, { correct: isCorrect }]);
-
-      // Short delay to show feedback before loading next
-      setTimeout(async () => {
-        if (data.is_complete) {
-          // Fetch final results
-          try {
-            const resultRes = await fetch(`/api/v1/assessment/result?session_id=${sessionId}`, {
-              credentials: 'include',
-            });
-            if (resultRes.ok) {
-              const resultData = await resultRes.json();
-              setResult(resultData);
-            }
-          } catch {
-            // Result fetch failed, show basic result
-          }
-          setState('result');
-        } else if (data.next_question) {
-          setCurrentQuestion(data.next_question);
-          setSelectedAnswer(null);
-          setLastCorrect(null);
-          setState('answering');
-        }
-      }, 1200);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Hata oluştu');
-    }
-  }, [sessionId, currentQuestion]);
-
-  const progress = currentQuestion
-    ? (currentQuestion.question_number / currentQuestion.total_questions) * 100
-    : 0;
+  const handleComplete = (r: { theta: number; level: string; level_label: string }) => {
+    if (!selectedSubject) return;
+    setResults(prev => ({ ...prev, [selectedSubject.id]: { theta: r.theta, level_label: r.level_label } }));
+    setTimeout(() => setSelectedSubject(null), 3000);
+  };
 
   return (
-    <Box sx={{ maxWidth: 700, mx: 'auto', p: 2 }}>
-      {error && (
-        <Alert severity="error" sx={{ mb: 2 }} onClose={() => setError(null)}>
-          {error}
+    <Container maxWidth="md" sx={{ py: 4 }}>
+      <Stack direction="row" alignItems="center" spacing={2} mb={3}>
+        <Button startIcon={<ArrowBack />} onClick={() => navigate(-1)} variant="text">Geri</Button>
+        <Box>
+          <Typography variant="h5" fontWeight={700}>🎓 Seviye Tespiti</Typography>
+          <Typography variant="caption" color="text.secondary">
+            Her ders için seviyeni belirle
+          </Typography>
+        </Box>
+      </Stack>
+
+      {!selectedSubject && (
+        <Box mb={3}>
+          <Typography variant="subtitle2" fontWeight={600} mb={1}>Okul Türü</Typography>
+          <Stack direction="row" spacing={1} flexWrap="wrap">
+            {SCHOOL_TYPES.map(st => (
+              <Chip key={st.id} label={st.label} clickable
+                onClick={() => setSchoolType(st.id)}
+                color={schoolType === st.id ? 'primary' : 'default'}
+                variant={schoolType === st.id ? 'filled' : 'outlined'} />
+            ))}
+          </Stack>
+        </Box>
+      )}
+
+      {!selectedSubject && Object.keys(results).length > 0 && (
+        <Alert severity="success" sx={{ mb: 3 }}>
+          <strong>Tamamlanan:</strong>{' '}
+          {Object.entries(results).map(([id, r]) => `${SUBJECTS.find(x=>x.id===id)?.name}: ${r.level_label}`).join(' • ')}
         </Alert>
       )}
 
-      {/* Intro */}
-      {state === 'intro' && (
-        <Card variant="outlined">
-          <CardContent sx={{ textAlign: 'center', py: 4 }}>
-            <AssessmentIcon sx={{ fontSize: 64, color: 'primary.main', mb: 2 }} />
-            <Typography variant="h5" fontWeight={700} gutterBottom>
-              Seviye Belirleme Testi
-            </Typography>
-            <Typography color="text.secondary" sx={{ mb: 3, maxWidth: 480, mx: 'auto' }}>
-              16 soruluk adaptif test ile bilgi seviyeni belirleyelim.
-              Her soru senin performansına göre otomatik seçilir.
-              Sonunda konu bazlı güçlü ve zayıf yönlerini göreceksin.
-            </Typography>
-            <Stack spacing={1} sx={{ mb: 3, textAlign: 'left', maxWidth: 320, mx: 'auto' }}>
-              <Typography variant="body2">✅ 16 soru — yaklaşık 10-15 dakika</Typography>
-              <Typography variant="body2">✅ Her soru seviyene göre ayarlanır</Typography>
-              <Typography variant="body2">✅ Sonunda kişiselleştirilmiş çalışma planı</Typography>
-            </Stack>
-            <Button
-              variant="contained"
-              size="large"
-              startIcon={<StartIcon />}
-              onClick={handleStart}
-            >
-              Teste Başla
-            </Button>
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Assessment Loading */}
-      {state === 'assessment' && (
-        <Card variant="outlined">
-          <CardContent sx={{ textAlign: 'center', py: 6 }}>
-            <CircularProgress size={48} sx={{ mb: 2 }} />
-            <Typography>Sorular hazırlanıyor...</Typography>
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Question */}
-      {(state === 'answering' || state === 'feedback') && currentQuestion && (
-        <Box>
-          {/* Progress bar */}
-          <Box sx={{ mb: 2 }}>
-            <Stack direction="row" justifyContent="space-between" sx={{ mb: 0.5 }}>
-              <Typography variant="caption" color="text.secondary">
-                Soru {currentQuestion.question_number} / {currentQuestion.total_questions}
-              </Typography>
-              <Stack direction="row" spacing={0.5}>
-                {answers.map((a, i) => (
-                  <Box
-                    key={i}
-                    sx={{
-                      width: 8,
-                      height: 8,
-                      borderRadius: '50%',
-                      bgcolor: a.correct ? 'success.main' : 'error.main',
-                    }}
-                  />
-                ))}
-              </Stack>
-            </Stack>
-            <LinearProgress variant="determinate" value={progress} sx={{ height: 6, borderRadius: 3 }} />
-          </Box>
-
-          {/* Subject/topic chips */}
-          <Stack direction="row" spacing={0.5} sx={{ mb: 2 }}>
-            <Chip label={currentQuestion.subject} size="small" color="primary" />
-            <Chip label={currentQuestion.topic} size="small" variant="outlined" />
-            <Tooltip title={`Zorluk: ${currentQuestion.difficulty.toFixed(1)}`}>
-              <Chip
-                label={
-                  currentQuestion.difficulty < -1 ? 'Kolay' :
-                  currentQuestion.difficulty < 1 ? 'Orta' : 'Zor'
-                }
-                size="small"
-                color={
-                  currentQuestion.difficulty < -1 ? 'success' :
-                  currentQuestion.difficulty < 1 ? 'warning' : 'error'
-                }
-                variant="outlined"
-              />
-            </Tooltip>
-          </Stack>
-
-          {/* Question text */}
-          <Card variant="outlined" sx={{ mb: 2 }}>
-            <CardContent>
-              <Typography variant="body1" sx={{ whiteSpace: 'pre-wrap', lineHeight: 1.8 }}>
-                {currentQuestion.question_text}
-              </Typography>
-            </CardContent>
-          </Card>
-
-          {/* Options */}
-          <Stack spacing={1}>
-            {Object.entries(currentQuestion.options).map(([key, value]) => {
-              const isSelected = selectedAnswer === key;
-              const showFeedback = state === 'feedback' && isSelected;
-
-              return (
-                <Paper
-                  key={key}
-                  variant="outlined"
-                  sx={{
-                    p: 1.5,
-                    cursor: state === 'answering' ? 'pointer' : 'default',
-                    borderColor: showFeedback
-                      ? (lastCorrect ? 'success.main' : 'error.main')
-                      : isSelected ? 'primary.main' : 'divider',
-                    borderWidth: isSelected ? 2 : 1,
-                    bgcolor: showFeedback
-                      ? (lastCorrect ? 'success.light' : 'error.light')
-                      : isSelected ? 'primary.light' : 'background.paper',
-                    opacity: state === 'feedback' && !isSelected ? 0.6 : 1,
-                    transition: 'all 0.2s',
-                    '&:hover': state === 'answering' ? { borderColor: 'primary.main', bgcolor: 'action.hover' } : {},
-                  }}
-                  onClick={() => state === 'answering' && handleAnswer(key)}
-                >
-                  <Stack direction="row" alignItems="center" spacing={1}>
-                    <Chip label={key} size="small" sx={{ fontWeight: 700, minWidth: 28 }} />
-                    <Typography variant="body2">{value}</Typography>
-                    {showFeedback && (
-                      lastCorrect
-                        ? <CorrectIcon color="success" sx={{ ml: 'auto' }} />
-                        : <WrongIcon color="error" sx={{ ml: 'auto' }} />
-                    )}
-                  </Stack>
-                </Paper>
-              );
-            })}
-          </Stack>
-
-          {/* Confidence band */}
-          {currentQuestion.confidence_interval && (
-            <Box sx={{ mt: 2, textAlign: 'center' }}>
-              <Typography variant="caption" color="text.secondary">
-                Tahmin güveni: {(
-                  (currentQuestion.confidence_interval[1] - currentQuestion.confidence_interval[0]) < 1.5
-                    ? 'Yüksek' : 'Gelişiyor'
-                )}
-              </Typography>
-            </Box>
-          )}
-        </Box>
-      )}
-
-      {/* Loading next question */}
-      {state === 'loading-next' && (
-        <Box sx={{ textAlign: 'center', py: 4 }}>
-          <CircularProgress size={32} />
-          <Typography variant="body2" sx={{ mt: 1 }}>Sonraki soru hazırlanıyor...</Typography>
-        </Box>
-      )}
-
-      {/* Result */}
-      {state === 'result' && (
-        <Box>
-          <Card variant="outlined" sx={{ mb: 2 }}>
-            <CardContent sx={{ textAlign: 'center' }}>
-              <AssessmentIcon sx={{ fontSize: 48, color: 'primary.main', mb: 1 }} />
-              <Typography variant="h5" fontWeight={700} gutterBottom>
-                Değerlendirme Tamamlandı!
-              </Typography>
-              {result && (
-                <Typography color="text.secondary">
-                  {result.total_correct}/{result.total_questions} doğru
-                </Typography>
-              )}
-            </CardContent>
-          </Card>
-
-          {/* Knowledge state per subject */}
-          {result?.knowledge_state && (
-            <Stack spacing={1.5}>
-              {Object.entries(result.knowledge_state).map(([subject, data]) => (
-                <Card key={subject} variant="outlined">
-                  <CardContent sx={{ py: 1.5 }}>
-                    <Stack direction="row" alignItems="center" justifyContent="space-between">
-                      <Typography variant="subtitle2" fontWeight={600}>
-                        {subject}
-                      </Typography>
-                      <Chip
-                        label={`%${Math.round(data.mastery * 100)}`}
-                        size="small"
-                        color={
-                          data.mastery >= 0.7 ? 'success' :
-                          data.mastery >= 0.4 ? 'warning' : 'error'
-                        }
-                      />
-                    </Stack>
-                    <LinearProgress
-                      variant="determinate"
-                      value={data.mastery * 100}
-                      sx={{ mt: 1, height: 6, borderRadius: 3 }}
-                      color={
-                        data.mastery >= 0.7 ? 'success' :
-                        data.mastery >= 0.4 ? 'warning' : 'error'
-                      }
-                    />
-                    {data.topics && Object.keys(data.topics).length > 0 && (
-                      <Stack direction="row" spacing={0.5} sx={{ mt: 1, flexWrap: 'wrap', gap: 0.5 }}>
-                        {Object.entries(data.topics).map(([topic, score]) => (
-                          <Chip
-                            key={topic}
-                            label={`${topic}: %${Math.round(score * 100)}`}
-                            size="small"
-                            variant="outlined"
-                          />
-                        ))}
-                      </Stack>
-                    )}
-                  </CardContent>
+      {!selectedSubject ? (
+        <Grid container spacing={2}>
+          {SUBJECTS.map(subj => {
+            const done = results[subj.id];
+            return (
+              <Grid item xs={6} sm={4} key={subj.id}>
+                <Card variant={done ? 'outlined' : 'elevation'}
+                  sx={{ borderColor: done ? 'success.main' : undefined }}>
+                  <CardActionArea onClick={() => setSelectedSubject(subj)} sx={{ p: 2.5, textAlign: 'center' }}>
+                    <Typography fontSize={40}>{subj.emoji}</Typography>
+                    <Typography variant="body2" fontWeight={600} mt={1}>{subj.name}</Typography>
+                    {done && <Chip size="small" label={done.level_label} color="success" sx={{ mt: 1 }} />}
+                  </CardActionArea>
                 </Card>
-              ))}
-            </Stack>
-          )}
-
-          <Button
-            variant="contained"
-            fullWidth
-            endIcon={<NextIcon />}
-            sx={{ mt: 3 }}
-            href="/learning-path"
-          >
-            Çalışma Planına Git
-          </Button>
+              </Grid>
+            );
+          })}
+        </Grid>
+      ) : (
+        <Box>
+          <Stack direction="row" alignItems="center" spacing={1} mb={3}>
+            <Button size="small" onClick={() => setSelectedSubject(null)} startIcon={<ArrowBack />}>Ders Seç</Button>
+            <Typography variant="h6" fontWeight={600}>{selectedSubject.emoji} {selectedSubject.name}</Typography>
+          </Stack>
+          <PlacementWidget
+            subjectId={selectedSubject.id}
+            subjectName={selectedSubject.name}
+            schoolType={schoolType}
+            onComplete={handleComplete}
+          />
         </Box>
       )}
-    </Box>
+    </Container>
   );
 }

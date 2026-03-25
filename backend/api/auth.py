@@ -381,67 +381,69 @@ async def database_authenticate(
         },
     },
 )
-async def kullanici_kayit(kullanici_data: KullaniciOlustur) -> dict[str, Any]:
+async def kullanici_kayit(
+    kullanici_data: KullaniciOlustur,
+    db: AsyncSession = Depends(get_db),
+) -> dict[str, Any]:
     """
-    Yeni kullanıcı kaydı oluştur
+    Yeni kullanıcı kaydı — PostgreSQL'e yazar (DB-backed).
 
-    Bu endpoint ile platformda yeni kullanıcı hesabı oluşturabilirsiniz.
-    Kullanıcı kayıt işlemi aşağıdaki adımları içerir:
-
-    1. E-posta adresinin benzersiz olduğu kontrol edilir
-    2. Şifre güvenlik politikalarına uygunluğu doğrulanır
-    3. Kullanıcı hesabı oluşturulur
-    4. Şifre güvenli bir şekilde hash'lenir (bcrypt)
-    5. Kullanıcı bilgileri döner
-
-    **Şifre Gereksinimleri (SECURITY):**
-    - Minimum 8 karakter
-    - En az bir büyük harf (A-Z)
-    - En az bir küçük harf (a-z)
-    - En az bir rakam (0-9)
-    - En az bir özel karakter (!@#$%^&* vb.)
-    - Yaygın kullanılan şifreler kabul edilmez (password123, 12345678, vb.)
-
-    **Kullanıcı Rolleri:**
-    - `ogrenci`: Öğrenci kullanıcı (varsayılan)
-    - `veli`: Veli kullanıcı
-    - `ogretmen`: Öğretmen kullanıcı
-    - `admin`: Sistem yöneticisi
-    - `super_admin`: Süper yönetici
-
-    **Request Body:**
-    ```json
-    {
-      "email": "ahmet@example.com",
-      "ad_soyad": "Ahmet Yılmaz",
-      "sifre": "GucluSifre123!",
-      "rol": "ogrenci",
-      "telefon": "+905551234567",
-      "aktif": true
-    }
-    ```
-
-    **Başarılı Yanıt (201) - Frontend Format:**
-    ```json
-    {
-      "success": true,
-      "message": "Kullanıcı kaydı başarıyla oluşturuldu"
-    }
-    ```
-
-    **Hata Durumları:**
-    - **400**: E-posta zaten kayıtlı veya şifre güvenlik gereksinimlerini karşılamıyor
-    - **422**: Geçersiz e-posta formatı veya eksik zorunlu alanlar
+    Request Body:
+      email, sifre, ad_soyad, rol (ogrenci/veli/ogretmen/admin)
     """
-    try:
-        await kullanici_servisi.kullanici_olustur(kullanici_data)
-        # Return frontend-compatible format {success, message}
-        return {
-            "success": True,
-            "message": "Kullanıcı kaydı başarıyla oluşturuldu"
-        }
-    except ValueError as e:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
+    import uuid as _uuid
+    from sqlalchemy import text as _text
+
+    # Rol eşleştirme: Türkçe → enum değeri
+    ROL_MAP = {
+        "ogrenci": "STUDENT", "student": "STUDENT",
+        "veli": "PARENT",    "parent": "PARENT",
+        "ogretmen": "TEACHER","teacher": "TEACHER",
+        "admin": "ADMIN",
+    }
+    rol_str = ROL_MAP.get(str(kullanici_data.rol).lower(), "STUDENT")
+
+    # E-posta benzersizlik kontrolü
+    dup = await db.execute(
+        _text("SELECT id FROM users WHERE email = :email"),
+        {"email": kullanici_data.email},
+    )
+    if dup.fetchone():
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Bu e-posta adresi zaten kullanımda",
+        )
+
+    # Şifre hash
+    _pwd_ctx = CryptContext(schemes=["bcrypt"], deprecated="auto")
+    pw_hash = _pwd_ctx.hash(kullanici_data.sifre)
+
+    # Ad / soyad ayır
+    parts = (kullanici_data.ad_soyad or "").strip().split(" ", 1)
+    first_name = parts[0] if parts else ""
+    last_name  = parts[1] if len(parts) > 1 else ""
+
+    user_id = str(_uuid.uuid4())
+
+    await db.execute(_text("""
+        INSERT INTO users
+            (id, email, username, password_hash, first_name, last_name,
+             role, is_active, is_verified, total_xp, level,
+             elo_rating, is_premium, is_parent, created_at, updated_at)
+        VALUES
+            (:id, :email, :username, :pw_hash, :first_name, :last_name,
+             CAST(:role AS userrole), TRUE, FALSE, 0, 1,
+             1200, FALSE, FALSE, NOW(), NOW())
+    """), {
+        "id": user_id, "email": kullanici_data.email,
+        "username": kullanici_data.email.split("@")[0],
+        "pw_hash": pw_hash, "first_name": first_name, "last_name": last_name,
+        "role": rol_str,
+    })
+    await db.commit()
+
+    logger.info(f"Yeni kullanıcı kaydı: {kullanici_data.email} ({rol_str})")
+    return {"success": True, "message": "Kullanıcı kaydı başarıyla oluşturuldu", "id": user_id}
 
 
 # English alias for registration endpoint
@@ -452,9 +454,12 @@ async def kullanici_kayit(kullanici_data: KullaniciOlustur) -> dict[str, Any]:
     status_code=status.HTTP_201_CREATED,
     include_in_schema=False,  # Hide from OpenAPI docs to avoid duplication
 )
-async def kullanici_kayit_en(kullanici_data: KullaniciOlustur) -> dict[str, Any]:
+async def kullanici_kayit_en(
+    kullanici_data: KullaniciOlustur,
+    db: AsyncSession = Depends(get_db),
+) -> dict[str, Any]:
     """English alias for /kayit - registration."""
-    return await kullanici_kayit(kullanici_data)
+    return await kullanici_kayit(kullanici_data, db)
 
 
 @router.post(
