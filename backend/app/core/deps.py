@@ -23,17 +23,7 @@ async def get_db() -> AsyncSession:
 
 async def get_redis():
     """Ham aioredis.Redis client dondurur."""
-    # Oncelik 1: main.get_redis() — kendi fallback zincirine sahip
-    try:
-        import main as _main
-
-        if hasattr(_main, "get_redis"):
-            client = await _main.get_redis()
-            if client is not None:
-                return client
-    except Exception:
-        pass
-    # Oncelik 2: cache_manager ic client
+    # Oncelik 1: cache_manager ic client (zaten baslangicta initialize ediliyor)
     try:
         from core.cache import cache_manager
 
@@ -43,15 +33,14 @@ async def get_redis():
             return cache_manager.redis
     except Exception:
         pass
-    # Oncelik 3: Dogrudan baglanti
+    # Oncelik 2: Dogrudan baglanti
     try:
         import os
 
         import redis.asyncio as aioredis
 
         _url = os.getenv("REDIS_URL", "redis://localhost:6379/0")
-        client = aioredis.from_url(_url, decode_responses=False)
-        return client
+        return aioredis.from_url(_url, decode_responses=False)
     except Exception:
         pass
     return None
