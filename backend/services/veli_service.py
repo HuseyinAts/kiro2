@@ -2,9 +2,10 @@
 Veli takip sistemi servisi
 TIMEZONE FIX: Using timezone-aware datetime
 """
+
 import uuid
-from datetime import datetime, timezone
-from typing import Any, Dict, List, Optional
+from datetime import UTC, datetime
+from typing import Any
 
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -30,24 +31,24 @@ class VeliRaporu(BaseModel):
     ortalama_basari_orani: float = Field(..., description="Ortalama başarı oranı (%)")
 
     # Performans Verileri
-    en_basarili_konular: List[str] = Field(
+    en_basarili_konular: list[str] = Field(
         default_factory=list, description="En başarılı konular"
     )
-    gelisim_gereken_konular: List[str] = Field(
+    gelisim_gereken_konular: list[str] = Field(
         default_factory=list, description="Gelişim gereken konular"
     )
     haftalik_ilerleme: str = Field(..., description="Haftalık ilerleme durumu")
 
     # Öneriler
-    veli_onerileri: List[str] = Field(
+    veli_onerileri: list[str] = Field(
         default_factory=list, description="Veli için öneriler"
     )
-    destek_alanlari: List[str] = Field(
+    destek_alanlari: list[str] = Field(
         default_factory=list, description="Destek alınması gereken alanlar"
     )
 
     # Meta Veriler
-    olusturma_tarihi: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    olusturma_tarihi: datetime = Field(default_factory=lambda: datetime.now(UTC))
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -61,9 +62,9 @@ class VeliOnayTalebi(BaseModel):
     talep_tipi: str = Field(..., description="Talep türü")
     talep_aciklamasi: str = Field(..., description="Talep açıklaması")
     durum: str = Field("beklemede", description="Onay durumu")
-    talep_tarihi: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
-    yanit_tarihi: Optional[datetime] = Field(None, description="Yanıt tarihi")
-    veli_notu: Optional[str] = Field(None, description="Veli notu")
+    talep_tarihi: datetime = Field(default_factory=lambda: datetime.now(UTC))
+    yanit_tarihi: datetime | None = Field(None, description="Yanıt tarihi")
+    veli_notu: str | None = Field(None, description="Veli notu")
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -74,51 +75,88 @@ class VeliServisi:
     def __init__(self) -> None:
         """Veli takip servisini başlatır."""
         # In-memory veri saklama (production'da database kullanılacak)
-        self.veli_raporlari: Dict[str, VeliRaporu] = {}
-        self.veli_onay_talepleri: Dict[str, VeliOnayTalebi] = {}
-        self.veli_bildirimleri: Dict[str, List[Bildirim]] = {}
-        self.cocuk_performans_verileri: Dict[str, Dict[str, Any]] = {}
+        self.veli_raporlari: dict[str, VeliRaporu] = {}
+        self.veli_onay_talepleri: dict[str, VeliOnayTalebi] = {}
+        self.veli_bildirimleri: dict[str, list[Bildirim]] = {}
+        self.cocuk_performans_verileri: dict[str, dict[str, Any]] = {}
 
-    async def veli_cocuklarini_getir(self, veli_id: str) -> List[Dict[str, Any]]:
-        """Velinin çocuklarının listesini getir"""
+    async def veli_cocuklarini_getir(self, veli_id: str) -> list[dict[str, Any]]:
+        """Velinin cocuklarinin listesini DB'den getir (SQLAlchemy session)"""
+        from sqlalchemy import text
+
+        from core.database import get_db_session_context
+
+        _ALLOWED_NAME_COLS = {"ad_soyad", "full_name", "name"}
+
         try:
-            # Veli profilini getir
-            veli_profili = await kullanici_servisi.veli_profili_getir(veli_id)
-            if not veli_profili:
-                raise ValueError("Veli profili bulunamadı")
-
-            cocuklar = []
-            for ogrenci_id in veli_profili.cocuk_ogrenci_ids:
-                # Öğrenci profilini getir
-                ogrenci_profili = await kullanici_servisi.ogrenci_profili_getir(
-                    ogrenci_id
+            async with get_db_session_context() as session:
+                # 1) Veli kullanicisinin DB'de var oldugunu dogrula
+                veli_row = await session.execute(
+                    text("SELECT id FROM users WHERE id = :veli_id"),
+                    {"veli_id": veli_id},
                 )
-                if ogrenci_profili:
-                    # Öğrenci kullanıcı bilgilerini getir
-                    kullanici = await kullanici_servisi.kullanici_getir(
-                        ogrenci_profili.kullanici_id
+                if not veli_row.first():
+                    raise ValueError("Veli profili bulunamadi")
+
+                # 2) parent_student_links tablosu var mi?
+                links_exist = await session.execute(
+                    text(
+                        "SELECT EXISTS("
+                        "  SELECT 1 FROM information_schema.tables"
+                        "  WHERE table_schema='public'"
+                        "    AND table_name='parent_student_links'"
+                        ")"
                     )
-                    if kullanici:
-                        cocuklar.append(
-                            {
-                                "ogrenci_id": ogrenci_id,
-                                "ad_soyad": kullanici.ad_soyad,
-                                "sinif_seviyesi": ogrenci_profili.sinif_seviyesi,
-                                "okul_adi": ogrenci_profili.okul_adi,
-                                "hedef_sinav": ogrenci_profili.hedef_sinav,
-                                "veli_onay": ogrenci_profili.veli_onay,
-                                "son_giris": kullanici.son_giris,
-                            }
-                        )
+                )
+                if not links_exist.scalar():
+                    return []
 
-            return cocuklar
+                # 3) ad_soyad kolonunu esnek bul (whitelist ile)
+                col_result = await session.execute(
+                    text(
+                        "SELECT column_name"
+                        " FROM information_schema.columns"
+                        " WHERE table_name='users'"
+                        "   AND column_name IN ('ad_soyad','full_name','name')"
+                        " LIMIT 1"
+                    )
+                )
+                name_col = col_result.scalar()
+                name_expr = name_col if name_col in _ALLOWED_NAME_COLS else "email"
 
+                # 4) Ana sorgu (name_expr whitelist'ten — SQL injection riski yok)
+                rows = await session.execute(
+                    text(
+                        f"SELECT u.id::text AS ogrenci_id,"
+                        f" u.{name_expr} AS ad_soyad,"
+                        f" u.email, u.created_at AS son_giris"
+                        f" FROM parent_student_links psl"
+                        f" JOIN users u ON u.id = psl.student_id"
+                        f" WHERE psl.parent_id = :veli_id"
+                    ),
+                    {"veli_id": veli_id},
+                )
+                return [
+                    {
+                        "ogrenci_id": r.ogrenci_id,
+                        "ad_soyad": r.ad_soyad or r.email,
+                        "sinif_seviyesi": None,
+                        "okul_adi": None,
+                        "hedef_sinav": "TYT/AYT",
+                        "veli_onay": True,
+                        "son_giris": r.son_giris,
+                    }
+                    for r in rows
+                ]
+
+        except ValueError:
+            raise
         except Exception as e:
-            raise ValueError(f"Çocuk listesi alınırken hata: {str(e)}")
+            raise ValueError(f"Cocuk listesi alinirken hata: {e!s}")
 
     async def cocuk_performansini_getir(
         self, veli_id: str, ogrenci_id: str
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Belirli bir çocuğun performans verilerini getir"""
         # CRITICAL SECURITY FIX: This function was returning 100% FRAUDULENT DATA to parents!
         # DISABLED until real database implementation is completed
@@ -182,10 +220,10 @@ class VeliServisi:
             return talep
 
         except Exception as e:
-            raise ValueError(f"Onay talebi oluşturulurken hata: {str(e)}")
+            raise ValueError(f"Onay talebi oluşturulurken hata: {e!s}")
 
     async def onay_talebi_yanitla(
-        self, veli_id: str, talep_id: str, onay: bool, not_: Optional[str] = None
+        self, veli_id: str, talep_id: str, onay: bool, not_: str | None = None
     ) -> VeliOnayTalebi:
         """Veli onay talebini yanıtla"""
         try:
@@ -215,9 +253,9 @@ class VeliServisi:
             return talep
 
         except Exception as e:
-            raise ValueError(f"Onay talebi yanıtlanırken hata: {str(e)}")
+            raise ValueError(f"Onay talebi yanıtlanırken hata: {e!s}")
 
-    async def veli_bildirimlerini_getir(self, veli_id: str) -> List[Bildirim]:
+    async def veli_bildirimlerini_getir(self, veli_id: str) -> list[Bildirim]:
         """Velinin bildirimlerini getir"""
         return self.veli_bildirimleri.get(veli_id, [])
 
@@ -244,7 +282,7 @@ class VeliServisi:
 
         return True
 
-    async def _mock_performans_verisi_olustur(self, ogrenci_id: str) -> Dict[str, Any]:
+    async def _mock_performans_verisi_olustur(self, ogrenci_id: str) -> dict[str, Any]:
         """
         DEPRECATED AND DISABLED: This function was generating 100% FRAUDULENT DATA!
 

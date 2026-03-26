@@ -3,14 +3,15 @@ Veli takip sistemi API endpoint'leri
 
 CODE QUALITY FIX: Improved exception handling, added path validation
 """
+
 import logging
-from datetime import datetime
-from typing import Any, Dict, List, Optional
+from datetime import UTC, datetime
+from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException, Path, status
-from core.dependencies import get_current_user
 from fastapi.security import HTTPBearer
 
+from core.dependencies import get_current_user
 from models import Kullanici, KullaniciRolu
 from models.dashboard import Bildirim
 from services.veli_service import VeliOnayTalebi, VeliRaporu, veli_servisi
@@ -27,9 +28,13 @@ async def mevcut_veli_getir(
     r = getattr(current_user, "role", None)
     role = (r.value if hasattr(r, "value") else str(r)).upper()
     if role not in ("PARENT", "ADMIN", "SUPER_ADMIN"):
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Bu islem icin veli yetkisi gerekli")
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Bu islem icin veli yetkisi gerekli",
+        )
     # Frozen pydantic yerine duck-typing wrapper kullan
     from types import SimpleNamespace
+
     veli = SimpleNamespace(
         kullanici_id=str(getattr(current_user, "id", "")),
         rol=KullaniciRolu.VELI,
@@ -39,7 +44,7 @@ async def mevcut_veli_getir(
     return veli
 
 
-@router.get("/cocuklar", response_model=List[Dict[str, Any]], summary="Çocuk Listesi")
+@router.get("/cocuklar", summary="Çocuk Listesi")
 async def cocuk_listesi_getir(mevcut_veli: Kullanici = Depends(mevcut_veli_getir)):
     """
     Velinin çocuklarının listesini getir
@@ -47,27 +52,17 @@ async def cocuk_listesi_getir(mevcut_veli: Kullanici = Depends(mevcut_veli_getir
     - **Döndürür**: Çocukların temel bilgileri ve durumları
     """
     try:
-        # Veli profili ID'sini kullanıcı ID'si olarak kullan (basit implementasyon)
         veli_id = mevcut_veli.kullanici_id
-
         cocuklar = await veli_servisi.veli_cocuklarini_getir(veli_id)
-
-        return {
-            "success": True,
-            "data": cocuklar,
-            "message": f"{len(cocuklar)} çocuk bulundu",
-        }
+        return cocuklar  # doğrudan liste → HTTP 200
 
     except ValueError as e:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Islem basarisiz. Lutfen tekrar deneyin.")
-    except (ConnectionError, TimeoutError) as e:
-        logger.error(f"Database/service connection error: {e}")
+        logger.error(f"veli_cocuklarini_getir ValueError: {e}")
         raise HTTPException(
-            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail="Servis geçici olarak kullanılamıyor, lütfen tekrar deneyin",
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(e),
         )
     except Exception as e:
-        # Log full error for debugging, but don't expose to client
         logger.error(f"Unexpected error in cocuk_listesi_getir: {e}", exc_info=True)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -77,7 +72,7 @@ async def cocuk_listesi_getir(mevcut_veli: Kullanici = Depends(mevcut_veli_getir
 
 @router.get(
     "/cocuk/{ogrenci_id}/performans",
-    response_model=Dict[str, Any],
+    response_model=dict[str, Any],
     summary="Çocuk Performansı",
 )
 async def cocuk_performansi_getir(
@@ -107,8 +102,11 @@ async def cocuk_performansi_getir(
             "message": "Performans verileri başarıyla alındı",
         }
 
-    except ValueError as e:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Islem basarisiz. Lutfen tekrar deneyin.")
+    except ValueError:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
+        )
     except PermissionError:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
@@ -149,8 +147,11 @@ async def haftalik_rapor_olustur(
 
         return rapor
 
-    except ValueError as e:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Islem basarisiz. Lutfen tekrar deneyin.")
+    except ValueError:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
+        )
     except Exception:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -159,7 +160,7 @@ async def haftalik_rapor_olustur(
 
 
 @router.get(
-    "/onay-talepleri", response_model=List[VeliOnayTalebi], summary="Onay Talepleri"
+    "/onay-talepleri", response_model=list[VeliOnayTalebi], summary="Onay Talepleri"
 )
 async def onay_talepleri_listesi(mevcut_veli: Kullanici = Depends(mevcut_veli_getir)):
     """
@@ -195,7 +196,7 @@ async def onay_talepleri_listesi(mevcut_veli: Kullanici = Depends(mevcut_veli_ge
 async def onay_talebi_yanitla(
     talep_id: str,
     onay: bool,
-    not_: Optional[str] = None,
+    not_: str | None = None,
     mevcut_veli: Kullanici = Depends(mevcut_veli_getir),
 ):
     """
@@ -212,8 +213,11 @@ async def onay_talebi_yanitla(
 
         return talep
 
-    except ValueError as e:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Islem basarisiz. Lutfen tekrar deneyin.")
+    except ValueError:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
+        )
     except Exception:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -221,7 +225,7 @@ async def onay_talebi_yanitla(
         )
 
 
-@router.get("/bildirimler", response_model=List[Bildirim], summary="Veli Bildirimleri")
+@router.get("/bildirimler", response_model=list[Bildirim], summary="Veli Bildirimleri")
 async def veli_bildirimleri(mevcut_veli: Kullanici = Depends(mevcut_veli_getir)):
     """
     Velinin bildirimlerini getir
@@ -262,10 +266,9 @@ async def bildirim_okundu_isaretle(
 
         if basarili:
             return {"success": True, "message": "Bildirim okundu olarak işaretlendi"}
-        else:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND, detail="Bildirim bulunamadı"
-            )
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Bildirim bulunamadı"
+        )
 
     except HTTPException:
         raise
@@ -278,7 +281,7 @@ async def bildirim_okundu_isaretle(
 
 @router.get(
     "/istatistikler",
-    response_model=Dict[str, Any],
+    response_model=dict[str, Any],
     summary="Veli Dashboard İstatistikleri",
 )
 async def veli_dashboard_istatistikleri(
@@ -301,7 +304,7 @@ async def veli_dashboard_istatistikleri(
             [
                 c
                 for c in cocuklar
-                if c.get("son_giris") and (datetime.now() - c["son_giris"]).days < 7
+                if c.get("son_giris") and (datetime.now(UTC) - c["son_giris"]).days < 7
             ]
         )
 
@@ -346,21 +349,28 @@ async def veli_dashboard_istatistikleri(
 @router.post(
     "/onay-talebi-olustur", response_model=VeliOnayTalebi, summary="Onay Talebi Oluştur"
 )
-async def onay_talebi_olustur(ogrenci_id: str, talep_tipi: str, aciklama: str):
+async def onay_talebi_olustur(
+    talep_tipi: str,
+    aciklama: str,
+    current_user=Depends(get_current_user),
+):
     """
-    Öğrenci tarafından veli onay talebi oluştur
+    Ogrenci tarafindan veli onay talebi olustur
 
-    - **ogrenci_id**: Öğrenci ID'si
-    - **talep_tipi**: Talep türü (sinav_kayit, ek_ders, vb.)
-    - **aciklama**: Talep açıklaması
+    - **talep_tipi**: Talep turu (sinav_kayit, ek_ders, vb.)
+    - **aciklama**: Talep aciklamasi
     """
     try:
+        ogrenci_id = str(current_user.id)
         talep = await veli_servisi.onay_talebi_olustur(ogrenci_id, talep_tipi, aciklama)
 
         return talep
 
-    except ValueError as e:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Islem basarisiz. Lutfen tekrar deneyin.")
+    except ValueError:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
+        )
     except Exception:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
