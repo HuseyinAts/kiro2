@@ -5,7 +5,7 @@ database.py'den ayrıştırıldı (2026-01-10)
 
 import uuid
 from datetime import datetime
-from typing import TYPE_CHECKING, List, Optional
+from typing import TYPE_CHECKING
 
 from sqlalchemy import (
     Boolean,
@@ -26,8 +26,8 @@ from .base import Base
 from .enums_db import ExamType
 
 if TYPE_CHECKING:
-    from .user_models import StudentProfile
     from .question_bank import QuestionBankItem
+    from .user_models import StudentProfile
 
 
 class ExamSession(Base):
@@ -59,8 +59,8 @@ class ExamSession(Base):
     current_question_index: Mapped[int] = mapped_column(Integer, default=0)
 
     # Timing
-    started_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True))
-    completed_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True))
+    started_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    completed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     time_spent_seconds: Mapped[int] = mapped_column(Integer, default=0)
 
     # Results
@@ -68,8 +68,8 @@ class ExamSession(Base):
     total_wrong: Mapped[int] = mapped_column(Integer, default=0)
     total_empty: Mapped[int] = mapped_column(Integer, default=0)
     raw_score: Mapped[float] = mapped_column(Float, default=0.0)
-    scaled_score: Mapped[Optional[float]] = mapped_column(Float)
-    percentile: Mapped[Optional[float]] = mapped_column(Float)
+    scaled_score: Mapped[float | None] = mapped_column(Float)
+    percentile: Mapped[float | None] = mapped_column(Float)
 
     # IRT Analysis
     estimated_ability: Mapped[float] = mapped_column(Float, default=0.0)
@@ -87,10 +87,10 @@ class ExamSession(Base):
     student: Mapped["StudentProfile"] = relationship(
         "StudentProfile", back_populates="exam_sessions"
     )
-    exam_questions: Mapped[List["ExamQuestion"]] = relationship(
+    exam_questions: Mapped[list["ExamQuestion"]] = relationship(
         "ExamQuestion", back_populates="exam_session"
     )
-    student_answers: Mapped[List["StudentAnswer"]] = relationship(
+    student_answers: Mapped[list["StudentAnswer"]] = relationship(
         "StudentAnswer", back_populates="exam_session"
     )
 
@@ -122,7 +122,8 @@ class ExamQuestion(Base):
         "ExamSession", back_populates="exam_questions"
     )
     question: Mapped["QuestionBankItem"] = relationship(
-        "QuestionBankItem", foreign_keys=[question_id],
+        "QuestionBankItem",
+        foreign_keys=[question_id],
         primaryjoin="ExamQuestion.question_id == QuestionBankItem.id",
         lazy="select",
     )
@@ -151,14 +152,19 @@ class StudentAnswer(Base):
     question_id: Mapped[str] = mapped_column(String, nullable=False)
 
     # Answer information
-    selected_answer: Mapped[Optional[str]] = mapped_column(String(1))
-    is_correct: Mapped[Optional[bool]] = mapped_column(Boolean)
+    selected_answer: Mapped[str | None] = mapped_column(String(1))
+    is_correct: Mapped[bool | None] = mapped_column(Boolean)
     response_time_seconds: Mapped[float] = mapped_column(Float, default=0.0)
 
     # Behavioral data
     answer_changes: Mapped[int] = mapped_column(Integer, default=0)
     time_to_first_answer: Mapped[float] = mapped_column(Float, default=0.0)
-    confidence_level: Mapped[Optional[float]] = mapped_column(Float)
+    confidence_level: Mapped[float | None] = mapped_column(Float)
+
+    # Error classification (migration 20260312_add_error_type_to_student_answers)
+    error_type: Mapped[str | None] = mapped_column(
+        String(20), nullable=True, comment="concept|procedural|careless|knowledge_gap"
+    )
 
     # System fields
     answered_at: Mapped[datetime] = mapped_column(
@@ -170,7 +176,8 @@ class StudentAnswer(Base):
         "ExamSession", back_populates="student_answers"
     )
     question: Mapped["QuestionBankItem"] = relationship(
-        "QuestionBankItem", foreign_keys=[question_id],
+        "QuestionBankItem",
+        foreign_keys=[question_id],
         primaryjoin="StudentAnswer.question_id == QuestionBankItem.id",
         lazy="select",
     )
