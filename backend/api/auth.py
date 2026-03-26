@@ -15,7 +15,7 @@ import jwt as pyjwt
 from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from passlib.context import CryptContext
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -1101,14 +1101,14 @@ async def validate_token(request: Request) -> dict[str, bool]:
 class ChangePasswordRequest(BaseModel):
     """Change password request model"""
 
-    currentPassword: str  # noqa: N815 (frontend contract)
-    newPassword: str  # noqa: N815 (frontend contract)
+    currentPassword: str = Field(..., min_length=8, max_length=128)  # noqa: N815
+    newPassword: str = Field(..., min_length=8, max_length=128)  # noqa: N815
 
 
 class RevokeDeviceRequest(BaseModel):
     """Revoke device request model"""
 
-    device_id: str
+    device_id: str = Field(..., max_length=200)
 
 
 @router.post("/change-password", summary="Change Password", include_in_schema=False)
@@ -1160,7 +1160,7 @@ async def change_password(
 class ForgotPasswordRequest(BaseModel):
     """Forgot password request model"""
 
-    email: str
+    email: str = Field(..., max_length=254)
 
 
 # In-memory store for password reset tokens (15 minute TTL)
@@ -1226,15 +1226,15 @@ async def forgot_password(
         # await send_password_reset_email(db_user.email, reset_link)
 
         return {"success": True, "message": success_message}
-    except Exception as e:
-        return {"success": False, "message": f"Şifre sıfırlama başarısız: {e!s}"}
+    except Exception:
+        return {"success": False, "message": "Şifre sıfırlama başarısız"}
 
 
 class ResetPasswordRequest(BaseModel):
     """Reset password request model"""
 
-    token: str
-    newPassword: str  # noqa: N815 (frontend contract)
+    token: str = Field(..., max_length=200)
+    newPassword: str = Field(..., min_length=8, max_length=128)  # noqa: N815
 
 
 @router.post("/reset-password", summary="Reset Password", include_in_schema=False)

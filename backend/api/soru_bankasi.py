@@ -156,7 +156,7 @@ async def sorular_listele(
             },
         )
 
-    except Exception as e:
+    except Exception:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Islem basarisiz. Lutfen tekrar deneyin.",
@@ -227,7 +227,7 @@ async def soru_detay(soru_id: str, db: AsyncSession = Depends(get_db_session)):
 
     except HTTPException:
         raise
-    except Exception as e:
+    except Exception:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Islem basarisiz. Lutfen tekrar deneyin.",
@@ -341,7 +341,7 @@ async def rastgele_sorular_sec(
 
     except HTTPException:
         raise
-    except Exception as e:
+    except Exception:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Islem basarisiz. Lutfen tekrar deneyin.",
@@ -442,7 +442,7 @@ async def irt_parametreli_sorular_sec(
 
     except HTTPException:
         raise
-    except Exception as e:
+    except Exception:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Islem basarisiz. Lutfen tekrar deneyin.",
@@ -472,7 +472,7 @@ async def konu_listesi_getir(
             },
         )
 
-    except Exception as e:
+    except Exception:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Islem basarisiz. Lutfen tekrar deneyin.",
@@ -496,7 +496,7 @@ async def soru_bankasi_istatistikleri(db: AsyncSession = Depends(get_db_session)
             },
         )
 
-    except Exception as e:
+    except Exception:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Islem basarisiz. Lutfen tekrar deneyin.",
@@ -545,7 +545,7 @@ async def soru_performans_guncelle(
 
     except HTTPException:
         raise
-    except Exception as e:
+    except Exception:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Islem basarisiz. Lutfen tekrar deneyin.",
@@ -612,7 +612,7 @@ async def zorluk_seviyesi_filtrele(
 
     except HTTPException:
         raise
-    except Exception as e:
+    except Exception:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Islem basarisiz. Lutfen tekrar deneyin.",
@@ -627,27 +627,35 @@ from pydantic import BaseModel, Field
 class SoruEkleRequest(BaseModel):
     """Soru ekleme isteği"""
 
-    soru_metni: str = Field(..., description="Soru metni")
-    secenekler: list[str] = Field(
-        ..., min_items=4, max_items=5, description="Seçenekler listesi"
+    soru_metni: str = Field(
+        ..., min_length=10, max_length=5000, description="Soru metni"
     )
-    dogru_cevap: str = Field(..., description="Doğru cevap (A, B, C, D veya E)")
-    cozum_aciklamasi: str | None = Field(None, description="Çözüm açıklaması")
-    sinav_tipi: str = Field("TYT", description="Sınav tipi")
-    konu: str = Field(..., description="Konu")
-    alt_konu: str | None = Field(None, description="Alt konu")
-    zorluk_seviyesi: str = Field("orta", description="Zorluk seviyesi")
-    created_by: str | None = Field(None, description="Oluşturan kullanıcı")
+    secenekler: list[str] = Field(
+        ..., min_length=4, max_length=5, description="Seçenekler listesi"
+    )
+    dogru_cevap: str = Field(
+        ..., pattern=r"^[A-Ea-e]$", description="Doğru cevap (A, B, C, D veya E)"
+    )
+    cozum_aciklamasi: str | None = Field(
+        None, max_length=10000, description="Çözüm açıklaması"
+    )
+    sinav_tipi: str = Field("TYT", max_length=10, description="Sınav tipi")
+    konu: str = Field(..., max_length=200, description="Konu")
+    alt_konu: str | None = Field(None, max_length=200, description="Alt konu")
+    zorluk_seviyesi: str = Field("orta", max_length=20, description="Zorluk seviyesi")
+    created_by: str | None = Field(
+        None, max_length=100, description="Oluşturan kullanıcı"
+    )
 
 
 class SoruGuncelleRequest(BaseModel):
     """Soru güncelleme isteği"""
 
-    soru_metni: str | None = None
-    secenekler: list[str] | None = None
-    dogru_cevap: str | None = None
-    cozum_aciklamasi: str | None = None
-    zorluk_seviyesi: str | None = None
+    soru_metni: str | None = Field(None, min_length=10, max_length=5000)
+    secenekler: list[str] | None = Field(None, min_length=4, max_length=5)
+    dogru_cevap: str | None = Field(None, pattern=r"^[A-Ea-e]$")
+    cozum_aciklamasi: str | None = Field(None, max_length=10000)
+    zorluk_seviyesi: str | None = Field(None, max_length=20)
 
 
 class TopluSoruEkleRequest(BaseModel):
@@ -710,7 +718,7 @@ async def soru_ekle(
             },
         )
 
-    except Exception as e:
+    except Exception:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Islem basarisiz. Lutfen tekrar deneyin.",
@@ -779,7 +787,7 @@ async def soru_guncelle(
 
     except HTTPException:
         raise
-    except Exception as e:
+    except Exception:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Islem basarisiz. Lutfen tekrar deneyin.",
@@ -816,7 +824,7 @@ async def soru_sil(
 
     except HTTPException:
         raise
-    except Exception as e:
+    except Exception:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Islem basarisiz. Lutfen tekrar deneyin.",
@@ -853,7 +861,7 @@ async def toplu_soru_ekle(
             },
         )
 
-    except Exception as e:
+    except Exception:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Islem basarisiz. Lutfen tekrar deneyin.",
@@ -907,7 +915,7 @@ async def irt_parametreleri_yeniden_hesapla(
 
     except HTTPException:
         raise
-    except Exception as e:
+    except Exception:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Islem basarisiz. Lutfen tekrar deneyin.",
