@@ -404,7 +404,10 @@ async def create_exam(
                 "exam_type": request.exam_type.value,
             },
         )
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Islem basarisiz. Lutfen tekrar deneyin.")
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
+        )
     except Exception as e:
         logger.error(
             f"Beklenmeyen sınav oluşturma hatası: {e}",
@@ -481,7 +484,10 @@ async def start_exam(
                 "student_id": current_user.id,
             },
         )
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Islem basarisiz. Lutfen tekrar deneyin.")
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
+        )
     except Exception as e:
         logger.error(
             f"Beklenmeyen sınav başlatma hatası: {e}",
@@ -974,7 +980,10 @@ async def complete_exam(
         logger.error(
             f"Sınav tamamlama hatası: {e}", extra_data={"session_id": session_id}
         )
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Islem basarisiz. Lutfen tekrar deneyin.")
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
+        )
     except Exception as e:
         logger.error(
             f"Beklenmeyen sınav tamamlama hatası: {e}",
@@ -1204,6 +1213,16 @@ async def cancel_exam(
         if session_id in osym_exam_engine.auto_save_tasks:
             osym_exam_engine.auto_save_tasks[session_id].cancel()
             del osym_exam_engine.auto_save_tasks[session_id]
+
+        # Otomatik tamamlama task'ını durdur
+        autoclose_key = f"autoclose:{session_id}"
+        if autoclose_key in osym_exam_engine.auto_save_tasks:
+            osym_exam_engine.auto_save_tasks[autoclose_key].cancel()
+            del osym_exam_engine.auto_save_tasks[autoclose_key]
+
+        # L1 eviction — prevent memory leak
+        if session_id in osym_exam_engine.active_sessions:
+            del osym_exam_engine.active_sessions[session_id]
 
         logger.info(
             "ÖSYM sınavı iptal edildi",

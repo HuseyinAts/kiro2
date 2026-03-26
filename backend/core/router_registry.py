@@ -7,10 +7,10 @@ API Versioning Standard:
 - /api/v2/* - New endpoints (after 2026-01-20)
 - /admin/* - Admin-only endpoints
 """
+
 import importlib
 import logging
 from dataclasses import dataclass
-from typing import List, Optional
 
 from fastapi import FastAPI
 
@@ -32,15 +32,15 @@ class RouterConfig:
     category: str  # 'core', 'features', 'integrations', 'monitoring'
     priority: int  # Load order (lower = earlier)
     required: bool = True  # If False, failure won't stop app
-    api_version: Optional[str] = None  # 'v1', 'v2', or None for unversioned
+    api_version: str | None = None  # 'v1', 'v2', or None for unversioned
 
-    def get_expected_prefix(self) -> Optional[str]:
+    def get_expected_prefix(self) -> str | None:
         """Get expected API prefix based on version"""
         if self.api_version == "v1":
             return API_V1_PREFIX
-        elif self.api_version == "v2":
+        if self.api_version == "v2":
             return API_V2_PREFIX
-        elif self.category == "admin":
+        if self.category == "admin":
             return ADMIN_PREFIX
         return None
 
@@ -58,7 +58,7 @@ class RouterRegistry:
         self.loaded_routers = []
         self.failed_routers = []
 
-    def _get_router_configs(self) -> List[RouterConfig]:
+    def _get_router_configs(self) -> list[RouterConfig]:
         """
         Define all router configurations
         Returns routers in priority order
@@ -68,7 +68,9 @@ class RouterRegistry:
             RouterConfig("api.health", "router", "Health Check", "core", 1, True, "v1"),
             RouterConfig("api.auth", "router", "Authentication", "core", 2, True, "v1"),
             # EXAM & ASSESSMENT (Priority 10-29)
-            RouterConfig("api.sinav", "router", "Sınav Motoru", "features", 10, True, "v1"),
+            RouterConfig(
+                "api.sinav", "router", "Sınav Motoru", "features", 10, True, "v1"
+            ),
             RouterConfig(
                 "api.exam_performance",
                 "router",
@@ -79,15 +81,8 @@ class RouterRegistry:
                 "v1",
             ),
             RouterConfig(
-                "api.sinav_motoru_api",
-                "router",
-                "Sınav Motoru API",
-                "features",
-                12,
-                True,
-                "v1",
+                "api.exam", "router", "WebSocket Exam", "features", 13, False, "v1"
             ),
-            RouterConfig("api.exam", "router", "WebSocket Exam", "features", 13, False, "v1"),
             # LEARNING & ANALYTICS (Priority 30-49)
             RouterConfig(
                 "api.monitoring",
@@ -99,7 +94,13 @@ class RouterRegistry:
                 "v1",
             ),
             RouterConfig(
-                "api.analytics", "router", "Advanced Analytics", "features", 31, True, "v1"
+                "api.analytics",
+                "router",
+                "Advanced Analytics",
+                "features",
+                31,
+                True,
+                "v1",
             ),
             # Learning Path router
             RouterConfig(
@@ -348,11 +349,10 @@ class RouterRegistry:
                 f"[ERROR] REQUIRED router failed: {config.display_name} - {error_msg}"
             )
             raise RuntimeError(f"Failed to load required router: {config.display_name}")
-        else:
-            self.failed_routers.append(config.display_name)
-            self.logger.warning(
-                f"[WARNING] Optional router not loaded: {config.display_name} - {error_msg}"
-            )
+        self.failed_routers.append(config.display_name)
+        self.logger.warning(
+            f"[WARNING] Optional router not loaded: {config.display_name} - {error_msg}"
+        )
 
     def get_router_summary(self) -> dict:
         """Get summary of router registration status"""

@@ -507,8 +507,10 @@ class OSYMExamEngine:
                 self._auto_save_task(session_id)
             )
 
-            # Otomatik tamamlama task'ını başlat
-            asyncio.create_task(self._auto_complete_task(session_id))
+            # Otomatik tamamlama task'ını başlat ve takip et
+            self.auto_save_tasks[f"autoclose:{session_id}"] = asyncio.create_task(
+                self._auto_complete_task(session_id)
+            )
 
             logger.info(
                 "Sınav başlatıldı",
@@ -832,10 +834,20 @@ class OSYMExamEngine:
                 self.auto_save_tasks[session_id].cancel()
                 del self.auto_save_tasks[session_id]
 
+            # Otomatik tamamlama task'ını durdur
+            autoclose_key = f"autoclose:{session_id}"
+            if autoclose_key in self.auto_save_tasks:
+                self.auto_save_tasks[autoclose_key].cancel()
+                del self.auto_save_tasks[autoclose_key]
+
             # Redis L2 cleanup — completed exams no longer need session state
             from core.exam_session_store import delete_session
 
             await delete_session(session_id)
+
+            # L1 eviction — prevent memory leak from completed sessions
+            if session_id in self.active_sessions:
+                del self.active_sessions[session_id]
 
             logger.info(
                 "Sınav tamamlandı",
