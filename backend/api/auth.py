@@ -56,15 +56,23 @@ REFRESH_TOKEN_COOKIE_PATH = "/api/v1/auth"  # noqa: S105
 _IS_DEV = app_settings.environment == "development"
 logger = logging.getLogger(__name__)
 
-# P1-1: Simple in-memory rate limiter for login endpoints (5 attempts/minute per IP)
-
-_login_attempts: dict[str, list[float]] = defaultdict(list)
-LOGIN_RATE_LIMIT = 10  # max attempts per IP per window
-LOGIN_RATE_WINDOW = 60  # seconds
-
+# ── Rate Limiting ──────────────────────────────────────────────────────────
 
 # Only trust X-Forwarded-For from these IPs (reverse proxy / load balancer)
 _TRUSTED_PROXIES = {"127.0.0.1", "::1", "172.17.0.1"}  # localhost + Docker default
+
+# Per-bucket in-memory rate counters: bucket_name -> {ip -> [timestamps]}
+_rate_buckets: dict[str, dict[str, list[float]]] = defaultdict(
+    lambda: defaultdict(list)
+)
+
+# Bucket configs: (max_attempts, window_seconds)
+RATE_LIMITS = {
+    "login": (10, 60),
+    "register": (5, 60),
+    "password_reset": (5, 300),
+    "2fa_verify": (10, 60),
+}
 
 
 def _get_client_ip(request: Request) -> str:
@@ -77,28 +85,33 @@ def _get_client_ip(request: Request) -> str:
     return client_host
 
 
-def _check_login_rate_limit(request: Request) -> None:
-    """Raise 429 if IP exceeds failed login rate limit."""
+def _check_rate_limit(request: Request, bucket: str = "login") -> None:
+    """Raise 429 if IP exceeds rate limit for the given bucket."""
+    max_attempts, window = RATE_LIMITS.get(bucket, (10, 60))
     client_ip = _get_client_ip(request)
     now = time.time()
-    # Clean old entries
-    _login_attempts[client_ip] = [
-        t for t in _login_attempts[client_ip] if now - t < LOGIN_RATE_WINDOW
-    ]
-    if len(_login_attempts[client_ip]) >= LOGIN_RATE_LIMIT:
+    attempts = _rate_buckets[bucket][client_ip]
+    _rate_buckets[bucket][client_ip] = [t for t in attempts if now - t < window]
+    if len(_rate_buckets[bucket][client_ip]) >= max_attempts:
         raise HTTPException(
             status_code=429,
-            detail=(
-                "Cok fazla giris denemesi. "
-                f"{LOGIN_RATE_WINDOW} saniye sonra tekrar deneyin."
-            ),
+            detail=f"Cok fazla istek. {window} saniye sonra tekrar deneyin.",
         )
 
 
-def _record_failed_login(request: Request) -> None:
-    """Record a failed login attempt for rate limiting."""
+def _record_attempt(request: Request, bucket: str = "login") -> None:
+    """Record an attempt for rate limiting."""
     client_ip = _get_client_ip(request)
-    _login_attempts[client_ip].append(time.time())
+    _rate_buckets[bucket][client_ip].append(time.time())
+
+
+# Backward compat aliases
+def _check_login_rate_limit(request: Request) -> None:
+    _check_rate_limit(request, "login")
+
+
+def _record_failed_login(request: Request) -> None:
+    _record_attempt(request, "login")
 
 
 @contextmanager
@@ -402,6 +415,7 @@ async def database_authenticate(
     },
 )
 async def kullanici_kayit(
+    request: Request,
     kullanici_data: KullaniciOlustur,
     db: AsyncSession = Depends(get_db),
 ) -> dict[str, Any]:
@@ -411,6 +425,8 @@ async def kullanici_kayit(
     Request Body:
       email, sifre, ad_soyad, rol (ogrenci/veli/ogretmen/admin)
     """
+    _check_rate_limit(request, "register")
+
     import uuid as _uuid
 
     from sqlalchemy import text as _text
@@ -1140,7 +1156,7 @@ async def forgot_password(
         "message": string
     }
     """
-    _check_login_rate_limit(request)
+    _check_rate_limit(request, "password_reset")
 
     try:
         # Check if user exists

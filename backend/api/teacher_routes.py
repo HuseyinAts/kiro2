@@ -133,14 +133,14 @@ class AppointmentCancelRequest(BaseModel):
 
 
 class AppointmentCompleteRequest(BaseModel):
-    session_summary: str | None = None
-    homework_assigned: str | None = None
+    session_summary: str | None = Field(None, max_length=5000)
+    homework_assigned: str | None = Field(None, max_length=2000)
 
 
 class ReviewRequest(BaseModel):
     overall_rating: int = Field(..., ge=1, le=5)
-    title: str
-    content: str
+    title: str = Field(..., min_length=3, max_length=200)
+    content: str = Field(..., min_length=10, max_length=5000)
     teaching_quality: int | None = Field(None, ge=1, le=5)
     communication: int | None = Field(None, ge=1, le=5)
     punctuality: int | None = Field(None, ge=1, le=5)

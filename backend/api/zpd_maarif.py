@@ -108,8 +108,8 @@ class CulturalAdaptationRequest(BaseModel):
 class MaarifAlignmentRequest(BaseModel):
     """Maarif uyum analizi isteği"""
 
-    subject: str
-    content_description: str
+    subject: str = Field(..., min_length=2, max_length=100)
+    content_description: str = Field(..., min_length=5, max_length=5000)
 
 
 class LearningBalanceRequest(BaseModel):

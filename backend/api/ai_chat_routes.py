@@ -4,20 +4,18 @@ Task 106: AI Chat Assistant API Routes
 REST API for enhanced chat with image upload and OCR
 """
 
-from typing import Optional
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, HTTPException, UploadFile, File
-from pydantic import BaseModel
+from fastapi import APIRouter, Depends, File, HTTPException, UploadFile
+from pydantic import BaseModel, Field
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from core.database import get_db
 from api.auth import mevcut_kullanici_getir
+from core.database import get_db
+from models.ai_chat import MessageRole, SessionStatus, SubjectType
 from models.user import Kullanici
 from services.ai_chat_service import AIChatService
 from services.ocr_service import OCRService
-from models.ai_chat import MessageRole, SessionStatus, SubjectType
-
 
 router = APIRouter(prefix="/api/v1/chat", tags=["AI Chat"])
 
@@ -30,23 +28,23 @@ router = APIRouter(prefix="/api/v1/chat", tags=["AI Chat"])
 class SessionCreateRequest(BaseModel):
     """Request model for creating session"""
 
-    title: Optional[str] = None
+    title: str | None = Field(None, max_length=200)
     subject_type: SubjectType = SubjectType.GENERAL
 
 
 class MessageRequest(BaseModel):
     """Request model for sending message"""
 
-    content: str
-    image_id: Optional[UUID] = None
+    content: str = Field(..., min_length=1, max_length=10000)
+    image_id: UUID | None = None
 
 
 class MessageRatingRequest(BaseModel):
     """Request model for rating message"""
 
-    rating: int
+    rating: int = Field(..., ge=1, le=5)
     is_helpful: bool
-    feedback_comment: Optional[str] = None
+    feedback_comment: str | None = Field(None, max_length=1000)
 
 
 # ============================================================
@@ -97,7 +95,7 @@ async def create_session(
 
 @router.get("/sessions")
 async def get_user_sessions(
-    status: Optional[SessionStatus] = None,
+    status: SessionStatus | None = None,
     mevcut_kullanici: Kullanici = Depends(mevcut_kullanici_getir),
     db: AsyncSession = Depends(get_db),
 ):

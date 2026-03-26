@@ -29,7 +29,7 @@ class ReviewCreateRequest(BaseModel):
 
     review_type: ReviewType
     title: str = Field(..., min_length=10, max_length=255)
-    content: str = Field(..., min_length=50)
+    content: str = Field(..., min_length=50, max_length=10000)
     overall_rating: float = Field(..., ge=1.0, le=5.0)
     university_id: UUID | None = None
     department_id: UUID | None = None
@@ -58,14 +58,14 @@ class ReviewReportRequest(BaseModel):
     """Request model for reporting a review"""
 
     reason: ReportReason
-    description: str | None = None
+    description: str | None = Field(None, max_length=2000)
 
 
 class ReviewModerationRequest(BaseModel):
     """Request model for moderating a review"""
 
     new_status: ReviewStatus
-    notes: str | None = None
+    notes: str | None = Field(None, max_length=2000)
 
 
 class ReviewResponse(BaseModel):

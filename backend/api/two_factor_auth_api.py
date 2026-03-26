@@ -441,6 +441,10 @@ async def login_verify_2fa(
     endpoint with email + password + TOTP code. If valid, httpOnly cookies
     are set and user info is returned.
     """
+    from api.auth import _check_rate_limit
+
+    _check_rate_limit(request, "2fa_verify")
+
     from datetime import UTC, datetime
 
     from passlib.context import CryptContext
@@ -470,6 +474,9 @@ async def login_verify_2fa(
         token=body.totp_code,
     )
     if not is_valid:
+        from api.auth import _record_attempt
+
+        _record_attempt(request, "2fa_verify")
         logger.warning("2fa_login_verify_failed", user_id=db_user.id)
         raise HTTPException(status_code=401, detail="Geçersiz 2FA kodu")
 
@@ -549,6 +556,10 @@ async def login_verify_backup(
 
     Same as /login-verify but uses a single-use backup code instead of TOTP.
     """
+    from api.auth import _check_rate_limit
+
+    _check_rate_limit(request, "2fa_verify")
+
     from datetime import UTC, datetime
 
     from passlib.context import CryptContext
