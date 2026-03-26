@@ -83,6 +83,31 @@ async def app_lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     except Exception as e:
         logger.warning(f"⚠️ Exam session recovery failed (non-fatal): {e}")
 
+    # Orphan DB session recovery — in_progress kalan eski session'ları kapat
+    try:
+        from sqlalchemy import text
+
+        from core.database import get_db_session_context
+
+        async with get_db_session_context() as db:
+            result = await db.execute(
+                text("""
+                    UPDATE exam_sessions
+                    SET status = 'abandoned', updated_at = NOW()
+                    WHERE status = 'in_progress'
+                      AND updated_at < NOW() - INTERVAL '3 hours'
+                    RETURNING id
+                """)
+            )
+            abandoned = result.fetchall()
+            await db.commit()
+            if abandoned:
+                logger.info(
+                    f"🔧 Orphan session cleanup: {len(abandoned)} exam_sessions → abandoned"
+                )
+    except Exception as e:
+        logger.warning(f"⚠️ Orphan session cleanup failed (non-fatal): {e}")
+
     # Initialize AI agents
     try:
         initialize_agents()
