@@ -2,7 +2,7 @@
  * DailyPlanPage — Günlük Çalışma Planı
  * ZPD + DAG + IRT + FSRS algoritmasıyla üretilen kişisel plan
  */
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const API = '/api/v1/learning-path';
@@ -70,7 +70,9 @@ export default function DailyPlanPage() {
   const [error, setError] = useState('');
   const [activeTab, setActiveTab] = useState<'plan' | 'status'>('plan');
 
-  useEffect(() => {
+  const fetchPlan = useCallback(() => {
+    setLoading(true);
+    setError('');
     Promise.all([
       fetch(`${API}/today`, { credentials: 'include' }).then(r => { if (!r.ok) throw new Error(`HTTP ${r.status}`); return r.json(); }),
       fetch(`${API}/status`, { credentials: 'include' }).then(r => { if (!r.ok) throw new Error(`HTTP ${r.status}`); return r.json(); }),
@@ -83,6 +85,14 @@ export default function DailyPlanPage() {
       .catch(() => setError('Sunucuya bağlanılamadı.'))
       .finally(() => setLoading(false));
   }, []);
+
+  useEffect(() => { fetchPlan(); }, [fetchPlan]);
+
+  useEffect(() => {
+    const handler = () => fetchPlan();
+    window.addEventListener('cat-complete', handler);
+    return () => window.removeEventListener('cat-complete', handler);
+  }, [fetchPlan]);
 
   const startActivity = (block: StudyBlock) => {
     if (block.activity_type === 'cat') navigate('/cat');

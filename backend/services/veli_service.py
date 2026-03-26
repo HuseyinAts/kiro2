@@ -81,16 +81,14 @@ class VeliServisi:
         self.cocuk_performans_verileri: dict[str, dict[str, Any]] = {}
 
     async def veli_cocuklarini_getir(self, veli_id: str) -> list[dict[str, Any]]:
-        """Velinin cocuklarinin listesini DB'den getir (SQLAlchemy session)"""
+        """Velinin cocuklarinin listesini DB'den getir (parent_child tablosu)"""
         from sqlalchemy import text
 
         from core.database import get_db_session_context
 
-        _ALLOWED_NAME_COLS = {"ad_soyad", "full_name", "name"}
-
         try:
             async with get_db_session_context() as session:
-                # 1) Veli kullanicisinin DB'de var oldugunu dogrula
+                # Veli kullanicisinin DB'de var oldugunu dogrula
                 veli_row = await session.execute(
                     text("SELECT id FROM users WHERE id = :veli_id"),
                     {"veli_id": veli_id},
@@ -98,48 +96,22 @@ class VeliServisi:
                 if not veli_row.first():
                     raise ValueError("Veli profili bulunamadi")
 
-                # 2) parent_student_links tablosu var mi?
-                links_exist = await session.execute(
-                    text(
-                        "SELECT EXISTS("
-                        "  SELECT 1 FROM information_schema.tables"
-                        "  WHERE table_schema='public'"
-                        "    AND table_name='parent_student_links'"
-                        ")"
-                    )
-                )
-                if not links_exist.scalar():
-                    return []
-
-                # 3) ad_soyad kolonunu esnek bul (whitelist ile)
-                col_result = await session.execute(
-                    text(
-                        "SELECT column_name"
-                        " FROM information_schema.columns"
-                        " WHERE table_name='users'"
-                        "   AND column_name IN ('ad_soyad','full_name','name')"
-                        " LIMIT 1"
-                    )
-                )
-                name_col = col_result.scalar()
-                name_expr = name_col if name_col in _ALLOWED_NAME_COLS else "email"
-
-                # 4) Ana sorgu (name_expr whitelist'ten — SQL injection riski yok)
+                # parent_child tablosundan cocuklari getir
                 rows = await session.execute(
                     text(
-                        f"SELECT u.id::text AS ogrenci_id,"
-                        f" u.{name_expr} AS ad_soyad,"
-                        f" u.email, u.created_at AS son_giris"
-                        f" FROM parent_student_links psl"
-                        f" JOIN users u ON u.id = psl.student_id"
-                        f" WHERE psl.parent_id = :veli_id"
+                        "SELECT u.id::text AS ogrenci_id,"
+                        " u.first_name || ' ' || COALESCE(u.last_name, '') AS ad_soyad,"
+                        " u.email, u.created_at AS son_giris"
+                        " FROM parent_child pc"
+                        " JOIN users u ON u.id = pc.child_id"
+                        " WHERE pc.parent_id = :veli_id"
                     ),
                     {"veli_id": veli_id},
                 )
                 return [
                     {
                         "ogrenci_id": r.ogrenci_id,
-                        "ad_soyad": r.ad_soyad or r.email,
+                        "ad_soyad": r.ad_soyad.strip() or r.email,
                         "sinif_seviyesi": None,
                         "okul_adi": None,
                         "hedef_sinav": "TYT/AYT",
