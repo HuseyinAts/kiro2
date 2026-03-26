@@ -107,8 +107,9 @@ ROUTER_MAPPING = {
     "api.performance_monitoring": ("analytics", "api.performance_monitoring"),
     "api.performance": ("analytics", "api.performance"),
     "api.elasticsearch": ("analytics", "api.elasticsearch"),
-    "api.tracing_example": ("analytics", "api.tracing_example"),
-    "api.sentry_demo": ("analytics", "api.sentry_demo"),
+    # REMOVED: demo/test endpoints (security risk in production)
+    # "api.tracing_example": ("analytics", "api.tracing_example"),
+    # "api.sentry_demo": ("analytics", "api.sentry_demo"),
     "api.video_analytics_routes": ("analytics", "api.video_analytics_routes"),
     # Accessibility
     "api.adhd_task_management_api": ("accessibility", "api.adhd_task_management_api"),

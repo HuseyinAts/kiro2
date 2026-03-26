@@ -5,7 +5,10 @@ Basit agents listesi ve mock data
 
 import logging
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, Depends, HTTPException
+
+from core.dependencies import get_current_user
+from models.database import User
 
 logger = logging.getLogger(__name__)
 
@@ -14,13 +17,13 @@ router = APIRouter(tags=["Agents"])
 
 
 @router.get("/agents/test")
-async def test_agents():
+async def test_agents(current_user: User = Depends(get_current_user)):
     """Simple test endpoint"""
     return {"test": "ok", "count": 8}
 
 
 @router.get("/agents")
-async def get_agents():
+async def get_agents(current_user: User = Depends(get_current_user)):
     """Available AI agents listesi döndür (mock data)"""
     try:
         # Ultra simplified mock data for testing
