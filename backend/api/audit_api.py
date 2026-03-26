@@ -12,6 +12,7 @@ Features:
 Author: Claude
 Date: 2025-10-27
 """
+
 from datetime import datetime
 from typing import Optional
 
@@ -198,7 +199,7 @@ async def get_audit_logs(
 async def get_audit_log_by_id(
     log_id: str,
     db: AsyncSession = Depends(get_db),
-    # current_user: User = Depends(require_admin),
+    current_admin: dict = Depends(get_current_admin_user),
 ):
     """
     Get specific audit log by ID (Task 48.5)
@@ -262,7 +263,7 @@ async def get_user_audit_trail(
     user_id: str,
     limit: int = Query(100, ge=1, le=1000, description="Max results"),
     db: AsyncSession = Depends(get_db),
-    # current_user: User = Depends(require_admin),
+    current_admin: dict = Depends(get_current_admin_user),
 ):
     """
     Get user's complete audit trail (Task 48.5)
@@ -320,7 +321,7 @@ async def get_security_events(
     start_date: Optional[datetime] = Query(None, description="Start date"),
     limit: int = Query(100, ge=1, le=1000, description="Max results"),
     db: AsyncSession = Depends(get_db),
-    # current_user: User = Depends(require_admin),
+    current_admin: dict = Depends(get_current_admin_user),
 ):
     """
     Get security events (Task 48.5)
@@ -391,7 +392,7 @@ async def cleanup_old_audit_logs(
         90, ge=30, le=365, description="Retention days (30-365)"
     ),
     db: AsyncSession = Depends(get_db),
-    # current_user: User = Depends(require_admin),
+    current_admin: dict = Depends(get_current_admin_user),
 ):
     """
     Cleanup audit logs older than retention period (Task 48.5)
@@ -440,7 +441,7 @@ async def get_audit_statistics(
     ),
     end_date: Optional[datetime] = Query(None, description="End date for statistics"),
     db: AsyncSession = Depends(get_db),
-    # current_user: User = Depends(require_admin),
+    current_admin: dict = Depends(get_current_admin_user),
 ):
     """
     Get audit log statistics (Task 48.5)

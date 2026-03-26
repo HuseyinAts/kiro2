@@ -12,17 +12,20 @@ Bu degisiklik monitoring.py ile cakismayi onler:
 - /api/v1/monitoring/quality → Production quality metrics (BU DOSYA)
 """
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, Depends, HTTPException
 from typing import Optional
 from datetime import datetime
 
+from core.auth_dependencies import require_role
 from services.production_quality_monitor import get_monitor
 
-router = APIRouter(prefix="/api/v1/monitoring/quality", tags=["Production Quality Monitoring"])
+router = APIRouter(
+    prefix="/api/v1/monitoring/quality", tags=["Production Quality Monitoring"]
+)
 
 
 @router.get("/stats")
-async def get_quality_stats():
+async def get_quality_stats(_: None = Depends(require_role("ADMIN"))):
     """
     Get current quality statistics
 
@@ -38,11 +41,15 @@ async def get_quality_stats():
 
         return {"success": True, "data": stats, "timestamp": datetime.now().isoformat()}
     except Exception as e:
-        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
+        raise HTTPException(
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
+        )
 
 
 @router.get("/report")
-async def get_quality_report(last_n: Optional[int] = None):
+async def get_quality_report(
+    last_n: Optional[int] = None, _: None = Depends(require_role("ADMIN"))
+):
     """
     Generate detailed quality report
 
@@ -62,7 +69,9 @@ async def get_quality_report(last_n: Optional[int] = None):
             "timestamp": datetime.now().isoformat(),
         }
     except Exception as e:
-        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
+        raise HTTPException(
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
+        )
 
 
 @router.get("/health")
@@ -105,11 +114,15 @@ async def monitoring_health():
             "timestamp": datetime.now().isoformat(),
         }
     except Exception as e:
-        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
+        raise HTTPException(
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
+        )
 
 
 @router.get("/recent")
-async def get_recent_questions(limit: int = 10):
+async def get_recent_questions(
+    limit: int = 10, _: None = Depends(require_role("ADMIN"))
+):
     """
     Get recent question logs
 
@@ -141,4 +154,6 @@ async def get_recent_questions(limit: int = 10):
             ],
         }
     except Exception as e:
-        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
+        raise HTTPException(
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
+        )
