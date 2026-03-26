@@ -2,7 +2,7 @@
  * LearningPathMapPage — Konu Haritası (DAG Görünümü)
  * Haftalık plan + ders öncelik görselleştirmesi
  */
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const API = '/api/v1/learning-path';
@@ -58,6 +58,13 @@ export default function LearningPathMapPage() {
   const [selectedSubject, setSelectedSubject] = useState<string | null>(null);
   const [goalForm, setGoalForm] = useState({ exam_type: 'TYT', exam_date: '', daily_minutes: 120 });
   const [goalSaved, setGoalSaved] = useState(false);
+  const [isMobile, setIsMobile] = useState(() => window.innerWidth < 768);
+
+  const handleResize = useCallback(() => setIsMobile(window.innerWidth < 768), []);
+  useEffect(() => {
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, [handleResize]);
 
   useEffect(() => {
     Promise.all([
@@ -125,13 +132,13 @@ export default function LearningPathMapPage() {
       <div style={s.section}>
         <h3 style={s.sectionTitle}>📊 Ders Öncelik Haritası</h3>
         <p style={s.hint}>Derse tıklayarak detay gör</p>
-        <div style={s.subjectGrid}>
+        <div style={isMobile ? s.subjectList : s.subjectGrid}>
           {sorted.map(st => {
             const color = SUBJECT_COLOR[st.subject] ?? '#6b7280';
             const isSelected = selectedSubject === st.subject;
             return (
               <div key={st.subject} onClick={() => setSelectedSubject(isSelected ? null : st.subject)}
-                style={{ ...s.subjectNode, borderColor: isSelected ? color : '#334155', boxShadow: isSelected ? `0 0 20px ${color}44` : 'none' }}>
+                style={{ ...s.subjectNode, ...(isMobile ? s.subjectNodeRow : {}), borderColor: isSelected ? color : '#334155', boxShadow: isSelected ? `0 0 20px ${color}44` : 'none' }}>
                 <div style={{ ...s.subjectDot, background: color }} />
                 <span style={s.subjectEmoji}>{SUBJECT_EMOJI[st.subject] ?? '📚'}</span>
                 <span style={s.subjectName}>{SUBJECT_TR[st.subject] ?? st.subject}</span>
@@ -173,7 +180,7 @@ export default function LearningPathMapPage() {
       {/* 7 Günlük Plan */}
       <div style={s.section}>
         <h3 style={s.sectionTitle}>📅 Bu Haftanın Planı</h3>
-        <div style={s.weekGrid}>
+        <div style={isMobile ? s.weekList : s.weekGrid}>
           {weekly.map((day, i) => (
             <div key={i} style={{ ...s.dayCard, borderColor: day.is_today ? '#6366f1' : '#334155', background: day.is_today ? '#1e1b4b' : '#1e293b' }}>
               <div style={s.dayHeader}>
@@ -217,7 +224,9 @@ const s: Record<string, any> = {
   input: { background: '#0f172a', border: '1px solid #475569', color: '#f8fafc', padding: '8px 12px', borderRadius: 8, fontSize: 14, flex: 1, minWidth: 120 },
   saveBtn: { background: 'linear-gradient(135deg,#6366f1,#8b5cf6)', border: 'none', color: '#fff', padding: '8px 18px', borderRadius: 8, cursor: 'pointer', fontSize: 14, fontWeight: 600, whiteSpace: 'nowrap' as const },
   subjectGrid: { display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(130px, 1fr))', gap: 12 },
+  subjectList: { display: 'flex', flexDirection: 'column' as const, gap: 10 },
   subjectNode: { background: '#1e293b', border: '2px solid #334155', borderRadius: 12, padding: 12, cursor: 'pointer', position: 'relative' as const, transition: 'all 0.2s' },
+  subjectNodeRow: { display: 'flex', flexDirection: 'row' as const, alignItems: 'center', gap: 10, paddingRight: 50 },
   subjectDot: { width: 8, height: 8, borderRadius: '50%', position: 'absolute' as const, top: 10, right: 10 },
   subjectEmoji: { display: 'block', fontSize: 24, marginBottom: 4 },
   subjectName: { display: 'block', fontSize: 12, fontWeight: 600, color: '#f8fafc', marginBottom: 8 },
@@ -231,6 +240,7 @@ const s: Record<string, any> = {
   detailLabel: { fontSize: 11, color: '#64748b' },
   detailValue: { fontSize: 15, fontWeight: 700, color: '#f8fafc' },
   weekGrid: { display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))', gap: 10 },
+  weekList: { display: 'flex', flexDirection: 'column' as const, gap: 10 },
   dayCard: { background: '#1e293b', border: '1px solid #334155', borderRadius: 10, padding: 12 },
   dayHeader: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 },
   dayLabel: { fontSize: 13, fontWeight: 700 },

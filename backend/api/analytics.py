@@ -9,6 +9,8 @@ import logging
 from datetime import datetime, timedelta
 from typing import Any, Dict, List, Optional
 
+from sqlalchemy import text
+
 import xlsxwriter
 from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel, Field
@@ -18,12 +20,14 @@ from reportlab.pdfgen import canvas
 try:
     from core.dependencies import get_current_user
     from core.auth_dependencies import require_role
+    from core.database import get_db_session_context
     from core.redis_cache import get_cache
     from models.database import User
     from services.elasticsearch_service import get_elasticsearch_service
 except ImportError:
     from core.dependencies import get_current_user
     from core.auth_dependencies import require_role
+    from core.database import get_db_session_context
     from core.redis_cache import get_cache
     from models.database import User
     from services.elasticsearch_service import get_elasticsearch_service
@@ -352,6 +356,68 @@ async def get_admin_dashboard_analytics(
         raise HTTPException(
             status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
+
+
+# Retention Metrics
+
+
+@router.get("/retention/d7")
+async def get_d7_retention(
+    current_user: User = Depends(get_current_user),
+):
+    """
+    D7 Retention metriği: 8-14 gün önce aktif olan kullanıcıların
+    son 7 günde geri dönme oranı.
+
+    kiro2_learning_events tablosunu kullanır (117K+ kayıt).
+    """
+    try:
+        async with get_db_session_context() as db:
+            row = await db.execute(
+                text("""
+                    WITH cohort AS (
+                        SELECT DISTINCT user_id
+                        FROM kiro2_learning_events
+                        WHERE occurred_at >= NOW() - INTERVAL '14 days'
+                          AND occurred_at <  NOW() - INTERVAL '7 days'
+                    ),
+                    retained AS (
+                        SELECT DISTINCT le.user_id
+                        FROM kiro2_learning_events le
+                        JOIN cohort c ON le.user_id = c.user_id
+                        WHERE le.occurred_at >= NOW() - INTERVAL '7 days'
+                    )
+                    SELECT
+                        COUNT(DISTINCT c.user_id)       AS cohort_size,
+                        COUNT(DISTINCT r.user_id)       AS retained_count,
+                        CASE WHEN COUNT(DISTINCT c.user_id) > 0
+                             THEN ROUND(
+                                 COUNT(DISTINCT r.user_id)::numeric
+                                 / COUNT(DISTINCT c.user_id) * 100, 1)
+                             ELSE 0
+                        END AS d7_retention_pct
+                    FROM cohort c
+                    LEFT JOIN retained r ON c.user_id = r.user_id
+                """)
+            )
+            data = row.mappings().first()
+
+        cohort_size = int(data["cohort_size"]) if data else 0
+        retained_count = int(data["retained_count"]) if data else 0
+        d7_pct = float(data["d7_retention_pct"]) if data else 0.0
+
+        return {
+            "metric": "d7_retention",
+            "cohort_window": "days_8_to_14_ago",
+            "return_window": "last_7_days",
+            "cohort_size": cohort_size,
+            "retained_count": retained_count,
+            "d7_retention_pct": d7_pct,
+        }
+
+    except Exception as e:
+        logger.error(f"D7 retention error: {e}")
+        raise HTTPException(status_code=500, detail="Islem basarisiz.")
 
 
 # Export API Endpoints

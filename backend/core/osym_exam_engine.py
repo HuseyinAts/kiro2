@@ -141,6 +141,8 @@ class OSYMExamEngine:
         self.auto_save_tasks: dict[str, asyncio.Task] = {}
         # P2: Question ID pool cache — avoids ORDER BY RANDOM() (TTL 1 hour, max 200 keys)
         self._question_pool_cache: TTLCache = TTLCache(maxsize=200, ttl=3600)
+        # P2: Performance analysis cache — idempotent re-call protection (TTL 1 hour, max 500 sessions)
+        self._performance_cache: TTLCache = TTLCache(maxsize=500, ttl=3600)
 
         # ÖSYM sınav konfigürasyonları
         # subject_distribution keys MUST match question_bank.subject_area (UPPERCASE)
@@ -811,21 +813,31 @@ class OSYMExamEngine:
             performance_metrics = await self._analyze_performance(session_data)
             session_data.performance_metrics = performance_metrics
 
+            # Çalışma süresi hesapla
+            time_spent: int | None = None
+            if session_data.started_at and session_data.completed_at:
+                time_spent = int(
+                    (session_data.completed_at - session_data.started_at).total_seconds()
+                )
+
             # Veritabanını güncelle
             async with get_db_session_context() as db_session:
+                update_values: dict = {
+                    "status": ExamStatus.COMPLETED.value,
+                    "completed_at": session_data.completed_at,
+                    "total_correct": performance_metrics.correct_answers,
+                    "total_wrong": performance_metrics.wrong_answers,
+                    "total_empty": performance_metrics.empty_answers,
+                    "raw_score": performance_metrics.raw_score,
+                    "scaled_score": performance_metrics.raw_score,
+                    "estimated_ability": performance_metrics.estimated_ability,
+                }
+                if time_spent is not None:
+                    update_values["time_spent_seconds"] = time_spent
                 await db_session.execute(
                     update(ExamSession)
                     .where(ExamSession.id == session_id)
-                    .values(
-                        status=ExamStatus.COMPLETED.value,
-                        completed_at=session_data.completed_at,
-                        total_correct=performance_metrics.correct_answers,
-                        total_wrong=performance_metrics.wrong_answers,
-                        total_empty=performance_metrics.empty_answers,
-                        raw_score=performance_metrics.raw_score,
-                        scaled_score=performance_metrics.raw_score,
-                        estimated_ability=performance_metrics.estimated_ability,
-                    )
+                    .values(**update_values)
                 )
                 await db_session.commit()
 
@@ -1309,6 +1321,12 @@ class OSYMExamEngine:
         Returns:
             ExamPerformanceMetrics: Performans metrikleri
         """
+        cached: ExamPerformanceMetrics | None = self._performance_cache.get(
+            session_data.session_id
+        )
+        if cached is not None:
+            return cached
+
         try:
             total_questions = len(session_data.questions)
             answered_questions = len(session_data.answers)
@@ -1416,7 +1434,7 @@ class OSYMExamEngine:
                 answered_questions, total_questions
             )
 
-            return ExamPerformanceMetrics(
+            result = ExamPerformanceMetrics(
                 total_questions=total_questions,
                 answered_questions=answered_questions,
                 correct_answers=correct_answers,
@@ -1427,6 +1445,8 @@ class OSYMExamEngine:
                 estimated_ability=estimated_ability,
                 confidence_level=confidence_level,
             )
+            self._performance_cache[session_data.session_id] = result
+            return result
 
         except Exception as e:
             logger.error(
