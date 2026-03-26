@@ -4,11 +4,16 @@ Uzman içerik doğrulama ve onay API'leri
 """
 
 from datetime import datetime
-from typing import Any, Dict, List
+from typing import Any
 
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel
 
+from core.dependencies import (
+    AuthenticatedUser,
+    get_current_admin_user,
+    get_current_user,
+)
 from core.expert_content_validation import (
     ContentType,
     ExpertRole,
@@ -29,7 +34,7 @@ class ContentSubmissionRequest(BaseModel):
 
     content_id: str
     content_type: str  # "question", "exam", "topic", etc.
-    content_data: Dict[str, Any]
+    content_data: dict[str, Any]
     submitter_id: str
     submitter_name: str
 
@@ -37,7 +42,7 @@ class ContentSubmissionRequest(BaseModel):
     grade_level: str | None = None
     subject: str | None = None
     topic: str | None = None
-    learning_outcomes: List[str] | None = None
+    learning_outcomes: list[str] | None = None
     exam_type: str | None = None
     difficulty_level: str | None = None
     priority: int = 5
@@ -49,14 +54,14 @@ class ExpertFeedbackSubmission(BaseModel):
     expert_id: str
     expert_name: str
     expert_role: str
-    feedbacks: List[Dict[str, Any]]
+    feedbacks: list[dict[str, Any]]
 
 
 class ExpertRegistrationRequest(BaseModel):
     """Uzman kaydı talebi"""
 
     expert_id: str
-    expert_roles: List[str]
+    expert_roles: list[str]
 
 
 class ValidationStatusResponse(BaseModel):
@@ -77,7 +82,8 @@ class ValidationStatusResponse(BaseModel):
 @router.post("/submit")
 async def submit_content_for_validation(
     submission: ContentSubmissionRequest,
-) -> Dict[str, Any]:
+    current_user: AuthenticatedUser = Depends(get_current_user),
+) -> dict[str, Any]:
     """
     İçeriği uzman doğrulamasına gönder
 
@@ -137,14 +143,17 @@ async def submit_content_for_validation(
             "content_submission_failed", error=str(e), content_id=submission.content_id
         )
         raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Islem basarisiz. Lutfen tekrar deneyin."
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
 
 
 @router.post("/feedback/{request_id}")
 async def submit_expert_feedback(
-    request_id: str, feedback: ExpertFeedbackSubmission
-) -> Dict[str, Any]:
+    request_id: str,
+    feedback: ExpertFeedbackSubmission,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+) -> dict[str, Any]:
     """
     Uzman geri bildirimi gönder
 
@@ -198,12 +207,16 @@ async def submit_expert_feedback(
             "expert_feedback_submission_failed", error=str(e), request_id=request_id
         )
         raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Islem basarisiz. Lutfen tekrar deneyin."
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
 
 
 @router.get("/status/{request_id}")
-async def get_validation_status(request_id: str) -> ValidationStatusResponse:
+async def get_validation_status(
+    request_id: str,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+) -> ValidationStatusResponse:
     """
     Doğrulama durumunu getir
 
@@ -248,12 +261,16 @@ async def get_validation_status(request_id: str) -> ValidationStatusResponse:
             "get_validation_status_failed", error=str(e), request_id=request_id
         )
         raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Islem basarisiz. Lutfen tekrar deneyin."
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
 
 
 @router.get("/request/{request_id}")
-async def get_validation_request(request_id: str) -> Dict[str, Any]:
+async def get_validation_request(
+    request_id: str,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+) -> dict[str, Any]:
     """
     Tam doğrulama talebi bilgisini getir
 
@@ -328,12 +345,16 @@ async def get_validation_request(request_id: str) -> Dict[str, Any]:
             "get_validation_request_failed", error=str(e), request_id=request_id
         )
         raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Islem basarisiz. Lutfen tekrar deneyin."
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
 
 
 @router.get("/compliance/{report_id}")
-async def get_compliance_report(report_id: str) -> Dict[str, Any]:
+async def get_compliance_report(
+    report_id: str,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+) -> dict[str, Any]:
     """
     Uyumluluk raporunu getir
 
@@ -386,12 +407,16 @@ async def get_compliance_report(report_id: str) -> Dict[str, Any]:
     except Exception as e:
         logger.error("get_compliance_report_failed", error=str(e), report_id=report_id)
         raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Islem basarisiz. Lutfen tekrar deneyin."
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
 
 
 @router.post("/experts/register")
-async def register_expert(request: ExpertRegistrationRequest) -> Dict[str, Any]:
+async def register_expert(
+    request: ExpertRegistrationRequest,
+    current_user: AuthenticatedUser = Depends(get_current_admin_user),
+) -> dict[str, Any]:
     """
     Uzman kaydı yap
 
@@ -419,7 +444,9 @@ async def register_expert(request: ExpertRegistrationRequest) -> Dict[str, Any]:
         )
 
         logger.info(
-            "expert_registered", expert_id=request.expert_id, roles=[r.value for r in roles]
+            "expert_registered",
+            expert_id=request.expert_id,
+            roles=[r.value for r in roles],
         )
 
         return {
@@ -432,14 +459,20 @@ async def register_expert(request: ExpertRegistrationRequest) -> Dict[str, Any]:
     except HTTPException:
         raise
     except Exception as e:
-        logger.error("expert_registration_failed", error=str(e), expert_id=request.expert_id)
+        logger.error(
+            "expert_registration_failed", error=str(e), expert_id=request.expert_id
+        )
         raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Islem basarisiz. Lutfen tekrar deneyin."
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
 
 
 @router.get("/experts/{expert_id}/pending")
-async def get_pending_requests_for_expert(expert_id: str) -> Dict[str, Any]:
+async def get_pending_requests_for_expert(
+    expert_id: str,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+) -> dict[str, Any]:
     """
     Uzman için bekleyen doğrulama taleplerini getir
 
@@ -475,7 +508,8 @@ async def get_pending_requests_for_expert(expert_id: str) -> Dict[str, Any]:
     except Exception as e:
         logger.error("get_pending_requests_failed", error=str(e), expert_id=expert_id)
         raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Islem basarisiz. Lutfen tekrar deneyin."
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
 
 
