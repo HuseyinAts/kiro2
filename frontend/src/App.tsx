@@ -647,7 +647,7 @@ function AppContent() {
                 path="/admin/labs"
                 element={
                   <ProtectedRoute requiredRoles={['admin']}>
-                    <RevolutionaryDashboard studentId="demo" />
+                    <RevolutionaryDashboard />
                   </ProtectedRoute>
                 }
               />

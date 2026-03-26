@@ -70,6 +70,19 @@ async def app_lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
             f"JWT Redis blacklist init failed (using in-memory fallback): {e}"
         )
 
+    # Recover exam sessions from Redis L2 → L1 dict
+    try:
+        from core.exam_session_store import list_active_sessions
+        from core.osym_exam_engine import osym_exam_engine
+
+        recovered = await list_active_sessions()
+        for session in recovered:
+            osym_exam_engine.active_sessions[session.session_id] = session
+        if recovered:
+            logger.info(f"✅ Recovered {len(recovered)} exam sessions from Redis")
+    except Exception as e:
+        logger.warning(f"⚠️ Exam session recovery failed (non-fatal): {e}")
+
     # Initialize AI agents
     try:
         initialize_agents()

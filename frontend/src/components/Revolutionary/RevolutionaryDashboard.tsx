@@ -37,6 +37,7 @@ import * as React from 'react';
 import {  useState, useEffect  } from 'react';
 
 // Devrimsel bileşenleri import et
+import { useUser } from '../../store/authStore';
 import { RevolutionaryFeatureSettings } from '../../types';
 
 import BionicReadingToggle from './BionicReadingToggle';
@@ -48,7 +49,7 @@ import TextSimplifier from './TextSimplifier';
 import ZPDMaarifDashboard from './ZPDMaarifDashboard';
 
 interface RevolutionaryDashboardProps {
-  studentId: string;
+  studentId?: string;
 }
 
 interface TabPanelProps {
@@ -75,7 +76,9 @@ const TabPanel: React.FC<TabPanelProps> = ({ children, value, index, ...other })
   );
 };
 
-const RevolutionaryDashboard: React.FC<RevolutionaryDashboardProps> = ({ studentId }) => {
+const RevolutionaryDashboard: React.FC<RevolutionaryDashboardProps> = ({ studentId: studentIdProp }) => {
+  const user = useUser();
+  const studentId = studentIdProp || user?.id || 'anonymous';
   const [activeTab, setActiveTab] = useState(0);
   const [settings, setSettings] = useState<RevolutionaryFeatureSettings | null>(null);
   const [loading, setLoading] = useState(true);

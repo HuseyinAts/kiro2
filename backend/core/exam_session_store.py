@@ -152,6 +152,29 @@ async def delete_session(session_id: str) -> None:
         logger.warning(f"Redis delete failed for {session_id}: {e}")
 
 
+async def list_active_sessions() -> list["ExamSessionData"]:
+    """Load ALL sessions from Redis (startup recovery).
+
+    Returns empty list on error.
+    """
+    try:
+        r = await _get_redis()
+        if r:
+            sessions = []
+            async for key in r.scan_iter(match=f"{_REDIS_PREFIX}*"):
+                data = await r.get(key)
+                if data:
+                    try:
+                        sessions.append(_deserialize_session(data))
+                    except Exception as e:
+                        logger.warning(f"Skipping corrupt session {key}: {e}")
+            await r.aclose()
+            return sessions
+    except Exception as e:
+        logger.warning(f"Redis list_active_sessions failed: {e}")
+    return []
+
+
 async def get_student_sessions(student_id: str) -> list["ExamSessionData"]:
     """Get all sessions for a student from Redis. Returns empty list on error."""
     try:
