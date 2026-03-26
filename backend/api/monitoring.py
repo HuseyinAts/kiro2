@@ -6,8 +6,9 @@ Performance metrics, health checks, system status
 from datetime import UTC, datetime
 from typing import Any
 
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException, Query
 
+from core.auth_dependencies import require_role
 from core.database import get_db_session
 from core.performance_monitor import performance_monitor
 from core.structured_logger import get_logger
@@ -91,6 +92,7 @@ async def health_check() -> dict[str, Any]:
 @router.get("/performance/api")
 async def get_api_performance(
     hours: int = Query(1, ge=1, le=24, description="Hours to analyze"),
+    _: None = Depends(require_role("ADMIN")),
 ) -> dict[str, Any]:
     """
     Get API performance metrics
@@ -116,6 +118,7 @@ async def get_api_performance(
 @router.get("/performance/database")
 async def get_database_performance(
     hours: int = Query(1, ge=1, le=24, description="Hours to analyze"),
+    _: None = Depends(require_role("ADMIN")),
 ) -> dict[str, Any]:
     """
     Get database performance metrics
@@ -143,6 +146,7 @@ async def get_database_performance(
 @router.get("/performance/system")
 async def get_system_performance(
     hours: int = Query(1, ge=1, le=24, description="Hours to analyze"),
+    _: None = Depends(require_role("ADMIN")),
 ) -> dict[str, Any]:
     """
     Get system performance metrics
@@ -168,6 +172,7 @@ async def get_system_performance(
 @router.get("/performance/summary")
 async def get_performance_summary(
     hours: int = Query(1, ge=1, le=24, description="Hours to analyze"),
+    _: None = Depends(require_role("ADMIN")),
 ) -> dict[str, Any]:
     """
     Get comprehensive performance summary
@@ -203,7 +208,7 @@ async def get_performance_summary(
 
 
 @router.get("/metrics/prometheus")
-async def get_prometheus_metrics() -> str:
+async def get_prometheus_metrics(_: None = Depends(require_role("ADMIN"))) -> str:
     """
     Get metrics in Prometheus format
     """
@@ -224,6 +229,7 @@ async def get_prometheus_metrics() -> str:
 @router.get("/bottlenecks")
 async def detect_performance_bottlenecks(
     hours: int = Query(1, ge=1, le=24, description="Hours to analyze"),
+    _: None = Depends(require_role("ADMIN")),
 ) -> dict[str, Any]:
     """
     Detect performance bottlenecks
@@ -314,6 +320,7 @@ async def start_monitoring(
     interval_seconds: int = Query(
         30, ge=10, le=300, description="Monitoring interval in seconds"
     ),
+    _: None = Depends(require_role("ADMIN")),
 ) -> dict[str, Any]:
     """
     Start performance monitoring
@@ -345,7 +352,7 @@ async def start_monitoring(
 
 
 @router.post("/monitoring/stop")
-async def stop_monitoring() -> dict[str, Any]:
+async def stop_monitoring(_: None = Depends(require_role("ADMIN"))) -> dict[str, Any]:
     """
     Stop performance monitoring
     """
@@ -370,6 +377,7 @@ async def stop_monitoring() -> dict[str, Any]:
 async def analyze_logs(
     hours: int = Query(1, ge=1, le=24, description="Hours to analyze"),
     log_level: str | None = Query(None, description="Filter by log level"),
+    _: None = Depends(require_role("ADMIN")),
 ) -> dict[str, Any]:
     """
     Analyze application logs for patterns and issues
@@ -407,7 +415,9 @@ async def analyze_logs(
 
 
 @router.get("/token-projection")
-async def get_token_projection() -> dict[str, Any]:
+async def get_token_projection(
+    _: None = Depends(require_role("ADMIN")),
+) -> dict[str, Any]:
     """
     Token usage projection — stub endpoint.
     Frontend: TokenOptimizationDashboard.tsx

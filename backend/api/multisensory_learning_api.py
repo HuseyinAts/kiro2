@@ -3,18 +3,20 @@ Multisensory Learning API - Çoklu Duyusal Öğrenme REST API
 Task 82: Çoklu Duyusal Öğrenme (REQ-50.89 - REQ-50.104)
 """
 
-from fastapi import APIRouter, HTTPException, Query
-from typing import List, Optional, Dict, Any
+from typing import Any
+
+from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel
 
+from core.dependencies import AuthenticatedUser, get_current_user
 from services.multisensory_learning_service import (
-    multisensory_learning_service,
-    MultimodalContent,
-    InteractiveAnimation,
-    EducationalVideo,
-    VRARContent,
-    LearningModality,
     AnimationType,
+    EducationalVideo,
+    InteractiveAnimation,
+    LearningModality,
+    MultimodalContent,
+    VRARContent,
+    multisensory_learning_service,
 )
 
 router = APIRouter(prefix="/api/v1/multisensory", tags=["Multisensory Learning"])
@@ -25,17 +27,17 @@ class MultimodalContentRequest(BaseModel):
     title: str
     subject: str
     topic: str
-    modalities: List[LearningModality]
-    visual_content: Optional[Dict[str, Any]] = None
-    audio_content: Optional[Dict[str, Any]] = None
-    kinesthetic_content: Optional[Dict[str, Any]] = None
-    interactive_elements: Optional[List[Dict[str, Any]]] = None
+    modalities: list[LearningModality]
+    visual_content: dict[str, Any] | None = None
+    audio_content: dict[str, Any] | None = None
+    kinesthetic_content: dict[str, Any] | None = None
+    interactive_elements: list[dict[str, Any]] | None = None
 
 
 class AnimationRequest(BaseModel):
     title: str
     animation_type: AnimationType
-    steps: List[Dict[str, Any]]
+    steps: list[dict[str, Any]]
     duration_ms: int = 5000
 
 
@@ -46,28 +48,31 @@ class VideoRequest(BaseModel):
     duration_seconds: int
     subject: str
     topic: str
-    subtitles: Optional[List[Dict[str, Any]]] = None
-    thumbnail_url: Optional[str] = None
+    subtitles: list[dict[str, Any]] | None = None
+    thumbnail_url: str | None = None
 
 
 class VRContentRequest(BaseModel):
     title: str
     description: str
     scene_url: str
-    models_3d: List[Dict[str, Any]]
-    interactions: List[str]
+    models_3d: list[dict[str, Any]]
+    interactions: list[str]
 
 
 class ARContentRequest(BaseModel):
     title: str
     description: str
-    overlay_data: Dict[str, Any]
-    models_3d: List[Dict[str, Any]]
+    overlay_data: dict[str, Any]
+    models_3d: list[dict[str, Any]]
 
 
 # Multimodal Content Endpoints (REQ-50.89-92)
 @router.post("/multimodal", response_model=MultimodalContent)
-async def create_multimodal_content(request: MultimodalContentRequest):
+async def create_multimodal_content(
+    request: MultimodalContentRequest,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+):
     """REQ-50.89: Çoklu modal içerik oluştur"""
     try:
         content = multisensory_learning_service.create_multimodal_content(
@@ -81,12 +86,18 @@ async def create_multimodal_content(request: MultimodalContentRequest):
             interactive_elements=request.interactive_elements,
         )
         return content
-    except Exception as e:
-        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
+    except Exception:
+        raise HTTPException(
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
+        )
 
 
 @router.post("/multimodal/{content_id}/synchronize")
-async def synchronize_media(content_id: str, sync_points: List[Dict[str, Any]]):
+async def synchronize_media(
+    content_id: str,
+    sync_points: list[dict[str, Any]],
+    current_user: AuthenticatedUser = Depends(get_current_user),
+):
     """REQ-50.90: Medya senkronizasyonu"""
     success = multisensory_learning_service.synchronize_media(content_id, sync_points)
     if not success:
@@ -96,7 +107,10 @@ async def synchronize_media(content_id: str, sync_points: List[Dict[str, Any]]):
 
 @router.post("/multimodal/{content_id}/interactive-element")
 async def add_interactive_element(
-    content_id: str, element_type: str, element_data: Dict[str, Any]
+    content_id: str,
+    element_type: str,
+    element_data: dict[str, Any],
+    current_user: AuthenticatedUser = Depends(get_current_user),
 ):
     """REQ-50.91: İnteraktif element ekle"""
     success = multisensory_learning_service.add_interactive_element(
@@ -109,18 +123,23 @@ async def add_interactive_element(
 
 @router.post("/preferences")
 async def save_preferences(
-    user_id: str, preferred_modalities: List[LearningModality], settings: Dict[str, Any]
+    preferred_modalities: list[LearningModality],
+    settings: dict[str, Any],
+    current_user: AuthenticatedUser = Depends(get_current_user),
 ):
     """REQ-50.92: Kullanıcı tercihlerini kaydet"""
     result = multisensory_learning_service.save_user_preferences(
-        user_id, preferred_modalities, settings
+        current_user.id, preferred_modalities, settings
     )
     return result
 
 
 # Animation Endpoints (REQ-50.93-96)
 @router.post("/animations", response_model=InteractiveAnimation)
-async def create_animation(request: AnimationRequest):
+async def create_animation(
+    request: AnimationRequest,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+):
     """REQ-50.93: İnteraktif animasyon oluştur"""
     try:
         animation = multisensory_learning_service.create_animation(
@@ -130,12 +149,16 @@ async def create_animation(request: AnimationRequest):
             duration_ms=request.duration_ms,
         )
         return animation
-    except Exception as e:
-        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
+    except Exception:
+        raise HTTPException(
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
+        )
 
 
 @router.get("/animations/{animation_id}/steps")
-async def get_animation_steps(animation_id: str):
+async def get_animation_steps(
+    animation_id: str, current_user: AuthenticatedUser = Depends(get_current_user)
+):
     """REQ-50.94: Animasyon adımlarını getir"""
     steps = multisensory_learning_service.get_animation_steps(animation_id)
     if not steps:
@@ -145,7 +168,10 @@ async def get_animation_steps(animation_id: str):
 
 @router.post("/animations/{animation_id}/control")
 async def control_animation(
-    animation_id: str, action: str, value: Optional[Any] = None
+    animation_id: str,
+    action: str,
+    value: Any | None = None,
+    current_user: AuthenticatedUser = Depends(get_current_user),
 ):
     """REQ-50.95: Animasyon kontrolü (pause/replay)"""
     result = multisensory_learning_service.control_animation(
@@ -160,7 +186,9 @@ async def control_animation(
 
 @router.patch("/animations/{animation_id}/speed")
 async def set_animation_speed(
-    animation_id: str, speed: float = Query(..., ge=0.5, le=2.0)
+    animation_id: str,
+    speed: float = Query(..., ge=0.5, le=2.0),
+    current_user: AuthenticatedUser = Depends(get_current_user),
 ):
     """REQ-50.96: Animasyon hızını ayarla"""
     success = multisensory_learning_service.set_playback_speed(animation_id, speed)
@@ -171,7 +199,9 @@ async def set_animation_speed(
 
 # Video Endpoints (REQ-50.97-100)
 @router.post("/videos", response_model=EducationalVideo)
-async def add_video(request: VideoRequest):
+async def add_video(
+    request: VideoRequest, current_user: AuthenticatedUser = Depends(get_current_user)
+):
     """REQ-50.97: Eğitim videosu ekle"""
     try:
         video = multisensory_learning_service.add_video(
@@ -185,13 +215,18 @@ async def add_video(request: VideoRequest):
             thumbnail_url=request.thumbnail_url,
         )
         return video
-    except Exception as e:
-        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
+    except Exception:
+        raise HTTPException(
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
+        )
 
 
 @router.post("/videos/{video_id}/subtitles")
 async def add_subtitles(
-    video_id: str, language: str, subtitle_data: List[Dict[str, Any]]
+    video_id: str,
+    language: str,
+    subtitle_data: list[dict[str, Any]],
+    current_user: AuthenticatedUser = Depends(get_current_user),
 ):
     """REQ-50.98: Video altyazı ekle"""
     success = multisensory_learning_service.add_subtitles(
@@ -203,7 +238,11 @@ async def add_subtitles(
 
 
 @router.patch("/videos/{video_id}/speed")
-async def set_video_speed(video_id: str, speed: float = Query(..., ge=0.5, le=2.0)):
+async def set_video_speed(
+    video_id: str,
+    speed: float = Query(..., ge=0.5, le=2.0),
+    current_user: AuthenticatedUser = Depends(get_current_user),
+):
     """REQ-50.99: Video hızını ayarla"""
     success = multisensory_learning_service.set_video_playback_speed(video_id, speed)
     if not success:
@@ -212,7 +251,9 @@ async def set_video_speed(video_id: str, speed: float = Query(..., ge=0.5, le=2.
 
 
 @router.get("/videos/{video_id}/wcag-compliance")
-async def check_wcag_compliance(video_id: str):
+async def check_wcag_compliance(
+    video_id: str, current_user: AuthenticatedUser = Depends(get_current_user)
+):
     """REQ-50.100: WCAG uyumluluğunu kontrol et"""
     result = multisensory_learning_service.ensure_wcag_compliance(video_id)
     if "error" in result:
@@ -222,7 +263,10 @@ async def check_wcag_compliance(video_id: str):
 
 # VR/AR Endpoints (REQ-50.101-104)
 @router.post("/vr", response_model=VRARContent)
-async def create_vr_content(request: VRContentRequest):
+async def create_vr_content(
+    request: VRContentRequest,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+):
     """REQ-50.101: VR içerik oluştur"""
     try:
         content = multisensory_learning_service.create_vr_content(
@@ -233,12 +277,17 @@ async def create_vr_content(request: VRContentRequest):
             interactions=request.interactions,
         )
         return content
-    except Exception as e:
-        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
+    except Exception:
+        raise HTTPException(
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
+        )
 
 
 @router.post("/ar", response_model=VRARContent)
-async def create_ar_overlay(request: ARContentRequest):
+async def create_ar_overlay(
+    request: ARContentRequest,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+):
     """REQ-50.102: AR overlay oluştur"""
     try:
         content = multisensory_learning_service.create_ar_overlay(
@@ -248,13 +297,18 @@ async def create_ar_overlay(request: ARContentRequest):
             models_3d=request.models_3d,
         )
         return content
-    except Exception as e:
-        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
+    except Exception:
+        raise HTTPException(
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
+        )
 
 
 @router.post("/vr-ar/{content_id}/interaction")
 async def enable_3d_interaction(
-    content_id: str, interaction_type: str, settings: Dict[str, Any]
+    content_id: str,
+    interaction_type: str,
+    settings: dict[str, Any],
+    current_user: AuthenticatedUser = Depends(get_current_user),
 ):
     """REQ-50.103: 3D model interaksiyonu etkinleştir"""
     success = multisensory_learning_service.enable_3d_interaction(
@@ -267,11 +321,13 @@ async def enable_3d_interaction(
 
 @router.post("/vr-ar/{content_id}/save-experience")
 async def save_immersive_experience(
-    content_id: str, user_id: str, experience_data: Dict[str, Any]
+    content_id: str,
+    experience_data: dict[str, Any],
+    current_user: AuthenticatedUser = Depends(get_current_user),
 ):
     """REQ-50.104: Immersive learning experience kaydet"""
     result = multisensory_learning_service.save_immersive_experience(
-        content_id, user_id, experience_data
+        content_id, current_user.id, experience_data
     )
     if not result["success"]:
         raise HTTPException(status_code=404, detail=result.get("error", "Save failed"))
