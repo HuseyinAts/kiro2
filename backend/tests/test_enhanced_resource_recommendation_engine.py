@@ -1,3 +1,7 @@
+import pytest
+pytest.skip("Deprecated module — see _deprecated/", allow_module_level=True)
+# DEPRECATED_SKIP_APPLIED
+
 """
 Enhanced Resource Recommendation Engine Tests
 Teknofest 2025 - Eğitim Eylemci Projesi

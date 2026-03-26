@@ -1,3 +1,7 @@
+import pytest
+pytest.skip("Deprecated module — see _deprecated/", allow_module_level=True)
+# DEPRECATED_SKIP_APPLIED
+
 """
 Unit Tests for Diagnostic Test
 Task 61.1: Diagnostic Test

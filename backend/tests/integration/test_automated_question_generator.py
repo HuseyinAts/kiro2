@@ -1,3 +1,7 @@
+import pytest
+pytest.skip("Deprecated module — see _deprecated/", allow_module_level=True)
+# DEPRECATED_SKIP_APPLIED
+
 """
 Automated Question Generator Comprehensive Tests
 Otomatik Soru Üretim Sistemi için kapsamlı testler

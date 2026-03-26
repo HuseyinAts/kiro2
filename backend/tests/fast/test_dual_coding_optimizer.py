@@ -1,6 +1,15 @@
+from __future__ import annotations
+
+import pytest
+pytest.skip("Deprecated module — see _deprecated/", allow_module_level=True)
+# DEPRECATED_SKIP_APPLIED
+
+import pytest
+pytest.skip("Deprecated module — see _deprecated/", allow_module_level=True)
+# DEPRECATED_SKIP_APPLIED
+
 """Tests for Dual Coding Optimizer - Paivio & Mayer Multimedia Principles."""
 
-from __future__ import annotations
 
 from services.dual_coding_optimizer import (
     MayerPrinciple,

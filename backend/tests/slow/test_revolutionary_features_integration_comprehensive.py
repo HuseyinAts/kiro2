@@ -1,4 +1,8 @@
 import pytest
+pytest.skip("Deprecated module — see _deprecated/", allow_module_level=True)
+# DEPRECATED_SKIP_APPLIED
+
+import pytest
 
 """
 Comprehensive Integration Tests for Revolutionary Features

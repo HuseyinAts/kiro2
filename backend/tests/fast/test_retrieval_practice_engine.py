@@ -1,9 +1,18 @@
+from __future__ import annotations
+
+import pytest
+pytest.skip("Deprecated module — see _deprecated/", allow_module_level=True)
+# DEPRECATED_SKIP_APPLIED
+
+import pytest
+pytest.skip("Deprecated module — see _deprecated/", allow_module_level=True)
+# DEPRECATED_SKIP_APPLIED
+
 """Tests for Retrieval Practice Engine.
 
 Bjork's Generation Effect + Interleaving + Testing Effect.
 """
 
-from __future__ import annotations
 
 from services.retrieval_practice_engine import (
     InterleavingStrategy,

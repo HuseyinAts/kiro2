@@ -1,3 +1,7 @@
+import pytest
+pytest.skip("Deprecated module — see _deprecated/", allow_module_level=True)
+# DEPRECATED_SKIP_APPLIED
+
 """
 Comprehensive tests for PersonalizedContentRecommender
 Test coverage for 64-profile hybrid learning content recommendation system

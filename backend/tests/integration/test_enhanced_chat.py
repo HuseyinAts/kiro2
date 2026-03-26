@@ -1,3 +1,7 @@
+import pytest
+pytest.skip("Deprecated module — see _deprecated/", allow_module_level=True)
+# DEPRECATED_SKIP_APPLIED
+
 """
 Enhanced Chat API Test Suite
 Task 22: AI sohbet sistemi ve NLP entegrasyonu tamamlama

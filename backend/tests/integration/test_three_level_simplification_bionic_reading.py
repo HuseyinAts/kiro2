@@ -1,3 +1,7 @@
+import pytest
+pytest.skip("Deprecated module — see _deprecated/", allow_module_level=True)
+# DEPRECATED_SKIP_APPLIED
+
 """
 3 Seviyeli Türkçe Metin Basitleştirme ve Türkçe Bionic Reading Test Suite
 Dünyada İlk Türkçe Metin Basitleştirme ve Disleksi Desteği

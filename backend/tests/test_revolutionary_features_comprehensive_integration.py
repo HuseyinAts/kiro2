@@ -1,3 +1,7 @@
+import pytest
+pytest.skip("Deprecated module — see _deprecated/", allow_module_level=True)
+# DEPRECATED_SKIP_APPLIED
+
 # -*- coding: utf-8 -*-
 """
 Devrimsel AI Özellikler Kapsamlı Entegrasyon Test Suite

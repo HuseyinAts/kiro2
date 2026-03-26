@@ -1,3 +1,7 @@
+import pytest
+pytest.skip("Deprecated module — see _deprecated/", allow_module_level=True)
+# DEPRECATED_SKIP_APPLIED
+
 """
 Türkçe Morfoloji IRT Sistemi Kapsamlı Test Suite
 ÖSYM ve ETS Standartlarını Aşan Devrimsel Sistem

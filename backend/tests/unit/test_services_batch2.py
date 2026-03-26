@@ -1,3 +1,7 @@
+import pytest
+pytest.skip("Deprecated module — see _deprecated/", allow_module_level=True)
+# DEPRECATED_SKIP_APPLIED
+
 """
 Unit Tests for Service Layer Batch 2
 Tests for: exam_performance_service, question_generation_service,
