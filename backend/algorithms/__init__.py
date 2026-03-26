@@ -7,30 +7,26 @@ Lazy imports kullanılır - database bağlantısı import-time'da gerekli değil
 """
 
 __all__ = [
-    "HybridLearningStyleDetector",
-    "PersonalizedContentRecommender",
-    "TurkishOptimizedFSRS",
-    "FSRSCard",
-    "FSRSSchedule",
-    "FSRSGrade",
-    "StudentContext",
-    "MultiAgentBlackboard",
     "EventType",
+    "FSRSCard",
+    "FSRSGrade",
+    "FSRSSchedule",
+    "MultiAgentBlackboard",
     "Priority",
+    "StudentContext",
+    "TurkishOptimizedFSRS",
 ]
 
 
 def __getattr__(name: str):
     """Lazy import for algorithms - avoids database connection at import time."""
-    if name == "HybridLearningStyleDetector":
-        from .hybrid_learning_style_detector import HybridLearningStyleDetector
-        return HybridLearningStyleDetector
-
-    if name == "PersonalizedContentRecommender":
-        from .personalized_content_recommender import PersonalizedContentRecommender
-        return PersonalizedContentRecommender
-
-    if name in ("TurkishOptimizedFSRS", "FSRSCard", "FSRSGrade", "FSRSSchedule", "StudentContext"):
+    if name in (
+        "TurkishOptimizedFSRS",
+        "FSRSCard",
+        "FSRSGrade",
+        "FSRSSchedule",
+        "StudentContext",
+    ):
         from .turkish_optimized_fsrs import (
             FSRSCard,
             FSRSGrade,
@@ -38,6 +34,7 @@ def __getattr__(name: str):
             StudentContext,
             TurkishOptimizedFSRS,
         )
+
         mapping = {
             "TurkishOptimizedFSRS": TurkishOptimizedFSRS,
             "FSRSCard": FSRSCard,
@@ -49,10 +46,11 @@ def __getattr__(name: str):
 
     if name in ("MultiAgentBlackboard", "EventType", "Priority"):
         from .multi_agent_blackboard import (
-            MultiAgentBlackboard,
             EventType,
+            MultiAgentBlackboard,
             Priority,
         )
+
         mapping = {
             "MultiAgentBlackboard": MultiAgentBlackboard,
             "EventType": EventType,
