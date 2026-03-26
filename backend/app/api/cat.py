@@ -35,20 +35,26 @@ router = APIRouter(prefix="/api/v1/cat", tags=["CAT"])
 
 # ── Dependency: CATSessionService ────────────────────────────────
 
+
 def get_cat_service(
-    db:    AsyncSession = Depends(get_db),
-    redis              = Depends(get_redis),
+    db: AsyncSession = Depends(get_db),
+    redis=Depends(get_redis),
 ) -> CATSessionService:
     if redis is None:
         try:
+            import os
+
             import redis.asyncio as _aioredis
-            redis = _aioredis.from_url("redis://localhost:6379", decode_responses=False)
+
+            _url = os.getenv("REDIS_URL", "redis://localhost:6379/0")
+            redis = _aioredis.from_url(_url, decode_responses=False)
         except Exception:
             pass
     return CATSessionService(redis=redis, db=db)
 
 
 # ── Endpoints ────────────────────────────────────────────────────
+
 
 @router.post(
     "/sessions",
@@ -64,9 +70,9 @@ def get_cat_service(
     """,
 )
 async def start_cat_session(
-    body:         StartSessionRequest,
-    current_user: User               = Depends(get_current_user),
-    service:      CATSessionService  = Depends(get_cat_service),
+    body: StartSessionRequest,
+    current_user: User = Depends(get_current_user),
+    service: CATSessionService = Depends(get_cat_service),
 ) -> StartSessionResponse:
     try:
         result = await service.start_session(
@@ -97,10 +103,10 @@ async def start_cat_session(
     """,
 )
 async def submit_answer(
-    session_id:   str,
-    body:         SubmitAnswerRequest,
-    current_user: User              = Depends(get_current_user),
-    service:      CATSessionService = Depends(get_cat_service),
+    session_id: str,
+    body: SubmitAnswerRequest,
+    current_user: User = Depends(get_current_user),
+    service: CATSessionService = Depends(get_cat_service),
 ) -> SubmitAnswerResponse:
     # Önce oturumun bu kullanıcıya ait olduğunu doğrula
     state = await service.get_session_state(session_id)
@@ -136,7 +142,7 @@ async def submit_answer(
     # FeedbackResponse: doğru şıkkı ekle
     result["feedback"] = FeedbackResponse(
         is_correct=is_correct,
-        correct_option=None,   # İsteğe bağlı: doğru şıkkı hemen göster/gizle
+        correct_option=None,  # İsteğe bağlı: doğru şıkkı hemen göster/gizle
     )
     return SubmitAnswerResponse(**result)
 
@@ -147,9 +153,9 @@ async def submit_answer(
     summary="Oturum durumunu getir",
 )
 async def get_session(
-    session_id:   str,
-    current_user: User              = Depends(get_current_user),
-    service:      CATSessionService = Depends(get_cat_service),
+    session_id: str,
+    current_user: User = Depends(get_current_user),
+    service: CATSessionService = Depends(get_cat_service),
 ) -> SessionStateResponse:
     state = await service.get_session_state(session_id)
     if state is None:
@@ -158,11 +164,11 @@ async def get_session(
         raise HTTPException(status_code=403, detail="Erişim reddedildi")
 
     return SessionStateResponse(
-        session_id=  state.session_id,
-        state=       state.state,
-        theta=       state.theta,
-        se=          state.se,
-        n_questions= state.n_questions,
+        session_id=state.session_id,
+        state=state.state,
+        theta=state.theta,
+        se=state.se,
+        n_questions=state.n_questions,
         warm_up_done=state.warm_up_done,
     )
 
@@ -173,9 +179,9 @@ async def get_session(
     summary="Oturumu iptal et",
 )
 async def abandon_session(
-    session_id:   str,
-    current_user: User              = Depends(get_current_user),
-    service:      CATSessionService = Depends(get_cat_service),
+    session_id: str,
+    current_user: User = Depends(get_current_user),
+    service: CATSessionService = Depends(get_cat_service),
 ) -> None:
     state = await service.get_session_state(session_id)
     if state and state.user_id != str(current_user.id):
@@ -184,6 +190,7 @@ async def abandon_session(
 
 
 # ── Yardımcı ──────────────────────────────────────────────────────
+
 
 async def _check_answer(db, question_id: str, selected_option: str) -> bool:
     """DB'den doğru şıkkı çek, karşılaştır."""

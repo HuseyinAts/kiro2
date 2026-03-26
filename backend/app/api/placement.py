@@ -50,9 +50,12 @@ def get_service(
     # Redis None ise direkt bağlan (her backend instance için güvenli fallback)
     if redis is None:
         try:
+            import os
+
             import redis.asyncio as _aioredis
 
-            redis = _aioredis.from_url("redis://localhost:6379", decode_responses=False)
+            _url = os.getenv("REDIS_URL", "redis://localhost:6379/0")
+            redis = _aioredis.from_url(_url, decode_responses=False)
         except Exception:
             pass
     return PlacementTestService(db=db, redis=redis)

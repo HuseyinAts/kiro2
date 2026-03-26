@@ -247,11 +247,12 @@ class PlacementTestService:
         # Redis None ise direkt bağlantı kur (fallback)
         if self.redis is None:
             try:
+                import os
+
                 import redis.asyncio as _aioredis
 
-                self.redis = _aioredis.from_url(
-                    "redis://localhost:6379", decode_responses=False
-                )
+                _url = os.getenv("REDIS_URL", "redis://localhost:6379/0")
+                self.redis = _aioredis.from_url(_url, decode_responses=False)
             except Exception:
                 pass
 
