@@ -2,8 +2,11 @@
 Two-Factor Authentication (2FA) API Endpoints
 PHASE 2 Sprint 4: Security Hardening
 
-Implements TOTP-based 2FA with QR code setup and backup codes
+Implements TOTP-based 2FA with QR code setup and backup codes.
+Feature-flagged: Set FEATURE_2FA_ENABLED=true to activate.
 """
+
+import os
 
 from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
 from pydantic import BaseModel
@@ -18,7 +21,18 @@ from models.database import User
 
 logger = get_logger(__name__)
 
+_2FA_ENABLED = os.getenv("FEATURE_2FA_ENABLED", "false").lower() == "true"
+
 router = APIRouter(prefix="/api/v1/auth/2fa", tags=["2FA Authentication"])
+
+
+def _require_2fa_feature():
+    """Dependency that blocks 2FA endpoints when feature flag is off."""
+    if not _2FA_ENABLED:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Bu ozellik henuz aktif degil",
+        )
 
 
 # Request/Response Models
@@ -48,7 +62,11 @@ class BackupCodeVerifyRequest(BaseModel):
     code: str
 
 
-@router.post("/setup", response_model=TwoFactorSetupResponse)
+@router.post(
+    "/setup",
+    response_model=TwoFactorSetupResponse,
+    dependencies=[Depends(_require_2fa_feature)],
+)
 async def setup_2fa(
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
@@ -110,7 +128,7 @@ async def setup_2fa(
         )
 
 
-@router.post("/enable")
+@router.post("/enable", dependencies=[Depends(_require_2fa_feature)])
 async def enable_2fa(
     request: TwoFactorEnableRequest,
     current_user: User = Depends(get_current_user),

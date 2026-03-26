@@ -81,7 +81,9 @@ async def start_placement(
             school_type=body.school_type,
         )
     except ValueError as e:
-        raise HTTPException(status_code=422, detail=str(e)) from e
+        raise HTTPException(
+            status_code=422, detail=str(e) if str(e) else "Islem basarisiz"
+        ) from e
 
 
 @router.post(
@@ -117,7 +119,9 @@ async def answer_placement(
     try:
         return await svc.answer(session_id, body.question_id, is_correct)
     except ValueError as e:
-        raise HTTPException(status_code=409, detail=str(e)) from e
+        raise HTTPException(
+            status_code=409, detail=str(e) if str(e) else "Islem basarisiz"
+        ) from e
 
 
 @router.get(

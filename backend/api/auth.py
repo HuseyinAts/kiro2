@@ -114,6 +114,27 @@ def _record_failed_login(request: Request) -> None:
     _record_attempt(request, "login")
 
 
+_GENERIC_ERROR = "Islem basarisiz. Lutfen tekrar deneyin."
+
+# Allowlisted Turkish user-facing ValueError messages (safe to expose)
+_SAFE_PATTERNS = {
+    "zaten",  # "profil zaten mevcut", "email zaten kayitli"
+    "bulunamadı",  # "kullanici bulunamadı"
+    "geçersiz",  # "geçersiz format"
+    "eksik",  # "eksik alan"
+    "mevcut",  # "profil zaten mevcut"
+}
+
+
+def _safe_user_detail(e: Exception) -> str:
+    """Return ValueError message if it's user-actionable, otherwise generic."""
+    msg = str(e)
+    msg_lower = msg.lower()
+    if any(p in msg_lower for p in _SAFE_PATTERNS):
+        return msg
+    return _GENERIC_ERROR
+
+
 @contextmanager
 def _sync_session(db: AsyncSession):
     """Create a sync session from async session for JWT DB operations.
@@ -505,11 +526,12 @@ async def kullanici_kayit(
     include_in_schema=False,  # Hide from OpenAPI docs to avoid duplication
 )
 async def kullanici_kayit_en(
+    request: Request,
     kullanici_data: KullaniciOlustur,
     db: AsyncSession = Depends(get_db),
 ) -> dict[str, Any]:
     """English alias for /kayit - registration."""
-    return await kullanici_kayit(kullanici_data, db)
+    return await kullanici_kayit(request, kullanici_data, db)
 
 
 @router.post(
@@ -648,9 +670,12 @@ async def kullanici_giris(
             "message": "2FA doğrulaması gerekli",
             "email": e.email,
         }
-    except ValueError as e:
+    except ValueError:
         _record_failed_login(request)
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Islem basarisiz. Lutfen tekrar deneyin.")
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
+        )
 
 
 # English alias for login endpoint
@@ -736,9 +761,12 @@ async def secure_login(
             "message": "2FA doğrulaması gerekli",
             "email": e.email,
         }
-    except ValueError as e:
+    except ValueError:
         _record_failed_login(request)
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Islem basarisiz. Lutfen tekrar deneyin.")
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
+        )
 
 
 @router.post(
@@ -1379,7 +1407,10 @@ async def ogrenci_profil_olustur(
 
         return await kullanici_servisi.ogrenci_profili_olustur(profil_data)
     except ValueError as e:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Islem basarisiz. Lutfen tekrar deneyin.")
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=_safe_user_detail(e),
+        )
 
 
 @router.get(
@@ -1446,7 +1477,10 @@ async def ogretmen_profil_olustur(
 
         return await kullanici_servisi.ogretmen_profili_olustur(profil_data)
     except ValueError as e:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Islem basarisiz. Lutfen tekrar deneyin.")
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=_safe_user_detail(e),
+        )
 
 
 @router.post(
@@ -1475,7 +1509,10 @@ async def veli_profil_olustur(
 
         return await kullanici_servisi.veli_profili_olustur(profil_data)
     except ValueError as e:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Islem basarisiz. Lutfen tekrar deneyin.")
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=_safe_user_detail(e),
+        )
 
 
 # Task 48.4: JWT Refresh Token Endpoints
@@ -1636,7 +1673,7 @@ async def refresh_token(
         }
     except HTTPException:
         raise
-    except Exception as e:
+    except Exception:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Islem basarisiz. Lutfen tekrar deneyin.",
@@ -1679,7 +1716,7 @@ async def logout_all_devices(
         return {"message": "Tüm cihazlardan başarıyla çıkış yapıldı"}
     except HTTPException:
         raise
-    except Exception as e:
+    except Exception:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Islem basarisiz. Lutfen tekrar deneyin.",
@@ -1725,7 +1762,7 @@ async def revoke_device(
         return {"message": f"Cihaz {device_id} token'ları iptal edildi"}
     except HTTPException:
         raise
-    except Exception as e:
+    except Exception:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Islem basarisiz. Lutfen tekrar deneyin.",

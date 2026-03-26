@@ -18,8 +18,7 @@ Requirements:
 """
 
 import logging
-from datetime import datetime, timedelta, UTC
-from typing import Dict, List, Optional
+from datetime import UTC, datetime, timedelta
 
 from fastapi import APIRouter, HTTPException, Query
 from pydantic import BaseModel, ConfigDict, Field
@@ -34,8 +33,10 @@ router = APIRouter(prefix="/api/v1/health", tags=["Health Dashboard"])
 
 # ===== Pydantic Models =====
 
+
 class EndpointHealthResponse(BaseModel):
     """Endpoint health response modeli."""
+
     endpoint: str
     method: str
     status: HealthStatus
@@ -46,23 +47,26 @@ class EndpointHealthResponse(BaseModel):
     circuit_state: str = "closed"
     last_checked: datetime
 
-    model_config = ConfigDict(json_schema_extra={
-        "example": {
-            "endpoint": "/api/v1/users",
-            "method": "GET",
-            "status": "healthy",
-            "score": 95,
-            "response_time_ms": 45.2,
-            "error_rate": 0.005,
-            "uptime_percentage": 99.95,
-            "circuit_state": "closed",
-            "last_checked": "2026-01-14T10:30:00Z"
+    model_config = ConfigDict(
+        json_schema_extra={
+            "example": {
+                "endpoint": "/api/v1/users",
+                "method": "GET",
+                "status": "healthy",
+                "score": 95,
+                "response_time_ms": 45.2,
+                "error_rate": 0.005,
+                "uptime_percentage": 99.95,
+                "circuit_state": "closed",
+                "last_checked": "2026-01-14T10:30:00Z",
+            }
         }
-    })
+    )
 
 
 class EndpointDetailResponse(BaseModel):
     """Endpoint detay response modeli."""
+
     endpoint: str
     method: str
     handler: str
@@ -70,12 +74,13 @@ class EndpointDetailResponse(BaseModel):
     requires_auth: bool
     status: HealthStatus
     score: int
-    metrics: Dict
-    history: List[Dict] = []
+    metrics: dict
+    history: list[dict] = []
 
 
 class SystemMetricsResponse(BaseModel):
     """Sistem metrikleri response modeli."""
+
     total_endpoints: int
     healthy_count: int
     degraded_count: int
@@ -91,6 +96,7 @@ class SystemMetricsResponse(BaseModel):
 
 class SLAReportResponse(BaseModel):
     """SLA raporu response modeli."""
+
     period_start: datetime
     period_end: datetime
     total_endpoints: int
@@ -98,15 +104,16 @@ class SLAReportResponse(BaseModel):
     sla_compliance_rate: float
     average_uptime: float
     average_response_time_ms: float
-    incidents: List[Dict] = []
-    recommendations: List[str] = []
+    incidents: list[dict] = []
+    recommendations: list[str] = []
 
 
 class HistoricalDataResponse(BaseModel):
     """Tarihsel veri response modeli."""
+
     endpoint: str
     period_days: int
-    data_points: List[Dict]
+    data_points: list[dict]
     trend: str  # improving, stable, degrading
 
 
@@ -120,10 +127,7 @@ def get_health_service():
     """Health service bağımlılığı."""
     global _health_service
     if _health_service is None:
-        raise HTTPException(
-            status_code=503,
-            detail="Health service not initialized"
-        )
+        raise HTTPException(status_code=503, detail="Health service not initialized")
     return _health_service
 
 
@@ -135,18 +139,19 @@ def set_health_service(service):
 
 # ===== API Endpoints =====
 
+
 @router.get(
     "/endpoints",
-    response_model=List[EndpointHealthResponse],
+    response_model=list[EndpointHealthResponse],
     summary="Tüm endpoint'lerin sağlık durumu",
-    description="Tüm API endpoint'lerinin health score ve durumlarını listeler."
+    description="Tüm API endpoint'lerinin health score ve durumlarını listeler.",
 )
 async def list_endpoints(
-    status: Optional[HealthStatus] = Query(None, description="Status filtresi"),
-    min_score: Optional[int] = Query(None, ge=0, le=100, description="Minimum skor"),
-    max_score: Optional[int] = Query(None, ge=0, le=100, description="Maksimum skor"),
+    status: HealthStatus | None = Query(None, description="Status filtresi"),
+    min_score: int | None = Query(None, ge=0, le=100, description="Minimum skor"),
+    max_score: int | None = Query(None, ge=0, le=100, description="Maksimum skor"),
     limit: int = Query(100, ge=1, le=500, description="Maksimum sonuç sayısı"),
-    offset: int = Query(0, ge=0, description="Başlangıç offset")
+    offset: int = Query(0, ge=0, description="Başlangıç offset"),
 ):
     """
     Tüm endpoint'lerin health durumunu listeler.
@@ -166,7 +171,7 @@ async def list_endpoints(
                 error_rate=0.005,
                 uptime_percentage=99.95,
                 circuit_state="closed",
-                last_checked=datetime.now(UTC)
+                last_checked=datetime.now(UTC),
             ),
             EndpointHealthResponse(
                 endpoint="/api/v1/auth/login",
@@ -177,7 +182,7 @@ async def list_endpoints(
                 error_rate=0.01,
                 uptime_percentage=99.9,
                 circuit_state="closed",
-                last_checked=datetime.now(UTC)
+                last_checked=datetime.now(UTC),
             ),
             EndpointHealthResponse(
                 endpoint="/api/v1/exams",
@@ -188,8 +193,8 @@ async def list_endpoints(
                 error_rate=0.02,
                 uptime_percentage=99.5,
                 circuit_state="closed",
-                last_checked=datetime.now(UTC)
-            )
+                last_checked=datetime.now(UTC),
+            ),
         ]
 
         # Filtreleme
@@ -201,24 +206,23 @@ async def list_endpoints(
             endpoints = [e for e in endpoints if e.score <= max_score]
 
         # Pagination
-        endpoints = endpoints[offset:offset + limit]
+        endpoints = endpoints[offset : offset + limit]
 
         return endpoints
 
     except Exception as e:
         logger.error(f"Endpoint listesi alınamadı: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="Dahili sunucu hatasi")
 
 
 @router.get(
     "/endpoints/{path:path}",
     response_model=EndpointDetailResponse,
     summary="Endpoint detayları",
-    description="Belirli bir endpoint'in detaylı sağlık bilgilerini getirir."
+    description="Belirli bir endpoint'in detaylı sağlık bilgilerini getirir.",
 )
 async def get_endpoint_detail(
-    path: str,
-    method: str = Query("GET", description="HTTP method")
+    path: str, method: str = Query("GET", description="HTTP method")
 ):
     """
     Endpoint detaylarını getirir.
@@ -243,25 +247,37 @@ async def get_endpoint_detail(
                 "error_rate": 0.005,
                 "request_count_1h": 1500,
                 "success_count_1h": 1492,
-                "failure_count_1h": 8
+                "failure_count_1h": 8,
             },
             history=[
-                {"timestamp": "2026-01-14T10:00:00Z", "score": 95, "response_time_ms": 45.0},
-                {"timestamp": "2026-01-14T09:00:00Z", "score": 93, "response_time_ms": 52.0},
-                {"timestamp": "2026-01-14T08:00:00Z", "score": 94, "response_time_ms": 48.0}
-            ]
+                {
+                    "timestamp": "2026-01-14T10:00:00Z",
+                    "score": 95,
+                    "response_time_ms": 45.0,
+                },
+                {
+                    "timestamp": "2026-01-14T09:00:00Z",
+                    "score": 93,
+                    "response_time_ms": 52.0,
+                },
+                {
+                    "timestamp": "2026-01-14T08:00:00Z",
+                    "score": 94,
+                    "response_time_ms": 48.0,
+                },
+            ],
         )
 
     except Exception as e:
         logger.error(f"Endpoint detayı alınamadı: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="Dahili sunucu hatasi")
 
 
 @router.get(
     "/metrics",
     response_model=SystemMetricsResponse,
     summary="Sistem metrikleri",
-    description="Sistem genelindeki health metriklerini getirir."
+    description="Sistem genelindeki health metriklerini getirir.",
 )
 async def get_system_metrics():
     """
@@ -282,23 +298,23 @@ async def get_system_metrics():
             overall_uptime=99.85,
             database_healthy=True,
             redis_healthy=True,
-            timestamp=datetime.now(UTC)
+            timestamp=datetime.now(UTC),
         )
 
     except Exception as e:
         logger.error(f"Sistem metrikleri alınamadı: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="Dahili sunucu hatasi")
 
 
 @router.get(
     "/sla-report",
     response_model=SLAReportResponse,
     summary="SLA raporu",
-    description="Aylık SLA compliance raporunu getirir."
+    description="Aylık SLA compliance raporunu getirir.",
 )
 async def get_sla_report(
-    start_date: Optional[datetime] = Query(None, description="Başlangıç tarihi"),
-    end_date: Optional[datetime] = Query(None, description="Bitiş tarihi")
+    start_date: datetime | None = Query(None, description="Başlangıç tarihi"),
+    end_date: datetime | None = Query(None, description="Bitiş tarihi"),
 ):
     """
     SLA raporunu getirir.
@@ -327,30 +343,30 @@ async def get_sla_report(
                     "endpoint": "/api/v1/exams",
                     "duration_minutes": 15,
                     "impact": "high",
-                    "resolved": True
+                    "resolved": True,
                 }
             ],
             recommendations=[
                 "Consider scaling exam service during peak hours",
                 "Review database connection pool settings",
-                "Implement caching for frequently accessed endpoints"
-            ]
+                "Implement caching for frequently accessed endpoints",
+            ],
         )
 
     except Exception as e:
         logger.error(f"SLA raporu alınamadı: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="Dahili sunucu hatasi")
 
 
 @router.get(
     "/history",
     response_model=HistoricalDataResponse,
     summary="Tarihsel veriler",
-    description="Endpoint için tarihsel trend verilerini getirir."
+    description="Endpoint için tarihsel trend verilerini getirir.",
 )
 async def get_historical_data(
     endpoint: str = Query(..., description="Endpoint path"),
-    days: int = Query(30, ge=1, le=90, description="Gün sayısı")
+    days: int = Query(30, ge=1, le=90, description="Gün sayısı"),
 ):
     """
     Tarihsel verileri getirir.
@@ -365,13 +381,15 @@ async def get_historical_data(
 
         for i in range(days):
             date = now - timedelta(days=i)
-            data_points.append({
-                "date": date.strftime("%Y-%m-%d"),
-                "score": 90 + (i % 10) - 5,  # 85-95 arası dalgalanma
-                "response_time_ms": 80 + (i % 30),
-                "error_rate": 0.005 + (i % 5) * 0.001,
-                "request_count": 10000 + (i % 1000)
-            })
+            data_points.append(
+                {
+                    "date": date.strftime("%Y-%m-%d"),
+                    "score": 90 + (i % 10) - 5,  # 85-95 arası dalgalanma
+                    "response_time_ms": 80 + (i % 30),
+                    "error_rate": 0.005 + (i % 5) * 0.001,
+                    "request_count": 10000 + (i % 1000),
+                }
+            )
 
         # Trend analizi
         if len(data_points) >= 7:
@@ -388,25 +406,22 @@ async def get_historical_data(
             trend = "stable"
 
         return HistoricalDataResponse(
-            endpoint=endpoint,
-            period_days=days,
-            data_points=data_points,
-            trend=trend
+            endpoint=endpoint, period_days=days, data_points=data_points, trend=trend
         )
 
     except Exception as e:
         logger.error(f"Tarihsel veri alınamadı: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="Dahili sunucu hatasi")
 
 
 @router.get(
     "/alerts",
     summary="Aktif alertler",
-    description="Aktif health alertlerini listeler."
+    description="Aktif health alertlerini listeler.",
 )
 async def get_active_alerts(
-    severity: Optional[str] = Query(None, description="Severity filtresi"),
-    limit: int = Query(50, ge=1, le=200)
+    severity: str | None = Query(None, description="Severity filtresi"),
+    limit: int = Query(50, ge=1, le=200),
 ):
     """Aktif alertleri listeler."""
     try:
@@ -418,7 +433,7 @@ async def get_active_alerts(
                 "severity": "warning",
                 "endpoint": "/api/v1/exams",
                 "message": "High latency: 350ms",
-                "timestamp": datetime.now(UTC).isoformat()
+                "timestamp": datetime.now(UTC).isoformat(),
             },
             {
                 "id": "alert_20260114102500_2",
@@ -426,8 +441,8 @@ async def get_active_alerts(
                 "severity": "critical",
                 "endpoint": "/api/v1/questions/generate",
                 "message": "Critical error rate: 5.2%",
-                "timestamp": (datetime.now(UTC) - timedelta(minutes=5)).isoformat()
-            }
+                "timestamp": (datetime.now(UTC) - timedelta(minutes=5)).isoformat(),
+            },
         ]
 
         if severity:
@@ -437,36 +452,33 @@ async def get_active_alerts(
 
     except Exception as e:
         logger.error(f"Alertler alınamadı: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="Dahili sunucu hatasi")
 
 
 @router.post(
     "/circuit/{endpoint:path}/reset",
     summary="Circuit breaker reset",
-    description="Endpoint'in circuit breaker'ını manuel olarak resetler."
+    description="Endpoint'in circuit breaker'ını manuel olarak resetler.",
 )
-async def reset_circuit_breaker(
-    endpoint: str,
-    method: str = Query("GET")
-):
+async def reset_circuit_breaker(endpoint: str, method: str = Query("GET")):
     """Circuit breaker'ı resetler."""
     try:
         logger.info(f"Circuit breaker reset: {method}:{endpoint}")
         return {
             "status": "success",
             "message": f"Circuit breaker reset for {method} {endpoint}",
-            "new_state": "closed"
+            "new_state": "closed",
         }
 
     except Exception as e:
         logger.error(f"Circuit reset hatası: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="Dahili sunucu hatasi")
 
 
 @router.get(
     "/dependencies",
     summary="Bağımlılık durumu",
-    description="Database, Redis vb. bağımlılıkların sağlık durumunu gösterir."
+    description="Database, Redis vb. bağımlılıkların sağlık durumunu gösterir.",
 )
 async def get_dependency_health():
     """Bağımlılık sağlık durumunu getirir."""
@@ -476,21 +488,21 @@ async def get_dependency_health():
                 "healthy": True,
                 "response_time_ms": 12.5,
                 "active_connections": 25,
-                "pool_usage_percent": 50.0
+                "pool_usage_percent": 50.0,
             },
             "redis": {
                 "healthy": True,
                 "response_time_ms": 2.3,
                 "hit_rate": 0.85,
-                "memory_usage_percent": 45.0
+                "memory_usage_percent": 45.0,
             },
             "elasticsearch": {
                 "healthy": True,
                 "response_time_ms": 35.0,
-                "cluster_status": "green"
-            }
+                "cluster_status": "green",
+            },
         }
 
     except Exception as e:
         logger.error(f"Bağımlılık durumu alınamadı: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="Dahili sunucu hatasi")
