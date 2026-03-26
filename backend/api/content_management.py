@@ -92,7 +92,7 @@ async def soru_bankasi_listele(
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Soru listesi alınırken hata oluştu: {str(e)}",
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
 
 
@@ -141,7 +141,7 @@ async def soru_ekle(
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Soru eklenirken hata oluştu: {str(e)}",
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
 
 
@@ -181,7 +181,7 @@ async def soru_detay(
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Soru detayları alınırken hata oluştu: {str(e)}",
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
 
 
@@ -210,7 +210,7 @@ async def soru_guncelle(
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Soru güncellenirken hata oluştu: {str(e)}",
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
 
 
@@ -231,7 +231,7 @@ async def soru_sil(
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Soru silinirken hata oluştu: {str(e)}",
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
 
 
@@ -288,7 +288,7 @@ async def egitim_materyalleri_listele(
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Eğitim materyalleri alınırken hata oluştu: {str(e)}",
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
 
 
@@ -339,7 +339,7 @@ async def egitim_materyali_ekle(
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Eğitim materyali eklenirken hata oluştu: {str(e)}",
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
 
 
@@ -375,7 +375,7 @@ async def egitim_materyali_detay(
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Eğitim materyali detayları alınırken hata oluştu: {str(e)}",
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
 
 
@@ -404,7 +404,7 @@ async def egitim_materyali_guncelle(
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Eğitim materyali güncellenirken hata oluştu: {str(e)}",
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
 
 
@@ -425,7 +425,7 @@ async def egitim_materyali_sil(
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Eğitim materyali silinirken hata oluştu: {str(e)}",
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
 
 
@@ -472,7 +472,7 @@ async def soru_onay_durumu_guncelle(
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Onay durumu güncellenirken hata oluştu: {str(e)}",
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
 
 
@@ -510,7 +510,7 @@ async def egitim_materyali_onay_durumu_guncelle(
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Onay durumu güncellenirken hata oluştu: {str(e)}",
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
 
 
@@ -557,7 +557,7 @@ async def toplu_soru_yukle(
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Toplu soru yükleme sırasında hata oluştu: {str(e)}",
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
 
 
@@ -601,7 +601,7 @@ async def toplu_egitim_materyali_yukle(
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Toplu materyal yükleme sırasında hata oluştu: {str(e)}",
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
 
 
@@ -644,7 +644,7 @@ async def icerik_kategorileri_getir(
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Kategoriler alınırken hata oluştu: {str(e)}",
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
 
 
@@ -680,7 +680,7 @@ async def icerik_kategorisi_ekle(
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Kategori eklenirken hata oluştu: {str(e)}",
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
 
 
@@ -734,7 +734,7 @@ async def icerik_ara(
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Arama yapılırken hata oluştu: {str(e)}",
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
 
 
@@ -773,7 +773,7 @@ async def filtre_secenekleri_getir(
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Filtre seçenekleri alınırken hata oluştu: {str(e)}",
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
 
 
@@ -814,5 +814,5 @@ async def icerik_istatistikleri(current_user: MockUser = Depends(admin_yetki_kon
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"İstatistikler alınırken hata oluştu: {str(e)}",
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )

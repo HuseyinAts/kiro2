@@ -186,7 +186,7 @@ async def get_audit_logs(
         )
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to get audit logs: {str(e)}",
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
 
 
@@ -249,7 +249,7 @@ async def get_audit_log_by_id(
         )
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to get audit log: {str(e)}",
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
 
 
@@ -310,7 +310,7 @@ async def get_user_audit_trail(
         )
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to get user audit trail: {str(e)}",
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
 
 
@@ -381,7 +381,7 @@ async def get_security_events(
         )
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to get security events: {str(e)}",
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
 
 
@@ -429,7 +429,7 @@ async def cleanup_old_audit_logs(
         )
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to cleanup old logs: {str(e)}",
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
 
 
@@ -525,5 +525,5 @@ async def get_audit_statistics(
         )
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to get audit statistics: {str(e)}",
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )

@@ -85,7 +85,7 @@ async def dashboard_istatistikleri_getir(
         logger.error(f"Dashboard istatistikleri hatası: {str(e)}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"İstatistikler alınırken hata oluştu: {str(e)}",
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
 
 
@@ -143,7 +143,7 @@ async def sinav_gecmisi_getir(
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Sınav geçmişi alınırken hata oluştu: {str(e)}",
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
 
 
@@ -192,7 +192,7 @@ async def performans_trendi_getir(
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Performans trendi alınırken hata oluştu: {str(e)}",
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
 
 
@@ -217,7 +217,7 @@ async def hedefler_getir(
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Hedefler alınırken hata oluştu: {str(e)}",
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
 
 
@@ -240,11 +240,11 @@ async def hedef_olustur(
         )
         return yeni_hedef
     except ValueError as e:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Islem basarisiz. Lutfen tekrar deneyin.")
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Hedef oluşturulurken hata oluştu: {str(e)}",
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
 
 
@@ -269,11 +269,11 @@ async def hedef_guncelle(
         )
         return guncellenen_hedef
     except ValueError as e:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Islem basarisiz. Lutfen tekrar deneyin.")
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Hedef güncellenirken hata oluştu: {str(e)}",
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
 
 
@@ -301,7 +301,7 @@ async def hedef_sil(
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Hedef silinirken hata oluştu: {str(e)}",
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
 
 
@@ -359,7 +359,7 @@ async def bildirimler_getir(
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Bildirimler alınırken hata oluştu: {str(e)}",
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
 
 
@@ -387,7 +387,7 @@ async def bildirim_okundu_isaretle(
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Bildirim güncellenirken hata oluştu: {str(e)}",
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
 
 
@@ -436,7 +436,7 @@ async def ogrenci_profili_getir(
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Profil alınırken hata oluştu: {str(e)}",
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
 
 
@@ -470,11 +470,11 @@ async def profil_guncelle(
 
         return guncellenen_profil
     except ValueError as e:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Islem basarisiz. Lutfen tekrar deneyin.")
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Profil güncellenirken hata oluştu: {str(e)}",
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
 
 
@@ -524,5 +524,5 @@ async def dashboard_ozeti(
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Dashboard özeti alınırken hata oluştu: {str(e)}",
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )

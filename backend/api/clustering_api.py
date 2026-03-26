@@ -156,12 +156,12 @@ async def cluster_concepts(
     except ImportError as e:
         raise HTTPException(
             status_code=status.HTTP_501_NOT_IMPLEMENTED,
-            detail=str(e),
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
     except ValueError as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail=str(e),
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
     except Exception as e:
         logger.error(f"Clustering failed: {e}")
@@ -201,12 +201,12 @@ async def find_optimal_clusters(
     except ImportError as e:
         raise HTTPException(
             status_code=status.HTTP_501_NOT_IMPLEMENTED,
-            detail=str(e),
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
     except ValueError as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail=str(e),
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
 
 
@@ -247,7 +247,7 @@ async def get_visualization_data(
     except ImportError as e:
         raise HTTPException(
             status_code=status.HTTP_501_NOT_IMPLEMENTED,
-            detail=str(e),
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
 
 
@@ -280,7 +280,7 @@ async def calculate_silhouette(
     except ImportError as e:
         raise HTTPException(
             status_code=status.HTTP_501_NOT_IMPLEMENTED,
-            detail=str(e),
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
 
 
@@ -312,10 +312,10 @@ async def auto_cluster(
     except ImportError as e:
         raise HTTPException(
             status_code=status.HTTP_501_NOT_IMPLEMENTED,
-            detail=str(e),
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
     except ValueError as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail=str(e),
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )

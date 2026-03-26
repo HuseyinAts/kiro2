@@ -281,7 +281,7 @@ async def generate_question_full_pipeline(
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Pipeline error: {str(e)}",
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
 
 
@@ -338,7 +338,7 @@ async def start_cat_session(
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"CAT session start failed: {str(e)}",
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
 
 
@@ -382,7 +382,7 @@ async def submit_cat_response(
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"CAT submission failed: {str(e)}",
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
 
 
@@ -417,7 +417,7 @@ async def get_question_recommendations(
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Recommendation failed: {str(e)}",
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
 
 
@@ -432,7 +432,7 @@ async def get_knowledge_graph_stats(
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Stats retrieval failed: {str(e)}",
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
 
 
@@ -449,7 +449,7 @@ async def analyze_student_knowledge_gaps(
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Gap analysis failed: {str(e)}",
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
 
 
@@ -476,7 +476,7 @@ async def create_review_task(
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Task creation failed: {str(e)}",
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
 
 
@@ -494,7 +494,7 @@ async def assign_task_to_expert(
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Task assignment failed: {str(e)}",
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
 
 
@@ -523,7 +523,7 @@ async def submit_expert_review(
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Review submission failed: {str(e)}",
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
 
 
@@ -540,7 +540,7 @@ async def get_expert_dashboard(
 
     except Exception as e:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail=f"Expert not found: {str(e)}"
+            status_code=status.HTTP_404_NOT_FOUND, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
 
 
@@ -557,7 +557,7 @@ async def get_expert_leaderboard(
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Leaderboard retrieval failed: {str(e)}",
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
 
 

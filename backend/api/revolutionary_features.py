@@ -138,7 +138,7 @@ async def detect_learning_style(
 
     except Exception as e:
         logger.error(f"Öğrenme stili tespit hatası: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
 
 
 @router.get("/learning-style/detect/{student_id}", response_model=ApiResponse)
@@ -171,7 +171,7 @@ async def detect_learning_style_get(
 
     except Exception as e:
         logger.error(f"Öğrenme stili tespit hatası: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
 
 
 @router.get("/learning-style/hybrid-codes", response_model=ApiResponse)
@@ -208,7 +208,7 @@ async def get_hybrid_codes():
 
     except Exception as e:
         logger.error(f"Hibrit kod listeleme hatası: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
 
 
 # ZPD + Maarif Endpoint'leri
@@ -238,7 +238,7 @@ async def calculate_revolutionary_zpd(
 
     except Exception as e:
         logger.error(f"ZPD hesaplama hatası: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
 
 
 @router.post("/zpd-maarif/revolutionary/recommend", response_model=ApiResponse)
@@ -270,7 +270,7 @@ async def generate_revolutionary_recommendation(
 
     except Exception as e:
         logger.error(f"Öneri oluşturma hatası: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
 
 
 @router.post("/zpd-maarif/revolutionary/cultural-context", response_model=ApiResponse)
@@ -295,7 +295,7 @@ async def detect_cultural_context(
 
     except Exception as e:
         logger.error(f"Kültürel bağlam tespit hatası: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
 
 
 @router.post("/zpd-maarif/revolutionary/maarif-alignment", response_model=ApiResponse)
@@ -319,7 +319,7 @@ async def calculate_maarif_alignment(
 
     except Exception as e:
         logger.error(f"Maarif uyumu hesaplama hatası: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
 
 
 @router.get("/zpd-maarif/revolutionary/demo/{student_id}", response_model=ApiResponse)
@@ -401,7 +401,7 @@ async def get_revolutionary_demo(
 
     except Exception as e:
         logger.error(f"Demo oluşturma hatası: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
 
 
 # Sistem sağlığı
@@ -435,4 +435,4 @@ async def check_revolutionary_health():
 
     except Exception as e:
         logger.error(f"Sağlık kontrolü hatası: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")

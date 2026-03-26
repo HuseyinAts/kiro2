@@ -74,7 +74,7 @@ async def add_meb_standard(
 
     except Exception as e:
         logger.error(f"MEB standardı ekleme API hatası: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
 
 
 @router.get("/meb/standards/{subject}", response_model=Dict[str, Any])
@@ -111,7 +111,7 @@ async def get_meb_standards_by_subject(
 
     except Exception as e:
         logger.error(f"MEB standartları getirme API hatası: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
 
 
 @router.get("/meb/learning-outcomes/{standard_id}", response_model=Dict[str, Any])
@@ -148,7 +148,7 @@ async def get_learning_outcomes(
 
     except Exception as e:
         logger.error(f"Öğrenme kazanımları getirme API hatası: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
 
 
 # ÖSYM Standartları Endpoints
@@ -181,7 +181,7 @@ async def add_osym_standard(
 
     except Exception as e:
         logger.error(f"ÖSYM standardı ekleme API hatası: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
 
 
 @router.get("/osym/standards/{exam_type}", response_model=Dict[str, Any])
@@ -221,7 +221,7 @@ async def get_osym_standards_by_priority(
 
     except Exception as e:
         logger.error(f"ÖSYM standartları getirme API hatası: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
 
 
 # Uyumluluk Analizi Endpoints
@@ -259,7 +259,7 @@ async def analyze_curriculum_alignment(
 
     except Exception as e:
         logger.error(f"Uyumluluk analizi API hatası: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
 
 
 # Soru Bankası Uyumluluk Endpoints
@@ -308,7 +308,7 @@ async def validate_question_bank_compliance(
 
     except Exception as e:
         logger.error(f"Soru bankası uyumluluk API hatası: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
 
 
 # Uyumluluk Raporlama Endpoints
@@ -363,7 +363,7 @@ async def generate_compliance_report(
 
     except Exception as e:
         logger.error(f"Uyumluluk raporu API hatası: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
 
 
 # Müfredat Güncelleme Endpoints
@@ -403,7 +403,7 @@ async def handle_curriculum_update(
 
     except Exception as e:
         logger.error(f"Müfredat güncelleme API hatası: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
 
 
 # Sistem Durumu Endpoints
@@ -421,7 +421,7 @@ async def get_compliance_system_status(
 
     except Exception as e:
         logger.error(f"Sistem durumu API hatası: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
 
 
 @router.get("/health", response_model=Dict[str, Any])
@@ -441,7 +441,7 @@ async def curriculum_compliance_health_check():
 
     except Exception as e:
         logger.error(f"Sağlık kontrolü API hatası: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
 
 
 # Toplu İşlemler
@@ -485,7 +485,7 @@ async def validate_all_subjects_compliance(
 
     except Exception as e:
         logger.error(f"Toplu uyumluluk kontrolü API hatası: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
 
 
 @router.get("/statistics/overview", response_model=Dict[str, Any])
@@ -516,4 +516,4 @@ async def get_curriculum_statistics(
 
     except Exception as e:
         logger.error(f"İstatistikler API hatası: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")

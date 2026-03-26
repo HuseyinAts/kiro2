@@ -119,7 +119,7 @@ async def analyze_morphology(request: MorphologyAnalysisRequest):
     except Exception as e:
         logger.error(f"Morfolojik analiz API hatası: {e}")
         raise HTTPException(
-            status_code=500, detail=f"Morfolojik analiz sırasında hata oluştu: {str(e)}"
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
 
 
@@ -171,7 +171,7 @@ async def batch_morphology_analysis(request: BatchMorphologyRequest):
         logger.error(f"Toplu morfolojik analiz API hatası: {e}")
         raise HTTPException(
             status_code=500,
-            detail=f"Toplu morfolojik analiz sırasında hata oluştu: {str(e)}",
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
 
 
@@ -211,7 +211,7 @@ async def normalize_text(request: TextNormalizationRequest):
         logger.error(f"Metin normalizasyon API hatası: {e}")
         raise HTTPException(
             status_code=500,
-            detail=f"Metin normalizasyonu sırasında hata oluştu: {str(e)}",
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
 
 
@@ -240,7 +240,7 @@ async def analyze_text_complexity(request: TextComplexityRequest):
         logger.error(f"Metin karmaşıklık analizi API hatası: {e}")
         raise HTTPException(
             status_code=500,
-            detail=f"Metin karmaşıklık analizi sırasında hata oluştu: {str(e)}",
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
 
 
@@ -320,7 +320,7 @@ async def get_word_complexity(word: str):
         logger.error(f"Kelime karmaşıklığı API hatası: {e}")
         raise HTTPException(
             status_code=500,
-            detail=f"Kelime karmaşıklığı hesaplanırken hata oluştu: {str(e)}",
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
 
 
@@ -363,5 +363,5 @@ async def clean_text(request: dict):
     except Exception as e:
         logger.error(f"Metin temizleme API hatası: {e}")
         raise HTTPException(
-            status_code=500, detail=f"Metin temizleme sırasında hata oluştu: {str(e)}"
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )

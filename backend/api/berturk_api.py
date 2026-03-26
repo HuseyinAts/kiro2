@@ -185,7 +185,7 @@ async def analyze_sentiment(
     except Exception as e:
         logger.error(f"Duygu analizi API hatası: {e}")
         raise HTTPException(
-            status_code=500, detail=f"Duygu analizi sırasında hata oluştu: {str(e)}"
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
 
 
@@ -254,7 +254,7 @@ async def assess_student_motivation(
         logger.error(f"Motivasyon değerlendirme API hatası: {e}")
         raise HTTPException(
             status_code=500,
-            detail=f"Motivasyon değerlendirmesi sırasında hata oluştu: {str(e)}",
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
 
 
@@ -299,7 +299,7 @@ async def detect_intent(
     except Exception as e:
         logger.error(f"Intent tespit API hatası: {e}")
         raise HTTPException(
-            status_code=500, detail=f"Niyet tespiti sırasında hata oluştu: {str(e)}"
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
 
 
@@ -347,7 +347,7 @@ async def extract_contextual_meaning(
         logger.error(f"Bağlamsal anlam çıkarma API hatası: {e}")
         raise HTTPException(
             status_code=500,
-            detail=f"Bağlamsal anlam çıkarma sırasında hata oluştu: {str(e)}",
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
 
 
@@ -463,7 +463,7 @@ async def batch_analysis(
     except Exception as e:
         logger.error(f"Toplu analiz API hatası: {e}")
         raise HTTPException(
-            status_code=500, detail=f"Toplu analiz sırasında hata oluştu: {str(e)}"
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
 
 
@@ -503,7 +503,7 @@ async def get_performance_stats(current_user: User = Depends(get_current_user)):
         logger.error(f"Performans istatistikleri API hatası: {e}")
         raise HTTPException(
             status_code=500,
-            detail=f"Performans istatistikleri alınırken hata oluştu: {str(e)}",
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
 
 
@@ -531,7 +531,7 @@ async def clear_cache(current_user: User = Depends(get_current_user)):
     except Exception as e:
         logger.error(f"Cache temizleme API hatası: {e}")
         raise HTTPException(
-            status_code=500, detail=f"Cache temizlenirken hata oluştu: {str(e)}"
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
 
 

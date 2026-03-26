@@ -124,7 +124,7 @@ async def add_alternative_solution(
         logger.error(f"Çözüm ekleme hatası: {str(e)}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Çözüm ekleme hatası: {str(e)}",
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
 
 
@@ -161,7 +161,7 @@ async def get_alternative_solutions(
         logger.error(f"Çözüm getirme hatası: {str(e)}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Çözüm getirme hatası: {str(e)}",
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
 
 
@@ -220,7 +220,7 @@ async def get_student_submissions(
         logger.error(f"Öğrenci çözümleri getirme hatası: {str(e)}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Öğrenci çözümleri getirme hatası: {str(e)}",
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
 
 
@@ -267,7 +267,7 @@ async def get_solution_reviews(
         logger.error(f"Review getirme hatası: {str(e)}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Review getirme hatası: {str(e)}",
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
 
 
@@ -319,7 +319,7 @@ async def get_top_rated_solutions(
         logger.error(f"Top rated çözümler hatası: {str(e)}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Top rated çözümler hatası: {str(e)}",
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
 
 
@@ -370,7 +370,7 @@ async def vote_solution(
         logger.error(f"Oylama hatası: {str(e)}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Oylama hatası: {str(e)}",
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
 
 
@@ -417,7 +417,7 @@ async def remove_vote(
         logger.error(f"Oy geri çekme hatası: {str(e)}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Oy geri çekme hatası: {str(e)}",
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
 
 

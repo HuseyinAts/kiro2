@@ -108,7 +108,7 @@ async def get_cache_metrics(
         logger.error("cache_metrics_error", error=str(e))
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to retrieve cache metrics: {e!s}",
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
 
 
@@ -158,7 +158,7 @@ async def invalidate_cache_pattern(pattern: str, _=Depends(get_current_admin_use
         logger.error("cache_invalidation_error", pattern=pattern, error=str(e))
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Cache invalidation failed: {e!s}",
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
 
 
@@ -204,7 +204,7 @@ async def clear_all_caches(_=Depends(get_current_admin_user)):
         logger.error("cache_clear_error", error=str(e))
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Cache clear failed: {e!s}",
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
 
 

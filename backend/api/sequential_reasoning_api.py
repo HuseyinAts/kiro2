@@ -201,7 +201,7 @@ async def solve_problem(
         )
 
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
 
 
 @router.get("/session/{session_id}")
@@ -328,7 +328,7 @@ async def decompose_problem(
         )
 
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
 
 
 @router.post("/compare", response_model=CompareResponse)
@@ -355,7 +355,7 @@ async def compare_providers(
         )
 
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
 
 
 @router.post("/cache/invalidate")

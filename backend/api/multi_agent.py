@@ -153,7 +153,7 @@ async def write_data(request: WriteDataRequest, current_user: AuthenticatedUser 
 
     except Exception as e:
         logger.error(f"Write data API error: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
 
 
 @router.get("/read/{key}", response_model=BlackboardResponse)
@@ -184,7 +184,7 @@ async def read_data(key: str, current_user: AuthenticatedUser = Depends(get_curr
 
     except Exception as e:
         logger.error(f"Read data API error: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
 
 
 @router.delete("/delete/{key}", response_model=BlackboardResponse)
@@ -217,7 +217,7 @@ async def delete_data(key: str, current_user: AuthenticatedUser = Depends(get_cu
 
     except Exception as e:
         logger.error(f"Delete data API error: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
 
 
 @router.post("/subscribe", response_model=BlackboardResponse)
@@ -263,7 +263,7 @@ async def subscribe_agent(
 
     except Exception as e:
         logger.error(f"Subscribe API error: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
 
 
 @router.post("/coordination/request", response_model=BlackboardResponse)
@@ -297,7 +297,7 @@ async def request_coordination(
 
     except Exception as e:
         logger.error(f"Coordination request API error: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
 
 
 @router.post("/coordination/respond", response_model=BlackboardResponse)
@@ -335,7 +335,7 @@ async def respond_coordination(
 
     except Exception as e:
         logger.error(f"Coordination response API error: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
 
 
 @router.get("/metrics", response_model=BlackboardResponse)
@@ -355,7 +355,7 @@ async def get_metrics(current_user: AuthenticatedUser = Depends(get_current_user
 
     except Exception as e:
         logger.error(f"Metrics API error: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
 
 
 @router.get("/agents/status", response_model=BlackboardResponse)
@@ -375,7 +375,7 @@ async def get_agent_status(current_user: AuthenticatedUser = Depends(get_current
 
     except Exception as e:
         logger.error(f"Agent status API error: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
 
 
 @router.get("/events/history")
@@ -427,7 +427,7 @@ async def get_event_history(
 
     except Exception as e:
         logger.error(f"Event history API error: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
 
 
 # WebSocket endpoint for real-time synchronization

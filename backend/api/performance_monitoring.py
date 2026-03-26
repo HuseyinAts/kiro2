@@ -147,7 +147,7 @@ async def get_comprehensive_metrics(
 
     except Exception as e:
         logger.error(f"Get comprehensive metrics error: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
 
 
 @router.get("/llm-pool", response_model=LLMPoolMetrics)
@@ -174,7 +174,7 @@ async def get_llm_pool_stats(current_user: AuthenticatedUser = Depends(get_curre
 
     except Exception as e:
         logger.error(f"Get LLM pool stats error: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
 
 
 @router.get("/vector-store", response_model=VectorStoreMetrics)
@@ -203,7 +203,7 @@ async def get_vector_store_stats(
 
     except Exception as e:
         logger.error(f"Get vector store stats error: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
 
 
 @router.get("/cache", response_model=CacheMetrics)
@@ -232,7 +232,7 @@ async def get_cache_stats(current_user: AuthenticatedUser = Depends(get_current_
 
     except Exception as e:
         logger.error(f"Get cache stats error: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
 
 
 @router.delete("/cache/clear/{tag}")
@@ -262,7 +262,7 @@ async def clear_cache_by_tag(
 
     except Exception as e:
         logger.error(f"Clear cache by tag error: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
 
 
 @router.get("/rag-pipeline", response_model=RAGPipelineMetrics)
@@ -291,7 +291,7 @@ async def get_rag_pipeline_stats(
 
     except Exception as e:
         logger.error(f"Get RAG pipeline stats error: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
 
 
 @router.get("/health")

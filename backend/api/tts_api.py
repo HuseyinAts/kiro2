@@ -232,7 +232,7 @@ async def synthesize_speech(request: TTSRequest):
         raise
     except Exception as e:
         logger.error(f"TTS API hatası: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"Ses sentezleme hatası: {str(e)}")
+        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
 
 
 @router.get("/voices")

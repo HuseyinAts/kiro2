@@ -155,7 +155,7 @@ async def search_questions(
 
     except Exception as e:
         logger.error(f"Soru arama hatası: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"Arama hatası: {str(e)}")
+        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
 
 
 @router.get("/questions/{question_id}/similar", response_model=SearchResponse)
@@ -195,7 +195,7 @@ async def get_similar_questions(
     except Exception as e:
         logger.error(f"Benzer soru arama hatası: {str(e)}")
         raise HTTPException(
-            status_code=500, detail=f"Benzer soru arama hatası: {str(e)}"
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
 
 
@@ -254,7 +254,7 @@ async def search_content(
 
     except Exception as e:
         logger.error(f"İçerik arama hatası: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"İçerik arama hatası: {str(e)}")
+        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
 
 
 # Analytics endpoint'leri
@@ -299,7 +299,7 @@ async def get_user_analytics(
         raise
     except Exception as e:
         logger.error(f"Analytics getirme hatası: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"Analytics hatası: {str(e)}")
+        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
 
 
 # Admin endpoint'leri
@@ -434,7 +434,7 @@ async def reindex_questions(
     except Exception as e:
         logger.error(f"Yeniden indeksleme hatası: {str(e)}")
         raise HTTPException(
-            status_code=500, detail=f"Yeniden indeksleme hatası: {str(e)}"
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
 
 
@@ -469,7 +469,7 @@ async def get_indices_stats(
     except Exception as e:
         logger.error(f"İndeks istatistik hatası: {str(e)}")
         raise HTTPException(
-            status_code=500, detail=f"İndeks istatistik hatası: {str(e)}"
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
 
 

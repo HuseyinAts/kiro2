@@ -95,7 +95,7 @@ async def get_cache_stats(current_user=Depends(get_current_admin_user)):
     except Exception as e:
         logger.error(f"Cache stats hatası: {str(e)}")
         raise HTTPException(
-            status_code=500, detail=f"Cache istatistikleri alınamadı: {str(e)}"
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
 
 
@@ -150,7 +150,7 @@ async def invalidate_by_event(
     except Exception as e:
         logger.error(f"Event-based invalidation hatası: {str(e)}")
         raise HTTPException(
-            status_code=500, detail=f"Event-based invalidation başarısız: {str(e)}"
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
 
 
@@ -178,7 +178,7 @@ async def invalidate_by_pattern(
     except Exception as e:
         logger.error(f"Pattern-based invalidation hatası: {str(e)}")
         raise HTTPException(
-            status_code=500, detail=f"Pattern-based invalidation başarısız: {str(e)}"
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
 
 
@@ -202,7 +202,7 @@ async def invalidate_user_cache(
     except Exception as e:
         logger.error(f"Kullanıcı cache temizleme hatası: {str(e)}")
         raise HTTPException(
-            status_code=500, detail=f"Kullanıcı cache temizleme başarısız: {str(e)}"
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
 
 
@@ -232,7 +232,7 @@ async def invalidate_exam_cache(
     except Exception as e:
         logger.error(f"Sınav cache temizleme hatası: {str(e)}")
         raise HTTPException(
-            status_code=500, detail=f"Sınav cache temizleme başarısız: {str(e)}"
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
 
 
@@ -258,7 +258,7 @@ async def get_cache_key(
     except Exception as e:
         logger.error(f"Cache key getirme hatası: {str(e)}")
         raise HTTPException(
-            status_code=500, detail=f"Cache key getirme başarısız: {str(e)}"
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
 
 
@@ -293,7 +293,7 @@ async def set_cache_key(
     except Exception as e:
         logger.error(f"Cache key ayarlama hatası: {str(e)}")
         raise HTTPException(
-            status_code=500, detail=f"Cache key ayarlama başarısız: {str(e)}"
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
 
 
@@ -317,7 +317,7 @@ async def delete_cache_key(key: str, current_user=Depends(get_current_admin_user
     except Exception as e:
         logger.error(f"Cache key silme hatası: {str(e)}")
         raise HTTPException(
-            status_code=500, detail=f"Cache key silme başarısız: {str(e)}"
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
 
 
@@ -349,7 +349,7 @@ async def warm_up_cache(current_user=Depends(get_current_admin_user)):
     except Exception as e:
         logger.error(f"Cache warm-up hatası: {str(e)}")
         raise HTTPException(
-            status_code=500, detail=f"Cache warm-up başarısız: {str(e)}"
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
 
 

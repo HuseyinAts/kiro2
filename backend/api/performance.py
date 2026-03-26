@@ -81,7 +81,7 @@ async def get_performance_metrics(
     except Exception as e:
         logger.error(f"Performance metrics hatası: {str(e)}")
         raise HTTPException(
-            status_code=500, detail=f"Performans metrikleri alınamadı: {str(e)}"
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
 
 
@@ -132,7 +132,7 @@ async def get_system_status(
     except Exception as e:
         logger.error(f"System status hatası: {str(e)}")
         raise HTTPException(
-            status_code=500, detail=f"Sistem durumu alınamadı: {str(e)}"
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
 
 
@@ -179,7 +179,7 @@ async def get_cache_statistics(
     except Exception as e:
         logger.error(f"Cache stats hatası: {str(e)}")
         raise HTTPException(
-            status_code=500, detail=f"Cache istatistikleri alınamadı: {str(e)}"
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
 
 
@@ -239,7 +239,7 @@ async def get_database_performance(
         logger.error(f"Database performance hatası: {str(e)}")
         raise HTTPException(
             status_code=500,
-            detail=f"Database performans metrikleri alınamadı: {str(e)}",
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
 
 
@@ -265,7 +265,7 @@ async def get_revolutionary_features_performance(
         logger.error(f"Revolutionary features performance hatası: {str(e)}")
         raise HTTPException(
             status_code=500,
-            detail=f"Devrimsel özellik performans metrikleri alınamadı: {str(e)}",
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
 
 
@@ -332,7 +332,7 @@ async def clear_cache(
 
     except Exception as e:
         logger.error(f"Cache temizleme hatası: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"Cache temizlenemedi: {str(e)}")
+        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
 
 
 @router.get("/api-response-times", response_model=Dict[str, Any])
@@ -410,7 +410,7 @@ async def get_api_response_times(
     except Exception as e:
         logger.error(f"API response times hatası: {str(e)}")
         raise HTTPException(
-            status_code=500, detail=f"API response time metrikleri alınamadı: {str(e)}"
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
 
 
@@ -487,7 +487,7 @@ async def optimize_system(
     except Exception as e:
         logger.error(f"Sistem optimizasyon hatası: {str(e)}")
         raise HTTPException(
-            status_code=500, detail=f"Sistem optimize edilemedi: {str(e)}"
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
 
 
@@ -568,5 +568,5 @@ async def performance_health_check():
     except Exception as e:
         logger.error(f"Performance health check hatası: {str(e)}")
         raise HTTPException(
-            status_code=500, detail=f"Sağlık kontrolü yapılamadı: {str(e)}"
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )

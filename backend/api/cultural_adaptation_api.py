@@ -104,7 +104,7 @@ async def get_student_cultural_adaptation(
 
     except ValueError as e:
         logger.warning(f"Öğrenci bulunamadı: {student_id} - {e}")
-        raise HTTPException(status_code=404, detail=str(e))
+        raise HTTPException(status_code=404, detail="Islem basarisiz. Lutfen tekrar deneyin.")
 
     except Exception as e:
         logger.error(f"Kültürel adaptasyon getirme hatası: {e}")
@@ -165,7 +165,7 @@ async def update_student_behavioral_data(
 
     except ValueError as e:
         logger.warning(f"Davranış güncelleme hatası: {student_id} - {e}")
-        raise HTTPException(status_code=400, detail=str(e))
+        raise HTTPException(status_code=400, detail="Islem basarisiz. Lutfen tekrar deneyin.")
 
     except Exception as e:
         logger.error(f"Davranış güncelleme hatası: {e}")

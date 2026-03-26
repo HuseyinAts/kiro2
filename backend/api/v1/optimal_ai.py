@@ -120,14 +120,14 @@ async def ai_query(
         logger.error("api_key_missing", error=str(e))
         raise HTTPException(
             status_code=500,
-            detail=f"API key eksik: {str(e)}"
+            detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
     
     except Exception as e:
         logger.error("query_failed", error=str(e), query=request.query[:100])
         raise HTTPException(
             status_code=500,
-            detail=f"Sorgu işlenemedi: {str(e)}"
+            detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
 
 
@@ -148,7 +148,7 @@ async def get_routing_info(request: RoutingInfoRequest):
         logger.error("routing_info_failed", error=str(e))
         raise HTTPException(
             status_code=500,
-            detail=f"Routing bilgisi alınamadı: {str(e)}"
+            detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
 
 
@@ -167,7 +167,7 @@ async def get_metrics(system: OptimalHybridSystem = Depends(get_system)):
         logger.error("metrics_failed", error=str(e))
         raise HTTPException(
             status_code=500,
-            detail=f"Metrikler alınamadı: {str(e)}"
+            detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
 
 

@@ -146,10 +146,10 @@ async def generate_question(
         return response
 
     except ValueError as e:
-        raise HTTPException(status_code=400, detail=f"Invalid input: {str(e)}")
+        raise HTTPException(status_code=400, detail="Islem basarisiz. Lutfen tekrar deneyin.")
     except Exception as e:
         raise HTTPException(
-            status_code=500, detail=f"Question generation failed: {str(e)}"
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
 
 
@@ -189,7 +189,7 @@ async def validate_question(
         return response
 
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Validation failed: {str(e)}")
+        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
 
 
 @router.post("/batch-generate")
@@ -244,7 +244,7 @@ async def batch_generate(
 
     except Exception as e:
         raise HTTPException(
-            status_code=500, detail=f"Batch generation failed: {str(e)}"
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
 
 
@@ -261,4 +261,4 @@ async def health_check():
         }
 
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")

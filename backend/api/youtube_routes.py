@@ -599,7 +599,7 @@ async def search_videos(
     except Exception as e:
         logger.error(f"YouTube arama hatası: {e!s}")
         raise HTTPException(
-            status_code=500, detail=f"YouTube arama sırasında hata: {e!s}"
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
 
 
@@ -1028,7 +1028,7 @@ async def health_check(
     except Exception as e:
         logger.error(f"Health check hatası: {e!s}")
         raise HTTPException(
-            status_code=500, detail=f"Sağlık kontrolü yapılamadı: {e!s}"
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
 
 
@@ -1097,7 +1097,7 @@ async def get_prometheus_metrics():
 
     except Exception as e:
         logger.error(f"Prometheus metrics hatası: {e!s}")
-        raise HTTPException(status_code=500, detail=f"Metrics alınamadı: {e!s}")
+        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
 
 
 @router.get("/metrics/snapshot", response_model=MetricsSnapshotResponse)
@@ -1144,7 +1144,7 @@ async def get_metrics_snapshot():
     except Exception as e:
         logger.error(f"Metrics snapshot hatası: {e!s}")
         raise HTTPException(
-            status_code=500, detail=f"Metrics snapshot alınamadı: {e!s}"
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
 
 

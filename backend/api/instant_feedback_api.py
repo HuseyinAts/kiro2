@@ -122,7 +122,7 @@ async def submit_answer_feedback(
 
     except Exception as e:
         logger.error(f"Failed to process answer feedback: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
 
 
 @router.get("/streak", response_model=StreakResponse)
@@ -155,7 +155,7 @@ async def get_streak(
 
     except Exception as e:
         logger.error(f"Failed to get streak: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
 
 
 @router.post("/performance", response_model=Dict)
@@ -189,7 +189,7 @@ async def record_performance(
 
     except Exception as e:
         logger.error(f"Failed to record performance: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
 
 
 @router.get("/performance/history", response_model=List[PerformanceDataPoint])
@@ -232,4 +232,4 @@ async def get_performance_history(
 
     except Exception as e:
         logger.error(f"Failed to get performance history: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")

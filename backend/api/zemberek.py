@@ -184,7 +184,7 @@ async def analyze_morphology(
         logger.error(f"Morphology analysis error: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Morfolojik analiz hatası: {str(e)}",
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
 
 
@@ -241,7 +241,7 @@ async def batch_morphology_analysis(
     except Exception as e:
         logger.error(f"Batch morphology error: {e}")
         raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
 
 
@@ -288,7 +288,7 @@ async def tokenize_text(
     except Exception as e:
         logger.error(f"Tokenization error: {e}")
         raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
 
 
@@ -322,7 +322,7 @@ async def spell_check(
     except Exception as e:
         logger.error(f"Spell check error: {e}")
         raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
 
 
@@ -353,7 +353,7 @@ async def normalize_text(
     except Exception as e:
         logger.error(f"Normalization error: {e}")
         raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
 
 
@@ -382,7 +382,7 @@ async def detect_sentences(
     except Exception as e:
         logger.error(f"Sentence detection error: {e}")
         raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
 
 
@@ -415,7 +415,7 @@ async def get_zemberek_stats(current_user: User = Depends(get_current_user)):
     except Exception as e:
         logger.error(f"Stats error: {e}")
         raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
 
 

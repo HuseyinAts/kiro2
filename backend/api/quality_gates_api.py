@@ -228,13 +228,13 @@ async def run_quality_gates(
         logger.error("quality_gates_import_error", error=str(e))
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Quality gates module not available: {e}",
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
     except Exception as e:
         logger.exception("quality_gates_run_failed", error=str(e))
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Pipeline execution failed: {e}",
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
 
 
@@ -290,13 +290,13 @@ async def get_pipeline_status(
         logger.error("quality_gates_import_error", error=str(e))
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Quality gates module not available: {e}",
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
     except Exception as e:
         logger.exception("get_pipeline_status_failed", error=str(e))
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to get pipeline status: {e}",
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
 
 

@@ -194,7 +194,7 @@ async def upload_video(
         logger.error(f"Video upload endpoint error: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Video yükleme hatası: {str(e)}",
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
 
 
@@ -575,7 +575,7 @@ async def generate_streaming_formats(
         logger.error(f"Generate streaming formats error: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Streaming formatları oluşturma hatası: {str(e)}",
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
 
 
@@ -708,7 +708,7 @@ async def track_video_view(
         logger.error(f"Track video view error: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"İzleme kaydı hatası: {str(e)}",
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
 
 
@@ -771,7 +771,7 @@ async def get_video_analytics(
         logger.error(f"Get video analytics error: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Analytics getirme hatası: {str(e)}",
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
 
 
@@ -841,7 +841,7 @@ async def generate_transcript(
         logger.error(f"Generate transcript error: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Transkript oluşturma hatası: {str(e)}",
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
 
 
@@ -912,7 +912,7 @@ async def list_transcripts(
         logger.error(f"List transcripts error: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Transkript listesi getirme hatası: {str(e)}",
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
 
 
@@ -961,7 +961,7 @@ async def get_transcript(
         logger.error(f"Get transcript error: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Transkript getirme hatası: {str(e)}",
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
 
 
@@ -1015,7 +1015,7 @@ async def update_transcript(
         logger.error(f"Update transcript error: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Transkript güncelleme hatası: {str(e)}",
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
 
 
@@ -1133,5 +1133,5 @@ async def search_videos(
         logger.error(f"Video search error: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Arama hatası: {str(e)}",
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )

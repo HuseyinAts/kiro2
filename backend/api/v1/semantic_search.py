@@ -248,7 +248,7 @@ class SemanticSearchService:
 
         except Exception as e:
             logger.error(f"Search failed: {e}")
-            raise HTTPException(status_code=500, detail=str(e))
+            raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
 
     def _build_where_clause(self, request: SearchRequest) -> dict | None:
         """Where clause oluştur."""
@@ -516,7 +516,7 @@ class SemanticSearchService:
             raise
         except Exception as e:
             logger.error(f"Find similar failed: {e}")
-            raise HTTPException(status_code=500, detail=str(e))
+            raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
 
 
 # ============================================================================

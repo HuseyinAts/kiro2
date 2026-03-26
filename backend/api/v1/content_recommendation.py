@@ -180,7 +180,7 @@ async def get_recommendations(request: RecommendationRequest) -> RecommendationR
         logger.error(f"Recommendations failed for user {request.user_id}: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Oneri sistemi hatasi: {str(e)}"
+            detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
 
 
@@ -253,7 +253,7 @@ async def record_interaction(request: InteractionRequest) -> InteractionResponse
         logger.error(f"Interaction recording failed: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Etkilesim kayit hatasi: {str(e)}"
+            detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
 
 
@@ -301,7 +301,7 @@ async def get_ctr_stats(
         logger.error(f"CTR stats failed: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"CTR istatistik hatasi: {str(e)}"
+            detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
 
 
@@ -332,7 +332,7 @@ async def get_user_profile(user_id: str) -> UserProfileResponse:
         logger.error(f"User profile failed for {user_id}: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Profil getirme hatasi: {str(e)}"
+            detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
 
 

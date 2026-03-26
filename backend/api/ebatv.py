@@ -123,7 +123,7 @@ async def get_all_eba_content(
     except Exception as e:
         logger.error(f"EBA TV içerik getirme hatası: {e}")
         raise HTTPException(
-            status_code=500, detail=f"İçerikler getirilirken hata oluştu: {str(e)}"
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
 
 
@@ -244,7 +244,7 @@ async def search_eba_content(
     except Exception as e:
         logger.error(f"EBA TV arama hatası: {e}")
         raise HTTPException(
-            status_code=500, detail=f"Arama yapılırken hata oluştu: {str(e)}"
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
 
 
@@ -344,11 +344,11 @@ async def get_eba_recommendations(
         )
 
     except ValueError as e:
-        raise HTTPException(status_code=400, detail=f"Geçersiz parametre: {str(e)}")
+        raise HTTPException(status_code=400, detail="Islem basarisiz. Lutfen tekrar deneyin.")
     except Exception as e:
         logger.error(f"EBA TV öneri hatası: {e}")
         raise HTTPException(
-            status_code=500, detail=f"Öneriler oluşturulurken hata oluştu: {str(e)}"
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
 
 
@@ -405,12 +405,12 @@ async def get_content_by_curriculum_topic(
         }
 
     except ValueError as e:
-        raise HTTPException(status_code=400, detail=f"Geçersiz parametre: {str(e)}")
+        raise HTTPException(status_code=400, detail="Islem basarisiz. Lutfen tekrar deneyin.")
     except Exception as e:
         logger.error(f"EBA TV müfredat içerik hatası: {e}")
         raise HTTPException(
             status_code=500,
-            detail=f"Müfredat içerikleri getirilirken hata oluştu: {str(e)}",
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
 
 
@@ -446,7 +446,7 @@ async def get_eba_statistics(ebatv_service: EBAtvService = Depends(get_ebatv_ser
     except Exception as e:
         logger.error(f"EBA TV istatistik hatası: {e}")
         raise HTTPException(
-            status_code=500, detail=f"İstatistikler getirilirken hata oluştu: {str(e)}"
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
 
 
@@ -509,7 +509,7 @@ async def analyze_video_quality(
     except Exception as e:
         logger.error(f"EBA TV kalite analizi hatası: {e}")
         raise HTTPException(
-            status_code=500, detail=f"Kalite analizi yapılırken hata oluştu: {str(e)}"
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
 
 
@@ -559,7 +559,7 @@ async def moderate_eba_content(
         logger.error(f"EBA TV moderasyon hatası: {e}")
         raise HTTPException(
             status_code=500,
-            detail=f"Moderasyon işlemi yapılırken hata oluştu: {str(e)}",
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
 
 

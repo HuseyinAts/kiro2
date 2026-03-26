@@ -120,7 +120,7 @@ async def classify_question_difficulty(
 
     except Exception as e:
         logger.error(f"Error classifying question {question_id}: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
 
 
 @router.get("/visual-indicator/{level}")
@@ -158,7 +158,7 @@ async def get_visual_indicator(level: str):
         raise
     except Exception as e:
         logger.error(f"Error getting visual indicator for {level}: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
 
 
 @router.post("/filter")
@@ -217,7 +217,7 @@ async def filter_questions_by_difficulty(
         raise
     except Exception as e:
         logger.error(f"Error filtering questions: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
 
 
 @router.get("/distribution")
@@ -256,7 +256,7 @@ async def get_difficulty_distribution(
 
     except Exception as e:
         logger.error(f"Error getting difficulty distribution: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
 
 
 @router.post("/update-realtime")
@@ -297,7 +297,7 @@ async def update_difficulty_realtime(
 
     except Exception as e:
         logger.error(f"Error updating difficulty realtime: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
 
 
 @router.post("/batch-update")
@@ -339,7 +339,7 @@ async def batch_update_difficulties(
 
     except Exception as e:
         logger.error(f"Error batch updating difficulties: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
 
 
 @router.get("/trend/{question_id}")
@@ -383,7 +383,7 @@ async def get_difficulty_trend(
 
     except Exception as e:
         logger.error(f"Error getting difficulty trend for {question_id}: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
 
 
 @router.get("/calibrate-thresholds")
@@ -443,4 +443,4 @@ async def calibrate_irt_thresholds(
         raise
     except Exception as e:
         logger.error(f"Error calibrating thresholds: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")

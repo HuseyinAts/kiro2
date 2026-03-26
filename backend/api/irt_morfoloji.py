@@ -101,7 +101,7 @@ async def analyze_question(
     except Exception as e:
         logger.error(f"IRT + Morfoloji analiz hatası: {str(e)}")
         raise HTTPException(
-            status_code=500, detail=f"Analiz sırasında hata oluştu: {str(e)}"
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
 
 
@@ -137,7 +137,7 @@ async def batch_analyze_questions(
     except Exception as e:
         logger.error(f"Toplu analiz hatası: {str(e)}")
         raise HTTPException(
-            status_code=500, detail=f"Toplu analiz sırasında hata oluştu: {str(e)}"
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
 
 
@@ -163,7 +163,7 @@ async def get_morphology_insights(
     except Exception as e:
         logger.error(f"Morfoloji içgörü hatası: {str(e)}")
         raise HTTPException(
-            status_code=500, detail=f"Morfoloji analizi sırasında hata oluştu: {str(e)}"
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
 
 
@@ -203,7 +203,7 @@ async def get_difficulty_recommendation(
     except Exception as e:
         logger.error(f"Zorluk önerisi hatası: {str(e)}")
         raise HTTPException(
-            status_code=500, detail=f"Zorluk önerisi sırasında hata oluştu: {str(e)}"
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
 
 
@@ -250,7 +250,7 @@ async def calculate_irt_probability(
         logger.error(f"IRT olasılık hesaplama hatası: {str(e)}")
         raise HTTPException(
             status_code=500,
-            detail=f"Olasılık hesaplama sırasında hata oluştu: {str(e)}",
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
 
 
@@ -273,7 +273,7 @@ async def get_service_stats(
     except Exception as e:
         logger.error(f"Servis istatistik hatası: {str(e)}")
         raise HTTPException(
-            status_code=500, detail=f"İstatistik alınırken hata oluştu: {str(e)}"
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
 
 
@@ -382,7 +382,7 @@ async def quick_assessment(
         logger.error(f"Hızlı değerlendirme hatası: {str(e)}")
         raise HTTPException(
             status_code=500,
-            detail=f"Hızlı değerlendirme sırasında hata oluştu: {str(e)}",
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
 
 
@@ -421,7 +421,7 @@ async def recommend_questions_for_student(
     except Exception as e:
         logger.error(f"Soru önerisi hatası: {str(e)}")
         raise HTTPException(
-            status_code=500, detail=f"Soru önerisi sırasında hata oluştu: {str(e)}"
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
 
 
@@ -454,7 +454,7 @@ async def bulk_quality_analysis(
         logger.error(f"Toplu kalite analizi hatası: {str(e)}")
         raise HTTPException(
             status_code=500,
-            detail=f"Toplu kalite analizi sırasında hata oluştu: {str(e)}",
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
 
 
@@ -486,7 +486,7 @@ async def osym_ets_comparison(
     except Exception as e:
         logger.error(f"ÖSYM/ETS karşılaştırma hatası: {str(e)}")
         raise HTTPException(
-            status_code=500, detail=f"Karşılaştırma sırasında hata oluştu: {str(e)}"
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
 
 
@@ -543,5 +543,5 @@ async def get_full_question_analysis(
     except Exception as e:
         logger.error(f"Tam analiz getirme hatası: {str(e)}")
         raise HTTPException(
-            status_code=500, detail=f"Analiz getirilirken hata oluştu: {str(e)}"
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )

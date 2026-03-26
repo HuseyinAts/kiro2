@@ -159,7 +159,7 @@ async def hesapla_zpd(
         )
 
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"ZPD hesaplama hatası: {e!s}")
+        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
 
 
 @router.post("/optimize", response_model=ZPDResponse)
@@ -188,7 +188,7 @@ async def optimize_zpd(
         )
 
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"ZPD optimizasyon hatası: {e!s}")
+        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
 
 
 @router.get("/profil/kulturel/{ogrenci_id}", response_model=ZPDResponse)
@@ -211,7 +211,7 @@ async def get_kulturel_profil(
 
     except Exception as e:
         raise HTTPException(
-            status_code=500, detail=f"Kültürel profil getirme hatası: {e!s}"
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
 
 
@@ -235,7 +235,7 @@ async def get_maarif_profili(
 
     except Exception as e:
         raise HTTPException(
-            status_code=500, detail=f"MEB Maarif profili getirme hatası: {e!s}"
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
 
 
@@ -260,7 +260,7 @@ async def update_kulturel_profil(
 
     except Exception as e:
         raise HTTPException(
-            status_code=500, detail=f"Kültürel profil güncelleme hatası: {e!s}"
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
 
 
@@ -285,7 +285,7 @@ async def update_maarif_profili(
 
     except Exception as e:
         raise HTTPException(
-            status_code=500, detail=f"MEB Maarif profili güncelleme hatası: {e!s}"
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
 
 
@@ -334,7 +334,7 @@ async def get_zorluk_seviyesi(
 
     except Exception as e:
         raise HTTPException(
-            status_code=500, detail=f"Zorluk seviyesi belirleme hatası: {e!s}"
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
 
 
@@ -382,7 +382,7 @@ async def get_zpd_gecmisi(
         )
 
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"ZPD geçmiş getirme hatası: {e!s}")
+        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
 
 
 @router.get("/istatistikler/{ogrenci_id}", response_model=ZPDResponse)
@@ -444,7 +444,7 @@ async def get_zpd_istatistikleri(
 
     except Exception as e:
         raise HTTPException(
-            status_code=500, detail=f"ZPD istatistik hesaplama hatası: {e!s}"
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
 
 
@@ -522,7 +522,7 @@ async def calculate_revolutionary_zpd(
 
     except Exception as e:
         raise HTTPException(
-            status_code=500, detail=f"DEVRİMSEL ZPD hesaplama hatası: {e!s}"
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
 
 
@@ -568,7 +568,7 @@ async def generate_revolutionary_recommendation(
 
     except Exception as e:
         raise HTTPException(
-            status_code=500, detail=f"DEVRİMSEL öneri oluşturma hatası: {e!s}"
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
 
 
@@ -607,7 +607,7 @@ async def detect_cultural_context(
     except Exception as e:
         raise HTTPException(
             status_code=500,
-            detail=f"DEVRİMSEL kültürel bağlam tespiti hatası: {e!s}",
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
 
 
@@ -645,7 +645,7 @@ async def adapt_difficulty_culturally(
 
     except Exception as e:
         raise HTTPException(
-            status_code=500, detail=f"DEVRİMSEL zorluk adaptasyon hatası: {e!s}"
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
 
 
@@ -679,7 +679,7 @@ async def calculate_maarif_alignment(
 
     except Exception as e:
         raise HTTPException(
-            status_code=500, detail=f"DEVRİMSEL Maarif uyum analizi hatası: {e!s}"
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
 
 
@@ -707,7 +707,7 @@ async def get_learning_balance(
     except Exception as e:
         raise HTTPException(
             status_code=500,
-            detail=f"DEVRİMSEL öğrenme dengesi analizi hatası: {e!s}",
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
 
 
@@ -734,7 +734,7 @@ async def monitor_cultural_patterns(
 
     except Exception as e:
         raise HTTPException(
-            status_code=500, detail=f"DEVRİMSEL kültürel kalıp analizi hatası: {e!s}"
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
 
 
@@ -845,4 +845,4 @@ async def revolutionary_demo(
         )
 
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"DEVRİMSEL demo hatası: {e!s}")
+        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")

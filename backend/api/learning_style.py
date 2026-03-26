@@ -143,7 +143,7 @@ async def get_content_recommendations(
     except Exception as e:
         logger.error(f"İçerik önerisi hatası: {str(e)}")
         raise HTTPException(
-            status_code=500, detail=f"İçerik önerisi oluşturulamadı: {str(e)}"
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
 
 
@@ -189,7 +189,7 @@ async def update_behavioral_data(
     except Exception as e:
         logger.error(f"Davranışsal veri güncelleme hatası: {str(e)}")
         raise HTTPException(
-            status_code=500, detail=f"Davranışsal veri güncellenemedi: {str(e)}"
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
 
 
@@ -247,7 +247,7 @@ async def submit_questionnaire(
 
     except Exception as e:
         logger.error(f"Anket kaydetme hatası: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"Anket kaydedilemedi: {str(e)}")
+        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
 
 
 def _calculate_vark_scores(response: QuestionnaireResponse) -> Dict[str, float]:
@@ -306,7 +306,7 @@ async def get_learning_style_explanation(
     except Exception as e:
         logger.error(f"Açıklama hatası: {str(e)}")
         raise HTTPException(
-            status_code=500, detail=f"Açıklama oluşturulamadı: {str(e)}"
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
 
 
@@ -332,7 +332,7 @@ async def get_all_hybrid_codes():
     except Exception as e:
         logger.error(f"Hibrit kodlar hatası: {str(e)}")
         raise HTTPException(
-            status_code=500, detail=f"Hibrit kodlar alınamadı: {str(e)}"
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
 
 
@@ -355,7 +355,7 @@ async def get_learning_style_statistics():
     except Exception as e:
         logger.error(f"İstatistik hatası: {str(e)}")
         raise HTTPException(
-            status_code=500, detail=f"İstatistikler alınamadı: {str(e)}"
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
 
 
@@ -383,7 +383,7 @@ async def export_learning_profile(
     except Exception as e:
         logger.error(f"Dışa aktarma hatası: {str(e)}")
         raise HTTPException(
-            status_code=500, detail=f"Profil dışa aktarılamadı: {str(e)}"
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
 
 
@@ -416,7 +416,7 @@ async def get_content_explanation(hybrid_code: str, content_type: str):
     except Exception as e:
         logger.error(f"İçerik açıklaması hatası: {str(e)}")
         raise HTTPException(
-            status_code=500, detail=f"Açıklama oluşturulamadı: {str(e)}"
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
 
 
@@ -467,7 +467,7 @@ async def update_recommendations_based_on_performance(
     except Exception as e:
         logger.error(f"Performans tabanlı güncelleme hatası: {str(e)}")
         raise HTTPException(
-            status_code=500, detail=f"Öneriler güncellenemedi: {str(e)}"
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
 
 
@@ -505,7 +505,7 @@ async def health_check():
     except Exception as e:
         logger.error(f"Sağlık kontrolü hatası: {str(e)}")
         raise HTTPException(
-            status_code=500, detail=f"Sistem sağlık kontrolü başarısız: {str(e)}"
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
 
 

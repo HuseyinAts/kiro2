@@ -157,7 +157,7 @@ async def send_chat_message(
     except Exception as e:
         logger.error(f"Chat mesajı işleme hatası: {e}")
         raise HTTPException(
-            status_code=500, detail=f"Mesaj işlenirken hata oluştu: {str(e)}"
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
 
 
@@ -207,7 +207,7 @@ async def get_conversation_history(
     except Exception as e:
         logger.error(f"Konuşma geçmişi alma hatası: {e}")
         raise HTTPException(
-            status_code=500, detail=f"Konuşma geçmişi alınırken hata oluştu: {str(e)}"
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
 
 
@@ -250,7 +250,7 @@ async def apply_bionic_reading(
     except Exception as e:
         logger.error(f"Bionic Reading hatası: {e}")
         raise HTTPException(
-            status_code=500, detail=f"Bionic Reading uygulanırken hata oluştu: {str(e)}"
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
 
 
@@ -308,7 +308,7 @@ async def manage_conversation_context(
     except Exception as e:
         logger.error(f"Bağlam yönetimi hatası: {e}")
         raise HTTPException(
-            status_code=500, detail=f"Bağlam yönetimi sırasında hata oluştu: {str(e)}"
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
 
 
@@ -405,7 +405,7 @@ async def generate_step_by_step_solution(
     except Exception as e:
         logger.error(f"Adım adım çözüm hatası: {e}")
         raise HTTPException(
-            status_code=500, detail=f"Adım adım çözüm üretilirken hata oluştu: {str(e)}"
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
 
 

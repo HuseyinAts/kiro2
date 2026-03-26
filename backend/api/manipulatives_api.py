@@ -95,7 +95,7 @@ async def record_virtual_block_operation(
             },
         }
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"İşlem kaydedilemedi: {str(e)}")
+        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
 
 
 @router.get("/virtual-blocks/progress")
@@ -120,7 +120,7 @@ async def get_virtual_block_progress(
             },
         }
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"İlerleme getirilemedi: {str(e)}")
+        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
 
 
 @router.post("/geogebra/activity")
@@ -147,7 +147,7 @@ async def record_geogebra_activity(
             },
         }
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Aktivite kaydedilemedi: {str(e)}")
+        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
 
 
 @router.get("/geogebra/applets")
@@ -187,7 +187,7 @@ async def get_geogebra_applets(
         return {"success": True, "data": applets}
     except Exception as e:
         raise HTTPException(
-            status_code=500, detail=f"Applet listesi getirilemedi: {str(e)}"
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
 
 
@@ -215,7 +215,7 @@ async def record_geometry_tool_usage(
             },
         }
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Kullanım kaydedilemedi: {str(e)}")
+        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
 
 
 @router.get("/geometry/tools")
@@ -270,7 +270,7 @@ async def get_geometry_tools(current_user: User = Depends(get_current_user)):
         return {"success": True, "data": tools}
     except Exception as e:
         raise HTTPException(
-            status_code=500, detail=f"Araç listesi getirilemedi: {str(e)}"
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
 
 
@@ -299,7 +299,7 @@ async def record_tangram_puzzle(
             },
         }
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Puzzle kaydedilemedi: {str(e)}")
+        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
 
 
 @router.get("/tangram/puzzles")
@@ -357,7 +357,7 @@ async def get_tangram_puzzles(
         return {"success": True, "data": puzzles}
     except Exception as e:
         raise HTTPException(
-            status_code=500, detail=f"Puzzle listesi getirilemedi: {str(e)}"
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
 
 
@@ -383,4 +383,4 @@ async def get_tangram_progress(
             },
         }
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"İlerleme getirilemedi: {str(e)}")
+        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")

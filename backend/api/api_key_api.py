@@ -94,7 +94,7 @@ async def create_api_key(
 
     except Exception as e:
         logger.error(f"[API KEY API] Create failed: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
 
 
 @router.get("/list", response_model=List[APIKeyResponse], summary="List API Keys")
@@ -142,7 +142,7 @@ async def list_api_keys(
 
     except Exception as e:
         logger.error(f"[API KEY API] List failed: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
 
 
 @router.post("/{key_id}/revoke", summary="Revoke API Key")
@@ -175,7 +175,7 @@ async def revoke_api_key(
 
     except Exception as e:
         logger.error(f"[API KEY API] Revoke failed: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
 
 
 @router.post("/{key_id}/rotate", summary="Rotate API Key")
@@ -208,4 +208,4 @@ async def rotate_api_key(
 
     except Exception as e:
         logger.error(f"[API KEY API] Rotate failed: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")

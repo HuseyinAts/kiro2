@@ -75,7 +75,7 @@ async def create_makale(
             "message": "Makale başarıyla oluşturuldu",
         }
     except Exception as e:
-        raise HTTPException(status_code=400, detail=f"Makale oluşturma hatası: {e!s}")
+        raise HTTPException(status_code=400, detail="Islem basarisiz. Lutfen tekrar deneyin.")
 
 
 @router.get("/makale/{makale_id}", response_model=dict[str, Any])
@@ -279,7 +279,7 @@ async def create_video(
             "message": "Video başarıyla oluşturuldu",
         }
     except Exception as e:
-        raise HTTPException(status_code=400, detail=f"Video oluşturma hatası: {e!s}")
+        raise HTTPException(status_code=400, detail="Islem basarisiz. Lutfen tekrar deneyin.")
 
 
 @router.get("/video/{video_id}", response_model=dict[str, Any])

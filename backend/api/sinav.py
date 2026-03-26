@@ -404,7 +404,7 @@ async def create_exam(
                 "exam_type": request.exam_type.value,
             },
         )
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Islem basarisiz. Lutfen tekrar deneyin.")
     except Exception as e:
         logger.error(
             f"Beklenmeyen sınav oluşturma hatası: {e}",
@@ -481,7 +481,7 @@ async def start_exam(
                 "student_id": current_user.id,
             },
         )
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Islem basarisiz. Lutfen tekrar deneyin.")
     except Exception as e:
         logger.error(
             f"Beklenmeyen sınav başlatma hatası: {e}",
@@ -974,7 +974,7 @@ async def complete_exam(
         logger.error(
             f"Sınav tamamlama hatası: {e}", extra_data={"session_id": session_id}
         )
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Islem basarisiz. Lutfen tekrar deneyin.")
     except Exception as e:
         logger.error(
             f"Beklenmeyen sınav tamamlama hatası: {e}",

@@ -146,7 +146,7 @@ async def get_student_analytics(
     except Exception as e:
         logger.error(f"Student analytics error: {str(e)}")
         raise HTTPException(
-            status_code=500, detail=f"Analytics alınırken hata: {str(e)}"
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
 
 
@@ -252,7 +252,7 @@ async def get_class_analytics(
     except Exception as e:
         logger.error(f"Class analytics error: {str(e)}")
         raise HTTPException(
-            status_code=500, detail=f"Sınıf analytics alınırken hata: {str(e)}"
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
 
 
@@ -350,7 +350,7 @@ async def get_admin_dashboard_analytics(
     except Exception as e:
         logger.error(f"Admin dashboard analytics error: {str(e)}")
         raise HTTPException(
-            status_code=500, detail=f"Admin analytics alınırken hata: {str(e)}"
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
 
 
@@ -428,7 +428,7 @@ async def export_analytics_pdf(
 
     except Exception as e:
         logger.error(f"PDF export error: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"PDF export hatası: {str(e)}")
+        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
 
 
 @router.post("/export/excel")
@@ -477,7 +477,7 @@ async def export_analytics_excel(
 
     except Exception as e:
         logger.error(f"Excel export error: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"Excel export hatası: {str(e)}")
+        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
 
 
 @router.post("/export/csv")
@@ -525,7 +525,7 @@ async def export_analytics_csv(
 
     except Exception as e:
         logger.error(f"CSV export error: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"CSV export hatası: {str(e)}")
+        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
 
 
 # Helper functions

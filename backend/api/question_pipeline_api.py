@@ -171,7 +171,7 @@ async def generate_question(
 
     except Exception as e:
         logger.error(f"Generate question error: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
 
 
 @router.post(
@@ -218,7 +218,7 @@ async def generate_question_sync(
         raise
     except Exception as e:
         logger.error(f"Sync generate error: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
 
 
 @router.get(
@@ -259,7 +259,7 @@ async def get_pipeline_status(
         raise
     except Exception as e:
         logger.error(f"Get status error: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
 
 
 @router.get(
@@ -306,7 +306,7 @@ async def get_generated_question(pipeline_id: str):
         raise
     except Exception as e:
         logger.error(f"Get question error: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
 
 
 @router.get(
@@ -341,7 +341,7 @@ async def get_pipeline_metrics(
 
     except Exception as e:
         logger.error(f"Get metrics error: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
 
 
 @router.post(
@@ -368,7 +368,7 @@ async def cancel_pipeline(
         raise
     except Exception as e:
         logger.error(f"Cancel pipeline error: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
 
 
 @router.get(

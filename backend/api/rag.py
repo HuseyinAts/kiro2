@@ -172,7 +172,7 @@ async def index_text_document(
         logger.error(f"Document indexing error: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Indexing error: {str(e)}",
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
 
 
@@ -255,7 +255,7 @@ async def index_file_document(
     except Exception as e:
         logger.error(f"File indexing error: {e}")
         raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
 
 
@@ -306,7 +306,7 @@ async def semantic_search(
     except Exception as e:
         logger.error(f"Search error: {e}")
         raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
 
 
@@ -366,7 +366,7 @@ async def get_llm_context(
     except Exception as e:
         logger.error(f"Context retrieval error: {e}")
         raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
 
 
@@ -462,7 +462,7 @@ async def list_documents(
     except Exception as e:
         logger.error(f"Document listing error: {e}")
         raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
 
 
@@ -528,7 +528,7 @@ async def delete_document(
     except Exception as e:
         logger.error(f"Document deletion error: {e}")
         raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
 
 
@@ -552,7 +552,7 @@ async def get_rag_stats(current_user: User = Depends(get_current_user)):
     except Exception as e:
         logger.error(f"Stats error: {e}")
         raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
 
 

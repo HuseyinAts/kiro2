@@ -120,7 +120,7 @@ async def generate_solution(request: GenerateSolutionRequest):
     except Exception as e:
         logger.error(f"Solution generation error: {e}")
         raise HTTPException(
-            status_code=500, detail=f"Çözüm oluşturulurken hata oluştu: {e!s}"
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
 
 
@@ -159,7 +159,7 @@ async def get_solution(problem_id: str):
     except Exception as e:
         logger.error(f"Get solution error: {e}")
         raise HTTPException(
-            status_code=500, detail=f"Çözüm getirilirken hata oluştu: {e!s}"
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
 
 
@@ -197,7 +197,7 @@ async def get_step(problem_id: str, step_number: int):
     except Exception as e:
         logger.error(f"Get step error: {e}")
         raise HTTPException(
-            status_code=500, detail=f"Adım getirilirken hata oluştu: {e!s}"
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
 
 
@@ -267,7 +267,7 @@ async def get_hint(request: GetHintRequest, student_id: str | None = None):
     except Exception as e:
         logger.error(f"Get hint error: {e}")
         raise HTTPException(
-            status_code=500, detail=f"İpucu getirilirken hata oluştu: {e!s}"
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
 
 
@@ -313,7 +313,7 @@ async def get_navigation_info(problem_id: str):
         logger.error(f"Get navigation info error: {e}")
         raise HTTPException(
             status_code=500,
-            detail=f"Navigasyon bilgileri getirilirken hata oluştu: {e!s}",
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
 
 
@@ -336,7 +336,7 @@ async def clear_cache():
     except Exception as e:
         logger.error(f"Clear cache error: {e}")
         raise HTTPException(
-            status_code=500, detail=f"Cache temizlenirken hata oluştu: {e!s}"
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
 
 
@@ -386,7 +386,7 @@ async def get_hint_statistics(
     except Exception as e:
         logger.error(f"Get hint stats error: {e}")
         raise HTTPException(
-            status_code=500, detail=f"İstatistikler getirilirken hata oluştu: {e!s}"
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
 
 
@@ -419,7 +419,7 @@ async def get_hint_trends(
     except Exception as e:
         logger.error(f"Get hint trends error: {e}")
         raise HTTPException(
-            status_code=500, detail=f"Trend analizi yapılırken hata oluştu: {e!s}"
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
 
 
@@ -478,7 +478,7 @@ async def check_answer(request: CheckAnswerRequest):
     except Exception as e:
         logger.error(f"Check answer error: {e}")
         raise HTTPException(
-            status_code=500, detail=f"Cevap kontrol edilirken hata oluştu: {e!s}"
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
 
 
@@ -528,7 +528,7 @@ async def get_error_analysis(
     except Exception as e:
         logger.error(f"Get error analysis error: {e}")
         raise HTTPException(
-            status_code=500, detail=f"Hata analizi yapılırken hata oluştu: {e!s}"
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
 
 

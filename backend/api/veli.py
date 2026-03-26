@@ -28,9 +28,15 @@ async def mevcut_veli_getir(
     role = (r.value if hasattr(r, "value") else str(r)).upper()
     if role not in ("PARENT", "ADMIN", "SUPER_ADMIN"):
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Bu islem icin veli yetkisi gerekli")
-    current_user.kullanici_id = str(getattr(current_user, "id", ""))
-    current_user.rol = KullaniciRolu.VELI
-    return current_user
+    # Frozen pydantic yerine duck-typing wrapper kullan
+    from types import SimpleNamespace
+    veli = SimpleNamespace(
+        kullanici_id=str(getattr(current_user, "id", "")),
+        rol=KullaniciRolu.VELI,
+        email=getattr(current_user, "email", ""),
+        id=str(getattr(current_user, "id", "")),
+    )
+    return veli
 
 
 @router.get("/cocuklar", response_model=List[Dict[str, Any]], summary="Çocuk Listesi")
@@ -53,7 +59,7 @@ async def cocuk_listesi_getir(mevcut_veli: Kullanici = Depends(mevcut_veli_getir
         }
 
     except ValueError as e:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Islem basarisiz. Lutfen tekrar deneyin.")
     except (ConnectionError, TimeoutError) as e:
         logger.error(f"Database/service connection error: {e}")
         raise HTTPException(
@@ -102,7 +108,7 @@ async def cocuk_performansi_getir(
         }
 
     except ValueError as e:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Islem basarisiz. Lutfen tekrar deneyin.")
     except PermissionError:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
@@ -144,7 +150,7 @@ async def haftalik_rapor_olustur(
         return rapor
 
     except ValueError as e:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Islem basarisiz. Lutfen tekrar deneyin.")
     except Exception:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -207,7 +213,7 @@ async def onay_talebi_yanitla(
         return talep
 
     except ValueError as e:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Islem basarisiz. Lutfen tekrar deneyin.")
     except Exception:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -354,7 +360,7 @@ async def onay_talebi_olustur(ogrenci_id: str, talep_tipi: str, aciklama: str):
         return talep
 
     except ValueError as e:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Islem basarisiz. Lutfen tekrar deneyin.")
     except Exception:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,

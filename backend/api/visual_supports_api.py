@@ -110,7 +110,7 @@ async def create_mind_map(
         )
         return mind_map
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Mind map creation failed: {e!s}")
+        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
 
 
 @router.get("/mind-maps/{mind_map_id}", response_model=MindMap)
@@ -186,7 +186,7 @@ async def create_infographic(
         return infographic
     except Exception as e:
         raise HTTPException(
-            status_code=500, detail=f"Infographic creation failed: {e!s}"
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
 
 
@@ -241,7 +241,7 @@ async def create_vocabulary_card(
         )
         return card
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Card creation failed: {e!s}")
+        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
 
 
 @router.get("/vocabulary-cards/search", response_model=list[VisualVocabularyCard])
@@ -296,7 +296,7 @@ async def create_color_scheme(
         return scheme
     except Exception as e:
         raise HTTPException(
-            status_code=500, detail=f"Color scheme creation failed: {e!s}"
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
 
 

@@ -509,7 +509,7 @@ async def create_student_profile(
     except Exception as e:
         await db.rollback()  # FIX: Add rollback on error
         logger.error(f"Error creating student profile: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
 
 
 @router.post("/assess-knowledge")
@@ -636,7 +636,7 @@ async def assess_knowledge(
     except Exception as e:
         await db.rollback()  # FIX: Async rollback on error
         logger.error(f"Error assessing knowledge: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
 
 
 @router.post("/create-path")
@@ -802,7 +802,7 @@ async def create_learning_path(
         )
 
         logger.error(f"Error creating learning path: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
 
 
 @router.post("/search-resources")
@@ -1047,7 +1047,7 @@ async def adapt_learning_path(
         raise
     except Exception as e:
         logger.error(f"Error adapting learning path: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
 
 
 @router.get("/completion/{student_id}")
@@ -1116,7 +1116,7 @@ async def get_completion_status(
         raise
     except Exception as e:
         logger.error(f"Error getting completion status: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
 
 
 @router.put("/completion/{student_id}")
@@ -1201,7 +1201,7 @@ async def update_completion_status(
         await db.rollback()
         logger.error(f"Error updating completion status: {e}")
         raise HTTPException(
-            status_code=500, detail=f"Failed to update completion status: {e!s}"
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
 
 
@@ -1412,7 +1412,7 @@ async def submit_quiz(
         await db.rollback()
         logger.error(f"Error processing quiz submission: {e}")
         raise HTTPException(
-            status_code=500, detail=f"Failed to process quiz submission: {e!s}"
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
 
 
@@ -1517,7 +1517,7 @@ async def update_progress(
     except Exception as e:
         await db.rollback()
         logger.error(f"Error updating progress: {e}")
-        raise HTTPException(status_code=500, detail=f"Failed to update progress: {e!s}")
+        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
 
 
 # ============================================================================
@@ -1825,7 +1825,7 @@ async def get_exit_quiz(
     except Exception as e:
         logger.error(f"Error fetching exit quiz questions: {e}")
         raise HTTPException(
-            status_code=500, detail=f"Failed to fetch exit quiz questions: {e!s}"
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
 
 
@@ -1869,7 +1869,7 @@ async def get_interleaved_practice(
         logger.error(f"Error fetching interleaved practice questions: {e}")
         raise HTTPException(
             status_code=500,
-            detail=f"Failed to fetch interleaved practice questions: {e!s}",
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
 
 
@@ -1901,7 +1901,7 @@ async def get_review_queue(
     except Exception as e:
         logger.error(f"Error fetching review queue: {e}")
         raise HTTPException(
-            status_code=500, detail=f"Failed to fetch review queue: {e!s}"
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
 
 
@@ -1948,7 +1948,7 @@ async def submit_review(
     except Exception as e:
         logger.error(f"Error submitting review: {e}")
         await db.rollback()
-        raise HTTPException(status_code=500, detail=f"Failed to submit review: {e!s}")
+        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
 
 
 class RegisterWrongAnswersRequest(BaseModel):
@@ -1989,7 +1989,7 @@ async def register_wrong_answers(
         logger.error(f"Error registering wrong answers: {e}")
         await db.rollback()
         raise HTTPException(
-            status_code=500, detail=f"Failed to register wrong answers: {e!s}"
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
 
 

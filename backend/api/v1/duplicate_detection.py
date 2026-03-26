@@ -250,7 +250,7 @@ async def check_duplicate(request: DuplicateCheckRequest) -> DuplicateCheckRespo
         logger.error(f"Duplicate check failed: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Duplicate kontrol hatasi: {str(e)}"
+            detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
 
 
@@ -319,7 +319,7 @@ async def add_with_duplicate_check(request: AddWithCheckRequest) -> AddWithCheck
         logger.error(f"Add with check failed: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Ekleme hatasi: {str(e)}"
+            detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
 
 
@@ -361,7 +361,7 @@ async def merge_duplicates(request: MergeRequest) -> MergeResponse:
         logger.error(f"Merge failed: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Birlestirme hatasi: {str(e)}"
+            detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
 
 
@@ -399,7 +399,7 @@ async def get_duplicate_stats() -> DuplicateStats:
         logger.error(f"Stats failed: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Istatistik hatasi: {str(e)}"
+            detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
 
 
@@ -462,7 +462,7 @@ async def get_pending_reviews(
         logger.error(f"Pending reviews failed: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Inceleme listesi hatasi: {str(e)}"
+            detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
 
 
@@ -558,7 +558,7 @@ async def submit_review(question_id: str, request: ReviewRequest) -> ReviewRespo
         logger.error(f"Review submission failed: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Inceleme kayit hatasi: {str(e)}"
+            detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
 
 

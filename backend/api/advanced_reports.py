@@ -103,7 +103,7 @@ async def get_advanced_exam_report(
 
     except Exception as e:
         logger.error(f"Gelişmiş rapor hatası - Sınav: {sinav_id}, Hata: {e!s}")
-        raise HTTPException(status_code=500, detail=f"Rapor oluşturma hatası: {e!s}")
+        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
 
 
 @router.get("/exam/{sinav_id}/irt-analysis")
@@ -128,7 +128,7 @@ async def get_irt_morfoloji_analysis(
 
     except Exception as e:
         logger.error(f"IRT analizi hatası - Sınav: {sinav_id}, Hata: {e!s}")
-        raise HTTPException(status_code=500, detail=f"IRT analizi hatası: {e!s}")
+        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
 
 
 @router.get("/exam/{sinav_id}/zpd-recommendations")
@@ -154,7 +154,7 @@ async def get_zpd_recommendations(
 
     except Exception as e:
         logger.error(f"ZPD analizi hatası - Sınav: {sinav_id}, Hata: {e!s}")
-        raise HTTPException(status_code=500, detail=f"ZPD analizi hatası: {e!s}")
+        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
 
 
 @router.get("/exam/{sinav_id}/learning-style-analysis")
@@ -183,7 +183,7 @@ async def get_learning_style_analysis(
     except Exception as e:
         logger.error(f"Öğrenme stili analizi hatası - Sınav: {sinav_id}, Hata: {e!s}")
         raise HTTPException(
-            status_code=500, detail=f"Öğrenme stili analizi hatası: {e!s}"
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
 
 
@@ -209,7 +209,7 @@ async def get_osym_ets_comparison(
 
     except Exception as e:
         logger.error(f"ÖSYM/ETS karşılaştırma hatası - Sınav: {sinav_id}, Hata: {e!s}")
-        raise HTTPException(status_code=500, detail=f"Karşılaştırma hatası: {e!s}")
+        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
 
 
 @router.post("/exam/{sinav_id}/generate-pdf")
@@ -242,7 +242,7 @@ async def generate_pdf_report(
 
     except Exception as e:
         logger.error(f"PDF oluşturma hatası - Sınav: {sinav_id}, Hata: {e!s}")
-        raise HTTPException(status_code=500, detail=f"PDF oluşturma hatası: {e!s}")
+        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
 
 
 @router.get("/download/{filename}")

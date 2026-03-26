@@ -136,7 +136,7 @@ async def create_flashcard(
         logger.error(f"Flashcard oluşturma hatası: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Flashcard oluşturulurken hata oluştu: {str(e)}",
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
 
 
@@ -173,7 +173,7 @@ async def get_due_flashcards(
         logger.error(f"Vadesi gelen kartları getirme hatası: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Kartlar getirilirken hata oluştu: {str(e)}",
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
 
 
@@ -227,12 +227,12 @@ async def review_flashcard(
         }
 
     except ValueError as e:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Islem basarisiz. Lutfen tekrar deneyin.")
     except Exception as e:
         logger.error(f"Flashcard inceleme hatası: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Kart incelenirken hata oluştu: {str(e)}",
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
 
 
@@ -267,7 +267,7 @@ async def get_study_recommendations(
         logger.error(f"Çalışma önerileri getirme hatası: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Öneriler getirilirken hata oluştu: {str(e)}",
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
 
 
@@ -302,7 +302,7 @@ async def get_student_statistics(
         logger.error(f"İstatistik getirme hatası: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"İstatistikler getirilirken hata oluştu: {str(e)}",
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
 
 
@@ -344,7 +344,7 @@ async def start_study_session(
         logger.error(f"Çalışma oturumu başlatma hatası: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Oturum başlatılırken hata oluştu: {str(e)}",
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
 
 
@@ -375,12 +375,12 @@ async def end_study_session(
         }
 
     except ValueError as e:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Islem basarisiz. Lutfen tekrar deneyin.")
     except Exception as e:
         logger.error(f"Çalışma oturumu sonlandırma hatası: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Oturum sonlandırılırken hata oluştu: {str(e)}",
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
 
 
@@ -463,7 +463,7 @@ async def get_cultural_periods_info():
         logger.error(f"Kültürel dönem bilgileri getirme hatası: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Bilgiler getirilirken hata oluştu: {str(e)}",
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
 
 

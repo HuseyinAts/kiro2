@@ -207,7 +207,7 @@ async def evaluate_question(request: QuestionEvaluationRequest):
 
     except Exception as e:
         logger.error(f"Evaluation failed: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
 
 
 @router.post("/evaluate-batch", response_model=BatchEvaluationResponse)
@@ -273,7 +273,7 @@ async def evaluate_batch(request: BatchEvaluationRequest):
 
     except Exception as e:
         logger.error(f"Batch evaluation failed: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
 
 
 @router.post("/bertscore", response_model=BERTScoreResponse)
@@ -312,7 +312,7 @@ async def calculate_bertscore(request: BERTScoreRequest):
         raise
     except Exception as e:
         logger.error(f"BERTScore calculation failed: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
 
 
 @router.get("/health")
@@ -381,7 +381,7 @@ async def get_evaluation_stats():
 
     except Exception as e:
         logger.error(f"Stats retrieval failed: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
 
 
 # Startup event to initialize evaluator

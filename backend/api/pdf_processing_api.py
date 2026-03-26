@@ -307,7 +307,7 @@ async def upload_pdf(
         if file_path.exists():
             file_path.unlink()
 
-        raise HTTPException(status_code=500, detail=f"Upload failed: {str(e)}")
+        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
 
 
 @router.get("/status/{job_id}", response_model=PDFProcessingStatus)

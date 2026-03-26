@@ -169,7 +169,7 @@ async def get_progress_dashboard(
         return {"success": True, "data": progress_data}
     except Exception as e:
         raise HTTPException(
-            status_code=500, detail=f"İlerleme verisi getirilemedi: {str(e)}"
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
 
 
@@ -391,7 +391,7 @@ async def get_user_badges(
 
         return {"success": True, "data": badges}
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Rozetler getirilemedi: {str(e)}")
+        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
 
 
 @router.get("/progress/summary")
@@ -550,7 +550,7 @@ async def get_progress_summary(
 
         return {"success": True, "data": summary}
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Özet getirilemedi: {str(e)}")
+        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
 
 
 @router.post("/badges/{badge_id}/claim")
@@ -711,7 +711,7 @@ async def claim_badge(
         raise
     except Exception as e:
         db.rollback()
-        raise HTTPException(status_code=500, detail=f"Rozet talep edilemedi: {str(e)}")
+        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
 
 
 @router.get("/progress/weekly")
@@ -801,5 +801,5 @@ async def get_weekly_progress(
         }
     except Exception as e:
         raise HTTPException(
-            status_code=500, detail=f"Haftalık ilerleme getirilemedi: {str(e)}"
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )

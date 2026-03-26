@@ -347,7 +347,7 @@ async def ask_question(
         logger.error(f"Error processing question: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=str(e),
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
 
 
@@ -426,7 +426,7 @@ async def get_agent_performance(
         logger.error(f"Error getting agent performance: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=str(e),
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
 
 
@@ -484,7 +484,7 @@ async def get_all_specialization_scores(
         logger.error(f"Error getting specialization scores: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=str(e),
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
 
 

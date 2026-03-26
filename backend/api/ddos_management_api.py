@@ -83,7 +83,7 @@ async def add_to_whitelist(
 
     except Exception as e:
         logger.error(f"[DDOS API] Failed to whitelist IP: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
 
 
 @router.post("/whitelist/remove", summary="Remove IP from Whitelist (Admin Only)")
@@ -109,7 +109,7 @@ async def remove_from_whitelist(
 
     except Exception as e:
         logger.error(f"[DDOS API] Failed to remove from whitelist: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
 
 
 @router.get(
@@ -131,7 +131,7 @@ async def get_whitelist(current_admin: dict = Depends(get_current_admin_user)):
 
     except Exception as e:
         logger.error(f"[DDOS API] Failed to get whitelist: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
 
 
 @router.post("/blacklist/add", summary="Add IP to Blacklist (Admin Only)")
@@ -162,7 +162,7 @@ async def add_to_blacklist(
 
     except Exception as e:
         logger.error(f"[DDOS API] Failed to blacklist IP: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
 
 
 @router.post("/blacklist/remove", summary="Remove IP from Blacklist (Admin Only)")
@@ -188,7 +188,7 @@ async def remove_from_blacklist(
 
     except Exception as e:
         logger.error(f"[DDOS API] Failed to remove from blacklist: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
 
 
 @router.get(
@@ -210,7 +210,7 @@ async def get_blacklist(current_admin: dict = Depends(get_current_admin_user)):
 
     except Exception as e:
         logger.error(f"[DDOS API] Failed to get blacklist: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
 
 
 @router.get(
@@ -232,7 +232,7 @@ async def get_blocked_ips(current_admin: dict = Depends(get_current_admin_user))
 
     except Exception as e:
         logger.error(f"[DDOS API] Failed to get blocked IPs: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
 
 
 @router.post("/unblock", summary="Manually Unblock IP (Admin Only)")
@@ -258,7 +258,7 @@ async def unblock_ip(
 
     except Exception as e:
         logger.error(f"[DDOS API] Failed to unblock IP: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
 
 
 @router.get(
@@ -299,7 +299,7 @@ async def get_ip_reputation(
         raise
     except Exception as e:
         logger.error(f"[DDOS API] Failed to get IP reputation: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
 
 
 @router.get(
@@ -321,4 +321,4 @@ async def get_ddos_statistics(current_admin: dict = Depends(get_current_admin_us
 
     except Exception as e:
         logger.error(f"[DDOS API] Failed to get statistics: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")

@@ -324,7 +324,7 @@ async def start_watch_session(
         }
 
     except ValueError as e:
-        raise HTTPException(status_code=404, detail=str(e))
+        raise HTTPException(status_code=404, detail="Islem basarisiz. Lutfen tekrar deneyin.")
     except Exception as e:
         logger.error(f"Failed to start watch session: {e}")
         raise HTTPException(status_code=500, detail="Failed to start session")
@@ -353,7 +353,7 @@ async def update_watch_progress(
         return result
 
     except ValueError as e:
-        raise HTTPException(status_code=404, detail=str(e))
+        raise HTTPException(status_code=404, detail="Islem basarisiz. Lutfen tekrar deneyin.")
     except Exception as e:
         logger.error(f"Failed to update progress: {e}")
         raise HTTPException(status_code=500, detail="Failed to update progress")
@@ -381,7 +381,7 @@ async def end_watch_session(
         return result
 
     except ValueError as e:
-        raise HTTPException(status_code=404, detail=str(e))
+        raise HTTPException(status_code=404, detail="Islem basarisiz. Lutfen tekrar deneyin.")
     except Exception as e:
         logger.error(f"Failed to end session: {e}")
         raise HTTPException(status_code=500, detail="Failed to end session")
@@ -458,7 +458,7 @@ async def get_video_analytics(eba_video_id: str, db: AsyncSession = Depends(get_
         return analytics
 
     except ValueError as e:
-        raise HTTPException(status_code=404, detail=str(e))
+        raise HTTPException(status_code=404, detail="Islem basarisiz. Lutfen tekrar deneyin.")
     except Exception as e:
         logger.error(f"Failed to fetch video analytics: {e}")
         raise HTTPException(status_code=500, detail="Failed to fetch analytics")

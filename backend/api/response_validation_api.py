@@ -184,13 +184,13 @@ async def validate_response(
     except AgentTypeError as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Geçersiz agent tipi: {str(e)}"
+            detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
     except Exception as e:
         logger.error(f"Validation error: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Doğrulama hatası: {str(e)}"
+            detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
 
 
@@ -295,7 +295,7 @@ async def quick_validate(
         logger.error(f"Quick validation error: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=str(e)
+            detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
 
 

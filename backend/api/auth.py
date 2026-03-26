@@ -650,7 +650,7 @@ async def kullanici_giris(
         }
     except ValueError as e:
         _record_failed_login(request)
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=str(e))
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Islem basarisiz. Lutfen tekrar deneyin.")
 
 
 # English alias for login endpoint
@@ -738,7 +738,7 @@ async def secure_login(
         }
     except ValueError as e:
         _record_failed_login(request)
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=str(e))
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Islem basarisiz. Lutfen tekrar deneyin.")
 
 
 @router.post(
@@ -1379,7 +1379,7 @@ async def ogrenci_profil_olustur(
 
         return await kullanici_servisi.ogrenci_profili_olustur(profil_data)
     except ValueError as e:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Islem basarisiz. Lutfen tekrar deneyin.")
 
 
 @router.get(
@@ -1446,7 +1446,7 @@ async def ogretmen_profil_olustur(
 
         return await kullanici_servisi.ogretmen_profili_olustur(profil_data)
     except ValueError as e:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Islem basarisiz. Lutfen tekrar deneyin.")
 
 
 @router.post(
@@ -1475,7 +1475,7 @@ async def veli_profil_olustur(
 
         return await kullanici_servisi.veli_profili_olustur(profil_data)
     except ValueError as e:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Islem basarisiz. Lutfen tekrar deneyin.")
 
 
 # Task 48.4: JWT Refresh Token Endpoints
@@ -1639,7 +1639,7 @@ async def refresh_token(
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail=f"Refresh token başarısız: {e!s}",
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
 
 
@@ -1682,7 +1682,7 @@ async def logout_all_devices(
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Logout başarısız: {e!s}",
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
 
 
@@ -1728,5 +1728,5 @@ async def revoke_device(
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Device revoke başarısız: {e!s}",
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )

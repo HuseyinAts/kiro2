@@ -124,7 +124,7 @@ async def get_points_summary(
 
     except Exception as e:
         logger.error(f"Puan ozeti hatasi: {e!s}")
-        raise HTTPException(status_code=500, detail=f"Puan ozeti alinamadi: {e!s}")
+        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
 
 
 @router.get("/points/history", response_model=dict[str, Any])
@@ -154,7 +154,7 @@ async def get_point_history(
 
     except Exception as e:
         logger.error(f"Puan gecmisi hatasi: {e!s}")
-        raise HTTPException(status_code=500, detail=f"Puan gecmisi alinamadi: {e!s}")
+        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
 
 
 @router.post("/points/award", response_model=dict[str, Any])
@@ -196,7 +196,7 @@ async def award_points(
 
     except Exception as e:
         logger.error(f"Puan verme hatasi: {e!s}")
-        raise HTTPException(status_code=500, detail=f"Puan verilemedi: {e!s}")
+        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
 
 
 # ============================================================================
@@ -237,7 +237,7 @@ async def get_level_info(
 
     except Exception as e:
         logger.error(f"Seviye bilgisi hatasi: {e!s}")
-        raise HTTPException(status_code=500, detail=f"Seviye bilgisi alinamadi: {e!s}")
+        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
 
 
 @router.get("/level/progress", response_model=dict[str, Any])
@@ -276,7 +276,7 @@ async def get_level_progress(
     except Exception as e:
         logger.error(f"Seviye ilerlemesi hatasi: {e!s}")
         raise HTTPException(
-            status_code=500, detail=f"Seviye ilerlemesi alinamadi: {e!s}"
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
 
 
@@ -335,7 +335,7 @@ async def get_all_badges(
 
     except Exception as e:
         logger.error(f"Rozetler getirme hatasi: {e!s}")
-        raise HTTPException(status_code=500, detail=f"Rozetler getirilemedi: {e!s}")
+        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
 
 
 @router.get("/badges/earned", response_model=dict[str, Any])
@@ -385,7 +385,7 @@ async def get_earned_badges(
     except Exception as e:
         logger.error(f"Kazanilan rozetler hatasi: {e!s}")
         raise HTTPException(
-            status_code=500, detail=f"Kazanilan rozetler getirilemedi: {e!s}"
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
 
 
@@ -434,7 +434,7 @@ async def get_badge_categories(
     except Exception as e:
         logger.error(f"Kategori istatistikleri hatasi: {e!s}")
         raise HTTPException(
-            status_code=500, detail=f"Kategori istatistikleri alinamadi: {e!s}"
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
 
 
@@ -514,7 +514,7 @@ async def get_leaderboard(
     except Exception as e:
         logger.error(f"Liderlik tablosu hatasi: {e!s}")
         raise HTTPException(
-            status_code=500, detail=f"Liderlik tablosu alinamadi: {e!s}"
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
 
 
@@ -599,7 +599,7 @@ async def get_gamification_profile(
     except Exception as e:
         logger.error(f"Gamification profil hatasi: {e!s}")
         raise HTTPException(
-            status_code=500, detail=f"Gamification profili alinamadi: {e!s}"
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
 
 
@@ -749,7 +749,7 @@ async def get_user_achievements(
         }
     except Exception as e:
         logger.error(f"Basarilar getirme hatasi: {e!s}")
-        raise HTTPException(status_code=500, detail=f"Basarilar getirilemedi: {e!s}")
+        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
 
 
 @router.get("/achievements/completed", response_model=dict[str, Any])
@@ -783,7 +783,7 @@ async def get_completed_achievements(
     except Exception as e:
         logger.error(f"Tamamlanmis basarilar hatasi: {e!s}")
         raise HTTPException(
-            status_code=500, detail=f"Tamamlanmis basarilar getirilemedi: {e!s}"
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
 
 
@@ -817,7 +817,7 @@ async def get_nearby_users_in_leaderboard(
     except Exception as e:
         logger.error(f"Yakindaki kullanicilar hatasi: {e!s}")
         raise HTTPException(
-            status_code=500, detail=f"Yakindaki kullanicilar getirilemedi: {e!s}"
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
 
 
@@ -851,7 +851,7 @@ async def get_user_leaderboard_rank(
     except Exception as e:
         logger.error(f"Kullanici siralamasi hatasi: {e!s}")
         raise HTTPException(
-            status_code=500, detail=f"Kullanici siralamasi getirilemedi: {e!s}"
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
 
 
@@ -876,7 +876,7 @@ async def get_leaderboard_statistics(
     except Exception as e:
         logger.error(f"Liderlik tablosu istatistikleri hatasi: {e!s}")
         raise HTTPException(
-            status_code=500, detail=f"Liderlik tablosu istatistikleri alinamadi: {e!s}"
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
 
 
@@ -941,7 +941,7 @@ async def get_peer_group_leaderboard(
     except Exception as e:
         logger.error(f"Peer group leaderboard hatasi: {e!s}")
         raise HTTPException(
-            status_code=500, detail=f"Peer group leaderboard alinamadi: {e!s}"
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
 
 
@@ -985,5 +985,5 @@ async def get_improvement_leaderboard(
     except Exception as e:
         logger.error(f"Improvement leaderboard hatasi: {e!s}")
         raise HTTPException(
-            status_code=500, detail=f"Improvement leaderboard alinamadi: {e!s}"
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )

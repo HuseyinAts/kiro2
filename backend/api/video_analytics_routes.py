@@ -133,7 +133,7 @@ async def update_watch_progress(
             "last_position": session.last_position,
         }
     except ValueError as e:
-        raise HTTPException(status_code=404, detail=str(e))
+        raise HTTPException(status_code=404, detail="Islem basarisiz. Lutfen tekrar deneyin.")
 
 
 @router.post("/sessions/{session_id}/pause")
@@ -177,7 +177,7 @@ async def end_watch_session(
             "watch_duration": session.watch_duration,
         }
     except ValueError as e:
-        raise HTTPException(status_code=404, detail=str(e))
+        raise HTTPException(status_code=404, detail="Islem basarisiz. Lutfen tekrar deneyin.")
 
 
 @router.get("/videos/{video_id}/engagement")
@@ -290,7 +290,7 @@ async def update_note(
             "updated_at": note.updated_at.isoformat(),
         }
     except ValueError as e:
-        raise HTTPException(status_code=404, detail=str(e))
+        raise HTTPException(status_code=404, detail="Islem basarisiz. Lutfen tekrar deneyin.")
 
 
 @router.delete("/notes/{note_id}")
@@ -430,7 +430,7 @@ async def update_bookmark(
             "updated_at": bookmark.updated_at.isoformat(),
         }
     except ValueError as e:
-        raise HTTPException(status_code=404, detail=str(e))
+        raise HTTPException(status_code=404, detail="Islem basarisiz. Lutfen tekrar deneyin.")
 
 
 @router.delete("/bookmarks/{bookmark_id}")

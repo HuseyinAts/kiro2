@@ -185,7 +185,7 @@ async def detect_questions(
         logger.error(f"Tespit hatası: {e}")
         raise HTTPException(
             status_code=500,
-            detail=f"Tespit sırasında hata oluştu: {str(e)}"
+            detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
 
 
@@ -220,7 +220,7 @@ async def detect_questions_base64(
         logger.error(f"Base64 tespit hatası: {e}")
         raise HTTPException(
             status_code=500,
-            detail=f"Tespit sırasında hata oluştu: {str(e)}"
+            detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
 
 
@@ -272,7 +272,7 @@ async def detect_questions_batch(
         logger.error(f"Toplu tespit hatası: {e}")
         raise HTTPException(
             status_code=500,
-            detail=f"Toplu tespit sırasında hata oluştu: {str(e)}"
+            detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
 
 
@@ -324,7 +324,7 @@ async def crop_questions(
         logger.error(f"Kırpma hatası: {e}")
         raise HTTPException(
             status_code=500,
-            detail=f"Kırpma sırasında hata oluştu: {str(e)}"
+            detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
 
 
@@ -344,7 +344,7 @@ async def get_model_info() -> Dict[str, Any]:
         logger.error(f"Model bilgisi hatası: {e}")
         raise HTTPException(
             status_code=500,
-            detail=f"Model bilgisi alınamadı: {str(e)}"
+            detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
 
 

@@ -179,7 +179,7 @@ async def create_question(
         logger.error(f"Soru oluşturma hatası: {e!s}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Soru oluşturma hatası: {e!s}",
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
 
 
@@ -215,7 +215,7 @@ async def bulk_create_questions(
         logger.error(f"Toplu oluşturma hatası: {e!s}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Toplu oluşturma hatası: {e!s}",
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
 
 
@@ -281,7 +281,7 @@ async def update_question(
         logger.error(f"Soru güncelleme hatası: {e!s}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Soru güncelleme hatası: {e!s}",
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
 
 
@@ -315,7 +315,7 @@ async def get_question_history(
         logger.error(f"Geçmiş getirme hatası: {e!s}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Geçmiş getirme hatası: {e!s}",
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
 
 
@@ -370,7 +370,7 @@ async def delete_question(
         logger.error(f"Soru silme hatası: {e!s}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Soru silme hatası: {e!s}",
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
 
 
@@ -411,7 +411,7 @@ async def archive_question(
         logger.error(f"Arşivleme hatası: {e!s}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Arşivleme hatası: {e!s}",
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
 
 
@@ -452,7 +452,7 @@ async def restore_question(
         logger.error(f"Geri yükleme hatası: {e!s}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Geri yükleme hatası: {e!s}",
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
 
 
@@ -495,7 +495,7 @@ async def get_archived_questions(
         logger.error(f"Arşiv listeleme hatası: {e!s}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Arşiv listeleme hatası: {e!s}",
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
 
 
@@ -672,7 +672,7 @@ async def elasticsearch_search(
         logger.error(f"Elasticsearch arama hatası: {e!s}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Elasticsearch arama hatası: {e!s}",
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
 
 
@@ -704,7 +704,7 @@ async def get_statistics(
         logger.error(f"İstatistik hatası: {e!s}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"İstatistik hatası: {e!s}",
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
 
 
@@ -808,7 +808,7 @@ async def get_random_questions(
         logger.error(f"Rastgele soru hatası: {e!s}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Rastgele soru hatası: {e!s}",
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
 
 
@@ -1132,5 +1132,5 @@ async def get_question(
         logger.error(f"Soru getirme hatası: {e!s}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Soru getirme hatası: {e!s}",
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )

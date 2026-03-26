@@ -82,7 +82,7 @@ async def create_multimodal_content(request: MultimodalContentRequest):
         )
         return content
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
 
 
 @router.post("/multimodal/{content_id}/synchronize")
@@ -131,7 +131,7 @@ async def create_animation(request: AnimationRequest):
         )
         return animation
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
 
 
 @router.get("/animations/{animation_id}/steps")
@@ -186,7 +186,7 @@ async def add_video(request: VideoRequest):
         )
         return video
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
 
 
 @router.post("/videos/{video_id}/subtitles")
@@ -234,7 +234,7 @@ async def create_vr_content(request: VRContentRequest):
         )
         return content
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
 
 
 @router.post("/ar", response_model=VRARContent)
@@ -249,7 +249,7 @@ async def create_ar_overlay(request: ARContentRequest):
         )
         return content
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
 
 
 @router.post("/vr-ar/{content_id}/interaction")

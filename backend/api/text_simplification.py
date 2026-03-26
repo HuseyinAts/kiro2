@@ -129,7 +129,7 @@ async def detect_complex_words(request: ComplexWordsRequest):
         logger.error(f"Karmaşık kelime tespiti hatası: {e}")
         raise HTTPException(
             status_code=500,
-            detail=f"Karmaşık kelime tespiti sırasında hata oluştu: {str(e)}",
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
 
 
@@ -189,7 +189,7 @@ async def simplify_text(request: SimplifyTextRequest):
         logger.error(f"Metin basitleştirme hatası: {e}")
         raise HTTPException(
             status_code=500,
-            detail=f"Metin basitleştirme sırasında hata oluştu: {str(e)}",
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
 
 
@@ -246,7 +246,7 @@ async def calculate_flesch_score(request: FleschScoreRequest):
         logger.error(f"Flesch-Kincaid skoru hesaplama hatası: {e}")
         raise HTTPException(
             status_code=500,
-            detail=f"Flesch-Kincaid skoru hesaplama sırasında hata oluştu: {str(e)}",
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
 
 

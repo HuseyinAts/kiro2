@@ -137,7 +137,7 @@ async def submit_content_for_validation(
             "content_submission_failed", error=str(e), content_id=submission.content_id
         )
         raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
 
 
@@ -198,7 +198,7 @@ async def submit_expert_feedback(
             "expert_feedback_submission_failed", error=str(e), request_id=request_id
         )
         raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
 
 
@@ -248,7 +248,7 @@ async def get_validation_status(request_id: str) -> ValidationStatusResponse:
             "get_validation_status_failed", error=str(e), request_id=request_id
         )
         raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
 
 
@@ -328,7 +328,7 @@ async def get_validation_request(request_id: str) -> Dict[str, Any]:
             "get_validation_request_failed", error=str(e), request_id=request_id
         )
         raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
 
 
@@ -386,7 +386,7 @@ async def get_compliance_report(report_id: str) -> Dict[str, Any]:
     except Exception as e:
         logger.error("get_compliance_report_failed", error=str(e), report_id=report_id)
         raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
 
 
@@ -434,7 +434,7 @@ async def register_expert(request: ExpertRegistrationRequest) -> Dict[str, Any]:
     except Exception as e:
         logger.error("expert_registration_failed", error=str(e), expert_id=request.expert_id)
         raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
 
 
@@ -475,7 +475,7 @@ async def get_pending_requests_for_expert(expert_id: str) -> Dict[str, Any]:
     except Exception as e:
         logger.error("get_pending_requests_failed", error=str(e), expert_id=expert_id)
         raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
 
 

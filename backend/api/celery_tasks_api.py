@@ -91,7 +91,7 @@ async def get_task_status(task_id: str) -> TaskStatusResponse:
         logger.error("task_status_check_failed", task_id=task_id, error=str(e))
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to get task status: {str(e)}"
+            detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
 
 
@@ -134,7 +134,7 @@ async def cancel_task(task_id: str) -> Dict[str, Any]:
         logger.error("task_cancel_failed", task_id=task_id, error=str(e))
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to cancel task: {str(e)}"
+            detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
 
 
@@ -186,7 +186,7 @@ async def list_active_tasks() -> Dict[str, Any]:
         logger.error("active_tasks_list_failed", error=str(e))
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to list active tasks: {str(e)}"
+            detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
 
 
@@ -220,5 +220,5 @@ async def get_task_stats() -> Dict[str, Any]:
         logger.error("task_stats_failed", error=str(e))
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to get task stats: {str(e)}"
+            detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
