@@ -186,6 +186,24 @@ def setup_middleware(app: FastAPI) -> None:
     )
     logger.info(f"✅ CORS middleware added (origins: {len(settings.allowed_origins)})")
 
+    # 2.5. CSRF Protection Middleware (Phase 1: /api/v1/ exempt — frontend pending)
+    try:
+        from core.csrf_protection import CSRFProtectionMiddleware
+
+        app.add_middleware(
+            CSRFProtectionMiddleware,
+            exempt_paths=[
+                "/api/v1/",  # Phase 2: remove once frontend sends X-CSRF-Token
+                "/docs",
+                "/redoc",
+                "/openapi.json",
+                "/health",
+            ],
+        )
+        logger.info("✅ CSRF protection middleware added (Phase 1: /api/v1/ exempt)")
+    except ImportError as e:
+        logger.warning(f"⚠️ CSRF middleware not available: {e}")
+
     # 3. Cache Headers Middleware (ETag, If-None-Match)
     try:
         from core.middleware.cache_headers import CacheMiddleware
