@@ -252,8 +252,8 @@ def student_profile_factory(db_session: AsyncSession, user_factory):
             user_id=user.id,
             grade_level=grade_level,
             target_exam=target_exam,
-            created_at=datetime.now(timezone.utc),
-            updated_at=datetime.now(timezone.utc),
+            created_at=datetime.now(UTC),
+            updated_at=datetime.now(UTC),
             **kwargs,
         )
 
@@ -294,14 +294,14 @@ def question_factory(db_session: AsyncSession, _test_topic):
     import uuid
     from datetime import datetime
 
-    from models.question_bank import QuestionBankItem
+    from models.question_bank import QuestionBankItem, QuestionDifficultyLevel
 
     _difficulty_map = {
-        "EASY": "EASY",
-        "MEDIUM": "MEDIUM",
-        "HARD": "HARD",
-        "VERY_EASY": "VERY_EASY",
-        "VERY_HARD": "VERY_HARD",
+        "EASY": QuestionDifficultyLevel.EASY,
+        "MEDIUM": QuestionDifficultyLevel.MEDIUM,
+        "HARD": QuestionDifficultyLevel.HARD,
+        "VERY_EASY": QuestionDifficultyLevel.VERY_EASY,
+        "VERY_HARD": QuestionDifficultyLevel.VERY_HARD,
     }
 
     async def _create_question(
@@ -323,7 +323,9 @@ def question_factory(db_session: AsyncSession, _test_topic):
             subject_area=subject_area,
             primary_topic_id=kwargs.pop("primary_topic_id", _test_topic.id),
             grade_level=kwargs.pop("grade_level", 11),
-            difficulty_level=_difficulty_map.get(difficulty, "MEDIUM"),
+            difficulty_level=_difficulty_map.get(
+                difficulty, QuestionDifficultyLevel.MEDIUM
+            ),
             irt_difficulty=0.5,
             irt_discrimination=1.0,
             irt_guessing=0.25,

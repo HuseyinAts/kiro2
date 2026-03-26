@@ -49,6 +49,8 @@ async def test_student_profile_creation(student_profile_factory, user_factory):
 @pytest.mark.asyncio
 async def test_question_creation(question_factory):
     """Test creating questions using the question_factory fixture."""
+    from models.question_bank import QuestionDifficultyLevel
+
     # Create a question
     question = await question_factory(
         question_text="What is 2+2?",
@@ -61,7 +63,7 @@ async def test_question_creation(question_factory):
     assert question.id is not None
     assert question.question_text == "What is 2+2?"
     assert question.subject_area == "MATEMATIK"
-    assert question.difficulty_level == "EASY"
+    assert question.difficulty_level == QuestionDifficultyLevel.EASY
     assert question.correct_answer == "A"
 
 
@@ -122,13 +124,19 @@ async def test_sample_user_fixture(sample_user):
 @pytest.mark.asyncio
 async def test_sample_questions_fixture(sample_questions):
     """Test using pre-created sample_questions fixture."""
+    from models.question_bank import QuestionDifficultyLevel
+
     assert len(sample_questions) == 5
 
     # Verify all questions were created
     for question in sample_questions:
         assert question.id is not None
         assert question.subject_area == "MATEMATIK"
-        assert question.difficulty_level in ["EASY", "MEDIUM", "HARD"]
+        assert question.difficulty_level in [
+            QuestionDifficultyLevel.EASY,
+            QuestionDifficultyLevel.MEDIUM,
+            QuestionDifficultyLevel.HARD,
+        ]
 
 
 @pytest.mark.integration
@@ -171,7 +179,7 @@ async def test_query_created_data(db_session, user_factory, question_factory):
     from sqlalchemy import select
 
     from models.database import User
-    from models.question_bank import QuestionBankItem
+    from models.question_bank import QuestionBankItem, QuestionDifficultyLevel
 
     # Create test data
     user = await user_factory(username="querytest")
@@ -186,7 +194,9 @@ async def test_query_created_data(db_session, user_factory, question_factory):
 
     # Query questions by difficulty_level (question_bank table)
     result = await db_session.execute(
-        select(QuestionBankItem).where(QuestionBankItem.difficulty_level == "EASY")
+        select(QuestionBankItem).where(
+            QuestionBankItem.difficulty_level == QuestionDifficultyLevel.EASY
+        )
     )
     easy_questions = result.scalars().all()
     assert len(easy_questions) >= 1
