@@ -2,11 +2,14 @@
 Example Integration Tests Using Database Fixtures
 Demonstrates how to use the PostgreSQL fixtures for integration testing
 """
+
 import pytest
 
 # Module skip: Requires 'test_engine' fixture which is not in conftest.
 # These are example/demo tests that need a real PostgreSQL database.
-pytestmark = pytest.mark.skipif(True, reason="Missing 'test_engine' fixture - example tests requiring PostgreSQL")
+pytestmark = pytest.mark.skipif(
+    True, reason="Missing 'test_engine' fixture - example tests requiring PostgreSQL"
+)
 
 
 @pytest.mark.integration
@@ -58,7 +61,7 @@ async def test_question_creation(question_factory):
     assert question.id is not None
     assert question.question_text == "What is 2+2?"
     assert question.subject_area == "MATEMATIK"
-    assert question.difficulty == "EASY"
+    assert question.difficulty_level == "EASY"
     assert question.correct_answer == "A"
 
 
@@ -69,8 +72,9 @@ async def test_database_session_rollback(db_session, user_factory):
     Test that changes are rolled back after each test.
     This test creates a user but it should not exist in the next test.
     """
-    from models.database import User
     from sqlalchemy import select
+
+    from models.database import User
 
     # Create a user
     user = await user_factory(email="rollback_test@example.com")
@@ -91,8 +95,9 @@ async def test_rollback_verification(db_session):
     Verify that the user from previous test was rolled back.
     This test should NOT find the user created in the previous test.
     """
-    from models.database import User
     from sqlalchemy import select
+
+    from models.database import User
 
     # Try to find the user from the previous test
     result = await db_session.execute(
@@ -123,15 +128,16 @@ async def test_sample_questions_fixture(sample_questions):
     for question in sample_questions:
         assert question.id is not None
         assert question.subject_area == "MATEMATIK"
-        assert question.difficulty in ["EASY", "MEDIUM", "HARD"]
+        assert question.difficulty_level in ["EASY", "MEDIUM", "HARD"]
 
 
 @pytest.mark.integration
 @pytest.mark.asyncio
 async def test_clean_database_fixture(clean_database):
     """Test the clean_database fixture that truncates all tables."""
+    from sqlalchemy import func, select
+
     from models.database import User
-    from sqlalchemy import select, func
 
     # Count users in the clean database
     result = await clean_database.execute(select(func.count(User.id)))
@@ -162,8 +168,10 @@ async def test_multiple_users_with_relationships(user_factory, student_profile_f
 @pytest.mark.asyncio
 async def test_query_created_data(db_session, user_factory, question_factory):
     """Test querying data that was created in the test."""
-    from models.database import User, Question
     from sqlalchemy import select
+
+    from models.database import User
+    from models.question_bank import QuestionBankItem
 
     # Create test data
     user = await user_factory(username="querytest")
@@ -176,9 +184,9 @@ async def test_query_created_data(db_session, user_factory, question_factory):
     assert len(users) >= 1
     assert any(u.username == "querytest" for u in users)
 
-    # Query questions by difficulty
+    # Query questions by difficulty_level (question_bank table)
     result = await db_session.execute(
-        select(Question).where(Question.difficulty == "EASY")
+        select(QuestionBankItem).where(QuestionBankItem.difficulty_level == "EASY")
     )
     easy_questions = result.scalars().all()
     assert len(easy_questions) >= 1

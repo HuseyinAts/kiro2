@@ -2,9 +2,10 @@
 PostgreSQL Test Fixtures and Database Session Management
 Provides comprehensive database fixtures for integration testing
 """
-import asyncio
+
 import os
-from typing import AsyncGenerator, Generator
+from collections.abc import AsyncGenerator
+from datetime import UTC
 
 import pytest
 import pytest_asyncio
@@ -181,9 +182,10 @@ def user_factory(db_session: AsyncSession):
                 username="testuser"
             )
     """
-    from models.database import User
-    from datetime import datetime, timezone
     import uuid
+    from datetime import datetime
+
+    from models.database import User
 
     async def _create_user(
         email: str = None,
@@ -211,8 +213,8 @@ def user_factory(db_session: AsyncSession):
             role=role,
             is_active=is_active,
             is_verified=is_verified,
-            created_at=datetime.now(timezone.utc),
-            updated_at=datetime.now(timezone.utc),
+            created_at=datetime.now(UTC),
+            updated_at=datetime.now(UTC),
             **kwargs,
         )
 
@@ -234,9 +236,10 @@ def student_profile_factory(db_session: AsyncSession, user_factory):
         async def test_student(student_profile_factory):
             profile = await student_profile_factory()
     """
-    from models.database import StudentProfile
     import uuid
     from datetime import datetime
+
+    from models.database import StudentProfile
 
     async def _create_student_profile(
         user=None, grade_level: int = 9, target_exam: str = "TYT", **kwargs
@@ -263,14 +266,43 @@ def student_profile_factory(db_session: AsyncSession, user_factory):
     return _create_student_profile
 
 
+@pytest_asyncio.fixture
+async def _test_topic(db_session: AsyncSession):
+    """Shared test topic for question_factory FK requirement."""
+    import uuid as _uuid
+
+    from models.question_bank import TopicHierarchy
+
+    topic_id = str(_uuid.uuid4())
+    topic = TopicHierarchy(
+        id=topic_id,
+        level=1,
+        code=f"TEST.{topic_id[:8]}",
+        name_tr="Test Konu",
+    )
+    db_session.add(topic)
+    await db_session.flush()
+    return topic
+
+
 @pytest.fixture
-def question_factory(db_session: AsyncSession):
+def question_factory(db_session: AsyncSession, _test_topic):
     """
-    Factory for creating test questions.
+    Factory for creating test questions in question_bank (production table).
+    Uses QuestionBankItem (77K+ production soru) instead of legacy Question (BOŞ tablo).
     """
-    from models.database import Question
     import uuid
     from datetime import datetime
+
+    from models.question_bank import QuestionBankItem
+
+    _difficulty_map = {
+        "EASY": "EASY",
+        "MEDIUM": "MEDIUM",
+        "HARD": "HARD",
+        "VERY_EASY": "VERY_EASY",
+        "VERY_HARD": "VERY_HARD",
+    }
 
     async def _create_question(
         question_text: str = "Test question?",
@@ -279,7 +311,7 @@ def question_factory(db_session: AsyncSession):
         correct_answer: str = "A",
         **kwargs,
     ):
-        question = Question(
+        question = QuestionBankItem(
             id=str(uuid.uuid4()),
             question_text=question_text,
             option_a="Option A",
@@ -289,8 +321,9 @@ def question_factory(db_session: AsyncSession):
             correct_answer=correct_answer,
             exam_type="TYT",
             subject_area=subject_area,
-            topic="Test Topic",
-            difficulty=difficulty,
+            primary_topic_id=kwargs.pop("primary_topic_id", _test_topic.id),
+            grade_level=kwargs.pop("grade_level", 11),
+            difficulty_level=_difficulty_map.get(difficulty, "MEDIUM"),
             irt_difficulty=0.5,
             irt_discrimination=1.0,
             irt_guessing=0.25,
@@ -300,8 +333,8 @@ def question_factory(db_session: AsyncSession):
             times_correct=0,
             average_response_time=0.0,
             is_active=True,
-            created_at=datetime.now(timezone.utc),
-            updated_at=datetime.now(timezone.utc),
+            created_at=datetime.now(UTC),
+            updated_at=datetime.now(UTC),
             **kwargs,
         )
 
@@ -337,7 +370,7 @@ async def sample_questions(question_factory):
     questions = []
     for i in range(5):
         q = await question_factory(
-            question_text=f"Test question {i+1}?",
+            question_text=f"Test question {i + 1}?",
             subject_area="MATEMATIK",
             difficulty=["EASY", "MEDIUM", "HARD"][i % 3],
         )

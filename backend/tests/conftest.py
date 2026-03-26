@@ -10,8 +10,8 @@ Pytest configuration and fixtures for testing
 
 import os
 import sys
-# Note: WindowsSelectorEventLoopPolicy is set in root conftest.py (before collection)
 
+# Note: WindowsSelectorEventLoopPolicy is set in root conftest.py (before collection)
 # Generator import removed - not used in this file
 from unittest.mock import AsyncMock, MagicMock, patch
 
@@ -26,7 +26,7 @@ sys.path.insert(0, os.path.dirname(backend_dir))
 # Testcontainers support - activate with USE_TESTCONTAINERS=true
 if os.getenv("USE_TESTCONTAINERS", "false").lower() == "true":
     try:
-        from conftest_testcontainers import *  # noqa: F401,F403
+        from conftest_testcontainers import *  # noqa: F403
     except ImportError:
         pass
 
@@ -69,9 +69,9 @@ import json
 os.environ["SERVER_ALLOWED_ORIGINS"] = json.dumps(
     ["http://localhost:3000", "http://localhost:5173"]
 )
-os.environ[
-    "CORS_ALLOWED_ORIGINS"
-] = "http://localhost:3000,http://localhost:5173,http://localhost:8080"
+os.environ["CORS_ALLOWED_ORIGINS"] = (
+    "http://localhost:3000,http://localhost:5173,http://localhost:8080"
+)
 
 # FIX: Security keys for testing
 if "SECRET_KEY" not in os.environ:
@@ -368,7 +368,8 @@ TEST_PASSWORD_TEACHER = generate_test_password("Teacher")
 # JWT Test Helper - Centralized Token Generation (DRY)
 # All test files should use these instead of defining their own
 # ============================================================================
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
+
 import jwt as pyjwt
 
 TEST_JWT_SECRET = "test-secret-for-unit-tests-only"
@@ -376,9 +377,7 @@ TEST_JWT_ALGORITHM = "HS256"
 
 
 def _generate_test_jwt(
-    user_id: str,
-    email: str | None = None,
-    role: str = "student"
+    user_id: str, email: str | None = None, role: str = "student"
 ) -> str:
     """Generate valid JWT token for testing.
 
@@ -399,7 +398,7 @@ def _generate_test_jwt(
         "role": role,
         "email": email,
         "permissions": [],
-        "exp": datetime.now(timezone.utc) + timedelta(hours=1),
+        "exp": datetime.now(UTC) + timedelta(hours=1),
     }
     return pyjwt.encode(payload, TEST_JWT_SECRET, algorithm=TEST_JWT_ALGORITHM)
 
@@ -468,8 +467,11 @@ def mock_health_check():
             "redis": {"status": "healthy", "latency_ms": 1},
         },
     }
-    with patch("core.comprehensive_health_check.HealthChecker.check_all",
-               new_callable=AsyncMock, return_value=health_result):
+    with patch(
+        "core.comprehensive_health_check.HealthChecker.check_all",
+        new_callable=AsyncMock,
+        return_value=health_result,
+    ):
         yield health_result
 
 
@@ -478,7 +480,7 @@ def mock_health_check():
 # Provides comprehensive database fixtures for integration testing
 # ============================================================================
 import os
-from typing import AsyncGenerator
+from collections.abc import AsyncGenerator
 
 import pytest
 import pytest_asyncio
@@ -532,14 +534,18 @@ async def setup_database(test_database_url):
     engine = create_async_engine(test_database_url, echo=False)
 
     try:
-        from models.base import Base  # noqa: F811
+        from models.base import Base
 
         async with engine.begin() as conn:
             # checkfirst=True is default but explicit for clarity
             await conn.run_sync(Base.metadata.create_all, checkfirst=True)
     except Exception as e:
         err_msg = str(e).lower()
-        if "already exists" in err_msg or "duplicatetable" in err_msg or "duplicateobject" in err_msg:
+        if (
+            "already exists" in err_msg
+            or "duplicatetable" in err_msg
+            or "duplicateobject" in err_msg
+        ):
             pass  # Tables already exist - safe to continue
         else:
             pytest.skip(f"Database setup failed: {e}")
@@ -661,9 +667,10 @@ def user_factory(db_session: AsyncSession):
                 username="testuser"
             )
     """
-    from models.database import User
-    from datetime import datetime, timezone  # TIMEZONE FIX
     import uuid
+    from datetime import datetime  # TIMEZONE FIX
+
+    from models.database import User
 
     async def _create_user(
         email: str = None,
@@ -691,8 +698,8 @@ def user_factory(db_session: AsyncSession):
             role=role,
             is_active=is_active,
             is_verified=is_verified,
-            created_at=datetime.now(timezone.utc),  # TIMEZONE FIX: deprecated utcnow()
-            updated_at=datetime.now(timezone.utc),  # TIMEZONE FIX: deprecated utcnow()
+            created_at=datetime.now(UTC),  # TIMEZONE FIX: deprecated utcnow()
+            updated_at=datetime.now(UTC),  # TIMEZONE FIX: deprecated utcnow()
             **kwargs,
         )
 
@@ -714,9 +721,10 @@ def student_profile_factory(db_session: AsyncSession, user_factory):
         async def test_student(student_profile_factory):
             profile = await student_profile_factory()
     """
-    from models.database import StudentProfile
     import uuid
-    from datetime import datetime, timezone  # TIMEZONE FIX
+    from datetime import datetime  # TIMEZONE FIX
+
+    from models.database import StudentProfile
 
     async def _create_student_profile(
         user=None, grade_level: int = 9, target_exam: str = "TYT", **kwargs
@@ -729,8 +737,8 @@ def student_profile_factory(db_session: AsyncSession, user_factory):
             user_id=user.id,
             grade_level=grade_level,
             target_exam=target_exam,
-            created_at=datetime.now(timezone.utc),  # TIMEZONE FIX: deprecated utcnow()
-            updated_at=datetime.now(timezone.utc),  # TIMEZONE FIX: deprecated utcnow()
+            created_at=datetime.now(UTC),  # TIMEZONE FIX: deprecated utcnow()
+            updated_at=datetime.now(UTC),  # TIMEZONE FIX: deprecated utcnow()
             **kwargs,
         )
 
@@ -743,14 +751,43 @@ def student_profile_factory(db_session: AsyncSession, user_factory):
     return _create_student_profile
 
 
+@pytest_asyncio.fixture
+async def _test_topic(db_session: AsyncSession):
+    """Shared test topic for question_factory FK requirement."""
+    import uuid as _uuid
+
+    from models.question_bank import TopicHierarchy
+
+    topic_id = str(_uuid.uuid4())
+    topic = TopicHierarchy(
+        id=topic_id,
+        level=1,
+        code=f"TEST.{topic_id[:8]}",
+        name_tr="Test Konu",
+    )
+    db_session.add(topic)
+    await db_session.flush()
+    return topic
+
+
 @pytest.fixture
-def question_factory(db_session: AsyncSession):
+def question_factory(db_session: AsyncSession, _test_topic):
     """
-    Factory for creating test questions.
+    Factory for creating test questions in question_bank (production table).
+    Uses QuestionBankItem (77K+ production soru) instead of legacy Question (BOŞ tablo).
     """
-    from models.database import Question
     import uuid
-    from datetime import datetime, timezone  # TIMEZONE FIX
+    from datetime import datetime
+
+    from models.question_bank import QuestionBankItem
+
+    _difficulty_map = {
+        "EASY": "EASY",
+        "MEDIUM": "MEDIUM",
+        "HARD": "HARD",
+        "VERY_EASY": "VERY_EASY",
+        "VERY_HARD": "VERY_HARD",
+    }
 
     async def _create_question(
         question_text: str = "Test question?",
@@ -759,7 +796,7 @@ def question_factory(db_session: AsyncSession):
         correct_answer: str = "A",
         **kwargs,
     ):
-        question = Question(
+        question = QuestionBankItem(
             id=str(uuid.uuid4()),
             question_text=question_text,
             option_a="Option A",
@@ -769,8 +806,9 @@ def question_factory(db_session: AsyncSession):
             correct_answer=correct_answer,
             exam_type="TYT",
             subject_area=subject_area,
-            topic="Test Topic",
-            difficulty=difficulty,
+            primary_topic_id=kwargs.pop("primary_topic_id", _test_topic.id),
+            grade_level=kwargs.pop("grade_level", 11),
+            difficulty_level=_difficulty_map.get(difficulty, "MEDIUM"),
             irt_difficulty=0.5,
             irt_discrimination=1.0,
             irt_guessing=0.25,
@@ -780,8 +818,8 @@ def question_factory(db_session: AsyncSession):
             times_correct=0,
             average_response_time=0.0,
             is_active=True,
-            created_at=datetime.now(timezone.utc),  # TIMEZONE FIX: deprecated utcnow()
-            updated_at=datetime.now(timezone.utc),  # TIMEZONE FIX: deprecated utcnow()
+            created_at=datetime.now(UTC),
+            updated_at=datetime.now(UTC),
             **kwargs,
         )
 
@@ -817,7 +855,7 @@ async def sample_questions(question_factory):
     questions = []
     for i in range(5):
         q = await question_factory(
-            question_text=f"Test question {i+1}?",
+            question_text=f"Test question {i + 1}?",
             subject_area="MATEMATIK",
             difficulty=["EASY", "MEDIUM", "HARD"][i % 3],
         )
@@ -949,12 +987,16 @@ def capture_logs(caplog):
         @property
         def errors(self):
             """Get error-level messages."""
-            return [r.message for r in self._caplog.records if r.levelno >= logging.ERROR]
+            return [
+                r.message for r in self._caplog.records if r.levelno >= logging.ERROR
+            ]
 
         @property
         def warnings(self):
             """Get warning-level messages."""
-            return [r.message for r in self._caplog.records if r.levelno == logging.WARNING]
+            return [
+                r.message for r in self._caplog.records if r.levelno == logging.WARNING
+            ]
 
     caplog.set_level(logging.DEBUG)
     return LogCapture(caplog)
@@ -1031,6 +1073,7 @@ async def async_cleanup_after_test():
 
     # Run cleanup in reverse order
     import asyncio
+
     for func in reversed(cleanup_funcs):
         try:
             if asyncio.iscoroutinefunction(func):
@@ -1048,11 +1091,11 @@ async def async_cleanup_after_test():
 # Import test helpers fixtures for global availability
 try:
     from tests.utils.test_helpers import (
-        fake_db,
         fake_cache,
+        fake_db,
         fake_http,
-        user_builder,
         question_builder,
+        user_builder,
     )
 except ImportError:
     pass  # test_helpers module is optional
