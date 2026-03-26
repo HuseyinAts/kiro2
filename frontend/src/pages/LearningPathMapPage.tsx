@@ -60,11 +60,9 @@ export default function LearningPathMapPage() {
   const [goalSaved, setGoalSaved] = useState(false);
 
   useEffect(() => {
-    const token = localStorage.getItem('access_token');
-    const headers = { Authorization: `Bearer ${token}` };
     Promise.all([
-      fetch(`${API}/weekly`, { headers }).then(r => r.json()),
-      fetch(`${API}/status`, { headers }).then(r => r.json()),
+      fetch(`${API}/weekly`, { credentials: 'include' }).then(r => { if (!r.ok) throw new Error(`HTTP ${r.status}`); return r.json(); }),
+      fetch(`${API}/status`, { credentials: 'include' }).then(r => { if (!r.ok) throw new Error(`HTTP ${r.status}`); return r.json(); }),
     ]).then(([weekData, statusData]) => {
       if (weekData.weekly_plan) { setWeekly(weekData.weekly_plan); setExamDate(weekData.exam_date); }
       if (Array.isArray(statusData)) setStatuses(statusData);
@@ -72,14 +70,19 @@ export default function LearningPathMapPage() {
   }, []);
 
   const saveGoal = async () => {
-    const token = localStorage.getItem('access_token');
-    await fetch(`${API}/goal`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-      body: JSON.stringify(goalForm),
-    });
-    setGoalSaved(true);
-    setTimeout(() => setGoalSaved(false), 3000);
+    try {
+      const r = await fetch(`${API}/goal`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify(goalForm),
+      });
+      if (!r.ok) throw new Error(`HTTP ${r.status}`);
+      setGoalSaved(true);
+      setTimeout(() => setGoalSaved(false), 3000);
+    } catch {
+      setGoalSaved(false);
+    }
   };
 
   const sorted = [...statuses].sort((a, b) => b.priority_score - a.priority_score);

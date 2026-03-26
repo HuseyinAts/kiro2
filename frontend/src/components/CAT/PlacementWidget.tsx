@@ -37,7 +37,7 @@ export function PlacementWidget({
     if (phase === 'complete' && finalResult && onComplete) {
       onComplete({ theta: finalResult.theta_final, level: finalResult.level, level_label: finalResult.level_label });
     }
-  }, [phase]);
+  }, [phase, finalResult, onComplete]);
 
   // ── IDLE ──────────────────────────────────────────────────────────────────
   if (phase === 'idle') {

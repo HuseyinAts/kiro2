@@ -38,11 +38,11 @@ export function QuestionCard({
     onAnswer(key, Date.now() - startTime.current);
   };
 
-  const getColor = (key: string): 'default' | 'success' | 'error' | 'primary' => {
-    if (!feedback) return selected === key ? 'primary' : 'default';
+  const getColor = (key: string): 'inherit' | 'success' | 'error' | 'primary' => {
+    if (!feedback) return selected === key ? 'primary' : 'inherit';
     if (key === feedback.correct_option) return 'success';
     if (key === feedback.selected && !feedback.is_correct) return 'error';
-    return 'default';
+    return 'inherit';
   };
 
   const progress = totalQuestions && questionNumber ? (questionNumber / totalQuestions) * 100 : 0;
@@ -62,7 +62,7 @@ export function QuestionCard({
               {phase && (
                 <Chip size="small"
                   label={phase === 'warm_up' ? '🔥 Isınma' : '🎯 Ana Test'}
-                  color={phase === 'warm_up' ? 'default' : 'primary'}
+                  color={phase === 'warm_up' ? 'info' : 'primary'}
                   variant="outlined"
                 />
               )}
@@ -86,7 +86,7 @@ export function QuestionCard({
             <Button
               key={key}
               variant={isSelected ? 'contained' : 'outlined'}
-              color={color as any}
+              color={color}
               onClick={() => handleSelect(key)}
               disabled={disabled || !!selected}
               fullWidth

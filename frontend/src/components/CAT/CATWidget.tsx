@@ -31,7 +31,7 @@ export function CATWidget({ subjectId, subjectName = 'Ders', token, onComplete }
     if (phase === 'complete' && session && onComplete) {
       onComplete(session.theta, session.se, session.n_questions);
     }
-  }, [phase]);
+  }, [phase, session, onComplete]);
 
   // ── IDLE ──────────────────────────────────────────────────────────────────
   if (phase === 'idle') {

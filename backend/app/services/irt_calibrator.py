@@ -282,15 +282,9 @@ def _ctt_fallback(response_vector: np.ndarray) -> tuple[float, float, float]:
     z_p = stats.norm.ppf(p)
     phi_z = stats.norm.pdf(z_p)
     # Point-biserial r hesabı: total score proxy olarak yanıtlar kullanılır
-    # (tek madde için diğer maddelerin skoru lazım — burada basit proxy)
-    score_proxy = valid
-    _mean_total = score_proxy.mean()
-    std_total = score_proxy.std()
-    if std_total < 1e-9:
-        r_pbis = 0.3  # default
-    else:
-        r_pbis = float(np.corrcoef(valid, score_proxy)[0, 1])
-        r_pbis = np.clip(abs(r_pbis), 0.1, 0.9)
+    # (tek madde için diğer maddelerin skoru lazım — CTT r_pbis=1.0 tuzağı)
+    # valid == score_proxy olduğunda corrcoef daima 1.0 döner → sabit kullan
+    r_pbis = 0.5  # CTT tek-madde proxy — gerçek r_pbis çoklu madde gerektirir
 
     a = r_pbis * math.sqrt(p * (1 - p)) / (phi_z + 1e-9)
     a = float(np.clip(a, *A_BOUNDS))

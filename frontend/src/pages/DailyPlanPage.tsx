@@ -71,12 +71,9 @@ export default function DailyPlanPage() {
   const [activeTab, setActiveTab] = useState<'plan' | 'status'>('plan');
 
   useEffect(() => {
-    const token = localStorage.getItem('access_token');
-    const headers = { Authorization: `Bearer ${token}` };
-
     Promise.all([
-      fetch(`${API}/today`, { headers }).then(r => r.json()),
-      fetch(`${API}/status`, { headers }).then(r => r.json()),
+      fetch(`${API}/today`, { credentials: 'include' }).then(r => { if (!r.ok) throw new Error(`HTTP ${r.status}`); return r.json(); }),
+      fetch(`${API}/status`, { credentials: 'include' }).then(r => { if (!r.ok) throw new Error(`HTTP ${r.status}`); return r.json(); }),
     ])
       .then(([planData, statusData]) => {
         if (planData.detail) setError(planData.detail);

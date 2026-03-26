@@ -38,10 +38,9 @@ export default function ParentDashboardNew() {
   const [error, setError] = useState('');
 
   useEffect(() => {
-    const token = localStorage.getItem('access_token');
-    const h = { Authorization: `Bearer ${token}` };
+    const opts = { credentials: 'include' as RequestCredentials };
 
-    fetch('/api/v1/veli/cocuklar', { headers: h })
+    fetch('/api/v1/veli/cocuklar', opts)
       .then(r => r.ok ? r.json() : [])
       .then(async (data: any[]) => {
         if (!Array.isArray(data) || data.length === 0) {
@@ -49,15 +48,9 @@ export default function ParentDashboardNew() {
         }
         const enriched: ChildSummary[] = await Promise.all(
           data.map(async (child) => {
-        const [sRes, pRes, eRes] = await Promise.all([
-              fetch(`/api/v1/learning-path/status`, { headers: h }),
-              fetch(`/api/v1/learning-path/today`, { headers: h }),
-              fetch(`/api/v1/veli/cocuk/${child.id}/performans`, { headers: h }),
-            ]);
-            const statuses = sRes.ok ? await sRes.json() : [];
-            const plan     = pRes.ok ? await pRes.json() : null;
+            const eRes = await fetch(`/api/v1/veli/cocuk/${child.id}/performans`, opts);
             const estimate = eRes.ok ? await eRes.json() : null;
-            return { ...child, statuses: Array.isArray(statuses) ? statuses : [], plan, estimate };
+            return { ...child, statuses: [], plan: null, estimate };
           })
         );
         setChildren(enriched);

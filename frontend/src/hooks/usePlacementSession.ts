@@ -4,7 +4,7 @@
  */
 import { useState, useCallback } from 'react';
 
-const API = 'http://localhost:8000';
+const API = '';
 
 export interface PlacementQuestion {
   question_id: string;

@@ -253,7 +253,7 @@ class CATSessionService:
             """)
 
         params = (
-            {"subject_id": subject_id, "b_max": theta - 1.0}
+            {"subject_id": subject_id, "b_max": max(theta - 1.0, -0.5)}
             if warm_up
             else {
                 "subject_id": subject_id,
@@ -609,7 +609,7 @@ class CATSessionService:
         started_dt = (
             datetime.fromisoformat(state.started_at)
             if isinstance(state.started_at, str) and state.started_at
-            else datetime.utcnow()
+            else datetime.now(UTC)
         )
         await self.db.execute(
             stmt,
