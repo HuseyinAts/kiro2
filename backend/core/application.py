@@ -10,9 +10,10 @@ from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
 from typing import Any
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.openapi.utils import get_openapi
+from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 
 from agents import initialize_agents, shutdown_agents
@@ -239,6 +240,21 @@ def create_app() -> FastAPI:
 
     # Setup rate limiting
     setup_rate_limiting(app)
+
+    # Global catch-all exception handler (prevent internal detail leaks)
+    @app.exception_handler(Exception)
+    async def _unhandled_exception_handler(request: Request, exc: Exception):
+        logger.error(
+            "Unhandled exception on %s %s: %s",
+            request.method,
+            request.url.path,
+            exc,
+            exc_info=True,
+        )
+        return JSONResponse(
+            status_code=500,
+            content={"detail": "Dahili sunucu hatasi"},
+        )
 
     # Setup routers
     setup_routers(app)
