@@ -23,6 +23,7 @@ export interface CATSessionState {
   n_questions: number;
   phase: string;
   is_complete: boolean;
+  subject_id?: string;  // CAT başlatılırken set edilir
 }
 
 export interface CATResult {
@@ -63,7 +64,7 @@ export function useCATSession(token?: string | null) {
         throw new Error(err.detail || `HTTP ${res.status}`);
       }
       const data: CATSessionState = await res.json();
-      setSession(data);
+      setSession({ ...data, subject_id });  // subject_id'yi sakla
       setPhase('active');
     } catch (e) {
       setError(e instanceof Error ? e.message : 'CAT başlatılamadı');
@@ -89,11 +90,16 @@ export function useCATSession(token?: string | null) {
         const err = await res.json().catch(() => ({}));
         throw new Error(err.detail || `HTTP ${res.status}`);
       }
-      const result: CATResult = await res.json();
+      const result: CATResult & { plan_refresh_needed?: boolean } = await res.json();
       setLastResult(result);
       if (result.is_complete) {
         setPhase('complete');
         setSession(prev => prev ? { ...prev, theta: result.theta, se: result.se, is_complete: true } : null);
+        // CAT bitti → daily-plan sayfasını yenile (backend'den plan_refresh_needed: true gelir)
+        if (result.plan_refresh_needed) {
+          // React Query cache'ini invalidate et veya navigasyon ile yenile
+          window.dispatchEvent(new CustomEvent('cat-complete', { detail: { theta: result.theta, subject: session?.subject_id } }));
+        }
       } else if (result.next_question) {
         setSession(prev => prev ? {
           ...prev,

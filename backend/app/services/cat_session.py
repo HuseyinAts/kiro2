@@ -510,6 +510,7 @@ class CATSessionService:
                 "next_question": None,
                 "phase": "completed",
                 "feedback": {"is_correct": is_correct},
+                "plan_refresh_needed": True,  # Frontend bunu gorünce /daily-plan yeniler
             }
 
         # 5b. Sonraki soruyu seç

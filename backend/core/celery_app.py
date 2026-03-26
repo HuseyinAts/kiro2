@@ -33,6 +33,7 @@ celery_app = Celery(
         "tasks.mega_feature_tasks",
         "tasks.social_tasks",
         "app.tasks.calibration_task",  # IRT 3PL kalibrasyon
+        "tasks.daily_plan_tasks",      # Günlük plan yenileme
     ],
 )
 
@@ -173,6 +174,11 @@ celery_app.conf.update(
         "social-oba-challenge-expiry": {
             "task": "tasks.social_tasks.expire_oba_challenges",
             "schedule": crontab(hour=0, minute=10),
+        },
+        # LEARNING PATH: Daily plan refresh (every day at 02:00)
+        "refresh-daily-plans": {
+            "task": "tasks.refresh_daily_plans",
+            "schedule": crontab(hour=2, minute=0),
         },
     },
 )

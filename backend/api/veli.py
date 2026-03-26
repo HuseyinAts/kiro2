@@ -6,14 +6,13 @@ CODE QUALITY FIX: Improved exception handling, added path validation
 import logging
 from datetime import datetime
 from typing import Any, Dict, List, Optional
-from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, Path, status
-from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
+from core.dependencies import get_current_user
+from fastapi.security import HTTPBearer
 
 from models import Kullanici, KullaniciRolu
 from models.dashboard import Bildirim
-from services.user_service import kullanici_servisi
 from services.veli_service import VeliOnayTalebi, VeliRaporu, veli_servisi
 
 logger = logging.getLogger(__name__)
@@ -23,25 +22,15 @@ security = HTTPBearer()
 
 
 async def mevcut_veli_getir(
-    credentials: HTTPAuthorizationCredentials = Depends(security),
-) -> Kullanici:
-    """Mevcut veliyi token'dan getir ve yetki kontrolü yap"""
-    token = credentials.credentials
-    kullanici = await kullanici_servisi.token_dogrula(token)
-
-    if not kullanici:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Geçersiz veya süresi dolmuş token",
-        )
-
-    if kullanici.rol != KullaniciRolu.VELI:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Bu işlem için veli yetkisi gerekli",
-        )
-
-    return kullanici
+    current_user=Depends(get_current_user),
+):
+    r = getattr(current_user, "role", None)
+    role = (r.value if hasattr(r, "value") else str(r)).upper()
+    if role not in ("PARENT", "ADMIN", "SUPER_ADMIN"):
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Bu islem icin veli yetkisi gerekli")
+    current_user.kullanici_id = str(getattr(current_user, "id", ""))
+    current_user.rol = KullaniciRolu.VELI
+    return current_user
 
 
 @router.get("/cocuklar", response_model=List[Dict[str, Any]], summary="Çocuk Listesi")
