@@ -2,6 +2,7 @@
 Kimlik doğrulama API endpoint'leri (Task 48.4: Enhanced with Refresh Token)
 SECURITY FIX: Authorization checks added to prevent IDOR attacks
 """
+
 import logging
 import secrets
 import time
@@ -38,6 +39,17 @@ from services.user_service import kullanici_servisi
 
 # Cookie path constants (must match between set and delete)
 ACCESS_TOKEN_COOKIE_PATH = "/api"  # noqa: S105
+
+
+class TwoFactorRequired(Exception):
+    """Raised when 2FA verification is needed before issuing tokens."""
+
+    def __init__(self, user_id: str, email: str):
+        self.user_id = user_id
+        self.email = email
+        super().__init__("2FA verification required")
+
+
 REFRESH_TOKEN_COOKIE_PATH = "/api/v1/auth"  # noqa: S105
 
 # Computed once at module import
@@ -87,6 +99,7 @@ def _record_failed_login(request: Request) -> None:
     """Record a failed login attempt for rate limiting."""
     client_ip = _get_client_ip(request)
     _login_attempts[client_ip].append(time.time())
+
 
 @contextmanager
 def _sync_session(db: AsyncSession):
@@ -139,6 +152,7 @@ security = HTTPBearer()
 
 class RefreshTokenRequest(BaseModel):
     """Refresh token request model - accepts refreshToken in body"""
+
     refreshToken: str | None = None  # noqa: N815 (frontend contract)
 
 
@@ -212,7 +226,8 @@ async def mevcut_kullanici_getir(
 
 
 async def database_authenticate(
-    giris_data: KullaniciGiris, db: AsyncSession,
+    giris_data: KullaniciGiris,
+    db: AsyncSession,
 ) -> dict[str, Any]:
     """
     Database-backed authentication function
@@ -235,6 +250,10 @@ async def database_authenticate(
         raise ValueError("Şifre alanı boş olamaz")
     if not pwd_context.verify(password, db_user.password_hash):
         raise ValueError("Geçersiz e-posta veya şifre")
+
+    # 2FA gate: if user has 2FA enabled, don't issue tokens yet
+    if getattr(db_user, "is_2fa_enabled", False) and db_user.secret_2fa:
+        raise TwoFactorRequired(user_id=str(db_user.id), email=db_user.email)
 
     # Create JWT tokens (P0-1 fix: replaces random tokens)
     jwt_mgr = get_jwt_manager()
@@ -259,7 +278,11 @@ async def database_authenticate(
         sync_db = SyncSession(bind=db.bind.sync_engine)
         try:
             jwt_mgr._save_refresh_token_to_db(
-                sync_db, refresh_token, str(db_user.id), None, None,
+                sync_db,
+                refresh_token,
+                str(db_user.id),
+                None,
+                None,
             )
             sync_db.commit()
         except Exception:
@@ -306,12 +329,10 @@ async def database_authenticate(
             "rol": frontend_role,
             "aktif": db_user.is_active,
             "olusturma_tarihi": (
-                db_user.created_at.isoformat()
-                if db_user.created_at else None
+                db_user.created_at.isoformat() if db_user.created_at else None
             ),
             "son_giris": (
-                db_user.last_login.isoformat()
-                if db_user.last_login else None
+                db_user.last_login.isoformat() if db_user.last_login else None
             ),
             "telefon": db_user.phone or "",
             "profil_resmi": None,  # TODO: Add profile image support
@@ -336,15 +357,14 @@ async def database_authenticate(
                 "application/json": {
                     "example": {
                         "success": True,
-                        "message": "Kullanıcı kaydı başarıyla oluşturuldu"
+                        "message": "Kullanıcı kaydı başarıyla oluşturuldu",
                     }
                 }
             },
         },
         400: {
             "description": (
-                "Geçersiz istek - E-posta zaten kayıtlı"
-                " veya doğrulama hatası"
+                "Geçersiz istek - E-posta zaten kayıtlı veya doğrulama hatası"
             ),
             "content": {
                 "application/json": {
@@ -392,13 +412,17 @@ async def kullanici_kayit(
       email, sifre, ad_soyad, rol (ogrenci/veli/ogretmen/admin)
     """
     import uuid as _uuid
+
     from sqlalchemy import text as _text
 
     # Rol eşleştirme: Türkçe → enum değeri
     ROL_MAP = {
-        "ogrenci": "STUDENT", "student": "STUDENT",
-        "veli": "PARENT",    "parent": "PARENT",
-        "ogretmen": "TEACHER","teacher": "TEACHER",
+        "ogrenci": "STUDENT",
+        "student": "STUDENT",
+        "veli": "PARENT",
+        "parent": "PARENT",
+        "ogretmen": "TEACHER",
+        "teacher": "TEACHER",
         "admin": "ADMIN",
     }
     rol_str = ROL_MAP.get(str(kullanici_data.rol).lower(), "STUDENT")
@@ -421,11 +445,12 @@ async def kullanici_kayit(
     # Ad / soyad ayır
     parts = (kullanici_data.ad_soyad or "").strip().split(" ", 1)
     first_name = parts[0] if parts else ""
-    last_name  = parts[1] if len(parts) > 1 else ""
+    last_name = parts[1] if len(parts) > 1 else ""
 
     user_id = str(_uuid.uuid4())
 
-    await db.execute(_text("""
+    await db.execute(
+        _text("""
         INSERT INTO users
             (id, email, username, password_hash, first_name, last_name,
              role, is_active, is_verified, total_xp, level,
@@ -434,16 +459,25 @@ async def kullanici_kayit(
             (:id, :email, :username, :pw_hash, :first_name, :last_name,
              CAST(:role AS userrole), TRUE, FALSE, 0, 1,
              1200, FALSE, FALSE, NOW(), NOW())
-    """), {
-        "id": user_id, "email": kullanici_data.email,
-        "username": kullanici_data.email.split("@")[0],
-        "pw_hash": pw_hash, "first_name": first_name, "last_name": last_name,
-        "role": rol_str,
-    })
+    """),
+        {
+            "id": user_id,
+            "email": kullanici_data.email,
+            "username": kullanici_data.email.split("@")[0],
+            "pw_hash": pw_hash,
+            "first_name": first_name,
+            "last_name": last_name,
+            "role": rol_str,
+        },
+    )
     await db.commit()
 
     logger.info(f"Yeni kullanıcı kaydı: {kullanici_data.email} ({rol_str})")
-    return {"success": True, "message": "Kullanıcı kaydı başarıyla oluşturuldu", "id": user_id}
+    return {
+        "success": True,
+        "message": "Kullanıcı kaydı başarıyla oluşturuldu",
+        "id": user_id,
+    }
 
 
 # English alias for registration endpoint
@@ -591,6 +625,13 @@ async def kullanici_giris(
     try:
         # Use database-backed authentication instead of in-memory service
         return await database_authenticate(giris_data, db)
+    except TwoFactorRequired as e:
+        return {
+            "success": False,
+            "requires_2fa": True,
+            "message": "2FA doğrulaması gerekli",
+            "email": e.email,
+        }
     except ValueError as e:
         _record_failed_login(request)
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=str(e))
@@ -623,7 +664,7 @@ async def secure_login(
     request: Request,
     giris_data: KullaniciGiris,
     response: Response,
-    db: AsyncSession = Depends(get_db)
+    db: AsyncSession = Depends(get_db),
 ) -> dict[str, Any]:
     """
     SECURITY FIX #5: Secure login endpoint with httpOnly cookies
@@ -669,7 +710,15 @@ async def secure_login(
         return {
             "success": True,
             "message": "Giriş başarılı",
-            "user": token_yaniti["user"]
+            "user": token_yaniti["user"],
+        }
+    except TwoFactorRequired as e:
+        # 2FA enabled — credentials OK but TOTP verification needed
+        return {
+            "success": False,
+            "requires_2fa": True,
+            "message": "2FA doğrulaması gerekli",
+            "email": e.email,
         }
     except ValueError as e:
         _record_failed_login(request)
@@ -724,8 +773,7 @@ async def secure_refresh(
 
     if not refresh_token:
         raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Refresh token bulunamadı"
+            status_code=status.HTTP_401_UNAUTHORIZED, detail="Refresh token bulunamadı"
         )
 
     try:
@@ -787,8 +835,7 @@ async def secure_refresh(
         },
         401: {
             "description": (
-                "Kimlik doğrulama hatası"
-                " - Geçersiz veya süresi dolmuş token"
+                "Kimlik doğrulama hatası - Geçersiz veya süresi dolmuş token"
             ),
             "content": {
                 "application/json": {
@@ -860,7 +907,7 @@ async def get_current_user(
     """
     # Convert Kullanici model to frontend-expected format
     # Frontend expects User interface with ad, soyad (split name)
-    name_parts = mevcut_kullanici.ad_soyad.split(' ', 1)
+    name_parts = mevcut_kullanici.ad_soyad.split(" ", 1)
     ad = name_parts[0] if len(name_parts) > 0 else ""
     soyad = name_parts[1] if len(name_parts) > 1 else ""
 
@@ -884,11 +931,13 @@ async def get_current_user(
             "aktif": mevcut_kullanici.aktif,
             "olusturma_tarihi": (
                 mevcut_kullanici.olusturma_tarihi.isoformat()
-                if mevcut_kullanici.olusturma_tarihi else None
+                if mevcut_kullanici.olusturma_tarihi
+                else None
             ),
             "son_giris": (
                 mevcut_kullanici.son_giris.isoformat()
-                if mevcut_kullanici.son_giris else None
+                if mevcut_kullanici.son_giris
+                else None
             ),
             "telefon": mevcut_kullanici.telefon or "",
             "profil_resmi": None,  # TODO: Add profile image support
@@ -904,18 +953,12 @@ async def get_current_user(
         200: {
             "description": "Basarili cikis",
             "content": {
-                "application/json": {
-                    "example": {"message": "Basariyla cikis yapildi"}
-                }
+                "application/json": {"example": {"message": "Basariyla cikis yapildi"}}
             },
         },
         400: {
             "description": "Gecersiz token",
-            "content": {
-                "application/json": {
-                    "example": {"detail": "Gecersiz token"}
-                }
-            },
+            "content": {"application/json": {"example": {"detail": "Gecersiz token"}}},
         },
         401: {
             "description": "Yetkilendirme hatasi",
@@ -950,8 +993,6 @@ async def kullanici_cikis(
     # Blacklist token in Redis (P0-1e: Redis-backed with in-memory fallback)
     jwt_mgr = get_jwt_manager()
     await jwt_mgr.blacklist_token_async(token)
-
-
 
     return {"message": "Başarıyla çıkış yapıldı"}
 
@@ -1015,12 +1056,14 @@ async def validate_token(request: Request) -> dict[str, bool]:
 
 class ChangePasswordRequest(BaseModel):
     """Change password request model"""
+
     currentPassword: str  # noqa: N815 (frontend contract)
     newPassword: str  # noqa: N815 (frontend contract)
 
 
 class RevokeDeviceRequest(BaseModel):
     """Revoke device request model"""
+
     device_id: str
 
 
@@ -1072,6 +1115,7 @@ async def change_password(
 
 class ForgotPasswordRequest(BaseModel):
     """Forgot password request model"""
+
     email: str
 
 
@@ -1125,8 +1169,11 @@ async def forgot_password(
 
         # Clean up expired tokens
         current_time = datetime.now(UTC)
-        expired = [k for k, v in _password_reset_tokens.items()
-                   if v["expires_at"] < current_time]
+        expired = [
+            k
+            for k, v in _password_reset_tokens.items()
+            if v["expires_at"] < current_time
+        ]
         for k in expired:
             del _password_reset_tokens[k]
 
@@ -1141,6 +1188,7 @@ async def forgot_password(
 
 class ResetPasswordRequest(BaseModel):
     """Reset password request model"""
+
     token: str
     newPassword: str  # noqa: N815 (frontend contract)
 
@@ -1255,8 +1303,10 @@ async def update_profile(
 
         # Map role
         role_mapping = {
-            "STUDENT": "ogrenci", "TEACHER": "ogretmen",
-            "PARENT": "veli", "ADMIN": "admin",
+            "STUDENT": "ogrenci",
+            "TEACHER": "ogretmen",
+            "PARENT": "veli",
+            "ADMIN": "admin",
             "SUPER_ADMIN": "super_admin",
         }
         rol = role_mapping.get(db_user.role.value, "ogrenci")
@@ -1271,16 +1321,14 @@ async def update_profile(
                 "rol": rol,
                 "aktif": db_user.is_active,
                 "olusturma_tarihi": (
-                    db_user.created_at.isoformat()
-                    if db_user.created_at else None
+                    db_user.created_at.isoformat() if db_user.created_at else None
                 ),
                 "son_giris": (
-                    db_user.last_login.isoformat()
-                    if db_user.last_login else None
+                    db_user.last_login.isoformat() if db_user.last_login else None
                 ),
                 "telefon": getattr(db_user, "phone", "") or "",
                 "profil_resmi": None,
-            }
+            },
         }
     except Exception:
         await db.rollback()
@@ -1292,8 +1340,7 @@ async def update_profile(
     response_model=OgrenciProfili,
     summary="Ogrenci Profili Olustur",
     description=(
-        "Yeni ogrenci profili olusturma"
-        " - hedef sinav, konu tercihleri ve ogrenme stili"
+        "Yeni ogrenci profili olusturma - hedef sinav, konu tercihleri ve ogrenme stili"
     ),
     responses={
         200: {"description": "Ogrenci profili basariyla olusturuldu"},
@@ -1329,8 +1376,7 @@ async def ogrenci_profil_olustur(
         401: {"description": "Yetkilendirme hatasi"},
         403: {
             "description": (
-                "Erisim engellendi"
-                " - sadece kendi profilinizi gorebilirsiniz"
+                "Erisim engellendi - sadece kendi profilinizi gorebilirsiniz"
             ),
         },
         404: {"description": "Ogrenci profili bulunamadi"},

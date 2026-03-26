@@ -4,16 +4,16 @@ PHASE 2 Sprint 4: Security Hardening
 
 Implements TOTP-based 2FA with QR code setup and backup codes
 """
-from typing import List
-from fastapi import APIRouter, Depends, HTTPException, status
+
+from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
 from pydantic import BaseModel
-from sqlalchemy import update
+from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.database import get_db
-from core.two_factor_auth import two_factor_auth
 from core.jwt_auth import get_current_user
 from core.structured_logger import get_logger
+from core.two_factor_auth import two_factor_auth
 from models.database import User
 
 logger = get_logger(__name__)
@@ -24,23 +24,27 @@ router = APIRouter(prefix="/api/v1/auth/2fa", tags=["2FA Authentication"])
 # Request/Response Models
 class TwoFactorSetupResponse(BaseModel):
     """2FA setup response with QR code"""
+
     secret: str
     qr_code: str  # Base64 encoded PNG
-    backup_codes: List[str]
+    backup_codes: list[str]
 
 
 class TwoFactorVerifyRequest(BaseModel):
     """Request to verify TOTP token"""
+
     token: str
 
 
 class TwoFactorEnableRequest(BaseModel):
     """Request to enable 2FA"""
+
     token: str  # Verification token
 
 
 class BackupCodeVerifyRequest(BaseModel):
     """Request to verify backup code"""
+
     code: str
 
 
@@ -64,7 +68,7 @@ async def setup_2fa(
         if current_user.is_2fa_enabled:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail="2FA is already enabled for this account"
+                detail="2FA is already enabled for this account",
             )
 
         # Generate new secret
@@ -72,9 +76,7 @@ async def setup_2fa(
 
         # Generate QR code
         qr_code = two_factor_auth.generate_qr_code(
-            secret=secret,
-            user_email=current_user.email,
-            issuer="Kiro2 Egitim"
+            secret=secret, user_email=current_user.email, issuer="Kiro2 Egitim"
         )
 
         # Generate backup codes
@@ -85,24 +87,17 @@ async def setup_2fa(
         stmt = (
             update(User)
             .where(User.id == current_user.id)
-            .values(
-                secret_2fa=secret,
-                backup_codes_hashed={"codes": hashed_codes}
-            )
+            .values(secret_2fa=secret, backup_codes_hashed={"codes": hashed_codes})
         )
         await db.execute(stmt)
         await db.commit()
 
         logger.info(
-            "2fa_setup_initiated",
-            user_id=current_user.id,
-            email=current_user.email
+            "2fa_setup_initiated", user_id=current_user.id, email=current_user.email
         )
 
         return TwoFactorSetupResponse(
-            secret=secret,
-            qr_code=qr_code,
-            backup_codes=backup_codes
+            secret=secret, qr_code=qr_code, backup_codes=backup_codes
         )
 
     except HTTPException:
@@ -111,7 +106,7 @@ async def setup_2fa(
         logger.error("2fa_setup_error", user_id=current_user.id, error=str(e))
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to setup 2FA"
+            detail="Failed to setup 2FA",
         )
 
 
@@ -133,38 +128,31 @@ async def enable_2fa(
         # Check if already enabled
         if current_user.is_2fa_enabled:
             raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="2FA is already enabled"
+                status_code=status.HTTP_400_BAD_REQUEST, detail="2FA is already enabled"
             )
 
         # Check if secret exists
         if not current_user.secret_2fa:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail="2FA setup not initiated. Call /setup first"
+                detail="2FA setup not initiated. Call /setup first",
             )
 
         # Verify token
         is_valid = two_factor_auth.verify_token(
-            secret=current_user.secret_2fa,
-            token=request.token
+            secret=current_user.secret_2fa, token=request.token
         )
 
         if not is_valid:
-            logger.warning(
-                "2fa_enable_failed_invalid_token",
-                user_id=current_user.id
-            )
+            logger.warning("2fa_enable_failed_invalid_token", user_id=current_user.id)
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Invalid verification token"
+                detail="Invalid verification token",
             )
 
         # Enable 2FA
         stmt = (
-            update(User)
-            .where(User.id == current_user.id)
-            .values(is_2fa_enabled=True)
+            update(User).where(User.id == current_user.id).values(is_2fa_enabled=True)
         )
         await db.execute(stmt)
         await db.commit()
@@ -174,7 +162,7 @@ async def enable_2fa(
         return {
             "success": True,
             "message": "2FA enabled successfully",
-            "is_2fa_enabled": True
+            "is_2fa_enabled": True,
         }
 
     except HTTPException:
@@ -183,7 +171,7 @@ async def enable_2fa(
         logger.error("2fa_enable_error", user_id=current_user.id, error=str(e))
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to enable 2FA"
+            detail="Failed to enable 2FA",
         )
 
 
@@ -202,35 +190,26 @@ async def disable_2fa(
         # Check if 2FA is enabled
         if not current_user.is_2fa_enabled:
             raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="2FA is not enabled"
+                status_code=status.HTTP_400_BAD_REQUEST, detail="2FA is not enabled"
             )
 
         # Verify token before disabling
         is_valid = two_factor_auth.verify_token(
-            secret=current_user.secret_2fa,
-            token=request.token
+            secret=current_user.secret_2fa, token=request.token
         )
 
         if not is_valid:
-            logger.warning(
-                "2fa_disable_failed_invalid_token",
-                user_id=current_user.id
-            )
+            logger.warning("2fa_disable_failed_invalid_token", user_id=current_user.id)
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Invalid verification token"
+                detail="Invalid verification token",
             )
 
         # Disable 2FA and clear secret
         stmt = (
             update(User)
             .where(User.id == current_user.id)
-            .values(
-                is_2fa_enabled=False,
-                secret_2fa=None,
-                backup_codes_hashed=None
-            )
+            .values(is_2fa_enabled=False, secret_2fa=None, backup_codes_hashed=None)
         )
         await db.execute(stmt)
         await db.commit()
@@ -240,7 +219,7 @@ async def disable_2fa(
         return {
             "success": True,
             "message": "2FA disabled successfully",
-            "is_2fa_enabled": False
+            "is_2fa_enabled": False,
         }
 
     except HTTPException:
@@ -249,7 +228,7 @@ async def disable_2fa(
         logger.error("2fa_disable_error", user_id=current_user.id, error=str(e))
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to disable 2FA"
+            detail="Failed to disable 2FA",
         )
 
 
@@ -267,17 +246,16 @@ async def verify_2fa_token(
         if not current_user.is_2fa_enabled or not current_user.secret_2fa:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail="2FA is not enabled for this account"
+                detail="2FA is not enabled for this account",
             )
 
         is_valid = two_factor_auth.verify_token(
-            secret=current_user.secret_2fa,
-            token=request.token
+            secret=current_user.secret_2fa, token=request.token
         )
 
         return {
             "valid": is_valid,
-            "message": "Token is valid" if is_valid else "Token is invalid"
+            "message": "Token is valid" if is_valid else "Token is invalid",
         }
 
     except HTTPException:
@@ -286,7 +264,7 @@ async def verify_2fa_token(
         logger.error("2fa_verify_error", user_id=current_user.id, error=str(e))
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to verify token"
+            detail="Failed to verify token",
         )
 
 
@@ -305,14 +283,13 @@ async def verify_backup_code(
     try:
         if not current_user.is_2fa_enabled:
             raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="2FA is not enabled"
+                status_code=status.HTTP_400_BAD_REQUEST, detail="2FA is not enabled"
             )
 
         if not current_user.backup_codes_hashed:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail="No backup codes available"
+                detail="No backup codes available",
             )
 
         hashed_codes = current_user.backup_codes_hashed.get("codes", [])
@@ -320,17 +297,13 @@ async def verify_backup_code(
         # Verify code
         is_valid, matched_hash = two_factor_auth.verify_backup_code(
             code=request.code.upper(),  # Normalize to uppercase
-            hashed_codes=hashed_codes
+            hashed_codes=hashed_codes,
         )
 
         if not is_valid:
-            logger.warning(
-                "2fa_backup_code_invalid",
-                user_id=current_user.id
-            )
+            logger.warning("2fa_backup_code_invalid", user_id=current_user.id)
             raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Invalid backup code"
+                status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid backup code"
             )
 
         # Remove used code (single-use)
@@ -347,14 +320,14 @@ async def verify_backup_code(
         logger.info(
             "2fa_backup_code_used",
             user_id=current_user.id,
-            remaining_codes=len(hashed_codes)
+            remaining_codes=len(hashed_codes),
         )
 
         return {
             "success": True,
             "valid": True,
             "message": "Backup code verified successfully",
-            "remaining_codes": len(hashed_codes)
+            "remaining_codes": len(hashed_codes),
         }
 
     except HTTPException:
@@ -363,7 +336,7 @@ async def verify_backup_code(
         logger.error("2fa_backup_verify_error", user_id=current_user.id, error=str(e))
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to verify backup code"
+            detail="Failed to verify backup code",
         )
 
 
@@ -381,7 +354,7 @@ async def get_2fa_status(
     return {
         "is_2fa_enabled": current_user.is_2fa_enabled,
         "has_secret": bool(current_user.secret_2fa),
-        "backup_codes_remaining": backup_codes_count
+        "backup_codes_remaining": backup_codes_count,
     }
 
 
@@ -399,7 +372,7 @@ async def regenerate_backup_codes(
         if not current_user.is_2fa_enabled:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail="2FA must be enabled to generate backup codes"
+                detail="2FA must be enabled to generate backup codes",
             )
 
         # Generate new backup codes
@@ -420,17 +393,268 @@ async def regenerate_backup_codes(
         return {
             "success": True,
             "backup_codes": backup_codes,
-            "message": "New backup codes generated. Save these securely!"
+            "message": "New backup codes generated. Save these securely!",
         }
 
     except HTTPException:
         raise
     except Exception as e:
-        logger.error("2fa_backup_regenerate_error", user_id=current_user.id, error=str(e))
+        logger.error(
+            "2fa_backup_regenerate_error", user_id=current_user.id, error=str(e)
+        )
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to regenerate backup codes"
+            detail="Failed to regenerate backup codes",
         )
+
+
+# ── Login-time 2FA verification ──────────────────────────────────
+
+
+class TwoFactorLoginRequest(BaseModel):
+    """Complete login with 2FA TOTP code."""
+
+    email: str
+    password: str
+    totp_code: str
+
+
+class TwoFactorBackupLoginRequest(BaseModel):
+    """Complete login with 2FA backup code."""
+
+    email: str
+    password: str
+    backup_code: str
+
+
+@router.post("/login-verify", summary="Complete login with TOTP code")
+async def login_verify_2fa(
+    body: TwoFactorLoginRequest,
+    request: Request,
+    response: Response,
+    db: AsyncSession = Depends(get_db),
+):
+    """
+    Second step of 2FA login flow.
+
+    After /login/secure returns requires_2fa=true, the client calls this
+    endpoint with email + password + TOTP code. If valid, httpOnly cookies
+    are set and user info is returned.
+    """
+    from datetime import UTC, datetime
+
+    from passlib.context import CryptContext
+
+    from core.config import settings as app_settings
+    from core.jwt_auth import UserRole as JWTUserRole
+    from core.jwt_auth import get_jwt_manager
+
+    pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
+    # Re-authenticate credentials (never trust client-side state)
+    result = await db.execute(select(User).where(User.email == body.email))
+    db_user = result.scalar_one_or_none()
+
+    if not db_user or not db_user.is_active:
+        raise HTTPException(status_code=401, detail="Geçersiz kimlik bilgileri")
+
+    if not pwd_context.verify(body.password, db_user.password_hash):
+        raise HTTPException(status_code=401, detail="Geçersiz kimlik bilgileri")
+
+    if not db_user.is_2fa_enabled or not db_user.secret_2fa:
+        raise HTTPException(status_code=400, detail="2FA bu hesapta aktif değil")
+
+    # Verify TOTP
+    is_valid = two_factor_auth.verify_token(
+        secret=db_user.secret_2fa,
+        token=body.totp_code,
+    )
+    if not is_valid:
+        logger.warning("2fa_login_verify_failed", user_id=db_user.id)
+        raise HTTPException(status_code=401, detail="Geçersiz 2FA kodu")
+
+    # Issue tokens
+    jwt_mgr = get_jwt_manager()
+    jwt_role = JWTUserRole(db_user.role.value.lower())
+    token = jwt_mgr.create_access_token(
+        user_id=str(db_user.id),
+        email=db_user.email,
+        role=jwt_role,
+        username=db_user.username,
+    )
+    refresh_token = jwt_mgr.create_refresh_token(
+        user_id=str(db_user.id),
+        email=db_user.email,
+        role=jwt_role,
+    )
+
+    # Update last login
+    db_user.last_login = datetime.now(UTC)
+    await db.commit()
+
+    # Set cookies
+    _is_dev = app_settings.environment == "development"
+    response.set_cookie(
+        key="access_token",
+        value=token,
+        httponly=True,
+        secure=not _is_dev,
+        samesite="lax",
+        max_age=86400,
+        path="/api",
+    )
+    response.set_cookie(
+        key="refresh_token",
+        value=refresh_token,
+        httponly=True,
+        secure=not _is_dev,
+        samesite="lax",
+        max_age=604800,
+        path="/api/v1/auth",
+    )
+
+    role_mapping = {
+        "STUDENT": "ogrenci",
+        "TEACHER": "ogretmen",
+        "PARENT": "veli",
+        "ADMIN": "admin",
+        "SUPER_ADMIN": "super_admin",
+    }
+
+    logger.info("2fa_login_success", user_id=db_user.id, email=db_user.email)
+
+    return {
+        "success": True,
+        "message": "Giriş başarılı",
+        "user": {
+            "id": str(db_user.id),
+            "email": db_user.email,
+            "ad": db_user.first_name,
+            "soyad": db_user.last_name,
+            "rol": role_mapping.get(db_user.role.value, "ogrenci"),
+            "aktif": db_user.is_active,
+        },
+    }
+
+
+@router.post("/login-verify-backup", summary="Complete login with backup code")
+async def login_verify_backup(
+    body: TwoFactorBackupLoginRequest,
+    request: Request,
+    response: Response,
+    db: AsyncSession = Depends(get_db),
+):
+    """
+    Login with backup code when authenticator app is unavailable.
+
+    Same as /login-verify but uses a single-use backup code instead of TOTP.
+    """
+    from datetime import UTC, datetime
+
+    from passlib.context import CryptContext
+
+    from core.config import settings as app_settings
+    from core.jwt_auth import UserRole as JWTUserRole
+    from core.jwt_auth import get_jwt_manager
+
+    pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
+    result = await db.execute(select(User).where(User.email == body.email))
+    db_user = result.scalar_one_or_none()
+
+    if not db_user or not db_user.is_active:
+        raise HTTPException(status_code=401, detail="Geçersiz kimlik bilgileri")
+
+    if not pwd_context.verify(body.password, db_user.password_hash):
+        raise HTTPException(status_code=401, detail="Geçersiz kimlik bilgileri")
+
+    if not db_user.is_2fa_enabled or not db_user.backup_codes_hashed:
+        raise HTTPException(status_code=400, detail="Yedek kodlar mevcut değil")
+
+    hashed_codes = db_user.backup_codes_hashed.get("codes", [])
+    is_valid, matched_hash = two_factor_auth.verify_backup_code(
+        code=body.backup_code.upper(),
+        hashed_codes=hashed_codes,
+    )
+
+    if not is_valid:
+        logger.warning("2fa_backup_login_failed", user_id=db_user.id)
+        raise HTTPException(status_code=401, detail="Geçersiz yedek kod")
+
+    # Remove used backup code (single-use)
+    hashed_codes.remove(matched_hash)
+    stmt = (
+        update(User)
+        .where(User.id == db_user.id)
+        .values(backup_codes_hashed={"codes": hashed_codes})
+    )
+    await db.execute(stmt)
+
+    # Issue tokens
+    jwt_mgr = get_jwt_manager()
+    jwt_role = JWTUserRole(db_user.role.value.lower())
+    token = jwt_mgr.create_access_token(
+        user_id=str(db_user.id),
+        email=db_user.email,
+        role=jwt_role,
+        username=db_user.username,
+    )
+    refresh_token = jwt_mgr.create_refresh_token(
+        user_id=str(db_user.id),
+        email=db_user.email,
+        role=jwt_role,
+    )
+
+    db_user.last_login = datetime.now(UTC)
+    await db.commit()
+
+    _is_dev = app_settings.environment == "development"
+    response.set_cookie(
+        key="access_token",
+        value=token,
+        httponly=True,
+        secure=not _is_dev,
+        samesite="lax",
+        max_age=86400,
+        path="/api",
+    )
+    response.set_cookie(
+        key="refresh_token",
+        value=refresh_token,
+        httponly=True,
+        secure=not _is_dev,
+        samesite="lax",
+        max_age=604800,
+        path="/api/v1/auth",
+    )
+
+    role_mapping = {
+        "STUDENT": "ogrenci",
+        "TEACHER": "ogretmen",
+        "PARENT": "veli",
+        "ADMIN": "admin",
+        "SUPER_ADMIN": "super_admin",
+    }
+
+    logger.info(
+        "2fa_backup_login_success",
+        user_id=db_user.id,
+        remaining_codes=len(hashed_codes),
+    )
+
+    return {
+        "success": True,
+        "message": "Giriş başarılı (yedek kod kullanıldı)",
+        "remaining_backup_codes": len(hashed_codes),
+        "user": {
+            "id": str(db_user.id),
+            "email": db_user.email,
+            "ad": db_user.first_name,
+            "soyad": db_user.last_name,
+            "rol": role_mapping.get(db_user.role.value, "ogrenci"),
+            "aktif": db_user.is_active,
+        },
+    }
 
 
 __all__ = ["router"]
