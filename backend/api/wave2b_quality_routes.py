@@ -3,30 +3,32 @@ Wave 2B Quality Evaluation API Routes
 Production-ready endpoints for quality evaluation
 """
 
-from fastapi import APIRouter, HTTPException
-from pydantic import BaseModel, Field
-from typing import List, Optional, Dict, Any
 import logging
 from datetime import datetime
+from typing import Any
 
-from services.comprehensive_quality_evaluator import ComprehensiveQualityEvaluator
-from services.bertscore_evaluator import BERTScoreEvaluator
-from core.database import get_db_session
+from fastapi import APIRouter, Depends, HTTPException
+from pydantic import BaseModel, Field
 from sqlalchemy import text
+
+from core.database import get_db_session
+from core.dependencies import AuthenticatedUser, get_current_user
+from services.bertscore_evaluator import BERTScoreEvaluator
+from services.comprehensive_quality_evaluator import ComprehensiveQualityEvaluator
 
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api/v2/quality", tags=["Wave 2B Quality"])
 
 # Global evaluator instance (initialized on startup)
-_evaluator: Optional[ComprehensiveQualityEvaluator] = None
+_evaluator: ComprehensiveQualityEvaluator | None = None
 
 
 # Request/Response Models
 class QuestionEvaluationRequest(BaseModel):
     question_text: str = Field(..., min_length=10, max_length=1000)
-    difficulty: Optional[str] = Field(None, description="kolay, orta, zor")
-    subject: Optional[str] = Field(None, description="Matematik, Fizik, etc.")
-    correct_answer: Optional[str] = Field(None, description="A, B, C, D, E")
+    difficulty: str | None = Field(None, description="kolay, orta, zor")
+    subject: str | None = Field(None, description="Matematik, Fizik, etc.")
+    correct_answer: str | None = Field(None, description="A, B, C, D, E")
     evaluation_stage: str = Field(
         "standard", description="quick, standard, thorough, complete"
     )
@@ -47,11 +49,11 @@ class EvaluationResponse(BaseModel):
     overall_score: float = Field(..., ge=0.0, le=1.0)
     overall_grade: str
     decision: str  # APPROVE, REVIEW, REJECT
-    bloom_level: Optional[int] = None
-    bloom_confidence: Optional[float] = None
-    strengths: List[str] = []
-    weaknesses: List[str] = []
-    recommendations: List[str] = []
+    bloom_level: int | None = None
+    bloom_confidence: float | None = None
+    strengths: list[str] = []
+    weaknesses: list[str] = []
+    recommendations: list[str] = []
     execution_time_ms: float
 
     model_config = {
@@ -72,7 +74,7 @@ class EvaluationResponse(BaseModel):
 
 
 class BatchEvaluationRequest(BaseModel):
-    questions: List[Dict[str, Any]] = Field(..., min_items=1, max_items=50)
+    questions: list[dict[str, Any]] = Field(..., min_items=1, max_items=50)
     evaluation_stage: str = Field(
         "standard", description="quick, standard, thorough, complete"
     )
@@ -84,7 +86,7 @@ class BatchEvaluationResponse(BaseModel):
     review: int
     rejected: int
     average_score: float
-    results: List[Dict[str, Any]]
+    results: list[dict[str, Any]]
     execution_time_ms: float
 
 
@@ -107,16 +109,15 @@ async def get_evaluator() -> ComprehensiveQualityEvaluator:
     global _evaluator
 
     if _evaluator is None:
-        # Load ÖSYM reference questions
         osym_ref = await load_osym_reference_questions()
         _evaluator = ComprehensiveQualityEvaluator(osym_reference_questions=osym_ref)
-        logger.info("✓ ComprehensiveQualityEvaluator initialized")
+        logger.info("ComprehensiveQualityEvaluator initialized")
 
     return _evaluator
 
 
-async def load_osym_reference_questions(limit: int = 30) -> List[Dict]:
-    """Load ÖSYM reference questions from database"""
+async def load_osym_reference_questions(limit: int = 30) -> list[dict]:
+    """Load OSYM reference questions from database"""
     async for db in get_db_session():
         try:
             query = text(
@@ -149,11 +150,11 @@ async def load_osym_reference_questions(limit: int = 30) -> List[Dict]:
                     }
                 )
 
-            logger.info(f"✓ Loaded {len(questions)} ÖSYM reference questions")
+            logger.info(f"Loaded {len(questions)} OSYM reference questions")
             return questions
 
         except Exception as e:
-            logger.error(f"Failed to load ÖSYM reference: {e}")
+            logger.error(f"Failed to load OSYM reference: {e}")
             return []
 
 
@@ -161,24 +162,16 @@ async def load_osym_reference_questions(limit: int = 30) -> List[Dict]:
 
 
 @router.post("/evaluate", response_model=EvaluationResponse)
-async def evaluate_question(request: QuestionEvaluationRequest):
-    """
-    Evaluate a single question with Wave 2B
-
-    - **question_text**: The question to evaluate
-    - **difficulty**: Optional difficulty level
-    - **subject**: Optional subject/topic
-    - **evaluation_stage**: quick, standard, thorough, or complete
-
-    Returns detailed quality evaluation with APPROVE/REVIEW/REJECT decision
-    """
+async def evaluate_question(
+    request: QuestionEvaluationRequest,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+):
+    """Evaluate a single question with Wave 2B quality pipeline."""
     start_time = datetime.now()
 
     try:
-        # Get evaluator
         evaluator = await get_evaluator()
 
-        # Prepare question dict
         question = {
             "question_text": request.question_text,
             "difficulty": request.difficulty,
@@ -186,20 +179,16 @@ async def evaluate_question(request: QuestionEvaluationRequest):
             "correct_answer": request.correct_answer,
         }
 
-        # Evaluate
         evaluation = evaluator.evaluate(question, stage=request.evaluation_stage)
-
-        # Calculate execution time
         execution_time = (datetime.now() - start_time).total_seconds() * 1000
 
-        # Build response
         return EvaluationResponse(
             overall_score=evaluation.overall_score,
             overall_grade=evaluation.overall_grade,
             decision=evaluation.decision,
             bloom_level=evaluation.bloom_level,
             bloom_confidence=evaluation.bloom_confidence,
-            strengths=evaluation.strengths[:5],  # Top 5
+            strengths=evaluation.strengths[:5],
             weaknesses=evaluation.weaknesses[:5],
             recommendations=evaluation.recommendations[:5],
             execution_time_ms=round(execution_time, 2),
@@ -207,19 +196,17 @@ async def evaluate_question(request: QuestionEvaluationRequest):
 
     except Exception as e:
         logger.error(f"Evaluation failed: {e}")
-        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
+        raise HTTPException(
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
+        )
 
 
 @router.post("/evaluate-batch", response_model=BatchEvaluationResponse)
-async def evaluate_batch(request: BatchEvaluationRequest):
-    """
-    Evaluate multiple questions in batch
-
-    - **questions**: List of questions (max 50)
-    - **evaluation_stage**: Evaluation depth
-
-    Returns aggregated statistics and individual results
-    """
+async def evaluate_batch(
+    request: BatchEvaluationRequest,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+):
+    """Evaluate multiple questions in batch."""
     start_time = datetime.now()
 
     try:
@@ -234,7 +221,6 @@ async def evaluate_batch(request: BatchEvaluationRequest):
                     question, stage=request.evaluation_stage
                 )
 
-                # Update stats
                 stats["scores"].append(evaluation.overall_score)
                 if evaluation.decision == "APPROVE":
                     stats["approved"] += 1
@@ -243,7 +229,6 @@ async def evaluate_batch(request: BatchEvaluationRequest):
                 else:
                     stats["rejected"] += 1
 
-                # Add to results
                 results.append(
                     {
                         "question_text": question.get("question_text", "")[:100],
@@ -273,19 +258,17 @@ async def evaluate_batch(request: BatchEvaluationRequest):
 
     except Exception as e:
         logger.error(f"Batch evaluation failed: {e}")
-        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
+        raise HTTPException(
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
+        )
 
 
 @router.post("/bertscore", response_model=BERTScoreResponse)
-async def calculate_bertscore(request: BERTScoreRequest):
-    """
-    Calculate BERTScore semantic similarity between two questions
-
-    - **candidate**: First question
-    - **reference**: Second question
-
-    Returns F1, precision, recall scores and similarity interpretation
-    """
+async def calculate_bertscore(
+    request: BERTScoreRequest,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+):
+    """Calculate BERTScore semantic similarity between two questions."""
     try:
         evaluator = BERTScoreEvaluator()
 
@@ -312,16 +295,14 @@ async def calculate_bertscore(request: BERTScoreRequest):
         raise
     except Exception as e:
         logger.error(f"BERTScore calculation failed: {e}")
-        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
+        raise HTTPException(
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
+        )
 
 
 @router.get("/health")
 async def health_check():
-    """
-    Health check endpoint for Wave 2B services
-
-    Returns status of all components
-    """
+    """Health check endpoint for Wave 2B services."""
     try:
         evaluator = await get_evaluator()
         bertscore = BERTScoreEvaluator()
@@ -350,11 +331,7 @@ async def health_check():
 
 @router.get("/stats")
 async def get_evaluation_stats():
-    """
-    Get current evaluation statistics and configuration
-
-    Returns system configuration and status
-    """
+    """Get current evaluation statistics and configuration."""
     try:
         evaluator = await get_evaluator()
 
@@ -372,16 +349,18 @@ async def get_evaluation_stats():
                 else 0,
             },
             "thresholds": {
-                "excellent": "≥ 0.90",
-                "good": "≥ 0.80",
-                "acceptable": "≥ 0.70",
+                "excellent": ">= 0.90",
+                "good": ">= 0.80",
+                "acceptable": ">= 0.70",
                 "needs_improvement": "< 0.70",
             },
         }
 
     except Exception as e:
         logger.error(f"Stats retrieval failed: {e}")
-        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
+        raise HTTPException(
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
+        )
 
 
 # Startup event to initialize evaluator
@@ -389,6 +368,6 @@ async def initialize_wave2b():
     """Initialize Wave 2B evaluator on startup"""
     try:
         await get_evaluator()
-        logger.info("✅ Wave 2B Quality API initialized successfully")
+        logger.info("Wave 2B Quality API initialized successfully")
     except Exception as e:
-        logger.error(f"❌ Wave 2B initialization failed: {e}")
+        logger.error(f"Wave 2B initialization failed: {e}")

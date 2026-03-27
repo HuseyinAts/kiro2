@@ -1,13 +1,16 @@
 """
-ÖSYM-Inspired Question Generation API
-Generate questions using real ÖSYM questions as inspiration
+OSYM-Inspired Question Generation API
+Generate questions using real OSYM questions as inspiration
 """
-from fastapi import APIRouter, HTTPException, Query
-from pydantic import BaseModel, Field
-from typing import Dict
+
 import os
 
-router = APIRouter(prefix="/api/v1/osym-inspired", tags=["ÖSYM-Inspired Generation"])
+from fastapi import APIRouter, Depends, HTTPException, Query
+from pydantic import BaseModel, Field
+
+from core.dependencies import AuthenticatedUser, get_current_user
+
+router = APIRouter(prefix="/api/v1/osym-inspired", tags=["OSYM-Inspired Generation"])
 
 
 class OSYMInspiredRequest(BaseModel):
@@ -19,29 +22,14 @@ class OSYMInspiredRequest(BaseModel):
 
 
 @router.post("/generate")
-async def generate_osym_inspired_question(request: OSYMInspiredRequest) -> Dict:
-    """
-    Generate a question inspired by real ÖSYM questions
-
-    **Method**: Few-shot learning with 3 real ÖSYM examples
-    **Quality**: ÖSYM-level (10.0/10.0)
-    **Source**: Real ÖSYM question bank (1988 questions)
-
-    Example:
-    ```json
-    {
-        "subject": "Matematik",
-        "topic": "Türev",
-        "exam_type": "TYT",
-        "difficulty": "orta",
-        "provider": "claude"
-    }
-    ```
-    """
+async def generate_osym_inspired_question(
+    request: OSYMInspiredRequest,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+) -> dict:
+    """Generate a question inspired by real OSYM questions using few-shot learning."""
     try:
         from services.osym_inspired_generator import OSYMInspiredGenerator
 
-        # Get API keys from environment
         openai_key = os.getenv("OPENAI_API_KEY")
         anthropic_key = os.getenv("ANTHROPIC_API_KEY")
 
@@ -49,7 +37,6 @@ async def generate_osym_inspired_question(request: OSYMInspiredRequest) -> Dict:
             openai_api_key=openai_key, anthropic_api_key=anthropic_key
         )
 
-        # Generate question
         result = await generator.generate_with_few_shot(
             subject=request.subject,
             topic=request.topic,
@@ -61,23 +48,16 @@ async def generate_osym_inspired_question(request: OSYMInspiredRequest) -> Dict:
         return {
             "success": True,
             "data": result,
-            "message": f"Generated {request.subject} question inspired by ÖSYM",
+            "message": f"Generated {request.subject} question inspired by OSYM",
         }
 
     except Exception as e:
-        raise HTTPException(500, f"Generation failed: {str(e)}")
+        raise HTTPException(500, f"Generation failed: {e!s}")
 
 
 @router.get("/style-guide/{subject}")
-async def get_osym_style_guide(subject: str, exam_type: str = Query("TYT")) -> Dict:
-    """
-    Get ÖSYM style guide for a subject
-
-    Analyzes 50 real ÖSYM questions to extract:
-    - Average question length
-    - Common question patterns
-    - Style recommendations
-    """
+async def get_osym_style_guide(subject: str, exam_type: str = Query("TYT")) -> dict:
+    """Get OSYM style guide for a subject."""
     try:
         from services.osym_inspired_generator import OSYMInspiredGenerator
 
@@ -90,25 +70,18 @@ async def get_osym_style_guide(subject: str, exam_type: str = Query("TYT")) -> D
         return {
             "success": True,
             "data": style_guide,
-            "message": f"ÖSYM style guide for {subject}",
+            "message": f"OSYM style guide for {subject}",
         }
 
     except Exception as e:
-        raise HTTPException(500, f"Analysis failed: {str(e)}")
+        raise HTTPException(500, f"Analysis failed: {e!s}")
 
 
 @router.get("/examples/{subject}")
 async def get_osym_examples(
     subject: str, exam_type: str = Query("TYT"), count: int = Query(3, ge=1, le=10)
-) -> Dict:
-    """
-    Get real ÖSYM questions as examples
-
-    Perfect for:
-    - Few-shot prompting
-    - Template extraction
-    - Quality reference
-    """
+) -> dict:
+    """Get real OSYM questions as examples for few-shot prompting."""
     try:
         from services.osym_inspired_generator import OSYMInspiredGenerator
 
@@ -122,20 +95,16 @@ async def get_osym_examples(
             "success": True,
             "data": examples,
             "count": len(examples),
-            "message": f"Retrieved {len(examples)} ÖSYM examples",
+            "message": f"Retrieved {len(examples)} OSYM examples",
         }
 
     except Exception as e:
-        raise HTTPException(500, f"Failed to get examples: {str(e)}")
+        raise HTTPException(500, f"Failed to get examples: {e!s}")
 
 
 @router.get("/statistics")
-async def get_training_statistics() -> Dict:
-    """
-    Get ÖSYM question bank statistics
-
-    Shows how many questions are available for training
-    """
+async def get_training_statistics() -> dict:
+    """Get OSYM question bank statistics."""
     try:
         from services.osym_inspired_generator import OSYMInspiredGenerator
 
@@ -146,8 +115,8 @@ async def get_training_statistics() -> Dict:
         return {
             "success": True,
             "data": stats,
-            "message": "ÖSYM training data statistics",
+            "message": "OSYM training data statistics",
         }
 
     except Exception as e:
-        raise HTTPException(500, f"Failed to get statistics: {str(e)}")
+        raise HTTPException(500, f"Failed to get statistics: {e!s}")

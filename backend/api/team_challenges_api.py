@@ -2,8 +2,10 @@
 
 import logging
 
-from fastapi import APIRouter, HTTPException, WebSocket
+from fastapi import APIRouter, Depends, HTTPException, WebSocket
 from pydantic import BaseModel
+
+from core.dependencies import AuthenticatedUser, get_current_user
 
 logger = logging.getLogger(__name__)
 
@@ -26,10 +28,14 @@ class JoinBattleRequest(BaseModel):
 
 
 @router.post("/teams/create")
-async def create_team(request: CreateTeamRequest, user_id: int):
-    """Yeni bir takım oluşturur ve kullanıcıyı takım lideri olarak atar."""
+async def create_team(
+    request: CreateTeamRequest,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+):
+    """Yeni bir takim olusturur ve kullaniciyi takim lideri olarak atar."""
     from ..services.team_challenges import TeamChallengeManager
 
+    user_id = int(current_user.id)
     manager = TeamChallengeManager()
     team = manager.create_team(request.team_name, user_id)
 
@@ -42,10 +48,14 @@ async def create_team(request: CreateTeamRequest, user_id: int):
 
 
 @router.post("/battles/create")
-async def create_quiz_battle(request: CreateBattleRequest, host_id: int):
-    """Yeni bir quiz savaşı odası oluşturur. Oda kodu ile diğer kullanıcılar katılabilir."""
+async def create_quiz_battle(
+    request: CreateBattleRequest,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+):
+    """Yeni bir quiz savasi odasi olusturur. Oda kodu ile diger kullanicilar katilabilir."""
     from ..services.team_challenges import TeamChallengeManager
 
+    host_id = int(current_user.id)
     manager = TeamChallengeManager()
     battle = manager.create_quiz_battle(
         host_id=host_id, topic=request.topic, max_participants=request.max_participants
@@ -60,10 +70,14 @@ async def create_quiz_battle(request: CreateBattleRequest, host_id: int):
 
 
 @router.post("/battles/join")
-async def join_quiz_battle(request: JoinBattleRequest, user_id: int):
-    """Oda kodu ile mevcut bir quiz savaşına katılır."""
+async def join_quiz_battle(
+    request: JoinBattleRequest,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+):
+    """Oda kodu ile mevcut bir quiz savasina katilir."""
     from ..services.team_challenges import TeamChallengeManager
 
+    user_id = int(current_user.id)
     manager = TeamChallengeManager()
 
     # Find battle by room code
@@ -90,7 +104,7 @@ async def join_quiz_battle(request: JoinBattleRequest, user_id: int):
 
 @router.get("/battles/{battle_id}/leaderboard")
 async def get_battle_leaderboard(battle_id: str):
-    """Belirli bir quiz savaşının skor tablosunu döndürür."""
+    """Belirli bir quiz savasinin skor tablosunu dondurur."""
     from ..services.team_challenges import TeamChallengeManager
 
     manager = TeamChallengeManager()
@@ -104,7 +118,7 @@ async def get_battle_leaderboard(battle_id: str):
 
 @router.get("/teams/leaderboard")
 async def get_team_leaderboard(limit: int = 10):
-    """Tüm takımların genel sıralamasını puan ve kazanılan yarışma sayısına göre döndürür."""
+    """Tum takimlarin genel siralamasini puan ve kazanilan yarisma sayisina gore dondurur."""
     from ..services.team_challenges import TeamChallengeManager
 
     manager = TeamChallengeManager()
@@ -132,14 +146,11 @@ async def websocket_battle(websocket: WebSocket, battle_id: str):
         while True:
             data = await websocket.receive_json()
 
-            # Handle real-time battle events
             if data["type"] == "submit_answer":
-                # Process answer submission
                 response = {"type": "answer_result", "correct": True, "points": 100}
                 await websocket.send_json(response)
 
             elif data["type"] == "get_scores":
-                # Send current scores
                 response = {"type": "scores_update", "scores": {}}
                 await websocket.send_json(response)
 
