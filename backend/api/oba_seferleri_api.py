@@ -12,7 +12,7 @@ import logging
 from datetime import UTC, date, datetime
 from typing import Any
 
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException, Query, Request
 from pydantic import BaseModel, Field
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -108,10 +108,15 @@ async def get_active_challenge(
 async def contribute(
     challenge_id: str,
     body: ContributeRequest,
+    request: Request,
     current_user: AuthenticatedUser = Depends(get_current_user),
     db: AsyncSession = Depends(get_db_session),
 ):
     """Goreve katki ekle (otomatik veya manuel)."""
+    from api.auth import _check_rate_limit, _record_attempt
+
+    _check_rate_limit(request, "oba_contribute")
+    _record_attempt(request, "oba_contribute")
     user_id = str(current_user.id)
 
     # Gorev kontrolu

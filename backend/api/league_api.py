@@ -7,7 +7,7 @@ Endpoints:
   POST /api/v1/leagues/award-xp   — XP ver (quiz/sınav tamamlama sonrası)
 """
 
-from fastapi import APIRouter, Depends, HTTPException, Query, status
+from fastapi import APIRouter, Depends, HTTPException, Query, Request, status
 from pydantic import BaseModel, Field
 
 from core.database import get_db_session_context
@@ -74,8 +74,7 @@ class AwardXpResponse(BaseModel):
     response_model=LeagueStandingsResponse,
     summary="Mevcut lig durumu",
     description=(
-        "Öğrencinin mevcut lig tier'ını, sırasını ve"
-        " tier'daki üst oyuncuları döner."
+        "Öğrencinin mevcut lig tier'ını, sırasını ve tier'daki üst oyuncuları döner."
     ),
 )
 async def get_current_standings(
@@ -99,9 +98,7 @@ async def get_current_standings(
 
     try:
         async with get_db_session_context() as db:
-            result = await get_league_standings(
-                db=db, student_id=current_user.id
-            )
+            result = await get_league_standings(db=db, student_id=current_user.id)
 
         return LeagueStandingsResponse(**result)
 
@@ -121,8 +118,7 @@ async def get_current_standings(
     response_model=list[LeagueHistoryEntry],
     summary="Geçmiş lig sonuçları",
     description=(
-        "Öğrencinin geçmiş haftalık lig sonuçlarını"
-        " (tier değişimi, sıra, XP) döner."
+        "Öğrencinin geçmiş haftalık lig sonuçlarını (tier değişimi, sıra, XP) döner."
     ),
 )
 async def get_league_history(
@@ -177,6 +173,7 @@ async def get_league_history(
     ),
 )
 async def award_xp(
+    request: Request,
     body: AwardXpRequest,
     current_user: AuthenticatedUser = Depends(get_current_user),
 ) -> AwardXpResponse:
@@ -195,7 +192,11 @@ async def award_xp(
     Raises:
         HTTPException: 500 on unexpected error.
     """
+    from api.auth import _check_rate_limit, _record_attempt
     from services.league_service import award_xp
+
+    _check_rate_limit(request, "award_xp")
+    _record_attempt(request, "award_xp")
 
     try:
         async with get_db_session_context() as db:

@@ -72,6 +72,10 @@ RATE_LIMITS = {
     "register": (5, 60),
     "password_reset": (5, 300),
     "2fa_verify": (10, 60),
+    "award_xp": (10, 60),
+    "quest_progress": (20, 60),
+    "claim_bonus": (3, 60),
+    "oba_contribute": (10, 60),
 }
 
 

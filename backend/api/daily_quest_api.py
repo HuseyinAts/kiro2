@@ -15,7 +15,7 @@ import random
 from datetime import UTC, date, datetime
 from typing import Any
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Request
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -189,10 +189,15 @@ async def get_today_quests(
 @router.post("/{quest_id}/progress", response_model=dict[str, Any])
 async def update_quest_progress(
     quest_id: int,
+    request: Request,
     current_user: AuthenticatedUser = Depends(get_current_user),
     db: AsyncSession = Depends(get_db_session),
 ):
     """Gorev ilerlemesini guncelle. Tamamlaninca XP ver."""
+    from api.auth import _check_rate_limit, _record_attempt
+
+    _check_rate_limit(request, "quest_progress")
+    _record_attempt(request, "quest_progress")
     user_id = str(current_user.id)
 
     result = await db.execute(
@@ -240,10 +245,15 @@ async def update_quest_progress(
 
 @router.post("/claim-bonus", response_model=dict[str, Any])
 async def claim_daily_bonus(
+    request: Request,
     current_user: AuthenticatedUser = Depends(get_current_user),
     db: AsyncSession = Depends(get_db_session),
 ):
     """3/3 gorev tamamlandi ise bonus XP al."""
+    from api.auth import _check_rate_limit, _record_attempt
+
+    _check_rate_limit(request, "claim_bonus")
+    _record_attempt(request, "claim_bonus")
     user_id = str(current_user.id)
     today = date.today()
 
