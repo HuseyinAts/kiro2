@@ -141,6 +141,7 @@ async def get_subject_statuses(
         SubjectStatusOut(
             subject=s.subject,
             theta=round(s.theta, 3),
+            theta_se=round(s.theta_se, 3),
             mastery_pct=s.mastery_pct,
             fsrs_due_count=s.fsrs_due_count,
             zpd_lower=round(s.zpd_lower, 2),
@@ -148,6 +149,9 @@ async def get_subject_statuses(
             priority_score=s.priority_score,
             level_label="CAT Gerekiyor" if s.needs_cat else _theta_label(s.theta),
             needs_cat=s.needs_cat,
+            prereq_blocked=s.prereq_blocked,
+            prereq_topic=s.prereq_topic,
+            prereq_topic_name=s.prereq_topic_name,
         )
         for s in statuses
     ]
@@ -187,6 +191,7 @@ async def get_today_plan(
                 difficulty_band=b.difficulty_band,
                 reason=b.reason,
                 priority=b.priority,
+                prereq_blocked=getattr(b, "prereq_blocked", False),
             )
             for b in plan.blocks
         ],
@@ -252,7 +257,9 @@ async def get_weekly_preview(
                 "secondary_subject": subjects_by_priority[s_idx],
                 "estimated_minutes": goal["daily_minutes"],
                 "days_to_exam": max(1, (exam_d - day).days),
-                "focus_reason": f"θ={s_primary.theta:.2f} — {_theta_label(s_primary.theta)}",
+                "focus_reason": (
+                    f"θ={s_primary.theta:.2f} — {_theta_label(s_primary.theta)}"
+                ),
             }
         )
     return {"weekly_plan": weekly, "exam_date": exam_d.isoformat()}
