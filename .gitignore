@@ -1,6 +1,9 @@
 # Minimal AI Education Platform
 # Simple .gitignore for minimal system
 
+# Leaked secrets / session cookies (NEVER commit)
+cookies*.txt
+
 # Python
 __pycache__/
 *.py[cod]
