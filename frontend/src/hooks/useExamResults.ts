@@ -73,9 +73,55 @@ export const useExamResults = (sinavId: string): UseExamResultsReturn => {
   };
 
   useEffect(() => {
-    if (sinavId) {
-      loadResults();
-    }
+    let isMounted = true;
+
+    const fetchResults = async () => {
+      if (!sinavId) return;
+      try {
+        setLoading(true);
+        setError(null);
+
+        const [sonucData, gelismisRaporData] = await Promise.allSettled([
+          examService.getExamResult(sinavId),
+          advancedReportsService.getAdvancedExamReport(sinavId),
+        ]);
+
+        if (!isMounted) return;
+
+        if (sonucData.status === 'fulfilled') {
+          const performanceData = sonucData.value;
+          const convertedResult = performanceToSinavSonucu(
+            performanceData,
+            sinavId,
+            'unknown',
+            SinavTipi.TYT,
+          );
+          setSonuc(convertedResult);
+        } else {
+          throw new Error('Temel sınav sonucu yüklenemedi');
+        }
+
+        if (gelismisRaporData.status === 'fulfilled') {
+          setGelismisRapor(gelismisRaporData.value);
+        } else {
+          console.warn('Gelişmiş rapor yüklenemedi:', gelismisRaporData.reason);
+        }
+      } catch (err: any) {
+        if (isMounted) {
+          setError(err.message || 'Sonuçlar yüklenirken hata oluştu');
+        }
+      } finally {
+        if (isMounted) {
+          setLoading(false);
+        }
+      }
+    };
+
+    fetchResults();
+
+    return () => {
+      isMounted = false;
+    };
   }, [sinavId]);
 
   return {

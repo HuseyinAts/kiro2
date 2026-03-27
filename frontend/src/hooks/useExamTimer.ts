@@ -116,14 +116,15 @@ export const useExamTimer = (
       decrementTime();
       checkWarnings();
 
-      // Check if time is up
-      if (remainingTime <= 1) {
+      // Check if time is up — read from store to avoid stale closure
+      const currentTime = useExamStore.getState().remainingTime;
+      if (currentTime <= 1) {
         handleTimeUp();
       }
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [isRunning, decrementTime, checkWarnings, remainingTime, handleTimeUp]);
+  }, [isRunning, decrementTime, checkWarnings, handleTimeUp]);
 
   /**
    * Sync with server periodically (every 30 seconds)

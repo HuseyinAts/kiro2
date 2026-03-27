@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {  useState, useEffect  } from 'react';
+import {  useState, useEffect, useRef  } from 'react';
 
 import { validateWCAG, generateAccessibilityReport, type ValidationResult } from '../../utils/wcagValidator';
 
@@ -20,18 +20,22 @@ export const AccessibilityValidator: React.FC<AccessibilityValidatorProps> = ({
   const [result, setResult] = useState<ValidationResult | null>(null);
   const [isRunning, setIsRunning] = useState(false);
   const [report, setReport] = useState<string>('');
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     if (autoRun) {
       runValidation();
     }
+    return () => {
+      if (timerRef.current) clearTimeout(timerRef.current);
+    };
   }, [autoRun]);
 
   const runValidation = () => {
     setIsRunning(true);
 
     // Run validation after a short delay to ensure DOM is ready
-    setTimeout(() => {
+    timerRef.current = setTimeout(() => {
       const validationResult = validateWCAG(document.body);
       setResult(validationResult);
       setReport(generateAccessibilityReport(validationResult));
