@@ -446,7 +446,9 @@ class CATSessionService:
         if not state.is_active():
             raise ValueError(f"Oturum zaten tamamlanmış: {session_id} ({state.state})")
 
-        # 2. Yanıtı ekle
+        # 2. Yanıtı ekle (replay guard — aynı soru iki kez cevaplanamaz)
+        if question_id in state.answered_ids:
+            raise ValueError(f"Bu soru zaten cevaplanmış: {question_id}")
         state.answered_ids.append(question_id)
         state.responses.append(1 if is_correct else 0)
         state.n_questions += 1

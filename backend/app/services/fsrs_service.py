@@ -20,22 +20,18 @@ FSRS+CAT soru seçimi:
 
 from __future__ import annotations
 
-import json
-from datetime import datetime, timezone
-from typing import Dict, List, Optional, Tuple
+from datetime import UTC
 
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.services.fsrs_engine import (
-    DURUM_YENİ, DURUM_TEKRAR, DURUM_ÖĞRENME, DURUM_YENİDEN,
-    FSRSState,
     FSRSResult,
+    FSRSState,
     answer_to_fsrs_rating,
     combined_priority_score,
     fsrs_update,
 )
-
 
 # ─── SQL sorguları ────────────────────────────────────────────────────────────
 
@@ -78,6 +74,7 @@ _FETCH_ITEM_SQL = text("""
         f.scheduled_days, f.elapsed_days
     FROM user_item_fsrs f
     WHERE f.user_id = :uid AND f.question_id = :qid
+    FOR UPDATE
 """)
 
 _UPSERT_FSRS_SQL = text("""
@@ -115,6 +112,7 @@ _DUE_COUNT_SQL = text("""
 
 # ─── FSRSService ──────────────────────────────────────────────────────────────
 
+
 class FSRSService:
     """FSRS state yönetimi — DB operasyonları."""
 
@@ -126,9 +124,9 @@ class FSRSService:
     async def get_due_items(
         self,
         user_id: str,
-        subject_id: Optional[str] = None,
+        subject_id: str | None = None,
         limit: int = 50,
-    ) -> List[Tuple[FSRSState, Dict]]:
+    ) -> list[tuple[FSRSState, dict]]:
         """
         Vadesi gelen FSRS kartlarını IRT parametreleriyle birlikte getir.
         Döndürür: [(FSRSState, {irt_a, irt_b, irt_c, subject_id, topic_id}), ...]
@@ -148,8 +146,9 @@ class FSRSService:
                 question_id=row.question_id,
                 stability=float(row.stability),
                 difficulty=float(row.difficulty),
-                due_date=row.due_date.replace(tzinfo=timezone.utc)
-                         if row.due_date.tzinfo is None else row.due_date,
+                due_date=row.due_date.replace(tzinfo=UTC)
+                if row.due_date.tzinfo is None
+                else row.due_date,
                 last_review=row.last_review,
                 state=row.state,
                 reps=row.reps,
@@ -158,24 +157,22 @@ class FSRSService:
                 elapsed_days=float(row.elapsed_days),
             )
             irt = {
-                "a":           float(row.irt_a),
-                "b":           float(row.irt_b),
-                "c":           float(row.irt_c),
-                "subject_id":  row.subject_id,
-                "topic_id":    row.topic_id,
+                "a": float(row.irt_a),
+                "b": float(row.irt_b),
+                "c": float(row.irt_c),
+                "subject_id": row.subject_id,
+                "topic_id": row.topic_id,
                 "question_text": row.question_text or "",
-                "option_a":    row.option_a or "",
-                "option_b":    row.option_b or "",
-                "option_c":    row.option_c or "",
-                "option_d":    row.option_d or "",
+                "option_a": row.option_a or "",
+                "option_b": row.option_b or "",
+                "option_c": row.option_c or "",
+                "option_d": row.option_d or "",
             }
             items.append((state, irt))
 
         return items
 
-    async def get_item_state(
-        self, user_id: str, question_id: str
-    ) -> Optional[FSRSState]:
+    async def get_item_state(self, user_id: str, question_id: str) -> FSRSState | None:
         """Tek bir user-item çiftinin FSRS state'ini getir."""
         result = await self.db.execute(
             _FETCH_ITEM_SQL, {"uid": user_id, "qid": question_id}
@@ -208,11 +205,11 @@ class FSRSService:
 
     async def apply_review(
         self,
-        user_id:     str,
+        user_id: str,
         question_id: str,
-        is_correct:  bool,
-        response_ms: Optional[int] = None,
-        item_b:      Optional[float] = None,
+        is_correct: bool,
+        response_ms: int | None = None,
+        item_b: float | None = None,
     ) -> FSRSResult:
         """
         Tek yanıt için FSRS güncelleme — anlık DB yazımı.
@@ -224,7 +221,7 @@ class FSRSService:
             # İlk kez görülen soru
             state = FSRSState(user_id=user_id, question_id=question_id)
 
-        puan  = answer_to_fsrs_rating(is_correct, response_ms, item_b=item_b)
+        puan = answer_to_fsrs_rating(is_correct, response_ms, item_b=item_b)
         result = fsrs_update(state, puan)
 
         await self._write_state(result.new_state)
@@ -233,7 +230,9 @@ class FSRSService:
 
     async def apply_batch_reviews(
         self,
-        reviews: List[Dict],   # [{user_id, question_id, is_correct, response_ms, item_b}]
+        reviews: list[
+            dict
+        ],  # [{user_id, question_id, is_correct, response_ms, item_b}]
     ) -> int:
         """
         Toplu FSRS güncelleme — CAT oturumu bitişinde çağrılır.
@@ -247,10 +246,9 @@ class FSRSService:
                 state = await self.get_item_state(r["user_id"], r["question_id"])
                 if state is None:
                     state = FSRSState(
-                        user_id=r["user_id"],
-                        question_id=r["question_id"]
+                        user_id=r["user_id"], question_id=r["question_id"]
                     )
-                puan   = answer_to_fsrs_rating(
+                puan = answer_to_fsrs_rating(
                     r["is_correct"],
                     r.get("response_ms"),
                     item_b=r.get("item_b"),
@@ -261,8 +259,9 @@ class FSRSService:
             except Exception as exc:
                 # Tek hata tüm batch'i durdurmasın
                 import logging
+
                 logging.getLogger("kiro2.fsrs").error(
-                    f"FSRS yazım hatası q={r.get('question_id','?')}: {exc}"
+                    f"FSRS yazım hatası q={r.get('question_id', '?')}: {exc}"
                 )
 
         if written:
@@ -271,30 +270,34 @@ class FSRSService:
 
     async def _write_state(self, state: FSRSState) -> None:
         """FSRSState'i DB'ye yaz (UPSERT)."""
-        await self.db.execute(_UPSERT_FSRS_SQL, {
-            "user_id":       state.user_id,
-            "question_id":   state.question_id,
-            "stability":     round(state.stability, 4),
-            "difficulty":    round(state.difficulty, 2),
-            "due_date":      state.due_date,
-            "last_review":   state.last_review,
-            "state":         state.state,
-            "reps":          state.reps,
-            "lapses":        state.lapses,
-            "scheduled_days": state.scheduled_days,
-            "elapsed_days":  round(state.elapsed_days, 2),
-        })
+        await self.db.execute(
+            _UPSERT_FSRS_SQL,
+            {
+                "user_id": state.user_id,
+                "question_id": state.question_id,
+                "stability": round(state.stability, 4),
+                "difficulty": round(state.difficulty, 2),
+                "due_date": state.due_date,
+                "last_review": state.last_review,
+                "state": state.state,
+                "reps": state.reps,
+                "lapses": state.lapses,
+                "scheduled_days": state.scheduled_days,
+                "elapsed_days": round(state.elapsed_days, 2),
+            },
+        )
 
 
 # ─── CAT+FSRS Birleşik Soru Seçici ───────────────────────────────────────────
 
+
 def build_combined_candidate_list(
-    due_items:          List[Tuple[FSRSState, Dict]],
-    new_candidates:     List[Dict],          # IRT parametreleri olan sorular
-    current_theta:      float,
-    answered_ids:       set,
+    due_items: list[tuple[FSRSState, dict]],
+    new_candidates: list[dict],  # IRT parametreleri olan sorular
+    current_theta: float,
+    answered_ids: set,
     max_due_per_session: int = 5,
-) -> List[Tuple[str, float]]:
+) -> list[tuple[str, float]]:
     """
     CAT + FSRS öncelik listesi oluştur.
 
@@ -311,9 +314,9 @@ def build_combined_candidate_list(
 
     Döndürür: [(question_id, priority_score), ...] azalan sırada
     """
-    from .irt_engine import fisher_information   # app/services/ içinde aynı dizin
+    from .irt_engine import fisher_information  # app/services/ içinde aynı dizin
 
-    scored: List[Tuple[str, float]] = []
+    scored: list[tuple[str, float]] = []
 
     # 1. FSRS due kartları (oturum limiti ile)
     due_count = 0

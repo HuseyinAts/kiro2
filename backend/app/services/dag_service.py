@@ -17,7 +17,6 @@ from __future__ import annotations
 
 import json
 import logging
-from typing import Dict, List, Optional
 
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -27,7 +26,6 @@ from app.services.dag_engine import (
     MasteryCheck,
     PrereqType,
     PrerequisiteDAG,
-    TopicNode,
     build_yks_dag,
     compute_mastery_from_theta,
 )
@@ -35,8 +33,8 @@ from app.services.dag_engine import (
 logger = logging.getLogger("kiro2.dag")
 
 # Redis cache key — 6 saat TTL (DAG nadiren değişir)
-DAG_CACHE_TTL     = 21600
-MASTERY_CACHE_TTL = 300    # 5 dakika
+DAG_CACHE_TTL = 21600
+MASTERY_CACHE_TTL = 300  # 5 dakika
 
 
 class DAGService:
@@ -45,9 +43,9 @@ class DAGService:
     """
 
     def __init__(self, db: AsyncSession, redis=None):
-        self.db    = db
+        self.db = db
         self.redis = redis
-        self._dag: Optional[PrerequisiteDAG] = None
+        self._dag: PrerequisiteDAG | None = None
 
     # ── DAG Yükleme ───────────────────────────────────────────────
 
@@ -93,12 +91,14 @@ class DAGService:
         dag = PrerequisiteDAG()
 
         # Konuları yükle
-        topics_result = await self.db.execute(text("""
-            SELECT id::text, name_tr AS name, NULL AS subject_id
+        topics_result = await self.db.execute(
+            text("""
+            SELECT id::text, name_tr AS name, COALESCE(subject_id::text, '') AS subject_id
             FROM topic_hierarchy
             WHERE is_active = TRUE
             ORDER BY name_tr
-        """))
+        """)
+        )
         for row in topics_result.fetchall():
             dag.add_topic(str(row.id), row.name, str(row.subject_id))
 
@@ -106,7 +106,8 @@ class DAGService:
             return dag
 
         # Önkoşulları yükle
-        prereqs_result = await self.db.execute(text("""
+        prereqs_result = await self.db.execute(
+            text("""
             SELECT
                 topic_id,
                 prereq_id,
@@ -114,7 +115,8 @@ class DAGService:
                 strength
             FROM topic_prerequisites
             WHERE is_active = TRUE
-        """))
+        """)
+        )
         for row in prereqs_result.fetchall():
             try:
                 ptype = PrereqType(row.prereq_type or "hard")
@@ -138,8 +140,8 @@ class DAGService:
     async def get_user_mastery(
         self,
         user_id: str,
-        subject_id: Optional[str] = None,
-    ) -> Dict[str, float]:
+        subject_id: str | None = None,
+    ) -> dict[str, float]:
         """
         Kullanıcının tüm konulardaki mastery skorlarını getir.
         Redis cache → DB sorgusu.
@@ -155,8 +157,9 @@ class DAGService:
         # cat_sessions tablosundan son θ değerlerini çek
         # Her oturum subject_id'ye bağlı; mastery topic_id bazında döner
         # subject_id → topics tablosu üzerinden topic_id'ye ulaşırız
-        result = await self.db.execute(text("""
-            SELECT
+        result = await self.db.execute(
+            text("""
+            SELECT DISTINCT ON (q.primary_topic_id)
                 q.primary_topic_id AS topic_id,
                 cs.theta_final,
                 cs.se_final
@@ -164,13 +167,16 @@ class DAGService:
             JOIN question_bank q ON q.subject_area = cs.subject_id
             WHERE cs.user_id = :uid
               AND cs.state = 'completed'
-            ORDER BY cs.completed_at DESC
-        """), {"uid": user_id})
+              AND q.primary_topic_id IS NOT NULL
+            ORDER BY q.primary_topic_id, cs.completed_at DESC
+        """),
+            {"uid": user_id},
+        )
 
         # Konu başına en yüksek mastery al
-        mastery: Dict[str, float] = {}
+        mastery: dict[str, float] = {}
         for row in result.fetchall():
-            tid   = row.topic_id
+            tid = row.topic_id
             score = compute_mastery_from_theta(
                 float(row.theta_final),
                 float(row.se_final or 0.5),
@@ -191,7 +197,7 @@ class DAGService:
 
     async def check_can_study_topic(
         self,
-        user_id:  str,
+        user_id: str,
         topic_id: str,
     ) -> MasteryCheck:
         """
@@ -202,15 +208,15 @@ class DAGService:
           MasteryCheck.can_proceed=True  → CAT başlatılabilir
           MasteryCheck.can_proceed=False → blocking_prereqs listesini göster
         """
-        dag     = await self.get_dag()
+        dag = await self.get_dag()
         mastery = await self.get_user_mastery(user_id)
         return dag.check_mastery(topic_id, mastery)
 
     async def get_next_recommended_topic(
         self,
-        user_id:    str,
+        user_id: str,
         subject_id: str,
-    ) -> Optional[str]:
+    ) -> str | None:
         """
         Kullanıcının şu an çalışabileceği en uygun konuyu öner.
 
@@ -219,32 +225,30 @@ class DAGService:
           2. Mastery < 0.70 olan ilk konuyu seç
           3. Önkoşulları tamamlanmış olmalı (can_proceed=True)
         """
-        dag     = await self.get_dag()
+        dag = await self.get_dag()
         mastery = await self.get_user_mastery(user_id)
-        topics  = dag.get_subject_topics(subject_id)
+        topics = dag.get_subject_topics(subject_id)
 
         for node in topics:
             score = mastery.get(node.topic_id, 0.0)
             if score >= 0.70:
-                continue   # zaten ustalaştı
+                continue  # zaten ustalaştı
 
             check = dag.check_mastery(node.topic_id, mastery)
             if check.can_proceed:
                 return node.topic_id
 
-        return None   # tüm konular tamamlandı
+        return None  # tüm konular tamamlandı
 
     async def get_learning_path_for_user(
         self,
-        user_id:        str,
+        user_id: str,
         target_topic_id: str,
     ) -> LearningPath:
         """Kullanıcıya özel öğrenme yolu — ustalaşılanları atlar."""
-        dag     = await self.get_dag()
+        dag = await self.get_dag()
         mastery = await self.get_user_mastery(user_id)
-        return dag.get_learning_path(
-            target_topic_id, mastery, skip_mastered=True
-        )
+        return dag.get_learning_path(target_topic_id, mastery, skip_mastered=True)
 
     # ── Seri/Deserialize ──────────────────────────────────────────
 
@@ -253,19 +257,19 @@ class DAGService:
         data = {
             "nodes": [
                 {
-                    "topic_id":   n.topic_id,
-                    "name":       n.name,
+                    "topic_id": n.topic_id,
+                    "name": n.name,
                     "subject_id": n.subject_id,
-                    "level":      n.level,
+                    "level": n.level,
                 }
                 for n in dag.get_all_topics()
             ],
             "edges": [
                 {
-                    "topic_id":  e.topic_id,
+                    "topic_id": e.topic_id,
                     "prereq_id": e.prereq_id,
-                    "ptype":     e.ptype.value,
-                    "strength":  e.strength,
+                    "ptype": e.ptype.value,
+                    "strength": e.strength,
                 }
                 for e in dag._edges
             ],
@@ -283,7 +287,8 @@ class DAGService:
         for e in data["edges"]:
             try:
                 dag.add_prereq(
-                    e["topic_id"], e["prereq_id"],
+                    e["topic_id"],
+                    e["prereq_id"],
                     PrereqType(e["ptype"]),
                     float(e["strength"]),
                 )
