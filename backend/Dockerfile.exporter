@@ -27,5 +27,9 @@ EXPOSE 9091
 HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
     CMD python -c "import urllib.request; urllib.request.urlopen('http://localhost:9091/metrics')"
 
+# Non-root user
+RUN addgroup --system kiro2 && adduser --system --ingroup kiro2 kiro2
+USER kiro2
+
 # Run Prometheus exporter
 CMD ["python", "-m", "monitoring.prometheus_exporter"]
