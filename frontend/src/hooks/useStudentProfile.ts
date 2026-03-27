@@ -43,14 +43,11 @@ export function useStudentProfile(): StudentProfile {
 
   const fetch_data = useCallback(async () => {
     setLoading(true);
-    const token = localStorage.getItem('access_token');
-    if (!token) { setLoading(false); return; }
-    const headers = { Authorization: `Bearer ${token}` };
 
     try {
       const [statusRes, planRes] = await Promise.all([
-        fetch(`${LP_API}/status`, { headers }),
-        fetch(`${LP_API}/today`, { headers }),
+        fetch(`${LP_API}/status`, { credentials: 'include' }),
+        fetch(`${LP_API}/today`, { credentials: 'include' }),
       ]);
 
       if (statusRes.ok) {

@@ -10,19 +10,16 @@ Endpoint'ler:
 """
 
 import logging
-from datetime import date, datetime, timedelta
-from typing import List, Optional
+from datetime import date, timedelta
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel, Field
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.core.deps import get_current_user, get_db, User
+from app.core.deps import User, get_current_user, get_db
 from app.services.learning_path_orchestrator import (
     LearningPathOrchestrator,
-    DailyPlan,
-    StudyBlock,
 )
 
 logger = logging.getLogger("kiro2.lp_daily_api")
@@ -35,35 +32,42 @@ router = APIRouter(
 
 # ─── Request / Response Modeller ─────────────────────────────────────────────
 
+
 class GoalRequest(BaseModel):
     exam_type: str = Field("TYT", description="TYT | AYT_SAY | AYT_EA | AYT_SOZ")
     exam_date: str = Field(..., description="YYYY-MM-DD")
     daily_minutes: int = Field(120, ge=30, le=480)
-    target_university: Optional[str] = None
-    target_department: Optional[str] = None
+    target_university: str | None = None
+    target_department: str | None = None
 
 
 class StudyBlockOut(BaseModel):
     subject: str
     topic_name: str
-    activity_type: str
+    activity_type: str  # cat | fsrs_review | practice | prereq
     duration_minutes: int
     question_count: int
     difficulty_band: str
     reason: str
     priority: int
+    prereq_blocked: bool = False  # v2: önkoşul uyarısı
 
 
 class SubjectStatusOut(BaseModel):
     subject: str
     theta: float
+    theta_se: float = 0.5  # v2: gerçek standart hata
     mastery_pct: float
     fsrs_due_count: int
     zpd_lower: float
     zpd_upper: float
     priority_score: float
     level_label: str
-    needs_cat: bool = False   # True → CAT yapılmamış, seviye bilinmiyor
+    needs_cat: bool = False
+    # v2: DAG önkoşul bilgisi
+    prereq_blocked: bool = False
+    prereq_topic: str | None = None
+    prereq_topic_name: str | None = None
 
 
 class DailyPlanOut(BaseModel):
@@ -71,33 +75,41 @@ class DailyPlanOut(BaseModel):
     exam_date: str
     days_remaining: int
     total_minutes: int
-    blocks: List[StudyBlockOut]
+    blocks: list[StudyBlockOut]
     fsrs_review_count: int
     new_topic_count: int
-    weak_subject: Optional[str]
-    strong_subject: Optional[str]
+    weak_subject: str | None
+    strong_subject: str | None
     motivational_note: str
     generated_at: str
 
 
 # ─── Yardımcılar ─────────────────────────────────────────────────────────────
 
+
 def _theta_label(theta: float) -> str:
-    if theta < -1.5: return "Temel"
-    if theta < -0.5: return "Başlangıç"
-    if theta <  0.5: return "Orta"
-    if theta <  1.5: return "İleri"
+    if theta < -1.5:
+        return "Temel"
+    if theta < -0.5:
+        return "Başlangıç"
+    if theta < 0.5:
+        return "Orta"
+    if theta < 1.5:
+        return "İleri"
     return "Uzman"
 
 
 async def _get_user_goal(db: AsyncSession, user_id: str) -> dict:
     """Kullanıcının kayıtlı sınav hedefini çek."""
     try:
-        result = await db.execute(text("""
+        result = await db.execute(
+            text("""
             SELECT exam_type, exam_date, daily_minutes
             FROM yks_exam_goals WHERE user_id = :uid
             ORDER BY created_at DESC LIMIT 1
-        """), {"uid": user_id})
+        """),
+            {"uid": user_id},
+        )
         row = result.fetchone()
         if row:
             return {
@@ -116,7 +128,8 @@ async def _get_user_goal(db: AsyncSession, user_id: str) -> dict:
 
 # ─── Endpoint'ler ─────────────────────────────────────────────────────────────
 
-@router.get("/status", response_model=List[SubjectStatusOut])
+
+@router.get("/status", response_model=list[SubjectStatusOut])
 async def get_subject_statuses(
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
@@ -148,8 +161,11 @@ async def get_today_plan(
     """Bugünkü kişiselleştirilmiş çalışma planı (ZPD+DAG+IRT+FSRS)."""
     goal = await _get_user_goal(db, str(current_user.id))
     orch = LearningPathOrchestrator(db=db)
-    exam_d = goal["exam_date"] if isinstance(goal["exam_date"], date) \
-             else date.fromisoformat(str(goal["exam_date"]))
+    exam_d = (
+        goal["exam_date"]
+        if isinstance(goal["exam_date"], date)
+        else date.fromisoformat(str(goal["exam_date"]))
+    )
     plan = await orch.generate_daily_plan(
         user_id=str(current_user.id),
         available_minutes=goal["daily_minutes"],
@@ -161,12 +177,19 @@ async def get_today_plan(
         exam_date=plan.exam_date.isoformat(),
         days_remaining=plan.days_remaining,
         total_minutes=plan.total_minutes,
-        blocks=[StudyBlockOut(
-            subject=b.subject, topic_name=b.topic_name,
-            activity_type=b.activity_type, duration_minutes=b.duration_minutes,
-            question_count=b.question_count, difficulty_band=b.difficulty_band,
-            reason=b.reason, priority=b.priority,
-        ) for b in plan.blocks],
+        blocks=[
+            StudyBlockOut(
+                subject=b.subject,
+                topic_name=b.topic_name,
+                activity_type=b.activity_type,
+                duration_minutes=b.duration_minutes,
+                question_count=b.question_count,
+                difficulty_band=b.difficulty_band,
+                reason=b.reason,
+                priority=b.priority,
+            )
+            for b in plan.blocks
+        ],
         fsrs_review_count=plan.fsrs_review_count,
         new_topic_count=plan.new_topic_count,
         weak_subject=plan.weak_subject,
@@ -196,11 +219,22 @@ async def get_weekly_preview(
     goal = await _get_user_goal(db, str(current_user.id))
     orch = LearningPathOrchestrator(db=db)
     statuses = await orch.get_student_subject_statuses(str(current_user.id))
-    exam_d = goal["exam_date"] if isinstance(goal["exam_date"], date) \
-             else date.fromisoformat(str(goal["exam_date"]))
+    exam_d = (
+        goal["exam_date"]
+        if isinstance(goal["exam_date"], date)
+        else date.fromisoformat(str(goal["exam_date"]))
+    )
     today = date.today()
     subjects_by_priority = [s.subject for s in statuses]
-    day_names = ["Pazartesi","Salı","Çarşamba","Perşembe","Cuma","Cumartesi","Pazar"]
+    day_names = [
+        "Pazartesi",
+        "Salı",
+        "Çarşamba",
+        "Perşembe",
+        "Cuma",
+        "Cumartesi",
+        "Pazar",
+    ]
     weekly = []
     for i in range(7):
         day = today + timedelta(days=i)
@@ -209,16 +243,18 @@ async def get_weekly_preview(
         p_idx = i % len(subjects_by_priority)
         s_idx = (i + 1) % len(subjects_by_priority)
         s_primary = statuses[p_idx]
-        weekly.append({
-            "date": day.isoformat(),
-            "day_label": day_names[day.weekday()],
-            "is_today": day == today,
-            "primary_subject": subjects_by_priority[p_idx],
-            "secondary_subject": subjects_by_priority[s_idx],
-            "estimated_minutes": goal["daily_minutes"],
-            "days_to_exam": max(1, (exam_d - day).days),
-            "focus_reason": f"θ={s_primary.theta:.2f} — {_theta_label(s_primary.theta)}",
-        })
+        weekly.append(
+            {
+                "date": day.isoformat(),
+                "day_label": day_names[day.weekday()],
+                "is_today": day == today,
+                "primary_subject": subjects_by_priority[p_idx],
+                "secondary_subject": subjects_by_priority[s_idx],
+                "estimated_minutes": goal["daily_minutes"],
+                "days_to_exam": max(1, (exam_d - day).days),
+                "focus_reason": f"θ={s_primary.theta:.2f} — {_theta_label(s_primary.theta)}",
+            }
+        )
     return {"weekly_plan": weekly, "exam_date": exam_d.isoformat()}
 
 
@@ -230,7 +266,8 @@ async def save_student_goal(
 ):
     """Öğrencinin sınav hedefini (tarih, tür, günlük süre) kaydet."""
     try:
-        await db.execute(text("""
+        await db.execute(
+            text("""
             INSERT INTO yks_exam_goals
                 (user_id, exam_type, exam_date, daily_minutes,
                  target_university, target_department, created_at, updated_at)
@@ -243,14 +280,18 @@ async def save_student_goal(
                 target_university = EXCLUDED.target_university,
                 target_department = EXCLUDED.target_department,
                 updated_at = NOW()
-        """), {
-            "uid": str(current_user.id),
-            "exam_type": goal.exam_type,
-            "exam_date": date.fromisoformat(goal.exam_date) if isinstance(goal.exam_date, str) else goal.exam_date,
-            "daily_minutes": goal.daily_minutes,
-            "target_univ": goal.target_university,
-            "target_dept": goal.target_department,
-        })
+        """),
+            {
+                "uid": str(current_user.id),
+                "exam_type": goal.exam_type,
+                "exam_date": date.fromisoformat(goal.exam_date)
+                if isinstance(goal.exam_date, str)
+                else goal.exam_date,
+                "daily_minutes": goal.daily_minutes,
+                "target_univ": goal.target_university,
+                "target_dept": goal.target_department,
+            },
+        )
         await db.commit()
         return {"status": "ok", "message": "Hedef kaydedildi."}
     except Exception as e:
