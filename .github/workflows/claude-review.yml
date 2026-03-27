@@ -93,8 +93,10 @@ jobs:
 
       - name: Parse command
         id: parse
+        env:
+          COMMENT_BODY: ${{ github.event.comment.body }}
         run: |
-          COMMENT="${{ github.event.comment.body }}"
+          COMMENT="${COMMENT_BODY}"
 
           if echo "$COMMENT" | grep -qi "@claude review"; then
             echo "command=review" >> $GITHUB_OUTPUT
