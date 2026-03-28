@@ -7,7 +7,7 @@ kullanarak flashcard sistemi ve tekrar zamanlaması yönetimi sağlar.
 
 import logging
 from datetime import datetime, timedelta
-from typing import Any, Dict, List
+from typing import Any
 
 from sqlalchemy import and_, desc, func, or_
 from sqlalchemy.orm import Session
@@ -101,7 +101,7 @@ class FSRSService:
         response_time_ms: int,
         student_id: str,
         db: Session,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Flashcard incelemesi yap ve sonraki tekrar zamanını hesapla
 
@@ -156,10 +156,10 @@ class FSRSService:
             pre_stability = card.stability
             pre_retrievability = card.retrievability
 
-            # Kartı güncelle
-            card.difficulty = schedule.difficulty
-            card.stability = schedule.stability
-            card.retrievability = schedule.retrievability
+            # Kartı güncelle (clamp to valid ranges)
+            card.difficulty = max(0.0, min(10.0, schedule.difficulty))
+            card.stability = max(0.0, min(36500.0, schedule.stability))
+            card.retrievability = max(0.0, min(1.0, schedule.retrievability))
             card.last_review = current_time
             card.due_date = schedule.scheduled_date
             card.review_count += 1
@@ -170,11 +170,10 @@ class FSRSService:
                 card.lapses += 1
                 card.lapse_count += 1
                 card.state = "relearning"
+            elif card.state == "new":
+                card.state = "learning"
             else:
-                if card.state == "new":
-                    card.state = "learning"
-                else:
-                    card.state = "review"
+                card.state = "review"
 
             # İnceleme kaydı oluştur
             review = DBFSRSReview(
@@ -234,7 +233,7 @@ class FSRSService:
 
     async def get_due_cards(
         self, student_id: str, limit: int = 20, db: Session = None
-    ) -> List[Dict[str, Any]]:
+    ) -> list[dict[str, Any]]:
         """
         Vadesi gelen kartları getir
 
@@ -321,7 +320,7 @@ class FSRSService:
 
     async def get_study_recommendations(
         self, student_id: str, db: Session
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Çalışma önerileri getir
 
@@ -396,7 +395,7 @@ class FSRSService:
 
     async def get_student_statistics(
         self, student_id: str, db: Session
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Öğrenci FSRS istatistiklerini getir
 
@@ -565,7 +564,7 @@ class FSRSService:
             db.rollback()
             raise
 
-    async def end_study_session(self, session_id: str, db: Session) -> Dict[str, Any]:
+    async def end_study_session(self, session_id: str, db: Session) -> dict[str, Any]:
         """
         Çalışma oturumunu sonlandır
 
