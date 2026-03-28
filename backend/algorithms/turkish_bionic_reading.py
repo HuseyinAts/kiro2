@@ -12,7 +12,9 @@ import logging
 import re
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any
+
+from core.turkish_nlp_utils import normalize_tr
 
 logger = logging.getLogger(__name__)
 
@@ -27,7 +29,7 @@ class BionicReadingResult:
     word_count: int
     bold_ratio: float
     success: bool
-    error_message: Optional[str] = None
+    error_message: str | None = None
 
 
 @dataclass
@@ -36,7 +38,7 @@ class TurkishMorphologyAnalysis:
 
     word: str
     root: str
-    suffixes: List[str]
+    suffixes: list[str]
     is_compound: bool
     analysis_confidence: float
 
@@ -90,18 +92,17 @@ class ZemberekMorphologyAnalyzer:
         try:
             if hasattr(TurkishMorphology, "createWithDefaults"):
                 return TurkishMorphology.createWithDefaults()
-            elif hasattr(TurkishMorphology, "builder"):
+            if hasattr(TurkishMorphology, "builder"):
                 return TurkishMorphology.builder().build()
-            else:
-                return TurkishMorphology()
+            return TurkishMorphology()
         except Exception as e:
             logger.warning(f"Failed to initialize Zemberek: {e}")
             return None
 
-    async def analyze(self, word: str) -> Optional[TurkishMorphologyAnalysis]:
+    async def analyze(self, word: str) -> TurkishMorphologyAnalysis | None:
         """Kelimeyi morfolojik olarak analiz et"""
         try:
-            clean_word = word.lower().strip()
+            clean_word = normalize_tr(word).strip()
 
             # Try Zemberek first if available
             if self.morphology_analyzer:
@@ -177,7 +178,7 @@ class TurkishBionicReading:
         self.punctuation_chars = ".,!?;:()[]{}\"'-"
 
         # Cache için basit dictionary
-        self._analysis_cache: Dict[str, TurkishMorphologyAnalysis] = {}
+        self._analysis_cache: dict[str, TurkishMorphologyAnalysis] = {}
 
     async def apply_bionic_reading(
         self, text: str, use_cache: bool = True
@@ -257,7 +258,7 @@ class TurkishBionicReading:
 
         try:
             # Cache kontrolü
-            cache_key = clean_word.lower()
+            cache_key = normalize_tr(clean_word)
             if use_cache and cache_key in self._analysis_cache:
                 analysis = self._analysis_cache[cache_key]
             else:
@@ -271,9 +272,8 @@ class TurkishBionicReading:
                     analysis.root, "".join(analysis.suffixes)
                 )
                 return f"{bionic_word}{punctuation}"
-            else:
-                # Analiz başarısızsa basit bold uygula
-                return self._apply_simple_bionic(clean_word, punctuation)
+            # Analiz başarısızsa basit bold uygula
+            return self._apply_simple_bionic(clean_word, punctuation)
 
         except Exception as e:
             logger.warning(f"Kelime işleme hatası ({word}): {e}")
@@ -312,7 +312,7 @@ class TurkishBionicReading:
 
         return f"**{clean_word[:bold_length]}**{clean_word[bold_length:]}{punctuation}"
 
-    def _separate_punctuation(self, word: str) -> Tuple[str, str]:
+    def _separate_punctuation(self, word: str) -> tuple[str, str]:
         """Kelime ve noktalama işaretlerini ayır"""
         punctuation = ""
         clean_word = word
@@ -348,7 +348,7 @@ class TurkishBionicReading:
         """Analiz cache'ini temizle"""
         self._analysis_cache.clear()
 
-    def get_cache_stats(self) -> Dict[str, Any]:
+    def get_cache_stats(self) -> dict[str, Any]:
         """Cache istatistiklerini döndür"""
         return {
             "cache_size": len(self._analysis_cache),

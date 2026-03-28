@@ -11,6 +11,8 @@ from typing import TYPE_CHECKING
 
 import aiohttp
 
+from core.turkish_nlp_utils import normalize_tr
+
 from .models import DifficultyLevel, ExamType, SubjectType
 
 if TYPE_CHECKING:
@@ -34,12 +36,12 @@ class QualityScorerMixin:
         """Hizli kalite puani hesaplama (performance optimized)"""
         score = 5.0  # Base score
 
-        title_lower = video_data["title"].lower()
+        title_lower = normalize_tr(video_data["title"])
 
         # Hizli baslik kontrolu
         if subject.value in title_lower:
             score += 2.0
-        if exam_type.value.lower() in title_lower:
+        if normalize_tr(exam_type.value) in title_lower:
             score += 2.0
         if any(
             keyword in title_lower
@@ -48,7 +50,7 @@ class QualityScorerMixin:
             score += 1.0
 
         # Hizli kanal kontrolu
-        channel_lower = video_data["channel"].lower()
+        channel_lower = normalize_tr(video_data["channel"])
         if any(
             keyword in channel_lower for keyword in ["ogretmen", "akademi", "egitim"]
         ):
@@ -97,14 +99,15 @@ class QualityScorerMixin:
         """Kanal kalite puani al"""
         subject_channels = self.trusted_channels.get(subject.value, [])
 
+        channel_name_lower = normalize_tr(channel_name)
         for channel in subject_channels:
-            if channel["name"].lower() in channel_name.lower():
+            if normalize_tr(channel["name"]) in channel_name_lower:
                 return channel["quality"]
 
-        # Genel egitim kanali kontrolu
+        # Genel egitim kanali kontrolu (ASCII-only keywords, normalize_tr handles any Turkish in channel_name)
         educational_keywords = ["ogretmen", "akademi", "egitim", "ders", "kurs", "okul"]
         for keyword in educational_keywords:
-            if keyword in channel_name.lower():
+            if keyword in channel_name_lower:
                 return 7.0
 
         return 5.0  # Varsayilan puan
@@ -116,7 +119,7 @@ class QualityScorerMixin:
         exam_type: ExamType,
     ) -> float:
         """Baslik relevans puani"""
-        title_lower = title.lower()
+        title_lower = normalize_tr(title)
         score = 0.0
 
         # Konu adi varligi
@@ -124,7 +127,7 @@ class QualityScorerMixin:
             score += 3.0
 
         # Sinav turu varligi
-        if exam_type.value.lower() in title_lower:
+        if normalize_tr(exam_type.value) in title_lower:
             score += 3.0
 
         # Egitim anahtar kelimeleri

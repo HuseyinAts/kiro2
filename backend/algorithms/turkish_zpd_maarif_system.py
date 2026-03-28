@@ -2,11 +2,14 @@
 Zone of Proximal Development + MEB Maarif Modeli
 Vygotsky ZPD teorisi + Türk eğitim kültürü entegrasyonu - DEVRİMSEL
 """
+
 import logging
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any
+
+from core.turkish_nlp_utils import normalize_tr
 
 logger = logging.getLogger(__name__)
 
@@ -103,7 +106,7 @@ class MaarifAlignment:
     overall_alignment: float = 0.0
 
     # Uyumlu değerler listesi
-    aligned_values: List[MaarifValue] = field(default_factory=list)
+    aligned_values: list[MaarifValue] = field(default_factory=list)
 
 
 @dataclass
@@ -161,7 +164,7 @@ class ZPDRecommendation:
     peer_support_level: float
 
     # Maarif değerleri entegrasyonu
-    maarif_integration: List[MaarifValue]
+    maarif_integration: list[MaarifValue]
 
     # Gerekçe
     reasoning: str
@@ -229,8 +232,8 @@ class TurkishZPDMaarifSystem:
     async def detect_cultural_context(
         self,
         student_id: str,
-        behavioral_data: Dict[str, Any],
-        family_survey: Optional[Dict[str, Any]] = None,
+        behavioral_data: dict[str, Any],
+        family_survey: dict[str, Any] | None = None,
     ) -> TurkishCulturalContext:
         """Öğrencinin Türk kültürel bağlamını tespit et"""
 
@@ -280,10 +283,10 @@ class TurkishZPDMaarifSystem:
         alignment = MaarifAlignment(subject=subject)
 
         # Konu bazlı değer eşleştirmesi
-        subject_values = self.subject_maarif_mapping.get(subject.lower(), [])
+        subject_values = self.subject_maarif_mapping.get(normalize_tr(subject), [])
 
         # İçerik analizi (basitleştirilmiş)
-        content_lower = content_description.lower()
+        content_lower = normalize_tr(content_description)
         aligned_values = []
 
         for value in subject_values:
@@ -559,12 +562,11 @@ class TurkishZPDMaarifSystem:
         # Türk öğrenci tercihleri
         if cultural_context.group_learning_preference > 0.7:
             return "interactive"  # Grup etkileşimli içerik
-        elif cultural_context.teacher_respect_level > 0.8:
+        if cultural_context.teacher_respect_level > 0.8:
             return "textual"  # Öğretmen rehberli metin içerik
-        elif subject.lower() in ["matematik", "fen"]:
+        if normalize_tr(subject) in ["matematik", "fen"]:
             return "visual"  # Görsel destekli içerik
-        else:
-            return "mixed"  # Karma içerik
+        return "mixed"  # Karma içerik
 
     def _generate_reasoning(
         self, zpd_range: TurkishZPDRange, learning_mode: str, content_type: str
@@ -626,7 +628,7 @@ class TurkishZPDMaarifSystem:
     async def adapt_difficulty_culturally(
         self,
         current_difficulty: float,
-        student_performance: Dict[str, float],
+        student_performance: dict[str, float],
         cultural_context: TurkishCulturalContext,
     ) -> float:
         """Kültürel faktörlere göre zorluk seviyesini adapte et"""
@@ -664,8 +666,8 @@ class TurkishZPDMaarifSystem:
         return adapted_difficulty
 
     async def monitor_cultural_learning_patterns(
-        self, student_id: str, learning_sessions: List[Dict[str, Any]]
-    ) -> Dict[str, Any]:
+        self, student_id: str, learning_sessions: list[dict[str, Any]]
+    ) -> dict[str, Any]:
         """Kültürel öğrenme kalıplarını izle ve analiz et"""
 
         patterns = {
@@ -703,9 +705,9 @@ class TurkishZPDMaarifSystem:
 
         if len(teacher_interactions) > 1:
             # Basit korelasyon hesaplama
-            patterns[
-                "teacher_interaction_correlation"
-            ] = self._calculate_simple_correlation(teacher_interactions, session_scores)
+            patterns["teacher_interaction_correlation"] = (
+                self._calculate_simple_correlation(teacher_interactions, session_scores)
+            )
 
         # Maarif içerik katılımı
         maarif_sessions = [
@@ -727,7 +729,7 @@ class TurkishZPDMaarifSystem:
         logger.info(f"Kültürel öğrenme kalıpları analiz edildi - Öğrenci: {student_id}")
         return patterns
 
-    def _calculate_simple_correlation(self, x: List[float], y: List[float]) -> float:
+    def _calculate_simple_correlation(self, x: list[float], y: list[float]) -> float:
         """Basit korelasyon hesaplama"""
         if len(x) != len(y) or len(x) < 2:
             return 0.0

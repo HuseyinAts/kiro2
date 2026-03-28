@@ -15,9 +15,11 @@ import logging
 from dataclasses import dataclass
 from datetime import datetime
 from enum import Enum
-from typing import Any, Dict, List, Tuple
+from typing import Any
 
 from hijri_converter import Gregorian
+
+from core.turkish_nlp_utils import normalize_tr
 
 logger = logging.getLogger(__name__)
 
@@ -77,7 +79,7 @@ class CulturalAdaptationResult:
     current_period: CulturalPeriod
     adaptation_multiplier: float
     recommended_study_hours: int
-    optimal_study_times: List[str]
+    optimal_study_times: list[str]
     content_difficulty_adjustment: float
     social_learning_emphasis: float
     individual_focus_emphasis: float
@@ -345,7 +347,7 @@ class CulturalAdaptationEngine:
 
         if current_date.year == 2024:
             return current_tuple in kurban_dates_2024
-        elif current_date.year == 2025:
+        if current_date.year == 2025:
             return current_tuple in kurban_dates_2025
 
         return False
@@ -360,7 +362,7 @@ class CulturalAdaptationEngine:
 
         if current_date.year == 2024:
             return current_tuple in ramazan_dates_2024
-        elif current_date.year == 2025:
+        if current_date.year == 2025:
             return current_tuple in ramazan_dates_2025
 
         return False
@@ -417,7 +419,7 @@ class CulturalAdaptationEngine:
 
         return (month, day) in national_holidays
 
-    def _get_period_adjustments(self, period: CulturalPeriod) -> Dict[str, float]:
+    def _get_period_adjustments(self, period: CulturalPeriod) -> dict[str, float]:
         """Dönemsel ayarlamaları getir"""
         adjustments = {
             CulturalPeriod.NORMAL: {
@@ -514,32 +516,30 @@ class CulturalAdaptationEngine:
 
     def _get_optimal_study_times(
         self, period: CulturalPeriod, religious_observance: float
-    ) -> List[str]:
+    ) -> list[str]:
         """Optimal çalışma zamanlarını belirle"""
 
         if period == CulturalPeriod.RAMADAN:
             if religious_observance > 0.7:
                 # Dindar öğrenciler için sahur sonrası ve iftar sonrası
                 return ["05:00-07:00", "20:00-22:00"]
-            else:
-                # Daha esnek program
-                return ["06:00-08:00", "19:00-21:00"]
+            # Daha esnek program
+            return ["06:00-08:00", "19:00-21:00"]
 
-        elif period == CulturalPeriod.EXAM_SEASON:
+        if period == CulturalPeriod.EXAM_SEASON:
             # Sınav döneminde yoğun çalışma saatleri
             return ["08:00-12:00", "14:00-18:00", "20:00-22:00"]
 
-        elif period in [CulturalPeriod.KURBAN_BAYRAMI, CulturalPeriod.RAMAZAN_BAYRAMI]:
+        if period in [CulturalPeriod.KURBAN_BAYRAMI, CulturalPeriod.RAMAZAN_BAYRAMI]:
             # Bayramlarda minimal çalışma
             return ["10:00-11:00"]
 
-        elif period == CulturalPeriod.SUMMER_BREAK:
+        if period == CulturalPeriod.SUMMER_BREAK:
             # Yaz tatilinde esnek saatler
             return ["09:00-11:00", "16:00-18:00"]
 
-        else:
-            # Normal dönem
-            return ["08:00-10:00", "14:00-16:00", "19:00-21:00"]
+        # Normal dönem
+        return ["08:00-10:00", "14:00-16:00", "19:00-21:00"]
 
     def _calculate_difficulty_adjustment(
         self,
@@ -573,7 +573,7 @@ class CulturalAdaptationEngine:
         cultural_factors: CulturalFactors,
         regional_culture: RegionalCulture,
         age_group: AgeGroup,
-    ) -> Tuple[float, float]:
+    ) -> tuple[float, float]:
         """Sosyal vs bireysel öğrenme vurgusunu hesapla"""
 
         # Temel sosyal öğrenme tercihi
@@ -610,23 +610,21 @@ class CulturalAdaptationEngine:
         if period == CulturalPeriod.RAMADAN:
             return "spiritual_motivation"  # Manevi motivasyon
 
-        elif period == CulturalPeriod.EXAM_SEASON:
+        if period == CulturalPeriod.EXAM_SEASON:
             if cultural_factors.family_pressure_level > 0.8:
                 return "family_honor_motivation"  # Aile onuru motivasyonu
-            else:
-                return "personal_achievement_motivation"  # Kişisel başarı
+            return "personal_achievement_motivation"  # Kişisel başarı
 
-        elif period in [CulturalPeriod.KURBAN_BAYRAMI, CulturalPeriod.RAMAZAN_BAYRAMI]:
+        if period in [CulturalPeriod.KURBAN_BAYRAMI, CulturalPeriod.RAMAZAN_BAYRAMI]:
             return "family_values_motivation"  # Aile değerleri
 
-        elif period == CulturalPeriod.NATIONAL_HOLIDAYS:
+        if period == CulturalPeriod.NATIONAL_HOLIDAYS:
             return "national_pride_motivation"  # Milli gurur
 
-        elif cultural_factors.peer_competition_intensity > 0.7:
+        if cultural_factors.peer_competition_intensity > 0.7:
             return "peer_competition_motivation"  # Akran rekabeti
 
-        else:
-            return "balanced_motivation"  # Dengeli motivasyon
+        return "balanced_motivation"  # Dengeli motivasyon
 
     def _generate_cultural_context_explanation(
         self,
@@ -728,9 +726,9 @@ class CulturalContextAnalyzer:
     async def analyze_student_cultural_context(
         self,
         student_id: str,
-        behavioral_data: Dict[str, Any],
-        interaction_history: List[Dict[str, Any]],
-    ) -> Dict[str, Any]:
+        behavioral_data: dict[str, Any],
+        interaction_history: list[dict[str, Any]],
+    ) -> dict[str, Any]:
         """
         Öğrenci davranış verilerinden kültürel bağlamı analiz et
 
@@ -790,7 +788,7 @@ class CulturalContextAnalyzer:
         }
 
     async def _assess_family_involvement(
-        self, behavioral_data: Dict[str, Any], interaction_history: List[Dict[str, Any]]
+        self, behavioral_data: dict[str, Any], interaction_history: list[dict[str, Any]]
     ) -> float:
         """Aile katılım seviyesini değerlendir"""
 
@@ -806,7 +804,7 @@ class CulturalContextAnalyzer:
         family_mentions = 0
         for interaction in interaction_history[-50:]:  # Son 50 etkileşim
             if any(
-                word in interaction.get("content", "").lower()
+                word in normalize_tr(interaction.get("content", ""))
                 for word in ["ailem", "annem", "babam", "velim", "aile"]
             ):
                 family_mentions += 1
@@ -827,7 +825,7 @@ class CulturalContextAnalyzer:
         )
 
     async def _analyze_study_preferences(
-        self, behavioral_data: Dict[str, Any], interaction_history: List[Dict[str, Any]]
+        self, behavioral_data: dict[str, Any], interaction_history: list[dict[str, Any]]
     ) -> str:
         """Çalışma tercihlerini analiz et"""
 
@@ -844,7 +842,7 @@ class CulturalContextAnalyzer:
 
         # Sohbet içeriği analizi
         for interaction in interaction_history[-30:]:
-            content = interaction.get("content", "").lower()
+            content = normalize_tr(interaction.get("content", ""))
             if any(
                 word in content
                 for word in ["arkadaşlarımla", "beraber", "grup", "birlikte"]
@@ -855,13 +853,12 @@ class CulturalContextAnalyzer:
 
         if group_indicators > individual_indicators * 1.2:
             return "group_oriented"
-        elif individual_indicators > group_indicators * 1.2:
+        if individual_indicators > group_indicators * 1.2:
             return "individual_oriented"
-        else:
-            return "balanced"
+        return "balanced"
 
     async def _measure_authority_respect(
-        self, behavioral_data: Dict[str, Any], interaction_history: List[Dict[str, Any]]
+        self, behavioral_data: dict[str, Any], interaction_history: list[dict[str, Any]]
     ) -> float:
         """Otorite saygısı seviyesini ölç"""
 
@@ -875,7 +872,7 @@ class CulturalContextAnalyzer:
         # Nezaket seviyesi ve saygılı dil kullanımı
         polite_interactions = 0
         for interaction in interaction_history[-20:]:
-            content = interaction.get("content", "").lower()
+            content = normalize_tr(interaction.get("content", ""))
             if any(
                 word in content for word in ["lütfen", "teşekkür", "saygılar", "özür"]
             ):
@@ -889,8 +886,8 @@ class CulturalContextAnalyzer:
         return min(1.0, respect_score)
 
     async def _analyze_peer_interaction(
-        self, behavioral_data: Dict[str, Any], interaction_history: List[Dict[str, Any]]
-    ) -> Dict[str, float]:
+        self, behavioral_data: dict[str, Any], interaction_history: list[dict[str, Any]]
+    ) -> dict[str, float]:
         """Akran etkileşimini analiz et"""
 
         competition_level = 0.0
@@ -915,7 +912,7 @@ class CulturalContextAnalyzer:
         collaborative_mentions = 0
 
         for interaction in interaction_history[-25:]:
-            content = interaction.get("content", "").lower()
+            content = normalize_tr(interaction.get("content", ""))
             if any(
                 word in content for word in ["yarış", "rekabet", "geçmek", "kazanmak"]
             ):
@@ -939,7 +936,7 @@ class CulturalContextAnalyzer:
         family_involvement: float,
         study_preference: str,
         authority_respect: float,
-        peer_interaction: Dict[str, float],
+        peer_interaction: dict[str, float],
     ) -> str:
         """Kültürel kalıbı tespit et"""
 
@@ -983,8 +980,8 @@ class CulturalContextAnalyzer:
         return best_match
 
     async def _generate_adaptation_recommendations(
-        self, cultural_pattern: str, behavioral_data: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, cultural_pattern: str, behavioral_data: dict[str, Any]
+    ) -> dict[str, Any]:
         """Adaptasyon önerilerini oluştur"""
 
         recommendations = {
@@ -1023,7 +1020,7 @@ class CulturalContextAnalyzer:
         )
 
         # Davranış verilerine göre özelleştir
-        customizations: Dict[str, Any] = {}
+        customizations: dict[str, Any] = {}
 
         if behavioral_data.get("study_time_preference") == "evening":
             customizations["optimal_study_times"] = ["19:00-21:00", "21:00-23:00"]
@@ -1038,7 +1035,7 @@ class CulturalContextAnalyzer:
         return {**base_recommendations, **customizations}
 
     def _calculate_analysis_confidence(
-        self, behavioral_data: Dict[str, Any], interaction_history: List[Dict[str, Any]]
+        self, behavioral_data: dict[str, Any], interaction_history: list[dict[str, Any]]
     ) -> float:
         """Analiz güven skorunu hesapla"""
 

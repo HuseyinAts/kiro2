@@ -7,9 +7,10 @@ Multi-criteria scoring ve weighted scoring kullanır.
 Requirements: REQ-48.49 - REQ-48.52
 """
 
-from typing import Dict, List, Optional
 from dataclasses import dataclass
 from enum import Enum
+
+from core.turkish_nlp_utils import normalize_tr
 
 
 class QualityCriterion(Enum):
@@ -29,10 +30,10 @@ class QualityScore:
     """Kalite skoru sonucu"""
 
     total_score: float  # 0-100 arası toplam skor
-    criterion_scores: Dict[str, float]  # Her kriter için skor
+    criterion_scores: dict[str, float]  # Her kriter için skor
     passed_threshold: bool  # Eşik değeri geçti mi?
-    feedback: List[str]  # İyileştirme önerileri
-    weighted_breakdown: Dict[str, float]  # Ağırlıklı skor dağılımı
+    feedback: list[str]  # İyileştirme önerileri
+    weighted_breakdown: dict[str, float]  # Ağırlıklı skor dağılımı
 
 
 class QuestionQualityScorer:
@@ -59,7 +60,7 @@ class QuestionQualityScorer:
     # Kalite eşik değeri (REQ-48.51)
     QUALITY_THRESHOLD = 70.0
 
-    def __init__(self, weights: Optional[Dict[QualityCriterion, float]] = None):
+    def __init__(self, weights: dict[QualityCriterion, float] | None = None):
         """
         Args:
             weights: Özel kriter ağırlıkları (opsiyonel)
@@ -76,11 +77,11 @@ class QuestionQualityScorer:
     def score_question(
         self,
         question_text: str,
-        options: List[str],
+        options: list[str],
         correct_answer: int,
-        explanation: Optional[str] = None,
-        subject: Optional[str] = None,
-        difficulty_level: Optional[str] = None,
+        explanation: str | None = None,
+        subject: str | None = None,
+        difficulty_level: str | None = None,
     ) -> QualityScore:
         """
         Soruyu çok kriterli algoritma ile skorla
@@ -124,7 +125,7 @@ class QuestionQualityScorer:
                 QualityCriterion.CONTENT_ACCURACY.value: 0.0,
                 QualityCriterion.EDUCATIONAL_VALUE.value: 0.0,
             }
-            weighted_breakdown = {k: 0.0 for k in criterion_scores.keys()}
+            weighted_breakdown = dict.fromkeys(criterion_scores.keys(), 0.0)
             feedback = [f"❌ {err}" for err in validation_errors]
             feedback.insert(0, "⚠️ Soru kalite eşiğini geçemedi (minimum 70 puan)")
 
@@ -182,7 +183,7 @@ class QuestionQualityScorer:
         )
 
     def _score_osym_compliance(
-        self, question_text: str, options: List[str], correct_answer: int
+        self, question_text: str, options: list[str], correct_answer: int
     ) -> float:
         """
         ÖSYM formatına uygunluk skorla (0-1 arası)
@@ -217,7 +218,7 @@ class QuestionQualityScorer:
 
         return max(0.0, score)
 
-    def _score_grammar(self, question_text: str, options: List[str]) -> float:
+    def _score_grammar(self, question_text: str, options: list[str]) -> float:
         """
         Dilbilgisi kalitesi skorla (0-1 arası)
 
@@ -269,14 +270,14 @@ class QuestionQualityScorer:
         # Belirsiz ifadeler
         vague_terms = ["bazı", "birkaç", "genellikle", "çoğunlukla", "yaklaşık"]
         for term in vague_terms:
-            if term in question_text.lower():
+            if term in normalize_tr(question_text):
                 score -= 0.1
                 break
 
         return max(0.0, score)
 
     def _score_difficulty(
-        self, question_text: str, difficulty_level: Optional[str]
+        self, question_text: str, difficulty_level: str | None
     ) -> float:
         """
         Zorluk seviyesi uygunluğu skorla (0-1 arası)
@@ -288,14 +289,14 @@ class QuestionQualityScorer:
             # Kelime sayısı ile zorluk korelasyonu
             word_count = len(question_text.split())
 
-            if difficulty_level.lower() == "kolay" and word_count > 50:
-                score -= 0.2
-            elif difficulty_level.lower() == "zor" and word_count < 20:
+            if (normalize_tr(difficulty_level) == "kolay" and word_count > 50) or (
+                normalize_tr(difficulty_level) == "zor" and word_count < 20
+            ):
                 score -= 0.2
 
         return max(0.0, score)
 
-    def _score_distractors(self, options: List[str], correct_answer: int) -> float:
+    def _score_distractors(self, options: list[str], correct_answer: int) -> float:
         """
         Çeldirici kalitesi skorla (0-1 arası)
 
@@ -332,7 +333,7 @@ class QuestionQualityScorer:
         return max(0.0, score)
 
     def _score_content_accuracy(
-        self, question_text: str, explanation: Optional[str]
+        self, question_text: str, explanation: str | None
     ) -> float:
         """
         İçerik doğruluğu skorla (0-1 arası)
@@ -353,7 +354,7 @@ class QuestionQualityScorer:
         return max(0.0, score)
 
     def _score_educational_value(
-        self, question_text: str, explanation: Optional[str]
+        self, question_text: str, explanation: str | None
     ) -> float:
         """
         Eğitsel değer skorla (0-1 arası)
@@ -379,7 +380,7 @@ class QuestionQualityScorer:
         ]
 
         has_bloom_keyword = any(
-            keyword in question_text.lower() for keyword in bloom_keywords
+            keyword in normalize_tr(question_text) for keyword in bloom_keywords
         )
 
         if not has_bloom_keyword:
@@ -388,8 +389,8 @@ class QuestionQualityScorer:
         return max(0.0, score)
 
     def _generate_feedback(
-        self, criterion_scores: Dict[str, float], passed_threshold: bool
-    ) -> List[str]:
+        self, criterion_scores: dict[str, float], passed_threshold: bool
+    ) -> list[str]:
         """
         İyileştirme önerileri oluştur
         """
@@ -424,7 +425,7 @@ class QuestionQualityScorer:
             f"❌ {feedback_map.get(criterion, 'Bilinmeyen kriter')} (Skor: {score:.2f})"
         )
 
-    def batch_score(self, questions: List[Dict]) -> List[QualityScore]:
+    def batch_score(self, questions: list[dict]) -> list[QualityScore]:
         """
         Toplu soru skorlama
 
@@ -450,8 +451,8 @@ class QuestionQualityScorer:
         return results
 
     def filter_by_threshold(
-        self, questions: List[Dict], threshold: Optional[float] = None
-    ) -> List[Dict]:
+        self, questions: list[dict], threshold: float | None = None
+    ) -> list[dict]:
         """
         Kalite eşiğini geçen soruları filtrele (REQ-48.51)
 

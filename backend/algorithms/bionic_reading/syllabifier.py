@@ -12,29 +12,32 @@ Türkçe heceleme kurallarını uygular:
 import logging
 from dataclasses import dataclass
 from enum import Enum
-from typing import Optional
+
+from core.turkish_nlp_utils import normalize_tr
 
 logger = logging.getLogger(__name__)
 
-# Türkçe ünlüler
-TURKISH_VOWELS = set("aeıioöuüAEIİOÖUÜ")
-FRONT_VOWELS = set("eiöüEİÖÜ")  # İnce ünlüler
-BACK_VOWELS = set("aıouAIOU")  # Kalın ünlüler
-ROUNDED_VOWELS = set("oöuüOÖUÜ")  # Yuvarlak ünlüler
-UNROUNDED_VOWELS = set("aeıiAEIİ")  # Düz ünlüler
+# Türkçe ünlüler (lowercase only — input is normalized via normalize_tr before comparison)
+TURKISH_VOWELS = set("aeıioöuü")
+FRONT_VOWELS = set("eiöü")  # İnce ünlüler
+BACK_VOWELS = set("aıou")  # Kalın ünlüler
+ROUNDED_VOWELS = set("oöuü")  # Yuvarlak ünlüler
+UNROUNDED_VOWELS = set("aeıi")  # Düz ünlüler
 
-# Türkçe ünsüzler
-TURKISH_CONSONANTS = set("bcçdfgğhjklmnprsştvyzBCÇDFGĞHJKLMNPRSŞTVYZ")
+# Türkçe ünsüzler (lowercase only — input is normalized via normalize_tr before comparison)
+TURKISH_CONSONANTS = set("bcçdfgğhjklmnprsştvyz")
 
 
 class SyllableWeight(Enum):
     """Hece ağırlığı tipleri"""
+
     LIGHT = "light"  # CV (açık hece): ka, de
     HEAVY = "heavy"  # CVC veya CVV (kapalı hece): kan, kaan
 
 
 class VowelHarmony(Enum):
     """Ünlü uyumu tipleri"""
+
     FRONT = "front"  # İnce ünlüler (e, i, ö, ü)
     BACK = "back"  # Kalın ünlüler (a, ı, o, u)
     MIXED = "mixed"  # Karışık (yabancı kökenli)
@@ -43,6 +46,7 @@ class VowelHarmony(Enum):
 @dataclass
 class Syllable:
     """Hece veri yapısı"""
+
     text: str
     weight: SyllableWeight
     vowel: str
@@ -53,6 +57,7 @@ class Syllable:
 @dataclass
 class SyllabificationResult:
     """Heceleme sonucu"""
+
     word: str
     syllables: list[Syllable]
     vowel_harmony: VowelHarmony
@@ -76,8 +81,20 @@ class TurkishSyllabifier:
         self._cache: dict[str, SyllabificationResult] = {}
 
         # Türkçe'de geçerli ünsüz kümeleri
-        self.valid_onset_clusters: set[str] = set()  # Türkçe'de sözcük başı ünsüz kümesi yok
-        self.valid_coda_clusters = {"nk", "nt", "nç", "st", "şt", "rk", "rt", "lk", "lt"}
+        self.valid_onset_clusters: set[str] = (
+            set()
+        )  # Türkçe'de sözcük başı ünsüz kümesi yok
+        self.valid_coda_clusters = {
+            "nk",
+            "nt",
+            "nç",
+            "st",
+            "şt",
+            "rk",
+            "rt",
+            "lk",
+            "lt",
+        }
 
     def syllabify(self, word: str, use_cache: bool = True) -> SyllabificationResult:
         """
@@ -97,10 +114,10 @@ class TurkishSyllabifier:
                 vowel_harmony=VowelHarmony.BACK,
                 is_compound=False,
                 syllable_count=0,
-                confidence=1.0
+                confidence=1.0,
             )
 
-        cache_key = word.lower()
+        cache_key = normalize_tr(word)
         if use_cache and cache_key in self._cache:
             return self._cache[cache_key]
 
@@ -115,7 +132,7 @@ class TurkishSyllabifier:
                 vowel_harmony=vowel_harmony,
                 is_compound=is_compound,
                 syllable_count=len(syllables),
-                confidence=0.9
+                confidence=0.9,
             )
 
             if use_cache:
@@ -131,7 +148,7 @@ class TurkishSyllabifier:
                 vowel_harmony=VowelHarmony.MIXED,
                 is_compound=False,
                 syllable_count=1,
-                confidence=0.5
+                confidence=0.5,
             )
 
     def _split_into_syllables(self, word: str) -> list[Syllable]:
@@ -144,7 +161,7 @@ class TurkishSyllabifier:
         while i < len(word):
             char = word[i]
 
-            if char.lower() in TURKISH_VOWELS:
+            if normalize_tr(char) in TURKISH_VOWELS:
                 # Ünlü bulundu, mevcut heceye ekle
                 current_syllable += char
 
@@ -153,7 +170,7 @@ class TurkishSyllabifier:
 
                 # Sonraki ünsüzleri kontrol et
                 consonant_buffer = ""
-                while j < len(word) and word[j].lower() not in TURKISH_VOWELS:
+                while j < len(word) and normalize_tr(word[j]) not in TURKISH_VOWELS:
                     consonant_buffer += word[j]
                     j += 1
 
@@ -166,12 +183,14 @@ class TurkishSyllabifier:
                         # Heceyi kaydet
                         vowel = self._find_vowel(current_syllable)
                         weight = self._calculate_weight(current_syllable)
-                        syllables.append(Syllable(
-                            text=current_syllable,
-                            weight=weight,
-                            vowel=vowel,
-                            position=position
-                        ))
+                        syllables.append(
+                            Syllable(
+                                text=current_syllable,
+                                weight=weight,
+                                vowel=vowel,
+                                position=position,
+                            )
+                        )
                         position += 1
 
                         # Yeni hece başlat
@@ -182,24 +201,28 @@ class TurkishSyllabifier:
                         current_syllable += consonant_buffer
                         vowel = self._find_vowel(current_syllable)
                         weight = self._calculate_weight(current_syllable)
-                        syllables.append(Syllable(
-                            text=current_syllable,
-                            weight=weight,
-                            vowel=vowel,
-                            position=position
-                        ))
+                        syllables.append(
+                            Syllable(
+                                text=current_syllable,
+                                weight=weight,
+                                vowel=vowel,
+                                position=position,
+                            )
+                        )
                         current_syllable = ""
                         i = j - 1
                 else:
                     # Ünlüden sonra ünsüz yok
                     vowel = self._find_vowel(current_syllable)
                     weight = self._calculate_weight(current_syllable)
-                    syllables.append(Syllable(
-                        text=current_syllable,
-                        weight=weight,
-                        vowel=vowel,
-                        position=position
-                    ))
+                    syllables.append(
+                        Syllable(
+                            text=current_syllable,
+                            weight=weight,
+                            vowel=vowel,
+                            position=position,
+                        )
+                    )
                     position += 1
                     current_syllable = ""
             else:
@@ -212,12 +235,11 @@ class TurkishSyllabifier:
         if current_syllable:
             vowel = self._find_vowel(current_syllable)
             weight = self._calculate_weight(current_syllable)
-            syllables.append(Syllable(
-                text=current_syllable,
-                weight=weight,
-                vowel=vowel,
-                position=position
-            ))
+            syllables.append(
+                Syllable(
+                    text=current_syllable, weight=weight, vowel=vowel, position=position
+                )
+            )
 
         # İlk heceler genellikle kök heceleridir
         if syllables:
@@ -230,20 +252,20 @@ class TurkishSyllabifier:
     def _find_vowel(self, syllable: str) -> str:
         """Hecedeki ünlüyü bul"""
         for char in syllable:
-            if char.lower() in TURKISH_VOWELS:
+            if normalize_tr(char) in TURKISH_VOWELS:
                 return char
         return ""
 
     def _calculate_weight(self, syllable: str) -> SyllableWeight:
         """Hece ağırlığını hesapla"""
-        vowel_count = sum(1 for c in syllable if c.lower() in TURKISH_VOWELS)
+        vowel_count = sum(1 for c in syllable if normalize_tr(c) in TURKISH_VOWELS)
         consonant_after_vowel = False
 
         found_vowel = False
         for char in syllable:
-            if char.lower() in TURKISH_VOWELS:
+            if normalize_tr(char) in TURKISH_VOWELS:
                 found_vowel = True
-            elif found_vowel and char.lower() in TURKISH_CONSONANTS:
+            elif found_vowel and normalize_tr(char) in TURKISH_CONSONANTS:
                 consonant_after_vowel = True
                 break
 
@@ -254,25 +276,24 @@ class TurkishSyllabifier:
 
     def _detect_vowel_harmony(self, word: str) -> VowelHarmony:
         """Ünlü uyumunu tespit et"""
-        vowels_in_word = [c for c in word if c.lower() in TURKISH_VOWELS]
+        vowels_in_word = [c for c in word if normalize_tr(c) in TURKISH_VOWELS]
 
         if not vowels_in_word:
             return VowelHarmony.BACK
 
-        front_count = sum(1 for v in vowels_in_word if v.lower() in FRONT_VOWELS)
-        back_count = sum(1 for v in vowels_in_word if v.lower() in BACK_VOWELS)
+        front_count = sum(1 for v in vowels_in_word if normalize_tr(v) in FRONT_VOWELS)
+        back_count = sum(1 for v in vowels_in_word if normalize_tr(v) in BACK_VOWELS)
 
         if front_count > 0 and back_count > 0:
             # Karışık ünlüler (yabancı kökenli veya birleşik kelime olabilir)
             if front_count > back_count:
                 return VowelHarmony.FRONT
-            elif back_count > front_count:
+            if back_count > front_count:
                 return VowelHarmony.BACK
             return VowelHarmony.MIXED
-        elif front_count > 0:
+        if front_count > 0:
             return VowelHarmony.FRONT
-        else:
-            return VowelHarmony.BACK
+        return VowelHarmony.BACK
 
     def _detect_compound(self, word: str) -> bool:
         """Birleşik kelime tespiti"""
@@ -290,7 +311,7 @@ class TurkishSyllabifier:
 
         return False
 
-    def get_first_syllable(self, word: str) -> Optional[Syllable]:
+    def get_first_syllable(self, word: str) -> Syllable | None:
         """İlk heceyi döndür"""
         result = self.syllabify(word)
         if result.syllables:
@@ -318,5 +339,5 @@ class TurkishSyllabifier:
         """Cache istatistiklerini döndür"""
         return {
             "cache_size": len(self._cache),
-            "sample_keys": list(self._cache.keys())[:10]
+            "sample_keys": list(self._cache.keys())[:10],
         }

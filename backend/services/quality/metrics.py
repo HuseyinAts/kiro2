@@ -6,10 +6,13 @@ Author: KIRO AI Team
 Date: 2025-10-19
 """
 
-import numpy as np
-from typing import List, Dict, Any, Optional
-from collections import Counter
 import re
+from collections import Counter
+from typing import Any
+
+import numpy as np
+
+from core.turkish_nlp_utils import normalize_tr
 
 
 class BLEUScore:
@@ -30,8 +33,8 @@ class BLEUScore:
     def compute(
         self,
         candidate: str,
-        references: List[str],
-        weights: Optional[List[float]] = None,
+        references: list[str],
+        weights: list[float] | None = None,
     ) -> float:
         """
         Compute BLEU score
@@ -74,14 +77,14 @@ class BLEUScore:
 
         return bleu
 
-    def _tokenize(self, text: str) -> List[str]:
+    def _tokenize(self, text: str) -> list[str]:
         """Simple tokenization"""
-        # Remove punctuation and lowercase
-        text = re.sub(r"[^\w\s]", " ", text.lower())
+        # Remove punctuation and normalize (Turkish-safe lowercasing)
+        text = re.sub(r"[^\w\s]", " ", normalize_tr(text))
         return text.split()
 
     def _ngram_precision(
-        self, candidate: List[str], references: List[List[str]], n: int
+        self, candidate: list[str], references: list[list[str]], n: int
     ) -> float:
         """
         Calculate n-gram precision
@@ -119,7 +122,7 @@ class BLEUScore:
 
         return numerator / denominator
 
-    def _get_ngrams(self, tokens: List[str], n: int) -> Counter:
+    def _get_ngrams(self, tokens: list[str], n: int) -> Counter:
         """Get n-grams from token list"""
         ngrams = []
         for i in range(len(tokens) - n + 1):
@@ -128,7 +131,7 @@ class BLEUScore:
         return Counter(ngrams)
 
     def _brevity_penalty(
-        self, candidate: List[str], references: List[List[str]]
+        self, candidate: list[str], references: list[list[str]]
     ) -> float:
         """Calculate brevity penalty"""
         c = len(candidate)
@@ -139,10 +142,9 @@ class BLEUScore:
 
         if c > r:
             return 1.0
-        elif c == 0:
+        if c == 0:
             return 0.0
-        else:
-            return np.exp(1 - r / c)
+        return np.exp(1 - r / c)
 
 
 class ROUGEScore:
@@ -153,11 +155,10 @@ class ROUGEScore:
 
     def __init__(self):
         """Initialize ROUGE scorer"""
-        pass
 
     def compute_rouge_n(
         self, candidate: str, reference: str, n: int = 2
-    ) -> Dict[str, float]:
+    ) -> dict[str, float]:
         """
         Compute ROUGE-N score
 
@@ -191,7 +192,7 @@ class ROUGEScore:
 
         return {"precision": precision, "recall": recall, "f1": f1}
 
-    def compute_rouge_l(self, candidate: str, reference: str) -> Dict[str, float]:
+    def compute_rouge_l(self, candidate: str, reference: str) -> dict[str, float]:
         """
         Compute ROUGE-L (Longest Common Subsequence)
 
@@ -217,12 +218,12 @@ class ROUGEScore:
 
         return {"precision": precision, "recall": recall, "f1": f1}
 
-    def _tokenize(self, text: str) -> List[str]:
+    def _tokenize(self, text: str) -> list[str]:
         """Tokenize text"""
-        text = re.sub(r"[^\w\s]", " ", text.lower())
+        text = re.sub(r"[^\w\s]", " ", normalize_tr(text))
         return text.split()
 
-    def _get_ngrams(self, tokens: List[str], n: int) -> Counter:
+    def _get_ngrams(self, tokens: list[str], n: int) -> Counter:
         """Get n-grams"""
         ngrams = []
         for i in range(len(tokens) - n + 1):
@@ -230,7 +231,7 @@ class ROUGEScore:
             ngrams.append(ngram)
         return Counter(ngrams)
 
-    def _lcs(self, seq1: List[str], seq2: List[str]) -> int:
+    def _lcs(self, seq1: list[str], seq2: list[str]) -> int:
         """Longest Common Subsequence length"""
         m, n = len(seq1), len(seq2)
         dp = [[0] * (n + 1) for _ in range(m + 1)]
@@ -269,8 +270,8 @@ class BERTScoreMetric:
         """Lazy load BERT model"""
         if self._model is None:
             try:
-                from transformers import AutoTokenizer, AutoModel
                 import torch
+                from transformers import AutoModel, AutoTokenizer
 
                 self._tokenizer = AutoTokenizer.from_pretrained(self.model_name)
                 self._model = AutoModel.from_pretrained(self.model_name)
@@ -284,7 +285,7 @@ class BERTScoreMetric:
 
     def compute(
         self, candidate: str, reference: str, use_idf: bool = False
-    ) -> Dict[str, float]:
+    ) -> dict[str, float]:
         """
         Compute BERTScore
 
@@ -317,7 +318,7 @@ class QualityMetrics:
         self.rouge = ROUGEScore()
         self.bertscore = BERTScoreMetric()
 
-    def compute_all(self, candidate: str, references: List[str]) -> Dict[str, Any]:
+    def compute_all(self, candidate: str, references: list[str]) -> dict[str, Any]:
         """
         Compute all quality metrics
 

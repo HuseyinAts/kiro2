@@ -5,9 +5,9 @@ import json
 import logging
 import os
 from collections.abc import AsyncIterator
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from enum import Enum
-from typing import Any, Optional
+from typing import Any
 from uuid import uuid4
 
 from fastapi import APIRouter, Depends, File, Form, Query, UploadFile
@@ -15,6 +15,8 @@ from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, Field
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
+
+from core.turkish_nlp_utils import normalize_tr
 
 logger = logging.getLogger(__name__)
 
@@ -27,11 +29,14 @@ router = APIRouter(prefix="/api/v1/enhanced-chat", tags=["chat"])
 def _get_auth_dependency():
     try:
         from core.dependencies import get_current_user
+
         return Depends(get_current_user)
     except ImportError:
         _is_dev = os.getenv("ENVIRONMENT", "development") == "development"
         if _is_dev:
-            logger.warning("Auth module not available — enhanced-chat unauthenticated (dev mode)")
+            logger.warning(
+                "Auth module not available — enhanced-chat unauthenticated (dev mode)"
+            )
 
             async def _noop_auth() -> None:
                 return None
@@ -48,6 +53,7 @@ _auth_dep = _get_auth_dependency()
 def _get_db_dependency():
     try:
         from core.dependencies import get_db
+
         return Depends(get_db)
     except ImportError:
         logger.warning("DB module not available — chat persistence disabled")
@@ -91,7 +97,10 @@ async def _verify_chat_tables(db: AsyncSession) -> bool:
 
 
 async def _get_or_create_session(
-    db: AsyncSession, user_id: str, session_id: Optional[str], subject: str,
+    db: AsyncSession,
+    user_id: str,
+    session_id: str | None,
+    subject: str,
 ) -> str:
     """Get existing session or create a new one. Returns session_id."""
     if session_id:
@@ -116,8 +125,12 @@ async def _get_or_create_session(
 
 
 async def _save_message(
-    db: AsyncSession, session_id: str, role: str, content: str,
-    model: Optional[str] = None, confidence: Optional[float] = None,
+    db: AsyncSession,
+    session_id: str,
+    role: str,
+    content: str,
+    model: str | None = None,
+    confidence: float | None = None,
 ) -> str:
     """Save a message to chat_messages. Returns message id."""
     msg_id = str(uuid4())
@@ -127,8 +140,12 @@ async def _save_message(
             "VALUES (:id, :sid, :role, :content, :model, :conf)"
         ),
         {
-            "id": msg_id, "sid": session_id, "role": role,
-            "content": content, "model": model, "conf": confidence,
+            "id": msg_id,
+            "sid": session_id,
+            "role": role,
+            "content": content,
+            "model": model,
+            "conf": confidence,
         },
     )
     # Update session stats
@@ -202,11 +219,11 @@ class ChatMessageRequest(BaseModel):
     student_id: str = Field(..., min_length=1)
     message: str = Field(..., min_length=1)
     subject: str = Field(default="")
-    session_id: Optional[str] = None
-    response_mode: Optional[str] = None
+    session_id: str | None = None
+    response_mode: str | None = None
     teaching_mode: str = Field(default="direct")
     include_bionic: bool = False
-    context_data: Optional[dict[str, Any]] = None
+    context_data: dict[str, Any] | None = None
 
 
 # ---------------------------------------------------------------------------
@@ -282,7 +299,7 @@ SUBJECT_CHAT_PROMPTS: dict[str, str] = {
 def _get_system_prompt(subject: str, teaching_mode: str = "direct") -> str:
     """Build system prompt based on subject and teaching mode."""
     base = SOCRATIC_SYSTEM_PROMPT if teaching_mode == "socratic" else SYSTEM_PROMPT
-    subject_addition = SUBJECT_CHAT_PROMPTS.get(subject.lower(), "")
+    subject_addition = SUBJECT_CHAT_PROMPTS.get(normalize_tr(subject), "")
     if subject_addition:
         base += "\n\n" + subject_addition
     return base
@@ -290,7 +307,7 @@ def _get_system_prompt(subject: str, teaching_mode: str = "direct") -> str:
 
 def _generate_fallback(message: str, subject: str) -> str:
     """Generate a subject-aware fallback response when no LLM is available."""
-    subject_lower = subject.lower() if subject else ""
+    subject_lower = normalize_tr(subject) if subject else ""
 
     for key, hint in SUBJECT_HINTS.items():
         if key in subject_lower or key in message.lower():
@@ -305,7 +322,9 @@ def _generate_fallback(message: str, subject: str) -> str:
 # ---------------------------------------------------------------------------
 # LLM call with fallback chain
 # ---------------------------------------------------------------------------
-async def _call_llm(message: str, subject: str, teaching_mode: str = "direct") -> EnhancedChatResponse:
+async def _call_llm(
+    message: str, subject: str, teaching_mode: str = "direct"
+) -> EnhancedChatResponse:
     """Try LLM backends in order: LiteLLM → Ollama → fallback."""
     system_prompt = _get_system_prompt(subject, teaching_mode)
 
@@ -320,7 +339,8 @@ async def _call_llm(message: str, subject: str, teaching_mode: str = "direct") -
                 {"role": "user", "content": message},
             ]
             response = await client.chat_completion(
-                messages=messages, stream=False,
+                messages=messages,
+                stream=False,
             )
             content = response.choices[0].message.content
             return EnhancedChatResponse(message=content, confidence_score=0.9)
@@ -350,7 +370,8 @@ async def _call_llm(message: str, subject: str, teaching_mode: str = "direct") -
                 content = data.get("message", {}).get("content", "")
                 if content:
                     return EnhancedChatResponse(
-                        message=content, confidence_score=0.85,
+                        message=content,
+                        confidence_score=0.85,
                     )
     except Exception as e:
         logger.debug(f"Ollama not available: {e}")
@@ -375,20 +396,30 @@ async def send_message(
     """Send a chat message and get AI response."""
     response = await _call_llm(request.message, request.subject, request.teaching_mode)
 
-    now = datetime.now(timezone.utc).isoformat()
+    now = datetime.now(UTC).isoformat()
     resp_id = f"resp-{uuid4().hex[:8]}"
 
     # Persist to DB if available
     session_id = request.session_id
     if db is not None and await _verify_chat_tables(db):
         try:
-            user_id = getattr(current_user, "id", "anonymous") if current_user else "anonymous"
+            user_id = (
+                getattr(current_user, "id", "anonymous")
+                if current_user
+                else "anonymous"
+            )
             session_id = await _get_or_create_session(
-                db, str(user_id), request.session_id, request.subject,
+                db,
+                str(user_id),
+                request.session_id,
+                request.subject,
             )
             await _save_message(db, session_id, "user", request.message)
             await _save_message(
-                db, session_id, "assistant", response.message,
+                db,
+                session_id,
+                "assistant",
+                response.message,
                 model=os.getenv("OLLAMA_MODEL", "qwen3:8b"),
                 confidence=response.confidence_score,
             )
@@ -414,7 +445,9 @@ async def send_message(
 # ---------------------------------------------------------------------------
 # SSE Streaming endpoint
 # ---------------------------------------------------------------------------
-async def _stream_ollama(message: str, subject: str, teaching_mode: str = "direct") -> AsyncIterator[str]:
+async def _stream_ollama(
+    message: str, subject: str, teaching_mode: str = "direct"
+) -> AsyncIterator[str]:
     """Stream Ollama response as SSE events."""
     import httpx
 
@@ -468,7 +501,10 @@ async def stream_message(
         try:
             user_id = str(getattr(current_user, "id", "anonymous"))
             session_id = await _get_or_create_session(
-                db, user_id, request.session_id, request.subject,
+                db,
+                user_id,
+                request.session_id,
+                request.subject,
             )
             await _save_message(db, session_id, "user", request.message)
         except Exception as e:
@@ -477,7 +513,9 @@ async def stream_message(
     async def _stream_and_persist() -> AsyncIterator[str]:
         """Wrap streaming to collect full response and persist after."""
         accumulated = ""
-        async for chunk in _stream_ollama(request.message, request.subject, request.teaching_mode):
+        async for chunk in _stream_ollama(
+            request.message, request.subject, request.teaching_mode
+        ):
             # Collect content for DB persistence
             if chunk.startswith("data: ") and "[DONE]" not in chunk:
                 try:
@@ -492,7 +530,10 @@ async def stream_message(
         if db is not None and accumulated and session_id:
             try:
                 await _save_message(
-                    db, session_id, "assistant", accumulated,
+                    db,
+                    session_id,
+                    "assistant",
+                    accumulated,
                     model=os.getenv("OLLAMA_MODEL", "qwen3:8b"),
                 )
             except Exception as e:
@@ -526,7 +567,9 @@ async def list_sessions(
     if db is None:
         return {"success": True, "sessions": []}
 
-    user_id = str(getattr(current_user, "id", "anonymous")) if current_user else "anonymous"
+    user_id = (
+        str(getattr(current_user, "id", "anonymous")) if current_user else "anonymous"
+    )
     r = await db.execute(
         text(
             "SELECT id, title, subject_type, message_count, created_at, updated_at "
@@ -537,7 +580,9 @@ async def list_sessions(
     )
     sessions = [
         {
-            "id": row[0], "title": row[1], "subject": row[2],
+            "id": row[0],
+            "title": row[1],
+            "subject": row[2],
             "message_count": row[3],
             "created_at": row[4].isoformat() if row[4] else None,
             "updated_at": row[5].isoformat() if row[5] else None,
@@ -590,9 +635,16 @@ async def get_history(
     db: AsyncSession = _db_dep,
 ) -> dict[str, Any]:
     """Get chat history for a student (legacy endpoint)."""
-    user_id = str(getattr(current_user, "id", student_id)) if current_user else student_id
+    user_id = (
+        str(getattr(current_user, "id", student_id)) if current_user else student_id
+    )
     if db is None:
-        return {"success": True, "data": {"history": []}, "student_id": student_id, "messages": []}
+        return {
+            "success": True,
+            "data": {"history": []},
+            "student_id": student_id,
+            "messages": [],
+        }
 
     r = await db.execute(
         text(
@@ -606,7 +658,9 @@ async def get_history(
     )
     history = [
         {
-            "id": row[0], "role": row[1], "content": row[2],
+            "id": row[0],
+            "role": row[1],
+            "content": row[2],
             "timestamp": row[3].isoformat() if row[3] else None,
         }
         for row in r.fetchall()
@@ -630,8 +684,10 @@ _MAX_FILE_SIZE = 10 * 1024 * 1024  # 10 MB
 async def _extract_text_from_pdf(file_bytes: bytes) -> str:
     """Extract text from PDF bytes using pdfplumber."""
     try:
-        import pdfplumber
         import io
+
+        import pdfplumber
+
         with pdfplumber.open(io.BytesIO(file_bytes)) as pdf:
             pages = []
             for i, page in enumerate(pdf.pages[:20]):  # max 20 pages
@@ -648,10 +704,11 @@ async def _extract_text_from_pdf(file_bytes: bytes) -> str:
 
 async def _fetch_url_content(url: str) -> str:
     """Fetch and extract readable text from a URL (SSRF-safe)."""
-    import httpx
-    import socket
     import ipaddress
+    import socket
     from urllib.parse import urlparse
+
+    import httpx
 
     # Scheme + hostname validation
     parsed = urlparse(url)
@@ -678,25 +735,33 @@ async def _fetch_url_content(url: str) -> str:
             if "text/html" in content_type:
                 # Simple HTML text extraction
                 import re
+
                 html = resp.text
                 # Remove script/style tags
-                html = re.sub(r"<(script|style)[^>]*>.*?</\1>", "", html, flags=re.DOTALL | re.IGNORECASE)
+                html = re.sub(
+                    r"<(script|style)[^>]*>.*?</\1>",
+                    "",
+                    html,
+                    flags=re.DOTALL | re.IGNORECASE,
+                )
                 # Remove HTML tags
                 text_content = re.sub(r"<[^>]+>", " ", html)
                 # Clean whitespace
                 text_content = re.sub(r"\s+", " ", text_content).strip()
                 return text_content[:5000]  # max 5000 chars
-            elif "application/json" in content_type:
+            if "application/json" in content_type:
                 return resp.text[:5000]
-            else:
-                return resp.text[:5000]
+            return resp.text[:5000]
     except Exception as e:
         logger.warning(f"URL fetch failed: {e}")
         return f"URL icerigi alinamadi: {e}"
 
 
 async def _analyze_image_with_vision(
-    image_b64: str, message: str, subject: str, teaching_mode: str,
+    image_b64: str,
+    message: str,
+    subject: str,
+    teaching_mode: str,
 ) -> str:
     """Send image to vision model for analysis/solving."""
     system_prompt = _get_system_prompt(subject, teaching_mode)
@@ -711,6 +776,7 @@ async def _analyze_image_with_vision(
     # Try LiteLLM vision
     try:
         from core.litellm.client import get_litellm_client
+
         client = get_litellm_client()
         result = await client.analyze_image(image_b64, prompt)
         if result:
@@ -721,6 +787,7 @@ async def _analyze_image_with_vision(
     # Try Ollama with vision model
     try:
         import httpx
+
         ollama_url = os.getenv("OLLAMA_URL", "http://localhost:11434")
         vision_model = os.getenv("OLLAMA_VISION_MODEL", "llava")
         async with httpx.AsyncClient(timeout=60.0) as client:
@@ -742,19 +809,21 @@ async def _analyze_image_with_vision(
     except Exception as e:
         logger.debug(f"Ollama vision not available: {e}")
 
-    return "Gorsel analizi su anda kullanilabilir degil. Lutfen soruyu metin olarak yazin."
+    return (
+        "Gorsel analizi su anda kullanilabilir degil. Lutfen soruyu metin olarak yazin."
+    )
 
 
 @router.post("/message-with-attachment")
 async def message_with_attachment(
     current_user: Any = _auth_dep,
     db: AsyncSession = _db_dep,
-    file: Optional[UploadFile] = File(None),
+    file: UploadFile | None = File(None),
     message: str = Form(default=""),
     subject: str = Form(default=""),
-    session_id: Optional[str] = Form(default=None),
+    session_id: str | None = Form(default=None),
     teaching_mode: str = Form(default="direct"),
-    url: Optional[str] = Form(default=None),
+    url: str | None = Form(default=None),
 ) -> dict[str, Any]:
     """Send a chat message with an optional file or URL attachment."""
 
@@ -783,9 +852,14 @@ async def message_with_attachment(
             attachment_type = "image"
             image_b64 = base64.b64encode(file_bytes).decode("utf-8")
             attachment_context = await _analyze_image_with_vision(
-                image_b64, message, subject, teaching_mode,
+                image_b64,
+                message,
+                subject,
+                teaching_mode,
             )
-        elif content_type in _PDF_TYPES or (file.filename and file.filename.lower().endswith(".pdf")):
+        elif content_type in _PDF_TYPES or (
+            file.filename and file.filename.lower().endswith(".pdf")
+        ):
             # PDF → text extraction
             attachment_type = "pdf"
             pdf_text = await _extract_text_from_pdf(file_bytes)
@@ -831,15 +905,29 @@ async def message_with_attachment(
     resp_session_id = session_id
     if db is not None and await _verify_chat_tables(db):
         try:
-            user_id = str(getattr(current_user, "id", "anonymous")) if current_user else "anonymous"
-            resp_session_id = await _get_or_create_session(
-                db, user_id, session_id, subject,
+            user_id = (
+                str(getattr(current_user, "id", "anonymous"))
+                if current_user
+                else "anonymous"
             )
-            user_content = f"[{attachment_type}] {message}" if message else f"[{attachment_type}]"
+            resp_session_id = await _get_or_create_session(
+                db,
+                user_id,
+                session_id,
+                subject,
+            )
+            user_content = (
+                f"[{attachment_type}] {message}" if message else f"[{attachment_type}]"
+            )
             await _save_message(db, resp_session_id, "user", user_content)
             await _save_message(
-                db, resp_session_id, "assistant", attachment_context,
-                model="vision" if attachment_type == "image" else os.getenv("OLLAMA_MODEL", "qwen3:8b"),
+                db,
+                resp_session_id,
+                "assistant",
+                attachment_context,
+                model="vision"
+                if attachment_type == "image"
+                else os.getenv("OLLAMA_MODEL", "qwen3:8b"),
             )
         except Exception as e:
             logger.warning(f"Chat DB persist (attachment) failed: {e}")

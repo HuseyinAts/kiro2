@@ -338,9 +338,11 @@ class AdvancedYouTubeSearch:
             "ders",
         ]
 
-        title = video_data.get("title", "").lower()
-        description = video_data.get("description", "").lower()
-        channel = video_data.get("channel", "").lower()
+        from core.turkish_nlp_utils import normalize_tr
+
+        title = normalize_tr(video_data.get("title", ""))
+        description = normalize_tr(video_data.get("description", ""))
+        channel = normalize_tr(video_data.get("channel", ""))
 
         # Title analizi
         for keyword in turkish_edu_keywords:
@@ -368,7 +370,9 @@ class AdvancedYouTubeSearch:
 
     def _detect_language_quality(self, title: str, description: str = "") -> float:
         """Türkçe dil kalitesini tespit et - MÜZİK FİLTRESİ EKLENDİ"""
-        text = f"{title} {description}".lower()
+        from core.turkish_nlp_utils import normalize_tr as _ntr
+
+        text = _ntr(f"{title} {description}")
 
         # Müzik içerik kontrolü - HARD BLOCK
         music_terms = [
@@ -435,7 +439,9 @@ class AdvancedYouTubeSearch:
     ) -> list[TurkishEducationVideo]:
         """Seçilmiş kaliteli videolardan ara"""
 
-        key = (subject.lower(), exam_type.upper(), difficulty.lower())
+        from core.turkish_nlp_utils import normalize_tr
+
+        key = (normalize_tr(subject), exam_type.upper(), normalize_tr(difficulty))
         videos = []
 
         # Önce exact match ara
@@ -445,7 +451,7 @@ class AdvancedYouTubeSearch:
             # Fallback: benzer konularda ara
             fallback_key = None
             for k in self.curated_videos:
-                if k[0] == subject.lower() and k[1] == exam_type.upper():
+                if k[0] == normalize_tr(subject) and k[1] == exam_type.upper():
                     fallback_key = k
                     break
 
@@ -492,7 +498,9 @@ class AdvancedYouTubeSearch:
         """Gelişmiş filtrelerle video ara - MÜZİK ENGELLENDİ"""
 
         # Müzik içerik kontrolü - EN ÜST SEVİYE ENGEL
-        subject_lower = subject.lower()
+        from core.turkish_nlp_utils import normalize_tr as _ntr2
+
+        subject_lower = _ntr2(subject)
         music_subjects = ["müzik", "music", "sanat", "art"]
 
         if any(music_term in subject_lower for music_term in music_subjects):

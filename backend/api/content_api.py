@@ -14,6 +14,7 @@ from core.dependencies import (
     AuthenticatedUser,
     get_current_user,
 )
+from core.turkish_nlp_utils import normalize_tr
 from models.content_models import (
     BulkContentImport,
     ContentInteraction,
@@ -74,8 +75,10 @@ async def create_makale(
             "data": makale.dict(),
             "message": "Makale başarıyla oluşturuldu",
         }
-    except Exception as e:
-        raise HTTPException(status_code=400, detail="Islem basarisiz. Lutfen tekrar deneyin.")
+    except Exception:
+        raise HTTPException(
+            status_code=400, detail="Islem basarisiz. Lutfen tekrar deneyin."
+        )
 
 
 @router.get("/makale/{makale_id}", response_model=dict[str, Any])
@@ -115,15 +118,21 @@ async def list_makaleler(
     makaleler = list(makale_store.values())
 
     if kategori:
-        makaleler = [m for m in makaleler if m.kategori.lower() == kategori.lower()]
+        makaleler = [
+            m for m in makaleler if normalize_tr(m.kategori) == normalize_tr(kategori)
+        ]
 
     if etiket:
         makaleler = [
-            m for m in makaleler if etiket.lower() in [e.lower() for e in m.etiketler]
+            m
+            for m in makaleler
+            if normalize_tr(etiket) in [normalize_tr(e) for e in m.etiketler]
         ]
 
     if yazar:
-        makaleler = [m for m in makaleler if yazar.lower() in m.yazar.lower()]
+        makaleler = [
+            m for m in makaleler if normalize_tr(yazar) in normalize_tr(m.yazar)
+        ]
 
     if aktif is not None:
         makaleler = [m for m in makaleler if m.aktif == aktif]
@@ -278,8 +287,10 @@ async def create_video(
             "data": video.dict(),
             "message": "Video başarıyla oluşturuldu",
         }
-    except Exception as e:
-        raise HTTPException(status_code=400, detail="Islem basarisiz. Lutfen tekrar deneyin.")
+    except Exception:
+        raise HTTPException(
+            status_code=400, detail="Islem basarisiz. Lutfen tekrar deneyin."
+        )
 
 
 @router.get("/video/{video_id}", response_model=dict[str, Any])
@@ -321,7 +332,9 @@ async def list_videolar(
     videolar = list(video_store.values())
 
     if kategori:
-        videolar = [v for v in videolar if v.kategori.lower() == kategori.lower()]
+        videolar = [
+            v for v in videolar if normalize_tr(v.kategori) == normalize_tr(kategori)
+        ]
 
     if platform:
         videolar = [v for v in videolar if v.platform.lower() == platform.lower()]
@@ -365,7 +378,7 @@ async def search_content(search_request: ContentSearchRequest):
     """
     İçeriklerde gelişmiş arama yap
     """
-    query = search_request.query.lower()
+    query = normalize_tr(search_request.query)
     results = []
 
     # Makalelerde ara
@@ -383,7 +396,7 @@ async def search_content(search_request: ContentSearchRequest):
             highlighted_content = makale.icerik[:200] + "..."
 
             # Başlıkta arama
-            if query in makale.baslik.lower():
+            if query in normalize_tr(makale.baslik):
                 score += 10
                 if search_request.highlight:
                     highlighted_title = makale.baslik.replace(
@@ -391,7 +404,7 @@ async def search_content(search_request: ContentSearchRequest):
                     )
 
             # İçerikte arama
-            if query in makale.icerik.lower():
+            if query in normalize_tr(makale.icerik):
                 score += 5
                 if search_request.highlight:
                     # Basit highlighting
@@ -401,7 +414,7 @@ async def search_content(search_request: ContentSearchRequest):
                     )
 
             # Etiketlerde arama
-            if any(query in etiket.lower() for etiket in makale.etiketler):
+            if any(query in normalize_tr(etiket) for etiket in makale.etiketler):
                 score += 7
 
             if score > 0:
@@ -431,14 +444,14 @@ async def search_content(search_request: ContentSearchRequest):
             highlighted_title = video.baslik
             highlighted_desc = video.aciklama or ""
 
-            if query in video.baslik.lower():
+            if query in normalize_tr(video.baslik):
                 score += 10
                 if search_request.highlight:
                     highlighted_title = video.baslik.replace(
                         query, f"<mark>{query}</mark>"
                     )
 
-            if video.aciklama and query in video.aciklama.lower():
+            if video.aciklama and query in normalize_tr(video.aciklama):
                 score += 5
                 if search_request.highlight:
                     highlighted_desc = video.aciklama.replace(

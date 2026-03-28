@@ -8,6 +8,7 @@ import logging
 from dataclasses import dataclass
 from typing import Any
 
+from core.turkish_nlp_utils import normalize_tr
 from core.youtube_channels import TRUSTED_TURKISH_CHANNELS as _CANONICAL_CHANNELS
 
 logger = logging.getLogger(__name__)
@@ -341,7 +342,7 @@ class TurkishContentFilter:
             float: 0.0-1.0 arası skor
         """
         score = 0.0
-        text_lower = text.lower()
+        text_lower = normalize_tr(text)
 
         # 1. Türkçe karakterler kontrolü (max 0.2)
         turkish_char_count = sum(1 for char in self.turkish_chars if char in text)
@@ -420,17 +421,17 @@ class TurkishContentFilter:
         if channel_name in TRUSTED_TURKISH_CHANNELS:
             return True
 
-        # Case-insensitive eşleşme kontrolü
-        channel_lower = channel_name.lower().strip()
+        # Turkish-safe case-insensitive eşleşme kontrolü
+        channel_lower = normalize_tr(channel_name).strip()
 
         # Önce tam eşleşme dene
         for trusted_channel in TRUSTED_TURKISH_CHANNELS:
-            if trusted_channel.lower() == channel_lower:
+            if normalize_tr(trusted_channel) == channel_lower:
                 return True
 
         # Kısmi eşleşme kontrolü — short strings (<4 chars) require exact match
         for trusted_channel in TRUSTED_TURKISH_CHANNELS:
-            trusted_lower = trusted_channel.lower()
+            trusted_lower = normalize_tr(trusted_channel)
             shorter = min(len(trusted_lower), len(channel_lower))
             if shorter < 4:
                 continue
@@ -481,7 +482,7 @@ class TurkishContentFilter:
             List[str]: Bulunan Türkçe göstergeler
         """
         indicators = []
-        text_lower = text.lower()
+        text_lower = normalize_tr(text)
 
         # Türkçe karakterler
         found_chars = [char for char in self.turkish_chars if char in text]
@@ -728,7 +729,7 @@ class TurkishContentFilter:
             scores.append(1.0)
 
         # 5. Turkish education words
-        text = f"{title} {description}".lower()
+        text = normalize_tr(f"{title} {description}")
         turkish_word_count = sum(1 for word in self.turkish_edu_words if word in text)
         if turkish_word_count > 0:
             scores.append(min(1.0, turkish_word_count / 3))
@@ -789,18 +790,18 @@ class TurkishContentFilter:
         if not target_subject:
             return 0.5  # Unknown subject
 
-        subject_lower = target_subject.lower()
+        subject_lower = normalize_tr(target_subject)
 
         # Taxonomy'den konu bilgilerini al
         taxonomy = SUBJECT_TAXONOMY.get(subject_lower, {})
 
         if not taxonomy:
             # Taxonomy'de yoksa basit keyword matching
-            return 1.0 if subject_lower in title.lower() else 0.5
+            return 1.0 if subject_lower in normalize_tr(title) else 0.5
 
         # 1. Main keyword match
-        title_lower = title.lower()
-        desc_lower = description.lower() if description else ""
+        title_lower = normalize_tr(title)
+        desc_lower = normalize_tr(description) if description else ""
 
         main_keyword_score = 0.0
         for keyword in taxonomy.get("keywords", []):
@@ -854,8 +855,8 @@ class TurkishContentFilter:
             "sinava_ozel": 3,
         }
 
-        video_level = difficulty_map.get(video_difficulty.lower(), 2)
-        target_level = difficulty_map.get(target_difficulty.lower(), 2)
+        video_level = difficulty_map.get(normalize_tr(video_difficulty), 2)
+        target_level = difficulty_map.get(normalize_tr(target_difficulty), 2)
 
         diff = abs(video_level - target_level)
 
@@ -903,7 +904,7 @@ class TurkishContentFilter:
         Returns:
             Optional[Dict]: Taxonomy bilgileri veya None
         """
-        return SUBJECT_TAXONOMY.get(subject.lower())
+        return SUBJECT_TAXONOMY.get(normalize_tr(subject))
 
     def get_all_subjects(self) -> list[str]:
         """

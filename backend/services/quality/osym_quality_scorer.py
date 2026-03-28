@@ -7,9 +7,9 @@ Date: 2025-10-19
 """
 
 import re
-from typing import List, Optional
 from dataclasses import dataclass
 
+from core.turkish_nlp_utils import normalize_tr
 from services.quality.metrics import QualityMetrics
 
 
@@ -23,8 +23,8 @@ class QualityScore:
     distractor_quality: float  # 0-20
     topic_relevance: float  # 0-20
     difficulty_appropriate: float  # 0-20
-    feedback: List[str]
-    improvements: List[str]
+    feedback: list[str]
+    improvements: list[str]
 
 
 class OSYMQualityScorer:
@@ -46,12 +46,12 @@ class OSYMQualityScorer:
     def score_question(
         self,
         question_stem: str,
-        options: List[str],
+        options: list[str],
         correct_answer_index: int,
         topic: str,
         difficulty_target: float,
         exam_type: str = "TYT",
-        reference_questions: Optional[List[str]] = None,
+        reference_questions: list[str] | None = None,
     ) -> QualityScore:
         """
         Score OSYM question quality
@@ -131,8 +131,8 @@ class OSYMQualityScorer:
         )
 
     def _score_format_compliance(
-        self, question_stem: str, options: List[str], exam_type: str
-    ) -> tuple[float, List[str]]:
+        self, question_stem: str, options: list[str], exam_type: str
+    ) -> tuple[float, list[str]]:
         """
         Score format compliance (0-20)
 
@@ -168,7 +168,7 @@ class OSYMQualityScorer:
         for i, option in enumerate(options):
             if len(option.strip()) < 2:
                 score -= 1
-                feedback.append(f"Şık {chr(65+i)} çok kısa")
+                feedback.append(f"Şık {chr(65 + i)} çok kısa")
 
         # Check Turkish characters (ş, ğ, ü, ö, ç, İ)
         turkish_chars = set("şğüöçıİŞĞÜÖÇ")
@@ -182,8 +182,8 @@ class OSYMQualityScorer:
         return score, feedback
 
     def _score_language_quality(
-        self, question_stem: str, options: List[str]
-    ) -> tuple[float, List[str]]:
+        self, question_stem: str, options: list[str]
+    ) -> tuple[float, list[str]]:
         """
         Score language quality (0-20)
 
@@ -214,7 +214,9 @@ class OSYMQualityScorer:
 
         # Check for common clarity issues
         ambiguous_words = ["bazı", "çoğu", "birçok", "genellikle", "bazen"]
-        ambiguity_count = sum(word in full_text.lower() for word in ambiguous_words)
+        ambiguity_count = sum(
+            word in normalize_tr(full_text) for word in ambiguous_words
+        )
         if ambiguity_count > 3:
             score -= 3
             feedback.append("Belirsiz ifadeler azaltılmalı")
@@ -237,8 +239,8 @@ class OSYMQualityScorer:
         return score, feedback
 
     def _score_distractor_quality(
-        self, options: List[str], correct_answer_index: int
-    ) -> tuple[float, List[str]]:
+        self, options: list[str], correct_answer_index: int
+    ) -> tuple[float, list[str]]:
         """
         Score distractor quality (0-20)
 
@@ -276,18 +278,20 @@ class OSYMQualityScorer:
                 similarity = self._text_similarity(distractors[i], distractors[j])
                 if similarity > 0.9:
                     score -= 2
-                    feedback.append(f"Şık {chr(65+i)} ve {chr(65+j)} çok benzer")
+                    feedback.append(f"Şık {chr(65 + i)} ve {chr(65 + j)} çok benzer")
 
         # Check for obvious patterns
         # (e.g., all numbers, all "Yukarıdakilerden hiçbiri")
         none_of_above = ["hiçbiri", "hepsi yanlış", "cevap yok"]
-        if any(pattern in " ".join(distractors).lower() for pattern in none_of_above):
+        if any(
+            pattern in normalize_tr(" ".join(distractors)) for pattern in none_of_above
+        ):
             if (
                 len(
                     [
                         d
                         for d in distractors
-                        if any(p in d.lower() for p in none_of_above)
+                        if any(p in normalize_tr(d) for p in none_of_above)
                     ]
                 )
                 > 1
@@ -306,7 +310,7 @@ class OSYMQualityScorer:
 
     def _score_topic_relevance(
         self, question_stem: str, topic: str
-    ) -> tuple[float, List[str]]:
+    ) -> tuple[float, list[str]]:
         """
         Score topic relevance (0-20)
 
@@ -316,11 +320,11 @@ class OSYMQualityScorer:
         feedback = []
 
         # Simple keyword matching (would use embeddings in production)
-        topic_keywords = topic.lower().split()
+        topic_keywords = normalize_tr(topic).split()
 
         # Check if topic keywords appear in question
         matches = sum(
-            1 for keyword in topic_keywords if keyword in question_stem.lower()
+            1 for keyword in topic_keywords if keyword in normalize_tr(question_stem)
         )
 
         relevance_ratio = matches / len(topic_keywords) if topic_keywords else 0
@@ -337,8 +341,8 @@ class OSYMQualityScorer:
         return score, feedback
 
     def _score_difficulty(
-        self, question_stem: str, options: List[str], target_difficulty: float
-    ) -> tuple[float, List[str]]:
+        self, question_stem: str, options: list[str], target_difficulty: float
+    ) -> tuple[float, list[str]]:
         """
         Score difficulty appropriateness (0-20)
 
@@ -375,7 +379,7 @@ class OSYMQualityScorer:
 
         return score, feedback
 
-    def _estimate_difficulty(self, question_stem: str, options: List[str]) -> float:
+    def _estimate_difficulty(self, question_stem: str, options: list[str]) -> float:
         """
         Estimate question difficulty (0-1)
 
@@ -397,7 +401,7 @@ class OSYMQualityScorer:
             "ikinci",
         ]
         multi_step_count = sum(
-            1 for kw in multi_step_keywords if kw in question_stem.lower()
+            1 for kw in multi_step_keywords if kw in normalize_tr(question_stem)
         )
         step_score = min(1.0, multi_step_count / 3)
 
@@ -410,7 +414,7 @@ class OSYMQualityScorer:
             "yorumlama",
         ]
         complexity_count = sum(
-            1 for kw in complex_keywords if kw in question_stem.lower()
+            1 for kw in complex_keywords if kw in normalize_tr(question_stem)
         )
         complexity_score = min(1.0, complexity_count / 2)
 
@@ -424,8 +428,8 @@ class OSYMQualityScorer:
 
     def _text_similarity(self, text1: str, text2: str) -> float:
         """Simple text similarity (Jaccard)"""
-        set1 = set(text1.lower().split())
-        set2 = set(text2.lower().split())
+        set1 = set(normalize_tr(text1).split())
+        set2 = set(normalize_tr(text2).split())
 
         intersection = len(set1 & set2)
         union = len(set1 | set2)
@@ -439,7 +443,7 @@ class OSYMQualityScorer:
         distractor_score: float,
         relevance_score: float,
         difficulty_score: float,
-    ) -> List[str]:
+    ) -> list[str]:
         """Generate improvement suggestions"""
         improvements = []
 

@@ -13,6 +13,8 @@ import logging
 from dataclasses import dataclass
 from enum import Enum
 
+from core.turkish_nlp_utils import normalize_tr
+
 from .syllabifier import TurkishSyllabifier
 
 logger = logging.getLogger(__name__)
@@ -20,6 +22,7 @@ logger = logging.getLogger(__name__)
 
 class WordLength(Enum):
     """Kelime uzunluğu kategorileri"""
+
     SHORT = "short"  # 1-3 karakter
     MEDIUM = "medium"  # 4-7 karakter
     LONG = "long"  # 8+ karakter
@@ -28,6 +31,7 @@ class WordLength(Enum):
 @dataclass
 class FixationPoint:
     """Fixation point veri yapısı"""
+
     word: str
     bold_start: int  # Bold başlangıç indeksi
     bold_end: int  # Bold bitiş indeksi
@@ -53,7 +57,7 @@ class FixationPointDetector:
         short_bold_chars: int = 1,
         medium_bold_chars: tuple[int, int] = (2, 3),
         long_bold_chars: tuple[int, int] = (3, 4),
-        use_syllable_awareness: bool = True
+        use_syllable_awareness: bool = True,
     ):
         """
         Args:
@@ -92,10 +96,10 @@ class FixationPointDetector:
                 normal_text="",
                 word_length_category=WordLength.SHORT,
                 syllable_aware=False,
-                confidence=1.0
+                confidence=1.0,
             )
 
-        cache_key = word.lower()
+        cache_key = normalize_tr(word)
         if use_cache and cache_key in self._cache:
             return self._cache[cache_key]
 
@@ -126,7 +130,7 @@ class FixationPointDetector:
                 normal_text=word[bold_end:],
                 word_length_category=length_category,
                 syllable_aware=syllable_aware,
-                confidence=0.9 if syllable_aware else 0.8
+                confidence=0.9 if syllable_aware else 0.8,
             )
 
             if use_cache:
@@ -146,17 +150,16 @@ class FixationPointDetector:
                 normal_text=word[bold_end:],
                 word_length_category=WordLength.SHORT,
                 syllable_aware=False,
-                confidence=0.5
+                confidence=0.5,
             )
 
     def _categorize_length(self, length: int) -> WordLength:
         """Kelime uzunluğunu kategorize et"""
         if length <= 3:
             return WordLength.SHORT
-        elif length <= 7:
+        if length <= 7:
             return WordLength.MEDIUM
-        else:
-            return WordLength.LONG
+        return WordLength.LONG
 
     def _calculate_bold_count(self, word: str, category: WordLength) -> int:
         """Bold karakter sayısını hesapla"""
@@ -165,19 +168,19 @@ class FixationPointDetector:
         if category == WordLength.SHORT:
             return self.short_bold_chars
 
-        elif category == WordLength.MEDIUM:
+        if category == WordLength.MEDIUM:
             # 4-7 karakter: %30-40 bold
             min_bold, max_bold = self.medium_bold_chars
             target_ratio = 0.35
             calculated = int(length * target_ratio)
             return max(min_bold, min(max_bold, calculated))
 
-        else:  # LONG
-            # 8+ karakter: %25-35 bold
-            min_bold, max_bold = self.long_bold_chars
-            target_ratio = 0.30
-            calculated = int(length * target_ratio)
-            return max(min_bold, min(max_bold, calculated))
+        # LONG
+        # 8+ karakter: %25-35 bold
+        min_bold, max_bold = self.long_bold_chars
+        target_ratio = 0.30
+        calculated = int(length * target_ratio)
+        return max(min_bold, min(max_bold, calculated))
 
     def _syllable_aware_adjustment(self, word: str, bold_count: int) -> int:
         """Syllable sınırına göre bold sayısını ayarla"""
@@ -205,7 +208,9 @@ class FixationPointDetector:
 
         return bold_count
 
-    def batch_detect(self, words: list[str], use_cache: bool = True) -> list[FixationPoint]:
+    def batch_detect(
+        self, words: list[str], use_cache: bool = True
+    ) -> list[FixationPoint]:
         """Birden fazla kelime için fixation point hesapla"""
         return [self.detect(word, use_cache) for word in words]
 
@@ -226,5 +231,7 @@ class FixationPointDetector:
         """Cache istatistiklerini döndür"""
         return {
             "fixation_cache_size": len(self._cache),
-            "syllabifier_cache": self.syllabifier.get_cache_stats() if self.syllabifier else None
+            "syllabifier_cache": self.syllabifier.get_cache_stats()
+            if self.syllabifier
+            else None,
         }

@@ -14,6 +14,7 @@ from pydantic import BaseModel, Field
 from core.database import get_db_session_context
 from core.dependencies import AuthenticatedUser, get_current_user
 from core.structured_logger import get_logger
+from core.turkish_nlp_utils import normalize_tr
 
 router = APIRouter(prefix="/api/v1/knowledge-map", tags=["Knowledge Map"])
 logger = get_logger("knowledge_graph_api")
@@ -110,12 +111,13 @@ async def get_prerequisite_dag(
     """
     from services.knowledge_graph_service import build_prerequisite_dag
 
+    normalized = normalize_tr(subject)
     try:
         async with get_db_session_context() as db:
-            result = await build_prerequisite_dag(db=db, subject=subject.lower())
+            result = await build_prerequisite_dag(db=db, subject=normalized)
 
         return PrerequisiteDagResponse(
-            subject=subject.lower(),
+            subject=normalized,
             nodes=[KnowledgeNodeItem(**n) for n in result["nodes"]],
             edges=result["edges"],
         )
@@ -162,12 +164,13 @@ async def get_student_knowledge_state(
     """
     from services.knowledge_graph_service import get_student_knowledge_state
 
+    normalized = normalize_tr(subject)
     try:
         async with get_db_session_context() as db:
             states = await get_student_knowledge_state(
                 db=db,
                 student_id=current_user.id,
-                subject=subject.lower(),
+                subject=normalized,
             )
 
         return [KnowledgeStateItem(**s) for s in states]
@@ -215,12 +218,13 @@ async def get_topic_suggestions(
     """
     from services.knowledge_graph_service import suggest_next_topics
 
+    normalized = normalize_tr(subject)
     try:
         async with get_db_session_context() as db:
             suggestions = await suggest_next_topics(
                 db=db,
                 student_id=current_user.id,
-                subject=subject.lower(),
+                subject=normalized,
                 limit=limit,
             )
 

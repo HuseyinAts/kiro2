@@ -9,6 +9,8 @@ Extracted from youtube_discovery.py
 import logging
 from typing import Any
 
+from core.turkish_nlp_utils import normalize_tr
+
 from .config import TRUSTED_CHANNELS
 from .models import DifficultyLevel, ExamType, SubjectType
 
@@ -24,12 +26,12 @@ class QualityScorer:
         """Hızlı kalite puanı hesaplama (performance optimized)"""
         score = 5.0  # Base score
 
-        title_lower = video_data.get("title", "").lower()
+        title_lower = normalize_tr(video_data.get("title", ""))
 
         # Hızlı başlık kontrolü
         if subject.value in title_lower:
             score += 2.0
-        if exam_type.value.lower() in title_lower:
+        if normalize_tr(exam_type.value) in title_lower:
             score += 2.0
         if any(
             keyword in title_lower
@@ -38,7 +40,7 @@ class QualityScorer:
             score += 1.0
 
         # Hızlı kanal kontrolü
-        channel_lower = video_data.get("channel", "").lower()
+        channel_lower = normalize_tr(video_data.get("channel", ""))
         if any(
             keyword in channel_lower for keyword in ["öğretmen", "akademi", "eğitim"]
         ):
@@ -139,14 +141,15 @@ class QualityScorer:
         """Kanal kalite puanı al"""
         subject_channels = TRUSTED_CHANNELS.get(subject.value, [])
 
+        channel_name_lower = normalize_tr(channel_name)
         for channel in subject_channels:
-            if channel["name"].lower() in channel_name.lower():
+            if normalize_tr(channel["name"]) in channel_name_lower:
                 return channel["quality"]
 
         # Genel eğitim kanalı kontrolü
         educational_keywords = ["öğretmen", "akademi", "eğitim", "ders", "kurs", "okul"]
         for keyword in educational_keywords:
-            if keyword in channel_name.lower():
+            if keyword in channel_name_lower:
                 return 7.0
 
         return 5.0  # Varsayılan puan
@@ -155,7 +158,7 @@ class QualityScorer:
         self, title: str, subject: SubjectType, exam_type: ExamType
     ) -> float:
         """Başlık relevans puanı"""
-        title_lower = title.lower()
+        title_lower = normalize_tr(title)
         score = 0.0
 
         # Konu adı varlığı
@@ -163,7 +166,7 @@ class QualityScorer:
             score += 3.0
 
         # Sınav türü varlığı
-        if exam_type.value.lower() in title_lower:
+        if normalize_tr(exam_type.value) in title_lower:
             score += 3.0
 
         # Eğitim anahtar kelimeleri

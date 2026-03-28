@@ -13,6 +13,8 @@ import logging
 import aiohttp
 from bs4 import BeautifulSoup
 
+from core.turkish_nlp_utils import normalize_tr
+
 from .config import SEARCH_TEMPLATES
 from .database import YouTubeCacheDB
 from .models import DifficultyLevel, ExamType, SubjectType, VideoMetadata
@@ -274,9 +276,9 @@ class YouTubeSearchService:
         if not view_text:
             return 0
 
-        # Türkçe view count formatları
+        # Türkçe view count formatları (normalize_tr for Turkish-safe lowercase)
         view_text = (
-            view_text.lower()
+            normalize_tr(view_text)
             .replace(" görüntüleme", "")
             .replace(",", "")
             .replace(".", "")

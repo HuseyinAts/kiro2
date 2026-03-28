@@ -9,6 +9,8 @@ Extracted from youtube_discovery.py
 import logging
 import re
 
+from core.turkish_nlp_utils import normalize_tr
+
 from .config import SUBJECT_KEYWORDS
 from .models import DifficultyLevel, SubjectType
 
@@ -123,8 +125,8 @@ class TurkishContentFilter:
         # Türkçe karakterler
         turkish_chars = set("çğıöşüÇĞIİÖŞÜ")
 
-        # Metni normalize et
-        text_lower = text.lower()
+        # Metni normalize et (Turkish-safe lowercase)
+        text_lower = normalize_tr(text)
 
         # Türkçe karakter oranı
         char_count = len([c for c in text if c.isalpha()])
@@ -200,8 +202,8 @@ class TurkishContentFilter:
         filtered_videos = []
 
         for video in turkish_videos:
-            title = video.get("title", "").lower()
-            channel = video.get("channel", "").lower()
+            title = normalize_tr(video.get("title", ""))
+            channel = normalize_tr(video.get("channel", ""))
 
             # Konu uygunluk skoru
             subject_score = 0

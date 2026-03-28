@@ -13,6 +13,7 @@ from fastapi.responses import FileResponse
 
 from core.dependencies import AuthenticatedUser, get_current_user
 from core.osym_exam_engine import session_to_sinav_sonucu
+from core.turkish_nlp_utils import normalize_tr
 from models import SinavSonucu, SinavTipi
 from services.irt_morfoloji_service import IRTMorfolojiService
 from services.learning_style_service import LearningStyleService
@@ -103,7 +104,9 @@ async def get_advanced_exam_report(
 
     except Exception as e:
         logger.error(f"Gelişmiş rapor hatası - Sınav: {sinav_id}, Hata: {e!s}")
-        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
+        raise HTTPException(
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
+        )
 
 
 @router.get("/exam/{sinav_id}/irt-analysis")
@@ -128,7 +131,9 @@ async def get_irt_morfoloji_analysis(
 
     except Exception as e:
         logger.error(f"IRT analizi hatası - Sınav: {sinav_id}, Hata: {e!s}")
-        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
+        raise HTTPException(
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
+        )
 
 
 @router.get("/exam/{sinav_id}/zpd-recommendations")
@@ -154,7 +159,9 @@ async def get_zpd_recommendations(
 
     except Exception as e:
         logger.error(f"ZPD analizi hatası - Sınav: {sinav_id}, Hata: {e!s}")
-        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
+        raise HTTPException(
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
+        )
 
 
 @router.get("/exam/{sinav_id}/learning-style-analysis")
@@ -209,7 +216,9 @@ async def get_osym_ets_comparison(
 
     except Exception as e:
         logger.error(f"ÖSYM/ETS karşılaştırma hatası - Sınav: {sinav_id}, Hata: {e!s}")
-        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
+        raise HTTPException(
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
+        )
 
 
 @router.post("/exam/{sinav_id}/generate-pdf")
@@ -242,7 +251,9 @@ async def generate_pdf_report(
 
     except Exception as e:
         logger.error(f"PDF oluşturma hatası - Sınav: {sinav_id}, Hata: {e!s}")
-        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
+        raise HTTPException(
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
+        )
 
 
 @router.get("/download/{filename}")
@@ -477,12 +488,12 @@ async def _get_hibrit_ogrenme_stili_analizi(
 
         for konu_performansi in temel_sonuc.konu_performanslari:
             # Konu tipine göre öğrenme stili uyumu hesapla
-            if "matematik" in konu_performansi.konu.lower():
+            if "matematik" in normalize_tr(konu_performansi.konu):
                 uyum_skoru = (
                     vark_profili["visual"]
                     + abs(felder_silverman_profili["sequential_global"])
                 ) / 2
-            elif "türkçe" in konu_performansi.konu.lower():
+            elif "türkçe" in normalize_tr(konu_performansi.konu):
                 uyum_skoru = (
                     vark_profili["reading"]
                     + abs(felder_silverman_profili["visual_verbal"])
