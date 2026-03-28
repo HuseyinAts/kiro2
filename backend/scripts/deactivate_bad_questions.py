@@ -18,7 +18,6 @@ Usage:
 import argparse
 import os
 import re
-import sys
 from collections import defaultdict
 
 import psycopg2
@@ -52,11 +51,23 @@ HALLUCINATION_PATTERNS = [
 
 # Keywords that indicate wrong subject (should NOT appear in matematik questions)
 WRONG_SUBJECT_KEYWORDS_MATEMATIK = [
-    "fosil", "fosfor", "Rosa Luxemburg", "politika siyaset",
-    "cinsiyet eşitliği", "ekonomi politikası",
-    "fotosentez", "klorofil", "mitoz", "mayoz", "hücre bölünmesi",
-    "Öğrenme Alanı", "Öğrenme Çıktıları", "Dersin Amacı",
-    "kromozom", "genetik", "evrim",
+    "fosil",
+    "fosfor",
+    "Rosa Luxemburg",
+    "politika siyaset",
+    "cinsiyet eşitliği",
+    "ekonomi politikası",
+    "fotosentez",
+    "klorofil",
+    "mitoz",
+    "mayoz",
+    "hücre bölünmesi",
+    "Öğrenme Alanı",
+    "Öğrenme Çıktıları",
+    "Dersin Amacı",
+    "kromozom",
+    "genetik",
+    "evrim",
 ]
 
 # Visual reference phrases (question references a figure but has no image)
@@ -79,13 +90,14 @@ MIN_OPTION_LENGTH = 1
 def parse_db_url(url: str) -> dict:
     """Parse DATABASE_URL into psycopg2 connection params."""
     from urllib.parse import urlparse
+
     parsed = urlparse(url)
     return {
         "host": parsed.hostname or "localhost",
         "port": parsed.port or 5434,
         "dbname": parsed.path.lstrip("/") or "kiro2",
         "user": parsed.username or "postgres",
-        "password": parsed.password or "postgres",
+        "password": parsed.password or os.environ.get("DB_PASSWORD", ""),
     }
 
 
@@ -128,7 +140,9 @@ def check_short_text(text: str) -> str | None:
     return None
 
 
-def check_identical_options(opt_a: str, opt_b: str, opt_c: str, opt_d: str) -> str | None:
+def check_identical_options(
+    opt_a: str, opt_b: str, opt_c: str, opt_d: str
+) -> str | None:
     opts = [opt_a.strip(), opt_b.strip(), opt_c.strip(), opt_d.strip()]
     if len(set(opts)) == 1:
         return "All 4 options identical"
@@ -173,17 +187,16 @@ def main():
         description="Detect and deactivate garbage questions"
     )
     parser.add_argument(
-        "--dry-run", action="store_true",
-        help="Only report, do not modify database"
+        "--dry-run", action="store_true", help="Only report, do not modify database"
     )
     parser.add_argument(
-        "--table", default="question_bank",
+        "--table",
+        default="question_bank",
         choices=["questions", "question_bank"],
-        help="Which table to clean (default: question_bank)"
+        help="Which table to clean (default: question_bank)",
     )
     parser.add_argument(
-        "--subject", default=None,
-        help="Filter by subject_area (e.g. matematik)"
+        "--subject", default=None, help="Filter by subject_area (e.g. matematik)"
     )
     args = parser.parse_args()
 
@@ -192,7 +205,9 @@ def main():
     image_col = "question_image_url"
 
     conn_params = parse_db_url(DB_URL)
-    print(f"Connecting to {conn_params['host']}:{conn_params['port']}/{conn_params['dbname']}")
+    print(
+        f"Connecting to {conn_params['host']}:{conn_params['port']}/{conn_params['dbname']}"
+    )
     conn = psycopg2.connect(**conn_params)
 
     try:
@@ -234,9 +249,9 @@ def main():
                     examples[cat].append(f"  {row['id'][:8]}... | {preview}")
 
         # Report
-        print(f"\n{'='*60}")
+        print(f"\n{'=' * 60}")
         print(f"GARBAGE QUESTION REPORT — table: {table}")
-        print(f"{'='*60}")
+        print(f"{'=' * 60}")
         print(f"Total active:     {len(rows):,}")
         print(f"Garbage detected: {len(bad_ids):,}")
         print(f"Clean remaining:  {len(rows) - len(bad_ids):,}")

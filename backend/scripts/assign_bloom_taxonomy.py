@@ -20,7 +20,7 @@ DB_CONFIG = {
     "port": int(os.environ.get("DB_PORT", "5434")),
     "dbname": os.environ.get("DB_NAME", "kiro2"),
     "user": os.environ.get("DB_USER", "postgres"),
-    "password": os.environ.get("DB_PASSWORD", "postgres"),
+    "password": os.environ.get("DB_PASSWORD", ""),
 }
 
 BLOOM_LEVELS = {

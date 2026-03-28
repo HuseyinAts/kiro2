@@ -8,10 +8,10 @@ services:
     environment:
       POSTGRES_DB: kiro2
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres123
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres123}
       POSTGRES_INITDB_ARGS: "--encoding=UTF8 --locale=tr_TR.UTF-8"
     ports:
-      - "5434:5432"
+      - "127.0.0.1:5434:5432"
     volumes:
       - postgres_dev_data:/var/lib/postgresql/data
       - ./init-scripts:/docker-entrypoint-initdb.d
@@ -24,7 +24,7 @@ services:
     image: redis:7-alpine
     container_name: turkiye_sinav_redis_dev
     ports:
-      - "6379:6379"
+      - "127.0.0.1:6379:6379"
     volumes:
       - redis_dev_data:/data
     networks:
@@ -41,10 +41,10 @@ services:
     ports:
       - "8000:8000"
     environment:
-      - DATABASE_URL=postgresql+asyncpg://postgres:postgres123@postgres:5432/kiro2
+      - DATABASE_URL=postgresql+asyncpg://postgres:${POSTGRES_PASSWORD:-postgres123}@postgres:5432/kiro2
       - REDIS_URL=redis://redis:6379/0
-      - SECRET_KEY=dev-secret-key-not-for-production-32-chars
-      - JWT_SECRET_KEY=dev-jwt-secret-not-for-production-32-chars
+      - SECRET_KEY=${SECRET_KEY:-dev-secret-key-not-for-production-32-chars}
+      - JWT_SECRET_KEY=${JWT_SECRET_KEY:-dev-jwt-secret-not-for-production-32-chars}
       - DEBUG=true
       - ENVIRONMENT=development
       - LOG_LEVEL=DEBUG

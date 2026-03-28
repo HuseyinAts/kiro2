@@ -13,7 +13,6 @@ Kullanım:
 import argparse
 import os
 import re
-import sys
 
 import psycopg2
 
@@ -23,7 +22,7 @@ DB_CONFIG = {
     "port": int(os.environ.get("DB_PORT", "5434")),
     "dbname": os.environ.get("DB_NAME", "kiro2"),
     "user": os.environ.get("DB_USER", "postgres"),
-    "password": os.environ.get("DB_PASSWORD", "postgres"),
+    "password": os.environ.get("DB_PASSWORD", ""),
 }
 
 # IRT difficulty mapping (keys match DB enum: UPPERCASE)
@@ -66,9 +65,16 @@ HARDER_SUBJECTS = {"GEOMETRI", "BIYOLOJI", "KIMYA"}
 EASIER_SUBJECTS = {"TURKCE", "SOSYAL", "TARIH"}
 
 
-def calculate_difficulty_score(question_text: str, option_a: str, option_b: str,
-                                option_c: str, option_d: str, option_e: str,
-                                subject_area: str, exam_type: str) -> tuple[str, float]:
+def calculate_difficulty_score(
+    question_text: str,
+    option_a: str,
+    option_b: str,
+    option_c: str,
+    option_d: str,
+    option_e: str,
+    subject_area: str,
+    exam_type: str,
+) -> tuple[str, float]:
     """
     Calculate difficulty level and IRT difficulty for a question.
 
@@ -97,8 +103,7 @@ def calculate_difficulty_score(question_text: str, option_a: str, option_b: str,
 
     # 2. Math/formula density
     math_count = sum(
-        len(re.findall(pattern, text, re.IGNORECASE))
-        for pattern in MATH_PATTERNS
+        len(re.findall(pattern, text, re.IGNORECASE)) for pattern in MATH_PATTERNS
     )
     if math_count >= 5:
         score += 0.8
@@ -107,15 +112,13 @@ def calculate_difficulty_score(question_text: str, option_a: str, option_b: str,
 
     # 3. Complex question structure
     complex_count = sum(
-        1 for pattern in COMPLEX_PATTERNS
-        if re.search(pattern, text, re.IGNORECASE)
+        1 for pattern in COMPLEX_PATTERNS if re.search(pattern, text, re.IGNORECASE)
     )
     score += complex_count * 0.4
 
     # 4. Easy question indicators
     easy_count = sum(
-        1 for pattern in EASY_PATTERNS
-        if re.search(pattern, text, re.IGNORECASE)
+        1 for pattern in EASY_PATTERNS if re.search(pattern, text, re.IGNORECASE)
     )
     score -= easy_count * 0.3
 
@@ -159,8 +162,12 @@ def calculate_difficulty_score(question_text: str, option_a: str, option_b: str,
 
 def main():
     parser = argparse.ArgumentParser(description="Heuristic difficulty assignment")
-    parser.add_argument("--dry-run", action="store_true", help="Preview without updating DB")
-    parser.add_argument("--limit", type=int, default=0, help="Limit questions to process (0=all)")
+    parser.add_argument(
+        "--dry-run", action="store_true", help="Preview without updating DB"
+    )
+    parser.add_argument(
+        "--limit", type=int, default=0, help="Limit questions to process (0=all)"
+    )
     args = parser.parse_args()
 
     conn = psycopg2.connect(**DB_CONFIG)
@@ -189,16 +196,22 @@ def main():
     for row in rows:
         qid, text, oa, ob, oc, od, oe, subject, exam_type = row
         level, irt_diff = calculate_difficulty_score(
-            text or "", oa or "", ob or "", oc or "", od or "", oe or "",
-            subject or "", exam_type or ""
+            text or "",
+            oa or "",
+            ob or "",
+            oc or "",
+            od or "",
+            oe or "",
+            subject or "",
+            exam_type or "",
         )
         distribution[level] += 1
         updates.append((level, irt_diff, qid))
 
     # Print distribution
-    print(f"\n{'='*50}")
+    print(f"\n{'=' * 50}")
     print("Zorluk Dağılımı:")
-    print(f"{'='*50}")
+    print(f"{'=' * 50}")
     for level, count in sorted(distribution.items()):
         pct = (count / total * 100) if total > 0 else 0
         bar = "#" * int(pct / 2)
@@ -211,7 +224,10 @@ def main():
         print("\nÖrnek atamalar (ilk 10):")
         cur2 = conn.cursor()
         for level, irt_diff, qid in updates[:10]:
-            cur2.execute("SELECT question_text, subject_area FROM question_bank WHERE id = %s", (qid,))
+            cur2.execute(
+                "SELECT question_text, subject_area FROM question_bank WHERE id = %s",
+                (qid,),
+            )
             r = cur2.fetchone()
             text_preview = (r[0] or "")[:60].replace("\n", " ")
             print(f"  [{level:10s}] (b={irt_diff:+.1f}) {r[1]:12s} | {text_preview}...")
@@ -222,12 +238,12 @@ def main():
     print("\nVeritabanı güncelleniyor...")
     batch_size = 1000
     for i in range(0, len(updates), batch_size):
-        batch = updates[i:i + batch_size]
+        batch = updates[i : i + batch_size]
         cur.executemany(
             """UPDATE question_bank
                SET difficulty_level = %s, irt_difficulty = %s
                WHERE id = %s""",
-            batch
+            batch,
         )
         conn.commit()
         done = min(i + batch_size, len(updates))

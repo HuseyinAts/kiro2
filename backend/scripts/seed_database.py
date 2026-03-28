@@ -5,7 +5,6 @@ Türkiye Üniversite Sınavları Hazırlık Platformu için production data seed
 """
 
 import asyncio
-import hashlib
 import json
 import logging
 import os
@@ -75,7 +74,7 @@ class DatabaseSeeder:
             logger.info("[CHECK] Database seeding tamamlandı!")
 
         except Exception as e:
-            logger.error(f"[X] Database seeding hatası: {str(e)}")
+            logger.error(f"[X] Database seeding hatası: {e!s}")
             raise
         finally:
             await db_manager.close()
@@ -862,8 +861,10 @@ class DatabaseSeeder:
         logger.info("=" * 50)
 
     def _hash_password(self, password: str) -> str:
-        """Şifre hash'le (basit implementasyon)"""
-        return hashlib.sha256(password.encode()).hexdigest()
+        """Şifre hash'le (bcrypt)"""
+        import bcrypt
+
+        return bcrypt.hashpw(password.encode(), bcrypt.gensalt()).decode()
 
 
 async def main():
