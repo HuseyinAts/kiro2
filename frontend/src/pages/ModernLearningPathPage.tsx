@@ -120,9 +120,26 @@ export function ModernLearningPathPage() {
   // F16: Duel mode dialog
   const [showDuel, setShowDuel] = useState(false);
 
+  // Subject status from /status endpoint (theta, zpd_zone, prereq info)
+  interface SubjectStatusInfo {
+    subject: string; theta: number; mastery_pct: number; level_label: string;
+    theta_se?: number; zpd_zone?: string; prereq_blocked?: boolean; prereq_topic_name?: string;
+  }
+  const [subjectStatuses, setSubjectStatuses] = useState<SubjectStatusInfo[]>([]);
+
   // ========================================
   // Effects
   // ========================================
+
+  /**
+   * Fetch subject statuses (theta, zpd_zone, prereq) from Daily API
+   */
+  useEffect(() => {
+    fetch('/api/v1/learning-path/status', { credentials: 'include' })
+      .then(r => r.ok ? r.json() : [])
+      .then(data => { if (Array.isArray(data)) setSubjectStatuses(data); })
+      .catch(() => { /* silent — LP page works without status data */ });
+  }, []);
 
   /**
    * Load videos when path is ready
@@ -650,11 +667,34 @@ export function ModernLearningPathPage() {
                   { value: 'geometri', label: 'Geometri' },
                   { value: 'cografya', label: 'Cografya' },
                   { value: 'edebiyat', label: 'Edebiyat' },
-                ].map(s => (
-                  <ToggleButton key={s.value} value={s.value}>{s.label}</ToggleButton>
-                ))}
+                ].map(s => {
+                  const st = subjectStatuses.find(ss => ss.subject.toLowerCase() === s.value);
+                  return (
+                    <ToggleButton key={s.value} value={s.value} sx={{ flexDirection: 'column', lineHeight: 1.2 }}>
+                      <span>{s.label}</span>
+                      {st && (
+                        <span style={{ fontSize: 9, opacity: 0.8, fontWeight: 400 }}>
+                          θ{st.theta.toFixed(1)} · {st.mastery_pct.toFixed(0)}%
+                        </span>
+                      )}
+                    </ToggleButton>
+                  );
+                })}
               </ToggleButtonGroup>
             </Box>
+
+            {/* Prereq warning for selected subject */}
+            {(() => {
+              const st = subjectStatuses.find(ss => ss.subject.toLowerCase() === selectedSubject);
+              if (st?.prereq_blocked && st.prereq_topic_name) {
+                return (
+                  <Alert severity="warning" sx={{ mt: 1 }}>
+                    Bu konuyu başlatmak için önce <strong>{st.prereq_topic_name}</strong> tamamlanmalı.
+                  </Alert>
+                );
+              }
+              return null;
+            })()}
           </Box>
         </motion.div>
 

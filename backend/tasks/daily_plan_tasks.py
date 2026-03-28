@@ -4,10 +4,12 @@ tasks/daily_plan_tasks.py
 Celery task: her gece 02:00'de tüm kullanıcıların
 daily_plans tablosunu yenile.
 """
-from celery import shared_task
-from celery.utils.log import get_task_logger
+
 import asyncio
 from datetime import date
+
+from celery import shared_task
+from celery.utils.log import get_task_logger
 
 logger = get_task_logger(__name__)
 
@@ -29,15 +31,19 @@ def refresh_daily_plans(self):
 
 
 async def _async_refresh():
-    from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
-    from sqlalchemy.orm import sessionmaker
-    from sqlalchemy import text
     import json
+
+    from sqlalchemy import text
+    from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
+    from sqlalchemy.orm import sessionmaker
+
     from core.config import settings
 
-    DATABASE_URL = str(settings.database_url).replace(
-        "postgresql://", "postgresql+asyncpg://"
-    ).replace("postgresql+psycopg2://", "postgresql+asyncpg://")
+    DATABASE_URL = (
+        str(settings.database_url)
+        .replace("postgresql://", "postgresql+asyncpg://")
+        .replace("postgresql+psycopg2://", "postgresql+asyncpg://")
+    )
 
     engine = create_async_engine(DATABASE_URL, pool_size=5)
     AsyncSess = sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
@@ -48,22 +54,25 @@ async def _async_refresh():
     ok = err = 0
 
     async with AsyncSess() as db:
-        result = await db.execute(text(
-            "SELECT DISTINCT user_id FROM user_theta"
-        ))
+        result = await db.execute(
+            text("SELECT DISTINCT student_id FROM student_abilities")
+        )
         user_ids = [r[0] for r in result.fetchall()]
         logger.info(f"Planlanacak kullanici: {len(user_ids)}")
 
         for uid in user_ids:
             try:
                 # Kullanicinin hedefini al
-                goal_r = await db.execute(text(
-                    "SELECT exam_type, exam_date, daily_minutes "
-                    "FROM yks_exam_goals WHERE user_id = :uid"
-                ), {"uid": uid})
+                goal_r = await db.execute(
+                    text(
+                        "SELECT exam_type, exam_date, daily_minutes "
+                        "FROM yks_exam_goals WHERE user_id = :uid"
+                    ),
+                    {"uid": uid},
+                )
                 goal = goal_r.fetchone()
                 exam_type = goal.exam_type if goal else "TYT"
-                exam_dt   = goal.exam_date  if goal else EXAM_DATE
+                exam_dt = goal.exam_date if goal else EXAM_DATE
                 daily_min = goal.daily_minutes if goal else 120
 
                 if isinstance(exam_dt, str):
@@ -77,7 +86,8 @@ async def _async_refresh():
                     exam_type=exam_type,
                 )
 
-                await db.execute(text("""
+                await db.execute(
+                    text("""
                     INSERT INTO daily_plans
                         (user_id, plan_date, exam_date, days_remaining,
                          total_minutes, plan_json, weak_subject,
@@ -93,29 +103,36 @@ async def _async_refresh():
                         strong_subject    = EXCLUDED.strong_subject,
                         motivational_note = EXCLUDED.motivational_note,
                         generated_at      = NOW()
-                """), {
-                    "uid":       uid,
-                    "plan_date": plan.plan_date,
-                    "exam_date": plan.exam_date,
-                    "days_rem":  plan.days_remaining,
-                    "total_min": plan.total_minutes,
-                    "plan_json": json.dumps({
-                        "blocks": [
-                            {"subject": b.subject,
-                             "topic_name": b.topic_name,
-                             "activity_type": b.activity_type,
-                             "duration_minutes": b.duration_minutes,
-                             "question_count": b.question_count,
-                             "difficulty_band": b.difficulty_band,
-                             "reason": b.reason,
-                             "priority": b.priority}
-                            for b in plan.blocks
-                        ]
-                    }, ensure_ascii=False),
-                    "weak":  plan.weak_subject,
-                    "strong": plan.strong_subject,
-                    "note":  plan.motivational_note,
-                })
+                """),
+                    {
+                        "uid": uid,
+                        "plan_date": plan.plan_date,
+                        "exam_date": plan.exam_date,
+                        "days_rem": plan.days_remaining,
+                        "total_min": plan.total_minutes,
+                        "plan_json": json.dumps(
+                            {
+                                "blocks": [
+                                    {
+                                        "subject": b.subject,
+                                        "topic_name": b.topic_name,
+                                        "activity_type": b.activity_type,
+                                        "duration_minutes": b.duration_minutes,
+                                        "question_count": b.question_count,
+                                        "difficulty_band": b.difficulty_band,
+                                        "reason": b.reason,
+                                        "priority": b.priority,
+                                    }
+                                    for b in plan.blocks
+                                ]
+                            },
+                            ensure_ascii=False,
+                        ),
+                        "weak": plan.weak_subject,
+                        "strong": plan.strong_subject,
+                        "note": plan.motivational_note,
+                    },
+                )
                 await db.commit()
                 ok += 1
             except Exception as e:

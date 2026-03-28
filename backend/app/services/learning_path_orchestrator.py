@@ -18,10 +18,11 @@ import math
 from dataclasses import dataclass, field
 from datetime import date, datetime
 
-from sqlalchemy import text
+from sqlalchemy import select, text
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.services.dag_service import DAGService
+from models.gamification import StudentAbility
 
 logger = logging.getLogger("kiro2.lp_orchestrator")
 
@@ -492,25 +493,37 @@ class LearningPathOrchestrator:
 
     # ── Yardımcı DB metodları ─────────────────────────────────────────────
 
+    # subject_id → subject_area name reverse mapping (StudentAbility uses int PKs)
+    _REVERSE_SUBJECT_MAP: dict[int, str] = {
+        1: "matematik",
+        2: "geometri",
+        3: "fizik",
+        4: "kimya",
+        5: "biyoloji",
+        6: "turkce",
+        7: "tarih",
+        8: "cografya",
+        9: "edebiyat",
+        10: "felsefe",
+        11: "din",
+        12: "sosyal",
+    }
+
     async def _fetch_thetas_with_se(
         self, user_id: str
     ) -> tuple[dict[str, float], dict[str, float]]:
-        """user_theta tablosundan theta + SE değerleri. v2: SE artık gerçek."""
+        """student_abilities tablosundan theta + SE değerleri. v2: SE artık gerçek."""
         theta_map: dict[str, float] = {}
         se_map: dict[str, float] = {}
         try:
             result = await self.db.execute(
-                text("""
-                SELECT subject_area, theta_estimate,
-                       COALESCE(theta_se, 0.5) AS theta_se
-                FROM user_theta
-                WHERE user_id = :uid
-            """),
-                {"uid": user_id},
+                select(StudentAbility).where(StudentAbility.student_id == user_id)
             )
-            for row in result.fetchall():
-                theta_map[row.subject_area] = float(row.theta_estimate)
-                se_map[row.subject_area] = float(row.theta_se)
+            for row in result.scalars():
+                subject_name = self._REVERSE_SUBJECT_MAP.get(row.subject_id, "")
+                if subject_name:
+                    theta_map[subject_name] = float(row.theta)
+                    se_map[subject_name] = float(row.theta_se) if row.theta_se else 0.5
         except Exception as e:
             logger.warning(f"Theta+SE çekme hatası: {e}")
         return theta_map, se_map

@@ -651,28 +651,52 @@ class CATSessionService:
                 },
             )
 
-        # ── user_theta UPSERT ─────────────────────────────────────────
-        # CAT biter bitmez IRT θ tahminini user_theta tablosuna yaz.
+        # ── student_abilities UPSERT ──────────────────────────────────
+        # CAT biter bitmez IRT θ tahminini student_abilities tablosuna yaz.
         # LearningPathOrchestrator bu tabloyu okur — eksik olursa ZPD hesaplanamaz.
-        theta_stmt = text("""
-            INSERT INTO user_theta (user_id, subject_area, theta_estimate, theta_se, response_count, last_updated)
-            VALUES (:user_id, :subject_area, :theta, :se, :n_questions, NOW())
-            ON CONFLICT (user_id, subject_area) DO UPDATE SET
-                theta_estimate = EXCLUDED.theta_estimate,
-                theta_se       = EXCLUDED.theta_se,
-                response_count = user_theta.response_count + EXCLUDED.response_count,
-                last_updated   = NOW()
-        """)
-        await self.db.execute(
-            theta_stmt,
-            {
-                "user_id": state.user_id,
-                "subject_area": state.subject_id,
-                "theta": state.theta,
-                "se": state.se,
-                "n_questions": state.n_questions,
-            },
-        )
+        _SUBJECT_ID_MAP = {
+            "matematik": 1,
+            "geometri": 2,
+            "fizik": 3,
+            "kimya": 4,
+            "biyoloji": 5,
+            "turkce": 6,
+            "tarih": 7,
+            "cografya": 8,
+            "edebiyat": 9,
+            "felsefe": 10,
+            "din": 11,
+            "sosyal": 12,
+        }
+        subj_id = _SUBJECT_ID_MAP.get(state.subject_id.lower())
+        if subj_id is not None:
+            from sqlalchemy.dialects.postgresql import insert as pg_insert
+
+            from models.gamification import StudentAbility
+
+            stmt = (
+                pg_insert(StudentAbility)
+                .values(
+                    student_id=state.user_id,
+                    subject_id=subj_id,
+                    theta=round(state.theta, 4),
+                    theta_se=round(state.se, 4),
+                )
+                .on_conflict_do_update(
+                    index_elements=["student_id", "subject_id"],
+                    set_={
+                        "theta": round(state.theta, 4),
+                        "theta_se": round(state.se, 4),
+                    },
+                )
+            )
+            await self.db.execute(stmt)
+        else:
+            import logging
+
+            logging.getLogger("kiro2.cat").warning(
+                f"CAT UPSERT: bilinmeyen subject_id '{state.subject_id}'"
+            )
 
         await self.db.commit()
 

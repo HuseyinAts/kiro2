@@ -16,6 +16,7 @@ interface StudyBlock {
   difficulty_band: string;
   reason: string;
   priority: number;
+  prereq_blocked?: boolean;
 }
 
 interface DailyPlan {
@@ -40,6 +41,12 @@ interface SubjectStatus {
   zpd_upper: number;
   priority_score: number;
   level_label: string;
+  theta_se?: number;
+  zpd_zone?: string;
+  needs_cat?: boolean;
+  prereq_blocked?: boolean;
+  prereq_topic?: string;
+  prereq_topic_name?: string;
 }
 
 const SUBJECT_TR: Record<string, string> = {
@@ -60,6 +67,12 @@ const DIFFICULTY_COLOR: Record<string, string> = {
 const LEVEL_COLOR: Record<string, string> = {
   'Temel': '#ef4444', 'Başlangıç': '#f97316', 'Orta': '#f59e0b',
   'İleri': '#10b981', 'Uzman': '#6366f1',
+};
+
+const ZPD_ZONE_STYLE: Record<string, { bg: string; color: string; label: string }> = {
+  MASTERED: { bg: '#d1fae5', color: '#059669', label: 'Uzmanlaşmış' },
+  ZPD_ACTIVE: { bg: '#dbeafe', color: '#2563eb', label: 'Aktif Öğrenme' },
+  FRUSTRATION: { bg: '#fee2e2', color: '#dc2626', label: 'Çok Zor' },
 };
 
 export default function DailyPlanPage() {
@@ -159,9 +172,9 @@ export default function DailyPlanPage() {
               <div style={styles.emptyState}>🎉 Bugün için tüm görevler tamamlandı!</div>
             )}
             {plan.blocks.map((block, i) => (
-              <div key={i} style={styles.block}>
+              <div key={i} style={{ ...styles.block, ...(block.prereq_blocked ? { opacity: 0.5, pointerEvents: 'none' as const } : {}) }}>
                 <div style={styles.blockLeft}>
-                  <span style={styles.blockIcon}>{ACTIVITY_ICON[block.activity_type] ?? '📖'}</span>
+                  <span style={styles.blockIcon}>{block.prereq_blocked ? '🔒' : (ACTIVITY_ICON[block.activity_type] ?? '📖')}</span>
                   <div style={styles.blockPriority(block.priority)} />
                 </div>
                 <div style={styles.blockBody}>
@@ -172,12 +185,15 @@ export default function DailyPlanPage() {
                     </span>
                   </div>
                   <p style={styles.blockTopic}>{block.topic_name}</p>
+                  {block.prereq_blocked && (
+                    <p style={{ margin: '0 0 4px', fontSize: 12, color: '#f59e0b' }}>🔒 Önkoşul tamamlanmalı</p>
+                  )}
                   <p style={styles.blockReason}>💡 {block.reason}</p>
                   <div style={styles.blockFooter}>
                     <span style={styles.blockMeta}>⏱ {block.duration_minutes} dk</span>
                     <span style={styles.blockMeta}>❓ {block.question_count} soru</span>
                     <button onClick={() => startActivity(block)} style={styles.startBtn}>
-                      Başla →
+                      {block.prereq_blocked ? '🔒 Kilitli' : 'Başla →'}
                     </button>
                   </div>
                 </div>
@@ -203,13 +219,26 @@ export default function DailyPlanPage() {
                 <div style={{ ...styles.barFill, width: `${s.mastery_pct}%` }} />
               </div>
               <div style={styles.statusMeta}>
-                <span>θ = {s.theta.toFixed(2)}</span>
+                <span>θ = {s.theta.toFixed(2)} ± {(s.theta_se ?? 0.5).toFixed(2)}</span>
                 <span>{s.mastery_pct.toFixed(0)}% mastery</span>
                 {s.fsrs_due_count > 0 && <span style={{ color: '#f59e0b' }}>🔄 {s.fsrs_due_count}</span>}
               </div>
+              {s.zpd_zone && ZPD_ZONE_STYLE[s.zpd_zone] && (
+                <div style={{
+                  display: 'inline-block', padding: '2px 8px', borderRadius: 20, fontSize: 11, fontWeight: 700, marginBottom: 4,
+                  background: ZPD_ZONE_STYLE[s.zpd_zone].bg, color: ZPD_ZONE_STYLE[s.zpd_zone].color,
+                }}>
+                  {ZPD_ZONE_STYLE[s.zpd_zone].label}
+                </div>
+              )}
               <div style={styles.statusZpd}>
                 ZPD [{s.zpd_lower.toFixed(1)} – {s.zpd_upper.toFixed(1)}]
               </div>
+              {s.prereq_blocked && s.prereq_topic_name && (
+                <div style={{ fontSize: 11, color: '#f59e0b', marginTop: 4 }}>
+                  ⚠️ Önkoşul: {s.prereq_topic_name} tamamlanmalı
+                </div>
+              )}
             </div>
           ))}
           {statuses.length === 0 && (
