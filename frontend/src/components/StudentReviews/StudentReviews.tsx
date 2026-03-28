@@ -7,8 +7,9 @@
 import * as React from 'react';
 import {  useState, useEffect  } from 'react';
 import './StudentReviews.css';
+import { config } from '../../config';
 
-const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+const API_BASE = config.api.baseURL;
 
 // ============================================================
 // Types
