@@ -408,7 +408,48 @@ class BKTService:
                 e,
             )
 
-        # --- 4. ZPD ---
+        # --- 4. ZPD + History persist ---
+        zpd_zone = ZPDManager.zone(new_p_L)
+        scaffold = ZPDManager.scaffold_level(new_p_L)
+        try:
+            from models.gamification import ZPDHistory
+
+            zpd_row = ZPDHistory(
+                student_id=student_id,
+                topic_id=topic_id,
+                zone=zpd_zone.lower(),
+                p_learn=new_p_L,
+                theta=theta_after,
+                scaffold_level=scaffold,
+            )
+            db.add(zpd_row)
+        except Exception as e:
+            errors["zpd"] = str(e)
+            logger.error(
+                "ZPD history persist hatasi student=%s topic=%s: %s",
+                student_id,
+                topic_id,
+                e,
+            )
+
+        # --- 5. Blackboard publish (fire-and-forget) ---
+        try:
+            from services.blackboard_service import BlackboardService
+
+            await BlackboardService.get().publish_learning_event(
+                student_id=student_id,
+                topic_id=topic_id,
+                event_data={
+                    "new_p_L": new_p_L,
+                    "theta": round(theta_after, 4),
+                    "theta_se": round(theta_se, 4),
+                    "zpd_zone": zpd_zone,
+                    "correct": correct,
+                },
+            )
+        except Exception as e:
+            logger.debug("Blackboard publish skipped: %s", e)
+
         return {
             "new_p_L": new_p_L,
             "theta_after": round(theta_after, 4),
@@ -417,8 +458,8 @@ class BKTService:
             "fsrs_next_review": (
                 fsrs_next_review.isoformat() if fsrs_next_review else None
             ),
-            "zpd_zone": ZPDManager.zone(new_p_L),
-            "scaffold_level": ZPDManager.scaffold_level(new_p_L),
+            "zpd_zone": zpd_zone,
+            "scaffold_level": scaffold,
             "hints_available": ZPDManager.hints(new_p_L),
             "bilge_mode": ZPDManager.bilge_mode(new_p_L),
             "unlock_3d": ZPDManager.unlock_3d(new_p_L),

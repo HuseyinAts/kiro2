@@ -11,10 +11,10 @@ orchestration sağlar. "Doğru Kod" prensipleri ile tasarlanmıştır:
 
 Kullanım:
     from orchestrator import create_orchestrator, run_task
-    
+
     # Orchestrator oluştur
     orch = create_orchestrator()
-    
+
     # Task çalıştır
     result = await run_task(orch, "Fix authentication bug in login.py")
 
@@ -30,48 +30,68 @@ Modüller:
     - core.agents: Specialized agent implementations
 """
 
-__version__ = "2.0.0"
+__version__ = "2.5.0"
 __author__ = "KIRO2 Team"
 
 # Core state management
-from orchestrator.core.state import (
-    RunState,
-    DiffStats,
-    TaskStatus,
+# Agents
+from orchestrator.core.agents import (
+    AGENT_PROMPTS,
+    Agent,
+    AgentFactory,
+    AgentOutput,
+    AgentRole,
+    DocumentWriterAgent,
+    FixerAgent,
+    ImplementerAgent,
+    PlannerAgent,
+    ReviewerAgent,
+    SecurityAuditorAgent,
+    TesterAgent,
+    get_agent,
 )
 
 # Diff guard
 from orchestrator.core.diff_guard import (
-    DiffLimits,
-    DiffGuard,
     DIFF_LIMITS,
+    DiffGuard,
+    DiffLimits,
+)
+
+# LLM Gateway
+from orchestrator.core.llm_gateway import (
+    MODEL_PRICING,
+    ClaudeClient,
+    LLMGateway,
+    LLMResponse,
+    OpenAIClient,
 )
 
 # Persistent memory/learning
 from orchestrator.core.memory import (
-    Lesson,
     ConfidenceLevel,
+    Lesson,
     MemoryStore,
 )
 
 # Quality gates
 from orchestrator.core.quality_gates import (
-    QualityGate,
     GateResult,
     LintGate,
+    QualityGate,
+    QualityGatePipeline,
+    SecurityGate,
     TypeCheckGate,
     UnitTestGate,
-    SecurityGate,
-    QualityGatePipeline,
 )
 
 # Routing
 from orchestrator.core.routing import (
-    TaskType,
-    RiskLevel,
     ModelChoice,
+    RiskLevel,
     RoutingDecision,
     RoutingEngine,
+    TaskType,
 )
 
 # Self-improvement
@@ -79,73 +99,53 @@ from orchestrator.core.self_improvement import (
     ImprovementAction,
     SelfImprovementEngine,
 )
-
-# LLM Gateway
-from orchestrator.core.llm_gateway import (
-    LLMResponse,
-    ClaudeClient,
-    OpenAIClient,
-    LLMGateway,
-    MODEL_PRICING,
+from orchestrator.core.state import (
+    DiffStats,
+    RunState,
+    TaskStatus,
 )
 
 # Tool Executor
 from orchestrator.core.tool_executor import (
-    ToolCategory,
-    ToolResult,
-    FileOperations,
-    ShellExecutor,
-    LintRunner,
-    TestRunner,
-    SandboxToolExecutor,
     TOOL_ALLOWLIST,
     TOOL_BLOCKLIST,
+    FileOperations,
+    LintRunner,
+    SandboxToolExecutor,
+    ShellExecutor,
+    TestRunner,
+    ToolCategory,
+    ToolResult,
 )
 
-# Agents
-from orchestrator.core.agents import (
-    AgentRole,
-    AgentOutput,
-    Agent,
-    PlannerAgent,
-    ImplementerAgent,
-    ReviewerAgent,
-    FixerAgent,
-    TesterAgent,
-    SecurityAuditorAgent,
-    DocumentWriterAgent,
-    AgentFactory,
-    get_agent,
-    AGENT_PROMPTS,
-)
+# Graph orchestration — try/except for graceful degradation
+try:
+    from orchestrator.core.graph import (
+        GraphState,
+        OrchestratorGraph,
+        create_orchestrator,
+    )
 
-# Graph orchestration - disabled (LangGraph dependency missing)
-# from orchestrator.core.graph import (
-#     GraphState,
-#     OrchestratorGraph,
-#     create_orchestrator,
-# )
+    _GRAPH_AVAILABLE = True
+except ImportError:
+    _GRAPH_AVAILABLE = False
 
 # Convenience exports
 __all__ = [
     # Version
     "__version__",
-    
     # State
     "RunState",
-    "DiffStats", 
+    "DiffStats",
     "TaskStatus",
-    
     # Diff Guard
     "DiffLimits",
     "DiffGuard",
     "DIFF_LIMITS",
-    
     # Memory
     "Lesson",
     "ConfidenceLevel",
     "MemoryStore",
-    
     # Quality Gates
     "QualityGate",
     "GateResult",
@@ -154,25 +154,21 @@ __all__ = [
     "UnitTestGate",
     "SecurityGate",
     "QualityGatePipeline",
-    
     # Routing
     "TaskType",
     "RiskLevel",
     "ModelChoice",
     "RoutingDecision",
     "RoutingEngine",
-    
     # Self-improvement
     "ImprovementAction",
     "SelfImprovementEngine",
-    
     # LLM Gateway
     "LLMResponse",
     "ClaudeClient",
     "OpenAIClient",
     "LLMGateway",
     "MODEL_PRICING",
-    
     # Tool Executor
     "ToolCategory",
     "ToolResult",
@@ -183,7 +179,6 @@ __all__ = [
     "SandboxToolExecutor",
     "TOOL_ALLOWLIST",
     "TOOL_BLOCKLIST",
-    
     # Agents
     "AgentRole",
     "AgentOutput",
@@ -198,12 +193,11 @@ __all__ = [
     "AgentFactory",
     "get_agent",
     "AGENT_PROMPTS",
-    
-    # Graph - disabled (LangGraph dependency missing)
-    # "GraphState",
-    # "OrchestratorGraph",
-    # "create_orchestrator",
 ]
+
+# Add graph exports if available
+if _GRAPH_AVAILABLE:
+    __all__.extend(["GraphState", "OrchestratorGraph", "create_orchestrator"])
 
 
 # Quick start helper
@@ -224,16 +218,14 @@ async def run_task(task_description: str, project_root: str = ".") -> dict:
             print(f"Task completed in {result['iterations']} iterations")
     """
     from pathlib import Path
+
     from orchestrator.core.graph import create_orchestrator
 
     # Orchestrator oluştur
     orchestrator = create_orchestrator(project_root)
 
     # Graph'ı çalıştır
-    final_state = await orchestrator.run(
-        task_description=task_description,
-        files=[]
-    )
+    final_state = await orchestrator.run(task_description=task_description, files=[])
 
     return {
         "success": final_state.get("status") == "completed",

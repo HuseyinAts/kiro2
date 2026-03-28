@@ -11,7 +11,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import TYPE_CHECKING, Any, Dict, List, Optional
+from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
     from .resource_discovery import (
@@ -48,8 +48,8 @@ class PerformanceMetrics:
     """Student performance metrics for a topic."""
 
     topic: str
-    quiz_score: Optional[float] = None  # 0-100
-    completion_time_minutes: Optional[int] = None
+    quiz_score: float | None = None  # 0-100
+    completion_time_minutes: int | None = None
     attempts: int = 1
     resources_viewed: int = 0
     notes_taken: bool = False
@@ -77,8 +77,8 @@ class AdaptationRequest:
 
     path: LearningPath
     student_profile: StudentProfile
-    performance_history: List[PerformanceMetrics] = field(default_factory=list)
-    trigger_reason: Optional[str] = None
+    performance_history: list[PerformanceMetrics] = field(default_factory=list)
+    trigger_reason: str | None = None
 
 
 @dataclass
@@ -86,9 +86,19 @@ class AdaptationAction:
     """A single adaptation action."""
 
     type: AdaptationType
-    target_node_id: Optional[str] = None
+    target_node_id: str | None = None
     description: str = ""
-    details: Dict[str, Any] = field(default_factory=dict)
+    details: dict[str, Any] = field(default_factory=dict)
+
+    @property
+    def adaptation_type(self) -> AdaptationType:
+        """Alias for type — used by learning_path_v2.py."""
+        return self.type
+
+    @property
+    def reason(self) -> str:
+        """Alias for description — used by learning_path_v2.py."""
+        return self.description
 
 
 @dataclass
@@ -96,9 +106,24 @@ class AdaptationResult:
     """Result of path adaptation."""
 
     success: bool
-    adapted_path: Optional[LearningPath] = None
-    actions_taken: List[AdaptationAction] = field(default_factory=list)
+    adapted_path: LearningPath | None = None
+    actions_taken: list[AdaptationAction] = field(default_factory=list)
     message: str = ""
+
+    @property
+    def new_difficulty(self) -> str | None:
+        """Derive difficulty from actions — used by learning_path_v2.py."""
+        for action in self.actions_taken:
+            if action.type == AdaptationType.DIFFICULTY_ADJUSTMENT:
+                adj = action.details.get("adjusted_difficulty")
+                if adj is not None:
+                    return str(adj)
+        return None
+
+    @property
+    def next_steps(self) -> list[str]:
+        """Compile recommendation strings from actions — used by learning_path_v2.py."""
+        return [a.description for a in self.actions_taken if a.description]
 
 
 class PathAdaptationService:
@@ -110,8 +135,8 @@ class PathAdaptationService:
 
     def __init__(
         self,
-        resource_discovery: Optional[ResourceDiscoveryService] = None,
-        llm_service: Optional[Any] = None,
+        resource_discovery: ResourceDiscoveryService | None = None,
+        llm_service: Any | None = None,
     ):
         """Initialize the path adaptation service.
 
@@ -140,7 +165,7 @@ class PathAdaptationService:
         try:
             logger.info(f"Adapting path for student: {request.path.student_id}")
 
-            actions: List[AdaptationAction] = []
+            actions: list[AdaptationAction] = []
             adapted_path = request.path
 
             # Analyze performance patterns
@@ -167,7 +192,9 @@ class PathAdaptationService:
             actions.extend(style_actions)
 
             # Apply pacing adjustments
-            pacing_actions = self._adjust_pacing(adapted_path, request.performance_history)
+            pacing_actions = self._adjust_pacing(
+                adapted_path, request.performance_history
+            )
             actions.extend(pacing_actions)
 
             logger.info(f"Adaptation complete: {len(actions)} actions taken")
@@ -184,25 +211,25 @@ class PathAdaptationService:
             return AdaptationResult(success=False, message=str(e))
 
     def _find_struggling_topics(
-        self, history: List[PerformanceMetrics]
-    ) -> List[PerformanceMetrics]:
+        self, history: list[PerformanceMetrics]
+    ) -> list[PerformanceMetrics]:
         """Find topics where student is struggling."""
         return [m for m in history if m.is_struggling]
 
     def _find_excelling_topics(
-        self, history: List[PerformanceMetrics]
-    ) -> List[PerformanceMetrics]:
+        self, history: list[PerformanceMetrics]
+    ) -> list[PerformanceMetrics]:
         """Find topics where student is excelling."""
         return [m for m in history if m.is_excelling]
 
     async def _handle_struggling(
         self,
         path: LearningPath,
-        struggling: List[PerformanceMetrics],
+        struggling: list[PerformanceMetrics],
         profile: StudentProfile,
-    ) -> List[AdaptationAction]:
+    ) -> list[AdaptationAction]:
         """Handle topics where student is struggling."""
-        actions: List[AdaptationAction] = []
+        actions: list[AdaptationAction] = []
 
         for metric in struggling:
             # Find the node for this topic
@@ -264,10 +291,10 @@ class PathAdaptationService:
         return actions
 
     def _handle_excelling(
-        self, path: LearningPath, excelling: List[PerformanceMetrics]
-    ) -> List[AdaptationAction]:
+        self, path: LearningPath, excelling: list[PerformanceMetrics]
+    ) -> list[AdaptationAction]:
         """Handle topics where student is excelling."""
-        actions: List[AdaptationAction] = []
+        actions: list[AdaptationAction] = []
 
         for metric in excelling:
             node = self._find_node_by_topic(path, metric.topic)
@@ -291,9 +318,9 @@ class PathAdaptationService:
 
     async def _adjust_for_learning_style(
         self, path: LearningPath, profile: StudentProfile
-    ) -> List[AdaptationAction]:
+    ) -> list[AdaptationAction]:
         """Adjust resources based on learning style preference."""
-        actions: List[AdaptationAction] = []
+        actions: list[AdaptationAction] = []
         style = profile.learning_style
 
         if not style:
@@ -310,7 +337,7 @@ class PathAdaptationService:
         preferred_types = style_preferences.get(style, [])
 
         # Check if path has nodes attribute (new structure)
-        nodes_to_check: List[PathNode] = []
+        nodes_to_check: list[PathNode] = []
         if hasattr(path, "nodes") and path.nodes:  # type: ignore
             nodes_to_check = path.nodes  # type: ignore
 
@@ -320,9 +347,7 @@ class PathAdaptationService:
 
             # Count current resource types
             current_types = [
-                r.resource_type
-                for r in node.resources
-                if hasattr(r, "resource_type")
+                r.resource_type for r in node.resources if hasattr(r, "resource_type")
             ]
             preferred_count = sum(1 for t in current_types if t in preferred_types)
 
@@ -344,13 +369,13 @@ class PathAdaptationService:
         return actions
 
     def _adjust_pacing(
-        self, path: LearningPath, history: List[PerformanceMetrics]
-    ) -> List[AdaptationAction]:
+        self, path: LearningPath, history: list[PerformanceMetrics]
+    ) -> list[AdaptationAction]:
         """Adjust pacing based on completion times."""
-        actions: List[AdaptationAction] = []
+        actions: list[AdaptationAction] = []
 
         # Calculate average completion ratio
-        completion_ratios: List[float] = []
+        completion_ratios: list[float] = []
         for metric in history:
             if metric.completion_time_minutes:
                 # Find expected time from path
@@ -391,9 +416,7 @@ class PathAdaptationService:
 
         return actions
 
-    def _find_node_by_topic(
-        self, path: LearningPath, topic: str
-    ) -> Optional[PathNode]:
+    def _find_node_by_topic(self, path: LearningPath, topic: str) -> PathNode | None:
         """Find a path node by topic name."""
         # Check if path has nodes attribute (new structure)
         if hasattr(path, "nodes"):
@@ -405,7 +428,7 @@ class PathAdaptationService:
 
     async def get_recommendations(
         self, path: LearningPath, student_profile: StudentProfile
-    ) -> List[str]:
+    ) -> list[str]:
         """Get adaptation recommendations without applying them.
 
         Args:
@@ -415,7 +438,7 @@ class PathAdaptationService:
         Returns:
             List of recommendation strings
         """
-        recommendations: List[str] = []
+        recommendations: list[str] = []
 
         # Check if path has nodes attribute
         if hasattr(path, "nodes"):

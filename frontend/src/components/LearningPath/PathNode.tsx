@@ -22,6 +22,9 @@ export interface PathNodeData {
   difficulty: 'beginner' | 'intermediate' | 'advanced'
   points?: number
   mastery?: number
+  theta?: number
+  theta_se?: number
+  zpd_zone?: 'MASTERED' | 'ZPD_ACTIVE' | 'FRUSTRATION'
   prerequisites?: string[]
   resources?: number
   position: { x: number; y: number }

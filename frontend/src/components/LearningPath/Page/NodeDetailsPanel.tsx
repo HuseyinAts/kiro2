@@ -154,6 +154,75 @@ export const NodeDetailsPanel: React.FC<NodeDetailsPanelProps> = ({
         </Box>
       </Box>
 
+      {/* Theta Gauge + ZPD Badge */}
+      {node.theta !== undefined && (
+        <Box sx={{ mb: 2, display: 'flex', alignItems: 'center', gap: 2 }}>
+          <Box sx={{ flex: 1 }}>
+            <Typography variant="caption" color="text.secondary">
+              Yetenek Skoru (theta)
+            </Typography>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              <Box
+                sx={{
+                  flex: 1,
+                  height: 8,
+                  borderRadius: 4,
+                  backgroundColor: 'grey.200',
+                  position: 'relative',
+                  overflow: 'hidden',
+                }}
+              >
+                <Box
+                  sx={{
+                    position: 'absolute',
+                    left: `${Math.max(0, Math.min(100, ((node.theta + 4) / 8) * 100))}%`,
+                    top: 0,
+                    width: 12,
+                    height: 8,
+                    borderRadius: 4,
+                    backgroundColor:
+                      node.zpd_zone === 'MASTERED'
+                        ? 'success.main'
+                        : node.zpd_zone === 'FRUSTRATION'
+                          ? 'error.main'
+                          : 'warning.main',
+                    transform: 'translateX(-50%)',
+                  }}
+                />
+              </Box>
+              <Typography variant="body2" fontWeight="bold">
+                {node.theta.toFixed(2)}
+              </Typography>
+            </Box>
+            {node.theta_se !== undefined && (
+              <Typography variant="caption" color="text.secondary">
+                Guven: {((1 - Math.min(1, node.theta_se)) * 100).toFixed(0)}%
+              </Typography>
+            )}
+          </Box>
+          {node.zpd_zone && (
+            <Chip
+              label={
+                node.zpd_zone === 'MASTERED'
+                  ? 'Uzman'
+                  : node.zpd_zone === 'ZPD_ACTIVE'
+                    ? 'ZPD Aktif'
+                    : 'Destek Gerekli'
+              }
+              color={
+                node.zpd_zone === 'MASTERED'
+                  ? 'success'
+                  : node.zpd_zone === 'FRUSTRATION'
+                    ? 'error'
+                    : 'warning'
+              }
+              size="small"
+              variant="filled"
+            />
+          )}
+        </Box>
+      )}
+
       {node.quiz && (
         <Alert severity="info" sx={{ mb: 2 }}>
           <Typography variant="body2" fontWeight="bold" gutterBottom>

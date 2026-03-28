@@ -122,6 +122,9 @@ export const convertPathToNodes = (
         points: 100,
         prerequisites: topicIndex > 0 ? [`${module.module_id}-TOP${topicIndex}`] : [],
         resources: topic?.resources?.length || 0,
+        theta: topic?.theta,
+        theta_se: topic?.theta_se,
+        zpd_zone: topic?.zpd_zone,
         quiz: topic?.quiz ? {
           quiz_id: topic.quiz.quiz_id || `QZ_${nodeId}`,
           question_count: topic.quiz.question_count || 5,

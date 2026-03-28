@@ -61,6 +61,7 @@ class SubjectStatusOut(BaseModel):
     fsrs_due_count: int
     zpd_lower: float
     zpd_upper: float
+    zpd_zone: str = "ZPD_ACTIVE"  # MASTERED | ZPD_ACTIVE | FRUSTRATION
     priority_score: float
     level_label: str
     needs_cat: bool = False
@@ -146,6 +147,7 @@ async def get_subject_statuses(
             fsrs_due_count=s.fsrs_due_count,
             zpd_lower=round(s.zpd_lower, 2),
             zpd_upper=round(s.zpd_upper, 2),
+            zpd_zone=s.zpd_zone,
             priority_score=s.priority_score,
             level_label="CAT Gerekiyor" if s.needs_cat else _theta_label(s.theta),
             needs_cat=s.needs_cat,

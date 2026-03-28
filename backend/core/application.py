@@ -115,6 +115,15 @@ async def app_lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     except Exception as e:
         logger.warning(f"⚠️ Agent initialization failed (non-fatal): {e}")
 
+    # Register blackboard subscribers
+    try:
+        from services.blackboard_service import register_default_subscribers
+
+        register_default_subscribers()
+        logger.info("✅ Blackboard subscribers registered")
+    except Exception as e:
+        logger.warning(f"⚠️ Blackboard subscriber init failed (non-fatal): {e}")
+
     logger.info("✅ KIRO2 Backend Started Successfully!")
     logger.info("=" * 60)
 

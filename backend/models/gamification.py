@@ -11,6 +11,8 @@ KRITIK: BKTState SADECE BURADA tanimlanir.
 
 from __future__ import annotations
 
+import uuid
+
 from sqlalchemy import (
     JSON,
     Boolean,
@@ -303,4 +305,22 @@ class StudentAbility(Base):
         DateTime(timezone=True),
         server_default=func.now(),
         onupdate=func.now(),
+    )
+
+
+class ZPDHistory(Base):
+    """ZPD zone gecmisi — ogrenci gelisim takibi."""
+
+    __tablename__ = "zpd_history"
+
+    id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
+    student_id = Column(String, ForeignKey("users.id"), nullable=False, index=True)
+    topic_id = Column(String, nullable=False, index=True)
+    zone = Column(String(20), nullable=False)  # frustration / zpd / mastery
+    p_learn = Column(Float(precision=6, asdecimal=False), default=0.0)
+    theta = Column(Float(precision=6, asdecimal=False), default=0.0)
+    scaffold_level = Column(Integer, default=0)
+    recorded_at = Column(
+        DateTime(timezone=True),
+        server_default=func.now(),
     )

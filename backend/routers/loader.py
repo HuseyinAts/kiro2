@@ -192,6 +192,8 @@ ROUTER_MAPPING = {
     "api.pwa_sync_api": ("learning", "api.pwa_sync_api"),
     # Learning Path Daily (ZPD+DAG+IRT+FSRS Orchestrator)
     "app.api.learning_path_daily": ("learning", "app.api.learning_path_daily"),
+    # Orchestrator Admin API
+    "api.orchestrator_api": ("admin", "api.orchestrator_api"),
 }
 
 

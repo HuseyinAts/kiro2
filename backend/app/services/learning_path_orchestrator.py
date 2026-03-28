@@ -96,6 +96,7 @@ class SubjectStatus:
     prereq_topic_name: str | None = None  # v2: Okunabilir ismi
     zpd_lower: float = -1.0
     zpd_upper: float = 1.0
+    zpd_zone: str = "ZPD_ACTIVE"  # MASTERED | ZPD_ACTIVE | FRUSTRATION
     priority_score: float = 0.0
     needs_cat: bool = False
 
@@ -226,6 +227,14 @@ class LearningPathOrchestrator:
                 )
             )
 
+            # Compute ZPD zone from mastery_pct
+            if mastery_pct >= 80:
+                zpd_zone = "MASTERED"
+            elif mastery_pct >= 40:
+                zpd_zone = "ZPD_ACTIVE"
+            else:
+                zpd_zone = "FRUSTRATION"
+
             statuses.append(
                 SubjectStatus(
                     subject=subject,
@@ -240,6 +249,7 @@ class LearningPathOrchestrator:
                     prereq_topic_name=prereq_topic_name,
                     zpd_lower=zpd_lower,
                     zpd_upper=zpd_upper,
+                    zpd_zone=zpd_zone,
                     priority_score=priority,
                     needs_cat=not has_theta,
                 )
