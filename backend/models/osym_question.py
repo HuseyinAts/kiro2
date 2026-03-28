@@ -159,7 +159,7 @@ class StudentQuestionResponse(Base):
     response_time_seconds = Column(Integer)  # Yanıt süresi
 
     # Bağlam
-    exam_session_id = Column(Integer, ForeignKey("exam_sessions.id"))
+    exam_session_id = Column(String, ForeignKey("exam_sessions.id"))
     attempt_number = Column(Integer, default=1)  # Kaçıncı deneme
 
     # Timestamps

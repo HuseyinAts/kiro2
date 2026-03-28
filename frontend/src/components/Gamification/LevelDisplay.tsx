@@ -3,7 +3,7 @@
  * Kullanıcı seviye ve XP gösterimi
  */
 import * as React from 'react';
-import {  useEffect, useState  } from 'react';
+import {  useEffect, useRef, useState  } from 'react';
 
 import { useLevel } from '../../hooks/useGamification';
 import './LevelDisplay.css';
@@ -30,17 +30,22 @@ export const LevelDisplay: React.FC<LevelDisplayProps> = ({
     }
   }, [showMilestones, getMilestones]);
 
+  const levelUpTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
   useEffect(() => {
     if (levelProgress && previousLevel !== null) {
       if (levelProgress.current_level > previousLevel) {
         setIsLevelingUp(true);
         onLevelUp?.(levelProgress.current_level);
-        setTimeout(() => setIsLevelingUp(false), 3000);
+        levelUpTimerRef.current = setTimeout(() => setIsLevelingUp(false), 3000);
       }
     }
     if (levelProgress) {
       setPreviousLevel(levelProgress.current_level);
     }
+    return () => {
+      if (levelUpTimerRef.current) clearTimeout(levelUpTimerRef.current);
+    };
   }, [levelProgress, previousLevel, onLevelUp]);
 
   if (loading && !levelProgress) {

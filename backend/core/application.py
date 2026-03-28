@@ -180,8 +180,14 @@ def setup_middleware(app: FastAPI) -> None:
         CORSMiddleware,
         allow_origins=settings.allowed_origins,
         allow_credentials=True,
-        allow_methods=["*"],
-        allow_headers=["*"],
+        allow_methods=["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+        allow_headers=[
+            "Authorization",
+            "Content-Type",
+            "X-Requested-With",
+            "Accept",
+            "X-CSRF-Token",
+        ],
         expose_headers=["X-Response-Time", "X-Cache-Status", "ETag"],
     )
     logger.info(f"✅ CORS middleware added (origins: {len(settings.allowed_origins)})")

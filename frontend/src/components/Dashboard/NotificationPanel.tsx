@@ -302,8 +302,17 @@ export function NotificationPanel({ open, onClose }: NotificationPanelProps) {
                             variant="text"
                             className="ml-2"
                             onClick={() => {
-                              // Eylem URL'sine yönlendir
-                              window.location.href = notification.eylem_url!;
+                              // Eylem URL'sine yönlendir (open redirect koruması)
+                              try {
+                                const parsed = new URL(notification.eylem_url!, window.location.origin);
+                                if (parsed.origin !== window.location.origin) {
+                                  console.warn('Blocked external redirect:', notification.eylem_url);
+                                  return;
+                                }
+                                window.location.href = parsed.href;
+                              } catch {
+                                console.warn('Invalid notification URL:', notification.eylem_url);
+                              }
                             }}
                           >
                             Görüntüle

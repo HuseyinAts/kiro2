@@ -362,7 +362,9 @@ class ChatService {
         params.append('session_id', sessionId);
       }
 
-      const response = await fetch(`${ENHANCED_CHAT_API}/history?${params}`);
+      const response = await fetch(`${ENHANCED_CHAT_API}/history?${params}`, {
+        credentials: 'include',
+      });
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);

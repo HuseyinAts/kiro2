@@ -383,6 +383,7 @@ class RevolutionaryFeaturesService {
     const response = await fetch(`${this.baseUrl}/text-simplification/simplify`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
       body: JSON.stringify({
         text: text,
         level: level,

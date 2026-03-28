@@ -113,7 +113,9 @@ class ExamQuestion(Base):
     exam_session_id: Mapped[str] = mapped_column(
         String, ForeignKey("exam_sessions.id", ondelete="CASCADE"), nullable=False
     )
-    question_id: Mapped[str] = mapped_column(String, nullable=False)
+    question_id: Mapped[str] = mapped_column(
+        String, ForeignKey("question_bank.id"), nullable=False
+    )
 
     question_order: Mapped[int] = mapped_column(Integer, nullable=False)
 
@@ -124,7 +126,6 @@ class ExamQuestion(Base):
     question: Mapped["QuestionBankItem"] = relationship(
         "QuestionBankItem",
         foreign_keys=[question_id],
-        primaryjoin="ExamQuestion.question_id == QuestionBankItem.id",
         lazy="select",
     )
 
@@ -149,7 +150,9 @@ class StudentAnswer(Base):
     exam_session_id: Mapped[str] = mapped_column(
         String, ForeignKey("exam_sessions.id", ondelete="CASCADE"), nullable=False
     )
-    question_id: Mapped[str] = mapped_column(String, nullable=False)
+    question_id: Mapped[str] = mapped_column(
+        String, ForeignKey("question_bank.id"), nullable=False
+    )
 
     # Answer information
     selected_answer: Mapped[str | None] = mapped_column(String(1))

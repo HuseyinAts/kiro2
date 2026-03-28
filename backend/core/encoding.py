@@ -2,10 +2,13 @@
 Türkçe karakter desteği ve encoding konfigürasyonu
 UTF-8 encoding ve locale ayarları
 """
+
 import json
 import locale
 import os
+import re
 import sys
+import unicodedata
 from typing import Any, Union
 
 
@@ -148,21 +151,17 @@ def normalize_turkish_text(text: str) -> str:
     if not isinstance(text, str):
         text = str(text)
 
-    # Lowercase ve whitespace temizleme
-    normalized = text.lower().strip()
+    # 1. Unicode NFC normalizasyonu (İ decomposition'ı önler)
+    normalized = unicodedata.normalize("NFC", text)
+
+    # 2. Türkçe-specific lowercase mapping (İ→i, I→ı)
+    normalized = normalized.replace("\u0130", "i").replace("I", "\u0131")
+
+    # 3. Standard lowercase + whitespace temizleme
+    normalized = normalized.lower().strip()
 
     # Çoklu boşlukları tek boşluğa çevir
-    import re
-
     normalized = re.sub(r"\s+", " ", normalized)
-
-    # Türkçe karakter dönüşümleri
-    replacements = {
-        "i̇": "i",  # Noktalı i problemi
-    }
-
-    for old, new in replacements.items():
-        normalized = normalized.replace(old, new)
 
     return normalized
 
