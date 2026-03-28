@@ -88,6 +88,10 @@ services:
       - kiro2-dev-network
     restart: unless-stopped
 
+volumes:
+  postgres_dev_data:
+  redis_dev_data:
+
 networks:
   kiro2-dev-network:
     driver: bridge

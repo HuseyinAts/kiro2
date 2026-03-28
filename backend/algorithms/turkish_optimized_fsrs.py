@@ -16,10 +16,11 @@ import math
 from dataclasses import dataclass
 from datetime import datetime, timedelta
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 try:
     from hijri_converter import Gregorian
+
     HIJRI_AVAILABLE = True
 except ImportError:
     HIJRI_AVAILABLE = False
@@ -109,14 +110,13 @@ class CulturalFactorCalculator:
 
         if days <= 7:
             return 1.5  # Son hafta - maksimum yoğunluk
-        elif days <= 30:
+        if days <= 30:
             return 1.4  # Son ay
-        elif days <= 90:
+        if days <= 90:
             return 1.3  # Son 3 ay
-        elif days <= 180:
+        if days <= 180:
             return 1.2  # Son 6 ay
-        else:
-            return 1.0  # Normal dönem
+        return 1.0  # Normal dönem
 
 
 class FSRSGrade(Enum):
@@ -147,8 +147,8 @@ class FSRSCard:
     difficulty: float = 0.0
     stability: float = 0.0
     retrievability: float = 0.0
-    last_review: Optional[datetime] = None
-    due_date: Optional[datetime] = None
+    last_review: datetime | None = None
+    due_date: datetime | None = None
     review_count: int = 0
     lapse_count: int = 0
     elapsed_days: int = 0
@@ -169,7 +169,7 @@ class FSRSSchedule:
     stability: float
     difficulty: float
     retrievability: float
-    cultural_factors: Dict[str, Any]
+    cultural_factors: dict[str, Any]
 
 
 @dataclass
@@ -299,9 +299,7 @@ class TurkishOptimizedFSRS:
                     "family_pressure": getattr(
                         student_context, "family_pressure_level", 0.5
                     ),
-                    "exam_anxiety": getattr(
-                        student_context, "exam_anxiety_level", 0.5
-                    ),
+                    "exam_anxiety": getattr(student_context, "exam_anxiety_level", 0.5),
                 },
             }
 
@@ -414,7 +412,7 @@ class TurkishOptimizedFSRS:
                 else:  # EASY
                     stability_multiplier = self.turkish_params[3]
 
-                new_card.stability = card.stability * stability_multiplier
+                new_card.stability = min(36500.0, card.stability * stability_multiplier)
 
             # Difficulty güncelleme
             if grade == FSRSGrade.HARD:
@@ -557,7 +555,7 @@ class TurkishOptimizedFSRS:
         return base_retention
 
     def calculate_difficulty_adjustment(
-        self, card: FSRSCard, recent_performance: List[FSRSGrade]
+        self, card: FSRSCard, recent_performance: list[FSRSGrade]
     ) -> float:
         """Son performansa göre zorluk ayarlaması"""
 
@@ -573,10 +571,9 @@ class TurkishOptimizedFSRS:
         # Başarı oranına göre zorluk ayarla
         if success_rate >= 0.8:
             return -0.1  # Zorluğu azalt
-        elif success_rate <= 0.4:
+        if success_rate <= 0.4:
             return 0.15  # Zorluğu artır
-        else:
-            return 0.0  # Değiştirme
+        return 0.0  # Değiştirme
 
     def predict_retention_probability(
         self, card: FSRSCard, days_ahead: int = 1
@@ -592,10 +589,10 @@ class TurkishOptimizedFSRS:
 
     def get_study_recommendations(
         self,
-        cards: List[FSRSCard],
+        cards: list[FSRSCard],
         student_context: StudentContext,
         current_date: datetime,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Çalışma önerileri oluştur"""
 
         due_cards = []
@@ -641,17 +638,16 @@ class TurkishOptimizedFSRS:
         if period == CulturalPeriod.RAMADAN:
             return "Ramazan ayında sahur sonrası ve iftar öncesi çalışma saatleri daha verimli olabilir."
 
-        elif period == CulturalPeriod.EXAM_SEASON:
+        if period == CulturalPeriod.EXAM_SEASON:
             return "Sınav döneminde kısa aralıklarla tekrar yapın ve stres yönetimi tekniklerini kullanın."
 
-        elif period == CulturalPeriod.SUMMER_BREAK:
+        if period == CulturalPeriod.SUMMER_BREAK:
             return "Yaz tatilinde düzenli çalışma rutini oluşturun, unutmayı önlemek için hafif tekrarlar yapın."
 
-        elif period == CulturalPeriod.RELIGIOUS_HOLIDAY:
+        if period == CulturalPeriod.RELIGIOUS_HOLIDAY:
             return "Bayram döneminde aile zamanı ile çalışma dengesini kurun."
 
-        else:
-            return "Normal dönemde düzenli çalışma rutininizi sürdürün."
+        return "Normal dönemde düzenli çalışma rutininizi sürdürün."
 
     def _calculate_recommended_study_time(
         self, due_cards_count: int, student_context: StudentContext
@@ -669,10 +665,10 @@ class TurkishOptimizedFSRS:
 
         return max(15, min(180, base_time))  # 15-180 dakika arası
 
-    def _get_priority_subjects(self, due_cards: List[FSRSCard]) -> List[str]:
+    def _get_priority_subjects(self, due_cards: list[FSRSCard]) -> list[str]:
         """Öncelikli konuları belirle"""
 
-        subject_counts: Dict[str, int] = {}
+        subject_counts: dict[str, int] = {}
         for card in due_cards:
             subject_counts[card.subject] = subject_counts.get(card.subject, 0) + 1
 

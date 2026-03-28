@@ -47,7 +47,9 @@ class IRTService3PL:
         Returns:
             Dogru cevap olasiligi [c, 1.0]
         """
-        return c + (1 - c) / (1 + math.exp(-a * (theta - b)))
+        exponent = -a * (theta - b)
+        exponent = max(-700, min(700, exponent))  # prevent math overflow
+        return c + (1 - c) / (1 + math.exp(exponent))
 
     # ---------------------------------------------------------------------------
     # 2. Fisher Bilgi Fonksiyonu
@@ -99,9 +101,9 @@ class IRTService3PL:
         # Log likelihood
         log_likelihood = np.zeros(41)
         for q, r in zip(answered_questions, responses):
-            a = float(q.get("irt_a", 1.0))
-            b = float(q.get("irt_b", 0.0))
-            c = float(q.get("irt_c", 0.20))
+            a = max(IRT_A_MIN, min(IRT_A_MAX, float(q.get("irt_a", 1.0))))
+            b = max(IRT_B_MIN, min(IRT_B_MAX, float(q.get("irt_b", 0.0))))
+            c = max(IRT_C_MIN, min(IRT_C_MAX, float(q.get("irt_c", 0.20))))
             for j, theta in enumerate(quad_points):
                 p = max(1e-10, min(1 - 1e-10, IRTService3PL.icc(theta, a, b, c)))
                 log_likelihood[j] += r * math.log(p) + (1 - r) * math.log(1 - p)
@@ -142,7 +144,10 @@ class IRTService3PL:
         for q in item_bank:
             if q["id"] in answered_ids:
                 continue
-            info = IRTService3PL.information(theta, q["irt_a"], q["irt_b"], q["irt_c"])
+            a = max(IRT_A_MIN, min(IRT_A_MAX, float(q.get("irt_a", 1.0))))
+            b = max(IRT_B_MIN, min(IRT_B_MAX, float(q.get("irt_b", 0.0))))
+            c = max(IRT_C_MIN, min(IRT_C_MAX, float(q.get("irt_c", 0.20))))
+            info = IRTService3PL.information(theta, a, b, c)
             if info > best_info:
                 best_info, best_id = info, q["id"]
 
