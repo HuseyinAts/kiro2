@@ -493,7 +493,8 @@ class TurkishZPDMaarifSystem:
         individual_score = sum(individual_factors) / len(individual_factors)
 
         # 0.0 = tamamen bireysel, 1.0 = tamamen grup
-        balance = group_score / (group_score + individual_score)
+        total = group_score + individual_score
+        balance = (group_score / total) if total > 1e-10 else 0.5
 
         return balance
 

@@ -160,12 +160,12 @@ class BKTService:
         """
         if correct:
             # Dogru cevap verildiyse: Bayes posterior
-            posterior = (
-                p_learn * (1 - p_S) / (p_learn * (1 - p_S) + (1 - p_learn) * p_G)
-            )
+            denom = p_learn * (1 - p_S) + (1 - p_learn) * p_G
+            posterior = (p_learn * (1 - p_S) / denom) if denom > 1e-10 else p_learn
         else:
             # Yanlis cevap
-            posterior = p_learn * p_S / (p_learn * p_S + (1 - p_learn) * (1 - p_G))
+            denom = p_learn * p_S + (1 - p_learn) * (1 - p_G)
+            posterior = (p_learn * p_S / denom) if denom > 1e-10 else p_learn
 
         # Transfer: yeni sey ogrendi mi? (standart BKT: posterior + (1-posterior)*p_T)
         new_p_L = posterior + (1 - posterior) * p_T
