@@ -18,7 +18,7 @@ import sys
 from dataclasses import dataclass
 from datetime import datetime
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from core.assessment_system import AssessmentResult, AssessmentType, assessment_system
@@ -69,9 +69,9 @@ class StudentProfile:
     learning_goal: str  # Öğrenme hedefi
     learning_style: LearningStyle
     knowledge_level: KnowledgeLevel
-    interests: List[str]
+    interests: list[str]
     available_time: int  # Günlük dakika
-    metadata: Dict[str, Any]
+    metadata: dict[str, Any]
 
 
 @dataclass
@@ -87,9 +87,9 @@ class LearningResource:
     estimated_time: int  # Dakika
     language: str
     description: str
-    tags: List[str]
-    rating: Optional[float] = None
-    metadata: Optional[Dict[str, Any]] = None
+    tags: list[str]
+    rating: float | None = None
+    metadata: dict[str, Any] | None = None
 
 
 @dataclass
@@ -98,33 +98,34 @@ class LearningPath:
 
     path_id: str
     student_profile: StudentProfile
-    resources: List[LearningResource]
+    resources: list[LearningResource]
     total_time: int  # Toplam süre (dakika)
-    phases: List[Dict[str, Any]]  # Öğrenme aşamaları
+    phases: list[dict[str, Any]]  # Öğrenme aşamaları
     created_at: datetime
     reasoning: str  # Neden bu yol önerildi
-    metadata: Dict[str, Any]
+    metadata: dict[str, Any]
 
 
 class LearningPathAgent:
     """Kişiselleştirilmiş Öğrenme Yolu Oluşturan Ajan"""
 
-    def __init__(self, rag_service: Optional[Any] = None):
-        self.profiles: Dict[str, StudentProfile] = {}
-        self.learning_paths: Dict[str, Any] = {}
-        self.resource_cache: Dict[str, Any] = {}
+    def __init__(self, rag_service: Any | None = None):
+        self.profiles: dict[str, StudentProfile] = {}
+        self.learning_paths: dict[str, Any] = {}
+        self.resource_cache: dict[str, Any] = {}
         self.rag_service = rag_service
 
         # Initialize ZPD+Maarif system for culturally-adapted difficulty selection
         try:
             from algorithms.turkish_zpd_maarif_system import TurkishZPDMaarifSystem
+
             self.zpd_system = TurkishZPDMaarifSystem()
             logger.info("ZPD+Maarif system initialized for LearningPathAgent")
         except ImportError:
             self.zpd_system = None
             logger.warning("TurkishZPDMaarifSystem not available")
 
-    async def _get_exam_history(self, student_id: str) -> Dict[str, Any]:
+    async def _get_exam_history(self, student_id: str) -> dict[str, Any]:
         """
         Sınav geçmişinden bilgi seviyesi ve zayıf/güçlü konuları hesapla.
 
@@ -139,8 +140,10 @@ class LearningPathAgent:
             }
         """
         try:
+            from sqlalchemy import Integer, select
+            from sqlalchemy import func as sa_func
+
             from core.database import get_db_session_context
-            from sqlalchemy import select, func as sa_func, Integer
             from models.exam_db import ExamSession, StudentAnswer
 
             async with get_db_session_context() as session:
@@ -159,7 +162,9 @@ class LearningPathAgent:
                 # Calculate overall accuracy
                 total_correct = sum(e.total_correct for e in exams)
                 total_questions = sum(e.total_questions for e in exams)
-                overall_accuracy = total_correct / total_questions if total_questions > 0 else 0
+                overall_accuracy = (
+                    total_correct / total_questions if total_questions > 0 else 0
+                )
 
                 # Determine knowledge level from accuracy
                 if overall_accuracy >= 0.90:
@@ -175,6 +180,7 @@ class LearningPathAgent:
 
                 # Get per-question results with topic info
                 from models.question_bank import QuestionBankItem
+
                 answer_result = await session.execute(
                     select(
                         QuestionBankItem.subject_area,
@@ -208,11 +214,15 @@ class LearningPathAgent:
                     correct = int(row.correct or 0)
                     total = int(row.total or 0)
                     acc = correct / total if total > 0 else 0
-                    subject_stats[subj] = {"correct": correct, "total": total, "accuracy": round(acc, 2)}
+                    subject_stats[subj] = {
+                        "correct": correct,
+                        "total": total,
+                        "accuracy": round(acc, 2),
+                    }
                     if acc < 0.50:
-                        weak_topics.append(f"{subj} (%{int(acc*100)})")
+                        weak_topics.append(f"{subj} (%{int(acc * 100)})")
                     elif acc >= 0.70:
-                        strong_topics.append(f"{subj} (%{int(acc*100)})")
+                        strong_topics.append(f"{subj} (%{int(acc * 100)})")
 
                 return {
                     "has_data": True,
@@ -230,7 +240,7 @@ class LearningPathAgent:
             return {"has_data": False}
 
     async def analyze_student(
-        self, student_id: str, initial_data: Dict[str, Any]
+        self, student_id: str, initial_data: dict[str, Any]
     ) -> StudentProfile:
         """
         Öğrenci analizi yap ve profil oluştur.
@@ -285,11 +295,16 @@ class LearningPathAgent:
                 }}
                 """
 
-                result = await llm_service.generate(prompt=analysis_prompt, temperature=0.3, max_tokens=300)
+                result = await llm_service.generate(
+                    prompt=analysis_prompt, temperature=0.3, max_tokens=300
+                )
 
                 try:
                     analysis = json.loads(result) if isinstance(result, str) else result
-                    if not isinstance(analysis, dict) or "learning_style" not in analysis:
+                    if (
+                        not isinstance(analysis, dict)
+                        or "learning_style" not in analysis
+                    ):
                         raise ValueError("Missing expected keys in analysis")
                 except (json.JSONDecodeError, TypeError, ValueError) as e:
                     logger.debug(f"JSON parsing failed for student analysis: {e}")
@@ -301,8 +316,20 @@ class LearningPathAgent:
                     }
 
             # Normalize Turkish LLM outputs to enum values
-            _style_map = {"karma": "mixed", "görsel": "visual", "işitsel": "auditory", "okuma": "reading", "uygulama": "kinesthetic"}
-            _level_map = {"başlangıç": "beginner", "temel": "elementary", "orta": "intermediate", "ileri": "advanced", "uzman": "expert"}
+            _style_map = {
+                "karma": "mixed",
+                "görsel": "visual",
+                "işitsel": "auditory",
+                "okuma": "reading",
+                "uygulama": "kinesthetic",
+            }
+            _level_map = {
+                "başlangıç": "beginner",
+                "temel": "elementary",
+                "orta": "intermediate",
+                "ileri": "advanced",
+                "uzman": "expert",
+            }
             raw_style = analysis.get("learning_style", "mixed").lower()
             raw_level = analysis.get("knowledge_level", "beginner").lower()
             style_val = _style_map.get(raw_style, raw_style)
@@ -334,25 +361,29 @@ class LearningPathAgent:
                     "analysis": analysis,
                     "initial_data": initial_data,
                     "created_at": datetime.now().isoformat(),
-                    "data_source": "exam_history" if exam_history.get("has_data") else "llm_estimate",
+                    "data_source": "exam_history"
+                    if exam_history.get("has_data")
+                    else "llm_estimate",
                 },
             )
 
             # Cache'e kaydet
             self.profiles[student_id] = profile
 
-            logger.info(f"Student profile created: {student_id} (source: {'exam_history' if exam_history.get('has_data') else 'llm_estimate'})")
+            logger.info(
+                f"Student profile created: {student_id} (source: {'exam_history' if exam_history.get('has_data') else 'llm_estimate'})"
+            )
             return profile
 
         except Exception as e:
-            logger.error(f"Student analysis error: {str(e)}")
+            logger.error(f"Student analysis error: {e!s}")
             raise
 
     async def assess_knowledge_level(
         self,
         student_id: str,
         subject: str,
-        test_results: Optional[Dict[str, Any]] = None,
+        test_results: dict[str, Any] | None = None,
     ) -> KnowledgeLevel:
         """
         Bilgi seviyesi değerlendirmesi (Eski metod - geriye uyumluluk için)
@@ -377,37 +408,34 @@ class LearningPathAgent:
                 # Test sonuçlarından seviye belirleme
                 score = test_results.get("score", 0)
                 total = test_results.get("total", 100)
-                percentage = (score / total) * 100
+                percentage = (score / total) * 100 if total > 0 else 0
 
                 if percentage < 30:
                     return KnowledgeLevel.BEGINNER
-                elif percentage < 50:
+                if percentage < 50:
                     return KnowledgeLevel.ELEMENTARY
-                elif percentage < 70:
+                if percentage < 70:
                     return KnowledgeLevel.INTERMEDIATE
-                elif percentage < 90:
+                if percentage < 90:
                     return KnowledgeLevel.ADVANCED
-                else:
-                    return KnowledgeLevel.EXPERT
-            else:
-                # Öğrenci profilinden tahmin
-                profile = self.profiles.get(student_id)
-                if profile:
-                    return profile.knowledge_level
-                else:
-                    return KnowledgeLevel.BEGINNER
+                return KnowledgeLevel.EXPERT
+            # Öğrenci profilinden tahmin
+            profile = self.profiles.get(student_id)
+            if profile:
+                return profile.knowledge_level
+            return KnowledgeLevel.BEGINNER
 
         except Exception as e:
-            logger.error(f"Knowledge assessment error: {str(e)}")
+            logger.error(f"Knowledge assessment error: {e!s}")
             raise
 
     async def create_quick_assessment(
         self,
         student_id: str,
         subject: str,
-        topic: Optional[str] = None,
+        topic: str | None = None,
         question_count: int = 5,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Enhanced quick assessment with dynamic question selection
 
@@ -427,9 +455,10 @@ class LearningPathAgent:
 
             if profile:
                 # Profil varsa zorluk seviyesini belirle
-                if profile.knowledge_level == KnowledgeLevel.BEGINNER:
-                    difficulty = assessment_system.DifficultyLevel.EASY
-                elif profile.knowledge_level == KnowledgeLevel.ELEMENTARY:
+                if (
+                    profile.knowledge_level == KnowledgeLevel.BEGINNER
+                    or profile.knowledge_level == KnowledgeLevel.ELEMENTARY
+                ):
                     difficulty = assessment_system.DifficultyLevel.EASY
                 elif profile.knowledge_level == KnowledgeLevel.INTERMEDIATE:
                     difficulty = assessment_system.DifficultyLevel.MEDIUM
@@ -486,12 +515,12 @@ class LearningPathAgent:
             return assessment_data
 
         except Exception as e:
-            logger.error(f"Create quick assessment error: {str(e)}")
+            logger.error(f"Create quick assessment error: {e!s}")
             raise
 
     async def create_self_assessment(
-        self, student_id: str, subjects: List[str]
-    ) -> Dict[str, Any]:
+        self, student_id: str, subjects: list[str]
+    ) -> dict[str, Any]:
         """
         Öz değerlendirme oluştur
 
@@ -536,12 +565,12 @@ class LearningPathAgent:
             return assessment_data
 
         except Exception as e:
-            logger.error(f"Create self-assessment error: {str(e)}")
+            logger.error(f"Create self-assessment error: {e!s}")
             raise
 
     async def create_interactive_questionnaire(
-        self, student_id: str, goal: str, subjects: Optional[List[str]] = None
-    ) -> Dict[str, Any]:
+        self, student_id: str, goal: str, subjects: list[str] | None = None
+    ) -> dict[str, Any]:
         """
         Enhanced interactive questionnaire with dynamic question selection
 
@@ -613,12 +642,12 @@ class LearningPathAgent:
             return assessment_data
 
         except Exception as e:
-            logger.error(f"Create interactive questionnaire error: {str(e)}")
+            logger.error(f"Create interactive questionnaire error: {e!s}")
             raise
 
     async def create_guided_self_assessment(
-        self, student_id: str, subjects: List[str], learning_goals: List[str]
-    ) -> Dict[str, Any]:
+        self, student_id: str, subjects: list[str], learning_goals: list[str]
+    ) -> dict[str, Any]:
         """
         Create guided self-assessment flow
 
@@ -641,16 +670,16 @@ class LearningPathAgent:
             return flow_data
 
         except Exception as e:
-            logger.error(f"Create guided self-assessment error: {str(e)}")
+            logger.error(f"Create guided self-assessment error: {e!s}")
             raise
 
     async def evaluate_assessment_results(
         self,
         assessment_id: str,
-        answers: List[str],
+        answers: list[str],
         time_taken_seconds: int,
-        additional_data: Optional[Dict[str, Any]] = None,
-    ) -> Dict[str, Any]:
+        additional_data: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
         """
         Enhanced assessment result analysis with comprehensive evaluation
 
@@ -706,10 +735,10 @@ class LearningPathAgent:
                     # Self-assessment için scale questions
                     question = Question(
                         question_id=f"q_{i}",
-                        question_text=f"Self-assessment soru {i+1}",
+                        question_text=f"Self-assessment soru {i + 1}",
                         question_type=QuestionType.SCALE,
                         subject=subject,
-                        topic=f"Konu {i+1}",
+                        topic=f"Konu {i + 1}",
                         difficulty=difficulty,
                         options=["1", "2", "3", "4", "5"],
                         points=1,
@@ -723,10 +752,10 @@ class LearningPathAgent:
                     )
                     question = Question(
                         question_id=f"q_{i}",
-                        question_text=f"Interactive soru {i+1}",
+                        question_text=f"Interactive soru {i + 1}",
                         question_type=q_type,
                         subject=subject,
-                        topic=f"Konu {i+1}",
+                        topic=f"Konu {i + 1}",
                         difficulty=difficulty,
                         correct_answer="A"
                         if q_type == QuestionType.MULTIPLE_CHOICE
@@ -740,10 +769,10 @@ class LearningPathAgent:
                     # Quick test için multiple choice
                     question = Question(
                         question_id=f"q_{i}",
-                        question_text=f"Test soru {i+1}",
+                        question_text=f"Test soru {i + 1}",
                         question_type=QuestionType.MULTIPLE_CHOICE,
                         subject=subject,
-                        topic=f"Konu {i+1}",
+                        topic=f"Konu {i + 1}",
                         difficulty=difficulty,
                         correct_answer="A" if i % 2 == 0 else "B",
                         options=["A", "B", "C", "D"],
@@ -778,9 +807,9 @@ class LearningPathAgent:
                 )
                 if new_level != profile.knowledge_level:
                     profile.knowledge_level = new_level
-                    profile.metadata[
-                        "last_assessment_update"
-                    ] = datetime.now().isoformat()
+                    profile.metadata["last_assessment_update"] = (
+                        datetime.now().isoformat()
+                    )
                     logger.info(
                         f"Updated student {student_id} knowledge level to {new_level.value}"
                     )
@@ -833,7 +862,7 @@ class LearningPathAgent:
             return result_data
 
         except Exception as e:
-            logger.error(f"Evaluate assessment results error: {str(e)}")
+            logger.error(f"Evaluate assessment results error: {e!s}")
             raise
 
     def _analyze_performance_trend(self, student_id: str, current_score: float) -> str:
@@ -849,17 +878,16 @@ class LearningPathAgent:
 
             if current_score > avg_recent + 10:
                 return "improving"
-            elif current_score < avg_recent - 10:
+            if current_score < avg_recent - 10:
                 return "declining"
-            else:
-                return "stable"
+            return "stable"
 
         except Exception:
             return "unknown"
 
     def _extract_learning_style_indicators(
-        self, result: AssessmentResult, additional_data: Optional[Dict[str, Any]]
-    ) -> Dict[str, Any]:
+        self, result: AssessmentResult, additional_data: dict[str, Any] | None
+    ) -> dict[str, Any]:
         """Öğrenme stili göstergelerini çıkar"""
         indicators = {
             "response_speed": "normal",
@@ -899,7 +927,7 @@ class LearningPathAgent:
         level: KnowledgeLevel,
         language: str = "tr",
         limit: int = 20,
-    ) -> List[LearningResource]:
+    ) -> list[LearningResource]:
         """
         Kaynak arama ve toplama
 
@@ -1030,7 +1058,7 @@ class LearningPathAgent:
                     )
 
                 except Exception as e:
-                    logger.warning(f"YouTube search failed for topic {topic}: {str(e)}")
+                    logger.warning(f"YouTube search failed for topic {topic}: {e!s}")
                     # YouTube hatası durumunda devam et
 
             # Khan Academy'den yapılandırılmış içerik ara
@@ -1122,7 +1150,7 @@ class LearningPathAgent:
                             )
                     except Exception as lesson_error:
                         logger.warning(
-                            f"Failed to get lessons for course {course.course_id}: {str(lesson_error)}"
+                            f"Failed to get lessons for course {course.course_id}: {lesson_error!s}"
                         )
 
                 logger.info(
@@ -1130,9 +1158,7 @@ class LearningPathAgent:
                 )
 
             except Exception as e:
-                logger.warning(
-                    f"Khan Academy search failed for topic {topic}: {str(e)}"
-                )
+                logger.warning(f"Khan Academy search failed for topic {topic}: {e!s}")
                 # Khan Academy hatası durumunda devam et
 
             # OER (Open Educational Resources) kaynaklarını ara
@@ -1205,7 +1231,7 @@ class LearningPathAgent:
                 logger.info(f"Found OER resources for topic: {topic}")
 
             except Exception as e:
-                logger.warning(f"OER search failed for topic {topic}: {str(e)}")
+                logger.warning(f"OER search failed for topic {topic}: {e!s}")
                 # OER hatası durumunda devam et
 
             # Harici kaynak önerileri (simüle edilmiş)
@@ -1330,20 +1356,22 @@ class LearningPathAgent:
             return filtered_learning_resources
 
         except Exception as e:
-            logger.error(f"Resource search error: {str(e)}")
+            logger.error(f"Resource search error: {e!s}")
             raise
 
     async def _assign_questions_to_phases(
-        self, phases: List[Dict], subject: str, knowledge_level: str
-    ) -> List[Dict]:
+        self, phases: list[dict], subject: str, knowledge_level: str
+    ) -> list[dict]:
         """
         Her faz için soru bankasından gerçek sorular ata.
         ZPD seviyesine göre optimal zorluk + faz bazlı artan zorluk.
         İlk fazlar kolay, son fazlar zor (progressive difficulty).
         """
         try:
+            from sqlalchemy import func as sa_func
+            from sqlalchemy import select
+
             from core.database import get_db_session_context
-            from sqlalchemy import select, func as sa_func
             from models.question_bank import QuestionBankItem
 
             # Ordered difficulty levels for progressive ramping
@@ -1351,11 +1379,11 @@ class LearningPathAgent:
 
             # Base ZPD index from knowledge level
             _zpd_base = {
-                "beginner": 0,     # starts at VERY_EASY
-                "elementary": 1,   # starts at EASY
-                "intermediate": 2, # starts at MEDIUM
-                "advanced": 3,     # starts at HARD
-                "expert": 4,       # starts at VERY_HARD
+                "beginner": 0,  # starts at VERY_EASY
+                "elementary": 1,  # starts at EASY
+                "intermediate": 2,  # starts at MEDIUM
+                "advanced": 3,  # starts at HARD
+                "expert": 4,  # starts at VERY_HARD
             }
             base_idx = _zpd_base.get(knowledge_level, 2)
 
@@ -1365,10 +1393,16 @@ class LearningPathAgent:
                 for i, phase in enumerate(phases):
                     # Progressive difficulty: shift up by phase position
                     # e.g. beginner with 4 phases: phase0=VERY_EASY/EASY, phase1=EASY/MEDIUM, ...
-                    phase_shift = int((i / max(total_phases - 1, 1)) * 2) if total_phases > 1 else 0
+                    phase_shift = (
+                        int((i / max(total_phases - 1, 1)) * 2)
+                        if total_phases > 1
+                        else 0
+                    )
                     low = min(base_idx + phase_shift, len(ALL_DIFFICULTIES) - 1)
                     high = min(low + 1, len(ALL_DIFFICULTIES) - 1)
-                    target_difficulties = list(set([ALL_DIFFICULTIES[low], ALL_DIFFICULTIES[high]]))
+                    target_difficulties = list(
+                        set([ALL_DIFFICULTIES[low], ALL_DIFFICULTIES[high]])
+                    )
 
                     query = (
                         select(QuestionBankItem.id, QuestionBankItem.difficulty_level)
@@ -1392,7 +1426,7 @@ class LearningPathAgent:
                     }
 
                     logger.info(
-                        f"Phase {i+1}/{total_phases} '{phase.get('title', '?')}': "
+                        f"Phase {i + 1}/{total_phases} '{phase.get('title', '?')}': "
                         f"{len(questions)} questions (difficulty: {target_difficulties})"
                     )
 
@@ -1430,14 +1464,16 @@ class LearningPathAgent:
             exam_context = ""
             if exam_history.get("has_data"):
                 weak = ", ".join(exam_history.get("weak_topics", [])) or "Belirlenemedi"
-                strong = ", ".join(exam_history.get("strong_topics", [])) or "Belirlenemedi"
+                strong = (
+                    ", ".join(exam_history.get("strong_topics", [])) or "Belirlenemedi"
+                )
                 exam_context = f"""
 
             ÖĞRENCİNİN SINAV GEÇMİŞİ (gerçek veri):
-            - Genel doğru oranı: %{int(exam_history['overall_accuracy'] * 100)}
+            - Genel doğru oranı: %{int(exam_history["overall_accuracy"] * 100)}
             - Zayıf konular: {weak}
             - Güçlü konular: {strong}
-            - Toplam sınav: {exam_history.get('exam_count', 0)}
+            - Toplam sınav: {exam_history.get("exam_count", 0)}
 
             ZAYIF konulara öncelik veren bir plan oluştur.
             Güçlü konuları pekiştirme olarak dahil et."""
@@ -1475,7 +1511,9 @@ class LearningPathAgent:
             }}
             """
 
-            result = await llm_service.generate(prompt=planning_prompt, temperature=0.5, max_tokens=800)
+            result = await llm_service.generate(
+                prompt=planning_prompt, temperature=0.5, max_tokens=800
+            )
 
             try:
                 plan = json.loads(result) if isinstance(result, str) else result
@@ -1530,15 +1568,17 @@ class LearningPathAgent:
             # Cache'e kaydet
             self.learning_paths[path_id] = learning_path
 
-            logger.info(f"Learning path created: {path_id} (exam_data={exam_history.get('has_data', False)})")
+            logger.info(
+                f"Learning path created: {path_id} (exam_data={exam_history.get('has_data', False)})"
+            )
             return learning_path
 
         except Exception as e:
-            logger.error(f"Create learning path error: {str(e)}")
+            logger.error(f"Create learning path error: {e!s}")
             raise
 
     async def adapt_learning_path(
-        self, path_id: str, progress_data: Dict[str, Any]
+        self, path_id: str, progress_data: dict[str, Any]
     ) -> LearningPath:
         """
         Öğrenme yolunu ilerlemeye göre adapte et
@@ -1600,18 +1640,18 @@ class LearningPathAgent:
             return path
 
         except Exception as e:
-            logger.error(f"Adapt learning path error: {str(e)}")
+            logger.error(f"Adapt learning path error: {e!s}")
             raise
 
-    def get_student_profile(self, student_id: str) -> Optional[StudentProfile]:
+    def get_student_profile(self, student_id: str) -> StudentProfile | None:
         """Öğrenci profilini getir"""
         return self.profiles.get(student_id)
 
-    def get_learning_path(self, path_id: str) -> Optional[LearningPath]:
+    def get_learning_path(self, path_id: str) -> LearningPath | None:
         """Öğrenme yolunu getir"""
         return self.learning_paths.get(path_id)
 
-    def list_student_paths(self, student_id: str) -> List[LearningPath]:
+    def list_student_paths(self, student_id: str) -> list[LearningPath]:
         """Öğrencinin tüm öğrenme yollarını listele"""
         paths = []
         for path in self.learning_paths.values():
@@ -1623,7 +1663,7 @@ class LearningPathAgent:
 
     async def create_learning_style_questionnaire(
         self, student_id: str
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Öğrenme stili anketi oluştur
 
@@ -1669,16 +1709,16 @@ class LearningPathAgent:
             return questionnaire_data
 
         except Exception as e:
-            logger.error(f"Create learning style questionnaire error: {str(e)}")
+            logger.error(f"Create learning style questionnaire error: {e!s}")
             raise
 
     async def analyze_learning_style_responses(
         self,
         student_id: str,
         questionnaire_id: str,
-        questions: List[Dict[str, Any]],
-        answers: List[str],
-    ) -> Dict[str, Any]:
+        questions: list[dict[str, Any]],
+        answers: list[str],
+    ) -> dict[str, Any]:
         """
         Öğrenme stili anket cevaplarını analiz et
 
@@ -1755,11 +1795,11 @@ class LearningPathAgent:
             return result_data
 
         except Exception as e:
-            logger.error(f"Analyze learning style responses error: {str(e)}")
+            logger.error(f"Analyze learning style responses error: {e!s}")
             raise
 
     def record_learning_behavior(
-        self, student_id: str, content_type: str, interaction_data: Dict[str, Any]
+        self, student_id: str, content_type: str, interaction_data: dict[str, Any]
     ):
         """
         Öğrenme davranışını kaydet
@@ -1827,11 +1867,11 @@ class LearningPathAgent:
             )
 
         except Exception as e:
-            logger.error(f"Record learning behavior error: {str(e)}")
+            logger.error(f"Record learning behavior error: {e!s}")
 
     async def analyze_behavioral_learning_style(
         self, student_id: str
-    ) -> Optional[Dict[str, Any]]:
+    ) -> dict[str, Any] | None:
         """
         Davranışsal verilerden öğrenme stilini analiz et
 
@@ -1902,7 +1942,7 @@ class LearningPathAgent:
             return result_data
 
         except Exception as e:
-            logger.error(f"Analyze behavioral learning style error: {str(e)}")
+            logger.error(f"Analyze behavioral learning style error: {e!s}")
             raise
 
     async def search_and_rank_resources_unified(
@@ -1912,8 +1952,8 @@ class LearningPathAgent:
         level: KnowledgeLevel,
         language: str = "tr",
         limit: int = 20,
-        learning_goals: Optional[List[str]] = None,
-    ) -> List[Dict[str, Any]]:
+        learning_goals: list[str] | None = None,
+    ) -> list[dict[str, Any]]:
         """
         Birleşik algoritma ile kaynakları ara, sırala ve puanla
 
@@ -2023,7 +2063,7 @@ class LearningPathAgent:
             return result_resources
 
         except Exception as e:
-            logger.error(f"Search and rank resources unified error: {str(e)}")
+            logger.error(f"Search and rank resources unified error: {e!s}")
             # Fallback: basit arama yap
             fallback_resources = await self.search_resources(
                 topic, learning_style, level, language, limit
@@ -2055,7 +2095,7 @@ class LearningPathAgent:
         level: KnowledgeLevel,
         language: str = "tr",
         limit: int = 20,
-    ) -> List[LearningResource]:
+    ) -> list[LearningResource]:
         """
         Öğrenci profiline göre kaynakları ara ve filtrele
 
@@ -2143,20 +2183,19 @@ class LearningPathAgent:
                     f"Filtered {len(resources)} resources to {len(filtered_resources)} based on student {student_id} learning style"
                 )
                 return filtered_resources
-            else:
-                # Stil profili yoksa orijinal kaynakları döndür
-                return resources[:limit]
+            # Stil profili yoksa orijinal kaynakları döndür
+            return resources[:limit]
 
         except Exception as e:
-            logger.error(f"Search and filter resources by style error: {str(e)}")
+            logger.error(f"Search and filter resources by style error: {e!s}")
             # Hata durumunda temel arama yap
             return await self.search_resources(
                 topic, learning_style, level, language, limit
             )
 
     def get_style_based_content_recommendations(
-        self, student_id: str, available_content_types: List[str]
-    ) -> List[Dict[str, Any]]:
+        self, student_id: str, available_content_types: list[str]
+    ) -> list[dict[str, Any]]:
         """
         Öğrenme stiline göre içerik önerileri
 
@@ -2191,7 +2230,7 @@ class LearningPathAgent:
             return recommendation_list
 
         except Exception as e:
-            logger.error(f"Get style-based content recommendations error: {str(e)}")
+            logger.error(f"Get style-based content recommendations error: {e!s}")
             return []
 
     def _calculate_style_match_score(
@@ -2221,30 +2260,28 @@ class LearningPathAgent:
             "exercise": LearningStyle.KINESTHETIC,
         }
 
-        mapped_style = content_style_mapping.get(content_type, None)
+        mapped_style = content_style_mapping.get(content_type)
 
         if not mapped_style:
             return 0.5  # Bilinmeyen içerik türü için orta skor
 
         if mapped_style == learning_style:
             return 1.0  # Tam uyum
-        elif learning_style == LearningStyle.MIXED:
+        if learning_style == LearningStyle.MIXED:
             return 0.8  # Karma stil her şeyi kabul eder
-        else:
-            return 0.4  # Kısmi uyum
+        return 0.4  # Kısmi uyum
 
     def _get_style_match_description(self, score: float) -> str:
         """Stil uyum skorunu açıklamaya çevir"""
         if score >= 0.8:
             return "excellent"
-        elif score >= 0.6:
+        if score >= 0.6:
             return "good"
-        elif score >= 0.4:
+        if score >= 0.4:
             return "moderate"
-        else:
-            return "low"
+        return "low"
 
-    def _parse_youtube_duration_to_minutes(self, duration: Optional[str]) -> int:
+    def _parse_youtube_duration_to_minutes(self, duration: str | None) -> int:
         """
         YouTube duration formatını dakikaya çevir
 
@@ -2258,6 +2295,7 @@ class LearningPathAgent:
         """
         # Use centralized parser for consistent ISO 8601 handling
         from agents.learning_path.utils.duration_parser import parse_iso8601_duration
+
         return parse_iso8601_duration(duration, default=10)
 
     def _map_topic_to_subject(self, topic: str) -> str:
@@ -2374,7 +2412,7 @@ class LearningPathAgent:
         # Eşleştirme yap
         if any(keyword in topic_lower for keyword in math_keywords):
             return "matematik"
-        elif any(keyword in topic_lower for keyword in science_keywords):
+        if any(keyword in topic_lower for keyword in science_keywords):
             if any(
                 keyword in topic_lower
                 for keyword in [
@@ -2388,32 +2426,30 @@ class LearningPathAgent:
                 ]
             ):
                 return "fizik"
-            elif any(
+            if any(
                 keyword in topic_lower
                 for keyword in ["kimya", "atom", "molekül", "asit", "baz", "reaksiyon"]
             ):
                 return "kimya"
-            elif any(
+            if any(
                 keyword in topic_lower
                 for keyword in ["biyoloji", "hücre", "genetik", "evrim", "ekosistem"]
             ):
                 return "biyoloji"
-            else:
-                return "fen"
-        elif any(keyword in topic_lower for keyword in turkish_keywords):
+            return "fen"
+        if any(keyword in topic_lower for keyword in turkish_keywords):
             return "türkçe"
-        elif any(keyword in topic_lower for keyword in history_keywords):
+        if any(keyword in topic_lower for keyword in history_keywords):
             return "tarih"
-        elif any(keyword in topic_lower for keyword in geography_keywords):
+        if any(keyword in topic_lower for keyword in geography_keywords):
             return "coğrafya"
-        else:
-            return "genel"  # Default
+        return "genel"  # Default
 
     # Chat Interface Methods
 
     async def process_chat_message(
-        self, session_id: str, message: str, user_id: Optional[str] = None
-    ) -> Dict[str, Any]:
+        self, session_id: str, message: str, user_id: str | None = None
+    ) -> dict[str, Any]:
         """
         Chat mesajını işle
 
@@ -2484,7 +2520,7 @@ class LearningPathAgent:
             }
 
         except Exception as e:
-            logger.error(f"Process chat message error: {str(e)}")
+            logger.error(f"Process chat message error: {e!s}")
             return {
                 "message": "Üzgünüm, bir hata oluştu. Lütfen tekrar deneyin.",
                 "message_type": "assistant",
@@ -2495,9 +2531,7 @@ class LearningPathAgent:
                 "timestamp": datetime.now().isoformat(),
             }
 
-    def get_chat_conversation_history(
-        self, session_id: str
-    ) -> Optional[Dict[str, Any]]:
+    def get_chat_conversation_history(self, session_id: str) -> dict[str, Any] | None:
         """
         Chat konuşma geçmişini getir
 
@@ -2531,7 +2565,7 @@ class LearningPathAgent:
             }
 
         except Exception as e:
-            logger.error(f"Get chat conversation history error: {str(e)}")
+            logger.error(f"Get chat conversation history error: {e!s}")
             return None
 
     def clear_chat_conversation(self, session_id: str) -> bool:
@@ -2548,12 +2582,12 @@ class LearningPathAgent:
             chat_interface.clear_conversation(session_id)
             return True
         except Exception as e:
-            logger.error(f"Clear chat conversation error: {str(e)}")
+            logger.error(f"Clear chat conversation error: {e!s}")
             return False
 
     async def handle_chat_goal_setting(
-        self, session_id: str, goal_data: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, session_id: str, goal_data: dict[str, Any]
+    ) -> dict[str, Any]:
         """
         Chat üzerinden hedef belirleme
 
@@ -2575,16 +2609,15 @@ class LearningPathAgent:
                     "next_step": "profile_creation",
                     "collected_data": context.collected_data,
                 }
-            else:
-                return {"success": False, "error": "Konuşma bağlamı bulunamadı"}
+            return {"success": False, "error": "Konuşma bağlamı bulunamadı"}
 
         except Exception as e:
-            logger.error(f"Handle chat goal setting error: {str(e)}")
+            logger.error(f"Handle chat goal setting error: {e!s}")
             return {"success": False, "error": str(e)}
 
     async def handle_chat_assessment_completion(
-        self, session_id: str, assessment_results: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, session_id: str, assessment_results: dict[str, Any]
+    ) -> dict[str, Any]:
         """
         Chat üzerinden değerlendirme tamamlama
 
@@ -2625,12 +2658,12 @@ class LearningPathAgent:
             }
 
         except Exception as e:
-            logger.error(f"Handle chat assessment completion error: {str(e)}")
+            logger.error(f"Handle chat assessment completion error: {e!s}")
             return {"success": False, "error": str(e)}
 
     async def get_chat_based_recommendations(
         self, session_id: str, request_type: str = "general"
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Chat tabanlı öneriler getir
 
@@ -2698,7 +2731,7 @@ class LearningPathAgent:
                         "description": f"{available_time} dakikalık günlük {subject} çalışma planı",
                         "details": [
                             "İlk 15 dakika: Konu tekrarı",
-                            f"Sonraki {available_time-30} dakika: Yeni konu öğrenme",
+                            f"Sonraki {available_time - 30} dakika: Yeni konu öğrenme",
                             "Son 15 dakika: Soru çözümü",
                         ],
                     },
@@ -2722,12 +2755,12 @@ class LearningPathAgent:
             }
 
         except Exception as e:
-            logger.error(f"Get chat based recommendations error: {str(e)}")
+            logger.error(f"Get chat based recommendations error: {e!s}")
             return {"success": False, "error": str(e)}
 
     # Form Interface Methods
 
-    def get_profile_creation_form(self) -> Dict[str, Any]:
+    def get_profile_creation_form(self) -> dict[str, Any]:
         """
         Profil oluşturma formunu getir
 
@@ -2776,10 +2809,10 @@ class LearningPathAgent:
             }
 
         except Exception as e:
-            logger.error(f"Get profile creation form error: {str(e)}")
+            logger.error(f"Get profile creation form error: {e!s}")
             return {"success": False, "error": str(e)}
 
-    def get_learning_style_form(self) -> Dict[str, Any]:
+    def get_learning_style_form(self) -> dict[str, Any]:
         """
         Öğrenme stili formunu getir
 
@@ -2823,10 +2856,10 @@ class LearningPathAgent:
             }
 
         except Exception as e:
-            logger.error(f"Get learning style form error: {str(e)}")
+            logger.error(f"Get learning style form error: {e!s}")
             return {"success": False, "error": str(e)}
 
-    def get_progress_report_form(self) -> Dict[str, Any]:
+    def get_progress_report_form(self) -> dict[str, Any]:
         """
         İlerleme raporu formunu getir
 
@@ -2873,15 +2906,15 @@ class LearningPathAgent:
             }
 
         except Exception as e:
-            logger.error(f"Get progress report form error: {str(e)}")
+            logger.error(f"Get progress report form error: {e!s}")
             return {"success": False, "error": str(e)}
 
     async def submit_profile_form(
         self,
-        form_data: Dict[str, Any],
-        user_id: Optional[str] = None,
-        session_id: Optional[str] = None,
-    ) -> Dict[str, Any]:
+        form_data: dict[str, Any],
+        user_id: str | None = None,
+        session_id: str | None = None,
+    ) -> dict[str, Any]:
         """
         Profil formunu gönder ve profil oluştur
 
@@ -2957,15 +2990,15 @@ class LearningPathAgent:
             }
 
         except Exception as e:
-            logger.error(f"Submit profile form error: {str(e)}")
+            logger.error(f"Submit profile form error: {e!s}")
             return {"success": False, "error": str(e)}
 
     async def submit_learning_style_form(
         self,
-        form_data: Dict[str, Any],
-        user_id: Optional[str] = None,
-        session_id: Optional[str] = None,
-    ) -> Dict[str, Any]:
+        form_data: dict[str, Any],
+        user_id: str | None = None,
+        session_id: str | None = None,
+    ) -> dict[str, Any]:
         """
         Öğrenme stili formunu gönder ve analiz et
 
@@ -3049,15 +3082,15 @@ class LearningPathAgent:
             }
 
         except Exception as e:
-            logger.error(f"Submit learning style form error: {str(e)}")
+            logger.error(f"Submit learning style form error: {e!s}")
             return {"success": False, "error": str(e)}
 
     def submit_progress_report_form(
         self,
-        form_data: Dict[str, Any],
-        user_id: Optional[str] = None,
-        session_id: Optional[str] = None,
-    ) -> Dict[str, Any]:
+        form_data: dict[str, Any],
+        user_id: str | None = None,
+        session_id: str | None = None,
+    ) -> dict[str, Any]:
         """
         İlerleme raporu formunu gönder
 
@@ -3137,12 +3170,12 @@ class LearningPathAgent:
             }
 
         except Exception as e:
-            logger.error(f"Submit progress report form error: {str(e)}")
+            logger.error(f"Submit progress report form error: {e!s}")
             return {"success": False, "error": str(e)}
 
     def get_user_form_submissions(
-        self, user_id: str, form_type: Optional[str] = None
-    ) -> Dict[str, Any]:
+        self, user_id: str, form_type: str | None = None
+    ) -> dict[str, Any]:
         """
         Kullanıcının form gönderimlerini getir
 
@@ -3184,10 +3217,10 @@ class LearningPathAgent:
             }
 
         except Exception as e:
-            logger.error(f"Get user form submissions error: {str(e)}")
+            logger.error(f"Get user form submissions error: {e!s}")
             return {"success": False, "error": str(e)}
 
-    def _get_style_recommendations(self, style: str) -> List[str]:
+    def _get_style_recommendations(self, style: str) -> list[str]:
         """Öğrenme stiline göre öneriler"""
         recommendations = {
             "visual": [
@@ -3219,8 +3252,8 @@ class LearningPathAgent:
         return recommendations.get(style, ["Karma öğrenme yöntemleri kullan"])
 
     def _generate_progress_recommendations(
-        self, progress_data: Dict[str, Any]
-    ) -> List[str]:
+        self, progress_data: dict[str, Any]
+    ) -> list[str]:
         """İlerleme verilerine göre öneriler oluştur"""
         recommendations = []
 
@@ -3300,7 +3333,7 @@ class LearningPathAgent:
         subject: str,
         duration_weeks: int = 8,
         difficulty_preference: float = 0.5,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Yapılandırılmış öğrenme yolu oluştur
 
@@ -3388,10 +3421,10 @@ class LearningPathAgent:
             }
 
         except Exception as e:
-            logger.error(f"Create structured learning path error: {str(e)}")
+            logger.error(f"Create structured learning path error: {e!s}")
             return {"success": False, "error": str(e)}
 
-    def create_milestone_checkpoints(self, path_id: str) -> Dict[str, Any]:
+    def create_milestone_checkpoints(self, path_id: str) -> dict[str, Any]:
         """
         Kilometre taşı kontrol noktaları oluştur
 
@@ -3443,7 +3476,7 @@ class LearningPathAgent:
             }
 
         except Exception as e:
-            logger.error(f"Create milestone checkpoints error: {str(e)}")
+            logger.error(f"Create milestone checkpoints error: {e!s}")
             return {"success": False, "error": str(e)}
 
     def generate_time_based_schedule(
@@ -3453,7 +3486,7 @@ class LearningPathAgent:
         start_date: str,
         daily_study_minutes: int = 60,
         study_days_per_week: int = 5,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Zaman tabanlı çalışma programı oluştur
 
@@ -3526,16 +3559,16 @@ class LearningPathAgent:
             }
 
         except Exception as e:
-            logger.error(f"Generate time-based schedule error: {str(e)}")
+            logger.error(f"Generate time-based schedule error: {e!s}")
             return {"success": False, "error": str(e)}
 
     def track_learning_objectives(
         self,
         student_id: str,
         path_id: str,
-        completed_objectives: List[str],
-        objective_scores: Dict[str, float],
-    ) -> Dict[str, Any]:
+        completed_objectives: list[str],
+        objective_scores: dict[str, float],
+    ) -> dict[str, Any]:
         """
         Öğrenme hedeflerini takip et
 
@@ -3552,7 +3585,11 @@ class LearningPathAgent:
             # Basit takip verisi oluştur
             total_objectives = 10  # Örnek toplam hedef sayısı
             completed_count = len(completed_objectives)
-            completion_percentage = (completed_count / total_objectives) * 100
+            completion_percentage = (
+                (completed_count / total_objectives) * 100
+                if total_objectives > 0
+                else 0
+            )
 
             average_score = (
                 sum(objective_scores.values()) / len(objective_scores)
@@ -3608,10 +3645,10 @@ class LearningPathAgent:
             }
 
         except Exception as e:
-            logger.error(f"Track learning objectives error: {str(e)}")
+            logger.error(f"Track learning objectives error: {e!s}")
             return {"success": False, "error": str(e)}
 
-    def _calculate_score_consistency(self, scores: List[float]) -> float:
+    def _calculate_score_consistency(self, scores: list[float]) -> float:
         """Skor tutarlılığını hesapla"""
         if len(scores) < 2:
             return 1.0
@@ -3626,8 +3663,8 @@ class LearningPathAgent:
         return consistency
 
     def optimize_learning_sequence(
-        self, student_id: str, path_id: str, performance_data: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, student_id: str, path_id: str, performance_data: dict[str, Any]
+    ) -> dict[str, Any]:
         """
         Öğrenme sırasını optimize et
 
@@ -3700,7 +3737,7 @@ class LearningPathAgent:
             }
 
         except Exception as e:
-            logger.error(f"Optimize learning sequence error: {str(e)}")
+            logger.error(f"Optimize learning sequence error: {e!s}")
             return {"success": False, "error": str(e)}
 
 

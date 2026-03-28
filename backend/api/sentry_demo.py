@@ -234,14 +234,17 @@ async def process_exam_submission(exam_id: str, user_id: str) -> dict:
 
 
 @router.post("/exam-submission/{exam_id}")
-async def submit_exam(exam_id: str, user_id: str = Query(...)) -> dict:
+async def submit_exam(
+    exam_id: str,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+) -> dict:
     """
     Exam submission with business operation tracking
 
     Demonstrates error tracking in business operations.
     """
     try:
-        result = await process_exam_submission(exam_id, user_id)
+        result = await process_exam_submission(exam_id, current_user.id)
         return {**result, "message": "Check Sentry for business operation tracking"}
     except Exception as e:
         capture_exception(e)

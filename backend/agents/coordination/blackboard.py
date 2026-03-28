@@ -12,11 +12,12 @@ Blackboard pattern ile agent'lar arasi koordinasyon:
 
 import json
 import logging
+import os
 import time
 import uuid
-from dataclasses import dataclass, asdict, field
-from typing import Any, Callable, Dict, List, Optional
-
+from collections.abc import Callable
+from dataclasses import asdict, dataclass, field
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -31,13 +32,13 @@ class BlackboardMessage:
 
     message_id: str
     source_agent: str  # Agent domain or ID
-    target_agent: Optional[str]  # None = broadcast
+    target_agent: str | None  # None = broadcast
     message_type: str  # "question", "response", "context_share", etc.
-    content: Dict[str, Any]
+    content: dict[str, Any]
     priority: int = 0  # 0=normal, 1=high, 2=critical
     ttl_seconds: int = MESSAGE_TTL
     timestamp: float = field(default_factory=time.time)
-    correlation_id: Optional[str] = None  # REQ-8.5: Distributed tracing
+    correlation_id: str | None = None  # REQ-8.5: Distributed tracing
 
     def __post_init__(self):
         """correlation_id yoksa otomatik olustur"""
@@ -59,9 +60,9 @@ class BlackboardMessage:
         cls,
         source_agent: str,
         message_type: str,
-        content: Dict[str, Any],
-        target_agent: Optional[str] = None,
-        correlation_id: Optional[str] = None,
+        content: dict[str, Any],
+        target_agent: str | None = None,
+        correlation_id: str | None = None,
         priority: int = 0,
     ) -> "BlackboardMessage":
         """
@@ -99,8 +100,8 @@ class SharedContext:
 
     context_id: str
     source_agent: str
-    target_agent: Optional[str]  # None = all agents
-    data: Dict[str, Any]
+    target_agent: str | None  # None = all agents
+    data: dict[str, Any]
     ttl_seconds: int = SHARED_CONTEXT_TTL
     created_at: float = field(default_factory=time.time)
 
@@ -134,7 +135,7 @@ class DomainBlackboard:
 
     def __init__(
         self,
-        redis_url: str = "redis://localhost:6379/2",
+        redis_url: str = os.getenv("REDIS_URL", "redis://localhost:6379/2"),
         message_ttl: int = MESSAGE_TTL,
         context_ttl: int = SHARED_CONTEXT_TTL,
     ):
@@ -155,11 +156,11 @@ class DomainBlackboard:
         self._use_fallback = False
 
         # In-memory fallback
-        self._message_queue: Dict[str, List[BlackboardMessage]] = {}
-        self._shared_contexts: Dict[str, SharedContext] = {}
+        self._message_queue: dict[str, list[BlackboardMessage]] = {}
+        self._shared_contexts: dict[str, SharedContext] = {}
 
         # Subscribers
-        self._subscribers: Dict[str, List[Callable]] = {}
+        self._subscribers: dict[str, list[Callable]] = {}
 
         # Metrics
         self.messages_sent = 0
@@ -210,8 +211,8 @@ class DomainBlackboard:
         self,
         source_agent: str,
         message_type: str,
-        content: Dict[str, Any],
-        target_agent: Optional[str] = None,
+        content: dict[str, Any],
+        target_agent: str | None = None,
         priority: int = 0,
     ) -> str:
         """
@@ -274,7 +275,7 @@ class DomainBlackboard:
         agent_id: str,
         include_broadcast: bool = True,
         limit: int = 100,
-    ) -> List[BlackboardMessage]:
+    ) -> list[BlackboardMessage]:
         """
         Agent icin mesajlari al
 
@@ -291,14 +292,16 @@ class DomainBlackboard:
         if self._use_fallback or self._redis is None:
             messages = await self._get_messages_fallback(agent_id, include_broadcast)
         else:
-            messages = await self._get_messages_redis(agent_id, include_broadcast, limit)
+            messages = await self._get_messages_redis(
+                agent_id, include_broadcast, limit
+            )
 
         self.messages_received += len(messages)
         return messages
 
     async def _get_messages_redis(
         self, agent_id: str, include_broadcast: bool, limit: int
-    ) -> List[BlackboardMessage]:
+    ) -> list[BlackboardMessage]:
         """Redis'ten mesajlari al"""
         messages = []
 
@@ -329,7 +332,7 @@ class DomainBlackboard:
 
     async def _get_messages_fallback(
         self, agent_id: str, include_broadcast: bool
-    ) -> List[BlackboardMessage]:
+    ) -> list[BlackboardMessage]:
         """In-memory queue'dan mesajlari al"""
         messages = []
 
@@ -350,8 +353,8 @@ class DomainBlackboard:
     async def share_context(
         self,
         source_agent: str,
-        data: Dict[str, Any],
-        target_agent: Optional[str] = None,
+        data: dict[str, Any],
+        target_agent: str | None = None,
     ) -> str:
         """
         Context payllas (REQ-7.5)
@@ -406,9 +409,7 @@ class DomainBlackboard:
             k: v for k, v in self._shared_contexts.items() if not v.is_expired()
         }
 
-    async def get_shared_context(
-        self, agent_id: str
-    ) -> Dict[str, Any]:
+    async def get_shared_context(self, agent_id: str) -> dict[str, Any]:
         """
         Agent icin paylasilan context'i al
 
@@ -420,10 +421,9 @@ class DomainBlackboard:
         """
         if self._use_fallback or self._redis is None:
             return await self._get_context_fallback(agent_id)
-        else:
-            return await self._get_context_redis(agent_id)
+        return await self._get_context_redis(agent_id)
 
-    async def _get_context_redis(self, agent_id: str) -> Dict[str, Any]:
+    async def _get_context_redis(self, agent_id: str) -> dict[str, Any]:
         """Redis'ten context al"""
         combined_data = {}
 
@@ -445,7 +445,7 @@ class DomainBlackboard:
 
         return combined_data
 
-    async def _get_context_fallback(self, agent_id: str) -> Dict[str, Any]:
+    async def _get_context_fallback(self, agent_id: str) -> dict[str, Any]:
         """In-memory'den context al"""
         combined_data = {}
 
@@ -472,7 +472,7 @@ class DomainBlackboard:
 
         logger.info(f"Cleared context for agent: {agent_id}")
 
-    def get_metrics(self) -> Dict[str, Any]:
+    def get_metrics(self) -> dict[str, Any]:
         """Blackboard metriklerini al"""
         return {
             "messages_sent": self.messages_sent,
@@ -485,7 +485,7 @@ class DomainBlackboard:
 
 
 # Global instance
-_blackboard_instance: Optional[DomainBlackboard] = None
+_blackboard_instance: DomainBlackboard | None = None
 
 
 async def get_domain_blackboard() -> DomainBlackboard:

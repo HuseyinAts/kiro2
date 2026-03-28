@@ -52,3 +52,30 @@ PYTHONUNBUFFERED=1
    ```bash
    docker compose up --build
    ```
+
+## Security Notes
+
+### Docker-compose Passwords
+
+Never use default passwords in production. All docker-compose files should reference environment variables:
+
+```yaml
+# CORRECT — password from env var (fails if missing)
+POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Required}
+
+# WRONG — hardcoded password
+POSTGRES_PASSWORD: changeme
+```
+
+### Database Timestamps
+
+All timestamps should use UTC (`TIMESTAMPTZ` in PostgreSQL). The backend expects UTC-normalized timestamps. Do not store local time.
+
+### Redis TTL Policy
+
+- Session data: 15 min TTL (JWT access token lifetime)
+- Cache data: 5 min default TTL (configurable via `LEARNING_PATH_CACHE_TTL`)
+- Blackboard messages: 1 hour TTL
+- Shared context: 10 min TTL
+
+Always set explicit TTLs on Redis keys to prevent unbounded memory growth.
