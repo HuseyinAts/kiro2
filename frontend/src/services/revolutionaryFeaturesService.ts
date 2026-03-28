@@ -534,6 +534,7 @@ class RevolutionaryFeaturesService {
   async detectLearningStyle(studentId: string): Promise<HybridLearningProfile> {
     const response = await fetch(`${this.baseUrl}/learning-style/detect/${studentId}`, {
       method: 'POST',
+      credentials: 'include',
     });
 
     if (!response.ok) {
@@ -549,7 +550,9 @@ class RevolutionaryFeaturesService {
   }
 
   async getContentRecommendations(studentId: string): Promise<ContentRecommendation> {
-    const response = await fetch(`${this.baseUrl}/learning-style/recommendations/${studentId}`);
+    const response = await fetch(`${this.baseUrl}/learning-style/recommendations/${studentId}`, {
+      credentials: 'include',
+    });
 
     if (!response.ok) {
       throw new Error('Icerik onerileri yuklenemedi');
@@ -564,7 +567,9 @@ class RevolutionaryFeaturesService {
   }
 
   async getLearningStyleExplanation(studentId: string): Promise<any> {
-    const response = await fetch(`${this.baseUrl}/learning-style/explanation/${studentId}`);
+    const response = await fetch(`${this.baseUrl}/learning-style/explanation/${studentId}`, {
+      credentials: 'include',
+    });
 
     if (!response.ok) {
       throw new Error('Öğrenme stili açıklaması yüklenemedi');
@@ -589,6 +594,7 @@ class RevolutionaryFeaturesService {
     const response = await fetch(`${this.baseUrl}/zpd-maarif/revolutionary/calculate`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
       body: JSON.stringify({
         student_id: studentId,
         subject: subject,
@@ -621,6 +627,7 @@ class RevolutionaryFeaturesService {
     const response = await fetch(`${this.baseUrl}/zpd-maarif/revolutionary/recommend`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
       body: JSON.stringify({
         student_id: studentId,
         subject: subject,
@@ -647,6 +654,7 @@ class RevolutionaryFeaturesService {
     const response = await fetch(`${this.baseUrl}/zpd-maarif/revolutionary/cultural-context`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
       body: JSON.stringify({
         student_id: studentId,
         behavioral_data: behavioralData,
@@ -779,7 +787,9 @@ class RevolutionaryFeaturesService {
 
   // İstatistikler
   async getRevolutionaryStats(studentId: string): Promise<any> {
-    const response = await fetch(`${this.baseUrl}/revolutionary-features/stats/${studentId}`);
+    const response = await fetch(`${this.baseUrl}/revolutionary-features/stats/${studentId}`, {
+      credentials: 'include',
+    });
 
     if (!response.ok) {
       throw new Error('Devrimsel özellik istatistikleri yüklenemedi');

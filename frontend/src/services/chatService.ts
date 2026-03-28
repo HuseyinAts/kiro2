@@ -301,6 +301,7 @@ class ChatService {
         headers: {
           'Content-Type': 'application/json',
         },
+        credentials: 'include',
         body: JSON.stringify({
           student_id: studentId,
           message: message,
@@ -396,6 +397,7 @@ class ChatService {
         headers: {
           'Content-Type': 'application/json',
         },
+        credentials: 'include',
         body: JSON.stringify({ text }),
       });
 
