@@ -82,33 +82,8 @@ except ImportError as e:
 # Create application instance
 app = create_app()
 
-# ── KIRO2 CAT/FSRS/DAG/Placement/Estimator Router'lar ───────────────────────
-try:
-    from app.api.cat import router as cat_router
-
-    app.include_router(cat_router)
-    from app.api.fsrs import router as fsrs_router
-
-    app.include_router(fsrs_router)
-    from app.api.dag import router as dag_router
-
-    app.include_router(dag_router)
-    from app.api.placement import router as placement_router
-
-    app.include_router(placement_router)
-    from app.api.estimator import router as estimator_router
-
-    app.include_router(estimator_router)
-    from app.api.calibration_api import router as calibration_router
-
-    app.include_router(calibration_router)
-    logger.info(
-        "KIRO2 CAT+FSRS+DAG+Placement+Estimator+Calibration routerlari yuklendi"
-    )
-except Exception as e:
-    logger.warning(f"KIRO2 router yukleme hatasi (non-critical): {e}")
-
-# ────────────────────────────────────────────────────────────────────────────
+# NOTE: CAT/FSRS/DAG/Placement/Estimator/Calibration routers are registered
+# via core/application.py setup_routers(). No need to duplicate here.
 
 if __name__ == "__main__":
     import uvicorn

@@ -2,19 +2,21 @@
 Soru bankası veri yükleme scripti
 Gerçek soru verilerini database'e yükler ve IRT kalibrasyonu yapar
 """
+
 import asyncio
 import logging
 import sys
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any
 
 # Backend modüllerini import edebilmek için path ekle
 sys.path.append(str(Path(__file__).parent.parent))
 
 from core.database import get_db_session
 from data.question_bank_data import QuestionBankData
-from models.database import ExamType, Question, QuestionDifficulty, SubjectArea
+from models.database import ExamType, QuestionDifficulty, SubjectArea
+from models.question_bank import QuestionBankItem as Question
 from services.irt_calibration_service import IRTCalibrationService
 from services.soru_bankasi_service import SoruBankasiServisi
 
@@ -62,7 +64,7 @@ class QuestionBankPopulator:
             "İngilizce": SubjectArea.INGILIZCE,
         }
 
-    async def populate_all_questions(self) -> Dict[str, Any]:
+    async def populate_all_questions(self) -> dict[str, Any]:
         """Tüm soruları database'e yükle"""
 
         logger.info("Soru bankası veri yükleme işlemi başlatıldı")
@@ -111,8 +113,8 @@ class QuestionBankPopulator:
             results["final_statistics"] = stats
 
         except Exception as e:
-            logger.error(f"Genel hata: {str(e)}")
-            results["errors"].append(f"Genel hata: {str(e)}")
+            logger.error(f"Genel hata: {e!s}")
+            results["errors"].append(f"Genel hata: {e!s}")
 
         finally:
             end_time = datetime.now()
@@ -128,8 +130,8 @@ class QuestionBankPopulator:
         return results
 
     async def _process_question_batch(
-        self, questions: List[Dict[str, Any]], batch_number: int
-    ) -> Dict[str, Any]:
+        self, questions: list[dict[str, Any]], batch_number: int
+    ) -> dict[str, Any]:
         """Soru batch'ini işle"""
 
         batch_results = {"successful": 0, "failed": 0, "errors": []}
@@ -178,7 +180,7 @@ class QuestionBankPopulator:
                         batch_results["successful"] += 1
 
                     except Exception as e:
-                        error_msg = f"Soru işleme hatası (ID: {question_data.get('soru_id', 'unknown')}): {str(e)}"
+                        error_msg = f"Soru işleme hatası (ID: {question_data.get('soru_id', 'unknown')}): {e!s}"
                         batch_results["errors"].append(error_msg)
                         batch_results["failed"] += 1
                         logger.warning(error_msg)
@@ -189,15 +191,15 @@ class QuestionBankPopulator:
 
             except Exception as e:
                 await session.rollback()
-                error_msg = f"Batch {batch_number} commit hatası: {str(e)}"
+                error_msg = f"Batch {batch_number} commit hatası: {e!s}"
                 batch_results["errors"].append(error_msg)
                 logger.error(error_msg)
 
         return batch_results
 
     async def _perform_irt_calibration(
-        self, questions: List[Dict[str, Any]]
-    ) -> Dict[str, Any]:
+        self, questions: list[dict[str, Any]]
+    ) -> dict[str, Any]:
         """IRT kalibrasyon işlemini gerçekleştir"""
 
         try:
@@ -229,10 +231,10 @@ class QuestionBankPopulator:
             }
 
         except Exception as e:
-            logger.error(f"IRT kalibrasyon hatası: {str(e)}")
+            logger.error(f"IRT kalibrasyon hatası: {e!s}")
             return {"error": str(e)}
 
-    async def _generate_statistics(self) -> Dict[str, Any]:
+    async def _generate_statistics(self) -> dict[str, Any]:
         """Final istatistikleri oluştur"""
 
         try:
@@ -264,10 +266,10 @@ class QuestionBankPopulator:
             return stats
 
         except Exception as e:
-            logger.error(f"İstatistik oluşturma hatası: {str(e)}")
+            logger.error(f"İstatistik oluşturma hatası: {e!s}")
             return {"error": str(e)}
 
-    async def populate_specific_exam_type(self, exam_type: str) -> Dict[str, Any]:
+    async def populate_specific_exam_type(self, exam_type: str) -> dict[str, Any]:
         """Belirli sınav tipinin sorularını yükle"""
 
         logger.info(f"{exam_type} soruları yükleniyor...")
@@ -301,7 +303,7 @@ class QuestionBankPopulator:
         )
         return results
 
-    async def verify_question_counts(self) -> Dict[str, Any]:
+    async def verify_question_counts(self) -> dict[str, Any]:
         """Soru sayılarını doğrula"""
 
         verification = {
@@ -385,12 +387,12 @@ async def main():
                 for subject, counts in data.items():
                     if isinstance(counts, dict) and "hedef" in counts:
                         print(
-                            f"  {subject.title()}: {counts['mevcut']}/{counts['hedef']} (%{counts['tamamlanma_orani']*100:.1f})"
+                            f"  {subject.title()}: {counts['mevcut']}/{counts['hedef']} (%{counts['tamamlanma_orani'] * 100:.1f})"
                         )
 
             return
 
-        elif command in ["tyt", "ayt", "ydt"]:
+        if command in ["tyt", "ayt", "ydt"]:
             print(f"[BOOKS] {command.upper()} soruları yükleniyor...")
             results = await populator.populate_specific_exam_type(command.upper())
             print(
@@ -428,7 +430,7 @@ async def main():
             print("\n[CLIPBOARD] HEDEF TAMAMLANMA ORANLARI:")
             for exam_type, data in stats["hedef_soru_sayilari"].items():
                 print(
-                    f"{exam_type}: %{data['tamamlanma_orani']*100:.1f} ({data['mevcut']}/{data['hedef']})"
+                    f"{exam_type}: %{data['tamamlanma_orani'] * 100:.1f} ({data['mevcut']}/{data['hedef']})"
                 )
 
     if results["errors"]:

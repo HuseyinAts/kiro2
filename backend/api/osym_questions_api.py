@@ -2,21 +2,23 @@
 OSYM Original Questions API Endpoints
 Provides access to authentic OSYM exam questions
 """
-from typing import Optional
-from datetime import datetime
-import random
-import asyncpg
-import json
 
-from fastapi import APIRouter, HTTPException, Query
+import random
+from datetime import datetime
+
+import asyncpg
+from fastapi import APIRouter, Depends, HTTPException, Query
+
+from core.dependencies import AuthenticatedUser, get_current_user
 
 router = APIRouter(prefix="/api/v1/osym", tags=["OSYM Questions"])
 
 
 async def get_db():
     """Get database connection"""
-    from core.config import settings
     import re
+
+    from core.config import settings
 
     # Parse connection string
     pattern = r"postgresql\+?.*://([^:]+):([^@]+)@([^:]+):(\d+)/(.+)"
@@ -35,7 +37,9 @@ async def get_db():
 
 
 @router.get("/statistics")
-async def get_osym_statistics():
+async def get_osym_statistics(
+    current_user: AuthenticatedUser = Depends(get_current_user),
+):
     """Get OSYM question bank statistics"""
     try:
         conn = await get_db()
@@ -75,9 +79,13 @@ async def get_osym_statistics():
                     "by_exam_type": {
                         row["exam_type"]: row["count"] for row in by_exam_type
                     },
-                    "by_subject": {row["subject_area"]: row["count"] for row in by_subject},
+                    "by_subject": {
+                        row["subject_area"]: row["count"] for row in by_subject
+                    },
                     "by_year": {
-                        row["osym_year"]: row["count"] for row in by_year if row["osym_year"]
+                        row["osym_year"]: row["count"]
+                        for row in by_year
+                        if row["osym_year"]
                     },
                     "quality_score": 10.0,
                     "source": "OSYM Official",
@@ -89,12 +97,16 @@ async def get_osym_statistics():
 
     except Exception as e:
         import logging
-        logging.error(f"OSYM API Error: {str(e)}")
+
+        logging.error(f"OSYM API Error: {e!s}")
         raise HTTPException(500, "Soru bankası verilerine erişilirken bir hata oluştu")
 
 
 @router.get("/subjects")
-async def get_available_subjects(exam_type: Optional[str] = Query(None)):
+async def get_available_subjects(
+    current_user: AuthenticatedUser = Depends(get_current_user),
+    exam_type: str | None = Query(None),
+):
     """Get list of available subjects"""
     try:
         conn = await get_db()
@@ -134,16 +146,18 @@ async def get_available_subjects(exam_type: Optional[str] = Query(None)):
 
     except Exception as e:
         import logging
-        logging.error(f"OSYM API Error: {str(e)}")
+
+        logging.error(f"OSYM API Error: {e!s}")
         raise HTTPException(500, "Soru bankası verilerine erişilirken bir hata oluştu")
 
 
 @router.get("/random-questions")
 async def get_random_questions(
-    subject: Optional[str] = Query(None),
+    current_user: AuthenticatedUser = Depends(get_current_user),
+    subject: str | None = Query(None),
     exam_type: str = Query("TYT"),
     count: int = Query(10, ge=1, le=40),
-    difficulty: Optional[str] = Query(None),
+    difficulty: str | None = Query(None),
     with_answers: bool = Query(True),
 ):
     """Get random OSYM questions for practice"""
@@ -213,7 +227,9 @@ async def get_random_questions(
                     "stem": row["question_text"],
                     "options": options,
                     "year": row["osym_year"],
-                    "quality_score": float(row["quality_score"]) if row["quality_score"] else 10.0,
+                    "quality_score": float(row["quality_score"])
+                    if row["quality_score"]
+                    else 10.0,
                 }
 
                 if with_answers:
@@ -233,13 +249,16 @@ async def get_random_questions(
 
     except Exception as e:
         import logging
-        logging.error(f"OSYM API Error: {str(e)}")
+
+        logging.error(f"OSYM API Error: {e!s}")
         raise HTTPException(500, "Soru bankası verilerine erişilirken bir hata oluştu")
 
 
 @router.get("/practice-exam")
 async def generate_practice_exam(
-    exam_type: str = Query("TYT"), year: Optional[int] = Query(None)
+    current_user: AuthenticatedUser = Depends(get_current_user),
+    exam_type: str = Query("TYT"),
+    year: int | None = Query(None),
 ):
     """Generate a full OSYM practice exam"""
     try:
@@ -334,16 +353,18 @@ async def generate_practice_exam(
 
     except Exception as e:
         import logging
-        logging.error(f"OSYM API Error: {str(e)}")
+
+        logging.error(f"OSYM API Error: {e!s}")
         raise HTTPException(500, "Soru bankası verilerine erişilirken bir hata oluştu")
 
 
 @router.get("/questions")
 async def get_questions(
-    subject: Optional[str] = Query(None),
-    exam_type: Optional[str] = Query(None),
-    year: Optional[int] = Query(None),
-    difficulty: Optional[str] = Query(None),
+    current_user: AuthenticatedUser = Depends(get_current_user),
+    subject: str | None = Query(None),
+    exam_type: str | None = Query(None),
+    year: int | None = Query(None),
+    difficulty: str | None = Query(None),
     limit: int = Query(20, ge=1, le=100),
     offset: int = Query(0, ge=0),
 ):
@@ -428,5 +449,6 @@ async def get_questions(
 
     except Exception as e:
         import logging
-        logging.error(f"OSYM API Error: {str(e)}")
+
+        logging.error(f"OSYM API Error: {e!s}")
         raise HTTPException(500, "Soru bankası verilerine erişilirken bir hata oluştu")

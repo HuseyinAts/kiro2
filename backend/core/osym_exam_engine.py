@@ -558,7 +558,7 @@ class OSYMExamEngine:
             async with get_db_session_context() as db_session:
                 result = await db_session.execute(
                     select(Question).where(
-                        Question.id == question_id, Question.is_active == True
+                        Question.id == question_id, Question.is_active.is_(True)
                     )
                 )
                 question = result.scalar_one_or_none()
@@ -817,7 +817,9 @@ class OSYMExamEngine:
             time_spent: int | None = None
             if session_data.started_at and session_data.completed_at:
                 time_spent = int(
-                    (session_data.completed_at - session_data.started_at).total_seconds()
+                    (
+                        session_data.completed_at - session_data.started_at
+                    ).total_seconds()
                 )
 
             # Veritabanını güncelle
@@ -1339,7 +1341,8 @@ class OSYMExamEngine:
                 if question_ids:
                     result = await db_session.execute(
                         select(Question.id, Question.correct_answer).where(
-                            Question.id.in_(question_ids)
+                            Question.id.in_(question_ids),
+                            Question.is_active.is_(True),
                         )
                     )
                     correct_answers_map = {

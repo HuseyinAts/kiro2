@@ -179,7 +179,7 @@ class AdvancedReportsService {
    */
   async getAdvancedExamReport(sinavId: string): Promise<AdvancedExamReport> {
     try {
-      const response = await apiClient.get(`/reports/exam/${sinavId}/advanced`);
+      const response = await apiClient.get(`/api/v1/reports/exam/${sinavId}/advanced`);
       return response.data;
     } catch (error) {
       console.error('Gelişmiş rapor getirme hatası:', error);
@@ -192,7 +192,7 @@ class AdvancedReportsService {
    */
   async getIRTAnalysis(sinavId: string): Promise<IRTAnalysis> {
     try {
-      const response = await apiClient.get(`/reports/exam/${sinavId}/irt-analysis`);
+      const response = await apiClient.get(`/api/v1/reports/exam/${sinavId}/irt-analysis`);
       return response.data.irt_morfoloji_analizi;
     } catch (error) {
       console.error('IRT analizi getirme hatası:', error);
@@ -205,7 +205,7 @@ class AdvancedReportsService {
    */
   async getZPDRecommendations(sinavId: string): Promise<ZPDAnalysis> {
     try {
-      const response = await apiClient.get(`/reports/exam/${sinavId}/zpd-recommendations`);
+      const response = await apiClient.get(`/api/v1/reports/exam/${sinavId}/zpd-recommendations`);
       return response.data.zpd_analizi;
     } catch (error) {
       console.error('ZPD analizi getirme hatası:', error);
@@ -218,7 +218,7 @@ class AdvancedReportsService {
    */
   async getLearningStyleAnalysis(sinavId: string): Promise<LearningStyleAnalysis> {
     try {
-      const response = await apiClient.get(`/reports/exam/${sinavId}/learning-style-analysis`);
+      const response = await apiClient.get(`/api/v1/reports/exam/${sinavId}/learning-style-analysis`);
       return response.data.hibrit_ogrenme_stili_analizi;
     } catch (error) {
       console.error('Öğrenme stili analizi getirme hatası:', error);
@@ -231,7 +231,7 @@ class AdvancedReportsService {
    */
   async getOSYMETSComparison(sinavId: string): Promise<OSYMETSComparison> {
     try {
-      const response = await apiClient.get(`/reports/exam/${sinavId}/osym-ets-comparison`);
+      const response = await apiClient.get(`/api/v1/reports/exam/${sinavId}/osym-ets-comparison`);
       return response.data.osym_ets_karsilastirmasi;
     } catch (error) {
       console.error('ÖSYM/ETS karşılaştırma hatası:', error);
@@ -244,7 +244,7 @@ class AdvancedReportsService {
    */
   async generatePDFReport(sinavId: string): Promise<{ message: string; pdf_filename: string; download_url: string }> {
     try {
-      const response = await apiClient.post(`/reports/exam/${sinavId}/generate-pdf`);
+      const response = await apiClient.post(`/api/v1/reports/exam/${sinavId}/generate-pdf`);
       return response.data;
     } catch (error) {
       console.error('PDF oluşturma hatası:', error);
@@ -257,7 +257,7 @@ class AdvancedReportsService {
    */
   async downloadPDFReport(filename: string): Promise<Blob> {
     try {
-      const response = await apiClient.get(`/reports/download/${filename}`, {
+      const response = await apiClient.get(`/api/v1/reports/download/${filename}`, {
         responseType: 'blob',
       });
       return response.data;

@@ -130,7 +130,11 @@ async def create_session(
 
 
 @router.get("/{session_id}")
-async def get_session(session_id: UUID, db: AsyncSession = Depends(get_db)):
+async def get_session(
+    session_id: UUID,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
     """Get session details"""
     service = VideoConferenceService(db)
     session = await service.get_session(session_id)
@@ -242,7 +246,11 @@ async def start_screen_share(
 
 
 @router.post("/screen-share/{screen_share_id}/stop")
-async def stop_screen_share(screen_share_id: UUID, db: AsyncSession = Depends(get_db)):
+async def stop_screen_share(
+    screen_share_id: UUID,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
     """Stop screen sharing"""
     service = VideoConferenceService(db)
     screen_share = await service.end_screen_share(screen_share_id)
@@ -262,6 +270,7 @@ async def stop_screen_share(screen_share_id: UUID, db: AsyncSession = Depends(ge
 async def create_whiteboard(
     session_id: UUID,
     request: WhiteboardCreateRequest,
+    current_user: AuthenticatedUser = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
     """Create whiteboard for session"""
@@ -282,7 +291,11 @@ async def create_whiteboard(
 
 
 @router.get("/whiteboard/{whiteboard_id}")
-async def get_whiteboard(whiteboard_id: UUID, db: AsyncSession = Depends(get_db)):
+async def get_whiteboard(
+    whiteboard_id: UUID,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
     """Get whiteboard details"""
     service = WhiteboardService(db)
     whiteboard = await service.get_whiteboard(whiteboard_id)
@@ -361,7 +374,10 @@ async def add_equation(
 
 @router.get("/whiteboard/{whiteboard_id}/page/{page_number}")
 async def get_page_content(
-    whiteboard_id: UUID, page_number: int, db: AsyncSession = Depends(get_db)
+    whiteboard_id: UUID,
+    page_number: int,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
 ):
     """Get complete page content (strokes + equations)"""
     service = WhiteboardService(db)
@@ -371,7 +387,11 @@ async def get_page_content(
 
 
 @router.post("/whiteboard/{whiteboard_id}/page")
-async def add_page(whiteboard_id: UUID, db: AsyncSession = Depends(get_db)):
+async def add_page(
+    whiteboard_id: UUID,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
     """Add new page to whiteboard"""
     service = WhiteboardService(db)
     whiteboard = await service.add_page(whiteboard_id)
@@ -386,7 +406,11 @@ async def add_page(whiteboard_id: UUID, db: AsyncSession = Depends(get_db)):
 
 
 @router.delete("/whiteboard/stroke/{stroke_id}")
-async def delete_stroke(stroke_id: UUID, db: AsyncSession = Depends(get_db)):
+async def delete_stroke(
+    stroke_id: UUID,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
     """Delete stroke"""
     service = WhiteboardService(db)
     success = await service.delete_stroke(stroke_id)
@@ -404,7 +428,10 @@ async def delete_stroke(stroke_id: UUID, db: AsyncSession = Depends(get_db)):
 
 @router.post("/{session_id}/recording/start")
 async def start_recording(
-    session_id: UUID, title: str | None = None, db: AsyncSession = Depends(get_db)
+    session_id: UUID,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+    title: str | None = None,
+    db: AsyncSession = Depends(get_db),
 ):
     """Start session recording"""
     service = VideoConferenceService(db)
@@ -415,7 +442,11 @@ async def start_recording(
 
 
 @router.post("/recording/{recording_id}/stop")
-async def stop_recording(recording_id: UUID, db: AsyncSession = Depends(get_db)):
+async def stop_recording(
+    recording_id: UUID,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
     """Stop recording"""
     service = VideoConferenceService(db)
     recording = await service.stop_recording(recording_id)
@@ -427,7 +458,11 @@ async def stop_recording(recording_id: UUID, db: AsyncSession = Depends(get_db))
 
 
 @router.get("/{session_id}/recordings")
-async def get_session_recordings(session_id: UUID, db: AsyncSession = Depends(get_db)):
+async def get_session_recordings(
+    session_id: UUID,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
     """Get all recordings for session"""
     service = VideoConferenceService(db)
     recordings = await service.get_session_recordings(session_id)
@@ -476,7 +511,10 @@ async def send_chat_message(
 
 @router.get("/{session_id}/chat")
 async def get_session_chat(
-    session_id: UUID, limit: int = 100, db: AsyncSession = Depends(get_db)
+    session_id: UUID,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+    limit: int = 100,
+    db: AsyncSession = Depends(get_db),
 ):
     """Get chat messages"""
     service = VideoConferenceService(db)

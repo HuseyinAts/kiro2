@@ -124,7 +124,9 @@ async def get_points_summary(
 
     except Exception as e:
         logger.error(f"Puan ozeti hatasi: {e!s}")
-        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
+        raise HTTPException(
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
+        )
 
 
 @router.get("/points/history", response_model=dict[str, Any])
@@ -154,14 +156,18 @@ async def get_point_history(
 
     except Exception as e:
         logger.error(f"Puan gecmisi hatasi: {e!s}")
-        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
+        raise HTTPException(
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
+        )
 
 
 @router.post("/points/award", response_model=dict[str, Any])
 async def award_points(
     current_user: AuthenticatedUser = Depends(get_current_user),
     db: AsyncSession = Depends(get_db_session),
-    points: int = Query(..., ge=1, le=1000, description="Verilecek puan miktari"),
+    points: int = Query(
+        ..., ge=1, le=100, description="Verilecek puan miktari (max 100)"
+    ),
     reason: str = Query(..., description="Puan verme nedeni"),
 ):
     """Kullaniciya puan ver (DB-backed)."""
@@ -196,7 +202,9 @@ async def award_points(
 
     except Exception as e:
         logger.error(f"Puan verme hatasi: {e!s}")
-        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
+        raise HTTPException(
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
+        )
 
 
 # ============================================================================
@@ -237,7 +245,9 @@ async def get_level_info(
 
     except Exception as e:
         logger.error(f"Seviye bilgisi hatasi: {e!s}")
-        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
+        raise HTTPException(
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
+        )
 
 
 @router.get("/level/progress", response_model=dict[str, Any])
@@ -335,7 +345,9 @@ async def get_all_badges(
 
     except Exception as e:
         logger.error(f"Rozetler getirme hatasi: {e!s}")
-        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
+        raise HTTPException(
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
+        )
 
 
 @router.get("/badges/earned", response_model=dict[str, Any])
@@ -617,10 +629,13 @@ def calculate_level(total_xp: int) -> int:
 
 
 def xp_for_level(level: int) -> int:
-    """Belirli bir seviyeye ulasmak icin gereken toplam XP."""
-    if level == 1:
+    """Belirli bir seviyeye ulasmak icin gereken toplam XP.
+
+    Formula: 100 * 1.5^(lv-1) per level (unified with ExperienceManager).
+    """
+    if level <= 1:
         return 0
-    return sum(int(lv * 100 * (1.5**lv)) for lv in range(1, level))
+    return sum(int(100 * (1.5 ** (lv - 1))) for lv in range(1, level))
 
 
 def get_badge_definitions() -> list[dict[str, Any]]:
@@ -749,7 +764,9 @@ async def get_user_achievements(
         }
     except Exception as e:
         logger.error(f"Basarilar getirme hatasi: {e!s}")
-        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
+        raise HTTPException(
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
+        )
 
 
 @router.get("/achievements/completed", response_model=dict[str, Any])

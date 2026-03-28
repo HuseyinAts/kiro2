@@ -313,20 +313,8 @@ export function ModernLearningPathPage() {
       }
     }
 
-    // 4. Award gamification points - with retry
-    if (studentId) {
-      const points = results.correctCount * 10 + (results.percentage >= (activeQuizNode?.quiz?.passing_score || 60) ? 50 : 0);
-      if (points > 0) {
-        try {
-          await fetchWithRetry(`/api/v1/gamification/points/award?points=${points}&reason=quiz_complete`, {
-            method: 'POST',
-            credentials: 'include',
-          });
-        } catch (err) {
-          console.error('Gamification puan hatası (retry dahil):', err);
-        }
-      }
-    }
+    // 4. Gamification points: backend on_quiz_completed() handles XP award automatically
+    // (removed duplicate frontend XP call — was causing double XP)
 
     // 5. Show timeout warning if applicable
     if (results.isTimeout) {

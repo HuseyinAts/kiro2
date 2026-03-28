@@ -99,6 +99,30 @@ class LearningEventService:
             logger.warning("Streak update skipped: %s", e)
             report["streak"] = f"error: {e}"
 
+        # 4. Badge check (best-effort)
+        try:
+            badges = await GamificationDBService.check_quiz_badges(
+                student_id=student_id,
+                score=score,
+                passed=passed,
+                db=db,
+            )
+            report["badges"] = badges
+        except Exception as e:
+            logger.warning("Badge check skipped: %s", e)
+            report["badges"] = f"error: {e}"
+
+        # 5. Leaderboard update (best-effort, Redis)
+        try:
+            if report.get("xp") and isinstance(report["xp"], int):
+                await GamificationDBService.update_leaderboard(
+                    student_id=student_id, db=db
+                )
+                report["leaderboard"] = "ok"
+        except Exception as e:
+            logger.warning("Leaderboard update skipped: %s", e)
+            report["leaderboard"] = f"error: {e}"
+
         await db.commit()
         return report
 
@@ -415,3 +439,102 @@ class GamificationDBService:
             if streak.last_activity
             else None,
         }
+
+    @staticmethod
+    async def check_quiz_badges(
+        *,
+        student_id: str,
+        score: float,
+        passed: bool,
+        db: AsyncSession,
+    ) -> list[str]:
+        """Check and award badges after quiz completion. Returns list of newly awarded badge IDs."""
+        from sqlalchemy import func as sa_func
+
+        from models.gamification import Streak, UserBadge, XPTransaction
+
+        awarded: list[str] = []
+
+        # Count total quizzes completed (XP transactions with source='quiz')
+        quiz_count_result = await db.execute(
+            select(sa_func.count()).where(
+                XPTransaction.student_id == student_id,
+                XPTransaction.source == "quiz",
+            )
+        )
+        quiz_count = quiz_count_result.scalar() or 0
+
+        # Get streak info
+        streak_result = await db.execute(
+            select(Streak).where(Streak.user_id == student_id)
+        )
+        streak = streak_result.scalar_one_or_none()
+        current_streak = streak.current_streak if streak else 0
+
+        # Badge definitions: (badge_id, criteria_check)
+        badge_checks = [
+            ("first_quiz", quiz_count >= 1),
+            ("quiz_10", quiz_count >= 10),
+            ("quiz_50", quiz_count >= 50),
+            ("quiz_100", quiz_count >= 100),
+            ("perfect_score", score >= 100.0),
+            ("consistent_7", current_streak >= 7),
+            ("consistent_30", current_streak >= 30),
+        ]
+
+        for badge_id, criteria_met in badge_checks:
+            if not criteria_met:
+                continue
+            # Check if already earned
+            existing = await db.execute(
+                select(UserBadge).where(
+                    UserBadge.user_id == student_id,
+                    UserBadge.badge_id == badge_id,
+                )
+            )
+            if existing.scalar_one_or_none():
+                continue
+            # Award the badge
+            new_badge = UserBadge(
+                user_id=student_id,
+                badge_id=badge_id,
+            )
+            db.add(new_badge)
+            awarded.append(badge_id)
+
+        if awarded:
+            await db.flush()
+            logger.info("Badges awarded to %s: %s", student_id, awarded)
+
+        return awarded
+
+    @staticmethod
+    async def update_leaderboard(
+        *,
+        student_id: str,
+        db: AsyncSession,
+    ) -> None:
+        """Update Redis leaderboard with user's current total XP."""
+        try:
+            from redis import Redis
+
+            from models.database import User
+
+            # Get current total_xp from DB
+            result = await db.execute(
+                select(User.total_xp).where(User.id == student_id)
+            )
+            row = result.first()
+            if not row:
+                return
+            total_xp = row[0] or 0
+
+            # Update Redis sorted set (best-effort)
+            import os
+
+            redis_url = os.environ.get("REDIS_URL", "redis://localhost:6379/0")
+            r = Redis.from_url(redis_url, decode_responses=True)
+            r.zadd("leaderboard:global", {student_id: total_xp})
+            r.close()
+        except Exception as e:
+            logger.warning("Redis leaderboard update failed: %s", e)
