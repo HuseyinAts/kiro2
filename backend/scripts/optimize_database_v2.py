@@ -2,10 +2,11 @@
 Database Query Optimization Script v2 - Week 3
 Analyzes and optimizes PostgreSQL database for KIRO platform
 """
+
 import asyncio
-import asyncpg
-from typing import List, Dict
 import os
+
+import asyncpg
 
 
 class DatabaseOptimizerV2:
@@ -13,10 +14,9 @@ class DatabaseOptimizerV2:
 
     def __init__(self):
         """Initialize database connection"""
-        self.db_url = os.getenv(
-            "DATABASE_URL",
-            "postgresql://postgres:changeme_strong_password_here@localhost:5434/kiro",
-        )
+        self.db_url = os.getenv("DATABASE_URL")
+        if not self.db_url:
+            raise RuntimeError("DATABASE_URL env var required")
         self.conn = None
 
     async def connect(self):
@@ -26,7 +26,7 @@ class DatabaseOptimizerV2:
             print("✅ Connected to PostgreSQL")
             return True
         except Exception as e:
-            print(f"❌ Failed to connect: {str(e)}")
+            print(f"❌ Failed to connect: {e!s}")
             return False
 
     async def close(self):
@@ -34,7 +34,7 @@ class DatabaseOptimizerV2:
         if self.conn:
             await self.conn.close()
 
-    async def analyze_table_stats(self) -> List[Dict]:
+    async def analyze_table_stats(self) -> list[dict]:
         """Analyze table statistics"""
         query = """
         SELECT
@@ -81,9 +81,9 @@ class DatabaseOptimizerV2:
         for idx in indexes:
             try:
                 create_sql = f"""
-                CREATE INDEX IF NOT EXISTS {idx['name']}
-                ON {idx['table']} {idx['columns']}
-                {idx['condition']};
+                CREATE INDEX IF NOT EXISTS {idx["name"]}
+                ON {idx["table"]} {idx["columns"]}
+                {idx["condition"]};
                 """
 
                 await self.conn.execute(create_sql)

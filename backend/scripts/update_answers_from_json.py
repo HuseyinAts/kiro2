@@ -4,10 +4,13 @@ Update Missing Answers from Extracted JSONs
 Problem: Questions exist in database but without answers.
 Solution: Update correct_answer field from newly extracted JSONs.
 """
+
 import asyncio
-import asyncpg
 import json
+import os
 from pathlib import Path
+
+import asyncpg
 
 
 async def update_answers():
@@ -21,11 +24,11 @@ async def update_answers():
     # Connect
     print("Connecting to database...")
     conn = await asyncpg.connect(
-        host="localhost",
-        port=5434,
-        user="postgres",
-        password="changeme_strong_password_here",
-        database="turkiye_sinav_db",
+        host=os.environ.get("PGHOST", "localhost"),
+        port=int(os.environ.get("PGPORT", "5434")),
+        user=os.environ.get("PGUSER", "postgres"),
+        password=os.environ["PGPASSWORD"],
+        database=os.environ.get("PGDATABASE", "kiro2"),
     )
     print("[OK] Connected!")
     print()

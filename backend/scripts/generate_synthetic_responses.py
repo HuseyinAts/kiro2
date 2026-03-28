@@ -13,13 +13,24 @@ ve gerçek kalibrasyonla karışmaz.
   python scripts/generate_synthetic_responses.py --n-students 50
   python scripts/generate_synthetic_responses.py --n-students 200 --clear
 """
-import argparse, math, random, uuid
-from datetime import datetime, timedelta, timezone
+
+import argparse
+import math
+import os
+import random
+import uuid
+from datetime import UTC, datetime, timedelta
+
 import numpy as np
 import psycopg2
 
-DB = dict(host="localhost", port=5434, dbname="kiro2",
-          user="postgres", password="changeme_strong_password_here")
+DB = dict(
+    host=os.environ.get("PGHOST", "localhost"),
+    port=int(os.environ.get("PGPORT", "5434")),
+    dbname=os.environ.get("PGDATABASE", "kiro2"),
+    user=os.environ.get("PGUSER", "postgres"),
+    password=os.environ["PGPASSWORD"],
+)
 
 ADMIN_USER = "de384ad3-93f6-4ff4-8efb-d430bdc55733"
 
@@ -38,28 +49,36 @@ def simulate_student(theta_true: float, questions: list) -> list:
     for q in questions:
         prob = p3pl(theta_true, q["a"], q["b"], q["c"])
         is_correct = random.random() < prob
-        responses.append({
-            "question_id": q["id"],
-            "is_correct": is_correct,
-            "response_ms": random.randint(8000, 120000),
-        })
+        responses.append(
+            {
+                "question_id": q["id"],
+                "is_correct": is_correct,
+                "response_ms": random.randint(8000, 120000),
+            }
+        )
     return responses
 
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--n-students",  type=int, default=100,
-                        help="Simüle edilecek öğrenci sayısı")
-    parser.add_argument("--dry-run",     action="store_true",
-                        help="DB'ye yazma, sadece istatistikleri göster")
-    parser.add_argument("--clear",       action="store_true",
-                        help="Önceki sentetik verileri temizle")
-    parser.add_argument("--subject",     type=str, default="",
-                        help="Sadece bu dersi işle (örn. MATEMATIK)")
+    parser.add_argument(
+        "--n-students", type=int, default=100, help="Simüle edilecek öğrenci sayısı"
+    )
+    parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="DB'ye yazma, sadece istatistikleri göster",
+    )
+    parser.add_argument(
+        "--clear", action="store_true", help="Önceki sentetik verileri temizle"
+    )
+    parser.add_argument(
+        "--subject", type=str, default="", help="Sadece bu dersi işle (örn. MATEMATIK)"
+    )
     args = parser.parse_args()
 
     conn = psycopg2.connect(**DB)
-    cur  = conn.cursor()
+    cur = conn.cursor()
 
     # Önceki sentetik verileri temizle
     if args.clear and not args.dry_run:
@@ -72,7 +91,8 @@ def main():
 
     # Kalibrasyon havuzundaki soruları çek
     subj_filter = "AND subject_area = %s" if args.subject else ""
-    cur.execute(f"""
+    cur.execute(
+        f"""
         SELECT id::text, subject_area,
                irt_discrimination AS a,
                irt_difficulty     AS b,
@@ -82,14 +102,19 @@ def main():
           AND is_active = TRUE
           {subj_filter}
         ORDER BY subject_area, irt_difficulty
-    """, (args.subject,) if args.subject else ())
-    questions = [dict(zip(["id","subject","a","b","c"], row)) for row in cur.fetchall()]
+    """,
+        (args.subject,) if args.subject else (),
+    )
+    questions = [
+        dict(zip(["id", "subject", "a", "b", "c"], row)) for row in cur.fetchall()
+    ]
     print(f"Kalibrasyon havuzu: {len(questions)} soru")
     print(f"Simüle edilecek: {args.n_students} öğrenci")
 
     if not questions:
         print("Kalibrasyon havuzu boş! Önce add_calib_pool.sql çalıştır.")
-        conn.close(); return
+        conn.close()
+        return
 
     # Öğrenci theta dağılımı: N(0, 1) - YKS öğrenci popülasyonu
     thetas = np.random.normal(0.0, 1.0, args.n_students)
@@ -105,52 +130,66 @@ def main():
 
         responses = simulate_student(float(theta_true), sample)
         sim_user_id = str(uuid.uuid4())  # Her öğrenci için sahte UUID
-        sim_time = datetime.now(timezone.utc) - timedelta(
-            days=random.randint(0, 30),
-            hours=random.randint(0, 23)
+        sim_time = datetime.now(UTC) - timedelta(
+            days=random.randint(0, 30), hours=random.randint(0, 23)
         )
 
         for resp in responses:
-            subj = next(q["subject"] for q in questions if q["id"] == resp["question_id"])
+            subj = next(
+                q["subject"] for q in questions if q["id"] == resp["question_id"]
+            )
             subject_counts[subj] = subject_counts.get(subj, 0) + 1
 
             if not args.dry_run:
-                cur.execute("""
+                cur.execute(
+                    """
                     INSERT INTO kiro2_learning_events (
                         id, user_id, question_id, session_id,
                         event_type, is_correct, theta_after, response_ms, occurred_at
                     ) VALUES (%s, %s, %s, NULL, 'synthetic_response', %s, %s, %s, %s)
                     ON CONFLICT DO NOTHING
-                """, (
-                    str(uuid.uuid4()),
-                    sim_user_id,
-                    resp["question_id"],
-                    resp["is_correct"],
-                    round(float(theta_true), 3),
-                    resp["response_ms"],
-                    sim_time + timedelta(seconds=random.randint(0, 3600)),
-                ))
+                """,
+                    (
+                        str(uuid.uuid4()),
+                        sim_user_id,
+                        resp["question_id"],
+                        resp["is_correct"],
+                        round(float(theta_true), 3),
+                        resp["response_ms"],
+                        sim_time + timedelta(seconds=random.randint(0, 3600)),
+                    ),
+                )
                 inserted += 1
 
         if (i + 1) % 20 == 0:
             if not args.dry_run:
                 conn.commit()
-            print(f"  {i+1}/{args.n_students} öğrenci işlendi...")
+            print(f"  {i + 1}/{args.n_students} öğrenci işlendi...")
 
     if not args.dry_run:
         conn.commit()
 
     # İstatistikler
     total_resp = sum(subject_counts.values())
-    print(f"\n{'='*60}")
-    print(f"SONUÇ: {args.n_students} öğrenci × ort. {total_resp//args.n_students} soru = {total_resp} yanıt")
-    print(f"{'DRY RUN - DB yazılmadı' if args.dry_run else f'{inserted} yanıt DB yazıldı'}")
+    print(f"\n{'=' * 60}")
+    print(
+        f"SONUÇ: {args.n_students} öğrenci × ort. {total_resp // args.n_students} soru = {total_resp} yanıt"
+    )
+    print(
+        f"{'DRY RUN - DB yazılmadı' if args.dry_run else f'{inserted} yanıt DB yazıldı'}"
+    )
 
-    print(f"\nDers bazında yanıt sayıları:")
+    print("\nDers bazında yanıt sayıları:")
     for subj, cnt in sorted(subject_counts.items(), key=lambda x: -x[1]):
         avg_per_q = cnt / (len([q for q in questions if q["subject"] == subj]) or 1)
-        status = "[CTT OK]" if avg_per_q >= 50 else ("[3PL?]" if avg_per_q >= 20 else "[wait]")
-        print(f"  {status} {subj:12s}: {cnt:5d} yanıt | soru başına ort: {avg_per_q:.1f}")
+        status = (
+            "[CTT OK]"
+            if avg_per_q >= 50
+            else ("[3PL?]" if avg_per_q >= 20 else "[wait]")
+        )
+        print(
+            f"  {status} {subj:12s}: {cnt:5d} yanıt | soru başına ort: {avg_per_q:.1f}"
+        )
 
     if not args.dry_run:
         # Kalibre edilebilir soru sayısı kontrol
@@ -166,9 +205,11 @@ def main():
             ) sub
         """)
         kalibre = cur.fetchone()[0]
-        print(f"\n{'='*60}")
+        print(f"\n{'=' * 60}")
         print(f"Kalibre edilebilir soru (>=50 yanıt): {kalibre}")
-        print(f"Çalıştır: python scripts/irt_calibration_runner.py --min-responses 50 --limit 100")
+        print(
+            "Çalıştır: python scripts/irt_calibration_runner.py --min-responses 50 --limit 100"
+        )
 
     conn.close()
 

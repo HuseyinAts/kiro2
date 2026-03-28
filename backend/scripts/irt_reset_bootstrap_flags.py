@@ -12,12 +12,19 @@ Bu script sahte bayrakları düzeltiyor.
   python scripts/irt_reset_bootstrap_flags.py --dry-run
   python scripts/irt_reset_bootstrap_flags.py
 """
+
 import argparse
-import sys
+import os
+
 import psycopg2
 
-DB = dict(host="localhost", port=5434, dbname="kiro2",
-          user="postgres", password="changeme_strong_password_here")
+DB = dict(
+    host=os.environ.get("PGHOST", "localhost"),
+    port=int(os.environ.get("PGPORT", "5434")),
+    dbname=os.environ.get("PGDATABASE", "kiro2"),
+    user=os.environ.get("PGUSER", "postgres"),
+    password=os.environ["PGPASSWORD"],
+)
 
 # Sahte kalibrasyon tespiti:
 # Gerçek EM-3PL → standard_error > 0, convergence_iterations > 0
@@ -75,7 +82,7 @@ WHERE standard_error = 0
 
 def main(dry_run: bool):
     conn = psycopg2.connect(**DB)
-    cur  = conn.cursor()
+    cur = conn.cursor()
 
     print("=" * 60)
     print("IRT BOOTSTRAP FLAG RESET")
@@ -88,10 +95,12 @@ def main(dry_run: bool):
     total_false = cur.fetchone()[0]
     cur.execute("SELECT COUNT(*) FROM irt_calibration_history;")
     hist_total = cur.fetchone()[0]
-    cur.execute("SELECT COUNT(*) FROM irt_calibration_history WHERE standard_error=0 AND convergence_iterations=0;")
+    cur.execute(
+        "SELECT COUNT(*) FROM irt_calibration_history WHERE standard_error=0 AND convergence_iterations=0;"
+    )
     hist_fake = cur.fetchone()[0]
 
-    print(f"\nMEVCUT DURUM:")
+    print("\nMEVCUT DURUM:")
     print(f"  question_bank is_calibrated=TRUE  : {total_true:,}")
     print(f"  question_bank is_calibrated=FALSE : {total_false:,}")
     print(f"  irt_calibration_history toplam    : {hist_total:,}")
@@ -103,13 +112,13 @@ def main(dry_run: bool):
     print(f"\nSIFIRLANACAK (yanıt yok + is_calibrated=TRUE): {will_reset:,}")
 
     if dry_run:
-        print(f"\n[DRY RUN] Değişiklik yapılmadı.")
-        print(f"  Uygulamak için: python scripts/irt_reset_bootstrap_flags.py")
+        print("\n[DRY RUN] Değişiklik yapılmadı.")
+        print("  Uygulamak için: python scripts/irt_reset_bootstrap_flags.py")
         conn.close()
         return
 
     # Uygula
-    print(f"\nUYGULANIYOR...")
+    print("\nUYGULANIYOR...")
 
     cur.execute(RESET_SQL)
     reset_count = cur.rowcount
@@ -129,13 +138,13 @@ def main(dry_run: bool):
     cur.execute("SELECT COUNT(*) FROM irt_calibration_history;")
     new_hist = cur.fetchone()[0]
 
-    print(f"\nYENİ DURUM:")
+    print("\nYENİ DURUM:")
     print(f"  question_bank is_calibrated=TRUE  : {new_true:,}  (gerçekten kalibre)")
     print(f"  question_bank is_calibrated=FALSE : {new_false:,} (kalibrasyon bekliyor)")
     print(f"  irt_calibration_history toplam    : {new_hist:,}")
 
     print(f"\n✅ Calibration task artık {new_false:,} soruyu görebilir.")
-    print(f"   Veri birikince: python scripts/irt_calibration_runner.py --dry-run")
+    print("   Veri birikince: python scripts/irt_calibration_runner.py --dry-run")
 
     conn.close()
 

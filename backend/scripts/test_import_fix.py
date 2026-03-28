@@ -1,10 +1,12 @@
 """
 Test Import Script - Debug and Fix Connection Issue
 """
+
 import asyncio
-import asyncpg
 import json
 from pathlib import Path
+
+import asyncpg
 
 
 async def test_import():
@@ -19,12 +21,14 @@ async def test_import():
     # Connect directly
     print("Step 1: Connecting to database...")
     try:
+        import os
+
         conn = await asyncpg.connect(
-            host="localhost",
-            port=5434,
-            user="postgres",
-            password="changeme_strong_password_here",
-            database="turkiye_sinav_db",
+            host=os.environ.get("PGHOST", "localhost"),
+            port=int(os.environ.get("PGPORT", "5434")),
+            user=os.environ.get("PGUSER", "postgres"),
+            password=os.environ["PGPASSWORD"],
+            database=os.environ.get("PGDATABASE", "kiro2"),
         )
         print("[OK] Connected!")
     except Exception as e:

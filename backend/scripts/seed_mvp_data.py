@@ -25,10 +25,11 @@ from passlib.context import CryptContext
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 # Database connection - strip asyncpg driver for sync psycopg2
-DATABASE_URL = os.getenv(
-    "DATABASE_URL",
-    "postgresql+asyncpg://postgres:changeme_strong_password_here@localhost:5434/kiro2",
-)
+DATABASE_URL = os.getenv("DATABASE_URL")
+if not DATABASE_URL:
+    sys.exit(
+        "ERROR: DATABASE_URL env var required. Example: DATABASE_URL=postgresql+asyncpg://postgres:pass@localhost:5434/kiro2"
+    )
 # Convert async URL to sync: remove +asyncpg
 SYNC_URL = DATABASE_URL.replace("+asyncpg", "").replace("postgresql://", "")
 # Parse: user:pass@host:port/dbname
