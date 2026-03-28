@@ -12,14 +12,16 @@ from typing import Any
 
 from pydantic import BaseModel, Field, field_validator
 
+from core.turkish_nlp_utils import normalize_tr
+
 
 class LearningPathCreateRequest(BaseModel):
     """
     Learning path creation request schema
 
-     BUG FIX #2: Flat structure (not nested student_profile)
-     Field names match frontend expectations
-     Comprehensive validation
+     BUG FIX #2: Flat structure (not nested student_profile)
+     Field names match frontend expectations
+     Comprehensive validation
 
     This schema is auto-exported to OpenAPI and used by frontend TypeScript types.
 
@@ -80,8 +82,8 @@ class LearningPathCreateRequest(BaseModel):
     @field_validator("subject")
     @classmethod
     def validate_subject(cls, v: str) -> str:
-        """Normalize subject name"""
-        return v.strip().lower()
+        """Normalize subject name using Turkish-safe lowercasing."""
+        return normalize_tr(v.strip())
 
     model_config = {
         "json_schema_extra": {
@@ -100,8 +102,8 @@ class StudentProfileData(BaseModel):
     """
     Student profile for resource search
 
-     BUG FIX #3: Structured student profile data
-     Optional fields for flexible queries
+     BUG FIX #3: Structured student profile data
+     Optional fields for flexible queries
     """
 
     student_id: str | None = Field(
@@ -126,7 +128,7 @@ class StudentProfileData(BaseModel):
     goals: list[str] | None = Field(
         None,
         description="Learning goals",
-        json_schema_extra={"examples": [["matematik örenme", "YKS haz1rl1k"]]},
+        json_schema_extra={"examples": [["matematik örenme", "YKS haz1rl1k"]]},
     )
     current_level: dict[str, Any] | None = Field(
         None,
@@ -145,7 +147,7 @@ class StudentProfileData(BaseModel):
                 "student_id": "STU_123",
                 "learning_style": "visual",
                 "grade": 12,
-                "goals": ["matematik örenme"],
+                "goals": ["matematik örenme"],
                 "preferences": {"exam_type": "YKS"},
             }
         }
@@ -156,8 +158,8 @@ class ResourceSearchRequest(BaseModel):
     """
     Resource search request schema
 
-     BUG FIX #3: Proper type structure for resource search
-     Structured student_profile field
+     BUG FIX #3: Proper type structure for resource search
+     Structured student_profile field
     """
 
     subject: str = Field(
@@ -190,10 +192,10 @@ class ResourceSearchRequest(BaseModel):
     @field_validator("difficulty")
     @classmethod
     def validate_difficulty(cls, v: str | None) -> str:
-        """Validate and normalize difficulty"""
+        """Validate and normalize difficulty using Turkish-safe lowercasing."""
         if v is None:
             return "orta"
-        v = v.lower().strip()
+        v = normalize_tr(v.strip())
         allowed = ["kolay", "orta", "zor"]
         if v not in allowed:
             # Try to map English to Turkish
