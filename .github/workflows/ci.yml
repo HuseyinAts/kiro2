@@ -16,7 +16,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  NODE_VERSION: "18"
+  NODE_VERSION: "20"
   UV_SYSTEM_PYTHON: 1
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
