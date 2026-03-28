@@ -32,6 +32,8 @@ ALLOWED_ORIGINS=http://localhost:3000,http://localhost:3001,http://localhost:517
 PYTHONUNBUFFERED=1
 ```
 
+> **PRODUCTION WARNING:** `ALLOWED_ORIGINS` MUST be set to your actual domain(s) in production (e.g., `https://kiro2.com`). Leaving localhost origins in production is a security risk. The backend logs a warning at startup if localhost origins are detected in non-development environments.
+
 ## Pre-launch Steps
 
 1. Run database migrations (from host, not Docker):
