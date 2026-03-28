@@ -201,6 +201,12 @@ class BKTService:
             }
         """
         params = get_params(subject_slug)
+        errors: dict[str, str | None] = {
+            "bkt": None,
+            "irt": None,
+            "fsrs": None,
+            "zpd": None,
+        }
 
         # --- 1. BKT: mevcut durumu oku ---
         try:
@@ -216,6 +222,7 @@ class BKTService:
             bkt_state = result.scalar_one_or_none()
         except Exception as e:
             _ALGO_ERRORS["bkt_read"] += 1
+            errors["bkt"] = str(e)
             logger.error(
                 "BKT state okunamadi student=%s topic=%s: %s", student_id, topic_id, e
             )
@@ -255,6 +262,7 @@ class BKTService:
                     bkt_state.mastery_status = "mastered"
         except Exception as e:
             _ALGO_ERRORS["bkt_write"] += 1
+            errors["bkt"] = str(e)
             logger.error(
                 "BKT DB yazma hatasi student=%s topic=%s: %s", student_id, topic_id, e
             )
@@ -279,7 +287,54 @@ class BKTService:
                 )  # daha yuksek mastery = daha dusuk SE
         except Exception as e:
             _ALGO_ERRORS["irt"] += 1
+            errors["irt"] = str(e)
             logger.error("IRT theta basarisiz student=%s: %s", student_id, e)
+
+        # --- 2b. Theta'yi DB'ye persist et (StudentAbility) ---
+        try:
+            from models.gamification import StudentAbility
+
+            _SUBJECT_ID_MAP = {
+                "matematik": 1,
+                "geometri": 2,
+                "fizik": 3,
+                "kimya": 4,
+                "biyoloji": 5,
+                "turkce": 6,
+                "tarih": 7,
+                "cografya": 8,
+                "edebiyat": 9,
+                "felsefe": 10,
+                "din": 11,
+                "sosyal": 12,
+            }
+            mapped_slug = _SUBJECT_AREA_MAP.get(subject_slug, subject_slug)
+            subj_id = _SUBJECT_ID_MAP.get(mapped_slug)
+            if subj_id is not None:
+                from sqlalchemy.dialects.postgresql import insert as pg_insert
+
+                stmt = (
+                    pg_insert(StudentAbility)
+                    .values(
+                        student_id=student_id,
+                        subject_id=subj_id,
+                        theta=round(theta_after, 4),
+                        theta_se=round(theta_se, 4),
+                    )
+                    .on_conflict_do_update(
+                        index_elements=["student_id", "subject_id"],
+                        set_={
+                            "theta": round(theta_after, 4),
+                            "theta_se": round(theta_se, 4),
+                        },
+                    )
+                )
+                await db.execute(stmt)
+        except Exception as e:
+            _ALGO_ERRORS["irt"] += 1
+            if errors["irt"] is None:
+                errors["irt"] = str(e)
+            logger.error("IRT theta persist hatasi student=%s: %s", student_id, e)
 
         # --- 3. FSRS karti guncelle (state persistent) ---
         fsrs_next_review = None
@@ -345,6 +400,7 @@ class BKTService:
                 fsrs_card.last_review = datetime.now(UTC)
         except Exception as e:
             _ALGO_ERRORS["fsrs"] += 1
+            errors["fsrs"] = str(e)
             logger.error(
                 "FSRS guncelleme basarisiz student=%s topic=%s: %s",
                 student_id,
@@ -357,6 +413,7 @@ class BKTService:
             "new_p_L": new_p_L,
             "theta_after": round(theta_after, 4),
             "theta_se": round(theta_se, 4),
+            "irt_method": "eap" if (answered_questions and responses) else "bridge",
             "fsrs_next_review": (
                 fsrs_next_review.isoformat() if fsrs_next_review else None
             ),
@@ -366,4 +423,5 @@ class BKTService:
             "bilge_mode": ZPDManager.bilge_mode(new_p_L),
             "unlock_3d": ZPDManager.unlock_3d(new_p_L),
             "recommended_difficulty": ZPDManager.recommended_difficulty(new_p_L),
+            "errors": errors,
         }

@@ -34,14 +34,27 @@ class LearningEventService:
         """Called after a quiz is submitted. Triggers BKT + XP + Streak."""
         report: dict[str, Any] = {"bkt": None, "xp": None, "streak": None}
 
-        # 1. BKT update (per question)
+        # 1. BKT update (per question, with cumulative IRT history)
         try:
             from services.bkt_service import BKTService
 
+            # Build IRT history incrementally so eap_theta gets real data
+            answered_questions: list[dict] = []
+            responses_history: list[bool] = []
             for qr in question_results:
                 meta = q_meta.get(qr["question_id"], {})
                 t_id = meta.get("topic_id")
                 if t_id:
+                    # Add current question's IRT params to cumulative history
+                    answered_questions.append(
+                        {
+                            "irt_a": float(meta.get("irt_a", 1.0)),
+                            "irt_b": float(meta.get("irt_b", 0.0)),
+                            "irt_c": float(meta.get("irt_c", 0.2)),
+                        }
+                    )
+                    responses_history.append(bool(qr["is_correct"]))
+
                     await BKTService.record_answer(
                         student_id=student_id,
                         topic_id=str(t_id),
@@ -49,6 +62,8 @@ class LearningEventService:
                         correct=qr["is_correct"],
                         rating=3 if qr["is_correct"] else 1,
                         db=db,
+                        answered_questions=list(answered_questions),
+                        responses=list(responses_history),
                     )
             await db.flush()
             report["bkt"] = "ok"

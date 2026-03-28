@@ -635,6 +635,7 @@ async def save_answer(
                 from sqlalchemy import select
 
                 from core.database import get_db_session_context
+                from models.exam_db import StudentAnswer
                 from models.question_bank import QuestionBankItem as Question
                 from services.bkt_service import BKTService
 
@@ -644,6 +645,9 @@ async def save_answer(
                             Question.correct_answer,
                             Question.primary_topic_id,
                             Question.subject_area,
+                            Question.irt_discrimination,
+                            Question.irt_difficulty,
+                            Question.irt_guessing,
                         ).where(Question.id == request.question_id)
                     )
                     row = q.first()
@@ -656,6 +660,61 @@ async def save_answer(
                         rating = request.rating or (3 if correct else 1)
                         subject_slug = (row.subject_area or "matematik").lower()
 
+                        # Build IRT history from session's previous answers
+                        answered_questions = []
+                        responses = []
+                        try:
+                            prev = await db.execute(
+                                select(
+                                    StudentAnswer.question_id,
+                                    StudentAnswer.is_correct,
+                                ).where(
+                                    StudentAnswer.exam_session_id == session_id,
+                                    StudentAnswer.is_correct.isnot(None),
+                                )
+                            )
+                            prev_rows = prev.all()
+                            if prev_rows:
+                                prev_qids = [r.question_id for r in prev_rows]
+                                prev_correct_map = {
+                                    r.question_id: r.is_correct for r in prev_rows
+                                }
+                                irt_q = await db.execute(
+                                    select(
+                                        Question.id,
+                                        Question.irt_discrimination,
+                                        Question.irt_difficulty,
+                                        Question.irt_guessing,
+                                    ).where(Question.id.in_(prev_qids))
+                                )
+                                for irt_row in irt_q.all():
+                                    answered_questions.append(
+                                        {
+                                            "irt_a": float(
+                                                irt_row.irt_discrimination or 1.0
+                                            ),
+                                            "irt_b": float(
+                                                irt_row.irt_difficulty or 0.0
+                                            ),
+                                            "irt_c": float(irt_row.irt_guessing or 0.2),
+                                        }
+                                    )
+                                    responses.append(
+                                        bool(prev_correct_map.get(irt_row.id))
+                                    )
+                        except Exception as irt_err:
+                            logger.debug("IRT history fetch skipped: %s", irt_err)
+
+                        # Add current answer to history
+                        answered_questions.append(
+                            {
+                                "irt_a": float(row.irt_discrimination or 1.0),
+                                "irt_b": float(row.irt_difficulty or 0.0),
+                                "irt_c": float(row.irt_guessing or 0.2),
+                            }
+                        )
+                        responses.append(correct)
+
                         bkt_result = await BKTService.record_answer(
                             student_id=str(current_user.id),
                             topic_id=str(row.primary_topic_id),
@@ -663,6 +722,8 @@ async def save_answer(
                             correct=correct,
                             rating=rating,
                             db=db,
+                            answered_questions=answered_questions,
+                            responses=responses,
                         )
                         await db.commit()
             except Exception as e:
