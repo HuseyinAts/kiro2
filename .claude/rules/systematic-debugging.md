@@ -7,7 +7,7 @@ priority: high
 
 # Systematic Debugging Methodology
 
-## ALTIN KURAL: TAHMiN ETME, GOR
+## ALTIN KURAL: TAHMIN ETME, GOR
 
 Her sorun icin: ONCE gercek kanit topla, SONRA yorum yap.
 "Muhtemelen X'tir" YASAK — "X ciktisi Y gosteriyor" ZORUNLU.
@@ -86,7 +86,7 @@ docker exec kiro2-backend bash -c "python -c \"import redis; r=redis.from_url('R
 
 ## ADIM 4: Katmanli Hata Ayiklama
 
-Her katmani SIRASIYA kontrol et — atla:
+Her katmani SIRASIYLA kontrol et — atla:
 
 ```
 Katman 1: ALTYAPI
