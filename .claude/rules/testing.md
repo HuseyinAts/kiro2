@@ -573,3 +573,30 @@ Question.exam_type == exam_config.exam_type  # "tyt" != "TYT"
 # DOGRU - Donusum uygula
 Question.exam_type == exam_config.exam_type.value.upper()  # "TYT" == "TYT"
 ```
+
+### 27. Yeni Router = loader.py Kaydı ZORUNLU (Session 120)
+`backend/app/api/` veya `backend/api/` altına yeni router dosyası eklendiğinde
+`routers/loader.py` ROUTER_MAPPING'e kayıt ZORUNLU. Aksi halde 404.
+Session 112'de 5 router 2+ hafta kayıtsız kaldı — `test_router_registration.py` bunu engeller.
+
+```python
+# Yeni app/api/xxx.py oluşturduysan:
+# 1. routers/loader.py ROUTER_MAPPING'e ekle:
+"app.api.xxx": ("category", "app.api.xxx"),
+# 2. pytest tests/test_router_registration.py çalıştır
+```
+
+### 28. Migration SQL ↔ DB Şema Doğrulaması ZORUNLU (Session 120)
+Raw SQL migration (`op.execute`) yazıldıktan sonra DB'deki gerçek şema ile karşılaştır.
+`CREATE TABLE IF NOT EXISTS` şema farkını GİZLER — tablo varsa sessizce geçer.
+
+```python
+# Migration yazdıktan sonra doğrulama:
+psql -p 5434 -d kiro2 -U postgres -c "
+  SELECT column_name, data_type, is_nullable, column_default
+  FROM information_schema.columns
+  WHERE table_name = 'tablo_adi'
+  ORDER BY ordinal_position
+"
+# Migration SQL ile satır satır karşılaştır
+```

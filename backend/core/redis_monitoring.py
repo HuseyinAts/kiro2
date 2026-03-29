@@ -7,7 +7,6 @@ import asyncio
 import os
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Dict, Optional
 
 import redis.asyncio as aioredis
 
@@ -40,7 +39,7 @@ class RedisHealthStatus:
     memory_ok: bool
     replication_ok: bool
     issues: list
-    metrics: Dict
+    metrics: dict
 
 
 class RedisMonitor:
@@ -57,13 +56,17 @@ class RedisMonitor:
 
     def __init__(self, redis_url: str | None = None):
         self.redis_url = redis_url or os.getenv("REDIS_URL", "redis://localhost:6379/0")
-        self.redis_client: Optional[aioredis.Redis] = None
+        self.redis_client: aioredis.Redis | None = None
 
     async def connect(self):
         """Connect to Redis"""
         if not self.redis_client:
             self.redis_client = await aioredis.from_url(
-                self.redis_url, encoding="utf-8", decode_responses=True
+                self.redis_url,
+                encoding="utf-8",
+                decode_responses=True,
+                socket_connect_timeout=2,
+                socket_timeout=2,
             )
 
     async def disconnect(self):
@@ -241,7 +244,7 @@ class RedisMonitor:
                 persistence_ok=False,
                 memory_ok=False,
                 replication_ok=False,
-                issues=[f"Health check error: {str(e)}"],
+                issues=[f"Health check error: {e!s}"],
                 metrics={},
             )
 
@@ -306,7 +309,7 @@ class RedisMonitor:
             logger.error(f"Failed to trigger BGSAVE: {e}")
             return False
 
-    async def get_backup_status(self) -> Dict:
+    async def get_backup_status(self) -> dict:
         """
         Get last backup status
 
@@ -334,7 +337,7 @@ redis_monitor = RedisMonitor()
 
 
 # Health check endpoint helper
-async def redis_health_check() -> Dict:
+async def redis_health_check() -> dict:
     """
     Redis health check for /health endpoint
 

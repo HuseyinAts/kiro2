@@ -7,8 +7,8 @@ RELIABILITY FIX: Production-ready health checks with Kubernetes support
 import asyncio
 import os
 import time
-from datetime import datetime, timezone
-from typing import Any, Dict
+from datetime import UTC, datetime
+from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException, Response, status
 from sqlalchemy import text
@@ -33,7 +33,7 @@ router = APIRouter(tags=["health"])
 @router.get("/health/")
 async def health_check(
     session: AsyncSession = Depends(get_db_session),
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """
     Comprehensive health check with Redis caching (60s TTL)
     RELIABILITY FIX: Full system health with all dependencies
@@ -110,9 +110,8 @@ async def readiness_probe(response: Response):
 
     if is_ready:
         return {"status": "ready"}
-    else:
-        response.status_code = status.HTTP_503_SERVICE_UNAVAILABLE
-        return {"status": "not_ready"}
+    response.status_code = status.HTTP_503_SERVICE_UNAVAILABLE
+    return {"status": "not_ready"}
 
 
 @router.get("/health/live")
@@ -125,9 +124,8 @@ async def liveness_probe(response: Response):
 
     if is_alive:
         return {"status": "alive"}
-    else:
-        response.status_code = status.HTTP_503_SERVICE_UNAVAILABLE
-        return {"status": "dead"}
+    response.status_code = status.HTTP_503_SERVICE_UNAVAILABLE
+    return {"status": "dead"}
 
 
 @router.get("/health/startup")
@@ -140,24 +138,22 @@ async def startup_probe(response: Response):
 
     if has_started:
         return {"status": "started"}
-    else:
-        response.status_code = status.HTTP_503_SERVICE_UNAVAILABLE
-        return {"status": "starting"}
+    response.status_code = status.HTTP_503_SERVICE_UNAVAILABLE
+    return {"status": "starting"}
 
 
 @router.get("/health/database")
-async def database_health_check() -> Dict[str, Any]:
+async def database_health_check() -> dict[str, Any]:
     """Database health check"""
     try:
         health_status = await get_database_health()
 
         if health_status.get("healthy", False):
             return {"status": "healthy", "database": health_status}
-        else:
-            raise HTTPException(
-                status_code=503,
-                detail={"status": "unhealthy", "database": health_status},
-            )
+        raise HTTPException(
+            status_code=503,
+            detail={"status": "unhealthy", "database": health_status},
+        )
     except Exception as e:
         raise HTTPException(
             status_code=503, detail={"status": "error", "error": str(e)}
@@ -167,7 +163,7 @@ async def database_health_check() -> Dict[str, Any]:
 @router.get("/health/detailed")
 async def detailed_health_check(
     session: AsyncSession = Depends(get_db_session),
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """
     Detailed system health check - monitors all services
     Returns comprehensive status for monitoring dashboards
@@ -220,7 +216,7 @@ async def detailed_health_check(
 
         result = {
             "status": "healthy" if overall_healthy else "unhealthy",
-            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "timestamp": datetime.now(UTC).isoformat(),
             "response_time_ms": round(total_duration_ms, 2),
             "services": services,
             "system_info": {
@@ -260,7 +256,7 @@ async def detailed_health_check(
             detail={
                 "status": "error",
                 "error": str(e),
-                "timestamp": datetime.now(timezone.utc).isoformat(),
+                "timestamp": datetime.now(UTC).isoformat(),
             },
         )
 
@@ -268,7 +264,7 @@ async def detailed_health_check(
 # ==================== SERVICE HEALTH CHECK FUNCTIONS ====================
 
 
-async def check_database_health_detailed(session: AsyncSession) -> Dict[str, Any]:
+async def check_database_health_detailed(session: AsyncSession) -> dict[str, Any]:
     """Check database with detailed metrics"""
     start_time = time.time()
 
@@ -292,7 +288,6 @@ async def check_database_health_detailed(session: AsyncSession) -> Dict[str, Any
         except (AttributeError, RuntimeError) as e:
             # Pool stats not available (e.g., SQLite, connection issues)
             logger.debug(f"Pool stats unavailable: {e}")
-            pass
 
         duration_ms = (time.time() - start_time) * 1000
 
@@ -320,7 +315,7 @@ async def check_database_health_detailed(session: AsyncSession) -> Dict[str, Any
         }
 
 
-async def check_redis_health() -> Dict[str, Any]:
+async def check_redis_health() -> dict[str, Any]:
     """Check Redis connectivity"""
     start_time = time.time()
 
@@ -354,14 +349,18 @@ async def check_redis_health() -> Dict[str, Any]:
         return {"status": "unhealthy", "healthy": True, "error": str(e)}  # Non-critical
 
 
-async def check_elasticsearch_health() -> Dict[str, Any]:
+async def check_elasticsearch_health() -> dict[str, Any]:
     """Check Elasticsearch connectivity"""
     start_time = time.time()
 
     try:
         from elasticsearch import AsyncElasticsearch
 
-        es = AsyncElasticsearch(["http://localhost:9200"])
+        es = AsyncElasticsearch(
+            ["http://localhost:9200"],
+            request_timeout=2,
+            retry_on_timeout=False,
+        )
         health = await es.cluster.health()
         await es.close()
 
@@ -390,7 +389,7 @@ async def check_elasticsearch_health() -> Dict[str, Any]:
         return {"status": "unhealthy", "healthy": True, "error": str(e)}  # Non-critical
 
 
-async def check_llm_health() -> Dict[str, Any]:
+async def check_llm_health() -> dict[str, Any]:
     """Check LLM service availability (Ollama/qwen3:14b)"""
     start_time = time.time()
 
@@ -415,12 +414,11 @@ async def check_llm_health() -> Dict[str, Any]:
                 "provider": model_info.get("provider", "unknown"),
                 "model": model_info.get("model", "unknown"),
             }
-        else:
-            return {
-                "status": "unhealthy",
-                "healthy": True,  # Non-critical
-                "error": "Empty response from LLM",
-            }
+        return {
+            "status": "unhealthy",
+            "healthy": True,  # Non-critical
+            "error": "Empty response from LLM",
+        }
 
     except Exception as e:
         logger.error("llm_health_check_failed", error=str(e))

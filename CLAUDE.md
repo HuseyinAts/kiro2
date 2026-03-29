@@ -519,6 +519,13 @@ alembic upgrade head
 alembic downgrade -1
 ```
 
+### Migration Kuralları (ZORUNLU)
+- Yeni tablo → ÖNCE ORM model (`models/`), SONRA `alembic revision --autogenerate`
+- `op.execute(raw SQL)` → SADECE index, constraint, alter, data migration için
+- `op.create_table()` + `sa.Column()` → yeni tablo için HER ZAMAN
+- Raw SQL migration yazıldıysa → `information_schema.columns` ile DB doğrulaması ZORUNLU
+- `CREATE TABLE IF NOT EXISTS` → şema farkını GİZLER, dikkatli kullan
+
 ### Running Tests
 ```bash
 # Backend with coverage
