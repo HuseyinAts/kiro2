@@ -24,14 +24,14 @@ def upgrade() -> None:
             id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
             user_id UUID NOT NULL,
             subject_id TEXT NOT NULL,
-            theta_final NUMERIC,
-            se_final NUMERIC,
-            n_questions SMALLINT DEFAULT 0,
-            started_at TIMESTAMPTZ,
+            theta_final NUMERIC NOT NULL DEFAULT 0.0,
+            se_final NUMERIC NOT NULL DEFAULT 1.0,
+            n_questions SMALLINT NOT NULL DEFAULT 0,
+            started_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
             completed_at TIMESTAMPTZ,
+            state TEXT NOT NULL DEFAULT 'active',
             termination_reason TEXT,
-            state TEXT DEFAULT 'active',
-            created_at TIMESTAMPTZ DEFAULT NOW()
+            created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
         )
     """)
     op.execute("""
