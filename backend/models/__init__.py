@@ -14,6 +14,9 @@ DEPRECATED MODELS (will be removed in v3.0.0):
 from .base import Base
 from .birlikte_streak import StreakDailyLog, StreakPair
 
+# CAT / DAG / Learning Events ORM models (enables alembic autogenerate)
+from .cat_models import CatSession, LearningEvent, TopicPrerequisite
+
 # Faz 2: Study Planner, Leagues, Coaching models
 from .coaching import CoachingEvent, StudentEngagementSignal
 
@@ -336,6 +339,10 @@ __all__ = [
     "SolutionDuelVote",
     "ObaChallenge",
     "ObaChallengeProgress",
+    # CAT / DAG / Learning Events
+    "CatSession",
+    "LearningEvent",
+    "TopicPrerequisite",
     # Aliases for backward compatibility
     "Student",
     "CanonicalStudentProfile",  # Alias for LearningPathStudentProfile
