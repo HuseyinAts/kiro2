@@ -84,8 +84,8 @@ class HealthChecker:
         start_time = time.time()
         components = []
 
-        # Run health checks in parallel with per-check timeout (3s max)
-        check_timeout = 3.0
+        # Run health checks in parallel with per-check timeout (5s max)
+        check_timeout = 5.0
         tasks = [
             asyncio.wait_for(
                 self._check_database(session)
