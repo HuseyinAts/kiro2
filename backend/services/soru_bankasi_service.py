@@ -465,7 +465,7 @@ class SoruBankasiServisi:
                 # Her konu için istenen sayıda soru seç
                 secilen_sorular = []
                 for konu, sayi in konu_dagilimi.items():
-                    subject_key = konu_map.get(konu, konu.upper())
+                    subject_key = _KONU_MAP.get(konu, konu.upper())
                     konu_sorulari = konu_gruplari.get(subject_key, [])
 
                     logger.debug(

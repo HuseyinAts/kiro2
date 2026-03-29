@@ -24,6 +24,9 @@ from passlib.context import CryptContext
 # Password hasher (must match auth system)
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
+# MVP password from env var (fallback for backwards compatibility)
+MVP_DEFAULT_PASSWORD = os.getenv("MVP_PASSWORD", "Kiro2Beta2026@x")
+
 # Database connection - strip asyncpg driver for sync psycopg2
 DATABASE_URL = os.getenv("DATABASE_URL")
 if not DATABASE_URL:
@@ -49,7 +52,7 @@ MVP_USERS = [
         "id": str(uuid.uuid5(uuid.NAMESPACE_DNS, "mvp-student@kiro2.com")),
         "email": "test@kiro2.com",
         "username": "test_user",
-        "password": "Kiro2Beta2026@x",
+        "password": MVP_DEFAULT_PASSWORD,
         "first_name": "Test",
         "last_name": "User",
         "role": "STUDENT",
@@ -58,7 +61,7 @@ MVP_USERS = [
         "id": str(uuid.uuid5(uuid.NAMESPACE_DNS, "mvp-ogrenci@kiro2.com")),
         "email": "ogrenci@kiro2.com",
         "username": "ogrenci_mvp",
-        "password": "Kiro2Beta2026@x",
+        "password": MVP_DEFAULT_PASSWORD,
         "first_name": "Demo",
         "last_name": "Ogrenci",
         "role": "STUDENT",
@@ -67,7 +70,7 @@ MVP_USERS = [
         "id": str(uuid.uuid5(uuid.NAMESPACE_DNS, "mvp-ogretmen@kiro2.com")),
         "email": "ogretmen@kiro2.com",
         "username": "ogretmen_mvp",
-        "password": "Kiro2Beta2026@x",
+        "password": MVP_DEFAULT_PASSWORD,
         "first_name": "Demo",
         "last_name": "Ogretmen",
         "role": "TEACHER",
@@ -76,7 +79,7 @@ MVP_USERS = [
         "id": str(uuid.uuid5(uuid.NAMESPACE_DNS, "mvp-admin@kiro2.com")),
         "email": "admin@kiro2.com",
         "username": "admin_mvp",
-        "password": "Kiro2Beta2026@x",
+        "password": MVP_DEFAULT_PASSWORD,
         "first_name": "Demo",
         "last_name": "Admin",
         "role": "ADMIN",
@@ -85,7 +88,7 @@ MVP_USERS = [
         "id": str(uuid.uuid5(uuid.NAMESPACE_DNS, "mvp-veli@kiro2.com")),
         "email": "veli@kiro2.com",
         "username": "veli_mvp",
-        "password": "Kiro2Beta2026@x",
+        "password": MVP_DEFAULT_PASSWORD,
         "first_name": "Demo",
         "last_name": "Veli",
         "role": "PARENT",
@@ -186,7 +189,7 @@ def main():
     print("\nMVP Login Credentials:")
     print("-" * 50)
     for user in MVP_USERS:
-        print(f"  {user['role']:8s} | {user['email']} | {user['password']}")
+        print(f"  {user['role']:8s} | {user['email']} | ****")
 
 
 if __name__ == "__main__":

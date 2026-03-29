@@ -10,6 +10,7 @@ from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
+from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.database import get_db
@@ -25,6 +26,56 @@ from services.video_conference_service import VideoConferenceService
 from services.whiteboard_service import WhiteboardService
 
 router = APIRouter(prefix="/api/v1/live-sessions", tags=["live-sessions"])
+
+
+# ============================================================
+# Session Access Helpers
+# ============================================================
+
+
+async def _verify_host_only(
+    session_id: UUID,
+    current_user: AuthenticatedUser,
+    db: AsyncSession,
+) -> None:
+    """Verify current user is the session host. Raises 403/404."""
+    result = await db.execute(
+        text("SELECT host_id FROM live_sessions WHERE id = :sid"),
+        {"sid": str(session_id)},
+    )
+    row = result.first()
+    if not row:
+        raise HTTPException(status_code=404, detail="Session not found")
+    if str(row.host_id) != current_user.user_id:
+        raise HTTPException(
+            status_code=403, detail="Only session host can perform this action"
+        )
+
+
+async def _verify_session_participant(
+    session_id: UUID,
+    current_user: AuthenticatedUser,
+    db: AsyncSession,
+) -> None:
+    """Verify current user is host or participant. Raises 403/404."""
+    result = await db.execute(
+        text("SELECT host_id FROM live_sessions WHERE id = :sid"),
+        {"sid": str(session_id)},
+    )
+    row = result.first()
+    if not row:
+        raise HTTPException(status_code=404, detail="Session not found")
+    if str(row.host_id) == current_user.user_id:
+        return  # Host always has access
+    part = await db.execute(
+        text(
+            "SELECT 1 FROM live_session_participants "
+            "WHERE session_id = :sid AND user_id = :uid"
+        ),
+        {"sid": str(session_id), "uid": current_user.user_id},
+    )
+    if not part.first():
+        raise HTTPException(status_code=403, detail="Not a session participant")
 
 
 # ============================================================
@@ -136,6 +187,7 @@ async def get_session(
     db: AsyncSession = Depends(get_db),
 ):
     """Get session details"""
+    await _verify_session_participant(session_id, current_user, db)
     service = VideoConferenceService(db)
     session = await service.get_session(session_id)
 
@@ -164,7 +216,8 @@ async def start_session(
     current_user: AuthenticatedUser = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
-    """Start session"""
+    """Start session (host only)"""
+    await _verify_host_only(session_id, current_user, db)
     service = VideoConferenceService(db)
     session = await service.start_session(session_id)
 
@@ -180,7 +233,8 @@ async def end_session(
     current_user: AuthenticatedUser = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
-    """End session"""
+    """End session (host only)"""
+    await _verify_host_only(session_id, current_user, db)
     service = VideoConferenceService(db)
     session = await service.end_session(session_id)
 
@@ -230,7 +284,8 @@ async def start_screen_share(
     current_user: AuthenticatedUser = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
-    """Start screen sharing"""
+    """Start screen sharing (participants)"""
+    await _verify_session_participant(session_id, current_user, db)
     user_id = UUID(current_user.user_id)
     service = VideoConferenceService(db)
 
@@ -273,7 +328,8 @@ async def create_whiteboard(
     current_user: AuthenticatedUser = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
-    """Create whiteboard for session"""
+    """Create whiteboard for session (host only)"""
+    await _verify_host_only(session_id, current_user, db)
     service = WhiteboardService(db)
 
     whiteboard = await service.create_whiteboard(
@@ -433,7 +489,8 @@ async def start_recording(
     title: str | None = None,
     db: AsyncSession = Depends(get_db),
 ):
-    """Start session recording"""
+    """Start session recording (host only)"""
+    await _verify_host_only(session_id, current_user, db)
     service = VideoConferenceService(db)
 
     recording = await service.start_recording(session_id, title)
@@ -464,6 +521,7 @@ async def get_session_recordings(
     db: AsyncSession = Depends(get_db),
 ):
     """Get all recordings for session"""
+    await _verify_session_participant(session_id, current_user, db)
     service = VideoConferenceService(db)
     recordings = await service.get_session_recordings(session_id)
 
@@ -496,6 +554,7 @@ async def send_chat_message(
     db: AsyncSession = Depends(get_db),
 ):
     """Send chat message"""
+    await _verify_session_participant(session_id, current_user, db)
     user_id = UUID(current_user.user_id)
     service = VideoConferenceService(db)
 
@@ -517,6 +576,7 @@ async def get_session_chat(
     db: AsyncSession = Depends(get_db),
 ):
     """Get chat messages"""
+    await _verify_session_participant(session_id, current_user, db)
     service = VideoConferenceService(db)
     messages = await service.get_session_chat(session_id, limit)
 
