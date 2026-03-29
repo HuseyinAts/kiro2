@@ -600,3 +600,47 @@ psql -p 5434 -d kiro2 -U postgres -c "
 "
 # Migration SQL ile satır satır karşılaştır
 ```
+
+### 29. Phantom Sorun Filtresi — Raporu Dogrula ONCE (Session 121)
+Hata raporu veya audit bulgusunda "X eksik/bozuk" denildiginde ONCE dogrula.
+Session 121'de 6 "kritik" sorundan 4'u phantom cikti (%67).
+
+```python
+# YANLIS - Rapordaki her sorunu gercek kabul et
+# "cat_responses tablosu eksik" → hemen migration yaz
+# Gercek: SQL alias, tablo degil!
+
+# YANLIS - "subjects.slug yok" → kolon ekle
+# Gercek: Kod slug kullanmiyor, inline dict var!
+
+# DOGRU - 30 saniye dogrulama
+# 1. "Tablo X eksik" → grep 'CREATE TABLE X' + information_schema
+# 2. "Kolon Y yok" → grep 's.Y' app/api/ (kod gercekten kullaniyor mu?)
+# 3. "Endpoint 404" → grep ROUTER_MAPPING + docker image guncel mi?
+# 4. "Modul import edilemiyor" → python -c "from X import Y"
+```
+
+**Kural:** Raporlanan sorunlarin %30-70'i phantom olabilir. `grep` + `DB sorgu` ile
+dogrulama 30 saniye surer, yanlis fix saatlerce surer.
+
+### 30. Docker Image Staleness — Container vs Local Farki (Session 121)
+Docker'da 404/ImportError gorulurse KOD degistirmeden ONCE image rebuild dene.
+`COPY . .` ile build edilen image son `docker compose build`'den beri degismez.
+
+```bash
+# YANLIS - Container'da 404 → kod degistir
+# Gercek: Image eski, loader.py guncellenmemis!
+
+# DOGRU - 3 adimli Docker debug
+# 1. Container icindeki dosyayi kontrol et
+docker exec kiro2-backend bash -c "grep -c 'PATTERN' /app/FILE"
+
+# 2. Local ile karsilastir
+grep -c 'PATTERN' backend/FILE
+
+# 3. Farklilarsa → rebuild
+docker compose build --no-cache backend && docker compose up -d
+```
+
+**Env var tuzagi:** Container icinden `localhost` = container kendisi.
+Host servislerine `host.docker.internal` ile ulas (Redis, PostgreSQL).
