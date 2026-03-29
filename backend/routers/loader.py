@@ -41,7 +41,7 @@ ROUTER_MAPPING = {
     "api.learning_path_v2": ("learning", "api.learning_path_v2"),
     "api.zpd_maarif": ("learning", "api.zpd_maarif"),
     "api.irt_morfoloji": ("learning", "api.irt_morfoloji"),
-    "api.fsrs": ("learning", "api.fsrs"),
+    "app.api.fsrs": ("learning", "app.api.fsrs"),
     "app.api.cat": ("learning", "app.api.cat"),
     "app.api.dag": ("learning", "app.api.dag"),
     "app.api.estimator": ("learning", "app.api.estimator"),

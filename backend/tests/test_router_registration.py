@@ -12,8 +12,8 @@ from pathlib import Path
 
 from routers.loader import ROUTER_MAPPING
 
-# app/api/fsrs.py kasıtlı kayıtsız — eski api/fsrs.py (9 route) aktif
-KNOWN_EXCEPTIONS = {"__init__", "fsrs"}
+# __init__.py is not a router
+KNOWN_EXCEPTIONS = {"__init__"}
 
 
 def test_all_app_api_routers_registered():

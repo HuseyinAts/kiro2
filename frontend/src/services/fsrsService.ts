@@ -114,7 +114,7 @@ class FSRSService {
     request: CreateFlashcardRequest,
   ): Promise<ApiResponse<FSRSCard | null>> {
     try {
-      const response = await fetch(`${this.baseUrl}/cards`, {
+      const response = await fetch(`${this.baseUrl}/flashcards`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -150,20 +150,20 @@ class FSRSService {
    * Flashcard incelemesi yap
    */
   async reviewFlashcard(
-    studentId: string,
+    _studentId: string,
     request: ReviewFlashcardRequest,
   ): Promise<ApiResponse<any>> {
     try {
-      const response = await fetch(`${this.baseUrl}/cards/${request.card_id}/review`, {
+      const response = await fetch(`${this.baseUrl}/review`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         credentials: 'include',
         body: JSON.stringify({
-          student_id: studentId,
-          grade: request.grade,
-          response_time_ms: request.response_time_ms,
+          question_id: request.card_id,
+          is_correct: request.grade >= 3,
+          response_ms: request.response_time_ms,
         }),
       });
 
@@ -191,12 +191,12 @@ class FSRSService {
    * Vadesi gelen kartları getir
    */
   async getDueCards(
-    studentId: string,
+    _studentId: string,
     limit: number = 20,
   ): Promise<ApiResponse<FSRSCard[] | null>> {
     try {
       const response = await fetch(
-        `${this.baseUrl}/cards/due?student_id=${studentId}&limit=${limit}`,
+        `${this.baseUrl}/due?limit=${limit}`,
         {
           method: 'GET',
           credentials: 'include',
@@ -227,11 +227,11 @@ class FSRSService {
    * Çalışma önerilerini getir
    */
   async getStudyRecommendations(
-    studentId: string,
+    _studentId: string,
   ): Promise<ApiResponse<StudyRecommendations | null>> {
     try {
       const response = await fetch(
-        `${this.baseUrl}/recommendations?student_id=${studentId}`,
+        `${this.baseUrl}/recommendations`,
         {
           method: 'GET',
           credentials: 'include',
@@ -262,11 +262,11 @@ class FSRSService {
    * Öğrenci istatistiklerini getir
    */
   async getStudentStatistics(
-    studentId: string,
+    _studentId: string,
   ): Promise<ApiResponse<StudentStatistics | null>> {
     try {
       const response = await fetch(
-        `${this.baseUrl}/statistics?student_id=${studentId}`,
+        `${this.baseUrl}/stats`,
         {
           method: 'GET',
           credentials: 'include',
@@ -297,18 +297,17 @@ class FSRSService {
    * Çalışma oturumu başlat
    */
   async startStudySession(
-    studentId: string,
+    _studentId: string,
     sessionType: string = 'regular',
   ): Promise<ApiResponse<string | null>> {
     try {
-      const response = await fetch(`${this.baseUrl}/sessions/start`, {
+      const response = await fetch(`${this.baseUrl}/study-sessions/start`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         credentials: 'include',
         body: JSON.stringify({
-          student_id: studentId,
           session_type: sessionType,
         }),
       });
@@ -338,7 +337,7 @@ class FSRSService {
    */
   async endStudySession(sessionId: string): Promise<ApiResponse<StudySessionSummary | null>> {
     try {
-      const response = await fetch(`${this.baseUrl}/sessions/${sessionId}/end`, {
+      const response = await fetch(`${this.baseUrl}/study-sessions/${sessionId}/end`, {
         method: 'POST',
         credentials: 'include',
       });
@@ -367,19 +366,19 @@ class FSRSService {
    * Kart zamanlamasını hesapla (preview)
    */
   async calculateSchedule(
-    studentId: string,
+    _studentId: string,
     cardId: string,
     grade: FSRSGrade,
   ): Promise<ApiResponse<FSRSSchedule | null>> {
     try {
-      const response = await fetch(`${this.baseUrl}/cards/${cardId}/schedule`, {
+      const response = await fetch(`${this.baseUrl}/schedule`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         credentials: 'include',
         body: JSON.stringify({
-          student_id: studentId,
+          card_id: cardId,
           grade: grade,
         }),
       });
