@@ -7,9 +7,7 @@ Collaborative filtering of student error patterns.
 
 from __future__ import annotations
 
-from typing import Optional
-
-from sqlalchemy import func, select
+from sqlalchemy import func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.structured_logger import get_logger
@@ -22,7 +20,7 @@ async def get_error_clusters_for_topic(
     *,
     db: AsyncSession,
     subject: str,
-    topic_id: Optional[str] = None,
+    topic_id: str | None = None,
     limit: int = 5,
 ) -> list[dict]:
     """Get error clusters relevant to a topic."""
@@ -33,9 +31,7 @@ async def get_error_clusters_for_topic(
 
     if topic_id:
         # JSONB contains check
-        query = query.where(
-            ErrorCluster.topic_ids.contains([topic_id])
-        )
+        query = query.where(ErrorCluster.topic_ids.contains([topic_id]))
 
     query = query.order_by(ErrorCluster.student_count.desc()).limit(limit)
     result = await db.execute(query)
@@ -116,32 +112,69 @@ async def cluster_student_errors(
     if not error_counts:
         return []
 
-    # Find clusters matching dominant error types
+    error_type_counts = {et: c for et, c in error_counts}
+    error_types = list(error_type_counts.keys())
+
+    # Single query for all matching clusters (replaces N separate queries)
+    clusters_result = await db.execute(
+        select(ErrorCluster)
+        .where(
+            ErrorCluster.subject == subject.upper(),
+            or_(*[ErrorCluster.error_pattern.contains(et) for et in error_types]),
+        )
+        .order_by(ErrorCluster.student_count.desc())
+        .limit(10)  # max 5 error types × 2 clusters each
+    )
+    all_clusters = clusters_result.scalars().all()
+
+    if not all_clusters:
+        return []
+
+    # Single query for all peer recommendations (replaces N×M separate queries)
+    cluster_ids = [c.id for c in all_clusters]
+    recs_result = await db.execute(
+        select(PeerRecommendation)
+        .where(
+            PeerRecommendation.cluster_id.in_(cluster_ids),
+            PeerRecommendation.improvement_rate >= 0.1,
+            PeerRecommendation.sample_size >= 5,
+        )
+        .order_by(PeerRecommendation.improvement_rate.desc())
+    )
+    all_recs = recs_result.scalars().all()
+
+    # Group recs by cluster_id in Python (no DB round trips)
+    recs_by_cluster: dict[str, list[dict]] = {cid: [] for cid in cluster_ids}
+    for r in all_recs:
+        recs_by_cluster[r.cluster_id].append(
+            {
+                "source_topic": r.source_topic,
+                "target_topic": r.target_topic,
+                "improvement_rate": round(r.improvement_rate, 2),
+                "sample_size": r.sample_size,
+                "description": r.description,
+            }
+        )
+
+    # Build suggestions by matching clusters to error types in Python
     suggestions = []
     for error_type, count in error_counts:
-        clusters = await db.execute(
-            select(ErrorCluster)
-            .where(
-                ErrorCluster.subject == subject.upper(),
-                ErrorCluster.error_pattern.contains(error_type),
-            )
-            .order_by(ErrorCluster.student_count.desc())
-            .limit(2)
-        )
-        for cluster in clusters.scalars().all():
-            recs = await get_peer_recommendations(
-                db=db, cluster_id=cluster.id
-            )
-            suggestions.append({
-                "error_type": error_type,
-                "error_count": count,
-                "cluster": {
-                    "id": cluster.id,
-                    "pattern": cluster.error_pattern,
-                    "student_count": cluster.student_count,
-                },
-                "recommendations": recs,
-            })
+        matched = 0
+        for cluster in all_clusters:
+            if error_type in cluster.error_pattern and matched < 2:
+                suggestions.append(
+                    {
+                        "error_type": error_type,
+                        "error_count": count,
+                        "cluster": {
+                            "id": cluster.id,
+                            "pattern": cluster.error_pattern,
+                            "student_count": cluster.student_count,
+                        },
+                        "recommendations": recs_by_cluster.get(cluster.id, [])[:5],
+                    }
+                )
+                matched += 1
 
     return suggestions
 
@@ -163,8 +196,7 @@ async def build_error_clusters(
         select(
             StudentAnswer.student_id,
             StudentAnswer.error_type,
-        )
-        .where(
+        ).where(
             StudentAnswer.is_correct == False,  # noqa: E712
             StudentAnswer.error_type.isnot(None),
         )

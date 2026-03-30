@@ -4,9 +4,10 @@ League Service — F2 Lig Sistemi
 Haftalık tier tabanlı sıralama: BRONZE → SILVER → GOLD → PLATINUM → CHAMPION
 Her hafta üst %10 yükselir, alt %10 düşer. XP haftalık sıfırlanır.
 """
+
 from __future__ import annotations
 
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from typing import TYPE_CHECKING
 
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -36,13 +37,12 @@ XP_AMOUNTS: dict[str, int] = {
 # Yardımcı fonksiyonlar
 # ---------------------------------------------------------------------------
 
+
 def _current_week_start() -> datetime:
     """Mevcut haftanın Pazartesi 00:00 UTC zamanını döndürür."""
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     monday = now - timedelta(days=now.weekday())
-    return monday.replace(
-        hour=0, minute=0, second=0, microsecond=0, tzinfo=timezone.utc
-    )
+    return monday.replace(hour=0, minute=0, second=0, microsecond=0, tzinfo=UTC)
 
 
 def _tier_index(tier: str) -> int:
@@ -56,6 +56,7 @@ def _tier_index(tier: str) -> int:
 # Servis fonksiyonları
 # ---------------------------------------------------------------------------
 
+
 async def get_league_standings(*, db: AsyncSession, student_id: str) -> dict:
     """Öğrencinin mevcut lig tier'ını, sırasını ve tier'daki üst oyuncuları getirir.
 
@@ -64,7 +65,8 @@ async def get_league_standings(*, db: AsyncSession, student_id: str) -> dict:
          standings: [{student_id, display_name, xp, rank}]}
     """
     try:
-        from sqlalchemy import and_, desc, func as sa_func, select
+        from sqlalchemy import and_, desc, select
+        from sqlalchemy import func as sa_func
 
         from models.league import LeagueMembership  # lazy import
 
@@ -238,7 +240,7 @@ async def process_weekly_reset(*, db: AsyncSession) -> dict:
         {promoted, demoted, unchanged, total}
     """
     try:
-        from sqlalchemy import and_, desc, select
+        from sqlalchemy import desc, select
 
         from models.league import LeagueHistory, LeagueMembership  # lazy import
 
@@ -247,18 +249,23 @@ async def process_weekly_reset(*, db: AsyncSession) -> dict:
         demoted = 0
         unchanged = 0
 
+        # Single query for ALL tiers (replaces 5 separate per-tier queries)
+        all_result = await db.execute(
+            select(LeagueMembership)
+            .where(LeagueMembership.week_start == last_week)
+            .order_by(desc(LeagueMembership.weekly_xp))
+        )
+        all_members = all_result.scalars().all()
+
+        # Group by tier in Python (no extra DB round trips)
+        members_by_tier: dict[str, list] = {tier: [] for tier in LEAGUE_TIERS}
+        for m in all_members:
+            if m.league_tier in members_by_tier:
+                members_by_tier[m.league_tier].append(m)
+
+        current_week = _current_week_start()
         for tier in LEAGUE_TIERS:
-            result = await db.execute(
-                select(LeagueMembership)
-                .where(
-                    and_(
-                        LeagueMembership.league_tier == tier,
-                        LeagueMembership.week_start == last_week,
-                    )
-                )
-                .order_by(desc(LeagueMembership.weekly_xp))
-            )
-            members = result.scalars().all()
+            members = members_by_tier[tier]
             if not members:
                 continue
 
@@ -284,7 +291,7 @@ async def process_weekly_reset(*, db: AsyncSession) -> dict:
                 # Persist tier change and reset XP for next week
                 m.league_tier = new_tier
                 m.weekly_xp = 0
-                m.week_start = _current_week_start()
+                m.week_start = current_week
                 db.add(m)
 
                 history = LeagueHistory(
@@ -322,8 +329,11 @@ async def process_weekly_reset(*, db: AsyncSession) -> dict:
             extra_data={"error": str(exc)},
         )
         return {
-            "promoted": 0, "demoted": 0, "unchanged": 0,
-            "total": 0, "error": str(exc),
+            "promoted": 0,
+            "demoted": 0,
+            "unchanged": 0,
+            "total": 0,
+            "error": str(exc),
         }
 
 
@@ -378,6 +388,7 @@ async def get_league_history(
 # ---------------------------------------------------------------------------
 # İç yardımcı — dışarıdan çağrılmamalı
 # ---------------------------------------------------------------------------
+
 
 async def _get_or_create_membership(*, db: AsyncSession, student_id: str):
     """Mevcut hafta üyeliğini getirir ya da oluşturur.
