@@ -12,7 +12,7 @@ from __future__ import annotations
 from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException, status
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, model_validator
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.deps import User, get_current_user, get_db, get_redis
@@ -25,11 +25,20 @@ router = APIRouter(prefix="/api/v1/placement", tags=["Placement Test"])
 
 
 class StartPlacementRequest(BaseModel):
-    subject_id: str
+    subject_id: str | None = None
+    exam_type: str | None = None  # Backward compat: TYT/AYT → MATEMATIK
     school_type: str = Field(
         "default",
         description="Lise turu: anadolu | fen | ozel | imam_hatip | meslek | default",
     )
+
+    @model_validator(mode="after")
+    def resolve_subject(self) -> StartPlacementRequest:
+        if not self.subject_id and not self.exam_type:
+            raise ValueError("subject_id veya exam_type gerekli")
+        if not self.subject_id:
+            self.subject_id = "MATEMATIK"
+        return self
 
 
 class AnswerPlacementRequest(BaseModel):
@@ -77,7 +86,9 @@ async def start_placement(
     try:
         return await svc.start(
             user_id=str(current_user.id),
-            subject_id=body.subject_id.upper(),  # DB buyuk harf kullanıyor
+            subject_id=(
+                body.subject_id or "MATEMATIK"
+            ).upper(),  # DB buyuk harf kullanıyor
             school_type=body.school_type,
         )
     except ValueError as e:

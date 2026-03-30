@@ -32,8 +32,7 @@ celery_app = Celery(
         "tasks.claude_md_improvement_tasks",
         "tasks.mega_feature_tasks",
         "tasks.social_tasks",
-        "app.tasks.calibration_task",  # IRT 3PL kalibrasyon
-        "tasks.daily_plan_tasks",      # Günlük plan yenileme
+        "tasks.daily_plan_tasks",  # Günlük plan yenileme
     ],
 )
 
@@ -118,27 +117,29 @@ celery_app.conf.update(
             "task": "tasks.video_tasks.refresh_popular_video_cache",
             "schedule": crontab(minute=0, hour="*/6"),  # Every 6 hours
         },
-        # CLAUDE.md Self-Improvement Tasks
-        "claude-md-collect-feedback-hourly": {
-            "task": "tasks.claude_md_improvement_tasks.collect_feedback_hourly",
-            "schedule": crontab(minute=0),  # Every hour
-        },
-        "claude-md-detect-patterns-daily": {
-            "task": "tasks.claude_md_improvement_tasks.detect_patterns_daily",
-            "schedule": crontab(hour=2, minute=0),  # Daily at 02:00
-        },
-        "claude-md-monitor-performance": {
-            "task": "tasks.claude_md_improvement_tasks.monitor_performance",
-            "schedule": 300.0,  # Every 5 minutes
-        },
-        "claude-md-detect-anomalies": {
-            "task": "tasks.claude_md_improvement_tasks.detect_anomalies",
-            "schedule": 900.0,  # Every 15 minutes
-        },
-        "claude-md-check-rule-evolution-weekly": {
-            "task": "tasks.claude_md_improvement_tasks.check_rule_evolution",
-            "schedule": crontab(hour=3, minute=0, day_of_week=1),  # Monday 03:00
-        },
+        # CLAUDE.md Self-Improvement Tasks — DISABLED (dependent services deprecated)
+        # Uncomment when services are restored: feedback_service, pattern_service,
+        # performance_monitor_service, rule_evolution_service
+        # "claude-md-collect-feedback-hourly": {
+        #     "task": "tasks.claude_md_improvement_tasks.collect_feedback_hourly",
+        #     "schedule": crontab(minute=0),
+        # },
+        # "claude-md-detect-patterns-daily": {
+        #     "task": "tasks.claude_md_improvement_tasks.detect_patterns_daily",
+        #     "schedule": crontab(hour=2, minute=0),
+        # },
+        # "claude-md-monitor-performance": {
+        #     "task": "tasks.claude_md_improvement_tasks.monitor_performance",
+        #     "schedule": 300.0,
+        # },
+        # "claude-md-detect-anomalies": {
+        #     "task": "tasks.claude_md_improvement_tasks.detect_anomalies",
+        #     "schedule": 900.0,
+        # },
+        # "claude-md-check-rule-evolution-weekly": {
+        #     "task": "tasks.claude_md_improvement_tasks.check_rule_evolution",
+        #     "schedule": crontab(hour=3, minute=0, day_of_week=1),
+        # },
         # F2: League weekly reset (every Monday at midnight)
         "league-weekly-reset": {
             "task": "tasks.mega_feature_tasks.process_weekly_league_reset",

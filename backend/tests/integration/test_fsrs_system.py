@@ -18,7 +18,7 @@ from algorithms.turkish_optimized_fsrs import (
     StudentContext,
     TurkishOptimizedFSRS,
 )
-from services.fsrs_service import FSRSService
+from services._deprecated.fsrs_service import FSRSService
 
 
 class TestTurkishOptimizedFSRS:
@@ -84,7 +84,9 @@ class TestTurkishOptimizedFSRS:
         assert schedule.scheduled_date > current_date
         assert "cultural_multiplier" in schedule.cultural_factors
 
-    @pytest.mark.skipif(True, reason="Cultural period date-sensitive: Ramadan dates shift yearly")
+    @pytest.mark.skipif(
+        True, reason="Cultural period date-sensitive: Ramadan dates shift yearly"
+    )
     def test_calculate_next_review_ramadan_period(self):
         """Ramazan döneminde tekrar zamanı hesaplama testi"""
         card = FSRSCard(
@@ -109,7 +111,9 @@ class TestTurkishOptimizedFSRS:
         assert schedule.cultural_factors["current_period"] == "ramadan"
         assert schedule.cultural_factors["cultural_multiplier"] < 1.0
 
-    @pytest.mark.skipif(True, reason="Cultural period date-sensitive: exam season detection varies")
+    @pytest.mark.skipif(
+        True, reason="Cultural period date-sensitive: exam season detection varies"
+    )
     def test_calculate_next_review_exam_season(self):
         """Sınav dönemi tekrar zamanı hesaplama testi"""
         card = FSRSCard(
@@ -218,7 +222,9 @@ class TestTurkishOptimizedFSRS:
         assert schedule.cultural_factors["student_factors"]["family_pressure"] == 0.9
         assert schedule.cultural_factors["cultural_multiplier"] > 1.0
 
-    @pytest.mark.skipif(True, reason="Cultural multiplier assertions outdated (multiplier > 1.0)")
+    @pytest.mark.skipif(
+        True, reason="Cultural multiplier assertions outdated (multiplier > 1.0)"
+    )
     def test_weekend_effect(self):
         """Hafta sonu etkisi testi"""
         card = FSRSCard(
@@ -241,7 +247,10 @@ class TestTurkishOptimizedFSRS:
         # Hafta sonu etkisi uygulanmalı (0.90)
         assert schedule.cultural_factors["cultural_multiplier"] < 1.0
 
-    @pytest.mark.skipif(True, reason="Cultural period detection date-sensitive: RELIGIOUS_HOLIDAY vs NORMAL")
+    @pytest.mark.skipif(
+        True,
+        reason="Cultural period detection date-sensitive: RELIGIOUS_HOLIDAY vs NORMAL",
+    )
     def test_detect_cultural_period(self):
         """Kültürel dönem tespiti testi"""
         # Normal dönem
@@ -361,8 +370,9 @@ class TestFSRSService:
         self.mock_db.commit.return_value = None
         self.mock_db.refresh.return_value = None
 
-        with patch.object(self.fsrs_service, "_schedule_first_review"), patch.object(
-            self.fsrs_service, "_update_student_stats"
+        with (
+            patch.object(self.fsrs_service, "_schedule_first_review"),
+            patch.object(self.fsrs_service, "_update_student_stats"),
         ):
             # Mock DBFSRSCard constructor
             with patch("services.fsrs_service.DBFSRSCard", return_value=mock_card):
@@ -381,7 +391,9 @@ class TestFSRSService:
         self.mock_db.commit.assert_called()
 
     @pytest.mark.asyncio
-    @pytest.mark.skipif(True, reason="FSRSReview model changed: response_time_ms is invalid keyword")
+    @pytest.mark.skipif(
+        True, reason="FSRSReview model changed: response_time_ms is invalid keyword"
+    )
     async def test_review_flashcard(self):
         """Flashcard inceleme testi"""
         # Mock card
@@ -406,12 +418,10 @@ class TestFSRSService:
             mock_card
         )
 
-        with patch.object(
-            self.fsrs_service, "_get_student_context"
-        ) as mock_context, patch.object(
-            self.fsrs_service, "_update_student_stats"
-        ), patch.object(
-            self.fsrs_service, "_update_subject_stats"
+        with (
+            patch.object(self.fsrs_service, "_get_student_context") as mock_context,
+            patch.object(self.fsrs_service, "_update_student_stats"),
+            patch.object(self.fsrs_service, "_update_subject_stats"),
         ):
             mock_context.return_value = StudentContext(
                 student_id="test_student",
@@ -474,9 +484,7 @@ class TestFSRSService:
         ]
 
         # Mock database query
-        self.mock_db.query.return_value.filter.return_value.order_by.return_value.limit.return_value.all.return_value = (
-            mock_cards
-        )
+        self.mock_db.query.return_value.filter.return_value.order_by.return_value.limit.return_value.all.return_value = mock_cards
 
         result = await self.fsrs_service.get_due_cards(
             student_id="test_student", limit=10, db=self.mock_db

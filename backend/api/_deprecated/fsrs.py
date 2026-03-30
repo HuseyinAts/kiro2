@@ -7,7 +7,7 @@ API endpoint'lerini sağlar.
 
 import logging
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from fastapi.security import HTTPBearer
@@ -16,7 +16,7 @@ from sqlalchemy.orm import Session
 
 from core.dependencies import get_current_user, get_db
 from models.database import User
-from services.fsrs_service import FSRSService
+from services._deprecated.fsrs_service import FSRSService
 
 logger = logging.getLogger(__name__)
 security = HTTPBearer()
@@ -55,7 +55,7 @@ class FlashcardResponse(BaseModel):
     difficulty: float
     stability: float
     retrievability: float
-    due_date: Optional[str]
+    due_date: str | None
     state: str
     review_count: int
     lapse_count: int
@@ -72,7 +72,7 @@ class StudyRecommendationsResponse(BaseModel):
     cultural_period: str
     period_advice: str
     recommended_study_time: int
-    priority_subjects: List[str]
+    priority_subjects: list[str]
     total_cards: int
     new_cards: int
     learning_cards: int
@@ -83,14 +83,14 @@ class StudySessionResponse(BaseModel):
     """Çalışma oturumu yanıt modeli"""
 
     session_id: str
-    duration_minutes: Optional[int] = None
+    duration_minutes: int | None = None
     cards_reviewed: int = 0
     cards_learned: int = 0
-    average_grade: Optional[float] = None
+    average_grade: float | None = None
     success_rate: float = 0.0
 
 
-@router.post("/flashcards", response_model=Dict[str, Any])
+@router.post("/flashcards", response_model=dict[str, Any])
 async def create_flashcard(
     request: CreateFlashcardRequest,
     current_user: User = Depends(get_current_user),
@@ -134,7 +134,7 @@ async def create_flashcard(
         )
 
 
-@router.get("/flashcards/due", response_model=Dict[str, Any])
+@router.get("/flashcards/due", response_model=dict[str, Any])
 async def get_due_flashcards(
     limit: int = Query(20, ge=1, le=100, description="Maksimum kart sayısı"),
     current_user: User = Depends(get_current_user),
@@ -165,7 +165,7 @@ async def get_due_flashcards(
         )
 
 
-@router.post("/flashcards/{card_id}/review", response_model=Dict[str, Any])
+@router.post("/flashcards/{card_id}/review", response_model=dict[str, Any])
 async def review_flashcard(
     card_id: str,
     request: ReviewFlashcardRequest,
@@ -198,9 +198,9 @@ async def review_flashcard(
         result["grade_description"] = grade_descriptions.get(
             request.grade, "Bilinmeyen"
         )
-        result[
-            "message"
-        ] = f"Kart incelendi. Sonraki tekrar: {result['interval_days']} gün sonra"
+        result["message"] = (
+            f"Kart incelendi. Sonraki tekrar: {result['interval_days']} gün sonra"
+        )
 
         return {
             "success": True,
@@ -208,8 +208,11 @@ async def review_flashcard(
             "data": result,
         }
 
-    except ValueError as e:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Islem basarisiz. Lutfen tekrar deneyin.")
+    except ValueError:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
+        )
     except Exception as e:
         logger.error(f"Flashcard inceleme hatası: {e}")
         raise HTTPException(
@@ -218,7 +221,7 @@ async def review_flashcard(
         )
 
 
-@router.get("/recommendations", response_model=Dict[str, Any])
+@router.get("/recommendations", response_model=dict[str, Any])
 async def get_study_recommendations(
     current_user: User = Depends(get_current_user), db: Session = Depends(get_db)
 ):
@@ -247,7 +250,7 @@ async def get_study_recommendations(
         )
 
 
-@router.get("/statistics", response_model=Dict[str, Any])
+@router.get("/statistics", response_model=dict[str, Any])
 async def get_student_statistics(
     current_user: User = Depends(get_current_user), db: Session = Depends(get_db)
 ):
@@ -276,7 +279,7 @@ async def get_student_statistics(
         )
 
 
-@router.post("/study-sessions/start", response_model=Dict[str, Any])
+@router.post("/study-sessions/start", response_model=dict[str, Any])
 async def start_study_session(
     session_type: str = Query(
         "regular", description="Oturum türü (regular, exam_prep, review)"
@@ -312,7 +315,7 @@ async def start_study_session(
         )
 
 
-@router.post("/study-sessions/{session_id}/end", response_model=Dict[str, Any])
+@router.post("/study-sessions/{session_id}/end", response_model=dict[str, Any])
 async def end_study_session(
     session_id: str,
     current_user: User = Depends(get_current_user),
@@ -332,8 +335,11 @@ async def end_study_session(
             "data": summary,
         }
 
-    except ValueError as e:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Islem basarisiz. Lutfen tekrar deneyin.")
+    except ValueError:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
+        )
     except Exception as e:
         logger.error(f"Çalışma oturumu sonlandırma hatası: {e}")
         raise HTTPException(
@@ -342,7 +348,7 @@ async def end_study_session(
         )
 
 
-@router.get("/cultural-periods", response_model=Dict[str, Any])
+@router.get("/cultural-periods", response_model=dict[str, Any])
 async def get_cultural_periods_info():
     """
     Türk kültürüne özel dönemler hakkında bilgi getir
@@ -425,7 +431,7 @@ async def get_cultural_periods_info():
         )
 
 
-@router.get("/health", response_model=Dict[str, Any])
+@router.get("/health", response_model=dict[str, Any])
 async def fsrs_health_check():
     """
     FSRS sistemi sağlık kontrolü

@@ -16,8 +16,8 @@ Date: 2026-01-19
 from __future__ import annotations
 
 import asyncio
-from datetime import datetime, timedelta, timezone
-from typing import Any, Dict
+from datetime import UTC, datetime, timedelta
+from typing import Any
 
 from core.celery_app import celery_app
 from core.structured_logger import get_logger
@@ -29,13 +29,14 @@ logger = get_logger(__name__)
 # REQ-10.1.1: Hourly Feedback Collection
 # ============================================================================
 
+
 @celery_app.task(
     bind=True,
-    name="tasks.claude_md_improvement.collect_feedback_hourly",
+    name="tasks.claude_md_improvement_tasks.collect_feedback_hourly",
     max_retries=3,
     default_retry_delay=60,
 )
-def collect_feedback_hourly(self) -> Dict[str, Any]:
+def collect_feedback_hourly(self) -> dict[str, Any]:
     """
     Collect and aggregate feedback every hour.
 
@@ -54,7 +55,7 @@ def collect_feedback_hourly(self) -> Dict[str, Any]:
         logger.info(
             "feedback_collection_started",
             task_id=self.request.id,
-            scheduled_at=datetime.now(timezone.utc).isoformat(),
+            scheduled_at=datetime.now(UTC).isoformat(),
         )
 
         # Run async collection in sync context
@@ -79,16 +80,16 @@ def collect_feedback_hourly(self) -> Dict[str, Any]:
         raise self.retry(exc=e)
 
 
-async def _collect_feedback_async() -> Dict[str, Any]:
+async def _collect_feedback_async() -> dict[str, Any]:
     """Async implementation of feedback collection."""
-    from backend.services.feedback_service import FeedbackService
-    from backend.core.database import get_db_session_context
+    from core.database import get_db_session_context
+    from services._deprecated.feedback_service import FeedbackService
 
     async with get_db_session_context() as session:
         service = FeedbackService()
 
         # Get feedback from last hour
-        cutoff = datetime.now(timezone.utc) - timedelta(hours=1)
+        cutoff = datetime.now(UTC) - timedelta(hours=1)
 
         # Aggregate and update effectiveness
         result = await service.aggregate_recent_feedback(
@@ -102,7 +103,7 @@ async def _collect_feedback_async() -> Dict[str, Any]:
             "records_processed": result.get("total_records", 0),
             "rules_updated": len(result.get("updated_rules", [])),
             "triggers_created": len(result.get("triggers", [])),
-            "collection_time": datetime.now(timezone.utc).isoformat(),
+            "collection_time": datetime.now(UTC).isoformat(),
         }
 
 
@@ -110,13 +111,14 @@ async def _collect_feedback_async() -> Dict[str, Any]:
 # REQ-10.1.2: Daily Pattern Detection
 # ============================================================================
 
+
 @celery_app.task(
     bind=True,
-    name="tasks.claude_md_improvement.detect_patterns_daily",
+    name="tasks.claude_md_improvement_tasks.detect_patterns_daily",
     max_retries=2,
     default_retry_delay=300,
 )
-def detect_patterns_daily(self) -> Dict[str, Any]:
+def detect_patterns_daily(self) -> dict[str, Any]:
     """
     Run pattern detection daily at 02:00 UTC.
 
@@ -135,7 +137,7 @@ def detect_patterns_daily(self) -> Dict[str, Any]:
         logger.info(
             "pattern_detection_started",
             task_id=self.request.id,
-            scheduled_at=datetime.now(timezone.utc).isoformat(),
+            scheduled_at=datetime.now(UTC).isoformat(),
         )
 
         result = asyncio.run(_detect_patterns_async())
@@ -159,11 +161,12 @@ def detect_patterns_daily(self) -> Dict[str, Any]:
         raise self.retry(exc=e)
 
 
-async def _detect_patterns_async() -> Dict[str, Any]:
+async def _detect_patterns_async() -> dict[str, Any]:
     """Async implementation of pattern detection."""
-    from backend.services.pattern_service import PatternDetectionService
-    from backend.core.database import get_db_session_context
     import time
+
+    from core.database import get_db_session_context
+    from services._deprecated.pattern_service import PatternDetectionService
 
     start_time = time.time()
 
@@ -199,7 +202,7 @@ async def _detect_patterns_async() -> Dict[str, Any]:
             "anti_patterns_count": len(anti_patterns),
             "recommendations_count": len(recommendations),
             "detection_time_seconds": round(detection_time, 2),
-            "detection_timestamp": datetime.now(timezone.utc).isoformat(),
+            "detection_timestamp": datetime.now(UTC).isoformat(),
         }
 
 
@@ -207,13 +210,14 @@ async def _detect_patterns_async() -> Dict[str, Any]:
 # REQ-10.1.3: Continuous Performance Monitoring
 # ============================================================================
 
+
 @celery_app.task(
     bind=True,
-    name="tasks.claude_md_improvement.monitor_performance",
+    name="tasks.claude_md_improvement_tasks.monitor_performance",
     max_retries=3,
     default_retry_delay=30,
 )
-def monitor_performance(self) -> Dict[str, Any]:
+def monitor_performance(self) -> dict[str, Any]:
     """
     Monitor performance every 5 minutes.
 
@@ -232,7 +236,7 @@ def monitor_performance(self) -> Dict[str, Any]:
         logger.info(
             "performance_monitoring_started",
             task_id=self.request.id,
-            scheduled_at=datetime.now(timezone.utc).isoformat(),
+            scheduled_at=datetime.now(UTC).isoformat(),
         )
 
         result = asyncio.run(_monitor_performance_async())
@@ -264,10 +268,12 @@ def monitor_performance(self) -> Dict[str, Any]:
         raise self.retry(exc=e)
 
 
-async def _monitor_performance_async() -> Dict[str, Any]:
+async def _monitor_performance_async() -> dict[str, Any]:
     """Async implementation of performance monitoring."""
-    from backend.services.performance_monitor_service import PerformanceMonitorService
-    from backend.core.database import get_db_session_context
+    from core.database import get_db_session_context
+    from services._deprecated.performance_monitor_service import (
+        PerformanceMonitorService,
+    )
 
     async with get_db_session_context() as session:
         service = PerformanceMonitorService(db=session)
@@ -276,7 +282,7 @@ async def _monitor_performance_async() -> Dict[str, Any]:
         current_metrics = await service.get_current_metrics()
 
         # Compare with baseline
-        comparison = await service.compare_with_baseline()
+        await service.compare_with_baseline()
 
         # Check for regression (REQ-7.3)
         regression_result = await service.detect_regression()
@@ -296,7 +302,7 @@ async def _monitor_performance_async() -> Dict[str, Any]:
             "regression_metric": regression_result.get("metric"),
             "drop_percentage": regression_result.get("drop_percentage"),
             "rollback_triggered": rollback_triggered,
-            "monitoring_timestamp": datetime.now(timezone.utc).isoformat(),
+            "monitoring_timestamp": datetime.now(UTC).isoformat(),
         }
 
 
@@ -304,12 +310,13 @@ async def _monitor_performance_async() -> Dict[str, Any]:
 # Anomaly Detection Task
 # ============================================================================
 
+
 @celery_app.task(
     bind=True,
-    name="tasks.claude_md_improvement.detect_anomalies",
+    name="tasks.claude_md_improvement_tasks.detect_anomalies",
     max_retries=2,
 )
-def detect_anomalies(self) -> Dict[str, Any]:
+def detect_anomalies(self) -> dict[str, Any]:
     """
     Detect anomalies in metrics every 15 minutes.
 
@@ -345,10 +352,12 @@ def detect_anomalies(self) -> Dict[str, Any]:
         raise self.retry(exc=e)
 
 
-async def _detect_anomalies_async() -> Dict[str, Any]:
+async def _detect_anomalies_async() -> dict[str, Any]:
     """Async implementation of anomaly detection."""
-    from backend.services.performance_monitor_service import PerformanceMonitorService
-    from backend.core.database import get_db_session_context
+    from core.database import get_db_session_context
+    from services._deprecated.performance_monitor_service import (
+        PerformanceMonitorService,
+    )
 
     async with get_db_session_context() as session:
         service = PerformanceMonitorService(db=session)
@@ -359,7 +368,7 @@ async def _detect_anomalies_async() -> Dict[str, Any]:
         return {
             "anomalies_detected": len(anomalies),
             "anomalous_metrics": [a.metric for a in anomalies],
-            "detection_timestamp": datetime.now(timezone.utc).isoformat(),
+            "detection_timestamp": datetime.now(UTC).isoformat(),
         }
 
 
@@ -367,11 +376,12 @@ async def _detect_anomalies_async() -> Dict[str, Any]:
 # Scheduled Rule Evolution Check
 # ============================================================================
 
+
 @celery_app.task(
     bind=True,
-    name="tasks.claude_md_improvement.check_rule_evolution",
+    name="tasks.claude_md_improvement_tasks.check_rule_evolution",
 )
-def check_rule_evolution(self) -> Dict[str, Any]:
+def check_rule_evolution(self) -> dict[str, Any]:
     """
     Check for rules needing evolution (weekly task).
 
@@ -406,10 +416,10 @@ def check_rule_evolution(self) -> Dict[str, Any]:
         raise
 
 
-async def _check_rule_evolution_async() -> Dict[str, Any]:
+async def _check_rule_evolution_async() -> dict[str, Any]:
     """Async implementation of rule evolution check."""
-    from backend.services.rule_evolution_service import RuleEvolutionService
-    from backend.core.database import get_db_session_context
+    from core.database import get_db_session_context
+    from services._deprecated.rule_evolution_service import RuleEvolutionService
 
     async with get_db_session_context() as session:
         service = RuleEvolutionService(db=session)
@@ -430,7 +440,7 @@ async def _check_rule_evolution_async() -> Dict[str, Any]:
         return {
             "low_performing_count": len(low_performing),
             "triggers_created": triggers_created,
-            "check_timestamp": datetime.now(timezone.utc).isoformat(),
+            "check_timestamp": datetime.now(UTC).isoformat(),
         }
 
 
@@ -441,24 +451,24 @@ async def _check_rule_evolution_async() -> Dict[str, Any]:
 # Add to Celery beat schedule in core/celery_app.py:
 CELERY_BEAT_SCHEDULE = {
     "collect-feedback-hourly": {
-        "task": "tasks.claude_md_improvement.collect_feedback_hourly",
+        "task": "tasks.claude_md_improvement_tasks.collect_feedback_hourly",
         "schedule": 3600.0,  # Every hour
     },
     "detect-patterns-daily": {
-        "task": "tasks.claude_md_improvement.detect_patterns_daily",
+        "task": "tasks.claude_md_improvement_tasks.detect_patterns_daily",
         "schedule": 86400.0,  # Every 24 hours
         # Run at 02:00 UTC
     },
     "monitor-performance": {
-        "task": "tasks.claude_md_improvement.monitor_performance",
+        "task": "tasks.claude_md_improvement_tasks.monitor_performance",
         "schedule": 300.0,  # Every 5 minutes
     },
     "detect-anomalies": {
-        "task": "tasks.claude_md_improvement.detect_anomalies",
+        "task": "tasks.claude_md_improvement_tasks.detect_anomalies",
         "schedule": 900.0,  # Every 15 minutes
     },
     "check-rule-evolution-weekly": {
-        "task": "tasks.claude_md_improvement.check_rule_evolution",
+        "task": "tasks.claude_md_improvement_tasks.check_rule_evolution",
         "schedule": 604800.0,  # Every week
     },
 }

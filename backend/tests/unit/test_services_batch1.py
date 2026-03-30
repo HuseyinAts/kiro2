@@ -12,9 +12,10 @@ STRATEGY:
 TARGET: 500+ tests
 """
 
-import pytest
 from datetime import datetime, timedelta
-from unittest.mock import MagicMock, AsyncMock, patch
+from unittest.mock import AsyncMock, MagicMock, patch
+
+import pytest
 
 # ==============================================================================
 # USER SERVICE TESTS (150+ tests)
@@ -165,8 +166,8 @@ class TestUserServiceKullaniciOlustur:
 
     async def test_kullanici_olustur_creates_user_successfully(self):
         """Test successful user creation"""
-        from services.user_service import KullaniciServisi
         from models import KullaniciOlustur, KullaniciRolu
+        from services.user_service import KullaniciServisi
 
         service = KullaniciServisi()
         user_data = KullaniciOlustur(
@@ -188,8 +189,8 @@ class TestUserServiceKullaniciOlustur:
 
     async def test_kullanici_olustur_stores_user_in_memory(self):
         """Test user is stored in service memory"""
-        from services.user_service import KullaniciServisi
         from models import KullaniciOlustur, KullaniciRolu
+        from services.user_service import KullaniciServisi
 
         service = KullaniciServisi()
         user_data = KullaniciOlustur(
@@ -207,8 +208,8 @@ class TestUserServiceKullaniciOlustur:
 
     async def test_kullanici_olustur_creates_email_index(self):
         """Test email index is created"""
-        from services.user_service import KullaniciServisi
         from models import KullaniciOlustur, KullaniciRolu
+        from services.user_service import KullaniciServisi
 
         service = KullaniciServisi()
         user_data = KullaniciOlustur(
@@ -226,8 +227,8 @@ class TestUserServiceKullaniciOlustur:
 
     async def test_kullanici_olustur_hashes_password(self):
         """Test password is hashed, not stored in plain text"""
-        from services.user_service import KullaniciServisi
         from models import KullaniciOlustur, KullaniciRolu
+        from services.user_service import KullaniciServisi
 
         service = KullaniciServisi()
         password = "Secure!Pass9word"
@@ -248,8 +249,8 @@ class TestUserServiceKullaniciOlustur:
 
     async def test_kullanici_olustur_rejects_duplicate_email(self):
         """Test duplicate email is rejected"""
-        from services.user_service import KullaniciServisi
         from models import KullaniciOlustur, KullaniciRolu
+        from services.user_service import KullaniciServisi
 
         service = KullaniciServisi()
         user_data = KullaniciOlustur(
@@ -279,9 +280,10 @@ class TestUserServiceKullaniciOlustur:
     )
     async def test_kullanici_olustur_rejects_weak_passwords(self, weak_password):
         """Test weak passwords are rejected"""
-        from services.user_service import KullaniciServisi
-        from models import KullaniciOlustur, KullaniciRolu
         from pydantic import ValidationError
+
+        from models import KullaniciOlustur, KullaniciRolu
+        from services.user_service import KullaniciServisi
 
         service = KullaniciServisi()
 
@@ -307,8 +309,8 @@ class TestUserServiceKullaniciOlustur:
     )
     async def test_kullanici_olustur_supports_all_roles(self, rol):
         """Test user creation supports all roles"""
-        from services.user_service import KullaniciServisi
         from models import KullaniciOlustur, KullaniciRolu
+        from services.user_service import KullaniciServisi
 
         service = KullaniciServisi()
         user_data = KullaniciOlustur(
@@ -329,8 +331,8 @@ class TestUserServiceKullaniciGiris:
 
     async def test_kullanici_giris_succeeds_with_valid_credentials(self):
         """Test successful login with valid credentials"""
+        from models import KullaniciGiris, KullaniciOlustur, KullaniciRolu
         from services.user_service import KullaniciServisi
-        from models import KullaniciOlustur, KullaniciGiris, KullaniciRolu
 
         service = KullaniciServisi()
 
@@ -357,8 +359,8 @@ class TestUserServiceKullaniciGiris:
 
     async def test_kullanici_giris_creates_valid_token(self):
         """Test login creates a valid token"""
+        from models import KullaniciGiris, KullaniciOlustur, KullaniciRolu
         from services.user_service import KullaniciServisi
-        from models import KullaniciOlustur, KullaniciGiris, KullaniciRolu
 
         service = KullaniciServisi()
 
@@ -381,8 +383,8 @@ class TestUserServiceKullaniciGiris:
 
     async def test_kullanici_giris_rejects_invalid_email(self):
         """Test login fails with invalid email"""
-        from services.user_service import KullaniciServisi
         from models import KullaniciGiris
+        from services.user_service import KullaniciServisi
 
         service = KullaniciServisi()
 
@@ -395,8 +397,8 @@ class TestUserServiceKullaniciGiris:
 
     async def test_kullanici_giris_rejects_invalid_password(self):
         """Test login fails with invalid password"""
+        from models import KullaniciGiris, KullaniciOlustur, KullaniciRolu
         from services.user_service import KullaniciServisi
-        from models import KullaniciOlustur, KullaniciGiris, KullaniciRolu
 
         service = KullaniciServisi()
 
@@ -418,8 +420,8 @@ class TestUserServiceKullaniciGiris:
 
     async def test_kullanici_giris_updates_son_giris(self):
         """Test login updates last login timestamp"""
+        from models import KullaniciGiris, KullaniciOlustur, KullaniciRolu
         from services.user_service import KullaniciServisi
-        from models import KullaniciOlustur, KullaniciGiris, KullaniciRolu
 
         service = KullaniciServisi()
 
@@ -444,8 +446,8 @@ class TestUserServiceKullaniciGiris:
 
     async def test_kullanici_giris_rejects_inactive_user(self):
         """Test login fails for inactive user"""
+        from models import KullaniciGiris, KullaniciOlustur, KullaniciRolu
         from services.user_service import KullaniciServisi
-        from models import KullaniciOlustur, KullaniciGiris, KullaniciRolu
 
         service = KullaniciServisi()
 
@@ -475,8 +477,8 @@ class TestUserServiceTokenValidation:
 
     async def test_token_dogrula_validates_valid_token(self):
         """Test valid token is accepted"""
+        from models import KullaniciGiris, KullaniciOlustur, KullaniciRolu
         from services.user_service import KullaniciServisi
-        from models import KullaniciOlustur, KullaniciGiris, KullaniciRolu
 
         service = KullaniciServisi()
 
@@ -511,8 +513,8 @@ class TestUserServiceTokenValidation:
 
     async def test_token_dogrula_rejects_expired_token(self):
         """Test expired token is rejected"""
+        from models import KullaniciGiris, KullaniciOlustur, KullaniciRolu
         from services.user_service import KullaniciServisi
-        from models import KullaniciOlustur, KullaniciGiris, KullaniciRolu
 
         service = KullaniciServisi()
 
@@ -531,9 +533,9 @@ class TestUserServiceTokenValidation:
         result = await service.kullanici_giris(login_data)
 
         # Manually expire the token
-        service.aktif_tokenlar[result.access_token][
-            "expires_at"
-        ] = datetime.now() - timedelta(hours=1)
+        service.aktif_tokenlar[result.access_token]["expires_at"] = (
+            datetime.now() - timedelta(hours=1)
+        )
 
         validated_user = await service.token_dogrula(result.access_token)
 
@@ -546,7 +548,9 @@ class TestUserServiceTokenValidation:
 # ==============================================================================
 
 
-@pytest.mark.skip(reason="Servis refactor edildi - artık db session gerekiyor. Testler güncellenmeli.")
+@pytest.mark.skip(
+    reason="Servis refactor edildi - artık db session gerekiyor. Testler güncellenmeli."
+)
 class TestStudentDashboardServiceInit:
     """Test student dashboard service initialization"""
 
@@ -564,7 +568,9 @@ class TestStudentDashboardServiceInit:
         assert "profiller" in service.mock_data
 
 
-@pytest.mark.skip(reason="Servis refactor edildi - artık db session gerekiyor. Testler güncellenmeli.")
+@pytest.mark.skip(
+    reason="Servis refactor edildi - artık db session gerekiyor. Testler güncellenmeli."
+)
 @pytest.mark.asyncio
 class TestDashboardIstatistikleriGetir:
     """Test dashboard statistics retrieval"""
@@ -624,7 +630,9 @@ class TestDashboardIstatistikleriGetir:
         assert stats.deneyim < stats.sonraki_seviye_deneyim
 
 
-@pytest.mark.skip(reason="Servis refactor edildi - artık db session gerekiyor. Testler güncellenmeli.")
+@pytest.mark.skip(
+    reason="Servis refactor edildi - artık db session gerekiyor. Testler güncellenmeli."
+)
 @pytest.mark.asyncio
 class TestSinavGecmisiGetir:
     """Test exam history retrieval"""
@@ -709,7 +717,9 @@ class TestSinavGecmisiGetir:
             assert hasattr(exam, "yanlis_sayisi")
 
 
-@pytest.mark.skip(reason="Servis refactor edildi - artık db session gerekiyor. Testler güncellenmeli.")
+@pytest.mark.skip(
+    reason="Servis refactor edildi - artık db session gerekiyor. Testler güncellenmeli."
+)
 @pytest.mark.asyncio
 class TestPerformansTrendiGetir:
     """Test performance trend retrieval"""
@@ -766,7 +776,9 @@ class TestPerformansTrendiGetir:
             assert data.calisma_suresi >= 0
 
 
-@pytest.mark.skip(reason="Servis refactor edildi - artık db session gerekiyor. Testler güncellenmeli.")
+@pytest.mark.skip(
+    reason="Servis refactor edildi - artık db session gerekiyor. Testler güncellenmeli."
+)
 @pytest.mark.asyncio
 class TestHedeflerGetir:
     """Test goals retrieval"""
@@ -821,7 +833,9 @@ class TestHedeflerGetir:
 # ==============================================================================
 
 
-@pytest.mark.skip(reason="LearningStyleService refactor edildi - attribute yapısı değişti. Testler güncellenmeli.")
+@pytest.mark.skip(
+    reason="LearningStyleService refactor edildi - attribute yapısı değişti. Testler güncellenmeli."
+)
 class TestLearningStyleServiceInit:
     """Test learning style service initialization"""
 
@@ -855,7 +869,9 @@ class TestLearningStyleServiceInit:
         assert "sequential_global" in service.felder_dimensions
 
 
-@pytest.mark.skip(reason="LearningStyleService.detect_learning_style() signature değişti - behavioral_data arg gerekli. Testler güncellenmeli.")
+@pytest.mark.skip(
+    reason="LearningStyleService.detect_learning_style() signature değişti - behavioral_data arg gerekli. Testler güncellenmeli."
+)
 @pytest.mark.asyncio
 class TestDetectLearningStyle:
     """Test learning style detection"""
@@ -1001,7 +1017,9 @@ class TestDetectLearningStyle:
         assert len(parts) == 2
 
 
-@pytest.mark.skip(reason="LearningStyleService refactor edildi - hibrit kod format değişti. Testler güncellenmeli.")
+@pytest.mark.skip(
+    reason="LearningStyleService refactor edildi - hibrit kod format değişti. Testler güncellenmeli."
+)
 class TestGenerateHibridCode:
     """Test hybrid code generation"""
 
@@ -1079,7 +1097,9 @@ class TestGenerateHibridCode:
         assert felder_part[0] == expected_char
 
 
-@pytest.mark.skip(reason="LearningStyleService.get_learning_recommendations() signature değişti - db arg gerekli. Testler güncellenmeli.")
+@pytest.mark.skip(
+    reason="LearningStyleService.get_learning_recommendations() signature değişti - db arg gerekli. Testler güncellenmeli."
+)
 @pytest.mark.asyncio
 class TestGetLearningRecommendations:
     """Test learning recommendations"""
@@ -1330,7 +1350,7 @@ class TestFSRSServiceInit:
 
     def test_service_init_creates_algorithm(self):
         """Test service initializes with FSRS algorithm"""
-        from services.fsrs_service import FSRSService
+        from services._deprecated.fsrs_service import FSRSService
 
         service = FSRSService()
         assert service.fsrs_algorithm is not None
@@ -1345,7 +1365,7 @@ class TestFSRSCreateFlashcard:
 
     async def test_create_flashcard_returns_card(self):
         """Test flashcard creation returns card object"""
-        from services.fsrs_service import FSRSService
+        from services._deprecated.fsrs_service import FSRSService
 
         service = FSRSService()
         mock_db = MagicMock()
@@ -1370,7 +1390,7 @@ class TestFSRSCreateFlashcard:
 
     async def test_create_flashcard_sets_initial_state(self):
         """Test flashcard is created with 'new' state"""
-        from services.fsrs_service import FSRSService
+        from services._deprecated.fsrs_service import FSRSService
 
         service = FSRSService()
         mock_db = MagicMock()
@@ -1410,7 +1430,7 @@ class TestFSRSGetDueCards:
 
     async def test_get_due_cards_returns_list(self):
         """Test returns list of due cards"""
-        from services.fsrs_service import FSRSService
+        from services._deprecated.fsrs_service import FSRSService
 
         service = FSRSService()
         mock_db = MagicMock()
@@ -1433,7 +1453,7 @@ class TestFSRSGetDueCards:
 
     async def test_get_due_cards_respects_limit(self):
         """Test limit parameter is respected"""
-        from services.fsrs_service import FSRSService
+        from services._deprecated.fsrs_service import FSRSService
 
         service = FSRSService()
         mock_db = MagicMock()
@@ -1456,7 +1476,7 @@ class TestFSRSGetDueCards:
     @pytest.mark.parametrize("limit", [5, 10, 20, 50])
     async def test_get_due_cards_various_limits(self, limit):
         """Test various limit values"""
-        from services.fsrs_service import FSRSService
+        from services._deprecated.fsrs_service import FSRSService
 
         service = FSRSService()
         mock_db = MagicMock()
@@ -1486,8 +1506,8 @@ class TestFSRSStudySession:
 
     async def test_start_study_session_returns_id(self):
         """Test starting study session returns ID"""
-        from services.fsrs_service import FSRSService
         from models.fsrs import FSRSStudySession
+        from services._deprecated.fsrs_service import FSRSService
 
         service = FSRSService()
         mock_db = MagicMock()
@@ -1509,8 +1529,8 @@ class TestFSRSStudySession:
 
     async def test_end_study_session_returns_summary(self):
         """Test ending study session returns summary"""
-        from services.fsrs_service import FSRSService
         from models.fsrs import FSRSStudySession
+        from services._deprecated.fsrs_service import FSRSService
 
         service = FSRSService()
         mock_db = MagicMock()
@@ -1552,8 +1572,8 @@ class TestFSRSGetStudentStatistics:
 
     async def test_get_statistics_returns_dict(self):
         """Test statistics returns dictionary"""
-        from services.fsrs_service import FSRSService
         from models.fsrs import FSRSStudentProfile
+        from services._deprecated.fsrs_service import FSRSService
 
         service = FSRSService()
         mock_db = MagicMock()
@@ -1640,8 +1660,8 @@ class TestFSRSGetStudentStatistics:
 @pytest.mark.asyncio
 async def test_user_service_email_validation(email, should_reject):
     """Test email validation for various formats"""
-    from services.user_service import KullaniciServisi
     from models import KullaniciOlustur, KullaniciRolu
+    from services.user_service import KullaniciServisi
 
     service = KullaniciServisi()
 
@@ -1664,7 +1684,9 @@ async def test_user_service_email_validation(email, should_reject):
             raise  # Unexpected error for valid email
 
 
-@pytest.mark.skip(reason="Servis refactor edildi - artık db session gerekiyor. Testler güncellenmeli.")
+@pytest.mark.skip(
+    reason="Servis refactor edildi - artık db session gerekiyor. Testler güncellenmeli."
+)
 @pytest.mark.parametrize("gun_sayisi", [0, 1, 7, 30, 365])
 @pytest.mark.asyncio
 async def test_dashboard_performance_trend_edge_cases(gun_sayisi):
