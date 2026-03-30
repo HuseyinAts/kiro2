@@ -93,7 +93,7 @@ class DAGService:
         # Konuları yükle
         topics_result = await self.db.execute(
             text("""
-            SELECT id::text, name_tr AS name, COALESCE(subject_id::text, '') AS subject_id
+            SELECT id::text, name_tr AS name, COALESCE(subject_area, '') AS subject_id
             FROM topic_hierarchy
             WHERE is_active = TRUE
             ORDER BY name_tr
