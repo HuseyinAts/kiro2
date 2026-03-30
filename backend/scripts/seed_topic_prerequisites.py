@@ -155,7 +155,7 @@ async def seed(dry_run: bool = False) -> None:
             p.prereq_type,
             p.strength,
         )
-        if result == "INSERT 0 1":
+        if result and result.split()[-1] == "1":
             inserted += 1
 
     await conn.close()

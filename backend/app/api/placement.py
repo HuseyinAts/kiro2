@@ -20,6 +20,13 @@ from app.services.placement_service import PlacementTestService, _theta_to_label
 
 router = APIRouter(prefix="/api/v1/placement", tags=["Placement Test"])
 
+# exam_type backward-compat mapping (TYT/AYT/YDT → ilk placement dersi)
+_EXAM_TYPE_TO_SUBJECT: dict[str, str] = {
+    "TYT": "MATEMATIK",
+    "AYT": "MATEMATIK",
+    "YDT": "TURKCE",
+}
+
 
 # ── Schemas ──────────────────────────────────────────────────────
 
@@ -37,7 +44,9 @@ class StartPlacementRequest(BaseModel):
         if not self.subject_id and not self.exam_type:
             raise ValueError("subject_id veya exam_type gerekli")
         if not self.subject_id:
-            self.subject_id = "MATEMATIK"
+            self.subject_id = _EXAM_TYPE_TO_SUBJECT.get(
+                (self.exam_type or "").upper(), "MATEMATIK"
+            )
         return self
 
 
