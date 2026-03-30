@@ -1,14 +1,15 @@
-# -*- coding: utf-8 -*-
 """
 Veli (Parent) servis katmanı
 Türkiye Üniversite Sınavları Hazırlık Platformu için veli takip sistemi
 """
 
 import json
-from datetime import datetime, timedelta, timezone
-from typing import List
+from datetime import UTC, datetime, timedelta
 
-from models.database import ExamSession
+from sqlalchemy import and_, desc
+from sqlalchemy.orm import Session, joinedload
+
+from models.database import ExamSession, User
 from models.parent import (
     ChildPerformanceData,
     ParentChildRelation,
@@ -21,9 +22,6 @@ from models.parent import (
     WeeklyReport,
     WeeklyReportData,
 )
-from models.database import User
-from sqlalchemy import and_, desc
-from sqlalchemy.orm import Session, joinedload
 
 
 class ParentService:
@@ -32,7 +30,7 @@ class ParentService:
     def __init__(self, db: Session):
         self.db = db
 
-    async def create_parent_child_relation(
+    def create_parent_child_relation(
         self, parent_id: int, relation_data: ParentChildRelationCreate
     ) -> ParentChildRelationResponse:
         """Veli-çocuk ilişkisi oluştur"""
@@ -76,7 +74,7 @@ class ParentService:
         self.db.refresh(new_relation)
 
         # Çocuğa bildirim gönder
-        await self._send_approval_request_notification(child.id, parent_id)
+        self._send_approval_request_notification(child.id, parent_id)
 
         return ParentChildRelationResponse(
             id=new_relation.id,
@@ -90,7 +88,7 @@ class ParentService:
             approved_at=new_relation.approved_at,
         )
 
-    async def approve_parent_child_relation(
+    def approve_parent_child_relation(
         self, child_id: int, relation_id: int, approved: bool
     ) -> bool:
         """Veli-çocuk ilişkisini onayla/reddet"""
@@ -112,10 +110,10 @@ class ParentService:
 
         if approved:
             relation.approved = True
-            relation.approved_at = datetime.now(timezone.utc)
+            relation.approved_at = datetime.now(UTC)
 
             # Veliye onay bildirimi gönder
-            await self._send_approval_confirmation_notification(
+            self._send_approval_confirmation_notification(
                 relation.parent_id, child_id, True
             )
         else:
@@ -123,16 +121,14 @@ class ParentService:
             self.db.delete(relation)
 
             # Veliye red bildirimi gönder
-            await self._send_approval_confirmation_notification(
+            self._send_approval_confirmation_notification(
                 relation.parent_id, child_id, False
             )
 
         self.db.commit()
         return True
 
-    async def get_parent_children(
-        self, parent_id: int
-    ) -> List[ParentChildRelationResponse]:
+    def get_parent_children(self, parent_id: int) -> list[ParentChildRelationResponse]:
         """
         Velinin çocuklarını getir
         PERFORMANCE FIX: Eager loading ile N+1 query önlendi
@@ -172,7 +168,7 @@ class ParentService:
 
         return result
 
-    async def get_child_performance(
+    def get_child_performance(
         self, parent_id: int, child_id: int
     ) -> ChildPerformanceData:
         """Çocuğun performans verilerini getir"""
@@ -198,7 +194,7 @@ class ParentService:
             raise ValueError("Çocuk bulunamadı")
 
         # Son 30 günün verilerini al
-        thirty_days_ago = datetime.now(timezone.utc) - timedelta(days=30)
+        thirty_days_ago = datetime.now(UTC) - timedelta(days=30)
 
         # Sınav sonuçları
         exam_results = (
@@ -250,11 +246,11 @@ class ParentService:
             recent_achievements=recent_achievements,
         )
 
-    async def generate_weekly_report(self, child_id: int) -> WeeklyReportData:
+    def generate_weekly_report(self, child_id: int) -> WeeklyReportData:
         """Haftalık rapor oluştur"""
 
         # Bu haftanın başlangıç ve bitiş tarihleri
-        today = datetime.now(timezone.utc)
+        today = datetime.now(UTC)
         week_start = today - timedelta(days=today.weekday())
         week_end = week_start + timedelta(days=6)
 
@@ -337,7 +333,7 @@ class ParentService:
             recommendations=recommendations,
         )
 
-    async def create_notification(
+    def create_notification(
         self, parent_id: int, notification_data: ParentNotificationCreate
     ) -> ParentNotificationResponse:
         """Veli bildirimi oluştur"""
@@ -388,9 +384,9 @@ class ParentService:
             read_at=notification.read_at,
         )
 
-    async def get_parent_notifications(
+    def get_parent_notifications(
         self, parent_id: int, unread_only: bool = False
-    ) -> List[ParentNotificationResponse]:
+    ) -> list[ParentNotificationResponse]:
         """
         Veli bildirimlerini getir
         PERFORMANCE FIX: Eager loading ile N+1 query önlendi
@@ -428,9 +424,7 @@ class ParentService:
 
         return result
 
-    async def mark_notification_as_read(
-        self, parent_id: int, notification_id: int
-    ) -> bool:
+    def mark_notification_as_read(self, parent_id: int, notification_id: int) -> bool:
         """Bildirimi okundu olarak işaretle"""
 
         notification = (
@@ -448,35 +442,33 @@ class ParentService:
             raise ValueError("Bildirim bulunamadı")
 
         notification.is_read = True
-        notification.read_at = datetime.now(timezone.utc)
+        notification.read_at = datetime.now(UTC)
 
         self.db.commit()
         return True
 
-    async def get_parent_dashboard_data(self, parent_id: int) -> ParentDashboardData:
+    def get_parent_dashboard_data(self, parent_id: int) -> ParentDashboardData:
         """Veli dashboard verilerini getir"""
 
         # Çocukları getir
-        children_relations = await self.get_parent_children(parent_id)
+        children_relations = self.get_parent_children(parent_id)
         children_performance = []
 
         for relation in children_relations:
             try:
-                performance = await self.get_child_performance(
-                    parent_id, relation.child_id
-                )
+                performance = self.get_child_performance(parent_id, relation.child_id)
                 children_performance.append(performance)
             except Exception:
                 # Hata durumunda boş performans verisi ekle
                 continue
 
         # Okunmamış bildirimler
-        unread_notifications = await self.get_parent_notifications(
+        unread_notifications = self.get_parent_notifications(
             parent_id, unread_only=True
         )
 
         # Son bildirimler (son 5)
-        recent_notifications = await self.get_parent_notifications(parent_id)
+        recent_notifications = self.get_parent_notifications(parent_id)
         recent_notifications = recent_notifications[:5]
 
         # Haftalık özet
@@ -532,14 +524,14 @@ class ParentService:
             pending_approvals=pending_list,
         )
 
-    async def _send_approval_request_notification(self, child_id: int, parent_id: int):
+    def _send_approval_request_notification(self, child_id: int, parent_id: int):
         """Onay isteği bildirimi gönder"""
         parent = self.db.query(User).filter(User.id == parent_id).first()
 
         # Çocuğa sistem bildirimi gönder (basit implementasyon)
         # Gerçek uygulamada email/SMS gönderilebilir
 
-    async def _send_approval_confirmation_notification(
+    def _send_approval_confirmation_notification(
         self, parent_id: int, child_id: int, approved: bool
     ):
         """Onay sonucu bildirimi gönder"""

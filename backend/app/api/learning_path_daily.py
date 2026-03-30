@@ -119,7 +119,7 @@ async def _get_user_goal(db: AsyncSession, user_id: str) -> dict:
                 "daily_minutes": row.daily_minutes,
             }
     except Exception:
-        pass
+        logger.warning("Student profile DB query failed, using defaults", exc_info=True)
     return {
         "exam_type": "TYT",
         "exam_date": date(date.today().year, 6, 7),

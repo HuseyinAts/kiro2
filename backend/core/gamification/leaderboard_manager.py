@@ -8,14 +8,15 @@ Redis tabanlı liderlik tablosu yönetim sistemi
 - Kullanıcı sıralaması ve yakın kullanıcılar
 - Otomatik periyodik sıfırlama
 """
-from datetime import datetime, timedelta, timezone
-from typing import List, Dict, Optional
-from uuid import UUID
-from sqlalchemy.orm import Session
-from redis import Redis
 
-from models.database import User
+from datetime import UTC, datetime, timedelta
+from uuid import UUID
+
+from redis import Redis
+from sqlalchemy.orm import Session
+
 from core.structured_logger import get_logger
+from models.database import User
 
 logger = get_logger(__name__)
 
@@ -39,31 +40,30 @@ class LeaderboardManager:
         self.cache_ttl = 300  # 5 dakika
 
     def _get_redis_key(
-        self, leaderboard_type: str, identifier: Optional[str] = None
+        self, leaderboard_type: str, identifier: str | None = None
     ) -> str:
         """Redis key oluştur"""
         if leaderboard_type == LeaderboardType.GLOBAL:
             return "leaderboard:global"
-        elif leaderboard_type == LeaderboardType.WEEKLY:
-            week_num = datetime.now(timezone.utc).isocalendar()[1]
-            year = datetime.now(timezone.utc).year
+        if leaderboard_type == LeaderboardType.WEEKLY:
+            week_num = datetime.now(UTC).isocalendar()[1]
+            year = datetime.now(UTC).year
             return f"leaderboard:weekly:{year}:w{week_num}"
-        elif leaderboard_type == LeaderboardType.MONTHLY:
-            month = datetime.now(timezone.utc).strftime("%Y-%m")
+        if leaderboard_type == LeaderboardType.MONTHLY:
+            month = datetime.now(UTC).strftime("%Y-%m")
             return f"leaderboard:monthly:{month}"
-        elif leaderboard_type == LeaderboardType.FRIENDS:
+        if leaderboard_type == LeaderboardType.FRIENDS:
             return f"leaderboard:friends:{identifier}"
-        elif leaderboard_type == LeaderboardType.CLASS:
+        if leaderboard_type == LeaderboardType.CLASS:
             return f"leaderboard:class:{identifier}"
-        else:
-            return f"leaderboard:{leaderboard_type}"
+        return f"leaderboard:{leaderboard_type}"
 
     def update_score(
         self,
-        user_id: UUID,
+        user_id: str,
         score: int,
         leaderboard_type: str = LeaderboardType.GLOBAL,
-        identifier: Optional[str] = None,
+        identifier: str | None = None,
     ) -> bool:
         """
         Kullanıcının skorunu güncelle
@@ -83,13 +83,13 @@ class LeaderboardManager:
             # Weekly ve monthly için TTL ayarla
             if leaderboard_type == LeaderboardType.WEEKLY:
                 # Haftanın sonuna kadar
-                now = datetime.now(timezone.utc)
+                now = datetime.now(UTC)
                 days_until_sunday = (6 - now.weekday()) % 7
                 ttl = (days_until_sunday + 1) * 86400  # Saniye cinsinden
                 self.redis.expire(redis_key, ttl)
             elif leaderboard_type == LeaderboardType.MONTHLY:
                 # Ayın sonuna kadar
-                now = datetime.now(timezone.utc)
+                now = datetime.now(UTC)
                 next_month = (now.replace(day=1) + timedelta(days=32)).replace(day=1)
                 ttl = int((next_month - now).total_seconds())
                 self.redis.expire(redis_key, ttl)
@@ -108,8 +108,8 @@ class LeaderboardManager:
         leaderboard_type: str = LeaderboardType.GLOBAL,
         limit: int = 100,
         offset: int = 0,
-        identifier: Optional[str] = None,
-    ) -> List[Dict]:
+        identifier: str | None = None,
+    ) -> list[dict]:
         """
         Liderlik tablosunu getir
 
@@ -176,10 +176,10 @@ class LeaderboardManager:
 
     def get_user_rank(
         self,
-        user_id: UUID,
+        user_id: str,
         leaderboard_type: str = LeaderboardType.GLOBAL,
-        identifier: Optional[str] = None,
-    ) -> Optional[Dict]:
+        identifier: str | None = None,
+    ) -> dict | None:
         """
         Kullanıcının sırasını getir
 
@@ -226,11 +226,11 @@ class LeaderboardManager:
 
     def get_nearby_users(
         self,
-        user_id: UUID,
+        user_id: str,
         leaderboard_type: str = LeaderboardType.GLOBAL,
         range_size: int = 5,
-        identifier: Optional[str] = None,
-    ) -> Dict:
+        identifier: str | None = None,
+    ) -> dict:
         """
         Kullanıcının yakınındaki kullanıcıları getir
 
@@ -282,10 +282,10 @@ class LeaderboardManager:
 
     def get_user_position_change(
         self,
-        user_id: UUID,
+        user_id: str,
         leaderboard_type: str = LeaderboardType.GLOBAL,
-        identifier: Optional[str] = None,
-    ) -> Optional[int]:
+        identifier: str | None = None,
+    ) -> int | None:
         """
         Kullanıcının konum değişimini getir (önceki snapshot ile karşılaştır)
 
@@ -325,7 +325,7 @@ class LeaderboardManager:
             return None
 
     def reset_leaderboard(
-        self, leaderboard_type: str, identifier: Optional[str] = None
+        self, leaderboard_type: str, identifier: str | None = None
     ) -> bool:
         """Liderlik tablosunu sıfırla"""
         try:
@@ -379,7 +379,7 @@ class LeaderboardManager:
 
 
 # Global instance
-_leaderboard_manager: Optional[LeaderboardManager] = None
+_leaderboard_manager: LeaderboardManager | None = None
 
 
 def get_leaderboard_manager(db: Session, redis_client: Redis) -> LeaderboardManager:

@@ -13,7 +13,6 @@ Endpoints:
 import logging
 from datetime import UTC, datetime
 from typing import Any
-from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel, Field
@@ -741,7 +740,7 @@ async def get_user_achievements(
         user_id = str(current_user.id)
         result = await db.execute(
             sa_select(UserAchievement)
-            .where(UserAchievement.user_id == UUID(user_id))
+            .where(UserAchievement.user_id == user_id)
             .order_by(
                 UserAchievement.is_completed.desc(),
                 UserAchievement.progress_percentage.desc(),
@@ -782,7 +781,7 @@ async def get_completed_achievements(
         result = await db.execute(
             sa_select(UserAchievement)
             .where(
-                UserAchievement.user_id == UUID(user_id),
+                UserAchievement.user_id == user_id,
                 UserAchievement.is_completed == True,  # noqa: E712
             )
             .order_by(UserAchievement.completed_at.desc())
@@ -821,10 +820,9 @@ def get_nearby_users_in_leaderboard(
         user_id = str(current_user.id)
         leaderboard_manager = get_leaderboard_manager(db, redis)
         result = leaderboard_manager.get_nearby_users(
-            user_id=UUID(user_id),
+            user_id=user_id,
             leaderboard_type=leaderboard_type,
             range_size=range_size,
-            with_details=True,
         )
         return {
             "success": True,
@@ -852,7 +850,7 @@ def get_user_leaderboard_rank(
         user_id = str(current_user.id)
         leaderboard_manager = get_leaderboard_manager(db, redis)
         rank_info = leaderboard_manager.get_user_rank(
-            user_id=UUID(user_id), leaderboard_type=leaderboard_type
+            user_id=user_id, leaderboard_type=leaderboard_type
         )
         if not rank_info:
             return {

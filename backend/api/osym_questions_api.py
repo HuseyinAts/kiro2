@@ -11,7 +11,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from core.database import get_db
+from core.database import get_async_session as get_db
 from core.dependencies import AuthenticatedUser, get_current_user
 
 logger = logging.getLogger(__name__)
@@ -412,3 +412,4 @@ async def get_questions(
     except Exception as e:
         logger.error(f"OSYM API Error: {e!s}")
         raise HTTPException(500, "Soru bankası verilerine erişilirken bir hata oluştu")
+
