@@ -1342,7 +1342,11 @@ async def submit_quiz(
         db.add(quiz_submission_record)
         await db.commit()
 
-        # Central event service: BKT + XP + Streak (best-effort per subsystem)
+        # Mastery sync comes from the quiz event pipeline; Daily truth source reads StudentAbility/theta.
+        event_report: dict[str, Any] = {"bkt": None, "xp": None, "streak": None}
+        mastery_sync_status = "ok"
+        mastery_sync_error = None
+
         try:
             from services.learning_event_service import LearningEventService
 
@@ -1355,9 +1359,27 @@ async def submit_quiz(
                 db=db,
             )
             logger.info("Quiz event report: %s", event_report)
+
+            bkt_result = event_report.get("bkt")
+            if bkt_result != "ok":
+                mastery_sync_status = "pending"
+                mastery_sync_error = str(bkt_result)
+                logger.error(
+                    "Quiz mastery sync incomplete for student %s quiz %s: %s",
+                    student_id,
+                    quiz_id,
+                    bkt_result,
+                )
         except Exception as event_err:
-            logger.warning(
-                "Quiz event processing skipped (non-critical): %s", event_err
+            mastery_sync_status = "pending"
+            mastery_sync_error = str(event_err)
+            event_report = {"bkt": f"error: {event_err}", "xp": None, "streak": None}
+            logger.error(
+                "Quiz mastery sync failed for student %s quiz %s: %s",
+                student_id,
+                quiz_id,
+                event_err,
+                exc_info=True,
             )
 
         logger.info(f"Quiz {quiz_id} results - Score: {score:.1f}%, Passed: {passed}")
@@ -1404,6 +1426,9 @@ async def submit_quiz(
                 if passed
                 else f"Quiz'i geçemediniz. Geçme notu: {passing_score}%"
             ),
+            "event_report": event_report,
+            "mastery_sync_status": mastery_sync_status,
+            "mastery_sync_error": mastery_sync_error,
         }
 
     except HTTPException:
@@ -1427,10 +1452,13 @@ async def update_progress(
     current_user: AuthenticatedUser = Depends(get_current_user),
 ) -> dict[str, Any]:
     """
-    Update student's progress on a specific topic/node
+    Update student's INTERACTION STATE on a specific topic/node
 
-    Tracks progress percentage, time spent, and completion status.
-    Saves to database.
+    Writes {progress, completed, time_spent} to TopicProgress and TopicCompletion.
+    This is a UI convenience write - it is NOT a mastery signal.
+
+    MASTERY TRUTH SOURCE: StudentAbility/theta (updated only by submit_quiz pipeline).
+    Calling this endpoint does NOT update theta, BKT, cat_sessions, or any mastery model.
     """
     try:
         await verify_student_access(student_id, current_user, db)
@@ -1493,8 +1521,10 @@ async def update_progress(
         await db.commit()
 
         logger.info(
-            f"Progress updated - Student: {student_id}, Node: {node_id}, "
-            f"Progress: {progress_update.progress}%, Completed: {progress_update.completed}"
+            f"[update_progress] Interaction state updated - "
+            f"Student: {student_id}, Node: {node_id}, "
+            f"Progress: {progress_update.progress}%, Completed: {progress_update.completed}, "
+            f"Source: update_progress_endpoint (NOT a mastery signal)"
         )
 
         return {
@@ -1506,10 +1536,14 @@ async def update_progress(
             "time_spent": progress_update.time_spent,
             "timestamp": datetime.now().isoformat(),
             "message": (
-                "Topic başarıyla tamamlandı!"
+                "Topic ilerleme durumu kaydedildi (mastery pipeline etkilenmez)."
                 if progress_update.completed
-                else f"İlerleme %{progress_update.progress} olarak kaydedildi"
+                else f"İlerleme %{progress_update.progress} olarak kaydedildi (mastery pipeline etkilenmez)."
             ),
+            "is_mastery_signal": False,
+            "mastery_source": "quiz_submissions",
+            "progress_source": "update_progress_endpoint",
+            "completion_source": "update_progress_endpoint",
         }
 
     except HTTPException:
