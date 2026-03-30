@@ -138,7 +138,7 @@ class RouterRegistry:
                 35,
                 True,
             ),
-            RouterConfig("api.fsrs_api", "router", "FSRS API", "features", 36, False),
+            # api.fsrs_api REMOVED — dead entry. Active: app.api.fsrs
             # CONTENT & QUESTIONS (Priority 50-69)
             RouterConfig(
                 "api.soru_bankasi_api",

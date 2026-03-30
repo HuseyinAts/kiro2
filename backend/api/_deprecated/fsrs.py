@@ -103,12 +103,6 @@ async def create_flashcard(
     yeni bir flashcard oluşturur ve ilk tekrar zamanlamasını yapar.
     """
     try:
-        if current_user.role.value != "student":
-            raise HTTPException(
-                status_code=status.HTTP_403_FORBIDDEN,
-                detail="Sadece öğrenciler flashcard oluşturabilir",
-            )
-
         card = await fsrs_service.create_flashcard(
             student_id=current_user.id,
             subject=request.subject,
@@ -153,12 +147,6 @@ async def get_due_flashcards(
     öncelik sırasında getirir.
     """
     try:
-        if current_user.role.value != "student":
-            raise HTTPException(
-                status_code=status.HTTP_403_FORBIDDEN,
-                detail="Sadece öğrenciler flashcard'larını görüntüleyebilir",
-            )
-
         due_cards = await fsrs_service.get_due_cards(
             student_id=current_user.id, limit=limit, db=db
         )
@@ -191,12 +179,6 @@ async def review_flashcard(
     ile sonraki tekrar zamanını hesaplar ve kartı günceller.
     """
     try:
-        if current_user.role.value != "student":
-            raise HTTPException(
-                status_code=status.HTTP_403_FORBIDDEN,
-                detail="Sadece öğrenciler flashcard inceleyebilir",
-            )
-
         result = await fsrs_service.review_flashcard(
             card_id=card_id,
             grade=request.grade,
@@ -247,12 +229,6 @@ async def get_study_recommendations(
     kişiselleştirilmiş çalışma önerileri oluşturur.
     """
     try:
-        if current_user.role.value != "student":
-            raise HTTPException(
-                status_code=status.HTTP_403_FORBIDDEN,
-                detail="Sadece öğrenciler çalışma önerilerini görüntüleyebilir",
-            )
-
         recommendations = await fsrs_service.get_study_recommendations(
             student_id=current_user.id, db=db
         )
@@ -282,12 +258,6 @@ async def get_student_statistics(
     son çalışma oturumlarını getirir.
     """
     try:
-        if current_user.role.value != "student":
-            raise HTTPException(
-                status_code=status.HTTP_403_FORBIDDEN,
-                detail="Sadece öğrenciler istatistiklerini görüntüleyebilir",
-            )
-
         statistics = await fsrs_service.get_student_statistics(
             student_id=current_user.id, db=db
         )
@@ -320,12 +290,6 @@ async def start_study_session(
     Yeni bir FSRS çalışma oturumu başlatır ve oturum ID'si döner.
     """
     try:
-        if current_user.role.value != "student":
-            raise HTTPException(
-                status_code=status.HTTP_403_FORBIDDEN,
-                detail="Sadece öğrenciler çalışma oturumu başlatabilir",
-            )
-
         session_id = await fsrs_service.start_study_session(
             student_id=current_user.id, session_type=session_type, db=db
         )
@@ -360,12 +324,6 @@ async def end_study_session(
     Mevcut çalışma oturumunu sonlandırır ve oturum özetini döner.
     """
     try:
-        if current_user.role.value != "student":
-            raise HTTPException(
-                status_code=status.HTTP_403_FORBIDDEN,
-                detail="Sadece öğrenciler çalışma oturumu sonlandırabilir",
-            )
-
         summary = await fsrs_service.end_study_session(session_id=session_id, db=db)
 
         return {

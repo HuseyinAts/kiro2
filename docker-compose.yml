@@ -33,6 +33,38 @@ services:
       start_period: 60s
       retries: 3
 
+  celery-worker:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.minimal
+    container_name: kiro2-celery-worker
+    command: celery -A celery_worker worker -l info -Q default,emails,reports,features,videos,bulk,claude_md --concurrency=2
+    env_file:
+      - .env.mvp
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    volumes:
+      - backend-logs:/app/logs
+    depends_on:
+      backend:
+        condition: service_healthy
+    restart: unless-stopped
+
+  celery-beat:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.minimal
+    container_name: kiro2-celery-beat
+    command: celery -A celery_worker beat -l info
+    env_file:
+      - .env.mvp
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    depends_on:
+      backend:
+        condition: service_healthy
+    restart: unless-stopped
+
   frontend:
     build:
       context: ./frontend
