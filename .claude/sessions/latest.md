@@ -1,39 +1,34 @@
-# Session State — 2026-03-29 Session 120
+# Session State — 2026-03-30 Session 122
 
 ## Quick Resume
 - **Branch:** master
-- **Last commit:** `79538e9` fix(security): 5 audit findings (IDOR, credential, SQLAlchemy)
-- **Push:** commit 79538e9 PUSH BEKLIYOR
+- **Last commit:** `3b03b25` fix(quiz): mastery sync error tracking
+- **Push:** TUM PUSH EDILDI (origin/master = 3b03b25)
 - **Production:** 77,336 questions
-- **Services:** Backend=DOWN, Frontend=DOWN (Docker kapalı)
+- **Services:** Backend=200, Frontend=200
 
 ## Bu Session'da Yapilanlar
-- 5 audit fix commit'i (`79538e9`): konu_map, osym_questions_api SQLAlchemy, seed password env var, live_session IDOR, nginx CSP
-- Brainstorm v2 raporu yazıldı: `docs/brainstorms/2026-03-29_connectivity-score-6plus-strategy-v2.md`
-  - 3 paralel agent (Performans, Bakım, ROI) sentez
-  - Matematiksel hatalar düzeltildi (90/17=5.29, range 5.1-5.3)
-  - 17 chain tam projeksiyon tablosu
-  - 6.0 hedefi: Top 5 yetmez, Genisletilmis senaryo (Gamification UI + Exam fix) gerekli
-- Brainstorm raporu henüz commit edilmedi (untracked)
+- Git push: 3 commit pushed (96ce586 → 87902c8, dag fix + FSRS deprecation + Celery Docker)
+- Mastery sync fix: submit_quiz BKT error tracking (mastery_sync_status/error fields)
+- Brainstorm v2 raporu commit edildi
+- 3 .bak dosya temizlendi (learning_path_v2, learning_path_orchestrator, learning_event_service)
+- Push: 4. commit (3b03b25) da pushed
 
-## Bekleyen Isler
-1. **commit 79538e9 PUSH** — 5 audit fix (user onayı bekliyor)
-2. **Brainstorm v2 raporu commit** — docs/brainstorms/ altında untracked
-3. **Connectivity Faz 1 dogrulama** — Reports backend curl test, user_item_fsrs tablo kontrolü
-4. HTTPS/TLS — production blocker
-5. CSRF Phase 2
-6. Test coverage artirma (backend ~18% → 80%)
+## Bekleyen
+1. FSRS frontend: 6 endpoint backend'de implement edilmemis (pre-existing)
+2. Test coverage (backend ~18% → 80%)
+3. HTTPS/TLS, CSRF Phase 2
+4. Docker rebuild sonrasi endpoint dogrulama
+5. Remote Control setup (kullanici Max plan ile remote kullanmak istiyor)
+
+## Engelleyiciler
+- Yok
 
 ## Dokunulan Dosyalar
-- docs/brainstorms/2026-03-29_connectivity-score-6plus-strategy-v2.md (YENİ)
-- backend/api/osym_questions_api.py (önceki session'da fix edildi)
-- backend/scripts/seed_mvp_data.py (önceki session'da fix edildi)
-- backend/api/live_session_routes.py (önceki session'da fix edildi)
-- backend/services/soru_bankasi_service.py (önceki session'da fix edildi)
-- frontend/nginx.conf (önceki session'da fix edildi)
+- backend/api/learning_path_v2.py (mastery sync error tracking)
+- docs/brainstorms/2026-03-29_connectivity-score-6plus-strategy-v2.md
 
 ## Sonraki Adimlar
-1. Push commit 79538e9
-2. Brainstorm v2 raporunu commit et
-3. Connectivity Faz 1: doğrulama (Reports endpoint test, FSRS tablo check)
-4. Quick Wins implementasyonu (parentService→LP, Facade bridge, Recommendation mock kaldır)
+1. Docker rebuild + endpoint dogrulama (Celery worker eklendi)
+2. Remote Control setup: `claude remote-control --name "KIRO2" --spawn worktree`
+3. Test coverage artirma sprinti
