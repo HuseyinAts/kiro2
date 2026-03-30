@@ -79,7 +79,7 @@ class RealtimeUpdateRequest(BaseModel):
 
 
 @router.get("/classify/{question_id}", response_model=DifficultyClassificationResponse)
-async def classify_question_difficulty(
+def classify_question_difficulty(
     question_id: str,
     force_recalculate: bool = Query(
         False, description="Cache'i atla ve yeniden hesapla"
@@ -124,7 +124,7 @@ async def classify_question_difficulty(
 
 
 @router.get("/visual-indicator/{level}")
-async def get_visual_indicator(level: str):
+def get_visual_indicator(level: str):
     """
     Zorluk seviyesi için görsel gösterge bilgisi al
 
@@ -162,7 +162,7 @@ async def get_visual_indicator(level: str):
 
 
 @router.post("/filter")
-async def filter_questions_by_difficulty(
+def filter_questions_by_difficulty(
     request: FilterRequest, db: Session = Depends(get_db)
 ):
     """
@@ -221,7 +221,7 @@ async def filter_questions_by_difficulty(
 
 
 @router.get("/distribution")
-async def get_difficulty_distribution(
+def get_difficulty_distribution(
     topic_id: Optional[str] = Query(None, description="Opsiyonel konu filtresi"),
     db: Session = Depends(get_db),
 ):
@@ -260,7 +260,7 @@ async def get_difficulty_distribution(
 
 
 @router.post("/update-realtime")
-async def update_difficulty_realtime(
+def update_difficulty_realtime(
     request: RealtimeUpdateRequest, db: Session = Depends(get_db)
 ):
     """
@@ -301,7 +301,7 @@ async def update_difficulty_realtime(
 
 
 @router.post("/batch-update")
-async def batch_update_difficulties(
+def batch_update_difficulties(
     request: BatchUpdateRequest, db: Session = Depends(get_db)
 ):
     """
@@ -343,7 +343,7 @@ async def batch_update_difficulties(
 
 
 @router.get("/trend/{question_id}")
-async def get_difficulty_trend(
+def get_difficulty_trend(
     question_id: str,
     recent_days: int = Query(30, ge=7, le=90, description="Son kaç günlük veri"),
     historical_days: int = Query(
@@ -387,7 +387,7 @@ async def get_difficulty_trend(
 
 
 @router.get("/calibrate-thresholds")
-async def calibrate_irt_thresholds(
+def calibrate_irt_thresholds(
     topic_id: Optional[str] = Query(
         None, description="Belirli bir konu için kalibre et"
     ),

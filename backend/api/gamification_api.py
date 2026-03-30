@@ -805,7 +805,7 @@ async def get_completed_achievements(
 
 
 @router.get("/leaderboard/nearby", response_model=dict[str, Any])
-async def get_nearby_users_in_leaderboard(
+def get_nearby_users_in_leaderboard(
     current_user: AuthenticatedUser = Depends(get_current_user),
     leaderboard_type: str = Query(
         LeaderboardType.GLOBAL, description="Liderlik tablosu turu"
@@ -839,7 +839,7 @@ async def get_nearby_users_in_leaderboard(
 
 
 @router.get("/leaderboard/rank", response_model=dict[str, Any])
-async def get_user_leaderboard_rank(
+def get_user_leaderboard_rank(
     current_user: AuthenticatedUser = Depends(get_current_user),
     leaderboard_type: str = Query(
         LeaderboardType.GLOBAL, description="Liderlik tablosu turu"
@@ -873,7 +873,7 @@ async def get_user_leaderboard_rank(
 
 
 @router.get("/leaderboard/stats", response_model=dict[str, Any])
-async def get_leaderboard_statistics(
+def get_leaderboard_statistics(
     current_user: AuthenticatedUser = Depends(get_current_user),
     leaderboard_type: str = Query(
         LeaderboardType.GLOBAL, description="Liderlik tablosu turu"

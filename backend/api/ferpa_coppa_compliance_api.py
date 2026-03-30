@@ -57,7 +57,7 @@ class ConsentVerification(BaseModel):
 
 
 @router.post("/coppa/parental-consent", status_code=status.HTTP_201_CREATED)
-async def request_coppa_parental_consent(
+def request_coppa_parental_consent(
     request: COPPAConsentRequest,
     db: Session = Depends(get_db),
     current_user: AuthenticatedUser = Depends(get_current_user),
@@ -104,7 +104,7 @@ async def request_coppa_parental_consent(
 
 
 @router.post("/coppa/verify-consent/{consent_id}")
-async def verify_coppa_consent(
+def verify_coppa_consent(
     consent_id: str,
     verification: ConsentVerification,
     db: Session = Depends(get_db),
@@ -141,7 +141,7 @@ async def verify_coppa_consent(
 
 
 @router.post("/ferpa/consent", status_code=status.HTTP_201_CREATED)
-async def request_ferpa_consent(
+def request_ferpa_consent(
     request: FERPAConsentRequest,
     db: Session = Depends(get_db),
     current_user: AuthenticatedUser = Depends(get_current_user),
@@ -169,7 +169,7 @@ async def request_ferpa_consent(
 
 
 @router.get("/coppa/consent/{child_id}")
-async def get_coppa_consent_status(
+def get_coppa_consent_status(
     child_id: int,
     db: Session = Depends(get_db),
     current_user: AuthenticatedUser = Depends(get_current_user),
@@ -201,7 +201,7 @@ async def get_coppa_consent_status(
 
 
 @router.delete("/coppa/withdraw-consent/{consent_id}")
-async def withdraw_coppa_consent(
+def withdraw_coppa_consent(
     consent_id: str,
     reason: str | None = None,
     db: Session = Depends(get_db),
@@ -232,7 +232,7 @@ async def withdraw_coppa_consent(
 
 
 @router.get("/ferpa/access-log/{student_id}")
-async def get_ferpa_access_log(
+def get_ferpa_access_log(
     student_id: int,
     limit: int = 50,
     db: Session = Depends(get_db),

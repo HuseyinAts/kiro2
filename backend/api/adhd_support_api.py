@@ -151,7 +151,7 @@ class FocusExerciseProgress(BaseModel):
 
 
 @router.post("/pomodoro/start", response_model=PomodoroSessionResponse)
-async def start_pomodoro_session(
+def start_pomodoro_session(
     request: StartPomodoroRequest,
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
@@ -221,7 +221,7 @@ async def start_pomodoro_session(
 
 
 @router.get("/pomodoro/current", response_model=Optional[PomodoroSessionResponse])
-async def get_current_pomodoro_session(
+def get_current_pomodoro_session(
     current_user: User = Depends(get_current_user), db: Session = Depends(get_db)
 ):
     """
@@ -236,7 +236,7 @@ async def get_current_pomodoro_session(
 
 
 @router.put("/pomodoro/{session_id}", response_model=PomodoroSessionResponse)
-async def update_pomodoro_session(
+def update_pomodoro_session(
     session_id: str,
     request: UpdatePomodoroRequest,
     current_user: User = Depends(get_current_user),
@@ -261,7 +261,7 @@ async def update_pomodoro_session(
 
 
 @router.get("/pomodoro/settings", response_model=PomodoroSettings)
-async def get_pomodoro_settings(
+def get_pomodoro_settings(
     current_user: User = Depends(get_current_user), db: Session = Depends(get_db)
 ):
     """
@@ -275,7 +275,7 @@ async def get_pomodoro_settings(
 
 
 @router.put("/pomodoro/settings", response_model=PomodoroSettings)
-async def update_pomodoro_settings(
+def update_pomodoro_settings(
     settings: PomodoroSettings,
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
@@ -298,7 +298,7 @@ async def update_pomodoro_settings(
 
 
 @router.get("/pomodoro/history")
-async def get_pomodoro_history(
+def get_pomodoro_history(
     limit: int = 20,
     offset: int = 0,
     current_user: User = Depends(get_current_user),
@@ -336,7 +336,7 @@ async def get_pomodoro_history(
 
 
 @router.get("/timer/visual/{session_id}")
-async def get_visual_timer_data(
+def get_visual_timer_data(
     session_id: str,
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
@@ -381,7 +381,7 @@ async def get_visual_timer_data(
 
 
 @router.post("/inactivity/detect")
-async def detect_inactivity(
+def detect_inactivity(
     inactive_duration_seconds: int,
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
@@ -433,7 +433,7 @@ async def detect_inactivity(
 
 
 @router.get("/inactivity/alerts")
-async def get_inactivity_alerts(
+def get_inactivity_alerts(
     limit: int = 10,
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
@@ -468,7 +468,7 @@ async def get_inactivity_alerts(
 
 
 @router.get("/focus-exercises", response_model=List[FocusExercise])
-async def get_focus_exercises(
+def get_focus_exercises(
     difficulty: Optional[str] = None,
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
@@ -593,7 +593,7 @@ async def get_focus_exercises(
 @router.post(
     "/focus-exercises/{exercise_id}/start", response_model=FocusExerciseProgress
 )
-async def start_focus_exercise(
+def start_focus_exercise(
     exercise_id: str,
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
@@ -620,7 +620,7 @@ async def start_focus_exercise(
 
 
 @router.put("/focus-exercises/progress/{exercise_id}/complete")
-async def complete_focus_exercise(
+def complete_focus_exercise(
     exercise_id: str,
     duration_seconds: int,
     success_rate: Optional[float] = None,
@@ -656,7 +656,7 @@ async def complete_focus_exercise(
 
 
 @router.get("/focus-exercises/progress")
-async def get_focus_exercise_progress(
+def get_focus_exercise_progress(
     limit: int = 20,
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
@@ -691,7 +691,7 @@ async def get_focus_exercise_progress(
 
 
 @router.get("/stats/daily")
-async def get_daily_adhd_stats(
+def get_daily_adhd_stats(
     current_user: User = Depends(get_current_user), db: Session = Depends(get_db)
 ):
     """
@@ -716,7 +716,7 @@ async def get_daily_adhd_stats(
 
 
 @router.get("/recommendations")
-async def get_adhd_recommendations(
+def get_adhd_recommendations(
     current_user: User = Depends(get_current_user), db: Session = Depends(get_db)
 ):
     """

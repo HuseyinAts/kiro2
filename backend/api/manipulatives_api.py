@@ -71,7 +71,7 @@ class TangramPuzzle(BaseModel):
 
 
 @router.post("/virtual-blocks/operation")
-async def record_virtual_block_operation(
+def record_virtual_block_operation(
     operation: VirtualBlockOperation,
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
@@ -99,7 +99,7 @@ async def record_virtual_block_operation(
 
 
 @router.get("/virtual-blocks/progress")
-async def get_virtual_block_progress(
+def get_virtual_block_progress(
     current_user: User = Depends(get_current_user), db: Session = Depends(get_db)
 ):
     """Kullanıcının sanal blok ilerlemesini getir"""
@@ -124,7 +124,7 @@ async def get_virtual_block_progress(
 
 
 @router.post("/geogebra/activity")
-async def record_geogebra_activity(
+def record_geogebra_activity(
     activity: GeoGebraActivity,
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
@@ -151,7 +151,7 @@ async def record_geogebra_activity(
 
 
 @router.get("/geogebra/applets")
-async def get_geogebra_applets(
+def get_geogebra_applets(
     activity_type: Optional[str] = None, current_user: User = Depends(get_current_user)
 ):
     """GeoGebra applet listesini getir"""
@@ -192,7 +192,7 @@ async def get_geogebra_applets(
 
 
 @router.post("/geometry/tool-usage")
-async def record_geometry_tool_usage(
+def record_geometry_tool_usage(
     usage: GeometryToolUsage,
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
@@ -219,7 +219,7 @@ async def record_geometry_tool_usage(
 
 
 @router.get("/geometry/tools")
-async def get_geometry_tools(current_user: User = Depends(get_current_user)):
+def get_geometry_tools(current_user: User = Depends(get_current_user)):
     """Mevcut geometri araçlarını listele"""
     try:
         tools = [
@@ -275,7 +275,7 @@ async def get_geometry_tools(current_user: User = Depends(get_current_user)):
 
 
 @router.post("/tangram/puzzle")
-async def record_tangram_puzzle(
+def record_tangram_puzzle(
     puzzle: TangramPuzzle,
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
@@ -303,7 +303,7 @@ async def record_tangram_puzzle(
 
 
 @router.get("/tangram/puzzles")
-async def get_tangram_puzzles(
+def get_tangram_puzzles(
     difficulty: Optional[str] = None, current_user: User = Depends(get_current_user)
 ):
     """Tangram puzzle listesini getir"""
@@ -362,7 +362,7 @@ async def get_tangram_puzzles(
 
 
 @router.get("/tangram/progress")
-async def get_tangram_progress(
+def get_tangram_progress(
     current_user: User = Depends(get_current_user), db: Session = Depends(get_db)
 ):
     """Kullanıcının tangram ilerlemesini getir"""

@@ -2,13 +2,20 @@
 API Performance Optimization
 Middleware and utilities for optimizing API response times
 """
+
+import asyncio
+import logging
+import re
+import time
+from collections.abc import Callable
+from functools import wraps
+
 from fastapi import Response
 from fastapi.responses import JSONResponse
-import time
-from typing import Callable, Dict, List
-import asyncio
-from functools import wraps
-import logging
+
+# SQL injection prevention: only allow safe identifiers
+_SAFE_IDENTIFIER = re.compile(r"^[a-zA-Z_][a-zA-Z0-9_]*$")
+_SAFE_FIELD = re.compile(r"^[a-zA-Z_][a-zA-Z0-9_\.]*$")
 
 logger = logging.getLogger(__name__)
 
@@ -18,8 +25,8 @@ class PerformanceMiddleware:
 
     def __init__(self, app):
         self.app = app
-        self.response_times: List[float] = []
-        self.slow_endpoints: Dict[str, List[float]] = {}
+        self.response_times: list[float] = []
+        self.slow_endpoints: dict[str, list[float]] = {}
 
     async def __call__(self, scope, receive, send):
         if scope["type"] != "http":
@@ -43,7 +50,7 @@ class PerformanceMiddleware:
                     if len(self.slow_endpoints[path]) >= 10:
                         avg_time = sum(self.slow_endpoints[path][-10:]) / 10
                         logger.warning(
-                            f"Slow endpoint detected: {path} (avg: {avg_time*1000:.2f}ms)"
+                            f"Slow endpoint detected: {path} (avg: {avg_time * 1000:.2f}ms)"
                         )
 
                 # Add performance header
@@ -55,7 +62,7 @@ class PerformanceMiddleware:
 
         await self.app(scope, receive, send_wrapper)
 
-    def get_stats(self) -> Dict:
+    def get_stats(self) -> dict:
         """Get performance statistics"""
         if not self.response_times:
             return {"message": "No requests yet"}
@@ -90,8 +97,8 @@ def async_lru_cache(maxsize=128, ttl=300):
         maxsize: Maximum cache size
         ttl: Time-to-live in seconds
     """
-    from functools import lru_cache
     import time
+    from functools import lru_cache
 
     def decorator(func):
         # Create cache with timestamp tracking
@@ -111,10 +118,9 @@ def async_lru_cache(maxsize=128, ttl=300):
                 if time.time() - cache_times[cache_key] < ttl:
                     # Cache hit
                     return await _cached_func(*args, **kwargs)
-                else:
-                    # Cache expired
-                    _cached_func.cache_clear()
-                    del cache_times[cache_key]
+                # Cache expired
+                _cached_func.cache_clear()
+                del cache_times[cache_key]
 
             # Cache miss or expired - execute function
             result = await func(*args, **kwargs)
@@ -130,7 +136,7 @@ def async_lru_cache(maxsize=128, ttl=300):
     return decorator
 
 
-async def batch_database_queries(queries: List[Callable], max_concurrent=10):
+async def batch_database_queries(queries: list[Callable], max_concurrent=10):
     """
     Execute multiple database queries concurrently
 
@@ -180,7 +186,7 @@ class ResponseCompression:
         return response
 
 
-def optimize_query_params(limit: int = 100, offset: int = 0) -> Dict:
+def optimize_query_params(limit: int = 100, offset: int = 0) -> dict:
     """
     Optimize and validate query parameters
 
@@ -202,38 +208,55 @@ class DatabaseQueryOptimizer:
     """Optimize database queries for performance"""
 
     @staticmethod
-    def add_select_fields(base_query: str, fields: List[str]) -> str:
-        """Add only requested fields to SELECT query"""
+    def add_select_fields(base_query: str, fields: list[str]) -> str:
+        """Add only requested fields to SELECT query.
+
+        Validates each field name against a safe identifier pattern to
+        prevent SQL injection via crafted field names.
+        """
         if not fields:
             return base_query  # Return all fields
 
-        # Replace SELECT * with specific fields
+        # Validate: only allow alphanumeric, underscore, dot (table.column)
+        for field in fields:
+            if not _SAFE_FIELD.match(field):
+                raise ValueError(f"Invalid field name (SQL injection guard): {field!r}")
+
         field_str = ", ".join(fields)
         optimized = base_query.replace("SELECT *", f"SELECT {field_str}")
-
         return optimized
 
     @staticmethod
-    def add_index_hints(query: str, index_name: str) -> str:
-        """Add index hints for PostgreSQL query planner"""
-        # PostgreSQL doesn't support index hints like MySQL
-        # Instead, we can use SET enable_seqscan=off for specific queries
+    def add_index_hints(query: str, _index_name: str) -> str:
+        """Add index hints for PostgreSQL query planner.
+
+        Note: PostgreSQL doesn't support named index hints.
+        Uses planner config instead; index_name param kept for API compatibility.
+        """
+        # index_name is not interpolated into the query — no injection risk
         return f"SET enable_seqscan = off; {query}; SET enable_seqscan = on;"
 
     @staticmethod
     def optimize_count_query(table: str, where_clause: str = "") -> str:
-        """Optimize COUNT queries using approximate counts for large tables"""
-        # For large tables, use pg_class statistics for approximate counts
+        """Optimize COUNT queries using approximate counts for large tables.
+
+        Validates table name against a safe identifier pattern to prevent
+        SQL injection.
+        """
+        # Validate table name — must be a plain identifier
+        if not _SAFE_IDENTIFIER.match(table):
+            raise ValueError(f"Invalid table name (SQL injection guard): {table!r}")
+
         if where_clause:
+            # where_clause must only be used with trusted internal callers
             return f"SELECT COUNT(*) FROM {table} WHERE {where_clause};"
-        else:
-            return f"""
+        return f"""
             SELECT CASE
                 WHEN c.reltuples < 10000 THEN (SELECT COUNT(*) FROM {table})
                 ELSE c.reltuples::bigint
             END as count
             FROM pg_class c
-            WHERE c.relname = '{table}';
+            WHERE c.relname = %(table_name)s;
             """
 
 
@@ -241,8 +264,8 @@ class APIPerformanceMonitor:
     """Monitor and report API performance metrics"""
 
     def __init__(self):
-        self.request_times: Dict[str, List[float]] = {}
-        self.error_counts: Dict[str, int] = {}
+        self.request_times: dict[str, list[float]] = {}
+        self.error_counts: dict[str, int] = {}
 
     def record_request(self, endpoint: str, duration_ms: float, success: bool = True):
         """Record request metrics"""
@@ -254,7 +277,7 @@ class APIPerformanceMonitor:
         if not success:
             self.error_counts[endpoint] = self.error_counts.get(endpoint, 0) + 1
 
-    def get_endpoint_stats(self, endpoint: str) -> Dict:
+    def get_endpoint_stats(self, endpoint: str) -> dict:
         """Get statistics for specific endpoint"""
         if endpoint not in self.request_times:
             return {"message": "No data for endpoint"}
@@ -277,7 +300,7 @@ class APIPerformanceMonitor:
             ),
         }
 
-    def get_slow_endpoints(self, threshold_ms: float = 200) -> List[Dict]:
+    def get_slow_endpoints(self, threshold_ms: float = 200) -> list[dict]:
         """Get endpoints slower than threshold"""
         slow_endpoints = []
 
@@ -295,7 +318,7 @@ class APIPerformanceMonitor:
 
         return sorted(slow_endpoints, key=lambda x: x["avg_time_ms"], reverse=True)
 
-    def get_overall_stats(self) -> Dict:
+    def get_overall_stats(self) -> dict:
         """Get overall performance statistics"""
         all_times = []
         for times in self.request_times.values():

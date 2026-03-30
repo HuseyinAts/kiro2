@@ -70,7 +70,7 @@ def require_admin(current_user: User = Depends(get_current_user)) -> User:
 
 
 @router.get("/", response_model=AuditLogListResponse)
-async def get_audit_logs(
+def get_audit_logs(
     page: int = Query(1, ge=1),
     per_page: int = Query(50, ge=1, le=500),
     event_type: Optional[str] = None,
@@ -135,7 +135,7 @@ async def get_audit_logs(
 
 
 @router.get("/stats", response_model=AuditStatsResponse)
-async def get_audit_stats(
+def get_audit_stats(
     days: int = Query(7, ge=1, le=90),
     db: Session = Depends(get_db),
     admin: User = Depends(require_admin),
@@ -223,7 +223,7 @@ async def get_audit_stats(
 
 
 @router.get("/export")
-async def export_audit_logs(
+def export_audit_logs(
     format: str = Query("csv", pattern="^(csv|json)$"),
     event_type: Optional[str] = None,
     start_date: Optional[datetime] = None,
@@ -344,7 +344,7 @@ async def export_audit_logs(
 
 
 @router.delete("/cleanup")
-async def cleanup_old_logs(
+def cleanup_old_logs(
     days: int = Query(90, ge=30, le=365),
     db: Session = Depends(get_db),
     admin: User = Depends(require_admin),

@@ -2,16 +2,16 @@
 Task 93: OSB Settings API
 OSB (Otizm Spektrum Bozukluğu) kullanıcı ayarları API endpoints
 """
-from typing import Dict
+
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, ConfigDict, Field
 from sqlalchemy.orm import Session
 
 from core.database import get_db
 from core.dependencies import get_current_user
+from core.structured_logger import get_logger
 from models.database import User
 from models.osb_settings import OSBSettings
-from core.structured_logger import get_logger
 
 logger = get_logger(__name__)
 router = APIRouter(prefix="/api/v1/osb/settings", tags=["OSB Support - Settings"])
@@ -93,7 +93,7 @@ class OSBSettingsResponse(BaseModel):
 
 
 @router.get("/", response_model=OSBSettingsResponse)
-async def get_osb_settings(
+def get_osb_settings(
     current_user: User = Depends(get_current_user), db: Session = Depends(get_db)
 ):
     """
@@ -161,7 +161,7 @@ async def get_osb_settings(
 
 
 @router.put("/", response_model=OSBSettingsResponse)
-async def update_osb_settings(
+def update_osb_settings(
     request: OSBSettingsRequest,
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
@@ -230,8 +230,8 @@ async def update_osb_settings(
         raise HTTPException(status_code=500, detail="OSB ayarları güncellenemedi")
 
 
-@router.post("/reset", response_model=Dict)
-async def reset_osb_settings(
+@router.post("/reset", response_model=dict)
+def reset_osb_settings(
     current_user: User = Depends(get_current_user), db: Session = Depends(get_db)
 ):
     """
@@ -275,8 +275,8 @@ async def reset_osb_settings(
         raise HTTPException(status_code=500, detail="OSB ayarları sıfırlanamadı")
 
 
-@router.get("/presets", response_model=Dict)
-async def get_osb_presets():
+@router.get("/presets", response_model=dict)
+def get_osb_presets():
     """
     Hazır OSB ayar profilleri getir
     """
@@ -356,7 +356,7 @@ async def get_osb_presets():
 
 
 @router.post("/apply-preset/{preset_id}", response_model=OSBSettingsResponse)
-async def apply_osb_preset(
+def apply_osb_preset(
     preset_id: str,
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
@@ -365,7 +365,7 @@ async def apply_osb_preset(
     Hazır OSB profilini uygula
     """
     # Get presets
-    presets_data = await get_osb_presets()
+    presets_data = get_osb_presets()
     presets = presets_data["presets"]
 
     # Find preset
@@ -375,4 +375,4 @@ async def apply_osb_preset(
 
     # Apply preset
     preset_settings = OSBSettingsRequest(**preset["settings"])
-    return await update_osb_settings(preset_settings, current_user, db)
+    return update_osb_settings(preset_settings, current_user, db)

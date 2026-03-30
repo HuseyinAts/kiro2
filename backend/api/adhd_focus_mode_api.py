@@ -165,7 +165,7 @@ def calculate_focus_stats(user_id: str, db: Session) -> FocusModeStats:
 
 
 @router.get("/task/{task_id}", response_model=FocusModeTask)
-async def get_focus_task(
+def get_focus_task(
     task_id: str,
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
@@ -193,7 +193,7 @@ async def get_focus_task(
 
 
 @router.post("/activate")
-async def activate_focus_mode(
+def activate_focus_mode(
     request: FocusModeActivateRequest,
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
@@ -249,7 +249,7 @@ async def activate_focus_mode(
 
 
 @router.post("/deactivate")
-async def deactivate_focus_mode(
+def deactivate_focus_mode(
     request: FocusModeDeactivateRequest,
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
@@ -293,7 +293,7 @@ async def deactivate_focus_mode(
 
 
 @router.get("/stats", response_model=FocusModeStats)
-async def get_focus_stats(
+def get_focus_stats(
     current_user: User = Depends(get_current_user), db: Session = Depends(get_db)
 ):
     """
@@ -320,7 +320,7 @@ async def get_focus_stats(
 
 
 @router.get("/sessions", response_model=List[FocusModeSession])
-async def get_focus_sessions(
+def get_focus_sessions(
     limit: int = 10,
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
@@ -371,7 +371,7 @@ async def get_focus_sessions(
 
 
 @router.get("/health")
-async def focus_mode_health_check():
+def focus_mode_health_check():
     """
     Health check endpoint for focus mode API
 

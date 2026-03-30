@@ -320,7 +320,7 @@ def count_subtasks(task_id: str) -> int:
 @router.post(
     "/create", response_model=TaskResponse, status_code=status.HTTP_201_CREATED
 )
-async def create_task(
+def create_task(
     request: CreateTaskRequest,
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
@@ -370,7 +370,7 @@ async def create_task(
 
 
 @router.get("/list", response_model=TaskListResponse)
-async def list_tasks(
+def list_tasks(
     status_filter: Optional[TaskStatus] = None,
     priority_filter: Optional[TaskPriority] = None,
     category_filter: Optional[TaskCategory] = None,
@@ -446,7 +446,7 @@ async def list_tasks(
 
 
 @router.get("/{task_id}", response_model=TaskResponse)
-async def get_task(
+def get_task(
     task_id: str,
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
@@ -475,7 +475,7 @@ async def get_task(
 
 
 @router.put("/{task_id}", response_model=TaskResponse)
-async def update_task(
+def update_task(
     task_id: str,
     request: UpdateTaskRequest,
     current_user: User = Depends(get_current_user),
@@ -529,7 +529,7 @@ async def update_task(
 
 
 @router.delete("/{task_id}", status_code=status.HTTP_204_NO_CONTENT)
-async def delete_task(
+def delete_task(
     task_id: str,
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
@@ -562,7 +562,7 @@ async def delete_task(
 
 
 @router.get("/{task_id}/subtasks", response_model=List[TaskResponse])
-async def get_subtasks(
+def get_subtasks(
     task_id: str,
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
@@ -615,7 +615,7 @@ async def get_subtasks(
 
 
 @router.post("/{task_id}/recommend-priority", response_model=PriorityRecommendation)
-async def recommend_priority(
+def recommend_priority(
     task_id: str,
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
@@ -690,7 +690,7 @@ async def recommend_priority(
 
 
 @router.get("/colors/scheme", response_model=ColorSchemeResponse)
-async def get_color_scheme():
+def get_color_scheme():
     """
     Renk şemasını getir
 
@@ -708,7 +708,7 @@ async def get_color_scheme():
 
 
 @router.get("/stats/summary")
-async def get_task_stats(
+def get_task_stats(
     current_user: User = Depends(get_current_user), db: Session = Depends(get_db)
 ):
     """
@@ -759,7 +759,7 @@ async def get_task_stats(
 
 
 @router.get("/health")
-async def health_check():
+def health_check():
     """
     Sağlık kontrolü
 

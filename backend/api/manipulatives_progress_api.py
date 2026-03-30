@@ -36,7 +36,7 @@ class Badge(BaseModel):
 
 
 @router.get("/progress/dashboard")
-async def get_progress_dashboard(
+def get_progress_dashboard(
     current_user: User = Depends(get_current_user), db: Session = Depends(get_db)
 ):
     """
@@ -174,7 +174,7 @@ async def get_progress_dashboard(
 
 
 @router.get("/badges")
-async def get_user_badges(
+def get_user_badges(
     current_user: User = Depends(get_current_user), db: Session = Depends(get_db)
 ):
     """
@@ -395,7 +395,7 @@ async def get_user_badges(
 
 
 @router.get("/progress/summary")
-async def get_progress_summary(
+def get_progress_summary(
     current_user: User = Depends(get_current_user), db: Session = Depends(get_db)
 ):
     """
@@ -554,7 +554,7 @@ async def get_progress_summary(
 
 
 @router.post("/badges/{badge_id}/claim")
-async def claim_badge(
+def claim_badge(
     badge_id: str,
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
@@ -715,7 +715,7 @@ async def claim_badge(
 
 
 @router.get("/progress/weekly")
-async def get_weekly_progress(
+def get_weekly_progress(
     current_user: User = Depends(get_current_user), db: Session = Depends(get_db)
 ):
     """

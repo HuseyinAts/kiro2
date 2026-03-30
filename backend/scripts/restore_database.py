@@ -26,13 +26,12 @@ Usage:
 WARNING: This will DROP and recreate the target database!
 """
 
-import os
-import sys
 import argparse
+import os
 import subprocess
-from pathlib import Path
+import sys
 from datetime import datetime
-from typing import Optional
+from pathlib import Path
 
 # Add backend to path
 backend_path = Path(__file__).parent.parent
@@ -51,10 +50,10 @@ class DatabaseRestore:
 
     def __init__(
         self,
-        backup_file: Optional[Path] = None,
-        s3_key: Optional[str] = None,
-        s3_bucket: Optional[str] = None,
-        target_db: Optional[str] = None,
+        backup_file: Path | None = None,
+        s3_key: str | None = None,
+        s3_bucket: str | None = None,
+        target_db: str | None = None,
         create_backup: bool = True,
     ):
         self.backup_file = backup_file
@@ -65,11 +64,19 @@ class DatabaseRestore:
         # Database connection info
         self.db_host = os.getenv("POSTGRES_HOST", "localhost")
         self.db_port = os.getenv("POSTGRES_PORT", "5434")
-        self.db_name = target_db or os.getenv("POSTGRES_DB", "kiro2_db")
+        raw_db_name = target_db or os.getenv("POSTGRES_DB", "kiro2_db")
+        # Validate db_name to prevent SQL injection via f-string interpolation
+        import re
+
+        if not re.match(r"^[a-zA-Z_][a-zA-Z0-9_]*$", raw_db_name):
+            raise ValueError(
+                f"Invalid database name (unsafe characters): {raw_db_name!r}"
+            )
+        self.db_name = raw_db_name
         self.db_user = os.getenv("POSTGRES_USER", "postgres")
         self.db_password = os.getenv("POSTGRES_PASSWORD", "postgres")
 
-    def find_latest_backup(self, backup_dir: Path = Path("backups")) -> Optional[Path]:
+    def find_latest_backup(self, backup_dir: Path = Path("backups")) -> Path | None:
         """Find latest backup file"""
         backup_files = sorted(
             backup_dir.glob("backup_*.sql.gz"),
@@ -85,7 +92,7 @@ class DatabaseRestore:
         print(f"{GREEN}[OK]{RESET} Found latest backup: {latest.name}")
         return latest
 
-    def download_from_s3(self) -> Optional[Path]:
+    def download_from_s3(self) -> Path | None:
         """Download backup from S3"""
         if not self.s3_key or not self.s3_bucket:
             return None
@@ -415,11 +422,11 @@ class DatabaseRestore:
 
     def run(self) -> bool:
         """Run restore process"""
-        print(f"{BLUE}{'='*60}{RESET}")
+        print(f"{BLUE}{'=' * 60}{RESET}")
         print(
             f"{BLUE}Database Restore - {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}{RESET}"
         )
-        print(f"{BLUE}{'='*60}{RESET}\n")
+        print(f"{BLUE}{'=' * 60}{RESET}\n")
 
         # Get backup file
         if self.s3_key:
@@ -465,9 +472,9 @@ class DatabaseRestore:
         # Verify restoration
         self.verify_restoration()
 
-        print(f"\n{BLUE}{'='*60}{RESET}")
+        print(f"\n{BLUE}{'=' * 60}{RESET}")
         print(f"{GREEN}[SUCCESS]{RESET} Restore completed successfully!")
-        print(f"{BLUE}{'='*60}{RESET}\n")
+        print(f"{BLUE}{'=' * 60}{RESET}\n")
 
         return True
 

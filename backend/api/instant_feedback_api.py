@@ -54,7 +54,7 @@ class PerformanceRecordRequest(BaseModel):
 
 # Endpoints
 @router.post("/answer", response_model=Dict)
-async def submit_answer_feedback(
+def submit_answer_feedback(
     request: AnswerFeedbackRequest,
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
@@ -126,7 +126,7 @@ async def submit_answer_feedback(
 
 
 @router.get("/streak", response_model=StreakResponse)
-async def get_streak(
+def get_streak(
     current_user: User = Depends(get_current_user), db: Session = Depends(get_db)
 ):
     """Mevcut seri bilgisini getir"""
@@ -159,7 +159,7 @@ async def get_streak(
 
 
 @router.post("/performance", response_model=Dict)
-async def record_performance(
+def record_performance(
     request: PerformanceRecordRequest,
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
@@ -193,7 +193,7 @@ async def record_performance(
 
 
 @router.get("/performance/history", response_model=List[PerformanceDataPoint])
-async def get_performance_history(
+def get_performance_history(
     days: int = 7,
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
