@@ -375,7 +375,9 @@ class TestFSRSService:
             patch.object(self.fsrs_service, "_update_student_stats"),
         ):
             # Mock DBFSRSCard constructor
-            with patch("services.fsrs_service.DBFSRSCard", return_value=mock_card):
+            with patch(
+                "services._deprecated.fsrs_service.DBFSRSCard", return_value=mock_card
+            ):
                 result = await self.fsrs_service.create_flashcard(
                     student_id="test_student",
                     subject="Matematik",
