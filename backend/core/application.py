@@ -124,6 +124,21 @@ async def app_lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     except Exception as e:
         logger.warning(f"⚠️ Blackboard subscriber init failed (non-fatal): {e}")
 
+    # Run ANALYZE on high-traffic tables so query planner has up-to-date stats.
+    # Without this, a freshly populated question_bank (77K rows) shows n_live_tup=0
+    # and last_analyze=NULL → planner ignores indexes → sequential scans everywhere.
+    try:
+        from sqlalchemy import text
+
+        from core.database import get_db_session_context
+
+        async with get_db_session_context() as db:
+            await db.execute(text("ANALYZE question_bank, users, topic_prerequisites"))
+            await db.commit()
+        logger.info("✅ ANALYZE completed on question_bank, users, topic_prerequisites")
+    except Exception as e:
+        logger.warning(f"⚠️ ANALYZE failed (non-fatal, planner may be suboptimal): {e}")
+
     logger.info("✅ KIRO2 Backend Started Successfully!")
     logger.info("=" * 60)
 

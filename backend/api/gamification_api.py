@@ -123,7 +123,7 @@ async def get_points_summary(
         return result
 
     except Exception as e:
-        logger.error(f"Puan ozeti hatasi: {e!s}")
+        logger.error(f"Puan ozeti hatasi: {e!s}", exc_info=True)
         raise HTTPException(
             status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
@@ -155,7 +155,7 @@ async def get_point_history(
         }
 
     except Exception as e:
-        logger.error(f"Puan gecmisi hatasi: {e!s}")
+        logger.error(f"Puan gecmisi hatasi: {e!s}", exc_info=True)
         raise HTTPException(
             status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
@@ -201,7 +201,7 @@ async def award_points(
         }
 
     except Exception as e:
-        logger.error(f"Puan verme hatasi: {e!s}")
+        logger.error(f"Puan verme hatasi: {e!s}", exc_info=True)
         raise HTTPException(
             status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
@@ -244,7 +244,7 @@ async def get_level_info(
         }
 
     except Exception as e:
-        logger.error(f"Seviye bilgisi hatasi: {e!s}")
+        logger.error(f"Seviye bilgisi hatasi: {e!s}", exc_info=True)
         raise HTTPException(
             status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
@@ -284,7 +284,7 @@ async def get_level_progress(
         }
 
     except Exception as e:
-        logger.error(f"Seviye ilerlemesi hatasi: {e!s}")
+        logger.error(f"Seviye ilerlemesi hatasi: {e!s}", exc_info=True)
         raise HTTPException(
             status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
@@ -344,7 +344,7 @@ async def get_all_badges(
         }
 
     except Exception as e:
-        logger.error(f"Rozetler getirme hatasi: {e!s}")
+        logger.error(f"Rozetler getirme hatasi: {e!s}", exc_info=True)
         raise HTTPException(
             status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
@@ -395,7 +395,7 @@ async def get_earned_badges(
         }
 
     except Exception as e:
-        logger.error(f"Kazanilan rozetler hatasi: {e!s}")
+        logger.error(f"Kazanilan rozetler hatasi: {e!s}", exc_info=True)
         raise HTTPException(
             status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
@@ -444,7 +444,7 @@ async def get_badge_categories(
         }
 
     except Exception as e:
-        logger.error(f"Kategori istatistikleri hatasi: {e!s}")
+        logger.error(f"Kategori istatistikleri hatasi: {e!s}", exc_info=True)
         raise HTTPException(
             status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
@@ -524,7 +524,7 @@ async def get_leaderboard(
         return result_dict
 
     except Exception as e:
-        logger.error(f"Liderlik tablosu hatasi: {e!s}")
+        logger.error(f"Liderlik tablosu hatasi: {e!s}", exc_info=True)
         raise HTTPException(
             status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
@@ -609,7 +609,7 @@ async def get_gamification_profile(
         }
 
     except Exception as e:
-        logger.error(f"Gamification profil hatasi: {e!s}")
+        logger.error(f"Gamification profil hatasi: {e!s}", exc_info=True)
         raise HTTPException(
             status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
@@ -763,7 +763,7 @@ async def get_user_achievements(
             "message": "Basarilar basariyla getirildi",
         }
     except Exception as e:
-        logger.error(f"Basarilar getirme hatasi: {e!s}")
+        logger.error(f"Basarilar getirme hatasi: {e!s}", exc_info=True)
         raise HTTPException(
             status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
@@ -798,7 +798,7 @@ async def get_completed_achievements(
             "message": "Tamamlanmis basarilar basariyla getirildi",
         }
     except Exception as e:
-        logger.error(f"Tamamlanmis basarilar hatasi: {e!s}")
+        logger.error(f"Tamamlanmis basarilar hatasi: {e!s}", exc_info=True)
         raise HTTPException(
             status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
@@ -832,7 +832,7 @@ def get_nearby_users_in_leaderboard(
             "message": "Yakindaki kullanicilar basariyla getirildi",
         }
     except Exception as e:
-        logger.error(f"Yakindaki kullanicilar hatasi: {e!s}")
+        logger.error(f"Yakindaki kullanicilar hatasi: {e!s}", exc_info=True)
         raise HTTPException(
             status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
@@ -866,7 +866,7 @@ def get_user_leaderboard_rank(
             "message": "Kullanici siralamasi basariyla getirildi",
         }
     except Exception as e:
-        logger.error(f"Kullanici siralamasi hatasi: {e!s}")
+        logger.error(f"Kullanici siralamasi hatasi: {e!s}", exc_info=True)
         raise HTTPException(
             status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
@@ -891,7 +891,7 @@ def get_leaderboard_statistics(
             "message": "Liderlik tablosu istatistikleri basariyla getirildi",
         }
     except Exception as e:
-        logger.error(f"Liderlik tablosu istatistikleri hatasi: {e!s}")
+        logger.error(f"Liderlik tablosu istatistikleri hatasi: {e!s}", exc_info=True)
         raise HTTPException(
             status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
@@ -956,7 +956,7 @@ async def get_peer_group_leaderboard(
             },
         }
     except Exception as e:
-        logger.error(f"Peer group leaderboard hatasi: {e!s}")
+        logger.error(f"Peer group leaderboard hatasi: {e!s}", exc_info=True)
         raise HTTPException(
             status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
@@ -1000,7 +1000,7 @@ async def get_improvement_leaderboard(
             "data": {"entries": entries, "period": "weekly"},
         }
     except Exception as e:
-        logger.error(f"Improvement leaderboard hatasi: {e!s}")
+        logger.error(f"Improvement leaderboard hatasi: {e!s}", exc_info=True)
         raise HTTPException(
             status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
