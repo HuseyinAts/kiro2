@@ -11,9 +11,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
 from models.database import ExamSession, User
+from models.gamification import ParentChild as ParentChildRelation
 from models.parent import (
     ChildPerformanceData,
-    ParentChildRelation,
     ParentChildRelationCreate,
     ParentChildRelationResponse,
     ParentDashboardData,
@@ -129,41 +129,31 @@ class ParentService:
     async def get_parent_children(
         self, parent_id: str
     ) -> list[ParentChildRelationResponse]:
-        """
-        Velinin çocuklarını getir
-        PERFORMANCE FIX: Eager loading ile N+1 query önlendi
-        """
+        """Velinin çocuklarını getir - Raw SQL ile ORM mapper bypass"""
+        from sqlalchemy import text
 
         result = await self.db.execute(
-            select(ParentChildRelation)
-            .options(selectinload(ParentChildRelation.child))
-            .where(
-                and_(
-                    ParentChildRelation.parent_id == parent_id,
-                    ParentChildRelation.approved == True,  # noqa: E712
+            text("""
+                SELECT pc.id, pc.parent_id, pc.child_id, pc.approved,
+                       u.email as child_email, u.id as child_user_id
+                FROM parent_child pc
+                LEFT JOIN users u ON u.id = pc.child_id
+                WHERE pc.parent_id = :parent_id AND pc.approved = TRUE
+            """),
+            {"parent_id": parent_id},
+        )
+        rows = result.fetchall()
+        output = []
+        for row in rows:
+            output.append(
+                ParentChildRelationResponse(
+                    id=row.id,
+                    parent_id=row.parent_id,
+                    child_id=row.child_id,
+                    approved=row.approved,
+                    child_email=row.child_email or "",
                 )
             )
-        )
-        relations = result.scalars().all()
-
-        output = []
-        for relation in relations:
-            child = relation.child
-            if child:
-                output.append(
-                    ParentChildRelationResponse(
-                        id=relation.id,
-                        parent_id=relation.parent_id,
-                        child_id=relation.child_id,
-                        child_name=child.full_name,
-                        child_email=child.email,
-                        relation_type=relation.relation_type,
-                        approved=relation.approved,
-                        created_at=relation.created_at,
-                        approved_at=relation.approved_at,
-                    )
-                )
-
         return output
 
     async def get_child_performance(
@@ -172,16 +162,15 @@ class ParentService:
         """Çocuğun performans verilerini getir"""
 
         # İlişki kontrolü
+        from sqlalchemy import text as _text
+
         rel_result = await self.db.execute(
-            select(ParentChildRelation).where(
-                and_(
-                    ParentChildRelation.parent_id == parent_id,
-                    ParentChildRelation.child_id == child_id,
-                    ParentChildRelation.approved == True,  # noqa: E712
-                )
-            )
+            _text(
+                "SELECT id FROM parent_child WHERE parent_id=:pid AND child_id=:cid AND approved=TRUE"
+            ),
+            {"pid": parent_id, "cid": child_id},
         )
-        if not rel_result.scalar_one_or_none():
+        if not rel_result.fetchone():
             raise ValueError("Bu çocuğun verilerine erişim yetkiniz bulunmamaktadır")
 
         child_result = await self.db.execute(select(User).where(User.id == child_id))
@@ -466,9 +455,7 @@ class ParentService:
 
         # Bekleyen onaylar
         pending_result = await self.db.execute(
-            select(ParentChildRelation)
-            .options(selectinload(ParentChildRelation.child))
-            .where(
+            select(ParentChildRelation).where(
                 and_(
                     ParentChildRelation.parent_id == parent_id,
                     ParentChildRelation.approved == False,  # noqa: E712
@@ -479,15 +466,20 @@ class ParentService:
 
         pending_list = []
         for relation in pending_approvals:
-            child = relation.child
-            if child:
+            if relation.child_id:
+                child_result = await self.db.execute(
+                    select(User).where(User.id == relation.child_id)
+                )
+                pending_child = child_result.scalar_one_or_none()
                 pending_list.append(
                     ParentChildRelationResponse(
                         id=relation.id,
                         parent_id=relation.parent_id,
                         child_id=relation.child_id,
-                        child_name=child.full_name,
-                        child_email=child.email,
+                        child_name=pending_child.full_name
+                        if pending_child
+                        else "Bilinmeyen",
+                        child_email=pending_child.email if pending_child else "",
                         relation_type=relation.relation_type,
                         approved=relation.approved,
                         created_at=relation.created_at,

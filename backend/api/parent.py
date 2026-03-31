@@ -314,3 +314,5 @@ async def approve_parent_relation(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
+
+

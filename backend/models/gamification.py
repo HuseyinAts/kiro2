@@ -259,6 +259,9 @@ class ParentChild(Base):
     id = Column(Integer, primary_key=True)
     parent_id = Column(String, ForeignKey("users.id"), nullable=False)
     child_id = Column(String, ForeignKey("users.id"), nullable=False)
+    approved = Column(Boolean, nullable=False, default=False)
+    relation_type = Column(String(50), default="parent")
+    approved_at = Column(DateTime, nullable=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
     __table_args__ = (UniqueConstraint("parent_id", "child_id"),)
@@ -324,3 +327,4 @@ class ZPDHistory(Base):
         DateTime(timezone=True),
         server_default=func.now(),
     )
+

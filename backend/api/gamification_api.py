@@ -17,6 +17,7 @@ from typing import Any
 from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel, Field
 from redis import Redis
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import Session
 
@@ -309,7 +310,6 @@ async def get_all_badges(
             all_badges = [b for b in all_badges if b["category"] == category]
 
         # Check earned badges from DB — join to get slug for string comparison
-        from sqlalchemy import select
 
         from models.gamification import Badge
         from models.gamification import UserBadge as GamUserBadge
@@ -360,8 +360,6 @@ async def get_earned_badges(
     """Sadece kazanilan rozetleri getir."""
     try:
         user_id = str(current_user.id)
-
-        from sqlalchemy import select
 
         from models.gamification import Badge
         from models.gamification import UserBadge as GamUserBadge
@@ -416,8 +414,6 @@ async def get_badge_categories(
         user_id = str(current_user.id)
 
         all_badges = get_badge_definitions()
-
-        from sqlalchemy import select
 
         from models.gamification import Badge
         from models.gamification import UserBadge as GamUserBadge
@@ -483,7 +479,6 @@ async def get_leaderboard(
             return cached_result
 
         # Query top users by total_xp
-        from sqlalchemy import select
 
         from models.database import User
 
@@ -744,11 +739,9 @@ async def get_user_achievements(
 ):
     """Kullanicinin tum basarilarini getir (P2.2)."""
     try:
-        from sqlalchemy import select as sa_select
-
         user_id = str(current_user.id)
         result = await db.execute(
-            sa_select(UserAchievement)
+            select(UserAchievement)
             .where(UserAchievement.user_id == user_id)
             .order_by(
                 UserAchievement.is_completed.desc(),
@@ -784,11 +777,9 @@ async def get_completed_achievements(
 ):
     """Sadece tamamlanmis basarilari getir (P2.2)."""
     try:
-        from sqlalchemy import select as sa_select
-
         user_id = str(current_user.id)
         result = await db.execute(
-            sa_select(UserAchievement)
+            select(UserAchievement)
             .where(
                 UserAchievement.user_id == user_id,
                 UserAchievement.is_completed == True,  # noqa: E712
@@ -919,7 +910,6 @@ async def get_peer_group_leaderboard(
     """Benzer seviye ogrenciler arasinda siralama (DB-backed)."""
     try:
         user_id = str(current_user.id)
-        from sqlalchemy import select
 
         from models.database import User
 
@@ -977,8 +967,6 @@ async def get_improvement_leaderboard(
 ):
     """Bu haftanin en cok gelisen ogrencileri (DB-backed)."""
     try:
-        from sqlalchemy import select
-
         from models.database import User
 
         stmt = (

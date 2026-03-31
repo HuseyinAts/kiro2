@@ -22,32 +22,6 @@ from sqlalchemy import (
 from sqlalchemy.orm import relationship
 
 
-class ParentChildRelation(Base):
-    """Veli-çocuk ilişki tablosu"""
-
-    __tablename__ = "parent_child_relations"
-
-    id = Column(Integer, primary_key=True, index=True)
-    parent_id = Column(
-        Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False
-    )
-    child_id = Column(
-        Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False
-    )
-    relation_type = Column(String(50), default="parent")  # parent, guardian, etc.
-    approved = Column(Boolean, default=False)
-    created_at = Column(DateTime, default=datetime.utcnow)
-    approved_at = Column(DateTime, nullable=True)
-
-    # İlişkiler
-    # NOTE: back_populates commented out due to User model not having these relationships (import ordering issue)
-    parent = relationship(
-        "User", foreign_keys=[parent_id]  # back_populates="children_relations"
-    )
-    child = relationship(
-        "User", foreign_keys=[child_id]  # back_populates="parent_relations"
-    )
-
 
 class ParentNotification(Base):
     """Veli bildirimleri tablosu"""
@@ -55,11 +29,9 @@ class ParentNotification(Base):
     __tablename__ = "parent_notifications"
 
     id = Column(Integer, primary_key=True, index=True)
-    parent_id = Column(
-        Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False
+    parent_id = Column(String, ForeignKey("users.id", ondelete="CASCADE"), nullable=False
     )
-    child_id = Column(
-        Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False
+    child_id = Column(String, ForeignKey("users.id", ondelete="CASCADE"), nullable=False
     )
     title = Column(String(200), nullable=False)
     message = Column(Text, nullable=False)
@@ -81,8 +53,7 @@ class WeeklyReport(Base):
     __tablename__ = "weekly_reports"
 
     id = Column(Integer, primary_key=True, index=True)
-    child_id = Column(
-        Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False
+    child_id = Column(String, ForeignKey("users.id", ondelete="CASCADE"), nullable=False
     )
     week_start = Column(DateTime, nullable=False)
     week_end = Column(DateTime, nullable=False)
@@ -193,3 +164,5 @@ class ParentDashboardData(BaseModel):
     recent_notifications: List[ParentNotificationResponse]
     weekly_summary: dict
     pending_approvals: List[ParentChildRelationResponse]
+
+
