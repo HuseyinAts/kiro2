@@ -4,19 +4,20 @@ EBA TV video kataloğunu otomatik olarak çeker ve veritabanına kaydeder
 """
 
 import logging
-from typing import List, Optional, Dict, Any
 from datetime import datetime, timedelta
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
+from typing import Any
 
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from models.database import EBAVideo
 from services.eba_tv_client import (
-    get_eba_client,
-    EBAVideoMetadata,
+    EBACatalogFilter,
     EBAGradeLevel,
     EBASubject,
-    EBACatalogFilter,
+    EBAVideoMetadata,
+    get_eba_client,
 )
-from models.database import EBAVideo
 
 logger = logging.getLogger(__name__)
 
@@ -38,9 +39,9 @@ class EBACatalogSyncService:
 
     async def sync_full_catalog(
         self,
-        subjects: Optional[List[EBASubject]] = None,
-        grade_levels: Optional[List[EBAGradeLevel]] = None,
-    ) -> Dict[str, int]:
+        subjects: list[EBASubject] | None = None,
+        grade_levels: list[EBAGradeLevel] | None = None,
+    ) -> dict[str, int]:
         """
         Full catalog sync
 
@@ -80,7 +81,7 @@ class EBACatalogSyncService:
 
     async def _sync_category(
         self, subject: EBASubject, grade_level: EBAGradeLevel
-    ) -> Dict[str, int]:
+    ) -> dict[str, int]:
         """Sync a specific subject + grade level combination"""
 
         stats = {"fetched": 0, "new": 0, "updated": 0}
@@ -116,6 +117,7 @@ class EBACatalogSyncService:
                         logger.warning(
                             f"Failed to save video {video_meta.video_id}: {e}"
                         )
+                        await self.db.rollback()
                         continue
 
                 # FIX N+1: Commit after each page instead of after each video
@@ -129,12 +131,15 @@ class EBACatalogSyncService:
 
             except Exception as e:
                 logger.error(f"Failed to fetch page {page}: {e}")
+                await self.db.rollback()
                 has_more = False
 
         logger.info(f"[EBA SYNC] {subject.value} - {grade_level.value}: {stats}")
         return stats
 
-    async def _save_video(self, video_meta: EBAVideoMetadata, commit: bool = True) -> bool:
+    async def _save_video(
+        self, video_meta: EBAVideoMetadata, commit: bool = True
+    ) -> bool:
         """
         Save video to database
 
@@ -170,36 +175,35 @@ class EBACatalogSyncService:
                 await self.db.commit()
             return False
 
-        else:
-            # Create new video
-            new_video = EBAVideo(
-                eba_video_id=video_meta.video_id,
-                title=video_meta.title,
-                description=video_meta.description,
-                duration_seconds=video_meta.duration_seconds,
-                thumbnail_url=video_meta.thumbnail_url,
-                video_url=video_meta.video_url,
-                subject=video_meta.subject.value,
-                grade_level=video_meta.grade_level.value,
-                topic=video_meta.topic,
-                subtopics=video_meta.subtopics,
-                keywords=video_meta.keywords,
-                publish_date=video_meta.publish_date,
-                view_count=video_meta.view_count,
-                quality=video_meta.quality,
-                has_turkish_subtitle=video_meta.has_turkish_subtitle,
-                curriculum_aligned=video_meta.curriculum_aligned,
-                meb_content_id=video_meta.meb_content_id,
-                kazanim_codes=video_meta.kazanim_codes,
-                last_synced_at=datetime.now(),
-            )
+        # Create new video
+        new_video = EBAVideo(
+            eba_video_id=video_meta.video_id,
+            title=video_meta.title,
+            description=video_meta.description,
+            duration_seconds=video_meta.duration_seconds,
+            thumbnail_url=video_meta.thumbnail_url,
+            video_url=video_meta.video_url,
+            subject=video_meta.subject.value,
+            grade_level=video_meta.grade_level.value,
+            topic=video_meta.topic,
+            subtopics=video_meta.subtopics,
+            keywords=video_meta.keywords,
+            publish_date=video_meta.publish_date,
+            view_count=video_meta.view_count,
+            quality=video_meta.quality,
+            has_turkish_subtitle=video_meta.has_turkish_subtitle,
+            curriculum_aligned=video_meta.curriculum_aligned,
+            meb_content_id=video_meta.meb_content_id,
+            kazanim_codes=video_meta.kazanim_codes,
+            last_synced_at=datetime.now(),
+        )
 
-            self.db.add(new_video)
-            if commit:
-                await self.db.commit()
-            return True
+        self.db.add(new_video)
+        if commit:
+            await self.db.commit()
+        return True
 
-    async def sync_incremental(self, since_hours: int = 24) -> Dict[str, int]:
+    async def sync_incremental(self, since_hours: int = 24) -> dict[str, int]:
         """
         Incremental sync
 
@@ -236,6 +240,7 @@ class EBACatalogSyncService:
 
                 except Exception as e:
                     logger.warning(f"Failed to save video {video_meta.video_id}: {e}")
+                    await self.db.rollback()
                     stats["errors"] += 1
                     continue
 
@@ -248,7 +253,7 @@ class EBACatalogSyncService:
 
     async def sync_by_curriculum_code(
         self, kazanim_code: str
-    ) -> List[EBAVideoMetadata]:
+    ) -> list[EBAVideoMetadata]:
         """
         Belirli bir müfredat kazanımına ait videoları çeker
 
@@ -300,7 +305,7 @@ class EBACatalogSyncService:
             logger.error(f"Failed to fetch videos for kazanım {kazanim_code}: {e}")
             return []
 
-    async def get_sync_status(self) -> Dict[str, Any]:
+    async def get_sync_status(self) -> dict[str, Any]:
         """
         Get sync status and statistics
         """

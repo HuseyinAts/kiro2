@@ -3,17 +3,18 @@ Task 98.2 & 98.3: Khan Academy Content & Progress Synchronization
 """
 
 import logging
-from typing import List, Optional, Dict, Any
 from datetime import datetime
+from typing import Any
+
+from sqlalchemy import and_, select
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, and_
 
 from services.khan_academy_client import (
-    get_khan_client,
     KhanContentMetadata,
-    KhanUserProgress,
-    KhanSubject,
     KhanContentType,
+    KhanSubject,
+    KhanUserProgress,
+    get_khan_client,
 )
 
 logger = logging.getLogger(__name__)
@@ -34,8 +35,8 @@ class KhanContentSyncService:
         self.khan_client = get_khan_client(use_mock=use_mock)
 
     async def sync_turkish_content(
-        self, subjects: Optional[List[KhanSubject]] = None
-    ) -> Dict[str, int]:
+        self, subjects: list[KhanSubject] | None = None
+    ) -> dict[str, int]:
         """
         Task 98.2: Sync Turkish content from Khan Academy
 
@@ -79,6 +80,7 @@ class KhanContentSyncService:
                         logger.warning(
                             f"Failed to save content {video.content_id}: {e}"
                         )
+                        await self.db.rollback()
                         stats["errors"] += 1
                         continue
 
@@ -102,6 +104,7 @@ class KhanContentSyncService:
                         logger.warning(
                             f"Failed to save content {exercise.content_id}: {e}"
                         )
+                        await self.db.rollback()
                         stats["errors"] += 1
                         continue
 
@@ -122,7 +125,9 @@ class KhanContentSyncService:
         logger.info(f"[KHAN SYNC] Completed. Stats: {stats}")
         return stats
 
-    async def _save_content(self, content: KhanContentMetadata, commit: bool = True) -> bool:
+    async def _save_content(
+        self, content: KhanContentMetadata, commit: bool = True
+    ) -> bool:
         """
         Save content to database
 
@@ -158,31 +163,30 @@ class KhanContentSyncService:
                 await self.db.commit()
             return False
 
-        else:
-            # Create new
-            new_content = KhanContent(
-                khan_content_id=content.content_id,
-                title=content.title,
-                description=content.description,
-                content_type=content.content_type.value,
-                subject=content.subject.value,
-                topic=content.topic,
-                video_url=content.video_url,
-                duration_seconds=content.duration_seconds,
-                thumbnail_url=content.thumbnail_url,
-                exercise_url=content.exercise_url,
-                problem_count=content.problem_count,
-                language="tr",
-                difficulty_level=content.difficulty_level,
-                last_synced_at=datetime.now(),
-            )
+        # Create new
+        new_content = KhanContent(
+            khan_content_id=content.content_id,
+            title=content.title,
+            description=content.description,
+            content_type=content.content_type.value,
+            subject=content.subject.value,
+            topic=content.topic,
+            video_url=content.video_url,
+            duration_seconds=content.duration_seconds,
+            thumbnail_url=content.thumbnail_url,
+            exercise_url=content.exercise_url,
+            problem_count=content.problem_count,
+            language="tr",
+            difficulty_level=content.difficulty_level,
+            last_synced_at=datetime.now(),
+        )
 
-            self.db.add(new_content)
-            if commit:
-                await self.db.commit()
-            return True
+        self.db.add(new_content)
+        if commit:
+            await self.db.commit()
+        return True
 
-    async def sync_incremental(self, since_days: int = 7) -> Dict[str, int]:
+    async def sync_incremental(self, since_days: int = 7) -> dict[str, int]:
         """
         Incremental sync: Only recently updated content
 
@@ -215,7 +219,7 @@ class KhanProgressSyncService:
 
     async def pull_user_progress(
         self, user_id: str, khan_user_id: str
-    ) -> Dict[str, int]:
+    ) -> dict[str, int]:
         """
         Task 98.3: Pull progress from Khan Academy to Kiro
 
@@ -241,9 +245,7 @@ class KhanProgressSyncService:
                 KhanUserProgressModel.user_id == user_id
             )
             result = await self.db.execute(stmt)
-            local_progress_dict = {
-                p.khan_content_id: p for p in result.scalars().all()
-            }
+            local_progress_dict = {p.khan_content_id: p for p in result.scalars().all()}
 
             for progress in progress_list:
                 try:
@@ -290,6 +292,7 @@ class KhanProgressSyncService:
                     logger.warning(
                         f"Failed to sync progress for {progress.content_id}: {e}"
                     )
+                    await self.db.rollback()
                     continue
 
             await self.db.commit()
@@ -299,6 +302,7 @@ class KhanProgressSyncService:
 
         except Exception as e:
             logger.error(f"[KHAN PROGRESS] Pull sync failed: {e}")
+            await self.db.rollback()
             raise
 
     async def _merge_progress(
@@ -394,11 +398,12 @@ class KhanProgressSyncService:
 
         except Exception as e:
             logger.error(f"[KHAN PROGRESS] Push failed for {content_id}: {e}")
+            await self.db.rollback()
             return False
 
     async def sync_bidirectional(
         self, user_id: str, khan_user_id: str
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Task 98.3: Bidirectional progress sync
 
