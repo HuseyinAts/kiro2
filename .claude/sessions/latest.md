@@ -1,34 +1,41 @@
-# Session State — 2026-03-30 Session 122
+# Session State — 2026-03-31 Session 125
 
 ## Quick Resume
 - **Branch:** master
-- **Last commit:** `3b03b25` fix(quiz): mastery sync error tracking
-- **Push:** TUM PUSH EDILDI (origin/master = 3b03b25)
+- **Last commit:** `5cbf71e` fix(review): CSRF dead code + parent Pydantic type/SQL field alignment
+- **Push:** TUM PUSH EDILDI (origin/master = 5cbf71e)
 - **Production:** 77,336 questions
 - **Services:** Backend=200, Frontend=200
 
 ## Bu Session'da Yapilanlar
-- Git push: 3 commit pushed (96ce586 → 87902c8, dag fix + FSRS deprecation + Celery Docker)
-- Mastery sync fix: submit_quiz BKT error tracking (mastery_sync_status/error fields)
-- Brainstorm v2 raporu commit edildi
-- 3 .bak dosya temizlendi (learning_path_v2, learning_path_orchestrator, learning_event_service)
-- Push: 4. commit (3b03b25) da pushed
+
+### Commit 3ff8633 — 4 CRITICAL fix
+- gamification_api.py: `cast(Badge.id, SAString)` kaldirildi (3 JOIN), `sa_select` → `select` (2 yer), import birlestirildi
+- parent_service.py: `child_obj` → `child` rename (11 yer), `selectinload(ParentNotification.child)` geri eklendi, pending approvals DB fetch eklendi
+
+### Commit 5cbf71e — 3 WARNING fix
+- csrf_protection.py: dead signature code + hashlib import kaldirildi, Optional → str | None
+- models/parent.py: child_id/parent_id int → str (5 Pydantic model), List → list, Optional → X | None
+- parent_service.py: get_parent_children SQL'e relation_type, created_at, approved_at, child_name eklendi
+
+### Code Review
+- Son commit 0 CRITICAL, 0 WARNING, 2 ONERI (stil)
 
 ## Bekleyen
-1. FSRS frontend: 6 endpoint backend'de implement edilmemis (pre-existing)
-2. Test coverage (backend ~18% → 80%)
-3. HTTPS/TLS, CSRF Phase 2
-4. Docker rebuild sonrasi endpoint dogrulama
-5. Remote Control setup (kullanici Max plan ile remote kullanmak istiyor)
+1. Test coverage (backend ~18% → 80%)
+2. Docker rebuild sonrasi endpoint dogrulama
+3. MVP beta launch
 
 ## Engelleyiciler
 - Yok
 
 ## Dokunulan Dosyalar
-- backend/api/learning_path_v2.py (mastery sync error tracking)
-- docs/brainstorms/2026-03-29_connectivity-score-6plus-strategy-v2.md
+- backend/api/gamification_api.py
+- backend/services/parent_service.py
+- backend/models/parent.py
+- backend/core/csrf_protection.py
 
 ## Sonraki Adimlar
-1. Docker rebuild + endpoint dogrulama (Celery worker eklendi)
-2. Remote Control setup: `claude remote-control --name "KIRO2" --spawn worktree`
-3. Test coverage artirma sprinti
+1. Docker rebuild + endpoint dogrulama
+2. Test coverage artirma sprinti
+3. MVP beta launch hazirligi
