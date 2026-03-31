@@ -386,6 +386,7 @@ class QuestionBankItem(Base):
     # Metadata ve Sınıflandırma
     # ========================================================================
     exam_type: Mapped[str] = mapped_column(String(20), nullable=False)  # TYT, AYT, YDT
+    # Denormalized for fast string filtering. Canonical hierarchy: primary_topic_id -> topic_hierarchy
     subject_area: Mapped[str] = mapped_column(String(50), nullable=False)
     grade_level: Mapped[int] = mapped_column(Integer, nullable=False)  # 9-12
 
