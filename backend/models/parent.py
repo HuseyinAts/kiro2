@@ -1,13 +1,10 @@
-# -*- coding: utf-8 -*-
 """
 Veli (Parent) veri modelleri
 Türkiye Üniversite Sınavları Hazırlık Platformu için veli takip sistemi
 """
 
 from datetime import datetime
-from typing import List, Optional
 
-from .database import Base
 from pydantic import BaseModel, ConfigDict, Field
 from sqlalchemy import (
     Boolean,
@@ -21,6 +18,7 @@ from sqlalchemy import (
 )
 from sqlalchemy.orm import relationship
 
+from .database import Base
 
 
 class ParentNotification(Base):
@@ -29,9 +27,11 @@ class ParentNotification(Base):
     __tablename__ = "parent_notifications"
 
     id = Column(Integer, primary_key=True, index=True)
-    parent_id = Column(String, ForeignKey("users.id", ondelete="CASCADE"), nullable=False
+    parent_id = Column(
+        String, ForeignKey("users.id", ondelete="CASCADE"), nullable=False
     )
-    child_id = Column(String, ForeignKey("users.id", ondelete="CASCADE"), nullable=False
+    child_id = Column(
+        String, ForeignKey("users.id", ondelete="CASCADE"), nullable=False
     )
     title = Column(String(200), nullable=False)
     message = Column(Text, nullable=False)
@@ -53,7 +53,8 @@ class WeeklyReport(Base):
     __tablename__ = "weekly_reports"
 
     id = Column(Integer, primary_key=True, index=True)
-    child_id = Column(String, ForeignKey("users.id", ondelete="CASCADE"), nullable=False
+    child_id = Column(
+        String, ForeignKey("users.id", ondelete="CASCADE"), nullable=False
     )
     week_start = Column(DateTime, nullable=False)
     week_end = Column(DateTime, nullable=False)
@@ -85,14 +86,14 @@ class ParentChildRelationResponse(BaseModel):
     """Veli-çocuk ilişkisi yanıt modeli"""
 
     id: int
-    parent_id: int
-    child_id: int
+    parent_id: str
+    child_id: str
     child_name: str
     child_email: str
     relation_type: str
     approved: bool
-    created_at: datetime
-    approved_at: Optional[datetime]
+    created_at: datetime | None = None
+    approved_at: datetime | None = None
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -100,38 +101,38 @@ class ParentChildRelationResponse(BaseModel):
 class ChildPerformanceData(BaseModel):
     """Çocuk performans verisi"""
 
-    child_id: int
+    child_id: str
     child_name: str
     total_study_time: int  # dakika
     exams_taken: int
     average_score: float
-    last_exam_date: Optional[datetime]
-    last_exam_score: Optional[float]
-    weak_subjects: List[str]
-    strong_subjects: List[str]
-    recent_achievements: List[str]
+    last_exam_date: datetime | None
+    last_exam_score: float | None
+    weak_subjects: list[str]
+    strong_subjects: list[str]
+    recent_achievements: list[str]
 
 
 class WeeklyReportData(BaseModel):
     """Haftalık rapor verisi"""
 
-    child_id: int
+    child_id: str
     child_name: str
     week_start: datetime
     week_end: datetime
     total_study_time: int
     exams_taken: int
     average_score: float
-    subjects_studied: List[str]
-    achievements: List[str]
+    subjects_studied: list[str]
+    achievements: list[str]
     performance_trend: str  # "improving", "stable", "declining"
-    recommendations: List[str]
+    recommendations: list[str]
 
 
 class ParentNotificationCreate(BaseModel):
     """Veli bildirimi oluşturma modeli"""
 
-    child_id: int
+    child_id: str
     title: str = Field(..., max_length=200)
     message: str
     # FIX: Pydantic v2 uses 'pattern' instead of 'regex'
@@ -144,14 +145,14 @@ class ParentNotificationResponse(BaseModel):
     """Veli bildirimi yanıt modeli"""
 
     id: int
-    child_id: int
+    child_id: str
     child_name: str
     title: str
     message: str
     notification_type: str
     is_read: bool
     created_at: datetime
-    read_at: Optional[datetime]
+    read_at: datetime | None = None
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -159,10 +160,8 @@ class ParentNotificationResponse(BaseModel):
 class ParentDashboardData(BaseModel):
     """Veli dashboard verisi"""
 
-    children: List[ChildPerformanceData]
+    children: list[ChildPerformanceData]
     unread_notifications: int
-    recent_notifications: List[ParentNotificationResponse]
+    recent_notifications: list[ParentNotificationResponse]
     weekly_summary: dict
-    pending_approvals: List[ParentChildRelationResponse]
-
-
+    pending_approvals: list[ParentChildRelationResponse]

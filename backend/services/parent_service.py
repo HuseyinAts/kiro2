@@ -135,7 +135,9 @@ class ParentService:
         result = await self.db.execute(
             text("""
                 SELECT pc.id, pc.parent_id, pc.child_id, pc.approved,
-                       u.email as child_email, u.id as child_user_id
+                       pc.relation_type, pc.created_at, pc.approved_at,
+                       u.email as child_email,
+                       COALESCE(u.full_name, u.email) as child_name
                 FROM parent_child pc
                 LEFT JOIN users u ON u.id = pc.child_id
                 WHERE pc.parent_id = :parent_id AND pc.approved = TRUE
@@ -150,8 +152,12 @@ class ParentService:
                     id=row.id,
                     parent_id=row.parent_id,
                     child_id=row.child_id,
-                    approved=row.approved,
+                    child_name=row.child_name or "Bilinmeyen",
                     child_email=row.child_email or "",
+                    relation_type=row.relation_type or "parent",
+                    approved=row.approved,
+                    created_at=row.created_at,
+                    approved_at=row.approved_at,
                 )
             )
         return output

@@ -3,10 +3,8 @@ CSRF (Cross-Site Request Forgery) Protection
 SECURITY FIX: Double-submit cookie pattern implementation
 """
 
-import hashlib
 import hmac
 import secrets
-from typing import Optional
 
 from fastapi import Header, HTTPException, Request, status
 from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoint
@@ -32,7 +30,7 @@ class CSRFProtectionMiddleware(BaseHTTPMiddleware):
     def __init__(
         self,
         app,
-        secret_key: Optional[str] = None,
+        secret_key: str | None = None,
         cookie_name: str = "csrf_token",
         header_name: str = "X-CSRF-Token",
         safe_methods: set = None,
@@ -58,14 +56,7 @@ class CSRFProtectionMiddleware(BaseHTTPMiddleware):
 
     def _generate_csrf_token(self) -> str:
         """Generate a new CSRF token"""
-        random_bytes = secrets.token_bytes(32)
-        # Sign with secret key to prevent tampering
-        signature = hmac.new(
-            self.secret_key.encode(), random_bytes, hashlib.sha256
-        ).digest()
-        # Combine random bytes and signature
-        token = secrets.token_urlsafe(32)
-        return token
+        return secrets.token_urlsafe(32)
 
     def _validate_csrf_token(self, cookie_token: str, header_token: str) -> bool:
         """Validate CSRF token (constant-time comparison)"""
@@ -151,7 +142,7 @@ async def get_csrf_token(request: Request) -> str:
 
 
 async def validate_csrf_token(
-    request: Request, x_csrf_token: Optional[str] = Header(None, alias="X-CSRF-Token")
+    request: Request, x_csrf_token: str | None = Header(None, alias="X-CSRF-Token")
 ) -> bool:
     """
     Dependency to validate CSRF token
