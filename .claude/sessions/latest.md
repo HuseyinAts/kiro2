@@ -1,41 +1,36 @@
-# Session State — 2026-03-31 Session 125
+## Session Handoff — 2026-04-01 02:30
+**Branch:** master
+**Son commit:** 666d9ad chore: insights-based workflow improvements
+**Uncommitted:** 12 modified + 30+ untracked scripts/ (onceki session'lardan kalan)
 
-## Quick Resume
-- **Branch:** master
-- **Last commit:** `5cbf71e` fix(review): CSRF dead code + parent Pydantic type/SQL field alignment
-- **Push:** TUM PUSH EDILDI (origin/master = 5cbf71e)
-- **Production:** 77,336 questions
-- **Services:** Backend=200, Frontend=200
+### Yapilanlar
+- `backend/migrations/016_isolate_synthetic_events.sql` — 117K synthetic event ayri tabloya (d530647)
+- `backend/scripts/irt_calibration_runner.py:50-75,152-165,219-223` — FETCH_RESPONSES_WITH_SYNTHETIC_SQL, min 500 guard, --include-synthetic wired (d530647, ea61227)
+- `backend/scripts/generate_synthetic_responses.py:86,146,196-210` — archive tablosuna yaz (ea61227)
+- `backend/scripts/irt_reset_bootstrap_flags.py:49-52,66-70` — defensive event_type filter (d530647)
+- `backend/api/analytics.py:379` — D7 retention event_type filtresi (d530647)
+- `docs/schema_snapshot_20260331.sql` — 9149 satir schema snapshot (ccd03e0)
+- `backend/migrations/README.md` — 44 migration index, "manuel SQL YASAK" kurali (ccd03e0)
+- `docs/mvp-essential-modules.md` — 23 essential router listesi (ccd03e0)
+- `orchestrator/README.md` — aktif/experimental modul siniflandirmasi (ccd03e0)
+- `backend/models/question_bank.py:389` — subject_area denormalizasyon yorumu (ccd03e0)
+- `.claude/rules/plan-before-execute.md` — 3+ dosya = plan zorunlu (666d9ad)
+- `.claude/skills/handoff/SKILL.md` — yapisal 6-point format (666d9ad)
+- `CLAUDE.md:636-638` — Docker startup order, Redis hostname, rebuild notu (666d9ad)
+- 57 stale plan dosyasi silindi, 113 completed task purge edildi (666d9ad)
 
-## Bu Session'da Yapilanlar
+### Fail Eden Testler
+- YOK (test suite calistirilmadi — degisiklikler script/docs/rule dosyalari)
 
-### Commit 3ff8633 — 4 CRITICAL fix
-- gamification_api.py: `cast(Badge.id, SAString)` kaldirildi (3 JOIN), `sa_select` → `select` (2 yer), import birlestirildi
-- parent_service.py: `child_obj` → `child` rename (11 yer), `selectinload(ParentNotification.child)` geri eklendi, pending approvals DB fetch eklendi
+### Engelleyiciler
+- YOK
 
-### Commit 5cbf71e — 3 WARNING fix
-- csrf_protection.py: dead signature code + hashlib import kaldirildi, Optional → str | None
-- models/parent.py: child_id/parent_id int → str (5 Pydantic model), List → list, Optional → X | None
-- parent_service.py: get_parent_children SQL'e relation_type, created_at, approved_at, child_name eklendi
+### Sonraki Adimlar
+1. Uncommitted degisiklikleri incele (12 modified file — onceki session'lardan)
+2. scripts/ altindaki 30+ untracked dosyayi temizle veya .gitignore'a ekle
+3. Pre-existing SQL injection fix: `irt_calibration_runner.py:168` (args.subject)
+4. Test coverage artirma (backend ~18% → hedef 80%)
 
-### Code Review
-- Son commit 0 CRITICAL, 0 WARNING, 2 ONERI (stil)
-
-## Bekleyen
-1. Test coverage (backend ~18% → 80%)
-2. Docker rebuild sonrasi endpoint dogrulama
-3. MVP beta launch
-
-## Engelleyiciler
-- Yok
-
-## Dokunulan Dosyalar
-- backend/api/gamification_api.py
-- backend/services/parent_service.py
-- backend/models/parent.py
-- backend/core/csrf_protection.py
-
-## Sonraki Adimlar
-1. Docker rebuild + endpoint dogrulama
-2. Test coverage artirma sprinti
-3. MVP beta launch hazirligi
+### Kararlar
+- Insights onerilerin cogu ZATEN mevcut — yeni sey yaratmak yerine mevcutu iyilestirdik
+- plan-before-execute.md + debugging-first.md birbirini tamamliyor (catisma yok)
