@@ -633,6 +633,9 @@ Configure in: Repository Settings → Secrets and variables → Actions
 - Node 20+ required: Vite 7 needs Node 20.19+
 - Vite dev server port: 3001 (vite.config.ts override, varsayilan 5173 DEGIL)
 - Question images: docker volume `/static/crops:ro` mount
+- Container startup order: postgres -> redis -> backend -> frontend (aksi halde 502)
+- Redis hostname: Container icinden `localhost` DEGIL `host.docker.internal` (veya docker network name)
+- Rebuild sonrasi: `docker compose down` SONRA `docker compose up -d` (stale container onleme)
 
 ## 📞 Contact & Resources
 
