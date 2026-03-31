@@ -48,6 +48,7 @@ WHERE q.is_calibrated = TRUE
   AND NOT EXISTS (
     SELECT 1 FROM kiro2_learning_events le
     WHERE le.question_id::text = q.id::text
+      AND le.event_type IN ('cat_answer', 'exam_answer')
   )
   AND NOT EXISTS (
     SELECT 1 FROM student_answers sa
@@ -65,6 +66,7 @@ WHERE is_calibrated = TRUE
   AND NOT EXISTS (
     SELECT 1 FROM kiro2_learning_events le
     WHERE le.question_id::text = id::text
+      AND le.event_type IN ('cat_answer', 'exam_answer')
   )
   AND NOT EXISTS (
     SELECT 1 FROM student_answers sa

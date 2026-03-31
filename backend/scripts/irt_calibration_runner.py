@@ -53,7 +53,7 @@ FROM (
     SELECT is_correct, occurred_at ts
     FROM kiro2_learning_events
     WHERE question_id::text = %(qid)s
-      AND event_type IN ('cat_answer','exam_answer','synthetic_response')
+      AND event_type IN ('cat_answer','exam_answer')
       AND is_correct IS NOT NULL
 ) x ORDER BY ts
 """
@@ -123,10 +123,30 @@ def main():
         action="store_true",
         help="is_calibrated=TRUE olanları da yeniden kalibre et",
     )
+    parser.add_argument(
+        "--include-synthetic",
+        action="store_true",
+        help="Sentetik yanıtları da dahil et (kiro2_learning_events_synthetic)",
+    )
     args = parser.parse_args()
 
     conn = psycopg2.connect(**DB)
     cur = conn.cursor()
+
+    # Minimum gercek event guard
+    cur.execute(
+        "SELECT COUNT(*) FROM kiro2_learning_events"
+        " WHERE event_type IN ('cat_answer', 'exam_answer')"
+    )
+    real_count = cur.fetchone()[0]
+    if real_count < 500 and not args.force:
+        print(
+            f"UYARI: Sadece {real_count} gercek event var. "
+            "Kalibrasyon icin minimum 500 gerekli."
+        )
+        print("--force ile zorlayabilirsiniz.")
+        conn.close()
+        return
 
     # Aday sorular
     subj = f"AND q.subject_area = '{args.subject}'" if args.subject else ""

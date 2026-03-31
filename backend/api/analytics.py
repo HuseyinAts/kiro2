@@ -7,27 +7,26 @@ import csv
 import io
 import logging
 from datetime import datetime, timedelta
-from typing import Any, Dict, List, Optional
-
-from sqlalchemy import text
+from typing import Any
 
 import xlsxwriter
 from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel, Field
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
+from sqlalchemy import text
 
 try:
-    from core.dependencies import get_current_user
     from core.auth_dependencies import require_role
     from core.database import get_db_session_context
+    from core.dependencies import get_current_user
     from core.redis_cache import get_cache
     from models.database import User
     from services.elasticsearch_service import get_elasticsearch_service
 except ImportError:
-    from core.dependencies import get_current_user
     from core.auth_dependencies import require_role
     from core.database import get_db_session_context
+    from core.dependencies import get_current_user
     from core.redis_cache import get_cache
     from models.database import User
     from services.elasticsearch_service import get_elasticsearch_service
@@ -40,16 +39,16 @@ router = APIRouter(prefix="/api/v1/analytics", tags=["analytics"])
 class StudentAnalyticsRequest(BaseModel):
     """Öğrenci analytics isteği"""
 
-    start_date: Optional[datetime] = Field(None, description="Başlangıç tarihi")
-    end_date: Optional[datetime] = Field(None, description="Bitiş tarihi")
+    start_date: datetime | None = Field(None, description="Başlangıç tarihi")
+    end_date: datetime | None = Field(None, description="Bitiş tarihi")
     include_detailed: bool = Field(False, description="Detaylı analiz dahil et")
 
 
 class ClassAnalyticsRequest(BaseModel):
     """Sınıf analytics isteği"""
 
-    start_date: Optional[datetime] = Field(None, description="Başlangıç tarihi")
-    end_date: Optional[datetime] = Field(None, description="Bitiş tarihi")
+    start_date: datetime | None = Field(None, description="Başlangıç tarihi")
+    end_date: datetime | None = Field(None, description="Bitiş tarihi")
     include_students: bool = Field(True, description="Öğrenci detayları dahil et")
 
 
@@ -58,7 +57,7 @@ class ExportRequest(BaseModel):
 
     format: str = Field(..., description="Export formatı: pdf, excel, csv")
     data_type: str = Field(..., description="Veri tipi: student, class, admin")
-    filters: Dict[str, Any] = Field(default_factory=dict, description="Filtreler")
+    filters: dict[str, Any] = Field(default_factory=dict, description="Filtreler")
 
 
 # Analytics API Endpoints
@@ -67,8 +66,8 @@ class ExportRequest(BaseModel):
 @router.get("/student/{student_id}")
 async def get_student_analytics(
     student_id: str,
-    start_date: Optional[datetime] = Query(None, description="Başlangıç tarihi"),
-    end_date: Optional[datetime] = Query(None, description="Bitiş tarihi"),
+    start_date: datetime | None = Query(None, description="Başlangıç tarihi"),
+    end_date: datetime | None = Query(None, description="Bitiş tarihi"),
     include_detailed: bool = Query(False, description="Detaylı analiz dahil et"),
     current_user: User = Depends(get_current_user),
 ):
@@ -148,7 +147,7 @@ async def get_student_analytics(
         }
 
     except Exception as e:
-        logger.error(f"Student analytics error: {str(e)}")
+        logger.error(f"Student analytics error: {e!s}")
         raise HTTPException(
             status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
@@ -157,8 +156,8 @@ async def get_student_analytics(
 @router.get("/class/{class_id}")
 async def get_class_analytics(
     class_id: str,
-    start_date: Optional[datetime] = Query(None, description="Başlangıç tarihi"),
-    end_date: Optional[datetime] = Query(None, description="Bitiş tarihi"),
+    start_date: datetime | None = Query(None, description="Başlangıç tarihi"),
+    end_date: datetime | None = Query(None, description="Bitiş tarihi"),
     include_students: bool = Query(True, description="Öğrenci detayları dahil et"),
     current_user: User = Depends(get_current_user),
 ):
@@ -254,7 +253,7 @@ async def get_class_analytics(
         }
 
     except Exception as e:
-        logger.error(f"Class analytics error: {str(e)}")
+        logger.error(f"Class analytics error: {e!s}")
         raise HTTPException(
             status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
@@ -262,8 +261,8 @@ async def get_class_analytics(
 
 @router.get("/admin/dashboard")
 async def get_admin_dashboard_analytics(
-    start_date: Optional[datetime] = Query(None, description="Başlangıç tarihi"),
-    end_date: Optional[datetime] = Query(None, description="Bitiş tarihi"),
+    start_date: datetime | None = Query(None, description="Başlangıç tarihi"),
+    end_date: datetime | None = Query(None, description="Bitiş tarihi"),
     current_user: User = Depends(get_current_user),
     _: None = Depends(require_role("ADMIN")),
 ):
@@ -273,7 +272,6 @@ async def get_admin_dashboard_analytics(
     Requirements: 6.5 - Sistem geneli analytics ve raporlama
     """
     try:
-
         # Tarih aralığı ayarla
         if not end_date:
             end_date = datetime.now()
@@ -352,7 +350,7 @@ async def get_admin_dashboard_analytics(
         return result
 
     except Exception as e:
-        logger.error(f"Admin dashboard analytics error: {str(e)}")
+        logger.error(f"Admin dashboard analytics error: {e!s}")
         raise HTTPException(
             status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
@@ -369,7 +367,7 @@ async def get_d7_retention(
     D7 Retention metriği: 8-14 gün önce aktif olan kullanıcıların
     son 7 günde geri dönme oranı.
 
-    kiro2_learning_events tablosunu kullanır (117K+ kayıt).
+    kiro2_learning_events tablosunu kullanır (sentetik veriler ayrı tabloda).
     """
     try:
         async with get_db_session_context() as db:
@@ -378,7 +376,8 @@ async def get_d7_retention(
                     WITH cohort AS (
                         SELECT DISTINCT user_id
                         FROM kiro2_learning_events
-                        WHERE occurred_at >= NOW() - INTERVAL '14 days'
+                        WHERE event_type IN ('cat_answer', 'exam_answer')
+                          AND occurred_at >= NOW() - INTERVAL '14 days'
                           AND occurred_at <  NOW() - INTERVAL '7 days'
                     ),
                     retained AS (
@@ -493,8 +492,10 @@ async def export_analytics_pdf(
         }
 
     except Exception as e:
-        logger.error(f"PDF export error: {str(e)}")
-        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
+        logger.error(f"PDF export error: {e!s}")
+        raise HTTPException(
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
+        )
 
 
 @router.post("/export/excel")
@@ -542,8 +543,10 @@ async def export_analytics_excel(
         }
 
     except Exception as e:
-        logger.error(f"Excel export error: {str(e)}")
-        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
+        logger.error(f"Excel export error: {e!s}")
+        raise HTTPException(
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
+        )
 
 
 @router.post("/export/csv")
@@ -590,8 +593,10 @@ async def export_analytics_csv(
         }
 
     except Exception as e:
-        logger.error(f"CSV export error: {str(e)}")
-        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
+        logger.error(f"CSV export error: {e!s}")
+        raise HTTPException(
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
+        )
 
 
 # Helper functions
@@ -599,7 +604,7 @@ async def export_analytics_csv(
 
 async def _calculate_student_performance_metrics(
     student_id: str, start_date: datetime, end_date: datetime, es_service
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """Öğrenci performans metrikleri hesapla"""
     try:
         # Mock implementation - gerçek implementasyonda DB'den veri alınacak
@@ -615,11 +620,11 @@ async def _calculate_student_performance_metrics(
             "study_consistency_score": 0.82,
         }
     except Exception as e:
-        logger.error(f"Student performance metrics error: {str(e)}")
+        logger.error(f"Student performance metrics error: {e!s}")
         return {}
 
 
-async def _get_learning_style_analysis(student_id: str) -> Dict[str, Any]:
+async def _get_learning_style_analysis(student_id: str) -> dict[str, Any]:
     """Öğrenme stili analizi"""
     try:
         # Mock implementation
@@ -645,13 +650,13 @@ async def _get_learning_style_analysis(student_id: str) -> Dict[str, Any]:
             ],
         }
     except Exception as e:
-        logger.error(f"Learning style analysis error: {str(e)}")
+        logger.error(f"Learning style analysis error: {e!s}")
         return {}
 
 
 async def _get_exam_performance_analysis(
     student_id: str, start_date: datetime, end_date: datetime
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """Sınav performans analizi"""
     try:
         # Mock implementation
@@ -672,13 +677,13 @@ async def _get_exam_performance_analysis(
             },
         }
     except Exception as e:
-        logger.error(f"Exam performance analysis error: {str(e)}")
+        logger.error(f"Exam performance analysis error: {e!s}")
         return {}
 
 
 async def _get_subject_performance_analysis(
     student_id: str, start_date: datetime, end_date: datetime
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """Konu bazlı performans analizi"""
     try:
         # Mock implementation
@@ -711,13 +716,13 @@ async def _get_subject_performance_analysis(
             }
         }
     except Exception as e:
-        logger.error(f"Subject performance analysis error: {str(e)}")
+        logger.error(f"Subject performance analysis error: {e!s}")
         return {}
 
 
 async def _get_detailed_student_analysis(
     student_id: str, start_date: datetime, end_date: datetime
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """Detaylı öğrenci analizi"""
     try:
         # Mock implementation
@@ -748,11 +753,11 @@ async def _get_detailed_student_analysis(
             },
         }
     except Exception as e:
-        logger.error(f"Detailed student analysis error: {str(e)}")
+        logger.error(f"Detailed student analysis error: {e!s}")
         return {}
 
 
-async def _get_class_students(class_id: str) -> List[Dict[str, Any]]:
+async def _get_class_students(class_id: str) -> list[dict[str, Any]]:
     """Sınıf öğrencilerini al"""
     try:
         # Mock implementation - gerçek implementasyonda DB'den gelecek
@@ -764,17 +769,17 @@ async def _get_class_students(class_id: str) -> List[Dict[str, Any]]:
             {"id": "student_5", "name": "Ali Çelik"},
         ]
     except Exception as e:
-        logger.error(f"Get class students error: {str(e)}")
+        logger.error(f"Get class students error: {e!s}")
         return []
 
 
 async def _calculate_class_metrics(
     class_id: str,
-    students: List[Dict[str, Any]],
+    students: list[dict[str, Any]],
     start_date: datetime,
     end_date: datetime,
     es_service,
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """Sınıf metrikleri hesapla"""
     try:
         # Mock implementation
@@ -787,13 +792,13 @@ async def _calculate_class_metrics(
             "engagement_score": 0.78,
         }
     except Exception as e:
-        logger.error(f"Class metrics calculation error: {str(e)}")
+        logger.error(f"Class metrics calculation error: {e!s}")
         return {}
 
 
 async def _get_class_performance_distribution(
-    students: List[Dict[str, Any]], start_date: datetime, end_date: datetime
-) -> Dict[str, Any]:
+    students: list[dict[str, Any]], start_date: datetime, end_date: datetime
+) -> dict[str, Any]:
     """Sınıf performans dağılımı"""
     try:
         # Mock implementation
@@ -814,13 +819,13 @@ async def _get_class_performance_distribution(
             },
         }
     except Exception as e:
-        logger.error(f"Class performance distribution error: {str(e)}")
+        logger.error(f"Class performance distribution error: {e!s}")
         return {}
 
 
 async def _get_class_subject_analysis(
-    students: List[Dict[str, Any]], start_date: datetime, end_date: datetime
-) -> Dict[str, Any]:
+    students: list[dict[str, Any]], start_date: datetime, end_date: datetime
+) -> dict[str, Any]:
     """Sınıf konu analizi"""
     try:
         # Mock implementation
@@ -846,13 +851,13 @@ async def _get_class_subject_analysis(
             ],
         }
     except Exception as e:
-        logger.error(f"Class subject analysis error: {str(e)}")
+        logger.error(f"Class subject analysis error: {e!s}")
         return {}
 
 
 async def _get_class_learning_style_distribution(
-    students: List[Dict[str, Any]]
-) -> Dict[str, Any]:
+    students: list[dict[str, Any]],
+) -> dict[str, Any]:
     """Sınıf öğrenme stili dağılımı"""
     try:
         # Mock implementation
@@ -882,13 +887,13 @@ async def _get_class_learning_style_distribution(
             },
         }
     except Exception as e:
-        logger.error(f"Class learning style distribution error: {str(e)}")
+        logger.error(f"Class learning style distribution error: {e!s}")
         return {}
 
 
 async def _calculate_system_metrics(
     start_date: datetime, end_date: datetime, es_service
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """Sistem metrikleri hesapla"""
     try:
         # Mock implementation
@@ -902,13 +907,13 @@ async def _calculate_system_metrics(
             "error_rate_percentage": 0.3,
         }
     except Exception as e:
-        logger.error(f"System metrics calculation error: {str(e)}")
+        logger.error(f"System metrics calculation error: {e!s}")
         return {}
 
 
 async def _get_user_statistics(
     start_date: datetime, end_date: datetime
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """Kullanıcı istatistikleri"""
     try:
         # Mock implementation
@@ -926,13 +931,13 @@ async def _get_user_statistics(
             "churn_rate": 0.05,
         }
     except Exception as e:
-        logger.error(f"User statistics error: {str(e)}")
+        logger.error(f"User statistics error: {e!s}")
         return {}
 
 
 async def _get_exam_statistics(
     start_date: datetime, end_date: datetime
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """Sınav istatistikleri"""
     try:
         # Mock implementation
@@ -943,13 +948,13 @@ async def _get_exam_statistics(
             "completion_rates": {"TYT": 0.89, "AYT": 0.85, "YDT": 0.92},
         }
     except Exception as e:
-        logger.error(f"Exam statistics error: {str(e)}")
+        logger.error(f"Exam statistics error: {e!s}")
         return {}
 
 
 async def _get_content_usage_statistics(
     start_date: datetime, end_date: datetime
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """İçerik kullanım istatistikleri"""
     try:
         # Mock implementation
@@ -975,13 +980,13 @@ async def _get_content_usage_statistics(
             },
         }
     except Exception as e:
-        logger.error(f"Content usage statistics error: {str(e)}")
+        logger.error(f"Content usage statistics error: {e!s}")
         return {}
 
 
 async def _get_system_performance_metrics(
     start_date: datetime, end_date: datetime
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """Sistem performans metrikleri"""
     try:
         # Mock implementation
@@ -1005,13 +1010,13 @@ async def _get_system_performance_metrics(
             },
         }
     except Exception as e:
-        logger.error(f"System performance metrics error: {str(e)}")
+        logger.error(f"System performance metrics error: {e!s}")
         return {}
 
 
 async def _get_revolutionary_features_usage(
     start_date: datetime, end_date: datetime
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """Devrimsel özellik kullanımı"""
     try:
         # Mock implementation
@@ -1057,36 +1062,35 @@ async def _get_revolutionary_features_usage(
             },
         }
     except Exception as e:
-        logger.error(f"Revolutionary features usage error: {str(e)}")
+        logger.error(f"Revolutionary features usage error: {e!s}")
         return {}
 
 
 # Export helper functions
 
 
-async def _get_analytics_data_for_export(request: ExportRequest) -> Dict[str, Any]:
+async def _get_analytics_data_for_export(request: ExportRequest) -> dict[str, Any]:
     """Export için analytics verilerini al"""
     try:
         if request.data_type == "student":
             return await _get_student_analytics_for_export(
                 request.filters.get("student_id"), request.filters
             )
-        elif request.data_type == "class":
+        if request.data_type == "class":
             return await _get_class_analytics_for_export(
                 request.filters.get("class_id"), request.filters
             )
-        elif request.data_type == "admin":
+        if request.data_type == "admin":
             return await _get_admin_analytics_for_export(request.filters)
-        else:
-            return {}
+        return {}
     except Exception as e:
-        logger.error(f"Get analytics data for export error: {str(e)}")
+        logger.error(f"Get analytics data for export error: {e!s}")
         return {}
 
 
 async def _get_student_analytics_for_export(
-    student_id: str, filters: Dict[str, Any]
-) -> Dict[str, Any]:
+    student_id: str, filters: dict[str, Any]
+) -> dict[str, Any]:
     """Öğrenci analytics export verisi"""
     try:
         # Mock implementation
@@ -1120,13 +1124,13 @@ async def _get_student_analytics_for_export(
             ],
         }
     except Exception as e:
-        logger.error(f"Student analytics for export error: {str(e)}")
+        logger.error(f"Student analytics for export error: {e!s}")
         return {}
 
 
 async def _get_class_analytics_for_export(
-    class_id: str, filters: Dict[str, Any]
-) -> Dict[str, Any]:
+    class_id: str, filters: dict[str, Any]
+) -> dict[str, Any]:
     """Sınıf analytics export verisi"""
     try:
         # Mock implementation
@@ -1151,11 +1155,11 @@ async def _get_class_analytics_for_export(
             ],
         }
     except Exception as e:
-        logger.error(f"Class analytics for export error: {str(e)}")
+        logger.error(f"Class analytics for export error: {e!s}")
         return {}
 
 
-async def _get_admin_analytics_for_export(filters: Dict[str, Any]) -> Dict[str, Any]:
+async def _get_admin_analytics_for_export(filters: dict[str, Any]) -> dict[str, Any]:
     """Admin analytics export verisi"""
     try:
         # Mock implementation
@@ -1178,12 +1182,12 @@ async def _get_admin_analytics_for_export(filters: Dict[str, Any]) -> Dict[str, 
             },
         }
     except Exception as e:
-        logger.error(f"Admin analytics for export error: {str(e)}")
+        logger.error(f"Admin analytics for export error: {e!s}")
         return {}
 
 
 async def _generate_pdf_content(
-    pdf_canvas, analytics_data: Dict[str, Any], data_type: str
+    pdf_canvas, analytics_data: dict[str, Any], data_type: str
 ):
     """PDF içeriği oluştur"""
     try:
@@ -1210,11 +1214,11 @@ async def _generate_pdf_content(
             y_position -= 20
 
     except Exception as e:
-        logger.error(f"PDF content generation error: {str(e)}")
+        logger.error(f"PDF content generation error: {e!s}")
 
 
 async def _generate_excel_content(
-    workbook, analytics_data: Dict[str, Any], data_type: str
+    workbook, analytics_data: dict[str, Any], data_type: str
 ):
     """Excel içeriği oluştur"""
     try:
@@ -1243,11 +1247,11 @@ async def _generate_excel_content(
             row += 1
 
     except Exception as e:
-        logger.error(f"Excel content generation error: {str(e)}")
+        logger.error(f"Excel content generation error: {e!s}")
 
 
 async def _generate_csv_content(
-    csv_writer, analytics_data: Dict[str, Any], data_type: str
+    csv_writer, analytics_data: dict[str, Any], data_type: str
 ):
     """CSV içeriği oluştur"""
     try:
@@ -1264,12 +1268,12 @@ async def _generate_csv_content(
             csv_writer.writerow([key, str(value)])
 
     except Exception as e:
-        logger.error(f"CSV content generation error: {str(e)}")
+        logger.error(f"CSV content generation error: {e!s}")
 
 
 async def _get_system_performance_metrics(
     start_date: datetime, end_date: datetime
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """Sistem performans metrikleri"""
     try:
         # Mock implementation
@@ -1293,13 +1297,13 @@ async def _get_system_performance_metrics(
             },
         }
     except Exception as e:
-        logger.error(f"System performance metrics error: {str(e)}")
+        logger.error(f"System performance metrics error: {e!s}")
         return {}
 
 
 async def _get_revolutionary_features_usage(
     start_date: datetime, end_date: datetime
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """Devrimsel özellik kullanımı"""
     try:
         # Mock implementation
@@ -1345,36 +1349,35 @@ async def _get_revolutionary_features_usage(
             },
         }
     except Exception as e:
-        logger.error(f"Revolutionary features usage error: {str(e)}")
+        logger.error(f"Revolutionary features usage error: {e!s}")
         return {}
 
 
 # Export helper functions
 
 
-async def _get_analytics_data_for_export(request: ExportRequest) -> Dict[str, Any]:
+async def _get_analytics_data_for_export(request: ExportRequest) -> dict[str, Any]:
     """Export için analytics verilerini al"""
     try:
         if request.data_type == "student":
             return await _get_student_analytics_for_export(
                 request.filters.get("student_id"), request.filters
             )
-        elif request.data_type == "class":
+        if request.data_type == "class":
             return await _get_class_analytics_for_export(
                 request.filters.get("class_id"), request.filters
             )
-        elif request.data_type == "admin":
+        if request.data_type == "admin":
             return await _get_admin_analytics_for_export(request.filters)
-        else:
-            return {}
+        return {}
     except Exception as e:
-        logger.error(f"Get analytics data for export error: {str(e)}")
+        logger.error(f"Get analytics data for export error: {e!s}")
         return {}
 
 
 async def _get_student_analytics_for_export(
-    student_id: str, filters: Dict[str, Any]
-) -> Dict[str, Any]:
+    student_id: str, filters: dict[str, Any]
+) -> dict[str, Any]:
     """Öğrenci analytics export verisi"""
     try:
         # Mock implementation
@@ -1408,13 +1411,13 @@ async def _get_student_analytics_for_export(
             ],
         }
     except Exception as e:
-        logger.error(f"Student analytics for export error: {str(e)}")
+        logger.error(f"Student analytics for export error: {e!s}")
         return {}
 
 
 async def _get_class_analytics_for_export(
-    class_id: str, filters: Dict[str, Any]
-) -> Dict[str, Any]:
+    class_id: str, filters: dict[str, Any]
+) -> dict[str, Any]:
     """Sınıf analytics export verisi"""
     try:
         # Mock implementation
@@ -1439,11 +1442,11 @@ async def _get_class_analytics_for_export(
             ],
         }
     except Exception as e:
-        logger.error(f"Class analytics for export error: {str(e)}")
+        logger.error(f"Class analytics for export error: {e!s}")
         return {}
 
 
-async def _get_admin_analytics_for_export(filters: Dict[str, Any]) -> Dict[str, Any]:
+async def _get_admin_analytics_for_export(filters: dict[str, Any]) -> dict[str, Any]:
     """Admin analytics export verisi"""
     try:
         # Mock implementation
@@ -1466,12 +1469,12 @@ async def _get_admin_analytics_for_export(filters: Dict[str, Any]) -> Dict[str, 
             },
         }
     except Exception as e:
-        logger.error(f"Admin analytics for export error: {str(e)}")
+        logger.error(f"Admin analytics for export error: {e!s}")
         return {}
 
 
 async def _generate_pdf_content(
-    pdf_canvas, analytics_data: Dict[str, Any], data_type: str
+    pdf_canvas, analytics_data: dict[str, Any], data_type: str
 ):
     """PDF içeriği oluştur"""
     try:
@@ -1498,11 +1501,11 @@ async def _generate_pdf_content(
             y_position -= 20
 
     except Exception as e:
-        logger.error(f"PDF content generation error: {str(e)}")
+        logger.error(f"PDF content generation error: {e!s}")
 
 
 async def _generate_excel_content(
-    workbook, analytics_data: Dict[str, Any], data_type: str
+    workbook, analytics_data: dict[str, Any], data_type: str
 ):
     """Excel içeriği oluştur"""
     try:
@@ -1531,11 +1534,11 @@ async def _generate_excel_content(
             row += 1
 
     except Exception as e:
-        logger.error(f"Excel content generation error: {str(e)}")
+        logger.error(f"Excel content generation error: {e!s}")
 
 
 async def _generate_csv_content(
-    csv_writer, analytics_data: Dict[str, Any], data_type: str
+    csv_writer, analytics_data: dict[str, Any], data_type: str
 ):
     """CSV içeriği oluştur"""
     try:
@@ -1552,4 +1555,4 @@ async def _generate_csv_content(
             csv_writer.writerow([key, str(value)])
 
     except Exception as e:
-        logger.error(f"CSV content generation error: {str(e)}")
+        logger.error(f"CSV content generation error: {e!s}")
