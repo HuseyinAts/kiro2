@@ -308,15 +308,18 @@ async def get_all_badges(
         if category:
             all_badges = [b for b in all_badges if b["category"] == category]
 
-        # Check earned badges from DB
+        # Check earned badges from DB — join to get slug for string comparison
         from sqlalchemy import select
 
+        from models.gamification import Badge
         from models.gamification import UserBadge as GamUserBadge
 
         result = await db.execute(
-            select(GamUserBadge.badge_id).where(GamUserBadge.user_id == user_id)
+            select(Badge.slug)
+            .join(GamUserBadge, GamUserBadge.badge_id == Badge.id)
+            .where(GamUserBadge.user_id == user_id)
         )
-        earned_badge_db_ids = {row[0] for row in result.fetchall()}
+        earned_slugs = {row[0] for row in result.fetchall()}
 
         badges = []
         for badge_def in all_badges:
@@ -327,7 +330,7 @@ async def get_all_badges(
                 category=badge_def["category"],
                 rarity=badge_def["rarity"],
                 icon=badge_def["icon"],
-                earned=badge_def["id"] in [str(bid) for bid in earned_badge_db_ids],
+                earned=badge_def["id"] in earned_slugs,
                 earned_at=None,
             )
             badges.append(badge_info.model_dump())
@@ -360,19 +363,22 @@ async def get_earned_badges(
 
         from sqlalchemy import select
 
+        from models.gamification import Badge
         from models.gamification import UserBadge as GamUserBadge
 
         result = await db.execute(
-            select(GamUserBadge).where(GamUserBadge.user_id == user_id)
+            select(GamUserBadge, Badge.slug)
+            .join(Badge, GamUserBadge.badge_id == Badge.id)
+            .where(GamUserBadge.user_id == user_id)
         )
-        earned_rows = result.scalars().all()
+        rows = result.all()
 
         all_badges = get_badge_definitions()
         badge_map = {b["id"]: b for b in all_badges}
 
         earned_badges = []
-        for ub in earned_rows:
-            badge_def = badge_map.get(str(ub.badge_id))
+        for ub, slug in rows:
+            badge_def = badge_map.get(slug)
             if badge_def:
                 earned_badges.append(
                     BadgeInfo(
@@ -413,12 +419,15 @@ async def get_badge_categories(
 
         from sqlalchemy import select
 
+        from models.gamification import Badge
         from models.gamification import UserBadge as GamUserBadge
 
         result = await db.execute(
-            select(GamUserBadge.badge_id).where(GamUserBadge.user_id == user_id)
+            select(Badge.slug)
+            .join(GamUserBadge, GamUserBadge.badge_id == Badge.id)
+            .where(GamUserBadge.user_id == user_id)
         )
-        earned_ids = {str(row[0]) for row in result.fetchall()}
+        earned_slugs = {row[0] for row in result.fetchall()}
 
         categories: dict[str, dict[str, Any]] = {}
         for badge in all_badges:
@@ -426,7 +435,7 @@ async def get_badge_categories(
             if cat not in categories:
                 categories[cat] = {"total": 0, "earned": 0}
             categories[cat]["total"] += 1
-            if badge["id"] in earned_ids:
+            if badge["id"] in earned_slugs:
                 categories[cat]["earned"] += 1
 
         for cat in categories:

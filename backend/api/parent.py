@@ -23,7 +23,7 @@ router = APIRouter(prefix="/api/v1/parent", tags=["parent"])
 
 
 @router.post("/children", response_model=ParentChildRelationResponse)
-def create_parent_child_relation(
+async def create_parent_child_relation(
     relation_data: ParentChildRelationCreate,
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
@@ -42,7 +42,7 @@ def create_parent_child_relation(
 
     try:
         parent_service = ParentService(db)
-        result = parent_service.create_parent_child_relation(
+        result = await parent_service.create_parent_child_relation(
             current_user.id, relation_data
         )
         return result
@@ -59,7 +59,7 @@ def create_parent_child_relation(
 
 
 @router.get("/children", response_model=list[ParentChildRelationResponse])
-def get_parent_children(
+async def get_parent_children(
     current_user: User = Depends(get_current_user), db: AsyncSession = Depends(get_db)
 ):
     """
@@ -73,7 +73,7 @@ def get_parent_children(
 
     try:
         parent_service = ParentService(db)
-        children = parent_service.get_parent_children(current_user.id)
+        children = await parent_service.get_parent_children(current_user.id)
         return children
     except Exception:
         raise HTTPException(
@@ -83,7 +83,7 @@ def get_parent_children(
 
 
 @router.get("/children/{child_id}/performance", response_model=ChildPerformanceData)
-def get_child_performance(
+async def get_child_performance(
     child_id: int,
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
@@ -101,7 +101,9 @@ def get_child_performance(
 
     try:
         parent_service = ParentService(db)
-        performance = parent_service.get_child_performance(current_user.id, child_id)
+        performance = await parent_service.get_child_performance(
+            current_user.id, child_id
+        )
         return performance
     except ValueError:
         raise HTTPException(
@@ -116,7 +118,7 @@ def get_child_performance(
 
 
 @router.get("/children/{child_id}/weekly-report", response_model=WeeklyReportData)
-def get_weekly_report(
+async def get_weekly_report(
     child_id: int,
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
@@ -136,10 +138,10 @@ def get_weekly_report(
         parent_service = ParentService(db)
 
         # İlişki kontrolü için önce performans verilerini çek
-        parent_service.get_child_performance(current_user.id, child_id)
+        await parent_service.get_child_performance(current_user.id, child_id)
 
         # Haftalık rapor oluştur
-        report = parent_service.generate_weekly_report(child_id)
+        report = await parent_service.generate_weekly_report(child_id)
         return report
     except ValueError:
         raise HTTPException(
@@ -154,7 +156,7 @@ def get_weekly_report(
 
 
 @router.post("/notifications", response_model=ParentNotificationResponse)
-def create_notification(
+async def create_notification(
     notification_data: ParentNotificationCreate,
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
@@ -172,7 +174,7 @@ def create_notification(
 
     try:
         parent_service = ParentService(db)
-        notification = parent_service.create_notification(
+        notification = await parent_service.create_notification(
             current_user.id, notification_data
         )
         return notification
@@ -189,7 +191,7 @@ def create_notification(
 
 
 @router.get("/notifications", response_model=list[ParentNotificationResponse])
-def get_notifications(
+async def get_notifications(
     unread_only: bool = False,
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
@@ -207,7 +209,7 @@ def get_notifications(
 
     try:
         parent_service = ParentService(db)
-        notifications = parent_service.get_parent_notifications(
+        notifications = await parent_service.get_parent_notifications(
             current_user.id, unread_only
         )
         return notifications
@@ -219,7 +221,7 @@ def get_notifications(
 
 
 @router.put("/notifications/{notification_id}/read")
-def mark_notification_as_read(
+async def mark_notification_as_read(
     notification_id: int,
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
@@ -235,7 +237,7 @@ def mark_notification_as_read(
 
     try:
         parent_service = ParentService(db)
-        parent_service.mark_notification_as_read(current_user.id, notification_id)
+        await parent_service.mark_notification_as_read(current_user.id, notification_id)
         return {"success": True, "message": "Bildirim okundu olarak işaretlendi"}
     except ValueError:
         raise HTTPException(
@@ -250,7 +252,7 @@ def mark_notification_as_read(
 
 
 @router.get("/dashboard", response_model=ParentDashboardData)
-def get_parent_dashboard(
+async def get_parent_dashboard(
     current_user: User = Depends(get_current_user), db: AsyncSession = Depends(get_db)
 ):
     """
@@ -266,7 +268,7 @@ def get_parent_dashboard(
 
     try:
         parent_service = ParentService(db)
-        dashboard_data = parent_service.get_parent_dashboard_data(current_user.id)
+        dashboard_data = await parent_service.get_parent_dashboard_data(current_user.id)
         return dashboard_data
     except Exception:
         raise HTTPException(
@@ -277,7 +279,7 @@ def get_parent_dashboard(
 
 # Öğrenci tarafından kullanılacak endpoint'ler
 @router.put("/approval/{relation_id}")
-def approve_parent_relation(
+async def approve_parent_relation(
     relation_id: int,
     approved: bool,
     current_user: User = Depends(get_current_user),
@@ -296,7 +298,7 @@ def approve_parent_relation(
 
     try:
         parent_service = ParentService(db)
-        parent_service.approve_parent_child_relation(
+        await parent_service.approve_parent_child_relation(
             current_user.id, relation_id, approved
         )
 
