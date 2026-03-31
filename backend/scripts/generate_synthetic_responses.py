@@ -83,7 +83,7 @@ def main():
     # Önceki sentetik verileri temizle
     if args.clear and not args.dry_run:
         cur.execute("""
-            DELETE FROM kiro2_learning_events
+            DELETE FROM kiro2_learning_events_synthetic
             WHERE event_type = 'synthetic_response'
         """)
         conn.commit()
@@ -143,7 +143,7 @@ def main():
             if not args.dry_run:
                 cur.execute(
                     """
-                    INSERT INTO kiro2_learning_events (
+                    INSERT INTO kiro2_learning_events_synthetic (
                         id, user_id, question_id, session_id,
                         event_type, is_correct, theta_after, response_ms, occurred_at
                     ) VALUES (%s, %s, %s, NULL, 'synthetic_response', %s, %s, %s, %s)
@@ -197,9 +197,13 @@ def main():
             SELECT COUNT(DISTINCT question_id) AS kalibre_adayi
             FROM (
                 SELECT question_id, COUNT(*) AS n
-                FROM kiro2_learning_events
-                WHERE event_type IN ('cat_answer','exam_answer','synthetic_response')
-                  AND is_correct IS NOT NULL
+                FROM (
+                    SELECT question_id, is_correct FROM kiro2_learning_events
+                    WHERE event_type IN ('cat_answer','exam_answer') AND is_correct IS NOT NULL
+                    UNION ALL
+                    SELECT question_id, is_correct FROM kiro2_learning_events_synthetic
+                    WHERE is_correct IS NOT NULL
+                ) combined
                 GROUP BY question_id
                 HAVING COUNT(*) >= 50
             ) sub

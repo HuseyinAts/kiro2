@@ -58,6 +58,22 @@ FROM (
 ) x ORDER BY ts
 """
 
+FETCH_RESPONSES_WITH_SYNTHETIC_SQL = """
+SELECT is_correct::int AS r
+FROM (
+    SELECT is_correct, occurred_at ts
+    FROM kiro2_learning_events
+    WHERE question_id::text = %(qid)s
+      AND event_type IN ('cat_answer','exam_answer')
+      AND is_correct IS NOT NULL
+    UNION ALL
+    SELECT is_correct, occurred_at ts
+    FROM kiro2_learning_events_synthetic
+    WHERE question_id::text = %(qid)s
+      AND is_correct IS NOT NULL
+) x ORDER BY ts
+"""
+
 UPDATE_SQL = """
 UPDATE question_bank SET
     irt_discrimination=%(a)s, irt_difficulty=%(b)s, irt_guessing=%(c)s,
@@ -200,6 +216,11 @@ def main():
         return
 
     # Kalibrasyon
+    resp_sql = (
+        FETCH_RESPONSES_WITH_SYNTHETIC_SQL
+        if args.include_synthetic
+        else FETCH_RESPONSES_SQL
+    )
     results_summary = []
     ok3pl = ok_ctt = skipped = failed = 0
     t_start = time.time()
@@ -207,7 +228,7 @@ def main():
     for i, (qid, subj_area, old_a, old_b, old_c, was_cal, n_resp) in enumerate(
         filtered
     ):
-        cur.execute(FETCH_RESPONSES_SQL, {"qid": qid})
+        cur.execute(resp_sql, {"qid": qid})
         rows = cur.fetchall()
         vec = np.array([float(r[0]) for r in rows])
 
