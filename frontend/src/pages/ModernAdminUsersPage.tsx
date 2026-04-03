@@ -90,7 +90,7 @@ export function ModernAdminUsersPage() {
     try {
       setLoading(true);
       const response = await apiClient.get('/api/v1/admin/users');
-      setUsers(response.data.users || []);
+      setUsers(response?.data?.users || []);
     } catch (error) {
       console.error('Kullanıcılar yüklenemedi:', error);
       // Mock data

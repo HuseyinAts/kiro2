@@ -81,7 +81,7 @@ export function ModernTeacherExamsPage() {
     try {
       setLoading(true);
       const response = await apiClient.get('/api/v1/teacher/exams');
-      setExams(response.data.exams || []);
+      setExams(response?.data?.exams || []);
     } catch (error) {
       console.error('Sınavlar yüklenemedi:', error);
       // Mock data

@@ -74,7 +74,7 @@ export function ModernAdminContentPage() {
     try {
       setLoading(true);
       const response = await apiClient.get('/api/v1/admin/content');
-      setContents(response.data.contents || []);
+      setContents(response?.data?.contents || []);
     } catch (error) {
       console.error('İçerikler yüklenemedi:', error);
       // Mock data
