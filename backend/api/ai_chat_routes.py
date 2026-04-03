@@ -236,13 +236,22 @@ async def upload_image(
     # Ownership kontrolü
     await get_owned_session(session_id, mevcut_kullanici, chat_service)
 
-    # Save file
+    # Save file — sanitize filename to prevent path traversal
     upload_dir = Path("uploads/chat_images")
     upload_dir.mkdir(parents=True, exist_ok=True)
 
-    file_path = upload_dir / f"{session_id}_{file.filename}"
+    # Strip path components from client-supplied filename
+    safe_name = Path(file.filename or "upload").name.replace("..", "")
+    if not safe_name:
+        safe_name = "upload"
+    file_path = upload_dir / f"{session_id}_{safe_name}"
+
+    # Enforce 10MB size limit
+    content = await file.read(10 * 1024 * 1024 + 1)
+    if len(content) > 10 * 1024 * 1024:
+        raise HTTPException(413, "Dosya boyutu 10MB'yi asamaz")
+
     with open(file_path, "wb") as f:
-        content = await file.read()
         f.write(content)
 
     # Create image record
