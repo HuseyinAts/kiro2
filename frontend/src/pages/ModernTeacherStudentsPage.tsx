@@ -57,7 +57,7 @@ export function ModernTeacherStudentsPage() {
     try {
       setLoading(true);
       const response = await apiClient.get('/api/v1/teacher/students');
-      setStudents(response.data.students || []);
+      setStudents(response?.data?.students || []);
     } catch (error) {
       console.error('Öğrenciler yüklenemedi:', error);
       // Mock data for demo

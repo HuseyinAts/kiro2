@@ -67,6 +67,10 @@ export default function DuelPage() {
     apiRequest<{elo_rating:number}>('/api/v1/duel/rating')
       .then(r => setRating(Math.round(r.elo_rating)))
       .catch(() => {});
+    return () => {
+      clearInterval(pollRef.current!);
+      clearInterval(timerRef.current!);
+    };
   }, []);
 
   // Matchmaking başlat

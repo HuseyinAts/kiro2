@@ -63,7 +63,7 @@ export function ModernTeacherReportsPage() {
     try {
       setLoading(true);
       const response = await apiClient.get('/api/v1/teacher/reports');
-      setReports(response.data.reports || []);
+      setReports(response?.data?.reports || []);
     } catch (error) {
       console.error('Raporlar yüklenemedi:', error);
       // Mock data

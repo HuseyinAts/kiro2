@@ -89,7 +89,7 @@ export function ModernTeacherContentPage() {
     try {
       setLoading(true);
       const response = await apiClient.get('/api/v1/teacher/contents');
-      setContents(response.data.contents || []);
+      setContents(response?.data?.contents || []);
     } catch (error) {
       console.error('İçerikler yüklenemedi:', error);
       // Mock data

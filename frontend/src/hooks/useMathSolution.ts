@@ -43,11 +43,11 @@ export const useMathSolution = () => {
         difficulty_level: difficultyLevel,
       });
 
-      if (response.data.success) {
+      if (response?.data?.success) {
         setSolution(response.data.data);
         setCurrentStep(1);
       } else {
-        setError(response.data.message || 'Çözüm oluşturulamadı');
+        setError(response?.data?.message || 'Çözüm oluşturulamadı');
       }
     } catch (err: any) {
       setError(err.response?.data?.detail || 'Bir hata oluştu');
@@ -61,7 +61,7 @@ export const useMathSolution = () => {
       const response = await axios.get(
         `/api/v1/math-solution-steps/step/${problemId}/${stepNumber}`,
       );
-      return response.data.data;
+      return response?.data?.data;
     } catch (err: any) {
       console.error('Step fetch error:', err);
       return null;
@@ -79,7 +79,7 @@ export const useMathSolution = () => {
         step_number: stepNumber,
         hint_level: hintLevel,
       });
-      return response.data.data.hint;
+      return response?.data?.data?.hint;
     } catch (err: any) {
       console.error('Hint fetch error:', err);
       return null;

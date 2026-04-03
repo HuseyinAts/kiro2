@@ -77,7 +77,7 @@ export function ModernParentReportsPage() {
     try {
       setLoading(true);
       const response = await apiClient.get('/api/v1/parent/children-performance');
-      const childrenData = response.data.children || [];
+      const childrenData = response?.data?.children || [];
       setChildren(childrenData);
       if (childrenData.length > 0) {
         setSelectedChildId(childrenData[0].ogrenci_id);
@@ -109,7 +109,7 @@ export function ModernParentReportsPage() {
   const fetchWeeklyReports = async (childId: string) => {
     try {
       const response = await apiClient.get(`/api/v1/parent/children/${childId}/weekly-performance`);
-      setWeeklyReports(response.data.reports || []);
+      setWeeklyReports(response?.data?.reports || []);
     } catch (error) {
       console.error('Haftalık raporlar yüklenemedi:', error);
       // Mock data

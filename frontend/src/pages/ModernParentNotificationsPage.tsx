@@ -58,7 +58,7 @@ export function ModernParentNotificationsPage() {
     try {
       setLoading(true);
       const response = await apiClient.get('/api/v1/parent/notifications');
-      setNotifications(response.data.notifications || []);
+      setNotifications(response?.data?.notifications || []);
     } catch (error) {
       console.error('Bildirimler yüklenemedi:', error);
       // Mock data

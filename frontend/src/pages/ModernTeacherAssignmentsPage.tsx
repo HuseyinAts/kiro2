@@ -79,7 +79,7 @@ export function ModernTeacherAssignmentsPage() {
     try {
       setLoading(true);
       const response = await apiClient.get('/api/v1/teacher/assignments');
-      setAssignments(response.data.assignments || []);
+      setAssignments(response?.data?.assignments || []);
     } catch (error) {
       console.error('Ödevler yüklenemedi:', error);
       // Mock data

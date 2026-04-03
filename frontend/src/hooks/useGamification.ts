@@ -85,7 +85,7 @@ export function usePoints() {
     try {
       setLoading(true);
       const response = await api.get(`${API_BASE}/points`);
-      setPoints(response.data.total_points);
+      setPoints(response?.data?.total_points ?? 0);
       setError(null);
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : String(err));
@@ -102,9 +102,9 @@ export function usePoints() {
         reason,
         metadata,
       });
-      setPoints(response.data.total_points);
+      setPoints(response?.data?.total_points ?? 0);
       setError(null);
-      return response.data;
+      return response?.data;
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : String(err));
       throw err;
