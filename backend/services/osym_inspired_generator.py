@@ -2,26 +2,27 @@
 ÖSYM-Inspired Question Generator
 Uses real ÖSYM questions as examples for AI generation
 """
-import asyncpg
+
 import json
-from typing import List, Dict, Optional
+
 import anthropic
+import asyncpg
 import openai
-
-# Import subject-specific configurations
-from services.subject_specific_prompts import (
-    get_subject_config,
-    get_enhanced_prompt,
-    SUBJECT_TARGET_LENGTHS,
-)
-
-# Import reranker (Wave 1 improvement - DEEP_RESEARCH_FINDINGS_2024.md)
-from services.question_reranker import KeywordQuestionReranker
 
 # Import quality improvement templates (Wave 2B improvement - Physics pattern)
 from services.enhanced_question_templates import (
     get_quality_improved_prompt,
     needs_enhancement,
+)
+
+# Import reranker (Wave 1 improvement - DEEP_RESEARCH_FINDINGS_2024.md)
+from services.question_reranker import KeywordQuestionReranker
+
+# Import subject-specific configurations
+from services.subject_specific_prompts import (
+    SUBJECT_TARGET_LENGTHS,
+    get_enhanced_prompt,
+    get_subject_config,
 )
 
 
@@ -53,8 +54,9 @@ class OSYMInspiredGenerator:
 
     async def get_db_connection(self):
         """Get database connection"""
-        from core.config import settings
         import re
+
+        from core.config import settings
 
         pattern = r"postgresql\+?.*://([^:]+):([^@]+)@([^:]+):(\d+)/(.+)"
         match = re.match(pattern, settings.database_url)
@@ -74,9 +76,9 @@ class OSYMInspiredGenerator:
         subject: str,
         exam_type: str = "TYT",
         count: int = 3,
-        topic: Optional[str] = None,
+        topic: str | None = None,
         use_reranking: bool = True,
-    ) -> List[Dict]:
+    ) -> list[dict]:
         """
         Get similar ÖSYM questions as examples
 
@@ -93,12 +95,15 @@ class OSYMInspiredGenerator:
             # Wave 1: Fetch MORE candidates for reranking (3x multiplier)
             fetch_count = count * 3 if use_reranking and topic else count
 
-            # Get random ÖSYM questions from same subject
+            # Get random ÖSYM questions (question_bank table)
             query = """
-                SELECT question_id, subject, stem, options, correct_answer, year
-                FROM questions
-                WHERE source = 'ÖSYM'
-                  AND subject = $1
+                SELECT id, subject_area, question_text,
+                       option_a, option_b, option_c, option_d, option_e,
+                       correct_answer, osym_year
+                FROM question_bank
+                WHERE osym_format_compliant = true
+                  AND is_active = true
+                  AND subject_area = $1
                   AND exam_type = $2
                   AND correct_answer IS NOT NULL
                 ORDER BY RANDOM()
@@ -109,16 +114,22 @@ class OSYMInspiredGenerator:
 
             questions = []
             for row in rows:
+                options = {
+                    "A": row["option_a"],
+                    "B": row["option_b"],
+                    "C": row["option_c"],
+                    "D": row["option_d"],
+                }
+                if row["option_e"]:
+                    options["E"] = row["option_e"]
                 questions.append(
                     {
-                        "question_id": str(row["question_id"]),
-                        "subject": row["subject"],
-                        "stem": row["stem"],
-                        "options": json.loads(row["options"])
-                        if isinstance(row["options"], str)
-                        else row["options"],
+                        "question_id": str(row["id"]),
+                        "subject": row["subject_area"],
+                        "stem": row["question_text"],
+                        "options": options,
                         "correct_answer": row["correct_answer"],
-                        "year": row["year"],
+                        "year": row["osym_year"],
                     }
                 )
 
@@ -160,7 +171,7 @@ class OSYMInspiredGenerator:
         finally:
             await conn.close()
 
-    def format_osym_examples(self, osym_questions: List[Dict]) -> str:
+    def format_osym_examples(self, osym_questions: list[dict]) -> str:
         """
         Format ÖSYM questions as few-shot examples
         """
@@ -168,9 +179,9 @@ class OSYMInspiredGenerator:
 
         for i, q in enumerate(osym_questions, 1):
             example = f"""
-ÖRNEK {i} (ÖSYM {q['year']} - {q['subject']}):
+ÖRNEK {i} (ÖSYM {q["year"]} - {q["subject"]}):
 
-SORU: {q['stem']}
+SORU: {q["stem"]}
 
 SEÇENEKLER:
 """
@@ -189,22 +200,20 @@ SEÇENEKLER:
         exam_type: str = "TYT",
         difficulty: str = "orta",
         provider: str = "claude",  # "claude" or "openai"
-        style_guide: Optional[Dict] = None,  # OPTION A: Pass database average
+        style_guide: dict | None = None,  # OPTION A: Pass database average
         include_table: bool = False,  # Phase 1: Generate question with table
         table_type: str = "frequency_table",  # Type of table to include
         include_graph: bool = False,  # Phase 2: Generate question with graph
         graph_type: str = "line",  # Type of graph to include (line, bar, pie, scatter, histogram)
         include_geometry: bool = False,  # Phase 3: Generate question with geometry
         geometry_type: str = "triangle",  # Type of geometry (triangle, circle, quadrilateral, polygon, 3d_shape)
-        shape_subtype: Optional[
-            str
-        ] = None,  # Specific shape (e.g., "right_triangle", "square", auto-selected if None)
+        shape_subtype: str
+        | None = None,  # Specific shape (e.g., "right_triangle", "square", auto-selected if None)
         include_map_diagram: bool = False,  # Phase 4: Generate question with map/diagram
         diagram_type: str = "geographic_map",  # Type of diagram (geographic_map, process_diagram, classification_diagram, timeline)
-        diagram_subtype: Optional[
-            str
-        ] = None,  # Specific diagram (e.g., "turkey_regions", "flowchart", auto-selected if None)
-    ) -> Dict:
+        diagram_subtype: str
+        | None = None,  # Specific diagram (e.g., "turkey_regions", "flowchart", auto-selected if None)
+    ) -> dict:
         """
         METHOD 1: Few-Shot Learning
         Use real ÖSYM questions as examples in the prompt
@@ -278,7 +287,7 @@ SEÇENEKLER:
 <instruction>Bu soru aşağıdaki TABLO ile birlikte sunulacaktır. Soruyu tabloya referans vererek oluştur.</instruction>
 
 <table_example>
-{table_data['content']}
+{table_data["content"]}
 </table_example>
 
 <table_usage_guide>
@@ -309,10 +318,10 @@ SEÇENEKLER:
 <instruction>Bu soru aşağıdaki GRAFİK ile birlikte sunulacaktır. Soruyu grafiğe referans vererek oluştur.</instruction>
 
 <graph_description>
-Grafik Tipi: {graph_data['metadata']['graph_type']}
-Başlık: {graph_data['metadata']['title']}
-X Ekseni: {graph_data['metadata']['x_label']}
-Y Ekseni: {graph_data['metadata']['y_label']}
+Grafik Tipi: {graph_data["metadata"]["graph_type"]}
+Başlık: {graph_data["metadata"]["title"]}
+X Ekseni: {graph_data["metadata"]["x_label"]}
+Y Ekseni: {graph_data["metadata"]["y_label"]}
 </graph_description>
 
 <graph_usage_guide>
@@ -350,9 +359,9 @@ Y Ekseni: {graph_data['metadata']['y_label']}
 <instruction>Bu soru aşağıdaki GEOMETRİK ŞEKİL ile birlikte sunulacaktır. Soruyu şekle referans vererek oluştur.</instruction>
 
 <geometry_description>
-Şekil Tipi: {geometry_data['metadata']['geometry_type']}
-Alt Tip: {geometry_data['metadata']['shape_subtype']}
-Boyutlar: {', '.join([f'{k}: {v}' for k, v in geometry_data['metadata']['dimensions'].items()])}
+Şekil Tipi: {geometry_data["metadata"]["geometry_type"]}
+Alt Tip: {geometry_data["metadata"]["shape_subtype"]}
+Boyutlar: {", ".join([f"{k}: {v}" for k, v in geometry_data["metadata"]["dimensions"].items()])}
 </geometry_description>
 
 <geometry_usage_guide>
@@ -391,9 +400,9 @@ Boyutlar: {', '.join([f'{k}: {v}' for k, v in geometry_data['metadata']['dimensi
 <instruction>Bu soru aşağıdaki HARİTA/DİYAGRAM ile birlikte sunulacaktır. Soruyu görsele referans vererek oluştur.</instruction>
 
 <diagram_description>
-Diyagram Tipi: {map_diagram_data['metadata']['diagram_type']}
-Alt Tip: {map_diagram_data['metadata']['diagram_subtype']}
-Açıklama: {map_diagram_data['metadata']['description']}
+Diyagram Tipi: {map_diagram_data["metadata"]["diagram_type"]}
+Alt Tip: {map_diagram_data["metadata"]["diagram_subtype"]}
+Açıklama: {map_diagram_data["metadata"]["description"]}
 </diagram_description>
 
 <diagram_usage_guide>
@@ -597,7 +606,7 @@ Soruyu oluşturduktan sonra kontrol et:
                 f"Failed to parse AI response: {e}. Response snippet: {result_text[:200]}..."
             )
 
-    async def analyze_osym_style(self, subject: str, exam_type: str = "TYT") -> Dict:
+    async def analyze_osym_style(self, subject: str, exam_type: str = "TYT") -> dict:
         """
         METHOD 2: Style Analysis
         Analyze ÖSYM questions to extract patterns
@@ -608,12 +617,13 @@ Soruyu oluşturduktan sonra kontrol et:
         conn = await self.get_db_connection()
 
         try:
-            # Get many ÖSYM questions for analysis
+            # Get many ÖSYM questions for analysis (question_bank = 77K production)
             query = """
-                SELECT stem, options
-                FROM questions
-                WHERE source = 'ÖSYM'
-                  AND subject = $1
+                SELECT question_text
+                FROM question_bank
+                WHERE osym_format_compliant = true
+                  AND is_active = true
+                  AND subject_area = $1
                   AND exam_type = $2
                 LIMIT 50
             """
@@ -623,10 +633,12 @@ Soruyu oluşturduktan sonra kontrol et:
             # Analyze patterns
             if rows and len(rows) >= 10:
                 # Sufficient data: use database statistics
-                avg_stem_length = sum(len(row["stem"]) for row in rows) / len(rows)
-                avg_word_count = sum(len(row["stem"].split()) for row in rows) / len(
+                avg_stem_length = sum(len(row["question_text"]) for row in rows) / len(
                     rows
                 )
+                avg_word_count = sum(
+                    len(row["question_text"].split()) for row in rows
+                ) / len(rows)
                 data_source = "database"
             else:
                 # Insufficient data: use research-based fallback
@@ -642,7 +654,7 @@ Soruyu oluşturduktan sonra kontrol et:
             # Common question starters
             starters = {}
             for row in rows:
-                first_words = " ".join(row["stem"].split()[:3])
+                first_words = " ".join(row["question_text"].split()[:3])
                 starters[first_words] = starters.get(first_words, 0) + 1
 
             return {
@@ -668,7 +680,7 @@ Soruyu oluşturduktan sonra kontrol et:
 
     async def generate_with_template(
         self, subject: str, topic: str, exam_type: str = "TYT"
-    ) -> Dict:
+    ) -> dict:
         """
         METHOD 3: Template-Based Generation
         Extract template from ÖSYM question and fill with new content
@@ -694,32 +706,41 @@ Soruyu oluşturduktan sonra kontrol et:
 
         return template
 
-    async def get_osym_statistics(self) -> Dict:
+    async def get_osym_statistics(self) -> dict:
         """
         Get comprehensive ÖSYM question bank statistics
         """
         conn = await self.get_db_connection()
 
         try:
-            # Total questions
+            # Total questions (question_bank = 77K production)
             total = await conn.fetchval(
-                "SELECT COUNT(*) FROM questions WHERE source = 'ÖSYM'"
+                "SELECT COUNT(*) FROM question_bank"
+                " WHERE osym_format_compliant = true"
+                " AND is_active = true"
             )
 
             # By subject
             by_subject = await conn.fetch(
-                "SELECT subject, COUNT(*) as count FROM questions WHERE source = 'ÖSYM' GROUP BY subject"
+                "SELECT subject_area, COUNT(*) as count"
+                " FROM question_bank"
+                " WHERE osym_format_compliant = true"
+                " AND is_active = true"
+                " GROUP BY subject_area"
             )
 
             # With answers (usable for training)
             with_answers = await conn.fetchval(
-                "SELECT COUNT(*) FROM questions WHERE source = 'ÖSYM' AND correct_answer IS NOT NULL"
+                "SELECT COUNT(*) FROM question_bank"
+                " WHERE osym_format_compliant = true"
+                " AND is_active = true"
+                " AND correct_answer IS NOT NULL"
             )
 
             return {
                 "total_osym_questions": total,
                 "usable_for_training": with_answers,
-                "by_subject": {row["subject"]: row["count"] for row in by_subject},
+                "by_subject": {row["subject_area"]: row["count"] for row in by_subject},
                 "training_ready": with_answers > 0,
             }
 

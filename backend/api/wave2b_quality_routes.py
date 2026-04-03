@@ -123,14 +123,15 @@ async def load_osym_reference_questions(limit: int = 30) -> list[dict]:
             query = text(
                 """
                 SELECT
-                    stem as question_text,
-                    difficulty,
-                    subject,
+                    question_text,
+                    difficulty_level,
+                    subject_area,
                     correct_answer
-                FROM questions
-                WHERE correct_answer IS NOT NULL
-                AND stem IS NOT NULL
-                AND LENGTH(stem) > 50
+                FROM question_bank
+                WHERE is_active = true
+                AND correct_answer IS NOT NULL
+                AND question_text IS NOT NULL
+                AND LENGTH(question_text) > 50
                 ORDER BY RANDOM()
                 LIMIT :limit
             """
