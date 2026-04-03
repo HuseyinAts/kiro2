@@ -71,7 +71,7 @@ async def dispatch_task(
         raise
     except Exception as e:
         logger.error("Orchestrator dispatch failed: %s", e)
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="Orchestrator dispatch failed")
 
 
 @router.get("/status")
@@ -165,7 +165,7 @@ async def calibrate_irt_batch(
             await db.commit()
     except Exception as e:
         logger.error("IRT batch calibration failed: %s", e)
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="IRT calibration failed")
 
     return {
         "calibrated": calibrated,

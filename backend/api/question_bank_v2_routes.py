@@ -10,22 +10,25 @@ Endpoints:
 - POST /api/v2/hitl/tasks - Create expert review task
 - GET /api/v2/hitl/dashboard/{expert_id} - Expert dashboard
 """
-from fastapi import APIRouter, Depends, HTTPException, status
-from core.dependencies import AuthenticatedUser, UserRole, get_current_user
-from typing import Dict, Optional
-from pydantic import BaseModel, Field
-from uuid import uuid4
-from datetime import datetime
+
+import os
 
 # Import services
 import sys
-import os
+from datetime import datetime
+from uuid import uuid4
+
+from fastapi import APIRouter, Depends, HTTPException, status
+from pydantic import BaseModel, Field
+
+from core.dependencies import AuthenticatedUser, UserRole, get_current_user
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 
 try:
     from scripts.ai_question_generator import HybridQuestionGenerator
     from scripts.question_validator import QuestionValidator
+
     _SCRIPTS_AVAILABLE = True
 except ImportError:
     HybridQuestionGenerator = None
@@ -33,14 +36,15 @@ except ImportError:
     _SCRIPTS_AVAILABLE = False
 
 try:
-    from services.knowledge_graph_service import KnowledgeGraphService, QuestionNode
-    from services.plagiarism_detection_service import PlagiarismDetectionService
     from services.adaptive_testing_service import ComputerAdaptiveTestingService
     from services.hitl_workflow_service import (
         HITLWorkflowService,
         ReviewDecision,
         ReviewSubmission,
     )
+    from services.knowledge_graph_service import KnowledgeGraphService, QuestionNode
+    from services.plagiarism_detection_service import PlagiarismDetectionService
+
     _SERVICES_AVAILABLE = True
 except ImportError:
     KnowledgeGraphService = None
@@ -55,11 +59,13 @@ except ImportError:
 router = APIRouter(prefix="/api/v2", tags=["Question Bank v2.0"])
 
 # Initialize services (in production: use dependency injection)
-question_generator = HybridQuestionGenerator()
-question_validator = QuestionValidator()
-kg_service = KnowledgeGraphService()
-plagiarism_service = PlagiarismDetectionService()
-hitl_service = HITLWorkflowService()
+question_generator = HybridQuestionGenerator() if HybridQuestionGenerator else None
+question_validator = QuestionValidator() if QuestionValidator else None
+kg_service = KnowledgeGraphService() if KnowledgeGraphService else None
+plagiarism_service = (
+    PlagiarismDetectionService() if PlagiarismDetectionService else None
+)
+hitl_service = HITLWorkflowService() if HITLWorkflowService else None
 
 
 def _verify_student_access(current_user: AuthenticatedUser, student_id: str) -> None:
@@ -74,7 +80,11 @@ def _verify_student_access(current_user: AuthenticatedUser, student_id: str) -> 
 
 # Mock item bank for CAT (in production: load from database)
 MOCK_ITEM_BANK = []
-cat_service = ComputerAdaptiveTestingService(MOCK_ITEM_BANK)
+cat_service = (
+    ComputerAdaptiveTestingService(MOCK_ITEM_BANK)
+    if ComputerAdaptiveTestingService
+    else None
+)
 
 
 # ============================================================================
@@ -90,21 +100,19 @@ class QuestionGenerationRequest(BaseModel):
     kazanim: str = Field(..., description="Learning objective")
     zorluk: str = Field(default="medium", description="Difficulty: easy, medium, hard")
     bloom_level: str = Field(default="apply", description="Bloom's taxonomy level")
-    force_model: Optional[str] = Field(
-        None, description="Force AI model: gpt-5 or claude"
-    )
+    force_model: str | None = Field(None, description="Force AI model: gpt-5 or claude")
 
 
 class QuestionGenerationResponse(BaseModel):
     """Response from question generation"""
 
     status: str  # "approved", "needs_review", "rejected"
-    question_id: Optional[str]
-    question: Optional[Dict]
-    task_id: Optional[str]  # If needs review
-    priority: Optional[str]
-    plagiarism_result: Optional[Dict]
-    validation_result: Optional[Dict]
+    question_id: str | None
+    question: dict | None
+    task_id: str | None  # If needs review
+    priority: str | None
+    plagiarism_result: dict | None
+    validation_result: dict | None
     message: str
 
 
@@ -113,15 +121,15 @@ class CATStartRequest(BaseModel):
 
     student_id: str
     konu: str
-    sinav_tipi: Optional[str] = "TYT"
-    initial_theta: Optional[float] = 0.0
+    sinav_tipi: str | None = "TYT"
+    initial_theta: float | None = 0.0
 
 
 class CATStartResponse(BaseModel):
     """Response from CAT session start"""
 
     session_id: str
-    first_question: Dict
+    first_question: dict
     initial_ability: float
     estimated_questions: str
 
@@ -139,11 +147,11 @@ class CATSubmitResponse(BaseModel):
     """Response from CAT submission"""
 
     status: str  # "in_progress" or "complete"
-    current_ability: Optional[float]
-    current_sem: Optional[float]
+    current_ability: float | None
+    current_sem: float | None
     questions_answered: int
-    next_question: Optional[Dict]
-    final_results: Optional[Dict]
+    next_question: dict | None
+    final_results: dict | None
 
 
 class KnowledgeGraphRecommendationRequest(BaseModel):
@@ -158,8 +166,8 @@ class HITLTaskRequest(BaseModel):
     """Request to create HITL task"""
 
     question_id: str
-    question_data: Dict
-    ai_validation_result: Dict
+    question_data: dict
+    ai_validation_result: dict
 
 
 class HITLReviewSubmission(BaseModel):
@@ -170,7 +178,7 @@ class HITLReviewSubmission(BaseModel):
     decision: str  # "approve", "reject", "needs_revision", "escalate"
     pedagogy_score: int = Field(..., ge=0, le=100)
     comments: str
-    suggested_changes: Optional[Dict]
+    suggested_changes: dict | None
     review_time_seconds: int
 
 
@@ -208,7 +216,7 @@ async def generate_question_full_pipeline(
         if "error" in question:
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail=f"AI generation failed: {question['error']}",
+                detail="AI soru uretimi basarisiz. Lutfen tekrar deneyin.",
             )
 
         question_id = str(uuid4())
@@ -278,7 +286,7 @@ async def generate_question_full_pipeline(
             message="Question approved and ready for use",
         )
 
-    except Exception as e:
+    except Exception:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Islem basarisiz. Lutfen tekrar deneyin.",
@@ -335,7 +343,7 @@ async def start_cat_session(
             estimated_questions="10-20 sorular",
         )
 
-    except Exception as e:
+    except Exception:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Islem basarisiz. Lutfen tekrar deneyin.",
@@ -369,17 +377,16 @@ async def submit_cat_response(
                 next_question=None,
                 final_results=result.get("performance_summary"),
             )
-        else:
-            return CATSubmitResponse(
-                status="in_progress",
-                current_ability=result["current_ability"],
-                current_sem=result["current_sem"],
-                questions_answered=result["questions_answered"],
-                next_question=result["next_question"],
-                final_results=None,
-            )
+        return CATSubmitResponse(
+            status="in_progress",
+            current_ability=result["current_ability"],
+            current_sem=result["current_sem"],
+            questions_answered=result["questions_answered"],
+            next_question=result["next_question"],
+            final_results=None,
+        )
 
-    except Exception as e:
+    except Exception:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Islem basarisiz. Lutfen tekrar deneyin.",
@@ -414,7 +421,7 @@ async def get_question_recommendations(
 
         return {"recommendations": recommendations, "count": len(recommendations)}
 
-    except Exception as e:
+    except Exception:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Islem basarisiz. Lutfen tekrar deneyin.",
@@ -429,7 +436,7 @@ async def get_knowledge_graph_stats(
     try:
         stats = kg_service.export_graph_stats()
         return stats
-    except Exception as e:
+    except Exception:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Islem basarisiz. Lutfen tekrar deneyin.",
@@ -446,7 +453,7 @@ async def analyze_student_knowledge_gaps(
         _verify_student_access(current_user, student_id)
         gap_analysis = kg_service.analyze_student_gaps(student_id)
         return gap_analysis
-    except Exception as e:
+    except Exception:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Islem basarisiz. Lutfen tekrar deneyin.",
@@ -473,7 +480,7 @@ async def create_review_task(
 
         return eval_result
 
-    except Exception as e:
+    except Exception:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Islem basarisiz. Lutfen tekrar deneyin.",
@@ -483,7 +490,7 @@ async def create_review_task(
 @router.post("/hitl/tasks/{task_id}/assign")
 async def assign_task_to_expert(
     task_id: str,
-    expert_id: Optional[str] = None,
+    expert_id: str | None = None,
     current_user: AuthenticatedUser = Depends(get_current_user),
 ):
     """Assign review task to an expert (auto-match if expert_id not provided)"""
@@ -491,7 +498,7 @@ async def assign_task_to_expert(
         assignment = hitl_service.assign_task_to_expert(task_id, expert_id)
         return assignment
 
-    except Exception as e:
+    except Exception:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Islem basarisiz. Lutfen tekrar deneyin.",
@@ -520,7 +527,7 @@ async def submit_expert_review(
         result = hitl_service.submit_review(submission)
         return result
 
-    except Exception as e:
+    except Exception:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Islem basarisiz. Lutfen tekrar deneyin.",
@@ -538,9 +545,10 @@ async def get_expert_dashboard(
         dashboard = hitl_service.get_expert_dashboard(expert_id)
         return dashboard
 
-    except Exception as e:
+    except Exception:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Islem basarisiz. Lutfen tekrar deneyin."
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
 
 
@@ -554,7 +562,7 @@ async def get_expert_leaderboard(
         leaderboard = hitl_service.get_leaderboard(limit)
         return {"leaderboard": leaderboard, "count": len(leaderboard)}
 
-    except Exception as e:
+    except Exception:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Islem basarisiz. Lutfen tekrar deneyin.",

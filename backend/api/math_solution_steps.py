@@ -559,6 +559,6 @@ async def health_check():
         logger.error(f"Health check error: {e}")
         return {
             "success": False,
-            "message": f"Sistem hatası: {e!s}",
-            "data": {"system_status": "unhealthy", "error": str(e)},
+            "message": "Sistem hatasi. Lutfen tekrar deneyin.",
+            "data": {"system_status": "unhealthy"},
         }

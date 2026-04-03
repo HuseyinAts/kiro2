@@ -104,8 +104,8 @@ async def start_batch_generation(
             "message": f"Batch generation started: {request.batch_size} questions",
         }
 
-    except Exception as e:
-        raise HTTPException(500, f"Failed to start batch generation: {e!s}")
+    except Exception:
+        raise HTTPException(500, "Islem basarisiz. Lutfen tekrar deneyin.")
 
 
 @router.get("/status/{task_id}", response_model=BatchStatusResponse)
@@ -143,12 +143,12 @@ async def get_batch_status(
             response["status"] = "Completed"
             response["result"] = result.result
         elif result.state == "FAILURE":
-            response["status"] = f"Failed: {result.info!s}"
+            response["status"] = "Failed"
 
         return response
 
-    except Exception as e:
-        raise HTTPException(500, f"Failed to get task status: {e!s}")
+    except Exception:
+        raise HTTPException(500, "Islem basarisiz. Lutfen tekrar deneyin.")
 
 
 @router.get("/results/{task_id}", response_model=BatchResultResponse)
@@ -180,8 +180,8 @@ async def get_batch_results(
 
     except HTTPException:
         raise
-    except Exception as e:
-        raise HTTPException(500, f"Failed to get results: {e!s}")
+    except Exception:
+        raise HTTPException(500, "Islem basarisiz. Lutfen tekrar deneyin.")
 
 
 @router.delete("/cancel/{task_id}")
@@ -195,8 +195,8 @@ async def cancel_batch_generation(
 
         return {"success": True, "task_id": task_id, "message": "Task cancelled"}
 
-    except Exception as e:
-        raise HTTPException(500, f"Failed to cancel task: {e!s}")
+    except Exception:
+        raise HTTPException(500, "Islem basarisiz. Lutfen tekrar deneyin.")
 
 
 @router.get("/queue/stats")
@@ -226,5 +226,5 @@ async def get_queue_stats(_=Depends(get_current_admin_user)) -> dict[str, Any]:
             "queues": ["default", "bulk", "emails", "reports"],
         }
 
-    except Exception as e:
-        raise HTTPException(500, f"Failed to get queue stats: {e!s}")
+    except Exception:
+        raise HTTPException(500, "Islem basarisiz. Lutfen tekrar deneyin.")

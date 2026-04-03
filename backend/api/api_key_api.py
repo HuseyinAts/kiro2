@@ -5,14 +5,13 @@ CRUD operations for API keys
 Author: Claude
 Date: 2025-10-27
 """
-from typing import List, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Request
 from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.api_key_manager import APIKeyScope, get_api_key_manager
-from core.dependencies import get_db, get_current_user, AuthenticatedUser
+from core.dependencies import AuthenticatedUser, get_current_user, get_db
 from core.structured_logger import get_logger
 from models.database import APIKey
 
@@ -25,11 +24,11 @@ class APIKeyCreateRequest(BaseModel):
     """API key creation request"""
 
     name: str
-    description: Optional[str] = None
-    scopes: List[str]
+    description: str | None = None
+    scopes: list[str]
     rate_limit: int = 1000
-    expires_in_days: Optional[int] = None
-    allowed_ips: Optional[List[str]] = None
+    expires_in_days: int | None = None
+    allowed_ips: list[str] | None = None
 
 
 class APIKeyResponse(BaseModel):
@@ -37,14 +36,14 @@ class APIKeyResponse(BaseModel):
 
     id: str
     name: str
-    description: Optional[str]
+    description: str | None
     prefix: str
-    scopes: List[str]
+    scopes: list[str]
     rate_limit: int
     is_active: bool
     usage_count: int
-    last_used_at: Optional[str]
-    expires_at: Optional[str]
+    last_used_at: str | None
+    expires_at: str | None
     created_at: str
 
 
@@ -94,10 +93,12 @@ async def create_api_key(
 
     except Exception as e:
         logger.error(f"[API KEY API] Create failed: {e}")
-        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
+        raise HTTPException(
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
+        )
 
 
-@router.get("/list", response_model=List[APIKeyResponse], summary="List API Keys")
+@router.get("/list", response_model=list[APIKeyResponse], summary="List API Keys")
 async def list_api_keys(
     db: AsyncSession = Depends(get_db),
     current_user: AuthenticatedUser = Depends(get_current_user),
@@ -142,7 +143,9 @@ async def list_api_keys(
 
     except Exception as e:
         logger.error(f"[API KEY API] List failed: {e}")
-        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
+        raise HTTPException(
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
+        )
 
 
 @router.post("/{key_id}/revoke", summary="Revoke API Key")
@@ -165,6 +168,14 @@ async def revoke_api_key(
             else None
         )
 
+        # Ownership check — only key owner can revoke
+        if sync_db:
+            key_obj = sync_db.query(APIKey).filter(APIKey.id == key_id).first()
+            if not key_obj:
+                raise HTTPException(status_code=404, detail="API key bulunamadi")
+            if str(key_obj.user_id) != str(current_user.id):
+                raise HTTPException(status_code=403, detail="Bu API key size ait degil")
+
         manager = get_api_key_manager(sync_db)
         manager.revoke_api_key(key_id, reason)
 
@@ -173,9 +184,13 @@ async def revoke_api_key(
 
         return {"message": f"API key {key_id} revoked successfully"}
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"[API KEY API] Revoke failed: {e}")
-        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
+        raise HTTPException(
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
+        )
 
 
 @router.post("/{key_id}/rotate", summary="Rotate API Key")
@@ -198,6 +213,14 @@ async def rotate_api_key(
             else None
         )
 
+        # Ownership check — only key owner can rotate
+        if sync_db:
+            key_obj = sync_db.query(APIKey).filter(APIKey.id == key_id).first()
+            if not key_obj:
+                raise HTTPException(status_code=404, detail="API key bulunamadi")
+            if str(key_obj.user_id) != str(current_user.id):
+                raise HTTPException(status_code=403, detail="Bu API key size ait degil")
+
         manager = get_api_key_manager(sync_db)
         new_key = manager.rotate_api_key(key_id, request)
 
@@ -208,4 +231,6 @@ async def rotate_api_key(
 
     except Exception as e:
         logger.error(f"[API KEY API] Rotate failed: {e}")
-        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
+        raise HTTPException(
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
+        )

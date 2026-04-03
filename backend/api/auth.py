@@ -7,7 +7,7 @@ import logging
 import secrets
 import time
 from collections import defaultdict
-from contextlib import contextmanager
+from contextlib import contextmanager  # noqa: F401 -- kept for backward compat
 from datetime import UTC, datetime, timedelta
 from typing import Any
 
@@ -139,27 +139,10 @@ def _safe_user_detail(e: Exception) -> str:
     return _GENERIC_ERROR
 
 
-@contextmanager
-def _sync_session(db: AsyncSession):
-    """Create a sync session from async session for JWT DB operations.
-
-    Raises HTTPException 503 if sync engine is unavailable.
-    """
-    from sqlalchemy.orm import Session as SyncSession
-
-    if not hasattr(db.bind, "sync_engine"):
-        raise HTTPException(
-            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail="Veritabanı servisi geçici olarak kullanılamıyor",
-        )
-    session = SyncSession(bind=db.bind.sync_engine)
-    try:
-        yield session
-    except Exception:
-        session.rollback()
-        raise
-    finally:
-        session.close()
+# FIX 2026-04-01: _sync_session kaldirildi.
+# SQLAlchemy 2.x'te db.bind attribute yok -> AttributeError/503.
+# Refresh token persist zaten async await db.execute() ile yapiliyor.
+# Bu contextmanager dead code olarak kaldi, kullanilan yer yok.
 
 
 # Password hashing using bcrypt
@@ -310,23 +293,34 @@ async def database_authenticate(
     expires_in = jwt_mgr.access_token_expire_minutes * 60
 
     # Save refresh token to DB for rotation/revocation support
-    if hasattr(db.bind, "sync_engine"):
-        from sqlalchemy.orm import Session as SyncSession
+    # Refresh token'i async ile kaydet (sync session asyncpg ile calismiyor)
+    try:
+        import hashlib as _hashlib
 
-        sync_db = SyncSession(bind=db.bind.sync_engine)
-        try:
-            jwt_mgr._save_refresh_token_to_db(
-                sync_db,
-                refresh_token,
-                str(db_user.id),
-                None,
-                None,
-            )
-            sync_db.commit()
-        except Exception:
-            logger.warning("Failed to persist refresh token to DB")
-        finally:
-            sync_db.close()
+        from sqlalchemy import text as _text
+
+        _payload = pyjwt.decode(refresh_token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
+        _token_hash = _hashlib.sha256(refresh_token.encode()).hexdigest()
+        _jti = _payload.get("jti", "") if _payload else ""
+        _exp = (
+            datetime.fromtimestamp(_payload.get("exp", 0), tz=UTC)
+            if _payload
+            else datetime.now(UTC)
+        )
+        await db.execute(
+            _text("""
+                INSERT INTO refresh_tokens
+                    (id, user_id, token_hash, jti, device_type, expires_at,
+                     revoked, usage_count, created_at, updated_at)
+                VALUES
+                    (gen_random_uuid(), :uid, :th, :jti, 'desktop', :exp,
+                     false, 0, now(), now())
+                ON CONFLICT DO NOTHING
+            """),
+            {"uid": str(db_user.id), "th": _token_hash, "jti": _jti, "exp": _exp},
+        )
+    except Exception as _rt_err:
+        logger.warning(f"Failed to persist refresh token to DB: {_rt_err}")
 
     # Update last login
     db_user.last_login = datetime.now(UTC)
@@ -511,6 +505,34 @@ async def kullanici_kayit(
             "role": rol_str,
         },
     )
+
+    # ── student_profiles oluştur (öğrenci rolü için) ─────────────────
+    # Bu kayıt olmadan: exam_sessions FK kırık, theta persist edemez,
+    # learning path kişiselleştiremez, dashboard hep sıfır gösterir.
+    if rol_str == "STUDENT":
+        profile_id = str(_uuid.uuid4())
+        grade_level = getattr(kullanici_data, "sinif", 11)  # Default: 11. sınıf
+        if not isinstance(grade_level, int) or grade_level < 9 or grade_level > 12:
+            grade_level = 11
+
+        await db.execute(
+            _text("""
+            INSERT INTO student_profiles
+                (id, user_id, grade_level, veli_onay, current_level,
+                 total_study_hours, total_questions_solved, correct_answers,
+                 irt_ability, created_at, updated_at)
+            VALUES
+                (:id, :user_id, :grade_level, FALSE, 0.0,
+                 0, 0, 0,
+                 0.0, NOW(), NOW())
+        """),
+            {
+                "id": profile_id,
+                "user_id": user_id,
+                "grade_level": grade_level,
+            },
+        )
+
     await db.commit()
 
     logger.info(f"Yeni kullanıcı kaydı: {kullanici_data.email} ({rol_str})")
@@ -959,15 +981,8 @@ async def get_current_user(
     ad = name_parts[0] if len(name_parts) > 0 else ""
     soyad = name_parts[1] if len(name_parts) > 1 else ""
 
-    # Map backend role to frontend role format
-    role_mapping = {
-        "STUDENT": "ogrenci",
-        "TEACHER": "ogretmen",
-        "PARENT": "veli",
-        "ADMIN": "admin",
-        "SUPER_ADMIN": "super_admin",
-    }
-    frontend_role = role_mapping.get(mevcut_kullanici.rol.value, "ogrenci")
+    # KullaniciRolu values already match frontend format: "ogrenci", "admin" etc.
+    frontend_role = mevcut_kullanici.rol.value
 
     return {
         "user": {
@@ -1158,7 +1173,11 @@ async def change_password(
         return {"success": True, "message": "Şifre başarıyla değiştirildi"}
     except Exception as e:
         await db.rollback()
-        return {"success": False, "message": f"Şifre değiştirme başarısız: {e!s}"}
+        logger.error(f"Password change failed: {e!s}")
+        return {
+            "success": False,
+            "message": "Şifre değiştirme başarısız. Lütfen tekrar deneyin.",
+        }
 
 
 class ForgotPasswordRequest(BaseModel):
@@ -1292,7 +1311,11 @@ async def reset_password(
         return {"success": True, "message": "Şifre başarıyla sıfırlandı"}
     except Exception as e:
         await db.rollback()
-        return {"success": False, "message": f"Şifre sıfırlama başarısız: {e!s}"}
+        logger.error(f"Password reset failed: {e!s}")
+        return {
+            "success": False,
+            "message": "Şifre sıfırlama başarısız. Lütfen tekrar deneyin.",
+        }
 
 
 @router.put("/profile", summary="Update Profile", include_in_schema=False)

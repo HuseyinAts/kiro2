@@ -15,9 +15,9 @@ Endpoints:
 from __future__ import annotations
 
 import uuid
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Query, status
 
@@ -38,8 +38,10 @@ from api.schemas.quality_gates import (
     RunHistoryResponse,
     RunPipelineRequest,
 )
-from core.auth_dependencies import get_current_user
-from core.dependencies import AuthenticatedUser
+from core.dependencies import (
+    AuthenticatedUser,
+    get_current_user,  # fixed: was auth_dependencies (no blacklist)
+)
 from core.structured_logger import get_logger
 
 logger = get_logger(__name__)
@@ -102,8 +104,8 @@ async def run_quality_gates(
     )
 
     try:
-        from core.quality_gates.orchestrator import QualityGatesOrchestrator
         from core.quality_gates.models import PipelineConfig
+        from core.quality_gates.orchestrator import QualityGatesOrchestrator
 
         # Determine working directory
         working_dir = Path(request.working_dir) if request.working_dir else Path.cwd()
@@ -111,7 +113,7 @@ async def run_quality_gates(
         if not working_dir.exists():
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail=f"Working directory does not exist: {working_dir}",
+                detail="Working directory does not exist",
             )
 
         # Create pipeline config
@@ -249,8 +251,8 @@ async def get_pipeline_status(
     thresholds, timeouts, and dependencies.
     """
     try:
-        from core.quality_gates.orchestrator import QualityGatesOrchestrator
         from core.quality_gates.dependency_graph import DEFAULT_GATE_DEPENDENCIES
+        from core.quality_gates.orchestrator import QualityGatesOrchestrator
 
         # Create orchestrator with default config to get gate info
         orchestrator = QualityGatesOrchestrator(working_dir=Path.cwd())
@@ -387,7 +389,7 @@ async def request_override(
     override_id = str(uuid.uuid4())
     expires_at = None
     if request.expires_hours:
-        expires_at = datetime.now(timezone.utc) + timedelta(hours=request.expires_hours)
+        expires_at = datetime.now(UTC) + timedelta(hours=request.expires_hours)
 
     override_data = {
         "override_id": override_id,
@@ -397,7 +399,7 @@ async def request_override(
         "ticket_id": request.ticket_id,
         "status": "pending",
         "expires_at": expires_at,
-        "created_at": datetime.now(timezone.utc),
+        "created_at": datetime.now(UTC),
     }
 
     _override_requests[override_id] = override_data
@@ -407,7 +409,7 @@ async def request_override(
 
 @router.get("/overrides", response_model=list[OverrideResponse])
 async def list_overrides(
-    status_filter: Optional[str] = Query(None, description="Filter by status"),
+    status_filter: str | None = Query(None, description="Filter by status"),
     current_user: AuthenticatedUser = Depends(get_current_user),
 ) -> list[OverrideResponse]:
     """
@@ -451,7 +453,7 @@ async def approve_override(
     override = _override_requests[override_id]
     override["status"] = "approved"
     override["approver"] = current_user.email
-    override["approved_at"] = datetime.now(timezone.utc)
+    override["approved_at"] = datetime.now(UTC)
     override["comments"] = request.comments
 
     logger.info(

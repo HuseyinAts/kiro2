@@ -16,7 +16,7 @@ Endpoints:
 import base64
 import logging
 import time
-from typing import Any, Optional
+from typing import Any
 
 from fastapi import APIRouter, File, Form, HTTPException, UploadFile
 from pydantic import BaseModel, Field
@@ -35,57 +35,55 @@ router = APIRouter(prefix="/api/v1/vision", tags=["Vision AI"])
 # Pydantic Models
 # ============================================================
 
+
 class VisionAnalyzeRequest(BaseModel):
     """Gorsel analiz istegi"""
+
     image: str = Field(..., description="Base64 encoded gorsel")
     prompt: str = Field(
-        default="Bu gorseli detayli olarak analiz et.",
-        description="Analiz icin prompt"
+        default="Bu gorseli detayli olarak analiz et.", description="Analiz icin prompt"
     )
     language: str = Field(default="tr", description="Yanit dili (tr/en)")
 
 
 class VisionSolveRequest(BaseModel):
     """Soru cozum istegi"""
+
     image: str = Field(..., description="Base64 encoded soru gorseli")
     subject: str = Field(
         default="matematik",
-        description="Ders (matematik, fizik, kimya, biyoloji, turkce, vb.)"
+        description="Ders (matematik, fizik, kimya, biyoloji, turkce, vb.)",
     )
-    level: str = Field(
-        default="TYT",
-        description="Seviye (TYT, AYT, LGS)"
-    )
-    show_steps: bool = Field(
-        default=True,
-        description="Adim adim cozum goster"
-    )
+    level: str = Field(default="TYT", description="Seviye (TYT, AYT, LGS)")
+    show_steps: bool = Field(default=True, description="Adim adim cozum goster")
 
 
 class VisionExtractRequest(BaseModel):
     """Metin cikarma istegi"""
+
     image: str = Field(..., description="Base64 encoded gorsel")
     include_layout: bool = Field(
-        default=False,
-        description="Sayfa duzenini koruyarak cikar"
+        default=False, description="Sayfa duzenini koruyarak cikar"
     )
 
 
 class VisionDiagramRequest(BaseModel):
     """Diyagram aciklama istegi"""
+
     image: str = Field(..., description="Base64 encoded diyagram gorseli")
     subject: str = Field(
         default="genel",
-        description="Konu alani (matematik, fizik, kimya, biyoloji, cografya)"
+        description="Konu alani (matematik, fizik, kimya, biyoloji, cografya)",
     )
     detail_level: str = Field(
         default="detailed",
-        description="Detay seviyesi (brief, detailed, comprehensive)"
+        description="Detay seviyesi (brief, detailed, comprehensive)",
     )
 
 
 class VisionResponse(BaseModel):
     """Gorsel analiz yaniti"""
+
     success: bool
     result: str
     model: str
@@ -95,15 +93,17 @@ class VisionResponse(BaseModel):
 
 class VisionHealthResponse(BaseModel):
     """Saglik kontrolu yaniti"""
+
     status: str
     model: str
     available: bool
-    latency_ms: Optional[float] = None
+    latency_ms: float | None = None
 
 
 # ============================================================
 # Helper Functions
 # ============================================================
+
 
 def clean_base64(b64_string: str) -> str:
     """Base64 string'i temizle (data URL prefix'ini kaldir)"""
@@ -118,7 +118,11 @@ def validate_base64_image(b64_string: str) -> bool:
         cleaned = clean_base64(b64_string)
         decoded = base64.b64decode(cleaned)
         # PNG, JPEG, WebP magic bytes kontrolu
-        if decoded[:4] == b"\x89PNG" or decoded[:2] == b"\xff\xd8" or decoded[:4] == b"RIFF":
+        if (
+            decoded[:4] == b"\x89PNG"
+            or decoded[:2] == b"\xff\xd8"
+            or decoded[:4] == b"RIFF"
+        ):
             return True
         return False
     except Exception:
@@ -126,18 +130,14 @@ def validate_base64_image(b64_string: str) -> bool:
 
 
 async def analyze_with_vision(
-    image_b64: str,
-    prompt: str,
-    **kwargs: Any
+    image_b64: str, prompt: str, **kwargs: Any
 ) -> tuple[str, float]:
     """Vision modeli ile gorsel analiz yap"""
     start_time = time.time()
 
     cleaned_b64 = clean_base64(image_b64)
     result = await llm_service.analyze_image(
-        prompt=prompt,
-        image_base64=cleaned_b64,
-        **kwargs
+        prompt=prompt, image_base64=cleaned_b64, **kwargs
     )
 
     elapsed_ms = (time.time() - start_time) * 1000
@@ -147,6 +147,7 @@ async def analyze_with_vision(
 # ============================================================
 # Endpoints
 # ============================================================
+
 
 @router.post("/analyze", response_model=VisionResponse)
 async def analyze_image(request: VisionAnalyzeRequest) -> VisionResponse:
@@ -172,22 +173,19 @@ async def analyze_image(request: VisionAnalyzeRequest) -> VisionResponse:
 
         full_prompt = f"{lang_prompt}{request.prompt}"
 
-        result, elapsed_ms = await analyze_with_vision(
-            request.image,
-            full_prompt
-        )
+        result, elapsed_ms = await analyze_with_vision(request.image, full_prompt)
 
         return VisionResponse(
             success=True,
             result=result,
             model=llm_service.vision_model,
             processing_time_ms=round(elapsed_ms, 2),
-            metadata={"language": request.language}
+            metadata={"language": request.language},
         )
 
     except Exception as e:
         logger.error(f"Vision analyze error: {e}")
-        raise HTTPException(500, f"Gorsel analizi basarisiz: {str(e)}")
+        raise HTTPException(500, "Gorsel analizi basarisiz. Lutfen tekrar deneyin.")
 
 
 @router.post("/solve-question", response_model=VisionResponse)
@@ -219,8 +217,7 @@ async def solve_question(request: VisionSolveRequest) -> VisionResponse:
         }
 
         base_prompt = subject_prompts.get(
-            request.subject.lower(),
-            "Bu soruyu analiz et ve coz."
+            request.subject.lower(), "Bu soruyu analiz et ve coz."
         )
 
         # Adim adim cozum istegi
@@ -244,10 +241,7 @@ Cozum adimlarini su formatta ver:
 {level_info}
 {step_instruction}"""
 
-        result, elapsed_ms = await analyze_with_vision(
-            request.image,
-            full_prompt
-        )
+        result, elapsed_ms = await analyze_with_vision(request.image, full_prompt)
 
         return VisionResponse(
             success=True,
@@ -257,13 +251,13 @@ Cozum adimlarini su formatta ver:
             metadata={
                 "subject": request.subject,
                 "level": request.level,
-                "show_steps": request.show_steps
-            }
+                "show_steps": request.show_steps,
+            },
         )
 
     except Exception as e:
         logger.error(f"Vision solve error: {e}")
-        raise HTTPException(500, f"Soru cozumu basarisiz: {str(e)}")
+        raise HTTPException(500, "Soru cozumu basarisiz. Lutfen tekrar deneyin.")
 
 
 @router.post("/extract-text", response_model=VisionResponse)
@@ -282,7 +276,9 @@ async def extract_text(request: VisionExtractRequest) -> VisionResponse:
     try:
         layout_instruction = ""
         if request.include_layout:
-            layout_instruction = " Sayfa duzenini (basliklari, paragraflari, listeleri) koruyarak cikar."
+            layout_instruction = (
+                " Sayfa duzenini (basliklari, paragraflari, listeleri) koruyarak cikar."
+            )
 
         prompt = f"""Bu gorseldeki tum metinleri oku ve yaz.
 Matematiksel ifadeleri LaTeX formatinda goster.
@@ -290,22 +286,19 @@ El yazisi varsa onu da oku.{layout_instruction}
 
 Sadece okudugun metni yaz, yorum ekleme."""
 
-        result, elapsed_ms = await analyze_with_vision(
-            request.image,
-            prompt
-        )
+        result, elapsed_ms = await analyze_with_vision(request.image, prompt)
 
         return VisionResponse(
             success=True,
             result=result,
             model=llm_service.vision_model,
             processing_time_ms=round(elapsed_ms, 2),
-            metadata={"include_layout": request.include_layout}
+            metadata={"include_layout": request.include_layout},
         )
 
     except Exception as e:
         logger.error(f"Vision OCR error: {e}")
-        raise HTTPException(500, f"Metin cikarma basarisiz: {str(e)}")
+        raise HTTPException(500, "Metin cikarma basarisiz. Lutfen tekrar deneyin.")
 
 
 @router.post("/describe-diagram", response_model=VisionResponse)
@@ -327,12 +320,11 @@ async def describe_diagram(request: VisionDiagramRequest) -> VisionResponse:
         detail_map = {
             "brief": "Kisa ve oz bir aciklama yap (2-3 cumle).",
             "detailed": "Detayli bir aciklama yap. Tum onemli elemanlari belirt.",
-            "comprehensive": "Kapsamli bir analiz yap. Her elemani, iliskilerini ve egitimsel onemini acikla."
+            "comprehensive": "Kapsamli bir analiz yap. Her elemani, iliskilerini ve egitimsel onemini acikla.",
         }
 
         detail_instruction = detail_map.get(
-            request.detail_level,
-            detail_map["detailed"]
+            request.detail_level, detail_map["detailed"]
         )
 
         # Konu bazli ek talimatlar
@@ -359,31 +351,25 @@ Diyagramdaki:
 - Renk kodlamalarini (varsa)
 ayri ayri belirt."""
 
-        result, elapsed_ms = await analyze_with_vision(
-            request.image,
-            prompt
-        )
+        result, elapsed_ms = await analyze_with_vision(request.image, prompt)
 
         return VisionResponse(
             success=True,
             result=result,
             model=llm_service.vision_model,
             processing_time_ms=round(elapsed_ms, 2),
-            metadata={
-                "subject": request.subject,
-                "detail_level": request.detail_level
-            }
+            metadata={"subject": request.subject, "detail_level": request.detail_level},
         )
 
     except Exception as e:
         logger.error(f"Vision diagram error: {e}")
-        raise HTTPException(500, f"Diyagram aciklama basarisiz: {str(e)}")
+        raise HTTPException(500, "Diyagram aciklama basarisiz. Lutfen tekrar deneyin.")
 
 
 @router.post("/analyze-upload", response_model=VisionResponse)
 async def analyze_upload(
     file: UploadFile = File(...),
-    prompt: str = Form(default="Bu gorseli detayli olarak analiz et.")
+    prompt: str = Form(default="Bu gorseli detayli olarak analiz et."),
 ) -> VisionResponse:
     """
     Dosya yukleme ile gorsel analizi
@@ -407,22 +393,19 @@ async def analyze_upload(
 
         full_prompt = f"Turkce yanit ver. {prompt}"
 
-        result, elapsed_ms = await analyze_with_vision(
-            image_b64,
-            full_prompt
-        )
+        result, elapsed_ms = await analyze_with_vision(image_b64, full_prompt)
 
         return VisionResponse(
             success=True,
             result=result,
             model=llm_service.vision_model,
             processing_time_ms=round(elapsed_ms, 2),
-            metadata={"filename": file.filename}
+            metadata={"filename": file.filename},
         )
 
     except Exception as e:
         logger.error(f"Vision upload error: {e}")
-        raise HTTPException(500, f"Gorsel analizi basarisiz: {str(e)}")
+        raise HTTPException(500, "Gorsel analizi basarisiz. Lutfen tekrar deneyin.")
 
 
 @router.get("/health", response_model=VisionHealthResponse)
@@ -436,8 +419,7 @@ async def health_check() -> VisionHealthResponse:
         test_image = "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg=="
 
         result = await llm_service.analyze_image(
-            prompt="Bu gorsel ne renk?",
-            image_base64=test_image
+            prompt="Bu gorsel ne renk?", image_base64=test_image
         )
 
         elapsed_ms = (time.time() - start_time) * 1000
@@ -446,16 +428,16 @@ async def health_check() -> VisionHealthResponse:
             status="healthy" if result else "degraded",
             model=llm_service.vision_model,
             available=True,
-            latency_ms=round(elapsed_ms, 2)
+            latency_ms=round(elapsed_ms, 2),
         )
 
     except Exception as e:
         logger.warning(f"Vision health check failed: {e}")
         return VisionHealthResponse(
-            status=f"unhealthy: {str(e)}",
+            status=f"unhealthy: {e!s}",
             model=llm_service.vision_model,
             available=False,
-            latency_ms=None
+            latency_ms=None,
         )
 
 
@@ -475,8 +457,8 @@ async def get_info() -> dict[str, Any]:
             "ocr",
             "diagram_description",
             "handwriting_recognition",
-            "latex_extraction"
+            "latex_extraction",
         ],
         "supported_formats": ["PNG", "JPEG", "WebP"],
-        "max_file_size_mb": 10
+        "max_file_size_mb": 10,
     }
