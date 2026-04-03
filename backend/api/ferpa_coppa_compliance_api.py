@@ -239,6 +239,15 @@ def get_ferpa_access_log(
     current_user: AuthenticatedUser = Depends(get_current_user),
 ):
     """Get FERPA educational records access log"""
+    # IDOR koruması: sadece admin/teacher erişebilir
+    role_str = getattr(current_user.role, "value", str(current_user.role)).lower()
+    if role_str not in ("admin", "teacher", "super_admin"):
+        user_id = getattr(current_user, "id", None)
+        if user_id != student_id:
+            raise HTTPException(
+                status_code=403,
+                detail="Bu öğrencinin erişim loglarına yetkiniz yok",
+            )
 
     access_logs = (
         db.query(EducationalRecordAccess)

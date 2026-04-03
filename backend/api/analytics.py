@@ -77,6 +77,17 @@ async def get_student_analytics(
     Requirements: 1.4, 1.5 - Öğrenci performans analizi ve raporlama
     """
     try:
+        # IDOR koruması: öğrenci sadece kendi verisini görebilir
+        user_role = getattr(current_user, "role", None)
+        role_str = user_role.value if hasattr(user_role, "value") else str(user_role)
+        if role_str.lower() not in ("admin", "teacher", "super_admin"):
+            user_id = str(getattr(current_user, "id", ""))
+            if user_id != student_id:
+                raise HTTPException(
+                    status_code=403,
+                    detail="Bu öğrencinin analytics verilerine erişim yetkiniz yok",
+                )
+
         # Tarih aralığı ayarla
         if not end_date:
             end_date = datetime.now()
