@@ -4,7 +4,7 @@ Task 103: Department Information API Routes
 REST API for curriculum, career opportunities, salary expectations, and sector analysis
 """
 
-from typing import List, Optional, Dict, Any
+from typing import Any, Optional
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, Query
@@ -12,9 +12,9 @@ from pydantic import BaseModel, ConfigDict
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.database import get_db
-from services.department_info_service import DepartmentInfoService
+from core.dependencies import AuthenticatedUser, get_current_admin_user
 from models.department_info import ExperienceLevel, IndustryType
-
+from services.department_info_service import DepartmentInfoService
 
 router = APIRouter(prefix="/api/v1/department-info", tags=["Department Information"])
 
@@ -31,15 +31,15 @@ class CurriculumCreateRequest(BaseModel):
     total_credits: int
     duration_years: int
     duration_semesters: int
-    core_courses: List[Dict[str, Any]]
-    elective_courses: Optional[List[Dict[str, Any]]] = None
-    specialization_tracks: Optional[List[str]] = None
-    learning_outcomes: Optional[List[str]] = None
-    skills_gained: Optional[List[str]] = None
+    core_courses: list[dict[str, Any]]
+    elective_courses: list[dict[str, Any]] | None = None
+    specialization_tracks: list[str] | None = None
+    learning_outcomes: list[str] | None = None
+    skills_gained: list[str] | None = None
     internship_required: bool = False
     thesis_required: bool = False
     capstone_project: bool = False
-    ects_credits: Optional[int] = None
+    ects_credits: int | None = None
     exchange_programs_available: bool = False
 
 
@@ -51,15 +51,15 @@ class CurriculumResponse(BaseModel):
     total_credits: int
     duration_years: int
     duration_semesters: int
-    core_courses: List[Dict[str, Any]]
-    elective_courses: Optional[List[Dict[str, Any]]]
-    specialization_tracks: Optional[List[str]]
-    learning_outcomes: Optional[List[str]]
-    skills_gained: Optional[List[str]]
+    core_courses: list[dict[str, Any]]
+    elective_courses: list[dict[str, Any]] | None
+    specialization_tracks: list[str] | None
+    learning_outcomes: list[str] | None
+    skills_gained: list[str] | None
     internship_required: bool
     thesis_required: bool
     capstone_project: bool
-    ects_credits: Optional[int]
+    ects_credits: int | None
     exchange_programs_available: bool
 
     model_config = ConfigDict(from_attributes=True)
@@ -70,17 +70,17 @@ class CareerOpportunityCreateRequest(BaseModel):
 
     department_id: UUID
     job_title: str
-    job_description: Optional[str] = None
-    industry_type: Optional[IndustryType] = None
-    employment_rate: Optional[float] = None
-    average_hiring_time_days: Optional[int] = None
-    demand_level: Optional[str] = None
-    required_skills: Optional[List[str]] = None
-    preferred_certifications: Optional[List[str]] = None
-    career_growth_potential: Optional[str] = None
-    work_life_balance_rating: Optional[float] = None
-    job_satisfaction_rating: Optional[float] = None
-    top_employers: Optional[List[str]] = None
+    job_description: str | None = None
+    industry_type: IndustryType | None = None
+    employment_rate: float | None = None
+    average_hiring_time_days: int | None = None
+    demand_level: str | None = None
+    required_skills: list[str] | None = None
+    preferred_certifications: list[str] | None = None
+    career_growth_potential: str | None = None
+    work_life_balance_rating: float | None = None
+    job_satisfaction_rating: float | None = None
+    top_employers: list[str] | None = None
 
 
 class CareerOpportunityResponse(BaseModel):
@@ -89,17 +89,17 @@ class CareerOpportunityResponse(BaseModel):
     id: UUID
     department_id: UUID
     job_title: str
-    job_description: Optional[str]
-    industry_type: Optional[IndustryType]
-    employment_rate: Optional[float]
-    average_hiring_time_days: Optional[int]
-    demand_level: Optional[str]
-    required_skills: Optional[List[str]]
-    preferred_certifications: Optional[List[str]]
-    career_growth_potential: Optional[str]
-    work_life_balance_rating: Optional[float]
-    job_satisfaction_rating: Optional[float]
-    top_employers: Optional[List[str]]
+    job_description: str | None
+    industry_type: IndustryType | None
+    employment_rate: float | None
+    average_hiring_time_days: int | None
+    demand_level: str | None
+    required_skills: list[str] | None
+    preferred_certifications: list[str] | None
+    career_growth_potential: str | None
+    work_life_balance_rating: float | None
+    job_satisfaction_rating: float | None
+    top_employers: list[str] | None
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -112,17 +112,17 @@ class SalaryExpectationCreateRequest(BaseModel):
     min_salary: int
     max_salary: int
     average_salary: int
-    median_salary: Optional[int] = None
-    region: Optional[str] = None
-    city: Optional[str] = None
-    industry_type: Optional[IndustryType] = None
+    median_salary: int | None = None
+    region: str | None = None
+    city: str | None = None
+    industry_type: IndustryType | None = None
     currency: str = "TRY"
     year: int = 2024
-    sample_size: Optional[int] = None
-    average_bonus_percentage: Optional[float] = None
+    sample_size: int | None = None
+    average_bonus_percentage: float | None = None
     stock_options_common: bool = False
-    remote_work_percentage: Optional[float] = None
-    career_opportunity_id: Optional[UUID] = None
+    remote_work_percentage: float | None = None
+    career_opportunity_id: UUID | None = None
 
 
 class SalaryExpectationResponse(BaseModel):
@@ -134,16 +134,16 @@ class SalaryExpectationResponse(BaseModel):
     min_salary: int
     max_salary: int
     average_salary: int
-    median_salary: Optional[int]
-    region: Optional[str]
-    city: Optional[str]
-    industry_type: Optional[IndustryType]
+    median_salary: int | None
+    region: str | None
+    city: str | None
+    industry_type: IndustryType | None
     currency: str
     year: int
-    sample_size: Optional[int]
-    average_bonus_percentage: Optional[float]
+    sample_size: int | None
+    average_bonus_percentage: float | None
     stock_options_common: bool
-    remote_work_percentage: Optional[float]
+    remote_work_percentage: float | None
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -153,20 +153,20 @@ class SectorAnalysisCreateRequest(BaseModel):
 
     industry_type: IndustryType
     sector_name: str
-    market_size_billion_tl: Optional[float] = None
-    total_employment: Optional[int] = None
-    annual_growth_rate: Optional[float] = None
-    job_growth_rate: Optional[float] = None
-    growth_trend: Optional[str] = None
-    total_job_openings: Optional[int] = None
-    in_demand_skills: Optional[List[str]] = None
-    emerging_technologies: Optional[List[str]] = None
-    future_demand_prediction: Optional[str] = None
-    automation_risk: Optional[str] = None
-    sustainability_rating: Optional[float] = None
-    innovation_index: Optional[float] = None
+    market_size_billion_tl: float | None = None
+    total_employment: int | None = None
+    annual_growth_rate: float | None = None
+    job_growth_rate: float | None = None
+    growth_trend: str | None = None
+    total_job_openings: int | None = None
+    in_demand_skills: list[str] | None = None
+    emerging_technologies: list[str] | None = None
+    future_demand_prediction: str | None = None
+    automation_risk: str | None = None
+    sustainability_rating: float | None = None
+    innovation_index: float | None = None
     year: int = 2024
-    related_department_ids: Optional[List[UUID]] = None
+    related_department_ids: list[UUID] | None = None
 
 
 class SectorAnalysisResponse(BaseModel):
@@ -175,18 +175,18 @@ class SectorAnalysisResponse(BaseModel):
     id: UUID
     industry_type: IndustryType
     sector_name: str
-    market_size_billion_tl: Optional[float]
-    total_employment: Optional[int]
-    annual_growth_rate: Optional[float]
-    job_growth_rate: Optional[float]
-    growth_trend: Optional[str]
-    total_job_openings: Optional[int]
-    in_demand_skills: Optional[List[str]]
-    emerging_technologies: Optional[List[str]]
-    future_demand_prediction: Optional[str]
-    automation_risk: Optional[str]
-    sustainability_rating: Optional[float]
-    innovation_index: Optional[float]
+    market_size_billion_tl: float | None
+    total_employment: int | None
+    annual_growth_rate: float | None
+    job_growth_rate: float | None
+    growth_trend: str | None
+    total_job_openings: int | None
+    in_demand_skills: list[str] | None
+    emerging_technologies: list[str] | None
+    future_demand_prediction: str | None
+    automation_risk: str | None
+    sustainability_rating: float | None
+    innovation_index: float | None
     year: int
 
     model_config = ConfigDict(from_attributes=True)
@@ -199,20 +199,20 @@ class EmploymentStatisticsResponse(BaseModel):
     average_employment_rate: float
     average_hiring_time_days: int
     high_demand_careers: int
-    top_industries: List[Dict[str, Any]]
+    top_industries: list[dict[str, Any]]
     career_growth_high: int
 
 
 class SalaryProgressionResponse(BaseModel):
     """Response for salary progression"""
 
-    progression: Dict[str, Dict[str, Any]]
+    progression: dict[str, dict[str, Any]]
 
 
 class RegionalSalaryComparisonResponse(BaseModel):
     """Response for regional salary comparison"""
 
-    comparisons: List[Dict[str, Any]]
+    comparisons: list[dict[str, Any]]
 
 
 class JobMarketTrendsResponse(BaseModel):
@@ -222,21 +222,21 @@ class JobMarketTrendsResponse(BaseModel):
     annual_growth_rate: float
     total_job_openings: int
     sectors_analyzed: int
-    top_skills: List[str]
+    top_skills: list[str]
     employment_rate: float
-    sectors: List[Dict[str, Any]]
+    sectors: list[dict[str, Any]]
 
 
 class ComprehensiveDepartmentInfoResponse(BaseModel):
     """Response for comprehensive department information"""
 
-    curriculum: Dict[str, Any]
-    career_opportunities: List[Dict[str, Any]]
-    salary_progression: Dict[str, Any]
-    regional_salaries: List[Dict[str, Any]]
-    sectors: List[Dict[str, Any]]
-    job_market_trends: Dict[str, Any]
-    statistics: Dict[str, Any]
+    curriculum: dict[str, Any]
+    career_opportunities: list[dict[str, Any]]
+    salary_progression: dict[str, Any]
+    regional_salaries: list[dict[str, Any]]
+    sectors: list[dict[str, Any]]
+    job_market_trends: dict[str, Any]
+    statistics: dict[str, Any]
 
 
 # ============================================================
@@ -264,12 +264,12 @@ async def get_department_curriculum(
 
 @router.post("/curriculum", response_model=CurriculumResponse)
 async def create_curriculum(
-    request: CurriculumCreateRequest, db: AsyncSession = Depends(get_db)
+    request: CurriculumCreateRequest,
+    _admin: AuthenticatedUser = Depends(get_current_admin_user),
+    db: AsyncSession = Depends(get_db),
 ):
     """
-    Create curriculum information for a department
-
-    Requires department admin permissions (not implemented in this endpoint)
+    Create curriculum information for a department (Admin only)
     """
     service = DepartmentInfoService(db)
 
@@ -293,7 +293,7 @@ async def create_curriculum(
     return curriculum
 
 
-@router.get("/curriculum/{department_id}/specializations", response_model=List[str])
+@router.get("/curriculum/{department_id}/specializations", response_model=list[str])
 async def get_specialization_options(
     department_id: UUID, db: AsyncSession = Depends(get_db)
 ):
@@ -313,13 +313,11 @@ async def get_specialization_options(
 # ============================================================
 
 
-@router.get("/careers/{department_id}", response_model=List[CareerOpportunityResponse])
+@router.get("/careers/{department_id}", response_model=list[CareerOpportunityResponse])
 async def get_career_opportunities(
     department_id: UUID,
-    industry_type: Optional[IndustryType] = Query(
-        None, description="Filter by industry"
-    ),
-    demand_level: Optional[str] = Query(
+    industry_type: IndustryType | None = Query(None, description="Filter by industry"),
+    demand_level: str | None = Query(
         None, description="Filter by demand level (high, medium, low)"
     ),
     db: AsyncSession = Depends(get_db),
@@ -342,12 +340,12 @@ async def get_career_opportunities(
 
 @router.post("/careers", response_model=CareerOpportunityResponse)
 async def create_career_opportunity(
-    request: CareerOpportunityCreateRequest, db: AsyncSession = Depends(get_db)
+    request: CareerOpportunityCreateRequest,
+    _admin: AuthenticatedUser = Depends(get_current_admin_user),
+    db: AsyncSession = Depends(get_db),
 ):
     """
-    Create a career opportunity entry for a department
-
-    Requires admin permissions (not implemented in this endpoint)
+    Create a career opportunity entry for a department (Admin only)
     """
     service = DepartmentInfoService(db)
 
@@ -392,13 +390,13 @@ async def get_employment_statistics(
 # ============================================================
 
 
-@router.get("/salaries/{department_id}", response_model=List[SalaryExpectationResponse])
+@router.get("/salaries/{department_id}", response_model=list[SalaryExpectationResponse])
 async def get_salary_expectations(
     department_id: UUID,
-    experience_level: Optional[ExperienceLevel] = Query(
+    experience_level: ExperienceLevel | None = Query(
         None, description="Filter by experience level"
     ),
-    city: Optional[str] = Query(None, description="Filter by city"),
+    city: str | None = Query(None, description="Filter by city"),
     year: int = Query(2024, description="Year for salary data"),
     db: AsyncSession = Depends(get_db),
 ):
@@ -424,7 +422,7 @@ async def get_salary_expectations(
 )
 async def get_salary_progression(
     department_id: UUID,
-    city: Optional[str] = Query(None, description="Filter by city"),
+    city: str | None = Query(None, description="Filter by city"),
     year: int = Query(2024, description="Year for salary data"),
     db: AsyncSession = Depends(get_db),
 ):
@@ -495,7 +493,7 @@ async def get_sector_analysis(
 
 
 @router.get(
-    "/sectors/department/{department_id}", response_model=List[SectorAnalysisResponse]
+    "/sectors/department/{department_id}", response_model=list[SectorAnalysisResponse]
 )
 async def get_related_sectors(
     department_id: UUID,
@@ -539,7 +537,7 @@ async def get_job_market_trends(
 # ============================================================
 
 
-@router.get("/statistics/{department_id}", response_model=Dict[str, Any])
+@router.get("/statistics/{department_id}", response_model=dict[str, Any])
 async def get_department_statistics(
     department_id: UUID,
     year: int = Query(2024, description="Year for statistics"),
@@ -575,16 +573,15 @@ async def get_department_statistics(
     }
 
 
-@router.post("/statistics/{department_id}/generate", response_model=Dict[str, Any])
+@router.post("/statistics/{department_id}/generate", response_model=dict[str, Any])
 async def generate_department_statistics(
     department_id: UUID,
     year: int = Query(2024, description="Year for statistics"),
+    _admin: AuthenticatedUser = Depends(get_current_admin_user),
     db: AsyncSession = Depends(get_db),
 ):
     """
-    Generate or update aggregate statistics for a department
-
-    Recomputes statistics from current career, salary, and sector data
+    Generate or update aggregate statistics for a department (Admin only)
     """
     service = DepartmentInfoService(db)
 

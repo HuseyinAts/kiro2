@@ -12,7 +12,11 @@ from pydantic import BaseModel, Field
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.database import get_db
-from core.dependencies import AuthenticatedUser, get_current_user
+from core.dependencies import (
+    AuthenticatedUser,
+    get_current_admin_user,
+    get_current_user,
+)
 from models.teacher_pool import (
     AppointmentStatus,
     AppointmentType,
@@ -304,7 +308,7 @@ async def update_teacher_profile(
 async def verify_teacher(
     teacher_id: UUID,
     request: TeacherVerificationRequest,
-    verified_by: UUID = Query(...),  # Admin user ID
+    admin: AuthenticatedUser = Depends(get_current_admin_user),
     db: AsyncSession = Depends(get_db),
 ):
     """
@@ -314,7 +318,7 @@ async def verify_teacher(
 
     teacher = await service.verify_teacher(
         teacher_id=teacher_id,
-        verified_by=verified_by,
+        verified_by=UUID(admin.id),
         approved=request.approved,
         rejection_reason=request.rejection_reason,
     )
@@ -526,7 +530,7 @@ async def get_teacher_certifications(
 async def verify_certification(
     certification_id: UUID,
     request: CertificationVerificationRequest,
-    verified_by: UUID = Query(...),  # Admin user ID
+    admin: AuthenticatedUser = Depends(get_current_admin_user),
     db: AsyncSession = Depends(get_db),
 ):
     """Verify or reject certification (Admin only)"""
@@ -534,7 +538,7 @@ async def verify_certification(
 
     certification = await service.verify_certification(
         certification_id=certification_id,
-        verified_by=verified_by,
+        verified_by=UUID(admin.id),
         approved=request.approved,
         rejection_reason=request.rejection_reason,
     )
@@ -710,7 +714,7 @@ async def create_appointment(
 async def confirm_appointment(
     appointment_id: UUID,
     request: AppointmentConfirmRequest,
-    confirmed_by: UUID = Query(...),
+    current_user: AuthenticatedUser = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
     """Confirm appointment (teacher confirms)"""
@@ -718,7 +722,7 @@ async def confirm_appointment(
 
     appointment = await service.confirm_appointment(
         appointment_id=appointment_id,
-        confirmed_by=confirmed_by,
+        confirmed_by=UUID(current_user.id),
         meeting_url=request.meeting_url,
     )
 
@@ -736,7 +740,7 @@ async def confirm_appointment(
 async def cancel_appointment(
     appointment_id: UUID,
     request: AppointmentCancelRequest,
-    cancelled_by: UUID = Query(...),
+    current_user: AuthenticatedUser = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
     """Cancel appointment"""
@@ -744,7 +748,7 @@ async def cancel_appointment(
 
     appointment = await service.cancel_appointment(
         appointment_id=appointment_id,
-        cancelled_by=cancelled_by,
+        cancelled_by=UUID(current_user.id),
         cancellation_reason=request.cancellation_reason,
     )
 

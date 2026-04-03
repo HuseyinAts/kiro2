@@ -164,7 +164,11 @@ async def sorular_listele(
 
 
 @router.get("/soru/{soru_id}", response_model=dict[str, Any])
-async def soru_detay(soru_id: str, db: AsyncSession = Depends(get_db_session)):
+async def soru_detay(
+    soru_id: str,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db_session),
+):
     """
     Belirli bir sorunun detaylarını getir
 
@@ -733,10 +737,15 @@ async def soru_guncelle(
     db: AsyncSession = Depends(get_db_session),
 ):
     """
-    Mevcut soruyu güncelle
+    Mevcut soruyu güncelle (admin/teacher only)
 
     - **soru_id**: Güncellenecek soru ID'si
     """
+    if current_user.role.value not in ("admin", "teacher"):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Bu islem icin yetkiniz yok",
+        )
     try:
         # Güncelleme verilerini hazırla
         guncelleme_verisi = {}
@@ -801,10 +810,15 @@ async def soru_sil(
     db: AsyncSession = Depends(get_db_session),
 ):
     """
-    Soruyu sil (soft delete)
+    Soruyu sil (soft delete, admin/teacher only)
 
     - **soru_id**: Silinecek soru ID'si
     """
+    if current_user.role.value not in ("admin", "teacher"):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Bu islem icin yetkiniz yok",
+        )
     try:
         basarili = await soru_bankasi_servisi.soru_sil(soru_id)
 

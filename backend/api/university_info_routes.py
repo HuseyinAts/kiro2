@@ -4,7 +4,7 @@ Task 104: University Information API Routes
 REST API for campus info, living costs, dormitories, and scholarships
 """
 
-from typing import List, Optional, Dict, Any
+from typing import Any, Optional
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, Query
@@ -12,9 +12,9 @@ from pydantic import BaseModel, ConfigDict
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.database import get_db
+from core.dependencies import AuthenticatedUser, get_current_admin_user
+from models.university_info import AccommodationType, CampusType, ScholarshipType
 from services.university_info_service import UniversityInfoService
-from models.university_info import CampusType, AccommodationType, ScholarshipType
-
 
 router = APIRouter(prefix="/api/v1/university-info", tags=["University Information"])
 
@@ -32,10 +32,10 @@ class CampusCreateRequest(BaseModel):
     campus_name: str
     city: str
     campus_type: CampusType = CampusType.MAIN_CAMPUS
-    district: Optional[str] = None
-    total_area_sqm: Optional[int] = None
-    student_clubs: Optional[List[Dict[str, Any]]] = None
-    total_student_clubs: Optional[int] = None
+    district: str | None = None
+    total_area_sqm: int | None = None
+    student_clubs: list[dict[str, Any]] | None = None
+    total_student_clubs: int | None = None
     health_center: bool = False
     career_center: bool = False
     wifi_available: bool = True
@@ -47,10 +47,10 @@ class CampusResponse(BaseModel):
 
     id: UUID
     campus_name: str
-    campus_type: Optional[str]
+    campus_type: str | None
     city: str
-    total_area_sqm: Optional[int]
-    total_student_clubs: Optional[int]
+    total_area_sqm: int | None
+    total_student_clubs: int | None
     health_center: bool
     career_center: bool
     wifi_available: bool
@@ -64,11 +64,11 @@ class LivingCostCreateRequest(BaseModel):
 
     city: str
     year: int = 2024
-    rent_studio_avg: Optional[int] = None
-    food_budget_avg: Optional[int] = None
-    public_transport_monthly: Optional[int] = None
-    total_avg_budget: Optional[int] = None
-    cost_of_living_index: Optional[float] = None
+    rent_studio_avg: int | None = None
+    food_budget_avg: int | None = None
+    public_transport_monthly: int | None = None
+    total_avg_budget: int | None = None
+    cost_of_living_index: float | None = None
 
 
 class LivingCostResponse(BaseModel):
@@ -77,11 +77,11 @@ class LivingCostResponse(BaseModel):
     id: UUID
     city: str
     year: int
-    rent_studio_avg: Optional[int]
-    food_budget_avg: Optional[int]
-    public_transport_monthly: Optional[int]
-    total_avg_budget: Optional[int]
-    cost_of_living_index: Optional[float]
+    rent_studio_avg: int | None
+    food_budget_avg: int | None
+    public_transport_monthly: int | None
+    total_avg_budget: int | None
+    cost_of_living_index: float | None
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -90,16 +90,16 @@ class LivingCostResponse(BaseModel):
 class DormitoryCreateRequest(BaseModel):
     """Request model for creating dormitory info"""
 
-    university_id: Optional[UUID] = None
+    university_id: UUID | None = None
     name: str
     accommodation_type: AccommodationType
     city: str
-    district: Optional[str] = None
-    total_capacity: Optional[int] = None
-    price_avg: Optional[int] = None
+    district: str | None = None
+    total_capacity: int | None = None
+    price_avg: int | None = None
     meals_included: bool = False
     wifi_included: bool = True
-    distance_to_campus_km: Optional[float] = None
+    distance_to_campus_km: float | None = None
 
 
 class DormitoryResponse(BaseModel):
@@ -109,11 +109,11 @@ class DormitoryResponse(BaseModel):
     name: str
     accommodation_type: str
     city: str
-    total_capacity: Optional[int]
-    price_avg: Optional[int]
+    total_capacity: int | None
+    price_avg: int | None
     meals_included: bool
     wifi_included: bool
-    distance_to_campus_km: Optional[float]
+    distance_to_campus_km: float | None
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -122,14 +122,14 @@ class DormitoryResponse(BaseModel):
 class ScholarshipCreateRequest(BaseModel):
     """Request model for creating scholarship program"""
 
-    university_id: Optional[UUID] = None
+    university_id: UUID | None = None
     name: str
     scholarship_type: ScholarshipType
-    coverage_percentage: Optional[float] = None
-    amount_avg: Optional[int] = None
+    coverage_percentage: float | None = None
+    amount_avg: int | None = None
     covers_tuition: bool = True
     covers_accommodation: bool = False
-    min_exam_score: Optional[float] = None
+    min_exam_score: float | None = None
     active: bool = True
 
 
@@ -139,11 +139,11 @@ class ScholarshipResponse(BaseModel):
     id: UUID
     name: str
     scholarship_type: str
-    coverage_percentage: Optional[float]
-    amount_avg: Optional[int]
+    coverage_percentage: float | None
+    amount_avg: int | None
     covers_tuition: bool
     covers_accommodation: bool
-    min_exam_score: Optional[float]
+    min_exam_score: float | None
     active: bool
 
     model_config = ConfigDict(from_attributes=True)
@@ -154,7 +154,7 @@ class ScholarshipResponse(BaseModel):
 # ============================================================
 
 
-@router.get("/campus/{university_id}", response_model=List[CampusResponse])
+@router.get("/campus/{university_id}", response_model=list[CampusResponse])
 async def get_campus_info(university_id: UUID, db: AsyncSession = Depends(get_db)):
     """
     Get all campus information for a university
@@ -182,9 +182,11 @@ async def get_campus_info(university_id: UUID, db: AsyncSession = Depends(get_db
 
 @router.post("/campus", response_model=CampusResponse)
 async def create_campus_info(
-    request: CampusCreateRequest, db: AsyncSession = Depends(get_db)
+    request: CampusCreateRequest,
+    _admin: AuthenticatedUser = Depends(get_current_admin_user),
+    db: AsyncSession = Depends(get_db),
 ):
-    """Create new campus information"""
+    """Create new campus information (Admin only)"""
     service = UniversityInfoService(db)
 
     campus = await service.create_campus_info(
@@ -215,7 +217,7 @@ async def create_campus_info(
     )
 
 
-@router.get("/campus/{university_id}/facilities", response_model=Dict[str, Any])
+@router.get("/campus/{university_id}/facilities", response_model=dict[str, Any])
 async def get_campus_facilities(
     university_id: UUID, db: AsyncSession = Depends(get_db)
 ):
@@ -268,9 +270,11 @@ async def get_city_living_cost(
 
 @router.post("/living-cost", response_model=LivingCostResponse)
 async def create_living_cost(
-    request: LivingCostCreateRequest, db: AsyncSession = Depends(get_db)
+    request: LivingCostCreateRequest,
+    _admin: AuthenticatedUser = Depends(get_current_admin_user),
+    db: AsyncSession = Depends(get_db),
 ):
-    """Create new city living cost data"""
+    """Create new city living cost data (Admin only)"""
     service = UniversityInfoService(db)
 
     cost = await service.create_city_living_cost(
@@ -295,7 +299,7 @@ async def create_living_cost(
     )
 
 
-@router.get("/living-cost/compare/cities", response_model=List[Dict[str, Any]])
+@router.get("/living-cost/compare/cities", response_model=list[dict[str, Any]])
 async def compare_city_costs(
     cities: str = Query(..., description="Comma-separated city names"),
     year: int = Query(2024, description="Year for cost data"),
@@ -314,7 +318,7 @@ async def compare_city_costs(
     return comparison
 
 
-@router.get("/living-cost/{city}/student-budget", response_model=Dict[str, Any])
+@router.get("/living-cost/{city}/student-budget", response_model=dict[str, Any])
 async def get_student_budget_estimate(
     city: str,
     accommodation_type: str = Query(
@@ -344,14 +348,14 @@ async def get_student_budget_estimate(
 # ============================================================
 
 
-@router.get("/dormitories", response_model=List[DormitoryResponse])
+@router.get("/dormitories", response_model=list[DormitoryResponse])
 async def get_dormitories(
-    university_id: Optional[UUID] = Query(None, description="Filter by university"),
-    city: Optional[str] = Query(None, description="Filter by city"),
-    accommodation_type: Optional[AccommodationType] = Query(
+    university_id: UUID | None = Query(None, description="Filter by university"),
+    city: str | None = Query(None, description="Filter by city"),
+    accommodation_type: AccommodationType | None = Query(
         None, description="Filter by type"
     ),
-    max_price: Optional[int] = Query(None, description="Maximum monthly price"),
+    max_price: int | None = Query(None, description="Maximum monthly price"),
     db: AsyncSession = Depends(get_db),
 ):
     """
@@ -411,9 +415,11 @@ async def get_dormitory_by_id(dormitory_id: UUID, db: AsyncSession = Depends(get
 
 @router.post("/dormitories", response_model=DormitoryResponse)
 async def create_dormitory_info(
-    request: DormitoryCreateRequest, db: AsyncSession = Depends(get_db)
+    request: DormitoryCreateRequest,
+    _admin: AuthenticatedUser = Depends(get_current_admin_user),
+    db: AsyncSession = Depends(get_db),
 ):
-    """Create new dormitory information"""
+    """Create new dormitory information (Admin only)"""
     service = UniversityInfoService(db)
 
     dormitory = await service.create_dormitory_info(
@@ -442,10 +448,10 @@ async def create_dormitory_info(
     )
 
 
-@router.get("/dormitories/statistics/summary", response_model=Dict[str, Any])
+@router.get("/dormitories/statistics/summary", response_model=dict[str, Any])
 async def get_dormitory_statistics(
-    university_id: Optional[UUID] = Query(None, description="Filter by university"),
-    city: Optional[str] = Query(None, description="Filter by city"),
+    university_id: UUID | None = Query(None, description="Filter by university"),
+    city: str | None = Query(None, description="Filter by city"),
     db: AsyncSession = Depends(get_db),
 ):
     """
@@ -466,15 +472,13 @@ async def get_dormitory_statistics(
 # ============================================================
 
 
-@router.get("/scholarships", response_model=List[ScholarshipResponse])
+@router.get("/scholarships", response_model=list[ScholarshipResponse])
 async def get_scholarships(
-    university_id: Optional[UUID] = Query(None, description="Filter by university"),
-    scholarship_type: Optional[ScholarshipType] = Query(
+    university_id: UUID | None = Query(None, description="Filter by university"),
+    scholarship_type: ScholarshipType | None = Query(
         None, description="Filter by type"
     ),
-    min_coverage: Optional[float] = Query(
-        None, description="Minimum coverage percentage"
-    ),
+    min_coverage: float | None = Query(None, description="Minimum coverage percentage"),
     active_only: bool = Query(True, description="Show only active scholarships"),
     db: AsyncSession = Depends(get_db),
 ):
@@ -537,9 +541,11 @@ async def get_scholarship_by_id(
 
 @router.post("/scholarships", response_model=ScholarshipResponse)
 async def create_scholarship_program(
-    request: ScholarshipCreateRequest, db: AsyncSession = Depends(get_db)
+    request: ScholarshipCreateRequest,
+    _admin: AuthenticatedUser = Depends(get_current_admin_user),
+    db: AsyncSession = Depends(get_db),
 ):
-    """Create new scholarship program"""
+    """Create new scholarship program (Admin only)"""
     service = UniversityInfoService(db)
 
     scholarship = await service.create_scholarship_program(
@@ -568,13 +574,13 @@ async def create_scholarship_program(
 
 
 @router.get(
-    "/scholarships/eligible/{university_id}", response_model=List[ScholarshipResponse]
+    "/scholarships/eligible/{university_id}", response_model=list[ScholarshipResponse]
 )
 async def get_eligible_scholarships(
     university_id: UUID,
     exam_score: float = Query(..., description="Student's exam score"),
-    high_school_gpa: Optional[float] = Query(None, description="High school GPA"),
-    family_income: Optional[int] = Query(None, description="Family income (TRY)"),
+    high_school_gpa: float | None = Query(None, description="High school GPA"),
+    family_income: int | None = Query(None, description="Family income (TRY)"),
     db: AsyncSession = Depends(get_db),
 ):
     """
@@ -608,7 +614,7 @@ async def get_eligible_scholarships(
     ]
 
 
-@router.get("/scholarships/statistics/{university_id}", response_model=Dict[str, Any])
+@router.get("/scholarships/statistics/{university_id}", response_model=dict[str, Any])
 async def get_scholarship_statistics(
     university_id: UUID, db: AsyncSession = Depends(get_db)
 ):
@@ -628,7 +634,7 @@ async def get_scholarship_statistics(
 # ============================================================
 
 
-@router.get("/comprehensive/{university_id}", response_model=Dict[str, Any])
+@router.get("/comprehensive/{university_id}", response_model=dict[str, Any])
 async def get_comprehensive_university_info(
     university_id: UUID,
     year: int = Query(2024, description="Year for data"),
@@ -650,7 +656,7 @@ async def get_comprehensive_university_info(
 # ============================================================
 
 
-@router.get("/statistics/{university_id}", response_model=Dict[str, Any])
+@router.get("/statistics/{university_id}", response_model=dict[str, Any])
 async def get_university_statistics(
     university_id: UUID,
     year: int = Query(2024, description="Year for statistics"),
@@ -676,10 +682,11 @@ async def get_university_statistics(
     }
 
 
-@router.post("/statistics/{university_id}/generate", response_model=Dict[str, Any])
+@router.post("/statistics/{university_id}/generate", response_model=dict[str, Any])
 async def generate_university_statistics(
     university_id: UUID,
     year: int = Query(2024, description="Year for statistics"),
+    _admin: AuthenticatedUser = Depends(get_current_admin_user),
     db: AsyncSession = Depends(get_db),
 ):
     """Generate or update aggregate statistics for a university"""

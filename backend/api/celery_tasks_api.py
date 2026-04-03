@@ -65,8 +65,8 @@ async def get_task_status(
         if task_result.status == "SUCCESS":
             response["result"] = task_result.result
         elif task_result.status == "FAILURE":
-            response["error"] = str(task_result.result)
-            response["traceback"] = task_result.traceback
+            response["error"] = "Task failed"
+            logger.error("task_failed", task_id=task_id, error=str(task_result.result))
         elif task_result.status == "PENDING":
             response["result"] = {"message": "Task is queued"}
         elif task_result.status == "STARTED":

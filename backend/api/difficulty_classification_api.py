@@ -13,13 +13,13 @@ API Endpoints:
 """
 
 import logging
-from typing import List, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
 
 from core.database import get_db
+from core.dependencies import AuthenticatedUser, get_current_admin_user
 from services.difficulty_classification_service import (
     DifficultyClassificationService,
     DifficultyLevel,
@@ -43,8 +43,8 @@ class DifficultyClassificationResponse(BaseModel):
     difficulty_score: float
     classification_method: str
     confidence: float
-    irt_based_difficulty: Optional[float] = None
-    performance_based_difficulty: Optional[float] = None
+    irt_based_difficulty: float | None = None
+    performance_based_difficulty: float | None = None
     visual_indicator: dict
     metadata: dict = {}
 
@@ -52,17 +52,17 @@ class DifficultyClassificationResponse(BaseModel):
 class FilterRequest(BaseModel):
     """Zorluk filtreleme isteği"""
 
-    difficulty_levels: List[str] = Field(
+    difficulty_levels: list[str] = Field(
         ..., description="Zorluk seviyeleri: very_easy, easy, medium, hard, very_hard"
     )
-    topic_id: Optional[str] = None
+    topic_id: str | None = None
     limit: int = Field(50, ge=1, le=200)
 
 
 class BatchUpdateRequest(BaseModel):
     """Toplu güncelleme isteği"""
 
-    question_ids: List[str]
+    question_ids: list[str]
     update_threshold_days: int = Field(7, ge=1, le=365)
 
 
@@ -120,7 +120,9 @@ def classify_question_difficulty(
 
     except Exception as e:
         logger.error(f"Error classifying question {question_id}: {e}")
-        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
+        raise HTTPException(
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
+        )
 
 
 @router.get("/visual-indicator/{level}")
@@ -158,7 +160,9 @@ def get_visual_indicator(level: str):
         raise
     except Exception as e:
         logger.error(f"Error getting visual indicator for {level}: {e}")
-        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
+        raise HTTPException(
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
+        )
 
 
 @router.post("/filter")
@@ -217,12 +221,14 @@ def filter_questions_by_difficulty(
         raise
     except Exception as e:
         logger.error(f"Error filtering questions: {e}")
-        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
+        raise HTTPException(
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
+        )
 
 
 @router.get("/distribution")
 def get_difficulty_distribution(
-    topic_id: Optional[str] = Query(None, description="Opsiyonel konu filtresi"),
+    topic_id: str | None = Query(None, description="Opsiyonel konu filtresi"),
     db: Session = Depends(get_db),
 ):
     """
@@ -256,12 +262,16 @@ def get_difficulty_distribution(
 
     except Exception as e:
         logger.error(f"Error getting difficulty distribution: {e}")
-        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
+        raise HTTPException(
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
+        )
 
 
 @router.post("/update-realtime")
 def update_difficulty_realtime(
-    request: RealtimeUpdateRequest, db: Session = Depends(get_db)
+    request: RealtimeUpdateRequest,
+    _admin: AuthenticatedUser = Depends(get_current_admin_user),
+    db: Session = Depends(get_db),
 ):
     """
     Yeni yanıt verisi geldiğinde zorluk seviyesini gerçek zamanlı güncelle
@@ -297,12 +307,16 @@ def update_difficulty_realtime(
 
     except Exception as e:
         logger.error(f"Error updating difficulty realtime: {e}")
-        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
+        raise HTTPException(
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
+        )
 
 
 @router.post("/batch-update")
 def batch_update_difficulties(
-    request: BatchUpdateRequest, db: Session = Depends(get_db)
+    request: BatchUpdateRequest,
+    _admin: AuthenticatedUser = Depends(get_current_admin_user),
+    db: Session = Depends(get_db),
 ):
     """
     Toplu zorluk güncellemesi yap
@@ -339,7 +353,9 @@ def batch_update_difficulties(
 
     except Exception as e:
         logger.error(f"Error batch updating difficulties: {e}")
-        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
+        raise HTTPException(
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
+        )
 
 
 @router.get("/trend/{question_id}")
@@ -383,14 +399,14 @@ def get_difficulty_trend(
 
     except Exception as e:
         logger.error(f"Error getting difficulty trend for {question_id}: {e}")
-        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
+        raise HTTPException(
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
+        )
 
 
 @router.get("/calibrate-thresholds")
 def calibrate_irt_thresholds(
-    topic_id: Optional[str] = Query(
-        None, description="Belirli bir konu için kalibre et"
-    ),
+    topic_id: str | None = Query(None, description="Belirli bir konu için kalibre et"),
     db: Session = Depends(get_db),
 ):
     """
@@ -443,4 +459,6 @@ def calibrate_irt_thresholds(
         raise
     except Exception as e:
         logger.error(f"Error calibrating thresholds: {e}")
-        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
+        raise HTTPException(
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
+        )

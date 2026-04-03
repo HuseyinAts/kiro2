@@ -5,12 +5,12 @@ Requirements: 2.1, 2.2, 2.3, 2.5, 2.6
 
 import logging
 from datetime import datetime
-from typing import Any, Dict, Optional
+from typing import Any
 
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException
 from pydantic import BaseModel, Field
 
-from core.dependencies import get_current_user, AuthenticatedUser
+from core.dependencies import AuthenticatedUser, get_current_user
 
 try:
     from core.turkish_nlp_chat_system import turkish_nlp_chat_system
@@ -22,6 +22,22 @@ logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api/v1/turkish-nlp-chat", tags=["Turkish NLP Chat"])
 
 
+def _require_nlp_system():
+    """NLP sistemi None ise 503 döndür."""
+    if turkish_nlp_chat_system is None:
+        raise HTTPException(
+            status_code=503,
+            detail="Türkçe NLP Chat sistemi şu an kullanılamıyor (import başarısız).",
+        )
+
+
+async def _ensure_initialized():
+    """Sistem mevcut ama henüz başlatılmamışsa başlat."""
+    _require_nlp_system()
+    if not hasattr(turkish_nlp_chat_system, "nlp_service"):
+        await turkish_nlp_chat_system.initialize()
+
+
 # Request/Response Models
 class ChatMessageRequest(BaseModel):
     """Chat mesajı isteği"""
@@ -30,9 +46,9 @@ class ChatMessageRequest(BaseModel):
     message: str = Field(
         ..., min_length=1, max_length=1000, description="Öğrenci mesajı"
     )
-    session_id: Optional[str] = Field(None, description="Oturum ID'si")
+    session_id: str | None = Field(None, description="Oturum ID'si")
     subject: str = Field("genel", description="Konu alanı")
-    context_data: Optional[Dict[str, Any]] = Field(None, description="Ek bağlam verisi")
+    context_data: dict[str, Any] | None = Field(None, description="Ek bağlam verisi")
 
 
 class ChatMessageResponse(BaseModel):
@@ -43,14 +59,14 @@ class ChatMessageResponse(BaseModel):
     response_id: str
     agent: str = "turkish_nlp"
     timestamp: str
-    data: Optional[Dict[str, Any]] = None
+    data: dict[str, Any] | None = None
 
 
 class ConversationHistoryRequest(BaseModel):
     """Konuşma geçmişi isteği"""
 
     student_id: str = Field(..., description="Öğrenci ID'si")
-    session_id: Optional[str] = Field(None, description="Oturum ID'si")
+    session_id: str | None = Field(None, description="Oturum ID'si")
     limit: int = Field(20, ge=1, le=100, description="Maksimum mesaj sayısı")
 
 
@@ -58,7 +74,7 @@ class ConversationHistoryResponse(BaseModel):
     """Konuşma geçmişi yanıtı"""
 
     success: bool
-    data: Dict[str, Any]
+    data: dict[str, Any]
     message: str
 
 
@@ -74,7 +90,7 @@ class BionicReadingResponse(BaseModel):
     """Bionic Reading yanıtı"""
 
     success: bool
-    data: Dict[str, str]
+    data: dict[str, str]
     message: str
 
 
@@ -82,7 +98,7 @@ class ContextManagementRequest(BaseModel):
     """Bağlam yönetimi isteği"""
 
     student_id: str = Field(..., description="Öğrenci ID'si")
-    session_id: Optional[str] = Field(None, description="Oturum ID'si")
+    session_id: str | None = Field(None, description="Oturum ID'si")
     action: str = Field(..., description="Eylem: clear, get_stats")
 
 
@@ -107,8 +123,7 @@ async def send_chat_message(
         )
 
         # Chat sisteminin başlatıldığından emin ol
-        if not hasattr(turkish_nlp_chat_system, "nlp_service"):
-            await turkish_nlp_chat_system.initialize()
+        await _ensure_initialized()
 
         # Mesajı işle
         response = await turkish_nlp_chat_system.process_message(
@@ -163,8 +178,7 @@ async def send_chat_message(
 
 @router.get("/history", response_model=ConversationHistoryResponse)
 async def get_conversation_history(
-    student_id: str,
-    session_id: Optional[str] = None,
+    session_id: str | None = None,
     limit: int = 20,
     current_user: AuthenticatedUser = Depends(get_current_user),
 ):
@@ -177,6 +191,7 @@ async def get_conversation_history(
     - Sayfalama desteği sunar
     """
     try:
+        student_id = str(current_user.id)
         logger.info(
             f"Konuşma geçmişi istendi - Öğrenci: {student_id}, Oturum: {session_id}"
         )
@@ -228,8 +243,7 @@ async def apply_bionic_reading(
         logger.info(f"Bionic Reading isteği - Metin uzunluğu: {len(request.text)}")
 
         # Chat sisteminin başlatıldığından emin ol
-        if not hasattr(turkish_nlp_chat_system, "nlp_service"):
-            await turkish_nlp_chat_system.initialize()
+        await _ensure_initialized()
 
         # Bionic Reading uygula
         bionic_text = await turkish_nlp_chat_system._apply_bionic_reading(request.text)
@@ -288,7 +302,7 @@ async def manage_conversation_context(
                 },
             }
 
-        elif request.action == "get_stats":
+        if request.action == "get_stats":
             # İstatistikleri al
             stats = turkish_nlp_chat_system.get_performance_stats()
 
@@ -298,10 +312,7 @@ async def manage_conversation_context(
                 "data": {"action": "get_stats", "statistics": stats},
             }
 
-        else:
-            raise HTTPException(
-                status_code=400, detail=f"Geçersiz eylem: {request.action}"
-            )
+        raise HTTPException(status_code=400, detail=f"Geçersiz eylem: {request.action}")
 
     except HTTPException:
         raise
@@ -318,6 +329,15 @@ async def health_check():
     Türkçe NLP Chat sisteminin sağlık kontrolü
     """
     try:
+        if turkish_nlp_chat_system is None:
+            return {
+                "success": False,
+                "message": "NLP sistemi devre dışı (import başarısız)",
+                "data": {
+                    "system_status": "unavailable",
+                    "timestamp": datetime.now().isoformat(),
+                },
+            }
         # Sistem durumunu kontrol et
         stats = turkish_nlp_chat_system.get_performance_stats()
 
@@ -343,7 +363,7 @@ async def health_check():
         logger.error(f"Sağlık kontrolü hatası: {e}")
         return {
             "success": False,
-            "message": f"Sistem hatası: {str(e)}",
+            "message": f"Sistem hatası: {e!s}",
             "data": {
                 "system_status": "unhealthy",
                 "error": str(e),
@@ -366,8 +386,7 @@ async def generate_step_by_step_solution(
         logger.info(f"Adım adım çözüm isteği - Öğrenci: {request.student_id}")
 
         # Chat sisteminin başlatıldığından emin ol
-        if not hasattr(turkish_nlp_chat_system, "nlp_service"):
-            await turkish_nlp_chat_system.initialize()
+        await _ensure_initialized()
 
         # Bağlam verilerini güncelle - adım adım çözüm talebi olduğunu belirt
         context_data = request.context_data or {}
@@ -425,6 +444,13 @@ async def _update_chat_statistics(student_id: str, subject: str, explanation_typ
 @router.on_event("startup")
 async def startup_event():
     """Router başlatma eventi"""
+    # FIX 2026-04-02: turkish_nlp_chat_system None ise (import basarisiz)
+    # None.initialize() -> AttributeError log spam'i durdur.
+    if turkish_nlp_chat_system is None:
+        logger.warning(
+            "Türkçe NLP Chat API: core.turkish_nlp_chat_system import edilemedi, devre dışı."
+        )
+        return
     try:
         logger.info("Türkçe NLP Chat API başlatılıyor...")
         await turkish_nlp_chat_system.initialize()
@@ -437,6 +463,9 @@ async def startup_event():
 @router.on_event("shutdown")
 async def shutdown_event():
     """Router kapatma eventi"""
+    # FIX 2026-04-02: None.close() -> AttributeError log spam'i durdur.
+    if turkish_nlp_chat_system is None:
+        return
     try:
         logger.info("Türkçe NLP Chat API kapatılıyor...")
         await turkish_nlp_chat_system.close()

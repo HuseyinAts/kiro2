@@ -751,6 +751,7 @@ async def get_random_questions(
     count: int = Query(10, ge=1, le=50, description="Soru sayısı"),
     subject_area: str | None = Query(None, description="Konu filtresi"),
     exam_type: str | None = Query(None, description="Sınav türü (TYT/AYT/YDT)"),
+    current_user: AuthenticatedUser = Depends(get_current_user),
     service: QuestionCRUDService = Depends(get_question_service),
 ):
     """
@@ -1048,6 +1049,7 @@ async def download_questions(
 async def get_question(
     question_id: str,
     include_relations: bool = Query(False, description="İlişkileri dahil et"),
+    current_user: AuthenticatedUser = Depends(get_current_user),
     service: QuestionCRUDService = Depends(get_question_service),
 ):
     """

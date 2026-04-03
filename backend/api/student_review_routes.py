@@ -12,7 +12,11 @@ from pydantic import BaseModel, ConfigDict, Field
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.database import get_db
-from core.dependencies import AuthenticatedUser, get_current_user
+from core.dependencies import (
+    AuthenticatedUser,
+    get_current_admin_user,
+    get_current_user,
+)
 from models.student_review import RatingCategory, ReportReason, ReviewStatus, ReviewType
 from services.student_review_service import StudentReviewService
 
@@ -342,7 +346,7 @@ async def vote_review(
 async def report_review(
     review_id: UUID,
     request: ReviewReportRequest,
-    reporter_id: UUID = Query(..., description="Reporter user ID"),
+    current_user: AuthenticatedUser = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
     """
@@ -354,7 +358,7 @@ async def report_review(
 
     report = await service.report_review(
         review_id=review_id,
-        reporter_id=reporter_id,
+        reporter_id=UUID(current_user.id),
         reason=request.reason,
         description=request.description,
     )
@@ -366,19 +370,19 @@ async def report_review(
 async def moderate_review(
     review_id: UUID,
     request: ReviewModerationRequest,
-    moderator_id: UUID = Query(..., description="Moderator user ID"),
+    admin: AuthenticatedUser = Depends(get_current_admin_user),
     db: AsyncSession = Depends(get_db),
 ):
     """
     Moderate a review (approve/reject/flag/remove)
 
-    Requires moderator privileges (not checked in this endpoint)
+    Requires admin privileges.
     """
     service = StudentReviewService(db)
 
     review = await service.moderate_review(
         review_id=review_id,
-        moderator_id=moderator_id,
+        moderator_id=UUID(admin.id),
         new_status=request.new_status,
         notes=request.notes,
     )
@@ -399,6 +403,7 @@ async def get_moderation_queue(
         "pending", description="Queue status: pending, in_review, completed"
     ),
     limit: int = Query(50, ge=1, le=100),
+    _admin: AuthenticatedUser = Depends(get_current_admin_user),
     db: AsyncSession = Depends(get_db),
 ):
     """

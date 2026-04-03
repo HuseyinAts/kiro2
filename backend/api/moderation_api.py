@@ -19,7 +19,11 @@ from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.database import get_db_session
-from core.dependencies import AuthenticatedUser, get_current_user
+from core.dependencies import (
+    AuthenticatedUser,
+    get_current_admin_user,
+    get_current_user,
+)
 from models.social_safety import (
     BlockedUser,
     ContentReport,
@@ -113,7 +117,7 @@ async def create_report(
 
 @router.get("/reports", response_model=dict[str, Any])
 async def list_reports(
-    current_user: AuthenticatedUser = Depends(get_current_user),
+    current_user: AuthenticatedUser = Depends(get_current_admin_user),
     db: AsyncSession = Depends(get_db_session),
     status: str | None = Query(
         None, pattern=r"^(pending|reviewed|resolved|dismissed)$"
@@ -159,10 +163,10 @@ async def list_reports(
 async def update_report(
     report_id: str,
     body: ReportUpdate,
-    current_user: AuthenticatedUser = Depends(get_current_user),
+    current_user: AuthenticatedUser = Depends(get_current_admin_user),
     db: AsyncSession = Depends(get_db_session),
 ):
-    """Rapor durumunu guncelle (admin)."""
+    """Rapor durumunu guncelle (admin only)."""
     result = await db.execute(
         select(ContentReport).where(ContentReport.id == report_id)
     )
@@ -274,10 +278,10 @@ async def list_blocked(
 @router.post("/actions", response_model=dict[str, Any])
 async def create_action(
     body: ModerationActionCreate,
-    current_user: AuthenticatedUser = Depends(get_current_user),
+    current_user: AuthenticatedUser = Depends(get_current_admin_user),
     db: AsyncSession = Depends(get_db_session),
 ):
-    """Moderasyon aksiyonu olustur (admin)."""
+    """Moderasyon aksiyonu olustur (admin only)."""
     action = ModerationAction(
         moderator_id=str(current_user.id),
         target_user_id=body.target_user_id,

@@ -170,6 +170,16 @@ async def update_makale(
 
     makale = makale_store[makale_id]
 
+    # Ownership check — only author or admin can update
+    if (
+        hasattr(makale, "yazar_id")
+        and makale.yazar_id != str(current_user.id)
+        and current_user.role.value != "admin"
+    ):
+        raise HTTPException(
+            status_code=403, detail="Bu makaleyi duzenleme yetkiniz yok"
+        )
+
     # Güncelleme
     allowed_fields = ["baslik", "icerik", "ozet", "kategori", "etiketler", "aktif"]
     for key, value in update_data.items():
@@ -196,6 +206,14 @@ async def delete_makale(
     """
     if makale_id not in makale_store:
         raise HTTPException(status_code=404, detail="Makale bulunamadı")
+
+    makale = makale_store[makale_id]
+    if (
+        hasattr(makale, "yazar_id")
+        and makale.yazar_id != str(current_user.id)
+        and current_user.role.value != "admin"
+    ):
+        raise HTTPException(status_code=403, detail="Bu makaleyi silme yetkiniz yok")
 
     if soft_delete:
         # Soft delete - sadece aktif durumunu false yap

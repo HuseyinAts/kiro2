@@ -306,12 +306,20 @@ async def stop_screen_share(
     current_user: AuthenticatedUser = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
-    """Stop screen sharing"""
+    """Stop screen sharing (owner only)"""
     service = VideoConferenceService(db)
     screen_share = await service.end_screen_share(screen_share_id)
 
     if not screen_share:
         raise HTTPException(status_code=404, detail="Screen share not found")
+
+    # Ownership check
+    if hasattr(screen_share, "user_id") and str(screen_share.user_id) != str(
+        current_user.id
+    ):
+        raise HTTPException(
+            status_code=403, detail="Not authorized to stop this screen share"
+        )
 
     return {"message": "Screen share stopped"}
 
@@ -504,12 +512,20 @@ async def stop_recording(
     current_user: AuthenticatedUser = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
-    """Stop recording"""
+    """Stop recording (owner only)"""
     service = VideoConferenceService(db)
     recording = await service.stop_recording(recording_id)
 
     if not recording:
         raise HTTPException(status_code=404, detail="Recording not found")
+
+    # Ownership check
+    if hasattr(recording, "started_by") and str(recording.started_by) != str(
+        current_user.id
+    ):
+        raise HTTPException(
+            status_code=403, detail="Not authorized to stop this recording"
+        )
 
     return {"message": "Recording stopped", "status": recording.status}
 

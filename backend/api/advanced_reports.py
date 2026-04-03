@@ -5,6 +5,7 @@ IRT, Morfoloji, ZPD ve Hibrit Öğrenme Stili analizleri
 
 import asyncio
 import logging
+import os
 from datetime import datetime
 from typing import Any
 
@@ -264,9 +265,14 @@ async def download_pdf_report(
     PDF raporu indir
     """
     try:
-        file_path = f"reports/pdf/{filename}"
+        safe_name = os.path.basename(filename)
+        if not safe_name.endswith(".pdf"):
+            raise HTTPException(
+                status_code=400, detail="Sadece PDF dosyalari indirilebilir"
+            )
+        file_path = f"reports/pdf/{safe_name}"
         return FileResponse(
-            path=file_path, filename=filename, media_type="application/pdf"
+            path=file_path, filename=safe_name, media_type="application/pdf"
         )
 
     except Exception as e:

@@ -110,7 +110,10 @@ async def start_watch_session(
 
 @router.post("/sessions/{session_id}/progress", response_model=dict)
 async def update_watch_progress(
-    session_id: UUID, request: UpdateProgressRequest, db: AsyncSession = Depends(get_db)
+    session_id: UUID,
+    request: UpdateProgressRequest,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
 ):
     """
     Update watch progress
@@ -132,12 +135,18 @@ async def update_watch_progress(
             "is_completed": session.is_completed,
             "last_position": session.last_position,
         }
-    except ValueError as e:
-        raise HTTPException(status_code=404, detail="Islem basarisiz. Lutfen tekrar deneyin.")
+    except ValueError:
+        raise HTTPException(
+            status_code=404, detail="Islem basarisiz. Lutfen tekrar deneyin."
+        )
 
 
 @router.post("/sessions/{session_id}/pause")
-async def record_pause(session_id: UUID, db: AsyncSession = Depends(get_db)):
+async def record_pause(
+    session_id: UUID,
+    _user: AuthenticatedUser = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
     """Record a pause event"""
     service = VideoAnalyticsService(db)
     await service.record_pause(session_id)
@@ -146,7 +155,10 @@ async def record_pause(session_id: UUID, db: AsyncSession = Depends(get_db)):
 
 @router.post("/sessions/{session_id}/seek")
 async def record_seek(
-    session_id: UUID, request: SeekRequest, db: AsyncSession = Depends(get_db)
+    session_id: UUID,
+    request: SeekRequest,
+    _user: AuthenticatedUser = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
 ):
     """Record a seek event"""
     service = VideoAnalyticsService(db)
@@ -162,6 +174,7 @@ async def record_seek(
 async def end_watch_session(
     session_id: UUID,
     final_position: int = Query(..., ge=0),
+    _user: AuthenticatedUser = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
     """End a watch session"""
@@ -176,8 +189,10 @@ async def end_watch_session(
             "is_completed": session.is_completed,
             "watch_duration": session.watch_duration,
         }
-    except ValueError as e:
-        raise HTTPException(status_code=404, detail="Islem basarisiz. Lutfen tekrar deneyin.")
+    except ValueError:
+        raise HTTPException(
+            status_code=404, detail="Islem basarisiz. Lutfen tekrar deneyin."
+        )
 
 
 @router.get("/videos/{video_id}/engagement")
@@ -269,7 +284,10 @@ async def create_note(
 
 @router.put("/notes/{note_id}", response_model=dict)
 async def update_note(
-    note_id: UUID, request: UpdateNoteRequest, db: AsyncSession = Depends(get_db)
+    note_id: UUID,
+    request: UpdateNoteRequest,
+    _user: AuthenticatedUser = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
 ):
     """Update a note"""
     service = VideoAnalyticsService(db)
@@ -289,12 +307,18 @@ async def update_note(
             "tags": note.tags,
             "updated_at": note.updated_at.isoformat(),
         }
-    except ValueError as e:
-        raise HTTPException(status_code=404, detail="Islem basarisiz. Lutfen tekrar deneyin.")
+    except ValueError:
+        raise HTTPException(
+            status_code=404, detail="Islem basarisiz. Lutfen tekrar deneyin."
+        )
 
 
 @router.delete("/notes/{note_id}")
-async def delete_note(note_id: UUID, db: AsyncSession = Depends(get_db)):
+async def delete_note(
+    note_id: UUID,
+    _user: AuthenticatedUser = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
     """Delete a note"""
     service = VideoAnalyticsService(db)
     await service.delete_note(note_id)
@@ -409,6 +433,7 @@ async def create_bookmark(
 async def update_bookmark(
     bookmark_id: UUID,
     request: UpdateBookmarkRequest,
+    _user: AuthenticatedUser = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
     """Update a bookmark"""
@@ -429,12 +454,18 @@ async def update_bookmark(
             "is_public": bookmark.is_public,
             "updated_at": bookmark.updated_at.isoformat(),
         }
-    except ValueError as e:
-        raise HTTPException(status_code=404, detail="Islem basarisiz. Lutfen tekrar deneyin.")
+    except ValueError:
+        raise HTTPException(
+            status_code=404, detail="Islem basarisiz. Lutfen tekrar deneyin."
+        )
 
 
 @router.delete("/bookmarks/{bookmark_id}")
-async def delete_bookmark(bookmark_id: UUID, db: AsyncSession = Depends(get_db)):
+async def delete_bookmark(
+    bookmark_id: UUID,
+    _user: AuthenticatedUser = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
     """Delete a bookmark"""
     service = VideoAnalyticsService(db)
     await service.delete_bookmark(bookmark_id)
