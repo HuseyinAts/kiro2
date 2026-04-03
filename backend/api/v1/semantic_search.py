@@ -15,7 +15,6 @@ Date: 2026-01-18
 
 import logging
 from datetime import datetime
-from typing import Optional
 
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field
@@ -24,6 +23,7 @@ logger = logging.getLogger(__name__)
 
 try:
     import numpy as np
+
     NUMPY_AVAILABLE = True
 except ImportError:
     NUMPY_AVAILABLE = False
@@ -32,6 +32,7 @@ except ImportError:
 try:
     import chromadb
     from chromadb.config import Settings as ChromaSettings
+
     CHROMADB_AVAILABLE = True
 except (ImportError, TypeError, OSError, Exception) as e:
     CHROMADB_AVAILABLE = False
@@ -40,6 +41,7 @@ except (ImportError, TypeError, OSError, Exception) as e:
 
 try:
     from services.embedding_service import get_embedding_service
+
     EMBEDDING_AVAILABLE = True
 except (ImportError, TypeError):
     EMBEDDING_AVAILABLE = False
@@ -53,45 +55,45 @@ router = APIRouter(prefix="/api/v1/search", tags=["Semantic Search"])
 # Pydantic Models
 # ============================================================================
 
+
 class SearchRequest(BaseModel):
     """Arama isteği."""
+
     query: str = Field(..., min_length=3, max_length=1000, description="Arama sorgusu")
     limit: int = Field(default=10, ge=1, le=100, description="Maksimum sonuç sayısı")
     similarity_threshold: float = Field(
-        default=0.7, ge=0.0, le=1.0,
-        description="Minimum benzerlik eşiği"
+        default=0.7, ge=0.0, le=1.0, description="Minimum benzerlik eşiği"
     )
-    subject: Optional[str] = Field(default=None, description="Ders filtresi")
-    difficulty_min: Optional[float] = Field(
-        default=None, ge=-4.0, le=4.0,
-        description="Minimum zorluk"
+    subject: str | None = Field(default=None, description="Ders filtresi")
+    difficulty_min: float | None = Field(
+        default=None, ge=-4.0, le=4.0, description="Minimum zorluk"
     )
-    difficulty_max: Optional[float] = Field(
-        default=None, ge=-4.0, le=4.0,
-        description="Maksimum zorluk"
+    difficulty_max: float | None = Field(
+        default=None, ge=-4.0, le=4.0, description="Maksimum zorluk"
     )
-    exam_type: Optional[str] = Field(default=None, description="Sınav tipi (TYT, AYT)")
-    learning_outcome: Optional[str] = Field(default=None, description="Kazanım filtresi")
+    exam_type: str | None = Field(default=None, description="Sınav tipi (TYT, AYT)")
+    learning_outcome: str | None = Field(default=None, description="Kazanım filtresi")
     use_mmr: bool = Field(default=False, description="MMR diversity kullan")
     mmr_lambda: float = Field(
-        default=0.5, ge=0.0, le=1.0,
-        description="MMR lambda (0=diversity, 1=relevance)"
+        default=0.5, ge=0.0, le=1.0, description="MMR lambda (0=diversity, 1=relevance)"
     )
     use_hybrid_ranking: bool = Field(default=False, description="Hybrid ranking kullan")
 
 
 class SearchResult(BaseModel):
     """Arama sonucu."""
+
     id: str
     content: str
     similarity: float
     metadata: dict
-    hybrid_score: Optional[float] = None
-    score_breakdown: Optional[dict] = None
+    hybrid_score: float | None = None
+    score_breakdown: dict | None = None
 
 
 class SearchResponse(BaseModel):
     """Arama response'u."""
+
     query: str
     results: list[SearchResult]
     total_found: int
@@ -102,6 +104,7 @@ class SearchResponse(BaseModel):
 
 class SimilarRequest(BaseModel):
     """Benzer soru isteği."""
+
     question_id: str = Field(..., description="Kaynak soru ID'si")
     limit: int = Field(default=5, ge=1, le=50)
     exclude_same_subject: bool = Field(default=False)
@@ -109,6 +112,7 @@ class SimilarRequest(BaseModel):
 
 class SimilarResponse(BaseModel):
     """Benzer soru response'u."""
+
     source_id: str
     source_preview: str
     similar_questions: list[SearchResult]
@@ -118,6 +122,7 @@ class SimilarResponse(BaseModel):
 # ============================================================================
 # ChromaDB Service
 # ============================================================================
+
 
 class SemanticSearchService:
     """
@@ -129,11 +134,11 @@ class SemanticSearchService:
     def __init__(
         self,
         persist_directory: str = "./vector_db",
-        collection_name: str = "kiro2_questions"
+        collection_name: str = "kiro2_questions",
     ):
         self.persist_directory = persist_directory
         self.collection_name = collection_name
-        self._client: Optional["chromadb.Client"] = None
+        self._client: chromadb.Client | None = None
         self._collection = None
         self._embedding_service = None
         self._initialized = False
@@ -148,14 +153,14 @@ class SemanticSearchService:
             return False
 
         try:
-            self._client = chromadb.Client(ChromaSettings(
-                persist_directory=self.persist_directory,
-                anonymized_telemetry=False
-            ))
+            self._client = chromadb.Client(
+                ChromaSettings(
+                    persist_directory=self.persist_directory, anonymized_telemetry=False
+                )
+            )
 
             self._collection = self._client.get_or_create_collection(
-                name=self.collection_name,
-                metadata={"hnsw:space": "cosine"}
+                name=self.collection_name, metadata={"hnsw:space": "cosine"}
             )
 
             self._embedding_service = get_embedding_service()
@@ -179,6 +184,7 @@ class SemanticSearchService:
             SearchResponse
         """
         import time
+
         start_time = time.time()
 
         if not await self.initialize():
@@ -192,13 +198,17 @@ class SemanticSearchService:
             where_clause = self._build_where_clause(request)
 
             # REQ-3.2: Top-k search (fazla al, sonra filtrele)
-            fetch_limit = request.limit * 3 if (request.use_mmr or request.use_hybrid_ranking) else request.limit
+            fetch_limit = (
+                request.limit * 3
+                if (request.use_mmr or request.use_hybrid_ranking)
+                else request.limit
+            )
 
             results = self._collection.query(
                 query_embeddings=[query_embedding],
                 n_results=fetch_limit,
                 where=where_clause if where_clause else None,
-                include=["documents", "metadatas", "distances", "embeddings"]
+                include=["documents", "metadatas", "distances", "embeddings"],
             )
 
             # Process results
@@ -206,16 +216,13 @@ class SemanticSearchService:
                 results,
                 request.similarity_threshold,
                 request.difficulty_min,
-                request.difficulty_max
+                request.difficulty_max,
             )
 
             # REQ-3.5: MMR diversity
             if request.use_mmr and len(search_results) > request.limit:
                 search_results = self._apply_mmr(
-                    query_embedding,
-                    search_results,
-                    request.mmr_lambda,
-                    request.limit
+                    query_embedding, search_results, request.mmr_lambda, request.limit
                 )
 
             # REQ-3.6: Hybrid ranking
@@ -223,7 +230,7 @@ class SemanticSearchService:
                 search_results = self._apply_hybrid_ranking(search_results)
 
             # Limit
-            search_results = search_results[:request.limit]
+            search_results = search_results[: request.limit]
 
             latency_ms = (time.time() - start_time) * 1000
 
@@ -234,21 +241,26 @@ class SemanticSearchService:
                 filters_applied={
                     "subject": request.subject,
                     "exam_type": request.exam_type,
-                    "difficulty_range": [request.difficulty_min, request.difficulty_max],
+                    "difficulty_range": [
+                        request.difficulty_min,
+                        request.difficulty_max,
+                    ],
                     "learning_outcome": request.learning_outcome,
-                    "similarity_threshold": request.similarity_threshold
+                    "similarity_threshold": request.similarity_threshold,
                 },
                 ranking_info={
                     "mmr_enabled": request.use_mmr,
                     "mmr_lambda": request.mmr_lambda if request.use_mmr else None,
-                    "hybrid_ranking_enabled": request.use_hybrid_ranking
+                    "hybrid_ranking_enabled": request.use_hybrid_ranking,
                 },
-                latency_ms=round(latency_ms, 2)
+                latency_ms=round(latency_ms, 2),
             )
 
         except Exception as e:
             logger.error(f"Search failed: {e}")
-            raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
+            raise HTTPException(
+                status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
+            )
 
     def _build_where_clause(self, request: SearchRequest) -> dict | None:
         """Where clause oluştur."""
@@ -271,8 +283,8 @@ class SemanticSearchService:
         self,
         results: dict,
         similarity_threshold: float,
-        difficulty_min: Optional[float],
-        difficulty_max: Optional[float]
+        difficulty_min: float | None,
+        difficulty_max: float | None,
     ) -> list[SearchResult]:
         """Sonuçları işle ve filtrele."""
         search_results = []
@@ -303,12 +315,14 @@ class SemanticSearchService:
             if results.get("embeddings") and results["embeddings"][0]:
                 embedding = results["embeddings"][0][i]
 
-            search_results.append(SearchResult(
-                id=doc_id,
-                content=document,
-                similarity=round(similarity, 4),
-                metadata={**metadata, "_embedding": embedding}
-            ))
+            search_results.append(
+                SearchResult(
+                    id=doc_id,
+                    content=document,
+                    similarity=round(similarity, 4),
+                    metadata={**metadata, "_embedding": embedding},
+                )
+            )
 
         return search_results
 
@@ -317,7 +331,7 @@ class SemanticSearchService:
         query_embedding: list[float],
         results: list[SearchResult],
         lambda_param: float,
-        top_k: int
+        top_k: int,
     ) -> list[SearchResult]:
         """
         MMR (Maximal Marginal Relevance) uygula.
@@ -352,14 +366,17 @@ class SemanticSearchService:
 
                 # Max similarity to already selected
                 if selected:
-                    max_sim = max(
-                        cosine_sim(
-                            embedding or [],
-                            s.metadata.get("_embedding", [])
+                    max_sim = (
+                        max(
+                            cosine_sim(
+                                embedding or [], s.metadata.get("_embedding", [])
+                            )
+                            for s in selected
+                            if s.metadata.get("_embedding")
                         )
-                        for s in selected
-                        if s.metadata.get("_embedding")
-                    ) if embedding else 0.0
+                        if embedding
+                        else 0.0
+                    )
                 else:
                     max_sim = 0.0
 
@@ -378,9 +395,7 @@ class SemanticSearchService:
         return selected
 
     def _apply_hybrid_ranking(
-        self,
-        results: list[SearchResult],
-        weights: dict | None = None
+        self, results: list[SearchResult], weights: dict | None = None
     ) -> list[SearchResult]:
         """
         Hybrid ranking uygula.
@@ -420,16 +435,16 @@ class SemanticSearchService:
 
             # Hybrid score
             hybrid_score = (
-                weights["similarity"] * similarity +
-                weights["recency"] * recency +
-                weights["popularity"] * popularity
+                weights["similarity"] * similarity
+                + weights["recency"] * recency
+                + weights["popularity"] * popularity
             )
 
             result.hybrid_score = round(hybrid_score, 4)
             result.score_breakdown = {
                 "similarity": round(similarity, 4),
                 "recency": round(recency, 4),
-                "popularity": round(popularity, 4)
+                "popularity": round(popularity, 4),
             }
 
         # Hybrid score'a göre sırala
@@ -458,18 +473,19 @@ class SemanticSearchService:
             # Kaynak soruyu al
             source = self._collection.get(
                 ids=[request.question_id],
-                include=["documents", "metadatas", "embeddings"]
+                include=["documents", "metadatas", "embeddings"],
             )
 
             if not source or not source.get("documents"):
                 raise HTTPException(
-                    status_code=404,
-                    detail=f"Question {request.question_id} not found"
+                    status_code=404, detail=f"Question {request.question_id} not found"
                 )
 
             source_doc = source["documents"][0]
             source_meta = source["metadatas"][0] if source.get("metadatas") else {}
-            source_embedding = source["embeddings"][0] if source.get("embeddings") else None
+            source_embedding = (
+                source["embeddings"][0] if source.get("embeddings") else None
+            )
 
             # Embedding yoksa oluştur
             if source_embedding is None:
@@ -485,7 +501,7 @@ class SemanticSearchService:
                 query_embeddings=[source_embedding],
                 n_results=request.limit + 1,
                 where=where_clause,
-                include=["documents", "metadatas", "distances"]
+                include=["documents", "metadatas", "distances"],
             )
 
             # Sonuçları işle (kaynak hariç)
@@ -495,35 +511,47 @@ class SemanticSearchService:
                     if doc_id == request.question_id:
                         continue
 
-                    distance = results["distances"][0][i] if results.get("distances") else 1.0
+                    distance = (
+                        results["distances"][0][i] if results.get("distances") else 1.0
+                    )
                     similarity = 1 - distance
 
-                    similar.append(SearchResult(
-                        id=doc_id,
-                        content=results["documents"][0][i] if results.get("documents") else "",
-                        similarity=round(similarity, 4),
-                        metadata=results["metadatas"][0][i] if results.get("metadatas") else {}
-                    ))
+                    similar.append(
+                        SearchResult(
+                            id=doc_id,
+                            content=results["documents"][0][i]
+                            if results.get("documents")
+                            else "",
+                            similarity=round(similarity, 4),
+                            metadata=results["metadatas"][0][i]
+                            if results.get("metadatas")
+                            else {},
+                        )
+                    )
 
             return SimilarResponse(
                 source_id=request.question_id,
-                source_preview=source_doc[:200] + "..." if len(source_doc) > 200 else source_doc,
-                similar_questions=similar[:request.limit],
-                total_found=len(similar[:request.limit])
+                source_preview=source_doc[:200] + "..."
+                if len(source_doc) > 200
+                else source_doc,
+                similar_questions=similar[: request.limit],
+                total_found=len(similar[: request.limit]),
             )
 
         except HTTPException:
             raise
         except Exception as e:
             logger.error(f"Find similar failed: {e}")
-            raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
+            raise HTTPException(
+                status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
+            )
 
 
 # ============================================================================
 # Service Instance
 # ============================================================================
 
-_search_service: Optional[SemanticSearchService] = None
+_search_service: SemanticSearchService | None = None
 
 
 def get_search_service() -> SemanticSearchService:
@@ -538,8 +566,11 @@ def get_search_service() -> SemanticSearchService:
 # API Endpoints
 # ============================================================================
 
+
 @router.post("/questions", response_model=SearchResponse)
-async def search_questions(request: SearchRequest):
+async def search_questions(
+    request: SearchRequest, _current_user=Depends(get_current_user)
+):
     """
     Soru bankasında semantic arama yap.
 
@@ -555,7 +586,9 @@ async def search_questions(request: SearchRequest):
 
 
 @router.post("/content", response_model=SearchResponse)
-async def search_content(request: SearchRequest):
+async def search_content(
+    request: SearchRequest, _current_user=Depends(get_current_user)
+):
     """
     Eğitim içeriklerinde semantic arama yap.
 
@@ -563,15 +596,18 @@ async def search_content(request: SearchRequest):
     """
     # Content collection için service
     import os
+
     service = SemanticSearchService(
         persist_directory=os.getenv("CHROMADB_PERSIST_DIR", "./vector_db"),
-        collection_name="kiro2_content"
+        collection_name="kiro2_content",
     )
     return await service.search(request)
 
 
 @router.post("/similar", response_model=SimilarResponse)
-async def find_similar_questions(request: SimilarRequest):
+async def find_similar_questions(
+    request: SimilarRequest, _current_user=Depends(get_current_user)
+):
     """
     Belirli bir soruya benzer soruları bul.
 
@@ -602,5 +638,5 @@ async def search_health():
         "status": "healthy" if initialized else "unhealthy",
         "chromadb_available": CHROMADB_AVAILABLE,
         "collection_name": service.collection_name,
-        "document_count": collection_count
+        "document_count": collection_count,
     }

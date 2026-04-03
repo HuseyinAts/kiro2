@@ -7,7 +7,7 @@ fonksiyon grafikleri, geometrik sekiller, pasta/cubuk grafikler.
 """
 
 import logging
-from typing import Any, Dict, Optional
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -54,8 +54,8 @@ class VisualGenerationEngine:
         function_str: str,
         x_range: tuple = (-10, 10),
         title: str = "Fonksiyon Grafigi",
-        output_path: Optional[str] = None,
-    ) -> Dict[str, Any]:
+        output_path: str | None = None,
+    ) -> dict[str, Any]:
         """
         REQ-48.46: Graph generation - Matematiksel fonksiyonlari gorsellestirmek
 
@@ -77,9 +77,71 @@ class VisualGenerationEngine:
             # X degerlerini olustur
             x = np.linspace(x_range[0], x_range[1], 400)
 
-            # Fonksiyonu degerlendir
-            # Guvenlik icin eval yerine daha guvenli bir yontem kullanilmali
-            y = eval(function_str, {"x": x, "np": np, "__builtins__": {}})
+            # Fonksiyonu degerlendir — guvenli AST whitelist
+            import ast
+            import operator
+
+            _SAFE_OPS = {
+                ast.Add: operator.add,
+                ast.Sub: operator.sub,
+                ast.Mult: operator.mul,
+                ast.Div: operator.truediv,
+                ast.Pow: operator.pow,
+                ast.USub: operator.neg,
+                ast.UAdd: operator.pos,
+            }
+            _SAFE_FUNCS = {
+                "sin": np.sin,
+                "cos": np.cos,
+                "tan": np.tan,
+                "sqrt": np.sqrt,
+                "abs": np.abs,
+                "log": np.log,
+                "exp": np.exp,
+                "pi": np.pi,
+                "e": np.e,
+            }
+
+            def _safe_eval_node(node, x_val):
+                if isinstance(node, ast.Expression):
+                    return _safe_eval_node(node.body, x_val)
+                if isinstance(node, ast.Constant):
+                    if not isinstance(node.value, (int, float)):
+                        raise ValueError("Sadece sayisal sabitler desteklenir")
+                    return node.value
+                if isinstance(node, ast.Name):
+                    if node.id == "x":
+                        return x_val
+                    if node.id in _SAFE_FUNCS:
+                        return _SAFE_FUNCS[node.id]
+                    raise ValueError(f"Tanimsiz degisken: {node.id}")
+                if isinstance(node, ast.BinOp):
+                    op = _SAFE_OPS.get(type(node.op))
+                    if op is None:
+                        raise ValueError(
+                            f"Desteklenmeyen operator: {type(node.op).__name__}"
+                        )
+                    return op(
+                        _safe_eval_node(node.left, x_val),
+                        _safe_eval_node(node.right, x_val),
+                    )
+                if isinstance(node, ast.UnaryOp):
+                    op = _SAFE_OPS.get(type(node.op))
+                    if op is None:
+                        raise ValueError(
+                            f"Desteklenmeyen operator: {type(node.op).__name__}"
+                        )
+                    return op(_safe_eval_node(node.operand, x_val))
+                if isinstance(node, ast.Call):
+                    func = _safe_eval_node(node.func, x_val)
+                    if not callable(func):
+                        raise ValueError("Cagrilabilir degil")
+                    args = [_safe_eval_node(a, x_val) for a in node.args]
+                    return func(*args)
+                raise ValueError(f"Desteklenmeyen ifade: {type(node).__name__}")
+
+            tree = ast.parse(function_str, mode="eval")
+            y = _safe_eval_node(tree, x)
 
             # Grafik olustur
             fig, ax = self.plt.subplots(figsize=(10, 6))
@@ -112,9 +174,9 @@ class VisualGenerationEngine:
     def generate_geometry_figure(
         self,
         shape_type: str,
-        parameters: Dict[str, Any],
-        output_path: Optional[str] = None,
-    ) -> Dict[str, Any]:
+        parameters: dict[str, Any],
+        output_path: str | None = None,
+    ) -> dict[str, Any]:
         """
         REQ-48.47: Geometry figure - Geometrik sekilleri cizmek
 
@@ -203,10 +265,10 @@ class VisualGenerationEngine:
     def generate_chart(
         self,
         chart_type: str,
-        data: Dict[str, Any],
+        data: dict[str, Any],
         title: str = "Grafik",
-        output_path: Optional[str] = None,
-    ) -> Dict[str, Any]:
+        output_path: str | None = None,
+    ) -> dict[str, Any]:
         """
         REQ-48.48: Chart/Diagram - Veri gorsellestirmesi yapmak
 
@@ -277,8 +339,8 @@ class VisualGenerationEngine:
             return {"success": False, "error": str(e)}
 
     def generate_interactive_plot(
-        self, plot_type: str, data: Dict[str, Any], title: str = "Interaktif Grafik"
-    ) -> Dict[str, Any]:
+        self, plot_type: str, data: dict[str, Any], title: str = "Interaktif Grafik"
+    ) -> dict[str, Any]:
         """
         Plotly ile interaktif grafik olustur
 

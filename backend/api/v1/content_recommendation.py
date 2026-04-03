@@ -15,19 +15,19 @@ Date: 2026-01-19
 
 import logging
 from datetime import datetime
-from typing import Optional
 
-from fastapi import APIRouter, HTTPException, status, Query
+from fastapi import APIRouter, HTTPException, Query, status
 from pydantic import BaseModel, Field
 
 logger = logging.getLogger(__name__)
 
 try:
     from services.content_recommendation_service import (
-        UserInteraction,
         InteractionType,
+        UserInteraction,
         get_recommendation_service,
     )
+
     RECOMMENDATION_AVAILABLE = True
 except (ImportError, OSError, Exception) as e:
     RECOMMENDATION_AVAILABLE = False
@@ -50,14 +50,18 @@ router = APIRouter(
 
 class RecommendationRequest(BaseModel):
     """Oneri istegi."""
+
     user_id: str = Field(..., description="Kullanici ID'si", min_length=1)
     limit: int = Field(default=10, ge=1, le=100, description="Maksimum oneri sayisi")
-    subject_filter: Optional[str] = Field(default=None, description="Konu filtresi")
-    ensure_diversity: bool = Field(default=True, description="Cesitlilik sagla (REQ-4.5)")
+    subject_filter: str | None = Field(default=None, description="Konu filtresi")
+    ensure_diversity: bool = Field(
+        default=True, description="Cesitlilik sagla (REQ-4.5)"
+    )
 
 
 class ContentRecommendation(BaseModel):
     """Tek bir oneri."""
+
     content_id: str
     content_preview: str
     score: float
@@ -67,6 +71,7 @@ class ContentRecommendation(BaseModel):
 
 class RecommendationResponse(BaseModel):
     """Oneri yaniti."""
+
     user_id: str
     recommendations: list[ContentRecommendation]
     is_cold_start: bool
@@ -77,18 +82,22 @@ class RecommendationResponse(BaseModel):
 
 class InteractionRequest(BaseModel):
     """Etkilesim kayit istegi."""
+
     user_id: str = Field(..., description="Kullanici ID'si", min_length=1)
     content_id: str = Field(..., description="Icerik ID'si", min_length=1)
     interaction_type: str = Field(
         ...,
-        description="Etkilesim tipi: view, like, complete, bookmark, share, skip, dislike"
+        description="Etkilesim tipi: view, like, complete, bookmark, share, skip, dislike",
     )
-    duration_seconds: int = Field(default=0, ge=0, description="Etkilesim suresi (saniye)")
+    duration_seconds: int = Field(
+        default=0, ge=0, description="Etkilesim suresi (saniye)"
+    )
     metadata: dict = Field(default_factory=dict, description="Ek metadata")
 
 
 class InteractionResponse(BaseModel):
     """Etkilesim kayit yaniti."""
+
     success: bool
     message: str
     user_id: str
@@ -99,23 +108,24 @@ class InteractionResponse(BaseModel):
 
 class CTRStats(BaseModel):
     """CTR istatistikleri (REQ-4.6)."""
+
     total_content: int
     average_ctr: float
     top_performing: list[dict]
     bottom_performing: list[dict]
-    improvement_vs_baseline: Optional[float] = Field(
-        default=None,
-        description="Baseline'a gore iyilesme yuzdesi (hedef: %300)"
+    improvement_vs_baseline: float | None = Field(
+        default=None, description="Baseline'a gore iyilesme yuzdesi (hedef: %300)"
     )
 
 
 class UserProfileResponse(BaseModel):
     """Kullanici profil yaniti."""
+
     user_id: str
     interaction_count: int
     is_cold_start: bool
     preferred_subjects: list[str]
-    last_updated: Optional[datetime]
+    last_updated: datetime | None
     embedding_dimension: int
 
 
@@ -135,14 +145,17 @@ class UserProfileResponse(BaseModel):
     - Hybrid filtering (collaborative + content-based)
     - Cold-start fallback (popularity-based)
     - Diversity sampling
-    """
+    """,
 )
-async def get_recommendations(request: RecommendationRequest) -> RecommendationResponse:
+async def get_recommendations(
+    request: RecommendationRequest,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+) -> RecommendationResponse:
     """Kullanici icin icerik onerileri getir."""
     if not RECOMMENDATION_AVAILABLE:
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail="Recommendation service not available"
+            detail="Recommendation service not available",
         )
 
     try:
@@ -180,7 +193,7 @@ async def get_recommendations(request: RecommendationRequest) -> RecommendationR
         logger.error(f"Recommendations failed for user {request.user_id}: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Islem basarisiz. Lutfen tekrar deneyin."
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
 
 
@@ -199,14 +212,17 @@ async def get_recommendations(request: RecommendationRequest) -> RecommendationR
     - share: Paylasim
     - skip: Atlama
     - dislike: Begenmeme
-    """
+    """,
 )
-async def record_interaction(request: InteractionRequest) -> InteractionResponse:
+async def record_interaction(
+    request: InteractionRequest,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+) -> InteractionResponse:
     """Kullanici etkilesimini kaydet."""
     if not RECOMMENDATION_AVAILABLE:
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail="Recommendation service not available"
+            detail="Recommendation service not available",
         )
 
     try:
@@ -217,7 +233,7 @@ async def record_interaction(request: InteractionRequest) -> InteractionResponse
             valid_types = [t.value for t in InteractionType]
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail=f"Gecersiz etkilesim tipi. Gecerli tipler: {valid_types}"
+                detail=f"Gecersiz etkilesim tipi. Gecerli tipler: {valid_types}",
             )
 
         service = get_recommendation_service()
@@ -235,7 +251,7 @@ async def record_interaction(request: InteractionRequest) -> InteractionResponse
         if not success:
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail="Etkilesim kaydedilemedi"
+                detail="Etkilesim kaydedilemedi",
             )
 
         return InteractionResponse(
@@ -253,7 +269,7 @@ async def record_interaction(request: InteractionRequest) -> InteractionResponse
         logger.error(f"Interaction recording failed: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Islem basarisiz. Lutfen tekrar deneyin."
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
 
 
@@ -266,15 +282,16 @@ async def record_interaction(request: InteractionRequest) -> InteractionResponse
 
     Spec REQ-4.6: CTR tracking.
     Hedef: %300 iyilesme.
-    """
+    """,
 )
 async def get_ctr_stats(
     baseline_ctr: float = Query(
         default=2.0,
         ge=0.0,
         le=100.0,
-        description="Baseline CTR yuzdesi (karsilastirma icin)"
-    )
+        description="Baseline CTR yuzdesi (karsilastirma icin)",
+    ),
+    _admin=Depends(get_current_admin_user),
 ) -> CTRStats:
     """CTR istatistiklerini getir (REQ-4.6)."""
     try:
@@ -285,8 +302,7 @@ async def get_ctr_stats(
         improvement = None
         if report["average_ctr"] > 0 and baseline_ctr > 0:
             improvement = round(
-                ((report["average_ctr"] - baseline_ctr) / baseline_ctr) * 100,
-                2
+                ((report["average_ctr"] - baseline_ctr) / baseline_ctr) * 100, 2
             )
 
         return CTRStats(
@@ -301,7 +317,7 @@ async def get_ctr_stats(
         logger.error(f"CTR stats failed: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Islem basarisiz. Lutfen tekrar deneyin."
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
 
 
@@ -309,10 +325,17 @@ async def get_ctr_stats(
     "/user/{user_id}/profile",
     response_model=UserProfileResponse,
     summary="Kullanici profili getir",
-    description="Kullanici profil embedding bilgilerini getirir."
+    description="Kullanici profil embedding bilgilerini getirir.",
 )
-async def get_user_profile(user_id: str) -> UserProfileResponse:
+async def get_user_profile(
+    user_id: str, current_user: AuthenticatedUser = Depends(get_current_user)
+) -> UserProfileResponse:
     """Kullanici profilini getir."""
+    if str(current_user.id) != user_id and current_user.role.value not in (
+        "admin",
+        "teacher",
+    ):
+        raise HTTPException(status_code=403, detail="Bu profile erisim yetkiniz yok")
     try:
         service = get_recommendation_service()
 
@@ -332,14 +355,11 @@ async def get_user_profile(user_id: str) -> UserProfileResponse:
         logger.error(f"User profile failed for {user_id}: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Islem basarisiz. Lutfen tekrar deneyin."
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
 
 
-@router.get(
-    "/health",
-    summary="Oneri servisi saglik kontrolu"
-)
+@router.get("/health", summary="Oneri servisi saglik kontrolu")
 async def health_check() -> dict:
     """Oneri servisinin saglik durumunu kontrol et."""
     try:
@@ -358,6 +378,6 @@ async def health_check() -> dict:
         return {
             "status": "unhealthy",
             "service": "content_recommendation",
-            "error": str(e),
+            "error": "Internal error",
             "timestamp": datetime.now().isoformat(),
         }

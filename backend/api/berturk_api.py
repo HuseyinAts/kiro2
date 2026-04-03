@@ -5,7 +5,7 @@ Duygu analizi, motivasyon tespiti ve intent detection API'leri
 
 import logging
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException
 from pydantic import BaseModel, Field
@@ -15,7 +15,7 @@ try:
 except (ImportError, TypeError):
     berturk_service = None
 
-from core.dependencies import get_current_user
+from core.dependencies import UserRole, get_current_user
 from models.database import User
 
 logger = logging.getLogger(__name__)
@@ -42,7 +42,7 @@ class MotivationAssessmentRequest(BaseModel):
     """Motivasyon değerlendirme isteği"""
 
     student_id: str = Field(..., description="Öğrenci ID'si")
-    recent_texts: List[str] = Field(
+    recent_texts: list[str] = Field(
         ...,
         description="Son metinler (sohbet, yorumlar, vs.)",
         min_items=1,
@@ -72,7 +72,7 @@ class ContextualMeaningRequest(BaseModel):
 class BatchAnalysisRequest(BaseModel):
     """Toplu analiz isteği"""
 
-    texts: List[str] = Field(
+    texts: list[str] = Field(
         ..., description="Analiz edilecek metinler", min_items=1, max_items=100
     )
     analysis_type: str = Field(
@@ -89,53 +89,53 @@ class SentimentAnalysisResponse(BaseModel):
     """Duygu analizi yanıtı"""
 
     success: bool
-    data: Optional[Dict[str, Any]] = None
+    data: dict[str, Any] | None = None
     message: str
-    processing_time_ms: Optional[float] = None
+    processing_time_ms: float | None = None
 
 
 class MotivationAssessmentResponse(BaseModel):
     """Motivasyon değerlendirme yanıtı"""
 
     success: bool
-    data: Optional[Dict[str, Any]] = None
+    data: dict[str, Any] | None = None
     message: str
-    processing_time_ms: Optional[float] = None
+    processing_time_ms: float | None = None
 
 
 class IntentDetectionResponse(BaseModel):
     """Niyet tespit yanıtı"""
 
     success: bool
-    data: Optional[Dict[str, Any]] = None
+    data: dict[str, Any] | None = None
     message: str
-    processing_time_ms: Optional[float] = None
+    processing_time_ms: float | None = None
 
 
 class ContextualMeaningResponse(BaseModel):
     """Bağlamsal anlam yanıtı"""
 
     success: bool
-    data: Optional[Dict[str, Any]] = None
+    data: dict[str, Any] | None = None
     message: str
-    processing_time_ms: Optional[float] = None
+    processing_time_ms: float | None = None
 
 
 class BatchAnalysisResponse(BaseModel):
     """Toplu analiz yanıtı"""
 
     success: bool
-    data: Optional[Dict[str, Any]] = None
+    data: dict[str, Any] | None = None
     message: str
     total_processed: int
-    processing_time_ms: Optional[float] = None
+    processing_time_ms: float | None = None
 
 
 class PerformanceStatsResponse(BaseModel):
     """Performans istatistikleri yanıtı"""
 
     success: bool
-    data: Optional[Dict[str, Any]] = None
+    data: dict[str, Any] | None = None
     message: str
 
 
@@ -440,7 +440,7 @@ async def batch_analysis(
 
             except Exception as e:
                 logger.error(f"Toplu analiz - metin {i} hatası: {e}")
-                results.append({"index": i, "text": text, "error": str(e)})
+                results.append({"index": i, "text": text, "error": "Analiz basarisiz"})
 
         processing_time = (datetime.now() - start_time).total_seconds() * 1000
 
@@ -483,7 +483,7 @@ async def get_performance_stats(current_user: User = Depends(get_current_user)):
     """
     try:
         # Admin kontrolü
-        if current_user.role != "admin":
+        if current_user.role != UserRole.ADMIN:
             raise HTTPException(
                 status_code=403,
                 detail="Performans istatistiklerine sadece admin kullanıcıları erişebilir",
@@ -516,7 +516,7 @@ async def clear_cache(current_user: User = Depends(get_current_user)):
     """
     try:
         # Admin kontrolü
-        if current_user.role != "admin":
+        if current_user.role != UserRole.ADMIN:
             raise HTTPException(
                 status_code=403,
                 detail="Cache temizleme işlemine sadece admin kullanıcıları erişebilir",
@@ -557,6 +557,6 @@ async def health_check():
         logger.error(f"BERTurk sağlık kontrolü hatası: {e}")
         return {
             "success": False,
-            "message": f"BERTurk servisi sağlık kontrolü başarısız: {str(e)}",
+            "message": "BERTurk servisi saglik kontrolu basarisiz",
             "status": "unhealthy",
         }

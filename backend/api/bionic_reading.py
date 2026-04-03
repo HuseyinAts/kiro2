@@ -5,14 +5,14 @@ Bionic Reading API Endpoints
 
 import logging
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel, Field, field_validator
 
 from core.bionic_reading_service import BionicReadingService
 from core.cache import CacheService
-from core.dependencies import get_cache_service, get_current_user, AuthenticatedUser
+from core.dependencies import AuthenticatedUser, get_cache_service, get_current_user
 
 logger = logging.getLogger(__name__)
 
@@ -39,7 +39,7 @@ class BionicReadingRequest(BaseModel):
 class MultipleBionicReadingRequest(BaseModel):
     """Çoklu Bionic Reading isteği"""
 
-    texts: List[str] = Field(
+    texts: list[str] = Field(
         ..., min_items=1, max_items=50, description="İşlenecek metinler"
     )
     use_cache: bool = Field(True, description="Cache kullanılsın mı")
@@ -64,14 +64,14 @@ class MultipleBionicReadingRequest(BaseModel):
 class UserPreferencesRequest(BaseModel):
     """Kullanıcı tercihleri güncelleme isteği"""
 
-    enabled: Optional[bool] = Field(None, description="Bionic Reading etkin mi")
-    bold_ratio: Optional[float] = Field(None, ge=0.1, le=1.0, description="Bold oranı")
-    min_word_length: Optional[int] = Field(
+    enabled: bool | None = Field(None, description="Bionic Reading etkin mi")
+    bold_ratio: float | None = Field(None, ge=0.1, le=1.0, description="Bold oranı")
+    min_word_length: int | None = Field(
         None, ge=1, le=10, description="Minimum kelime uzunluğu"
     )
-    auto_apply: Optional[bool] = Field(None, description="Otomatik uygula")
-    font_weight: Optional[str] = Field(None, description="Font kalınlığı")
-    highlight_color: Optional[str] = Field(None, description="Vurgulama rengi")
+    auto_apply: bool | None = Field(None, description="Otomatik uygula")
+    font_weight: str | None = Field(None, description="Font kalınlığı")
+    highlight_color: str | None = Field(None, description="Vurgulama rengi")
 
 
 # Dependency injection
@@ -87,7 +87,7 @@ async def process_text(
     request: BionicReadingRequest,
     current_user: AuthenticatedUser = Depends(get_current_user),
     bionic_service: BionicReadingService = Depends(get_bionic_reading_service),
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """
     Tek metin için Bionic Reading uygula
 
@@ -129,7 +129,7 @@ async def process_multiple_texts(
     request: MultipleBionicReadingRequest,
     current_user: AuthenticatedUser = Depends(get_current_user),
     bionic_service: BionicReadingService = Depends(get_bionic_reading_service),
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """
     Birden fazla metin için Bionic Reading uygula
 
@@ -162,7 +162,7 @@ async def process_multiple_texts(
 async def get_user_preferences(
     current_user: AuthenticatedUser = Depends(get_current_user),
     bionic_service: BionicReadingService = Depends(get_bionic_reading_service),
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """
     Kullanıcının Bionic Reading tercihlerini getir
 
@@ -201,7 +201,7 @@ async def update_user_preferences(
     request: UserPreferencesRequest,
     current_user: AuthenticatedUser = Depends(get_current_user),
     bionic_service: BionicReadingService = Depends(get_bionic_reading_service),
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """
     Kullanıcının Bionic Reading tercihlerini güncelle
 
@@ -252,7 +252,7 @@ async def update_user_preferences(
 async def get_service_stats(
     current_user: AuthenticatedUser = Depends(get_current_user),
     bionic_service: BionicReadingService = Depends(get_bionic_reading_service),
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """
     Bionic Reading servis istatistiklerini getir
 
@@ -286,7 +286,7 @@ async def clear_cache(
     current_user: AuthenticatedUser = Depends(get_current_user),
     bionic_service: BionicReadingService = Depends(get_bionic_reading_service),
     clear_all: bool = False,
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """
     Bionic Reading cache'ini temizle
 
@@ -327,7 +327,7 @@ async def clear_cache(
 
 
 @router.get("/health")
-async def health_check() -> Dict[str, Any]:
+async def health_check() -> dict[str, Any]:
     """
     Bionic Reading servis sağlık kontrolü
 
@@ -355,7 +355,7 @@ async def health_check() -> Dict[str, Any]:
             "success": False,
             "data": {
                 "service_status": "unhealthy",
-                "error": str(e),
+                "error": "Internal error",
                 "timestamp": datetime.now().isoformat(),
             },
             "message": "Bionic Reading servisi çalışmıyor",

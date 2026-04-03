@@ -355,7 +355,7 @@ async def _get_irt_morfoloji_analizi(
 
     except Exception as e:
         logger.error(f"IRT morfoloji analizi hatası: {e!s}")
-        return {"hata": str(e)}
+        return {"hata": "Analiz sirasinda bir hata olustu"}
 
 
 async def _get_zpd_analizi(ogrenci_id: str, temel_sonuc: SinavSonucu) -> dict[str, Any]:
@@ -457,7 +457,7 @@ async def _get_zpd_analizi(ogrenci_id: str, temel_sonuc: SinavSonucu) -> dict[st
 
     except Exception as e:
         logger.error(f"ZPD analizi hatası: {e!s}")
-        return {"hata": str(e)}
+        return {"hata": "Analiz sirasinda bir hata olustu"}
 
 
 async def _get_hibrit_ogrenme_stili_analizi(
@@ -564,7 +564,7 @@ async def _get_hibrit_ogrenme_stili_analizi(
 
     except Exception as e:
         logger.error(f"Hibrit öğrenme stili analizi hatası: {e!s}")
-        return {"hata": str(e)}
+        return {"hata": "Analiz sirasinda bir hata olustu"}
 
 
 async def _get_osym_ets_karsilastirmasi(
@@ -675,7 +675,7 @@ async def _get_osym_ets_karsilastirmasi(
 
     except Exception as e:
         logger.error(f"ÖSYM/ETS karşılaştırma hatası: {e!s}")
-        return {"hata": str(e)}
+        return {"hata": "Analiz sirasinda bir hata olustu"}
 
 
 # Yardımcı fonksiyonlar

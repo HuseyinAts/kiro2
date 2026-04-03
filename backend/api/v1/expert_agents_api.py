@@ -10,20 +10,19 @@ Endpoints:
 """
 
 import logging
-from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, status
 
 try:
     from api.schemas.expert_agents import (
+        AgentPerformance,
+        AgentResponse,
+        AllAgentsScores,
+        DomainClassification,
+        DomainTypeEnum,
         QuestionRequest,
         QuestionResponse,
-        AgentResponse,
-        DomainClassification,
-        AgentPerformance,
-        AllAgentsScores,
         SpecializationScore,
-        DomainTypeEnum,
     )
 except (ImportError, TypeError):
     QuestionRequest = None
@@ -37,12 +36,12 @@ except (ImportError, TypeError):
 
 try:
     from agents.domain_experts import (
-        DomainType,
-        MatematikAgent,
-        FizikAgent,
-        TurkceAgent,
-        SosyalAgent,
         BiyolojiAgent,
+        DomainType,
+        FizikAgent,
+        MatematikAgent,
+        SosyalAgent,
+        TurkceAgent,
         YabanciDilAgent,
     )
 except (ImportError, TypeError):
@@ -56,10 +55,10 @@ except (ImportError, TypeError):
 
 try:
     from agents.coordination import (
-        QuestionClassifier,
         AgentCoordinator,
-        ResponseSynthesizer,
         DomainBlackboard,
+        QuestionClassifier,
+        ResponseSynthesizer,
     )
 except (ImportError, TypeError):
     QuestionClassifier = None
@@ -68,7 +67,7 @@ except (ImportError, TypeError):
     DomainBlackboard = None
 
 try:
-    from agents.scoring import SpecializationScorer, PerformanceTracker
+    from agents.scoring import PerformanceTracker, SpecializationScorer
 except (ImportError, TypeError):
     SpecializationScorer = None
     PerformanceTracker = None
@@ -78,10 +77,10 @@ logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api/v1", tags=["Expert Agents"])
 
 # Global instances
-_coordinator: Optional[AgentCoordinator] = None
-_scorer: Optional[SpecializationScorer] = None
-_tracker: Optional[PerformanceTracker] = None
-_blackboard: Optional[DomainBlackboard] = None
+_coordinator: AgentCoordinator | None = None
+_scorer: SpecializationScorer | None = None
+_tracker: PerformanceTracker | None = None
+_blackboard: DomainBlackboard | None = None
 
 
 async def get_coordinator() -> AgentCoordinator:
@@ -172,29 +171,34 @@ async def get_tracker() -> PerformanceTracker:
                                     "primary_confidence": 0.95,
                                     "secondary_domain": None,
                                     "secondary_confidence": None,
-                                    "is_multi_domain": False
+                                    "is_multi_domain": False,
                                 },
-                                "responses": [{
-                                    "domain": "matematik",
-                                    "content": "2x + 3 = 7 denkleminin cozumu...",
-                                    "confidence": 0.92,
-                                    "tools_used": ["sympy"],
-                                    "step_by_step_solution": ["Adim 1: ...", "Adim 2: ..."],
-                                    "latex_expressions": ["x = 2"],
-                                    "visualizations": [],
-                                    "references": [],
-                                    "response_time_ms": 1250.5,
-                                    "tokens_used": 1500
-                                }],
+                                "responses": [
+                                    {
+                                        "domain": "matematik",
+                                        "content": "2x + 3 = 7 denkleminin cozumu...",
+                                        "confidence": 0.92,
+                                        "tools_used": ["sympy"],
+                                        "step_by_step_solution": [
+                                            "Adim 1: ...",
+                                            "Adim 2: ...",
+                                        ],
+                                        "latex_expressions": ["x = 2"],
+                                        "visualizations": [],
+                                        "references": [],
+                                        "response_time_ms": 1250.5,
+                                        "tokens_used": 1500,
+                                    }
+                                ],
                                 "synthesized_response": "Denklemin cozumu x = 2",
                                 "specialization_score": 0.88,
                                 "total_response_time_ms": 1250.5,
                                 "metadata": {
                                     "agents_called": ["matematik"],
                                     "is_multi_domain": False,
-                                    "student_id": "student_001"
-                                }
-                            }
+                                    "student_id": "student_001",
+                                },
+                            },
                         },
                         "multi_domain": {
                             "summary": "Multi-domain soru yaniti",
@@ -205,24 +209,24 @@ async def get_tracker() -> PerformanceTracker:
                                     "primary_confidence": 0.75,
                                     "secondary_domain": "fizik",
                                     "secondary_confidence": 0.68,
-                                    "is_multi_domain": True
+                                    "is_multi_domain": True,
                                 },
                                 "responses": [
                                     {"domain": "matematik", "content": "..."},
-                                    {"domain": "fizik", "content": "..."}
+                                    {"domain": "fizik", "content": "..."},
                                 ],
                                 "synthesized_response": "Birlesik yanit...",
                                 "specialization_score": 0.85,
                                 "total_response_time_ms": 2500.0,
                                 "metadata": {
                                     "agents_called": ["matematik", "fizik"],
-                                    "is_multi_domain": True
-                                }
-                            }
-                        }
+                                    "is_multi_domain": True,
+                                },
+                            },
+                        },
                     }
                 }
-            }
+            },
         },
         422: {
             "description": "Validation Error - Gecersiz istek",
@@ -233,23 +237,19 @@ async def get_tracker() -> PerformanceTracker:
                             {
                                 "loc": ["body", "question_text"],
                                 "msg": "field required",
-                                "type": "value_error.missing"
+                                "type": "value_error.missing",
                             }
                         ]
                     }
                 }
-            }
+            },
         },
         500: {
             "description": "Internal Server Error",
             "content": {
-                "application/json": {
-                    "example": {
-                        "detail": "Agent processing failed"
-                    }
-                }
-            }
-        }
+                "application/json": {"example": {"detail": "Agent processing failed"}}
+            },
+        },
     },
 )
 async def ask_question(
@@ -257,6 +257,7 @@ async def ask_question(
     coordinator: AgentCoordinator = Depends(get_coordinator),
     scorer: SpecializationScorer = Depends(get_scorer),
     tracker: PerformanceTracker = Depends(get_tracker),
+    _current_user=Depends(get_current_user),
 ) -> QuestionResponse:
     """
     Soru sor ve cevap al
@@ -324,9 +325,13 @@ async def ask_question(
         return QuestionResponse(
             success=True,
             classification=DomainClassification(
-                primary_domain=DomainTypeEnum(result.classification.primary_domain.value),
+                primary_domain=DomainTypeEnum(
+                    result.classification.primary_domain.value
+                ),
                 primary_confidence=result.classification.primary_confidence,
-                secondary_domain=DomainTypeEnum(result.classification.secondary_domain.value)
+                secondary_domain=DomainTypeEnum(
+                    result.classification.secondary_domain.value
+                )
                 if result.classification.secondary_domain
                 else None,
                 secondary_confidence=result.classification.secondary_confidence,
@@ -361,6 +366,7 @@ async def get_agent_performance(
     agent_name: str,
     tracker: PerformanceTracker = Depends(get_tracker),
     scorer: SpecializationScorer = Depends(get_scorer),
+    _current_user=Depends(get_current_user),
 ) -> AgentPerformance:
     """
     Agent performans metriklerini al
@@ -402,7 +408,9 @@ async def get_agent_performance(
             total_questions_answered=metrics.total_questions if metrics else 0,
             successful_answers=metrics.successful_responses if metrics else 0,
             failed_answers=metrics.failed_responses if metrics else 0,
-            average_response_time_ms=metrics.average_response_time_ms if metrics else 0.0,
+            average_response_time_ms=metrics.average_response_time_ms
+            if metrics
+            else 0.0,
             average_confidence=metrics.average_confidence if metrics else 0.0,
             current_specialization_score=SpecializationScore(
                 domain=DomainTypeEnum(latest_score.domain.value),
@@ -438,6 +446,7 @@ async def get_agent_performance(
 )
 async def get_all_specialization_scores(
     scorer: SpecializationScorer = Depends(get_scorer),
+    _current_user=Depends(get_current_user),
 ) -> AllAgentsScores:
     """
     Tum agent'larin uzmanlik skorlarini al
@@ -497,6 +506,7 @@ async def get_system_metrics(
     coordinator: AgentCoordinator = Depends(get_coordinator),
     scorer: SpecializationScorer = Depends(get_scorer),
     tracker: PerformanceTracker = Depends(get_tracker),
+    _current_user=Depends(get_current_user),
 ):
     """Sistem metriklerini al"""
     return {

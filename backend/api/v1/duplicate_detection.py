@@ -18,9 +18,8 @@ Date: 2026-01-19
 import logging
 from datetime import datetime
 from enum import Enum
-from typing import Optional
 
-from fastapi import APIRouter, HTTPException, status, Query
+from fastapi import APIRouter, HTTPException, Query, status
 from pydantic import BaseModel, Field
 
 logger = logging.getLogger(__name__)
@@ -30,6 +29,7 @@ try:
         DuplicateStatus,
         get_duplicate_service,
     )
+
     DUPLICATE_AVAILABLE = True
 except (ImportError, OSError, Exception) as e:
     DUPLICATE_AVAILABLE = False
@@ -39,9 +39,12 @@ except (ImportError, OSError, Exception) as e:
 
 try:
     from services.pending_review_service import (
-        get_pending_review_service,
         ReviewStatus as ServiceReviewStatus,
     )
+    from services.pending_review_service import (
+        get_pending_review_service,
+    )
+
     REVIEW_AVAILABLE = True
 except (ImportError, OSError, Exception) as e:
     REVIEW_AVAILABLE = False
@@ -58,6 +61,7 @@ router = APIRouter(
 
 class ReviewDecision(str, Enum):
     """Manuel inceleme kararlari."""
+
     APPROVE_ADD = "approve_add"  # Eklemeyi onayla
     REJECT_DUPLICATE = "reject_duplicate"  # Duplicate olarak reddet
     MERGE_WITH = "merge_with"  # Mevcut soru ile birlestir
@@ -70,19 +74,23 @@ class ReviewDecision(str, Enum):
 
 class DuplicateCheckRequest(BaseModel):
     """Duplicate kontrol istegi."""
-    content: str = Field(..., description="Kontrol edilecek soru icerigi", min_length=10)
-    subject: Optional[str] = Field(default=None, description="Konu filtresi")
+
+    content: str = Field(
+        ..., description="Kontrol edilecek soru icerigi", min_length=10
+    )
+    subject: str | None = Field(default=None, description="Konu filtresi")
     check_paraphrase: bool = Field(default=True, description="Paraphrase detection yap")
-    similarity_threshold: Optional[float] = Field(
+    similarity_threshold: float | None = Field(
         default=None,
         ge=0.0,
         le=1.0,
-        description="Ozel benzerlik esigi (varsayilan: 0.95)"
+        description="Ozel benzerlik esigi (varsayilan: 0.95)",
     )
 
 
 class SimilarQuestion(BaseModel):
     """Benzer soru."""
+
     id: str
     content_preview: str
     similarity: float
@@ -91,6 +99,7 @@ class SimilarQuestion(BaseModel):
 
 class DuplicateCheckResponse(BaseModel):
     """Duplicate kontrol yaniti."""
+
     status: str
     is_duplicate: bool
     similarity_score: float
@@ -98,25 +107,25 @@ class DuplicateCheckResponse(BaseModel):
     recommendation: str
     can_add: bool
     requires_manual_review: bool = Field(
-        default=False,
-        description="Manuel inceleme gerekiyor mu (REQ-5.4)"
+        default=False, description="Manuel inceleme gerekiyor mu (REQ-5.4)"
     )
     merge_candidates: list[str]
 
 
 class AddWithCheckRequest(BaseModel):
     """Duplicate kontrolu ile ekleme istegi."""
+
     content: str = Field(..., description="Soru icerigi", min_length=10)
     metadata: dict = Field(default_factory=dict, description="Soru metadata'si")
-    question_id: Optional[str] = Field(default=None, description="Opsiyonel soru ID")
+    question_id: str | None = Field(default=None, description="Opsiyonel soru ID")
     force: bool = Field(
-        default=False,
-        description="Duplicate olsa bile ekle (admin icin)"
+        default=False, description="Duplicate olsa bile ekle (admin icin)"
     )
 
 
 class AddWithCheckResponse(BaseModel):
     """Duplicate kontrolu ile ekleme yaniti."""
+
     success: bool
     question_id: str
     duplicate_check: DuplicateCheckResponse
@@ -125,16 +134,20 @@ class AddWithCheckResponse(BaseModel):
 
 class MergeRequest(BaseModel):
     """Duplicate birlestirme istegi."""
+
     primary_id: str = Field(..., description="Ana soru ID'si (korunacak)")
-    secondary_ids: list[str] = Field(..., description="Birlestirilecek soru ID'leri", min_length=1)
+    secondary_ids: list[str] = Field(
+        ..., description="Birlestirilecek soru ID'leri", min_length=1
+    )
     merge_strategy: str = Field(
         default="keep_primary",
-        description="Birlestirme stratejisi: keep_primary, merge_all, keep_newest"
+        description="Birlestirme stratejisi: keep_primary, merge_all, keep_newest",
     )
 
 
 class MergeResponse(BaseModel):
     """Duplicate birlestirme yaniti."""
+
     success: bool
     merged_id: str
     merged_metadata: dict
@@ -144,6 +157,7 @@ class MergeResponse(BaseModel):
 
 class DuplicateStats(BaseModel):
     """Duplicate istatistikleri."""
+
     total_questions: int
     sample_size: int
     potential_duplicates: int
@@ -154,6 +168,7 @@ class DuplicateStats(BaseModel):
 
 class PendingReviewItem(BaseModel):
     """Manuel inceleme bekleyen oge (REQ-5.4)."""
+
     question_id: str
     content_preview: str
     similarity_score: float
@@ -165,16 +180,17 @@ class PendingReviewItem(BaseModel):
 
 class ReviewRequest(BaseModel):
     """Inceleme sonucu kayit istegi (REQ-5.4)."""
+
     decision: ReviewDecision
-    merge_with_id: Optional[str] = Field(
-        default=None,
-        description="MERGE_WITH karari icin hedef soru ID"
+    merge_with_id: str | None = Field(
+        default=None, description="MERGE_WITH karari icin hedef soru ID"
     )
     reviewer_notes: str = Field(default="", description="Inceleme notlari")
 
 
 class ReviewResponse(BaseModel):
     """Inceleme sonucu yaniti."""
+
     success: bool
     question_id: str
     decision: str
@@ -200,14 +216,16 @@ class ReviewResponse(BaseModel):
     - >= 0.99 benzerlik = exact match (engellenir)
     - 0.90-0.95 arasi = near-duplicate (uyari)
     - Paraphrase detection
-    """
+    """,
 )
-async def check_duplicate(request: DuplicateCheckRequest) -> DuplicateCheckResponse:
+async def check_duplicate(
+    request: DuplicateCheckRequest, _admin=Depends(get_current_admin_user)
+) -> DuplicateCheckResponse:
     """Soru iceriginin duplicate olup olmadigini kontrol et."""
     if not DUPLICATE_AVAILABLE:
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail="Duplicate detection service not available"
+            detail="Duplicate detection service not available",
         )
 
     try:
@@ -222,7 +240,7 @@ async def check_duplicate(request: DuplicateCheckRequest) -> DuplicateCheckRespo
         # Near-duplicate veya duplicate ise manual review flag'i set et (REQ-5.4)
         requires_manual_review = result.status in [
             DuplicateStatus.NEAR_DUPLICATE,
-            DuplicateStatus.DUPLICATE
+            DuplicateStatus.DUPLICATE,
         ]
 
         similar_questions = [
@@ -250,7 +268,7 @@ async def check_duplicate(request: DuplicateCheckRequest) -> DuplicateCheckRespo
         logger.error(f"Duplicate check failed: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Islem basarisiz. Lutfen tekrar deneyin."
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
 
 
@@ -258,9 +276,12 @@ async def check_duplicate(request: DuplicateCheckRequest) -> DuplicateCheckRespo
     "/add-with-check",
     response_model=AddWithCheckResponse,
     summary="Duplicate kontrolu ile ekleme",
-    description="Soru eklenmeden once duplicate kontrolu yapar."
+    description="Soru eklenmeden once duplicate kontrolu yapar.",
 )
-async def add_with_duplicate_check(request: AddWithCheckRequest) -> AddWithCheckResponse:
+async def add_with_duplicate_check(
+    request: AddWithCheckRequest,
+    _admin=Depends(get_current_admin_user),
+) -> AddWithCheckResponse:
     """Duplicate kontrolu ile soru ekle."""
     try:
         service = get_duplicate_service()
@@ -276,13 +297,19 @@ async def add_with_duplicate_check(request: AddWithCheckRequest) -> AddWithCheck
         if check_result.status == DuplicateStatus.NEAR_DUPLICATE and success:
             if check_result.similar_questions:
                 review_service = get_pending_review_service()
-                content_preview = request.content[:200] + "..." if len(request.content) > 200 else request.content
+                content_preview = (
+                    request.content[:200] + "..."
+                    if len(request.content) > 200
+                    else request.content
+                )
                 review_service.add_for_review(
                     question_id=question_id,
                     content_preview=content_preview,
                     similarity_score=check_result.similarity_score,
                     similar_to_id=check_result.similar_questions[0]["id"],
-                    similar_to_preview=check_result.similar_questions[0]["content_preview"],
+                    similar_to_preview=check_result.similar_questions[0][
+                        "content_preview"
+                    ],
                 )
 
         similar_questions = [
@@ -302,7 +329,8 @@ async def add_with_duplicate_check(request: AddWithCheckRequest) -> AddWithCheck
             similar_questions=similar_questions,
             recommendation=check_result.recommendation,
             can_add=check_result.can_add,
-            requires_manual_review=check_result.status == DuplicateStatus.NEAR_DUPLICATE,
+            requires_manual_review=check_result.status
+            == DuplicateStatus.NEAR_DUPLICATE,
             merge_candidates=check_result.merge_candidates,
         )
 
@@ -319,7 +347,7 @@ async def add_with_duplicate_check(request: AddWithCheckRequest) -> AddWithCheck
         logger.error(f"Add with check failed: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Islem basarisiz. Lutfen tekrar deneyin."
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
 
 
@@ -336,9 +364,11 @@ async def add_with_duplicate_check(request: AddWithCheckRequest) -> AddWithCheck
     - keep_primary: Ana soru metadata'sini koru
     - merge_all: Tum metadata'lari birlestir
     - keep_newest: En yeni metadata'yi koru
-    """
+    """,
 )
-async def merge_duplicates(request: MergeRequest) -> MergeResponse:
+async def merge_duplicates(
+    request: MergeRequest, _admin=Depends(get_current_admin_user)
+) -> MergeResponse:
     """Duplicate sorulari birlestir."""
     try:
         service = get_duplicate_service()
@@ -361,7 +391,7 @@ async def merge_duplicates(request: MergeRequest) -> MergeResponse:
         logger.error(f"Merge failed: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Islem basarisiz. Lutfen tekrar deneyin."
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
 
 
@@ -369,9 +399,9 @@ async def merge_duplicates(request: MergeRequest) -> MergeResponse:
     "/stats",
     response_model=DuplicateStats,
     summary="Duplicate istatistikleri",
-    description="Duplicate tespit istatistiklerini getirir."
+    description="Duplicate tespit istatistiklerini getirir.",
 )
-async def get_duplicate_stats() -> DuplicateStats:
+async def get_duplicate_stats(_admin=Depends(get_current_admin_user)) -> DuplicateStats:
     """Duplicate istatistiklerini getir."""
     try:
         service = get_duplicate_service()
@@ -379,8 +409,7 @@ async def get_duplicate_stats() -> DuplicateStats:
 
         if "error" in stats:
             raise HTTPException(
-                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail=stats["error"]
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=stats["error"]
             )
 
         review_service = get_pending_review_service()
@@ -399,7 +428,7 @@ async def get_duplicate_stats() -> DuplicateStats:
         logger.error(f"Stats failed: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Islem basarisiz. Lutfen tekrar deneyin."
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
 
 
@@ -411,14 +440,14 @@ async def get_duplicate_stats() -> DuplicateStats:
     Manuel inceleme bekleyen sorulari listeler.
 
     Spec REQ-5.4: Near-duplicate flagging ve manual review suggestion.
-    """
+    """,
 )
 async def get_pending_reviews(
     limit: int = Query(default=20, ge=1, le=100, description="Maksimum sonuc sayisi"),
-    status_filter: Optional[str] = Query(
-        default="pending",
-        description="Durum filtresi: pending, reviewed, all"
-    )
+    status_filter: str | None = Query(
+        default="pending", description="Durum filtresi: pending, reviewed, all"
+    ),
+    _admin=Depends(get_current_admin_user),
 ) -> list[PendingReviewItem]:
     """Manuel inceleme bekleyen sorulari getir (REQ-5.4)."""
     try:
@@ -433,12 +462,15 @@ async def get_pending_reviews(
             service_status = None  # Will filter manually
 
         # Get items from service
-        service_items = review_service.list_pending(limit=limit, status_filter=service_status)
+        service_items = review_service.list_pending(
+            limit=limit, status_filter=service_status
+        )
 
         # Filter for "reviewed" if needed
         if status_filter == "reviewed":
             service_items = [
-                item for item in service_items
+                item
+                for item in service_items
                 if item.status != ServiceReviewStatus.PENDING
             ]
 
@@ -462,7 +494,7 @@ async def get_pending_reviews(
         logger.error(f"Pending reviews failed: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Islem basarisiz. Lutfen tekrar deneyin."
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
 
 
@@ -479,9 +511,11 @@ async def get_pending_reviews(
     - approve_add: Eklemeyi onayla (soru kalir)
     - reject_duplicate: Duplicate olarak reddet (soru silinir)
     - merge_with: Mevcut soru ile birlestir
-    """
+    """,
 )
-async def submit_review(question_id: str, request: ReviewRequest) -> ReviewResponse:
+async def submit_review(
+    question_id: str, request: ReviewRequest, _admin=Depends(get_current_admin_user)
+) -> ReviewResponse:
     """Inceleme sonucunu kaydet (REQ-5.4)."""
     try:
         review_service = get_pending_review_service()
@@ -490,7 +524,7 @@ async def submit_review(question_id: str, request: ReviewRequest) -> ReviewRespo
         if not review_service.exists(question_id):
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
-                detail=f"Inceleme bekleyen soru bulunamadi: {question_id}"
+                detail=f"Inceleme bekleyen soru bulunamadi: {question_id}",
             )
 
         duplicate_service = get_duplicate_service()
@@ -511,20 +545,21 @@ async def submit_review(question_id: str, request: ReviewRequest) -> ReviewRespo
                 message = "Soru duplicate olarak reddedildi ve silindi."
             except Exception as e:
                 logger.warning(f"Could not delete question {question_id}: {e}")
-                message = f"Soru reddedildi ama silinemedi: {e}"
+                logger.error(f"Soru silinemedi: {e}")
+                message = "Soru reddedildi ama silinemedi"
 
         elif request.decision == ReviewDecision.MERGE_WITH:
             # Birleştir
             if not request.merge_with_id:
                 raise HTTPException(
                     status_code=status.HTTP_400_BAD_REQUEST,
-                    detail="MERGE_WITH karari icin merge_with_id gerekli"
+                    detail="MERGE_WITH karari icin merge_with_id gerekli",
                 )
 
             merge_result = await duplicate_service.merge_duplicates(
                 primary_id=request.merge_with_id,
                 secondary_ids=[question_id],
-                merge_strategy="merge_all"
+                merge_strategy="merge_all",
             )
 
             if merge_result.success:
@@ -558,14 +593,11 @@ async def submit_review(question_id: str, request: ReviewRequest) -> ReviewRespo
         logger.error(f"Review submission failed: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Islem basarisiz. Lutfen tekrar deneyin."
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
 
 
-@router.get(
-    "/health",
-    summary="Duplicate servis saglik kontrolu"
-)
+@router.get("/health", summary="Duplicate servis saglik kontrolu")
 async def health_check() -> dict:
     """Duplicate servisinin saglik durumunu kontrol et."""
     try:
@@ -586,6 +618,6 @@ async def health_check() -> dict:
         return {
             "status": "unhealthy",
             "service": "duplicate_detection",
-            "error": str(e),
+            "error": "Internal error",
             "timestamp": datetime.now().isoformat(),
         }

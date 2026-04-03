@@ -200,14 +200,17 @@ async def solve_problem(
             ensemble_scores=result.get("ensemble_scores"),
         )
 
-    except Exception as e:
-        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
+    except Exception:
+        raise HTTPException(
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
+        )
 
 
 @router.get("/session/{session_id}")
 async def get_session(
     session_id: UUID,
     db: AsyncSession = Depends(get_db),
+    current_user=Depends(authenticate_optional),
 ):
     """
     Get a reasoning session by ID
@@ -220,6 +223,19 @@ async def get_session(
     if not session:
         raise HTTPException(status_code=404, detail="Session not found")
 
+    # Ownership check: only session owner can view
+    session_user_id = (
+        session.get("user_id")
+        if isinstance(session, dict)
+        else getattr(session, "user_id", None)
+    )
+    if (
+        current_user
+        and session_user_id
+        and str(session_user_id) != str(current_user.id)
+    ):
+        raise HTTPException(status_code=403, detail="Bu oturuma erisim yetkiniz yok")
+
     return session
 
 
@@ -227,6 +243,7 @@ async def get_session(
 async def get_session_steps(
     session_id: UUID,
     db: AsyncSession = Depends(get_db),
+    current_user=Depends(authenticate_optional),
 ):
     """
     Get all reasoning steps for a session
@@ -234,6 +251,23 @@ async def get_session_steps(
     Returns steps in order with their details.
     """
     service = SequentialReasoningService(db)
+
+    # Verify session exists and check ownership
+    session = await service.get_session(session_id)
+    if not session:
+        raise HTTPException(status_code=404, detail="Session not found")
+
+    session_user_id = (
+        session.get("user_id")
+        if isinstance(session, dict)
+        else getattr(session, "user_id", None)
+    )
+    if (
+        current_user
+        and session_user_id
+        and str(session_user_id) != str(current_user.id)
+    ):
+        raise HTTPException(status_code=403, detail="Bu oturuma erisim yetkiniz yok")
 
     steps = await service.get_session_steps(session_id)
     return {"session_id": str(session_id), "steps": steps}
@@ -250,6 +284,7 @@ async def get_session_mermaid(
         True, description="Include JSON tree for interactive UI"
     ),
     db: AsyncSession = Depends(get_db),
+    current_user=Depends(authenticate_optional),
 ):
     """
     Get Mermaid diagram for a reasoning session (REQ-6.2)
@@ -305,6 +340,7 @@ async def get_session_mermaid(
 async def decompose_problem(
     request: DecomposeRequest,
     db: AsyncSession = Depends(get_db),
+    current_user=Depends(authenticate_optional),
 ):
     """
     Decompose a complex problem into sub-problems
@@ -327,14 +363,17 @@ async def decompose_problem(
             total_steps=result.get("total_steps", 0),
         )
 
-    except Exception as e:
-        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
+    except Exception:
+        raise HTTPException(
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
+        )
 
 
 @router.post("/compare", response_model=CompareResponse)
 async def compare_providers(
     request: CompareRequest,
     db: AsyncSession = Depends(get_db),
+    current_user=Depends(authenticate_optional),
 ):
     """
     Compare all providers on the same problem
@@ -354,18 +393,20 @@ async def compare_providers(
             fastest_provider=result.get("fastest_provider"),
         )
 
-    except Exception as e:
-        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
+    except Exception:
+        raise HTTPException(
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
+        )
 
 
 @router.post("/cache/invalidate")
 async def invalidate_cache(
     request: CacheInvalidateRequest,
     db: AsyncSession = Depends(get_db),
-    current_user=Depends(authenticate_optional),
+    _admin=Depends(get_current_admin_user),
 ):
     """
-    Invalidate reasoning cache
+    Invalidate reasoning cache (admin only)
 
     If `problem` is provided, invalidates cache for that specific problem.
     Otherwise, removes all expired cache entries.

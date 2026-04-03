@@ -14,9 +14,8 @@ import asyncio
 import hashlib
 import logging
 import mimetypes
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
-from typing import Dict, Optional, Tuple
 
 import aiofiles
 from fastapi import UploadFile
@@ -90,7 +89,7 @@ class VideoValidator:
     @staticmethod
     async def validate_upload(
         file: UploadFile, question_id: str, db: AsyncSession
-    ) -> Tuple[bool, Optional[str], Optional[Dict]]:
+    ) -> tuple[bool, str | None, dict | None]:
         """
         Yüklenen videoyu valide et
 
@@ -135,7 +134,7 @@ class VideoValidator:
             errors.append("Dosya boş")
         elif file_size > VideoConfig.MAX_FILE_SIZE_BYTES:
             errors.append(
-                f"Dosya çok büyük: {file_size / (1024*1024):.2f} MB "
+                f"Dosya çok büyük: {file_size / (1024 * 1024):.2f} MB "
                 f"(Maximum: {VideoConfig.MAX_FILE_SIZE_MB} MB)"
             )
 
@@ -161,7 +160,7 @@ class VideoValidator:
     @staticmethod
     async def validate_video_properties(
         video_path: Path,
-    ) -> Tuple[bool, Optional[str], Optional[Dict]]:
+    ) -> tuple[bool, str | None, dict | None]:
         """
         Video özelliklerini ffprobe ile kontrol et (REQ-14.2)
 
@@ -216,7 +215,13 @@ class VideoValidator:
                 "width": int(video_stream.get("width", 0)),
                 "height": int(video_stream.get("height", 0)),
                 "codec": video_stream.get("codec_name"),
-                "fps": eval(video_stream.get("r_frame_rate", "0/1")),
+                "fps": (
+                    lambda r: int(r.split("/")[0]) / int(r.split("/")[1])
+                    if "/" in r and int(r.split("/")[1]) != 0
+                    else float(r)
+                    if r
+                    else 0
+                )(video_stream.get("r_frame_rate", "0/1")),
                 "bitrate": int(probe_data["format"].get("bit_rate", 0)),
             }
 
@@ -248,7 +253,7 @@ class VideoValidator:
 
         except Exception as e:
             logger.error(f"Video properties validation error: {e}")
-            return False, f"Video analiz hatası: {str(e)}", None
+            return False, f"Video analiz hatası: {e!s}", None
 
 
 # ============================================================================
@@ -264,7 +269,7 @@ class VideoProcessor:
         input_path: Path,
         output_path: Path,
         target_bitrate_kbps: int = VideoConfig.TARGET_BITRATE_KBPS,
-    ) -> Tuple[bool, Optional[str], Optional[Dict]]:
+    ) -> tuple[bool, str | None, dict | None]:
         """
         Videoyu sıkıştır (TASK 72.1: Compression optimization)
 
@@ -328,8 +333,8 @@ class VideoProcessor:
             }
 
             logger.info(
-                f"Compression successful: {original_size / (1024*1024):.2f} MB -> "
-                f"{compressed_size / (1024*1024):.2f} MB "
+                f"Compression successful: {original_size / (1024 * 1024):.2f} MB -> "
+                f"{compressed_size / (1024 * 1024):.2f} MB "
                 f"({size_reduction_percent:.1f}% reduction)"
             )
 
@@ -337,12 +342,12 @@ class VideoProcessor:
 
         except Exception as e:
             logger.error(f"Video compression error: {e}")
-            return False, f"Sıkıştırma hatası: {str(e)}", None
+            return False, f"Sıkıştırma hatası: {e!s}", None
 
     @staticmethod
     async def generate_thumbnail(
         video_path: Path, output_path: Path, timestamp_seconds: float = 5.0
-    ) -> Tuple[bool, Optional[str]]:
+    ) -> tuple[bool, str | None]:
         """
         Video thumbnail oluştur (REQ-14.3)
 
@@ -385,7 +390,7 @@ class VideoProcessor:
 
         except Exception as e:
             logger.error(f"Thumbnail generation error: {e}")
-            return False, f"Thumbnail oluşturma hatası: {str(e)}"
+            return False, f"Thumbnail oluşturma hatası: {e!s}"
 
 
 # ============================================================================
@@ -406,9 +411,9 @@ class VideoSolutionService:
         question_id: str,
         user_id: str,
         title: str,
-        description: Optional[str] = None,
-        solution_method: Optional[str] = None,
-    ) -> Tuple[bool, Optional[str], Optional[VideoSolution]]:
+        description: str | None = None,
+        solution_method: str | None = None,
+    ) -> tuple[bool, str | None, VideoSolution | None]:
         """
         Video yükle ve işle (TASK 72.1)
 
@@ -434,7 +439,7 @@ class VideoSolutionService:
 
             # 2. Dosyayı geçici olarak kaydet
             file_hash = hashlib.sha256(
-                f"{user_id}{question_id}{datetime.now(timezone.utc).isoformat()}".encode()
+                f"{user_id}{question_id}{datetime.now(UTC).isoformat()}".encode()
             ).hexdigest()[:16]
             original_ext = file.filename.split(".")[-1]
             temp_filename = f"{file_hash}_original.{original_ext}"
@@ -475,7 +480,7 @@ class VideoSolutionService:
                 validation_errors=None,
                 # Processing durumu
                 processing_status=VideoProcessingStatus.VALIDATING,
-                processing_started_at=datetime.now(timezone.utc),
+                processing_started_at=datetime.now(UTC),
             )
 
             self.db.add(video_solution)
@@ -492,7 +497,7 @@ class VideoSolutionService:
         except Exception as e:
             logger.error(f"Video upload error: {e}")
             await self.db.rollback()
-            return False, f"Video yükleme hatası: {str(e)}", None
+            return False, f"Video yükleme hatası: {e!s}", None
 
     async def _process_video_async(self, video_id: str, temp_path: Path):
         """
@@ -548,11 +553,11 @@ class VideoSolutionService:
 
             if success:
                 video.thumbnail_url = str(thumbnail_path)
-                video.thumbnail_generated_at = datetime.now(timezone.utc)
+                video.thumbnail_generated_at = datetime.now(UTC)
 
             # 3. İşlem tamamlandı
             video.processing_status = VideoProcessingStatus.READY
-            video.processing_completed_at = datetime.now(timezone.utc)
+            video.processing_completed_at = datetime.now(UTC)
             await self.db.commit()
 
             # Geçici dosyayı sil
@@ -577,7 +582,6 @@ class VideoSolutionService:
                     await self.db.commit()
             except Exception as db_err:
                 logger.debug(f"Failed to update video status: {db_err}")
-                pass
 
 
 # ============================================================================
@@ -598,7 +602,7 @@ class VideoStreamingService:
     @staticmethod
     async def generate_hls_playlist(
         video_path: Path, output_dir: Path, qualities: list = None
-    ) -> Tuple[bool, Optional[str], Optional[Dict]]:
+    ) -> tuple[bool, str | None, dict | None]:
         """
         HLS playlist oluştur (TASK 72.2: HLS streaming)
 
@@ -713,12 +717,12 @@ class VideoStreamingService:
 
         except Exception as e:
             logger.error(f"HLS generation error: {e}")
-            return False, f"HLS oluşturma hatası: {str(e)}", None
+            return False, f"HLS oluşturma hatası: {e!s}", None
 
     @staticmethod
     async def generate_dash_manifest(
         video_path: Path, output_dir: Path
-    ) -> Tuple[bool, Optional[str], Optional[str]]:
+    ) -> tuple[bool, str | None, str | None]:
         """
         DASH manifest oluştur (TASK 72.2: DASH streaming)
 
@@ -795,12 +799,12 @@ class VideoStreamingService:
 
         except Exception as e:
             logger.error(f"DASH generation error: {e}")
-            return False, f"DASH oluşturma hatası: {str(e)}", None
+            return False, f"DASH oluşturma hatası: {e!s}", None
 
     @staticmethod
     async def upload_to_cdn(
-        local_path: Path, cdn_config: Dict
-    ) -> Tuple[bool, Optional[str], Optional[str]]:
+        local_path: Path, cdn_config: dict
+    ) -> tuple[bool, str | None, str | None]:
         """
         CDN'e yükle (TASK 72.2: CDN integration)
 
@@ -840,11 +844,11 @@ class VideoAnalyticsService:
     async def track_view(
         self,
         video_id: str,
-        user_id: Optional[str],
+        user_id: str | None,
         session_id: str,
         watch_duration_seconds: float,
         completion_percentage: float,
-        device_info: Optional[Dict] = None,
+        device_info: dict | None = None,
     ) -> bool:
         """
         Video izleme kaydı oluştur (REQ-14.4: İzlenme sayısı)
@@ -861,15 +865,16 @@ class VideoAnalyticsService:
             bool: Başarılı mı
         """
         try:
-            from models.video_solution import VideoAnalytics, VideoSolution
             from datetime import datetime
+
+            from models.video_solution import VideoAnalytics, VideoSolution
 
             # Video analytics kaydı oluştur
             analytics = VideoAnalytics(
                 video_id=video_id,
                 user_id=user_id,
                 session_id=session_id,
-                started_at=datetime.now(timezone.utc),
+                started_at=datetime.now(UTC),
                 watch_duration_seconds=watch_duration_seconds,
                 completion_percentage=completion_percentage,
                 device_type=device_info.get("device_type") if device_info else None,

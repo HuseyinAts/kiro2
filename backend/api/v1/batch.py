@@ -17,10 +17,10 @@ Created: 2026-01-14
 
 import asyncio
 import time
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any
 
-from fastapi import APIRouter, Request
 import structlog
+from fastapi import APIRouter, Request
 
 from api.schemas.batch import (
     BatchOperation,
@@ -86,19 +86,20 @@ async def execute_single_operation(
             HTTPMethod.PATCH,
         ):
             import json
+
             body = json.dumps(operation.body).encode()
 
         # Response collector
         response_started = False
         response_status = 500
-        response_headers: List[Tuple[bytes, bytes]] = []
-        response_body_parts: List[bytes] = []
+        response_headers: list[tuple[bytes, bytes]] = []
+        response_body_parts: list[bytes] = []
 
-        async def receive() -> Dict[str, Any]:
+        async def receive() -> dict[str, Any]:
             """ASGI receive callable."""
             return {"type": "http.request", "body": body, "more_body": False}
 
-        async def send(message: Dict[str, Any]) -> None:
+        async def send(message: dict[str, Any]) -> None:
             """ASGI send callable."""
             nonlocal response_started, response_status, response_headers
             if message["type"] == "http.response.start":
@@ -120,6 +121,7 @@ async def execute_single_operation(
         if response_body:
             try:
                 import json
+
                 data = json.loads(response_body.decode("utf-8"))
             except (json.JSONDecodeError, UnicodeDecodeError):
                 data = response_body.decode("utf-8", errors="replace")
@@ -159,7 +161,7 @@ async def execute_single_operation(
             status_code=500,
             success=False,
             data=None,
-            error=f"Internal error: {str(e)}",
+            error="Internal error",
             duration_ms=round(duration_ms, 2),
         )
 
@@ -219,6 +221,7 @@ async def execute_single_operation(
 async def process_batch(
     batch_request: BatchRequest,
     request: Request,
+    _current_user=Depends(get_current_user),
 ) -> BatchResponse:
     """
     Batch API isteklerini isler.
@@ -241,17 +244,16 @@ async def process_batch(
 
     # Operasyonlari paralel olarak calistir (REQ-3.1)
     tasks = [
-        execute_single_operation(request, op, idx)
-        for idx, op in enumerate(operations)
+        execute_single_operation(request, op, idx) for idx, op in enumerate(operations)
     ]
 
     # asyncio.gather ile concurrent islem (return_exceptions=True)
-    results: List[OperationResult] = await asyncio.gather(
+    results: list[OperationResult] = await asyncio.gather(
         *tasks, return_exceptions=True
     )
 
     # Exception'lari OperationResult'a donustur
-    processed_results: List[OperationResult] = []
+    processed_results: list[OperationResult] = []
     for idx, result in enumerate(results):
         if isinstance(result, Exception):
             processed_results.append(
@@ -261,7 +263,7 @@ async def process_batch(
                     status_code=500,
                     success=False,
                     data=None,
-                    error=f"Unexpected error: {str(result)}",
+                    error="Unexpected error",
                     duration_ms=0.0,
                 )
             )
@@ -273,7 +275,7 @@ async def process_batch(
     failure_count = len(processed_results) - success_count
 
     # Atomic mod kontrolu (REQ-3.4)
-    atomic_success: Optional[bool] = None
+    atomic_success: bool | None = None
     if batch_request.atomic:
         atomic_success = failure_count == 0
         if not atomic_success:
@@ -310,7 +312,7 @@ async def process_batch(
     summary="Batch API Bilgisi",
     description="Batch API hakkinda bilgi verir.",
 )
-async def batch_info() -> Dict[str, Any]:
+async def batch_info() -> dict[str, Any]:
     """
     Batch API bilgisi doner.
 

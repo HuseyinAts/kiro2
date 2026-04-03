@@ -92,7 +92,8 @@ async def orchestrator_status(
         result["routing_engine"] = True
         result["graph_available"] = getattr(orchestrator, "_GRAPH_AVAILABLE", False)
     except Exception as e:
-        result["error"] = str(e)
+        logger.error("Orchestrator status check failed: %s", e)
+        result["error"] = "Orchestrator unavailable"
 
     return result
 
