@@ -276,8 +276,11 @@ async def upload_pdf(
     # Generate job ID
     job_id = str(uuid.uuid4())
 
-    # Save file
-    file_path = UPLOAD_DIR / f"{job_id}_{file.filename}"
+    # Save file — sanitize filename to prevent path traversal
+    safe_name = Path(file.filename or "upload.pdf").name.replace("..", "")
+    if not safe_name:
+        safe_name = "upload.pdf"
+    file_path = UPLOAD_DIR / f"{job_id}_{safe_name}"
 
     try:
         with open(file_path, "wb") as f:
