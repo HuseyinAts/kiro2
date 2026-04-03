@@ -30,7 +30,7 @@ import { examService } from '../../services/examService';
 import { SinavSonucu, performanceToSinavSonucu } from '../../types';
 
 // Import sub-components
-import { BasicResultsTab } from './Results/BasicResultsTab';
+import { BasicResultsTab } from './Results';
 import { ComparisonTab } from './Results/ComparisonTab';
 import { IRTMorphologyTab } from './Results/IRTMorphologyTab';
 import { LearningStyleTab } from './Results/LearningStyleTab';

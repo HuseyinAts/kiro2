@@ -23,9 +23,9 @@ export {
 // DEHB Desteği - Dikkat Yönetimi
 export { VisualTimer } from './ADHD';
 
-// Video Erişilebilirliği
-export { AccessibleVideoPlayer } from './AccessibleVideoPlayer';
-export { default as AccessibleVideoPlayerDefault } from './AccessibleVideoPlayer';
+// Video Erişilebilirliği (canonical: Common/AccessibleVideoPlayer)
+export { default as AccessibleVideoPlayer } from '../Common/AccessibleVideoPlayer';
+export { default as AccessibleVideoPlayerDefault } from '../Common/AccessibleVideoPlayer';
 
 // Matematik Formül Erişilebilirliği
 export {

@@ -12,7 +12,7 @@ import {
   calculateContrastRatio,
   checkContrastCompliance,
 } from '../../utils/wcagValidator';
-import { AccessibleVideoPlayer } from '../../components/Accessibility/AccessibleVideoPlayer';
+import AccessibleVideoPlayer from '../../components/Common/AccessibleVideoPlayer';
 import { MathFormula } from '../../components/Accessibility/MathFormula';
 
 /**
