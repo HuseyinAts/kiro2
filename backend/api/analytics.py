@@ -10,7 +10,7 @@ from datetime import datetime, timedelta
 from typing import Any
 
 import xlsxwriter
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException, Query, Request, Response
 from pydantic import BaseModel, Field
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
@@ -1556,3 +1556,19 @@ async def _generate_csv_content(
 
     except Exception as e:
         logger.error(f"CSV content generation error: {e!s}")
+
+
+# ---------------------------------------------------------------------------
+# Web Vitals — fire-and-forget endpoint for frontend performance metrics
+# ---------------------------------------------------------------------------
+
+
+@router.post("/web-vitals", status_code=204)
+async def receive_web_vitals(request: Request):
+    """Receive web vitals metrics from frontend (fire-and-forget)."""
+    try:
+        body = await request.json()
+        logger.debug("Web vital: %s=%s", body.get("name"), body.get("value"))
+    except Exception:
+        pass
+    return Response(status_code=204)

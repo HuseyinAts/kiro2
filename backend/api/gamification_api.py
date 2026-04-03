@@ -603,7 +603,9 @@ async def get_gamification_profile(
                 "level_progress_pct": round((xp_in_current / xp_for_next) * 100, 2)
                 if xp_for_next > 0
                 else 0,
-                "streak": streak,
+                "streak": streak.get("current_streak", 0)
+                if isinstance(streak, dict)
+                else streak,
                 "streak_active_today": streak_active_today,
                 "total_badges": total_badges,
                 "leaderboard_rank": leaderboard_rank,
