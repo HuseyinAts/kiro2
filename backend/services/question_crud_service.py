@@ -11,7 +11,7 @@ Task 71.4: Soru arama (Full-text search, Advanced filters, Faceted search)
 import logging
 import uuid
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from sqlalchemy import and_, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -43,10 +43,10 @@ class QuestionCRUDService:
 
     async def create_question(
         self,
-        question_data: Dict[str, Any],
+        question_data: dict[str, Any],
         created_by: str,
-        image_file: Optional[bytes] = None,
-        image_filename: Optional[str] = None,
+        image_file: bytes | None = None,
+        image_filename: str | None = None,
     ) -> QuestionBankItem:
         """
         Yeni soru oluştur
@@ -160,7 +160,7 @@ class QuestionCRUDService:
 
         except Exception as e:
             await self.db.rollback()
-            logger.error(f"Soru oluşturma hatası: {str(e)}")
+            logger.error(f"Soru oluşturma hatası: {e!s}")
             raise
 
     async def _upload_question_image(self, image_file: bytes, filename: str) -> str:
@@ -197,11 +197,11 @@ class QuestionCRUDService:
             return image_url
 
         except Exception as e:
-            logger.error(f"Görsel yükleme hatası: {str(e)}")
+            logger.error(f"Görsel yükleme hatası: {e!s}")
             raise
 
     async def _get_or_create_topic(
-        self, topic_name: str, subtopic_name: Optional[str] = None
+        self, topic_name: str, subtopic_name: str | None = None
     ) -> str:
         """
         Konu ID'sini al veya yeni konu oluştur
@@ -268,10 +268,10 @@ class QuestionCRUDService:
             return topic.id
 
         except Exception as e:
-            logger.error(f"Konu oluşturma hatası: {str(e)}")
+            logger.error(f"Konu oluşturma hatası: {e!s}")
             raise
 
-    async def _add_question_tags(self, question_id: str, tags: List[str]) -> None:
+    async def _add_question_tags(self, question_id: str, tags: list[str]) -> None:
         """
         Soruya etiket ekle
 
@@ -319,7 +319,7 @@ class QuestionCRUDService:
             await self.db.commit()
 
         except Exception as e:
-            logger.error(f"Etiket ekleme hatası: {str(e)}")
+            logger.error(f"Etiket ekleme hatası: {e!s}")
             raise
 
     # ========================================================================
@@ -329,10 +329,10 @@ class QuestionCRUDService:
     async def update_question(
         self,
         question_id: str,
-        update_data: Dict[str, Any],
+        update_data: dict[str, Any],
         updated_by: str,
         create_version: bool = True,
-    ) -> Optional[QuestionBankItem]:
+    ) -> QuestionBankItem | None:
         """
         Soruyu güncelle ve versiyon oluştur
 
@@ -373,7 +373,7 @@ class QuestionCRUDService:
 
         except Exception as e:
             await self.db.rollback()
-            logger.error(f"Soru güncelleme hatası: {str(e)}")
+            logger.error(f"Soru güncelleme hatası: {e!s}")
             raise
 
     async def _create_question_version(
@@ -387,7 +387,6 @@ class QuestionCRUDService:
             updated_by: Güncelleyen kullanıcı ID
         """
         try:
-
             # Versiyon tablosu yoksa oluştur (migration gerekebilir)
             version = {
                 "id": str(uuid.uuid4()),
@@ -424,7 +423,7 @@ class QuestionCRUDService:
             )
 
         except Exception as e:
-            logger.error(f"Versiyon oluşturma hatası: {str(e)}")
+            logger.error(f"Versiyon oluşturma hatası: {e!s}")
             # Versiyon oluşturma hatası kritik değil, devam et
 
     async def _get_next_version_number(self, question_id: str) -> int:
@@ -451,10 +450,10 @@ class QuestionCRUDService:
             return 1
 
         except Exception as e:
-            logger.error(f"Versiyon numarası alma hatası: {str(e)}")
+            logger.error(f"Versiyon numarası alma hatası: {e!s}")
             return 1
 
-    async def get_question_history(self, question_id: str) -> List[Dict[str, Any]]:
+    async def get_question_history(self, question_id: str) -> list[dict[str, Any]]:
         """
         Soru değişiklik geçmişini getir
 
@@ -480,7 +479,7 @@ class QuestionCRUDService:
             return []
 
         except Exception as e:
-            logger.error(f"Geçmiş getirme hatası: {str(e)}")
+            logger.error(f"Geçmiş getirme hatası: {e!s}")
             return []
 
     # ========================================================================
@@ -524,7 +523,7 @@ class QuestionCRUDService:
 
         except Exception as e:
             await self.db.rollback()
-            logger.error(f"Soru silme hatası: {str(e)}")
+            logger.error(f"Soru silme hatası: {e!s}")
             return False
 
     async def archive_question(self, question_id: str, archived_by: str) -> bool:
@@ -558,7 +557,7 @@ class QuestionCRUDService:
 
         except Exception as e:
             await self.db.rollback()
-            logger.error(f"Soru arşivleme hatası: {str(e)}")
+            logger.error(f"Soru arşivleme hatası: {e!s}")
             return False
 
     async def restore_question(self, question_id: str, restored_by: str) -> bool:
@@ -593,12 +592,12 @@ class QuestionCRUDService:
 
         except Exception as e:
             await self.db.rollback()
-            logger.error(f"Soru geri yükleme hatası: {str(e)}")
+            logger.error(f"Soru geri yükleme hatası: {e!s}")
             return False
 
     async def get_archived_questions(
         self, limit: int = 100, offset: int = 0
-    ) -> List[QuestionBankItem]:
+    ) -> list[QuestionBankItem]:
         """
         Arşivlenmiş soruları getir
 
@@ -628,7 +627,7 @@ class QuestionCRUDService:
             return list(questions)
 
         except Exception as e:
-            logger.error(f"Arşiv sorgusu hatası: {str(e)}")
+            logger.error(f"Arşiv sorgusu hatası: {e!s}")
             return []
 
     # ========================================================================
@@ -637,12 +636,12 @@ class QuestionCRUDService:
 
     async def search_questions(
         self,
-        search_query: Optional[str] = None,
-        filters: Optional[Dict[str, Any]] = None,
-        facets: Optional[List[str]] = None,
+        search_query: str | None = None,
+        filters: dict[str, Any] | None = None,
+        facets: list[str] | None = None,
         limit: int = 100,
         offset: int = 0,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Gelişmiş soru arama
 
@@ -663,7 +662,11 @@ class QuestionCRUDService:
             # Full-text search (PostgreSQL için)
             if search_query:
                 # Escape LIKE wildcards to prevent pattern injection
-                escaped = search_query.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_")
+                escaped = (
+                    search_query.replace("\\", "\\\\")
+                    .replace("%", "\\%")
+                    .replace("_", "\\_")
+                )
                 search_pattern = f"%{escaped}%"
                 stmt = stmt.where(
                     or_(
@@ -768,7 +771,7 @@ class QuestionCRUDService:
             }
 
         except Exception as e:
-            logger.error(f"Arama hatası: {str(e)}")
+            logger.error(f"Arama hatası: {e!s}")
             return {
                 "questions": [],
                 "total_count": 0,
@@ -778,8 +781,8 @@ class QuestionCRUDService:
             }
 
     async def _calculate_facets(
-        self, facet_fields: List[str], filters: Optional[Dict[str, Any]] = None
-    ) -> Dict[str, Dict[str, int]]:
+        self, facet_fields: list[str], filters: dict[str, Any] | None = None
+    ) -> dict[str, dict[str, int]]:
         """
         Facet'leri hesapla (gruplandırılmış sayılar)
 
@@ -862,15 +865,15 @@ class QuestionCRUDService:
             return facet_results
 
         except Exception as e:
-            logger.error(f"Facet hesaplama hatası: {str(e)}")
+            logger.error(f"Facet hesaplama hatası: {e!s}")
             return {}
 
     async def advanced_search_with_elasticsearch(
         self,
         search_query: str,
-        filters: Optional[Dict[str, Any]] = None,
+        filters: dict[str, Any] | None = None,
         limit: int = 100,
-    ) -> List[QuestionBankItem]:
+    ) -> list[QuestionBankItem]:
         """
         Elasticsearch ile gelişmiş arama
 
@@ -940,7 +943,8 @@ class QuestionCRUDService:
             # Veritabanından soruları getir
             if question_ids:
                 stmt = select(QuestionBankItem).where(
-                    QuestionBankItem.id.in_(question_ids)
+                    QuestionBankItem.id.in_(question_ids),
+                    QuestionBankItem.is_active == True,
                 )
                 result = await self.db.execute(stmt)
                 questions = result.scalars().all()
@@ -949,7 +953,7 @@ class QuestionCRUDService:
             return []
 
         except Exception as e:
-            logger.error(f"Elasticsearch arama hatası: {str(e)}")
+            logger.error(f"Elasticsearch arama hatası: {e!s}")
             # Fallback: Normal arama yap
             search_result = await self.search_questions(
                 search_query=search_query, filters=filters, limit=limit
@@ -962,7 +966,7 @@ class QuestionCRUDService:
 
     async def get_question_by_id(
         self, question_id: str, include_relations: bool = False
-    ) -> Optional[QuestionBankItem]:
+    ) -> QuestionBankItem | None:
         """
         ID'ye göre soru getir
 
@@ -974,7 +978,10 @@ class QuestionCRUDService:
             QuestionBankItem: Soru nesnesi
         """
         try:
-            stmt = select(QuestionBankItem).where(QuestionBankItem.id == question_id)
+            stmt = select(QuestionBankItem).where(
+                QuestionBankItem.id == question_id,
+                QuestionBankItem.is_active == True,
+            )
 
             if include_relations:
                 stmt = stmt.options(
@@ -989,12 +996,12 @@ class QuestionCRUDService:
             return question
 
         except Exception as e:
-            logger.error(f"Soru getirme hatası: {str(e)}")
+            logger.error(f"Soru getirme hatası: {e!s}")
             return None
 
     async def bulk_create_questions(
-        self, questions_data: List[Dict[str, Any]], created_by: str
-    ) -> Dict[str, Any]:
+        self, questions_data: list[dict[str, Any]], created_by: str
+    ) -> dict[str, Any]:
         """
         Toplu soru oluşturma
 
@@ -1024,7 +1031,7 @@ class QuestionCRUDService:
             }
 
         except Exception as e:
-            logger.error(f"Toplu oluşturma hatası: {str(e)}")
+            logger.error(f"Toplu oluşturma hatası: {e!s}")
             return {
                 "success_count": 0,
                 "failed_count": len(questions_data),
@@ -1032,7 +1039,7 @@ class QuestionCRUDService:
                 "failures": [{"error": str(e)}],
             }
 
-    async def get_question_statistics(self) -> Dict[str, Any]:
+    async def get_question_statistics(self) -> dict[str, Any]:
         """
         Soru bankası istatistikleri
 
@@ -1096,7 +1103,7 @@ class QuestionCRUDService:
             }
 
         except Exception as e:
-            logger.error(f"İstatistik hatası: {str(e)}")
+            logger.error(f"İstatistik hatası: {e!s}")
             return {}
 
     # ================================================================
@@ -1106,9 +1113,9 @@ class QuestionCRUDService:
     async def get_random_questions(
         self,
         count: int = 10,
-        subject_area: Optional[str] = None,
-        exam_type: Optional[str] = None,
-    ) -> List[QuestionBankItem]:
+        subject_area: str | None = None,
+        exam_type: str | None = None,
+    ) -> list[QuestionBankItem]:
         """Rastgele soru seçimi (adaptif öğrenme için)."""
         from sqlalchemy import func
 
@@ -1126,9 +1133,9 @@ class QuestionCRUDService:
 
     async def list_source_books(
         self,
-        subject_area: Optional[str] = None,
-        exam_type: Optional[str] = None,
-    ) -> List[Dict[str, Any]]:
+        subject_area: str | None = None,
+        exam_type: str | None = None,
+    ) -> list[dict[str, Any]]:
         """Kaynak kitap listesi (soru sayılarıyla birlikte)."""
         from sqlalchemy import func
 
