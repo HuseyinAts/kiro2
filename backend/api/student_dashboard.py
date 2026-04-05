@@ -513,7 +513,7 @@ async def dashboard_ozeti(
         ozet = await dashboard_cache.get_or_compute(
             key=cache_key,
             compute_fn=fetch_summary,
-            ttl=180  # 3 minutes - balance between freshness and performance
+            ttl=30  # 30 seconds - short TTL so CAT results appear quickly
         )
 
         return {

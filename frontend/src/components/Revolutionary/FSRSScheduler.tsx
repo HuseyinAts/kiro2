@@ -83,19 +83,20 @@ const FSRSScheduler: React.FC<FSRSSchedulerProps> = ({
         ]);
 
         // Vadesi gelen kartları işle
-        if (dueCardsResult.success && dueCardsResult.data) {
+        // Backend DueItemResponse: question_id, stem, subject_id, due_date, reps, lapses
+        if (dueCardsResult.success && dueCardsResult.data && dueCardsResult.data.length > 0) {
           const apiCards = dueCardsResult.data.map((card: any) => ({
-            card_id: card.id,
-            content: card.content,
-            subject: card.subject,
-            difficulty: card.difficulty,
-            stability: card.stability,
-            retrievability: card.retrievability,
-            last_review: card.last_review || new Date().toISOString(),
+            card_id: card.question_id,
+            content: card.stem || '',
+            subject: card.subject_id || subject,
+            difficulty: card.difficulty ?? 2.5,
+            stability: card.stability ?? 1.0,
+            retrievability: card.retrievability ?? 0.9,
+            last_review: new Date().toISOString(),
             next_review: card.due_date || new Date().toISOString(),
-            review_count: card.review_count,
-            lapses: card.lapse_count,
-            state: card.state,
+            review_count: card.reps ?? 0,
+            lapses: card.lapses ?? 0,
+            state: (card.state ?? 'new') as 'new' | 'learning' | 'review' | 'relearning',
           }));
           setCards(apiCards);
         } else {

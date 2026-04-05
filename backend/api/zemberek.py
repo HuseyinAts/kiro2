@@ -18,7 +18,7 @@ from typing import List
 from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel, Field
 
-from core.auth_dependencies import get_current_user
+from core.dependencies import get_current_user  # fixed: was auth_dependencies (no blacklist)
 from core.structured_logger import get_logger
 from core.zemberek_service import (
     get_zemberek_service,

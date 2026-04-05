@@ -406,6 +406,16 @@ class LearningPathOrchestrator:
 
         note = self._motivational_note(days_remaining, statuses)
         weak_subjects_list = sorted(statuses, key=lambda s: s.theta)
+        # TÃ¼m theta'lar eÅŸitse (cold start) weak/strong gÃ¶sterme
+        thetas = [s.theta for s in statuses]
+        all_equal = len(set(thetas)) <= 1
+        _weak = weak_subjects_list[0].subject if (weak_subjects_list and not all_equal) else None
+        _strong_stat = max(statuses, key=lambda s: s.theta) if statuses else None
+        _strong = (
+            _strong_stat.subject
+            if (_strong_stat and not all_equal and _strong_stat.subject != _weak)
+            else None
+        )
         return DailyPlan(
             user_id=user_id,
             plan_date=today,
@@ -415,10 +425,8 @@ class LearningPathOrchestrator:
             blocks=blocks,
             fsrs_review_count=fsrs_total,
             new_topic_count=new_topic_count,
-            weak_subject=weak_subjects_list[0].subject if weak_subjects_list else None,
-            strong_subject=max(statuses, key=lambda s: s.theta).subject
-            if statuses
-            else None,
+            weak_subject=_weak,
+            strong_subject=_strong,
             motivational_note=note,
         )
 
@@ -495,18 +503,18 @@ class LearningPathOrchestrator:
 
     # subject_id → subject_area name reverse mapping (StudentAbility uses int PKs)
     _REVERSE_SUBJECT_MAP: dict[int, str] = {
-        1: "matematik",
-        2: "geometri",
-        3: "fizik",
-        4: "kimya",
-        5: "biyoloji",
-        6: "turkce",
-        7: "tarih",
-        8: "cografya",
-        9: "edebiyat",
-        10: "felsefe",
-        11: "din",
-        12: "sosyal",
+        1: "MATEMATIK",
+        2: "GEOMETRI",
+        3: "FIZIK",
+        4: "KIMYA",
+        5: "BIYOLOJI",
+        6: "TURKCE",
+        7: "TARIH",
+        8: "COGRAFYA",
+        9: "EDEBIYAT",
+        10: "FELSEFE",
+        11: "DIN",
+        12: "SOSYAL",
     }
 
     async def _fetch_thetas_with_se(

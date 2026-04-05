@@ -303,8 +303,10 @@ class HealthChecker:
         try:
             from elasticsearch import AsyncElasticsearch
 
+            import os
+            _es_url = os.environ.get("ELASTICSEARCH_URL", "http://localhost:9200")
             es = AsyncElasticsearch(
-                ["http://localhost:9200"],
+                [_es_url],
                 request_timeout=2,
                 retry_on_timeout=False,
             )

@@ -24,9 +24,9 @@ from sqlalchemy.sql import func
 
 from .base import Base
 from .enums_db import ExamType
+from .question_bank import QuestionBankItem  # noqa: F401 - runtime mapper resolution icin gerekli
 
 if TYPE_CHECKING:
-    from .question_bank import QuestionBankItem
     from .user_models import StudentProfile
 
 

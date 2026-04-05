@@ -12,7 +12,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel, Field
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from core.auth_dependencies import get_current_user
+from core.dependencies import get_current_user  # fixed: was auth_dependencies (no blacklist)
 from core.database import get_async_session
 from core.structured_logger import get_logger
 from models.database import User

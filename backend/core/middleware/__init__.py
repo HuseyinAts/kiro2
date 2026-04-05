@@ -7,15 +7,15 @@ Bu modul asagidaki middleware'leri icerir:
 - GZipMiddleware: Gzip response sikistirma (REQ-2.1, REQ-2.2, REQ-2.3, REQ-2.6)
 """
 
-from backend.core.middleware.timeout_middleware import TimeoutMiddleware, get_timeout_middleware
-from backend.core.middleware.cache_headers import CacheMiddleware, CachePolicy
-from backend.core.middleware.compression import (
+from core.middleware.timeout_middleware import TimeoutMiddleware, get_timeout_middleware
+from core.middleware.cache_headers import CacheMiddleware, CachePolicy
+from core.middleware.compression import (
     GZipMiddleware,
     get_gzip_middleware,
     EXCLUDED_CONTENT_TYPES,
     COMPRESSIBLE_CONTENT_TYPES,
 )
-from backend.core.middleware.timing import (
+from core.middleware.timing import (
     TimingMiddleware,
     EndpointStats,
     TimingStatsManager,

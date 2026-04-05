@@ -44,50 +44,18 @@ export interface StudyRecommendations {
   };
 }
 
+/**
+ * Backend /api/v1/fsrs/stats -> StatsResponse (schemas/fsrs_schemas.py)
+ * Alan adlari backend ile tam eslesir — eski nested {profile,...} yapisi kaldirildi.
+ */
 export interface StudentStatistics {
-  profile: {
-    total_cards: number;
-    total_reviews: number;
-    average_retention: number;
-    study_streak_days: number;
-    last_study_date: string | null;
-    cards_due_today: number;
-    cards_learned_today: number;
-    study_time_today_minutes: number;
-    target_retention: number;
-    group_study_preference: boolean;
-    family_pressure_level: number;
-    exam_anxiety_level: number;
-    study_consistency: number;
-  };
-  subject_statistics: Array<{
-    subject: string;
-    total_cards: number;
-    cards_mastered: number;
-    cards_learning: number;
-    cards_difficult: number;
-    average_difficulty: number;
-    average_stability: number;
-    success_rate: number;
-    total_study_time_minutes: number;
-    last_studied: string | null;
-  }>;
-  recent_performance: {
-    total_reviews: number;
-    average_grade: number;
-    recent_success_rate: number;
-    recent_reviews_count: number;
-  };
-  recent_sessions: Array<{
-    id: string;
-    session_start: string;
-    session_end: string | null;
-    duration_minutes: number;
-    cards_reviewed: number;
-    cards_learned: number;
-    average_grade: number;
-    session_type: string;
-  }>;
+  total_cards:    number;   // Toplam FSRS karti
+  new_count:      number;   // Yeni kartlar (state=0)
+  learning_count: number;   // Ogrenme asamasindaki kartlar
+  review_count:   number;   // Tekrar asamasindaki kartlar
+  due_now:        number;   // Simdi vadesi gelmis kartlar
+  avg_stability:  number;   // Ortalama stabilite
+  total_lapses:   number;   // Toplam hata sayisi
 }
 
 export interface StudySessionSummary {
@@ -106,9 +74,7 @@ class FSRSService {
     this.baseUrl = `${API_BASE_URL}/api/v1/fsrs`;
   }
 
-  /**
-   * Yeni flashcard oluştur
-   */
+  /** Yeni flashcard oluştur (endpoint henüz yok — 404 fallback) */
   async createFlashcard(
     studentId: string,
     request: CreateFlashcardRequest,
@@ -116,38 +82,23 @@ class FSRSService {
     try {
       const response = await fetch(`${this.baseUrl}/flashcards`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
-        body: JSON.stringify({
-          student_id: studentId,
-          ...request,
-        }),
+        body: JSON.stringify({ student_id: studentId, ...request }),
       });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
+      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
       const data = await response.json();
-      return {
-        success: data.success,
-        data: data.data,
-        message: data.message,
-      };
+      return { success: data.success, data: data.data, message: data.message };
     } catch (error) {
       console.error('Create flashcard error:', error);
-      return {
-        success: false,
-        data: null,
-        message: error instanceof Error ? error.message : 'Flashcard oluşturma hatası',
-      };
+      return { success: false, data: null, message: error instanceof Error ? error.message : 'Flashcard oluşturma hatası' };
     }
   }
 
   /**
    * Flashcard incelemesi yap
+   * Backend: POST /api/v1/fsrs/review → ReviewResponse (question_id, new_stability, ...)
+   * Backend {success,data} wrapper dönmez — direkt ReviewResponse döner
    */
   async reviewFlashcard(
     _studentId: string,
@@ -156,9 +107,7 @@ class FSRSService {
     try {
       const response = await fetch(`${this.baseUrl}/review`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
         body: JSON.stringify({
           question_id: request.card_id,
@@ -166,274 +115,154 @@ class FSRSService {
           response_ms: request.response_time_ms,
         }),
       });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
+      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
       const data = await response.json();
-      return {
-        success: data.success,
-        data: data.data,
-        message: data.message,
-      };
+      // Backend ReviewResponse döndürür ({question_id, new_stability, ...}), {success,data} değil
+      return { success: true, data: data, message: 'OK' };
     } catch (error) {
       console.error('Review flashcard error:', error);
-      return {
-        success: false,
-        data: null,
-        message: error instanceof Error ? error.message : 'Flashcard inceleme hatası',
-      };
+      return { success: false, data: null, message: error instanceof Error ? error.message : 'Flashcard inceleme hatası' };
     }
   }
 
   /**
    * Vadesi gelen kartları getir
+   * Backend: GET /api/v1/fsrs/due → list[DueItemResponse] (düz JSON array, wrapper yok)
+   * DueItemResponse: question_id, stem, options, subject_id,
+   *   stability, difficulty, due_date, retrievability, urgency_score, state, reps, lapses
    */
   async getDueCards(
     _studentId: string,
     limit: number = 20,
   ): Promise<ApiResponse<FSRSCard[] | null>> {
     try {
-      const response = await fetch(
-        `${this.baseUrl}/due?limit=${limit}`,
-        {
-          method: 'GET',
-          credentials: 'include',
-        },
-      );
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const data = await response.json();
+      const response = await fetch(`${this.baseUrl}/due?limit=${limit}`, {
+        method: 'GET',
+        credentials: 'include',
+      });
+      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+      // Backend düz array döndürür — {success,data} wrapper değil
+      const items: any[] = await response.json();
       return {
-        success: data.success,
-        data: data.data || [],
-        message: data.message,
+        success: Array.isArray(items),
+        data: Array.isArray(items) ? items : [],
+        message: 'OK',
       };
     } catch (error) {
       console.error('Get due cards error:', error);
-      return {
-        success: false,
-        data: null,
-        message: error instanceof Error ? error.message : 'Vadesi gelen kartları getirme hatası',
-      };
+      return { success: false, data: null, message: error instanceof Error ? error.message : 'Vadesi gelen kartları getirme hatası' };
     }
   }
 
   /**
    * Çalışma önerilerini getir
+   * Backend: endpoint yok → 404, fallback mock kullanılır (FSRSScheduler'da)
    */
   async getStudyRecommendations(
     _studentId: string,
   ): Promise<ApiResponse<StudyRecommendations | null>> {
     try {
-      const response = await fetch(
-        `${this.baseUrl}/recommendations`,
-        {
-          method: 'GET',
-          credentials: 'include',
-        },
-      );
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
+      const response = await fetch(`${this.baseUrl}/recommendations`, {
+        method: 'GET',
+        credentials: 'include',
+      });
+      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
       const data = await response.json();
-      return {
-        success: data.success,
-        data: data.data,
-        message: data.message,
-      };
+      return { success: data.success, data: data.data, message: data.message };
     } catch (error) {
       console.error('Get study recommendations error:', error);
-      return {
-        success: false,
-        data: null,
-        message: error instanceof Error ? error.message : 'Çalışma önerileri getirme hatası',
-      };
+      return { success: false, data: null, message: error instanceof Error ? error.message : 'Çalışma önerileri getirme hatası' };
     }
   }
 
   /**
    * Öğrenci istatistiklerini getir
+   * Backend: GET /api/v1/fsrs/stats → StatsResponse (düz obje, wrapper yok)
+   * Alanlar: total_cards, new_count, learning_count, review_count, due_now, avg_stability, total_lapses
    */
   async getStudentStatistics(
     _studentId: string,
   ): Promise<ApiResponse<StudentStatistics | null>> {
     try {
-      const response = await fetch(
-        `${this.baseUrl}/stats`,
-        {
-          method: 'GET',
-          credentials: 'include',
-        },
-      );
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
+      const response = await fetch(`${this.baseUrl}/stats`, {
+        method: 'GET',
+        credentials: 'include',
+      });
+      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+      // Backend StatsResponse döndürür ({total_cards, due_now, ...}), {success,data} değil
       const data = await response.json();
-      return {
-        success: data.success,
-        data: data.data,
-        message: data.message,
-      };
+      return { success: true, data: data, message: 'OK' };
     } catch (error) {
       console.error('Get student statistics error:', error);
-      return {
-        success: false,
-        data: null,
-        message: error instanceof Error ? error.message : 'Öğrenci istatistikleri getirme hatası',
-      };
+      return { success: false, data: null, message: error instanceof Error ? error.message : 'Öğrenci istatistikleri getirme hatası' };
     }
   }
 
-  /**
-   * Çalışma oturumu başlat
-   */
-  async startStudySession(
-    _studentId: string,
-    sessionType: string = 'regular',
-  ): Promise<ApiResponse<string | null>> {
+  /** Çalışma oturumu başlat (endpoint henüz yok) */
+  async startStudySession(_studentId: string, sessionType: string = 'regular'): Promise<ApiResponse<string | null>> {
     try {
       const response = await fetch(`${this.baseUrl}/study-sessions/start`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
-        body: JSON.stringify({
-          session_type: sessionType,
-        }),
+        body: JSON.stringify({ session_type: sessionType }),
       });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
+      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
       const data = await response.json();
-      return {
-        success: data.success,
-        data: data.data,
-        message: data.message,
-      };
+      return { success: data.success, data: data.data, message: data.message };
     } catch (error) {
       console.error('Start study session error:', error);
-      return {
-        success: false,
-        data: null,
-        message: error instanceof Error ? error.message : 'Çalışma oturumu başlatma hatası',
-      };
+      return { success: false, data: null, message: error instanceof Error ? error.message : 'Çalışma oturumu başlatma hatası' };
     }
   }
 
-  /**
-   * Çalışma oturumunu sonlandır
-   */
+  /** Çalışma oturumunu sonlandır (endpoint henüz yok) */
   async endStudySession(sessionId: string): Promise<ApiResponse<StudySessionSummary | null>> {
     try {
       const response = await fetch(`${this.baseUrl}/study-sessions/${sessionId}/end`, {
         method: 'POST',
         credentials: 'include',
       });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
+      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
       const data = await response.json();
-      return {
-        success: data.success,
-        data: data.data,
-        message: data.message,
-      };
+      return { success: data.success, data: data.data, message: data.message };
     } catch (error) {
       console.error('End study session error:', error);
-      return {
-        success: false,
-        data: null,
-        message: error instanceof Error ? error.message : 'Çalışma oturumu sonlandırma hatası',
-      };
+      return { success: false, data: null, message: error instanceof Error ? error.message : 'Çalışma oturumu sonlandırma hatası' };
     }
   }
 
-  /**
-   * Kart zamanlamasını hesapla (preview)
-   */
-  async calculateSchedule(
-    _studentId: string,
-    cardId: string,
-    grade: FSRSGrade,
-  ): Promise<ApiResponse<FSRSSchedule | null>> {
+  /** Kart zamanlamasını hesapla (endpoint henüz yok) */
+  async calculateSchedule(_studentId: string, cardId: string, grade: FSRSGrade): Promise<ApiResponse<FSRSSchedule | null>> {
     try {
       const response = await fetch(`${this.baseUrl}/schedule`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
-        body: JSON.stringify({
-          card_id: cardId,
-          grade: grade,
-        }),
+        body: JSON.stringify({ card_id: cardId, grade }),
       });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
+      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
       const data = await response.json();
-      return {
-        success: data.success,
-        data: data.data,
-        message: data.message,
-      };
+      return { success: data.success, data: data.data, message: data.message };
     } catch (error) {
       console.error('Calculate schedule error:', error);
-      return {
-        success: false,
-        data: null,
-        message: error instanceof Error ? error.message : 'Zamanlama hesaplama hatası',
-      };
+      return { success: false, data: null, message: error instanceof Error ? error.message : 'Zamanlama hesaplama hatası' };
     }
   }
 
-  /**
-   * Sistem sağlık kontrolü
-   */
+  /** Sistem sağlık kontrolü */
   async healthCheck(): Promise<ApiResponse<any>> {
     try {
-      const response = await fetch(`${this.baseUrl}/health`, {
-        method: 'GET',
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
+      const response = await fetch(`${this.baseUrl}/health`, { method: 'GET' });
+      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
       const data = await response.json();
-      return {
-        success: data.status === 'healthy',
-        data: data,
-        message: data.status === 'healthy' ? 'FSRS sistemi sağlıklı' : 'FSRS sistemi sağlıksız',
-      };
+      return { success: data.status === 'healthy', data, message: data.status };
     } catch (error) {
       console.error('FSRS health check error:', error);
-      return {
-        success: false,
-        data: null,
-        message: error instanceof Error ? error.message : 'FSRS sağlık kontrolü hatası',
-      };
+      return { success: false, data: null, message: error instanceof Error ? error.message : 'FSRS sağlık kontrolü hatası' };
     }
   }
 }
 
-// Singleton instance
 const fsrsService = new FSRSService();
-
 export default fsrsService;

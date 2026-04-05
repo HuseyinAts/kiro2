@@ -14,7 +14,7 @@ from core.database import get_db
 from models.database import User
 from services.khan_academy_client import KhanSubject, KhanContentType, get_khan_client
 from services.khan_content_sync import KhanContentSyncService, KhanProgressSyncService
-from core.dependencies import get_current_user
+from core.dependencies import get_current_user, UserRole
 import logging
 
 logger = logging.getLogger(__name__)
@@ -597,7 +597,7 @@ async def trigger_content_sync(
     """
     Admin: Trigger Khan Academy content sync
     """
-    if current_user.role != "admin":
+    if current_user.role != UserRole.ADMIN:
         raise HTTPException(status_code=403, detail="Admin only")
 
     sync_service = KhanContentSyncService(db, use_mock=use_mock)

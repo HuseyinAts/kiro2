@@ -13,8 +13,7 @@ from sqlalchemy import func, and_
 
 from core.audit_logging import AuditLog, AuditEventType
 from core.database import get_db
-from core.dependencies import get_current_user
-from models.database import User
+from core.dependencies import get_current_user, AuthenticatedUser, UserRole
 
 router = APIRouter(prefix="/admin/audit-logs", tags=["Admin - Audit Logs"])
 
@@ -60,9 +59,9 @@ class AuditStatsResponse(BaseModel):
     security_events_24h: int
 
 
-def require_admin(current_user: User = Depends(get_current_user)) -> User:
+def require_admin(current_user: AuthenticatedUser = Depends(get_current_user)) -> AuthenticatedUser:
     """Require admin role"""
-    if current_user.role != "admin":
+    if current_user.role != UserRole.ADMIN:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN, detail="Admin access required"
         )
@@ -80,7 +79,7 @@ def get_audit_logs(
     end_date: Optional[datetime] = None,
     search: Optional[str] = None,
     db: Session = Depends(get_db),
-    admin: User = Depends(require_admin),
+    admin: AuthenticatedUser = Depends(require_admin),
 ):
     """
     Get audit logs with filtering and pagination
@@ -138,7 +137,7 @@ def get_audit_logs(
 def get_audit_stats(
     days: int = Query(7, ge=1, le=90),
     db: Session = Depends(get_db),
-    admin: User = Depends(require_admin),
+    admin: AuthenticatedUser = Depends(require_admin),
 ):
     """
     Get audit statistics
@@ -229,7 +228,7 @@ def export_audit_logs(
     start_date: Optional[datetime] = None,
     end_date: Optional[datetime] = None,
     db: Session = Depends(get_db),
-    admin: User = Depends(require_admin),
+    admin: AuthenticatedUser = Depends(require_admin),
 ):
     """
     Export audit logs
@@ -347,7 +346,7 @@ def export_audit_logs(
 def cleanup_old_logs(
     days: int = Query(90, ge=30, le=365),
     db: Session = Depends(get_db),
-    admin: User = Depends(require_admin),
+    admin: AuthenticatedUser = Depends(require_admin),
 ):
     """
     Delete audit logs older than specified days

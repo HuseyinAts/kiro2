@@ -28,23 +28,9 @@ ACCESS_TOKEN_EXPIRE_MINUTES = settings.jwt_access_token_expire_minutes
 
 
 # ============================================================================
-# User Role Enum (centralized)
+# User Role Enum — imported from canonical source (models.enums_db)
 # ============================================================================
-class UserRole(str, Enum):
-    """User roles for KIRO2 platform.
-
-    Using str, Enum for JSON serialization compatibility.
-    """
-    STUDENT = "student"
-    TEACHER = "teacher"
-    PARENT = "parent"
-    ADMIN = "admin"
-    SUPER_ADMIN = "super_admin"
-
-    @classmethod
-    def values(cls) -> set[str]:
-        """Get all valid role values."""
-        return {role.value for role in cls}
+from models.enums_db import UserRole  # noqa: F401 — re-exported for backward compat
 
 
 # ============================================================================

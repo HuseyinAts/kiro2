@@ -7,6 +7,7 @@
 #   3. docker compose up --build
 #
 # NOTE: Redis runs natively on host (port 6379). Docker Redis disabled to avoid port conflict.
+# NOTE: Elasticsearch runs in turkiye_sinav_elasticsearch container (external network).
 
 services:
   backend:
@@ -26,6 +27,9 @@ services:
     environment:
       - CROP_IMAGE_DIR=/app/static/crops
     restart: unless-stopped
+    networks:
+      - default
+      - turkiye_sinav_network
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
       interval: 30s
@@ -38,7 +42,7 @@ services:
       context: ./backend
       dockerfile: Dockerfile.minimal
     container_name: kiro2-celery-worker
-    command: celery -A celery_worker worker -l info -Q default,emails,reports,features,videos,bulk,claude_md --concurrency=2
+    command: celery -A celery_worker worker -l info -Q default,emails,reports,features,videos,bulk,claude_md --concurrency=8
     env_file:
       - .env.mvp
     environment:
@@ -51,6 +55,9 @@ services:
       backend:
         condition: service_healthy
     restart: unless-stopped
+    networks:
+      - default
+      - turkiye_sinav_network
     healthcheck:
       test: ["CMD", "celery", "-A", "celery_worker", "inspect", "ping", "--timeout", "5"]
       interval: 60s
@@ -74,6 +81,9 @@ services:
       backend:
         condition: service_healthy
     restart: unless-stopped
+    networks:
+      - default
+      - turkiye_sinav_network
     healthcheck:
       disable: true
 
@@ -103,3 +113,6 @@ volumes:
 networks:
   default:
     driver: bridge
+  turkiye_sinav_network:
+    external: true
+    name: kiro2_turkiye_sinav_network

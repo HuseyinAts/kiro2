@@ -1,0 +1,229 @@
+Now I have full context on `update_progress` (lines 1444-1545). Let me produce the exact patch.
+
+---
+
+## 1. Why the Previous Patch Idea Was Unsafe
+
+**Updating `StudentAbility`/`theta` from `update_progress`** would create a **second mastery write path** outside the quiz event pipeline. Daily truth source is `StudentAbility/theta` (via `submit_quiz ÔåÆ LearningEventService`). If `update_progress` also writes to `StudentAbility`, two writers race on the same rows ÔÇö BKT state diverges and the daily truth source invariant breaks.
+
+**Converting `completed=True` into a synthetic correct answer** injects false signal into the mastery pipeline. A topic marked "completed" in the UI is not equivalent to a quiz being answered correctly. This corrupts theta estimates.
+
+**Writing to `cat_sessions`** would corrupt adaptive testing state because CAT sessions are managed entirely by the assessment engine, not the progress endpoint.
+
+**Using a fallback `subject_slug`** when none is provided silently defaults to a wildcard match, causing cross-subject contamination in mastery records.
+
+---
+
+## 2. Exact Contract for `update_progress`
+
+```
+Contract: INTERACTION STATE WRITE ONLY
+
+Scope:
+  - Persist {progress%, completed, time_spent} to TopicProgress
+  - Persist {completed} to TopicCompletion (when completed=True)
+  - NO writes to: StudentAbility, theta, BKT state, cat_sessions, mastery tables
+
+Guarantees:
+  - progress/completed = UI interaction signals, NOT mastery estimates
+  - Actual mastery lives in StudentAbility/theta (written only by submit_quiz pipeline)
+  - completion/completion_date in TopicCompletion are UI convenience fields
+  - Re-calling with identical values is idempotent (upsert behavior)
+
+Inputs consumed:
+  - student_id, node_id (URL path)
+  - ProgressUpdate {progress: 0-100, completed: bool, time_spent: int|null}
+```
+
+---
+
+## 3. Exact Response Fields to Add
+
+Add these fields to the **existing** return dict (lines 1525-1538):
+
+```python
+return {
+    "success": True,
+    "student_id": student_id,
+    "node_id": node_id,
+    "progress": progress_update.progress,
+    "completed": progress_update.completed,
+    "time_spent": progress_update.time_spent,
+    "timestamp": datetime.now().isoformat(),
+    "message": (...),
+    # --- ADD (explicit contract fields) ---
+    "is_mastery_signal": False,
+    "mastery_source": "quiz_submissions",
+    "progress_source": "update_progress_endpoint",
+    "completion_source": "update_progress_endpoint",
+}
+```
+
+**Field semantics:**
+
+| Field | Value | Meaning |
+|---|---|---|
+| `is_mastery_signal` | `False` | Explicit flag ÔÇö this data does NOT update mastery |
+| `mastery_source` | `"quiz_submissions"` | Daily truth source; mastery only written by `submit_quiz` pipeline |
+| `progress_source` | `"update_progress_endpoint"` | `progress` field origin for auditability |
+| `completion_source` | `"update_progress_endpoint"` | `completed` field origin for auditability |
+
+---
+
+## 4. Exact Message / Log Changes
+
+**Log message (line 1520-1523) ÔÇö expand to include source tracking:**
+
+```python
+logger.info(
+    f"[update_progress] Interaction state updated ÔÇö "
+    f"Student: {student_id}, Node: {node_id}, "
+    f"Progress: {progress_update.progress}%, Completed: {progress_update.completed}, "
+    f"Source: update_progress_endpoint (NOT a mastery signal)"
+)
+```
+
+**Response message ÔÇö remove any implication of mastery:**
+
+Replace:
+```python
+"message": (
+    "Topic ba┼şar─▒yla tamamland─▒!"
+    if progress_update.completed
+    else f"─░lerleme %{progress_update.progress} olarak kaydedildi"
+),
+```
+
+With:
+```python
+"message": (
+    "Topic ilerleme durumu kaydedildi (mastery pipeline etkilenmez)."
+    if progress_update.completed
+    else f"─░lerleme %{progress_update.progress} olarak kaydedildi (mastery pipeline etkilenmez)."
+),
+```
+
+**Docstring update (lines 1454-1459):**
+
+Replace:
+```python
+"""
+Update student's progress on a specific topic/node
+
+Tracks progress percentage, time spent, and completion status.
+Saves to database.
+"""
+```
+
+With:
+```python
+"""
+Update student's INTERACTION STATE on a specific topic/node.
+
+Writes {progress, completed, time_spent} to TopicProgress and TopicCompletion.
+This is a UI convenience write ÔÇö it is NOT a mastery signal.
+
+MASTERY TRUTH SOURCE: StudentAbility/theta (updated only by submit_quiz pipeline).
+Calling this endpoint does NOT update theta, BKT, cat_sessions, or any mastery model.
+
+Args:
+    progress_update: Interaction state {progress: 0-100, completed: bool, time_spent}
+"""
+```
+
+---
+
+## 5. Exact Minimal Diff Plan
+
+**File:** `backend/api/learning_path_v2.py`
+
+**Change 1 ÔÇö Docstring (lines 1454-1459):**
+```
+-    """
+-    Update student's progress on a specific topic/node
+-
+-    Tracks progress percentage, time spent, and completion status.
+-    Saves to database.
+-    """
++    """
++    Update student's INTERACTION STATE on a specific topic/node.
++
++    Writes {progress, completed, time_spent} to TopicProgress and TopicCompletion.
++    This is a UI convenience write ÔÇö it is NOT a mastery signal.
++
++    MASTERY TRUTH SOURCE: StudentAbility/theta (updated only by submit_quiz pipeline).
++    Calling this endpoint does NOT update theta, BKT, cat_sessions, or any mastery model.
++    """
+```
+
+**Change 2 ÔÇö Logger (lines 1520-1523):**
+```
+         logger.info(
+-            f"Progress updated - Student: {student_id}, Node: {node_id}, "
+-            f"Progress: {progress_update.progress}%, Completed: {progress_update.completed}"
++            f"[update_progress] Interaction state updated - "
++            f"Student: {student_id}, Node: {node_id}, "
++            f"Progress: {progress_update.progress}%, Completed: {progress_update.completed}, "
++            f"Source: update_progress_endpoint (NOT a mastery signal)"
+         )
+```
+
+**Change 3 ÔÇö Response message (lines 1533-1537):**
+```
+         return {
+             "success": True,
+             "student_id": student_id,
+             "node_id": node_id,
+             "progress": progress_update.progress,
+             "completed": progress_update.completed,
+             "time_spent": progress_update.time_spent,
+             "timestamp": datetime.now().isoformat(),
+-            "message": (
+-                "Topic ba┼şar─▒yla tamamland─▒!"
+-                if progress_update.completed
+-                else f"─░lerleme %{progress_update.progress} olarak kaydedildi"
+-            ),
++            "message": (
++                "Topic ilerleme durumu kaydedildi (mastery pipeline etkilenmez)."
++                if progress_update.completed
++                else f"─░lerleme %{progress_update.progress} olarak kaydedildi (mastery pipeline etkilenmez)."
++            ),
++            "is_mastery_signal": False,
++            "mastery_source": "quiz_submissions",
++            "progress_source": "update_progress_endpoint",
++            "completion_source": "update_progress_endpoint",
+         }
+```
+
+---
+
+## 6. Backward Compatibility Notes
+
+| Change | Impact | Mitigation |
+|---|---|---|
+| New response fields added | Existing clients ignore unknown fields ÔÇö **safe** | Only additive |
+| Message string changed | "Topic ba┼şar─▒yla tamamland─▒!" ÔåÆ longer Turkish message | Existing clients don't parse message, only `success` flag |
+| Log format expanded | Existing log parsing unaffected ÔÇö additive | **Safe** |
+| Docstring updated | No runtime effect | **Safe** |
+
+No breaking changes. All changes are additive to the response dict.
+
+---
+
+## 7. Validation Checklist
+
+```
+[ ] update_progress response includes is_mastery_signal=False
+[ ] update_progress response includes mastery_source="quiz_submissions"
+[ ] update_progress response includes progress_source="update_progress_endpoint"
+[ ] update_progress response includes completion_source="update_progress_endpoint"
+[ ] Docstring explicitly states: does NOT update theta, BKT, cat_sessions, mastery
+[ ] Log line contains "(NOT a mastery signal)"
+[ ] Response message does NOT imply mastery update
+[ ] ProgressUpdate model is NOT modified (contract is in endpoint only)
+[ ] submit_quiz pipeline is NOT touched (mastery/event visibility already patched)
+[ ] No writes to StudentAbility, BKT tables, cat_sessions from this endpoint
+[ ] TopicProgress + TopicCompletion writes remain unchanged (UI state only)
+[ ] Backend lint passes: ruff check backend/api/learning_path_v2.py
+[ ] Backend typecheck passes: mypy backend/api/learning_path_v2.py (if configured)
+```

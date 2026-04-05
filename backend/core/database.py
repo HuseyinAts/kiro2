@@ -72,16 +72,11 @@ async def get_async_session() -> AsyncGenerator[AsyncSession, None]:
         return
 
     # Use real database session
+    # NOTE: Session lifecycle (commit/rollback/close) is managed by
+    # db_manager.get_session() context manager. Do NOT add commit/close here
+    # to avoid double-commit on an already-closed session.
     async with db_manager.get_session() as session:
-        try:
-            yield session
-            await session.commit()
-        except Exception as e:
-            await session.rollback()
-            logger.error(f"Database session error: {e}")
-            raise
-        finally:
-            await session.close()
+        yield session
 
 
 class DatabaseManager:

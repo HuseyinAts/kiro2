@@ -12,10 +12,10 @@ export const config = {
   api: {
     baseURL: isTestEnv
       ? 'http://localhost:8000'
-      : import.meta.env.VITE_API_URL ?? 'http://localhost:8000',
+      : (import.meta.env.VITE_API_URL ?? ''),  // bos = relative URL, nginx proxy'e gider
     wsURL: isTestEnv
       ? 'ws://localhost:8000'
-      : import.meta.env.VITE_WS_URL ?? '',
+      : (import.meta.env.VITE_WS_URL ?? ''),
     timeout: isTestEnv
       ? 5000 // Shorter timeout for tests
       : parseInt(import.meta.env.VITE_API_TIMEOUT || '30000'),
@@ -23,7 +23,7 @@ export const config = {
   app: {
     name: isTestEnv
       ? 'KIRO2 Test'
-      : import.meta.env.VITE_APP_NAME || 'Teknofest Eğitim Eylemci',
+      : import.meta.env.VITE_APP_NAME || 'KIRO2',
     version: import.meta.env.VITE_APP_VERSION || '1.0.0',
     env: isTestEnv ? 'test' : import.meta.env.VITE_APP_ENV || 'development',
   },

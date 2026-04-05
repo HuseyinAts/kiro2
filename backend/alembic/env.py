@@ -55,6 +55,64 @@ if config.config_file_name is not None:
 # for 'autogenerate' support
 target_metadata = Base.metadata
 
+# ============================================================================
+# GÜVENLİK KONFIGÜRASYONU — ALEMBIC DRIFT KORUMALARI
+# ============================================================================
+# ⚠️  ALTIN KURAL: "alembic revision --autogenerate" TEHLİKELİDİR!
+#
+# Neden: 108 tablo henüz DB'de oluşturulmamış (gelecek özellikler için model var).
+#        Autogenerate bunların hepsini CREATE etmeye çalışır → gereksiz migration.
+#        Ayrıca DB-only kolonlar (is_calib_pool vb.) varsa DROP önerir.
+#
+# GÜVENLİ YÖNTEM: Elle migration yaz:
+#   alembic revision -m "açıklayıcı_isim"
+#   → Dosyayı aç, upgrade/downgrade fonksiyonlarını elle yaz
+#
+# Autogenerate SADECE şu durumda kullanılabilir:
+#   1. include_object() hook güncel
+#   2. ALEMBIC_EXCLUDE_TABLES güncel
+#   3. Üretilen migration MUTLAKA gözden geçirilmeli (DROP/ALTER kontrol)
+# Alembic autogenerate'in DOKUNMAMASI gereken tablolar.
+# Bu tablolar ya DB-only'dir ya da başka migration araçlarıyla yönetilir.
+# ÖNEMLİ: Bu listeye EKLE, çıkarma — çıkarmak DROP riskine yol açar.
+ALEMBIC_EXCLUDE_TABLES = {
+    # DB-only tablolar (ORM modeli yok, elle SQL ile yaratıldı)
+    "subjects",          # yks_estimator.py kullanıyor, slug dahil
+    "user_item_fsrs",    # eski FSRS kartları (22 kayıt)
+    "user_theta",        # eski theta storage
+    "yks_exam_goals",    # YKS hedef tablosu
+    # Chat/session tabloları (legacy, ORM dışı)
+    "chat_sessions",
+    "chat_messages",
+    # Analytics/tracking (legacy, ORM dışı)
+    "kiro2_learning_events_synthetic",
+    "parent_notifications",
+    "learning_progress_daily",
+    "streak_tracking",
+    "daily_plans",
+    "platform_stats",
+    # Sprint 5 ile elle oluşturulan tablolar (02.04.2026)
+    "weekly_reports",
+    "osym_questions",
+    "osb_settings",
+    "performance_history",
+    "study_rooms",
+}
+
+
+def include_object(object, name, type_, reflected, compare_to):
+    """
+    Alembic autogenerate'e hangi nesnelerin dahil edileceğini belirler.
+    KURAL: Bu fonksiyon olmadan autogenerate çalıştırma!
+    """
+    # DB-only tabloları atla (DROP önerisini önle)
+    if type_ == "table" and name in ALEMBIC_EXCLUDE_TABLES:
+        return False
+    # pgvector 'embedding' kolonunu atla (SQLAlchemy NullType → karşılaştırma hatası)
+    if type_ == "column" and name == "embedding":
+        return False
+    return True
+
 
 def run_migrations_offline() -> None:
     """Run migrations in 'offline' mode."""
@@ -64,6 +122,9 @@ def run_migrations_offline() -> None:
         target_metadata=target_metadata,
         literal_binds=True,
         dialect_opts={"paramstyle": "named"},
+        include_object=include_object,
+        compare_type=False,           # VARCHAR/String, NUMERIC/Float gürültüsünü sustur
+        compare_server_default=False, # Server default farklarını sustur
     )
 
     with context.begin_transaction():
@@ -79,7 +140,13 @@ def run_migrations_online() -> None:
     )
 
     with connectable.connect() as connection:
-        context.configure(connection=connection, target_metadata=target_metadata)
+        context.configure(
+            connection=connection,
+            target_metadata=target_metadata,
+            include_object=include_object,
+            compare_type=False,           # VARCHAR/String, NUMERIC/Float gürültüsünü sustur
+            compare_server_default=False, # Server default farklarını sustur
+        )
 
         with context.begin_transaction():
             context.run_migrations()

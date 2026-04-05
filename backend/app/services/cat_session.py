@@ -223,17 +223,23 @@ class CATSessionService:
                 WHERE LOWER(subject_area) = LOWER(:subject_id)
                   AND is_active = TRUE
                   AND (
-                      -- Once kalibrasyon havuzundaki orta zorluklar
-                      (is_calib_pool = TRUE AND irt_difficulty BETWEEN -1.0 AND 1.0)
+                      -- Oncelik 1: Gercek IRT kalibrasyonu olan calib_pool sorulari
+                      (is_calib_pool = TRUE AND is_calibrated = TRUE AND irt_difficulty BETWEEN -1.0 AND 1.0)
                       OR
-                      -- Sonra havuzdaki diger sorular
+                      -- Oncelik 2: Kalibreli ama b araligi disinda
+                      (is_calib_pool = TRUE AND is_calibrated = TRUE)
+                      OR
+                      -- Oncelik 3: Kalibrasyon havuzunda ama is_calibrated=FALSE (default parametreler)
                       (is_calib_pool = TRUE)
                       OR
                       -- Son care: kolay normal sorular
                       (irt_difficulty < :b_max)
                   )
                 ORDER BY
-                    CASE WHEN is_calib_pool = TRUE THEN 0 ELSE 1 END ASC,
+                    -- is_calibrated=TRUE olanlar her zaman once gelir
+                    CASE WHEN is_calibrated = TRUE AND is_calib_pool = TRUE THEN 0
+                         WHEN is_calib_pool = TRUE THEN 1
+                         ELSE 2 END ASC,
                     RANDOM()
                 LIMIT 30
             """)
@@ -247,7 +253,10 @@ class CATSessionService:
                   AND irt_difficulty BETWEEN :b_min AND :b_max
                   AND is_active = TRUE
                 ORDER BY
-                    CASE WHEN is_calib_pool = TRUE THEN 0 ELSE 1 END ASC,
+                    -- is_calibrated=TRUE olanlar ZPD icinde de one alinir
+                    CASE WHEN is_calibrated = TRUE AND is_calib_pool = TRUE THEN 0
+                         WHEN is_calib_pool = TRUE THEN 1
+                         ELSE 2 END ASC,
                     RANDOM()
                 LIMIT 100
             """)
@@ -282,8 +291,13 @@ class CATSessionService:
         stmt = text("""
             SELECT id::text,
                    question_text AS stem,
-                   json_build_object('A', option_a, 'B', option_b,
-                                     'C', option_c, 'D', option_d) AS options,
+                   CASE
+                       WHEN option_e IS NOT NULL AND option_e != ''
+                       THEN json_build_object('A', option_a, 'B', option_b,
+                                             'C', option_c, 'D', option_d, 'E', option_e)
+                       ELSE json_build_object('A', option_a, 'B', option_b,
+                                             'C', option_c, 'D', option_d)
+                   END AS options,
                    correct_answer AS correct_option,
                    irt_difficulty AS difficulty,
                    irt_discrimination AS discrimination,
@@ -301,6 +315,7 @@ class CATSessionService:
             "question_id": row.id,
             "stem": row.stem,
             "options": row.options,
+            "correct_option": row.correct_option,
             "topic_id": row.topic_id,
             "subject_id": row.subject_id,
             "irt": {
@@ -488,6 +503,66 @@ class CATSessionService:
         if state.n_questions >= 3:
             state.warm_up_done = True
 
+        # 3b. PROGRESSIVE PERSIST: Her cevaptan sonra theta'yı DB'ye yaz
+        # Böylece öğrenci oturumu tamamlamasa bile son theta kaydedilir.
+        try:
+            _SUBJ_MAP = {
+                "matematik": 1, "geometri": 2, "fizik": 3, "kimya": 4,
+                "biyoloji": 5, "turkce": 6, "tarih": 7, "cografya": 8,
+                "edebiyat": 9, "felsefe": 10, "din": 11, "sosyal": 12,
+            }
+            _sid = _SUBJ_MAP.get(state.subject_id.lower())
+            if _sid is not None:
+                from sqlalchemy import text as _txt
+                await self.db.execute(
+                    _txt("""
+                    INSERT INTO student_abilities (student_id, subject_id, theta, theta_se, updated_at)
+                    VALUES (:uid, :sid, :theta, :se, NOW())
+                    ON CONFLICT (student_id, subject_id)
+                    DO UPDATE SET theta = :theta, theta_se = :se, updated_at = NOW()
+                    """),
+                    {"uid": state.user_id, "sid": _sid,
+                     "theta": round(state.theta, 4), "se": round(state.se, 4)},
+                )
+                await self.db.commit()
+        except Exception:
+            pass  # Persist hatası CAT akışını bozmamalı
+
+        # 3c. PROGRESSIVE XP: Her cevaptan sonra XP ekle
+        try:
+            from sqlalchemy import text as _txt2
+            _xp = 10 if is_correct else 3  # Doğru: 10XP, Yanlış: 3XP (katılım ödülü)
+            # 1) xp_transactions INSERT (gamification endpoint bunu okur)
+            await self.db.execute(
+                _txt2("""INSERT INTO xp_transactions (student_id, amount, source, created_at)
+                         VALUES (:uid, :xp, 'cat', NOW())"""),
+                {"uid": state.user_id, "xp": _xp},
+            )
+            # 2) users.total_xp UPDATE (dashboard bunu okur)
+            await self.db.execute(
+                _txt2("UPDATE users SET total_xp = total_xp + :xp WHERE id = :uid"),
+                {"uid": state.user_id, "xp": _xp},
+            )
+            await self.db.commit()
+        except Exception:
+            pass
+
+        # 3d. PROGRESSIVE FSRS: Her cevaptan sonra kart oluştur/güncelle
+        try:
+            from sqlalchemy import text as _txt3
+            await self.db.execute(
+                _txt3("""
+                INSERT INTO user_item_fsrs (user_id, question_id, state, due_date, stability, difficulty,
+                    scheduled_days, elapsed_days, reps, lapses, created_at, updated_at)
+                VALUES (CAST(:uid AS uuid), :qid, 0, NOW(), 1.0, 5.0, 0, 0.0, 0, 0, NOW(), NOW())
+                ON CONFLICT (user_id, question_id) DO NOTHING
+                """),
+                {"uid": state.user_id, "qid": question_id},
+            )
+            await self.db.commit()
+        except Exception:
+            pass
+
         # 4. Bitiş kontrolü
         terminate, reason = should_terminate(state.se, state.n_questions)
 
@@ -511,7 +586,7 @@ class CATSessionService:
                 "termination_reason": reason,
                 "next_question": None,
                 "phase": "completed",
-                "feedback": {"is_correct": is_correct},
+                "feedback": {"is_correct": is_correct, "correct_option": q_detail.get("correct_option") if q_detail else None},
                 "plan_refresh_needed": True,  # Frontend bunu gorünce /daily-plan yeniler
             }
 
@@ -544,7 +619,7 @@ class CATSessionService:
                 "termination_reason": "pool_exhausted",
                 "next_question": None,
                 "phase": "completed",
-                "feedback": {"is_correct": is_correct},
+                "feedback": {"is_correct": is_correct, "correct_option": q_detail.get("correct_option") if q_detail else None},
             }
 
         next_question_detail = await self._fetch_question_detail(next_item.question_id)
@@ -560,7 +635,7 @@ class CATSessionService:
             "termination_reason": None,
             "next_question": next_question_detail,
             "phase": phase,
-            "feedback": {"is_correct": is_correct},
+            "feedback": {"is_correct": is_correct, "correct_option": q_detail.get("correct_option") if q_detail else None},
         }
 
     async def get_session_state(self, session_id: str) -> CATState | None:
@@ -727,6 +802,56 @@ class CATSessionService:
             logging.getLogger("kiro2.cat").warning(
                 f"FSRS batch update başarısız (non-critical): {exc}"
             )
+
+        # Dashboard cache invalidation — CAT tamamlandığında eski cache'i sil
+        try:
+            await self.redis.delete(f"student_dashboard:summary:{state.user_id}")
+        except Exception:
+            pass
+
+        # Streak güncelleme — CAT tamamlandığında bugünü aktif say
+        try:
+            from sqlalchemy import text as _stxt
+            await self.db.execute(
+                _stxt("""
+                INSERT INTO streaks (user_id, current_streak, largest_streak, last_activity, total_days_active)
+                VALUES (:uid, 1, 1, CURRENT_DATE, 1)
+                ON CONFLICT (user_id) DO UPDATE SET
+                    current_streak = CASE
+                        WHEN streaks.last_activity = CURRENT_DATE THEN streaks.current_streak
+                        WHEN streaks.last_activity = CURRENT_DATE - 1 THEN streaks.current_streak + 1
+                        ELSE 1
+                    END,
+                    largest_streak = GREATEST(streaks.largest_streak, CASE
+                        WHEN streaks.last_activity = CURRENT_DATE - 1 THEN streaks.current_streak + 1
+                        ELSE streaks.current_streak
+                    END),
+                    last_activity = CURRENT_DATE,
+                    total_days_active = CASE
+                        WHEN streaks.last_activity = CURRENT_DATE THEN streaks.total_days_active
+                        ELSE streaks.total_days_active + 1
+                    END
+                """),
+                {"uid": state.user_id},
+            )
+
+            # Weekly progress güncelleme
+            _iso = datetime.now(UTC).isocalendar()
+            await self.db.execute(
+                _stxt("""
+                INSERT INTO weekly_progress (user_id, year, week_number, total_activities, total_time_seconds, streak_days, created_at, updated_at)
+                VALUES (:uid, :yr, :wk, 1, :secs, 0, NOW(), NOW())
+                ON CONFLICT ON CONSTRAINT uq_weekly_progress DO UPDATE SET
+                    total_activities = weekly_progress.total_activities + 1,
+                    total_time_seconds = weekly_progress.total_time_seconds + :secs,
+                    updated_at = NOW()
+                """),
+                {"uid": state.user_id, "yr": _iso.year, "wk": _iso.week,
+                 "secs": state.n_questions * 15},  # ~15s per question estimate
+            )
+            await self.db.commit()
+        except Exception:
+            pass
 
     async def _update_theta_cache(self, state: CATState) -> None:
         """Kullanıcının θ tahminini Redis'e cache'le."""

@@ -144,10 +144,10 @@ async def search_questions(
             took=search_result.took,
             results=[
                 {
-                    "id": result.id,
-                    "score": result.score,
-                    "source": result.source,
-                    "highlight": result.highlight,
+                    "id": result.get("id", result.get("_id", "")),
+                    "score": result.get("_score"),
+                    "source": result,
+                    "highlight": result.get("highlight", {}),
                 }
                 for result in search_result.results
             ],
@@ -187,7 +187,7 @@ async def get_similar_questions(
             max_score=search_result.max_score,
             took=search_result.took,
             results=[
-                {"id": result.id, "score": result.score, "source": result.source}
+                {"id": result.get("id", result.get("_id", "")), "score": result.get("_score"), "source": result}
                 for result in search_result.results
             ],
         )
@@ -243,10 +243,10 @@ async def search_content(
             took=search_result.took,
             results=[
                 {
-                    "id": result.id,
-                    "score": result.score,
-                    "source": result.source,
-                    "highlight": result.highlight,
+                    "id": result.get("id", result.get("_id", "")),
+                    "score": result.get("_score"),
+                    "source": result,
+                    "highlight": result.get("highlight", {}),
                 }
                 for result in search_result.results
             ],
@@ -442,24 +442,35 @@ async def reindex_questions(
 async def get_indices_stats(
     current_user: AuthenticatedUser = Depends(get_current_user),
     es_service: ElasticsearchService = Depends(get_elasticsearch_service),
-    _: None = Depends(require_role("ADMIN")),
 ):
     """
     İndeks istatistiklerini getir (Admin only)
-    """
-    try:
 
+    Mevcut tüm Elasticsearch indekslerinin doc sayısı ve boyutunu döner.
+    """
+    # Manuel admin kontrolü (require_role decorator değil, FastAPI dependency)
+    user_role = getattr(current_user, "role", "")
+    if isinstance(user_role, str):
+        role_val = user_role.lower()
+    else:
+        role_val = str(user_role).lower()
+    if role_val not in ("admin", "super_admin"):
+        raise HTTPException(status_code=403, detail="Admin yetkisi gerekli")
+
+    try:
         stats = {}
 
-        # Her indeks için istatistik
-        for index_name in ["questions", "content", "analytics"]:
-            index_stats = await es_service.es_client.get_index_stats(index_name)
+        # ES'ten mevcut indeksleri dinamik olarak al
+        index_list = await es_service.es_client.list_indices()
 
+        for index_name in index_list:
+            index_stats = await es_service.es_client.get_index_stats(index_name)
             if index_stats:
+                # IndexStats dataclass — dict değil, attribute erişimi kullan
                 stats[index_name] = IndexStatsResponse(
-                    doc_count=index_stats["total"]["docs"]["count"],
-                    store_size_bytes=index_stats["total"]["store"]["size_in_bytes"],
-                    index_name=index_name,
+                    doc_count=index_stats.doc_count,
+                    store_size_bytes=index_stats.size_in_bytes,
+                    index_name=index_stats.name,
                 )
 
         return stats

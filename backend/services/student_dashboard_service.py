@@ -82,20 +82,37 @@ class OgrenciDashboardServisi:
         )
         user = user_result.scalar_one_or_none() if hasattr(user_result, 'scalar_one_or_none') else user_result.scalars().first()
 
-        # Get exam statistics from exam_sessions (combined query)
-        exam_stats_query = select(
-            func.count(ExamSession.id).label('count'),
-            func.avg(ExamSession.scaled_score).label('avg_score')
-        ).where(
-            and_(
-                ExamSession.student_id == kullanici_id,
-                ExamSession.status == 'completed'
-            )
-        )
-        exam_stats_result = await execute_query(exam_stats_query)
-        exam_row = exam_stats_result.first() if hasattr(exam_stats_result, 'first') else next(iter(exam_stats_result), None)
-        completed_exams = exam_row.count if exam_row else 0
-        avg_score = float(exam_row.avg_score) if exam_row and exam_row.avg_score else 0.0
+        # Get exam statistics — combine exam_sessions AND kiro2_cat_sessions
+        # exam_sessions.student_id → student_profiles.id (not user_id!)
+        # kiro2_cat_sessions.user_id → users.id
+        # SAVEPOINT: SQL hata verirse ana transaction'ı zehirlemesin
+        from sqlalchemy import text as sa_text
+        completed_exams = 0
+        avg_score = 0.0
+        try:
+            async with db.begin_nested():
+                cat_stats_result = await db.execute(sa_text("""
+                    SELECT
+                        (COALESCE(es.cnt, 0) + COALESCE(cs.cnt, 0)) AS total_count,
+                        CASE WHEN (COALESCE(es.cnt, 0) + COALESCE(cs.cnt, 0)) > 0
+                             THEN COALESCE(es.avg_score, 0)
+                             ELSE 0 END AS avg_score
+                    FROM
+                        (SELECT COUNT(*) AS cnt, AVG(scaled_score) AS avg_score
+                         FROM exam_sessions
+                         WHERE student_id IN (SELECT id FROM student_profiles WHERE user_id = :uid)
+                           AND status = 'completed') es,
+                        (SELECT COUNT(*) AS cnt
+                         FROM kiro2_cat_sessions
+                         WHERE user_id = CAST(:uid AS uuid)
+                           AND state = 'completed') cs
+                """), {"uid": kullanici_id})
+                cat_row = cat_stats_result.first()
+                completed_exams = int(cat_row.total_count) if cat_row else 0
+                avg_score = float(cat_row.avg_score) if cat_row and cat_row.avg_score else 0.0
+        except Exception:
+            completed_exams = 0
+            avg_score = 0.0
 
         # Get weekly progress
         current_week = datetime.now().isocalendar()
@@ -113,16 +130,20 @@ class OgrenciDashboardServisi:
         haftalik_ilerleme = (week_progress.total_time_seconds // 60) if week_progress else 0
         gunluk_seri = week_progress.streak_days if week_progress else 0
 
-        # Get completed lessons (videos) count — table may not exist yet
+        # Get completed lessons (videos) count
+        # SAVEPOINT: video_watch_sessions sorgusu başarısız olursa
+        # PostgreSQL transaction'ı zehirlemez — sadece savepoint geri alınır
+        tamamlanan_dersler = 0
         try:
-            video_count_query = select(func.count(VideoWatchSession.id)).where(
-                and_(
-                    VideoWatchSession.user_id == kullanici_id,
-                    VideoWatchSession.is_completed == True
+            async with db.begin_nested():  # SAVEPOINT
+                video_count_query = select(func.count(VideoWatchSession.id)).where(
+                    and_(
+                        VideoWatchSession.user_id == kullanici_id,
+                        VideoWatchSession.is_completed == True
+                    )
                 )
-            )
-            video_result = await execute_query(video_count_query)
-            tamamlanan_dersler = video_result.scalar() if hasattr(video_result, 'scalar') else video_result.scalar_one()
+                video_result = await db.execute(video_count_query)
+                tamamlanan_dersler = video_result.scalar() or 0
         except Exception:
             tamamlanan_dersler = 0
 
@@ -153,52 +174,64 @@ class OgrenciDashboardServisi:
         """
         Öğrencinin sınav geçmişini getir
 
-        REFACTORED: Real exam history from exam_sessions table
-        - Query: exam_sessions with pagination
-        - Fallback: Empty list for new users (NOT fake exams)
+        REFACTORED v2: Combines exam_sessions + kiro2_cat_sessions
+        - exam_sessions.student_id → student_profiles.id (JOIN required)
+        - kiro2_cat_sessions.user_id → users.id (direct)
         """
+        from sqlalchemy import text as sa_text
 
-        # Build async query
-        conditions = [
-            ExamSession.student_id == kullanici_id,
-            ExamSession.status == 'completed',
-        ]
-        if sinav_tipi:
-            conditions.append(ExamSession.exam_type == sinav_tipi)
+        type_filter = "AND exam_type = :sinav_tipi" if sinav_tipi else ""
+        type_params = {"sinav_tipi": sinav_tipi} if sinav_tipi else {}
 
-        stmt = (
-            select(ExamSession)
-            .where(and_(*conditions))
-            .order_by(ExamSession.completed_at.desc())
-            .offset(offset)
-            .limit(limit)
-        )
-        result = await db.execute(stmt)
-        exams = result.scalars().all()
+        query = sa_text(f"""
+            (SELECT id::text, exam_name::text, exam_type::text, completed_at,
+                    scaled_score::float,
+                    total_correct::int, total_wrong::int, total_empty::int,
+                    duration_minutes::int
+             FROM exam_sessions
+             WHERE student_id IN (SELECT id FROM student_profiles WHERE user_id = :uid)
+               AND status = 'completed' {type_filter}
+            )
+            UNION ALL
+            (SELECT id::text, ('CAT ' || subject_id)::text AS exam_name,
+                    'CAT'::text AS exam_type,
+                    completed_at, NULL::float AS scaled_score,
+                    NULL::int AS total_correct, NULL::int AS total_wrong,
+                    NULL::int AS total_empty,
+                    (EXTRACT(EPOCH FROM (completed_at - started_at))::int / 60)::int
+                        AS duration_minutes
+             FROM kiro2_cat_sessions
+             WHERE user_id = CAST(:uid AS uuid) AND state = 'completed'
+            )
+            ORDER BY completed_at DESC NULLS LAST
+            LIMIT :lim OFFSET :off
+        """)
 
-        # Batch topic performance for ALL exams in single query (N+1 fix)
-        exam_ids = [exam.id for exam in exams]
-        all_topic_perf = await self._calculate_topic_performance_batch(exam_ids, db)
+        try:
+            async with db.begin_nested():
+                result = await db.execute(
+                    query, {"uid": kullanici_id, "lim": limit, "off": offset, **type_params}
+                )
+                rows = result.fetchall()
+        except Exception:
+            rows = []
 
-        # Convert to SinavSonucu format
         sinavlar = []
-        for exam in exams:
+        for row in rows:
             sinavlar.append(
                 SinavSonucu(
-                    sinav_id=exam.id,
-                    sinav_adi=exam.exam_name,
-                    sinav_tipi=exam.exam_type,
-                    tarih=exam.completed_at,
-                    puan=float(exam.scaled_score or 0),
-                    dogru_sayisi=exam.total_correct,
-                    yanlis_sayisi=exam.total_wrong,
-                    bos_sayisi=exam.total_empty,
-                    sure=exam.duration_minutes,
-                    konu_performanslari=all_topic_perf.get(exam.id, {}),
+                    sinav_id=str(row.id),
+                    sinav_adi=row.exam_name or "Sınav",
+                    sinav_tipi=row.exam_type or "CAT",
+                    tarih=row.completed_at,
+                    puan=float(row.scaled_score or 0),
+                    dogru_sayisi=row.total_correct or 0,
+                    yanlis_sayisi=row.total_wrong or 0,
+                    bos_sayisi=row.total_empty or 0,
+                    sure=row.duration_minutes or 0,
+                    konu_performanslari={},
                 )
             )
-
-        # Return real data (empty list if no exams - NOT fake data)
         return sinavlar
 
     async def _calculate_topic_performance_batch(
@@ -654,12 +687,20 @@ class OgrenciDashboardServisi:
         aktif_hedefler = await self.hedefler_getir(kullanici_id, db, aktif_sadece=True)
         bugun_performans = await self.performans_trendi_getir(kullanici_id, db, gun_sayisi=1)
 
+        # Pydantic → dict conversion helper (cache JSON serialization için)
+        def _to_dict(obj):
+            if hasattr(obj, 'model_dump'):
+                return obj.model_dump()
+            elif hasattr(obj, 'dict'):
+                return obj.dict()
+            return obj
+
         return {
-            "istatistikler": istatistikler,
-            "son_sinavlar": son_sinavlar,
+            "istatistikler": _to_dict(istatistikler),
+            "son_sinavlar": [_to_dict(s) for s in son_sinavlar],
             "okunmamis_bildirim_sayisi": len(okunmamis_bildirimler),
             "acil_bildirimler": [
-                b for b in okunmamis_bildirimler if b.tip in ["uyari", "hata"]
+                _to_dict(b) for b in okunmamis_bildirimler if b.tip in ["uyari", "hata"]
             ],
             "aktif_hedef_sayisi": len(aktif_hedefler),
             "bugun_calisma_suresi": bugun_performans[0].calisma_suresi

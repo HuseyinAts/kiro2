@@ -115,6 +115,10 @@ class User(Base):
     )
     last_login: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True))
 
+    # DB'de mevcut kolonlar — Alembic dışı migration ile eklendi
+    elo_rating: Mapped[int] = mapped_column(Integer, default=1000)
+    is_parent: Mapped[bool] = mapped_column(Boolean, default=False)
+
     # Relationships
     student_profile: Mapped[Optional["StudentProfile"]] = relationship(
         "StudentProfile", back_populates="user", uselist=False

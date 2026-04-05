@@ -6,11 +6,45 @@ database.py'den ayrıştırıldı (2026-01-10)
 import enum
 
 
-class UserRole(enum.Enum):
+class UserRole(str, enum.Enum):
+    """User role enum — canonical definition for entire KIRO2 platform.
+
+    DB stores UPPERCASE ('STUDENT'). JWT tokens use lowercase ('student').
+    Inherits from str so UserRole.ADMIN == 'ADMIN' is True.
+    _missing_ handles case-insensitive lookup: UserRole('student') → STUDENT.
+
+    Import THIS enum everywhere. Do NOT create duplicate UserRole enums.
+    """
     STUDENT = "STUDENT"
     TEACHER = "TEACHER"
     PARENT = "PARENT"
     ADMIN = "ADMIN"
+    SUPER_ADMIN = "SUPER_ADMIN"
+
+    @classmethod
+    def _missing_(cls, value):
+        """Case-insensitive lookup: UserRole('student') → UserRole.STUDENT"""
+        if isinstance(value, str):
+            upper = value.upper()
+            for member in cls:
+                if member.value == upper:
+                    return member
+        return None
+
+    @property
+    def jwt_value(self) -> str:
+        """Lowercase value for JWT tokens: UserRole.STUDENT.jwt_value → 'student'"""
+        return self.value.lower()
+
+    @classmethod
+    def values(cls) -> set[str]:
+        """Get all valid role values (uppercase)."""
+        return {role.value for role in cls}
+
+    @classmethod
+    def jwt_values(cls) -> set[str]:
+        """Get all valid JWT role values (lowercase)."""
+        return {role.value.lower() for role in cls}
 
 
 class ExamType(str, enum.Enum):

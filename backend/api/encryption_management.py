@@ -11,8 +11,7 @@ import os
 from datetime import datetime, timedelta, timezone
 
 from core.encryption_service import get_encryption_service, EncryptionService
-from core.dependencies import get_current_user
-from models.database import User
+from core.dependencies import get_current_user, AuthenticatedUser, UserRole
 
 router = APIRouter(prefix="/admin/encryption", tags=["Admin - Encryption"])
 
@@ -44,9 +43,9 @@ class EncryptionStatusResponse(BaseModel):
     recommendation: str
 
 
-def require_admin(current_user: User = Depends(get_current_user)) -> User:
+def require_admin(current_user: AuthenticatedUser = Depends(get_current_user)) -> AuthenticatedUser:
     """Dependency to require admin role"""
-    if current_user.role != "admin":
+    if current_user.role != UserRole.ADMIN:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN, detail="Admin access required"
         )
@@ -54,7 +53,7 @@ def require_admin(current_user: User = Depends(get_current_user)) -> User:
 
 
 @router.get("/status", response_model=EncryptionStatusResponse)
-async def get_encryption_status(admin: User = Depends(require_admin)):
+async def get_encryption_status(admin: AuthenticatedUser = Depends(require_admin)):
     """
     Get encryption service status
 
@@ -142,7 +141,7 @@ async def get_encryption_status(admin: User = Depends(require_admin)):
 
 @router.post("/rotate-key", response_model=KeyRotationResponse)
 async def rotate_encryption_key(
-    request: KeyRotationRequest, admin: User = Depends(require_admin)
+    request: KeyRotationRequest, admin: AuthenticatedUser = Depends(require_admin)
 ):
     """
     Rotate encryption key
@@ -236,7 +235,7 @@ async def rotate_encryption_key(
 
 
 @router.post("/generate-key")
-async def generate_new_key(admin: User = Depends(require_admin)) -> dict:
+async def generate_new_key(admin: AuthenticatedUser = Depends(require_admin)) -> dict:
     """
     Generate a new encryption key
 
@@ -266,7 +265,7 @@ async def generate_new_key(admin: User = Depends(require_admin)) -> dict:
 
 
 @router.post("/test-encryption")
-async def test_encryption(admin: User = Depends(require_admin)) -> dict:
+async def test_encryption(admin: AuthenticatedUser = Depends(require_admin)) -> dict:
     """
     Test encryption service
 

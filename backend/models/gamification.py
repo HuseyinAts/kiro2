@@ -238,7 +238,9 @@ class Duel(Base):
     topic_id = Column(String, ForeignKey("topic_hierarchy.id"), nullable=False)
     # durum: pending|active|completed
     status = Column(String(20), default="pending")
-    winner_id = Column(Integer, nullable=True)
+    # FIX 2026-04-01: Integer -> String (users.id UUID String, FK type match)
+    # DB: ALTER TABLE duels ALTER COLUMN winner_id TYPE VARCHAR; (uygulandı)
+    winner_id = Column(String, nullable=True)
     player1_score = Column(Integer, default=0)
     player2_score = Column(Integer, default=0)
     elo_delta = Column(Integer, default=0)

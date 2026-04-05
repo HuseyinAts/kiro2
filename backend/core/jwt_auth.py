@@ -33,14 +33,7 @@ class TokenType(str, Enum):
     EMAIL_VERIFICATION = "email_verification"
 
 
-class UserRole(str, Enum):
-    """Kullanıcı rolleri"""
-
-    STUDENT = "student"
-    TEACHER = "teacher"
-    PARENT = "parent"
-    ADMIN = "admin"
-    SUPER_ADMIN = "super_admin"
+from models.enums_db import UserRole  # Canonical source — DO NOT redefine
 
 
 class TokenPayload(BaseModel):
@@ -118,7 +111,7 @@ class JWTManager:
             "sub": user_id,
             "username": username or email.split("@")[0],
             "email": email,
-            "role": role.value,
+            "role": role.jwt_value,  # lowercase for JWT compat
             "exp": expire,
             "iat": datetime.now(UTC),
             "type": TokenType.ACCESS.value,
@@ -140,7 +133,7 @@ class JWTManager:
         payload = {
             "sub": user_id,
             "email": email,
-            "role": role.value,
+            "role": role.jwt_value,  # lowercase for JWT compat
             "exp": expire,
             "iat": datetime.now(UTC),
             "type": TokenType.REFRESH.value,
@@ -203,9 +196,11 @@ class JWTManager:
                 )
 
             # Expiration check (jwt library handles this automatically)
-            # Role validation
+            # Role validation (case-insensitive via _missing_)
             role = payload.get("role")
-            if role not in [r.value for r in UserRole]:
+            try:
+                resolved_role = UserRole(role)
+            except (ValueError, KeyError):
                 raise HTTPException(
                     status_code=status.HTTP_401_UNAUTHORIZED,
                     detail="Invalid user role in token",
@@ -214,7 +209,7 @@ class JWTManager:
             return TokenPayload(
                 sub=payload["sub"],
                 email=payload["email"],
-                role=UserRole(role),
+                role=resolved_role,
                 exp=datetime.fromtimestamp(payload["exp"], tz=UTC),
                 iat=datetime.fromtimestamp(payload["iat"], tz=UTC),
                 type=TokenType(payload["type"]),

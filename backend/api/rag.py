@@ -17,7 +17,7 @@ from typing import List, Optional
 from fastapi import APIRouter, Depends, File, HTTPException, UploadFile, status
 from pydantic import BaseModel, Field
 
-from core.auth_dependencies import get_current_user
+from core.dependencies import get_current_user  # fixed: was auth_dependencies (no blacklist)
 
 try:
     from core.rag_service import RAGService

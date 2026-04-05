@@ -92,7 +92,7 @@ async def get_social_summary(
     from models.birlikte_streak import StreakPair
 
     streak_result = await db.execute(
-        select(func.coalesce(func.sum(StreakPair.total_xp), 0)).where(
+        select(func.coalesce(func.sum(StreakPair.total_xp_earned), 0)).where(
             or_(
                 StreakPair.student_a_id == user_id,
                 StreakPair.student_b_id == user_id,

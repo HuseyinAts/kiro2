@@ -11,6 +11,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
 from models.database import ExamSession, User
+from models.enums_db import UserRole
 from models.gamification import ParentChild as ParentChildRelation
 from models.parent import (
     ChildPerformanceData,
@@ -45,7 +46,7 @@ class ParentService:
         if not child:
             raise ValueError("Belirtilen email adresine sahip öğrenci bulunamadı")
 
-        if child.role != "student":
+        if child.role != UserRole.STUDENT:
             raise ValueError("Sadece öğrenci hesapları ile ilişki kurulabilir")
 
         # Mevcut ilişki kontrolü
@@ -79,7 +80,7 @@ class ParentService:
             id=new_relation.id,
             parent_id=new_relation.parent_id,
             child_id=new_relation.child_id,
-            child_name=child.full_name,
+            child_name=f"{child.first_name} {child.last_name}",
             child_email=child.email,
             relation_type=new_relation.relation_type,
             approved=new_relation.approved,
@@ -137,7 +138,7 @@ class ParentService:
                 SELECT pc.id, pc.parent_id, pc.child_id, pc.approved,
                        pc.relation_type, pc.created_at, pc.approved_at,
                        u.email as child_email,
-                       COALESCE(u.full_name, u.email) as child_name
+                       COALESCE(u.first_name || ' ' || u.last_name, u.email) as child_name
                 FROM parent_child pc
                 LEFT JOIN users u ON u.id = pc.child_id
                 WHERE pc.parent_id = :parent_id AND pc.approved = TRUE
@@ -187,10 +188,12 @@ class ParentService:
         # Son 30 günün verilerini al
         thirty_days_ago = datetime.now(UTC) - timedelta(days=30)
 
+        # student_profiles.id == users.id olduğundan student_id = child_id
+        # FIX 2026-04-02: user_id → student_id, score → raw_score
         exam_result = await self.db.execute(
             select(ExamSession).where(
                 and_(
-                    ExamSession.user_id == child_id,
+                    ExamSession.student_id == child_id,
                     ExamSession.completed_at >= thirty_days_ago,
                 )
             )
@@ -198,10 +201,10 @@ class ParentService:
         exam_results = exam_result.scalars().all()
 
         # Performans hesaplamaları
-        total_study_time = sum([r.duration_minutes for r in exam_results])
+        total_study_time = sum([r.duration_minutes or 0 for r in exam_results])
         exams_taken = len(exam_results)
         average_score = (
-            sum([r.score for r in exam_results]) / exams_taken
+            sum([r.raw_score or 0 for r in exam_results]) / exams_taken
             if exams_taken > 0
             else 0.0
         )
@@ -222,12 +225,12 @@ class ParentService:
 
         return ChildPerformanceData(
             child_id=child_id,
-            child_name=child.full_name,
+            child_name=f"{child.first_name} {child.last_name}",
             total_study_time=total_study_time,
             exams_taken=exams_taken,
             average_score=round(average_score, 2),
             last_exam_date=last_exam.completed_at if last_exam else None,
-            last_exam_score=last_exam.score if last_exam else None,
+            last_exam_score=last_exam.raw_score if last_exam else None,
             weak_subjects=weak_subjects,
             strong_subjects=strong_subjects,
             recent_achievements=recent_achievements,
@@ -245,10 +248,11 @@ class ParentService:
         if not child:
             raise ValueError("Çocuk bulunamadı")
 
+        # FIX 2026-04-02: user_id → student_id, score → raw_score
         exam_result = await self.db.execute(
             select(ExamSession).where(
                 and_(
-                    ExamSession.user_id == child_id,
+                    ExamSession.student_id == child_id,
                     ExamSession.completed_at >= week_start,
                     ExamSession.completed_at <= week_end,
                 )
@@ -256,10 +260,10 @@ class ParentService:
         )
         exam_results = exam_result.scalars().all()
 
-        total_study_time = sum([r.duration_minutes for r in exam_results])
+        total_study_time = sum([r.duration_minutes or 0 for r in exam_results])
         exams_taken = len(exam_results)
         average_score = (
-            sum([r.score for r in exam_results]) / exams_taken
+            sum([r.raw_score or 0 for r in exam_results]) / exams_taken
             if exams_taken > 0
             else 0.0
         )
@@ -301,7 +305,7 @@ class ParentService:
 
         return WeeklyReportData(
             child_id=child_id,
-            child_name=child.full_name,
+            child_name=f"{child.first_name} {child.last_name}",
             week_start=week_start,
             week_end=week_end,
             total_study_time=total_study_time,
@@ -390,7 +394,7 @@ class ParentService:
                 ParentNotificationResponse(
                     id=notification.id,
                     child_id=notification.child_id,
-                    child_name=child.full_name if child else "Bilinmeyen",
+                    child_name=f"{child.first_name} {child.last_name}" if child else "Bilinmeyen",
                     title=notification.title,
                     message=notification.message,
                     notification_type=notification.notification_type,
@@ -482,7 +486,7 @@ class ParentService:
                         id=relation.id,
                         parent_id=relation.parent_id,
                         child_id=relation.child_id,
-                        child_name=pending_child.full_name
+                        child_name=f"{pending_child.first_name} {pending_child.last_name}"
                         if pending_child
                         else "Bilinmeyen",
                         child_email=pending_child.email if pending_child else "",
@@ -519,7 +523,7 @@ class ParentService:
 
         title = "Veli İlişkisi Onaylandı" if approved else "Veli İlişkisi Reddedildi"
         action = "onaylandı" if approved else "reddedildi"
-        message = f"{child.full_name} ile veli ilişkiniz {action}."
+        message = f"{child.first_name} {child.last_name} ile veli ilişkiniz {action}."
 
         notification = ParentNotification(
             parent_id=parent_id,

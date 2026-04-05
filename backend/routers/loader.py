@@ -14,6 +14,53 @@ from routers import router_registry
 
 logger = logging.getLogger(__name__)
 
+# ============================================================================
+# DISABLED ROUTERS — Yüklenmez ama kodda kalır (re-enable: setten çıkar)
+# Sebep: Eksik tablo, deprecated, veya henüz aktif değil
+# ============================================================================
+DISABLED_ROUTERS = {
+    # NOT: api.veli ve api.ogretmen DISABLED DEĞİL — deprecated=True olarak yükleniyor
+    # Frontend hala /api/v1/veli/* ve /api/v1/ogretmen/* referans veriyor
+
+    # EKSİK TABLO — DB'de tablo yok, çağrılınca 500 verir
+    "api.diary_api",                     # diary_entries, emotional_states yok
+    # RE-ENABLED (2026-04-02): knowledge_points + question_knowledge_mappings + student_knowledge_states MEVCUT
+    # RE-ENABLED (2026-04-02): dina_parameters + nano_skills + q_matrix + student_nano_skill_mastery MEVCUT
+    "api.productive_failure_api",        # sub_problems, solution_steps yok
+    "api.university_advisory_routes",    # universities tablosu yok
+    "api.preference_simulation_routes",  # departments tablosu yok
+    "api.department_info_routes",        # department_curricula yok
+    "api.university_info_routes",        # campus_info, dormitory_info yok
+    "api.student_review_routes",         # student_reviews tablosu yok
+    "api.live_session_routes",           # live_sessions, session_recordings yok
+    "api.video_analytics_routes",        # video_watch_sessions var ama video_completion_milestones, video_notes, video_bookmarks, video_analytics_summary yok
+
+    # PWA/OFFLINE — Deploy edilmedi
+    "api.offline_sync_api",
+    "api.pwa_sync_api",
+
+    # AI ADVANCED — Servis bağımlılıkları eksik
+    "api.v1.expert_agents_api",          # expert agent framework deploy edilmedi
+    "api.revolutionary_features",        # çoğu mock
+    "api.sequential_reasoning_api",      # reasoning_sessions tablosu yok
+    "api.vision_api",                    # YOLO + Gemini pipeline henüz entegre değil
+
+    # SECURITY STUBS — Tablolar eksik
+    "api.ferpa_coppa_compliance_api",    # coppa_parental_consents yok
+    "api.kvkk_consent_api",             # kvkk_consents tablosu yok
+    "api.kvkk_privacy_api",             # kvkk_data_deletion_requests yok
+
+    # SEARCH — ChromaDB entegrasyonu tamamlanmadı
+    "api.v1.semantic_search",
+    "api.clustering_api",
+    "api.v1.content_recommendation",
+    "api.v1.duplicate_detection",
+
+    # OTHER STUBS
+    "api.team_challenges_api",           # çoğu mock
+    # RE-ENABLED (2026-04-02): quality_gates_runs + quality_gate_results + quality_gates_override_audit MEVCUT
+}
+
 # Router mapping - gerçek dosya adlarıyla eşleştirildi
 ROUTER_MAPPING = {
     # Health & Monitoring
@@ -215,8 +262,12 @@ class RouterLoader:
         logger.info("=" * 60)
         logger.info("Starting router loading...")
 
-        # Mapping'deki router'ları yükle
+        # Mapping'deki router'ları yükle (disabled olanları atla)
+        disabled_count = 0
         for old_module, (category, new_module) in ROUTER_MAPPING.items():
+            if old_module in DISABLED_ROUTERS:
+                disabled_count += 1
+                continue
             self._load_router(new_module, category)
 
         # Özet bilgi
@@ -224,6 +275,7 @@ class RouterLoader:
         logger.info("=" * 60)
         logger.info("Router Loading Complete!")
         logger.info(f"  Loaded: {summary['total']}")
+        logger.info(f"  Disabled: {disabled_count}")
         logger.info(f"  Failed: {summary['failed']}")
         logger.info(f"  Categories: {summary['categories']}")
 

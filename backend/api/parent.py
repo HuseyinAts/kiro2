@@ -6,8 +6,7 @@ Türkiye Üniversite Sınavları Hazırlık Platformu için veli takip sistemi
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from core.dependencies import get_current_user, get_db
-from models.database import User
+from core.dependencies import get_current_user, get_db, AuthenticatedUser, UserRole
 from models.parent import (
     ChildPerformanceData,
     ParentChildRelationCreate,
@@ -25,7 +24,7 @@ router = APIRouter(prefix="/api/v1/parent", tags=["parent"])
 @router.post("/children", response_model=ParentChildRelationResponse)
 async def create_parent_child_relation(
     relation_data: ParentChildRelationCreate,
-    current_user: User = Depends(get_current_user),
+    current_user: AuthenticatedUser = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
     """
@@ -34,7 +33,7 @@ async def create_parent_child_relation(
     Veli, çocuğunun email adresini girerek takip isteği gönderir.
     Çocuk bu isteği onaylamalıdır.
     """
-    if current_user.role != "parent":
+    if current_user.role != UserRole.PARENT:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Bu işlem sadece veli hesapları tarafından yapılabilir",
@@ -60,12 +59,12 @@ async def create_parent_child_relation(
 
 @router.get("/children", response_model=list[ParentChildRelationResponse])
 async def get_parent_children(
-    current_user: User = Depends(get_current_user), db: AsyncSession = Depends(get_db)
+    current_user: AuthenticatedUser = Depends(get_current_user), db: AsyncSession = Depends(get_db)
 ):
     """
     Velinin onaylanmış çocuklarını listele
     """
-    if current_user.role != "parent":
+    if current_user.role != UserRole.PARENT:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Bu işlem sadece veli hesapları tarafından yapılabilir",
@@ -84,8 +83,8 @@ async def get_parent_children(
 
 @router.get("/children/{child_id}/performance", response_model=ChildPerformanceData)
 async def get_child_performance(
-    child_id: int,
-    current_user: User = Depends(get_current_user),
+    child_id: str,
+    current_user: AuthenticatedUser = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
     """
@@ -93,7 +92,7 @@ async def get_child_performance(
 
     Son 30 günün sınav sonuçları, çalışma süresi ve performans analizi
     """
-    if current_user.role != "parent":
+    if current_user.role != UserRole.PARENT:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Bu işlem sadece veli hesapları tarafından yapılabilir",
@@ -119,8 +118,8 @@ async def get_child_performance(
 
 @router.get("/children/{child_id}/weekly-report", response_model=WeeklyReportData)
 async def get_weekly_report(
-    child_id: int,
-    current_user: User = Depends(get_current_user),
+    child_id: str,
+    current_user: AuthenticatedUser = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
     """
@@ -128,7 +127,7 @@ async def get_weekly_report(
 
     Bu haftanın çalışma özeti, başarılar ve öneriler
     """
-    if current_user.role != "parent":
+    if current_user.role != UserRole.PARENT:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Bu işlem sadece veli hesapları tarafından yapılabilir",
@@ -158,7 +157,7 @@ async def get_weekly_report(
 @router.post("/notifications", response_model=ParentNotificationResponse)
 async def create_notification(
     notification_data: ParentNotificationCreate,
-    current_user: User = Depends(get_current_user),
+    current_user: AuthenticatedUser = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
     """
@@ -166,7 +165,7 @@ async def create_notification(
 
     Sistem tarafından otomatik olarak oluşturulan bildirimler için kullanılır
     """
-    if current_user.role != "parent":
+    if current_user.role != UserRole.PARENT:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Bu işlem sadece veli hesapları tarafından yapılabilir",
@@ -193,7 +192,7 @@ async def create_notification(
 @router.get("/notifications", response_model=list[ParentNotificationResponse])
 async def get_notifications(
     unread_only: bool = False,
-    current_user: User = Depends(get_current_user),
+    current_user: AuthenticatedUser = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
     """
@@ -201,7 +200,7 @@ async def get_notifications(
 
     unread_only=true ile sadece okunmamış bildirimleri getirebilirsiniz
     """
-    if current_user.role != "parent":
+    if current_user.role != UserRole.PARENT:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Bu işlem sadece veli hesapları tarafından yapılabilir",
@@ -223,13 +222,13 @@ async def get_notifications(
 @router.put("/notifications/{notification_id}/read")
 async def mark_notification_as_read(
     notification_id: int,
-    current_user: User = Depends(get_current_user),
+    current_user: AuthenticatedUser = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
     """
     Bildirimi okundu olarak işaretle
     """
-    if current_user.role != "parent":
+    if current_user.role != UserRole.PARENT:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Bu işlem sadece veli hesapları tarafından yapılabilir",
@@ -253,14 +252,14 @@ async def mark_notification_as_read(
 
 @router.get("/dashboard", response_model=ParentDashboardData)
 async def get_parent_dashboard(
-    current_user: User = Depends(get_current_user), db: AsyncSession = Depends(get_db)
+    current_user: AuthenticatedUser = Depends(get_current_user), db: AsyncSession = Depends(get_db)
 ):
     """
     Veli dashboard verilerini getir
 
     Çocukların performansı, bildirimler ve genel özet
     """
-    if current_user.role != "parent":
+    if current_user.role != UserRole.PARENT:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Bu işlem sadece veli hesapları tarafından yapılabilir",
@@ -282,7 +281,7 @@ async def get_parent_dashboard(
 async def approve_parent_relation(
     relation_id: int,
     approved: bool,
-    current_user: User = Depends(get_current_user),
+    current_user: AuthenticatedUser = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
     """
@@ -290,7 +289,7 @@ async def approve_parent_relation(
 
     Öğrenci, veli tarafından gönderilen takip isteğini onaylar veya reddeder
     """
-    if current_user.role != "student":
+    if current_user.role != UserRole.STUDENT:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Bu işlem sadece öğrenci hesapları tarafından yapılabilir",

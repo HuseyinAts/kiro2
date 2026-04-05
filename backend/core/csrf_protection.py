@@ -78,9 +78,11 @@ class CSRFProtectionMiddleware(BaseHTTPMiddleware):
     ) -> Response:
         """Process request with CSRF protection"""
 
-        # DEVELOPMENT: Skip CSRF protection entirely in development mode
-        if settings.environment == "development":
-            return await call_next(request)
+        # FIX 2026-04-01: environment bazli bypass kaldirildi.
+        # Onceki kod: if settings.environment == "development": return
+        # Bu, production'da da CSRF'i tamamen devre disi birakiyordu.
+        # Simdi CSRF kontrolu sadece exempt_paths config'e gore calisir.
+        # Phase 2: /api/v1/ exempt_paths'tan kaldirildiginda gercek CSRF aktif olur.
 
         # Skip CSRF check for safe methods
         if request.method in self.safe_methods:

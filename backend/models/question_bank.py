@@ -24,6 +24,7 @@ from sqlalchemy import (
     ForeignKey,
     Index,
     Integer,
+    Numeric,
     String,
     Text,
     UniqueConstraint,
@@ -96,6 +97,14 @@ class TopicHierarchy(Base):
     # İstatistikler
     total_questions: Mapped[int] = mapped_column(Integer, default=0)
     average_difficulty: Mapped[float] = mapped_column(Float, default=0.0)
+
+    # DB-only legacy kolonlar — alembic dışı eklendi, korunuyor
+    difficulty_level: Mapped[Optional[float]] = mapped_column(
+        Float, nullable=True, server_default="0.5", comment="Legacy difficulty (DB-only)"
+    )
+    subject_area: Mapped[Optional[str]] = mapped_column(
+        String(50), nullable=True, comment="Legacy subject_area (DB-only)"
+    )
 
     # Sistem alanları
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
@@ -357,6 +366,40 @@ class QuestionBankItem(Base):
     calibration_quality_score: Mapped[float] = mapped_column(
         Float, default=0.0
     )  # 0-1 arası
+
+    # ========================================================================
+    # DB-ONLY LEGACY IRT KOLONLARI — ALEMBIC DIŞI EKLENDI, KORUMADA
+    # CAT engine bu kolonları kullanıyor — DOKUNMA / DO NOT DROP
+    # ========================================================================
+    # 3PL IRT parametreleri (CAT kalibrasyonu için)
+    irt_a: Mapped[Optional[float]] = mapped_column(
+        Numeric(6, 4), nullable=True, comment="3PL discrimination param (CAT)"
+    )
+    irt_b: Mapped[Optional[float]] = mapped_column(
+        Numeric(6, 4), nullable=True, comment="3PL difficulty param (CAT)"
+    )
+    irt_c: Mapped[Optional[float]] = mapped_column(
+        Numeric(5, 4), nullable=True, comment="3PL guessing param (CAT)"
+    )
+    # Kalibrasyon durumu (360 kalibreli soru bu kolonla işaretlendi)
+    irt_calibrated: Mapped[bool] = mapped_column(
+        Boolean, server_default="false", comment="3PL kalibrasyonu tamamlandı mı"
+    )
+    irt_calibrated_at: Mapped[Optional[datetime]] = mapped_column(
+        DateTime(timezone=True), nullable=True, comment="Kalibrasyon tarihi"
+    )
+    irt_n_responses: Mapped[int] = mapped_column(
+        Integer, server_default="0", comment="Kalibrasyon için kullanılan yanıt sayısı"
+    )
+    irt_method: Mapped[Optional[str]] = mapped_column(
+        Text, nullable=True, comment="Kalibrasyon yöntemi (EM, MLE, Bayesian)"
+    )
+    # CAT kalibrasyon havuzu (598 soru bu kolonla işaretlendi — KRİTİK)
+    is_calib_pool: Mapped[bool] = mapped_column(
+        Boolean, server_default="false", comment="CAT kalibrasyon havuzu üyesi mi"
+    )
+    # NOT: embedding kolonu pgvector tipinde — SQLAlchemy NullType ile görünmez,
+    #      alembic/env.py include_object ile hariç tutuldu
 
     # ========================================================================
     # Türkçe Morfoloji Analizi

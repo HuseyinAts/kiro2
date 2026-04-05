@@ -54,7 +54,8 @@ class QuestionSearchService:
 
     def __init__(self, es_client: ElasticsearchClient):
         self.es_client = es_client
-        self.index_name = "questions"
+        import os as _os
+        self.index_name = _os.environ.get("ELASTICSEARCH_INDEX", "turkiye_sinav_platform")
 
         # Soru indeks mapping'i
         self.question_mapping = {
@@ -187,7 +188,7 @@ class QuestionSearchService:
             # Range query için özel işlem gerekli
 
         # Arama alanları
-        search_fields = ["text^2", "explanation", "options.text"]
+        search_fields = ["question_text^3", "option_a", "option_b", "option_c", "option_d", "option_e", "explanation"]
 
         return await self.es_client.turkish_full_text_search(
             index_name=self.index_name,
@@ -240,7 +241,8 @@ class ContentSearchService:
 
     def __init__(self, es_client: ElasticsearchClient):
         self.es_client = es_client
-        self.index_name = "content"
+        import os as _os
+        self.index_name = _os.environ.get("ELASTICSEARCH_INDEX", "turkiye_sinav_platform")
 
         # İçerik indeks mapping'i
         self.content_mapping = {
@@ -642,7 +644,7 @@ async def get_elasticsearch_service() -> ElasticsearchService:
     if not elasticsearch_service:
         from core.elasticsearch_client import get_elasticsearch_client
 
-        es_client = await get_elasticsearch_client()
+        es_client = get_elasticsearch_client()
         elasticsearch_service = ElasticsearchService(es_client)
 
     return elasticsearch_service

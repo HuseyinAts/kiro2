@@ -1,0 +1,8 @@
+
+> build ┬À MiniMax-M2.7
+
+Ô£ù read failed
+Error: File not found: C:\Users\husey\kiro2\backend\app\api\learning_path_v2.py
+Ô£▒ Glob "**/learning_path_v2.py" 1 match
+ÔåÆ Read backend\api\learning_path_v2.py
+ÔåÆ Read backend\api\learning_path_v2.py [offset=1437]

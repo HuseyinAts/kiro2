@@ -140,9 +140,11 @@ async def submit_answer(
         ) from exc
 
     # FeedbackResponse: doğru şıkkı ekle
+    _svc_fb = result.get("feedback", {})
+    _co = _svc_fb.get("correct_option") if isinstance(_svc_fb, dict) else None
     result["feedback"] = FeedbackResponse(
         is_correct=is_correct,
-        correct_option=None,  # İsteğe bağlı: doğru şıkkı hemen göster/gizle
+        correct_option=_co,
     )
     return SubmitAnswerResponse(**result)
 

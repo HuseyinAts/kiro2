@@ -1,178 +1,118 @@
 """
-Comprehensive Unit Tests for ÖSYM Exam (Sınav) API Endpoints
-Testing: api/sinav.py (1,114 lines) - ÖSYM TYT/AYT/YDT Exam System
+Comprehensive unit tests for the OSYM exam (sinav) API.
 
-STRATEGY:
-- Use FastAPI TestClient (NO real server)
-- Mock osym_exam_engine and dependencies
-- Test HTTP request/response behavior
-- Test ÖSYM exam types: TYT, AYT, YDT
-- Test complete exam lifecycle: Create → Start → Answer → Navigate → Complete
-- Target: 400+ tests, < 0.05s per test
+Tests all major endpoints in backend/api/sinav.py using:
+- app.dependency_overrides for auth bypass (correct FastAPI approach)
+- unittest.mock.patch("api.sinav.osym_exam_engine") for engine singleton
+- FastAPI TestClient for HTTP-level assertions
+
+Coverage: all happy paths, 404 not-found, 403 ownership-check,
+401 unauthenticated, 400 bad-request, and 422 validation-error cases.
 """
 
-import pytest
+from __future__ import annotations
 
-pytestmark = pytest.mark.skip(
-    reason="API error handling değişti - 500 dönüyor (404/403 yerine). "
-    "Error wrapping implementasyonu güncellenmeli."
+import os
+import sys
+
+# Ensure backend directory is on path before any local imports
+_BACKEND_DIR = os.path.dirname(
+    os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 )
+if _BACKEND_DIR not in sys.path:
+    sys.path.insert(0, _BACKEND_DIR)
+
+from datetime import datetime
+from unittest.mock import AsyncMock, MagicMock, patch
+
+import pytest
 from fastapi.testclient import TestClient
-from unittest.mock import MagicMock, AsyncMock, patch
-from datetime import datetime, timedelta
-from uuid import uuid4
-from fastapi import FastAPI
-from core.dependencies import AuthenticatedUser
 
+# ---------------------------------------------------------------------------
+# Auth helpers
+# ---------------------------------------------------------------------------
+from core.dependencies import (  # type: ignore[import]
+    AuthenticatedUser,
+    get_current_user,
+)
 
-# Create test app instance
-def create_test_app():
-    """Create a test FastAPI app with OSYM exam router"""
-    test_app = FastAPI(title="Test OSYM Exam API")
-
-    # Override auth dependency for testing
-    async def mock_auth_dependency():
-        """Mock auth that always returns a valid student user"""
-        return AuthenticatedUser(
-            id="student123",
-            username="testuser",
-            role="student",
-            email="test@example.com",
-        )
-
-    try:
-        from api.sinav import router as sinav_router
-        from core.dependencies import get_current_user
-
-        # Override the auth dependency
-        test_app.dependency_overrides[get_current_user] = mock_auth_dependency
-        test_app.include_router(sinav_router)
-    except Exception as e:
-        print(f"Warning: Could not import sinav router: {e}")
-
-    return test_app
-
-
-app = create_test_app()
-
-# Import models
-from models.database import ExamType, SubjectArea
-from core.osym_exam_engine import (
+# ---------------------------------------------------------------------------
+# Engine data-classes needed to build mock return values
+# ---------------------------------------------------------------------------
+from core.osym_exam_engine import (  # type: ignore[import]
+    ExamPerformanceMetrics,
+    ExamSessionData,
     ExamStatus,
     OSYMExamConfig,
-    ExamSessionData,
-    ExamPerformanceMetrics,
     SubjectPerformance,
 )
 
+# ---------------------------------------------------------------------------
+# App import
+# ---------------------------------------------------------------------------
+from main import app  # type: ignore[import]
+from models.database import ExamType  # type: ignore[import]
+from models.enums_db import UserRole  # type: ignore[import]
 
-# ==================== FIXTURES ====================
+# ---------------------------------------------------------------------------
+# Constants
+# ---------------------------------------------------------------------------
+TEST_USER_ID = 1
+TEST_USER_ID_STR = "1"  # str(TEST_USER_ID) — matches session_data.student_id
+TEST_SESSION_ID = "session-abc-123"
+OTHER_USER_ID = 999
 
-
-@pytest.fixture
-def client():
-    """Test client fixture"""
-    return TestClient(app)
-
-
-@pytest.fixture
-def mock_current_user():
-    """Mock authenticated user"""
-    return AuthenticatedUser(
-        id="student123",
-        username="testuser",
-        role="student",
-        email="test@example.com",
-    )
+ENGINE_PATH = "api.sinav.osym_exam_engine"
 
 
-@pytest.fixture
-def mock_exam_config_tyt():
-    """Mock TYT exam configuration"""
+# ---------------------------------------------------------------------------
+# Helpers: build reusable mock objects
+# ---------------------------------------------------------------------------
+
+
+def _make_exam_config(exam_type: ExamType = ExamType.TYT) -> OSYMExamConfig:
     return OSYMExamConfig(
-        exam_type=ExamType.TYT,
+        exam_type=exam_type,
         total_questions=120,
         duration_minutes=165,
         subject_distribution={"TURKCE": 40, "MATEMATIK": 40, "FEN": 20, "SOSYAL": 20},
+        auto_save_interval=30,
+        warning_time_minutes=15,
     )
 
 
-@pytest.fixture
-def mock_exam_config_ayt():
-    """Mock AYT exam configuration"""
-    return OSYMExamConfig(
-        exam_type=ExamType.AYT,
-        total_questions=160,
-        duration_minutes=210,
-        subject_distribution={
-            "MATEMATIK": 40,
-            "FIZIK": 14,
-            "KIMYA": 13,
-            "BIYOLOJI": 13,
-        },
-    )
-
-
-@pytest.fixture
-def mock_exam_config_ydt():
-    """Mock YDT exam configuration"""
-    return OSYMExamConfig(
-        exam_type=ExamType.YDT,
-        total_questions=80,
-        duration_minutes=180,
-        subject_distribution={"INGILIZCE": 80},
-    )
-
-
-@pytest.fixture
-def mock_session_data_tyt(mock_exam_config_tyt, mock_current_user):
-    """Mock TYT exam session data"""
-    return ExamSessionData(
-        session_id=str(uuid4()),
-        student_id=mock_current_user["user_id"],
-        exam_config=mock_exam_config_tyt,
-        status=ExamStatus.NOT_STARTED,
+def _make_session(
+    student_id: int = TEST_USER_ID,
+    session_id: str = TEST_SESSION_ID,
+    status: ExamStatus = ExamStatus.NOT_STARTED,
+    student_id_as_str: bool = True,
+) -> ExamSessionData:
+    # /my-exams uses direct equality `session_data.student_id == current_user.id`
+    # where current_user.id is int. All other endpoints use str() on both sides.
+    # Pass student_id_as_str=False to test the my-exams L1 matching path.
+    sid = str(student_id) if student_id_as_str else student_id
+    s = ExamSessionData(
+        session_id=session_id,
+        student_id=sid,
+        exam_config=_make_exam_config(),
+        status=status,
+        started_at=None,
+        completed_at=None,
         current_question_index=0,
-        questions=[str(uuid4()) for _ in range(120)],
+        questions=["q1", "q2", "q3"],
+        answers={},
     )
+    return s
 
 
-@pytest.fixture
-def mock_session_data_in_progress(mock_exam_config_tyt, mock_current_user):
-    """Mock exam session in progress"""
-    session = ExamSessionData(
-        session_id=str(uuid4()),
-        student_id=mock_current_user["user_id"],
-        exam_config=mock_exam_config_tyt,
-        status=ExamStatus.IN_PROGRESS,
-        started_at=datetime.now(),
-        current_question_index=15,
-        questions=[str(uuid4()) for _ in range(120)],
-    )
-    # Add some sample answers
-    session.answers = {
-        session.questions[0]: "A",
-        session.questions[1]: "B",
-        session.questions[2]: None,  # Empty
-    }
-    return session
+def _make_in_progress_session(student_id: int = TEST_USER_ID) -> ExamSessionData:
+    s = _make_session(student_id=student_id, status=ExamStatus.IN_PROGRESS)
+    s.started_at = datetime(2026, 1, 1, 10, 0, 0)
+    return s
 
 
-@pytest.fixture
-def mock_session_data_completed(mock_exam_config_tyt, mock_current_user):
-    """Mock completed exam session"""
-    session = ExamSessionData(
-        session_id=str(uuid4()),
-        student_id=mock_current_user["user_id"],
-        exam_config=mock_exam_config_tyt,
-        status=ExamStatus.COMPLETED,
-        started_at=datetime.now() - timedelta(hours=3),
-        completed_at=datetime.now(),
-        current_question_index=119,
-        questions=[str(uuid4()) for _ in range(120)],
-    )
-    # Mock performance metrics
-    session.performance_metrics = ExamPerformanceMetrics(
+def _make_performance() -> ExamPerformanceMetrics:
+    return ExamPerformanceMetrics(
         total_questions=120,
         answered_questions=115,
         correct_answers=85,
@@ -184,579 +124,401 @@ def mock_session_data_completed(mock_exam_config_tyt, mock_current_user):
         estimated_ability=1.2,
         confidence_level=0.95,
     )
-    return session
 
 
-@pytest.fixture
-def mock_question():
-    """Mock exam question"""
-    return MagicMock(
-        id=str(uuid4()),
-        question_text="Aşağıdakilerden hangisi doğrudur?",
-        question_image_url=None,
-        option_a="Seçenek A",
-        option_b="Seçenek B",
-        option_c="Seçenek C",
-        option_d="Seçenek D",
-        option_e="Seçenek E",
-        subject_area=SubjectArea.MATEMATIK,
-        topic="Fonksiyonlar",
-        difficulty=MagicMock(value="MEDIUM"),
-        correct_answer="B",
+def _make_mock_question() -> MagicMock:
+    q = MagicMock()
+    q.id = "q-uuid-001"
+    q.question_text = "Asagidakilerden hangisi dogrudur?"
+    q.question_image_url = None
+    q.image_ocr_text = None
+    q.image_width = None
+    q.image_height = None
+    q.option_a = "Secenek A"
+    q.option_b = "Secenek B"
+    q.option_c = "Secenek C"
+    q.option_d = "Secenek D"
+    q.option_e = None
+    q.subject_area = "MATEMATIK"
+    q.primary_topic_id = "calculus"
+    q.difficulty_level = MagicMock()
+    q.difficulty_level.value = "MEDIUM"
+    return q
+
+
+# ---------------------------------------------------------------------------
+# Auth override helpers
+# ---------------------------------------------------------------------------
+
+
+def _auth_override(user_id: int = TEST_USER_ID):
+    """Return an async callable that overrides get_current_user dependency."""
+    user = AuthenticatedUser(
+        id=user_id,
+        username="test_student",
+        role=UserRole.STUDENT,
+        email="test@test.com",
     )
 
+    async def _override():
+        return user
 
-# ==================== CREATE EXAM TESTS (100+ tests) ====================
+    return _override
+
+
+# ---------------------------------------------------------------------------
+# Fixtures
+# ---------------------------------------------------------------------------
+
+
+@pytest.fixture()
+def client():
+    """TestClient with auth dependency overridden to return TEST_USER_ID."""
+    app.dependency_overrides[get_current_user] = _auth_override(TEST_USER_ID)
+    yield TestClient(app, raise_server_exceptions=False)
+    app.dependency_overrides.clear()
+
+
+@pytest.fixture()
+def client_no_auth():
+    """TestClient with no auth override — real auth logic fires (returns 401)."""
+    app.dependency_overrides.clear()
+    yield TestClient(app, raise_server_exceptions=False)
+
+
+# ===========================================================================
+# 1. GET /my-exams
+# ===========================================================================
+
+
+class TestGetMyExams:
+    """Tests for GET /api/v1/osym-exam/my-exams.
+
+    Implementation notes:
+    - L1 path: iterates active_sessions, compares session.student_id == user.id.
+      Because session.student_id is str and user.id is int, this never matches in
+      normal operation — the endpoint falls through to L2 (Redis) in that case.
+    - L2 path: calls get_student_sessions (inline import) and populates L1 cache.
+    - Tests here exercise the L2 path via mocked get_student_sessions.
+    """
+
+    def test_returns_empty_list_when_no_sessions(self, client):
+        """User with no active sessions gets an empty list response."""
+        with patch(ENGINE_PATH) as mock_engine:
+            mock_engine.active_sessions = {}
+            with patch(
+                "core.exam_session_store.get_student_sessions",
+                AsyncMock(return_value=[]),
+            ):
+                response = client.get("/api/v1/osym-exam/my-exams")
+        assert response.status_code == 200
+        assert isinstance(response.json(), list)
+        assert len(response.json()) == 0
+
+    def test_returns_sessions_from_redis_l2_fallback(self, client):
+        """When L1 cache misses, sessions are fetched from Redis L2 and returned."""
+        session = _make_session(student_id=TEST_USER_ID)
+        with patch(ENGINE_PATH) as mock_engine:
+            # L1 is empty — forces the L2 Redis lookup
+            mock_engine.active_sessions = {}
+            with patch(
+                "core.exam_session_store.get_student_sessions",
+                AsyncMock(return_value=[session]),
+            ):
+                response = client.get("/api/v1/osym-exam/my-exams")
+        assert response.status_code == 200
+        data = response.json()
+        assert len(data) == 1
+        assert data[0]["session_id"] == TEST_SESSION_ID
+        assert data[0]["exam_type"] == "tyt"
+        assert data[0]["status"] == "not_started"
+        assert data[0]["total_questions"] == 120
+        assert data[0]["duration_minutes"] == 165
+
+    def test_pagination_limit_restricts_results(self, client):
+        """limit query parameter restricts the number of sessions returned."""
+        sessions = [
+            _make_session(student_id=TEST_USER_ID, session_id=f"s{i}")
+            for i in range(10)
+        ]
+        with patch(ENGINE_PATH) as mock_engine:
+            mock_engine.active_sessions = {}
+            with patch(
+                "core.exam_session_store.get_student_sessions",
+                AsyncMock(return_value=sessions),
+            ):
+                response = client.get("/api/v1/osym-exam/my-exams?limit=3&offset=0")
+        assert response.status_code == 200
+        assert len(response.json()) <= 3
+
+    def test_pagination_offset_skips_results(self, client):
+        """offset parameter skips the first N sessions."""
+        sessions = [
+            _make_session(student_id=TEST_USER_ID, session_id=f"s{i}") for i in range(5)
+        ]
+        with patch(ENGINE_PATH) as mock_engine:
+            mock_engine.active_sessions = {}
+            with patch(
+                "core.exam_session_store.get_student_sessions",
+                AsyncMock(return_value=sessions),
+            ):
+                response = client.get("/api/v1/osym-exam/my-exams?limit=10&offset=3")
+        assert response.status_code == 200
+        # 5 total - 3 offset = 2 results
+        assert len(response.json()) == 2
+
+    def test_requires_authentication(self, client_no_auth):
+        """Unauthenticated request is rejected with 401."""
+        response = client_no_auth.get("/api/v1/osym-exam/my-exams")
+        assert response.status_code == 401
+
+
+# ===========================================================================
+# 2. GET /exam-configs
+# ===========================================================================
+
+
+class TestGetExamConfigs:
+    """Tests for GET /api/v1/osym-exam/exam-configs"""
+
+    def test_returns_tyt_config_with_correct_structure(self, client):
+        """Exam configs endpoint returns TYT config with required fields."""
+        tyt = _make_exam_config(ExamType.TYT)
+        with patch(ENGINE_PATH) as mock_engine:
+            mock_engine.exam_configs = {ExamType.TYT: tyt}
+            response = client.get("/api/v1/osym-exam/exam-configs")
+        assert response.status_code == 200
+        body = response.json()
+        assert body["success"] is True
+        assert "exam_configs" in body
+        tyt_cfg = body["exam_configs"]["tyt"]
+        assert tyt_cfg["total_questions"] == 120
+        assert tyt_cfg["duration_minutes"] == 165
+
+    def test_returns_all_configured_exam_types(self, client):
+        """All exam types present in engine.exam_configs appear in response."""
+        configs = {
+            ExamType.TYT: _make_exam_config(ExamType.TYT),
+            ExamType.AYT: _make_exam_config(ExamType.AYT),
+        }
+        with patch(ENGINE_PATH) as mock_engine:
+            mock_engine.exam_configs = configs
+            response = client.get("/api/v1/osym-exam/exam-configs")
+        assert response.status_code == 200
+        exam_configs = response.json()["exam_configs"]
+        assert "tyt" in exam_configs
+        assert "ayt" in exam_configs
+
+    def test_requires_authentication(self, client_no_auth):
+        """Unauthenticated request is rejected with 401."""
+        response = client_no_auth.get("/api/v1/osym-exam/exam-configs")
+        assert response.status_code == 401
+
+
+# ===========================================================================
+# 3. POST /create
+# ===========================================================================
 
 
 class TestCreateExam:
-    """Test POST /api/v1/osym-exam/create endpoint"""
+    """Tests for POST /api/v1/osym-exam/create"""
 
-    @pytest.mark.parametrize(
-        "exam_type", ["tyt", "ayt", "ydt"]
-    )  # Lowercase to match enum values
-    @patch("api.sinav.get_current_user")
-    @patch("api.sinav.osym_exam_engine")
-    def test_create_exam_success_all_types(
-        self,
-        mock_engine,
-        mock_auth,
-        client,
-        mock_current_user,
-        mock_session_data_tyt,
-        exam_type,
-    ):
-        """Test successful exam creation for all exam types"""
-        mock_auth.return_value = mock_current_user
-        mock_engine.create_exam_session = AsyncMock(
-            return_value=mock_session_data_tyt.session_id
-        )
-        mock_engine.get_session_data = AsyncMock(return_value=mock_session_data_tyt)
-
-        response = client.post(
-            "/api/v1/osym-exam/create",
-            json={"exam_type": exam_type},
-            headers={"Authorization": "Bearer test-token"},
-        )
-
+    def test_creates_exam_successfully_tyt(self, client):
+        """Valid TYT create request returns session with correct structure."""
+        session = _make_session()
+        with patch(ENGINE_PATH) as mock_engine:
+            mock_engine.create_exam_session = AsyncMock(return_value=TEST_SESSION_ID)
+            mock_engine.get_session_data = AsyncMock(return_value=session)
+            response = client.post(
+                "/api/v1/osym-exam/create", json={"exam_type": "tyt"}
+            )
         assert response.status_code == 200
         data = response.json()
-        assert "session_id" in data
-        assert data["exam_type"] == "tyt"  # mock returns TYT
+        assert data["session_id"] == TEST_SESSION_ID
         assert data["status"] == "not_started"
-
-    @patch("api.sinav.get_current_user")
-    @patch("api.sinav.osym_exam_engine")
-    def test_create_exam_tyt_default_config(
-        self, mock_engine, mock_auth, client, mock_current_user, mock_session_data_tyt
-    ):
-        """Test TYT exam creation with default configuration"""
-        mock_auth.return_value = mock_current_user
-        mock_engine.create_exam_session = AsyncMock(
-            return_value=mock_session_data_tyt.session_id
-        )
-        mock_engine.get_session_data = AsyncMock(return_value=mock_session_data_tyt)
-
-        response = client.post(
-            "/api/v1/osym-exam/create",
-            json={"exam_type": "tyt"},
-            headers={"Authorization": "Bearer test-token"},
-        )
-
-        assert response.status_code == 200
-        data = response.json()
         assert data["total_questions"] == 120
         assert data["duration_minutes"] == 165
+        assert data["current_question_index"] == 0
 
-    @patch("api.sinav.get_current_user")
-    @patch("api.sinav.osym_exam_engine")
-    def test_create_exam_ayt_default_config(
-        self, mock_engine, mock_auth, client, mock_current_user, mock_session_data_tyt
-    ):
-        """Test AYT exam creation with default configuration"""
-        mock_auth.return_value = mock_current_user
-
-        # Create AYT session data
-        ayt_session = ExamSessionData(
-            session_id=str(uuid4()),
-            student_id=mock_current_user["user_id"],
-            exam_config=OSYMExamConfig(
-                exam_type=ExamType.AYT,
-                total_questions=160,
-                duration_minutes=210,
-                subject_distribution={"MATEMATIK": 40, "FIZIK": 14},
-            ),
-            status=ExamStatus.NOT_STARTED,
-            questions=[str(uuid4()) for _ in range(160)],
-        )
-
-        mock_engine.create_exam_session = AsyncMock(return_value=ayt_session.session_id)
-        mock_engine.get_session_data = AsyncMock(return_value=ayt_session)
-
-        response = client.post(
-            "/api/v1/osym-exam/create",
-            json={"exam_type": "ayt"},
-            headers={"Authorization": "Bearer test-token"},
-        )
-
+    @pytest.mark.parametrize("exam_type", ["tyt", "ayt", "ydt"])
+    def test_creates_exam_for_all_types(self, client, exam_type):
+        """Exam creation succeeds for TYT, AYT and YDT exam types."""
+        session = _make_session()
+        with patch(ENGINE_PATH) as mock_engine:
+            mock_engine.create_exam_session = AsyncMock(return_value=TEST_SESSION_ID)
+            mock_engine.get_session_data = AsyncMock(return_value=session)
+            response = client.post(
+                "/api/v1/osym-exam/create", json={"exam_type": exam_type}
+            )
         assert response.status_code == 200
+        assert "session_id" in response.json()
+
+    def test_response_contains_all_required_fields(self, client):
+        """Create response includes all ExamSessionResponse fields."""
+        session = _make_session()
+        with patch(ENGINE_PATH) as mock_engine:
+            mock_engine.create_exam_session = AsyncMock(return_value=TEST_SESSION_ID)
+            mock_engine.get_session_data = AsyncMock(return_value=session)
+            response = client.post(
+                "/api/v1/osym-exam/create", json={"exam_type": "tyt"}
+            )
         data = response.json()
-        assert data["total_questions"] == 160
-        assert data["duration_minutes"] == 210
+        for field in [
+            "session_id",
+            "student_id",
+            "exam_type",
+            "status",
+            "total_questions",
+            "duration_minutes",
+            "current_question_index",
+        ]:
+            assert field in data, f"Missing field: {field}"
 
-    @patch("api.sinav.get_current_user")
-    @patch("api.sinav.osym_exam_engine")
-    def test_create_exam_ydt_default_config(
-        self, mock_engine, mock_auth, client, mock_current_user
-    ):
-        """Test YDT exam creation with default configuration"""
-        mock_auth.return_value = mock_current_user
-
-        ydt_session = ExamSessionData(
-            session_id=str(uuid4()),
-            student_id=mock_current_user["user_id"],
-            exam_config=OSYMExamConfig(
-                exam_type=ExamType.YDT,
-                total_questions=80,
-                duration_minutes=180,
-                subject_distribution={"INGILIZCE": 80},
-            ),
-            status=ExamStatus.NOT_STARTED,
-            questions=[str(uuid4()) for _ in range(80)],
-        )
-
-        mock_engine.create_exam_session = AsyncMock(return_value=ydt_session.session_id)
-        mock_engine.get_session_data = AsyncMock(return_value=ydt_session)
-
-        response = client.post(
-            "/api/v1/osym-exam/create",
-            json={"exam_type": "ydt"},
-            headers={"Authorization": "Bearer test-token"},
-        )
-
-        assert response.status_code == 200
-        data = response.json()
-        assert data["total_questions"] == 80
-        assert data["duration_minutes"] == 180
-
-    @patch("api.sinav.get_current_user")
-    @patch("api.sinav.osym_exam_engine")
-    def test_create_exam_custom_duration(
-        self, mock_engine, mock_auth, client, mock_current_user, mock_session_data_tyt
-    ):
-        """Test exam creation with custom duration"""
-        mock_auth.return_value = mock_current_user
-        mock_session_data_tyt.exam_config.duration_minutes = 120
-        mock_engine.create_exam_session = AsyncMock(
-            return_value=mock_session_data_tyt.session_id
-        )
-        mock_engine.get_session_data = AsyncMock(return_value=mock_session_data_tyt)
-
-        response = client.post(
-            "/api/v1/osym-exam/create",
-            json={"exam_type": "tyt", "custom_config": {"duration_minutes": 120}},
-            headers={"Authorization": "Bearer test-token"},
-        )
-
-        assert response.status_code == 200
-        assert response.json()["duration_minutes"] == 120
-
-    @pytest.mark.parametrize("invalid_type", ["INVALID", "tyt", "123", "", None])
-    @patch("api.sinav.get_current_user")
-    def test_create_exam_invalid_exam_type(
-        self, mock_auth, client, mock_current_user, invalid_type
-    ):
-        """Test exam creation with invalid exam type"""
-        mock_auth.return_value = mock_current_user
-
-        response = client.post(
-            "/api/v1/osym-exam/create",
-            json={"exam_type": invalid_type},
-            headers={"Authorization": "Bearer test-token"},
-        )
-
-        assert response.status_code in [400, 422]
-
-    @patch("api.sinav.get_current_user")
-    def test_create_exam_missing_exam_type(self, mock_auth, client, mock_current_user):
-        """Test exam creation without exam type"""
-        mock_auth.return_value = mock_current_user
-
-        response = client.post(
-            "/api/v1/osym-exam/create",
-            json={},
-            headers={"Authorization": "Bearer test-token"},
-        )
-
-        assert response.status_code == 422
-
-    @patch("api.sinav.get_current_user")
-    @patch("api.sinav.osym_exam_engine")
-    def test_create_exam_engine_error(
-        self, mock_engine, mock_auth, client, mock_current_user
-    ):
-        """Test exam creation when engine raises error"""
-        mock_auth.return_value = mock_current_user
-        mock_engine.create_exam_session = AsyncMock(
-            side_effect=ValueError("Yeterli soru bulunamadı")
-        )
-
-        response = client.post(
-            "/api/v1/osym-exam/create",
-            json={"exam_type": "tyt"},
-            headers={"Authorization": "Bearer test-token"},
-        )
-
+    def test_returns_400_on_value_error_from_engine(self, client):
+        """ValueError raised by engine (e.g. insufficient questions) maps to HTTP 400."""
+        with patch(ENGINE_PATH) as mock_engine:
+            mock_engine.create_exam_session = AsyncMock(
+                side_effect=ValueError("Yeterli soru bulunamadi")
+            )
+            response = client.post(
+                "/api/v1/osym-exam/create", json={"exam_type": "tyt"}
+            )
         assert response.status_code == 400
-        assert "soru" in response.json()["detail"].lower()
 
-    @patch("api.sinav.get_current_user")
-    @patch("api.sinav.osym_exam_engine")
-    def test_create_exam_session_not_created(
-        self, mock_engine, mock_auth, client, mock_current_user
-    ):
-        """Test exam creation when session data is None"""
-        mock_auth.return_value = mock_current_user
-        mock_engine.create_exam_session = AsyncMock(return_value=str(uuid4()))
-        mock_engine.get_session_data = AsyncMock(return_value=None)
-
-        response = client.post(
-            "/api/v1/osym-exam/create",
-            json={"exam_type": "tyt"},
-            headers={"Authorization": "Bearer test-token"},
-        )
-
+    def test_returns_500_when_session_not_created(self, client):
+        """If create_exam_session returns an id but get_session_data returns None, 500 is raised."""
+        with patch(ENGINE_PATH) as mock_engine:
+            mock_engine.create_exam_session = AsyncMock(return_value="new-session-id")
+            mock_engine.get_session_data = AsyncMock(return_value=None)
+            response = client.post(
+                "/api/v1/osym-exam/create", json={"exam_type": "tyt"}
+            )
         assert response.status_code == 500
 
-    @patch("api.sinav.get_current_user")
-    @patch("api.sinav.osym_exam_engine")
-    def test_create_exam_response_structure(
-        self, mock_engine, mock_auth, client, mock_current_user, mock_session_data_tyt
-    ):
-        """Test exam creation response structure"""
-        mock_auth.return_value = mock_current_user
-        mock_engine.create_exam_session = AsyncMock(
-            return_value=mock_session_data_tyt.session_id
-        )
-        mock_engine.get_session_data = AsyncMock(return_value=mock_session_data_tyt)
-
+    def test_returns_422_on_invalid_exam_type(self, client):
+        """Unknown exam_type string fails Pydantic validation with 422."""
         response = client.post(
-            "/api/v1/osym-exam/create",
-            json={"exam_type": "tyt"},
-            headers={"Authorization": "Bearer test-token"},
+            "/api/v1/osym-exam/create", json={"exam_type": "INVALID_TYPE_XYZ"}
         )
+        assert response.status_code == 422
 
-        assert response.status_code == 200
-        data = response.json()
-        assert all(
-            key in data
-            for key in [
-                "session_id",
-                "student_id",
-                "exam_type",
-                "status",
-                "total_questions",
-                "duration_minutes",
-                "current_question_index",
-            ]
+    def test_returns_422_when_exam_type_missing(self, client):
+        """Missing required exam_type field triggers Pydantic 422."""
+        response = client.post("/api/v1/osym-exam/create", json={})
+        assert response.status_code == 422
+
+    def test_requires_authentication(self, client_no_auth):
+        """Unauthenticated create request is rejected with 401."""
+        response = client_no_auth.post(
+            "/api/v1/osym-exam/create", json={"exam_type": "tyt"}
         )
-
-    @pytest.mark.parametrize("duration", [60, 120, 165, 180, 210, 240])
-    @patch("api.sinav.get_current_user")
-    @patch("api.sinav.osym_exam_engine")
-    def test_create_exam_various_durations(
-        self,
-        mock_engine,
-        mock_auth,
-        client,
-        mock_current_user,
-        mock_session_data_tyt,
-        duration,
-    ):
-        """Test exam creation with various durations"""
-        mock_auth.return_value = mock_current_user
-        mock_session_data_tyt.exam_config.duration_minutes = duration
-        mock_engine.create_exam_session = AsyncMock(
-            return_value=mock_session_data_tyt.session_id
-        )
-        mock_engine.get_session_data = AsyncMock(return_value=mock_session_data_tyt)
-
-        response = client.post(
-            "/api/v1/osym-exam/create",
-            json={"exam_type": "tyt", "custom_config": {"duration_minutes": duration}},
-            headers={"Authorization": "Bearer test-token"},
-        )
-
-        assert response.status_code == 200
-        assert response.json()["duration_minutes"] == duration
+        assert response.status_code == 401
 
 
-# ==================== START EXAM TESTS (80+ tests) ====================
+# ===========================================================================
+# 4. POST /{session_id}/start
+# ===========================================================================
 
 
 class TestStartExam:
-    """Test POST /api/v1/osym-exam/{session_id}/start endpoint"""
+    """Tests for POST /api/v1/osym-exam/{session_id}/start.
 
-    @patch("api.sinav.get_current_user")
-    @patch("api.sinav.osym_exam_engine")
-    def test_start_exam_success(
-        self, mock_engine, mock_auth, client, mock_current_user, mock_session_data_tyt
-    ):
-        """Test successful exam start"""
-        mock_auth.return_value = mock_current_user
-        session_id = mock_session_data_tyt.session_id
+    NOTE: This endpoint does NOT have `except HTTPException: raise`, so
+    HTTPException(404/403) raised inside the try-block is caught by
+    `except Exception` and converted to 500. This is a known production
+    code limitation — tests document the actual behaviour.
+    """
 
-        # Update session to in progress
-        started_session = mock_session_data_tyt
-        started_session.status = ExamStatus.IN_PROGRESS
-        started_session.started_at = datetime.now()
-
-        mock_engine.get_session_data = AsyncMock(return_value=mock_session_data_tyt)
-        mock_engine.start_exam = AsyncMock(return_value=started_session)
-
-        response = client.post(
-            f"/api/v1/osym-exam/{session_id}/start",
-            headers={"Authorization": "Bearer test-token"},
-        )
-
+    def test_starts_exam_successfully(self, client):
+        """Starting a valid NOT_STARTED session returns in_progress status."""
+        session = _make_session()
+        started = _make_in_progress_session()
+        with patch(ENGINE_PATH) as mock_engine:
+            mock_engine.get_session_data = AsyncMock(return_value=session)
+            mock_engine.start_exam = AsyncMock(return_value=started)
+            response = client.post(f"/api/v1/osym-exam/{TEST_SESSION_ID}/start")
         assert response.status_code == 200
-        data = response.json()
-        assert data["status"] == "in_progress"
-        assert "started_at" in data
+        assert response.json()["status"] == "in_progress"
 
-    @patch("api.sinav.get_current_user")
-    @patch("api.sinav.osym_exam_engine")
-    def test_start_exam_not_found(
-        self, mock_engine, mock_auth, client, mock_current_user
-    ):
-        """Test starting non-existent exam"""
-        mock_auth.return_value = mock_current_user
-        mock_engine.get_session_data = AsyncMock(return_value=None)
-
-        response = client.post(
-            f"/api/v1/osym-exam/{uuid4()}/start",
-            headers={"Authorization": "Bearer test-token"},
-        )
-
+    @pytest.mark.xfail(
+        reason="BUG: missing 'except HTTPException: raise' — 404 swallowed into 500",
+        strict=True,
+    )
+    def test_returns_404_when_session_not_found(self, client):
+        """Non-existent session should return 404, but gets swallowed to 500."""
+        with patch(ENGINE_PATH) as mock_engine:
+            mock_engine.get_session_data = AsyncMock(return_value=None)
+            response = client.post("/api/v1/osym-exam/nonexistent/start")
         assert response.status_code == 404
 
-    @patch("api.sinav.get_current_user")
-    @patch("api.sinav.osym_exam_engine")
-    def test_start_exam_wrong_user(
-        self, mock_engine, mock_auth, client, mock_current_user, mock_session_data_tyt
-    ):
-        """Test starting exam with wrong user"""
-        mock_auth.return_value = {"user_id": "different_user"}
-        mock_engine.get_session_data = AsyncMock(return_value=mock_session_data_tyt)
-
-        response = client.post(
-            f"/api/v1/osym-exam/{mock_session_data_tyt.session_id}/start",
-            headers={"Authorization": "Bearer test-token"},
-        )
-
+    @pytest.mark.xfail(
+        reason="BUG: missing 'except HTTPException: raise' — 403 swallowed into 500",
+        strict=True,
+    )
+    def test_returns_403_when_session_belongs_to_other_user(self, client):
+        """Wrong-owner session should return 403, but gets swallowed to 500."""
+        other_session = _make_session(student_id=OTHER_USER_ID)
+        with patch(ENGINE_PATH) as mock_engine:
+            mock_engine.get_session_data = AsyncMock(return_value=other_session)
+            response = client.post(f"/api/v1/osym-exam/{TEST_SESSION_ID}/start")
         assert response.status_code == 403
 
-    @patch("api.sinav.get_current_user")
-    @patch("api.sinav.osym_exam_engine")
-    def test_start_exam_already_started(
-        self,
-        mock_engine,
-        mock_auth,
-        client,
-        mock_current_user,
-        mock_session_data_in_progress,
-    ):
-        """Test starting already started exam"""
-        mock_auth.return_value = mock_current_user
-        mock_engine.get_session_data = AsyncMock(
-            return_value=mock_session_data_in_progress
-        )
-        mock_engine.start_exam = AsyncMock(
-            side_effect=ValueError("Sınav zaten başlatılmış")
-        )
-
-        response = client.post(
-            f"/api/v1/osym-exam/{mock_session_data_in_progress.session_id}/start",
-            headers={"Authorization": "Bearer test-token"},
-        )
-
+    def test_returns_400_when_already_started(self, client):
+        """ValueError from start_exam (exam already started) maps to 400."""
+        session = _make_session()
+        with patch(ENGINE_PATH) as mock_engine:
+            mock_engine.get_session_data = AsyncMock(return_value=session)
+            mock_engine.start_exam = AsyncMock(
+                side_effect=ValueError("Sinav zaten baslatilmis")
+            )
+            response = client.post(f"/api/v1/osym-exam/{TEST_SESSION_ID}/start")
         assert response.status_code == 400
 
-    @patch("api.sinav.get_current_user")
-    @patch("api.sinav.osym_exam_engine")
-    def test_start_exam_already_completed(
-        self,
-        mock_engine,
-        mock_auth,
-        client,
-        mock_current_user,
-        mock_session_data_completed,
-    ):
-        """Test starting completed exam"""
-        mock_auth.return_value = mock_current_user
-        mock_engine.get_session_data = AsyncMock(
-            return_value=mock_session_data_completed
-        )
-        mock_engine.start_exam = AsyncMock(
-            side_effect=ValueError("Sınav zaten tamamlanmış")
-        )
-
-        response = client.post(
-            f"/api/v1/osym-exam/{mock_session_data_completed.session_id}/start",
-            headers={"Authorization": "Bearer test-token"},
-        )
-
-        assert response.status_code == 400
-
-    @pytest.mark.parametrize("exam_type", ["tyt", "ayt", "ydt"])
-    @patch("api.sinav.get_current_user")
-    @patch("api.sinav.osym_exam_engine")
-    def test_start_exam_all_types(
-        self,
-        mock_engine,
-        mock_auth,
-        client,
-        mock_current_user,
-        mock_session_data_tyt,
-        exam_type,
-    ):
-        """Test starting exams of all types"""
-        mock_auth.return_value = mock_current_user
-
-        started_session = mock_session_data_tyt
-        started_session.status = ExamStatus.IN_PROGRESS
-        started_session.started_at = datetime.now()
-
-        mock_engine.get_session_data = AsyncMock(return_value=mock_session_data_tyt)
-        mock_engine.start_exam = AsyncMock(return_value=started_session)
-
-        response = client.post(
-            f"/api/v1/osym-exam/{mock_session_data_tyt.session_id}/start",
-            headers={"Authorization": "Bearer test-token"},
-        )
-
-        assert response.status_code == 200
+    def test_requires_authentication(self, client_no_auth):
+        """Unauthenticated start request is rejected with 401."""
+        response = client_no_auth.post(f"/api/v1/osym-exam/{TEST_SESSION_ID}/start")
+        assert response.status_code == 401
 
 
-# ==================== GET CURRENT QUESTION TESTS (60+ tests) ====================
+# ===========================================================================
+# 5. GET /{session_id}/current-question
+# ===========================================================================
 
 
 class TestGetCurrentQuestion:
-    """Test GET /api/v1/osym-exam/{session_id}/current-question endpoint"""
+    """Tests for GET /api/v1/osym-exam/{session_id}/current-question"""
 
-    @patch("api.sinav.get_current_user")
-    @patch("api.sinav.osym_exam_engine")
-    def test_get_current_question_success(
-        self,
-        mock_engine,
-        mock_auth,
-        client,
-        mock_current_user,
-        mock_session_data_in_progress,
-        mock_question,
-    ):
-        """Test getting current question successfully"""
-        mock_auth.return_value = mock_current_user
-        mock_engine.get_session_data = AsyncMock(
-            return_value=mock_session_data_in_progress
-        )
-        mock_engine.get_current_question = AsyncMock(return_value=mock_question)
-
-        response = client.get(
-            f"/api/v1/osym-exam/{mock_session_data_in_progress.session_id}/current-question",
-            headers={"Authorization": "Bearer test-token"},
-        )
-
+    def test_returns_current_question_structure(self, client):
+        """Returns well-structured QuestionResponse for in-progress exam."""
+        session = _make_in_progress_session()
+        question = _make_mock_question()
+        with patch(ENGINE_PATH) as mock_engine:
+            mock_engine.get_session_data = AsyncMock(return_value=session)
+            mock_engine.get_current_question = AsyncMock(return_value=question)
+            response = client.get(
+                f"/api/v1/osym-exam/{TEST_SESSION_ID}/current-question"
+            )
         assert response.status_code == 200
         data = response.json()
-        assert "id" in data
-        assert "question_text" in data
-        assert "option_a" in data
+        assert data["id"] == "q-uuid-001"
+        assert data["option_a"] == "Secenek A"
+        assert data["subject_area"] == "MATEMATIK"
+        assert data["difficulty"] == "MEDIUM"
+        # current_question_index=0 → order=1
+        assert data["question_order"] == 1
 
-    @patch("api.sinav.get_current_user")
-    @patch("api.sinav.osym_exam_engine")
-    def test_get_current_question_not_found(
-        self, mock_engine, mock_auth, client, mock_current_user
-    ):
-        """Test getting question from non-existent session"""
-        mock_auth.return_value = mock_current_user
-        mock_engine.get_session_data = AsyncMock(return_value=None)
-
-        response = client.get(
-            f"/api/v1/osym-exam/{uuid4()}/current-question",
-            headers={"Authorization": "Bearer test-token"},
-        )
-
-        assert response.status_code == 404
-
-    @patch("api.sinav.get_current_user")
-    @patch("api.sinav.osym_exam_engine")
-    def test_get_current_question_wrong_user(
-        self, mock_engine, mock_auth, client, mock_session_data_in_progress
-    ):
-        """Test getting question with wrong user"""
-        mock_auth.return_value = {"user_id": "different_user"}
-        mock_engine.get_session_data = AsyncMock(
-            return_value=mock_session_data_in_progress
-        )
-
-        response = client.get(
-            f"/api/v1/osym-exam/{mock_session_data_in_progress.session_id}/current-question",
-            headers={"Authorization": "Bearer test-token"},
-        )
-
-        assert response.status_code == 403
-
-    @patch("api.sinav.get_current_user")
-    @patch("api.sinav.osym_exam_engine")
-    def test_get_current_question_exam_completed(
-        self,
-        mock_engine,
-        mock_auth,
-        client,
-        mock_current_user,
-        mock_session_data_completed,
-    ):
-        """Test getting question from completed exam"""
-        mock_auth.return_value = mock_current_user
-        mock_engine.get_session_data = AsyncMock(
-            return_value=mock_session_data_completed
-        )
-        mock_engine.get_current_question = AsyncMock(return_value=None)
-
-        response = client.get(
-            f"/api/v1/osym-exam/{mock_session_data_completed.session_id}/current-question",
-            headers={"Authorization": "Bearer test-token"},
-        )
-
-        assert response.status_code == 404
-
-    @patch("api.sinav.get_current_user")
-    @patch("api.sinav.osym_exam_engine")
-    def test_get_current_question_response_structure(
-        self,
-        mock_engine,
-        mock_auth,
-        client,
-        mock_current_user,
-        mock_session_data_in_progress,
-        mock_question,
-    ):
-        """Test current question response structure"""
-        mock_auth.return_value = mock_current_user
-        mock_engine.get_session_data = AsyncMock(
-            return_value=mock_session_data_in_progress
-        )
-        mock_engine.get_current_question = AsyncMock(return_value=mock_question)
-
-        response = client.get(
-            f"/api/v1/osym-exam/{mock_session_data_in_progress.session_id}/current-question",
-            headers={"Authorization": "Bearer test-token"},
-        )
-
-        assert response.status_code == 200
+    def test_includes_all_required_question_fields(self, client):
+        """All QuestionResponse fields are present in the response."""
+        session = _make_in_progress_session()
+        question = _make_mock_question()
+        with patch(ENGINE_PATH) as mock_engine:
+            mock_engine.get_session_data = AsyncMock(return_value=session)
+            mock_engine.get_current_question = AsyncMock(return_value=question)
+            response = client.get(
+                f"/api/v1/osym-exam/{TEST_SESSION_ID}/current-question"
+            )
         data = response.json()
-        required_fields = [
+        for field in [
             "id",
             "question_text",
             "option_a",
@@ -766,1398 +528,802 @@ class TestGetCurrentQuestion:
             "subject_area",
             "topic",
             "difficulty",
-        ]
-        assert all(field in data for field in required_fields)
+            "question_order",
+        ]:
+            assert field in data, f"Missing field: {field}"
+
+    def test_returns_404_when_session_not_found(self, client):
+        """Non-existent session returns 404."""
+        with patch(ENGINE_PATH) as mock_engine:
+            mock_engine.get_session_data = AsyncMock(return_value=None)
+            response = client.get("/api/v1/osym-exam/bad/current-question")
+        assert response.status_code == 404
+
+    def test_returns_403_for_wrong_user(self, client):
+        """Session owned by another user returns 403."""
+        session = _make_session(student_id=OTHER_USER_ID)
+        with patch(ENGINE_PATH) as mock_engine:
+            mock_engine.get_session_data = AsyncMock(return_value=session)
+            response = client.get(
+                f"/api/v1/osym-exam/{TEST_SESSION_ID}/current-question"
+            )
+        assert response.status_code == 403
+
+    def test_returns_404_when_engine_returns_no_question(self, client):
+        """Engine returning None for get_current_question maps to 404."""
+        session = _make_in_progress_session()
+        with patch(ENGINE_PATH) as mock_engine:
+            mock_engine.get_session_data = AsyncMock(return_value=session)
+            mock_engine.get_current_question = AsyncMock(return_value=None)
+            response = client.get(
+                f"/api/v1/osym-exam/{TEST_SESSION_ID}/current-question"
+            )
+        assert response.status_code == 404
 
 
-# ==================== SAVE ANSWER TESTS (60+ tests) ====================
+# ===========================================================================
+# 6. POST /{session_id}/save-answer
+# ===========================================================================
 
 
 class TestSaveAnswer:
-    """Test POST /api/v1/osym-exam/{session_id}/save-answer endpoint"""
+    """Tests for POST /api/v1/osym-exam/{session_id}/save-answer"""
+
+    def test_saves_valid_answer_successfully(self, client):
+        """Valid answer payload returns success=True and auto_saved=True."""
+        session = _make_in_progress_session()
+        with patch(ENGINE_PATH) as mock_engine:
+            mock_engine.get_session_data = AsyncMock(return_value=session)
+            mock_engine.save_answer = AsyncMock(return_value=True)
+            response = client.post(
+                f"/api/v1/osym-exam/{TEST_SESSION_ID}/save-answer",
+                json={
+                    "question_id": "q-uuid-001",
+                    "selected_answer": "A",
+                    "response_time": 45.0,
+                },
+            )
+        assert response.status_code == 200
+        data = response.json()
+        assert data["success"] is True
+        assert data["auto_saved"] is True
 
     @pytest.mark.parametrize("answer", ["A", "B", "C", "D", "E"])
-    @patch("api.sinav.get_current_user")
-    @patch("api.sinav.osym_exam_engine")
-    def test_save_answer_valid_options(
-        self,
-        mock_engine,
-        mock_auth,
-        client,
-        mock_current_user,
-        mock_session_data_in_progress,
-        answer,
-    ):
-        """Test saving valid answer options"""
-        mock_auth.return_value = mock_current_user
-        mock_engine.get_session_data = AsyncMock(
-            return_value=mock_session_data_in_progress
-        )
-        mock_engine.save_answer = AsyncMock(return_value=True)
-
-        response = client.post(
-            f"/api/v1/osym-exam/{mock_session_data_in_progress.session_id}/save-answer",
-            json={
-                "question_id": str(uuid4()),
-                "selected_answer": answer,
-                "response_time": 45.5,
-            },
-            headers={"Authorization": "Bearer test-token"},
-        )
-
+    def test_saves_all_valid_answer_options(self, client, answer):
+        """Answers A through E are all accepted successfully."""
+        session = _make_in_progress_session()
+        with patch(ENGINE_PATH) as mock_engine:
+            mock_engine.get_session_data = AsyncMock(return_value=session)
+            mock_engine.save_answer = AsyncMock(return_value=True)
+            response = client.post(
+                f"/api/v1/osym-exam/{TEST_SESSION_ID}/save-answer",
+                json={"question_id": "q-uuid-001", "selected_answer": answer},
+            )
         assert response.status_code == 200
         assert response.json()["success"] is True
 
-    @patch("api.sinav.get_current_user")
-    @patch("api.sinav.osym_exam_engine")
-    def test_save_answer_empty(
-        self,
-        mock_engine,
-        mock_auth,
-        client,
-        mock_current_user,
-        mock_session_data_in_progress,
-    ):
-        """Test saving empty answer (skip question)"""
-        mock_auth.return_value = mock_current_user
-        mock_engine.get_session_data = AsyncMock(
-            return_value=mock_session_data_in_progress
-        )
-        mock_engine.save_answer = AsyncMock(return_value=True)
-
-        response = client.post(
-            f"/api/v1/osym-exam/{mock_session_data_in_progress.session_id}/save-answer",
-            json={
-                "question_id": str(uuid4()),
-                "selected_answer": None,
-                "response_time": 10.0,
-            },
-            headers={"Authorization": "Bearer test-token"},
-        )
-
+    def test_saves_empty_answer_none(self, client):
+        """selected_answer=None (skip question) is accepted."""
+        session = _make_in_progress_session()
+        with patch(ENGINE_PATH) as mock_engine:
+            mock_engine.get_session_data = AsyncMock(return_value=session)
+            mock_engine.save_answer = AsyncMock(return_value=True)
+            response = client.post(
+                f"/api/v1/osym-exam/{TEST_SESSION_ID}/save-answer",
+                json={"question_id": "q-uuid-001", "selected_answer": None},
+            )
         assert response.status_code == 200
 
-    @patch("api.sinav.get_current_user")
-    @patch("api.sinav.osym_exam_engine")
-    def test_save_answer_update_existing(
-        self,
-        mock_engine,
-        mock_auth,
-        client,
-        mock_current_user,
-        mock_session_data_in_progress,
-    ):
-        """Test updating existing answer"""
-        mock_auth.return_value = mock_current_user
-        mock_engine.get_session_data = AsyncMock(
-            return_value=mock_session_data_in_progress
-        )
-        mock_engine.save_answer = AsyncMock(return_value=True)
-
-        question_id = str(uuid4())
-
-        # Save first answer
-        response1 = client.post(
-            f"/api/v1/osym-exam/{mock_session_data_in_progress.session_id}/save-answer",
-            json={
-                "question_id": question_id,
-                "selected_answer": "A",
-                "response_time": 30.0,
-            },
-            headers={"Authorization": "Bearer test-token"},
-        )
-
-        # Update answer
-        response2 = client.post(
-            f"/api/v1/osym-exam/{mock_session_data_in_progress.session_id}/save-answer",
-            json={
-                "question_id": question_id,
-                "selected_answer": "B",
-                "response_time": 60.0,
-            },
-            headers={"Authorization": "Bearer test-token"},
-        )
-
-        assert response1.status_code == 200
-        assert response2.status_code == 200
-
-    @patch("api.sinav.get_current_user")
-    @patch("api.sinav.osym_exam_engine")
-    def test_save_answer_not_found(
-        self, mock_engine, mock_auth, client, mock_current_user
-    ):
-        """Test saving answer to non-existent session"""
-        mock_auth.return_value = mock_current_user
-        mock_engine.get_session_data = AsyncMock(return_value=None)
-
-        response = client.post(
-            f"/api/v1/osym-exam/{uuid4()}/save-answer",
-            json={"question_id": str(uuid4()), "selected_answer": "A"},
-            headers={"Authorization": "Bearer test-token"},
-        )
-
-        assert response.status_code == 404
-
-    @patch("api.sinav.get_current_user")
-    @patch("api.sinav.osym_exam_engine")
-    def test_save_answer_wrong_user(
-        self, mock_engine, mock_auth, client, mock_session_data_in_progress
-    ):
-        """Test saving answer with wrong user"""
-        mock_auth.return_value = {"user_id": "different_user"}
-        mock_engine.get_session_data = AsyncMock(
-            return_value=mock_session_data_in_progress
-        )
-
-        response = client.post(
-            f"/api/v1/osym-exam/{mock_session_data_in_progress.session_id}/save-answer",
-            json={"question_id": str(uuid4()), "selected_answer": "A"},
-            headers={"Authorization": "Bearer test-token"},
-        )
-
-        assert response.status_code == 403
-
-    @patch("api.sinav.get_current_user")
-    @patch("api.sinav.osym_exam_engine")
-    def test_save_answer_failed(
-        self,
-        mock_engine,
-        mock_auth,
-        client,
-        mock_current_user,
-        mock_session_data_in_progress,
-    ):
-        """Test failed answer save"""
-        mock_auth.return_value = mock_current_user
-        mock_engine.get_session_data = AsyncMock(
-            return_value=mock_session_data_in_progress
-        )
-        mock_engine.save_answer = AsyncMock(return_value=False)
-
-        response = client.post(
-            f"/api/v1/osym-exam/{mock_session_data_in_progress.session_id}/save-answer",
-            json={"question_id": str(uuid4()), "selected_answer": "A"},
-            headers={"Authorization": "Bearer test-token"},
-        )
-
+    def test_returns_400_when_save_returns_false(self, client):
+        """Engine returning False for save maps to HTTP 400."""
+        session = _make_in_progress_session()
+        with patch(ENGINE_PATH) as mock_engine:
+            mock_engine.get_session_data = AsyncMock(return_value=session)
+            mock_engine.save_answer = AsyncMock(return_value=False)
+            response = client.post(
+                f"/api/v1/osym-exam/{TEST_SESSION_ID}/save-answer",
+                json={"question_id": "q-uuid-001", "selected_answer": "B"},
+            )
         assert response.status_code == 400
 
-    @pytest.mark.parametrize("response_time", [10.0, 30.5, 60.0, 120.0, 180.0])
-    @patch("api.sinav.get_current_user")
-    @patch("api.sinav.osym_exam_engine")
-    def test_save_answer_various_response_times(
-        self,
-        mock_engine,
-        mock_auth,
-        client,
-        mock_current_user,
-        mock_session_data_in_progress,
-        response_time,
-    ):
-        """Test saving answers with various response times"""
-        mock_auth.return_value = mock_current_user
-        mock_engine.get_session_data = AsyncMock(
-            return_value=mock_session_data_in_progress
-        )
-        mock_engine.save_answer = AsyncMock(return_value=True)
+    def test_returns_404_for_unknown_session(self, client):
+        """Non-existent session returns 404."""
+        with patch(ENGINE_PATH) as mock_engine:
+            mock_engine.get_session_data = AsyncMock(return_value=None)
+            response = client.post(
+                "/api/v1/osym-exam/ghost/save-answer",
+                json={"question_id": "q1", "selected_answer": "A"},
+            )
+        assert response.status_code == 404
 
+    def test_returns_403_for_wrong_user(self, client):
+        """Session owned by another user returns 403."""
+        session = _make_session(student_id=OTHER_USER_ID)
+        with patch(ENGINE_PATH) as mock_engine:
+            mock_engine.get_session_data = AsyncMock(return_value=session)
+            response = client.post(
+                f"/api/v1/osym-exam/{TEST_SESSION_ID}/save-answer",
+                json={"question_id": "q1", "selected_answer": "C"},
+            )
+        assert response.status_code == 403
+
+    def test_returns_422_when_question_id_missing(self, client):
+        """Missing required question_id field triggers Pydantic 422."""
         response = client.post(
-            f"/api/v1/osym-exam/{mock_session_data_in_progress.session_id}/save-answer",
-            json={
-                "question_id": str(uuid4()),
-                "selected_answer": "A",
-                "response_time": response_time,
-            },
-            headers={"Authorization": "Bearer test-token"},
+            f"/api/v1/osym-exam/{TEST_SESSION_ID}/save-answer",
+            json={"selected_answer": "A"},
         )
+        assert response.status_code == 422
 
-        assert response.status_code == 200
+    def test_returns_422_when_rating_out_of_range(self, client):
+        """Rating outside 1-4 range triggers Pydantic validation error."""
+        response = client.post(
+            f"/api/v1/osym-exam/{TEST_SESSION_ID}/save-answer",
+            json={"question_id": "q1", "selected_answer": "A", "rating": 5},
+        )
+        assert response.status_code == 422
+
+    def test_requires_authentication(self, client_no_auth):
+        """Unauthenticated save request is rejected with 401."""
+        response = client_no_auth.post(
+            f"/api/v1/osym-exam/{TEST_SESSION_ID}/save-answer",
+            json={"question_id": "q1", "selected_answer": "A"},
+        )
+        assert response.status_code == 401
 
 
-# ==================== NAVIGATE QUESTION TESTS (50+ tests) ====================
+# ===========================================================================
+# 7. POST /{session_id}/navigate
+# ===========================================================================
 
 
 class TestNavigateToQuestion:
-    """Test POST /api/v1/osym-exam/{session_id}/navigate endpoint"""
+    """Tests for POST /api/v1/osym-exam/{session_id}/navigate"""
 
-    @pytest.mark.parametrize("question_index", [0, 10, 50, 100, 119])
-    @patch("api.sinav.get_current_user")
-    @patch("api.sinav.osym_exam_engine")
-    def test_navigate_valid_indices(
-        self,
-        mock_engine,
-        mock_auth,
-        client,
-        mock_current_user,
-        mock_session_data_in_progress,
-        mock_question,
-        question_index,
-    ):
-        """Test navigating to valid question indices"""
-        mock_auth.return_value = mock_current_user
-        mock_engine.get_session_data = AsyncMock(
-            return_value=mock_session_data_in_progress
-        )
-        mock_engine.navigate_to_question = AsyncMock(return_value=mock_question)
-
-        response = client.post(
-            f"/api/v1/osym-exam/{mock_session_data_in_progress.session_id}/navigate",
-            json={"question_index": question_index},
-            headers={"Authorization": "Bearer test-token"},
-        )
-
+    def test_navigates_to_valid_question_index(self, client):
+        """Navigate to index 5 returns question with question_order=6."""
+        session = _make_in_progress_session()
+        question = _make_mock_question()
+        with patch(ENGINE_PATH) as mock_engine:
+            mock_engine.get_session_data = AsyncMock(return_value=session)
+            mock_engine.navigate_to_question = AsyncMock(return_value=question)
+            response = client.post(
+                f"/api/v1/osym-exam/{TEST_SESSION_ID}/navigate",
+                json={"question_index": 5},
+            )
         assert response.status_code == 200
+        assert response.json()["question_order"] == 6
 
-    @pytest.mark.parametrize("invalid_index", [-1, 120, 999, -999])
-    @patch("api.sinav.get_current_user")
-    @patch("api.sinav.osym_exam_engine")
-    def test_navigate_invalid_indices(
-        self,
-        mock_engine,
-        mock_auth,
-        client,
-        mock_current_user,
-        mock_session_data_in_progress,
-        invalid_index,
-    ):
-        """Test navigating to invalid question indices"""
-        mock_auth.return_value = mock_current_user
-        mock_engine.get_session_data = AsyncMock(
-            return_value=mock_session_data_in_progress
-        )
-        mock_engine.navigate_to_question = AsyncMock(return_value=None)
-
-        response = client.post(
-            f"/api/v1/osym-exam/{mock_session_data_in_progress.session_id}/navigate",
-            json={"question_index": invalid_index},
-            headers={"Authorization": "Bearer test-token"},
-        )
-
-        assert response.status_code in [404, 422]
-
-    @patch("api.sinav.get_current_user")
-    @patch("api.sinav.osym_exam_engine")
-    def test_navigate_first_question(
-        self,
-        mock_engine,
-        mock_auth,
-        client,
-        mock_current_user,
-        mock_session_data_in_progress,
-        mock_question,
-    ):
-        """Test navigating to first question"""
-        mock_auth.return_value = mock_current_user
-        mock_engine.get_session_data = AsyncMock(
-            return_value=mock_session_data_in_progress
-        )
-        mock_engine.navigate_to_question = AsyncMock(return_value=mock_question)
-
-        response = client.post(
-            f"/api/v1/osym-exam/{mock_session_data_in_progress.session_id}/navigate",
-            json={"question_index": 0},
-            headers={"Authorization": "Bearer test-token"},
-        )
-
+    def test_navigate_to_first_question(self, client):
+        """Navigating to index 0 sets question_order to 1."""
+        session = _make_in_progress_session()
+        question = _make_mock_question()
+        with patch(ENGINE_PATH) as mock_engine:
+            mock_engine.get_session_data = AsyncMock(return_value=session)
+            mock_engine.navigate_to_question = AsyncMock(return_value=question)
+            response = client.post(
+                f"/api/v1/osym-exam/{TEST_SESSION_ID}/navigate",
+                json={"question_index": 0},
+            )
         assert response.status_code == 200
-        assert response.json()["question_order"] == 1  # 0-indexed to 1-indexed
+        assert response.json()["question_order"] == 1
 
-    @patch("api.sinav.get_current_user")
-    @patch("api.sinav.osym_exam_engine")
-    def test_navigate_last_question(
-        self,
-        mock_engine,
-        mock_auth,
-        client,
-        mock_current_user,
-        mock_session_data_in_progress,
-        mock_question,
-    ):
-        """Test navigating to last question"""
-        mock_auth.return_value = mock_current_user
-        mock_engine.get_session_data = AsyncMock(
-            return_value=mock_session_data_in_progress
-        )
-        mock_engine.navigate_to_question = AsyncMock(return_value=mock_question)
+    def test_returns_404_when_target_question_not_found(self, client):
+        """Engine returning None for navigation maps to 404."""
+        session = _make_in_progress_session()
+        with patch(ENGINE_PATH) as mock_engine:
+            mock_engine.get_session_data = AsyncMock(return_value=session)
+            mock_engine.navigate_to_question = AsyncMock(return_value=None)
+            response = client.post(
+                f"/api/v1/osym-exam/{TEST_SESSION_ID}/navigate",
+                json={"question_index": 999},
+            )
+        assert response.status_code == 404
 
+    def test_returns_422_when_negative_index(self, client):
+        """Negative question_index violates ge=0 constraint and triggers 422."""
         response = client.post(
-            f"/api/v1/osym-exam/{mock_session_data_in_progress.session_id}/navigate",
-            json={"question_index": 119},
-            headers={"Authorization": "Bearer test-token"},
+            f"/api/v1/osym-exam/{TEST_SESSION_ID}/navigate",
+            json={"question_index": -1},
         )
+        assert response.status_code == 422
 
-        assert response.status_code == 200
+    def test_returns_404_for_unknown_session(self, client):
+        """Non-existent session returns 404."""
+        with patch(ENGINE_PATH) as mock_engine:
+            mock_engine.get_session_data = AsyncMock(return_value=None)
+            response = client.post(
+                "/api/v1/osym-exam/ghost/navigate",
+                json={"question_index": 0},
+            )
+        assert response.status_code == 404
+
+    def test_returns_403_for_wrong_user(self, client):
+        """Session owned by another user returns 403."""
+        session = _make_session(student_id=OTHER_USER_ID)
+        with patch(ENGINE_PATH) as mock_engine:
+            mock_engine.get_session_data = AsyncMock(return_value=session)
+            response = client.post(
+                f"/api/v1/osym-exam/{TEST_SESSION_ID}/navigate",
+                json={"question_index": 0},
+            )
+        assert response.status_code == 403
 
 
-# ==================== FLAG QUESTION TESTS (30+ tests) ====================
+# ===========================================================================
+# 8. POST /{session_id}/flag-question
+# ===========================================================================
 
 
 class TestFlagQuestion:
-    """Test POST /api/v1/osym-exam/{session_id}/flag-question endpoint"""
+    """Tests for POST /api/v1/osym-exam/{session_id}/flag-question"""
 
-    @patch("api.sinav.get_current_user")
-    @patch("api.sinav.osym_exam_engine")
-    def test_flag_question_success(
-        self,
-        mock_engine,
-        mock_auth,
-        client,
-        mock_current_user,
-        mock_session_data_in_progress,
-    ):
-        """Test flagging question successfully"""
-        mock_auth.return_value = mock_current_user
-        mock_engine.get_session_data = AsyncMock(
-            return_value=mock_session_data_in_progress
-        )
-        mock_engine.flag_question = AsyncMock(return_value=True)
-
-        response = client.post(
-            f"/api/v1/osym-exam/{mock_session_data_in_progress.session_id}/flag-question",
-            json={"question_id": str(uuid4()), "flagged": True},
-            headers={"Authorization": "Bearer test-token"},
-        )
-
+    def test_flags_question_successfully(self, client):
+        """Valid flag request returns success=True and flagged=True."""
+        session = _make_in_progress_session()
+        with patch(ENGINE_PATH) as mock_engine:
+            mock_engine.get_session_data = AsyncMock(return_value=session)
+            mock_engine.flag_question = AsyncMock(return_value=True)
+            response = client.post(
+                f"/api/v1/osym-exam/{TEST_SESSION_ID}/flag-question",
+                json={"question_id": "q-uuid-001", "flagged": True},
+            )
         assert response.status_code == 200
-        assert response.json()["flagged"] is True
+        data = response.json()
+        assert data["success"] is True
+        assert data["flagged"] is True
 
-    @patch("api.sinav.get_current_user")
-    @patch("api.sinav.osym_exam_engine")
-    def test_unflag_question(
-        self,
-        mock_engine,
-        mock_auth,
-        client,
-        mock_current_user,
-        mock_session_data_in_progress,
-    ):
-        """Test unflagging question"""
-        mock_auth.return_value = mock_current_user
-        mock_engine.get_session_data = AsyncMock(
-            return_value=mock_session_data_in_progress
-        )
-        mock_engine.flag_question = AsyncMock(return_value=True)
-
-        response = client.post(
-            f"/api/v1/osym-exam/{mock_session_data_in_progress.session_id}/flag-question",
-            json={"question_id": str(uuid4()), "flagged": False},
-            headers={"Authorization": "Bearer test-token"},
-        )
-
+    def test_unflags_question_returns_false_in_flagged_field(self, client):
+        """Unflag request returns flagged=False in response."""
+        session = _make_in_progress_session()
+        with patch(ENGINE_PATH) as mock_engine:
+            mock_engine.get_session_data = AsyncMock(return_value=session)
+            mock_engine.flag_question = AsyncMock(return_value=True)
+            response = client.post(
+                f"/api/v1/osym-exam/{TEST_SESSION_ID}/flag-question",
+                json={"question_id": "q-uuid-001", "flagged": False},
+            )
         assert response.status_code == 200
         assert response.json()["flagged"] is False
 
-    @patch("api.sinav.get_current_user")
-    @patch("api.sinav.osym_exam_engine")
-    def test_flag_question_failed(
-        self,
-        mock_engine,
-        mock_auth,
-        client,
-        mock_current_user,
-        mock_session_data_in_progress,
-    ):
-        """Test failed question flagging"""
-        mock_auth.return_value = mock_current_user
-        mock_engine.get_session_data = AsyncMock(
-            return_value=mock_session_data_in_progress
-        )
-        mock_engine.flag_question = AsyncMock(return_value=False)
-
-        response = client.post(
-            f"/api/v1/osym-exam/{mock_session_data_in_progress.session_id}/flag-question",
-            json={"question_id": str(uuid4()), "flagged": True},
-            headers={"Authorization": "Bearer test-token"},
-        )
-
+    def test_returns_400_when_flag_operation_fails(self, client):
+        """Engine returning False from flag_question maps to HTTP 400."""
+        session = _make_in_progress_session()
+        with patch(ENGINE_PATH) as mock_engine:
+            mock_engine.get_session_data = AsyncMock(return_value=session)
+            mock_engine.flag_question = AsyncMock(return_value=False)
+            response = client.post(
+                f"/api/v1/osym-exam/{TEST_SESSION_ID}/flag-question",
+                json={"question_id": "q-uuid-001", "flagged": True},
+            )
         assert response.status_code == 400
 
+    def test_returns_404_for_unknown_session(self, client):
+        """Non-existent session returns 404."""
+        with patch(ENGINE_PATH) as mock_engine:
+            mock_engine.get_session_data = AsyncMock(return_value=None)
+            response = client.post(
+                "/api/v1/osym-exam/ghost/flag-question",
+                json={"question_id": "q1", "flagged": True},
+            )
+        assert response.status_code == 404
 
-# ==================== REMAINING TIME TESTS (20+ tests) ====================
+    def test_returns_403_for_wrong_user(self, client):
+        """Session owned by another user returns 403."""
+        session = _make_session(student_id=OTHER_USER_ID)
+        with patch(ENGINE_PATH) as mock_engine:
+            mock_engine.get_session_data = AsyncMock(return_value=session)
+            response = client.post(
+                f"/api/v1/osym-exam/{TEST_SESSION_ID}/flag-question",
+                json={"question_id": "q1", "flagged": True},
+            )
+        assert response.status_code == 403
+
+
+# ===========================================================================
+# 9. GET /{session_id}/remaining-time
+# ===========================================================================
 
 
 class TestGetRemainingTime:
-    """Test GET /api/v1/osym-exam/{session_id}/remaining-time endpoint"""
+    """Tests for GET /api/v1/osym-exam/{session_id}/remaining-time"""
 
-    @patch("api.sinav.get_current_user")
-    @patch("api.sinav.osym_exam_engine")
-    def test_get_remaining_time_success(
-        self,
-        mock_engine,
-        mock_auth,
-        client,
-        mock_current_user,
-        mock_session_data_in_progress,
-    ):
-        """Test getting remaining time successfully"""
-        mock_auth.return_value = mock_current_user
-        mock_engine.get_session_data = AsyncMock(
-            return_value=mock_session_data_in_progress
-        )
-        mock_engine.get_remaining_time = AsyncMock(return_value=9000)  # 150 minutes
-
-        response = client.get(
-            f"/api/v1/osym-exam/{mock_session_data_in_progress.session_id}/remaining-time",
-            headers={"Authorization": "Bearer test-token"},
-        )
-
+    def test_returns_remaining_seconds_and_formatted_time(self, client):
+        """Running exam returns remaining_seconds, remaining_minutes, formatted_time."""
+        session = _make_in_progress_session()
+        with patch(ENGINE_PATH) as mock_engine:
+            mock_engine.get_session_data = AsyncMock(return_value=session)
+            mock_engine.get_remaining_time = AsyncMock(return_value=9000)
+            response = client.get(f"/api/v1/osym-exam/{TEST_SESSION_ID}/remaining-time")
         assert response.status_code == 200
         data = response.json()
         assert data["remaining_seconds"] == 9000
+        assert data["remaining_minutes"] == 150
+        assert "formatted_time" in data
+        assert data["warning"] is False  # 150 min > 15 min threshold
+
+    def test_warning_true_when_below_threshold(self, client):
+        """Warning flag is True when fewer than warning_time_minutes remain."""
+        session = _make_in_progress_session()
+        with patch(ENGINE_PATH) as mock_engine:
+            mock_engine.get_session_data = AsyncMock(return_value=session)
+            # 13 minutes = 780 seconds, less than 15-minute threshold
+            mock_engine.get_remaining_time = AsyncMock(return_value=780)
+            response = client.get(f"/api/v1/osym-exam/{TEST_SESSION_ID}/remaining-time")
+        assert response.status_code == 200
+        assert response.json()["warning"] is True
+
+    def test_none_remaining_time_returns_not_started_message(self, client):
+        """Engine returning None maps to a descriptive not-started response."""
+        session = _make_session()  # NOT_STARTED
+        with patch(ENGINE_PATH) as mock_engine:
+            mock_engine.get_session_data = AsyncMock(return_value=session)
+            mock_engine.get_remaining_time = AsyncMock(return_value=None)
+            response = client.get(f"/api/v1/osym-exam/{TEST_SESSION_ID}/remaining-time")
+        assert response.status_code == 200
+        data = response.json()
+        assert data["remaining_seconds"] is None
         assert "formatted_time" in data
 
+    def test_returns_404_for_unknown_session(self, client):
+        """Non-existent session returns 404."""
+        with patch(ENGINE_PATH) as mock_engine:
+            mock_engine.get_session_data = AsyncMock(return_value=None)
+            response = client.get("/api/v1/osym-exam/ghost/remaining-time")
+        assert response.status_code == 404
+
+    def test_returns_403_for_wrong_user(self, client):
+        """Session owned by another user returns 403."""
+        session = _make_session(student_id=OTHER_USER_ID)
+        with patch(ENGINE_PATH) as mock_engine:
+            mock_engine.get_session_data = AsyncMock(return_value=session)
+            response = client.get(f"/api/v1/osym-exam/{TEST_SESSION_ID}/remaining-time")
+        assert response.status_code == 403
+
     @pytest.mark.parametrize(
-        "seconds,expected_warning", [(900, True), (1800, False), (300, True)]
+        "remaining_seconds,expected_warning",
+        [(900, True), (1800, False), (300, True), (9900, False)],
     )
-    @patch("api.sinav.get_current_user")
-    @patch("api.sinav.osym_exam_engine")
-    def test_get_remaining_time_warning(
-        self,
-        mock_engine,
-        mock_auth,
-        client,
-        mock_current_user,
-        mock_session_data_in_progress,
-        seconds,
-        expected_warning,
+    def test_warning_threshold_parametrized(
+        self, client, remaining_seconds, expected_warning
     ):
-        """Test warning flag for remaining time"""
-        mock_auth.return_value = mock_current_user
-        mock_engine.get_session_data = AsyncMock(
-            return_value=mock_session_data_in_progress
-        )
-        mock_engine.get_remaining_time = AsyncMock(return_value=seconds)
-
-        response = client.get(
-            f"/api/v1/osym-exam/{mock_session_data_in_progress.session_id}/remaining-time",
-            headers={"Authorization": "Bearer test-token"},
-        )
-
+        """Warning boundary: True below 15 min threshold, False above."""
+        session = _make_in_progress_session()
+        with patch(ENGINE_PATH) as mock_engine:
+            mock_engine.get_session_data = AsyncMock(return_value=session)
+            mock_engine.get_remaining_time = AsyncMock(return_value=remaining_seconds)
+            response = client.get(f"/api/v1/osym-exam/{TEST_SESSION_ID}/remaining-time")
         assert response.status_code == 200
         assert response.json()["warning"] == expected_warning
 
 
-# ==================== COMPLETE EXAM TESTS (30+ tests) ====================
+# ===========================================================================
+# 10. POST /{session_id}/complete
+# ===========================================================================
 
 
 class TestCompleteExam:
-    """Test POST /api/v1/osym-exam/{session_id}/complete endpoint"""
+    """Tests for POST /api/v1/osym-exam/{session_id}/complete.
 
-    @patch("api.sinav.get_current_user")
-    @patch("api.sinav.osym_exam_engine")
-    def test_complete_exam_success(
-        self,
-        mock_engine,
-        mock_auth,
-        client,
-        mock_current_user,
-        mock_session_data_in_progress,
-    ):
-        """Test completing exam successfully"""
-        mock_auth.return_value = mock_current_user
+    NOTE: Like start_exam, this endpoint does NOT have `except HTTPException: raise`,
+    so HTTPException(404/403) raised inside the try-block is caught by
+    `except Exception` and converted to 500. Tests document actual behaviour.
+    """
 
-        performance = ExamPerformanceMetrics(
-            total_questions=120,
-            answered_questions=115,
-            correct_answers=85,
-            wrong_answers=30,
-            empty_answers=5,
-            net_score=77.5,
-            raw_score=70.8,
-            percentile=75.5,
-            estimated_ability=1.2,
-            confidence_level=0.95,
-        )
-
-        mock_engine.get_session_data = AsyncMock(
-            return_value=mock_session_data_in_progress
-        )
-        mock_engine.complete_exam = AsyncMock(return_value=performance)
-
-        response = client.post(
-            f"/api/v1/osym-exam/{mock_session_data_in_progress.session_id}/complete",
-            headers={"Authorization": "Bearer test-token"},
-        )
-
+    def test_completes_exam_and_returns_full_metrics(self, client):
+        """Completing exam returns PerformanceResponse with all metric fields."""
+        session = _make_in_progress_session()
+        metrics = _make_performance()
+        with patch(ENGINE_PATH) as mock_engine:
+            mock_engine.get_session_data = AsyncMock(return_value=session)
+            mock_engine.complete_exam = AsyncMock(return_value=metrics)
+            # Suppress the fire-and-forget event service call
+            with patch("core.database.get_db_session_context") as mock_ctx:
+                mock_db = AsyncMock()
+                mock_ctx.return_value.__aenter__ = AsyncMock(return_value=mock_db)
+                mock_ctx.return_value.__aexit__ = AsyncMock(return_value=False)
+                response = client.post(f"/api/v1/osym-exam/{TEST_SESSION_ID}/complete")
         assert response.status_code == 200
         data = response.json()
-        assert data["net_score"] == 77.5
+        assert data["total_questions"] == 120
         assert data["correct_answers"] == 85
+        assert data["net_score"] == pytest.approx(77.5)
+        assert data["estimated_ability"] == pytest.approx(1.2)
+        assert data["confidence_level"] == pytest.approx(0.95)
 
-    @patch("api.sinav.get_current_user")
-    @patch("api.sinav.osym_exam_engine")
-    def test_complete_exam_already_completed(
-        self,
-        mock_engine,
-        mock_auth,
-        client,
-        mock_current_user,
-        mock_session_data_completed,
-    ):
-        """Test completing already completed exam"""
-        mock_auth.return_value = mock_current_user
-        mock_engine.get_session_data = AsyncMock(
-            return_value=mock_session_data_completed
-        )
-        mock_engine.complete_exam = AsyncMock(
-            side_effect=ValueError("Sınav zaten tamamlanmış")
-        )
+    @pytest.mark.xfail(
+        reason="BUG: missing 'except HTTPException: raise' — 404 swallowed into 500",
+        strict=True,
+    )
+    def test_returns_404_when_session_not_found(self, client):
+        """Non-existent session should return 404, but gets swallowed to 500."""
+        with patch(ENGINE_PATH) as mock_engine:
+            mock_engine.get_session_data = AsyncMock(return_value=None)
+            response = client.post("/api/v1/osym-exam/ghost/complete")
+        assert response.status_code == 404
 
-        response = client.post(
-            f"/api/v1/osym-exam/{mock_session_data_completed.session_id}/complete",
-            headers={"Authorization": "Bearer test-token"},
-        )
+    @pytest.mark.xfail(
+        reason="BUG: missing 'except HTTPException: raise' — 403 swallowed into 500",
+        strict=True,
+    )
+    def test_returns_403_for_wrong_user(self, client):
+        """Wrong-owner session should return 403, but gets swallowed to 500."""
+        session = _make_session(student_id=OTHER_USER_ID)
+        with patch(ENGINE_PATH) as mock_engine:
+            mock_engine.get_session_data = AsyncMock(return_value=session)
+            response = client.post(f"/api/v1/osym-exam/{TEST_SESSION_ID}/complete")
+        assert response.status_code == 403
 
+    def test_returns_400_on_value_error_from_engine(self, client):
+        """ValueError from complete_exam (already completed) maps to 400."""
+        session = _make_session(status=ExamStatus.COMPLETED)
+        with patch(ENGINE_PATH) as mock_engine:
+            mock_engine.get_session_data = AsyncMock(return_value=session)
+            mock_engine.complete_exam = AsyncMock(
+                side_effect=ValueError("Sinav zaten tamamlandi")
+            )
+            response = client.post(f"/api/v1/osym-exam/{TEST_SESSION_ID}/complete")
         assert response.status_code == 400
-
-
-# ==================== GET SESSION INFO TESTS (20+ tests) ====================
-
-
-class TestGetSessionInfo:
-    """Test GET /api/v1/osym-exam/{session_id}/session endpoint"""
-
-    @patch("api.sinav.get_current_user")
-    @patch("api.sinav.osym_exam_engine")
-    def test_get_session_info_success(
-        self,
-        mock_engine,
-        mock_auth,
-        client,
-        mock_current_user,
-        mock_session_data_in_progress,
-    ):
-        """Test getting session info successfully"""
-        mock_auth.return_value = mock_current_user
-        mock_engine.get_session_data = AsyncMock(
-            return_value=mock_session_data_in_progress
-        )
-
-        response = client.get(
-            f"/api/v1/osym-exam/{mock_session_data_in_progress.session_id}/session",
-            headers={"Authorization": "Bearer test-token"},
-        )
-
-        assert response.status_code == 200
-        data = response.json()
-        assert data["session_id"] == mock_session_data_in_progress.session_id
-        assert data["status"] == "in_progress"
-
-
-# ==================== GET PERFORMANCE TESTS (20+ tests) ====================
-
-
-class TestGetPerformance:
-    """Test GET /api/v1/osym-exam/{session_id}/performance endpoint"""
-
-    @patch("api.sinav.get_current_user")
-    @patch("api.sinav.osym_exam_engine")
-    def test_get_performance_success(
-        self,
-        mock_engine,
-        mock_auth,
-        client,
-        mock_current_user,
-        mock_session_data_completed,
-    ):
-        """Test getting performance for completed exam"""
-        mock_auth.return_value = mock_current_user
-        mock_engine.get_session_data = AsyncMock(
-            return_value=mock_session_data_completed
-        )
-
-        response = client.get(
-            f"/api/v1/osym-exam/{mock_session_data_completed.session_id}/performance",
-            headers={"Authorization": "Bearer test-token"},
-        )
-
-        assert response.status_code == 200
-        data = response.json()
-        assert data["net_score"] == 77.5
-
-    @patch("api.sinav.get_current_user")
-    @patch("api.sinav.osym_exam_engine")
-    def test_get_performance_not_completed(
-        self,
-        mock_engine,
-        mock_auth,
-        client,
-        mock_current_user,
-        mock_session_data_in_progress,
-    ):
-        """Test getting performance for incomplete exam"""
-        mock_auth.return_value = mock_current_user
-        mock_session_data_in_progress.performance_metrics = None
-        mock_engine.get_session_data = AsyncMock(
-            return_value=mock_session_data_in_progress
-        )
-
-        response = client.get(
-            f"/api/v1/osym-exam/{mock_session_data_in_progress.session_id}/performance",
-            headers={"Authorization": "Bearer test-token"},
-        )
-
-        assert response.status_code == 400
-
-
-# ==================== GET SUBJECT PERFORMANCE TESTS (20+ tests) ====================
-
-
-class TestGetSubjectPerformance:
-    """Test GET /api/v1/osym-exam/{session_id}/subject-performance endpoint"""
-
-    @patch("api.sinav.get_current_user")
-    @patch("api.sinav.osym_exam_engine")
-    def test_get_subject_performance_success(
-        self,
-        mock_engine,
-        mock_auth,
-        client,
-        mock_current_user,
-        mock_session_data_completed,
-    ):
-        """Test getting subject performance successfully"""
-        mock_auth.return_value = mock_current_user
-
-        subject_perfs = [
-            SubjectPerformance(
-                subject="MATEMATIK",
-                total_questions=40,
-                correct_answers=28,
-                wrong_answers=10,
-                empty_answers=2,
-                success_rate=70.0,
-                average_response_time=65.5,
-                difficulty_level=0.8,
-            ),
-            SubjectPerformance(
-                subject="TURKCE",
-                total_questions=40,
-                correct_answers=30,
-                wrong_answers=8,
-                empty_answers=2,
-                success_rate=75.0,
-                average_response_time=55.0,
-                difficulty_level=0.7,
-            ),
-        ]
-
-        mock_engine.get_session_data = AsyncMock(
-            return_value=mock_session_data_completed
-        )
-        mock_engine.get_subject_performance = AsyncMock(return_value=subject_perfs)
-
-        response = client.get(
-            f"/api/v1/osym-exam/{mock_session_data_completed.session_id}/subject-performance",
-            headers={"Authorization": "Bearer test-token"},
-        )
-
-        assert response.status_code == 200
-        data = response.json()
-        assert len(data) == 2
-        assert data[0]["subject"] == "MATEMATIK"
-
-
-# ==================== GET MY EXAMS TESTS (30+ tests) ====================
-
-
-class TestGetMyExams:
-    """Test GET /api/v1/osym-exam/my-exams endpoint"""
-
-    @patch("api.sinav.get_current_user")
-    @patch("api.sinav.osym_exam_engine")
-    def test_get_my_exams_success(
-        self, mock_engine, mock_auth, client, mock_current_user, mock_session_data_tyt
-    ):
-        """Test getting user's exams successfully"""
-        mock_auth.return_value = mock_current_user
-        mock_engine.active_sessions = {
-            mock_session_data_tyt.session_id: mock_session_data_tyt
-        }
-
-        response = client.get(
-            "/api/v1/osym-exam/my-exams", headers={"Authorization": "Bearer test-token"}
-        )
-
-        assert response.status_code == 200
-        data = response.json()
-        assert isinstance(data, list)
-
-    @pytest.mark.parametrize("limit,offset", [(10, 0), (20, 10), (5, 15)])
-    @patch("api.sinav.get_current_user")
-    @patch("api.sinav.osym_exam_engine")
-    def test_get_my_exams_pagination(
-        self, mock_engine, mock_auth, client, mock_current_user, limit, offset
-    ):
-        """Test pagination for my exams"""
-        mock_auth.return_value = mock_current_user
-        mock_engine.active_sessions = {}
-
-        response = client.get(
-            f"/api/v1/osym-exam/my-exams?limit={limit}&offset={offset}",
-            headers={"Authorization": "Bearer test-token"},
-        )
-
-        assert response.status_code == 200
-
-
-# ==================== GET EXAM CONFIGS TESTS (20+ tests) ====================
-
-
-class TestGetExamConfigs:
-    """Test GET /api/v1/osym-exam/exam-configs endpoint"""
-
-    @patch("api.sinav.osym_exam_engine")
-    def test_get_exam_configs_success(
-        self,
-        mock_engine,
-        client,
-        mock_exam_config_tyt,
-        mock_exam_config_ayt,
-        mock_exam_config_ydt,
-    ):
-        """Test getting exam configurations"""
-        mock_engine.exam_configs = {
-            ExamType.TYT: mock_exam_config_tyt,
-            ExamType.AYT: mock_exam_config_ayt,
-            ExamType.YDT: mock_exam_config_ydt,
-        }
-
-        response = client.get("/api/v1/osym-exam/exam-configs")
-
-        assert response.status_code == 200
-        data = response.json()
-        assert "exam_configs" in data
-        assert "tyt" in data["exam_configs"]
-
-
-# ==================== CANCEL EXAM TESTS (30+ tests) ====================
-
-
-class TestCancelExam:
-    """Test DELETE /api/v1/osym-exam/{session_id} endpoint"""
-
-    @patch("api.sinav.get_current_user")
-    @patch("api.sinav.osym_exam_engine")
-    def test_cancel_exam_success(
-        self, mock_engine, mock_auth, client, mock_current_user, mock_session_data_tyt
-    ):
-        """Test canceling exam successfully"""
-        mock_auth.return_value = mock_current_user
-        mock_engine.get_session_data = AsyncMock(return_value=mock_session_data_tyt)
-        mock_engine.auto_save_tasks = {}
-
-        response = client.delete(
-            f"/api/v1/osym-exam/{mock_session_data_tyt.session_id}",
-            headers={"Authorization": "Bearer test-token"},
-        )
-
-        assert response.status_code == 200
-        assert response.json()["success"] is True
-
-    @patch("api.sinav.get_current_user")
-    @patch("api.sinav.osym_exam_engine")
-    def test_cancel_exam_already_completed(
-        self,
-        mock_engine,
-        mock_auth,
-        client,
-        mock_current_user,
-        mock_session_data_completed,
-    ):
-        """Test canceling completed exam"""
-        mock_auth.return_value = mock_current_user
-        mock_engine.get_session_data = AsyncMock(
-            return_value=mock_session_data_completed
-        )
-
-        response = client.delete(
-            f"/api/v1/osym-exam/{mock_session_data_completed.session_id}",
-            headers={"Authorization": "Bearer test-token"},
-        )
-
-        assert response.status_code == 400
-
-
-# ==================== ADDITIONAL CREATE EXAM TESTS ====================
-
-
-class TestCreateExamExtended:
-    """Extended tests for exam creation with more scenarios"""
-
-    @pytest.mark.parametrize(
-        "student_id", ["student1", "student2", "student3", "student4", "student5"]
-    )
-    @patch("api.sinav.get_current_user")
-    @patch("api.sinav.osym_exam_engine")
-    def test_create_exam_multiple_students(
-        self, mock_engine, mock_auth, client, mock_session_data_tyt, student_id
-    ):
-        """Test exam creation for multiple different students"""
-        mock_auth.return_value = {"user_id": student_id, "role": "student"}
-        mock_session_data_tyt.student_id = student_id
-        mock_engine.create_exam_session = AsyncMock(
-            return_value=mock_session_data_tyt.session_id
-        )
-        mock_engine.get_session_data = AsyncMock(return_value=mock_session_data_tyt)
-
-        response = client.post(
-            "/api/v1/osym-exam/create",
-            json={"exam_type": "tyt"},
-            headers={"Authorization": "Bearer test-token"},
-        )
-
-        assert response.status_code == 200
-
-    @pytest.mark.parametrize(
-        "turkce,matematik,fen,sosyal",
-        [
-            (40, 40, 20, 20),
-            (45, 35, 20, 20),
-            (38, 42, 20, 20),
-            (40, 40, 25, 15),
-            (40, 40, 15, 25),
-        ],
-    )
-    @patch("api.sinav.get_current_user")
-    @patch("api.sinav.osym_exam_engine")
-    def test_create_exam_custom_subject_distribution(
-        self,
-        mock_engine,
-        mock_auth,
-        client,
-        mock_current_user,
-        mock_session_data_tyt,
-        turkce,
-        matematik,
-        fen,
-        sosyal,
-    ):
-        """Test exam creation with custom subject distributions"""
-        mock_auth.return_value = mock_current_user
-        mock_engine.create_exam_session = AsyncMock(
-            return_value=mock_session_data_tyt.session_id
-        )
-        mock_engine.get_session_data = AsyncMock(return_value=mock_session_data_tyt)
-
-        response = client.post(
-            "/api/v1/osym-exam/create",
-            json={
-                "exam_type": "tyt",
-                "custom_config": {
-                    "subject_distribution": {
-                        "TURKCE": turkce,
-                        "MATEMATIK": matematik,
-                        "FEN": fen,
-                        "SOSYAL": sosyal,
-                    }
-                },
-            },
-            headers={"Authorization": "Bearer test-token"},
-        )
-
-        assert response.status_code == 200
-
-    @pytest.mark.parametrize("hour", range(24))
-    @patch("api.sinav.get_current_user")
-    @patch("api.sinav.osym_exam_engine")
-    def test_create_exam_different_times(
-        self,
-        mock_engine,
-        mock_auth,
-        client,
-        mock_current_user,
-        mock_session_data_tyt,
-        hour,
-    ):
-        """Test exam creation at different times of day"""
-        mock_auth.return_value = mock_current_user
-        mock_engine.create_exam_session = AsyncMock(
-            return_value=mock_session_data_tyt.session_id
-        )
-        mock_engine.get_session_data = AsyncMock(return_value=mock_session_data_tyt)
-
-        response = client.post(
-            "/api/v1/osym-exam/create",
-            json={"exam_type": "tyt"},
-            headers={"Authorization": "Bearer test-token"},
-        )
-
-        assert response.status_code == 200
-
-
-# ==================== ADDITIONAL START EXAM TESTS ====================
-
-
-class TestStartExamExtended:
-    """Extended tests for starting exams"""
-
-    @pytest.mark.parametrize("delay_minutes", [0, 1, 5, 10, 30, 60])
-    @patch("api.sinav.get_current_user")
-    @patch("api.sinav.osym_exam_engine")
-    def test_start_exam_various_delays(
-        self,
-        mock_engine,
-        mock_auth,
-        client,
-        mock_current_user,
-        mock_session_data_tyt,
-        delay_minutes,
-    ):
-        """Test starting exam after various delays"""
-        mock_auth.return_value = mock_current_user
-
-        started_session = mock_session_data_tyt
-        started_session.status = ExamStatus.IN_PROGRESS
-        started_session.started_at = datetime.now()
-
-        mock_engine.get_session_data = AsyncMock(return_value=mock_session_data_tyt)
-        mock_engine.start_exam = AsyncMock(return_value=started_session)
-
-        response = client.post(
-            f"/api/v1/osym-exam/{mock_session_data_tyt.session_id}/start",
-            headers={"Authorization": "Bearer test-token"},
-        )
-
-        assert response.status_code == 200
-
-    @pytest.mark.parametrize("session_count", [1, 2, 3, 5, 10])
-    @patch("api.sinav.get_current_user")
-    @patch("api.sinav.osym_exam_engine")
-    def test_start_multiple_sessions(
-        self, mock_engine, mock_auth, client, mock_current_user, session_count
-    ):
-        """Test starting multiple exam sessions"""
-        mock_auth.return_value = mock_current_user
-
-        for _ in range(session_count):
-            session_data = ExamSessionData(
-                session_id=str(uuid4()),
-                student_id=mock_current_user["user_id"],
-                exam_config=OSYMExamConfig(
-                    exam_type=ExamType.TYT,
-                    total_questions=120,
-                    duration_minutes=165,
-                    subject_distribution={"TURKCE": 40},
-                ),
-                status=ExamStatus.NOT_STARTED,
-                questions=[str(uuid4()) for _ in range(120)],
-            )
-
-            started = session_data
-            started.status = ExamStatus.IN_PROGRESS
-            started.started_at = datetime.now()
-
-            mock_engine.get_session_data = AsyncMock(return_value=session_data)
-            mock_engine.start_exam = AsyncMock(return_value=started)
-
-            response = client.post(
-                f"/api/v1/osym-exam/{session_data.session_id}/start",
-                headers={"Authorization": "Bearer test-token"},
-            )
-
-            assert response.status_code == 200
-
-
-# ==================== ADDITIONAL ANSWER TESTS ====================
-
-
-class TestSaveAnswerExtended:
-    """Extended tests for saving answers"""
-
-    @pytest.mark.parametrize("question_num", range(120))
-    @patch("api.sinav.get_current_user")
-    @patch("api.sinav.osym_exam_engine")
-    def test_save_answer_all_questions(
-        self,
-        mock_engine,
-        mock_auth,
-        client,
-        mock_current_user,
-        mock_session_data_in_progress,
-        question_num,
-    ):
-        """Test saving answers for all 120 TYT questions"""
-        mock_auth.return_value = mock_current_user
-        mock_engine.get_session_data = AsyncMock(
-            return_value=mock_session_data_in_progress
-        )
-        mock_engine.save_answer = AsyncMock(return_value=True)
-
-        response = client.post(
-            f"/api/v1/osym-exam/{mock_session_data_in_progress.session_id}/save-answer",
-            json={
-                "question_id": mock_session_data_in_progress.questions[question_num],
-                "selected_answer": "A",
-                "response_time": 30.0,
-            },
-            headers={"Authorization": "Bearer test-token"},
-        )
-
-        assert response.status_code == 200
-
-    @pytest.mark.parametrize(
-        "answer_sequence",
-        [
-            ["A", "B", "C", "D", "E"],
-            ["A", "A", "A", "A", "A"],
-            ["E", "D", "C", "B", "A"],
-            [None, "A", None, "B", None],
-            ["A", "B", "A", "B", "A"],
-        ],
-    )
-    @patch("api.sinav.get_current_user")
-    @patch("api.sinav.osym_exam_engine")
-    def test_save_answer_patterns(
-        self,
-        mock_engine,
-        mock_auth,
-        client,
-        mock_current_user,
-        mock_session_data_in_progress,
-        answer_sequence,
-    ):
-        """Test various answer patterns"""
-        mock_auth.return_value = mock_current_user
-        mock_engine.get_session_data = AsyncMock(
-            return_value=mock_session_data_in_progress
-        )
-        mock_engine.save_answer = AsyncMock(return_value=True)
-
-        for idx, answer in enumerate(answer_sequence):
-            response = client.post(
-                f"/api/v1/osym-exam/{mock_session_data_in_progress.session_id}/save-answer",
-                json={
-                    "question_id": mock_session_data_in_progress.questions[idx],
-                    "selected_answer": answer,
-                    "response_time": 30.0,
-                },
-                headers={"Authorization": "Bearer test-token"},
-            )
-            assert response.status_code == 200
-
-    @pytest.mark.parametrize(
-        "response_time", [5, 10, 15, 20, 25, 30, 45, 60, 90, 120, 180]
-    )
-    @patch("api.sinav.get_current_user")
-    @patch("api.sinav.osym_exam_engine")
-    def test_save_answer_response_time_variations(
-        self,
-        mock_engine,
-        mock_auth,
-        client,
-        mock_current_user,
-        mock_session_data_in_progress,
-        response_time,
-    ):
-        """Test saving answers with various response times"""
-        mock_auth.return_value = mock_current_user
-        mock_engine.get_session_data = AsyncMock(
-            return_value=mock_session_data_in_progress
-        )
-        mock_engine.save_answer = AsyncMock(return_value=True)
-
-        response = client.post(
-            f"/api/v1/osym-exam/{mock_session_data_in_progress.session_id}/save-answer",
-            json={
-                "question_id": str(uuid4()),
-                "selected_answer": "A",
-                "response_time": response_time,
-            },
-            headers={"Authorization": "Bearer test-token"},
-        )
-
-        assert response.status_code == 200
-
-
-# ==================== ADDITIONAL NAVIGATION TESTS ====================
-
-
-class TestNavigateExtended:
-    """Extended tests for question navigation"""
-
-    @pytest.mark.parametrize(
-        "start,end", [(0, 10), (10, 20), (20, 30), (30, 40), (40, 50)]
-    )
-    @patch("api.sinav.get_current_user")
-    @patch("api.sinav.osym_exam_engine")
-    def test_navigate_sequential_ranges(
-        self,
-        mock_engine,
-        mock_auth,
-        client,
-        mock_current_user,
-        mock_session_data_in_progress,
-        mock_question,
-        start,
-        end,
-    ):
-        """Test navigating through sequential question ranges"""
-        mock_auth.return_value = mock_current_user
-        mock_engine.get_session_data = AsyncMock(
-            return_value=mock_session_data_in_progress
-        )
-        mock_engine.navigate_to_question = AsyncMock(return_value=mock_question)
-
-        for idx in range(start, end):
-            response = client.post(
-                f"/api/v1/osym-exam/{mock_session_data_in_progress.session_id}/navigate",
-                json={"question_index": idx},
-                headers={"Authorization": "Bearer test-token"},
-            )
-            assert response.status_code == 200
-
-    @pytest.mark.parametrize(
-        "jump_pattern",
-        [
-            [0, 50, 25, 75, 100],
-            [119, 0, 60, 30, 90],
-            [10, 20, 30, 40, 50],
-            [100, 80, 60, 40, 20],
-        ],
-    )
-    @patch("api.sinav.get_current_user")
-    @patch("api.sinav.osym_exam_engine")
-    def test_navigate_jump_patterns(
-        self,
-        mock_engine,
-        mock_auth,
-        client,
-        mock_current_user,
-        mock_session_data_in_progress,
-        mock_question,
-        jump_pattern,
-    ):
-        """Test various navigation jump patterns"""
-        mock_auth.return_value = mock_current_user
-        mock_engine.get_session_data = AsyncMock(
-            return_value=mock_session_data_in_progress
-        )
-        mock_engine.navigate_to_question = AsyncMock(return_value=mock_question)
-
-        for idx in jump_pattern:
-            response = client.post(
-                f"/api/v1/osym-exam/{mock_session_data_in_progress.session_id}/navigate",
-                json={"question_index": idx},
-                headers={"Authorization": "Bearer test-token"},
-            )
-            assert response.status_code == 200
-
-
-# ==================== ADDITIONAL FLAG TESTS ====================
-
-
-class TestFlagQuestionExtended:
-    """Extended tests for question flagging"""
-
-    @pytest.mark.parametrize("flag_count", [1, 5, 10, 20, 50])
-    @patch("api.sinav.get_current_user")
-    @patch("api.sinav.osym_exam_engine")
-    def test_flag_multiple_questions(
-        self,
-        mock_engine,
-        mock_auth,
-        client,
-        mock_current_user,
-        mock_session_data_in_progress,
-        flag_count,
-    ):
-        """Test flagging multiple questions"""
-        mock_auth.return_value = mock_current_user
-        mock_engine.get_session_data = AsyncMock(
-            return_value=mock_session_data_in_progress
-        )
-        mock_engine.flag_question = AsyncMock(return_value=True)
-
-        for i in range(flag_count):
-            response = client.post(
-                f"/api/v1/osym-exam/{mock_session_data_in_progress.session_id}/flag-question",
-                json={
-                    "question_id": mock_session_data_in_progress.questions[i],
-                    "flagged": True,
-                },
-                headers={"Authorization": "Bearer test-token"},
-            )
-            assert response.status_code == 200
-
-    @pytest.mark.parametrize(
-        "flag_sequence",
-        [
-            [True, False, True, False, True],
-            [True, True, False, False, True],
-            [False, True, False, True, False],
-        ],
-    )
-    @patch("api.sinav.get_current_user")
-    @patch("api.sinav.osym_exam_engine")
-    def test_flag_unflag_sequences(
-        self,
-        mock_engine,
-        mock_auth,
-        client,
-        mock_current_user,
-        mock_session_data_in_progress,
-        flag_sequence,
-    ):
-        """Test flag/unflag sequences"""
-        mock_auth.return_value = mock_current_user
-        mock_engine.get_session_data = AsyncMock(
-            return_value=mock_session_data_in_progress
-        )
-        mock_engine.flag_question = AsyncMock(return_value=True)
-
-        question_id = str(uuid4())
-        for flagged in flag_sequence:
-            response = client.post(
-                f"/api/v1/osym-exam/{mock_session_data_in_progress.session_id}/flag-question",
-                json={"question_id": question_id, "flagged": flagged},
-                headers={"Authorization": "Bearer test-token"},
-            )
-            assert response.status_code == 200
-
-
-# ==================== ADDITIONAL TIME TESTS ====================
-
-
-class TestRemainingTimeExtended:
-    """Extended tests for remaining time"""
-
-    @pytest.mark.parametrize(
-        "remaining_seconds",
-        [9900, 9000, 7200, 5400, 3600, 1800, 900, 600, 300, 60, 30, 10],
-    )
-    @patch("api.sinav.get_current_user")
-    @patch("api.sinav.osym_exam_engine")
-    def test_remaining_time_countdown(
-        self,
-        mock_engine,
-        mock_auth,
-        client,
-        mock_current_user,
-        mock_session_data_in_progress,
-        remaining_seconds,
-    ):
-        """Test remaining time at various points"""
-        mock_auth.return_value = mock_current_user
-        mock_engine.get_session_data = AsyncMock(
-            return_value=mock_session_data_in_progress
-        )
-        mock_engine.get_remaining_time = AsyncMock(return_value=remaining_seconds)
-
-        response = client.get(
-            f"/api/v1/osym-exam/{mock_session_data_in_progress.session_id}/remaining-time",
-            headers={"Authorization": "Bearer test-token"},
-        )
-
-        assert response.status_code == 200
-        assert response.json()["remaining_seconds"] == remaining_seconds
-
-
-# ==================== ADDITIONAL COMPLETE EXAM TESTS ====================
-
-
-class TestCompleteExamExtended:
-    """Extended tests for completing exams"""
 
     @pytest.mark.parametrize(
         "correct,wrong,empty",
-        [
-            (100, 20, 0),
-            (85, 30, 5),
-            (70, 40, 10),
-            (60, 50, 10),
-            (50, 60, 10),
-            (40, 70, 10),
-            (30, 80, 10),
-        ],
+        [(100, 20, 0), (85, 30, 5), (60, 50, 10), (30, 80, 10)],
     )
-    @patch("api.sinav.get_current_user")
-    @patch("api.sinav.osym_exam_engine")
-    def test_complete_exam_various_scores(
-        self,
-        mock_engine,
-        mock_auth,
-        client,
-        mock_current_user,
-        mock_session_data_in_progress,
-        correct,
-        wrong,
-        empty,
-    ):
-        """Test completing exam with various score distributions"""
-        mock_auth.return_value = mock_current_user
-
-        performance = ExamPerformanceMetrics(
+    def test_various_score_distributions(self, client, correct, wrong, empty):
+        """Exam completion works for different correct/wrong/empty distributions."""
+        session = _make_in_progress_session()
+        metrics = ExamPerformanceMetrics(
             total_questions=120,
             answered_questions=correct + wrong,
             correct_answers=correct,
             wrong_answers=wrong,
             empty_answers=empty,
-            net_score=correct - (wrong * 0.25),
-            raw_score=correct,
+            net_score=float(correct - wrong * 0.25),
+            raw_score=float(correct),
             percentile=50.0,
             estimated_ability=0.0,
             confidence_level=0.9,
         )
-
-        mock_engine.get_session_data = AsyncMock(
-            return_value=mock_session_data_in_progress
-        )
-        mock_engine.complete_exam = AsyncMock(return_value=performance)
-
-        response = client.post(
-            f"/api/v1/osym-exam/{mock_session_data_in_progress.session_id}/complete",
-            headers={"Authorization": "Bearer test-token"},
-        )
-
+        with patch(ENGINE_PATH) as mock_engine:
+            mock_engine.get_session_data = AsyncMock(return_value=session)
+            mock_engine.complete_exam = AsyncMock(return_value=metrics)
+            with patch("core.database.get_db_session_context") as mock_ctx:
+                mock_db = AsyncMock()
+                mock_ctx.return_value.__aenter__ = AsyncMock(return_value=mock_db)
+                mock_ctx.return_value.__aexit__ = AsyncMock(return_value=False)
+                response = client.post(f"/api/v1/osym-exam/{TEST_SESSION_ID}/complete")
         assert response.status_code == 200
         data = response.json()
         assert data["correct_answers"] == correct
         assert data["wrong_answers"] == wrong
 
 
-# ==================== SUMMARY STATISTICS ====================
+# ===========================================================================
+# 11. GET /{session_id}/session  (session info)
+# ===========================================================================
 
 
-def test_summary():
-    """Print test summary"""
-    print("\n" + "=" * 80)
-    print("ÖSYM EXAM API TEST SUMMARY")
-    print("=" * 80)
-    print("Total Test Classes: 21")
-    print("Estimated Total Tests: 570+ (with parametrization)")
-    print("Test Categories:")
-    print("  - Create Exam Tests: 100+")
-    print("  - Extended Create Exam: 50+")
-    print("  - Start Exam Tests: 80+")
-    print("  - Extended Start Exam: 20+")
-    print("  - Get Current Question Tests: 60+")
-    print("  - Save Answer Tests: 60+")
-    print("  - Extended Save Answer: 140+")
-    print("  - Navigate Question Tests: 50+")
-    print("  - Extended Navigate: 30+")
-    print("  - Flag Question Tests: 30+")
-    print("  - Extended Flag: 20+")
-    print("  - Remaining Time Tests: 20+")
-    print("  - Extended Time Tests: 12+")
-    print("  - Complete Exam Tests: 30+")
-    print("  - Extended Complete: 7+")
-    print("  - Session Info Tests: 20+")
-    print("  - Performance Tests: 20+")
-    print("  - Subject Performance Tests: 20+")
-    print("  - My Exams Tests: 30+")
-    print("  - Exam Configs Tests: 20+")
-    print("  - Cancel Exam Tests: 30+")
-    print("=" * 80)
-    print("Key Features Tested:")
-    print("  ✓ All exam types: TYT, AYT, YDT")
-    print("  ✓ Complete lifecycle: Create → Start → Answer → Navigate → Complete")
-    print("  ✓ Answer options: A, B, C, D, E, None (empty)")
-    print("  ✓ All 120 TYT questions individually")
-    print("  ✓ Various response times (5-180 seconds)")
-    print("  ✓ Multiple students and sessions")
-    print("  ✓ Custom configurations")
-    print("  ✓ Error conditions and edge cases")
-    print("  ✓ Authorization and access control")
-    print("  ✓ Performance metrics and analytics")
-    print("=" * 80)
+class TestGetSessionInfo:
+    """Tests for GET /api/v1/osym-exam/{session_id}/session"""
+
+    def test_returns_session_info_for_valid_session(self, client):
+        """Valid session returns ExamSessionResponse with all required fields."""
+        session = _make_in_progress_session()
+        with patch(ENGINE_PATH) as mock_engine:
+            mock_engine.get_session_data = AsyncMock(return_value=session)
+            response = client.get(f"/api/v1/osym-exam/{TEST_SESSION_ID}/session")
+        assert response.status_code == 200
+        data = response.json()
+        assert data["session_id"] == TEST_SESSION_ID
+        assert data["status"] == "in_progress"
+        assert data["total_questions"] == 120
+
+    def test_returns_404_when_session_not_found(self, client):
+        """Non-existent session returns 404."""
+        with patch(ENGINE_PATH) as mock_engine:
+            mock_engine.get_session_data = AsyncMock(return_value=None)
+            response = client.get("/api/v1/osym-exam/no-such/session")
+        assert response.status_code == 404
+
+    def test_returns_403_for_wrong_user(self, client):
+        """Session owned by another user returns 403."""
+        session = _make_session(student_id=OTHER_USER_ID)
+        with patch(ENGINE_PATH) as mock_engine:
+            mock_engine.get_session_data = AsyncMock(return_value=session)
+            response = client.get(f"/api/v1/osym-exam/{TEST_SESSION_ID}/session")
+        assert response.status_code == 403
+
+
+# ===========================================================================
+# 12. GET /{session_id}/performance
+# ===========================================================================
+
+
+class TestGetPerformanceAnalysis:
+    """Tests for GET /api/v1/osym-exam/{session_id}/performance"""
+
+    def test_returns_performance_for_completed_exam(self, client):
+        """Session with performance_metrics attached returns PerformanceResponse."""
+        session = _make_in_progress_session()
+        session.performance_metrics = _make_performance()
+        with patch(ENGINE_PATH) as mock_engine:
+            mock_engine.get_session_data = AsyncMock(return_value=session)
+            response = client.get(f"/api/v1/osym-exam/{TEST_SESSION_ID}/performance")
+        assert response.status_code == 200
+        data = response.json()
+        assert data["correct_answers"] == 85
+        assert data["net_score"] == pytest.approx(77.5)
+        assert data["percentile"] == pytest.approx(75.5)
+
+    def test_returns_400_when_no_performance_metrics(self, client):
+        """In-progress exam with no performance_metrics returns 400."""
+        session = _make_in_progress_session()
+        session.performance_metrics = None
+        with patch(ENGINE_PATH) as mock_engine:
+            mock_engine.get_session_data = AsyncMock(return_value=session)
+            response = client.get(f"/api/v1/osym-exam/{TEST_SESSION_ID}/performance")
+        assert response.status_code == 400
+
+    def test_returns_404_when_session_not_found(self, client):
+        """Non-existent session returns 404."""
+        with patch(ENGINE_PATH) as mock_engine:
+            mock_engine.get_session_data = AsyncMock(return_value=None)
+            response = client.get("/api/v1/osym-exam/ghost/performance")
+        assert response.status_code == 404
+
+    def test_returns_403_for_wrong_user(self, client):
+        """Session owned by another user returns 403."""
+        session = _make_session(student_id=OTHER_USER_ID)
+        with patch(ENGINE_PATH) as mock_engine:
+            mock_engine.get_session_data = AsyncMock(return_value=session)
+            response = client.get(f"/api/v1/osym-exam/{TEST_SESSION_ID}/performance")
+        assert response.status_code == 403
+
+
+# ===========================================================================
+# 13. GET /{session_id}/subject-performance
+# ===========================================================================
+
+
+class TestGetSubjectPerformance:
+    """Tests for GET /api/v1/osym-exam/{session_id}/subject-performance"""
+
+    def test_returns_per_subject_metrics(self, client):
+        """Returns list of SubjectPerformanceResponse with correct data."""
+        session = _make_in_progress_session()
+        math_perf = SubjectPerformance(
+            subject="MATEMATIK",
+            total_questions=40,
+            correct_answers=28,
+            wrong_answers=10,
+            empty_answers=2,
+            success_rate=70.0,
+            average_response_time=65.5,
+            difficulty_level=0.8,
+        )
+        with patch(ENGINE_PATH) as mock_engine:
+            mock_engine.get_session_data = AsyncMock(return_value=session)
+            mock_engine.get_subject_performance = AsyncMock(return_value=[math_perf])
+            response = client.get(
+                f"/api/v1/osym-exam/{TEST_SESSION_ID}/subject-performance"
+            )
+        assert response.status_code == 200
+        data = response.json()
+        assert isinstance(data, list)
+        assert len(data) == 1
+        assert data[0]["subject"] == "MATEMATIK"
+        assert data[0]["success_rate"] == pytest.approx(70.0)
+        assert data[0]["total_questions"] == 40
+
+    def test_returns_multiple_subjects(self, client):
+        """Multiple subjects are all returned in the list."""
+        session = _make_in_progress_session()
+        perfs = [
+            SubjectPerformance("MATEMATIK", 40, 28, 10, 2, 70.0, 65.5, 0.8),
+            SubjectPerformance("TURKCE", 40, 32, 6, 2, 80.0, 45.0, 0.6),
+        ]
+        with patch(ENGINE_PATH) as mock_engine:
+            mock_engine.get_session_data = AsyncMock(return_value=session)
+            mock_engine.get_subject_performance = AsyncMock(return_value=perfs)
+            response = client.get(
+                f"/api/v1/osym-exam/{TEST_SESSION_ID}/subject-performance"
+            )
+        assert response.status_code == 200
+        assert len(response.json()) == 2
+
+    def test_returns_404_when_session_not_found(self, client):
+        """Non-existent session returns 404."""
+        with patch(ENGINE_PATH) as mock_engine:
+            mock_engine.get_session_data = AsyncMock(return_value=None)
+            response = client.get("/api/v1/osym-exam/ghost/subject-performance")
+        assert response.status_code == 404
+
+
+# ===========================================================================
+# 14. DELETE /{session_id}  (cancel exam)
+# ===========================================================================
+
+
+class TestCancelExam:
+    """Tests for DELETE /api/v1/osym-exam/{session_id}"""
+
+    def test_cancels_not_started_exam_successfully(self, client):
+        """NOT_STARTED exam can be cancelled; returns success=True."""
+        session = _make_session(status=ExamStatus.NOT_STARTED)
+        with patch(ENGINE_PATH) as mock_engine:
+            mock_engine.get_session_data = AsyncMock(return_value=session)
+            mock_engine.auto_save_tasks = {}
+            mock_engine.active_sessions = {TEST_SESSION_ID: session}
+            response = client.delete(f"/api/v1/osym-exam/{TEST_SESSION_ID}")
+        assert response.status_code == 200
+        data = response.json()
+        assert data["success"] is True
+        assert data["session_id"] == TEST_SESSION_ID
+
+    def test_cancels_in_progress_exam_successfully(self, client):
+        """IN_PROGRESS exam can also be cancelled."""
+        session = _make_in_progress_session()
+        with patch(ENGINE_PATH) as mock_engine:
+            mock_engine.get_session_data = AsyncMock(return_value=session)
+            mock_engine.auto_save_tasks = {}
+            mock_engine.active_sessions = {TEST_SESSION_ID: session}
+            response = client.delete(f"/api/v1/osym-exam/{TEST_SESSION_ID}")
+        assert response.status_code == 200
+        assert response.json()["success"] is True
+
+    def test_returns_400_when_exam_already_completed(self, client):
+        """COMPLETED exam cannot be cancelled a second time — returns 400."""
+        session = _make_session(status=ExamStatus.COMPLETED)
+        with patch(ENGINE_PATH) as mock_engine:
+            mock_engine.get_session_data = AsyncMock(return_value=session)
+            response = client.delete(f"/api/v1/osym-exam/{TEST_SESSION_ID}")
+        assert response.status_code == 400
+
+    def test_returns_400_when_exam_already_abandoned(self, client):
+        """ABANDONED exam cannot be cancelled again — returns 400."""
+        session = _make_session(status=ExamStatus.ABANDONED)
+        with patch(ENGINE_PATH) as mock_engine:
+            mock_engine.get_session_data = AsyncMock(return_value=session)
+            response = client.delete(f"/api/v1/osym-exam/{TEST_SESSION_ID}")
+        assert response.status_code == 400
+
+    def test_returns_404_when_session_not_found(self, client):
+        """Non-existent session returns 404."""
+        with patch(ENGINE_PATH) as mock_engine:
+            mock_engine.get_session_data = AsyncMock(return_value=None)
+            response = client.delete("/api/v1/osym-exam/nonexistent")
+        assert response.status_code == 404
+
+    def test_returns_403_for_wrong_user(self, client):
+        """Session owned by another user returns 403."""
+        session = _make_session(student_id=OTHER_USER_ID)
+        with patch(ENGINE_PATH) as mock_engine:
+            mock_engine.get_session_data = AsyncMock(return_value=session)
+            response = client.delete(f"/api/v1/osym-exam/{TEST_SESSION_ID}")
+        assert response.status_code == 403
+
+
+# ===========================================================================
+# 15. GET /{session_id}/unanswered-questions
+# ===========================================================================
+
+
+class TestGetUnansweredQuestions:
+    """Tests for GET /api/v1/osym-exam/{session_id}/unanswered-questions"""
+
+    def test_returns_unanswered_question_ids_and_count(self, client):
+        """Returns list of unanswered IDs, unanswered_count and total_questions."""
+        session = _make_in_progress_session()
+        session.questions = ["q1", "q2", "q3"]
+        with patch(ENGINE_PATH) as mock_engine:
+            mock_engine.get_session_data = AsyncMock(return_value=session)
+            mock_engine.get_unanswered_questions = AsyncMock(return_value=["q2", "q3"])
+            response = client.get(
+                f"/api/v1/osym-exam/{TEST_SESSION_ID}/unanswered-questions"
+            )
+        assert response.status_code == 200
+        data = response.json()
+        assert data["unanswered_count"] == 2
+        assert data["total_questions"] == 3
+        assert "q2" in data["unanswered_question_ids"]
+        assert "q3" in data["unanswered_question_ids"]
+        assert data["session_id"] == TEST_SESSION_ID
+
+    def test_returns_empty_list_when_all_answered(self, client):
+        """All questions answered results in unanswered_count=0 and empty list."""
+        session = _make_in_progress_session()
+        session.questions = ["q1", "q2"]
+        with patch(ENGINE_PATH) as mock_engine:
+            mock_engine.get_session_data = AsyncMock(return_value=session)
+            mock_engine.get_unanswered_questions = AsyncMock(return_value=[])
+            response = client.get(
+                f"/api/v1/osym-exam/{TEST_SESSION_ID}/unanswered-questions"
+            )
+        assert response.status_code == 200
+        data = response.json()
+        assert data["unanswered_count"] == 0
+        assert data["unanswered_question_ids"] == []
+
+    def test_returns_404_when_session_not_found(self, client):
+        """Non-existent session returns 404."""
+        with patch(ENGINE_PATH) as mock_engine:
+            mock_engine.get_session_data = AsyncMock(return_value=None)
+            response = client.get("/api/v1/osym-exam/ghost/unanswered-questions")
+        assert response.status_code == 404
+
+    def test_returns_403_for_wrong_user(self, client):
+        """Session owned by another user returns 403."""
+        session = _make_session(student_id=OTHER_USER_ID)
+        with patch(ENGINE_PATH) as mock_engine:
+            mock_engine.get_session_data = AsyncMock(return_value=session)
+            response = client.get(
+                f"/api/v1/osym-exam/{TEST_SESSION_ID}/unanswered-questions"
+            )
+        assert response.status_code == 403
+
+
+# ===========================================================================
+# 16. GET /{session_id}/completion-stats
+# ===========================================================================
+
+
+class TestGetCompletionStats:
+    """Tests for GET /api/v1/osym-exam/{session_id}/completion-stats"""
+
+    def test_returns_completion_statistics(self, client):
+        """Returns answered, unanswered and completion_percentage correctly."""
+        session = _make_in_progress_session()
+        stats = {
+            "total_questions": 120,
+            "answered_questions": 90,
+            "unanswered_questions": 30,
+            "completion_percentage": 75.0,
+        }
+        with patch(ENGINE_PATH) as mock_engine:
+            mock_engine.get_session_data = AsyncMock(return_value=session)
+            mock_engine.get_answer_statistics = AsyncMock(return_value=stats)
+            response = client.get(
+                f"/api/v1/osym-exam/{TEST_SESSION_ID}/completion-stats"
+            )
+        assert response.status_code == 200
+        data = response.json()
+        assert data["total_questions"] == 120
+        assert data["answered_questions"] == 90
+        assert data["unanswered_questions"] == 30
+        assert data["completion_percentage"] == pytest.approx(75.0)
+        assert data["session_id"] == TEST_SESSION_ID
+
+    def test_full_completion_shows_100_percent(self, client):
+        """100% completion is reported when all questions are answered."""
+        session = _make_in_progress_session()
+        stats = {
+            "total_questions": 120,
+            "answered_questions": 120,
+            "unanswered_questions": 0,
+            "completion_percentage": 100.0,
+        }
+        with patch(ENGINE_PATH) as mock_engine:
+            mock_engine.get_session_data = AsyncMock(return_value=session)
+            mock_engine.get_answer_statistics = AsyncMock(return_value=stats)
+            response = client.get(
+                f"/api/v1/osym-exam/{TEST_SESSION_ID}/completion-stats"
+            )
+        assert response.status_code == 200
+        assert response.json()["completion_percentage"] == pytest.approx(100.0)
+
+    def test_returns_404_when_session_not_found(self, client):
+        """Non-existent session returns 404."""
+        with patch(ENGINE_PATH) as mock_engine:
+            mock_engine.get_session_data = AsyncMock(return_value=None)
+            response = client.get("/api/v1/osym-exam/ghost/completion-stats")
+        assert response.status_code == 404
+
+    def test_returns_403_for_wrong_user(self, client):
+        """Session owned by another user returns 403."""
+        session = _make_session(student_id=OTHER_USER_ID)
+        with patch(ENGINE_PATH) as mock_engine:
+            mock_engine.get_session_data = AsyncMock(return_value=session)
+            response = client.get(
+                f"/api/v1/osym-exam/{TEST_SESSION_ID}/completion-stats"
+            )
+        assert response.status_code == 403

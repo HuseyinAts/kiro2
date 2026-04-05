@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 KIRO2 OCR API Endpoints
 ======================

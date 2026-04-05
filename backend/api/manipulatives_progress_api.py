@@ -9,7 +9,7 @@ from pydantic import BaseModel
 from datetime import datetime, timedelta, timezone
 
 from core.database import get_db
-from core.auth_dependencies import get_current_user
+from core.dependencies import get_current_user  # fixed: was auth_dependencies (no blacklist)
 from models.database import (
     User,
     ManipulativeProgress,

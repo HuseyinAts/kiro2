@@ -1,7 +1,12 @@
 """
 Basit kullanıcı yönetimi servisi
-SECURITY FIX: Strong password validation integrated
+
+⚠️  DEPRECATED: Bu servis IN-MEMORY çalışır. Her restart'ta veri sıfırlanır.
+Production auth: api/auth.py → database_authenticate() (PostgreSQL)
+Production parent: services/parent_service.py (PostgreSQL)
+Bu dosya SADECE test backward-compat için korunuyor. Yeni kod KULLANMAMALI.
 """
+import logging
 import secrets
 import uuid
 from datetime import datetime, timedelta
@@ -21,14 +26,25 @@ from models import (
 )
 from core.password_validator import PasswordValidator, PasswordValidationError
 
+_logger = logging.getLogger(__name__)
+
 # SECURITY FIX: bcrypt password hashing (replaces weak SHA-256)
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
 class KullaniciServisi:
-    """Basit kullanıcı yönetimi servisi - In-memory implementation"""
+    """⚠️ DEPRECATED — In-memory user service. Use DB-backed auth instead."""
+
+    _warned = False
 
     def __init__(self):
+        if not KullaniciServisi._warned:
+            _logger.warning(
+                "⚠️  KullaniciServisi IN-MEMORY başlatıldı. "
+                "Production'da auth.py/database_authenticate() kullanılmalı. "
+                "Bu servis sadece test backward-compat için var."
+            )
+            KullaniciServisi._warned = True
         # In-memory veri saklama (production'da database kullanılacak)
         self.kullanicilar: Dict[str, Kullanici] = {}
         self.sifreler: Dict[str, str] = {}  # kullanici_id -> hashed_password

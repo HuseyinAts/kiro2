@@ -18,7 +18,11 @@ from services.veli_service import VeliOnayTalebi, VeliRaporu, veli_servisi
 
 logger = logging.getLogger(__name__)
 
-router = APIRouter(prefix="/api/v1/veli", tags=["Veli Takip Sistemi"])
+router = APIRouter(
+    prefix="/api/v1/veli",
+    tags=["Veli Takip Sistemi (DEPRECATED)"],
+    deprecated=True,  # In-memory backend — use /api/v1/parent instead
+)
 security = HTTPBearer()
 
 
@@ -45,28 +49,41 @@ async def mevcut_veli_getir(
 
 
 @router.get("/cocuklar", summary="Çocuk Listesi")
-async def cocuk_listesi_getir(mevcut_veli: Kullanici = Depends(mevcut_veli_getir)):
+async def cocuk_listesi_getir(
+    mevcut_veli=Depends(mevcut_veli_getir),
+    db=Depends(__import__("core.database", fromlist=["get_db_session"]).get_db_session),
+):
     """
-    Velinin çocuklarının listesini getir
-
-    - **Döndürür**: Çocukların temel bilgileri ve durumları
+    Velinin çocuklarının listesini getir (DB-direct, in-memory bypass kaldırıldı)
     """
     try:
+        from sqlalchemy import text
         veli_id = mevcut_veli.kullanici_id
-        cocuklar = await veli_servisi.veli_cocuklarini_getir(veli_id)
-        return cocuklar  # doğrudan liste → HTTP 200
-
-    except ValueError as e:
-        logger.error(f"veli_cocuklarini_getir ValueError: {e}")
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=str(e),
+        result = await db.execute(
+            text("""
+                SELECT u.id, u.first_name, u.last_name, u.email
+                FROM parent_child pc
+                JOIN users u ON u.id = pc.child_id
+                WHERE pc.parent_id = :veli_id
+            """),
+            {"veli_id": veli_id},
         )
+        rows = result.fetchall()
+        cocuklar = [
+            {
+                "kullanici_id": str(r[0]),
+                "ad_soyad": f"{r[1] or ''} {r[2] or ''}".strip(),
+                "email": r[3],
+            }
+            for r in rows
+        ]
+        return {"success": True, "data": cocuklar, "message": f"{len(cocuklar)} çocuk bulundu"}
+
     except Exception as e:
-        logger.error(f"Unexpected error in cocuk_listesi_getir: {e}", exc_info=True)
+        logger.error(f"cocuk_listesi_getir hata: {e}", exc_info=True)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Çocuk listesi alınırken beklenmeyen hata oluştu",
+            detail="Çocuk listesi alınırken hata oluştu",
         )
 
 

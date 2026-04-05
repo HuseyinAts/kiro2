@@ -10,6 +10,8 @@ RUN apt-get update && apt-get install -y \
     gcc \
     g++ \
     curl \
+    espeak-ng \
+    espeak-ng-data \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy and install minimal Python dependencies

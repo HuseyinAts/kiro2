@@ -54,8 +54,14 @@ async def _async_refresh():
     ok = err = 0
 
     async with AsyncSess() as db:
+        # yks_exam_goals birincil kaynak; yoksa student_abilities fallback
         result = await db.execute(
-            text("SELECT DISTINCT student_id FROM student_abilities")
+            text("""
+                SELECT DISTINCT user_id::text FROM yks_exam_goals
+                UNION
+                SELECT DISTINCT student_id FROM student_abilities
+                  WHERE student_id NOT IN (SELECT user_id::text FROM yks_exam_goals)
+            """)
         )
         user_ids = [r[0] for r in result.fetchall()]
         logger.info(f"Planlanacak kullanici: {len(user_ids)}")

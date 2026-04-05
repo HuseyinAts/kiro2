@@ -73,6 +73,7 @@ export async function clearSessions() {
     method: 'DELETE',
     headers: getHeaders(),
     signal: AbortSignal.timeout(appConfig.api.timeout),
+    credentials: 'include',
   });
 
   if (!response.ok) {

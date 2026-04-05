@@ -11,7 +11,11 @@ from api.auth import mevcut_kullanici_getir
 from models import Kullanici, KullaniciRolu
 from services.ogretmen_service import ogretmen_servisi
 
-router = APIRouter(prefix="/api/v1/ogretmen", tags=["Öğretmen Paneli"])
+router = APIRouter(
+    prefix="/api/v1/ogretmen",
+    tags=["Öğretmen Paneli (DEPRECATED)"],
+    deprecated=True,  # In-memory backend — teacher_routes.py is DB-backed
+)
 
 
 class RaporParametreleri(BaseModel):

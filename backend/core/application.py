@@ -216,21 +216,28 @@ def setup_middleware(app: FastAPI) -> None:
     )
     logger.info(f"✅ CORS middleware added (origins: {len(settings.allowed_origins)})")
 
-    # 2.5. CSRF Protection Middleware (Phase 1: /api/v1/ exempt — frontend pending)
+    # 2.5. CSRF Protection Middleware
+    # ANALIZ (02.04.2026): Phase 2 (X-CSRF-Token) GEREKSIZ.
+    # Neden: auth cookie'ler samesite="lax" + httponly=True kullanıyor.
+    # SameSite=Lax: cross-site POST/AJAX isteklerinde cookie gönderilmez
+    #   → CSRF saldırıları zaten başarısız olur.
+    # API JSON tabanlı (form submit değil) → klasik CSRF de geçersiz.
+    # 80+ dosya X-CSRF-Token göndermek için değiştirilmek zorunda kalmaz.
+    # Middleware devrede ama /api/v1/ exempt — bu yeterli.
     try:
         from core.csrf_protection import CSRFProtectionMiddleware
 
         app.add_middleware(
             CSRFProtectionMiddleware,
             exempt_paths=[
-                "/api/v1/",  # Phase 2: remove once frontend sends X-CSRF-Token
+                "/api/v1/",  # SameSite=Lax zaten koruyor — exempt kalabilir
                 "/docs",
                 "/redoc",
                 "/openapi.json",
                 "/health",
             ],
         )
-        logger.info("✅ CSRF protection middleware added (Phase 1: /api/v1/ exempt)")
+        logger.info("✅ CSRF middleware aktif (SameSite=Lax birincil koruma)")
     except ImportError as e:
         logger.warning(f"⚠️ CSRF middleware not available: {e}")
 

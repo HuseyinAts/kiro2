@@ -114,7 +114,15 @@ class Settings:
 
         # Redis ayarları - centralized for all Redis consumers
         self.redis_url = os.getenv("REDIS_URL", "redis://localhost:6379/0")
-        self.redis_host = os.getenv("REDIS_HOST", "localhost")
+        # redis_host: REDIS_URL'den parse et, REDIS_HOST yoksa
+        _redis_host_env = os.getenv("REDIS_HOST")
+        if _redis_host_env:
+            self.redis_host = _redis_host_env
+        else:
+            # REDIS_URL'den host parse et: redis://host:port/db
+            import re as _re
+            _m = _re.match(r'redis://(?:[^@]+@)?([^:/]+)', self.redis_url)
+            self.redis_host = _m.group(1) if _m else "localhost"
         self.redis_port = int(os.getenv("REDIS_PORT", "6379"))
         self.redis_db = int(os.getenv("REDIS_DB", "0"))
         self.redis_password = os.getenv("REDIS_PASSWORD")
