@@ -47,8 +47,8 @@ DISABLED_ROUTERS = {
 
     # SECURITY STUBS — Tablolar eksik
     "api.ferpa_coppa_compliance_api",    # coppa_parental_consents yok
-    "api.kvkk_consent_api",             # kvkk_consents tablosu yok
-    "api.kvkk_privacy_api",             # kvkk_data_deletion_requests yok
+    "api.kvkk_consent_api",
+    "api.kvkk_privacy_api",
 
     # SEARCH — ChromaDB entegrasyonu tamamlanmadı
     "api.v1.semantic_search",
