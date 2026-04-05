@@ -226,7 +226,6 @@ export const ExamTimer: React.FC<ExamTimerProps> = ({
       try {
         audioRef.current.play();
       } catch (error) {
-        console.log('Ses çalınamadı:', error);
       }
     }
   };

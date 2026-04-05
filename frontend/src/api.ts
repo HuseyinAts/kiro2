@@ -877,7 +877,6 @@ export function createWebSocketConnection(options: WebSocketOptions) {
       ws = new WebSocket(wsURL);
 
       ws.onopen = () => {
-        console.log('✅ WebSocket connected');
         reconnectAttempts = 0; // Reset reconnect counter on successful connection
 
         // Start heartbeat
@@ -892,7 +891,6 @@ export function createWebSocketConnection(options: WebSocketOptions) {
 
           // Handle pong responses (heartbeat)
           if (data.type === 'pong') {
-            console.log('💓 WebSocket heartbeat: pong received');
             return;
           }
 
@@ -908,12 +906,6 @@ export function createWebSocketConnection(options: WebSocketOptions) {
       };
 
       ws.onclose = (event) => {
-        console.log('🔌 WebSocket disconnected', {
-          code: event.code,
-          reason: event.reason,
-          wasClean: event.wasClean,
-        });
-
         stopHeartbeat();
 
         if (onDisconnect) {onDisconnect();}
@@ -942,7 +934,6 @@ export function createWebSocketConnection(options: WebSocketOptions) {
 
     heartbeatTimer = setInterval(() => {
       if (ws && ws.readyState === WebSocket.OPEN) {
-        console.log('💓 WebSocket heartbeat: sending ping');
         ws.send(JSON.stringify({ type: 'ping' }));
       }
     }, heartbeatInterval);

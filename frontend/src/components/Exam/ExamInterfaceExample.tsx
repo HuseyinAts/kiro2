@@ -172,8 +172,6 @@ export const ExamInterfaceExample: React.FC = () => {
 
     // Simüle edilmiş kaydetme işlemi
     await new Promise(resolve => setTimeout(resolve, 500));
-
-    console.log('Cevaplar kaydedildi:', answers);
     setAutoSaveStatus('saved');
 
     setTimeout(() => setAutoSaveStatus('idle'), 2000);

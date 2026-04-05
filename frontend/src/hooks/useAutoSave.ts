@@ -78,9 +78,6 @@ export const useAutoSave = ({
       if (onSave) {
         onSave(true);
       }
-
-      console.log(`✅ ${itemsToSave.length} cevap otomatik kaydedildi`);
-
     } catch (error: any) {
       console.error('❌ Otomatik kaydetme hatası:', error);
 
@@ -125,9 +122,6 @@ export const useAutoSave = ({
       if (onSave) {
         onSave(true);
       }
-
-      console.log(`✅ Cevap hemen kaydedildi: Soru ${data.question_id}`);
-
     } catch (error: any) {
       console.error('❌ Hemen kaydetme hatası:', error);
 

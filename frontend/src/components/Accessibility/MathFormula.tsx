@@ -100,7 +100,6 @@ export const MathFormula: React.FC<MathFormulaProps> = ({
       startup: {
         pageReady: () => {
           return window.MathJax.startup.defaultPageReady().then(() => {
-            console.log('MathJax with accessibility features loaded');
             setIsLoaded(true);
           });
         },

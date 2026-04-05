@@ -535,7 +535,6 @@ export const ExamResults: React.FC<ExamResultsProps> = ({ sinavId, onRetake }) =
           startIcon={<Download />}
           onClick={() => {
             // PDF indirme işlevi
-            console.log('PDF indirme işlevi');
           }}
         >
           Raporu İndir
@@ -545,7 +544,6 @@ export const ExamResults: React.FC<ExamResultsProps> = ({ sinavId, onRetake }) =
           startIcon={<Share />}
           onClick={() => {
             // Paylaşma işlevi
-            console.log('Paylaşma işlevi');
           }}
         >
           Paylaş

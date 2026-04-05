@@ -105,24 +105,16 @@ export class PerformanceMonitor {
 
   private static logMetrics() {
     console.group('🚀 KIRO2 Performance Metrics');
-    console.log('📊 Navigation Start:', this.metrics.navigationStart, 'ms');
-    console.log('🎯 DOM Content Loaded:', this.metrics.domContentLoaded, 'ms');
-    console.log('✅ Load Complete:', this.metrics.loadComplete, 'ms');
-
     if (this.metrics.firstContentfulPaint) {
-      console.log('🎨 First Contentful Paint:', this.metrics.firstContentfulPaint, 'ms');
     }
 
     if (this.metrics.largestContentfulPaint) {
-      console.log('🖼️ Largest Contentful Paint:', this.metrics.largestContentfulPaint, 'ms');
     }
 
     if (this.metrics.firstInputDelay) {
-      console.log('⚡ First Input Delay:', this.metrics.firstInputDelay, 'ms');
     }
 
     if (this.metrics.cumulativeLayoutShift) {
-      console.log('📐 Cumulative Layout Shift:', this.metrics.cumulativeLayoutShift);
     }
 
     console.groupEnd();
@@ -136,7 +128,6 @@ export class PerformanceMonitor {
     // This is where you'd integrate with Google Analytics, Mixpanel, etc.
     if (process.env.NODE_ENV === 'production') {
       // Example: gtag('event', 'performance', metrics);
-      console.log('📈 Performance metrics would be sent to analytics:', metrics);
     }
   }
 
@@ -424,9 +415,6 @@ export class ServiceWorkerManager {
     try {
       const registration = await navigator.serviceWorker.register(swUrl);
       this.swRegistration = registration;
-
-      console.log('Service Worker registered successfully:', registration.scope);
-
       // Check for updates
       registration.addEventListener('updatefound', () => {
         const newWorker = registration.installing;

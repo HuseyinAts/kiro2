@@ -72,9 +72,6 @@ const FSRSScheduler: React.FC<FSRSSchedulerProps> = ({
       try {
         setLoading(true);
         setError(null);
-
-        console.log(`Loading FSRS data for student: ${studentId}, subject: ${subject}`);
-
         // Backend API'lerden veri çek
         const [dueCardsResult, _statisticsResult, recommendationsResult] = await Promise.all([
           fsrsService.getDueCards(studentId, 20),
@@ -212,8 +209,6 @@ const FSRSScheduler: React.FC<FSRSSchedulerProps> = ({
   // Kart incelemesi işle
   const handleReview = async (cardId: string, grade: 1 | 2 | 3 | 4) => {
     try {
-      console.log(`FSRS Review: Card ${cardId}, Grade ${grade}, Student ${studentId}`);
-
       // Backend API'ye inceleme gönder
       const reviewResult = await fsrsService.reviewFlashcard(studentId, {
         card_id: cardId,
@@ -229,8 +224,6 @@ const FSRSScheduler: React.FC<FSRSSchedulerProps> = ({
 
         // Başarı mesajı göster
         setError(null);
-
-        console.log('FSRS Review successful:', reviewResult.data);
       } else {
         // API hatası durumunda fallback
         console.warn('FSRS Review API failed, using fallback:', reviewResult.message);

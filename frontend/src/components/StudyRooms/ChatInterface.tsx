@@ -125,7 +125,6 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
     const ws = new WebSocket(wsUrl);
 
     ws.onopen = () => {
-      console.log('WebSocket connected');
       setWsConnection(ws);
     };
 
@@ -139,7 +138,6 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
     };
 
     ws.onclose = () => {
-      console.log('WebSocket disconnected');
     };
   };
 

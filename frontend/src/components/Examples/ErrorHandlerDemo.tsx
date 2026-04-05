@@ -33,7 +33,6 @@ export const ErrorHandlerDemo: React.FC = () => {
 
       // Auto-retry for recoverable errors
       if (isRecoverable(appError)) {
-        console.log('Recoverable error, will retry...');
         setTimeout(fetchData, 2000); // Retry after 2s
       }
     } finally {

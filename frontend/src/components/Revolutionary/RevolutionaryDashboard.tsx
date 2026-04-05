@@ -99,9 +99,6 @@ const RevolutionaryDashboard: React.FC<RevolutionaryDashboardProps> = ({ student
       try {
         setLoading(true);
         setError(null);
-
-        console.log(`Loading revolutionary dashboard data for student: ${studentId}`);
-
         // Import revolutionary features service
         const { revolutionaryFeaturesService } = await import('../../services/revolutionaryFeaturesService');
 
@@ -332,7 +329,6 @@ const RevolutionaryDashboard: React.FC<RevolutionaryDashboardProps> = ({ student
           <FSRSScheduler
             studentId={studentId}
             onScheduleUpdate={(schedules) => {
-              console.log('FSRS schedules updated:', schedules);
             }}
           />
         </TabPanel>
@@ -341,7 +337,6 @@ const RevolutionaryDashboard: React.FC<RevolutionaryDashboardProps> = ({ student
           <BionicReadingToggle
             studentId={studentId}
             onTextChange={(bionicText, isEnabled) => {
-              console.log('Bionic reading updated:', { bionicText, isEnabled });
             }}
           />
         </TabPanel>
@@ -354,7 +349,6 @@ const RevolutionaryDashboard: React.FC<RevolutionaryDashboardProps> = ({ student
           <MultiAgentCoordination
             studentId={studentId}
             onCoordinationUpdate={(coordination) => {
-              console.log('Multi-agent coordination updated:', coordination);
             }}
           />
         </TabPanel>
@@ -363,7 +357,6 @@ const RevolutionaryDashboard: React.FC<RevolutionaryDashboardProps> = ({ student
           <LearningStyleProfile
             studentId={studentId}
             onProfileUpdate={(profile) => {
-              console.log('Learning style profile updated:', profile);
             }}
           />
         </TabPanel>
@@ -372,7 +365,6 @@ const RevolutionaryDashboard: React.FC<RevolutionaryDashboardProps> = ({ student
           <ZPDMaarifDashboard
             studentId={studentId}
             onZPDUpdate={(zpd) => {
-              console.log('ZPD Maarif updated:', zpd);
             }}
           />
         </TabPanel>
@@ -382,7 +374,6 @@ const RevolutionaryDashboard: React.FC<RevolutionaryDashboardProps> = ({ student
             studentId={studentId}
             onSettingsChange={(newSettings) => {
               setSettings(newSettings);
-              console.log('Revolutionary settings updated:', newSettings);
             }}
           />
         </TabPanel>

@@ -117,7 +117,6 @@ export const useDyslexiaSettings = () => {
         }
 
         setFontsLoaded(true);
-        console.log('Disleksi fontları başarıyla yüklendi');
       } catch (error) {
         console.warn('Font yükleme hatası:', error);
         // Fontlar yüklenemese bile devam et

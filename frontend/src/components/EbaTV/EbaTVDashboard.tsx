@@ -153,11 +153,9 @@ export const EbaTVDashboard: React.FC = () => {
   };
 
   const handleVideoProgress = (progress: number) => {
-    console.log('Video progress:', progress);
   };
 
   const handleVideoComplete = () => {
-    console.log('Video completed');
     // Video tamamlandığında yapılacak işlemler
   };
 

@@ -306,7 +306,6 @@ export function ModernLearningPathPage() {
           body: JSON.stringify({ question_ids: wrongIds, error_types: errorTypes, is_timeout: results.isTimeout }),
         });
         const data = await response.json().catch(() => ({}));
-        console.log('FSRS kayit basarili:', data);
       } catch (err: any) {
         console.error('FSRS kaydi basarisiz (retry dahil):', err);
         // Don't block quiz completion for FSRS errors - continue

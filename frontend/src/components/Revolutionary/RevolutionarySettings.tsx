@@ -93,9 +93,6 @@ const RevolutionarySettings: React.FC<RevolutionarySettingsProps> = ({
       try {
         setLoading(true);
         setError(null);
-
-        console.log(`Loading revolutionary settings for student: ${studentId}`);
-
         // Import revolutionary features service
         const { revolutionaryFeaturesService } = await import('../../services/revolutionaryFeaturesService');
 
@@ -123,9 +120,6 @@ const RevolutionarySettings: React.FC<RevolutionarySettingsProps> = ({
       setSaving(true);
       setError(null);
       setSuccess(null);
-
-      console.log(`Saving revolutionary settings for student: ${studentId}`, settings);
-
       // Import revolutionary features service
       const { revolutionaryFeaturesService } = await import('../../services/revolutionaryFeaturesService');
 
@@ -150,9 +144,6 @@ const RevolutionarySettings: React.FC<RevolutionarySettingsProps> = ({
     try {
       setSaving(true);
       setError(null);
-
-      console.log(`Resetting revolutionary settings for student: ${studentId}`);
-
       // Import revolutionary features service
       const { revolutionaryFeaturesService } = await import('../../services/revolutionaryFeaturesService');
 

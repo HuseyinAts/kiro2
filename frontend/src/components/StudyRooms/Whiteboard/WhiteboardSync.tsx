@@ -61,7 +61,6 @@ export const useWhiteboardSync = ({
     const ws = new WebSocket(wsUrl);
 
     ws.onopen = () => {
-      console.log('Whiteboard WebSocket connected');
       isConnectedRef.current = true;
       wsRef.current = ws;
     };
@@ -81,7 +80,6 @@ export const useWhiteboardSync = ({
     };
 
     ws.onclose = () => {
-      console.log('Whiteboard WebSocket closed');
       isConnectedRef.current = false;
       wsRef.current = null;
     };
@@ -121,7 +119,6 @@ export const useWhiteboardSync = ({
           onClear();
           break;
         default:
-          console.log('Unknown whiteboard message type:', message.type);
       }
     },
     [onStrokeAdded, onShapeAdded, onTextAdded, onEquationAdded, onClear],
@@ -240,7 +237,6 @@ const WhiteboardSync: React.FC<WhiteboardSyncProps> = ({
     const ws = new WebSocket(wsUrl);
 
     ws.onopen = () => {
-      console.log('Whiteboard WebSocket connected');
       wsRef.current = ws;
     };
 
@@ -275,7 +271,6 @@ const WhiteboardSync: React.FC<WhiteboardSyncProps> = ({
     };
 
     ws.onclose = () => {
-      console.log('Whiteboard WebSocket closed');
       wsRef.current = null;
     };
 

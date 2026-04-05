@@ -56,7 +56,6 @@ class PerformanceTracker {
     // Largest Contentful Paint (LCP)
     this.observeMetric('largest-contentful-paint', (entries) => {
       const lcp = entries[entries.length - 1];
-      console.log('LCP:', lcp.startTime);
     });
 
     // First Input Delay (FID)
@@ -73,7 +72,6 @@ class PerformanceTracker {
           cls += (entry as any).value;
         }
       }
-      console.log('CLS:', cls);
     });
   }
 
@@ -391,7 +389,6 @@ export const initializePerformanceTracking = (): void => {
 
   // Bundle size tracking (development only)
   if (process.env.NODE_ENV === 'development') {
-    console.log('Performance tracking initialized');
   }
 };
 

@@ -210,8 +210,6 @@ self.addEventListener('fetch', (event) => {
           return networkResponse;
         } catch (error) {
           // Network failed, serve offline page
-          console.log('Fetch failed; returning offline page instead.', error);
-
           const cache = await caches.open(CACHE_NAME);
           const cachedResponse = await cache.match(OFFLINE_URL);
           return cachedResponse;
@@ -230,8 +228,6 @@ self.addEventListener('sync', (event) => {
 
 async function doBackgroundSync() {
   // Implement background sync logic for Turkish educational platform
-  console.log('Background sync triggered');
-
   try {
     // Sync user progress
     await syncUserProgress();
@@ -241,8 +237,6 @@ async function doBackgroundSync() {
 
     // Sync learning analytics
     await syncLearningAnalytics();
-
-    console.log('Background sync completed successfully');
   } catch (error) {
     console.error('Background sync failed:', error);
   }
@@ -393,7 +387,6 @@ self.addEventListener('notificationclick', (event) => {
 self.addEventListener('message', (event) => {
   if (event.data && event.data.type === 'PERFORMANCE_MEASURE') {
     // Log performance metrics
-    console.log('Performance metric received:', event.data.metric);
   }
 });
 

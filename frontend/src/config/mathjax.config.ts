@@ -148,13 +148,8 @@ export const mathJaxConfig = {
   // Startup configuration
   startup: {
     pageReady: async () => {
-      console.log('MathJax starting...');
-
       // Default page ready
       await window.MathJax.startup.defaultPageReady();
-
-      console.log('MathJax loaded with accessibility features');
-
       // Dispatch custom event
       const event = new CustomEvent('mathjax-loaded', {
         detail: { version: window.MathJax.version },
@@ -165,7 +160,6 @@ export const mathJaxConfig = {
     },
 
     ready: () => {
-      console.log('MathJax ready');
       window.MathJax.startup.defaultReady();
     },
   },
@@ -218,7 +212,6 @@ export const typesetMath = async (elements?: HTMLElement[]): Promise<void> => {
   if (window.MathJax && window.MathJax.typesetPromise) {
     try {
       await window.MathJax.typesetPromise(elements);
-      console.log('Math typeset completed');
     } catch (error) {
       console.error('MathJax typeset error:', error);
     }

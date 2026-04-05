@@ -121,7 +121,6 @@ export const OSYMExamInterface: React.FC<OSYMExamInterfaceProps> = ({
     interval: 30000, // 30 seconds
     onSave: (success, error) => {
       // Status is handled by examStore
-      console.log('Auto-save:', success ? 'success' : error);
     },
   });
 

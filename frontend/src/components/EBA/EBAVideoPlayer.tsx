@@ -110,10 +110,6 @@ export const EBAVideoPlayer: React.FC<EBAVideoPlayerProps> = ({
       const data = await response.json();
       setSessionId(data.session_id);
       setResumePosition(data.resume_position || 0);
-
-      console.log('[EBA WATCH] Session started:', data.session_id);
-      console.log('[EBA WATCH] Resume position:', data.resume_position);
-
     } catch (err) {
       console.error('[EBA WATCH] Failed to start session:', err);
       setError('Video yüklenemedi. Lütfen tekrar deneyin.');
@@ -149,7 +145,6 @@ export const EBAVideoPlayer: React.FC<EBAVideoPlayerProps> = ({
 
       if (data.completed && !isCompleted) {
         setIsCompleted(true);
-        console.log('[EBA WATCH] Video completed!');
         onComplete?.();
       }
 
@@ -174,9 +169,6 @@ export const EBAVideoPlayer: React.FC<EBAVideoPlayerProps> = ({
           'Content-Type': 'application/json',
         },
       });
-
-      console.log('[EBA WATCH] Session ended');
-
     } catch (err) {
       console.error('[EBA WATCH] Failed to end session:', err);
     }
@@ -194,7 +186,6 @@ export const EBAVideoPlayer: React.FC<EBAVideoPlayerProps> = ({
   };
 
   const handleEnded = () => {
-    console.log('[EBA WATCH] Video ended');
     if (sessionId) {
       updateProgress(video.duration_seconds);
     }

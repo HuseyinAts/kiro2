@@ -57,7 +57,6 @@ export function usePWA(): PWAState & PWAActions {
       setIsInstalled(true);
       setIsInstallable(false);
       setInstallPrompt(null);
-      console.log('PWA başarıyla kuruldu');
     };
 
     window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
@@ -146,12 +145,10 @@ export function usePWA(): PWAState & PWAActions {
       const { outcome } = await installPrompt.userChoice;
 
       if (outcome === 'accepted') {
-        console.log('PWA kurulumu kabul edildi');
         setIsInstallable(false);
         setInstallPrompt(null);
         return true;
       } else {
-        console.log('PWA kurulumu reddedildi');
         return false;
       }
     } catch (error) {
@@ -165,11 +162,9 @@ export function usePWA(): PWAState & PWAActions {
    */
   const triggerSync = useCallback(async (): Promise<void> => {
     try {
-      console.log('Manuel senkronizasyon başlatılıyor...');
       const result = await backgroundSyncService.triggerManualSync();
 
       if (result.success) {
-        console.log(`Senkronizasyon başarılı: ${result.syncedItems} öğe senkronize edildi`);
       } else {
         console.error('Senkronizasyon hatası:', result.errors);
       }
@@ -190,12 +185,7 @@ export function usePWA(): PWAState & PWAActions {
     count: number = 50,
   ): Promise<void> => {
     try {
-      console.log(`${subject} konusu için ${count} soru indiriliyor...`);
-
       const questions = await offlineStorageService.downloadQuestionsForOffline(subject, count);
-
-      console.log(`${questions.length} soru başarıyla indirildi`);
-
       // İstatistikleri güncelle
       const stats = await offlineStorageService.getOfflineStats();
       setOfflineStats(stats);
@@ -210,12 +200,7 @@ export function usePWA(): PWAState & PWAActions {
    */
   const clearOfflineData = useCallback(async (): Promise<void> => {
     try {
-      console.log('Çevrimdışı veriler temizleniyor...');
-
       await offlineStorageService.clearOfflineData(true); // Ayarları koru
-
-      console.log('Çevrimdışı veriler başarıyla temizlendi');
-
       // İstatistikleri güncelle
       const stats = await offlineStorageService.getOfflineStats();
       setOfflineStats(stats);
@@ -237,7 +222,6 @@ export function usePWA(): PWAState & PWAActions {
       const permission = await Notification.requestPermission();
 
       if (permission !== 'granted') {
-        console.log('Notification izni reddedildi');
         return false;
       }
 
@@ -245,10 +229,8 @@ export function usePWA(): PWAState & PWAActions {
       const subscription = await backgroundSyncService.subscribeToPushNotifications();
 
       if (subscription) {
-        console.log('Push notification subscription başarılı');
         return true;
       } else {
-        console.log('Push notification subscription başarısız');
         return false;
       }
     } catch (error) {

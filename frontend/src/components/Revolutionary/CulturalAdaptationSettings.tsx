@@ -42,9 +42,6 @@ const CulturalAdaptationSettings: React.FC<CulturalAdaptationSettingsProps> = ({
       try {
         setLoading(true);
         setError(null);
-
-        console.log(`Loading cultural adaptation for student: ${studentId}`);
-
         // Backend API'den kültürel adaptasyon verilerini al
         const adaptationResult = await culturalAdaptationService.getStudentCulturalAdaptation(studentId);
 
@@ -177,9 +174,6 @@ const CulturalAdaptationSettings: React.FC<CulturalAdaptationSettingsProps> = ({
       setSaving(true);
       setError(null);
       setSuccessMessage(null);
-
-      console.log(`Saving cultural factors for student: ${studentId}`, formData);
-
       // Backend API'ye kültürel faktörleri gönder
       const updateResult = await culturalAdaptationService.updateCulturalFactors(studentId, {
         group_study_preference: formData.group_learning_preference,
@@ -204,8 +198,6 @@ const CulturalAdaptationSettings: React.FC<CulturalAdaptationSettingsProps> = ({
         onSettingsUpdate?.(updatedContext);
 
         setSuccessMessage('Kültürel adaptasyon ayarları başarıyla kaydedildi!');
-
-        console.log('Cultural factors updated successfully:', updateResult.data);
       } else {
         // API hatası durumunda fallback
         console.warn('Cultural factors update API failed, using fallback:', updateResult.message);

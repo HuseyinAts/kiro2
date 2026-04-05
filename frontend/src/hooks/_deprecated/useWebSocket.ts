@@ -59,7 +59,6 @@ export const useWebSocket = (
       wsRef.current = ws;
 
       ws.onopen = () => {
-        console.log('WebSocket bağlantısı kuruldu');
         setIsConnected(true);
         setConnectionStatus('connected');
         setError(null);
@@ -98,16 +97,13 @@ export const useWebSocket = (
               break;
 
             case 'status':
-              console.log('WebSocket durum:', data.data);
               break;
 
             case 'typing':
               // Handle typing indicator
-              console.log('Agent yazıyor...');
               break;
 
             default:
-              console.log('Bilinmeyen WebSocket mesajı:', data);
           }
         } catch (error) {
           console.error('WebSocket mesajı parse edilemedi:', error);
@@ -115,7 +111,6 @@ export const useWebSocket = (
       };
 
       ws.onclose = (event) => {
-        console.log('WebSocket bağlantısı kapandı:', event.code, event.reason);
         setIsConnected(false);
         setConnectionStatus('disconnected');
         wsRef.current = null;
@@ -123,8 +118,6 @@ export const useWebSocket = (
         // Auto-reconnect if not intentionally closed
         if (event.code !== 1000 && reconnectAttemptsRef.current < maxReconnectAttempts) {
           reconnectAttemptsRef.current++;
-          console.log(`Yeniden bağlanma denemesi ${reconnectAttemptsRef.current}/${maxReconnectAttempts}`);
-
           reconnectTimeoutRef.current = setTimeout(() => {
             connect();
           }, reconnectDelay * reconnectAttemptsRef.current);

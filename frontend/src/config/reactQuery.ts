@@ -137,7 +137,6 @@ export const onQueryError = (error: unknown) => {
  */
 export const onMutationSuccess = () => {
   // Show success toast or notification
-  console.log('Mutation successful');
 };
 
 /**

@@ -43,10 +43,6 @@ export const AccessibilityValidator: React.FC<AccessibilityValidatorProps> = ({
 
       // Log to console
       console.group('🔍 WCAG 2.1 Validation Results');
-      console.log('Score:', validationResult.score);
-      console.log('Passed:', validationResult.passed);
-      console.log('Errors:', validationResult.errors);
-      console.log('Warnings:', validationResult.warnings);
       console.groupEnd();
     }, 500);
   };

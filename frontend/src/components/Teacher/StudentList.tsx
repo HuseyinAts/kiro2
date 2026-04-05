@@ -219,7 +219,6 @@ const StudentList: React.FC = () => {
       const result = await response.json();
       if (result.success) {
         // Detay sayfasına yönlendir veya modal aç
-        console.log('Öğrenci detayları:', result.data);
         // Bu kısımda detay modal'ı açılabilir
       }
     } catch (err) {

@@ -41,7 +41,6 @@ export const DashboardWithErrorHandling: React.FC = () => {
 
       // Log success (only in production)
       if (config.isProduction && config.features.analytics) {
-        console.log('Dashboard loaded successfully');
       }
     } catch (err) {
       const appError = handleError(err, 'loadDashboard');

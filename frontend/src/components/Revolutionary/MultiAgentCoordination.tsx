@@ -79,9 +79,6 @@ const MultiAgentCoordination: React.FC<MultiAgentCoordinationProps> = ({
       try {
         setLoading(true);
         setError(null);
-
-        console.log(`Loading multi-agent data for student: ${studentId}`);
-
         // Backend API'lerden veri çek
         const [metricsResult, agentStatusResult, eventHistoryResult] = await Promise.all([
           multiAgentService.getMetrics(),
@@ -245,8 +242,6 @@ const MultiAgentCoordination: React.FC<MultiAgentCoordinationProps> = ({
 
         // Blackboard event listener ekle
         multiAgentService.addEventListener('coordination_updates', (serviceEvent: ServiceBlackboardEvent) => {
-          console.log('Blackboard event received:', serviceEvent);
-
           // Service event'i BlackboardEvent formatına dönüştür
           const event: BlackboardEvent = {
             event_id: serviceEvent.event_id,
@@ -274,9 +269,6 @@ const MultiAgentCoordination: React.FC<MultiAgentCoordinationProps> = ({
             ));
           }
         });
-
-        console.log('WebSocket connection established for multi-agent coordination');
-
       } catch (error) {
         console.error('WebSocket connection failed:', error);
         websocketConnected = false;

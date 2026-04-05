@@ -95,8 +95,6 @@ export const initWebVitals = async (): Promise<void> => {
     webVitalsModule.onFCP(sendToAnalytics);   // First Contentful Paint
     webVitalsModule.onTTFB(sendToAnalytics);  // Time to First Byte
     webVitalsModule.onINP(sendToAnalytics);   // Interaction to Next Paint (replaces FID)
-
-    console.log('[Web Vitals] Monitoring initialized');
   } catch (error) {
     console.warn('[Web Vitals] Failed to initialize:', error);
     console.info('[Web Vitals] Run: npm install web-vitals');
@@ -187,8 +185,6 @@ export const initWebVitalsFallback = (): void => {
   } catch (error) {
     console.warn('[Web Vitals] CLS observer failed:', error);
   }
-
-  console.log('[Web Vitals] Fallback monitoring initialized');
 };
 
 /**

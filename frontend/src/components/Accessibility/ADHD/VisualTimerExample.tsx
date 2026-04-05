@@ -29,7 +29,6 @@ const VisualTimerExample: React.FC = () => {
     // - Ses çal
     // - Browser notification göster
     // - Sonraki oturumu başlat
-    console.log('⏰ Pomodoro oturumu tamamlandı!');
   };
 
   const handleSizeChange = (newSize: 'small' | 'medium' | 'large') => {
@@ -174,7 +173,6 @@ const VisualTimerExample: React.FC = () => {
 
 function PomodoroPage() {
   const handleTimerEnd = () => {
-    console.log('Timer tamamlandı!');
   };
 
   return (
