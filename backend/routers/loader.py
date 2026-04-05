@@ -46,8 +46,6 @@ DISABLED_ROUTERS = {
     "api.vision_api",                    # YOLO + Gemini pipeline henüz entegre değil
 
     # SECURITY STUBS — Tablolar eksik
-    "api.ferpa_coppa_compliance_api",    # coppa_parental_consents yok
-
     # SEARCH — ChromaDB entegrasyonu tamamlanmadı
     "api.v1.semantic_search",
     "api.clustering_api",
@@ -332,3 +330,4 @@ def setup_routers(app: FastAPI):
     loader = RouterLoader(app)
     loader.load_all_routers()
     return loader
+
