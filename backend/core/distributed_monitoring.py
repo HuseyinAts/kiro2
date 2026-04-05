@@ -9,19 +9,75 @@ import logging
 import os
 import time
 import uuid
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from enum import Enum
-from typing import Any, Callable, Optional
+from typing import Any
 
 import httpx
 from prometheus_client import Counter, Gauge, Histogram, Info
 
 logger = logging.getLogger(__name__)
 
+# ---------------------------------------------------------------------------
+# Module-level Prometheus metric singletons.
+# Prometheus raises ValueError if a metric name is registered twice in the
+# same CollectorRegistry (which is the default global registry).  Because
+# tests create multiple instances of DistributedTracer / ServiceHealthChecker
+# / DistributedMonitoringSidekick within a single process, the metrics MUST
+# be declared once at import time rather than inside __init__.
+# ---------------------------------------------------------------------------
+
+_TRACER_SPAN_DURATION = Histogram(
+    "trace_span_duration_seconds",
+    "Duration of trace spans",
+    ["service", "operation"],
+    buckets=(0.01, 0.05, 0.1, 0.25, 0.5, 1.0, 2.5, 5.0, 10.0),
+)
+_TRACER_ACTIVE_SPANS = Gauge(
+    "trace_active_spans",
+    "Number of active spans",
+    ["service"],
+)
+
+_HEALTH_SERVICE_UP = Gauge(
+    "service_up",
+    "Whether the service is up (1) or down (0)",
+    ["service"],
+)
+_HEALTH_RESPONSE_TIME = Histogram(
+    "service_health_check_duration_seconds",
+    "Health check response time",
+    ["service"],
+    buckets=(0.01, 0.05, 0.1, 0.25, 0.5, 1.0, 2.5, 5.0),
+)
+_HEALTH_CHECK_ERRORS = Counter(
+    "health_check_errors_total",
+    "Total health check errors",
+    ["service"],
+)
+
+_SIDEKICK_SYSTEM_INFO = Info(
+    "kiro2_monitoring",
+    "KIRO2 monitoring sidekick information",
+)
+
+_ALERT_MANAGER_TOTAL = Counter(
+    "monitoring_alerts_total",
+    "Total alerts generated",
+    ["severity", "service"],
+)
+_ALERT_MANAGER_ACTIVE = Gauge(
+    "monitoring_active_alerts",
+    "Number of active (unresolved) alerts",
+    ["severity"],
+)
+
 
 class ServiceStatus(Enum):
     """Service health status levels"""
+
     HEALTHY = "healthy"
     DEGRADED = "degraded"
     UNHEALTHY = "unhealthy"
@@ -30,6 +86,7 @@ class ServiceStatus(Enum):
 
 class AlertSeverity(Enum):
     """Alert severity levels"""
+
     INFO = "info"
     WARNING = "warning"
     ERROR = "error"
@@ -39,25 +96,27 @@ class AlertSeverity(Enum):
 @dataclass
 class ServiceHealth:
     """Health status for a service"""
+
     service_name: str
     status: ServiceStatus
     response_time_ms: float
     last_check: datetime
     details: dict[str, Any] = field(default_factory=dict)
-    error_message: Optional[str] = None
+    error_message: str | None = None
 
 
 @dataclass
 class TraceSpan:
     """Distributed tracing span"""
+
     trace_id: str
     span_id: str
-    parent_span_id: Optional[str]
+    parent_span_id: str | None
     service_name: str
     operation_name: str
     start_time: datetime
-    end_time: Optional[datetime] = None
-    duration_ms: Optional[float] = None
+    end_time: datetime | None = None
+    duration_ms: float | None = None
     tags: dict[str, str] = field(default_factory=dict)
     logs: list[dict[str, Any]] = field(default_factory=list)
     error: bool = False
@@ -65,14 +124,13 @@ class TraceSpan:
     def finish(self) -> None:
         """Complete the span"""
         self.end_time = datetime.now()
-        self.duration_ms = (
-            (self.end_time - self.start_time).total_seconds() * 1000
-        )
+        self.duration_ms = (self.end_time - self.start_time).total_seconds() * 1000
 
 
 @dataclass
 class Alert:
     """Monitoring alert"""
+
     id: str
     severity: AlertSeverity
     service_name: str
@@ -143,25 +201,16 @@ class DistributedTracer:
         self._trace_storage: list[TraceSpan] = []
         self._max_stored_traces = 10000
 
-        # Prometheus metrics
-        self.span_duration = Histogram(
-            "trace_span_duration_seconds",
-            "Duration of trace spans",
-            ["service", "operation"],
-            buckets=(0.01, 0.05, 0.1, 0.25, 0.5, 1.0, 2.5, 5.0, 10.0),
-        )
-        self.active_spans_gauge = Gauge(
-            "trace_active_spans",
-            "Number of active spans",
-            ["service"],
-        )
+        # Prometheus metrics (module-level singletons — never re-register)
+        self.span_duration = _TRACER_SPAN_DURATION
+        self.active_spans_gauge = _TRACER_ACTIVE_SPANS
 
     def start_span(
         self,
         operation_name: str,
-        trace_id: Optional[str] = None,
-        parent_span_id: Optional[str] = None,
-        tags: Optional[dict[str, str]] = None,
+        trace_id: str | None = None,
+        parent_span_id: str | None = None,
+        tags: dict[str, str] | None = None,
     ) -> TraceSpan:
         """Start a new trace span"""
         span = TraceSpan(
@@ -194,7 +243,7 @@ class DistributedTracer:
         # Store completed span
         self._trace_storage.append(span)
         if len(self._trace_storage) > self._max_stored_traces:
-            self._trace_storage = self._trace_storage[-self._max_stored_traces:]
+            self._trace_storage = self._trace_storage[-self._max_stored_traces :]
 
     def get_trace(self, trace_id: str) -> list[TraceSpan]:
         """Get all spans for a trace"""
@@ -208,7 +257,7 @@ class DistributedTracer:
             "X-Parent-Span-ID": span.parent_span_id or "",
         }
 
-    def extract_headers(self, headers: dict[str, str]) -> tuple[Optional[str], Optional[str]]:
+    def extract_headers(self, headers: dict[str, str]) -> tuple[str | None, str | None]:
         """Extract trace info from headers"""
         return (
             headers.get("X-Trace-ID") or headers.get("x-trace-id"),
@@ -223,23 +272,10 @@ class ServiceHealthChecker:
         self.health_cache: dict[str, ServiceHealth] = {}
         self.cache_ttl = timedelta(seconds=30)
 
-        # Prometheus metrics
-        self.service_up = Gauge(
-            "service_up",
-            "Whether the service is up (1) or down (0)",
-            ["service"],
-        )
-        self.service_response_time = Histogram(
-            "service_health_check_duration_seconds",
-            "Health check response time",
-            ["service"],
-            buckets=(0.01, 0.05, 0.1, 0.25, 0.5, 1.0, 2.5, 5.0),
-        )
-        self.health_check_errors = Counter(
-            "health_check_errors_total",
-            "Total health check errors",
-            ["service"],
-        )
+        # Prometheus metrics (module-level singletons — never re-register)
+        self.service_up = _HEALTH_SERVICE_UP
+        self.service_response_time = _HEALTH_RESPONSE_TIME
+        self.health_check_errors = _HEALTH_CHECK_ERRORS
 
     async def check_service(
         self,
@@ -269,9 +305,9 @@ class ServiceHealthChecker:
                 self.service_up.labels(service=service_name).set(
                     1 if status == ServiceStatus.HEALTHY else 0
                 )
-                self.service_response_time.labels(
-                    service=service_name
-                ).observe(response_time / 1000)
+                self.service_response_time.labels(service=service_name).observe(
+                    response_time / 1000
+                )
 
                 return ServiceHealth(
                     service_name=service_name,
@@ -314,7 +350,7 @@ class ServiceHealthChecker:
     def get_cached_health(
         self,
         service_name: str,
-    ) -> Optional[ServiceHealth]:
+    ) -> ServiceHealth | None:
         """Get cached health status"""
         cached = self.health_cache.get(service_name)
         if cached:
@@ -339,13 +375,12 @@ class ServiceHealthChecker:
                     unhealthy_critical = True
                 elif health.status == ServiceStatus.DEGRADED:
                     any_degraded = True
-            else:
-                if health.status != ServiceStatus.HEALTHY:
-                    any_degraded = True
+            elif health.status != ServiceStatus.HEALTHY:
+                any_degraded = True
 
         if unhealthy_critical:
             return ServiceStatus.UNHEALTHY
-        elif any_degraded:
+        if any_degraded:
             return ServiceStatus.DEGRADED
         return ServiceStatus.HEALTHY
 
@@ -358,17 +393,9 @@ class AlertManager:
         self.alert_handlers: list[Callable[[Alert], None]] = []
         self._max_alerts = 1000
 
-        # Prometheus metrics
-        self.alerts_total = Counter(
-            "monitoring_alerts_total",
-            "Total alerts generated",
-            ["severity", "service"],
-        )
-        self.active_alerts = Gauge(
-            "monitoring_active_alerts",
-            "Number of active (unresolved) alerts",
-            ["severity"],
-        )
+        # Prometheus metrics (module-level singletons — never re-register)
+        self.alerts_total = _ALERT_MANAGER_TOTAL
+        self.active_alerts = _ALERT_MANAGER_ACTIVE
 
     def register_handler(self, handler: Callable[[Alert], None]) -> None:
         """Register an alert handler"""
@@ -379,7 +406,7 @@ class AlertManager:
         severity: AlertSeverity,
         service_name: str,
         message: str,
-        details: Optional[dict[str, Any]] = None,
+        details: dict[str, Any] | None = None,
     ) -> Alert:
         """Create and dispatch a new alert"""
         alert = Alert(
@@ -393,7 +420,7 @@ class AlertManager:
 
         self.alerts.append(alert)
         if len(self.alerts) > self._max_alerts:
-            self.alerts = self.alerts[-self._max_alerts:]
+            self.alerts = self.alerts[-self._max_alerts :]
 
         # Update metrics
         self.alerts_total.labels(
@@ -424,15 +451,13 @@ class AlertManager:
         for alert in self.alerts:
             if alert.id == alert_id:
                 alert.resolved = True
-                self.active_alerts.labels(
-                    severity=alert.severity.value
-                ).dec()
+                self.active_alerts.labels(severity=alert.severity.value).dec()
                 return True
         return False
 
     def get_active_alerts(
         self,
-        severity: Optional[AlertSeverity] = None,
+        severity: AlertSeverity | None = None,
     ) -> list[Alert]:
         """Get active (unresolved) alerts"""
         active = [a for a in self.alerts if not a.resolved]
@@ -462,19 +487,18 @@ class DistributedMonitoringSidekick:
         self.tracer = DistributedTracer(service_name)
         self.health_checker = ServiceHealthChecker()
         self.alert_manager = AlertManager()
-        self._monitoring_task: Optional[asyncio.Task] = None
+        self._monitoring_task: asyncio.Task | None = None
         self._running = False
 
-        # System info
-        self.system_info = Info(
-            "kiro2_monitoring",
-            "KIRO2 monitoring sidekick information",
+        # System info (module-level singleton — never re-register)
+        self.system_info = _SIDEKICK_SYSTEM_INFO
+        self.system_info.info(
+            {
+                "service": service_name,
+                "version": "1.0.0",
+                "environment": os.getenv("ENVIRONMENT", "development"),
+            }
         )
-        self.system_info.info({
-            "service": service_name,
-            "version": "1.0.0",
-            "environment": os.getenv("ENVIRONMENT", "development"),
-        })
 
     async def start_background_monitoring(
         self,
@@ -552,10 +576,9 @@ class DistributedMonitoringSidekick:
             "alerts": {
                 "total_active": len(active_alerts),
                 "by_severity": {
-                    severity.value: len([
-                        a for a in active_alerts
-                        if a.severity == severity
-                    ])
+                    severity.value: len(
+                        [a for a in active_alerts if a.severity == severity]
+                    )
                     for severity in AlertSeverity
                 },
             },
@@ -568,8 +591,8 @@ class DistributedMonitoringSidekick:
     def trace_request(
         self,
         operation_name: str,
-        trace_id: Optional[str] = None,
-        parent_span_id: Optional[str] = None,
+        trace_id: str | None = None,
+        parent_span_id: str | None = None,
     ):
         """Context manager for tracing requests"""
         return TracingContext(
@@ -624,14 +647,14 @@ class TracingContext:
         self,
         tracer: DistributedTracer,
         operation_name: str,
-        trace_id: Optional[str] = None,
-        parent_span_id: Optional[str] = None,
+        trace_id: str | None = None,
+        parent_span_id: str | None = None,
     ):
         self.tracer = tracer
         self.operation_name = operation_name
         self.trace_id = trace_id
         self.parent_span_id = parent_span_id
-        self.span: Optional[TraceSpan] = None
+        self.span: TraceSpan | None = None
 
     def __enter__(self) -> TraceSpan:
         self.span = self.tracer.start_span(
@@ -645,11 +668,13 @@ class TracingContext:
         if self.span:
             if exc_type:
                 self.span.error = True
-                self.span.logs.append({
-                    "event": "error",
-                    "error.type": str(exc_type.__name__) if exc_type else None,
-                    "error.message": str(exc_val) if exc_val else None,
-                })
+                self.span.logs.append(
+                    {
+                        "event": "error",
+                        "error.type": str(exc_type.__name__) if exc_type else None,
+                        "error.message": str(exc_val) if exc_val else None,
+                    }
+                )
             self.tracer.finish_span(self.span)
 
     async def __aenter__(self) -> TraceSpan:
@@ -660,7 +685,7 @@ class TracingContext:
 
 
 # Global monitoring sidekick instance
-_monitoring_sidekick: Optional[DistributedMonitoringSidekick] = None
+_monitoring_sidekick: DistributedMonitoringSidekick | None = None
 
 
 def get_monitoring_sidekick(
@@ -673,7 +698,9 @@ def get_monitoring_sidekick(
     return _monitoring_sidekick
 
 
-async def init_monitoring(service_name: str = "kiro2-backend") -> DistributedMonitoringSidekick:
+async def init_monitoring(
+    service_name: str = "kiro2-backend",
+) -> DistributedMonitoringSidekick:
     """Initialize and start monitoring sidekick"""
     sidekick = get_monitoring_sidekick(service_name)
     await sidekick.start_background_monitoring()

@@ -103,6 +103,8 @@ async def get_advanced_exam_report(
         logger.info(f"Gelişmiş sınav raporu oluşturuldu - Sınav: {sinav_id}")
         return gelismis_rapor
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Gelişmiş rapor hatası - Sınav: {sinav_id}, Hata: {e!s}")
         raise HTTPException(
@@ -130,6 +132,8 @@ async def get_irt_morfoloji_analysis(
             "irt_morfoloji_analizi": irt_analizi,
         }
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"IRT analizi hatası - Sınav: {sinav_id}, Hata: {e!s}")
         raise HTTPException(
@@ -158,6 +162,8 @@ async def get_zpd_recommendations(
             "zpd_analizi": zpd_analizi,
         }
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"ZPD analizi hatası - Sınav: {sinav_id}, Hata: {e!s}")
         raise HTTPException(
@@ -188,6 +194,8 @@ async def get_learning_style_analysis(
             "hibrit_ogrenme_stili_analizi": ogrenme_stili_analizi,
         }
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Öğrenme stili analizi hatası - Sınav: {sinav_id}, Hata: {e!s}")
         raise HTTPException(
@@ -215,6 +223,8 @@ async def get_osym_ets_comparison(
             "osym_ets_karsilastirmasi": karsilastirma,
         }
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"ÖSYM/ETS karşılaştırma hatası - Sınav: {sinav_id}, Hata: {e!s}")
         raise HTTPException(
