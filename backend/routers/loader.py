@@ -33,8 +33,6 @@ DISABLED_ROUTERS = {
     "api.university_info_routes",        # campus_info, dormitory_info yok
     "api.student_review_routes",         # student_reviews tablosu yok
     "api.live_session_routes",           # live_sessions, session_recordings yok
-    "api.video_analytics_routes",        # video_watch_sessions var ama video_completion_milestones, video_notes, video_bookmarks, video_analytics_summary yok
-
     # PWA/OFFLINE — Deploy edilmedi
     "api.offline_sync_api",
     "api.pwa_sync_api",
@@ -330,4 +328,5 @@ def setup_routers(app: FastAPI):
     loader = RouterLoader(app)
     loader.load_all_routers()
     return loader
+
 
