@@ -40,7 +40,6 @@ DISABLED_ROUTERS = {
     # AI ADVANCED — Servis bağımlılıkları eksik
     "api.v1.expert_agents_api",          # expert agent framework deploy edilmedi
     "api.revolutionary_features",        # çoğu mock
-    "api.sequential_reasoning_api",      # reasoning_sessions tablosu yok
     "api.vision_api",                    # YOLO + Gemini pipeline henüz entegre değil
 
     # SECURITY STUBS — Tablolar eksik
@@ -328,5 +327,6 @@ def setup_routers(app: FastAPI):
     loader = RouterLoader(app)
     loader.load_all_routers()
     return loader
+
 
 
