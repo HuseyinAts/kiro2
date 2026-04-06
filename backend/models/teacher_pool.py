@@ -142,9 +142,9 @@ class TeacherPoolProfile(Base):
     __tablename__ = "teacher_pool_profiles"
     __table_args__ = {"extend_existing": True}
 
-    id = Column(PGUUID(as_uuid=True), primary_key=True, default=uuid4)
+    id = Column(String, primary_key=True, default=uuid4)
     user_id = Column(
-        PGUUID(as_uuid=True), ForeignKey("users.id"), nullable=False, unique=True
+        String, ForeignKey("users.id"), nullable=False, unique=True
     )
 
     # Basic Information
@@ -175,7 +175,7 @@ class TeacherPoolProfile(Base):
     )
     verified_at = Column(DateTime(timezone=True))
     verified_by = Column(
-        PGUUID(as_uuid=True), ForeignKey("users.id")
+        String, ForeignKey("users.id")
     )  # Admin who verified
 
     # Ratings & Statistics
@@ -236,9 +236,9 @@ class TeacherExpertise(Base):
 
     __tablename__ = "teacher_expertise"
 
-    id = Column(PGUUID(as_uuid=True), primary_key=True, default=uuid4)
+    id = Column(String, primary_key=True, default=uuid4)
     teacher_id = Column(
-        PGUUID(as_uuid=True), ForeignKey("teacher_pool_profiles.id"), nullable=False
+        String, ForeignKey("teacher_pool_profiles.id"), nullable=False
     )
 
     # Expertise Details
@@ -284,9 +284,9 @@ class TeacherCertification(Base):
 
     __tablename__ = "teacher_certifications"
 
-    id = Column(PGUUID(as_uuid=True), primary_key=True, default=uuid4)
+    id = Column(String, primary_key=True, default=uuid4)
     teacher_id = Column(
-        PGUUID(as_uuid=True), ForeignKey("teacher_pool_profiles.id"), nullable=False
+        String, ForeignKey("teacher_pool_profiles.id"), nullable=False
     )
 
     # Certification Details
@@ -308,7 +308,7 @@ class TeacherCertification(Base):
         SQLEnum(VerificationStatus), default=VerificationStatus.PENDING
     )
     verified_at = Column(DateTime(timezone=True))
-    verified_by = Column(PGUUID(as_uuid=True), ForeignKey("users.id"))
+    verified_by = Column(String, ForeignKey("users.id"))
     rejection_reason = Column(Text)
 
     # Display
@@ -338,9 +338,9 @@ class TeacherAvailability(Base):
 
     __tablename__ = "teacher_availability"
 
-    id = Column(PGUUID(as_uuid=True), primary_key=True, default=uuid4)
+    id = Column(String, primary_key=True, default=uuid4)
     teacher_id = Column(
-        PGUUID(as_uuid=True), ForeignKey("teacher_pool_profiles.id"), nullable=False
+        String, ForeignKey("teacher_pool_profiles.id"), nullable=False
     )
 
     # Time Slot
@@ -387,13 +387,13 @@ class Appointment(Base):
 
     __tablename__ = "appointments"
 
-    id = Column(PGUUID(as_uuid=True), primary_key=True, default=uuid4)
+    id = Column(String, primary_key=True, default=uuid4)
     teacher_id = Column(
-        PGUUID(as_uuid=True), ForeignKey("teacher_pool_profiles.id"), nullable=False
+        String, ForeignKey("teacher_pool_profiles.id"), nullable=False
     )
-    student_id = Column(PGUUID(as_uuid=True), ForeignKey("users.id"), nullable=False)
+    student_id = Column(String, ForeignKey("users.id"), nullable=False)
     availability_slot_id = Column(
-        PGUUID(as_uuid=True), ForeignKey("teacher_availability.id")
+        String, ForeignKey("teacher_availability.id")
     )
 
     # Appointment Details
@@ -422,11 +422,11 @@ class Appointment(Base):
 
     # Confirmation
     confirmed_at = Column(DateTime(timezone=True))
-    confirmed_by = Column(PGUUID(as_uuid=True), ForeignKey("users.id"))
+    confirmed_by = Column(String, ForeignKey("users.id"))
 
     # Cancellation
     cancelled_at = Column(DateTime(timezone=True))
-    cancelled_by = Column(PGUUID(as_uuid=True), ForeignKey("users.id"))
+    cancelled_by = Column(String, ForeignKey("users.id"))
     cancellation_reason = Column(Text)
 
     # Completion
@@ -479,9 +479,9 @@ class AppointmentReminder(Base):
 
     __tablename__ = "appointment_reminders"
 
-    id = Column(PGUUID(as_uuid=True), primary_key=True, default=uuid4)
+    id = Column(String, primary_key=True, default=uuid4)
     appointment_id = Column(
-        PGUUID(as_uuid=True), ForeignKey("appointments.id"), nullable=False
+        String, ForeignKey("appointments.id"), nullable=False
     )
 
     # Reminder Details
@@ -494,7 +494,7 @@ class AppointmentReminder(Base):
 
     # Recipient
     recipient_type = Column(String(50))  # "student" or "teacher"
-    recipient_id = Column(PGUUID(as_uuid=True), ForeignKey("users.id"))
+    recipient_id = Column(String, ForeignKey("users.id"))
 
     # Message
     message_template = Column(String(100))  # Template identifier
@@ -522,12 +522,12 @@ class TeacherReview(Base):
 
     __tablename__ = "teacher_reviews"
 
-    id = Column(PGUUID(as_uuid=True), primary_key=True, default=uuid4)
+    id = Column(String, primary_key=True, default=uuid4)
     teacher_id = Column(
-        PGUUID(as_uuid=True), ForeignKey("teacher_pool_profiles.id"), nullable=False
+        String, ForeignKey("teacher_pool_profiles.id"), nullable=False
     )
-    student_id = Column(PGUUID(as_uuid=True), ForeignKey("users.id"), nullable=False)
-    appointment_id = Column(PGUUID(as_uuid=True), ForeignKey("appointments.id"))
+    student_id = Column(String, ForeignKey("users.id"), nullable=False)
+    appointment_id = Column(String, ForeignKey("appointments.id"))
 
     # Rating (1-5 stars)
     overall_rating = Column(Integer, nullable=False)
@@ -574,9 +574,9 @@ class TeacherStatistics(Base):
 
     __tablename__ = "teacher_statistics"
 
-    id = Column(PGUUID(as_uuid=True), primary_key=True, default=uuid4)
+    id = Column(String, primary_key=True, default=uuid4)
     teacher_id = Column(
-        PGUUID(as_uuid=True),
+        String,
         ForeignKey("teacher_pool_profiles.id"),
         nullable=False,
         unique=True,

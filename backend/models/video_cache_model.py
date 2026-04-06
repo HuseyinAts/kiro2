@@ -34,7 +34,7 @@ class VideoCache(Base):
     __tablename__ = "video_cache"
 
     # Primary key
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid4)
+    id = Column(String, primary_key=True, default=uuid4)
 
     # Video identification
     video_id = Column(String(100), nullable=False, unique=True, index=True)

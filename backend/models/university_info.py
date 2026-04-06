@@ -77,9 +77,9 @@ class CampusInfo(Base):
 
     __tablename__ = "campus_info"
 
-    id = Column(PGUUID(as_uuid=True), primary_key=True, default=uuid4)
+    id = Column(String, primary_key=True, default=uuid4)
     university_id = Column(
-        PGUUID(as_uuid=True),
+        String,
         ForeignKey("universities.id", ondelete="CASCADE"),
         nullable=False,
     )
@@ -179,7 +179,7 @@ class CityLivingCost(Base):
 
     __tablename__ = "city_living_costs"
 
-    id = Column(PGUUID(as_uuid=True), primary_key=True, default=uuid4)
+    id = Column(String, primary_key=True, default=uuid4)
 
     # Location
     city = Column(String(100), nullable=False)
@@ -281,9 +281,9 @@ class DormitoryInfo(Base):
 
     __tablename__ = "dormitory_info"
 
-    id = Column(PGUUID(as_uuid=True), primary_key=True, default=uuid4)
+    id = Column(String, primary_key=True, default=uuid4)
     university_id = Column(
-        PGUUID(as_uuid=True), ForeignKey("universities.id", ondelete="CASCADE")
+        String, ForeignKey("universities.id", ondelete="CASCADE")
     )
 
     # Basic info
@@ -406,9 +406,9 @@ class ScholarshipProgram(Base):
 
     __tablename__ = "scholarship_programs"
 
-    id = Column(PGUUID(as_uuid=True), primary_key=True, default=uuid4)
+    id = Column(String, primary_key=True, default=uuid4)
     university_id = Column(
-        PGUUID(as_uuid=True), ForeignKey("universities.id", ondelete="CASCADE")
+        String, ForeignKey("universities.id", ondelete="CASCADE")
     )
 
     # Basic info
@@ -526,9 +526,9 @@ class UniversityStatistics(Base):
 
     __tablename__ = "university_statistics"
 
-    id = Column(PGUUID(as_uuid=True), primary_key=True, default=uuid4)
+    id = Column(String, primary_key=True, default=uuid4)
     university_id = Column(
-        PGUUID(as_uuid=True),
+        String,
         ForeignKey("universities.id", ondelete="CASCADE"),
         nullable=False,
     )

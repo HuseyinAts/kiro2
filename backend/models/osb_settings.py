@@ -18,7 +18,7 @@ class OSBSettings(Base):
 
     __tablename__ = "osb_settings"
 
-    id = Column(PGUUID(as_uuid=True), primary_key=True, default=uuid4)
+    id = Column(String, primary_key=True, default=uuid4)
     user_id = Column(String, ForeignKey("users.id"), nullable=False, unique=True)
 
     # Genel OSB modu

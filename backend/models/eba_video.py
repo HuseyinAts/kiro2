@@ -37,14 +37,14 @@ class EBAVideoWatch(Base):
 
     __tablename__ = "eba_video_watches"
 
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    id = Column(String, primary_key=True, default=uuid.uuid4)
 
     # Foreign keys
     user_id = Column(
-        UUID(as_uuid=True), ForeignKey("users.id"), nullable=False, index=True
+        String, ForeignKey("users.id"), nullable=False, index=True
     )
     eba_video_id = Column(
-        UUID(as_uuid=True), ForeignKey("eba_videos.id"), nullable=False, index=True
+        String, ForeignKey("eba_videos.id"), nullable=False, index=True
     )
 
     # Watch session info
@@ -83,7 +83,7 @@ class EBASubjectTaxonomy(Base):
 
     __tablename__ = "eba_subject_taxonomy"
 
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    id = Column(String, primary_key=True, default=uuid.uuid4)
 
     subject = Column(String(50), nullable=False, index=True)
     topic = Column(String(200), nullable=False)

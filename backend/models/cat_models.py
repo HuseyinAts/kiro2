@@ -19,6 +19,7 @@ from sqlalchemy import (
     SmallInteger,
     Text,
     func,
+    String,
 )
 from sqlalchemy.dialects.postgresql import UUID
 
@@ -31,12 +32,12 @@ class CatSession(Base):
     __tablename__ = "kiro2_cat_sessions"
 
     id = Column(
-        UUID(as_uuid=True),
+        String,
         primary_key=True,
         default=uuid.uuid4,
         server_default=func.gen_random_uuid(),
     )
-    user_id = Column(UUID(as_uuid=True), nullable=False)
+    user_id = Column(String, nullable=False)
     subject_id = Column(Text, nullable=False)
     theta_final = Column(Numeric, nullable=False, server_default="0.0")
     se_final = Column(Numeric, nullable=False, server_default="1.0")
@@ -65,14 +66,14 @@ class LearningEvent(Base):
     __tablename__ = "kiro2_learning_events"
 
     id = Column(
-        UUID(as_uuid=True),
+        String,
         primary_key=True,
         default=uuid.uuid4,
         server_default=func.gen_random_uuid(),
     )
-    user_id = Column(UUID(as_uuid=True), nullable=False)
+    user_id = Column(String, nullable=False)
     question_id = Column(Text, nullable=False)
-    session_id = Column(UUID(as_uuid=True), nullable=True)
+    session_id = Column(String, nullable=True)
     event_type = Column(Text, nullable=False, server_default="cat_answer")
     is_correct = Column(Boolean, nullable=True)
     theta_after = Column(Numeric, nullable=True)
@@ -93,7 +94,7 @@ class TopicPrerequisite(Base):
     __tablename__ = "topic_prerequisites"
 
     id = Column(
-        UUID(as_uuid=True),
+        String,
         primary_key=True,
         default=uuid.uuid4,
         server_default=func.gen_random_uuid(),

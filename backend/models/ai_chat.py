@@ -84,9 +84,9 @@ class ChatSession(Base):
 
     __tablename__ = "chat_sessions"
 
-    id = Column(PGUUID(as_uuid=True), primary_key=True, default=uuid4)
+    id = Column(String, primary_key=True, default=uuid4)
     user_id = Column(
-        PGUUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), nullable=False
+        String, ForeignKey("users.id", ondelete="CASCADE"), nullable=False
     )
 
     # Session info
@@ -146,9 +146,9 @@ class ChatMessage(Base):
 
     __tablename__ = "chat_messages"
 
-    id = Column(PGUUID(as_uuid=True), primary_key=True, default=uuid4)
+    id = Column(String, primary_key=True, default=uuid4)
     session_id = Column(
-        PGUUID(as_uuid=True),
+        String,
         ForeignKey("chat_sessions.id", ondelete="CASCADE"),
         nullable=False,
     )
@@ -159,7 +159,7 @@ class ChatMessage(Base):
 
     # Image reference (if message contains image)
     image_id = Column(
-        PGUUID(as_uuid=True), ForeignKey("image_uploads.id", ondelete="SET NULL")
+        String, ForeignKey("image_uploads.id", ondelete="SET NULL")
     )
 
     # AI response metadata
@@ -209,14 +209,14 @@ class ImageUpload(Base):
 
     __tablename__ = "image_uploads"
 
-    id = Column(PGUUID(as_uuid=True), primary_key=True, default=uuid4)
+    id = Column(String, primary_key=True, default=uuid4)
     session_id = Column(
-        PGUUID(as_uuid=True),
+        String,
         ForeignKey("chat_sessions.id", ondelete="CASCADE"),
         nullable=False,
     )
     user_id = Column(
-        PGUUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), nullable=False
+        String, ForeignKey("users.id", ondelete="CASCADE"), nullable=False
     )
 
     # Image file info
@@ -290,9 +290,9 @@ class SolutionStep(Base):
 
     __tablename__ = "solution_steps"
 
-    id = Column(PGUUID(as_uuid=True), primary_key=True, default=uuid4)
+    id = Column(String, primary_key=True, default=uuid4)
     message_id = Column(
-        PGUUID(as_uuid=True),
+        String,
         ForeignKey("chat_messages.id", ondelete="CASCADE"),
         nullable=False,
     )
@@ -342,8 +342,8 @@ class ChatAnalytics(Base):
 
     __tablename__ = "chat_analytics"
 
-    id = Column(PGUUID(as_uuid=True), primary_key=True, default=uuid4)
-    user_id = Column(PGUUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"))
+    id = Column(String, primary_key=True, default=uuid4)
+    user_id = Column(String, ForeignKey("users.id", ondelete="CASCADE"))
 
     # Time period
     date = Column(DateTime(timezone=True), nullable=False)

@@ -29,7 +29,7 @@ class KhanContent(Base):
 
     __tablename__ = "khan_contents"
 
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    id = Column(String, primary_key=True, default=uuid.uuid4)
 
     # Khan Academy IDs
     khan_content_id = Column(String(100), unique=True, nullable=False, index=True)
@@ -80,17 +80,17 @@ class KhanUserProgress(Base):
 
     __tablename__ = "khan_user_progress"
 
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    id = Column(String, primary_key=True, default=uuid.uuid4)
 
     # Foreign keys
     user_id = Column(
-        UUID(as_uuid=True), ForeignKey("users.id"), nullable=False, index=True
+        String, ForeignKey("users.id"), nullable=False, index=True
     )
     khan_user_id = Column(
         String(100), nullable=True, index=True
     )  # Khan Academy user ID
     khan_content_id = Column(
-        UUID(as_uuid=True), ForeignKey("khan_contents.id"), nullable=False, index=True
+        String, ForeignKey("khan_contents.id"), nullable=False, index=True
     )
 
     # Content type
@@ -136,11 +136,11 @@ class KhanCertificate(Base):
 
     __tablename__ = "khan_certificates"
 
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    id = Column(String, primary_key=True, default=uuid.uuid4)
 
     # Foreign keys
     user_id = Column(
-        UUID(as_uuid=True), ForeignKey("users.id"), nullable=False, index=True
+        String, ForeignKey("users.id"), nullable=False, index=True
     )
     khan_user_id = Column(String(100), nullable=True, index=True)
 
@@ -177,11 +177,11 @@ class KhanOAuthToken(Base):
 
     __tablename__ = "khan_oauth_tokens"
 
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    id = Column(String, primary_key=True, default=uuid.uuid4)
 
     # User association
     user_id = Column(
-        UUID(as_uuid=True),
+        String,
         ForeignKey("users.id"),
         nullable=False,
         unique=True,

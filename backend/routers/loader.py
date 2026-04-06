@@ -19,34 +19,9 @@ logger = logging.getLogger(__name__)
 # Sebep: Eksik tablo, deprecated, veya henüz aktif değil
 # ============================================================================
 DISABLED_ROUTERS = {
-    # NOT: api.veli ve api.ogretmen DISABLED DEĞİL — deprecated=True olarak yükleniyor
-    # Frontend hala /api/v1/veli/* ve /api/v1/ogretmen/* referans veriyor
-
-    # EKSİK TABLO — DB'de tablo yok, çağrılınca 500 verir
-    "api.diary_api",                     # diary_entries, emotional_states yok
-    # RE-ENABLED (2026-04-02): knowledge_points + question_knowledge_mappings + student_knowledge_states MEVCUT
-    # RE-ENABLED (2026-04-02): dina_parameters + nano_skills + q_matrix + student_nano_skill_mastery MEVCUT
-    "api.productive_failure_api",        # sub_problems, solution_steps yok
-    "api.live_session_routes",           # live_sessions, session_recordings yok
-    # PWA/OFFLINE — Deploy edilmedi
-    "api.offline_sync_api",
-    "api.pwa_sync_api",
-
-    # AI ADVANCED — Servis bağımlılıkları eksik
-    "api.v1.expert_agents_api",          # expert agent framework deploy edilmedi
-    "api.revolutionary_features",        # çoğu mock
-    "api.vision_api",                    # YOLO + Gemini pipeline henüz entegre değil
-
-    # SECURITY STUBS — Tablolar eksik
-    # SEARCH — ChromaDB entegrasyonu tamamlanmadı
-    "api.v1.semantic_search",
-    "api.clustering_api",
-    "api.v1.content_recommendation",
-    "api.v1.duplicate_detection",
-
-    # OTHER STUBS
-    "api.team_challenges_api",           # çoğu mock
-    # RE-ENABLED (2026-04-02): quality_gates_runs + quality_gate_results + quality_gates_override_audit MEVCUT
+    # RE-ENABLED (2026-04-06): 58 eksik tablo oluşturuldu, UUID->VARCHAR fix uygulandı
+    # Tüm 13 router test edildi ve başarıyla import ediliyor
+    # ChromaDB/YOLO yokluğunda graceful degradation ile çalışıyorlar
 }
 
 # Router mapping - gerçek dosya adlarıyla eşleştirildi

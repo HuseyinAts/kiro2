@@ -71,7 +71,7 @@ class ReasoningSession(Base):
     __tablename__ = "reasoning_sessions"
 
     # Primary key
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    id = Column(String, primary_key=True, default=uuid.uuid4)
 
     # Problem and context
     problem = Column(Text, nullable=False, comment="Original problem text")
@@ -122,7 +122,7 @@ class ReasoningSession(Base):
 
     # User association
     user_id = Column(
-        UUID(as_uuid=True),
+        String,
         ForeignKey("users.id", ondelete="SET NULL"),
         nullable=True,
         comment="User who initiated the session",
@@ -192,11 +192,11 @@ class ReasoningStep(Base):
     __tablename__ = "reasoning_steps"
 
     # Primary key
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    id = Column(String, primary_key=True, default=uuid.uuid4)
 
     # Session reference
     session_id = Column(
-        UUID(as_uuid=True),
+        String,
         ForeignKey("reasoning_sessions.id", ondelete="CASCADE"),
         nullable=False,
     )
@@ -216,7 +216,7 @@ class ReasoningStep(Base):
 
     # Parent step for hierarchical numbering (1.1, 1.2, etc.)
     parent_step_id = Column(
-        UUID(as_uuid=True),
+        String,
         ForeignKey("reasoning_steps.id", ondelete="SET NULL"),
         nullable=True,
     )
@@ -277,11 +277,11 @@ class SubProblem(Base):
     __tablename__ = "sub_problems"
 
     # Primary key
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    id = Column(String, primary_key=True, default=uuid.uuid4)
 
     # Session reference
     session_id = Column(
-        UUID(as_uuid=True),
+        String,
         ForeignKey("reasoning_sessions.id", ondelete="CASCADE"),
         nullable=False,
     )
@@ -293,7 +293,7 @@ class SubProblem(Base):
 
     # Dependencies (IDs of other sub-problems that must be solved first)
     dependencies = Column(
-        ARRAY(UUID(as_uuid=True)),
+        ARRAY(String),
         default=[],
         comment="IDs of dependent sub-problems",
     )
@@ -348,7 +348,7 @@ class ReasoningCache(Base):
     __tablename__ = "reasoning_cache"
 
     # Primary key
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    id = Column(String, primary_key=True, default=uuid.uuid4)
 
     # Problem embedding key
     problem_hash = Column(String(64), unique=True, nullable=False, index=True)

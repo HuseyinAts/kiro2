@@ -109,7 +109,7 @@ class LiveSession(Base):
 
     __tablename__ = "live_sessions"
 
-    id = Column(PGUUID(as_uuid=True), primary_key=True, default=uuid4)
+    id = Column(String, primary_key=True, default=uuid4)
 
     # Basic Information
     title = Column(String(255), nullable=False)
@@ -117,10 +117,10 @@ class LiveSession(Base):
     session_type = Column(SQLEnum(SessionType), default=SessionType.ONE_ON_ONE)
 
     # Host
-    host_id = Column(PGUUID(as_uuid=True), ForeignKey("users.id"), nullable=False)
+    host_id = Column(String, ForeignKey("users.id"), nullable=False)
 
     # Optional teacher link
-    teacher_id = Column(PGUUID(as_uuid=True), ForeignKey("teacher_profiles.id"))
+    teacher_id = Column(String, ForeignKey("teacher_profiles.id"))
 
     # Scheduling
     scheduled_start = Column(DateTime(timezone=True), nullable=False)
@@ -207,11 +207,11 @@ class SessionParticipant(Base):
 
     __tablename__ = "session_participants"
 
-    id = Column(PGUUID(as_uuid=True), primary_key=True, default=uuid4)
+    id = Column(String, primary_key=True, default=uuid4)
     session_id = Column(
-        PGUUID(as_uuid=True), ForeignKey("live_sessions.id"), nullable=False
+        String, ForeignKey("live_sessions.id"), nullable=False
     )
-    user_id = Column(PGUUID(as_uuid=True), ForeignKey("users.id"), nullable=False)
+    user_id = Column(String, ForeignKey("users.id"), nullable=False)
 
     # Role
     role = Column(SQLEnum(ParticipantRole), default=ParticipantRole.PARTICIPANT)
@@ -263,11 +263,11 @@ class ScreenShare(Base):
 
     __tablename__ = "screen_shares"
 
-    id = Column(PGUUID(as_uuid=True), primary_key=True, default=uuid4)
+    id = Column(String, primary_key=True, default=uuid4)
     session_id = Column(
-        PGUUID(as_uuid=True), ForeignKey("live_sessions.id"), nullable=False
+        String, ForeignKey("live_sessions.id"), nullable=False
     )
-    user_id = Column(PGUUID(as_uuid=True), ForeignKey("users.id"), nullable=False)
+    user_id = Column(String, ForeignKey("users.id"), nullable=False)
 
     # Screen Share Details
     share_type = Column(SQLEnum(ScreenShareType), default=ScreenShareType.ENTIRE_SCREEN)
@@ -304,9 +304,9 @@ class WhiteboardSession(Base):
 
     __tablename__ = "whiteboard_sessions"
 
-    id = Column(PGUUID(as_uuid=True), primary_key=True, default=uuid4)
+    id = Column(String, primary_key=True, default=uuid4)
     session_id = Column(
-        PGUUID(as_uuid=True), ForeignKey("live_sessions.id"), nullable=False
+        String, ForeignKey("live_sessions.id"), nullable=False
     )
 
     # Whiteboard Info
@@ -348,11 +348,11 @@ class WhiteboardStroke(Base):
 
     __tablename__ = "whiteboard_strokes"
 
-    id = Column(PGUUID(as_uuid=True), primary_key=True, default=uuid4)
+    id = Column(String, primary_key=True, default=uuid4)
     whiteboard_id = Column(
-        PGUUID(as_uuid=True), ForeignKey("whiteboard_sessions.id"), nullable=False
+        String, ForeignKey("whiteboard_sessions.id"), nullable=False
     )
-    user_id = Column(PGUUID(as_uuid=True), ForeignKey("users.id"), nullable=False)
+    user_id = Column(String, ForeignKey("users.id"), nullable=False)
 
     # Page
     page_number = Column(Integer, default=1)
@@ -398,11 +398,11 @@ class WhiteboardEquation(Base):
 
     __tablename__ = "whiteboard_equations"
 
-    id = Column(PGUUID(as_uuid=True), primary_key=True, default=uuid4)
+    id = Column(String, primary_key=True, default=uuid4)
     whiteboard_id = Column(
-        PGUUID(as_uuid=True), ForeignKey("whiteboard_sessions.id"), nullable=False
+        String, ForeignKey("whiteboard_sessions.id"), nullable=False
     )
-    user_id = Column(PGUUID(as_uuid=True), ForeignKey("users.id"), nullable=False)
+    user_id = Column(String, ForeignKey("users.id"), nullable=False)
 
     # Page
     page_number = Column(Integer, default=1)
@@ -452,9 +452,9 @@ class SessionRecording(Base):
 
     __tablename__ = "session_recordings"
 
-    id = Column(PGUUID(as_uuid=True), primary_key=True, default=uuid4)
+    id = Column(String, primary_key=True, default=uuid4)
     session_id = Column(
-        PGUUID(as_uuid=True), ForeignKey("live_sessions.id"), nullable=False
+        String, ForeignKey("live_sessions.id"), nullable=False
     )
 
     # Recording Info
@@ -530,11 +530,11 @@ class RecordingView(Base):
 
     __tablename__ = "recording_views"
 
-    id = Column(PGUUID(as_uuid=True), primary_key=True, default=uuid4)
+    id = Column(String, primary_key=True, default=uuid4)
     recording_id = Column(
-        PGUUID(as_uuid=True), ForeignKey("session_recordings.id"), nullable=False
+        String, ForeignKey("session_recordings.id"), nullable=False
     )
-    user_id = Column(PGUUID(as_uuid=True), ForeignKey("users.id"))
+    user_id = Column(String, ForeignKey("users.id"))
 
     # View Details
     started_at = Column(DateTime(timezone=True), default=datetime.utcnow)
@@ -567,11 +567,11 @@ class RecordingBookmark(Base):
 
     __tablename__ = "recording_bookmarks"
 
-    id = Column(PGUUID(as_uuid=True), primary_key=True, default=uuid4)
+    id = Column(String, primary_key=True, default=uuid4)
     recording_id = Column(
-        PGUUID(as_uuid=True), ForeignKey("session_recordings.id"), nullable=False
+        String, ForeignKey("session_recordings.id"), nullable=False
     )
-    user_id = Column(PGUUID(as_uuid=True), ForeignKey("users.id"), nullable=False)
+    user_id = Column(String, ForeignKey("users.id"), nullable=False)
 
     # Bookmark
     timestamp_seconds = Column(Integer, nullable=False)
@@ -596,11 +596,11 @@ class SessionChatMessage(Base):
 
     __tablename__ = "session_chat_messages"
 
-    id = Column(PGUUID(as_uuid=True), primary_key=True, default=uuid4)
+    id = Column(String, primary_key=True, default=uuid4)
     session_id = Column(
-        PGUUID(as_uuid=True), ForeignKey("live_sessions.id"), nullable=False
+        String, ForeignKey("live_sessions.id"), nullable=False
     )
-    user_id = Column(PGUUID(as_uuid=True), ForeignKey("users.id"), nullable=False)
+    user_id = Column(String, ForeignKey("users.id"), nullable=False)
 
     # Message
     message = Column(Text, nullable=False)
@@ -609,7 +609,7 @@ class SessionChatMessage(Base):
     message_type = Column(String(50), default="text")  # text, file, link
 
     # Recipient (for private messages)
-    recipient_id = Column(PGUUID(as_uuid=True), ForeignKey("users.id"))
+    recipient_id = Column(String, ForeignKey("users.id"))
     is_private = Column(Boolean, default=False)
 
     # Metadata
@@ -617,7 +617,7 @@ class SessionChatMessage(Base):
 
     # Moderation
     is_deleted = Column(Boolean, default=False)
-    deleted_by = Column(PGUUID(as_uuid=True), ForeignKey("users.id"))
+    deleted_by = Column(String, ForeignKey("users.id"))
 
     created_at = Column(DateTime(timezone=True), default=datetime.utcnow)
 
@@ -637,9 +637,9 @@ class SessionAnalytics(Base):
 
     __tablename__ = "session_analytics"
 
-    id = Column(PGUUID(as_uuid=True), primary_key=True, default=uuid4)
+    id = Column(String, primary_key=True, default=uuid4)
     session_id = Column(
-        PGUUID(as_uuid=True),
+        String,
         ForeignKey("live_sessions.id"),
         nullable=False,
         unique=True,

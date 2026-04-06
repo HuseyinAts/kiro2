@@ -64,11 +64,11 @@ class DepartmentCurriculum(Base):
 
     __tablename__ = "department_curricula"
 
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    id = Column(String, primary_key=True, default=uuid.uuid4)
 
     # Department reference
     department_id = Column(
-        UUID(as_uuid=True), ForeignKey("departments.id"), nullable=False, index=True
+        String, ForeignKey("departments.id"), nullable=False, index=True
     )
 
     # Basic info
@@ -129,11 +129,11 @@ class CareerOpportunity(Base):
 
     __tablename__ = "career_opportunities"
 
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    id = Column(String, primary_key=True, default=uuid.uuid4)
 
     # Department reference
     department_id = Column(
-        UUID(as_uuid=True), ForeignKey("departments.id"), nullable=False, index=True
+        String, ForeignKey("departments.id"), nullable=False, index=True
     )
 
     # Job info
@@ -186,14 +186,14 @@ class SalaryExpectation(Base):
 
     __tablename__ = "salary_expectations"
 
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    id = Column(String, primary_key=True, default=uuid.uuid4)
 
     # Department/Career reference
     department_id = Column(
-        UUID(as_uuid=True), ForeignKey("departments.id"), nullable=False, index=True
+        String, ForeignKey("departments.id"), nullable=False, index=True
     )
     career_opportunity_id = Column(
-        UUID(as_uuid=True),
+        String,
         ForeignKey("career_opportunities.id"),
         nullable=True,
         index=True,
@@ -262,14 +262,14 @@ class SectorAnalysis(Base):
 
     __tablename__ = "sector_analyses"
 
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    id = Column(String, primary_key=True, default=uuid.uuid4)
 
     # Sector info
     industry_type = Column(SQLEnum(IndustryType), nullable=False, index=True)
     sector_name = Column(String(200), nullable=False)
 
     # Related departments (many-to-many via JSONB)
-    related_department_ids = Column(ARRAY(UUID(as_uuid=True)), default=list)
+    related_department_ids = Column(ARRAY(String), default=list)
 
     # Market size
     market_size_billion_tl = Column(Float, nullable=True)
@@ -337,11 +337,11 @@ class DepartmentStatistics(Base):
 
     __tablename__ = "department_statistics"
 
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    id = Column(String, primary_key=True, default=uuid.uuid4)
 
     # Department reference
     department_id = Column(
-        UUID(as_uuid=True),
+        String,
         ForeignKey("departments.id"),
         nullable=False,
         unique=True,

@@ -93,23 +93,23 @@ class StudentReview(Base):
 
     __tablename__ = "student_reviews"
 
-    id = Column(PGUUID(as_uuid=True), primary_key=True, default=uuid4)
+    id = Column(String, primary_key=True, default=uuid4)
     user_id = Column(
-        PGUUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), nullable=False
+        String, ForeignKey("users.id", ondelete="CASCADE"), nullable=False
     )
 
     # Review target
     review_type = Column(SQLEnum(ReviewType), nullable=False)
     university_id = Column(
-        PGUUID(as_uuid=True), ForeignKey("universities.id", ondelete="CASCADE")
+        String, ForeignKey("universities.id", ondelete="CASCADE")
     )
     department_id = Column(
-        PGUUID(as_uuid=True), ForeignKey("departments.id", ondelete="CASCADE")
+        String, ForeignKey("departments.id", ondelete="CASCADE")
     )
-    professor_id = Column(PGUUID(as_uuid=True))  # Could add professors table later
-    course_id = Column(PGUUID(as_uuid=True))  # Could add courses table later
+    professor_id = Column(String)  # Could add professors table later
+    course_id = Column(String)  # Could add courses table later
     dormitory_id = Column(
-        PGUUID(as_uuid=True), ForeignKey("dormitory_info.id", ondelete="CASCADE")
+        String, ForeignKey("dormitory_info.id", ondelete="CASCADE")
     )
 
     # Review content
@@ -134,7 +134,7 @@ class StudentReview(Base):
     status = Column(SQLEnum(ReviewStatus), default=ReviewStatus.PENDING)
     moderation_notes = Column(Text)
     moderated_by = Column(
-        PGUUID(as_uuid=True), ForeignKey("users.id", ondelete="SET NULL")
+        String, ForeignKey("users.id", ondelete="SET NULL")
     )
     moderated_at = Column(DateTime(timezone=True))
 
@@ -208,9 +208,9 @@ class ReviewRating(Base):
 
     __tablename__ = "review_ratings"
 
-    id = Column(PGUUID(as_uuid=True), primary_key=True, default=uuid4)
+    id = Column(String, primary_key=True, default=uuid4)
     review_id = Column(
-        PGUUID(as_uuid=True),
+        String,
         ForeignKey("student_reviews.id", ondelete="CASCADE"),
         nullable=False,
     )
@@ -255,14 +255,14 @@ class ReviewVote(Base):
 
     __tablename__ = "review_votes"
 
-    id = Column(PGUUID(as_uuid=True), primary_key=True, default=uuid4)
+    id = Column(String, primary_key=True, default=uuid4)
     review_id = Column(
-        PGUUID(as_uuid=True),
+        String,
         ForeignKey("student_reviews.id", ondelete="CASCADE"),
         nullable=False,
     )
     user_id = Column(
-        PGUUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), nullable=False
+        String, ForeignKey("users.id", ondelete="CASCADE"), nullable=False
     )
 
     # Vote type
@@ -297,14 +297,14 @@ class ReviewReport(Base):
 
     __tablename__ = "review_reports"
 
-    id = Column(PGUUID(as_uuid=True), primary_key=True, default=uuid4)
+    id = Column(String, primary_key=True, default=uuid4)
     review_id = Column(
-        PGUUID(as_uuid=True),
+        String,
         ForeignKey("student_reviews.id", ondelete="CASCADE"),
         nullable=False,
     )
     reporter_id = Column(
-        PGUUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), nullable=False
+        String, ForeignKey("users.id", ondelete="CASCADE"), nullable=False
     )
 
     # Report details
@@ -316,7 +316,7 @@ class ReviewReport(Base):
         String(50), default="pending"
     )  # "pending", "reviewed", "resolved", "dismissed"
     resolved_by = Column(
-        PGUUID(as_uuid=True), ForeignKey("users.id", ondelete="SET NULL")
+        String, ForeignKey("users.id", ondelete="SET NULL")
     )
     resolved_at = Column(DateTime(timezone=True))
     resolution_notes = Column(Text)
@@ -350,18 +350,18 @@ class ReviewStatistics(Base):
 
     __tablename__ = "review_statistics"
 
-    id = Column(PGUUID(as_uuid=True), primary_key=True, default=uuid4)
+    id = Column(String, primary_key=True, default=uuid4)
 
     # Target
     review_type = Column(SQLEnum(ReviewType), nullable=False)
     university_id = Column(
-        PGUUID(as_uuid=True), ForeignKey("universities.id", ondelete="CASCADE")
+        String, ForeignKey("universities.id", ondelete="CASCADE")
     )
     department_id = Column(
-        PGUUID(as_uuid=True), ForeignKey("departments.id", ondelete="CASCADE")
+        String, ForeignKey("departments.id", ondelete="CASCADE")
     )
     dormitory_id = Column(
-        PGUUID(as_uuid=True), ForeignKey("dormitory_info.id", ondelete="CASCADE")
+        String, ForeignKey("dormitory_info.id", ondelete="CASCADE")
     )
 
     # Overall statistics
@@ -421,9 +421,9 @@ class ModerationQueue(Base):
 
     __tablename__ = "moderation_queue"
 
-    id = Column(PGUUID(as_uuid=True), primary_key=True, default=uuid4)
+    id = Column(String, primary_key=True, default=uuid4)
     review_id = Column(
-        PGUUID(as_uuid=True),
+        String,
         ForeignKey("student_reviews.id", ondelete="CASCADE"),
         nullable=False,
     )
@@ -436,7 +436,7 @@ class ModerationQueue(Base):
 
     # Assignment
     assigned_to = Column(
-        PGUUID(as_uuid=True), ForeignKey("users.id", ondelete="SET NULL")
+        String, ForeignKey("users.id", ondelete="SET NULL")
     )
     assigned_at = Column(DateTime(timezone=True))
 

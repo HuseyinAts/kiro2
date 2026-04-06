@@ -26,7 +26,7 @@ class Soru(SoruBase):
 
     # Primary key
     id: Mapped[uuid.UUID] = mapped_column(
-        UUID(as_uuid=True), primary_key=True, default=uuid.uuid4
+        String, primary_key=True, default=uuid.uuid4
     )
 
     # Soru içeriği
@@ -85,7 +85,7 @@ class Soru(SoruBase):
     prerequisite_topics: Mapped[Optional[list]] = mapped_column(JSONB)
     ai_validation_confidence: Mapped[Optional[float]] = mapped_column(Float)
     expert_review_score: Mapped[Optional[int]] = mapped_column(Integer)
-    expert_reviewer_id: Mapped[Optional[uuid.UUID]] = mapped_column(UUID(as_uuid=True))
+    expert_reviewer_id: Mapped[Optional[uuid.UUID]] = mapped_column(String)
     review_date: Mapped[Optional[datetime]] = mapped_column(DateTime)
     bloom_level: Mapped[Optional[str]] = mapped_column(String)
     cognitive_skills: Mapped[Optional[list]] = mapped_column(JSONB)

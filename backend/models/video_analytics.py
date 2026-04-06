@@ -32,11 +32,11 @@ class VideoWatchSession(Base):
 
     __tablename__ = "video_watch_sessions"
 
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    id = Column(String, primary_key=True, default=uuid.uuid4)
 
     # Session info
     user_id = Column(
-        UUID(as_uuid=True), ForeignKey("users.id"), nullable=False, index=True
+        String, ForeignKey("users.id"), nullable=False, index=True
     )
     video_id = Column(String(100), nullable=False, index=True)
     video_source = Column(String(20), nullable=False)  # youtube, eba, khan, vimeo
@@ -88,11 +88,11 @@ class VideoCompletionMilestone(Base):
 
     __tablename__ = "video_completion_milestones"
 
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    id = Column(String, primary_key=True, default=uuid.uuid4)
 
     # User and video
     user_id = Column(
-        UUID(as_uuid=True), ForeignKey("users.id"), nullable=False, index=True
+        String, ForeignKey("users.id"), nullable=False, index=True
     )
     video_id = Column(String(100), nullable=False, index=True)
     video_source = Column(String(20), nullable=False)
@@ -103,7 +103,7 @@ class VideoCompletionMilestone(Base):
 
     # Badge awarded
     badge_awarded = Column(Boolean, default=False)
-    badge_id = Column(UUID(as_uuid=True), ForeignKey("user_badges.id"), nullable=True)
+    badge_id = Column(String, ForeignKey("user_badges.id"), nullable=True)
 
     # Relationships
     user = relationship("User")
@@ -131,18 +131,18 @@ class VideoNote(Base):
 
     __tablename__ = "video_notes"
 
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    id = Column(String, primary_key=True, default=uuid.uuid4)
 
     # User and video
     user_id = Column(
-        UUID(as_uuid=True), ForeignKey("users.id"), nullable=False, index=True
+        String, ForeignKey("users.id"), nullable=False, index=True
     )
     video_id = Column(String(100), nullable=False, index=True)
     video_source = Column(String(20), nullable=False)
 
     # Session reference
     session_id = Column(
-        UUID(as_uuid=True), ForeignKey("video_watch_sessions.id"), nullable=True
+        String, ForeignKey("video_watch_sessions.id"), nullable=True
     )
 
     # Note content
@@ -181,18 +181,18 @@ class VideoBookmark(Base):
 
     __tablename__ = "video_bookmarks"
 
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    id = Column(String, primary_key=True, default=uuid.uuid4)
 
     # User and video
     user_id = Column(
-        UUID(as_uuid=True), ForeignKey("users.id"), nullable=False, index=True
+        String, ForeignKey("users.id"), nullable=False, index=True
     )
     video_id = Column(String(100), nullable=False, index=True)
     video_source = Column(String(20), nullable=False)
 
     # Session reference
     session_id = Column(
-        UUID(as_uuid=True), ForeignKey("video_watch_sessions.id"), nullable=True
+        String, ForeignKey("video_watch_sessions.id"), nullable=True
     )
 
     # Bookmark info
@@ -232,11 +232,11 @@ class VideoAnalyticsSummary(Base):
 
     __tablename__ = "video_analytics_summary"
 
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    id = Column(String, primary_key=True, default=uuid.uuid4)
 
     # User and period
     user_id = Column(
-        UUID(as_uuid=True), ForeignKey("users.id"), nullable=False, index=True
+        String, ForeignKey("users.id"), nullable=False, index=True
     )
     period_type = Column(String(10), nullable=False)  # daily, weekly, monthly
     period_start = Column(DateTime(timezone=True), nullable=False, index=True)

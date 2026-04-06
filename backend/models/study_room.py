@@ -108,7 +108,7 @@ class StudyRoom(Base):
 
     __tablename__ = "study_rooms"
 
-    id = Column(PGUUID(as_uuid=True), primary_key=True, default=uuid4)
+    id = Column(String, primary_key=True, default=uuid4)
 
     # Basic Information
     name = Column(String(255), nullable=False)
@@ -116,7 +116,7 @@ class StudyRoom(Base):
     topic = Column(String(255))  # Study topic/subject
 
     # Owner
-    owner_id = Column(PGUUID(as_uuid=True), ForeignKey("users.id"), nullable=False)
+    owner_id = Column(String, ForeignKey("users.id"), nullable=False)
 
     # Status
     status = Column(SQLEnum(RoomStatus), default=RoomStatus.ACTIVE)
@@ -189,9 +189,9 @@ class RoomMember(Base):
 
     __tablename__ = "room_members"
 
-    id = Column(PGUUID(as_uuid=True), primary_key=True, default=uuid4)
-    room_id = Column(PGUUID(as_uuid=True), ForeignKey("study_rooms.id"), nullable=False)
-    user_id = Column(PGUUID(as_uuid=True), ForeignKey("users.id"), nullable=False)
+    id = Column(String, primary_key=True, default=uuid4)
+    room_id = Column(String, ForeignKey("study_rooms.id"), nullable=False)
+    user_id = Column(String, ForeignKey("users.id"), nullable=False)
 
     # Role (Task 109.2)
     role = Column(SQLEnum(MemberRole), default=MemberRole.MEMBER)
@@ -208,7 +208,7 @@ class RoomMember(Base):
 
     # Joined
     joined_at = Column(DateTime(timezone=True), default=datetime.utcnow)
-    invited_by = Column(PGUUID(as_uuid=True), ForeignKey("users.id"))
+    invited_by = Column(String, ForeignKey("users.id"))
 
     # Activity
     last_seen_at = Column(DateTime(timezone=True))
@@ -248,12 +248,12 @@ class RoomInvitation(Base):
 
     __tablename__ = "room_invitations"
 
-    id = Column(PGUUID(as_uuid=True), primary_key=True, default=uuid4)
-    room_id = Column(PGUUID(as_uuid=True), ForeignKey("study_rooms.id"), nullable=False)
+    id = Column(String, primary_key=True, default=uuid4)
+    room_id = Column(String, ForeignKey("study_rooms.id"), nullable=False)
 
     # Inviter & Invitee
-    inviter_id = Column(PGUUID(as_uuid=True), ForeignKey("users.id"), nullable=False)
-    invitee_id = Column(PGUUID(as_uuid=True), ForeignKey("users.id"))
+    inviter_id = Column(String, ForeignKey("users.id"), nullable=False)
+    invitee_id = Column(String, ForeignKey("users.id"))
     invitee_email = Column(String(255))  # For external invitations
 
     # Invitation Details
@@ -291,9 +291,9 @@ class RoomChatMessage(Base):
 
     __tablename__ = "room_chat_messages"
 
-    id = Column(PGUUID(as_uuid=True), primary_key=True, default=uuid4)
-    room_id = Column(PGUUID(as_uuid=True), ForeignKey("study_rooms.id"), nullable=False)
-    user_id = Column(PGUUID(as_uuid=True), ForeignKey("users.id"), nullable=False)
+    id = Column(String, primary_key=True, default=uuid4)
+    room_id = Column(String, ForeignKey("study_rooms.id"), nullable=False)
+    user_id = Column(String, ForeignKey("users.id"), nullable=False)
 
     # Message Content (Task 109.3)
     message = Column(Text, nullable=False)
@@ -304,10 +304,10 @@ class RoomChatMessage(Base):
     reactions = Column(JSONB, default=dict)  # Emoji reactions: {emoji: [user_ids]}
 
     # File Reference (for file messages)
-    file_id = Column(PGUUID(as_uuid=True), ForeignKey("shared_files.id"))
+    file_id = Column(String, ForeignKey("shared_files.id"))
 
     # Reply
-    reply_to_id = Column(PGUUID(as_uuid=True), ForeignKey("room_chat_messages.id"))
+    reply_to_id = Column(String, ForeignKey("room_chat_messages.id"))
 
     # Editing
     is_edited = Column(Boolean, default=False)
@@ -316,12 +316,12 @@ class RoomChatMessage(Base):
     # Deletion
     is_deleted = Column(Boolean, default=False)
     deleted_at = Column(DateTime(timezone=True))
-    deleted_by = Column(PGUUID(as_uuid=True), ForeignKey("users.id"))
+    deleted_by = Column(String, ForeignKey("users.id"))
 
     # Pinned
     is_pinned = Column(Boolean, default=False)
     pinned_at = Column(DateTime(timezone=True))
-    pinned_by = Column(PGUUID(as_uuid=True), ForeignKey("users.id"))
+    pinned_by = Column(String, ForeignKey("users.id"))
 
     # Read Receipts
     read_by = Column(ARRAY(String), default=list)  # User IDs who read the message
@@ -349,9 +349,9 @@ class SharedFile(Base):
 
     __tablename__ = "shared_files"
 
-    id = Column(PGUUID(as_uuid=True), primary_key=True, default=uuid4)
-    room_id = Column(PGUUID(as_uuid=True), ForeignKey("study_rooms.id"), nullable=False)
-    uploaded_by = Column(PGUUID(as_uuid=True), ForeignKey("users.id"), nullable=False)
+    id = Column(String, primary_key=True, default=uuid4)
+    room_id = Column(String, ForeignKey("study_rooms.id"), nullable=False)
+    uploaded_by = Column(String, ForeignKey("users.id"), nullable=False)
 
     # File Information (Task 109.4)
     filename = Column(String(255), nullable=False)
@@ -375,7 +375,7 @@ class SharedFile(Base):
     # Versioning (Task 109.4)
     version_number = Column(Integer, default=1)
     parent_file_id = Column(
-        PGUUID(as_uuid=True), ForeignKey("shared_files.id")
+        String, ForeignKey("shared_files.id")
     )  # Original file for versions
 
     # Download Tracking
@@ -390,7 +390,7 @@ class SharedFile(Base):
     # Deletion
     is_deleted = Column(Boolean, default=False)
     deleted_at = Column(DateTime(timezone=True))
-    deleted_by = Column(PGUUID(as_uuid=True), ForeignKey("users.id"))
+    deleted_by = Column(String, ForeignKey("users.id"))
 
     # Metadata
     meta_data = Column(JSONB, default=dict)
@@ -421,9 +421,9 @@ class FileVersion(Base):
 
     __tablename__ = "file_versions"
 
-    id = Column(PGUUID(as_uuid=True), primary_key=True, default=uuid4)
+    id = Column(String, primary_key=True, default=uuid4)
     file_id = Column(
-        PGUUID(as_uuid=True), ForeignKey("shared_files.id"), nullable=False
+        String, ForeignKey("shared_files.id"), nullable=False
     )
 
     # Version Details
@@ -433,7 +433,7 @@ class FileVersion(Base):
     file_size_bytes = Column(Integer, nullable=False)
 
     # Uploader
-    uploaded_by = Column(PGUUID(as_uuid=True), ForeignKey("users.id"), nullable=False)
+    uploaded_by = Column(String, ForeignKey("users.id"), nullable=False)
 
     # Status
     status = Column(SQLEnum(FileVersionStatus), default=FileVersionStatus.ARCHIVED)
@@ -463,9 +463,9 @@ class StudySession(Base):
     __tablename__ = "study_sessions"
     __table_args__ = {"extend_existing": True}
 
-    id = Column(PGUUID(as_uuid=True), primary_key=True, default=uuid4)
-    room_id = Column(PGUUID(as_uuid=True), ForeignKey("study_rooms.id"), nullable=False)
-    user_id = Column(PGUUID(as_uuid=True), ForeignKey("users.id"), nullable=False)
+    id = Column(String, primary_key=True, default=uuid4)
+    room_id = Column(String, ForeignKey("study_rooms.id"), nullable=False)
+    user_id = Column(String, ForeignKey("users.id"), nullable=False)
 
     # Session Details
     started_at = Column(DateTime(timezone=True), default=datetime.utcnow)
@@ -495,9 +495,9 @@ class RoomAnalytics(Base):
 
     __tablename__ = "room_analytics"
 
-    id = Column(PGUUID(as_uuid=True), primary_key=True, default=uuid4)
+    id = Column(String, primary_key=True, default=uuid4)
     room_id = Column(
-        PGUUID(as_uuid=True), ForeignKey("study_rooms.id"), nullable=False, unique=True
+        String, ForeignKey("study_rooms.id"), nullable=False, unique=True
     )
 
     # Member Statistics
@@ -551,9 +551,9 @@ class RoomSettings(Base):
 
     __tablename__ = "room_settings"
 
-    id = Column(PGUUID(as_uuid=True), primary_key=True, default=uuid4)
+    id = Column(String, primary_key=True, default=uuid4)
     room_id = Column(
-        PGUUID(as_uuid=True), ForeignKey("study_rooms.id"), nullable=False, unique=True
+        String, ForeignKey("study_rooms.id"), nullable=False, unique=True
     )
 
     # Chat Settings

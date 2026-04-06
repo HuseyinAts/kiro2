@@ -81,9 +81,9 @@ class DiaryEntry(Base):
 
     __tablename__ = "diary_entries"
 
-    id = Column(PGUUID(as_uuid=True), primary_key=True, default=uuid4)
+    id = Column(String, primary_key=True, default=uuid4)
     user_id = Column(
-        PGUUID(as_uuid=True),
+        String,
         ForeignKey("users.id", ondelete="CASCADE"),
         nullable=False
     )
@@ -169,14 +169,14 @@ class Insight(Base):
 
     __tablename__ = "insights"
 
-    id = Column(PGUUID(as_uuid=True), primary_key=True, default=uuid4)
+    id = Column(String, primary_key=True, default=uuid4)
     diary_entry_id = Column(
-        PGUUID(as_uuid=True),
+        String,
         ForeignKey("diary_entries.id", ondelete="CASCADE"),
         nullable=False
     )
     user_id = Column(
-        PGUUID(as_uuid=True),
+        String,
         ForeignKey("users.id", ondelete="CASCADE"),
         nullable=False
     )
@@ -239,14 +239,14 @@ class Reflection(Base):
 
     __tablename__ = "reflections"
 
-    id = Column(PGUUID(as_uuid=True), primary_key=True, default=uuid4)
+    id = Column(String, primary_key=True, default=uuid4)
     diary_entry_id = Column(
-        PGUUID(as_uuid=True),
+        String,
         ForeignKey("diary_entries.id", ondelete="CASCADE"),
         nullable=False
     )
     user_id = Column(
-        PGUUID(as_uuid=True),
+        String,
         ForeignKey("users.id", ondelete="CASCADE"),
         nullable=False
     )
@@ -312,9 +312,9 @@ class LearningEntry(Base):
 
     __tablename__ = "learning_entries"
 
-    id = Column(PGUUID(as_uuid=True), primary_key=True, default=uuid4)
+    id = Column(String, primary_key=True, default=uuid4)
     user_id = Column(
-        PGUUID(as_uuid=True),
+        String,
         ForeignKey("users.id", ondelete="CASCADE"),
         nullable=False
     )
@@ -388,9 +388,9 @@ class EmotionalState(Base):
 
     __tablename__ = "emotional_states"
 
-    id = Column(PGUUID(as_uuid=True), primary_key=True, default=uuid4)
+    id = Column(String, primary_key=True, default=uuid4)
     user_id = Column(
-        PGUUID(as_uuid=True),
+        String,
         ForeignKey("users.id", ondelete="CASCADE"),
         nullable=False
     )
@@ -455,9 +455,9 @@ class Goal(Base):
 
     __tablename__ = "goals"
 
-    id = Column(PGUUID(as_uuid=True), primary_key=True, default=uuid4)
+    id = Column(String, primary_key=True, default=uuid4)
     user_id = Column(
-        PGUUID(as_uuid=True),
+        String,
         ForeignKey("users.id", ondelete="CASCADE"),
         nullable=False
     )
@@ -563,9 +563,9 @@ class PeerComparison(Base):
 
     __tablename__ = "peer_comparisons"
 
-    id = Column(PGUUID(as_uuid=True), primary_key=True, default=uuid4)
+    id = Column(String, primary_key=True, default=uuid4)
     user_id = Column(
-        PGUUID(as_uuid=True),
+        String,
         ForeignKey("users.id", ondelete="CASCADE"),
         nullable=False
     )
@@ -630,9 +630,9 @@ class DiaryExport(Base):
 
     __tablename__ = "diary_exports"
 
-    id = Column(PGUUID(as_uuid=True), primary_key=True, default=uuid4)
+    id = Column(String, primary_key=True, default=uuid4)
     user_id = Column(
-        PGUUID(as_uuid=True),
+        String,
         ForeignKey("users.id", ondelete="CASCADE"),
         nullable=False
     )

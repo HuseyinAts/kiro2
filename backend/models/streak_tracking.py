@@ -17,7 +17,7 @@ class StreakTracking(Base):
 
     __tablename__ = "streak_tracking"
 
-    id = Column(PGUUID(as_uuid=True), primary_key=True, default=uuid4)
+    id = Column(String, primary_key=True, default=uuid4)
     user_id = Column(String, ForeignKey("users.id"), nullable=False, index=True)
 
     # Current streak
@@ -65,7 +65,7 @@ class PerformanceHistory(Base):
 
     __tablename__ = "performance_history"
 
-    id = Column(PGUUID(as_uuid=True), primary_key=True, default=uuid4)
+    id = Column(String, primary_key=True, default=uuid4)
     user_id = Column(String, ForeignKey("users.id"), nullable=False, index=True)
 
     # Performance data

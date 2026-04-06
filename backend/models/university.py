@@ -62,7 +62,7 @@ class University(Base):
 
     __tablename__ = "universities"
 
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    id = Column(String, primary_key=True, default=uuid.uuid4)
 
     # Basic info
     name = Column(String(255), nullable=False, unique=True, index=True)
@@ -136,7 +136,7 @@ class Department(Base):
 
     __tablename__ = "departments"
 
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    id = Column(String, primary_key=True, default=uuid.uuid4)
 
     # Basic info
     name = Column(String(255), nullable=False, index=True)
@@ -203,14 +203,14 @@ class UniversityProgram(Base):
 
     __tablename__ = "university_programs"
 
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    id = Column(String, primary_key=True, default=uuid.uuid4)
 
     # References
     university_id = Column(
-        UUID(as_uuid=True), ForeignKey("universities.id"), nullable=False, index=True
+        String, ForeignKey("universities.id"), nullable=False, index=True
     )
     department_id = Column(
-        UUID(as_uuid=True), ForeignKey("departments.id"), nullable=False, index=True
+        String, ForeignKey("departments.id"), nullable=False, index=True
     )
 
     # Program info
@@ -298,11 +298,11 @@ class ProgramScoreHistory(Base):
 
     __tablename__ = "program_score_history"
 
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    id = Column(String, primary_key=True, default=uuid.uuid4)
 
     # Reference
     program_id = Column(
-        UUID(as_uuid=True),
+        String,
         ForeignKey("university_programs.id"),
         nullable=False,
         index=True,
@@ -351,11 +351,11 @@ class UserUniversityPreference(Base):
 
     __tablename__ = "user_university_preferences"
 
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    id = Column(String, primary_key=True, default=uuid.uuid4)
 
     # User
     user_id = Column(
-        UUID(as_uuid=True), ForeignKey("users.id"), nullable=False, index=True
+        String, ForeignKey("users.id"), nullable=False, index=True
     )
 
     # Preferences
