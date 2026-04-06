@@ -15,7 +15,9 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel, ConfigDict, Field
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from core.auth_dependencies import authenticate_optional
+from core.auth_dependencies import authenticate_optional, AuthorizationDependency
+
+get_current_admin_user = AuthorizationDependency(required_roles=["admin", "super_admin"])
 from core.database import get_db
 from services.reasoning.visualization_service import get_visualization_service
 from services.sequential_reasoning_service import SequentialReasoningService

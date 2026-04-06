@@ -16,7 +16,12 @@ Date: 2026-01-19
 import logging
 from datetime import datetime
 
-from fastapi import APIRouter, HTTPException, Query, status
+from fastapi import APIRouter, Depends, HTTPException, Query, status
+from core.auth_dependencies import AuthenticationDependency, AuthorizationDependency
+from core.dependencies import AuthenticatedUser
+
+get_current_user = AuthenticationDependency(required=True)
+get_current_admin_user = AuthorizationDependency(required_roles=["admin", "super_admin"])
 from pydantic import BaseModel, Field
 
 logger = logging.getLogger(__name__)
