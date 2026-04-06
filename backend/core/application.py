@@ -231,6 +231,7 @@ def setup_middleware(app: FastAPI) -> None:
             CSRFProtectionMiddleware,
             exempt_paths=[
                 "/api/v1/",  # SameSite=Lax zaten koruyor — exempt kalabilir
+                "/api/pwa-sync-api/",  # PWA sync endpoints — JSON API, CSRF gereksiz
                 "/docs",
                 "/redoc",
                 "/openapi.json",
