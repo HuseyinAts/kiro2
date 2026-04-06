@@ -27,11 +27,6 @@ DISABLED_ROUTERS = {
     # RE-ENABLED (2026-04-02): knowledge_points + question_knowledge_mappings + student_knowledge_states MEVCUT
     # RE-ENABLED (2026-04-02): dina_parameters + nano_skills + q_matrix + student_nano_skill_mastery MEVCUT
     "api.productive_failure_api",        # sub_problems, solution_steps yok
-    "api.university_advisory_routes",    # universities tablosu yok
-    "api.preference_simulation_routes",  # departments tablosu yok
-    "api.department_info_routes",        # department_curricula yok
-    "api.university_info_routes",        # campus_info, dormitory_info yok
-    "api.student_review_routes",         # student_reviews tablosu yok
     "api.live_session_routes",           # live_sessions, session_recordings yok
     # PWA/OFFLINE — Deploy edilmedi
     "api.offline_sync_api",
@@ -327,6 +322,7 @@ def setup_routers(app: FastAPI):
     loader = RouterLoader(app)
     loader.load_all_routers()
     return loader
+
 
 
 
