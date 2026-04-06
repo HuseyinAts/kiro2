@@ -22,9 +22,9 @@ sync_router = APIRouter(prefix="/api/v1/sync", tags=["PWA Sync"])
 push_router = APIRouter(prefix="/api/v1/push", tags=["PWA Push"])
 
 # Expose a combined router for loader.py
-router = APIRouter()
-router.include_router(sync_router)
-router.include_router(push_router)
+# NOTE: include_router calls MUST be after the route decorators below.
+# FastAPI/Starlette's include_router takes a snapshot of child router routes
+# at call time — if called before decorators, child router routes are empty.
 
 
 class PushSubscription(BaseModel):
@@ -87,3 +87,10 @@ async def sync_progress(
         "data": {"synced": 0, "pending": 0},
         "message": "Progress sync stub — not yet implemented",
     }
+
+
+# Expose combined router AFTER all route decorators
+# so include_router captures the actual routes (not an empty snapshot)
+router = APIRouter()
+router.include_router(sync_router)
+router.include_router(push_router)
