@@ -138,7 +138,7 @@ KIRO2 is a Turkish EdTech platform for YKS/TYT/AYT university entrance exam prep
 3. **P1: Re-OCR recovery** — 1,521-2,511 soru kurtarma (silinen 3,546'dan)
 
 ### Orchestrator Architecture ✅
-- ✅ **orchestrator/** v2.5.0 (LangGraph 1.0.5) - **ACTIVE**
+- ✅ **orchestrator/** v2.5.0 (LangGraph >=0.2.0) - **ACTIVE**
   - 24 modules (graph.py, routing.py, policy_engine.py, etc.)
   - 45 policies
   - 20 active agents

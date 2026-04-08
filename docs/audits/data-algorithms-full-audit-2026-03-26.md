@@ -251,7 +251,7 @@ Cikis: new_p_L, theta, se, fsrs_next_review, zpd_zone
 | Test sayisi | 71+ |
 | Implementation | %40 (60% TODO) |
 
-- LangGraph 1.0.5, StateGraph + conditional edges
+- LangGraph >=0.2.0, StateGraph + conditional edges
 - 18 task type + risk-level matrix
 - Tool allowlist/blocklist (guvenlik)
 - Quality gates: Lint → TypeCheck → UnitTest → Integration → Security

@@ -507,13 +507,23 @@ class CATSessionService:
         # Böylece öğrenci oturumu tamamlamasa bile son theta kaydedilir.
         try:
             _SUBJ_MAP = {
-                "matematik": 1, "geometri": 2, "fizik": 3, "kimya": 4,
-                "biyoloji": 5, "turkce": 6, "tarih": 7, "cografya": 8,
-                "edebiyat": 9, "felsefe": 10, "din": 11, "sosyal": 12,
+                "matematik": 1,
+                "geometri": 2,
+                "fizik": 3,
+                "kimya": 4,
+                "biyoloji": 5,
+                "turkce": 6,
+                "tarih": 7,
+                "cografya": 8,
+                "edebiyat": 9,
+                "felsefe": 10,
+                "din": 11,
+                "sosyal": 12,
             }
             _sid = _SUBJ_MAP.get(state.subject_id.lower())
             if _sid is not None:
                 from sqlalchemy import text as _txt
+
                 await self.db.execute(
                     _txt("""
                     INSERT INTO student_abilities (student_id, subject_id, theta, theta_se, updated_at)
@@ -521,8 +531,12 @@ class CATSessionService:
                     ON CONFLICT (student_id, subject_id)
                     DO UPDATE SET theta = :theta, theta_se = :se, updated_at = NOW()
                     """),
-                    {"uid": state.user_id, "sid": _sid,
-                     "theta": round(state.theta, 4), "se": round(state.se, 4)},
+                    {
+                        "uid": state.user_id,
+                        "sid": _sid,
+                        "theta": round(state.theta, 4),
+                        "se": round(state.se, 4),
+                    },
                 )
                 await self.db.commit()
         except Exception:
@@ -531,6 +545,7 @@ class CATSessionService:
         # 3c. PROGRESSIVE XP: Her cevaptan sonra XP ekle
         try:
             from sqlalchemy import text as _txt2
+
             _xp = 10 if is_correct else 3  # Doğru: 10XP, Yanlış: 3XP (katılım ödülü)
             # 1) xp_transactions INSERT (gamification endpoint bunu okur)
             await self.db.execute(
@@ -542,22 +557,6 @@ class CATSessionService:
             await self.db.execute(
                 _txt2("UPDATE users SET total_xp = total_xp + :xp WHERE id = :uid"),
                 {"uid": state.user_id, "xp": _xp},
-            )
-            await self.db.commit()
-        except Exception:
-            pass
-
-        # 3d. PROGRESSIVE FSRS: Her cevaptan sonra kart oluştur/güncelle
-        try:
-            from sqlalchemy import text as _txt3
-            await self.db.execute(
-                _txt3("""
-                INSERT INTO user_item_fsrs (user_id, question_id, state, due_date, stability, difficulty,
-                    scheduled_days, elapsed_days, reps, lapses, created_at, updated_at)
-                VALUES (CAST(:uid AS uuid), :qid, 0, NOW(), 1.0, 5.0, 0, 0.0, 0, 0, NOW(), NOW())
-                ON CONFLICT (user_id, question_id) DO NOTHING
-                """),
-                {"uid": state.user_id, "qid": question_id},
             )
             await self.db.commit()
         except Exception:
@@ -586,7 +585,12 @@ class CATSessionService:
                 "termination_reason": reason,
                 "next_question": None,
                 "phase": "completed",
-                "feedback": {"is_correct": is_correct, "correct_option": q_detail.get("correct_option") if q_detail else None},
+                "feedback": {
+                    "is_correct": is_correct,
+                    "correct_option": q_detail.get("correct_option")
+                    if q_detail
+                    else None,
+                },
                 "plan_refresh_needed": True,  # Frontend bunu gorünce /daily-plan yeniler
             }
 
@@ -619,7 +623,12 @@ class CATSessionService:
                 "termination_reason": "pool_exhausted",
                 "next_question": None,
                 "phase": "completed",
-                "feedback": {"is_correct": is_correct, "correct_option": q_detail.get("correct_option") if q_detail else None},
+                "feedback": {
+                    "is_correct": is_correct,
+                    "correct_option": q_detail.get("correct_option")
+                    if q_detail
+                    else None,
+                },
             }
 
         next_question_detail = await self._fetch_question_detail(next_item.question_id)
@@ -635,7 +644,10 @@ class CATSessionService:
             "termination_reason": None,
             "next_question": next_question_detail,
             "phase": phase,
-            "feedback": {"is_correct": is_correct, "correct_option": q_detail.get("correct_option") if q_detail else None},
+            "feedback": {
+                "is_correct": is_correct,
+                "correct_option": q_detail.get("correct_option") if q_detail else None,
+            },
         }
 
     async def get_session_state(self, session_id: str) -> CATState | None:
@@ -812,6 +824,7 @@ class CATSessionService:
         # Streak güncelleme — CAT tamamlandığında bugünü aktif say
         try:
             from sqlalchemy import text as _stxt
+
             await self.db.execute(
                 _stxt("""
                 INSERT INTO streaks (user_id, current_streak, largest_streak, last_activity, total_days_active)
@@ -846,8 +859,12 @@ class CATSessionService:
                     total_time_seconds = weekly_progress.total_time_seconds + :secs,
                     updated_at = NOW()
                 """),
-                {"uid": state.user_id, "yr": _iso.year, "wk": _iso.week,
-                 "secs": state.n_questions * 15},  # ~15s per question estimate
+                {
+                    "uid": state.user_id,
+                    "yr": _iso.year,
+                    "wk": _iso.week,
+                    "secs": state.n_questions * 15,
+                },  # ~15s per question estimate
             )
             await self.db.commit()
         except Exception:

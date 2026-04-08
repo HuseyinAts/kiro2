@@ -10,6 +10,8 @@ DEPRECATED MODELS (will be removed in v3.0.0):
 - StudentLearningProfile: Use LearningPathStudentProfile instead
 """
 
+import importlib.util
+
 # Base import (avoid circular import)
 from .base import Base
 from .birlikte_streak import StreakDailyLog, StreakPair
@@ -189,6 +191,41 @@ from .usta_cirak import MentorFeedback, MentorPair, MentorSession
 Student = StudentProfile
 # DEPRECATED: Use LearningPathStudentProfile directly
 CanonicalStudentProfile = LearningPathStudentProfile
+
+# Re-export deprecated models for backward compatibility
+# These models were moved to _deprecated/ but tests still import from models.learning_models
+try:
+    from ._deprecated.learning_models import (
+        AgentMessage,
+        BionicReadingResult,
+        BlackboardEntry,
+        CulturalContext,
+        FelderDimension,
+        Flashcard,
+        FSRSCard,
+        HybridLearningProfile,
+        LearningSession,
+        LearningStyleType,
+        MorphologyAnalysis,
+        Question,
+        SimplificationLevel,
+        Student,
+        TurkishZPDRange,
+        create_sample_hybrid_profile,
+        create_sample_student,
+        create_sample_zpd_range,
+    )
+except ImportError:
+    pass
+
+try:
+    from ._deprecated.revolutionary_models import (
+        RevolutionaryAchievement,
+        RevolutionaryBadge,
+        RevolutionaryModel,
+    )
+except ImportError:
+    pass
 
 __all__ = [
     # Base

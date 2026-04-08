@@ -3,13 +3,19 @@ Kimlik doğrulama API endpoint'leri (Task 48.4: Enhanced with Refresh Token)
 SECURITY FIX: Authorization checks added to prevent IDOR attacks
 """
 
+from __future__ import annotations
+
+import json
 import logging
 import secrets
 import time
 from collections import defaultdict
 from contextlib import contextmanager  # noqa: F401 -- kept for backward compat
 from datetime import UTC, datetime, timedelta
-from typing import Any
+from typing import TYPE_CHECKING, Any
+
+if TYPE_CHECKING:
+    import redis.asyncio as aioredis
 
 import jwt as pyjwt
 from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
@@ -24,6 +30,7 @@ from core.config import settings as app_settings
 from core.dependencies import JWT_ALGORITHM, JWT_SECRET, get_db
 from core.jwt_auth import UserRole as JWTUserRole
 from core.jwt_auth import get_jwt_manager
+from database.connection import get_sync_session_context
 from models import (
     Kullanici,
     KullaniciGiris,
@@ -1186,9 +1193,91 @@ class ForgotPasswordRequest(BaseModel):
     email: str = Field(..., max_length=254)
 
 
-# In-memory store for password reset tokens (15 minute TTL)
-# Production should use Redis or database table
-_password_reset_tokens: dict[str, dict[str, Any]] = {}
+# Redis-backed password reset token store (15 minute TTL)
+# Graceful fallback to in-memory dict if Redis unavailable
+
+
+class RedisPasswordResetStore:
+    """Redis-backed password reset token store with 15-min TTL."""
+
+    KEY_PREFIX = "password_reset"
+    TTL_SECONDS = 900  # 15 minutes
+
+    def __init__(self, redis_client: aioredis.Redis | None):
+        self._redis = redis_client
+        self._memory: dict[str, dict[str, Any]] = {}
+
+    async def set(self, token: str, user_id: str, email: str) -> None:
+        """Store token with 15-min TTL."""
+        entry = {
+            "user_id": user_id,
+            "email": email,
+            "expires_at": (datetime.now(UTC) + timedelta(minutes=15)).isoformat(),
+        }
+        if self._redis:
+            try:
+                key = f"{self.KEY_PREFIX}:{token}"
+                await self._redis.setex(key, self.TTL_SECONDS, json.dumps(entry))
+                return
+            except Exception:
+                pass
+        # Fallback to in-memory
+        self._memory[token] = entry
+
+    async def get(self, token: str) -> dict[str, Any] | None:
+        """Retrieve token data, or None if expired/missing."""
+        if self._redis:
+            try:
+                key = f"{self.KEY_PREFIX}:{token}"
+                raw = await self._redis.get(key)
+                if raw:
+                    return json.loads(raw)
+                return None
+            except Exception:
+                pass
+        # Fallback to in-memory
+        entry = self._memory.get(token)
+        if entry:
+            expires_at = datetime.fromisoformat(entry["expires_at"])
+            if expires_at > datetime.now(UTC):
+                return entry
+            # Expired — clean up
+            del self._memory[token]
+        return None
+
+    async def delete(self, token: str) -> None:
+        """Invalidate token."""
+        if self._redis:
+            try:
+                key = f"{self.KEY_PREFIX}:{token}"
+                await self._redis.delete(key)
+                return
+            except Exception:
+                pass
+        self._memory.pop(token, None)
+
+
+_redis_client_for_tokens: aioredis.Redis | None = None
+
+
+async def _get_token_store() -> RedisPasswordResetStore:
+    """Lazy-initialize Redis client and token store."""
+    global _redis_client_for_tokens
+    if _redis_client_for_tokens is None:
+        try:
+            import os
+
+            import redis.asyncio as aioredis
+
+            _redis_client_for_tokens = aioredis.from_url(
+                os.getenv("REDIS_URL", "redis://localhost:6379/0"),
+                decode_responses=True,
+            )
+            # Verify connection
+            await _redis_client_for_tokens.ping()
+        except Exception:
+            _redis_client_for_tokens = None
+    return RedisPasswordResetStore(_redis_client_for_tokens)
 
 
 @router.post("/forgot-password", summary="Forgot Password", include_in_schema=False)
@@ -1225,24 +1314,10 @@ async def forgot_password(
 
         # Generate secure reset token (valid for 15 minutes)
         reset_token = secrets.token_urlsafe(32)
-        expires_at = datetime.now(UTC) + timedelta(minutes=15)
 
-        # Store token (in production, use Redis with TTL or database)
-        _password_reset_tokens[reset_token] = {
-            "user_id": db_user.id,
-            "email": db_user.email,
-            "expires_at": expires_at,
-        }
-
-        # Clean up expired tokens
-        current_time = datetime.now(UTC)
-        expired = [
-            k
-            for k, v in _password_reset_tokens.items()
-            if v["expires_at"] < current_time
-        ]
-        for k in expired:
-            del _password_reset_tokens[k]
+        # Store token in Redis (with 15-min TTL), fallback to memory
+        store = await _get_token_store()
+        await store.set(reset_token, db_user.id, db_user.email)
 
         # TODO: Send email with reset link
         # reset_link = f"{settings.frontend_url}/reset-password?token={reset_token}"
@@ -1276,15 +1351,10 @@ async def reset_password(
     }
     """
     try:
-        # Validate token exists
-        token_data = _password_reset_tokens.get(request_data.token)
+        store = await _get_token_store()
+        token_data = await store.get(request_data.token)
         if not token_data:
             return {"success": False, "message": "Geçersiz veya süresi dolmuş token"}
-
-        # Check token expiration
-        if token_data["expires_at"] < datetime.now(UTC):
-            del _password_reset_tokens[request_data.token]
-            return {"success": False, "message": "Token süresi dolmuş"}
 
         # Validate new password (same policy as registration)
         pw_error = _validate_password(request_data.newPassword)
@@ -1306,7 +1376,7 @@ async def reset_password(
         await db.commit()
 
         # Invalidate used token
-        del _password_reset_tokens[request_data.token]
+        await store.delete(request_data.token)
 
         return {"success": True, "message": "Şifre başarıyla sıfırlandı"}
     except Exception as e:
@@ -1681,7 +1751,7 @@ async def refresh_token(
 
         jwt_manager = get_jwt_manager()
 
-        with _sync_session(db) as sync_db:
+        with get_sync_session_context() as sync_db:
             new_tokens = await jwt_manager.refresh_access_token(
                 refresh_token_str, db=sync_db, request=request
             )
@@ -1737,7 +1807,7 @@ async def logout_all_devices(
     try:
         jwt_manager = get_jwt_manager()
 
-        with _sync_session(db) as sync_db:
+        with get_sync_session_context() as sync_db:
             jwt_manager.revoke_all_user_tokens(sync_db, mevcut_kullanici.kullanici_id)
 
         return {"message": "Tüm cihazlardan başarıyla çıkış yapıldı"}
@@ -1781,7 +1851,7 @@ async def revoke_device(
     try:
         jwt_manager = get_jwt_manager()
 
-        with _sync_session(db) as sync_db:
+        with get_sync_session_context() as sync_db:
             jwt_manager.revoke_device_tokens(
                 sync_db, mevcut_kullanici.kullanici_id, device_id
             )

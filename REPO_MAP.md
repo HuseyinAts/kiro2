@@ -92,7 +92,7 @@ asyncpg (PostgreSQL driver, 3-5x faster)
 Redis (caching, JWT blacklist, sessions)
 FastAPI + Uvicorn
 Pydantic v2
-LangGraph 1.0.5
+LangGraph >=0.2.0
 ```
 
 ---
