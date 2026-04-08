@@ -119,20 +119,6 @@ class BackgroundSyncService {
         }
       }
 
-      // Çalışma notlarını senkronize et
-      if (unsyncedData.studyNotes.length > 0) {
-        try {
-          const syncedNoteIds = await this.syncStudyNotes(unsyncedData.studyNotes);
-          syncedItems += syncedNoteIds.length;
-
-          if (syncedNoteIds.length > 0) {
-            await offlineStorageService.markAsSynced('studyNotes', syncedNoteIds);
-          }
-        } catch (error) {
-          errors.push(`Çalışma notları senkronizasyon hatası: ${error}`);
-        }
-      }
-
       // İlerleme verilerini senkronize et
       if (unsyncedData.progress.length > 0) {
         try {
@@ -216,55 +202,6 @@ class BackgroundSyncService {
           this.retryAttempts.set(retryKey, attempts + 1);
           // Retry queue'ya ekle
           this.addToRetryQueue(async () => { await this.syncExamSessions([session]); });
-        }
-
-        throw error;
-      }
-    }
-
-    return syncedIds;
-  }
-
-  /**
-   * Çalışma notlarını senkronize et
-   */
-  private async syncStudyNotes(studyNotes: any[]): Promise<string[]> {
-    const syncedIds: string[] = [];
-
-    for (const note of studyNotes) {
-      try {
-        const response = await fetch('/api/v1/sync/study-notes', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          credentials: 'include',
-          body: JSON.stringify({
-            noteId: note.id,
-            title: note.title,
-            content: note.content,
-            subject: note.subject,
-            createdAt: note.createdAt,
-            updatedAt: note.updatedAt,
-          }),
-        });
-
-        if (response.ok) {
-          syncedIds.push(note.id);
-          // Study note synced: note.id
-        } else {
-          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-        }
-      } catch (error) {
-        console.error(`Çalışma notu senkronizasyon hatası (${note.id}):`, error);
-
-        // Retry mekanizması
-        const retryKey = `note-${note.id}`;
-        const attempts = this.retryAttempts.get(retryKey) || 0;
-
-        if (attempts < this.maxRetries) {
-          this.retryAttempts.set(retryKey, attempts + 1);
-          this.addToRetryQueue(async () => { await this.syncStudyNotes([note]); });
         }
 
         throw error;

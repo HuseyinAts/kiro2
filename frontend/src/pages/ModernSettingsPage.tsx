@@ -144,54 +144,6 @@ export function ModernSettingsPage() {
     }
   };
 
-  const handleDeleteAccount = async () => {
-    if (
-      !window.confirm(
-        'Hesabınızı silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.',
-      )
-    ) {
-      return;
-    }
-
-    if (
-      !window.confirm(
-        'SON UYARI: Tüm verileriniz kalıcı olarak silinecektir. Devam etmek istiyor musunuz?',
-      )
-    ) {
-      return;
-    }
-
-    try {
-      const response = await fetch('/api/v1/users/delete-account', {
-        method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include',
-      });
-
-      if (!response.ok) {
-        throw new Error(`API hatası: ${response.status}`);
-      }
-
-      const apiResult = await response.json();
-
-      if (!apiResult.success) {
-        throw new Error(apiResult.message || 'Hesap silinemedi');
-      }
-
-      localStorage.clear();
-      sessionStorage.clear();
-
-      alert('Hesabınız başarıyla silindi. Giriş sayfasına yönlendiriliyorsunuz.');
-
-      window.location.href = '/login';
-    } catch (error: any) {
-      console.error('Hesap silme hatası:', error);
-      alert('Hesap silinirken hata oluştu: ' + error.message);
-    }
-  };
-
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -833,17 +785,6 @@ export function ModernSettingsPage() {
                       </ModernButton>
                     </Grid>
 
-                    <Grid item xs={12} sm={6} md={3}>
-                      <ModernButton
-                        variant="gradient"
-                        gradient={modernColors.gradients.error}
-                        icon={<Delete />}
-                        onClick={handleDeleteAccount}
-                        fullWidth
-                      >
-                        Hesabı Sil
-                      </ModernButton>
-                    </Grid>
                   </Grid>
                 </GlassCard>
               </motion.div>

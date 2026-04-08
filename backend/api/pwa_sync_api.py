@@ -3,8 +3,7 @@ PWA Sync & Push API — endpoints for frontend backgroundSyncService.ts and sw.t
 
 Frontend calls:
   POST /api/v1/sync/exam-sessions   — implemented (Sprint 1E)
-  POST /api/v1/sync/study-notes    — stub
-  POST /api/v1/sync/progress       — stub
+  POST /api/v1/sync/progress       — implemented (Sprint 1G)
   POST /api/v1/push/subscribe      — stub
 """
 
@@ -17,6 +16,7 @@ from typing import Any
 
 from fastapi import APIRouter, Depends
 from pydantic import BaseModel, Field
+from sqlalchemy import text
 from sqlalchemy.dialects.postgresql import insert as pg_insert
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -47,12 +47,25 @@ class OfflineExamSession(BaseModel):
     completed: bool = Field(False, description="Whether session was completed")
 
 
+class OfflineProgressPayload(BaseModel):
+    """Payload from backgroundSyncService.ts:syncProgress() and sw.ts:syncUserProgress()."""
+
+    userId: str = Field(..., description="User ID")
+    subject: str = Field(..., description="Subject area")
+    totalQuestions: int = Field(..., description="Total questions attempted")
+    correctAnswers: int = Field(..., description="Number of correct answers")
+    studyTime: int = Field(..., description="Study time in minutes")
+    lastActivity: str = Field(..., description="ISO-8601 last activity timestamp")
+
+
 class PushSubscriptionPayload(BaseModel):
+    """Payload for push notification subscription."""
+
     endpoint: str
     keys: dict[str, str] = Field(default_factory=dict)
 
 
-# --- Stub Endpoints (study-notes, progress, push/subscribe) ---
+# --- Stub Endpoints (study-notes, push/subscribe) ---
 
 
 @push_router.post("/subscribe")
@@ -70,31 +83,72 @@ async def push_subscribe(
     }
 
 
-@sync_router.post("/study-notes")
-async def sync_study_notes(
-    current_user: AuthenticatedUser = Depends(get_current_user),
-) -> dict[str, Any]:
-    """Sync offline study notes — stub endpoint.
-    Frontend: backgroundSyncService.ts
-    """
-    return {
-        "success": True,
-        "data": {"synced": 0, "pending": 0},
-        "message": "Study notes sync stub — not yet implemented",
-    }
-
-
 @sync_router.post("/progress")
 async def sync_progress(
+    progress: OfflineProgressPayload,
+    db: AsyncSession = Depends(get_db),
     current_user: AuthenticatedUser = Depends(get_current_user),
 ) -> dict[str, Any]:
-    """Sync offline progress data — stub endpoint.
-    Frontend: backgroundSyncService.ts / sw.ts
+    """Sync offline progress data to learning_progress_daily.
+
+    Upserts into learning_progress_daily using (user_id, log_date, subject, activity_type) unique key.
+    Frontend only checks HTTP status — response body is informational.
     """
+    student_id = str(current_user.id)
+
+    # Determine log_date from lastActivity (date part only)
+    try:
+        last_dt = datetime.fromisoformat(progress.lastActivity.replace("Z", "+00:00"))
+        log_date = last_dt.date()
+    except ValueError:
+        log_date = datetime.now(UTC).date()
+
+    # Map subject from frontend convention to canonical form
+    # Frontend sends lowercase ("matematik", "turkce") — normalize to DB uppercase
+    subject_map = {
+        "matematik": "MATEMATIK",
+        "turkce": "TURKCE",
+        "fen": "FEN",
+        "sosyal": "SOSYAL",
+        "fizik": "FIZIK",
+        "kimya": "KIMYA",
+        "biyoloji": "BIYOLOJI",
+        "tarih": "TARIH",
+        "cografya": "COGRAFIYA",
+        "geometri": "GEOMETRI",
+        "edebiyat": "EDEBIYAT",
+    }
+    db_subject = subject_map.get(progress.subject.lower(), progress.subject.upper())
+
+    progress_values = {
+        "user_id": student_id,
+        "log_date": log_date,
+        "subject": db_subject,
+        "minutes_spent": progress.studyTime,
+        "questions_done": progress.totalQuestions,
+        "correct_count": progress.correctAnswers,
+        "activity_type": "practice",
+    }
+
+    # Upsert using raw SQL — learning_progress_daily has no ORM model (raw SQL migration)
+    upsert_sql = text("""
+        INSERT INTO learning_progress_daily
+            (user_id, log_date, subject, minutes_spent, questions_done, correct_count, activity_type)
+        VALUES
+            (:user_id, :log_date, :subject, :minutes_spent, :questions_done, :correct_count, :activity_type)
+        ON CONFLICT ON CONSTRAINT learning_progress_daily_user_id_log_date_subject_activity_t_key
+        DO UPDATE SET
+            minutes_spent = EXCLUDED.minutes_spent,
+            questions_done = EXCLUDED.questions_done,
+            correct_count = EXCLUDED.correct_count
+    """)
+    await db.execute(upsert_sql, progress_values)
+    await db.commit()
+
     return {
         "success": True,
-        "data": {"synced": 0, "pending": 0},
-        "message": "Progress sync stub — not yet implemented",
+        "data": {"synced": 1, "pending": 0},
+        "message": f"Progress synced for {db_subject} on {log_date}",
     }
 
 

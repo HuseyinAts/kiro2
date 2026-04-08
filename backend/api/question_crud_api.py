@@ -5,10 +5,12 @@ Task 71: Soru Bankası CRUD Operasyonları
 REQ-13.1: Makale/Soru içerik yönetimi
 """
 
+import asyncio
 import html
 import logging
 import os
 import unicodedata
+from datetime import UTC, datetime
 from typing import Any
 
 import httpx
@@ -18,16 +20,18 @@ from fastapi import (
     File,
     HTTPException,
     Query,
+    Request,
     UploadFile,
     status,
 )
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
+from sqlalchemy import select
 from sqlalchemy import text as sa_text
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.database import get_db_session
-from core.dependencies import AuthenticatedUser, get_current_user
+from core.dependencies import AuthenticatedUser, get_current_user, get_db
 from services.question_crud_service import QuestionCRUDService
 
 OLLAMA_URL = os.getenv("OLLAMA_URL", "http://localhost:11434")
@@ -1026,22 +1030,111 @@ async def semantic_search(
 
 @router.post("/download")
 async def download_questions(
+    request: Request,
     current_user: AuthenticatedUser = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
 ) -> JSONResponse:
-    """Download questions for offline use — stub endpoint.
+    """Download questions for offline use.
     Frontend: offlineStorageService.ts (POST with JSON body: subject, count, difficulty)
     """
+    body = await request.json()
+    subject = body.get("subject", "matematik")
+    count = min(body.get("count", 50), 200)
+    difficulty = body.get("difficulty", ["easy", "medium", "hard"])
+
+    # Normalize subject to DB UPPERCASE
+    subject_map = {
+        "matematik": "MATEMATIK",
+        "turkce": "TURKCE",
+        "fen": "FEN",
+        "sosyal": "SOSYAL",
+        "fizik": "FIZIK",
+        "kimya": "KIMYA",
+        "biyoloji": "BIYOLOJI",
+        "tarih": "TARIH",
+        "cografya": "COGRAFIYA",
+        "geometri": "GEOMETRI",
+        "edebiyat": "EDEBIYAT",
+    }
+    db_subject = subject_map.get(subject.lower(), subject.upper())
+
+    # Normalize difficulty strings to DB enum values
+    if isinstance(difficulty, list):
+        diff_values = [d.lower() for d in difficulty]
+    else:
+        diff_values = [difficulty.lower()] if difficulty else []
+
+    # Use a larger pool to replace incompatible questions
+    pool_size = min(count * 3, 500)
+
+    # Import enum members directly — asyncpg needs SQLAlchemy enum references to cast correctly
+    from sqlalchemy import func
+
+    from models.question_bank import QuestionBankItem, QuestionDifficultyLevel
+
+    stmt = select(QuestionBankItem).where(QuestionBankItem.is_active)
+    stmt = stmt.where(QuestionBankItem.subject_area == db_subject)
+    # Only easy/medium/hard — frontend only sends these three
+    stmt = stmt.where(
+        QuestionBankItem.difficulty_level.in_(
+            [
+                QuestionDifficultyLevel.EASY,
+                QuestionDifficultyLevel.MEDIUM,
+                QuestionDifficultyLevel.HARD,
+            ]
+        )
+    )
+    stmt = stmt.order_by(func.random()).limit(pool_size)
+
+    result = await db.execute(stmt)
+    scalars_result = result.scalars()
+    if asyncio.iscoroutine(scalars_result):
+        scalars_result = await scalars_result
+    all_result = scalars_result.all()
+    if asyncio.iscoroutine(all_result):
+        all_result = await all_result
+    pool = list(all_result)
+    logger.info(f"[download] subject={db_subject} pool_size={len(pool)}")
+
+    VALID_ANSWERS = {"A", "B", "C", "D", "E"}
+    now_iso = datetime.now(UTC).isoformat()
+
+    def to_offline_question(q) -> dict | None:
+        # Filter: all 5 options must be non-null, non-empty strings
+        opts = [q.option_a, q.option_b, q.option_c, q.option_d, q.option_e]
+        if not all(o and isinstance(o, str) and o.strip() for o in opts):
+            return None
+        # Filter: correct_answer must map 0-4
+        if q.correct_answer not in VALID_ANSWERS:
+            return None
+
+        correct_idx = {"A": 0, "B": 1, "C": 2, "D": 3, "E": 4}[q.correct_answer]
+        return {
+            "id": q.id,
+            "text": q.question_text,
+            "options": opts,
+            "correct": correct_idx,
+            "subject": q.subject_area.lower(),
+            "difficulty": q.difficulty_level.value
+            if hasattr(q.difficulty_level, "value")
+            else q.difficulty_level,
+            "explanation": q.explanation or "",
+            "downloadedAt": now_iso,
+        }
+
+    # Filter pool to compatible items, fill up to requested count
+    compatible = []
+    for q in pool:
+        item = to_offline_question(q)
+        if item is not None:
+            compatible.append(item)
+            if len(compatible) >= count:
+                break
+    logger.info(f"[download] compatible_count={len(compatible)}, requested={count}")
+
     return JSONResponse(
         status_code=status.HTTP_200_OK,
-        content={
-            "success": True,
-            "data": {
-                "questions": [],
-                "total": 0,
-                "message": "Offline indirme henüz uygulanmadı",
-            },
-            "message": "Questions download stub — not yet implemented",
-        },
+        content=compatible,
     )
 
 

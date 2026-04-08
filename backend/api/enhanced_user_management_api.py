@@ -8,9 +8,10 @@ SPRINT 3 UPDATE: Email operations now use Celery background tasks
 from datetime import datetime
 from typing import Any
 
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
+from sqlalchemy.ext.asyncio import AsyncSession
 
-from core.dependencies import get_current_user
+from core.dependencies import get_current_user, get_db
 from core.error_context import (
     SpanKind,
     add_database_query_to_context,
@@ -38,7 +39,8 @@ from core.response_models import (
     SuccessResponse,
     turkish_success_response,
 )
-from models.database import User
+from models.database import StudentProfile, User
+from models.gamification_db import ManipulativeProgress
 from models.user import UserCreate
 
 # SPRINT 3: Celery task imports
@@ -47,6 +49,7 @@ from tasks.email_tasks import send_welcome_email
 
 # UserResponse placeholder
 class UserResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
     id: str
     email: str
     username: str
@@ -57,6 +60,7 @@ class UserResponse(BaseModel):
 
 
 from fastapi import APIRouter, Depends, Query, Request, status
+from fastapi.responses import JSONResponse
 
 from services.user_service import KullaniciServisi as UserService
 
@@ -100,7 +104,7 @@ async def require_admin_or_self(
 async def require_admin(current_user: User = Depends(get_current_user)) -> User:
     """Enhanced admin check with tracing"""
 
-    if current_user.role not in ["admin", "super_admin"]:
+    if (current_user.role or "").lower() not in ["admin", "super_admin"]:
         # Use error factory for consistent error creation
         raise ErrorFactory.authorization_error(
             required_role="admin",
@@ -131,6 +135,7 @@ async def list_users_enhanced(
     search: str | None = Query(None, description="Arama terimi"),
     role_filter: str | None = Query(None, description="Rol filtresi"),
     current_user: User = Depends(require_admin),
+    db: AsyncSession = Depends(get_db),
 ) -> PaginatedResponse[list[UserResponse]]:
     """
     Enhanced user listing with comprehensive error handling
@@ -169,19 +174,36 @@ async def list_users_enhanced(
             )
 
         # Initialize service with error handling
-        user_service = UserService()
-
         try:
-            # Use automatic retry with recovery for database operations
-            result = await handle_with_recovery(
-                user_service.list_users_paginated,
-                page=page,
-                page_size=page_size,
-                search=search,
-                role_filter=role_filter,
-                max_retries=3,
-                base_delay=1.0,
-            )
+            from sqlalchemy import select, func, or_, cast, String
+            query = select(User)
+            count_query = select(func.count()).select_from(User)
+
+            if search:
+                search_filter = or_(
+                    User.email.ilike(f"%{search}%"),
+                    User.username.ilike(f"%{search}%"),
+                )
+                query = query.where(search_filter)
+                count_query = count_query.where(search_filter)
+
+            if role_filter:
+                query = query.where(
+                    func.lower(cast(User.role, String)) == role_filter.lower()
+                )
+                count_query = count_query.where(
+                    func.lower(cast(User.role, String)) == role_filter.lower()
+                )
+
+            total_result = await db.execute(count_query)
+            total = total_result.scalar() or 0
+
+            offset = (page - 1) * page_size
+            query = query.offset(offset).limit(page_size)
+            users_result = await db.execute(query)
+            db_users = users_result.scalars().all()
+
+            result = {"users": db_users, "total": total}
 
             # Track database performance
             if hasattr(result, "query_time"):
@@ -201,7 +223,10 @@ async def list_users_enhanced(
             reset_consecutive_errors()
 
             # Convert to response models
-            user_responses = [UserResponse.from_orm(user) for user in result["users"]]
+            user_responses = [
+                UserResponse.model_validate(user, from_attributes=True)
+                for user in result["users"]
+            ]
 
             # Build paginated response
             from core.response_models import paginated_response
@@ -464,38 +489,125 @@ async def create_user_enhanced(
 
 @router.get("/export-data")
 async def export_user_data(
+    db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user),
-) -> dict[str, Any]:
-    """Export user data — stub endpoint.
-    Frontend: ModernSettingsPage.tsx
+) -> JSONResponse:
+    """Export user data — real implementation.
+    Frontend: ModernSettingsPage.tsx (calls response.blob() for download)
     """
-    return {
-        "success": True,
-        "data": {
-            "user_id": str(current_user.id),
-            "export_status": "pending",
-            "message": "Veri dışa aktarma henüz uygulanmadı",
-        },
-        "message": "Export data stub — not yet implemented",
+    from sqlalchemy import select, text
+
+    # Load full User from DB (get_current_user returns Pydantic AuthenticatedUser with limited fields)
+    user_result = await db.execute(select(User).where(User.id == str(current_user.id)))
+    db_user = user_result.scalar_one_or_none()
+
+    # Load student profile if exists
+    profile_result = await db.execute(
+        select(StudentProfile).where(StudentProfile.user_id == str(current_user.id))
+    )
+    profile = profile_result.scalar_one_or_none()
+
+    # Get gamification progress (manipulative tools)
+    manip_result = await db.execute(
+        select(ManipulativeProgress).where(
+            ManipulativeProgress.user_id == str(current_user.id)
+        )
+    )
+    manipulative_progress = manip_result.scalars().all()
+
+    # Get learning progress daily (last 90 days)
+    from datetime import timedelta
+
+    ninety_days_ago = (datetime.now().astimezone() - timedelta(days=90)).date()
+    lp_result = await db.execute(
+        text("""
+            SELECT log_date, subject, minutes_spent, questions_done, correct_count, activity_type
+            FROM learning_progress_daily
+            WHERE user_id = :user_id AND log_date >= :since
+            ORDER BY log_date DESC
+            LIMIT 500
+        """),
+        {"user_id": str(current_user.id), "since": ninety_days_ago},
+    )
+    learning_progress_rows = lp_result.fetchall()
+
+    # Build export sections
+    # Fall back to current_user fields when db_user not found
+    export_user = db_user if db_user else current_user
+    user_info = {
+        "id": str(export_user.id),
+        "email": export_user.email,
+        "username": export_user.username,
+        "first_name": getattr(export_user, "first_name", None),
+        "last_name": getattr(export_user, "last_name", None),
+        "role": export_user.role.value
+        if hasattr(export_user.role, "value")
+        else str(export_user.role),
+        "is_premium": getattr(export_user, "is_premium", None),
+        "created_at": export_user.created_at.isoformat()
+        if getattr(export_user, "created_at", None)
+        else None,
     }
 
+    profile_info = None
+    if profile:
+        profile_info = {
+            "grade_level": profile.grade_level,
+            "school_name": profile.school_name,
+            "target_university": profile.target_university,
+            "target_department": profile.target_department,
+            "learning_style": str(profile.learning_style.value)
+            if profile.learning_style
+            else None,
+            "study_hours_per_day": profile.study_hours_per_day,
+            "total_study_hours": profile.total_study_hours,
+            "total_questions_solved": profile.total_questions_solved,
+            "correct_answers": profile.correct_answers,
+        }
 
-@router.delete("/delete-account")
-async def delete_user_account(
-    current_user: User = Depends(get_current_user),
-) -> dict[str, Any]:
-    """Delete user account — stub endpoint.
-    Frontend: ModernSettingsPage.tsx
-    """
-    return {
-        "success": True,
-        "data": {
-            "user_id": str(current_user.id),
-            "deletion_status": "pending",
-            "message": "Hesap silme henüz uygulanmadı",
-        },
-        "message": "Delete account stub — not yet implemented",
+    gamification = {
+        "total_xp": getattr(export_user, "total_xp", None),
+        "level": getattr(export_user, "level", None),
+        "last_level_up_at": export_user.last_level_up_at.isoformat()
+        if getattr(export_user, "last_level_up_at", None)
+        else None,
+        "manipulative_progress": [
+            {
+                "type": mp.manipulative_type,
+                "activity_type": mp.activity_type,
+                "operation_count": mp.operation_count,
+                "completion_count": mp.completion_count,
+                "total_duration_seconds": mp.total_duration_seconds,
+                "mastery_level": mp.mastery_level,
+            }
+            for mp in manipulative_progress
+        ],
     }
+
+    study_progress = {
+        "total_sessions": len(learning_progress_rows),
+        "recent_sessions": [
+            {
+                "date": str(row.log_date),
+                "subject": row.subject,
+                "minutes_spent": row.minutes_spent,
+                "questions_done": row.questions_done,
+                "correct_count": row.correct_count,
+                "activity_type": row.activity_type,
+            }
+            for row in learning_progress_rows
+        ],
+    }
+
+    export_payload = {
+        "exported_at": datetime.now().isoformat(),
+        "user": user_info,
+        "profile": profile_info,
+        "gamification": gamification,
+        "study_progress": study_progress,
+    }
+
+    return JSONResponse(content=export_payload)
 
 
 @router.get(

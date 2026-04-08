@@ -314,28 +314,38 @@ class JWTManager:
 
         return new_tokens
 
-    async def connect_redis(self):
+    async def connect_redis(self, max_retries: int = 3, retry_delay: float = 2.0):
         """Connect to Redis for blacklist persistence. Called during app startup."""
-        try:
-            from redis import asyncio as aioredis
-            redis_url = self.settings.redis_url
-            self._redis = await aioredis.from_url(
-                redis_url,
-                encoding="utf-8",
-                decode_responses=True,
-                socket_connect_timeout=1,
-                socket_timeout=1,
-                retry_on_timeout=False,
-            )
-            await self._redis.ping()
-            self._redis_available = True
-            logger.info("JWT blacklist connected to Redis")
-        except Exception as e:
-            logger.warning(
-                "JWT blacklist Redis unavailable, "
-                f"using in-memory fallback: {e}"
-            )
-            self._redis_available = False
+        for attempt in range(1, max_retries + 1):
+            try:
+                from redis import asyncio as aioredis
+                redis_url = self.settings.redis_url
+                self._redis = await aioredis.from_url(
+                    redis_url,
+                    encoding="utf-8",
+                    decode_responses=True,
+                    socket_connect_timeout=5,
+                    socket_timeout=5,
+                    retry_on_timeout=True,
+                )
+                await self._redis.ping()
+                self._redis_available = True
+                logger.info("JWT blacklist connected to Redis")
+                return
+            except Exception as e:
+                if attempt < max_retries:
+                    logger.warning(
+                        f"JWT Redis connect attempt {attempt}/{max_retries} failed: {e}. "
+                        f"Retrying in {retry_delay}s..."
+                    )
+                    import asyncio
+                    await asyncio.sleep(retry_delay)
+                else:
+                    logger.warning(
+                        "JWT blacklist Redis unavailable after "
+                        f"{max_retries} attempts, using in-memory fallback: {e}"
+                    )
+                    self._redis_available = False
 
     def _get_blacklist_key(self, identifier: str) -> str:
         """Build Redis key for a blacklisted token identifier."""

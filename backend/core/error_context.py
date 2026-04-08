@@ -4,6 +4,7 @@ Advanced error context management, distributed tracing, and debugging support
 """
 
 import asyncio
+import functools
 import inspect
 import logging
 import threading
@@ -781,12 +782,14 @@ def trace_operation(
 
         if asyncio.iscoroutinefunction(func):
 
+            @functools.wraps(func)
             async def async_wrapper(*args, **kwargs):
                 with tracing_span(name, kind):
                     return await func(*args, **kwargs)
 
             return async_wrapper
 
+        @functools.wraps(func)
         def wrapper(*args, **kwargs):
             with tracing_span(name, kind):
                 return func(*args, **kwargs)
@@ -808,6 +811,7 @@ def error_context_decorator(
 
         if asyncio.iscoroutinefunction(func):
 
+            @functools.wraps(func)
             async def async_wrapper(*args, **kwargs):
                 context_kwargs = {"operation_name": name}
 
@@ -829,6 +833,7 @@ def error_context_decorator(
 
             return async_wrapper
 
+        @functools.wraps(func)
         def wrapper(*args, **kwargs):
             context_kwargs = {"operation_name": name}
 

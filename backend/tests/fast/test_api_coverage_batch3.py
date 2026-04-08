@@ -269,10 +269,6 @@ class TestEnhancedUserMgmt:
         r = self.client.get("/api/v1/users/export-data")
         assert r.status_code != 405
 
-    def test_delete_account(self):
-        r = self.client.delete("/api/v1/users/delete-account")
-        assert r.status_code != 405
-
 
 # ---------------------------------------------------------------------------
 # live_session_routes.py (~642 lines) — prefix="/api/v1/live-sessions"

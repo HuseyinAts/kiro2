@@ -9,7 +9,7 @@ Covers:
     - core/account_security.py     (AccountSecurityService, DeviceInfo, etc.)
     - core/security_manager.py     (SecurityManager, PasswordManager, TokenManager,
                                     EncryptionManager, SecurityAuditor, InputValidator)
-    - core/jwt_auth_docker.py      (JWTManager)
+    - core/jwt_auth.py        (JWTManager)
 """
 
 import sys
@@ -118,13 +118,13 @@ from core.auth_security_utils import (
     scan_input_security,
     validate_password_strength,
 )
-from core.jwt_auth_docker import (
+from core.jwt_auth import (
     JWTManager,
 )
-from core.jwt_auth_docker import (
+from core.jwt_auth import (
     TokenType as JWTTokenType,
 )
-from core.jwt_auth_docker import (
+from core.jwt_auth import (
     UserRole as JWTUserRole,
 )
 from core.security_manager import (

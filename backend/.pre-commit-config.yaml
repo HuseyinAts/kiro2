@@ -73,7 +73,7 @@ repos:
     hooks:
       - id: pytest-fast
         name: Pytest fast (last-failed)
-        entry: bash -c "cd backend && python -m pytest -x -q --tb=short tests/unit/test_algorithm_core_p0.py tests/unit/test_fsrs_v6_service.py tests/unit/test_fsrs_card_persistence.py tests/unit/test_bkt_record_answer_batch1b.py tests/unit/test_bkt_record_answer_batch1b_errors.py"
+        entry: bash -c "cd backend && python -m pytest -x -q --tb=short tests/unit/test_algorithm_core_p0.py tests/unit/test_fsrs_v6_service.py tests/unit/test_fsrs_card_persistence.py tests/unit/test_bkt_record_answer_batch1b.py tests/unit/test_bkt_record_answer_batch1b_errors.py tests/unit/test_bkt_zpd_static_methods.py"
         language: system
         pass_filenames: false
         always_run: false
