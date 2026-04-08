@@ -68,6 +68,17 @@ repos:
         additional_dependencies: ["bandit[toml]"]
         exclude: ^tests/
 
+  # Pytest — Fast test execution (last-failed only)
+  - repo: local
+    hooks:
+      - id: pytest-fast
+        name: Pytest fast (last-failed)
+        entry: python -m pytest -x -q --lf --tb=short
+        language: system
+        pass_filenames: false
+        always_run: false
+        stages: [commit]
+
 # Configuration
 default_stages: [commit]
 default_install_hook_types: [pre-commit, pre-push]
@@ -76,7 +87,7 @@ default_install_hook_types: [pre-commit, pre-push]
 ci:
   autofix_commit_msg: |
     [pre-commit.ci] auto fixes from pre-commit hooks
-    
+
     for more information, see https://pre-commit.ci
   autofix_prs: true
   autoupdate_branch: ''

@@ -393,7 +393,7 @@ class BKTService:
                 fsrs_card.difficulty = fsrs_result.get(
                     "difficulty", fsrs_card.difficulty
                 )
-                fsrs_card.reps = fsrs_result.get("reps", fsrs_card.reps)
+                fsrs_card.reps = fsrs_result.get("reps") or fsrs_card.reps
                 fsrs_card.lapses = fsrs_result.get("lapses", fsrs_card.lapses)
                 fsrs_card.state = fsrs_result.get("state", fsrs_card.state)
                 fsrs_card.due_date = fsrs_next_review or fsrs_card.due_date

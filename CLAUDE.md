@@ -13,6 +13,45 @@
   4. Handoff prompt sun
   NOT: Yeni session acmak MUMKUN DEGIL — sadece prompt metni ver
 
+## Pre-flight Checks
+
+Before Docker commands (`docker compose`, `docker build`, `docker up`):
+1. Verify Docker: `docker info`
+2. Check Redis: `redis-cli ping`
+3. Check PostgreSQL: `pg_isready -p 5434`
+
+## Testing Requirements
+
+- Write failing tests BEFORE fixing bugs (TDD approach)
+- Run `pytest` after modifying algorithm files (BKT, FSRS, IRT calibration)
+- Verify all tests pass locally before committing
+- Check for Redis cache pollution after container recreation
+
+## Session Handoff Checklist
+
+Before closing session:
+1. Commit: `git add . && git commit -m "..."`
+2. Push: `git push`
+3. Update `.claude/sessions/latest.md`:
+   - ✅ Completed (yapılanlar)
+   - ⏳ Remaining (bekleyenler)
+   - 🔧 State (Docker/Redis/PG status)
+   - ⚠️ Known Issues (sorunlar)
+
+## Rate Limit Prevention
+
+- Batch large DB updates: 1000 records at a time
+- `asyncio.sleep(0.5)` between bulk operations
+- For 60K+ records: use checkpointing script
+
+## Code Review Auto-fixes
+
+Fix WITHOUT asking during code review:
+- SQL injection → parameterized queries
+- Hardcoded credentials → environment variables
+- Dead code paths → remove stale imports
+- Duplicate keys in config → merge/simplify
+
 ## Communication Rules
 
 1. **Direct Answer First**: Kullanıcı evet/hayır veya kısa cevap gerektiren soru sorduğunda ÖNCE 1 cümle ile cevapla, SONRA analiz/keşif yap. Dosya keşfi cevaptan ÖNCE yapılmaz.

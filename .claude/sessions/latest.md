@@ -23,6 +23,15 @@
 ### Engelleyiciler
 - YOK
 
+### 🔧 State
+- Docker: running/stopped
+- Redis: connected/localhost issue
+- PostgreSQL: 5434 OK
+- Git: uncommitted changes?
+
+### ⚠️ Known Issues
+-
+
 ### Sonraki Adimlar (maks 5)
 1. Test coverage 53% → 80% (hedef)
 2. MVP beta launch (Docker stack hazır, E2E 7/7 PASS)
