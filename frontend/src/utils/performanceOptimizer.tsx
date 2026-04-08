@@ -55,7 +55,7 @@ class PerformanceTracker {
   initWebVitals(): void {
     // Largest Contentful Paint (LCP)
     this.observeMetric('largest-contentful-paint', (entries) => {
-      const lcp = entries[entries.length - 1];
+      void entries[entries.length - 1];
     });
 
     // First Input Delay (FID)

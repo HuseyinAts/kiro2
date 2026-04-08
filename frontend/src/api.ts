@@ -68,22 +68,6 @@ export async function getAgents() {
   });
 }
 
-export async function clearSessions() {
-  const response = await fetch(`${API_BASE_URL}/api/clear`, {
-    method: 'DELETE',
-    headers: getHeaders(),
-    signal: AbortSignal.timeout(appConfig.api.timeout),
-    credentials: 'include',
-  });
-
-  if (!response.ok) {
-    const error = await response.text();
-    throw new Error(error || 'Failed to clear sessions');
-  }
-
-  return response.json();
-}
-
 // Learning Path API Endpoints — httpOnly cookie auth via apiRequest
 export async function createStudentProfile(profileData: {
   name: string;
@@ -400,48 +384,6 @@ export async function getRAGHealth() {
   }
 
   return response.json();
-}
-
-// Session Management
-export async function getSession(sessionId: string) {
-  const response = await fetch(`${API_BASE_URL}/api/sessions/${sessionId}`, {
-    headers: getHeaders(),
-    signal: AbortSignal.timeout(appConfig.api.timeout),
-  });
-
-  if (!response.ok) {
-    const error = await response.text();
-    throw new Error(error || 'Failed to get session');
-  }
-
-  return response.json();
-}
-
-// Health and Monitoring
-export async function getHealth() {
-  const response = await fetch(`${API_BASE_URL}/health`, {
-    signal: AbortSignal.timeout(appConfig.api.timeout),
-  });
-
-  if (!response.ok) {
-    const error = await response.text();
-    throw new Error(error || 'Failed to get health status');
-  }
-
-  return response.json();
-}
-
-export async function getMetrics() {
-  const response = await fetch(`${API_BASE_URL}/metrics`, {
-    signal: AbortSignal.timeout(appConfig.api.timeout),
-  });
-
-  if (!response.ok) {
-    const error = await response.text();
-    throw new Error(error || 'Failed to get metrics');
-  }
-
-  return response.text();
 }
 
 // Learning Style API Endpoints - VARK + Felder-Silverman Hibrit Sistem
@@ -905,7 +847,7 @@ export function createWebSocketConnection(options: WebSocketOptions) {
         if (onError) {onError(error);}
       };
 
-      ws.onclose = (event) => {
+      ws.onclose = () => {
         stopHeartbeat();
 
         if (onDisconnect) {onDisconnect();}

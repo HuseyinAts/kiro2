@@ -123,7 +123,7 @@ export class PerformanceMonitor {
     this.sendToAnalytics(this.metrics);
   }
 
-  private static sendToAnalytics(metrics: PerformanceMetrics) {
+  private static sendToAnalytics(_metrics: PerformanceMetrics) {
     // Send performance metrics to your analytics service
     // This is where you'd integrate with Google Analytics, Mixpanel, etc.
     if (process.env.NODE_ENV === 'production') {

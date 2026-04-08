@@ -289,7 +289,7 @@ export const ModernExamInterface: React.FC<ModernExamInterfaceProps> = memo(({
     onQuestionFlag(currentQuestion.id);
   }, [currentQuestion.id, onQuestionFlag]);
 
-  const handleQuestionClick = useCallback((index: number) => {
+  const handleQuestionClick = useCallback((_index: number) => {
     // Navigation logic would be implemented by parent
   }, []);
 

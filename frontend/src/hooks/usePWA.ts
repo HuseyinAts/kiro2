@@ -185,7 +185,7 @@ export function usePWA(): PWAState & PWAActions {
     count: number = 50,
   ): Promise<void> => {
     try {
-      const questions = await offlineStorageService.downloadQuestionsForOffline(subject, count);
+      await offlineStorageService.downloadQuestionsForOffline(subject, count);
       // İstatistikleri güncelle
       const stats = await offlineStorageService.getOfflineStats();
       setOfflineStats(stats);

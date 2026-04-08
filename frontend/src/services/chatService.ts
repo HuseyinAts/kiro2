@@ -1,8 +1,4 @@
-import {
-  sendChatMessage,
-  getSession,
-  clearSessions,
-} from '../api';
+import { sendChatMessage } from '../api';
 
 // Enhanced chat API endpoints
 const ENHANCED_CHAT_API = '/api/v1/enhanced-chat';
@@ -425,8 +421,12 @@ class ChatService {
     }
 
     try {
-      const session = await getSession(id);
-      this.messages = session.messages.map((msg: any, index: number) => ({
+      const response = await fetch(`${ENHANCED_CHAT_API}/sessions/${id}`, {
+        credentials: 'include',
+      });
+      if (!response.ok) throw new Error('Failed to load session');
+      const session = await response.json();
+      this.messages = (session.messages || []).map((msg: any, index: number) => ({
         id: `msg-${index}`,
         role: msg.role,
         content: msg.content,
@@ -442,7 +442,10 @@ class ChatService {
 
   async clearAllSessions() {
     try {
-      await clearSessions();
+      await fetch(`${ENHANCED_CHAT_API}/sessions`, {
+        method: 'DELETE',
+        credentials: 'include',
+      });
       this.messages = [];
       this.sessionId = null;
       localStorage.removeItem('chatSessionId');

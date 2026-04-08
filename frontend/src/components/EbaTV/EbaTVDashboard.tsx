@@ -152,7 +152,7 @@ export const EbaTVDashboard: React.FC = () => {
     setActiveTab('player');
   };
 
-  const handleVideoProgress = (progress: number) => {
+  const handleVideoProgress = (_progress: number) => {
   };
 
   const handleVideoComplete = () => {

@@ -119,7 +119,7 @@ export const OSYMExamInterface: React.FC<OSYMExamInterfaceProps> = ({
     sessionId,
     enabled: session?.status === ExamStatus.IN_PROGRESS,
     interval: 30000, // 30 seconds
-    onSave: (success, error) => {
+    onSave: (_success, _error) => {
       // Status is handled by examStore
     },
   });

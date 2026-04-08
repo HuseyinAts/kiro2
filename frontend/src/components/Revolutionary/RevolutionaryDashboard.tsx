@@ -328,7 +328,7 @@ const RevolutionaryDashboard: React.FC<RevolutionaryDashboardProps> = ({ student
         <TabPanel value={activeTab} index={0}>
           <FSRSScheduler
             studentId={studentId}
-            onScheduleUpdate={(schedules) => {
+            onScheduleUpdate={(_schedules) => {
             }}
           />
         </TabPanel>
@@ -336,7 +336,7 @@ const RevolutionaryDashboard: React.FC<RevolutionaryDashboardProps> = ({ student
         <TabPanel value={activeTab} index={1}>
           <BionicReadingToggle
             studentId={studentId}
-            onTextChange={(bionicText, isEnabled) => {
+            onTextChange={(_bionicText, _isEnabled) => {
             }}
           />
         </TabPanel>
@@ -348,7 +348,7 @@ const RevolutionaryDashboard: React.FC<RevolutionaryDashboardProps> = ({ student
         <TabPanel value={activeTab} index={3}>
           <MultiAgentCoordination
             studentId={studentId}
-            onCoordinationUpdate={(coordination) => {
+            onCoordinationUpdate={(_coordination) => {
             }}
           />
         </TabPanel>
@@ -356,7 +356,7 @@ const RevolutionaryDashboard: React.FC<RevolutionaryDashboardProps> = ({ student
         <TabPanel value={activeTab} index={4}>
           <LearningStyleProfile
             studentId={studentId}
-            onProfileUpdate={(profile) => {
+            onProfileUpdate={(_profile) => {
             }}
           />
         </TabPanel>
@@ -364,7 +364,7 @@ const RevolutionaryDashboard: React.FC<RevolutionaryDashboardProps> = ({ student
         <TabPanel value={activeTab} index={5}>
           <ZPDMaarifDashboard
             studentId={studentId}
-            onZPDUpdate={(zpd) => {
+            onZPDUpdate={(_zpd) => {
             }}
           />
         </TabPanel>

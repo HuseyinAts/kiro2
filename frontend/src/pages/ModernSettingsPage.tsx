@@ -12,7 +12,6 @@ import {
   Storage,
   Backup,
   Download,
-  Delete,
   Info,
   Public,
   Speed,
