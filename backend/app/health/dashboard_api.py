@@ -20,8 +20,10 @@ Requirements:
 import logging
 from datetime import UTC, datetime, timedelta
 
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel, ConfigDict, Field
+
+from app.core.deps import User, get_current_user
 
 from .models import HealthStatus
 
@@ -147,6 +149,7 @@ def set_health_service(service):
     description="Tüm API endpoint'lerinin health score ve durumlarını listeler.",
 )
 async def list_endpoints(
+    current_user: User = Depends(get_current_user),
     status: HealthStatus | None = Query(None, description="Status filtresi"),
     min_score: int | None = Query(None, ge=0, le=100, description="Minimum skor"),
     max_score: int | None = Query(None, ge=0, le=100, description="Maksimum skor"),
@@ -222,7 +225,9 @@ async def list_endpoints(
     description="Belirli bir endpoint'in detaylı sağlık bilgilerini getirir.",
 )
 async def get_endpoint_detail(
-    path: str, method: str = Query("GET", description="HTTP method")
+    path: str,
+    method: str = Query("GET", description="HTTP method"),
+    current_user: User = Depends(get_current_user),
 ):
     """
     Endpoint detaylarını getirir.
@@ -279,7 +284,9 @@ async def get_endpoint_detail(
     summary="Sistem metrikleri",
     description="Sistem genelindeki health metriklerini getirir.",
 )
-async def get_system_metrics():
+async def get_system_metrics(
+    current_user: User = Depends(get_current_user),
+):
     """
     Sistem geneli metrikleri getirir.
 
@@ -313,6 +320,7 @@ async def get_system_metrics():
     description="Aylık SLA compliance raporunu getirir.",
 )
 async def get_sla_report(
+    current_user: User = Depends(get_current_user),
     start_date: datetime | None = Query(None, description="Başlangıç tarihi"),
     end_date: datetime | None = Query(None, description="Bitiş tarihi"),
 ):
@@ -365,6 +373,7 @@ async def get_sla_report(
     description="Endpoint için tarihsel trend verilerini getirir.",
 )
 async def get_historical_data(
+    current_user: User = Depends(get_current_user),
     endpoint: str = Query(..., description="Endpoint path"),
     days: int = Query(30, ge=1, le=90, description="Gün sayısı"),
 ):
@@ -420,6 +429,7 @@ async def get_historical_data(
     description="Aktif health alertlerini listeler.",
 )
 async def get_active_alerts(
+    current_user: User = Depends(get_current_user),
     severity: str | None = Query(None, description="Severity filtresi"),
     limit: int = Query(50, ge=1, le=200),
 ):
@@ -460,7 +470,11 @@ async def get_active_alerts(
     summary="Circuit breaker reset",
     description="Endpoint'in circuit breaker'ını manuel olarak resetler.",
 )
-async def reset_circuit_breaker(endpoint: str, method: str = Query("GET")):
+async def reset_circuit_breaker(
+    endpoint: str,
+    method: str = Query("GET"),
+    current_user: User = Depends(get_current_user),
+):
     """Circuit breaker'ı resetler."""
     try:
         logger.info(f"Circuit breaker reset: {method}:{endpoint}")
@@ -480,7 +494,9 @@ async def reset_circuit_breaker(endpoint: str, method: str = Query("GET")):
     summary="Bağımlılık durumu",
     description="Database, Redis vb. bağımlılıkların sağlık durumunu gösterir.",
 )
-async def get_dependency_health():
+async def get_dependency_health(
+    current_user: User = Depends(get_current_user),
+):
     """Bağımlılık sağlık durumunu getirir."""
     try:
         return {

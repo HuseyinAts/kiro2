@@ -25,6 +25,26 @@ class BackgroundSyncService {
   private retryAttempts = new Map<string, number>();
   private maxRetries = 3;
 
+  // Handler references for cleanup
+  private _onlineHandler = () => {
+    if (navigator.onLine && !this.syncInProgress) {
+      this.performSync();
+    }
+  };
+  private _offlineHandler = () => {
+    // Internet connection lost, switching to offline mode
+  };
+  private _beforeunloadHandler = () => {
+    if (navigator.onLine && !this.syncInProgress) {
+      this.performSync();
+    }
+  };
+  private _visibilityHandler = () => {
+    if (!document.hidden && navigator.onLine && !this.syncInProgress) {
+      this.performSync();
+    }
+  };
+
   constructor() {
     this.setupEventListeners();
     this.startPeriodicSync();
@@ -35,28 +55,25 @@ class BackgroundSyncService {
    */
   private setupEventListeners(): void {
     // Online/offline durumu değişikliklerini dinle
-    window.addEventListener('online', () => {
-      // Internet connection restored, starting sync
-      this.performSync();
-    });
+    window.addEventListener('online', this._onlineHandler);
 
-    window.addEventListener('offline', () => {
-      // Internet connection lost, switching to offline mode
-    });
+    window.addEventListener('offline', this._offlineHandler);
 
     // Sayfa kapatılmadan önce senkronize et
-    window.addEventListener('beforeunload', () => {
-      if (navigator.onLine && !this.syncInProgress) {
-        this.performSync();
-      }
-    });
+    window.addEventListener('beforeunload', this._beforeunloadHandler);
 
     // Visibility API ile sayfa odağı değişikliklerini dinle
-    document.addEventListener('visibilitychange', () => {
-      if (!document.hidden && navigator.onLine && !this.syncInProgress) {
-        this.performSync();
-      }
-    });
+    document.addEventListener('visibilitychange', this._visibilityHandler);
+  }
+
+  /**
+   * Cleanup — tüm event listener'ları kaldır
+   */
+  public dispose(): void {
+    window.removeEventListener('online', this._onlineHandler);
+    window.removeEventListener('offline', this._offlineHandler);
+    window.removeEventListener('beforeunload', this._beforeunloadHandler);
+    document.removeEventListener('visibilitychange', this._visibilityHandler);
   }
 
   /**

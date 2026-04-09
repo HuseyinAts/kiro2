@@ -110,15 +110,10 @@ async def submit_answer(
 ) -> SubmitAnswerResponse:
     # Önce oturumun bu kullanıcıya ait olduğunu doğrula
     state = await service.get_session_state(session_id)
-    if state is None:
+    if not state or state.user_id != str(current_user.id):
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Oturum bulunamadı veya süresi dolmuş",
-        )
-    if state.user_id != str(current_user.id):
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Bu oturum size ait değil",
         )
 
     # Doğru mu?  — DB'den doğru seçeneği al
@@ -160,10 +155,8 @@ async def get_session(
     service: CATSessionService = Depends(get_cat_service),
 ) -> SessionStateResponse:
     state = await service.get_session_state(session_id)
-    if state is None:
+    if not state or state.user_id != str(current_user.id):
         raise HTTPException(status_code=404, detail="Oturum bulunamadı")
-    if state.user_id != str(current_user.id):
-        raise HTTPException(status_code=403, detail="Erişim reddedildi")
 
     return SessionStateResponse(
         session_id=state.session_id,
@@ -186,7 +179,7 @@ async def abandon_session(
     service: CATSessionService = Depends(get_cat_service),
 ) -> None:
     state = await service.get_session_state(session_id)
-    if state and state.user_id != str(current_user.id):
+    if not state or state.user_id != str(current_user.id):
         raise HTTPException(status_code=403, detail="Erişim reddedildi")
     await service.abandon_session(session_id)
 
@@ -198,11 +191,18 @@ async def _check_answer(db, question_id: str, selected_option: str) -> bool:
     """DB'den doğru şıkkı çek, karşılaştır."""
     from sqlalchemy import text
 
-    result = await db.execute(
-        text("SELECT correct_answer FROM question_bank WHERE id = :qid"),
-        {"qid": question_id},
-    )
-    row = result.fetchone()
-    if not row:
+    try:
+        result = await db.execute(
+            text(
+                "SELECT correct_answer FROM question_bank WHERE id = :qid AND is_active = TRUE"
+            ),
+            {"qid": question_id},
+        )
+        row = result.fetchone()
+        if not row:
+            # Logla ama False dön — soru yoksa yanlış cevap say
+            return False
+        return row.correct_answer.upper() == selected_option.upper()
+    except Exception:
+        # DB hatası — crash yerine False dön, üst katmana loglatalım
         return False
-    return row.correct_answer.upper() == selected_option.upper()

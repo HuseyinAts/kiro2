@@ -228,12 +228,13 @@ export async function syncPendingAnswers(apiBase = '/api'): Promise<number> {
 
 // ---------------------------------------------------------------------------
 // Online sync hook — call when coming back online
+// Returns cleanup function to remove listener
 // ---------------------------------------------------------------------------
 
-export function registerOnlineSync() {
-  if (typeof window === 'undefined') return;
+export function registerOnlineSync(): () => void {
+  if (typeof window === 'undefined') return () => {};
 
-  window.addEventListener('online', async () => {
+  const handleOnline = async () => {
     const [answers, fsrs] = await Promise.all([
       syncPendingAnswers(),
       syncFsrsQueue(),
@@ -242,5 +243,8 @@ export function registerOnlineSync() {
       console.info(`[KIRO2 Offline] Synced: ${answers} answers, ${fsrs} FSRS reviews`);
     }
     await cleanExpiredCache();
-  });
+  };
+
+  window.addEventListener('online', handleOnline);
+  return () => window.removeEventListener('online', handleOnline);
 }

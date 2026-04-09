@@ -214,7 +214,7 @@ class BKTService:
             p_guess=float(row.p_guess),
             p_slip=float(row.p_slip),
             attempt_count=row.attempt_count,
-            mastery_status=MasteryStatus(row.mastery_status),
+            mastery_status=MasteryStatus(row.mastery_status.lower()),
             last_attempt=row.last_attempt,
             created_at=row.created_at,
         )

@@ -562,7 +562,7 @@ async def setup_database(test_database_url):
 
 @pytest_asyncio.fixture
 async def db_session(
-    test_engine: AsyncEngine, setup_database: None
+    test_async_engine: AsyncEngine, setup_database: None
 ) -> AsyncGenerator[AsyncSession, None]:
     """
     Create a new database session for each test.
@@ -595,7 +595,7 @@ async def db_session(
 
 @pytest_asyncio.fixture
 async def db_session_autocommit(
-    test_engine: AsyncEngine, setup_database: None
+    test_async_engine: AsyncEngine, setup_database: None
 ) -> AsyncGenerator[AsyncSession, None]:
     """
     Create a database session that auto-commits changes.
