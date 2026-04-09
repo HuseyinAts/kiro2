@@ -47,6 +47,10 @@ export const OrganicPath: React.FC<OrganicPathProps> = ({
       },
     );
     g.appendChild(pathNode);
+
+    return () => {
+      while (g.firstChild) g.removeChild(g.firstChild);
+    };
   }, [fromX, fromY, toX, toY, fromTopic, toTopic, prereqType]);
 
   return <g ref={gRef} />;

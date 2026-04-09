@@ -76,6 +76,10 @@ export const DungeonRoom: React.FC<DungeonRoomProps> = ({
       },
     );
     g.appendChild(rect);
+
+    return () => {
+      while (g.firstChild) g.removeChild(g.firstChild);
+    };
   }, [level, style]);
 
   return (

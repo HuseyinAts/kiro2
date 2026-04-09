@@ -177,7 +177,7 @@ async def get_dungeon_map(
                    tp.prereq_id::text AS from_topic,
                    tp.prereq_type
             FROM topic_prerequisites tp
-            WHERE tp.topic_id = ANY(:ids) OR tp.prereq_id = ANY(:ids)
+            WHERE tp.topic_id = ANY(CAST(:ids AS text[])) OR tp.prereq_id = ANY(CAST(:ids AS text[]))
         """),
         {"ids": topic_ids},
     )
@@ -198,7 +198,7 @@ async def get_dungeon_map(
         text("""
             SELECT topic_id::text, attempt_count, best_score, last_score, completed
             FROM dungeon_progress
-            WHERE user_id = :uid AND topic_id = ANY(:ids)
+            WHERE user_id = :uid AND topic_id = ANY(CAST(:ids AS text[]))
         """),
         {"uid": str(current_user.id), "ids": topic_ids},
     )
@@ -228,7 +228,7 @@ async def get_dungeon_map(
         text("""
             SELECT primary_topic_id::text AS tid, COUNT(*) AS cnt
             FROM question_bank
-            WHERE is_active = true AND primary_topic_id = ANY(:ids)
+            WHERE is_active = true AND primary_topic_id = ANY(CAST(:ids AS text[]))
             GROUP BY primary_topic_id
         """),
         {"ids": topic_ids},
