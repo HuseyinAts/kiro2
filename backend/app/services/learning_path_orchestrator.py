@@ -215,7 +215,9 @@ class LearningPathOrchestrator:
                         prereq_topic_id = check.blocking_prereqs[0]
                         prereq_topic_name = prereq_topic_id
             except Exception as e:
-                logger.debug(f"DAG önkoşul kontrolü atlandı ({subject}): {e}")
+                # K-A3: Hata durumunda güvenli taraf — öğrenci hazır olmadığı konuya gitmesin
+                prereq_blocked = True
+                logger.warning(f"DAG önkoşul kontrolü başarısız ({subject}): {e}")
 
             priority = (
                 100.0
@@ -644,8 +646,8 @@ class LearningPathOrchestrator:
 
     @staticmethod
     def _theta_to_mastery_pct(theta: float, se: float) -> float:
-        """θ → 0-100 mastery (normal CDF)."""
-        z = (theta + 1.0) / max(0.1, se)
+        """θ → 0-100 mastery (normal CDF). K-A4: θ=0 → %50 (ortalama)."""
+        z = theta / max(0.1, se)
         cdf = 0.5 * (1 + math.erf(z / math.sqrt(2)))
         return round(min(100.0, max(0.0, cdf * 100)), 1)
 

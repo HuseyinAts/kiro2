@@ -46,6 +46,7 @@ Akış:
 from __future__ import annotations
 
 import json
+import logging
 import uuid
 from dataclasses import dataclass, field
 from datetime import UTC, datetime
@@ -60,6 +61,8 @@ from app.services.irt_engine import (
     select_next_question,
     should_terminate,
 )
+
+logger = logging.getLogger(__name__)
 
 # ------------------------------------------------------------------
 # Session TTL
@@ -539,8 +542,8 @@ class CATSessionService:
                     },
                 )
                 await self.db.commit()
-        except Exception:
-            pass  # Persist hatası CAT akışını bozmamalı
+        except Exception as e:
+            logger.warning("CAT theta/XP persist hatası: %s", e)
 
         # 3c. PROGRESSIVE XP: Her cevaptan sonra XP ekle
         try:
@@ -559,8 +562,8 @@ class CATSessionService:
                 {"uid": state.user_id, "xp": _xp},
             )
             await self.db.commit()
-        except Exception:
-            pass
+        except Exception as e:
+            logger.warning("CAT XP persist hatası: %s", e)
 
         # 4. Bitiş kontrolü
         terminate, reason = should_terminate(state.se, state.n_questions)
@@ -840,8 +843,8 @@ class CATSessionService:
         # Dashboard cache invalidation — CAT tamamlandığında eski cache'i sil
         try:
             await self.redis.delete(f"student_dashboard:summary:{state.user_id}")
-        except Exception:
-            pass
+        except Exception as e:
+            logger.warning("Dashboard cache invalidation hatası: %s", e)
 
         # Streak güncelleme — CAT tamamlandığında bugünü aktif say
         try:
@@ -889,8 +892,8 @@ class CATSessionService:
                 },  # ~15s per question estimate
             )
             await self.db.commit()
-        except Exception:
-            pass
+        except Exception as e:
+            logger.warning("CAT streak/weekly persist hatası: %s", e)
 
     async def _update_theta_cache(self, state: CATState) -> None:
         """Kullanıcının θ tahminini Redis'e cache'le."""

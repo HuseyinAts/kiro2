@@ -155,7 +155,7 @@ class OSYMExamEngine:
             ExamType.TYT: OSYMExamConfig(
                 exam_type=ExamType.TYT,
                 total_questions=120,
-                duration_minutes=165,
+                duration_minutes=135,  # ÖSYM TYT: 135 dakika (2 saat 15 dk)
                 subject_distribution={
                     # Türkçe (40 soru)
                     "TURKCE": 40,
@@ -175,7 +175,7 @@ class OSYMExamEngine:
             ExamType.AYT: OSYMExamConfig(
                 exam_type=ExamType.AYT,
                 total_questions=160,  # REQ-1.2: AYT 160 soru
-                duration_minutes=210,  # REQ-1.2: AYT 210 dakika (3.5 saat)
+                duration_minutes=180,  # ÖSYM AYT: 180 dakika (3 saat)
                 subject_distribution={
                     # Sayısal Alan (80 soru)
                     "MATEMATIK": 30,
@@ -1445,8 +1445,8 @@ class OSYMExamEngine:
 
             empty_answers = total_questions - answered_questions
 
-            # Net hesaplama (ÖSYM sistemine göre)
-            net_score = correct_answers - (wrong_answers / 4)
+            # Net hesaplama — ÖSYM 2023'ten itibaren 1/4 ceza kaldırıldı
+            net_score = float(correct_answers)
             raw_score = (
                 (correct_answers / total_questions) * 100 if total_questions > 0 else 0
             )
