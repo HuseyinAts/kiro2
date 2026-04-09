@@ -223,27 +223,162 @@ T1.5 Katman 1'de taranacak.
 | dag_service is_active eksik | K1 T1.6 "CLEAN" tespiti + D-03 tarafından düzeltildi | ★ K1 yanlış-negatif düzeltildi |
 
 ### Katman 3 (Yorumsal)
-| ID | Dosya:Satır | Niyet | Gerçekleşme | Ciddiyet | Güven | Agent |
-|----|-------------|-------|-------------|----------|-------|-------|
+
+#### T3.1 Orchestrator Policy Tutarlılığı
+
+| ID | Dosya:Satır | Niyet | Gerçekleşme | Ciddiyet | Güven |
+|----|-------------|-------|-------------|----------|-------|
+| T3-01 | orchestrator/core/policy_engine.py (P12) ↔ routing.py | CRITICAL risk: max 50 satır (routing) | P12 policy: max 20 satır — çelişki, routing geçen PR policy'de FAIL | P1 | YÜKSEK |
+| T3-02 | policy_engine.py (P14) ↔ routing (SECURITY task) | Security task'ta auth değişikliği yapabilme | P14 auth changes'ı CRITICAL bloklıyor → security task'ında auth fix imkansız | P1 | YÜKSEK |
+| T3-03 | policy_engine.py (P1) | 18 TaskType'ı routing'e yönlendir | Sadece 5/18 TaskType handle ediliyor (%28 coverage) — 13 type fallback'e düşer | P2 | YÜKSEK |
+| T3-04 | policy_engine.py (P2,P3,P4) | Agent capability, workflow integrity, state consistency | Stub implementation — always pass. Hiçbir validasyon yapılmıyor | P2 | YÜKSEK |
+| T3-05 | policy_engine.py | 7 specialist agent için policy kuralları | 0 rule — psychometrics, exam_engine, learning_analytics vb. politikasız | P2 | ORTA |
+
+**Not:** Orchestrator policy sistemi ~%85 placeholder. Production kullanımı sınırlı olduğundan P1/P2.
+
+#### T3.2 Config Tutarlılığı
+
+| ID | Dosya1 ↔ Dosya2 | Beklenen | Gerçek | Ciddiyet |
+|----|------------------|----------|--------|----------|
+| T3-06 | vite.config.ts:184 ↔ nginx.conf:7 | Aynı port | Dev:3001, Nginx:3000 — kasıtlı (dev vs prod) | P2 (by design) |
+| T3-07 | config.py:116 ↔ docker-compose.yml | Redis: host.docker.internal | Default: localhost:6379 — Docker'da çalışması .env.mvp override'a bağlı | P2 (bilinen) |
+| T3-08 | config.py:177 CORS | 3000,3001,5173 hepsi izinli | 5173 artık kullanılmıyor (Vite artık 3001) — stale entry | P2 |
+| — | Backend port 8000, Docker network, API prefix | Tutarlı | ✅ CLEAN | — |
+
+#### T3.3 Test Semantiği
+
+| ID | Kontrol | Sonuç | Ciddiyet |
+|----|---------|-------|----------|
+| T3-09 | `assert True` sahte test taraması | 75 hit — TÜMÜ reward_hacking detector test dosyalarında veya "NEVER use" yorumlarında. **0 gerçek sahte test** | CLEAN |
+| T3-10 | `pytest.skip/mark.skip` sayısı | 113 occurrence / 30 dosya — teknik borç ama fonksiyonel risk değil | P2 |
+| T3-11 | placement_service.py:256 | `except Exception: pass` — bare except, hata yutulur | P2 (K1'de yakalandı) |
+
+#### T3.4 CLAUDE.md ↔ Gerçeklik
+
+| # | CLAUDE.md İddiası | Gerçek Değer | Tutarlı? | Güncelleme Gerekiyor? |
+|---|-------------------|-------------|----------|----------------------|
+| T3-12 | "41+ endpoint" (backend/api/) | backend/api/: ~96 aktif router, backend/app/api/: 28 endpoint = **124+ toplam** | ❌ | ✅ Güncelle: "124+ endpoint" |
+| T3-13 | "17 kanal, 27 alias" | 17 kanal ✓, **11 alias** (27 değil) | ❌ | ✅ Güncelle: "17 kanal, 11 alias" |
+| T3-14 | "Coverage ~18%" | Session 127'de **%53** (28 yeni test dosyası) | ❌ | ✅ Güncelle: "~53%" |
+| T3-15 | "React 18" | React 18.2.0 ✓ | ✅ | — |
+| T3-16 | "PostgreSQL 15" | postgres:15-alpine ✓ | ✅ | — |
+| T3-17 | "12+ modules" YouTube | 12 dosya ✓ | ✅ | — |
+| T3-18 | "77,336 soru" | import script + MEMORY referansı ✓ | ✅ | — |
+
+**Not:** 3 iddia güncellenmelidir (endpoint sayısı, alias sayısı, coverage). Doğruluk = 4/7 (%57).
 
 ## Adım 4: Akış Trace
 
 ### Sınav Akışı
-| Geçiş | Kaynak | Hedef | Durum | Boşluk |
-|--------|--------|-------|-------|--------|
+
+**Akış Diyagramı:**
+```
+[ModernExamStartPage] --(POST /api/v1/osym-exam/create)--> [sinav.py:348]
+  │                                                          │
+  │ exam_type.toLowerCase()="tyt"                            │ ExamType(str,Enum) TYT="tyt" ✓
+  │                                                          │
+  └── navigate(`/exam/${session_id}`)                        ├── osym_exam_engine.create_exam_session()
+                                                             │    ├── exam_configs[ExamType.TYT] deepcopy
+[ExamPage] --(GET /questions, POST /answer)-->               │    ├── _select_questions() → question_bank
+  │                                                          │    │    ├── is_active filter ✓ (P0 fix)
+  │ Timer: local countdown + 30s sync                        │    │    ├── UPPERCASE subject match ✓
+  └── (POST /finish) → calculate_score()                     │    │    └── TTLCache + random.sample
+                                                             │    └── active_sessions[sid] = session_data (in-memory ⚠️)
+                                                             │
+                                                             └── get_session_data() → ExamSessionResponse
+```
+
+| # | Geçiş | Dosya:Satır | Niyet | Gerçekleşme | Ciddiyet |
+|---|-------|------------|-------|------------|---------|
+| EX-01 | Frontend→API: exam_type case | ExamStartPage:91 → sinav.py:36 | Frontend "tyt" → backend ExamType parse | ✅ ExamType(str,Enum) TYT="tyt" — Pydantic otomatik parse | CLEAN |
+| EX-02 | Soru seçimi: doğru tablo | osym_exam.py:32 | QuestionBankItem kullan | `from models.question_bank import QuestionBankItem as Question` ✅ | CLEAN |
+| EX-03 | Soru seçimi: is_active | osym_exam.py:1260-1298 | Deaktif soru filtreleme | ✅ 4 select noktasında `Question.is_active.is_(True)` (Session 1 P0 fix) | CLEAN (fixed) |
+| EX-04 | Cache invalidation | osym_exam.py:1248 | TTLCache soru havuzu | Cache doluyken is_active kontrolü yapılmaz — TTL (1 saat) içinde deaktif soru ID havuzda kalır. Fetch'te is_active filtresi var ama COUNT mismatch olabilir | P1 (downgraded from P0) |
+| EX-05 | Session izolasyonu | osym_exam.py:140,1641 | Multi-worker desteği | ★ `active_sessions: dict` in-memory — multi-worker'da session paylaşılmaz (K-B5) | **P0** (bilinen) |
+| EX-06 | TYT/AYT süreleri | osym_exam.py:158,178 | ÖSYM resmi süreler | TYT=165dk (doğru:135), AYT=210dk (doğru:180) — K-B1 ile aynı | P1 (bilinen) |
+| EX-07 | Puan hesaplama | osym_exam.py:1427 | ÖSYM 2023+ net=correct | `net = correct - (wrong/4)` — 1/4 ceza kaldırıldı ama hâlâ uygulanıyor (K-B4) | P1 (bilinen) |
+| EX-08 | response_time None | osym_exam.py:1084 | Süre topla | ✅ `answer.response_time_seconds or 0` (Session 1 P0 fix) | CLEAN (fixed) |
+| EX-09 | Score scaling | osym_exam.py:834 | YKS puan ölçekleme | `scaled_score = raw_score` — gerçek YKS ölçekleme yok (K-B6) | P1 (bilinen) |
+| EX-10 | PerformanceResponse eksik | sinav.py:175-203 ↔ examService.ts:119 | `konu_performanslari` dönmeli | Backend schema'da alan YOK. Frontend `performanceToSinavSonucu()` || [] ile default → **konu analizi her zaman BOŞ** | **P0** |
+| EX-11 | start_exam L1-only | osym_exam.py:478-479 | Session L2'den yüklenebilmeli | `start_exam()` sadece `active_sessions` dict'e bakıyor, `get_session_data()` gibi L2 Redis fallback YOK. Backend restart sonrası start çağrısı FAIL | **P0** |
+| EX-12 | auto_complete_task restore | osym_exam.py:1608-1640 | Restart sonrası timer devam etmeli | Redis L2'den yüklenen session için `_auto_complete_task` başlatılmıyor → sınav süresi dolsa bile IN_PROGRESS'te asılı kalır | **P0** |
+| EX-13 | Abandoned exam cleanup | ExamPage.tsx:104-106 | Terk edilen sınav ABANDONED olmalı | `handleExamExit` → `/dashboard` redirect, ExamSession DB'de sonsuza kadar IN_PROGRESS | P1 |
+| EX-14 | LGS enum mismatch | examService.ts:13 ↔ enums_db.py:50 | LGS desteklenmeli veya devre dışı | Frontend ExamType.LGS tanımlı, backend'de YOK → 422 Unprocessable Entity | P1 |
+| EX-15 | topic field UUID | sinav.py:558 | Konu adı dönmeli | `topic=question.primary_topic_id or question.subject_area` — primary_topic_id UUID string, konu adı değil | P1 |
+| EX-16 | YDT no-questions UX | osym_exam.py:198-200 | Açık mesaj | YDT soru yokluğu → ValueError → "İşlem başarısız" — kullanıcı neden anlayamaz | P1 |
 
 ### Öğrenme Yolu Akışı
-| Geçiş | Kaynak | Hedef | Durum | Boşluk |
-|--------|--------|-------|-------|--------|
 
-## Özet Sayaçlar (Katman 1+2 sonrası)
+**Akış Diyagramı:**
+```
+[ModernLearningPathPage]
+  ├── GET /api/v1/learning-path/status → [daily API] → Orchestrator
+  │     ├── _fetch_thetas_with_se() → student_abilities
+  │     ├── _fetch_fsrs_due_counts() → user_item_fsrs JOIN question_bank
+  │     ├── DAGService.get_user_mastery() → kiro2_cat_sessions JOIN question_bank
+  │     └── DAGService.get_next_recommended_topic()
+  │
+  ├── GET /api/v1/dungeon/{subject} → [dungeon API]
+  │     ├── topic_hierarchy + topic_prerequisites → rooms/edges
+  │     ├── dungeon_progress → user progress
+  │     ├── user_theta → theta, theta_se  ⚠️ FARKLI TABLO
+  │     └── question_bank WHERE is_active=true → counts
+  │
+  ├── GET /api/v1/learning-path/exit-quiz/{subject} → SoruBankasiServisi
+  │     └── question_bank WHERE is_active=TRUE
+  │
+  └── POST /api/v1/learning-path/register-wrong-answers → QuestionReviewAdapter
+        └── user_item_fsrs (FSRS state persist)
+            ↓ (BKTService.record_answer pipeline)
+        BKT → IRT (theta bridge) → FSRS (review_card) → ZPD (zone)
+```
 
-| Ciddiyet | Kalibrasyon | Katman 1 | Katman 2 | Toplam |
-|----------|------------|----------|----------|--------|
-| **P0** | 3 | 0 | 13 | **16** |
-| **P1** | 7 | 0 | 15 | **22** |
-| **P2** | 5 | 7 | 10 | **22** |
-| **Toplam** | 15 | 7 | 38 | **60** |
+| # | Geçiş | Dosya:Satır | Niyet | Gerçekleşme | Ciddiyet |
+|---|-------|------------|-------|------------|---------|
+| LP-01 | DungeonMap subject | ModernLearningPathPage.tsx:103,927 | Kullanıcının seçtiği selectedSubject'i göster | `dungeonSubject='MATEMATIK'` sabit — her ders için matematik dungeon'ı gösterir | **P0** |
+| LP-02 | Theta tablo çatallanması | orchestrator.py:527 ↔ dungeon.py:215 | Theta tutarlı bir tablodan okunmalı | Orchestrator → `student_abilities` (INT subject_id), Dungeon → `user_theta` (TEXT subject_area). İki farklı tablo → fog-of-war her kullanıcı için theta=0.0 | **P0** |
+| LP-03 | FSRS tablo çatallanması | orchestrator.py:541 ↔ bkt_service.py:341 | FSRS due count tutarlı olmalı | Orchestrator `user_item_fsrs` sorgular, BKTService `FSRSCard/fsrs_cards` günceller. Farklı tablolar → due count her zaman 0 | **P0** |
+| LP-04 | prereq_topic_name | orchestrator.py:211 | Konu adı göster | `next_topic_name = next_tid` — UUID yazılıyor, banner'da UUID görünür | P1 (=K-A7) |
+| LP-05 | /status exam_type | daily.py:133-159 | Öğrencinin sınav türüne göre ağırlık | `exam_type` default "TYT" kalır, `_get_user_goal()` sonucu kullanılmaz. AYT öğrenci TYT ağırlığı alır | P1 |
+| LP-06 | is_timeout field | MLPP.tsx:320 ↔ v2.py:1988 | Timeout bilgisi backend'e ulaşmalı | `RegisterWrongAnswersRequest`'te `is_timeout` field yok → sessizce silinir | P1 |
+| LP-07 | Bozuk DAG kullanımı | dag_service.py:132-134 | Cycle → DAG hatalı işaretle | `logger.error()` sonrası bozuk DAG `self._dag`'a atanır → sessizce kullanılmaya devam | P1 |
+| LP-08 | BKT→IRT bridge | bkt_service.py:283-286 | p_L→theta dönüşümü | `max(0.05, min(0.95))` clamp var, `(clamped-0.5)*8` → [-3.6,3.6]. IRT b∈[-3,3] daha dar | CLEAN |
+| LP-09 | IRT parametre sınırları | irt_service_3pl.py:104-106 | a,b,c clamp | ✅ Tüm parametreler klamplı, overflow koruması var | CLEAN |
+| LP-10 | Cold start | dungeon.py:196-212 | Yeni kullanıcı default | ✅ `progress_map.get(tid, {})` → default değerler | CLEAN |
+| LP-11 | DungeonNode description | MLPP.tsx:185-189 | Anlamlı açıklama | `description: node.code` — MAT.01 gibi kod gösterir, UX sorunu | P2 |
+
+## Özet Sayaçlar (Tüm adımlar sonrası — FINAL, review sonrası düzeltilmiş)
+
+| Ciddiyet | Kalibrasyon | K1 | K2 | K3 | Akış | Toplam | Benzersiz |
+|----------|------------|-----|-----|-----|------|--------|-----------|
+| **P0** | 3 | 0 | 13 | 0 | 6 | 22 | **21** |
+| **P1** | 7 | 0 | 15 | 2 | 9 | 33 | **28** |
+| **P2** | 5 | 7 | 10 | 9 | 1 | 32 | **31** |
+| **Toplam** | 15 | 7 | 38 | 11 | 16 | 87 | **80** |
+
+*Duplicate'lar: EX-05=K-B5, EX-06=K-B1, EX-07=K-B4, EX-09=K-B6, LP-04=K-A7, F-01=LP-01 (6 duplicate). D-01 P0→P1 downgrade (review sonrası).*
+*Fixlenen: 14 P0 (commit f244aae). Kalan P0: 7.*
+
+### P0 Tam Liste (22 toplam — 14 fixlendi, 1 duplicate, 7 kalan)
+
+**FIXLENDİ (Session 1, commit f244aae — 14 bulgu):**
+- S-01..S-11: 3 dosyada 17 endpoint'e auth eklendi (11 P0) ✅
+- K-B2: AYT field type → total_questions sync ✅
+- K-B3: response_time_seconds None → `or 0` guard ✅
+- D-02: select(Question).where(id.in_) → is_active filtresi eklendi (4 sorgu) ✅
+
+**DUPLICATE:** EX-05 = K-B5 (aynı singleton bulgusu)
+
+**DOWNGRADE:** D-01 → P1 (fetch tarafı fixlendi, cache stale count mismatch riski düşük)
+
+**KALAN (7 adet):**
+- K-B5: Global singleton multi-worker session izolasyonu
+- LP-01: DungeonMap hardcoded 'MATEMATIK' (=F-01, F-01 kaldırıldı)
+- LP-02: Theta tablo çatallanması (student_abilities vs user_theta)
+- LP-03: FSRS tablo çatallanması (user_item_fsrs vs fsrs_cards)
+- EX-10: PerformanceResponse konu_performanslari eksik → konu analizi her zaman BOŞ
+- EX-11: start_exam() L1-only — L2 Redis fallback yok (nadir senaryo ama restart'ta session kaybı)
+- EX-12: _auto_complete_task L2'den restore edilmiyor → sınav süresiz IN_PROGRESS
 
 ### P0 Listesi (16 adet — acil müdahale)
 - K-B2: AYT field type → total_questions mismatch → ValueError
