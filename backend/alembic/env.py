@@ -1,11 +1,12 @@
-from logging.config import fileConfig
-from sqlalchemy import engine_from_config
-from sqlalchemy import pool
-from alembic import context
-import sys
 import os
+import sys
+from logging.config import fileConfig
 from pathlib import Path
+
 from dotenv import load_dotenv
+from sqlalchemy import engine_from_config, pool
+
+from alembic import context
 
 # Load environment variables from .env file (check both backend and root directories)
 # Note: override=False ensures environment variables (e.g., from CI/CD) take precedence
@@ -43,7 +44,8 @@ config.set_main_option("sqlalchemy.url", sync_url)
 
 # Log which database is being used (mask password)
 import re
-safe_url = re.sub(r':([^@]+)@', ':***@', sync_url)
+
+safe_url = re.sub(r":([^@]+)@", ":***@", sync_url)
 print(f"[ALEMBIC] Using database: {safe_url}")
 
 # Interpret the config file for Python logging.
@@ -77,10 +79,10 @@ target_metadata = Base.metadata
 # ÖNEMLİ: Bu listeye EKLE, çıkarma — çıkarmak DROP riskine yol açar.
 ALEMBIC_EXCLUDE_TABLES = {
     # DB-only tablolar (ORM modeli yok, elle SQL ile yaratıldı)
-    "subjects",          # yks_estimator.py kullanıyor, slug dahil
-    "user_item_fsrs",    # eski FSRS kartları (22 kayıt)
-    "user_theta",        # eski theta storage
-    "yks_exam_goals",    # YKS hedef tablosu
+    "subjects",  # yks_estimator.py kullanıyor, slug dahil
+    # "user_item_fsrs",  # Migration 20260410/user_item_fsrs_001 tarafından yönetiliyor
+    "user_theta",  # eski theta storage
+    "yks_exam_goals",  # YKS hedef tablosu
     # Chat/session tabloları (legacy, ORM dışı)
     "chat_sessions",
     "chat_messages",
@@ -123,8 +125,8 @@ def run_migrations_offline() -> None:
         literal_binds=True,
         dialect_opts={"paramstyle": "named"},
         include_object=include_object,
-        compare_type=False,           # VARCHAR/String, NUMERIC/Float gürültüsünü sustur
-        compare_server_default=False, # Server default farklarını sustur
+        compare_type=False,  # VARCHAR/String, NUMERIC/Float gürültüsünü sustur
+        compare_server_default=False,  # Server default farklarını sustur
     )
 
     with context.begin_transaction():
@@ -144,8 +146,8 @@ def run_migrations_online() -> None:
             connection=connection,
             target_metadata=target_metadata,
             include_object=include_object,
-            compare_type=False,           # VARCHAR/String, NUMERIC/Float gürültüsünü sustur
-            compare_server_default=False, # Server default farklarını sustur
+            compare_type=False,  # VARCHAR/String, NUMERIC/Float gürültüsünü sustur
+            compare_server_default=False,  # Server default farklarını sustur
         )
 
         with context.begin_transaction():

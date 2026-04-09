@@ -17,11 +17,10 @@ from sqlalchemy import (
     Integer,
     Numeric,
     SmallInteger,
+    String,
     Text,
     func,
-    String,
 )
-from sqlalchemy.dialects.postgresql import UUID
 
 from .base import Base
 
@@ -115,4 +114,28 @@ class TopicPrerequisite(Base):
             "is_active",
             postgresql_where=(is_active == True),  # noqa: E712
         ),
+    )
+
+
+class UserTheta(Base):
+    """User subject ability — IRT θ tahmini (per user × subject_area).
+
+    Tablo DB'de migrations/005_learning_path.sql ile yaratıldı.
+    Alembic EXCLUDE listesinde (env.py) — autogenerate etkilenmez.
+    """
+
+    __tablename__ = "user_theta"
+
+    user_id = Column(String(255), nullable=False, primary_key=True)
+    subject_area = Column(String(50), nullable=False, primary_key=True)
+    theta_estimate = Column(Float, nullable=False, server_default="0.0")
+    theta_se = Column(Float, nullable=False, server_default="0.5")
+    response_count = Column(Integer, nullable=False, server_default="0")
+    last_updated = Column(
+        DateTime(timezone=True), nullable=False, server_default=func.now()
+    )
+
+    __table_args__ = (
+        Index("idx_user_theta_user", "user_id"),
+        {"extend_existing": True},
     )

@@ -785,6 +785,28 @@ class CATSessionService:
                 f"CAT UPSERT: bilinmeyen subject_id '{state.subject_id}'"
             )
 
+        # ── user_theta UPSERT (IRT θ global store) ───────────────────
+        # DAGService ve ZPD bu tablodan okur. subject_area string key.
+        await self.db.execute(
+            text("""
+                INSERT INTO user_theta
+                    (user_id, subject_area, theta_estimate, theta_se, response_count)
+                VALUES (:uid, :subj, :theta, :se, :resp)
+                ON CONFLICT (user_id, subject_area) DO UPDATE SET
+                    theta_estimate = EXCLUDED.theta_estimate,
+                    theta_se       = EXCLUDED.theta_se,
+                    response_count = EXCLUDED.response_count,
+                    last_updated   = NOW()
+            """),
+            {
+                "uid": state.user_id,
+                "subj": state.subject_id,
+                "theta": round(state.theta, 4),
+                "se": round(state.se, 4),
+                "resp": len(getattr(state, "responses", [])),
+            },
+        )
+
         await self.db.commit()
 
         # BUG-12 FIX: FSRS user_item_fsrs tablosunu güncelle

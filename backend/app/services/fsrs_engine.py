@@ -35,31 +35,50 @@ from datetime import UTC, datetime, timedelta
 # Bu ağırlıklar büyük ölçekli Anki verisiyle optimize edilmiştir.
 # YKS verisi biriktikçe fine-tune yapılabilir.
 W = [
-    0.4072, 1.1829, 3.1262, 15.4722,  # w0-w3:  S_0 (ilk stabilite)
-    7.2102, 0.5316, 1.0651, 0.0589,   # w4-w7:  D parametreleri
-    1.5330, 0.1544, 1.0040,            # w8-w10: stabilite artış faktörleri
-    1.9829, 0.0953, 0.2975, 2.2042,   # w11-w14: stabilite hesabı
-    0.2407, 2.9466, 0.5034,            # w15-w17
-    0.6567, 0.1673, 0.1415,            # w18-w20
+    0.4072,
+    1.1829,
+    3.1262,
+    15.4722,  # w0-w3:  S_0 (ilk stabilite)
+    7.2102,
+    0.5316,
+    1.0651,
+    0.0589,  # w4-w7:  D parametreleri
+    1.5330,
+    0.1544,
+    1.0040,  # w8-w10: stabilite artış faktörleri
+    1.9829,
+    0.0953,
+    0.2975,
+    2.2042,  # w11-w14: stabilite hesabı
+    0.2407,
+    2.9466,
+    0.5034,  # w15-w17
+    0.6567,
+    0.1673,
+    0.1415,  # w18-w20
 ]
 
-DECAY  = -0.5                          # Hafıza bozunma katsayısı
-FACTOR = 0.9 ** (1 / DECAY) - 1       # ≈ 0.8122
+DECAY = -0.5  # Hafıza bozunma katsayısı
+FACTOR = 0.9 ** (1 / DECAY) - 1  # ≈ 0.8122
+
+MAX_INTERVAL_DAYS: int = 36_500  # 100 yıl — FSRS+ standardı
+MIN_INTERVAL_DAYS: int = 1
 
 # Puan tanımları (Anki tarzı)
-PUAN_TEKRAR = 1   # Tekrar: hiç hatırlamadı
-PUAN_ZOR    = 2   # Zor: hatırladı ama zorlandı
-PUAN_İYİ    = 3   # İyi: hatırladı (default doğru yanıt)
-PUAN_KOLAY  = 4   # Kolay: kolayca hatırladı
+PUAN_TEKRAR = 1  # Tekrar: hiç hatırlamadı
+PUAN_ZOR = 2  # Zor: hatırladı ama zorlandı
+PUAN_İYİ = 3  # İyi: hatırladı (default doğru yanıt)
+PUAN_KOLAY = 4  # Kolay: kolayca hatırladı
 
 # State tanımları
-DURUM_YENİ       = 0
-DURUM_ÖĞRENME    = 1
-DURUM_TEKRAR     = 2
-DURUM_YENİDEN    = 3   # lapse: unutuldu, yeniden öğreniliyor
+DURUM_YENİ = 0
+DURUM_ÖĞRENME = 1
+DURUM_TEKRAR = 2
+DURUM_YENİDEN = 3  # lapse: unutuldu, yeniden öğreniliyor
 
 
 # ─── Veri yapıları ────────────────────────────────────────────────────────────
+
 
 @dataclass
 class FSRSState:
@@ -67,19 +86,18 @@ class FSRSState:
     Bir kullanıcı-soru çiftinin FSRS durumu.
     user_item_fsrs tablosunun Python temsili.
     """
-    user_id:       str
-    question_id:   str
-    stability:     float   = 1.0    # S: hafıza ömrü (gün)
-    difficulty:    float   = 5.0    # D: 1-10, 5=orta
-    due_date:      datetime = field(
-        default_factory=lambda: datetime.now(UTC)
-    )
-    last_review:   datetime | None = None
-    state:         int   = DURUM_YENİ
-    reps:          int   = 0        # toplam tekrar sayısı
-    lapses:        int   = 0        # unutulma sayısı
-    scheduled_days: int  = 0
-    elapsed_days:  float = 0.0
+
+    user_id: str
+    question_id: str
+    stability: float = 1.0  # S: hafıza ömrü (gün)
+    difficulty: float = 5.0  # D: 1-10, 5=orta
+    due_date: datetime = field(default_factory=lambda: datetime.now(UTC))
+    last_review: datetime | None = None
+    state: int = DURUM_YENİ
+    reps: int = 0  # toplam tekrar sayısı
+    lapses: int = 0  # unutulma sayısı
+    scheduled_days: int = 0
+    elapsed_days: float = 0.0
 
     @property
     def retrievability(self) -> float:
@@ -121,12 +139,14 @@ class FSRSState:
 @dataclass
 class FSRSResult:
     """Bir tekrarın sonucu — DB'ye yazılacak yeni state."""
-    new_state:     FSRSState
-    interval_days: int    # bir sonraki tekrara kaç gün
-    puan:          int
+
+    new_state: FSRSState
+    interval_days: int  # bir sonraki tekrara kaç gün
+    puan: int
 
 
 # ─── Temel FSRS formülleri ────────────────────────────────────────────────────
+
 
 def _retrievability(t: float, s: float) -> float:
     """
@@ -178,12 +198,15 @@ def _next_recall_stability(s: float, d: float, r: float, puan: int) -> float:
     S_r = S * (e^w8 * (11-D) * S^(-w9) * (e^(w10*(1-R)) - 1) * w15 [if easy] * w16 [if hard])
     """
     hard_penalty = W[15] if puan == PUAN_ZOR else 1.0
-    easy_bonus   = W[16] if puan == PUAN_KOLAY else 1.0
-    return (
-        s
-        * (math.exp(W[8]) * (11.0 - d) * (s ** (-W[9]))
-           * (math.exp(W[10] * (1.0 - r)) - 1.0)
-           * hard_penalty * easy_bonus + 1.0)
+    easy_bonus = W[16] if puan == PUAN_KOLAY else 1.0
+    return s * (
+        math.exp(W[8])
+        * (11.0 - d)
+        * (s ** (-W[9]))
+        * (math.exp(W[10] * (1.0 - r)) - 1.0)
+        * hard_penalty
+        * easy_bonus
+        + 1.0
     )
 
 
@@ -203,13 +226,13 @@ def _interval_from_stability(s: float, desired_r: float = 0.90) -> int:
     t = S / FACTOR * (desired_R^(1/DECAY) - 1)
     """
     interval = s / FACTOR * (desired_r ** (1.0 / DECAY) - 1.0)
-    return max(1, round(interval))
+    return max(MIN_INTERVAL_DAYS, min(MAX_INTERVAL_DAYS, round(interval)))
 
 
 # ─── Ana FSRS güncelleme fonksiyonu ──────────────────────────────────────────
 
-def fsrs_update(state: FSRSState, puan: int,
-                desired_r: float = 0.90) -> FSRSResult:
+
+def fsrs_update(state: FSRSState, puan: int, desired_r: float = 0.90) -> FSRSResult:
     """
     Bir tekrarı işle → yeni FSRS state döndür.
 
@@ -249,16 +272,16 @@ def fsrs_update(state: FSRSState, puan: int,
 
     # ── YENİ madde (ilk görüntülenme) ────────────────────────────
     if state.state == DURUM_YENİ:
-        new.stability  = _initial_stability(puan)
+        new.stability = _initial_stability(puan)
         new.difficulty = _initial_difficulty(puan)
 
         if puan >= PUAN_İYİ:
             new.state = DURUM_TEKRAR
-            interval  = _interval_from_stability(new.stability, desired_r)
+            interval = _interval_from_stability(new.stability, desired_r)
         else:
             # Tekrar veya Zor → bugün tekrar göster
             new.state = DURUM_ÖĞRENME
-            interval  = 1
+            interval = 1
 
     # ── ÖĞRENME aşaması ──────────────────────────────────────────
     elif state.state == DURUM_ÖĞRENME:
@@ -266,13 +289,13 @@ def fsrs_update(state: FSRSState, puan: int,
 
         if puan >= PUAN_İYİ:
             new.stability = _short_term_stability(state.stability, puan)
-            new.state     = DURUM_TEKRAR
-            interval      = _interval_from_stability(new.stability, desired_r)
+            new.state = DURUM_TEKRAR
+            interval = _interval_from_stability(new.stability, desired_r)
         else:
             # Hâlâ öğrenme aşamasında
             new.stability = _short_term_stability(state.stability, puan)
-            new.state     = DURUM_ÖĞRENME
-            interval      = 1
+            new.state = DURUM_ÖĞRENME
+            interval = 1
 
     # ── TEKRAR aşaması ───────────────────────────────────────────
     elif state.state == DURUM_TEKRAR:
@@ -281,18 +304,16 @@ def fsrs_update(state: FSRSState, puan: int,
 
         if puan == PUAN_TEKRAR:
             # Unuttu → lapse
-            new.stability = _next_forget_stability(
-                state.stability, new.difficulty, r
-            )
-            new.state  = DURUM_YENİDEN
+            new.stability = _next_forget_stability(state.stability, new.difficulty, r)
+            new.state = DURUM_YENİDEN
             new.lapses = state.lapses + 1
-            interval   = 1
+            interval = 1
         else:
             new.stability = _next_recall_stability(
                 state.stability, new.difficulty, r, puan
             )
             new.state = DURUM_TEKRAR
-            interval  = _interval_from_stability(new.stability, desired_r)
+            interval = _interval_from_stability(new.stability, desired_r)
 
     # ── YENİDEN ÖĞRENME ──────────────────────────────────────────
     elif state.state == DURUM_YENİDEN:
@@ -300,27 +321,30 @@ def fsrs_update(state: FSRSState, puan: int,
 
         if puan >= PUAN_İYİ:
             new.stability = _short_term_stability(state.stability, puan)
-            new.state     = DURUM_TEKRAR
-            interval      = _interval_from_stability(new.stability, desired_r)
+            new.state = DURUM_TEKRAR
+            interval = _interval_from_stability(new.stability, desired_r)
         else:
             new.state = DURUM_YENİDEN
-            interval  = 1
+            interval = 1
     else:
         raise ValueError(f"Bilinmeyen durum: {state.state}")
 
     new.scheduled_days = interval
-    new.elapsed_days   = elapsed
-    new.due_date       = now + timedelta(days=interval)
+    new.elapsed_days = elapsed
+    new.due_date = now + timedelta(days=interval)
 
     return FSRSResult(new_state=new, interval_days=interval, puan=puan)
 
 
 # ─── YKS puan → FSRS puan dönüşümü ──────────────────────────────────────────
 
-def answer_to_fsrs_rating(is_correct: bool,
-                           response_ms: int | None = None,
-                           theta: float | None = None,
-                           item_b: float | None = None) -> int:
+
+def answer_to_fsrs_rating(
+    is_correct: bool,
+    response_ms: int | None = None,
+    theta: float | None = None,
+    item_b: float | None = None,
+) -> int:
     """
     CAT yanıtını FSRS puanına çevir.
 
@@ -350,11 +374,12 @@ def answer_to_fsrs_rating(is_correct: bool,
 
 # ─── Birleşik skor: FSRS urgency + IRT information ───────────────────────────
 
+
 def combined_priority_score(
     fsrs_state: FSRSState,
     irt_info: float,
     w_fsrs: float = 0.60,
-    w_irt:  float = 0.40,
+    w_irt: float = 0.40,
 ) -> float:
     """
     CAT + FSRS birleşik öncelik skoru.
@@ -371,5 +396,5 @@ def combined_priority_score(
       w_irt=0.40:  bilgi kazancı ikincil
     """
     urgency = fsrs_state.urgency_score
-    norm_info = min(irt_info / 2.0, 1.0)   # normalize: tipik I(θ) 0-2
+    norm_info = min(irt_info / 2.0, 1.0)  # normalize: tipik I(θ) 0-2
     return w_fsrs * urgency + w_irt * norm_info
