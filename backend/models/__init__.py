@@ -81,6 +81,9 @@ from .dina import DINAParameter, NanoSkill, QMatrix, StudentNanoSkillMastery
 # Faz 3: Duel models
 from .duel import DuelMatch, DuelRating, DuelSession
 
+# Dungeon Learning Path
+from .dungeon_models import DungeonProgress
+
 # Enums
 from .enums import (
     IcerikTipi,
@@ -380,6 +383,8 @@ __all__ = [
     "CatSession",
     "LearningEvent",
     "TopicPrerequisite",
+    # Dungeon Learning Path
+    "DungeonProgress",
     # Aliases for backward compatibility
     "Student",
     "CanonicalStudentProfile",  # Alias for LearningPathStudentProfile
