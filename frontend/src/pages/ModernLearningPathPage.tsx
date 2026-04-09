@@ -11,8 +11,11 @@ import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 // Custom hooks
 import { VideoResponse } from '../api';
 import { LearningStyleQuiz } from '../components/LearningPath/LearningStyleQuiz';
-import { ModernLearningPathVisualizer } from '../components/LearningPath/ModernLearningPathVisualizer';
+import { DungeonMap } from '../components/LearningPath/DungeonMap';
+// Replaced by DungeonMap — keeping import for potential fallback
+// import { ModernLearningPathVisualizer } from '../components/LearningPath/ModernLearningPathVisualizer';
 import { NodeDetailsPanel } from '../components/LearningPath/Page/NodeDetailsPanel';
+import type { LayoutNode } from '../hooks/useDungeonMap';
 import { PathNodeData } from '../components/LearningPath/PathNode';
 import { GlassCard } from '../components/ui/GlassCard';
 import { ModernButton } from '../components/ui/ModernButton';
@@ -33,7 +36,7 @@ import { useLearningPathVideos } from '../hooks/useLearningPathVideos';
 import modernColors from '../theme/modern-colors';
 
 // Types
-import { generateConnections } from '../utils/learningPathHelpers';
+// import { generateConnections } from '../utils/learningPathHelpers';
 import { turkishLowerCase } from '../utils/turkishUtils';
 
 // Lazy-loaded tab content components
@@ -70,7 +73,7 @@ export function ModernLearningPathPage() {
   const {
     pathNodes,
     learningStyle,
-    currentNodeId,
+    currentNodeId: _currentNodeId,
     loading,
     error,
     needsQuiz,
@@ -97,6 +100,7 @@ export function ModernLearningPathPage() {
   // Local UI state
   // ========================================
   const [tabValue, setTabValue] = useState(0);
+  const [dungeonSubject] = useState('MATEMATIK');
   const [showNodeDetails, setShowNodeDetails] = useState(false);
   const [selectedNode, setSelectedNode] = useState<PathNodeData | null>(null);
   const [interleavedQuestions, setInterleavedQuestions] = useState<Question[] | null>(null);
@@ -173,6 +177,17 @@ export function ModernLearningPathPage() {
     },
     [setCurrentNode, loadVideosForNode, learningStyle],
   );
+
+  const handleDungeonNodeClick = useCallback((node: LayoutNode) => {
+    // Bridge dungeon node to existing node click handler
+    handleNodeClick({
+      id: node.topic_id,
+      title: node.name_tr,
+      description: node.code,
+      status: node.progress.completed ? 'completed' : node.progress.attempt_count > 0 ? 'in_progress' : 'locked',
+      difficulty: 'medium',
+    } as unknown as PathNodeData);
+  }, [handleNodeClick]);
 
   /**
    * Handle video play
@@ -412,10 +427,11 @@ export function ModernLearningPathPage() {
     [pathNodes.length],
   );
 
-  const pathConnections = useMemo(
-    () => generateConnections(pathNodes),
-    [pathNodes],
-  );
+  // Replaced by DungeonMap — DAG edges come from backend now
+  // const pathConnections = useMemo(
+  //   () => generateConnections(pathNodes),
+  //   [pathNodes],
+  // );
 
   /**
    * Calculate progress stats
@@ -907,12 +923,9 @@ export function ModernLearningPathPage() {
 
                   {/* Learning Path Visualizer */}
                   {pathNodes.length > 0 ? (
-                    <ModernLearningPathVisualizer
-                      nodes={pathNodes}
-                      connections={pathConnections}
-                      currentNodeId={currentNodeId}
-                      onNodeClick={handleNodeClick}
-                      viewMode="tree"
+                    <DungeonMap
+                      subject={dungeonSubject}
+                      onNodeClick={handleDungeonNodeClick}
                     />
                   ) : (
                     <GlassCard glassIntensity="light">
