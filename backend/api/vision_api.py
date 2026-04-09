@@ -18,8 +18,10 @@ import logging
 import time
 from typing import Any
 
-from fastapi import APIRouter, File, Form, HTTPException, UploadFile
+from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile
 from pydantic import BaseModel, Field
+
+from core.dependencies import AuthenticatedUser, get_current_user
 
 try:
     from core.llm_service import llm_service
@@ -150,7 +152,10 @@ async def analyze_with_vision(
 
 
 @router.post("/analyze", response_model=VisionResponse)
-async def analyze_image(request: VisionAnalyzeRequest) -> VisionResponse:
+async def analyze_image(
+    request: VisionAnalyzeRequest,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+) -> VisionResponse:
     """
     Genel gorsel analizi
 
@@ -189,7 +194,10 @@ async def analyze_image(request: VisionAnalyzeRequest) -> VisionResponse:
 
 
 @router.post("/solve-question", response_model=VisionResponse)
-async def solve_question(request: VisionSolveRequest) -> VisionResponse:
+async def solve_question(
+    request: VisionSolveRequest,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+) -> VisionResponse:
     """
     Soru cozumu
 
@@ -261,7 +269,10 @@ Cozum adimlarini su formatta ver:
 
 
 @router.post("/extract-text", response_model=VisionResponse)
-async def extract_text(request: VisionExtractRequest) -> VisionResponse:
+async def extract_text(
+    request: VisionExtractRequest,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+) -> VisionResponse:
     """
     Gorselden metin cikarma (OCR)
 
@@ -302,7 +313,10 @@ Sadece okudugun metni yaz, yorum ekleme."""
 
 
 @router.post("/describe-diagram", response_model=VisionResponse)
-async def describe_diagram(request: VisionDiagramRequest) -> VisionResponse:
+async def describe_diagram(
+    request: VisionDiagramRequest,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+) -> VisionResponse:
     """
     Diyagram aciklama
 
@@ -370,6 +384,7 @@ ayri ayri belirt."""
 async def analyze_upload(
     file: UploadFile = File(...),
     prompt: str = Form(default="Bu gorseli detayli olarak analiz et."),
+    current_user: AuthenticatedUser = Depends(get_current_user),
 ) -> VisionResponse:
     """
     Dosya yukleme ile gorsel analizi
@@ -442,7 +457,9 @@ async def health_check() -> VisionHealthResponse:
 
 
 @router.get("/info")
-async def get_info() -> dict[str, Any]:
+async def get_info(
+    current_user: AuthenticatedUser = Depends(get_current_user),
+) -> dict[str, Any]:
     """Vision servisi bilgisi"""
     model_info = llm_service.get_model_info()
 

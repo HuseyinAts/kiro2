@@ -10,7 +10,12 @@ from typing import Any
 from fastapi import APIRouter, Depends, HTTPException, Path, Query
 
 from core.curriculum_compliance_system import CurriculumComplianceSystem
-from core.dependencies import get_cache_service, get_database_service
+from core.dependencies import (
+    AuthenticatedUser,
+    get_cache_service,
+    get_current_user,
+    get_database_service,
+)
 from models.curriculum import (
     CurriculumUpdateRequest,
     ExamType,
@@ -47,6 +52,7 @@ async def get_curriculum_system():
 async def add_meb_standard(
     standard: MEBCurriculumStandard,
     system: CurriculumComplianceSystem = Depends(get_curriculum_system),
+    current_user: AuthenticatedUser = Depends(get_current_user),
 ):
     """
     MEB müfredat standardı ekle
@@ -163,6 +169,7 @@ async def get_learning_outcomes(
 async def add_osym_standard(
     standard: OSYMStandard,
     system: CurriculumComplianceSystem = Depends(get_curriculum_system),
+    current_user: AuthenticatedUser = Depends(get_current_user),
 ):
     """ÖSYM sınav standardı ekle"""
     try:
@@ -240,6 +247,7 @@ async def analyze_curriculum_alignment(
     subject: SubjectType = Query(..., description="Ders türü"),
     exam_type: ExamType = Query(..., description="Sınav türü"),
     system: CurriculumComplianceSystem = Depends(get_curriculum_system),
+    current_user: AuthenticatedUser = Depends(get_current_user),
 ):
     """MEB ve ÖSYM standartları arasında uyumluluk analizi yap"""
     try:
@@ -382,6 +390,7 @@ async def generate_compliance_report(
 async def handle_curriculum_update(
     update_request: CurriculumUpdateRequest,
     system: CurriculumComplianceSystem = Depends(get_curriculum_system),
+    current_user: AuthenticatedUser = Depends(get_current_user),
 ):
     """
     Müfredat güncelleme talebini işle
@@ -464,6 +473,7 @@ async def curriculum_compliance_health_check():
 @router.post("/bulk/validate-all-subjects", response_model=dict[str, Any])
 async def validate_all_subjects_compliance(
     system: CurriculumComplianceSystem = Depends(get_curriculum_system),
+    current_user: AuthenticatedUser = Depends(get_current_user),
 ):
     """Tüm dersler için uyumluluk kontrolü yap"""
     try:

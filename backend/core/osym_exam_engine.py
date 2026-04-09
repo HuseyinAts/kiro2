@@ -294,9 +294,9 @@ class OSYMExamEngine:
                 try:
                     field_type = AYTFieldType(field_type_str)
                     exam_config.ayt_field_type = field_type
-                    exam_config.subject_distribution = self.ayt_field_configs[
-                        field_type
-                    ].copy()
+                    new_dist = self.ayt_field_configs[field_type].copy()
+                    exam_config.subject_distribution = new_dist
+                    exam_config.total_questions = sum(new_dist.values())
 
                     logger.info(
                         f"AYT alan türü seçildi: {field_type.value}",
@@ -322,9 +322,9 @@ class OSYMExamEngine:
                 try:
                     language = YDTLanguage(language_str)
                     exam_config.ydt_language = language
-                    exam_config.subject_distribution = self.ydt_language_configs[
-                        language
-                    ].copy()
+                    new_dist = self.ydt_language_configs[language].copy()
+                    exam_config.subject_distribution = new_dist
+                    exam_config.total_questions = sum(new_dist.values())
 
                     logger.info(
                         f"YDT dil seçildi: {language.value}",
@@ -1084,7 +1084,7 @@ class OSYMExamEngine:
                         else:
                             stats["wrong"] += 1
 
-                        stats["total_time"] += answer.response_time_seconds
+                        stats["total_time"] += answer.response_time_seconds or 0
                     else:
                         # Boş cevap
                         stats["empty"] += 1
@@ -1257,12 +1257,18 @@ class OSYMExamEngine:
                 if len(pool) >= count:
                     sampled_ids = random.sample(pool, count)
                     result = await db_session.execute(
-                        select(Question).where(Question.id.in_(sampled_ids))
+                        select(Question).where(
+                            Question.id.in_(sampled_ids),
+                            Question.is_active.is_(True),
+                        )
                     )
                     questions = result.scalars().all()
                 elif pool:
                     result = await db_session.execute(
-                        select(Question).where(Question.id.in_(pool))
+                        select(Question).where(
+                            Question.id.in_(pool),
+                            Question.is_active.is_(True),
+                        )
                     )
                     questions = result.scalars().all()
                 else:
@@ -1287,12 +1293,18 @@ class OSYMExamEngine:
                     if len(fallback_pool) >= count:
                         sampled_ids = random.sample(fallback_pool, count)
                         fb_q = await db_session.execute(
-                            select(Question).where(Question.id.in_(sampled_ids))
+                            select(Question).where(
+                                Question.id.in_(sampled_ids),
+                                Question.is_active.is_(True),
+                            )
                         )
                         questions = fb_q.scalars().all()
                     elif fallback_pool:
                         fb_q = await db_session.execute(
-                            select(Question).where(Question.id.in_(fallback_pool))
+                            select(Question).where(
+                                Question.id.in_(fallback_pool),
+                                Question.is_active.is_(True),
+                            )
                         )
                         questions = fb_q.scalars().all()
 
@@ -1629,6 +1641,9 @@ class OSYMExamEngine:
 
 
 # Global ÖSYM sınav motoru instance
+# TODO(P0): Multi-worker deployment'ta her process ayrı active_sessions dict'i tutar.
+# active_sessions Redis-backed yapılmalı veya DB ExamSession tablosu kullanılmalı.
+# Tek worker'da çalışır, multi-worker'da session izolasyonu bozulur.
 osym_exam_engine = OSYMExamEngine()
 
 
