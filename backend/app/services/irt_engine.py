@@ -36,24 +36,32 @@ from scipy import stats
 # Sabitler
 # ------------------------------------------------------------------
 
-THETA_GRID = np.linspace(-4.0, 4.0, 201)   # θ arama uzayı
-PRIOR_MEAN = 0.0                             # N(0,1) — YKS öğrenci dağılımı
-PRIOR_SD   = 1.0
-SE_STOP    = 0.35                            # Oturumu bitir eşiği
-MAX_ITEMS  = 20                              # Maks soru sayısı
+THETA_GRID = np.linspace(-4.0, 4.0, 201)  # θ arama uzayı
+PRIOR_MEAN = 0.0  # N(0,1) — YKS öğrenci dağılımı
+PRIOR_SD = 1.0
+SE_STOP = 0.35  # Oturumu bitir eşiği
+MAX_ITEMS = 20  # Maks soru sayısı
 
 
 # ------------------------------------------------------------------
 # Veri yapıları
 # ------------------------------------------------------------------
 
+
 @dataclass
 class ItemParams:
     """Bir sorunun IRT parametreleri."""
+
     question_id: str
-    a: float = 1.0    # discrimination — varsayılan kalibrasyon öncesi
-    b: float = 0.0    # difficulty
-    c: float = 0.25   # guessing (4-şık MCQ)
+    a: float = 1.0  # discrimination — varsayılan kalibrasyon öncesi
+    b: float = 0.0  # difficulty
+    c: float = 0.25  # guessing (4-şık MCQ)
+
+    def __post_init__(self) -> None:
+        """DM-02: Parametre sınırlarını zorla — a∈[0.1,3], b∈[-4,4], c∈[0,0.5]."""
+        self.a = max(0.1, min(3.0, self.a))
+        self.b = max(-4.0, min(4.0, self.b))
+        self.c = max(0.0, min(0.5, self.c))
 
     def is_calibrated(self) -> bool:
         """Gerçek kalibrasyon yapıldı mı? Yoksa varsayılan mı?"""
@@ -63,17 +71,20 @@ class ItemParams:
 @dataclass
 class IRTResult:
     """EAP sonucu."""
-    theta: float      # yetenek tahmini
-    se: float         # standart hata
-    converged: bool   # SE eşiğine ulaşıldı mı
+
+    theta: float  # yetenek tahmini
+    se: float  # standart hata
+    converged: bool  # SE eşiğine ulaşıldı mı
 
 
 # ------------------------------------------------------------------
 # Temel IRT fonksiyonları
 # ------------------------------------------------------------------
 
-def p_correct(theta: float | np.ndarray,
-              a: float, b: float, c: float) -> float | np.ndarray:
+
+def p_correct(
+    theta: float | np.ndarray, a: float, b: float, c: float
+) -> float | np.ndarray:
     """
     3PL P(doğru | θ, a, b, c).
 
@@ -84,8 +95,9 @@ def p_correct(theta: float | np.ndarray,
     return c + (1.0 - c) / (1.0 + np.exp(-a * (theta - b)))
 
 
-def fisher_information(theta: float | np.ndarray,
-                       a: float, b: float, c: float) -> float | np.ndarray:
+def fisher_information(
+    theta: float | np.ndarray, a: float, b: float, c: float
+) -> float | np.ndarray:
     """
     Madde Fisher Bilgi Fonksiyonu I(θ).
 
@@ -97,7 +109,7 @@ def fisher_information(theta: float | np.ndarray,
     p = p_correct(theta, a, b, c)
     # Numerik kararlılık: sıfıra yakın paydaları koru
     p_safe = np.clip(p, 1e-9, 1.0 - 1e-9)
-    numerator   = (a ** 2) * ((p_safe - c) ** 2) * (1.0 - p_safe)
+    numerator = (a**2) * ((p_safe - c) ** 2) * (1.0 - p_safe)
     denominator = p_safe * ((1.0 - c) ** 2)
     return numerator / denominator
 
@@ -106,10 +118,13 @@ def fisher_information(theta: float | np.ndarray,
 # EAP Theta Güncelleme
 # ------------------------------------------------------------------
 
-def eap_update(responses: list[int],
-               item_params: list[ItemParams],
-               prior_mean: float = PRIOR_MEAN,
-               prior_sd: float = PRIOR_SD) -> IRTResult:
+
+def eap_update(
+    responses: list[int],
+    item_params: list[ItemParams],
+    prior_mean: float = PRIOR_MEAN,
+    prior_sd: float = PRIOR_SD,
+) -> IRTResult:
     """
     EAP (Expected A Posteriori) ile θ ve SE güncelle.
 
@@ -153,7 +168,7 @@ def eap_update(responses: list[int],
 
     # Posterior = normalize(likelihood × prior)
     raw_posterior = likelihood * prior
-    norm_factor   = np.trapezoid(raw_posterior, THETA_GRID)
+    norm_factor = np.trapezoid(raw_posterior, THETA_GRID)
 
     if norm_factor < 1e-300:
         # Numerik underflow — prior'a dön (kötü veri sinyali)
@@ -163,19 +178,20 @@ def eap_update(responses: list[int],
 
     # E[θ] ve SE
     theta_hat = float(np.trapezoid(THETA_GRID * posterior, THETA_GRID))
-    variance  = float(np.trapezoid((THETA_GRID - theta_hat) ** 2 * posterior, THETA_GRID))
-    se        = float(math.sqrt(max(variance, 1e-10)))
+    variance = float(
+        np.trapezoid((THETA_GRID - theta_hat) ** 2 * posterior, THETA_GRID)
+    )
+    se = float(math.sqrt(max(variance, 1e-10)))
 
     return IRTResult(
-        theta=round(theta_hat, 4),
-        se=round(se, 4),
-        converged=(se < SE_STOP)
+        theta=round(theta_hat, 4), se=round(se, 4), converged=(se < SE_STOP)
     )
 
 
 # ------------------------------------------------------------------
 # Soru Seçimi: Epsilon-Greedy MFI
 # ------------------------------------------------------------------
+
 
 def select_next_question(
     theta: float,
@@ -193,7 +209,7 @@ def select_next_question(
       1. Zaten yanıtlananları çıkar (answered_ids)
       2. Exposure rate > max_exposure_rate olanları çıkar
          (aynı soru çok fazla kişiye gitmesin)
-      3. ZPD filtresi: P(doğru | θ) ∈ [0.40, 0.85]
+      3. ZPD filtresi: P(doğru | θ) ∈ [0.20, 0.85]
          (çok kolay veya çok zor soruyu atla)
       4. epsilon=0.20 ihtimalle rastgele seç (exploration)
          1-epsilon ihtimalle en yüksek I(θ) olan soruyu seç (exploitation)
@@ -219,18 +235,19 @@ def select_next_question(
     # Adım 2: exposure filtresi
     if exposure_counts and total_sessions > 10:
         pool = [
-            q for q in pool
+            q
+            for q in pool
             if (exposure_counts.get(q.question_id, 0) / total_sessions)
-               <= max_exposure_rate
+            <= max_exposure_rate
         ]
     if not pool:
         # Exposure filtresi hepsini elediyse orijinal pool'a dön
         pool = [q for q in candidates if q.question_id not in answered_ids]
 
     # Adım 3: ZPD filtresi — optimal challenge zone
+    # DM-03: Alt sınır 0.40→0.20 (düşük yetenek öğrenciye uygun soru seçimi)
     zpd_pool = [
-        q for q in pool
-        if 0.40 <= float(p_correct(theta, q.a, q.b, q.c)) <= 0.85
+        q for q in pool if 0.20 <= float(p_correct(theta, q.a, q.b, q.c)) <= 0.85
     ]
     # ZPD içinde soru yoksa filtreyi gevşet
     if not zpd_pool:
@@ -248,9 +265,10 @@ def select_next_question(
 # Bitiş koşulu
 # ------------------------------------------------------------------
 
-def should_terminate(se: float, n_items: int,
-                     se_threshold: float = SE_STOP,
-                     max_items: int = MAX_ITEMS) -> tuple[bool, str]:
+
+def should_terminate(
+    se: float, n_items: int, se_threshold: float = SE_STOP, max_items: int = MAX_ITEMS
+) -> tuple[bool, str]:
     """
     CAT oturumu bitmeli mi?
 

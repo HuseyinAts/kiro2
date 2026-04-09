@@ -132,6 +132,7 @@ class DAGService:
         ok, errors = dag.build()
         if not ok:
             logger.error(f"DAG döngüsü tespit edildi: {errors}")
+            raise RuntimeError(f"DAG döngüsü tespit edildi: {errors}")
 
         return dag
 
@@ -295,7 +296,9 @@ class DAGService:
             except (ValueError, KeyError):
                 pass
 
-        dag.build()
+        ok, errors = dag.build()
+        if not ok:
+            logger.warning(f"Cached DAG döngüsü: {errors}")
         return dag
 
     async def invalidate_cache(self) -> None:

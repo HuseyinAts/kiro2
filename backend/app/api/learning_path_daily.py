@@ -136,8 +136,11 @@ async def get_subject_statuses(
     db: AsyncSession = Depends(get_db),
 ):
     """Tüm derslerin θ, mastery%, FSRS vadesi, ZPD, öncelik özetini döndür."""
+    goal = await _get_user_goal(db, str(current_user.id))
     orch = LearningPathOrchestrator(db=db)
-    statuses = await orch.get_student_subject_statuses(str(current_user.id))
+    statuses = await orch.get_student_subject_statuses(
+        str(current_user.id), exam_type=goal["exam_type"]
+    )
     return [
         SubjectStatusOut(
             subject=s.subject,
@@ -225,7 +228,9 @@ async def get_weekly_preview(
     """7 günlük plan önizlemesi — hangi gün hangi derse odaklanılacak."""
     goal = await _get_user_goal(db, str(current_user.id))
     orch = LearningPathOrchestrator(db=db)
-    statuses = await orch.get_student_subject_statuses(str(current_user.id))
+    statuses = await orch.get_student_subject_statuses(
+        str(current_user.id), exam_type=goal["exam_type"]
+    )
     exam_d = (
         goal["exam_date"]
         if isinstance(goal["exam_date"], date)

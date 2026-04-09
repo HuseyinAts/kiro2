@@ -831,7 +831,10 @@ class OSYMExamEngine:
                     "total_wrong": performance_metrics.wrong_answers,
                     "total_empty": performance_metrics.empty_answers,
                     "raw_score": performance_metrics.raw_score,
-                    "scaled_score": performance_metrics.raw_score,
+                    # K-B6: Basit ölçekleme — 100 + 15*θ (YKS benzeri, gerçek ÖSYM kamuya açık değil)
+                    "scaled_score": round(
+                        100 + 15 * performance_metrics.estimated_ability, 2
+                    ),
                     "estimated_ability": performance_metrics.estimated_ability,
                 }
                 if time_spent is not None:

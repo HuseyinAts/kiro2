@@ -275,7 +275,9 @@ export const bundleAnalyzer = new BundleAnalyzer();
 export class MemoryTracker {
   private measurements: Array<{ timestamp: number; used: number; total: number }> = [];
 
-  startTracking(interval: number = 30000): void {
+  private _intervalId: ReturnType<typeof setInterval> | null = null;
+
+  startTracking(interval: number = 30000): () => void {
     const track = () => {
       if ('memory' in performance) {
         const memory = (performance as any).memory;
@@ -306,7 +308,15 @@ export class MemoryTracker {
     track();
 
     // Periyodik ölçüm
-    setInterval(track, interval);
+    this._intervalId = setInterval(track, interval);
+
+    // Cleanup fonksiyonu döndür
+    return () => {
+      if (this._intervalId) {
+        clearInterval(this._intervalId);
+        this._intervalId = null;
+      }
+    };
   }
 
   getCurrentUsage(): { used: number; total: number } | null {

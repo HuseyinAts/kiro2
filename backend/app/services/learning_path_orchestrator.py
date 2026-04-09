@@ -539,7 +539,9 @@ class LearningPathOrchestrator:
                     theta_map[subject_name] = float(row.theta)
                     se_map[subject_name] = float(row.theta_se) if row.theta_se else 0.5
         except Exception as e:
-            logger.warning(f"Theta+SE çekme hatası: {e}")
+            # K-A6: Hata durumunda boş dict dönmek yerine logla + boş dön
+            # (raise yapmak tüm daily API'yi kırar, boş dict güvenli fallback)
+            logger.error(f"Theta+SE çekme HATASI — tüm dersler θ=0.0 olacak: {e}")
         return theta_map, se_map
 
     async def _fetch_fsrs_due_counts(self, user_id: str) -> dict[str, int]:
