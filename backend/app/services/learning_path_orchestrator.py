@@ -208,12 +208,18 @@ class LearningPathOrchestrator:
                         topic_id=next_tid,
                     )
                     next_topic_id = next_tid
-                    next_topic_name = next_tid  # gerçek isim dag'dan çekilebilir
+                    # LP-04: DAG'dan gerçek konu adını çek (UUID yerine)
+                    dag = await self._dag_service.get_dag()
+                    topic_node = dag.get_topic(next_tid)
+                    next_topic_name = topic_node.name if topic_node else next_tid
 
                     if not check.can_proceed and check.blocking_prereqs:
                         prereq_blocked = True
                         prereq_topic_id = check.blocking_prereqs[0]
-                        prereq_topic_name = prereq_topic_id
+                        prereq_node = dag.get_topic(prereq_topic_id)
+                        prereq_topic_name = (
+                            prereq_node.name if prereq_node else prereq_topic_id
+                        )
             except Exception as e:
                 # K-A3: Hata durumunda güvenli taraf — öğrenci hazır olmadığı konuya gitmesin
                 prereq_blocked = True

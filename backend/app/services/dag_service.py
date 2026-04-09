@@ -169,6 +169,7 @@ class DAGService:
             WHERE cs.user_id = :uid
               AND cs.state = 'completed'
               AND q.primary_topic_id IS NOT NULL
+              AND q.is_active = TRUE
             ORDER BY q.primary_topic_id, cs.completed_at DESC
         """),
             {"uid": user_id},

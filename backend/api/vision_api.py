@@ -466,7 +466,7 @@ async def get_info(
     return {
         "vision_model": model_info.get("vision_model", "qwen3-vl:8b"),
         "text_model": model_info.get("model", "qwen3:14b"),
-        "base_url": model_info.get("base_url", "http://localhost:11434"),
+        # S-17: İç altyapı adresi (localhost:11434) dışarı sızdırılmaz
         "provider": model_info.get("provider", "ollama"),
         "capabilities": [
             "image_analysis",

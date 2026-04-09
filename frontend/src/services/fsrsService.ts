@@ -253,7 +253,7 @@ class FSRSService {
   /** Sistem sağlık kontrolü */
   async healthCheck(): Promise<ApiResponse<any>> {
     try {
-      const response = await fetch(`${this.baseUrl}/health`, { method: 'GET' });
+      const response = await fetch(`${this.baseUrl}/health`, { method: 'GET', credentials: 'include' });
       if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
       const data = await response.json();
       return { success: data.status === 'healthy', data, message: data.status };

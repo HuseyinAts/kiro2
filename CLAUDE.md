@@ -106,7 +106,7 @@ KIRO2 is a Turkish EdTech platform for YKS/TYT/AYT university entrance exam prep
 
 | Katman | Yol | Notlar |
 |--------|-----|--------|
-| API Routers | `backend/api/` | FastAPI, 41+ endpoint |
+| API Routers | `backend/api/` | FastAPI, 124+ endpoint |
 | Services | `backend/services/` | Is mantigi |
 | Models | `backend/models/` | SQLAlchemy — `question_bank` = prod, `questions` = BOS |
 | Frontend Pages | `frontend/src/pages/` | React 18 + TypeScript |
@@ -114,7 +114,7 @@ KIRO2 is a Turkish EdTech platform for YKS/TYT/AYT university entrance exam prep
 | State | `frontend/src/store/` | Zustand (authStore, NOT stores/) |
 | Auth | `backend/core/dependencies.py` | Cookie (frontend) + Bearer (API) dual auth |
 | YouTube | `backend/services/youtube/` | Multi-platform search (12+ modules) |
-| Channel Registry | `backend/core/youtube_channels.py` | 17 kanal, 27 alias (canonical) |
+| Channel Registry | `backend/core/youtube_channels.py` | 17 kanal, 11 alias (canonical) |
 
 ## 📊 Current Status (March 2026)
 
@@ -134,7 +134,7 @@ KIRO2 is a Turkish EdTech platform for YKS/TYT/AYT university entrance exam prep
 
 ### 🎯 Next Priorities
 1. **P0: MVP beta launch** — Docker stack ready, E2E verified 7/7
-2. **P0: Test coverage** — backend ~18% → hedef 80%
+2. **P0: Test coverage** — backend ~53% → hedef 80%
 3. **P1: Re-OCR recovery** — 1,521-2,511 soru kurtarma (silinen 3,546'dan)
 
 ### Orchestrator Architecture ✅
@@ -146,7 +146,7 @@ KIRO2 is a Turkish EdTech platform for YKS/TYT/AYT university entrance exam prep
 
 ### YouTube/Multi-Platform Search ✅
 - ✅ **backend/services/youtube/** — Modular search pipeline (12+ modules)
-  - `core/youtube_channels.py` — Canonical channel registry (17 kanal, 27 alias)
+  - `core/youtube_channels.py` — Canonical channel registry (17 kanal, 11 alias)
   - Score formula: relevance 35% + quality 25% + popularity 15% + turkish 25%
   - Difficulty differentiation in cache keys
 - ✅ **Question Images**: 58,523/77,336 (%75.7) `question_image_url` populated
@@ -195,7 +195,7 @@ python create_answers_v8.py --validate
 kiro2/
 ├── backend/
 │   ├── app/
-│   │   ├── api/           # FastAPI routers (41 endpoints)
+│   │   ├── api/           # FastAPI routers (124+ endpoints)
 │   │   ├── core/          # Config, security, deps
 │   │   ├── models/        # SQLAlchemy models
 │   │   ├── schemas/       # Pydantic schemas
@@ -508,7 +508,7 @@ E) {secenek_e}
 
 ### Current Status (as of 17 Mar 2026)
 - Backend test results: **~1,223 passed, 169 skipped, 1 fail** (unrelated auth legacy test)
-  - Backend line coverage (api+core+services+models+algorithms): **~18%** (109K lines, massive codebase)
+  - Backend line coverage (api+core+services+models+algorithms): **~53%** (109K lines, massive codebase)
   - Run: `cd backend && pytest --cov=api --cov=core --cov=services --cov=models --cov=algorithms --cov-report=term`
 - Orchestrator test results: **71 passed, 0 failures**
   - Run: `cd orchestrator && pytest tests/ -v`
@@ -642,7 +642,7 @@ style: Code style (formatting, etc.)
 - **Turkish Tokenization**: Some compound words not handled correctly (Zemberek enhancement needed)
 
 ### Technical Debt
-- [ ] Implement comprehensive test coverage (>80%) - currently ~18% backend
+- [ ] Implement comprehensive test coverage (>80%) - currently ~53% backend
 - [ ] Add performance monitoring dashboards
 - [ ] Document all API endpoints in OpenAPI spec
 - [ ] Migrate remaining WebSocket features to SSE
