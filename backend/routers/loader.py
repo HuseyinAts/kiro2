@@ -207,6 +207,8 @@ ROUTER_MAPPING = {
     "api.pwa_sync_api": ("learning", "api.pwa_sync_api"),
     # Learning Path Daily (ZPD+DAG+IRT+FSRS Orchestrator)
     "app.api.learning_path_daily": ("learning", "app.api.learning_path_daily"),
+    # Dungeon Learning Path (RPG map)
+    "app.api.learning_path_dungeon": ("learning", "app.api.learning_path_dungeon"),
     # Orchestrator Admin API
     "api.orchestrator_api": ("admin", "api.orchestrator_api"),
 }
@@ -297,7 +299,3 @@ def setup_routers(app: FastAPI):
     loader = RouterLoader(app)
     loader.load_all_routers()
     return loader
-
-
-
-
