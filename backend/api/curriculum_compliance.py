@@ -89,6 +89,7 @@ async def get_meb_standards_by_subject(
     subject: SubjectType = Path(..., description="Ders türü"),
     grade_level: GradeLevel | None = Query(None, description="Sınıf seviyesi"),
     system: CurriculumComplianceSystem = Depends(get_curriculum_system),
+    current_user: AuthenticatedUser = Depends(get_current_user),
 ):
     """
     Derse göre MEB standartlarını getir
@@ -127,6 +128,7 @@ async def get_meb_standards_by_subject(
 async def get_learning_outcomes(
     standard_id: str = Path(..., description="MEB standardı ID"),
     system: CurriculumComplianceSystem = Depends(get_curriculum_system),
+    current_user: AuthenticatedUser = Depends(get_current_user),
 ):
     """
     Öğrenme kazanımlarını getir
@@ -202,6 +204,7 @@ async def get_osym_standards_by_priority(
     exam_type: ExamType = Path(..., description="Sınav türü"),
     subject: SubjectType | None = Query(None, description="Ders türü"),
     system: CurriculumComplianceSystem = Depends(get_curriculum_system),
+    current_user: AuthenticatedUser = Depends(get_current_user),
 ):
     """
     ÖSYM standartlarını öncelik sırasına göre getir
@@ -289,6 +292,7 @@ async def validate_question_bank_compliance(
     subject: SubjectType = Path(..., description="Ders türü"),
     topic_id: str = Path(..., description="Konu ID"),
     system: CurriculumComplianceSystem = Depends(get_curriculum_system),
+    current_user: AuthenticatedUser = Depends(get_current_user),
 ):
     """
     Soru bankası uyumluluk kontrolü
@@ -337,6 +341,7 @@ async def generate_compliance_report(
     subject: SubjectType | None = Query(None, description="Ders türü"),
     exam_type: ExamType | None = Query(None, description="Sınav türü"),
     system: CurriculumComplianceSystem = Depends(get_curriculum_system),
+    current_user: AuthenticatedUser = Depends(get_current_user),
 ):
     """Kapsamlı uyumluluk raporu oluştur"""
     try:
@@ -431,6 +436,7 @@ async def handle_curriculum_update(
 @router.get("/status", response_model=dict[str, Any])
 async def get_compliance_system_status(
     system: CurriculumComplianceSystem = Depends(get_curriculum_system),
+    current_user: AuthenticatedUser = Depends(get_current_user),
 ):
     """Müfredat uyumluluk sistemi durumunu getir"""
     try:
@@ -521,6 +527,7 @@ async def validate_all_subjects_compliance(
 @router.get("/statistics/overview", response_model=dict[str, Any])
 async def get_curriculum_statistics(
     system: CurriculumComplianceSystem = Depends(get_curriculum_system),
+    current_user: AuthenticatedUser = Depends(get_current_user),
 ):
     """Müfredat uyumluluk istatistikleri getir"""
     try:

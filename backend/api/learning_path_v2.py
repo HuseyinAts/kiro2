@@ -509,7 +509,9 @@ async def create_student_profile(
     except Exception as e:
         await db.rollback()  # FIX: Add rollback on error
         logger.error(f"Error creating student profile: {e}")
-        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
+        raise HTTPException(
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
+        )
 
 
 @router.post("/assess-knowledge")
@@ -636,7 +638,9 @@ async def assess_knowledge(
     except Exception as e:
         await db.rollback()  # FIX: Async rollback on error
         logger.error(f"Error assessing knowledge: {e}")
-        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
+        raise HTTPException(
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
+        )
 
 
 @router.post("/create-path")
@@ -802,7 +806,9 @@ async def create_learning_path(
         )
 
         logger.error(f"Error creating learning path: {e}")
-        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
+        raise HTTPException(
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
+        )
 
 
 @router.post("/search-resources")
@@ -1047,7 +1053,9 @@ async def adapt_learning_path(
         raise
     except Exception as e:
         logger.error(f"Error adapting learning path: {e}")
-        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
+        raise HTTPException(
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
+        )
 
 
 @router.get("/completion/{student_id}")
@@ -1116,7 +1124,9 @@ async def get_completion_status(
         raise
     except Exception as e:
         logger.error(f"Error getting completion status: {e}")
-        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
+        raise HTTPException(
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
+        )
 
 
 @router.put("/completion/{student_id}")
@@ -1551,7 +1561,9 @@ async def update_progress(
     except Exception as e:
         await db.rollback()
         logger.error(f"Error updating progress: {e}")
-        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
+        raise HTTPException(
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
+        )
 
 
 # ============================================================================
@@ -1982,12 +1994,15 @@ async def submit_review(
     except Exception as e:
         logger.error(f"Error submitting review: {e}")
         await db.rollback()
-        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
+        raise HTTPException(
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
+        )
 
 
 class RegisterWrongAnswersRequest(BaseModel):
     question_ids: list[str] = Field(..., min_length=1)
     error_types: dict[str, str] | None = None
+    is_timeout: bool = False
 
 
 @router.post("/register-wrong-answers")

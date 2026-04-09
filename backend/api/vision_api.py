@@ -425,25 +425,15 @@ async def analyze_upload(
 
 @router.get("/health", response_model=VisionHealthResponse)
 async def health_check() -> VisionHealthResponse:
-    """Vision servisi saglik kontrolu"""
+    """Vision servisi saglik kontrolu — S-18: inference yapmadan durum döndür"""
     try:
-        # Basit bir test - modelin respond edip etmedigini kontrol et
-        start_time = time.time()
-
-        # Kucuk bir test gorseli olustur (1x1 siyah pixel PNG)
-        test_image = "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg=="
-
-        result = await llm_service.analyze_image(
-            prompt="Bu gorsel ne renk?", image_base64=test_image
-        )
-
-        elapsed_ms = (time.time() - start_time) * 1000
-
+        # S-18: Her çağrıda gerçek inference yapmak DoS vektörü.
+        # Sadece servisin ayakta olup olmadığını kontrol et.
         return VisionHealthResponse(
-            status="healthy" if result else "degraded",
+            status="healthy",
             model=llm_service.vision_model,
             available=True,
-            latency_ms=round(elapsed_ms, 2),
+            latency_ms=0.0,
         )
 
     except Exception as e:

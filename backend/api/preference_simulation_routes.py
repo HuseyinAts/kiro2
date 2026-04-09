@@ -4,18 +4,20 @@ Task 102: Preference Simulation API Routes
 REST API endpoints for score calculation, placement prediction, and simulation
 """
 
-from fastapi import APIRouter, Depends, HTTPException, Query
-from sqlalchemy.ext.asyncio import AsyncSession
-from typing import List, Optional, Dict
 from uuid import UUID
+
+from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel, Field
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.database import get_db
-from services.preference_simulation_service import PreferenceSimulationService
+from core.dependencies import AuthenticatedUser, get_current_user
 from models.university import ScoreType
+from services.preference_simulation_service import PreferenceSimulationService
 
-
-router = APIRouter(prefix="/api/v1/preference-simulation", tags=["preference-simulation"])
+router = APIRouter(
+    prefix="/api/v1/preference-simulation", tags=["preference-simulation"]
+)
 
 
 # ============================================================
@@ -57,10 +59,10 @@ class AYTScoresDIL(BaseModel):
 
 class ScoreCalculationRequest(BaseModel):
     score_type: str = Field(..., description="Score type (SAY/EA/SOZ/DIL)")
-    tyt_scores: Dict[str, float]
-    ayt_scores: Dict[str, float]
-    diploma_grade: Optional[float] = Field(None, ge=0, le=100)
-    language_certificate: Optional[str] = None
+    tyt_scores: dict[str, float]
+    ayt_scores: dict[str, float]
+    diploma_grade: float | None = Field(None, ge=0, le=100)
+    language_certificate: str | None = None
     special_talent: bool = False
 
 
@@ -73,9 +75,9 @@ class PlacementPredictionRequest(BaseModel):
 class DepartmentRecommendationRequest(BaseModel):
     student_score: float = Field(..., ge=180, le=560)
     score_type: str
-    interests: List[str] = []
-    career_goals: List[str] = []
-    preferred_cities: Optional[List[str]] = None
+    interests: list[str] = []
+    career_goals: list[str] = []
+    preferred_cities: list[str] | None = None
     year: int = 2024
     limit: int = Field(30, ge=1, le=100)
 
@@ -89,7 +91,7 @@ class RankPredictionRequest(BaseModel):
 class SimulatePreferencesRequest(BaseModel):
     student_score: float = Field(..., ge=180, le=560)
     score_type: str
-    preference_list: List[UUID] = Field(..., min_items=1, max_items=50)
+    preference_list: list[UUID] = Field(..., min_items=1, max_items=50)
     year: int = 2024
 
 
@@ -100,7 +102,9 @@ class SimulatePreferencesRequest(BaseModel):
 
 @router.post("/calculate-score")
 async def calculate_score(
-    request: ScoreCalculationRequest, db: AsyncSession = Depends(get_db)
+    request: ScoreCalculationRequest,
+    db: AsyncSession = Depends(get_db),
+    current_user: AuthenticatedUser = Depends(get_current_user),
 ):
     """
     Calculate YKS score with coefficients and bonus points
@@ -141,10 +145,11 @@ async def calculate_score(
 @router.post("/calculate-bonus")
 async def calculate_bonus(
     base_score: float = Query(..., ge=0, le=560),
-    diploma_grade: Optional[float] = Query(None, ge=0, le=100),
-    language_certificate: Optional[str] = Query(None),
+    diploma_grade: float | None = Query(None, ge=0, le=100),
+    language_certificate: str | None = Query(None),
     special_talent: bool = Query(False),
     db: AsyncSession = Depends(get_db),
+    current_user: AuthenticatedUser = Depends(get_current_user),
 ):
     """
     Calculate bonus points only
@@ -183,7 +188,9 @@ async def calculate_bonus(
 
 @router.post("/predict-placement")
 async def predict_placement(
-    request: PlacementPredictionRequest, db: AsyncSession = Depends(get_db)
+    request: PlacementPredictionRequest,
+    db: AsyncSession = Depends(get_db),
+    current_user: AuthenticatedUser = Depends(get_current_user),
 ):
     """
     Predict placement probability for a program
@@ -207,6 +214,7 @@ async def get_placement_analysis(
     student_score: float = Query(..., ge=180, le=560),
     year: int = Query(2024),
     db: AsyncSession = Depends(get_db),
+    current_user: AuthenticatedUser = Depends(get_current_user),
 ):
     """
     Get detailed placement analysis for a program
@@ -229,7 +237,9 @@ async def get_placement_analysis(
 
 @router.post("/recommend-departments")
 async def recommend_departments(
-    request: DepartmentRecommendationRequest, db: AsyncSession = Depends(get_db)
+    request: DepartmentRecommendationRequest,
+    db: AsyncSession = Depends(get_db),
+    current_user: AuthenticatedUser = Depends(get_current_user),
 ):
     """
     Get personalized department recommendations
@@ -279,7 +289,9 @@ async def recommend_departments(
 
 @router.post("/predict-rank")
 async def predict_rank(
-    request: RankPredictionRequest, db: AsyncSession = Depends(get_db)
+    request: RankPredictionRequest,
+    db: AsyncSession = Depends(get_db),
+    current_user: AuthenticatedUser = Depends(get_current_user),
 ):
     """
     Predict student's rank based on score
@@ -307,6 +319,7 @@ async def get_rank_analysis(
     student_score: float = Query(..., ge=180, le=560),
     score_type: str = Query(...),
     year: int = Query(2024),
+    current_user: AuthenticatedUser = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
     """
@@ -335,7 +348,9 @@ async def get_rank_analysis(
 
 @router.post("/simulate-preferences")
 async def simulate_preferences(
-    request: SimulatePreferencesRequest, db: AsyncSession = Depends(get_db)
+    request: SimulatePreferencesRequest,
+    db: AsyncSession = Depends(get_db),
+    current_user: AuthenticatedUser = Depends(get_current_user),
 ):
     """
     Simulate placement for a list of preferences
@@ -362,9 +377,10 @@ async def simulate_preferences(
 @router.post("/batch-predictions")
 async def batch_predictions(
     student_score: float = Query(..., ge=180, le=560),
-    program_ids: List[UUID] = Query(..., min_items=1, max_items=100),
+    program_ids: list[UUID] = Query(..., min_items=1, max_items=100),
     year: int = Query(2024),
     db: AsyncSession = Depends(get_db),
+    current_user: AuthenticatedUser = Depends(get_current_user),
 ):
     """
     Get placement predictions for multiple programs at once
@@ -394,7 +410,7 @@ async def batch_predictions(
 
 @router.get("/score-coefficients")
 async def get_score_coefficients(
-    score_type: str = Query(..., description="Score type (SAY/EA/SOZ/DIL)")
+    score_type: str = Query(..., description="Score type (SAY/EA/SOZ/DIL)"),
 ):
     """
     Get score coefficients for a score type
