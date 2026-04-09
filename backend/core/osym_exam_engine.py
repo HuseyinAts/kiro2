@@ -475,10 +475,10 @@ class OSYMExamEngine:
             ExamSessionData: Güncellenmiş sınav oturum verisi
         """
         try:
-            if session_id not in self.active_sessions:
+            # L1 + L2 fallback: restart sonrası session L1'de olmayabilir
+            session_data = await self.get_session_data(session_id)
+            if not session_data:
                 raise ValueError("Sınav oturumu bulunamadı")
-
-            session_data = self.active_sessions[session_id]
 
             if session_data.status != ExamStatus.NOT_STARTED:
                 raise ValueError("Sınav zaten başlatılmış veya tamamlanmış")
@@ -904,6 +904,16 @@ class OSYMExamEngine:
         if session:
             # Populate L1 cache
             self.active_sessions[session_id] = session
+
+            # Restore auto_complete timer for IN_PROGRESS sessions (EX-12)
+            autoclose_key = f"autoclose:{session_id}"
+            if (
+                session.status == ExamStatus.IN_PROGRESS
+                and autoclose_key not in self.auto_save_tasks
+            ):
+                self.auto_save_tasks[autoclose_key] = asyncio.create_task(
+                    self._auto_complete_task(session_id)
+                )
         return session
 
     async def get_unanswered_questions(self, session_id: str) -> list[str]:

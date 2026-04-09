@@ -409,7 +409,11 @@ class LearningPathOrchestrator:
         # TÃ¼m theta'lar eÅŸitse (cold start) weak/strong gÃ¶sterme
         thetas = [s.theta for s in statuses]
         all_equal = len(set(thetas)) <= 1
-        _weak = weak_subjects_list[0].subject if (weak_subjects_list and not all_equal) else None
+        _weak = (
+            weak_subjects_list[0].subject
+            if (weak_subjects_list and not all_equal)
+            else None
+        )
         _strong_stat = max(statuses, key=lambda s: s.theta) if statuses else None
         _strong = (
             _strong_stat.subject
@@ -537,17 +541,20 @@ class LearningPathOrchestrator:
         return theta_map, se_map
 
     async def _fetch_fsrs_due_counts(self, user_id: str) -> dict[str, int]:
-        """FSRS bugün vadesi gelen kart sayısı (ders bazında)."""
+        """FSRS bugün vadesi gelen kart sayısı (ders bazında).
+
+        LP-03 fix: fsrs_cards tablosu kullan (bkt_service buraya yazar).
+        Eski user_item_fsrs tablosu farklı schema — her zaman 0 dönüyordu.
+        """
         try:
             result = await self.db.execute(
                 text("""
-                SELECT qb.subject_area, COUNT(*) AS due_count
-                FROM user_item_fsrs uif
-                JOIN question_bank qb ON qb.id = uif.question_id
-                WHERE uif.user_id = :uid
-                  AND uif.due_date <= NOW()
-                  AND uif.state IN (1, 2, 3)
-                GROUP BY qb.subject_area
+                SELECT subject_area::text, COUNT(*) AS due_count
+                FROM fsrs_cards
+                WHERE student_id = :uid
+                  AND due_date <= NOW()
+                  AND state NOT IN ('new')
+                GROUP BY subject_area
             """),
                 {"uid": user_id},
             )

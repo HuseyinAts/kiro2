@@ -100,7 +100,7 @@ export function ModernLearningPathPage() {
   // Local UI state
   // ========================================
   const [tabValue, setTabValue] = useState(0);
-  const [dungeonSubject] = useState('MATEMATIK');
+  const dungeonSubject = selectedSubject?.toUpperCase() || 'MATEMATIK';
   const [showNodeDetails, setShowNodeDetails] = useState(false);
   const [selectedNode, setSelectedNode] = useState<PathNodeData | null>(null);
   const [interleavedQuestions, setInterleavedQuestions] = useState<Question[] | null>(null);

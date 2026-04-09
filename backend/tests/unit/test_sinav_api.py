@@ -917,6 +917,7 @@ class TestCompleteExam:
         with patch(ENGINE_PATH) as mock_engine:
             mock_engine.get_session_data = AsyncMock(return_value=session)
             mock_engine.complete_exam = AsyncMock(return_value=metrics)
+            mock_engine.get_subject_performance = AsyncMock(return_value=[])
             # Suppress the fire-and-forget event service call
             with patch("core.database.get_db_session_context") as mock_ctx:
                 mock_db = AsyncMock()
@@ -930,6 +931,7 @@ class TestCompleteExam:
         assert data["net_score"] == pytest.approx(77.5)
         assert data["estimated_ability"] == pytest.approx(1.2)
         assert data["confidence_level"] == pytest.approx(0.95)
+        assert data["konu_performanslari"] == []
 
     @pytest.mark.xfail(
         reason="BUG: missing 'except HTTPException: raise' — 404 swallowed into 500",
@@ -987,6 +989,7 @@ class TestCompleteExam:
         with patch(ENGINE_PATH) as mock_engine:
             mock_engine.get_session_data = AsyncMock(return_value=session)
             mock_engine.complete_exam = AsyncMock(return_value=metrics)
+            mock_engine.get_subject_performance = AsyncMock(return_value=[])
             with patch("core.database.get_db_session_context") as mock_ctx:
                 mock_db = AsyncMock()
                 mock_ctx.return_value.__aenter__ = AsyncMock(return_value=mock_db)

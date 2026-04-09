@@ -29,6 +29,22 @@ CODE_PREFIX_MAP: dict[str, str] = {
     "EDEBIYAT": "EDU",
 }
 
+# subject_area → subject_id (student_abilities PK)
+_SUBJECT_ID_MAP: dict[str, int] = {
+    "MATEMATIK": 1,
+    "GEOMETRI": 2,
+    "FIZIK": 3,
+    "KIMYA": 4,
+    "BIYOLOJI": 5,
+    "TURKCE": 6,
+    "TARIH": 7,
+    "COGRAFYA": 8,
+    "EDEBIYAT": 9,
+    "FELSEFE": 10,
+    "DIN": 11,
+    "SOSYAL": 12,
+}
+
 
 # ── Pydantic models ────────────────────────────────────────────────
 
@@ -211,16 +227,17 @@ async def get_dungeon_map(
             "completed": row["completed"],
         }
 
-    # ── 4. Fetch theta ──
+    # ── 4. Fetch theta (LP-02: use student_abilities — same source as orchestrator) ──
+    subj_id = _SUBJECT_ID_MAP.get(subject_upper, 0)
     theta_result = await db.execute(
         text("""
-            SELECT theta_estimate, theta_se FROM user_theta
-            WHERE user_id = :uid AND subject_area = :subj
+            SELECT theta, theta_se FROM student_abilities
+            WHERE student_id = :uid AND subject_id = :sid
         """),
-        {"uid": str(current_user.id), "subj": subject_upper},
+        {"uid": str(current_user.id), "sid": subj_id},
     )
     theta_row = theta_result.mappings().first()
-    theta = float(theta_row["theta_estimate"]) if theta_row else 0.0
+    theta = float(theta_row["theta"]) if theta_row else 0.0
     theta_se = float(theta_row["theta_se"]) if theta_row else 0.5
 
     # ── 5. Question counts (direct + root fallback) ──

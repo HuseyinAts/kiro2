@@ -185,6 +185,7 @@ class PerformanceResponse(BaseModel):
     percentile: float | None
     estimated_ability: float
     confidence_level: float
+    konu_performanslari: list[dict] = []
 
     model_config = {
         "json_schema_extra": {
@@ -199,6 +200,13 @@ class PerformanceResponse(BaseModel):
                 "percentile": 75.5,
                 "estimated_ability": 1.2,
                 "confidence_level": 0.95,
+                "konu_performanslari": [
+                    {
+                        "subject": "MATEMATIK",
+                        "total_questions": 40,
+                        "correct_answers": 28,
+                    }
+                ],
             }
         }
     }
@@ -1024,6 +1032,22 @@ async def complete_exam(
         except Exception as event_err:
             logger.warning("Exam event processing skipped: %s", event_err)
 
+        # Konu performanslarını ekle (EX-10: frontend results page bunu bekliyor)
+        subject_perfs = await osym_exam_engine.get_subject_performance(session_id)
+        konu_data = [
+            {
+                "subject": p.subject,
+                "total_questions": p.total_questions,
+                "correct_answers": p.correct_answers,
+                "wrong_answers": p.wrong_answers,
+                "empty_answers": p.empty_answers,
+                "success_rate": p.success_rate,
+                "average_response_time": p.average_response_time,
+                "difficulty_level": p.difficulty_level,
+            }
+            for p in subject_perfs
+        ]
+
         return PerformanceResponse(
             total_questions=performance_metrics.total_questions,
             answered_questions=performance_metrics.answered_questions,
@@ -1035,6 +1059,7 @@ async def complete_exam(
             percentile=performance_metrics.percentile,
             estimated_ability=performance_metrics.estimated_ability,
             confidence_level=performance_metrics.confidence_level,
+            konu_performanslari=konu_data,
         )
 
     except ValueError as e:
