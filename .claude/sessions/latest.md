@@ -1,35 +1,37 @@
-## Session Handoff — 2026-04-10 14:45
+## Session Handoff — 2026-04-11 Session 137
 **Branch:** master
-**Son commit:** b11fb9a docs(rules): add case-convention.md
+**Son commit:** 148642b chore(gitignore): ignore audit_db_dependency.py local report
 **Uncommitted:** temiz (origin güncel)
 
-### Yapilanlar
-- `backend/services/mastery_confidence_service.py:199` — LOWER(qb.subject_area) → exact match + subject.upper() (f6187cb)
-- `frontend/src/pages/ModernExamStartPage.tsx:91,93` — exam_type/subject toUpperCase() (f6187cb)
-- `frontend/src/pages/CozumDuellosuPage.tsx:44,67` — subject state UPPERCASE + API toUpperCase() (f6187cb)
-- `backend/app/services/cat_session.py:68` — _normalize_subject() Turkish char helper, DRY (a4ef60f)
-- `backend/services/bkt_service.py:316` — _slug_lower = subject_slug.lower() defensive guard (a4ef60f)
-- `backend/api/learning_path_v2.py:1267,1293` — q_meta subject REVERTED .lower() (BKT lowercase bekliyor) (a4ef60f)
-- `frontend/src/pages/ModernExamStartPage.tsx:94` — difficulty .toUpperCase() kaldırıldı (backend lowercase) (a4ef60f)
-- `.claude/rules/case-convention.md` — yeni kural belgesi, 3 katman haritası (b11fb9a)
-- Code review: 15 bulguden 13 phantom, 2 gerçek fix (orchestrator+dag Session 132'de zaten fix)
+### Yapilanlar — DB Dependency Sweep (4 Aşama)
+- `backend/scripts/audit_db_dependency.py` — AST linter Pattern A (sync get_db + AsyncSession) + Pattern B (TokenPayload.id) detector
+- `backend/api/khan_routes.py` — 9 handler get_async_session fix (Aşama 2a)
+- `backend/api/eba_routes.py` — 3 handler get_async_session fix (3d4ed8a)
+- `backend/api/kvkk_privacy_api.py` — dual-trap: 6 A-broken + 22 B fix (517f37e)
+- `backend/api/two_factor_auth_api.py` — 7 A-broken + 19 B, `_get_user_orm` helper (ba96e41)
+- `backend/api/rate_limit_api.py` — 3+4 Pattern B (require_admin blindspot) (a7e7d35)
+- `backend/core/advanced_rate_limiter.py` — `get_rate_limiter()` REDIS_URL env var fix (a7e7d35)
+- `backend/tests/e2e/test_golden_flows.py` — GF9wC/D/E write-path regression tests
+- `backend/scripts/audit_db_dependency.py:464` — `--fail-on-high` flag (5c41d28)
+- `.github/workflows/golden-flows.yml:84` — AST lint step (5c41d28)
+- `backend/core/database.py:415` — `get_db()` DeprecationWarning (5c41d28)
+- `.gitignore` — backend/audit_out.json (148642b)
 
 ### Fail Eden Testler
-- YOK. Router registration PASS. Ruff clean.
+- YOK. Golden Flow: 21 passed, 2 skipped. audit --fail-on-high: exit=0
 
 ### Engelleyiciler
 - YOK
 
 ### Sonraki Adimlar (maks 5)
-1. **Test coverage:** backend ~53% → 80% hedef — case convention test ekle (mastery_confidence, BKT uppercase input)
-2. **MVP beta launch** — seed data + docker-compose hazır, E2E 7/7 PASS
-3. **Re-OCR recovery** — 1,521-2,511 soru kurtarma potansiyeli
-4. **Health check optimization** — 9s timeout → skip veya reduce
-5. **Frontend Teacher UI** — teacher_classroom backend hazır, frontend yok
+1. **MEDIUM type-lie worked down** — 98 call site (diary_api, university_info, department_info, preference_simulation, sequential_reasoning). DeprecationWarning test run'larda görünür. Basit swap, 3+ dosya/PR.
+2. **Test coverage:** backend ~53% → 80% hedef
+3. **MVP beta launch** — E2E 7/7 PASS, blocker yok
+4. **Golden Flow Wave 3** — domain coverage genişlet (yeni yarım-feature avı)
+5. **Frontend Teacher UI** — teacher_classroom backend hazır
 
 ### Kararlar (gelecek session tekrar tartismasin)
-- case-convention katman kuralı: DB=UPPERCASE, BKT_slug=lowercase, FSRSCard_enum=lowercase, DAG=UPPERCASE
-- dag_service.py:243 defansif .upper() kalıcı guard — kaldırma
-- q_meta["subject"] = lowercase (BKT pipeline internal convention)
-- difficulty: frontend lowercase gönderir (kolay/orta/zor), backend lowercase bekliyor
-- mastery_confidence_service: subject.upper() yapıyor, caller lowercase gönderebilir (defensif)
+- `get_db()` DELETE edilmedi — 98 MEDIUM caller kırılır. DeprecationWarning + CI gate yeterli savunma.
+- Linter require_admin blindspot bilinçli: şimdilik manual catch, Aşama 5'te düzeltilebilir.
+- `_get_user_orm` helper 2FA için özel — genel yardımcıya çevrilmedi (YAGNI).
+- advanced_rate_limiter Pydantic settings'e eklenmedi — Session 131 cache_manager pattern'i korundu (os.getenv).
