@@ -5,6 +5,7 @@ Türkiye Üniversite Sınavları Hazırlık Platformu
 """
 
 import hashlib
+import os
 import secrets
 import time
 from collections.abc import Callable
@@ -146,7 +147,13 @@ class JWTManager:
 
     def __init__(self, config: dict[str, Any]):
         self.config = config
-        self.secret_key = config.get("jwt_secret_key", "kiro2-turkish-exam-secret")
+        self.secret_key = config.get("jwt_secret_key") or os.environ.get(
+            "JWT_SECRET_KEY"
+        )
+        if not self.secret_key:
+            raise ValueError(
+                "JWT_SECRET_KEY is not configured — set jwt_secret_key in config or JWT_SECRET_KEY env var"
+            )
         self.algorithm = config.get("jwt_algorithm", "HS256")
         self.access_token_expire = config.get("access_token_expire_minutes", 30)
         self.refresh_token_expire = config.get("refresh_token_expire_days", 30)
@@ -350,7 +357,9 @@ class SessionManager:
 
             # Store updated sessions
             await session_cache.cache_system.set(
-                user_sessions_key, current_sessions, ttl=24 * 3600  # 24 hours
+                user_sessions_key,
+                current_sessions,
+                ttl=24 * 3600,  # 24 hours
             )
 
         except Exception as e:
@@ -948,7 +957,7 @@ class AuthorizationMiddleware:
 
 
 def create_authentication_middleware(
-    config: dict[str, Any] = None
+    config: dict[str, Any] = None,
 ) -> AuthenticationMiddleware:
     """Create authentication middleware instance"""
     config = config or {}
@@ -956,7 +965,7 @@ def create_authentication_middleware(
 
 
 def create_authorization_middleware(
-    config: dict[str, Any] = None
+    config: dict[str, Any] = None,
 ) -> AuthorizationMiddleware:
     """Create authorization middleware instance"""
     config = config or {}

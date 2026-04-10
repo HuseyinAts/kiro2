@@ -16,6 +16,8 @@ Neden 3 endpoint, tek "soru ver" değil?
 
 from __future__ import annotations
 
+import logging
+
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -29,6 +31,8 @@ from app.schemas.cat_schemas import (
     SubmitAnswerResponse,
 )
 from app.services.cat_session import CATSessionService
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/api/v1/cat", tags=["CAT"])
 
@@ -203,6 +207,6 @@ async def _check_answer(db, question_id: str, selected_option: str) -> bool:
             # Logla ama False dön — soru yoksa yanlış cevap say
             return False
         return row.correct_answer.upper() == selected_option.upper()
-    except Exception:
-        # DB hatası — crash yerine False dön, üst katmana loglatalım
+    except Exception as e:
+        logger.error("CAT doğru cevap DB sorgusu HATASI q=%s: %s", question_id, e)
         return False

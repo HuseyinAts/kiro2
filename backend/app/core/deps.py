@@ -5,6 +5,7 @@ CAT/FSRS/DAG/Placement/Estimator dependency koprusu.
 
 from __future__ import annotations
 
+import logging
 import os
 
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -16,6 +17,8 @@ from core.dependencies import (
 from core.dependencies import (
     get_db as _get_db,
 )
+
+logger = logging.getLogger(__name__)
 
 # Singleton fallback Redis client — pool exhaustion'ı önler
 _fallback_redis = None
@@ -37,8 +40,10 @@ async def get_redis():
             await cache_manager.initialize()
         if cache_manager.redis is not None:
             return cache_manager.redis
-    except Exception:
-        pass
+    except Exception as e:
+        logger.warning(
+            "cache_manager Redis başlatma hatası — fallback'e geçiliyor: %s", e
+        )
     # Oncelik 2: Singleton fallback — her request'te yeni baglanti ACILMAZ
     try:
         import redis.asyncio as aioredis
@@ -51,8 +56,8 @@ async def get_redis():
                 max_connections=50,
             )
         return _fallback_redis
-    except Exception:
-        pass
+    except Exception as e:
+        logger.error("Redis fallback başlatma HATASI — Redis kullanılamıyor: %s", e)
     return None
 
 
