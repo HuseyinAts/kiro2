@@ -37,7 +37,7 @@ Wave 2 — domain write-path probes (Option B, 8 new tests, discovered 5 additio
 | # | Flow | Surfaces | Status |
 |---|------|----------|--------|
 | GF1wB | auth refresh token actually persisted in DB | `auth.py:329` fire-and-forget refresh token persist | ⏭️ SKIP (state-dependent) |
-| GF2w | gamification points award advances balance | Query-param vs JSON body contract drift, `points/award` 500 | 🔴 FAIL — half-working |
+| GF2w | gamification points award advances balance | Query-param vs JSON body contract drift, `points/award` 500 (`xp_transactions.source` VARCHAR(20) overflow) | ✅ PASS (fix: Session 136) |
 | GF2wB | placement returns session + first question | CAT placement write path | ✅ PASS |
 | GF3wA | chat session create returns 200 | `ai_chat_routes.py` wrong `get_db` (sync), `ai_chat.py` UUID-vs-VARCHAR + native enum collision with `live_sessions.sessionstatus` | ✅ PASS (fix: Session 136) |
 | GF5w | teacher class create accepts canonical schema | TR field names (`sinif_adi`, `seviye`) vs English body — `path-naming.md` violation | ✅ PASS (fix: Session 136) |
@@ -45,7 +45,7 @@ Wave 2 — domain write-path probes (Option B, 8 new tests, discovered 5 additio
 | GF7wA | video-solutions list not 500 | `video_solutions.py` service init / router wiring 500 | 🔴 FAIL — half-working |
 | GF8wA | kvkk consent list not 500 | `kvkk.py` consent query + compliance model 500 | 🔴 FAIL — half-working |
 
-**Current distribution (Session 136, after GF5w fix):** 21 tests → 16 PASS, 3 FAIL, 2 SKIP.
+**Current distribution (Session 136, after GF2w fix):** 21 tests → 17 PASS, 2 FAIL, 2 SKIP.
 
 The 5 FAILs are regression guards for half-working features discovered by the
 Option B write-path probes. Each is a follow-up task — the tests must stay

@@ -131,8 +131,8 @@ class XPTransaction(Base):
     id = Column(Integer, primary_key=True)
     student_id = Column(String, ForeignKey("users.id"), nullable=False)
     amount = Column(Integer, nullable=False)
-    # kaynak: 'soru'|'3d'|'alim'|'duel'|'streak'|'realm'
-    source = Column(String(20), nullable=False)
+    # kaynak: 'soru'|'3d'|'alim'|'duel'|'streak'|'realm' + ad-hoc API callers
+    source = Column(String(50), nullable=False)
     topic_id = Column(String, nullable=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
@@ -329,4 +329,3 @@ class ZPDHistory(Base):
         DateTime(timezone=True),
         server_default=func.now(),
     )
-
