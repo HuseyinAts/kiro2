@@ -103,6 +103,7 @@ ROUTER_MAPPING = {
     # Admin & Management
     "api.admin": ("admin", "api.admin"),
     "api.teacher_routes": ("admin", "api.teacher_routes"),
+    "app.api.teacher_classroom": ("teacher", "app.api.teacher_classroom"),
     "api.ogretmen": ("admin", "api.ogretmen"),
     "api.veli": ("admin", "api.veli"),
     "api.parent": ("admin", "api.parent"),
