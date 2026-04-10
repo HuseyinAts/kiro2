@@ -91,7 +91,7 @@ export const ModernExamStartPage: React.FC = () => {
           exam_type: config.exam_type.toUpperCase(),
           custom_config: {
             subject: config.subject.toUpperCase(),
-            difficulty: config.difficulty.toUpperCase(),
+            difficulty: config.difficulty,
             question_count: config.question_count,
             time_limit: config.time_limit,
           },

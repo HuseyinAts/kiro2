@@ -64,6 +64,20 @@ from app.services.irt_engine import (
 
 logger = logging.getLogger(__name__)
 
+
+def _normalize_subject(s: str) -> str:
+    """Normalize Turkish subject name to ASCII-lowercase map key."""
+    return (
+        s.lower()
+        .replace("ü", "u")
+        .replace("ö", "o")
+        .replace("ç", "c")
+        .replace("ş", "s")
+        .replace("ğ", "g")
+        .replace("ı", "i")
+    )
+
+
 # ------------------------------------------------------------------
 # Session TTL
 # ------------------------------------------------------------------
@@ -523,16 +537,7 @@ class CATSessionService:
                 "din": 11,
                 "sosyal": 12,
             }
-            _norm = (
-                state.subject_id.lower()
-                .replace("ü", "u")
-                .replace("ö", "o")
-                .replace("ç", "c")
-                .replace("ş", "s")
-                .replace("ğ", "g")
-                .replace("ı", "i")
-            )
-            _sid = _SUBJ_MAP.get(_norm)
+            _sid = _SUBJ_MAP.get(_normalize_subject(state.subject_id))
             if _sid is not None:
                 from sqlalchemy import text as _txt
 
@@ -767,16 +772,7 @@ class CATSessionService:
             "din": 11,
             "sosyal": 12,
         }
-        _norm2 = (
-            state.subject_id.lower()
-            .replace("ü", "u")
-            .replace("ö", "o")
-            .replace("ç", "c")
-            .replace("ş", "s")
-            .replace("ğ", "g")
-            .replace("ı", "i")
-        )
-        subj_id = _SUBJECT_ID_MAP.get(_norm2)
+        subj_id = _SUBJECT_ID_MAP.get(_normalize_subject(state.subject_id))
         if subj_id is not None:
             from sqlalchemy.dialects.postgresql import insert as pg_insert
 

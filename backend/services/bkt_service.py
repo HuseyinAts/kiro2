@@ -313,7 +313,8 @@ class BKTService:
                 "din": 11,
                 "sosyal": 12,
             }
-            mapped_slug = _SUBJECT_AREA_MAP.get(subject_slug, subject_slug)
+            _slug_lower = subject_slug.lower() if subject_slug else "matematik"
+            mapped_slug = _SUBJECT_AREA_MAP.get(_slug_lower, _slug_lower)
             subj_id = _SUBJECT_ID_MAP.get(mapped_slug)
             if subj_id is not None:
                 from sqlalchemy.dialects.postgresql import insert as pg_insert
