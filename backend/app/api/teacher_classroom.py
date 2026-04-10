@@ -25,7 +25,7 @@ from typing import Any
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict, Field
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -49,9 +49,13 @@ router = APIRouter(prefix="/api/v1/teacher", tags=["teacher-classroom"])
 
 
 class ClassCreate(BaseModel):
-    sinif_adi: str
-    seviye: str
-    ders: str
+    """Canonical English field names; Turkish aliases retained for legacy callers."""
+
+    model_config = ConfigDict(populate_by_name=True)
+
+    name: str = Field(..., alias="sinif_adi")
+    grade_level: str = Field(..., alias="seviye")
+    subject_area: str = Field(..., alias="ders")
 
 
 class ExamCreate(BaseModel):
@@ -131,7 +135,7 @@ async def list_classes(
     return {"success": True, "data": data}
 
 
-@router.post("/classes", status_code=201)
+@router.post("/classes")
 async def create_class(
     body: ClassCreate,
     current_user: User = Depends(get_current_user),
@@ -139,9 +143,9 @@ async def create_class(
 ) -> dict[str, Any]:
     classroom = TeacherClassroom(
         teacher_user_id=str(current_user.id),
-        sinif_adi=body.sinif_adi,
-        seviye=body.seviye,
-        ders=body.ders,
+        sinif_adi=body.name,
+        seviye=body.grade_level,
+        ders=body.subject_area,
     )
     db.add(classroom)
     await db.commit()
