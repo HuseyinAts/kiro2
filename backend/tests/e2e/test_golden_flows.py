@@ -1049,6 +1049,29 @@ def test_gf9wd_two_factor_status_not_500(client: httpx.Client):
 
 
 # ---------------------------------------------------------------------------
+# GF9wE: rate-limit status must not 500 (Pattern B + require_admin variant)
+# ---------------------------------------------------------------------------
+
+
+def test_gf9we_rate_limit_status_not_500(client: httpx.Client):
+    """
+    GET /api/v1/rate-limit/status must return a semantic status, never 500.
+
+    Session 137 AST linter flagged 3 Pattern-B hits in rate_limit_api.py
+    (current_user.id on a TokenPayload). A manual read of the file also
+    surfaced 4 more in the require_admin-gated handlers that the linter
+    heuristic missed — fixed together (7 total). /status is the lightest
+    probe a student can hit without admin rights.
+    """
+    token = _login(client, STUDENT)
+    resp = client.get("/api/v1/rate-limit/status", headers=_auth_headers(token))
+    assert resp.status_code != 500, (
+        f"GF9wE rate-limit/status crashed with 500: {resp.text[:300]}. "
+        f"Check backend/api/rate_limit_api.py — Pattern B TokenPayload.id."
+    )
+
+
+# ---------------------------------------------------------------------------
 # GF1wB: auth refresh-token persistence (auth.py:329 silent swallow)
 # ---------------------------------------------------------------------------
 

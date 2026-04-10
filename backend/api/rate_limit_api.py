@@ -13,15 +13,14 @@ from fastapi import APIRouter, Depends, HTTPException, Request, status
 from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from core.database import get_db
-from core.jwt_auth import get_current_user, require_admin
+from core.database import get_async_session
+from core.jwt_auth import TokenPayload, get_current_user, require_admin
 from core.advanced_rate_limiter import (
     UserTier,
     get_rate_limiter
 )
 from core.rate_limit_middleware import get_rate_limit_status
 from core.structured_logger import get_logger
-from models.database import User
 
 logger = get_logger(__name__)
 
@@ -63,7 +62,7 @@ class RateLimitResetResponse(BaseModel):
 @router.get("/status", response_model=RateLimitStatusResponse)
 async def get_current_rate_limit_status(
     request: Request,
-    current_user: User = Depends(get_current_user)
+    current_user: TokenPayload = Depends(get_current_user)
 ):
     """
     Get current rate limit status
@@ -82,7 +81,7 @@ async def get_current_rate_limit_status(
         return status_info
 
     except Exception as e:
-        logger.error("get_rate_limit_status_error", user_id=current_user.id, error=str(e))
+        logger.error("get_rate_limit_status_error", user_id=current_user.sub, error=str(e))
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Failed to retrieve rate limit status"
@@ -91,7 +90,7 @@ async def get_current_rate_limit_status(
 
 @router.get("/config", response_model=RateLimitConfigResponse)
 async def get_rate_limit_config(
-    current_user: User = Depends(get_current_user)
+    current_user: TokenPayload = Depends(get_current_user)
 ):
     """
     Get rate limit configuration for user's tier
@@ -131,7 +130,7 @@ async def get_rate_limit_config(
         }
 
     except Exception as e:
-        logger.error("get_rate_limit_config_error", user_id=current_user.id, error=str(e))
+        logger.error("get_rate_limit_config_error", user_id=current_user.sub, error=str(e))
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Failed to retrieve rate limit configuration"
@@ -140,7 +139,7 @@ async def get_rate_limit_config(
 
 @router.get("/my-tier")
 async def get_my_tier(
-    current_user: User = Depends(get_current_user)
+    current_user: TokenPayload = Depends(get_current_user)
 ):
     """
     Get user's current tier
@@ -185,7 +184,7 @@ async def get_my_tier(
         }
 
     except Exception as e:
-        logger.error("get_my_tier_error", user_id=current_user.id, error=str(e))
+        logger.error("get_my_tier_error", user_id=current_user.sub, error=str(e))
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Failed to retrieve tier information"
@@ -200,8 +199,8 @@ async def get_my_tier(
 async def reset_user_rate_limit(
     user_id: str,
     endpoint: Optional[str] = None,
-    current_user: User = Depends(require_admin),
-    db: AsyncSession = Depends(get_db)
+    current_user: TokenPayload = Depends(require_admin),
+    db: AsyncSession = Depends(get_async_session)
 ):
     """
     Reset rate limit for specific user (Admin only)
@@ -232,7 +231,7 @@ async def reset_user_rate_limit(
 
             logger.info(
                 "rate_limit_reset_by_admin",
-                admin_id=current_user.id,
+                admin_id=current_user.sub,
                 target_user_id=user_id,
                 endpoint=endpoint
             )
@@ -257,7 +256,7 @@ async def reset_user_rate_limit(
 
             logger.info(
                 "rate_limit_full_reset_by_admin",
-                admin_id=current_user.id,
+                admin_id=current_user.sub,
                 target_user_id=user_id,
                 endpoints_reset=len(endpoints_to_reset)
             )
@@ -272,7 +271,7 @@ async def reset_user_rate_limit(
     except Exception as e:
         logger.error(
             "reset_rate_limit_error",
-            admin_id=current_user.id,
+            admin_id=current_user.sub,
             target_user_id=user_id,
             error=str(e)
         )
@@ -284,7 +283,7 @@ async def reset_user_rate_limit(
 
 @router.get("/admin/statistics")
 async def get_rate_limit_statistics(
-    current_user: User = Depends(require_admin)
+    current_user: TokenPayload = Depends(require_admin)
 ):
     """
     Get rate limit statistics (Admin only)
@@ -333,7 +332,7 @@ async def get_rate_limit_statistics(
         return stats
 
     except Exception as e:
-        logger.error("get_rate_limit_stats_error", admin_id=current_user.id, error=str(e))
+        logger.error("get_rate_limit_stats_error", admin_id=current_user.sub, error=str(e))
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Failed to retrieve rate limit statistics"

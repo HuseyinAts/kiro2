@@ -10,12 +10,13 @@ Features:
 - Sliding window algorithm
 - IP & User-based limiting
 """
+
 import time
-from typing import Optional, Tuple, Dict
 from enum import Enum
 
 import redis.asyncio as redis
-from fastapi import Request, HTTPException, status
+from fastapi import HTTPException, Request, status
+
 from core.structured_logger import get_logger
 
 logger = get_logger(__name__)
@@ -23,6 +24,7 @@ logger = get_logger(__name__)
 
 class UserTier(str, Enum):
     """User subscription tiers"""
+
     FREE = "free"
     PREMIUM = "premium"
     ADMIN = "admin"
@@ -30,6 +32,7 @@ class UserTier(str, Enum):
 
 class RateLimitExceeded(HTTPException):
     """Rate limit exceeded exception"""
+
     def __init__(self, retry_after: int, limit: int, window: int):
         super().__init__(
             status_code=status.HTTP_429_TOO_MANY_REQUESTS,
@@ -38,13 +41,13 @@ class RateLimitExceeded(HTTPException):
                 "message": f"Rate limit exceeded. Try again in {retry_after} seconds.",
                 "limit": limit,
                 "window": window,
-                "retry_after": retry_after
+                "retry_after": retry_after,
             },
             headers={
                 "Retry-After": str(retry_after),
                 "X-RateLimit-Limit": str(limit),
-                "X-RateLimit-Window": str(window)
-            }
+                "X-RateLimit-Window": str(window),
+            },
         )
 
 
@@ -64,7 +67,7 @@ class AdvancedRateLimiter:
             redis_url: Redis connection URL
         """
         self.redis_url = redis_url
-        self.redis_client: Optional[redis.Redis] = None
+        self.redis_client: redis.Redis | None = None
 
         # Default rate limits per tier (requests per minute)
         self.tier_limits = {
@@ -85,7 +88,7 @@ class AdvancedRateLimiter:
                 "auth": 1000,
                 "export": 1000,
                 "ai": 1000,
-            }
+            },
         }
 
         # Endpoint-specific limits (overrides tier defaults)
@@ -100,9 +103,7 @@ class AdvancedRateLimiter:
         """Connect to Redis"""
         if not self.redis_client:
             self.redis_client = await redis.from_url(
-                self.redis_url,
-                encoding="utf-8",
-                decode_responses=True
+                self.redis_url, encoding="utf-8", decode_responses=True
             )
             logger.info("rate_limiter_connected", redis_url=self.redis_url)
 
@@ -113,10 +114,7 @@ class AdvancedRateLimiter:
             logger.info("rate_limiter_disconnected")
 
     def _get_rate_limit_key(
-        self,
-        identifier: str,
-        endpoint: str,
-        tier: UserTier
+        self, identifier: str, endpoint: str, tier: UserTier
     ) -> str:
         """
         Generate Redis key for rate limit
@@ -132,9 +130,7 @@ class AdvancedRateLimiter:
         return f"ratelimit:{tier.value}:{endpoint}:{identifier}"
 
     def _get_tier_limit(
-        self,
-        tier: UserTier,
-        endpoint_category: str = "default"
+        self, tier: UserTier, endpoint_category: str = "default"
     ) -> int:
         """
         Get rate limit for tier and endpoint category
@@ -147,8 +143,7 @@ class AdvancedRateLimiter:
             Rate limit (requests per window)
         """
         return self.tier_limits[tier].get(
-            endpoint_category,
-            self.tier_limits[tier]["default"]
+            endpoint_category, self.tier_limits[tier]["default"]
         )
 
     def _categorize_endpoint(self, endpoint: str) -> str:
@@ -163,20 +158,19 @@ class AdvancedRateLimiter:
         """
         if "/auth/" in endpoint:
             return "auth"
-        elif "/export" in endpoint or "/delete" in endpoint:
+        if "/export" in endpoint or "/delete" in endpoint:
             return "export"
-        elif "/ai/" in endpoint or "/chat" in endpoint:
+        if "/ai/" in endpoint or "/chat" in endpoint:
             return "ai"
-        else:
-            return "default"
+        return "default"
 
     async def check_rate_limit(
         self,
         identifier: str,
         endpoint: str,
         tier: UserTier = UserTier.FREE,
-        window: int = 60  # seconds
-    ) -> Tuple[bool, Dict[str, int]]:
+        window: int = 60,  # seconds
+    ) -> tuple[bool, dict[str, int]]:
         """
         Check if request is within rate limit (Sliding Window Algorithm)
 
@@ -242,7 +236,7 @@ class AdvancedRateLimiter:
                 endpoint=endpoint,
                 tier=tier.value,
                 count=current_count,
-                limit=limit
+                limit=limit,
             )
 
             return False, {
@@ -250,7 +244,7 @@ class AdvancedRateLimiter:
                 "remaining": 0,
                 "reset": reset,
                 "retry_after": max(1, retry_after),
-                "window": window
+                "window": window,
             }
 
         return True, {
@@ -258,7 +252,7 @@ class AdvancedRateLimiter:
             "remaining": remaining,
             "reset": reset,
             "retry_after": 0,
-            "window": window
+            "window": window,
         }
 
     async def reset_rate_limit(self, identifier: str, endpoint: str, tier: UserTier):
@@ -280,15 +274,12 @@ class AdvancedRateLimiter:
             "rate_limit_reset",
             identifier=identifier,
             endpoint=endpoint,
-            tier=tier.value
+            tier=tier.value,
         )
 
     async def get_rate_limit_info(
-        self,
-        identifier: str,
-        endpoint: str,
-        tier: UserTier = UserTier.FREE
-    ) -> Dict[str, int]:
+        self, identifier: str, endpoint: str, tier: UserTier = UserTier.FREE
+    ) -> dict[str, int]:
         """
         Get current rate limit status without incrementing
 
@@ -327,29 +318,36 @@ class AdvancedRateLimiter:
             "limit": limit,
             "remaining": remaining,
             "reset": reset,
-            "window": window
+            "window": window,
         }
 
 
 # Global rate limiter instance
-_rate_limiter: Optional[AdvancedRateLimiter] = None
+_rate_limiter: AdvancedRateLimiter | None = None
 
 
 def get_rate_limiter() -> AdvancedRateLimiter:
-    """Get global rate limiter instance"""
+    """Get global rate limiter instance.
+
+    Reads REDIS_URL from the OS environment directly so the singleton
+    honours the docker-compose ``host.docker.internal:6379`` override.
+    Falling back to ``settings.REDIS_URL`` kept producing
+    ``redis://localhost:6379`` because the Pydantic settings object
+    does not declare this field; inside the container ``localhost``
+    is the container itself and Redis is unreachable.
+    """
     global _rate_limiter
     if _rate_limiter is None:
-        from core.config import settings
-        redis_url = getattr(settings, "REDIS_URL", "redis://localhost:6379/0")
+        import os
+
+        redis_url = os.getenv("REDIS_URL", "redis://localhost:6379/0")
         _rate_limiter = AdvancedRateLimiter(redis_url)
     return _rate_limiter
 
 
 async def check_rate_limit(
-    request: Request,
-    tier: UserTier = UserTier.FREE,
-    user_id: Optional[str] = None
-) -> Dict[str, int]:
+    request: Request, tier: UserTier = UserTier.FREE, user_id: str | None = None
+) -> dict[str, int]:
     """
     Check rate limit for request
 
@@ -371,16 +369,12 @@ async def check_rate_limit(
     endpoint = request.url.path
 
     allowed, info = await limiter.check_rate_limit(
-        identifier=identifier,
-        endpoint=endpoint,
-        tier=tier
+        identifier=identifier, endpoint=endpoint, tier=tier
     )
 
     if not allowed:
         raise RateLimitExceeded(
-            retry_after=info["retry_after"],
-            limit=info["limit"],
-            window=info["window"]
+            retry_after=info["retry_after"], limit=info["limit"], window=info["window"]
         )
 
     return info
@@ -388,8 +382,8 @@ async def check_rate_limit(
 
 __all__ = [
     "AdvancedRateLimiter",
-    "UserTier",
     "RateLimitExceeded",
+    "UserTier",
+    "check_rate_limit",
     "get_rate_limiter",
-    "check_rate_limit"
 ]
