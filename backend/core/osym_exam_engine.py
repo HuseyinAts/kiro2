@@ -542,10 +542,9 @@ class OSYMExamEngine:
             Optional[Question]: Mevcut soru veya None
         """
         try:
-            if session_id not in self.active_sessions:
+            session_data = await self.get_session_data(session_id)
+            if not session_data:
                 return None
-
-            session_data = self.active_sessions[session_id]
 
             if session_data.status != ExamStatus.IN_PROGRESS:
                 return None
@@ -592,10 +591,9 @@ class OSYMExamEngine:
             bool: Kaydetme başarı durumu
         """
         try:
-            if session_id not in self.active_sessions:
+            session_data = await self.get_session_data(session_id)
+            if not session_data:
                 return False
-
-            session_data = self.active_sessions[session_id]
 
             if session_data.status != ExamStatus.IN_PROGRESS:
                 return False
@@ -640,12 +638,10 @@ class OSYMExamEngine:
                 await db_session.execute(stmt)
                 await db_session.commit()
 
-            # Redis L2 persist (periodic, not every answer for performance)
-            # Persist every 5th answer or when flagged
-            if len(session_data.answers) % 5 == 0:
-                from core.exam_session_store import persist_session
+            # Redis L2 persist — always sync after answer for multi-worker compatibility
+            from core.exam_session_store import persist_session
 
-                await persist_session(session_data)
+            await persist_session(session_data)
 
             logger.debug(
                 "Cevap kaydedildi",
@@ -680,16 +676,18 @@ class OSYMExamEngine:
             Optional[Question]: Hedef soru veya None
         """
         try:
-            if session_id not in self.active_sessions:
+            session_data = await self.get_session_data(session_id)
+            if not session_data:
                 return None
-
-            session_data = self.active_sessions[session_id]
 
             if session_data.status != ExamStatus.IN_PROGRESS:
                 return None
 
             if 0 <= question_index < len(session_data.questions):
                 session_data.current_question_index = question_index
+                from core.exam_session_store import persist_session
+
+                await persist_session(session_data)
                 return await self.get_current_question(session_id)
 
             return None
@@ -716,16 +714,19 @@ class OSYMExamEngine:
             bool: İşlem başarı durumu
         """
         try:
-            if session_id not in self.active_sessions:
+            session_data = await self.get_session_data(session_id)
+            if not session_data:
                 return False
-
-            session_data = self.active_sessions[session_id]
 
             if flagged:
                 if question_id not in session_data.flagged_questions:
                     session_data.flagged_questions.append(question_id)
             elif question_id in session_data.flagged_questions:
                 session_data.flagged_questions.remove(question_id)
+
+            from core.exam_session_store import persist_session
+
+            await persist_session(session_data)
 
             logger.debug(
                 "Soru işaretleme güncellendi",
@@ -756,10 +757,9 @@ class OSYMExamEngine:
             Optional[int]: Kalan süre (saniye) veya None
         """
         try:
-            if session_id not in self.active_sessions:
+            session_data = await self.get_session_data(session_id)
+            if not session_data:
                 return None
-
-            session_data = self.active_sessions[session_id]
 
             if (
                 session_data.status != ExamStatus.IN_PROGRESS
@@ -796,10 +796,9 @@ class OSYMExamEngine:
             ExamPerformanceMetrics: Performans metrikleri
         """
         try:
-            if session_id not in self.active_sessions:
+            session_data = await self.get_session_data(session_id)
+            if not session_data:
                 raise ValueError("Sınav oturumu bulunamadı")
-
-            session_data = self.active_sessions[session_id]
 
             if session_data.status == ExamStatus.COMPLETED:
                 # Zaten tamamlanmış
@@ -930,10 +929,9 @@ class OSYMExamEngine:
             List[str]: Cevaplanmamış soru ID'leri
         """
         try:
-            if session_id not in self.active_sessions:
+            session_data = await self.get_session_data(session_id)
+            if not session_data:
                 return []
-
-            session_data = self.active_sessions[session_id]
 
             # Tüm sorulardan cevaplananları çıkar
             unanswered = [
@@ -962,10 +960,9 @@ class OSYMExamEngine:
             float: Tamamlanma yüzdesi (0-100 arası)
         """
         try:
-            if session_id not in self.active_sessions:
+            session_data = await self.get_session_data(session_id)
+            if not session_data:
                 return 0.0
-
-            session_data = self.active_sessions[session_id]
 
             total_questions = len(session_data.questions)
             if total_questions == 0:
@@ -998,15 +995,14 @@ class OSYMExamEngine:
                 - completion_percentage: Tamamlanma yüzdesi
         """
         try:
-            if session_id not in self.active_sessions:
+            session_data = await self.get_session_data(session_id)
+            if not session_data:
                 return {
                     "total_questions": 0,
                     "answered_questions": 0,
                     "unanswered_questions": 0,
                     "completion_percentage": 0.0,
                 }
-
-            session_data = self.active_sessions[session_id]
 
             total_questions = len(session_data.questions)
             answered_questions = len(session_data.answers)
@@ -1045,7 +1041,8 @@ class OSYMExamEngine:
             List[SubjectPerformance]: Konu performansları
         """
         try:
-            if session_id not in self.active_sessions:
+            session_data = await self.get_session_data(session_id)
+            if not session_data:
                 return []
 
             subject_stats = {}
@@ -1654,9 +1651,9 @@ class OSYMExamEngine:
 
 
 # Global ÖSYM sınav motoru instance
-# TODO(P0): Multi-worker deployment'ta her process ayrı active_sessions dict'i tutar.
-# active_sessions Redis-backed yapılmalı veya DB ExamSession tablosu kullanılmalı.
-# Tek worker'da çalışır, multi-worker'da session izolasyonu bozulur.
+# K-B5 FIXED: 10 direct active_sessions lookups replaced with get_session_data(session_id)
+# which implements L1 (in-memory) → L2 (Redis) fallback. Mutating methods now call
+# persist_session() to sync state across workers. Multi-worker deployments are supported.
 osym_exam_engine = OSYMExamEngine()
 
 
