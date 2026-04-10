@@ -325,7 +325,8 @@ async def soru_bankasi_listesi(
 
 @router.post("/content/questions", summary="Yeni Soru Ekle")
 async def soru_ekle(
-    soru_data: dict[str, Any], _: Kullanici = Depends(admin_kullanici_getir)
+    soru_data: dict[str, Any],
+    admin: Kullanici = Depends(admin_kullanici_getir),
 ) -> dict[str, Any]:
     """
     Soru bankasına yeni soru ekle (Admin yetkisi gerekli)
@@ -339,14 +340,40 @@ async def soru_ekle(
     - sinav_tipi: TYT/AYT/YDT
     """
     try:
-        soru = await admin_servisi.soru_ekle(soru_data)
-        return {"success": True, "data": soru, "message": "Soru başarıyla eklendi"}
+        # admin_kullanici_getir yetki doğrulamasını zaten yapıyor.
+        # admin_service.soru_ekle'deki @admin_required decorator'ı
+        # AuthenticatedUser'ı (rol/role attr farkı) tanımadığı için
+        # doğrudan soru_bankasi_servisi.soru_ekle'yi çağırıyoruz.
+        from services.soru_bankasi_service import soru_bankasi_servisi
+
+        soru = await soru_bankasi_servisi.soru_ekle(
+            {**soru_data, "created_by": admin.id}
+        )
+        return {
+            "success": True,
+            "data": {
+                "id": soru.id,
+                "soru_metni": soru.question_text,
+                "sinav_tipi": soru.exam_type,
+                "konu": soru.subject_area,
+                "zorluk_seviyesi": (
+                    soru.difficulty_level.value
+                    if hasattr(soru.difficulty_level, "value")
+                    else str(soru.difficulty_level)
+                ),
+                "olusturma_tarihi": (
+                    soru.created_at.isoformat() if soru.created_at else None
+                ),
+            },
+            "message": "Soru başarıyla eklendi",
+        }
     except ValueError:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
     except Exception:
+        logger.exception("admin /content/questions POST hatası")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Islem basarisiz. Lutfen tekrar deneyin.",

@@ -15,10 +15,11 @@ from sqlalchemy.ext.asyncio import AsyncSession
 # PERFORMANCE: Redis cache integration
 from core.cache import cache_manager
 from core.database import db_manager
+from core.turkish_nlp_utils import subject_db
 from models import SinavTipi
 from models.database import ExamType, QuestionDifficulty, SubjectArea
 from models.question_bank import QuestionBankItem as Question
-from models.question_bank import TopicHierarchy
+from models.question_bank import QuestionDifficultyLevel, TopicHierarchy
 from services.irt_analysis_service import IRTAnalysisService
 
 logger = logging.getLogger(__name__)
@@ -167,44 +168,103 @@ class SoruBankasiServisi:
         """
         async with db_manager.get_session() as session:
             try:
-                # Enum dönüştürmeleri
-                exam_type, difficulty, subject_area = await self._enum_donusturucu(
-                    soru_data.get("sinav_tipi", "TYT"),
-                    soru_data.get("zorluk_seviyesi", "orta"),
-                    soru_data.get("konu", "Matematik"),
+                # --- Normalize inputs to QuestionBankItem schema ---
+                # Canonical UPPERCASE string for subject_area + exam_type
+                # (question_bank.py:431-433 — plain String, not Enum).
+                konu_raw = soru_data.get("konu") or "Matematik"
+                subject_area_str = subject_db(_KONU_MAP.get(konu_raw, konu_raw))
+                exam_type_str = (soru_data.get("sinav_tipi") or "TYT").strip().upper()
+
+                # 5-level difficulty Enum (question_bank.QuestionDifficultyLevel)
+                # Input "kolay/orta/zor" (Turkish) or "easy/medium/hard" (ASCII).
+                difficulty_input = (
+                    (soru_data.get("zorluk_seviyesi") or "orta").strip().lower()
+                )
+                difficulty_level_map = {
+                    "cok_kolay": QuestionDifficultyLevel.VERY_EASY,
+                    "very_easy": QuestionDifficultyLevel.VERY_EASY,
+                    "kolay": QuestionDifficultyLevel.EASY,
+                    "easy": QuestionDifficultyLevel.EASY,
+                    "orta": QuestionDifficultyLevel.MEDIUM,
+                    "medium": QuestionDifficultyLevel.MEDIUM,
+                    "zor": QuestionDifficultyLevel.HARD,
+                    "hard": QuestionDifficultyLevel.HARD,
+                    "cok_zor": QuestionDifficultyLevel.VERY_HARD,
+                    "very_hard": QuestionDifficultyLevel.VERY_HARD,
+                }
+                difficulty_level = difficulty_level_map.get(
+                    difficulty_input, QuestionDifficultyLevel.MEDIUM
                 )
 
-                # IRT parametrelerini hesapla
+                # IRT parametrelerini hesapla (legacy helper uses easy/medium/hard)
                 irt_params = await self._hesapla_irt_parametreleri(
-                    difficulty.value, soru_data.get("konu", "Matematik")
+                    difficulty_level.value.replace("very_", "").replace("_", " "),
+                    konu_raw,
                 )
 
-                # Yeni soru oluştur
+                # --- primary_topic_id lookup (NOT NULL FK → topic_hierarchy) ---
+                # Strategy: match by subject_area + (sub_topic name or subject fallback).
+                # Prefer the most specific topic; fall back to any root topic of the subject.
+                alt_konu = (soru_data.get("alt_konu") or "").strip()
+                primary_topic_id: str | None = None
+
+                if alt_konu:
+                    row = await session.execute(
+                        select(TopicHierarchy.id)
+                        .where(
+                            TopicHierarchy.subject_area == subject_area_str,
+                            func.lower(TopicHierarchy.name_tr) == alt_konu.lower(),
+                        )
+                        .limit(1)
+                    )
+                    primary_topic_id = row.scalar_one_or_none()
+
+                if not primary_topic_id:
+                    # Fallback: first topic of the subject (any level).
+                    row = await session.execute(
+                        select(TopicHierarchy.id)
+                        .where(TopicHierarchy.subject_area == subject_area_str)
+                        .order_by(TopicHierarchy.level.asc())
+                        .limit(1)
+                    )
+                    primary_topic_id = row.scalar_one_or_none()
+
+                if not primary_topic_id:
+                    raise ValueError(
+                        f"topic_hierarchy'de '{subject_area_str}' için kayıt yok "
+                        f"(alt_konu={alt_konu!r}). Önce TopicHierarchy seed edilmeli."
+                    )
+
+                # grade_level: int NOT NULL (question_bank.py:434) — default 11 for YKS.
+                try:
+                    grade_level = int(soru_data.get("sinif_seviyesi") or 11)
+                except (TypeError, ValueError):
+                    grade_level = 11
+
+                # --- Options (Text NOT NULL a..d, option_e nullable) ---
+                secenekler = soru_data["secenekler"]
+                option_e = (
+                    secenekler[4].replace("E) ", "") if len(secenekler) > 4 else None
+                )
+
+                # --- Build QuestionBankItem (no legacy topic/subtopic/difficulty) ---
                 yeni_soru = Question(
                     question_text=soru_data["soru_metni"],
-                    option_a=soru_data["secenekler"][0].replace("A) ", ""),
-                    option_b=soru_data["secenekler"][1].replace("B) ", ""),
-                    option_c=soru_data["secenekler"][2].replace("C) ", ""),
-                    option_d=soru_data["secenekler"][3].replace("D) ", ""),
-                    option_e=soru_data["secenekler"][4].replace("E) ", "")
-                    if len(soru_data["secenekler"]) > 4
-                    else None,
+                    option_a=secenekler[0].replace("A) ", ""),
+                    option_b=secenekler[1].replace("B) ", ""),
+                    option_c=secenekler[2].replace("C) ", ""),
+                    option_d=secenekler[3].replace("D) ", ""),
+                    option_e=option_e,
                     correct_answer=soru_data["dogru_cevap"],
                     explanation=soru_data.get("cozum_aciklamasi"),
-                    exam_type=exam_type,
-                    subject_area=subject_area,
-                    topic=soru_data.get("konu", "Genel"),
-                    subtopic=soru_data.get("alt_konu"),
-                    difficulty=difficulty,
+                    exam_type=exam_type_str,
+                    subject_area=subject_area_str,
+                    grade_level=grade_level,
+                    primary_topic_id=primary_topic_id,
+                    difficulty_level=difficulty_level,
                     irt_difficulty=irt_params["difficulty"],
                     irt_discrimination=irt_params["discrimination"],
                     irt_guessing=irt_params["guessing"],
-                    morphology_complexity=await self._hesapla_morfoloji_karmasikligi(
-                        soru_data["soru_metni"]
-                    ),
-                    readability_score=await self._hesapla_okunabilirlik(
-                        soru_data["soru_metni"]
-                    ),
                     created_by=soru_data.get("created_by"),
                 )
 
@@ -216,7 +276,8 @@ class SoruBankasiServisi:
 
             except Exception as e:
                 await session.rollback()
-                raise Exception(f"Soru eklenirken hata oluştu: {e!s}")
+                logger.exception("soru_ekle hata: %s", e)
+                raise
 
     async def _hesapla_irt_parametreleri(
         self, zorluk: str, konu: str

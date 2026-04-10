@@ -59,7 +59,11 @@ class CreateExamRequest(BaseModel):
 class SaveAnswerRequest(BaseModel):
     """Cevap kaydetme isteği"""
 
-    question_id: str = Field(..., description="Soru ID")
+    question_id: str = Field(
+        ...,
+        min_length=1,
+        description="Soru ID (non-empty, UUID bekleniyor)",
+    )
     selected_answer: str | None = Field(
         None, description="Seçilen cevap (A, B, C, D, E)"
     )
@@ -82,7 +86,11 @@ class SaveAnswerRequest(BaseModel):
 class FlagQuestionRequest(BaseModel):
     """Soru işaretleme isteği"""
 
-    question_id: str = Field(..., description="Soru ID")
+    question_id: str = Field(
+        ...,
+        min_length=1,
+        description="Soru ID (non-empty, UUID bekleniyor)",
+    )
     flagged: bool = Field(..., description="İşaretli durumu")
 
     model_config = {

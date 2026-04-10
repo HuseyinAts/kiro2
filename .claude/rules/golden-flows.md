@@ -5,18 +5,54 @@ platform MUST deliver. Unit tests can all pass while a real user cannot log
 in, list topics, or start an exam — Golden Flows catch that class of failure
 before merge.
 
-## The 8 Flows (user-approved, 10 Apr 2026)
+## The Flows (user-approved, 10 Apr 2026)
+
+**Read-path (GF1-GF8):**
 
 | # | Flow | Surfaces |
 |---|------|----------|
 | GF1 | Login → `/me` | Auth stack end-to-end |
 | GF2 | Daily learning path → DAG topics | Case convention endpoint gate |
-| GF3 | TYT exam start → configs list | Exam engine read path |
+| GF3 | TYT exam configs list | Exam engine read path (router prefix `/api/v1/osym-exam`) |
 | GF4 | Review queue (FSRS) | Review scheduler read path |
 | GF5 | Teacher profile | Async ORM + AuthenticatedUser attrs |
 | GF6 | Admin question bank | Production table wiring (`question_bank`) |
 | GF7 | Video fallback (both cases) | Turkish locale I/ı trap |
 | GF8 | Parent children view | Consent + parent auth |
+
+**Write-path (Session 136 — 13 write tests across two waves):**
+
+Wave 1 — planned probe-fix pairs (K1–K4):
+
+| # | Flow | Surfaces | Status |
+|---|------|----------|--------|
+| GF1w | save-answer must update mastery (`response_count` / `algorithm`) | BKT/IRT/FSRS/ZPD fire-and-forget pipeline (`sinav.py:737-738`) | ✅ PASS |
+| GF3w | save-answer rejects empty `question_id` | Payload validation boundary (`SaveAnswerRequest` `min_length=1`) | ✅ PASS (fix: Session 136) |
+| GF4w.1 | register-wrong-answers accepts valid ID | FSRS write path (`learning_path_v2.py:2020`) | ✅ PASS |
+| GF4w.2 | submit-review returns non-null `next_due` | FSRS grading pipeline (`learning_path_v2.py:1971`) | ⏭️ SKIP (no due cards) |
+| GF6w | admin question create returns 200 success | Dual-trap: QuestionBankItem legacy kwargs + NOT NULL `primary_topic_id` (`soru_bankasi_service.py:183` + `admin.py` bypasses buggy `admin_servisi.soru_ekle` decorator) | ✅ PASS (fix: Session 136) |
+
+Wave 2 — domain write-path probes (Option B, 8 new tests, discovered 5 additional half-working features):
+
+| # | Flow | Surfaces | Status |
+|---|------|----------|--------|
+| GF1wB | auth refresh token actually persisted in DB | `auth.py:329` fire-and-forget refresh token persist | ⏭️ SKIP (state-dependent) |
+| GF2w | gamification points award advances balance | Query-param vs JSON body contract drift, `points/award` 500 | 🔴 FAIL — half-working |
+| GF2wB | placement returns session + first question | CAT placement write path | ✅ PASS |
+| GF3wA | chat session create returns 200 | `enhanced_chat.py` DB persist silent-fail, session create 500 | 🔴 FAIL — half-working |
+| GF5w | teacher class create accepts canonical schema | TR field names (`sinif_adi`, `seviye`) vs English body — `path-naming.md` violation | 🔴 FAIL — half-working |
+| GF5wB | daily quest progress advances counter | Gamification write path | ✅ PASS |
+| GF7wA | video-solutions list not 500 | `video_solutions.py` service init / router wiring 500 | 🔴 FAIL — half-working |
+| GF8wA | kvkk consent list not 500 | `kvkk.py` consent query + compliance model 500 | 🔴 FAIL — half-working |
+
+**Current distribution (Session 136 final, Option A/B/C complete):** 21 tests → 14 PASS, 5 FAIL, 2 SKIP.
+
+The 5 FAILs are regression guards for half-working features discovered by the
+Option B write-path probes. Each is a follow-up task — the tests must stay
+until the underlying bug is fixed, at which point they become green guards.
+Wave 1 expected FAILs (GF1w, GF3w, GF6w) are all now PASS after Session 136
+fixes; Wave 2 FAILs are newly surfaced and tracked as separate half-working
+feature bugs.
 
 Implementation: `backend/tests/e2e/test_golden_flows.py`
 CI gate: `.github/workflows/golden-flows.yml`
