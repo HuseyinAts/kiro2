@@ -4,22 +4,23 @@ Task 106: AI Chat Assistant Service
 Service layer for enhanced chat with image upload, OCR, and step-by-step solutions
 """
 
-from typing import List, Optional, Dict, Any
+from datetime import UTC, datetime
+from typing import Any
 from uuid import UUID
-from sqlalchemy import select, func, and_, desc
+
+from sqlalchemy import and_, desc, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
-from datetime import datetime, timezone
 
 from models.ai_chat import (
-    ChatSession,
-    ChatMessage,
-    ImageUpload,
-    SolutionStep,
     ChatAnalytics,
+    ChatMessage,
+    ChatSession,
+    ImageProcessingStatus,
+    ImageUpload,
     MessageRole,
     SessionStatus,
+    SolutionStep,
     SubjectType,
-    ImageProcessingStatus,
 )
 
 
@@ -36,13 +37,14 @@ class AIChatService:
     async def create_session(
         self,
         user_id: UUID,
-        title: Optional[str] = None,
+        title: str | None = None,
         subject_type: SubjectType = SubjectType.GENERAL,
         **kwargs,
     ) -> ChatSession:
         """Create a new chat session"""
+        # chat_sessions.user_id is VARCHAR; asyncpg rejects UUID objects.
         session = ChatSession(
-            user_id=user_id,
+            user_id=str(user_id),
             title=title or "New Chat",
             subject_type=subject_type,
             **kwargs,
@@ -53,15 +55,15 @@ class AIChatService:
         await self.db.refresh(session)
         return session
 
-    async def get_session(self, session_id: UUID) -> Optional[ChatSession]:
+    async def get_session(self, session_id: UUID) -> ChatSession | None:
         """Get a chat session"""
         query = select(ChatSession).where(ChatSession.id == session_id)
         result = await self.db.execute(query)
         return result.scalar_one_or_none()
 
     async def get_user_sessions(
-        self, user_id: UUID, status: Optional[SessionStatus] = None, limit: int = 50
-    ) -> List[ChatSession]:
+        self, user_id: UUID, status: SessionStatus | None = None, limit: int = 50
+    ) -> list[ChatSession]:
         """Get user's chat sessions"""
         conditions = [ChatSession.user_id == user_id]
 
@@ -78,9 +80,7 @@ class AIChatService:
         result = await self.db.execute(query)
         return result.scalars().all()
 
-    async def update_session(
-        self, session_id: UUID, **updates
-    ) -> Optional[ChatSession]:
+    async def update_session(self, session_id: UUID, **updates) -> ChatSession | None:
         """Update a chat session"""
         session = await self.get_session(session_id)
         if not session:
@@ -113,7 +113,7 @@ class AIChatService:
         session_id: UUID,
         role: MessageRole,
         content: str,
-        image_id: Optional[UUID] = None,
+        image_id: UUID | None = None,
         **kwargs,
     ) -> ChatMessage:
         """Add a message to the chat session"""
@@ -131,7 +131,7 @@ class AIChatService:
         session = await self.get_session(session_id)
         if session:
             session.message_count += 1
-            session.last_message_at = datetime.now(timezone.utc)
+            session.last_message_at = datetime.now(UTC)
             if kwargs.get("tokens_used"):
                 session.total_tokens += kwargs["tokens_used"]
             if kwargs.get("cost"):
@@ -142,8 +142,8 @@ class AIChatService:
         return message
 
     async def get_messages(
-        self, session_id: UUID, limit: Optional[int] = None
-    ) -> List[ChatMessage]:
+        self, session_id: UUID, limit: int | None = None
+    ) -> list[ChatMessage]:
         """Get messages for a session"""
         query = (
             select(ChatMessage)
@@ -159,7 +159,7 @@ class AIChatService:
 
     async def get_conversation_context(
         self, session_id: UUID, max_messages: int = 10
-    ) -> List[Dict[str, str]]:
+    ) -> list[dict[str, str]]:
         """Get conversation context for AI (last N messages)"""
         messages = await self.get_messages(session_id)
 
@@ -180,8 +180,8 @@ class AIChatService:
         message_id: UUID,
         rating: int,
         is_helpful: bool,
-        feedback_comment: Optional[str] = None,
-    ) -> Optional[ChatMessage]:
+        feedback_comment: str | None = None,
+    ) -> ChatMessage | None:
         """Rate a message"""
         query = select(ChatMessage).where(ChatMessage.id == message_id)
         result = await self.db.execute(query)
@@ -219,13 +219,13 @@ class AIChatService:
         await self.db.refresh(image)
         return image
 
-    async def get_image_upload(self, image_id: UUID) -> Optional[ImageUpload]:
+    async def get_image_upload(self, image_id: UUID) -> ImageUpload | None:
         """Get an image upload"""
         query = select(ImageUpload).where(ImageUpload.id == image_id)
         result = await self.db.execute(query)
         return result.scalar_one_or_none()
 
-    async def get_session_images(self, session_id: UUID) -> List[ImageUpload]:
+    async def get_session_images(self, session_id: UUID) -> list[ImageUpload]:
         """Get all images for a session"""
         query = (
             select(ImageUpload)
@@ -242,7 +242,7 @@ class AIChatService:
 
     async def update_ocr_results(
         self, image_id: UUID, ocr_text: str, ocr_confidence: float, **kwargs
-    ) -> Optional[ImageUpload]:
+    ) -> ImageUpload | None:
         """Update OCR processing results"""
         image = await self.get_image_upload(image_id)
         if not image:
@@ -251,7 +251,7 @@ class AIChatService:
         image.processing_status = ImageProcessingStatus.COMPLETED
         image.ocr_text = ocr_text
         image.ocr_confidence = ocr_confidence
-        image.processed_at = datetime.now(timezone.utc)
+        image.processed_at = datetime.now(UTC)
 
         # Update optional fields
         for key, value in kwargs.items():
@@ -264,7 +264,7 @@ class AIChatService:
 
     async def mark_ocr_failed(
         self, image_id: UUID, error_message: str
-    ) -> Optional[ImageUpload]:
+    ) -> ImageUpload | None:
         """Mark OCR processing as failed"""
         image = await self.get_image_upload(image_id)
         if not image:
@@ -272,7 +272,7 @@ class AIChatService:
 
         image.processing_status = ImageProcessingStatus.FAILED
         image.error_message = error_message
-        image.processed_at = datetime.now(timezone.utc)
+        image.processed_at = datetime.now(UTC)
 
         await self.db.commit()
         await self.db.refresh(image)
@@ -283,8 +283,8 @@ class AIChatService:
     # ============================================================
 
     async def add_solution_steps(
-        self, message_id: UUID, steps: List[Dict[str, Any]]
-    ) -> List[SolutionStep]:
+        self, message_id: UUID, steps: list[dict[str, Any]]
+    ) -> list[SolutionStep]:
         """Add step-by-step solution to a message"""
         solution_steps = []
 
@@ -300,7 +300,7 @@ class AIChatService:
 
         return solution_steps
 
-    async def get_solution_steps(self, message_id: UUID) -> List[SolutionStep]:
+    async def get_solution_steps(self, message_id: UUID) -> list[SolutionStep]:
         """Get solution steps for a message"""
         query = (
             select(SolutionStep)
@@ -316,8 +316,8 @@ class AIChatService:
     # ============================================================
 
     async def generate_ai_response(
-        self, session_id: UUID, user_message: str, image_text: Optional[str] = None
-    ) -> Dict[str, Any]:
+        self, session_id: UUID, user_message: str, image_text: str | None = None
+    ) -> dict[str, Any]:
         """
         Generate AI response with enhanced context
 
@@ -372,7 +372,7 @@ class AIChatService:
 
     async def generate_step_by_step_solution(
         self, problem: str, subject_type: SubjectType
-    ) -> List[Dict[str, Any]]:
+    ) -> list[dict[str, Any]]:
         """
         Generate step-by-step solution
 
@@ -413,7 +413,7 @@ class AIChatService:
     # Analytics
     # ============================================================
 
-    async def get_chat_statistics(self, user_id: UUID) -> Dict[str, Any]:
+    async def get_chat_statistics(self, user_id: UUID) -> dict[str, Any]:
         """Get chat statistics for a user"""
         # Get total sessions
         session_query = select(func.count(ChatSession.id)).where(

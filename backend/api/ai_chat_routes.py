@@ -11,7 +11,7 @@ from pydantic import BaseModel, Field
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from api.auth import mevcut_kullanici_getir
-from core.database import get_db
+from core.database import get_async_session
 from models.ai_chat import MessageRole, SessionStatus, SubjectType
 from models.user import Kullanici
 from services.ai_chat_service import AIChatService
@@ -80,7 +80,7 @@ async def get_owned_session(
 async def create_session(
     request: SessionCreateRequest,
     mevcut_kullanici: Kullanici = Depends(mevcut_kullanici_getir),
-    db: AsyncSession = Depends(get_db),
+    db: AsyncSession = Depends(get_async_session),
 ):
     """Create a new chat session"""
     user_uuid = UUID(mevcut_kullanici.kullanici_id)
@@ -97,7 +97,7 @@ async def create_session(
 async def get_user_sessions(
     status: SessionStatus | None = None,
     mevcut_kullanici: Kullanici = Depends(mevcut_kullanici_getir),
-    db: AsyncSession = Depends(get_db),
+    db: AsyncSession = Depends(get_async_session),
 ):
     """Get user's chat sessions"""
     user_uuid = UUID(mevcut_kullanici.kullanici_id)
@@ -119,7 +119,7 @@ async def get_user_sessions(
 async def get_session(
     session_id: UUID,
     mevcut_kullanici: Kullanici = Depends(mevcut_kullanici_getir),
-    db: AsyncSession = Depends(get_db),
+    db: AsyncSession = Depends(get_async_session),
 ):
     """Get session details"""
     service = AIChatService(db)
@@ -143,7 +143,7 @@ async def send_message(
     session_id: UUID,
     request: MessageRequest,
     mevcut_kullanici: Kullanici = Depends(mevcut_kullanici_getir),
-    db: AsyncSession = Depends(get_db),
+    db: AsyncSession = Depends(get_async_session),
 ):
     """Send a message and get AI response"""
     service = AIChatService(db)
@@ -194,7 +194,7 @@ async def send_message(
 async def get_messages(
     session_id: UUID,
     mevcut_kullanici: Kullanici = Depends(mevcut_kullanici_getir),
-    db: AsyncSession = Depends(get_db),
+    db: AsyncSession = Depends(get_async_session),
 ):
     """Get messages for a session"""
     service = AIChatService(db)
@@ -225,7 +225,7 @@ async def upload_image(
     session_id: UUID,
     file: UploadFile = File(...),
     mevcut_kullanici: Kullanici = Depends(mevcut_kullanici_getir),
-    db: AsyncSession = Depends(get_db),
+    db: AsyncSession = Depends(get_async_session),
 ):
     """Upload image for OCR processing"""
     from pathlib import Path
@@ -297,7 +297,7 @@ async def upload_image(
 @router.get("/statistics")
 async def get_statistics(
     mevcut_kullanici: Kullanici = Depends(mevcut_kullanici_getir),
-    db: AsyncSession = Depends(get_db),
+    db: AsyncSession = Depends(get_async_session),
 ):
     """Get chat statistics"""
     user_uuid = UUID(mevcut_kullanici.kullanici_id)

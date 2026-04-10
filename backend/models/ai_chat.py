@@ -4,27 +4,28 @@ Task 106: AI Chat Assistant Models
 Database models for enhanced chat system with image upload and OCR
 """
 
+from enum import Enum
 from uuid import uuid4
 
 from sqlalchemy import (
-    Column,
-    String,
-    Integer,
-    Float,
     Boolean,
+    Column,
+    Float,
     ForeignKey,
-    Text,
-    Enum as SQLEnum,
     Index,
+    Integer,
+    String,
+    Text,
 )
-from sqlalchemy.dialects.postgresql import UUID as PGUUID, JSONB
+from sqlalchemy import (
+    Enum as SQLEnum,
+)
+from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 from sqlalchemy.types import DateTime
 
 from .database import Base
-from enum import Enum
-
 
 # ============================================================
 # Enumerations
@@ -84,15 +85,22 @@ class ChatSession(Base):
 
     __tablename__ = "chat_sessions"
 
-    id = Column(String, primary_key=True, default=uuid4)
-    user_id = Column(
-        String, ForeignKey("users.id", ondelete="CASCADE"), nullable=False
-    )
+    id = Column(String, primary_key=True, default=lambda: str(uuid4()))
+    user_id = Column(String, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
 
     # Session info
     title = Column(String(255))
-    subject_type = Column(SQLEnum(SubjectType), default=SubjectType.GENERAL)
-    status = Column(SQLEnum(SessionStatus), default=SessionStatus.ACTIVE)
+    # DB columns are VARCHAR; use native_enum=False so SQLAlchemy does NOT
+    # emit ::sessionstatus / ::subjecttype casts (the live_sessions feature
+    # owns a conflicting "sessionstatus" native enum with different values).
+    subject_type = Column(
+        SQLEnum(SubjectType, native_enum=False, length=50),
+        default=SubjectType.GENERAL,
+    )
+    status = Column(
+        SQLEnum(SessionStatus, native_enum=False, length=50),
+        default=SessionStatus.ACTIVE,
+    )
 
     # Context and metadata
     context = Column(JSONB, default=dict)  # Conversation context for AI
@@ -146,7 +154,7 @@ class ChatMessage(Base):
 
     __tablename__ = "chat_messages"
 
-    id = Column(String, primary_key=True, default=uuid4)
+    id = Column(String, primary_key=True, default=lambda: str(uuid4()))
     session_id = Column(
         String,
         ForeignKey("chat_sessions.id", ondelete="CASCADE"),
@@ -154,13 +162,11 @@ class ChatMessage(Base):
     )
 
     # Message content
-    role = Column(SQLEnum(MessageRole), nullable=False)
+    role = Column(SQLEnum(MessageRole, native_enum=False, length=50), nullable=False)
     content = Column(Text, nullable=False)
 
     # Image reference (if message contains image)
-    image_id = Column(
-        String, ForeignKey("image_uploads.id", ondelete="SET NULL")
-    )
+    image_id = Column(String, ForeignKey("image_uploads.id", ondelete="SET NULL"))
 
     # AI response metadata
     model = Column(String(100))
@@ -209,15 +215,13 @@ class ImageUpload(Base):
 
     __tablename__ = "image_uploads"
 
-    id = Column(String, primary_key=True, default=uuid4)
+    id = Column(String, primary_key=True, default=lambda: str(uuid4()))
     session_id = Column(
         String,
         ForeignKey("chat_sessions.id", ondelete="CASCADE"),
         nullable=False,
     )
-    user_id = Column(
-        String, ForeignKey("users.id", ondelete="CASCADE"), nullable=False
-    )
+    user_id = Column(String, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
 
     # Image file info
     filename = Column(String(255), nullable=False)
@@ -290,7 +294,7 @@ class SolutionStep(Base):
 
     __tablename__ = "solution_steps"
 
-    id = Column(String, primary_key=True, default=uuid4)
+    id = Column(String, primary_key=True, default=lambda: str(uuid4()))
     message_id = Column(
         String,
         ForeignKey("chat_messages.id", ondelete="CASCADE"),
@@ -342,7 +346,7 @@ class ChatAnalytics(Base):
 
     __tablename__ = "chat_analytics"
 
-    id = Column(String, primary_key=True, default=uuid4)
+    id = Column(String, primary_key=True, default=lambda: str(uuid4()))
     user_id = Column(String, ForeignKey("users.id", ondelete="CASCADE"))
 
     # Time period
