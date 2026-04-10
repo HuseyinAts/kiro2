@@ -22,7 +22,11 @@ from sqlalchemy import select, text
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.services.dag_service import DAGService
-from models.gamification import StudentAbility
+
+try:
+    from models.gamification import StudentAbility
+except ImportError:
+    StudentAbility = None  # type: ignore[misc,assignment]
 
 logger = logging.getLogger("kiro2.lp_orchestrator")
 
@@ -167,8 +171,8 @@ class LearningPathOrchestrator:
         # 2. FSRS vadesi gelen kart sayısı
         fsrs_map = await self._fetch_fsrs_due_counts(user_id)
 
-        # 3. DAG mastery skorları (topic bazında)
-        await self._dag_service.get_user_mastery(user_id)
+        # 3. DAG mastery skorlarını Redis cache'e yükle (sonraki DAG sorgularında kullanılır)
+        _ = await self._dag_service.get_user_mastery(user_id)
 
         # 4. Sınav türü ağırlıkları
         weights = YKS_SUBJECT_WEIGHTS.get(exam_type, YKS_SUBJECT_WEIGHTS["TYT"])
@@ -640,8 +644,8 @@ class LearningPathOrchestrator:
                         "difficulty": row.difficulty,
                         "qcount": row.qcount,
                     }
-            except Exception:
-                pass
+            except Exception as e:
+                logger.warning("Konu sorgusu başarısız: %s", e)
         return None
 
     # ── Hesaplama yardımcıları ────────────────────────────────────────────

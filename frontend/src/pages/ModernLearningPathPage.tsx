@@ -139,10 +139,13 @@ export function ModernLearningPathPage() {
    * Fetch subject statuses (theta, zpd_zone, prereq) from Daily API
    */
   useEffect(() => {
-    fetch('/api/v1/learning-path/status', { credentials: 'include' })
+    // F-06: AbortController ile unmount cleanup
+    const controller = new AbortController();
+    fetch('/api/v1/learning-path/status', { credentials: 'include', signal: controller.signal })
       .then(r => r.ok ? r.json() : [])
       .then(data => { if (Array.isArray(data)) setSubjectStatuses(data); })
       .catch(() => { /* silent — LP page works without status data */ });
+    return () => controller.abort();
   }, []);
 
   /**
@@ -183,7 +186,7 @@ export function ModernLearningPathPage() {
     handleNodeClick({
       id: node.topic_id,
       title: node.name_tr,
-      description: node.code,
+      description: node.name_tr || node.code,
       status: node.progress.completed ? 'completed' : node.progress.attempt_count > 0 ? 'in_progress' : 'locked',
       difficulty: 'medium',
     } as unknown as PathNodeData);

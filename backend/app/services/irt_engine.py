@@ -249,7 +249,11 @@ def select_next_question(
     zpd_pool = [
         q for q in pool if 0.20 <= float(p_correct(theta, q.a, q.b, q.c)) <= 0.85
     ]
-    # ZPD içinde soru yoksa filtreyi gevşet
+    # DM-08: ZPD boşsa önce gevşek band [0.10, 0.95] dene, sonra full pool
+    if not zpd_pool:
+        zpd_pool = [
+            q for q in pool if 0.10 <= float(p_correct(theta, q.a, q.b, q.c)) <= 0.95
+        ]
     if not zpd_pool:
         zpd_pool = pool
 

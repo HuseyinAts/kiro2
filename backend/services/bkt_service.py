@@ -85,9 +85,9 @@ class ZPDManager:
         """Ipucu seviyesi (0=yok, 5=maksimum)."""
         if p_L >= ZPDManager.MASTERY:
             return 0
-        return int(
-            5 * (ZPDManager.MASTERY - p_L) / (ZPDManager.MASTERY - ZPDManager.LOWER)
-        )
+        # DM-06: p_L < LOWER olduğunda 5'i aşmaması için clamp
+        raw = 5 * (ZPDManager.MASTERY - p_L) / (ZPDManager.MASTERY - ZPDManager.LOWER)
+        return min(5, int(raw))
 
     @staticmethod
     def hints(p_L: float, max_hints: int = 4) -> int:
@@ -170,7 +170,8 @@ class BKTService:
         # Transfer: yeni sey ogrendi mi? (standart BKT: posterior + (1-posterior)*p_T)
         new_p_L = posterior + (1 - posterior) * p_T
 
-        return round(min(new_p_L, 0.999), 4)
+        # DM-10: alt ve üst sınır clamp [0.001, 0.999]
+        return round(max(0.001, min(new_p_L, 0.999)), 4)
 
     @classmethod
     async def record_answer(
@@ -228,7 +229,8 @@ class BKTService:
             )
             bkt_state = None
 
-        p_learn = bkt_state.p_learn if bkt_state else params.get("p_T", 0.10)
+        # DM-09: başlangıç p_L olarak p_T (transit) değil p_L0 (prior) kullan
+        p_learn = bkt_state.p_learn if bkt_state else 0.10
 
         new_p_L = cls.update(
             p_learn,
@@ -278,10 +280,13 @@ class BKTService:
                     answered_questions, responses
                 )
             else:
-                # BKT -> IRT bridge: p_L'den theta tureti (fallback)
-                # p_L [0,1] -> theta [-4,4] lineer donusum
+                # DM-05: BKT→IRT bridge: logit dönüşümü (lineer yerine)
+                # p_L [0,1] → theta [-4,4] via ln(p/(1-p)), clamped
+                import math as _math
+
                 clamped = max(0.05, min(0.95, new_p_L))
-                theta_after = (clamped - 0.5) * 8.0  # 0.05->-3.6, 0.5->0, 0.95->3.6
+                raw_logit = _math.log(clamped / (1.0 - clamped))
+                theta_after = max(-4.0, min(4.0, raw_logit))
                 theta_se = max(
                     0.3, 1.0 - new_p_L
                 )  # daha yuksek mastery = daha dusuk SE

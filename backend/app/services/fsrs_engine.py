@@ -324,6 +324,8 @@ def fsrs_update(state: FSRSState, puan: int, desired_r: float = 0.90) -> FSRSRes
             new.state = DURUM_TEKRAR
             interval = _interval_from_stability(new.stability, desired_r)
         else:
+            # DM-07: YENİDEN state'te yanlış cevapta stability güncellenmeli
+            new.stability = _short_term_stability(state.stability, puan)
             new.state = DURUM_YENİDEN
             interval = 1
     else:

@@ -29,10 +29,13 @@ Lise türüne göre prior ayarı:
 
 from __future__ import annotations
 
+import logging
 import uuid
 from dataclasses import dataclass, field
 from datetime import UTC, datetime
 from typing import Any
+
+logger = logging.getLogger(__name__)
 
 # ─── Lise türüne göre prior ayarı ────────────────────────────────────────────
 
@@ -253,8 +256,8 @@ class PlacementTestService:
 
                 _url = os.getenv("REDIS_URL", "redis://localhost:6379/0")
                 self.redis = _aioredis.from_url(_url, decode_responses=False)
-            except Exception:
-                pass
+            except Exception as e:
+                logger.warning("Redis bağlantısı başarısız (placement): %s", e)
 
     def _key(self, sid: str) -> str:
         return f"{self.REDIS_PREFIX}:{sid}"

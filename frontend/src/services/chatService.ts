@@ -44,16 +44,16 @@ class ChatService {
   setSessionId(id: string | null) {
     this.sessionId = id;
     if (id) {
-      localStorage.setItem('chatSessionId', id);
+      sessionStorage.setItem('chatSessionId', id);
     } else {
-      localStorage.removeItem('chatSessionId');
+      sessionStorage.removeItem('chatSessionId');
     }
   }
 
   initSession() {
     if (!this.sessionId) {
       this.sessionId = this.generateSessionId();
-      localStorage.setItem('chatSessionId', this.sessionId);
+      sessionStorage.setItem('chatSessionId', this.sessionId);
     }
     return this.sessionId;
   }
@@ -166,7 +166,7 @@ class ChatService {
     };
 
     // Don't re-add to local state — handleSubmit manages state directly
-    // Just persist to localStorage as backup
+    // F-04: sessionStorage (KVKK — tab kapanınca temizlenir)
     this.addMessage({
       id: this.generateMessageId(),
       role: 'user',
@@ -261,7 +261,7 @@ class ChatService {
       }));
       this.sessionId = sessionId;
       this.messages = messages;
-      localStorage.setItem('chatSessionId', sessionId);
+      sessionStorage.setItem('chatSessionId', sessionId);
       this.saveMessagesToLocalStorage();
       return messages;
     } catch (error) {
@@ -276,8 +276,8 @@ class ChatService {
   startNewSession() {
     this.sessionId = null;
     this.messages = [];
-    localStorage.removeItem('chatSessionId');
-    localStorage.removeItem('chatMessages');
+    sessionStorage.removeItem('chatSessionId');
+    sessionStorage.removeItem('chatMessages');
   }
 
   async sendEnhancedMessage(
@@ -448,7 +448,7 @@ class ChatService {
       });
       this.messages = [];
       this.sessionId = null;
-      localStorage.removeItem('chatSessionId');
+      sessionStorage.removeItem('chatSessionId');
       return true;
     } catch (error) {
       console.error('Error clearing sessions:', error);
@@ -484,20 +484,20 @@ class ChatService {
   }
 
   private saveMessagesToLocalStorage() {
-    localStorage.setItem('chatMessages', JSON.stringify(this.messages));
+    sessionStorage.setItem('chatMessages', JSON.stringify(this.messages));
   }
 
   loadMessagesFromLocalStorage() {
-    const stored = localStorage.getItem('chatMessages');
+    const stored = sessionStorage.getItem('chatMessages');
     if (stored) {
       try {
         this.messages = JSON.parse(stored);
       } catch (error) {
-        console.error('Error loading messages from localStorage:', error);
+        console.error('Error loading messages from sessionStorage:', error);
       }
     }
 
-    const sessionId = localStorage.getItem('chatSessionId');
+    const sessionId = sessionStorage.getItem('chatSessionId');
     if (sessionId) {
       this.sessionId = sessionId;
     }
@@ -511,7 +511,7 @@ class ChatService {
 
   clearMessages() {
     this.messages = [];
-    localStorage.removeItem('chatMessages');
+    sessionStorage.removeItem('chatMessages');
   }
 
   private generateSessionId(): string {
