@@ -232,10 +232,16 @@ class DAGService:
           1. Konuları topological sırayla tara
           2. Mastery < 0.70 olan ilk konuyu seç
           3. Önkoşulları tamamlanmış olmalı (can_proceed=True)
+
+        NOT: topic_hierarchy.subject_area UPPERCASE'dir. Defansif normalize
+        ederek caller case-hatasına rağmen doğru sonuç dönüyoruz
+        (Faz C/D pilot: learning_path_orchestrator.py lowercase bypass bug).
         """
         dag = await self.get_dag()
         mastery = await self.get_user_mastery(user_id)
-        topics = dag.get_subject_topics(subject_id)
+        topics = dag.get_subject_topics(
+            subject_id.upper() if subject_id else subject_id
+        )
 
         for node in topics:
             score = mastery.get(node.topic_id, 0.0)

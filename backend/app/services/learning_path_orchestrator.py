@@ -201,9 +201,11 @@ class LearningPathOrchestrator:
             next_topic_name = None
 
             try:
+                # topic_hierarchy.subject_area UPPERCASE — .lower() YAPMA
+                # (dag_engine get_subject_topics exact match, lowercase → 0 eşleşme → prereq bypass)
                 next_tid = await self._dag_service.get_next_recommended_topic(
                     user_id=user_id,
-                    subject_id=subject.lower(),
+                    subject_id=subject,
                 )
                 if next_tid:
                     # Önerilen konunun önkoşul durumu
@@ -457,10 +459,11 @@ class LearningPathOrchestrator:
         zpd_lower, zpd_upper = self._calc_zpd_band(theta, se)
 
         # v2: DAGService'ten önerilen konuyu al
+        # topic_hierarchy.subject_area UPPERCASE — .lower() YAPMA
         try:
             next_tid = await self._dag_service.get_next_recommended_topic(
                 user_id=user_id,
-                subject_id=subject.lower(),
+                subject_id=subject,
             )
             if next_tid:
                 check = await self._dag_service.check_can_study_topic(
