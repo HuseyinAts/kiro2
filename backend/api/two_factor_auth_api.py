@@ -13,8 +13,8 @@ from pydantic import BaseModel
 from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from core.database import get_db
-from core.jwt_auth import get_current_user
+from core.database import get_async_session
+from core.jwt_auth import TokenPayload, get_current_user
 from core.structured_logger import get_logger
 from core.two_factor_auth import two_factor_auth
 from models.database import User
@@ -33,6 +33,30 @@ def _require_2fa_feature():
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Bu ozellik henuz aktif degil",
         )
+
+
+async def _get_user_orm(
+    token: TokenPayload = Depends(get_current_user),
+    db: AsyncSession = Depends(get_async_session),
+) -> User:
+    """Resolve the User ORM row from a JWT TokenPayload.
+
+    jwt_auth.get_current_user returns a Pydantic TokenPayload whose user_id
+    field is .sub — not .id. This dependency loads the real User ORM row
+    so every handler can continue to use current_user.id / .email /
+    .backup_codes_hashed / .is_2fa_enabled / .secret_2fa unchanged.
+
+    Raises 401 if the token is valid but the user row is gone.
+    """
+    result = await db.execute(select(User).where(User.id == token.sub))
+    user = result.scalar_one_or_none()
+    if user is None:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="User not found",
+        )
+    return user
+
 
 
 # Request/Response Models
@@ -68,8 +92,8 @@ class BackupCodeVerifyRequest(BaseModel):
     dependencies=[Depends(_require_2fa_feature)],
 )
 async def setup_2fa(
-    current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(_get_user_orm),
+    db: AsyncSession = Depends(get_async_session),
 ):
     """
     Generate 2FA secret and QR code for user
@@ -131,8 +155,8 @@ async def setup_2fa(
 @router.post("/enable", dependencies=[Depends(_require_2fa_feature)])
 async def enable_2fa(
     request: TwoFactorEnableRequest,
-    current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(_get_user_orm),
+    db: AsyncSession = Depends(get_async_session),
 ):
     """
     Enable 2FA after verifying token
@@ -196,8 +220,8 @@ async def enable_2fa(
 @router.post("/disable")
 async def disable_2fa(
     request: TwoFactorVerifyRequest,
-    current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(_get_user_orm),
+    db: AsyncSession = Depends(get_async_session),
 ):
     """
     Disable 2FA after verifying token
@@ -253,7 +277,7 @@ async def disable_2fa(
 @router.post("/verify")
 async def verify_2fa_token(
     request: TwoFactorVerifyRequest,
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(_get_user_orm),
 ):
     """
     Verify TOTP token
@@ -289,8 +313,8 @@ async def verify_2fa_token(
 @router.post("/verify-backup")
 async def verify_backup_code(
     request: BackupCodeVerifyRequest,
-    current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(_get_user_orm),
+    db: AsyncSession = Depends(get_async_session),
 ):
     """
     Verify backup recovery code
@@ -360,7 +384,7 @@ async def verify_backup_code(
 
 @router.get("/status")
 async def get_2fa_status(
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(_get_user_orm),
 ):
     """
     Get current 2FA status for user
@@ -378,8 +402,8 @@ async def get_2fa_status(
 
 @router.get("/backup-codes/regenerate")
 async def regenerate_backup_codes(
-    current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(_get_user_orm),
+    db: AsyncSession = Depends(get_async_session),
 ):
     """
     Regenerate backup codes
@@ -450,7 +474,7 @@ async def login_verify_2fa(
     body: TwoFactorLoginRequest,
     request: Request,
     response: Response,
-    db: AsyncSession = Depends(get_db),
+    db: AsyncSession = Depends(get_async_session),
 ):
     """
     Second step of 2FA login flow.
@@ -567,7 +591,7 @@ async def login_verify_backup(
     body: TwoFactorBackupLoginRequest,
     request: Request,
     response: Response,
-    db: AsyncSession = Depends(get_db),
+    db: AsyncSession = Depends(get_async_session),
 ):
     """
     Login with backup code when authenticator app is unavailable.

@@ -1022,6 +1022,33 @@ def test_gf9wc_kvkk_privacy_export_requests_not_500(client: httpx.Client):
 
 
 # ---------------------------------------------------------------------------
+# GF9wD: 2FA status must not 500 (dual-trap Pattern A + Pattern B)
+# ---------------------------------------------------------------------------
+
+
+def test_gf9wd_two_factor_status_not_500(client: httpx.Client):
+    """
+    GET /api/v1/auth/2fa/status must return a semantic status, never 500.
+
+    Session 137 AST linter: ``backend/api/two_factor_auth_api.py`` was the
+    second dual-trap file: 7 Pattern-A broken handlers (sync ``get_db``
+    + ``await db.*``) and 19 Pattern-B accesses (``current_user.id`` on
+    a Pydantic ``TokenPayload`` whose user_id is ``sub``). /status is
+    the minimal probe — no request body, no feature flag gating, and
+    the handler touches ``current_user.backup_codes_hashed`` /
+    ``.is_2fa_enabled`` which only exist on a real User ORM row. A
+    student with no 2FA set up should get ``{is_2fa_enabled: false}``.
+    """
+    token = _login(client, STUDENT)
+    resp = client.get("/api/v1/auth/2fa/status", headers=_auth_headers(token))
+    assert resp.status_code != 500, (
+        f"GF9wD 2fa/status crashed with 500: {resp.text[:300]}. "
+        f"Check backend/api/two_factor_auth_api.py — dual trap "
+        f"(sync get_db + TokenPayload.id on ORM-only fields)."
+    )
+
+
+# ---------------------------------------------------------------------------
 # GF1wB: auth refresh-token persistence (auth.py:329 silent swallow)
 # ---------------------------------------------------------------------------
 
