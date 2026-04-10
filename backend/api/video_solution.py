@@ -7,8 +7,8 @@ Task 72: Video Çözüm Sistemi API Endpoints
 
 import asyncio
 import logging
+from datetime import UTC
 from pathlib import Path
-from typing import List, Optional
 
 from fastapi import (
     APIRouter,
@@ -24,7 +24,7 @@ from pydantic import BaseModel, ConfigDict
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from core.database import get_db
+from core.database import get_async_session
 from core.dependencies import get_current_user
 from models.database import User
 from models.video_solution import (
@@ -49,7 +49,7 @@ class VideoSolutionResponse(BaseModel):
     id: str
     question_id: str
     title: str
-    description: Optional[str]
+    description: str | None
 
     # Upload bilgileri
     original_filename: str
@@ -62,17 +62,17 @@ class VideoSolutionResponse(BaseModel):
     is_format_valid: bool
 
     # URLs
-    cdn_url: Optional[str]
-    thumbnail_url: Optional[str]
-    hls_playlist_url: Optional[str]
+    cdn_url: str | None
+    thumbnail_url: str | None
+    hls_playlist_url: str | None
 
     # Compression bilgileri
-    compressed_size_bytes: Optional[int]
-    compression_ratio: Optional[float]
+    compressed_size_bytes: int | None
+    compression_ratio: float | None
 
     # Metadata
-    solution_method: Optional[str]
-    instructor_name: Optional[str]
+    solution_method: str | None
+    instructor_name: str | None
 
     # Stats
     total_views: int
@@ -81,7 +81,7 @@ class VideoSolutionResponse(BaseModel):
 
     # Timestamps
     created_at: str
-    processing_completed_at: Optional[str]
+    processing_completed_at: str | None
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -91,14 +91,14 @@ class VideoUploadResponse(BaseModel):
 
     success: bool
     message: str
-    video: Optional[VideoSolutionResponse]
+    video: VideoSolutionResponse | None
 
 
 class VideoListResponse(BaseModel):
     """Video list response"""
 
     total: int
-    videos: List[VideoSolutionResponse]
+    videos: list[VideoSolutionResponse]
 
 
 # ============================================================================
@@ -126,13 +126,13 @@ class VideoListResponse(BaseModel):
 async def upload_video(
     question_id: str = Form(..., description="İlişkili soru ID"),
     title: str = Form(..., description="Video başlığı"),
-    description: Optional[str] = Form(None, description="Video açıklaması"),
-    solution_method: Optional[str] = Form(
+    description: str | None = Form(None, description="Video açıklaması"),
+    solution_method: str | None = Form(
         None, description="Çözüm yöntemi (hızlı, klasik, vb.)"
     ),
     file: UploadFile = File(..., description="Video dosyası"),
     current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db),
+    db: AsyncSession = Depends(get_async_session),
 ):
     """
     Video yükle ve işleme başlat
@@ -212,7 +212,7 @@ async def upload_video(
 async def get_video(
     video_id: str,
     current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db),
+    db: AsyncSession = Depends(get_async_session),
 ):
     """Video detaylarını getir"""
     result = await db.execute(
@@ -264,7 +264,7 @@ async def get_video(
 async def get_videos_by_question(
     question_id: str,
     current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db),
+    db: AsyncSession = Depends(get_async_session),
 ):
     """Soruya ait videoları listele"""
     result = await db.execute(
@@ -320,12 +320,12 @@ async def get_videos_by_question(
 async def list_videos(
     skip: int = Query(0, ge=0, description="Atlanacak kayıt sayısı"),
     limit: int = Query(20, ge=1, le=100, description="Getirilecek kayıt sayısı"),
-    status: Optional[VideoProcessingStatus] = Query(
+    status: VideoProcessingStatus | None = Query(
         None, description="İşleme durumu filtresi"
     ),
     approved_only: bool = Query(False, description="Sadece onaylı videoları getir"),
     current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db),
+    db: AsyncSession = Depends(get_async_session),
 ):
     """Videoları listele"""
     query = select(VideoSolution).where(VideoSolution.is_active == True)
@@ -402,7 +402,7 @@ async def list_videos(
 async def delete_video(
     video_id: str,
     current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db),
+    db: AsyncSession = Depends(get_async_session),
 ):
     """Videoyu sil"""
     result = await db.execute(select(VideoSolution).where(VideoSolution.id == video_id))
@@ -423,8 +423,6 @@ async def delete_video(
     video.is_active = False
     await db.commit()
 
-    return None
-
 
 @router.patch(
     "/{video_id}/approve",
@@ -435,7 +433,7 @@ async def delete_video(
 async def approve_video(
     video_id: str,
     current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db),
+    db: AsyncSession = Depends(get_async_session),
 ):
     """Videoyu onayla"""
     # Admin kontrolü
@@ -453,11 +451,11 @@ async def approve_video(
             status_code=status.HTTP_404_NOT_FOUND, detail="Video bulunamadı"
         )
 
-    from datetime import datetime, timezone
+    from datetime import datetime
 
     video.is_approved = True
     video.approved_by = current_user.id
-    video.approved_at = datetime.now(timezone.utc)
+    video.approved_at = datetime.now(UTC)
 
     await db.commit()
     await db.refresh(video)
@@ -514,7 +512,7 @@ async def generate_streaming_formats(
     generate_dash: bool = Query(False, description="DASH formatı oluştur"),
     upload_to_cdn: bool = Query(False, description="CDN'e yükle"),
     current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db),
+    db: AsyncSession = Depends(get_async_session),
 ):
     """
     Streaming formatları oluştur
@@ -589,8 +587,9 @@ async def _generate_streaming_async(
 ):
     """Arka planda streaming formatları oluştur"""
     try:
-        from services.video_solution_service import VideoStreamingService
         from pathlib import Path
+
+        from services.video_solution_service import VideoStreamingService
 
         streaming_dir = Path("uploads/streaming") / video_id
         streaming_dir.mkdir(parents=True, exist_ok=True)
@@ -668,11 +667,11 @@ async def track_video_view(
     completion_percentage: float = Form(
         ..., ge=0, le=100, description="Tamamlanma yüzdesi"
     ),
-    device_type: Optional[str] = Form(None, description="Cihaz tipi"),
-    browser: Optional[str] = Form(None, description="Tarayıcı"),
-    os: Optional[str] = Form(None, description="İşletim sistemi"),
-    current_user: Optional[User] = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db),
+    device_type: str | None = Form(None, description="Cihaz tipi"),
+    browser: str | None = Form(None, description="Tarayıcı"),
+    os: str | None = Form(None, description="İşletim sistemi"),
+    current_user: User | None = Depends(get_current_user),
+    db: AsyncSession = Depends(get_async_session),
 ):
     """
     Video izleme kaydı oluştur
@@ -720,12 +719,13 @@ async def track_video_view(
 async def get_video_analytics(
     video_id: str,
     current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db),
+    db: AsyncSession = Depends(get_async_session),
 ):
     """Video analytics getir"""
     try:
-        from models.video_solution import VideoAnalytics
         from sqlalchemy import func as sql_func
+
+        from models.video_solution import VideoAnalytics
 
         # Video kontrolü
         result = await db.execute(
@@ -796,7 +796,7 @@ async def generate_transcript(
     video_id: str,
     language: str = Query("tr", description="Dil kodu"),
     current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db),
+    db: AsyncSession = Depends(get_async_session),
 ):
     """
     Otomatik transkript oluştur
@@ -876,7 +876,7 @@ async def _generate_transcript_async(
 async def list_transcripts(
     video_id: str,
     current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db),
+    db: AsyncSession = Depends(get_async_session),
 ):
     """Video transkriptlerini listele"""
     try:
@@ -924,7 +924,7 @@ async def list_transcripts(
 async def get_transcript(
     transcript_id: str,
     current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db),
+    db: AsyncSession = Depends(get_async_session),
 ):
     """Transkript detaylarını getir"""
     try:
@@ -972,17 +972,16 @@ async def get_transcript(
 )
 async def update_transcript(
     transcript_id: str,
-    full_text: Optional[str] = Form(None, description="Yeni tam metin"),
-    timestamped_segments: Optional[str] = Form(
-        None, description="Yeni segmentler (JSON)"
-    ),
+    full_text: str | None = Form(None, description="Yeni tam metin"),
+    timestamped_segments: str | None = Form(None, description="Yeni segmentler (JSON)"),
     current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db),
+    db: AsyncSession = Depends(get_async_session),
 ):
     """Transkripti düzenle"""
     try:
-        from services.video_transcript_service import VideoTranscriptService
         import json
+
+        from services.video_transcript_service import VideoTranscriptService
 
         # JSON parse
         segments_dict = None
@@ -1038,11 +1037,11 @@ async def update_transcript(
 async def search_videos(
     q: str = Query(..., description="Arama sorgusu"),
     search_in_transcripts: bool = Query(True, description="Transkriptlerde ara"),
-    topic: Optional[str] = Query(None, description="Konu filtresi"),
+    topic: str | None = Query(None, description="Konu filtresi"),
     skip: int = Query(0, ge=0),
     limit: int = Query(20, ge=1, le=100),
     current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db),
+    db: AsyncSession = Depends(get_async_session),
 ):
     """
     Videolarda arama yap
