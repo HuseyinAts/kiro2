@@ -20,6 +20,7 @@ FSRS+CAT soru seçimi:
 
 from __future__ import annotations
 
+import logging
 from datetime import UTC
 
 from sqlalchemy import text
@@ -32,6 +33,8 @@ from app.services.fsrs_engine import (
     combined_priority_score,
     fsrs_update,
 )
+
+logger = logging.getLogger(__name__)
 
 # ─── SQL sorguları ────────────────────────────────────────────────────────────
 
@@ -241,6 +244,7 @@ class FSRSService:
         Döndürür: başarıyla güncellenen kayıt sayısı
         """
         written = 0
+        skipped_ids: list[str] = []
         for r in reviews:
             try:
                 state = await self.get_item_state(r["user_id"], r["question_id"])
@@ -258,12 +262,15 @@ class FSRSService:
                 written += 1
             except Exception as exc:
                 # Tek hata tüm batch'i durdurmasın
-                import logging
-
-                logging.getLogger("kiro2.fsrs").error(
-                    f"FSRS yazım hatası q={r.get('question_id', '?')}: {exc}"
+                skipped_ids.append(str(r.get("question_id", "?")))
+                logger.error(
+                    "FSRS yazım hatası q=%s: %s", r.get("question_id", "?"), exc
                 )
 
+        if skipped_ids:
+            logger.error(
+                "FSRS batch: %d soru atlandı: %s", len(skipped_ids), skipped_ids
+            )
         if written:
             await self.db.commit()
         return written

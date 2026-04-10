@@ -602,6 +602,15 @@ class PolicyEngine:
 
     def _validate_workflow_integrity(self, ctx: dict) -> PolicyResult:
         """P3: İş akışı bütünlüğü"""
+        workflow = ctx.get("workflow", {})
+        steps = workflow.get("steps", None)
+        if steps is not None and len(steps) == 0:
+            return PolicyResult(
+                policy_id="P3_WORKFLOW_INTEGRITY",
+                passed=False,
+                severity=PolicySeverity.ERROR,
+                message="Workflow steps boş — en az 1 adım gerekli",
+            )
         return PolicyResult(
             policy_id="P3_WORKFLOW_INTEGRITY",
             passed=True,
@@ -922,6 +931,26 @@ class PolicyEngine:
         """Kalite politikası validator factory"""
 
         def validator(ctx: dict) -> PolicyResult:
+            # P22_TEST_COVERAGE: test coverage eşiği
+            if "TEST_COVERAGE" in policy_id:
+                coverage = ctx.get("test_coverage", 100)
+                if coverage < 60:
+                    return PolicyResult(
+                        policy_id=policy_id,
+                        passed=False,
+                        severity=PolicySeverity.WARNING,
+                        message=f"Test coverage {coverage}% < 60% eşiği",
+                    )
+            # P21_CODE_STYLE: kod karmaşıklığı eşiği
+            if "CODE_STYLE" in policy_id:
+                complexity = ctx.get("complexity_score", 0)
+                if complexity > 15:
+                    return PolicyResult(
+                        policy_id=policy_id,
+                        passed=False,
+                        severity=PolicySeverity.WARNING,
+                        message=f"Complexity score {complexity} > 15 eşiği",
+                    )
             return PolicyResult(
                 policy_id=policy_id,
                 passed=True,
@@ -935,6 +964,38 @@ class PolicyEngine:
         """Kaynak politikası validator factory"""
 
         def validator(ctx: dict) -> PolicyResult:
+            # P31_CPU_LIMITS: CPU kullanım eşiği
+            if "CPU" in policy_id:
+                cpu = ctx.get("cpu_usage_pct", 0)
+                if cpu > 90:
+                    return PolicyResult(
+                        policy_id=policy_id,
+                        passed=False,
+                        severity=PolicySeverity.ERROR,
+                        message=f"CPU kullanımı %{cpu} > %90 eşiği",
+                    )
+            # P32_MEMORY_LIMITS: bellek kullanım eşiği
+            if "MEMORY" in policy_id:
+                memory = ctx.get("memory_mb", 0)
+                limit = ctx.get("memory_limit_mb", 8192)
+                if memory > limit:
+                    return PolicyResult(
+                        policy_id=policy_id,
+                        passed=False,
+                        severity=PolicySeverity.ERROR,
+                        message=f"Bellek {memory}MB > limit {limit}MB",
+                    )
+            # P33_API_RATE: API istek hızı eşiği
+            if "RATE" in policy_id:
+                rate = ctx.get("request_rate", 0)
+                rate_limit = ctx.get("rate_limit", 1000)
+                if rate > rate_limit:
+                    return PolicyResult(
+                        policy_id=policy_id,
+                        passed=False,
+                        severity=PolicySeverity.ERROR,
+                        message=f"İstek hızı {rate} > limit {rate_limit}",
+                    )
             return PolicyResult(
                 policy_id=policy_id,
                 passed=True,
@@ -948,6 +1009,35 @@ class PolicyEngine:
         """Öğrenme politikası validator factory"""
 
         def validator(ctx: dict) -> PolicyResult:
+            # P41_REGRESSION_PREVENTION: regresyon tespiti
+            if "REGRESSION" in policy_id:
+                if ctx.get("regression_detected", False):
+                    return PolicyResult(
+                        policy_id=policy_id,
+                        passed=False,
+                        severity=PolicySeverity.CRITICAL,
+                        message="Öğrenme regresyonu tespit edildi",
+                    )
+            # P39_PARAMETER_BOUNDS: parametre değişim sınırı
+            if "PARAMETER" in policy_id:
+                delta = ctx.get("parameter_delta", 0)
+                if delta > 0.5:
+                    return PolicyResult(
+                        policy_id=policy_id,
+                        passed=False,
+                        severity=PolicySeverity.WARNING,
+                        message=f"Parametre değişimi {delta} > 0.5 sınırı",
+                    )
+            # P40_LEARNING_RATE: öğrenme hızı sınırı
+            if "LEARNING_RATE" in policy_id:
+                lr = ctx.get("learning_rate", 0.01)
+                if lr > 0.1:
+                    return PolicyResult(
+                        policy_id=policy_id,
+                        passed=False,
+                        severity=PolicySeverity.WARNING,
+                        message=f"Öğrenme hızı {lr} > 0.1 sınırı",
+                    )
             return PolicyResult(
                 policy_id=policy_id,
                 passed=True,
@@ -985,15 +1075,20 @@ class PolicyEngine:
         )
 
 
-# Global policy engine instance
+# Global policy engine instance (thread-safe singleton)
+import threading as _threading
+
 _policy_engine: PolicyEngine | None = None
+_policy_engine_lock = _threading.Lock()
 
 
 def get_policy_engine() -> PolicyEngine:
-    """Singleton policy engine erişimi"""
+    """Singleton policy engine erişimi (thread-safe, double-checked locking)"""
     global _policy_engine
     if _policy_engine is None:
-        _policy_engine = PolicyEngine()
+        with _policy_engine_lock:
+            if _policy_engine is None:
+                _policy_engine = PolicyEngine()
     return _policy_engine
 
 

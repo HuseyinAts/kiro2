@@ -11,7 +11,7 @@ import math
 from dataclasses import dataclass
 from datetime import datetime
 from enum import Enum
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any
 
 from core.turkish_nlp_service import MorphologicalAnalysis, turkish_nlp_service
 
@@ -43,13 +43,14 @@ class MorphologyComplexity:
 
     word: str
     root: str
-    suffixes: List[str]
+    suffixes: list[str]
     suffix_count: int
     derivational_depth: int
     compound_complexity: float
     phonetic_changes: int
     semantic_ambiguity: float
     overall_complexity: float  # 0.0-1.0
+    is_fallback: bool = False  # True ise hata nedeniyle varsayılan değer kullanıldı
 
 
 @dataclass
@@ -62,10 +63,10 @@ class QuestionAnalysis:
     morphology_complexity: MorphologyComplexity
     adjusted_difficulty: float
     turkish_difficulty_factor: float
-    osym_ets_comparison: Dict[str, float]
-    recommendations: List[str]
+    osym_ets_comparison: dict[str, float]
+    recommendations: list[str]
     analysis_confidence: float
-    metadata: Dict[str, Any]
+    metadata: dict[str, Any]
 
 
 class IRTMorfolojiService:
@@ -116,8 +117,8 @@ class IRTMorfolojiService:
         question_id: str,
         question_text: str,
         correct_answer: str,
-        student_responses: Optional[List[Dict[str, Any]]] = None,
-        base_difficulty: Optional[float] = None,
+        student_responses: list[dict[str, Any]] | None = None,
+        base_difficulty: float | None = None,
     ) -> QuestionAnalysis:
         """
         Soruyu IRT + Morfoloji ile analiz et
@@ -188,7 +189,7 @@ class IRTMorfolojiService:
             return analysis
 
         except Exception as e:
-            logger.error(f"IRT + Morfoloji analiz hatası: {str(e)}")
+            logger.error(f"IRT + Morfoloji analiz hatası: {e!s}")
             raise
 
     async def _analyze_turkish_morphology_complexity(
@@ -261,8 +262,8 @@ class IRTMorfolojiService:
             )
 
         except Exception as e:
-            logger.error(f"Morfolojik karmaşıklık analiz hatası: {str(e)}")
-            # Fallback
+            logger.error(f"Morfolojik karmaşıklık analiz hatası: {e!s}")
+            # Fallback — is_fallback=True ile caller'lar bu sonucu ayırt edebilir
             return MorphologyComplexity(
                 word="error",
                 root="error",
@@ -273,6 +274,7 @@ class IRTMorfolojiService:
                 phonetic_changes=0,
                 semantic_ambiguity=0.5,
                 overall_complexity=0.5,
+                is_fallback=True,
             )
 
     def _calculate_word_complexity(self, analysis: MorphologicalAnalysis) -> float:
@@ -303,7 +305,7 @@ class IRTMorfolojiService:
         except Exception:
             return 0.5
 
-    def _calculate_derivational_depth(self, suffixes: List[str]) -> int:
+    def _calculate_derivational_depth(self, suffixes: list[str]) -> int:
         """Türetim derinliğini hesapla"""
         # Türetim ekleri (basitleştirilmiş liste)
         derivational_suffixes = {
@@ -339,12 +341,11 @@ class IRTMorfolojiService:
         # Basit heuristik: uzun kelimeler genellikle birleşik
         if len(word) > 15:
             return 0.8
-        elif len(word) > 10:
+        if len(word) > 10:
             return 0.5
-        else:
-            return 0.0
+        return 0.0
 
-    def _count_phonetic_changes(self, root: str, suffixes: List[str]) -> int:
+    def _count_phonetic_changes(self, root: str, suffixes: list[str]) -> int:
         """Ses değişimi sayısı (basitleştirilmiş)"""
         changes = 0
 
@@ -371,8 +372,7 @@ class IRTMorfolojiService:
 
         if root_vowel in front_vowels:
             return suffix_vowel in front_vowels
-        else:
-            return suffix_vowel in back_vowels
+        return suffix_vowel in back_vowels
 
     def _calculate_semantic_ambiguity(self, word: str, root: str) -> float:
         """Anlam belirsizliği hesapla (basitleştirilmiş)"""
@@ -385,19 +385,18 @@ class IRTMorfolojiService:
         # Kök oranı düşükse (çok ek var) anlam belirsizliği artar
         if ratio < 0.3:
             return 0.8
-        elif ratio < 0.5:
+        if ratio < 0.5:
             return 0.6
-        elif ratio < 0.7:
+        if ratio < 0.7:
             return 0.4
-        else:
-            return 0.2
+        return 0.2
 
     async def _calculate_base_irt_parameters(
         self,
         question_text: str,
         correct_answer: str,
-        student_responses: Optional[List[Dict[str, Any]]],
-        base_difficulty: Optional[float],
+        student_responses: list[dict[str, Any]] | None,
+        base_difficulty: float | None,
     ) -> IRTParameters:
         """Temel IRT parametrelerini hesapla"""
         try:
@@ -444,7 +443,7 @@ class IRTMorfolojiService:
             )
 
         except Exception as e:
-            logger.error(f"Temel IRT parametre hesaplama hatası: {str(e)}")
+            logger.error(f"Temel IRT parametre hesaplama hatası: {e!s}")
             # Varsayılan parametreler
             return IRTParameters(
                 difficulty=0.0, discrimination=1.0, guessing=0.20, upper_asymptote=1.0
@@ -485,7 +484,7 @@ class IRTMorfolojiService:
             )
 
         except Exception as e:
-            logger.error(f"IRT morfoloji ayarlama hatası: {str(e)}")
+            logger.error(f"IRT morfoloji ayarlama hatası: {e!s}")
             return base_params
 
     def _calculate_turkish_difficulty_factor(
@@ -519,12 +518,12 @@ class IRTMorfolojiService:
             return max(0.5, min(2.0, total_factor))
 
         except Exception as e:
-            logger.error(f"Türkçe zorluk faktörü hesaplama hatası: {str(e)}")
+            logger.error(f"Türkçe zorluk faktörü hesaplama hatası: {e!s}")
             return 1.0
 
     async def _compare_with_osym_ets_standards(
         self, irt_params: IRTParameters, morphology: MorphologyComplexity
-    ) -> Dict[str, float]:
+    ) -> dict[str, float]:
         """ÖSYM ve ETS standartları ile karşılaştırma"""
         try:
             comparison = {
@@ -579,11 +578,11 @@ class IRTMorfolojiService:
             return comparison
 
         except Exception as e:
-            logger.error(f"ÖSYM/ETS karşılaştırma hatası: {str(e)}")
+            logger.error(f"ÖSYM/ETS karşılaştırma hatası: {e!s}")
             return {}
 
     def _calculate_standard_match(
-        self, difficulty: float, standards: Dict[str, Dict]
+        self, difficulty: float, standards: dict[str, dict]
     ) -> float:
         """Standart eşleşme skoru hesapla"""
         try:
@@ -596,28 +595,28 @@ class IRTMorfolojiService:
                     # Tam eşleşme
                     best_match = 1.0
                     break
+                # Kısmi eşleşme hesapla
+                if difficulty < min_diff:
+                    distance = min_diff - difficulty
                 else:
-                    # Kısmi eşleşme hesapla
-                    if difficulty < min_diff:
-                        distance = min_diff - difficulty
-                    else:
-                        distance = difficulty - max_diff
+                    distance = difficulty - max_diff
 
-                    # Mesafe ne kadar az o kadar iyi eşleşme
-                    match_score = max(0.0, 1.0 - (distance / 2.0))
-                    best_match = max(best_match, match_score)
+                # Mesafe ne kadar az o kadar iyi eşleşme
+                match_score = max(0.0, 1.0 - (distance / 2.0))
+                best_match = max(best_match, match_score)
 
             return best_match
 
-        except Exception:
+        except Exception as e:
+            logger.warning("standard_match hesaplama hatası: %s", e)
             return 0.5
 
     async def _generate_recommendations(
         self,
         irt_params: IRTParameters,
         morphology: MorphologyComplexity,
-        comparison: Dict[str, float],
-    ) -> List[str]:
+        comparison: dict[str, float],
+    ) -> list[str]:
         """Öneriler oluştur"""
         try:
             recommendations = []
@@ -676,7 +675,7 @@ class IRTMorfolojiService:
             return recommendations[:5]  # Maksimum 5 öneri
 
         except Exception as e:
-            logger.error(f"Öneri oluşturma hatası: {str(e)}")
+            logger.error(f"Öneri oluşturma hatası: {e!s}")
             return ["Analiz tamamlandı"]
 
     def _calculate_analysis_confidence(
@@ -697,7 +696,8 @@ class IRTMorfolojiService:
 
             return max(0.3, min(1.0, overall_confidence))
 
-        except Exception:
+        except Exception as e:
+            logger.warning("confidence_score hesaplama hatası: %s", e)
             return 0.7
 
     async def calculate_irt_probability(
@@ -735,7 +735,7 @@ class IRTMorfolojiService:
             return max(0.0, min(1.0, probability))
 
         except Exception as e:
-            logger.error(f"IRT olasılık hesaplama hatası: {str(e)}")
+            logger.error(f"IRT olasılık hesaplama hatası: {e!s}")
             return 0.5
 
     async def get_difficulty_recommendation(
@@ -743,7 +743,7 @@ class IRTMorfolojiService:
         current_difficulty: float,
         student_performance: float,
         morphology_complexity: float,
-    ) -> Tuple[float, str]:
+    ) -> tuple[float, str]:
         """
         Zorluk seviyesi önerisi
         """
@@ -767,12 +767,12 @@ class IRTMorfolojiService:
             return new_difficulty, recommendation
 
         except Exception as e:
-            logger.error(f"Zorluk önerisi hatası: {str(e)}")
+            logger.error(f"Zorluk önerisi hatası: {e!s}")
             return current_difficulty, "Zorluk ayarlanamadı"
 
     async def batch_analyze_questions(
-        self, questions: List[Dict[str, Any]]
-    ) -> List[QuestionAnalysis]:
+        self, questions: list[dict[str, Any]]
+    ) -> list[QuestionAnalysis]:
         """
         Toplu soru analizi
         """
@@ -793,10 +793,10 @@ class IRTMorfolojiService:
             return results
 
         except Exception as e:
-            logger.error(f"Toplu analiz hatası: {str(e)}")
+            logger.error(f"Toplu analiz hatası: {e!s}")
             raise
 
-    async def get_morphology_insights(self, text: str) -> Dict[str, Any]:
+    async def get_morphology_insights(self, text: str) -> dict[str, Any]:
         """
         Metin için morfolojik içgörüler
         """
@@ -836,10 +836,10 @@ class IRTMorfolojiService:
             return insights
 
         except Exception as e:
-            logger.error(f"Morfoloji içgörü hatası: {str(e)}")
+            logger.error(f"Morfoloji içgörü hatası: {e!s}")
             return {"error": str(e)}
 
-    def get_service_stats(self) -> Dict[str, Any]:
+    def get_service_stats(self) -> dict[str, Any]:
         """Servis istatistikleri"""
         return {
             "service_name": "IRT + Türkçe Morfoloji Servisi",

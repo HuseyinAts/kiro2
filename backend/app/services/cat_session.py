@@ -543,7 +543,7 @@ class CATSessionService:
                 )
                 await self.db.commit()
         except Exception as e:
-            logger.warning("CAT theta/XP persist hatası: %s", e)
+            logger.error("CAT theta persist HATASI — theta kaybı riski: %s", e)
 
         # 3c. PROGRESSIVE XP: Her cevaptan sonra XP ekle
         try:
