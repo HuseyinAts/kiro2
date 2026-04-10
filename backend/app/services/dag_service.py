@@ -97,6 +97,7 @@ class DAGService:
             FROM topic_hierarchy
             WHERE is_active = TRUE
             ORDER BY name_tr
+            LIMIT 10000
         """)
         )
         for row in topics_result.fetchall():
@@ -115,6 +116,7 @@ class DAGService:
                 strength
             FROM topic_prerequisites
             WHERE is_active = TRUE
+            LIMIT 50000
         """)
         )
         for row in prereqs_result.fetchall():

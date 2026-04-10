@@ -24,7 +24,9 @@ from sqlalchemy.sql import func
 
 from .base import Base
 from .enums_db import ExamType
-from .question_bank import QuestionBankItem  # noqa: F401 - runtime mapper resolution icin gerekli
+from .question_bank import (
+    QuestionBankItem,
+)
 
 if TYPE_CHECKING:
     from .user_models import StudentProfile
@@ -126,7 +128,7 @@ class ExamQuestion(Base):
     question: Mapped["QuestionBankItem"] = relationship(
         "QuestionBankItem",
         foreign_keys=[question_id],
-        lazy="select",
+        lazy="selectin",
     )
 
 
@@ -182,5 +184,5 @@ class StudentAnswer(Base):
         "QuestionBankItem",
         foreign_keys=[question_id],
         primaryjoin="StudentAnswer.question_id == QuestionBankItem.id",
-        lazy="select",
+        lazy="selectin",
     )

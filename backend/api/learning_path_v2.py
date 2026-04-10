@@ -1276,12 +1276,17 @@ async def submit_quiz(
             question_ids = [a.question_id for a in submission.answers]
             if question_ids:
                 questions_result = await db.execute(
-                    select(Question).filter(
+                    select(
+                        Question.id,
+                        Question.correct_answer,
+                        Question.primary_topic_id,
+                        Question.subject_area,
+                    ).filter(
                         Question.id.in_(question_ids),
                         Question.is_active == True,  # noqa: E712
                     )
                 )
-                for question in questions_result.scalars().all():
+                for question in questions_result.fetchall():
                     correct_answers[question.id] = question.correct_answer
                     q_meta[question.id] = {
                         "topic_id": question.primary_topic_id,

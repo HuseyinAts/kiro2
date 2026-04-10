@@ -541,9 +541,13 @@ class LearningPathOrchestrator:
         se_map: dict[str, float] = {}
         try:
             result = await self.db.execute(
-                select(StudentAbility).where(StudentAbility.student_id == user_id)
+                select(
+                    StudentAbility.subject_id,
+                    StudentAbility.theta,
+                    StudentAbility.theta_se,
+                ).where(StudentAbility.student_id == user_id)
             )
-            for row in result.scalars():
+            for row in result.fetchall():
                 subject_name = self._REVERSE_SUBJECT_MAP.get(row.subject_id, "")
                 if subject_name:
                     theta_map[subject_name] = float(row.theta)
