@@ -324,8 +324,9 @@ def fsrs_update(state: FSRSState, puan: int, desired_r: float = 0.90) -> FSRSRes
             new.state = DURUM_TEKRAR
             interval = _interval_from_stability(new.stability, desired_r)
         else:
-            # DM-07: YENİDEN state'te yanlış cevapta stability güncellenmeli
-            new.stability = _short_term_stability(state.stability, puan)
+            # DM-07: YENİDEN state repeated lapse — forget stability (FSRS v6 spec)
+            r = _retrievability(elapsed, state.stability)
+            new.stability = _next_forget_stability(state.stability, new.difficulty, r)
             new.state = DURUM_YENİDEN
             interval = 1
     else:

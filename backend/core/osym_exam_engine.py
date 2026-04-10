@@ -856,14 +856,14 @@ class OSYMExamEngine:
                 self.auto_save_tasks[autoclose_key].cancel()
                 del self.auto_save_tasks[autoclose_key]
 
+            # L1 eviction first — prevent concurrent persist_session() after Redis delete
+            if session_id in self.active_sessions:
+                del self.active_sessions[session_id]
+
             # Redis L2 cleanup — completed exams no longer need session state
             from core.exam_session_store import delete_session
 
             await delete_session(session_id)
-
-            # L1 eviction — prevent memory leak from completed sessions
-            if session_id in self.active_sessions:
-                del self.active_sessions[session_id]
 
             logger.info(
                 "Sınav tamamlandı",
@@ -1574,7 +1574,9 @@ class OSYMExamEngine:
             session_id: Sınav oturum ID'si
         """
         try:
-            session_data = self.active_sessions[session_id]
+            session_data = self.active_sessions.get(session_id)
+            if not session_data:
+                return
 
             # Veritabanını güncelle
             async with get_db_session_context() as db_session:
@@ -1623,7 +1625,9 @@ class OSYMExamEngine:
             session_id: Sınav oturum ID'si
         """
         try:
-            session_data = self.active_sessions[session_id]
+            session_data = self.active_sessions.get(session_id)
+            if not session_data:
+                return
 
             if not session_data.started_at:
                 return
