@@ -11,7 +11,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel, ConfigDict, Field
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from core.database import get_db
+from core.database import get_db_session as get_db
 from core.dependencies import (
     AuthenticatedUser,
     get_current_admin_user,
@@ -126,7 +126,7 @@ async def create_review(
 
     Automatically runs spam detection and quality checks
     """
-    user_id = UUID(current_user.user_id)
+    user_id = current_user.id
     service = StudentReviewService(db)
 
     review = await service.create_review(
@@ -255,7 +255,7 @@ async def delete_review(
     db: AsyncSession = Depends(get_db),
 ):
     """Delete a review (user must own the review)"""
-    user_id = UUID(current_user.user_id)
+    user_id = current_user.id
     service = StudentReviewService(db)
 
     # Check ownership
@@ -329,7 +329,7 @@ async def vote_review(
 
     Users can change their vote
     """
-    user_id = UUID(current_user.user_id)
+    user_id = current_user.id
     service = StudentReviewService(db)
 
     vote = await service.vote_review(review_id, user_id, request.is_helpful)
@@ -358,7 +358,7 @@ async def report_review(
 
     report = await service.report_review(
         review_id=review_id,
-        reporter_id=UUID(current_user.id),
+        reporter_id=current_user.id,
         reason=request.reason,
         description=request.description,
     )

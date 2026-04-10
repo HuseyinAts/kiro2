@@ -11,7 +11,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel, Field
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from core.database import get_db
+from core.database import get_db_session as get_db
 from core.dependencies import AuthenticatedUser, get_current_user
 from services.video_analytics_service import VideoAnalyticsService
 
@@ -91,7 +91,7 @@ async def start_watch_session(
 
     Creates a new session for tracking watch progress
     """
-    user_id = UUID(current_user.user_id)
+    user_id = current_user.id
     service = VideoAnalyticsService(db)
 
     session = await service.start_watch_session(
@@ -225,7 +225,7 @@ async def get_user_milestones(
 
     Returns all milestones achieved by the user
     """
-    user_id = UUID(current_user.user_id)
+    user_id = current_user.id
     service = VideoAnalyticsService(db)
     milestones = await service.get_user_milestones(user_id, video_id)
 
@@ -258,7 +258,7 @@ async def create_note(
 
     Create a note at a specific video timestamp
     """
-    user_id = UUID(current_user.user_id)
+    user_id = current_user.id
     service = VideoAnalyticsService(db)
 
     note = await service.create_note(
@@ -337,7 +337,7 @@ async def get_video_notes(
 
     Returns notes ordered by timestamp
     """
-    user_id = UUID(current_user.user_id)
+    user_id = current_user.id
     service = VideoAnalyticsService(db)
     notes = await service.get_video_notes(user_id, video_id, video_source)
 
@@ -370,7 +370,7 @@ async def search_notes(
 
     Full-text search in note content
     """
-    user_id = UUID(current_user.user_id)
+    user_id = current_user.id
     service = VideoAnalyticsService(db)
     notes = await service.search_notes(user_id, query, video_id, tags)
 
@@ -405,7 +405,7 @@ async def create_bookmark(
 
     Create a bookmark at a specific video timestamp
     """
-    user_id = UUID(current_user.user_id)
+    user_id = current_user.id
     service = VideoAnalyticsService(db)
 
     bookmark = await service.create_bookmark(
@@ -487,7 +487,7 @@ async def get_video_bookmarks(
 
     Returns bookmarks ordered by timestamp
     """
-    user_id = UUID(current_user.user_id)
+    user_id = current_user.id
     service = VideoAnalyticsService(db)
     bookmarks = await service.get_video_bookmarks(
         user_id, video_id, video_source, include_public
@@ -530,7 +530,7 @@ async def get_daily_summary(
     db: AsyncSession = Depends(get_db),
 ):
     """Get daily analytics summary"""
-    user_id = UUID(current_user.user_id)
+    user_id = current_user.id
     service = VideoAnalyticsService(db)
 
     try:

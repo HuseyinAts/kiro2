@@ -13,7 +13,7 @@ from pydantic import BaseModel
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from core.database import get_db
+from core.database import get_db_session as get_db
 from core.dependencies import AuthenticatedUser, get_current_user
 from models.live_session import (
     PlatformType,
@@ -46,7 +46,7 @@ async def _verify_host_only(
     row = result.first()
     if not row:
         raise HTTPException(status_code=404, detail="Session not found")
-    if str(row.host_id) != current_user.user_id:
+    if str(row.host_id) != current_user.id:
         raise HTTPException(
             status_code=403, detail="Only session host can perform this action"
         )
@@ -65,14 +65,14 @@ async def _verify_session_participant(
     row = result.first()
     if not row:
         raise HTTPException(status_code=404, detail="Session not found")
-    if str(row.host_id) == current_user.user_id:
+    if str(row.host_id) == current_user.id:
         return  # Host always has access
     part = await db.execute(
         text(
             "SELECT 1 FROM live_session_participants "
             "WHERE session_id = :sid AND user_id = :uid"
         ),
-        {"sid": str(session_id), "uid": current_user.user_id},
+        {"sid": str(session_id), "uid": current_user.id},
     )
     if not part.first():
         raise HTTPException(status_code=403, detail="Not a session participant")
@@ -150,7 +150,7 @@ async def create_session(
     db: AsyncSession = Depends(get_db),
 ):
     """Create new live session with video conference integration"""
-    host_id = UUID(current_user.user_id)
+    host_id = current_user.id
     service = VideoConferenceService(db)
 
     session = await service.create_session(
@@ -251,7 +251,7 @@ async def join_session(
     db: AsyncSession = Depends(get_db),
 ):
     """Join session as participant"""
-    user_id = UUID(current_user.user_id)
+    user_id = current_user.id
     service = VideoConferenceService(db)
     participant = await service.join_session(session_id, user_id)
 
@@ -265,7 +265,7 @@ async def leave_session(
     db: AsyncSession = Depends(get_db),
 ):
     """Leave session"""
-    user_id = UUID(current_user.user_id)
+    user_id = current_user.id
     service = VideoConferenceService(db)
     await service.leave_session(session_id, user_id)
 
@@ -286,7 +286,7 @@ async def start_screen_share(
 ):
     """Start screen sharing (participants)"""
     await _verify_session_participant(session_id, current_user, db)
-    user_id = UUID(current_user.user_id)
+    user_id = current_user.id
     service = VideoConferenceService(db)
 
     screen_share = await service.start_screen_share(
@@ -385,7 +385,7 @@ async def add_stroke(
     db: AsyncSession = Depends(get_db),
 ):
     """Add drawing stroke to whiteboard"""
-    user_id = UUID(current_user.user_id)
+    user_id = current_user.id
     service = WhiteboardService(db)
 
     stroke = await service.add_stroke(
@@ -415,7 +415,7 @@ async def add_equation(
     db: AsyncSession = Depends(get_db),
 ):
     """Add math equation to whiteboard"""
-    user_id = UUID(current_user.user_id)
+    user_id = current_user.id
     service = WhiteboardService(db)
 
     equation = await service.add_equation(
@@ -571,7 +571,7 @@ async def send_chat_message(
 ):
     """Send chat message"""
     await _verify_session_participant(session_id, current_user, db)
-    user_id = UUID(current_user.user_id)
+    user_id = current_user.id
     service = VideoConferenceService(db)
 
     message = await service.send_chat_message(
@@ -623,7 +623,7 @@ async def get_my_sessions(
     db: AsyncSession = Depends(get_db),
 ):
     """Get user's sessions"""
-    user_id = UUID(current_user.user_id)
+    user_id = current_user.id
     service = VideoConferenceService(db)
     sessions = await service.get_user_sessions(user_id, status, upcoming_only)
 

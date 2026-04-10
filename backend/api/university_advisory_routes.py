@@ -10,7 +10,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from core.database import get_db
+from core.database import get_db_session as get_db
 from core.dependencies import AuthenticatedUser, get_current_user
 from models.university import ProgramType, ScoreType, UniversityType
 from services.university_advisory_service import UniversityAdvisoryService
@@ -462,7 +462,7 @@ async def get_recommendations(
 
     Returns programs matched to student score and preferences
     """
-    user_id = UUID(current_user.user_id)
+    user_id = current_user.id
     service = UniversityAdvisoryService(db)
     score_type_enum = ScoreType(score_type)
 
@@ -517,7 +517,7 @@ async def save_preferences(
     db: AsyncSession = Depends(get_db),
 ):
     """Save or update user preferences"""
-    user_id = UUID(current_user.user_id)
+    user_id = current_user.id
     service = UniversityAdvisoryService(db)
 
     saved_pref = await service.save_user_preferences(
@@ -540,7 +540,7 @@ async def get_preferences(
     db: AsyncSession = Depends(get_db),
 ):
     """Get user preferences"""
-    user_id = UUID(current_user.user_id)
+    user_id = current_user.id
     service = UniversityAdvisoryService(db)
     preferences = await service.get_user_preferences(user_id)
 

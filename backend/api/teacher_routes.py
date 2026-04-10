@@ -11,7 +11,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel, Field
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from core.database import get_db
+from core.database import get_db_session as get_db
 from core.dependencies import (
     AuthenticatedUser,
     get_current_admin_user,
@@ -167,7 +167,7 @@ async def register_teacher(
 
     Creates a teacher profile with PENDING status awaiting verification.
     """
-    user_id = UUID(current_user.user_id)
+    user_id = current_user.id
     service = TeacherService(db)
 
     # Check if user already has a teacher profile
@@ -268,7 +268,7 @@ async def get_my_teacher_profile(
     db: AsyncSession = Depends(get_db),
 ):
     """Get current user's teacher profile"""
-    user_id = UUID(current_user.user_id)
+    user_id = current_user.id
     service = TeacherService(db)
     teacher = await service.get_teacher_by_user_id(user_id)
 
@@ -286,7 +286,7 @@ async def update_teacher_profile(
     db: AsyncSession = Depends(get_db),
 ):
     """Update teacher profile"""
-    user_id = UUID(current_user.user_id)
+    user_id = current_user.id
     service = TeacherService(db)
 
     # Verify ownership
@@ -397,7 +397,7 @@ async def add_expertise(
     db: AsyncSession = Depends(get_db),
 ):
     """Add subject expertise for teacher"""
-    user_id = UUID(current_user.user_id)
+    user_id = current_user.id
     service = TeacherService(db)
 
     # Verify ownership
@@ -473,7 +473,7 @@ async def add_certification(
     db: AsyncSession = Depends(get_db),
 ):
     """Add certification for teacher"""
-    user_id = UUID(current_user.user_id)
+    user_id = current_user.id
     service = TeacherService(db)
 
     # Verify ownership
@@ -568,7 +568,7 @@ async def add_availability_slot(
     db: AsyncSession = Depends(get_db),
 ):
     """Add availability time slot"""
-    user_id = UUID(current_user.user_id)
+    user_id = current_user.id
     service = TeacherService(db)
 
     # Verify ownership
@@ -686,7 +686,7 @@ async def create_appointment(
     db: AsyncSession = Depends(get_db),
 ):
     """Create new appointment (student books teacher)"""
-    student_id = UUID(current_user.user_id)
+    student_id = current_user.id
     service = TeacherService(db)
 
     appointment = await service.create_appointment(
@@ -722,7 +722,7 @@ async def confirm_appointment(
 
     appointment = await service.confirm_appointment(
         appointment_id=appointment_id,
-        confirmed_by=UUID(current_user.id),
+        confirmed_by=current_user.id,
         meeting_url=request.meeting_url,
     )
 
@@ -748,7 +748,7 @@ async def cancel_appointment(
 
     appointment = await service.cancel_appointment(
         appointment_id=appointment_id,
-        cancelled_by=UUID(current_user.id),
+        cancelled_by=current_user.id,
         cancellation_reason=request.cancellation_reason,
     )
 
@@ -822,7 +822,7 @@ async def get_my_appointments(
     db: AsyncSession = Depends(get_db),
 ):
     """Get student's appointments"""
-    student_id = UUID(current_user.user_id)
+    student_id = current_user.id
     service = TeacherService(db)
     appointments = await service.get_student_appointments(
         student_id=student_id, status=status
@@ -863,7 +863,7 @@ async def add_review(
     db: AsyncSession = Depends(get_db),
 ):
     """Add review for teacher"""
-    student_id = UUID(current_user.user_id)
+    student_id = current_user.id
     service = TeacherService(db)
 
     review = await service.add_review(

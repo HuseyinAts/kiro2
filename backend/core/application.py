@@ -345,6 +345,19 @@ def create_app() -> FastAPI:
             exc,
             exc_info=True,
         )
+        # In dev/debug mode, expose error class + message so the client
+        # isn't left guessing when the frontend surfaces a 500. Production
+        # keeps the generic message to avoid leaking internals.
+        if settings.debug:
+            return JSONResponse(
+                status_code=500,
+                content={
+                    "detail": "Dahili sunucu hatasi",
+                    "error_type": type(exc).__name__,
+                    "error_message": str(exc),
+                    "path": request.url.path,
+                },
+            )
         return JSONResponse(
             status_code=500,
             content={"detail": "Dahili sunucu hatasi"},
