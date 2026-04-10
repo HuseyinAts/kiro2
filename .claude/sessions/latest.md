@@ -1,31 +1,35 @@
-## Session Handoff — 2026-04-10 (Faz C/D pilot)
+## Session Handoff — 2026-04-10 14:45
 **Branch:** master
-**Son commit:** 3ee8392 fix(learning-path): DAG prereq enforcement case-convention bug (Faz C pilot)
-**Uncommitted:** temiz (ProgressDashboard.tsx untracked — dokunulmadi)
+**Son commit:** b11fb9a docs(rules): add case-convention.md
+**Uncommitted:** temiz (origin güncel)
 
-### Yapilanlar (bu session)
-- `backend/app/services/learning_path_orchestrator.py:206,463` — `subject.lower()` kaldirildi (DB UPPERCASE)
-- `backend/app/services/dag_service.py:243` — defansif `subject_id.upper()` normalize (Faz D kaynakta fix)
-- `backend/tests/unit/test_learning_path_subject_case.py` — 2 regression test (TDD red→green)
-- `docs/audits/2026-04-10_feature_health_audit.md` — Faz C/D sonuc bolumu eklendi
-- `frontend/src/test/e2e/feature-health-smoke.spec.ts` — serial mode kaldirildi (cascade-skip fix)
-- Docker: `docker cp` + `docker restart kiro2-backend` ile fix container'a yansitildi, runtime verified
+### Yapilanlar
+- `backend/services/mastery_confidence_service.py:199` — LOWER(qb.subject_area) → exact match + subject.upper() (f6187cb)
+- `frontend/src/pages/ModernExamStartPage.tsx:91,93` — exam_type/subject toUpperCase() (f6187cb)
+- `frontend/src/pages/CozumDuellosuPage.tsx:44,67` — subject state UPPERCASE + API toUpperCase() (f6187cb)
+- `backend/app/services/cat_session.py:68` — _normalize_subject() Turkish char helper, DRY (a4ef60f)
+- `backend/services/bkt_service.py:316` — _slug_lower = subject_slug.lower() defensive guard (a4ef60f)
+- `backend/api/learning_path_v2.py:1267,1293` — q_meta subject REVERTED .lower() (BKT lowercase bekliyor) (a4ef60f)
+- `frontend/src/pages/ModernExamStartPage.tsx:94` — difficulty .toUpperCase() kaldırıldı (backend lowercase) (a4ef60f)
+- `.claude/rules/case-convention.md` — yeni kural belgesi, 3 katman haritası (b11fb9a)
+- Code review: 15 bulguden 13 phantom, 2 gerçek fix (orchestrator+dag Session 132'de zaten fix)
 
 ### Fail Eden Testler
-- YOK. 55/55 PASS (2 yeni regression + 6 cold-start + 47 dag)
-- Pre-existing: `test_create_access_token_success` (student/STUDENT case) — bu session'dan bagimsiz, memory'de kayitli
+- YOK. Router registration PASS. Ruff clean.
 
 ### Engelleyiciler
 - YOK
 
 ### Sonraki Adimlar (maks 5)
-1. **Push** commit 3ee8392 (`git push origin master`) — henuz push edilmedi
-2. **Faz A/B/B+ raporlarindaki digerler**: Flow 8 (Teacher backend eksik, P0), Flow 3 (FSRS auth-dependent 401), Flow 5 (League empty state), Flow 11 (Social dual-table)
-3. **Runtime semantic test**: Bir ogrenci theta'sini yapay olarak yukseltip ileri konu (ornek `Ucgenler`) sorgusunda `prereq_blocked=true` donup donmedigini manuel dogrula
-4. **ProgressDashboard.tsx untracked** — commit edilecek mi yoksa silinecek mi karar ver
-5. **Docker image rebuild** (`docker compose build --no-cache backend`) — docker cp gecici, image icinde eski kod kaldi
+1. **Test coverage:** backend ~53% → 80% hedef — case convention test ekle (mastery_confidence, BKT uppercase input)
+2. **MVP beta launch** — seed data + docker-compose hazır, E2E 7/7 PASS
+3. **Re-OCR recovery** — 1,521-2,511 soru kurtarma potansiyeli
+4. **Health check optimization** — 9s timeout → skip veya reduce
+5. **Frontend Teacher UI** — teacher_classroom backend hazır, frontend yok
 
 ### Kararlar (gelecek session tekrar tartismasin)
-- Faz A/B/B+ hipotezleri 3/3 phantom cikti → gelecek audit'lerde runtime DAG inspection scripti ZORUNLU oncul (testing.md Lesson 26 + Session 121 filter)
-- Faz D stratejisi: caller-site fix yerine kaynakta defansif normalize tercih edildi (dag_service.py). Gelecekte ayni bug sinifi otomatik korunuyor.
-- Pilot scope 1 satir degil, 2 dosya (orchestrator + dag_service) cikti — defansif genelleme degeri acisindan dogru karar.
+- case-convention katman kuralı: DB=UPPERCASE, BKT_slug=lowercase, FSRSCard_enum=lowercase, DAG=UPPERCASE
+- dag_service.py:243 defansif .upper() kalıcı guard — kaldırma
+- q_meta["subject"] = lowercase (BKT pipeline internal convention)
+- difficulty: frontend lowercase gönderir (kolay/orta/zor), backend lowercase bekliyor
+- mastery_confidence_service: subject.upper() yapıyor, caller lowercase gönderebilir (defensif)
