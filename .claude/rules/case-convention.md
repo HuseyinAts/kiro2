@@ -101,10 +101,51 @@ Yeni endpoint/service yazarken:
 
 | Dosya | Satır | Guard |
 |-------|-------|-------|
+| `core/turkish_nlp_utils.py` | 56 | **`subject_db()` / `subject_key()`** — kanonik helper |
 | `dag_service.py` | 243 | `subject_id.upper() if subject_id else subject_id` |
 | `bkt_service.py` | 316 | `_slug_lower = subject_slug.lower() if subject_slug else "matematik"` |
 | `cat_session.py` | 68 | `_normalize_subject()` Turkish char + lowercase |
 | `mastery_confidence_service.py` | 208 | `subject.upper()` |
+| `app/api/dag.py` | 91 | `subject_id.upper()` (Session 134) |
+| `api/learning_path_v2.py` | 1704 | `subject_key(subject)` (Session 135) |
+
+---
+
+## Endpoint Gate (ZORUNLU — Session 135)
+
+> **Subject identifiers ASCII tag, Turkish prose DEĞİL.**
+> `normalize_tr()` Turkish locale (I→ı) uygular: `"MATEMATIK"` → `"matematık"`.
+> Bu DB'deki ASCII `MATEMATIK` ile **eşleşmez**, dict key `"matematik"` ile de **eşleşmez**.
+
+### Kural
+
+Her endpoint `subject` / `subject_area` / `exam_type` / `subject_id` parametresi alıyorsa
+**ZORUNLU** kanonik helper kullan:
+
+```python
+from core.turkish_nlp_utils import subject_db, subject_key
+
+# DB query, DAG lookup, topic_hierarchy
+db_value = subject_db(subject)        # "matematik" → "MATEMATIK"
+
+# Dict/cache key, BKT/IRT/FSRS slug
+key_value = subject_key(subject)      # "MATEMATIK" → "matematik"
+```
+
+### YASAK
+
+```python
+# ❌ Subject identifier'a normalize_tr uygulama — Turkish locale dotless ı üretir
+subject_normalized = normalize_tr(subject)  # "MATEMATIK" → "matematık" (BUG)
+
+# ❌ Manuel .lower()/.upper() — strip + None handling unutulur
+subject = subject.lower()                   # None → AttributeError
+```
+
+### Test
+
+`tests/unit/test_subject_normalize.py` — round-trip ve dokümantasyon testi.
+Yeni endpoint eklerken bu test pattern'ini kopyala.
 
 ---
 

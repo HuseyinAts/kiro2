@@ -88,7 +88,9 @@ async def list_topics(
 ):
     dag = await svc.get_dag()
     if subject_id:
-        nodes = dag.get_subject_topics(subject_id)
+        # topic_hierarchy.subject_area UPPERCASE — defansif normalize
+        # (.claude/rules/case-convention.md, Session 134 audit)
+        nodes = dag.get_subject_topics(subject_id.upper())
     else:
         nodes = dag.get_all_topics()
 

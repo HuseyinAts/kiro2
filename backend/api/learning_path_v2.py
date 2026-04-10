@@ -38,6 +38,10 @@ from typing import Any
 from fastapi import APIRouter, Depends, HTTPException, Request
 from pydantic import BaseModel, Field
 
+# Subject identifier normalization (ASCII tags, NOT Turkish prose)
+# .claude/rules/case-convention.md — Endpoint Gate
+from core.turkish_nlp_utils import subject_db, subject_key  # noqa: F401
+
 # New facade import
 try:
     from agents.learning_path.facade import LearningPathFacade, get_learning_path_facade
@@ -1697,8 +1701,11 @@ async def get_fallback_videos(
         # Validate limit
         limit = max(1, min(50, limit))
 
-        # Normalize subject name (Turkish case handling)
-        subject_normalized = _normalize_turkish(subject)
+        # Normalize subject identifier — ASCII tag, NOT Turkish prose.
+        # _normalize_turkish() applies Turkish locale (I→ı) which produces
+        # "matematık" for "MATEMATIK" → never matches dict keys "matematik".
+        # Endpoint Gate: use subject_key() for cache/dict lookups.
+        subject_normalized = subject_key(subject)
 
         # Check cache first
         cache = _get_cache()
