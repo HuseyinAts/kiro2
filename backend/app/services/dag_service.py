@@ -97,10 +97,14 @@ class DAGService:
             FROM topic_hierarchy
             WHERE is_active = TRUE
             ORDER BY name_tr
-            LIMIT 10000
         """)
         )
-        for row in topics_result.fetchall():
+        topic_rows = topics_result.fetchall()
+        if len(topic_rows) > 5000:
+            logger.warning(
+                "topic_hierarchy %d satır — beklenenden fazla", len(topic_rows)
+            )
+        for row in topic_rows:
             dag.add_topic(str(row.id), row.name, str(row.subject_id))
 
         if dag.node_count == 0:
@@ -116,7 +120,7 @@ class DAGService:
                 strength
             FROM topic_prerequisites
             WHERE is_active = TRUE
-            LIMIT 50000
+            ORDER BY topic_id, prereq_id
         """)
         )
         for row in prereqs_result.fetchall():

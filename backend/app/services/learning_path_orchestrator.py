@@ -539,6 +539,9 @@ class LearningPathOrchestrator:
         """student_abilities tablosundan theta + SE değerleri. v2: SE artık gerçek."""
         theta_map: dict[str, float] = {}
         se_map: dict[str, float] = {}
+        if StudentAbility is None:
+            logger.warning("StudentAbility model yüklenemedi — tüm dersler θ=0.0")
+            return theta_map, se_map
         try:
             result = await self.db.execute(
                 select(
