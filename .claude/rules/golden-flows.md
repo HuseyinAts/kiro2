@@ -43,16 +43,15 @@ Wave 2 — domain write-path probes (Option B, 8 new tests, discovered 5 additio
 | GF5w | teacher class create accepts canonical schema | TR field names (`sinif_adi`, `seviye`) vs English body — `path-naming.md` violation | ✅ PASS (fix: Session 136) |
 | GF5wB | daily quest progress advances counter | Gamification write path | ✅ PASS |
 | GF7wA | video-solutions list not 500 | `video_solution.py` used sync `get_db` for `AsyncSession` handlers → `MissingGreenlet` 500 | ✅ PASS (fix: Session 136) |
-| GF8wA | kvkk consent list not 500 | `kvkk.py` consent query + compliance model 500 | 🔴 FAIL — half-working |
+| GF8wA | kvkk consent list not 500 | `kvkk_consent_api.py` used sync `get_db` for `AsyncSession` handlers + `current_user.id` on Pydantic `TokenPayload` (should be `.sub`) | ✅ PASS (fix: Session 136) |
 
-**Current distribution (Session 136, after GF7wA fix):** 21 tests → 18 PASS, 1 FAIL, 2 SKIP.
+**Current distribution (Session 136 final):** 21 tests → **19 PASS, 0 FAIL, 2 SKIP**.
 
-The 5 FAILs are regression guards for half-working features discovered by the
-Option B write-path probes. Each is a follow-up task — the tests must stay
-until the underlying bug is fixed, at which point they become green guards.
-Wave 1 expected FAILs (GF1w, GF3w, GF6w) are all now PASS after Session 136
-fixes; Wave 2 FAILs are newly surfaced and tracked as separate half-working
-feature bugs.
+Wave 1 expected FAILs (GF1w, GF3w, GF6w) and all 5 Wave 2 half-working feature
+FAILs (GF2w, GF3wA, GF5w, GF7wA, GF8wA) are now PASS after Session 136 fixes.
+The 2 remaining SKIPs are state-dependent (GF1wB refresh-token persist has no
+deterministic probe; GF4w.2 needs a due FSRS card which only exists after the
+24h schedule window) — these are acceptable skips, not regressions.
 
 Implementation: `backend/tests/e2e/test_golden_flows.py`
 CI gate: `.github/workflows/golden-flows.yml`

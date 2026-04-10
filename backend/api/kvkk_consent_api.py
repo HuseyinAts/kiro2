@@ -4,23 +4,23 @@ PHASE 2 Sprint 5: KVKK Compliance
 
 Endpoints for managing user consent (KVKK Article 7)
 """
+
 import uuid
-from datetime import datetime, timezone
-from typing import List, Optional
+from datetime import UTC, datetime
+
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 from pydantic import BaseModel, ConfigDict
 from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from core.database import get_db
-from core.jwt_auth import get_current_user
+from core.database import get_async_session
+from core.jwt_auth import TokenPayload, get_current_user
 from core.structured_logger import get_logger
-from models.database import User
 from models.kvkk_models import (
-    KVKKConsent,
     ConsentStatus,
     DataProcessingPurpose,
-    KVKKAuditLog
+    KVKKAuditLog,
+    KVKKConsent,
 )
 
 logger = get_logger(__name__)
@@ -32,8 +32,10 @@ router = APIRouter(prefix="/api/v1/kvkk/consent", tags=["KVKK Consent"])
 # Request/Response Models
 # ============================================================================
 
+
 class ConsentGiveRequest(BaseModel):
     """Request to give consent"""
+
     purpose: DataProcessingPurpose
     consent_text: str
     privacy_policy_version: str
@@ -41,12 +43,14 @@ class ConsentGiveRequest(BaseModel):
 
 class ConsentWithdrawRequest(BaseModel):
     """Request to withdraw consent"""
+
     purpose: DataProcessingPurpose
-    reason: Optional[str] = None
+    reason: str | None = None
 
 
 class ConsentResponse(BaseModel):
     """Consent record response"""
+
     id: str
     user_id: str
     purpose: DataProcessingPurpose
@@ -54,20 +58,22 @@ class ConsentResponse(BaseModel):
     consent_text: str
     privacy_policy_version: str
     given_at: datetime
-    withdrawn_at: Optional[datetime] = None
-    expires_at: Optional[datetime] = None
+    withdrawn_at: datetime | None = None
+    expires_at: datetime | None = None
 
     model_config = ConfigDict(from_attributes=True)
 
 
 class BulkConsentRequest(BaseModel):
     """Request to give multiple consents at once"""
-    consents: List[ConsentGiveRequest]
+
+    consents: list[ConsentGiveRequest]
 
 
 # ============================================================================
 # Helper Functions
 # ============================================================================
+
 
 async def log_consent_action(
     db: AsyncSession,
@@ -75,7 +81,7 @@ async def log_consent_action(
     action: str,
     purpose: DataProcessingPurpose,
     request: Request,
-    details: Optional[dict] = None
+    details: dict | None = None,
 ):
     """Log consent action to audit log"""
     audit_log = KVKKAuditLog(
@@ -89,7 +95,7 @@ async def log_consent_action(
         user_agent=request.headers.get("user-agent"),
         request_method=request.method,
         request_path=str(request.url),
-        details=details
+        details=details,
     )
     db.add(audit_log)
 
@@ -98,12 +104,13 @@ async def log_consent_action(
 # Consent Endpoints
 # ============================================================================
 
+
 @router.post("/give", response_model=ConsentResponse)
 async def give_consent(
     consent_req: ConsentGiveRequest,
     request: Request,
-    current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db),
+    current_user: TokenPayload = Depends(get_current_user),
+    db: AsyncSession = Depends(get_async_session),
 ):
     """
     Give consent for data processing
@@ -114,9 +121,9 @@ async def give_consent(
     try:
         # Check if consent already exists and is active
         stmt = select(KVKKConsent).where(
-            KVKKConsent.user_id == current_user.id,
+            KVKKConsent.user_id == current_user.sub,
             KVKKConsent.purpose == consent_req.purpose,
-            KVKKConsent.status == ConsentStatus.GIVEN
+            KVKKConsent.status == ConsentStatus.GIVEN,
         )
         result = await db.execute(stmt)
         existing_consent = result.scalar_one_or_none()
@@ -124,20 +131,20 @@ async def give_consent(
         if existing_consent:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail=f"Active consent already exists for purpose: {consent_req.purpose}"
+                detail=f"Active consent already exists for purpose: {consent_req.purpose}",
             )
 
         # Create new consent
         new_consent = KVKKConsent(
             id=str(uuid.uuid4()),
-            user_id=current_user.id,
+            user_id=current_user.sub,
             purpose=consent_req.purpose,
             status=ConsentStatus.GIVEN,
             consent_text=consent_req.consent_text,
             privacy_policy_version=consent_req.privacy_policy_version,
-            given_at=datetime.now(timezone.utc),
+            given_at=datetime.now(UTC),
             ip_address=request.client.host if request.client else None,
-            user_agent=request.headers.get("user-agent")
+            user_agent=request.headers.get("user-agent"),
         )
 
         db.add(new_consent)
@@ -145,14 +152,14 @@ async def give_consent(
         # Log action
         await log_consent_action(
             db=db,
-            user_id=current_user.id,
+            user_id=current_user.sub,
             action="consent_given",
             purpose=consent_req.purpose,
             request=request,
             details={
                 "privacy_policy_version": consent_req.privacy_policy_version,
-                "consent_id": new_consent.id
-            }
+                "consent_id": new_consent.id,
+            },
         )
 
         await db.commit()
@@ -160,9 +167,9 @@ async def give_consent(
 
         logger.info(
             "consent_given",
-            user_id=current_user.id,
+            user_id=current_user.sub,
             purpose=consent_req.purpose.value,
-            consent_id=new_consent.id
+            consent_id=new_consent.id,
         )
 
         return new_consent
@@ -170,11 +177,11 @@ async def give_consent(
     except HTTPException:
         raise
     except Exception as e:
-        logger.error("consent_give_error", user_id=current_user.id, error=str(e))
+        logger.error("consent_give_error", user_id=current_user.sub, error=str(e))
         await db.rollback()
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to give consent"
+            detail="Failed to give consent",
         )
 
 
@@ -182,8 +189,8 @@ async def give_consent(
 async def give_bulk_consent(
     bulk_req: BulkConsentRequest,
     request: Request,
-    current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db),
+    current_user: TokenPayload = Depends(get_current_user),
+    db: AsyncSession = Depends(get_async_session),
 ):
     """
     Give multiple consents at once
@@ -197,9 +204,9 @@ async def give_bulk_consent(
         for consent_req in bulk_req.consents:
             # Check if already exists
             stmt = select(KVKKConsent).where(
-                KVKKConsent.user_id == current_user.id,
+                KVKKConsent.user_id == current_user.sub,
                 KVKKConsent.purpose == consent_req.purpose,
-                KVKKConsent.status == ConsentStatus.GIVEN
+                KVKKConsent.status == ConsentStatus.GIVEN,
             )
             result = await db.execute(stmt)
             existing = result.scalar_one_or_none()
@@ -210,14 +217,14 @@ async def give_bulk_consent(
             # Create consent
             new_consent = KVKKConsent(
                 id=str(uuid.uuid4()),
-                user_id=current_user.id,
+                user_id=current_user.sub,
                 purpose=consent_req.purpose,
                 status=ConsentStatus.GIVEN,
                 consent_text=consent_req.consent_text,
                 privacy_policy_version=consent_req.privacy_policy_version,
-                given_at=datetime.now(timezone.utc),
+                given_at=datetime.now(UTC),
                 ip_address=request.client.host if request.client else None,
-                user_agent=request.headers.get("user-agent")
+                user_agent=request.headers.get("user-agent"),
             )
 
             db.add(new_consent)
@@ -226,33 +233,31 @@ async def give_bulk_consent(
             # Log action
             await log_consent_action(
                 db=db,
-                user_id=current_user.id,
+                user_id=current_user.sub,
                 action="consent_given",
                 purpose=consent_req.purpose,
                 request=request,
-                details={"consent_id": new_consent.id}
+                details={"consent_id": new_consent.id},
             )
 
         await db.commit()
 
         logger.info(
-            "bulk_consent_given",
-            user_id=current_user.id,
-            count=len(created_consents)
+            "bulk_consent_given", user_id=current_user.sub, count=len(created_consents)
         )
 
         return {
             "success": True,
             "consents_created": len(created_consents),
-            "message": f"{len(created_consents)} consent(s) recorded"
+            "message": f"{len(created_consents)} consent(s) recorded",
         }
 
     except Exception as e:
-        logger.error("bulk_consent_error", user_id=current_user.id, error=str(e))
+        logger.error("bulk_consent_error", user_id=current_user.sub, error=str(e))
         await db.rollback()
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to give bulk consent"
+            detail="Failed to give bulk consent",
         )
 
 
@@ -260,8 +265,8 @@ async def give_bulk_consent(
 async def withdraw_consent(
     withdraw_req: ConsentWithdrawRequest,
     request: Request,
-    current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db),
+    current_user: TokenPayload = Depends(get_current_user),
+    db: AsyncSession = Depends(get_async_session),
 ):
     """
     Withdraw consent for data processing
@@ -272,9 +277,9 @@ async def withdraw_consent(
     try:
         # Find active consent
         stmt = select(KVKKConsent).where(
-            KVKKConsent.user_id == current_user.id,
+            KVKKConsent.user_id == current_user.sub,
             KVKKConsent.purpose == withdraw_req.purpose,
-            KVKKConsent.status == ConsentStatus.GIVEN
+            KVKKConsent.status == ConsentStatus.GIVEN,
         )
         result = await db.execute(stmt)
         consent = result.scalar_one_or_none()
@@ -282,65 +287,59 @@ async def withdraw_consent(
         if not consent:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
-                detail=f"No active consent found for purpose: {withdraw_req.purpose}"
+                detail=f"No active consent found for purpose: {withdraw_req.purpose}",
             )
 
         # Withdraw consent
         stmt = (
             update(KVKKConsent)
             .where(KVKKConsent.id == consent.id)
-            .values(
-                status=ConsentStatus.WITHDRAWN,
-                withdrawn_at=datetime.now(timezone.utc)
-            )
+            .values(status=ConsentStatus.WITHDRAWN, withdrawn_at=datetime.now(UTC))
         )
         await db.execute(stmt)
 
         # Log action
         await log_consent_action(
             db=db,
-            user_id=current_user.id,
+            user_id=current_user.sub,
             action="consent_withdrawn",
             purpose=withdraw_req.purpose,
             request=request,
-            details={
-                "consent_id": consent.id,
-                "reason": withdraw_req.reason
-            }
+            details={"consent_id": consent.id, "reason": withdraw_req.reason},
         )
 
         await db.commit()
 
         logger.info(
             "consent_withdrawn",
-            user_id=current_user.id,
+            user_id=current_user.sub,
             purpose=withdraw_req.purpose.value,
-            consent_id=consent.id
+            consent_id=consent.id,
         )
 
         return {
             "success": True,
             "message": "Consent withdrawn successfully",
             "purpose": withdraw_req.purpose,
-            "withdrawn_at": datetime.now(timezone.utc)
+            "withdrawn_at": datetime.now(UTC),
         }
 
     except HTTPException:
         raise
     except Exception as e:
-        logger.error("consent_withdraw_error", user_id=current_user.id, error=str(e))
+        logger.error("consent_withdraw_error", user_id=current_user.sub, error=str(e))
         await db.rollback()
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to withdraw consent"
+            detail="Failed to withdraw consent",
         )
 
 
-@router.get("/my-consents", response_model=List[ConsentResponse])
+@router.get("/my-consents", response_model=list[ConsentResponse])
 async def get_my_consents(
-    status_filter: Optional[ConsentStatus] = None,
-    current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db),
+    status_filter: ConsentStatus | None = None,
+    current_user: TokenPayload = Depends(get_current_user),
+    db: AsyncSession = Depends(get_async_session),
 ):
     """
     Get all consents for current user
@@ -348,9 +347,7 @@ async def get_my_consents(
     Returns user's consent history with optional status filter.
     """
     try:
-        stmt = select(KVKKConsent).where(
-            KVKKConsent.user_id == current_user.id
-        )
+        stmt = select(KVKKConsent).where(KVKKConsent.user_id == current_user.sub)
 
         if status_filter:
             stmt = stmt.where(KVKKConsent.status == status_filter)
@@ -363,18 +360,18 @@ async def get_my_consents(
         return consents
 
     except Exception as e:
-        logger.error("get_consents_error", user_id=current_user.id, error=str(e))
+        logger.error("get_consents_error", user_id=current_user.sub, error=str(e))
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to retrieve consents"
+            detail="Failed to retrieve consents",
         )
 
 
 @router.get("/check/{purpose}")
 async def check_consent(
     purpose: DataProcessingPurpose,
-    current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db),
+    current_user: TokenPayload = Depends(get_current_user),
+    db: AsyncSession = Depends(get_async_session),
 ):
     """
     Check if user has given consent for specific purpose
@@ -383,9 +380,9 @@ async def check_consent(
     """
     try:
         stmt = select(KVKKConsent).where(
-            KVKKConsent.user_id == current_user.id,
+            KVKKConsent.user_id == current_user.sub,
             KVKKConsent.purpose == purpose,
-            KVKKConsent.status == ConsentStatus.GIVEN
+            KVKKConsent.status == ConsentStatus.GIVEN,
         )
         result = await db.execute(stmt)
         consent = result.scalar_one_or_none()
@@ -396,14 +393,16 @@ async def check_consent(
             "purpose": purpose,
             "has_consent": has_consent,
             "consent_given_at": consent.given_at if consent else None,
-            "privacy_policy_version": consent.privacy_policy_version if consent else None
+            "privacy_policy_version": consent.privacy_policy_version
+            if consent
+            else None,
         }
 
     except Exception as e:
-        logger.error("check_consent_error", user_id=current_user.id, error=str(e))
+        logger.error("check_consent_error", user_id=current_user.sub, error=str(e))
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to check consent"
+            detail="Failed to check consent",
         )
 
 
@@ -419,55 +418,55 @@ async def get_required_consents():
             "purpose": DataProcessingPurpose.SERVICE_PROVISION,
             "title": "Hizmet Sunumu",
             "description": "Platform hizmetlerini kullanabilmeniz için gerekli.",
-            "required": True
+            "required": True,
         },
         {
             "purpose": DataProcessingPurpose.ACCOUNT_MANAGEMENT,
             "title": "Hesap Yönetimi",
             "description": "Hesabınızı yönetmek ve güvenliğini sağlamak için gerekli.",
-            "required": True
+            "required": True,
         },
         {
             "purpose": DataProcessingPurpose.AUTHENTICATION,
             "title": "Kimlik Doğrulama",
             "description": "Giriş yapabilmeniz için gerekli.",
-            "required": True
+            "required": True,
         },
         {
             "purpose": DataProcessingPurpose.EXAM_EVALUATION,
             "title": "Sınav Değerlendirme",
             "description": "Sınavlarınızı değerlendirmek için gerekli.",
-            "required": True
+            "required": True,
         },
         {
             "purpose": DataProcessingPurpose.PROGRESS_TRACKING,
             "title": "İlerleme Takibi",
             "description": "Öğrenme ilerlemenizi takip etmek için.",
-            "required": False
+            "required": False,
         },
         {
             "purpose": DataProcessingPurpose.ANALYTICS,
             "title": "Analitik",
             "description": "Platform performansını iyileştirmek için.",
-            "required": False
+            "required": False,
         },
         {
             "purpose": DataProcessingPurpose.PERSONALIZATION,
             "title": "Kişiselleştirme",
             "description": "Size özel içerik önerileri için.",
-            "required": False
+            "required": False,
         },
         {
             "purpose": DataProcessingPurpose.MARKETING,
             "title": "Pazarlama",
             "description": "Yeni özellikler ve kampanyalardan haberdar olmak için.",
-            "required": False
-        }
+            "required": False,
+        },
     ]
 
     return {
         "required_consents": required_consents,
-        "total_count": len(required_consents)
+        "total_count": len(required_consents),
     }
 
 
