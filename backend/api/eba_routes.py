@@ -3,24 +3,25 @@ Task 97: EBA TV API Routes
 REST endpoints for EBA TV integration
 """
 
-from fastapi import APIRouter, Depends, HTTPException, Query
-from sqlalchemy.ext.asyncio import AsyncSession
-from typing import List, Optional, Dict
-from pydantic import BaseModel, UUID4
+import logging
 
-# PHASE 1 FIX: Corrected import paths (removed 'backend.' prefix)
-from core.database import get_db
+from fastapi import APIRouter, Depends, HTTPException, Query
+from pydantic import UUID4, BaseModel
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from core.auth_dependencies import require_role
+
+# Session 137: swap sync get_db shim → async get_async_session.
+# Pattern A fix — handlers are AsyncSession so we must yield an AsyncSession.
+from core.dependencies import get_current_user
 from models.database import User
+from services.eba_catalog_sync import EBACatalogSyncService
 from services.eba_tv_client import (
-    EBASubject,
     EBAGradeLevel,
+    EBASubject,
     get_eba_client,
 )
-from services.eba_catalog_sync import EBACatalogSyncService
 from services.eba_watch_tracking import EBAWatchTrackingService, WatchAnalytics
-from core.dependencies import get_current_user
-from core.auth_dependencies import require_role
-import logging
 
 logger = logging.getLogger(__name__)
 
@@ -37,14 +38,14 @@ class EBAVideoResponse(BaseModel):
 
     video_id: str
     title: str
-    description: Optional[str]
+    description: str | None
     duration_seconds: int
-    thumbnail_url: Optional[str]
+    thumbnail_url: str | None
     video_url: str
     subject: str
     grade_level: str
-    topic: Optional[str]
-    keywords: List[str]
+    topic: str | None
+    keywords: list[str]
     quality: str
     view_count: int
 
@@ -73,8 +74,8 @@ class WatchHistoryResponse(BaseModel):
     last_position: int
     watch_percentage: float
     completed: bool
-    last_watched: Optional[str]
-    thumbnail_url: Optional[str]
+    last_watched: str | None
+    thumbnail_url: str | None
 
 
 class SyncStatsResponse(BaseModel):
@@ -91,15 +92,15 @@ class SyncStatsResponse(BaseModel):
 # ============================================
 
 
-@router.get("/videos", response_model=List[EBAVideoResponse])
+@router.get("/videos", response_model=list[EBAVideoResponse])
 async def get_eba_videos(
-    subject: Optional[EBASubject] = None,
-    grade_level: Optional[EBAGradeLevel] = None,
-    topic: Optional[str] = None,
-    search: Optional[str] = None,
+    subject: EBASubject | None = None,
+    grade_level: EBAGradeLevel | None = None,
+    topic: str | None = None,
+    search: str | None = None,
     page: int = Query(1, ge=1),
     page_size: int = Query(20, ge=1, le=100),
-    db: AsyncSession = Depends(get_db),
+    db: AsyncSession = Depends(get_async_session),
 ):
     """
     Task 97.2: Get EBA video catalog
@@ -112,7 +113,8 @@ async def get_eba_videos(
 
     Returns paginated video list
     """
-    from sqlalchemy import select, and_, or_
+    from sqlalchemy import and_, or_, select
+
     from models.eba_video import EBAVideo
 
     # Build query
@@ -170,11 +172,12 @@ async def get_eba_videos(
 
 
 @router.get("/videos/{eba_video_id}", response_model=EBAVideoResponse)
-async def get_eba_video_details(eba_video_id: str, db: AsyncSession = Depends(get_db)):
+async def get_eba_video_details(eba_video_id: str, db: AsyncSession = Depends(get_async_session)):
     """
     Get specific EBA video details
     """
     from sqlalchemy import select
+
     from models.eba_video import EBAVideo
 
     stmt = select(EBAVideo).where(EBAVideo.eba_video_id == eba_video_id)
@@ -205,9 +208,9 @@ async def get_eba_video_details(eba_video_id: str, db: AsyncSession = Depends(ge
 # ============================================
 
 
-@router.get("/taxonomy/subjects", response_model=Dict[str, List[str]])
+@router.get("/taxonomy/subjects", response_model=dict[str, list[str]])
 async def get_subjects_taxonomy(
-    use_mock: bool = Query(False, description="Use mock EBA client")
+    use_mock: bool = Query(False, description="Use mock EBA client"),
 ):
     """
     Task 97.3: Get subject taxonomy
@@ -252,14 +255,15 @@ async def get_curriculum_alignment(
         await eba_client.close()
 
 
-@router.get("/videos/by-kazanim/{kazanim_code}", response_model=List[EBAVideoResponse])
-async def get_videos_by_kazanim(kazanim_code: str, db: AsyncSession = Depends(get_db)):
+@router.get("/videos/by-kazanim/{kazanim_code}", response_model=list[EBAVideoResponse])
+async def get_videos_by_kazanim(kazanim_code: str, db: AsyncSession = Depends(get_async_session)):
     """
     Task 97.3: Get videos by curriculum kazanım code
 
     Example: kazanim_code = "8.1.2.1"
     """
     from sqlalchemy import select
+
     from models.eba_video import EBAVideo
 
     # Search for videos containing this kazanim code
@@ -296,7 +300,7 @@ async def get_videos_by_kazanim(kazanim_code: str, db: AsyncSession = Depends(ge
 async def start_watch_session(
     request: WatchSessionStartRequest,
     current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db),
+    db: AsyncSession = Depends(get_async_session),
 ):
     """
     Task 97.4: Start watching a video
@@ -323,8 +327,10 @@ async def start_watch_session(
             else "Yeni izleme başladı",
         }
 
-    except ValueError as e:
-        raise HTTPException(status_code=404, detail="Islem basarisiz. Lutfen tekrar deneyin.")
+    except ValueError:
+        raise HTTPException(
+            status_code=404, detail="Islem basarisiz. Lutfen tekrar deneyin."
+        )
     except Exception as e:
         logger.error(f"Failed to start watch session: {e}")
         raise HTTPException(status_code=500, detail="Failed to start session")
@@ -334,7 +340,7 @@ async def start_watch_session(
 async def update_watch_progress(
     request: WatchProgressRequest,
     current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db),
+    db: AsyncSession = Depends(get_async_session),
 ):
     """
     Task 97.4: Update watch progress
@@ -352,8 +358,10 @@ async def update_watch_progress(
 
         return result
 
-    except ValueError as e:
-        raise HTTPException(status_code=404, detail="Islem basarisiz. Lutfen tekrar deneyin.")
+    except ValueError:
+        raise HTTPException(
+            status_code=404, detail="Islem basarisiz. Lutfen tekrar deneyin."
+        )
     except Exception as e:
         logger.error(f"Failed to update progress: {e}")
         raise HTTPException(status_code=500, detail="Failed to update progress")
@@ -364,7 +372,7 @@ async def end_watch_session(
     session_id: UUID4,
     final_time: int = Query(..., description="Final position in seconds"),
     current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db),
+    db: AsyncSession = Depends(get_async_session),
 ):
     """
     Task 97.4: End watch session
@@ -380,18 +388,20 @@ async def end_watch_session(
 
         return result
 
-    except ValueError as e:
-        raise HTTPException(status_code=404, detail="Islem basarisiz. Lutfen tekrar deneyin.")
+    except ValueError:
+        raise HTTPException(
+            status_code=404, detail="Islem basarisiz. Lutfen tekrar deneyin."
+        )
     except Exception as e:
         logger.error(f"Failed to end session: {e}")
         raise HTTPException(status_code=500, detail="Failed to end session")
 
 
-@router.get("/watch/history", response_model=List[WatchHistoryResponse])
+@router.get("/watch/history", response_model=list[WatchHistoryResponse])
 async def get_watch_history(
     limit: int = Query(20, ge=1, le=100),
     current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db),
+    db: AsyncSession = Depends(get_async_session),
 ):
     """
     Task 97.4: Get user's watch history
@@ -414,11 +424,9 @@ async def get_watch_history(
 
 @router.get("/watch/analytics", response_model=WatchAnalytics)
 async def get_user_analytics(
-    since_days: Optional[int] = Query(
-        None, description="Last X days (null = all time)"
-    ),
+    since_days: int | None = Query(None, description="Last X days (null = all time)"),
     current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db),
+    db: AsyncSession = Depends(get_async_session),
 ):
     """
     Task 97.4: Get user watch analytics
@@ -443,7 +451,7 @@ async def get_user_analytics(
 
 
 @router.get("/videos/{eba_video_id}/analytics")
-async def get_video_analytics(eba_video_id: str, db: AsyncSession = Depends(get_db)):
+async def get_video_analytics(eba_video_id: str, db: AsyncSession = Depends(get_async_session)):
     """
     Task 97.4: Get video analytics (all users)
 
@@ -457,19 +465,21 @@ async def get_video_analytics(eba_video_id: str, db: AsyncSession = Depends(get_
         analytics = await tracking_service.get_video_analytics(eba_video_id)
         return analytics
 
-    except ValueError as e:
-        raise HTTPException(status_code=404, detail="Islem basarisiz. Lutfen tekrar deneyin.")
+    except ValueError:
+        raise HTTPException(
+            status_code=404, detail="Islem basarisiz. Lutfen tekrar deneyin."
+        )
     except Exception as e:
         logger.error(f"Failed to fetch video analytics: {e}")
         raise HTTPException(status_code=500, detail="Failed to fetch analytics")
 
 
-@router.get("/popular", response_model=List[EBAVideoResponse])
+@router.get("/popular", response_model=list[EBAVideoResponse])
 async def get_popular_videos(
-    subject: Optional[EBASubject] = None,
-    grade_level: Optional[EBAGradeLevel] = None,
+    subject: EBASubject | None = None,
+    grade_level: EBAGradeLevel | None = None,
     limit: int = Query(10, ge=1, le=50),
-    db: AsyncSession = Depends(get_db),
+    db: AsyncSession = Depends(get_async_session),
 ):
     """
     Task 97.4: Get popular videos (most watched)
@@ -513,11 +523,11 @@ async def get_popular_videos(
 
 @router.post("/admin/sync/full", response_model=SyncStatsResponse)
 async def trigger_full_catalog_sync(
-    subjects: Optional[List[EBASubject]] = None,
-    grade_levels: Optional[List[EBAGradeLevel]] = None,
+    subjects: list[EBASubject] | None = None,
+    grade_levels: list[EBAGradeLevel] | None = None,
     use_mock: bool = Query(False),
     current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db),
+    db: AsyncSession = Depends(get_async_session),
     _: None = Depends(require_role("ADMIN")),
 ):
     """
@@ -550,7 +560,7 @@ async def trigger_incremental_sync(
     since_hours: int = Query(24, ge=1, le=168),
     use_mock: bool = Query(False),
     current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db),
+    db: AsyncSession = Depends(get_async_session),
     _: None = Depends(require_role("ADMIN")),
 ):
     """
@@ -579,7 +589,7 @@ async def trigger_incremental_sync(
 @router.get("/admin/sync/status")
 async def get_sync_status(
     current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db),
+    db: AsyncSession = Depends(get_async_session),
     _: None = Depends(require_role("ADMIN")),
 ):
     """

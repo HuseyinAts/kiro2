@@ -972,6 +972,29 @@ def test_gf9wa_khan_oauth_status_not_500(client: httpx.Client):
 
 
 # ---------------------------------------------------------------------------
+# GF9wB: eba watch history must not 500 (Pattern A sync get_db trap)
+# ---------------------------------------------------------------------------
+
+
+def test_gf9wb_eba_watch_history_not_500(client: httpx.Client):
+    """
+    GET /api/v1/eba/watch/history must return a semantic status, never 500.
+
+    Session 137 AST linter hit: ``backend/api/eba_routes.py`` imports sync
+    ``get_db`` but declares ``db: AsyncSession = Depends(get_db)``. Any
+    handler doing ``await db.execute(...)`` raises ``MissingGreenlet``.
+    ``watch/history`` is the minimal user-facing probe: a student with
+    zero history should get ``[]``, not a 500.
+    """
+    token = _login(client, STUDENT)
+    resp = client.get("/api/v1/eba/watch/history", headers=_auth_headers(token))
+    assert resp.status_code != 500, (
+        f"GF9wB eba watch/history crashed with 500: {resp.text[:300]}. "
+        f"Check backend/api/eba_routes.py — Pattern A sync get_db trap."
+    )
+
+
+# ---------------------------------------------------------------------------
 # GF1wB: auth refresh-token persistence (auth.py:329 silent swallow)
 # ---------------------------------------------------------------------------
 
