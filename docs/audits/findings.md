@@ -445,8 +445,8 @@ T1.5 Katman 1'de taranacak.
 - K-B7: osym IRT estimation — informational, works as approximate
 - L1-5: dag_service ValueError/KeyError — appropriate for cache misses
 
-### Kalan P0 (7 adet — mimari/session redesign gerektirir)
-- K-B5: Global singleton → Redis/DB session store (multi-worker redesign)
+### P0 Son Durum (21/21 FIXLENDİ)
+- K-B5: ✅ FIXLENDİ (d2e5b1a) — 10 method Redis L2 fallback, 3 mutating persist
 - LP-01: ✅ FIXLENDİ (2a84504)
 - LP-02: ✅ FIXLENDİ (2a84504)
 - LP-03: ✅ FIXLENDİ (2a84504)
@@ -454,4 +454,9 @@ T1.5 Katman 1'de taranacak.
 - EX-11: ✅ FIXLENDİ (2a84504)
 - EX-12: ✅ FIXLENDİ (2a84504)
 
-**Gerçek kalan P0: 1 (K-B5 — global singleton session isolation)**
+### Code Review Fixes (commit e06c16f)
+- osym_exam_engine: background task KeyError guard (.get() instead of [])
+- osym_exam_engine: L1 eviction before Redis delete (race condition fix)
+- fsrs_engine DM-07: _next_forget_stability for repeated lapse (FSRS v6 spec)
+
+**Kalan P0: 0. Kalan P1: 0. Kalan P2: ~18 (informational/by-design).**
