@@ -312,3 +312,6 @@ celerybeat-schedule*
 
 # Dataset working files
 veriseti/
+
+# audit_db_dependency.py local report output
+backend/audit_out.json
