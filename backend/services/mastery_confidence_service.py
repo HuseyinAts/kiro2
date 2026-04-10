@@ -5,6 +5,7 @@ IRT-based confidence intervals and mastery confidence levels.
 Reads student response history and computes ability estimates with
 95% confidence intervals using the test information function.
 """
+
 from __future__ import annotations
 
 import math
@@ -154,14 +155,16 @@ async def get_topics_confidence(
         # Convert theta to [0, 1] mastery via sigmoid
         mastery = _irt_probability(theta, 0.0)
 
-        results.append({
-            "topic_id": tid,
-            "name": topic_names.get(tid, tid),
-            "mastery": mastery,
-            "ci_low": ci_low,
-            "ci_high": ci_high,
-            "response_count": len(topic_responses),
-        })
+        results.append(
+            {
+                "topic_id": tid,
+                "name": topic_names.get(tid, tid),
+                "mastery": mastery,
+                "ci_low": ci_low,
+                "ci_high": ci_high,
+                "response_count": len(topic_responses),
+            }
+        )
 
     return results
 
@@ -183,7 +186,6 @@ async def _fetch_responses(
     Returns list of {is_correct, difficulty, topic_id?, topic_name?}.
     """
     try:
-
         # Try to get from exam_responses table
         from sqlalchemy import text
 
@@ -196,14 +198,14 @@ async def _fetch_responses(
             FROM exam_responses er
             JOIN question_bank qb ON er.question_id = CAST(qb.id AS TEXT)
             WHERE er.student_id = :student_id
-              AND LOWER(qb.subject_area) = :subject
+              AND qb.subject_area = :subject
             ORDER BY er.created_at DESC
             LIMIT 500
         """)
 
         result = await db.execute(
             query,
-            {"student_id": student_id, "subject": subject.lower()},
+            {"student_id": student_id, "subject": subject.upper()},
         )
         rows = result.fetchall()
 
@@ -217,8 +219,11 @@ async def _fetch_responses(
                 except (ValueError, TypeError):
                     # Map categorical difficulty to numeric
                     diff_map = {
-                        "COK_KOLAY": -2.0, "KOLAY": -1.0,
-                        "ORTA": 0.0, "ZOR": 1.0, "COK_ZOR": 2.0,
+                        "COK_KOLAY": -2.0,
+                        "KOLAY": -1.0,
+                        "ORTA": 0.0,
+                        "ZOR": 1.0,
+                        "COK_ZOR": 2.0,
                     }
                     difficulty = diff_map.get(str(row[1]).upper(), 0.0)
 
@@ -237,6 +242,10 @@ async def _fetch_responses(
     except Exception as exc:
         logger.warning(
             "Response fetch failed, returning empty",
-            extra_data={"student_id": student_id, "subject": subject, "error": str(exc)},
+            extra_data={
+                "student_id": student_id,
+                "subject": subject,
+                "error": str(exc),
+            },
         )
         return []

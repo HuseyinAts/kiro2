@@ -1264,7 +1264,7 @@ async def submit_quiz(
                 correct_answers[question.id] = question.correct_answer
                 q_meta[question.id] = {
                     "topic_id": question.primary_topic_id,
-                    "subject": (question.subject_area or "MATEMATIK").lower(),
+                    "subject": (question.subject_area or "MATEMATIK").upper(),
                 }
 
             logger.info(
@@ -1290,7 +1290,7 @@ async def submit_quiz(
                     correct_answers[question.id] = question.correct_answer
                     q_meta[question.id] = {
                         "topic_id": question.primary_topic_id,
-                        "subject": (question.subject_area or "MATEMATIK").lower(),
+                        "subject": (question.subject_area or "MATEMATIK").upper(),
                     }
 
             logger.info(

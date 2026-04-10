@@ -41,7 +41,7 @@ export default function CozumDuellosuPage() {
   const [acting, setActing] = useState(false);
   const [error, setError] = useState('');
   const [message, setMessage] = useState('');
-  const [subject, setSubject] = useState('matematik');
+  const [subject, setSubject] = useState('MATEMATIK');
   const [solutionText, setSolutionText] = useState('');
 
   const fetchActive = useCallback(async () => {
@@ -64,7 +64,7 @@ export default function CozumDuellosuPage() {
     try {
       const res = await cozumDuellosu.create({
         question_bank_id: 'auto',
-        subject_area: subject,
+        subject_area: subject.toUpperCase(),
       });
       setMessage(res.message);
       if (res.data.matched) {

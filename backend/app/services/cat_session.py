@@ -523,7 +523,16 @@ class CATSessionService:
                 "din": 11,
                 "sosyal": 12,
             }
-            _sid = _SUBJ_MAP.get(state.subject_id.lower())
+            _norm = (
+                state.subject_id.lower()
+                .replace("ü", "u")
+                .replace("ö", "o")
+                .replace("ç", "c")
+                .replace("ş", "s")
+                .replace("ğ", "g")
+                .replace("ı", "i")
+            )
+            _sid = _SUBJ_MAP.get(_norm)
             if _sid is not None:
                 from sqlalchemy import text as _txt
 
@@ -758,7 +767,16 @@ class CATSessionService:
             "din": 11,
             "sosyal": 12,
         }
-        subj_id = _SUBJECT_ID_MAP.get(state.subject_id.lower())
+        _norm2 = (
+            state.subject_id.lower()
+            .replace("ü", "u")
+            .replace("ö", "o")
+            .replace("ç", "c")
+            .replace("ş", "s")
+            .replace("ğ", "g")
+            .replace("ı", "i")
+        )
+        subj_id = _SUBJECT_ID_MAP.get(_norm2)
         if subj_id is not None:
             from sqlalchemy.dialects.postgresql import insert as pg_insert
 

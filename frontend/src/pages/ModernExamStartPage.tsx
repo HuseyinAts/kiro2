@@ -88,10 +88,10 @@ export const ModernExamStartPage: React.FC = () => {
       const data = await apiRequest<{ session_id: string }>('/api/v1/osym-exam/create', {
         method: 'POST',
         body: JSON.stringify({
-          exam_type: config.exam_type.toLowerCase(),
+          exam_type: config.exam_type.toUpperCase(),
           custom_config: {
-            subject: config.subject,
-            difficulty: config.difficulty,
+            subject: config.subject.toUpperCase(),
+            difficulty: config.difficulty.toUpperCase(),
             question_count: config.question_count,
             time_limit: config.time_limit,
           },
