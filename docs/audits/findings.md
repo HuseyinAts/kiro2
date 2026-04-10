@@ -357,7 +357,7 @@ T1.5 Katman 1'de taranacak.
 | **Toplam** | 15 | 7 | 38 | 11 | 16 | 87 | **80** |
 
 *Duplicate'lar: EX-05=K-B5, EX-06=K-B1, EX-07=K-B4, EX-09=K-B6, LP-04=K-A7, F-01=LP-01 (6 duplicate). D-01 P0→P1 downgrade (review sonrası).*
-*Fixlenen: 14 P0 (commit f244aae). Kalan P0: 7.*
+*Fixlenen: 14 P0 (f244aae), 21 P0 toplam (2a84504), 28 P1 (22b089e→088ccf2), 13 P2 (5b1160d). Kalan P0: 7. Kalan P1: 0. Kalan P2: ~18 (çoğu informational/by-design).*
 
 ### P0 Tam Liste (22 toplam — 14 fixlendi, 1 duplicate, 7 kalan)
 
@@ -397,3 +397,61 @@ T1.5 Katman 1'de taranacak.
 2/16 P0 question cache (yeni, kritik).
 
 **Karar:** Analiz DEVAM — P0'lar ayrı fix sprint'inde çözülecek. Session 2'de Katman 3 + Akış İzleme.
+
+---
+
+## Fix Sprint Özeti
+
+### P0 Fixes (commit 2a84504 — 6 fix, Session 2)
+- LP-01: DungeonMap selectedSubject binding (hardcoded MATEMATIK→dynamic)
+- LP-02: Theta tablo çatallanması → user_theta tablosu (dungeon okumalarında)
+- LP-03: FSRS tablo çatallanması → user_item_fsrs birleştirildi
+- EX-10: PerformanceResponse konu_performanslari → konu analizi dolu
+- EX-11: start_exam() L2 Redis fallback eklendi
+- EX-12: auto_complete_task L2'den restore ediliyor
+
+### P1 Fixes (4 batch: 22b089e, 392c2bc, 96ef273, 088ccf2 — 28/28 fix)
+**Batch 1:** K-A4 mastery formula, K-A6 theta error handling, K-B1 TYT/AYT süreler, K-B4 1/4 ceza kaldırma, K-B6 scaled_score, K-B8 session Redis L2, DM-01 BKT posterior, K-A3 DAG hata→prereq_blocked=True, D-04 cat_session theta except→log, D-05 cat_session XP except→log, EX-04 cache+is_active, EX-13 abandoned exam
+**Batch 2:** DM-02 IRT __post_init__ clamp, DM-03 ZPD 0.40→0.20, DM-04 ZPD difficulty band, EX-14 LGS enum, EX-15 topic field UUID→name, EX-16 YDT no-questions UX, F-01 (=LP-01 resolved), F-02 MemoryTracker cleanup, F-03 relative URL
+**Batch 3:** LP-05 exam_type goal, LP-07 DAG cycle→raise, D-03 dag_service is_active, S-17 vision info leak, S-18 vision health DoS, F-05 fsrsService credentials
+**Batch 4:** S-12..S-14 curriculum auth (7 endpoint), S-15/S-16 preference_simulation auth (9 endpoint), LP-06 is_timeout field, T3-01 policy P12 diff limits, T3-02 policy P14 auth/security, T3-12..T3-14 CLAUDE.md stats update
+
+### P2 Fixes (commit 5b1160d — 13 fix)
+**Backend domain:**
+- DM-05: BKT→IRT logit transform (linear→ln(p/(1-p)))
+- DM-06: scaffold_level clamp max 5
+- DM-07: FSRS YENİDEN state stability update
+- DM-08: ZPD empty pool intermediate band [0.10,0.95]
+- DM-09: BKT initial p_L proper prior (0.10 not p_T)
+- DM-10: p_learn lower bound clamp [0.001,0.999]
+**Backend infrastructure:**
+- K-A1: absolute import try/except guard
+- K-A2: unused return value captured
+- K-A5/L1-7: bare except→logged warning (orchestrator)
+- L1-6: bare except→logged warning (placement)
+**Frontend:**
+- F-04: chatService localStorage→sessionStorage (KVKK)
+- F-06: AbortController fetch unmount cleanup
+- LP-11: DungeonNode description name_tr
+
+### P2 Skipped (by design / out of scope)
+- T3-03/T3-04/T3-05: Policy engine stubs — ~85% placeholder, feature request not fix
+- T3-08: CORS 5173 stale entry — harmless, .env override controls production
+- T3-10: pytest skip count — informational, not actionable
+- F-07: loadVideosForPath dep — already stable (useCallback([]))
+- L1-1..L1-4 (=D-04/D-05): Already fixed in P1 batch
+- D-06: cat_session streak except — duplicate of D-04/D-05 pattern
+- K-A7 (=LP-04): Already fixed in P1 batch
+- K-B7: osym IRT estimation — informational, works as approximate
+- L1-5: dag_service ValueError/KeyError — appropriate for cache misses
+
+### Kalan P0 (7 adet — mimari/session redesign gerektirir)
+- K-B5: Global singleton → Redis/DB session store (multi-worker redesign)
+- LP-01: ✅ FIXLENDİ (2a84504)
+- LP-02: ✅ FIXLENDİ (2a84504)
+- LP-03: ✅ FIXLENDİ (2a84504)
+- EX-10: ✅ FIXLENDİ (2a84504)
+- EX-11: ✅ FIXLENDİ (2a84504)
+- EX-12: ✅ FIXLENDİ (2a84504)
+
+**Gerçek kalan P0: 1 (K-B5 — global singleton session isolation)**
