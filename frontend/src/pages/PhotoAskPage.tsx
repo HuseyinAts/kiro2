@@ -4,7 +4,7 @@
  * Camera/file upload → OCR text extraction → pgvector similarity search → AI solution
  * Uses existing backend: OCR API + pgvector (21ms avg) + AI chat
  */
-import { useState, useRef, useCallback } from 'react';
+import { useState, useRef, useCallback, useEffect } from 'react';
 import {
   Box,
   Button,
@@ -84,11 +84,19 @@ export default function PhotoAskPage() {
     setSelectedFile(file);
     setError(null);
 
-    // Create preview
-    const reader = new FileReader();
-    reader.onload = (e) => setPreview(e.target?.result as string);
-    reader.readAsDataURL(file);
+    // Create preview using object URL (avoids base64 encoding ~33% memory overhead)
+    const objectUrl = URL.createObjectURL(file);
+    setPreview(objectUrl);
   }, []);
+
+  // Revoke object URL on unmount or when preview changes to prevent memory leak
+  useEffect(() => {
+    return () => {
+      if (preview && preview.startsWith('blob:')) {
+        URL.revokeObjectURL(preview);
+      }
+    };
+  }, [preview]);
 
   const handleUpload = useCallback(async () => {
     if (!selectedFile) return;

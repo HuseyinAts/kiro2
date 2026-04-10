@@ -2,7 +2,7 @@
  * LeaguePage — /league
  * Haftalık lig sıralaması. GET /api/v1/leagues/current
  */
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import {
   Avatar, Box, Card, CardContent, Chip, CircularProgress,
   Divider, LinearProgress, Stack, Table, TableBody,
@@ -64,7 +64,7 @@ export default function LeaguePage() {
   );
 
   const tier   = TIER_CONFIG[data.tier] ?? { label: data.tier, color: '#888', icon: '🏅' };
-  const maxXP  = Math.max(...data.standings.map(s => s.xp), 1);
+  const maxXP  = useMemo(() => Math.max(...data.standings.map(s => s.xp), 1), [data.standings]);
   const weekOf = new Date(data.week_start).toLocaleDateString('tr-TR', { day:'numeric', month:'long' });
 
   return (
