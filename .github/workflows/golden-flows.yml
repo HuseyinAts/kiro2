@@ -81,6 +81,18 @@ jobs:
           pip install -r requirements.txt
           pip install httpx pytest pytest-asyncio
 
+      - name: AST lint — Pattern A/B dependency traps (HIGH only)
+        working-directory: backend
+        run: |
+          # Session 137 Aşama 4 CI gate:
+          # Block any PR that introduces a new Pattern A (sync get_db +
+          # `await db.*` -> MissingGreenlet 500) or Pattern B
+          # (`current_user.id` on a Pydantic TokenPayload -> AttributeError
+          # 500) regression. MEDIUM type-lies are tracked as tech debt
+          # and will be worked down incrementally.
+          # See docs/audits/2026-04-10_db-dependency-baseline.md
+          python scripts/audit_db_dependency.py --fail-on-high
+
       - name: Run migrations
         working-directory: backend
         run: |

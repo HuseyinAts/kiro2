@@ -412,6 +412,16 @@ def format_report(report: AuditReport) -> str:
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--fail", action="store_true", help="Exit 1 if findings > 0")
+    parser.add_argument(
+        "--fail-on-high",
+        action="store_true",
+        help=(
+            "Exit 1 only if HIGH-severity findings > 0 "
+            "(Pattern A broken + Pattern B). Ignores MEDIUM type-lies. "
+            "Use this as a CI gate to prevent new regressions while "
+            "existing medium-severity tech debt is worked down."
+        ),
+    )
     parser.add_argument("--json", type=str, help="Write JSON report to path")
     parser.add_argument(
         "--root",
@@ -453,6 +463,16 @@ def main() -> int:
 
     if args.fail and report.total() > 0:
         return 1
+    if args.fail_on_high:
+        high_count = len(report.pattern_a_broken) + len(report.pattern_b)
+        if high_count > 0:
+            print(
+                f"\nFAIL: {high_count} HIGH-severity finding(s) — "
+                f"A-broken={len(report.pattern_a_broken)}, "
+                f"B={len(report.pattern_b)}",
+                file=sys.stderr,
+            )
+            return 1
     return 0
 
 

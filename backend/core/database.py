@@ -392,12 +392,44 @@ async def get_db_session_context():
 
 
 # Sync version for compatibility
+#
+# DEPRECATED — DO NOT USE IN NEW CODE.
+#
+# This yields a synchronous sqlalchemy.orm.Session. FastAPI's DI resolver
+# does NOT type-check the annotation against what the dependency yields,
+# so a handler declared as `db: AsyncSession = Depends(get_db)` silently
+# gets a sync Session injected. Any subsequent `await db.execute(...)`
+# raises sqlalchemy.exc.MissingGreenlet at runtime — a 100% 500 factory.
+#
+# Correct imports:
+#   - Async handlers: `from core.database import get_async_session`
+#     and `db: AsyncSession = Depends(get_async_session)`
+#   - Manual session blocks: `async with get_db_session_context() as s:`
+#
+# Session 137 AST linter (`backend/scripts/audit_db_dependency.py`)
+# blocks new regressions at CI. The 98 remaining MEDIUM type-lie call
+# sites (diary_api, university_info_routes, department_info_routes,
+# preference_simulation_routes, sequential_reasoning_api) still work
+# today because none of them `await db.*`, but they are a latent hazard.
+# See `docs/audits/2026-04-10_db-dependency-baseline.md`.
 def get_db():
-    """Sync compatibility function — yields a sync Session.
+    """Sync compatibility shim — DEPRECATED, use get_async_session instead.
 
-    Uses the async engine's underlying sync_engine to create a real
-    sqlalchemy.orm.Session for legacy code that needs db.query().
+    Emits a DeprecationWarning on every call so new usages surface in
+    test runs without breaking the 98 existing legacy call sites.
     """
+    import warnings
+
+    warnings.warn(
+        "core.database.get_db is a sync shim that yields a sync "
+        "sqlalchemy.orm.Session. Any `db: AsyncSession = Depends(get_db)` "
+        "with an `await db.*` call will raise MissingGreenlet. Use "
+        "`get_async_session` for FastAPI handlers or "
+        "`get_db_session_context()` for manual session blocks.",
+        DeprecationWarning,
+        stacklevel=2,
+    )
+
     from sqlalchemy.orm import sessionmaker
 
     if db_manager.engine is None:
