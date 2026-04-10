@@ -1337,6 +1337,7 @@ class ResetPasswordRequest(BaseModel):
 
 @router.post("/reset-password", summary="Reset Password", include_in_schema=False)
 async def reset_password(
+    request: Request,
     request_data: ResetPasswordRequest,
     db: AsyncSession = Depends(get_db),
 ) -> dict[str, Any]:
@@ -1350,6 +1351,7 @@ async def reset_password(
         "message": string
     }
     """
+    _check_rate_limit(request, "password_reset")
     try:
         store = await _get_token_store()
         token_data = await store.get(request_data.token)
@@ -1360,6 +1362,10 @@ async def reset_password(
         pw_error = _validate_password(request_data.newPassword)
         if pw_error:
             return {"success": False, "message": pw_error}
+
+        # Invalidate token BEFORE password update to prevent race condition
+        # (two concurrent requests with same token — only first proceeds)
+        await store.delete(request_data.token)
 
         # Get user and update password
         result = await db.execute(
@@ -1374,9 +1380,6 @@ async def reset_password(
         db_user.password_hash = pwd_context.hash(request_data.newPassword)
         db_user.updated_at = datetime.now(UTC)
         await db.commit()
-
-        # Invalidate used token
-        await store.delete(request_data.token)
 
         return {"success": True, "message": "Şifre başarıyla sıfırlandı"}
     except Exception as e:

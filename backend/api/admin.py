@@ -4,21 +4,20 @@ Kullanıcı yönetimi, dashboard istatistikleri ve içerik yönetimi
 
 CODE QUALITY FIX: Removed sensitive data exposure in error messages
 """
+
 import logging
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any, Literal
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
-from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
-
-from models.enums import KullaniciRolu
-from models.user import Kullanici, KullaniciOlustur
-from services.admin_service import admin_servisi
-from services.user_service import kullanici_servisi
-# FIX 2026-04-01: in-memory auth kaldirildi, JWT auth eklendi
-from core.dependencies import get_current_user, AuthenticatedUser, UserRole, get_db
-from sqlalchemy.ext.asyncio import AsyncSession
+from fastapi.security import HTTPBearer
 from sqlalchemy import text as _sql_text
+from sqlalchemy.ext.asyncio import AsyncSession
+
+# FIX 2026-04-01: in-memory auth kaldirildi, JWT auth eklendi
+from core.dependencies import AuthenticatedUser, UserRole, get_current_user, get_db
+from models.user import Kullanici
+from services.admin_service import admin_servisi
 
 logger = logging.getLogger(__name__)
 
@@ -51,24 +50,24 @@ async def admin_kullanici_getir(
 # ==================== KULLANICI YÖNETİMİ API'LERİ ====================
 
 
-@router.get(
-    "/users", response_model=List[Any], summary="Tüm Kullanıcıları Listele"
-)
+@router.get("/users", response_model=list[Any], summary="Tüm Kullanıcıları Listele")
 async def kullanicilari_listele(
-    rol: Optional[str] = Query(None, description="Rol filtresi (STUDENT, TEACHER, PARENT, ADMIN)"),
-    aktif: Optional[bool] = Query(None, description="Aktiflik durumu filtresi"),
+    rol: str | None = Query(
+        None, description="Rol filtresi (STUDENT, TEACHER, PARENT, ADMIN)"
+    ),
+    aktif: bool | None = Query(None, description="Aktiflik durumu filtresi"),
     sayfa: int = Query(1, ge=1, description="Sayfa numarası"),
     sayfa_boyutu: int = Query(20, ge=1, le=50, description="Sayfa boyutu (max 50)"),
     _: AuthenticatedUser = Depends(admin_kullanici_getir),
     db: AsyncSession = Depends(get_db),
-) -> List[Any]:
+) -> list[Any]:
     """
     Tüm kullanıcıları listele - DB sorgusu (Admin yetkisi gerekli)
     FIX 2026-04-01: admin_servisi mock data yerine dogrudan DB sorgusu.
     """
     try:
         where_clauses = []
-        params: Dict[str, Any] = {}
+        params: dict[str, Any] = {}
         if rol:
             where_clauses.append("role = :rol")
             params["rol"] = rol.upper()
@@ -78,13 +77,16 @@ async def kullanicilari_listele(
         where_sql = ("WHERE " + " AND ".join(where_clauses)) if where_clauses else ""
         params["limit"] = sayfa_boyutu
         params["offset"] = (sayfa - 1) * sayfa_boyutu
-        result = await db.execute(_sql_text(f"""
+        result = await db.execute(
+            _sql_text(f"""
             SELECT id, email, username, first_name, last_name,
                    role, is_active, created_at, last_login, total_xp, level
             FROM users {where_sql}
             ORDER BY created_at DESC
             LIMIT :limit OFFSET :offset
-        """), params)
+        """),
+            params,
+        )
         return [dict(r) for r in result.mappings().all()]
     except Exception as e:
         logger.error(f"Error in kullanicilari_listele: {e}", exc_info=True)
@@ -94,12 +96,12 @@ async def kullanicilari_listele(
         )
 
 
-@router.post("/users", response_model=Dict[str, Any], summary="Yeni Kullanıcı Oluştur")
+@router.post("/users", response_model=dict[str, Any], summary="Yeni Kullanıcı Oluştur")
 async def kullanici_olustur(
-    kullanici_data: Dict[str, Any],
+    kullanici_data: dict[str, Any],
     _: AuthenticatedUser = Depends(admin_kullanici_getir),
     db: AsyncSession = Depends(get_db),
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """Yeni kullanici olustur — auth servisi uzerinden kayit."""
     # Kayit islemi auth.py /kayit endpointinde yapiliyor.
     # Admin panelinden kullanici olusturmak icin oraya yonlendir.
@@ -109,20 +111,25 @@ async def kullanici_olustur(
     )
 
 
-@router.get("/users/{kullanici_id}", response_model=Dict[str, Any], summary="Kullanıcı Detayı")
+@router.get(
+    "/users/{kullanici_id}", response_model=dict[str, Any], summary="Kullanıcı Detayı"
+)
 async def kullanici_detay(
     kullanici_id: str,
     _: AuthenticatedUser = Depends(admin_kullanici_getir),
     db: AsyncSession = Depends(get_db),
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """Belirli kullanicinin detay bilgilerini DB'den getir."""
     try:
-        result = await db.execute(_sql_text("""
+        result = await db.execute(
+            _sql_text("""
             SELECT id, email, username, first_name, last_name,
                    role, is_active, created_at, last_login,
                    total_xp, level, phone
             FROM users WHERE id = :uid
-        """), {"uid": kullanici_id})
+        """),
+            {"uid": kullanici_id},
+        )
         row = result.mappings().first()
         if not row:
             raise HTTPException(status_code=404, detail="Kullanici bulunamadi")
@@ -134,13 +141,15 @@ async def kullanici_detay(
         raise HTTPException(500, detail="Kullanici bilgisi alinamadi")
 
 
-@router.put("/users/{kullanici_id}", response_model=Dict[str, Any], summary="Kullanıcı Güncelle")
+@router.put(
+    "/users/{kullanici_id}", response_model=dict[str, Any], summary="Kullanıcı Güncelle"
+)
 async def kullanici_guncelle(
     kullanici_id: str,
-    kullanici_data: Dict[str, Any],
+    kullanici_data: dict[str, Any],
     _: AuthenticatedUser = Depends(admin_kullanici_getir),
     db: AsyncSession = Depends(get_db),
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """Kullanici is_active / role guncelle. Diger alanlar ignora edilir."""
     try:
         updates, params = [], {"uid": kullanici_id}
@@ -155,13 +164,13 @@ async def kullanici_guncelle(
             params["role"] = new_role
         if not updates:
             raise HTTPException(400, detail="Guncellenecek alan yok")
-        await db.execute(_sql_text(
-            f"UPDATE users SET {', '.join(updates)} WHERE id = :uid"
-        ), params)
+        await db.execute(
+            _sql_text(f"UPDATE users SET {', '.join(updates)} WHERE id = :uid"), params
+        )
         await db.commit()
         result = await db.execute(
             _sql_text("SELECT id, email, role, is_active FROM users WHERE id = :uid"),
-            {"uid": kullanici_id}
+            {"uid": kullanici_id},
         )
         row = result.mappings().first()
         if not row:
@@ -180,12 +189,15 @@ async def kullanici_sil(
     kullanici_id: str,
     _: AuthenticatedUser = Depends(admin_kullanici_getir),
     db: AsyncSession = Depends(get_db),
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """Hard delete yerine soft delete: is_active=False yapar."""
     try:
-        result = await db.execute(_sql_text(
-            "UPDATE users SET is_active=FALSE WHERE id=:uid RETURNING id, email"
-        ), {"uid": kullanici_id})
+        result = await db.execute(
+            _sql_text(
+                "UPDATE users SET is_active=FALSE WHERE id=:uid RETURNING id, email"
+            ),
+            {"uid": kullanici_id},
+        )
         await db.commit()
         row = result.mappings().first()
         if not row:
@@ -206,13 +218,14 @@ async def kullanici_sil(
 async def dashboard_istatistikleri(
     _: AuthenticatedUser = Depends(admin_kullanici_getir),
     db: AsyncSession = Depends(get_db),
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """
     Admin dashboard genel istatistikleri — dogrudan DB sorgusu.
     FIX 2026-04-01: mock data kaldirildi.
     """
     try:
-        result = await db.execute(_sql_text("""
+        result = await db.execute(
+            _sql_text("""
             SELECT
                 COUNT(*)                                          AS toplam_kullanici,
                 SUM(CASE WHEN is_active THEN 1 ELSE 0 END)       AS aktif_kullanici,
@@ -223,10 +236,12 @@ async def dashboard_istatistikleri(
                 SUM(CASE WHEN created_at >= NOW() - INTERVAL '30 days' THEN 1 ELSE 0 END)
                                                                   AS son_30_gun_kayit
             FROM users
-        """))
+        """)
+        )
         u = dict(result.mappings().one())
 
-        q = await db.execute(_sql_text("""
+        q = await db.execute(
+            _sql_text("""
             SELECT
                 COUNT(*)                                                    AS toplam_soru,
                 SUM(CASE WHEN is_active THEN 1 ELSE 0 END)                 AS aktif_soru,
@@ -234,12 +249,13 @@ async def dashboard_istatistikleri(
                 SUM(CASE WHEN is_calib_pool THEN 1 ELSE 0 END)             AS calib_pool,
                 COUNT(DISTINCT subject_area)                                AS ders_sayisi
             FROM question_bank
-        """))
+        """)
+        )
         s = dict(q.mappings().one())
 
-        cat = await db.execute(_sql_text(
-            "SELECT COUNT(*) AS session_sayisi FROM kiro2_cat_sessions"
-        ))
+        cat = await db.execute(
+            _sql_text("SELECT COUNT(*) AS session_sayisi FROM kiro2_cat_sessions")
+        )
         c = dict(cat.mappings().one())
 
         return {
@@ -261,14 +277,16 @@ async def dashboard_istatistikleri(
 
 @router.get("/content/questions", summary="Soru Bankası Listesi")
 async def soru_bankasi_listesi(
-    konu: Optional[str] = Query(None),
-    zorluk: Optional[str] = Query(None),
-    sinav_tipi: Optional[str] = Query(None),
+    konu: str | None = Query(None),
+    zorluk: Literal["VERY_EASY", "EASY", "MEDIUM", "HARD", "VERY_HARD"] | None = Query(
+        None
+    ),
+    sinav_tipi: str | None = Query(None),
     sayfa: int = Query(1, ge=1),
     sayfa_boyutu: int = Query(20, ge=1, le=50),
     _: AuthenticatedUser = Depends(admin_kullanici_getir),
     db: AsyncSession = Depends(get_db),
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """Soru bankasini listele — dogrudan question_bank DB sorgusu."""
     try:
         clauses, params = [], {}
@@ -280,14 +298,17 @@ async def soru_bankasi_listesi(
             params["zorluk"] = zorluk
         where = ("WHERE " + " AND ".join(clauses)) if clauses else ""
         params.update({"limit": sayfa_boyutu, "offset": (sayfa - 1) * sayfa_boyutu})
-        rows = await db.execute(_sql_text(f"""
+        rows = await db.execute(
+            _sql_text(f"""
             SELECT id, question_text, subject_area, difficulty_level,
                    correct_answer, is_calibrated, is_calib_pool,
                    irt_difficulty, irt_discrimination
             FROM question_bank {where}
             ORDER BY created_at DESC
             LIMIT :limit OFFSET :offset
-        """), params)
+        """),
+            params,
+        )
         cnt = await db.execute(
             _sql_text(f"SELECT COUNT(*) FROM question_bank {where}"),
             {k: v for k, v in params.items() if k not in ("limit", "offset")},
@@ -304,8 +325,8 @@ async def soru_bankasi_listesi(
 
 @router.post("/content/questions", summary="Yeni Soru Ekle")
 async def soru_ekle(
-    soru_data: Dict[str, Any], _: Kullanici = Depends(admin_kullanici_getir)
-) -> Dict[str, Any]:
+    soru_data: dict[str, Any], _: Kullanici = Depends(admin_kullanici_getir)
+) -> dict[str, Any]:
     """
     Soru bankasına yeni soru ekle (Admin yetkisi gerekli)
 
@@ -320,9 +341,12 @@ async def soru_ekle(
     try:
         soru = await admin_servisi.soru_ekle(soru_data)
         return {"success": True, "data": soru, "message": "Soru başarıyla eklendi"}
-    except ValueError as e:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Islem basarisiz. Lutfen tekrar deneyin.")
-    except Exception as e:
+    except ValueError:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
+        )
+    except Exception:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Islem basarisiz. Lutfen tekrar deneyin.",
@@ -332,18 +356,21 @@ async def soru_ekle(
 @router.put("/content/questions/{soru_id}", summary="Soru Güncelle")
 async def soru_guncelle(
     soru_id: str,
-    soru_data: Dict[str, Any],
+    soru_data: dict[str, Any],
     _: Kullanici = Depends(admin_kullanici_getir),
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """
     Mevcut soruyu güncelle (Admin yetkisi gerekli)
     """
     try:
         soru = await admin_servisi.soru_guncelle(soru_id, soru_data)
         return {"success": True, "data": soru, "message": "Soru başarıyla güncellendi"}
-    except ValueError as e:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Islem basarisiz. Lutfen tekrar deneyin.")
-    except Exception as e:
+    except ValueError:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
+        )
+    except Exception:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Islem basarisiz. Lutfen tekrar deneyin.",
@@ -353,7 +380,7 @@ async def soru_guncelle(
 @router.delete("/content/questions/{soru_id}", summary="Soru Sil")
 async def soru_sil(
     soru_id: str, _: Kullanici = Depends(admin_kullanici_getir)
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """
     Soruyu sil (Admin yetkisi gerekli)
     """
@@ -362,11 +389,10 @@ async def soru_sil(
 
         if basarili:
             return {"success": True, "message": "Soru başarıyla silindi"}
-        else:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND, detail="Soru bulunamadı"
-            )
-    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Soru bulunamadı"
+        )
+    except Exception:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Islem basarisiz. Lutfen tekrar deneyin.",
@@ -378,45 +404,53 @@ async def soru_sil(
 
 @router.get("/content/educational", summary="Eğitim Materyalleri Listesi")
 async def egitim_materyalleri_listesi(
-    tur: Optional[str] = Query(None),
-    konu: Optional[str] = Query(None),
-    onay_durumu: Optional[str] = Query(None),
+    tur: str | None = Query(None),
+    konu: str | None = Query(None),
+    onay_durumu: str | None = Query(None),
     sayfa: int = Query(1, ge=1),
     sayfa_boyutu: int = Query(20, ge=1, le=50),
     _: AuthenticatedUser = Depends(admin_kullanici_getir),
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """Egitim materyalleri — DB tablosu henuz yok, bos liste dondur."""
-    return {"success": True, "data": [], "total_count": 0,
-            "message": "educational_materials tablosu henuz olusturulmadi"}
+    return {
+        "success": True,
+        "data": [],
+        "total_count": 0,
+        "message": "educational_materials tablosu henuz olusturulmadi",
+    }
 
 
 @router.post("/content/educational", summary="Yeni Eğitim Materyali Ekle")
 async def egitim_materyali_ekle(
-    materyal_data: Dict[str, Any], _: AuthenticatedUser = Depends(admin_kullanici_getir)
-) -> Dict[str, Any]:
+    materyal_data: dict[str, Any], _: AuthenticatedUser = Depends(admin_kullanici_getir)
+) -> dict[str, Any]:
     raise HTTPException(501, detail="educational_materials tablosu henuz olusturulmadi")
 
 
 @router.put("/content/educational/{materyal_id}", summary="Eğitim Materyali Güncelle")
 async def egitim_materyali_guncelle(
-    materyal_id: str, materyal_data: Dict[str, Any],
+    materyal_id: str,
+    materyal_data: dict[str, Any],
     _: AuthenticatedUser = Depends(admin_kullanici_getir),
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     raise HTTPException(501, detail="educational_materials tablosu henuz olusturulmadi")
 
 
 @router.delete("/content/educational/{materyal_id}", summary="Eğitim Materyali Sil")
 async def egitim_materyali_sil(
     materyal_id: str, _: AuthenticatedUser = Depends(admin_kullanici_getir)
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     raise HTTPException(501, detail="educational_materials tablosu henuz olusturulmadi")
 
 
-@router.put("/content/educational/{materyal_id}/approve", summary="Eğitim Materyali Onayla")
+@router.put(
+    "/content/educational/{materyal_id}/approve", summary="Eğitim Materyali Onayla"
+)
 async def egitim_materyali_onayla(
-    materyal_id: str, onay_data: Dict[str, Any],
+    materyal_id: str,
+    onay_data: dict[str, Any],
     _: AuthenticatedUser = Depends(admin_kullanici_getir),
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     raise HTTPException(501, detail="educational_materials tablosu henuz olusturulmadi")
 
 
@@ -425,42 +459,51 @@ async def egitim_materyali_onayla(
 
 @router.post("/content/questions/bulk-upload", summary="Toplu Soru Yükleme")
 async def toplu_soru_yukle(
-    sorular_data: List[Dict[str, Any]], _: AuthenticatedUser = Depends(admin_kullanici_getir)
-) -> Dict[str, Any]:
+    sorular_data: list[dict[str, Any]],
+    _: AuthenticatedUser = Depends(admin_kullanici_getir),
+) -> dict[str, Any]:
     raise HTTPException(501, detail="Toplu soru yukleme henuz implement edilmedi")
 
 
 @router.get("/content/search", summary="İçerik Arama")
 async def icerik_ara(
     q: str = Query(..., min_length=2),
-    tur: Optional[str] = Query(None),
+    tur: str | None = Query(None),
     sayfa: int = Query(1, ge=1),
     sayfa_boyutu: int = Query(20, ge=1, le=50),
     _: AuthenticatedUser = Depends(admin_kullanici_getir),
     db: AsyncSession = Depends(get_db),
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """question_bank'ta full-text arama."""
     try:
-        params: Dict[str, Any] = {
-            "q": f"%{q}%", "limit": sayfa_boyutu,
+        params: dict[str, Any] = {
+            "q": f"%{q}%",
+            "limit": sayfa_boyutu,
             "offset": (sayfa - 1) * sayfa_boyutu,
         }
-        rows = await db.execute(_sql_text("""
+        rows = await db.execute(
+            _sql_text("""
             SELECT id, question_text, subject_area, difficulty_level, correct_answer
             FROM question_bank
             WHERE is_active=TRUE
               AND (LOWER(question_text) LIKE LOWER(:q)
                    OR LOWER(subject_area) LIKE LOWER(:q))
             ORDER BY id LIMIT :limit OFFSET :offset
-        """), params)
-        cnt = await db.execute(_sql_text("""
+        """),
+            params,
+        )
+        cnt = await db.execute(
+            _sql_text("""
             SELECT COUNT(*) FROM question_bank
             WHERE is_active=TRUE
               AND (LOWER(question_text) LIKE LOWER(:q)
                    OR LOWER(subject_area) LIKE LOWER(:q))
-        """), {"q": f"%{q}%"})
+        """),
+            {"q": f"%{q}%"},
+        )
         return {
-            "success": True, "query": q,
+            "success": True,
+            "query": q,
             "data": [dict(r) for r in rows.mappings().all()],
             "total_count": cnt.scalar(),
         }
