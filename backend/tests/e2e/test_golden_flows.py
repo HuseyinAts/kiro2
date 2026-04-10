@@ -995,6 +995,33 @@ def test_gf9wb_eba_watch_history_not_500(client: httpx.Client):
 
 
 # ---------------------------------------------------------------------------
+# GF9wC: kvkk privacy export/requests must not 500 (dual-trap)
+# ---------------------------------------------------------------------------
+
+
+def test_gf9wc_kvkk_privacy_export_requests_not_500(client: httpx.Client):
+    """
+    GET /api/v1/kvkk/privacy/export/requests must return semantic status.
+
+    Session 137 AST linter: ``backend/api/kvkk_privacy_api.py`` is a dual-trap:
+    Pattern A (sync ``get_db`` with ``await db.execute``) AND Pattern B
+    (``current_user.id`` on a Pydantic ``TokenPayload`` whose user_id field
+    is ``sub``). Both traps 500 on first call. A student with zero export
+    requests should get ``[]``, not a 500 or AttributeError.
+    """
+    token = _login(client, STUDENT)
+    resp = client.get(
+        "/api/v1/kvkk/privacy/export/requests",
+        headers=_auth_headers(token),
+    )
+    assert resp.status_code != 500, (
+        f"GF9wC kvkk export/requests crashed with 500: {resp.text[:300]}. "
+        f"Check backend/api/kvkk_privacy_api.py — dual trap "
+        f"(sync get_db + TokenPayload.id)."
+    )
+
+
+# ---------------------------------------------------------------------------
 # GF1wB: auth refresh-token persistence (auth.py:329 silent swallow)
 # ---------------------------------------------------------------------------
 
