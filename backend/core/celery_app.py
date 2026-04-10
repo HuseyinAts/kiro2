@@ -83,13 +83,13 @@ celery_app.conf.update(
     task_default_retry_delay=60,  # 1 minute
     task_max_retries=3,
     # Result backend
-    result_expires=3600,  # 1 hour
+    result_expires=86400,  # 24 hours (batch/report tasks can take 30-60 min)
     result_backend_transport_options={
         "master_name": "mymaster",
         "visibility_timeout": 3600,
     },
     # Worker configuration
-    worker_prefetch_multiplier=4,
+    worker_prefetch_multiplier=1,  # Fair distribution; 4 causes starvation with long tasks
     worker_max_tasks_per_child=1000,  # Restart worker after 1000 tasks
     worker_disable_rate_limits=False,
     # Monitoring
@@ -189,7 +189,9 @@ celery_app.conf.update(
 class BaseTask(celery_app.Task):
     """Base task with retry and logging"""
 
-    autoretry_for = (Exception,)
+    # Only retry transient failures — broad Exception retry causes non-recoverable
+    # errors (bad data, validation errors) to waste retries before final failure
+    autoretry_for = (ConnectionError, TimeoutError, OSError)
     retry_kwargs = {"max_retries": 3, "countdown": 60}
     retry_backoff = True
     retry_backoff_max = 600
