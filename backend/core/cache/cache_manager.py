@@ -5,6 +5,7 @@ Redis Cache Manager - Performance Optimization
 import hashlib
 import json
 import logging
+import os
 from dataclasses import dataclass
 from datetime import datetime
 from enum import Enum
@@ -238,8 +239,10 @@ class CacheManager:
             print(f"Cache clear error: {e}")
 
 
-# Global instance
-cache_manager = CacheManager()
+# Global instance — env var'dan URL oku, fallback localhost
+cache_manager = CacheManager(
+    redis_url=os.getenv("REDIS_URL", "redis://localhost:6379/0")
+)
 
 
 # Cache decorator functions
