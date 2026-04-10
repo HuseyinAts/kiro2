@@ -92,7 +92,8 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
       args:
-        VITE_SHOW_DEMO: "${VITE_SHOW_DEMO:-false}"
+        VITE_SHOW_DEMO: "${VITE_SHOW_DEMO:-true}"
+        VITE_DEMO_PASSWORD: "${VITE_DEMO_PASSWORD:-Kiro2Beta2026@x}"
     container_name: kiro2-frontend
     ports:
       - "3000:3000"
