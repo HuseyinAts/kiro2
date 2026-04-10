@@ -62,6 +62,15 @@ export default function LeaguePage() {
       <Alert severity="error">{error ?? 'Lig verisi alınamadı'}</Alert>
     </Box>
   );
+  if (data.standings.length === 0) return (
+    <Box maxWidth={520} mx="auto" mt={8} textAlign="center">
+      <Typography fontSize={48}>🏅</Typography>
+      <Typography variant="h6" fontWeight={700} mt={1}>Henüz sıralama yok</Typography>
+      <Typography variant="body2" color="text.secondary" mt={1}>
+        Bu hafta sınav çözdükçe lig sıralamana gireceksin.
+      </Typography>
+    </Box>
+  );
 
   const tier   = TIER_CONFIG[data.tier] ?? { label: data.tier, color: '#888', icon: '🏅' };
   const maxXP  = useMemo(() => Math.max(...data.standings.map(s => s.xp), 1), [data.standings]);

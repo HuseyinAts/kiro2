@@ -146,22 +146,13 @@ async def get_league_standings(*, db: AsyncSession, student_id: str) -> dict:
             "League standings DB fallback",
             extra_data={"student_id": student_id, "error": str(exc)},
         )
-        # Tablo henüz oluşturulmadıysa mock veri döndür
         return {
             "tier": DEFAULT_TIER,
-            "rank": 1,
+            "rank": 0,
             "weekly_xp": 0,
-            "total_in_tier": 1,
+            "total_in_tier": 0,
             "week_start": _current_week_start().isoformat(),
-            "standings": [
-                {
-                    "student_id": student_id,
-                    "display_name": "Sen",
-                    "xp": 0,
-                    "rank": 1,
-                    "is_self": True,
-                }
-            ],
+            "standings": [],
         }
 
 
