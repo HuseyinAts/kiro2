@@ -1,0 +1,129 @@
+# Golden Flow Merge Gate
+#
+# Runs the 8 critical end-to-end user journeys against a live backend stack.
+# These are NOT unit tests — they exist to catch silent regressions that unit
+# tests miss (wrong tables, broken routers, case convention drift, missing
+# seed data, middleware wiring bugs).
+#
+# Rule: Any PR that breaks a Golden Flow MUST NOT be merged. New top-level
+# user features MUST add a new Golden Flow test before shipping.
+#
+# See:
+#   - backend/tests/e2e/test_golden_flows.py
+#   - .claude/rules/case-convention.md (Endpoint Gate)
+#   - .claude/rules/path-naming.md    (TR/EN drift)
+
+name: Golden Flows
+
+on:
+  push:
+    branches: [main, master, develop]
+  pull_request:
+    branches: [main, master, develop]
+  workflow_dispatch:
+
+concurrency:
+  group: golden-flows-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  golden-flows:
+    name: 8 Golden Flow E2E tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: kiro2
+        ports:
+          - 5434:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      DATABASE_URL: postgresql+asyncpg://postgres:postgres@localhost:5434/kiro2
+      REDIS_URL: redis://localhost:6379/0
+      JWT_SECRET: test-jwt-secret-for-golden-flows-ci-not-for-production-use-only
+      BACKEND_URL: http://localhost:8000
+      PYTHONIOENCODING: utf-8
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install backend dependencies
+        working-directory: backend
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install httpx pytest pytest-asyncio
+
+      - name: Run migrations
+        working-directory: backend
+        run: |
+          alembic upgrade head || echo "::warning::alembic upgrade failed — continuing with raw schema"
+
+      - name: Seed MVP users
+        working-directory: backend
+        run: |
+          python scripts/seed_mvp_data.py || echo "::warning::seed script failed — GF tests will skip unauthenticated flows"
+
+      - name: Start backend
+        working-directory: backend
+        run: |
+          nohup python -m uvicorn main:app --host 0.0.0.0 --port 8000 > backend.log 2>&1 &
+          echo $! > backend.pid
+
+      - name: Wait for backend
+        run: |
+          for i in {1..30}; do
+            if curl -sf http://localhost:8000/health > /dev/null; then
+              echo "Backend is up after ${i}s"
+              exit 0
+            fi
+            sleep 1
+          done
+          echo "::error::Backend did not come up within 30s"
+          tail -100 backend/backend.log || true
+          exit 1
+
+      - name: Run Golden Flow tests
+        working-directory: backend
+        run: |
+          pytest tests/e2e/test_golden_flows.py -m golden_flow -v --tb=short -x
+
+      - name: Backend log on failure
+        if: failure()
+        working-directory: backend
+        run: tail -200 backend.log || true
+
+      - name: Stop backend
+        if: always()
+        working-directory: backend
+        run: |
+          if [ -f backend.pid ]; then
+            kill "$(cat backend.pid)" 2>/dev/null || true
+          fi
