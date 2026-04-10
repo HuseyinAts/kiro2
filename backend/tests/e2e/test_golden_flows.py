@@ -940,6 +940,38 @@ def test_gf5wb_daily_quest_progress_advances(client: httpx.Client):
 
 
 # ---------------------------------------------------------------------------
+# GF9wA: khan oauth status must not 500 (Pattern A sync get_db trap)
+# ---------------------------------------------------------------------------
+
+
+def test_gf9wa_khan_oauth_status_not_500(client: httpx.Client):
+    """
+    GET /api/v1/khan/oauth/status must return a semantic status, never 500.
+
+    Session 137 AST linter hit: ``backend/api/khan_routes.py`` imports the
+    sync ``get_db`` from ``core.database`` but declares handler params as
+    ``db: AsyncSession = Depends(get_db)``. FastAPI's DI resolver injects
+    a sync ``sqlalchemy.orm.Session`` with no type check, and the first
+    ``await db.execute(...)`` raises ``MissingGreenlet`` → 500.
+
+    ``oauth/status`` is the minimal handler — no OAuth token required —
+    that still hits the broken DB dependency, so it is the smallest probe
+    for this file. A student with no Khan link should get
+    ``{"connected": false}``, never a crash.
+
+    On fail: swap the import to ``get_async_session`` (same module) and
+    replace every ``Depends(get_db)`` in khan_routes.py. See
+    ``docs/audits/2026-04-10_db-dependency-baseline.md``.
+    """
+    token = _login(client, STUDENT)
+    resp = client.get("/api/v1/khan/oauth/status", headers=_auth_headers(token))
+    assert resp.status_code != 500, (
+        f"GF9wA khan oauth/status crashed with 500: {resp.text[:300]}. "
+        f"Check backend/api/khan_routes.py — Pattern A sync get_db trap."
+    )
+
+
+# ---------------------------------------------------------------------------
 # GF1wB: auth refresh-token persistence (auth.py:329 silent swallow)
 # ---------------------------------------------------------------------------
 

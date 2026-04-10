@@ -3,19 +3,19 @@ Task 98: Khan Academy API Routes
 OAuth, content browsing, progress sync, and certificates
 """
 
-from fastapi import APIRouter, Depends, HTTPException, Query
-from sqlalchemy.ext.asyncio import AsyncSession
-from typing import List, Optional
-from pydantic import BaseModel
+import logging
 from datetime import datetime
 
-# PHASE 1 FIX: Corrected import paths (removed 'backend.' prefix)
-from core.database import get_db
+from fastapi import APIRouter, Depends, HTTPException, Query
+from pydantic import BaseModel
+from sqlalchemy.ext.asyncio import AsyncSession
+
+# Session 137: swap sync get_db shim → async get_async_session.
+# Pattern A fix — handlers are AsyncSession so we must yield an AsyncSession.
+from core.dependencies import UserRole, get_current_user
 from models.database import User
-from services.khan_academy_client import KhanSubject, KhanContentType, get_khan_client
+from services.khan_academy_client import KhanContentType, KhanSubject, get_khan_client
 from services.khan_content_sync import KhanContentSyncService, KhanProgressSyncService
-from core.dependencies import get_current_user, UserRole
-import logging
 
 logger = logging.getLogger(__name__)
 
@@ -32,16 +32,16 @@ class KhanContentResponse(BaseModel):
 
     content_id: str
     title: str
-    description: Optional[str]
+    description: str | None
     content_type: str
     subject: str
-    topic: Optional[str]
-    video_url: Optional[str]
-    duration_seconds: Optional[int]
-    thumbnail_url: Optional[str]
-    exercise_url: Optional[str]
-    problem_count: Optional[int]
-    difficulty_level: Optional[str]
+    topic: str | None
+    video_url: str | None
+    duration_seconds: int | None
+    thumbnail_url: str | None
+    exercise_url: str | None
+    problem_count: int | None
+    difficulty_level: str | None
 
 
 class KhanProgressResponse(BaseModel):
@@ -50,14 +50,14 @@ class KhanProgressResponse(BaseModel):
     content_id: str
     content_title: str
     content_type: str
-    started_at: Optional[str]
-    completed_at: Optional[str]
-    last_accessed: Optional[str]
+    started_at: str | None
+    completed_at: str | None
+    last_accessed: str | None
     video_seconds_watched: int
     video_completed: bool
     problems_attempted: int
     problems_correct: int
-    proficiency_level: Optional[str]
+    proficiency_level: str | None
     energy_points: int
 
 
@@ -67,9 +67,9 @@ class KhanCertificateResponse(BaseModel):
     badge_id: str
     badge_name: str
     badge_category: str
-    description: Optional[str]
-    icon_url: Optional[str]
-    verification_url: Optional[str]
+    description: str | None
+    icon_url: str | None
+    verification_url: str | None
     earned_at: str
 
 
@@ -132,7 +132,7 @@ async def khan_oauth_callback(
     state: str = Query(..., description="CSRF state"),
     redirect_uri: str = Query(..., description="Redirect URI"),
     current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db),
+    db: AsyncSession = Depends(get_async_session),
 ):
     """
     Task 98.1: OAuth callback handler
@@ -196,13 +196,14 @@ async def khan_oauth_callback(
 
 @router.get("/oauth/status")
 async def get_oauth_status(
-    current_user: User = Depends(get_current_user), db: AsyncSession = Depends(get_db)
+    current_user: User = Depends(get_current_user), db: AsyncSession = Depends(get_async_session)
 ):
     """
     Check if user has connected Khan Academy account
     """
-    from models.khan_content import KhanOAuthToken
     from sqlalchemy import select
+
+    from models.khan_content import KhanOAuthToken
 
     stmt = select(KhanOAuthToken).where(
         KhanOAuthToken.user_id == current_user.id, KhanOAuthToken.is_active == True
@@ -229,15 +230,15 @@ async def get_oauth_status(
 # ============================================
 
 
-@router.get("/content", response_model=List[KhanContentResponse])
+@router.get("/content", response_model=list[KhanContentResponse])
 async def get_khan_content(
-    subject: Optional[KhanSubject] = None,
-    content_type: Optional[KhanContentType] = None,
-    difficulty: Optional[str] = None,
-    search: Optional[str] = None,
+    subject: KhanSubject | None = None,
+    content_type: KhanContentType | None = None,
+    difficulty: str | None = None,
+    search: str | None = None,
     page: int = Query(1, ge=1),
     page_size: int = Query(20, ge=1, le=100),
-    db: AsyncSession = Depends(get_db),
+    db: AsyncSession = Depends(get_async_session),
 ):
     """
     Task 98.2: Browse Turkish Khan Academy content
@@ -248,8 +249,9 @@ async def get_khan_content(
     - difficulty: beginner, intermediate, advanced
     - search: Search in title/description
     """
+    from sqlalchemy import and_, or_, select
+
     from models.khan_content import KhanContent
-    from sqlalchemy import select, and_, or_
 
     # Build query
     filters = [KhanContent.language == "tr"]
@@ -303,10 +305,11 @@ async def get_khan_content(
 
 
 @router.get("/content/{content_id}", response_model=KhanContentResponse)
-async def get_khan_content_details(content_id: str, db: AsyncSession = Depends(get_db)):
+async def get_khan_content_details(content_id: str, db: AsyncSession = Depends(get_async_session)):
     """Get specific Khan content details"""
-    from models.khan_content import KhanContent
     from sqlalchemy import select
+
+    from models.khan_content import KhanContent
 
     stmt = select(KhanContent).where(KhanContent.khan_content_id == content_id)
     result = await db.execute(stmt)
@@ -338,15 +341,16 @@ async def get_khan_content_details(content_id: str, db: AsyncSession = Depends(g
 
 @router.post("/progress/sync")
 async def sync_user_progress(
-    current_user: User = Depends(get_current_user), db: AsyncSession = Depends(get_db)
+    current_user: User = Depends(get_current_user), db: AsyncSession = Depends(get_async_session)
 ):
     """
     Task 98.3: Bidirectional progress sync
 
     Pull progress from Khan Academy and push local progress
     """
-    from models.khan_content import KhanOAuthToken
     from sqlalchemy import select
+
+    from models.khan_content import KhanOAuthToken
 
     # Get OAuth token
     stmt = select(KhanOAuthToken).where(
@@ -382,17 +386,18 @@ async def sync_user_progress(
         await sync_service.close()
 
 
-@router.get("/progress", response_model=List[KhanProgressResponse])
+@router.get("/progress", response_model=list[KhanProgressResponse])
 async def get_user_progress(
-    current_user: User = Depends(get_current_user), db: AsyncSession = Depends(get_db)
+    current_user: User = Depends(get_current_user), db: AsyncSession = Depends(get_async_session)
 ):
     """
     Task 98.3: Get user's Khan Academy progress
 
     Returns all progress entries
     """
-    from models.khan_content import KhanUserProgress, KhanContent
     from sqlalchemy import select
+
+    from models.khan_content import KhanContent, KhanUserProgress
 
     stmt = (
         select(KhanUserProgress, KhanContent)
@@ -429,15 +434,16 @@ async def get_user_progress(
 
 @router.get("/progress/analytics")
 async def get_progress_analytics(
-    current_user: User = Depends(get_current_user), db: AsyncSession = Depends(get_db)
+    current_user: User = Depends(get_current_user), db: AsyncSession = Depends(get_async_session)
 ):
     """
     Task 98.3: Get user progress analytics
 
     Summary statistics of Khan Academy learning
     """
+    from sqlalchemy import func, select
+
     from models.khan_content import KhanUserProgress
-    from sqlalchemy import select, func
 
     # Total energy points
     stmt = select(func.sum(KhanUserProgress.energy_points)).where(
@@ -482,15 +488,16 @@ async def get_progress_analytics(
 # ============================================
 
 
-@router.get("/badges", response_model=List[KhanCertificateResponse])
+@router.get("/badges", response_model=list[KhanCertificateResponse])
 async def get_user_badges(
-    current_user: User = Depends(get_current_user), db: AsyncSession = Depends(get_db)
+    current_user: User = Depends(get_current_user), db: AsyncSession = Depends(get_async_session)
 ):
     """
     Task 98.4: Get user's Khan Academy badges/certificates
     """
-    from models.khan_content import KhanCertificate
     from sqlalchemy import select
+
+    from models.khan_content import KhanCertificate
 
     stmt = (
         select(KhanCertificate)
@@ -517,13 +524,14 @@ async def get_user_badges(
 
 @router.post("/badges/sync")
 async def sync_user_badges(
-    current_user: User = Depends(get_current_user), db: AsyncSession = Depends(get_db)
+    current_user: User = Depends(get_current_user), db: AsyncSession = Depends(get_async_session)
 ):
     """
     Task 98.4: Sync badges from Khan Academy
     """
-    from models.khan_content import KhanOAuthToken, KhanCertificate
     from sqlalchemy import select
+
+    from models.khan_content import KhanCertificate, KhanOAuthToken
 
     # Get OAuth token
     stmt = select(KhanOAuthToken).where(
@@ -589,10 +597,10 @@ async def sync_user_badges(
 
 @router.post("/admin/sync/content", response_model=SyncStatsResponse)
 async def trigger_content_sync(
-    subjects: Optional[List[KhanSubject]] = None,
+    subjects: list[KhanSubject] | None = None,
     use_mock: bool = Query(False),
     current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db),
+    db: AsyncSession = Depends(get_async_session),
 ):
     """
     Admin: Trigger Khan Academy content sync
