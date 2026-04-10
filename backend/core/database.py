@@ -163,8 +163,8 @@ class DatabaseManager:
                         "pool_pre_ping": True,  # Connection health check before each use
                         "pool_size": pool_size,  # Base pool size
                         "max_overflow": max_overflow,  # Additional connections during peak
-                        "pool_recycle": 300,  # PERFORMANCE FIX: Recycle after 5 minutes (was 1 hour)
-                        # PostgreSQL default idle timeout is 600s, so 300s prevents stale connections
+                        "pool_recycle": 600,  # Recycle at PostgreSQL default idle timeout (600s)
+                        # 300s was < PostgreSQL idle timeout → "server closed connection" errors
                         "pool_timeout": 30,  # Wait up to 30s for connection from pool
                     }
                 )

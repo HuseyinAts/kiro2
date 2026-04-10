@@ -2,13 +2,17 @@
 Redis Cache Manager - Performance Optimization
 """
 
-from redis import asyncio as aioredis
-import json
-from typing import Any, Optional
 import hashlib
-from datetime import datetime
+import json
+import logging
 from dataclasses import dataclass
+from datetime import datetime
 from enum import Enum
+from typing import Any
+
+from redis import asyncio as aioredis
+
+logger = logging.getLogger(__name__)
 
 
 class ConnectionStatus(str, Enum):
@@ -28,9 +32,9 @@ class ConnectionMetrics:
     active_connections: int = 0
     failed_connections: int = 0
     reconnection_attempts: int = 0
-    last_connection_time: Optional[datetime] = None
-    last_error_time: Optional[datetime] = None
-    last_error_message: Optional[str] = None
+    last_connection_time: datetime | None = None
+    last_error_time: datetime | None = None
+    last_error_message: str | None = None
 
     def to_dict(self) -> dict:
         """Convert metrics to dictionary"""
@@ -64,11 +68,14 @@ class CacheManager:
     async def initialize(self) -> bool:
         """Redis bağlantısı kur"""
         try:
+            import os
+
+            max_conn = int(os.getenv("REDIS_MAX_CONNECTIONS", "100"))
             self.redis = await aioredis.from_url(
                 self.redis_url,
                 encoding="utf-8",
                 decode_responses=False,
-                max_connections=50,
+                max_connections=max_conn,
                 socket_keepalive=True,
                 socket_connect_timeout=5,
                 retry_on_timeout=True,
@@ -76,12 +83,11 @@ class CacheManager:
 
             # Bağlantıyı test et
             await self.redis.ping()
-            print("[OK] Redis bağlantısı başarılı")
+            logger.info("Redis bağlantısı başarılı (max_connections=%d)", max_conn)
             return True
 
         except Exception as e:
-            print(f"[OK][OK]  Redis bağlantı hatası: {e}")
-            print("   Cache devre dışı - sistem normal çalışmaya devam edecek")
+            logger.error("Redis bağlantı hatası: %s — cache devre dışı", e)
             self.enabled = False
             return False
 
@@ -112,7 +118,7 @@ class CacheManager:
         hash_key = hashlib.md5(data.encode()).hexdigest()
         return f"{prefix}:{hash_key}"
 
-    async def get(self, key: str) -> Optional[Any]:
+    async def get(self, key: str) -> Any | None:
         """Cache'den veri al"""
         await self._ensure_initialized()
 
@@ -184,24 +190,27 @@ class CacheManager:
             await self.redis.delete(key)
             return True
         except Exception as e:
-            print(f"Cache delete error: {e}")
+            logger.error("Cache delete error: %s", e)
             return False
 
     async def invalidate_pattern(self, pattern: str):
-        """Pattern'e uyan tüm cache'leri temizle"""
+        """Pattern'e uyan tüm cache'leri temizle (pipeline ile batch delete)"""
         if not self.enabled or not self.redis:
             return
 
         try:
             cursor = 0
             while True:
-                cursor, keys = await self.redis.scan(cursor, match=pattern, count=100)
+                cursor, keys = await self.redis.scan(cursor, match=pattern, count=1000)
                 if keys:
-                    await self.redis.delete(*keys)
+                    pipe = self.redis.pipeline()
+                    for key in keys:
+                        pipe.delete(key)
+                    await pipe.execute()
                 if cursor == 0:
                     break
         except Exception as e:
-            print(f"Cache invalidate error: {e}")
+            logger.error("Cache invalidate error: %s", e)
 
     def get_stats(self) -> dict:
         """Cache istatistikleri"""
@@ -294,10 +303,10 @@ __all__ = [
     "CacheService",  # Alias for CacheManager
     "ConnectionMetrics",
     "ConnectionStatus",
-    "cache_manager",
-    "cache_result",
-    "cache_learning_style",
-    "cache_exam_results",
-    "cache_recommendations",
     "cache_content",
+    "cache_exam_results",
+    "cache_learning_style",
+    "cache_manager",
+    "cache_recommendations",
+    "cache_result",
 ]

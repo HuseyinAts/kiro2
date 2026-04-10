@@ -3,13 +3,16 @@ Advanced Cache Strategies
 Multi-layer caching with smart invalidation and preloading
 Target: Improve cache hit rate and reduce latency
 """
+
 import asyncio
+import builtins
 import json
 import logging
 import time
+from collections.abc import Callable
 from dataclasses import dataclass
 from enum import Enum
-from typing import Any, Callable, Dict, List, Optional, Set, Tuple
+from typing import Any
 
 import redis.asyncio as redis
 from redis.asyncio import ConnectionPool
@@ -33,11 +36,11 @@ class CacheEntry:
     key: str
     value: Any
     created_at: float
-    expires_at: Optional[float]
+    expires_at: float | None
     access_count: int = 0
     last_accessed: float = 0
     size_bytes: int = 0
-    tags: Set[str] = None
+    tags: set[str] = None
 
     def __post_init__(self):
         if self.tags is None:
@@ -71,14 +74,14 @@ class SmartCacheManager:
         self.default_ttl = default_ttl
 
         # L1 cache (in-memory)
-        self.l1_cache: Dict[str, CacheEntry] = {}
+        self.l1_cache: dict[str, CacheEntry] = {}
 
         # L2 cache (Redis)
-        self.redis_pool: Optional[ConnectionPool] = None
-        self.redis_client: Optional[redis.Redis] = None
+        self.redis_pool: ConnectionPool | None = None
+        self.redis_client: redis.Redis | None = None
 
         # Tag index for invalidation
-        self.tag_index: Dict[str, Set[str]] = {}  # tag -> keys
+        self.tag_index: dict[str, set[str]] = {}  # tag -> keys
 
         # Metrics
         self.metrics = {
@@ -97,7 +100,7 @@ class SmartCacheManager:
         if self.l2_enabled and self.redis_client is None:
             try:
                 self.redis_pool = ConnectionPool.from_url(
-                    self.redis_url, max_connections=20, decode_responses=False
+                    self.redis_url, max_connections=50, decode_responses=False
                 )
                 self.redis_client = redis.Redis(connection_pool=self.redis_pool)
                 await self.redis_client.ping()
@@ -113,7 +116,7 @@ class SmartCacheManager:
         if self.redis_pool:
             await self.redis_pool.disconnect()
 
-    async def get(self, key: str, default: Any = None) -> Optional[Any]:
+    async def get(self, key: str, default: Any = None) -> Any | None:
         """
         Get value from cache (L1 -> L2 hierarchy)
 
@@ -167,8 +170,8 @@ class SmartCacheManager:
         self,
         key: str,
         value: Any,
-        ttl: Optional[int] = None,
-        tags: Optional[Set[str]] = None,
+        ttl: int | None = None,
+        tags: set[str] | None = None,
     ):
         """
         Set value in cache (L1 + L2)
@@ -203,7 +206,11 @@ class SmartCacheManager:
                 logger.error(f"L2 cache set error: {e}")
 
     async def _set_l1(
-        self, key: str, value: Any, ttl: Optional[int], tags: Optional[Set[str]] = None
+        self,
+        key: str,
+        value: Any,
+        ttl: int | None,
+        tags: builtins.set[str] | None = None,
     ):
         """Set value in L1 cache"""
         # Evict if cache is full
@@ -355,8 +362,8 @@ class SmartCacheManager:
         self,
         key: str,
         compute_fn: Callable,
-        ttl: Optional[int] = None,
-        tags: Optional[Set[str]] = None,
+        ttl: int | None = None,
+        tags: builtins.set[str] | None = None,
     ) -> Any:
         """
         Get from cache or compute if missing
@@ -387,7 +394,7 @@ class SmartCacheManager:
         return value
 
     async def preload(
-        self, keys_and_values: List[Tuple[str, Any]], ttl: Optional[int] = None
+        self, keys_and_values: list[tuple[str, Any]], ttl: int | None = None
     ):
         """
         Preload multiple keys (cache warming)
@@ -403,7 +410,7 @@ class SmartCacheManager:
 
         logger.info(f"Preloaded {len(keys_and_values)} cache entries")
 
-    def get_metrics(self) -> Dict[str, Any]:
+    def get_metrics(self) -> dict[str, Any]:
         """Get cache metrics"""
         total_requests = self.metrics["l1_hits"] + self.metrics["l1_misses"]
 
@@ -454,9 +461,7 @@ class SmartCacheManager:
 
 
 # Decorator for caching function results
-def cached(
-    ttl: Optional[int] = None, tags: Optional[Set[str]] = None, key_prefix: str = ""
-):
+def cached(ttl: int | None = None, tags: set[str] | None = None, key_prefix: str = ""):
     """
     Decorator to cache function results
 
@@ -494,10 +499,10 @@ def cached(
 
 
 # Global cache instance
-_global_cache: Optional[SmartCacheManager] = None
+_global_cache: SmartCacheManager | None = None
 
 
-async def get_smart_cache(config: Optional[Dict[str, Any]] = None) -> SmartCacheManager:
+async def get_smart_cache(config: dict[str, Any] | None = None) -> SmartCacheManager:
     """Get or create global cache manager"""
     global _global_cache
 
@@ -509,7 +514,7 @@ async def get_smart_cache(config: Optional[Dict[str, Any]] = None) -> SmartCache
     return _global_cache
 
 
-def get_cache_manager() -> Optional[SmartCacheManager]:
+def get_cache_manager() -> SmartCacheManager | None:
     """
     Get the global cache manager for metrics/monitoring
 

@@ -10,6 +10,7 @@ Endpoint'ler:
 
 from __future__ import annotations
 
+import logging
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, Query
@@ -25,6 +26,7 @@ from app.schemas.fsrs_schemas import (
 )
 from app.services.fsrs_service import FSRSService
 
+logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api/v1/fsrs", tags=["FSRS"])
 
 
@@ -35,9 +37,9 @@ router = APIRouter(prefix="/api/v1/fsrs", tags=["FSRS"])
 )
 async def get_due_items(
     subject_id: UUID | None = Query(None, description="Derse göre filtrele"),
-    limit:      int            = Query(20,  ge=1, le=100),
-    current_user: User         = Depends(get_current_user),
-    db: AsyncSession           = Depends(get_db),
+    limit: int = Query(20, ge=1, le=100),
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
 ) -> list[DueItemResponse]:
     svc = FSRSService(db)
     items = await svc.get_due_items(
@@ -45,28 +47,35 @@ async def get_due_items(
         subject_id=str(subject_id) if subject_id else None,
         limit=limit,
     )
-    return [
-        DueItemResponse(
-            question_id=s.question_id,
-            stability=round(s.stability, 3),
-            difficulty=round(s.difficulty, 2),
-            due_date=s.due_date,
-            retrievability=round(s.retrievability, 3),
-            urgency_score=round(s.urgency_score, 3),
-            state=s.state,
-            reps=s.reps,
-            lapses=s.lapses,
-            stem=irt.get("question_text"),
-            options={
-                "A": irt.get("option_a", ""),
-                "B": irt.get("option_b", ""),
-                "C": irt.get("option_c", ""),
-                "D": irt.get("option_d", ""),
-            },
-            subject_id=irt.get("subject_id"),
+    results = []
+    for s, irt in items:
+        if not isinstance(irt, dict):
+            logger.warning(
+                "get_due_items: beklenen dict, alınan %s — atlanıyor", type(irt)
+            )
+            continue
+        results.append(
+            DueItemResponse(
+                question_id=s.question_id,
+                stability=round(s.stability, 3),
+                difficulty=round(s.difficulty, 2),
+                due_date=s.due_date,
+                retrievability=round(s.retrievability, 3),
+                urgency_score=round(s.urgency_score, 3),
+                state=s.state,
+                reps=s.reps,
+                lapses=s.lapses,
+                stem=irt.get("question_text"),
+                options={
+                    "A": irt.get("option_a", ""),
+                    "B": irt.get("option_b", ""),
+                    "C": irt.get("option_c", ""),
+                    "D": irt.get("option_d", ""),
+                },
+                subject_id=irt.get("subject_id"),
+            )
         )
-        for s, irt in items
-    ]
+    return results
 
 
 @router.post(
@@ -75,11 +84,11 @@ async def get_due_items(
     summary="Standalone tekrar yanıtla (CAT dışı)",
 )
 async def submit_review(
-    body:         ReviewRequest,
-    current_user: User         = Depends(get_current_user),
-    db: AsyncSession           = Depends(get_db),
+    body: ReviewRequest,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
 ) -> ReviewResponse:
-    svc    = FSRSService(db)
+    svc = FSRSService(db)
     result = await svc.apply_review(
         user_id=str(current_user.id),
         question_id=str(body.question_id),
@@ -105,10 +114,10 @@ async def submit_review(
     summary="Vadesi gelen kart sayısı (hızlı)",
 )
 async def get_due_count(
-    current_user: User       = Depends(get_current_user),
-    db: AsyncSession         = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
 ) -> DueCountResponse:
-    svc   = FSRSService(db)
+    svc = FSRSService(db)
     count = await svc.get_due_count(str(current_user.id))
     return DueCountResponse(count=count)
 
@@ -119,12 +128,13 @@ async def get_due_count(
     summary="Öğrencinin FSRS istatistikleri",
 )
 async def get_stats(
-    current_user: User       = Depends(get_current_user),
-    db: AsyncSession         = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
 ) -> StatsResponse:
     from sqlalchemy import text
 
-    result = await db.execute(text("""
+    result = await db.execute(
+        text("""
         SELECT
             COUNT(*)                                            AS total,
             SUM(CASE WHEN state = 0 THEN 1 ELSE 0 END)         AS new_count,
@@ -137,7 +147,9 @@ async def get_stats(
             SUM(lapses)                                         AS total_lapses
         FROM user_item_fsrs
         WHERE user_id = :uid
-    """), {"uid": str(current_user.id)})
+    """),
+        {"uid": str(current_user.id)},
+    )
 
     row = result.fetchone()
     if not row or not row.total:

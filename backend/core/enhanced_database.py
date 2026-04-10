@@ -56,8 +56,8 @@ class ConnectionPoolConfig:
 
     def __init__(
         self,
-        pool_size: int = 30,
-        max_overflow: int = 50,
+        pool_size: int | None = None,
+        max_overflow: int | None = None,
         pool_timeout: int = 30,
         pool_recycle: int = 3600,
         pool_pre_ping: bool = True,
@@ -65,8 +65,16 @@ class ConnectionPoolConfig:
         echo: bool = False,
         echo_pool: bool = False,
     ):
-        self.pool_size = pool_size
-        self.max_overflow = max_overflow
+        import os
+
+        self.pool_size = (
+            pool_size if pool_size is not None else int(os.getenv("DB_POOL_SIZE", "50"))
+        )
+        self.max_overflow = (
+            max_overflow
+            if max_overflow is not None
+            else int(os.getenv("DB_MAX_OVERFLOW", "100"))
+        )
         self.pool_timeout = pool_timeout
         self.pool_recycle = pool_recycle
         self.pool_pre_ping = pool_pre_ping

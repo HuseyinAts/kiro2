@@ -12,10 +12,11 @@ Features:
 Author: Claude
 Date: 2025-10-27
 """
+
 import random
+from collections.abc import Generator
 from contextlib import contextmanager
 from enum import Enum
-from typing import Generator, List, Optional
 
 from sqlalchemy import create_engine, text
 from sqlalchemy.engine import Engine
@@ -64,8 +65,8 @@ class DatabaseReplicationManager:
 
     def __init__(
         self,
-        primary_url: Optional[str] = None,
-        replica_urls: Optional[List[str]] = None,
+        primary_url: str | None = None,
+        replica_urls: list[str] | None = None,
         strategy: ReplicationStrategy = ReplicationStrategy.RANDOM,
     ):
         """
@@ -86,8 +87,8 @@ class DatabaseReplicationManager:
 
         # Read replicas (read operations)
         self.replica_urls = replica_urls or self._get_replica_urls()
-        self.replica_engines: List[Engine] = []
-        self.replica_session_factories: List[sessionmaker] = []
+        self.replica_engines: list[Engine] = []
+        self.replica_session_factories: list[sessionmaker] = []
 
         if self.replica_urls:
             for replica_url in self.replica_urls:
@@ -129,7 +130,7 @@ class DatabaseReplicationManager:
             echo=False,
         )
 
-    def _get_replica_urls(self) -> List[str]:
+    def _get_replica_urls(self) -> list[str]:
         """
         Get replica URLs from configuration
 
@@ -142,8 +143,9 @@ class DatabaseReplicationManager:
 
         replica_urls = []
         index = 1
+        max_replicas = 10  # Güvenlik sınırı — 10 üstü engine memory leak riski
 
-        while True:
+        while index <= max_replicas:
             replica_url = os.getenv(f"DATABASE_REPLICA_{index}_URL")
             if not replica_url:
                 break
@@ -224,10 +226,10 @@ class DatabaseReplicationManager:
             )
             return factory
 
-        elif self.strategy == ReplicationStrategy.RANDOM:
+        if self.strategy == ReplicationStrategy.RANDOM:
             return random.choice(self.replica_session_factories)
 
-        elif self.strategy == ReplicationStrategy.LEAST_LAG:
+        if self.strategy == ReplicationStrategy.LEAST_LAG:
             # Check replication lag and select replica with least lag
             lags = []
             for i, engine in enumerate(self.replica_engines):
@@ -239,8 +241,7 @@ class DatabaseReplicationManager:
             min_lag_index = lags[0][1]
             return self.replica_session_factories[min_lag_index]
 
-        else:
-            return random.choice(self.replica_session_factories)
+        return random.choice(self.replica_session_factories)
 
     def _check_replication_lag(self, engine: Engine) -> float:
         """
@@ -381,7 +382,7 @@ class DatabaseReplicationManager:
 
 
 # Global replication manager instance
-_replication_manager: Optional[DatabaseReplicationManager] = None
+_replication_manager: DatabaseReplicationManager | None = None
 
 
 def get_replication_manager() -> DatabaseReplicationManager:
