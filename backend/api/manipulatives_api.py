@@ -2,14 +2,17 @@
 Manipülatifler API - Diskalkuli Desteği
 Task 87: Sanal bloklar, GeoGebra, İnteraktif geometri, Dijital tangram
 """
+
+from datetime import UTC, datetime
+
 from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy.orm import Session
-from typing import List, Optional
 from pydantic import BaseModel
-from datetime import datetime, timezone
+from sqlalchemy.orm import Session
 
 from core.database import get_db
-from core.dependencies import get_current_user  # fixed: was auth_dependencies (no blacklist)
+from core.dependencies import (
+    get_current_user,  # fixed: was auth_dependencies (no blacklist)
+)
 from models.database import User
 
 router = APIRouter(prefix="/api/v1/manipulatives", tags=["manipulatives"])
@@ -20,51 +23,59 @@ class VirtualBlockOperation(BaseModel):
     """Sanal blok işlemi"""
 
     operation_type: str  # add, subtract, multiply, divide
-    blocks_used: List[dict]  # [{type: 'unit', count: 5}, {type: 'ten', count: 2}]
+    blocks_used: list[dict]  # [{type: 'unit', count: 5}, {type: 'ten', count: 2}]
     result: int
     duration_seconds: int
 
 
+# Session 148 (GF107): KIRO2 auth returns `AuthenticatedUser.id` as a UUID
+# string, not an integer. The `user_id: int` declaration used to raise
+# Pydantic `ValidationError` when the handler assigned `current_user.id` to
+# these models, which the bare `except Exception` on each handler re-wrapped
+# as a generic 500. This is the fifth occurrence of the pattern after GF20
+# AdhdPomodoroSessionResponse/InactivityAlert/FocusExerciseProgress and GF71
+# TaskResponse — any `user_id: int` in a Pydantic model touched by
+# `current_user.id` is a guaranteed crash site.
 class VirtualBlockProgress(BaseModel):
     """Sanal blok ilerleme kaydı"""
 
-    user_id: int
+    user_id: str
     operation: VirtualBlockOperation
-    timestamp: datetime = datetime.now(timezone.utc)
+    timestamp: datetime = datetime.now(UTC)
 
 
 class GeoGebraActivity(BaseModel):
     """GeoGebra aktivite kaydı"""
 
-    user_id: int
+    user_id: str
     applet_id: str
     activity_type: str  # geometry, algebra, calculus
     duration_seconds: int
     completed: bool
-    timestamp: datetime = datetime.now(timezone.utc)
+    timestamp: datetime = datetime.now(UTC)
 
 
 class GeometryToolUsage(BaseModel):
     """Geometri aracı kullanım kaydı"""
 
-    user_id: int
+    user_id: str
     tool_type: str  # ruler, compass, protractor, transform
-    shapes_created: List[dict]
-    measurements: List[dict]
+    shapes_created: list[dict]
+    measurements: list[dict]
     duration_seconds: int
-    timestamp: datetime = datetime.now(timezone.utc)
+    timestamp: datetime = datetime.now(UTC)
 
 
 class TangramPuzzle(BaseModel):
     """Tangram puzzle kaydı"""
 
-    user_id: int
+    user_id: str
     puzzle_id: str
-    pieces_used: List[dict]
+    pieces_used: list[dict]
     completed: bool
     attempts: int
     duration_seconds: int
-    timestamp: datetime = datetime.now(timezone.utc)
+    timestamp: datetime = datetime.now(UTC)
 
 
 # API Endpoints
@@ -96,8 +107,10 @@ def record_virtual_block_operation(
         }
     except HTTPException:
         raise
-    except Exception as e:
-        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
+    except Exception:
+        raise HTTPException(
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
+        )
 
 
 @router.get("/virtual-blocks/progress")
@@ -123,8 +136,10 @@ def get_virtual_block_progress(
         }
     except HTTPException:
         raise
-    except Exception as e:
-        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
+    except Exception:
+        raise HTTPException(
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
+        )
 
 
 @router.post("/geogebra/activity")
@@ -152,13 +167,15 @@ def record_geogebra_activity(
         }
     except HTTPException:
         raise
-    except Exception as e:
-        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
+    except Exception:
+        raise HTTPException(
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
+        )
 
 
 @router.get("/geogebra/applets")
 def get_geogebra_applets(
-    activity_type: Optional[str] = None, current_user: User = Depends(get_current_user)
+    activity_type: str | None = None, current_user: User = Depends(get_current_user)
 ):
     """GeoGebra applet listesini getir"""
     try:
@@ -193,7 +210,7 @@ def get_geogebra_applets(
         return {"success": True, "data": applets}
     except HTTPException:
         raise
-    except Exception as e:
+    except Exception:
         raise HTTPException(
             status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
@@ -224,8 +241,10 @@ def record_geometry_tool_usage(
         }
     except HTTPException:
         raise
-    except Exception as e:
-        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
+    except Exception:
+        raise HTTPException(
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
+        )
 
 
 @router.get("/geometry/tools")
@@ -280,7 +299,7 @@ def get_geometry_tools(current_user: User = Depends(get_current_user)):
         return {"success": True, "data": tools}
     except HTTPException:
         raise
-    except Exception as e:
+    except Exception:
         raise HTTPException(
             status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
@@ -312,13 +331,15 @@ def record_tangram_puzzle(
         }
     except HTTPException:
         raise
-    except Exception as e:
-        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
+    except Exception:
+        raise HTTPException(
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
+        )
 
 
 @router.get("/tangram/puzzles")
 def get_tangram_puzzles(
-    difficulty: Optional[str] = None, current_user: User = Depends(get_current_user)
+    difficulty: str | None = None, current_user: User = Depends(get_current_user)
 ):
     """Tangram puzzle listesini getir"""
     try:
@@ -371,7 +392,7 @@ def get_tangram_puzzles(
         return {"success": True, "data": puzzles}
     except HTTPException:
         raise
-    except Exception as e:
+    except Exception:
         raise HTTPException(
             status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
@@ -400,5 +421,7 @@ def get_tangram_progress(
         }
     except HTTPException:
         raise
-    except Exception as e:
-        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
+    except Exception:
+        raise HTTPException(
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
+        )

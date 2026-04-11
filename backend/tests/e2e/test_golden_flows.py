@@ -3754,3 +3754,196 @@ def test_gf99_encryption_rotate_key_admin_gate(client: httpx.Client):
         f"(got {resp.status_code}). This is a SECURITY regression — "
         f"api/encryption_management.py require_admin is broken."
     )
+
+
+# ---------------------------------------------------------------------------
+# Wave 12 (GF100-GF109) — Session 148 feature-inventory sweep
+#
+# Ten disjoint write-path probes covering surfaces Wave 1-11 did not touch:
+# photo-ask (LLM vision), mnemonics, OCR, TTS, birlikte-streak, realms,
+# student reviews, manipulatives, oba teams, and ZPD-maarif. Wave 11 hit rate
+# was 50% (rule-of-eight sweep eradicated most bare-except cases); Wave 12
+# targets modules that have not been probed before, so the expected yield is
+# the new anti-pattern class (raw ORM/DB schema drift + three-part async trap).
+# ---------------------------------------------------------------------------
+
+
+def test_gf100_photo_ask_ai_solve_not_500(client: httpx.Client):
+    """POST /api/v1/photo-ask/ai-solve must not crash when given text."""
+    token = _login(client, STUDENT)
+    resp = client.post(
+        "/api/v1/photo-ask/ai-solve",
+        headers=_auth_headers(token),
+        params={"question_text": "2x + 3 = 7 ise x kactir?"},
+    )
+    assert resp.status_code != 500, (
+        f"GF100 photo-ask/ai-solve crashed: {resp.status_code} "
+        f"{resp.text[:300]}. Check services/photo_ask_service.generate_ai_solution."
+    )
+
+
+def test_gf101_mnemonic_generate_not_500(client: httpx.Client):
+    """POST /api/v1/mnemonics/{question_id}/generate must not crash."""
+    token = _login(client, STUDENT)
+    # Use a synthetic question id — handler should 404 cleanly, not crash
+    synthetic_id = "00000000-0000-0000-0000-000000000001"
+    resp = client.post(
+        f"/api/v1/mnemonics/{synthetic_id}/generate",
+        headers=_auth_headers(token),
+        json={"force": False},
+    )
+    assert resp.status_code != 500, (
+        f"GF101 mnemonics/generate crashed: {resp.status_code} "
+        f"{resp.text[:300]}. Check api/mnemonic_api.py LLM fallback + "
+        f"QuestionBankItem lookup."
+    )
+
+
+def test_gf102_ocr_extract_base64_not_500(client: httpx.Client):
+    """POST /api/v1/ocr/extract-base64 must not crash on a trivial payload."""
+    token = _login(client, STUDENT)
+    # 1x1 transparent PNG base64 — smallest valid image payload
+    tiny_png = (
+        "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR4"
+        "nGNgAAIAAAUAAen63NgAAAAASUVORK5CYII="
+    )
+    resp = client.post(
+        "/api/v1/ocr/extract-base64",
+        headers=_auth_headers(token),
+        json={"image": tiny_png, "engine": "tesseract"},
+    )
+    assert resp.status_code != 500, (
+        f"GF102 ocr/extract-base64 crashed: {resp.status_code} "
+        f"{resp.text[:300]}. Check api/ocr_api.py engine fallback + "
+        f"optional-dep 503 pattern (GF22)."
+    )
+
+
+def test_gf103_tts_synthesize_not_500(client: httpx.Client):
+    """POST /api/v1/tts/synthesize must not crash on a minimal payload."""
+    token = _login(client, STUDENT)
+    resp = client.post(
+        "/api/v1/tts/synthesize",
+        headers=_auth_headers(token),
+        json={"text": "Merhaba dunya", "language": "tr-TR"},
+    )
+    assert resp.status_code != 500, (
+        f"GF103 tts/synthesize crashed: {resp.status_code} "
+        f"{resp.text[:300]}. Check api/tts_api.py optional-dep fallback "
+        f"(should return 503 if Azure/ElevenLabs not configured)."
+    )
+
+
+def test_gf104_birlikte_streak_request_not_500(client: httpx.Client):
+    """POST /api/v1/birlikte-streak/request must not crash."""
+    token = _login(client, STUDENT)
+    resp = client.post(
+        "/api/v1/birlikte-streak/request",
+        headers=_auth_headers(token),
+    )
+    assert resp.status_code != 500, (
+        f"GF104 birlikte-streak/request crashed: {resp.status_code} "
+        f"{resp.text[:300]}. Check api/birlikte_streak_api.py + "
+        f"streak_tracking ORM drift (GF86/GF87 class bug)."
+    )
+
+
+def test_gf105_realms_quest_start_not_500(client: httpx.Client):
+    """POST /api/v1/realms/{slug}/quest/start must not crash."""
+    token = _login(client, STUDENT)
+    # Synthetic slug — handler must 404/503 cleanly, not crash
+    resp = client.post(
+        "/api/v1/realms/golden-flow-probe/quest/start",
+        headers=_auth_headers(token),
+    )
+    assert resp.status_code != 500, (
+        f"GF105 realms/quest/start crashed: {resp.status_code} "
+        f"{resp.text[:300]}. Check api/realms.py _get_realm_or_404 + "
+        f"models.gamification.Realm import + realms table migration."
+    )
+
+
+def test_gf106_student_review_create_not_500(client: httpx.Client):
+    """POST /api/v1/reviews/ must not crash on a valid review body."""
+    token = _login(client, STUDENT)
+    resp = client.post(
+        "/api/v1/reviews/",
+        headers=_auth_headers(token),
+        json={
+            "review_type": "university",
+            "title": "Golden Flow Wave 12 probe review",
+            "content": (
+                "Bu bir Golden Flow Wave 12 test probe'udur. Universite "
+                "degerlendirmesi icin minimum 50 karakter iceren icerik."
+            ),
+            "overall_rating": 4.5,
+        },
+    )
+    assert resp.status_code != 500, (
+        f"GF106 reviews/ create crashed: {resp.status_code} "
+        f"{resp.text[:300]}. Check api/student_review_routes.py + "
+        f"StudentReview ORM + get_db async-drift."
+    )
+
+
+def test_gf107_manipulatives_virtual_blocks_not_500(client: httpx.Client):
+    """POST /api/v1/manipulatives/virtual-blocks/operation must not crash."""
+    token = _login(client, STUDENT)
+    resp = client.post(
+        "/api/v1/manipulatives/virtual-blocks/operation",
+        headers=_auth_headers(token),
+        json={
+            "operation_type": "add",
+            "blocks_used": [{"type": "unit", "count": 5}],
+            "result": 5,
+            "duration_seconds": 10,
+        },
+    )
+    assert resp.status_code != 500, (
+        f"GF107 manipulatives/virtual-blocks crashed: {resp.status_code} "
+        f"{resp.text[:300]}. Check api/manipulatives_api.py — any Pydantic "
+        f"model touched by current_user.id needs `user_id: str` (UUID). "
+        f"Rule of five: GF20 x3 + GF71 + GF107."
+    )
+
+
+def test_gf108_oba_create_not_500(client: httpx.Client):
+    """POST /api/v1/oba/create must not crash on a valid oba body."""
+    token = _login(client, STUDENT)
+    resp = client.post(
+        "/api/v1/oba/create",
+        headers=_auth_headers(token),
+        json={
+            "name": "Golden Flow Probe Oba",
+            "description": "Wave 12 probe oba for crash detection.",
+        },
+    )
+    assert resp.status_code != 500, (
+        f"GF108 oba/create crashed: {resp.status_code} "
+        f"{resp.text[:300]}. Check api/oba_api.py + Oba ORM + "
+        f"uuid4 VARCHAR caller coerce (rule-of-seven)."
+    )
+
+
+def test_gf109_zpd_maarif_hesapla_not_500(client: httpx.Client):
+    """POST /api/v1/zpd-maarif/hesapla must not crash."""
+    token = _login(client, STUDENT)
+    # Need student_id from /auth/me to match the request body shape
+    me_resp = client.get("/api/v1/auth/me", headers=_auth_headers(token))
+    me_payload = me_resp.json() if me_resp.status_code == 200 else {}
+    user_obj = me_payload.get("user") or me_payload.get("kullanici") or me_payload
+    student_id = str(user_obj.get("id") or "00000000-0000-0000-0000-000000000001")
+    resp = client.post(
+        "/api/v1/zpd-maarif/hesapla",
+        headers=_auth_headers(token),
+        json={
+            "ogrenci_id": student_id,
+            "konu": "matematik",
+            "mevcut_seviye": 5.0,
+        },
+    )
+    assert resp.status_code != 500, (
+        f"GF109 zpd-maarif/hesapla crashed: {resp.status_code} "
+        f"{resp.text[:300]}. Check api/zpd_maarif.py cultural/maarif "
+        f"optional-profile fallback + ZPDCalculator wiring."
+    )

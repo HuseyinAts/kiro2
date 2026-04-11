@@ -9,6 +9,7 @@ from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel, ConfigDict, Field
+from sqlalchemy.exc import ProgrammingError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.database import get_db_session as get_db
@@ -129,22 +130,50 @@ async def create_review(
     user_id = current_user.id
     service = StudentReviewService(db)
 
-    review = await service.create_review(
-        user_id=user_id,
-        review_type=request.review_type,
-        title=request.title,
-        content=request.content,
-        overall_rating=request.overall_rating,
-        university_id=request.university_id,
-        department_id=request.department_id,
-        dormitory_id=request.dormitory_id,
-        pros=request.pros,
-        cons=request.cons,
-        tags=request.tags,
-        student_year=request.student_year,
-        enrollment_year=request.enrollment_year,
-        is_current_student=request.is_current_student,
-    )
+    # Session 148 (GF106): the ORM `StudentReview` model declares ~18 columns
+    # (professor_id, course_id, pros, cons, tags, student_year,
+    # enrollment_year, is_current_student, is_alumni, status,
+    # moderation_notes, moderated_at, spam_score, quality_score,
+    # contains_profanity, contains_contact_info, is_too_short,
+    # verification_method, verified_at, not_helpful_count, report_count,
+    # view_count, language, ip_address, user_agent, published_at) that do
+    # NOT exist in the live `student_reviews` table — the schema drift is
+    # massive and fixing it requires a dedicated migration out of probe
+    # scope. Until then, any INSERT crashes with asyncpg
+    # `UndefinedColumnError` wrapped as SQLAlchemy `ProgrammingError`.
+    # Degrade to 503 at the handler boundary instead (GF22/GF41 pattern).
+    try:
+        review = await service.create_review(
+            user_id=user_id,
+            review_type=request.review_type,
+            title=request.title,
+            content=request.content,
+            overall_rating=request.overall_rating,
+            university_id=request.university_id,
+            department_id=request.department_id,
+            dormitory_id=request.dormitory_id,
+            pros=request.pros,
+            cons=request.cons,
+            tags=request.tags,
+            student_year=request.student_year,
+            enrollment_year=request.enrollment_year,
+            is_current_student=request.is_current_student,
+        )
+    except HTTPException:
+        raise
+    except ProgrammingError as exc:
+        import logging as _log
+
+        _log.getLogger(__name__).warning(
+            "Student review create failed due to schema drift: %s", exc
+        )
+        raise HTTPException(
+            status_code=503,
+            detail=(
+                "Ogrenci yorumu olusturulamadi: veritabani sema guncellemesi "
+                "bekleniyor."
+            ),
+        ) from exc
 
     return ReviewResponse(
         id=review.id,

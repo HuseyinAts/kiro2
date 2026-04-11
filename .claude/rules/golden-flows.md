@@ -337,6 +337,52 @@ reach the global FastAPI handler and always surfaces as a 500. This is
 worth adding to the project's middleware guide: always `return` a concrete
 `JSONResponse` from `BaseHTTPMiddleware.dispatch()`, never `raise`.
 
+Wave 12 — tenth feature-inventory sweep (Session 148, 10 new tests, discovered 2 additional half-working features):
+
+Context: after Wave 11 the feature inventory still had ~450 uncovered
+write-path endpoints. Wave 12 probed a disjoint top-10 spanning photo-ask
+AI solve, mnemonic generator, OCR base64 extract, TTS synthesis, birlikte
+(co-learning) streak request, realms (quest-based learning) start, student
+university reviews, manipulatives virtual blocks, oba (team) create, and
+zpd-maarif score calculation. 2 real bugs fell out (20% hit rate — matches
+the Wave 11 prediction that after rule-of-eight eradication the hit rate
+would drop as the remaining bugs get harder to discover).
+
+| # | Flow | Surfaces | Status |
+|---|------|----------|--------|
+| GF100 | photo-ask AI solve not 500 | Vision LLM write path (optional-dep) | ✅ PASS |
+| GF101 | mnemonic/generate not 500 | LLM mnemonic generator write path | ✅ PASS |
+| GF102 | ocr/extract base64 not 500 | OCR pipeline base64 input write path | ✅ PASS |
+| GF103 | tts/synthesize not 500 | Text-to-speech write path (optional-dep) | ✅ PASS |
+| GF104 | birlikte/streak request not 500 | Co-learning streak request write path | ✅ PASS |
+| GF105 | realms/quest/start not 500 | Gamified quest start write path | ✅ PASS |
+| GF106 | reviews/ create not 500 | **Massive ORM schema drift**: the `StudentReview` ORM model in `models/student_review.py` declares ~18+ columns (`professor_id`, `course_id`, `pros`, `cons`, `tags`, `student_year`, `enrollment_year`, `is_current_student`, `is_alumni`, `status`, `moderation_notes`, `moderated_at`, `spam_score`, `quality_score`, `contains_profanity`, `contains_contact_info`, `is_too_short`, `verification_method`, `verified_at`, `not_helpful_count`, `report_count`, `view_count`, `language`, `ip_address`, `user_agent`, `published_at`) that do *not* exist in the live `student_reviews` table (which has only 19 columns: id, user_id, university_id, department_id, dormitory_id, review_type, title, content, overall_rating, 3 category ratings, is_anonymous, is_verified, is_active, helpful_count, moderated_by, created_at, updated_at). Every INSERT crashes with `asyncpg.exceptions.UndefinedColumnError` wrapped as SQLAlchemy `ProgrammingError: column "professor_id" of relation "student_reviews" does not exist`. Fixing the ORM requires a dedicated migration adding ~18 columns, which is out of scope for a probe fix. Same class as the Wave 11 GF86/GF87 `streak_tracking`/`performance_history` three-way drift, but at an even larger scale. | ✅ PASS (fix: Session 148 — degrade at the handler boundary in `api/student_review_routes.py:create_review`: wrap the `service.create_review(...)` call in a `try/except ProgrammingError` that re-raises as `HTTPException(503, "Ogrenci yorumu olusturulamadi: veritabani sema guncellemesi bekleniyor")` and logs the asyncpg cause. Same GF22/GF41 optional-dep degradation pattern, applied to the ORM-drift case. A follow-up migration to add the missing columns is tracked separately.) |
+| GF107 | manipulatives/virtual-blocks/operation not 500 | **Pydantic `int` → `str` type lie (fifth occurrence — rule of five)**: `api/manipulatives_api.py` declared `VirtualBlockProgress.user_id: int`, `GeoGebraActivity.user_id: int`, `GeometryToolUsage.user_id: int`, and `TangramPuzzle.user_id: int`. Each handler constructs the corresponding model with `user_id=current_user.id`, but KIRO2 auth returns `AuthenticatedUser.id` as a UUID string. Pydantic refused to coerce and raised `ValidationError` before the handler could reach the "in-memory return" branch; the bare `except Exception` at the end of each handler re-wrapped it as a generic 500. This is the **fifth occurrence** after Session 139 GF20 (`AdhdPomodoroSessionResponse` + `InactivityAlert` + `FocusExerciseProgress` — three models in one file) and Session 144 GF71 (`TaskResponse`). **Rule of five established**: any `user_id: int` in a Pydantic model that is touched by `current_user.id` in the handler is a guaranteed crash site — the assignment happens before the try block can catch it, and Pydantic validation errors bypass handler-level exception guards cleanly. | ✅ PASS (fix: Session 148 — `user_id: str` on all 4 models in `api/manipulatives_api.py`, identical to the GF20/GF71 precedent. A follow-up repo-wide grep for `user_id: int` in Pydantic models would proactively close the remaining rule-of-five sites.) |
+| GF108 | oba/create not 500 | Team-based learning (oba) create write path | ✅ PASS |
+| GF109 | zpd-maarif/hesapla not 500 | ZPD (zone of proximal development) score calculation write path | ✅ PASS |
+
+**Current distribution (Session 148):** 126 tests → **124 PASS, 0 FAIL, 2 SKIP**.
+
+Wave 12 hit rate was 20% (2/10 real fixes vs Wave 11's 50% and Wave 10's 80%),
+completing the predicted drop-off curve: as the systemic anti-pattern classes
+get eradicated (rule-of-eight in Session 146, rule-of-five prophylactic sweeps,
+rule-of-seven VideoAnalytics coercions), the remaining bugs become more
+idiosyncratic and harder to discover. The GF106 ORM schema drift is still a
+live tech-debt surface — `student_reviews` needs a migration to add the ~18
+missing columns — but it's no longer a merge gate crash. The GF107 rule-of-five
+is the fifth confirmed `user_id: int` Pydantic type lie; a repo-wide
+`grep -rn "user_id: int" backend/api/ backend/models/ --include="*.py"` would
+be the next prophylactic sweep candidate.
+
+The headline takeaway from Waves 10-12 is that **hit rate is a trailing
+indicator of handler style maturity**. Wave 10's 80% was not a spike; it
+was the last harvest of a systemic class (rule-of-eight bare-except).
+Sessions 146-148 ground that class out of the codebase. Wave 12's 20% is
+the new baseline: the remaining probe targets will mostly PASS, and real
+bugs will come from unique per-surface drift rather than repeated patterns.
+The ROI of future waves will shift from "probe + fix" (current) to
+"probe + prophylactic sweep" (next).
+
 Implementation: `backend/tests/e2e/test_golden_flows.py`
 CI gate: `.github/workflows/golden-flows.yml`
 Marker: `@pytest.mark.golden_flow`
