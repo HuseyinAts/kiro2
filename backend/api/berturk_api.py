@@ -23,6 +23,23 @@ logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api/v1/berturk", tags=["BERTurk NLP"])
 
 
+def _require_berturk_service() -> None:
+    """Fail fast with 503 if the optional BERTurk transformer service is
+    unavailable. The module-level `berturk_service` falls back to ``None`` when
+    the heavy `transformers` dependency or model weights are missing; calling
+    any method on it would crash the handler with a generic 500 that hides the
+    real cause. See GF22 in golden-flows.md.
+    """
+    if berturk_service is None:
+        raise HTTPException(
+            status_code=503,
+            detail=(
+                "BERTurk NLP servisi su anda kullanilamiyor "
+                "(model veya bagimliliklar yuklu degil)."
+            ),
+        )
+
+
 # Request Models
 class SentimentAnalysisRequest(BaseModel):
     """Duygu analizi isteği"""
@@ -156,6 +173,7 @@ async def analyze_sentiment(
     - Detailed emotion scores (opsiyonel)
     - Educational context scores (opsiyonel)
     """
+    _require_berturk_service()
     try:
         start_time = datetime.now()
 
@@ -209,6 +227,7 @@ async def assess_student_motivation(
     - Support needed (boolean)
     - Recommendations (list)
     """
+    _require_berturk_service()
     try:
         start_time = datetime.now()
 
@@ -274,6 +293,7 @@ async def detect_intent(
     - Context category (academic, technical, emotional, social)
     - Urgency level (low, medium, high, critical)
     """
+    _require_berturk_service()
     try:
         start_time = datetime.now()
 
@@ -320,6 +340,7 @@ async def extract_contextual_meaning(
     - Key concepts
     - Semantic similarity score
     """
+    _require_berturk_service()
     try:
         start_time = datetime.now()
 
@@ -369,6 +390,7 @@ async def batch_analysis(
     - Batch analysis results
     - Processing statistics
     """
+    _require_berturk_service()
     try:
         start_time = datetime.now()
 
@@ -481,6 +503,7 @@ async def get_performance_stats(current_user: User = Depends(get_current_user)):
     - Error count
     - Cache size
     """
+    _require_berturk_service()
     try:
         # Admin kontrolü
         if current_user.role != UserRole.ADMIN:
@@ -514,6 +537,7 @@ async def clear_cache(current_user: User = Depends(get_current_user)):
 
     Sadece admin kullanıcıları erişebilir.
     """
+    _require_berturk_service()
     try:
         # Admin kontrolü
         if current_user.role != UserRole.ADMIN:
@@ -540,6 +564,13 @@ async def health_check():
     """
     BERTurk servisi sağlık kontrolü
     """
+    if berturk_service is None:
+        return {
+            "success": False,
+            "message": "BERTurk servisi bagimliliklari yuklu degil",
+            "status": "unavailable",
+            "test_analysis_completed": False,
+        }
     try:
         # Basit sağlık kontrolü
         test_result = await berturk_service.analyze_sentiment(

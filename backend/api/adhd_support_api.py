@@ -12,12 +12,13 @@ dikkat yönetimi araçları sağlar:
 Requirements: REQ-52.1 - REQ-52.20
 """
 
-from fastapi import APIRouter, Depends, HTTPException, status
-from sqlalchemy.orm import Session
-from pydantic import BaseModel, Field
-from typing import Optional, List
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from enum import Enum
+from typing import Optional
+
+from fastapi import APIRouter, Depends, HTTPException, status
+from pydantic import BaseModel, Field
+from sqlalchemy.orm import Session
 
 from core.database import get_db
 from core.dependencies import get_current_user
@@ -77,10 +78,10 @@ class StartPomodoroRequest(BaseModel):
     """Pomodoro oturumu başlatma isteği"""
 
     session_type: PomodoroSessionType = Field(default=PomodoroSessionType.WORK)
-    custom_duration_minutes: Optional[int] = Field(
+    custom_duration_minutes: int | None = Field(
         default=None, ge=1, le=120, description="Özel süre (dakika)"
     )
-    task_description: Optional[str] = Field(
+    task_description: str | None = Field(
         default=None, max_length=500, description="Görev açıklaması"
     )
 
@@ -89,16 +90,19 @@ class PomodoroSessionResponse(BaseModel):
     """Pomodoro oturum yanıtı"""
 
     session_id: str
-    user_id: int
+    # KIRO2 user IDs are UUID strings (auth returns AuthenticatedUser.id as str).
+    # The legacy `int` annotation was a type lie that crashed the handler at
+    # response coercion time; see GF20 in golden-flows.md.
+    user_id: str
     session_type: PomodoroSessionType
     status: PomodoroSessionStatus
     duration_minutes: int
     remaining_seconds: int
     started_at: datetime
     ends_at: datetime
-    paused_at: Optional[datetime] = None
-    completed_at: Optional[datetime] = None
-    task_description: Optional[str] = None
+    paused_at: datetime | None = None
+    completed_at: datetime | None = None
+    task_description: str | None = None
     sessions_completed_today: int
     next_session_type: PomodoroSessionType
 
@@ -113,7 +117,7 @@ class InactivityAlert(BaseModel):
     """Dikkat dağınıklığı uyarısı"""
 
     alert_id: str
-    user_id: int
+    user_id: str  # UUID string, see PomodoroSessionResponse.user_id
     detected_at: datetime
     inactive_duration_seconds: int
     alert_message: str
@@ -128,20 +132,20 @@ class FocusExercise(BaseModel):
     description: str
     duration_minutes: int
     difficulty: str  # easy, medium, hard
-    instructions: List[str]
-    benefits: List[str]
+    instructions: list[str]
+    benefits: list[str]
 
 
 class FocusExerciseProgress(BaseModel):
     """Konsantrasyon egzersizi ilerleme"""
 
     exercise_id: str
-    user_id: int
+    user_id: str  # UUID string, see PomodoroSessionResponse.user_id
     started_at: datetime
-    completed_at: Optional[datetime] = None
+    completed_at: datetime | None = None
     duration_seconds: int
-    success_rate: Optional[float] = None
-    notes: Optional[str] = None
+    success_rate: float | None = None
+    notes: str | None = None
 
 
 # ============================================================================
@@ -187,7 +191,7 @@ def start_pomodoro_session(
 
     # Oturum oluştur
     session_id = str(uuid.uuid4())
-    started_at = datetime.now(timezone.utc)
+    started_at = datetime.now(UTC)
     ends_at = started_at + timedelta(minutes=duration_minutes)
 
     # Bugün tamamlanan oturum sayısını hesapla (simüle edilmiş)
@@ -232,7 +236,7 @@ def get_current_pomodoro_session(
     """
     # Gerçek implementasyonda veritabanından aktif oturum çekilir
     # Şimdilik None döndürüyoruz
-    return None
+    return
 
 
 @router.put("/pomodoro/{session_id}", response_model=PomodoroSessionResponse)
@@ -423,7 +427,7 @@ def detect_inactivity(
     alert = InactivityAlert(
         alert_id=str(uuid.uuid4()),
         user_id=current_user.id,
-        detected_at=datetime.now(timezone.utc),
+        detected_at=datetime.now(UTC),
         inactive_duration_seconds=inactive_duration_seconds,
         alert_message=alert_message,
         suggested_action=suggested_action,
@@ -467,9 +471,9 @@ def get_inactivity_alerts(
 # ============================================================================
 
 
-@router.get("/focus-exercises", response_model=List[FocusExercise])
+@router.get("/focus-exercises", response_model=list[FocusExercise])
 def get_focus_exercises(
-    difficulty: Optional[str] = None,
+    difficulty: str | None = None,
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
@@ -612,7 +616,7 @@ def start_focus_exercise(
     progress = FocusExerciseProgress(
         exercise_id=exercise_id,
         user_id=current_user.id,
-        started_at=datetime.now(timezone.utc),
+        started_at=datetime.now(UTC),
         duration_seconds=0,
     )
 
@@ -623,8 +627,8 @@ def start_focus_exercise(
 def complete_focus_exercise(
     exercise_id: str,
     duration_seconds: int,
-    success_rate: Optional[float] = None,
-    notes: Optional[str] = None,
+    success_rate: float | None = None,
+    notes: str | None = None,
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
@@ -645,8 +649,8 @@ def complete_focus_exercise(
     progress = FocusExerciseProgress(
         exercise_id=exercise_id,
         user_id=current_user.id,
-        started_at=datetime.now(timezone.utc) - timedelta(seconds=duration_seconds),
-        completed_at=datetime.now(timezone.utc),
+        started_at=datetime.now(UTC) - timedelta(seconds=duration_seconds),
+        completed_at=datetime.now(UTC),
         duration_seconds=duration_seconds,
         success_rate=success_rate,
         notes=notes,
@@ -701,7 +705,7 @@ def get_daily_adhd_stats(
         dict: Günlük istatistikler
     """
     return {
-        "date": datetime.now(timezone.utc).date().isoformat(),
+        "date": datetime.now(UTC).date().isoformat(),
         "pomodoro_sessions": {
             "total": 0,
             "completed": 0,
