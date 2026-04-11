@@ -110,6 +110,21 @@ jobs:
           # PUBLIC_PATH_SUBSTRINGS at the top of the linter.
           python scripts/audit_missing_auth.py --fail-on-high
 
+      - name: AST lint — Question dual-table trap
+        working-directory: backend
+        run: |
+          # Session 139 CI gate:
+          # Block any PR that imports the legacy `Question` symbol from
+          # `models.content_db` / `models.database` into production code
+          # paths (api/, services/, core/). The legacy `questions` table
+          # holds ~36K partial rows; the production `question_bank` table
+          # holds 77K. Querying the wrong one silently returns ~47% of
+          # the catalog and causes the multi-session bug class documented
+          # in testing.md lessons #23, #24, #26.
+          # Re-export hubs (models/__init__.py, models/database.py) and
+          # tests/scripts/alembic are allow-listed.
+          python scripts/audit_dual_table_trap.py --fail-on-high
+
       - name: Run migrations
         working-directory: backend
         run: |
