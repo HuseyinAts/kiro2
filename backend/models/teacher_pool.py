@@ -4,28 +4,30 @@ Task 107: Teacher Pool Models
 Database models for teacher registration, expertise, availability, and appointments.
 """
 
-from sqlalchemy import (
-    Column,
-    String,
-    Integer,
-    Float,
-    Boolean,
-    Text,
-    DateTime,
-    Date,
-    Time,
-    ForeignKey,
-    Enum as SQLEnum,
-    ARRAY,
-)
-from sqlalchemy.dialects.postgresql import UUID as PGUUID, JSONB
-from sqlalchemy.orm import relationship
 from datetime import datetime
-from uuid import uuid4
 from enum import Enum
+from uuid import uuid4
+
+from sqlalchemy import (
+    ARRAY,
+    Boolean,
+    Column,
+    Date,
+    DateTime,
+    Float,
+    ForeignKey,
+    Integer,
+    String,
+    Text,
+    Time,
+)
+from sqlalchemy import (
+    Enum as SQLEnum,
+)
+from sqlalchemy.dialects.postgresql import JSONB
+from sqlalchemy.orm import relationship
 
 from .database import Base
-
 
 # ============================================================
 # Enumerations
@@ -142,10 +144,8 @@ class TeacherPoolProfile(Base):
     __tablename__ = "teacher_pool_profiles"
     __table_args__ = {"extend_existing": True}
 
-    id = Column(String, primary_key=True, default=uuid4)
-    user_id = Column(
-        String, ForeignKey("users.id"), nullable=False, unique=True
-    )
+    id = Column(String, primary_key=True, default=lambda: str(uuid4()))
+    user_id = Column(String, ForeignKey("users.id"), nullable=False, unique=True)
 
     # Basic Information
     full_name = Column(String(255), nullable=False)
@@ -174,9 +174,7 @@ class TeacherPoolProfile(Base):
         SQLEnum(VerificationStatus), default=VerificationStatus.NOT_SUBMITTED
     )
     verified_at = Column(DateTime(timezone=True))
-    verified_by = Column(
-        String, ForeignKey("users.id")
-    )  # Admin who verified
+    verified_by = Column(String, ForeignKey("users.id"))  # Admin who verified
 
     # Ratings & Statistics
     average_rating = Column(Float, default=0.0)
@@ -236,10 +234,8 @@ class TeacherExpertise(Base):
 
     __tablename__ = "teacher_expertise"
 
-    id = Column(String, primary_key=True, default=uuid4)
-    teacher_id = Column(
-        String, ForeignKey("teacher_pool_profiles.id"), nullable=False
-    )
+    id = Column(String, primary_key=True, default=lambda: str(uuid4()))
+    teacher_id = Column(String, ForeignKey("teacher_pool_profiles.id"), nullable=False)
 
     # Expertise Details
     subject = Column(SQLEnum(SubjectExpertise), nullable=False)
@@ -284,10 +280,8 @@ class TeacherCertification(Base):
 
     __tablename__ = "teacher_certifications"
 
-    id = Column(String, primary_key=True, default=uuid4)
-    teacher_id = Column(
-        String, ForeignKey("teacher_pool_profiles.id"), nullable=False
-    )
+    id = Column(String, primary_key=True, default=lambda: str(uuid4()))
+    teacher_id = Column(String, ForeignKey("teacher_pool_profiles.id"), nullable=False)
 
     # Certification Details
     certification_type = Column(SQLEnum(CertificationType), nullable=False)
@@ -338,10 +332,8 @@ class TeacherAvailability(Base):
 
     __tablename__ = "teacher_availability"
 
-    id = Column(String, primary_key=True, default=uuid4)
-    teacher_id = Column(
-        String, ForeignKey("teacher_pool_profiles.id"), nullable=False
-    )
+    id = Column(String, primary_key=True, default=lambda: str(uuid4()))
+    teacher_id = Column(String, ForeignKey("teacher_pool_profiles.id"), nullable=False)
 
     # Time Slot
     day_of_week = Column(SQLEnum(DayOfWeek), nullable=False)
@@ -387,14 +379,10 @@ class Appointment(Base):
 
     __tablename__ = "appointments"
 
-    id = Column(String, primary_key=True, default=uuid4)
-    teacher_id = Column(
-        String, ForeignKey("teacher_pool_profiles.id"), nullable=False
-    )
+    id = Column(String, primary_key=True, default=lambda: str(uuid4()))
+    teacher_id = Column(String, ForeignKey("teacher_pool_profiles.id"), nullable=False)
     student_id = Column(String, ForeignKey("users.id"), nullable=False)
-    availability_slot_id = Column(
-        String, ForeignKey("teacher_availability.id")
-    )
+    availability_slot_id = Column(String, ForeignKey("teacher_availability.id"))
 
     # Appointment Details
     appointment_type = Column(
@@ -479,10 +467,8 @@ class AppointmentReminder(Base):
 
     __tablename__ = "appointment_reminders"
 
-    id = Column(String, primary_key=True, default=uuid4)
-    appointment_id = Column(
-        String, ForeignKey("appointments.id"), nullable=False
-    )
+    id = Column(String, primary_key=True, default=lambda: str(uuid4()))
+    appointment_id = Column(String, ForeignKey("appointments.id"), nullable=False)
 
     # Reminder Details
     remind_at = Column(DateTime(timezone=True), nullable=False)
@@ -522,10 +508,8 @@ class TeacherReview(Base):
 
     __tablename__ = "teacher_reviews"
 
-    id = Column(String, primary_key=True, default=uuid4)
-    teacher_id = Column(
-        String, ForeignKey("teacher_pool_profiles.id"), nullable=False
-    )
+    id = Column(String, primary_key=True, default=lambda: str(uuid4()))
+    teacher_id = Column(String, ForeignKey("teacher_pool_profiles.id"), nullable=False)
     student_id = Column(String, ForeignKey("users.id"), nullable=False)
     appointment_id = Column(String, ForeignKey("appointments.id"))
 
@@ -574,7 +558,7 @@ class TeacherStatistics(Base):
 
     __tablename__ = "teacher_statistics"
 
-    id = Column(String, primary_key=True, default=uuid4)
+    id = Column(String, primary_key=True, default=lambda: str(uuid4()))
     teacher_id = Column(
         String,
         ForeignKey("teacher_pool_profiles.id"),

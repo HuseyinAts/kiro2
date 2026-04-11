@@ -2,10 +2,11 @@
 Task 93: OSB Settings Model
 OSB (Otizm Spektrum Bozukluğu) kullanıcı tercihlerini saklayan model
 """
+
 from datetime import datetime
 from uuid import uuid4
-from sqlalchemy import Column, String, Boolean, DateTime, ForeignKey
-from sqlalchemy.dialects.postgresql import UUID as PGUUID
+
+from sqlalchemy import Boolean, Column, DateTime, ForeignKey, String
 
 from .base import Base
 
@@ -18,7 +19,7 @@ class OSBSettings(Base):
 
     __tablename__ = "osb_settings"
 
-    id = Column(String, primary_key=True, default=uuid4)
+    id = Column(String, primary_key=True, default=lambda: str(uuid4()))
     user_id = Column(String, ForeignKey("users.id"), nullable=False, unique=True)
 
     # Genel OSB modu

@@ -4,27 +4,28 @@ Task 105: Student Review Models
 Database models for review system, ratings, moderation, and filtering
 """
 
+from enum import Enum
 from uuid import uuid4
 
 from sqlalchemy import (
-    Column,
-    String,
-    Integer,
-    Float,
     Boolean,
+    Column,
+    Float,
     ForeignKey,
-    Text,
-    Enum as SQLEnum,
     Index,
+    Integer,
+    String,
+    Text,
 )
-from sqlalchemy.dialects.postgresql import UUID as PGUUID, JSONB
+from sqlalchemy import (
+    Enum as SQLEnum,
+)
+from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 from sqlalchemy.types import DateTime
 
 from .database import Base
-from enum import Enum
-
 
 # ============================================================
 # Enumerations
@@ -93,24 +94,16 @@ class StudentReview(Base):
 
     __tablename__ = "student_reviews"
 
-    id = Column(String, primary_key=True, default=uuid4)
-    user_id = Column(
-        String, ForeignKey("users.id", ondelete="CASCADE"), nullable=False
-    )
+    id = Column(String, primary_key=True, default=lambda: str(uuid4()))
+    user_id = Column(String, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
 
     # Review target
     review_type = Column(SQLEnum(ReviewType), nullable=False)
-    university_id = Column(
-        String, ForeignKey("universities.id", ondelete="CASCADE")
-    )
-    department_id = Column(
-        String, ForeignKey("departments.id", ondelete="CASCADE")
-    )
+    university_id = Column(String, ForeignKey("universities.id", ondelete="CASCADE"))
+    department_id = Column(String, ForeignKey("departments.id", ondelete="CASCADE"))
     professor_id = Column(String)  # Could add professors table later
     course_id = Column(String)  # Could add courses table later
-    dormitory_id = Column(
-        String, ForeignKey("dormitory_info.id", ondelete="CASCADE")
-    )
+    dormitory_id = Column(String, ForeignKey("dormitory_info.id", ondelete="CASCADE"))
 
     # Review content
     title = Column(String(255), nullable=False)
@@ -133,9 +126,7 @@ class StudentReview(Base):
     # Task 105.3: Moderation
     status = Column(SQLEnum(ReviewStatus), default=ReviewStatus.PENDING)
     moderation_notes = Column(Text)
-    moderated_by = Column(
-        String, ForeignKey("users.id", ondelete="SET NULL")
-    )
+    moderated_by = Column(String, ForeignKey("users.id", ondelete="SET NULL"))
     moderated_at = Column(DateTime(timezone=True))
 
     # Spam/quality scores (0.0 - 1.0)
@@ -208,7 +199,7 @@ class ReviewRating(Base):
 
     __tablename__ = "review_ratings"
 
-    id = Column(String, primary_key=True, default=uuid4)
+    id = Column(String, primary_key=True, default=lambda: str(uuid4()))
     review_id = Column(
         String,
         ForeignKey("student_reviews.id", ondelete="CASCADE"),
@@ -255,15 +246,13 @@ class ReviewVote(Base):
 
     __tablename__ = "review_votes"
 
-    id = Column(String, primary_key=True, default=uuid4)
+    id = Column(String, primary_key=True, default=lambda: str(uuid4()))
     review_id = Column(
         String,
         ForeignKey("student_reviews.id", ondelete="CASCADE"),
         nullable=False,
     )
-    user_id = Column(
-        String, ForeignKey("users.id", ondelete="CASCADE"), nullable=False
-    )
+    user_id = Column(String, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
 
     # Vote type
     is_helpful = Column(Boolean, nullable=False)  # True = helpful, False = not helpful
@@ -297,7 +286,7 @@ class ReviewReport(Base):
 
     __tablename__ = "review_reports"
 
-    id = Column(String, primary_key=True, default=uuid4)
+    id = Column(String, primary_key=True, default=lambda: str(uuid4()))
     review_id = Column(
         String,
         ForeignKey("student_reviews.id", ondelete="CASCADE"),
@@ -315,9 +304,7 @@ class ReviewReport(Base):
     status = Column(
         String(50), default="pending"
     )  # "pending", "reviewed", "resolved", "dismissed"
-    resolved_by = Column(
-        String, ForeignKey("users.id", ondelete="SET NULL")
-    )
+    resolved_by = Column(String, ForeignKey("users.id", ondelete="SET NULL"))
     resolved_at = Column(DateTime(timezone=True))
     resolution_notes = Column(Text)
 
@@ -350,19 +337,13 @@ class ReviewStatistics(Base):
 
     __tablename__ = "review_statistics"
 
-    id = Column(String, primary_key=True, default=uuid4)
+    id = Column(String, primary_key=True, default=lambda: str(uuid4()))
 
     # Target
     review_type = Column(SQLEnum(ReviewType), nullable=False)
-    university_id = Column(
-        String, ForeignKey("universities.id", ondelete="CASCADE")
-    )
-    department_id = Column(
-        String, ForeignKey("departments.id", ondelete="CASCADE")
-    )
-    dormitory_id = Column(
-        String, ForeignKey("dormitory_info.id", ondelete="CASCADE")
-    )
+    university_id = Column(String, ForeignKey("universities.id", ondelete="CASCADE"))
+    department_id = Column(String, ForeignKey("departments.id", ondelete="CASCADE"))
+    dormitory_id = Column(String, ForeignKey("dormitory_info.id", ondelete="CASCADE"))
 
     # Overall statistics
     total_reviews = Column(Integer, default=0)
@@ -421,7 +402,7 @@ class ModerationQueue(Base):
 
     __tablename__ = "moderation_queue"
 
-    id = Column(String, primary_key=True, default=uuid4)
+    id = Column(String, primary_key=True, default=lambda: str(uuid4()))
     review_id = Column(
         String,
         ForeignKey("student_reviews.id", ondelete="CASCADE"),
@@ -435,9 +416,7 @@ class ModerationQueue(Base):
     flag_reasons = Column(JSONB, default=list)  # ["spam", "profanity", "too_short"]
 
     # Assignment
-    assigned_to = Column(
-        String, ForeignKey("users.id", ondelete="SET NULL")
-    )
+    assigned_to = Column(String, ForeignKey("users.id", ondelete="SET NULL"))
     assigned_at = Column(DateTime(timezone=True))
 
     # Status

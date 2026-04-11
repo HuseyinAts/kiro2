@@ -2,11 +2,11 @@
 Task 92.3: Streak Tracking Model
 Ardışık doğru cevap takibi
 """
+
 from datetime import datetime
 from uuid import uuid4
 
-from sqlalchemy import Column, String, Integer, DateTime, ForeignKey, JSON
-from sqlalchemy.dialects.postgresql import UUID as PGUUID
+from sqlalchemy import JSON, Column, DateTime, ForeignKey, Integer, String
 from sqlalchemy.orm import relationship
 
 from .base import Base
@@ -17,7 +17,7 @@ class StreakTracking(Base):
 
     __tablename__ = "streak_tracking"
 
-    id = Column(String, primary_key=True, default=uuid4)
+    id = Column(String, primary_key=True, default=lambda: str(uuid4()))
     user_id = Column(String, ForeignKey("users.id"), nullable=False, index=True)
 
     # Current streak
@@ -65,7 +65,7 @@ class PerformanceHistory(Base):
 
     __tablename__ = "performance_history"
 
-    id = Column(String, primary_key=True, default=uuid4)
+    id = Column(String, primary_key=True, default=lambda: str(uuid4()))
     user_id = Column(String, ForeignKey("users.id"), nullable=False, index=True)
 
     # Performance data

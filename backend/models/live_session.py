@@ -4,26 +4,28 @@ Task 108: Live Q&A Sessions Models
 Database models for video conferencing, screen sharing, whiteboard, and recording.
 """
 
-from sqlalchemy import (
-    Column,
-    String,
-    Integer,
-    Float,
-    Boolean,
-    Text,
-    DateTime,
-    ForeignKey,
-    Enum as SQLEnum,
-    ARRAY,
-)
-from sqlalchemy.dialects.postgresql import UUID as PGUUID, JSONB
-from sqlalchemy.orm import relationship
 from datetime import datetime
-from uuid import uuid4
 from enum import Enum
+from uuid import uuid4
+
+from sqlalchemy import (
+    ARRAY,
+    Boolean,
+    Column,
+    DateTime,
+    Float,
+    ForeignKey,
+    Integer,
+    String,
+    Text,
+)
+from sqlalchemy import (
+    Enum as SQLEnum,
+)
+from sqlalchemy.dialects.postgresql import JSONB
+from sqlalchemy.orm import relationship
 
 from .database import Base
-
 
 # ============================================================
 # Enumerations
@@ -109,7 +111,7 @@ class LiveSession(Base):
 
     __tablename__ = "live_sessions"
 
-    id = Column(String, primary_key=True, default=uuid4)
+    id = Column(String, primary_key=True, default=lambda: str(uuid4()))
 
     # Basic Information
     title = Column(String(255), nullable=False)
@@ -207,10 +209,8 @@ class SessionParticipant(Base):
 
     __tablename__ = "session_participants"
 
-    id = Column(String, primary_key=True, default=uuid4)
-    session_id = Column(
-        String, ForeignKey("live_sessions.id"), nullable=False
-    )
+    id = Column(String, primary_key=True, default=lambda: str(uuid4()))
+    session_id = Column(String, ForeignKey("live_sessions.id"), nullable=False)
     user_id = Column(String, ForeignKey("users.id"), nullable=False)
 
     # Role
@@ -263,10 +263,8 @@ class ScreenShare(Base):
 
     __tablename__ = "screen_shares"
 
-    id = Column(String, primary_key=True, default=uuid4)
-    session_id = Column(
-        String, ForeignKey("live_sessions.id"), nullable=False
-    )
+    id = Column(String, primary_key=True, default=lambda: str(uuid4()))
+    session_id = Column(String, ForeignKey("live_sessions.id"), nullable=False)
     user_id = Column(String, ForeignKey("users.id"), nullable=False)
 
     # Screen Share Details
@@ -304,10 +302,8 @@ class WhiteboardSession(Base):
 
     __tablename__ = "whiteboard_sessions"
 
-    id = Column(String, primary_key=True, default=uuid4)
-    session_id = Column(
-        String, ForeignKey("live_sessions.id"), nullable=False
-    )
+    id = Column(String, primary_key=True, default=lambda: str(uuid4()))
+    session_id = Column(String, ForeignKey("live_sessions.id"), nullable=False)
 
     # Whiteboard Info
     name = Column(String(255))
@@ -348,10 +344,8 @@ class WhiteboardStroke(Base):
 
     __tablename__ = "whiteboard_strokes"
 
-    id = Column(String, primary_key=True, default=uuid4)
-    whiteboard_id = Column(
-        String, ForeignKey("whiteboard_sessions.id"), nullable=False
-    )
+    id = Column(String, primary_key=True, default=lambda: str(uuid4()))
+    whiteboard_id = Column(String, ForeignKey("whiteboard_sessions.id"), nullable=False)
     user_id = Column(String, ForeignKey("users.id"), nullable=False)
 
     # Page
@@ -398,10 +392,8 @@ class WhiteboardEquation(Base):
 
     __tablename__ = "whiteboard_equations"
 
-    id = Column(String, primary_key=True, default=uuid4)
-    whiteboard_id = Column(
-        String, ForeignKey("whiteboard_sessions.id"), nullable=False
-    )
+    id = Column(String, primary_key=True, default=lambda: str(uuid4()))
+    whiteboard_id = Column(String, ForeignKey("whiteboard_sessions.id"), nullable=False)
     user_id = Column(String, ForeignKey("users.id"), nullable=False)
 
     # Page
@@ -452,10 +444,8 @@ class SessionRecording(Base):
 
     __tablename__ = "session_recordings"
 
-    id = Column(String, primary_key=True, default=uuid4)
-    session_id = Column(
-        String, ForeignKey("live_sessions.id"), nullable=False
-    )
+    id = Column(String, primary_key=True, default=lambda: str(uuid4()))
+    session_id = Column(String, ForeignKey("live_sessions.id"), nullable=False)
 
     # Recording Info
     title = Column(String(255))
@@ -530,10 +520,8 @@ class RecordingView(Base):
 
     __tablename__ = "recording_views"
 
-    id = Column(String, primary_key=True, default=uuid4)
-    recording_id = Column(
-        String, ForeignKey("session_recordings.id"), nullable=False
-    )
+    id = Column(String, primary_key=True, default=lambda: str(uuid4()))
+    recording_id = Column(String, ForeignKey("session_recordings.id"), nullable=False)
     user_id = Column(String, ForeignKey("users.id"))
 
     # View Details
@@ -567,10 +555,8 @@ class RecordingBookmark(Base):
 
     __tablename__ = "recording_bookmarks"
 
-    id = Column(String, primary_key=True, default=uuid4)
-    recording_id = Column(
-        String, ForeignKey("session_recordings.id"), nullable=False
-    )
+    id = Column(String, primary_key=True, default=lambda: str(uuid4()))
+    recording_id = Column(String, ForeignKey("session_recordings.id"), nullable=False)
     user_id = Column(String, ForeignKey("users.id"), nullable=False)
 
     # Bookmark
@@ -596,10 +582,8 @@ class SessionChatMessage(Base):
 
     __tablename__ = "session_chat_messages"
 
-    id = Column(String, primary_key=True, default=uuid4)
-    session_id = Column(
-        String, ForeignKey("live_sessions.id"), nullable=False
-    )
+    id = Column(String, primary_key=True, default=lambda: str(uuid4()))
+    session_id = Column(String, ForeignKey("live_sessions.id"), nullable=False)
     user_id = Column(String, ForeignKey("users.id"), nullable=False)
 
     # Message
@@ -637,7 +621,7 @@ class SessionAnalytics(Base):
 
     __tablename__ = "session_analytics"
 
-    id = Column(String, primary_key=True, default=uuid4)
+    id = Column(String, primary_key=True, default=lambda: str(uuid4()))
     session_id = Column(
         String,
         ForeignKey("live_sessions.id"),

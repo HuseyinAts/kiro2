@@ -4,27 +4,28 @@ Task 104: University Information Models
 Database models for campus information, city living costs, dormitory info, and scholarships
 """
 
+from enum import Enum
 from uuid import uuid4
 
 from sqlalchemy import (
-    Column,
-    String,
-    Integer,
-    Float,
-    Boolean,
-    ForeignKey,
-    Text,
     ARRAY,
-    Enum as SQLEnum,
+    Boolean,
+    Column,
+    Float,
+    ForeignKey,
     Index,
+    Integer,
+    String,
+    Text,
 )
-from sqlalchemy.dialects.postgresql import UUID as PGUUID, JSONB
+from sqlalchemy import (
+    Enum as SQLEnum,
+)
+from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.sql import func
 from sqlalchemy.types import DateTime
 
 from .database import Base
-from enum import Enum
-
 
 # ============================================================
 # Enumerations
@@ -77,7 +78,7 @@ class CampusInfo(Base):
 
     __tablename__ = "campus_info"
 
-    id = Column(String, primary_key=True, default=uuid4)
+    id = Column(String, primary_key=True, default=lambda: str(uuid4()))
     university_id = Column(
         String,
         ForeignKey("universities.id", ondelete="CASCADE"),
@@ -179,7 +180,7 @@ class CityLivingCost(Base):
 
     __tablename__ = "city_living_costs"
 
-    id = Column(String, primary_key=True, default=uuid4)
+    id = Column(String, primary_key=True, default=lambda: str(uuid4()))
 
     # Location
     city = Column(String(100), nullable=False)
@@ -281,10 +282,8 @@ class DormitoryInfo(Base):
 
     __tablename__ = "dormitory_info"
 
-    id = Column(String, primary_key=True, default=uuid4)
-    university_id = Column(
-        String, ForeignKey("universities.id", ondelete="CASCADE")
-    )
+    id = Column(String, primary_key=True, default=lambda: str(uuid4()))
+    university_id = Column(String, ForeignKey("universities.id", ondelete="CASCADE"))
 
     # Basic info
     name = Column(String(255), nullable=False)
@@ -406,10 +405,8 @@ class ScholarshipProgram(Base):
 
     __tablename__ = "scholarship_programs"
 
-    id = Column(String, primary_key=True, default=uuid4)
-    university_id = Column(
-        String, ForeignKey("universities.id", ondelete="CASCADE")
-    )
+    id = Column(String, primary_key=True, default=lambda: str(uuid4()))
+    university_id = Column(String, ForeignKey("universities.id", ondelete="CASCADE"))
 
     # Basic info
     name = Column(String(255), nullable=False)
@@ -526,7 +523,7 @@ class UniversityStatistics(Base):
 
     __tablename__ = "university_statistics"
 
-    id = Column(String, primary_key=True, default=uuid4)
+    id = Column(String, primary_key=True, default=lambda: str(uuid4()))
     university_id = Column(
         String,
         ForeignKey("universities.id", ondelete="CASCADE"),

@@ -3,22 +3,22 @@ Video Cache Model
 SQLAlchemy model for video_cache table
 """
 
-from datetime import datetime, timezone
-from typing import Dict, Any
+from datetime import UTC, datetime
+from typing import Any
 from uuid import uuid4
 
 from sqlalchemy import (
-    Column,
-    String,
-    Integer,
     BigInteger,
-    Float,
-    Text,
-    DateTime,
     CheckConstraint,
+    Column,
+    DateTime,
+    Float,
     Index,
+    Integer,
+    String,
+    Text,
 )
-from sqlalchemy.dialects.postgresql import UUID, JSONB
+from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import declarative_base
 
 Base = declarative_base()
@@ -34,7 +34,7 @@ class VideoCache(Base):
     __tablename__ = "video_cache"
 
     # Primary key
-    id = Column(String, primary_key=True, default=uuid4)
+    id = Column(String, primary_key=True, default=lambda: str(uuid4()))
 
     # Video identification
     video_id = Column(String(100), nullable=False, unique=True, index=True)
@@ -135,7 +135,7 @@ class VideoCache(Base):
             f"subject={self.subject}, quality_score={self.quality_score})>"
         )
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert model to dictionary"""
         return {
             "id": str(self.id),
@@ -170,7 +170,7 @@ class VideoCache(Base):
         }
 
     @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> "VideoCache":
+    def from_dict(cls, data: dict[str, Any]) -> "VideoCache":
         """Create model from dictionary"""
         # Remove fields that shouldn't be set directly
         data = data.copy()
@@ -182,7 +182,7 @@ class VideoCache(Base):
 
     def update_access(self) -> None:
         """Update access tracking"""
-        self.last_accessed = datetime.now(timezone.utc)
+        self.last_accessed = datetime.now(UTC)
         self.access_count += 1
 
     def is_expired(self) -> bool:
@@ -190,7 +190,7 @@ class VideoCache(Base):
         if not self.last_updated or not self.cache_ttl:
             return False
 
-        elapsed = (datetime.now(timezone.utc) - self.last_updated).total_seconds()
+        elapsed = (datetime.now(UTC) - self.last_updated).total_seconds()
         return elapsed > self.cache_ttl
 
     def calculate_overall_score(self) -> float:

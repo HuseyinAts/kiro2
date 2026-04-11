@@ -10,24 +10,25 @@ from enum import Enum
 from uuid import uuid4
 
 from sqlalchemy import (
-    Column,
-    String,
-    Integer,
-    Float,
     Boolean,
-    ForeignKey,
-    Text,
+    Column,
     Date,
-    Enum as SQLEnum,
+    Float,
+    ForeignKey,
     Index,
+    Integer,
+    String,
+    Text,
 )
-from sqlalchemy.dialects.postgresql import UUID as PGUUID, JSONB, ARRAY
+from sqlalchemy import (
+    Enum as SQLEnum,
+)
+from sqlalchemy.dialects.postgresql import ARRAY, JSONB
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 from sqlalchemy.types import DateTime
 
 from .database import Base
-
 
 # ============================================================
 # Enumerations
@@ -36,6 +37,7 @@ from .database import Base
 
 class InsightCategory(str, Enum):
     """Insight kategorileri (REQ-2.6)"""
+
     TECHNICAL = "technical"
     PROCESS = "process"
     COMMUNICATION = "communication"
@@ -43,6 +45,7 @@ class InsightCategory(str, Enum):
 
 class GoalStatus(str, Enum):
     """Hedef durumlari (REQ-6)"""
+
     ACTIVE = "active"
     COMPLETED = "completed"
     AT_RISK = "at_risk"
@@ -51,6 +54,7 @@ class GoalStatus(str, Enum):
 
 class ReflectionDepth(str, Enum):
     """Yansitma derinligi (REQ-3.6)"""
+
     SURFACE = "surface"
     MODERATE = "moderate"
     DEEP = "deep"
@@ -58,6 +62,7 @@ class ReflectionDepth(str, Enum):
 
 class ExportFormat(str, Enum):
     """Export formatlari (REQ-8.1)"""
+
     MARKDOWN = "markdown"
     PDF = "pdf"
     JSON = "json"
@@ -81,12 +86,8 @@ class DiaryEntry(Base):
 
     __tablename__ = "diary_entries"
 
-    id = Column(String, primary_key=True, default=uuid4)
-    user_id = Column(
-        String,
-        ForeignKey("users.id", ondelete="CASCADE"),
-        nullable=False
-    )
+    id = Column(String, primary_key=True, default=lambda: str(uuid4()))
+    user_id = Column(String, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
 
     # Tarih (benzersiz - gun basina tek kayit)
     date = Column(Date, nullable=False, index=True)
@@ -99,7 +100,7 @@ class DiaryEntry(Base):
 
     # Icerik (REQ-1.2, REQ-1.3, REQ-1.4)
     highlights = Column(JSONB, default=list)  # List[str] - One cikan tasklar
-    learnings = Column(JSONB, default=list)   # List[str] - Key learnings (top 3)
+    learnings = Column(JSONB, default=list)  # List[str] - Key learnings (top 3)
     challenges = Column(JSONB, default=list)  # List[str] - Karsilasilan zorluklar
 
     # Ham task verileri
@@ -117,21 +118,15 @@ class DiaryEntry(Base):
     # Timestamps
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(
-        DateTime(timezone=True),
-        server_default=func.now(),
-        onupdate=func.now()
+        DateTime(timezone=True), server_default=func.now(), onupdate=func.now()
     )
 
     # Relationships
     insights = relationship(
-        "Insight",
-        back_populates="diary_entry",
-        cascade="all, delete-orphan"
+        "Insight", back_populates="diary_entry", cascade="all, delete-orphan"
     )
     reflections = relationship(
-        "Reflection",
-        back_populates="diary_entry",
-        cascade="all, delete-orphan"
+        "Reflection", back_populates="diary_entry", cascade="all, delete-orphan"
     )
 
     # Indexes
@@ -169,23 +164,15 @@ class Insight(Base):
 
     __tablename__ = "insights"
 
-    id = Column(String, primary_key=True, default=uuid4)
+    id = Column(String, primary_key=True, default=lambda: str(uuid4()))
     diary_entry_id = Column(
-        String,
-        ForeignKey("diary_entries.id", ondelete="CASCADE"),
-        nullable=False
+        String, ForeignKey("diary_entries.id", ondelete="CASCADE"), nullable=False
     )
-    user_id = Column(
-        String,
-        ForeignKey("users.id", ondelete="CASCADE"),
-        nullable=False
-    )
+    user_id = Column(String, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
 
     # Kategori (REQ-2.6)
     category = Column(
-        SQLEnum(InsightCategory),
-        nullable=False,
-        default=InsightCategory.TECHNICAL
+        SQLEnum(InsightCategory), nullable=False, default=InsightCategory.TECHNICAL
     )
 
     # Pattern ve analiz (REQ-2.1, REQ-2.2, REQ-2.3)
@@ -239,32 +226,23 @@ class Reflection(Base):
 
     __tablename__ = "reflections"
 
-    id = Column(String, primary_key=True, default=uuid4)
+    id = Column(String, primary_key=True, default=lambda: str(uuid4()))
     diary_entry_id = Column(
-        String,
-        ForeignKey("diary_entries.id", ondelete="CASCADE"),
-        nullable=False
+        String, ForeignKey("diary_entries.id", ondelete="CASCADE"), nullable=False
     )
-    user_id = Column(
-        String,
-        ForeignKey("users.id", ondelete="CASCADE"),
-        nullable=False
-    )
+    user_id = Column(String, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
 
     # Reflection sorulari ve yanitlari
-    what_went_well = Column(Text)       # REQ-3.2
-    what_could_improve = Column(Text)   # REQ-3.3
-    what_did_i_learn = Column(Text)     # REQ-3.4
+    what_went_well = Column(Text)  # REQ-3.2
+    what_could_improve = Column(Text)  # REQ-3.3
+    what_did_i_learn = Column(Text)  # REQ-3.4
     what_will_i_do_differently = Column(Text)  # REQ-3.5
 
     # Additional notes
     additional_notes = Column(Text)
 
     # Depth measurement (REQ-3.6)
-    depth = Column(
-        SQLEnum(ReflectionDepth),
-        default=ReflectionDepth.SURFACE
-    )
+    depth = Column(SQLEnum(ReflectionDepth), default=ReflectionDepth.SURFACE)
     depth_score = Column(Float, default=0.0)  # 0.0 - 1.0
 
     # Analysis
@@ -277,9 +255,7 @@ class Reflection(Base):
     # Timestamps
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(
-        DateTime(timezone=True),
-        server_default=func.now(),
-        onupdate=func.now()
+        DateTime(timezone=True), server_default=func.now(), onupdate=func.now()
     )
 
     # Relationships
@@ -312,12 +288,8 @@ class LearningEntry(Base):
 
     __tablename__ = "learning_entries"
 
-    id = Column(String, primary_key=True, default=uuid4)
-    user_id = Column(
-        String,
-        ForeignKey("users.id", ondelete="CASCADE"),
-        nullable=False
-    )
+    id = Column(String, primary_key=True, default=lambda: str(uuid4()))
+    user_id = Column(String, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
 
     # Content (REQ-4.1)
     title = Column(String(255), nullable=False)
@@ -355,9 +327,7 @@ class LearningEntry(Base):
     # Timestamps
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(
-        DateTime(timezone=True),
-        server_default=func.now(),
-        onupdate=func.now()
+        DateTime(timezone=True), server_default=func.now(), onupdate=func.now()
     )
 
     # Indexes
@@ -388,12 +358,8 @@ class EmotionalState(Base):
 
     __tablename__ = "emotional_states"
 
-    id = Column(String, primary_key=True, default=uuid4)
-    user_id = Column(
-        String,
-        ForeignKey("users.id", ondelete="CASCADE"),
-        nullable=False
-    )
+    id = Column(String, primary_key=True, default=lambda: str(uuid4()))
+    user_id = Column(String, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
 
     # Timestamp
     timestamp = Column(DateTime(timezone=True), server_default=func.now())
@@ -455,12 +421,8 @@ class Goal(Base):
 
     __tablename__ = "goals"
 
-    id = Column(String, primary_key=True, default=uuid4)
-    user_id = Column(
-        String,
-        ForeignKey("users.id", ondelete="CASCADE"),
-        nullable=False
-    )
+    id = Column(String, primary_key=True, default=lambda: str(uuid4()))
+    user_id = Column(String, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
 
     # Goal info (REQ-6.1 - SMART)
     title = Column(String(255), nullable=False)
@@ -480,13 +442,12 @@ class Goal(Base):
     unit = Column(String(50))  # e.g., "tasks", "hours", "points"
 
     # Status
-    status = Column(
-        SQLEnum(GoalStatus),
-        default=GoalStatus.ACTIVE
-    )
+    status = Column(SQLEnum(GoalStatus), default=GoalStatus.ACTIVE)
 
     # Milestones (REQ-6.3)
-    milestones = Column(JSONB, default=list)  # [{percentage, title, achieved, achieved_at}]
+    milestones = Column(
+        JSONB, default=list
+    )  # [{percentage, title, achieved, achieved_at}]
     milestone_celebrations = Column(JSONB, default=list)
 
     # Risk detection (REQ-6.4)
@@ -516,9 +477,7 @@ class Goal(Base):
     # Timestamps
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(
-        DateTime(timezone=True),
-        server_default=func.now(),
-        onupdate=func.now()
+        DateTime(timezone=True), server_default=func.now(), onupdate=func.now()
     )
 
     # Indexes
@@ -563,12 +522,8 @@ class PeerComparison(Base):
 
     __tablename__ = "peer_comparisons"
 
-    id = Column(String, primary_key=True, default=uuid4)
-    user_id = Column(
-        String,
-        ForeignKey("users.id", ondelete="CASCADE"),
-        nullable=False
-    )
+    id = Column(String, primary_key=True, default=lambda: str(uuid4()))
+    user_id = Column(String, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
 
     # Comparison period
     period_start = Column(Date, nullable=False)
@@ -630,12 +585,8 @@ class DiaryExport(Base):
 
     __tablename__ = "diary_exports"
 
-    id = Column(String, primary_key=True, default=uuid4)
-    user_id = Column(
-        String,
-        ForeignKey("users.id", ondelete="CASCADE"),
-        nullable=False
-    )
+    id = Column(String, primary_key=True, default=lambda: str(uuid4()))
+    user_id = Column(String, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
 
     # Export info
     format = Column(SQLEnum(ExportFormat), nullable=False)

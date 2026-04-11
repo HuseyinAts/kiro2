@@ -23,7 +23,6 @@ from sqlalchemy import (
     Enum as SQLEnum,
 )
 from sqlalchemy.dialects.postgresql import JSONB
-from sqlalchemy.dialects.postgresql import UUID as PGUUID
 from sqlalchemy.orm import relationship
 
 from .database import Base
@@ -108,7 +107,7 @@ class StudyRoom(Base):
 
     __tablename__ = "study_rooms"
 
-    id = Column(String, primary_key=True, default=uuid4)
+    id = Column(String, primary_key=True, default=lambda: str(uuid4()))
 
     # Basic Information
     name = Column(String(255), nullable=False)
@@ -189,7 +188,7 @@ class RoomMember(Base):
 
     __tablename__ = "room_members"
 
-    id = Column(String, primary_key=True, default=uuid4)
+    id = Column(String, primary_key=True, default=lambda: str(uuid4()))
     room_id = Column(String, ForeignKey("study_rooms.id"), nullable=False)
     user_id = Column(String, ForeignKey("users.id"), nullable=False)
 
@@ -248,7 +247,7 @@ class RoomInvitation(Base):
 
     __tablename__ = "room_invitations"
 
-    id = Column(String, primary_key=True, default=uuid4)
+    id = Column(String, primary_key=True, default=lambda: str(uuid4()))
     room_id = Column(String, ForeignKey("study_rooms.id"), nullable=False)
 
     # Inviter & Invitee
@@ -291,7 +290,7 @@ class RoomChatMessage(Base):
 
     __tablename__ = "room_chat_messages"
 
-    id = Column(String, primary_key=True, default=uuid4)
+    id = Column(String, primary_key=True, default=lambda: str(uuid4()))
     room_id = Column(String, ForeignKey("study_rooms.id"), nullable=False)
     user_id = Column(String, ForeignKey("users.id"), nullable=False)
 
@@ -349,7 +348,7 @@ class SharedFile(Base):
 
     __tablename__ = "shared_files"
 
-    id = Column(String, primary_key=True, default=uuid4)
+    id = Column(String, primary_key=True, default=lambda: str(uuid4()))
     room_id = Column(String, ForeignKey("study_rooms.id"), nullable=False)
     uploaded_by = Column(String, ForeignKey("users.id"), nullable=False)
 
@@ -421,10 +420,8 @@ class FileVersion(Base):
 
     __tablename__ = "file_versions"
 
-    id = Column(String, primary_key=True, default=uuid4)
-    file_id = Column(
-        String, ForeignKey("shared_files.id"), nullable=False
-    )
+    id = Column(String, primary_key=True, default=lambda: str(uuid4()))
+    file_id = Column(String, ForeignKey("shared_files.id"), nullable=False)
 
     # Version Details
     version_number = Column(Integer, nullable=False)
@@ -463,7 +460,7 @@ class StudySession(Base):
     __tablename__ = "study_sessions"
     __table_args__ = {"extend_existing": True}
 
-    id = Column(String, primary_key=True, default=uuid4)
+    id = Column(String, primary_key=True, default=lambda: str(uuid4()))
     room_id = Column(String, ForeignKey("study_rooms.id"), nullable=False)
     user_id = Column(String, ForeignKey("users.id"), nullable=False)
 
@@ -495,10 +492,8 @@ class RoomAnalytics(Base):
 
     __tablename__ = "room_analytics"
 
-    id = Column(String, primary_key=True, default=uuid4)
-    room_id = Column(
-        String, ForeignKey("study_rooms.id"), nullable=False, unique=True
-    )
+    id = Column(String, primary_key=True, default=lambda: str(uuid4()))
+    room_id = Column(String, ForeignKey("study_rooms.id"), nullable=False, unique=True)
 
     # Member Statistics
     total_members = Column(Integer, default=0)
@@ -551,10 +546,8 @@ class RoomSettings(Base):
 
     __tablename__ = "room_settings"
 
-    id = Column(String, primary_key=True, default=uuid4)
-    room_id = Column(
-        String, ForeignKey("study_rooms.id"), nullable=False, unique=True
-    )
+    id = Column(String, primary_key=True, default=lambda: str(uuid4()))
+    room_id = Column(String, ForeignKey("study_rooms.id"), nullable=False, unique=True)
 
     # Chat Settings
     slow_mode_seconds = Column(Integer, default=0)  # Message cooldown
