@@ -440,12 +440,68 @@ The systemic count after Wave 13:
   503 sites (fail-fast + helper pattern is now canonical)
 - **GF117** = one confirmed wrapped-HTTPException propagation site (new class)
 
-Wave 14 (Session 150+) should probe another disjoint top-10 but bias toward
-inventory entries whose service layer is sync and whose dep is `get_db` —
-those are the remaining latent `MissingGreenlet` crash sites. The prophylactic
-sweep candidate is clear: `audit_db_dependency.py` already reports 98 MEDIUM
-Pattern B sites; any of them under `backend/api/*.py` is a likely Wave 14
-target.
+Wave 14 — twelfth feature-inventory sweep (Session 150, 10 new tests, discovered 1 additional half-working feature):
+
+Context: Session 150 re-ran `audit_db_dependency.py` and the MEDIUM count
+collapsed from Session 147's 98 to **0** — Session 146's rule-of-eight
+proactive sweep plus the Wave 10-13 fix streak and Session 149's
+rule-of-five prophylactic `user_id: str` sweep collaterally eradicated the
+Pattern A/B backlog. The auditor also has a known blind spot for aliased
+imports (`from core.database import get_db_session as get_db`), but an
+exhaustive grep confirmed only `audit_logs_api.py` still had a bare-sync
+`from core.database import get_db` + real db operations in the `api/`
+tree. Wave 14 therefore shifted probe targets away from "hunting
+three-part traps" toward a breadth sweep of surfaces Waves 1-13 had not
+touched: admin audit log, mastery confidence, performance metrics, social
+summary, wave2b quality evaluation, error pattern clustering, monitoring,
+question history, osym random questions, and orchestrator status. **1
+real fix (10% hit rate — lowest wave yet, confirming the trailing
+indicator curve: the remaining bugs are one-off per-surface drift, not
+systemic classes)**.
+
+| # | Flow | Surfaces | Status |
+|---|------|----------|--------|
+| GF120 | admin/audit-logs admin-gate | Student→403 (dependency resolution order: `require_admin` returns 403 before sync-db trap fires — no crash) | ✅ PASS (semantic) |
+| GF121 | mastery-confidence/MATEMATIK not 500 | IRT ability+95% CI read path | ✅ PASS (first-probe) |
+| GF122 | performance/metrics admin-gate | Student→403 | ✅ PASS (semantic) |
+| GF123 | social/summary not 500 | 6-way social XP aggregation (ForumQuestion, ForumSolution, Duels, Birlikte, Oba, Usta_Cirak) | ✅ PASS (first-probe) |
+| GF124 | wave2b quality/evaluate not 500 | BERTScore/Bloom question evaluation (optional-dep) | ✅ PASS (first-probe) |
+| GF125 | error-clusters/my-patterns/MATEMATIK not 500 | **Three-bug pile-up in one file** — (1) **FastAPI route ordering trap**: `@router.get("/{subject}/{topic_id}")` was declared before `@router.get("/my-patterns/{subject}")`, so `/my-patterns/MATEMATIK` greedily matched the wildcard with `subject="my-patterns"`, `topic_id="MATEMATIK"`. Static path segments MUST be declared before wildcards — same class as the MEMORY.md note about FastAPI route ordering. (2) **Service/caller contract drift (identical to Session 143 GF65 DINA)**: `error_cluster_service.get_error_clusters_for_topic`, `get_peer_recommendations`, and `cluster_student_errors` all return `list[dict]`, but the handlers did `ErrorClustersResponse(**result)` / `PeerRecommendationsResponse(**result)` / `StudentErrorPatternsResponse(**result)` — `TypeError: argument after ** must be a mapping, not list` on empty list (the GF125 test case, because the test student has zero wrong answers). The bare `except Exception` swallowed it as a generic 500. (3) **Kwargs drift**: `get_peer_recommendations` handler passed `student_id=current_user.id` but the service signature takes `min_improvement=0.1` — a latent `TypeError: unexpected keyword argument` for any non-empty cluster. | ✅ PASS (fix: Session 150 — complete rewrite of `api/error_cluster_api.py`: static `/my-patterns/{subject}` handler moved ABOVE wildcard `/{subject}/{topic_id}`, and all 3 handlers now transform service `list[dict]` into proper response envelopes by mapping per-row fields to pydantic items. `get_peer_recommendations` handler drops the bogus `student_id=` kwarg. `get_my_error_patterns` retains the graceful-empty-response fallback from the original — a student with no wrong-answer history returns an empty-patterns envelope, not 500.) |
+| GF126 | monitoring/performance/api admin-gate | Student→403 | ✅ PASS (semantic) |
+| GF127 | questions/{id}/history not 500 | Question version history read path | ✅ PASS (first-probe) |
+| GF128 | osym/random-questions not 500 | Raw SQL on `question_bank` (77K rows) + random.sample | ✅ PASS (first-probe) |
+| GF129 | admin/orchestrator/status admin-gate | Student→403 | ✅ PASS (semantic) |
+
+**Current distribution (Session 150):** 146 tests → **144 PASS, 0 FAIL, 2 SKIP**.
+
+Wave 14 hit rate was 10% (1/10 real fixes — lowest of any wave). The drop
+from Wave 13's 50% matches the predicted trailing indicator curve: as
+systemic anti-pattern classes get eradicated (rule-of-eight Session 146,
+rule-of-seven Session 147 VideoAnalytics coercion, rule-of-five Session
+148 Pydantic `user_id: int`, the three-part async trap sweep in Waves
+10/11/13), the remaining bugs are increasingly idiosyncratic
+per-surface drift. GF125 is the exception-that-proves-the-rule: three
+independent bugs (route ordering, contract drift, kwargs drift) stacked
+in a single file where no probe had ever landed before. The `list[dict]`
+vs `Response(**dict)` contract drift has now been confirmed at **two**
+surfaces (Session 143 GF65 DINA + GF125 error-clusters) — close enough
+to establish a rule-of-two candidate, but not yet systemic.
+
+The `audit_db_dependency.py` baseline collapse from 98 → 0 MEDIUM is the
+most important infra signal from Session 150: the handler-level merge
+gate that Session 146 installed (`audit_httpexception_guard.py --fail`)
+plus the incidental `get_db → get_async_session` rewrites in Waves 10/11
+have together grounded the entire Pattern A/B class out of the repo.
+Future waves should NOT expect `MissingGreenlet` / `greenlet_spawn`
+crashes as probe targets — those are done. The remaining harvest is in
+per-endpoint contract drift, schema drift, and long-tail optional-dep
+propagation bugs that each touch exactly one handler.
+
+Wave 15 (Session 151+) should probe a disjoint top-10 but bias toward
+endpoints the frontend actively calls but no probe has touched, rather
+than infrastructure audit targets. Expected hit rate: 10-20% baseline
+with occasional spikes when a probe lands on a file with multiple
+stacked bugs (the GF125 pattern).
 
 Implementation: `backend/tests/e2e/test_golden_flows.py`
 CI gate: `.github/workflows/golden-flows.yml`

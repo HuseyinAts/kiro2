@@ -4168,3 +4168,194 @@ def test_gf119_litellm_chat_not_500(client: httpx.Client):
         f"LLM_BACKEND != 'litellm' (GF22/GF37/GF38 optional-dep pattern); "
         f"a 500 means _get_litellm_client() or the rate limiter is broken."
     )
+
+
+# ---------------------------------------------------------------------------
+# Wave 14 (GF120-GF129) — Session 150 feature-inventory sweep
+#
+# Ten disjoint probes covering surfaces Wave 1-13 did not touch. The
+# Session 150 re-run of `audit_db_dependency.py` returned 0 Pattern A/B
+# findings (Session 147 baseline was 98 MEDIUM) — the rule-of-eight sweep
+# + Wave 10-13 direct fixes collaterally eradicated the backlog. The one
+# remaining bare-sync-`get_db` crash target in api/ is `audit_logs_api.py`
+# (admin-gated, 10 db operations, sync `def`), probed by GF120. The other
+# nine targets are disjoint read/write surfaces chosen to keep blast radius
+# varied: mastery confidence, admin performance metrics, social summary
+# aggregation, Wave 2B question evaluation, student error patterns,
+# monitoring API perf, question history, OSYM random, and orchestrator
+# status. Expected hit rate: 20-50% — the remaining half-working features
+# are likely to be idiosyncratic per-surface drift (auth-wrapper bugs,
+# sync/async mismatches that slipped past the earlier sweeps) rather than
+# a single systemic class.
+# ---------------------------------------------------------------------------
+
+
+def test_gf120_audit_logs_list_admin_gate(client: httpx.Client):
+    """GET /admin/audit-logs/ must reject student with 401/403, never 500."""
+    token = _login(client, STUDENT)
+    resp = client.get(
+        "/admin/audit-logs/",
+        headers=_auth_headers(token),
+    )
+    assert resp.status_code != 500, (
+        f"GF120 audit-logs/ crashed: {resp.status_code} "
+        f"{resp.text[:300]}. Check api/audit_logs_api.py — sync `def` + "
+        f"`db: Session = Depends(get_db)` is the only remaining bare-sync-"
+        f"get_db crash target in api/. Student should get 403 from "
+        f"require_admin BEFORE the sync db trap fires; a 500 means the "
+        f"dependency chain is wired wrong and `get_db` is executing first."
+    )
+
+
+def test_gf121_mastery_confidence_subject_not_500(client: httpx.Client):
+    """GET /api/v1/mastery-confidence/{subject} must not crash."""
+    token = _login(client, STUDENT)
+    resp = client.get(
+        "/api/v1/mastery-confidence/MATEMATIK",
+        headers=_auth_headers(token),
+    )
+    assert resp.status_code != 500, (
+        f"GF121 mastery-confidence/MATEMATIK crashed: {resp.status_code} "
+        f"{resp.text[:300]}. Check api/mastery_confidence_api.py — "
+        f"IRT ability estimator + 95% CI calculation. A new student with "
+        f"no responses should return a neutral prior, not crash."
+    )
+
+
+def test_gf122_performance_metrics_admin_gate(client: httpx.Client):
+    """GET /api/v1/performance/metrics must reject student with 401/403."""
+    token = _login(client, STUDENT)
+    resp = client.get(
+        "/api/v1/performance/metrics",
+        headers=_auth_headers(token),
+    )
+    assert resp.status_code != 500, (
+        f"GF122 performance/metrics crashed: {resp.status_code} "
+        f"{resp.text[:300]}. Expected 403 (admin-only); a 500 means "
+        f"get_current_admin_user is broken or one of the 4 inline "
+        f"`from core.xxx import ...` imports (cache_manager, system_monitor, "
+        f"query_optimizer, get_optimization_stats) crashes at module load."
+    )
+
+
+def test_gf123_social_summary_not_500(client: httpx.Client):
+    """GET /api/v1/social/summary must not crash on XP aggregation."""
+    token = _login(client, STUDENT)
+    resp = client.get(
+        "/api/v1/social/summary",
+        headers=_auth_headers(token),
+    )
+    assert resp.status_code != 500, (
+        f"GF123 social/summary crashed: {resp.status_code} "
+        f"{resp.text[:300]}. Check api/social_summary_api.py — aggregates "
+        f"XP from 6 social features (ForumQuestion, ForumSolution, duels, "
+        f"birlikte, oba, usta_cirak). A new student with zero rows should "
+        f"return all-zeros, not crash. Look for missing model imports or "
+        f"table/column drift."
+    )
+
+
+def test_gf124_wave2b_evaluate_not_500(client: httpx.Client):
+    """POST /api/v2/quality/evaluate must not crash on a valid question body."""
+    token = _login(client, STUDENT)
+    resp = client.post(
+        "/api/v2/quality/evaluate",
+        headers=_auth_headers(token),
+        json={
+            "question_text": (
+                "Bir sayinin uc kati on besten bir fazladir. Bu sayi kactir?"
+            ),
+            "difficulty": "kolay",
+            "subject": "Matematik",
+            "correct_answer": "A",
+            "evaluation_stage": "quick",
+        },
+    )
+    assert resp.status_code != 500, (
+        f"GF124 wave2b/evaluate crashed: {resp.status_code} "
+        f"{resp.text[:300]}. Check api/wave2b_quality_routes.py + "
+        f"get_evaluator() singleton. If BERTScore / Bloom classifier "
+        f"optional deps are missing, handler should 503 (GF22 pattern), "
+        f"not crash."
+    )
+
+
+def test_gf125_error_clusters_my_patterns_not_500(client: httpx.Client):
+    """GET /api/v1/error-clusters/my-patterns/{subject} must not crash."""
+    token = _login(client, STUDENT)
+    resp = client.get(
+        "/api/v1/error-clusters/my-patterns/MATEMATIK",
+        headers=_auth_headers(token),
+    )
+    assert resp.status_code != 500, (
+        f"GF125 error-clusters/my-patterns crashed: {resp.status_code} "
+        f"{resp.text[:300]}. Check api/error_cluster_api.py — "
+        f"student error pattern clustering. A student with zero wrong "
+        f"answers should return an empty-patterns response, not crash. "
+        f"Watch for bare `except Exception: raise HTTPException(500)` "
+        f"swallowing empty-result 404s (GF81/GF82/GF88 rule-of-eight)."
+    )
+
+
+def test_gf126_monitoring_api_perf_admin_gate(client: httpx.Client):
+    """GET /api/v1/monitoring/performance/api must reject student."""
+    token = _login(client, STUDENT)
+    resp = client.get(
+        "/api/v1/monitoring/performance/api?hours=1",
+        headers=_auth_headers(token),
+    )
+    assert resp.status_code != 500, (
+        f"GF126 monitoring/performance/api crashed: {resp.status_code} "
+        f"{resp.text[:300]}. Expected 403 (require_role('ADMIN')); a 500 "
+        f"means performance_monitor.get_api_performance_summary blew up "
+        f"or the ADMIN role guard is broken."
+    )
+
+
+def test_gf127_question_history_not_500(client: httpx.Client):
+    """GET /api/v1/questions/{id}/history must not crash on a synthetic id."""
+    token = _login(client, STUDENT)
+    resp = client.get(
+        "/api/v1/questions/00000000-0000-0000-0000-000000000001/history",
+        headers=_auth_headers(token),
+    )
+    assert resp.status_code != 500, (
+        f"GF127 questions/{{id}}/history crashed: {resp.status_code} "
+        f"{resp.text[:300]}. Check api/question_crud_api.py — "
+        f"`get_question_history` should return an empty version list "
+        f"(or 404) for a missing id, not crash. The handler's bare "
+        f"`except Exception` re-wraps to 500 — check for the "
+        f"`except HTTPException: raise` guard."
+    )
+
+
+def test_gf128_osym_random_questions_not_500(client: httpx.Client):
+    """GET /api/v1/osym/random-questions must not crash on default filters."""
+    token = _login(client, STUDENT)
+    resp = client.get(
+        "/api/v1/osym/random-questions?exam_type=TYT&count=5",
+        headers=_auth_headers(token),
+    )
+    assert resp.status_code != 500, (
+        f"GF128 osym/random-questions crashed: {resp.status_code} "
+        f"{resp.text[:300]}. Check api/osym_questions_api.py — "
+        f"raw SQL with `SELECT ... FROM question_bank WHERE is_active` + "
+        f"`random.sample()` on mappings. 77K production questions should "
+        f"return 5 rows trivially; a 500 means get_db async-drift or "
+        f"the mapping projection is broken."
+    )
+
+
+def test_gf129_orchestrator_status_admin_gate(client: httpx.Client):
+    """GET /api/v1/admin/orchestrator/status must reject student with 403."""
+    token = _login(client, STUDENT)
+    resp = client.get(
+        "/api/v1/admin/orchestrator/status",
+        headers=_auth_headers(token),
+    )
+    assert resp.status_code != 500, (
+        f"GF129 admin/orchestrator/status crashed: {resp.status_code} "
+        f"{resp.text[:300]}. Expected 403 for student (get_current_admin_user); "
+        f"a 500 means the `import orchestrator` side-effect at module load "
+        f"blew up or the admin-guard dep chain is broken."
+    )
