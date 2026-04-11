@@ -18,9 +18,10 @@ import logging
 import time
 from typing import Any
 
-from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile
+from fastapi import APIRouter, Depends, File, Form, HTTPException, Request, UploadFile
 from pydantic import BaseModel, Field
 
+from core.ddos_protection import limiter
 from core.dependencies import AuthenticatedUser, get_current_user
 
 try:
@@ -152,8 +153,10 @@ async def analyze_with_vision(
 
 
 @router.post("/analyze", response_model=VisionResponse)
+@limiter.limit("5/minute")
 async def analyze_image(
-    request: VisionAnalyzeRequest,
+    request: Request,
+    payload: VisionAnalyzeRequest,
     current_user: AuthenticatedUser = Depends(get_current_user),
 ) -> VisionResponse:
     """
@@ -165,27 +168,27 @@ async def analyze_image(
     - **prompt**: Analiz icin ozel prompt
     - **language**: Yanit dili (tr/en)
     """
-    if not validate_base64_image(request.image):
+    if not validate_base64_image(payload.image):
         raise HTTPException(400, "Gecersiz gorsel formati. PNG, JPEG veya WebP olmali.")
 
     try:
         # Dil ayari
         lang_prompt = ""
-        if request.language == "tr":
+        if payload.language == "tr":
             lang_prompt = "Turkce yanit ver. "
-        elif request.language == "en":
+        elif payload.language == "en":
             lang_prompt = "Respond in English. "
 
-        full_prompt = f"{lang_prompt}{request.prompt}"
+        full_prompt = f"{lang_prompt}{payload.prompt}"
 
-        result, elapsed_ms = await analyze_with_vision(request.image, full_prompt)
+        result, elapsed_ms = await analyze_with_vision(payload.image, full_prompt)
 
         return VisionResponse(
             success=True,
             result=result,
             model=llm_service.vision_model,
             processing_time_ms=round(elapsed_ms, 2),
-            metadata={"language": request.language},
+            metadata={"language": payload.language},
         )
 
     except Exception as e:
@@ -194,8 +197,10 @@ async def analyze_image(
 
 
 @router.post("/solve-question", response_model=VisionResponse)
+@limiter.limit("5/minute")
 async def solve_question(
-    request: VisionSolveRequest,
+    request: Request,
+    payload: VisionSolveRequest,
     current_user: AuthenticatedUser = Depends(get_current_user),
 ) -> VisionResponse:
     """
@@ -209,7 +214,7 @@ async def solve_question(
     - **level**: Seviye (TYT, AYT, LGS)
     - **show_steps**: Adim adim cozum goster
     """
-    if not validate_base64_image(request.image):
+    if not validate_base64_image(payload.image):
         raise HTTPException(400, "Gecersiz gorsel formati.")
 
     try:
@@ -225,12 +230,12 @@ async def solve_question(
         }
 
         base_prompt = subject_prompts.get(
-            request.subject.lower(), "Bu soruyu analiz et ve coz."
+            payload.subject.lower(), "Bu soruyu analiz et ve coz."
         )
 
         # Adim adim cozum istegi
         step_instruction = ""
-        if request.show_steps:
+        if payload.show_steps:
             step_instruction = """
 
 Cozum adimlarini su formatta ver:
@@ -242,14 +247,14 @@ Cozum adimlarini su formatta ver:
 """
 
         # Seviye bilgisi
-        level_info = f"\nSeviye: {request.level}. Bu seviyeye uygun detayda acikla."
+        level_info = f"\nSeviye: {payload.level}. Bu seviyeye uygun detayda acikla."
 
         full_prompt = f"""Turkce yanit ver.
 {base_prompt}
 {level_info}
 {step_instruction}"""
 
-        result, elapsed_ms = await analyze_with_vision(request.image, full_prompt)
+        result, elapsed_ms = await analyze_with_vision(payload.image, full_prompt)
 
         return VisionResponse(
             success=True,
@@ -257,9 +262,9 @@ Cozum adimlarini su formatta ver:
             model=llm_service.vision_model,
             processing_time_ms=round(elapsed_ms, 2),
             metadata={
-                "subject": request.subject,
-                "level": request.level,
-                "show_steps": request.show_steps,
+                "subject": payload.subject,
+                "level": payload.level,
+                "show_steps": payload.show_steps,
             },
         )
 
@@ -269,8 +274,10 @@ Cozum adimlarini su formatta ver:
 
 
 @router.post("/extract-text", response_model=VisionResponse)
+@limiter.limit("5/minute")
 async def extract_text(
-    request: VisionExtractRequest,
+    request: Request,
+    payload: VisionExtractRequest,
     current_user: AuthenticatedUser = Depends(get_current_user),
 ) -> VisionResponse:
     """
@@ -281,12 +288,12 @@ async def extract_text(
     - **image**: Base64 encoded gorsel
     - **include_layout**: Sayfa duzenini koruyarak cikar
     """
-    if not validate_base64_image(request.image):
+    if not validate_base64_image(payload.image):
         raise HTTPException(400, "Gecersiz gorsel formati.")
 
     try:
         layout_instruction = ""
-        if request.include_layout:
+        if payload.include_layout:
             layout_instruction = (
                 " Sayfa duzenini (basliklari, paragraflari, listeleri) koruyarak cikar."
             )
@@ -297,14 +304,14 @@ El yazisi varsa onu da oku.{layout_instruction}
 
 Sadece okudugun metni yaz, yorum ekleme."""
 
-        result, elapsed_ms = await analyze_with_vision(request.image, prompt)
+        result, elapsed_ms = await analyze_with_vision(payload.image, prompt)
 
         return VisionResponse(
             success=True,
             result=result,
             model=llm_service.vision_model,
             processing_time_ms=round(elapsed_ms, 2),
-            metadata={"include_layout": request.include_layout},
+            metadata={"include_layout": payload.include_layout},
         )
 
     except Exception as e:
@@ -313,8 +320,10 @@ Sadece okudugun metni yaz, yorum ekleme."""
 
 
 @router.post("/describe-diagram", response_model=VisionResponse)
+@limiter.limit("5/minute")
 async def describe_diagram(
-    request: VisionDiagramRequest,
+    request: Request,
+    payload: VisionDiagramRequest,
     current_user: AuthenticatedUser = Depends(get_current_user),
 ) -> VisionResponse:
     """
@@ -326,7 +335,7 @@ async def describe_diagram(
     - **subject**: Konu alani
     - **detail_level**: Detay seviyesi (brief, detailed, comprehensive)
     """
-    if not validate_base64_image(request.image):
+    if not validate_base64_image(payload.image):
         raise HTTPException(400, "Gecersiz gorsel formati.")
 
     try:
@@ -338,7 +347,7 @@ async def describe_diagram(
         }
 
         detail_instruction = detail_map.get(
-            request.detail_level, detail_map["detailed"]
+            payload.detail_level, detail_map["detailed"]
         )
 
         # Konu bazli ek talimatlar
@@ -350,11 +359,11 @@ async def describe_diagram(
             "cografya": " Harita elemanlarini, koordinatlari ve cografi ozellikleri belirt.",
         }
 
-        extra = subject_extras.get(request.subject.lower(), "")
+        extra = subject_extras.get(payload.subject.lower(), "")
 
         prompt = f"""Turkce yanit ver.
 Bu egitim diyagramini analiz et ve acikla.
-Konu alani: {request.subject}
+Konu alani: {payload.subject}
 
 {detail_instruction}{extra}
 
@@ -365,14 +374,14 @@ Diyagramdaki:
 - Renk kodlamalarini (varsa)
 ayri ayri belirt."""
 
-        result, elapsed_ms = await analyze_with_vision(request.image, prompt)
+        result, elapsed_ms = await analyze_with_vision(payload.image, prompt)
 
         return VisionResponse(
             success=True,
             result=result,
             model=llm_service.vision_model,
             processing_time_ms=round(elapsed_ms, 2),
-            metadata={"subject": request.subject, "detail_level": request.detail_level},
+            metadata={"subject": payload.subject, "detail_level": payload.detail_level},
         )
 
     except Exception as e:
@@ -381,7 +390,9 @@ ayri ayri belirt."""
 
 
 @router.post("/analyze-upload", response_model=VisionResponse)
+@limiter.limit("5/minute")
 async def analyze_upload(
+    request: Request,
     file: UploadFile = File(...),
     prompt: str = Form(default="Bu gorseli detayli olarak analiz et."),
     current_user: AuthenticatedUser = Depends(get_current_user),

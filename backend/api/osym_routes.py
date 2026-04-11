@@ -11,13 +11,14 @@ Bu degisiklik /api/v1/osym (osym_questions_api.py) ile cakismayi onler.
 - /api/v1/osym/generate → AI uretimi OSYM sorulari (BU DOSYA)
 """
 
-from fastapi import APIRouter, Depends, HTTPException
+import time
+import uuid
+
+from fastapi import APIRouter, Depends, HTTPException, Request
 from pydantic import BaseModel, Field
 
-from core.dependencies import get_current_user, AuthenticatedUser
-from typing import List, Optional
-import uuid
-import time
+from core.ddos_protection import limiter
+from core.dependencies import AuthenticatedUser, get_current_user
 
 router = APIRouter(prefix="/api/v1/osym/generate", tags=["OSYM Question Generation"])
 
@@ -40,9 +41,9 @@ class QuestionGenerationRequest(BaseModel):
 
 class QuestionValidationRequest(BaseModel):
     stem: str = Field(..., description="Question text")
-    options: List[str] = Field(..., description="Answer options")
+    options: list[str] = Field(..., description="Answer options")
     correct_answer: int = Field(..., description="Index of correct answer (0-4)")
-    explanation: Optional[str] = Field(default="", description="Explanation")
+    explanation: str | None = Field(default="", description="Explanation")
 
 
 class BatchGenerationRequest(BaseModel):
@@ -57,9 +58,11 @@ class BatchGenerationRequest(BaseModel):
 
 
 @router.post("/generate-question")
+@limiter.limit("5/minute")
 async def generate_question(
-    request: QuestionGenerationRequest,
-    current_user: AuthenticatedUser = Depends(get_current_user)
+    request: Request,
+    payload: QuestionGenerationRequest,
+    current_user: AuthenticatedUser = Depends(get_current_user),
 ):
     """
     Generate OSYM question with AI
@@ -70,9 +73,9 @@ async def generate_question(
 
         # Try to use actual OSYM generator
         try:
-            from services.osym_question_generator import OSYMQuestionGenerator
-            from services.llm.ensemble_manager import MultiLLMEnsembleManager
             from core.database import get_async_session
+            from services.llm.ensemble_manager import MultiLLMEnsembleManager
+            from services.osym_question_generator import OSYMQuestionGenerator
 
             # Initialize ensemble manager
             ensemble_manager = MultiLLMEnsembleManager()
@@ -86,13 +89,13 @@ async def generate_question(
 
                 # Generate question
                 result = await generator.generate_question(
-                    topic=request.topic,
-                    subtopic=request.subtopic,
-                    exam_type=request.examType,
-                    subject=request.subject,
-                    difficulty=request.difficulty,
-                    bloom_level=request.bloomLevel,
-                    generation_method=request.provider,
+                    topic=payload.topic,
+                    subtopic=payload.subtopic,
+                    exam_type=payload.examType,
+                    subject=payload.subject,
+                    difficulty=payload.difficulty,
+                    bloom_level=payload.bloomLevel,
+                    generation_method=payload.provider,
                     save_to_db=True,
                 )
 
@@ -104,7 +107,7 @@ async def generate_question(
                     "correct_answer": result.get("correct_answer", 0),
                     "explanation": result.get("explanation", ""),
                     "keywords": result.get("keywords", []),
-                    "difficulty": result.get("difficulty", request.difficulty),
+                    "difficulty": result.get("difficulty", payload.difficulty),
                     "quality_score": result.get("quality_score", 0.0),
                     "tokens_used": result.get("tokens_used", 0),
                     "cost_usd": result.get("cost_usd", 0.0),
@@ -122,7 +125,7 @@ async def generate_question(
         # Fallback: return mock response
         response = {
             "id": str(uuid.uuid4()),
-            "stem": f"{request.topic} konusunda örnek soru metni. Bu soru {request.difficulty} zorluk seviyesinde ve Bloom seviyesi {request.bloomLevel}.",
+            "stem": f"{payload.topic} konusunda örnek soru metni. Bu soru {payload.difficulty} zorluk seviyesinde ve Bloom seviyesi {payload.bloomLevel}.",
             "options": [
                 "Seçenek A",
                 "Seçenek B (Doğru)",
@@ -133,10 +136,10 @@ async def generate_question(
             "correct_answer": 1,
             "explanation": "Bu sorunun cevabı B seçeneğidir çünkü...",
             "keywords": [
-                request.subject.lower(),
-                request.topic.split("-")[0].strip().lower(),
+                payload.subject.lower(),
+                payload.topic.split("-")[0].strip().lower(),
             ],
-            "difficulty": request.difficulty,
+            "difficulty": payload.difficulty,
             "quality_score": 85.5,
             "tokens_used": 150,
             "cost_usd": 0.0015,
@@ -145,18 +148,22 @@ async def generate_question(
 
         return response
 
-    except ValueError as e:
-        raise HTTPException(status_code=400, detail="Islem basarisiz. Lutfen tekrar deneyin.")
-    except Exception as e:
+    except ValueError:
+        raise HTTPException(
+            status_code=400, detail="Islem basarisiz. Lutfen tekrar deneyin."
+        )
+    except Exception:
         raise HTTPException(
             status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
 
 
 @router.post("/validate-question")
+@limiter.limit("5/minute")
 async def validate_question(
-    request: QuestionValidationRequest,
-    current_user: AuthenticatedUser = Depends(get_current_user)
+    request: Request,
+    payload: QuestionValidationRequest,
+    current_user: AuthenticatedUser = Depends(get_current_user),
 ):
     """
     Validate an OSYM question
@@ -166,10 +173,10 @@ async def validate_question(
         suggestions = []
 
         # Check for common issues
-        if len(request.options) != 5:
+        if len(payload.options) != 5:
             issues.append("OSYM soruları 5 şık içermelidir")
 
-        if not request.explanation:
+        if not payload.explanation:
             suggestions.append("Açıklama eklenmesi önerilir")
 
         # Mock quality score
@@ -188,14 +195,18 @@ async def validate_question(
 
         return response
 
-    except Exception as e:
-        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
+    except Exception:
+        raise HTTPException(
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
+        )
 
 
 @router.post("/batch-generate")
+@limiter.limit("5/minute")
 async def batch_generate(
-    request: BatchGenerationRequest,
-    current_user: AuthenticatedUser = Depends(get_current_user)
+    request: Request,
+    payload: BatchGenerationRequest,
+    current_user: AuthenticatedUser = Depends(get_current_user),
 ):
     """
     Generate multiple OSYM questions in batch
@@ -210,15 +221,15 @@ async def batch_generate(
         total_quality = 0.0
 
         # Generate questions
-        for i in range(request.count):
+        for i in range(payload.count):
             question_req = QuestionGenerationRequest(
-                topic=request.topic,
-                subtopic=request.subtopic,
-                examType=request.examType,
-                subject=request.subject,
-                difficulty=request.difficulty,
-                bloomLevel=request.bloomLevel,
-                provider=request.provider,
+                topic=payload.topic,
+                subtopic=payload.subtopic,
+                examType=payload.examType,
+                subject=payload.subject,
+                difficulty=payload.difficulty,
+                bloomLevel=payload.bloomLevel,
+                provider=payload.provider,
             )
 
             question_data = await generate_question(question_req)
@@ -242,7 +253,7 @@ async def batch_generate(
 
         return response
 
-    except Exception as e:
+    except Exception:
         raise HTTPException(
             status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
@@ -260,5 +271,7 @@ async def health_check():
             "providers_available": ["openai", "claude", "qwen"],
         }
 
-    except Exception as e:
-        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
+    except Exception:
+        raise HTTPException(
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
+        )

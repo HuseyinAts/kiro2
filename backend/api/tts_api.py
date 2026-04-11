@@ -8,8 +8,11 @@ Requirements: REQ-50.45 (Fallback TTS servisi)
 import logging
 from io import BytesIO
 
-from fastapi import APIRouter, HTTPException, Response
+from fastapi import APIRouter, Depends, HTTPException, Request, Response
 from pydantic import BaseModel, Field
+
+from core.ddos_protection import limiter
+from core.dependencies import AuthenticatedUser, get_current_user
 
 # TTS kütüphaneleri
 try:
@@ -167,8 +170,10 @@ class TTSService:
 
 
 @router.post("/synthesize", response_class=Response)
+@limiter.limit("20/minute")
 async def synthesize_speech(
-    request: TTSRequest,
+    request: Request,
+    payload: TTSRequest,
     _current_user: AuthenticatedUser = Depends(get_current_user),
 ):
     """
@@ -190,7 +195,7 @@ async def synthesize_speech(
         if GTTS_AVAILABLE:
             try:
                 audio_stream = TTSService.synthesize_with_gtts(
-                    text=request.text, language=request.language
+                    text=payload.text, language=payload.language
                 )
 
                 return Response(
@@ -208,10 +213,10 @@ async def synthesize_speech(
         if PYTTSX3_AVAILABLE:
             try:
                 audio_stream = TTSService.synthesize_with_pyttsx3(
-                    text=request.text,
-                    rate=request.rate,
-                    pitch=request.pitch,
-                    voice_gender=request.voice_gender,
+                    text=payload.text,
+                    rate=payload.rate,
+                    pitch=payload.pitch,
+                    voice_gender=payload.voice_gender,
                 )
 
                 return Response(

@@ -10,12 +10,13 @@ from enum import Enum
 from typing import Any
 from uuid import uuid4
 
-from fastapi import APIRouter, Depends, File, Form, Query, UploadFile
+from fastapi import APIRouter, Depends, File, Form, Query, Request, UploadFile
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, Field
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from core.ddos_protection import limiter
 from core.turkish_nlp_utils import normalize_tr
 
 logger = logging.getLogger(__name__)
@@ -388,19 +389,21 @@ async def _call_llm(
 # Endpoints
 # ---------------------------------------------------------------------------
 @router.post("/message")
+@limiter.limit("10/minute")
 async def send_message(
-    request: ChatMessageRequest,
+    request: Request,
+    payload: ChatMessageRequest,
     current_user: Any = _auth_dep,
     db: AsyncSession = _db_dep,
 ) -> dict[str, Any]:
     """Send a chat message and get AI response."""
-    response = await _call_llm(request.message, request.subject, request.teaching_mode)
+    response = await _call_llm(payload.message, payload.subject, payload.teaching_mode)
 
     now = datetime.now(UTC).isoformat()
     resp_id = f"resp-{uuid4().hex[:8]}"
 
     # Persist to DB if available
-    session_id = request.session_id
+    session_id = payload.session_id
     if db is not None and await _verify_chat_tables(db):
         try:
             user_id = (
@@ -411,10 +414,10 @@ async def send_message(
             session_id = await _get_or_create_session(
                 db,
                 str(user_id),
-                request.session_id,
-                request.subject,
+                payload.session_id,
+                payload.subject,
             )
-            await _save_message(db, session_id, "user", request.message)
+            await _save_message(db, session_id, "user", payload.message)
             await _save_message(
                 db,
                 session_id,
@@ -487,15 +490,17 @@ async def _stream_ollama(
 
 
 @router.post("/stream")
+@limiter.limit("10/minute")
 async def stream_message(
-    request: ChatMessageRequest,
+    request: Request,
+    payload: ChatMessageRequest,
     current_user: Any = _auth_dep,
     db: AsyncSession = _db_dep,
 ) -> StreamingResponse:
     """Stream AI response as Server-Sent Events."""
 
     # Resolve session before streaming starts
-    session_id = request.session_id
+    session_id = payload.session_id
     user_id = "anonymous"
     if db is not None and current_user is not None and await _verify_chat_tables(db):
         try:
@@ -503,10 +508,10 @@ async def stream_message(
             session_id = await _get_or_create_session(
                 db,
                 user_id,
-                request.session_id,
-                request.subject,
+                payload.session_id,
+                payload.subject,
             )
-            await _save_message(db, session_id, "user", request.message)
+            await _save_message(db, session_id, "user", payload.message)
         except Exception as e:
             logger.warning(f"Chat DB persist (stream-pre) failed: {e}")
 
@@ -514,13 +519,13 @@ async def stream_message(
         """Wrap streaming to collect full response and persist after."""
         accumulated = ""
         async for chunk in _stream_ollama(
-            request.message, request.subject, request.teaching_mode
+            payload.message, payload.subject, payload.teaching_mode
         ):
             # Collect content for DB persistence
             if chunk.startswith("data: ") and "[DONE]" not in chunk:
                 try:
-                    payload = json.loads(chunk[6:].strip())
-                    accumulated += payload.get("content", "")
+                    chunk_data = json.loads(chunk[6:].strip())
+                    accumulated += chunk_data.get("content", "")
                 except Exception:
                     pass
             # Inject session_id in first chunk
@@ -815,7 +820,9 @@ async def _analyze_image_with_vision(
 
 
 @router.post("/message-with-attachment")
+@limiter.limit("10/minute")
 async def message_with_attachment(
+    request: Request,
     current_user: Any = _auth_dep,
     db: AsyncSession = _db_dep,
     file: UploadFile | None = File(None),

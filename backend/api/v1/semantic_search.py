@@ -16,8 +16,10 @@ Date: 2026-01-18
 import logging
 from datetime import datetime
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Request
+
 from core.auth_dependencies import AuthenticationDependency
+from core.ddos_protection import limiter
 
 get_current_user = AuthenticationDependency(required=True)
 from pydantic import BaseModel, Field
@@ -571,8 +573,11 @@ def get_search_service() -> SemanticSearchService:
 
 
 @router.post("/questions", response_model=SearchResponse)
+@limiter.limit("30/minute")
 async def search_questions(
-    request: SearchRequest, _current_user=Depends(get_current_user)
+    request: Request,
+    payload: SearchRequest,
+    _current_user=Depends(get_current_user),
 ):
     """
     Soru bankasında semantic arama yap.
@@ -585,12 +590,15 @@ async def search_questions(
     - MMR diversity ve hybrid ranking destekler
     """
     service = get_search_service()
-    return await service.search(request)
+    return await service.search(payload)
 
 
 @router.post("/content", response_model=SearchResponse)
+@limiter.limit("30/minute")
 async def search_content(
-    request: SearchRequest, _current_user=Depends(get_current_user)
+    request: Request,
+    payload: SearchRequest,
+    _current_user=Depends(get_current_user),
 ):
     """
     Eğitim içeriklerinde semantic arama yap.
@@ -604,24 +612,27 @@ async def search_content(
         persist_directory=os.getenv("CHROMADB_PERSIST_DIR", "./vector_db"),
         collection_name="kiro2_content",
     )
-    return await service.search(request)
+    return await service.search(payload)
 
 
 @router.post("/similar", response_model=SimilarResponse)
+@limiter.limit("30/minute")
 async def find_similar_questions(
-    request: SimilarRequest, _current_user=Depends(get_current_user)
+    request: Request,
+    payload: SimilarRequest,
+    _current_user=Depends(get_current_user),
 ):
     """
     Belirli bir soruya benzer soruları bul.
 
     Args:
-        request: Kaynak soru ID ve parametreler
+        payload: Kaynak soru ID ve parametreler
 
     Returns:
         Benzer sorular listesi
     """
     service = get_search_service()
-    return await service.find_similar(request)
+    return await service.find_similar(payload)
 
 
 @router.get("/health")
