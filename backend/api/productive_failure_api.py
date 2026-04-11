@@ -5,10 +5,10 @@ Pretest-before-instruction cycle: students attempt problems first to activate
 prior knowledge, then instruction follows. Growth is measured pre vs post.
 """
 
-from typing import Any, Optional
+from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException, status
-from pydantic import BaseModel, Field, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
 
 from core.database import get_db_session_context
 from core.dependencies import AuthenticatedUser, get_current_user
@@ -25,22 +25,29 @@ logger = get_logger("productive_failure_api")
 
 class PretestStartRequest(BaseModel):
     """Pretest başlatma isteği - backward compatible"""
+
     model_config = ConfigDict(populate_by_name=True)
 
     # Yeni format
-    topic_id: Optional[str] = Field(None, min_length=1, description="Konu ID'si")
-    subject: Optional[str] = Field(None, min_length=1, description="Ders (ör. MATEMATIK)")
-    count: Optional[int] = Field(3, ge=1, le=10, description="Pretest soru sayısı")
+    topic_id: str | None = Field(None, min_length=1, description="Konu ID'si")
+    subject: str | None = Field(None, min_length=1, description="Ders (ör. MATEMATIK)")
+    count: int | None = Field(3, ge=1, le=10, description="Pretest soru sayısı")
 
     # Eski frontend formatı (backward compatibility)
-    topic: Optional[str] = Field(None, alias="topic")  # eski: { topic: "..." }
-    question_count: Optional[int] = Field(3, alias="question_count")  # eski: { question_count: 3 }
+    topic: str | None = Field(None, alias="topic")  # eski: { topic: "..." }
+    question_count: int | None = Field(
+        3, alias="question_count"
+    )  # eski: { question_count: 3 }
 
     def __init__(self, **data):
         # Backward compatibility: eski formatı yeni formata çevir
         if "topic" in data and data["topic"] and not data.get("topic_id"):
             data["topic_id"] = data["topic"]
-        if "question_count" in data and data["question_count"] and not data.get("count"):
+        if (
+            "question_count" in data
+            and data["question_count"]
+            and not data.get("count")
+        ):
             data["count"] = data["question_count"]
         super().__init__(**data)
 
@@ -125,25 +132,32 @@ async def start_pretest(
     Raises:
         HTTPException: 400 if topic is invalid, 500 on unexpected error.
     """
+    import secrets
+
     from services.productive_failure_service import get_pretest_questions
 
     try:
         async with get_db_session_context() as db:
-            result = await get_pretest_questions(
+            # GF32 fix: service returns list[dict] and takes no `student_id`
+            # kwarg. API layer builds the response envelope + session token.
+            questions = await get_pretest_questions(
                 db=db,
-                student_id=current_user.id,
                 topic_id=request.topic_id,
                 subject=request.subject,
                 count=request.count,
             )
 
-        if "error" in result:
+        if not questions:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail=result["error"],
+                detail="Bu konu için pretest sorusu bulunamadı.",
             )
 
-        return PretestStartResponse(**result)
+        return PretestStartResponse(
+            topic_id=request.topic_id,
+            questions=questions,
+            session_token=secrets.token_urlsafe(16),
+        )
 
     except HTTPException:
         raise
