@@ -1,23 +1,33 @@
 """
 Manipülatifler İlerleme ve Rozet API - Task 87.9
 REQ-51.101-51.105: Progress tracking, visualization, achievement badges
-"""
-from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy.orm import Session
-from sqlalchemy import func
-from pydantic import BaseModel
-from datetime import datetime, timedelta, timezone
 
-from core.database import get_db
-from core.dependencies import get_current_user  # fixed: was auth_dependencies (no blacklist)
+Session 147 (GF95): Wave 10 three-part trap rewrite. All 5 handlers were
+sync `def` + `Depends(get_db)` (deprecated sync shim) against an async
+engine, which raises MissingGreenlet on every ORM call. Rewritten to
+`async def` + `Depends(get_async_session)` + `await db.execute(select(...))`.
+Identical rewrite pattern to instant_feedback_api.py (Session 145 GF86/GF87).
+"""
+
+from datetime import UTC, datetime, timedelta
+
+from fastapi import APIRouter, Depends, HTTPException
+from pydantic import BaseModel
+from sqlalchemy import func, select
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from core.database import get_async_session
+from core.dependencies import get_current_user
 from models.database import (
-    User,
-    ManipulativeProgress,
     ManipulativeActivity,
+    ManipulativeProgress,
+    User,
 )
 from models.user_badge import UserBadge
 
-router = APIRouter(prefix="/api/v1/manipulatives/progress", tags=["manipulatives-progress"])
+router = APIRouter(
+    prefix="/api/v1/manipulatives/progress", tags=["manipulatives-progress"]
+)
 
 
 # Pydantic Models
@@ -32,34 +42,101 @@ class Badge(BaseModel):
     earnedDate: str | None = None
 
 
+# Total number of tangram puzzles (shared constant)
+TOTAL_TANGRAM_PUZZLES = 10
+
+
+def _evaluate_badge_conditions(
+    progress_records: list[ManipulativeProgress],
+    recent_activity_days: int,
+    fast_activity_count: int,
+) -> dict[str, bool]:
+    """Pure function: compute badge conditions from already-loaded data."""
+    virtual_blocks_ops = sum(
+        p.operation_count
+        for p in progress_records
+        if p.manipulative_type == "virtualBlocks"
+    )
+    geogebra_activities = sum(
+        p.operation_count for p in progress_records if p.manipulative_type == "geogebra"
+    )
+    geometry_shapes = sum(
+        p.operation_count
+        for p in progress_records
+        if p.manipulative_type == "geometry" and p.activity_type != "measurement"
+    )
+    tangram_completed = sum(
+        p.completion_count for p in progress_records if p.manipulative_type == "tangram"
+    )
+    measurements = sum(
+        p.operation_count
+        for p in progress_records
+        if p.manipulative_type == "geometry" and p.activity_type == "measurement"
+    )
+
+    all_tools = set()
+    for record in progress_records:
+        if (
+            record.manipulative_type == "geometry"
+            and record.activity_data
+            and "tools" in record.activity_data
+        ):
+            all_tools.update(record.activity_data["tools"])
+
+    required_tools = {
+        "line",
+        "circle",
+        "rectangle",
+        "triangle",
+        "ruler",
+        "protractor",
+    }
+    has_all_tools = required_tools.issubset(all_tools)
+
+    return {
+        "first-block": virtual_blocks_ops >= 1,
+        "math-explorer": geogebra_activities >= 10,
+        "geometry-master": geometry_shapes >= 30,
+        "tangram-solver": tangram_completed >= 5,
+        "block-master": virtual_blocks_ops >= 50,
+        "geogebra-expert": geogebra_activities >= 25,
+        "shape-artist": geometry_shapes >= 50,
+        "tangram-champion": tangram_completed >= TOTAL_TANGRAM_PUZZLES,
+        "measurement-pro": measurements >= 50,
+        "perfect-week": recent_activity_days >= 7,
+        "speed-learner": fast_activity_count >= 10,
+        "all-tools": has_all_tools,
+    }
+
+
 # API Endpoints
 
 
 @router.get("/progress/dashboard")
-def get_progress_dashboard(
-    current_user: User = Depends(get_current_user), db: Session = Depends(get_db)
+async def get_progress_dashboard(
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_async_session),
 ):
     """
     Tüm manipülatifler için ilerleme panosunu getir
     REQ-51.101: Progress tracking
     """
     try:
-        # Fetch all progress records for the user
-        progress_records = (
-            db.query(ManipulativeProgress)
-            .filter(ManipulativeProgress.user_id == current_user.id)
-            .all()
+        result = await db.execute(
+            select(ManipulativeProgress).where(
+                ManipulativeProgress.user_id == current_user.id
+            )
         )
+        progress_records = result.scalars().all()
 
-        # Initialize progress data structure
-        progress_data = {}
+        progress_data: dict = {}
 
         # Process virtualBlocks
         virtual_blocks = [
             p for p in progress_records if p.manipulative_type == "virtualBlocks"
         ]
         if virtual_blocks:
-            operations_by_type = {}
+            operations_by_type: dict = {}
             total_ops = 0
             total_duration = 0
             total_mastery = 0
@@ -84,7 +161,7 @@ def get_progress_dashboard(
         # Process geogebra
         geogebra = [p for p in progress_records if p.manipulative_type == "geogebra"]
         if geogebra:
-            activities_by_type = {}
+            activities_by_type: dict = {}
             total_activities = 0
             total_completed = 0
             total_duration = 0
@@ -113,10 +190,10 @@ def get_progress_dashboard(
         # Process geometry
         geometry = [p for p in progress_records if p.manipulative_type == "geometry"]
         if geometry:
-            shapes_by_type = {}
+            shapes_by_type: dict = {}
             total_shapes = 0
             measurements_count = 0
-            tools_used = set()
+            tools_used: set = set()
 
             for record in geometry:
                 if record.activity_type:
@@ -126,7 +203,6 @@ def get_progress_dashboard(
                         shapes_by_type[record.activity_type] = record.operation_count
                         total_shapes += record.operation_count
 
-                # Extract tools from activity_data
                 if record.activity_data and "tools" in record.activity_data:
                     tools_used.update(record.activity_data["tools"])
 
@@ -169,221 +245,123 @@ def get_progress_dashboard(
         return {"success": True, "data": progress_data}
     except HTTPException:
         raise
-    except Exception as e:
+    except Exception:
         raise HTTPException(
             status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
 
 
 @router.get("/badges")
-def get_user_badges(
-    current_user: User = Depends(get_current_user), db: Session = Depends(get_db)
+async def get_user_badges(
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_async_session),
 ):
     """
     Kullanıcının rozetlerini getir
     REQ-51.103: Achievement badges
     """
     try:
-        # Fetch earned badges from database
-        earned_badges = (
-            db.query(UserBadge).filter(UserBadge.user_id == current_user.id).all()
+        earned_result = await db.execute(
+            select(UserBadge).where(UserBadge.user_id == current_user.id)
         )
+        earned_badges = earned_result.scalars().all()
         earned_badge_ids = {b.badge_id: b.earned_at for b in earned_badges}
 
-        # Fetch progress data to check badge conditions
-        progress_records = (
-            db.query(ManipulativeProgress)
-            .filter(ManipulativeProgress.user_id == current_user.id)
-            .all()
+        progress_result = await db.execute(
+            select(ManipulativeProgress).where(
+                ManipulativeProgress.user_id == current_user.id
+            )
         )
-
-        # Calculate metrics for badge conditions
-        virtual_blocks_ops = sum(
-            p.operation_count
-            for p in progress_records
-            if p.manipulative_type == "virtualBlocks"
-        )
-        geogebra_activities = sum(
-            p.operation_count
-            for p in progress_records
-            if p.manipulative_type == "geogebra"
-        )
-        geometry_shapes = sum(
-            p.operation_count
-            for p in progress_records
-            if p.manipulative_type == "geometry" and p.activity_type != "measurement"
-        )
-        tangram_completed = sum(
-            p.completion_count
-            for p in progress_records
-            if p.manipulative_type == "tangram"
-        )
-        measurements = sum(
-            p.operation_count
-            for p in progress_records
-            if p.manipulative_type == "geometry" and p.activity_type == "measurement"
-        )
+        progress_records = list(progress_result.scalars().all())
 
         # Check for consecutive days (perfect week)
-        seven_days_ago = datetime.now(timezone.utc) - timedelta(days=7)
-        recent_activities = (
-            db.query(func.date(ManipulativeActivity.created_at))
-            .filter(
+        seven_days_ago = datetime.now(UTC) - timedelta(days=7)
+        recent_days_result = await db.execute(
+            select(func.date(ManipulativeActivity.created_at))
+            .where(
                 ManipulativeActivity.user_id == current_user.id,
                 ManipulativeActivity.created_at >= seven_days_ago,
             )
             .distinct()
-            .count()
         )
+        recent_activities_count = len(recent_days_result.all())
 
-        # Check for speed learner (fast operations)
-        fast_activities = (
-            db.query(ManipulativeActivity)
-            .filter(
+        # Check for speed learner
+        fast_result = await db.execute(
+            select(func.count(ManipulativeActivity.id)).where(
                 ManipulativeActivity.user_id == current_user.id,
-                ManipulativeActivity.completed == True,
+                ManipulativeActivity.completed.is_(True),
                 ManipulativeActivity.duration_seconds <= 30,
                 ManipulativeActivity.duration_seconds > 0,
             )
-            .count()
+        )
+        fast_activities = fast_result.scalar() or 0
+
+        conditions = _evaluate_badge_conditions(
+            progress_records,
+            recent_activity_days=recent_activities_count,
+            fast_activity_count=fast_activities,
         )
 
-        # Check all tools used
-        all_tools = set()
-        for record in progress_records:
-            if (
-                record.manipulative_type == "geometry"
-                and record.activity_data
-                and "tools" in record.activity_data
-            ):
-                all_tools.update(record.activity_data["tools"])
-
-        required_tools = {
-            "line",
-            "circle",
-            "rectangle",
-            "triangle",
-            "ruler",
-            "protractor",
+        badge_metadata = {
+            "first-block": ("İlk Blok", "İlk sanal blok işlemini tamamla", "🧱"),
+            "math-explorer": (
+                "Matematik Kaşifi",
+                "10 farklı GeoGebra aktivitesi tamamla",
+                "🔍",
+            ),
+            "geometry-master": ("Geometri Ustası", "30 şekil çiz", "📐"),
+            "tangram-solver": ("Tangram Çözücü", "5 tangram puzzle'ı tamamla", "🧩"),
+            "block-master": ("Blok Ustası", "50 blok işlemi tamamla", "🏆"),
+            "geogebra-expert": (
+                "GeoGebra Uzmanı",
+                "25 GeoGebra aktivitesi tamamla",
+                "⭐",
+            ),
+            "shape-artist": ("Şekil Sanatçısı", "50 şekil çiz", "🎨"),
+            "tangram-champion": (
+                "Tangram Şampiyonu",
+                "Tüm tangram puzzle'larını tamamla",
+                "🥇",
+            ),
+            "measurement-pro": ("Ölçüm Profesyoneli", "50 ölçüm yap", "📏"),
+            "perfect-week": (
+                "Mükemmel Hafta",
+                "7 gün üst üste manipülatif kullan",
+                "🔥",
+            ),
+            "speed-learner": (
+                "Hızlı Öğrenci",
+                "10 işlemi ortalama 30 saniyede tamamla",
+                "⚡",
+            ),
+            "all-tools": ("Araç Koleksiyoncusu", "Tüm geometri araçlarını kullan", "🛠️"),
         }
-        has_all_tools = required_tools.issubset(all_tools)
 
-        # Total tangram puzzles (assuming 10 puzzles available)
-        TOTAL_TANGRAM_PUZZLES = 10
-
-        # Define all badges with conditions
-        badge_definitions = [
-            {
-                "id": "first-block",
-                "name": "İlk Blok",
-                "description": "İlk sanal blok işlemini tamamla",
-                "icon": "🧱",
-                "condition": virtual_blocks_ops >= 1,
-            },
-            {
-                "id": "math-explorer",
-                "name": "Matematik Kaşifi",
-                "description": "10 farklı GeoGebra aktivitesi tamamla",
-                "icon": "🔍",
-                "condition": geogebra_activities >= 10,
-            },
-            {
-                "id": "geometry-master",
-                "name": "Geometri Ustası",
-                "description": "30 şekil çiz",
-                "icon": "📐",
-                "condition": geometry_shapes >= 30,
-            },
-            {
-                "id": "tangram-solver",
-                "name": "Tangram Çözücü",
-                "description": "5 tangram puzzle'ı tamamla",
-                "icon": "🧩",
-                "condition": tangram_completed >= 5,
-            },
-            {
-                "id": "block-master",
-                "name": "Blok Ustası",
-                "description": "50 blok işlemi tamamla",
-                "icon": "🏆",
-                "condition": virtual_blocks_ops >= 50,
-            },
-            {
-                "id": "geogebra-expert",
-                "name": "GeoGebra Uzmanı",
-                "description": "25 GeoGebra aktivitesi tamamla",
-                "icon": "⭐",
-                "condition": geogebra_activities >= 25,
-            },
-            {
-                "id": "shape-artist",
-                "name": "Şekil Sanatçısı",
-                "description": "50 şekil çiz",
-                "icon": "🎨",
-                "condition": geometry_shapes >= 50,
-            },
-            {
-                "id": "tangram-champion",
-                "name": "Tangram Şampiyonu",
-                "description": "Tüm tangram puzzle'larını tamamla",
-                "icon": "🥇",
-                "condition": tangram_completed >= TOTAL_TANGRAM_PUZZLES,
-            },
-            {
-                "id": "measurement-pro",
-                "name": "Ölçüm Profesyoneli",
-                "description": "50 ölçüm yap",
-                "icon": "📏",
-                "condition": measurements >= 50,
-            },
-            {
-                "id": "perfect-week",
-                "name": "Mükemmel Hafta",
-                "description": "7 gün üst üste manipülatif kullan",
-                "icon": "🔥",
-                "condition": recent_activities >= 7,
-            },
-            {
-                "id": "speed-learner",
-                "name": "Hızlı Öğrenci",
-                "description": "10 işlemi ortalama 30 saniyede tamamla",
-                "icon": "⚡",
-                "condition": fast_activities >= 10,
-            },
-            {
-                "id": "all-tools",
-                "name": "Araç Koleksiyoncusu",
-                "description": "Tüm geometri araçlarını kullan",
-                "icon": "🛠️",
-                "condition": has_all_tools,
-            },
-        ]
-
-        # Build response
         badges = []
-        for badge_def in badge_definitions:
-            badge_id = badge_def["id"]
+        for badge_id, (name, description, icon) in badge_metadata.items():
             is_earned = badge_id in earned_badge_ids
+            condition_met = conditions.get(badge_id, False)
 
-            # If condition met but not yet earned, auto-award it
-            if badge_def["condition"] and not is_earned:
+            # Auto-award if condition met but not yet earned
+            if condition_met and not is_earned:
                 new_badge = UserBadge(
                     user_id=current_user.id,
                     badge_id=badge_id,
-                    earned_at=datetime.now(timezone.utc),
+                    earned_at=datetime.now(UTC),
                     auto_awarded=True,
                 )
                 db.add(new_badge)
-                db.commit()
+                await db.commit()
                 earned_badge_ids[badge_id] = new_badge.earned_at
                 is_earned = True
 
             badges.append(
                 {
                     "id": badge_id,
-                    "name": badge_def["name"],
-                    "description": badge_def["description"],
-                    "icon": badge_def["icon"],
+                    "name": name,
+                    "description": description,
+                    "icon": icon,
                     "earned": is_earned,
                     "earnedDate": earned_badge_ids[badge_id].strftime("%Y-%m-%d")
                     if is_earned
@@ -394,61 +372,60 @@ def get_user_badges(
         return {"success": True, "data": badges}
     except HTTPException:
         raise
-    except Exception as e:
-        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
+    except Exception:
+        raise HTTPException(
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
+        )
 
 
 @router.get("/progress/summary")
-def get_progress_summary(
-    current_user: User = Depends(get_current_user), db: Session = Depends(get_db)
+async def get_progress_summary(
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_async_session),
 ):
     """
     Kullanıcının genel ilerleme özetini getir
     REQ-51.102: Progress visualization
     """
     try:
-        # Fetch all progress records
-        progress_records = (
-            db.query(ManipulativeProgress)
-            .filter(ManipulativeProgress.user_id == current_user.id)
-            .all()
+        progress_result = await db.execute(
+            select(ManipulativeProgress).where(
+                ManipulativeProgress.user_id == current_user.id
+            )
         )
+        progress_records = list(progress_result.scalars().all())
 
-        # Calculate total time spent (in seconds)
         total_time_spent = sum(p.total_duration_seconds for p in progress_records)
-
-        # Calculate total activities
         total_activities = sum(p.operation_count for p in progress_records)
 
-        # Calculate mastery percentage (average of all mastery levels)
         mastery_percentage = 0
         if progress_records:
             mastery_percentage = int(
                 sum(p.mastery_level for p in progress_records) / len(progress_records)
             )
 
-        # Count earned badges
-        badges_earned = (
-            db.query(UserBadge).filter(UserBadge.user_id == current_user.id).count()
+        badges_result = await db.execute(
+            select(func.count(UserBadge.id)).where(UserBadge.user_id == current_user.id)
         )
-        badges_total = 12  # Total number of available badges
+        badges_earned = badges_result.scalar() or 0
+        badges_total = 12
 
         # Calculate current streak
-        # Get distinct activity dates ordered by date
-        activity_dates = (
-            db.query(func.date(ManipulativeActivity.created_at))
-            .filter(ManipulativeActivity.user_id == current_user.id)
+        activity_dates_result = await db.execute(
+            select(func.date(ManipulativeActivity.created_at))
+            .where(ManipulativeActivity.user_id == current_user.id)
             .distinct()
             .order_by(func.date(ManipulativeActivity.created_at).desc())
-            .all()
         )
+        activity_dates = activity_dates_result.all()
 
         current_streak = 0
         if activity_dates:
-            current_date = datetime.now(timezone.utc).date()
+            current_date = datetime.now(UTC).date()
             expected_date = current_date
 
-            for (activity_date,) in activity_dates:
+            for row in activity_dates:
+                activity_date = row[0]
                 if (
                     activity_date == expected_date
                     or activity_date == expected_date - timedelta(days=1)
@@ -458,20 +435,21 @@ def get_progress_summary(
                 else:
                     break
 
-        # Get last activity date
-        last_activity = (
-            db.query(ManipulativeActivity)
-            .filter(ManipulativeActivity.user_id == current_user.id)
+        # Last activity
+        last_result = await db.execute(
+            select(ManipulativeActivity)
+            .where(ManipulativeActivity.user_id == current_user.id)
             .order_by(ManipulativeActivity.created_at.desc())
-            .first()
+            .limit(1)
         )
+        last_activity = last_result.scalar_one_or_none()
 
         last_activity_date = (
             last_activity.created_at.isoformat() if last_activity else None
         )
 
-        # Find favorite tool (most used manipulative type)
-        manipulative_counts = {}
+        # Favorite tool
+        manipulative_counts: dict = {}
         for record in progress_records:
             manipulative_counts[record.manipulative_type] = (
                 manipulative_counts.get(record.manipulative_type, 0)
@@ -484,40 +462,35 @@ def get_progress_summary(
             else None
         )
 
-        # Weekly goal progress (current week)
-        current_week = datetime.now(timezone.utc).isocalendar()[1]
-        current_year = datetime.now(timezone.utc).year
-
-        week_start = datetime.now(timezone.utc) - timedelta(days=datetime.now(timezone.utc).weekday())
-        weekly_activities = (
-            db.query(ManipulativeActivity)
-            .filter(
+        # Weekly goal progress
+        week_start = datetime.now(UTC) - timedelta(days=datetime.now(UTC).weekday())
+        weekly_result = await db.execute(
+            select(func.count(ManipulativeActivity.id)).where(
                 ManipulativeActivity.user_id == current_user.id,
                 ManipulativeActivity.created_at >= week_start,
             )
-            .count()
         )
+        weekly_activities = weekly_result.scalar() or 0
 
-        weekly_target = 20  # Default weekly goal
+        weekly_target = 20
         weekly_percentage = (
             int((weekly_activities / weekly_target) * 100) if weekly_target > 0 else 0
         )
 
-        # Get recent activities (last 3)
-        recent_activity_records = (
-            db.query(ManipulativeActivity)
-            .filter(ManipulativeActivity.user_id == current_user.id)
+        # Recent activities (last 3)
+        recent_result = await db.execute(
+            select(ManipulativeActivity)
+            .where(ManipulativeActivity.user_id == current_user.id)
             .order_by(ManipulativeActivity.created_at.desc())
             .limit(3)
-            .all()
         )
+        recent_activity_records = recent_result.scalars().all()
 
-        recent_activities = []
+        recent_activities_list = []
         for activity in recent_activity_records:
             details = "Aktivite tamamlandı"
             if activity.details:
                 if isinstance(activity.details, dict):
-                    # Extract meaningful details from JSON
                     if "operation" in activity.details:
                         details = f"{activity.details['operation']} işlemi tamamlandı"
                     elif "puzzle_name" in activity.details:
@@ -527,7 +500,7 @@ def get_progress_summary(
                 else:
                     details = str(activity.details)
 
-            recent_activities.append(
+            recent_activities_list.append(
                 {
                     "type": activity.manipulative_type,
                     "date": activity.created_at.isoformat(),
@@ -549,35 +522,36 @@ def get_progress_summary(
                 "target": weekly_target,
                 "percentage": weekly_percentage,
             },
-            "recent_activities": recent_activities,
+            "recent_activities": recent_activities_list,
         }
 
         return {"success": True, "data": summary}
     except HTTPException:
         raise
-    except Exception as e:
-        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
+    except Exception:
+        raise HTTPException(
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
+        )
 
 
 @router.post("/badges/{badge_id}/claim")
-def claim_badge(
+async def claim_badge(
     badge_id: str,
     current_user: User = Depends(get_current_user),
-    db: Session = Depends(get_db),
+    db: AsyncSession = Depends(get_async_session),
 ):
     """
     Rozet talep et (kullanıcı şartları sağladıysa)
     REQ-51.104: Badge earning system
     """
     try:
-        # Check if badge already earned
-        existing_badge = (
-            db.query(UserBadge)
-            .filter(
-                UserBadge.user_id == current_user.id, UserBadge.badge_id == badge_id
+        existing_result = await db.execute(
+            select(UserBadge).where(
+                UserBadge.user_id == current_user.id,
+                UserBadge.badge_id == badge_id,
             )
-            .first()
         )
+        existing_badge = existing_result.scalar_one_or_none()
 
         if existing_badge:
             return {
@@ -590,107 +564,48 @@ def claim_badge(
             }
 
         # Fetch progress data to validate badge conditions
-        progress_records = (
-            db.query(ManipulativeProgress)
-            .filter(ManipulativeProgress.user_id == current_user.id)
-            .all()
+        progress_result = await db.execute(
+            select(ManipulativeProgress).where(
+                ManipulativeProgress.user_id == current_user.id
+            )
         )
-
-        # Calculate metrics for validation
-        virtual_blocks_ops = sum(
-            p.operation_count
-            for p in progress_records
-            if p.manipulative_type == "virtualBlocks"
-        )
-        geogebra_activities = sum(
-            p.operation_count
-            for p in progress_records
-            if p.manipulative_type == "geogebra"
-        )
-        geometry_shapes = sum(
-            p.operation_count
-            for p in progress_records
-            if p.manipulative_type == "geometry" and p.activity_type != "measurement"
-        )
-        tangram_completed = sum(
-            p.completion_count
-            for p in progress_records
-            if p.manipulative_type == "tangram"
-        )
-        measurements = sum(
-            p.operation_count
-            for p in progress_records
-            if p.manipulative_type == "geometry" and p.activity_type == "measurement"
-        )
+        progress_records = list(progress_result.scalars().all())
 
         # Check for consecutive days
-        seven_days_ago = datetime.now(timezone.utc) - timedelta(days=7)
-        recent_activities = (
-            db.query(func.date(ManipulativeActivity.created_at))
-            .filter(
+        seven_days_ago = datetime.now(UTC) - timedelta(days=7)
+        recent_days_result = await db.execute(
+            select(func.date(ManipulativeActivity.created_at))
+            .where(
                 ManipulativeActivity.user_id == current_user.id,
                 ManipulativeActivity.created_at >= seven_days_ago,
             )
             .distinct()
-            .count()
         )
+        recent_activities_count = len(recent_days_result.all())
 
         # Check for speed learner
-        fast_activities = (
-            db.query(ManipulativeActivity)
-            .filter(
+        fast_result = await db.execute(
+            select(func.count(ManipulativeActivity.id)).where(
                 ManipulativeActivity.user_id == current_user.id,
-                ManipulativeActivity.completed == True,
+                ManipulativeActivity.completed.is_(True),
                 ManipulativeActivity.duration_seconds <= 30,
                 ManipulativeActivity.duration_seconds > 0,
             )
-            .count()
+        )
+        fast_activities = fast_result.scalar() or 0
+
+        conditions = _evaluate_badge_conditions(
+            progress_records,
+            recent_activity_days=recent_activities_count,
+            fast_activity_count=fast_activities,
         )
 
-        # Check all tools used
-        all_tools = set()
-        for record in progress_records:
-            if (
-                record.manipulative_type == "geometry"
-                and record.activity_data
-                and "tools" in record.activity_data
-            ):
-                all_tools.update(record.activity_data["tools"])
-
-        required_tools = {
-            "line",
-            "circle",
-            "rectangle",
-            "triangle",
-            "ruler",
-            "protractor",
-        }
-        has_all_tools = required_tools.issubset(all_tools)
-
-        # Define badge conditions
-        TOTAL_TANGRAM_PUZZLES = 10
-        badge_conditions = {
-            "first-block": virtual_blocks_ops >= 1,
-            "math-explorer": geogebra_activities >= 10,
-            "geometry-master": geometry_shapes >= 30,
-            "tangram-solver": tangram_completed >= 5,
-            "block-master": virtual_blocks_ops >= 50,
-            "geogebra-expert": geogebra_activities >= 25,
-            "shape-artist": geometry_shapes >= 50,
-            "tangram-champion": tangram_completed >= TOTAL_TANGRAM_PUZZLES,
-            "measurement-pro": measurements >= 50,
-            "perfect-week": recent_activities >= 7,
-            "speed-learner": fast_activities >= 10,
-            "all-tools": has_all_tools,
-        }
-
-        # Validate badge condition
-        if badge_id not in badge_conditions:
+        if badge_id not in conditions:
             raise HTTPException(
                 status_code=404, detail=f"Rozet '{badge_id}' bulunamadı!"
             )
 
-        if not badge_conditions[badge_id]:
+        if not conditions[badge_id]:
             raise HTTPException(
                 status_code=400, detail=f"Rozet '{badge_id}' için şartlar sağlanmadı!"
             )
@@ -699,11 +614,11 @@ def claim_badge(
         new_badge = UserBadge(
             user_id=current_user.id,
             badge_id=badge_id,
-            earned_at=datetime.now(timezone.utc),
-            auto_awarded=False,  # Manually claimed
+            earned_at=datetime.now(UTC),
+            auto_awarded=False,
         )
         db.add(new_badge)
-        db.commit()
+        await db.commit()
 
         return {
             "success": True,
@@ -715,25 +630,26 @@ def claim_badge(
         }
     except HTTPException:
         raise
-    except Exception as e:
-        db.rollback()
-        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
+    except Exception:
+        await db.rollback()
+        raise HTTPException(
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
+        )
 
 
 @router.get("/progress/weekly")
-def get_weekly_progress(
-    current_user: User = Depends(get_current_user), db: Session = Depends(get_db)
+async def get_weekly_progress(
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_async_session),
 ):
     """
     Haftalık ilerleme grafiği için veri
     REQ-51.105: Weekly progress tracking
     """
     try:
-        # Calculate last 7 days date range
-        today = datetime.now(timezone.utc)
-        seven_days_ago = today - timedelta(days=6)  # Include today, so 7 days total
+        today = datetime.now(UTC)
+        seven_days_ago = today - timedelta(days=6)
 
-        # Turkish day names
         day_names = [
             "Pazartesi",
             "Salı",
@@ -744,35 +660,32 @@ def get_weekly_progress(
             "Pazar",
         ]
 
-        # Initialize weekly data structure
         weekly_data = []
-        daily_counts = {}
-        daily_times = {}
+        daily_counts: dict = {}
+        daily_times: dict = {}
 
         # Fetch activities for the last 7 days
-        activities = (
-            db.query(
+        activities_result = await db.execute(
+            select(
                 func.date(ManipulativeActivity.created_at).label("activity_date"),
                 func.count(ManipulativeActivity.id).label("activity_count"),
                 func.sum(ManipulativeActivity.duration_seconds).label("total_time"),
             )
-            .filter(
+            .where(
                 ManipulativeActivity.user_id == current_user.id,
                 ManipulativeActivity.created_at >= seven_days_ago,
             )
             .group_by(func.date(ManipulativeActivity.created_at))
-            .all()
         )
 
-        # Build lookup dictionary
-        for activity_date, count, total_time in activities:
+        for row in activities_result.all():
+            activity_date, count, total_time = row
             daily_counts[activity_date] = count
             daily_times[activity_date] = total_time or 0
 
-        # Build weekly data for each day
         for i in range(7):
             current_date = (seven_days_ago + timedelta(days=i)).date()
-            day_of_week = current_date.weekday()  # Monday = 0, Sunday = 6
+            day_of_week = current_date.weekday()
             day_name = day_names[day_of_week]
 
             activity_count = daily_counts.get(current_date, 0)
@@ -782,12 +695,10 @@ def get_weekly_progress(
                 {"day": day_name, "activities": activity_count, "time": time_seconds}
             )
 
-        # Calculate summary statistics
         total_activities = sum(d["activities"] for d in weekly_data)
         total_time = sum(d["time"] for d in weekly_data)
         avg_daily_activities = total_activities / 7 if weekly_data else 0
 
-        # Find most active day
         most_active_day = "Pazartesi"
         max_activities = 0
         for day_data in weekly_data:
@@ -807,7 +718,7 @@ def get_weekly_progress(
         }
     except HTTPException:
         raise
-    except Exception as e:
+    except Exception:
         raise HTTPException(
             status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )

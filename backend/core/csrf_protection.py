@@ -8,7 +8,7 @@ import secrets
 
 from fastapi import Header, HTTPException, Request, status
 from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoint
-from starlette.responses import Response
+from starlette.responses import JSONResponse, Response
 
 from core.config import settings
 
@@ -104,14 +104,31 @@ class CSRFProtectionMiddleware(BaseHTTPMiddleware):
         if self._is_exempt_path(request.url.path):
             return await call_next(request)
 
+        # Session 147 (GF99): Bearer-authenticated API clients cannot be
+        # CSRF'd (they don't auto-send cookies cross-site and attackers
+        # can't read the header back), so bypass CSRF for Authorization
+        # header-based requests. Cookie-authed browsers still go through
+        # the double-submit check below.
+        auth_header = request.headers.get("authorization", "")
+        if auth_header.lower().startswith("bearer "):
+            return await call_next(request)
+
         # Validate CSRF token for state-changing methods
         cookie_token = request.cookies.get(self.cookie_name)
         header_token = request.headers.get(self.header_name)
 
         if not self._validate_csrf_token(cookie_token, header_token):
-            raise HTTPException(
+            # Session 147 (GF99): `raise HTTPException` inside middleware
+            # dispatch escapes through the middleware stack as an
+            # ExceptionGroup and surfaces as a generic 500 — FastAPI's
+            # HTTPException handler only catches exceptions raised from
+            # route handlers, not from middleware. Return a JSONResponse
+            # directly so the 403 reaches the client intact.
+            return JSONResponse(
                 status_code=status.HTTP_403_FORBIDDEN,
-                detail="CSRF token validation failed. Invalid or missing token.",
+                content={
+                    "detail": "CSRF token validation failed. Invalid or missing token.",
+                },
             )
 
         # Token valid, process request

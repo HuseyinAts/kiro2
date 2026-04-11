@@ -350,8 +350,10 @@ class VideoAnalyticsService:
             return None
 
         # Create new milestone
+        # Session 147 (GF94 prophylactic): rule-of-seven asyncpg VARCHAR+UUID.
         new_milestone = VideoCompletionMilestone(
-            user_id=user_id,
+            id=str(uuid4()),
+            user_id=str(user_id),
             video_id=video_id,
             video_source=video_source,
             milestone_percentage=milestone,
@@ -422,11 +424,17 @@ class VideoAnalyticsService:
         Returns:
             New VideoNote
         """
+        # Session 147 (GF94): asyncpg VARCHAR + UUID type lie (rule-of-seven).
+        # VideoNote.id/user_id/session_id are Column(String, ...) but asyncpg
+        # refuses to bind Python UUID objects to VARCHAR params. Coerce at
+        # caller level. See GF26/GF36/GF49/GF59 + Session 142 prophylactic
+        # sweep (4 sibling VideoAnalytics models) — VideoNote was missed.
         note = VideoNote(
-            user_id=user_id,
+            id=str(uuid4()),
+            user_id=str(user_id),
             video_id=video_id,
             video_source=video_source,
-            session_id=session_id,
+            session_id=str(session_id) if session_id is not None else None,
             content=content,
             timestamp=timestamp,
             is_important=is_important,
@@ -572,11 +580,13 @@ class VideoAnalyticsService:
         Returns:
             New VideoBookmark
         """
+        # Session 147 (GF94 prophylactic): rule-of-seven asyncpg VARCHAR+UUID.
         bookmark = VideoBookmark(
-            user_id=user_id,
+            id=str(uuid4()),
+            user_id=str(user_id),
             video_id=video_id,
             video_source=video_source,
-            session_id=session_id,
+            session_id=str(session_id) if session_id is not None else None,
             timestamp=timestamp,
             title=title,
             description=description,
@@ -796,8 +806,10 @@ class VideoAnalyticsService:
             await self.db.refresh(existing)
             return existing
         # Create new
+        # Session 147 (GF94 prophylactic): rule-of-seven asyncpg VARCHAR+UUID.
         summary = VideoAnalyticsSummary(
-            user_id=user_id,
+            id=str(uuid4()),
+            user_id=str(user_id),
             period_type=period_type,
             period_start=period_start,
             period_end=period_end,

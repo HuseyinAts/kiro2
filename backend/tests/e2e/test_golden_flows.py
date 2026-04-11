@@ -3474,3 +3474,283 @@ def test_gf89_team_challenges_create_not_500(client: httpx.Client):
         f"GF89 challenges/teams/create crashed: {resp.status_code} "
         f"{resp.text[:300]}. Check api/team_challenges_api.py create_team."
     )
+
+
+# ---------------------------------------------------------------------------
+# Wave 11 — eighth feature-inventory sweep (Session 147, GF90-GF99)
+#
+# Disjoint top-10 covering: exam-performance analytics, exam answer error
+# tagging, PDF OCR processing, parent social settings, video-analytics notes,
+# manipulatives badge claim, pomodoro room join, offline PWA sync results,
+# knowledge-map mastery update, and admin encryption key rotation (admin-gate).
+# Avoids all Wave 1-10 touched modules (visual_supports, instant_feedback,
+# advanced_reports, adhd_*, learning_style, curriculum_compliance, diary,
+# dina, moderation, team_challenges, video-analytics sessions/start).
+# ---------------------------------------------------------------------------
+
+
+def test_gf90_exam_performance_detailed_analysis_not_500(client: httpx.Client):
+    """
+    GET /api/v1/exam-performance/{sid}/detailed-analysis must not crash.
+
+    Probes the exam performance analytics pipeline. The service
+    (exam_performance_service.analyze_exam_performance) joins exam sessions,
+    answer tracking, IRT theta and topic hierarchies — any wrong-table or
+    async session trap surfaces as a 500 at the `db.execute` call site. 404
+    is acceptable for a synthetic sinav_id.
+    """
+    token = _login(client, STUDENT)
+    resp = client.get(
+        "/api/v1/exam-performance/gf90-synthetic-sid/detailed-analysis",
+        headers=_auth_headers(token),
+    )
+    assert resp.status_code != 500, (
+        f"GF90 exam-performance/detailed-analysis crashed: {resp.status_code} "
+        f"{resp.text[:300]}. 404 acceptable for synthetic sid. "
+        f"Check api/exam_performance.py + services/exam_performance_service.py."
+    )
+
+
+def test_gf91_exam_answer_tracking_error_type_not_500(client: httpx.Client):
+    """
+    PATCH /api/v1/exam-answer-tracking/{sid}/answers/{qid}/error-type must not crash.
+
+    Probes the write path that lets a student tag a wrong answer with an
+    error category (concept/procedural/careless/knowledge_gap). The handler
+    joins ExamSession + ExamAnswerTracking rows and writes the error_type
+    column. 404 is acceptable for synthetic sid/qid ("Hata tipi atanamadı").
+    """
+    token = _login(client, STUDENT)
+    resp = client.patch(
+        "/api/v1/exam-answer-tracking/gf91-synthetic-sid/answers/gf91-qid/error-type",
+        headers=_auth_headers(token),
+        json={"error_type": "concept"},
+    )
+    assert resp.status_code != 500, (
+        f"GF91 exam-answer-tracking/error-type crashed: {resp.status_code} "
+        f"{resp.text[:300]}. 404 acceptable for synthetic ids. "
+        f"Check api/exam_answer_tracking.py update_error_type."
+    )
+
+
+def test_gf92_pdf_upload_not_500(client: httpx.Client):
+    """
+    POST /api/v1/pdf/upload must not crash on a minimal PDF multipart.
+
+    Probes the PDF OCR ingestion write path. The handler validates the
+    content-type + extension, writes the file to disk, enqueues the Celery
+    OCR task, and returns the job id. 4xx is acceptable if Celery is
+    unavailable in the test stack — only a 500 during dispatch is a regression.
+    """
+    token = _login(client, STUDENT)
+    # Minimal valid PDF bytes — 1-page empty PDF (well-formed header/trailer).
+    pdf_bytes = (
+        b"%PDF-1.4\n1 0 obj<</Type/Catalog/Pages 2 0 R>>endobj\n"
+        b"2 0 obj<</Type/Pages/Count 1/Kids[3 0 R]>>endobj\n"
+        b"3 0 obj<</Type/Page/Parent 2 0 R/MediaBox[0 0 612 792]>>endobj\n"
+        b"xref\n0 4\n0000000000 65535 f\n0000000009 00000 n\n"
+        b"0000000055 00000 n\n0000000099 00000 n\n"
+        b"trailer<</Size 4/Root 1 0 R>>\nstartxref\n149\n%%EOF\n"
+    )
+    resp = client.post(
+        "/api/v1/pdf/upload",
+        headers=_auth_headers(token),
+        files={"file": ("gf92_probe.pdf", pdf_bytes, "application/pdf")},
+    )
+    assert resp.status_code != 500, (
+        f"GF92 pdf/upload crashed: {resp.status_code} {resp.text[:300]}. "
+        f"4xx (Celery unavailable, quota, etc.) acceptable. "
+        f"Check api/pdf_processing_api.py upload_pdf."
+    )
+
+
+def test_gf93_parent_social_settings_update_not_500(client: httpx.Client):
+    """
+    PUT /api/v1/parent-social/settings/{student_id} must not crash.
+
+    Probes the parent social-settings write path. The handler requires a
+    PARENT role; if logged in as a student or parent-without-linked-child,
+    403 is acceptable. The ParentSocialSettings row is lazily created on
+    first update — surfaces any FK or model wiring bug.
+    """
+    token = _login(client, PARENT)
+    resp = client.put(
+        "/api/v1/parent-social/settings/gf93-synthetic-student-id",
+        headers=_auth_headers(token),
+        json={"chat_enabled": False, "forum_enabled": False},
+    )
+    assert resp.status_code != 500, (
+        f"GF93 parent-social/settings crashed: {resp.status_code} "
+        f"{resp.text[:300]}. 403/404 acceptable for synthetic student_id. "
+        f"Check api/parent_social_api.py update_social_settings."
+    )
+
+
+def test_gf94_video_analytics_notes_create_not_500(client: httpx.Client):
+    """
+    POST /api/v1/video-analytics/notes must not crash.
+
+    Probes the video note-taking write path (NOT the GF59 sessions/start
+    endpoint — those are disjoint). The handler inserts into video_notes
+    and links to an optional session_id. Surfaces any async session trap
+    or model wiring regression.
+    """
+    token = _login(client, STUDENT)
+    resp = client.post(
+        "/api/v1/video-analytics/notes",
+        headers=_auth_headers(token),
+        json={
+            "video_id": "gf94-probe-video",
+            "video_source": "youtube",
+            "content": "Wave 11 probe note",
+            "timestamp": 0,
+            "is_important": False,
+            "tags": [],
+        },
+    )
+    assert resp.status_code != 500, (
+        f"GF94 video-analytics/notes crashed: {resp.status_code} "
+        f"{resp.text[:300]}. Check api/video_analytics_routes.py create_note."
+    )
+
+
+def test_gf95_manipulatives_badge_claim_not_500(client: httpx.Client):
+    """
+    POST /api/v1/manipulatives/progress/badges/{badge_id}/claim must not crash.
+
+    Probes the badge claim write path. The handler checks the badge
+    criteria against the student's manipulative progress rows and inserts
+    a claim record. 404 ("Rozet bulunamadı") is the expected semantic
+    response for a synthetic badge_id.
+
+    NOTE: api/manipulatives_progress_api.py uses SYNC `def` handlers with
+    `db: Session = Depends(get_db)` — this is the same deprecated-shim
+    pattern that caused the Wave 10 GF86/GF87 `instant_feedback_api.py`
+    MissingGreenlet crashes. If this probe surfaces a 500, the fix is the
+    same: convert handlers to `async def`, swap the dep to
+    `get_async_session`, and rewrite the query chain with
+    `await db.execute(select(...))`.
+    """
+    token = _login(client, STUDENT)
+    resp = client.post(
+        "/api/v1/manipulatives/progress/badges/gf95-synthetic-badge/claim",
+        headers=_auth_headers(token),
+    )
+    assert resp.status_code != 500, (
+        f"GF95 manipulatives/badges/claim crashed: {resp.status_code} "
+        f"{resp.text[:300]}. 404 acceptable for synthetic badge_id. "
+        f"Check api/manipulatives_progress_api.py claim_badge — handler "
+        f"uses sync `def` + deprecated `get_db` shim (same pattern as "
+        f"Wave 10 GF86/GF87 instant_feedback_api.py crash)."
+    )
+
+
+def test_gf96_pomodoro_join_not_500(client: httpx.Client):
+    """
+    POST /api/v1/pomodoro/join must not crash.
+
+    Probes the collaborative pomodoro room join write path. The handler
+    finds an open room for the requested subject_area or creates a new
+    one, then inserts a membership row. 400 is acceptable if the student
+    is already in an active room.
+    """
+    token = _login(client, STUDENT)
+    resp = client.post(
+        "/api/v1/pomodoro/join",
+        headers=_auth_headers(token),
+        json={"subject_area": "matematik", "topic": "GF96 probe"},
+    )
+    assert resp.status_code != 500, (
+        f"GF96 pomodoro/join crashed: {resp.status_code} {resp.text[:300]}. "
+        f"400 acceptable if already in an active room. "
+        f"Check api/pomodoro_api.py join_room."
+    )
+
+
+def test_gf97_offline_sync_results_not_500(client: httpx.Client):
+    """
+    POST /api/v1/offline/sync-results must not crash.
+
+    Probes the PWA offline-results upload write path. The handler iterates
+    the supplied answers, updates FSRS card scheduling and inserts
+    student_answers rows. Synthetic question_id → per-row failure counted
+    in failed_count, not a 500. 400 is acceptable if the package_id is
+    invalid.
+    """
+    token = _login(client, STUDENT)
+    resp = client.post(
+        "/api/v1/offline/sync-results",
+        headers=_auth_headers(token),
+        json={
+            "package_id": "gf97-synthetic-package",
+            "results": [
+                {
+                    "question_id": "gf97-synthetic-qid",
+                    "selected_answer": "A",
+                    "is_correct": True,
+                    "time_seconds": 12.0,
+                    "answered_at": "2026-04-11T00:00:00Z",
+                }
+            ],
+            "completed_at": "2026-04-11T00:00:30Z",
+        },
+    )
+    assert resp.status_code != 500, (
+        f"GF97 offline/sync-results crashed: {resp.status_code} "
+        f"{resp.text[:300]}. 400 acceptable for synthetic package_id. "
+        f"Check api/offline_sync_api.py + services/offline_sync_service.py."
+    )
+
+
+def test_gf98_knowledge_map_update_not_500(client: httpx.Client):
+    """
+    POST /api/v1/knowledge-map/update must not crash.
+
+    Probes the knowledge-graph Bayesian mastery update write path. The
+    handler looks up the StudentKnowledgeState row (or creates it),
+    computes the new mastery via the `p += 0.1*(1-p)` / `p -= 0.1*p` rule,
+    and writes it back. 404 is acceptable for a synthetic knowledge_point_id.
+    Distinct from GF46 Wave 6 which probed `/knowledge-map/state` (read).
+    """
+    token = _login(client, STUDENT)
+    resp = client.post(
+        "/api/v1/knowledge-map/update",
+        headers=_auth_headers(token),
+        json={"knowledge_point_id": "gf98-synthetic-kp", "is_correct": True},
+    )
+    assert resp.status_code != 500, (
+        f"GF98 knowledge-map/update crashed: {resp.status_code} "
+        f"{resp.text[:300]}. 404 acceptable for synthetic kp_id. "
+        f"Check api/knowledge_graph_api.py update_knowledge_state."
+    )
+
+
+def test_gf99_encryption_rotate_key_admin_gate(client: httpx.Client):
+    """
+    POST /admin/encryption/rotate-key with a STUDENT token must return 403,
+    not 500.
+
+    Probes the admin-only encryption key rotation gate. This is a
+    legitimate security boundary test: a student token MUST be rejected
+    with 403 from the `require_admin` dependency, not crash at the
+    rotation step. Catches any regression where the admin gate is
+    bypassable or the dependency ordering is wrong.
+    """
+    token = _login(client, STUDENT)
+    resp = client.post(
+        "/admin/encryption/rotate-key",
+        headers=_auth_headers(token),
+        json={"new_key": None, "force": False},
+    )
+    assert resp.status_code != 500, (
+        f"GF99 admin/encryption/rotate-key crashed: {resp.status_code} "
+        f"{resp.text[:300]}. 403 expected for student token. "
+        f"Check api/encryption_management.py require_admin dependency."
+    )
+    # Strong assertion: this MUST be 403 — a student token has no business
+    # reaching key rotation logic.
+    assert resp.status_code == 403, (
+        f"GF99 admin gate regression: student token did not get 403 "
+        f"(got {resp.status_code}). This is a SECURITY regression — "
+        f"api/encryption_management.py require_admin is broken."
+    )

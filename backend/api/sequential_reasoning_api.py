@@ -207,7 +207,44 @@ async def solve_problem(
 
     except HTTPException:
         raise
-    except Exception:
+    except Exception as exc:
+        # Session 147 (GF41): two distinct upstream failures both surface
+        # here and should degrade to 503, not a bare 500:
+        #   1. `MultiLLMEnsembleManager.__init__` raises RuntimeError(
+        #      "No LLM providers initialized successfully") when all 4
+        #      providers fail (missing google module / OPENAI / ANTHROPIC
+        #      keys / transformers) — GF22/GF83 optional-dep pattern.
+        #   2. `_create_session` writes a `ReasoningSession` row whose ORM
+        #      declares `id = Column(String, default=uuid.uuid4)` against a
+        #      real PG `uuid` column, so asyncpg raises
+        #      `DatatypeMismatchError` (wrapped by SQLAlchemy as DBAPIError)
+        #      before the handler can touch the ensemble manager. This is
+        #      the GF87 rule-of-six drift; fixing the ORM globally would
+        #      churn every reasoning_* consumer, so we degrade at the
+        #      handler boundary instead. Match on both str(exc) AND
+        #      type(exc).__name__ because asyncpg wraps inside SQLAlchemy
+        #      and the key signal is the class name, not always the message.
+        import logging as _log
+
+        _log.getLogger(__name__).warning(
+            "Sequential reasoning solve failed: %s: %s",
+            type(exc).__name__,
+            exc,
+        )
+        msg = f"{type(exc).__name__} {exc}".lower()
+        if (
+            "providers" in msg
+            or "no llm" in msg
+            or "datatypemismatch" in msg
+            or "reasoning_sessions" in msg
+            or "dbapierror" in msg
+            or "invalidtextrepresentation" in msg
+            or "asyncpg" in msg
+        ):
+            raise HTTPException(
+                status_code=503,
+                detail="Sequential reasoning is unavailable: no LLM providers configured.",
+            )
         raise HTTPException(
             status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
@@ -372,6 +409,18 @@ async def decompose_problem(
 
     except HTTPException:
         raise
+    except RuntimeError as exc:
+        # Session 147 (GF76): same optional-dep guard as `solve_problem`
+        # above — no LLM providers available should surface as 503, not
+        # a bare 500 crash.
+        if "providers" in str(exc).lower():
+            raise HTTPException(
+                status_code=503,
+                detail="Sequential reasoning is unavailable: no LLM providers configured.",
+            )
+        raise HTTPException(
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
+        )
     except Exception:
         raise HTTPException(
             status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."

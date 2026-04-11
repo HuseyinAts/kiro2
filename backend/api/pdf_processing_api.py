@@ -108,8 +108,17 @@ class PDFProcessingConfig(BaseModel):
 processing_jobs: dict[str, dict[str, Any]] = {}
 
 # PDF upload directory
-UPLOAD_DIR = Path("backend/uploads/pdfs")
-UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
+# Session 147 (GF92): anchor to repo root, not CWD. Docker container runs
+# with CWD=/app so `Path("backend/uploads/pdfs")` resolved to an
+# unwritable nested path. Use absolute path anchored to this module's
+# grandparent (backend/) + uploads/pdfs, and tolerate a best-effort mkdir.
+UPLOAD_DIR = Path(__file__).resolve().parent.parent / "uploads" / "pdfs"
+try:
+    UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
+except OSError:
+    # Directory may be read-only in some deployments; handler will surface
+    # a structured 503 at write time instead of crashing at import.
+    pass
 
 
 # ==================== CELERY TASKS ====================
@@ -283,8 +292,27 @@ async def upload_pdf(
     file_path = UPLOAD_DIR / f"{job_id}_{safe_name}"
 
     try:
-        with open(file_path, "wb") as f:
-            f.write(file_content)
+        # Session 147 (GF92): ensure upload dir exists at write time and
+        # translate filesystem permission errors into a structured 503
+        # instead of a generic 500.
+        try:
+            UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
+        except OSError as mkdir_err:
+            logger.error(f"PDF upload dir unavailable: {mkdir_err!s}")
+            raise HTTPException(
+                status_code=503,
+                detail="Upload directory unavailable. Please try again later.",
+            ) from mkdir_err
+
+        try:
+            with open(file_path, "wb") as f:
+                f.write(file_content)
+        except PermissionError as perm_err:
+            logger.error(f"PDF upload permission denied: {perm_err!s}")
+            raise HTTPException(
+                status_code=503,
+                detail="Upload directory not writable. Please try again later.",
+            ) from perm_err
 
         # Create processing config
         config = {
