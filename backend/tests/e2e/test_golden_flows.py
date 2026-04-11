@@ -48,7 +48,11 @@ import httpx
 import pytest
 
 BACKEND_URL = os.environ.get("BACKEND_URL", "http://localhost:8000")
-TIMEOUT = 10.0
+# Bumped from 10s to 30s in Session 143: Zemberek JVM cold-start (GF43
+# tokenize + GF64 spell-check) can block ~15-20s on the first request
+# after a restart. 30s is still short enough that genuine hangs surface
+# as failures.
+TIMEOUT = 30.0
 
 # Seed users (backend/scripts/seed_mvp_data.py)
 STUDENT = {"email": "test@kiro2.com", "password": "Kiro2Beta2026@x"}
@@ -2624,4 +2628,268 @@ def test_gf59_video_analytics_session_start_not_500(client: httpx.Client):
         f"Check services/video_analytics_service.py start_watch_session — "
         f"asyncpg VARCHAR+uuid4 rule-of-five requires "
         f"id=str(uuid4()) + user_id=str(user_id) caller coercion."
+    )
+
+
+# ---------------------------------------------------------------------------
+# Wave 8 — sixth feature-inventory sweep (Session 143, 10 new probes)
+#
+# Disjoint top-10 from docs/audits/2026-04-11_feature-inventory.md spanning
+# multisensory learning, visual supports, admin orchestrator, BERTurk intent,
+# Zemberek spell-check, DINA mastery estimate, content moderation, diary
+# SMART validation, forum solutions (soru-meydani), and teacher assignments.
+# 1 real bug fell out: GF65 DINA caller/service contract drift.
+# ---------------------------------------------------------------------------
+
+
+def test_gf60_multisensory_multimodal_not_500(client: httpx.Client):
+    """
+    POST /api/v1/multisensory/multimodal must not crash.
+
+    Probes the multisensory learning content creation write path
+    (REQ-50.89). A 500 means the MultimodalContent model serialization,
+    LearningModality enum coercion, or service singleton wiring broke.
+    """
+    token = _login(client, STUDENT)
+    resp = client.post(
+        "/api/v1/multisensory/multimodal",
+        headers=_auth_headers(token),
+        json={
+            "title": "GF60 probe",
+            "subject": "biyoloji",
+            "topic": "Fotosentez",
+            "modalities": ["visual"],
+        },
+    )
+    assert resp.status_code != 500, (
+        f"GF60 multisensory/multimodal crashed: {resp.status_code} "
+        f"{resp.text[:300]}. Check api/multisensory_learning_api.py "
+        f"create_multimodal_content + service wiring."
+    )
+
+
+def test_gf61_visual_supports_mind_map_not_500(client: httpx.Client):
+    """
+    POST /api/v1/visual-supports/mind-maps must not crash.
+
+    Probes the mind-map generation write path (REQ-50.73). A 500 means
+    the visual_supports_service.generate_mind_map pipeline or MindMap
+    response model broke.
+    """
+    token = _login(client, STUDENT)
+    resp = client.post(
+        "/api/v1/visual-supports/mind-maps",
+        headers=_auth_headers(token),
+        json={
+            "title": "GF61 probe",
+            "subject": "matematik",
+            "topic": "Cebirsel Ifadeler",
+            "content": "x + y = z",
+        },
+    )
+    assert resp.status_code != 500, (
+        f"GF61 visual-supports/mind-maps crashed: {resp.status_code} "
+        f"{resp.text[:300]}. Check api/visual_supports_api.py "
+        f"create_mind_map + services/visual_supports_service.py."
+    )
+
+
+def test_gf62_admin_orchestrator_dispatch_not_500(client: httpx.Client):
+    """
+    POST /api/v1/admin/orchestrator/dispatch must not crash.
+
+    Probes the orchestrator RoutingEngine admin endpoint. Non-admin
+    students should receive 403 (admin gate), NOT 500. A 500 means the
+    RoutingEngine import, orchestrator.core.routing module, or the
+    get_current_admin_user dependency broke.
+    """
+    token = _login(client, STUDENT)
+    resp = client.post(
+        "/api/v1/admin/orchestrator/dispatch",
+        headers=_auth_headers(token),
+        json={"description": "GF62 probe task", "files": []},
+    )
+    assert resp.status_code != 500, (
+        f"GF62 admin/orchestrator/dispatch crashed: {resp.status_code} "
+        f"{resp.text[:300]}. 403 is expected for non-admin. "
+        f"Check api/orchestrator_api.py + orchestrator.core.routing import."
+    )
+
+
+def test_gf63_berturk_intent_detect_not_500(client: httpx.Client):
+    """
+    POST /api/v1/berturk/intent/detect must not crash.
+
+    Probes BERTurk intent detection. Same optional-dep pattern as GF22
+    (sentiment): when transformers/model weights are missing the handler
+    must return 503 via _require_berturk_service() rather than
+    AttributeError: 'NoneType' → 500.
+    """
+    token = _login(client, STUDENT)
+    resp = client.post(
+        "/api/v1/berturk/intent/detect",
+        headers=_auth_headers(token),
+        json={"text": "bu konuyu nasil calisabilirim"},
+    )
+    assert resp.status_code != 500, (
+        f"GF63 berturk/intent/detect crashed 500: {resp.text[:300]}. "
+        f"503 is acceptable when transformers is absent (GF22 pattern). "
+        f"Check api/berturk_api.py _require_berturk_service() guard."
+    )
+
+
+def test_gf64_zemberek_spell_check_not_500(client: httpx.Client):
+    """
+    POST /api/v1/zemberek/spell-check must not crash.
+
+    Probes the Zemberek JVM spell-check bridge. The optional-dep
+    fallback is graceful: suggestions list may be empty but the
+    pipeline must never crash. A 500 means the JVM client, request
+    schema (field: word, NOT text), or Zemberek loader broke.
+    """
+    token = _login(client, STUDENT)
+    resp = client.post(
+        "/api/v1/zemberek/spell-check",
+        headers=_auth_headers(token),
+        json={"word": "matemaatik"},
+    )
+    assert resp.status_code != 500, (
+        f"GF64 zemberek/spell-check crashed: {resp.status_code} "
+        f"{resp.text[:300]}. Check api/zemberek.py schema (word field) "
+        f"and JVM bridge fallback."
+    )
+
+
+def test_gf65_dina_estimate_not_500(client: httpx.Client):
+    """
+    POST /api/v1/dina/estimate must not crash.
+
+    Probes the DINA nano-skill mastery Bayesian update write path.
+    Wave 8 caught a caller/service contract drift: the service
+    ``estimate_student_mastery`` returns ``list[dict]`` (per-nano-skill
+    updates) but the caller did ``MasteryEstimateResponse(**result)``
+    which expects a mapping, crashing with
+    ``TypeError: argument after ** must be a mapping, not list``.
+    Fix: caller now transforms the list to SkillMasteryItem rows and
+    builds the response envelope; empty list → 404 "not in DINA map".
+    """
+    token = _login(client, STUDENT)
+    resp = client.post(
+        "/api/v1/dina/estimate",
+        headers=_auth_headers(token),
+        json={
+            "question_id": "00000000-0000-0000-0000-000000000000",
+            "is_correct": True,
+        },
+    )
+    assert resp.status_code != 500, (
+        f"GF65 dina/estimate crashed 500: {resp.text[:300]}. "
+        f"Check api/dina_api.py estimate_mastery — service returns "
+        f"list[dict], caller must build MasteryEstimateResponse from it."
+    )
+
+
+def test_gf66_moderation_report_not_500(client: httpx.Client):
+    """
+    POST /api/v1/moderation/reports must not crash.
+
+    Probes the content moderation report write path. A 500 means the
+    ContentReport model, social content filter wiring, or the reason/
+    content_type regex validators broke.
+    """
+    token = _login(client, STUDENT)
+    resp = client.post(
+        "/api/v1/moderation/reports",
+        headers=_auth_headers(token),
+        json={
+            "reported_content_id": "00000000-0000-0000-0000-000000000000",
+            "content_type": "chat_message",
+            "reason": "spam",
+            "description": "gf66 probe",
+        },
+    )
+    assert resp.status_code != 500, (
+        f"GF66 moderation/reports crashed: {resp.status_code} "
+        f"{resp.text[:300]}. Check api/moderation_api.py create_report "
+        f"+ ContentReport ORM write path."
+    )
+
+
+def test_gf67_diary_goals_validate_smart_not_500(client: httpx.Client):
+    """
+    POST /api/v1/diary/goals/validate-smart must not crash.
+
+    Probes the SMART goal criteria validation write path. A 500 means
+    the GoalService.validate_smart pipeline or the GoalCreate pydantic
+    model_validator broke. Note that SMART validation is advisory (soft
+    warnings, not hard rejection).
+    """
+    token = _login(client, STUDENT)
+    resp = client.post(
+        "/api/v1/diary/goals/validate-smart",
+        headers=_auth_headers(token),
+        json={
+            "title": "GF67 hedef",
+            "description": "test goal",
+            "target_value": 10.0,
+            "target_date": "2026-12-31T23:59:59",
+            "category": "academic",
+            "priority": 2,
+        },
+    )
+    assert resp.status_code != 500, (
+        f"GF67 diary/goals/validate-smart crashed: {resp.status_code} "
+        f"{resp.text[:300]}. Check api/diary_api.py + "
+        f"services/diary/goal_service.py validate_smart."
+    )
+
+
+def test_gf68_soru_meydani_solution_not_500(client: httpx.Client):
+    """
+    POST /api/v1/soru-meydani/questions/{id}/solutions must not crash.
+
+    Probes the forum solution submission write path. A 500 means the
+    ForumSolution ORM write, social content filter, or rate limiting
+    broke. A 404 "Soru bulunamadi" for a bogus UUID is semantic
+    (question does not exist in the forum), NOT a crash.
+    """
+    token = _login(client, STUDENT)
+    bogus_question = "00000000-0000-0000-0000-000000000000"
+    resp = client.post(
+        f"/api/v1/soru-meydani/questions/{bogus_question}/solutions",
+        headers=_auth_headers(token),
+        json={"body": "Bu sorunun cozumu: once x'i bul, sonra y'yi hesapla."},
+    )
+    assert resp.status_code != 500, (
+        f"GF68 soru-meydani solutions crashed 500: {resp.text[:300]}. "
+        f"404 is acceptable when question not found. "
+        f"Check api/soru_meydani_api.py submit_solution."
+    )
+
+
+def test_gf69_teacher_assignment_create_not_500(client: httpx.Client):
+    """
+    POST /api/v1/teacher/assignments must not crash.
+
+    Probes the teacher assignment creation write path. Canonical TR
+    field schema (baslik/aciklama/sinif/teslim_tarihi) must be
+    accepted — an English-schema request would 422 and mask this probe.
+    A 500 means the TeacherAssignment ORM write, async session handling,
+    or datetime parsing broke.
+    """
+    token = _login(client, TEACHER)
+    resp = client.post(
+        "/api/v1/teacher/assignments",
+        headers=_auth_headers(token),
+        json={
+            "baslik": "GF69 probe odev",
+            "aciklama": "deneme",
+            "sinif": "12A",
+            "teslim_tarihi": "2026-12-31T23:59:59",
+        },
+    )
+    assert resp.status_code != 500, (
+        f"GF69 teacher/assignments crashed: {resp.status_code} "
+        f"{resp.text[:300]}. Check app/api/teacher_classroom.py "
+        f"create_assignment + TeacherAssignment ORM write."
     )

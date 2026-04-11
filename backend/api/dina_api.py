@@ -158,19 +158,45 @@ async def estimate_mastery(
                 is_correct=request.is_correct,
             )
 
-        if result is None:
+        # Service contract: returns list[dict] of per-nano-skill updates,
+        # or [] when the question has no Q-matrix entries (not yet mapped
+        # to any nano-skill) — treat [] as 404 so clients can distinguish
+        # "question not in DINA model" from a crash.
+        if not result:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
-                detail="Soru bulunamadı",
+                detail="Soru DINA bilgi haritasında bulunamadı",
             )
 
-        if "error" in result:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail=result["error"],
+        # Map the raw service rows to the response schema. The service
+        # does not return skill_name (no join), so fall back to the
+        # nano_skill_id short prefix. `mastered` uses the conventional
+        # DINA 0.5 threshold on posterior mastery probability.
+        updated_skills = [
+            SkillMasteryItem(
+                skill_id=str(row["nano_skill_id"]),
+                skill_name=str(row.get("skill_name") or row["nano_skill_id"])[:64],
+                mastery_prob=float(row["mastery"]),
+                mastered=float(row["mastery"]) >= 0.5,
             )
+            for row in result
+        ]
 
-        return MasteryEstimateResponse(**result)
+        # Overall delta: average deviation from the neutral 0.5 prior.
+        # The service currently does not return per-row prior mastery,
+        # so this is a coarse signal rather than a true pre/post delta.
+        overall_delta = (
+            sum(item.mastery_prob - 0.5 for item in updated_skills)
+            / len(updated_skills)
+            if updated_skills
+            else 0.0
+        )
+
+        return MasteryEstimateResponse(
+            question_id=request.question_id,
+            updated_skills=updated_skills,
+            overall_mastery_delta=round(overall_delta, 4),
+        )
 
     except HTTPException:
         raise

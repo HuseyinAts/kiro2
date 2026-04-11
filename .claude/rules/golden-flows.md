@@ -164,15 +164,42 @@ is now documented, and Wave 7 GF59 covers the live-write surface. Any future
 model that declares `Column(String, default=uuid.uuid4)` should be treated as
 a guaranteed asyncpg crash site at the caller level.
 
-**Current distribution (Session 142):** 76 tests → **74 PASS, 0 FAIL, 2 SKIP**.
+Wave 8 — sixth feature-inventory sweep (Session 143, 10 new tests, discovered 1 additional half-working feature):
 
-All new Wave 7 probes PASS after the Session 142 fixes. The 2 remaining SKIPs
-are unchanged (GF1wB refresh-token persist, GF4w.2 FSRS no due card). Six
-Wave 7 routes (GF50-GF53, GF55) are semantically 404 — the routers are
-unwired for features that don't exist yet. Not a crash, accepted under the
-`!= 500` pattern. Two Wave 7 probes return structured 503 (GF56 RAG, GF57
-vision) because their optional deps are not installed in the MVP Docker
-stack — accepted under the GF22/GF37/GF38 optional-dep pattern.
+Context: after Wave 7 the feature inventory still had ~470 uncovered write-path
+endpoints. Wave 8 probed a disjoint top-10 spanning multisensory multimodal
+content, visual supports (mind maps), admin orchestrator dispatch, BERTurk
+intent detection, Zemberek spell check, DINA cognitive diagnosis, moderation
+reports, diary SMART goal validation, soru-meydani solution posting, and
+teacher assignment creation. 1 real bug fell out (DINA service/caller
+contract drift) plus one infrastructure-level fix (Zemberek JVM cold-start
+test timeout).
+
+| # | Flow | Surfaces | Status |
+|---|------|----------|--------|
+| GF60 | multisensory/multimodal create not 500 | Multimodal content write path (`multisensory_learning_api.py`) | ✅ PASS |
+| GF61 | visual-supports/mind-maps create not 500 | Mind map write path | ✅ PASS |
+| GF62 | admin/orchestrator/dispatch admin-gate | Admin-only dispatch endpoint (student → 403 expected) | ✅ PASS |
+| GF63 | berturk/intent/detect not 500 | BERTurk intent detection (optional-dep 503 — GF22 pattern) | ✅ PASS |
+| GF64 | zemberek/spell-check not 500 | Zemberek JVM spell-check write path | ✅ PASS (infra fix: `TIMEOUT` module constant bumped 10s→30s because Zemberek JVM bridge cold-starts ~15-20s on the first request after a restart and exceeded the original 10s budget. Not a service regression — the JVM init is a one-shot cost amortized across the suite. Same `TIMEOUT` also unblocks GF43 tokenize.) |
+| GF65 | dina/estimate not 500 | **Service/caller contract drift**: `services/dina_service.estimate_student_mastery` returns `list[dict]` of per-nano-skill updates (or `[]` when the question has no Q-matrix entries), but `api/dina_api.estimate_mastery` unpacked it with `MasteryEstimateResponse(**result)` expecting a mapping → `TypeError: argument after ** must be a mapping, not list`. The caller signature assumed the service returned a pre-built envelope — but the service is lower-level and returns raw rows. | ✅ PASS (fix: Session 143 — rewrote the caller to transform `list[dict]` into the `MasteryEstimateResponse` envelope: empty list → 404 "Soru DINA bilgi haritasında bulunamadı", populated list → map each row to `SkillMasteryItem(skill_id, skill_name fallback, mastery_prob, mastered=prob>=0.5)` and compute `overall_mastery_delta` as the average deviation from the neutral 0.5 prior) |
+| GF66 | moderation/reports create not 500 | Content moderation report write path | ✅ PASS |
+| GF67 | diary/goals/validate-smart not 500 | SMART goal validation (tz-aware/naive normalization from Wave 5 GF26 extends here) | ✅ PASS |
+| GF68 | soru-meydani question solution post not 500 | Forum solution write path (synthetic question id → 404 expected) | ✅ PASS |
+| GF69 | teacher/assignments create not 500 | Teacher assignment write path with TR schema (`baslik`, `aciklama`, `sinif`, `teslim_tarihi`) | ✅ PASS |
+
+Note on target selection: GF66 was originally planned against `/api/v1/knowledge-map/update` but that endpoint was already covered by GF46 (Wave 6), so it was swapped for `/api/v1/moderation/reports` to keep the Wave 8 set strictly disjoint from earlier waves.
+
+**Current distribution (Session 143):** 86 tests → **84 PASS, 0 FAIL, 2 SKIP**.
+
+All new Wave 8 probes PASS after the Session 143 fixes. The 2 remaining SKIPs
+are unchanged (GF1wB refresh-token persist, GF4w.2 FSRS no due card). GF62
+admin/orchestrator/dispatch returns semantic 403 for the student token —
+accepted under the `!= 500` pattern (admin gate works as designed). GF63
+berturk/intent/detect returns structured 503 — accepted under the
+GF22/GF37/GF38/GF56/GF57 optional-dep pattern. GF68 soru-meydani solution
+returns 404 for a synthetic question id — accepted as a semantic not-found
+signal.
 
 Implementation: `backend/tests/e2e/test_golden_flows.py`
 CI gate: `.github/workflows/golden-flows.yml`
